@@ -450,6 +450,20 @@ export const campaignGroupJoinSchema = z.object({
   inviteCode: z.string().regex(/^[A-Z0-9]{6}$/, "That code is not right."),
 });
 
+/** /api/circles POST body (Read together, 1.8): a circle for a reading path. */
+export const circleCreateSchema = z.object({
+  name: z.string().trim().min(2).max(60),
+  kind: z.enum(["parish", "household", "friends"]),
+  pathId: z.string().regex(/^[a-z0-9-]{1,40}$/),
+});
+
+/** /api/circles/read POST body: a day of a path read, or unmarked, in every circle the reader keeps on it. */
+export const circleReadSchema = z.object({
+  pathId: z.string().regex(/^[a-z0-9-]{1,40}$/),
+  day: z.number().int().min(1).max(60),
+  read: z.boolean(),
+});
+
 /** /api/campaigns/[id]/remind PUT body (per-campaign daily reminder).
  *
  *  Default off, and the reader sets their own local hour. `enabled: false`
@@ -542,6 +556,11 @@ export const communityPostSchema = z
     category: z.literal("question").optional().nullable(),
     /** The Bible chapter this is about ("john/3"), from the chapter's page. */
     chapterRef: z.string().max(50).optional().nullable(),
+    /** The day of a circle's reading path this is about (Read together, 1.8). Only with groupId. */
+    pathDay: z.number().int().min(1).max(60).optional().nullable(),
+  })
+  .refine((p) => !p.pathDay || Boolean(p.groupId), {
+    message: "A day's conversation belongs to a circle.",
   })
   .refine((p) => !p.category || p.kind === "discussion", {
     message: "A question is written in your own words.",

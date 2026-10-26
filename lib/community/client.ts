@@ -75,11 +75,11 @@ export type PostsResult =
  */
 export async function fetchCommunityPosts(
   groupId?: string | null,
-  opts: { following?: boolean; chapter?: string; category?: "question" } = {},
+  opts: { following?: boolean; chapter?: string; category?: "question"; day?: number } = {},
 ): Promise<PostsResult> {
   try {
     const qs = groupId
-      ? `?group=${encodeURIComponent(groupId)}`
+      ? `?group=${encodeURIComponent(groupId)}${opts.day ? `&day=${opts.day}` : ""}`
       : opts.following
         ? "?following=1"
         : opts.chapter
@@ -143,6 +143,8 @@ export type CreatePostInput = {
   category?: "question" | null;
   /** The Bible chapter it is about, from that chapter's page ("john/3"). */
   chapterRef?: string | null;
+  /** The day of a circle's reading path it is about (Read together, 1.8); with groupId. */
+  pathDay?: number | null;
 };
 
 /** Ids of the caller's own posts and replies. See app/api/community/mine. */

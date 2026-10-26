@@ -1,8 +1,9 @@
 import { describe, expect, it } from "vitest";
 
 import { ENTRIES, type WorkKey } from "../entries";
+import { NATIVITY_PATH, nativityFastAround } from "../nativity";
 import { pathPage } from "../pathView";
-import { PATHS } from "../paths";
+import { PATHS, getPath } from "../paths";
 import { CHECKED_KEYS } from "../provenance";
 import { statFor } from "../cards";
 
@@ -48,5 +49,19 @@ describe("reading paths", () => {
     expect(start.days[3].readings[0].part).toEqual({ n: 1, of: 2 });
     expect(start.days[4].readings[0].part).toEqual({ n: 2, of: 2 });
     expect(start.days[0].readings[0].part).toBeUndefined();
+  });
+
+  it("name the piece of a work read a section a day", () => {
+    const nativity = pathPage(NATIVITY_PATH)!;
+    expect(nativity.days[1].readings[0].place).toBe("Hymn I");
+    expect(nativity.days[2].readings[0].place).toBe("Book III, Chapter I");
+    expect(nativity.days[4].readings[0].place).toBe("Sermon XXI");
+    expect(nativity.days[37].readings[0]).toMatchObject({ part: { n: 1, of: 3 } });
+    expect(nativity.days[37].readings[0].place).toBeUndefined();
+  });
+
+  it("give the Nativity Fast a day for each of its forty days", () => {
+    const [first, last] = nativityFastAround(new Date(2026, 10, 20), "new");
+    expect(getPath(NATIVITY_PATH)!.days).toHaveLength(last - first + 1);
   });
 });

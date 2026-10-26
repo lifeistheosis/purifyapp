@@ -153,6 +153,10 @@
    "share": 0.943,
    "withNotes": true
   },
+  "ephraim-the-syrian/hymns-on-the-nativity": {
+   "edition": "Nicene and Post-Nicene Fathers, Series II, Vol. 13",
+   "share": 0.997
+  },
   "epiphanius-of-salamis/the-anchored-one": {
    "edition": "Philip Schaff, The Creeds of Christendom, Vol. 2 (1877)",
    "withNotes": true
@@ -170,6 +174,10 @@
   "gregory-theologian/first-theological-oration": {
    "edition": "Nicene and Post-Nicene Fathers, Series II, Vol. 7",
    "share": 1.0
+  },
+  "gregory-theologian/oration-on-the-nativity": {
+   "edition": "Nicene and Post-Nicene Fathers, Series II, Vol. 7",
+   "share": 0.998
   },
   "hosius-of-cordova/the-elder-of-the-west": {
    "edition": "Nicene and Post-Nicene Fathers, Series II, Vol. 4",
@@ -349,6 +357,10 @@
    "edition": "Nicene and Post-Nicene Fathers, Series II, Vol. 14",
    "share": 1.0,
    "withNotes": true
+  },
+  "leo-the-great/sermons-on-the-nativity": {
+   "edition": "Nicene and Post-Nicene Fathers, Series II, Vol. 12",
+   "share": 0.996
   },
   "leo-the-great/the-tome-of-leo": {
    "edition": "Nicene and Post-Nicene Fathers, Series II, Vol. 12",

@@ -428,6 +428,18 @@ export const ENTRIES: Readonly<Record<WorkKey, ReadingEntry>> = {
     review: R,
   },
   "gregory-theologian/first-theological-oration": { by: "gregory-theologian", form: "homilies", scope: "selections", themes: [], review: R },
+  // 1.8: the oration the Nativity Fast path closes on (NPNF II 7, checked against the 1894 page).
+  "gregory-theologian/oration-on-the-nativity": {
+    by: "gregory-theologian",
+    form: "homilies",
+    scope: "complete",
+    themes: [
+      t("nativity", "Oration 38, preached on the feast: Christ is born, glorify ye Him, the words the canon of the feast opens with"),
+      t("nativityFast", "The oration whose first words are sung from the Entry of the Theotokos to the feast"),
+    ],
+    featured: { seasons: ["nativity", "nativityFast"] },
+    review: R,
+  },
   "john-of-damascus/exact-exposition-of-the-orthodox-faith": {
     by: "john-of-damascus",
     form: "treatise",
@@ -759,6 +771,18 @@ export const ENTRIES: Readonly<Record<WorkKey, ReadingEntry>> = {
     themes: [t("transfiguration", "The homily on Tabor, retold: the light from within the Lord's own divinity")],
     review: R,
   },
+  // 1.8: the nineteen hymns of NPNF II 13 (1898); the Syriac cycle has more, so the cover says Selections.
+  "ephraim-the-syrian/hymns-on-the-nativity": {
+    by: "ephraim-the-syrian",
+    form: "hymns",
+    scope: "selections",
+    themes: [
+      t("nativity", "Nineteen hymns on the Lord's birth: the Virgin to her Child, the shepherds and the Magi, the Lord of all held in His mother's arms"),
+      t("nativityFast", "The hymns of the Nativity, read toward the feast"),
+    ],
+    featured: { seasons: ["nativity", "nativityFast"] },
+    review: R,
+  },
   "justin-martyr/first-apology": { by: "justin-martyr", form: "treatise", scope: "complete", themes: [], featured: {}, review: R },
   "justin-martyr/second-apology": { by: "justin-martyr", form: "treatise", scope: "complete", themes: [], review: R },
   "justin-martyr/dialogue-with-trypho": { by: "justin-martyr", form: "treatise", scope: "complete", themes: [], review: R },
@@ -772,6 +796,18 @@ export const ENTRIES: Readonly<Record<WorkKey, ReadingEntry>> = {
   },
   "photius-the-great/the-bibliotheca": { by: "photius-the-great", form: "treatise", scope: "selections", themes: [], review: R },
   "leo-the-great/the-tome-of-leo": { by: "leo-the-great", form: "letters", scope: "complete", themes: [], featured: {}, review: R },
+  // 1.8: seven of his ten sermons on the feast, all that NPNF II 12 (1895) prints.
+  "leo-the-great/sermons-on-the-nativity": {
+    by: "leo-the-great",
+    form: "homilies",
+    scope: "selections",
+    themes: [
+      t("nativity", "Sermons on the feast: the Word made flesh, remaining what He was; Christian, acknowledge thy dignity"),
+      t("nativityFast", "The sermons of the feast, read toward it"),
+    ],
+    featured: { seasons: ["nativity", "nativityFast"] },
+    review: R,
+  },
   "agatho-of-rome/the-letter-to-the-emperors": { by: "agatho-of-rome", form: "letters", scope: "complete", themes: [], review: R },
   "celestine-of-rome/letter-to-the-synod-of-ephesus": { by: "celestine-of-rome", form: "letters", scope: "complete", themes: [], review: R },
   "irene-the-empress/letters-for-the-seventh-council": { by: "irene-the-empress", form: "letters", scope: "complete", themes: [], review: R },

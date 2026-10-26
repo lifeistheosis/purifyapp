@@ -15,6 +15,8 @@ import { pathKey as keyOf, readPathDone as readDone } from "@/lib/reading/pathPr
 import type { PathView as View } from "@/lib/reading/pathView";
 
 import { readingTime } from "./CoverRow";
+import { DayThread } from "./DayThread";
+import { ReadTogether, useCircles } from "./ReadTogether";
 
 export function PathView({ path }: { path: View }) {
   const { t } = useTranslate();
@@ -22,15 +24,22 @@ export function PathView({ path }: { path: View }) {
   // Read once the page has woken: the server has no device to read.
   // eslint-disable-next-line react-hooks/set-state-in-effect
   useEffect(() => setDone(readDone(path.id)), [path.id]);
+  // Read together (1.8): the reader's circles on this path, and the day whose
+  // conversation is open.
+  const circles = useCircles(path.id);
+  const [thread, setThread] = useState<number | null>(null);
+  const circle = circles.circles?.[0] ?? null;
 
   function toggle(i: number) {
-    const next = done.includes(i) ? done.filter((n) => n !== i) : [...done, i].sort((a, b) => a - b);
+    const wasRead = done.includes(i);
+    const next = wasRead ? done.filter((n) => n !== i) : [...done, i].sort((a, b) => a - b);
     setDone(next);
     try {
       window.localStorage.setItem(keyOf(path.id), JSON.stringify(next));
     } catch {
       /* a private window: the path just will not remember */
     }
+    circles.mark(i + 1, !wasRead);
   }
 
   return (
@@ -44,9 +53,11 @@ export function PathView({ path }: { path: View }) {
           <p className="mt-5 max-w-[60ch] font-serif text-body leading-[1.75] text-paper/80">{t(`paths.${path.id}.body`)}</p>
           <p className="mt-3 font-sans text-caption text-paper/50">{t("paths.progress", { done: done.length, total: path.days.length })}</p>
         </header>
+        <ReadTogether pathId={path.id} state={circles} />
         <ol className="mt-8 divide-y divide-paper/[0.07]">
           {path.days.map((day, i) => {
             const read = done.includes(i);
+            const readers = circles.readersOf(i + 1);
             return (
               <li key={i} id={`day-${i + 1}`} data-path-day={i + 1} className="scroll-mt-24 py-5">
                 <div className="flex items-baseline justify-between gap-3">
@@ -62,6 +73,12 @@ export function PathView({ path }: { path: View }) {
                         </span>
                         <span className="mt-0.5 block font-sans text-caption text-paper/55">
                           {[r.author, r.part ? t("paths.part", { n: r.part.n, total: r.part.of }) : null].filter(Boolean).join(" · ")}
+                          {r.place ? (
+                            <>
+                              {r.author || r.part ? " · " : null}
+                              <span lang="en">{r.place}</span>
+                            </>
+                          ) : null}
                         </span>
                       </Link>
                     </li>
@@ -75,10 +92,23 @@ export function PathView({ path }: { path: View }) {
                 >
                   {read ? t("paths.read") : t("paths.markRead")}
                 </button>
+                {readers.length ? (
+                  <p className="mt-2 font-sans text-caption text-paper/55">{t("together.readBy", { names: readers.join(", ") })}</p>
+                ) : null}
+                {circle ? (
+                  <button
+                    type="button"
+                    onClick={() => setThread(i + 1)}
+                    className="tap-press mt-1 inline-flex min-h-11 items-center font-sans text-caption font-semibold text-paper/70 underline-offset-4 hover:underline"
+                  >
+                    {t("together.talk")}
+                  </button>
+                ) : null}
               </li>
             );
           })}
         </ol>
+        <DayThread circle={circle} day={thread ?? 1} open={thread !== null} onClose={() => setThread(null)} />
       </div>
     </section>
   );

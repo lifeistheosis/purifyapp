@@ -752,6 +752,15 @@ export const SAINTS: Saint[] = [
  "Who may speak of God, when, and to whom, Gregory's preface to the four orations that follow.",
  topics: ["Theology", "Trinity", "Knowledge of God", "Asceticism"],
  },
+ {
+ slug: "oration-on-the-nativity",
+ title: "On the Theophany, or Birthday of Christ",
+ subtitle: "Oration XXXVIII, for the feast of the Nativity",
+ year: "c. 380",
+ blurb:
+ "Gregory's sermon for the feast of the Lord's birth, which his age called the Theophany, preached at Constantinople. Its opening words, Christ is born, glorify ye Him, are the first words of the canon the Church still sings at the feast. Verbatim from the public-domain English of the Nicene and Post-Nicene Fathers.",
+ topics: ["Nativity", "Incarnation", "Feasts", "Theology"],
+ },
  ],
  },
  {
@@ -2944,6 +2953,15 @@ export const SAINTS: Saint[] = [
  ],
  works: [
  {
+ slug: "hymns-on-the-nativity",
+ title: "Hymns on the Nativity",
+ subtitle: "Nineteen hymns on the birth of Christ in the flesh",
+ year: "4th century",
+ blurb:
+ "The Harp of the Spirit sings the Lord's birth: nineteen hymns in which the Virgin speaks to her Child, shepherds and Magi come to worship, and He who holds all things is held in His mother's arms. Verbatim from the public-domain English of the Nicene and Post-Nicene Fathers.",
+ topics: ["Nativity", "Incarnation", "Theotokos", "Hymnody"],
+ },
+ {
  slug: "on-the-transfiguration-of-the-lord",
  title: "On the Transfiguration of the Lord",
  subtitle: "The homily on Tabor, retold in our words",
@@ -3212,6 +3230,15 @@ export const SAINTS: Saint[] = [
  blurb:
  "Leo's dogmatic letter to Flavian of Constantinople, setting out the confession of one Christ in two natures. Read aloud at the Fourth Ecumenical Council, where the Fathers acclaimed it as the voice of Peter. Verbatim from the public-domain English of the Nicene and Post-Nicene Fathers.",
  topics: ["Incarnation", "Chalcedon", "Christology", "Two Natures"],
+ },
+ {
+ slug: "sermons-on-the-nativity",
+ title: "Sermons on the Nativity",
+ subtitle: "Seven sermons on the Feast of the Nativity",
+ year: "440 to 461",
+ blurb:
+ "Seven of the sermons Leo preached at Rome on the feast of the Lord's birth: the joy of the day, the Word made flesh without ceasing to be what He was, and the Christian called to acknowledge his dignity. Verbatim from the public-domain English of the Nicene and Post-Nicene Fathers.",
+ topics: ["Nativity", "Incarnation", "Christology", "Feasts"],
  },
  ],
  },

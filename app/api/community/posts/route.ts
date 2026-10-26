@@ -161,6 +161,11 @@ export async function GET(req: Request) {
   const params = new URL(req.url).searchParams;
   const groupId = params.get("group");
   let scopedGroup: string | null = null;
+  // `?group=<uuid>&day=<n>`: one day's conversation in a circle reading a
+  // path together (Read together, 1.8). Membership is proved for the group
+  // below, exactly as for its whole thread.
+  const dayParam = params.get("day");
+  const pathDay = groupId && dayParam && /^\d{1,2}$/.test(dayParam) && Number(dayParam) >= 1 && Number(dayParam) <= 60 ? Number(dayParam) : null;
 
   // `?chapter=john/3`: the posts about one Bible chapter, for its page
   // ("Discussed in Community"). `?category=question`: Ask a Priest, which
@@ -299,6 +304,7 @@ export async function GET(req: Request) {
     query = scopedGroup
       ? query.eq("group_id", scopedGroup)
       : query.is("group_id", null);
+    if (scopedGroup && pathDay) query = query.eq("path_day", pathDay);
     if (blocked.length > 0) {
       query = query.not("user_id", "in", `(${blocked.join(",")})`);
     }
@@ -517,6 +523,9 @@ async function handlePOST(req: Request) {
     author_name: shownName,
     author_avatar: meta.avatar_url || null,
     group_id: groupId,
+    // One day's conversation in a circle (Read together, 1.8): only with a
+    // group whose membership was proved above.
+    ...(groupId && p.pathDay ? { path_day: p.pathDay } : {}),
   };
   let { data: created, error } = await admin
     .from("community_posts")
