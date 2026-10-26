@@ -1748,7 +1748,17 @@ findings:
       Scripture works held to the app's King James text, and that text freed
       of 389 stray spaces; St Ephraim on the Transfiguration and St Symeon's
       Discourse on Faith, which have no public-domain English, now our
-      summaries marked editorial. STILL OPEN: the apolytikia's English across
+      summaries marked editorial. 2026-10-25: the lost opening quotation
+      marks (found that day: quoted speech kept its closing mark and lost its
+      opening one when the works were first imported) put back in 794
+      paragraphs of 15 works, 2,573 opening marks and 2,559 straight closers
+      made curly, each mark found beside the same five words in CCEL's
+      volume, and nothing but quotation marks changed (held by stripping
+      them and comparing every paragraph to the one before). Three new works
+      read word for word against scans of their printings, the printed page
+      followed where CCEL differs and seven printer's slips kept and noted:
+      St Ephraim's Hymns on the Nativity, St Leo's Sermons on the Nativity,
+      St Gregory's Oration 38. STILL OPEN: the apolytikia's English across
       the library (mostly unsourced; St Nectarius's, written for the page, is
       gone); St Gregory Palamas's florilegium on essence and energies and the
       Hagioritic Tome, whose quotations were in places "paraphrased with
@@ -1756,8 +1766,13 @@ findings:
       Ignatius's letters paragraph by paragraph against the shorter
       recension; the large works that name no CCEL volume (Cyril on John and
       on Luke, the Way of a Pilgrim, Isaac, the Sayings of Arsenius, Photius)
-      against their own editions; and a test that holds each quoted section
-      to its volume.
+      against their own editions; the quotation marks still to settle (18
+      paragraphs where CCEL itself differs, the 28 paragraph-opening marks of
+      Antony's speeches and 4 in 2 Corinthians that CCEL never closes, 6 lost
+      double marks at paragraph starts in John, Hebrews and Acts, one in the
+      Confessions, and the commentary rail's copies of Chrysostom's
+      paragraphs, which likely carry the same loss throughout); and a test
+      that holds each quoted section to its volume.
     evidence: data/saints/*/*.json (sections and their voice); data/bible/commentary; lib/reading/entries.ts; lib/saints/saints.ts; CCEL transcriptions of ANF 1, 5, 6 and NPNF I 6 to 14, II 1 to 14; Schaff, Creeds of Christendom II; Hapgood, Service Book (1906)
     action: "Done with the owner's yes of 2026-10-23 for what is listed above. Left: the apolytikia (find a public-domain English for each, or mark it ours), the Palamas texts (owner and dogma queue), Ignatius's recensions, the large non-CCEL works against their own editions, and a test that holds each quoted section to its volume."
     safe_to_automate: false
