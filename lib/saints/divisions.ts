@@ -743,6 +743,10 @@ export const SCHEMES: Readonly<Record<string, Scheme>> = {
   "jerome-of-stridon/the-perpetual-virginity-of-blessed-mary": { title: { re: /^(\d+)$/, levels: ["section"] }, edition: NPNF("II", 6) },
   "gregory-of-nyssa/the-great-catechism": { title: { re: /^Chapter (\d+)$/, levels: ["chapter"] }, edition: NPNF("II", 5) },
   "leo-the-great/the-tome-of-leo": { order: { first: 2, level: "chapter" }, edition: NPNF("II", 12) },
+  // The whole First Theological Oration (1.8): its nine chapters are
+  // sections 101 to 109, past the two sections of our own that held chapter
+  // 3 until then (lib/saints/layoutMoves.ts), and cited by chapter.
+  "gregory-theologian/first-theological-oration": { order: { first: 101, level: "chapter" }, edition: NPNF("II", 7) },
   // The seven Nativity sermons (1.8), each a section titled by its number in
   // the edition ("Sermon XXI. On the Feast of the Nativity, I"). The
   // translator opens each chapter with his own heading ("I. All share in the

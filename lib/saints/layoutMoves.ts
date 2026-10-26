@@ -99,6 +99,16 @@ export const LAYOUT_MOVES: Readonly<
     oldSections: [1, 2, 3],
     move: (n, i) => (n >= 1 && n <= 3 ? past(HEATHEN_NOTES[n], n + 3, i) : null),
   },
+  // St Gregory's First Theological Oration (1.8): two sections of our own
+  // held its chapter 3 (section 1 an empty slot and two paragraphs, section
+  // 2 two more), and the whole oration came as its nine chapters, sections
+  // 101 to 109, so no old place is ever a new one. Old 1.1 is 103.0, and
+  // old 1.2, 2.0 and 2.1, one paragraph in the edition, are 103.1.
+  "gregory-theologian/first-theological-oration": {
+    since: "1.8",
+    oldSections: [1, 2],
+    move: (n, i) => (n === 1 && i === 1 ? { n: 103, i: 0 } : (n === 1 && i === 2) || (n === 2 && (i === 0 || i === 1)) ? { n: 103, i: 1 } : null),
+  },
 };
 
 const PREFIX = "purify:saint:";

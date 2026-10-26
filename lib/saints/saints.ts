@@ -744,13 +744,155 @@ export const SAINTS: Saint[] = [
  ],
  works: [
  {
+ slug: "on-easter-and-his-reluctance",
+ title: "On Easter and His Reluctance",
+ subtitle: "Oration I",
+ year: "362",
+ blurb:
+ "Gregory's first sermon as a priest, preached at Nazianzus on Easter Day 362 after he had fled to Pontus from the ordination his father pressed on him, an Easter sermon that is also his apology for that reluctance. Verbatim from the public-domain English of the Nicene and Post-Nicene Fathers.",
+ topics: ["Pascha", "Resurrection", "Priesthood", "Humility"],
+ },
+ {
+ slug: "in-defence-of-his-flight",
+ title: "In Defence of His Flight to Pontus",
+ subtitle: "Oration II, with an exposition of the character of the priestly office",
+ blurb:
+ "Gregory's defence of his flight to Pontus after his ordination to the priesthood, written rather than preached, which grows into a full account of the dignity and the dangers of the priestly office. The volume notes that St. John Chrysostom built his Six Books on the Priesthood on it, and St. Gregory the Great his Pastoral Rule. Verbatim from the public-domain English of the Nicene and Post-Nicene Fathers.",
+ topics: ["Priesthood", "Pastoral", "Ministry", "Humility"],
+ },
+ {
+ slug: "to-those-who-had-invited-him",
+ title: "To Those Who Had Invited Him, and Not Come to Receive Him",
+ subtitle: "Oration III",
+ year: "c. 362",
+ blurb:
+ "A short sermon of about Easter 362 in which Gregory reproves the people of Nazianzus, who had pressed him into the priesthood and then stayed away when he came to preach. Verbatim from the public-domain English of the Nicene and Post-Nicene Fathers.",
+ topics: ["Priesthood", "Pastoral", "Love"],
+ },
+ {
+ slug: "panegyric-on-caesarius",
+ title: "Panegyric on His Brother S. Cæsarius",
+ subtitle: "Oration VII",
+ year: "c. 369",
+ blurb:
+ "Gregory's funeral oration for his younger brother Caesarius, physician at the imperial court, preached at Nazianzus before their parents, probably in the spring of 369. It consoles them with his brother's life, above all his stand against the Emperor Julian and his baptism after he escaped the earthquake at Nicaea. Verbatim from the public-domain English of the Nicene and Post-Nicene Fathers.",
+ topics: ["Death", "Comfort", "Hagiography", "Baptism"],
+ },
+ {
+ slug: "on-his-sister-gorgonia",
+ title: "On his Sister Gorgonia",
+ subtitle: "Oration VIII",
+ year: "369 to 374",
+ blurb:
+ "Gregory's funeral oration for his sister Gorgonia, preached between 369 and 374, almost certainly in the city where she had lived her married life. He praises her as a model Christian matron and tells of her cure before the altar. Verbatim from the public-domain English of the Nicene and Post-Nicene Fathers.",
+ topics: ["Death", "Marriage", "Hagiography", "Healing"],
+ },
+ {
+ slug: "to-his-father",
+ title: "To His Father, When He Had Entrusted to Him the Care of the Church of Nazianzus",
+ subtitle: "Oration XII",
+ year: "372",
+ blurb:
+ "The short discourse Gregory gave in 372 on taking up the care of the Church of Nazianzus as coadjutor to his aged father, after Anthimus had kept him by force of arms from the see of Sasima. Verbatim from the public-domain English of the Nicene and Post-Nicene Fathers.",
+ topics: ["Episcopate", "Pastoral", "Holy Spirit"],
+ },
+ {
+ slug: "on-the-plague-of-hail",
+ title: "On His Father's Silence, Because of the Plague of Hail",
+ subtitle: "Oration XVI",
+ year: "373",
+ blurb:
+ "Preached at Nazianzus in 373, when a cattle plague, a drought and then a storm of hail had ruined the harvest and Gregory's aged father, the bishop, was too overcome to speak, so that the people begged the son to take the pulpit. Verbatim from the public-domain English of the Nicene and Post-Nicene Fathers.",
+ topics: ["Repentance", "Providence", "Suffering", "Judgment"],
+ },
+ {
+ slug: "on-the-death-of-his-father",
+ title: "On the Death of His Father",
+ subtitle: "Oration XVIII",
+ year: "374",
+ blurb:
+ "Gregory's funeral oration for his father, the elder Gregory, bishop of Nazianzus, preached in 374 before his mother Nonna and St. Basil. It tells how his father came to the faith through Nonna's prayers and example, and of his long years as bishop. Verbatim from the public-domain English of the Nicene and Post-Nicene Fathers.",
+ topics: ["Death", "Episcopate", "Marriage", "Hagiography"],
+ },
+ {
+ slug: "on-the-great-athanasius",
+ title: "On the Great Athanasius, Bishop of Alexandria",
+ subtitle: "Oration XXI",
+ year: "c. 380",
+ blurb:
+ "Gregory's panegyric on St. Athanasius of Alexandria, preached at Constantinople, probably on his feast in 380, which the volume's introduction calls the model of an ecclesiastical panegyric. Verbatim from the public-domain English of the Nicene and Post-Nicene Fathers.",
+ topics: ["Hagiography", "Confessor", "Nicaea", "Arianism"],
+ },
+ {
  slug: "first-theological-oration",
- title: "The First Theological Oration",
- subtitle: "A Preliminary Discourse Against the Eunomians",
+ title: "The First Theological Oration. A Preliminary Discourse Against the Eunomians",
+ subtitle: "Oration XXVII",
+ year: "379 to 381",
+ blurb:
+ "The first of the five Theological Orations, preached in the Anastasia at Constantinople between 379 and 381, a preliminary discourse against the Eunomians on who may speak of God, when, and before whom. Verbatim from the public-domain English of the Nicene and Post-Nicene Fathers.",
+ topics: ["Theology", "Trinity", "Knowledge of God", "Asceticism"],
+ },
+ {
+ slug: "second-theological-oration",
+ title: "The Second Theological Oration",
+ subtitle: "Oration XXVIII",
+ year: "379 to 381",
+ blurb:
+ "The second of the five Theological Orations, preached at Constantinople between 379 and 381, on how far the nature of God can be known, which Gregory illustrates from the mysteries of the created world. Verbatim from the public-domain English of the Nicene and Post-Nicene Fathers.",
+ topics: ["Knowledge of God", "Apophasis", "Creation", "Theology"],
+ },
+ {
+ slug: "third-theological-oration",
+ title: "The Third Theological Oration. On the Son",
+ subtitle: "Oration XXIX",
+ year: "379 to 381",
+ blurb:
+ "The third of the five Theological Orations, the first on the Son, preached at Constantinople between 379 and 381, in which Gregory answers the Eunomian arguments about the Son's begetting and turns to the texts of Scripture they cited. Verbatim from the public-domain English of the Nicene and Post-Nicene Fathers.",
+ topics: ["Trinity", "Christology", "Arianism", "Scripture"],
+ },
+ {
+ slug: "fourth-theological-oration",
+ title: "The Fourth Theological Oration, Which is the Second Concerning the Son",
+ subtitle: "Oration XXX",
+ year: "379 to 381",
+ blurb:
+ "The fourth of the five Theological Orations, the second on the Son, preached at Constantinople between 379 and 381, in which Gregory takes in turn the passages of Scripture his opponents urged and then speaks of the names given to the Son. Verbatim from the public-domain English of the Nicene and Post-Nicene Fathers.",
+ topics: ["Christology", "Scripture", "Exegesis", "Incarnation"],
+ },
+ {
+ slug: "fifth-theological-oration",
+ title: "The Fifth Theological Oration. On the Holy Spirit",
+ subtitle: "Oration XXXI",
+ year: "379 to 381",
+ blurb:
+ "The last of the five Theological Orations, on the Holy Spirit, preached at Constantinople between 379 and 381 against the Macedonians, who would not confess His Godhead. Verbatim from the public-domain English of the Nicene and Post-Nicene Fathers.",
+ topics: ["Holy Spirit", "Trinity", "Theology", "Scripture"],
+ },
+ {
+ slug: "against-the-arians",
+ title: "Against The Arians, and Concerning Himself",
+ subtitle: "Oration XXXIII",
  year: "380",
  blurb:
- "Who may speak of God, when, and to whom, Gregory's preface to the four orations that follow.",
- topics: ["Theology", "Trinity", "Knowledge of God", "Asceticism"],
+ "Preached at Constantinople about the middle of 380, while the Arians still held the city's churches, in answer to those who mocked the poverty of Gregory and his little flock. Verbatim from the public-domain English of the Nicene and Post-Nicene Fathers.",
+ topics: ["Arianism", "Poverty", "Persecution", "Trinity"],
+ },
+ {
+ slug: "on-the-arrival-of-the-egyptians",
+ title: "On the Arrival of the Egyptians",
+ subtitle: "Oration XXXIV",
+ year: "380",
+ blurb:
+ "Preached at Constantinople in 380 to the crews of the Egyptian corn fleet, who, coming ashore for a feast soon after the affair of Maximus, passed by the Arians' churches to worship in Gregory's little Anastasia. Verbatim from the public-domain English of the Nicene and Post-Nicene Fathers.",
+ topics: ["Unity", "Trinity", "Constantinople", "Faith"],
+ },
+ {
+ slug: "on-the-words-of-the-gospel",
+ title: "On the Words of the Gospel",
+ subtitle: "Oration XXXVII, on St. Matthew 19:1, When Jesus had finished these sayings",
+ blurb:
+ "Gregory's sermon on St. Matthew 19, which the volume's Prolegomena counts the only sermon of his on a set text to come down to us, on the indissolubility of marriage. Verbatim from the public-domain English of the Nicene and Post-Nicene Fathers.",
+ topics: ["Marriage", "Chastity", "Virginity", "Scripture"],
  },
  {
  slug: "oration-on-the-nativity",
@@ -760,6 +902,59 @@ export const SAINTS: Saint[] = [
  blurb:
  "Gregory's sermon for the feast of the Lord's birth, which his age called the Theophany, preached at Constantinople. Its opening words, Christ is born, glorify ye Him, are the first words of the canon the Church still sings at the feast. Verbatim from the public-domain English of the Nicene and Post-Nicene Fathers.",
  topics: ["Nativity", "Incarnation", "Feasts", "Theology"],
+ },
+ {
+ slug: "on-the-holy-lights",
+ title: "Oration on the Holy Lights",
+ subtitle: "Oration XXXIX",
+ year: "381",
+ blurb:
+ "Gregory's sermon for the feast of the Lights, the Epiphany of 381, on the Baptism of Christ in the Jordan, in which he names five kinds of baptism and answers the rigorism of the followers of Novatus. Verbatim from the public-domain English of the Nicene and Post-Nicene Fathers.",
+ topics: ["Theophany", "Baptism", "Feasts", "Repentance"],
+ },
+ {
+ slug: "on-holy-baptism",
+ title: "The Oration on Holy Baptism",
+ subtitle: "Oration XL",
+ year: "381",
+ blurb:
+ "Preached at Constantinople in 381, the day after the sermon on the Holy Lights, on the gift of baptism, against putting it off till the approach of death, with an exposition of the Creed. Verbatim from the public-domain English of the Nicene and Post-Nicene Fathers.",
+ topics: ["Baptism", "Repentance", "Catechesis", "Trinity"],
+ },
+ {
+ slug: "on-pentecost",
+ title: "On Pentecost",
+ subtitle: "Oration XLI",
+ year: "c. 381",
+ blurb:
+ "A Pentecost sermon preached at Constantinople, probably in 381, on the Godhead of the Holy Spirit, argued afresh after some words on how feasts are kept and on the number seven. Verbatim from the public-domain English of the Nicene and Post-Nicene Fathers.",
+ topics: ["Holy Spirit", "Feasts", "Trinity"],
+ },
+ {
+ slug: "the-last-farewell",
+ title: "The Last Farewell in the Presence of the One Hundred and Fifty Bishops",
+ subtitle: "Oration XLII",
+ year: "381",
+ blurb:
+ "Gregory's farewell in 381 to the hundred and fifty bishops of the Second Ecumenical Council and to his flock at Constantinople, when he resigned the see for the sake of peace, with an account of his work there and his last public exposition of the faith. Verbatim from the public-domain English of the Nicene and Post-Nicene Fathers.",
+ topics: ["Second Council", "Episcopate", "Unity", "Constantinople"],
+ },
+ {
+ slug: "funeral-oration-on-basil",
+ title: "Funeral Oration on the Great S. Basil, Bishop of Cæsarea in Cappadocia",
+ subtitle: "Oration XLIII",
+ year: "c. 381",
+ blurb:
+ "Gregory's funeral oration for his friend St. Basil the Great, archbishop of Caesarea, who died on January 1, 379, given probably after Gregory's return to Nazianzus in 381. It includes his account of their student years together at Athens. Verbatim from the public-domain English of the Nicene and Post-Nicene Fathers.",
+ topics: ["Hagiography", "Death", "Episcopate", "Brotherhood"],
+ },
+ {
+ slug: "second-oration-on-easter",
+ title: "The Second Oration on Easter",
+ subtitle: "Oration XLV",
+ blurb:
+ "Gregory's last sermon, for Easter, preached in the church of Arianzus near Nazianzus in his retirement, which reads the Passover of the Law as a figure of Christ. Two passages are taken over word for word from his sermon on the Nativity. Verbatim from the public-domain English of the Nicene and Post-Nicene Fathers.",
+ topics: ["Pascha", "Resurrection", "Incarnation", "Feasts"],
  },
  ],
  },

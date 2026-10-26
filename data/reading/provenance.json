@@ -171,13 +171,101 @@
    "share": 0.999,
    "withNotes": true
   },
-  "gregory-theologian/first-theological-oration": {
+  "gregory-theologian/against-the-arians": {
+   "edition": "Nicene and Post-Nicene Fathers, Series II, Vol. 7",
+   "share": 0.997
+  },
+  "gregory-theologian/fifth-theological-oration": {
    "edition": "Nicene and Post-Nicene Fathers, Series II, Vol. 7",
    "share": 1.0
+  },
+  "gregory-theologian/first-theological-oration": {
+   "edition": "Nicene and Post-Nicene Fathers, Series II, Vol. 7",
+   "share": 0.995
+  },
+  "gregory-theologian/fourth-theological-oration": {
+   "edition": "Nicene and Post-Nicene Fathers, Series II, Vol. 7",
+   "share": 1.0
+  },
+  "gregory-theologian/funeral-oration-on-basil": {
+   "edition": "Nicene and Post-Nicene Fathers, Series II, Vol. 7",
+   "share": 0.998
+  },
+  "gregory-theologian/in-defence-of-his-flight": {
+   "edition": "Nicene and Post-Nicene Fathers, Series II, Vol. 7",
+   "share": 0.997
+  },
+  "gregory-theologian/on-easter-and-his-reluctance": {
+   "edition": "Nicene and Post-Nicene Fathers, Series II, Vol. 7",
+   "share": 0.992
+  },
+  "gregory-theologian/on-his-sister-gorgonia": {
+   "edition": "Nicene and Post-Nicene Fathers, Series II, Vol. 7",
+   "share": 0.999
+  },
+  "gregory-theologian/on-holy-baptism": {
+   "edition": "Nicene and Post-Nicene Fathers, Series II, Vol. 7",
+   "share": 0.998
+  },
+  "gregory-theologian/on-pentecost": {
+   "edition": "Nicene and Post-Nicene Fathers, Series II, Vol. 7",
+   "share": 0.998
+  },
+  "gregory-theologian/on-the-arrival-of-the-egyptians": {
+   "edition": "Nicene and Post-Nicene Fathers, Series II, Vol. 7",
+   "share": 0.997
+  },
+  "gregory-theologian/on-the-death-of-his-father": {
+   "edition": "Nicene and Post-Nicene Fathers, Series II, Vol. 7",
+   "share": 0.999
+  },
+  "gregory-theologian/on-the-great-athanasius": {
+   "edition": "Nicene and Post-Nicene Fathers, Series II, Vol. 7",
+   "share": 0.997
+  },
+  "gregory-theologian/on-the-holy-lights": {
+   "edition": "Nicene and Post-Nicene Fathers, Series II, Vol. 7",
+   "share": 0.994
+  },
+  "gregory-theologian/on-the-plague-of-hail": {
+   "edition": "Nicene and Post-Nicene Fathers, Series II, Vol. 7",
+   "share": 0.997
+  },
+  "gregory-theologian/on-the-words-of-the-gospel": {
+   "edition": "Nicene and Post-Nicene Fathers, Series II, Vol. 7",
+   "share": 0.993
   },
   "gregory-theologian/oration-on-the-nativity": {
    "edition": "Nicene and Post-Nicene Fathers, Series II, Vol. 7",
    "share": 0.998
+  },
+  "gregory-theologian/panegyric-on-caesarius": {
+   "edition": "Nicene and Post-Nicene Fathers, Series II, Vol. 7",
+   "share": 0.997
+  },
+  "gregory-theologian/second-oration-on-easter": {
+   "edition": "Nicene and Post-Nicene Fathers, Series II, Vol. 7",
+   "share": 0.999
+  },
+  "gregory-theologian/second-theological-oration": {
+   "edition": "Nicene and Post-Nicene Fathers, Series II, Vol. 7",
+   "share": 0.999
+  },
+  "gregory-theologian/the-last-farewell": {
+   "edition": "Nicene and Post-Nicene Fathers, Series II, Vol. 7",
+   "share": 0.998
+  },
+  "gregory-theologian/third-theological-oration": {
+   "edition": "Nicene and Post-Nicene Fathers, Series II, Vol. 7",
+   "share": 0.996
+  },
+  "gregory-theologian/to-his-father": {
+   "edition": "Nicene and Post-Nicene Fathers, Series II, Vol. 7",
+   "share": 0.994
+  },
+  "gregory-theologian/to-those-who-had-invited-him": {
+   "edition": "Nicene and Post-Nicene Fathers, Series II, Vol. 7",
+   "share": 0.989
   },
   "hosius-of-cordova/the-elder-of-the-west": {
    "edition": "Nicene and Post-Nicene Fathers, Series II, Vol. 4",
