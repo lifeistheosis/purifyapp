@@ -85,10 +85,19 @@ describe("the screens that draw a reading's reference", () => {
     ] as const) {
       const source = readFileSync(join(root, path), "utf8");
       const drawn = source.match(/<Reference>\{referenceIn\(/g) ?? [];
-      const bare = (source.match(/referenceIn\(/g) ?? []).length - drawn.length;
+      // Today's readings read aloud (1.8) name each track by its reference:
+      // words handed to the player, which draws them through Reference
+      // (below), not drawn here.
+      const titles = source.match(/title: referenceIn\(/g) ?? [];
+      const bare = (source.match(/referenceIn\(/g) ?? []).length - drawn.length - titles.length;
       expect(drawn.length, path).toBe(times);
       // Nothing draws a reference that has not been through it.
       expect(bare, path).toBe(0);
     }
+  });
+
+  it("draw a track's title through Reference in Now Playing", () => {
+    const source = readFileSync(join(root, "components/player/NowPlayingSheet.tsx"), "utf8");
+    expect(source).toContain("<Reference>{audio.title}</Reference>");
   });
 });

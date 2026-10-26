@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 
+import { Reference } from "@/components/bible/Reference";
 import { useTranslate } from "@/components/i18n/MessagesProvider";
 import { Sheet } from "@/components/ui/Sheet";
 import { Slider } from "@/components/ui/Slider";
@@ -211,7 +212,7 @@ export function NowPlayingSheet() {
                 />
               ) : null}
               <div className="mx-auto mt-7 w-full max-w-[340px]">
-                <h2 className="font-serif text-[24px] font-bold leading-tight text-paper">{audio.title}</h2>
+                <h2 className="font-serif text-[24px] font-bold leading-tight text-paper">{audio.title ? <Reference>{audio.title}</Reference> : null}</h2>
                 {audio.artist ? <p className="mt-1 font-sans text-ui text-paper/55">{audio.artist}</p> : null}
               </div>
             </div>
