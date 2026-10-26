@@ -2859,10 +2859,10 @@ export const SAINTS: Saint[] = [
  {
  slug: "the-holy-hesychast",
  title: "The Holy Hesychast",
- subtitle: "The Hagioritic Tome of 1340, the Apolytikia, and a guided summary of the Triads",
+ subtitle: "The Hagioritic Tome and the Triads in our words, with his apolytikion and kontakion",
  year: "1340 (Hagioritic Tome); 1338-1341 (Triads); 1351 (Synodal Tomos)",
  blurb:
- "His own Hagioritic Tome of 1340 in PD English; the standard Apolytikia for the November 14 feast and the Second Sunday of Great Lent; and a guided summary of the central teaching of the Triads (the essence/energies distinction, the uncreated light of Tabor, the prayer of the heart) drawn from the Synodal Tomos of 1351 read at the Sunday of Orthodoxy.",
+ "What the Hagioritic Tome of 1340 and his Triads teach, told in our words since no public-domain English of them has been found: the uncreated light of Tabor, the essence and the energies, the prayer of the heart. With his apolytikion in the public-domain English of 1914, his kontakion in ours, and a prayer to him written for Purify.",
  topics: [
  "Hesychasm",
  "Essence and Energies",
@@ -2878,7 +2878,7 @@ export const SAINTS: Saint[] = [
  subtitle: "A florilegium of patristic and Scriptural witnesses",
  year: "compiled 2026",
  blurb:
- "A short curated florilegium gathering the Scriptural and patristic witnesses to the essence-energies distinction, from Athanasius, Cyril of Jerusalem, Basil, Chrysostom, Cyril of Alexandria, Ephraim, Maximus, and John of Damascus to Palamas's own 150 Chapters and Letters. Prepared with the assistance of a reader from the Purify Discord (ChristosAnesti).",
+ "A short florilegium of the Scriptural and patristic witnesses to the essence-energies distinction: St. Cyril of Jerusalem, St. Athanasius, St. John Chrysostom, St. Basil, St. Ambrose and St. John of Damascus in the public-domain English of the Nicene and Post-Nicene Fathers, and the teaching of St. Cyril of Alexandria and of Palamas's own Chapters and letters in our words. Prepared with the assistance of a reader from the Purify Discord (ChristosAnesti).",
  topics: [
  "Essence and Energies",
  "Apophasis",
@@ -2938,7 +2938,7 @@ export const SAINTS: Saint[] = [
  text: "His garments white as light showed that the glory of His divinity flooded from His whole body, and His light shone from all His members. For His flesh did not shine with splendour from outside, like Moses, but the glory of His divinity flooded from Him.",
  source: "Homily on the Transfiguration of the Lord, on the uncreated light of Tabor",
  href: "/saints/ephraim-the-syrian/on-the-transfiguration-of-the-lord",
- cite: { kind: "untraced", searched: "The app's text of this homily is a light modernization of older English (on-the-transfiguration-of-the-lord), and the words appear only in the florilegium on St Gregory Palamas's page; no public-domain English is in the app word for word." },
+ cite: { kind: "untraced", searched: "No public-domain English of this homily has been found. The app's page for it (on-the-transfiguration-of-the-lord) retells it in our words, and the florilegium on St Gregory Palamas's page, which gave these words, left them out on 2026-10-26." },
  },
  ],
  works: [
