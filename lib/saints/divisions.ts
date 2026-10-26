@@ -743,6 +743,18 @@ export const SCHEMES: Readonly<Record<string, Scheme>> = {
   "jerome-of-stridon/the-perpetual-virginity-of-blessed-mary": { title: { re: /^(\d+)$/, levels: ["section"] }, edition: NPNF("II", 6) },
   "gregory-of-nyssa/the-great-catechism": { title: { re: /^Chapter (\d+)$/, levels: ["chapter"] }, edition: NPNF("II", 5) },
   "leo-the-great/the-tome-of-leo": { order: { first: 2, level: "chapter" }, edition: NPNF("II", 12) },
+  // The seven Nativity sermons (1.8), each a section titled by its number in
+  // the edition ("Sermon XXI. On the Feast of the Nativity, I"). The
+  // translator opens each chapter with his own heading ("I. All share in the
+  // joy of Christmas."), the chapters starting again in every sermon: the
+  // headings are set apart and never cited as St. Leo's words, and a place is
+  // cited by sermon and chapter (Sermon XXI.2).
+  "leo-the-great/sermons-on-the-nativity": {
+    title: { re: /^Sermon ([IVXLC]+)\./, levels: ["sermon"] },
+    synopsis: { re: /^([IVXLC]+)\. /, level: "chapter", cited: true, restart: "outer" },
+    roman: [true, false],
+    edition: NPNF("II", 12),
+  },
   "basil-the-great/on-the-holy-spirit": {
     title: { re: /^Chapter ([IVXLC]+)\./, levels: ["chapter"] },
     marks: { level: "section", restart: "never" },

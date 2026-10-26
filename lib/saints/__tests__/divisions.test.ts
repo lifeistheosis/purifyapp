@@ -270,4 +270,20 @@ describe("the edition's own numbers, as each work is cited", () => {
       if (s.n >= 493) expect(d.places[k].every((p) => p === null), `section ${s.n}`).toBe(true);
     });
   });
+
+  it("set St. Leo's translator's headings apart, and cite his Nativity sermons by sermon and chapter", () => {
+    const key = "leo-the-great/sermons-on-the-nativity";
+    const w = read(key);
+    const d = divisionsOf(key, w)!;
+    const first = w.sections[0];
+    expect(first.paragraphs[0]).toBe("I. All share in the joy of Christmas.");
+    expect(placeAt(d, w, first.n, 0)?.synopsis).toBe(true);
+    expect(synopsisChapter(d, first.paragraphs[2])).toBe(2);
+    expect(label(key, first.n, 1)).toBe("XXI.1");
+    expect(label(key, first.n, 3)).toBe("XXI.2");
+    // The chapters start again in the next sermon.
+    expect(label(key, w.sections[1].n, 1)).toBe("XXII.1");
+    // The seven the volume prints: XXV is not among them.
+    expect(w.sections.map((s) => sectionLabel(d, w, s.n))).toEqual(["XXI", "XXII", "XXIII", "XXIV", "XXVI", "XXVII", "XXVIII"]);
+  });
 });
