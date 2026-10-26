@@ -108,6 +108,16 @@ function update(patch: Partial<AudioSnapshot>) {
   emit();
 }
 
+/**
+ * Play, and say so when it cannot. With no signal, or no source the device
+ * can play, the browser refuses the promise play() returns: left uncaught,
+ * that is an error on the page (the export walk counts it, 2026-10-26), and
+ * the bar would go on saying it plays.
+ */
+function tryPlay(a: HTMLAudioElement): void {
+  a.play().catch(() => update({ playing: false }));
+}
+
 function ensureElement(): HTMLAudioElement {
   if (audioEl) return audioEl;
   if (typeof window === "undefined") {
@@ -142,7 +152,7 @@ function ensureElement(): HTMLAudioElement {
     if (repeatsLeft > 0) {
       repeatsLeft -= 1;
       a.currentTime = 0;
-      void a.play();
+      tryPlay(a);
       return;
     }
     update({ playing: false, currentTime: 0 });
@@ -154,7 +164,7 @@ function ensureElement(): HTMLAudioElement {
   if ("mediaSession" in navigator) {
     try {
       navigator.mediaSession.setActionHandler("play", () => {
-        void a.play();
+        tryPlay(a);
       });
       navigator.mediaSession.setActionHandler("pause", () => {
         a.pause();
@@ -288,7 +298,7 @@ export function setSleep(next: SleepTimer): void {
 
 export function play(): void {
   const a = ensureElement();
-  void a.play();
+  tryPlay(a);
 }
 
 export function pause(): void {
@@ -297,7 +307,7 @@ export function pause(): void {
 
 export function toggle(): void {
   const a = ensureElement();
-  if (a.paused) void a.play();
+  if (a.paused) tryPlay(a);
   else a.pause();
 }
 
