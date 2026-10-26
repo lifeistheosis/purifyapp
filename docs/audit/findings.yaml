@@ -1758,7 +1758,20 @@ findings:
       read word for word against scans of their printings, the printed page
       followed where CCEL differs and seven printer's slips kept and noted:
       St Ephraim's Hymns on the Nativity, St Leo's Sermons on the Nativity,
-      St Gregory's Oration 38. STILL OPEN: the apolytikia's English across
+      St Gregory's Oration 38. 2026-10-26: the commentary rail's copies had
+      the same loss and got the same restoration: 695 paragraphs in 560
+      notes (139 files), 1,076 curly and 288 straight openers added (the
+      rail's own straight style kept in the Catena and the other works only
+      the rail carries) and 1,064 straight closers made curly; the copies of
+      library paragraphs now byte-identical to the library, the rest by the
+      same CCEL method, and nothing but quotation marks changed. Left on the
+      rail: 241 paragraphs in other works (143 in Cyril on John and on Luke
+      and the Morals, which have no CCEL volume), about 80 opening double
+      marks printed before the space, Catena notes that run on into the next
+      commentator, an Oxford editors' note shown as St Ambrose's words, and
+      import damage ("?" and "^" for lost characters); and re-running a rail
+      ingest script would undo the restoration. STILL OPEN: the apolytikia's
+      English across
       the library (mostly unsourced; St Nectarius's, written for the page, is
       gone); St Gregory Palamas's florilegium on essence and energies and the
       Hagioritic Tome, whose quotations were in places "paraphrased with
@@ -1770,9 +1783,10 @@ findings:
       paragraphs where CCEL itself differs, the 28 paragraph-opening marks of
       Antony's speeches and 4 in 2 Corinthians that CCEL never closes, 6 lost
       double marks at paragraph starts in John, Hebrews and Acts, one in the
-      Confessions, and the commentary rail's copies of Chrysostom's
-      paragraphs, which likely carry the same loss throughout); and a test
-      that holds each quoted section to its volume.
+      Confessions, and 15 library paragraphs whose rail copies are now
+      restored: Romans, Galatians, Philippians, Colossians, 1 Thessalonians,
+      2 Timothy and the Harmony); and a test that holds each quoted section
+      to its volume.
     evidence: data/saints/*/*.json (sections and their voice); data/bible/commentary; lib/reading/entries.ts; lib/saints/saints.ts; CCEL transcriptions of ANF 1, 5, 6 and NPNF I 6 to 14, II 1 to 14; Schaff, Creeds of Christendom II; Hapgood, Service Book (1906)
     action: "Done with the owner's yes of 2026-10-23 for what is listed above. Left: the apolytikia (find a public-domain English for each, or mark it ours), the Palamas texts (owner and dogma queue), Ignatius's recensions, the large non-CCEL works against their own editions, and a test that holds each quoted section to its volume."
     safe_to_automate: false
