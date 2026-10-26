@@ -87,7 +87,7 @@ export type Saint = {
  disciples?: Disciple[];
  /**
  * Editorial flag. When `true`, every known work for this saint has
- * been translated and shipped — the bump/upvote button on the profile
+ * been translated and shipped: the bump/upvote button on the profile
  * is replaced by a non-interactive "Fully published" badge so users
  * stop being asked to signal demand we've already met.
  *
@@ -1100,7 +1100,7 @@ export const SAINTS: Saint[] = [
  subtitle: "The Second Letter, the Third Letter, and the Twelve Anathemas",
  year: "c. 430",
  blurb:
- "The two dogmatic letters and the Twelve Anathemas appended to the third — the conciliar standard received at Ephesus in 431 as the Church's confession of the one incarnate Word.",
+ "The two dogmatic letters and the Twelve Anathemas appended to the third: the conciliar standard received at Ephesus in 431 as the Church's confession of the one incarnate Word.",
  topics: ["Christology", "Anathemas", "Ephesus", "Letters", "Theotokos"],
  },
  {
@@ -1118,7 +1118,7 @@ export const SAINTS: Saint[] = [
  subtitle: "A short Christological handbook",
  year: "c. 435",
  blurb:
- "Cyril's compact teacher's syllabus on the Incarnation — the eternal generation, the personal union, the communicatio idiomatum — written for clergy who needed precise definitions after Ephesus.",
+ "Cyril's compact teacher's syllabus on the Incarnation (the eternal generation, the personal union, the communicatio idiomatum), written for clergy who needed precise definitions after Ephesus.",
  topics: ["Christology", "Catechesis", "Incarnation", "Communicatio idiomatum"],
  },
  ],
@@ -2931,13 +2931,13 @@ export const SAINTS: Saint[] = [
  life: [
  "Ephraim was born around the year 306 at Nisibis in Mesopotamia, on the frontier between the Roman empire and Persia. He was raised in the Christian faith and from his youth was attached to the bishop of Nisibis, St. James, who took him as a disciple and brought him to the First Ecumenical Council at Nicaea in 325 as part of his retinue.",
  "He served the church at Nisibis through three successive bishops and three Persian sieges of the city. After the Roman cession of Nisibis to the Persians in 363 he withdrew with most of the Christian population to Edessa, on the Roman side of the new border, where he spent the last ten years of his life teaching, writing, and serving as a deacon in the local church.",
- "Ephraim is the principal Father of the Syriac-speaking East. He wrote almost everything in verse — hundreds of hymns (madrashe) and verse-homilies (memre) on the Nativity, the Crucifixion, Pascha, the Faith, the Church, Paradise, the Transfiguration, and many more. His verse is dense with biblical typology, lyrical in its meditation, and theologically precise; the Syriac Church sings it to this day, and the Greek and Slavonic traditions received much of it under his name in translation.",
+ "Ephraim is the principal Father of the Syriac-speaking East. He wrote almost everything in verse: hundreds of hymns (madrashe) and verse-homilies (memre) on the Nativity, the Crucifixion, Pascha, the Faith, the Church, Paradise, the Transfiguration, and many more. His verse is dense with biblical typology, lyrical in its meditation, and theologically precise; the Syriac Church sings it to this day, and the Greek and Slavonic traditions received much of it under his name in translation.",
  "He reposed at Edessa on June 9, 373, ministering to victims of a famine. The Greek Church celebrates his memory on January 28; the Syriac and Western traditions on June 9. He is honoured as 'the Harp of the Spirit' for the lyrical theology by which the East was first catechised in song.",
  ],
  quotes: [
  {
  text: "His garments white as light showed that the glory of His divinity flooded from His whole body, and His light shone from all His members. For His flesh did not shine with splendour from outside, like Moses, but the glory of His divinity flooded from Him.",
- source: "Homily on the Transfiguration of the Lord — on the uncreated light of Tabor",
+ source: "Homily on the Transfiguration of the Lord, on the uncreated light of Tabor",
  href: "/saints/ephraim-the-syrian/on-the-transfiguration-of-the-lord",
  cite: { kind: "untraced", searched: "The app's text of this homily is a light modernization of older English (on-the-transfiguration-of-the-lord), and the words appear only in the florilegium on St Gregory Palamas's page; no public-domain English is in the app word for word." },
  },
@@ -3040,10 +3040,10 @@ export const SAINTS: Saint[] = [
  {
  slug: "mystic-treatises",
  title: "Mystic Treatises",
- subtitle: "Six Treatises on the Behaviour of Excellence — opening homilies",
+ subtitle: "Six Treatises on the Behaviour of Excellence: the opening homilies",
  year: "7th c.",
  blurb:
- "The opening homilies of Isaac's great corpus on the inner life — fear of God as the foundation of every virtue, the soul's stillness in the desert, the ladder of the Kingdom hidden within the heart. Verbatim public-domain English from A. J. Wensinck's 1923 translation, with more homilies to follow as the text is sourced.",
+ "The opening homilies of Isaac's great corpus on the inner life: fear of God as the foundation of every virtue, the soul's stillness in the desert, the ladder of the Kingdom hidden within the heart. Verbatim public-domain English from A. J. Wensinck's 1923 translation, with more homilies to follow as the text is sourced.",
  topics: [
  "Asceticism",
  "Stillness",
@@ -3104,8 +3104,8 @@ export const SAINTS: Saint[] = [
  },
  ],
  // The Bibliotheca is shipped in the public-domain English of J. H. Freese
- // (SPCK, 1920). Photius's other chief writings — the Mystagogy of the Holy
- // Spirit, the Amphilochia, the Lexicon, and the Homilies and Letters — are
+ // (SPCK, 1920). Photius's other chief writings (the Mystagogy of the Holy
+ // Spirit, the Amphilochia, the Lexicon, and the Homilies and Letters) are
  // pending: their only English translations are modern and under copyright,
  // so they are described in the life above and await a confirmed
  // public-domain source before any verbatim text is ingested.
@@ -3116,7 +3116,7 @@ export const SAINTS: Saint[] = [
  subtitle: "His review of the books he had read, with the prefatory letter to his brother Tarasius",
  year: "9th c. (tr. Freese, 1920)",
  blurb:
- "Photius's reading journal: short notices of the hundreds of pagan and Christian volumes his circle had read, dictated from memory for his brother Tarasius. It is the single richest witness to what the ninth-century East had read, and the only trace of many ancient books now lost. This selection gives his prefatory letter and representative codices — on the writings of Dionysius the Areopagite, the Acts of the Ecumenical Councils, Gregory of Nyssa, and Origen — in the public-domain English of J. H. Freese (1920).",
+ "Photius's reading journal: short notices of the hundreds of pagan and Christian volumes his circle had read, dictated from memory for his brother Tarasius. It is the single richest witness to what the ninth-century East had read, and the only trace of many ancient books now lost. This selection gives his prefatory letter and representative codices (on the writings of Dionysius the Areopagite, the Acts of the Ecumenical Councils, Gregory of Nyssa, and Origen) in the public-domain English of J. H. Freese (1920).",
  topics: [
  "Bibliotheca",
  "Patristics",
@@ -3683,7 +3683,7 @@ export const SAINTS: Saint[] = [
     reposed: "February 13, 1199 (Hilandar, Mount Athos)",
     feastDays: ["February 13"],
     shortBio:
-      "The Grand Prince Stefan Nemanja, who gathered the Serbian lands into one realm and founded the Nemanjić dynasty, then laid down his crown to become a monk and died on the Holy Mountain — the father, in the flesh and in the spirit, of St. Sava.",
+      "The Grand Prince Stefan Nemanja, who gathered the Serbian lands into one realm and founded the Nemanjić dynasty, then laid down his crown to become a monk and died on the Holy Mountain: the father, in the flesh and in the spirit, of St. Sava.",
     life: [
       "He was born around 1113 as Stefan Nemanja, in the lands of Zeta near the river Ribnica, and rose to become Grand Prince of the Serbs. Through long struggle he united the divided Serbian principalities into a single state and secured its independence, founding the Nemanjić dynasty that would rule Serbia through its golden age.",
       "A builder of churches and monasteries, he raised among others the great monastery of Studenica, with its white-marble church of the Mother of God, which became the spiritual heart of the young Serbian Church. He labored to root out the dualist Bogomil heresy from his lands and to establish his people firmly in the Orthodox faith.",
@@ -3704,13 +3704,13 @@ export const SAINTS: Saint[] = [
     feastDays: ["January 14"],
     see: "Serbia (Žiča)",
     shortBio:
-      "The youngest son of the Grand Prince Stefan Nemanja, who forsook a royal future for the monastic life on Mount Athos and became the first Archbishop of an autocephalous Serbian Church — the father of Serbian letters, law, and Christian nationhood.",
+      "The youngest son of the Grand Prince Stefan Nemanja, who forsook a royal future for the monastic life on Mount Athos and became the first Archbishop of an autocephalous Serbian Church: the father of Serbian letters, law, and Christian nationhood.",
     life: [
       "He was born around 1174 as Rastko, the youngest son of the Grand Prince Stefan Nemanja. Given a province to govern while still a youth, he longed instead for God; and at about the age of seventeen he fled in secret to Mount Athos, where he was tonsured a monk with the name Sava and gave himself wholly to prayer and obedience.",
       "His father followed him to the Holy Mountain, becoming the monk Simeon, and together they restored the abandoned monastery of Hilandar as a spiritual home for the Serbian people. There Sava composed its rule and grew into a teacher of monks, until the affairs of his homeland drew him back. He brought the relics of his father Simeon to Serbia to reconcile his quarreling brothers, and the wonders that attended them quieted the strife.",
-      "Seeing that his people needed a Church of their own, Sava traveled in 1219 to Nicaea, where the Emperor and the Ecumenical Patriarch Manuel I then resided in exile. From them he obtained the autocephaly — the self-governing freedom — of the Serbian Church, and was himself consecrated its first Archbishop. Returning home, he organized bishoprics across the land, ordained clergy, founded schools, and translated the books of the Church into the language of his people.",
+      "Seeing that his people needed a Church of their own, Sava traveled in 1219 to Nicaea, where the Emperor and the Ecumenical Patriarch Manuel I then resided in exile. From them he obtained the autocephaly, the self-governing freedom, of the Serbian Church, and was himself consecrated its first Archbishop. Returning home, he organized bishoprics across the land, ordained clergy, founded schools, and translated the books of the Church into the language of his people.",
       "He gave the Serbs not only a hierarchy but a Christian civilization: he compiled the Nomocanon, the first body of Serbian law uniting the canons of the Church with the statutes of the state; he wrote the Life of his father St. Simeon and the typika for Hilandar and his hermitage at Karyes; and he is honored as the founder of Serbian literature, medicine, and education. Twice he made the long pilgrimage to the holy places of the East.",
-      "Returning from his second pilgrimage to the Holy Land, he fell ill at Tarnovo in Bulgaria and reposed there on the fourteenth of January, 1236. His relics were carried home to the monastery of Mileševa, where they became a fountain of healing and a sign of Serbian identity, until in 1594 the Ottoman Sinan Pasha, to break the people's spirit, burned them upon the hill of Vračar in Belgrade — where the great church dedicated to St. Sava now stands. He is loved by the Serbs above all their saints, as the enlightener and father of their nation.",
+      "Returning from his second pilgrimage to the Holy Land, he fell ill at Tarnovo in Bulgaria and reposed there on the fourteenth of January, 1236. His relics were carried home to the monastery of Mileševa, where they became a fountain of healing and a sign of Serbian identity, until in 1594 the Ottoman Sinan Pasha, to break the people's spirit, burned them upon the hill of Vračar in Belgrade, where the great church dedicated to St. Sava now stands. He is loved by the Serbs above all their saints, as the enlightener and father of their nation.",
     ],
     works: [],
   },
@@ -3724,11 +3724,11 @@ export const SAINTS: Saint[] = [
     reposed: "June 15, 1389 (the Battle of Kosovo)",
     feastDays: ["June 15"],
     shortBio:
-      "The Prince who gathered the Serbian lands after the fall of the Nemanjić kings and led the Christian host against the Ottomans at Kosovo, choosing — in the words of the tradition — the Kingdom of Heaven over an earthly crown, and dying there as a holy martyr.",
+      "The Prince who gathered the Serbian lands after the fall of the Nemanjić kings and led the Christian host against the Ottomans at Kosovo, choosing, in the words of the tradition, the Kingdom of Heaven over an earthly crown, and dying there as a holy martyr.",
     life: [
       "He was born around 1329 at Prilepac, of a noble family in the service of the Serbian kings. After the death of the last Nemanjić ruler and the breaking apart of the empire of Stefan Dušan, Lazar rose to gather the Serbian lands of the Morava valley under his rule, governing as Prince and laboring to restore the unity of his people and the order of the Church.",
-      "A pious ruler, he built and endowed monasteries — among them Ravanica, which he raised as his own foundation — and worked to heal the breach that had opened between the Serbian Church and the Patriarchate of Constantinople, securing the lifting of the schism and the recognition of the Serbian Patriarchate.",
-      "As the power of the Ottoman Turks pressed ever deeper into the Balkans, Lazar gathered a coalition of Serbian and allied lords to meet them. On the field of Kosovo, on the fifteenth of June — the feast of Vidovdan — in the year 1389, the two armies clashed in a battle of terrible cost. Both Prince Lazar and the Ottoman Sultan Murad were slain that day.",
+      "A pious ruler, he built and endowed monasteries (among them Ravanica, which he raised as his own foundation) and worked to heal the breach that had opened between the Serbian Church and the Patriarchate of Constantinople, securing the lifting of the schism and the recognition of the Serbian Patriarchate.",
+      "As the power of the Ottoman Turks pressed ever deeper into the Balkans, Lazar gathered a coalition of Serbian and allied lords to meet them. On the field of Kosovo, on the fifteenth of June, the feast of Vidovdan, in the year 1389, the two armies clashed in a battle of terrible cost. Both Prince Lazar and the Ottoman Sultan Murad were slain that day.",
       "The Serbian tradition remembers Lazar's choice on the eve of the battle as a covenant: offered, in the words of the epic, the kingdom of earth or the Kingdom of Heaven, he chose the heavenly and eternal, and so consecrated his people's suffering under the long Ottoman yoke as a martyrdom borne for Christ. Taken after the battle, he was beheaded.",
       "His body was laid to rest, and his relics, kept at Ravanica and venerated through the centuries of bondage, became a sign of hope and resurrection for the Serbian people. The Church honors him as the Holy Great-Martyr Lazar, and his memory on Vidovdan stands at the very heart of the Serbian Christian conscience.",
     ],
@@ -3745,13 +3745,13 @@ export const SAINTS: Saint[] = [
     feastDays: ["April 29"],
     see: "Zahumlje and the Coastlands",
     shortBio:
-      "The seventeenth-century Herzegovinian shepherd who became Metropolitan of Zahumlje and withdrew to the cliffs of Ostrog, where his incorrupt relics rest to this day — one of the most beloved wonderworkers of the Balkans, venerated by Christians and non-Christians alike.",
+      "The seventeenth-century Herzegovinian shepherd who became Metropolitan of Zahumlje and withdrew to the cliffs of Ostrog, where his incorrupt relics rest to this day: one of the most beloved wonderworkers of the Balkans, venerated by Christians and non-Christians alike.",
     life: [
       "He was born in 1610 as Stojan, in the village of Mrkonjić in the Popovo Polje of Herzegovina, to a poor and devout family. Drawn from childhood to the things of God, he entered the monastery of the Dormition at Tvrdoš near Trebinje, where he was tonsured a monk with the name Basil and was in time ordained.",
       "His holiness and zeal led to his consecration as Metropolitan of Zahumlje and the Coastlands. He labored without rest among a flock crushed between the Ottoman power and the pressure of the Latins, strengthening the people in the Orthodox faith, ransoming captives, building and repairing churches, and enduring slander and danger for the sake of his calling.",
       "Persecution at last forced him to leave the lowlands, and he withdrew to the high cliffs above the valley of Bjelopavlići, in what is now Montenegro. There, in a cave-church carved into the sheer rock, he gathered a small brotherhood and established the monastery of Ostrog, giving himself in his final years to fasting, prayer, and ceaseless ascetic struggle.",
       "He reposed at Ostrog in the year 1671. Some years later, the tradition relates, he appeared in a vision, and his body was found incorrupt and fragrant; it was placed in the upper cave-church, where it remains.",
-      "From that day the relics of St. Basil have been a fountain of healings and wonders without number, and the monastery of Ostrog has become one of the greatest places of pilgrimage in the Orthodox world — sought not by the Orthodox alone, but by Catholics and Muslims also, who come to the holy cliff to ask the prayers of the Wonderworker of Ostrog.",
+      "From that day the relics of St. Basil have been a fountain of healings and wonders without number, and the monastery of Ostrog has become one of the greatest places of pilgrimage in the Orthodox world, sought not by the Orthodox alone, but by Catholics and Muslims also, who come to the holy cliff to ask the prayers of the Wonderworker of Ostrog.",
     ],
     works: [],
   },
@@ -3769,9 +3769,9 @@ export const SAINTS: Saint[] = [
       "The bishop, preacher, and poet often called the Serbian Chrysostom: among the most influential Orthodox writers of the twentieth century, a confessor imprisoned in Dachau, and in his last years a teacher in the Orthodox seminaries of America.",
     life: [
       "He was born in 1881 in the mountain village of Lelić in western Serbia, the eldest of many children in a peasant family, and was schooled by the monks of the nearby monastery of Ćelije. Gifted and devout, he studied theology and philosophy at home and abroad, earning doctorates in the West, and was tonsured a monk and ordained, taking the name Nikolaj.",
-      "His preaching and writing soon made him known across the Orthodox world. As Bishop first of Žiča and then of Ohrid, and afterward of Žiča again, he revived the spiritual life of his people, fostered a popular movement of prayer and repentance among the faithful, and poured out a great stream of homilies, poems, and meditations — among them the Prologue of Ohrid, a treasury of the lives of the saints for every day of the year, and the Prayers by the Lake.",
+      "His preaching and writing soon made him known across the Orthodox world. As Bishop first of Žiča and then of Ohrid, and afterward of Žiča again, he revived the spiritual life of his people, fostered a popular movement of prayer and repentance among the faithful, and poured out a great stream of homilies, poems, and meditations, among them the Prologue of Ohrid, a treasury of the lives of the saints for every day of the year, and the Prayers by the Lake.",
       "When the Second World War came, Bishop Nikolaj was arrested by the occupying powers and at length deported, with the Serbian Patriarch Gavrilo, to the concentration camp of Dachau, where he shared the sufferings of the confessors and was delivered only at the war's end.",
-      "Unwilling to return to a homeland fallen under communist rule, he made his way to the United States, where he spent his last years teaching and writing in the Orthodox seminaries of the Russian and Serbian Churches in America — at Saint Sava's in Libertyville, at Saint Vladimir's, and at Saint Tikhon's — helping to form a generation of clergy for the growing Church on that continent.",
+      "Unwilling to return to a homeland fallen under communist rule, he made his way to the United States, where he spent his last years teaching and writing in the Orthodox seminaries of the Russian and Serbian Churches in America (at Saint Sava's in Libertyville, at Saint Vladimir's, and at Saint Tikhon's), helping to form a generation of clergy for the growing Church on that continent.",
       "He reposed on the eighteenth of March, 1956, at the monastery of Saint Tikhon in South Canaan, Pennsylvania, and was buried there; in 1991 his relics were returned in triumph to his native Lelić. In 2003 the Serbian Orthodox Church numbered him among the saints, and he is venerated wherever Orthodox Christians read his words, honored as a new Chrysostom for the richness and fire of his preaching.",
     ],
     works: [],
@@ -3790,9 +3790,9 @@ export const SAINTS: Saint[] = [
     life: [
       "He was born in 1894 in Vranje in southern Serbia, the son of a priest, into a family that had given priests to the Church for generations. Baptized Blagoje, he studied at the seminary in Belgrade, served as a nurse amid the horrors of the First World War, and during those years was tonsured a monk with the name Justin.",
       "He pursued theological studies abroad, in Russia, England, and Greece, and took his doctorate at Athens with a thesis on the spiritual world of Dostoevsky. Returning home, he taught in the seminaries and was in time made professor of dogmatic theology in the University of Belgrade, where his lectures drew the devotion of his students and the suspicion of the worldly.",
-      "When the communists seized power after the Second World War, Father Justin was expelled from the university and silenced. He withdrew to the convent of Ćelije near Valjevo, where he served as spiritual father to the nuns and lived, watched and harassed by the regime, for more than thirty years — laboring at his writing, receiving the many who sought his counsel, and celebrating the divine services with burning fervor.",
+      "When the communists seized power after the Second World War, Father Justin was expelled from the university and silenced. He withdrew to the convent of Ćelije near Valjevo, where he served as spiritual father to the nuns and lived, watched and harassed by the regime, for more than thirty years, laboring at his writing, receiving the many who sought his counsel, and celebrating the divine services with burning fervor.",
       "From Ćelije came the great body of his work: a three-volume Dogmatics of the Orthodox Church, the monumental Lives of the Saints gathered for the whole year, his philosophical writings on man and the God-Man, and his searching critique of the spirit of the age. At the heart of all of it stands the Person of Christ, the God-Man, in whom alone, he taught, man finds the measure and the healing of his humanity.",
-      "Around him gathered the disciples who would become a renewal of the Serbian Church in the next generation, among them the bishops Athanasius, Amphilochius, and Irenaeus. He reposed at Ćelije on the seventh of April, 1979 — by tradition the very feast of the Annunciation, the day of his birth. In 2010 the Serbian Orthodox Church glorified him as Saint Justin the New, of Ćelije.",
+      "Around him gathered the disciples who would become a renewal of the Serbian Church in the next generation, among them the bishops Athanasius, Amphilochius, and Irenaeus. He reposed at Ćelije on the seventh of April, 1979: by tradition the very feast of the Annunciation, the day of his birth. In 2010 the Serbian Orthodox Church glorified him as Saint Justin the New, of Ćelije.",
     ],
     works: [],
   },

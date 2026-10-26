@@ -21,6 +21,8 @@ import DAILY_SAINTS from "@/data/calendar/daily-saints.json";
 
 const DATA_DIR = path.join(process.cwd(), "data", "saints");
 
+const EM_DASH = String.fromCharCode(0x2014);
+
 const SAINT_SLUGS = new Set(SAINTS.map((s) => s.slug));
 const GROUP_IDS = new Set(SAINT_GROUPS.map((g) => g.id));
 
@@ -69,36 +71,16 @@ describe("saints registry", () => {
   });
 
   it("uses no em dashes in user-facing prose", () => {
-    // docs/editorial-standards.md: commas, colons and periods instead.
-    //
-    // These ten entries predate this gate and still carry em dashes. They are
-    // listed rather than ignored so the debt is visible and so nothing NEW can
-    // regress. Clear them with scripts/sweep-em-dashes.mjs and delete the
-    // allowlist; do not add to it.
-    const KNOWN = new Set([
-      "cyril-of-alexandria",
-      "ephraim-the-syrian",
-      "isaac-the-syrian",
-      "photius-the-great",
-      "simeon-the-myrrh-streaming",
-      "sava-of-serbia",
-      "lazar-of-serbia",
-      "basil-of-ostrog",
-      "nikolaj-velimirovic",
-      "justin-popovic",
-    ]);
+    // docs/editorial-standards.md: commas, colons and periods instead. Every
+    // word of the registry a reader can see, and every quotation's source
+    // line. A quotation's own text is the saint's, in its edition's
+    // punctuation, and is left as printed. The allowlist of ten saints this
+    // gate began with was cleared on 2026-10-25, and the gate reads more now:
+    // a quotation's source line and every field, not only the prose ones.
     const offenders: string[] = [];
-    for (const s of SAINTS) {
-      if (KNOWN.has(s.slug)) continue;
-      const prose = [
-        s.name,
-        s.epithet,
-        s.byname ?? "",
-        s.shortBio,
-        ...s.life,
-        ...s.works.flatMap((w) => [w.title, w.subtitle ?? "", w.blurb]),
-      ].join(" ");
-      if (prose.includes("—")) offenders.push(s.slug);
+    for (const { quotes, ...ours } of SAINTS) {
+      const sources = (quotes ?? []).map((q) => q.source);
+      if (JSON.stringify([ours, sources]).includes(EM_DASH)) offenders.push(ours.slug);
     }
     expect(offenders).toEqual([]);
   });
