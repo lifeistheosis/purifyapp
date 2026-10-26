@@ -3,7 +3,7 @@
   "slug": "the-vision-and-the-council",
   "title": "The Vision and the Council",
   "subtitle": "Three scenes from the Life of Constantine, with the apolytikia of the May 21 feast",
-  "source": "Vision and Council scenes adapted from Eusebius of Caesarea, Life of Constantine (Vita Constantini), Book I.27-32 and Book III.6-21, in the public-domain English of NPNF Series II Vol. 1 (1890), ed. Schaff & Wace. The apolytikion in the public-domain English of The Divine Liturgy of St John Chrysostom: The Greek Text with a Rendering in English (London: Williams & Norgate, 1914).",
+  "source": "Vision and Council scenes adapted from Eusebius of Caesarea, Life of Constantine (Vita Constantini), Book I.27-32 and Book III.6-21, in the public-domain English of NPNF Series II Vol. 1 (1890), ed. Schaff & Wace. The apolytikion and the kontakion in the public-domain English of The Divine Liturgy of St John Chrysostom: The Greek Text with a Rendering in English (London: Williams & Norgate, 1914).",
   "sections": [
     {
       "n": 1,
@@ -38,6 +38,18 @@
       ],
       "voice": "liturgical",
       "citation": "The Divine Liturgy of St John Chrysostom, Greek and English (London, 1914), pp. 150-151, the Dismissal Hymn for May 21"
+    },
+    {
+      "n": 4,
+      "title": "Kontakion of Sts. Constantine and Helena (Tone 3)",
+      "paragraphs": [
+        "Constantine, with his mother Helena, to-day show forth the Cross, that most venerable Tree—a weapon for faithful leaders against their enemies, and the shame of the Jews; for us also it has been displayed as a mighty sign, and terrible in war,"
+      ],
+      "voice": "liturgical",
+      "citation": "The Divine Liturgy of St John Chrysostom, Greek and English (London, 1914), p. 151, the Collect (kontakion) for May 21",
+      "notes": [
+        "in war,: so the 1914 page prints it, with a comma where the hymn ends."
+      ]
     }
   ]
 }
