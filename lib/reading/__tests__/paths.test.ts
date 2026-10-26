@@ -4,7 +4,7 @@ import { ENTRIES, type WorkKey } from "../entries";
 import { NATIVITY_PATH, nativityFastAround } from "../nativity";
 import { pathPage } from "../pathView";
 import { PATHS, getPath } from "../paths";
-import { CHECKED_KEYS } from "../provenance";
+import { CHECKED_KEYS, CHECKED_SECTIONS } from "../provenance";
 import { statFor } from "../cards";
 
 // Reading paths (1.8): every day is the Fathers' own words, from works the
@@ -16,7 +16,14 @@ describe("reading paths", () => {
     for (const p of PATHS) {
       for (const r of p.days.flat()) {
         expect(ENTRIES[r.work as WorkKey]?.form, r.work).not.toBe("retelling");
-        expect(CHECKED_KEYS, `${p.id}: ${r.work}`).toContain(r.work);
+        const sections = CHECKED_SECTIONS[r.work];
+        if (sections) {
+          // A work checked in some sections only: a path reads those and no others.
+          expect(r.from, `${p.id}: ${r.work} names its sections`).toBeDefined();
+          for (let n = r.from!; n <= (r.to ?? r.from!); n++) expect(sections, `${p.id}: ${r.work} §${n}`).toContain(n);
+        } else {
+          expect(CHECKED_KEYS, `${p.id}: ${r.work}`).toContain(r.work);
+        }
       }
     }
   });

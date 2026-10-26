@@ -1776,11 +1776,21 @@ findings:
       or marked ours, those written for the page taken out, St Nektarios of
       Aegina's page taken out whole, and St Gregory Palamas's two pages
       rebuilt from CCEL with what has no public-domain English told in our
-      words (editorial-standards queue item 23). STILL OPEN: St
-      Ignatius's letters paragraph by paragraph against the shorter
-      recension; the large works that name no CCEL volume (Cyril on John and
-      on Luke, the Way of a Pilgrim, Isaac, the Sayings of Arsenius, Photius)
-      against their own editions; the quotation marks still to settle (18
+      words (editorial-standards queue item 23). St Cyril on Luke against
+      the 1859 printing (five archive.org copies, their OCR outvoting each
+      other, 66 doubtful places read on the page images): the fragments on
+      Luke 1 and Sermons 1 to 5 follow the page now (24 edits in 15
+      paragraphs, the rail's copies with them), and are checked sections in
+      data/reading/provenance.json, so the Nativity path reads them. Found
+      on the way: Sermons 66 to the end (sections 52 to 137, 60% of the
+      work) are Roger Pearse's modernised English of 1859 (2008, public
+      domain), not the 1859 wording; the source line now says so. STILL
+      OPEN: St Ignatius's letters paragraph by paragraph against the
+      shorter recension; St Cyril on Luke, Sermons 6 to 65 against the 1859
+      printing (766 doubtful places listed) and Sermons 66 to the end
+      against Pearse's pages; the large works that name no CCEL volume
+      (Cyril on John, the Way of a Pilgrim, Isaac, the Sayings of Arsenius,
+      Photius) against their own editions; the quotation marks still to settle (18
       paragraphs where CCEL itself differs, the 28 paragraph-opening marks of
       Antony's speeches and 4 in 2 Corinthians that CCEL never closes, 6 lost
       double marks at paragraph starts in John, Hebrews and Acts, one in the

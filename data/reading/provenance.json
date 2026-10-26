@@ -423,5 +423,18 @@
    "edition": "the King James Version (1611)",
    "withNotes": true
   }
+ },
+ "sections": {
+  "cyril-of-alexandria/commentary-on-luke": {
+   "edition": "R. Payne Smith's translation from the Syriac (Oxford, 1859)",
+   "checked": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5
+   ]
+  }
  }
 }

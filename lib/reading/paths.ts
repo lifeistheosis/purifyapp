@@ -18,6 +18,7 @@ const hymn = (n: number) => one("ephraim-the-syrian/hymns-on-the-nativity", n);
 const sermon = (n: number) => one("leo-the-great/sermons-on-the-nativity", n);
 const exposition = (n: number) => one("john-of-damascus/exact-exposition-of-the-orthodox-faith", n);
 const onMatthew = (n: number) => one("john-chrysostom/homilies-on-matthew", n);
+const onLuke = (n: number) => one("cyril-of-alexandria/commentary-on-luke", n);
 
 export const PATHS: readonly ReadingPath[] = [
   {
@@ -54,7 +55,9 @@ export const PATHS: readonly ReadingPath[] = [
   // on Today (lib/reading/nativity.ts). The prophets first; the Magnificat on day 7, the Entry of the
   // Theotokos; St Ephraim's hymns between St Leo's sermons on the feast; the genealogy and the Magi in
   // the last week; and St Gregory's oration, whose first words open the canon of the feast, to end on
-  // Christmas Eve. St Cyril on Luke 1 and 2 waits for his commentary to be checked word for word.
+  // Christmas Eve. St Cyril on Luke, whose fragments on Luke 1 and first sermons on Luke 2 were checked
+  // against the 1859 printing on 2026-10-26, joins three days: with the Magnificat, the birth beside St
+  // Justin on the cave, and the shepherds before the Magi's gifts.
   {
     id: "nativity",
     days: [
@@ -64,7 +67,7 @@ export const PATHS: readonly ReadingPath[] = [
       [hymn(2)],
       [sermon(1)],
       [hymn(3)],
-      [{ work: "theotokos/the-magnificat" }, exposition(55)],
+      [{ work: "theotokos/the-magnificat" }, onLuke(0), exposition(55)],
       [hymn(4)],
       [sermon(2)],
       [hymn(5)],
@@ -92,9 +95,9 @@ export const PATHS: readonly ReadingPath[] = [
       [onMatthew(3)],
       [exposition(86)],
       [onMatthew(5)],
-      [{ work: "justin-martyr/dialogue-with-trypho", from: 76, to: 77 }],
+      [{ work: "justin-martyr/dialogue-with-trypho", from: 76, to: 77 }, onLuke(1)],
       [onMatthew(6)],
-      [onMatthew(8)],
+      [onLuke(2), onMatthew(8)],
       [{ work: "gregory-theologian/oration-on-the-nativity", from: 1, to: 6 }],
       [{ work: "gregory-theologian/oration-on-the-nativity", from: 7, to: 12 }],
       [{ work: "gregory-theologian/oration-on-the-nativity", from: 13, to: 18 }],
