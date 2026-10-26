@@ -12,11 +12,11 @@
  */
 
 /**
- * On once the owner has run docs/1.8-build/sql/read-together.sql. Until then
- * every circle route answers 404 and the path page shows no circles, so
- * nothing asks for columns production does not have yet.
+ * On since 2026-10-26, when the owner ran docs/1.8-build/sql/read-together.sql.
+ * Off, every circle route answers 404 and the path page shows no circles, so
+ * nothing asks for columns production does not have.
  */
-const SQL_RUN = false;
+const SQL_RUN = true;
 
 export function circlesEnabled(): boolean {
   return SQL_RUN;

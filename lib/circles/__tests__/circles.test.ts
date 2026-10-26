@@ -4,8 +4,8 @@ import { describe, expect, it } from "vitest";
 
 import { circlesEnabled, readByDay } from "../circles";
 
-// Read together (1.8): who in a circle read which day, and the routes held
-// shut until the owner has run the circle's SQL.
+// Read together (1.8): who in a circle read which day, and the routes that
+// answer to the one switch.
 
 describe("who read which day", () => {
   const members = [
@@ -34,9 +34,11 @@ describe("who read which day", () => {
   });
 });
 
-describe("before the SQL is run", () => {
-  it("keeps every circle route shut", () => {
-    expect(circlesEnabled()).toBe(false);
+describe("the switch", () => {
+  // On since the owner ran the circle's SQL (2026-10-26). Every route still
+  // asks it first, so turning it off again shuts them all.
+  it("is on, and every circle route answers to it", () => {
+    expect(circlesEnabled()).toBe(true);
     for (const route of ["app/api/circles/route.ts", "app/api/circles/join/route.ts", "app/api/circles/read/route.ts", "app/api/circles/[id]/route.ts"]) {
       expect(fs.readFileSync(route, "utf8"), route).toMatch(/if \(!circlesEnabled\(\)/);
     }

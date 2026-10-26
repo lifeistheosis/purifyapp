@@ -16,6 +16,10 @@
 -- Nothing is deleted, and nothing changes for anyone until 1.8 ships the
 -- screens that use it (the campaign routes are withdrawn and answer 404).
 --
+-- RUN: the owner ran it on 2026-10-26 (his word in chat, "I ran the SQL").
+-- Not yet probed from here. lib/circles/circles.ts turned circles on the
+-- same day.
+--
 -- What it does:
 --   1. A group no longer needs a campaign. It says what it follows (a
 --      campaign, a path, or both) and what kind of circle it is.
