@@ -223,4 +223,11 @@
          request and post notifications; the plugin manifest does not declare
          it, so it must be declared here or prayer reminders silently fail. -->
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
+    <!-- Listening with the phone locked (1.8, lib/player/lockScreen.ts): the
+         media-session plugin runs a media-playback foreground service while
+         something plays or is paused, which Android 14 (API 34) allows only
+         with this permission. The plugin's own manifest declares the general
+         FOREGROUND_SERVICE one. Play asks for the matching declaration in the
+         Console (foreground service: media playback). -->
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_MEDIA_PLAYBACK" />
 </manifest>

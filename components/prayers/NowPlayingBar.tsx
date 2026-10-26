@@ -39,6 +39,7 @@ import { Stop } from "@/components/ui/icons/Stop";
 import { getAmbienceTrack } from "@/lib/ambience/ambience";
 import { stopAmbience, useAmbience } from "@/lib/ambience/player";
 import { openAmbience } from "@/lib/ambience/sheet";
+import { connectLockScreen } from "@/lib/player/lockScreen";
 import { openNowPlaying, useNowPlayingSheet } from "@/lib/player/sheet";
 import { pause, play, unload, usePersistentAudio } from "@/lib/prayers/persistentAudioStore";
 
@@ -65,6 +66,10 @@ export function NowPlayingBar() {
     root.classList.add("has-now-playing");
     return () => root.classList.remove("has-now-playing");
   }, [visible]);
+
+  // The lock screen and the notification's controls (1.8), in the apps only.
+  // Here because this bar is mounted once for the whole app (RootFrame).
+  useEffect(() => connectLockScreen(), []);
 
   if (!visible) return null;
 
