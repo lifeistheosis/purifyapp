@@ -34,13 +34,14 @@ import { inputSince, watchInput } from "@/lib/ui/lastInput";
 import { ChevronDown } from "@/components/ui/icons/ChevronDown";
 import { ChaptersList } from "@/components/reading/ChaptersList";
 import { recordProgress } from "@/lib/reading/progress";
+import { readsAsChapters } from "@/lib/saints/readsAsChapters";
 
-// Works with this many sections render as an accordion: each section's body
-// (and its per-paragraph annotation components) mounts only when the section
-// is expanded. This keeps very long works, e.g. Chrysostom's 88 Homilies on
-// John, from mounting thousands of paragraph components at once. Shorter
-// works render continuously (all sections expanded), unchanged.
-const ACCORDION_THRESHOLD = 20;
+// Long works render as an accordion: each section's body (and its
+// per-paragraph annotation components) mounts only when the section is
+// expanded. This keeps very long works, e.g. Chrysostom's 88 Homilies on
+// John or the Confessions' thirteen books, from mounting thousands of
+// paragraph components at once (lib/saints/readsAsChapters.ts says which).
+// Shorter works render continuously (all sections expanded), unchanged.
 
 export function WritingReader({
  saint,
@@ -65,7 +66,7 @@ export function WritingReader({
  author?: string | null;
 }) {
   const { t } = useTranslate();
- const isLong = content.sections.length >= ACCORDION_THRESHOLD;
+ const isLong = readsAsChapters(content.sections);
  const [open, setOpen] = useState<Set<number>>(() => new Set());
  // Shared reader prefs, same provider as the Bible reader, so a font
  // and size chosen in Scripture carry over to the Fathers.
@@ -251,6 +252,14 @@ export function WritingReader({
  if (!divisions) return String(n).padStart(2, "0");
  return sectionLabel(divisions, content, n) ?? "";
  }
+ // The sections as the chapters, the pill and the contents list them, each
+ // with its number as the edition prints it, not the file's own (the
+ // Confessions' Book II is its section 102; lib/reading/contentsNumbers.ts).
+ const navSections = content.sections.map((s) => ({
+ n: s.n,
+ title: s.title,
+ label: divisions ? (sectionLabel(divisions, content, s.n) ?? "") : String(s.n),
+ }));
  const cites: Cites = { divisions, author: author === undefined ? saint.name : author };
 
  function toggle(n: number) {
@@ -277,7 +286,7 @@ export function WritingReader({
  the page so the apps show it before this text has been read. Here are the
  chapters, on every screen, then the text. */}
  <ChaptersList
- sections={content.sections.map((s) => ({ n: s.n, title: s.title }))}
+ sections={navSections}
  accordion={isLong}
  />
 
@@ -385,7 +394,7 @@ export function WritingReader({
  {/* Mobile floating section switcher, sits above the bottom tab
  bar and exposes the full TOC behind a tap. Hidden on md+. */}
  <MobileWorkPill
- sections={content.sections.map((s) => ({ n: s.n, title: s.title }))}
+ sections={navSections}
  />
  </article>
  );

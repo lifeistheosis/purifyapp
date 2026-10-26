@@ -6,7 +6,16 @@ import { useTranslate } from "@/components/i18n/MessagesProvider";
 import { ChevronLeft } from "@/components/ui/icons/ChevronLeft";
 import { AmbienceButton } from "@/components/player/AmbienceButton";
 import { cn } from "@/lib/cn";
+import { contentsNumbers } from "@/lib/reading/contentsNumbers";
 import { useOverlayOpen } from "@/lib/ui/overlay";
+
+/** A section as the pill and the contents list it: `label` is its number as the edition prints it. */
+export type ContentsSection = { n: number; title: string; label?: string };
+
+/** The numbers beside the titles, or null where every title says its own. */
+export function numbersOf(sections: readonly ContentsSection[]): string[] | null {
+  return contentsNumbers(sections.map((s) => ({ title: s.title, label: s.label ?? String(s.n) })));
+}
 
 /**
  * Mobile-only floating pill for the saint-works reader, modeled on
@@ -33,7 +42,7 @@ import { useOverlayOpen } from "@/lib/ui/overlay";
 export function MobileWorkPill({
   sections,
 }: {
-  sections: { n: number; title: string }[];
+  sections: ContentsSection[];
 }) {
   const { t } = useTranslate();
   const [currentIdx, setCurrentIdx] = useState(0);
@@ -131,7 +140,9 @@ export function MobileWorkPill({
             onClick={() => setTocOpen(true)}
             className="px-3 h-10 inline-flex items-center font-sans text-detail font-semibold text-paper truncate max-w-[60vw]"
           >
-            {t("saints.sectionOf", { n: current.n, total })}
+            {/* Counted by place, not by the file's numbers: the Confessions'
+                Book II is its section 102 (contentsNumbers). */}
+            {t("saints.sectionOf", { n: currentIdx + 1, total })}
           </button>
           <button
             type="button"
@@ -163,8 +174,9 @@ export function MobileWorkPill({
 
 /**
  * A work's contents in the shared movable sheet: every section, its number
- * and its title, the one being read marked. Opened from the section pill and
- * from the chapters at the top of a work (components/reading/ChaptersList.tsx).
+ * as the edition prints it (none where the titles already say it) and its
+ * title, the one being read marked. Opened from the section pill and from
+ * the chapters at the top of a work (components/reading/ChaptersList.tsx).
  */
 export function WorkContents({
   open,
@@ -176,7 +188,7 @@ export function WorkContents({
 }: {
   open: boolean;
   onClose: () => void;
-  sections: { n: number; title: string }[];
+  sections: ContentsSection[];
   /** The section being read, by its number. */
   current?: number;
   onJump: (n: number) => void;
@@ -184,10 +196,12 @@ export function WorkContents({
   desktop?: boolean;
 }) {
   const { t } = useTranslate();
+  const numbers = numbersOf(sections);
+  const width = numbers ? `${Math.max(2, ...numbers.map((x) => x.length))}ch` : undefined;
   return (
     <Sheet open={open} onClose={onClose} title={t("saints.contents")} desktop={desktop}>
       <ol className="grid grid-cols-1 gap-y-1 font-sans text-ui">
-        {sections.map((s) => {
+        {sections.map((s, i) => {
           const active = s.n === current;
           return (
             <li key={s.n}>
@@ -203,9 +217,14 @@ export function WorkContents({
                   (active ? "font-semibold text-paper" : "text-paper/75 hover:bg-paper/[0.04]")
                 }
               >
-                <span className={"tabular-nums w-7 text-right font-semibold " + (active ? "text-paper" : "text-paper/40")}>
-                  {s.n}
-                </span>
+                {numbers ? (
+                  <span
+                    className={"tabular-nums shrink-0 text-right font-semibold " + (active ? "text-paper" : "text-paper/40")}
+                    style={{ minWidth: width }}
+                  >
+                    {numbers[i]}
+                  </span>
+                ) : null}
                 <span className="flex-1 min-w-0 truncate">{s.title}</span>
               </button>
             </li>

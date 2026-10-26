@@ -3,7 +3,7 @@
 import { useState } from "react";
 
 import { useTranslate } from "@/components/i18n/MessagesProvider";
-import { WorkContents } from "@/components/saints/MobileWorkPill";
+import { WorkContents, numbersOf, type ContentsSection } from "@/components/saints/MobileWorkPill";
 
 /** How many chapters show before the rest go behind "All N chapters". */
 const SHOWN = 6;
@@ -19,10 +19,11 @@ const SHOWN = 6;
  * page), so it gets the button alone, to jump without scrolling the list.
  * A chapter opens by its address (#sN), which the reader follows.
  */
-export function ChaptersList({ sections, accordion }: { sections: { n: number; title: string }[]; accordion: boolean }) {
+export function ChaptersList({ sections, accordion }: { sections: ContentsSection[]; accordion: boolean }) {
   const { t, tn } = useTranslate();
   const [open, setOpen] = useState(false);
   if (sections.length < 2) return null;
+  const numbers = numbersOf(sections);
   const jump = (n: number) => {
     window.location.hash = `#s${n}`;
   };
@@ -43,10 +44,17 @@ export function ChaptersList({ sections, accordion }: { sections: { n: number; t
       </p>
       {accordion ? null : (
         <ol className="mt-2 divide-y divide-paper/8">
-          {sections.slice(0, SHOWN).map((s) => (
+          {sections.slice(0, SHOWN).map((s, i) => (
             <li key={s.n}>
               <a href={`#s${s.n}`} className="flex items-baseline gap-3 py-2.5 font-sans text-ui text-paper/80 hover:text-paper">
-                <span className="w-6 shrink-0 text-right font-semibold tabular-nums text-paper/40">{s.n}</span>
+                {numbers ? (
+                  <span
+                    className="shrink-0 text-right font-semibold tabular-nums text-paper/40"
+                    style={{ minWidth: `${Math.max(2, ...numbers.map((x) => x.length))}ch` }}
+                  >
+                    {numbers[i]}
+                  </span>
+                ) : null}
                 <span className="min-w-0 flex-1 truncate">{s.title}</span>
               </a>
             </li>
