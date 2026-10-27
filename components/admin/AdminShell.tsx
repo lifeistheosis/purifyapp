@@ -89,6 +89,7 @@ import { type PeriodId } from "./hero";
 import { Freshness } from "./Freshness";
 import { TabSearch } from "./TabSearch";
 import { useLiveData } from "@/lib/admin/useLiveData";
+import { markCountingOff } from "@/lib/onboarding/count";
 import {
   isOwnerTab,
   modeOf,
@@ -436,6 +437,10 @@ export function AdminShell({
   // place the moment the mode is switched on, including in the tab that just
   // switched it. See the note at the foot of lib/admin/larp.ts.
   useEffect(() => installLarpWriteGuard(), []);
+  // A device the admin is opened on is the owner's or the team's: its own
+  // walks through the onboarding are kept out of the onboarding's totals
+  // from now on (lib/onboarding/count.ts).
+  useEffect(() => markCountingOff(), []);
   useEffect(() => {
     let buf = "";
     function onKey(e: KeyboardEvent) {

@@ -12,6 +12,7 @@ import {
   isNudgeEligible,
   wasOnboardedAgain,
 } from "@/lib/onboarding/state";
+import { countDayOne } from "@/lib/onboarding/count";
 import { dayOneFor } from "@/lib/onboarding/space";
 import { useSpace } from "@/lib/onboarding/useSpace";
 
@@ -24,7 +25,7 @@ import { useSpace } from "@/lib/onboarding/useSpace";
  */
 export function FirstStepsNudge() {
   const { t } = useTranslate();
-  const { level, intent } = useSpace();
+  const { level, intent, background } = useSpace();
   const [ready, setReady] = useState(false);
   // A reader who was back when they answered is not on their first day: the
   // same card, called their next step.
@@ -71,7 +72,17 @@ export function FirstStepsNudge() {
       </div>
       <Link
         href={step.href}
-        onClick={() => dismissNudge()}
+        onClick={() => {
+          // Counted only here, where the reader chose it: the website sends a
+          // reader straight to their first step as the questions end, which
+          // is not a choice and is not counted.
+          countDayOne(step.key, {
+            ...(background ? { background } : {}),
+            ...(level ? { level } : {}),
+            ...(intent ? { intent } : {}),
+          });
+          dismissNudge();
+        }}
         className="mt-4 inline-flex min-h-11 items-center gap-2 rounded-pill bg-paper px-5 font-sans text-ui font-semibold text-night transition-[transform,background-color] hover:bg-paper/90 active:scale-[0.98]"
       >
         {t("onboard.day1.open")}

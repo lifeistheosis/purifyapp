@@ -281,6 +281,18 @@ export default async function PrivacyPage() {
  you, and deleted with it. If you are not, they stay on your
  device and only the two counters above leave it.
 </p>
+<p className="mt-3 font-serif text-body text-paper/85 leading-[1.7]">
+ The welcome questions are counted in the same table, so we can
+ see where new readers come from and what helps them: each screen
+ reached, each answer given, a skip, a finish, and, from your own
+ device, a note on your second, seventh and thirtieth day that you
+ came back. A row holds the answer, the kind of device (iPhone,
+ Android, website), the link that brought you if it was one of
+ ours, and the day, not the time. No session id, no account, no
+ device id: &ldquo;a reader who answered Catholic finished&rdquo;
+ is one more on a total, never you. Your answers themselves stay
+ on your device and in your own account, for making Purify yours.
+</p>
 
  {/* Retention */}
  <p className="mt-10 font-sans text-caption font-semibold text-paper/45">

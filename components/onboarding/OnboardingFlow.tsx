@@ -8,6 +8,7 @@ import { readCalendarStyleDefault, writeCalendarStyleDefault } from "@/lib/calen
 import {
   clearResumeStage,
   markOnboarded,
+  readBackground,
   readFastingRule,
   readIntent,
   readLevel,
@@ -31,6 +32,8 @@ import {
   type Level,
 } from "@/lib/onboarding/space";
 import { saveSpaceToAccount } from "@/lib/onboarding/accountSync";
+import { beginCountRun, countFinished, countOnboarding } from "@/lib/onboarding/count";
+import { routeFor, type CountQuestion } from "@/lib/onboarding/counting";
 import { enableReminders as enablePush, remindersStatus } from "@/lib/push/reminders";
 import { PurifyMark } from "@/components/ui/PurifyMark";
 import { OAuthButtons } from "@/components/auth/OAuthButtons";
@@ -146,12 +149,29 @@ export function OnboardingFlow({
   }, [startAt, level, returning, remindersOn]);
   const step = steps[Math.min(index, steps.length - 1)];
   const dayOne = useMemo(() => dayOneFor(level, intent), [level, intent]);
+  const route = routeFor(startAt);
 
   // Lock background scroll while the overlay is up.
   useEffect(() => {
     lockBodyScroll();
     return unlockBodyScroll;
   }, []);
+
+  // The counts (lib/onboarding/count.ts): a new run as the overlay opens, then
+  // each screen once as it is reached. Declared before the screen's count, so
+  // the run is new before the first screen is counted.
+  useEffect(() => {
+    beginCountRun();
+  }, []);
+  useEffect(() => {
+    countOnboarding({ name: "onboarding_step", props: { route, step } });
+  }, [route, step]);
+  const countAnswer = useCallback(
+    (question: CountQuestion, answer: string) => {
+      countOnboarding({ name: "onboarding_answer", props: { route, question, answer } });
+    },
+    [route],
+  );
 
   // Whether this device already has reminders, asked once for a reader who
   // is back. It answers long before they reach that step; if it cannot
@@ -186,10 +206,13 @@ export function OnboardingFlow({
   useEffect(() => {
     if (step !== "account") return;
     const { data } = createClient().auth.onAuthStateChange((event) => {
-      if (event === "SIGNED_IN") next();
+      if (event === "SIGNED_IN") {
+        countAnswer("account", "signed-in");
+        next();
+      }
     });
     return () => data.subscription.unsubscribe();
-  }, [step, next]);
+  }, [step, next, countAnswer]);
 
   useEffect(() => {
     // On the way into the account step: if sign-in leaves the page, the
@@ -222,6 +245,7 @@ export function OnboardingFlow({
     setLevel(l);
     writeLevel(l);
     writeDepth(depthFor(l));
+    countAnswer("level", l);
     advanceSoon();
   }
 
@@ -240,7 +264,16 @@ export function OnboardingFlow({
     setIntent(i);
     writeIntent(i);
     writeFocus([focusFor(i)]);
+    countAnswer("intent", i);
     advanceSoon();
+  }
+
+  // The rule's two answers are counted as the reader leaves the screen, so
+  // the count holds what they settled on, not every tap on the way.
+  function leaveRule() {
+    countAnswer("calendar", calendar);
+    countAnswer("fasting", fasting);
+    next();
   }
 
   const finish = useCallback(
@@ -250,10 +283,22 @@ export function OnboardingFlow({
       // Stamped with this version of the questions, so the reader's other
       // devices take these answers and do not ask again.
       void saveSpaceToAccount({ finished: true });
+      if (reached) {
+        const background = readBackground();
+        const answers = { ...(background ? { background } : {}), ...(level ? { level } : {}), ...(intent ? { intent } : {}) };
+        void createClient()
+          .auth.getSession()
+          .then(
+            ({ data }) => countFinished(route, answers, !!data.session),
+            () => countFinished(route, answers, false),
+          );
+      } else {
+        countOnboarding({ name: "onboarding_skipped", props: { route, at: step } });
+      }
       setExiting(true);
       window.setTimeout(() => onDone(reached ? dayOne : null), 420);
     },
-    [onDone, dayOne, returning],
+    [onDone, dayOne, returning, level, intent, route, step],
   );
 
   async function enableReminders() {
@@ -265,6 +310,7 @@ export function OnboardingFlow({
       // sign-in (PostSignInBridge), handled inside the facade.
       const result = await enablePush();
       if (!result.ok) {
+        countAnswer("reminders", result.reason === "denied" ? "blocked" : result.reason === "unsupported" ? "unsupported" : "failed");
         if (result.reason === "denied") setReminderNote(t("onboard.reminders.blocked"));
         else if (result.reason === "unsupported") setReminderNote(t("onboard.reminders.unsupported"));
         // Anything else is ours to say, not to swallow: the reader allowed
@@ -272,8 +318,10 @@ export function OnboardingFlow({
         else setReminderNote(t("prayers.push.failed"));
         return;
       }
+      countAnswer("reminders", "on");
       setReminderNote(t("onboard.reminders.done"));
     } catch {
+      countAnswer("reminders", "failed");
       setReminderNote(t("prayers.push.failed"));
     } finally {
       setBusy(false);
@@ -377,7 +425,13 @@ export function OnboardingFlow({
 
         {step === "account" && (
           <Step eyebrow={t("onboard.account.eyebrow")} title={t("onboard.account.title")} body={t("onboard.account.body")}>
-            <AccountStep onSkip={next} skipLabel={t("onboard.account.skip")} />
+            <AccountStep
+              onSkip={() => {
+                countAnswer("account", "without");
+                next();
+              }}
+              skipLabel={t("onboard.account.skip")}
+            />
             {catechismAvailable && (
               <p className="mt-6 text-center font-serif text-caption leading-[1.5] text-paper/55">
                 {t("catechism.onboardLine")}{" "}
@@ -464,7 +518,7 @@ export function OnboardingFlow({
               ))}
             </div>
             <div className="mt-8">
-              <PrimaryButton onClick={next}>{t("onboard.continue")}</PrimaryButton>
+              <PrimaryButton onClick={leaveRule}>{t("onboard.continue")}</PrimaryButton>
             </div>
           </Step>
         )}
@@ -505,7 +559,10 @@ export function OnboardingFlow({
             )}
             <button
               type="button"
-              onClick={next}
+              onClick={() => {
+                if (!reminderNote) countAnswer("reminders", "not-now");
+                next();
+              }}
               className="mt-2 inline-flex min-h-11 items-center self-center rounded-pill px-4 font-sans text-caption text-paper/55 transition-colors hover:text-paper"
             >
               {reminderNote ? t("onboard.continue") : t("onboard.reminders.notNow")}

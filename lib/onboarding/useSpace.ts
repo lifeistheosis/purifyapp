@@ -1,6 +1,7 @@
 "use client";
 
-// The reader's space (level, intent, fasting rule) as a live React value.
+// The reader's space (level, intent, fasting rule, and from 1.8 where they
+// come from) as a live React value.
 // Re-renders when the answers change in this tab (the onboarding event) or in
 // another one (storage), so Settings and Today stay in step.
 
@@ -19,7 +20,7 @@ function subscribe(onChange: () => void): () => void {
 }
 
 /** Server and first client render: no answers, fasting as it always showed. */
-const SERVER_SNAPSHOT = "||strict";
+const SERVER_SNAPSHOT = "||strict|";
 
 export function useSpace() {
   const snapshot = useSyncExternalStore(subscribe, spaceSnapshot, () => SERVER_SNAPSHOT);

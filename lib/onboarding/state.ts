@@ -7,9 +7,11 @@
 // the onboarding components, which use `useEffect`.
 
 import {
+  isBackground,
   isFastingRule,
   isIntent,
   isLevel,
+  type Background,
   type FastingRule,
   type Intent,
   type Level,
@@ -44,6 +46,7 @@ const NUDGE_ELIGIBLE_KEY = "purify:firststeps.eligible";
 const LEVEL_KEY = "purify:level"; // Level
 const INTENT_KEY = "purify:intent"; // Intent
 const FASTING_KEY = "purify:fasting-rule"; // FastingRule; absent = "strict"
+const BACKGROUND_KEY = "purify:background"; // Background (1.8); absent = not asked or not answered
 // Set on the way into the sign-in step and cleared when the flow ends, so a
 // Google or Apple sign-in, which leaves the page and comes back, resumes the
 // questions instead of landing a brand-new account on an unasked Today.
@@ -245,6 +248,19 @@ export function writeIntent(intent: Intent | null): void {
   writeString(INTENT_KEY, intent);
 }
 
+/**
+ * Where the reader comes from (1.8). Kept on the device and in the reader's
+ * own account, for making Purify theirs; counted only as a total
+ * (lib/onboarding/count.ts). "prefer-not" is an answer: they were asked.
+ */
+export function readBackground(): Background | null {
+  const v = readString(BACKGROUND_KEY);
+  return isBackground(v) ? v : null;
+}
+export function writeBackground(background: Background | null): void {
+  writeString(BACKGROUND_KEY, background);
+}
+
 /** "strict" when never set, which is how fasting showed before the choice existed. */
 export function readFastingRule(): FastingRule {
   const v = readString(FASTING_KEY);
@@ -268,6 +284,7 @@ export function fillSpaceFromAccount(remote: unknown): boolean {
   if (readLevel() == null) writeLevel(r.level);
   if (readIntent() == null && isIntent(r.intent)) writeIntent(r.intent);
   if (readString(FASTING_KEY) == null && isFastingRule(r.fasting)) writeFastingRule(r.fasting);
+  if (readBackground() == null && isBackground(r.background)) writeBackground(r.background);
   return true;
 }
 
@@ -286,21 +303,23 @@ export function accountAnsweredThisVersion(remote: unknown): boolean {
   return v >= ONBOARDING_VERSION;
 }
 
-/** The three answers as one primitive, for useSyncExternalStore snapshots. */
+/** The answers as one primitive, for useSyncExternalStore snapshots. */
 export function spaceSnapshot(): string {
-  return `${readLevel() ?? ""}|${readIntent() ?? ""}|${readFastingRule()}`;
+  return `${readLevel() ?? ""}|${readIntent() ?? ""}|${readFastingRule()}|${readBackground() ?? ""}`;
 }
 
 export function parseSpaceSnapshot(snapshot: string): {
   level: Level | null;
   intent: Intent | null;
   fasting: FastingRule;
+  background: Background | null;
 } {
-  const [l, i, f] = snapshot.split("|");
+  const [l, i, f, b] = snapshot.split("|");
   return {
     level: isLevel(l) ? l : null,
     intent: isIntent(i) ? i : null,
     fasting: isFastingRule(f) ? f : "strict",
+    background: isBackground(b) ? b : null,
   };
 }
 

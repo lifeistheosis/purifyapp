@@ -11,6 +11,7 @@ import {
   setResumeStage,
   shouldShowOnboarding,
 } from "@/lib/onboarding/state";
+import { countReturns } from "@/lib/onboarding/count";
 import { isDesktopApp } from "@/lib/desktop/bridge";
 import { DESKTOP_HOME } from "@/lib/desktop/homeRedirect";
 import { useIsNative } from "@/lib/platform/native";
@@ -67,6 +68,14 @@ export function FirstRunGate({
   const router = useRouter();
   const native = useIsNative();
   const [start, setStart] = useState<OnboardingStart | null>(null);
+
+  // On every page load, wherever it lands: a reader who finished the
+  // questions says once, on their day 2, 7 and 30, that they came back
+  // (lib/onboarding/count.ts). The gate is mounted on every page, so this is
+  // the one place that sees them all.
+  useEffect(() => {
+    countReturns();
+  }, []);
 
   useEffect(() => {
     const mobileWeb = mobileStore() !== null;
