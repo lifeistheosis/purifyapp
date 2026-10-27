@@ -1520,8 +1520,11 @@ await section(24, async () => {
         if (!up && log.first !== null && log.leaving === null) log.leaving = now;
         if (state === "frame" && log.frame === null) log.frame = { at: now, today };
         if (state === "ready" && log.ready === null) log.ready = { at: now, today };
-        if (root.dataset.intro === "played" && log.played === null) log.played = now;
-        if (up) {
+        const played = root.dataset.intro === "played";
+        if (played && log.played === null) log.played = now;
+        // Until it starts to go: from that instant the taps go through to
+        // the app, on purpose, while the fade is still at its first frame.
+        if (up && !(state === "ready" && played)) {
           // Nine points across the screen: each belongs to the intro.
           let mine = 0;
           for (const x of [0.1, 0.5, 0.9]) for (const y of [0.1, 0.5, 0.9]) {
