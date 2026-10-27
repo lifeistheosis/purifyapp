@@ -27,6 +27,8 @@ export type OnboardingSummary = {
   days: number;
   /** Readers who reached each screen, by way in. */
   steps: Record<CountRoute, Record<CountStep, number>>;
+  /** Readers who saw the first screen of their way in. */
+  began: number;
   /** Where readers left the questions with Skip. */
   skippedAt: Tally;
   skipped: number;
@@ -62,7 +64,7 @@ export function weekOf(iso: string): string {
   return new Date(d.getTime() - back * DAY).toISOString().slice(0, 10);
 }
 
-const BACKGROUND_WORDS: Record<string, [string, string]> = {
+export const BACKGROUND_WORDS: Record<string, [string, string]> = {
   orthodox: ["Orthodox reader", "Orthodox readers"],
   catholic: ["Catholic", "Catholics"],
   protestant: ["Protestant", "Protestants"],
@@ -71,7 +73,7 @@ const BACKGROUND_WORDS: Record<string, [string, string]> = {
   "prefer-not": ["reader who would rather not say", "readers who would rather not say"],
 };
 const LEVEL_WORDS: Record<string, string> = { inquirer: "completely new", learning: "learning", practicing: "practicing" };
-const STEP_WORDS: Record<string, string> = {
+export const STEP_WORDS: Record<string, string> = {
   welcome: "the welcome",
   returning: "the welcome back",
   account: "the account screen",
@@ -81,6 +83,14 @@ const STEP_WORDS: Record<string, string> = {
   intent: "what to focus on",
   reminders: "reminders",
   handoff: "the last screen",
+};
+
+/** The screen each way in opens on (lib/onboarding/counting.ts, routeFor). */
+const FIRST_STEP: Record<CountRoute, CountStep> = {
+  new: "welcome",
+  signup: "account",
+  "signed-in": "level",
+  returning: "returning",
 };
 
 const plural = (n: number, one: string, many: string) => `${n} ${n === 1 ? one : many}`;
@@ -179,6 +189,7 @@ export function summarizeOnboarding(rows: OnboardingRow[], now: Date, days: numb
   const summary: OnboardingSummary = {
     days,
     steps,
+    began: COUNT_ROUTES.reduce((n, route) => n + steps[route][FIRST_STEP[route]], 0),
     skippedAt,
     skipped,
     finished,

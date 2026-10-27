@@ -33,6 +33,9 @@ describe("the onboarding's sums", () => {
   it("adds up screens, answers, skips and finishes in the window only", () => {
     expect(s.steps.new.welcome).toBe(2);
     expect(s.steps.new.level).toBe(1);
+    // Began: the first screen of each way in, not every screen seen.
+    expect(s.began).toBe(2);
+    expect(summarizeOnboarding([row("onboarding_step", "2026-11-20", { step: "level", route: "signed-in" })], NOW, 30).began).toBe(1);
     expect(s.answers.level.inquirer).toBe(1);
     expect(s.skipped).toBe(1);
     expect(s.skippedAt.account).toBe(1);
