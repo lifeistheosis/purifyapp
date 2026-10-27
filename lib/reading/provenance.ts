@@ -32,10 +32,11 @@ export const CHECKED_KEYS: readonly string[] = Object.keys(WORKS);
 type SectionsRow = { edition: string; checked: number[] };
 
 /**
- * Works checked word for word in some sections only (2026-10-26: St Cyril
- * on Luke's fragments on Luke 1 and Sermons 1 to 5, against the 1859
- * printing). The work's page claims nothing for them, since most of it is
- * not checked; a reading path may read those sections and no others.
+ * Works checked word for word in some sections only. The work's page claims
+ * nothing for them, since most of it is not checked; a reading path may read
+ * those sections and no others. None at present: St Cyril on Luke stood here
+ * with its first six sections on 2026-10-26, and joined the list above once
+ * the rest of it was checked the same day.
  */
 export const CHECKED_SECTIONS: Readonly<Record<string, readonly number[]>> = Object.fromEntries(
   Object.entries((provenance as { sections?: Record<string, SectionsRow> }).sections ?? {}).map(([k, v]) => [k, v.checked]),

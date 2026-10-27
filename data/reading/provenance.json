@@ -148,6 +148,9 @@
    "share": 1.0,
    "withNotes": true
   },
+  "cyril-of-alexandria/commentary-on-luke": {
+   "edition": "R. Payne Smith's translation from the Syriac (Oxford, 1859), with Roger Pearse's modernised English of it (2008) from Sermon 66"
+  },
   "cyril-of-jerusalem/the-catechist-of-jerusalem": {
    "edition": "Nicene and Post-Nicene Fathers, Series II, Vol. 7",
    "share": 0.943,
@@ -512,17 +515,5 @@
    "withNotes": true
   }
  },
- "sections": {
-  "cyril-of-alexandria/commentary-on-luke": {
-   "edition": "R. Payne Smith's translation from the Syriac (Oxford, 1859)",
-   "checked": [
-    0,
-    1,
-    2,
-    3,
-    4,
-    5
-   ]
-  }
- }
+ "sections": {}
 }

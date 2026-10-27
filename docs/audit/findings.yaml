@@ -1784,11 +1784,34 @@ findings:
       data/reading/provenance.json, so the Nativity path reads them. Found
       on the way: Sermons 66 to the end (sections 52 to 137, 60% of the
       work) are Roger Pearse's modernised English of 1859 (2008, public
-      domain), not the 1859 wording; the source line now says so. STILL
-      OPEN: St Ignatius's letters paragraph by paragraph against the
-      shorter recension; St Cyril on Luke, Sermons 6 to 65 against the 1859
-      printing (766 doubtful places listed) and Sermons 66 to the end
-      against Pearse's pages; the large works that name no CCEL volume
+      domain), not the 1859 wording; the source line now says so. The same
+      evening, the rest of St Cyril on Luke. Sermons 6 to 65 (sections 6 to
+      51) against the 1859 printing, all 766 doubtful places read on the
+      page images: 332 edits in 192 paragraphs, 198 of them printed
+      readings the transcription had lost, with 112 dashes typed as hyphens
+      and the "FROM" of three sermon headings; the page's four misprints
+      kept and noted; five translator's notes emptied. Sermons 66 to the end
+      (sections 52 to 137) against Pearse's pages: the same words but for
+      10 places where the ingest had run two words together, now parted as
+      his page has them, and his typing of dashes, quotation marks, doubled
+      commas and spaces inside quotation marks set as print sets them, no
+      word changed. The rail follows (246 copied paragraphs, 12 copies kept
+      without their verse label, a stray "FROM", and at Luke 23:32 the
+      translator's note that ran on past St Cyril's last words), three
+      section titles of ours are tidied (one showed "&nbsp;" as text), and
+      the whole work is now a checked row in data/reading/provenance.json,
+      its sections list empty. Left, and said in the source line: the short
+      Gospel lines and a few headings that the 2026-08-15 ingest dropped
+      (every line of 40 characters or fewer) are not in the library; adding
+      them would move every later paragraph's address, so they wait for a
+      way to lay them over the text as marks (lib/saints/divisions.ts).
+      Also left: Sermons 29 and 96 each stand as two sections under one
+      number, so a highlight on one shows on both, and renumbering needs a
+      move that cannot tell the old keys apart; Pearse's two bracketed
+      labels ("[Sermon 98 restarts here]", "[The Syriac recommences]") are
+      kept, as the "[From Mai.]" labels are. STILL OPEN: St Ignatius's
+      letters paragraph by paragraph against the shorter recension; Sermons
+      29 and 96 of St Cyril on Luke, as above; the large works that name no CCEL volume
       (Cyril on John, the Way of a Pilgrim, Isaac, the Sayings of Arsenius,
       Photius) against their own editions; the quotation marks still to settle (18
       paragraphs where CCEL itself differs, the 28 paragraph-opening marks of
