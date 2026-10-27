@@ -13,6 +13,7 @@ import {
   markOnboardedSilently,
   parseSpaceSnapshot,
   priorUseDetected,
+  readBackground,
   readFastingRule,
   readIntent,
   readLevel,
@@ -22,6 +23,7 @@ import {
   shouldShowOnboarding,
   spaceSnapshot,
   wasOnboardedAgain,
+  writeBackground,
   writeFastingRule,
   writeIntent,
   writeLevel,
@@ -68,17 +70,38 @@ describe("onboarding state", () => {
     expect(readFastingRule()).toBe("hidden");
   });
 
-  it("round-trips the three answers through one snapshot string", () => {
-    expect(parseSpaceSnapshot(spaceSnapshot())).toEqual({ level: null, intent: null, fasting: "strict" });
+  it("round-trips the answers through one snapshot string", () => {
+    expect(parseSpaceSnapshot(spaceSnapshot())).toEqual({ level: null, intent: null, fasting: "strict", background: null });
     writeLevel("learning");
     writeIntent("liturgy");
     writeFastingRule("modified");
-    expect(parseSpaceSnapshot(spaceSnapshot())).toEqual({ level: "learning", intent: "liturgy", fasting: "modified" });
+    writeBackground("protestant");
+    expect(parseSpaceSnapshot(spaceSnapshot())).toEqual({
+      level: "learning",
+      intent: "liturgy",
+      fasting: "modified",
+      background: "protestant",
+    });
     expect(events).toContain(ONBOARDING_EVENT);
   });
 
   it("ignores junk in a snapshot rather than trusting it", () => {
-    expect(parseSpaceSnapshot("bishop|nap|feast")).toEqual({ level: null, intent: null, fasting: "strict" });
+    expect(parseSpaceSnapshot("bishop|nap|feast|martian")).toEqual({ level: null, intent: null, fasting: "strict", background: null });
+    // A snapshot written before where-you-come-from was asked.
+    expect(parseSpaceSnapshot("learning|liturgy|modified")).toEqual({
+      level: "learning",
+      intent: "liturgy",
+      fasting: "modified",
+      background: null,
+    });
+  });
+
+  it("takes where the reader comes from from the account, never over this device's answer", () => {
+    expect(fillSpaceFromAccount({ level: "inquirer", background: "catholic" })).toBe(true);
+    expect(readBackground()).toBe("catholic");
+    writeBackground("prefer-not");
+    fillSpaceFromAccount({ level: "inquirer", background: "orthodox" });
+    expect(readBackground()).toBe("prefer-not");
   });
 
   describe("the account copy", () => {

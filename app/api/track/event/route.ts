@@ -23,6 +23,9 @@ export const dynamic = "force-dynamic";
  * native shells exempted, a per-IP budget, writes with the service role,
  * failures swallowed so tracking never breaks a page. A missing table drops
  * the write and answers ok.
+ *
+ * Since 1.8 the onboarding counts its steps here too (lib/onboarding/count.ts):
+ * "a Catholic finished" is one row, kept to the day, with no reader in it.
  */
 async function handlePOST(req: Request) {
   const sfs = req.headers.get("sec-fetch-site");
@@ -47,9 +50,18 @@ async function handlePOST(req: Request) {
     if (!parsed.success) return NextResponse.json({ ok: false }, { status: 400 });
     const { name, props } = parsed.data;
 
+    // The onboarding's counts carry the reader's answers (where they come
+    // from, among them), so they are kept to the day: a time to the second
+    // could be laid beside a session's page views and put the two together.
+    // Midnight UTC of the day it happened says all the totals need.
+    const onboarding = name.startsWith("onboarding_");
     const { error } = await createAdminClient()
       .from("analytics_events")
-      .insert({ name, props: props ?? {} });
+      .insert({
+        name,
+        props: props ?? {},
+        ...(onboarding ? { ts: `${new Date().toISOString().slice(0, 10)}T00:00:00Z` } : {}),
+      });
     if (error && !isTableAbsent(error)) {
       console.error("[track/event] insert failed", error.message);
     }

@@ -73,17 +73,33 @@ export function depthFor(level: Level): "inquirer" | "faithful" {
   return level === "practicing" ? "faithful" : "inquirer";
 }
 
-export type DayOneKey =
-  | "whatIsPrayer"
-  | "jesusPrayer"
-  | "trisagion"
-  | "signOfCross"
-  | "firstLiturgy"
-  | "churchYear"
-  | "gospelJohn"
-  | "job"
-  | "morningRule"
-  | "morningPrayers";
+/**
+ * Where the reader comes from (1.8, the owner's "who are you?" of
+ * 2026-10-26): asked first, with "prefer not to say", and only ever counted
+ * as a total (lib/onboarding/count.ts). Kept here so the question, the
+ * counts and the server's closed list of events name the same answers.
+ */
+export type Background = "orthodox" | "catholic" | "protestant" | "other-faith" | "none" | "prefer-not";
+export const BACKGROUNDS: readonly Background[] = ["orthodox", "catholic", "protestant", "other-faith", "none", "prefer-not"];
+
+export function isBackground(v: unknown): v is Background {
+  return typeof v === "string" && (BACKGROUNDS as readonly string[]).includes(v);
+}
+
+export const DAY_ONE_KEYS = [
+  "whatIsPrayer",
+  "jesusPrayer",
+  "trisagion",
+  "signOfCross",
+  "firstLiturgy",
+  "churchYear",
+  "gospelJohn",
+  "job",
+  "morningRule",
+  "morningPrayers",
+] as const;
+
+export type DayOneKey = (typeof DAY_ONE_KEYS)[number];
 
 /**
  * The first step the handoff offers, from what the reader told us. Every

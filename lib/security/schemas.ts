@@ -1,5 +1,14 @@
 import { z } from "zod";
 
+import { cleanTag } from "@/lib/analytics/tag";
+import {
+  COUNT_PLATFORMS,
+  COUNT_QUESTIONS,
+  COUNT_ROUTES,
+  ONBOARDING_STEPS,
+  isCountAnswer,
+} from "@/lib/onboarding/counting";
+import { BACKGROUNDS, DAY_ONE_KEYS, INTENTS, LEVELS } from "@/lib/onboarding/space";
 import { CATEGORY_LABELS, CLASSIFICATION_LABELS } from "@/lib/shop/format";
 import type { ShopCategory, ShopClassification } from "@/lib/shop/types";
 
@@ -595,12 +604,72 @@ export const catechismStatsSchema = z.object({
   correct_ids: z.array(z.string().uuid()).max(5),
 });
 
+// The onboarding's counts (1.8, lib/onboarding/counting.ts): every word is
+// from a closed list there, and the link tag a visit came by is held to the
+// tag's own rule (lib/analytics/tag.ts), so nothing else can be written.
+const tuple = <T extends string>(list: readonly T[]) => list as unknown as [T, ...T[]];
+const doorTag = z
+  .string()
+  .max(40)
+  .refine((s) => cleanTag(s) === s, "door must be a link tag");
+const onboardingBase = {
+  v: z.number().int().min(1).max(99),
+  platform: z.enum(COUNT_PLATFORMS),
+  door: doorTag.optional(),
+};
+const onboardingAnswers = {
+  background: z.enum(tuple(BACKGROUNDS)).optional(),
+  level: z.enum(tuple(LEVELS)).optional(),
+  intent: z.enum(tuple(INTENTS)).optional(),
+};
+
 /**
  * /api/track/event POST body. A closed list of event names, each with its
  * own closed props shape, so an identifier cannot ride in as a "prop". Add
  * an event by adding a member here and a line to /privacy.
  */
 export const trackEventSchema = z.discriminatedUnion("name", [
+  z.object({
+    name: z.literal("onboarding_step"),
+    props: z.object({ ...onboardingBase, route: z.enum(COUNT_ROUTES), step: z.enum(ONBOARDING_STEPS) }).strict(),
+  }),
+  z.object({
+    name: z.literal("onboarding_answer"),
+    props: z
+      .object({
+        ...onboardingBase,
+        route: z.enum(COUNT_ROUTES),
+        question: z.enum(tuple(COUNT_QUESTIONS)),
+        answer: z.string().max(24),
+      })
+      .strict()
+      .refine((p) => isCountAnswer(p.question, p.answer), "answer is not one the question offers"),
+  }),
+  z.object({
+    name: z.literal("onboarding_skipped"),
+    props: z.object({ ...onboardingBase, route: z.enum(COUNT_ROUTES), at: z.enum(ONBOARDING_STEPS) }).strict(),
+  }),
+  z.object({
+    name: z.literal("onboarding_finished"),
+    props: z.object({ ...onboardingBase, ...onboardingAnswers, route: z.enum(COUNT_ROUTES), account: z.boolean() }).strict(),
+  }),
+  z.object({
+    name: z.literal("onboarding_dayone"),
+    props: z
+      .object({ ...onboardingBase, ...onboardingAnswers, route: z.enum(COUNT_ROUTES).optional(), key: z.enum(DAY_ONE_KEYS) })
+      .strict(),
+  }),
+  z.object({
+    name: z.literal("onboarding_returned"),
+    props: z
+      .object({
+        ...onboardingBase,
+        ...onboardingAnswers,
+        route: z.enum(COUNT_ROUTES),
+        day: z.union([z.literal(2), z.literal(7), z.literal(30)]),
+      })
+      .strict(),
+  }),
   z.object({
     name: z.literal("catechism_started"),
     props: z.object({ reckoning: z.enum(["new", "old"]).optional() }).strict().optional(),
