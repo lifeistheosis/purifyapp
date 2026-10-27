@@ -4016,8 +4016,11 @@ html.is-native :is(input, textarea, select, [contenteditable]:not([contenteditab
    of the fade, and visibility takes it out of the page once the fade is over.
    Nothing here matches on the website: the cover is only in the apps'
    document. */
+/* The night fades in and out evenly, as in the clip the owner picked from:
+   the house ease, quick at the start, showed Today before the cross had
+   begun to rise. */
 [data-launch-frame] {
- transition: opacity 340ms var(--ease-house) 20ms, visibility 0s linear 360ms;
+ transition: opacity 340ms cubic-bezier(0.4, 0, 0.6, 1) 20ms, visibility 0s linear 360ms;
 }
 [data-launch-stage] {
  transition:
