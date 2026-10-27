@@ -16,7 +16,14 @@
     </style>
 
 
+    <!-- The phone's own logo screen (1.8): the cross alone on the night,
+         sized and placed as the intro's first frame draws it, so the hand-over
+         to the intro cannot be seen. Before 1.8 Android drew the launcher icon
+         here, the cross on its dark disc, on a black ground.
+         scripts/launch-assets.mjs makes splash_cross.png. -->
     <style name="AppTheme.NoActionBarLaunch" parent="Theme.SplashScreen">
         <item name="android:background">@drawable/splash</item>
+        <item name="windowSplashScreenBackground">@color/launch_night</item>
+        <item name="windowSplashScreenAnimatedIcon">@drawable/splash_cross</item>
     </style>
 </resources>

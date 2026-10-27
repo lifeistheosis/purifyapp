@@ -3996,24 +3996,87 @@ html.is-native :is(input, textarea, select, [contenteditable]:not([contenteditab
  animation: none;
 }
 
-/* The outline the store apps paint before any of their code has run
+/* The cover the store apps paint before any of their code has run: since 1.8
+   Purify's own intro, the horizon rising under the cross
    (components/native/LaunchFrame.tsx; lib/platform/launchFrame.ts says why).
-   It covers the page until the app says it is ready: data-launch="ready" on
-   <html>, set by NativeBridge at the moment it lifts the logo screen. Then it
-   fades over the screen that has arrived under it and is gone. The taps go
-   through from the instant the app is ready, not from the end of the fade,
-   and visibility takes it out of the page once the fade is over. Nothing here
-   matches on the website: the outline is only in the apps' document. */
+
+   It builds from the phone's own logo screen: a few stars come out, the
+   horizon rises from below the screen and brightens as the sun comes up
+   behind it, and the cross takes the light. Every part is done inside
+   INTRO_BUILD_MS (900 ms, held by the test). Each animation runs from where
+   the logo screen is to the element's own style, so with motion off (no
+   animations at all) the cover is simply the finished picture.
+
+   It covers the page until <html> carries both data-launch="ready" (NativeBridge,
+   when the app's first screen is drawn) and data-intro="played" (the
+   document's own lines, INTRO_BUILD_MS after the logo screen was asked to go).
+   Then the cross, the stars and the horizon lift away with a short blur, as
+   the cards' words leave, and the night fades over the screen that has
+   arrived under it. The taps go through from that instant, not from the end
+   of the fade, and visibility takes it out of the page once the fade is over.
+   Nothing here matches on the website: the cover is only in the apps'
+   document. */
 [data-launch-frame] {
- transition: opacity 180ms var(--ease-house), visibility 0s linear 180ms;
+ transition: opacity 340ms var(--ease-house) 20ms, visibility 0s linear 360ms;
 }
-html[data-launch="ready"] [data-launch-frame] {
+[data-launch-stage] {
+ transition:
+  opacity 360ms cubic-bezier(0.5, 0, 0.9, 0.5),
+  transform 360ms cubic-bezier(0.5, 0, 0.9, 0.5),
+  filter 360ms cubic-bezier(0.5, 0, 0.9, 0.5);
+}
+html[data-launch="ready"][data-intro="played"] [data-launch-frame] {
  opacity: 0;
  visibility: hidden;
  pointer-events: none;
 }
-:where([data-motion="reduce"]) [data-launch-frame] {
+html[data-launch="ready"][data-intro="played"] [data-launch-stage] {
+ opacity: 0;
+ transform: translateY(-14px);
+ filter: blur(6px);
+}
+.launch-stars > i {
+ animation: launch-star 420ms ease-out both;
+}
+@keyframes launch-star {
+ from {
+  opacity: 0;
+ }
+}
+/* From below the screen (40% of its height clears the glow above the crest
+   on a phone and on a tablet alike), on the house ease. */
+.launch-horizon {
+ animation: launch-rise 780ms var(--ease-house) both;
+}
+@keyframes launch-rise {
+ from {
+  transform: translateY(40vh);
+ }
+}
+.launch-level {
+ animation: launch-level 760ms ease-out 140ms both;
+}
+@keyframes launch-level {
+ from {
+  opacity: 0.2;
+ }
+}
+/* Light, not depth: the cards' glow-lit, blooming from the cross. */
+.launch-cross {
+ filter: drop-shadow(0 0 10px rgb(255 255 255 / 0.7)) drop-shadow(0 0 26px rgb(255 255 255 / 0.25));
+ animation: launch-lit 600ms ease-out 300ms both;
+}
+@keyframes launch-lit {
+ from {
+  filter: drop-shadow(0 0 0 rgb(255 255 255 / 0)) drop-shadow(0 0 0 rgb(255 255 255 / 0));
+ }
+}
+:where([data-motion="reduce"]) [data-launch-frame],
+:where([data-motion="reduce"]) [data-launch-stage] {
  transition: none;
+}
+:where([data-motion="reduce"]) [data-launch-frame] * {
+ animation: none;
 }
 
 /* Paragraph view (1.7): the verses run on as prose, with a paragraph where

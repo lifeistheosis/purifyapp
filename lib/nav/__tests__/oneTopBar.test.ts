@@ -90,14 +90,17 @@ describe("the phone's tab bar", () => {
     expect(code("components/reading/ReadingRoom.tsx")).toContain('<MobileHeader titleKey="nav.reading" sticky={false} />');
   });
 
-  it("is the bar the launch outline draws, row for row", () => {
-    // Section 24 of the walk holds the two bottoms within a pixel.
+  it("has no copy to keep in step on the launch cover", () => {
+    // 1.6 and 1.7 opened on an outline of Today that drew this bar row for
+    // row. Since 1.8 the apps open on the horizon intro instead
+    // (components/native/LaunchFrame.tsx), which draws no bar, so the bar can
+    // change without a second drawing of it to move as well.
     const bar = code(BAR);
     expect(bar).toContain("bg-night py-2");
     expect(bar).toContain("flex h-11 items-center gap-2 ps-5 pe-[9px]");
     const frame = code("components/native/LaunchFrame.tsx");
-    expect(frame).toContain("pb-2 pt-[calc(env(safe-area-inset-top,0px)+0.5rem)]");
-    expect(frame).toContain("flex h-11 items-center justify-between gap-2 ps-5 pe-[9px]");
+    expect(frame).not.toContain("h-11");
+    expect(frame).toContain("launch-horizon");
   });
 
   it("names Today once: the greeting under the bar is not a second h1", () => {

@@ -27,7 +27,7 @@ import { useRouter } from "next/navigation";
 
 import { whenLanguageSettled } from "@/lib/i18n/launchLanguage";
 import { ENTRY_KEY, FRONT_DOOR_MARK, entryAction } from "@/lib/nav/entry";
-import { LIFT_ANYWAY_MS } from "@/lib/platform/launchFrame";
+import { INTRO_BUILD_MS, LIFT_ANYWAY_MS } from "@/lib/platform/launchFrame";
 import { isNativeClient } from "@/lib/platform/native";
 import { refreshNative, relinkNative } from "@/lib/push/native";
 import { onlyTheHashChanges, setPushOpener } from "@/lib/push/open";
@@ -179,15 +179,24 @@ export function NativeBridge() {
     // ways below got there first.
     let lifted = false;
     let anyway: ReturnType<typeof setTimeout> | undefined;
+    let playedNet: ReturnType<typeof setTimeout> | undefined;
 
     const hideSplash = async () => {
       if (cancelled) return;
       lifted = true;
       // Said on the document as well as to the shell, so the moment can be
       // seen from outside: scripts/export-walk.mjs reads what is on the
-      // screen at the instant this appears. It is also what takes the launch
-      // outline away (components/native/LaunchFrame.tsx, app/globals.css).
+      // screen at the instant this appears. It is also one of the two marks
+      // that take the launch intro away (components/native/LaunchFrame.tsx,
+      // app/globals.css).
       document.documentElement.dataset.launch = "ready";
+      // The other is the intro's own, set by the document's lines
+      // (lib/platform/launchFrame.ts). This sets it too, a full intro after
+      // ready, as a net: were those lines never to run, the cover would wait
+      // for a mark nobody sets, with the app alive under it.
+      playedNet ??= setTimeout(() => {
+        document.documentElement.dataset.intro = "played";
+      }, INTRO_BUILD_MS);
       try {
         const { SplashScreen } = await import("@capacitor/splash-screen");
         if (!cancelled) await SplashScreen.hide();
@@ -278,6 +287,7 @@ export function NativeBridge() {
       stopBar();
       clearTimeout(fallback);
       clearTimeout(anyway);
+      clearTimeout(playedNet);
       clearTimeout(pushRefresh);
     };
   }, []);

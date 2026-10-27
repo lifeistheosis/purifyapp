@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  The logo screen for the older path (1.8): the night with the cross in the
+  middle, 80 dp tall, as the intro's first frame draws it. The theme's
+  splash icon (styles.xml) is what phones show; Capacitor's splash plugin falls
+  back to this when that fails, and the launch theme lays it under the window.
+  The 288 dp square is splash_cross.png at the size Android gives a splash
+  icon, so the cross inside it is the same size on both paths.
+  scripts/launch-assets.mjs says how the image is made. This replaced
+  Capacitor's stock blue X, which was never Purify's.
+-->
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:drawable="@color/launch_night" />
+    <item
+        android:width="288dp"
+        android:height="288dp"
+        android:gravity="center"
+        android:drawable="@drawable/splash_cross" />
+</layer-list>

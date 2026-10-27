@@ -10,4 +10,6 @@
     <color name="colorPrimary">#101013</color>
     <color name="colorPrimaryDark">#101013</color>
     <color name="colorAccent">#6b6b70</color>
+    <!-- The ground of the logo screen: the app's night, as the intro's. -->
+    <color name="launch_night">#101013</color>
 </resources>
