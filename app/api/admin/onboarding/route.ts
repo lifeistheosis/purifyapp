@@ -49,7 +49,11 @@ export async function GET(req: Request) {
       .select("name, props, ts")
       .in("name", ONBOARDING_EVENTS)
       .gte("ts", from)
+      // Then by id: onboarding rows are kept to the day, so every row of a day
+      // has the same time, and pages cut through a tie may repeat a row or
+      // skip one (lib/supabase/pageAll.ts).
       .order("ts", { ascending: true })
+      .order("id", { ascending: true })
       .range(start, start + PAGE - 1);
     if (error) {
       const payload: OnboardingAdminPayload = isTableAbsent(error) ? { absent: true } : { unavailable: error.message };
