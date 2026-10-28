@@ -15,14 +15,8 @@ import { getBook, localBookNames } from "@/lib/bible/books";
 import { plusFeaturesNow } from "@/lib/entitlements/usePlusFeatures";
 import { streamedUrl } from "@/lib/media/streamed";
 import { isNativeClient } from "@/lib/platform/native";
-import { hasReadAloud, readAloudRecording } from "@/lib/readAloud/chapters";
+import { bookOfSrc, hasReadAloud, readAloudRecording } from "@/lib/readAloud/chapters";
 import { checkSaved, onSavedChange, removeBook, saveChapters, savedChapters } from "@/lib/readAloud/offline";
-
-/** The book a playing chapter belongs to, from its address (streamed or saved). */
-export function bookOfSrc(src: string | null): string | null {
-  const m = src ? /\/audio\/read\/([a-z0-9-]+)\/\d+\.mp3(?:$|\?)/.exec(src) : null;
-  return m ? m[1] : null;
-}
 
 function useSavedKeys(): string {
   return useSyncExternalStore(

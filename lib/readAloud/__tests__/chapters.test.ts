@@ -3,7 +3,7 @@ import path from "node:path";
 import { describe, expect, it } from "vitest";
 
 import available from "@/data/readAloud/index.json";
-import { READ_ALOUD_RECORDINGS, hasReadAloud, readAloudSrc, verseAt, type ReadAloudManifest } from "@/lib/readAloud/chapters";
+import { READ_ALOUD_RECORDINGS, bookOfSrc, hasReadAloud, readAloudSrc, verseAt, type ReadAloudManifest } from "@/lib/readAloud/chapters";
 
 describe("read-aloud", () => {
   const m: ReadAloudManifest = {
@@ -34,6 +34,15 @@ describe("read-aloud", () => {
     expect(readAloudSrc("john", 1, true)).toBe("https://audio.purifyapp.net/read/john/1.mp3");
     // The website's pages may play from it, and nothing else new.
     expect(fs.readFileSync("lib/security/headers.ts", "utf8")).toContain(`"media-src 'self' https://audio.purifyapp.net"`);
+  });
+
+  it("knows a playing chapter's book from the bucket's address and a saved copy's", () => {
+    // Offline saving offers the playing book (components/player/SaveOffline.tsx).
+    expect(bookOfSrc("https://audio.purifyapp.net/read/1-john/2.mp3")).toBe("1-john");
+    expect(bookOfSrc("https://localhost/_capacitor_file_/data/app/files/audio/read/jude/1.mp3")).toBe("jude");
+    expect(bookOfSrc("/audio/read/john/1.mp3")).toBe("john");
+    expect(bookOfSrc("/audio/chants/anthem/en.mp3")).toBeNull();
+    expect(bookOfSrc(null)).toBeNull();
   });
 
   it("keeps the recordings out of the repository, and their timings and the list in it", () => {

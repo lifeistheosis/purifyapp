@@ -51,6 +51,16 @@ export function readAloudRecording(book: string, chapter: number): string {
   return `${READ_ALOUD_RECORDINGS}/${book}/${chapter}.mp3`;
 }
 
+/**
+ * The book a playing chapter belongs to, from its address: the bucket's
+ * (…/read/<book>/<chapter>.mp3), or a copy saved on the phone
+ * (…/audio/read/<book>/<chapter>.mp3), as the website's own was before 1.8.
+ */
+export function bookOfSrc(src: string | null): string | null {
+  const m = src ? /\/(?:audio\/)?read\/([a-z0-9-]+)\/\d+\.mp3(?:$|\?)/.exec(src) : null;
+  return m ? m[1] : null;
+}
+
 const CARRIED: ReadonlySet<string> = new Set(bundled as string[]);
 let chapters: ReadonlySet<string> = CARRIED;
 const listeners = new Set<() => void>();
