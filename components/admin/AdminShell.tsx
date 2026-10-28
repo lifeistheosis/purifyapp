@@ -68,6 +68,7 @@ import { SourcingTab } from "./tabs/SourcingTab";
 import { TodayTab } from "./tabs/TodayTab";
 import { UsageTab } from "./tabs/UsageTab";
 import { OnboardingTab } from "./tabs/OnboardingTab";
+import { ScreensTab } from "./tabs/ScreensTab";
 import { SubTabs } from "./primitives";
 import { ADMIN_PAGE_GROUPS, pageOf, type AdminPage } from "@/lib/admin/pages";
 import { useUsageLog } from "@/lib/admin/useUsageLog";
@@ -122,6 +123,7 @@ type OpsTabId =
   | "badges"
   | "traffic"
   | "onboarding"
+  | "screens"
   | "goals"
   | "calendar"
   | "content"
@@ -176,6 +178,7 @@ const COMPONENTS: Partial<Record<TabId, ComponentType>> = {
   email: EmailTab,
   traffic: TrafficHubTab,
   onboarding: OnboardingTab,
+  screens: ScreensTab,
   goals: GoalsTab,
   calendar: CalendarTab,
   content: ContentTab,

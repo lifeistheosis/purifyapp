@@ -2,6 +2,8 @@ import { NextResponse } from "next/server";
 
 import { corsPreflight, corsRoute, isAllowedNativeOrigin } from "@/lib/api/cors";
 import { isTableAbsent } from "@/lib/admin/tableAbsent";
+import { isAutomatedAgent } from "@/lib/analytics/bot";
+import { isScreenEvent } from "@/lib/analytics/screenCounting";
 import { ipKey, rateLimited } from "@/lib/security/ratelimit";
 import { trackEventSchema } from "@/lib/security/schemas";
 import { createAdminClient } from "@/lib/supabase/admin";
@@ -25,7 +27,9 @@ export const dynamic = "force-dynamic";
  * the write and answers ok.
  *
  * Since 1.8 the onboarding counts its steps here too (lib/onboarding/count.ts):
- * "a Catholic finished" is one row, kept to the day, with no reader in it.
+ * "a Catholic finished" is one row, kept to the day, with no reader in it. So
+ * do the screens (lib/analytics/screenCount.ts): the kind of screen showing
+ * when the app was put away, a device's first open, and its coming back.
  */
 async function handlePOST(req: Request) {
   const sfs = req.headers.get("sec-fetch-site");
@@ -37,6 +41,13 @@ async function handlePOST(req: Request) {
   const ct = req.headers.get("content-type") ?? "";
   if (!ct.toLowerCase().includes("application/json")) {
     return NextResponse.json({ ok: false }, { status: 415 });
+  }
+
+  // Automation counts nothing (the devices already hold back: lib/onboarding/count.ts,
+  // lib/analytics/screenCount.ts). This covers anything that posts here directly,
+  // answered as if recorded, the way /api/track answers it.
+  if (isAutomatedAgent(req.headers.get("user-agent"), req.headers.get("sec-ch-ua"))) {
+    return NextResponse.json({ ok: true }, { headers: { "Cache-Control": "no-store" } });
   }
 
   const ip = ipKey(req.headers);
@@ -53,14 +64,17 @@ async function handlePOST(req: Request) {
     // The onboarding's counts carry the reader's answers (where they come
     // from, among them), so they are kept to the day: a time to the second
     // could be laid beside a session's page views and put the two together.
-    // Midnight UTC of the day it happened says all the totals need.
-    const onboarding = name.startsWith("onboarding_");
+    // Midnight UTC of the day it happened says all the totals need. The
+    // screens' counts (a screen put away, a first open, a return) are kept
+    // the same way, for the same reason: a close stamped to the second would
+    // sit beside the last page view of one session.
+    const toTheDay = name.startsWith("onboarding_") || isScreenEvent(name);
     const { error } = await createAdminClient()
       .from("analytics_events")
       .insert({
         name,
         props: props ?? {},
-        ...(onboarding ? { ts: `${new Date().toISOString().slice(0, 10)}T00:00:00Z` } : {}),
+        ...(toTheDay ? { ts: `${new Date().toISOString().slice(0, 10)}T00:00:00Z` } : {}),
       });
     if (error && !isTableAbsent(error)) {
       console.error("[track/event] insert failed", error.message);

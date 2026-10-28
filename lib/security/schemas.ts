@@ -1,5 +1,7 @@
 import { z } from "zod";
 
+import { OPEN_SPANS } from "@/lib/analytics/screenCounting";
+import { SCREENS } from "@/lib/analytics/screens";
 import { cleanTag } from "@/lib/analytics/tag";
 import {
   COUNT_PLATFORMS,
@@ -669,6 +671,21 @@ export const trackEventSchema = z.discriminatedUnion("name", [
         day: z.union([z.literal(2), z.literal(7), z.literal(30)]),
       })
       .strict(),
+  }),
+  // The screens' counts (1.8, lib/analytics/screenCounting.ts): a kind of
+  // screen, never its address, and the kind of device.
+  z.object({
+    name: z.literal("screen_closed"),
+    props: z.object({ screen: z.enum(SCREENS), open: z.enum(OPEN_SPANS), platform: z.enum(COUNT_PLATFORMS) }).strict(),
+  }),
+  z.object({
+    name: z.literal("first_open"),
+    props: z.object({ platform: z.enum(COUNT_PLATFORMS) }).strict(),
+  }),
+  z.object({
+    name: z.literal("came_back"),
+    // CAME_BACK_DAYS, written out; the screens' counting test holds the two equal.
+    props: z.object({ day: z.union([z.literal(1), z.literal(7), z.literal(30)]), platform: z.enum(COUNT_PLATFORMS) }).strict(),
   }),
   z.object({
     name: z.literal("catechism_started"),

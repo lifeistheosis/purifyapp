@@ -151,10 +151,11 @@ export const ADMIN_PAGE_GROUPS: AdminPageGroup[] = [
       {
         id: "traffic",
         label: "Traffic",
-        sentence: "Who visits, how they found us, and how the welcome questions go.",
+        sentence: "Who visits, how they found us, how the welcome questions go, and where readers leave.",
         views: [
           { tab: "traffic", label: "Traffic" },
           { tab: "onboarding", label: "Onboarding" },
+          { tab: "screens", label: "Screens" },
         ],
       },
     ],
