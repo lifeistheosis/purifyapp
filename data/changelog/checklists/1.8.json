@@ -1,0 +1,24 @@
+{
+  "version": "1.8",
+  "categories": {
+    "fixes": {
+      "status": "shipped"
+    },
+    "saints": {
+      "status": "shipped"
+    },
+    "library": {
+      "status": "shipped"
+    },
+    "shop": {
+      "status": "shipped"
+    },
+    "perks": {
+      "status": "shipped"
+    },
+    "stats": {
+      "status": "skipped",
+      "reason": "No totals are restated this release. The library grew (the orations, the councils' texts, sixteen History events, the New Testament read aloud), and each line says what was added, with its own number where it has one."
+    }
+  }
+}

@@ -1,5 +1,34 @@
 [
   {
+    "id": "v1-8",
+    "version": "1.8",
+    "date": "2026-10-27",
+    "title": "Hear the New Testament, and walk to the Nativity with the Church",
+    "intro": "1.8 is a release of things to hear and to read. The whole New Testament is read aloud, the Nativity Fast has a path of its own with the Fathers, and the library grew and was checked against the books it comes from.",
+    "sections": [
+      {
+        "heading": "The New Testament, read aloud",
+        "body": "All 260 chapters of the New Testament can be read to you, verse by verse, with the verse being read lit as you go: tap Listen beside a chapter's name. On Today, one tap plays the day's Epistle and Gospel, only the verses the Church reads that day. In the apps the reading goes on with your phone locked, with play, pause and skip on the lock screen, and Purify Plus can save a book's readings on your phone to listen offline."
+      },
+      {
+        "heading": "Toward the Nativity, and reading together",
+        "body": "Reading paths are short runs through the Fathers, a day at a time: The Fathers, Prayer, In sorrow, and Toward the Nativity, forty days for the Nativity Fast, offered on Today from a week before it begins. Read together lets you walk a path with your parish, your household or friends: you see who has read each day, and you can talk each day over."
+      },
+      {
+        "heading": "Where every word comes from",
+        "body": "Every book in the reading room now says where its words come from, and the ones checked word for word against their printed editions say so. St Cyril's Commentary on Luke was checked from the first sermon to the last, and St Gregory the Theologian's orations are all here, each read against its printed page. Who said it? takes a line that goes round under a saint's name and shows where it stands, word for word, or that no Father Purify carries says it, and the answer can be shared as a picture. The Fathers on everyday struggles gathers their own words on anxiety, anger, grief, temptation, loneliness, despondency, pride and forgiving others."
+      },
+      {
+        "heading": "The councils, history and theology",
+        "body": "The councils and Orthodox History are on maps, with a slider through the years from Lyons to Moscow. Sixteen more events in Orthodox History are written in full, with pictures. Theology is set out by subject, each with its icon; twenty-one heresies come with the words of the council that condemned them; and every council in Purify has its texts to read, from the Seven to the Synod of Jerusalem."
+      },
+      {
+        "heading": "Today, the shop and the rest",
+        "body": "Today shows the saint of the day in their own words, your patron's icon and words on your name day, and your departed on their third, ninth and fortieth days and on the Saturdays of the Souls. The apps open on the horizon, the cross on the night coming alive while the app loads. The shop is redone in black and white, with savings that grow with your order and each icon's saint in their own words. Yellow is back for highlights, a double tap highlights a verse, back goes the way you came, and Purify Plus adds cathedral bells, the sea and wind to the ambience."
+      }
+    ]
+  },
+  {
     "id": "v1-7-2",
     "version": "1.7.2",
     "date": "2026-10-19",
