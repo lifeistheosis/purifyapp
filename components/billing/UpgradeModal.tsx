@@ -12,6 +12,7 @@ import {
   useState,
 } from "react";
 
+import { DockNote, KeptHero, PlansDock, PlusFeatureRows, ScribePicture } from "@/components/billing/KeptPaywall";
 import { PREMIUM_CTA } from "@/components/premium/PremiumUI";
 import { Sheet } from "@/components/ui/Sheet";
 import { cn } from "@/lib/cn";
@@ -19,17 +20,21 @@ import { useTranslate } from "@/components/i18n/MessagesProvider";
 import { readLocalSessionUser } from "@/lib/supabase/localSession";
 import { emitEntitlementsChanged } from "@/lib/entitlements/refresh";
 import { useIsNative } from "@/lib/platform/native";
+import { firstPlan, type Plan, type PlusOffers } from "@/lib/billing/offers";
 import {
   billingAvailable,
+  freeTrialPeriod,
   getPlusPackages,
   initBilling,
+  nativeOffer,
   purchase,
+  restore,
 } from "@/lib/billing/revenuecat";
 import {
   getWebPlusPackages,
-  packagePrice,
   purchaseWebPlus,
   webBillingAvailable,
+  webOffer,
 } from "@/lib/billing/revenuecatWeb";
 
 /**
@@ -58,18 +63,32 @@ import {
  * /pricing advertised a 404ing feature in production on 2026-08-26.
  *
  * So this modal buys ONLY the happy path it can see for itself: signed in,
- * billing available, a package loaded, one product. Every other state hands off
- * to /pricing through the secondary link, which is the real route and stays the
- * real route (lib/platform/useAndroidBack.ts:13 depends on that).
+ * billing available, a package loaded, one product (Plus, in the plan the
+ * reader picks). Every other state hands off to /pricing through the
+ * secondary link, which is the real route and stays the real route
+ * (lib/platform/useAndroidBack.ts:13 depends on that). Restoring a purchase
+ * is the one thing it adds (1.8): the store's own answer, lit here.
  *
  * PRICE. Read from the store at open time, never from a literal. lib/premium/
  * plans.ts, the Terms of Service, the Play listing and the patch notes
  * currently disagree about what Plus costs, and docs/brand/voice.md:15 says
  * that when sources disagree you write no price at all. A store-supplied price
  * cannot disagree with the store.
+ *
+ * DRAWN (1.8) as the owner locked the paywall on 2026-10-27, round 10 R2
+ * (components/billing/KeptPaywall.tsx): "Purify is kept by those it helps"
+ * over the scribe, then every Plus feature in depth, the one the lock was
+ * for first and lit in the words this sheet always had for it (its
+ * headline, its body, what stays free), then the plans held at the bottom:
+ * Yearly and Monthly, the billed price large and the month it comes to
+ * small, the trial when the store grants it, the button, the small print,
+ * Restore purchases (the apps), Terms and Privacy. The plan a reader picks
+ * is the one bought; it was always the year before, with no choice shown.
+ * "Not now" went with the redraw: the sheet's own close, a tap outside it,
+ * a pull down and Back all still close it.
  */
 
-/** Which lock the reader just met. Chooses the copy, nothing else. */
+/** Which lock the reader just met. Chooses which feature leads the sheet, lit, and its words; nothing else. */
 export type UpgradeFeature =
   | "florilegium"
   | "palettes"
@@ -94,10 +113,6 @@ export type UpgradeFeature =
 type OpenOptions = { overPlayer?: boolean };
 
 type Ctx = { open: (feature: UpgradeFeature, opts?: OpenOptions) => void; available: boolean };
-
-/** A price is never rendered without the period it buys. "$38.99" alone is a
- *  number a reader will read as a month. */
-type Priced = { price: string; period: "month" | "year" } | null;
 
 const UpgradeModalContext = createContext<Ctx | null>(null);
 
@@ -128,7 +143,8 @@ export function useUpgradeModal(): Ctx {
   );
 }
 
-type Phase = "pitch" | "buying" | "active" | "failed";
+/** `notFound`: a restore that found no subscription. Both it and `failed` leave the buttons live. */
+type Phase = "pitch" | "buying" | "restoring" | "active" | "failed" | "notFound";
 
 export function UpgradeModalProvider({
   children,
@@ -138,8 +154,17 @@ export function UpgradeModalProvider({
   const [feature, setFeature] = useState<UpgradeFeature | null>(null);
   const [overPlayer, setOverPlayer] = useState(false);
   const [phase, setPhase] = useState<Phase>("pitch");
-  const [priced, setPriced] = useState<Priced>(null);
+  // What the store offers this reader, as it answered on open. Null until it
+  // has, and while it is null no price is shown at all.
+  const [offers, setOffers] = useState<PlusOffers | null>(null);
+  const [plan, setPlan] = useState<Plan>("yearly");
   const [canBuyHere, setCanBuyHere] = useState(false);
+  // The apps' store can look for a subscription bought before (a new phone, a
+  // reinstall) once RevenueCat knows who is asking.
+  const [canRestore, setCanRestore] = useState(false);
+  // Which open the store's answer belongs to, so a slow answer to a sheet
+  // already closed and opened again cannot land in the new one.
+  const openSeq = useRef(0);
   const isNative = useIsNative();
 
   const close = useCallback(() => {
@@ -150,14 +175,17 @@ export function UpgradeModalProvider({
   }, []);
 
   const open = useCallback((next: UpgradeFeature, opts?: OpenOptions) => {
+    const seq = ++openSeq.current;
     setFeature(next);
     setOverPlayer(Boolean(opts?.overPlayer));
     setPhase("pitch");
-    setPriced(null);
+    setOffers(null);
+    setPlan("yearly");
     setCanBuyHere(false);
+    setCanRestore(false);
 
-    // Price and purchasability are resolved lazily, on open. Doing it at mount
-    // would initialise RevenueCat on every page in the app for the large
+    // Prices and purchasability are resolved lazily, on open. Doing it at
+    // mount would initialise RevenueCat on every page in the app for the large
     // majority of readers who never tap any of this.
     void (async () => {
       try {
@@ -165,25 +193,36 @@ export function UpgradeModalProvider({
         if (!user) return;
         if (billingAvailable()) {
           if (!(await initBilling(user.id))) return;
+          if (seq !== openSeq.current) return;
+          setCanRestore(true);
           const pkgs = await getPlusPackages();
-          const yearly = Boolean(pkgs.yearly);
-          const pkg = pkgs.yearly ?? pkgs.monthly;
-          if (!pkg?.product.priceString) return;
-          setPriced({
-            price: pkg.product.priceString,
-            period: yearly ? "year" : "month",
-          });
+          // The store's own word on each trial, for this reader. Never throws.
+          const [yearlyTrial, monthlyTrial] = await Promise.all([
+            freeTrialPeriod(pkgs.yearly),
+            freeTrialPeriod(pkgs.monthly),
+          ]);
+          const found: PlusOffers = {
+            yearly: nativeOffer(pkgs.yearly, yearlyTrial, true),
+            monthly: nativeOffer(pkgs.monthly, monthlyTrial, false),
+          };
+          const first = firstPlan(found);
+          if (!first || seq !== openSeq.current) return;
+          setOffers(found);
+          setPlan(first);
           setCanBuyHere(true);
           return;
         }
         if (webBillingAvailable()) {
           // getWebPlusPackages configures the SDK and binds it to the uid.
           const pkgs = await getWebPlusPackages(user.id);
-          const yearly = Boolean(pkgs.yearly);
-          const pkg = pkgs.yearly ?? pkgs.monthly;
-          const formatted = packagePrice(pkg);
-          if (!formatted) return;
-          setPriced({ price: formatted, period: yearly ? "year" : "month" });
+          const found: PlusOffers = {
+            yearly: webOffer(pkgs.yearly, true),
+            monthly: webOffer(pkgs.monthly, false),
+          };
+          const first = firstPlan(found);
+          if (!first || seq !== openSeq.current) return;
+          setOffers(found);
+          setPlan(first);
           setCanBuyHere(true);
         }
       } catch (e) {
@@ -216,7 +255,8 @@ export function UpgradeModalProvider({
       }
       if (billingAvailable()) {
         const pkgs = await getPlusPackages();
-        const pkg = pkgs.yearly ?? pkgs.monthly;
+        // The plan the reader chose in the dock, and only that one.
+        const pkg = plan === "yearly" ? pkgs.yearly : pkgs.monthly;
         if (!pkg) {
           setPhase("failed");
           return;
@@ -237,7 +277,7 @@ export function UpgradeModalProvider({
         return;
       }
       const pkgs = await getWebPlusPackages(user.id);
-      const pkg = pkgs.yearly ?? pkgs.monthly;
+      const pkg = plan === "yearly" ? pkgs.yearly : pkgs.monthly;
       if (!pkg) {
         setPhase("failed");
         return;
@@ -255,6 +295,24 @@ export function UpgradeModalProvider({
       console.error("[UpgradeModal] purchase failed", e);
       setPhase("failed");
     }
+  }, [plan]);
+
+  // Restore purchases (the apps): a subscription bought before, on another
+  // phone or before a reinstall, found by the store and lit here. What it
+  // finds is the store's answer, so a restore is never a purchase.
+  const restorePurchases = useCallback(async () => {
+    setPhase("restoring");
+    try {
+      if (await restore()) {
+        emitEntitlementsChanged();
+        setPhase("active");
+      } else {
+        setPhase("notFound");
+      }
+    } catch (e) {
+      console.error("[UpgradeModal] restore failed", e);
+      setPhase("notFound");
+    }
   }, []);
 
   return (
@@ -264,10 +322,14 @@ export function UpgradeModalProvider({
         feature={feature}
         overPlayer={overPlayer}
         phase={phase}
-        priced={priced}
+        offers={offers}
+        plan={plan}
+        onPlan={setPlan}
         canBuyHere={canBuyHere}
+        canRestore={isNative && canRestore}
         isNative={isNative}
         onBuy={buy}
+        onRestore={restorePurchases}
         onClose={close}
       />
     </UpgradeModalContext.Provider>
@@ -286,30 +348,38 @@ const UNLOCKED: { key: string; href: string }[] = [
 ];
 
 /**
- * The sheet itself. Redrawn 2026-10-19 (1.7.2, the owner's pick B of three
- * paywall directions): the scribe of St Prochorus's icon writing the first
- * words of St John's Gospel, in black and white across the sheet's top and
- * falling into it, then the pitch, and the one white action with a soft light
- * under it (components/premium/PremiumUI.tsx). No gold and no star: the gold
- * star in a box that stood here before is gone with the rest of the gold.
+ * The sheet itself, as the owner locked the paywall (1.8, round 10 R2):
+ * "Purify is kept by those it helps" over the scribe of St Prochorus's icon,
+ * then every Plus feature in depth with the one this lock was for first and
+ * lit, then the plans and the action held at the bottom of the sheet while
+ * the features scroll under them (components/billing/KeptPaywall.tsx). The
+ * sheet's own title bar names Purify Plus and closes it. No gold and no star.
  */
 function UpgradeSheet({
   feature,
   overPlayer,
   phase,
-  priced,
+  offers,
+  plan,
+  onPlan,
   canBuyHere,
+  canRestore,
   isNative,
   onBuy,
+  onRestore,
   onClose,
 }: {
   feature: UpgradeFeature | null;
   overPlayer: boolean;
   phase: Phase;
-  priced: Priced;
+  offers: PlusOffers | null;
+  plan: Plan;
+  onPlan: (p: Plan) => void;
   canBuyHere: boolean;
+  canRestore: boolean;
   isNative: boolean;
   onBuy: () => void;
+  onRestore: () => void;
   onClose: () => void;
 }) {
   const { t } = useTranslate();
@@ -323,32 +393,13 @@ function UpgradeSheet({
       desktop
       openFull
       layer={overPlayer ? "over-player" : undefined}
-      bodyClassName="px-5 pb-6 pt-1"
+      // No padding under the body: the plans stand on its bottom edge.
+      bodyClassName={done ? "px-5 pb-6 pt-1" : "px-5 pt-1 !pb-0"}
     >
-      {/* The sheet's own title bar already says Purify Plus. Under it, the
-          scribe's hand at its first words, the paywall's own picture. */}
-      <div aria-hidden className="relative -mx-5 h-[148px] overflow-hidden">
-        {/* eslint-disable-next-line @next/next/no-img-element -- carried in the apps, served as it is. */}
-        <img
-          src="/premium/scribe.v1.webp"
-          alt=""
-          width={600}
-          height={750}
-          decoding="async"
-          className="absolute inset-0 h-full w-full object-cover"
-          style={{ objectPosition: "50% 97%" }}
-        />
-        <div
-          className="absolute inset-0"
-          style={{
-            background:
-              "radial-gradient(70% 70% at 50% 10%, rgba(255,255,255,0.14), rgba(255,255,255,0) 70%), linear-gradient(to bottom, rgb(16 16 19 / 0.25) 0%, rgb(16 16 19 / 0) 30%, rgb(16 16 19 / 0) 62%, var(--color-night) 100%)",
-          }}
-        />
-      </div>
-
       {done ? (
         <>
+          {/* The scribe at his first words, as the sheet has always opened. */}
+          <ScribePicture className="-mx-5 h-[148px]" focus="50% 97%" />
           <h2 className="mt-1 text-title-sm font-semibold leading-tight text-paper md:text-title">
             {t("plus.active.title")}
           </h2>
@@ -380,79 +431,48 @@ function UpgradeSheet({
         </>
       ) : (
         <>
-          <h2 className="mt-1 text-title-sm font-semibold leading-tight text-paper text-balance md:text-title [text-shadow:0_0_22px_rgba(255,255,255,0.14)]">
-            {t(`plus.${feature ?? "general"}.title`)}
-          </h2>
-          <p className="mt-3 font-sans text-ui leading-[1.65] text-paper/75">
-            {t(`plus.${feature ?? "general"}.body`)}
-          </p>
-          <p className="mt-3 font-sans text-detail leading-[1.6] text-paper/55">
-            {t(`plus.${feature ?? "general"}.keep`)}
-          </p>
+          {/* Kept by those it helps: the scribe, the headline and the app's
+              own line, plus.footer, which used to close the sheet. */}
+          <KeptHero place="sheet" />
 
-          {phase === "failed" ? (
-            <p role="alert" className="mt-4 font-sans text-detail text-crimson-soft">
-              {t("plus.failed")}
-            </p>
-          ) : null}
+          {/* The features working, in depth: the one this lock was for
+              first, lit, with what stays free beside it. */}
+          <PlusFeatureRows lead={feature} className="mt-4" />
 
-          {canBuyHere ? (
-            <button
-              type="button"
-              onClick={onBuy}
-              disabled={phase === "buying"}
-              className={cn(PREMIUM_CTA, "mt-6 w-full")}
-            >
-              {phase === "buying" ? t("plus.opening") : t("plus.start")}
-            </button>
-          ) : (
-            <Link href="/pricing" onClick={onClose} className={cn(PREMIUM_CTA, "mt-6 w-full")}>
-              {t("plus.start")}
-            </Link>
-          )}
-
-          {/* The price is whatever the store just said. When the store did not
-              answer, no price is shown at all rather than a remembered one. */}
-          {priced ? (
-            <p className="mt-3 text-center font-sans text-detail tabular-nums text-paper/60">
-              {priced.period === "year"
-                ? t("plus.perYear", { price: priced.price })
-                : t("plus.perMonth", { price: priced.price })}
-            </p>
-          ) : null}
-
-          <div className="mt-4 flex items-center justify-center gap-2">
-            {/* Only beside a buy button: without one, the action already
-                goes to /pricing. */}
-            {canBuyHere ? (
-              <Link
-                href="/pricing"
-                onClick={onClose}
-                className="inline-flex min-h-11 items-center rounded-pill px-4 font-sans text-detail font-semibold text-paper/80 transition-colors hover:bg-paper/[0.06] hover:text-paper"
-              >
-                {t("plus.seeAllPlans")}
-              </Link>
-            ) : null}
-            <button
-              type="button"
-              onClick={onClose}
-              className="inline-flex min-h-11 items-center rounded-pill px-4 font-sans text-detail font-medium text-paper/60 transition-colors hover:bg-paper/10 hover:text-paper"
-            >
-              {t("plus.notNow")}
-            </button>
-          </div>
-
-          <p className="mt-4 text-center font-sans text-caption leading-[1.55] text-paper/45">
-            {t("plus.footer")}
-          </p>
-          {/* Marks which store the charge will come from, so the reader is not
-              surprised by the receipt. Native only: on the web the hosted
-              checkout names itself. */}
-          {isNative ? (
-            <p className="mt-2 text-center font-sans text-caption text-paper/35">
-              {t("plus.billedThroughStore")}
-            </p>
-          ) : null}
+          {/* The plans, held at the bottom while the features scroll. The
+              price is whatever the store just said; when the store did not
+              answer, no price is shown at all rather than a remembered one,
+              and the action goes to /pricing. The store's small print
+              (plus.billedThroughStore) stands in the apps whatever happens,
+              as it always has. */}
+          <PlansDock
+            className="sticky bottom-0 z-10 -mx-5 mt-5 pb-1"
+            offers={canBuyHere ? offers : null}
+            plan={plan}
+            onPlan={onPlan}
+            place={isNative ? "store" : "web"}
+            busy={phase === "buying" ? "buy" : phase === "restoring" ? "restore" : null}
+            note={
+              phase === "failed" ? (
+                <DockNote>{t("plus.failed")}</DockNote>
+              ) : phase === "notFound" ? (
+                <DockNote>{t("plus.restoreNone")}</DockNote>
+              ) : null
+            }
+            onBuy={onBuy}
+            href={canBuyHere ? undefined : "/pricing"}
+            onRestore={canRestore ? onRestore : undefined}
+            onNavigate={onClose}
+            more={
+              // Pro and the full page, beside a buy button only: without one
+              // the action itself already goes to /pricing.
+              canBuyHere ? (
+                <Link href="/pricing" onClick={onClose} className="inline-flex min-h-11 items-center transition-colors hover:text-paper">
+                  {t("plus.seeAllPlans")}
+                </Link>
+              ) : null
+            }
+          />
         </>
       )}
     </Sheet>

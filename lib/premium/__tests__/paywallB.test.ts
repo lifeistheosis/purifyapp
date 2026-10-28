@@ -20,6 +20,7 @@ const SURFACES = [
   "components/premium/PlanStatus.tsx",
   "components/billing/PlusPaywall.tsx",
   "components/billing/UpgradeModal.tsx",
+  "components/billing/KeptPaywall.tsx",
   "components/billing/WebPlusCheckout.tsx",
   "app/(app)/pricing/page.tsx",
   "app/(app)/premium/page.tsx",
@@ -46,9 +47,12 @@ describe("the premium surfaces", () => {
 
   it("draw the scribe the apps carry, not one they must fetch", () => {
     expect(fs.existsSync("public/premium/scribe.v1.webp")).toBe(true);
-    for (const file of ["components/billing/PlusPaywall.tsx", "components/billing/UpgradeModal.tsx", "components/premium/PlanScreen.tsx"]) {
+    // The paywall's two places draw him through KeptPaywall (1.8, R2).
+    for (const file of ["components/billing/KeptPaywall.tsx", "components/premium/PlanScreen.tsx"]) {
       expect(code(file), file).toContain('src="/premium/scribe.v1.webp"');
     }
+    expect(code("components/billing/PlusPaywall.tsx")).toContain("<KeptHero");
+    expect(code("components/billing/UpgradeModal.tsx")).toContain("<KeptHero");
     // A carried picture: the export keeps it (scripts/native-build.mjs sets aside only the streamed folders).
     expect(code("scripts/native-build.mjs")).not.toMatch(/\["public", "premium"\]/);
   });
@@ -58,9 +62,13 @@ describe("the apps' paywall", () => {
   it("says a free trial only in the store's own words", () => {
     // Its comments may name the trial; its code may not.
     const paywall = code("components/billing/PlusPaywall.tsx").replace(/^\s*\/\/.*$/gm, "");
-    expect(paywall).toContain("freeTrial(plus.yearly)");
-    expect(paywall).not.toMatch(/["'`]7 days free/);
-    expect(paywall).toContain("trial ? `Start ${trial} free` : `Start ${tierName}`");
+    expect(paywall).toContain("freeTrialPeriod(pkgs.yearly)");
+    expect(paywall).not.toMatch(/["'`]7 days/);
+    // 1.8 (R2): the held plans say it from the store's period, in the
+    // reader's language, and only when the store granted one.
+    const dock = code("components/billing/KeptPaywall.tsx").replace(/^\s*\/\/.*$/gm, "");
+    expect(dock).toContain("chosen?.trial ? trialWords(chosen.trial, tn, locale) : null");
+    expect(dock).not.toMatch(/["'`]7 days/);
   });
 
   it("names the store a reader will be billed by", () => {
@@ -90,9 +98,16 @@ describe("the feature posters", () => {
     expect(showcase).toContain("<ScrollRail");
   });
 
-  it("stand on the paywall and on Your plan, where they also lead to the feature", () => {
-    expect(code("components/billing/PlusPaywall.tsx")).toContain("<FeatureShowcase");
+  it("stand on Your plan, where they also lead to the feature", () => {
     const plan = code("components/premium/PlanScreen.tsx");
     expect(plan).toMatch(/<FeatureShowcase[^>]*\bowned\b/);
+  });
+
+  it("gave way on the paywall to the features in depth (1.8, the owner's R2)", () => {
+    // His locked design shows each feature with its working picture and what
+    // it does as the reader scrolls, so nothing has to be opened to be read.
+    const paywall = code("components/billing/PlusPaywall.tsx");
+    expect(paywall).toContain("<PlusFeatureRows");
+    expect(paywall).not.toContain("<FeatureShowcase");
   });
 });

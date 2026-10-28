@@ -13,6 +13,7 @@
 // gate on isNativeClient() and these functions double-check.
 
 import { isNativeClient, nativePlatform } from "@/lib/platform/native";
+import { trialPeriod, type PlanOffer, type TrialPeriod } from "@/lib/billing/offers";
 import type {
   CustomerInfo,
   PurchasesPackage,
@@ -153,40 +154,23 @@ export async function getProPackages(): Promise<PlusPackages> {
 }
 
 /**
- * A store period said plainly, as the paywall puts a free trial: "7 days"
- * for a week (the yearly plan's trial, 2026-10-18), "3 days", "1 month".
- * Null for a period it cannot say.
- */
-export function periodLabel(unit: string, value: number): string | null {
-  if (!(value > 0)) return null;
-  switch (unit) {
-    case "DAY":
-      return value === 1 ? "1 day" : `${value} days`;
-    case "WEEK":
-      return `${value * 7} days`;
-    case "MONTH":
-      return value === 1 ? "1 month" : `${value} months`;
-    case "YEAR":
-      return value === 1 ? "1 year" : `${value} years`;
-    default:
-      return null;
-  }
-}
-
-/**
  * The free trial a package opens with, as its product carries it: Google
  * Play's default option names a free phase only where the reader may have
  * one, and the App Store's introductory price is free for a trial. Null when
  * there is none. On iOS the product carries its trial whoever asks, so
- * freeTrial below asks StoreKit about the reader too.
+ * freeTrialPeriod below asks StoreKit about the reader too.
+ *
+ * A length and a unit, not words (1.8): the paywall says it in the reader's
+ * language (components/billing/KeptPaywall.tsx), where it said "7 days" in
+ * English to every reader before.
  */
-export function storeFreeTrial(pkg: PurchasesPackage | null): string | null {
+export function storeTrialPeriod(pkg: PurchasesPackage | null): TrialPeriod | null {
   if (!pkg) return null;
   const free = pkg.product.defaultOption?.freePhase?.billingPeriod;
-  if (free) return periodLabel(free.unit, free.value);
+  if (free) return trialPeriod(free.unit, free.value);
   const intro = pkg.product.introPrice;
   if (intro && intro.price === 0) {
-    return periodLabel(intro.periodUnit, intro.periodNumberOfUnits * Math.max(1, intro.cycles));
+    return trialPeriod(intro.periodUnit, intro.periodNumberOfUnits * Math.max(1, intro.cycles));
   }
   return null;
 }
@@ -199,18 +183,39 @@ export function storeFreeTrial(pkg: PurchasesPackage | null): string | null {
  * StoreKit but "eligible", an unknown included, says no trial rather than
  * promise one. Never throws.
  */
-export async function freeTrial(pkg: PurchasesPackage | null): Promise<string | null> {
-  const label = storeFreeTrial(pkg);
-  if (!label || !pkg) return null;
-  if (nativePlatform() !== "ios") return label;
+export async function freeTrialPeriod(pkg: PurchasesPackage | null): Promise<TrialPeriod | null> {
+  const period = storeTrialPeriod(pkg);
+  if (!period || !pkg) return null;
+  if (nativePlatform() !== "ios") return period;
   try {
     const { Purchases, INTRO_ELIGIBILITY_STATUS } = await import("@revenuecat/purchases-capacitor");
     const id = pkg.product.identifier;
     const answer = await Purchases.checkTrialOrIntroductoryPriceEligibility({ productIdentifiers: [id] });
-    return answer[id]?.status === INTRO_ELIGIBILITY_STATUS.INTRO_ELIGIBILITY_STATUS_ELIGIBLE ? label : null;
+    return answer[id]?.status === INTRO_ELIGIBILITY_STATUS.INTRO_ELIGIBILITY_STATUS_ELIGIBLE ? period : null;
   } catch {
     return null;
   }
+}
+
+/**
+ * A package as the paywall draws it (1.8, lib/billing/offers.ts): the price
+ * the store formats, and for the year the month it comes to, also as the
+ * store works it out (pricePerMonthString), so "$6.00 a month" is the store's
+ * figure in the store's currency and never a sum done here.
+ */
+export function nativeOffer(
+  pkg: PurchasesPackage | null,
+  trial: TrialPeriod | null,
+  yearly: boolean,
+): PlanOffer | null {
+  if (!pkg?.product.priceString) return null;
+  const amount = pkg.product.price;
+  return {
+    price: pkg.product.priceString,
+    amount: typeof amount === "number" && Number.isFinite(amount) ? amount : null,
+    perMonth: yearly ? (pkg.product.pricePerMonthString ?? null) : null,
+    trial,
+  };
 }
 
 export type PurchaseOutcome = "active" | "cancelled" | "error";

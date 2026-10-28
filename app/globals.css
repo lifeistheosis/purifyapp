@@ -2801,6 +2801,29 @@ html[data-reading-mode="parchment"] .lic-notes .lic-note:target {
  opacity: 1;
  transform: none;
 }
+/* The paywall's choices (1.8, the owner's R2): Yearly or Monthly, Plus or
+   Pro, and the Save badge riding on the year. The chosen one turns white with
+   a soft white glow, and the change eases in rather than snapping.
+   components/billing/KeptPaywall.tsx and PlusPaywall.tsx. */
+.paywall-choice {
+ transition:
+  background-color 200ms var(--ease-house),
+  color 200ms var(--ease-house),
+  box-shadow 200ms var(--ease-house);
+}
+:where([data-motion="reduce"]) .paywall-choice {
+ transition: none;
+}
+/* The paywall's headline over the scribe (1.8, R2): a soft white light on the
+   words and a shade under them, so they hold over the picture. On Light the
+   upgrade sheet follows the page, paper with ink words, where a shade is a
+   smudge: none there. The apps' screen is a dark island and keeps both. */
+.paywall-title {
+ text-shadow: 0 0 24px rgb(255 255 255 / 0.22), 0 2px 12px rgb(0 0 0 / 0.55);
+}
+html[data-reading-mode="parchment"] .paywall-title:not(.dark-island *) {
+ text-shadow: none;
+}
 
 /* ── Touch feedback ───────────────────────────────────────────────────
    The native app shell has no hover state, so taps can feel inert — a
