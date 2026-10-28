@@ -789,6 +789,35 @@ html.is-native body {
   linear-gradient(180deg, color-mix(in srgb, var(--color-paper) 4%, var(--color-night-soft)) 0%, var(--color-night-soft) 100%);
 }
 
+/* The shop home's featured icon (components/shop/FeaturedIcon.tsx, round 11
+   of the 1.8 designs, the owner's pick B): one card on the palette's raised
+   surface, lit from the side its icon stands on, the way the vitrine lights a
+   piece. Tokens only, so it follows every palette. On a phone the icon stands
+   at the card's far edge, as drawn; on a wider screen, in the middle of its
+   half. A still picture: nothing here moves. */
+.shop-feature {
+ background:
+  radial-gradient(46% 80% at 82% 48%, rgb(255 255 255 / 0.08), transparent 72%),
+  linear-gradient(160deg, color-mix(in srgb, var(--color-paper) 5%, var(--color-night-soft)) 0%, var(--color-night-soft) 100%);
+}
+[dir="rtl"] .shop-feature {
+ background:
+  radial-gradient(46% 80% at 18% 48%, rgb(255 255 255 / 0.08), transparent 72%),
+  linear-gradient(200deg, color-mix(in srgb, var(--color-paper) 5%, var(--color-night-soft)) 0%, var(--color-night-soft) 100%);
+}
+.shop-feature-icon {
+ object-position: 100% 50%;
+}
+[dir="rtl"] .shop-feature-icon {
+ object-position: 0% 50%;
+}
+@media (min-width: 768px) {
+ .shop-feature-icon,
+ [dir="rtl"] .shop-feature-icon {
+  object-position: 50% 50%;
+ }
+}
+
 /* A piece's photograph arriving in its vitrine (components/shop/
    VitrineImage.tsx): a quarter-second fade once the picture has loaded, in
    place of a pop. Opacity only, and it fills backwards, so the photograph

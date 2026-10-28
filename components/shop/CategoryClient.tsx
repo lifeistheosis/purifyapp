@@ -4,9 +4,11 @@ import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
 
 import { ProductCard } from "@/components/shop/ProductCard";
+import { SaintAvatar } from "@/components/shop/SaintAvatar";
 import { ShopBrowseControls } from "@/components/shop/ShopBrowseControls";
 import { ShopError, ShopGridSkeleton } from "@/components/shop/ShopStates";
 import { filterProducts, type BrowseFilters } from "@/lib/shop/browse";
+import { shopSaint } from "@/lib/shop/bySaint";
 import { fetchShopHome, fetchShopProducts, peekShopHome } from "@/lib/shop/catalogClient";
 import { CategoryChips } from "@/components/shop/CategoryChips";
 import { CATEGORY_LABELS } from "@/lib/shop/format";
@@ -18,7 +20,7 @@ import { useTranslate } from "@/components/i18n/MessagesProvider";
  * NOTE: this reads ?q= / ?inventory= from window.location in a mount effect
  * rather than next/navigation's useSearchParams(). In the local-first static
  * export, a useSearchParams() call forces a client-side-rendering bailout
- * under its Suspense boundary and the whole component fails to hydrate — the
+ * under its Suspense boundary and the whole component fails to hydrate: the
  * products fetch never fires and the page sits on its skeleton forever (this
  * was live-broken on prod /shop/category/*). Reading the URL directly keeps
  * the component a plain, always-hydrating client component.
@@ -33,16 +35,18 @@ export function CategoryClient({ category }: { category: string }) {
   // Seed filters from the URL once, on the client, after mount. Deep links
   // like ?q=nicholas or ?inventory=ready_to_ship still work; typing afterward
   // is pure local state (no history spam). One-time URL read, same hydration
-  // pattern as FavoriteButton's mounted gate.
+  // pattern as FavoriteButton's mounted gate. ?saint= is the shop home's
+  // "Shop by saint" row (lib/shop/bySaint.ts): the pieces of one saint.
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
     const q = params.get("q") ?? "";
     const readyOnly = params.get("inventory") === "ready_to_ship";
+    const saint = params.get("saint") || null;
     // The disable belongs on the setState line, not on the useEffect line.
     // Sitting above the hook it silenced nothing the rule actually reports,
     // which is why this stayed a build-breaking error.
     // eslint-disable-next-line react-hooks/set-state-in-effect
-    if (q || readyOnly) setFilters({ q, readyOnly });
+    if (q || readyOnly || saint) setFilters({ q, readyOnly, saint });
   }, []);
 
   const { data, error, loading, reload } = useAsyncData(
@@ -69,6 +73,11 @@ export function CategoryClient({ category }: { category: string }) {
       : t("shop.everything")
     : t(`shop.category.${category}`);
 
+  // The saint the reader came in with, when the library has a page for him:
+  // his picture and name head the page, and "Read the life" goes to that page,
+  // so the shop and the reading room are linked both ways.
+  const saint = filters.saint ? shopSaint(filters.saint) : null;
+
   // Only kinds with something in them, as on the shop home, whose payload
   // carries the counts (and is usually already cached from the visit there).
   // Until it answers, or from an API too old to say, every chip shows.
@@ -82,15 +91,35 @@ export function CategoryClient({ category }: { category: string }) {
     <div className="mx-auto w-full max-w-[1200px] px-5 md:px-8">
       <header className="pt-8 md:pt-14">
         <div className="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1">
-          <h1 className="text-heading tracking-[-0.01em] text-paper md:text-display-sm">
-            {valid ? title : t("study.category")}
-          </h1>
+          {saint ? (
+            <div className="flex min-w-0 items-center gap-4">
+              <SaintAvatar saint={saint} sizes="72px" className="size-14 md:size-[4.5rem]" />
+              <div className="min-w-0">
+                <p className="font-sans text-caption font-semibold text-paper/55">{t("shop.shopBySaint")}</p>
+                <h1 className="text-balance text-title leading-[1.15] tracking-[-0.01em] text-paper md:text-display-sm">
+                  {saint.shortName}
+                </h1>
+              </div>
+            </div>
+          ) : (
+            <h1 className="text-heading tracking-[-0.01em] text-paper md:text-display-sm">
+              {valid ? title : t("study.category")}
+            </h1>
+          )}
           {data && !loading ? (
             <p aria-live="polite" className="font-sans text-caption text-paper/50">
               {tn("shop.itemCount", shown.length)}
             </p>
           ) : null}
         </div>
+        {saint ? (
+          <Link
+            href={`/saints/${saint.slug}`}
+            className="mt-2 inline-flex min-h-11 items-center font-sans text-detail font-medium text-paper/70 transition-colors hover:text-paper motion-reduce:transition-none"
+          >
+            {t("shop.readTheLife")}
+          </Link>
+        ) : null}
       </header>
 
       {/* Category switcher: the shop's row of kinds, opened on the one the
@@ -105,9 +134,11 @@ export function CategoryClient({ category }: { category: string }) {
             // Keep shareable URLs honest: once the reader edits filters, drop
             // the stale ?q= / ?inventory= params so a refresh doesn't lie.
             // history.replaceState avoids a navigation (and the Suspense
-            // bailout that useRouter/useSearchParams would reintroduce).
+            // bailout that useRouter/useSearchParams would reintroduce). A
+            // saint still chosen stays in the address, so a refresh keeps him.
             if (window.location.search) {
-              window.history.replaceState(null, "", `/shop/category/${category}`);
+              const keep = next.saint ? `?saint=${encodeURIComponent(next.saint)}` : "";
+              window.history.replaceState(null, "", `/shop/category/${category}${keep}`);
             }
           }}
           resultCount={shown.length}

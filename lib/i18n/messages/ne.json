@@ -3549,6 +3549,8 @@
   "shop.pairsWellWith": "तपाईंको कार्टसँग मिल्छ",
   "shop.recentlyViewed": "भर्खरै हेरिएका",
   "shop.theCollection": "संग्रह",
+  "shop.shopBySaint": "सन्तअनुसार हेर्नुहोस्",
+  "shop.newIn": "पसलमा नयाँ",
   "shop.setTitle": "प्रार्थना कुना, सँगै",
   "shop.setBody": "एउटा आइकन, एउटा प्रार्थना डोरी र एउटा क्रूस, एउटै अर्डरमा।",
   "shop.setTotal": "तीनवटैका लागि {total}",
