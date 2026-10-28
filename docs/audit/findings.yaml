@@ -1722,7 +1722,7 @@ findings:
     status: partially-corrected
     status_notes: >-
       Found 2026-10-23 on release/1.8 while correcting St. Alexander's letter
-      (17eff1a7, editorial queue item 21), whose sections of "his words" were
+      (f8da7088, editorial queue item 21), whose sections of "his words" were
       in no public-domain translation. Measured the same day: every section of
       every reading-room work not marked editorial or liturgical, against
       CCEL's transcription of the volume its source line names (the share of
@@ -1736,10 +1736,10 @@ findings:
       and prefaces out of 40 works as empty slots the reader skips, so no
       reader's mark moves, about 1,700 paragraphs rebuilt from the editions'
       words, and the commentary rail cut from those works the same
-      (c1c123ac); the rail's second pass (Catena notes run on into the next
+      (ed7f910c); the rail's second pass (Catena notes run on into the next
       commentator's, the Oxford editors' bracketed notes, the Morals on Job's
       inlined footnotes in the rail and the library, margin notes save
-      Scripture references, 2,876 paragraphs' stray spaces; dba3eefd); the
+      Scripture references, 2,876 paragraphs' stray spaces; 46137d69); the
       nine works the measure found worst set to their books or marked ours
       (Gregory's First Theological Oration, Basil's Hexaemeron, Cyril of
       Jerusalem's lectures, Theodosius, Hosius, Meletius, Eustathius,
