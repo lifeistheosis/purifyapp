@@ -3,8 +3,7 @@ import path from "node:path";
 import { describe, expect, it } from "vitest";
 
 import available from "@/data/readAloud/index.json";
-import { hasReadAloud, readAloudSrc, verseAt, type ReadAloudManifest } from "@/lib/readAloud/chapters";
-import { SITE_URL } from "@/lib/site";
+import { READ_ALOUD_RECORDINGS, hasReadAloud, readAloudSrc, verseAt, type ReadAloudManifest } from "@/lib/readAloud/chapters";
 
 describe("read-aloud", () => {
   const m: ReadAloudManifest = {
@@ -27,18 +26,28 @@ describe("read-aloud", () => {
     expect(JSON.parse(fs.readFileSync("public/audio/read/index.json", "utf8"))).toEqual(available);
   });
 
-  it("is asked of the website in the apps, and is the page's own on the web", () => {
-    expect(readAloudSrc("john", 1, false)).toBe("/audio/read/john/1.mp3");
-    expect(readAloudSrc("john", 1, true)).toBe(`${SITE_URL}/audio/read/john/1.mp3`);
+  it("plays from Purify's bucket, on the website and in the apps alike", () => {
+    // 1.8: the recordings are too big for the public repository the website
+    // is built from. Only a copy saved on the phone is read from anywhere else.
+    expect(READ_ALOUD_RECORDINGS).toBe("https://audio.purifyapp.net/read");
+    expect(readAloudSrc("john", 1, false)).toBe("https://audio.purifyapp.net/read/john/1.mp3");
+    expect(readAloudSrc("john", 1, true)).toBe("https://audio.purifyapp.net/read/john/1.mp3");
+    // The website's pages may play from it, and nothing else new.
+    expect(fs.readFileSync("lib/security/headers.ts", "utf8")).toContain(`"media-src 'self' https://audio.purifyapp.net"`);
   });
 
-  it("has a file, and timings for every verse in order, for each chapter it lists", () => {
+  it("keeps the recordings out of the repository, and their timings and the list in it", () => {
+    expect(fs.readFileSync(".gitignore", "utf8")).toMatch(/^public\/audio\/read\/\*\*\/\*\.mp3$/m);
+    expect(fs.readFileSync("scripts/read-aloud-index.mjs", "utf8")).toContain(String.raw`/^\d+\.json$/`);
+  });
+
+  it("has timings for every verse in order, for each chapter it lists", () => {
     for (const key of available as string[]) {
       const [book, ch] = key.split("/");
       expect(hasReadAloud(book, Number(ch)), key).toBe(true);
-      const mp3 = path.join("public", readAloudSrc(book, Number(ch)));
-      expect(fs.existsSync(mp3), mp3).toBe(true);
-      const manifest = JSON.parse(fs.readFileSync(mp3.replace(/\.mp3$/, ".json"), "utf8")) as ReadAloudManifest;
+      const timings = path.join("public/audio/read", book, `${ch}.json`);
+      expect(fs.existsSync(timings), timings).toBe(true);
+      const manifest = JSON.parse(fs.readFileSync(timings, "utf8")) as ReadAloudManifest;
       const verses = JSON.parse(fs.readFileSync(path.join("data/bible", book, `${ch}.json`), "utf8")).verses as { n: number }[];
       expect(manifest.verses.map((v) => v.n), key).toEqual(verses.map((v) => v.n));
       for (let i = 1; i < manifest.verses.length; i += 1) expect(manifest.verses[i].at, key).toBeGreaterThan(manifest.verses[i - 1].end);

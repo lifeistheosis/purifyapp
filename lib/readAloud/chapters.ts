@@ -32,6 +32,25 @@ export type ReadAloudManifest = { voice: string; seconds: number; verses: ReadAl
 /** Where the website keeps the list of chapters that have a reading. */
 export const READ_ALOUD_INDEX = "/audio/read/index.json";
 
+/**
+ * Where the recordings are (1.8): Purify's own bucket on Cloudflare R2, at
+ * audio.purifyapp.net, for the website and the apps alike. The New Testament
+ * alone is 295 MB of sound and the whole Bible about 1.5 GB, too much for the
+ * public repository the website is built from (the owner's yes of
+ * 2026-10-24; Homebase/tools/r2/README.md has how it was set up and how files
+ * go in). Each chapter's timings and the list of chapters stay on the website,
+ * small and made with the app; only the sound is the bucket's. The bucket
+ * answers the website's and both apps' origins (its CORS policy, in the
+ * README), and the website lets its pages play from it
+ * (lib/security/headers.ts, media-src).
+ */
+export const READ_ALOUD_RECORDINGS = "https://audio.purifyapp.net/read";
+
+/** A chapter's recording in the bucket, the same address on the website and in the apps. */
+export function readAloudRecording(book: string, chapter: number): string {
+  return `${READ_ALOUD_RECORDINGS}/${book}/${chapter}.mp3`;
+}
+
 const CARRIED: ReadonlySet<string> = new Set(bundled as string[]);
 let chapters: ReadonlySet<string> = CARRIED;
 const listeners = new Set<() => void>();
@@ -78,12 +97,12 @@ export function useHasReadAloud(book: string, chapter: number): boolean {
 }
 
 /**
- * A chapter's recording: the website's in the apps, the page's own on the
- * web; in the apps, the copy saved on the phone when the reader saved its
- * book for offline listening (lib/readAloud/offline.ts).
+ * A chapter's recording: the bucket's (readAloudRecording); in the apps, the
+ * copy saved on the phone when the reader saved its book for offline
+ * listening (lib/readAloud/offline.ts).
  */
 export function readAloudSrc(book: string, chapter: number, native: boolean = isNativeClient()): string {
-  return (native ? savedSrc(book, chapter) : null) ?? streamedUrl(`/audio/read/${book}/${chapter}.mp3`, native);
+  return (native ? savedSrc(book, chapter) : null) ?? readAloudRecording(book, chapter);
 }
 
 const manifests = new Map<string, Promise<ReadAloudManifest | null>>();
