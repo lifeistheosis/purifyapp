@@ -224,17 +224,29 @@ export default async function TheologyHubPage() {
   ];
 
   return (
-    <section className="bg-night px-5 md:px-8 py-10 md:py-14">
+    <section className="bg-night px-5 md:px-8 pt-6 pb-10 md:py-14">
       <div className="mx-auto w-full max-w-[920px]">
-        {/* ── Hero ──────────────────────────────────────────────────────── */}
-        <header className="border-b border-paper/10 pb-10 md:pb-12">
+        {/* ── Title ─────────────────────────────────────────────────────────
+            The owner's pick of 2026-10-27 (round 12, A, "A gallery"): the
+            name, then the subjects as bands. On a phone the name is set at
+            the size the mockup draws it, so the first screen is the gallery;
+            the computer keeps its display size. The lede and Begin here,
+            which stood between the two, open the study library below. */}
+        <header>
           <p className="font-sans text-caption font-semibold text-paper/45">
             <T k="study.theology.studyLibrary" />
           </p>
-          <h1 className="mt-3 font-serif text-display md:text-display-lg font-bold leading-[1.02] tracking-[-0.025em] text-paper">
+          <h1 className="mt-1.5 font-serif text-title md:mt-3 md:text-display-lg font-bold leading-[1.02] tracking-[-0.025em] text-paper">
             <T k="nav.discoverMenu.theology" />
           </h1>
-          <p className="mt-5 max-w-[60ch] font-serif text-lede text-paper/80 leading-[1.7]">
+        </header>
+
+        {/* ── The faith, by subject (1.8), a gallery since round 12 ─────── */}
+        <FaithMap className="mt-5 md:mt-8" />
+
+        {/* ── The study library: its four modes, and where to begin ─────── */}
+        <section className="mt-12 border-t border-paper/10 pt-10 md:mt-14 md:pt-12">
+          <p className="max-w-[60ch] font-serif text-lede text-paper/80 leading-[1.7]">
             <T k="study.oneConnectedStudyOfThe" />
           </p>
 
@@ -263,14 +275,8 @@ export default async function TheologyHubPage() {
               </span>
             </Link>
           ) : null}
-        </header>
 
-        {/* ── The faith, by subject (1.8) ───────────────────────────────── */}
-        <FaithMap className="mt-10 md:mt-12" />
-
-        {/* ── Four modes ────────────────────────────────────────────────── */}
-        <section className="mt-10 md:mt-12">
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-px overflow-hidden rounded-xl border border-paper/[0.1] bg-paper/[0.08]">
+          <div className="mt-8 grid grid-cols-1 sm:grid-cols-2 gap-px overflow-hidden rounded-xl border border-paper/[0.1] bg-paper/[0.08]">
             {MODES.map((m) => (
               <Link
                 key={m.href}

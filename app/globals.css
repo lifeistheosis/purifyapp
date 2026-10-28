@@ -120,14 +120,18 @@
 
  /* Named 2026-09-25 out of arbitrary hex, so the Light palette can re-ink
     them (see "Light mode: surfaces drawn for dark" below).
-    Moved 2026-09-28 from #d4af37 to antique metallic gold, with the premium
-    redesign: the owner reads #d4af37 as yellow, and asked for gold (#c9a25a,
-    lit to #efd9a3, shaded to #9a7433). .premium-cta and .premium-pill
-    below draw the same three as metal; .premium-gold-text is the solid ink. */
- --color-premium: #c9a25a;        /* the Premium gold: borders and fills */
- --color-premium-ink: #e2c68b;    /* its text */
- --color-premium-bright: #efd9a3; /* its text when selected */
- --color-premium-soft: #d6b877;   /* eyebrows and small badges */
+    Moved 2026-09-28 from #d4af37 to antique metallic gold (#c9a25a), which
+    the owner went on to call "vibe coded yellow". Silver and white since 1.8,
+    his word of 2026-10-28: "stop using that yellow too as that contrast
+    color just use a glowly white". The same four names, so every surface
+    that wore the gold (a badge, a selected choice, a Plus mark) is silver on
+    every dark palette, with the brightest of them pure white; Parchment
+    takes ink greys (below). Where an accent has to stand out, it glows
+    white, softly, as the Premium pill does (.premium-pill). */
+ --color-premium: #d9d9dd;        /* the Premium silver: borders and fills */
+ --color-premium-ink: #ececef;    /* its text */
+ --color-premium-bright: #ffffff; /* its text when selected: the white */
+ --color-premium-soft: #c7c7cb;   /* eyebrows and small badges */
  --color-comment: #f2594e;        /* the red mark on a verse with commentary */
  --color-comment-hover: #ff7a6e;
  --color-social-ig: #f06292;      /* footer pills, brand hues */
@@ -1571,12 +1575,6 @@ html[data-reading-mode="parchment"] [data-hl-color]:not(.dark-island *) {
  animation: none;
 }
 
-/* Premium CTA glow: a soft, breathing GOLD halo on the "Premium" pill in
-   the marketing header. In the otherwise monochrome (white-on-night) nav
-   this is the one warm accent, marking the paid tier and tying the button
-   to the gold premium/pricing surfaces. The pill also carries a resting
-   gold box-shadow inline, so reduced-motion users keep the halo (the
-   keyframe never drops to zero) without the pulse. */
 /* Emoji and symbols in readers' own words (components/community/SymbolText),
    drawn by fonts already on the device. Through the text faces, one ✨ or ●
    in a post fetched the web fonts' "symbols" subsets while a profile was
@@ -1587,77 +1585,56 @@ html[data-reading-mode="parchment"] [data-hl-color]:not(.dark-island *) {
   "Noto Sans Symbols", system-ui, sans-serif;
 }
 
-/* The Premium pill's breathing halo. The resting glow is the pill's own
-   box-shadow (set inline, so it shows with motion off); the breath is a
-   second, larger glow on a layer of its own whose opacity rises and falls.
-   It used to animate box-shadow itself, which repaints the pill on every
-   frame of every page for as long as the page is open, on every phone. An
-   opacity change on a layer is composited and costs no paint. */
-@keyframes premium-glow {
- 0%,
- 100% {
- opacity: 0;
- }
- 50% {
- opacity: 1;
- }
-}
-.premium-glow {
+/* ── The Premium pill, silver (1.8) ────────────────────────────────────
+   The owner's pick of 2026-10-27, round 6, B, "Silver", no gold: "a cool
+   metal edge and a soft sheen. Still reads as special, and sits with the
+   black and white" (Homebase/boards/purify-master/variants/06-premium-pill).
+   It is the pill while it sells, in the phone's tab bar (MobilePremiumButton)
+   and the computer's header (PremiumNavCta); a reader who holds a plan sees
+   the quiet graphite pill instead.
+
+   The edge and the word are the page's ink, so the pill follows every
+   palette: white on Dark and True black, Candlelight's dimmer grey,
+   Monastery's cool stone, and the ink on Parchment, where the sheen turns to
+   a pale pearl (with the Light rules below). The sheen and the lit top edge
+   are white light on every palette.
+
+   And it glows white, softly and still: the owner, 2026-10-28, "just use a
+   glowly white". The word carries a faint white light, and a halo sits on
+   a layer of its own around the pill. Nothing breathes: the gold pill's
+   pulse went with the gold, and with it the antique-gold metal of
+   2026-09-28 (.premium-cta, .premium-gold-text and .premium-glow), which
+   nothing wore any more. The rgba values come first for a WebView without
+   color-mix. The lit edge is a one-pixel layer of the background and the
+   halo is on ::after, not shadows on the pill itself, so a ring utility on
+   the pill can still draw (the computer's header rings it on the Premium
+   page). */
+.premium-pill {
  position: relative;
  isolation: isolate;
+ color: var(--color-paper);
+ border: 1px solid rgba(214, 218, 224, 0.75);
+ border-color: color-mix(in srgb, var(--color-paper) 62%, transparent);
+ background:
+  linear-gradient(rgba(255, 255, 255, 0.25), rgba(255, 255, 255, 0.25)) top / 100% 1px no-repeat,
+  linear-gradient(180deg, rgba(255, 255, 255, 0.16), rgba(255, 255, 255, 0.04));
+ text-shadow: 0 0 10px rgba(255, 255, 255, 0.35);
 }
-.premium-glow::after {
+.premium-pill::after {
  content: "";
  position: absolute;
- inset: 0;
+ inset: -1px;
  z-index: -1;
  border-radius: inherit;
  pointer-events: none;
- box-shadow: 0 0 18px 3px rgba(201, 162, 90, 0.5);
- opacity: 0;
- animation: premium-glow 2.8s ease-in-out infinite;
-}
-:where([data-motion="reduce"]) .premium-glow::after {
- animation: none;
-}
-
-/* ── Premium, drawn as metal (2026-09-28) ──────────────────────────────
-   The owner's gold is antique and metallic, never flat yellow: a base of
-   #c9a25a lit to #efd9a3 and shaded to #9a7433, run top to bottom so it reads
-   as a struck surface. Two uses of the gradient, and the word itself:
-     .premium-cta        the primary action on every premium surface
-     .premium-pill       the Premium pill in the header: a gold hairline
-                         around a near-black fill (the border is the second
-                         background, clipped to the border box)
-     .premium-gold-text  the word in the Premium ink, solid (2026-10-16) */
-.premium-cta {
- color: #17140f;
- background: linear-gradient(180deg, #efd9a3 0%, #c9a25a 52%, #a3803f 100%);
- box-shadow:
-  inset 0 1px 0 rgba(255, 255, 255, 0.4),
-  inset 0 -1px 0 rgba(0, 0, 0, 0.18),
-  0 10px 26px -12px rgba(201, 162, 90, 0.6);
-}
-.premium-cta:hover {
- background: linear-gradient(180deg, #f4e2b6 0%, #d1ab63 52%, #a98544 100%);
-}
-.premium-pill {
- border: 1px solid transparent;
- background:
-  linear-gradient(#16130e, #16130e) padding-box,
-  linear-gradient(180deg, #efd9a3 0%, #c9a25a 50%, #7c5d28 100%) border-box;
+ box-shadow: 0 0 14px -2px rgba(255, 255, 255, 0.3);
 }
 .premium-pill:hover {
+ border-color: rgba(214, 218, 224, 0.95);
+ border-color: color-mix(in srgb, var(--color-paper) 82%, transparent);
  background:
-  linear-gradient(#211b12, #211b12) padding-box,
-  linear-gradient(180deg, #f4e2b6 0%, #d1ab63 50%, #8a6a30 100%) border-box;
-}
-/* The word Premium, Plus or Pro in the Premium colour: solid, never a
-   gradient set into the letters (Impeccable flags gradient text, and the
-   owner said yes to cleaning it up, 2026-10-16). The token flips in
-   Parchment, so the light palette needs no rule of its own. */
-.premium-gold-text {
- color: var(--color-premium-ink);
+  linear-gradient(rgba(255, 255, 255, 0.3), rgba(255, 255, 255, 0.3)) top / 100% 1px no-repeat,
+  linear-gradient(180deg, rgba(255, 255, 255, 0.22), rgba(255, 255, 255, 0.07));
 }
 
 /* Section / card reveal for guided form flows (create a campaign, the fasting
@@ -1894,9 +1871,9 @@ html[data-reading-mode="monastery"] {
    Dark colours for a reason is left as Dark has it: the fasting registers
    (--fast-*, the tan of --fast-fast and the amber of --fast-wine-oil among
    them), the liturgical ones (--tone-*: crimson, green, and a warm grey
-   where gold once was), and the Premium gold (--color-premium*), one set
-   piece on every palette. So a tan, an amber and that gold are still seen
-   on this palette wherever Dark shows them. Any of them can be given a
+   where gold once was), and the Premium tokens (--color-premium*), silver
+   and white on every dark palette since 1.8. So a tan and an amber are still
+   seen on this palette wherever Dark shows them. Any of them can be given a
    neutral value in the block below, and the test then holds that too.
    lib/reader/__tests__/trueBlack.test.ts reads these blocks and holds the
    ground, the accents and the neutrality. */
@@ -1921,9 +1898,12 @@ html[data-reading-mode="parchment"] {
  --color-night: #f1e8d4;
  --color-night-soft: #e7dcc1;
  --color-paper: #2b2317;
- --color-gold: #7c621d;
- --color-gold-soft: #6b5316;
- --color-gold-pale: #5d4a1a;
+ /* The accent in ink greys, never brown or yellow (the owner, 2026-10-28:
+    "stop using that yellow"). It was a dark gold, #7c621d, at 4.8 to 1.
+    On the page: 7.8, 6.1 and 9.9 to 1. */
+ --color-gold: #45454b;
+ --color-gold-soft: #55555b;
+ --color-gold-pale: #36363b;
  color-scheme: light;
 
  /* The recessed well goes DARKER than the page on a dark theme and LIGHTER
@@ -2001,10 +1981,12 @@ html[data-reading-mode="parchment"] {
  --color-sage-soft: #2f6b58;
  --color-link: #3b45a8;
  --color-link-soft: #2c3590;
- --color-premium: #7d5f18;
- --color-premium-ink: #6b4f12;
- --color-premium-bright: #5a420e;
- --color-premium-soft: #6f5314;
+ /* The Premium silver turns to ink greys on paper, never brown or yellow
+    (1.8): 7.8, 11.1, 14.1 and 6.1 to 1 on the page. */
+ --color-premium: #45454b;
+ --color-premium-ink: #2e2e33;
+ --color-premium-bright: #1b1b1f;
+ --color-premium-soft: #55555b;
  --color-on-paper: #f7f0e1;
  --color-comment: #b3261e;
  --color-comment-hover: #8f1d17;
@@ -2022,14 +2004,31 @@ html[data-reading-mode="parchment"] {
  --color-amber-200: #92400e;
 }
 
-/* A card or tile: paper a shade lighter than the page, a warm shadow in
-   place of the black one. */
+/* The Premium pill, silver (1.8): on paper the sheen is a pale pearl, lit
+   along its top edge, inside a hairline of the ink. A white glow cannot be
+   seen on a light page, so the word is plain ink and the halo is a soft
+   shade under the pearl. */
 html[data-reading-mode="parchment"] .premium-pill {
+ border-color: rgba(43, 35, 23, 0.4);
+ border-color: color-mix(in srgb, var(--color-paper) 40%, transparent);
  background:
-  linear-gradient(#fbf6ea, #fbf6ea) padding-box,
-  linear-gradient(180deg, #c9a25a 0%, #9a7433 100%) border-box;
+  linear-gradient(rgb(255 255 255 / 0.9), rgb(255 255 255 / 0.9)) top / 100% 1px no-repeat,
+  linear-gradient(180deg, rgb(255 255 255 / 0.75), rgb(255 255 255 / 0.3));
+ text-shadow: none;
+}
+html[data-reading-mode="parchment"] .premium-pill::after {
+ box-shadow: 0 1px 3px rgb(0 0 0 / 0.1);
+}
+html[data-reading-mode="parchment"] .premium-pill:hover {
+ border-color: rgba(43, 35, 23, 0.6);
+ border-color: color-mix(in srgb, var(--color-paper) 60%, transparent);
+ background:
+  linear-gradient(rgb(255 255 255 / 0.95), rgb(255 255 255 / 0.95)) top / 100% 1px no-repeat,
+  linear-gradient(180deg, rgb(255 255 255 / 0.9), rgb(255 255 255 / 0.45));
 }
 
+/* A card or tile: paper a shade lighter than the page, a warm shadow in
+   place of the black one. */
 html[data-reading-mode="parchment"] .lm-card {
  background: radial-gradient(115% 90% at 88% 8%, rgb(255 255 255 / 0.55) 0%, transparent 55%),
   linear-gradient(155deg, #f9f3e5 0%, #f4ecda 60%, #efe5d0 100%) !important;
@@ -2123,10 +2122,10 @@ html[data-reading-mode="parchment"] .dark-island {
  --color-sage-soft: #bfd6cc;
  --color-link: #a4adff;
  --color-link-soft: #c7cdff;
- --color-premium: #c9a25a;
- --color-premium-ink: #e2c68b;
- --color-premium-bright: #efd9a3;
- --color-premium-soft: #d6b877;
+ --color-premium: #d9d9dd;
+ --color-premium-ink: #ececef;
+ --color-premium-bright: #ffffff;
+ --color-premium-soft: #c7c7cb;
  --color-on-paper: #49424e;
  --color-comment: #f2594e;
  --color-comment-hover: #ff7a6e;
@@ -2465,8 +2464,10 @@ html[data-reading-mode="parchment"] .lic-notes .lic-note:target {
  transition: border-color 200ms ease, background-color 200ms ease, box-shadow 320ms var(--ease-house), transform 160ms ease;
 }
 .ob-choice:active { transform: scale(0.985); }
+/* A chosen card is lit white, softly (1.8: "just use a glowly white"; it
+   was the Premium gold). */
 .ob-choice[aria-pressed="true"] {
- box-shadow: 0 0 0 1px rgb(201 162 90 / 0.45), 0 14px 34px -18px rgb(201 162 90 / 0.55);
+ box-shadow: 0 0 0 1px rgb(255 255 255 / 0.45), 0 14px 34px -18px rgb(255 255 255 / 0.4);
 }
 @keyframes ob-tick {
  from { stroke-dashoffset: 1; }
@@ -2503,8 +2504,9 @@ html[data-reading-mode="parchment"] .lic-notes .lic-note:target {
  display: inline-flex;
  animation: ob-slate-cross 720ms var(--ease-house) 120ms backwards;
 }
+/* The handoff's lit mark glows white (1.8; it was the Premium gold). */
 .ob-slate-glow {
- background: radial-gradient(circle, rgb(201 162 90 / 0.28) 0%, transparent 70%);
+ background: radial-gradient(circle, rgb(255 255 255 / 0.22) 0%, transparent 70%);
  opacity: 0;
  transition: opacity 600ms ease;
 }
@@ -2721,6 +2723,21 @@ html[data-reading-mode="parchment"] .lic-notes .lic-note:target {
  animation: none;
  opacity: 1;
  transform: none;
+}
+
+/* A gallery band that opens (Theology's subjects, components/theology/
+   FaithMap.tsx): what it holds settles in under it as it opens. The rule
+   matches only while the <details> is open, so it plays again on every
+   opening. Filled backwards, so the list is handed back to transform: none
+   when it lands. */
+@keyframes band-open {
+ from { opacity: 0; transform: translateY(-4px); }
+}
+details[open] > .band-open {
+ animation: band-open var(--duration-base) var(--ease-house) backwards;
+}
+:where([data-motion="reduce"]) details[open] > .band-open {
+ animation: none;
 }
 
 /* ── Tab select ───────────────────────────────────────────────────────

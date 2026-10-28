@@ -11,19 +11,21 @@ import { PlusCheck } from "@/components/premium/PremiumUI";
  * The "Premium" pill in the site header, shared by the marketing Navbar and
  * the in-app AppNav so the call-to-action is identical everywhere.
  *
- * Redrawn 2026-09-28 in the owner's antique gold: a gold hairline around a
- * near-black fill (.premium-pill), the word in the Premium ink
- * (.premium-gold-text), and the slow breathing halo (.premium-glow, still
- * under reduced motion as a resting glow). It was flat #d4af37, which the
- * owner reads as yellow. The gold star before the word went in 1.7, here and
- * on the phone's pill (MobilePremiumButton): the owner called it a
- * vibe-coded symbol (2026-10-16). The word says it.
+ * Silver since 1.8, the owner's pick of 2026-10-27 (round 6, B, "Silver", no
+ * gold), as on the phone's pill (MobilePremiumButton): the word in the
+ * page's ink inside a cool metal edge, with a soft sheen and a still white
+ * glow (.premium-pill in globals.css; the owner, 2026-10-28, "just use a
+ * glowly white"). It was antique gold from 2026-09-28, a gold
+ * hairline, the word in gold and a breathing gold halo, and flat #d4af37
+ * before that, which the owner reads as yellow. The gold star before the
+ * word went in 1.7: the owner called it a vibe-coded symbol (2026-10-16).
+ * The word says it.
  *
  * When the signed-in user already holds Plus or Pro the pill turns quiet:
- * graphite, a gold check, "Plus Activated" / "Pro Activated", no halo. Their
- * own plan reads as theirs rather than as a thing to buy. It was a green
- * pill, the one colour in the header that belonged to nothing else. Tier is
- * read client-side from the entitlements row.
+ * graphite, a check, "Plus Activated" / "Pro Activated". Their own plan
+ * reads as theirs rather than as a thing to buy. It was a green pill, the
+ * one colour in the header that belonged to nothing else. Tier is read
+ * client-side from the entitlements row.
  */
 export function PremiumNavCta({
   active = false,
@@ -51,22 +53,19 @@ export function PremiumNavCta({
   // above this (app/page.tsx renders Navbar outside the (app) group), so the
   // link is kept there rather than regressing that shell to a full navigation.
   const className = cn(
-    "inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-pill font-sans text-ui font-semibold transition-[background,box-shadow,color] duration-150",
+    "inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-pill font-sans text-ui font-semibold transition-[background,border-color,color] duration-150 motion-reduce:transition-none",
     fullWidth ? "flex w-full px-5 py-3" : "px-5 py-2.5",
     activated
       ? "border border-paper/15 bg-paper/[0.05] text-paper/90 hover:border-paper/30 hover:bg-paper/10 hover:text-paper"
-      : cn("premium-pill premium-glow", active && "ring-1 ring-premium/50"),
+      : cn("premium-pill", active && "ring-1 ring-paper/40"),
   );
-  // The resting halo, which the glow animation breathes around. Kept inline
-  // so reduced-motion readers, who get no animation, still see the pill lit.
-  const style = activated ? undefined : { boxShadow: "0 0 8px 0 rgba(201,162,90,0.28)" };
   const inner = activated ? (
     <>
       <PlusCheck size={13} />
       {label}
     </>
   ) : (
-    <span className="premium-gold-text">{label}</span>
+    label
   );
 
   if (!activated && upgrade.available) {
@@ -78,7 +77,6 @@ export function PremiumNavCta({
           upgrade.open("general");
         }}
         className={className}
-        style={style}
       >
         {inner}
       </button>
@@ -90,7 +88,6 @@ export function PremiumNavCta({
       href={activated ? "/plan" : "/premium"}
       onClick={onClick}
       className={className}
-      style={style}
     >
       {inner}
     </Link>
