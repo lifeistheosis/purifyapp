@@ -133,7 +133,9 @@ export function ChapterVerseStatus({
   }, [chapterKey]);
 
   // A 0fr to 1fr row, so the line opens with its own height over the pill,
-  // which holds its place at the foot, instead of jumping in.
+  // which holds its place at the foot, instead of jumping in. The words sit
+  // on the page's own colour: the line floats over the verses, and with
+  // nothing under it a screenshot of 2026-10-28 showed it written across one.
   return (
     <span
       aria-hidden
@@ -142,7 +144,7 @@ export function ChapterVerseStatus({
         show ? "grid-rows-[1fr] opacity-100" : "grid-rows-[0fr] opacity-0",
       )}
     >
-      <span className="truncate font-sans text-eyebrow font-medium leading-[1.35] tabular-nums text-paper/60">
+      <span className="max-w-full justify-self-center truncate rounded-pill bg-night px-2.5 py-0.5 font-sans text-eyebrow font-medium leading-[1.35] tabular-nums text-paper/60">
         {t("bible.verseOf", { verse, total: totalVerses })}
         {minutes ? ` · ${t("bible.minLeft", { min: minutes })}` : null}
       </span>

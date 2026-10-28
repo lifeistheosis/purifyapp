@@ -32,6 +32,22 @@ describe("the answers' pictures", () => {
     }
   });
 
+  it("draw none from a folder the apps fetch from the website instead of carrying", () => {
+    // scripts/native-build.mjs takes these out of the bundle (["public", ...]
+    // rows): History's pictures and the reading room's covers among them. In
+    // the export of 2026-10-28 two cards drew broken pictures from them.
+    const build = fs.readFileSync(path.join(process.cwd(), "scripts/native-build.mjs"), "utf8");
+    const fetched = [...build.matchAll(/\[\s*"public"((?:\s*,\s*"[^"]+")+)\s*\]/g)].map(
+      (m) => "/" + [...m[1].matchAll(/"([^"]+)"/g)].map((p) => p[1]).join("/") + "/",
+    );
+    expect(fetched).toContain("/covers/");
+    expect(fetched).toContain("/history/media/");
+    for (const intent of INTENTS) {
+      const { src } = ANSWER_PICTURES[intent];
+      for (const folder of fetched) expect(src.startsWith(folder), `${intent}: ${src} is under ${folder}`).toBe(false);
+    }
+  });
+
   it("give four answers four pictures", () => {
     expect(new Set(INTENTS.map((i) => ANSWER_PICTURES[i].src)).size).toBe(INTENTS.length);
   });

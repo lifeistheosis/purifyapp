@@ -14,7 +14,10 @@
 // Until then each slot holds a stand-in: a public-domain icon the app already
 // carries, its source and licence recorded where the app first used it (named
 // on each row), opened and looked at in this card's 4:5 crop before it was
-// chosen. None of them is new to the app.
+// chosen. None of them is new to the app. Each is one the apps carry in their
+// own bundle, because onboarding is a first open, maybe with no signal: the
+// folders the apps fetch from the website (scripts/native-build.mjs) drew two
+// broken cards in the export of 2026-10-28.
 
 import type { Intent } from "./space";
 
@@ -32,15 +35,19 @@ export type AnswerPicture = {
 };
 
 export const ANSWER_PICTURES: Readonly<Record<Intent, AnswerPicture>> = {
-  // Stand-in: St Gregory Palamas, the teacher of stillness, early 15th century
-  // (docs/licensing/HISTORY_MEDIA.md, the hesychast councils).
-  quiet: { slot: "onboarding-quiet", src: "/history/media/hesychast-councils.v1.jpg", focus: "50% 30%" },
+  // Stand-in: St Gregory Palamas, the teacher of stillness, his icon on his
+  // own page (lib/saints/iconRights.ts). Not History's larger copy: the apps
+  // ask the website for History's pictures, and a first open may have no
+  // signal.
+  quiet: { slot: "onboarding-quiet", src: "/saints/icons/gregory-palamas.jpg", focus: "50% 30%" },
   // Stand-in: the Mystical Supper, Kirillo-Belozersky Monastery, 1497
   // (docs/licensing/SECTION_MEDIA.md; Theology's "The Mysteries and worship").
   liturgy: { slot: "onboarding-liturgy", src: "/theology/subjects/mystical-supper.jpg", focus: "50% 50%" },
-  // Stand-in: St Prochorus writing the Gospel of John, E. Lambardos, 1602
-  // (docs/licensing/COVER_ICONS.md, his cover in the reading room).
-  study: { slot: "onboarding-study", src: "/covers/authors/prochorus-the-deacon.v1.jpg", focus: "50% 50%" },
+  // Stand-in: St Prochorus writing the Gospel of John, E. Lambardos, 1602,
+  // in the black and white the Plus paywall carries (docs/licensing/
+  // COVER_ICONS.md). Not the colour cover: the apps ask the website for the
+  // reading room's covers.
+  study: { slot: "onboarding-study", src: "/premium/scribe.v1.webp", focus: "50% 50%" },
   // Stand-in: Christ Pantocrator of Sinai, 6th century, the picture Prayers
   // wears (docs/licensing/SECTION_MEDIA.md, lib/media/sections.ts).
   prayer: { slot: "onboarding-rule", src: "/sections/prayers.v2.jpg", focus: "50% 50%" },
