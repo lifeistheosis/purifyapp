@@ -177,6 +177,24 @@ const ICONS: Record<string, ReactNode> = {
       <path d="m9 18-.8 2M13 18l-.8 2M17 18l-.8 2" />
     </svg>
   ),
+  // A reading saved onto the phone: the player's own Save offline mark (1.8,
+  // components/player/SaveOffline.tsx), so the paywall shows what the button is.
+  offline: (
+    <svg {...S}>
+      <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+      <path d="M7 10l5 5 5-5" />
+      <path d="M12 15V3" />
+    </svg>
+  ),
+  // A profile card: the banner across its top, the portrait under it (1.8).
+  profile: (
+    <svg {...S}>
+      <rect x="3" y="4" width="18" height="16" rx="2.5" />
+      <path d="M3 9h18" />
+      <circle cx="8.6" cy="13.4" r="2.4" />
+      <path d="M13.2 12.4h4.3M13.2 15.4h2.8" />
+    </svg>
+  ),
   // A bookmark with a turn of the hand: a verse brought back until known.
   remember: (
     <svg {...S}>

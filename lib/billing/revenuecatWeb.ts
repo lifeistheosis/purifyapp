@@ -15,6 +15,7 @@
 // (it uses the Capacitor plugin instead); this returns unavailable there.
 
 import { isNativeClient } from "@/lib/platform/native";
+import { trialPeriod, type PlanOffer } from "@/lib/billing/offers";
 import type {
   CustomerInfo,
   Offering,
@@ -118,6 +119,27 @@ export async function getWebProPackages(
 /** Formatted price string for a package, straight from RevenueCat (live). */
 export function packagePrice(pkg: Package | null): string | null {
   return pkg?.webBillingProduct?.currentPrice?.formattedPrice ?? null;
+}
+
+/**
+ * A web package as the paywall draws it (1.8, lib/billing/offers.ts): the
+ * price RevenueCat formats, the month a yearly price comes to as RevenueCat
+ * works it out, and the free trial the offering carries. getOfferings hands
+ * over only the options this customer may have, so a trial named here is one
+ * the checkout will give.
+ */
+export function webOffer(pkg: Package | null, yearly: boolean): PlanOffer | null {
+  const price = packagePrice(pkg);
+  const product = pkg?.webBillingProduct;
+  if (!price || !product) return null;
+  const micros = product.currentPrice?.amountMicros;
+  const trial = product.freeTrialPhase?.period;
+  return {
+    price,
+    amount: typeof micros === "number" && Number.isFinite(micros) ? micros / 1_000_000 : null,
+    perMonth: yearly ? (product.defaultSubscriptionOption?.base?.pricePerMonth?.formattedPrice ?? null) : null,
+    trial: trial ? trialPeriod(trial.unit, trial.number) : null,
+  };
 }
 
 function proActive(info: CustomerInfo): boolean {

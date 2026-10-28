@@ -1,6 +1,6 @@
 "use client";
 
-// Native-only Purify premium paywall — a fully custom UI driving RevenueCat
+// Native-only Purify premium paywall: a fully custom UI driving RevenueCat
 // (Play Billing and StoreKit). Returns null on the web (the website keeps its
 // own pricing page). Inside the apps the pricing route renders this
 // full-screen.
@@ -12,22 +12,26 @@
 // user signs in first.
 //
 // RevenueCat is the billing engine only: prices come live from the store
-// (package.product.priceString), so changing a price in the store consoles
-// flows through with no code change, and so does a free trial: the screen
-// says "7 days free" only when the store says this reader may have it
-// (lib/billing/revenuecat.ts, freeTrial).
+// (package.product.priceString, and pricePerMonthString for what a year comes
+// to a month), so changing a price in the store consoles flows through with
+// no code change, and so does a free trial: the screen says "7 days free"
+// only when the store says this reader may have it (lib/billing/revenuecat.ts,
+// freeTrialPeriod).
 //
-// DRAWN (1.7.2, the owner's pick of three directions: "B is the best"): the
-// young scribe of St Prochorus's icon, writing the first words of St John's
-// Gospel, in black and white, lit from above and falling into the page, the
-// tier's name on him; the features as small posters in a row; the two plans
-// side by side; one white action with a soft light under it. No gold, no
-// star: the screen is dark on every palette (a dark island), as the paywall
-// always was. The picture is carried in the apps (public/premium), so it is
-// there the moment the screen is; it is the reading room's cover of St
-// Prochorus made black and white (docs/licensing/COVER_ICONS.md).
+// DRAWN (1.8) as the owner locked the Plus paywall on 2026-10-27, round 10
+// refined as R2 (boards/purify-master/variants/10b-paywall.png): "Purify is
+// kept by those it helps" over the young scribe of St Prochorus's icon, then
+// the features in depth as you scroll, each with a small working picture,
+// then the plans and the button held at the bottom the whole time, the billed
+// price the big number and what it comes to a month the small one
+// (components/billing/KeptPaywall.tsx, shared with the upgrade sheet). Before
+// it (1.7.2, his pick B) the features stood as posters in a row and the two
+// plans side by side. No gold, no star: the screen is dark on every palette
+// (a dark island), as the paywall always was. The picture is carried in the
+// apps (public/premium); it is the reading room's cover of St Prochorus made
+// black and white (docs/licensing/COVER_ICONS.md).
 
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useState, type CSSProperties } from "react";
 import Link from "next/link";
 import {
   initBilling,
@@ -39,34 +43,39 @@ import {
   restore,
   billingAvailable,
   manageSubscriptionUrl,
-  freeTrial,
+  freeTrialPeriod,
+  nativeOffer,
   type PlusPackages,
 } from "@/lib/billing/revenuecat";
 import { presentCustomerCenter } from "@/lib/billing/revenuecatUi";
 import { createClient } from "@/lib/supabase/client";
 import { nativePlatform, useIsNative } from "@/lib/platform/native";
-import { getPremiumPlan } from "@/lib/premium/plans";
+import { getPremiumPlan, type PlanFeature } from "@/lib/premium/plans";
+import { NO_OFFERS, firstPlan, type Plan, type PlusOffers } from "@/lib/billing/offers";
 import { useTranslate } from "@/components/i18n/MessagesProvider";
-import { FeatureShowcase } from "@/components/premium/FeatureShowcase";
+import { DockNote, FeatureRow, KeptHero, PlansDock, PlusFeatureRows } from "@/components/billing/KeptPaywall";
 import { PREMIUM_CTA, PREMIUM_GHOST } from "@/components/premium/PremiumUI";
 import { cn } from "@/lib/cn";
 
 type Phase = "loading" | "signed-out" | "unavailable" | "ready" | "subscribed";
 export type Tier = "plus" | "pro";
-export type Plan = "monthly" | "yearly";
 
-/** Each package's free trial, as the store answered it for this reader. */
-export type Trials = Record<`${Tier}-${Plan}`, string | null>;
-const NO_TRIALS: Trials = { "plus-monthly": null, "plus-yearly": null, "pro-monthly": null, "pro-yearly": null };
+/** A message in the dock, said in the reader's language where it has one. */
+type Note = "failed" | "restoreNone" | "restoreError";
 
-/** Yearly savings vs paying monthly for a year, rounded. Null when it can't
- * be computed or isn't a saving. */
-function savingsPct(pkgs: PlusPackages): number | null {
-  const m = pkgs.monthly?.product.price;
-  const y = pkgs.yearly?.product.price;
-  if (!m || !y || m <= 0) return null;
-  const pct = Math.round((1 - y / (m * 12)) * 100);
-  return pct > 0 ? pct : null;
+const NO_PACKAGES: PlusPackages = { monthly: null, yearly: null };
+
+/** A tier's two plans as the store offers them to this reader: its prices, the month a year comes to, its trials. */
+async function offersFor(pkgs: PlusPackages): Promise<PlusOffers> {
+  // The store's own word on each trial, for this reader. Never throws.
+  const [yearlyTrial, monthlyTrial] = await Promise.all([
+    freeTrialPeriod(pkgs.yearly),
+    freeTrialPeriod(pkgs.monthly),
+  ]);
+  return {
+    yearly: nativeOffer(pkgs.yearly, yearlyTrial, true),
+    monthly: nativeOffer(pkgs.monthly, monthlyTrial, false),
+  };
 }
 
 /** The store the charge comes from, as a sentence names it. */
@@ -74,31 +83,35 @@ function storeName(): string {
   return nativePlatform() === "ios" ? "the App Store" : "Google Play";
 }
 
+/**
+ * Where the held plans stop: on the tab bar, and on the player when one is
+ * up, never under either (app/globals.css, --tab-bar-h and --now-playing-h).
+ */
+const DOCK_BOTTOM: CSSProperties = {
+  bottom: "calc(var(--inset-bottom, 0px) + var(--tab-bar-h, 0px) + var(--now-playing-h, 0px))",
+};
+
 export function PlusPaywall() {
   const isNative = useIsNative();
+  const { t } = useTranslate();
 
   const [phase, setPhase] = useState<Phase>("loading");
   const [tier, setTier] = useState<Tier>("plus");
   // What the account already has. `pro` short-circuits to the subscribed
   // screen; `plus` keeps the paywall up so Pro stays one tap away.
   const [active, setActive] = useState<"none" | "plus">("none");
-  const [plusPkgs, setPlusPkgs] = useState<PlusPackages>({
-    monthly: null,
-    yearly: null,
-  });
-  const [proPkgs, setProPkgs] = useState<PlusPackages>({
-    monthly: null,
-    yearly: null,
-  });
-  const [trials, setTrials] = useState<Trials>(NO_TRIALS);
+  const [plusPkgs, setPlusPkgs] = useState<PlusPackages>(NO_PACKAGES);
+  const [proPkgs, setProPkgs] = useState<PlusPackages>(NO_PACKAGES);
+  const [plusOffers, setPlusOffers] = useState<PlusOffers>(NO_OFFERS);
+  const [proOffers, setProOffers] = useState<PlusOffers>(NO_OFFERS);
   const [selected, setSelected] = useState<Plan>("yearly");
-  const [busy, setBusy] = useState<string | null>(null);
-  const [note, setNote] = useState<string | null>(null);
+  const [busy, setBusy] = useState<"buy" | "restore" | null>(null);
+  const [note, setNote] = useState<Note | null>(null);
 
   const load = useCallback(async () => {
     // Any failure in the RevenueCat/plugin chain must degrade to the calm
     // "unavailable" state, never throw uncaught (an unhandled error here
-    // white-screened the WebView — the "Purify Plus crashes" report).
+    // white-screened the WebView: the "Purify Plus crashes" report).
     try {
       if (!billingAvailable()) {
         setPhase("unavailable");
@@ -129,14 +142,9 @@ export function PlusPaywall() {
       ]);
       setPlusPkgs(plus);
       setProPkgs(pro);
-      // The store's own word on each trial, for this reader. Never throws.
-      const [plusMonthly, plusYearly, proMonthly, proYearly] = await Promise.all([
-        freeTrial(plus.monthly),
-        freeTrial(plus.yearly),
-        freeTrial(pro.monthly),
-        freeTrial(pro.yearly),
-      ]);
-      setTrials({ "plus-monthly": plusMonthly, "plus-yearly": plusYearly, "pro-monthly": proMonthly, "pro-yearly": proYearly });
+      const [plusO, proO] = await Promise.all([offersFor(plus), offersFor(pro)]);
+      setPlusOffers(plusO);
+      setProOffers(proO);
       setSelected(plus.yearly || pro.yearly ? "yearly" : "monthly");
       // A Plus subscriber lands on the Pro tab: Plus is already theirs.
       if (hasPlus) setTier("pro");
@@ -156,6 +164,18 @@ export function PlusPaywall() {
   }, [isNative, load]);
 
   const pkgs = tier === "pro" ? proPkgs : plusPkgs;
+  const offers = tier === "pro" ? proOffers : plusOffers;
+
+  const onTier = useCallback(
+    (next: Tier) => {
+      setTier(next);
+      setNote(null);
+      // Stay on the same plan across the switch when the other tier has it.
+      const theirs = next === "pro" ? proOffers : plusOffers;
+      if (!theirs[selected]) setSelected(firstPlan(theirs) ?? selected);
+    },
+    [proOffers, plusOffers, selected],
+  );
 
   const onSubscribe = useCallback(async () => {
     const pkg = selected === "yearly" ? pkgs.yearly : pkgs.monthly;
@@ -168,11 +188,11 @@ export function PlusPaywall() {
         if (tier === "pro") setPhase("subscribed");
         else setActive("plus");
       } else if (outcome === "error") {
-        setNote("That didn't go through. Nothing was charged.");
+        setNote("failed");
       }
     } catch (e) {
       console.error("[PlusPaywall] purchase failed:", e);
-      setNote("That didn't go through. Nothing was charged.");
+      setNote("failed");
     } finally {
       setBusy(null);
     }
@@ -185,10 +205,10 @@ export function PlusPaywall() {
     try {
       const ok = await restore();
       if (ok) await load(); // re-derive the tier the restore lit up
-      else setNote("No previous Purify subscription was found.");
+      else setNote("restoreNone");
     } catch (e) {
       console.error("[PlusPaywall] restore failed:", e);
-      setNote("Couldn't check for a previous subscription. Please try again.");
+      setNote("restoreError");
     } finally {
       setBusy(null);
     }
@@ -214,10 +234,12 @@ export function PlusPaywall() {
   if (phase === "signed-out") {
     return (
       <Screen>
-        <Hero tier="plus" />
-        {/* The same posters the ready phase shows, so the screen sells the
+        <KeptHero place="screen" eyebrow={t("plus.sheet.title")} heading="h1" />
+        {/* The same features the ready phase shows, so the screen sells the
             thing before asking for a sign-in. */}
-        <Included tier="plus" />
+        <section className="mx-auto mt-5 w-full max-w-[520px] px-5">
+          <PlusFeatureRows />
+        </section>
         <Foot>
           <p className="mx-auto max-w-[320px] text-center font-sans text-ui leading-relaxed text-paper/70">
             Purify Plus and Pro are tied to your account, so they follow you
@@ -237,7 +259,7 @@ export function PlusPaywall() {
   if (phase === "unavailable") {
     return (
       <Screen>
-        <Hero tier="plus" />
+        <KeptHero place="screen" eyebrow={t("plus.sheet.title")} heading="h1" />
         <Foot>
           <p className="mx-auto max-w-[320px] text-center font-sans text-ui leading-relaxed text-paper/65">
             Purify Plus isn’t available to purchase right now. The whole core of
@@ -252,7 +274,7 @@ export function PlusPaywall() {
   if (phase === "subscribed") {
     return (
       <Screen>
-        <Hero tier="pro" />
+        <KeptHero place="screen" eyebrow={t("profile.badge.pro")} heading="h1" />
         <Foot>
           <p className="text-center font-heading text-title font-semibold text-paper">You have Purify Pro.</p>
           <p className="mx-auto mt-3 max-w-[300px] text-center font-sans text-ui leading-relaxed text-paper/65">
@@ -271,9 +293,8 @@ export function PlusPaywall() {
   return (
     <PaywallReadyView
       tier={tier}
-      onTier={setTier}
-      pkgs={pkgs}
-      trials={trials}
+      onTier={onTier}
+      offers={offers}
       selected={selected}
       onSelect={setSelected}
       plusOwned={active === "plus"}
@@ -288,14 +309,13 @@ export function PlusPaywall() {
 
 /**
  * The ready screen, drawn from what the store answered. Apart from the
- * loading so it can be drawn from known packages too (a design check), as
+ * loading so it can be drawn from known offers too (a design check), as
  * components/premium/PlanScreen.tsx's PlanView is.
  */
 export function PaywallReadyView({
   tier,
   onTier,
-  pkgs,
-  trials,
+  offers,
   selected,
   onSelect,
   plusOwned,
@@ -307,37 +327,50 @@ export function PaywallReadyView({
 }: {
   tier: Tier;
   onTier: (t: Tier) => void;
-  /** The tier's packages. */
-  pkgs: PlusPackages;
-  trials: Trials;
+  /** The tier's plans, as the store offers them to this reader. */
+  offers: PlusOffers;
   selected: Plan;
   onSelect: (p: Plan) => void;
   plusOwned: boolean;
-  busy: string | null;
-  note: string | null;
+  busy: "buy" | "restore" | null;
+  note: Note | null;
   onSubscribe: () => void;
   onRestore: () => void;
   onManage: () => void;
 }) {
-  const saved = savingsPct(pkgs);
-  const tierName = tier === "pro" ? "Purify Pro" : "Purify Plus";
-  const tierAvailable = Boolean(pkgs.monthly || pkgs.yearly);
+  const { t, locale } = useTranslate();
+  const plan = getPremiumPlan(locale);
+  const tierName = tier === "pro" ? plan.proTitle : plan.plusTitle;
+  const tierAvailable = Boolean(offers.monthly || offers.yearly);
   const sellingThisTier = tierAvailable && !(tier === "plus" && plusOwned);
-  const chosen = selected === "yearly" ? pkgs.yearly : pkgs.monthly;
-  const yearlyTrial = trials[`${tier}-yearly`];
-  const monthlyTrial = trials[`${tier}-monthly`];
-  const trial = selected === "yearly" ? yearlyTrial : monthlyTrial;
-  const per = selected === "yearly" ? "a year" : "a month";
+  const message =
+    note === "failed"
+      ? t("plus.failed")
+      : note === "restoreNone"
+        ? t("plus.restoreNone")
+        : note === "restoreError"
+          ? "Couldn’t check for a previous subscription. Please try again."
+          : null;
 
   return (
     <Screen>
-      <Hero tier={tier} />
+      <KeptHero place="screen" eyebrow={tierName} heading="h1" />
 
       {/* Plus / Pro */}
       <div className="paywall-in mx-auto mt-5 w-full max-w-[520px] px-5" style={{ animationDelay: "260ms" }}>
         <TierSwitch tier={tier} onSwitch={onTier} />
       </div>
-      <Included tier={tier} />
+
+      {/* The features working, in depth. Plus in the app's own words, in
+          every language; Pro from the plan's list, with the terms of the
+          EIKON Box under it, as before. */}
+      <section className="mx-auto mt-4 w-full max-w-[520px] px-5">
+        {tier === "pro" ? (
+          <ProRows items={plan.proItems} soonLabel={plan.soonLabel} terms={plan.proNote} />
+        ) : (
+          <PlusFeatureRows />
+        )}
+      </section>
 
       {tier === "plus" && plusOwned ? (
         /* Already on Plus: nothing to sell on this tab, manage instead. */
@@ -350,6 +383,7 @@ export function PaywallReadyView({
           <button type="button" onClick={onManage} className={cn(PREMIUM_GHOST, "mt-5 w-full")}>
             Manage subscription
           </button>
+          {message ? <DockNote>{message}</DockNote> : null}
           <FooterRow onRestore={onRestore} busy={busy} />
         </Foot>
       ) : !sellingThisTier ? (
@@ -359,61 +393,34 @@ export function PaywallReadyView({
             {tierName} isn’t available to purchase right now. Please check back
             soon.
           </p>
+          {message ? <DockNote>{message}</DockNote> : null}
           <FooterRow onRestore={onRestore} busy={busy} />
         </Foot>
       ) : (
-        <Foot>
-          {/* The two plans, side by side: the year first, with its trial when
-              the store gives one, else what it saves. */}
-          <div className="grid grid-cols-2 gap-2.5">
-            <PlanTile
-              label="Yearly"
-              price={pkgs.yearly?.product.priceString}
-              note={yearlyTrial && saved != null ? `a year, saves ${saved}%` : "a year"}
-              chip={yearlyTrial ? `${yearlyTrial} free` : saved != null ? `Save ${saved}%` : undefined}
-              selected={selected === "yearly"}
-              disabled={!pkgs.yearly}
-              onSelect={() => onSelect("yearly")}
-            />
-            <PlanTile
-              label="Monthly"
-              price={pkgs.monthly?.product.priceString}
-              note="a month"
-              chip={monthlyTrial ? `${monthlyTrial} free` : undefined}
-              selected={selected === "monthly"}
-              disabled={!pkgs.monthly}
-              onSelect={() => onSelect("monthly")}
-            />
-          </div>
-
-          {tier === "pro" && plusOwned ? (
-            <p className="mt-4 text-center font-sans text-caption leading-relaxed text-paper/55">
-              You have Plus today. After Pro starts, cancel Plus in {storeName()} so you aren’t billed for both.
-            </p>
-          ) : null}
-          {note ? (
-            <p role="alert" className="mt-4 text-center font-sans text-caption text-crimson-soft">
-              {note}
-            </p>
-          ) : null}
-
-          <button
-            type="button"
-            onClick={onSubscribe}
-            disabled={!chosen || busy !== null}
-            className={cn(PREMIUM_CTA, "mt-5 min-h-14 w-full text-lede")}
-          >
-            {busy === "buy" ? "Starting…" : trial ? `Start ${trial} free` : `Start ${tierName}`}
-          </button>
-          {/* What the button commits to, in the store's own price. */}
-          {chosen?.product.priceString ? (
-            <p className="mt-3 text-center font-sans text-caption leading-relaxed text-paper/50">
-              {trial ? `Then ${chosen.product.priceString} ${per}.` : `${chosen.product.priceString} ${per}.`} Cancel anytime in {storeName()}.
-            </p>
-          ) : null}
-
-          <FooterRow onRestore={onRestore} busy={busy} />
-        </Foot>
+        /* The plans, the action and the small print, held at the bottom the
+           whole time the features scroll. */
+        <PlansDock
+          className="paywall-in sticky z-10 mt-6 pb-2"
+          style={{ ...DOCK_BOTTOM, animationDelay: "420ms" }}
+          offers={offers}
+          plan={selected}
+          onPlan={onSelect}
+          tier={tier}
+          place="store"
+          busy={busy}
+          note={
+            <>
+              {tier === "pro" && plusOwned ? (
+                <p className="mt-3 text-center font-sans text-caption leading-relaxed text-paper/55">
+                  You have Plus today. After Pro starts, cancel Plus in {storeName()} so you aren’t billed for both.
+                </p>
+              ) : null}
+              {message ? <DockNote>{message}</DockNote> : null}
+            </>
+          }
+          onBuy={onSubscribe}
+          onRestore={onRestore}
+        />
       )}
     </Screen>
   );
@@ -438,13 +445,15 @@ function Screen({ children }: { children: React.ReactNode }) {
   // `full` resolves against the padded content box instead, which is what
   // "fill the screen" actually means here. Where the parent has no definite
   // height it degrades to auto, which is harmless: the content is what sizes
-  // the page, and nothing is pushed off it.
+  // the page, and nothing is pushed off it. Since 1.8 the action is held at
+  // the bottom besides (the plans dock is sticky), so it is in view however
+  // far the features go.
   //
   // A dark island: the screen is black on every palette, Parchment's too.
   return <div className="dark-island flex min-h-full flex-col bg-night text-paper">{children}</div>;
 }
 
-/** The screen's last part: the plans, the action, the small print. */
+/** The screen's last part where nothing is sold: a word, the way to manage, the small print. */
 function Foot({ children }: { children: React.ReactNode }) {
   return (
     <div
@@ -456,58 +465,7 @@ function Foot({ children }: { children: React.ReactNode }) {
   );
 }
 
-/**
- * The scribe, black and white, lit from above and falling into the page,
- * with the tier's name on him. The picture is held to a phone's width and
- * its sides fall away on a tablet, so it is never drawn larger than it is.
- */
-function Hero({ tier }: { tier: Tier }) {
-  const lede = tier === "pro" ? "Everything in Plus, and the members’ layer." : "Study the Scriptures more closely.";
-  return (
-    <div className="relative mx-auto h-[min(46svh,400px)] w-full max-w-[600px] overflow-hidden">
-      {/* eslint-disable-next-line @next/next/no-img-element -- carried in the apps, served as it is. */}
-      <img
-        src="/premium/scribe.v1.webp"
-        alt=""
-        width={600}
-        height={750}
-        decoding="async"
-        fetchPriority="high"
-        className="paywall-glow-in absolute inset-0 h-full w-full object-cover"
-        style={{ objectPosition: "50% 22%" }}
-      />
-      <div
-        aria-hidden
-        className="absolute inset-0"
-        style={{
-          background:
-            "radial-gradient(75% 55% at 50% 0%, rgba(255,255,255,0.16), rgba(255,255,255,0) 72%), linear-gradient(to bottom, rgb(16 16 19 / 0.45) 0%, rgb(16 16 19 / 0) 26%, rgb(16 16 19 / 0.35) 58%, var(--color-night) 100%)",
-        }}
-      />
-      <div
-        aria-hidden
-        className="absolute inset-0 hidden sm:block"
-        style={{ background: "linear-gradient(to right, var(--color-night), transparent 16%, transparent 84%, var(--color-night))" }}
-      />
-      <div className="absolute inset-x-0 bottom-1.5 flex flex-col items-center px-6 text-center">
-        <h1
-          className="paywall-in text-display-sm font-semibold leading-[1.1] tracking-[-0.01em] text-paper [text-shadow:0_0_28px_rgba(255,255,255,0.28),0_2px_12px_rgba(0,0,0,0.6)]"
-          style={{ animationDelay: "120ms" }}
-        >
-          Purify {tier === "pro" ? "Pro" : "Plus"}
-        </h1>
-        <p
-          className="paywall-in mt-2 font-sans text-ui leading-relaxed text-paper/75 [text-shadow:0_1px_10px_rgba(0,0,0,0.7)]"
-          style={{ animationDelay: "200ms" }}
-        >
-          {lede}
-        </p>
-      </div>
-    </div>
-  );
-}
-
-/** Plus and Pro: the chosen one white, as the action is. */
+/** Plus and Pro: the chosen one white, softly lit, as the chosen plan is. */
 function TierSwitch({
   tier,
   onSwitch,
@@ -515,22 +473,23 @@ function TierSwitch({
   tier: Tier;
   onSwitch: (t: Tier) => void;
 }) {
+  const { t } = useTranslate();
   return (
     <div className="flex gap-1 rounded-pill bg-paper/[0.06] p-1">
-      {(["plus", "pro"] as const).map((t) => {
-        const on = tier === t;
+      {(["plus", "pro"] as const).map((x) => {
+        const on = tier === x;
         return (
           <button
-            key={t}
+            key={x}
             type="button"
-            onClick={() => onSwitch(t)}
+            onClick={() => onSwitch(x)}
             aria-pressed={on}
             className={cn(
-              "min-h-11 flex-1 rounded-pill px-4 text-center font-sans text-ui font-semibold transition-colors",
-              on ? "bg-paper text-night" : "text-paper/60 hover:text-paper",
+              "paywall-choice min-h-11 flex-1 rounded-pill px-4 text-center font-sans text-ui font-semibold",
+              on ? "bg-paper text-night shadow-[0_0_18px_-4px_rgba(255,255,255,0.55)]" : "text-paper/60 hover:text-paper",
             )}
           >
-            {t === "pro" ? "Pro" : "Plus"}
+            {x === "pro" ? t("nav.proPill") : t("nav.plusPill")}
           </button>
         );
       })}
@@ -539,99 +498,52 @@ function TierSwitch({
 }
 
 /**
- * What the tier opens, as small posters in a row, each of which opens to say
- * what it does (components/premium/FeatureShowcase.tsx). The rows come straight
- * from lib/premium/plans.ts (the single copy source shared with /pricing and
- * /premium), through getPremiumPlan(locale), never PREMIUM_PLAN_EN: the
- * direct import bypassed both the locale switch and the withdrawn-feature
- * filter, which is how this screen advertised a feature that answered 404 in
- * production on 2026-08-26 while /pricing beside it had already stopped.
- * Perks marked `soon` (Studio Audio) carry the coming-soon pill; every
- * unmarked poster is a REAL, live entitlement.
+ * What Pro adds, in depth like the Plus features, from lib/premium/plans.ts
+ * through getPremiumPlan(locale), never PREMIUM_PLAN_EN (the direct import
+ * bypassed both the locale switch and the withdrawn-feature filter, which is
+ * how this screen advertised a feature that answered 404 in production on
+ * 2026-08-26). Perks marked `soon` (Studio Audio) carry the coming-soon pill;
+ * every unmarked row is a REAL, live entitlement. The EIKON Box's terms stand
+ * under them, as they always have.
  */
-function Included({ tier }: { tier: Tier }) {
-  const { locale } = useTranslate();
-  const plan = getPremiumPlan(locale);
-  const items = tier === "pro" ? plan.proItems : plan.plusItems;
-  const label = tier === "pro" ? "What Pro adds" : "What Plus opens";
+function ProRows({ items, soonLabel, terms }: { items: PlanFeature[]; soonLabel: string; terms: string }) {
   return (
-    <section className="paywall-in mx-auto mt-6 w-full max-w-[600px] px-5" style={{ animationDelay: "340ms" }}>
-      <p className="font-sans text-caption font-semibold text-paper/55">{label}</p>
-      <FeatureShowcase items={items} soonLabel={plan.soonLabel} label={label} className="mt-2.5" />
-      <p className="mt-3 font-sans text-caption leading-relaxed text-paper/45">
-        {tier === "pro" ? plan.proNote : "Core Orthodox resources remain free. Plus is what pays the servers, and it keeps the core free for everyone."}
-      </p>
-    </section>
+    <>
+      <ul className="flex flex-col gap-2.5">
+        {items.map((item, i) => (
+          <FeatureRow key={item.id} index={i} id={item.id} name={item.title} body={item.sub} soon={item.soon ? soonLabel : undefined} />
+        ))}
+      </ul>
+      <p className="mt-3 font-sans text-caption leading-relaxed text-paper/45">{terms}</p>
+    </>
   );
 }
 
-/** Restore | Terms | Privacy, shared by every selling state. */
+/** Restore purchases | Terms | Privacy, where nothing is sold on the tab. */
 function FooterRow({
   onRestore,
   busy,
 }: {
   onRestore: () => void;
-  busy: string | null;
+  busy: "buy" | "restore" | null;
 }) {
+  const { t } = useTranslate();
   return (
-    <div className="mt-5 flex items-center justify-center gap-6 font-sans text-caption text-paper/55">
+    <div className="mt-5 flex flex-wrap items-center justify-center gap-x-6 font-sans text-caption text-paper/55">
       <button
         type="button"
         onClick={onRestore}
         disabled={busy !== null}
         className="min-h-11 hover:text-paper disabled:opacity-50"
       >
-        {busy === "restore" ? "Restoring…" : "Restore"}
+        {busy === "restore" ? t("plus.restoring") : t("plus.restore")}
       </button>
       <Link href="/terms" className="inline-flex min-h-11 items-center hover:text-paper">
-        Terms
+        {t("shop.terms")}
       </Link>
       <Link href="/privacy" className="inline-flex min-h-11 items-center hover:text-paper">
-        Privacy
+        {t("footer.privacy")}
       </Link>
     </div>
-  );
-}
-
-/** One plan: its name, its price as the store gives it, and what that buys. */
-function PlanTile({
-  label,
-  price,
-  note,
-  chip,
-  selected,
-  disabled,
-  onSelect,
-}: {
-  label: string;
-  price?: string;
-  note: string;
-  chip?: string;
-  selected: boolean;
-  disabled?: boolean;
-  onSelect: () => void;
-}) {
-  return (
-    <button
-      type="button"
-      onClick={onSelect}
-      disabled={disabled}
-      aria-pressed={selected}
-      className={cn(
-        "relative flex min-h-[96px] flex-col gap-0.5 rounded-[16px] p-3.5 text-start transition-colors disabled:opacity-40",
-        selected ? "border-[1.5px] border-paper bg-paper/[0.06]" : "border border-paper/15 hover:border-paper/30",
-      )}
-    >
-      {chip ? (
-        <span className="absolute -top-2.5 end-3 rounded-pill bg-paper px-2.5 py-0.5 font-sans text-[11.5px] font-semibold text-night">
-          {chip}
-        </span>
-      ) : null}
-      <span className="font-sans text-detail font-semibold text-paper/80">{label}</span>
-      <span className="font-sans text-[22px] font-bold leading-tight tracking-[-0.01em] text-paper tabular-nums">
-        {price ?? "Not available"}
-      </span>
-      <span className="font-sans text-caption text-paper/55">{note}</span>
-    </button>
   );
 }
