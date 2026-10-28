@@ -1365,8 +1365,12 @@ html[data-reading-mode="parchment"] [data-hl-color]:not(.dark-island *) {
 
     Colour is never the sole signal for a fast: every one of these is paired
     with a bespoke icon AND a text label at the render site. Keep it that
-    way. */
- --tone-gold: 183 176 163;
+    way.
+
+    1.8: the feast tone is a white light, not a warm beige (the owner,
+    2026-10-28, shown the two side by side: "the feast days on the
+    calendar, that's good"). The name stays; no yellow is left in it. */
+ --tone-gold: 236 236 239;
  --tone-crimson: 193 39 45;
  --tone-green: 16 185 129;
  --tone-muted: 183 176 163;
@@ -1926,8 +1930,9 @@ html[data-reading-mode="parchment"] {
  --panel-sheen: 0 0 0;
 
  /* Liturgical and fasting registers, darkened to hold contrast on paper.
-    Same hues, same order, same meanings; only the luminance moves. */
- --tone-gold: 122 96 42;
+    Same hues, same order, same meanings; only the luminance moves. The
+    feast tone is ink on paper, as it is white light on night (1.8). */
+ --tone-gold: 69 69 75;
  --tone-crimson: 150 40 32;
  --tone-green: 32 110 82;
  --tone-muted: 122 112 92;
