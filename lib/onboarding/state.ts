@@ -7,6 +7,7 @@
 // the onboarding components, which use `useEffect`.
 
 import {
+  cleanIntents,
   isBackground,
   isFastingRule,
   isIntent,
@@ -45,6 +46,7 @@ const NUDGE_DISMISSED_KEY = "purify:firststeps.dismissed";
 const NUDGE_ELIGIBLE_KEY = "purify:firststeps.eligible";
 const LEVEL_KEY = "purify:level"; // Level
 const INTENT_KEY = "purify:intent"; // Intent
+const INTENTS_KEY = "purify:intents"; // JSON array of Intent, in the order tapped (1.8)
 const FASTING_KEY = "purify:fasting-rule"; // FastingRule; absent = "strict"
 const BACKGROUND_KEY = "purify:background"; // Background (1.8); absent = not asked or not answered
 // Set on the way into the sign-in step and cleared when the flow ends, so a
@@ -249,6 +251,32 @@ export function writeIntent(intent: Intent | null): void {
 }
 
 /**
+ * Every answer to "What are you looking for?", in the order the reader tapped
+ * them (1.8). The first is the intent (readIntent), which stays the one answer
+ * the rest of Purify reads and counts; the list keeps the others behind it, in
+ * their order. The intent always leads: one changed since in Settings comes
+ * first here too, and no intent means no picks.
+ */
+export function readIntents(): Intent[] {
+  const first = readIntent();
+  if (!first) return [];
+  let rest: Intent[] = [];
+  try {
+    rest = cleanIntents(JSON.parse(readString(INTENTS_KEY) ?? "[]"));
+  } catch {
+    /* junk under the key: the intent alone */
+  }
+  return [first, ...rest.filter((i) => i !== first)];
+}
+
+/** The picks in the order tapped. The first becomes the intent; none clears both. */
+export function writeIntents(picks: readonly Intent[]): void {
+  const clean = cleanIntents(picks);
+  writeString(INTENTS_KEY, clean.length ? JSON.stringify(clean) : null);
+  writeIntent(clean[0] ?? null);
+}
+
+/**
  * Where the reader comes from (1.8). Kept on the device and in the reader's
  * own account, for making Purify theirs; counted only as a total
  * (lib/onboarding/count.ts). "prefer-not" is an answer: they were asked.
@@ -282,7 +310,9 @@ export function fillSpaceFromAccount(remote: unknown): boolean {
   const r = remote as Record<string, unknown>;
   if (!isLevel(r.level)) return false;
   if (readLevel() == null) writeLevel(r.level);
-  if (readIntent() == null && isIntent(r.intent)) writeIntent(r.intent);
+  // The picks behind the intent come with it (1.8); a copy from before then
+  // holds the intent alone.
+  if (readIntent() == null && isIntent(r.intent)) writeIntents([r.intent, ...cleanIntents(r.intents)]);
   if (readString(FASTING_KEY) == null && isFastingRule(r.fasting)) writeFastingRule(r.fasting);
   if (readBackground() == null && isBackground(r.background)) writeBackground(r.background);
   return true;

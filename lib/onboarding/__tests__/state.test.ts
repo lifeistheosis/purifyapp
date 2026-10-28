@@ -16,6 +16,7 @@ import {
   readBackground,
   readFastingRule,
   readIntent,
+  readIntents,
   readLevel,
   readResumeStage,
   refreshDayOne,
@@ -26,6 +27,7 @@ import {
   writeBackground,
   writeFastingRule,
   writeIntent,
+  writeIntents,
   writeLevel,
 } from "../state";
 
@@ -93,6 +95,59 @@ describe("onboarding state", () => {
       intent: "liturgy",
       fasting: "modified",
       background: null,
+    });
+  });
+
+  describe("the picks of What are you looking for?", () => {
+    it("keeps every pick in the order tapped, the first as the intent", () => {
+      writeIntents(["study", "quiet", "prayer"]);
+      expect(readIntents()).toEqual(["study", "quiet", "prayer"]);
+      expect(readIntent()).toBe("study");
+      expect(parseSpaceSnapshot(spaceSnapshot()).intent).toBe("study");
+      expect(events).toContain(ONBOARDING_EVENT);
+    });
+
+    it("clears the intent with the last pick, as an unanswered question", () => {
+      writeIntents(["study"]);
+      writeIntents([]);
+      expect(readIntents()).toEqual([]);
+      expect(readIntent()).toBeNull();
+      expect(store.getItem("purify:intents")).toBeNull();
+    });
+
+    it("puts an intent changed since, in Settings, first", () => {
+      writeIntents(["study", "quiet", "prayer"]);
+      writeIntent("prayer");
+      expect(readIntents()).toEqual(["prayer", "study", "quiet"]);
+      writeIntent("liturgy");
+      expect(readIntents()).toEqual(["liturgy", "study", "quiet", "prayer"]);
+    });
+
+    it("reads a reader from before the picks as their one intent", () => {
+      writeIntent("quiet");
+      expect(readIntents()).toEqual(["quiet"]);
+    });
+
+    it("never trusts junk under the key", () => {
+      writeIntent("liturgy");
+      store.setItem("purify:intents", "not json");
+      expect(readIntents()).toEqual(["liturgy"]);
+      store.setItem("purify:intents", JSON.stringify(["abbot", "study", "study", 7]));
+      expect(readIntents()).toEqual(["liturgy", "study"]);
+      writeIntents(["prayer", "prayer", "quiet"]);
+      expect(readIntents()).toEqual(["prayer", "quiet"]);
+    });
+
+    it("takes the account's picks with its intent, and never over this device's", () => {
+      fillSpaceFromAccount({ level: "learning", intent: "liturgy", intents: ["liturgy", "study", "abbot"] });
+      expect(readIntents()).toEqual(["liturgy", "study"]);
+      fillSpaceFromAccount({ level: "learning", intent: "prayer", intents: ["prayer"] });
+      expect(readIntents()).toEqual(["liturgy", "study"]);
+    });
+
+    it("takes an account copy from before the picks as its intent alone", () => {
+      fillSpaceFromAccount({ level: "practicing", intent: "study" });
+      expect(readIntents()).toEqual(["study"]);
     });
   });
 

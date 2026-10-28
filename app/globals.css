@@ -2659,6 +2659,48 @@ html[data-reading-mode="parchment"] .lic-notes .lic-note:target {
 }
 .ob-pop { animation: ob-pop 320ms var(--ease-pop) backwards; }
 
+/* "What are you looking for?" (1.8, the owner's pick B of round 14,
+   components/onboarding/LookingFor.tsx): picture cards, each pick numbered
+   in the order it was tapped. A picked card is lit, a ring of the page's ink
+   inside its edge and a soft white glow round it, and its number sits on a
+   disc that glows the same (the owner, 2026-10-28: the accent is a glowing
+   white, never yellow). A picture not picked rests a shade dimmer and greyer,
+   so the picks stand forward. The ring is drawn over the picture, since an
+   inset shadow on the card itself would lie under it. On Parchment, where
+   white cannot glow, the ring and the disc are the ink and nothing glows. */
+.ob-pick {
+ transition: box-shadow 320ms var(--ease-house), transform 160ms ease;
+}
+.ob-pick:active { transform: scale(0.97); }
+.ob-pick::after {
+ content: "";
+ position: absolute;
+ inset: 0;
+ border-radius: inherit;
+ box-shadow: inset 0 0 0 2px transparent;
+ transition: box-shadow 320ms var(--ease-house);
+ pointer-events: none;
+}
+.ob-pick[aria-pressed="true"] {
+ box-shadow: 0 0 26px -6px rgb(255 255 255 / 0.5);
+}
+.ob-pick[aria-pressed="true"]::after {
+ box-shadow: inset 0 0 0 2px var(--color-paper);
+}
+.ob-pick img {
+ transition: filter 320ms var(--ease-house);
+}
+.ob-pick[aria-pressed="false"] img {
+ filter: grayscale(0.3) brightness(0.75);
+}
+.ob-pick-n {
+ box-shadow: 0 0 12px -1px rgb(255 255 255 / 0.55);
+}
+html[data-reading-mode="parchment"] .ob-pick[aria-pressed="true"],
+html[data-reading-mode="parchment"] .ob-pick-n {
+ box-shadow: none;
+}
+
 /* The handoff slate. */
 @keyframes ob-slate-ring {
  from { stroke-dashoffset: 100; }
@@ -2763,7 +2805,10 @@ html[data-reading-mode="parchment"] .lic-notes .lic-note:target {
 :where([data-motion="reduce"]) .ob-slate-mark.is-ready .ob-slate-glow { animation: none; }
 :where([data-motion="reduce"]) .ob-sheen::after { animation: none; display: none; }
 :where([data-motion="reduce"]) .ob-progress,
-:where([data-motion="reduce"]) .ob-choice { transition: none; }
+:where([data-motion="reduce"]) .ob-choice,
+:where([data-motion="reduce"]) .ob-pick,
+:where([data-motion="reduce"]) .ob-pick::after,
+:where([data-motion="reduce"]) .ob-pick img { transition: none; }
 
 /* ── Plus paywall entrance ────────────────────────────────────────────
    The subscription screen plays the same calm cascade as first-run
