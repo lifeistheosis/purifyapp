@@ -34,12 +34,15 @@ import { useSyncExternalStore } from "react";
 
 export type LoopMode = "off" | "inf" | 3 | 7 | 12;
 
-/** One timed line of words: a chant's lines, later the read-aloud's
- *  sentences. `time` is where the line starts, in seconds, and `end`, when
- *  the timing file knows it, where the singing of it stops. `sub` is what
- *  goes under it (1.7, Chants): a transliteration where the script is not
- *  Latin, and an English line. */
-export type CaptionSource = { time?: number; end?: number; text: string; sub?: string[] }[];
+/** One timed line of words: a chant's lines, the read-aloud's verses.
+ *  `time` is where the line starts, in seconds, and `end`, when the timing
+ *  file knows it, where the singing or reading of it stops. `text` is what is
+ *  sung or read, in its own words. `en` (1.8, Sing along) is the English of a
+ *  line sung in another language, drawn over it as the line to read, the
+ *  sung words under it. `sub` goes under the sung words: a transliteration
+ *  where the script is not Latin. `n` is a verse's number, for "Verse 4 of
+ *  51" over the words. */
+export type CaptionSource = { time?: number; end?: number; text: string; en?: string; sub?: string[]; n?: number }[];
 
 /** Whether the player stops by itself at the end of the track. A timer of
  *  so many minutes is lib/player/sleep.ts's (1.7): it times the ambience

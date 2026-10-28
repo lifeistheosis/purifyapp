@@ -12,7 +12,7 @@ import fs from "node:fs";
 import { describe, expect, it } from "vitest";
 
 import { availabilityOf, readLiveList } from "@/lib/chants/live";
-import { CHANT_MEDIA_PREFIX, LIVE_LIST_PATH, chantMediaUrl, formatDuration, isStreamed, streamedPaths, subLines, variantRef } from "@/lib/chants/media";
+import { CHANT_MEDIA_PREFIX, LIVE_LIST_PATH, chantMediaUrl, englishOver, formatDuration, isStreamed, streamedPaths, subLines, variantRef } from "@/lib/chants/media";
 import { SITE_URL } from "@/lib/site";
 
 const streamed = { id: "en", audio: { src: "/audio/chants/prayer-rope-anthem/en.mp3" } };
@@ -42,11 +42,15 @@ describe("a chant's media address", () => {
     expect(formatDuration(0)).toBe("0:00");
   });
 
-  it("puts the transliteration, then the English, under a line, as the reader chose", () => {
+  it("puts the English over the sung words and the transliteration under them, as the reader chose (1.8, Sing along)", () => {
     const line = { text: "Χριστὸς ἀνέστη", translit: "Christós anésti", en: "Christ is risen" };
-    expect(subLines(line, { translit: true, en: true })).toEqual(["Christós anésti", "Christ is risen"]);
-    expect(subLines(line, { translit: false, en: true })).toEqual(["Christ is risen"]);
-    expect(subLines(line, { translit: false, en: false })).toEqual([]);
+    expect(subLines(line, { translit: true, en: true })).toEqual(["Christós anésti"]);
+    expect(subLines(line, { translit: false, en: true })).toEqual([]);
+    expect(englishOver(line, { translit: false, en: true })).toBe("Christ is risen");
+    expect(englishOver(line, { translit: true, en: false })).toBeUndefined();
+    // A line that is English already has no English over it.
+    expect(englishOver({ text: "Christ is risen", en: "Christ is risen" }, { translit: true, en: true })).toBeUndefined();
+    expect(englishOver({ text: "Christ is risen" }, { translit: true, en: true })).toBeUndefined();
   });
 });
 

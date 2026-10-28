@@ -3,26 +3,33 @@
 import { useSyncExternalStore } from "react";
 
 /**
- * Whether Now Playing is open, and whether it shows the live captions or the
- * picture (1.7). A module store, like the audio itself, so the mini player,
- * the Anthem's page and anything later (the read-aloud) open one sheet.
+ * Whether Now Playing is open, and which of its two views it shows (1.8, the
+ * owner's pick of 2026-10-27, round 8: "Keep the two separate, as in John 1
+ * without the lyrics and John 1 with the lyrics"): the cover, the playing
+ * item's picture large with no words, or the words, lit as they are sung or
+ * read, with no picture but a small one at their head. A switch in the top
+ * bar moves between them; they are never drawn together. A module store,
+ * like the audio itself, so the mini player, a chant's page and the
+ * read-aloud open one sheet.
  *
- * The captions choice is the reader's and is kept on the device: a reader
- * who reads along keeps reading along.
+ * The view is the reader's choice and is kept on the device: a reader who
+ * reads along keeps reading along. It keeps 1.7's key, where "1" meant the
+ * live captions were on, so a reader who had them on opens on the words.
  */
-type SheetState = { open: boolean; captions: boolean };
+export type PlayerView = "cover" | "words";
+type SheetState = { open: boolean; view: PlayerView };
 
-const CAPTIONS_KEY = "purify:player.captions";
+const VIEW_KEY = "purify:player.captions";
 
-function readCaptions(): boolean {
+function readView(): PlayerView {
   try {
-    return typeof window !== "undefined" && window.localStorage.getItem(CAPTIONS_KEY) === "1";
+    return typeof window !== "undefined" && window.localStorage.getItem(VIEW_KEY) === "1" ? "words" : "cover";
   } catch {
-    return false;
+    return "cover";
   }
 }
 
-let state: SheetState = { open: false, captions: false };
+let state: SheetState = { open: false, view: "cover" };
 let primed = false;
 const subscribers = new Set<() => void>();
 
@@ -31,28 +38,36 @@ function set(patch: Partial<SheetState>) {
   for (const cb of subscribers) cb();
 }
 
-export function openNowPlaying(opts: { captions?: boolean } = {}): void {
+/** Open Now Playing on the view the reader last chose, or on `view` this once. */
+export function openNowPlaying(opts: { view?: PlayerView } = {}): void {
   if (!primed) {
     primed = true;
-    state = { ...state, captions: readCaptions() };
+    state = { ...state, view: readView() };
   }
-  set({ open: true, ...(opts.captions != null ? { captions: opts.captions } : {}) });
+  set({ open: true, ...(opts.view ? { view: opts.view } : {}) });
 }
 
 export function closeNowPlaying(): void {
   set({ open: false });
 }
 
-export function setCaptionsOn(on: boolean): void {
+/** The reader's choice of view, remembered on the device. */
+export function setPlayerView(view: PlayerView): void {
+  primed = true;
   try {
-    window.localStorage.setItem(CAPTIONS_KEY, on ? "1" : "0");
+    window.localStorage.setItem(VIEW_KEY, view === "words" ? "1" : "0");
   } catch {
     /* private mode: the choice lasts the session */
   }
-  set({ captions: on });
+  set({ view });
 }
 
-const SERVER: SheetState = { open: false, captions: false };
+/** The sheet outside React: open, and on which view. */
+export function getNowPlaying(): SheetState {
+  return state;
+}
+
+const SERVER: SheetState = { open: false, view: "cover" };
 
 export function useNowPlayingSheet(): SheetState {
   return useSyncExternalStore(

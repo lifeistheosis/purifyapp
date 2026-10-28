@@ -1,199 +1,456 @@
 "use client";
 
-import { useCallback, useEffect, useMemo, useRef } from "react";
+import { memo, useEffect, useLayoutEffect, useRef } from "react";
 
-import { captionLines, lineAt, type CaptionLine } from "@/lib/player/captions";
-import { currentTimeNow, type CaptionSource } from "@/lib/prayers/persistentAudioStore";
+import { clockNow, subscribeClock } from "@/lib/player/clock";
+import { lineAt, lineParts, wordsOf, type CaptionLine } from "@/lib/player/captions";
+import { getAudioSnapshot, type CaptionSource } from "@/lib/prayers/persistentAudioStore";
 import { cn } from "@/lib/cn";
 
 /**
- * The live captions (1.7): the line being sung large, its words lighting one
- * by one with a soft glow as each is reached, the lines before and after it
- * quiet, and the whole moving up smoothly as the next line begins. A tap on a
- * line goes there. Drawn after the player mock the owner was sent on
- * 2026-10-15 (Homebase/boards/purify-master/r17/mock/player/).
+ * The words, lit as they are sung or read (1.7, redrawn for 1.8). One
+ * component for Now Playing's words (the owner's round 8 B, "the verse being
+ * read lit and the rest dim, moving as it reads") and a chant's Sing along
+ * (round 9 A, "the words move with the singing, the original under each
+ * English line"), so the two read alike, lit by the one clock
+ * (lib/player/clock.ts).
  *
- * The words are painted from a frame loop that reads the audio's own clock
- * (currentTimeNow), not from React state: the snapshot only moves four times
- * a second, which would make the light step instead of glide, and re-rendering
- * every word sixty times a second would cost an older phone its frames. Only
- * the line being sung is touched each frame.
+ *   - The line being sung is large, bold and white with a soft white glow;
+ *     the lines beside it a step back, the rest further. Its words light one
+ *     by one as each is reached, where they are the words being sung: a line
+ *     read in its English is lit whole, and the sung words under it light
+ *     word by word.
+ *   - The words move: the line being sung rises to a third of the way down,
+ *     unless the reader has just scrolled to look elsewhere. The box scrolls
+ *     like any list, so every line can be read with nothing playing.
+ *   - The line growing and the one before it shrinking are one smooth move
+ *     (First, Last, Invert, Play, as lib/ui/flip.ts does for lists), never a
+ *     jump; with motion off, they simply change.
+ *   - A tap on a line goes there, once its recording is the one playing.
  *
- * Under a line, its sub lines (Chants, 1.7): a transliteration where the
- * script is not Latin, and an English line, smaller and quiet, never lit word
- * by word. They are drawn under every line, as the lyrics apps draw a
- * translation, so nothing moves when the line changes; the one being sung
- * carries its sub lines a little brighter. Each line takes its own direction
- * (dir="auto"), so an Arabic line reads right to left and the Latin
- * transliteration under it left to right.
+ * The words are painted from the clock, not from React state: the light
+ * glides with the voice, and only the line being sung is touched each frame.
+ * Everything is drawn in the page's ink (opacity, never a colour), so on a
+ * light palette the words are ink and nothing glows.
  */
-const DIM = 0.3;
 const WAIT = 0.36;
-/** Sub lines: the line being sung's, and every other's. */
-const SUB_NOW = 0.62;
-const SUB_DIM = 0.28;
-/** Where the line being sung sits in the box, from the top. */
+/** Where the line being sung stands in the box, from the top. */
 const ANCHOR = 0.3;
+/** After the reader scrolls the words, they are left alone this long. */
+const HANDS_OFF_MS = 4000;
+/** The move from one line to the next. */
+const MOVE_MS = 520;
 
-export function LiveCaptions({
+type Look = "player" | "page";
+
+/** cubic-bezier(0.22, 1, 0.36, 1), the house curve (--ease-house), for the scroll the script drives. */
+function houseEase(p: number): number {
+  const cx = 0.66;
+  const bx = 3 * (0.36 - 0.22) - cx;
+  const ax = 1 - cx - bx;
+  const cy = 3;
+  const by = -3;
+  const ay = 1;
+  let t = p;
+  for (let i = 0; i < 8; i++) {
+    const x = ((ax * t + bx) * t + cx) * t - p;
+    const dx = (3 * ax * t + 2 * bx) * t + cx;
+    if (Math.abs(x) < 1e-5 || dx === 0) break;
+    t -= x / dx;
+  }
+  t = Math.min(1, Math.max(0, t));
+  return ((ay * t + by) * t + cy) * t;
+}
+
+function reduced(): boolean {
+  return typeof document !== "undefined" && document.documentElement.dataset.motion === "reduce";
+}
+
+/** Where the rows that move were, before the line changed. */
+type First = { from: number; to: number; nextTop: number; afterTop: number | null; nextShift: number; prevShift: number; nextSize: number; prevSize: number };
+
+// Drawn again only when its words or the line being sung change: the player
+// around it draws four times a second, and a chapter is hundreds of words.
+export const LiveCaptions = memo(function LiveCaptions({
   source,
-  duration,
-  playing,
-  position,
+  lines,
+  timed,
+  current,
+  live,
+  active = true,
+  look,
   rtl = false,
+  lang,
   onSeek,
   className,
 }: {
+  /** Every line, as it is drawn: timed or not, the words are the words. */
   source: CaptionSource;
-  duration: number;
-  playing: boolean;
-  /** The snapshot's position, so a seek while paused repaints. */
-  position: number;
+  /** Its timed lines (useSungLines), the same index for the same line. */
+  lines: CaptionLine[];
+  /** Every line has its time: only then does anything light. */
+  timed: boolean;
+  /** The line being sung, from the one clock; -1 for none. */
+  current: number;
+  /** These words' recording is the one in the player. */
+  live: boolean;
+  /** On the screen (Now Playing's words while they are the view shown). */
+  active?: boolean;
+  look: Look;
   rtl?: boolean;
-  onSeek: (t: number) => void;
+  /** The language the words are sung in. */
+  lang?: string;
+  onSeek: (at: number) => void;
   className?: string;
 }) {
-  const lines = useMemo(() => captionLines(source, duration), [source, duration]);
   const boxRef = useRef<HTMLDivElement>(null);
-  const stackRef = useRef<HTMLDivElement>(null);
-  const lineRefs = useRef<(HTMLButtonElement | null)[]>([]);
+  const rowRefs = useRef<(HTMLLIElement | null)[]>([]);
   const wordRefs = useRef<(HTMLSpanElement | null)[][]>([]);
-  const subRefs = useRef<(HTMLSpanElement | null)[]>([]);
-  const shown = useRef(-2);
+  /** The line the page shows lit, and the line whose words were painted last. */
+  const shown = useRef(-1);
+  const painted = useRef(-1);
+  const pending = useRef<First | null>(null);
+  const lastHand = useRef(-Infinity);
+  const scrolling = useRef(0);
+  const flipped = useRef<HTMLElement[]>([]);
+  const currentRef = useRef(current);
+  const followingRef = useRef(false);
+  const following = live && timed && active;
 
-  const settleLines = useCallback(
-    (cur: number) => {
-      // Every line but the one being sung is quiet, its words all one tone.
-      lines.forEach((line: CaptionLine, i) => {
-        const sub = subRefs.current[i];
-        if (sub) sub.style.color = `rgba(255,255,255,${i === cur ? SUB_NOW : SUB_DIM})`;
-        if (i === cur) return;
-        for (const el of wordRefs.current[i] ?? []) {
-          if (!el) continue;
-          el.style.color = `rgba(255,255,255,${DIM})`;
-          el.style.textShadow = "none";
-        }
-      });
-      // And the stack moves so the line being sung stands at the anchor.
-      const box = boxRef.current;
-      const stack = stackRef.current;
-      const target = lineRefs.current[Math.max(0, cur)];
-      if (box && stack && target) {
-        const reduce = document.documentElement.dataset.motion === "reduce";
-        stack.style.transition = reduce ? "none" : "transform 560ms cubic-bezier(0.22, 0.8, 0.2, 1)";
-        stack.style.transform = `translateY(${Math.round(box.clientHeight * ANCHOR - target.offsetTop)}px)`;
-      }
-    },
-    [lines],
-  );
+  const parts = (el: HTMLLIElement | null | undefined) => ({
+    grow: el?.querySelector<HTMLElement>("[data-sung-grow]") ?? null,
+    shift: el?.querySelector<HTMLElement>("[data-sung-shift]") ?? null,
+  });
 
-  const paint = useCallback(() => {
-    const t = currentTimeNow();
-    const cur = lineAt(lines, t);
-    if (cur !== shown.current) {
-      shown.current = cur;
-      settleLines(cur);
+  function measureFirst(from: number, to: number): First | null {
+    const next = rowRefs.current[to];
+    if (!next || to < 0) return null;
+    const prev = from >= 0 ? rowRefs.current[from] : null;
+    const after = rowRefs.current[to + 1];
+    const size = (el: HTMLElement | null) => (el ? parseFloat(getComputedStyle(el).fontSize) || 0 : 0);
+    const n = parts(next);
+    const p = parts(prev);
+    return {
+      from,
+      to,
+      nextTop: next.offsetTop,
+      afterTop: after ? after.offsetTop : null,
+      nextShift: n.shift ? n.shift.offsetTop - next.offsetTop : 0,
+      prevShift: p.shift && prev ? p.shift.offsetTop - prev.offsetTop : 0,
+      nextSize: size(n.grow),
+      prevSize: size(p.grow),
+    };
+  }
+
+  /** Put down a move in progress at once: its rows where they belong. */
+  function settleFlip() {
+    const els = flipped.current;
+    if (!els.length) return;
+    flipped.current = [];
+    for (const el of els) {
+      el.style.transition = "none";
+      el.style.transform = "";
+      el.style.transformOrigin = "";
     }
-    if (cur < 0) return;
-    const line = lines[cur];
-    const els = wordRefs.current[cur] ?? [];
-    line.words.forEach((w, j) => {
-      const el = els[j];
-      if (!el) return;
-      if (t < w.at) {
-        el.style.color = `rgba(255,255,255,${WAIT})`;
-        el.style.textShadow = "none";
-        return;
-      }
-      const since = t - w.at;
-      const o = WAIT + (1 - WAIT) * Math.min(1, since / 0.12);
-      const glow = Math.exp(-since / 0.5);
-      el.style.color = `rgba(255,255,255,${o.toFixed(3)})`;
-      el.style.textShadow =
-        glow > 0.02 ? `0 0 ${(10 + 10 * glow).toFixed(1)}px rgba(255,255,255,${(0.55 * glow).toFixed(3)})` : "none";
-    });
-  }, [lines, settleLines]);
+    void boxRef.current?.offsetHeight;
+    for (const el of els) el.style.transition = "";
+  }
 
-  // While playing, paint every frame; while paused, paint when the position
-  // moves (a seek, a tap on a line).
-  useEffect(() => {
-    if (!playing) {
-      paint();
+  function stopScroll() {
+    if (scrolling.current) cancelAnimationFrame(scrolling.current);
+    scrolling.current = 0;
+  }
+
+  /** The scroll that stands line `i` at the anchor, within what the box can scroll. */
+  function targetFor(i: number): number | null {
+    const box = boxRef.current;
+    const row = rowRefs.current[i];
+    if (!box || !row) return null;
+    const max = box.scrollHeight - box.clientHeight;
+    return Math.max(0, Math.min(max, Math.round(row.offsetTop - box.clientHeight * ANCHOR)));
+  }
+
+  function scrollTo(top: number, smooth: boolean) {
+    const box = boxRef.current;
+    if (!box) return;
+    stopScroll();
+    const from = box.scrollTop;
+    if (!smooth || reduced() || Math.abs(top - from) < 1) {
+      box.scrollTop = top;
       return;
     }
-    let raf = 0;
-    const loop = () => {
-      paint();
-      raf = requestAnimationFrame(loop);
+    const start = performance.now();
+    const step = (now: number) => {
+      const p = Math.min(1, (now - start) / MOVE_MS);
+      box.scrollTop = from + (top - from) * houseEase(p);
+      scrolling.current = p < 1 ? requestAnimationFrame(step) : 0;
     };
-    raf = requestAnimationFrame(loop);
-    return () => cancelAnimationFrame(raf);
-  }, [playing, paint, position]);
+    scrolling.current = requestAnimationFrame(step);
+  }
 
-  // A new set of lines (another language) starts from the top.
+  // The words of the line being sung, painted from the clock; the line about
+  // to change measured before React draws it, for the smooth move.
   useEffect(() => {
-    shown.current = -2;
-    paint();
-  }, [lines, paint]);
+    if (!following) return;
+    const clear = (i: number) => {
+      for (const el of wordRefs.current[i] ?? []) {
+        if (!el) continue;
+        el.style.opacity = "";
+        el.style.textShadow = "";
+      }
+    };
+    const unsubscribe = subscribeClock(() => {
+      const t = clockNow();
+      const cur = lineAt(lines, t);
+      if (cur !== shown.current && !pending.current) pending.current = measureFirst(shown.current, cur);
+      if (cur !== painted.current) {
+        clear(painted.current);
+        painted.current = cur;
+      }
+      if (cur < 0) return;
+      const els = wordRefs.current[cur] ?? [];
+      lines[cur].words.forEach((w, j) => {
+        const el = els[j];
+        if (!el) return;
+        if (t < w.at) {
+          el.style.opacity = String(WAIT);
+          el.style.textShadow = "";
+          return;
+        }
+        const since = t - w.at;
+        const o = WAIT + (1 - WAIT) * Math.min(1, since / 0.12);
+        const glow = Math.exp(-since / 0.5);
+        el.style.opacity = o >= 0.999 ? "" : o.toFixed(3);
+        el.style.textShadow =
+          glow > 0.02 ? `0 0 ${(10 + 10 * glow).toFixed(1)}px rgba(255,255,255,${(0.55 * glow).toFixed(3)})` : "";
+      });
+    });
+    return () => {
+      unsubscribe();
+      clear(painted.current);
+      painted.current = -1;
+      pending.current = null;
+    };
+    // measureFirst reads refs only.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [following, lines]);
+
+  // Another set of words (a version chosen, another track, the English
+  // turned off): the line being sung stands in place at once, or the top.
+  // Before the line's own effect below, which then has nothing to move.
+  useLayoutEffect(() => {
+    settleFlip();
+    stopScroll();
+    shown.current = current;
+    pending.current = null;
+    const box = boxRef.current;
+    if (!box) return;
+    const top = active && current >= 0 ? targetFor(current) : null;
+    box.scrollTop = top ?? 0;
+    // Only a new set of words: the line's own changes are the effect below.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [source]);
+
+  // The line being sung changed: the smooth move, and the box follows.
+  useLayoutEffect(() => {
+    currentRef.current = current;
+    followingRef.current = following;
+    const from = shown.current;
+    shown.current = current;
+    const first = pending.current;
+    pending.current = null;
+    if (!active || current < 0) {
+      // Back before the first line (a seek to the start): to the top.
+      if (active && live && from >= 0 && current < 0) scrollTo(0, true);
+      return;
+    }
+    const box = boxRef.current;
+    const next = rowRefs.current[current];
+    if (!box || !next) return;
+    settleFlip();
+    const adjacent = first && first.from === from && first.to === current && (current === from + 1 || (from < 0 && current === 0));
+    if (adjacent && first && !reduced()) {
+      const n = parts(next);
+      const prev = from >= 0 ? rowRefs.current[from] : null;
+      const p = parts(prev);
+      const moves: { el: HTMLElement; transform: string; origin?: string }[] = [];
+      const dy = first.nextTop - next.offsetTop;
+      if (Math.abs(dy) >= 1) moves.push({ el: next, transform: `translateY(${dy}px)` });
+      const grownTo = n.grow ? parseFloat(getComputedStyle(n.grow).fontSize) || 0 : 0;
+      if (n.grow && first.nextSize && grownTo && Math.abs(grownTo - first.nextSize) > 0.5) {
+        const ltr = getComputedStyle(n.grow).direction !== "rtl";
+        moves.push({ el: n.grow, transform: `scale(${first.nextSize / grownTo})`, origin: ltr ? "0 0" : "100% 0" });
+      }
+      // What is under a line rides on the line: measured from the line's own top.
+      const nextShift = n.shift ? first.nextShift - (n.shift.offsetTop - next.offsetTop) : 0;
+      if (n.shift && Math.abs(nextShift) >= 1) moves.push({ el: n.shift, transform: `translateY(${nextShift}px)` });
+      if (p.grow && first.prevSize) {
+        const shrunkTo = parseFloat(getComputedStyle(p.grow).fontSize) || 0;
+        if (shrunkTo && Math.abs(shrunkTo - first.prevSize) > 0.5) {
+          const ltr = getComputedStyle(p.grow).direction !== "rtl";
+          moves.push({ el: p.grow, transform: `scale(${first.prevSize / shrunkTo})`, origin: ltr ? "0 0" : "100% 0" });
+        }
+      }
+      const prevShift = p.shift && prev ? first.prevShift - (p.shift.offsetTop - prev.offsetTop) : 0;
+      if (p.shift && Math.abs(prevShift) >= 1) moves.push({ el: p.shift, transform: `translateY(${prevShift}px)` });
+      // The rows under the line moved by one amount: those that can be seen
+      // are carried back and let go with it.
+      const after = rowRefs.current[current + 1];
+      if (after && first.afterTop !== null) {
+        const d = first.afterTop - after.offsetTop;
+        if (Math.abs(d) >= 1) {
+          const bottom = box.scrollTop + box.clientHeight + 160;
+          for (let i = current + 1; i < rowRefs.current.length; i++) {
+            const row = rowRefs.current[i];
+            if (!row) continue;
+            if (row.offsetTop > bottom) break;
+            moves.push({ el: row, transform: `translateY(${d}px)` });
+          }
+        }
+      }
+      // Invert, with no transition, then let go: the house curve carries
+      // every part home (app/globals.css, "Sung words").
+      for (const m of moves) {
+        m.el.style.transition = "none";
+        if (m.origin) m.el.style.transformOrigin = m.origin;
+        m.el.style.transform = m.transform;
+      }
+      void box.offsetHeight;
+      for (const m of moves) {
+        m.el.style.transition = "";
+        m.el.style.transform = "";
+      }
+      flipped.current = moves.map((m) => m.el);
+    }
+    if (performance.now() - lastHand.current > HANDS_OFF_MS) {
+      const top = targetFor(current);
+      // Arriving (the words just shown, a version just chosen) stands the
+      // line in place; a line following the last one glides there.
+      if (top !== null) scrollTo(top, from >= 0 || current === 0);
+    }
+    // targetFor, scrollTo and parts read refs only.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [current, active, live, timed]);
+
+  // Shown again (Now Playing's words chosen): the line being sung, in place.
+  useLayoutEffect(() => {
+    if (!active) return;
+    const cur = currentRef.current;
+    if (cur < 0) return;
+    const top = targetFor(cur);
+    if (top !== null) scrollTo(top, false);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [active]);
+
+  // The reader's own scrolling: leave the words where they put them for a
+  // while, then, if the words are still being sung, go back to the line.
+  // Paused, the words stay where the reader left them.
+  useEffect(() => {
+    const box = boxRef.current;
+    if (!box) return;
+    let back = 0;
+    const hand = () => {
+      lastHand.current = performance.now();
+      stopScroll();
+      window.clearTimeout(back);
+      back = window.setTimeout(() => {
+        const cur = currentRef.current;
+        if (cur < 0 || !followingRef.current || !getAudioSnapshot().playing) return;
+        const top = targetFor(cur);
+        if (top !== null) scrollTo(top, true);
+      }, HANDS_OFF_MS + 50);
+    };
+    box.addEventListener("wheel", hand, { passive: true });
+    box.addEventListener("touchmove", hand, { passive: true });
+    return () => {
+      box.removeEventListener("wheel", hand);
+      box.removeEventListener("touchmove", hand);
+      window.clearTimeout(back);
+      stopScroll();
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  useEffect(() => () => settleFlip(), []);
+
+  const seekable = live && timed;
 
   return (
     <div
       ref={boxRef}
-      // The box never scrolls: the stack's transform places the lines. A
-      // focused or clicked line can still scroll an overflow-hidden box to
-      // itself, which put the line being sung out of sight above the top
-      // (found 2026-10-15 with a tap on a line low in the box).
-      onScroll={(e) => {
-        if (e.currentTarget.scrollTop) e.currentTarget.scrollTop = 0;
-      }}
-      className={cn("relative overflow-hidden", className)}
+      data-sung-look={look}
+      className={cn("no-scrollbar relative overflow-y-auto overflow-x-hidden overscroll-contain", className)}
       style={{
-        maskImage: "linear-gradient(180deg, transparent 0, #000 48px, #000 calc(100% - 80px), transparent 100%)",
-        WebkitMaskImage: "linear-gradient(180deg, transparent 0, #000 48px, #000 calc(100% - 80px), transparent 100%)",
+        maskImage: "linear-gradient(180deg, transparent 0, #000 36px, #000 calc(100% - 64px), transparent 100%)",
+        WebkitMaskImage: "linear-gradient(180deg, transparent 0, #000 36px, #000 calc(100% - 64px), transparent 100%)",
       }}
     >
-      <div ref={stackRef} className="absolute inset-x-0 top-0 will-change-transform">
-        {lines.map((line, i) => (
-          <button
-            type="button"
-            key={`${i}-${line.at}`}
-            ref={(el) => {
-              lineRefs.current[i] = el;
-            }}
-            onClick={() => onSeek(line.at)}
-            dir={rtl ? "rtl" : "auto"}
-            className="mb-4 block w-full text-start font-serif text-[26px] font-semibold leading-[1.3] text-paper"
-          >
-            {line.words.map((w, j) => (
-              <span
-                key={j}
-                ref={(el) => {
-                  (wordRefs.current[i] ??= [])[j] = el;
-                }}
-                style={{ color: `rgba(255,255,255,${DIM})` }}
-              >
-                {w.text}
-                {j < line.words.length - 1 ? " " : ""}
+      <ol dir={rtl ? "rtl" : undefined} className="pb-24 pt-9">
+        {source.map((line, i) => {
+          const { main, under } = lineParts(line);
+          const state = current < 0 ? "rest" : i === current ? "lit" : Math.abs(i - current) === 1 ? "near" : "far";
+          const said = timed ? lines[i].words.map((w) => w.text) : wordsOf(line.text);
+          const sung = (
+            <>
+              {said.map((word, j) => (
+                <span
+                  key={j}
+                  ref={(el) => {
+                    (wordRefs.current[i] ??= [])[j] = el;
+                  }}
+                >
+                  {word}
+                  {j < said.length - 1 ? " " : ""}
+                </span>
+              ))}
+            </>
+          );
+          const body = (
+            <>
+              <span data-sung-main dir="auto" lang={main.sung ? lang : "en"} className="block">
+                <span data-sung-grow className="block">
+                  {main.sung ? sung : main.text}
+                </span>
               </span>
-            ))}
-            {line.sub?.length ? (
-              <span
-                ref={(el) => {
-                  subRefs.current[i] = el;
-                }}
-                className="mt-1.5 block font-sans text-detail font-normal leading-snug"
-                style={{ color: `rgba(255,255,255,${SUB_DIM})` }}
-              >
-                {line.sub.map((s, k) => (
-                  <span key={k} dir="auto" className="block">
-                    {s}
+              {under.length ? (
+                <span data-sung-shift className="block">
+                  <span data-sung-under className="block">
+                    {under.map((u, k) => (
+                      <span
+                        key={k}
+                        dir="auto"
+                        lang={u.sung ? lang : lang ? `${lang}-Latn` : undefined}
+                        data-sung-part={u.sung ? "sung" : "translit"}
+                        className="block"
+                      >
+                        {u.sung ? sung : u.text}
+                      </span>
+                    ))}
                   </span>
-                ))}
-              </span>
-            ) : null}
-          </button>
-        ))}
-      </div>
+                </span>
+              ) : null}
+            </>
+          );
+          return (
+            <li
+              key={i}
+              ref={(el) => {
+                rowRefs.current[i] = el;
+              }}
+              data-sung={state}
+              aria-current={state === "lit" ? "true" : undefined}
+            >
+              {seekable ? (
+                <button type="button" onClick={() => onSeek(lines[i].at)} className="block w-full text-start">
+                  {body}
+                </button>
+              ) : (
+                <div className="text-start">{body}</div>
+              )}
+            </li>
+          );
+        })}
+      </ol>
     </div>
   );
-}
+});

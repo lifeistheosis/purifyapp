@@ -29,7 +29,8 @@ export type PlayRequest = {
   prefs: WordsPrefs;
   /** Round and round until stopped: Pray with chant, under a prayer. */
   loop?: boolean;
-  /** Open Now Playing on the live captions. */
+  /** Open Now Playing on its words. A chant's page, which lights the words
+   *  itself, keeps the page (1.8). */
   open?: boolean;
 };
 
@@ -58,7 +59,7 @@ export function playChant(req: PlayRequest): void {
   setTrack(src, meta);
   if (req.loop) setLoopMode("inf");
   play();
-  if (req.open) openNowPlaying({ captions: true });
+  if (req.open) openNowPlaying({ view: "words" });
 
   if (!req.variant.timing) return;
   void loadTiming(req.variant.timing).then((timing) => {

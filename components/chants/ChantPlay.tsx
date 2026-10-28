@@ -3,6 +3,7 @@
 import { useCallback } from "react";
 
 import { useTranslate } from "@/components/i18n/MessagesProvider";
+import { PositionBar, Transport } from "@/components/player/Transport";
 import { Pause } from "@/components/ui/icons/Pause";
 import { Play } from "@/components/ui/icons/Play";
 import { cn } from "@/lib/cn";
@@ -10,7 +11,7 @@ import { useChantAvailability, type Availability } from "@/lib/chants/live";
 import { playChant, useChantPlayback } from "@/lib/chants/play";
 import type { ChantIndexVariant, ChantLine } from "@/lib/chants/types";
 import { useWordsPrefs } from "@/lib/chants/wordsPrefs";
-import { pause, play } from "@/lib/prayers/persistentAudioStore";
+import { pause, play, seek, skipBy, usePersistentAudio } from "@/lib/prayers/persistentAudioStore";
 
 /**
  * Playing one version of a chant from a button (1.7), in one place for the
@@ -32,7 +33,8 @@ export function useChantPlay({
   variant: ChantIndexVariant;
   lines?: ChantLine[];
   coverSrc?: string;
-  /** Open Now Playing on the live captions when it starts. */
+  /** Open Now Playing on its words when it starts. A chant's page, which
+   *  sings along itself (1.8), does not. */
   open?: boolean;
 }): { availability: Availability; loaded: boolean; playing: boolean; toggle: () => void } {
   const availabilityFor = useChantAvailability();
@@ -125,5 +127,42 @@ export function PlayPill({
       {playing ? <Pause size={size === "lg" ? 18 : 15} /> : <Play size={size === "lg" ? 18 : 15} className="translate-x-[1px]" />}
       {playing ? t("prayers.pause") : t("prayers.play")}
     </button>
+  );
+}
+
+/**
+ * A chant's own controls on its page (1.8, the owner's pick of 2026-10-27,
+ * round 9 A, "Sing along"): where the recording is and how long it is, then
+ * back 15, Play and forward 15, the same controls Now Playing wears
+ * (components/player/Transport.tsx), for the version the page shows. Before
+ * it plays, the line shows the version's length and only Play answers.
+ */
+export function ChantTransport({
+  variant,
+  play: chant,
+  className,
+}: {
+  variant: ChantIndexVariant;
+  play: ReturnType<typeof useChantPlay>;
+  className?: string;
+}) {
+  const audio = usePersistentAudio();
+  const { loaded } = chant;
+  const current = loaded ? audio.currentTime : 0;
+  const duration = loaded && audio.duration > 0 ? audio.duration : variant.audio.durationSec;
+  return (
+    <div className={className}>
+      <PositionBar current={current} duration={duration} onSeek={loaded ? (at) => seek(at) : undefined} />
+      <Transport
+        playing={chant.playing}
+        onToggle={chant.toggle}
+        onSkip={skipBy}
+        canPlay={loaded || chant.availability === "playable"}
+        canSkip={loaded}
+        busy={chant.availability === "checking"}
+        size={64}
+        className="mt-2"
+      />
+    </div>
   );
 }

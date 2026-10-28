@@ -4442,6 +4442,116 @@ html.is-native .pray-chip {
  animation: none;
 }
 
+/* Sung words (1.8): Now Playing's words and a chant's Sing along
+   (components/player/LiveCaptions.tsx), the owner's picks of 2026-10-27,
+   rounds 8 B and 9 A. The line being sung large, bold and white with a soft
+   white glow (his word of 2026-10-28: a glowing white, never yellow); the
+   lines beside it a step back, the rest further; with nothing being sung,
+   every line at full strength, so the words read on their own. Drawn in the
+   page's ink with opacity, never a colour, so on Parchment the words are ink
+   and nothing glows. The line growing and the rows moving are transforms
+   the component sets and lets go (First, Last, Invert, Play), carried home
+   on the house curve. */
+[data-sung-look] li[data-sung],
+[data-sung-grow],
+[data-sung-shift] {
+ transition: transform 520ms var(--ease-house);
+}
+[data-sung-main],
+[data-sung-under] {
+ color: var(--color-paper);
+ transition: opacity 420ms var(--ease-house);
+}
+[data-sung-main] {
+ font-family: var(--font-serif);
+}
+[data-sung="lit"] [data-sung-main] {
+ font-weight: 600;
+ text-shadow: 0 0 18px rgba(255, 255, 255, 0.24);
+}
+[data-sung-part="sung"] {
+ font-family: var(--font-serif);
+ font-style: italic;
+}
+[data-sung-part="translit"] {
+ font-family: var(--font-sans);
+ font-size: 0.9em;
+}
+/* Now Playing: the verse being read 29px over 24px (round 8 B). */
+[data-sung-look="player"] li[data-sung] {
+ margin-bottom: 20px;
+}
+[data-sung-look="player"] [data-sung-main] {
+ font-size: 24px;
+ line-height: 1.4;
+}
+[data-sung-look="player"] [data-sung="lit"] [data-sung-main] {
+ font-size: 29px;
+}
+[data-sung-look="player"] [data-sung-under] {
+ margin-top: 6px;
+ font-size: 15px;
+ line-height: 1.45;
+ opacity: 0.55;
+}
+[data-sung-look="player"] [data-sung="lit"] [data-sung-under] {
+ opacity: 0.7;
+}
+[data-sung-look="player"] [data-sung="near"] [data-sung-main] {
+ opacity: 0.3;
+}
+[data-sung-look="player"] [data-sung="far"] [data-sung-main] {
+ opacity: 0.17;
+}
+[data-sung-look="player"] [data-sung="near"] [data-sung-under] {
+ opacity: 0.26;
+}
+[data-sung-look="player"] [data-sung="far"] [data-sung-under] {
+ opacity: 0.15;
+}
+/* A chant's Sing along: the line being sung 25px over 20px, the original
+   under each line in italic (round 9 A). */
+[data-sung-look="page"] li[data-sung] {
+ margin-bottom: 18px;
+}
+[data-sung-look="page"] [data-sung-main] {
+ font-size: 20px;
+ line-height: 1.45;
+}
+[data-sung-look="page"] [data-sung="lit"] [data-sung-main] {
+ font-size: 25px;
+}
+[data-sung-look="page"] [data-sung-under] {
+ margin-top: 3px;
+ font-size: 14.5px;
+ line-height: 1.5;
+ opacity: 0.62;
+}
+[data-sung-look="page"] [data-sung="near"] [data-sung-main] {
+ opacity: 0.35;
+}
+[data-sung-look="page"] [data-sung="far"] [data-sung-main] {
+ opacity: 0.3;
+}
+[data-sung-look="page"] [data-sung="near"] [data-sung-under],
+[data-sung-look="page"] [data-sung="far"] [data-sung-under] {
+ opacity: 0.34;
+}
+/* A white glow cannot be seen on paper: the page's ink is the light there.
+   Over the words' own light too, which the component paints inline. */
+html[data-reading-mode="parchment"] [data-sung-look="page"] [data-sung-main],
+html[data-reading-mode="parchment"] [data-sung-look="page"] [data-sung-main] span,
+html[data-reading-mode="parchment"] [data-sung-look="page"] [data-sung-under] span {
+ text-shadow: none !important;
+}
+:where([data-motion="reduce"]) [data-sung-look] li[data-sung],
+:where([data-motion="reduce"]) [data-sung-grow],
+:where([data-motion="reduce"]) [data-sung-shift],
+:where([data-motion="reduce"]) [data-sung-main],
+:where([data-motion="reduce"]) [data-sung-under] {
+ transition: none;
+}
+
 /* The prayer reader (1.7): a prayer flows down the page line by line, as the
    live lyrics in Now Playing and the read-aloud follow do. The owner,
    2026-10-16: the line being read bright, the rest a step back as you move
