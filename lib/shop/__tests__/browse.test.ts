@@ -90,12 +90,25 @@ describe("filterProducts", () => {
     expect(out).toHaveLength(1);
     expect(out[0].title).toBe("Theotokos of Vladimir");
   });
+
+  it("keeps only the pieces that carry the saint (Shop by saint's ?saint=)", () => {
+    expect(filterProducts(catalog, { saint: "nicholas-of-myra" }).map((p) => p.title)).toEqual([
+      "St Nicholas the Wonderworker",
+    ]);
+    // A subject of another kind with the same slug is not the saint.
+    const christ = [make({ subjects: [{ subject_type: "christ", subject_slug: "nicholas-of-myra" }] })];
+    expect(filterProducts(christ, { saint: "nicholas-of-myra" })).toEqual([]);
+    expect(filterProducts(catalog, { saint: "seraphim-of-sarov" })).toEqual([]);
+    expect(filterProducts(catalog, { saint: null })).toHaveLength(3);
+  });
 });
 
 describe("activeFilterCount", () => {
   it("counts facets, not search text", () => {
     expect(activeFilterCount({})).toBe(0);
     expect(activeFilterCount({ q: "nicholas" })).toBe(0);
+    // The saint is taken off by its own chip and is not in the Filters sheet.
+    expect(activeFilterCount({ saint: "nicholas-of-myra" })).toBe(0);
     expect(
       activeFilterCount({ readyOnly: true, classification: "wooden", priceBand: "under_50" }),
     ).toBe(3);
