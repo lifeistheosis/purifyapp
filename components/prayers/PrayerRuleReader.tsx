@@ -32,6 +32,19 @@
 // Each prayer's bookmark writes a `kind: 'prayer'` row to the Saved store
 // (and to the reader's account when signed in, through the bookmarks sync).
 //
+// While you pray (1.8): the owner's pick B, Immersive, of 2026-10-27, "the
+// line being prayed lit, the rest dim, the icon's light behind, chant
+// underneath" (Homebase/boards/purify-master/variants/05-praying.png). Built
+// on the 1.7 page, not beside it: the same scroll lights the line, and now
+// also marks the prayer it stands in (service/useLitLine.ts), so the prayers
+// before and after step back further than its own unlit lines; the prayers
+// stand in the middle of the page; behind them is the page's own icon
+// (lib/prayers/serviceArt.ts), drawn large, soft, dim and without its
+// colour, so the light is white, with a faint white breath that drifts only
+// while motion is on; and once Pray with has scrolled away, its chant waits
+// at the foot of the screen (components/player/PrayWith.tsx). Still no count
+// and no place kept.
+//
 // "Those I pray for" (1.7.1, lib/prayers/commemoration.ts): the reader's own
 // diptychs, living and departed, and the names they brought from the prayer
 // wall, in one step (service/CommemorationStep.tsx), in the prayers the reader
@@ -50,6 +63,7 @@ import { PrayerStep } from "@/components/prayers/service/PrayerStep";
 import { useLitLine } from "@/components/prayers/service/useLitLine";
 import { isRuleBookmarked, toggleRuleBookmark } from "@/lib/prayers/bookmarks";
 import { commemorationPlacement, placeOf } from "@/lib/prayers/commemoration";
+import { serviceArt } from "@/lib/prayers/serviceArt";
 import { markRuleCompletedToday, readTodayDone, useIntentions, writeTodayDone, PRAYER_EVENT } from "@/lib/prayers/storage";
 import type { Prayer, Rule } from "@/lib/prayers/types";
 import { useRememberedPlaces } from "@/lib/prayers/useCommemoration";
@@ -237,90 +251,100 @@ export function PrayerRuleReader({
     return v === key ? undefined : v;
   };
 
+  const light = serviceArt(artId ?? rule.id);
+
   return (
-    <article ref={article} data-prayer-reader className="mx-auto w-full max-w-[640px]">
-      <ServiceHeader
-        rule={rule}
-        title={title}
-        titleId={titleId}
-        artId={artId ?? rule.id}
-        kept={kept}
-        bookmarked={ruleBookmarked}
-        onBookmark={ruleHref ? () => toggleRuleBookmark(rule.id, title, ruleHref) : undefined}
-        onBegin={begin}
-        contentLang={contentLocale}
-        notInYourLanguage={locale !== "en" && locale !== contentLocale}
-      />
+    <>
+      {/* The icon's light behind the prayer: fixed, so it stays behind the
+          line being prayed as the page moves, and drawn once (globals.css,
+          .prayer-light). Decoration: the icon itself heads the page. */}
+      <div aria-hidden className="prayer-light" style={{ backgroundImage: `url(${light.src})` }} />
+      <div aria-hidden className="prayer-light-breath" />
+      <article ref={article} data-prayer-reader className="relative mx-auto w-full max-w-[640px]">
+        <ServiceHeader
+          rule={rule}
+          title={title}
+          titleId={titleId}
+          artId={artId ?? rule.id}
+          kept={kept}
+          bookmarked={ruleBookmarked}
+          onBookmark={ruleHref ? () => toggleRuleBookmark(rule.id, title, ruleHref) : undefined}
+          onBegin={begin}
+          contentLang={contentLocale}
+          notInYourLanguage={locale !== "en" && locale !== contentLocale}
+        />
 
-      {/* Mark all and Reset, as before: they mark prayers, they count nothing. */}
-      <div className="mt-10 flex items-center justify-end gap-1 font-sans text-caption">
-        <button
-          type="button"
-          onClick={() => {
-            persist(new Set([...rule.prayers.map((p) => p.id), ...(commemorated ? [commemorationId] : [])]));
-            if (wallIds.length > 0) updateWallNames((list) => markWallPrayed(list, wallIds));
-          }}
-          disabled={!hydrated || (allDone && (!commemorated || commemorationDone))}
-          className="tap-press inline-flex min-h-11 items-center px-2 text-paper/55 hover:text-paper disabled:opacity-35 disabled:hover:text-paper/55"
-        >
-          {t("prayers.reader.markAll")}
-        </button>
-        <span aria-hidden className="text-paper/25">
-          {"·"}
-        </span>
-        <button
-          type="button"
-          onClick={() => {
-            persist(new Set());
-            if (wallIds.length > 0) updateWallNames((list) => unmarkWallPrayed(list, wallIds));
-          }}
-          disabled={!hydrated || (done.size === 0 && !wall.some((n) => n.doneAt))}
-          className="tap-press inline-flex min-h-11 items-center px-2 text-paper/55 hover:text-paper disabled:opacity-35 disabled:hover:text-paper/55"
-        >
-          {t("prayers.rope.reset")}
-        </button>
-      </div>
+        {/* Mark all and Reset, as before: they mark prayers, they count
+            nothing. In the middle, with the prayers under them (1.8). */}
+        <div className="mt-10 flex items-center justify-center gap-1 font-sans text-caption">
+          <button
+            type="button"
+            onClick={() => {
+              persist(new Set([...rule.prayers.map((p) => p.id), ...(commemorated ? [commemorationId] : [])]));
+              if (wallIds.length > 0) updateWallNames((list) => markWallPrayed(list, wallIds));
+            }}
+            disabled={!hydrated || (allDone && (!commemorated || commemorationDone))}
+            className="tap-press inline-flex min-h-11 items-center px-2 text-paper/55 hover:text-paper disabled:opacity-35 disabled:hover:text-paper/55"
+          >
+            {t("prayers.reader.markAll")}
+          </button>
+          <span aria-hidden className="text-paper/25">
+            {"·"}
+          </span>
+          <button
+            type="button"
+            onClick={() => {
+              persist(new Set());
+              if (wallIds.length > 0) updateWallNames((list) => unmarkWallPrayed(list, wallIds));
+            }}
+            disabled={!hydrated || (done.size === 0 && !wall.some((n) => n.doneAt))}
+            className="tap-press inline-flex min-h-11 items-center px-2 text-paper/55 hover:text-paper disabled:opacity-35 disabled:hover:text-paper/55"
+          >
+            {t("prayers.rope.reset")}
+          </button>
+        </div>
 
-      <div className="mt-1">
-        {rule.prayers.map((p, i) => (
-          <Fragment key={p.id}>
-            {i === commemorationAt ? commemorationStep : null}
-            {/* The reader's own "Those I pray for" is drawn as the step above. */}
-            {ownStep && i === placement.index ? null : (
-              <PrayerStep
-                ruleId={rule.id}
-                prayer={p}
-                title={stepTitle(p)}
-                from={fromTitle(p)}
-                contentLang={contentLocale}
-                isDone={done.has(p.id)}
-                hydrated={hydrated}
-                onToggle={() => toggle(p.id)}
-                bookmarkable={rule.kind !== "custom" || Boolean(p.origin)}
-              />
-            )}
-          </Fragment>
-        ))}
-        {commemorationAt === rule.prayers.length ? commemorationStep : null}
-      </div>
+        <div className="mt-1">
+          {rule.prayers.map((p, i) => (
+            <Fragment key={p.id}>
+              {i === commemorationAt ? commemorationStep : null}
+              {/* The reader's own "Those I pray for" is drawn as the step above. */}
+              {ownStep && i === placement.index ? null : (
+                <PrayerStep
+                  ruleId={rule.id}
+                  prayer={p}
+                  title={stepTitle(p)}
+                  from={fromTitle(p)}
+                  contentLang={contentLocale}
+                  isDone={done.has(p.id)}
+                  hydrated={hydrated}
+                  onToggle={() => toggle(p.id)}
+                  bookmarkable={rule.kind !== "custom" || Boolean(p.origin)}
+                />
+              )}
+            </Fragment>
+          ))}
+          {commemorationAt === rule.prayers.length ? commemorationStep : null}
+        </div>
 
-      {/* The doxology stays. It is not a score: it says the rule is finished,
-          which is what the end of a rule is, and it says it once and quietly.
-          Nothing counts up to it and nothing is lost by not reaching it. */}
-      {allDone ? (
-        <p role="status" className="mt-4 border-t border-paper/10 pt-8 text-center font-serif text-body italic leading-[1.6] text-paper/80">
-          {t("prayers.reader.complete")}
-        </p>
-      ) : null}
-
-      {/* A reader's own rule has no one source: each of its prayers names its own. */}
-      {rule.source ? (
-        <footer className="mt-12 border-t border-paper/10 pt-6">
-          <p lang={contentLocale} className="font-sans text-caption leading-[1.6] text-paper/50">
-            {t("prayers.reader.sourceLabel")} {rule.source}
+        {/* The doxology stays. It is not a score: it says the rule is finished,
+            which is what the end of a rule is, and it says it once and quietly.
+            Nothing counts up to it and nothing is lost by not reaching it. */}
+        {allDone ? (
+          <p role="status" className="mt-4 border-t border-paper/10 pt-8 text-center font-serif text-body italic leading-[1.6] text-paper/80">
+            {t("prayers.reader.complete")}
           </p>
-        </footer>
-      ) : null}
-    </article>
+        ) : null}
+
+        {/* A reader's own rule has no one source: each of its prayers names its own. */}
+        {rule.source ? (
+          <footer className="mt-12 border-t border-paper/10 pt-6 text-center">
+            <p lang={contentLocale} className="font-sans text-caption leading-[1.6] text-paper/50">
+              {t("prayers.reader.sourceLabel")} {rule.source}
+            </p>
+          </footer>
+        ) : null}
+      </article>
+    </>
   );
 }

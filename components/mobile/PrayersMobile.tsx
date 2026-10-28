@@ -1,13 +1,11 @@
 "use client";
 
 import Link from "next/link";
-import { formatLongDate } from "@/lib/calendar/orthodox";
-import { useToday } from "@/lib/calendar/useToday";
-import { EVENING_FROM_HOUR } from "@/lib/prayers/ruleForHour";
+import { ruleIdForHour } from "@/lib/prayers/ruleForHour";
 import { useMounted } from "@/lib/useMounted";
 import { MobileShell } from "./MobileShell";
 import { MobileHeader } from "./MobileHeader";
-import { SectionMasthead } from "./SectionMasthead";
+import { PrayersHero } from "./PrayersHero";
 import { DiptychPreview } from "./DiptychPreview";
 import { SoftTile, SoftTileGrid, FeatureBand } from "./SoftTiles";
 import { Calendar } from "@/components/ui/icons/Calendar";
@@ -18,29 +16,11 @@ import { Hands } from "@/components/ui/icons/Hands";
 import { PrayerSearch } from "@/components/prayers/PrayerSearch";
 import { PrayNow } from "@/components/prayers/PrayNow";
 import { PrayerBookIndex } from "@/components/prayers/PrayerBookIndex";
-import { CARD, CARD_BG, Eyebrow, PILL } from "@/components/ui/Graphite";
+import { RuleToday } from "@/components/prayers/RuleToday";
+import { CARD, CARD_BG, PILL } from "@/components/ui/Graphite";
 import { ScrollRail } from "@/components/ui/ScrollRail";
 import { cn } from "@/lib/cn";
 import { T } from "@/components/i18n/T";
-import { useTranslate } from "@/components/i18n/MessagesProvider";
-
-type HeroMode = "morning" | "midday" | "evening";
-
-/** The reader's own hour, not UTC: "Stand before God before the day takes
- *  you" is wrong copy to show someone at 9pm because a server said 02:00. */
-function heroModeFor(d: Date): HeroMode {
-  const h = d.getHours();
-  if (h < 12) return "morning";
-  if (h < EVENING_FROM_HOUR) return "midday";
-  return "evening";
-}
-
-/** Catalog keys, not copy: the line follows the reader's language. */
-const TIME_LINE_KEY: Record<HeroMode, string> = {
-  morning: "prayers.timeLine.morning",
-  midday: "prayers.timeLine.midday",
-  evening: "prayers.timeLine.evening",
-};
 
 /** The quick ways in, the same five the desktop hero carries. */
 const QUICK = [
@@ -51,80 +31,71 @@ const QUICK = [
   { href: "/prayers/learning", k: "ui.learnToPray" },
 ] as const;
 
+/** A section's name, as the design sets "All prayers": Lora, no label over it. */
+const H2 = "text-lede leading-tight tracking-[-0.005em] text-paper";
+
 /**
- * Prayers on a phone. Redesigned 2026-09-26 with the desktop hub, in the
- * same order and the same graphite cards, sized for one thumb:
+ * Prayers on a phone. Redrawn for 1.8 as the owner's merged pick of round 4
+ * (2026-10-27, locked): "the Pantocrator and the verse fading in at the top,
+ * then your rule as a checklist" (Homebase/boards/purify-master/variants/
+ * m04-prayers.png, Merged; round 4 B's picture over C's system).
  *
- *   masthead      the section's words and the hour's line, then the quick
- *                 ways in as one row of pills that scrolls sideways
- *   Pray now      one card, four rows: the prayer to continue, then what
- *                 fits the hour, the season and the fast. It replaces the
- *                 Continue praying and Suggested for today lists.
- *   the heart     the Jesus Prayer, then the Prayer Rope Anthem band
- *   Practices     five soft tiles, the last one wide so the grid ends on a
- *                 full row
+ *   the head      Christ Pantocrator of Sinai from the top of the screen,
+ *                 under the bar, with "Pray without ceasing." on it, both
+ *                 fading in (PrayersHero)
+ *   your rule     the reader's own rule for today as a checklist, what is
+ *                 done and what is next, or the way to make one (RuleToday)
+ *   All prayers   the quick ways in, one row that scrolls sideways
+ *   Pray now      the prayer to continue, then what fits the hour, the
+ *                 season and the fast
+ *   the heart     the Jesus Prayer, then the Chants band
+ *   Practices     five soft tiles, the last one wide
  *   the book      search, then every rule by category
+ *
+ * Every door the 1.7 page had is still here, below the rule. What the design
+ * took away: the plate the icon stood on (and its credit line), the date over
+ * it, the small label over the verse, the hour's line under it, and the small
+ * labels that were the sections' names (each is a Lora heading now).
  */
 export function PrayersMobile() {
-  // Resolved on the device. This was `startOfDayUtc(new Date())` in a
-  // server component, so the Android static export froze the dateline, the
-  // season and the fast at build time. See lib/calendar/useToday.ts.
-  const today = useToday();
+  // The reader's own hour, resolved on the device: a server render bakes the
+  // build's hour into the apps' static export.
   const mounted = useMounted();
-  const mode = mounted ? heroModeFor(new Date()) : "morning";
-  // The dateline follows the reader's language. formatLongDate() falls back
-  // to hardcoded English weekday and month names when it is given no locale,
-  // which is what the eyebrow was showing in all twenty of them.
-  const { locale, t } = useTranslate();
+  const hourPart = mounted ? ruleIdForHour(new Date().getHours()) : "morning";
 
   return (
     <MobileShell
       header={<MobileHeader titleKey="nav.prayers" />}
-      eyebrow={today ? formatLongDate(today, locale) : " "}
+      hero={
+        <PrayersHero>
+          <RuleToday hourPart={hourPart} />
+        </PrayersHero>
+      }
     >
-      {/* Christ Pantocrator of Sinai, the face a prayer is said before, with
-          the surface's own words beside it: one plate where there were a band
-          of mosaic and, under it, a block of text. */}
-      <SectionMasthead section="prayers">
-        <Eyebrow className="text-eyebrow">
-          <T k="footer.prayer" />
-        </Eyebrow>
-        {/* h2, not h1: MobileHeader above already names the section, and
-            one surface should say its name once. */}
-        <h2 className="mt-2.5 text-title font-bold leading-[1.1] tracking-[-0.02em] text-paper">
-          <T k="ui.prayWithoutCeasing" />
+      {/* All prayers: the quick ways in, one row scrolled sideways and
+          bleeding to the screen's edges. A ScrollRail like the shop's rows,
+          so the end that has more to show fades into the page. */}
+      <section aria-labelledby="prayers-all">
+        <h2 id="prayers-all" className={H2}>
+          <T k="prayers.allPrayers" />
         </h2>
-        <p className="mt-2 font-serif italic text-detail text-paper/60">
-          <T k="ui.1Thessalonians517" />
-        </p>
-      </SectionMasthead>
-
-      <header>
-        <p className="max-w-[40ch] font-sans text-ui leading-[1.6] text-paper/75">
-          <T k={TIME_LINE_KEY[mode]} />
-        </p>
-      </header>
-
-      {/* The quick ways in: one row, scrolled sideways, bleeding to the
-          screen's edges. It is a ScrollRail like the shop's rows and the
-          Community filters (1.5.2), so the end that has more to show fades
-          into the page and the last pill reads as "there is more". */}
-      <nav aria-label={t("nav.prayers")} className="-mx-5 mt-6">
-        <ScrollRail as="ul" arrows={false} trackClassName="gap-2 px-5 pb-1">
-          {QUICK.map((q) => (
-            <li key={q.href}>
-              <Link href={q.href} className={cn(PILL, "whitespace-nowrap px-4 text-detail")}>
-                <T k={q.k} />
-              </Link>
-            </li>
-          ))}
-        </ScrollRail>
-      </nav>
+        <nav aria-labelledby="prayers-all" className="-mx-5 mt-3">
+          <ScrollRail as="ul" arrows={false} trackClassName="gap-2 px-5 pb-1">
+            {QUICK.map((q) => (
+              <li key={q.href}>
+                <Link href={q.href} className={cn(PILL, "whitespace-nowrap px-4 text-detail")}>
+                  <T k={q.k} />
+                </Link>
+              </li>
+            ))}
+          </ScrollRail>
+        </nav>
+      </section>
 
       <section className="mt-10">
-        <Eyebrow level={2} className="text-eyebrow">
+        <h2 className={H2}>
           <T k="today.prayNow.eyebrow" />
-        </Eyebrow>
+        </h2>
         <div className="mt-3">
           <PrayNow variant="mobile" />
         </div>
@@ -132,9 +103,9 @@ export function PrayersMobile() {
 
       {/* The prayer of the heart */}
       <section className="mt-10">
-        <Eyebrow level={2} className="text-eyebrow">
+        <h2 className={H2}>
           <T k="prayers.heart.eyebrow" />
-        </Eyebrow>
+        </h2>
         <div className={cn(CARD, "mt-3 p-5 hover:translate-y-0 md:p-5")} style={CARD_BG}>
           <p className="font-heading text-title-sm font-bold leading-[1.4] text-paper">
             <T k="prayers.heart.line1" />
@@ -153,7 +124,7 @@ export function PrayersMobile() {
             </Link>
           </div>
         </div>
-        {/* Chants (1.7): the play band leads to the whole library now, the
+        {/* Chants (1.7): the play band leads to the whole library, the
             Prayer Rope Anthem first among them. The owner, 2026-10-16:
             chants needed an easier way in. */}
         <div className="mt-3">
@@ -168,9 +139,9 @@ export function PrayersMobile() {
 
       {/* Practices: the surfaces with their own screens, as soft tiles. */}
       <section className="mt-10">
-        <Eyebrow level={2} className="text-eyebrow">
+        <h2 className={H2}>
           <T k="ui.practices" />
-        </Eyebrow>
+        </h2>
         <SoftTileGrid className="mt-3">
           <SoftTile href="/prayers/today" label={<T k="prayers.tabs.today" />} sub={<T k="prayers.openToday" />} icon={<Calendar size={20} />} tone="a" />
           <SoftTile href="/prayers/hours" label={<T k="ui.theHours" />} sub={<T k="ui.sanctifyTheDay" />} icon={<Lampada size={21} />} tone="b" />
@@ -188,9 +159,9 @@ export function PrayersMobile() {
 
       {/* The prayer book: a typed query replaces the index with results. */}
       <section className="mt-10">
-        <Eyebrow level={2} className="text-eyebrow">
+        <h2 className={H2}>
           <T k="prayers.bookTitle" />
-        </Eyebrow>
+        </h2>
         <div className="mt-3">
           <PrayerSearch>
             <PrayerBookIndex variant="mobile" />

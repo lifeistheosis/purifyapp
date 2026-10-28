@@ -39,6 +39,12 @@ import { useTranslate } from "@/components/i18n/MessagesProvider";
  *
  * Solid `bg-night`, not a translucent blur: the Android WebView bleeds
  * imagery through backdrop-filter and drops frames while scrolling.
+ *
+ * Over a page's own picture it starts clear (Prayers, 1.8, the owner's merged
+ * pick of round 4): globals.css takes the ground and the hairline away while
+ * the picture is on the page and not yet gone up under the bar
+ * (components/mobile/PrayersHero.tsx), phones only. The bar itself is the
+ * same on every tab and takes no prop for it.
  */
 export function MobileHeader({
   title,
@@ -101,7 +107,10 @@ export function MobileHeader({
         <h1 ref={nameRef} className="title-in min-w-0 flex-1 truncate text-lede leading-tight tracking-[-0.01em] text-paper">
           {resolvedTitle}
         </h1>
-        <div className="flex shrink-0 items-center">
+        {/* data-tab-actions: where the bar stands over a page's picture
+            (Prayers, 1.8), globals.css sets the round buttons on plates,
+            the Premium pill keeping its own. */}
+        <div data-tab-actions="" className="flex shrink-0 items-center">
           <span className="me-0.5 inline-flex">
             <MobilePremiumButton />
           </span>

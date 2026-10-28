@@ -12,11 +12,16 @@ import type { ReactNode } from "react";
  */
 export function MobileShell({
   header,
+  hero,
   eyebrow,
   children,
 }: {
   /** The tab bar: <MobileHeader titleKey="nav.bible" /> and its siblings. */
   header: ReactNode;
+  /** A picture that runs from the top of the screen, under the bar, before
+      the body (Prayers, 1.8). Outside the body's padding and its cascade:
+      it brings its own entrance. */
+  hero?: ReactNode;
   /** Small uppercase caption above the timeline (e.g. "Daily Refresh").
       Optional: screens that lead with their own masthead can omit it. */
   eyebrow?: ReactNode;
@@ -26,6 +31,7 @@ export function MobileShell({
   return (
     <div className="flex flex-col bg-night md:hidden native-md-flex">
       {header}
+      {hero}
       {/* The entrance for Bible, Discover, Prayers, Reading and You, in one
           place. `cascade` staggers the direct children in reading order,
           `cascade-tight` shortens the step because this is a screen arriving

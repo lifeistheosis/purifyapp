@@ -1,6 +1,6 @@
 "use client";
 
-import { useId, useState } from "react";
+import { useEffect, useId, useRef, useState } from "react";
 
 import { PlusLock } from "@/components/billing/PlusMark";
 import { useUpgradeModal } from "@/components/billing/UpgradeModal";
@@ -28,6 +28,12 @@ import { AskCard, ChantPicker, useChantAsk } from "./PrayWithChant";
  *
  * Whichever plays shows in the mini player, as it already does, and its half
  * of the control is lit while it plays.
+ *
+ * Chant underneath (1.8, the owner's pick B, Immersive, for while you pray):
+ * once this control has scrolled up off the screen and nothing sounds, its
+ * chant waits at the foot of the screen, where the mini player stands while
+ * one plays, so it is one tap away from the line being prayed. It is the same
+ * picker; the question's card takes the place while it is up.
  */
 export function PrayWith({ className }: { className?: string }) {
   const { t } = useTranslate();
@@ -38,6 +44,21 @@ export function PrayWith({ className }: { className?: string }) {
   const upgrade = useUpgradeModal();
   const [picker, setPicker] = useState(false);
   const { asking, dismiss } = useChantAsk(audio.playing);
+  const group = useRef<HTMLDivElement>(null);
+  const [scrolledPast, setScrolledPast] = useState(false);
+
+  // Gone up off the top as the prayer is read, not merely not reached yet.
+  useEffect(() => {
+    const el = group.current;
+    if (!el || typeof IntersectionObserver === "undefined") return;
+    const io = new IntersectionObserver(([entry]) => {
+      setScrolledPast(!entry.isIntersecting && entry.boundingClientRect.bottom <= (entry.rootBounds?.top ?? 0));
+    });
+    io.observe(el);
+    return () => io.disconnect();
+  }, []);
+  const silent = !audio.src && !ambience.playing && !ambience.loading;
+  const underneath = scrolledPast && silent && !asking && !picker;
 
   // Unknown is allowed (lib/entitlements/usePlusFeatures.ts): the sheet
   // carries its own lock, so a subscriber never meets one while it loads.
@@ -62,7 +83,7 @@ export function PrayWith({ className }: { className?: string }) {
     );
 
   return (
-    <div role="group" aria-labelledby={label} className={cn("flex flex-wrap items-center gap-x-3 gap-y-2", className)}>
+    <div ref={group} role="group" aria-labelledby={label} className={cn("flex flex-wrap items-center gap-x-3 gap-y-2", className)}>
       <span id={label} className="shrink-0 font-sans text-caption text-paper/55">
         {t("prayers.prayWith.label")}
       </span>
@@ -85,6 +106,19 @@ export function PrayWith({ className }: { className?: string }) {
         </button>
       </span>
       {asking ? <AskCard onDismiss={dismiss} onChoose={openPicker} /> : null}
+      {underneath ? (
+        <div className="now-playing-lift pointer-events-none fixed inset-x-0 bottom-0 z-[55] flex justify-center px-3 pb-[calc(env(safe-area-inset-bottom)+0.75rem)] md:pb-4">
+          <button
+            type="button"
+            aria-haspopup="dialog"
+            onClick={openPicker}
+            className="pray-chip pray-chip-in tap-press pointer-events-auto inline-flex min-h-11 items-center gap-2 rounded-pill bg-night-soft px-5 font-sans text-detail font-semibold text-paper shadow-[0_10px_28px_rgba(0,0,0,0.5)] ring-1 ring-inset ring-paper/12 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-paper"
+          >
+            <Note size={16} className="shrink-0" />
+            {t("chant.button")}
+          </button>
+        </div>
+      ) : null}
       <ChantPicker open={picker} onClose={() => setPicker(false)} />
     </div>
   );

@@ -49,8 +49,10 @@ export function CommemorationStep({
   const hasLiving = living.length + wall.length > 0;
   const hasDeparted = departed.length > 0;
 
+  // A step of the page, set in the middle as every prayer of it is since 1.8
+  // (PrayerStep, the owner's pick B, Immersive).
   return (
-    <section id={stepId} aria-labelledby={`${stepId}-title`} className="scroll-mt-16 border-t border-paper/10 py-9 md:scroll-mt-24">
+    <section id={stepId} data-step aria-labelledby={`${stepId}-title`} className="scroll-mt-16 border-t border-paper/10 py-9 text-center md:scroll-mt-24">
       <h2 id={`${stepId}-title`} tabIndex={-1} className="font-serif text-title-sm font-semibold leading-snug text-paper/90 focus:outline-none">
         {t("prayers.mine.names")}
       </h2>
@@ -100,29 +102,31 @@ export function CommemorationStep({
         </div>
       ) : null}
 
-      <button
-        type="button"
-        onClick={onToggle}
-        disabled={!hydrated}
-        aria-pressed={done}
-        className={cn(
-          "tap-press mt-6 inline-flex min-h-11 items-center gap-2.5 rounded-pill pe-3 font-sans text-detail motion-safe:transition-colors disabled:opacity-40",
-          done ? "text-paper" : "text-paper/65 hover:text-paper",
-        )}
-      >
-        <span
-          aria-hidden
-          className={cn("grid size-6 shrink-0 place-items-center rounded-full", done ? "bg-paper text-night" : "ring-1 ring-inset ring-paper/35")}
+      <div data-step-actions className="mt-6">
+        <button
+          type="button"
+          onClick={onToggle}
+          disabled={!hydrated}
+          aria-pressed={done}
+          className={cn(
+            "tap-press inline-flex min-h-11 items-center gap-2.5 rounded-pill px-3 font-sans text-detail motion-safe:transition-colors disabled:opacity-40",
+            done ? "text-paper" : "text-paper/65 hover:text-paper",
+          )}
         >
-          {done ? <Check size={14} /> : null}
-        </span>
-        {done ? t("shop.prayedToday") : t("prayers.reader.markPrayed")}
-      </button>
-      {done && wall.length > 0 ? (
-        <p role="status" className="mt-1 font-sans text-caption text-paper/50">
-          {t("prayers.wall.left")}
-        </p>
-      ) : null}
+          <span
+            aria-hidden
+            className={cn("grid size-6 shrink-0 place-items-center rounded-full", done ? "bg-paper text-night" : "ring-1 ring-inset ring-paper/35")}
+          >
+            {done ? <Check size={14} /> : null}
+          </span>
+          {done ? t("shop.prayedToday") : t("prayers.reader.markPrayed")}
+        </button>
+        {done && wall.length > 0 ? (
+          <p role="status" className="mt-1 font-sans text-caption text-paper/50">
+            {t("prayers.wall.left")}
+          </p>
+        ) : null}
+      </div>
     </section>
   );
 }

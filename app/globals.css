@@ -647,6 +647,113 @@ html.is-native .saint-web-sheet {
  background-image: repeating-linear-gradient(to bottom, color-mix(in srgb, var(--color-paper) 30%, transparent) 0 4px, transparent 4px 9px);
 }
 
+/* ── Prayers: the picture at the top (1.8) ──
+   The owner's merged pick of round 4 (2026-10-27): "the Pantocrator and the
+   verse fading in at the top, then your rule as a checklist"
+   (components/mobile/PrayersHero.tsx). On a phone the picture starts at the
+   top of the screen, under the tab bar: the hero is pulled up by the bar's
+   own height, MobileHeader's row and padding (2.75rem, and 0.5rem above and
+   below) and its hairline, and in the apps the status bar the bar pads for
+   (.tab-topbar above). lib/nav/__tests__/oneTopBar.test.ts holds those
+   classes, so a change to the bar's height is a change here too. On a tablet
+   the bar stays solid and the picture sits under it, in the column. */
+.prayers-hero {
+ --hero-top: calc(3.75rem + 1px);
+}
+html.is-native .prayers-hero {
+ --hero-top: calc(3.75rem + 1px + var(--inset-top));
+}
+@media (min-width: 768px) {
+ .prayers-hero,
+ html.is-native .prayers-hero {
+  --hero-top: 0px;
+ }
+}
+@media (max-width: 767.98px) {
+ .prayers-hero {
+  margin-top: calc(-1 * var(--hero-top));
+ }
+}
+.prayers-hero-picture {
+ height: calc(var(--hero-top) + 17.375rem);
+}
+.prayers-hero-shade-top {
+ height: calc(var(--hero-top) + 2.5rem);
+}
+.prayers-hero-verse {
+ padding-top: calc(var(--hero-top) + 6.5rem);
+}
+
+/* The bar over the picture: clear, its round buttons on plates, until the
+   picture has gone up under it, when PrayersHero sets data-bar-solid on
+   <html>. Decided by html:has(), as the one bar on a phone is above, so the
+   bar is clear from the first paint; a WebView without :has() keeps the
+   solid bar. The plates are the page bar's above, and the Premium pill keeps
+   its own silver. On the web the bar is not pinned, so it is lifted to stand
+   over the picture it covers. Phones only. */
+@media (max-width: 767.98px) {
+ html:has(.prayers-hero):not([data-bar-solid]) [data-tab-topbar] {
+  background-color: transparent;
+  border-bottom-color: transparent;
+ }
+ html:not(.is-native):has(.prayers-hero) [data-tab-topbar] {
+  position: relative;
+ }
+ html:has(.prayers-hero):not([data-bar-solid]) [data-tab-actions] > button {
+  border-radius: 9999px;
+  /* For a WebView without color-mix (Android before 111). */
+  background-color: rgb(16 16 19 / 0.55);
+  background-color: color-mix(in srgb, var(--color-night) 55%, transparent);
+ }
+}
+:where([data-motion="full"]) [data-tab-topbar] {
+ transition-property: background-color, border-color;
+ transition-duration: 200ms;
+ transition-timing-function: var(--ease-house);
+}
+
+/* The picture and the verse fade in as Prayers opens, the picture slowly and
+   from a little larger, then the verse, then the rule. 1.1s is past the
+   duration ladder's top on purpose: a full-screen picture arriving is the
+   one exception the ladder names. Filled backwards, so each is handed back
+   to transform: none when it lands. With motion off they are simply there. */
+@keyframes prayers-picture-in {
+ from { opacity: 0; transform: scale(1.04); }
+}
+@keyframes prayers-hero-in {
+ from { opacity: 0; transform: translateY(8px); }
+}
+.prayers-hero-img {
+ animation: prayers-picture-in 1100ms var(--ease-house) backwards;
+}
+.prayers-hero-verse.prayers-hero-in {
+ animation: prayers-hero-in 800ms var(--ease-house) 280ms backwards;
+}
+.prayers-hero-rule.prayers-hero-in {
+ animation: prayers-hero-in 600ms var(--ease-house) 460ms backwards;
+}
+:where([data-motion="reduce"]) .prayers-hero-img,
+:where([data-motion="reduce"]) .prayers-hero-in {
+ animation: none;
+}
+
+/* Your rule today (components/prayers/RuleToday.tsx): a checked step and the
+   ring's lit arc are the page's accent, white with a soft white glow (the
+   owner, 2026-10-28: the accent is a glowing white, never yellow). On
+   Parchment, where white cannot glow, they are the plain ink. */
+.rule-check-lit {
+ box-shadow: 0 0 12px -1px rgba(255, 255, 255, 0.35);
+}
+.rule-ring-lit {
+ filter: drop-shadow(0 0 4px rgba(255, 255, 255, 0.45));
+}
+html[data-reading-mode="parchment"] .rule-check-lit {
+ box-shadow: none;
+}
+html[data-reading-mode="parchment"] .rule-ring-lit {
+ filter: none;
+}
+
 /* The shop's floating cart button (56px, right-6 bottom-6) shares the
    bottom-right corner with the app-level back-to-top button (44px, right-7
    bottom-7), so on shop pages they rendered on top of each other. CartFab sets
@@ -4245,6 +4352,96 @@ html[data-verse-focus] [data-verse]:not([data-focus]) {
  transition: none;
 }
 
+/* While you pray (1.8): the owner's pick B, Immersive, of 2026-10-27, "the
+   line being prayed lit, the rest dim, the icon's light behind, chant
+   underneath" (components/prayers/PrayerRuleReader.tsx), on the 1.7 page
+   below and its one scroll-driven light.
+
+   The icon's light: the page's own icon (lib/prayers/serviceArt.ts), large
+   behind the reading place, soft and dim, and without its colour, so the
+   light it gives is white, never the gold of the panel. It is fixed and does
+   not move: a blurred layer is drawn once and only composited after, which
+   the 1.9 notes allow (blur on fixed layers, never on what scrolls). What
+   moves, with motion on, is a faint white breath over it, a gradient with no
+   filter that drifts on the compositor; with motion off it is still. On
+   Parchment a white light cannot be seen, so the icon is a soft shade and
+   the breath is not drawn. */
+.prayer-light {
+ position: fixed;
+ z-index: 0;
+ left: 50%;
+ top: 6vh;
+ width: min(150vw, 960px);
+ height: 72vh;
+ margin-left: calc(min(150vw, 960px) / -2);
+ background-size: cover;
+ background-position: 50% 22%;
+ background-repeat: no-repeat;
+ filter: blur(52px) grayscale(1);
+ opacity: 0.22;
+ pointer-events: none;
+}
+.prayer-light-breath {
+ position: fixed;
+ z-index: 0;
+ inset: 0;
+ background: radial-gradient(42% 30% at 50% 40%, rgb(255 255 255 / 0.07), rgb(255 255 255 / 0) 70%);
+ pointer-events: none;
+ animation: prayer-light-drift 24s ease-in-out infinite alternate;
+}
+@keyframes prayer-light-drift {
+ from { transform: translate3d(-6%, -3%, 0) scale(1); }
+ to { transform: translate3d(6%, 3%, 0) scale(1.12); }
+}
+:where([data-motion="reduce"]) .prayer-light-breath {
+ animation: none;
+}
+html[data-reading-mode="parchment"] .prayer-light {
+ opacity: 0.1;
+}
+html[data-reading-mode="parchment"] .prayer-light-breath {
+ display: none;
+}
+
+/* The rest dim: once the reader is following, the prayers before and after
+   the one being prayed step back further than its own unlit lines (the lines
+   at 0.4 below, in a prayer at half strength). Its two actions, Mark prayed
+   and the bookmark, keep their strength, so a prayer just finished can still
+   be marked. Only with motion on, as the lit line is. */
+:where([data-motion="full"]) [data-prayer-reader] [data-step] > * {
+ transition: opacity 420ms var(--ease-house);
+}
+:where([data-motion="full"]) [data-prayer-reader][data-following] [data-step]:not([data-praying]) > :not([data-step-actions]) {
+ opacity: 0.5;
+}
+
+/* The line being prayed is the page's accent: white with a soft white glow
+   (the owner, 2026-10-28: the accent is a glowing white, never yellow). On
+   Parchment, where white cannot glow, it is the plain ink at full strength. */
+:where([data-motion="full"]) [data-prayer-reader][data-following] [data-line][data-lit] {
+ text-shadow: 0 0 18px rgba(255, 255, 255, 0.35);
+}
+html[data-reading-mode="parchment"] [data-prayer-reader] [data-line][data-lit] {
+ text-shadow: none;
+}
+
+/* Chant underneath (components/player/PrayWith.tsx): the chip that keeps
+   Pray with's chant at the foot of the screen rises in as it comes. In the
+   apps it stands over the tab bar, where .now-playing-lift puts it and takes
+   its padding away, so it keeps a little air of its own there. */
+html.is-native .pray-chip {
+ margin-bottom: 0.75rem;
+}
+@keyframes pray-chip-in {
+ from { opacity: 0; transform: translateY(10px); }
+}
+.pray-chip-in {
+ animation: pray-chip-in var(--duration-base) var(--ease-house) backwards;
+}
+:where([data-motion="reduce"]) .pray-chip-in {
+ animation: none;
+}
+
 /* The prayer reader (1.7): a prayer flows down the page line by line, as the
    live lyrics in Now Playing and the read-aloud follow do. The owner,
    2026-10-16: the line being read bright, the rest a step back as you move
@@ -4255,7 +4452,7 @@ html[data-verse-focus] [data-verse]:not([data-focus]) {
    strength and nothing moves. */
 :where([data-motion="full"]) [data-prayer-reader][data-following] [data-line] {
  opacity: 0.4;
- transition: opacity 420ms var(--ease-house);
+ transition: opacity 420ms var(--ease-house), text-shadow 420ms var(--ease-house);
 }
 :where([data-motion="full"]) [data-prayer-reader][data-following] [data-line][data-lit] {
  opacity: 1;

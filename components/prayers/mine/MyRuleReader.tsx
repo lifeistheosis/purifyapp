@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useMemo } from "react";
+import { useEffect, useMemo, useRef } from "react";
 
 import { useTranslate } from "@/components/i18n/MessagesProvider";
 import { PrayerRuleReader } from "@/components/prayers/PrayerRuleReader";
@@ -53,6 +53,22 @@ export function MyRuleReader({ part }: { part: MyRulePart }) {
       ),
     [part, mine, locale, living, departed, t, titleKey],
   );
+
+  // Your rule today on Prayers (components/prayers/RuleToday.tsx, 1.8) opens
+  // a part at one of its prayers, /prayers/personal/<part>#<step>. Until the
+  // page has read the rule there is nothing to go to, so it goes once it has,
+  // and the prayer's name takes the focus, as Begin gives it.
+  const landed = useRef(false);
+  const steps = composed.rule.prayers.length;
+  useEffect(() => {
+    if (!mounted || steps === 0 || landed.current) return;
+    landed.current = true;
+    const id = decodeURIComponent(window.location.hash.slice(1));
+    const step = id ? document.getElementById(id) : null;
+    if (!step) return;
+    step.scrollIntoView({ block: "start" });
+    document.getElementById(`${id}-title`)?.focus({ preventScroll: true });
+  }, [mounted, steps]);
 
   // The rule lives on the device: nothing to show until the page has read it.
   if (!mounted) return <div aria-hidden className="min-h-[60vh]" />;
