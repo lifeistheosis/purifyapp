@@ -2734,15 +2734,17 @@ await section(35, async () => {
   await ctx.close();
 });
 
-// ---- 36. A saint on a phone (1.7).
+// ---- 36. A saint on a phone (1.7, and its doors and web of 1.8).
 // The owner's note 19 of 2026-10-16: a saint's page "reads like the desktop
 // page shrunk". Now his icon is at the top (full width where a sharp picture
 // of him is on the website; this walk has no network, so the bundled icon
 // stands in the same box), his name with one line under it, one row with the
-// request as a clear pill, then a switch between his Life, Writings and
-// Miracles, and the page's own bar, whose name arrives once his has scrolled
-// away. lib/saints/__tests__/saintPage.test.ts reads the source; this is how
-// the built app draws it.
+// request as a clear pill, then, from 1.8 (round 3b D, "Fade and doors"), the
+// doors to his Life, Writings, Web and Hymns, only those he has, and the
+// page's own bar, whose name arrives once his has scrolled away. The Web door
+// opens the saint web: one screen, a Web / Timeline switch in its bar.
+// lib/saints/__tests__/saintPage.test.ts reads the source; this is how the
+// built app draws it.
 await section(36, async () => {
   console.log("\n36. A saint on a phone");
   const en = JSON.parse(fs.readFileSync(path.resolve("lib/i18n/messages/en.json"), "utf8"));
@@ -2761,7 +2763,8 @@ await section(36, async () => {
       const h1 = document.querySelector("h1#saint-name");
       const pill = [...document.querySelectorAll("a, button")].find((b) => (b.textContent ?? "").trim() === labels.ask);
       const title = bar?.querySelector("[data-topbar-title]");
-      const tabs = [...document.querySelectorAll("[role=tablist] [role=tab]")].map((t) => (t.textContent ?? "").trim());
+      const group = [...document.querySelectorAll("[role=group]")].find((g) => g.getAttribute("aria-label") === labels.doors);
+      const tabs = group ? [...group.children].map((t) => (t.textContent ?? "").trim()) : [];
       const r = (el) => (el ? el.getBoundingClientRect() : null);
       return {
         bars: bars.length,
@@ -2776,12 +2779,12 @@ await section(36, async () => {
         tabs,
         h1s: document.querySelectorAll("h1").length,
       };
-    }, { ask: en["saints.ask.label"] });
+    }, { ask: en["saints.ask.label"], doors: en["saints.sectionSwitcher"] });
     must(top.bars === 1 && !top.backBar, `${size.width}px: one bar, the page's own (${top.bars} bar${top.bars === 1 ? "" : "s"}${top.backBar ? ", and the back bar" : ""})`);
     must(top.overlay && Boolean(top.hero) && top.hero.kind === "picture" && top.hero.left === 0 && top.hero.right === top.vw && top.hero.top <= 0, `${size.width}px: the picture spans the screen from its top, under the clear bar (${top.hero ? `${top.hero.left}..${top.hero.right} of ${top.vw}, top ${top.hero.top}` : "no picture"})`);
     must(top.h1s === 1 && top.h1 !== null && top.h1 < top.vh && top.pill !== null && top.pill < top.vh, `${size.width}px: the name and the pill are on the first screen, and the name is the one heading (name ends ${top.h1}, pill ends ${top.pill}, of ${top.vh})`);
     must(top.title === "0", `${size.width}px: the bar keeps its name back at the top (opacity ${top.title})`);
-    must(top.tabs.length === 2 && top.tabs[0] === en["saints.tab.life"] && top.tabs[1] === en["saints.writings"], `${size.width}px: St John Chrysostom has two parts, Life and Writings (${top.tabs.join(", ") || "no switch"})`);
+    must(top.tabs.join(",") === [en["saints.tab.life"], en["saints.writings"], en["saints.door.web"]].join(","), `${size.width}px: St John Chrysostom has three doors, Life, Writings and Web (${top.tabs.join(", ") || "no doors"})`);
     await page.screenshot({ path: path.join(SHOTS, `saint-top-${size.width}.png`) });
 
     // Past the name, the bar is solid with it.
@@ -2795,7 +2798,7 @@ await section(36, async () => {
     await page.screenshot({ path: path.join(SHOTS, `saint-scrolled-${size.width}.png`) });
 
     // Writings: the cover rows, and the Life put away.
-    await tap(page.getByRole("tab", { name: en["saints.writings"] }));
+    await tap(page.locator("#saint-door-writings"));
     await page.waitForTimeout(800);
     const writings = await page.evaluate(() => {
       const panel = document.querySelector("#saint-panel-writings");
@@ -2830,7 +2833,7 @@ await section(36, async () => {
     await ctx.close();
   }
 
-  // A saint with his life alone: no switch, his icon at its own size, the bar solid.
+  // A saint with his life alone: no doors, his icon at its own size, the bar solid.
   {
     const { ctx, page } = await open({ width: 390, height: 844, phone: true });
     await go(page, "/saints/sava-of-serbia/");
@@ -2839,12 +2842,12 @@ await section(36, async () => {
     const lone = await page.evaluate(() => {
       const img = document.querySelector("[data-saint-hero='plate'] img");
       return {
-        tabs: document.querySelectorAll("[role=tablist]").length,
+        tabs: document.querySelectorAll("[id^='saint-door-']").length,
         plate: img ? { h: Math.round(img.getBoundingClientRect().height), natural: img.naturalHeight } : null,
         overlay: document.querySelector("[data-mobile-topbar]")?.hasAttribute("data-overlay") ?? null,
       };
     });
-    must(lone.tabs === 0, `a saint with his life alone has no switch (${lone.tabs})`);
+    must(lone.tabs === 0, `a saint with his life alone has no doors (${lone.tabs})`);
     must(Boolean(lone.plate) && lone.plate.h <= 260 && lone.overlay === false, `and his icon stands at its own size on the plate under a solid bar (${lone.plate ? `${lone.plate.h}px tall, ${lone.plate.natural}px in the file` : "no icon"})`);
     await page.screenshot({ path: path.join(SHOTS, "saint-life-only-390.png") });
     await ctx.close();
@@ -2856,8 +2859,11 @@ await section(36, async () => {
     await go(page, "/saints/anthony-the-great/");
     await page.waitForFunction(() => !!document.querySelector("[data-saint-explainer]"), null, { timeout: 20000 }).catch(() => {});
     await page.waitForTimeout(900);
-    const parts = await page.evaluate(() => [...document.querySelectorAll("[role=tablist] [role=tab]")].map((t) => (t.textContent ?? "").trim()));
-    must(parts.join(",") === [en["saints.tab.life"], en["saints.writings"], en["saints.miracles"]].join(","), `St Anthony has three parts, his Miracles among them (${parts.join(", ")})`);
+    const parts = await page.evaluate(() => ({
+      doors: [...document.querySelectorAll("[id^='saint-door-']")].map((t) => (t.textContent ?? "").trim()),
+      miracles: !!document.querySelector("#saint-panel-life #miracles h2"),
+    }));
+    must(!parts.doors.includes(en["saints.miracles"]) && parts.miracles, `St Anthony's Miracles are at the end of his Life, not a door (${parts.doors.join(", ")}; in the Life: ${parts.miracles})`);
     await tap(page.locator("[data-saint-explainer]").first());
     await page.waitForTimeout(900);
     const sheet = await page.evaluate((title) => {
@@ -2865,6 +2871,47 @@ await section(36, async () => {
       return d ? (d.textContent ?? "").includes("editorial") : null;
     }, en["saints.bump.whatRequesting"]);
     must(sheet === true, `the round i opens what asking does, in the same sheet (${sheet === null ? "no sheet" : "its words there"})`);
+    await ctx.close();
+  }
+
+  // The saint web (1.8, round 1 A and B): the Web door opens it, one screen
+  // with a Web / Timeline switch in the bar, the same people both ways.
+  for (const size of [{ width: 360, height: 740 }, { width: 390, height: 844 }]) {
+    const { ctx, page, errors } = await open({ ...size, phone: true });
+    await go(page, "/saints/john-chrysostom/");
+    await page.waitForFunction(() => !!document.querySelector("h1#saint-name"), null, { timeout: 20000 }).catch(() => {});
+    await page.waitForTimeout(900);
+    await tap(page.locator("a[href$='/saints/john-chrysostom/web'], a[href$='/saints/john-chrysostom/web/']").first());
+    await page.waitForFunction(() => location.pathname.replace(/\/$/, "").endsWith("/web"), null, { timeout: 20000 }).catch(() => {});
+    await page.waitForTimeout(1500);
+    const web = await page.evaluate(() => {
+      const bar = document.querySelector("[data-mobile-topbar]");
+      const views = bar ? [...bar.querySelectorAll("[role=tablist] [role=tab]")].map((t) => (t.textContent ?? "").trim()) : [];
+      const nodes = [...document.querySelectorAll("[data-saint-web-canvas] button[aria-pressed]")];
+      const sheet = document.querySelector(".saint-web-sheet");
+      return {
+        path: location.pathname,
+        views,
+        nodes: nodes.length,
+        sheet: sheet ? Math.round(sheet.getBoundingClientRect().bottom) : null,
+        vh: window.innerHeight,
+        wide: document.documentElement.scrollWidth - document.documentElement.clientWidth,
+      };
+    });
+    must(web.views.join(",") === [en["saints.door.web"], en["saints.web.timeline"]].join(","), `${size.width}px: the Web door opens the saint web, its switch in the bar (${web.path}; ${web.views.join(", ") || "no switch"})`);
+    must(web.nodes >= 9 && web.sheet !== null && web.sheet <= web.vh, `${size.width}px: St John's web has its nine saints and the sheet on the screen (${web.nodes} nodes, sheet ends ${web.sheet} of ${web.vh})`);
+    must(web.wide <= 0, `${size.width}px: the web is no wider than the phone (${web.wide}px over)`);
+    await page.screenshot({ path: path.join(SHOTS, `saint-web-${size.width}.png`) });
+    await tap(page.locator("[data-mobile-topbar] [role=tab]").nth(1));
+    await page.waitForTimeout(700);
+    const line = await page.evaluate(() => ({
+      hash: location.hash,
+      rows: document.querySelectorAll("#saint-web-view ol > li").length,
+      people: document.querySelectorAll("#saint-web-view a[href^='/saints/']").length,
+    }));
+    must(line.hash === "#timeline" && line.rows > 3 && line.people >= 9, `${size.width}px: Timeline is his life year by year with the same people (${line.hash || "no #"}, ${line.rows} moments, ${line.people} saints)`);
+    await page.screenshot({ path: path.join(SHOTS, `saint-web-timeline-${size.width}.png`) });
+    must(errors.length === 0, `${size.width}px: no page errors on the web${errors.length ? ": " + errors.slice(0, 2).join(" | ") : ""}`);
     await ctx.close();
   }
 });

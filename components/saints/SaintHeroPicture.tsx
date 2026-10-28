@@ -28,6 +28,11 @@ import { avifFor } from "@/lib/media/streamed";
  * hero that fails is asked for once more, quietly, before the icon stays.
  * It is asked for as AVIF first, about 40% lighter (1.7.2), and as its JPEG
  * when the AVIF cannot be had.
+ *
+ * FADE AND DOORS (1.8, round 3b D, the owner's pick of 2026-10-27): the icon
+ * fades in at the top as the page opens (`.saint-icon-in`, still on the
+ * motion switch), nine wide by ten tall on a phone, the shape the design
+ * drew, with a deeper shade under the bar and the name set over its foot.
  */
 export function SaintHeroPicture({
   name,
@@ -79,8 +84,8 @@ export function SaintHeroPicture({
       <div
         data-saint-hero="picture"
         className={cn(
-          "under-topbar relative -mx-5 aspect-[4/5] max-h-[70svh] overflow-hidden",
-          "md:mx-0 md:mt-0 md:max-h-none md:w-full md:rounded-[14px] md:ring-1 md:ring-inset md:ring-paper/10",
+          "saint-icon-in under-topbar relative -mx-5 aspect-[9/10] max-h-[70svh] overflow-hidden",
+          "md:mx-0 md:mt-0 md:aspect-[4/5] md:max-h-none md:w-full md:rounded-[14px] md:ring-1 md:ring-inset md:ring-paper/10",
           !failed && "picture-melt",
         )}
       >
@@ -124,7 +129,7 @@ export function SaintHeroPicture({
         )}
         <div
           aria-hidden
-          className="pointer-events-none absolute inset-x-0 top-0 h-28 bg-gradient-to-b from-night/60 to-transparent md:hidden"
+          className="pointer-events-none absolute inset-x-0 top-0 h-36 bg-gradient-to-b from-night/80 to-transparent md:hidden"
         />
       </div>
     );
@@ -132,7 +137,7 @@ export function SaintHeroPicture({
 
   if (!iconUrl) return null;
   return (
-    <div data-saint-hero="plate" className="flex justify-center pt-6 md:block md:pt-0">
+    <div data-saint-hero="plate" className="saint-icon-in flex justify-center pt-6 md:block md:pt-0">
       {/* eslint-disable-next-line @next/next/no-img-element -- the app's own icon, as it is. */}
       <img
         src={iconUrl}

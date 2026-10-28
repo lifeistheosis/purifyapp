@@ -8,20 +8,38 @@
  * (lib/saints/__tests__/brief.test.ts).
  */
 
-/** The parts of a saint's page, in the order the switch shows them. */
-export type SaintTab = "life" | "writings" | "miracles";
+/**
+ * The doors of a saint's page (1.8, round 3b D, "Fade and doors", the
+ * owner's pick of 2026-10-27): Life, Writings, Web, Hymns, in that order.
+ */
+export type SaintDoor = "life" | "writings" | "web" | "hymns";
 
 /**
- * The parts this saint has: the life always, the writings when there are
- * works on Purify or books in print, the miracles when there is a verbatim
- * public-domain account of them. A part with nothing in it is not offered,
- * so most saints have two and sixty have the life alone, with no switch.
+ * The parts the doors switch between, below them. The Web door is not one:
+ * it opens the saint web (app/(app)/saints/[slug]/web). His miracles, a part
+ * of their own in 1.7, are read at the end of his Life now.
  */
-export function saintTabs(input: { works: number; licensed: number; miracles: boolean }): SaintTab[] {
-  const tabs: SaintTab[] = ["life"];
-  if (input.works > 0 || input.licensed > 0) tabs.push("writings");
-  if (input.miracles) tabs.push("miracles");
-  return tabs;
+export type SaintTab = Exclude<SaintDoor, "web">;
+
+/**
+ * The doors this saint has: the Life always, the Writings when there are
+ * works on Purify or books in print, the Web when the app's data joins him to
+ * another saint (lib/saints/web.ts), the Hymns when the library holds the
+ * Church's hymns to him (lib/saints/hymns.ts) or an akathist. A door with
+ * nothing behind it is left out, not shown empty, so a saint with his Life
+ * alone has no doors at all.
+ */
+export function saintDoors(input: { works: number; licensed: number; web: boolean; hymns: number }): SaintDoor[] {
+  const doors: SaintDoor[] = ["life"];
+  if (input.works > 0 || input.licensed > 0) doors.push("writings");
+  if (input.web) doors.push("web");
+  if (input.hymns > 0) doors.push("hymns");
+  return doors;
+}
+
+/** The doors that switch the page below them, in order. */
+export function saintTabs(doors: readonly SaintDoor[]): SaintTab[] {
+  return doors.filter((d): d is SaintTab => d !== "web");
 }
 
 /**

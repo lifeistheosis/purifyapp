@@ -5,15 +5,20 @@ import { getEffectiveComplete } from "@/lib/admin/saintOverrides";
 import { SaintHero } from "@/components/saints/SaintHero";
 import { SaintStudyRail } from "@/components/saints/SaintStudyRail";
 import { ContentShell } from "@/components/layout/ContentShell";
-import { SectionTabs, type SectionTab } from "@/components/layout/SectionTabs";
+import { SaintDoors, type SaintDoorPanels } from "@/components/saints/SaintDoors";
 import { SaintLife } from "@/components/saints/SaintLife";
 import { SaintWritings } from "@/components/saints/SaintWritings";
 import { MiraclesSection } from "@/components/saints/MiraclesSection";
 import { LicensedWorksSection } from "@/components/saints/LicensedWorksSection";
+import { HymnsSection } from "@/components/saints/HymnsSection";
+import { BookmarkSaintButton } from "@/components/saints/BookmarkSaintButton";
 import { MobileTopBar } from "@/components/nav/MobileTopBar";
 import { getLicensedWorks } from "@/lib/saints/licensedWorks";
 import { heroSrc, saintHero } from "@/lib/saints/heroes";
-import { saintTabs, type SaintTab } from "@/lib/saints/page";
+import { saintDoors, saintTabs } from "@/lib/saints/page";
+import { hymnsOf } from "@/lib/saints/hymns";
+import { hasWeb } from "@/lib/saints/web";
+import { listAkathists } from "@/lib/prayers/akathists";
 import { cardFor } from "@/lib/reading/cards";
 import { IS_STATIC_EXPORT } from "@/lib/platform/buildTarget";
 import { getServerLocale } from "@/lib/i18n/server";
@@ -84,21 +89,18 @@ async function loadBumpState(slug: string) {
   }
 }
 
-/** The name of each part on the switch. */
-const TAB_LABEL: Record<SaintTab, string> = {
-  life: "saints.tab.life",
-  writings: "saints.writings",
-  miracles: "saints.miracles",
-};
-
 /**
- * A saint's page (1.7, the owner's note 19 of 2026-10-16), phone first: his
- * icon at the top (full width where a sharp picture of him exists), his name
- * with one line under it, the request and Save, then a switch between his
- * Life, his Writings and his Miracles, offering only the parts he has. The
- * top bar is the page's own: it starts clear over the picture and turns
- * solid with his name once the name has scrolled away, and its way back
- * returns to the list, or to the saints when there is nothing behind.
+ * A saint's page, phone first: the 1.7 page of the owner's note 19 of
+ * 2026-10-16, with the top he locked on 2026-10-27, round 3b D, "Fade and
+ * doors": his icon fading in at the top (full width where a sharp picture of
+ * him exists), his name over its foot with one line under it, the row with
+ * the request and Share, then four doors, Life, Writings, Web and Hymns,
+ * offering only those he has. Life, Writings and Hymns switch what is below;
+ * Web opens his saint web. His miracles are read at the end of his Life. The
+ * top bar is the page's own: it starts clear over the picture with the way
+ * back and Save on round plates, turns solid with his name once the name has
+ * scrolled away, and its way back returns to the list, or to the saints when
+ * there is nothing behind.
  */
 export default async function SaintPage({ params }: { params: Params }) {
   const { slug } = await params;
@@ -142,13 +144,20 @@ export default async function SaintPage({ params }: { params: Params }) {
   const hero = saintHero(slug);
   const heroPicture = hero ? { src: heroSrc(hero, IS_STATIC_EXPORT), width: hero.width, height: hero.height } : null;
 
-  const parts = saintTabs({
+  const doors = saintDoors({
     works: saint.works.length,
     licensed: licensedWorks.length,
-    miracles: Boolean(saint.hasMiracles),
+    web: hasWeb(saint.slug),
+    hymns: hymnsOf(saint.slug).length + listAkathists().filter((a) => a.slug === saint.slug).length,
   });
-  const panel: Record<SaintTab, () => React.ReactNode> = {
-    life: () => <SaintLife saint={effectiveSaint} events={eventsForSaint(saint.slug)} />,
+  const panel = {
+    life: () => (
+      <SaintLife
+        saint={effectiveSaint}
+        events={eventsForSaint(saint.slug)}
+        miracles={saint.hasMiracles ? <MiraclesSection slug={saint.slug} /> : undefined}
+      />
+    ),
     writings: () => (
       <div className="space-y-12">
         <SaintWritings
@@ -172,9 +181,12 @@ export default async function SaintPage({ params }: { params: Params }) {
         <LicensedWorksSection works={licensedWorks} />
       </div>
     ),
-    miracles: () => <MiraclesSection slug={saint.slug} />,
+    hymns: () => <HymnsSection slug={saint.slug} />,
   };
-  const tabs: SectionTab[] = parts.map((id) => ({ id, labelKey: TAB_LABEL[id], panel: panel[id]() }));
+  const panels: SaintDoorPanels = {};
+  for (const id of saintTabs(doors)) panels[id] = panel[id]();
+  // Save rides in the top bar on a phone, beside the way back (round 3b D).
+  const save = <BookmarkSaintButton slug={saint.slug} name={saint.name} variant="bar" />;
 
   return (
     <>
@@ -196,6 +208,7 @@ export default async function SaintPage({ params }: { params: Params }) {
         backFallback="/saints"
         revealTitleOn="saint-name"
         overlay={Boolean(hero)}
+        trailing={save}
       />
       <section className="bg-night px-5 md:px-8">
         <div className="mx-auto w-full max-w-[1100px]">
@@ -204,7 +217,12 @@ export default async function SaintPage({ params }: { params: Params }) {
             <ContentNotYetTranslated locale={locale} kind="bio" />
           ) : null}
           <ContentShell rail={<SaintStudyRail saint={effectiveSaint} />}>
-            <SectionTabs idBase="saint" labelKey="saints.sectionSwitcher" tabs={tabs} />
+            <SaintDoors
+              doors={doors}
+              panels={panels}
+              webHref={doors.includes("web") ? `/saints/${saint.slug}/web` : undefined}
+              saintName={saint.name}
+            />
             <SaintIconsRail saintSlug={saint.slug} saintName={saint.name} />
           </ContentShell>
           <SaintIntercession saint={saint} />

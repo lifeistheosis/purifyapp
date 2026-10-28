@@ -10,6 +10,7 @@
 
 import { useState } from "react";
 import { useTranslate } from "@/components/i18n/MessagesProvider";
+import { Check } from "@/components/ui/icons/Check";
 import { cn } from "@/lib/cn";
 import { shareCurrentLink } from "@/lib/site";
 import { copyText as putOnClipboard } from "@/lib/ui/copyText";
@@ -19,6 +20,7 @@ export function ShareButton({
   titleKey,
   text,
   className,
+  round = false,
 }: {
   title?: string;
   /** Catalog key resolved client-side; wins over title when set. */
@@ -26,6 +28,12 @@ export function ShareButton({
   /** Optional longer body for the share sheet; defaults to the title. */
   text?: string;
   className?: string;
+  /**
+   * A round 44px button with the mark alone, named by its label for
+   * assistive technology (1.8, the share at the end of a saint's row, round
+   * 3b D). Once the link is copied it says so where a screen reader hears it.
+   */
+  round?: boolean;
 }) {
   const { t } = useTranslate();
   const [copied, setCopied] = useState(false);
@@ -50,6 +58,25 @@ export function ShareButton({
     }
   }
 
+  if (round) {
+    return (
+      <button
+        type="button"
+        onClick={onShare}
+        aria-label={copied ? t("common.linkCopied") : t("common.share")}
+        className={cn(
+          "tap-press inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-pill border border-paper/10 bg-paper/[0.08] text-paper motion-safe:transition-colors hover:border-paper/30",
+          className,
+        )}
+      >
+        {copied ? <Check size={16} /> : <ShareIcon size={18} />}
+        <span aria-live="polite" className="sr-only">
+          {copied ? t("common.linkCopied") : ""}
+        </span>
+      </button>
+    );
+  }
+
   return (
     <button
       type="button"
@@ -66,11 +93,11 @@ export function ShareButton({
   );
 }
 
-function ShareIcon() {
+function ShareIcon({ size = 14 }: { size?: number }) {
   return (
     <svg
-      width="14"
-      height="14"
+      width={size}
+      height={size}
       viewBox="0 0 24 24"
       fill="none"
       stroke="currentColor"

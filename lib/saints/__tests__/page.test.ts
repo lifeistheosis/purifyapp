@@ -1,15 +1,19 @@
-// A saint's page on a phone (1.7, the owner's note 19 of 2026-10-16): the
-// decisions it makes, as plain functions. Which parts a saint's page offers,
-// what the line under his name says, and what the line under the request
-// says. How the page is drawn is held in saintPage.test.ts.
+// A saint's page on a phone (1.7, the owner's note 19 of 2026-10-16), and its
+// doors (1.8, round 3b D, "Fade and doors"): the decisions it makes, as plain
+// functions. Which doors a saint's page offers, what the line under his name
+// says, and what the line under the request says. How the page is drawn is
+// held in saintPage.test.ts.
 
 import fs from "node:fs";
 import path from "node:path";
 
 import { describe, expect, it } from "vitest";
 
-import { askLine, heroTitle, saintTabs } from "@/lib/saints/page";
+import { listAkathists } from "@/lib/prayers/akathists";
+import { hymnsOf } from "@/lib/saints/hymns";
+import { askLine, heroTitle, saintDoors, saintTabs } from "@/lib/saints/page";
 import { SAINTS } from "@/lib/saints/saints";
+import { hasWeb, saintWeb } from "@/lib/saints/web";
 
 const licensed = (slug: string): number => {
   try {
@@ -20,39 +24,55 @@ const licensed = (slug: string): number => {
   }
 };
 
-const tabsOf = (slug: string) => {
+const akathists = (slug: string) => listAkathists().filter((a) => a.slug === slug).length;
+
+const doorsOf = (slug: string) => {
   const saint = SAINTS.find((s) => s.slug === slug)!;
-  return saintTabs({ works: saint.works.length, licensed: licensed(slug), miracles: Boolean(saint.hasMiracles) });
+  return saintDoors({
+    works: saint.works.length,
+    licensed: licensed(slug),
+    web: hasWeb(slug),
+    hymns: hymnsOf(slug).length + akathists(slug),
+  });
 };
 
-describe("the parts a saint's page offers", () => {
-  it("is his Life, then his Writings, then his Miracles, and only those he has", () => {
-    expect(saintTabs({ works: 0, licensed: 0, miracles: false })).toEqual(["life"]);
-    expect(saintTabs({ works: 3, licensed: 0, miracles: false })).toEqual(["life", "writings"]);
-    expect(saintTabs({ works: 0, licensed: 2, miracles: false })).toEqual(["life", "writings"]);
-    expect(saintTabs({ works: 1, licensed: 1, miracles: true })).toEqual(["life", "writings", "miracles"]);
-    expect(saintTabs({ works: 0, licensed: 0, miracles: true })).toEqual(["life", "miracles"]);
+describe("the doors a saint's page offers", () => {
+  it("are his Life, his Writings, his Web and his Hymns, in that order, and only those he has", () => {
+    expect(saintDoors({ works: 0, licensed: 0, web: false, hymns: 0 })).toEqual(["life"]);
+    expect(saintDoors({ works: 3, licensed: 0, web: false, hymns: 0 })).toEqual(["life", "writings"]);
+    expect(saintDoors({ works: 0, licensed: 2, web: false, hymns: 0 })).toEqual(["life", "writings"]);
+    expect(saintDoors({ works: 0, licensed: 0, web: true, hymns: 0 })).toEqual(["life", "web"]);
+    expect(saintDoors({ works: 0, licensed: 0, web: false, hymns: 1 })).toEqual(["life", "hymns"]);
+    expect(saintDoors({ works: 1, licensed: 1, web: true, hymns: 2 })).toEqual(["life", "writings", "web", "hymns"]);
   });
 
-  it("gives the real saints the parts the owner was shown", () => {
-    // St John Chrysostom: nineteen works and two books in print.
-    expect(tabsOf("john-chrysostom")).toEqual(["life", "writings"]);
-    // St Anthony: the one saint with a verbatim account of his miracles.
-    expect(tabsOf("anthony-the-great")).toEqual(["life", "writings", "miracles"]);
-    // A saint with no work on Purify and no book in print has his life alone,
-    // and no switch.
-    const lifeOnly = SAINTS.filter((s) => s.works.length === 0 && licensed(s.slug) === 0 && !s.hasMiracles);
-    expect(lifeOnly.length).toBeGreaterThan(30);
-    for (const s of lifeOnly) expect(tabsOf(s.slug), s.slug).toEqual(["life"]);
+  it("switch the page below them, but for the Web, which opens the saint web", () => {
+    expect(saintTabs(["life", "writings", "web", "hymns"])).toEqual(["life", "writings", "hymns"]);
+    expect(saintTabs(["life", "web"])).toEqual(["life"]);
   });
 
-  it("never offers an empty part", () => {
+  it("gives the real saints the doors their data holds", () => {
+    // St John Chrysostom: nineteen works and two books in print, and a web.
+    expect(doorsOf("john-chrysostom")).toEqual(["life", "writings", "web"]);
+    // St Nicholas: his troparion is in his Stories and Prayers.
+    expect(doorsOf("nicholas-the-wonderworker")).toEqual(["life", "writings", "web", "hymns"]);
+    // The Theotokos: her Akathist is her hymn.
+    expect(doorsOf("theotokos")).toContain("hymns");
+    // St Anthony's miracles are in his Life now, not a door of their own.
+    expect(doorsOf("anthony-the-great")).not.toContain("miracles");
+    // A saint with his Life alone, nobody joined to him, and no hymn: no doors.
+    const alone = SAINTS.filter((s) => doorsOf(s.slug).length === 1);
+    expect(alone.length).toBeGreaterThan(20);
+    for (const s of alone) expect(doorsOf(s.slug), s.slug).toEqual(["life"]);
+  });
+
+  it("never offers an empty door", () => {
     for (const s of SAINTS) {
-      const tabs = tabsOf(s.slug);
-      if (tabs.includes("writings")) expect(s.works.length + licensed(s.slug), s.slug).toBeGreaterThan(0);
-      if (tabs.includes("miracles")) {
-        expect(fs.existsSync(path.join(process.cwd(), "data", "saints", s.slug, "miracles.json")), s.slug).toBe(true);
-      }
+      const doors = doorsOf(s.slug);
+      if (doors.includes("writings")) expect(s.works.length + licensed(s.slug), s.slug).toBeGreaterThan(0);
+      if (doors.includes("web")) expect(saintWeb(s.slug)?.nodes.length ?? 0, s.slug).toBeGreaterThan(0);
+      if (doors.includes("hymns")) expect(hymnsOf(s.slug).length + akathists(s.slug), s.slug).toBeGreaterThan(0);
+      if (s.hasMiracles) expect(fs.existsSync(path.join(process.cwd(), "data", "saints", s.slug, "miracles.json")), s.slug).toBe(true);
     }
   });
 });
