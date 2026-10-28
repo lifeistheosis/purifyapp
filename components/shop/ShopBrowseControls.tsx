@@ -13,6 +13,7 @@ import {
   type BrowseFilters,
   type PriceBand,
 } from "@/lib/shop/browse";
+import { shopSaint } from "@/lib/shop/bySaint";
 import { CLASSIFICATION_LABELS } from "@/lib/shop/format";
 import type { ShopClassification } from "@/lib/shop/types";
 import { useTranslate } from "@/components/i18n/MessagesProvider";
@@ -43,6 +44,15 @@ export function ShopBrowseControls({
   const count = activeFilterCount(filters);
 
   const facetChips: { label: string; clear: () => void }[] = [];
+  // The saint the reader came in with from "Shop by saint" (lib/shop/
+  // bySaint.ts). Not in the sheet, so not in the count: it is only ever set
+  // by arriving, and taken off here.
+  if (filters.saint) {
+    facetChips.push({
+      label: shopSaint(filters.saint)?.shortName ?? filters.saint.replaceAll("-", " "),
+      clear: () => onChange({ ...filters, saint: null }),
+    });
+  }
   if (filters.readyOnly) {
     facetChips.push({
       label: t("shop.readyToShip"),
@@ -144,7 +154,7 @@ export function ShopBrowseControls({
             <button
               type="button"
               onClick={() =>
-                onChange({ q: filters.q, readyOnly: false, classification: null, priceBand: null })
+                onChange({ q: filters.q, readyOnly: false, classification: null, priceBand: null, saint: null })
               }
               className="min-h-[34px] px-2 font-sans text-caption text-paper/55 underline underline-offset-2 hover:text-paper"
             >
@@ -176,7 +186,7 @@ export function ShopBrowseControls({
   );
 }
 
-/** The facet controls themselves — shared verbatim between the sheet and the
+/** The facet controls themselves, shared verbatim between the sheet and the
  * desktop panel so the two can never drift. */
 function FacetEditor({
   filters,

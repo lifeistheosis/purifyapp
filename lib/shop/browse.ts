@@ -1,6 +1,6 @@
 // Client-side browse refinement for the shop: free-text search + facet
 // filters applied over the already-fetched catalog page (max 60 rows), so
-// refining feels instant — no network round-trip per keystroke. The server
+// refining feels instant, with no network round-trip per keystroke. The server
 // still owns the base query (category / inventory via /api/shop/catalog);
 // this narrows what is on screen. Pure functions, unit-tested.
 
@@ -17,6 +17,12 @@ export type BrowseFilters = {
   classification?: string | null;
   /** Price facet, in whole-dollar bands. */
   priceBand?: PriceBand | null;
+  /**
+   * Saint facet: only the pieces that carry this saint (a product subject of
+   * type "saint" with this slug). Set from the shop home's "Shop by saint"
+   * row (lib/shop/bySaint.ts), which opens the browse page with ?saint=.
+   */
+  saint?: string | null;
 };
 
 export const PRICE_BAND_LABELS: Record<PriceBand, string> = {
@@ -58,6 +64,9 @@ export function filterProducts(
     if (f.readyOnly && p.inventory_status !== "ready_to_ship") return false;
     if (f.classification && p.classification !== f.classification) return false;
     if (f.priceBand && !inBand(p.price_cents, f.priceBand)) return false;
+    if (f.saint && !p.subjects.some((s) => s.subject_type === "saint" && s.subject_slug === f.saint)) {
+      return false;
+    }
     if (terms.length > 0) {
       const hay = haystack(p);
       if (!terms.every((t) => hay.includes(t))) return false;
@@ -66,7 +75,7 @@ export function filterProducts(
   });
 }
 
-/** How many facet filters are active (search text not counted — it has its
+/** How many facet filters are active (search text not counted: it has its
  * own visible input). Drives the badge on the Filters button. */
 export function activeFilterCount(f: BrowseFilters): number {
   return (f.readyOnly ? 1 : 0) + (f.classification ? 1 : 0) + (f.priceBand ? 1 : 0);

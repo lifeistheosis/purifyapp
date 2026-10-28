@@ -90,17 +90,28 @@ export function peekShopHome(): ShopHomeData | null {
   return peekJson<ShopHomeData>("/api/shop/catalog/home");
 }
 
-export function fetchShopProducts(
-  params: FetchProductsParams = {},
-): Promise<ShopProductFull[]> {
+function productsPath(params: FetchProductsParams): string {
   const q = new URLSearchParams();
   for (const [k, v] of Object.entries(params)) {
     if (v !== undefined && v !== null && v !== "") q.set(k, String(v));
   }
   const qs = q.toString();
-  return getJson<{ products: ShopProductFull[] }>(
-    `/api/shop/catalog/products${qs ? `?${qs}` : ""}`,
-  ).then((d) => d.products);
+  return `/api/shop/catalog/products${qs ? `?${qs}` : ""}`;
+}
+
+export function fetchShopProducts(
+  params: FetchProductsParams = {},
+): Promise<ShopProductFull[]> {
+  return getJson<{ products: ShopProductFull[] }>(productsPath(params)).then(
+    (d) => d.products,
+  );
+}
+
+/** The last list for these parameters this visit, without asking (peekJson). */
+export function peekShopProducts(
+  params: FetchProductsParams = {},
+): ShopProductFull[] | null {
+  return peekJson<{ products: ShopProductFull[] }>(productsPath(params))?.products ?? null;
 }
 
 export function fetchShopProduct(slug: string): Promise<ShopProductDetail> {
