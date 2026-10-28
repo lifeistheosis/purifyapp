@@ -33,7 +33,7 @@ describe("the head of Prayers", () => {
     expect(page).toMatch(/hero=\{\s*<PrayersHero>\s*<RuleToday hourPart=\{hourPart\} \/>\s*<\/PrayersHero>\s*\}/);
     const hero = code(HERO);
     expect(hero).toContain('sectionMedia("prayers")');
-    expect(sectionMedia("prayers")?.src).toBe("/sections/prayers.v2.jpg");
+    expect(sectionMedia("prayers")?.src).toBe("/sections/prayers.v3.jpg");
     expect(hero).toContain('t("ui.prayWithoutCeasing")');
     expect(hero).toContain('t("ui.1Thessalonians517")');
     // No second h1: the tab bar names the tab.
