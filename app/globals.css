@@ -4474,9 +4474,13 @@ html.is-native :is(input, textarea, select, [contenteditable]:not([contenteditab
    It builds from the phone's own logo screen: a few stars come out, the
    horizon rises from below the screen and brightens as the sun comes up
    behind it, and the cross takes the light. Every part is done inside
-   INTRO_BUILD_MS (900 ms, held by the test). Each animation runs from where
-   the logo screen is to the element's own style, so with motion off (no
-   animations at all) the cover is simply the finished picture.
+   INTRO_BUILD_MS (held by the test): built in 1.8 s, then the finished
+   horizon held still for a moment, 2.4 s in all. The owner, 2026-10-28,
+   on the first pace (built in 0.9 s, gone in 1.3): "Make it slower,
+   because like I want the user to really take in the intro". Each
+   animation runs from where the logo screen is to the element's own style,
+   so with motion off (no animations at all) the cover is simply the
+   finished picture.
 
    It covers the page until <html> carries both data-launch="ready" (NativeBridge,
    when the app's first screen is drawn) and data-intro="played" (the
@@ -4491,13 +4495,13 @@ html.is-native :is(input, textarea, select, [contenteditable]:not([contenteditab
    the house ease, quick at the start, showed Today before the cross had
    begun to rise. */
 [data-launch-frame] {
- transition: opacity 340ms cubic-bezier(0.4, 0, 0.6, 1) 20ms, visibility 0s linear 360ms;
+ transition: opacity 580ms cubic-bezier(0.4, 0, 0.6, 1) 20ms, visibility 0s linear 600ms;
 }
 [data-launch-stage] {
  transition:
-  opacity 360ms cubic-bezier(0.5, 0, 0.9, 0.5),
-  transform 360ms cubic-bezier(0.5, 0, 0.9, 0.5),
-  filter 360ms cubic-bezier(0.5, 0, 0.9, 0.5);
+  opacity 600ms cubic-bezier(0.5, 0, 0.9, 0.5),
+  transform 600ms cubic-bezier(0.5, 0, 0.9, 0.5),
+  filter 600ms cubic-bezier(0.5, 0, 0.9, 0.5);
 }
 html[data-launch="ready"][data-intro="played"] [data-launch-frame] {
  opacity: 0;
@@ -4510,7 +4514,7 @@ html[data-launch="ready"][data-intro="played"] [data-launch-stage] {
  filter: blur(6px);
 }
 .launch-stars > i {
- animation: launch-star 420ms ease-out both;
+ animation: launch-star 840ms ease-out both;
 }
 @keyframes launch-star {
  from {
@@ -4520,7 +4524,7 @@ html[data-launch="ready"][data-intro="played"] [data-launch-stage] {
 /* From below the screen (40% of its height clears the glow above the crest
    on a phone and on a tablet alike), on the house ease. */
 .launch-horizon {
- animation: launch-rise 780ms var(--ease-house) both;
+ animation: launch-rise 1560ms var(--ease-house) both;
 }
 @keyframes launch-rise {
  from {
@@ -4528,7 +4532,7 @@ html[data-launch="ready"][data-intro="played"] [data-launch-stage] {
  }
 }
 .launch-level {
- animation: launch-level 760ms ease-out 140ms both;
+ animation: launch-level 1520ms ease-out 280ms both;
 }
 @keyframes launch-level {
  from {
@@ -4538,7 +4542,7 @@ html[data-launch="ready"][data-intro="played"] [data-launch-stage] {
 /* Light, not depth: the cards' glow-lit, blooming from the cross. */
 .launch-cross {
  filter: drop-shadow(0 0 10px rgb(255 255 255 / 0.7)) drop-shadow(0 0 26px rgb(255 255 255 / 0.25));
- animation: launch-lit 600ms ease-out 300ms both;
+ animation: launch-lit 1200ms ease-out 600ms both;
 }
 @keyframes launch-lit {
  from {

@@ -1494,6 +1494,11 @@ await section(24, async () => {
   const outline = at > 0 ? doc.slice(doc.lastIndexOf("<div", at), scriptAt).replace(/data:image\/png;base64,[A-Za-z0-9+/=]+/, "") : "";
   must(outline.length > 200 && outline.replace(/<[^>]+>/g, "").trim() === "", `and it has no words in it (${outline.length} bytes of shapes)`);
   must(at > 0 && doc.slice(scriptAt, scriptAt + 1200).includes("nativePromise"), "the lines that lift the logo screen follow it in the document");
+  // The intro's build as the document carries it (lib/platform/launchFrame.ts
+  // INTRO_BUILD_MS), and how long the cover takes to go (app/globals.css).
+  const buildMs = Number(/setTimeout\(played,(\d+)\)/.exec(doc.slice(scriptAt, scriptAt + 1200))?.[1] ?? NaN);
+  must(buildMs >= 900, `the document plays the intro for ${buildMs} ms`);
+  const leaveMs = Number(/\[data-launch-frame\] \{\s*transition:[^;]*visibility 0s linear (\d+)ms;/.exec(fs.readFileSync("app/globals.css", "utf8"))?.[1] ?? 600);
 
   // Every frame from the first. The shell's own handle is stood in for, so a
   // call to it is seen: only the document's lines use it here, because the
@@ -1554,7 +1559,7 @@ await section(24, async () => {
     await ctx.addInitScript(watch);
     await go(page, "/");
     await page.waitForFunction(() => window.__open?.ready && window.__open?.played, null, { timeout: 20000 }).catch(() => {});
-    await page.waitForTimeout(700);
+    await page.waitForTimeout(leaveMs + 400);
     const log = await page.evaluate(() => window.__open);
     must(log.first !== null && log.ready && log.first < log.ready.at, `the intro is painted before the app is ready (at ${log.first} ms; the app says ready at ${log.ready?.at} ms)`);
     must(log.asks.length === 1 && log.asks[0][1] === "SplashScreen" && log.asks[0][2] === "hide", `the document asks the phone to lift its logo screen, once (${log.asks.map((a) => `${a[1]}.${a[2]} at ${a[0]} ms`).join(", ") || "never"})`);
@@ -1563,10 +1568,10 @@ await section(24, async () => {
     must(log.words.length === 0, `and shows no words${log.words.length ? ": " + log.words[0].slice(0, 60) : ""}`);
     must(log.ready?.today === true, "when the app says ready, Today is under it");
     // The intro plays in full: marked played a whole build after the logo
-    // was asked to go (lib/platform/launchFrame.ts INTRO_BUILD_MS, 900), and
-    // the cover does not start to go before it is both played and ready.
+    // was asked to go (lib/platform/launchFrame.ts INTRO_BUILD_MS), and the
+    // cover does not start to go before it is both played and ready.
     const build = log.played !== null && log.asks[0] ? log.played - log.asks[0][0] : null;
-    must(build !== null && build >= 880 && build <= 1100, `it plays in full: marked played ${build} ms after the logo was asked to go`);
+    must(build !== null && build >= buildMs - 20 && build <= buildMs + 200, `it plays in full: marked played ${build} ms after the logo was asked to go (its build is ${buildMs} ms)`);
     must(log.leaving !== null && log.leaving >= Math.max(log.ready?.at ?? 0, log.played ?? 0) - 20, `and it goes only once the app is ready and it has played (starts to go at ${log.leaving} ms)`);
     const after = await page.evaluate(outlineNow);
     must(after && after.visibility === "hidden" && after.opacity === 0 && !after.takesTheMiddle, `then the intro is gone (visibility ${after?.visibility}, opacity ${after?.opacity})`);
@@ -1617,7 +1622,7 @@ await section(24, async () => {
     await page.screenshot({ path: path.join(SHOTS, "open-intro-phone.png") });
     // And it never stays for good: past its limit the document says ready itself.
     await page.waitForFunction(() => document.documentElement.dataset.launch === "ready", null, { timeout: 12000 }).catch(() => {});
-    await page.waitForTimeout(500);
+    await page.waitForTimeout(leaveMs + 300);
     const gone = await page.evaluate(outlineNow);
     must(gone && gone.state === "ready" && gone.visibility === "hidden", `and with no app at all it takes itself away at its limit (state "${gone?.state}", visibility ${gone?.visibility})`);
     await ctx.close();
@@ -1654,7 +1659,7 @@ await section(24, async () => {
     // Not go(): it waits on frames, and so does a wait with no polling time.
     await page.goto(`${ORIGIN}/`, { waitUntil: "load", timeout: 120000 });
     await page.waitForFunction(() => window.__still?.ready && window.__still?.played, null, { timeout: 20000, polling: 100 }).catch(() => {});
-    await page.waitForTimeout(700);
+    await page.waitForTimeout(leaveMs + 400);
     const log = await page.evaluate(() => window.__still);
     const gone = await page.evaluate(outlineNow);
     must(log.asks.length === 1 && log.frame !== null && log.frame < 2000, `with no frames at all, the document still asks the phone to lift its logo screen, once (${log.asks.length} time${log.asks.length === 1 ? "" : "s"}, marked at ${log.frame} ms)`);

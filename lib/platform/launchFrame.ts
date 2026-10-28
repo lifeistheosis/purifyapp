@@ -25,6 +25,9 @@
 // So the order is: logo, the horizon rising under it, the screen. The intro
 // plays in full (INTRO_BUILD_MS) before it leaves, even when the app is ready
 // sooner; when the app is slower, the finished horizon holds until it is.
+// Its pace is the owner's: first built in 0.9 s, then, the next day, "Make it
+// slower, because like I want the user to really take in the intro". Set to
+// B of the three paces then shown to him: about 3 seconds to the screen.
 //
 // WHY NO WORDS. The apps are built in English and corrected on the device to
 // the reader's language (lib/i18n/launchLanguage.ts). Anything written in the
@@ -33,7 +36,7 @@
 //
 // WHAT IT COSTS. While the cover is up the app does not answer a tap, because
 // the app is not there yet. That was true behind the logo as well. On a fast
-// phone the intro also adds the part of its 1.3 seconds the app did not need.
+// phone the intro also adds the part of its 3 seconds the app did not need.
 // To take it out, set OPEN_AT_FIRST_PAINT to false: the cover and its script
 // are then not written into the document at all, and the apps open as they
 // did before 1.6.
@@ -73,10 +76,11 @@ export const LIFT_ANYWAY_MS = 150;
  * How long the intro takes to build, counted from the moment the logo screen
  * is asked to go. app/globals.css finishes every part of it inside this
  * (the test holds the two together), and the cover does not leave before it,
- * so a fast phone still sees the horizon arrive. It then leaves in 360 ms:
- * about 1.3 seconds from the first paint to Today.
+ * so a fast phone still sees the horizon arrive. The parts are done by
+ * 1800 ms; the rest is the finished horizon held still, to be taken in. It
+ * then leaves in 600 ms: about 3 seconds from the first paint to Today.
  */
-export const INTRO_BUILD_MS = 900;
+export const INTRO_BUILD_MS = 2400;
 
 /**
  * The cross on the cover, in CSS pixels tall: the size the phone's own logo

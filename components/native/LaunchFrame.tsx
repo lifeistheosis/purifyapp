@@ -59,7 +59,9 @@ const STARS = (() => {
     const y = 3 + rnd() * 57;
     const u = rnd();
     const opacity = 0.18 + 0.5 * rnd();
-    const delay = Math.round(40 + rnd() * 400);
+    // Coming out over the first 0.9 s of the build (the owner's slower pace,
+    // 2026-10-28), so the sky fills while the horizon is still rising.
+    const delay = Math.round(80 + rnd() * 800);
     if (Math.abs(x - 50) < 11 && Math.abs(y - 50) < 9) continue;
     out.push({ left: `${x.toFixed(1)}%`, top: `${y.toFixed(1)}%`, size: Number((1 + 1.5 * u ** 5).toFixed(2)), opacity: Number(opacity.toFixed(2)), delay });
   }
