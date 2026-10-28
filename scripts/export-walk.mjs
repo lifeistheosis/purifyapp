@@ -1758,7 +1758,9 @@ await section(25, async () => {
   await page.waitForTimeout(600);
   const tiles = await page.evaluate(() => [...document.querySelectorAll('[data-route-content] a[href]')].map((a) => [a.getAttribute("href").replace(/\/$/, ""), (a.textContent ?? "").replace(/\s+/g, " ").trim()]));
   const tile = (href) => tiles.find(([h]) => h === href)?.[1] ?? "";
-  must(tile("/shop") === words["nav.shop"] && tile("/community") === words["nav.chat"], `Discover has a ${tile("/shop") || "(no)"} tile and a ${tile("/community") || "(no)"} tile`);
+  // 1.8: the tiles are a gallery's bands, each its name and then its line,
+  // so a band's words start with its name.
+  must(tile("/shop").startsWith(words["nav.shop"]) && tile("/community").startsWith(words["nav.chat"]), `Discover has a ${tile("/shop").slice(0, 40) || "(no)"} band and a ${tile("/community").slice(0, 40) || "(no)"} band`);
   must(!tiles.some(([h]) => h === "/account"), "and no longer ends on a Settings row");
   await page.screenshot({ path: path.join(SHOTS, "discover-tiles-phone.png"), fullPage: true });
   // /settings/ among them: its tab was written without the closing slash the
