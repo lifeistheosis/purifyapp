@@ -892,7 +892,7 @@ await section(17, async () => {
     };
   });
   must(frame.bars === 1 && !frame.backBar, `Start here has its own bar and no second one (${frame.bars} bar${frame.bars === 1 ? "" : "s"}${frame.backBar ? ", and the back bar" : ""})`);
-  must(Boolean(frame.icon) && frame.icon.ok && frame.icon.src === "/sections/prayers.v2.jpg" && frame.icon.w * 2 <= frame.icon.natural + 2, `the Pantocrator at the top, cut close to the face, never enlarged past its pixels (${frame.icon ? `${frame.icon.w}px wide of ${frame.icon.natural}` : "none"})`);
+  must(Boolean(frame.icon) && frame.icon.ok && frame.icon.src === "/sections/prayers.v3.jpg" && frame.icon.w * 2 <= frame.icon.natural + 2, `the Pantocrator at the top, cut close to the face, never enlarged past its pixels (${frame.icon ? `${frame.icon.w}px wide of ${frame.icon.natural}` : "none"})`);
   must(frame.guide && frame.guideAfterSteps, "after the steps, the door to Your first Liturgy");
   await page.screenshot({ path: path.join(SHOTS, "start-phone.png"), fullPage: true });
   await page.locator("ol > li a").first().click();

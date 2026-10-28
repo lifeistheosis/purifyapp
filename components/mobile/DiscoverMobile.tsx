@@ -17,7 +17,10 @@ type DiscoverEntry = {
   href: string;
   /** The app's own line on what is inside, from the place's own words. */
   blurb: ReactNode;
-  /** The band's picture, from public/discover/tiles. */
+  /** The band's picture, from public/discover/tiles. Each one's work, source
+   *  and cut are in docs/licensing/SECTION_MEDIA.md ("Discover's pictures");
+   *  a .v2 is the same picture cut again from its Commons original for 1.8,
+   *  when the bands made them large enough to look soft on a phone. */
   picture: string;
   /** Where the band's slice of the picture sits, when 50% 30% would cut the faces off. */
   focus?: string;
@@ -89,7 +92,7 @@ export function DiscoverMobile() {
       label: <T k="discover.tile.reading" />,
       href: "/reading",
       blurb: <T k="discover.tile.readingBlurb" />,
-      picture: "/discover/tiles/reading.webp",
+      picture: "/discover/tiles/reading.v2.webp",
     },
     {
       // History, a band over the library until 1.7 and a tile in it as well,
@@ -97,7 +100,7 @@ export function DiscoverMobile() {
       label: <T k="discover.tile.history" />,
       href: "/history",
       blurb: <T k="discover.tile.historyBlurb" />,
-      picture: "/discover/tiles/history.webp",
+      picture: "/discover/tiles/history.v2.webp",
     },
     {
       // The fathers who kept the councils' faith, assembled: the lower half
@@ -107,7 +110,7 @@ export function DiscoverMobile() {
       label: <T k="discover.tile.councils" />,
       href: "/councils",
       blurb: <T k="discover.tile.councilsBlurb" />,
-      picture: "/discover/tiles/councils.webp",
+      picture: "/discover/tiles/councils.v2.webp",
       focus: "50% 15%",
     },
     {
@@ -117,7 +120,7 @@ export function DiscoverMobile() {
       label: <T k="discover.tile.theology" />,
       href: "/theology",
       blurb: <T k="discover.tile.theologyBlurb" />,
-      picture: "/discover/tiles/theology.webp",
+      picture: "/discover/tiles/theology.v2.webp",
     },
     {
       // Chants (1.7), in the Kitchen's place: the owner, 2026-10-16, "Remove
@@ -139,7 +142,7 @@ export function DiscoverMobile() {
       href: "/calendar",
       blurb: <T k="discover.tile.calendarBlurb" />,
       // The Menologion of Basil II, Discover's plate until 1.7.
-      picture: "/discover/tiles/calendar.webp",
+      picture: "/discover/tiles/calendar.v2.webp",
     },
     {
       // The guided walkthroughs (Job, and more to come) had no standing door
@@ -165,7 +168,7 @@ export function DiscoverMobile() {
             // The shop's own line, under its title on its front page.
             blurb: <T k="shop.curatedOrthodoxIconsFaithfulTo" />,
             // St George, Novgorod, 15th century: an icon the shop carries.
-            picture: "/discover/tiles/shop.webp",
+            picture: "/discover/tiles/shop.v2.webp",
             focus: "50% 10%",
           },
         ]
@@ -194,7 +197,7 @@ export function DiscoverMobile() {
       href: "/start",
       blurb: <T k="discover.tile.startBlurb" />,
       // Christ Pantocrator, Sinai, the slice on his eyes.
-      picture: "/discover/tiles/start.webp",
+      picture: "/discover/tiles/start.v2.webp",
       focus: "50% 22%",
     },
     {
@@ -205,7 +208,7 @@ export function DiscoverMobile() {
       href: "/parishes",
       blurb: <T k="discover.tile.parishesBlurb" />,
       // St John Chrysostom in Hagia Sophia, the pastor in his church.
-      picture: "/discover/tiles/parishes.webp",
+      picture: "/discover/tiles/parishes.v2.webp",
     },
   ];
 

@@ -84,10 +84,13 @@ export const SECTION_MEDIA: Partial<Record<SectionKey, SectionMedia>> = {
   // docs/licensing/SHOP_MEDIA.md), so nothing new was fetched. Since 1.7.1 it
   // is cut closer, to the face, and inside the white of the scan: the owner,
   // 2026-10-17, on Start here, "zoom it in a little bit so it shows the face
-  // ... without the lines". A new name, so no cache keeps the old one. The
-  // record is in docs/licensing/SECTION_MEDIA.md.
+  // ... without the lines". A new name, so no cache keeps the old one. Since
+  // 1.8, when Prayers opens on it full width, the same framing is cut from the
+  // Commons original itself (801 wide) rather than the shop's smaller copy:
+  // prayers.v3.jpg, 619 by 652, the most that file holds. The record is in
+  // docs/licensing/SECTION_MEDIA.md.
   prayers: {
-    src: "/sections/prayers.v2.jpg",
+    src: "/sections/prayers.v3.jpg",
     alt: "Christ Pantocrator, the sixth-century icon kept at St Catherine's Monastery on Sinai: his face, close, within the gold of his halo.",
     work: "Christ Pantocrator, St Catherine's Monastery, Sinai",
     artist: "Anonymous",
@@ -97,8 +100,8 @@ export const SECTION_MEDIA: Partial<Record<SectionKey, SectionMedia>> = {
     evidenceUrl:
       "https://commons.wikimedia.org/wiki/File%3AChrist_Icon_Sinai_6th_century.jpg",
     portrait: true,
-    width: 486,
-    height: 512,
+    width: 619,
+    height: 652,
   },
   discover: {
     src: "/sections/discover.jpg",

@@ -94,9 +94,16 @@ describe("section media registry", () => {
     const dir = path.join(process.cwd(), "public", "sections");
     if (!fs.existsSync(dir)) return;
     const onDisk = fs.readdirSync(dir).filter((f) => /\.(jpe?g|png)$/i.test(f));
-    const referenced = new Set(
-      Object.values(SECTION_MEDIA).map((m) => m.src.replace("/sections/", "")),
-    );
+    // Files a screen outside this registry draws, so they stay when the
+    // registry moves on. prayers.v2.jpg: Prayers shows prayers.v3.jpg since
+    // 1.8, and the onboarding pictures (lib/onboarding/pictures.ts, from the
+    // ui/onboarding branch) use the 1.7.1 cut as a stand-in. Take it out of
+    // here, and off the disk, once nothing names it.
+    const keptForOthers = ["prayers.v2.jpg"];
+    const referenced = new Set([
+      ...Object.values(SECTION_MEDIA).map((m) => m.src.replace("/sections/", "")),
+      ...keptForOthers,
+    ]);
     const orphans = onDisk.filter((f) => !referenced.has(f));
     expect(orphans, `orphaned section images: ${orphans.join(", ")}`).toEqual([]);
   });
