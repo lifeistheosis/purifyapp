@@ -6,11 +6,14 @@ import {
   INTENTS,
   LEVELS,
   asksRule,
+  cleanIntents,
   dayOneFor,
   defaultsFor,
   depthFor,
   fastView,
   focusFor,
+  focusesFor,
+  togglePick,
   type Intent,
   type Level,
 } from "../space";
@@ -95,6 +98,47 @@ describe("focus", () => {
     expect(focusFor("prayer")).toBe("prayer");
     expect(focusFor("liturgy")).toBe("calendar");
     expect(focusFor("study")).toBe("scripture");
+  });
+
+  it("keeps several picks' focus in the order picked, none twice", () => {
+    expect(focusesFor(["study", "quiet", "liturgy", "prayer"])).toEqual(["scripture", "prayer", "calendar"]);
+    expect(focusesFor([])).toEqual([]);
+  });
+});
+
+// "What are you looking for?" (1.8, the owner's pick B of round 14): picture
+// cards, each pick numbered in the order it was tapped.
+describe("the picks, in the order tapped", () => {
+  it("puts a new pick last, so its number is the next one", () => {
+    let picks: Intent[] = [];
+    picks = togglePick(picks, "study");
+    picks = togglePick(picks, "quiet");
+    picks = togglePick(picks, "prayer");
+    expect(picks).toEqual(["study", "quiet", "prayer"]);
+  });
+
+  it("takes a pick out on a second tap, and the ones after it move up a place", () => {
+    expect(togglePick(["study", "quiet", "prayer"], "study")).toEqual(["quiet", "prayer"]);
+    expect(togglePick(["study", "quiet", "prayer"], "quiet")).toEqual(["study", "prayer"]);
+    expect(togglePick(["study"], "study")).toEqual([]);
+  });
+
+  it("brings a pick back at the end, not where it was", () => {
+    expect(togglePick(togglePick(["study", "quiet"], "study"), "study")).toEqual(["quiet", "study"]);
+  });
+
+  it("leaves the list it was given as it was", () => {
+    const picks: Intent[] = ["liturgy"];
+    togglePick(picks, "study");
+    togglePick(picks, "liturgy");
+    expect(picks).toEqual(["liturgy"]);
+  });
+
+  it("reads back real answers only, each once, in their order", () => {
+    expect(cleanIntents(["prayer", "study", "prayer", "abbot", 3, null, "quiet"])).toEqual(["prayer", "study", "quiet"]);
+    expect(cleanIntents("study")).toEqual([]);
+    expect(cleanIntents(undefined)).toEqual([]);
+    expect(cleanIntents({ 0: "study" })).toEqual([]);
   });
 });
 

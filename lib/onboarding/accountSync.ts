@@ -11,7 +11,7 @@
 
 import { pushProfilePrefs } from "@/lib/profile/preferences";
 import { createClient } from "@/lib/supabase/client";
-import { ONBOARDING_VERSION, readBackground, readFastingRule, readIntent, readLevel } from "./state";
+import { ONBOARDING_VERSION, readBackground, readFastingRule, readIntent, readIntents, readLevel } from "./state";
 
 /**
  * Best effort. Signed out, offline or failing, the answers stay on the device.
@@ -40,6 +40,9 @@ export async function saveSpaceToAccount(opts: { finished?: boolean } = {}): Pro
         purify_space: {
           level,
           intent: readIntent(),
+          // Every pick of "What are you looking for?" in the order tapped
+          // (1.8), the intent first. Read back by fillSpaceFromAccount.
+          intents: readIntents(),
           fasting: readFastingRule(),
           // Where they come from (1.8), in their own account only, so a new
           // device of theirs starts from it too.

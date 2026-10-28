@@ -41,6 +41,24 @@ export function isFastingRule(v: unknown): v is FastingRule {
 }
 
 /**
+ * "What are you looking for?" takes as many answers as the reader likes, in
+ * the order they tap them (1.8, the owner's pick B of round 14, picture cards
+ * numbered in tap order). A tap on an answer not picked yet puts it last; a
+ * tap on one already picked takes it out, and the ones after it move up a
+ * place, so the numbers on the cards close up. The first pick is the intent
+ * the rest of Purify reads: the Day 1 step and the counts.
+ */
+export function togglePick(picks: readonly Intent[], intent: Intent): Intent[] {
+  return picks.includes(intent) ? picks.filter((p) => p !== intent) : [...picks, intent];
+}
+
+/** A list of picks read back from storage or an account: real answers only, each once, in order. */
+export function cleanIntents(v: unknown): Intent[] {
+  if (!Array.isArray(v)) return [];
+  return [...new Set(v.filter(isIntent))];
+}
+
+/**
  * The settings a level implies. Only the practicing are asked about their
  * calendar and fast; everyone else starts on this baseline and can change it
  * in Settings. An inquirer starts on the Revised Julian calendar with fasting
@@ -154,6 +172,11 @@ export function focusFor(intent: Intent): "scripture" | "prayer" | "saints" | "c
     case "study":
       return "scripture";
   }
+}
+
+/** The older focus picks for several answers: one for each, in the order picked, none twice. */
+export function focusesFor(picks: readonly Intent[]): ReturnType<typeof focusFor>[] {
+  return [...new Set(picks.map(focusFor))];
 }
 
 /**

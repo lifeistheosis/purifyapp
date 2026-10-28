@@ -10,13 +10,13 @@ import {
   markOnboarded,
   readBackground,
   readFastingRule,
-  readIntent,
+  readIntents,
   readLevel,
   setResumeStage,
   writeDepth,
   writeFastingRule,
   writeFocus,
-  writeIntent,
+  writeIntents,
   writeLevel,
 } from "@/lib/onboarding/state";
 import {
@@ -24,7 +24,8 @@ import {
   dayOneFor,
   defaultsFor,
   depthFor,
-  focusFor,
+  focusesFor,
+  togglePick,
   type CalendarChoice,
   type DayOneKey,
   type FastingRule,
@@ -43,11 +44,9 @@ import { createClient } from "@/lib/supabase/client";
 import { Compass } from "@/components/ui/icons/Compass";
 import { Book } from "@/components/ui/icons/Book";
 import { Cross } from "@/components/ui/icons/Cross";
-import { Lampada } from "@/components/ui/icons/Lampada";
-import { Church } from "@/components/ui/icons/Church";
-import { Codex } from "@/components/ui/icons/Codex";
-import { Orans } from "@/components/ui/icons/Orans";
 import { HandoffSlate, type SlateLine } from "./HandoffSlate";
+import { LookingFor } from "./LookingFor";
+import { PrimaryButton } from "./PrimaryButton";
 
 /**
  * First-run onboarding, version 2: the adaptive onboarding engine from the
@@ -57,7 +56,8 @@ import { HandoffSlate, type SlateLine } from "./HandoffSlate";
  *   account   sign in or create an account, or carry on without one
  *   level     the baseline fork: completely new, learning, or practicing
  *   rule      calendar and fasting, asked of the practicing only
- *   intent    what they hope to focus on first
+ *   intent    "What are you looking for?": as many answers as fit, in the
+ *             order tapped, the first of them the intent (1.8, ./LookingFor)
  *   reminders a benefit-first priming screen before the OS prompt
  *   handoff   a three-second slate that sets the space up and hands over
  *
@@ -116,7 +116,10 @@ export function OnboardingFlow({
   const [level, setLevel] = useState<Level | null>(() => (returning ? readLevel() : null));
   const [calendar, setCalendar] = useState<CalendarChoice>(() => (returning ? readCalendarStyleDefault() : "new"));
   const [fasting, setFasting] = useState<FastingRule>(() => (returning ? readFastingRule() : "strict"));
-  const [intent, setIntent] = useState<Intent | null>(() => (returning ? readIntent() : null));
+  // "What are you looking for?" (1.8): every pick in the order tapped. The
+  // first is the intent, the one answer the Day 1 step and the counts read.
+  const [picks, setPicks] = useState<Intent[]>(() => (returning ? readIntents() : []));
+  const intent = picks[0] ?? null;
   // Reminders already on, on this device: a reader who is back is not asked
   // to turn on what is on. Unknown until the device has answered.
   const [remindersOn, setRemindersOn] = useState(false);
@@ -259,13 +262,22 @@ export function OnboardingFlow({
     writeFastingRule(f);
   }
 
-  function chooseIntent(i: Intent) {
-    if (advancing.current) return;
-    setIntent(i);
-    writeIntent(i);
-    writeFocus([focusFor(i)]);
-    countAnswer("intent", i);
-    advanceSoon();
+  // Each tap is saved as it is given, as every answer is: the picks in their
+  // order, the first as the intent, and the older focus picks in step.
+  function toggleIntent(i: Intent) {
+    const nextPicks = togglePick(picks, i);
+    setPicks(nextPicks);
+    writeIntents(nextPicks);
+    writeFocus(focusesFor(nextPicks));
+  }
+
+  // Counted as the reader leaves the screen, like the rule's answers, so the
+  // count holds what they settled on: the first pick, the one intent each
+  // reader was counted for before the picks could be several.
+  function leaveIntent() {
+    if (!intent) return;
+    countAnswer("intent", intent);
+    next();
   }
 
   // The rule's two answers are counted as the reader leaves the screen, so
@@ -398,7 +410,15 @@ export function OnboardingFlow({
         </button>
       </div>
 
-      <div key={step} className={`${stepClass} mx-auto flex w-full max-w-md flex-1 flex-col justify-center px-6 py-10`}>
+      {/* "What are you looking for?" stands at the top of a phone with its
+          button held at the foot, as its design draws it; every other step is
+          centred. */}
+      <div
+        key={step}
+        className={`${stepClass} mx-auto flex w-full max-w-md flex-1 flex-col px-6 ${
+          step === "intent" ? "pt-5 md:justify-center md:py-10" : "justify-center py-10"
+        }`}
+      >
         {step === "welcome" && (
           <Step
             eyebrow={t("onboard.welcome.eyebrow")}
@@ -523,30 +543,7 @@ export function OnboardingFlow({
           </Step>
         )}
 
-        {step === "intent" && (
-          <Step eyebrow={t("onboard.intent.eyebrow")} title={t("onboard.intent.title")}>
-            <div className="flex flex-col gap-2.5">
-              {(
-                [
-                  ["quiet", <Lampada key="i" size={20} />],
-                  ["liturgy", <Church key="i" size={20} />],
-                  ["study", <Codex key="i" size={20} />],
-                  ["prayer", <Orans key="i" size={20} />],
-                ] as const
-              ).map(([i, icon], n) => (
-                <ChoiceCard
-                  key={i}
-                  selected={intent === i}
-                  onClick={() => chooseIntent(i)}
-                  icon={icon}
-                  title={t(`onboard.intent.${i}`)}
-                  sub={t(`onboard.intent.${i}Sub`)}
-                  delay={n}
-                />
-              ))}
-            </div>
-          </Step>
-        )}
+        {step === "intent" && <LookingFor picks={picks} onToggle={toggleIntent} onContinue={leaveIntent} />}
 
         {step === "reminders" && (
           <Step eyebrow={t("onboard.reminders.eyebrow")} title={t("onboard.reminders.title")} body={t("onboard.reminders.body")}>
@@ -792,28 +789,7 @@ function Step({
   );
 }
 
-function PrimaryButton({
-  children,
-  onClick,
-  disabled,
-}: {
-  children: ReactNode;
-  onClick: () => void;
-  disabled?: boolean;
-}) {
-  return (
-    <button
-      type="button"
-      onClick={onClick}
-      disabled={disabled}
-      className="block min-h-11 w-full rounded-pill bg-paper px-6 py-3.5 text-center font-sans text-ui font-semibold text-night transition-[transform,background-color] hover:bg-paper/90 active:scale-[0.98] disabled:opacity-60"
-    >
-      {children}
-    </button>
-  );
-}
-
-/** One answer. Chosen, it blooms in gold and its tick draws itself. */
+/** One answer. Chosen, it is lit white and its tick draws itself. */
 function ChoiceCard({
   selected,
   onClick,
