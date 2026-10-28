@@ -24,6 +24,14 @@ import type { Prayer, PrayerVariant } from "@/lib/prayers/types";
  * Its bookmark keeps it in Saved, and "Mark prayed" marks it for today, as
  * before 1.7: a mark on a prayer, never a count, a fraction or a bar
  * (PrayerRuleReader.tsx says why).
+ *
+ * Set in the middle of the page since 1.8, as the owner's pick B, Immersive,
+ * draws a prayer being prayed (Homebase/boards/purify-master/variants/
+ * 05-praying.png): the name, the rubric and the lines centred, the way the
+ * lyrics stand in the player. It is a step of the page (`data-step`), which
+ * the scroll marks while it is being prayed, and its two actions sit together
+ * under it (`data-step-actions`), at full strength while the rest of a prayer
+ * not being prayed steps back.
  */
 
 /** The lyrics' sizes: a step above the reader's verse sizes, since a prayer page is read standing. */
@@ -105,34 +113,20 @@ export function PrayerStep({
   const leading = { lineHeight: leadingValue ?? 1.5 };
 
   return (
-    <section id={prayer.id} aria-labelledby={`${prayer.id}-title`} className="scroll-mt-16 border-t border-paper/10 py-9 md:scroll-mt-24">
-      <div className="flex items-start justify-between gap-3">
-        <div className="min-w-0">
-          {from ? <p className="mb-1 font-sans text-caption text-paper/50">{t("prayers.mine.fromRule", { rule: from })}</p> : null}
-          <h2
-            id={`${prayer.id}-title`}
-            tabIndex={-1}
-            className="font-serif text-title-sm font-semibold leading-snug text-paper/90 focus:outline-none"
-          >
-            {title}
-          </h2>
-        </div>
-        {bookmarkable ? (
-          <button
-            type="button"
-            onClick={() => togglePrayerBookmark(where.ruleId, where.prayerId, prayer.title)}
-            aria-pressed={bookmarked}
-            aria-label={bookmarked ? t("study.saved.removeBookmark") : t("prayers.reader.bookmarkPrayer")}
-            title={bookmarked ? t("prayers.reader.bookmarked") : t("prayers.reader.bookmark")}
-            className={cn(
-              "tap-press -me-2 -mt-1.5 inline-flex min-h-11 min-w-11 shrink-0 items-center justify-center rounded-full motion-safe:transition-colors",
-              bookmarked ? "text-paper" : "text-paper/50 hover:text-paper",
-            )}
-          >
-            <Bookmark size={18} filled={bookmarked} />
-          </button>
-        ) : null}
-      </div>
+    <section
+      id={prayer.id}
+      data-step
+      aria-labelledby={`${prayer.id}-title`}
+      className="scroll-mt-16 border-t border-paper/10 py-9 text-center md:scroll-mt-24"
+    >
+      {from ? <p className="mb-1 font-sans text-caption text-paper/50">{t("prayers.mine.fromRule", { rule: from })}</p> : null}
+      <h2
+        id={`${prayer.id}-title`}
+        tabIndex={-1}
+        className="font-serif text-title-sm font-semibold leading-snug text-paper/90 text-balance focus:outline-none"
+      >
+        {title}
+      </h2>
 
       {variants.length > 1 ? (
         <SegmentedSwitch
@@ -141,12 +135,12 @@ export function PrayerStep({
           items={variants.map((v, i) => ({ id: `v${i}`, label: v.jurisdiction }))}
           selected={`v${Math.min(variantIdx, variants.length - 1)}`}
           onSelect={(id) => setVariantIdx(Number(id.slice(1)))}
-          className="mt-4 max-w-[420px]"
+          className="mx-auto mt-4 max-w-[420px]"
         />
       ) : null}
 
       {instruction ? (
-        <p lang={contentLang} className="mt-4 font-serif text-detail italic leading-[1.55] text-paper/55">
+        <p lang={contentLang} className="mx-auto mt-4 max-w-[46ch] font-serif text-detail italic leading-[1.55] text-paper/55">
           {instruction}
         </p>
       ) : null}
@@ -207,27 +201,44 @@ export function PrayerStep({
 
       {prayer.audio ? <AudioRow src={prayer.audio} /> : null}
 
-      <button
-        type="button"
-        onClick={onToggle}
-        disabled={!hydrated}
-        aria-pressed={isDone}
-        className={cn(
-          "tap-press mt-6 inline-flex min-h-11 items-center gap-2.5 rounded-pill pe-3 font-sans text-detail motion-safe:transition-colors disabled:opacity-40",
-          isDone ? "text-paper" : "text-paper/65 hover:text-paper",
-        )}
-      >
-        <span
-          aria-hidden
+      <div data-step-actions className="mt-6 flex items-center justify-center gap-1">
+        <button
+          type="button"
+          onClick={onToggle}
+          disabled={!hydrated}
+          aria-pressed={isDone}
           className={cn(
-            "grid size-6 shrink-0 place-items-center rounded-full",
-            isDone ? "bg-paper text-night" : "ring-1 ring-inset ring-paper/35",
+            "tap-press inline-flex min-h-11 items-center gap-2.5 rounded-pill px-3 font-sans text-detail motion-safe:transition-colors disabled:opacity-40",
+            isDone ? "text-paper" : "text-paper/65 hover:text-paper",
           )}
         >
-          {isDone ? <Check size={14} /> : null}
-        </span>
-        {isDone ? t("shop.prayedToday") : t("prayers.reader.markPrayed")}
-      </button>
+          <span
+            aria-hidden
+            className={cn(
+              "grid size-6 shrink-0 place-items-center rounded-full",
+              isDone ? "bg-paper text-night" : "ring-1 ring-inset ring-paper/35",
+            )}
+          >
+            {isDone ? <Check size={14} /> : null}
+          </span>
+          {isDone ? t("shop.prayedToday") : t("prayers.reader.markPrayed")}
+        </button>
+        {bookmarkable ? (
+          <button
+            type="button"
+            onClick={() => togglePrayerBookmark(where.ruleId, where.prayerId, prayer.title)}
+            aria-pressed={bookmarked}
+            aria-label={bookmarked ? t("study.saved.removeBookmark") : t("prayers.reader.bookmarkPrayer")}
+            title={bookmarked ? t("prayers.reader.bookmarked") : t("prayers.reader.bookmark")}
+            className={cn(
+              "tap-press inline-flex min-h-11 min-w-11 shrink-0 items-center justify-center rounded-full motion-safe:transition-colors",
+              bookmarked ? "text-paper" : "text-paper/50 hover:text-paper",
+            )}
+          >
+            <Bookmark size={18} filled={bookmarked} />
+          </button>
+        ) : null}
+      </div>
     </section>
   );
 }

@@ -20,6 +20,12 @@ import { useReducedMotion } from "@/lib/ui/motion";
  * Near the foot of the page the place slides down with the last lines, which
  * could otherwise never rise to it.
  *
+ * The prayer the lit line stands in carries `data-praying` (1.8, the owner's
+ * pick B, Immersive, for while you pray): the prayers before and after it step
+ * back further than its own unlit lines, so the one being prayed sits lit in
+ * the middle (app/globals.css). Each prayer of the page marks itself with
+ * `data-step`.
+ *
  * Cheap on an older phone: the lines' places are measured once, and again
  * only when the page changes size or its lines change (a wording switched, a
  * prayer marked); a scroll reads two numbers and finds the line by halving,
@@ -38,6 +44,7 @@ export function useLitLine(ref: RefObject<HTMLElement | null>) {
     let lines: HTMLElement[] = [];
     let tops: number[] = [];
     let lit: HTMLElement | null = null;
+    let praying: HTMLElement | null = null;
     let frame = 0;
 
     const measure = () => {
@@ -50,6 +57,12 @@ export function useLitLine(ref: RefObject<HTMLElement | null>) {
       if (line === lit) return;
       if (lit) delete lit.dataset.lit;
       lit = line;
+      const step = line?.closest<HTMLElement>("[data-step]") ?? null;
+      if (step !== praying) {
+        if (praying) delete praying.dataset.praying;
+        praying = step;
+        if (step) step.dataset.praying = "";
+      }
       if (line) {
         line.dataset.lit = "";
         root.dataset.following = "";

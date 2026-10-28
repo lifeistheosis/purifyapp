@@ -4283,6 +4283,96 @@ html[data-verse-focus] [data-verse]:not([data-focus]) {
  transition: none;
 }
 
+/* While you pray (1.8): the owner's pick B, Immersive, of 2026-10-27, "the
+   line being prayed lit, the rest dim, the icon's light behind, chant
+   underneath" (components/prayers/PrayerRuleReader.tsx), on the 1.7 page
+   below and its one scroll-driven light.
+
+   The icon's light: the page's own icon (lib/prayers/serviceArt.ts), large
+   behind the reading place, soft and dim, and without its colour, so the
+   light it gives is white, never the gold of the panel. It is fixed and does
+   not move: a blurred layer is drawn once and only composited after, which
+   the 1.9 notes allow (blur on fixed layers, never on what scrolls). What
+   moves, with motion on, is a faint white breath over it, a gradient with no
+   filter that drifts on the compositor; with motion off it is still. On
+   Parchment a white light cannot be seen, so the icon is a soft shade and
+   the breath is not drawn. */
+.prayer-light {
+ position: fixed;
+ z-index: 0;
+ left: 50%;
+ top: 6vh;
+ width: min(150vw, 960px);
+ height: 72vh;
+ margin-left: calc(min(150vw, 960px) / -2);
+ background-size: cover;
+ background-position: 50% 22%;
+ background-repeat: no-repeat;
+ filter: blur(52px) grayscale(1);
+ opacity: 0.22;
+ pointer-events: none;
+}
+.prayer-light-breath {
+ position: fixed;
+ z-index: 0;
+ inset: 0;
+ background: radial-gradient(42% 30% at 50% 40%, rgb(255 255 255 / 0.07), rgb(255 255 255 / 0) 70%);
+ pointer-events: none;
+ animation: prayer-light-drift 24s ease-in-out infinite alternate;
+}
+@keyframes prayer-light-drift {
+ from { transform: translate3d(-6%, -3%, 0) scale(1); }
+ to { transform: translate3d(6%, 3%, 0) scale(1.12); }
+}
+:where([data-motion="reduce"]) .prayer-light-breath {
+ animation: none;
+}
+html[data-reading-mode="parchment"] .prayer-light {
+ opacity: 0.1;
+}
+html[data-reading-mode="parchment"] .prayer-light-breath {
+ display: none;
+}
+
+/* The rest dim: once the reader is following, the prayers before and after
+   the one being prayed step back further than its own unlit lines (the lines
+   at 0.4 below, in a prayer at half strength). Its two actions, Mark prayed
+   and the bookmark, keep their strength, so a prayer just finished can still
+   be marked. Only with motion on, as the lit line is. */
+:where([data-motion="full"]) [data-prayer-reader] [data-step] > * {
+ transition: opacity 420ms var(--ease-house);
+}
+:where([data-motion="full"]) [data-prayer-reader][data-following] [data-step]:not([data-praying]) > :not([data-step-actions]) {
+ opacity: 0.5;
+}
+
+/* The line being prayed is the page's accent: white with a soft white glow
+   (the owner, 2026-10-28: the accent is a glowing white, never yellow). On
+   Parchment, where white cannot glow, it is the plain ink at full strength. */
+:where([data-motion="full"]) [data-prayer-reader][data-following] [data-line][data-lit] {
+ text-shadow: 0 0 18px rgba(255, 255, 255, 0.35);
+}
+html[data-reading-mode="parchment"] [data-prayer-reader] [data-line][data-lit] {
+ text-shadow: none;
+}
+
+/* Chant underneath (components/player/PrayWith.tsx): the chip that keeps
+   Pray with's chant at the foot of the screen rises in as it comes. In the
+   apps it stands over the tab bar, where .now-playing-lift puts it and takes
+   its padding away, so it keeps a little air of its own there. */
+html.is-native .pray-chip {
+ margin-bottom: 0.75rem;
+}
+@keyframes pray-chip-in {
+ from { opacity: 0; transform: translateY(10px); }
+}
+.pray-chip-in {
+ animation: pray-chip-in var(--duration-base) var(--ease-house) backwards;
+}
+:where([data-motion="reduce"]) .pray-chip-in {
+ animation: none;
+}
+
 /* The prayer reader (1.7): a prayer flows down the page line by line, as the
    live lyrics in Now Playing and the read-aloud follow do. The owner,
    2026-10-16: the line being read bright, the rest a step back as you move
@@ -4293,7 +4383,7 @@ html[data-verse-focus] [data-verse]:not([data-focus]) {
    strength and nothing moves. */
 :where([data-motion="full"]) [data-prayer-reader][data-following] [data-line] {
  opacity: 0.4;
- transition: opacity 420ms var(--ease-house);
+ transition: opacity 420ms var(--ease-house), text-shadow 420ms var(--ease-house);
 }
 :where([data-motion="full"]) [data-prayer-reader][data-following] [data-line][data-lit] {
  opacity: 1;
