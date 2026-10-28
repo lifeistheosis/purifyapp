@@ -4,6 +4,8 @@ import { useCallback, useEffect, useRef } from "react";
 import { usePathname } from "next/navigation";
 import { apiFetch } from "@/lib/api/client";
 import { isAutomatedAgent } from "@/lib/analytics/bot";
+import { countClose, countVisit } from "@/lib/analytics/screenCount";
+import { screenOf } from "@/lib/analytics/screens";
 import { tagFromSearch, withoutTag } from "@/lib/analytics/tag";
 import { isDesktopApp } from "@/lib/desktop/bridge";
 
@@ -37,6 +39,13 @@ import { isDesktopApp } from "@/lib/desktop/bridge";
  *     (?via=email-release-1.5). It is read once, kept for the tab, and taken
  *     off the address so a copied link does not carry it to somebody else.
  *   - that this is the Windows app, whose user agent does not say so.
+ *
+ * And, since 1.8, the screens' counts, which are not page views and carry no
+ * session id (lib/analytics/screenCount.ts, on the privacy page beside the
+ * onboarding's): when the app is put away or the page closed, the kind of
+ * screen that was showing and roughly how long; and, once the tab has had
+ * input, a device's first open or its coming back a day, a week or a month
+ * later. Both wait for the same input the page views wait for.
  */
 const HUMAN_KEY = "purify:human";
 const TAG_KEY = "purify:via";
@@ -116,6 +125,9 @@ export function AnalyticsTracker() {
   const pathRef = useRef(pathname);
   const sentRef = useRef<string | null>(null);
   const humanRef = useRef(false);
+  // When the screen on show began showing: when it was opened, or when the
+  // reader came back to it. Null while the page is hidden.
+  const shownAtRef = useRef<number | null>(null);
 
   // One pageview per path, and only once a person is confirmed.
   const record = useCallback(() => {
@@ -144,15 +156,18 @@ export function AnalyticsTracker() {
   useEffect(() => {
     takeTag();
     pathRef.current = pathname;
+    shownAtRef.current = document.visibilityState === "visible" ? Date.now() : null;
     record();
   }, [pathname, record]);
 
-  // Wait for a person, then record the page they are on.
+  // Wait for a person, then record the page they are on, and count the visit
+  // itself: a first open, or a return after a day, a week or a month.
   useEffect(() => {
     if (looksAutomated()) return;
     const confirm = () => {
       humanRef.current = true;
       record();
+      countVisit();
     };
     if (tabHasHadInput()) {
       confirm();
@@ -187,6 +202,40 @@ export function AnalyticsTracker() {
     }, 20000);
     return () => clearInterval(id);
   }, [pathname]);
+
+  // The app put away or the page closed: one count of the kind of screen that
+  // was showing and for how long (lib/analytics/screenCount.ts). A tab switch
+  // on a computer is a putting away too. Hidden and then pagehide, as a closing
+  // tab fires both, is one count: the first takes the time and clears it. A
+  // return to the app starts the time again, and may be a day's return.
+  useEffect(() => {
+    const close = () => {
+      const shownAt = shownAtRef.current;
+      shownAtRef.current = null;
+      const path = pathRef.current;
+      if (shownAt === null || !humanRef.current || !path || path.startsWith("/admin")) return;
+      countClose(screenOf(path), Date.now() - shownAt);
+    };
+    const onVisibility = () => {
+      if (document.visibilityState === "hidden") {
+        close();
+        return;
+      }
+      if (shownAtRef.current === null) shownAtRef.current = Date.now();
+      if (humanRef.current) countVisit();
+    };
+    const onShow = (e: PageTransitionEvent) => {
+      if (e.persisted && document.visibilityState === "visible") shownAtRef.current = Date.now();
+    };
+    document.addEventListener("visibilitychange", onVisibility);
+    window.addEventListener("pagehide", close);
+    window.addEventListener("pageshow", onShow);
+    return () => {
+      document.removeEventListener("visibilitychange", onVisibility);
+      window.removeEventListener("pagehide", close);
+      window.removeEventListener("pageshow", onShow);
+    };
+  }, []);
 
   return null;
 }

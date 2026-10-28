@@ -87,7 +87,17 @@ function automated(): boolean {
   }
 }
 
-function platform(): CountPlatform {
+/**
+ * May this device count at all: in a browser, not automation, and not a
+ * device the admin has been opened on. The screens' counts ask the same
+ * (lib/analytics/screenCount.ts).
+ */
+export function countingAllowed(): boolean {
+  return typeof window !== "undefined" && !isCountingOff() && !automated();
+}
+
+/** The kind of device, as every count names it. */
+export function countPlatform(): CountPlatform {
   return nativePlatform() ?? (isDesktopApp() ? "desktop" : "web");
 }
 
@@ -105,8 +115,8 @@ function door(): string | undefined {
  * version of the questions it answered), for counts made on a later visit.
  */
 function send(event: OnboardingEvent, kept?: { door?: string; v?: number }): void {
-  if (typeof window === "undefined" || isCountingOff() || automated()) return;
-  const body = eventBody(event, { v: kept?.v ?? COUNT_VERSION, platform: platform(), door: kept ? kept.door : door() });
+  if (!countingAllowed()) return;
+  const body = eventBody(event, { v: kept?.v ?? COUNT_VERSION, platform: countPlatform(), door: kept ? kept.door : door() });
   void apiFetch("/api/track/event", {
     method: "POST",
     headers: { "Content-Type": "application/json" },

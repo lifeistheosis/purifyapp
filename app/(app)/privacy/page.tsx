@@ -293,6 +293,22 @@ export default async function PrivacyPage() {
  is one more on a total, never you. Your answers themselves stay
  on your device and in your own account, for making Purify yours.
 </p>
+<p className="mt-3 font-serif text-body text-paper/85 leading-[1.7]">
+ The screens are counted in the same table, so we can see where
+ reading stops and whether new readers come back. When you put the
+ app away or close the page, one row says what kind of screen was
+ showing (&ldquo;a Bible chapter&rdquo;, &ldquo;a prayer&rdquo;,
+ never which one) and roughly how long it had been open: under ten
+ seconds, under a minute, under five minutes, or longer. And from
+ your own device, a note the first time it opens Purify, and once
+ each when you come back a day, a week and a month after that. A
+ row holds only that, with the kind of device (iPhone, Android,
+ Windows, website) and the day, not the time. No session id, no
+ account, no device id, no page address: &ldquo;someone put the app
+ away on a saint&rsquo;s page after a minute or two&rdquo; is one
+ more on a total, never you. The day you first opened Purify stays
+ on your device.
+</p>
 
  {/* Retention */}
  <p className="mt-10 font-sans text-caption font-semibold text-paper/45">
