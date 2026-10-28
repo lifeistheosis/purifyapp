@@ -1,82 +1,61 @@
+import type { ReactNode } from "react";
+
 import { MobileShell } from "./MobileShell";
 import { MobileHeader } from "./MobileHeader";
-import { SoftTile, SoftTileGrid, type Tone } from "./SoftTiles";
 import { SearchField } from "@/components/search/SearchField";
-import { type DiscoverEntry } from "./DiscoverIndex";
-import { Book } from "@/components/ui/icons/Book";
-import { Church } from "@/components/ui/icons/Church";
-import { Calendar } from "@/components/ui/icons/Calendar";
-import { Compass } from "@/components/ui/icons/Compass";
-import { Cross } from "@/components/ui/icons/Cross";
-import { HaloedHead } from "@/components/ui/icons/HaloedHead";
-import { Hourglass } from "@/components/ui/icons/Hourglass";
-import { Orans } from "@/components/ui/icons/Orans";
-import { Cart } from "@/components/ui/icons/tab/Cart";
-import { ChatBubble } from "@/components/ui/icons/ChatBubble";
-import { Scroll } from "@/components/ui/icons/Scroll";
-import { Note } from "@/components/ui/icons/Note";
-import { DISCOVER_CLOSING, isClosingRow } from "@/lib/discover/grid";
+import { GalleryBand } from "@/components/ui/GalleryBand";
+import { TILE_PREVIEWS } from "@/lib/discover/tilePreviews.generated";
 import { shopEnabled } from "@/lib/shop/flags";
 import { UnreadDot } from "@/components/community/NotificationsInbox";
 import { T } from "@/components/i18n/T";
 
-// Tone cycle for the library tile grid: graded neutrals, no colour.
-const LIBRARY_TONES: Tone[] = ["a", "b", "c", "d"];
-
-// The Find a parish glyph. Church is already the Councils tile in the same
-// grid, so the parish tile takes the compass: it is about finding a place.
-// Compass was cut for the tab bar at a 2.2 stroke, which reads as bold beside
-// the library glyphs at 1.6, so it is thinned here to sit with them.
-//
-// Not yet seen on a phone beside the Settings gear, which closes the grid in
-// the row under it and whose own file says its four teeth read close to a
-// compass. If the two rows look alike there, change this glyph and leave the
-// gear: readers already know the gear from the tab it used to be.
-function ParishCompass(props: React.ComponentProps<typeof Compass>) {
-  return <Compass {...props} strokeWidth={1.6} />;
-}
-
-// The Chat tile's glyph, with Chat's unread dot on it. The dot left the tab
-// bar's Chat tab for Discover's tab when Chat became this tile, and a reader
-// who follows it here has to be shown which tile it meant. The dot only
-// reads what the bar's own badge has already asked for.
-function ChatGlyph(props: React.ComponentProps<typeof ChatBubble>) {
-  return (
-    <span className="relative inline-flex">
-      <ChatBubble {...props} />
-      <UnreadDot />
-    </span>
-  );
-}
+/** One door of the library, as its band draws it. */
+type DiscoverEntry = {
+  /** Words to draw, not a string: a <T> island, so they follow the reader's
+   *  language in the apps, where a server's string is frozen in English. */
+  label: ReactNode;
+  href: string;
+  /** The app's own line on what is inside, from the place's own words. */
+  blurb: ReactNode;
+  /** The band's picture, from public/discover/tiles. */
+  picture: string;
+  /** Where the band's slice of the picture sits, when 50% 30% would cut the faces off. */
+  focus?: string;
+  /** Set at the corner of the name: Chat's unread dot. */
+  badge?: ReactNode;
+};
 
 /**
  * Discover mobile shell: the library's front door.
  *
  *   1. A search field that says what it finds (opens the one search).
- *   2. The library as tiles, a picture on each where we hold one: Saints,
- *      Reading, History, Councils, Theology, Chants, Calendar,
- *      Walkthroughs; then the Shop and Chat; then Start here and Find a
- *      parish as rows.
+ *   2. The library as a gallery: each door a wide band with its picture, its
+ *      name and the app's own line on what is inside. Saints, Reading,
+ *      History, Councils, Theology, Chants, Calendar, Walkthroughs; then the
+ *      Shop and Chat; then Start here and Find a parish.
  *   3. Closing colophon.
  *
- * That is the 1.7 layout, the owner's pick of 2026-10-15 ("A", after
- * Hallow's Discover: a title, a search field, picture tiles). Until then the
- * screen opened on the Menologion plate, a sentence, a History band and the
- * reading-room card, and no tile showed on the first screen.
+ * The gallery is the owner's pick of 2026-10-27 (round 7b, D, "each part of
+ * the library a wide band with its picture and the app's line on what is
+ * inside, like Theology"; Homebase/boards/purify-master/variants/
+ * 07b-discover.png). The band is Theology's own (components/ui/GalleryBand),
+ * so the two galleries are one pattern. Until then the library was picture
+ * tiles two across (1.7, his pick of 2026-10-15 after Hallow's Discover),
+ * which showed a name and no line, with the last two as narrow rows; every
+ * door the tiles had is a band now, in the same order, and each says what
+ * is behind it.
  *
  * "Featured today" (a topic card and a council card) used to sit between the
- * library and the colophon and was removed. It cost a loadAllTopics() off
- * disk on every render of this server component to summarise two cards, and
- * the Android export froze the pick at build time anyway, so the "today" in
- * its name was not true in the app.
+ * library and the colophon and was removed in 1.7. It cost a loadAllTopics()
+ * off disk on every render of this server component to summarise two cards,
+ * and the Android export froze the pick at build time anyway, so the "today"
+ * in its name was not true in the app.
  *
  * Shop and Chat were tabs until 2026-10-13, when the owner chose a bar of
- * five and You came back to it. They are tiles here now, after the library
- * and before the two closing rows. The Shop keeps the cart its tab wore, so
- * the move reads as a move. MobileTabBar's Discover predicate claims /shop,
- * /community and /campaigns, so this tab stays lit while a reader is in
- * either. The Settings row that stood last here was the You tab in exile,
- * and went back to the bar with it.
+ * five and You came back to it. They are doors here, after the library and
+ * before the two closing ones. MobileTabBar's Discover predicate claims
+ * /shop, /community and /campaigns, so this tab stays lit while a reader is
+ * in either.
  */
 export function DiscoverMobile() {
   // Every word on this surface is a <T> island, never a string the server
@@ -85,22 +64,22 @@ export function DiscoverMobile() {
   // Greek and found this tab in English, though every line of it was already
   // translated. lib/i18n/__tests__/serverWords.test.ts keeps it so.
 
-  // The library index. Order reads like a menologion table of contents:
-  // people first (saints), then the doctrinal record together (the councils,
-  // the topics they confessed, the heresies they condemned), then the year,
-  // the daily readings, the Psalter, and the patristic commentary that ties
-  // it together. Saints + Calendar carry a live blurb; the rest reuse the
-  // shared `discover.tile.*` strings.
+  // The library. Order reads like a menologion table of contents: people
+  // first (saints), then the reading room and the record of the Church (its
+  // history, its councils, its theology), then what is sung and kept through
+  // the year, then the ways in from outside the library. Every line is the
+  // app's own sentence for the place, the one its tile, its hub or its menu
+  // already carried.
   const entries: DiscoverEntry[] = [
     {
-      // People first, as the ordering note above says. The Saints row was
-      // missing from this list even though its strings already shipped.
+      // People first, as the ordering note above says.
       label: <T k="discover.tile.saints" />,
       href: "/saints",
       blurb: <T k="discover.tile.saintsBlurb" />,
-      Icon: HaloedHead,
       // The Three Hierarchs, a Novgorod icon before 1917, the prayer icon.
+      // The slice is lifted to their faces.
       picture: "/discover/tiles/saints.webp",
+      focus: "50% 20%",
     },
     {
       // The reading room, a tile since 1.7 (a card above the library until
@@ -110,7 +89,6 @@ export function DiscoverMobile() {
       label: <T k="discover.tile.reading" />,
       href: "/reading",
       blurb: <T k="discover.tile.readingBlurb" />,
-      Icon: Book,
       picture: "/discover/tiles/reading.webp",
     },
     {
@@ -119,20 +97,18 @@ export function DiscoverMobile() {
       label: <T k="discover.tile.history" />,
       href: "/history",
       blurb: <T k="discover.tile.historyBlurb" />,
-      Icon: Hourglass,
       picture: "/discover/tiles/history.webp",
     },
     {
       // The fathers who kept the councils' faith, assembled: the lower half
       // of the Triumph of Orthodoxy (History shows its top). The free
       // pictures of a council itself are of Florence, and the Nicaea fresco
-      // needs a credit line. Every library tile has a picture since the
-      // owner's word of 2026-10-15.
+      // needs a credit line. The slice is lifted to their faces.
       label: <T k="discover.tile.councils" />,
       href: "/councils",
       blurb: <T k="discover.tile.councilsBlurb" />,
-      Icon: Church,
       picture: "/discover/tiles/councils.webp",
+      focus: "50% 15%",
     },
     {
       // The one Theology umbrella: Doctrine, Topics, Heresies, and
@@ -141,7 +117,6 @@ export function DiscoverMobile() {
       label: <T k="discover.tile.theology" />,
       href: "/theology",
       blurb: <T k="discover.tile.theologyBlurb" />,
-      Icon: Cross,
       picture: "/discover/tiles/theology.webp",
     },
     {
@@ -157,18 +132,12 @@ export function DiscoverMobile() {
       label: <T k="chants.title" />,
       href: "/chants",
       blurb: <T k="chants.lead" />,
-      Icon: Note,
       picture: "/discover/tiles/chants.webp",
     },
     {
       label: <T k="discover.tile.calendar" />,
       href: "/calendar",
-      // Was an interpolated "<fast>. Pascha in N days." built from a
-      // server-computed date. SoftTile does not render `blurb` at all, so
-      // it was dead string-building over a date that the Android export
-      // froze at build time. The static blurb matches its siblings.
       blurb: <T k="discover.tile.calendarBlurb" />,
-      Icon: Calendar,
       // The Menologion of Basil II, Discover's plate until 1.7.
       picture: "/discover/tiles/calendar.webp",
     },
@@ -177,26 +146,27 @@ export function DiscoverMobile() {
       // on a phone: a tile since 1.7, an addition the owner saw on the
       // picture he chose. The Anastasis, Christ taking Adam by the hand: the
       // owner asked for "a helping hand" (2026-10-15), as the Codex page it
-      // wore first was "literally just a manuscript".
+      // wore first was "literally just a manuscript". Its line is the
+      // walkthroughs' own opening sentence, held to two lines by the band.
       label: <T k="nav.discoverMenu.walkthroughs" />,
       href: "/walkthroughs",
-      blurb: <T k="nav.discoverMenu.walkthroughs" />,
-      Icon: Scroll,
+      blurb: <T k="walk.hubIntro" />,
       picture: "/discover/tiles/walkthroughs.webp",
+      focus: "50% 10%",
     },
     // Shop and Chat, tabs until 2026-10-13. After the library, as commerce
     // sat after the study surfaces on the bar, and each under the name its
-    // tab had. Tiles, not rows: a tile shows no second line, so the blurbs
-    // here are only what a row would say if one were ever drawn as a row.
+    // tab had.
     ...(shopEnabled()
       ? [
           {
             label: <T k="nav.shop" />,
             href: "/shop",
-            blurb: <T k="nav.shop" />,
-            Icon: Cart,
+            // The shop's own line, under its title on its front page.
+            blurb: <T k="shop.curatedOrthodoxIconsFaithfulTo" />,
             // St George, Novgorod, 15th century: an icon the shop carries.
             picture: "/discover/tiles/shop.webp",
+            focus: "50% 10%",
           },
         ]
       : []),
@@ -206,35 +176,34 @@ export function DiscoverMobile() {
       label: <T k="nav.chat" />,
       href: "/community",
       blurb: <T k="community.subtitle" />,
-      Icon: ChatGlyph,
       // Pentecost: the apostles together, given the words to speak.
       picture: "/discover/tiles/chat.webp",
+      // The dot left the tab bar's Chat tab for Discover's tab when Chat
+      // became a door here, and a reader who follows it has to be shown
+      // which door it meant. It only reads what the bar's own badge has
+      // already asked for. (On the picture tiles of 1.7 it rode on a glyph
+      // the tile never drew.)
+      badge: <UnreadDot />,
     },
     {
       // Start here (1.6): seven steps for a reader who is new to Orthodoxy
-      // (lib/start/steps.ts). The first of the two closing entries: it and
+      // (lib/start/steps.ts). The first of the two closing doors: it and
       // Find a parish are the two doors for the newcomer, in the order a
-      // newcomer needs them. The figure at prayer is the glyph, since the
-      // path begins with a prayer.
+      // newcomer needs them.
       label: <T k="discover.tile.start" />,
       href: "/start",
       blurb: <T k="discover.tile.startBlurb" />,
-      Icon: Orans,
-      // Christ Pantocrator, Sinai: drawn small at the row's head.
+      // Christ Pantocrator, Sinai, the slice on his eyes.
       picture: "/discover/tiles/start.webp",
+      focus: "50% 22%",
     },
     {
       // Find a parish (1.6): the jurisdictions' own parish directories, as
-      // links out. A quiet row under the library and not a band above it: it
-      // is a door for the reader with no parish yet, not the surface's
-      // headline. After the library and the two tiles under it, and last.
-      // One of the two closing entries (DISCOVER_CLOSING in
-      // lib/discover/grid.ts, which counts from the end of this list), so
-      // its blurb is read whenever it is drawn as a row.
+      // links out. A door for the reader with no parish yet, not the
+      // surface's headline, so it closes the list, last.
       label: <T k="discover.tile.parishes" />,
       href: "/parishes",
       blurb: <T k="discover.tile.parishesBlurb" />,
-      Icon: ParishCompass,
       // St John Chrysostom in Hagia Sophia, the pastor in his church.
       picture: "/discover/tiles/parishes.webp",
     },
@@ -245,44 +214,27 @@ export function DiscoverMobile() {
     // right as on the other four, the owner's "same design on all". The
     // field under the title stays too: it says what the search finds.
     <MobileShell header={<MobileHeader titleKey="nav.discover" />}>
-      {/* 1.7, the owner's pick of 2026-10-15 ("A"): the library first. A
-          search field under the title that says what it finds, then the
-          tiles on the first screen, each with a picture where we hold one.
-          The Menologion plate, its sentence, the History band and the
-          reading-room card gave way: History and Reading are tiles among the
-          rest (History was on the screen twice). The picture he chose from
-          is Homebase/boards/purify-master/r17/shots/ask-discover-calm.png. */}
       <SearchField className="mb-4" />
 
-      <div>
-        <SoftTileGrid>
-          {entries.map((e, i) => {
-            // The grid is two across. The library's entries, and the Shop
-            // and Chat after them, are tiles; the closing ones, Start here
-            // and Find a parish, each take
-            // a whole row and say what is behind them. The rule, and the one
-            // case where the first of them is a tile after all, is in
-            // lib/discover/grid.ts.
-            const row = isClosingRow(i, entries.length, DISCOVER_CLOSING);
-            return (
-              <SoftTile
-                key={e.href}
-                href={e.href}
-                label={e.label}
-                sub={row ? e.blurb : undefined}
-                wide={row}
-                icon={<e.Icon size={21} />}
-                tone={LIBRARY_TONES[i % LIBRARY_TONES.length]}
-                picture={e.picture}
-                // The first two rows are on the first screen of a phone.
-                priority={i < 4}
-              />
-            );
-          })}
-          {/* The marketplace had its own bottom-bar tab from Beta 1.9 to 1.5,
-              and is a tile here again from 1.6: see the list above. */}
-        </SoftTileGrid>
-      </div>
+      <ul className="flex flex-col gap-2.5">
+        {entries.map((e, i) => (
+          <li key={e.href}>
+            <GalleryBand
+              href={e.href}
+              title={e.label}
+              line={e.blurb}
+              badge={e.badge}
+              picture={e.picture}
+              focus={e.focus}
+              // The tile's tiny preview, blurred, at once (1.8): the band is
+              // never an empty box while its picture comes.
+              preview={TILE_PREVIEWS[e.picture]?.src}
+              // The first six are on the first screen of a phone.
+              priority={i < 6}
+            />
+          </li>
+        ))}
+      </ul>
 
       <p className="mt-10 text-center font-serif italic text-detail text-paper/45 leading-[1.55]">
         <T k="ui.throughThePrayersOfOur" />

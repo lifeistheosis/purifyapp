@@ -2694,6 +2694,21 @@ html[data-reading-mode="parchment"] .lic-notes .lic-note:target {
  transform: none;
 }
 
+/* A gallery band that opens (Theology's subjects, components/theology/
+   FaithMap.tsx): what it holds settles in under it as it opens. The rule
+   matches only while the <details> is open, so it plays again on every
+   opening. Filled backwards, so the list is handed back to transform: none
+   when it lands. */
+@keyframes band-open {
+ from { opacity: 0; transform: translateY(-4px); }
+}
+details[open] > .band-open {
+ animation: band-open var(--duration-base) var(--ease-house) backwards;
+}
+:where([data-motion="reduce"]) details[open] > .band-open {
+ animation: none;
+}
+
 /* ── Tab select ───────────────────────────────────────────────────────
    The pop the newly-selected tab icon makes. It replaces the sliding
    compartment that used to sit behind the active tab: that animated `left`,

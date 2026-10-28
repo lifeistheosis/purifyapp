@@ -18,6 +18,12 @@
  * The one line under each subject is ours, plain and descriptive, and every
  * picture is an icon or a fresco (docs/licensing/SECTION_MEDIA.md, "Theology
  * subjects").
+ *
+ * Since the owner's pick of 2026-10-27 (round 12, A, "A gallery") each
+ * subject is drawn as a wide band of its icon (components/ui/GalleryBand.tsx),
+ * which shows a slice of the picture about a third of its height. `focus`
+ * moves that slice where the default (50% 30%) would cut off the faces; each
+ * was chosen by looking at the crop.
  */
 
 export type TheologySubject = {
@@ -25,7 +31,7 @@ export type TheologySubject = {
   title: string;
   /** One plain sentence: what the subject is. */
   line: string;
-  picture: { src: string; alt: string; credit: string };
+  picture: { src: string; alt: string; credit: string; focus?: string };
   /** data/topics slugs: the focused question, answered. */
   topics: string[];
   /** data/theology slugs: the long studies. */
@@ -113,6 +119,7 @@ export const THEOLOGY_SUBJECTS: TheologySubject[] = [
       src: "/icons/prayer/anastasis.jpg",
       alt: "The Anastasis, Christ raising Adam and Eve from the tombs",
       credit: "The Anastasis · Russian icon, about 1500 · Public domain",
+      focus: "50% 40%",
     },
     topics: ["theosis"],
     studies: ["theosis", "essence-energies", "original-sin", "penal-substitution"],
@@ -127,6 +134,7 @@ export const THEOLOGY_SUBJECTS: TheologySubject[] = [
       src: "/theology/subjects/triumph-of-orthodoxy.jpg",
       alt: "The Triumph of Orthodoxy, the restoration of the icons in 843",
       credit: "The Triumph of Orthodoxy · about 1375 to 1425 · Public domain",
+      focus: "50% 15%",
     },
     topics: [],
     studies: [],
@@ -141,6 +149,7 @@ export const THEOLOGY_SUBJECTS: TheologySubject[] = [
       src: "/icons/prayer/three-hierarchs.v2.jpg",
       alt: "The Three Hierarchs, Saints Basil, Gregory the Theologian and John Chrysostom",
       credit: "The Three Hierarchs · Novgorod · Public domain",
+      focus: "50% 12%",
     },
     topics: [],
     studies: ["comma-johanneum", "mark-longer-ending"],

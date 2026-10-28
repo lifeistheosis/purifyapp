@@ -30,6 +30,8 @@ describe("the faith, by subject", () => {
       for (const h of s.heresies) expect(HERESIES.some((x) => x.slug === h), h).toBe(true);
       for (const c of s.councils) expect(COUNCILS.some((x) => x.slug === c), c).toBe(true);
       expect(fs.existsSync(path.join(ROOT, "public", s.picture.src)), s.picture.src).toBe(true);
+      // The band's crop (round 12, A): an object-position, when it moves.
+      if (s.picture.focus) expect(s.picture.focus).toMatch(/^\d{1,3}% \d{1,3}%$/);
       const file = path.basename(s.picture.src);
       if (s.picture.src.startsWith("/theology/")) expect(records.includes(file), file).toBe(true);
       expect(`${s.title} ${s.line} ${s.picture.credit}`.includes(String.fromCharCode(0x2014))).toBe(false);

@@ -87,24 +87,20 @@ describe("Discover, where the two went", () => {
   const start = discover.indexOf("const entries: DiscoverEntry[] = [");
   const entries = discover.slice(start, discover.indexOf("\n  ];", start));
 
-  it("has a Shop tile, only while the shop is on, under the name its tab had", () => {
+  // Doors in a gallery since 1.8 (the owner's pick of 2026-10-27, round 7b,
+  // D): each a band with its picture and no glyph, which is why the glyphs
+  // the tabs wore (the cart, the speech bubble) are no longer checked here.
+  it("has a Shop door, only while the shop is on, under the name its tab had", () => {
     const shop = entries.slice(entries.indexOf("...(shopEnabled()"), entries.indexOf('href: "/community"'));
     expect(shop).toContain('label: <T k="nav.shop" />');
     expect(shop).toContain('href: "/shop"');
-    expect(shop).toContain("Icon: Cart");
   });
 
-  it("has a Chat tile under the name its tab had, with the unread dot on it", () => {
-    expect(entries).toContain('label: <T k="nav.chat" />');
-    expect(entries).toContain('href: "/community"');
-    expect(entries).toContain("Icon: ChatGlyph");
-    expect(discover).toMatch(/function ChatGlyph[\s\S]*?<ChatBubble \{\.\.\.props\} \/>\s*<UnreadDot \/>/);
-  });
-
-  it("does not use the church twice in one grid", () => {
-    // The church is the Councils tile. Chat's tab wore it too, which is why
-    // the tile has a glyph of its own.
-    expect(entries.split("Icon: Church").length - 1).toBe(1);
+  it("has a Chat door under the name its tab had, with the unread dot on it", () => {
+    const chat = entries.slice(entries.indexOf('label: <T k="nav.chat" />'));
+    expect(chat).toContain('href: "/community"');
+    expect(chat.slice(0, chat.indexOf("\n    },"))).toContain("badge: <UnreadDot />");
+    expect(discover).toContain('import { UnreadDot } from "@/components/community/NotificationsInbox";');
   });
 
   it("writes its words as islands, never as strings the server looked up", () => {
