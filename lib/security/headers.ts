@@ -34,10 +34,8 @@ export function buildCsp(nonce: string): string {
     "style-src 'self' 'unsafe-inline'",
     "img-src 'self' data: blob: https://*.supabase.co https://*.buymeacoffee.com https://img.buymeacoffee.com",
     "font-src 'self' data:",
-    // Self-hosted prayer audio (e.g. the prayer-rope anthem), and the Bible
-    // read aloud, whose recordings are in Purify's own bucket (1.8,
-    // lib/readAloud/chapters.ts READ_ALOUD_RECORDINGS).
-    "media-src 'self' https://audio.purifyapp.net",
+    // Self-hosted prayer audio (e.g. the prayer-rope anthem).
+    "media-src 'self'",
     // ipc: and http://ipc.localhost are the desktop app's native bridge
     // (Tauri; ipc: on macOS and Linux, the http form on Windows). A browser
     // never reaches either. Without them the bridge still works, over a

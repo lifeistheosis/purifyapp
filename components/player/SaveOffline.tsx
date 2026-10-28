@@ -15,7 +15,7 @@ import { getBook, localBookNames } from "@/lib/bible/books";
 import { plusFeaturesNow } from "@/lib/entitlements/usePlusFeatures";
 import { streamedUrl } from "@/lib/media/streamed";
 import { isNativeClient } from "@/lib/platform/native";
-import { hasReadAloud, readAloudRecording } from "@/lib/readAloud/chapters";
+import { hasReadAloud } from "@/lib/readAloud/chapters";
 import { checkSaved, onSavedChange, removeBook, saveChapters, savedChapters } from "@/lib/readAloud/offline";
 
 /** The book a playing chapter belongs to, from its address (streamed or saved). */
@@ -62,7 +62,7 @@ export function SaveOffline({ src }: { src: string | null }) {
     const { failed: missed } = await saveChapters(
       book!,
       chapters,
-      (c) => ({ mp3: readAloudRecording(book!, c), json: streamedUrl(`/audio/read/${book}/${c}.json`, true) }),
+      (c) => ({ mp3: streamedUrl(`/audio/read/${book}/${c}.mp3`, true), json: streamedUrl(`/audio/read/${book}/${c}.json`, true) }),
       (done, total) => setBusy({ done, total }),
     );
     setBusy(null);
