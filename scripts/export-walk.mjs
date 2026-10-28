@@ -2628,21 +2628,23 @@ await section(34, async () => {
   must(![en["chants.row.feast"], en["chants.row.psalms"], en["chants.row.short"], en["chants.row.all"]].some((h) => home.headings.includes(h)), "no row is drawn with nothing in it");
   await page.screenshot({ path: path.join(SHOTS, "chants-home-phone.png"), fullPage: true });
 
-  // The Anthem's page: its name, the switch, the three versions, the words.
+  // The Anthem's page (1.8, Sing along, the owner's round 9 A): its name,
+  // the words on the page with no signal, the three versions, then About and
+  // Versions as the switch under them.
   await go(page, "/chants/prayer-rope-anthem/");
-  await page.waitForFunction(() => document.querySelectorAll("[data-route-content] [role=tab]").length >= 3, null, { timeout: 20000 }).catch(() => {});
+  await page.waitForFunction(() => document.querySelectorAll("[data-route-content] [role=tab]").length >= 2, null, { timeout: 20000 }).catch(() => {});
   await page.waitForTimeout(1500);
   const anthem = await page.evaluate((play) => ({
     title: document.querySelector("[data-route-content] h1")?.textContent?.trim() ?? "",
     tabs: [...document.querySelectorAll("[data-route-content] [role=tab]")].map((t) => (t.textContent ?? "").trim()),
     versions: [...document.querySelectorAll("[data-route-content] [role=radiogroup] [role=radio]")].map((r) => (r.textContent ?? "").trim()),
-    lines: document.querySelectorAll("[data-route-content] [role=tabpanel] ol li").length,
+    lines: document.querySelectorAll("[data-route-content] [data-sung-look=page] ol > li").length,
     plays: [...document.querySelectorAll("[data-route-content] button")].filter((b) => (b.textContent ?? "").trim() === play).map((b) => b.disabled),
   }), en["prayers.play"]);
   must(anthem.title === en["chants.item.prayerRopeAnthem.title"], `the Anthem's page is named (${anthem.title})`);
-  must(anthem.tabs.join("|") === [en["chants.tab.words"], en["chants.tab.about"], en["chants.tab.versions"]].join("|"), `with Words, About and Versions (${anthem.tabs.join(", ")})`);
+  must(anthem.tabs.join("|") === [en["chants.tab.about"], en["chants.tab.versions"]].join("|"), `with About and Versions under the words (${anthem.tabs.join(", ")})`);
   must(anthem.versions.length === 3, `three versions to choose between (${anthem.versions.join(", ")})`);
-  must(anthem.lines === 24, `the English words, all 24 lines (${anthem.lines})`);
+  must(anthem.lines === 24, `the English words on the page, all 24 lines, with no signal (${anthem.lines})`);
   must(anthem.plays.length > 0 && anthem.plays.every((d) => d), "and Play waits for a connection instead of failing");
   await page.getByRole("tab", { name: en["chants.tab.about"] }).tap().catch(() => {});
   await page.waitForTimeout(600);
