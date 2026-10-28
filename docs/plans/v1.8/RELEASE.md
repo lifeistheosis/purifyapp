@@ -139,7 +139,7 @@ in the owner's words.
 
 ## If it goes wrong
 
-Way back: not recorded yet (node scripts/release.mjs back)
+Way back: 74b91f9dde204cdc839717d3e32811263c616c66 Admin: the Onboarding view, as four numbers and three panels
 
 The line above is the commit on `origin/main` that this push replaces.
 `node scripts/release.mjs back` writes it before the push and again after
