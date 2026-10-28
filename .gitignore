@@ -150,3 +150,8 @@ public/widget-day-table.json
 
 # Written by scripts/release.mjs: gate logs and the release email preview.
 /.release-logs/
+
+# The Bible read aloud: the recordings are in Purify's bucket on Cloudflare R2
+# (1.8, lib/readAloud/chapters.ts READ_ALOUD_RECORDINGS), never in this public
+# repository. Their timings (.json) and the list stay here.
+public/audio/read/**/*.mp3

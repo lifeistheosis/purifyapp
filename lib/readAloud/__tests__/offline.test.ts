@@ -78,7 +78,7 @@ describe("saving a book", () => {
 
   it("still streams on the website, saved or not", async () => {
     await saveChapters("jude", [1], urls("jude"), undefined, plugin);
-    expect(readAloudSrc("jude", 1, false)).toBe("/audio/read/jude/1.mp3");
+    expect(readAloudSrc("jude", 1, false)).toBe("https://audio.purifyapp.net/read/jude/1.mp3");
   });
 });
 
