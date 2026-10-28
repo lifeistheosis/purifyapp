@@ -319,6 +319,10 @@ export type BuyPlace = "store" | "web";
  * store grants it to this reader. With no offers (signed out, no billing, the
  * store did not answer) no price is shown at all, never a remembered one, and
  * the action leads to /pricing (`href`).
+ *
+ * Its fill is solid, with no blur: the features scroll under it, a feature's
+ * title showed faintly through the old 90% glass, and the app keeps blur off
+ * anything over a moving page (the Bible pill, the saint page).
  */
 export function PlansDock({
   offers,
@@ -380,7 +384,7 @@ export function PlansDock({
 
   return (
     <div
-      className={cn("rounded-t-[26px] border-t border-paper/10 bg-night-soft/90 px-5 pt-4 backdrop-blur-xl", className)}
+      className={cn("rounded-t-[26px] border-t border-paper/10 bg-night-soft px-5 pt-4", className)}
       style={style}
       data-plans-dock=""
     >
