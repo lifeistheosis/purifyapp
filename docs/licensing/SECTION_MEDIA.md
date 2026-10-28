@@ -55,11 +55,10 @@ The picture was opened and laid beside v2 at the same size before it went in
 652, 104 KB, JPEG (mozjpeg) at quality 86, as dense as v2. Start here shows
 the same file, at 168px at most.
 
-`prayers.v2.jpg` stays in `public/sections/` only because the onboarding
-pictures (`lib/onboarding/pictures.ts`, from the ui/onboarding branch) use it
-as a stand-in. Nothing in Prayers or Start here shows it any more, and
-`lib/media/__tests__/sections.test.ts` names it as kept for that reason. Take
-it out once nothing names it.
+`prayers.v2.jpg` stayed in `public/sections/` for a day, as the onboarding
+pictures' stand-in (`lib/onboarding/pictures.ts`). When the two branches met
+on release/1.8 the stand-in moved to `prayers.v3.jpg` and v2 left the disk
+(2026-10-28).
 
 Two larger scans of the same icon are on Commons, and neither is used, because
 each is another photograph and so a change of picture, not more pixels of this

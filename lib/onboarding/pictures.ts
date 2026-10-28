@@ -50,5 +50,5 @@ export const ANSWER_PICTURES: Readonly<Record<Intent, AnswerPicture>> = {
   study: { slot: "onboarding-study", src: "/premium/scribe.v1.webp", focus: "50% 50%" },
   // Stand-in: Christ Pantocrator of Sinai, 6th century, the picture Prayers
   // wears (docs/licensing/SECTION_MEDIA.md, lib/media/sections.ts).
-  prayer: { slot: "onboarding-rule", src: "/sections/prayers.v2.jpg", focus: "50% 50%" },
+  prayer: { slot: "onboarding-rule", src: "/sections/prayers.v3.jpg", focus: "50% 50%" },
 };
