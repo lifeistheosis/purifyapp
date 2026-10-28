@@ -64,10 +64,12 @@ const MANIFESTS: Record<string, ReadAloudManifest> = {
   },
 };
 
-vi.mock("@/lib/readAloud/chapters", () => ({
+vi.mock("@/lib/readAloud/chapters", async (importOriginal) => ({
   hasReadAloud: (book: string, chapter: number) => `${book}/${chapter}` in MANIFESTS,
   readAloudManifest: async (book: string, chapter: number) => MANIFESTS[`${book}/${chapter}`] ?? null,
   readAloudSrc: (book: string, chapter: number) => `/audio/read/${book}/${chapter}.mp3`,
+  // The verses as the player's lines (1.8): the real one, shared with Listen.
+  verseCaptions: (await importOriginal<typeof import("@/lib/readAloud/chapters")>()).verseCaptions,
 }));
 vi.mock("@/lib/readAloud/covers", () => ({
   readAloudCover: () => ({ src: "/covers/read/x.jpg", fallback: "/x.jpg", size: null }),

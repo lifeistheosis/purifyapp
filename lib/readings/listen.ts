@@ -1,5 +1,5 @@
 import { getAudioSnapshot, pause, play, seek, setLoopMode, setTrack, subscribeAudio } from "@/lib/prayers/persistentAudioStore";
-import { hasReadAloud, readAloudManifest, readAloudSrc, type ReadAloudManifest } from "@/lib/readAloud/chapters";
+import { hasReadAloud, readAloudManifest, readAloudSrc, verseCaptions, type ReadAloudManifest } from "@/lib/readAloud/chapters";
 import { readAloudCover } from "@/lib/readAloud/covers";
 
 import type { FlowItem } from "./flow";
@@ -118,7 +118,7 @@ async function playPart(i: number): Promise<void> {
     art: cover.src,
     artFallback: cover.fallback,
     artSize: cover.size ?? undefined,
-    captions: manifest.verses.map((v) => ({ time: v.at, text: v.text ?? "" })),
+    captions: verseCaptions(manifest),
   });
   setLoopMode("off");
   // A second span in the chapter already loaded can be placed at once; a

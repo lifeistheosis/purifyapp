@@ -3,6 +3,7 @@ import { useSyncExternalStore } from "react";
 import bundled from "@/data/readAloud/index.json";
 import { streamedUrl } from "@/lib/media/streamed";
 import { isNativeClient } from "@/lib/platform/native";
+import type { CaptionSource } from "@/lib/prayers/persistentAudioStore";
 
 import { savedSrc } from "./offline";
 
@@ -128,6 +129,16 @@ export function readAloudManifest(book: string, chapter: number): Promise<ReadAl
     manifests.set(key, p);
   }
   return p;
+}
+
+/**
+ * A chapter's verses as the player's timed lines (1.8): each verse's words,
+ * where it starts and ends, and its number, for Now Playing's words and its
+ * "Verse 4 of 51". One place for the chapter Listen plays and for today's
+ * readings (lib/readings/listen.ts), so the two read alike.
+ */
+export function verseCaptions(manifest: ReadAloudManifest): CaptionSource {
+  return manifest.verses.map((v) => ({ time: v.at, end: v.end, text: v.text ?? "", n: v.n }));
 }
 
 /**

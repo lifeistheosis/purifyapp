@@ -4,7 +4,8 @@ import { describe, expect, it } from "vitest";
 
 import { captionsFor, readTiming } from "@/lib/chants/media";
 import type { Chant, ChantTiming } from "@/lib/chants/types";
-import { captionLines, lineAt } from "../captions";
+import { verseCaptions, type ReadAloudManifest } from "@/lib/readAloud/chapters";
+import { captionLines, lineAt, lineParts, verseOf } from "../captions";
 
 // The Prayer Rope Anthem, the first chant (data/chants/prayer-rope-anthem.json),
 // with each version's line times from its timing file beside the recording.
@@ -75,12 +76,14 @@ describe("the lines under a sung line", () => {
     expect(out[1].sub).toBeUndefined();
   });
 
-  it("follow the reader's choice: the English under the French anthem, or nothing", () => {
+  it("follow the reader's choice: the English over the French anthem, the French under it, or the French alone", () => {
     const fr = version("fr");
     const shown = captionsFor(fr.lines, timing("fr"), { translit: true, en: true });
-    expect(shown[0].sub).toEqual([fr.lines[0].en]);
+    expect(shown[0].text).toBe(fr.lines[0].text);
+    expect(shown[0].en).toBe(fr.lines[0].en);
+    expect(shown.every((l) => !l.sub)).toBe(true);
     const hidden = captionsFor(fr.lines, timing("fr"), { translit: true, en: false });
-    expect(hidden.every((l) => !l.sub)).toBe(true);
+    expect(hidden.every((l) => !l.en && !l.sub)).toBe(true);
   });
 
   it("are dropped, and the times with them, when the timing file does not match the words", () => {
@@ -89,5 +92,89 @@ describe("the lines under a sung line", () => {
     const out = captionsFor(en.lines, short, NONE);
     expect(out.every((l) => l.time === undefined)).toBe(true);
     expect(captionLines(out)).toEqual([]);
+  });
+});
+
+describe("Sing along (1.8, round 9 A): each line drawn from its own data and nothing else", () => {
+  const ALL = { translit: true, en: true };
+
+  it("reads the French anthem in its English, the French as sung under each line", () => {
+    const fr = version("fr");
+    captionsFor(fr.lines, timing("fr"), ALL).forEach((line, i) => {
+      expect(lineParts(line)).toEqual({
+        main: { text: fr.lines[i].en, sung: false },
+        under: [{ text: fr.lines[i].text, sung: true }],
+      });
+    });
+  });
+
+  it("draws the English anthem and the Arabic one as they are sung, with nothing under them", () => {
+    for (const id of ["en", "ar"]) {
+      const v = version(id);
+      captionsFor(v.lines, timing(id), ALL).forEach((line, i) => {
+        expect(lineParts(line)).toEqual({ main: { text: v.lines[i].text, sung: true }, under: [] });
+      });
+    }
+  });
+
+  it("invents no text: every part drawn is a field of the version's own line", () => {
+    for (const v of anthem.variants) {
+      captionsFor(v.lines, timing(v.id), ALL).forEach((line, i) => {
+        const { main, under } = lineParts(line);
+        const own = [v.lines[i].text, v.lines[i].en, v.lines[i].translit].filter(Boolean);
+        for (const part of [main, ...under]) expect(own).toContain(part.text);
+        // The sung words are drawn once, so they light once.
+        expect([main, ...under].filter((p) => p.sung).map((p) => p.text)).toEqual([v.lines[i].text]);
+      });
+    }
+  });
+
+  it("puts a transliteration under the sung words, never over them", () => {
+    const greek = { text: "Χριστὸς ἀνέστη ἐκ νεκρῶν", translit: "Christós anésti ek nekrón", en: "Christ is risen from the dead" };
+    const [line] = captionsFor([greek], null, ALL);
+    expect(lineParts(line)).toEqual({
+      main: { text: greek.en, sung: false },
+      under: [
+        { text: greek.text, sung: true },
+        { text: greek.translit, sung: false },
+      ],
+    });
+  });
+
+  it("keeps the English and the verse number through the timing", () => {
+    const out = captionLines([
+      { time: 0, text: "Je tiendrai mon chapelet", en: "I will hold my prayer rope" },
+      { time: 4, text: "In the beginning was the Word", n: 1 },
+    ]);
+    expect(out[0].en).toBe("I will hold my prayer rope");
+    expect(out[0].words.map((w) => w.text).join(" ")).toBe("Je tiendrai mon chapelet");
+    expect(out[1].n).toBe(1);
+    expect(out[1].en).toBeUndefined();
+  });
+});
+
+describe("a chapter read aloud, as the words view counts it (1.8, round 8 B)", () => {
+  const john1 = JSON.parse(fs.readFileSync("public/audio/read/john/1.json", "utf8")) as ReadAloudManifest;
+  const lines = captionLines(verseCaptions(john1));
+
+  it("carries every verse, its number, its words and its own end", () => {
+    expect(lines).toHaveLength(john1.verses.length);
+    lines.forEach((line, i) => {
+      expect(line.n).toBe(john1.verses[i].n);
+      expect(line.text).toBe(john1.verses[i].text);
+      expect(line.end).toBe(john1.verses[i].end);
+    });
+  });
+
+  it("says Verse 4 of 51 while the fourth verse is read", () => {
+    const fourth = john1.verses[3];
+    expect(verseOf(lines, lineAt(lines, fourth.at + 0.5))).toEqual({ verse: 4, total: 51 });
+    expect(verseOf(lines, -1)).toBeNull();
+  });
+
+  it("says nothing of verses over a chant's lines", () => {
+    const en = version("en");
+    const chant = captionLines(captionsFor(en.lines, timing("en"), NONE));
+    expect(verseOf(chant, 3)).toBeNull();
   });
 });

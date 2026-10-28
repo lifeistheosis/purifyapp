@@ -8,7 +8,7 @@ import { tabForKey } from "@/lib/ui/sectionTabs";
 /**
  * The app's segmented switch: one rounded row of equal parts, the chosen one
  * filled (the look of the Bible tab's Old and New Testament and a chant's
- * Words, About and Versions). A tablist: the arrows move between the parts
+ * About and Versions). A tablist: the arrows move between the parts
  * in the reading direction, Home and End go to the ends, and only the chosen
  * part is in the tab order (lib/ui/sectionTabs.ts, tabForKey).
  *

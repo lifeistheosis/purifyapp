@@ -20,7 +20,7 @@ import { Headphones } from "@/components/ui/icons/Headphones";
 import { Pause } from "@/components/ui/icons/Pause";
 import { Play } from "@/components/ui/icons/Play";
 import { nextChapter } from "@/lib/bible/books";
-import { hasReadAloud, readAloudManifest, readAloudSrc, useHasReadAloud, verseAt, type ReadAloudManifest } from "@/lib/readAloud/chapters";
+import { hasReadAloud, readAloudManifest, readAloudSrc, useHasReadAloud, verseAt, verseCaptions, type ReadAloudManifest } from "@/lib/readAloud/chapters";
 import { readAloudCover } from "@/lib/readAloud/covers";
 import { currentTimeNow, pause, play, setLoopMode, setTrack, usePersistentAudio } from "@/lib/prayers/persistentAudioStore";
 
@@ -50,7 +50,7 @@ async function startReading(book: string, chapter: number, title: string, t: (ke
     art: cover.src,
     artFallback: cover.fallback,
     artSize: cover.size ?? undefined,
-    captions: manifest?.verses.map((v) => ({ time: v.at, text: v.text ?? "" })),
+    captions: manifest ? verseCaptions(manifest) : undefined,
   });
   setLoopMode("off");
   play();

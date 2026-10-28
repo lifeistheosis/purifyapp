@@ -81,15 +81,22 @@ export function loadTiming(path: string): Promise<ChantTiming | null> {
   return p;
 }
 
-/** Which lines go under each sung line. */
+/** Which lines go with each sung line: its transliteration, its English. */
 export type WordsPrefs = { translit: boolean; en: boolean };
 
-/** The lines under a sung line, in order: transliteration, then English. */
+/** The lines under the sung words: the transliteration, where the reader keeps it. */
 export function subLines(line: ChantLine, prefs: WordsPrefs): string[] {
-  const out: string[] = [];
-  if (prefs.translit && line.translit) out.push(line.translit);
-  if (prefs.en && line.en) out.push(line.en);
-  return out;
+  return prefs.translit && line.translit ? [line.translit] : [];
+}
+
+/**
+ * The English to read over a line sung in another language (1.8, Sing along:
+ * the owner's pick of 2026-10-27, "the original under each English line"),
+ * where the version has it and the reader keeps it. A line that is English
+ * already has none.
+ */
+export function englishOver(line: ChantLine, prefs: WordsPrefs): string | undefined {
+  return prefs.en && line.en && line.en !== line.text ? line.en : undefined;
 }
 
 /**
@@ -98,14 +105,21 @@ export function subLines(line: ChantLine, prefs: WordsPrefs): string[] {
  * (the data test holds the two line for line); what is shown is always the
  * data file's words. Without a timing file the captions have no times, and
  * Now Playing simply shows the picture.
+ *
+ * Each line is drawn as lib/player/captions.ts lineParts says: its English
+ * over it where it has one (`en`), the sung words (`text`) under that, and
+ * the transliteration (`sub`) under them. A chant's page and Now Playing draw
+ * the same captions, so they read the same.
  */
 export function captionsFor(lines: ChantLine[], timing: ChantTiming | null, prefs: WordsPrefs): CaptionSource {
   const timed = timing && timing.lines.length === lines.length ? timing.lines : null;
   return lines.map((line, i) => {
+    const en = englishOver(line, prefs);
     const sub = subLines(line, prefs);
     return {
       ...(timed ? { time: timed[i].at, end: timed[i].end } : {}),
       text: line.text,
+      ...(en ? { en } : {}),
       ...(sub.length ? { sub } : {}),
     };
   });

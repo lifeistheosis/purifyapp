@@ -23,6 +23,10 @@ import { availabilityKey, isBlocked, useChantPlay } from "./ChantPlay";
  * recordings answers. The buttons stay where they are, dimmed while the list
  * is read and while a version cannot play, and the reason takes the place of
  * the singer's line, so the row keeps its height.
+ *
+ * 1.8: on a chant's page, a row's Play plays that version where the page
+ * sings along (round 9 A), not in Now Playing: the page shows that version's
+ * words (onPlay) and they light there.
  */
 export function ChantVersions({
   slug,
@@ -32,6 +36,8 @@ export function ChantVersions({
   coverSrc,
   selected,
   onSelect,
+  onPlay,
+  open = true,
 }: {
   slug: string;
   /** The chant's name in the reader's language. */
@@ -43,6 +49,10 @@ export function ChantVersions({
   /** The version the page shows, marked in the list. */
   selected?: string;
   onSelect?: (id: string) => void;
+  /** A row's Play has started its version. */
+  onPlay?: (id: string) => void;
+  /** Open Now Playing on its words when a row starts playing. */
+  open?: boolean;
 }) {
   const preview = usePreview();
   return (
@@ -57,6 +67,8 @@ export function ChantVersions({
           coverSrc={coverSrc}
           current={selected === v.id}
           onSelect={onSelect}
+          onPlay={onPlay}
+          open={open}
           preview={preview}
         />
       ))}
@@ -72,6 +84,8 @@ function VersionRow({
   coverSrc,
   current,
   onSelect,
+  onPlay,
+  open,
   preview,
 }: {
   slug: string;
@@ -81,10 +95,12 @@ function VersionRow({
   coverSrc?: string;
   current: boolean;
   onSelect?: (id: string) => void;
+  onPlay?: (id: string) => void;
+  open: boolean;
   preview: ReturnType<typeof usePreview>;
 }) {
   const { t } = useTranslate();
-  const { availability, playing, toggle } = useChantPlay({ slug, title, variant, lines, coverSrc });
+  const { availability, playing, toggle } = useChantPlay({ slug, title, variant, lines, coverSrc, open });
   const previewing = preview.playingId === `${slug}/${variant.id}`;
   const meta = [t(traditionKey(variant.tradition)), variant.setting, formatDuration(variant.audio.durationSec)].filter(Boolean);
   const sings = variant.performer ? t("chants.sungBy", { name: variant.performer }) : t("chants.performerUnknown");
@@ -134,6 +150,7 @@ function VersionRow({
         type="button"
         onClick={() => {
           preview.stop();
+          if (!playing && availability === "playable") onPlay?.(variant.id);
           toggle();
         }}
         disabled={!playing && availability !== "playable"}
