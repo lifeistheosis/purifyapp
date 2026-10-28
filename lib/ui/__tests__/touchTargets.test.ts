@@ -102,7 +102,13 @@ function countSmallTargets(): { total: number; byFile: Record<string, number> } 
 // the bar's Support lamp and the dead one in MobileTopBar went, Today's old
 // bar and its 40px bell went, and You's 36px settings mark left the bar. The
 // search, the bell and the Premium pill's box are 44px on every tab.
-const MAX_SMALL_TARGETS = 35;
+//
+// 35 -> 33 on 2026-10-28 (1.8), with the Bible reader as the owner's pick B
+// of round 2, "The page": the reader's bookmark and settings icons left the
+// bar for two round buttons with 44px touch boxes, and the chapter's name on
+// the pill is h-11, over 44px. The tree stood at 34 before it, one under the
+// line.
+const MAX_SMALL_TARGETS = 33;
 
 describe("touch targets", () => {
   const { total, byFile } = countSmallTargets();

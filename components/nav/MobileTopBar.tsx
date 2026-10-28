@@ -42,6 +42,14 @@ import { useTranslate } from "@/components/i18n/MessagesProvider";
  *   place of the title, the Web / Timeline switch the owner asked for ("I
  *   want that to just be a button"). The page then names itself with its own
  *   h1, and `title` is not shown.
+ * - `plates` (1.8, the Bible reader, the owner's pick B of round 2, "The
+ *   page"): no bar at all. The way back and the page's own buttons stand on
+ *   round plates over the page, clear of the status bar, whose strip stays
+ *   covered so the words never run under the clock. The page names itself
+ *   with its own h1, so the bar draws no title, and search is one of the
+ *   page's own buttons there. The plates step away while the reader reads
+ *   on and come back on a scroll up, with the page's pill (lib/ui/
+ *   scrollAway.ts, globals.css "The page: the Bible reader with no bar").
  *
  * No Support link rides in a phone bar (the owner, 2026-10-16: it "does
  * nothing useful there"). Giving is a row in Settings, and the computer's
@@ -60,6 +68,7 @@ export function MobileTopBar({
   revealTitleOn,
   overlay = false,
   center,
+  plates = false,
 }: {
   title?: string;
   /** Catalog key resolved client-side; wins over title. */
@@ -76,6 +85,8 @@ export function MobileTopBar({
   overlay?: boolean;
   /** A control in the middle of the bar, in place of the title. */
   center?: React.ReactNode;
+  /** No bar: the way back and the page's buttons on round plates over the page. */
+  plates?: boolean;
 }) {
   const router = useRouter();
   const { t } = useTranslate();
@@ -120,6 +131,50 @@ export function MobileTopBar({
   const backClass =
     "h-10 w-10 inline-flex shrink-0 items-center justify-center rounded-pill text-paper/80 transition-colors hover:text-paper focus-visible:outline-2 focus-visible:outline-paper focus-visible:outline-offset-2";
 
+  const backControl = back ? (
+    back === true ? (
+      <button
+        type="button"
+        aria-label={t("nav.back")}
+        onClick={() => goBack(router, backFallback ?? "/")}
+        className={backClass}
+      >
+        <ChevronLeft size={20} className="rtl:-scale-x-100" />
+      </button>
+    ) : (
+      <Link href={back} aria-label={t("nav.back")} className={backClass}>
+        <ChevronLeft size={20} className="rtl:-scale-x-100" />
+      </Link>
+    )
+  ) : null;
+
+  if (plates) {
+    // No bar: the plates stand in a row of the bar's height under the status
+    // bar, and the row lets every tap between them through to the page. The
+    // plates' look, the strip over the status bar and the stepping away are
+    // in globals.css, keyed on data-plates.
+    return (
+      <div
+        // Still the marker globals.css looks for: on a phone's browser the
+        // website's header steps aside for it, and focus mode puts it away.
+        data-mobile-topbar
+        data-plates
+        className="md:hidden native-md-flex pointer-events-none fixed inset-x-0 top-0 z-30 flex flex-col"
+        style={{ paddingTop: "env(safe-area-inset-top, 0px)" }}
+      >
+        <div data-plates-row className="flex h-[52px] items-center justify-between gap-2 px-3">
+          {backControl ?? <span aria-hidden />}
+          <div className="flex items-center gap-2">
+            {trailing}
+            <WebOnly>
+              <SiteMenuButton />
+            </WebOnly>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div
       ref={barRef}
@@ -137,22 +192,7 @@ export function MobileTopBar({
         "bg-night/95 backdrop-blur border-b border-white/8",
       )}
     >
-      {back ? (
-        back === true ? (
-          <button
-            type="button"
-            aria-label={t("nav.back")}
-            onClick={() => goBack(router, backFallback ?? "/")}
-            className={backClass}
-          >
-            <ChevronLeft size={20} className="rtl:-scale-x-100" />
-          </button>
-        ) : (
-          <Link href={back} aria-label={t("nav.back")} className={backClass}>
-            <ChevronLeft size={20} className="rtl:-scale-x-100" />
-          </Link>
-        )
-      ) : null}
+      {backControl}
       <div className={cn("min-w-0 flex-1 flex flex-col justify-center", !back && "pl-3")}>
         {center ? (
           <div className="flex min-w-0 justify-center">{center}</div>

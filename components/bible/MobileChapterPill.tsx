@@ -4,6 +4,7 @@ import { useState } from "react";
 import Link from "next/link";
 import { nextChapter, prevChapter, getBook } from "@/lib/bible/books";
 import { useTranslate } from "@/components/i18n/MessagesProvider";
+import { ChapterVerseStatus } from "./ChapterVerseStatus";
 import { MobileChapterSheet } from "./MobileChapterSheet";
 import { ReadAloudPillButton } from "./ReadAloud";
 import { ChevronLeft } from "@/components/ui/icons/ChevronLeft";
@@ -30,7 +31,7 @@ function Arrow({
     return (
       <span
         aria-hidden
-        className="h-10 w-10 inline-flex items-center justify-center text-paper/25 font-sans text-lede leading-none"
+        className="h-10 w-10 shrink-0 inline-flex items-center justify-center text-paper/25 font-sans text-lede leading-none"
       >
         {dir === "‹" ? <ChevronLeft size={20} className="rtl:-scale-x-100" /> : <ChevronLeft size={20} className="-scale-x-100 rtl:scale-x-100" />}
       </span>
@@ -40,7 +41,7 @@ function Arrow({
     <Link
       href={`/bible/${target.slug}/${target.chapter}`}
       aria-label={label}
-      className="h-10 w-10 inline-flex items-center justify-center text-paper/85 hover:text-paper font-sans text-lede leading-none"
+      className="h-10 w-10 shrink-0 inline-flex items-center justify-center text-paper/85 hover:text-paper font-sans text-lede leading-none"
     >
       {dir === "‹" ? <ChevronLeft size={20} className="rtl:-scale-x-100" /> : <ChevronLeft size={20} className="-scale-x-100 rtl:scale-x-100" />}
     </Link>
@@ -48,40 +49,48 @@ function Arrow({
 }
 
 /**
- * Mobile-only YouVersion-style chapter pill. Always visible (not scroll-gated)
- * and centered above the bottom tab bar. Shows the current `<Book> <Chapter>`
- * with drawn chevrons to step backward and forward through the canon.
+ * The chapter's pill, floating at the foot of the page on a phone and a
+ * tablet (1.8, the owner's pick B of round 2, "The page": "The floating pill
+ * comes back when you scroll up, with Listen"; Homebase/boards/purify-master/
+ * variants/02-bible). The arrows step back and forward through the canon,
+ * and the name between them opens the book and chapter sheet
+ * (MobileChapterSheet). After a hairline, the sound button, then Listen,
+ * white and softly lit, where the chapter has a reading. Over the pill, once
+ * the title has gone up, a running line says the verse being read and the
+ * minutes left (ChapterVerseStatus, which was the top bar's second line
+ * until the bar went).
  *
- * Tapping the center label opens `MobileChapterSheet`, a real book +
- * chapter picker, instead of dumping to /bible.
+ * It floats on a fade of the page, as drawn: the words go quiet under it.
+ * It leaves with the round buttons over the page while the reader reads on,
+ * and comes back with them on a scroll up and at the top of the chapter
+ * (lib/ui/scrollAway.ts; globals.css, "The page: the Bible reader with no
+ * bar"). No blur behind it: a blurred backdrop is redrawn on every frame of
+ * a scroll.
+ *
+ * The sound button stays on it (1.7, the owner's note 25 of 2026-10-16: the
+ * ambience "in the reader's bottom bar, by the chapter pager", lit while a
+ * sound plays, opening the ambience sheet). A chapter with no reading keeps
+ * the pill without Listen, and no button stands there that does nothing.
  *
  * Reader chrome: focus mode puts it away (1.7), so the way out of focus can
- * stand at the foot of the screen with nothing under it. A chapter is still
- * turned there by the pager at the chapter's end. No blur behind it: a
- * blurred backdrop is redrawn on every frame of a scroll, and through a 95%
- * fill it showed nothing.
- *
- * The sound button closes it (1.7, the owner's note 25 of 2026-10-16): the
- * ambience "in the reader's bottom bar, by the chapter pager", lit while a
- * sound plays, opening the ambience sheet. A hairline sets it apart from the
- * arrows, so it reads as its own control and not a third arrow.
- *
- * Play stands before it on a chapter that has a reading (1.7.1, the owner:
- * "add like a press play button" by the volume): it starts and pauses the
- * reading, as Listen on the title's line does. A chapter with no reading
- * keeps the pill as it was, with no play button at all.
+ * stand at the foot of the screen with nothing under it.
  *
  * It steps aside, as the tab bar does, while anything rises over the reader
  * (lib/ui/overlay.ts): the Copy pill of a hold and a verse's tools take its
  * very place, and the search screen and the sheets cover it (1.7.1, the
  * owner: "pill buttons colliding here"). It comes back as they go.
+ *
+ * It never runs past the screen: the name gives way first, down to a few
+ * letters and the chapter's number, which never goes.
  */
 export function MobileChapterPill({
   slug,
   chapter,
+  totalVerses,
 }: {
   slug: string;
   chapter: number;
+  totalVerses: number;
 }) {
   const { t } = useTranslate();
   const book = getBook(slug);
@@ -90,7 +99,7 @@ export function MobileChapterPill({
   const next = nextChapter(slug, chapter);
   const [sheetOpen, setSheetOpen] = useState(false);
   const covered = useOverlayOpen();
-  // Only a chapter that has a reading carries the play button.
+  // Only a chapter that has a reading carries Listen.
   const reads = useHasReadAloud(slug, chapter);
   if (!book) return null;
 
@@ -103,7 +112,7 @@ export function MobileChapterPill({
         // Out of reach and out of hearing while something stands over it.
         aria-hidden={covered || undefined}
         className={cn(
-          "md:hidden native-md-flex fixed inset-x-0 z-40 flex justify-center pointer-events-none motion-safe:transition-opacity motion-safe:duration-200",
+          "md:hidden native-md-flex fixed inset-x-0 z-40 flex flex-col items-center gap-1.5 px-4 pointer-events-none motion-safe:transition-opacity motion-safe:duration-200",
           covered && "opacity-0",
         )}
         // Sit clear of the tab bar, the now-playing bar when one is up, AND the
@@ -114,9 +123,16 @@ export function MobileChapterPill({
             "calc(var(--tab-bar-h) + var(--now-playing-h) + env(safe-area-inset-bottom, 0px) + 12px)",
         }}
       >
+        {/* The fade the pill floats on, down to the tab bar, behind it. */}
+        <span aria-hidden className="pill-fade pointer-events-none absolute inset-x-0 -bottom-3 -z-10 h-44" />
+        {/* The verse being read and the minutes left, a running line over
+            the pill once the title has gone up, as a printed page carries
+            its place at its foot. Over the pill and not inside it, so the
+            pill keeps its width and the name its room. */}
+        <ChapterVerseStatus chapterKey={`${slug}/${chapter}`} totalVerses={totalVerses} />
         <div
           className={cn(
-            "inline-flex items-center gap-1 rounded-pill bg-night/95 border border-white/15 shadow-raise pl-1 pr-1 py-1",
+            "flex h-14 min-w-0 max-w-full items-center gap-0.5 rounded-pill border border-paper/10 bg-night-soft px-1.5 shadow-[0_14px_34px_rgba(0,0,0,0.55)]",
             covered ? "pointer-events-none" : "pointer-events-auto",
           )}
         >
@@ -139,14 +155,9 @@ export function MobileChapterPill({
               book: bookName,
               chapter,
             })}
-            className={cn(
-              "px-3 h-10 inline-flex min-w-0 items-center font-sans text-ui font-semibold text-paper",
-              reads ? "max-w-[calc(100vw-13rem)]" : "max-w-[calc(100vw-10rem)]",
-            )}
+            className="flex h-11 min-w-0 items-center px-2 font-sans text-[15px] font-semibold leading-tight text-paper"
           >
-            {/* A long name gives way before the chapter's number does, so
-                the pill, with its sound button and play, stays on the
-                screen: play takes 44px more of it. */}
+            {/* A long name gives way before the chapter's number does. */}
             <span className="truncate">{bookName}</span>
             <span className="ms-1 shrink-0 tabular-nums">{chapter}</span>
           </button>
@@ -162,9 +173,9 @@ export function MobileChapterPill({
             }
             dir="›"
           />
-          <span aria-hidden className="mx-0.5 h-5 w-px bg-white/15" />
-          {reads ? <ReadAloudPillButton book={slug} chapter={chapter} title={`${bookName} ${chapter}`} /> : null}
+          <span aria-hidden className="mx-1.5 h-6 w-px shrink-0 bg-paper/15" />
           <AmbienceButton variant="pill" />
+          {reads ? <ReadAloudPillButton book={slug} chapter={chapter} title={`${bookName} ${chapter}`} /> : null}
         </div>
       </div>
 

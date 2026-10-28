@@ -105,22 +105,32 @@ test("manifest is served and parses as JSON", async ({ request }) => {
   expect(Array.isArray(body.icons)).toBeTruthy();
 });
 
-test("Bible chapter shows MobileTopBar with back + reader actions", async ({
+test("Bible chapter shows its round buttons: back, Aa and more", async ({
   page,
 }) => {
   await page.goto("/bible/john/1");
+  // No bar since 1.8 (the owner's pick B of round 2, "The page"): the way
+  // back and the reader's two buttons stand on round plates over the page.
   // The desktop AppNav also carries a (hidden) "Back" button, so filter
-  // to the visible one: the mobile top bar's.
+  // to the visible one: the plate's.
   await expect(
     page.getByLabel("Back").filter({ visible: true }).first(),
   ).toBeVisible();
-  // Reader actions cluster: bookmark + settings. Both exist twice (mobile
-  // top bar + desktop toolbar), so assert on the visible instance.
-  await expect(
-    page.getByLabel("Bookmark this chapter").filter({ visible: true }).first(),
-  ).toBeVisible();
+  // Aa (the settings) exists twice (the plate + the desktop toolbar's Reader
+  // pill), so assert on the visible instance. The bookmark is in the •••
+  // sheet now, with the search, the chapters and the translation.
   await expect(
     page.getByLabel("Reader settings").filter({ visible: true }).first(),
+  ).toBeVisible();
+  await expect(
+    page.getByLabel("More actions").filter({ visible: true }).first(),
+  ).toBeVisible();
+  await expect(async () => {
+    await page.getByLabel("More actions").filter({ visible: true }).first().click();
+    await expect(page.getByRole("dialog", { name: "John 1" })).toBeVisible({ timeout: 1_500 });
+  }).toPass({ timeout: 20_000 });
+  await expect(
+    page.getByRole("dialog", { name: "John 1" }).getByRole("button", { name: /Bookmark this chapter/ }),
   ).toBeVisible();
 });
 

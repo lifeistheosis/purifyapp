@@ -1,8 +1,9 @@
 "use client";
 
 // Read-aloud with follow-along (1.7, the owner's "Do all of these" of
-// 2026-10-15). On a chapter that has a reading, a Listen pill at the end of
-// its title's line plays it through the app's one player (the mini player and Now
+// 2026-10-15). On a chapter that has a reading, Listen (at the end of the
+// chapter's pill on a phone, in the toolbar on a computer, from 1.8) plays
+// it through the app's one player (the mini player and Now
 // Playing show it, the verses as live captions), and while it plays the
 // verse being read is lit in the chapter and kept in view, unless the reader
 // has just scrolled away to look at something else. lib/readAloud/chapters.ts
@@ -23,6 +24,7 @@ import { nextChapter } from "@/lib/bible/books";
 import { hasReadAloud, readAloudManifest, readAloudSrc, useHasReadAloud, verseAt, verseCaptions, type ReadAloudManifest } from "@/lib/readAloud/chapters";
 import { readAloudCover } from "@/lib/readAloud/covers";
 import { currentTimeNow, pause, play, setLoopMode, setTrack, usePersistentAudio } from "@/lib/prayers/persistentAudioStore";
+import { cn } from "@/lib/cn";
 
 import { ReaderPill } from "./ReaderPill";
 
@@ -64,11 +66,13 @@ function useThisChapter(book: string, chapter: number) {
 }
 
 /**
- * Listen, at the end of the chapter title's line (the owner's note 4 of
- * 2026-10-16: it "sits randomly", on a line of its own under the title, and
- * his pick of the title line for its place). The reader's pill, so it stands
- * at the height of the controls above it: headphones and Listen, the pause
- * bars and Pause while it plays, and a play mark once it is paused.
+ * Listen, in the computer's toolbar, beside the sound (1.8). It stood at the
+ * end of the chapter title's line from 1.7 (the owner's note 4 of
+ * 2026-10-16); the title is now the opening of the page, the book's name
+ * over its chapter (his pick B of round 2), and on a phone and a tablet
+ * Listen ends the pill at the foot (ReadAloudPillButton). The reader's pill,
+ * so it stands at the height of the toolbar's others: headphones and Listen,
+ * the pause bars and Pause while it plays, and a play mark once it is paused.
  */
 export function ListenButton({ book, chapter, bookName }: { book: string; chapter: number; bookName: string }) {
   const { t } = useTranslate();
@@ -104,14 +108,19 @@ export function ListenButton({ book, chapter, bookName }: { book: string; chapte
 }
 
 /**
- * Play and pause on the chapter pill at the foot of the screen (1.7.1, the
- * owner: "I don't see a TTS button where you could just press play ... add
- * it right next to the volume"). The same reading as Listen on the title's
- * line, through the same player, the verse being read lit as it is read
- * (ReadAloudFollow). Drawn only where the chapter has a reading: on any other
- * the pill is what it was, its arrows, its name and the sound button, and no
- * button stands there that does nothing. 40px like the pill's other buttons,
- * with a 44px touch box.
+ * Listen, on the chapter pill at the foot of the screen (1.8, the owner's
+ * pick B of round 2, "The page": "The floating pill comes back when you
+ * scroll up, with Listen"). It was a play mark beside the sound button from
+ * 1.7.1 (the owner: "add it right next to the volume"); now it ends the pill,
+ * white and softly lit, the word on it saying what a tap does: Listen, Pause
+ * while it plays, Listen again once paused. The same reading as Listen in the
+ * computer's toolbar, through the same player, the verse being read lit as it
+ * is read (ReadAloudFollow). Drawn only where the chapter has a reading: on
+ * any other the pill is its arrows, its name and the sound button, and no
+ * button stands there that does nothing. On the narrowest phones the word
+ * gives its room to the chapter's name and the mark stands alone; its name
+ * is still the word. A little shorter than the pill it ends, with a 44px
+ * touch box.
  */
 export function ReadAloudPillButton({ book, chapter, title }: { book: string; chapter: number; title: string }) {
   const { t } = useTranslate();
@@ -131,19 +140,23 @@ export function ReadAloudPillButton({ book, chapter, title }: { book: string; ch
     setBusy(false);
   };
 
+  const word = playing ? t("readAloud.pause") : t("readAloud.listen");
   return (
     <button
       type="button"
       data-read-aloud-play
       onClick={toggle}
-      aria-label={playing ? t("readAloud.pause") : t("readAloud.listen")}
-      className="tap-press hit-44 grid h-10 w-10 shrink-0 place-items-center rounded-full text-paper/85 hover:bg-paper/10 hover:text-paper focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-paper"
+      aria-label={word}
+      className="reader-lit tap-press hit-44 ms-1 inline-flex h-10 shrink-0 items-center justify-center gap-1.5 rounded-pill bg-paper px-3 font-sans text-ui font-semibold text-night focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-paper min-[390px]:px-4"
     >
       {playing ? (
-        <Pause size={18} />
+        <Pause size={14} className="shrink-0" />
       ) : (
-        <Play size={18} className={busy ? "motion-safe:animate-pulse" : undefined} />
+        <Play size={14} className={cn("shrink-0", busy && "motion-safe:animate-pulse")} />
       )}
+      <span aria-hidden className="max-[390px]:hidden">
+        {word}
+      </span>
     </button>
   );
 }

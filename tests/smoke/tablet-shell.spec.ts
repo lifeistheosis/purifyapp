@@ -47,8 +47,9 @@ test.describe("native app shell on a tablet (Capacitor UA, 1024x768)", () => {
     await expect(desktopTwin).toBeHidden();
   });
 
-  test("Bible chapter keeps the mobile top bar and the chapter pill", async ({ page }) => {
+  test("Bible chapter keeps the phone's round buttons and the chapter pill", async ({ page }) => {
     await page.goto("/bible/john/1");
+    // The way back and Aa, on round plates over the page (1.8, "The page").
     await expect(page.getByLabel("Back").filter({ visible: true }).first()).toBeVisible();
     await expect(
       page.getByLabel("Reader settings").filter({ visible: true }).first(),

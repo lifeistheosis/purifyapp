@@ -183,7 +183,7 @@ describe("where the tick is given", () => {
       "components/prayers/PrayerRuleReader.tsx", // a prayer rule finished
       "lib/streak/useStreak.ts", // the day kept
       "components/bible/VerseRow.tsx", // a verse saved
-      "components/bible/MobileReaderActions.tsx", // a chapter saved
+      "components/bible/ReaderMoreSheet.tsx", // a chapter saved, from the reader's ••• (1.8)
       "components/bible/ChapterBookmarkButton.tsx", // the same save, on the website's wide screen
       "components/today/VerseCardActions.tsx", // the verse of the day saved
     ]) {

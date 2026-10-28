@@ -10,7 +10,7 @@ import { TranslationList, useTranslationChoice } from "./TranslationList";
 /**
  * The computer's translation picker: the reader's pill, opening a popover
  * under itself with the rows the phone's sheet shows (TranslationList). On
- * the phone and the tablet the row has MobileTranslationPill, which opens a
+ * the phone and the tablet the reader's ••• sheet (ReaderMoreSheet) opens a
  * sheet instead; the website's wide screen keeps a popover, as its book and
  * reader settings do. The list is lib/bible/translations.ts.
  */

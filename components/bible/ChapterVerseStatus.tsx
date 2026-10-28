@@ -5,14 +5,18 @@ import { useTranslate } from "@/components/i18n/MessagesProvider";
 import { cn } from "@/lib/cn";
 
 /**
- * "v 11 of 42", the second line of the reader's top bar (MobileTopBar's
- * `subtitle`). It opens beneath the chapter's name once the chapter title has
- * scrolled away, and follows the verse being read.
+ * "v 11 of 42 · 3 min left", a running line over the chapter's pill at the
+ * foot of the screen (1.8, MobileChapterPill), as a printed page carries its
+ * place at its foot. It opens once the chapter title has scrolled away, and
+ * follows the verse being read. It was the second line of the reader's top
+ * bar from 1.7 until the bar went (the owner's pick B of round 2, "The page":
+ * no bar at all); the pill, which comes back on a scroll up, names the
+ * chapter now.
  *
- * It replaces ChapterStickyHeader, a strip of its own pinned under the bar
- * that repeated the book and chapter the bar already names. On a phone's
+ * It replaced ChapterStickyHeader, a strip of its own pinned under the bar
+ * that repeated the book and chapter the bar already named. On a phone's
  * browser that strip pinned at 48px under a 72px web header and cut through
- * it (the owner's screenshot, 2026-10-01). One bar now carries both.
+ * it (the owner's screenshot, 2026-10-01).
  *
  * The verse is the one most in view near the top of the reading area, read
  * from every `<div id="v{n}">` VerseRow renders. aria-hidden, as the strip
@@ -128,17 +132,17 @@ export function ChapterVerseStatus({
     };
   }, [chapterKey]);
 
-  // A 0fr to 1fr row, so the line opens with its own height and the name above
-  // it rises to make room instead of jumping.
+  // A 0fr to 1fr row, so the line opens with its own height over the pill,
+  // which holds its place at the foot, instead of jumping in.
   return (
     <span
       aria-hidden
       className={cn(
-        "grid transition-[grid-template-rows,opacity] duration-300 ease-house motion-reduce:transition-none",
+        "grid max-w-full transition-[grid-template-rows,opacity] duration-300 ease-house motion-reduce:transition-none",
         show ? "grid-rows-[1fr] opacity-100" : "grid-rows-[0fr] opacity-0",
       )}
     >
-      <span className="overflow-hidden font-sans text-eyebrow leading-[1.35] tabular-nums text-paper/55">
+      <span className="truncate font-sans text-eyebrow font-medium leading-[1.35] tabular-nums text-paper/60">
         {t("bible.verseOf", { verse, total: totalVerses })}
         {minutes ? ` · ${t("bible.minLeft", { min: minutes })}` : null}
       </span>

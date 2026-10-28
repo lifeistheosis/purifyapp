@@ -1142,7 +1142,7 @@ await section(21, async () => {
   // The fourth (1.6): a chapter drew twenty-six client components straight
   // from its page, on each of 1,362 chapters. They are one screen now
   // (components/bible/ChapterScreen.tsx), and the page names it, the reader,
-  // the rail, and the phone's bar with the two things it holds.
+  // the rail, and the phone's round plates with the buttons they hold (1.8).
   const gone = ["ReaderPrefsProvider", "BookSwitcher", "TranslationSwitcher", "ChapterPager", "BibleSearch", "BookChapterSidebar", "ChapterDiscussions"].filter((n) => inPage.includes(n));
   must(inPage.includes("ChapterScreen") && gone.length === 0, `a chapter names its screen and not the parts inside it${gone.length ? " (still named: " + gone.join(", ") + ")" : ""}`);
   must(inPage.length <= 20, `it names ${inPage.length} client components in all (it was 38)`);
@@ -2392,25 +2392,32 @@ await section(32, async () => {
     await ctx.close();
   }
 });
-// ---- 33. The reader on a phone and a tablet (1.7).
-// The owner's notes 1 to 8 of 2026-10-16 (Homebase/boards/purify-master/r17/
-// BRAINSTORM.md) and his picks: one clean row of pills (Translation, Book,
-// Interlinear) each opening a sheet, the translation's too; no Reader pill,
-// since the top bar's settings icon does its job; the title on one line,
-// "John 1", with Listen at its end; a slim chapter strip; on a tablet one
-// centred column with the Fathers in the sheet, and focus mode's way out at
-// the foot of the screen, out of the top right. This opens John 1 and Genesis
-// 1 (the Greek offered) on the narrow Android width and an iPhone's, then
-// John 1 on an iPad's two orientations, and walks focus mode on a phone and a
-// tablet. lib/bible/__tests__/readerScreen.test.ts holds the source.
+// ---- 33. The reader on a phone and a tablet (1.8, "The page").
+// The owner's pick B of round 2, locked 2026-10-27 (Homebase/boards/
+// purify-master/variants/02-bible): no bar at all, only round buttons over
+// the page, the way back on one side and Aa and ••• on the other; the
+// chapter opens like a book, on its words, the book's name over its chapter
+// and a short rule; the pill at the foot turns the chapter and ends in
+// Listen; the pill and the round buttons step away as the reader reads on
+// and come back on a scroll up. What stood above the title and in the 1.7
+// bar is in the ••• sheet (the search, the chapters, the translation, the
+// book, the Greek, the bookmark, the app's search) and the Aa sheet (the
+// settings). On a tablet one centred column with the Fathers in the sheet,
+// and focus mode's way out at the foot, out of the top right. This opens John
+// 1 and Genesis 1 (the Greek offered) on the narrow Android width and on an
+// iPhone's with its status bar and home indicator stood in, then John 1 on
+// an iPad's two orientations, and walks focus mode on a phone and a tablet.
+// lib/bible/__tests__/readerScreen.test.ts holds the source.
 await section(33, async () => {
   console.log("\n33. The reader on a phone and a tablet");
-  const looks = () => {
+  const en = JSON.parse(fs.readFileSync(path.resolve("lib/i18n/messages/en.json"), "utf8"));
+  const names = { back: en["nav.back"], settings: en["bible.readerSettings"], more: en["bible.moreActions"], sound: en["ambience.title"], listen: en["readAloud.listen"], focus: en["bible.focusReading"] };
+  const looks = (w) => {
     const title = document.getElementById("chapter-title");
     const h1 = title?.querySelector("h1");
     const column = title?.parentElement;
-    const row = title?.previousElementSibling?.firstElementChild;
     const shown = (n) => {
+      if (!n) return false;
       const b = n.getBoundingClientRect();
       const s = getComputedStyle(n);
       return b.width > 0 && b.height > 0 && s.visibility !== "hidden" && s.display !== "none";
@@ -2420,64 +2427,145 @@ await section(33, async () => {
       const b = n.getBoundingClientRect();
       return { left: b.left, right: b.right, top: b.top, bottom: b.bottom, width: b.width, height: b.height };
     };
-    const pills = row ? [...row.children].filter((n) => n.tagName === "BUTTON" && shown(n)) : [];
-    const listen = h1?.parentElement ? [...h1.parentElement.children].find((n) => n.tagName === "BUTTON") : null;
+    // The book's name as it is drawn: its words, not its block.
+    const nameWords = (() => {
+      const span = h1?.firstElementChild;
+      if (!span) return null;
+      const r = document.createRange();
+      r.selectNodeContents(span);
+      return box(r);
+    })();
+    const top = document.querySelector("[data-mobile-topbar]");
+    const plates = top ? [...top.querySelectorAll("a, button")].filter(shown) : [];
+    const wrap = document.querySelector("[data-reader-pill]");
+    const pill = wrap?.querySelector(":scope > div") ?? null;
+    const controls = pill ? [...pill.querySelectorAll("a, button")].filter(shown) : [];
+    const last = controls[controls.length - 1];
     const buttons = [...document.querySelectorAll("button")].filter(shown);
-    const current = document.querySelector("#chapter-title")?.previousElementSibling?.querySelector('a[aria-current="page"]');
     return {
       h1: (h1?.textContent ?? "").replace(/\s+/g, " ").trim(),
-      h1Box: box(h1),
+      name: nameWords,
       column: box(column),
-      row: row && shown(row) ? box(row) : null,
-      pills: pills.map((p) => ({ ...box(p), text: (p.textContent ?? "").trim(), cut: [...p.querySelectorAll("span")].some((s) => s.scrollWidth > s.clientWidth + 0.5) })),
-      listen: listen ? { ...box(listen), text: (listen.textContent ?? "").trim() } : null,
-      settings: buttons.filter((b) => (b.getAttribute("aria-label") ?? "") === "Reader settings").length,
-      readerPill: buttons.filter((b) => (b.textContent ?? "").trim() === "Reader").length,
+      rule: box(title?.querySelector(".page-open-rule")),
+      bar: top ? { plates: top.hasAttribute("data-plates"), heading: !!top.querySelector("h1, [data-topbar-title]"), pad: getComputedStyle(top).paddingTop, ground: getComputedStyle(top).backgroundImage } : null,
+      plates: plates.map((p) => ({ ...box(p), name: p.getAttribute("aria-label") ?? "", round: parseFloat(getComputedStyle(p).borderTopLeftRadius) >= p.getBoundingClientRect().height / 2 - 0.5 })),
+      pill: pill && shown(wrap) ? box(pill) : null,
+      last: last ? { ...box(last), name: last.getAttribute("aria-label") ?? "", text: (last.innerText ?? "").trim(), listen: last.hasAttribute("data-read-aloud-play") } : null,
+      sound: controls.findIndex((c) => c.getAttribute("aria-label") === w.sound),
+      v1: box(document.getElementById("v1")),
       asides: [...document.querySelectorAll("aside")].filter(shown).length,
-      toolbar: buttons.filter((b) => (b.getAttribute("aria-label") ?? "") === "Focus reading").length,
-      current: current && shown(current) ? box(current) : null,
+      toolbar: buttons.filter((b) => (b.getAttribute("aria-label") ?? "") === w.focus).length,
+      settings: buttons.filter((b) => (b.getAttribute("aria-label") ?? "") === w.settings).length,
+      readerPill: buttons.filter((b) => (b.textContent ?? "").trim() === "Reader").length,
       vw: innerWidth,
+      vh: innerHeight,
     };
   };
   const spread = (xs) => Math.max(...xs) - Math.min(...xs);
   const opened = (page, want) => page.waitForFunction((w) => document.getElementById("chapter-title")?.querySelector("h1")?.textContent?.replace(/\s+/g, " ").trim() === w, want, { timeout: 20000 }).catch(() => {});
+  // The panel of the sheet named so, or holding those words, through a box
+  // of display: contents (section 8).
+  const sheetNamed = (page, test) =>
+    page.evaluate((t) => {
+      const d = [...document.querySelectorAll("[role=dialog]")].find((x) => new RegExp(t).test(x.getAttribute("aria-label") ?? "") || new RegExp(t).test(x.textContent ?? ""));
+      if (!d) return null;
+      let p = d.lastElementChild;
+      while (p && getComputedStyle(p).display === "contents") p = p.lastElementChild;
+      const r = p.getBoundingClientRect();
+      return { name: d.getAttribute("aria-label"), modal: d.getAttribute("aria-modal"), left: Math.round(r.left), right: Math.round(r.right), bottom: Math.round(r.bottom), width: Math.round(r.width), middle: Math.round((r.left + r.right) / 2), vw: innerWidth, vh: innerHeight };
+    }, test);
+  // A phone's status bar and home indicator, as its WebView reports them.
+  const statusBar = async (ctx, page, top, bottom) => {
+    try {
+      const cdp = await ctx.newCDPSession(page);
+      await cdp.send("Emulation.setSafeAreaInsetsOverride", { insets: { top, topMax: top, bottom, bottomMax: bottom, left: 0, leftMax: 0, right: 0, rightMax: 0 } });
+    } catch (e) {
+      must(false, `the phone's status bar stood in: ${firstLine(e)}`);
+    }
+  };
 
-  // The phones: one row, inside the screen, no Reader pill, one title line.
-  for (const size of [{ width: 360, height: 780 }, { width: 390, height: 844 }]) {
-    const { ctx, page, errors } = await open({ ...size, phone: true, set: { "purify:interlinear": "1" } });
-    for (const [to, title, greek] of [["/bible/john/1/", "John 1", true], ["/bible/genesis/1/", "Genesis 1", true]]) {
+  // The phones: no bar, three round buttons, the book's name over its
+  // chapter, the words near the top, and the pill ending in Listen.
+  for (const size of [{ width: 360, height: 780, inset: [0, 0] }, { width: 390, height: 844, inset: [47, 34] }]) {
+    const { ctx, page, errors } = await open({ width: size.width, height: size.height, phone: true, set: { "purify:interlinear": "1" } });
+    if (size.inset[0]) await statusBar(ctx, page, size.inset[0], size.inset[1]);
+    for (const [to, book] of [["/bible/john/1/", "John"], ["/bible/genesis/1/", "Genesis"]]) {
       await go(page, to);
-      await opened(page, title);
+      await opened(page, `${book} Chapter 1`);
       await page.evaluate(() => document.fonts.ready);
-      await page.waitForTimeout(900);
-      const got = await page.evaluate(looks);
-      const where = `${title} at ${size.width}px`;
-      must(got.h1 === title, `${where}: the title is one line, "${got.h1}"`);
-      must(got.pills.length === (greek ? 3 : 2), `${where}: the row holds Translation, Book${greek ? " and Interlinear" : ""} (${got.pills.map((p) => p.text).join(" | ")})`);
-      must(got.pills.length > 0 && spread(got.pills.map((p) => p.top)) <= 1 && spread(got.pills.map((p) => p.height)) <= 0.5, `${where}: the pills stand in one row at one height (tops ${got.pills.map((p) => Math.round(p.top)).join(", ")})`);
-      must(got.pills.every((p) => p.left >= -0.5 && p.right <= got.vw + 0.5), `${where}: and every pill is inside the screen (${got.pills.map((p) => `${Math.round(p.left)}..${Math.round(p.right)}`).join(", ")} of ${got.vw})`);
-      must(got.pills.every((p) => !p.cut), `${where}: every pill's word is whole in English${got.pills.some((p) => p.cut) ? ": " + got.pills.filter((p) => p.cut).map((p) => p.text).join(", ") : ""}`);
-      must(got.settings === 1 && got.readerPill === 0, `${where}: the top bar's settings icon is the one way to the reader settings (${got.settings} named so, ${got.readerPill} Reader pill)`);
-      must(Boolean(got.current) && got.current.left >= 0 && got.current.right <= got.vw, `${where}: the chapter strip opens on the chapter being read`);
-      if (to === "/bible/john/1/") {
-        const l = got.listen;
-        const h = got.h1Box;
-        must(Boolean(l) && l.text === "Listen" && h && Math.abs((l.top + l.bottom) / 2 - (h.top + h.bottom) / 2) <= 6 && l.left >= h.right - 0.5, `${where}: Listen stands at the end of the title's line (${l ? `${Math.round(l.left)}..${Math.round(l.right)}, middle ${Math.round((l.top + l.bottom) / 2)} against the title's ${h ? Math.round((h.top + h.bottom) / 2) : "?"}` : "no Listen"})`);
-        if (size.width === 390) await page.screenshot({ path: path.join(SHOTS, "reader-john1-390.png") });
-        // The translation opens in a sheet, as the book and the settings do.
-        await page.getByRole("button", { name: /^Switch translation/ }).tap().catch(() => {});
-        await page.waitForFunction(() => [...document.querySelectorAll("[role=dialog]")].some((d) => /King James Version/.test(d.textContent ?? "")), null, { timeout: 8000 }).catch(() => {});
-        const sheet = await page.evaluate(() => {
-          const d = [...document.querySelectorAll("[role=dialog]")].find((x) => /King James Version/.test(x.textContent ?? ""));
+      await page.waitForTimeout(1500);
+      const got = await page.evaluate(looks, names);
+      const where = `${book} 1 at ${size.width}px`;
+      must(got.h1 === `${book} Chapter 1`, `${where}: one heading names the book over its chapter, "${got.h1}"`);
+      const middle = got.column ? (got.column.left + got.column.right) / 2 : -1;
+      must(Boolean(got.name) && Math.abs((got.name.left + got.name.right) / 2 - middle) <= 2 && Boolean(got.rule) && got.rule.width > 20 && got.rule.width < 40 && Math.abs((got.rule.left + got.rule.right) / 2 - middle) <= 1.5, `${where}: the name and its short rule stand in the middle (${got.name ? Math.round((got.name.left + got.name.right) / 2) : "?"} and ${got.rule ? Math.round((got.rule.left + got.rule.right) / 2) : "?"} against ${Math.round(middle)})`);
+      must(Boolean(got.bar) && got.bar.plates && !got.bar.heading, `${where}: no bar, only the plates (${got.bar ? (got.bar.heading ? "a title in it" : "no title") : "nothing"})`);
+      must(got.plates.map((p) => p.name).join(" | ") === [names.back, names.settings, names.more].join(" | "), `${where}: the way back, then Aa and ••• (${got.plates.map((p) => p.name).join(" | ")})`);
+      must(got.plates.length === 3 && got.plates.every((p) => p.round && p.width >= 40 && p.height >= 40 && p.left >= 0 && p.right <= got.vw && p.top >= size.inset[0]), `${where}: each a round plate, inside the screen and under the status bar (${got.plates.map((p) => `${Math.round(p.width)}px at ${Math.round(p.top)}`).join(", ")})`);
+      must(got.plates.length > 0 && spread(got.plates.map((p) => p.top)) <= 1, `${where}: in one row`);
+      must(Boolean(got.v1) && got.plates.length > 0 && got.v1.top >= Math.max(...got.plates.map((p) => p.bottom)) && got.v1.top < got.vh * 0.6, `${where}: the chapter opens on its words, the first verse at ${got.v1 ? Math.round(got.v1.top) : "?"}px of ${got.vh} (it was at the foot of the first screen in 1.7)`);
+      must(Boolean(got.pill) && got.pill.left >= -0.5 && got.pill.right <= got.vw + 0.5 && got.pill.bottom <= got.vh - size.inset[1], `${where}: the pill is inside the screen, clear of the home indicator (${got.pill ? `${Math.round(got.pill.left)}..${Math.round(got.pill.right)}, foot at ${Math.round(got.pill.bottom)} of ${got.vh}` : "no pill"})`);
+      if (book === "John") {
+        const l = got.last;
+        must(Boolean(l) && l.listen && l.name === names.listen && l.height >= 40 && (size.width < 390 || l.text === names.listen), `${where}: the pill ends in Listen${size.width < 390 ? ", its mark alone on a narrow phone" : ", with its word"} (${l ? `"${l.name}", "${l.text}", ${Math.round(l.width)}x${Math.round(l.height)}` : "nothing"})`);
+        must(got.sound >= 0, `${where}: the sound button is on the pill, before Listen`);
+      }
+      if (size.inset[0] && book === "John") {
+        must(Boolean(got.bar) && got.bar.pad === `${size.inset[0]}px` && /gradient/.test(got.bar.ground), `${where}: the strip under the clock is the page's ground, so the words never run under it (${got.bar ? `${got.bar.pad}, ${got.bar.ground.slice(0, 40)}` : "no bar"})`);
+        await page.screenshot({ path: path.join(SHOTS, "reader-john1-390.png") });
+
+        // Reading on puts the plates and the pill away; a scroll up brings them back.
+        const state = () =>
+          page.evaluate(() => ({
+            away: document.body.hasAttribute("data-reader-away"),
+            pill: getComputedStyle(document.querySelector("[data-reader-pill]")).visibility,
+            plates: getComputedStyle(document.querySelector("[data-plates-row]")).visibility,
+            y: Math.round(scrollY),
+          }));
+        await page.mouse.move(size.width / 2, size.height / 2);
+        await page.mouse.wheel(0, 900);
+        await page.waitForTimeout(700);
+        const down = await state();
+        must(down.away && down.pill === "hidden" && down.plates === "hidden", `${where}: reading on, the plates and the pill step away (scrolled to ${down.y}px; pill ${down.pill}, plates ${down.plates})`);
+        await page.screenshot({ path: path.join(SHOTS, "reader-away-390.png") });
+        await page.mouse.wheel(0, -160);
+        await page.waitForTimeout(700);
+        const up = await state();
+        must(!up.away && up.pill === "visible" && up.plates === "visible", `${where}: a scroll up brings them back (at ${up.y}px; pill ${up.pill}, plates ${up.plates})`);
+        await page.evaluate(() => window.scrollTo(0, 0));
+        await page.waitForTimeout(500);
+
+        // ••• holds what stood above the title and in the bar.
+        await tap(page.getByRole("button", { name: names.more }));
+        await page.waitForFunction(() => [...document.querySelectorAll("[role=dialog]")].some((d) => d.getAttribute("aria-label") === "John 1"), null, { timeout: 8000 }).catch(() => {});
+        await page.waitForTimeout(700);
+        const more = await page.evaluate(() => {
+          const d = [...document.querySelectorAll("[role=dialog]")].find((x) => x.getAttribute("aria-label") === "John 1");
           if (!d) return null;
-          // The panel, through a box of display: contents (section 8).
-          let p = d.lastElementChild;
-          while (p && getComputedStyle(p).display === "contents") p = p.lastElementChild;
-          const panel = p.getBoundingClientRect();
-          return { modal: d.getAttribute("aria-modal"), left: Math.round(panel.left), right: Math.round(panel.right), bottom: Math.round(panel.bottom), vh: innerHeight };
+          const rows = [...d.querySelectorAll("button")].map((b) => (b.innerText ?? "").replace(/\s+/g, " ").trim());
+          const current = d.querySelector('a[aria-current="page"]');
+          const r = current?.getBoundingClientRect();
+          return { rows, search: !!d.querySelector("[data-bible-search-open]"), current: current ? { text: current.textContent.trim(), inView: r.left >= 0 && r.right <= innerWidth } : null };
         });
-        must(Boolean(sheet) && sheet.modal === "true" && sheet.bottom >= sheet.vh - 1, `${where}: tapping the translation opens a sheet from the foot that holds the KJV (${sheet ? `${sheet.left}..${sheet.right}, foot at ${sheet.bottom} of ${sheet.vh}` : "no sheet"})`);
-        if (size.width === 390) await page.screenshot({ path: path.join(SHOTS, "reader-translation-sheet-390.png") });
+        const has = (start, holds = "") => Boolean(more) && more.rows.some((t) => t.startsWith(start) && t.includes(holds));
+        must(Boolean(more) && more.search && Boolean(more.current) && more.current.text === "1" && more.current.inView, `${where}: ••• opens a sheet with the search for a verse and the chapters, the one being read in view (${more ? `search ${more.search}, current ${more.current ? more.current.text : "none"}` : "no sheet"})`);
+        must(has(en["bible.translationLabel"], "KJV") && has(en["bible.bookLabel"], "John") && has(en["bible.interlinearGreek"]) && has(en["bible.bookmarkThisChapter"]) && has(en["search.ariaLabel"]), `${where}: and the translation, the book, the Greek, the bookmark and the app's search (${more ? more.rows.filter(Boolean).slice(0, 8).join(" | ") : "no sheet"})`);
+        await page.screenshot({ path: path.join(SHOTS, "reader-more-sheet-390.png") });
+        // The translation opens in a sheet of its own, as the book and the settings do.
+        await tap(page.locator("[role=dialog] button", { hasText: en["bible.translationLabel"] }).first());
+        await page.waitForFunction(() => [...document.querySelectorAll("[role=dialog]")].some((d) => /King James Version/.test(d.textContent ?? "")), null, { timeout: 8000 }).catch(() => {});
+        await page.waitForTimeout(700);
+        const sheet = await sheetNamed(page, "King James Version");
+        const stillMore = await page.evaluate(() => [...document.querySelectorAll("[role=dialog]")].some((x) => x.getAttribute("aria-label") === "John 1"));
+        must(Boolean(sheet) && sheet.modal === "true" && sheet.bottom >= sheet.vh - 1 && !stillMore, `${where}: Translation opens a sheet from the foot that holds the KJV, and ••• goes first (${sheet ? `${sheet.left}..${sheet.right}, foot at ${sheet.bottom} of ${sheet.vh}` : "no sheet"}${stillMore ? "; ••• still open" : ""})`);
+        await page.screenshot({ path: path.join(SHOTS, "reader-translation-sheet-390.png") });
+        await page.keyboard.press("Escape");
+        await page.waitForTimeout(700);
+        // Aa is the reader's settings.
+        await tap(page.getByRole("button", { name: names.settings }));
+        await page.waitForTimeout(800);
+        const settings = await sheetNamed(page, `^${names.settings}$`);
+        must(Boolean(settings) && settings.name === names.settings, `${where}: Aa opens the reader's settings (${settings ? settings.name : "no sheet"})`);
         await page.keyboard.press("Escape");
         await page.waitForTimeout(600);
       }
@@ -2487,20 +2575,21 @@ await section(33, async () => {
     await ctx.close();
   }
 
-  // An iPad, both ways round: one centred column, the controls on its edge,
-  // no rail beside it, the Fathers in the sheet, and each sheet a panel.
+  // An iPad, both ways round: one centred column, the round buttons as on a
+  // phone, no rail beside it, the Fathers in the sheet, and each sheet a panel.
   for (const size of [{ width: 1180, height: 820 }, { width: 820, height: 1180 }]) {
     const { ctx, page, asked, errors } = await open({ ...size, phone: true });
     await go(page, "/bible/john/1/");
-    await opened(page, "John 1");
-    await page.waitForTimeout(1200);
-    const got = await page.evaluate(looks);
+    await opened(page, "John Chapter 1");
+    await page.waitForTimeout(1500);
+    const got = await page.evaluate(looks, names);
     const where = `John 1 at ${size.width}x${size.height}`;
     const middle = got.column ? (got.column.left + got.column.right) / 2 : -1;
     must(Math.abs(middle - got.vw / 2) <= 2, `${where}: the text's column stands in the middle (${Math.round(middle)} against ${got.vw / 2})`);
-    must(Boolean(got.row) && Math.abs(got.row.left - got.column.left) <= 1, `${where}: the controls start on the column's edge (${got.row ? Math.round(got.row.left) : "no row"} and ${got.column ? Math.round(got.column.left) : "?"})`);
+    must(Boolean(got.bar) && got.bar.plates && got.plates.length === 3, `${where}: the round buttons over the page, as on a phone (${got.plates.map((p) => p.name).join(" | ")})`);
     must(got.asides === 0 && got.toolbar === 0, `${where}: no rail and no computer's toolbar (${got.asides} aside, ${got.toolbar} Focus pill)`);
-    must(got.settings === 1 && got.readerPill === 0, `${where}: the top bar's settings icon and no Reader pill`);
+    must(got.settings === 1 && got.readerPill === 0, `${where}: Aa is the one way to the reader's settings, and no Reader pill`);
+    must(Boolean(got.pill) && Math.abs((got.pill.left + got.pill.right) / 2 - got.vw / 2) <= 2, `${where}: the pill stands in the middle at the foot`);
     await page.screenshot({ path: path.join(SHOTS, `reader-john1-tablet-${size.width}.png`) });
     const mark = page.locator("button[aria-label*='ommentary']").filter({ visible: true }).first();
     if (await mark.count()) {
@@ -2521,32 +2610,27 @@ await section(33, async () => {
       await page.waitForTimeout(700);
     } else must(false, `${where}: found a commentary mark to tap`);
     await page.evaluate(() => window.scrollTo(0, 0));
-    await page.waitForTimeout(300);
-    await page.getByRole("button", { name: /^Switch translation/ }).tap().catch(() => {});
+    await page.waitForTimeout(500);
+    await tap(page.getByRole("button", { name: names.more }));
+    await page.waitForTimeout(800);
+    await tap(page.locator("[role=dialog] button", { hasText: en["bible.translationLabel"] }).first());
     await page.waitForTimeout(900);
-    const sheet = await page.evaluate(() => {
-      const d = [...document.querySelectorAll("[role=dialog]")].find((x) => /King James Version/.test(x.textContent ?? ""));
-      if (!d) return null;
-      let p = d.lastElementChild;
-      while (p && getComputedStyle(p).display === "contents") p = p.lastElementChild;
-      const r = p.getBoundingClientRect();
-      return { width: Math.round(r.width), middle: Math.round((r.left + r.right) / 2) };
-    });
-    must(Boolean(sheet) && sheet.width > 0 && sheet.width <= 561 && Math.abs(sheet.middle - got.vw / 2) <= 2, `${where}: the translation sheet is a centred panel, not a bar across the screen (${sheet ? `${sheet.width}px at ${sheet.middle}` : "no sheet"})`);
+    const sheet = await sheetNamed(page, "King James Version");
+    must(Boolean(sheet) && sheet.width > 0 && sheet.width <= 561 && Math.abs(sheet.middle - got.vw / 2) <= 2, `${where}: the translation sheet, from •••, is a centred panel, not a bar across the screen (${sheet ? `${sheet.width}px at ${sheet.middle}` : "no sheet"})`);
     await page.keyboard.press("Escape");
     await page.waitForTimeout(500);
     must(errors.length === 0, `${where}: no page errors${errors.length ? ": " + errors.slice(0, 2).join(" | ") : ""}`);
     await ctx.close();
   }
 
-  // Focus mode, from the reader settings, on a phone and an iPad.
+  // Focus mode, from Aa, on a phone and an iPad.
   for (const size of [{ width: 390, height: 844 }, { width: 1180, height: 820 }]) {
     const { ctx, page, errors } = await open({ ...size, phone: true });
     await go(page, "/bible/john/1/");
-    await opened(page, "John 1");
-    await page.waitForTimeout(900);
+    await opened(page, "John Chapter 1");
+    await page.waitForTimeout(1200);
     const where = `focus at ${size.width}px`;
-    await page.getByRole("button", { name: "Reader settings" }).tap().catch(() => {});
+    await page.getByRole("button", { name: names.settings }).tap().catch(() => {});
     await page.waitForTimeout(700);
     await page.getByRole("button", { name: /^Focus reading/ }).tap().catch(() => {});
     await page.waitForFunction(() => document.documentElement.classList.contains("reader-focus"), null, { timeout: 8000 }).catch(() => {});
@@ -2562,7 +2646,7 @@ await section(33, async () => {
       const shown = (n) => !!n && n.getBoundingClientRect().height > 0 && getComputedStyle(n).display !== "none";
       return { focus: document.documentElement.classList.contains("reader-focus"), bar: shown(document.querySelector("[data-mobile-topbar]")), pill: shown(document.querySelector("[aria-label='Chapter switcher']")) };
     });
-    must(bars.focus && !bars.bar && !bars.pill, `${where}: the top bar and the chapter pill are put away (focus ${bars.focus}, bar ${bars.bar}, pill ${bars.pill})`);
+    must(bars.focus && !bars.bar && !bars.pill, `${where}: the round buttons and the chapter pill are put away (focus ${bars.focus}, plates ${bars.bar}, pill ${bars.pill})`);
     const exit = await exitNow();
     must(Boolean(exit) && exit.opacity > 0.95 && exit.top >= exit.vh - 140 && exit.bottom <= exit.vh && Math.abs(exit.middle - exit.vw / 2) <= 2, `${where}: the way out is at the foot, in the middle, in sight as focus begins (${exit ? `${exit.top}..${exit.bottom} of ${exit.vh}, opacity ${exit.opacity}` : "none"})`);
     await page.screenshot({ path: path.join(SHOTS, `reader-focus-${size.width}.png`) });
@@ -2571,7 +2655,7 @@ await section(33, async () => {
     must(Boolean(resting) && resting.opacity < 0.05, `${where}: it fades once the reader is reading (opacity ${resting ? resting.opacity : "none"})`);
     const at = await page.evaluate(() => {
       const r = document.querySelector("#chapter-title h1")?.getBoundingClientRect();
-      return r ? { x: Math.round(r.left + 12), y: Math.round(r.top + r.height / 2) } : null;
+      return r ? { x: Math.round(r.left + r.width / 2), y: Math.round(r.top + r.height / 2) } : null;
     });
     if (at) await page.touchscreen.tap(at.x, at.y);
     await page.waitForTimeout(600);
@@ -2580,7 +2664,7 @@ await section(33, async () => {
     await page.keyboard.press("Escape");
     await page.waitForTimeout(900);
     const after = await page.evaluate(() => ({ focus: document.documentElement.classList.contains("reader-focus"), bar: !!document.querySelector("[data-mobile-topbar]") && getComputedStyle(document.querySelector("[data-mobile-topbar]")).display !== "none" }));
-    must(!after.focus && after.bar, `${where}: Escape leaves focus and the top bar is back`);
+    must(!after.focus && after.bar, `${where}: Escape leaves focus and the round buttons are back`);
     must(errors.length === 0, `${where}: no page errors${errors.length ? ": " + errors.slice(0, 2).join(" | ") : ""}`);
     await ctx.close();
   }
@@ -2661,7 +2745,9 @@ await section(34, async () => {
 // The owner's notes 9 and 25 of 2026-10-16 (Homebase/boards/purify-master/
 // r17/BRAINSTORM.md): an icon of the book's saint on the read-aloud cover,
 // for every book, and ambience out of the reader's settings into a sound
-// button by the chapter pager that opens a sheet of its own. The covers stay
+// button by the chapter pager that opens a sheet of its own. From 1.8 the
+// pill ends in Listen, with the sound button just before it (the owner's
+// pick B of round 2, "The page"; section 33). The covers stay
 // on the website (lib/media/streamed.ts), and this walk has no network, so it
 // is also the app with no signal: Now Playing must show the bundled plate in
 // the cover's place, never a broken picture. lib/readAloud/__tests__/
@@ -2674,10 +2760,10 @@ await section(35, async () => {
 
   const { ctx, page, errors } = await open({ width: 390, height: 844, phone: true });
   await go(page, "/bible/john/1/");
-  await page.waitForFunction(() => document.getElementById("chapter-title")?.querySelector("h1")?.textContent?.replace(/\s+/g, " ").trim() === "John 1", null, { timeout: 20000 }).catch(() => {});
-  await page.waitForTimeout(900);
+  await page.waitForFunction(() => document.getElementById("chapter-title")?.querySelector("h1")?.textContent?.replace(/\s+/g, " ").trim() === "John Chapter 1", null, { timeout: 20000 }).catch(() => {});
+  await page.waitForTimeout(1200);
 
-  // The sound button, at the end of the chapter pill, after the arrows.
+  // The sound button, on the chapter pill after the arrows, just before Listen at its end.
   const button = await page.evaluate((name) => {
     const pill = document.querySelector("[aria-label='Chapter switcher']");
     if (!pill) return null;
@@ -2685,12 +2771,13 @@ await section(35, async () => {
     const b = controls.find((x) => x.getAttribute("aria-label") === name);
     if (!b) return null;
     const r = b.getBoundingClientRect();
-    return { width: Math.round(r.width), height: Math.round(r.height), last: controls[controls.length - 1] === b, popup: b.getAttribute("aria-haspopup") };
+    const next = controls[controls.indexOf(b) + 1];
+    return { width: Math.round(r.width), height: Math.round(r.height), beforeListen: Boolean(next && next.hasAttribute("data-read-aloud-play") && next === controls[controls.length - 1]), popup: b.getAttribute("aria-haspopup") };
   }, en["ambience.title"]);
-  must(Boolean(button) && button.last && button.height >= 40 && button.popup === "dialog", `the chapter pill ends in the sound button (${button ? `${button.width}x${button.height}, last ${button.last}` : "none"})`);
+  must(Boolean(button) && button.beforeListen && button.height >= 40 && button.popup === "dialog", `the sound button is on the chapter pill, just before Listen at its end (${button ? `${button.width}x${button.height}, before Listen ${button.beforeListen}` : "none"})`);
 
   // It opens the ambience sheet: the three sounds as large tiles.
-  await page.locator("[aria-label='Chapter switcher'] button[aria-haspopup='dialog']").last().tap().catch(() => {});
+  await page.locator(`[aria-label='Chapter switcher'] button[aria-label="${en["ambience.title"]}"]`).first().tap().catch(() => {});
   await page.waitForFunction((t) => [...document.querySelectorAll("[role=dialog]")].some((d) => d.getAttribute("aria-label") === t), en["ambience.title"], { timeout: 8000 }).catch(() => {});
   await page.waitForTimeout(700);
   const sheet = await page.evaluate((t) => {
@@ -4408,7 +4495,9 @@ await section(43, async () => {
         right: words.length ? Math.max(...words.map((w) => box(w).right)) : -1,
         narrowest: texts.length ? Math.min(...texts.map((t) => box(t).width)) : 0,
         perLine: lines ? Math.round(chars / lines) : 0,
-        controls: edges(title.previousElementSibling?.firstElementChild),
+        // Nothing stands above the title in the column since 1.8: the
+        // controls are the round buttons over the page.
+        above: title.previousElementSibling ? title.previousElementSibling.tagName : null,
         heading: edges(title.firstElementChild),
         pager: edges(pager),
       };
@@ -4423,8 +4512,8 @@ await section(43, async () => {
     must(Math.abs(middle - got.vw / 2) <= 12, `${where}: the words stand in the middle of the screen (${Math.round(got.left)}..${Math.round(got.right)}, middle ${Math.round(middle)} against ${got.vw / 2})`);
     must(Math.abs(got.left - cl) <= 2 && got.right >= cr - 24 && got.narrowest >= cr - cl - 1, `${where}: they fill the text's column, ${Math.round(cl)}..${Math.round(cr)}, every verse its whole width (the narrowest ${Math.round(got.narrowest)} of ${Math.round(cr - cl)})`);
     must(got.perLine >= 45 && got.perLine <= 75 && cr - cl <= 681, `${where}: a reading measure, ${got.perLine} characters a line in a column ${Math.round(cr - cl)}px wide`);
-    const apart = [["controls", got.controls], ["title", got.heading], ["pager", got.pager]].filter(([, e]) => !e || Math.abs(e[0] - cl) > 1 || Math.abs(e[1] - cr) > 1);
-    must(apart.length === 0, `${where}: the controls, the title and the pager keep the column's edges${apart.length ? ": " + apart.map(([n, e]) => `${n} ${e ? e.join("..") : "missing"}`).join(", ") : ""}`);
+    const apart = [["title", got.heading], ["pager", got.pager]].filter(([, e]) => !e || Math.abs(e[0] - cl) > 1 || Math.abs(e[1] - cr) > 1);
+    must(apart.length === 0 && got.above === null, `${where}: the title opens the column and keeps its edges, as the pager does${apart.length ? ": " + apart.map(([n, e]) => `${n} ${e ? e.join("..") : "missing"}`).join(", ") : ""}${got.above ? `; a ${got.above} stands above the title` : ""}`);
     if (width === 820 || width === 1180) await page.screenshot({ path: path.join(SHOTS, `ipad-reader-${width}x${height}.png`) });
     must(errors.length === 0, `${where}: no page errors${errors.length ? ": " + errors.slice(0, 2).join(" | ") : ""}`);
     await ctx.close();

@@ -1,6 +1,7 @@
 // The Bible translations a chapter can be read in, and which of them a given
-// chapter offers. One list for the phone's sheet (MobileTranslationPill) and
-// the computer's popover (TranslationSwitcher), so the two cannot drift.
+// chapter offers. One list for the phone's sheet (in the reader's ••• sheet,
+// components/bible/ReaderMoreSheet.tsx) and the computer's popover
+// (TranslationSwitcher), so the two cannot drift.
 //
 // Pure: no React, no window. The choice itself (the ?v= in the address and
 // the remembered pick) is made in components/bible/TranslationList.tsx.

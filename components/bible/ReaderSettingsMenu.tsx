@@ -124,8 +124,13 @@ function AmbienceRow({ touch, onLeave }: { touch: boolean; onLeave?: () => void 
   );
 }
 
-/** A full-width on/off row: Focus reading, Interlinear Greek. */
-function ToggleRow({
+/**
+ * A full-width on/off row: Focus reading, Interlinear Greek, and in the
+ * reader's ••• sheet the bookmark (components/bible/ReaderMoreSheet.tsx).
+ * On, it is the page's ink with a soft white light about it (1.8, the
+ * owner: "just use a glowly white"; app/globals.css, .reader-lit).
+ */
+export function ToggleRow({
   on,
   touch,
   onClick,
@@ -146,7 +151,7 @@ function ToggleRow({
         "w-full inline-flex items-center justify-between gap-3 rounded-pill border px-3.5 font-sans text-detail font-medium transition-colors",
         touch ? "min-h-12" : "h-[40px]",
         on
-          ? "border-gold text-night bg-gold hover:bg-gold-soft"
+          ? "reader-lit border-paper bg-paper text-night"
           : "border-paper/15 bg-paper/[0.04] text-paper/85 hover:bg-paper/10 hover:border-paper/30",
       )}
     >
@@ -290,10 +295,11 @@ function ReaderSettingsControls({
 /**
  * The phone's and the tablet's reader settings: a movable bottom sheet.
  *
- * Opened from the settings icon in the top bar: the Bible reader's
- * (MobileReaderActions) and a saint's work's (MobileWorkActions). The Reader
- * pill under the book picker opened it too until 1.7, when the owner had it
- * removed because it repeated the icon (note 3 of 2026-10-16).
+ * Opened from the Bible reader's round Aa button over the page (1.8,
+ * MobileReaderActions) and from the settings icon in a saint's work's top
+ * bar (MobileWorkActions). The Reader pill under the book picker opened it
+ * too until 1.7, when the owner had it removed because it repeated the icon
+ * (note 3 of 2026-10-16).
  */
 export function ReaderSettingsSheet({
   open,
@@ -327,7 +333,8 @@ export function ReaderSettingsSheet({
  * The computer's Reader pill: a popover under the pill, right-aligned because
  * the pill sits at the right of the toolbar, without Focus and Interlinear,
  * which have their own pills beside it. Phones and tablets have no pill: the
- * top bar's settings icon opens ReaderSettingsSheet, with everything in it.
+ * round Aa button over the page opens ReaderSettingsSheet, with everything
+ * in it.
  */
 export function ReaderSettingsMenu({ showInterlinear }: { showInterlinear: boolean }) {
   const { t } = useTranslate();

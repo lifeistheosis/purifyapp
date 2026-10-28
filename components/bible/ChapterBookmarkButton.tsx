@@ -14,8 +14,8 @@ import { ReaderPill } from "./ReaderPill";
  * (the plumbing verses and saints' sections use, so it shows on /saved and
  * syncs when signed in).
  *
- * Phones and tablets save from the top bar's icon (MobileReaderActions): the
- * toolbar is the website's on a wide screen only.
+ * Phones and tablets save from the reader's ••• sheet (ReaderMoreSheet, 1.8):
+ * the toolbar is the website's on a wide screen only.
  */
 export function ChapterBookmarkButton({
   book,
