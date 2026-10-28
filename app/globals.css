@@ -554,11 +554,12 @@ html.is-native .below-topbar {
   margin-top: calc(-3rem - var(--inset-top));
  }
  /* The picture melts into the page below the name: a mask on the picture,
-    so no colour is laid over the page. Most of the picture is gone by the
-    time it reaches the name, which sits over its last eighth. */
+    so no colour is laid over the page. Round 3b D (1.8) sets the name over
+    the picture's last quarter, so the melt starts earlier, as the design's
+    shade does: the picture is a fifth of itself where the name begins. */
  .picture-melt {
-  -webkit-mask-image: linear-gradient(to bottom, #000 50%, rgb(0 0 0 / 0.35) 78%, transparent 96%);
-  mask-image: linear-gradient(to bottom, #000 50%, rgb(0 0 0 / 0.35) 78%, transparent 96%);
+  -webkit-mask-image: linear-gradient(to bottom, #000 42%, rgb(0 0 0 / 0.2) 74%, transparent 100%);
+  mask-image: linear-gradient(to bottom, #000 42%, rgb(0 0 0 / 0.2) 74%, transparent 100%);
  }
 }
 /* The slim bar's name, held back until the page's own has gone. */
@@ -577,6 +578,69 @@ html.is-native .below-topbar {
 :where([data-motion="full"]) [data-mobile-topbar][data-overlay] :is(a, button) {
  transition-property: background-color, color;
  transition-duration: 200ms;
+}
+
+/* ── A saint's page: fade and doors (1.8) ──
+   Round 3b D, the owner's pick of 2026-10-27: the icon fades in at the top as
+   the page opens, then his name and its line, the row, and the doors, each a
+   step after the one above (components/saints/SaintHero.tsx, SaintDoors.tsx;
+   `--i` is the step). Opacity only, filling backwards, for the reason the
+   cascade gives below: a transform here would become the containing block of
+   the doors' pinned row. The icon takes 900ms, past the duration ladder,
+   because it is a full-screen hero arriving and not a control. */
+@keyframes saint-icon-in {
+ from { opacity: 0; }
+ to { opacity: 1; }
+}
+.saint-icon-in {
+ animation: saint-icon-in 900ms var(--ease-house) backwards;
+}
+.saint-head-in {
+ animation: cascade-in var(--duration-base) var(--ease-house) backwards;
+ animation-delay: calc(var(--saint-head-start, 160ms) + var(--i, 0) * var(--stagger-step));
+}
+.route-fade .saint-head-in {
+ --saint-head-start: var(--duration-route-enter);
+}
+:where([data-motion="reduce"]) .saint-icon-in,
+:where([data-motion="reduce"]) .saint-head-in {
+ animation: none;
+}
+
+/* The doors again, as one slim row pinned under the bar once the doors have
+   gone up under it (SaintDoors). Fixed, so its arrival moves nothing below;
+   it fades in and out, and is simply there or not when motion is reduced. */
+.saint-doors-pin {
+ opacity: 0;
+ visibility: hidden;
+ transition: opacity var(--duration-fast) var(--ease-house), visibility 0s linear var(--duration-fast);
+}
+.saint-doors-pin[data-pinned] {
+ opacity: 1;
+ visibility: visible;
+ transition: opacity var(--duration-fast) var(--ease-house), visibility 0s;
+}
+:where([data-motion="reduce"]) .saint-doors-pin,
+:where([data-motion="reduce"]) .saint-doors-pin[data-pinned] {
+ transition: none;
+}
+
+/* ── The saint web (1.8) ──
+   The owner's round 1, A and B with a switch (components/saints/web). The
+   sheet that tells how two saints are joined stays at the foot of the screen
+   while the web scrolls past it, above the app's tab bar and the player, and
+   settles under the web at its end. The Timeline's line runs dashed after
+   the saint's repose, as the design draws it. */
+.saint-web-sheet {
+ bottom: calc(var(--tab-bar-h) + var(--now-playing-h));
+}
+html.is-native .saint-web-sheet {
+ bottom: calc(var(--inset-bottom) + var(--tab-bar-h) + var(--now-playing-h));
+}
+.saint-web-after {
+ /* For a WebView without color-mix (Android before 111). */
+ background-image: repeating-linear-gradient(to bottom, rgb(255 255 255 / 0.3) 0 4px, transparent 4px 9px);
+ background-image: repeating-linear-gradient(to bottom, color-mix(in srgb, var(--color-paper) 30%, transparent) 0 4px, transparent 4px 9px);
 }
 
 /* The shop's floating cart button (56px, right-6 bottom-6) shares the

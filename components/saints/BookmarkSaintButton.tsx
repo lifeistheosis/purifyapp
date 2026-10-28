@@ -22,8 +22,22 @@ import { cn } from "@/lib/cn";
  * A round 44px button at the end of the saint's row (1.7): the bookmark,
  * drawn filled once he is saved, named "Save {name}" or "Remove {name}" for
  * assistive technology, the word every other save in the app uses.
+ *
+ * In the top bar on a phone (1.8, round 3b D: the bookmark beside the way
+ * back, on a round plate over the picture), `variant="bar"` draws it the size
+ * and weight of the bar's other buttons; the bar gives it its plate.
  */
-export function BookmarkSaintButton({ slug, name }: { slug: string; name: string }) {
+export function BookmarkSaintButton({
+  slug,
+  name,
+  variant = "row",
+  className,
+}: {
+  slug: string;
+  name: string;
+  variant?: "row" | "bar";
+  className?: string;
+}) {
   const { t } = useTranslate();
   const { toggle, isBookmarked } = useBookmarks();
   const [mounted, setMounted] = useState(false);
@@ -42,8 +56,17 @@ export function BookmarkSaintButton({ slug, name }: { slug: string; name: string
       aria-label={saved ? t("saints.saveRemoveAria", { name }) : t("saints.saveAria", { name })}
       onClick={() => toggle({ kind: "saint", saintSlug: slug, label: name })}
       className={cn(
-        "tap-press inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-pill border motion-safe:transition-colors",
-        saved ? "border-paper/50 text-paper" : "border-paper/15 text-paper/75 hover:border-paper/35 hover:text-paper",
+        variant === "bar"
+          ? "tap-press hit-44 inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-pill motion-safe:transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-paper"
+          : "tap-press inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-pill border motion-safe:transition-colors",
+        variant === "bar"
+          ? saved
+            ? "text-paper"
+            : "text-paper/80 hover:text-paper"
+          : saved
+            ? "border-paper/50 text-paper"
+            : "border-paper/15 text-paper/75 hover:border-paper/35 hover:text-paper",
+        className,
       )}
     >
       <Bookmark size={19} filled={saved} />

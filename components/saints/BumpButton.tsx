@@ -110,7 +110,7 @@ function RequestExplainer() {
       <p className="mb-2 font-semibold text-paper">{t("saints.bump.requesting")}</p>
       <p>
         {t("saints.bump.requestExplainer1")}{" "}
-        <em className="text-gold">{t("saints.bump.requestQuote")}</em>
+        <em className="text-paper">{t("saints.bump.requestQuote")}</em>
       </p>
       <p className="mt-2">{t("saints.bump.requestExplainer2")}</p>
     </>
@@ -125,7 +125,7 @@ function CompleteExplainer() {
       <p>{t("saints.bump.completeExplainer1")}</p>
       <p className="mt-2 text-paper/65">
         {t("saints.bump.completeExplainer2")}{" "}
-        <Link href="/contact" className="text-gold hover:underline">
+        <Link href="/contact" className="text-paper underline-offset-4 hover:underline">
           {t("saints.bump.letUsKnow")}
         </Link>
         .

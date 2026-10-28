@@ -26,16 +26,26 @@ import { TitlesSection } from "./TitlesSection";
  *
  * The facts and the great feasts step aside on a computer, whose study rail
  * shows both (SaintStudyRail).
+ *
+ * His miracles close it (1.8): with the four doors of round 3b D (Life,
+ * Writings, Web, Hymns) they are no longer a part of their own, so where a
+ * verbatim account exists (St Anthony's) it is read here, under its own
+ * heading, after everything else in his Life. The heading answers to
+ * #miracles, the address the 1.7 switch wrote, so a link kept from then
+ * still lands on them.
  */
 export function SaintLife({
   saint,
   events,
+  miracles,
 }: {
   saint: Pick<
     Saint,
     "slug" | "shortBio" | "life" | "titles" | "greatFeasts" | "quotes" | "disciples" | "pronoun" | "featured" | "born" | "reposed" | "see" | "feastDays"
   >;
   events: HistoryEventMeta[];
+  /** The account of his miracles (MiraclesSection), when there is one. */
+  miracles?: ReactNode;
 }) {
   // The quotations inside the life, numbered in the order they stand, each
   // with its line (1.8, lib/saints/lifeQuotes.ts). A life in another
@@ -62,6 +72,19 @@ export function SaintLife({
   }
   if (saint.disciples?.length) {
     after.push({ key: "disciples", node: <DisciplesSection saint={saint} disciples={saint.disciples} /> });
+  }
+  if (miracles) {
+    after.push({
+      key: "miracles",
+      node: (
+        <section id="miracles" aria-labelledby="saint-miracles" className="scroll-mt-32">
+          <h2 id="saint-miracles" className="text-title-sm leading-tight text-paper">
+            <T k="saints.miracles" />
+          </h2>
+          <div className="mt-6">{miracles}</div>
+        </section>
+      ),
+    });
   }
 
   return (

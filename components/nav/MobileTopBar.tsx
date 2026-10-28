@@ -38,6 +38,10 @@ import { useTranslate } from "@/components/i18n/MessagesProvider";
  *   (globals.css, "A page bar over a picture"). The page pulls its picture up
  *   under the bar with `.under-topbar`. Never on a tablet: the iPad keeps a
  *   solid bar.
+ * - `center` (1.8, the saint web): a control in the middle of the bar in
+ *   place of the title, the Web / Timeline switch the owner asked for ("I
+ *   want that to just be a button"). The page then names itself with its own
+ *   h1, and `title` is not shown.
  *
  * No Support link rides in a phone bar (the owner, 2026-10-16: it "does
  * nothing useful there"). Giving is a row in Settings, and the computer's
@@ -55,6 +59,7 @@ export function MobileTopBar({
   trailing,
   revealTitleOn,
   overlay = false,
+  center,
 }: {
   title?: string;
   /** Catalog key resolved client-side; wins over title. */
@@ -69,6 +74,8 @@ export function MobileTopBar({
   revealTitleOn?: string;
   /** Start clear over the page's picture, on a phone. Needs `revealTitleOn`. */
   overlay?: boolean;
+  /** A control in the middle of the bar, in place of the title. */
+  center?: React.ReactNode;
 }) {
   const router = useRouter();
   const { t } = useTranslate();
@@ -147,7 +154,9 @@ export function MobileTopBar({
         )
       ) : null}
       <div className={cn("min-w-0 flex-1 flex flex-col justify-center", !back && "pl-3")}>
-        {revealTitleOn ? (
+        {center ? (
+          <div className="flex min-w-0 justify-center">{center}</div>
+        ) : revealTitleOn ? (
           // The page's own h1 names it; this is the slim bar's copy, for the eye.
           <p
             aria-hidden

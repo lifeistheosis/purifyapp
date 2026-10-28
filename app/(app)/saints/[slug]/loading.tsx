@@ -1,10 +1,10 @@
 import { Skeleton, SkeletonText } from "@/components/ui/Skeleton";
 
 /**
- * A saint's page while it arrives (1.7): the shape of the page it becomes.
- * On a phone, the icon's place at the top, the name and its line centred,
- * the row of the request, the switch, and the first paragraphs; on a tablet
- * and a computer, the picture beside the name.
+ * A saint's page while it arrives (1.7, and its doors of 1.8): the shape of
+ * the page it becomes. On a phone, the icon's place at the top, the name and
+ * its line, the row of the request, the doors (round 3b D), and the first
+ * paragraphs; on a tablet and a computer, the picture beside the name.
  */
 export default function SaintLoading() {
   return (
@@ -26,7 +26,11 @@ export default function SaintLoading() {
           </div>
         </div>
 
-        <Skeleton weight="faint" rounded="rounded-pill" className="mx-auto mt-2 h-[54px] w-full max-w-[420px] md:mx-0" />
+        <div className="mx-auto mt-2 grid w-full max-w-[420px] grid-cols-3 gap-2 md:mx-0">
+          {Array.from({ length: 3 }).map((_, i) => (
+            <Skeleton key={i} weight="faint" rounded="rounded-[16px]" className="h-[74px]" />
+          ))}
+        </div>
 
         <div className="mt-8 cascade space-y-8 pb-16">
           {Array.from({ length: 3 }).map((_, i) => (
