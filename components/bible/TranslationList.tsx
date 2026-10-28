@@ -20,8 +20,9 @@ import { cn } from "@/lib/cn";
  * Which translations this chapter offers, the one it is read in, and the way
  * to choose another: the address's ?v= for a licensed one, cleared for a
  * public-domain one, and remembered for the next chapter
- * (lib/bible/translationPref.ts). The phone's sheet (MobileTranslationPill)
- * and the computer's popover (TranslationSwitcher) both read it, so the two
+ * (lib/bible/translationPref.ts). The phone's sheet (in the reader's ••• sheet,
+ * ReaderMoreSheet) and the computer's popover (TranslationSwitcher) both read
+ * it, so the two
  * offer the same rows. The list itself is lib/bible/translations.ts.
  */
 export function useTranslationChoice(currentSlug: string, configured: readonly string[]) {

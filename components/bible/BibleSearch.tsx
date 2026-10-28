@@ -35,16 +35,23 @@ import { useVisibleFrame } from "@/lib/ui/viewport";
  * The list ends where the keyboard begins (lib/ui/viewport.ts), Cancel, the
  * back button and Escape leave it, and leaving puts the pill back. The
  * dropdown under the field stays the computer's, where no keyboard rises.
+ *
+ * From 1.8 the phone's and the tablet's field is in the reader's ••• sheet
+ * (components/bible/ReaderMoreSheet.tsx), and `onNavigate` closes that sheet
+ * as a result is opened, so a verse in the same chapter is not left under it.
  */
 export function BibleSearch({
   className,
   placeholder,
   layer = false,
+  onNavigate,
 }: {
   className?: string;
   placeholder?: string;
   /** Open search as its own screen: the phone's and the tablet's row. */
   layer?: boolean;
+  /** Called as a result is opened. */
+  onNavigate?: () => void;
 }) {
   const { t, tn } = useTranslate();
   const router = useRouter();
@@ -98,6 +105,7 @@ export function BibleSearch({
     if (!h) return;
     setOpen(false);
     setQ("");
+    onNavigate?.();
     router.push(hrefFor(h));
   }
 
@@ -106,6 +114,7 @@ export function BibleSearch({
     setOpen(false);
     const target = `/bible/multi?q=${encodeURIComponent(q.trim())}`;
     setQ("");
+    onNavigate?.();
     router.push(target);
   }
 
@@ -219,6 +228,7 @@ export function BibleSearch({
                 onClick={() => {
                   setOpen(false);
                   setQ("");
+                  onNavigate?.();
                 }}
                 className={
                   "block px-4 py-3 font-sans text-ui " +

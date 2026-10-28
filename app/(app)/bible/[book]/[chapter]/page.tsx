@@ -1,7 +1,6 @@
 import { notFound } from "next/navigation";
 import { ChapterReader } from "@/components/bible/ChapterReader";
 import { ChapterScreen } from "@/components/bible/ChapterScreen";
-import { ChapterVerseStatus } from "@/components/bible/ChapterVerseStatus";
 import { LazyStudyRail } from "@/components/bible/LazyStudyRail";
 import { LicensedChapterReader } from "@/components/bible/LicensedChapterReader";
 import { MobileReaderActions } from "@/components/bible/MobileReaderActions";
@@ -159,21 +158,28 @@ export default async function BibleChapterPage({
     id: p.id,
     verse: p.verse!,
    }))}
-   // Mobile-only top bar, a phone's only bar here on the web too: back to
-   // /bible, book + chapter as the title with the verse being read under it
-   // once the chapter title scrolls away, then search, the bookmark and the
-   // reader settings (and the site menu on the web). Hidden on md+; desktop
-   // uses the AppNav. Mounted here and not inside the screen: the back bar's
-   // list of screens with a bar of their own is checked against pages and
-   // layouts (lib/nav/__tests__/backBar.test.ts). The book's name is the
-   // reader's language's (1.7), as the chapter's title under it is.
+   // The phone's and the tablet's top, here on the web too: no bar at all
+   // (1.8, the owner's pick B of round 2, "The page"), only round plates
+   // over the page, the way back to /bible on one side and Aa and ••• on the
+   // other (and the site menu on the web). The chapter names itself with its
+   // own title, and the verse being read is on the pill at the foot. Hidden
+   // on md+; desktop uses the AppNav. Mounted here and not inside the
+   // screen: the back bar's list of screens with a bar of their own is
+   // checked against pages and layouts (lib/nav/__tests__/backBar.test.ts),
+   // and these plates are this page's bar for it.
    topBar={
     <MobileTopBar
-     titleKey={`bible.books.${book}`}
-     titleTail={String(chapterNum)}
-     subtitle={<ChapterVerseStatus chapterKey={`${book}/${chapterNum}`} totalVerses={totalVerses} />}
+     plates
      back="/bible"
-     trailing={<MobileReaderActions book={book} bookName={b!.name} chapter={chapterNum} showInterlinear={showInterlinear} />}
+     trailing={
+      <MobileReaderActions
+       book={book}
+       bookName={b!.name}
+       chapter={chapterNum}
+       showInterlinear={showInterlinear}
+       configuredLicensed={configuredLicensed}
+      />
+     }
     />
    }
    reader={

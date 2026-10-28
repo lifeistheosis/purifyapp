@@ -249,10 +249,11 @@ describe("app/(app)/bible/[book]/[chapter]/page.tsx", () => {
         // page on the website.
         "components/bible/LazyStudyRail.tsx",
         "components/bible/StudyRail.tsx",
-        // The phone's bar and the two things it holds. A bar is mounted from
-        // a page or a layout: lib/nav/__tests__/backBar.test.ts.
+        // The phone's round plates (1.8, a bar with no bar) and the buttons
+        // they hold. A bar is mounted from a page or a layout:
+        // lib/nav/__tests__/backBar.test.ts. The verse being read went from
+        // the bar to the chapter's pill, which the screen draws.
         "components/nav/MobileTopBar.tsx",
-        "components/bible/ChapterVerseStatus.tsx",
         "components/bible/MobileReaderActions.tsx",
       ].sort(),
     );
@@ -291,25 +292,29 @@ describe("components/bible/ChapterScreen.tsx", () => {
       "BookSwitcher",
       "ChapterBookmarkButton",
       "ReaderFocusButton",
-      "MobileBookPill",
-      "MobileChapterStrip",
       "RestoreTranslation",
       "GreekNumberingNote",
       "ChapterPager",
       "ChapterDiscussions",
-      // The computer's translation popover and Reader pill, and the phone's
-      // and tablet's translation sheet (1.7). A phone has no Reader pill:
-      // the top bar's settings icon does its job.
+      // The computer's translation popover and Reader pill (1.7). A phone
+      // has neither: the round Aa and ••• buttons over the page open the
+      // settings and the rest (1.8, MobileReaderActions, from the page).
       "TranslationSwitcher",
       "ReaderSettingsMenu",
-      "MobileTranslationPill",
+      // The computer's own row: its search, the Greek and Listen. On a phone
+      // and a tablet the search and the Greek are in the ••• sheet and
+      // Listen ends the chapter's pill (1.8).
+      "BibleSearch",
+      "InterlinearToggle",
+      "ListenButton",
     ]) {
       expect(screen.split(`<${name}`).length - 1, name).toBe(1);
     }
-    // Drawn twice each: once in the computer's toolbar, once in the phone's
-    // and tablet's row inside the text's column.
-    for (const name of ["BibleSearch", "InterlinearToggle"]) {
-      expect(screen.split(`<${name}`).length - 1, name).toBe(2);
+    // The row of pills, the field and the strip that stood above the title
+    // until 1.7 are not drawn here any more (the owner's pick B of round 2:
+    // the chapter opens on its words).
+    for (const name of ["MobileBookPill", "MobileTranslationPill", "MobileChapterStrip"]) {
+      expect(screen, name).not.toContain(`<${name}`);
     }
     const at = (text: string) => screen.indexOf(text);
     expect(at("{topBar}")).toBeGreaterThan(at("<ReaderFocusController />"));

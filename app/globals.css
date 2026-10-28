@@ -42,9 +42,10 @@
  * these sit outside Tailwind's layers, so they beat the layered md:hidden
  * beside them whatever the cascade order.
  *
- * native-md-pt-4 (1.7): the Bible reader on a tablet in the apps starts 16px
- * under its sticky top bar, as on a phone, where the website's wide screen
- * leaves md:pt-16 for its 72px header.
+ * The Bible reader on a tablet in the apps starts under its round plates, as
+ * on a phone (.under-plates, "The page: the Bible reader with no bar"), where
+ * the website's wide screen leaves md:pt-16 for its 72px header. It was
+ * native-md-pt-4 here, 16px under a sticky bar, until the bar went (1.8).
  */
 @media (min-width: 768px) {
   html.is-native .native-md-flex { display: flex; }
@@ -52,7 +53,6 @@
   html.is-native .native-md-grid { display: grid; }
   html.is-native .native-md-inline-flex { display: inline-flex; }
   html.is-native .native-md-hidden { display: none; }
-  html.is-native .native-md-pt-4 { padding-top: 1rem; }
 }
 
 @theme {
@@ -582,6 +582,182 @@ html.is-native .below-topbar {
 :where([data-motion="full"]) [data-mobile-topbar][data-overlay] :is(a, button) {
  transition-property: background-color, color;
  transition-duration: 200ms;
+}
+
+/* ── The page: the Bible reader with no bar (1.8) ──
+   The owner's pick of 2026-10-27, round 2, B, "The page" (Homebase/boards/
+   purify-master/variants/02-bible): "No bar at all, only two round buttons
+   over the page. The chapter opens like a book. The floating pill comes back
+   when you scroll up, with Listen." Phones, and tablets in the apps.
+
+   The plates. MobileTopBar `plates` stands the way back and the page's own
+   buttons (Aa and •••, MobileReaderActions; on the web the site's menu as
+   well) in a row of the bar's height under the status bar. The row is fixed
+   and lets every tap between the plates through to the page. A plate is the
+   page's ground lifted by a breath of its ink, opaque, so the words that
+   scroll under it never show through, inside a hairline of the ink: on Dark
+   the design's 6% white on night, and the same step on every palette, ink
+   on paper on Parchment. The status bar's strip is the page's ground, so the
+   words never run under the clock; the row's own ground melts from it to
+   nothing, so a plate brought back over the words stands clear of them. No
+   blur anywhere here: a blurred layer over moving text is redrawn on every
+   frame on Android. The rgb values come first for a WebView without
+   color-mix. */
+[data-mobile-topbar][data-plates] {
+ background: linear-gradient(var(--color-night), var(--color-night)) top / 100% env(safe-area-inset-top, 0px) no-repeat;
+}
+[data-mobile-topbar][data-plates] [data-plates-row] {
+ background: linear-gradient(to bottom, var(--color-night) 20%, transparent);
+}
+[data-mobile-topbar][data-plates] :is(a, button) {
+ pointer-events: auto;
+ border-radius: 9999px;
+ border: 1px solid rgb(255 255 255 / 0.1);
+ border-color: color-mix(in srgb, var(--color-paper) 10%, transparent);
+ background-color: rgb(30 30 33);
+ background-color: color-mix(in srgb, var(--color-paper) 6%, var(--color-night));
+ color: var(--color-paper);
+}
+
+/* The page starts under the plates: their row, and the design's 20px under
+   it before the book's name. On the web the row also pads for a notch, as
+   the bar did; in the apps <main> already does (.safe-pt). */
+@media (max-width: 767.98px) {
+ html:not(.is-native) .under-plates {
+  padding-top: calc(72px + env(safe-area-inset-top, 0px));
+ }
+}
+html.is-native .under-plates {
+ padding-top: 72px;
+}
+
+/* The reading line runs along the top of the screen under the status bar,
+   where there is no bar for it to sit under; on the computer, under its
+   header. Focus mode lifts it to the top there too (below, "Reader focus
+   mode"). */
+.reader-progress {
+ top: env(safe-area-inset-top, 0px);
+}
+@media (min-width: 768px) {
+ html:not(.is-native) .reader-progress {
+  top: 72px;
+ }
+}
+
+/* Away while the reader reads on. lib/ui/scrollAway.ts sets data-reader-away
+   on <body>: the plates rise a little and fade, the pill sinks a little and
+   fades, together, and both come back on a scroll up and at the top of the
+   chapter. Hidden once faded, not only clear, so a tap
+   reaches the words under them and a screen reader does not find them. The
+   pill's own fade, while a sheet or a verse's tools stand over it, rides on
+   the same transition. */
+[data-mobile-topbar][data-plates] [data-plates-row],
+[data-reader-pill] {
+ transition:
+  opacity var(--duration-fast) var(--ease-house),
+  transform var(--duration-fast) var(--ease-house),
+  visibility 0s;
+}
+body[data-reader-away] [data-mobile-topbar][data-plates] [data-plates-row],
+body[data-reader-away] [data-reader-pill] {
+ opacity: 0;
+ visibility: hidden;
+ transition:
+  opacity var(--duration-fast) var(--ease-house),
+  transform var(--duration-fast) var(--ease-house),
+  visibility 0s linear var(--duration-fast);
+}
+body[data-reader-away] [data-mobile-topbar][data-plates] [data-plates-row] {
+ transform: translateY(-8px);
+}
+body[data-reader-away] [data-reader-pill] {
+ transform: translateY(12px);
+}
+/* A control the keyboard is on stays in sight; one a finger tapped does not
+   hold the plates up. A rule of its own, so a WebView that cannot read
+   :has() still puts them away. */
+body[data-reader-away] [data-mobile-topbar][data-plates] [data-plates-row]:has(:focus-visible),
+body[data-reader-away] [data-reader-pill]:has(:focus-visible) {
+ opacity: 1;
+ visibility: visible;
+ transform: none;
+}
+:where([data-motion="reduce"]) [data-mobile-topbar][data-plates] [data-plates-row],
+:where([data-motion="reduce"]) [data-reader-pill],
+:where([data-motion="reduce"]) body[data-reader-away] [data-mobile-topbar][data-plates] [data-plates-row],
+:where([data-motion="reduce"]) body[data-reader-away] [data-reader-pill] {
+ transition: none;
+}
+
+/* The fade the pill floats on, as drawn: the words go quiet under it, down
+   to the tab bar. The page's own ground, so every palette has it. */
+.pill-fade {
+ background: linear-gradient(to bottom, transparent, var(--color-night) 72%);
+}
+
+/* What is lit on the page glows white, softly (the owner, 2026-10-28: "just
+   use a glowly white"): Listen on the pill, a switch in the reader's sheets
+   that is on, and the chapter being read in the strip of chapters. */
+.reader-lit {
+ box-shadow: 0 0 14px -2px rgb(255 255 255 / 0.42);
+}
+
+/* The chapter opens like a book (ChapterScreen, ChapterReader): the book's
+   name rises into place, its chapter comes in under it, the short rule draws
+   out from its middle, and the first lines arrive one after another. It
+   waits for the route's own fade, as the cascade does, so the two do not
+   multiply into one soft mush. A few pixels of rise on the name alone, which
+   holds only text; the rule only scales; everything else only fades. Each
+   fills backwards, so nothing keeps a transform or a stacking context once
+   it has arrived (the verse tools and the Fathers' sheet open from inside
+   the verses). The first eight verses, about a phone's first screen; the
+   rest are simply there. With motion off it is all there at once. */
+@keyframes page-open-rise {
+ from { opacity: 0; transform: translateY(var(--rise-title, 6px)); }
+}
+@keyframes page-open-fade {
+ from { opacity: 0; }
+}
+@keyframes page-open-draw {
+ from { transform: scaleX(0); }
+}
+.page-open-title {
+ animation: page-open-rise 460ms var(--ease-house) backwards;
+ animation-delay: var(--page-open-start, 0ms);
+}
+.page-open-sub {
+ animation: page-open-fade var(--duration-base) var(--ease-house) backwards;
+ animation-delay: calc(var(--page-open-start, 0ms) + 90ms);
+}
+.page-open-rule {
+ transform-origin: center;
+ animation: page-open-draw var(--duration-slow) var(--ease-house) backwards;
+ animation-delay: calc(var(--page-open-start, 0ms) + 150ms);
+}
+.page-open-after {
+ animation: page-open-fade var(--duration-base) var(--ease-house) backwards;
+ animation-delay: calc(var(--page-open-start, 0ms) + 220ms);
+}
+.page-open-words > :nth-child(-n + 8) {
+ animation: page-open-fade 380ms var(--ease-house) backwards;
+ animation-delay: calc(var(--page-open-start, 0ms) + 240ms + var(--line, 0) * var(--stagger-step-tight));
+}
+.page-open-words > :nth-child(2) { --line: 1; }
+.page-open-words > :nth-child(3) { --line: 2; }
+.page-open-words > :nth-child(4) { --line: 3; }
+.page-open-words > :nth-child(5) { --line: 4; }
+.page-open-words > :nth-child(6) { --line: 5; }
+.page-open-words > :nth-child(7) { --line: 6; }
+.page-open-words > :nth-child(8) { --line: 7; }
+.route-fade :is(.page-open-title, .page-open-sub, .page-open-rule, .page-open-after, .page-open-words) {
+ --page-open-start: var(--duration-route-enter);
+}
+:where([data-motion="reduce"]) .page-open-title,
+:where([data-motion="reduce"]) .page-open-sub,
+:where([data-motion="reduce"]) .page-open-rule,
+:where([data-motion="reduce"]) .page-open-after,
+:where([data-motion="reduce"]) .page-open-words > :nth-child(-n + 8) {
+ animation: none;
 }
 
 /* ── A saint's page: fade and doors (1.8) ──
@@ -1823,8 +1999,9 @@ html.reader-focus main {
 /* The phone's top bar is chrome too (1.7, the owner's note 7 of 2026-10-16):
    focus is the text alone, and its way out is at the foot of the screen, not
    on the bar's buttons. Both readers' bars carry data-mobile-topbar
-   (components/nav/MobileTopBar.tsx). While it is gone the strip under the
-   clock is covered by the way out's own band (ReaderPrefs, FocusExit). */
+   (components/nav/MobileTopBar.tsx), the Bible's round plates too (1.8).
+   While it is gone the strip under the clock is covered by the way out's own
+   band (ReaderPrefs, FocusExit). */
 html.reader-focus [data-mobile-topbar] {
  display: none !important;
 }
@@ -1840,8 +2017,12 @@ html.is-native.reader-focus .now-playing-lift {
 }
 
 /* The progress line under the bar moves up to where the bar was. Equal in
-   weight to the .below-topbar rules above, and after them, so it wins. */
-html.reader-focus .below-topbar {
+   weight to the .below-topbar rules above, and after them, so it wins. The
+   Bible's own line is at the top already on a phone (1.8, .reader-progress);
+   on the computer it leaves the header's foot for the top as the header
+   goes. */
+html.reader-focus .below-topbar,
+html.reader-focus .reader-progress {
  top: env(safe-area-inset-top, 0px);
 }
 

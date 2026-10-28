@@ -8,8 +8,8 @@ import { Settings } from "@/components/ui/icons/Settings";
 
 /**
  * The top bar's own action on a saint's work, on a phone: one gear that opens
- * the reader settings, the same sheet the Bible reader's gear opens
- * (MobileReaderActions), since they are the same preferences.
+ * the reader settings, the same sheet the Bible reader's round Aa button
+ * opens (MobileReaderActions), since they are the same preferences.
  *
  * This slot used to hold the three desktop pills, MODE, FONT and SIZE, each
  * with its label and its current value. Together they are about 430px wide in

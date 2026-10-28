@@ -7,7 +7,7 @@ import { ProgressBar } from "@/components/ui/ProgressBar";
 /**
  * Slim sticky progress bar at the top of a chapter. Driven by scroll.
  *
- * - 2px gold bar fills left→right as the user scrolls.
+ * - 2px white bar fills left→right as the user scrolls.
  * - Current-verse detection: the topmost <div id="v..."> below the
  * navbar offset is "current".
  * - Throttled with requestAnimationFrame.
@@ -15,7 +15,7 @@ import { ProgressBar } from "@/components/ui/ProgressBar";
  * mobile "Continue reading" card can resume at the verse, not the chapter top.
  * This is the sole writer of that key (it runs `compute()` on mount, so it
  * records the chapter immediately too), which is why the component survives
- * even though the top bar's second line (ChapterVerseStatus) now shows the
+ * even though the pill's second line (ChapterVerseStatus) now shows the
  * verse.
  */
 export function ReadingProgressBar({
@@ -121,24 +121,26 @@ export function ReadingProgressBar({
  return (
  // This component used to also render a mobile context strip reading
  // "{book} {chapter} · v {n} of {total}", and then ChapterStickyHeader drew
- // one of its own; both are gone, and the verse is the top bar's second line
+ // one of its own; both are gone, and the verse is the pill's second line
  // (ChapterVerseStatus). What stays here is the part nothing else does: the
  // scroll effect above is the sole writer of purify:bible:last
  // (lib/bible/lastRead.ts).
  //
- // Progress line, slim gold fill, pinned to the bar's bottom edge on mobile and
- // flush under the 72px AppNav on desktop. z-50 because the sticky header is
- // z-40 and renders after this in the parent: at equal z the header would paint
- // over the line exactly when the reader has scrolled far enough to want it.
- // Sheets are z-[60] and still cover it; the z-50 tab bar is at the far end of
- // the screen.
+ // Progress line, a slim white fill. On a phone and a tablet it runs along the
+ // top of the screen, under the status bar (1.8: the page has no bar for it
+ // to sit under, the owner's pick B of round 2; globals.css .reader-progress),
+ // and on the computer flush under the 72px AppNav. z-50 because the sticky
+ // header is z-40 and renders after this in the parent: at equal z the header
+ // would paint over the line exactly when the reader has scrolled far enough
+ // to want it. Sheets are z-[60] and still cover it; the z-50 tab bar is at
+ // the far end of the screen.
  <div
  aria-hidden
- className="fixed left-0 right-0 z-50 top-12 below-topbar md:top-[72px]"
+ className="reader-progress fixed left-0 right-0 z-50"
  >
  {/* Decorative, and moved by the scroll itself (compute above), with no
      easing: an eased fill trails the thumb. */}
- <ProgressBar value={0} height={2} durationMs={0} fillRef={fill} />
+ <ProgressBar value={0} height={2} durationMs={0} fillRef={fill} tone="paper" />
  </div>
  );
 }

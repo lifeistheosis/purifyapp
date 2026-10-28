@@ -11,18 +11,25 @@ import { cn } from "@/lib/cn";
  * computer has the sidebar). Plain numbers with no ring around them, and the
  * chapter being read filled, opening in the middle of the row (the owner's
  * note 6 of 2026-10-16, "could look much better", and his pick of the slim
- * strip). It sits in the text's column, so on a tablet it ends where the
- * verses end; on a phone it runs to the screen's edge. ChipScroller fades the
- * end that has more and gives a mouse its arrows, and in the phone apps each
- * chapter scrolled past is a small click in the hand (1.7.2, the owner's note
- * of 2026-10-19, lib/ui/scrollTicks.ts).
+ * strip). ChipScroller fades the end that has more and gives a mouse its
+ * arrows, and in the phone apps each chapter scrolled past is a small click
+ * in the hand (1.7.2, the owner's note of 2026-10-19, lib/ui/scrollTicks.ts).
+ *
+ * From 1.8 it is in the reader's ••• sheet (components/bible/
+ * ReaderMoreSheet.tsx): the chapter opens on its words, with nothing above
+ * the title (the owner's pick B of round 2, "The page"). `onPick` lets the
+ * sheet close as a chapter is picked. The chapter being read is lit white,
+ * softly, as the app's accent is from 1.8.
  */
 export function MobileChapterStrip({
   book,
   current,
+  onPick,
 }: {
   book: BibleBook;
   current: number;
+  /** Called as a chapter is picked. */
+  onPick?: () => void;
 }) {
   const { t } = useTranslate();
   if (book.chapters <= 1) return null;
@@ -42,10 +49,11 @@ export function MobileChapterStrip({
             key={ch}
             href={`/bible/${book.slug}/${ch}`}
             aria-current={active ? "page" : undefined}
+            onClick={onPick}
             className={cn(
               "tap-press hit-44 inline-flex h-9 min-w-9 items-center justify-center rounded-pill px-2.5 font-sans text-detail tabular-nums",
               active
-                ? "bg-gold font-semibold text-night"
+                ? "reader-lit bg-paper font-semibold text-night"
                 : "font-medium text-paper/60 hover:bg-paper/[0.06] hover:text-paper",
             )}
           >

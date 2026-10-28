@@ -2,9 +2,11 @@ import { Skeleton, SkeletonText } from "@/components/ui/Skeleton";
 
 /**
  * A chapter's outline while it opens, in the shape the chapter draws
- * (components/bible/ChapterScreen.tsx, 1.7): one row of pills, the title on
- * one line, then the verses, in the text's column. The computer's chapter
- * sidebar is outlined on the website's wide screen only.
+ * (components/bible/ChapterScreen.tsx, 1.8, the owner's pick B of round 2,
+ * "The page"): the book's name over its chapter in the middle, then the
+ * verses, in the text's column, under the room the round buttons over the
+ * page take. The computer's chapter sidebar is outlined on the website's
+ * wide screen only.
  */
 export default function ChapterLoading() {
   return (
@@ -21,18 +23,13 @@ export default function ChapterLoading() {
         </div>
       </aside>
 
-      <section className="flex-1 px-5 md:px-10 pt-4 md:pt-16 native-md-pt-4 pb-10 md:pb-16 min-w-0">
+      <section className="flex-1 px-5 md:px-10 under-plates md:pt-16 pb-10 md:pb-16 min-w-0">
         <div className="mx-auto max-w-[680px] w-full cascade">
-          {/* The row of pills */}
-          <div className="mb-8 flex gap-2">
-            <Skeleton weight="mid" rounded="rounded-pill" className="h-10 w-20" />
-            <Skeleton weight="mid" rounded="rounded-pill" className="h-10 w-24" />
-            <Skeleton weight="mid" rounded="rounded-pill" className="h-10 w-24" />
-          </div>
-
-          {/* The title, on one line */}
-          <div className="mb-10">
-            <Skeleton weight="strong" className="h-9 md:h-11 w-40" />
+          {/* The book's name over its chapter, and the short rule */}
+          <div className="mb-8 flex flex-col items-center">
+            <Skeleton weight="strong" className="h-10 w-40" />
+            <Skeleton weight="mid" className="mt-3 h-3.5 w-20" />
+            <div className="mt-5 h-px w-7 bg-paper/15" />
           </div>
 
           {/* Verse shimmers */}

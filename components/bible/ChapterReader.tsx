@@ -170,8 +170,14 @@ export function ChapterReader({
         )}
         style={leadingValue ? { lineHeight: leadingValue } : undefined}
       >
-        <div className={flowing ? "reading-paragraphs" : "space-y-2"}>
-          {verses.map((v, i) => (
+        {/* The first lines arrive one after another as the chapter opens
+            (page-open-words, globals.css "The page", 1.8). The chapter's
+            first verse wears its number, in red with a dot where the
+            Fathers comment, as every verse does: the title over it is the
+            page's opening now, and the drop cap it had until 1.7 is not in
+            the owner's pick (round 2, B). */}
+        <div className={cn("page-open-words", flowing ? "reading-paragraphs" : "space-y-2")}>
+          {verses.map((v) => (
             <VerseRow
               key={v.n}
               paraStart={flowing && starts.has(v.n)}
@@ -179,7 +185,6 @@ export function ChapterReader({
               bookName={bookName}
               chapter={chapter}
               verse={v}
-              dropCap={i === 0 && !flowing}
               hasCommentary={has.has(v.n)}
               onOpenCommentary={
                 has.has(v.n) ? () => openCommentary(v.n) : undefined
