@@ -4,14 +4,14 @@ One entry per change readers can see, under its category, with the commit and wh
 
 Everything below is on `release/1.8`, not pushed, unless it says live: the
 website has it at the push, the apps with their store builds. Cut on the
-owner's "finalize v1.8 tonight" (2026-10-27). Three things hold the push or
-the store builds, and the note says each only as it will be:
+owner's "finalize v1.8 tonight" (2026-10-27). Two things wait on a phone,
+and the note says each only as it will be:
 
-- **The New Testament audio waits on the bucket.** The recordings play from
-  Purify's Cloudflare R2 bucket at audio.purifyapp.net (`0adb4b5f`). The
-  bucket is the owner's to make (Homebase/tools/r2/README.md); then the 260
-  recordings are uploaded and taken out of this branch's history, and only
-  then is the branch pushed.
+- **The New Testament audio ships from the website.** The R2 bucket moved to
+  1.8.1 (his "do this in v1.8.1", then "From the website"): the 260
+  recordings, 295 MB, are pushed with 1.8 and stay in the repository's
+  history. The switch to the bucket was built and reverted (`0adb4b5f`,
+  `1ba00de5`); 1.8.1 brings it back and sends the Old Testament only there.
 - **Phone checks before the store builds go to review:** listening with the
   phone locked, listening offline, and Read together, on the test build.
   A line whose check fails comes out of the note, here and in Admin.
@@ -39,7 +39,7 @@ the store builds, and the note says each only as it will be:
 
 ## Library
 
-- The whole New Testament read aloud, 260 chapters. `a2bec4b7`, `77fb97d7`, `1c5fc41a`. Gated: plays from the bucket (`0adb4b5f`), which must hold the recordings before the push.
+- The whole New Testament read aloud, 260 chapters, from the website. `a2bec4b7`, `77fb97d7`, `1c5fc41a`. Live at the push.
 - Today's readings read aloud; memorial days; name day; history on the map; the Fathers on everyday struggles; maps that pan on a phone. `55a39924`
 - Who said it? and its picture. `ece23b83`, `55a39924`
 - Every work says where its words come from. `59dd7796`

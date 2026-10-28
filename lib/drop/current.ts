@@ -14,6 +14,7 @@
 import drop15 from "@/docs/plans/v1.5/drop.json";
 import drop16 from "@/docs/plans/v1.6/drop.json";
 import drop17 from "@/docs/plans/v1.7/drop.json";
+import drop18 from "@/docs/plans/v1.8/drop.json";
 import { CURRENT_VERSION, featureRelease } from "@/lib/whatsNew/version";
 
 import type { Drop } from "./kit";
@@ -22,6 +23,7 @@ export const DROPS: Readonly<Record<string, Drop>> = {
   "1.5": drop15 as unknown as Drop,
   "1.6": drop16 as unknown as Drop,
   "1.7": drop17 as unknown as Drop,
+  "1.8": drop18 as unknown as Drop,
 };
 
 /** The release this build is: a patch belongs to its release, and so does its drop. */
