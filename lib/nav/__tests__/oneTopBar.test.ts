@@ -133,8 +133,41 @@ describe("the Premium pill", () => {
     const pill = code(PILL);
     expect(pill).toContain('const box = "group inline-flex h-11 shrink-0 items-center";');
     expect(pill).toContain("inline-flex h-9 items-center whitespace-nowrap rounded-pill px-3 font-sans text-caption font-semibold min-[380px]:px-3.5 min-[380px]:text-ui");
-    // Not .hit-44: its ::after is the layer the glow breathes on.
+    // Not .hit-44: the box is the 44px target already.
     expect(pill).not.toMatch(/\bhit-44\b/);
+  });
+
+  // The owner's pick of 2026-10-27 (Homebase/boards/purify-master/variants/
+  // 06-premium-pill.png, round 6, B, "Silver"): "a cool metal edge and a soft
+  // sheen", no gold; and his word of 2026-10-28, "just use a glowly white"
+  // (the still white glow is held in lib/premium/__tests__/silver.test.ts).
+  // It was a gold hairline, the word in gold and a breathing gold halo
+  // (.premium-glow, and a resting halo set inline).
+  it("is silver, on the phone and on the computer: no gold, and no gold halo", () => {
+    const GOLD = [/premium-glow/, /premium-gold-text/, /rgba\(201,\s*162,\s*90/, /#c9a25a/i, /\b(?:ring|text|bg|border)-premium\b/, /boxShadow/];
+    const phone = code(PILL);
+    const computer = code("components/nav/PremiumNavCta.tsx");
+    expect(phone).toContain(': "premium-pill",');
+    expect(computer).toContain('cn("premium-pill", active && "ring-1 ring-paper/40")');
+    for (const [name, source] of [["phone", phone], ["computer", computer]] as const) {
+      for (const gold of GOLD) expect(source, `${name}: ${gold}`).not.toMatch(gold);
+    }
+
+    // The look itself, in globals.css: the page's ink for the word and the
+    // edge, a white sheen, nothing that moves, and nothing of the gold.
+    const css = read("app/globals.css").replace(/\/\*[\s\S]*?\*\//g, "");
+    const rules = [...css.matchAll(/([^{}]*\.premium-pill[^{}]*)\{([^}]*)\}/g)].map((m) => `${m[1].trim()} { ${m[2]} }`);
+    expect(rules.length).toBeGreaterThanOrEqual(4);
+    const base = /(^|\})\s*\.premium-pill\s*\{([^}]*)\}/.exec(css)?.[2] ?? "";
+    expect(base).toMatch(/color:\s*var\(--color-paper\);/);
+    expect(base).toMatch(/border-color:\s*color-mix\(in srgb, var\(--color-paper\) 62%, transparent\);/);
+    expect(base).toMatch(/linear-gradient\(180deg, rgba\(255, 255, 255, 0\.16\), rgba\(255, 255, 255, 0\.04\)\)/);
+    for (const rule of rules) {
+      expect(rule).not.toMatch(/#c9a25a|#efd9a3|#7c5d28|#9a7433|#16130e|201,\s*162,\s*90|premium-ink|animation/i);
+    }
+    expect(css).not.toMatch(/\.premium-glow|@keyframes premium-glow|\.premium-gold-text|\.premium-cta/);
+    // Parchment has its own pearl, so the pill is not white on paper.
+    expect(css).toMatch(/html\[data-reading-mode="parchment"\] \.premium-pill \{/);
   });
 
   it("calls a plan the reader holds by its name alone, and says the rest to a screen reader", () => {
