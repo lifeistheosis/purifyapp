@@ -36,6 +36,7 @@ import {
   type Depth,
   type Focus,
 } from "@/lib/onboarding/state";
+import { isTesting } from "@/lib/onboarding/testing";
 import { createClient } from "@/lib/supabase/client";
 
 /**
@@ -58,9 +59,11 @@ function localSnapshot(): ProfilePrefsRow {
 /**
  * Push whatever the device knows. Only sends keys that actually have a value,
  * so signing in on a fresh install cannot blank a preference the account
- * already holds.
+ * already holds. Never in Testers mode (lib/onboarding/testing.ts): the
+ * device's focus and depth are a test's then.
  */
 export async function pushProfilePrefs(): Promise<void> {
+  if (isTesting()) return;
   try {
     const supa = createClient();
     const {
@@ -83,9 +86,10 @@ export async function pushProfilePrefs(): Promise<void> {
 
 /**
  * Pull the account's preferences and fill only what the device is missing.
- * Called once after sign-in.
+ * Called once after sign-in. Not in Testers mode: a test is left as it is.
  */
 export async function pullProfilePrefs(): Promise<void> {
+  if (isTesting()) return;
   try {
     const supa = createClient();
     const {

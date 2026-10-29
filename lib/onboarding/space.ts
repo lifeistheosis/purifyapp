@@ -14,9 +14,40 @@ import { walkthroughsEnabled } from "@/lib/walkthroughs/flags";
 export type Level = "inquirer" | "learning" | "practicing";
 export const LEVELS: readonly Level[] = ["inquirer", "learning", "practicing"];
 
-/** What they hope to focus on first. */
-export type Intent = "quiet" | "liturgy" | "study" | "prayer";
-export const INTENTS: readonly Intent[] = ["quiet", "liturgy", "study", "prayer"];
+/**
+ * "What are you looking for?": every answer it offers, in the order drawn.
+ *
+ * The four the app had (quiet, liturgy, study, prayer) and, from 1.8, the
+ * others of the owner's pick B of round 14 (his "add everything we left
+ * out", 2026-10-28). The mockup's eight come first, in its order; its "The
+ * services" is the app's "The Liturgy", the same answer under the name it
+ * has always been saved and counted by. The app's other three follow.
+ */
+export type Intent =
+  | "saints"
+  | "fathers"
+  | "gospels"
+  | "councils"
+  | "history"
+  | "beliefs"
+  | "liturgy"
+  | "feasts"
+  | "prayer"
+  | "quiet"
+  | "study";
+export const INTENTS: readonly Intent[] = [
+  "saints",
+  "fathers",
+  "gospels",
+  "councils",
+  "history",
+  "beliefs",
+  "liturgy",
+  "feasts",
+  "prayer",
+  "quiet",
+  "study",
+];
 
 /**
  * How fasting shows. "strict" is the full rule as the calendar keeps it (and
@@ -46,7 +77,8 @@ export function isFastingRule(v: unknown): v is FastingRule {
  * numbered in tap order). A tap on an answer not picked yet puts it last; a
  * tap on one already picked takes it out, and the ones after it move up a
  * place, so the numbers on the cards close up. The first pick is the intent
- * the rest of Purify reads: the Day 1 step and the counts.
+ * the rest of Purify reads, the Day 1 step among it; every pick is counted,
+ * with its place in that order (lib/onboarding/count.ts).
  */
 export function togglePick(picks: readonly Intent[], intent: Intent): Intent[] {
   return picks.includes(intent) ? picks.filter((p) => p !== intent) : [...picks, intent];
@@ -93,12 +125,17 @@ export function depthFor(level: Level): "inquirer" | "faithful" {
 
 /**
  * Where the reader comes from (1.8, the owner's "who are you?" of
- * 2026-10-26): asked first, with "prefer not to say", and only ever counted
- * as a total (lib/onboarding/count.ts). Kept here so the question, the
+ * 2026-10-26): the first question, with "prefer not to say", and only ever
+ * counted as a total (lib/onboarding/count.ts). Kept here so the question, the
  * counts and the server's closed list of events name the same answers.
+ * "none" is drawn as "Just curious" (components/onboarding/WhereFrom.tsx, the
+ * owner's pick "E + I" of 2026-10-28).
  */
 export type Background = "orthodox" | "catholic" | "protestant" | "other-faith" | "none" | "prefer-not";
 export const BACKGROUNDS: readonly Background[] = ["orthodox", "catholic", "protestant", "other-faith", "none", "prefer-not"];
+
+/** The answers drawn as pills of light, in their order. "Prefer not to say" sits under them, quieter. */
+export const BACKGROUND_PILLS = ["orthodox", "catholic", "protestant", "other-faith", "none"] as const satisfies readonly Background[];
 
 export function isBackground(v: unknown): v is Background {
   return typeof v === "string" && (BACKGROUNDS as readonly string[]).includes(v);
@@ -115,6 +152,15 @@ export const DAY_ONE_KEYS = [
   "job",
   "morningRule",
   "morningPrayers",
+  // 1.8: a first step for each answer "What are you looking for?" gained.
+  "saintsLives",
+  "readingPaths",
+  "gospelsPlan",
+  "councils",
+  "history",
+  "startHere",
+  "theology",
+  "feasts",
 ] as const;
 
 export type DayOneKey = (typeof DAY_ONE_KEYS)[number];
@@ -127,10 +173,29 @@ export type DayOneKey = (typeof DAY_ONE_KEYS)[number];
  * since 1.7 an inquirer drawn to the Liturgy is offered the guide to a first
  * Divine Liturgy (the owner's note 27 of 2026-10-16), which ends at the Sign
  * of the Cross they were offered before.
+ *
+ * The answers added in 1.8 each open the door the app already has for them:
+ * the saints, the reading paths through the Fathers, the four Gospels plan,
+ * the councils, the history, the calendar, and for what the Orthodox believe
+ * Theology, or Start here for a reader who is completely new.
  */
 export function dayOneFor(level: Level | null, intent: Intent | null): { key: DayOneKey; href: string } {
   const beginner = level !== "practicing";
   switch (intent) {
+    case "saints":
+      return { key: "saintsLives", href: "/saints" };
+    case "fathers":
+      return { key: "readingPaths", href: "/reading/paths" };
+    case "gospels":
+      return { key: "gospelsPlan", href: "/plans/gospels" };
+    case "councils":
+      return { key: "councils", href: "/councils" };
+    case "history":
+      return { key: "history", href: "/history" };
+    case "beliefs":
+      return level === "inquirer" ? { key: "startHere", href: "/start" } : { key: "theology", href: "/theology" };
+    case "feasts":
+      return { key: "feasts", href: "/calendar" };
     case "quiet":
       // One answer at every level. The practicing used to be sent to the
       // digital prayer rope, which came down in 1.6.
@@ -160,7 +225,10 @@ export function dayOneFor(level: Level | null, intent: Intent | null): { key: Da
 
 /**
  * The older "what draws you" picks (lib/onboarding/state.ts, Focus), kept in
- * step so surfaces that still read them point the same way.
+ * step so surfaces that still read them point the same way. Four words for
+ * eleven answers: the saints and the Fathers are "saints", the Church's year
+ * "calendar", prayer "prayer", and what is studied "scripture", as Study
+ * always was.
  */
 export function focusFor(intent: Intent): "scripture" | "prayer" | "saints" | "calendar" {
   switch (intent) {
@@ -168,8 +236,16 @@ export function focusFor(intent: Intent): "scripture" | "prayer" | "saints" | "c
     case "prayer":
       return "prayer";
     case "liturgy":
+    case "feasts":
       return "calendar";
+    case "saints":
+    case "fathers":
+      return "saints";
     case "study":
+    case "gospels":
+    case "councils":
+    case "history":
+    case "beliefs":
       return "scripture";
   }
 }

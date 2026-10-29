@@ -21,7 +21,18 @@ describe("the answers' pictures", () => {
     expect(ANSWER_PICTURES.study.slot).toBe("onboarding-study");
     expect(ANSWER_PICTURES.quiet.slot).toBe("onboarding-quiet");
     expect(ANSWER_PICTURES.liturgy.slot).toBe("onboarding-liturgy");
-    expect(INTENTS.map((i) => ANSWER_PICTURES[i].slot).sort()).toEqual([...PICTURE_SLOTS].sort());
+    expect(INTENTS.flatMap((i) => ANSWER_PICTURES[i].slot ?? []).sort()).toEqual([...PICTURE_SLOTS].sort());
+  });
+
+  it("give the answers with a place of their own that place's picture from Discover, and no slot", () => {
+    // 1.8's answers from the mockup: no AI picture is made for a saint, a
+    // book or an icon (the owner's Gemini list), so these are the pictures.
+    for (const intent of ["saints", "fathers", "councils", "history", "beliefs", "feasts"] as const) {
+      expect(ANSWER_PICTURES[intent].slot, intent).toBeUndefined();
+      expect(ANSWER_PICTURES[intent].src, intent).toMatch(/^\/discover\/tiles\//);
+    }
+    // The Gospels wear the Bible's own page, as Christ's face is A rule of prayer's.
+    expect(ANSWER_PICTURES.gospels).toEqual({ src: "/sections/bible.jpg", focus: "50% 50%" });
   });
 
   it("draw a file the app carries, so it shows offline in the apps", () => {
@@ -48,7 +59,7 @@ describe("the answers' pictures", () => {
     }
   });
 
-  it("give four answers four pictures", () => {
+  it("give every answer a picture of its own", () => {
     expect(new Set(INTENTS.map((i) => ANSWER_PICTURES[i].src)).size).toBe(INTENTS.length);
   });
 

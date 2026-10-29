@@ -9,8 +9,11 @@
 //   - a device that has opened the admin counts nothing, so the owner's own
 //     walks through the questions never land in the totals
 //     (components/admin/AdminShell.tsx marks it);
+//   - nor does a device in Testers mode (lib/onboarding/testing.ts), whatever
+//     it is switched to or walks through;
 //   - within one run of the questions, a screen or a question counts once,
-//     so going back and forward is not a second reader.
+//     so going back and forward is not a second reader. "What are you looking
+//     for?" counts each of its picks once (1.8), each with its place.
 //
 // Coming back is counted by the device itself: the flow it finished is kept
 // here (FinishedRecord), and on its day 2, 7 and 30 it says so once, with the
@@ -21,10 +24,13 @@ import { isAutomatedAgent } from "@/lib/analytics/bot";
 import { cleanTag } from "@/lib/analytics/tag";
 import { isDesktopApp } from "@/lib/desktop/bridge";
 import { nativePlatform } from "@/lib/platform/native";
+
+import { isTesting } from "./testing";
 import {
   COUNT_VERSION,
   eventBody,
   parseFinishedRecord,
+  picksToCount,
   returnsDue,
   utcDay,
   type CountPlatform,
@@ -44,7 +50,7 @@ type Answers = { background?: Background; level?: Level; intent?: Intent };
 
 type OnboardingEvent =
   | { name: "onboarding_step"; props: { route: CountRoute; step: CountStep } }
-  | { name: "onboarding_answer"; props: { route: CountRoute; question: CountQuestion; answer: string } }
+  | { name: "onboarding_answer"; props: { route: CountRoute; question: CountQuestion; answer: string; place?: number } }
   | { name: "onboarding_skipped"; props: { route: CountRoute; at: CountStep } }
   | { name: "onboarding_finished"; props: { route: CountRoute; account: boolean } & Answers }
   | { name: "onboarding_dayone"; props: { route?: CountRoute; key: DayOneKey } & Answers }
@@ -88,12 +94,12 @@ function automated(): boolean {
 }
 
 /**
- * May this device count at all: in a browser, not automation, and not a
- * device the admin has been opened on. The screens' counts ask the same
- * (lib/analytics/screenCount.ts).
+ * May this device count at all: in a browser, not automation, not a device
+ * the admin has been opened on, and not one in Testers mode. The screens'
+ * counts ask the same (lib/analytics/screenCount.ts).
  */
 export function countingAllowed(): boolean {
-  return typeof window !== "undefined" && !isCountingOff() && !automated();
+  return typeof window !== "undefined" && !isCountingOff() && !isTesting() && !automated();
 }
 
 /** The kind of device, as every count names it. */
@@ -125,17 +131,30 @@ function send(event: OnboardingEvent, kept?: { door?: string; v?: number }): voi
   }).catch(() => {});
 }
 
-/** Count a screen, an answer or a skip, once per run of the questions. */
+/**
+ * Count a screen, an answer or a skip, once per run of the questions. A
+ * question counts its one answer once; "What are you looking for?" counts
+ * each answer picked once.
+ */
 export function countOnboarding(event: Extract<OnboardingEvent, { name: "onboarding_step" | "onboarding_answer" | "onboarding_skipped" }>): void {
   const key =
     event.name === "onboarding_step"
       ? `step:${event.props.step}`
       : event.name === "onboarding_answer"
-        ? `answer:${event.props.question}`
+        ? event.props.question === "intent"
+          ? `answer:intent:${event.props.answer}`
+          : `answer:${event.props.question}`
         : "skipped";
   if (counted.has(key)) return;
   counted.add(key);
   send(event);
+}
+
+/** Every pick of "What are you looking for?", each with its place in the order tapped. */
+export function countPicks(route: CountRoute, picks: readonly Intent[]): void {
+  for (const { answer, place } of picksToCount(picks)) {
+    countOnboarding({ name: "onboarding_answer", props: { route, question: "intent", answer, place } });
+  }
 }
 
 /**
@@ -145,10 +164,9 @@ export function countOnboarding(event: Extract<OnboardingEvent, { name: "onboard
 export function countFinished(route: CountRoute, answers: Answers, account: boolean): void {
   if (counted.has("finished")) return;
   counted.add("finished");
-  if (typeof window === "undefined") return;
+  if (!countingAllowed()) return;
   const d = door();
   send({ name: "onboarding_finished", props: { route, account, ...answers } });
-  if (isCountingOff() || automated()) return;
   const record: FinishedRecord = { at: utcDay(new Date()), v: COUNT_VERSION, route, ...(d ? { door: d } : {}), ...answers, sent: [] };
   try {
     window.localStorage.setItem(FINISHED_KEY, JSON.stringify(record));
@@ -178,6 +196,8 @@ function readRecord(): FinishedRecord | null {
 /** On any page load: say once that this device came back on day 2, 7 or 30. */
 export function countReturns(): void {
   if (typeof window === "undefined") return;
+  // In Testers mode the device's own record is left as it is, its days unsent.
+  if (isTesting()) return;
   const record = readRecord();
   if (!record) return;
   const due = returnsDue(record, utcDay(new Date()));

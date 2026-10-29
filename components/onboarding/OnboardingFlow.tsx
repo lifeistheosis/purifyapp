@@ -13,6 +13,7 @@ import {
   readIntents,
   readLevel,
   setResumeStage,
+  writeBackground,
   writeDepth,
   writeFastingRule,
   writeFocus,
@@ -26,6 +27,7 @@ import {
   depthFor,
   focusesFor,
   togglePick,
+  type Background,
   type CalendarChoice,
   type DayOneKey,
   type FastingRule,
@@ -33,7 +35,7 @@ import {
   type Level,
 } from "@/lib/onboarding/space";
 import { saveSpaceToAccount } from "@/lib/onboarding/accountSync";
-import { beginCountRun, countFinished, countOnboarding } from "@/lib/onboarding/count";
+import { beginCountRun, countFinished, countOnboarding, countPicks } from "@/lib/onboarding/count";
 import { routeFor, type CountQuestion } from "@/lib/onboarding/counting";
 import { enableReminders as enablePush, remindersStatus } from "@/lib/push/reminders";
 import { PurifyMark } from "@/components/ui/PurifyMark";
@@ -47,19 +49,22 @@ import { Cross } from "@/components/ui/icons/Cross";
 import { HandoffSlate, type SlateLine } from "./HandoffSlate";
 import { LookingFor } from "./LookingFor";
 import { PrimaryButton } from "./PrimaryButton";
+import { WhereFrom, WhereFromSky } from "./WhereFrom";
 
 /**
  * First-run onboarding, version 2: the adaptive onboarding engine from the
  * owner's specification of 2026-09-28.
  *
- *   welcome   the outcome, in one calm line
- *   account   sign in or create an account, or carry on without one
- *   level     the baseline fork: completely new, learning, or practicing
- *   rule      calendar and fasting, asked of the practicing only
- *   intent    "What are you looking for?": as many answers as fit, in the
- *             order tapped, the first of them the intent (1.8, ./LookingFor)
- *   reminders a benefit-first priming screen before the OS prompt
- *   handoff   a three-second slate that sets the space up and hands over
+ *   welcome    the outcome, in one calm line
+ *   account    sign in or create an account, or carry on without one
+ *   background "Where are you coming from?" (1.8, ./WhereFrom): the first
+ *              question, on the intro's night and horizon
+ *   level      the baseline fork: completely new, learning, or practicing
+ *   rule       calendar and fasting, asked of the practicing only
+ *   intent     "What are you looking for?": as many answers as fit, in the
+ *              order tapped, the first of them the intent (1.8, ./LookingFor)
+ *   reminders  a benefit-first priming screen before the OS prompt
+ *   handoff    a three-second slate that sets the space up and hands over
  *
  * The questions come AFTER the account step, as the specification places
  * them, and a Google or Apple sign-in that leaves the page resumes at the
@@ -71,7 +76,8 @@ import { PrimaryButton } from "./PrimaryButton";
  * our onboarding. Here are some quick questions") comes in by "returning":
  *
  *   returning  one screen that says so, and that nothing they saved changes
- *   level      the same questions, with what they answered before marked
+ *   background the same questions, with what they answered before marked
+ *   level
  *   rule       for the practicing, opened on the calendar and fast they keep
  *   intent
  *   reminders  only if this device does not have them on already
@@ -87,11 +93,13 @@ import { PrimaryButton } from "./PrimaryButton";
 
 /** Where the flow begins: the welcome for a new visitor, the account step
  *  when the reader came to make an account (the mobile website), the first
- *  question when they are signed in already, "returning" for a signed-in
- *  reader from before this version of the questions. */
+ *  question when they are signed in already ("level", the name it kept when
+ *  "Where are you coming from?" was put before familiarity in 1.8, so the
+ *  way in counts under the same name), "returning" for a signed-in reader
+ *  from before this version of the questions. */
 export type OnboardingStart = "welcome" | "account" | "level" | "returning";
 
-type StepId = "welcome" | "returning" | "account" | "level" | "rule" | "intent" | "reminders" | "handoff";
+type StepId = "welcome" | "returning" | "account" | "background" | "level" | "rule" | "intent" | "reminders" | "handoff";
 
 const AUTO_ADVANCE_MS = 420;
 
@@ -114,6 +122,11 @@ export function OnboardingFlow({
   // before are the ones marked, and the calendar and fast are the ones they
   // keep. Read once, as the overlay opens (it only ever opens on the client).
   const [level, setLevel] = useState<Level | null>(() => (returning ? readLevel() : null));
+  // Where they come from (1.8). Marked for a reader who is back, and for one
+  // coming back to the questions from a sign-in, who may have answered it.
+  const [background, setBackground] = useState<Background | null>(() =>
+    returning || startAt === "level" ? readBackground() : null,
+  );
   const [calendar, setCalendar] = useState<CalendarChoice>(() => (returning ? readCalendarStyleDefault() : "new"));
   const [fasting, setFasting] = useState<FastingRule>(() => (returning ? readFastingRule() : "strict"));
   // "What are you looking for?" (1.8): every pick in the order tapped. The
@@ -143,6 +156,7 @@ export function OnboardingFlow({
             : ["welcome", "account"];
     return [
       ...head,
+      "background",
       "level",
       ...(asksRule(level) ? (["rule"] as StepId[]) : []),
       "intent",
@@ -232,6 +246,30 @@ export function OnboardingFlow({
     }, AUTO_ADVANCE_MS);
   }
 
+  // Where they come from: saved as it is tapped, counted as they leave, so the
+  // count holds what they settled on. A pill is followed by its line and
+  // Continue; "Prefer not to say" is an answer, and moves on at once.
+  function chooseBackground(b: Background) {
+    // Not once "Prefer not to say" is moving the reader on.
+    if (advancing.current) return;
+    setBackground(b);
+    writeBackground(b);
+  }
+
+  function leaveBackground() {
+    if (!background) return;
+    countAnswer("background", background);
+    next();
+  }
+
+  function preferNotToSay() {
+    if (advancing.current) return;
+    setBackground("prefer-not");
+    writeBackground("prefer-not");
+    countAnswer("background", "prefer-not");
+    advanceSoon();
+  }
+
   function chooseLevel(l: Level) {
     if (advancing.current) return;
     // The same answer again (after going back) keeps whatever the rule step
@@ -272,11 +310,11 @@ export function OnboardingFlow({
   }
 
   // Counted as the reader leaves the screen, like the rule's answers, so the
-  // count holds what they settled on: the first pick, the one intent each
-  // reader was counted for before the picks could be several.
+  // count holds what they settled on: every pick, each with its place in the
+  // order tapped (1.8), the first of them the intent.
   function leaveIntent() {
     if (!intent) return;
-    countAnswer("intent", intent);
+    countPicks(route, picks);
     next();
   }
 
@@ -296,8 +334,8 @@ export function OnboardingFlow({
       // devices take these answers and do not ask again.
       void saveSpaceToAccount({ finished: true });
       if (reached) {
-        const background = readBackground();
-        const answers = { ...(background ? { background } : {}), ...(level ? { level } : {}), ...(intent ? { intent } : {}) };
+        const kept = readBackground();
+        const answers = { ...(kept ? { background: kept } : {}), ...(level ? { level } : {}), ...(intent ? { intent } : {}) };
         void createClient()
           .auth.getSession()
           .then(
@@ -359,12 +397,12 @@ export function OnboardingFlow({
   // against the live list would pull the line back just as the reader moved
   // forward. Everyone else skips that segment in one longer stride.
   const progressPath: StepId[] = startAt === "level"
-    ? ["level", "rule", "intent", "reminders", "handoff"]
+    ? ["background", "level", "rule", "intent", "reminders", "handoff"]
     : startAt === "returning"
-      ? ["returning", "level", "rule", "intent", "reminders", "handoff"]
+      ? ["returning", "background", "level", "rule", "intent", "reminders", "handoff"]
       : startAt === "account"
-        ? ["account", "level", "rule", "intent", "reminders", "handoff"]
-        : ["welcome", "account", "level", "rule", "intent", "reminders", "handoff"];
+        ? ["account", "background", "level", "rule", "intent", "reminders", "handoff"]
+        : ["welcome", "account", "background", "level", "rule", "intent", "reminders", "handoff"];
   const progress = Math.max(0, progressPath.indexOf(step)) / (progressPath.length - 1);
   const stepClass = dir === "fwd" ? "ob-step-fwd" : "ob-step-back";
 
@@ -379,6 +417,10 @@ export function OnboardingFlow({
           "radial-gradient(120% 55% at 50% 0%, rgba(255,255,255,0.05) 0%, transparent 55%), #101013",
       }}
     >
+      {/* "Where are you coming from?" stands on the intro's night and horizon,
+          held still behind the step while the step slides in. */}
+      {step === "background" ? <WhereFromSky /> : null}
+
       {/* Top bar: back, the progress line, skip. Padded past the status bar
           (inset + 1.25rem) so the controls are never under the Android clock,
           the "invisible skip button" tester report. On web the inset is 0. */}
@@ -411,12 +453,17 @@ export function OnboardingFlow({
       </div>
 
       {/* "What are you looking for?" stands at the top of a phone with its
-          button held at the foot, as its design draws it; every other step is
+          button held at the foot, as its design draws it, and "Where are you
+          coming from?" a little lower, over its horizon; every other step is
           centred. */}
       <div
         key={step}
         className={`${stepClass} mx-auto flex w-full max-w-md flex-1 flex-col px-6 ${
-          step === "intent" ? "pt-5 md:justify-center md:py-10" : "justify-center py-10"
+          step === "intent"
+            ? "pt-5 md:justify-center md:py-10"
+            : step === "background"
+              ? "pb-6 pt-16 md:justify-center md:py-10"
+              : "justify-center py-10"
         }`}
       >
         {step === "welcome" && (
@@ -465,6 +512,10 @@ export function OnboardingFlow({
               </p>
             )}
           </Step>
+        )}
+
+        {step === "background" && (
+          <WhereFrom answer={background} onChoose={chooseBackground} onContinue={leaveBackground} onPreferNot={preferNotToSay} />
         )}
 
         {step === "level" && (

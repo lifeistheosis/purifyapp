@@ -12,10 +12,12 @@ import {
   eventBody,
   isCountAnswer,
   parseFinishedRecord,
+  picksToCount,
   returnsDue,
   routeFor,
   type FinishedRecord,
 } from "../counting";
+import { INTENTS } from "../space";
 
 // The onboarding's counts (1.8): totals with no reader in them. These hold the
 // rules the totals depend on, and that the server takes nothing off the lists.
@@ -62,6 +64,30 @@ describe("the onboarding's counts", () => {
     expect(isCountAnswer("background", "inquirer")).toBe(false);
     expect(isCountAnswer("level", "practicing")).toBe(true);
     expect(COUNT_ANSWERS.reminders).toContain("not-now");
+    // "What are you looking for?" offers all eleven of its answers (1.8).
+    expect(COUNT_ANSWERS.intent).toEqual(INTENTS);
+    for (const intent of ["saints", "fathers", "gospels", "councils", "history", "beliefs", "feasts"]) {
+      expect(isCountAnswer("intent", intent), intent).toBe(true);
+    }
+  });
+
+  it("counts every pick, not only the first, each with its place in the order tapped", () => {
+    expect(picksToCount(["saints", "gospels", "prayer"])).toEqual([
+      { answer: "saints", place: 1 },
+      { answer: "gospels", place: 2 },
+      { answer: "prayer", place: 3 },
+    ]);
+    expect(picksToCount([])).toEqual([]);
+    // A pick is a pick once.
+    expect(picksToCount(["study", "study", "quiet"])).toEqual([
+      { answer: "study", place: 1 },
+      { answer: "quiet", place: 2 },
+    ]);
+  });
+
+  it("says which version of the questions a count answers: the fourth, from 1.8", () => {
+    // "Where are you coming from?" asked, eleven answers, every pick counted.
+    expect(COUNT_VERSION).toBe(4);
   });
 });
 
@@ -83,6 +109,14 @@ describe("what the device sends is what the server takes", () => {
           true,
         );
       }
+    }
+  });
+
+  it("every pick at every place, however many are picked", () => {
+    for (const { answer, place } of picksToCount(INTENTS)) {
+      expect(parse({ name: "onboarding_answer", props: { route: "new", question: "intent", answer, place } }).success, `${answer} ${place}`).toBe(
+        true,
+      );
     }
   });
 
@@ -126,6 +160,23 @@ describe("the server takes only what is on the lists", () => {
   it("refuses an answer the question does not offer", () => {
     expect(
       trackEventSchema.safeParse({ name: "onboarding_answer", props: { ...props, question: "level", answer: "catholic" } }).success,
+    ).toBe(false);
+  });
+
+  it("takes a place only for a pick, and only a place there can be", () => {
+    const pick = (over: Record<string, unknown>) =>
+      trackEventSchema.safeParse({ name: "onboarding_answer", props: { ...props, question: "intent", answer: "saints", ...over } }).success;
+    expect(pick({ place: 1 })).toBe(true);
+    expect(pick({ place: INTENTS.length })).toBe(true);
+    // A row from before places were counted has none, and was a first pick.
+    expect(pick({})).toBe(true);
+    expect(pick({ place: 0 })).toBe(false);
+    expect(pick({ place: INTENTS.length + 1 })).toBe(false);
+    expect(pick({ place: 1.5 })).toBe(false);
+    expect(pick({ place: "1" })).toBe(false);
+    expect(
+      trackEventSchema.safeParse({ name: "onboarding_answer", props: { ...props, question: "background", answer: "catholic", place: 1 } })
+        .success,
     ).toBe(false);
   });
 

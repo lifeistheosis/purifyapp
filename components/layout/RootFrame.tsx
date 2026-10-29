@@ -35,6 +35,7 @@ import { WidgetBridgeSync } from "@/components/native/WidgetBridgeSync";
 import { RouteExitBridge } from "@/components/nav/RouteExitBridge";
 import { ScrollResetBridge } from "@/components/nav/ScrollResetBridge";
 import { FirstRunGate } from "@/components/onboarding/FirstRunGate";
+import { TestersMark } from "@/components/onboarding/TestersMark";
 import { NowPlayingBar } from "@/components/prayers/NowPlayingBar";
 import { AmbienceSheet } from "@/components/player/AmbienceSheet";
 import { NowPlayingSheet } from "@/components/player/NowPlayingSheet";
@@ -133,6 +134,11 @@ export function RootFrame({
             fetches the corpus only on that first open. */}
         <CommandPaletteMount />
         <FirstRunGate catechismAvailable={catechismAvailable} />
+        {/* Testers mode's mark (1.8): "Testing as Catholic · Learning", on
+            every screen while an admin is seeing Purify as another reader,
+            with the way back. Here because the app opens on Today, outside
+            the (app) group. Renders nothing when no test is on. */}
+        <TestersMark />
         {/* The mobile website: "Purify is better in the app", once per visit. */}
         <AppNudge />
         {/* What the home screen widgets show (lib/widget). Inside the

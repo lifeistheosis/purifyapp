@@ -32,14 +32,18 @@
 //                  Signed out: Sign in.
 //   Your space, Reading, The calendar, Language, Home screen
 //                  as they were: what is kept on this device.
+//   Testers mode   (1.8) under Your space, for admins alone: the server says
+//                  who (app/api/admin/whoami).
 //   Data           Export your library, Delete account.
 //   Purify         Privacy, Support Purify, What's new, About.
 //   Sign out
 //
-// No new words: every heading and row is a line the catalogs already held.
+// No new words: every heading and row is a line the catalogs already held,
+// but for Testers mode, which is new in 1.8 and has its own.
 // lib/nav/__tests__/oneSettings.test.ts holds this list and the You tab's.
 
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useLayoutEffect, useState, useSyncExternalStore } from "react";
 
 import { cn } from "@/lib/cn";
@@ -62,7 +66,10 @@ import {
   useReducedMotion,
 } from "@/lib/ui/motion";
 import { DiscordModes } from "@/components/desktop/DiscordModes";
+import { useIsAdmin } from "@/lib/admin/useIsAdmin";
 import { useSpace } from "@/lib/onboarding/useSpace";
+import { useTesting } from "@/lib/onboarding/useTesting";
+import { backToMyOwn, testAs, testFirstOpen } from "@/lib/onboarding/testers";
 import { saveSpaceToAccount } from "@/lib/onboarding/accountSync";
 import {
   refreshDayOne,
@@ -72,7 +79,7 @@ import {
   writeIntent,
   writeLevel,
 } from "@/lib/onboarding/state";
-import { FASTING_RULES, INTENTS, LEVELS, depthFor, focusFor } from "@/lib/onboarding/space";
+import { BACKGROUNDS, FASTING_RULES, INTENTS, LEVELS, depthFor, focusFor } from "@/lib/onboarding/space";
 import { isDeveloperEmail } from "@/lib/dev/developer";
 import { useShowSupporterMark } from "@/lib/profile/useShowSupporterMark";
 import { readLocalSessionUser } from "@/lib/supabase/localSession";
@@ -227,6 +234,38 @@ function LinkRow({
         →
       </span>
     </Link>
+  );
+}
+
+/** A row that does something here, drawn as a LinkRow is. */
+function ButtonRow({
+  label,
+  description,
+  onClick,
+  disabled = false,
+}: {
+  label: React.ReactNode;
+  description?: React.ReactNode;
+  onClick: () => void;
+  disabled?: boolean;
+}) {
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      disabled={disabled}
+      className="tap-press flex w-full items-center justify-between gap-4 px-5 py-4 text-start transition-colors hover:bg-paper/[0.04] disabled:pointer-events-none disabled:opacity-45"
+    >
+      <span className="min-w-0">
+        <span className="block font-sans text-ui text-paper">{label}</span>
+        {description ? (
+          <span className="mt-0.5 block font-sans text-caption text-paper/55 leading-[1.5]">{description}</span>
+        ) : null}
+      </span>
+      <span aria-hidden className="shrink-0 font-serif text-body text-paper/30">
+        →
+      </span>
+    </button>
   );
 }
 
@@ -428,6 +467,61 @@ function SpaceSection() {
 }
 
 /**
+ * Testers mode (1.8), for admins alone. The owner, 2026-10-28: "add a testers
+ * mode for admins (I am able to easily switch the preference of my user to
+ * test out what different backgrounds see (Catholic protestant inquiring
+ * etc)". Drawn only once the server has said this reader is an admin
+ * (app/api/admin/whoami); the list never comes here.
+ *
+ * Where the reader comes from and how familiar they are switch at a tap, on
+ * this device only, so every screen that reads the reader's type shows that
+ * reader at once. First open shows the welcome questions again, as a new
+ * reader meets them. Back to my own puts the admin's answers back exactly.
+ * The first switch keeps them; while the mode is on nothing is counted,
+ * nothing reaches the account, and a mark on every screen says so
+ * (lib/onboarding/testers.ts, components/onboarding/TestersMark.tsx).
+ */
+function TestersSection({ signedIn }: { signedIn: boolean }) {
+  const { t } = useTranslate();
+  const router = useRouter();
+  const admin = useIsAdmin(signedIn);
+  const testing = useTesting();
+  const { level, background } = useSpace();
+  if (!admin) return null;
+  return (
+    <Section id="testers" title={t("testers.title")} hint={t("testers.hint")}>
+      <Row label={t("testers.from")} stacked>
+        <Choice
+          block
+          value={background}
+          options={BACKGROUNDS.map((b) => ({ value: b, label: t(`onboard.background.${b}`) }))}
+          onChange={(b) => testAs({ background: b })}
+          label={t("testers.from")}
+        />
+      </Row>
+      <Row label={t("settings.level")} stacked>
+        <Choice
+          block
+          value={level}
+          options={LEVELS.map((l) => ({ value: l, label: t(`onboard.level.${l}`) }))}
+          onChange={(l) => testAs({ level: l })}
+          label={t("settings.level")}
+        />
+      </Row>
+      <ButtonRow
+        label={t("testers.firstOpen")}
+        description={t("testers.firstOpenHint")}
+        onClick={() => {
+          testFirstOpen();
+          router.push("/");
+        }}
+      />
+      <ButtonRow label={t("testers.back")} description={t("testers.backHint")} onClick={() => backToMyOwn()} disabled={!testing} />
+    </Section>
+  );
+}
+
+/**
  * Animations, the owner's decision of 2026-09-29 (lib/ui/motionPreference.ts):
  * the Windows app always has this toggle; a browser shows it only once the
  * browser has asked for less motion or the reader has already chosen, since
@@ -537,6 +631,8 @@ function Body() {
       <AccountSection reader={reader} />
 
       <SpaceSection />
+
+      <TestersSection signedIn={signedIn} />
 
       <Section
         id="reading"

@@ -62,6 +62,56 @@ describe("the onboarding's sums", () => {
     expect(s.sentences.some((x) => x.startsWith("1 came back after a week, of 3 who could have, most of them Catholics"))).toBe(true);
   });
 
+  it("counts every pick of what they look for, and how many put each first (1.8)", () => {
+    const v4 = (props: Record<string, unknown>) => ({ ...row("onboarding_answer", "2026-11-25", { question: "intent", ...props }), props: { v: 4, platform: "android", route: "new", question: "intent", ...props } });
+    const picks = summarizeOnboarding(
+      [
+        // Version 3 counted the first pick alone, with no place.
+        row("onboarding_answer", "2026-11-20", { question: "intent", answer: "prayer" }),
+        // Version 4: a reader who picked the saints, then the Gospels, then prayer.
+        v4({ answer: "saints", place: 1 }),
+        v4({ answer: "gospels", place: 2 }),
+        v4({ answer: "prayer", place: 3 }),
+        // And one who put the Gospels first.
+        v4({ answer: "gospels", place: 1 }),
+      ],
+      NOW,
+      30,
+    );
+    expect(picks.answers.intent).toEqual({ prayer: 2, saints: 1, gospels: 2 });
+    expect(picks.picks.first).toEqual({ prayer: 1, saints: 1, gospels: 1 });
+    expect(picks.picks.places).toEqual({ prayer: { 1: 1, 3: 1 }, saints: { 1: 1 }, gospels: { 1: 1, 2: 1 } });
+  });
+
+  it("begins a signed-in reader on where they come from from version 4, on familiarity before it", () => {
+    const step = (v: number, step: string) => ({ ...row("onboarding_step", "2026-11-20", {}), props: { v, platform: "ios", route: "signed-in", step } });
+    // Version 4: the questions open on "Where are you coming from?"; familiarity follows and is not a second beginning.
+    expect(summarizeOnboarding([step(4, "background"), step(4, "level")], NOW, 30).began).toBe(1);
+    // Version 3 (the website until 1.8): they opened on familiarity.
+    expect(summarizeOnboarding([step(3, "level")], NOW, 30).began).toBe(1);
+    expect(summarizeOnboarding([step(3, "level"), step(4, "background"), step(4, "level")], NOW, 30).began).toBe(2);
+  });
+
+  it("says what they look for in a sentence, with the answer put first most", () => {
+    const withPicks = summarizeOnboarding(
+      [
+        ...rows,
+        { ...row("onboarding_answer", "2026-11-25", {}), props: { v: 4, platform: "web", route: "new", question: "intent", answer: "saints", place: 1 } },
+        { ...row("onboarding_answer", "2026-11-25", {}), props: { v: 4, platform: "web", route: "new", question: "intent", answer: "feasts", place: 2 } },
+      ],
+      NOW,
+      30,
+    );
+    expect(withPicks.sentences).toContain(
+      "What they look for most: the saints' lives (1) and fasts and feasts (1); picked first most often, the saints' lives (1).",
+    );
+  });
+
+  it("calls the readers who are just curious what the question calls them", () => {
+    const curious = summarizeOnboarding([row("onboarding_finished", "2026-11-20", { account: false, background: "none" })], NOW, 30);
+    expect(curious.sentences).toContain("Where they come from: 1 reader who is just curious.");
+  });
+
   it("weeks start on Monday", () => {
     expect(weekOf("2026-11-22")).toBe("2026-11-16");
     expect(weekOf("2026-11-23")).toBe("2026-11-23");

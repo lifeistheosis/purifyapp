@@ -24,17 +24,18 @@ import { PrimaryButton } from "./PrimaryButton";
  *     accent is a glowing white, never yellow). One not picked rests a shade
  *     dimmer. The motion and the light are app/globals.css, "What are you
  *     looking for?".
- *   - "Continue with 3" holds the foot of the screen, and on a short phone
- *     the cards pass under it. With nothing picked it reads Continue and
- *     waits, as the one answer it replaces waited for a tap.
+ *   - "Continue with 3" holds the foot of the screen, and the cards pass
+ *     under it. With nothing picked it reads Continue and waits, as the one
+ *     answer it replaces waited for a tap.
  *
- * The answers are the app's own four (lib/onboarding/space.ts, INTENTS), not
- * the mockup's eight: they are what is saved, counted, and read by the
- * admin's Onboarding view. The mockup's cards are short strips, eight to a
- * screen; four fill the same screen as 4:5 cards, the shape of the pictures
- * the owner is making for them (lib/onboarding/pictures.ts). The line each
- * answer had under its name (onboard.intent.*Sub) is not drawn, as the design
- * draws none; a screen reader says it after the name.
+ * Every answer the mockup has, since the owner's "add everything we left
+ * out" (2026-10-28): its eight, its "The services" being the app's "The
+ * Liturgy", and the app's other three after them, eleven in all
+ * (lib/onboarding/space.ts, INTENTS). So the cards are the mockup's short
+ * strips, 112 px tall, not the 4:5 cards four answers had room for; an odd
+ * last one runs the width of the screen. The line each answer has under its
+ * name (onboard.intent.*Sub) is not drawn, as the design draws none; a screen
+ * reader says it after the name.
  */
 export function LookingFor({
   picks,
@@ -71,15 +72,17 @@ export function LookingFor({
           // Its place in the order tapped, from 1; 0 when it is not picked.
           const n = picks.indexOf(intent) + 1;
           const picture = ANSWER_PICTURES[intent];
+          // An odd last card runs across both columns.
+          const wide = i === INTENTS.length - 1 && INTENTS.length % 2 === 1;
           return (
-            <li key={intent}>
+            <li key={intent} className={wide ? "col-span-2" : undefined}>
               <button
                 type="button"
                 aria-pressed={n > 0}
                 aria-describedby={`${id}${intent}`}
                 onClick={() => onToggle(intent)}
-                className="ob-pick ob-rise relative block aspect-[4/5] w-full overflow-hidden rounded-2xl bg-night-soft text-start"
-                style={{ animationDelay: `${300 + i * 60}ms` }}
+                className="ob-pick ob-rise relative block h-28 w-full overflow-hidden rounded-2xl bg-night-soft text-start"
+                style={{ animationDelay: `${300 + Math.min(i, 7) * 50}ms` }}
               >
                 {/* eslint-disable-next-line @next/next/no-img-element -- a static
                     export serves files as they are; next/image would add nothing. */}
