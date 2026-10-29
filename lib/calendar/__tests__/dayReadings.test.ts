@@ -52,11 +52,13 @@ describe("an ordinary day inside the official list", () => {
 
 describe("a reader the official list is not for", () => {
   it("an Old Calendar reader is not handed the New Calendar list", () => {
-    expect(readingsOptionsFor("old")).toEqual({ official: false });
-    expect(readingsOptionsFor("new")).toEqual({ official: true });
+    // The style rides along for the date's own table, the menaion, which
+    // moves 13 days for them (lib/calendar/__tests__/oldCalendar.test.ts).
+    expect(readingsOptionsFor("old")).toEqual({ official: false, style: "old" });
+    expect(readingsOptionsFor("new")).toEqual({ official: true, style: "new" });
   });
 
-  it("and sees what the app showed before: the date's own table, with nothing under it", () => {
+  it("and sees the date's own table, the menaion on their date, with nothing under it", () => {
     const day = dayReadings(at("2026-10-10"), readingsOptionsFor("old"));
     expect(day.source).toBe("fixed");
     expect(day.readings.map((r) => r.label)).toEqual(["Luke 21:12-19"]);

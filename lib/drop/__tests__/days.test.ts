@@ -73,20 +73,20 @@ describe("the Church's year", () => {
   it("agrees with the app's own calendar about where each season turns", () => {
     for (const year of [2026, 2027, 2028, 2029]) {
       const lent = occasionDay(occasion("great-lent"), year);
-      expect(currentSeason(noon(lent))?.label, `${year}: Clean Monday`).toBe("Great Lent");
-      expect(currentSeason(noon(addDays(lent, -1)))?.label, `${year}: the day before`).not.toBe("Great Lent");
+      expect(currentSeason(noon(lent), "new")?.label, `${year}: Clean Monday`).toBe("Great Lent");
+      expect(currentSeason(noon(addDays(lent, -1)), "new")?.label, `${year}: the day before`).not.toBe("Great Lent");
 
       const pascha = occasionDay(occasion("pascha"), year);
-      expect(fastingStatus(noon(pascha)).ruleId, `${year}: Pascha`).toBe("brightWeek");
-      expect(fastingStatus(noon(addDays(pascha, -1))).ruleId, `${year}: Holy Saturday`).not.toBe("brightWeek");
+      expect(fastingStatus(noon(pascha), "new").ruleId, `${year}: Pascha`).toBe("brightWeek");
+      expect(fastingStatus(noon(addDays(pascha, -1)), "new").ruleId, `${year}: Holy Saturday`).not.toBe("brightWeek");
 
       const pentecost = occasionDay(occasion("pentecost"), year);
-      expect(fastingStatus(noon(addDays(pentecost, 1))).ruleId, `${year}: the day after Pentecost`).toBe("trinityWeek");
-      expect(fastingStatus(noon(pentecost)).ruleId, `${year}: Pentecost`).not.toBe("trinityWeek");
+      expect(fastingStatus(noon(addDays(pentecost, 1)), "new").ruleId, `${year}: the day after Pentecost`).toBe("trinityWeek");
+      expect(fastingStatus(noon(pentecost), "new").ruleId, `${year}: Pentecost`).not.toBe("trinityWeek");
 
       const fast = occasionDay(occasion("nativity-fast"), year);
-      expect(currentSeason(noon(fast))?.label, `${year}: the fast's first day`).toBe("Nativity Fast");
-      expect(currentSeason(noon(addDays(fast, -1)))?.label ?? null, `${year}: the day before`).not.toBe("Nativity Fast");
+      expect(currentSeason(noon(fast), "new")?.label, `${year}: the fast's first day`).toBe("Nativity Fast");
+      expect(currentSeason(noon(addDays(fast, -1)), "new")?.label ?? null, `${year}: the day before`).not.toBe("Nativity Fast");
     }
   });
 });

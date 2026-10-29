@@ -48,8 +48,10 @@ import {
  * The widgets of docs/WIDGETS.md need more than the saint and the fast: the
  * season a Mosaic widget wears, the next fast and the next great feast with
  * how many days off each is, and the Verse of the Day. All of it is worked
- * out here, from the same functions the app's screens call on the same
- * shifted day, so a widget can never disagree with the app. The days to the
+ * out here, from the same functions the app's screens call, split the same
+ * way (the commemorations and fixed feasts on the shifted day, the fast, the
+ * season and the Paschal cycle from the civil day and the reckoning), so a
+ * widget can never disagree with the app. The days to the
  * next fast are counted here too: a widget never subtracts one date from
  * another.
  */
@@ -138,9 +140,9 @@ function monthDay(d: Date): string {
   return `${String(d.getUTCMonth() + 1).padStart(2, "0")}-${String(d.getUTCDate()).padStart(2, "0")}`;
 }
 
-/** Days from this lookup day's Pascha (negative before it). */
-function fromPascha(lookup: Date): number {
-  return between(lookup, orthodoxPascha(lookup.getUTCFullYear()));
+/** Days from this civil day's Pascha (negative before it). */
+function fromPascha(civil: Date): number {
+  return between(civil, orthodoxPascha(civil.getUTCFullYear()));
 }
 
 // The fixed great feasts, by the calendar date the app looks them up on. Their
@@ -167,49 +169,57 @@ const MOVABLE_GREAT_FEASTS: Record<number, string> = {
   49: "Pentecost",
 };
 
-/** The great feast on this lookup day, or null. */
-function greatFeastOn(lookup: Date): string | null {
+// Each helper below takes the CIVIL day and the reckoning, and splits them as
+// the app's screens do (2026-10-29): the fixed feasts and the commemorations
+// on the day shifted for the reader, the Paschal cycle on the civil day, which
+// both calendars keep alike. These took the shifted day for everything until
+// then, so an Old Calendar reader's widget put Pascha, Lent and the movable
+// feasts 13 days late.
+
+/** The great feast on this civil day in this reckoning, or null. */
+function greatFeastOn(civil: Date, style: "new" | "old"): string | null {
+  const lookup = shiftForStyle(civil, style);
   const md = monthDay(lookup);
   if (FIXED_GREAT_FEASTS[md]) {
     const feast = commemorationsOn(lookup).find((c) => c.kind === "feast");
     return feast?.name ?? FIXED_GREAT_FEASTS[md];
   }
-  const off = fromPascha(lookup);
-  if (MOVABLE_GREAT_FEASTS[off]) return movableLabelOn(lookup) ?? MOVABLE_GREAT_FEASTS[off];
+  const off = fromPascha(civil);
+  if (MOVABLE_GREAT_FEASTS[off]) return movableLabelOn(civil) ?? MOVABLE_GREAT_FEASTS[off];
   return null;
 }
 
 // The four fast seasons, by the names currentSeason gives them.
 const FAST_SEASONS = new Set(["Nativity Fast", "Great Lent", "Apostles' Fast", "Dormition Fast"]);
 
-/** The fast season this lookup day is in, or null. */
-function fastSeasonOn(lookup: Date): string | null {
-  const label = currentSeason(lookup)?.label ?? null;
+/** The fast season this civil day is in, in this reckoning, or null. */
+function fastSeasonOn(civil: Date, style: "new" | "old"): string | null {
+  const label = currentSeason(civil, style)?.label ?? null;
   return label && FAST_SEASONS.has(label) ? label : null;
 }
 
-/** Does a fast season begin on this lookup day? Its name, or null. */
-function fastBeginsOn(lookup: Date): string | null {
-  const today = fastSeasonOn(lookup);
+/** Does a fast season begin on this civil day? Its name, or null. */
+function fastBeginsOn(civil: Date, style: "new" | "old"): string | null {
+  const today = fastSeasonOn(civil, style);
   if (!today) return null;
-  const before = new Date(lookup.getTime() - DAY_MS);
-  return fastSeasonOn(before) === today ? null : today;
+  const before = new Date(civil.getTime() - DAY_MS);
+  return fastSeasonOn(before, style) === today ? null : today;
 }
 
-/** The Mosaic season worn on this lookup day, or undefined. */
-function seasonOn(lookup: Date): WidgetSeason | undefined {
-  const off = fromPascha(lookup);
+/** The Mosaic season worn on this civil day, or undefined. */
+function seasonOn(civil: Date, style: "new" | "old"): WidgetSeason | undefined {
+  const off = fromPascha(civil);
   // Pascha to the eve of the Ascension: forty days of "Christ is risen!".
   if (off >= 0 && off <= 38) return { theme: "pascha", title: "Christ is risen!", line: "Truly He is risen!" };
-  const season = currentSeason(lookup);
+  const season = currentSeason(civil, style);
   if (season?.label === "Great Lent") {
-    const day = Math.min(40, between(lookup, new Date(orthodoxPascha(lookup.getUTCFullYear()).getTime() - 48 * DAY_MS)) + 1);
+    const day = Math.min(40, between(civil, new Date(orthodoxPascha(civil.getUTCFullYear()).getTime() - 48 * DAY_MS)) + 1);
     return { theme: "lent", title: "Great Lent", line: `Day ${day} of 40` };
   }
   if (season?.label === "Holy Week" || season?.label === "Palm Sunday") {
     return { theme: "lent", title: season.label, line: season.subtheme ?? "" };
   }
-  const md = monthDay(lookup);
+  const md = monthDay(shiftForStyle(civil, style));
   if (md >= "12-25" || md <= "01-05") return { theme: "nativity", title: "Christ is born!", line: "Glorify Him!" };
   if (md >= "01-06" && md <= "01-14") return { theme: "theophany", title: "Theophany", line: "January 6" };
   if (md >= "08-15" && md <= "08-23") return { theme: "dormition", title: "Dormition of the Theotokos", line: "August 15" };
@@ -229,8 +239,8 @@ function factsFor(civil: Date, style: "new" | "old"): DayFacts {
   // Same rule as useChurchDay: the feast if the day has one, else the first.
   const headline =
     commemorations.find((c) => c.kind === "feast") ?? commemorations[0];
-  const fast = fastingStatus(lookup);
-  const season = seasonOn(lookup);
+  const fast = fastingStatus(civil, style);
+  const season = seasonOn(civil, style);
   return {
     day: {
       // Every one of the 366 fixed dates carries a commemoration, but a fold-in
@@ -243,8 +253,8 @@ function factsFor(civil: Date, style: "new" | "old"): DayFacts {
       fastRule: fast.ruleId,
       ...(season ? { season } : {}),
     },
-    fastBegins: fastBeginsOn(lookup),
-    feast: greatFeastOn(lookup),
+    fastBegins: fastBeginsOn(civil, style),
+    feast: greatFeastOn(civil, style),
   };
 }
 

@@ -88,7 +88,8 @@ export function useChurchDay(): ChurchDay | null {
       headline,
       // commemorationsOn has already resolved every slug that names a profile.
       headlineSaint: headline?.saint ?? null,
-      fast: fastingStatus(lookup),
+      // The civil day and the style: the rule moves only its fixed dates.
+      fast: fastingStatus(today, style),
       readings: appointed.readings,
       ordinaryReadings: appointed.ordinary,
       commemorationReadings: appointed.commemoration,

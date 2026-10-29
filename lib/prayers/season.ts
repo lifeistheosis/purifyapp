@@ -6,7 +6,6 @@
 import {
   fastingStatus,
   orthodoxPascha,
-  shiftForStyle,
   startOfDayUtc,
   type CalStyle,
 } from "@/lib/calendar/orthodox";
@@ -38,13 +37,16 @@ export function seasonFor(today: Date): Season {
  * on a day they were not fasting, and none on a day they were. It went
  * unnoticed because lib/calendar/__tests__/oneReckoning.test.ts scanned only
  * `app` and `components`, and this file is in `lib`. That blind spot is now
- * closed, and this was the one thing hiding behind it.
+ * closed, and this was the one thing hiding behind it. Since 2026-10-29 it
+ * hands fastingStatus the civil day and the style, and the rule moves only
+ * its fixed dates (the shifted day it was given before put the weekly fast
+ * on Tuesday and Thursday for an Old Calendar reader).
  *
  * seasonFor above is deliberately NOT shifted: it derives from Pascha, and
  * both reckonings compute Pascha from the same algorithm, so shifting it
  * would move the paschal cycle twice.
  */
 export function isFastDay(today: Date, style: CalStyle): boolean {
-  const kind = fastingStatus(shiftForStyle(today, style)).kind;
+  const kind = fastingStatus(today, style).kind;
   return kind !== "normal" && kind !== "fast-free";
 }

@@ -45,14 +45,14 @@ describe("orthodoxPascha", () => {
 describe("fastingStatus", () => {
   it("returns strict for Holy Friday (Pascha - 2)", () => {
     // Pascha 2026 = April 12, so Holy Friday = April 10 (Friday).
-    const result = fastingStatus(utc(2026, 4, 10));
+    const result = fastingStatus(utc(2026, 4, 10), "new");
     expect(result.kind).toBe("strict");
     expect(result.label).toMatch(/Great Lent/i);
   });
 
   it("returns fast-free for Bright Monday (Pascha + 1)", () => {
     // Pascha 2026 = April 12, so Bright Monday = April 13.
-    const result = fastingStatus(utc(2026, 4, 13));
+    const result = fastingStatus(utc(2026, 4, 13), "new");
     expect(result.kind).toBe("fast-free");
     expect(result.label).toMatch(/Bright Week/i);
   });
@@ -60,7 +60,7 @@ describe("fastingStatus", () => {
   it("returns wine-oil for a weekly Wednesday in ordinary time", () => {
     // July 8, 2026 is a Wednesday. After Apostles' Fast end (June 28),
     // before Dormition Fast (Aug 1). Year-round Wed/Fri rule applies.
-    const result = fastingStatus(utc(2026, 7, 8));
+    const result = fastingStatus(utc(2026, 7, 8), "new");
     expect(result.kind).toBe("wine-oil");
     expect(result.label).toMatch(/Wednesday/i);
   });

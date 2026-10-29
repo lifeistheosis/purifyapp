@@ -6032,3 +6032,40 @@ docs/editorial-standards.md lists what ships marked for a future clergy
 review (the cross marks, the icon pairings, Your rule's one line of our own).
 Your rule on every device needs a table and his SQL (not built, on his
 decision).
+
+## Addendum, 2026-10-29: the Old Calendar fasts, on branch `release/1.8`
+
+**Found by a reader.** In Community: "The fast days on my Android always
+show on Tuesday and Thursday instead of Wednesday and Friday." The owner
+asked for it fixed first.
+
+**Cause.** Every surface handed `fastingStatus` the day `shiftForStyle`
+had moved back 13 days, and the rule read everything from that one date.
+The weekday: 13 days back is one weekday on, so an Old Calendar reader's
+Wednesday and Friday fast showed on Tuesday and Thursday. The Paschal cycle:
+both reckonings keep Pascha on the same civil day, so Lent, Holy Week,
+Bright Week, the Publican and Trinity weeks and the start of the Apostles'
+Fast all came 13 days late (in 2026, Clean Monday read as no fast and
+Bright Monday as strict Lent). `currentSeason`, the widget's day table and
+the calendar page's readings had the same split wrong; Today asked the
+menaion's readings on the civil day, the calendar page asked everything on
+the shifted one.
+
+**Fix.** `fastingStatus(civil, style)` and `currentSeason(civil, style)`
+take the civil day and the reckoning and move only the menaion's dates;
+`readingsOptionsFor(style)` carries the style so `dayReadings` reads the
+date's own table (a menaion) on the reader's date and the Paschal table on
+the civil one. Every caller passes the civil day. oneReckoning.test.ts now
+also refuses a shifted day handed to any of the Paschal-cycle functions,
+and oldCalendar.test.ts pins the answer on real days in both reckonings.
+
+**Verified here.** Every day of 2024 to 2031 (2,922) before and after: New
+Calendar answers unchanged on all of them; Old Calendar answers changed on
+1,788, every change one of the two corrections above. tsc 0; vitest on
+the calendar, Today, widget, prayers, fasting and drop tests, 61 files
+green (735 tests); eslint clean on the changed files.
+
+**Not proven.** No build and no browser yet; it rides with the next native
+build and its walk. It reaches the website when it is on `main` (the
+owner's word), and the apps with their next store build. A reader on an
+installed app keeps the old answer until then.

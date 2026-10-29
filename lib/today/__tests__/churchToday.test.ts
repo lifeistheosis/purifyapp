@@ -63,7 +63,7 @@ describe("The Church today, on St John Chrysostom's day", () => {
 
   it("marks the Friday fast from the day's rule: wine and oil lit, fish and meat struck", () => {
     expect(text).toContain(en["calendar.fast.fridayFast.label"]);
-    const marks = fastMarks(fastingStatus(NOV_13).kind)!;
+    const marks = fastMarks(fastingStatus(NOV_13, "new").kind)!;
     expect(marks.filter((m) => m.allowed).map((m) => m.food)).toEqual(["wine", "oil"]);
     for (const { food, allowed } of marks) {
       expect(out).toMatch(new RegExp(`data-fast-mark="${food}"${allowed ? ' data-allowed=""' : '(?! data-allowed)'}`));
@@ -108,7 +108,7 @@ describe("The Church today, on a day with no fast", () => {
   const text = words(out);
 
   it("says the rule in words and draws no marks", () => {
-    expect(fastingStatus(OCT_25).kind).toBe("normal");
+    expect(fastingStatus(OCT_25, "new").kind).toBe("normal");
     expect(text).toContain(en["calendar.fast.noFast.label"]);
     expect(text).toContain(en["calendar.fast.noFast.rule"]);
     expect(out).not.toContain("data-fast-mark");

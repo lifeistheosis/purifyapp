@@ -29,7 +29,7 @@ function churchDay(today: Date, style: CalStyle = "new") {
   const lookup = shiftForStyle(today, style);
   const commemorations = commemorationsOn(lookup);
   const headline = commemorations.find((c) => c.kind === "feast") ?? commemorations[0];
-  return { day: { today, headline, fast: fastingStatus(lookup) }, lookup };
+  return { day: { today, headline, fast: fastingStatus(today, style) }, lookup };
 }
 
 function leadOn(today: Date, style: CalStyle = "new"): DayLead | null {

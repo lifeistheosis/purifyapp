@@ -60,7 +60,7 @@ describe("resolveMode", () => {
     // value outside the union through a cast or a JSON path.
     for (const year of [2026, 2027]) {
       for (const day of yearDays(year)) {
-        const kind = fastingStatus(day).kind;
+        const kind = fastingStatus(day, "new").kind;
         expect(MODE_BY_FAST_KIND[kind], `${kind} on ${day.toISOString()}`).toBeDefined();
       }
     }

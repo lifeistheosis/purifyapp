@@ -5,7 +5,6 @@ import { useTranslate } from "@/components/i18n/MessagesProvider";
 import Link from "next/link";
 import {
   fastingStatus,
-  shiftForStyle,
   type CalStyle,
   type FastKind,
 } from "@/lib/calendar/orthodox";
@@ -18,17 +17,18 @@ import { fastNotAllowedKey } from "@/lib/calendar/fastFoods";
 
 /**
  * Today's rule for a local calendar day, read in the frame fastingStatus
- * expects, and SHIFTED for the reader's reckoning.
+ * expects, in the reader's reckoning.
  *
- * The shift is not optional. Without it an Old (Julian) Calendar reader was
+ * The style is not optional. Without it an Old (Julian) Calendar reader was
  * shown the New Calendar rule here while Today and /prayers/today, which both
- * go through useChurchDay, showed them the shifted one. Two screens, two
- * different fasts, the same second. That is precisely the drift
- * lib/calendar/useChurchDay.ts was created to end, and this file was the one
- * surface still outside it.
+ * go through useChurchDay, showed them theirs. Two screens, two different
+ * fasts, the same second. That is precisely the drift
+ * lib/calendar/useChurchDay.ts was created to end. The rule takes the civil
+ * day and moves only its fixed dates (2026-10-29: handing it a day already
+ * moved back 13 days put the weekly fast on Tuesday and Thursday).
  */
 const ruleFor = (d: Date, style: CalStyle) =>
-  fastingStatus(shiftForStyle(localDayToUtcNoon(d), style));
+  fastingStatus(localDayToUtcNoon(d), style);
 
 /**
  * The fasting tracker: today's rule, a gentle check-in, the current streak,

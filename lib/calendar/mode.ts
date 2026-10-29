@@ -55,14 +55,15 @@ export function modeFor(opts: {
  * `date` is in the UTC-noon frame every "today" surface passes around
  * (`useToday()`, `useChurchDay().day`, `startOfDayLocal`), not a wall-clock
  * Date; lib/rhythm/dayKey.ts explains why mixing the two is off by one day
- * for half the planet. The lookup is shifted for Old Calendar readers exactly
- * as the month grid shifts it, which lib/calendar/__tests__/oneReckoning.test.ts
- * requires of anything that calls `fastingStatus` or `commemorationsOn`.
+ * for half the planet. The commemorations are looked up on the day shifted
+ * for Old Calendar readers, exactly as the month grid does it; the fast takes
+ * the civil day and the style, and moves only its fixed dates.
+ * lib/calendar/__tests__/oneReckoning.test.ts holds both.
  */
 export function resolveMode(date: Date, style: CalStyle = "new"): LiturgicalMode {
   const lookup = shiftForStyle(date, style);
   return modeFor({
     hasFeast: commemorationsOn(lookup).some((c) => c.kind === "feast"),
-    fast: fastingStatus(lookup).kind,
+    fast: fastingStatus(date, style).kind,
   });
 }

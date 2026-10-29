@@ -213,40 +213,65 @@ function paschalAnchors(year: number): PaschalAnchors {
  return anchors;
 }
 
-export function fastingStatus(date: Date): FastingStatus {
+/**
+ * The fast for a CIVIL day, in the reader's reckoning.
+ *
+ * The rule reads three things, and they do not all move with the calendar.
+ * The weekday is the civil one: a Wednesday is a Wednesday in both
+ * calendars. Everything counted from Pascha (Lent, Holy Week, Bright Week,
+ * Trinity Week, the start of the Apostles' Fast) is civil too, because both
+ * reckonings keep the same Pascha on the same day. Only the menaion's dates
+ * (the Nativity and Dormition fasts, the Twelve Days, the Annunciation, the
+ * Transfiguration, the end of the Apostles' Fast) fall 13 days later for an
+ * Old Calendar reader.
+ *
+ * Until 2026-10-29 every caller handed this function the date already moved
+ * back 13 days and it read all three from it, so an Old Calendar reader was
+ * shown the Wednesday and Friday fast on Tuesday and Thursday (13 days back
+ * is one weekday on), and Lent and Bright Week 13 days late: in 2026 Clean
+ * Monday read as no fast and Bright Monday as strict Lent. A reader found it
+ * ("The fast days on my Android always show on Tuesday and Thursday"). So the
+ * function takes the civil day and the style, and moves only what moves.
+ */
+export function fastingStatus(date: Date, style: CalStyle): FastingStatus {
+ // The civil day: its weekday, and the Paschal cycle.
  const d = startOfDayUtc(date);
- const year = d.getUTCFullYear();
- const month = d.getUTCMonth(); // 0-11
- const day = d.getUTCDate();
  const dow = d.getUTCDay(); // 0 = Sunday
+ // The same day in the reader's fixed calendar, for the menaion's dates.
+ const f = shiftForStyle(d, style);
+ const month = f.getUTCMonth(); // 0-11
+ const day = f.getUTCDate();
 
  const {
  pascha,
  cleanMonday,
  holySaturday,
  palmSunday,
- annunciation,
- transfiguration,
  brightWeekEnd,
  pentecost,
- allSaintsSunday,
  apostlesFastStart,
+ publicanFeast,
+ publicanFreeEnd,
+ } = paschalAnchors(d.getUTCFullYear());
+ // The fixed anchors of the fixed calendar's year, which for an Old
+ // Calendar reader is the year before from January 1 to 13.
+ const {
+ annunciation,
+ transfiguration,
  apostlesFastEnd,
  dormitionStart,
  dormitionEnd,
  nativityStart,
  nativityEnd,
  christmasFreeStart,
- publicanFeast,
- publicanFreeEnd,
  twelfthNightNext,
- } = paschalAnchors(year);
+ } = paschalAnchors(f.getUTCFullYear());
 
  // ----- Fast-free windows -----
  if (
  (month === 0 && day <= 4) ||
  (month === 11 && day >= 25) ||
- inRangeInclusive(d, christmasFreeStart, twelfthNightNext)
+ inRangeInclusive(f, christmasFreeStart, twelfthNightNext)
  ) {
  return {
  kind: "fast-free",
@@ -282,7 +307,7 @@ export function fastingStatus(date: Date): FastingStatus {
 
  // ----- Great Lent + Holy Week -----
  if (inRangeInclusive(d, cleanMonday, holySaturday)) {
- if (sameDay(d, annunciation) || sameDay(d, palmSunday)) {
+ if (sameDay(f, annunciation) || sameDay(d, palmSunday)) {
  return {
  kind: "fish",
  ruleId: sameDay(d, palmSunday) ? "lentPalmSunday" : "lentAnnunciation",
@@ -309,8 +334,8 @@ export function fastingStatus(date: Date): FastingStatus {
  }
 
  // ----- Dormition Fast -----
- if (inRangeInclusive(d, dormitionStart, dormitionEnd)) {
- if (sameDay(d, transfiguration)) {
+ if (inRangeInclusive(f, dormitionStart, dormitionEnd)) {
+ if (sameDay(f, transfiguration)) {
  return {
  kind: "fish",
  ruleId: "dormitionTransfiguration",
@@ -335,7 +360,7 @@ export function fastingStatus(date: Date): FastingStatus {
  }
 
  // ----- Nativity Fast -----
- if (inRangeInclusive(d, nativityStart, nativityEnd)) {
+ if (inRangeInclusive(f, nativityStart, nativityEnd)) {
  const stricter = day >= 20 && month === 11;
  if (dow === 0 || dow === 6) {
  return {
@@ -364,7 +389,9 @@ export function fastingStatus(date: Date): FastingStatus {
  }
 
  // ----- Apostles' Fast -----
- if (inRangeInclusive(d, apostlesFastStart, apostlesFastEnd)) {
+ // From a Paschal day (the Monday after All Saints, civil) to a fixed one
+ // (June 28 in the reader's calendar).
+ if (diffDays(d, apostlesFastStart) >= 0 && diffDays(f, apostlesFastEnd) <= 0) {
  if (dow === 0 || dow === 6) {
  return {
  kind: "fish",
@@ -579,11 +606,22 @@ export type ReadingsOptions = {
   * app showed before, until a list for their calendar is in hand.
   */
  official?: boolean;
+ /**
+  * The reader's calendar, for the date's own table only. That table is a
+  * menaion (the proper of the day's saints and feasts), so it moves 13 days
+  * for an Old Calendar reader, as the commemorations do: on civil January 7
+  * they keep the Nativity and read its Epistle and Gospel. The Paschal table
+  * and the official list stay on the civil day. Until 2026-10-29 Today asked
+  * the menaion on the civil day and the calendar asked everything on the
+  * shifted one, so each was half wrong for an Old Calendar reader, and in
+  * different halves.
+  */
+ style?: CalStyle;
 };
 
 /** The options for a reader's calendar. One place, so no surface decides alone. */
 export function readingsOptionsFor(style: CalStyle): ReadingsOptions {
- return { official: style !== "old" };
+ return { official: style !== "old", style };
 }
 
 export type ReadingsSource = "paschal" | "official" | "fixed";
@@ -782,7 +820,7 @@ function officialAnswerOn(date: Date): OfficialAnswer | null {
  * other day it holds. Past its last day, and for a reader it is not for
  * (ReadingsOptions), the date's own table answers as it always did.
  */
-export function dayReadings(date: Date, { official = true }: ReadingsOptions = {}): DayReadings {
+export function dayReadings(date: Date, { official = true, style = "new" }: ReadingsOptions = {}): DayReadings {
  // Movable cycle: a window of ±90 days around Pascha so the Paschal
  // calendar reaches the Sunday of All Saints (+56) on one side and the
  // pre-Triodion Sunday of Zacchaeus (−77) on the other without bleeding
@@ -794,7 +832,8 @@ export function dayReadings(date: Date, { official = true }: ReadingsOptions = {
  return { source: movable.readings.length > 0 ? "paschal" : null, readings: movable.readings, ordinary: [], commemoration: [] };
  }
  }
- const fixed = READINGS[mmdd(date)] ?? [];
+ // The menaion moves with the reader's calendar; see ReadingsOptions.style.
+ const fixed = READINGS[mmdd(shiftForStyle(startOfDayUtc(date), style))] ?? [];
  const listed = official ? officialAnswerOn(date) : null;
  if (listed) {
  const same = (a: ReadingRef, b: ReadingRef) => a.book === b.book && a.chapter === b.chapter && a.from === b.from;
@@ -889,9 +928,11 @@ export function isoDay(d: Date): string {
 /**
  * Returns 42 cells (6 weeks x 7 days) for the given year/month, Sun first.
  *
- * `style` is not optional by accident. Every cell names a commemoration and a
- * fast, both fixed-cycle lookups that must move back 13 days for an Old
- * Calendar reader. This function did neither: it passed the civil date to both
+ * `style` is not optional by accident. Every cell names a commemoration, a
+ * fixed-cycle lookup that moves back 13 days for an Old Calendar reader, and
+ * a fast, which fastingStatus splits itself (the civil weekday and Paschal
+ * cycle, the reader's fixed calendar for the rest; see its comment). This
+ * function once did neither: it passed the civil date to both
  * for all 42 cells, so an Old Calendar reader opening /calendar saw the
  * correct saint and fast in the day panel and NEW CALENDAR names and fast dots
  * in the grid directly beneath it. Two answers, one screen, which is the drift
@@ -931,7 +972,7 @@ export function monthGrid(
  isToday: sameDay(d, today),
  hasFeast: !!feast,
  headlineName: (feast ?? commemorations[0])?.name,
- fast: fastingStatus(lookup).kind,
+ fast: fastingStatus(d, style).kind,
  });
  }
  return cells;
@@ -1150,13 +1191,20 @@ export type SeasonInfo = {
  * Holy Week, Bright Week, Pre-Lent, Apostles' Fast, Dormition Fast,
  * Nativity Fast, Twelve Days of Christmas) and returns label + subtheme
  * for surface display. Returns null in ordinary time.
+ *
+ * `date` is the CIVIL day, split the way fastingStatus splits it: the
+ * Paschal seasons from the civil day, the fixed ones (the end of the
+ * Apostles' Fast, the Dormition and Nativity fasts, the Twelve Days) from
+ * the reader's own calendar.
  */
-export function currentSeason(date: Date): SeasonInfo | null {
+export function currentSeason(date: Date, style: CalStyle): SeasonInfo | null {
  const d = startOfDayUtc(date);
  const year = d.getUTCFullYear();
- const month = d.getUTCMonth();
- const day = d.getUTCDate();
  const dow = d.getUTCDay();
+ const f = shiftForStyle(d, style);
+ const fixedYear = f.getUTCFullYear();
+ const month = f.getUTCMonth();
+ const day = f.getUTCDate();
 
  const pascha = orthodoxPascha(year);
  const previousPascha = orthodoxPascha(year - 1);
@@ -1166,11 +1214,11 @@ export function currentSeason(date: Date): SeasonInfo | null {
  const brightWeekEnd = addDays(pascha, 7);
  const allSaintsSunday = addDays(pascha, 56);
  const apostlesFastStart = addDays(allSaintsSunday, 1);
- const apostlesFastEnd = new Date(Date.UTC(year, 5, 28, 12));
- const dormitionStart = new Date(Date.UTC(year, 7, 1, 12));
- const dormitionEnd = new Date(Date.UTC(year, 7, 14, 12));
- const nativityStart = new Date(Date.UTC(year, 10, 15, 12));
- const nativityEnd = new Date(Date.UTC(year, 11, 24, 12));
+ const apostlesFastEnd = new Date(Date.UTC(fixedYear, 5, 28, 12));
+ const dormitionStart = new Date(Date.UTC(fixedYear, 7, 1, 12));
+ const dormitionEnd = new Date(Date.UTC(fixedYear, 7, 14, 12));
+ const nativityStart = new Date(Date.UTC(fixedYear, 10, 15, 12));
+ const nativityEnd = new Date(Date.UTC(fixedYear, 11, 24, 12));
 
  const SUNDAYS_OF_LENT = [
  "Sunday of Orthodoxy",
@@ -1270,8 +1318,8 @@ export function currentSeason(date: Date): SeasonInfo | null {
  }
 
  // Apostles' Fast (Monday after All Saints Sunday → June 28).
- if (inRangeInclusive(d, apostlesFastStart, apostlesFastEnd)) {
- const remaining = diffDays(apostlesFastEnd, d) + 1;
+ if (diffDays(d, apostlesFastStart) >= 0 && diffDays(f, apostlesFastEnd) <= 0) {
+ const remaining = diffDays(apostlesFastEnd, f) + 1;
  return {
  label: "Apostles' Fast",
  subtheme: `${remaining} day${remaining === 1 ? "" : "s"} until the feast of Sts. Peter and Paul`,
@@ -1282,8 +1330,8 @@ export function currentSeason(date: Date): SeasonInfo | null {
  }
 
  // Dormition Fast (Aug 1-14).
- if (inRangeInclusive(d, dormitionStart, dormitionEnd)) {
- const remaining = diffDays(dormitionEnd, d) + 1;
+ if (inRangeInclusive(f, dormitionStart, dormitionEnd)) {
+ const remaining = diffDays(dormitionEnd, f) + 1;
  return {
  label: "Dormition Fast",
  subtheme: `${remaining} day${remaining === 1 ? "" : "s"} until the Dormition of the Theotokos`,
@@ -1294,8 +1342,8 @@ export function currentSeason(date: Date): SeasonInfo | null {
  }
 
  // Nativity Fast (Nov 15 - Dec 24).
- if (inRangeInclusive(d, nativityStart, nativityEnd)) {
- const remaining = diffDays(nativityEnd, d) + 1;
+ if (inRangeInclusive(f, nativityStart, nativityEnd)) {
+ const remaining = diffDays(nativityEnd, f) + 1;
  return {
  label: "Nativity Fast",
  subtheme: `${remaining} day${remaining === 1 ? "" : "s"} until the Nativity of Christ`,

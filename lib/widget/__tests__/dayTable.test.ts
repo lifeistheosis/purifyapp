@@ -29,7 +29,7 @@ function appAnswer(civilKey: string, style: "new" | "old") {
   const c = commemorationsOn(lookup);
   return {
     headline: c.find((x) => x.kind === "feast") ?? c[0],
-    fast: fastingStatus(lookup),
+    fast: fastingStatus(at(civilKey), style),
   };
 }
 

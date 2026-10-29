@@ -31,7 +31,7 @@ describe("what a fast day leaves out", () => {
     const start = Date.UTC(2026, 0, 1);
     for (let d = 0; d < 730; d++) {
       const day = new Date(start + d * 86_400_000 + 12 * 3_600_000);
-      const fast = fastingStatus(day);
+      const fast = fastingStatus(day, "new");
       const key = fastNotAllowedKey(fast.kind);
       const rule = english(`calendar.fast.${fast.ruleId}.rule`) ?? "";
       if (fast.kind === "strict") expect(rule, fast.ruleId).toMatch(/No meat/);

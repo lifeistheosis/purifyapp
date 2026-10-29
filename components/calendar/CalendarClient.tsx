@@ -182,17 +182,20 @@ export function CalendarClient() {
         ? day
         : new Date(Date.UTC(year, month, 1, 12)));
 
-    // Lookups use the style-shifted date; display strings use the real date.
+    // The commemorations use the style-shifted date; the readings and the
+    // fast take the civil day, as useChurchDay does (the readings follow the
+    // Paschal cycle, which both calendars keep on the same day, and the fast
+    // moves only its fixed dates itself). Display strings use the real date.
     const todayLookup = shiftForStyle(day, style);
     const selectedLookup = shiftForStyle(selectedDay, style);
 
-    const todayAppointed = dayReadings(todayLookup, readingsOptionsFor(style));
-    const selectedAppointed = dayReadings(selectedLookup, readingsOptionsFor(style));
+    const todayAppointed = dayReadings(day, readingsOptionsFor(style));
+    const selectedAppointed = dayReadings(selectedDay, readingsOptionsFor(style));
 
     const todayCommemorations = commemorationsOn(todayLookup);
-    const todayFast = fastingStatus(todayLookup);
+    const todayFast = fastingStatus(day, style);
     const selectedCommemorations = commemorationsOn(selectedLookup);
-    const selectedFast = fastingStatus(selectedLookup);
+    const selectedFast = fastingStatus(selectedDay, style);
     const headline =
       todayCommemorations.find((c) => c.kind === "feast") ??
       todayCommemorations[0] ??
@@ -238,7 +241,7 @@ export function CalendarClient() {
       // The phone says where the chosen day's readings come from (1.7.1), as
       // the readings band says it for today.
       selectedSource: selectedAppointed.source,
-      season: currentSeason(day),
+      season: currentSeason(day, style),
     };
   }, [today, mParam, dParam, style]);
 

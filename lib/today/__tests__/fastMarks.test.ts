@@ -12,7 +12,7 @@ import { FOODS, fastMarks } from "../fastMarks";
 
 const lit = (kind: FastKind) => fastMarks(kind)?.filter((m) => m.allowed).map((m) => m.food) ?? null;
 const day = (y: number, m: number, d: number) => new Date(Date.UTC(y, m - 1, d, 12));
-const onDay = (y: number, m: number, d: number) => lit(fastingStatus(day(y, m, d)).kind);
+const onDay = (y: number, m: number, d: number) => lit(fastingStatus(day(y, m, d), "new").kind);
 
 describe("the fast's marks", () => {
   it("are the four foods, in the band's order, on every fast day", () => {
@@ -53,17 +53,17 @@ describe("the fast's marks", () => {
 
 describe("the marks of real days, from the calendar's rule", () => {
   it("Friday 13 November 2026, a Friday fast: wine and oil", () => {
-    expect(fastingStatus(day(2026, 11, 13)).ruleId).toBe("fridayFast");
+    expect(fastingStatus(day(2026, 11, 13), "new").ruleId).toBe("fridayFast");
     expect(onDay(2026, 11, 13)).toEqual(["wine", "oil"]);
   });
 
   it("a Monday of the Nativity Fast: fish, wine and oil", () => {
-    expect(fastingStatus(day(2026, 11, 16)).ruleId).toBe("nativityWeekday");
+    expect(fastingStatus(day(2026, 11, 16), "new").ruleId).toBe("nativityWeekday");
     expect(onDay(2026, 11, 16)).toEqual(["wine", "oil", "fish"]);
   });
 
   it("a Wednesday of the Nativity Fast: nothing", () => {
-    expect(fastingStatus(day(2026, 11, 18)).ruleId).toBe("nativityWedFri");
+    expect(fastingStatus(day(2026, 11, 18), "new").ruleId).toBe("nativityWedFri");
     expect(onDay(2026, 11, 18)).toEqual([]);
   });
 
