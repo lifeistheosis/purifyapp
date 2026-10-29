@@ -118,7 +118,7 @@ export function MobileWorkPill({
         )}
         style={{
           bottom:
-            "calc(var(--tab-bar-h) + var(--now-playing-h) + env(safe-area-inset-bottom, 0px) + 12px)",
+            "calc(var(--tab-bar-h) + var(--now-playing-h) + var(--readings-flow-h, 0px) + env(safe-area-inset-bottom, 0px) + 12px)",
         }}
       >
         {/* The pill's face fades in as it arrives, with the work's text

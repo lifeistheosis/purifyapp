@@ -120,7 +120,7 @@ export function MobileChapterPill({
         // they measure is not on screen, so this is one formula for every case.
         style={{
           bottom:
-            "calc(var(--tab-bar-h) + var(--now-playing-h) + env(safe-area-inset-bottom, 0px) + 12px)",
+            "calc(var(--tab-bar-h) + var(--now-playing-h) + var(--readings-flow-h, 0px) + env(safe-area-inset-bottom, 0px) + 12px)",
         }}
       >
         {/* The fade the pill floats on, down to the tab bar, behind it. */}

@@ -140,9 +140,9 @@ describe("the safe areas", () => {
     expect(css.indexOf("html.reader-focus .reader-progress")).toBeGreaterThan(css.indexOf("html:not(.is-native) .reader-progress"));
   });
 
-  it("keeps the pill clear of the tab bar, the player and the home indicator", () => {
+  it("keeps the pill clear of the tab bar, the player, today's readings bar and the home indicator", () => {
     expect(code(PILL)).toContain(
-      '"calc(var(--tab-bar-h) + var(--now-playing-h) + env(safe-area-inset-bottom, 0px) + 12px)"',
+      '"calc(var(--tab-bar-h) + var(--now-playing-h) + var(--readings-flow-h, 0px) + env(safe-area-inset-bottom, 0px) + 12px)"',
     );
   });
 });
@@ -433,7 +433,7 @@ describe("the reader's pill and what rises over it", () => {
   // hold's Copy pill, a verse's tools and the search screen all stand where
   // the pill is, so the pill steps aside while one is up, as the tab bar does.
   const pills = ["components/bible/MobileChapterPill.tsx", "components/saints/MobileWorkPill.tsx"];
-  const PLACE = '"calc(var(--tab-bar-h) + var(--now-playing-h) + env(safe-area-inset-bottom, 0px) + 12px)"';
+  const PLACE = '"calc(var(--tab-bar-h) + var(--now-playing-h) + var(--readings-flow-h, 0px) + env(safe-area-inset-bottom, 0px) + 12px)"';
 
   it("steps aside while anything is up over the reader, and comes back after", () => {
     for (const file of pills) {

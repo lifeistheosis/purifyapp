@@ -302,6 +302,7 @@
 :root {
  --tab-bar-h: 0px;
  --now-playing-h: 0px;
+ --readings-flow-h: 0px;
 }
 
 /* How much room the now-playing bar claims at the bottom of the screen, so the
@@ -323,9 +324,12 @@ html.is-native.has-now-playing {
 
 /* The same for today's readings bar (components/bible/ReadingsFlowBar.tsx,
    1.7), which sits over the mini player: its card, about 64px, and its own
-   pad under it, 6px on a phone and 17px on a wide screen. Only the way out
-   of focus mode reads it (components/reader/ReaderPrefs.tsx), so the two
-   never stand on each other. */
+   pad under it, 6px on a phone and 17px on a wide screen. Every piece that
+   floats over the foot rises by it too (the chapter pill, the verse toolbar,
+   the work pill, press to copy, the install prompt, the way out of focus
+   mode), and the page's foot makes room for it: until build 82 only the way
+   out of focus mode did, and the bar stood over the Bible's chapter pill
+   (the owner's photo of build 81, "Next: Gospel" over Colossians 4). */
 html.has-readings-flow {
  --readings-flow-h: 76px;
 }
@@ -373,10 +377,10 @@ html.is-native {
    of every page. The owner, 2026-10-29: "it hides the bottom, the very
    bottom of the screen where it says show words" (Today's Remember card). */
 html.is-native .safe-pb {
- padding-bottom: calc(var(--inset-bottom) + var(--tab-bar-h) + var(--now-playing-h));
+ padding-bottom: calc(var(--inset-bottom) + var(--tab-bar-h) + var(--now-playing-h) + var(--readings-flow-h));
 }
 html.is-native .safe-pb-reader {
- padding-bottom: calc(var(--inset-bottom) + var(--tab-bar-h) + var(--now-playing-h) + 68px);
+ padding-bottom: calc(var(--inset-bottom) + var(--tab-bar-h) + var(--now-playing-h) + var(--readings-flow-h) + 68px);
 }
 /* A full-screen layer that covers the tab bar (the welcome questions) makes
    room for the screen's own edge only. It had .safe-pb, which kept the tab

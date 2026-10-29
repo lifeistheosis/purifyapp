@@ -180,7 +180,7 @@ export function PressToCopy() {
         className="pointer-events-none absolute inset-x-0 flex justify-center px-4"
         style={{
           bottom:
-            "calc(var(--tab-bar-h) + var(--now-playing-h) + env(safe-area-inset-bottom, 0px) + 12px)",
+            "calc(var(--tab-bar-h) + var(--now-playing-h) + var(--readings-flow-h, 0px) + env(safe-area-inset-bottom, 0px) + 12px)",
         }}
       >
         {/* One surface: the button is the pill. The verse's pill is a tray

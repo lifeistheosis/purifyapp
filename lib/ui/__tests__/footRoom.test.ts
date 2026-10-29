@@ -16,7 +16,30 @@ describe("the page's foot", () => {
       expect(rule, cls).toBeDefined();
       expect(rule, cls).toContain("var(--tab-bar-h)");
       expect(rule, cls).toContain("var(--now-playing-h)");
+      expect(rule, cls).toContain("var(--readings-flow-h)");
     }
+  });
+
+  it("raises everything that floats over the foot above the readings bar too", () => {
+    // Build 81, the owner's photo: today's readings bar ("Next: Gospel")
+    // stood over the Bible's chapter pill, which rose for the mini player
+    // only. Every piece placed above the tab bar and the mini player names
+    // the readings bar's height as well.
+    const walk = (dir: string): string[] =>
+      fs.readdirSync(path.join(process.cwd(), dir), { withFileTypes: true }).flatMap((e) => {
+        const rel = path.posix.join(dir, e.name);
+        if (e.isDirectory()) return e.name === "__tests__" ? [] : walk(rel);
+        return /\.tsx?$/.test(e.name) ? [rel] : [];
+      });
+    const offenders: string[] = [];
+    for (const rel of walk("components")) {
+      const src = fs.readFileSync(path.join(process.cwd(), rel), "utf8");
+      for (const m of src.matchAll(/calc\(var\(--tab-bar-h\) \+ var\(--now-playing-h\)[^"`]*/g)) {
+        if (!m[0].includes("--readings-flow-h")) offenders.push(`${rel}: ${m[0]}`);
+      }
+    }
+    expect(offenders).toEqual([]);
+    expect(css).toMatch(/:root \{[^}]*--readings-flow-h: 0px;/);
   });
 
   it("keeps no tab bar room under a layer that covers the tab bar", () => {
