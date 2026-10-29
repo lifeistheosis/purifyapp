@@ -23,6 +23,17 @@ import { cn } from "@/lib/cn";
  * the words are the page's ink (`paper`), so the band follows every palette:
  * on Parchment it is a wash of paper over the picture with the ink on it.
  *
+ * The shade is the ground itself, laid under the picture, and the picture is
+ * faded into it by a mask (.band-picture in globals.css), not darkened by a
+ * layer laid over it. The band clips each of its layers to its round corners
+ * on its own, so where the curve only partly covers a pixel, a dark layer over
+ * the picture covered only part of what the picture put there, and a thin
+ * bright line of the picture showed round the two start corners, the one
+ * place the shade is dark enough to tell (the owner's build 80 note 1, "a
+ * thin sliver shows with no shadow, as if trimmed off"). Faded before it is
+ * clipped, the picture shows nowhere more than the shade lets it, to the
+ * very edge.
+ *
  * A band is a link (`href`), or the summary of a <details> that opens to
  * what it holds (`summary`, Theology's subjects). Either way it is one tap
  * target the width of the page.
@@ -65,31 +76,30 @@ export function GalleryBand({
 
   const face = (
     <>
-      {preview ? (
-        <span
-          aria-hidden
-          className="absolute inset-0 scale-110 bg-cover bg-center blur-md"
-          style={{ backgroundImage: `url(${preview})` }}
+      {/* The shade's own colour, the page's ground, under everything. */}
+      <span aria-hidden className="absolute inset-0 bg-night" />
+      {/* The picture as one layer: the card's grey (what shows before the
+          picture comes), the preview and the picture, faded along the start
+          by the shade's own figures as a mask. */}
+      <span aria-hidden className={cn("absolute inset-0 bg-night-soft", tall ? "band-picture-tall" : "band-picture")}>
+        {preview ? (
+          <span
+            className="absolute inset-0 scale-110 bg-cover bg-center blur-md"
+            style={{ backgroundImage: `url(${preview})` }}
+          />
+        ) : null}
+        {/* eslint-disable-next-line @next/next/no-img-element -- a static
+            export serves files as they are; next/image would add nothing. */}
+        <img
+          src={picture}
+          alt=""
+          title={credit}
+          loading={priority ? "eager" : "lazy"}
+          decoding="async"
+          className="absolute inset-0 h-full w-full object-cover"
+          style={{ objectPosition: focus }}
         />
-      ) : null}
-      {/* eslint-disable-next-line @next/next/no-img-element -- a static
-          export serves files as they are; next/image would add nothing. */}
-      <img
-        src={picture}
-        alt=""
-        title={credit}
-        loading={priority ? "eager" : "lazy"}
-        decoding="async"
-        className="absolute inset-0 h-full w-full object-cover"
-        style={{ objectPosition: focus }}
-      />
-      <span
-        aria-hidden
-        className={cn(
-          "absolute inset-0 bg-gradient-to-r rtl:bg-gradient-to-l",
-          tall ? "from-night/90 from-35% to-night/15" : "from-night/93 from-40% to-night/12",
-        )}
-      />
+      </span>
       <span
         className={cn(
           "relative flex h-full flex-col",
@@ -124,8 +134,12 @@ export function GalleryBand({
     </>
   );
 
+  // No colour of its own: the band's colours are all in its layers, so
+  // nothing lighter than the shade lies under its edge, and the tint a press
+  // gives it (.press-card) stays hidden under the ground, as it was under the
+  // picture.
   const box = cn(
-    "press-card relative block overflow-hidden bg-night-soft ps-4 pe-3",
+    "press-card relative block overflow-hidden ps-4 pe-3",
     tall ? "h-[150px] rounded-[20px]" : "h-24 rounded-[18px]",
   );
 

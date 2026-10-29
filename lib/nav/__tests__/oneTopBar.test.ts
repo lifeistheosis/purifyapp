@@ -194,6 +194,28 @@ describe("search and the bell", () => {
     expect(bell).toContain("<Bell size={24} filled={lit} />");
   });
 
+  // The owner's build 80 note 5 (Homebase/boards/purify-master/r18/
+  // BUILD-80-NOTES.md, 2026-10-29): "the notifications button and search
+  // touch a little; the Premium pill does not touch search". The pill's
+  // wrapper had a 2px margin of its own and search and the bell had nothing
+  // between them, which showed on Prayers, where the two stand on round
+  // plates. One gap now, the row's own 8px, between all three boxes; the
+  // walk measures it (scripts/export-walk.mjs, "One top bar").
+  it("stand one even step apart, the pill, search and the bell, each in its own 44px box", () => {
+    const bar = code(BAR);
+    expect(bar).toContain('<div data-tab-actions="" className="flex shrink-0 items-center gap-2">');
+    // Still wrapped, so the plates over Prayers' picture (globals.css,
+    // `[data-tab-actions] > button`) leave the pill its own silver.
+    expect(bar).toMatch(/<span className="inline-flex">\s*<MobilePremiumButton \/>\s*<\/span>\s*<SearchTrigger iconSize=\{24\} className="text-paper\/80" \/>\s*<NotificationsButton \/>\s*<\/div>/);
+    // No margin on any of the three, so the one gap is all the room between them.
+    const margin = /(?:^|[\s"'`:])-?m[sexylrtb]?-(?:\d|\[|px\b|auto\b)/;
+    const cluster = bar.slice(bar.indexOf("data-tab-actions"), bar.indexOf("</header>"));
+    expect(cluster).not.toMatch(margin);
+    for (const file of [PILL, "components/search/SearchTrigger.tsx", BELL]) {
+      expect(code(file), file).not.toMatch(margin);
+    }
+  });
+
   it("says something is new one way only: the bell drawn filled, no dot, no count", () => {
     const bell = code(BELL);
     expect(bell).toContain("const lit = inbox.unread > 0 || whatsNewUnseen(seen);");

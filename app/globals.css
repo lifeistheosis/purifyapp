@@ -3226,6 +3226,37 @@ html[data-reading-mode="parchment"] .paywall-title:not(.dark-island *) {
  transform: none;
 }
 
+/* A gallery band's picture (components/ui/GalleryBand.tsx, Discover and
+   Theology, 1.8): faded into the page's ground, which lies under it, by a
+   mask with the shade's own figures, in place of the dark layer that lay
+   over it. The band clips each layer to its round corners on its own, so on
+   a pixel the curve only partly covers, the dark layer covered only part of
+   the picture under it: a thin bright line of the picture showed round the
+   two start corners, where the shade is darkest (the owner's build 80 note
+   1, "a thin sliver shows with no shadow, as if trimmed off"). Masked, the
+   picture is faded before it is clipped, so the edge is as dark as the
+   shade. The figures are how much of the picture shows, the shade's turned
+   over: 7% across the start 40%, to 88% at the far end (the shade was 93%
+   to 12%); the tall band 10% across 35%, to 85% (90% to 15%). A mask reads
+   only the alpha, so its black is no colour on any palette. Nothing here
+   moves. */
+.band-picture {
+ -webkit-mask-image: linear-gradient(to right, rgb(0 0 0 / 0.07) 40%, rgb(0 0 0 / 0.88));
+ mask-image: linear-gradient(to right, rgb(0 0 0 / 0.07) 40%, rgb(0 0 0 / 0.88));
+}
+.band-picture-tall {
+ -webkit-mask-image: linear-gradient(to right, rgb(0 0 0 / 0.1) 35%, rgb(0 0 0 / 0.85));
+ mask-image: linear-gradient(to right, rgb(0 0 0 / 0.1) 35%, rgb(0 0 0 / 0.85));
+}
+[dir="rtl"] .band-picture {
+ -webkit-mask-image: linear-gradient(to left, rgb(0 0 0 / 0.07) 40%, rgb(0 0 0 / 0.88));
+ mask-image: linear-gradient(to left, rgb(0 0 0 / 0.07) 40%, rgb(0 0 0 / 0.88));
+}
+[dir="rtl"] .band-picture-tall {
+ -webkit-mask-image: linear-gradient(to left, rgb(0 0 0 / 0.1) 35%, rgb(0 0 0 / 0.85));
+ mask-image: linear-gradient(to left, rgb(0 0 0 / 0.1) 35%, rgb(0 0 0 / 0.85));
+}
+
 /* A gallery band that opens (Theology's subjects, components/theology/
    FaithMap.tsx): what it holds settles in under it as it opens. The rule
    matches only while the <details> is open, so it plays again on every
