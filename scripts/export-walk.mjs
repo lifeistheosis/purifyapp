@@ -116,6 +116,91 @@ const bare = (href) => String(href ?? "").replace(/(.)\/(?=$|[?#])/, "$1");
 const slashed = (href) => (href.startsWith("/") ? href.replace(/^([^?#]*?)\/?(?=[?#]|$)/, "$1/") : href);
 const linkTo = (href) => `a:is([href="${bare(href)}"], [href="${slashed(bare(href))}"])`;
 
+/**
+ * How much lighter the curve of a round box's corners is than the box just
+ * inside it, or than the page beside it, in levels of light (0 to 255). A
+ * layer laid over a picture in a round box is clipped to the curve on its
+ * own, so where the curve only partly covers a pixel it covers only part of
+ * what the picture put there, and a hairline of the picture shows round the
+ * corner: the owner's build 80 note 1 on Discover's bands (section 25), and
+ * the same line on the Bible and You mastheads and Today's readings band.
+ * `corners` are "top-start", "bottom-end" and so on, so a page that reads
+ * right to left is measured on its own start. The box must be whole on the
+ * screen.
+ *
+ * Read along the whole curve, not at its lightest pixel: the line runs along
+ * every pixel the curve partly covers, while where a picture still shows
+ * through, a speck of its own (the You plate has one beside its foot corner,
+ * square corners or round) is one pixel. So the answer is the lift that a
+ * tenth of the curve's pixels reach, with the lightest beside it, and each
+ * corner's own. 1.8's markup, drawn in this Chromium with the real pictures
+ * on the five everyday palettes: the mastheads 11 to 31 levels, the readings
+ * band 15 to 17, and with the line gone 2 at most.
+ */
+async function cornerLift(page, selector, corners) {
+  const { default: sharp } = await import("sharp");
+  const b = await page.evaluate((sel) => {
+    const el = document.querySelector(sel);
+    if (!el) return null;
+    const r = el.getBoundingClientRect();
+    const css = getComputedStyle(el);
+    return {
+      left: r.left,
+      top: r.top,
+      width: r.width,
+      height: r.height,
+      radius: parseFloat(css.borderTopLeftRadius) || 0,
+      rtl: css.direction === "rtl",
+      whole: r.top >= 4 && r.left >= 4 && r.bottom <= innerHeight - 4 && r.right <= innerWidth - 4,
+    };
+  }, selector);
+  if (!b || !b.radius || !b.whole) throw new Error(`${selector} is ${!b ? "not on the page" : !b.radius ? "not round" : "not whole on the screen"}`);
+  const pad = 3;
+  const clip = { x: Math.floor(b.left) - pad, y: Math.floor(b.top) - pad, width: Math.ceil(b.width) + 2 * pad, height: Math.ceil(b.height) + 2 * pad };
+  const { data, info } = await sharp(await page.screenshot({ clip })).removeAlpha().raw().toBuffer({ resolveWithObject: true });
+  const s = info.width / clip.width;
+  const at = (x, y) => (Math.min(info.height - 1, Math.max(0, Math.round(y))) * info.width + Math.min(info.width - 1, Math.max(0, Math.round(x)))) * info.channels;
+  const lum = (i) => 0.2126 * data[i] + 0.7152 * data[i + 1] + 0.0722 * data[i + 2];
+  const R = b.radius * s;
+  const x0 = (b.left - clip.x) * s;
+  const y0 = (b.top - clip.y) * s;
+  const each = {};
+  let most = -Infinity;
+  for (const corner of corners) {
+    const [edge, side] = corner.split("-");
+    const up = edge === "top";
+    const left = (side === "start") !== b.rtl;
+    const cx = left ? x0 + R : x0 + b.width * s - R;
+    const cy = up ? y0 + R : y0 + b.height * s - R;
+    // The page beside the box on that side, halfway down it.
+    const ground = lum(at(left ? 1 : info.width - 2, info.height / 2));
+    const lifts = [];
+    for (let y = Math.floor(cy - R - 1); y <= Math.ceil(cy + R + 1); y++) {
+      for (let x = Math.floor(cx - R - 1); x <= Math.ceil(cx + R + 1); x++) {
+        const dx = x + 0.5 - cx;
+        const dy = y + 0.5 - cy;
+        // The corner's own quarter.
+        if ((left ? dx > 0 : dx < 0) || (up ? dy > 0 : dy < 0)) continue;
+        const d = Math.hypot(dx, dy);
+        // The curve's own pixels, the ones it only partly covers.
+        if (d < R - 1 || d > R + 0.5) continue;
+        // The box just inside: the lightest pixel near the same ray, 2 to 4px in.
+        let inside = 0;
+        for (const t of [2, 3, 4]) {
+          const k = (R - t * s) / d;
+          for (const ox of [-1, 0, 1]) for (const oy of [-1, 0, 1]) inside = Math.max(inside, lum(at(cx + dx * k - 0.5 + ox, cy + dy * k - 0.5 + oy)));
+        }
+        lifts.push(lum(at(x, y)) - Math.max(inside, ground));
+      }
+    }
+    if (!lifts.length) throw new Error(`${selector} has no curve at its ${corner} corner`);
+    lifts.sort((p, q) => p - q);
+    each[corner] = Math.round(lifts[Math.floor(lifts.length * 0.9)]);
+    most = Math.max(most, lifts.at(-1));
+  }
+  return { lift: Math.max(...Object.values(each)), most: Math.round(most), each };
+}
+
 // ---- 1. A phone, the Greek off: the page is its verses and asks for nothing more.
 await section(1, async () => {
   const { ctx, page, asked, missing, errors } = await open({ width: 390, height: 844, phone: true });
@@ -1547,6 +1632,20 @@ await section(23, async () => {
     must(!!bands.face?.ok && bands.face.src === "/saints/icons/john-chrysostom.jpg" && bands.broken.length === 0, `with no signal his face is his icon from the bundle, and nothing is broken (${bands.face?.src ?? "no picture"}${bands.broken.length ? "; broken: " + bands.broken.join(", ") : ""})`);
     must(bands.lit.join(",") === "wine,oil" && bands.struck.join(",") === "fish,meat", `the Friday fast lights wine and oil and strikes fish and meat (${bands.lit.join(", ")} | ${bands.struck.join(", ")})`);
     must(bands.read, "the readings band opens 1 Thessalonians 5 and Luke 13");
+    // The readings band's start corners are as dark as its shade, with no
+    // line of the manuscript round them: the shade lay over the page and was
+    // clipped to the curve on its own (found with the owner's build 80 note
+    // 1). ChurchTodayRail.tsx and .today-readings-picture in globals.css;
+    // lib/ui/__tests__/pictureCorners.test.ts holds the source.
+    try {
+      await page.evaluate(() => document.querySelector('[data-today-band="readings"]')?.scrollIntoView({ block: "center" }));
+      await page.waitForFunction(() => { const img = document.querySelector('[data-today-band="readings"] img'); return !!img && img.complete && img.naturalWidth > 0; }, null, { timeout: 10000 }).catch(() => {});
+      await page.waitForTimeout(300);
+      const lift = await cornerLift(page, '[data-today-band="readings"]', ["top-start", "bottom-start"]);
+      must(lift.lift <= 4, `the readings band's start corners are as dark as its shade, with no line of the page round them (${lift.lift} levels over the band inside along the curve, ${lift.most} at its lightest; 1.8's markup measured 16)`);
+    } catch (e) {
+      must(false, `the readings band's corners could not be measured: ${firstLine(e)}`);
+    }
 
     // A tap on him opens his window: his words whole, Share as a picture,
     // and Read where it's from at the homily's paragraph.
@@ -2143,6 +2242,18 @@ await section(27, async () => {
     must(!!got && got.study.length === 2 && got.study[0].href.replace(/\/$/, "") === "/plans" && got.study[1].href.replace(/\/$/, "") === "/journal" && got.study[0].text === en["plans.title"] && got.study[1].text === en["journal.title"], "Reading plans and Your journal are one row of two halves");
     must(!!got && got.others === 0, `nothing under the header is drawn in another look: no band, tinted card, pill or gold (${got?.others})`);
     must(!!got && got.firstBookAt < got.barTop - 40, `the first book is on the first screen (its row begins at ${got?.firstBookAt} px, the bar at ${got?.barTop}; it began at 1007)`);
+    // The picture's foot corners are as dark as its wash, with no line of
+    // the manuscript round them: the wash lay over the picture and was
+    // clipped to the curve on its own (found with the owner's build 80 note
+    // 1). SectionMasthead.tsx and .masthead-picture in globals.css;
+    // lib/ui/__tests__/pictureCorners.test.ts holds the source.
+    try {
+      await page.waitForFunction(() => { const img = document.querySelector(".cascade > figure img"); return !!img && img.complete && img.naturalWidth > 0; }, null, { timeout: 10000 }).catch(() => {});
+      const lift = await cornerLift(page, ".cascade > figure", ["bottom-start", "bottom-end"]);
+      must(lift.lift <= 4, `the picture's foot corners are as dark as its wash, with no line of the picture round them (${lift.lift} levels over the plate inside along the curve, ${lift.most} at its lightest; 1.8's markup measured 25)`);
+    } catch (e) {
+      must(false, `the picture's corners could not be measured: ${firstLine(e)}`);
+    }
     await page.screenshot({ path: path.join(SHOTS, "bible-tab-phone.png") });
     must(errors.length === 0, `no page errors${errors.length ? ": " + errors.slice(0, 2).join(" | ") : ""}`);
     await ctx.close();
@@ -2227,6 +2338,17 @@ await section(28, async () => {
     );
     must(you.rows.at(-1).label === en["settings.title"] && !you.door, `the door is Settings, the list's last row, and the bar is the tabs' own with no second door (${you.door ? "a door in the bar" : "none in the bar"})`);
     must(you.onlyTheList, "with no heading over the list");
+    // The Ladder's foot corners are as dark as its wash, as the Bible tab's
+    // (section 27): SectionMasthead.tsx, .masthead-picture in globals.css.
+    try {
+      await page.evaluate(() => window.scrollTo(0, 0));
+      await page.waitForFunction(() => { const img = document.querySelector(".cascade > figure img"); return !!img && img.complete && img.naturalWidth > 0; }, null, { timeout: 10000 }).catch(() => {});
+      await page.waitForTimeout(300);
+      const lift = await cornerLift(page, ".cascade > figure", ["bottom-start", "bottom-end"]);
+      must(lift.lift <= 4, `the You tab's picture has its foot corners as dark as its wash (${lift.lift} levels over the plate inside along the curve, ${lift.most} at its lightest; 1.8's markup measured 12)`);
+    } catch (e) {
+      must(false, `the You tab's picture corners could not be measured: ${firstLine(e)}`);
+    }
     await page.evaluate(() => document.querySelector("[data-you-rows]")?.scrollIntoView({ block: "center" }));
     await page.waitForTimeout(300);
     await page.screenshot({ path: path.join(SHOTS, "you-rows-phone.png") });

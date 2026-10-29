@@ -247,11 +247,17 @@ export function ChurchTodayRail() {
         ) : null}
 
         <section data-today-band="readings" aria-labelledby="today-readings" className="relative overflow-hidden rounded-[18px] bg-night-deep">
+          {/* The shade along the start is the band's own ground: the page is
+              faded into it by a mask (.today-readings-picture in globals.css),
+              not darkened by a layer laid over it. The band clips each layer
+              to its round corners on its own, so a layer over the page let a
+              hairline of it show round the two start corners, where the shade
+              is darkest (the line the owner's build 80 note 1 found on
+              Discover's bands). */}
           {bible ? (
             // eslint-disable-next-line @next/next/no-img-element -- the Bible tab's own picture (lib/media/sections.ts), as the band's ground
-            <img src={bible.src} alt="" aria-hidden decoding="async" className="pointer-events-none absolute inset-0 h-full w-full object-cover opacity-55" />
+            <img src={bible.src} alt="" aria-hidden decoding="async" className="today-readings-picture pointer-events-none absolute inset-0 h-full w-full object-cover opacity-55" />
           ) : null}
-          <span aria-hidden className="pointer-events-none absolute inset-0 bg-gradient-to-r from-night-deep/90 from-30% to-night-deep/35 rtl:bg-gradient-to-l" />
           <div className="relative flex min-h-[104px] items-end justify-between gap-3 px-4 py-3.5">
             <div className="min-w-0">
               <p id="today-readings" className="font-sans text-caption font-semibold text-paper/60">

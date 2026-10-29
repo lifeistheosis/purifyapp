@@ -161,6 +161,9 @@ export function useFlorilegia() {
   const florilegia = useSyncExternalStore(subscribe, readSnapshot, () => EMPTY);
 
   const create = useCallback((title: string, description?: string): string => {
+    // The last resort of a store with no catalog: every screen that creates a
+    // gathering names an unnamed one in the reader's language first
+    // (study.florilegium.untitled), and the title is kept as it is given.
     const trimmed = title.trim() || "Untitled gathering";
     const now = Date.now();
     const next: Florilegium = {
