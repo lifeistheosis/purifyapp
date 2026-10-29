@@ -119,7 +119,7 @@ export function LookingFor({
 
       {/* The way on, held at the foot of a phone over a fade of the page's
           ground. A computer's window has the room: there it follows the cards. */}
-      <div className="pointer-events-none sticky bottom-0 z-10 -mx-6 mt-auto bg-gradient-to-b from-transparent to-night to-45% px-6 pb-4 pt-10 md:static md:mx-0 md:mt-8 md:bg-none md:p-0">
+      <div className="ob-foot pointer-events-none sticky z-10 -mx-6 mt-auto bg-gradient-to-b from-transparent to-night to-45% px-6 pt-10 md:static md:mx-0 md:mt-8 md:bg-none md:p-0">
         <div className="pointer-events-auto">
           <PrimaryButton onClick={onContinue} disabled={count === 0}>
             {count ? t("onboard.intent.continueWith", { count }) : t("onboard.continue")}

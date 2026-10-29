@@ -19,6 +19,23 @@ describe("the page's foot", () => {
     }
   });
 
+  it("keeps no tab bar room under a layer that covers the tab bar", () => {
+    // The welcome questions cover the tab bar, so their foot makes room for
+    // the screen's edge only, and their way on reaches down over that edge.
+    // With the tab bar's room it stood about 100px clear of the bottom, the
+    // cards showing under it (build 81, the owner's photo).
+    const edge = css.match(/html\.is-native \.safe-pb-edge \{[^}]*\}/)?.[0];
+    expect(edge).toBeDefined();
+    expect(edge).toContain("var(--inset-bottom)");
+    expect(edge).not.toContain("--tab-bar-h");
+    const flow = fs.readFileSync(path.join(process.cwd(), "components/onboarding/OnboardingFlow.tsx"), "utf8");
+    expect(flow).toMatch(/fixed inset-0 z-\[100\][^`]*\bsafe-pb-edge\b/);
+    expect(flow).not.toMatch(/fixed inset-0 z-\[100\][^`]*\bsafe-pb(?!-)\b/);
+    const foot = fs.readFileSync(path.join(process.cwd(), "components/onboarding/LookingFor.tsx"), "utf8");
+    expect(foot).toMatch(/className="ob-foot [^"]*\bsticky\b/);
+    expect(css).toMatch(/\.ob-foot \{[^}]*bottom: calc\(-1 \* var\(--inset-bottom, 0px\)\)/);
+  });
+
   it("gives the card no room when no card is showing", () => {
     // The default is 0, set before any rule that raises it.
     expect(css).toMatch(/--now-playing-h:\s*0px;/);

@@ -411,7 +411,7 @@ export function OnboardingFlow({
       role="dialog"
       aria-modal="true"
       aria-label={returning ? t("onboard.returning.title") : t("onboard.welcome.eyebrow")}
-      className={`lm-hero fixed inset-0 z-[100] flex flex-col overflow-y-auto text-paper safe-pb ${exiting ? "ob-exit" : ""}`}
+      className={`lm-hero fixed inset-0 z-[100] flex flex-col overflow-y-auto text-paper safe-pb-edge ${exiting ? "ob-exit" : ""}`}
       style={{
         background:
           "radial-gradient(120% 55% at 50% 0%, rgba(255,255,255,0.05) 0%, transparent 55%), #101013",

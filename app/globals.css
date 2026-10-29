@@ -378,6 +378,14 @@ html.is-native .safe-pb {
 html.is-native .safe-pb-reader {
  padding-bottom: calc(var(--inset-bottom) + var(--tab-bar-h) + var(--now-playing-h) + 68px);
 }
+/* A full-screen layer that covers the tab bar (the welcome questions) makes
+   room for the screen's own edge only. It had .safe-pb, which kept the tab
+   bar's height free at its foot, so a sticky way on stood about 100px clear
+   of the bottom with the cards showing under it (build 81, the owner's
+   photo of "What are you looking for?"). */
+html.is-native .safe-pb-edge {
+ padding-bottom: var(--inset-bottom);
+}
 /* The now-playing bar sits ABOVE the tab bar, not on top of it.
    Both were pinned to bottom-0 and the player carried the higher z-index
    (z-55 against the bar's z-50), so starting the anthem hid the whole tab
@@ -2878,6 +2886,16 @@ html[data-reading-mode="parchment"] .lic-notes .lic-note:target {
 }
 /* Backwards, not both: a chosen card has to be free to take its press scale. */
 .ob-rise { animation: ob-rise 520ms var(--ease-house) backwards; }
+/* The welcome questions' way on (components/onboarding/LookingFor.tsx), held
+   at the very foot of a phone: it reaches down over the screen's edge, so
+   its fade to the page's ground covers everything under it. A computer's
+   window gives it the room, and there it follows the cards (md:static). */
+@media (max-width: 47.999rem) {
+ .ob-foot {
+  bottom: calc(-1 * var(--inset-bottom, 0px));
+  padding-bottom: calc(1rem + var(--inset-bottom, 0px));
+ }
+}
 .ob-step-back { animation: ob-step-back 460ms var(--ease-house) backwards; }
 
 .ob-progress { transition: width 520ms var(--ease-house); }
