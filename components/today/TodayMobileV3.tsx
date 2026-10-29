@@ -99,19 +99,22 @@ export function TodayMobileV3() {
             <VerseOfDayCard />
           </div>
 
-          {/* Your first Liturgy (1.7): from six days before the day the
-              reader chose in the guide until that day, under the day's word
-              so the verse stays first. Nothing at all on every other day. */}
+          {/* Your first Liturgy (1.7) and Today's Catechism, together under
+              the day's word, so the verse stays first (1.8, the owner's round
+              17, transitionary "A and B": one quiet line each for an Orthodox
+              reader, two cards for a reader learning or new to the faith;
+              lib/today/smallLook.ts). The reminder shows from six days before
+              the day the reader chose in the guide until that day; the
+              Catechism only while the bank holds questions. Each decides
+              that itself and renders nothing otherwise, so neither leaves a
+              gap here. */}
           <FirstLiturgyReminder className="mt-4" />
+          <CatechismCard className="mt-4" />
 
-          {/* Pray: the hour's prayer first, then the rest of the day's rule
-              and the Prayer Rope Anthem, as one row you swipe. */}
+          {/* Pray (1.8, his pick B of round 13, "The hour, large"): the hour's
+              prayer as one card, then the rest of the day's rule and the
+              Prayer Rope Anthem as small tiles. */}
           <PrayRail className="mt-8" />
-
-          {/* Today's Catechism: one line, and only while the bank holds
-              questions. The card decides that itself and renders nothing
-              otherwise, so an empty bank leaves no gap here. */}
-          <CatechismCard />
 
           {/* The "Explore" grid stood here: four tiles to /prayers, /bible,
               /saints and /calendar. Two were the same href as a tab 200px
@@ -119,8 +122,9 @@ export function TodayMobileV3() {
               the tab bar and called Bible "Scripture" while the tab said
               "Bible". The tab bar is the navigation. */}
 
-          {/* The Church today: the saint, the fast, the readings, the count
-              to Pascha, as one list of rows. */}
+          {/* The Church today (1.8, his pick B of round 12, "Bands"): the
+              saint with his face, the fast as marks, the readings over a
+              manuscript, then the rest of the day as rows. */}
           <p className="mt-8 mb-3 font-sans text-caption text-paper/55">
             <T k="today.churchToday" />
           </p>

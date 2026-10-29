@@ -64,7 +64,12 @@ export const SECTION_MEDIA: Partial<Record<SectionKey, SectionMedia>> = {
   // 1.7 the rest of the day is a swipe row of prayers and one list of rows
   // (components/today/ChurchTodayRail.tsx), the calm the owner picked on
   // 2026-10-15. A generic Pantocrator plate there would be decoration
-  // competing with content.
+  // competing with content. Since 1.8 two of the pictures below are parts of
+  // cards on Today, not a masthead, by the owner's round 2 picks: the Prayers
+  // Pantocrator as a soft light beside the hour's prayer
+  // (components/today/PrayNowCard.tsx) and the Bible's page under the day's
+  // readings (components/today/ChurchTodayRail.tsx). Each reads its entry
+  // here, so a new cut reaches Today with the section.
   bible: {
     src: "/sections/bible.jpg",
     alt: "A page of the Codex Sinaiticus, the Gospel of Matthew in Greek uncial script.",
