@@ -87,6 +87,20 @@ describe("Now Playing: the cover and the words, never merged", () => {
     expect(src).toContain('t("player.viewWords")');
     expect(src).toContain("onSelect={setPlayerView}");
   });
+
+  // The owner's note 3 of build 80, "the cover jumps": the two views
+  // cross-fade where they stand, so the cover stays exactly where it is both
+  // ways. Each view used to rise 0.75rem under transition-[opacity,transform],
+  // and Tailwind 4 draws translate-* with the `translate` property, which
+  // that list leaves out: the rise was a jump, not a move.
+  it("cross-fades the two views where they stand, so the cover never moves", () => {
+    const start = at("const panel = ");
+    const panel = src.slice(start, src.indexOf("\n", start));
+    expect(panel).toContain("transition-opacity");
+    expect(panel).toContain("motion-reduce:transition-none");
+    expect(panel).not.toMatch(/transition-\[|transition-transform|transition-all|translate/);
+    for (const view of [cover, words]) expect(view).not.toMatch(/translate-[xy]-/);
+  });
 });
 
 describe("one clock for every place the words are lit", () => {
