@@ -171,7 +171,14 @@ export function NowPlayingSheet() {
     { id: "cover", label: t("player.viewCover"), icon: <CoverGlyph /> },
     { id: "words", label: t("player.viewWords"), icon: <WordsGlyph /> },
   ];
-  const panel = "absolute inset-0 flex flex-col transition-[opacity,transform] duration-[380ms] ease-[var(--ease-house)] motion-reduce:transition-none";
+  // The two views cross-fade where they stand, and nothing else: the cover
+  // stays exactly where it is both ways (the owner's note 3 of build 80, "the
+  // cover jumps"). Each view used to carry a rise of 0.75rem (about 13px), a
+  // translate under a transition that named only opacity and transform, and
+  // Tailwind 4 draws a translate with the `translate` property, which that
+  // list leaves out: the rise never moved, it jumped. The cover leapt up as
+  // the words came, and came back lower than it was last seen.
+  const panel = "absolute inset-0 flex flex-col transition-opacity duration-[380ms] ease-[var(--ease-house)] motion-reduce:transition-none";
 
   return (
     <div className="fixed inset-0 z-[70]" role="dialog" aria-modal="true" aria-label={t("prayers.nowPlaying")}>
@@ -266,7 +273,7 @@ export function NowPlayingSheet() {
               aria-labelledby={hasWords ? "player-view-tab-cover" : undefined}
               aria-hidden={words}
               inert={words}
-              className={cn(panel, words ? "pointer-events-none -translate-y-3 opacity-0" : "opacity-100")}
+              className={cn(panel, words ? "pointer-events-none opacity-0" : "opacity-100")}
             >
               {/* As large as the screen leaves it, to 340px, and square. */}
               <div className="relative flex min-h-0 flex-1 items-center justify-center [container-type:size]">
@@ -295,7 +302,7 @@ export function NowPlayingSheet() {
                 aria-labelledby="player-view-tab-words"
                 aria-hidden={!words}
                 inert={!words}
-                className={cn(panel, words ? "opacity-100" : "pointer-events-none translate-y-3 opacity-0")}
+                className={cn(panel, words ? "opacity-100" : "pointer-events-none opacity-0")}
               >
                 <div className="flex items-center gap-3">
                   {audio.art ? (

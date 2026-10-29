@@ -10,7 +10,7 @@ import { Sound } from "@/components/ui/icons/Sound";
 import { useAmbience } from "@/lib/ambience/player";
 import { openAmbience } from "@/lib/ambience/sheet";
 import { cn } from "@/lib/cn";
-import { usePlusFeatures } from "@/lib/entitlements/usePlusFeatures";
+import { useExpectedPlusFeatures, usePlusFeatures } from "@/lib/entitlements/usePlusFeatures";
 import { usePersistentAudio } from "@/lib/prayers/persistentAudioStore";
 
 import { AskCard, ChantPicker, useChantAsk } from "./PrayWithChant";
@@ -41,6 +41,7 @@ export function PrayWith({ className }: { className?: string }) {
   const audio = usePersistentAudio();
   const ambience = useAmbience();
   const plus = usePlusFeatures();
+  const expectedPlus = useExpectedPlusFeatures();
   const upgrade = useUpgradeModal();
   const [picker, setPicker] = useState(false);
   const { asking, dismiss } = useChantAsk(audio.playing);
@@ -63,6 +64,15 @@ export function PrayWith({ className }: { className?: string }) {
   // Unknown is allowed (lib/entitlements/usePlusFeatures.ts): the sheet
   // carries its own lock, so a subscriber never meets one while it loads.
   const locked = plus === false;
+  // The lock's place, from the first frame (the owner's note 6 of build 80).
+  // The answer comes after the first frame, and the lock coming with it
+  // widened the Ambience half and moved the centred row, both halves and the
+  // lock, under the reader's eye. So until the answer is known its place is
+  // kept, empty, unless the answer is expected to be Plus (this build cannot
+  // sell it, or this device's last answer was Plus), and the lock fades into
+  // it when the answer says so. A page loaded afresh is drawn before it can
+  // read the device, so there the place is kept for everyone.
+  const lockPlace = locked || (plus === null && expectedPlus !== true);
   const chantOn = audio.playing;
   const soundOn = Boolean(ambience.playing);
 
@@ -102,7 +112,15 @@ export function PrayWith({ className }: { className?: string }) {
         >
           <Sound size={16} className="shrink-0" />
           {t("ambience.title")}
-          {locked ? <PlusLock size={12} className="opacity-70" /> : null}
+          {lockPlace ? (
+            <PlusLock
+              size={12}
+              className={cn(
+                "motion-safe:transition-opacity motion-safe:duration-[var(--duration-fast)] motion-safe:ease-[var(--ease-house)]",
+                locked ? "opacity-70" : "opacity-0",
+              )}
+            />
+          ) : null}
         </button>
       </span>
       {asking ? <AskCard onDismiss={dismiss} onChoose={openPicker} /> : null}
