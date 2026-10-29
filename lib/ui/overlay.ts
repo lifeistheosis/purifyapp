@@ -66,7 +66,7 @@ function subscribeOverlay(onChange: () => void): () => void {
 }
 
 /**
- * Counted body-scroll lock.
+ * Counted page-scroll lock.
  *
  * Every overlay used to do its own `prev = body.style.overflow` save and
  * restore. That is correct for ONE overlay and silently broken for two,
@@ -81,21 +81,44 @@ function subscribeOverlay(onChange: () => void): () => void {
  *
  * The page then cannot scroll at all and looks frozen until a reload. Sheet's
  * 220ms exit animation keeps a closing sheet mounted, so "close one, open the
- * other" is enough to hit it — no double-tap required.
+ * other" is enough to hit it, no double-tap required.
  *
  * Only the OUTERMOST lock captures and restores the real value; nested locks
  * just move the counter. Mirrors the depth counter above, and for the same
  * reason. Do not go back to per-component save/restore: a single unconverted
  * call site re-introduces the deadlock for every other overlay.
+ *
+ * THE LOCK IS ON <html>, NOT <body> (build 80, the owner's note 2: with the
+ * full player open, a drag or a wheel moved the page under it). The names
+ * are older than that and stay, for their callers.
+ *
+ * Since 1.5.2 app/globals.css gives <html> `overflow-x: clip` on phones and
+ * in the apps. A root whose overflow is not `visible` keeps its own: the
+ * viewport takes the root's overflow and the body's is never carried up to
+ * it. So `overflow: hidden` on the body stopped reaching the viewport there,
+ * and it did two things instead. The page under every sheet went on
+ * scrolling to a finger, and the body became a scroll container of its own,
+ * which pinned every sticky bar (the top bars) to the body's top, off the
+ * screen once the page was scrolled, for as long as the sheet was open.
+ * Measured in Chromium with the app's root rules: a 150px drag over a fixed
+ * overlay moved the page 135px with the body locked, none with the root
+ * locked, and a scrolling list inside the overlay scrolled in both.
+ *
+ * `overflow: hidden` on the root is the viewport's own wherever the page
+ * runs: a phone, the apps, a computer (where the body's lock had worked,
+ * because the root there is `visible`). The root's `scrollbar-gutter: stable`
+ * keeps its gutter under `hidden`, so nothing beside a sheet moves sideways
+ * on a computer. Never put the lock back on the body.
  */
 let scrollDepth = 0;
 let scrollRestore = "";
 
 export function lockBodyScroll(): void {
   if (typeof document === "undefined") return;
-  if (scrollDepth === 0) scrollRestore = document.body.style.overflow;
+  const root = document.documentElement;
+  if (scrollDepth === 0) scrollRestore = root.style.overflow;
   scrollDepth += 1;
-  document.body.style.overflow = "hidden";
+  root.style.overflow = "hidden";
 }
 
 export function unlockBodyScroll(): void {
@@ -106,5 +129,5 @@ export function unlockBodyScroll(): void {
   // any unbalanced call. Only a real 1 → 0 transition restores.
   if (scrollDepth === 0) return;
   scrollDepth -= 1;
-  if (scrollDepth === 0) document.body.style.overflow = scrollRestore;
+  if (scrollDepth === 0) document.documentElement.style.overflow = scrollRestore;
 }

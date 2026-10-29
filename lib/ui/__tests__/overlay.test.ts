@@ -1,41 +1,54 @@
-// The counted body-scroll lock. Pins the exact interleave that made the
+// The counted page-scroll lock. Pins the exact interleave that made the
 // Bible reader look frozen: two overlays on one page (the reader has four),
 // each doing its own save/restore, leaving `overflow: hidden` stuck on with
 // nothing open. See lib/ui/overlay.ts for the failure trace.
 //
+// And where the lock goes (build 80, the owner's note 2): on <html>, never on
+// <body>. app/globals.css clips the root's width on phones and in the apps,
+// and a root that is not `visible` keeps the body's overflow from reaching
+// the viewport, so a body lock let the page scroll under every sheet and
+// turned the body into a scroll container that pinned the sticky top bars
+// off the screen.
+//
 // The suite runs on the `node` environment for startup speed (vitest.config),
-// so rather than pull in jsdom for one file we stub the only two things the
-// module touches: document.body.style.overflow and document.body.dataset.
+// so rather than pull in jsdom for one file we stub the only things the
+// module touches: the two elements' style.overflow and document.body.dataset.
 
 import { describe, it, expect, beforeEach } from "vitest";
 import { lockBodyScroll, unlockBodyScroll } from "@/lib/ui/overlay";
 
+type Stub = {
+  documentElement: { style: { overflow: string } };
+  body: { style: { overflow: string }; dataset: Record<string, string> };
+};
+
 function installDocumentStub() {
-  (globalThis as unknown as { document: unknown }).document = {
-    body: { style: { overflow: "" }, dataset: {} as Record<string, string> },
+  (globalThis as unknown as { document: Stub }).document = {
+    documentElement: { style: { overflow: "" } },
+    body: { style: { overflow: "" }, dataset: {} },
   };
 }
 
+function doc(): Stub {
+  return (globalThis as unknown as { document: Stub }).document;
+}
+
 function overflow(): string {
-  return (
-    globalThis as unknown as { document: { body: { style: { overflow: string } } } }
-  ).document.body.style.overflow;
+  return doc().documentElement.style.overflow;
 }
 
 function setOverflow(v: string) {
-  (
-    globalThis as unknown as { document: { body: { style: { overflow: string } } } }
-  ).document.body.style.overflow = v;
+  doc().documentElement.style.overflow = v;
 }
 
 beforeEach(() => {
   installDocumentStub();
-  // Drain any depth left by a previous test, then start from a clean body.
+  // Drain any depth left by a previous test, then start from a clean root.
   for (let i = 0; i < 10; i++) unlockBodyScroll();
   setOverflow("");
 });
 
-describe("counted body scroll lock", () => {
+describe("counted page scroll lock", () => {
   it("locks and unlocks for a single overlay", () => {
     lockBodyScroll();
     expect(overflow()).toBe("hidden");
@@ -79,5 +92,15 @@ describe("counted body scroll lock", () => {
     expect(overflow()).toBe("hidden");
     unlockBodyScroll();
     expect(overflow()).toBe("");
+  });
+
+  it("locks the root, and never the body", () => {
+    lockBodyScroll();
+    expect(doc().documentElement.style.overflow).toBe("hidden");
+    // A body with `overflow: hidden` under a clipped root is a scroll
+    // container of its own: the page scrolls on, and the sticky bars leave.
+    expect(doc().body.style.overflow).toBe("");
+    unlockBodyScroll();
+    expect(doc().body.style.overflow).toBe("");
   });
 });
