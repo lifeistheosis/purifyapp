@@ -4,6 +4,7 @@ import { useState } from "react";
 import Link from "next/link";
 import { Reference } from "@/components/bible/Reference";
 import { useTranslate } from "@/components/i18n/MessagesProvider";
+import { Cross } from "@/components/ui/icons/Cross";
 import { getBook, localBookNames, referenceIn } from "@/lib/bible/books";
 import { useToday } from "@/lib/calendar/useToday";
 import { useVerseTable } from "@/lib/packs/usePacks";
@@ -16,6 +17,9 @@ import {
 import { VerseCardActions } from "./VerseCardActions";
 import { T } from "@/components/i18n/T";
 
+/** The reading the verse is from, as the card's line names it. */
+const KIND_KEY = { gospel: "bible.kindGospelLong", epistle: "bible.kindEpistleLong", ot: "bible.kindOtLong" } as const;
+
 /**
  * The Verse of the Day card itself. Client-side so it can read the
  * reader's own calendar day; the verse TEXT still comes from the server
@@ -24,6 +28,15 @@ import { T } from "@/components/i18n/T";
  *
  * `table` is a date-keyed window produced by the parent. See
  * lib/today/verseOfDay.ts for why it is a window rather than one entry.
+ *
+ * 1.8, the owner's pick B of round 10, "The light"
+ * (Homebase/boards/purify-master/r18/choose/10-verse-of-the-day.png): a card
+ * with the icon's light behind the words, a soft white at its top, the
+ * three-bar cross lit over them, "Verse of the Day" with the reading it is
+ * from, the whole verse in the reading serif in the middle, its reference,
+ * and three round actions (VerseCardActions). The verse is never cut short:
+ * a long one makes the card taller. A tap on the verse or its reference
+ * still opens the chapter, as it has since 1.7.
  */
 export function VerseOfDayView({
   table: bundled,
@@ -48,7 +61,10 @@ export function VerseOfDayView({
   const stale = Boolean(key && keys.length && !table[key]);
   // Which Bible the words are from (1.8), said quietly after the reference.
   const edition = vod ? `, ${t(getBook(vod.book)?.source === "brenton-lxx-pd" ? "reading.collection.brenton" : "reading.collection.kjv")}` : null;
-  const Label = headingId ? "h2" : "span";
+  // The reading the verse is from, after the card's name: a chosen verse
+  // from outside the day's reading, and the rotation's, name none.
+  const kind = vod && vod.source !== "rotation" && vod.source !== "related" && !stale ? t(KIND_KEY[vod.source]) : null;
+  const Label = headingId ? "h2" : "p";
 
   // TEMPORARY (lib/today/machineVerse.ts): in a language with no Bible of
   // its own, the verse machine-translated, never without its label, and the
@@ -61,82 +77,51 @@ export function VerseOfDayView({
   const translated = machine && !english ? machine : null;
 
   return (
-    <article
-      className="lm-card relative overflow-hidden rounded-[28px] border border-paper/10 p-6 pt-5 shadow-[0_18px_40px_-12px_rgba(0,0,0,0.55)]"
-      style={{
-        background:
-          "radial-gradient(120% 85% at 85% 8%, rgba(255,255,255,0.10) 0%, transparent 52%), linear-gradient(165deg, #26262b 0%, #1a1a1d 52%, #101013 100%)",
-      }}
-    >
+    <article className="lm-card relative overflow-hidden rounded-[24px] border border-paper/10 bg-night-deep px-[22px] pb-5 pt-6 text-center">
+      {/* The icon's light, behind the words. */}
+      <span aria-hidden className="verse-light pointer-events-none absolute left-1/2 top-[-120px] h-[300px] w-[380px] -translate-x-1/2" />
       <div className="relative">
-        {/* Eyebrow row: label + a small owned three-bar cross anchoring
-            this as the day's word, with the kind chip on the right. */}
-        <div className="flex items-center justify-between gap-3">
-          {/* The inline font is not a style preference: globals.css sets
-              h1..h6 to Lora 700 UNLAYERED, which beats any font-* utility,
-              so an <h2 className="font-sans"> would still render as bold
-              Lora and this 11px uppercase label would change face the
-              moment it became a heading. */}
-          <Label
-            id={headingId}
-            style={
-              headingId
-                ? { fontFamily: "var(--font-sans)", fontWeight: 600 }
-                : undefined
-            }
-            className="inline-flex items-center gap-2 font-sans text-caption font-semibold text-gold/80"
-          >
-            <ThreeBarCross />
-            <T k="today.verseOfDay" />
-          </Label>
-          {vod && vod.source !== "rotation" && vod.source !== "related" && !stale && (
-            <span className="shrink-0 inline-flex items-center rounded-full border border-paper/15 bg-paper/[0.05] px-2.5 py-[2px] font-sans text-caption font-semibold text-paper/60">
-              {vod.source === "gospel" ? (
-                <T k="bible.kindGospel" />
-              ) : vod.source === "epistle" ? (
-                <T k="bible.kindEpistle" />
-              ) : (
-                <T k="bible.kindOt" />
-              )}
-            </span>
-          )}
-        </div>
+        <span aria-hidden className="verse-cross-lit inline-flex text-paper">
+          <Cross size={24} />
+        </span>
+        {/* The inline font is not a style preference: globals.css sets
+            h1..h6 to Lora 700 UNLAYERED, which beats any font-* utility,
+            so an <h2 className="font-sans"> would still render as bold
+            Lora and this small label would change face the moment it
+            became a heading. */}
+        <Label
+          id={headingId}
+          style={headingId ? { fontFamily: "var(--font-sans)", fontWeight: 600 } : undefined}
+          className="mt-2 font-sans text-[12.5px] font-semibold leading-snug text-paper/55"
+        >
+          <T k="today.verseOfDay" />
+          {kind ? ` · ${kind}` : null}
+        </Label>
 
-        {/* The reference and the verse open the chapter, and the verse shows
-            four lines at most: the owner's marks of 2026-10-07 ("the verse
-            card shows a few lines and opens to the rest") in the Today he
-            picked on 2026-10-15. Before 1.7 a tap on the card did nothing,
-            so the chapter was two taps away, through the menu. */}
+        {/* The verse whole and its reference open the chapter. */}
         <Link href={vod?.href ?? "/bible"} className="tap-press mt-3 block">
-          {/* The book in the reader's language, as the day's readings are
-              (1.7: once the card became a link, the walk's Greek phone
-              found "Luke 13:34" among the Greek references). */}
-          <p className="font-sans text-detail font-semibold tracking-[0.01em] text-paper/80">
-            {vod ? <Reference>{referenceIn(vod.label, vod.book, books)}</Reference> : " "}
-            {/* Which Bible the words are from (1.8), quietly, after the reference. */}
-            {vod ? (
-              <span className="font-normal text-paper/50">
-                {edition}
-              </span>
-            ) : null}
-          </p>
-
-          <div
+          <p
             lang={machine ? (translated ? machine.language : "en") : undefined}
-            className="mt-2 line-clamp-4 font-serif text-title-sm leading-[1.32] text-paper/95"
+            className="font-serif text-[21px] font-medium leading-[1.45] text-paper"
           >
             {translated ? translated.text : vod?.text ?? (
               <span className="text-paper/45 italic">
                 <T k="today.loadingVerse" />
               </span>
             )}
-          </div>
+          </p>
+          {/* The book in the reader's language, as the day's readings are,
+              then which Bible the words are from (1.8), more quietly. */}
+          <p className="mt-2.5 font-sans text-detail font-semibold text-paper/60">
+            {vod ? <Reference>{referenceIn(vod.label, vod.book, books)}</Reference> : " "}
+            {vod ? <span className="font-normal text-paper/40">{edition}</span> : null}
+          </p>
         </Link>
 
-        {/* The label sits outside the link and outside the four-line clamp,
-            so no verse is long enough to push it out of sight. */}
+        {/* The label sits outside the link, so a tap on it is never a tap
+            into the chapter. */}
         {machine && (
-          <div lang={machine.language} className="mt-3 flex flex-wrap items-baseline gap-x-3 gap-y-1">
+          <div lang={machine.language} className="mt-3 flex flex-wrap items-baseline justify-center gap-x-3 gap-y-1">
             <p className="font-sans text-caption leading-snug text-paper/60">
               {translated ? machine.note : machine.original}
             </p>
@@ -161,30 +146,10 @@ export function VerseOfDayView({
             chapter={vod.chapter}
             verse={vod.verse}
             translated={translated ?? undefined}
+            listen={{ title: referenceIn(vod.label, vod.book, books), by: t("today.verseOfDay") }}
           />
         )}
       </div>
     </article>
-  );
-}
-
-function ThreeBarCross() {
-  return (
-    <svg
-      width={11}
-      height={15}
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth={1.8}
-      strokeLinecap="round"
-      className="shrink-0"
-      aria-hidden
-    >
-      <line x1="12" y1="2.5" x2="12" y2="21.5" />
-      <line x1="8.5" y1="6" x2="15.5" y2="6" />
-      <line x1="5.5" y1="9.5" x2="18.5" y2="9.5" />
-      <line x1="8" y1="16.5" x2="16" y2="14" />
-    </svg>
   );
 }

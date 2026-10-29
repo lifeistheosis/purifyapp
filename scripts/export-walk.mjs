@@ -858,13 +858,16 @@ await section(16, async () => {
     await ctx.close();
   }
 });
-// ---- 17. Start here, and a verse as a picture (1.6).
+// ---- 17. Start here, and a verse as a picture (1.6; the card and its picture 1.8).
 // Two things for the reader who is new, or who wants to send a verse to
 // someone. Start here is seven doors to screens the app already has, so the
-// check is that there are seven and that the first one opens. The picture is
-// drawn on the phone from the verse on the screen: with no share sheet in
-// this browser it is saved, and what is saved has to be a real PNG of the
-// card's size.
+// check is that there are seven and that the first one opens. The Verse of
+// the Day is the owner's pick B of round 10, "The light": the whole verse and
+// three round actions, Save, Listen (only where the chapter has a recording)
+// and Share, with a small ••• beside them. Share opens the verse picture's
+// sheet (his "mix of A and B" of round 11): the picture drawn on the phone,
+// its Look, Words and Size. With no share sheet in this browser Save
+// downloads it, and what comes out has to be a real PNG of the size chosen.
 await section(17, async () => {
   console.log("\n17. Start here, and a verse as a picture");
   const { ctx, page, errors } = await open({ width: 390, height: 844, phone: true });
@@ -901,23 +904,91 @@ await section(17, async () => {
   must(first.startsWith("/prayers/learning/what-is-prayer"), `the first step opens the first lesson (${first})`);
 
   await go(page, "/");
-  await page.locator('button[aria-label="More actions"]').first().click();
-  const saved = await Promise.all([
-    page.waitForEvent("download", { timeout: 20000 }),
-    page.locator("button", { hasText: "Share as a picture" }).first().click(),
-  ]).then(([d]) => d).catch(() => null);
-  must(!!saved, "the verse card offers Share as a picture, and a picture comes out");
-  if (saved) {
-    const to = path.join(SHOTS, "verse-picture.png");
+  const en = JSON.parse(fs.readFileSync(path.resolve("lib/i18n/messages/en.json"), "utf8"));
+  const recorded = JSON.parse(fs.readFileSync(path.resolve("data/readAloud/index.json"), "utf8"));
+  await page.waitForFunction(() => [...document.querySelectorAll("article")].some((a) => /verse of the day/i.test(a.innerText)), null, { timeout: 20000 }).catch(() => {});
+  const card = page.locator("article", { hasText: en["today.verseOfDay"] }).first();
+  const seen = await card
+    .evaluate((a) => ({
+      actions: [...a.querySelectorAll("button[aria-label]")].map((b) => b.getAttribute("aria-label")),
+      href: a.querySelector("a[href^='/bible/']")?.getAttribute("href") ?? "",
+      clamped: !!a.querySelector("[class*='line-clamp']"),
+    }))
+    .catch(() => ({ actions: [], href: "", clamped: true }));
+  const [, vodBook, vodChapter] = /^\/bible\/([a-z0-9-]+)\/(\d+)/.exec(seen.href) ?? [];
+  const heard = recorded.includes(`${vodBook}/${vodChapter}`);
+  const wantActions = [en["common.save"], ...(heard ? [en["readAloud.listen"]] : []), en["common.share"], en["today.verse.moreActions"]];
+  must(
+    JSON.stringify(seen.actions) === JSON.stringify(wantActions),
+    `the verse card's actions are ${wantActions.join(", ")}, Listen ${heard ? "with" : "without"} a recording of ${vodBook} ${vodChapter} (${seen.actions.join(", ") || "none"})`,
+  );
+  must(!seen.clamped, "and its verse is whole, never cut to a few lines");
+
+  // A PNG says its own size in bytes 16 to 23.
+  const savePicture = async (sheet, label) => {
+    const saved = await Promise.all([
+      page.waitForEvent("download", { timeout: 20000 }),
+      sheet.getByRole("button", { name: en["common.save"], exact: true }).click(),
+    ]).then(([d]) => d).catch(() => null);
+    if (!saved) return null;
+    const to = path.join(SHOTS, `verse-picture-${label}.png`);
     await saved.saveAs(to);
     const png = fs.readFileSync(to);
-    // A PNG says its own size in bytes 16 to 23.
     const isPng = png.subarray(1, 4).toString("latin1") === "PNG";
-    const width = isPng ? png.readUInt32BE(16) : 0;
-    const height = isPng ? png.readUInt32BE(20) : 0;
-    must(isPng && width === 1080 && height === 1350, `it is a PNG of the card's size (${width} by ${height}, ${Math.round(png.length / 1024)} KB)`);
-    must(/^purify-[a-z0-9-]+\.png$/.test(saved.suggestedFilename()), `named for its verse (${saved.suggestedFilename()})`);
-  }
+    return { name: saved.suggestedFilename(), width: isPng ? png.readUInt32BE(16) : 0, height: isPng ? png.readUInt32BE(20) : 0, kb: Math.round(png.length / 1024) };
+  };
+  // Painted, and not only sized: its ground is solid where nothing was before.
+  const previewIs = (w, h) =>
+    page
+      .waitForFunction(([pw, ph]) => {
+        const c = document.querySelector('[role="dialog"] canvas[role="img"]');
+        return !!c && c.width === pw && c.height === ph && c.getContext("2d").getImageData(Math.floor(pw / 2), 2, 1, 1).data[3] === 255;
+      }, [w, h], { timeout: 15000 })
+      .then(() => true)
+      .catch(() => false);
+
+  await tap(card.getByRole("button", { name: en["common.share"], exact: true }));
+  const sheet = page.getByRole("dialog", { name: en["picture.title"] });
+  await sheet.waitFor({ timeout: 15000 }).catch(() => {});
+  const drawn = await previewIs(540, 960);
+  const opened = await page.evaluate(() => {
+    const d = document.querySelector('[role="dialog"]');
+    return {
+      tabs: [...(d?.querySelectorAll('[role="tab"]') ?? [])].map((b) => (b.textContent ?? "").trim()),
+      looks: d ? d.querySelectorAll('[role="tabpanel"] button[aria-pressed]').length : 0,
+    };
+  });
+  must(
+    JSON.stringify(opened.tabs) === JSON.stringify([en["picture.tab.look"], en["picture.tab.words"], en["ui.size"]]) && opened.looks === 6,
+    `Share opens the verse picture: its tabs ${opened.tabs.join(", ") || "none"}, and ${opened.looks} looks`,
+  );
+  must(drawn, "and the picture is drawn as a story, 9 by 16");
+  const story = await savePicture(sheet, "story");
+  must(Boolean(story) && story.width === 1080 && story.height === 1920, `Save makes a PNG of a story's size (${story ? `${story.width} by ${story.height}, ${story.kb} KB` : "nothing came out"})`);
+  must(Boolean(story) && /^purify-[a-z0-9-]+\.png$/.test(story.name), `named for its verse (${story?.name ?? "none"})`);
+  await page.screenshot({ path: path.join(SHOTS, "verse-picture-sheet.png") });
+
+  // The Christ look in a square: the icon from the bundle above, the verse under it.
+  await tap(sheet.getByRole("button", { name: en["picture.look.christ"], exact: true }));
+  await tap(sheet.getByRole("tab", { name: en["ui.size"] }));
+  await tap(sheet.getByRole("button", { name: new RegExp(`^${en["picture.shape.square"]}`) }));
+  must(await previewIs(540, 540), "the Christ look as a square is drawn");
+  const square = await savePicture(sheet, "christ-square");
+  must(Boolean(square) && square.width === 1080 && square.height === 1080, `and comes out a square (${square ? `${square.width} by ${square.height}, ${square.kb} KB` : "nothing came out"})`);
+  await page.screenshot({ path: path.join(SHOTS, "verse-picture-christ.png") });
+  await page.keyboard.press("Escape");
+  await page.waitForTimeout(700);
+
+  // What the card's ••• offered stays one tap away, beside the three.
+  await tap(card.getByRole("button", { name: en["today.verse.moreActions"] }));
+  await page.waitForTimeout(600);
+  const more = await page.evaluate(() =>
+    [...(document.querySelector('[role="dialog"]')?.querySelectorAll("button") ?? [])].map((b) => (b.textContent ?? "").trim()).filter(Boolean),
+  );
+  must(
+    ["today.verse.openChapter", "today.verse.copyVerseText", "today.verse.copyLink"].every((k) => more.includes(en[k])),
+    `its ••• keeps the chapter, the copy and the link (${more.join(", ") || "nothing"})`,
+  );
   must(errors.length === 0, `no page errors${errors.length ? ": " + errors.slice(0, 2).join(" | ") : ""}`);
   await ctx.close();
 });

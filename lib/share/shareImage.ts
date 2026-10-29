@@ -85,3 +85,15 @@ export async function shareImage(blob: Blob, fileName: string, text: string): Pr
 
   return download(blob, fileName) ? "saved" : "failed";
 }
+
+/**
+ * Keep a picture on this device (1.8, Save in the verse picture's sheet). In
+ * a browser, a download. The apps carry no plugin that writes into the
+ * phone's photos, so there Save opens the phone's own share sheet, where its
+ * "Save image" is (the iOS app already asks leave to add to the photos for
+ * exactly that, in Info.plist).
+ */
+export async function saveImage(blob: Blob, fileName: string, text: string): Promise<ShareOutcome> {
+  if (isNativeClient()) return shareImage(blob, fileName, text);
+  return download(blob, fileName) ? "saved" : "failed";
+}

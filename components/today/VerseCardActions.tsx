@@ -1,26 +1,51 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import dynamic from "next/dynamic";
+import { useEffect, useMemo, useState, type ReactNode } from "react";
 import { useRouter } from "next/navigation";
 import { useTranslate } from "@/components/i18n/MessagesProvider";
+import { Heart } from "@/components/ui/icons/Heart";
+import { More } from "@/components/ui/icons/More";
+import { Pause } from "@/components/ui/icons/Pause";
+import { Play } from "@/components/ui/icons/Play";
+import { Share } from "@/components/ui/icons/Share";
 import { Sheet } from "@/components/ui/Sheet";
+import { cn } from "@/lib/cn";
 import { shareLink } from "@/lib/site";
 import { copyText as putOnClipboard } from "@/lib/ui/copyText";
 import { softTick } from "@/lib/ui/softTick";
 import { keepText, verseKey } from "@/lib/remember/schedule";
 import { machineCopyText, type MachineShown } from "@/lib/today/machineVerse";
+import { useVerseListen } from "@/lib/today/verseListen";
 import { getBook } from "@/lib/bible/books";
+import type { PictureWords } from "@/lib/share/verseCard";
 
 /**
- * Client island for the quiet footer row inside the Verse of Day card.
+ * The verse picture's sheet, loaded on the first tap of Share: Today does not
+ * carry a canvas for a reader who never shares.
+ */
+const PictureSheet = dynamic(() => import("@/components/share/PictureSheet").then((m) => m.PictureSheet), { ssr: false });
+
+/** A round action, as the owner's pick B of round 10 draws them: a ring on a breath of white. */
+const ROUND =
+  "tap-press grid h-11 w-11 place-items-center rounded-full border bg-paper/[0.04] text-paper motion-safe:transition-colors hover:bg-paper/[0.08] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-paper";
+
+/**
+ * The Verse of the Day's actions (1.8, the owner's pick B of round 10, "The
+ * light"): three round buttons under the verse, in the middle.
  *
- * - Save: toggles a localStorage bookmark for this verse reference. Heart
- *   fills rubric-red when active; label reads Save / Saved.
- * - More (overflow): opens a bottom sheet with Open chapter, Share as a
- *   picture, Copy verse text, Copy link.
+ * - Save: keeps the verse among the reader's saved (and its words for
+ *   Remember the verse). The heart fills and the ring lights white once it
+ *   is saved. Saving is felt in the phone apps.
+ * - Listen: the verse alone, read aloud from its chapter's recording by its
+ *   own timings (lib/today/verseListen.ts). Drawn only where the chapter has
+ *   a recording, the New Testament today.
+ * - Share: the verse as a picture, made in one sheet with its look, its
+ *   words and its size (components/share/PictureSheet.tsx, his "mix of A and
+ *   B" of round 11).
  *
- * The verse text + reference are server-rendered; only the interactive
- * footer lives on the client.
+ * What the card's "•••" offered before stays one tap away, on a small "•••"
+ * beside the three: open the chapter, copy the verse, copy its link.
  */
 export function VerseCardActions({
   refLabel,
@@ -32,6 +57,7 @@ export function VerseCardActions({
   chapter,
   verse,
   translated,
+  listen,
 }: {
   refLabel: string;
   href: string;
@@ -49,6 +75,8 @@ export function VerseCardActions({
    * (shareText): what is kept for later is the Bible's own words.
    */
   translated?: Pick<MachineShown, "language" | "text" | "reference" | "note">;
+  /** What the player shows while the verse is heard: its reference, and what it is. */
+  listen?: { title: string; by: string };
 }) {
   const { t } = useTranslate();
   const router = useRouter();
@@ -59,6 +87,26 @@ export function VerseCardActions({
   const [fav, setFav] = useState(false);
   const [toast, setToast] = useState<string | null>(null);
   const [more, setMore] = useState(false);
+  const [picture, setPicture] = useState(false);
+  // Mounted on the first Share and kept, so it can close as it opened.
+  const [pictureMade, setPictureMade] = useState(false);
+  const heard = useVerseListen(
+    book && chapter && verse ? { book, chapter, verse } : null,
+    listen?.title ?? refLabel,
+    listen?.by ?? t("today.verseOfDay"),
+  );
+
+  // The words the picture is made of: the translation with its label when
+  // the card shows one (the label never leaves it), else the verse with its
+  // reference and the Bible it is from.
+  const words = useMemo<PictureWords>(
+    () =>
+      translated
+        ? { text: translated.text, reference: translated.reference, note: translated.note, keepNote: true, lang: translated.language }
+        : { text: shareText, reference: refLabel, ...(edition ? { note: edition } : {}) },
+    [translated, shareText, refLabel, edition],
+  );
+  const caption = translated ? `${translated.reference}\n${translated.note}` : edition ? `${refLabel}\n${edition}` : refLabel;
 
   const STORAGE_KEY = "purify:bookmarks";
   const EVENT = "purify:bookmark";
@@ -115,12 +163,15 @@ export function VerseCardActions({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [book, chapter, verse]);
 
+  function say(key: string) {
+    setToast(t(key));
+    setTimeout(() => setToast(null), 1500);
+  }
+
   function toggleFav() {
-    // If the locator isn't available, silently do nothing. Favourite
-    // requires a verse locator so /saved can resolve it.
+    // Favourite requires a verse locator so /saved can resolve it.
     if (!book || !chapter || !verse) {
-      setToast(t("today.verse.cannotFavourite"));
-      setTimeout(() => setToast(null), 1500);
+      say("today.verse.cannotFavourite");
       return;
     }
     const all = readAll();
@@ -128,7 +179,7 @@ export function VerseCardActions({
     if (existing) {
       writeAll(all.filter((b) => b.id !== existing.id));
       setFav(false);
-      setToast(t("today.verse.removedFromSaved"));
+      say("today.verse.removedFromSaved");
     } else {
       const id =
         typeof crypto !== "undefined" && "randomUUID" in crypto
@@ -148,125 +199,92 @@ export function VerseCardActions({
       // Its words, kept for Remember a verse, so its card works offline.
       keepText(verseKey(book, chapter, verse), shareText);
       setFav(true);
-      setToast(t("today.verse.savedToBookmarks"));
+      say("today.verse.savedToBookmarks");
       // Saving the verse is felt in the phone apps. Removing it is not.
       softTick();
     }
-    setTimeout(() => setToast(null), 1500);
   }
 
-  async function share() {
-    // Copy the deep link to the clipboard. We deliberately bypass
-    // navigator.share so taps on this button always do the same thing
-    // (the system share sheet was a sometimes-yes / sometimes-no
-    // surprise depending on platform support).
-    void shareText;
+  async function copyLink() {
     // shareLink(), not window.location.origin: inside the Capacitor shell the
     // origin is https://localhost and the copied link is dead everywhere.
     const url = shareLink(shareUrl);
     try {
       if (!(await putOnClipboard(url))) throw new Error("the clipboard refused");
-      setToast(t("common.linkCopied"));
+      say("common.linkCopied");
     } catch {
-      setToast(t("today.verse.couldNotCopy"));
-    }
-    setTimeout(() => setToast(null), 1500);
-  }
-
-  /**
-   * The verse as a picture, handed to the phone's share sheet (lib/share).
-   * People send each other pictures, not links. The drawing code is loaded
-   * here, on the tap, so Today does not carry a canvas for a reader who
-   * never shares.
-   */
-  async function sharePicture() {
-    setMore(false);
-    const say = (key: string) => {
-      setToast(t(key));
-      setTimeout(() => setToast(null), 1800);
-    };
-    try {
-      const [{ renderVerseCard }, { shareImage }, { cardFileName }] = await Promise.all([
-        import("@/lib/share/drawVerseCard"),
-        import("@/lib/share/shareImage"),
-        import("@/lib/share/verseCard"),
-      ]);
-      const picture = await renderVerseCard(
-        translated
-          ? { text: translated.text, reference: translated.reference, note: translated.note, lang: translated.language }
-          : { text: shareText, reference: refLabel, ...(edition ? { note: edition } : {}) },
-      );
-      if (!picture) return say("today.verse.couldNotMakePicture");
-      const caption = translated ? `${translated.reference}\n${translated.note}` : edition ? `${refLabel}\n${edition}` : refLabel;
-      const outcome = await shareImage(picture, cardFileName(refLabel), caption);
-      if (outcome === "saved") say("today.verse.pictureSaved");
-      if (outcome === "failed") say("today.verse.couldNotMakePicture");
-    } catch {
-      say("today.verse.couldNotMakePicture");
+      say("today.verse.couldNotCopy");
     }
   }
 
   async function copyText() {
     try {
-      const words = translated ? machineCopyText(translated) : `${shareText}\n${refLabel}${edition ? `, ${edition}` : ""}`;
-      if (!(await putOnClipboard(words))) throw new Error("the clipboard refused");
-      setToast(t("today.verse.verseCopied"));
-      setTimeout(() => setToast(null), 1500);
+      const copied = translated ? machineCopyText(translated) : `${shareText}\n${refLabel}${edition ? `, ${edition}` : ""}`;
+      if (!(await putOnClipboard(copied))) throw new Error("the clipboard refused");
+      say("today.verse.verseCopied");
     } catch {
-      setToast(t("today.verse.couldNotCopy"));
-      setTimeout(() => setToast(null), 1500);
+      say("today.verse.couldNotCopy");
     }
     setMore(false);
   }
 
   return (
     <>
-      <div className="relative flex items-center justify-between pt-4 mt-4 border-t border-paper/8">
-        {/* Both controls carry padding pulled back by an equal negative
-            margin, so the touch box clears 44px while the row keeps the
-            height it had. Save had no padding at all and stood 61x22, its
-            height coming from the 22px heart alone. */}
+      <div className="relative mt-4 flex items-center justify-center gap-3.5">
         <button
           type="button"
           onClick={toggleFav}
           aria-pressed={fav}
-          className="flex items-center gap-2 -my-3 py-3 text-paper/75 hover:text-paper transition-colors"
+          aria-label={t("common.save")}
+          className={cn(ROUND, fav ? "reader-lit border-paper/45" : "border-paper/15")}
         >
-          <HeartIcon filled={fav} />
-          <span className="font-sans text-ui">{fav ? t("common.saved") : t("common.save")}</span>
+          <Heart size={19} filled={fav} />
         </button>
+        {heard.available ? (
+          <button
+            type="button"
+            onClick={heard.toggle}
+            aria-label={heard.playing ? t("readAloud.pause") : t("readAloud.listen")}
+            className={cn(ROUND, heard.playing ? "reader-lit border-paper/45" : "border-paper/15")}
+          >
+            {/* The triangle's weight sits left of its box: a pixel right centres it. */}
+            {heard.playing ? <Pause size={17} /> : <Play size={17} className="translate-x-px" />}
+          </button>
+        ) : null}
+        <button
+          type="button"
+          onClick={() => {
+            setPictureMade(true);
+            setPicture(true);
+          }}
+          aria-label={t("common.share")}
+          className={cn(ROUND, "border-paper/15")}
+        >
+          <Share size={19} />
+        </button>
+        {/* The card's other ways, beside the three: the chapter, a copy, a link. */}
         <button
           type="button"
           onClick={() => setMore(true)}
           aria-label={t("today.verse.moreActions")}
-          className="flex h-11 w-11 -my-1 items-center justify-center rounded-full text-paper/55 hover:text-paper hover:bg-paper/[0.06] transition-colors"
+          className="hit-44 absolute end-0 top-1/2 grid h-9 w-9 -translate-y-1/2 place-items-center rounded-full text-paper/50 motion-safe:transition-colors hover:bg-paper/[0.06] hover:text-paper"
         >
-          <MoreIcon />
+          <More size={18} />
         </button>
         {toast && (
           <div
             role="status"
-            className="absolute left-1/2 -translate-x-1/2 -top-9 rounded-full bg-paper text-night px-3 py-1 font-sans text-caption font-semibold shadow-lg"
+            className="absolute -top-10 left-1/2 -translate-x-1/2 whitespace-nowrap rounded-full bg-paper px-3 py-1 font-sans text-caption font-semibold text-night shadow-lg"
           >
             {toast}
           </div>
         )}
       </div>
 
-      {/* This was a hand-rolled `fixed inset-0 z-50` sheet with no animation
-          in either direction, no overlay flag, and no portal. Three faults in
-          one, and the last two are not cosmetic: at z-50 it tied with the
-          root-level tab bar, and rendered inline it was scoped to whatever
-          stacking context Today's tree created, so the bar stayed lit AND
-          tappable over an open modal. That is the shape of 5ee95ed3.
-
-          Sheet portals to <body>, holds the overlay flag across the whole
+      {/* Sheet portals to <body>, holds the overlay flag across the whole
           exit so the tab bar steps aside, and carries the reduced-motion
           escape. `desktop` because this card is on /prayers/today, which is
-          the web's only Today and is viewed on a laptop.
-
-          The old explicit Cancel row is gone: Sheet's title bar has a close
-          button, and the backdrop, Escape and Android back all dismiss. */}
+          the web's only Today and is viewed on a laptop. */}
       <Sheet
         open={more}
         onClose={() => setMore(false)}
@@ -284,21 +302,31 @@ export function VerseCardActions({
             router.push(href);
           }}
         />
-        <SheetItem label={t("today.verse.shareAsPicture")} onClick={() => void sharePicture()} />
         <SheetItem label={t("today.verse.copyVerseText")} onClick={copyText} />
         <SheetItem
           label={t("today.verse.copyLink")}
           onClick={() => {
-            void share();
+            void copyLink();
             setMore(false);
           }}
         />
       </Sheet>
+
+      {pictureMade ? (
+        <PictureSheet
+          open={picture}
+          onClose={() => setPicture(false)}
+          words={words}
+          title={t("picture.title")}
+          name={refLabel}
+          caption={caption}
+        />
+      ) : null}
     </>
   );
 }
 
-function SheetItem({ label, onClick }: { label: string; onClick: () => void }) {
+function SheetItem({ label, onClick }: { label: string; onClick: () => void }): ReactNode {
   return (
     <button
       type="button"
@@ -307,39 +335,5 @@ function SheetItem({ label, onClick }: { label: string; onClick: () => void }) {
     >
       {label}
     </button>
-  );
-}
-
-function HeartIcon({ filled }: { filled: boolean }) {
-  return (
-    <svg
-      width={22}
-      height={22}
-      viewBox="0 0 24 24"
-      fill={filled ? "#c1272d" : "none"}
-      stroke={filled ? "#c1272d" : "currentColor"}
-      strokeWidth={1.8}
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      aria-hidden
-    >
-      <path d="M12 21s-7-4.35-9.5-9A5.5 5.5 0 0 1 12 6a5.5 5.5 0 0 1 9.5 6c-2.5 4.65-9.5 9-9.5 9z" />
-    </svg>
-  );
-}
-
-function MoreIcon() {
-  return (
-    <svg
-      width={22}
-      height={22}
-      viewBox="0 0 24 24"
-      fill="currentColor"
-      aria-hidden
-    >
-      <circle cx="5" cy="12" r="1.6" />
-      <circle cx="12" cy="12" r="1.6" />
-      <circle cx="19" cy="12" r="1.6" />
-    </svg>
   );
 }

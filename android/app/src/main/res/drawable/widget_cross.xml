@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- The small three-bar cross over a widget, drawn as the app draws it
-     (ThreeBarCross in components/today/VerseOfDayView.tsx), not the ☦
-     character, which many phones' fonts lack. -->
+<!-- The small three-bar cross over a widget, drawn as the Verse of the Day
+     card drew its own until 1.8 (it wears components/ui/icons/Cross.tsx
+     since, whose footrest rises to the left), not the ☦ character, which
+     many phones' fonts lack. -->
 <vector xmlns:android="http://schemas.android.com/apk/res/android"
     android:width="11dp"
     android:height="15dp"

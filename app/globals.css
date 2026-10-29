@@ -4513,6 +4513,88 @@ html[data-reading-mode="parchment"] .rope-knot-pulse::after {
  opacity: 0.6;
 }
 
+/* ── The Verse of the Day, the light (1.8) ──────────────────────────────
+   The owner's pick B of round 10, "The light" (components/today/
+   VerseOfDayView.tsx), and Remember the verse in the same light
+   (RememberCard.tsx, his "mix of A and B" of round 16): the icon's light
+   behind the words, a soft white at the top of the card, and the three-bar
+   cross over them lit with a glowing white. A word Remember left blank
+   lights up the same white when the reader checks it (its fade is a
+   motion-safe utility, so the motion switch stills it). On Parchment the
+   card is paper (.lm-card) and white cannot glow there: the cross and the
+   word are the plain ink. */
+.verse-light {
+ background: radial-gradient(closest-side, rgb(255 255 255 / 0.13), rgb(255 255 255 / 0));
+}
+.verse-cross-lit {
+ filter: drop-shadow(0 0 6px rgb(255 255 255 / 0.75)) drop-shadow(0 0 14px rgb(255 255 255 / 0.3));
+}
+.remember-lit {
+ text-shadow: 0 0 12px rgb(255 255 255 / 0.7);
+}
+html[data-reading-mode="parchment"] .verse-cross-lit {
+ filter: none;
+}
+html[data-reading-mode="parchment"] .remember-lit {
+ text-shadow: none;
+}
+
+/* The verse picture's text size (components/share/PictureSheet.tsx, his
+   "mix of A and B" of round 11): a thin track, white up to the size chosen
+   (--fill), and a white knob lit like the sheet's other choices. */
+.picture-range {
+ -webkit-appearance: none;
+ appearance: none;
+ height: 36px;
+ background: transparent;
+ cursor: pointer;
+}
+.picture-range::-webkit-slider-runnable-track {
+ height: 3px;
+ border-radius: 999px;
+ background: linear-gradient(to right, var(--color-paper) var(--fill, 50%), color-mix(in srgb, var(--color-paper) 15%, transparent) var(--fill, 50%));
+}
+.picture-range::-webkit-slider-thumb {
+ -webkit-appearance: none;
+ appearance: none;
+ margin-top: -7.5px;
+ height: 18px;
+ width: 18px;
+ border-radius: 999px;
+ background: var(--color-paper);
+ box-shadow: 0 0 10px rgb(255 255 255 / 0.7);
+}
+.picture-range::-moz-range-track {
+ height: 3px;
+ border-radius: 999px;
+ background: color-mix(in srgb, var(--color-paper) 15%, transparent);
+}
+.picture-range::-moz-range-progress {
+ height: 3px;
+ border-radius: 999px;
+ background: var(--color-paper);
+}
+.picture-range::-moz-range-thumb {
+ height: 18px;
+ width: 18px;
+ border: 0;
+ border-radius: 999px;
+ background: var(--color-paper);
+ box-shadow: 0 0 10px rgb(255 255 255 / 0.7);
+}
+.picture-range:focus-visible {
+ outline: 2px solid var(--color-paper);
+ outline-offset: 4px;
+ border-radius: 999px;
+}
+/* Each engine's knob on its own: one it does not know would drop the pair. */
+html[data-reading-mode="parchment"] .picture-range::-webkit-slider-thumb {
+ box-shadow: none;
+}
+html[data-reading-mode="parchment"] .picture-range::-moz-range-thumb {
+ box-shadow: none;
+}
+
 /* ── The Nativity Fast's star on Today (1.8) ─────────────────────────────
    The owner's pick C of round 9, "The star rising", animated at his word
    (components/today/NativityStarCard.tsx; the motion as drawn in
