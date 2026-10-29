@@ -72,7 +72,8 @@ describe("the screens that draw a reading's reference", () => {
   const root = join(__dirname, "..", "..", "..");
   it("all draw it through Reference", () => {
     for (const [path, times] of [
-      // One since 1.7: the Church's day on Today draws each reading as a row, in one loop.
+      // One since 1.7: the Church's day on Today draws every reading through one
+      // helper, the readings band's and the rows' under it alike (1.8).
       ["components/today/ChurchTodayRail.tsx", 1],
       // One since 1.7: the day's verse names its book in the reader's language.
       ["components/today/VerseOfDayView.tsx", 1],

@@ -4583,6 +4583,38 @@ html[data-reading-mode="parchment"] .rope-knot-pulse::after {
  animation: none;
 }
 
+/* ── The rest of Today (1.8) ─────────────────────────────────────────────
+   The owner's round 2 picks for the lower half of Today: Pray as the hour,
+   large (components/today/PrayNowCard.tsx), The Church today as bands
+   (components/today/ChurchTodayRail.tsx), and Your first Liturgy with Today's
+   Catechism, transitionary (components/today/FirstLiturgyReminder.tsx,
+   components/catechism/CatechismToday.tsx).
+   What is lit glows white, softly (the owner, 2026-10-28: "just use a glowly
+   white"): a fast mark for what the day allows, and the candle and the cross
+   of the quiet lines and the cards. On Parchment, where white cannot glow,
+   they are the plain ink. Nothing here moves.
+   An Orthodox reader's quiet lines share their hairlines, so two read as one
+   list; a reader's two cards stand closer to each other than to the day's
+   word above them. */
+.today-lit {
+ box-shadow: 0 0 14px -3px rgb(255 255 255 / 0.32);
+}
+.today-glyph-lit {
+ filter: drop-shadow(0 0 5px rgb(255 255 255 / 0.7)) drop-shadow(0 0 12px rgb(255 255 255 / 0.28));
+}
+html[data-reading-mode="parchment"] .today-lit {
+ box-shadow: none;
+}
+html[data-reading-mode="parchment"] .today-glyph-lit {
+ filter: none;
+}
+.today-small[data-look="line"] + .today-small[data-look="line"] {
+ margin-top: -1px;
+}
+.today-small[data-look="card"] + .today-small[data-look="card"] {
+ margin-top: 0.625rem;
+}
+
 /* ── The apps select nothing by themselves (1.5.2) ────────────────────
    The owner, 2026-10-05, of holding the screen in the app and moving: "it
    acts as if you're going to copy the whole screen and the screen turns

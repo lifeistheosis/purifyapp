@@ -1428,12 +1428,10 @@ await section(23, async () => {
     await go(page, "/");
     await page.waitForFunction(() => document.querySelector('a[href*="/bible/"][href*="#v"]'), null, { timeout: 20000 }).catch(() => {});
     await page.waitForTimeout(900);
-    // 1.7: the day's verse is a link into its chapter too, so the card is the
-    // first list that holds a reading, the Church today.
-    const card = await page.evaluate(() => {
-      const box = [...document.querySelectorAll('a[href*="/bible/"][href*="#v"]')].map((a) => a.closest("ul.rounded-2xl, div.rounded-2xl")).find(Boolean);
-      return box ? (box.textContent ?? "").replace(/\s+/g, " ") : "";
-    });
+    // 1.8 (the owner's pick B of round 12, "Bands"): the feast's pair is on
+    // the readings band and the day's own pair in the rows under the bands,
+    // all inside The Church today.
+    const card = await page.evaluate(() => (document.querySelector("[data-church-today]")?.textContent ?? "").replace(/\s+/g, " "));
     const order = ["Hebrews 9:1-7", "Luke 10:38-42; 11:27-28", en["bible.readForDay"], "Galatians 1:3-10", "Luke 9:57-62"].map((w) => card.indexOf(w));
     must(
       order.every((at) => at >= 0) && order.every((at, i) => i === 0 || at > order[i - 1]),
@@ -1445,13 +1443,62 @@ await section(23, async () => {
 
   // An ordinary day has no such second group.
   {
-    const { ctx, page } = await open({ width: 390, height: 844, phone: true });
+    const { ctx, page, errors } = await open({ width: 390, height: 844, phone: true });
     await page.clock.setFixedTime(new Date("2026-11-13T10:30:00"));
     await go(page, "/");
     await page.waitForFunction(() => document.querySelector('a[href*="/bible/"][href*="#v"]'), null, { timeout: 20000 }).catch(() => {});
     await page.waitForTimeout(900);
     const text = await page.evaluate(() => document.body.textContent ?? "");
     must(!text.includes(en["bible.readForDay"]), `and on an ordinary day nothing is headed "${en["bible.readForDay"]}"`);
+
+    // The Church today as bands (1.8, the owner's pick B of round 12), on St
+    // John Chrysostom's day. His face is his cover portrait on the website;
+    // this walk has no network, so it must be his icon from the bundle, and
+    // never a broken picture.
+    await page.waitForFunction(() => { const img = document.querySelector('[data-today-band="saint"] img'); return !!img && img.complete && img.naturalWidth > 0 && img.getAttribute("src")?.startsWith("/saints/icons/"); }, null, { timeout: 10000 }).catch(() => {});
+    const bands = await page.evaluate(() => {
+      const rail = document.querySelector("[data-church-today]");
+      const saint = rail?.querySelector('[data-today-band="saint"]');
+      const img = saint?.querySelector("img");
+      return {
+        order: [...(rail?.querySelectorAll("[data-today-band]") ?? [])].map((b) => b.getAttribute("data-today-band")),
+        saint: (saint?.textContent ?? "").replace(/\s+/g, " "),
+        opens: saint?.tagName === "BUTTON" && saint.getAttribute("aria-haspopup") === "dialog",
+        face: img ? { src: img.getAttribute("src"), ok: img.complete && img.naturalWidth > 0 } : null,
+        broken: [...(rail?.querySelectorAll("img") ?? [])].filter((i) => i.complete && i.naturalWidth === 0 && i.getClientRects().length > 0).map((i) => i.getAttribute("src")),
+        lit: [...(rail?.querySelectorAll("[data-fast-mark][data-allowed]") ?? [])].map((m) => m.getAttribute("data-fast-mark")),
+        struck: [...(rail?.querySelectorAll("[data-fast-mark]:not([data-allowed])") ?? [])].map((m) => m.getAttribute("data-fast-mark")),
+        read: !!rail?.querySelector('[data-today-band="readings"] a[href*="/bible/1-thessalonians/5"]') && !!rail?.querySelector('[data-today-band="readings"] a[href*="/bible/luke/13"]'),
+      };
+    });
+    must(bands.order.join(",") === "saint,fast,readings", `The Church today is three bands, the saint, the fast and the readings (${bands.order.join(", ")})`);
+    must(bands.saint.includes("St. John Chrysostom") && bands.saint.includes("“Let no one fear death…”") && bands.opens, `the saint's band names him, opens his words, and opens his window (${bands.saint.slice(0, 80)})`);
+    must(!!bands.face?.ok && bands.face.src === "/saints/icons/john-chrysostom.jpg" && bands.broken.length === 0, `with no signal his face is his icon from the bundle, and nothing is broken (${bands.face?.src ?? "no picture"}${bands.broken.length ? "; broken: " + bands.broken.join(", ") : ""})`);
+    must(bands.lit.join(",") === "wine,oil" && bands.struck.join(",") === "fish,meat", `the Friday fast lights wine and oil and strikes fish and meat (${bands.lit.join(", ")} | ${bands.struck.join(", ")})`);
+    must(bands.read, "the readings band opens 1 Thessalonians 5 and Luke 13");
+
+    // A tap on him opens his window: his words whole, Share as a picture,
+    // and Read where it's from at the homily's paragraph.
+    await tap(page.locator('[data-today-band="saint"]'));
+    await page.waitForFunction(() => !!document.querySelector('[role="dialog"] [data-saint-words]'), null, { timeout: 10000 }).catch(() => {});
+    await page.waitForTimeout(500);
+    const sheet = await page.evaluate(() => {
+      const d = document.querySelector('[role="dialog"]');
+      return {
+        words: (d?.querySelector("[data-saint-words]")?.textContent ?? "").trim(),
+        share: !!d?.querySelector("[data-saint-share]"),
+        source: d?.querySelector("[data-saint-source]")?.getAttribute("href") ?? "",
+        page: !!d?.querySelector('a[href^="/saints/john-chrysostom"]:not([data-saint-source]):not([data-cite])'),
+      };
+    });
+    must(sheet.words === "“Let no one fear death, for the Saviour's death hath set us free.”", `his window sets his words whole (${sheet.words.slice(0, 60)})`);
+    must(sheet.share && /^\/saints\/john-chrysostom\/paschal-homily\/?#p-1-4$/.test(sheet.source) && sheet.page, `with Share as a picture, Read where it's from at the homily (${sheet.source || "none"}), and his page from his name`);
+    if (inBundle(OUT, "/saints/john-chrysostom/paschal-homily/")) {
+      await tap(page.locator("[data-saint-source]"));
+      await page.waitForFunction(() => location.pathname.startsWith("/saints/john-chrysostom/paschal-homily"), null, { timeout: 15000 }).catch(() => {});
+      must(await page.evaluate(() => location.pathname.startsWith("/saints/john-chrysostom/paschal-homily") && location.hash === "#p-1-4"), "and Read where it's from opens the homily at those words");
+    }
+    must(errors.length === 0, `no page errors${errors.length ? ": " + errors.slice(0, 2).join(" | ") : ""}`);
     await ctx.close();
   }
 
@@ -3827,24 +3874,28 @@ await section(39, async () => {
     must((await kept(page, "mine-morning")).includes(await today(page)), `${size.width}px: praying it through keeps the day under mine-morning, which the streak reads`);
     await page.screenshot({ path: path.join(SHOTS, `prayers-mine-reader-${size.width}.png`) });
 
-    // Today leads its Pray row with the reader's rule for the part the hour
-    // calls for: an evening part too, so either hour finds one.
+    // Today's Pray leads with the reader's rule for the part the hour calls
+    // for: an evening part too, so either hour finds one. Since 1.8 (the
+    // owner's pick B of round 13, "The hour, large") that is the hour's card,
+    // the first of the list, and the day's rule is the first tile under it.
     await page.evaluate(() => {
       const rule = JSON.parse(localStorage.getItem("purify.prayers.mine") ?? "{}");
       rule.evening = [{ kind: "prayer", rule: "evening", prayer: "trisagion" }];
       localStorage.setItem("purify.prayers.mine", JSON.stringify(rule));
     });
     await go(page, "/");
-    await page.waitForFunction(() => !!document.querySelector('section[aria-labelledby="today-pray"] ul > li a'), null, { timeout: 20000 }).catch(() => {});
+    await page.waitForFunction(() => !!document.querySelector('section[aria-labelledby="today-pray"] a[data-pray-hour]'), null, { timeout: 20000 }).catch(() => {});
     await page.waitForTimeout(1200);
     const first = await page.evaluate(() => {
       const a = document.querySelector('section[aria-labelledby="today-pray"] ul > li a');
-      return { href: a?.getAttribute("href") ?? "", text: a?.textContent ?? "" };
+      const tile = document.querySelector('section[aria-labelledby="today-pray"] ul > li:nth-child(2) a');
+      return { hour: a?.hasAttribute("data-pray-hour") ?? false, href: a?.getAttribute("href") ?? "", text: a?.textContent ?? "", tile: tile?.getAttribute("href") ?? "" };
     });
     must(
-      first.href.startsWith("/prayers/personal/") && (first.text.includes(en["prayers.mine.morningTitle"]) || first.text.includes(en["prayers.mine.eveningTitle"])),
-      `${size.width}px: Today's Pray row leads with the reader's own rule (${first.href})`,
+      first.hour && first.href.startsWith("/prayers/personal/") && (first.text.includes(en["prayers.mine.morningTitle"]) || first.text.includes(en["prayers.mine.eveningTitle"])),
+      `${size.width}px: Today's Pray leads with the reader's own rule as the hour's card (${first.href})`,
     );
+    must(/^\/prayers\/(morning|evening)\/?$/.test(first.tile), `${size.width}px: and the day's rule for the hour is the first tile under it (${first.tile || "none"})`);
     await page.screenshot({ path: path.join(SHOTS, `prayers-today-mine-${size.width}.png`) });
     must(errors.length === 0, `${size.width}px: no page errors${errors.length ? ": " + errors.slice(0, 2).join(" | ") : ""}`);
     await ctx.close();

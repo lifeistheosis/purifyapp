@@ -148,11 +148,10 @@ export function PrayersTodayClient({ verse }: { verse?: ReactNode }) {
             {/* ChurchTodayRail is the SAME component the native Today tab
                 renders. That is the point: one component answers "what does
                 the Church say today", so the two surfaces cannot drift the
-                way they did before lib/calendar/useChurchDay.ts existed. It
-                brings the saint's icon and read estimate, the fast rule
-                linked to /fasting, the readings as kind chips, and a
-                pluralized Pascha count, all of which this page either
-                lacked or hand-rolled worse. */}
+                way they did before lib/calendar/useChurchDay.ts existed.
+                Since 1.8 it is three bands (the saint with his face and his
+                window, the fast as marks, the day's readings) and the rest
+                of the day as rows, the same here as on the phone. */}
             <section aria-labelledby="today-church" className="hidden md:block native-md-hidden">
               <TodayHeading id="today-church">
                 {t("today.churchToday")}

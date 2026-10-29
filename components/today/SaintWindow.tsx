@@ -1,0 +1,209 @@
+"use client";
+
+import Link from "next/link";
+import { useState } from "react";
+
+import { SourceLine } from "@/components/citations/SourceLine";
+import { useTranslate } from "@/components/i18n/MessagesProvider";
+import { Book } from "@/components/ui/icons/Book";
+import { ChevronRight } from "@/components/ui/icons/ChevronRight";
+import { Close } from "@/components/ui/icons/Close";
+import { Sheet } from "@/components/ui/Sheet";
+import type { SaintBrief } from "@/lib/saints/brief";
+import type { SaintPicture } from "@/lib/today/saintFaces";
+import { quoted, readWhereFrom, saintByline, saintPictureInput, type SaintWords } from "@/lib/today/saintWords";
+
+import { SaintFace } from "./SaintFace";
+
+type WindowSaint = Pick<SaintBrief, "slug" | "name" | "epithet">;
+
+/**
+ * The saint's window (1.8, the owner's round 12: "a tap on him opens a window
+ * to share an image or read where the quote is from";
+ * Homebase/boards/purify-master/r18/choose/12b-church-saint.png, "2. Tap him:
+ * share or read"). Opened from his band in The Church today, on a day whose
+ * saint has words of his own the app can show where they stand.
+ *
+ * His face, his name and years (the first of his titles and the year he
+ * reposed), and they open his page, which the band opened before it had a
+ * window; his words large; where they come from, in the source line every
+ * quotation wears (components/citations/SourceLine.tsx); then the two
+ * actions:
+ *
+ *   Share as a picture    the verse's picture (lib/share/drawVerseCard.ts):
+ *                         his words, and his name where a verse has its
+ *                         reference. The look of a saint's picture follows
+ *                         the owner's reference when it comes.
+ *   Read where it's from  the work's page at that place (the source line's
+ *                         own link). A text the library does not carry has no
+ *                         page to open, so there it is not offered.
+ *
+ * The shared movable sheet (components/ui/Sheet.tsx), open at its full height
+ * because it ends in its actions.
+ */
+export function SaintWindow({
+  open,
+  onClose,
+  saint,
+  words,
+  picture,
+}: {
+  open: boolean;
+  onClose: () => void;
+  saint: WindowSaint;
+  words: SaintWords;
+  picture: SaintPicture | null;
+}) {
+  const { t } = useTranslate();
+  const [said, setSaid] = useState<string | null>(null);
+
+  const say = (key: string) => {
+    setSaid(t(key));
+    setTimeout(() => setSaid(null), 1800);
+  };
+
+  /**
+   * His words as a picture, handed to the phone's share sheet (lib/share).
+   * The drawing is loaded here, on the tap, as the verse card's is, so Today
+   * carries no canvas for a reader who never shares.
+   */
+  async function sharePicture() {
+    try {
+      const [{ renderVerseCard }, { shareImage }, { cardFileName }] = await Promise.all([
+        import("@/lib/share/drawVerseCard"),
+        import("@/lib/share/shareImage"),
+        import("@/lib/share/verseCard"),
+      ]);
+      const made = await renderVerseCard(saintPictureInput(words, saint.name));
+      if (!made) return say("today.verse.couldNotMakePicture");
+      const work = words.shown.kind === "father" || words.shown.kind === "text" ? words.shown.work : null;
+      const outcome = await shareImage(made, cardFileName(saint.name), work ? `${saint.name}\n${work}` : saint.name);
+      if (outcome === "saved") say("today.verse.pictureSaved");
+      if (outcome === "failed") say("today.verse.couldNotMakePicture");
+    } catch {
+      say("today.verse.couldNotMakePicture");
+    }
+  }
+
+  return (
+    <Sheet
+      open={open}
+      onClose={onClose}
+      title={saint.name}
+      desktop
+      openFull
+      header={<SaintWindowHead saint={saint} words={words} picture={picture} onClose={onClose} />}
+    >
+      <SaintWindowBody words={words} onShare={() => void sharePicture()} onLeave={onClose} said={said} />
+    </Sheet>
+  );
+}
+
+/** The window's head: his face, name and years, opening his page; and the close button. */
+export function SaintWindowHead({
+  saint,
+  words,
+  picture,
+  onClose,
+}: {
+  saint: WindowSaint;
+  words: SaintWords;
+  picture: SaintPicture | null;
+  onClose: () => void;
+}) {
+  const { t } = useTranslate();
+  const byline = saintByline(saint.epithet, words.reposed);
+  return (
+    <div className="flex items-center gap-2 px-4 pb-1 pt-1.5">
+      <Link href={`/saints/${saint.slug}`} onClick={onClose} className="tap-press flex min-w-0 flex-1 items-center gap-3 ps-1.5">
+        <span className="relative size-[52px] shrink-0 overflow-hidden rounded-full border border-paper/20 bg-night-soft">
+          {picture ? <SaintFace key={picture.src} picture={picture} zoom={1.4} /> : null}
+        </span>
+        <span className="min-w-0">
+          <span className="block font-heading text-lede font-bold leading-tight text-paper">{saint.name}</span>
+          {byline ? <span className="mt-0.5 block font-sans text-caption text-paper/55">{byline}</span> : null}
+        </span>
+        <ChevronRight size={14} className="shrink-0 text-paper/35 rtl:-scale-x-100" />
+      </Link>
+      <button
+        type="button"
+        aria-label={t("common.close")}
+        onClick={onClose}
+        className="tap-press -me-1 inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-pill text-paper/65 hover:text-paper"
+      >
+        <Close size={16} />
+      </button>
+    </div>
+  );
+}
+
+/** His words large, where they come from, and the two actions. */
+export function SaintWindowBody({
+  words,
+  onShare,
+  onLeave,
+  said,
+}: {
+  words: SaintWords;
+  onShare: () => void;
+  /** Followed as the reader leaves for the place the words are from. */
+  onLeave: () => void;
+  /** What the last action came to, said for a moment. */
+  said: string | null;
+}) {
+  const { t } = useTranslate();
+  const where = readWhereFrom(words.shown);
+  // Long words are set a step smaller, so the actions stay in reach.
+  const long = words.text.length > 180;
+  return (
+    <div className="px-1.5 pb-3">
+      <blockquote
+        lang="en"
+        data-saint-words=""
+        className={`mt-4 font-heading italic leading-[1.42] text-paper ${long ? "text-lede" : "text-title-sm"}`}
+      >
+        {quoted(words.text)}
+      </blockquote>
+      <SourceLine cite={words.shown} className="mt-2.5" />
+
+      <div className="mt-5 flex flex-col gap-2.5">
+        <button
+          type="button"
+          onClick={onShare}
+          data-saint-share=""
+          className="tap-press flex min-h-13 items-center justify-center gap-2.5 rounded-pill bg-paper px-5 font-sans text-[15px] font-semibold text-night"
+        >
+          <ShareMark size={18} />
+          {t("today.verse.shareAsPicture")}
+        </button>
+        {where ? (
+          <Link
+            href={where}
+            onClick={onLeave}
+            data-saint-source=""
+            className="tap-press flex min-h-13 items-center justify-center gap-2.5 rounded-pill border border-paper/22 px-5 font-sans text-[15px] font-semibold text-paper"
+          >
+            <Book size={18} />
+            {t("today.saintWords.readSource")}
+          </Link>
+        ) : null}
+      </div>
+      {said ? (
+        <p role="status" className="mt-3 text-center font-sans text-caption text-paper/70">
+          {said}
+        </p>
+      ) : null}
+    </div>
+  );
+}
+
+/** The share mark: a box with an arrow rising out of it. */
+export function ShareMark({ size }: { size: number }) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.7} strokeLinecap="round" strokeLinejoin="round" aria-hidden>
+      <path d="M12 15V3.5" />
+      <path d="M7.5 8 12 3.5 16.5 8" />
+      <path d="M5 12.5V19a1.5 1.5 0 0 0 1.5 1.5h11A1.5 1.5 0 0 0 19 19v-6.5" />
+    </svg>
+  );
+}
