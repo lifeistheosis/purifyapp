@@ -65,12 +65,13 @@ import { ContentHealthTab } from "./tabs/ContentHealthTab";
 import { HealthTab } from "./tabs/HealthTab";
 import { AuditLogTab } from "./tabs/AuditLogTab";
 import { SourcingTab } from "./tabs/SourcingTab";
-import { TodayTab } from "./tabs/TodayTab";
+import { HomeTab } from "./tabs/HomeTab";
 import { UsageTab } from "./tabs/UsageTab";
 import { OnboardingTab } from "./tabs/OnboardingTab";
 import { ScreensTab } from "./tabs/ScreensTab";
 import { SubTabs } from "./primitives";
-import { ADMIN_PAGE_GROUPS, pageOf, type AdminPage } from "@/lib/admin/pages";
+import { ADMIN_PAGE_GROUPS, pageOf, viewName, type AdminPage } from "@/lib/admin/pages";
+import { decodeRail, encodeRail, railCookie, railDay, railFromUsage, type ViewUse } from "@/lib/admin/rail";
 import { useUsageLog } from "@/lib/admin/useUsageLog";
 import { AdminThemeToggle } from "./AdminThemeToggle";
 import { AdminSoundToggle } from "./AdminSoundToggle";
@@ -78,7 +79,6 @@ import { AdminMotionToggle } from "./AdminMotionToggle";
 import { AdminStreamerToggle } from "./AdminStreamerToggle";
 import { ActivityFeed } from "./ActivityFeed";
 import { useStreamerOn } from "@/lib/admin/streamer";
-import { ADMIN_TAB_ICONS, ADMIN_TAB_ICON_FALLBACK } from "./nav-icons";
 import { AdminMobileNav } from "./AdminMobileNav";
 import { installLarpWriteGuard, larpOn, setLarp, useLarpOn } from "@/lib/admin/larp";
 import { TabBoundary } from "./TabBoundary";
@@ -153,11 +153,15 @@ type Group = { group: string; mode: Mode; tabs: Tab[] };
 // OwnerSection, which gates on a request before it imports anything.
 //
 // Library files, Services and Content were once dropped from the rail by a
-// restructure that never finished (c0d7994a); they are views of System's
-// pages now, so they cannot go missing that way again. pages.test.ts holds
-// that every id here is a view of exactly one page.
+// restructure that never finished (c0d7994a); they are views of pages in the
+// Tools line now, so they cannot go missing that way again. pages.test.ts
+// holds that every id here is a view of exactly one page, and rail.test.ts
+// that every page stays in the rail however it is sorted.
+//
+// `today` keeps its id though the page is called Home now (the owner's pick
+// A, 2026-10-28), so every #tab=today bookmark still lands on it.
 const COMPONENTS: Partial<Record<TabId, ComponentType>> = {
-  today: TodayTab,
+  today: HomeTab,
   overview: CommerceOverviewTab,
   orders: OrdersTab,
   fulfillment: FulfillmentTab,
@@ -191,15 +195,16 @@ const COMPONENTS: Partial<Record<TabId, ComponentType>> = {
   usage: UsageTab,
 };
 
-// The per-tab list the search box, the hash reader and the owner check use.
-// Label is the view's own name; eyebrow is its page's sentence.
+// The per-tab list the hash reader, the tab boundary and the owner check use.
+// Label is the view's own name; eyebrow is its page's sentence. The search box
+// reads the rail itself, so it follows the rail's order and group names.
 const GROUPS: Group[] = ADMIN_PAGE_GROUPS.map((g) => ({
   group: g.group,
   mode: g.mode,
   tabs: g.pages.flatMap((p) =>
     p.views.map((v) => ({
       id: v.tab as TabId,
-      label: p.views.length > 1 ? `${p.label}: ${v.label}` : p.label,
+      label: viewName(p, v),
       eyebrow: p.sentence,
       component: COMPONENTS[v.tab as TabId],
     })),
@@ -262,36 +267,35 @@ function NavItem({
 }) {
   return (
     <li>
+      {/* The owner's pick A, as drawn: a word per page, no glyph, the open
+          page solid (the panel's one meaning for a fill is "chosen"), and a
+          count of who is waiting as a quiet figure at the end of the row. The
+          phone bar keeps its glyphs, where a word alone is too small to hit. */}
       <button
         type="button"
         onClick={() => onSelect(t.id as TabId)}
         aria-current={on ? "page" : undefined}
-        className="adm-rail-item flex w-full items-center gap-2 rounded-[var(--adm-radius-sm)] px-2 py-[5px] text-left font-sans text-[13px]"
+        className="adm-control flex w-full items-center justify-between gap-2 rounded-[var(--adm-radius-sm)] px-2.5 py-[7px] text-left font-sans text-[13.5px]"
         style={
           on
-            ? {
-                // The surface carries the state. The old treatment was a 12%
-                // accent wash behind accented text: a tinted fill fighting a
-                // tinted label, which is why it read as muddy. Now the label
-                // is full-contrast ink (14.05:1 in both themes).
-                background: "var(--adm-nav-active-bg)",
-                color: "var(--adm-nav-active-fg)",
+            ? ({
+                "--_bg": "var(--adm-accent)",
+                "--_bg-hover": "var(--adm-accent)",
+                color: "var(--adm-on-accent)",
                 fontWeight: 600,
-              }
-            : { color: "var(--adm-ink-2)" }
+              } as React.CSSProperties)
+            : ({
+                "--_bg": "transparent",
+                "--_bg-hover": "var(--adm-hover)",
+                color: "var(--adm-ink-2)",
+              } as React.CSSProperties)
         }
       >
-        <span
-          className="grid shrink-0 place-items-center"
-          style={{ color: on ? "var(--adm-nav-bar)" : "var(--adm-ink-3)" }}
-        >
-          {ADMIN_TAB_ICONS[t.id] ?? ADMIN_TAB_ICON_FALLBACK}
-        </span>
         <span className="min-w-0 flex-1 truncate">{t.label}</span>
         {badge ? (
           <span
-            className="shrink-0 rounded-[var(--adm-radius-pill)] px-1.5 py-px font-sans text-[11px] font-semibold"
-            style={{ background: "var(--adm-badge-bg)", color: "var(--adm-badge-fg)" }}
+            className="shrink-0 font-mono text-[10.5px] font-normal"
+            style={{ color: on ? "var(--adm-on-accent)" : "var(--adm-ink-3)", opacity: on ? 0.7 : 1 }}
             title={badge.title}
           >
             {badge.count}
@@ -299,6 +303,61 @@ function NavItem({
         ) : null}
       </button>
     </li>
+  );
+}
+
+/**
+ * The Tools line: the pages he barely opens, folded into one quiet line of
+ * links (the owner's pick A). Each link still opens its page and every view
+ * under it, so nothing went away; it only stopped asking to be looked at. A
+ * page with somebody waiting keeps its count beside its name, so a queue
+ * that lands in here is still seen.
+ */
+function ToolsLine({
+  pages,
+  activeId,
+  badgeOf,
+  onSelect,
+}: {
+  pages: AdminPage[];
+  activeId: string;
+  badgeOf: (p: AdminPage) => { count: number; title: string } | null;
+  onSelect: (id: TabId) => void;
+}) {
+  return (
+    <ul
+      className="flex flex-wrap px-2.5 py-1 font-sans text-[12px] leading-[1.7]"
+      style={{ color: "var(--adm-ink-3)" }}
+    >
+      {pages.map((p, i) => {
+        const on = p.id === activeId;
+        const badge = badgeOf(p);
+        return (
+          <li key={p.id} className="whitespace-nowrap">
+            <button
+              type="button"
+              onClick={() => onSelect(p.id as TabId)}
+              aria-current={on ? "page" : undefined}
+              title={badge?.title}
+              className="rounded-[var(--adm-radius-xs)] underline-offset-[3px] hover:text-[color:var(--adm-ink)] hover:underline"
+              style={on ? { color: "var(--adm-ink)", fontWeight: 600 } : undefined}
+            >
+              {p.label}
+              {badge ? (
+                <span className="ml-1 font-mono text-[10.5px]" style={{ color: "var(--adm-ink-2)" }}>
+                  {badge.count}
+                </span>
+              ) : null}
+            </button>
+            {i < pages.length - 1 ? (
+              <span aria-hidden className="mr-1" style={{ opacity: 0.6 }}>
+                ,
+              </span>
+            ) : null}
+          </li>
+        );
+      })}
+    </ul>
   );
 }
 
@@ -416,11 +475,19 @@ type OverviewPayload = {
 export function AdminShell({
   adminEmail,
   isOwner = false,
+  savedRail = null,
 }: {
   adminEmail: string;
   /** Resolved server-side by getOwnerUser(). Controls whether the Owner
       segment renders. It is NOT the data gate: see OwnerSection.tsx. */
   isOwner?: boolean;
+  /**
+   * The rail's order as this browser last worked it out from the usage log,
+   * read by the server from the adm_rail cookie (lib/admin/rail.ts says why
+   * a cookie) so the rail is drawn in that order from the first paint.
+   * Absent or unreadable: the rail as the owner picked it.
+   */
+  savedRail?: string | null;
 }) {
   // Two names on purpose. `requested` is whatever the hash or a click asked
   // for; `active` is what this account may actually see. Deriving the second
@@ -572,12 +639,45 @@ export function AdminShell({
   const currentMeta = TABS.find((t) => t.id === active);
   const current = currentMeta ?? TABS[0];
 
-  const visibleGroups = GROUPS.filter((g) => g.mode === mode && (g.mode !== "owner" || isOwner));
-  const visiblePageGroups = ADMIN_PAGE_GROUPS.filter(
-    (g) => g.mode === mode && (g.mode !== "owner" || isOwner),
-  );
+  // THE RAIL, SORTED BY HIS USE (the owner's pick A, 2026-10-28). Daily, When
+  // needed, and the quiet Tools line, in the order the usage log last put
+  // them in. Decoded from what the server read, so the first paint is already
+  // in that order, and fixed for the whole visit: moving a rail under the
+  // pointer that is reaching for it is worse than a rail that never moves.
+  const rail = decodeRail(savedRail);
+
+  // ...and the NEXT visit's order, worked out at most once a day from the
+  // route the "Your use" readout already reads, and left in the cookie for
+  // the server. A log that does not answer leaves the rail as it is.
+  useEffect(() => {
+    const today = railDay(new Date());
+    if (rail.day === today) return;
+    let alive = true;
+    void (async () => {
+      try {
+        const r = await fetch("/api/admin/usage", { cache: "no-store" });
+        if (!alive || !r.ok) return;
+        const body = (await r.json()) as { views?: ViewUse[] };
+        if (!alive || !Array.isArray(body.views)) return;
+        document.cookie = railCookie(
+          encodeRail(railFromUsage(body.views), today),
+          window.location.protocol === "https:",
+        );
+      } catch {
+        // Offline, or a body that is not JSON: no new order this time.
+      }
+    })();
+    return () => {
+      alive = false;
+    };
+  }, [rail.day]);
+
+  const visiblePageGroups =
+    mode === "ops"
+      ? rail.groups.filter((g) => g.pages.length > 0)
+      : ADMIN_PAGE_GROUPS.filter((g) => g.mode === "owner" && isOwner);
   // Group, page, view; a step that repeats the one before it is left out, so
-  // Today reads "Today" and not "Today / Today / Today".
+  // Home reads "Daily / Home" and not "Daily / Home / Home".
   const crumbs = [
     visiblePageGroups.find((g) => g.pages.some((p) => p.id === page.id))?.group,
     page.label,
@@ -595,37 +695,36 @@ export function AdminShell({
   const nav = (
     <nav aria-label="Admin sections">
       {visiblePageGroups.map((g, i) => (
-        // A real hairline between groups, not whitespace. Group boundaries
-        // used to exist only as vertical gaps, which is the density problem
-        // this rail was built to fix, one layer down.
-        <div
-          key={g.group}
-          className={i === 0 ? "" : "mt-2 border-t pt-2"}
-          style={i === 0 ? undefined : { borderColor: "var(--adm-line)" }}
-        >
+        // Three groups with a quiet name each, set apart by room rather than
+        // rules, as the design draws them. The hairlines were for six groups
+        // of near-equal weight; these three already differ in kind.
+        <div key={g.group} className={i === 0 ? "" : "mt-4"}>
           {/* Sentence case. primitives.tsx bans tracked uppercase labels
               ("when everything is a heading, the eye has nothing to skip
               to"), and the rail should not contradict the panel below it. */}
-          {/* A group of one page with its own name (Today) needs no heading. */}
+          {/* A group of one page with its own name needs no heading. */}
           {g.pages.length === 1 && g.pages[0].label === g.group ? null : (
-            <p className="mb-1 px-2 font-sans text-[11.5px] font-medium" style={{ color: "var(--adm-ink-3)" }}>
+            <p className="mb-1 px-2.5 font-sans text-[11px] font-medium" style={{ color: "var(--adm-ink-3)" }}>
               {g.group}
             </p>
           )}
-          <ul className="space-y-px">
-            {g.pages.map((p) => (
-              <NavItem
-                key={p.id}
-                t={p}
-                on={p.id === page.id}
-                badge={pageBadge(p)}
-                onSelect={select}
-              />
-            ))}
-          </ul>
+          {g.quiet ? (
+            <ToolsLine pages={g.pages} activeId={page.id} badgeOf={pageBadge} onSelect={select} />
+          ) : (
+            <ul className="space-y-px">
+              {g.pages.map((p) => (
+                <NavItem
+                  key={p.id}
+                  t={p}
+                  on={p.id === page.id}
+                  badge={pageBadge(p)}
+                  onSelect={select}
+                />
+              ))}
+            </ul>
+          )}
         </div>
       ))}
-
     </nav>
   );
 
@@ -744,18 +843,16 @@ export function AdminShell({
         {/* Rail. Sticky on desktop so navigation is always one glance away,
             even a thousand rows into an order list.
 
-            200px, up from 184, to pay for the icon column. That leaves ~136px
-            of label, and "Subscriptions" is ~86px at 13px DM Sans, so the
-            truncate never fires on any current label.
+            The rows are words only since the owner's pick A (2026-10-28), so
+            the label has the whole width; the longest, "Catalogue", is far
+            inside it.
 
             Only the NAV region scrolls, not the whole rail. That is what keeps
             the identity block pinned no matter how many groups land, and it is
             what lets the live rows sit under the nav without pushing the
-            footer off. The budget at 1366x768 is tight on purpose: four groups
-            fit with room to spare, and a fifth spills a few pixels into the
-            nav scroller rather than pushing anything off the rail. py-[5px] on
-            the nav items is load-bearing, not taste. A sixth group wants
-            collapsible sections, not tighter padding. */}
+            footer off. Seven rows and the Tools line fit a 1366x768 screen
+            with room to spare at py-[7px]; if the rail ever grows past that,
+            it wants a fold, not tighter padding. */}
       {/* Fixed, not sticky. Sticky kept the rail inside the old centred
           max-w-[1400px] wrapper, which on a 1680px screen left 133px of dead
           margin on the left and 147px on the right, floated the rail 158px in
@@ -873,14 +970,19 @@ export function AdminShell({
                 {/* Search and the one count that means someone is waiting.
                     Both sit left of the action bank so the row reads
                     identity, then find, then do. */}
+                {/* Every view of every page in the rail, under the rail's
+                    own group names, so a view folded into Tools is still
+                    one search away. */}
                 <TabSearch
-                  tabs={visibleGroups.flatMap((g) =>
-                    g.tabs.map((t) => ({
-                      id: t.id,
-                      label: t.label,
-                      eyebrow: t.eyebrow,
-                      group: g.group,
-                    })),
+                  tabs={visiblePageGroups.flatMap((g) =>
+                    g.pages.flatMap((p) =>
+                      p.views.map((v) => ({
+                        id: v.tab,
+                        label: viewName(p, v),
+                        eyebrow: p.sentence,
+                        group: g.group,
+                      })),
+                    ),
                   )}
                   onSelect={(id) => isTabId(id) && select(id)}
                 />
@@ -993,7 +1095,7 @@ export function AdminShell({
                 remount and replay on every section change. It is the one
                 outlined status box on the page, and only while there is
                 something to say. */}
-            {/* Not on Today: its to-do list is this same summary, in full. */}
+            {/* Not on Home: its to-do list is this same summary, in full. */}
             {active === "today" ? null : (
             <AttentionStrip
               summary={attention.summary}
@@ -1088,8 +1190,14 @@ export function AdminShell({
       // Pages, the same list as the rail. A page id is its first view's id.
       groups={visiblePageGroups.map((g) => ({
         group: g.group,
+        quiet: g.quiet,
         tabs: g.pages.map((p) => ({ id: p.id, label: p.label })),
       }))}
+      // The bar's slots are the rail's Daily: Home and the three pages read
+      // most (the owner's pick A; it was Today, Orders, Messages and Shop,
+      // and he pressed More every time to reach Traffic and Money). Owner
+      // mode has no Daily and keeps More alone, as it always did.
+      primary={mode === "ops" ? (visiblePageGroups[0]?.pages.map((p) => p.id) ?? []) : []}
       active={page.id}
       onSelect={(id) => isTabId(id) && select(id)}
       footer={

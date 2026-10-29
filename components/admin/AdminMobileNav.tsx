@@ -22,10 +22,12 @@ import { cn } from "@/lib/cn";
  * words, and a hamburger charges a tap for every move an operator makes.
  *
  * So the phone gets a different structure rather than a squeezed one. Four
- * destinations sit in the thumb's arc, chosen from what the operator said they
- * actually do standing up: read the numbers, fulfil orders, answer people,
- * work the shop. Everything else, and there is a lot of it, lives one tap away
- * behind More, still in its groups, because full parity was the brief.
+ * destinations sit in the thumb's arc: the rail's Daily, Home and the three
+ * pages he reads most (the owner's pick A, 2026-10-28). They used to be
+ * Today, Orders, Messages and Shop, chosen from what he said he does standing
+ * up, and his own log showed him pressing More every time to reach Traffic
+ * and Money. Everything else lives one tap away behind More, still in its
+ * groups, because full parity was the brief.
  *
  * ── Matching the app, not inventing a second grammar ────────────────────
  *
@@ -43,22 +45,26 @@ import { cn } from "@/lib/cn";
  */
 
 export type MobileNavTab = { id: string; label: string };
-export type MobileNavGroup = { group: string; tabs: MobileNavTab[] };
-
-/**
- * The four that earn a permanent slot. Everything else is reachable in one
- * more tap, which is the correct trade for a destination nobody opens while
- * standing in a queue.
- */
-const PRIMARY = ["today", "orders", "messages", "shop"] as const;
+export type MobileNavGroup = {
+  group: string;
+  tabs: MobileNavTab[];
+  /** The rail's Tools: drawn as quiet text rows in the sheet, not tiles. */
+  quiet?: boolean;
+};
 
 export function AdminMobileNav({
   groups,
+  primary: primaryIds,
   active,
   onSelect,
   footer,
 }: {
   groups: MobileNavGroup[];
+  /**
+   * The ids that earn a permanent slot, in order: the rail's Daily. An id no
+   * group holds is skipped. Everything else is reachable in one more tap.
+   */
+  primary: readonly string[];
   active: string;
   onSelect: (id: string) => void;
   /**
@@ -84,9 +90,9 @@ export function AdminMobileNav({
   const moreRef = useRef<HTMLButtonElement | null>(null);
 
   const all = groups.flatMap((g) => g.tabs);
-  const primary = PRIMARY.map((id) => all.find((t) => t.id === id)).filter(
-    (t): t is MobileNavTab => !!t,
-  );
+  const primary = primaryIds
+    .map((id) => all.find((t) => t.id === id))
+    .filter((t): t is MobileNavTab => !!t);
   // "More" carries the badge of being current whenever the open tab is not one
   // of the four, so the bar never shows nothing selected.
   const activeIsPrimary = primary.some((t) => t.id === active);
@@ -242,30 +248,57 @@ export function AdminMobileNav({
                 <p className="mb-2 font-sans text-caption font-medium text-[color:var(--adm-ink-3)]">
                   {g.group}
                 </p>
-                <div className="grid grid-cols-2 gap-2">
-                  {g.tabs.map((t) => {
-                    const on = t.id === active;
-                    return (
-                      <button
-                        key={t.id}
-                        type="button"
-                        onClick={() => go(t.id)}
-                        aria-current={on ? "page" : undefined}
-                        className={cn(
-                          "flex min-h-[52px] items-center gap-2.5 rounded-2xl border px-3 py-2.5 text-left font-sans text-detail transition-colors",
-                          on
-                            ? "border-[color:var(--adm-ink)] bg-[var(--adm-panel-2)] font-semibold text-paper"
-                            : "border-[color:var(--adm-line)] text-paper/80 active:bg-[var(--adm-panel-2)]",
-                        )}
-                      >
-                        <span className="shrink-0 opacity-80">
-                          {ADMIN_TAB_ICONS[t.id] ?? ADMIN_TAB_ICON_FALLBACK}
-                        </span>
-                        <span className="min-w-0 truncate">{t.label}</span>
-                      </button>
-                    );
-                  })}
-                </div>
+                {g.quiet ? (
+                  // The Tools, quiet here too: text rows with no box, still a
+                  // full thumb's height each, so a folded page is one tap
+                  // away without asking to be looked at.
+                  <div className="grid grid-cols-2 gap-x-2">
+                    {g.tabs.map((t) => {
+                      const on = t.id === active;
+                      return (
+                        <button
+                          key={t.id}
+                          type="button"
+                          onClick={() => go(t.id)}
+                          aria-current={on ? "page" : undefined}
+                          className={cn(
+                            "flex min-h-11 items-center rounded-xl px-3 text-left font-sans text-detail",
+                            on
+                              ? "bg-[var(--adm-panel-2)] font-semibold text-paper"
+                              : "text-[color:var(--adm-ink-2)] active:bg-[var(--adm-panel-2)]",
+                          )}
+                        >
+                          <span className="min-w-0 truncate">{t.label}</span>
+                        </button>
+                      );
+                    })}
+                  </div>
+                ) : (
+                  <div className="grid grid-cols-2 gap-2">
+                    {g.tabs.map((t) => {
+                      const on = t.id === active;
+                      return (
+                        <button
+                          key={t.id}
+                          type="button"
+                          onClick={() => go(t.id)}
+                          aria-current={on ? "page" : undefined}
+                          className={cn(
+                            "flex min-h-[52px] items-center gap-2.5 rounded-2xl border px-3 py-2.5 text-left font-sans text-detail transition-colors",
+                            on
+                              ? "border-[color:var(--adm-ink)] bg-[var(--adm-panel-2)] font-semibold text-paper"
+                              : "border-[color:var(--adm-line)] text-paper/80 active:bg-[var(--adm-panel-2)]",
+                          )}
+                        >
+                          <span className="shrink-0 opacity-80">
+                            {ADMIN_TAB_ICONS[t.id] ?? ADMIN_TAB_ICON_FALLBACK}
+                          </span>
+                          <span className="min-w-0 truncate">{t.label}</span>
+                        </button>
+                      );
+                    })}
+                  </div>
+                )}
               </div>
             ))}
             {footer ? (
@@ -306,7 +339,7 @@ export function AdminMobileNav({
                   aria-current={on ? "page" : undefined}
                   className={cn(
                     "flex h-[58px] w-full flex-col items-center justify-center gap-1 rounded-2xl px-1 transition-colors",
-                    on ? "text-gold-pale" : "text-paper/55 active:text-paper/80",
+                    on ? "text-[color:var(--adm-accent-line)]" : "text-paper/55 active:text-paper/80",
                   )}
                 >
                   <span className={on ? "opacity-100" : "opacity-70"}>
@@ -335,7 +368,7 @@ export function AdminMobileNav({
                 "flex h-[58px] w-full flex-col items-center justify-center gap-1 rounded-2xl px-1 transition-colors",
                 activeIsPrimary
                   ? "text-paper/55 active:text-paper/80"
-                  : "text-gold-pale",
+                  : "text-[color:var(--adm-accent-line)]",
               )}
             >
               <span aria-hidden className="flex h-[18px] items-end gap-[3px]">
