@@ -9,11 +9,19 @@ import { useEffect } from "react";
  *
  * One attribute on <body> says the controls are away, and app/globals.css
  * does the rest ("The page: the Bible reader with no bar"): the round
- * buttons over the top of the page and the pill at its foot leave together
- * and come back together. Nothing renders while the page scrolls: the
- * attribute is written only when the answer changes. On <body> and not on
- * <html>, because the motion switch is on <html>, and each reduced-motion
- * escape needs it as an ancestor of the rule it quiets.
+ * buttons over the top of the page, the pill at its foot and, in the apps,
+ * the tab bar leave together and come back together. Nothing renders while
+ * the page scrolls: the attribute is written only when the answer changes.
+ * On <body> and not on <html>, because the motion switch is on <html>, and
+ * each reduced-motion escape needs it as an ancestor of the rule it quiets.
+ *
+ * The tab bar is every screen's, and steps away on the reader's alone (the
+ * owner's "add everything we left out" of 2026-10-28, with his pick B of the
+ * reader's buttons, r18/choose/4-bible-buttons): a second attribute on
+ * <body>, SCREEN_ATTR, says the screen that watches is open, and the tab
+ * bar's rules in globals.css are keyed on the two. Only that screen mounts
+ * this hook (ChapterScreen), and both attributes go with it, so on any other
+ * screen the tab bar is as it always was.
  *
  * The rule, and why:
  *  - Down, the reader is reading: after a run of AWAY_AFTER_PX one way, the
@@ -92,12 +100,21 @@ export function watchScrollAway(onChange: (away: boolean) => void): () => void {
 export const AWAY_ATTR = "data-reader-away";
 
 /**
- * Mounted once by the screen whose controls step away. The attribute goes
- * with the screen, so the next screen opens with its controls in sight.
+ * The attribute on <body> that says the screen whose controls step away is
+ * open: the tab bar, which is every screen's, takes its way of leaving and
+ * coming back from it, there and nowhere else.
+ */
+export const SCREEN_ATTR = "data-reader-screen";
+
+/**
+ * Mounted once by the screen whose controls step away. The attributes go
+ * with the screen, so the next screen opens with its controls, and the tab
+ * bar, in sight.
  */
 export function useScrollAway(): void {
   useEffect(() => {
     const body = document.body;
+    body.setAttribute(SCREEN_ATTR, "");
     const stop = watchScrollAway((away) => {
       if (away) body.setAttribute(AWAY_ATTR, "");
       else body.removeAttribute(AWAY_ATTR);
@@ -105,6 +122,7 @@ export function useScrollAway(): void {
     return () => {
       stop();
       body.removeAttribute(AWAY_ATTR);
+      body.removeAttribute(SCREEN_ATTR);
     };
   }, []);
 }

@@ -181,6 +181,7 @@ function ReaderSettingsControls({
   touch,
   onFocusToggled,
   onLeave,
+  startSize,
 }: {
   showInterlinear: boolean;
   /** Include Focus and Interlinear. Off on desktop, where each has its own pill. */
@@ -191,11 +192,17 @@ function ReaderSettingsControls({
   onFocusToggled?: () => void;
   /** A row that opens a sheet of its own (ambience) closes these first. */
   onLeave?: () => void;
+  /**
+   * The size the reader they were opened from reads at for a reader who has
+   * never chosen one, so the size lit here is the size on the page: Large in
+   * the Bible (BIBLE_START_SIZE).
+   */
+  startSize?: ReaderSize;
 }) {
   const { t } = useTranslate();
   const flow = useReadingFlow();
   const { size, setSize, font, setFont, leading, setLeading, focus, toggleFocus } =
-    useReaderPrefs();
+    useReaderPrefs(startSize);
   const { on: interlinearOn, toggle: toggleInterlinear } = useInterlinear();
 
   return (
@@ -295,9 +302,10 @@ function ReaderSettingsControls({
 /**
  * The phone's and the tablet's reader settings: a movable bottom sheet.
  *
- * Opened from the Bible reader's round Aa button over the page (1.8,
- * MobileReaderActions) and from the settings icon in a saint's work's top
- * bar (MobileWorkActions). The Reader pill under the book picker opened it
+ * Opened from the first row of the Bible reader's ••• sheet (1.8,
+ * MobileReaderActions; a round Aa button of its own until the owner's pick B
+ * of 2026-10-28, "Aa inside •••") and from the settings icon in a saint's
+ * work's top bar (MobileWorkActions). The Reader pill under the book picker opened it
  * too until 1.7, when the owner had it removed because it repeated the icon
  * (note 3 of 2026-10-16).
  */
@@ -305,10 +313,13 @@ export function ReaderSettingsSheet({
   open,
   onClose,
   showInterlinear,
+  startSize,
 }: {
   open: boolean;
   onClose: () => void;
   showInterlinear: boolean;
+  /** The opening reader's size for a reader who has never chosen one. */
+  startSize?: ReaderSize;
 }) {
   const { t } = useTranslate();
   return (
@@ -320,6 +331,7 @@ export function ReaderSettingsSheet({
           touch
           onFocusToggled={onClose}
           onLeave={onClose}
+          startSize={startSize}
         />
         <p className="font-sans text-caption text-paper/45 leading-[1.55]">
           {t("bible.readerPrefsNote")}
@@ -333,10 +345,10 @@ export function ReaderSettingsSheet({
  * The computer's Reader pill: a popover under the pill, right-aligned because
  * the pill sits at the right of the toolbar, without Focus and Interlinear,
  * which have their own pills beside it. Phones and tablets have no pill: the
- * round Aa button over the page opens ReaderSettingsSheet, with everything
- * in it.
+ * first row of the ••• sheet over the page opens ReaderSettingsSheet, with
+ * everything in it.
  */
-export function ReaderSettingsMenu({ showInterlinear }: { showInterlinear: boolean }) {
+export function ReaderSettingsMenu({ showInterlinear, startSize }: { showInterlinear: boolean; startSize?: ReaderSize }) {
   const { t } = useTranslate();
   const [open, setOpen] = useState(false);
   const buttonRef = useRef<HTMLButtonElement>(null);
@@ -392,6 +404,7 @@ export function ReaderSettingsMenu({ showInterlinear }: { showInterlinear: boole
             toggles={false}
             touch={false}
             onLeave={() => setOpen(false)}
+            startSize={startSize}
           />
         </div>
       )}

@@ -24,6 +24,9 @@ import { TranslationList, useTranslationChoice } from "./TranslationList";
  * chapter opens on its words, so what stood above its title and in its top
  * bar until 1.7 is here, one tap away:
  *
+ *  - first, the reader's settings (the owner's pick B of 2026-10-28, "Two
+ *    (Aa inside •••)": they had a round Aa button of their own until then),
+ *    opening the same sheet Aa opened, which this sheet makes way for,
  *  - the search for a verse (BibleSearch, which opens as a screen of its own),
  *  - the book's chapters, the slim strip with the one being read lit,
  *  - the translation and the book, each opening its own sheet as the pills
@@ -32,13 +35,14 @@ import { TranslationList, useTranslationChoice } from "./TranslationList";
  *  - the chapter's bookmark,
  *  - and the search of the whole app, which every phone bar carried.
  *
- * The way back is the round button opposite; Aa holds the reader's settings
- * (ReaderSettingsSheet); the pill at the foot turns the chapter and holds
- * Listen. lib/bible/__tests__/readerScreen.test.ts holds the list.
+ * The way back is the round button opposite; the pill at the foot turns the
+ * chapter and holds Listen. lib/bible/__tests__/readerScreen.test.ts holds
+ * the list.
  */
 export function ReaderMoreSheet({
   open,
   onClose,
+  onSettings,
   book,
   bookName,
   chapter,
@@ -47,6 +51,8 @@ export function ReaderMoreSheet({
 }: {
   open: boolean;
   onClose: () => void;
+  /** Open the reader's settings in place of this sheet: the one who holds both closes this one as it opens them. */
+  onSettings: () => void;
   /** The book's slug. */
   book: string;
   /** The book's English name: the bookmark's label, as the computer's Save writes it. */
@@ -88,6 +94,8 @@ export function ReaderMoreSheet({
     <>
       <Sheet open={open} onClose={onClose} title={`${name} ${chapter}`}>
         <div className="space-y-4 pt-1">
+          {/* The sheet's first row: the reader's settings, Aa's own sheet. */}
+          <SheetRow label={t("bible.readerSettings")} icon={<AaMark />} onClick={onSettings} />
           <BibleSearch layer onNavigate={onClose} />
           {bibleBook ? (
             // The strip runs to the sheet's edges as it ran to the screen's:
@@ -130,6 +138,20 @@ export function ReaderMoreSheet({
       </Sheet>
       <MobileChapterSheet open={next === "book"} onClose={() => setNext(null)} currentSlug={book} currentChapter={chapter} />
     </>
+  );
+}
+
+/**
+ * The mark of the reader's settings, "Aa", drawn as the round button drew it
+ * until it moved in here (the letter twice, as the settings' own size
+ * previews draw it), so the mark is a drawing and not a word.
+ */
+function AaMark() {
+  return (
+    <span aria-hidden className="inline-flex shrink-0 items-baseline font-serif text-[14px] font-semibold leading-none">
+      <span>A</span>
+      <span>a</span>
+    </span>
   );
 }
 

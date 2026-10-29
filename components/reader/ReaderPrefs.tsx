@@ -14,6 +14,12 @@ import {
 } from "@/lib/reader/readingModes";
 import { usePlusReadingModes } from "@/components/reader/usePlusReadingModes";
 import { useTranslate } from "@/components/i18n/MessagesProvider";
+import { BIBLE_START_SIZE, sizeShown, storedSize } from "@/lib/reader/textSize";
+
+// The Bible's size for a reader who has never chosen one (1.8): Large. The
+// rule is lib/reader/textSize.ts's; the Bible's readers and its settings
+// sheet ask with it.
+export { BIBLE_START_SIZE };
 
 export type ReaderSize = "sm" | "md" | "lg" | "xl";
 export type ReaderFont = "serif" | "display" | "sans";
@@ -80,6 +86,8 @@ export const FONT_CLASSES: Record<ReaderFont, string> = {
 
 type PrefsSnap = {
   size: ReaderSize;
+  /** The reader chose the size (it is stored), rather than reading the default. */
+  sizeChosen: boolean;
   font: ReaderFont;
   leading: ReaderLeading;
   focus: boolean;
@@ -87,6 +95,7 @@ type PrefsSnap = {
 };
 const DEFAULT_SNAP: PrefsSnap = {
   size: "md",
+  sizeChosen: false,
   font: "serif",
   leading: "normal",
   focus: false,
@@ -127,8 +136,7 @@ function readPrefs(): PrefsSnap {
   ) {
     return prefsCache.val;
   }
-  const size =
-    rawS && SIZES.includes(rawS as ReaderSize) ? (rawS as ReaderSize) : "md";
+  const { size, chosen: sizeChosen } = storedSize(rawS);
   const font =
     rawF && FONTS.includes(rawF as ReaderFont) ? (rawF as ReaderFont) : "serif";
   const leading =
@@ -137,7 +145,7 @@ function readPrefs(): PrefsSnap {
       : "normal";
   const focus = rawFocus === "1";
   const theme = coerceReadingTheme(rawT);
-  const val: PrefsSnap = { size, font, leading, focus, theme };
+  const val: PrefsSnap = { size, sizeChosen, font, leading, focus, theme };
   prefsCache = { rawS, rawF, rawL, rawFocus, rawT, val };
   return val;
 }
@@ -163,7 +171,10 @@ function write(keyName: string, value: string) {
 }
 
 type Ctx = {
+  /** The size to draw: the reader's choice, or the start the caller asked with. */
   size: ReaderSize;
+  /** Whether the reader ever chose a size. */
+  sizeChosen: boolean;
   font: ReaderFont;
   leading: ReaderLeading;
   focus: boolean;
@@ -195,12 +206,19 @@ export function ReaderPrefsProvider({
   return <>{children}</>;
 }
 
-export function useReaderPrefs(): Ctx {
-  const { size, font, leading, focus, theme } = useSyncExternalStore(
+/**
+ * The reader's preferences. `startSize` is the size a reader who has never
+ * chosen one sees here: the Bible asks with BIBLE_START_SIZE; without it, the
+ * store's own default.
+ */
+export function useReaderPrefs(startSize?: ReaderSize): Ctx {
+  const snap = useSyncExternalStore(
     subscribePrefs,
     readPrefs,
     () => DEFAULT_SNAP,
   );
+  const { sizeChosen, font, leading, focus, theme } = snap;
+  const size = sizeShown(snap, startSize);
 
   const setSize = useCallback((s: ReaderSize) => write(SIZE_KEY, s), []);
   const setFont = useCallback((f: ReaderFont) => write(FONT_KEY, f), []);
@@ -249,6 +267,7 @@ export function useReaderPrefs(): Ctx {
 
   return {
     size,
+    sizeChosen,
     font,
     leading,
     focus,
