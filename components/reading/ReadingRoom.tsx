@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { Suspense, useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
+import { preload } from "react-dom";
 
 import { useTranslate } from "@/components/i18n/MessagesProvider";
 import { MobileHeader } from "@/components/mobile/MobileHeader";
@@ -12,6 +13,7 @@ import { Search } from "@/components/ui/icons/Search";
 import { cn } from "@/lib/cn";
 import { useCalendarStyleDefault } from "@/lib/calendar/useCalendarStyleDefault";
 import { useToday } from "@/lib/calendar/useToday";
+import { avifFor } from "@/lib/media/streamed";
 import { useSpace } from "@/lib/onboarding/useSpace";
 import { ERA_IDS, LENGTH_IDS, THEME_IDS, TRADITION_IDS, partKey, themeKey, traditionKey } from "@/lib/reading/catalog";
 import { useReadingHistory } from "@/lib/reading/history";
@@ -78,6 +80,24 @@ function AddressSync({ onAddress }: { onAddress: (search: string) => void }) {
   const search = params.toString();
   useLayoutEffect(() => onAddress(search), [search, onAddress]);
   return null;
+}
+
+/** The covers a phone shows of a row before any swipe: three, and the edge of a fourth. */
+const FIRST_SEEN = 4;
+
+/**
+ * A cover's picture, asked for while the room is still being drawn and before
+ * its covers are in the page, the way the cover will ask for it (its AVIF
+ * where it has one, components/covers/WorkCover.tsx), so the first pictures
+ * are on their way as the room opens (1.8, the owner's note 13 of build 80).
+ * React puts each in the page's head once; a page written ahead (the website,
+ * the apps' export) carries the first row's in its own head, ahead of the
+ * covers themselves. `first` is the day's book, asked for before the rest.
+ */
+function warm(cover: Card["cover"], first = false) {
+  if (!cover) return;
+  const avif = avifFor(cover.src);
+  preload(avif ?? cover.src, { as: "image", ...(avif ? { type: "image/avif" } : {}), ...(first ? { fetchPriority: "high" as const } : {}) });
 }
 
 /**
@@ -228,6 +248,14 @@ export function ReadingRoom({ room, library }: { room: Room; library: LibraryLin
   const short = useMemo(() => shortRow(room), [room]);
   const seasonId = season ? (season.current ?? season.next) : null;
   const seasonal = useMemo(() => (seasonId ? seasonRow(room, seasonId) : []), [room, seasonId]);
+
+  // The first pictures the room opens on, asked for now: the day's book, and
+  // the first covers of the row under it. Each cover then waits for its own
+  // in the page's colour and arrives whole (components/reading/CoverRow.tsx).
+  if (!open) {
+    warm(featuredCard?.cover, true);
+    for (const c of (beginner ? begin : short).slice(0, FIRST_SEEN)) warm(c.cover);
+  }
 
   const partLabel = (p: ThemePick) =>
     p.part ? t(partKey(p.part.kind, p.part.to !== undefined), { n: p.part.from, from: p.part.from, to: p.part.to ?? p.part.from }) : null;

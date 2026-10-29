@@ -35,6 +35,15 @@ const CHIPS: { which: Which; key: string }[] = [
   { which: "length", key: "reading.filter.length" },
 ];
 
+/**
+ * The covers of the grid's first screen, about four rows at three across on a
+ * phone: asked for at once, so they arrive with the search and never wait
+ * long. The rest load as the grid is scrolled to them. Each waits for its
+ * picture in the page's own colour and arrives whole (1.8, the owner's note
+ * 13 of build 80; components/covers/WorkCover.tsx, `hold`).
+ */
+const FIRST_SCREEN = 12;
+
 const GROUP_HEADING: Record<ThemeGroup, string> = {
   passions: "reading.row.passions",
   virtues: "reading.row.virtues",
@@ -146,14 +155,14 @@ export function ReadingSearch({ room, query, filters, onFilter }: { room: Room; 
         <p className="mt-8 max-w-[40ch] font-sans text-ui leading-[1.55] text-paper/65">{t("reading.empty.search")}</p>
       ) : (
         <ul className="mt-3 grid grid-cols-2 gap-x-2.5 gap-y-6 min-[360px]:grid-cols-3 sm:grid-cols-4 md:grid-cols-5 md:gap-x-4 lg:grid-cols-6">
-          {results.map((c) => {
+          {results.map((c, i) => {
             const author = c.author ?? t("reading.work.anonymous");
             const name = [c.title, author].join(", ");
             return (
               <li key={c.key} className="min-w-0">
                 <Link href={hrefFor(c, filters.theme)} prefetch={false} className="press-card group block rounded-[6px]">
                   <span className="sr-only">{name}</span>
-                  <WorkCover title={c.title} author={author} iconUrl={c.cover?.src} focusY={c.cover?.focusY} size="grid" />
+                  <WorkCover title={c.title} author={author} iconUrl={c.cover?.src} focusY={c.cover?.focusY} size="grid" eager={i < FIRST_SCREEN} hold="self" />
                   <span className="mt-2 block truncate font-sans text-caption text-paper/55">{cardMeta(c, t)}</span>
                 </Link>
               </li>

@@ -115,6 +115,11 @@ export function CoverRow({
  * A book on a row: its cover, then one or two quiet lines (what the row
  * names it, how long it is). The whole tile is the link, named by the title
  * and the author; the cover itself is hidden from assistive technology.
+ *
+ * The cover waits for its picture in the page's own colour and arrives whole
+ * (1.8, the owner's note 13 of build 80: the room's pictures popped in), so a
+ * row fills with posters and never with grey boxes that pictures land on
+ * (components/covers/WorkCover.tsx, `hold`).
  */
 export function CoverTile({
   card,
@@ -152,6 +157,7 @@ export function CoverTile({
           size="row"
           priority={priority}
           eager={near}
+          hold="self"
         />
         {progress !== undefined ? (
           <span aria-hidden className="mt-2 block h-[2px] overflow-hidden rounded-full bg-paper/15">

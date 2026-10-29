@@ -24,6 +24,12 @@
  * timelines (WebKit before scroll-driven animations), the day's book is moved
  * by components/reading/FeaturedWork.tsx from the scroll, once a frame,
  * written straight to the element.
+ *
+ * One arrival, fired once, because the owner asked for it by name (1.8, his
+ * note 13 of build 80: the room's pictures popped in, "they fade in"): the
+ * stage waits unseen in the page's own colour until its book's picture is in,
+ * then fades in whole, and the picture behind the poster fades up to its dim
+ * once it has loaded. Opacity only, and on the same switch.
  */
 
 /* The day's book: a stage the width of the screen on a phone, lit from above.
@@ -36,6 +42,14 @@
   overflow: clip;
 }
 
+/* Waiting for the day's book, or for its poster's picture: there at its full
+   size, so the rows under it never move, and unseen, so the page's own colour
+   is all that shows until the stage arrives whole. */
+.hero[data-held] {
+  visibility: hidden;
+  opacity: 0;
+}
+
 .heroBackdrop {
   position: absolute;
   inset: 0;
@@ -44,16 +58,20 @@
 }
 
 /* The book's own picture, as the stage's backdrop: the cover's icon, larger,
-   drained of its colour and dimmed, so the poster in front keeps it. */
+   drained of its colour and dimmed, so the poster in front keeps it. Clear
+   until it has loaded, so it never draws itself in; then at its dim. */
 .heroArt {
   position: absolute;
   inset: 0;
   width: 100%;
   height: 100%;
   object-fit: cover;
-  opacity: 0.32;
+  opacity: 0;
   filter: grayscale(0.9);
   transform: scale(1.14);
+}
+.heroArt[data-shown] {
+  opacity: 0.32;
 }
 
 /* A pool of light behind the poster, and the page itself at the stage's top
@@ -76,8 +94,10 @@
 /* On Light the stage is the page itself: the picture a faint grey on paper,
    and the light a shade darker, as the house bloom is on paper. */
 html[data-reading-mode="parchment"] .heroArt {
-  opacity: 0.13;
   filter: grayscale(1);
+}
+html[data-reading-mode="parchment"] .heroArt[data-shown] {
+  opacity: 0.13;
 }
 html[data-reading-mode="parchment"] .heroShade {
   background:
@@ -136,9 +156,21 @@ html[data-reading-mode="parchment"] .heroShade {
   }
 }
 
-/* With motion off, nothing keeps a transform or a dimmed state. */
+/* The stage's one arrival, and its backdrop's: a fade, the house's curve, the
+   duration for a large surface. */
+:where([data-motion="full"]) .hero,
+:where([data-motion="full"]) .heroArt {
+  transition: opacity var(--duration-slow) var(--ease-house);
+}
+
+/* With motion off, nothing keeps a transform or a dimmed state, and the stage
+   and its backdrop are simply there once they are ready. */
 :where([data-motion="reduce"]) .heroBackdrop,
 :where([data-motion="reduce"]) .heroPoster,
 :where([data-motion="reduce"]) .heroWords {
   animation: none;
+}
+:where([data-motion="reduce"]) .hero,
+:where([data-motion="reduce"]) .heroArt {
+  transition: none;
 }

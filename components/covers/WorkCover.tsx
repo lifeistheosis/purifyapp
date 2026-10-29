@@ -43,6 +43,18 @@ import { GEOMETRY, SIZES, coverWords, type CoverScale, type CoverSize } from "@/
  * woke is read from the <img> itself (as components/saints/SaintHeroPicture.tsx
  * does): the server wrote it, and a phone can answer it before React is awake.
  *
+ * HELD (1.8, the owner's note 13 of build 80: opening the reading room while
+ * its pictures load "breaks the immersion"). The reading room's covers wait
+ * instead: `hold="self"` keeps the poster's place in the page's own colour,
+ * the poster there but unseen, shadow and words with it, and fades the whole
+ * poster in once its picture has loaded, so a reader never sees a grey box
+ * and then a picture. `hold="parent"` leaves the waiting to the screen around
+ * the cover (the day's book, components/reading/FeaturedWork.tsx), which
+ * shows it when `onArrive` says. Either way a picture that cannot come stops
+ * the wait at once, and the poster arrives with its plate; one slower than
+ * HOLD_MS lets the plate come first, and then fades in over it, as an
+ * unheld cover's does.
+ *
  * LOADING. `priority` is the one cover a screen opens on (eager, and first
  * in line); `eager` is a cover near the screen (a row that is about to be
  * seen, components/reading/CoverRow.tsx), so a row swiped sideways never
@@ -85,6 +97,14 @@ const UNDER = "linear-gradient(to bottom, rgba(0,0,0,0.72), rgba(0,0,0,0.88))";
 /** How long a failed picture waits before it is asked for once more. */
 const RETRY_MS = 2500;
 
+/**
+ * How long a held cover waits for its picture, from the moment the picture is
+ * asked for, before it shows its plate instead (the picture then fades in over
+ * the plate when it comes). Long enough for an icon from the website on a
+ * phone's ordinary signal; short enough that a slow one never leaves a hole.
+ */
+export const HOLD_MS = 1200;
+
 /** A length in hundredths of the poster's width, for a box on it: a percentage of its containing block's width. */
 const pct = (n: number) => `${+n.toFixed(3)}%`;
 
@@ -109,6 +129,8 @@ export function WorkCover({
   size,
   priority = false,
   eager = false,
+  hold,
+  onArrive,
   className,
 }: {
   title: string;
@@ -124,6 +146,10 @@ export function WorkCover({
   priority?: boolean;
   /** A cover about to be seen: loaded now, not when it is reached. */
   eager?: boolean;
+  /** Wait unseen for the picture: the cover itself ("self"), or the screen around it ("parent"). */
+  hold?: "self" | "parent";
+  /** Told once the cover is ready to be seen, with its picture or with its plate. */
+  onArrive?: () => void;
   className?: string;
 }) {
   const src = imageUrl || iconUrl || null;
@@ -135,6 +161,10 @@ export function WorkCover({
   // asked for again, so no broken picture ever sits in the poster, hidden or
   // not (the export walk counts them, and a reader's screen reader would too).
   const [resting, setResting] = useState<string | null>(null);
+  // A held cover shown without its picture: the picture failed once, or kept
+  // the cover waiting past HOLD_MS. It stays shown while the picture is asked
+  // for again, and the picture fades in over the plate if it comes.
+  const [bare, setBare] = useState<string | null>(null);
   const picture = useRef<HTMLImageElement>(null);
   const timer = useRef<ReturnType<typeof setTimeout> | null>(null);
   // The icon's lighter copy, and the picture whose AVIF failed, now asked for as JPEG.
@@ -142,6 +172,7 @@ export function WorkCover({
   const [jpegOnly, setJpegOnly] = useState<string | null>(null);
 
   const fail = (failed: string) => {
+    setBare(failed);
     if (retry === failed) {
       setGone(failed);
       return;
@@ -171,10 +202,38 @@ export function WorkCover({
     if (timer.current) clearTimeout(timer.current);
   }, []);
 
+  // Arrived: the picture is in, or the cover has stopped waiting for it, or
+  // it has none. Until then a held cover stays unseen.
+  const shown = src !== null && loaded === src;
+  const arrived = src === null || shown || bare === src || gone === src;
+  const asked = priority || eager;
+
+  // A held cover whose picture is slow shows its plate after HOLD_MS, counted
+  // from when the picture is asked for: at once for the cover a screen opens
+  // on and the ones near it, and for a row further down from when it nears
+  // the screen (components/reading/CoverRow.tsx).
+  useEffect(() => {
+    if (!hold || src === null || !asked || arrived) return;
+    const wait = setTimeout(() => setBare(src), HOLD_MS);
+    return () => clearTimeout(wait);
+  }, [hold, src, asked, arrived]);
+
+  // The screen holding this cover is told it can be seen, once a picture.
+  const told = useRef<string | null | undefined>(undefined);
+  useEffect(() => {
+    if (!arrived || !onArrive || told.current === src) return;
+    told.current = src;
+    onArrive();
+  }, [arrived, src, onArrive]);
+
   const { scale, min } = SIZES[size];
   const g = GEOMETRY[scale];
   const words = coverWords({ title, author, size, picture: src !== null });
-  const shown = src !== null && loaded === src;
+  // A held cover's picture is simply there when the poster arrives with it,
+  // so the two never fade at once; it fades in on its own only over a plate
+  // that had to come first.
+  const fades = !hold || bare === src;
+  const held = hold === "self" && !arrived;
   // The author's room above him is a part of the words' width, which is the
   // poster's less its two side paddings.
   const gap = g.gap / ((100 - 2 * g.padX) / 100);
@@ -201,7 +260,8 @@ export function WorkCover({
           }}
           data-cover-picture={shown ? "shown" : "waiting"}
           className={cn(
-            "absolute inset-0 h-full w-full object-cover motion-safe:transition-opacity motion-safe:duration-500 motion-safe:ease-out",
+            "absolute inset-0 h-full w-full object-cover",
+            fades && "motion-safe:transition-opacity motion-safe:duration-500 motion-safe:ease-out",
             shown ? "opacity-100" : "opacity-0",
           )}
           style={imageUrl ? undefined : { objectPosition: `50% ${focusY}%` }}
@@ -209,7 +269,16 @@ export function WorkCover({
       </picture>
     ) : null;
 
-  const box = cn("dark-island @container relative aspect-[2/3] shrink-0 overflow-hidden bg-night-soft", POSTER[scale], WIDTH[size], className);
+  const box = cn(
+    "dark-island @container relative aspect-[2/3] shrink-0 overflow-hidden bg-night-soft",
+    POSTER[scale],
+    WIDTH[size],
+    // Held, the whole poster is see-through, shadow and words with it, so its
+    // place is the page's own colour until it fades in as one.
+    hold === "self" && "motion-safe:transition-opacity motion-safe:duration-500 motion-safe:ease-[var(--ease-house)]",
+    held && "opacity-0",
+    className,
+  );
   const titleStyle: CSSProperties = {
     ...typeSize(g.title, words.titleFit * (src ? 1 : g.alone), min),
     lineHeight: g.titleLead,
@@ -244,7 +313,7 @@ export function WorkCover({
   }
 
   return (
-    <div aria-hidden data-cover="" className={box} style={{ backgroundImage: GROUND }}>
+    <div aria-hidden data-cover="" className={box} style={{ backgroundImage: GROUND }} data-cover-held={held ? "" : undefined}>
       {imageUrl ? null : image}
       <span data-cover-words="" className="absolute inset-x-0 bottom-0 flex flex-col">
         <span aria-hidden className="block" style={{ paddingTop: pct(g.fade), backgroundImage: FADE }} />
