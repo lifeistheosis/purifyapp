@@ -39,13 +39,72 @@ describe("the gallery band", () => {
 
   it("draws its shade in the page's ground and its words in the page's ink", () => {
     // So it follows every palette: a literal black shade under the token ink
-    // is dark on dark on Parchment.
+    // is dark on dark on Parchment. The shade is the ground itself, under the
+    // picture, and the picture is faded into it by a mask (the next case).
     const band = code(BAND);
-    expect(band).toContain("from-night/90 from-35% to-night/15");
-    expect(band).toContain("from-night/93 from-40% to-night/12");
-    expect(band).toContain("rtl:bg-gradient-to-l");
+    expect(band).toContain('<span aria-hidden className="absolute inset-0 bg-night" />');
+    expect(band).toContain('tall ? "band-picture-tall" : "band-picture"');
     expect(band).toMatch(/text-lede leading-\[1\.15\] text-paper/);
     expect(band).not.toMatch(/rgba?\(\s*0\s*,\s*0\s*,\s*0|#0[0-9a-f]{5}\b|bg-black\b/i);
+
+    // The shade's figures, as how much of the picture shows: 93% of the
+    // ground across the start 40% to 12% at the far end, and the tall band's
+    // 90% across 35% to 15%. Turned the other way where a page reads right
+    // to left. A mask reads only the alpha, so its black is no colour.
+    const css = read("app/globals.css").replace(/\/\*[\s\S]*?\*\//g, "");
+    const rule = (selector: string) => {
+      const at = css.indexOf(`\n${selector} {`);
+      return at < 0 ? "" : css.slice(at, css.indexOf("}", at));
+    };
+    for (const [selector, side, mask] of [
+      [".band-picture", "right", "rgb(0 0 0 / 0.07) 40%, rgb(0 0 0 / 0.88)"],
+      [".band-picture-tall", "right", "rgb(0 0 0 / 0.1) 35%, rgb(0 0 0 / 0.85)"],
+      ['[dir="rtl"] .band-picture', "left", "rgb(0 0 0 / 0.07) 40%, rgb(0 0 0 / 0.88)"],
+      ['[dir="rtl"] .band-picture-tall', "left", "rgb(0 0 0 / 0.1) 35%, rgb(0 0 0 / 0.85)"],
+    ]) {
+      const body = rule(selector);
+      // The prefixed form first, for an Android WebView before 120.
+      expect(body, selector).toContain(`-webkit-mask-image: linear-gradient(to ${side}, ${mask});`);
+      expect(body, selector).toContain(` mask-image: linear-gradient(to ${side}, ${mask});`);
+      expect(body, selector).not.toMatch(/animation|transition/);
+    }
+  });
+
+  // The owner's build 80 note 1 (Homebase/boards/purify-master/r18/
+  // BUILD-80-NOTES.md, 2026-10-29): "at the top left and bottom left of a
+  // card a thin sliver shows with no shadow, as if trimmed". The shade was a
+  // dark layer over the picture, and the band clips each layer to its round
+  // corners on its own: where the curve only partly covers a pixel, the
+  // shade covered only part of what the picture put there, so a hairline of
+  // the picture showed round the start corners, where the shade is dark. The
+  // 1.8 export walk's picture of Discover had it: rgb(67, 53, 35) on the
+  // curve of the Saints band, beside rgb(28, 24, 21) two pixels inside it.
+  it("keeps its shade to the very edge: the picture is one faded layer over the ground, with nothing laid over it", () => {
+    const band = code(BAND);
+    const ground = band.indexOf('<span aria-hidden className="absolute inset-0 bg-night" />');
+    const layer = band.indexOf('<span aria-hidden className={cn("absolute inset-0 bg-night-soft", tall ? "band-picture-tall" : "band-picture")}>');
+    const preview = band.indexOf("blur-md");
+    const img = band.indexOf("<img");
+    const closed = band.indexOf("</span>", img);
+    const words = band.indexOf('"relative flex h-full flex-col"');
+    // The ground, then the picture's layer holding the preview and the
+    // picture, then the words: in that order, and nothing of the picture
+    // outside its layer.
+    expect(ground).toBeGreaterThan(-1);
+    expect(layer).toBeGreaterThan(ground);
+    expect(preview).toBeGreaterThan(layer);
+    expect(img).toBeGreaterThan(preview);
+    expect(words).toBeGreaterThan(closed);
+    expect(band.match(/<img\b/g)?.length).toBe(1);
+    expect(band.match(/blur-md/g)?.length).toBe(1);
+    expect(band.slice(img, closed)).not.toContain("<span");
+    // No dark layer over the picture any more, in either direction.
+    expect(band).not.toMatch(/bg-gradient-to-|\bfrom-night\/|\bto-night\//);
+    // And the band's own box has no colour under its edge: its grey is in
+    // the picture's layer, under the mask.
+    const box = /const box = cn\(\s*"([^"]+)"/.exec(band)?.[1] ?? "";
+    expect(box).toContain("overflow-hidden");
+    expect(box).not.toMatch(/(^|\s)bg-/);
   });
 
   it("wears no gold", () => {
