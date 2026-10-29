@@ -1240,6 +1240,24 @@ html.is-native body {
   linear-gradient(200deg, color-mix(in srgb, var(--color-paper) 6%, var(--color-night-soft)) 0%, var(--color-night-soft) 100%);
 }
 
+/* The wide plate's picture (components/mobile/SectionMasthead.tsx, the Bible
+   and You tabs, 1.8): faded at its foot into a ground of the page's night
+   laid under it, by a mask with the wash's own figures, in place of the wash
+   that lay over it. The plate clips each layer to its round corners on its
+   own, so on a pixel the curve only partly covers, the wash covered only part
+   of the picture under it: a thin line of the picture showed round the two
+   foot corners, where the wash is darkest (the line the owner's build 80 note
+   1 found on Discover's bands). Masked, the picture is faded before it is
+   clipped, so the edge is as dark as the wash. The figures are how much of
+   the picture shows, the wash's turned over: 5% at the foot, 55% at 26% of
+   the way up, all of it from 58% up (the wash was 95%, 45% and nothing). A
+   mask reads only the alpha, so its black is no colour on any palette.
+   Nothing here moves. */
+.masthead-picture {
+ -webkit-mask-image: linear-gradient(to top, rgb(0 0 0 / 0.05) 0%, rgb(0 0 0 / 0.55) 26%, rgb(0 0 0) 58%);
+ mask-image: linear-gradient(to top, rgb(0 0 0 / 0.05) 0%, rgb(0 0 0 / 0.55) 26%, rgb(0 0 0) 58%);
+}
+
 /* The ambassador dashboard's day bars grow in once, from the baseline
    (components/shop/ambassador). Fills backwards only, so no bar keeps a
    transform, and a reader who asked for calm sees them already standing. */
@@ -4773,6 +4791,25 @@ html[data-reading-mode="parchment"] .today-glyph-lit {
 }
 .today-small[data-look="card"] + .today-small[data-look="card"] {
  margin-top: 0.625rem;
+}
+/* The readings band's page of the Codex Sinaiticus (ChurchTodayRail.tsx):
+   faded into the band's own ground (night-deep) by a mask with the shade's
+   own figures, in place of the shade that lay over it. The band clips each
+   layer to its round corners on its own, so on a pixel the curve only partly
+   covers, the shade covered only part of the page under it: a thin line of
+   the page showed round the two start corners, where the shade is darkest
+   (the line the owner's build 80 note 1 found on Discover's bands). The
+   figures are the shade's turned over, 10% of the picture across the start
+   30% to 65% at the far end (the shade was 90% to 35%), under the picture's
+   own 55%. Turned for right to left. A mask reads only the alpha, so its
+   black is no colour on any palette. */
+.today-readings-picture {
+ -webkit-mask-image: linear-gradient(to right, rgb(0 0 0 / 0.1) 30%, rgb(0 0 0 / 0.65));
+ mask-image: linear-gradient(to right, rgb(0 0 0 / 0.1) 30%, rgb(0 0 0 / 0.65));
+}
+[dir="rtl"] .today-readings-picture {
+ -webkit-mask-image: linear-gradient(to left, rgb(0 0 0 / 0.1) 30%, rgb(0 0 0 / 0.65));
+ mask-image: linear-gradient(to left, rgb(0 0 0 / 0.1) 30%, rgb(0 0 0 / 0.65));
 }
 
 /* ── The apps select nothing by themselves (1.5.2) ────────────────────

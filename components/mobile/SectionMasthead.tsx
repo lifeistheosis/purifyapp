@@ -19,6 +19,16 @@ import { sectionMedia, type SectionKey } from "@/lib/media/sections";
  *   - The wash covers only the foot of the picture, where the words sit. It
  *     used to start at the top, which dimmed gold grounds to brown and blacked
  *     out whatever was in the lower half: on Prayers, the face.
+ *     Since 1.8 the wash's colour, the page's night, is a ground laid under
+ *     the picture, and the picture is faded into it by a mask with the wash's
+ *     figures (.masthead-picture in globals.css), not darkened by a layer
+ *     laid over it. The plate clips each of its layers to its round corners on its own,
+ *     so where the curve only partly covers a pixel, a dark layer over the
+ *     picture covered only part of what the picture put there, and a hairline
+ *     of the picture showed round the two foot corners, where the wash is
+ *     darkest (the line the owner's build 80 note 1 found on Discover's
+ *     bands). Faded before it is clipped, the picture shows nowhere more than
+ *     the wash lets it, to the very edge.
  *   - The credit is inside the plate, at its foot.
  *
  * Two shapes, chosen by the picture (lib/media/sections.ts):
@@ -98,19 +108,20 @@ export function SectionMasthead({
   return (
     <figure className="relative mb-6 overflow-hidden rounded-[26px] shadow-[0_18px_40px_-20px_rgba(0,0,0,0.75)] ring-1 ring-inset ring-paper/10">
       <div className="relative aspect-[16/9] w-full">
-        {/* Plain <img>, for the reason above. */}
+        {/* The wash's own colour, the page's ground, under the picture. A
+            layer, not the plate's own background, so the plate's inset
+            hairline stays under it as it stayed under the picture. */}
+        <span aria-hidden className="absolute inset-0 bg-night" />
+        {/* Plain <img>, for the reason above. The wash: the ground shows
+            through the foot of the picture only, under the words, by the
+            mask .masthead-picture; the top half of the picture is left
+            exactly as it was painted. */}
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img
           src={media.src}
           alt={media.alt}
-          className="absolute inset-0 h-full w-full object-cover"
+          className="masthead-picture absolute inset-0 h-full w-full object-cover"
           style={{ objectPosition: media.focus ?? "center" }}
-        />
-        {/* The wash: the foot of the plate only, under the words. The top
-            half of the picture is left exactly as it was painted. */}
-        <div
-          aria-hidden
-          className="absolute inset-0 bg-gradient-to-t from-night/95 from-0% via-night/45 via-[26%] to-transparent to-[58%]"
         />
         <div className="absolute inset-x-4 bottom-3 space-y-1">
           {eyebrow ? (
