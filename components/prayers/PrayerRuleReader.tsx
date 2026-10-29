@@ -60,7 +60,7 @@ import { useTranslate } from "@/components/i18n/MessagesProvider";
 import { CommemorationStep } from "@/components/prayers/service/CommemorationStep";
 import { ServiceHeader } from "@/components/prayers/service/ServiceHeader";
 import { PrayerStep } from "@/components/prayers/service/PrayerStep";
-import { useLitLine } from "@/components/prayers/service/useLitLine";
+import { goToPrayer, useLitLine } from "@/components/prayers/service/useLitLine";
 import { isRuleBookmarked, toggleRuleBookmark } from "@/lib/prayers/bookmarks";
 import { commemorationPlacement, placeOf } from "@/lib/prayers/commemoration";
 import { serviceArt } from "@/lib/prayers/serviceArt";
@@ -73,7 +73,6 @@ import { markWallPrayed, unmarkWallPrayed, wallNamesFor } from "@/lib/prayers/wa
 /** The day's mark for "Those I pray for" where it is no prayer of the rule. */
 const COMMEMORATION_ID = "commemoration";
 import { isKept } from "@/lib/rhythm/marks";
-import { scrollBehavior } from "@/lib/ui/motion";
 import { softTick } from "@/lib/ui/softTick";
 
 // Re-exported for back-compat: the rule pages import these as types.
@@ -235,9 +234,9 @@ export function PrayerRuleReader({
   function begin() {
     const first = rule.prayers[0];
     if (!first) return;
-    document.getElementById(first.id)?.scrollIntoView({ behavior: scrollBehavior(), block: "start" });
-    // The way in is also where the reader's focus goes.
-    document.getElementById(`${first.id}-title`)?.focus({ preventScroll: true });
+    // Its first line at the reading place, lit there, and the reader's focus
+    // on its name: the way in is also where the focus goes.
+    goToPrayer(first.id);
   }
 
   const stepTitle = (p: Prayer): string => {

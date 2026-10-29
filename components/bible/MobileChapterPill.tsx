@@ -109,6 +109,10 @@ export function MobileChapterPill({
         aria-label={t("bible.chapterSwitcher")}
         data-reader-chrome
         data-reader-pill
+        // What stands at the foot of the screen, the running line over the
+        // pill with it (lib/ui/readingPlace.ts): the verse being read aloud,
+        // or landed on, stands clear of it.
+        data-screen-edge="bottom"
         // Out of reach and out of hearing while something stands over it.
         aria-hidden={covered || undefined}
         className={cn(

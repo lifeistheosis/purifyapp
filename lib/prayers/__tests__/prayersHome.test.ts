@@ -100,7 +100,9 @@ describe("your rule today", () => {
 
   it("leads on to what is next, and opens a prayer where it is read", () => {
     expect(rule).toContain('t("prayers.ruleToday.continue", { title: titleOf(today.next) })');
-    expect(code("components/prayers/mine/MyRuleReader.tsx")).toMatch(/window\.location\.hash[\s\S]*scrollIntoView\(\{ block: "start" \}\)/);
+    // At the reading place, as Begin goes, and no longer at the very top
+    // under the bar (the owner's build 81 note; lib/ui/readingPlace.ts).
+    expect(code("components/prayers/mine/MyRuleReader.tsx")).toMatch(/window\.location\.hash[\s\S]*goToPrayer\(id, \{ smooth: false \}\)/);
   });
 
   it("lights a checked step and the ring in white, never yellow, and plainly on Parchment", () => {

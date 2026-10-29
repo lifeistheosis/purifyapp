@@ -205,6 +205,9 @@ export function MobileVerseToolbar({
       >
         <div
           data-verse-tools=""
+          // The card, not the layer it stands in, is what covers the foot of
+          // the screen while it is open (lib/ui/readingPlace.ts).
+          data-screen-edge="bottom"
           className="press-pill-in pointer-events-auto w-full max-w-[20rem] rounded-[26px] border border-paper/15 bg-night/95 px-1.5 pb-1.5 pt-1.5 shadow-[0_12px_32px_rgba(0,0,0,0.55)] backdrop-blur"
         >
           <HighlightPicker

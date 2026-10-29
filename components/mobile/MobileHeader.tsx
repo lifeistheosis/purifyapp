@@ -95,6 +95,9 @@ export function MobileHeader({
   return (
     <header
       data-tab-topbar=""
+      // What stands at the top of the screen, which a page going to a place
+      // keeps clear of (lib/ui/readingPlace.ts).
+      data-screen-edge="top"
       className={cn("z-30 border-b border-paper/8 bg-night py-2", sticky && "tab-topbar")}
     >
       {/* The row lines up with the body below it, the same column on a
