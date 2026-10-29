@@ -39,11 +39,13 @@ export const ADMIN_TAB_ICON_FALLBACK: ReactNode = (
 );
 
 export const ADMIN_TAB_ICONS: Record<string, ReactNode> = {
-  // What needs you today: a ticked box.
+  // Home, where the admin opens (the owner's pick A): a house. It was a
+  // ticked box while the page was a to-do list called Today.
   today: (
     <svg {...S}>
-      <rect x="3" y="3" width="14" height="14" rx="3" />
-      <path d="m6.8 10.2 2.2 2.2 4.2-4.6" />
+      <path d="M3.2 9.2 10 3.4l6.8 5.8" />
+      <path d="M5 7.8v8.8h10V7.8" />
+      <path d="M8.4 16.6v-4.4h3.2v4.4" />
     </svg>
   ),
   // How the admin is used: a footprint path of three dots.
