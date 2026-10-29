@@ -86,3 +86,38 @@ export function plusRowsLedBy(lead: string | null | undefined): readonly PlusRow
 export function isPlusLock(name: string | null | undefined): name is PlusLock {
   return PLUS_ROWS.some((r) => r.feature !== null && r.feature === name);
 }
+
+// ── Pro ──────────────────────────────────────────────────────────────────
+//
+// What Pro adds, on the Pro side of the apps' screen and of the website's
+// /pricing (components/billing/PlusPaywall.tsx, ProRows). Until the owner's
+// second round of 1.8 these rows came from lib/premium/plans.ts, which is
+// written in English and German only, so a reader in Athens met them in
+// English. They are in all twenty-one catalogs now, the English letter for
+// letter the plan's own (lib/premium/__tests__/paywallPlus2.test.ts holds the
+// two together), and so are the EIKON Box's terms that stand under them.
+
+export type ProRow = {
+  /** The feature's id in lib/premium/plans.ts, and the mark it wears. */
+  id: string;
+  /** Catalog key of its name. */
+  name: string;
+  /** Catalog key of what it is. */
+  body: string;
+  /** Promised and not yet live: it wears the coming-soon pill. */
+  soon?: boolean;
+};
+
+/** In the plan's own order. Every unmarked row is a live Pro entitlement. */
+export const PRO_ROWS: readonly ProRow[] = [
+  { id: "everything-plus", name: "plus.pro.everything.name", body: "plus.pro.everything.body" },
+  { id: "studio-audio", name: "plus.pro.studioAudio.name", body: "plus.pro.studioAudio.body", soon: true },
+  { id: "eikon-box", name: "plus.pro.eikonBox.name", body: "plus.pro.eikonBox.body" },
+  { id: "eikon-benefits", name: "plus.pro.eikonBenefits.name", body: "plus.pro.eikonBenefits.body" },
+];
+
+/** Catalog key of the EIKON Box's terms, said under the Pro rows wherever they stand. */
+export const PRO_TERMS = "plus.pro.boxTerms";
+
+/** Catalog key of the coming-soon pill: the app's own word for it. */
+export const SOON_LABEL = "signin.comingSoon";

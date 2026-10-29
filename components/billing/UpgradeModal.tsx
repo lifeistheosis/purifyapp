@@ -12,7 +12,7 @@ import {
   useState,
 } from "react";
 
-import { DockNote, KeptHero, PlansDock, PlusFeatureRows, ScribePicture } from "@/components/billing/KeptPaywall";
+import { DockNote, KeptHero, PlansDock, PlusFeatureRows, PlusReviews, ScribePicture } from "@/components/billing/KeptPaywall";
 import { PREMIUM_CTA } from "@/components/premium/PremiumUI";
 import { Sheet } from "@/components/ui/Sheet";
 import { cn } from "@/lib/cn";
@@ -86,6 +86,13 @@ import {
  * is the one bought; it was always the year before, with no choice shown.
  * "Not now" went with the redraw: the sheet's own close, a tap outside it,
  * a pull down and Back all still close it.
+ *
+ * The owner's second round (2026-10-28, "add every single thing we left
+ * out"): the button says "Start 7 days free" when the store grants this
+ * reader a trial, in the trial's own length, and "Join Plus" when it does
+ * not; the small print says the plan renews automatically until cancelled;
+ * and two or three of the stores' own reviews, word for word, stand between
+ * the features and the plans.
  */
 
 /** Which lock the reader just met. Chooses which feature leads the sheet, lit, and its words; nothing else. */
@@ -351,9 +358,10 @@ const UNLOCKED: { key: string; href: string }[] = [
  * The sheet itself, as the owner locked the paywall (1.8, round 10 R2):
  * "Purify is kept by those it helps" over the scribe of St Prochorus's icon,
  * then every Plus feature in depth with the one this lock was for first and
- * lit, then the plans and the action held at the bottom of the sheet while
- * the features scroll under them (components/billing/KeptPaywall.tsx). The
- * sheet's own title bar names Purify Plus and closes it. No gold and no star.
+ * lit, then what readers say in the stores, then the plans and the action
+ * held at the bottom of the sheet while the rest scrolls under them
+ * (components/billing/KeptPaywall.tsx). The sheet's own title bar names
+ * Purify Plus and closes it. No gold, and the only stars are the reviewers'.
  */
 function UpgradeSheet({
   feature,
@@ -438,6 +446,9 @@ function UpgradeSheet({
           {/* The features working, in depth: the one this lock was for
               first, lit, with what stays free beside it. */}
           <PlusFeatureRows lead={feature} className="mt-4" />
+
+          {/* What readers say: the stores' own reviews, word for word. */}
+          <PlusReviews className="mt-6" />
 
           {/* The plans, held at the bottom while the features scroll. The
               price is whatever the store just said; when the store did not

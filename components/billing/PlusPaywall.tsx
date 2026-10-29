@@ -1,9 +1,10 @@
 "use client";
 
 // Native-only Purify premium paywall: a fully custom UI driving RevenueCat
-// (Play Billing and StoreKit). Returns null on the web (the website keeps its
-// own pricing page). Inside the apps the pricing route renders this
-// full-screen.
+// (Play Billing and StoreKit). Returns null on the web. Inside the apps the
+// pricing route renders this full-screen. The website's /pricing draws the
+// same screen from the pieces exported below, driven by its own web billing
+// (components/billing/WebPaywall.tsx).
 //
 // Two tiers, one screen: a Plus / Pro switcher under the hero swaps the
 // features, the live store prices, and the action. Plus sells from the
@@ -30,8 +31,15 @@
 // (a dark island), as the paywall always was. The picture is carried in the
 // apps (public/premium); it is the reading room's cover of St Prochorus made
 // black and white (docs/licensing/COVER_ICONS.md).
+//
+// The owner's second round (2026-10-28, "add every single thing we left
+// out"): every line on this screen in the reader's language, the states
+// around the ready one too (signed out, unavailable, subscribed) and the Pro
+// rows with the EIKON Box's terms (lib/premium/plusRows.ts, PRO_ROWS); the
+// stores' own reviews between the features and the plans; and the renewal
+// said plainly wherever the screen sells.
 
-import { useCallback, useEffect, useState, type CSSProperties } from "react";
+import { useCallback, useEffect, useState, type CSSProperties, type ReactNode } from "react";
 import Link from "next/link";
 import {
   initBilling,
@@ -50,18 +58,26 @@ import {
 import { presentCustomerCenter } from "@/lib/billing/revenuecatUi";
 import { createClient } from "@/lib/supabase/client";
 import { nativePlatform, useIsNative } from "@/lib/platform/native";
-import { getPremiumPlan, type PlanFeature } from "@/lib/premium/plans";
 import { NO_OFFERS, firstPlan, type Plan, type PlusOffers } from "@/lib/billing/offers";
+import { PRO_ROWS, PRO_TERMS, SOON_LABEL } from "@/lib/premium/plusRows";
 import { useTranslate } from "@/components/i18n/MessagesProvider";
-import { DockNote, FeatureRow, KeptHero, PlansDock, PlusFeatureRows } from "@/components/billing/KeptPaywall";
+import {
+  DockNote,
+  FeatureRow,
+  KeptHero,
+  PlansDock,
+  PlusFeatureRows,
+  PlusReviews,
+  type BuyPlace,
+} from "@/components/billing/KeptPaywall";
 import { PREMIUM_CTA, PREMIUM_GHOST } from "@/components/premium/PremiumUI";
 import { cn } from "@/lib/cn";
 
 type Phase = "loading" | "signed-out" | "unavailable" | "ready" | "subscribed";
 export type Tier = "plus" | "pro";
 
-/** A message in the dock, said in the reader's language where it has one. */
-type Note = "failed" | "restoreNone" | "restoreError";
+/** A message in the dock, said in the reader's language. */
+export type Note = "failed" | "restoreNone" | "restoreError";
 
 const NO_PACKAGES: PlusPackages = { monthly: null, yearly: null };
 
@@ -78,9 +94,9 @@ async function offersFor(pkgs: PlusPackages): Promise<PlusOffers> {
   };
 }
 
-/** The store the charge comes from, as a sentence names it. */
-function storeName(): string {
-  return nativePlatform() === "ios" ? "the App Store" : "Google Play";
+/** Is the App Store the one billing this reader? Otherwise it is Google Play. */
+function onAppStore(): boolean {
+  return nativePlatform() === "ios";
 }
 
 /**
@@ -228,70 +244,50 @@ export function PlusPaywall() {
     }
   }, []);
 
-  // Web renders nothing; the server pricing page carries the web copy.
+  // Web renders nothing; the website draws its own (WebPaywall.tsx).
   if (!isNative || phase === "loading") return null;
 
   if (phase === "signed-out") {
     return (
-      <Screen>
+      <PaywallScreen>
         <KeptHero place="screen" eyebrow={t("plus.sheet.title")} heading="h1" />
-        {/* The same features the ready phase shows, so the screen sells the
-            thing before asking for a sign-in. */}
+        {/* The same features the ready phase shows, and what readers say,
+            so the screen sells the thing before asking for a sign-in. */}
         <section className="mx-auto mt-5 w-full max-w-[520px] px-5">
           <PlusFeatureRows />
+          <PlusReviews className="mt-6" />
         </section>
-        <Foot>
-          <p className="mx-auto max-w-[320px] text-center font-sans text-ui leading-relaxed text-paper/70">
-            Purify Plus and Pro are tied to your account, so they follow you
-            across your devices.
-          </p>
-          <Link href="/signin?next=/pricing" className={cn(PREMIUM_CTA, "mt-5 min-h-14 w-full text-lede")}>
-            Sign in to continue
-          </Link>
-          <p className="mt-3 text-center font-sans text-caption text-paper/50">
-            Billed through {storeName()}. Cancel anytime.
-          </p>
-        </Foot>
-      </Screen>
+        <SignedOutFoot place="store" />
+      </PaywallScreen>
     );
   }
 
   if (phase === "unavailable") {
     return (
-      <Screen>
+      <PaywallScreen>
         <KeptHero place="screen" eyebrow={t("plus.sheet.title")} heading="h1" />
-        <Foot>
+        <PaywallFoot>
           <p className="mx-auto max-w-[320px] text-center font-sans text-ui leading-relaxed text-paper/65">
-            Purify Plus isn’t available to purchase right now. The whole core of
-            Purify stays free, and everything you’ve gathered is safe on this
-            device.
+            {t("plus.screen.unavailable")}
           </p>
-        </Foot>
-      </Screen>
+        </PaywallFoot>
+      </PaywallScreen>
     );
   }
 
   if (phase === "subscribed") {
     return (
-      <Screen>
+      <PaywallScreen>
         <KeptHero place="screen" eyebrow={t("profile.badge.pro")} heading="h1" />
-        <Foot>
-          <p className="text-center font-heading text-title font-semibold text-paper">You have Purify Pro.</p>
-          <p className="mx-auto mt-3 max-w-[300px] text-center font-sans text-ui leading-relaxed text-paper/65">
-            Thank you for keeping the lamps lit. Every Plus feature is yours,
-            and the members’ layer comes with our gratitude.
-          </p>
-          <button type="button" onClick={onManage} className={cn(PREMIUM_GHOST, "mt-6 w-full")}>
-            Manage subscription
-          </button>
-        </Foot>
-      </Screen>
+        <ProOwnedFoot onManage={onManage} />
+      </PaywallScreen>
     );
   }
 
   // ── ready ───────────────────────────────────────────────────────────────
   return (
     <PaywallReadyView
+      place="store"
       tier={tier}
       onTier={onTier}
       offers={offers}
@@ -308,13 +304,88 @@ export function PlusPaywall() {
 }
 
 /**
+ * The screen with Plus and Pro side by side: the scribe and why, the switch,
+ * the tier's features in depth (with the supporters' promise under Plus on
+ * the website, where /pricing has always carried it), and what readers say.
+ * `children` stands at the bottom: the plans, or a word where nothing is
+ * sold. The apps' ready screen and every state of the website's /pricing
+ * draw it.
+ */
+export function TierScreen({
+  tier,
+  onTier,
+  place,
+  children,
+}: {
+  tier: Tier;
+  onTier: (t: Tier) => void;
+  place: BuyPlace;
+  children: ReactNode;
+}) {
+  const { t } = useTranslate();
+  return (
+    <PaywallScreen>
+      <KeptHero place="screen" eyebrow={t(tier === "pro" ? "profile.badge.pro" : "plus.sheet.title")} heading="h1" />
+
+      {/* Plus / Pro */}
+      <div className="paywall-in mx-auto mt-5 w-full max-w-[520px] px-5" style={{ animationDelay: "260ms" }}>
+        <TierSwitch tier={tier} onSwitch={onTier} />
+      </div>
+
+      {/* The features working, in depth. Plus in the app's own words; Pro
+          with the terms of the EIKON Box under it, as before; every word in
+          the reader's language. Then what readers say, before the plans. */}
+      <section className="mx-auto mt-4 w-full max-w-[520px] px-5">
+        {tier === "pro" ? <ProRows /> : <PlusFeatureRows />}
+        {tier === "plus" && place === "web" ? (
+          <p className="mt-3 font-sans text-caption leading-[1.5] text-paper/45">{t("plus.promise.supporters")}</p>
+        ) : null}
+        <PlusReviews className="mt-6" />
+      </section>
+
+      {children}
+    </PaywallScreen>
+  );
+}
+
+type ReadyProps = {
+  /** Who bills: the app's store, or the website's checkout (no restore there). */
+  place?: BuyPlace;
+  tier: Tier;
+  /** The tier's plans, as the store offers them to this reader. */
+  offers: PlusOffers;
+  selected: Plan;
+  onSelect: (p: Plan) => void;
+  plusOwned: boolean;
+  busy: "buy" | "restore" | null;
+  note: Note | null;
+  onSubscribe: () => void;
+  /** Restore purchases, where the store can (the apps). */
+  onRestore?: () => void;
+  onManage: () => void;
+};
+
+/**
  * The ready screen, drawn from what the store answered. Apart from the
  * loading so it can be drawn from known offers too (a design check), as
  * components/premium/PlanScreen.tsx's PlanView is.
  */
-export function PaywallReadyView({
+export function PaywallReadyView({ onTier, ...ready }: ReadyProps & { onTier: (t: Tier) => void }) {
+  return (
+    <TierScreen tier={ready.tier} onTier={onTier} place={ready.place ?? "store"}>
+      <ReadyBottom {...ready} />
+    </TierScreen>
+  );
+}
+
+/**
+ * What stands at the bottom once the store has answered: the plans, the
+ * action and the small print, held there while the features scroll; or, on
+ * a tab with nothing to sell, a word and the way on.
+ */
+export function ReadyBottom({
+  place = "store",
   tier,
-  onTier,
   offers,
   selected,
   onSelect,
@@ -324,23 +395,9 @@ export function PaywallReadyView({
   onSubscribe,
   onRestore,
   onManage,
-}: {
-  tier: Tier;
-  onTier: (t: Tier) => void;
-  /** The tier's plans, as the store offers them to this reader. */
-  offers: PlusOffers;
-  selected: Plan;
-  onSelect: (p: Plan) => void;
-  plusOwned: boolean;
-  busy: "buy" | "restore" | null;
-  note: Note | null;
-  onSubscribe: () => void;
-  onRestore: () => void;
-  onManage: () => void;
-}) {
-  const { t, locale } = useTranslate();
-  const plan = getPremiumPlan(locale);
-  const tierName = tier === "pro" ? plan.proTitle : plan.plusTitle;
+}: ReadyProps) {
+  const { t } = useTranslate();
+  const tierName = t(tier === "pro" ? "profile.badge.pro" : "plus.sheet.title");
   const tierAvailable = Boolean(offers.monthly || offers.yearly);
   const sellingThisTier = tierAvailable && !(tier === "plus" && plusOwned);
   const message =
@@ -349,86 +406,61 @@ export function PaywallReadyView({
       : note === "restoreNone"
         ? t("plus.restoreNone")
         : note === "restoreError"
-          ? "Couldn’t check for a previous subscription. Please try again."
+          ? t("plus.screen.restoreError")
           : null;
+  // Where Plus is cancelled, so a reader who takes Pro is not billed twice.
+  const both = t(
+    place === "web" ? "plus.screen.bothWeb" : onAppStore() ? "plus.screen.bothApple" : "plus.screen.bothGoogle",
+  );
 
+  if (tier === "plus" && plusOwned) {
+    // Already on Plus: nothing to sell on this tab, manage instead.
+    return <PlusOwnedFoot onManage={onManage} onRestore={onRestore} busy={busy} message={message} />;
+  }
+
+  if (!sellingThisTier) {
+    // This tier's packages aren't live (offering dark / store hiccup).
+    return (
+      <PaywallFoot>
+        <p className="mx-auto max-w-[320px] text-center font-sans text-ui leading-relaxed text-paper/65">
+          {t("plus.screen.tierUnavailable", { tier: tierName })}
+        </p>
+        {message ? <DockNote>{message}</DockNote> : null}
+        <FooterRow onRestore={onRestore} busy={busy} />
+      </PaywallFoot>
+    );
+  }
+
+  // The plans, the action and the small print, held at the bottom the whole
+  // time the features scroll.
   return (
-    <Screen>
-      <KeptHero place="screen" eyebrow={tierName} heading="h1" />
-
-      {/* Plus / Pro */}
-      <div className="paywall-in mx-auto mt-5 w-full max-w-[520px] px-5" style={{ animationDelay: "260ms" }}>
-        <TierSwitch tier={tier} onSwitch={onTier} />
-      </div>
-
-      {/* The features working, in depth. Plus in the app's own words, in
-          every language; Pro from the plan's list, with the terms of the
-          EIKON Box under it, as before. */}
-      <section className="mx-auto mt-4 w-full max-w-[520px] px-5">
-        {tier === "pro" ? (
-          <ProRows items={plan.proItems} soonLabel={plan.soonLabel} terms={plan.proNote} />
-        ) : (
-          <PlusFeatureRows />
-        )}
-      </section>
-
-      {tier === "plus" && plusOwned ? (
-        /* Already on Plus: nothing to sell on this tab, manage instead. */
-        <Foot>
-          <p className="text-center font-heading text-title-sm font-semibold text-paper">You have Purify Plus.</p>
-          <p className="mx-auto mt-2 max-w-[300px] text-center font-sans text-ui leading-relaxed text-paper/65">
-            Everything here is already yours. Purify Pro adds the members’
-            layer on top.
-          </p>
-          <button type="button" onClick={onManage} className={cn(PREMIUM_GHOST, "mt-5 w-full")}>
-            Manage subscription
-          </button>
+    <PlansDock
+      className="paywall-in sticky z-10 mt-6 pb-2"
+      style={{ ...DOCK_BOTTOM, animationDelay: "420ms" }}
+      offers={offers}
+      plan={selected}
+      onPlan={onSelect}
+      tier={tier}
+      place={place}
+      busy={busy}
+      note={
+        <>
+          {tier === "pro" && plusOwned ? (
+            <p className="mt-3 text-center font-sans text-caption leading-relaxed text-paper/55">{both}</p>
+          ) : null}
           {message ? <DockNote>{message}</DockNote> : null}
-          <FooterRow onRestore={onRestore} busy={busy} />
-        </Foot>
-      ) : !sellingThisTier ? (
-        /* This tier's packages aren't live (offering dark / store hiccup). */
-        <Foot>
-          <p className="mx-auto max-w-[320px] text-center font-sans text-ui leading-relaxed text-paper/65">
-            {tierName} isn’t available to purchase right now. Please check back
-            soon.
-          </p>
-          {message ? <DockNote>{message}</DockNote> : null}
-          <FooterRow onRestore={onRestore} busy={busy} />
-        </Foot>
-      ) : (
-        /* The plans, the action and the small print, held at the bottom the
-           whole time the features scroll. */
-        <PlansDock
-          className="paywall-in sticky z-10 mt-6 pb-2"
-          style={{ ...DOCK_BOTTOM, animationDelay: "420ms" }}
-          offers={offers}
-          plan={selected}
-          onPlan={onSelect}
-          tier={tier}
-          place="store"
-          busy={busy}
-          note={
-            <>
-              {tier === "pro" && plusOwned ? (
-                <p className="mt-3 text-center font-sans text-caption leading-relaxed text-paper/55">
-                  You have Plus today. After Pro starts, cancel Plus in {storeName()} so you aren’t billed for both.
-                </p>
-              ) : null}
-              {message ? <DockNote>{message}</DockNote> : null}
-            </>
-          }
-          onBuy={onSubscribe}
-          onRestore={onRestore}
-        />
-      )}
-    </Screen>
+        </>
+      }
+      onBuy={onSubscribe}
+      onRestore={onRestore}
+    />
   );
 }
 
 /* ── layout pieces ───────────────────────────────────────────────────────── */
 
-function Screen({ children }: { children: React.ReactNode }) {
+/** The whole screen: black on every palette. */
+export function PaywallScreen({ children }: { children: ReactNode }) {
   // No safe-pt here: the app layout's <main> already pads past the status
   // bar, and stacking a second inset opened a dead band above the hero
   // (owner report, 2026-07-12 screenshot).
@@ -454,7 +486,7 @@ function Screen({ children }: { children: React.ReactNode }) {
 }
 
 /** The screen's last part where nothing is sold: a word, the way to manage, the small print. */
-function Foot({ children }: { children: React.ReactNode }) {
+export function PaywallFoot({ children }: { children: ReactNode }) {
   return (
     <div
       className="paywall-in mx-auto mt-6 w-full max-w-[520px] px-5 pb-[calc(env(safe-area-inset-bottom,0px)+1.25rem)]"
@@ -462,6 +494,80 @@ function Foot({ children }: { children: React.ReactNode }) {
     >
       {children}
     </div>
+  );
+}
+
+/**
+ * The small print where nothing is priced yet: that it renews until
+ * cancelled, then who bills it and that it can be cancelled any time, in the
+ * words this place has always used (the store by name in the apps).
+ */
+export function BilledLine({ place }: { place: BuyPlace }) {
+  const { t } = useTranslate();
+  const billed =
+    place === "web"
+      ? t("plus.billedOnWeb")
+      : t(onAppStore() ? "plus.screen.billedApple" : "plus.screen.billedGoogle");
+  return <p className="mt-3 text-center font-sans text-caption text-paper/50">{`${t("plus.fine.renews")} ${billed}`}</p>;
+}
+
+/** Signed out: Plus and Pro follow the account, so the way on is to sign in. */
+export function SignedOutFoot({ place }: { place: BuyPlace }) {
+  const { t } = useTranslate();
+  return (
+    <PaywallFoot>
+      <p className="mx-auto max-w-[320px] text-center font-sans text-ui leading-relaxed text-paper/70">
+        {t("plus.screen.signedOut")}
+      </p>
+      <Link href="/signin?next=/pricing" className={cn(PREMIUM_CTA, "mt-5 min-h-14 w-full text-lede")}>
+        {t("plus.screen.signIn")}
+      </Link>
+      <BilledLine place={place} />
+    </PaywallFoot>
+  );
+}
+
+/** Plus is already theirs: nothing to sell on the Plus tab, the way to manage it instead. */
+export function PlusOwnedFoot({
+  onManage,
+  onRestore,
+  busy,
+  message,
+}: {
+  onManage: () => void;
+  onRestore?: () => void;
+  busy: "buy" | "restore" | null;
+  message?: string | null;
+}) {
+  const { t } = useTranslate();
+  return (
+    <PaywallFoot>
+      <p className="text-center font-heading text-title-sm font-semibold text-paper">{t("plus.screen.plusTitle")}</p>
+      <p className="mx-auto mt-2 max-w-[300px] text-center font-sans text-ui leading-relaxed text-paper/65">
+        {t("plus.screen.plusBody")}
+      </p>
+      <button type="button" onClick={onManage} className={cn(PREMIUM_GHOST, "mt-5 w-full")}>
+        {t("ui.manageSubscription")}
+      </button>
+      {message ? <DockNote>{message}</DockNote> : null}
+      <FooterRow onRestore={onRestore} busy={busy} />
+    </PaywallFoot>
+  );
+}
+
+/** Pro is the top tier: nothing left to sell, only thanks and the way to manage it. */
+export function ProOwnedFoot({ onManage }: { onManage: () => void }) {
+  const { t } = useTranslate();
+  return (
+    <PaywallFoot>
+      <p className="text-center font-heading text-title font-semibold text-paper">{t("plus.screen.proTitle")}</p>
+      <p className="mx-auto mt-3 max-w-[300px] text-center font-sans text-ui leading-relaxed text-paper/65">
+        {t("plus.screen.proBody")}
+      </p>
+      <button type="button" onClick={onManage} className={cn(PREMIUM_GHOST, "mt-6 w-full")}>
+        {t("ui.manageSubscription")}
+      </button>
+    </PaywallFoot>
   );
 }
 
@@ -498,46 +604,54 @@ function TierSwitch({
 }
 
 /**
- * What Pro adds, in depth like the Plus features, from lib/premium/plans.ts
- * through getPremiumPlan(locale), never PREMIUM_PLAN_EN (the direct import
- * bypassed both the locale switch and the withdrawn-feature filter, which is
- * how this screen advertised a feature that answered 404 in production on
- * 2026-08-26). Perks marked `soon` (Studio Audio) carry the coming-soon pill;
- * every unmarked row is a REAL, live entitlement. The EIKON Box's terms stand
- * under them, as they always have.
+ * What Pro adds, in depth like the Plus features, in the reader's language
+ * (lib/premium/plusRows.ts, PRO_ROWS: the plan's own rows, held to
+ * lib/premium/plans.ts by a test). Perks marked `soon` (Studio Audio) carry
+ * the coming-soon pill; every unmarked row is a REAL, live entitlement. The
+ * EIKON Box's terms stand under them, as they always have.
  */
-function ProRows({ items, soonLabel, terms }: { items: PlanFeature[]; soonLabel: string; terms: string }) {
+function ProRows() {
+  const { t } = useTranslate();
   return (
     <>
-      <ul className="flex flex-col gap-2.5">
-        {items.map((item, i) => (
-          <FeatureRow key={item.id} index={i} id={item.id} name={item.title} body={item.sub} soon={item.soon ? soonLabel : undefined} />
+      <ul className="flex flex-col gap-2.5" aria-label={t("profile.badge.pro")}>
+        {PRO_ROWS.map((row, i) => (
+          <FeatureRow
+            key={row.id}
+            index={i}
+            id={row.id}
+            name={t(row.name)}
+            body={t(row.body)}
+            soon={row.soon ? t(SOON_LABEL) : undefined}
+          />
         ))}
       </ul>
-      <p className="mt-3 font-sans text-caption leading-relaxed text-paper/45">{terms}</p>
+      <p className="mt-3 font-sans text-caption leading-relaxed text-paper/45">{t(PRO_TERMS)}</p>
     </>
   );
 }
 
-/** Restore purchases | Terms | Privacy, where nothing is sold on the tab. */
-function FooterRow({
+/** Restore purchases (where the store can) | Terms | Privacy, where nothing is sold on the tab. */
+export function FooterRow({
   onRestore,
   busy,
 }: {
-  onRestore: () => void;
+  onRestore?: () => void;
   busy: "buy" | "restore" | null;
 }) {
   const { t } = useTranslate();
   return (
     <div className="mt-5 flex flex-wrap items-center justify-center gap-x-6 font-sans text-caption text-paper/55">
-      <button
-        type="button"
-        onClick={onRestore}
-        disabled={busy !== null}
-        className="min-h-11 hover:text-paper disabled:opacity-50"
-      >
-        {busy === "restore" ? t("plus.restoring") : t("plus.restore")}
-      </button>
+      {onRestore ? (
+        <button
+          type="button"
+          onClick={onRestore}
+          disabled={busy !== null}
+          className="min-h-11 hover:text-paper disabled:opacity-50"
+        >
+          {busy === "restore" ? t("plus.restoring") : t("plus.restore")}
+        </button>
+      ) : null}
       <Link href="/terms" className="inline-flex min-h-11 items-center hover:text-paper">
         {t("shop.terms")}
       </Link>

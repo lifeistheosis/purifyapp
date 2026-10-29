@@ -21,7 +21,7 @@ const SURFACES = [
   "components/billing/PlusPaywall.tsx",
   "components/billing/UpgradeModal.tsx",
   "components/billing/KeptPaywall.tsx",
-  "components/billing/WebPlusCheckout.tsx",
+  "components/billing/WebPaywall.tsx",
   "app/(app)/pricing/page.tsx",
   "app/(app)/premium/page.tsx",
   "components/community/CommunitySide.tsx",
@@ -71,9 +71,10 @@ describe("the apps' paywall", () => {
     expect(dock).not.toMatch(/["'`]7 days/);
   });
 
-  it("names the store a reader will be billed by", () => {
+  it("names the store a reader will be billed by, in the reader's language", () => {
     const paywall = code("components/billing/PlusPaywall.tsx");
-    expect(paywall).toContain('nativePlatform() === "ios" ? "the App Store" : "Google Play"');
+    expect(paywall).toContain('return nativePlatform() === "ios";');
+    expect(paywall).toContain('onAppStore() ? "plus.screen.billedApple" : "plus.screen.billedGoogle"');
     expect(paywall).not.toMatch(/Secure billing through Google Play/);
   });
 });

@@ -9,6 +9,10 @@
 // opened by a lock that does not lead with that feature; a price the store
 // never set; the small print, Restore purchases, Terms or Privacy gone from a
 // screen that asks for money; a review nobody wrote; or yellow.
+//
+// The owner's second round on it (2026-10-28: the button's words, the renew
+// line, the stores' reviews, the website's /pricing as R2, every line in 21
+// languages) is held by paywallPlus2.test.ts beside this file.
 
 import fs from "node:fs";
 import path from "node:path";
@@ -35,9 +39,18 @@ const CATALOGS = Object.fromEntries(
     .map((f) => [f.replace(/\.json$/, ""), JSON.parse(fs.readFileSync(path.join(MESSAGES, f), "utf8")) as Record<string, string>]),
 );
 
-const PAYWALL = ["components/billing/KeptPaywall.tsx", "components/billing/UpgradeModal.tsx", "components/billing/PlusPaywall.tsx"];
+const PAYWALL = [
+  "components/billing/KeptPaywall.tsx",
+  "components/billing/UpgradeModal.tsx",
+  "components/billing/PlusPaywall.tsx",
+  "components/billing/WebPaywall.tsx",
+];
 
-/** The words the R2 build added, every one of them in every language. */
+/**
+ * The words the R2 build added, every one of them in every language. Its
+ * button words, "Keep Purify free, join Plus" (plus.join, plus.joinPro), gave
+ * way in round 2 to his pick B (plus.cta.*, paywallPlus2.test.ts).
+ */
 const NEW_KEYS = [
   "plus.kept.title",
   "plus.offline.name",
@@ -49,8 +62,6 @@ const NEW_KEYS = [
   "plus.plan.trialMonthly",
   "plus.plan.billedYearly",
   "plus.plan.billedMonthly",
-  "plus.join",
-  "plus.joinPro",
   "plus.fine.trialYear",
   "plus.fine.trialMonth",
   "plus.fine.year",
@@ -207,12 +218,14 @@ describe("every legal line the paywall had", () => {
     expect(screen).toMatch(/href="\/privacy"/);
   });
 
-  it("keeps what the apps' screen has always said around a purchase", () => {
-    expect(screen).toContain("so you aren’t billed for both");
-    expect(screen).toContain("terms={plan.proNote}");
-    expect(screen).toContain("Manage subscription");
-    expect(screen).toContain("Billed through {storeName()}. Cancel anytime.");
-    expect(screen).toContain("Purify Plus and Pro are tied to your account");
+  it("keeps what the apps' screen has always said around a purchase, now in every language", () => {
+    expect(screen).toContain('"plus.screen.bothApple"');
+    expect(screen).toContain('"plus.screen.bothGoogle"');
+    expect(screen).toContain("t(PRO_TERMS)");
+    expect(screen).toContain('t("ui.manageSubscription")');
+    expect(screen).toContain('"plus.screen.billedApple"');
+    expect(screen).toContain('"plus.screen.billedGoogle"');
+    expect(screen).toContain('t("plus.screen.signedOut")');
   });
 
   it("keeps the sheet's own: its failure, the way to every plan, and no price where the store said none", () => {
@@ -230,11 +243,14 @@ describe("kept by those it helps", () => {
     expect(hero).toContain('t("plus.footer")');
   });
 
-  it("quotes no reader: no reviews or testimonials on the paywall", () => {
+  it("quotes readers only in the stores' own words, never written into the paywall", () => {
+    // Round 2 (2026-10-28) added the stores' reviews, from the one list
+    // (lib/premium/paywallReviews.ts over lib/marketing/storeRatings.ts).
     for (const file of PAYWALL) {
       const src = code(file);
-      expect(src, file).not.toMatch(/storeRatings|APP_REVIEWS|ReviewRow/);
+      expect(src, file).not.toMatch(/APP_REVIEWS|ReviewRow|testimonial/i);
     }
+    expect(bare("components/billing/KeptPaywall.tsx")).toContain("paywallReviews()");
   });
 });
 

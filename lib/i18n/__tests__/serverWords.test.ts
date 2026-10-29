@@ -37,7 +37,6 @@ const NEVER_DRAWN_IN_THE_APPS: Record<string, string> = {
   "app/page.tsx": "the website's front page, left out of the apps' export (IS_STATIC_EXPORT)",
   "app/(app)/discover/page.tsx": "the computer's twin of Discover, hidden in the apps (native-md-hidden)",
   "app/(app)/account/(you)/page.tsx": "the computer's twin of the account page, hidden in the apps (native-md-hidden)",
-  "app/(app)/pricing/page.tsx": "pricing wording, which is the owner's and is not touched here",
   "components/i18n/ContentNotYetTranslated.tsx": "the note that a text is not translated yet, kept off phones on purpose",
 };
 

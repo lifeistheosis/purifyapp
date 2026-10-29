@@ -86,7 +86,7 @@ export const PLUS_ENFORCED_IOS = resolveEnforcement({
 });
 
 /** Web: RevenueCat Web Billing, backed by Stripe
- * (components/billing/WebPlusCheckout.tsx). On wherever the website build has
+ * (components/billing/WebPaywall.tsx). On wherever the website build has
  * the Web Billing key, which is also what makes the sheet able to sell. */
 export const PLUS_ENFORCED_WEB = resolveEnforcement({
   explicit: envSwitch(process.env.NEXT_PUBLIC_PLUS_ENFORCED_WEB),
