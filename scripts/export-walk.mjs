@@ -2040,15 +2040,16 @@ await section(25, async () => {
   must(!tiles.some(([h]) => h === "/account"), "and no longer ends on a Settings row");
   await page.screenshot({ path: path.join(SHOTS, "discover-tiles-phone.png"), fullPage: true });
   // The bands' start corners are as dark as their shade (the owner's build
-  // 80 note 1, "a thin sliver shows with no shadow, as if trimmed off"). On
-  // the curve of each band's top and bottom start corners, no pixel may be
-  // lighter than the band just inside it, or than the page, by more than 6
-  // levels. 1.8's own walk had the picture showing round the shade there,
-  // 30 to 55 levels lighter on every band. components/ui/GalleryBand.tsx and
-  // .band-picture in globals.css; lib/ui/__tests__/galleryBand.test.ts holds
-  // the source.
+  // 80 note 1, "a thin sliver shows with no shadow, as if trimmed off"). Read
+  // along each band's top and bottom start curves with cornerLift (above):
+  // the lift a tenth of the curve's pixels reach may be 6 levels at most.
+  // 1.8's own walk had the picture showing round the shade there, 30 to 55
+  // levels lighter on every band. This read the curve's single lightest
+  // pixel until the first build with the fix, where a speck of the Reading
+  // band's own picture read 12 while the corner, drawn six times over,
+  // showed no line at all. components/ui/GalleryBand.tsx and .band-picture
+  // in globals.css; lib/ui/__tests__/galleryBand.test.ts holds the source.
   try {
-    const { default: sharp } = await import("sharp");
     await page.evaluate(() => window.scrollTo(0, 0));
     await page
       .waitForFunction(() => [...document.querySelectorAll("[data-route-content] li > a[href] img")].slice(0, 4).every((img) => img.complete && img.naturalWidth > 0), null, { timeout: 10000 })
@@ -2063,41 +2064,12 @@ await section(25, async () => {
     );
     const corners = [];
     for (const b of bands) {
-      const pad = 3;
-      const clip = { x: Math.floor(b.left) - pad, y: Math.floor(b.top) - pad, width: Math.ceil(b.radius) + 8, height: Math.ceil(b.height) + 2 * pad };
-      const { data, info } = await sharp(await page.screenshot({ clip })).removeAlpha().raw().toBuffer({ resolveWithObject: true });
-      const s = info.width / clip.width;
-      const at = (x, y) => (Math.min(info.height - 1, Math.max(0, Math.round(y))) * info.width + Math.min(info.width - 1, Math.max(0, Math.round(x)))) * info.channels;
-      const lum = (i) => 0.2126 * data[i] + 0.7152 * data[i + 1] + 0.0722 * data[i + 2];
-      const R = b.radius * s;
-      const cx = (b.left - clip.x) * s + R;
-      const top = (b.top - clip.y) * s;
-      const ground = lum(at(1, info.height / 2));
-      let most = -Infinity;
-      for (const [cy, up] of [[top + R, true], [top + b.height * s - R, false]]) {
-        for (let y = Math.floor(up ? cy - R - 1 : cy); y <= Math.ceil(up ? cy : cy + R + 1); y++) {
-          for (let x = Math.floor(cx - R - 1); x <= Math.ceil(cx); x++) {
-            const dx = x + 0.5 - cx;
-            const dy = y + 0.5 - cy;
-            if (dx > 0 || (up ? dy > 0 : dy < 0)) continue;
-            const d = Math.hypot(dx, dy);
-            // The curve's own pixels, the ones it only partly covers.
-            if (d < R - 1 || d > R + 0.5) continue;
-            // The band just inside: the lightest pixel near the same ray, 2 to 4px in.
-            let inside = 0;
-            for (const t of [2, 3, 4]) {
-              const k = (R - t * s) / d;
-              for (const ox of [-1, 0, 1]) for (const oy of [-1, 0, 1]) inside = Math.max(inside, lum(at(cx + dx * k - 0.5 + ox, cy + dy * k - 0.5 + oy)));
-            }
-            most = Math.max(most, lum(at(x, y)) - Math.max(inside, ground));
-          }
-        }
-      }
-      corners.push({ href: b.href, most });
+      const lift = await cornerLift(page, `[data-route-content] li > a[href="${b.href}"]`, ["top-start", "bottom-start"]);
+      corners.push({ href: b.href, lift: lift.lift, most: lift.most });
     }
     must(
-      corners.length >= 3 && corners.every((c) => c.most <= 6),
-      `the bands' start corners are as dark as their shade, with no line of the picture round them (${corners.map((c) => `${c.href} ${Math.round(c.most)}`).join(", ") || "no bands measured"} levels over the band inside)`,
+      corners.length >= 3 && corners.every((c) => c.lift <= 6),
+      `the bands' start corners are as dark as their shade, with no line of the picture round them (${corners.map((c) => `${c.href} ${c.lift} (${Math.round(c.most)} at its lightest)`).join(", ") || "no bands measured"} levels over the band inside along the curve)`,
     );
   } catch (e) {
     must(false, `the bands' start corners could not be measured: ${firstLine(e)}`);
