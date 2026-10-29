@@ -172,6 +172,31 @@ describe("a chapter read aloud, as the words view counts it (1.8, round 8 B)", (
     expect(verseOf(lines, -1)).toBeNull();
   });
 
+  it("moves to the next verse in the pause, before the voice reads it", () => {
+    // Build 81, the owner: at each new verse "the words have to pretty much
+    // catch up". The move to a verse takes about half a second, and the
+    // voice pauses about that long between verses: the move is made in the
+    // pause, as soon as the verse before is done.
+    for (let i = 1; i < lines.length; i++) {
+      const before = lines[i - 1];
+      const gap = lines[i].at - before.end;
+      if (gap <= 0.05) continue;
+      expect(lineAt(lines, before.end - 0.01), `verse ${i}`).toBe(i - 1);
+      expect(lineAt(lines, before.end + 0.01), `verse ${i + 1}`).toBe(i);
+    }
+  });
+
+  it("lights a verse's words across all of its reading, not ahead of the voice", () => {
+    // Five words of one weight each: the fifth starts four fifths of the way
+    // through the share of the line its words are spread over.
+    const read = captionLines([{ time: 0, end: 10, text: "aa aa aa aa aa" }, { time: 10.45, text: "bb" }]);
+    expect(read[0].words.at(-1)!.at).toBeCloseTo(10 * 0.97 * (4 / 5), 5);
+    // A sung line that ends where the next begins keeps its breath.
+    const sung = captionLines([{ time: 0, text: "aa aa aa aa aa" }, { time: 10, text: "bb" }]);
+    expect(sung[0].words.at(-1)!.at).toBeCloseTo(10 * 0.86 * (4 / 5), 5);
+    for (const line of lines) expect(line.words.at(-1)!.at).toBeLessThan(line.end);
+  });
+
   it("says nothing of verses over a chant's lines", () => {
     const en = version("en");
     const chant = captionLines(captionsFor(en.lines, timing("en"), NONE));

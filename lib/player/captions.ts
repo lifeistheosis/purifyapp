@@ -32,9 +32,14 @@ export type CaptionLine = {
   n?: number;
 };
 
-/** The share of a line's time its words are spread over: the rest is the
- *  breath before the next line. */
+/** The share of a line's time its words are spread over when the line ends
+ *  where the next begins: the rest is the breath before the next line. */
 const SUNG = 0.86;
+/** The same, for a line whose own end is known (a read-aloud verse ends at
+ *  the voice's last word, the pause after it already left out): nearly all
+ *  of it, or the light runs ahead of the voice. Build 81, the owner: at
+ *  each new verse "the words have to pretty much catch up". */
+const SPOKEN = 0.97;
 /** A line with no next line to end it ends this long after it starts. */
 const LAST_LINE = 5;
 
@@ -63,7 +68,7 @@ export function captionLines(source: CaptionSource, duration = 0): CaptionLine[]
     const parts = wordsOf(line.text);
     const weights = parts.map(weight);
     const total = weights.reduce((a, b) => a + b, 0) || 1;
-    const span = (end - line.time) * SUNG;
+    const span = (end - line.time) * (known !== undefined ? SPOKEN : SUNG);
     let acc = 0;
     const words = parts.map((text, j) => {
       const at = line.time + (span * acc) / total;
@@ -83,10 +88,21 @@ export function captionLines(source: CaptionSource, duration = 0): CaptionLine[]
 }
 
 /** The line being sung at `t`, or -1 before the first. A line is taken a
- *  breath early, so the eye is there when the voice is. */
+ *  breath early, so the eye is there when the voice is. And where the line
+ *  before it ended in a pause (a read-aloud verse: the voice stops, then the
+ *  next verse begins about half a second later), it is taken as soon as that
+ *  line is done, so the move to it (LiveCaptions, about half a second) is
+ *  over before the voice begins. Through build 81 it was taken 0.15 s before
+ *  the voice, so the line was still growing into place while its first
+ *  words were read, and the light seemed to catch up with them. A sung line
+ *  that ends where the next begins is taken a breath early, as before. */
 export function lineAt(lines: CaptionLine[], t: number, lead = 0.15): number {
   let at = -1;
-  for (let i = 0; i < lines.length; i++) if (lines[i].at <= t + lead) at = i;
+  for (let i = 0; i < lines.length; i++) {
+    const before = i > 0 ? lines[i - 1] : null;
+    const done = before && before.end < lines[i].at ? before.end : Infinity;
+    if (Math.min(lines[i].at - lead, done) <= t) at = i;
+  }
   return at;
 }
 
