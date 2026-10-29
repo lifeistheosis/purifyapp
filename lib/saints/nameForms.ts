@@ -37,7 +37,10 @@ export const KNOWN_FORMS: Record<string, string[]> = {
   "gregory-the-dialogist": ["Gregory the Dialogist"],
   "mark-of-ephesus": ["Mark Eugenikos"],
   "nikodemos-the-hagiorite": ["Nikodemos of the Holy Mountain"],
-  "theodosius-the-great": ["Theodosius the Cenobiarch"],
+  // theodosius-the-great is the emperor, Theodosius I (January 17, +395), and
+  // has no form here. "Theodosius the Cenobiarch" once stood here and opened
+  // the emperor's card: it names another saint, the founder of the common
+  // life in Palestine (January 11, +529), who has no card.
   "peter-of-moscow": ["Peter of Moscow"],
   "titus-of-crete": ["Titus of Crete"],
   "sixtus-of-rome": ["Sixtus of Rome"],
@@ -52,7 +55,7 @@ export const KNOWN_FORMS: Record<string, string[]> = {
  * known by the same words.
  */
 export const NOT_BY_NAME: Record<string, string> = {
-  "theodosius-the-great": "the emperor Theodosius I is also called Theodosius the Great",
+  "theodosius-the-great": "this card is the emperor, and St Theodosius the Cenobiarch is also called Theodosius the Great",
   "theotokos": "the registry name is a title of praise, not how texts name her",
 };
 
