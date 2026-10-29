@@ -64,13 +64,13 @@ export function CampaignsClient({ embedded = false }: { embedded?: boolean }) {
           <div className="mt-6 flex items-center justify-center gap-3">
             <Link
               href="/campaigns/new"
-              className="inline-flex items-center gap-2 rounded-pill bg-paper px-5 py-3 font-sans text-ui font-semibold text-night transition-[transform,background-color] duration-150 hover:bg-paper/90 active:scale-[0.98]"
+              className="inline-flex items-center gap-2 rounded-pill bg-paper px-5 py-3 font-sans text-ui font-semibold text-night transition-[transform,translate,scale,background-color] duration-150 hover:bg-paper/90 active:scale-[0.98]"
             >
               {t("shop.startACampaign")}
             </Link>
             <Link
               href="/campaigns/mine"
-              className="inline-flex items-center gap-2 rounded-pill border border-paper/20 px-5 py-3 font-sans text-ui font-semibold text-paper/80 transition-[transform,border-color] duration-150 hover:border-paper/40 active:scale-[0.98]"
+              className="inline-flex items-center gap-2 rounded-pill border border-paper/20 px-5 py-3 font-sans text-ui font-semibold text-paper/80 transition-[transform,translate,scale,border-color] duration-150 hover:border-paper/40 active:scale-[0.98]"
             >
               {t("shop.myPrayers")}
             </Link>
@@ -171,7 +171,7 @@ function FilterChip({
       type="button"
       onClick={onClick}
       aria-pressed={active}
-      className={`rounded-pill border px-3.5 py-1.5 font-sans text-caption font-semibold transition-[transform,border-color,background-color,color] duration-150 active:scale-95 ${
+      className={`rounded-pill border px-3.5 py-1.5 font-sans text-caption font-semibold transition-[transform,translate,scale,border-color,background-color,color] duration-150 active:scale-95 ${
         active
           ? "border-gold/50 bg-gold/10 text-gold-pale"
           : "border-paper/15 text-paper/60 hover:border-paper/30"
@@ -203,7 +203,7 @@ function CampaignCard({
     <Link
       href={`/campaigns/detail?id=${campaign.id}`}
       style={{ animationDelay: `${Math.min(index * 50, 300)}ms` }}
-      className="reveal-rise block overflow-hidden rounded-2xl border border-paper/10 bg-paper/[0.03] transition-[transform,border-color] duration-150 hover:border-gold/30 active:scale-[0.99]"
+      className="reveal-rise block overflow-hidden rounded-2xl border border-paper/10 bg-paper/[0.03] transition-[transform,translate,scale,border-color] duration-150 hover:border-gold/30 active:scale-[0.99]"
     >
       {campaign.image_url ? (
         <div className="relative aspect-[16/9] w-full overflow-hidden bg-black/30">

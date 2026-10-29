@@ -26,7 +26,7 @@ import type { PlanFeature } from "@/lib/premium/plans";
 
 /** The primary premium action: white on the dark, its ink the page's, with a soft light under it. */
 export const PREMIUM_CTA =
-  "inline-flex min-h-12 items-center justify-center gap-2 rounded-pill bg-paper px-6 font-sans text-ui font-semibold text-night shadow-[0_12px_40px_-14px_rgba(255,255,255,0.5)] transition-[transform,opacity] duration-150 active:scale-[0.99] disabled:opacity-60";
+  "inline-flex min-h-12 items-center justify-center gap-2 rounded-pill bg-paper px-6 font-sans text-ui font-semibold text-night shadow-[0_12px_40px_-14px_rgba(255,255,255,0.5)] transition-[transform,translate,scale,opacity] duration-150 active:scale-[0.99] disabled:opacity-60";
 
 /** The quieter action beside it. */
 export const PREMIUM_GHOST =

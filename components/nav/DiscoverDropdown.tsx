@@ -219,7 +219,10 @@ export function DiscoverDropdown({
             "shadow-[0_10px_40px_rgba(0,0,0,0.55)] py-2 z-50",
             // Smooth linear open/close: fade + a small slide-and-scale from
             // the trigger. Linear easing as requested; reduced motion snaps.
-            "transition-[opacity,transform] duration-200 ease-linear",
+            // Tailwind 4 writes translate-* and scale-* as their own
+            // properties, so they are named here (transform alone let the
+            // slide and the scale jump).
+            "transition-[opacity,translate,scale] duration-200 ease-linear",
             "motion-reduce:transition-none",
             visible
               ? "opacity-100 -translate-x-1/2 translate-y-0 scale-100"

@@ -80,7 +80,7 @@ export function DesktopInstallCTA({
       <Link
         href="/prayers/today"
         className={cn(
-          "font-sans text-ui leading-none font-medium whitespace-nowrap inline-flex items-center justify-center rounded-pill transition-[background-color,color,box-shadow,transform] duration-200 ease-out cursor-pointer",
+          "font-sans text-ui leading-none font-medium whitespace-nowrap inline-flex items-center justify-center rounded-pill transition-[background-color,color,box-shadow,transform,translate,scale] duration-200 ease-out cursor-pointer",
           variant === "inverse"
             ? "bg-paper text-on-paper hover:bg-paper/90"
             : "bg-ink text-paper hover:bg-ink/90",

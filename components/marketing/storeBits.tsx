@@ -57,7 +57,7 @@ export function StoreButton({
       rel="noopener noreferrer"
       onClick={onClick}
       className={cn(
-        "group inline-flex min-h-[56px] items-center gap-3 rounded-2xl px-4 py-2.5 transition-[background-color,border-color,transform] duration-150 active:scale-[0.98]",
+        "group inline-flex min-h-[56px] items-center gap-3 rounded-2xl px-4 py-2.5 transition-[background-color,border-color,transform,translate,scale] duration-150 active:scale-[0.98]",
         solid
           ? "bg-paper text-on-paper shadow-[0_10px_30px_-12px_rgba(0,0,0,0.6)] hover:bg-paper/90"
           : "border border-paper/15 bg-paper/[0.05] text-paper hover:border-paper/35 hover:bg-paper/10",

@@ -266,7 +266,7 @@ export function AskCard({ onChoose, onDismiss }: { onChoose: () => void; onDismi
         }}
         className={cn(
           "pointer-events-auto mx-auto flex max-w-md touch-none items-center gap-3 rounded-[18px] bg-night-soft p-3 shadow-[0_14px_34px_rgba(0,0,0,0.5)] ring-1 ring-inset ring-paper/10",
-          "transition-[transform,opacity] duration-300 ease-[cubic-bezier(0.2,0.8,0.2,1)] [:where([data-motion=reduce])_&]:transition-none",
+          "transition-[transform,translate,scale,opacity] duration-300 ease-[cubic-bezier(0.2,0.8,0.2,1)] [:where([data-motion=reduce])_&]:transition-none",
           shown ? "opacity-100" : "translate-y-6 opacity-0",
         )}
       >

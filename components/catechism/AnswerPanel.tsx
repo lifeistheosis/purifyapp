@@ -76,7 +76,7 @@ export function AnswerPanel({
             ref={nextRef}
             type="button"
             onClick={onNext}
-            className="mt-5 w-full rounded-pill bg-paper px-6 py-3.5 font-sans text-ui font-semibold text-night hover:bg-paper/90 active:scale-[0.98] transition-[transform,background-color] [transition-duration:var(--duration-instant)] motion-reduce:transition-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold/70"
+            className="mt-5 w-full rounded-pill bg-paper px-6 py-3.5 font-sans text-ui font-semibold text-night hover:bg-paper/90 active:scale-[0.98] transition-[transform,translate,scale,background-color] [transition-duration:var(--duration-instant)] motion-reduce:transition-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold/70"
           >
             {isLast ? t("catechism.finish") : t("catechism.next")}
           </button>

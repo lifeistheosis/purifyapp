@@ -226,7 +226,7 @@ function RowButton({
       aria-label={label}
       disabled={disabled}
       onClick={onClick}
-      className="grid h-11 w-11 place-items-center rounded-full border border-paper/15 text-paper/80 transition-[background-color,border-color,opacity,transform] duration-150 hover:border-paper/35 hover:bg-paper/[0.06] active:scale-[0.96] disabled:pointer-events-none disabled:opacity-30"
+      className="grid h-11 w-11 place-items-center rounded-full border border-paper/15 text-paper/80 transition-[background-color,border-color,opacity,transform,translate,scale] duration-150 hover:border-paper/35 hover:bg-paper/[0.06] active:scale-[0.96] disabled:pointer-events-none disabled:opacity-30"
     >
       <svg aria-hidden width={16} height={16} viewBox="0 0 16 16" className="rtl:-scale-x-100">
         <path

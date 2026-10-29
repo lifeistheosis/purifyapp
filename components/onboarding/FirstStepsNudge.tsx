@@ -74,7 +74,7 @@ export function FirstStepsNudge() {
           });
           dismissNudge();
         }}
-        className="mt-4 inline-flex min-h-11 items-center gap-2 rounded-pill bg-paper px-5 font-sans text-ui font-semibold text-night transition-[transform,background-color] hover:bg-paper/90 active:scale-[0.98]"
+        className="mt-4 inline-flex min-h-11 items-center gap-2 rounded-pill bg-paper px-5 font-sans text-ui font-semibold text-night transition-[transform,translate,scale,background-color] hover:bg-paper/90 active:scale-[0.98]"
       >
         {t("onboard.day1.open")}
         <span aria-hidden>{"→"}</span>

@@ -123,7 +123,9 @@ export function ChantPage({ chant, row, related }: { chant: Chant; row: ChantInd
       <div
         className={cn(
           "sticky sticky-safe-top under-back-bar z-20 -mx-5 -mb-14 h-14 border-b border-paper/[0.08] bg-night px-5 md:-mx-8 md:px-8",
-          "motion-safe:transition-[opacity,transform] motion-safe:duration-200",
+          // `translate`, not `transform`: Tailwind 4 writes -translate-y-1 as
+          // its own property, so a transform-only list let the bar jump.
+          "motion-safe:transition-[opacity,translate] motion-safe:duration-200",
           past ? "opacity-100" : "pointer-events-none -translate-y-1 opacity-0",
         )}
         aria-hidden={!past}
