@@ -7,6 +7,7 @@ import { WorkCover } from "@/components/covers/WorkCover";
 import { useTranslate } from "@/components/i18n/MessagesProvider";
 import { cn } from "@/lib/cn";
 import { avifFor } from "@/lib/media/streamed";
+import { useArrivingImage } from "@/lib/ui/useArrivingImage";
 import { eraKey } from "@/lib/reading/catalog";
 import { cardHref, type Card } from "@/lib/reading/select";
 
@@ -267,17 +268,22 @@ function useStageDepth(stage: RefObject<HTMLElement | null>, ready: boolean) {
  * than drawn broken.
  */
 export function RoundIcon({ src, focusY, className }: { src: string; focusY: number; className?: string }) {
+  // It fades in when it arrives: an empty ring stood there until it popped
+  // in (build 81, the owner's photo of "About St. Ignatius of Antioch").
+  const { ref, onArrive } = useArrivingImage(src);
   return (
     // eslint-disable-next-line @next/next/no-img-element -- the same picture the cover shows, round.
     <img
+      ref={ref}
       src={src}
       alt=""
       aria-hidden
       decoding="async"
+      onLoad={onArrive}
       onError={(e) => {
         e.currentTarget.style.display = "none";
       }}
-      className={cn("size-6 shrink-0 rounded-full object-cover ring-1 ring-paper/15", className)}
+      className={cn("img-arrive size-6 shrink-0 rounded-full object-cover ring-1 ring-paper/15", className)}
       style={{ objectPosition: `50% ${focusY}%` }}
     />
   );

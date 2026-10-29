@@ -2886,6 +2886,21 @@ html[data-reading-mode="parchment"] .lic-notes .lic-note:target {
 }
 /* Backwards, not both: a chosen card has to be free to take its press scale. */
 .ob-rise { animation: ob-rise 520ms var(--ease-house) backwards; }
+/* A small picture that arrives (lib/ui/useArrivingImage.ts: the player's
+   covers, the mini player's thumb, a work's byline icon). While the browser
+   fetches it, it is drawn as nothing, then it fades in; one already in hand
+   is shown at once. The mark is set by script only, so a page without it
+   shows its pictures as before. */
+.img-arrive {
+ transition: opacity 320ms var(--ease-house);
+}
+.img-arrive[data-arriving] {
+ opacity: 0;
+ transition: none;
+}
+:where([data-motion="reduce"]) .img-arrive {
+ transition: none;
+}
 /* The welcome questions' way on (components/onboarding/LookingFor.tsx), held
    at the very foot of a phone: it reaches down over the screen's edge, so
    its fade to the page's ground covers everything under it. A computer's

@@ -3,6 +3,7 @@
 import { useState, type CSSProperties } from "react";
 
 import { cn } from "@/lib/cn";
+import { useArrivingImage } from "@/lib/ui/useArrivingImage";
 
 /**
  * The picture of what is playing (1.7): Now Playing's cover, its blurred
@@ -35,20 +36,24 @@ export function CoverArt({
   const [errors, setErrors] = useState<{ of: string | null; count: number }>({ of: src, count: 0 });
   const count = errors.of === src ? errors.count : 0;
   const shown = count === 0 ? src : count === 1 && fallback ? fallback : null;
+  // The cover fades in when it arrives (the mini player's thumb popped in).
+  const { ref, onArrive } = useArrivingImage(shown);
 
   if (!shown) return <span aria-hidden className={cn("block bg-paper/10", className)} style={style} />;
   return (
     // eslint-disable-next-line @next/next/no-img-element -- a static export serves files as they are, and the cover may be another origin's.
     <img
       key={shown}
+      ref={ref}
       src={shown}
       alt=""
       aria-hidden={decorative || undefined}
       width={size}
       height={size}
       decoding="async"
+      onLoad={onArrive}
       onError={() => setErrors({ of: src, count: count + 1 })}
-      className={cn("object-cover", className)}
+      className={cn("img-arrive object-cover", className)}
       style={style}
     />
   );
