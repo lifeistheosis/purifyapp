@@ -105,6 +105,84 @@ describe("the reading room", () => {
   });
 });
 
+describe("the room's pictures (1.8, the owner's note 13 of build 80)", () => {
+  // "Opening the reading room while its pictures load breaks the immersion":
+  // grey boxes stood where the covers would be and the pictures landed on
+  // them one by one, and the day's book appeared at once with its backdrop
+  // popping in behind it. Each now waits in the page's own colour and arrives
+  // whole, on the app's motion switch, and the first are asked for early.
+  const cover = code("components/covers/WorkCover.tsx");
+  const stage = code("components/reading/FeaturedWork.tsx");
+  const css = read("components/reading/room.module.css").replace(/\/\*[\s\S]*?\*\//g, "");
+
+  it("hold a cover's place in the page's colour and fade the whole poster in once its picture is in", () => {
+    expect(cover).toContain('hold?: "self" | "parent"');
+    expect(cover).toMatch(/const arrived = src === null \|\| shown \|\| bare === src \|\| gone === src;/);
+    expect(cover).toMatch(/const held = hold === "self" && !arrived;/);
+    // The whole poster, shadow and words with it, is see-through while held,
+    // and its fade answers to the motion switch, on the house's curve.
+    expect(cover).toMatch(/hold === "self" && "motion-safe:transition-opacity motion-safe:duration-500 motion-safe:ease-\[var\(--ease-house\)\]"/);
+    expect(cover).toMatch(/held && "opacity-0"/);
+    expect(cover).toContain('data-cover-held={held ? "" : undefined}');
+    // The picture fades on its own only over a plate that came first, so the
+    // poster and its picture never fade at once.
+    expect(cover).toMatch(/const fades = !hold \|\| bare === src;/);
+    expect(cover).toMatch(/fades && "motion-safe:transition-opacity/);
+    // A picture that fails ends the wait at once; a slow one after HOLD_MS.
+    expect(cover).toMatch(/const fail = \(failed: string\) => \{\s*setBare\(failed\);/);
+    expect(cover).toMatch(/setTimeout\(\(\) => setBare\(src\), HOLD_MS\)/);
+  });
+
+  it("hold every cover the room draws: the rows, the search's grid, the day's book", () => {
+    expect(code("components/reading/CoverRow.tsx")).toMatch(/<WorkCover\b[^>]*\beager=\{near\}\s+hold="self"/);
+    // The grid's first screen is asked for at once, so it waits HOLD_MS at most.
+    expect(code("components/reading/ReadingSearch.tsx")).toMatch(/<WorkCover\b[^>]*size="grid" eager=\{i < FIRST_SCREEN\} hold="self"/);
+    expect(stage).toMatch(/<WorkCover\b[^>]*\bpriority\s+hold="parent"\s+onArrive=\{\(\) => setReady\(card\.key\)\}/);
+  });
+
+  it("keep the day's stage unseen at its full size until its poster can be seen, then bring it in whole", () => {
+    expect(stage).toContain('data-held={held ? "" : undefined}');
+    expect(stage).toContain("const held = !card || ready !== card.key;");
+    expect(stage).not.toMatch(/"invisible"/);
+    expect(css).toMatch(/\.hero\[data-held\] \{\s*visibility: hidden;\s*opacity: 0;\s*\}/);
+    // The size it keeps is the size of what arrives, so the rows never move.
+    // A phone: 20 above, the 200 by 300 poster, 20, a line of facts (12px at
+    // the page's 1.55), two lines of blurb (13px at 1.55) 8 under it, Read (20
+    // and 48), 8 below: 482.9. From a tablet's width: the 220 by 330 poster
+    // and 48 above and below it, 426.
+    const phone = 20 + 300 + 20 + 12 * 1.55 + 8 + 2 * 13 * 1.55 + 20 + 48 + 8;
+    const held = Number(/"flex min-h-\[(\d+)px\]/.exec(stage)?.[1]);
+    const wide = Number(/md:min-h-\[(\d+)px\]/.exec(stage)?.[1]);
+    expect(held).toBeGreaterThanOrEqual(Math.ceil(phone));
+    expect(held - phone).toBeLessThan(4);
+    expect(wide).toBe(330 + 48 * 2);
+  });
+
+  it("draw the stage's backdrop from the poster's own file and dim it in once it has loaded", () => {
+    expect(stage).toMatch(/<picture className="contents">\s*\{artAvif \? <source type="image\/avif" srcSet=\{artAvif\} \/> : null\}/);
+    expect(stage).toContain('data-shown={lit === art.src ? "" : undefined}');
+    expect(css).toMatch(/\.heroArt \{[^}]*opacity: 0;/);
+    expect(css).toMatch(/\.heroArt\[data-shown\] \{\s*opacity: 0\.32;/);
+    expect(css).toMatch(/html\[data-reading-mode="parchment"\] \.heroArt\[data-shown\] \{\s*opacity: 0\.13;/);
+  });
+
+  it("fade the stage and its backdrop only on the app's motion switch", () => {
+    expect(css).toMatch(/:where\(\[data-motion="full"\]\) \.hero,\s*:where\(\[data-motion="full"\]\) \.heroArt \{\s*transition: opacity var\(--duration-slow\) var\(--ease-house\);/);
+    expect(css).toMatch(/:where\(\[data-motion="reduce"\]\) \.hero,\s*:where\(\[data-motion="reduce"\]\) \.heroArt \{\s*transition: none;/);
+    // No transition on the stage outside the switch.
+    for (const m of css.matchAll(/([^{}]+)\{[^{}]*\btransition\s*:\s*opacity[^;{}]*;/g)) {
+      expect(m[1], m[1].trim()).toContain(':where([data-motion="full"])');
+    }
+  });
+
+  it("ask for the first pictures as the room is drawn: the day's book first, then the first covers of the row under it", () => {
+    const room = code("components/reading/ReadingRoom.tsx");
+    expect(room).toContain('import { preload } from "react-dom";');
+    expect(room).toMatch(/preload\(avif \?\? cover\.src, \{ as: "image"/);
+    expect(room).toMatch(/if \(!open\) \{\s*warm\(featuredCard\?\.cover, true\);\s*for \(const c of \(beginner \? begin : short\)\.slice\(0, FIRST_SEEN\)\) warm\(c\.cover\);/);
+  });
+});
+
 describe("a book's page", () => {
   it("is the work's own page, with the book's header above its text and more like it below", () => {
     const page = code(WORK);

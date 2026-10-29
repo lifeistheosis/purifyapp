@@ -89,11 +89,15 @@ export function AddToFlorilegium({
             else setOpen(true);
           });
         }}
-        className="inline-flex items-center gap-1.5 font-sans text-caption text-paper/50 hover:text-paper/85 transition-colors"
+        // Its words and its Plus mark on one baseline, as far apart as a
+        // doctrine's quotation keeps Source from Gather (components/theology/
+        // TopicReader.tsx; the owner's note 22 of build 80).
+        data-gather=""
+        className="inline-flex items-baseline gap-3 font-sans text-caption text-paper/50 hover:text-paper/85 transition-colors"
       >
         {done ? `Gathered into ${done}` : "Gather"}
         {plusAllowed === false ? (
-          <span className="rounded-pill border border-premium/40 bg-premium/[0.08] px-1.5 py-px font-sans text-caption font-semibold text-premium-ink">
+          <span data-plus-pill="" className="rounded-pill border border-premium/40 bg-premium/[0.08] px-1.5 py-px font-sans text-caption font-semibold text-premium-ink">
             {t("settings.discordPlusPill")}
           </span>
         ) : null}

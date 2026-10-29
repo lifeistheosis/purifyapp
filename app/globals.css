@@ -712,6 +712,25 @@ body[data-reader-screen][data-reader-away] [data-tab-bar]:has(:focus-visible) {
  transition: none;
 }
 
+/* A work's section pill arrives gently (1.8, the owner's note 14 of build 80:
+   opening the Conferences, "Section 1 of 603" appeared at once). It comes
+   into the page with the work's text, which in the apps is read from the
+   bundle after the page has opened (components/saints/LazyWritingReader.tsx),
+   so it used to land after the page's own fade, all at once. It fades in on
+   its own as it arrives, whenever that is. On the pill's face, not on
+   [data-reader-pill], whose opacity is the away and covered fades above, so
+   the three never fight; opacity only, filling backwards, so nothing is left
+   behind once it has played. */
+@keyframes reader-pill-in {
+ from { opacity: 0; }
+}
+.reader-pill-in {
+ animation: reader-pill-in var(--duration-slow) var(--ease-house) backwards;
+}
+:where([data-motion="reduce"]) .reader-pill-in {
+ animation: none;
+}
+
 /* The fade the pill floats on, as drawn: the words go quiet under it, down
    to the tab bar. The page's own ground, so every palette has it. */
 .pill-fade {
@@ -3620,6 +3639,34 @@ details[open] > .band-open {
 :where([data-motion="reduce"]) .notify-lit::after {
  animation: none;
  opacity: 0.6;
+}
+
+/* ── A long message, folded (components/community, 1.8) ───────────────
+   The owner's note 19 of build 80: folded, a long message ran its
+   paragraphs and lists together into one block, which undid the way the
+   writer laid it out. That was on purpose: the fold was a line clamp, and a
+   clamp that lands on the blank line between two paragraphs draws its
+   ellipsis on nothing, so every line break was turned into a space. Now the
+   writer's own lines stay. The fold is a height of so many lines
+   (--fold-lines, of --fold-lead each, set where the text is), and it ends in
+   a soft fade over its last line and a half instead of an ellipsis, so a cut
+   on a blank line reads as well as one mid-sentence. The fade is drawn only
+   where the words run past the fold (data-cut, measured in
+   CommunityClient.tsx), and it is a mask on the words, not a colour laid over
+   them, so it melts into whatever card the message is on, on every palette.
+   A browser without the lh unit counts the lines in ems. */
+.post-fold {
+ overflow: hidden;
+ max-height: calc(var(--fold-lines) * var(--fold-lead) * 1em);
+}
+@supports (height: 1lh) {
+ .post-fold {
+  max-height: calc(var(--fold-lines) * 1lh);
+ }
+}
+.post-fold[data-cut] {
+ -webkit-mask-image: linear-gradient(to bottom, #000 calc(100% - var(--fold-lead) * 1.5em), transparent);
+ mask-image: linear-gradient(to bottom, #000 calc(100% - var(--fold-lead) * 1.5em), transparent);
 }
 
 /* Route entrance. The in-app routes wrap their page content in

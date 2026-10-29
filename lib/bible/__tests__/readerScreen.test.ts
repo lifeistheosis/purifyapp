@@ -448,6 +448,21 @@ describe("the reader's pill and what rises over it", () => {
     expect(code("components/nav/MobileTabBar.tsx")).toContain("overlayOpen && \"opacity-0\"");
   });
 
+  it("fades a work's pill in as it arrives, on its face, on the motion switch (build 80, note 14)", () => {
+    // The owner, 2026-10-29: opening the Conferences, "Section 1 of 603"
+    // appeared at once. It comes with the work's text, which the apps read
+    // from the bundle after the page has opened, so it landed after the
+    // page's own fade with none of its own.
+    expect(code("components/saints/MobileWorkPill.tsx")).toMatch(/"reader-pill-in inline-flex items-center gap-1 rounded-pill/);
+    const css = rules();
+    expect(css).toMatch(/@keyframes reader-pill-in \{\s*from \{ opacity: 0; \}\s*\}/);
+    expect(css).toMatch(/\.reader-pill-in \{\s*animation: reader-pill-in var\(--duration-slow\) var\(--ease-house\) backwards;\s*\}/);
+    expect(css).toMatch(/:where\(\[data-motion="reduce"\]\) \.reader-pill-in \{\s*animation: none;\s*\}/);
+    // Never on [data-reader-pill] itself, whose opacity is the away and the
+    // covered fades: an animation there would show a pill that should be gone.
+    expect(css).not.toMatch(/\[data-reader-pill\][^{]*\{[^}]*\banimation\b/);
+  });
+
   it("is what the Copy pill, a verse's tools and search raise the flag for", () => {
     // Each stands in the pill's place, or over the whole screen.
     const copy = code("components/native/PressToCopy.tsx");

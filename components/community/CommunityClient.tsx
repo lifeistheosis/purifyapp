@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { createContext, memo, useCallback, useContext, useEffect, useMemo, useRef, useState } from "react";
+import { createContext, memo, useCallback, useContext, useEffect, useLayoutEffect, useMemo, useRef, useState, type CSSProperties } from "react";
 
 import { CampaignsClient } from "@/components/campaigns/CampaignsClient";
 import { ActionMenu, type ActionMenuItem } from "@/components/community/ActionMenu";
@@ -1760,6 +1760,9 @@ function PostCardInner({
     (post.body ?? "").split("\n").length > (pinned ? 4 : 8);
   const longQuote = (post.quote_text?.length ?? 0) > 520;
   const folded = (longBody || longQuote) && !unfolded;
+  // Where a fold cuts the words off, its soft fade (app/globals.css, .post-fold).
+  const bodyFold = useFoldCut<HTMLParagraphElement>(longBody && folded);
+  const quoteFold = useFoldCut<HTMLParagraphElement>(longQuote && folded);
 
   const authorHandle = post.author_handle ?? null;
   const seed: ProfileSeed | null = authorHandle
@@ -1947,10 +1950,12 @@ function PostCardInner({
         // on which screen you met him.
         <blockquote className="mt-3 border-l border-gold/40 pl-5">
           <p
+            ref={quoteFold}
             className={cn(
               "font-serif italic text-body leading-[1.7] text-paper/90",
-              longQuote && folded && "line-clamp-6",
+              longQuote && folded && "post-fold",
             )}
+            style={longQuote && folded ? foldLines(6, 1.7) : undefined}
           >
             {post.quote_text}
           </p>
@@ -1968,14 +1973,17 @@ function PostCardInner({
 
       {post.body ? (
         <p
+          ref={bodyFold}
           className={cn(
             "mt-3 whitespace-pre-wrap break-words font-sans text-ui leading-relaxed text-paper/80",
-            longBody && folded && (pinned ? "line-clamp-4" : "line-clamp-6"),
+            longBody && folded && "post-fold",
           )}
+          style={longBody && folded ? foldLines(pinned ? 4 : 6, 1.625) : undefined}
         >
-          {/* Folded, the paragraphs run on: a clamp that lands on the blank
-              line between two paragraphs shows an ellipsis on nothing. */}
-          <MentionText text={longBody && folded ? post.body.replace(/\s*\n+\s*/g, " ") : post.body} />
+          {/* Folded or not, the writer's own lines and paragraphs. The fold
+              ends in a soft fade, so one that lands on the blank line between
+              two paragraphs reads as well as any other. */}
+          <MentionText text={post.body} />
         </p>
       ) : null}
       {longBody || longQuote ? (
@@ -2284,6 +2292,38 @@ function replySeed(r: CommunityReply): ProfileSeed | null {
         nameColor: r.author_name_color ?? null,
       }
     : null;
+}
+
+/**
+ * A fold of so many lines of a text whose lines are `lead` ems apart: its
+ * leading as the text's class sets it, for a browser that cannot count in
+ * lines (app/globals.css, .post-fold).
+ */
+function foldLines(lines: number, lead: number): CSSProperties {
+  return { "--fold-lines": lines, "--fold-lead": lead } as CSSProperties;
+}
+
+/**
+ * Marks a folded text whose words run past its fold with data-cut, so the
+ * fold's soft fade is drawn only where something is cut off: a long message
+ * on a wide screen can fit its fold whole. Measured by a ResizeObserver, which
+ * answers before the fold is first painted and again whenever its box changes
+ * size, and written straight to the element, so nothing is drawn again and no
+ * card the feed has not laid out yet is laid out for it.
+ */
+function useFoldCut<T extends HTMLElement>(on: boolean) {
+  const ref = useRef<T>(null);
+  useLayoutEffect(() => {
+    const el = ref.current;
+    if (!on || !el || typeof ResizeObserver === "undefined") return;
+    const watch = new ResizeObserver(() => el.toggleAttribute("data-cut", el.scrollHeight > el.clientHeight + 1));
+    watch.observe(el);
+    return () => {
+      watch.disconnect();
+      el.removeAttribute("data-cut");
+    };
+  }, [on]);
+  return ref;
 }
 
 /**

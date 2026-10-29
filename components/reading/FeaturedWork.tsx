@@ -6,6 +6,7 @@ import { useEffect, useRef, useState, type RefObject } from "react";
 import { WorkCover } from "@/components/covers/WorkCover";
 import { useTranslate } from "@/components/i18n/MessagesProvider";
 import { cn } from "@/lib/cn";
+import { avifFor } from "@/lib/media/streamed";
 import { eraKey } from "@/lib/reading/catalog";
 import { cardHref, type Card } from "@/lib/reading/select";
 
@@ -30,6 +31,18 @@ import styles from "./room.module.css";
  * tablet's width up, where the poster stands beside the words. Until the day
  * is known the stage keeps its size and shows nothing, so the rows under it
  * never move and no other book flashes in its place first.
+ *
+ * ONE ARRIVAL (1.8, the owner's note 13 of build 80: "Opening the reading
+ * room while its pictures load breaks the immersion"). The stage then goes on
+ * waiting, unseen in the page's own colour, until its poster's picture is in
+ * (or cannot come, or is slower than the cover's HOLD_MS), and fades in whole:
+ * the poster with its picture, the words, the light. The picture behind it is
+ * the poster's own (its AVIF first, the same file the poster loads, so it is
+ * asked for once) and fades up to its dim once it has loaded, never popping
+ * in. The size the stage keeps while it waits is the size of what arrives in
+ * it, a poster, a line of facts, two lines of blurb and Read on a phone, and
+ * the poster with its padding from a tablet's width up, so nothing under it
+ * moves when it comes.
  */
 export function FeaturedWork({
   card,
@@ -50,6 +63,11 @@ export function FeaturedWork({
   // The backdrop picture, until it fails: the apps with no signal ask the
   // website for it in vain, and a broken picture is taken away, never drawn.
   const [gone, setGone] = useState<string | null>(null);
+  // The backdrop that has loaded, and the one whose AVIF failed, now asked for as JPEG.
+  const [lit, setLit] = useState<string | null>(null);
+  const [artJpeg, setArtJpeg] = useState<string | null>(null);
+  // The book whose poster can be seen: until then the stage waits unseen.
+  const [ready, setReady] = useState<string | null>(null);
   useStageDepth(stage, Boolean(card));
 
   const author = card?.author ?? t("reading.work.anonymous");
@@ -62,34 +80,43 @@ export function FeaturedWork({
       ].filter(Boolean)
     : [];
   const art = card?.cover && gone !== card.cover.src ? card.cover : null;
+  const artAvif = art && artJpeg !== art.src ? avifFor(art.src) : null;
+  const held = !card || ready !== card.key;
 
   return (
     <section
       ref={stage}
       aria-labelledby={card ? "featured-title" : undefined}
       data-featured={card ? card.key : "pending"}
-      className={cn(
-        styles.hero,
-        "relative -mx-5 mt-1 md:mx-0 md:mt-8 md:rounded-[16px]",
-        !card && "invisible",
-      )}
+      // Unseen until the poster can be seen (room.module.css, .hero[data-held]).
+      data-held={held ? "" : undefined}
+      className={cn(styles.hero, "relative -mx-5 mt-1 md:mx-0 md:mt-8 md:rounded-[16px]")}
     >
       <div aria-hidden data-stage-part="backdrop" className={styles.heroBackdrop}>
         {art ? (
-          // eslint-disable-next-line @next/next/no-img-element -- the cover's own picture, the same address the poster loads.
-          <img
-            src={art.src}
-            alt=""
-            decoding="async"
-            onError={() => setGone(art.src)}
-            className={styles.heroArt}
-            style={{ objectPosition: `50% ${art.focusY}%` }}
-          />
+          <picture className="contents">
+            {artAvif ? <source type="image/avif" srcSet={artAvif} /> : null}
+            <img
+              key={artJpeg === art.src ? `${art.src}#jpeg` : art.src}
+              src={art.src}
+              alt=""
+              decoding="async"
+              onLoad={() => setLit(art.src)}
+              onError={(e) => {
+                if (artAvif && e.currentTarget.currentSrc.endsWith(".avif")) setArtJpeg(art.src);
+                else setGone(art.src);
+              }}
+              // Dimmed in once it has loaded (room.module.css, .heroArt[data-shown]).
+              data-shown={lit === art.src ? "" : undefined}
+              className={styles.heroArt}
+              style={{ objectPosition: `50% ${art.focusY}%` }}
+            />
+          </picture>
         ) : null}
         <div className={styles.heroShade} />
       </div>
 
-      <div className="flex min-h-[480px] flex-col items-center px-5 pb-2 pt-5 text-center md:min-h-[400px] md:flex-row md:items-center md:gap-10 md:px-10 md:py-12 md:text-start">
+      <div className="flex min-h-[484px] flex-col items-center px-5 pb-2 pt-5 text-center md:min-h-[426px] md:flex-row md:items-center md:gap-10 md:px-10 md:py-12 md:text-start">
         {card ? (
           <>
             <div data-stage-part="poster" className={styles.heroPoster}>
@@ -101,6 +128,8 @@ export function FeaturedWork({
                   focusY={card.cover?.focusY}
                   size="hero"
                   priority
+                  hold="parent"
+                  onArrive={() => setReady(card.key)}
                   className="w-[200px] shadow-[0_32px_70px_-26px_rgba(0,0,0,0.9)] md:w-[220px]"
                 />
               </Link>

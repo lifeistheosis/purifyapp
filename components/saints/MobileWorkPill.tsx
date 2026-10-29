@@ -38,6 +38,13 @@ export function numbersOf(sections: readonly ContentsSection[]): string[] | null
  * (lib/ui/overlay.ts): a hold's Copy pill and a paragraph's tools stand in
  * its very place (1.7.1, the owner's screenshot: "pill buttons colliding
  * here", Copy over "Section").
+ *
+ * It appears with the work's text, nothing else: no measurement and no
+ * scroll holds it back, and it reads "Section 1 of N" from its first frame.
+ * In the apps that text is read from the bundle after the page has opened, so
+ * the pill used to land a moment later, all at once (1.8, the owner's note 14
+ * of build 80, on the Conferences). Its face fades in as it arrives
+ * (app/globals.css, .reader-pill-in), on the app's motion switch.
  */
 export function MobileWorkPill({
   sections,
@@ -114,9 +121,11 @@ export function MobileWorkPill({
             "calc(var(--tab-bar-h) + var(--now-playing-h) + env(safe-area-inset-bottom, 0px) + 12px)",
         }}
       >
+        {/* The pill's face fades in as it arrives, with the work's text
+            (app/globals.css, .reader-pill-in). */}
         <div
           className={cn(
-            "inline-flex items-center gap-1 rounded-pill bg-night/95 backdrop-blur border border-white/15 shadow-raise pl-1 pr-1 py-1 max-w-[92vw]",
+            "reader-pill-in inline-flex items-center gap-1 rounded-pill bg-night/95 backdrop-blur border border-white/15 shadow-raise pl-1 pr-1 py-1 max-w-[92vw]",
             covered ? "pointer-events-none" : "pointer-events-auto",
           )}
         >
