@@ -53,7 +53,9 @@ export function FlorilegiumPickerSheet({
 
   function createAndGather(e: React.FormEvent) {
     e.preventDefault();
-    const id = create(title);
+    // An unnamed gathering is named in the reader's language, as the inline
+    // popover names it (AddToFlorilegium).
+    const id = create(title.trim() || t("study.florilegium.untitled"));
     if (item) addItem(id, item);
     onClose();
   }

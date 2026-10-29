@@ -69,8 +69,11 @@ export function AddToFlorilegium({
 
   function createAndGather(e: React.FormEvent) {
     e.preventDefault();
-    const id = create(title);
-    gatherInto(id, title.trim() || "Untitled gathering");
+    // A gathering left unnamed is named here, in the reader's language: the
+    // store keeps the title it is given, and its own fallback is English.
+    const name = title.trim() || t("study.florilegium.untitled");
+    const id = create(name);
+    gatherInto(id, name);
   }
 
   return (
@@ -95,7 +98,7 @@ export function AddToFlorilegium({
         data-gather=""
         className="inline-flex items-baseline gap-3 font-sans text-caption text-paper/50 hover:text-paper/85 transition-colors"
       >
-        {done ? `Gathered into ${done}` : "Gather"}
+        {done ? t("study.florilegium.gatheredInto", { name: done }) : t("study.gather")}
         {plusAllowed === false ? (
           <span data-plus-pill="" className="rounded-pill border border-premium/40 bg-premium/[0.08] px-1.5 py-px font-sans text-caption font-semibold text-premium-ink">
             {t("settings.discordPlusPill")}

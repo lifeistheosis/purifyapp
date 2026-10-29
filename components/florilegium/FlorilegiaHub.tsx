@@ -39,7 +39,9 @@ export function FlorilegiaHub() {
 
   function submit(e: React.FormEvent) {
     e.preventDefault();
-    create(title);
+    // An unnamed gathering is named in the reader's language, as the Gather
+    // button names it (AddToFlorilegium).
+    create(title.trim() || t("study.florilegium.untitled"));
     setTitle("");
     // Stay on the hub; the new collection appears first among the
     // gatherings. The reader can open it to begin gathering.
