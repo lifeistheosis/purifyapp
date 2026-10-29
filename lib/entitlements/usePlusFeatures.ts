@@ -23,9 +23,10 @@
 // asks. The answer is shared for a minute and dropped the moment the
 // entitlements change (a purchase, a restore).
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useSyncExternalStore } from "react";
 
-import { getClientEntitlements } from "@/lib/entitlements/client";
+import { clientSurface, getClientEntitlements } from "@/lib/entitlements/client";
+import { plusEnforcedFor } from "@/lib/entitlements/entitlements";
 import { onEntitlementsChanged } from "@/lib/entitlements/refresh";
 
 const TTL_MS = 60_000;
@@ -44,11 +45,65 @@ export function plusFeaturesNow(): Promise<boolean | null> {
     shared = {
       at: Date.now(),
       answer: getClientEntitlements()
-        .then((e) => e.plusFeatures)
+        .then((e) => {
+          rememberPlusFeatures(e.plusFeatures);
+          return e.plusFeatures;
+        })
         .catch(() => null),
     };
   }
   return shared.answer;
+}
+
+// The answer as far as it can be known before it comes, for one use only:
+// keeping the place of a lock that may come, so a control does not move when
+// the answer arrives after the first frame (the owner's note 6 of build 80:
+// on opening Pray my rule, the Ambience button and its lock moved). It never
+// draws a lock and never lets a reader in: that is the live answer's alone,
+// so the posture above holds, and a reader who has just subscribed elsewhere
+// meets no lock while the answer loads, only a place kept for one.
+const LAST_KEY = "purify:plusFeatures";
+let last: boolean | null | undefined;
+
+function rememberPlusFeatures(answer: boolean): void {
+  last = answer;
+  try {
+    window.localStorage.setItem(LAST_KEY, answer ? "1" : "0");
+  } catch {
+    /* no storage: kept for this visit only */
+  }
+}
+
+/**
+ * What the Plus answer will be, before it is asked: yes where this build
+ * cannot sell Plus (getClientEntitlements answers OPEN_ENTITLEMENTS there,
+ * every time), otherwise the last answer this device had, or null if it has
+ * never had one.
+ */
+export function expectedPlusFeatures(): boolean | null {
+  if (typeof window === "undefined") return null;
+  if (!plusEnforcedFor(clientSurface())) return true;
+  if (last !== undefined) return last;
+  last = null;
+  try {
+    const kept = window.localStorage.getItem(LAST_KEY);
+    if (kept === "1") last = true;
+    else if (kept === "0") last = false;
+  } catch {
+    /* no storage: nothing kept */
+  }
+  return last;
+}
+
+const noSubscribe = () => () => {};
+
+/**
+ * expectedPlusFeatures for a component: read at its first render on the
+ * client, null on the server and while the page hydrates, so the markup
+ * agrees.
+ */
+export function useExpectedPlusFeatures(): boolean | null {
+  return useSyncExternalStore(noSubscribe, expectedPlusFeatures, () => null);
 }
 
 export function usePlusFeatures(): boolean | null {

@@ -181,4 +181,27 @@ describe("a prayer page", () => {
     // Shown to every reader: nothing about Plus decides whether it is drawn.
     expect(prayWith).not.toMatch(/locked \? null|!locked &&|plus \? </);
   });
+
+  // The owner's note 6 of build 80: on opening Pray my rule the Ambience half
+  // and its lock moved. The lock came with the Plus answer, after the first
+  // frame, and widened the centred row. Its place is kept from the first
+  // frame, from the answer expected (lib/entitlements/usePlusFeatures.ts),
+  // and the lock itself is drawn only on the live answer, so a subscriber
+  // still never meets one while it loads.
+  it("keeps the Plus lock's place from the first frame, and draws the lock only on the answer", () => {
+    const prayWith = code("components/player/PrayWith.tsx");
+    expect(prayWith).toContain("const expectedPlus = useExpectedPlusFeatures();");
+    expect(prayWith).toContain("const locked = plus === false;");
+    expect(prayWith).toContain("const lockPlace = locked || (plus === null && expectedPlus !== true);");
+    expect(prayWith).toMatch(/\{lockPlace \? \(\s*<PlusLock/);
+    expect(prayWith).toContain('locked ? "opacity-70" : "opacity-0"');
+    // Only the live answer names the lock and opens the upgrade sheet.
+    expect(prayWith).toContain('aria-label={locked ? t("prayers.prayWith.ambienceLocked") : undefined}');
+    expect(prayWith).toContain('if (locked) upgrade.open("ambience");');
+    // Each answer is kept where the live one is asked; the expected one is
+    // read once on the client, and is null where the markup is drawn.
+    const hook = code("lib/entitlements/usePlusFeatures.ts");
+    expect(hook).toMatch(/rememberPlusFeatures\(e\.plusFeatures\);\s*return e\.plusFeatures;/);
+    expect(hook).toContain("useSyncExternalStore(noSubscribe, expectedPlusFeatures, () => null)");
+  });
 });
