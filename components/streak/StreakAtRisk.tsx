@@ -4,44 +4,50 @@ import Link from "next/link";
 
 import { useTranslate } from "@/components/i18n/MessagesProvider";
 import { cn } from "@/lib/cn";
+import { useDayOneShown } from "@/lib/onboarding/useDayOne";
+import { todayKey } from "@/lib/rhythm/dayKey";
+import { atRiskShown, ropeWeek } from "@/lib/streak/rope";
 import { useStreak } from "@/lib/streak/useStreak";
-import { StreakFlame } from "./StreakFlame";
+import { PrayerRope } from "./PrayerRope";
 import { keepDayLinks } from "./StreakSheet";
 
 /**
- * From 6 pm, while a streak is going and today is not kept: a red card on
- * Today with the count and the two ways to keep it. It never says the
- * streak will be lost, because a hidden save may catch it; it says what
- * keeps it.
+ * From 6 pm, while a streak is going and today is not kept: the prayer rope
+ * with today's knot softly pulsing, and the two ways to keep it (1.8, after
+ * the owner's pick B of round 5: the rope, with no red and no flame). It was
+ * a red card with a pulsing flame. It never says the streak will be lost,
+ * because a hidden save may catch it; it says what keeps it.
+ *
+ * On Today it waits while the Day 1 card shows (`waitsForDayOne`), as the
+ * rope does (lib/streak/rope.ts). /prayers/today has no Day 1 card, so there
+ * it shows whenever the evening asks.
  */
-export function StreakAtRisk({ className }: { className?: string }) {
+export function StreakAtRisk({ className, waitsForDayOne = false }: { className?: string; waitsForDayOne?: boolean }) {
   const { t, tn } = useTranslate();
   const view = useStreak();
-  if (!view.ready || !view.atRisk) return null;
+  const dayOne = useDayOneShown();
+  if (!atRiskShown(view, waitsForDayOne && dayOne)) return null;
   const links = keepDayLinks();
+  const week = ropeWeek(view.strip, todayKey(), view.keptToday);
   return (
     <section
       aria-labelledby="streak-at-risk"
-      className={cn(
-        "relative overflow-hidden rounded-2xl border border-streak/40 bg-[linear-gradient(135deg,rgb(193_39_45/0.22),rgb(193_39_45/0.06))] p-4",
-        className,
-      )}
+      className={cn("rounded-[17px] border border-paper/12 bg-paper/[0.035] px-3.5 pb-3.5 pt-3", className)}
     >
-      <div className="flex items-center gap-3.5">
-        <span className="streak-pulse inline-flex shrink-0">
-          <StreakFlame size={44} state="pending" />
+      <h2 id="streak-at-risk" className="sr-only">
+        {tn("streak.atRiskTitle", view.current)}
+      </h2>
+      <div className="flex items-center gap-2.5">
+        <span aria-hidden className="shrink-0 font-sans text-[20px] font-bold leading-none tabular-nums text-paper/85">
+          {tn("streak.days", view.current)}
         </span>
-        <div className="min-w-0">
-          <p id="streak-at-risk" role="heading" aria-level={2} className="font-sans text-ui font-bold text-streak">
-            {tn("streak.atRiskTitle", view.current)}
-          </p>
-          <p className="mt-0.5 font-sans text-detail leading-snug text-paper/80">{t("streak.atRiskBody")}</p>
-        </div>
+        <p className="min-w-0 flex-1 font-sans text-detail leading-snug text-paper/60">{t("streak.atRiskBody")}</p>
       </div>
+      <PrayerRope week={week} pulse className="mt-[9px]" />
       <div className="mt-3.5 grid grid-cols-2 gap-2">
         <Link
           href={links.pray}
-          className="inline-flex min-h-11 items-center justify-center rounded-pill bg-crimson px-4 font-sans text-detail font-semibold text-white"
+          className="inline-flex min-h-11 items-center justify-center rounded-pill bg-paper px-4 font-sans text-detail font-semibold text-night transition-colors hover:bg-paper/90"
         >
           {t("streak.pray")}
         </Link>

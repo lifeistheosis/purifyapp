@@ -49,14 +49,17 @@ describe("the phone's tab bar", () => {
     expect(existsSync(join(root, "components/today/MobileTopTabs.tsx"))).toBe(false);
   });
 
-  it("holds the title, then the Premium pill, the streak, search and the bell, and nothing else", () => {
-    // The streak joined the bar beside the pill on the owner's word of
-    // 2026-10-17: "can you put the streak at the top, like right next to
-    // plus? Just added like a fireball and a counter." It is the same on
-    // every tab, so the pill still never moves between them.
+  it("holds the title, then the Premium pill, search and the bell, and nothing else", () => {
+    // The streak rode beside the pill from 1.7.1 (the owner, 2026-10-17: "can
+    // you put the streak at the top, like right next to plus?") until his
+    // pick A of round 15 in 1.8, "Lighter, no streak" (Homebase/boards/
+    // purify-master/r18/choose/15-top-bar.png). It left the one bar on every
+    // tab, so the pill still never moves between them, and it lives on Today
+    // as the prayer rope (components/today/StreakRow.tsx).
     const bar = code(BAR);
     const drawn = [...bar.matchAll(/<([A-Z][A-Za-z]*)[\s/>]/g)].map((m) => m[1]);
-    expect(drawn).toEqual(["MobilePremiumButton", "StreakCounter", "SearchTrigger", "NotificationsButton"]);
+    expect(drawn).toEqual(["MobilePremiumButton", "SearchTrigger", "NotificationsButton"]);
+    for (const gone of ["Streak", "useStreak", "Flame"]) expect(bar.includes(gone), gone).toBe(false);
     expect(bar).toMatch(/<h1\b/);
     // No slot through which one tab can put something else on the right, so
     // what follows the pill is the same width on every tab and it never moves.

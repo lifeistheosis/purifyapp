@@ -6,7 +6,6 @@ import { fitTitle, TITLE_MAX_PX } from "@/lib/ui/titleFit";
 import { MobilePremiumButton } from "@/components/nav/MobilePremiumButton";
 import { NotificationsButton } from "@/components/nav/NotificationsButton";
 import { SearchTrigger } from "@/components/search/SearchTrigger";
-import { StreakCounter } from "@/components/streak/StreakCounter";
 import { useTranslate } from "@/components/i18n/MessagesProvider";
 
 /**
@@ -22,13 +21,14 @@ import { useTranslate } from "@/components/i18n/MessagesProvider";
  * every tab and the pill never moves between them. Support stays a row in
  * Settings and the computer's header keeps its link.
  *
- * The streak rides beside the pill since 1.7.1, the owner, 2026-10-17: "can
- * you put the streak at the top, like right next to plus? Just added like a
- * fireball and a counter." The flame and the count (StreakCounter) follow
- * the pill, so the pill keeps the first place on the right, and the flame is
- * the same on every tab, so nothing moves between them. It costs the name
- * about 40px, so a name too long for what is left steps down in size until
- * it fits (lib/ui/titleFit.ts) rather than being cut.
+ * The streak rode beside the pill from 1.7.1 (the owner, 2026-10-17: "put
+ * the streak at the top, like right next to plus") until 1.8, when he picked
+ * the lighter bar, round 15 A, "Lighter, no streak" (Homebase/boards/
+ * purify-master/r18/choose/15-top-bar.png): the flame and the count left the
+ * bar on every tab, since it is the one bar, and the streak lives on Today as
+ * the prayer rope (components/today/StreakRow.tsx). A name too long for the
+ * room still steps down in size until it fits (lib/ui/titleFit.ts) rather
+ * than being cut.
  *
  * The title is the screen's one h1, set in Lora by the global heading rule.
  * In the apps the bar stays at the top while the page scrolls under it, and
@@ -64,7 +64,7 @@ export function MobileHeader({
 
   // The name is measured at the bar's own size, then drawn as large as the
   // room left for it allows (lib/ui/titleFit.ts): again whenever that room
-  // changes (the streak arriving, a phone turned) or a font lands. Before the
+  // changes (the pill's word arriving, a phone turned) or a font lands. Before the
   // paint, so a screen opened from the tab bar never shows the name cut first.
   useLayoutEffect(() => {
     const h1 = nameRef.current;
@@ -114,7 +114,6 @@ export function MobileHeader({
           <span className="me-0.5 inline-flex">
             <MobilePremiumButton />
           </span>
-          <StreakCounter />
           <SearchTrigger iconSize={24} className="text-paper/80" />
           <NotificationsButton />
         </div>

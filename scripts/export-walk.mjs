@@ -2299,7 +2299,10 @@ await section(31, async () => {
 // Premium pill sat on the left of Today and on the right elsewhere, Support
 // did nothing useful there, and the pill's star was a vibe-coded symbol. One
 // bar now (components/mobile/MobileHeader.tsx): the tab's name, then the
-// pill, search and the bell, the same on all five. This opens each tab on the
+// pill, search and the bell, the same on all five. The streak's flame and
+// count rode between them from 1.7.1 and left in 1.8 (his pick A of round 15,
+// "Lighter, no streak"; the streak is Today's prayer rope now), so the bar
+// holds those three and nothing else. This opens each tab on the
 // narrow Android width and on an iPhone's, in English, Greek and Filipino
 // (Filipino has the longest tab name, "Mga Panalangin"), and measures the
 // bar: the name whole, the pill and the two buttons where they are on every
@@ -2321,8 +2324,8 @@ await section(32, async () => {
         const r = n?.getBoundingClientRect();
         return r ? { left: r.left, right: r.right, top: r.top, bottom: r.bottom, width: r.width, height: r.height } : null;
       };
-      // The pill's 44px box first; search and the bell last. The streak
-      // stands between them since 1.7.1 (StreakCounter).
+      // The pill's 44px box first, then search and the bell, and nothing
+      // else: the streak left the bar in 1.8 (round 15 A).
       const kids = [...cluster.children];
       const [wrap, search, bell] = [kids[0], kids[kids.length - 2], kids[kids.length - 1]];
       const pill = wrap?.firstElementChild ?? null;
@@ -2341,6 +2344,9 @@ await section(32, async () => {
         searchSays: search?.getAttribute("aria-label") ?? "",
         support: !!bar.querySelector("a[href^='/support']"),
         star: !!pill && [...pill.querySelectorAll("*")].some((n) => getComputedStyle(n).clipPath !== "none" || n.tagName === "svg"),
+        kids: kids.length,
+        // The streak's count, by the words its button was named with.
+        streak: [...cluster.querySelectorAll("[aria-label]")].some((n) => /\bstreak\b|\d+-day/i.test(n.getAttribute("aria-label") ?? "")),
         outside,
         vw: innerWidth,
       };
@@ -2370,6 +2376,10 @@ await section(32, async () => {
       must(seen.every((s) => s.got && s.got.searchSays === w["search.open"] && s.got.search && s.got.bell && s.got.search.width >= 44 && s.got.search.height >= 44 && s.got.bell.width >= 44 && s.got.bell.height >= 44 && s.got.pill && s.got.pill.height >= 44), `${where}: search, the bell and the pill's box are 44px on every tab`);
       must(seen.every((s) => s.got && s.got.painted && near(s.got.painted.height, seen[0].got.painted?.height, 0.5)), `${where}: the pill is one size on every tab (${seen.map((s) => Math.round(s.got?.painted?.height ?? -1)).join(", ")} px tall)`);
       must(seen.every((s) => s.got && !s.got.support && !s.got.star), `${where}: no Support in the bar and no star in the pill`);
+      must(
+        seen.every((s) => s.got && s.got.kids === 3 && !s.got.streak),
+        `${where}: the pill, search and the bell, and no streak in the bar (round 15 A; ${seen.map((s) => `${s.to} ${s.got?.kids ?? "?"}${s.got?.streak ? " with a streak" : ""}`).join(", ")})`,
+      );
       must(seen.every((s) => s.got && s.got.outside === 0), `${where}: and all of it inside the screen${seen.some((s) => s.got?.outside) ? ` (${seen.filter((s) => s.got?.outside).map((s) => s.to).join(", ")} reach past it)` : ""}`);
       if (size.width === 360 && code === "fil") {
         await go(page, "/prayers/");

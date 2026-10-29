@@ -4417,6 +4417,119 @@ html[data-reading-mode="parchment"] .name-color-jordan:not(.dark-island *) { bac
  animation: none;
 }
 
+/* ── The prayer rope (components/streak/PrayerRope.tsx, 1.8) ─────────────
+   The streak on Today as the owner's pick B of round 5: a knot a day, the
+   days kept filled, today's knot lit with a glowing white once it is kept,
+   and the count glowing with it. From 6 pm, while a going streak's day is
+   not yet kept, today's open knot breathes (StreakAtRisk): a halo's opacity
+   and scale, nothing else. No red and no flame. White glows on the dark
+   palettes; on Parchment the ink's soft shade, as the Premium pill's is. */
+.rope-knot-lit {
+ box-shadow: 0 0 12px rgb(255 255 255 / 0.85), 0 0 26px rgb(255 255 255 / 0.3);
+}
+.rope-count-lit {
+ text-shadow: 0 0 12px rgb(255 255 255 / 0.45);
+}
+html[data-reading-mode="parchment"] .rope-knot-lit {
+ box-shadow: 0 0 0 3px rgb(43 35 23 / 0.14);
+}
+html[data-reading-mode="parchment"] .rope-count-lit {
+ text-shadow: none;
+}
+.rope-knot-pulse {
+ position: relative;
+}
+.rope-knot-pulse::after {
+ content: "";
+ position: absolute;
+ inset: -7px;
+ border-radius: 9999px;
+ background: radial-gradient(closest-side, rgb(255 255 255 / 0.55), rgb(255 255 255 / 0));
+ pointer-events: none;
+ animation: rope-pulse 2400ms ease-in-out infinite;
+}
+html[data-reading-mode="parchment"] .rope-knot-pulse::after {
+ background: radial-gradient(closest-side, rgb(43 35 23 / 0.28), rgb(43 35 23 / 0));
+}
+@keyframes rope-pulse {
+ 0%, 100% { opacity: 0.2; transform: scale(0.8); }
+ 50% { opacity: 0.9; transform: scale(1.2); }
+}
+:where([data-motion="reduce"]) .rope-knot-pulse::after {
+ animation: none;
+ opacity: 0.6;
+}
+
+/* ── The Nativity Fast's star on Today (1.8) ─────────────────────────────
+   The owner's pick C of round 9, "The star rising", animated at his word
+   (components/today/NativityStarCard.tsx; the motion as drawn in
+   Homebase/boards/purify-master/r18/choose/9c-nativity-star-animated.mp4).
+   On the first view of the reader's local day the card carries .nat-rise
+   (lib/reading/nativityStar.ts): the star rises from the horizon to the
+   day's height in two seconds on the house ease, its halo growing as it
+   clears the edge, the glow and the edge of the horizon brightening under
+   it. After that, or without it, the halo breathes and the small stars
+   twinkle, each on its own time (its duration and delay are set on it).
+   Transform and opacity only, so every part runs on the compositor; the
+   horizon's glow is a gradient and nothing animates a blur. Each animation
+   that moves fills backwards, so the star is handed back to transform: none.
+   Under the motion switch it is the still picture: the star up, at rest. */
+.nat-tw {
+ animation-name: nat-tw;
+ animation-iteration-count: infinite;
+ animation-timing-function: ease-in-out;
+}
+@keyframes nat-tw {
+ 0%, 100% { opacity: var(--o); }
+ 50% { opacity: calc(var(--o) * 0.25); }
+}
+.nat-halo {
+ opacity: 0.75;
+ animation: nat-breathe 4200ms ease-in-out infinite;
+}
+@keyframes nat-breathe {
+ 0%, 100% { opacity: 0.75; transform: scale(1); }
+ 50% { opacity: 1; transform: scale(1.18); }
+}
+.nat-rise .nat-star {
+ animation: nat-rise 2000ms var(--ease-house) 400ms backwards;
+}
+@keyframes nat-rise {
+ from { opacity: 0; transform: translateY(var(--nat-from)); }
+ 25% { opacity: 1; }
+ to { opacity: 1; transform: translateY(0); }
+}
+.nat-rise .nat-halo {
+ animation: nat-halo 2000ms ease-out 400ms backwards, nat-breathe 4200ms ease-in-out 2400ms infinite;
+}
+@keyframes nat-halo {
+ from { opacity: 0; transform: scale(0.4); }
+ 70% { opacity: 1; transform: scale(1.1); }
+ to { opacity: 0.75; transform: scale(1); }
+}
+.nat-rise .nat-dawn {
+ animation: nat-dawn 2400ms ease-out 300ms backwards;
+}
+@keyframes nat-dawn {
+ from { opacity: 0.25; }
+ to { opacity: 1; }
+}
+.nat-rise .nat-edge {
+ animation: nat-edge 2400ms ease-out 300ms backwards;
+}
+@keyframes nat-edge {
+ from { opacity: 0.35; }
+ to { opacity: 1; }
+}
+:where([data-motion="reduce"]) .nat-tw,
+:where([data-motion="reduce"]) .nat-halo,
+:where([data-motion="reduce"]) .nat-rise .nat-star,
+:where([data-motion="reduce"]) .nat-rise .nat-halo,
+:where([data-motion="reduce"]) .nat-rise .nat-dawn,
+:where([data-motion="reduce"]) .nat-rise .nat-edge {
+ animation: none;
+}
+
 /* ── The apps select nothing by themselves (1.5.2) ────────────────────
    The owner, 2026-10-05, of holding the screen in the app and moving: "it
    acts as if you're going to copy the whole screen and the screen turns
