@@ -72,7 +72,7 @@ export type Look =
 export const LOOKS: readonly Look[] = [
   { id: "light", kind: "light", nameKey: "picture.look.light" },
   { id: "horizon", kind: "horizon", nameKey: "picture.look.horizon" },
-  { id: "christ", kind: "icon", src: "/sections/prayers.v3.jpg", focus: [0.5, 0.3], nameKey: "picture.look.christ" },
+  { id: "christ", kind: "icon", src: "/sections/prayers.v4.jpg", focus: [0.5, 0.3], nameKey: "picture.look.christ" },
   { id: "trinity", kind: "icon", src: "/discover/tiles/theology.v2.webp", focus: [0.5, 0.4], nameKey: "picture.look.trinity" },
   { id: "plain", kind: "plain", nameKey: "picture.look.plain" },
 ];

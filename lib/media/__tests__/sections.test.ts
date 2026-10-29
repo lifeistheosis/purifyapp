@@ -132,12 +132,10 @@ describe("section media registry", () => {
     // Files a screen outside this registry draws, so they stay when the
     // registry moves on. prayers.v2.jpg was kept for the onboarding stand-in
     // until that moved to prayers.v3.jpg (1.8), and then left the disk.
-    // prayers.v3.jpg is kept the same way now that Prayers wears v4: two
-    // places that came into release/1.8 beside this change still name it, the
-    // Pray card on Today and the verse picture's Christ look
-    // (lib/share/verseCard.ts). Take it out of this list when they move to v4
-    // and the file goes.
-    const keptForOthers: string[] = ["prayers.v3.jpg"];
+    // prayers.v3.jpg was kept the same way for a night, while the verse
+    // picture's Christ look (lib/share/verseCard.ts) still named it, and left
+    // the disk when that moved to v4. None today.
+    const keptForOthers: string[] = [];
     const referenced = new Set([
       ...Object.values(SECTION_MEDIA).map((m) => m.src.replace("/sections/", "")),
       ...keptForOthers,

@@ -79,11 +79,11 @@ brought down to 1290 by 1359, nothing enlarged. JPEG (mozjpeg) at quality
 hair, the mouth and the edge of the halo fall on the same lines; the colour is
 the new photograph's own and was not matched to the old. It has no white at
 any edge (`node scripts/check-picture-edges.mjs sections`). The onboarding
-stand-in and Start here moved to it with Prayers. `prayers.v3.jpg` stays in
-`public/sections/` for now, only because two places that came into
-release/1.8 beside this change still name it: the Pray card on Today and the
-verse picture's Christ look (`lib/share/verseCard.ts`). It goes when they move
-to v4.
+stand-in and Start here moved to it with Prayers. `prayers.v3.jpg` stayed in
+`public/sections/` until the two places that came into release/1.8 beside
+this change were moved too: the Pray card on Today already drew Prayers' own
+picture, and the verse picture's Christ look (`lib/share/verseCard.ts`) was
+pointed at v4. Then v3 left the disk (2026-10-29).
 
 A third photograph of the icon on Commons, larger still, is not used. It is
 listed under "Rejected" below, so the next run sees it.

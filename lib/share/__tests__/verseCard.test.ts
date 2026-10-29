@@ -143,7 +143,7 @@ describe("the looks and the sizes", () => {
 
   it("takes the icons from the bundle, so the picture is made with no network", () => {
     const icons = LOOKS.filter((l) => l.kind === "icon");
-    expect(icons.map((l) => (l.kind === "icon" ? l.src : ""))).toEqual(["/sections/prayers.v3.jpg", "/discover/tiles/theology.v2.webp"]);
+    expect(icons.map((l) => (l.kind === "icon" ? l.src : ""))).toEqual(["/sections/prayers.v4.jpg", "/discover/tiles/theology.v2.webp"]);
     for (const look of icons) if (look.kind === "icon") expect(fs.existsSync(path.join("public", look.src)), look.src).toBe(true);
     expect(fs.existsSync("public/purify-cross-mark.png")).toBe(true);
   });
