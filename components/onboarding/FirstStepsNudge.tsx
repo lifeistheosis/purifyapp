@@ -1,19 +1,13 @@
 "use client";
 
-import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useTranslate } from "@/components/i18n/MessagesProvider";
 import { Close } from "@/components/ui/icons/Close";
 import { CARD_BG } from "@/components/ui/Graphite";
-import {
-  ONBOARDING_EVENT,
-  dismissNudge,
-  isNudgeDismissed,
-  isNudgeEligible,
-  wasOnboardedAgain,
-} from "@/lib/onboarding/state";
+import { dismissNudge, wasOnboardedAgain } from "@/lib/onboarding/state";
 import { countDayOne } from "@/lib/onboarding/count";
 import { dayOneFor } from "@/lib/onboarding/space";
+import { useDayOneShown } from "@/lib/onboarding/useDayOne";
 import { useSpace } from "@/lib/onboarding/useSpace";
 
 /**
@@ -22,31 +16,28 @@ import { useSpace } from "@/lib/onboarding/useSpace";
  * overlay has gone. It rises in and a band of light crosses it once, so the
  * eye lands on it after the slate. One suggestion, dismissible, gone once
  * taken.
+ *
+ * While it shows, it stands alone under the greeting: the streak's rope waits
+ * until it is taken or dismissed (1.8, the owner's pick B of round 6, "Day 1
+ * alone"). Both read whether it is up from lib/onboarding/useDayOne.ts, so
+ * they change in the same render. Its top margin is its siblings' (mt-4): it
+ * carried mb-4 and none on top, and touched the card above it (his
+ * screenshot of 2026-10-28, "the cards are touching").
  */
 export function FirstStepsNudge() {
   const { t } = useTranslate();
   const { level, intent, background } = useSpace();
-  const [ready, setReady] = useState(false);
-  // A reader who was back when they answered is not on their first day: the
-  // same card, called their next step.
-  const [again, setAgain] = useState(false);
-
-  useEffect(() => {
-    const check = () => {
-      setReady(isNudgeEligible() && !isNudgeDismissed());
-      setAgain(wasOnboardedAgain());
-    };
-    check();
-    window.addEventListener(ONBOARDING_EVENT, check);
-    return () => window.removeEventListener(ONBOARDING_EVENT, check);
-  }, []);
+  const ready = useDayOneShown();
 
   if (!ready) return null;
+  // A reader who was back when they answered is not on their first day: the
+  // same card, called their next step.
+  const again = wasOnboardedAgain();
   const step = dayOneFor(level, intent);
 
   return (
     <div
-      className="ob-day1-in ob-sheen lm-card relative mb-4 overflow-hidden rounded-[22px] p-5 ring-1 ring-inset ring-premium/30 shadow-[0_18px_40px_-18px_rgba(0,0,0,0.6)]"
+      className="ob-day1-in ob-sheen lm-card relative mt-4 overflow-hidden rounded-[22px] p-5 ring-1 ring-inset ring-premium/30 shadow-[0_18px_40px_-18px_rgba(0,0,0,0.6)]"
       style={CARD_BG}
     >
       <div className="flex items-start gap-3">

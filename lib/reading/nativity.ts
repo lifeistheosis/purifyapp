@@ -32,6 +32,19 @@ export function nativityFastAround(now: Date, style: "new" | "old"): [number, nu
   return today <= last[1] ? last : fastOf(now.getFullYear());
 }
 
+/**
+ * The fast's own day, 1 on its first day and 40 on its last (Christmas Eve on
+ * the reader's calendar), while it runs; null on every other day. The
+ * Nativity path has a day for each (lib/reading/paths.ts), so this is also the
+ * path's day for today: the Nativity Fast's card on Today reads both from it
+ * (components/today/NativityStarCard.tsx).
+ */
+export function nativityFastDay(now: Date, style: "new" | "old"): number | null {
+  const [first, last] = nativityFastAround(now, style);
+  const today = dayNumber(now);
+  return today >= first && today <= last ? today - first + 1 : null;
+}
+
 export type NativityRow = { kind: "invite" } | { kind: "day"; n: number; of: number } | null;
 
 /**

@@ -3,80 +3,83 @@
 import { useState } from "react";
 
 import { useTranslate } from "@/components/i18n/MessagesProvider";
-import { cn } from "@/lib/cn";
-import { useStreak } from "@/lib/streak/useStreak";
-import { StreakFlame } from "@/components/streak/StreakFlame";
+import { PrayerRope } from "@/components/streak/PrayerRope";
 import { StreakSheet } from "@/components/streak/StreakSheet";
+import { cn } from "@/lib/cn";
+import { useDayOneShown } from "@/lib/onboarding/useDayOne";
+import { todayKey } from "@/lib/rhythm/dayKey";
+import { ropeRow, ropeWeek } from "@/lib/streak/rope";
+import { useStreak } from "@/lib/streak/useStreak";
 
 /**
- * The streak on Today, as a row under the greeting: the flame, the count and
- * one sentence that says what to do. A tap opens the streak sheet.
+ * The streak on Today, as the prayer rope (1.8): the owner's pick B of round
+ * 5 (Homebase/boards/purify-master/r18/choose/5b-streak-new.png). "N days"
+ * and one line, then this week's seven knots, Monday first (PrayerRope). A
+ * tap opens the streak's sheet, as the row always did.
  *
- * Until 1.7 the streak was a flame and a number in Today's top bar (the
- * owner's call of 2026-10-02, a red streak on Today). On 2026-10-07 he marked
- * the layout row that turns it into a row with a sentence, the way Hallow's
- * Me tab opens, and a top bar of three things; on 2026-10-15 he picked this
- * Today ("B"). The streak stays on Today, red once it is going.
+ * It was the red flame, the count and a sentence (1.7, the owner's pick of
+ * 2026-10-15), and the flame and count rode in the top bar too; the bar is
+ * lighter now (round 15 A) and the streak lives here alone, with no flame and
+ * no red. The count glows white once today is kept.
  *
- * Every sentence is one the streak sheet already says (`streak.*`), so the
- * row adds no words. From 6 pm an unkept, going streak has its own red card
- * with the two ways to keep it (StreakAtRisk); the row gives way to it rather
- * than say the same thing twice.
+ * It waits while the Day 1 card shows (his pick B of round 6, "Day 1 alone")
+ * and comes back once Day 1 is taken or dismissed; from 6 pm, an unkept day of
+ * a going streak, the evening card stands in its place (StreakAtRisk). Both
+ * rules are lib/streak/rope.ts, ropeRow.
  */
 export function StreakRow({ className }: { className?: string }) {
   const { t, tn } = useTranslate();
   const view = useStreak();
+  const dayOne = useDayOneShown();
   const [open, setOpen] = useState(false);
-  // The row's height, held before the streak is read, so the verse under it
-  // does not jump when it lands.
-  if (!view.ready) return <div aria-hidden className={cn("h-[58px]", className)} />;
-  if (view.atRisk) return null;
-  const state = view.current === 0 ? "out" : view.keptToday ? "lit" : "pending";
-  const line =
-    view.current === 0 ? t("streak.start") : view.keptToday ? t("streak.keptToday") : t("streak.notYet");
+  const place = ropeRow(view, dayOne);
+  if (place === "none") return null;
+  // The rope's height, held before the streak is read, so the cards under it
+  // do not jump when it lands.
+  if (place === "hold") return <div aria-hidden className={cn("h-[92px]", className)} />;
+  const line = view.keptToday ? t("streak.rope.kept") : t("streak.rope.keep");
+  const week = ropeWeek(view.strip, todayKey(), view.keptToday);
   return (
     <>
       <button
         type="button"
         onClick={() => setOpen(true)}
         aria-label={`${tn("streak.count", view.current)}. ${line}`}
+        aria-haspopup="dialog"
         className={cn(
-          "tap-press flex min-h-[58px] w-full items-center gap-3 rounded-[17px] border px-3.5 py-2.5 text-left transition-colors",
-          view.keptToday
-            ? "border-streak/30 bg-streak/[0.07] hover:bg-streak/[0.1]"
-            : "border-paper/10 bg-paper/[0.03] hover:bg-paper/[0.06]",
+          "tap-press flex w-full flex-col gap-[9px] rounded-[17px] border border-paper/12 bg-paper/[0.035] px-3.5 pb-2.5 pt-3 text-left transition-colors hover:bg-paper/[0.06]",
           className,
         )}
       >
-        <span aria-hidden className={cn("inline-flex shrink-0", state === "out" && "text-paper")}>
-          <StreakFlame size={26} state={state} />
+        <span className="flex w-full items-center gap-2.5">
+          <span
+            aria-hidden
+            className={cn(
+              "shrink-0 font-sans text-[20px] font-bold leading-none tabular-nums",
+              view.keptToday ? "rope-count-lit text-paper" : view.current > 0 ? "text-paper/85" : "text-paper/50",
+            )}
+          >
+            {tn("streak.days", view.current)}
+          </span>
+          <span aria-hidden className="min-w-0 flex-1 font-sans text-detail leading-snug text-paper/60">
+            {line}
+          </span>
+          <svg
+            aria-hidden
+            width={16}
+            height={16}
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth={2.2}
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            className="shrink-0 text-paper/40 rtl:-scale-x-100"
+          >
+            <path d="m9 6 6 6-6 6" />
+          </svg>
         </span>
-        <span
-          aria-hidden
-          className={cn(
-            "shrink-0 font-sans text-[22px] font-bold leading-none tabular-nums",
-            view.current > 0 ? "text-streak" : "text-paper/45",
-          )}
-        >
-          {view.current}
-        </span>
-        <span aria-hidden className="min-w-0 flex-1 font-sans text-detail leading-snug text-paper/80">
-          {line}
-        </span>
-        <svg
-          aria-hidden
-          width={16}
-          height={16}
-          viewBox="0 0 24 24"
-          fill="none"
-          stroke="currentColor"
-          strokeWidth={2.2}
-          strokeLinecap="round"
-          strokeLinejoin="round"
-          className="shrink-0 text-paper/40"
-        >
-          <path d="m9 6 6 6-6 6" />
-        </svg>
+        <PrayerRope week={week} className="w-full" />
       </button>
       <StreakSheet open={open} onClose={() => setOpen(false)} />
     </>

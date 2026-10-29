@@ -4,8 +4,9 @@ import { VerseOfDayCard } from "./VerseOfDayCard";
 import { PrayRail } from "./PrayNowCard";
 import { ChurchTodayRail } from "./ChurchTodayRail";
 import { RememberCard } from "./RememberCard";
-import { GreetingHeader } from "./GreetingHeader";
+import { TodayGreeting } from "./TodayGreeting";
 import { StreakRow } from "./StreakRow";
+import { NativityFastCard } from "./NativityFastCard";
 import { FirstStepsNudge } from "@/components/onboarding/FirstStepsNudge";
 import { StreakAtRisk } from "@/components/streak/StreakAtRisk";
 import { CatechismCard } from "@/components/catechism/CatechismCard";
@@ -61,14 +62,22 @@ export function TodayMobileV3() {
             so this cascade correctly starts at zero rather than waiting on a
             route fade that never runs. */}
         <div className="cascade cascade-tight cascade-rise px-5 pt-3 pb-8 md:mx-auto md:w-full md:max-w-[760px] lg:max-w-[880px]">
-          <GreetingHeader />
+          {/* The greeting, one design for each type of reader (1.8, the
+              owner's round 14, transitionary). */}
+          <TodayGreeting />
 
-          {/* The streak, as a row with one sentence. From 6 pm, a streak going
-              and today not kept, the red card below takes its place. */}
+          {/* The streak, as the prayer rope (1.8, his pick B of round 5). From
+              6 pm, a streak going and today not kept, the rope's evening card
+              takes its place. Both wait while the Day 1 card shows (his pick B
+              of round 6, "Day 1 alone"). */}
           <StreakRow className="mt-4" />
-          <StreakAtRisk className="mt-4" />
+          <StreakAtRisk className="mt-4" waitsForDayOne />
 
           <FirstStepsNudge />
+
+          {/* The Nativity Fast's day (1.8, his pick C of round 9): during the
+              fast only, under the streak, its star a little higher each day. */}
+          <NativityFastCard className="mt-4" />
 
           {/* Your name day (1.8): the patron's icon, name and words, on that
               day only, above the day's word because it is the reader's. */}
