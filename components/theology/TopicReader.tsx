@@ -6,6 +6,7 @@ import type {
   Quotation,
 } from "@/lib/theology/load";
 import { saintsCitedIn } from "@/lib/theology/load";
+import { getTopicMeta } from "@/lib/theology/topics";
 import { getSaint } from "@/lib/saints/saints";
 import { AddToFlorilegium } from "@/components/florilegium/AddToFlorilegium";
 import { SourceLine } from "@/components/citations/SourceLine";
@@ -164,7 +165,9 @@ export function TopicReader({ body }: { body: TheologyBody }) {
                   href={`/theology/${slug}`}
                   className="inline-block rounded-pill border border-paper/15 px-3 py-1.5 font-sans text-detail text-paper/85 hover:border-paper/40 hover:text-paper transition-colors"
                 >
-                  {slug.replace(/-/g, " ")}
+                  {/* The study's own title. This printed the slug ("council
+                      of florence") until build 80. */}
+                  {getTopicMeta(slug)?.title ?? slug.replace(/-/g, " ")}
                 </Link>
               </li>
             ))}
