@@ -13,7 +13,7 @@ import { useAmbience } from "@/lib/ambience/player";
 import { openAmbience } from "@/lib/ambience/sheet";
 import { cn } from "@/lib/cn";
 
-import { optionClass } from "./Transport";
+import { OptionWord, optionClass } from "./Transport";
 
 /** A sound's drawing: the sheet's tiles and the mini player. */
 export function AmbienceIcon({ icon, size }: { icon: AmbienceTrack["icon"]; size: number }) {
@@ -61,7 +61,7 @@ export function AmbienceButton({
     return (
       <button type="button" onClick={open} aria-haspopup="dialog" aria-label={label} className={cn(optionClass(lit), className)}>
         {track ? <AmbienceIcon icon={track.icon} size={21} /> : <Sound size={21} />}
-        <span>{t("ambience.title")}</span>
+        <OptionWord>{t("ambience.title")}</OptionWord>
       </button>
     );
   }

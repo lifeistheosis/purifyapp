@@ -21,9 +21,9 @@ import { Headphones } from "@/components/ui/icons/Headphones";
 import { Pause } from "@/components/ui/icons/Pause";
 import { Play } from "@/components/ui/icons/Play";
 import { nextChapter } from "@/lib/bible/books";
-import { hasReadAloud, readAloudManifest, readAloudSrc, useHasReadAloud, verseAt, verseCaptions, type ReadAloudManifest } from "@/lib/readAloud/chapters";
-import { readAloudCover } from "@/lib/readAloud/covers";
-import { currentTimeNow, pause, play, setLoopMode, setTrack, usePersistentAudio } from "@/lib/prayers/persistentAudioStore";
+import { hasReadAloud, readAloudManifest, readAloudSrc, useHasReadAloud, verseAt, type ReadAloudManifest } from "@/lib/readAloud/chapters";
+import { startReading } from "@/lib/readAloud/play";
+import { currentTimeNow, pause, play, usePersistentAudio } from "@/lib/prayers/persistentAudioStore";
 import { cn } from "@/lib/cn";
 
 import { ReaderPill } from "./ReaderPill";
@@ -32,31 +32,6 @@ import { ReaderPill } from "./ReaderPill";
 const HANDS_OFF_MS = 4000;
 /** The chapter a reading that just ended rolls on into. */
 const NEXT_KEY = "purify:readAloud.next";
-
-/** Load a chapter's reading into the player and play it. */
-async function startReading(book: string, chapter: number, title: string, t: (key: string) => string): Promise<void> {
-  const cover = readAloudCover(book);
-  // Ask for the picture now, while the timings load, so Now Playing and the
-  // lock screen have it when they open. In the apps it is the website's.
-  if (typeof Image !== "undefined") {
-    const warm = new Image();
-    warm.decoding = "async";
-    warm.src = cover.src;
-  }
-  const manifest = await readAloudManifest(book, chapter);
-  setTrack(readAloudSrc(book, chapter), {
-    title,
-    // The saint or prophet on the cover, "St John the Theologian"; the plain
-    // "Read aloud" where the cover is the manuscript plate.
-    artist: cover.nameKey ? t(cover.nameKey) : t("readAloud.by"),
-    art: cover.src,
-    artFallback: cover.fallback,
-    artSize: cover.size ?? undefined,
-    captions: manifest ? verseCaptions(manifest) : undefined,
-  });
-  setLoopMode("off");
-  play();
-}
 
 function useThisChapter(book: string, chapter: number) {
   const audio = usePersistentAudio();

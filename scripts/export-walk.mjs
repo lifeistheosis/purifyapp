@@ -2799,6 +2799,14 @@ await section(34, async () => {
 // is also the app with no signal: Now Playing must show the bundled plate in
 // the cover's place, never a broken picture. lib/readAloud/__tests__/
 // covers.test.ts holds the map and the files.
+//
+// From 1.8's second round (the owner's "add everything we left out" of
+// 2026-10-28), the player's controls round 8 A drew and the first build left
+// out: previous and next (the chapters either side that have a recording),
+// Speed (the reader's own, kept on the device, and never on a chant), Read
+// (the text being played) and ••• (Save for offline, the sleep timer,
+// Ambience and Share). lib/player/__tests__/steps.test.ts and speed.test.ts
+// hold the rules; a chant cannot play in this walk, which has no network.
 await section(35, async () => {
   console.log("\n35. The read-aloud covers and the ambience sheet");
   const en = JSON.parse(fs.readFileSync(path.resolve("lib/i18n/messages/en.json"), "utf8"));
@@ -2871,6 +2879,88 @@ await section(35, async () => {
   must(Boolean(cover) && cover.ok && /\/sections\/bible\.jpg$/.test(cover.src ?? ""), `with no signal, Now Playing shows the plate in the cover's place (${cover ? cover.src : "no Now Playing"})`);
   must(Boolean(cover) && cover.text.includes(en["readAloud.cover.john"]), `and names ${en["readAloud.cover.john"]} under the title`);
   await page.screenshot({ path: path.join(SHOTS, "now-playing-cover-offline-390.png") });
+
+  // The player's controls, as round 8 A drew them.
+  const fill = (s, vars) => Object.entries(vars).reduce((out, [k, v]) => out.replaceAll(`{${k}}`, String(v)), s);
+  const NP = `[role=dialog][aria-label="${en["prayers.nowPlaying"]}"]`;
+  const player = () =>
+    page.evaluate((w) => {
+      const d = [...document.querySelectorAll("[role=dialog]")].find((x) => x.getAttribute("aria-label") === w.np);
+      if (!d) return null;
+      const labels = [...d.querySelectorAll("button, a")].map((b) => b.getAttribute("aria-label") ?? "");
+      const read = [...d.querySelectorAll("a")].find((a) => (a.getAttribute("aria-label") ?? "").startsWith(`${w.read}: `));
+      const play = [...d.querySelectorAll("button")].find((b) => b.getAttribute("aria-label") === w.pause || b.getAttribute("aria-label") === w.play);
+      const ends = (name) => {
+        const b = [...d.querySelectorAll("button")].find((x) => x.getAttribute("aria-label") === name);
+        return b ? b.getBoundingClientRect() : null;
+      };
+      const prev = ends(w.previous);
+      const next = ends(w.next);
+      const p = play?.getBoundingClientRect();
+      return {
+        title: d.querySelector("h2")?.textContent?.trim() ?? "",
+        labels,
+        speed: labels.find((l) => l.startsWith(`${w.speed}: `)) ?? null,
+        read: read ? read.getAttribute("href") : null,
+        more: labels.includes(w.more),
+        // Previous and next at the two ends of the controls, Play between them.
+        row: prev && next && p ? { prev: Math.round(prev.left), play: Math.round((p.left + p.right) / 2), next: Math.round(next.right), vw: innerWidth, sameLine: Math.abs(prev.top + prev.height / 2 - (p.top + p.height / 2)) < 2 } : null,
+      };
+    }, w);
+  const w = {
+    np: en["prayers.nowPlaying"],
+    read: en["player.read"],
+    speed: en["player.speed"],
+    more: en["bible.moreActions"],
+    play: en["prayers.play"],
+    pause: en["prayers.pause"],
+    previous: fill(en["bible.previousTargetAria"], { book: "Luke", chapter: 24 }),
+    next: fill(en["bible.nextTargetAria"], { book: "John", chapter: 2 }),
+  };
+  const before = await player();
+  must(Boolean(before) && before.labels.includes(w.previous) && before.labels.includes(w.next), `previous and next step to the chapters either side that have a recording (${before ? before.labels.filter((l) => /:/.test(l)).join(", ") : "no Now Playing"})`);
+  must(Boolean(before?.row) && before.row.sameLine && before.row.prev < before.row.play && before.row.play < before.row.next && Math.abs(before.row.play - before.row.vw / 2) <= 2, `at the two ends of the controls, Play in the middle (${before?.row ? `${before.row.prev}, ${before.row.play}, ${before.row.next} of ${before.row.vw}` : "not drawn"})`);
+  must(before?.speed === `${w.speed}: 1×`, `Speed is among the choices, at 1 until the reader chooses (${before?.speed ?? "no Speed"})`);
+  must(Boolean(before?.read) && /^\/bible\/john\/1\/?(#v\d+)?$/.test(before.read), `Read opens the chapter being read (${before?.read ?? "no Read"})`);
+  must(Boolean(before?.more), "••• stands in the top bar");
+  await page.screenshot({ path: path.join(SHOTS, "now-playing-controls-390.png") });
+
+  // Speed goes up a step at a tap, and is kept on the device.
+  await tap(page.locator(`${NP} button[aria-label^="${w.speed}: "]`).first());
+  await page.waitForTimeout(400);
+  const faster = await player();
+  const kept = await page.evaluate(() => window.localStorage.getItem("purify:player.speed"));
+  must(faster?.speed === `${w.speed}: 1.25×` && kept === "1.25", `a tap on Speed reads at 1.25, kept on the device (${faster?.speed ?? "no Speed"}, stored ${kept})`);
+
+  // ••• holds Save for offline, the sleep timer, Ambience and Share.
+  await tap(page.locator(`${NP} button[aria-label="${w.more}"]`).first());
+  await page.waitForTimeout(900);
+  const menu = await page.evaluate((title) => {
+    const d = [...document.querySelectorAll("[role=dialog]")].find((x) => x.getAttribute("aria-label") === title);
+    return d ? [...d.querySelectorAll("button")].map((b) => (b.innerText ?? "").replace(/\s+/g, " ").trim()).filter(Boolean) : null;
+  }, "John 1");
+  const rows = [fill(en["player.offline.save"], { book: "John" }), en["player.sleep"], en["ambience.title"], en["common.share"]];
+  must(Boolean(menu) && rows.every((r) => menu.some((t) => t.startsWith(r))), `••• opens a sheet over the player: Save for offline, the sleep timer, Ambience and Share (${menu ? menu.join(" | ") : "no sheet"})`);
+  await page.screenshot({ path: path.join(SHOTS, "now-playing-more-390.png") });
+  await page.keyboard.press("Escape");
+  await page.waitForTimeout(700);
+  must(Boolean(await player()), "Escape puts ••• away and leaves the player open");
+
+  // Next: John 2, at the reader's speed, and from there back to John 1.
+  await tap(page.locator(`${NP} button[aria-label="${w.next}"]`).first());
+  await page.waitForFunction((np) => {
+    const d = [...document.querySelectorAll("[role=dialog]")].find((x) => x.getAttribute("aria-label") === np);
+    return d?.querySelector("h2")?.textContent?.trim() === "John 2";
+  }, w.np, { timeout: 8000 }).catch(() => {});
+  const two = await player();
+  must(two?.title === "John 2" && two.speed === `${w.speed}: 1.25×` && two.labels.includes(fill(en["bible.previousTargetAria"], { book: "John", chapter: 1 })), `next plays John 2, at the speed kept (${two ? `${two.title}, ${two.speed}` : "no Now Playing"})`);
+
+  // Read: the player goes, and the chapter being read opens.
+  await tap(page.locator(`${NP} a[aria-label^="${w.read}: "]`).first());
+  await page.waitForFunction(() => location.pathname === "/bible/john/2/", null, { timeout: 15000 }).catch(() => {});
+  await page.waitForTimeout(900);
+  const after = await page.evaluate((np) => ({ path: location.pathname, open: [...document.querySelectorAll("[role=dialog]")].some((x) => x.getAttribute("aria-label") === np) }), w.np);
+  must(after.path === "/bible/john/2/" && !after.open, `Read closes the player and opens John 2 (${after.path}${after.open ? ", the player still open" : ""})`);
   must(errors.length === 0, `no page errors${errors.length ? ": " + errors.slice(0, 2).join(" | ") : ""}`);
   await ctx.close();
 });

@@ -3,7 +3,7 @@ import path from "node:path";
 import { describe, expect, it } from "vitest";
 
 import available from "@/data/readAloud/index.json";
-import { READ_ALOUD_RECORDINGS, bookOfSrc, hasReadAloud, readAloudSrc, verseAt, type ReadAloudManifest } from "@/lib/readAloud/chapters";
+import { READ_ALOUD_RECORDINGS, bookOfSrc, hasReadAloud, readAloudSrc, readingOfSrc, verseAt, type ReadAloudManifest } from "@/lib/readAloud/chapters";
 
 describe("read-aloud", () => {
   const m: ReadAloudManifest = {
@@ -43,6 +43,13 @@ describe("read-aloud", () => {
     expect(bookOfSrc("/audio/read/john/1.mp3")).toBe("john");
     expect(bookOfSrc("/audio/chants/anthem/en.mp3")).toBeNull();
     expect(bookOfSrc(null)).toBeNull();
+  });
+
+  it("knows the chapter too, for the player's previous, next and Read (1.8)", () => {
+    expect(readingOfSrc("https://audio.purifyapp.net/read/1-john/2.mp3")).toEqual({ book: "1-john", chapter: 2 });
+    expect(readingOfSrc("/audio/read/revelation/22.mp3?x=1")).toEqual({ book: "revelation", chapter: 22 });
+    expect(readingOfSrc("/audio/chants/anthem/en.mp3")).toBeNull();
+    expect(readingOfSrc(null)).toBeNull();
   });
 
   it("keeps the recordings out of the repository, and their timings and the list in it", () => {

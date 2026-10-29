@@ -9,7 +9,8 @@ import { cn } from "@/lib/cn";
  * along (1.8, the owner's picks of 2026-10-27, rounds 8 and 9): where it is
  * and how far it has to go, then back 15, the white Play and forward 15.
  * Both screens play through the app's one player, so they wear one set of
- * controls.
+ * controls. Now Playing adds previous and next at either end, as round 8 A
+ * drew them (lib/player/steps.ts says where each goes).
  */
 
 /** m:ss. */
@@ -64,9 +65,17 @@ export function PositionBar({
   );
 }
 
+/** Where previous or next goes, named for a screen reader, or null where there is nothing to go to. */
+export type Step = { label: string; go: () => void } | null;
+
 /**
  * Back 15, Play or Pause, forward 15. `size` is the white button's: 68px in
  * Now Playing, 64px on a chant's page, as the two were drawn.
+ *
+ * With `steps` (Now Playing, 1.8, round 8 A), previous and next stand at the
+ * two ends of the row, the five spread across it as drawn. A step with
+ * nowhere to go is not drawn, and its place is kept, so Play and the others
+ * never move between one track and the next.
  */
 export function Transport({
   playing,
@@ -76,6 +85,7 @@ export function Transport({
   canSkip = true,
   busy = false,
   size = 68,
+  steps,
   className,
 }: {
   playing: boolean;
@@ -86,11 +96,13 @@ export function Transport({
   /** The list of recordings is still being read. */
   busy?: boolean;
   size?: number;
+  /** Previous and next, at the row's ends. */
+  steps?: { previous: Step; next: Step };
   className?: string;
 }) {
   const { t } = useTranslate();
-  return (
-    <div className={cn("flex items-center justify-center gap-10", className)}>
+  const middle = (
+    <>
       <button
         type="button"
         onClick={() => onSkip(-15)}
@@ -129,7 +141,53 @@ export function Transport({
       >
         <SkipGlyph />
       </button>
+    </>
+  );
+  if (!steps) return <div className={cn("flex items-center justify-center gap-10", className)}>{middle}</div>;
+  return (
+    <div className={cn("flex items-center justify-between", className)}>
+      <StepButton step={steps.previous} back />
+      {middle}
+      <StepButton step={steps.next} />
     </div>
+  );
+}
+
+/**
+ * Previous or next. Its mark stands on the row's edge, as drawn, so the
+ * button reaches a little past it. Nothing to go to: its empty place.
+ */
+function StepButton({ step, back = false }: { step: Step; back?: boolean }) {
+  const edge = back ? "-ms-2.5" : "-me-2.5";
+  if (!step) return <span aria-hidden className={cn("h-11 w-11 shrink-0", edge)} />;
+  return (
+    <button
+      type="button"
+      onClick={step.go}
+      aria-label={step.label}
+      className={cn("tap-press grid h-11 w-11 shrink-0 place-items-center rounded-full text-paper hover:bg-paper/[0.06]", edge)}
+    >
+      <StepGlyph back={back} />
+    </button>
+  );
+}
+
+/** Previous and next as round 8 A draws them: a triangle against a bar. */
+export function StepGlyph({ back = false }: { back?: boolean }) {
+  return (
+    <svg width={24} height={24} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.8} strokeLinecap="round" strokeLinejoin="round" aria-hidden className="rtl:-scale-x-100">
+      {back ? (
+        <>
+          <path d="M19 20L9 12l10-8z" />
+          <path d="M5 19V5" />
+        </>
+      ) : (
+        <>
+          <path d="M5 4l10 8-10 8z" />
+          <path d="M19 5v14" />
+        </>
+      )}
+    </svg>
   );
 }
 
@@ -137,15 +195,26 @@ export function Transport({
  * One of the choices under Now Playing's controls (round 8 A: "four choices
  * under it"): its mark over a small word, quiet until it is on, then white
  * with a soft white glow (the owner, 2026-10-28: a glowing white, never
- * yellow). Loop, Ambience and the sleep timer wear it.
+ * yellow). Loop, Speed, Ambience, the sleep timer and Read wear it, each a
+ * share of one row (1.8), so five fit a 360px phone in every language: the
+ * word under a mark may take a second line (OptionWord).
  */
 export function optionClass(on: boolean): string {
   return cn(
-    "tap-press flex min-h-11 min-w-16 flex-col items-center justify-center gap-1.5 rounded-xl px-2 py-1 font-sans text-[11.5px] font-semibold leading-none motion-safe:transition-colors hover:bg-paper/[0.05]",
+    "tap-press flex min-h-11 min-w-0 flex-col items-center justify-start gap-1.5 rounded-xl px-1 py-1 font-sans text-[11.5px] font-semibold leading-none motion-safe:transition-colors hover:bg-paper/[0.05]",
     on
       ? "text-paper [text-shadow:0_0_10px_rgba(255,255,255,0.45)] [&_svg]:[filter:drop-shadow(0_0_6px_rgba(255,255,255,0.5))]"
       : "text-paper/60 hover:text-paper",
   );
+}
+
+/**
+ * The word under a choice's mark. It keeps to its share of the row: a long
+ * word ("Klangkulisse", "Χρονοδιακόπτης ύπνου") breaks onto a second line,
+ * hyphenated where the language allows, and never runs into its neighbour.
+ */
+export function OptionWord({ children }: { children: React.ReactNode }) {
+  return <span className="max-w-full text-center leading-[1.15] text-balance [overflow-wrap:anywhere] hyphens-auto">{children}</span>;
 }
 
 export function SkipGlyph({ back = false }: { back?: boolean }) {

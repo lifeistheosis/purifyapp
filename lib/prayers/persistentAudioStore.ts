@@ -208,14 +208,24 @@ export function setTrack(
     artSize?: string;
     captions?: CaptionSource;
     rtl?: boolean;
+    /**
+     * How fast it plays (1.8): the reader's speed for the Bible read aloud
+     * (lib/player/speed.ts). A new track that does not ask plays as recorded,
+     * at 1, so a chant is never sped up by the speed a reading was left at.
+     */
+    rate?: number;
   } = {},
 ): void {
   const a = ensureElement();
   const sameSrc = a.src.endsWith(src) || a.src === src;
   if (!sameSrc) {
+    const rate = clampRate(opts.rate ?? 1);
+    // Loading a source sets the speed back to the default one, so the default
+    // is set first, and the speed again after.
+    a.defaultPlaybackRate = rate;
     a.src = src;
     a.load();
-    a.playbackRate = snapshot.rate;
+    a.playbackRate = rate;
     update({
       src,
       title: opts.title ?? null,
@@ -224,11 +234,13 @@ export function setTrack(
       artFallback: opts.artFallback ?? null,
       captions: opts.captions ?? null,
       rtl: opts.rtl ?? false,
+      rate,
       currentTime: 0,
       duration: 0,
     });
   } else {
     // Refresh what the consumer passed: a remount keeps the playback.
+    if (opts.rate !== undefined) applyRate(a, clampRate(opts.rate));
     update({
       src,
       title: opts.title ?? snapshot.title,
@@ -237,6 +249,7 @@ export function setTrack(
       artFallback: opts.artFallback ?? snapshot.artFallback,
       captions: opts.captions ?? snapshot.captions,
       rtl: opts.rtl ?? snapshot.rtl,
+      rate: opts.rate !== undefined ? clampRate(opts.rate) : snapshot.rate,
     });
   }
   // MediaSession metadata for OS lock-screen controls, with the picture.
@@ -277,10 +290,21 @@ export function currentTimeNow(): number {
   return audioEl ? audioEl.currentTime : snapshot.currentTime;
 }
 
+/** A speed the player will take: 0.5 to 2. */
+function clampRate(rate: number): number {
+  return Number.isFinite(rate) ? Math.max(0.5, Math.min(2, rate)) : 1;
+}
+
+/** The element's speed now, and the one a reload falls back to. */
+function applyRate(a: HTMLAudioElement, rate: number): void {
+  a.defaultPlaybackRate = rate;
+  a.playbackRate = rate;
+}
+
 /** Playback speed, for reading aloud (1 is as recorded). */
 export function setRate(rate: number): void {
-  const r = Math.max(0.5, Math.min(2, rate));
-  if (audioEl) audioEl.playbackRate = r;
+  const r = clampRate(rate);
+  if (audioEl) applyRate(audioEl, r);
   update({ rate: r });
 }
 

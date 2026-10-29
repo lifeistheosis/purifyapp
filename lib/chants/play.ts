@@ -55,6 +55,9 @@ export function playChant(req: PlayRequest): void {
     artist: artistOf(req.variant),
     art: req.coverSrc ? chantMediaUrl(req.coverSrc) : undefined,
     rtl: Boolean(req.variant.rtl),
+    // A sung chant is never sped up (1.8): always as recorded, whatever the
+    // read-aloud's speed (lib/player/speed.ts).
+    rate: 1,
   };
   setTrack(src, meta);
   if (req.loop) setLoopMode("inf");
