@@ -9,6 +9,12 @@
 // chapter strip with the current chapter lit, on a tablet one centred column
 // with the Fathers in the sheet, and focus mode's way out at the foot.
 //
+// His pick B of 2026-10-28 (r18/choose/4-bible-buttons, "Two (Aa inside
+// •••)"): the two round buttons are the way back and •••, and the reader's
+// settings are the first row of the ••• sheet. With it, "add everything we
+// left out": the tab bar steps away with the buttons and the pill, on this
+// screen alone.
+//
 // What a reader would notice if this broke: a bar back over the chapter, the
 // first verse at the foot of the first screen again under a row of pills, a
 // control of the old bar or row with nowhere to be found, the pill and the
@@ -17,6 +23,7 @@
 // This reads the source; the built screens are measured by sections 33, 35
 // and 43 of scripts/export-walk.mjs.
 
+import { execFileSync } from "node:child_process";
 import { readFileSync } from "node:fs";
 import { join } from "node:path";
 import { describe, expect, it } from "vitest";
@@ -40,7 +47,7 @@ const MORE = "components/bible/ReaderMoreSheet.tsx";
 const PILL = "components/bible/MobileChapterPill.tsx";
 
 describe("no bar: round buttons over the page", () => {
-  it("mounts the page's top as plates, the way back to the Bible on one side and Aa and ••• on the other", () => {
+  it("mounts the page's top as plates, the way back to the Bible on one side and ••• on the other", () => {
     const page = code(PAGE);
     const bar = /<MobileTopBar\b[\s\S]*?\/>\s*\}/.exec(page)?.[0] ?? "";
     expect(bar).toMatch(/<MobileTopBar\s+plates\b/);
@@ -66,20 +73,35 @@ describe("no bar: round buttons over the page", () => {
     expect(plates).toMatch(/<WebOnly>\s*<SiteMenuButton \/>\s*<\/WebOnly>/);
   });
 
-  it("holds two round buttons, Aa for the settings and ••• for the rest, each opening a sheet", () => {
+  it("holds one round button opposite the way back, •••, with Aa inside it (the owner's pick B of 2026-10-28)", () => {
     const actions = code(ACTIONS);
     const buttons = [...actions.matchAll(/<button\b[\s\S]*?<\/button>/g)].map((m) => m[0]);
-    expect(buttons).toHaveLength(2);
-    expect(buttons[0]).toContain('aria-label={t("bible.readerSettings")}');
-    expect(buttons[0]).toMatch(/<span>A<\/span>\s*<span>a<\/span>/);
-    expect(buttons[1]).toContain('aria-label={t("bible.moreActions")}');
-    expect(buttons[1]).toContain("<More size={20} />");
-    for (const b of buttons) {
-      expect(b).toContain('aria-haspopup="dialog"');
-      expect(b).toMatch(/\bhit-44\b/);
-    }
+    expect(buttons).toHaveLength(1);
+    expect(buttons[0]).toContain('aria-label={t("bible.moreActions")}');
+    expect(buttons[0]).toContain("<More size={20} />");
+    expect(buttons[0]).toContain('aria-haspopup="dialog"');
+    expect(buttons[0]).toMatch(/\bhit-44\b/);
+    // No round Aa of its own any more.
+    expect(actions).not.toContain('t("bible.readerSettings")');
+    expect(actions).not.toMatch(/<span>A<\/span>\s*<span>a<\/span>/);
+    expect(actions).toMatch(/<ReaderMoreSheet\s+open=\{open === "more"\}\s+onClose=\{close\}\s+onSettings=\{\(\) => setOpen\("settings"\)\}/);
     expect(actions).toMatch(/<ReaderSettingsSheet open=\{open === "settings"\}/);
-    expect(actions).toMatch(/<ReaderMoreSheet\s+open=\{open === "more"\}/);
+  });
+
+  it("opens the reader's settings from the first row of the ••• sheet, the same sheet Aa opened", () => {
+    const more = code(MORE);
+    // The first thing in the sheet, over the search for a verse.
+    const body = more.slice(more.indexOf('<div className="space-y-4 pt-1">'));
+    const first = body.split("\n").slice(1).find((line) => line.trim() !== "") ?? "";
+    expect(first).toContain("<SheetRow ");
+    expect(body.indexOf("<SheetRow ")).toBeLessThan(body.indexOf("<BibleSearch layer"));
+    expect(first).toContain('label={t("bible.readerSettings")}');
+    expect(first).toContain("icon={<AaMark />}");
+    expect(first).toContain("onClick={onSettings}");
+    // The row's mark is the round button's: the letter twice.
+    expect(more).toMatch(/function AaMark\(\) \{[\s\S]*?<span>A<\/span>\s*<span>a<\/span>/);
+    // One state for the two sheets: opening the settings closes •••.
+    expect(code(ACTIONS)).toContain('const [open, setOpen] = useState<"settings" | "more" | null>(null);');
   });
 
   it("gives the plates the design's look in every palette: opaque, inside a hairline, never blurred", () => {
@@ -205,7 +227,7 @@ describe("the chapter opens like a book", () => {
   });
 });
 
-describe("the ••• sheet: what stood above the title and in the bar, one tap away", () => {
+describe("the ••• sheet: the reader's settings, and what stood above the title and in the bar, one tap away", () => {
   const more = code(MORE);
 
   it("holds the search for a verse, the book's chapters, the translation, the book, the Greek, the bookmark and the app's search", () => {
@@ -327,28 +349,29 @@ describe("the floating pill, with Listen", () => {
   });
 });
 
-describe("the plates and the pill step away as the reader reads on", () => {
+describe("the plates, the pill and the tab bar step away as the reader reads on", () => {
   it("is watched once, by the screen, through lib/ui/scrollAway.ts", () => {
     expect(code(SCREEN)).toContain("useScrollAway();");
     expect(code("lib/ui/scrollAway.ts")).toContain('export const AWAY_ATTR = "data-reader-away";');
   });
 
-  it("puts both away together, hidden once faded, and brings them back", () => {
+  it("puts them away together, hidden once faded, and brings them back", () => {
     const css = rules();
     expect(css).toMatch(
-      /body\[data-reader-away\] \[data-mobile-topbar\]\[data-plates\] \[data-plates-row\],\s*body\[data-reader-away\] \[data-reader-pill\] \{\s*opacity: 0;\s*visibility: hidden;/,
+      /body\[data-reader-away\] \[data-mobile-topbar\]\[data-plates\] \[data-plates-row\],\s*body\[data-reader-away\] \[data-reader-pill\],\s*body\[data-reader-screen\]\[data-reader-away\] \[data-tab-bar\] \{\s*opacity: 0;\s*visibility: hidden;/,
     );
     expect(css).toMatch(/body\[data-reader-away\] \[data-mobile-topbar\]\[data-plates\] \[data-plates-row\] \{\s*transform: translateY\(-8px\);/);
-    expect(css).toMatch(/body\[data-reader-away\] \[data-reader-pill\] \{\s*transform: translateY\(12px\);/);
+    // The tab bar sinks with the pill.
+    expect(css).toMatch(/body\[data-reader-away\] \[data-reader-pill\],\s*body\[data-reader-screen\]\[data-reader-away\] \[data-tab-bar\] \{\s*transform: translateY\(12px\);/);
     // Visible at once on the way back, hidden only after the fade on the way out.
-    expect(css).toMatch(/\[data-mobile-topbar\]\[data-plates\] \[data-plates-row\],\s*\[data-reader-pill\] \{\s*transition:[^}]*visibility 0s;/);
+    expect(css).toMatch(/\[data-mobile-topbar\]\[data-plates\] \[data-plates-row\],\s*\[data-reader-pill\],\s*body\[data-reader-screen\] \[data-tab-bar\] \{\s*transition:[^}]*visibility 0s;/);
     expect(css).toMatch(/visibility 0s linear var\(--duration-fast\);/);
   });
 
   it("keeps a control the keyboard is on in sight, in a rule an old WebView may drop alone", () => {
     // A tapped button keeps the focus on Android; only the keyboard's holds them up.
     expect(rules()).toMatch(
-      /body\[data-reader-away\] \[data-mobile-topbar\]\[data-plates\] \[data-plates-row\]:has\(:focus-visible\),\s*body\[data-reader-away\] \[data-reader-pill\]:has\(:focus-visible\) \{\s*opacity: 1;\s*visibility: visible;\s*transform: none;\s*\}/,
+      /body\[data-reader-away\] \[data-mobile-topbar\]\[data-plates\] \[data-plates-row\]:has\(:focus-visible\),\s*body\[data-reader-away\] \[data-reader-pill\]:has\(:focus-visible\),\s*body\[data-reader-screen\]\[data-reader-away\] \[data-tab-bar\]:has\(:focus-visible\) \{\s*opacity: 1;\s*visibility: visible;\s*transform: none;\s*\}/,
     );
     expect(rules()).not.toMatch(/data-reader-away[^{]*:focus-within/);
   });
@@ -358,11 +381,49 @@ describe("the plates and the pill step away as the reader reads on", () => {
     for (const selector of [
       "[data-mobile-topbar][data-plates] [data-plates-row],",
       "[data-reader-pill],",
+      "body[data-reader-screen] [data-tab-bar],",
+      "body[data-reader-screen] .now-playing-lift,",
       "body[data-reader-away] [data-mobile-topbar][data-plates] [data-plates-row],",
-      "body[data-reader-away] [data-reader-pill] {\n transition: none;",
+      "body[data-reader-away] [data-reader-pill],",
+      "body[data-reader-screen][data-reader-away] [data-tab-bar] {\n transition: none;",
     ]) {
       expect(css, selector).toContain(`:where([data-motion="reduce"]) ${selector}`);
     }
+  });
+});
+
+describe("the tab bar steps away on the reader's page, and on no other", () => {
+  it("is marked for it, and has no way of leaving of its own", () => {
+    const bar = code("components/nav/MobileTabBar.tsx");
+    expect(bar).toMatch(/<nav\s+aria-label=\{t\("nav\.tabBarLabel"\)\}\s+data-tab-bar\b/);
+    expect(bar).not.toContain("scrollAway");
+    expect(bar).not.toContain("data-reader-away");
+  });
+
+  it("is keyed in the stylesheet on the reader's screen being open, in every rule that moves it", () => {
+    const css = rules();
+    const selectors = [...css.matchAll(/([^{}]+)\{/g)].flatMap((m) => m[1].split(",").map((s) => s.trim())).filter((s) => s.includes("[data-tab-bar]"));
+    expect(selectors.length).toBeGreaterThan(0);
+    for (const s of selectors) expect(s, s).toMatch(/^(:where\(\[data-motion="reduce"\]\) )?body\[data-reader-screen\]/);
+  });
+
+  it("which only the reader's screen says, while it is open", () => {
+    const away = code("lib/ui/scrollAway.ts");
+    expect(away).toContain('export const SCREEN_ATTR = "data-reader-screen";');
+    expect(away).toMatch(/body\.setAttribute\(SCREEN_ATTR, ""\);/);
+    expect(away).toMatch(/return \(\) => \{\s*stop\(\);\s*body\.removeAttribute\(AWAY_ATTR\);\s*body\.removeAttribute\(SCREEN_ATTR\);/);
+    // The hook is mounted by the chapter's screen and nowhere else.
+    const mounts = execFileSync("git", ["grep", "-l", "useScrollAway();", "--", "app", "components", "lib"], { cwd: root, encoding: "utf8" })
+      .split("\n")
+      .filter(Boolean)
+      .filter((f) => !f.includes("__tests__"));
+    expect(mounts).toEqual([SCREEN]);
+  });
+
+  it("brings what stands on it to the foot while it is away, in the apps alone, as focus mode does", () => {
+    expect(rules()).toMatch(
+      /html\.is-native:not\(\.reader-focus\) body\[data-reader-screen\]\[data-reader-away\] \.now-playing-lift \{\s*translate: 0 calc\(var\(--tab-bar-h\) - 0\.375rem\);/,
+    );
   });
 });
 

@@ -1,12 +1,15 @@
 "use client";
 
+import Link from "next/link";
 import { useEffect, useState } from "react";
 
 import { Reference } from "@/components/bible/Reference";
 import { useTranslate } from "@/components/i18n/MessagesProvider";
 import { BarSwitch } from "@/components/ui/BarSwitch";
 import { Sheet } from "@/components/ui/Sheet";
+import { Book } from "@/components/ui/icons/Book";
 import { Check } from "@/components/ui/icons/Check";
+import { More } from "@/components/ui/icons/More";
 import { Timer } from "@/components/ui/icons/Timer";
 import { useAmbienceSheet } from "@/lib/ambience/sheet";
 import { cn } from "@/lib/cn";
@@ -14,14 +17,18 @@ import { verseOf } from "@/lib/player/captions";
 import { useSungLines } from "@/lib/player/clock";
 import { closeNowPlaying, setPlayerView, useNowPlayingSheet, type PlayerView } from "@/lib/player/sheet";
 import { isChosen, minutesLeft, setSleepTimer, useSleepTimer, type SleepChoice } from "@/lib/player/sleep";
-import { seek, setLoopMode, skipBy, toggle, usePersistentAudio, type LoopMode } from "@/lib/prayers/persistentAudioStore";
+import { nextSpeed, saveSpeed, speedText } from "@/lib/player/speed";
+import { playingOf, readHref, shareHref } from "@/lib/player/steps";
+import { seek, setLoopMode, setRate, usePersistentAudio, type LoopMode } from "@/lib/prayers/persistentAudioStore";
 import { useAndroidBack } from "@/lib/platform/useAndroidBack";
 import { lockBodyScroll, unlockBodyScroll } from "@/lib/ui/overlay";
 import { AmbienceButton } from "./AmbienceButton";
 import { CoverArt } from "./CoverArt";
 import { LiveCaptions } from "./LiveCaptions";
+import { PlayerMoreSheet } from "./PlayerMore";
+import { PlayerTransport } from "./PlayerSteps";
 import { SaveOffline, SaveOfflineNote } from "./SaveOffline";
-import { PositionBar, Transport, optionClass } from "./Transport";
+import { OptionWord, PositionBar, optionClass } from "./Transport";
 
 /**
  * Now Playing (1.7): the whole screen for what is playing, opened from the
@@ -53,6 +60,22 @@ import { PositionBar, Transport, optionClass } from "./Transport";
  * where it is, back 15, Play, forward 15, and the choices under them (round
  * 8 A's "four choices"): Loop, Ambience and the sleep timer.
  *
+ * What round 8 A drew and the first 1.8 build left out, for want of anything
+ * behind it, went in with the owner's "add everything we left out" of
+ * 2026-10-28, every control above where it was:
+ *
+ *   - previous and next at the ends of the controls (PlayerTransport): the
+ *     chapter before and after where it has a recording, a chant's version
+ *     before and after, today's reading before and after; none where there
+ *     is nothing to go to (lib/player/steps.ts);
+ *   - Speed among the choices, the Bible read aloud alone: 0.75 to 2, the
+ *     reader's own, kept on the device; a chant is never sped up, so it has
+ *     no Speed (lib/player/speed.ts);
+ *   - Read, the last choice: the chapter at the verse being read, or the
+ *     chant's page;
+ *   - ••• at the right of the top bar, a sheet of Save for offline, the
+ *     sleep timer, Ambience and Share (PlayerMoreSheet).
+ *
  * On a computer it is a panel on the right, as Spotify's tablets have it. The
  * cover is an icon of the book's saint for a reading, kept on the website, so
  * with no signal it falls back to the bundled plate (CoverArt). The sleep
@@ -63,16 +86,17 @@ const LOOPS: LoopMode[] = ["off", "inf", 3, 7, 12];
 const SLEEPS = [5, 10, 15, 30, 60];
 
 export function NowPlayingSheet() {
-  const { t } = useTranslate();
+  const { t, locale } = useTranslate();
   const audio = usePersistentAudio();
   const { open, view } = useNowPlayingSheet();
   const [mounted, setMounted] = useState(false);
   const [shown, setShown] = useState(false);
   const [sleepMenu, setSleepMenu] = useState(false);
+  const [moreMenu, setMoreMenu] = useState(false);
   const sleep = useSleepTimer();
   const ambienceSheet = useAmbienceSheet();
   // A sheet stands over the player: Escape is that sheet's.
-  const covered = sleepMenu || (ambienceSheet.open && ambienceSheet.overPlayer);
+  const covered = sleepMenu || moreMenu || (ambienceSheet.open && ambienceSheet.overPlayer);
   const hasWords = Boolean(audio.captions && audio.captions.length > 0);
   // The one clock that lights the words and counts the verses
   // (lib/player/clock.ts), running while the player is open.
@@ -89,6 +113,7 @@ export function NowPlayingSheet() {
     }
     setShown(false);
     setSleepMenu(false);
+    setMoreMenu(false);
     const id = setTimeout(() => setMounted(false), 380);
     return () => clearTimeout(id);
   }, [open]);
@@ -136,6 +161,12 @@ export function NowPlayingSheet() {
   ];
   // "Verse 4 of 51" over a reading's words; who sings it over a chant's.
   const verse = words ? verseOf(sung.lines, sung.current) : null;
+  // What is playing, for Speed, Read and Share (lib/player/steps.ts). Read
+  // opens a chapter at the verse being read, in either view.
+  const playing = playingOf(audio.src);
+  const reading = verseOf(sung.lines, sung.current);
+  const readTo = readHref(playing, reading?.verse);
+  const speed = speedText(audio.rate, locale);
   const views: { id: PlayerView; label: string; icon: React.ReactNode }[] = [
     { id: "cover", label: t("player.viewCover"), icon: <CoverGlyph /> },
     { id: "words", label: t("player.viewWords"), icon: <WordsGlyph /> },
@@ -213,7 +244,16 @@ export function NowPlayingSheet() {
             ) : (
               <p className="font-sans text-detail font-semibold text-paper/60">{t("prayers.nowPlaying")}</p>
             )}
-            <span className="h-11 w-11 shrink-0" aria-hidden />
+            {/* ••• (round 8 A): what the player does, in words, and Share. */}
+            <button
+              type="button"
+              onClick={() => setMoreMenu(true)}
+              aria-label={t("bible.moreActions")}
+              aria-haspopup="dialog"
+              className="tap-press -me-2 grid h-11 w-11 shrink-0 place-items-center rounded-full text-paper hover:bg-paper/[0.06]"
+            >
+              <More size={20} />
+            </button>
           </div>
 
           {/* The middle: the cover, or the words. Both are drawn and the one
@@ -297,11 +337,13 @@ export function NowPlayingSheet() {
           {/* One block for both views: nothing here moves when they switch. */}
           <SaveOfflineNote src={audio.src} className="mt-2" />
           <PositionBar current={audio.currentTime} duration={audio.duration} onSeek={(at) => seek(at)} className="mt-2" />
-          <Transport playing={audio.playing} onToggle={() => toggle()} onSkip={skipBy} size={68} className="mt-3" />
+          <PlayerTransport audio={audio} className="mt-3" />
 
           {/* The choices under the controls (round 8 A), each its mark over a
-              word, lit white while it is on. */}
-          <div className="mt-5 flex items-start justify-around">
+              word, lit white while it is on, each an even share of the row:
+              Loop, Speed (the Bible read aloud alone), Ambience, the sleep
+              timer and Read. */}
+          <div className="mt-5 grid grid-flow-col auto-cols-[minmax(0,1fr)] items-start gap-1">
             <button
               type="button"
               onClick={() => setLoopMode(LOOPS[(loopIndex + 1) % LOOPS.length])}
@@ -320,8 +362,27 @@ export function NowPlayingSheet() {
                   <path d="M20 13v2a4 4 0 0 1-4 4H4" />
                 </svg>
               )}
-              <span>{t("prayers.audio.loop")}</span>
+              <OptionWord>{t("prayers.audio.loop")}</OptionWord>
             </button>
+            {/* Speed: the Bible read aloud alone. A sung chant is never sped
+                up, so a chant has none (lib/player/speed.ts). */}
+            {playing?.kind === "chapter" ? (
+              <button
+                type="button"
+                onClick={() => {
+                  const next = nextSpeed(audio.rate);
+                  saveSpeed(next);
+                  setRate(next);
+                }}
+                aria-label={`${t("player.speed")}: ${speed}`}
+                className={optionClass(audio.rate !== 1)}
+              >
+                <span aria-hidden className="grid h-[21px] place-items-center text-[15px] font-bold leading-none text-paper">
+                  {speed}
+                </span>
+                <OptionWord>{t("player.speed")}</OptionWord>
+              </button>
+            ) : null}
             <AmbienceButton variant="option" />
             <button
               type="button"
@@ -331,9 +392,32 @@ export function NowPlayingSheet() {
               className={optionClass(sleeping)}
             >
               <Timer size={21} />
-              <span>{t("player.sleep")}</span>
+              <OptionWord>{t("player.sleep")}</OptionWord>
             </button>
+            {/* Read: the text being played, where it has got to. */}
+            {readTo ? (
+              <Link
+                href={readTo}
+                onClick={() => closeNowPlaying()}
+                aria-label={audio.title ? `${t("player.read")}: ${audio.title}` : t("player.read")}
+                className={optionClass(false)}
+              >
+                <Book size={21} />
+                <OptionWord>{t("player.read")}</OptionWord>
+              </Link>
+            ) : null}
           </div>
+
+          {/* •••: Save for offline, the sleep timer, Ambience and Share, as a
+              sheet over the player. */}
+          <PlayerMoreSheet
+            open={moreMenu}
+            onClose={() => setMoreMenu(false)}
+            title={audio.title ?? t("prayers.nowPlaying")}
+            src={audio.src}
+            share={shareHref(playing)}
+            onSleep={() => setSleepMenu(true)}
+          />
 
           {/* The sleep timer, as a sheet over the player: the one timer for
               the voice, a chant and the ambience (lib/player/sleep.ts). */}

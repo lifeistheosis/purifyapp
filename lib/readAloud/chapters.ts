@@ -53,13 +53,20 @@ export function readAloudRecording(book: string, chapter: number): string {
 }
 
 /**
- * The book a playing chapter belongs to, from its address: the bucket's
+ * The chapter a recording reads, from its address: the bucket's
  * (…/read/<book>/<chapter>.mp3), or a copy saved on the phone
  * (…/audio/read/<book>/<chapter>.mp3), as the website's own was before 1.8.
+ * The player steps to the chapters either side of it and opens it to read
+ * (1.8, lib/player/steps.ts).
  */
+export function readingOfSrc(src: string | null): { book: string; chapter: number } | null {
+  const m = src ? /\/(?:audio\/)?read\/([a-z0-9-]+)\/(\d+)\.mp3(?:$|\?)/.exec(src) : null;
+  return m ? { book: m[1], chapter: Number(m[2]) } : null;
+}
+
+/** The book a playing chapter belongs to, from its address (readingOfSrc). */
 export function bookOfSrc(src: string | null): string | null {
-  const m = src ? /\/(?:audio\/)?read\/([a-z0-9-]+)\/\d+\.mp3(?:$|\?)/.exec(src) : null;
-  return m ? m[1] : null;
+  return readingOfSrc(src)?.book ?? null;
 }
 
 const CARRIED: ReadonlySet<string> = new Set(bundled as string[]);

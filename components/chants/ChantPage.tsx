@@ -7,6 +7,7 @@ import { SegmentedSwitch } from "@/components/ui/SegmentedSwitch";
 import { ShareButton } from "@/components/ui/ShareButton";
 import { cn } from "@/lib/cn";
 import { useChantAvailability } from "@/lib/chants/live";
+import { usePersistentAudio } from "@/lib/prayers/persistentAudioStore";
 import { chantLineKey, chantTitleKey, kindKey, traditionKey } from "@/lib/chants/names";
 import { formatDuration } from "@/lib/chants/media";
 import { playChant, warmTiming } from "@/lib/chants/play";
@@ -50,7 +51,12 @@ export function ChantPage({ chant, row, related }: { chant: Chant; row: ChantInd
   const title = t(chantTitleKey(chant.key));
   const [part, setPart] = useState<Part>("about");
   const [chosen, setChosen] = useState<string | null>(null);
-  const variant = chant.variants.find((v) => v.id === chosen) ?? firstVersion(chant.variants, locale);
+  // Until the reader chooses, the page shows the version playing, if one of
+  // this chant's is: the player's Read opens this page to its words, lit
+  // where the singing has got to (1.8, components/player/NowPlayingSheet.tsx).
+  const { src: playingSrc } = usePersistentAudio();
+  const playingHere = playingSrc ? chant.variants.find((v) => playingSrc === v.audio.src || playingSrc.endsWith(v.audio.src)) : undefined;
+  const variant = chant.variants.find((v) => v.id === chosen) ?? playingHere ?? firstVersion(chant.variants, locale);
   const indexVariant = row.variants.find((v) => v.id === variant.id) ?? row.variants[0];
   const play = useChantPlay({
     slug: chant.slug,

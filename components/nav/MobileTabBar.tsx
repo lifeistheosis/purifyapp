@@ -320,6 +320,9 @@ export function MobileTabBar() {
   return (
     <nav
       aria-label={t("nav.tabBarLabel")}
+      // The marker globals.css steps the bar away by while the Bible is read
+      // on (1.8, lib/ui/scrollAway.ts), on that screen and no other.
+      data-tab-bar
       // Hidden from assistive tech too while a sheet is open, for the same
       // reason it is hidden visually: it is outside the open dialog.
       aria-hidden={overlayOpen || undefined}

@@ -15,6 +15,11 @@
 // be saved, and the saved book with Remove. The saving is the app's, not the
 // screen's: it goes on, and is still shown, when the player is closed and
 // opened again or its view is switched.
+//
+// From 1.8's second round it is also the first row of the player's •••
+// sheet (SaveOfflineRow; the owner's round 8 A drew the ••• and his "add
+// everything we left out" of 2026-10-28 filled it), the same saving with its
+// words on it.
 
 import { useEffect, useSyncExternalStore } from "react";
 
@@ -81,18 +86,20 @@ function useOfflineBook(src: string | null) {
   return { book, chapters, name: localBookNames(t)[book] ?? meta.name, saved: savedHere >= chapters.length };
 }
 
-/** The download mark, at the end of the title's line. */
-export function SaveOffline({ src, className }: { src: string | null; className?: string }) {
-  const { t } = useTranslate();
+/**
+ * The playing book's saving, for the mark and the row: the book, how far its
+ * saving has come, and the one way to start it (Plus first: a reader without
+ * it meets the upgrade sheet named for it, over the player).
+ */
+function useSaveBook(src: string | null) {
   const upgrade = useUpgradeModal();
   const saving = useSaving();
   const offline = useOfflineBook(src);
-  if (!offline) return null;
-  const { book, chapters, name, saved } = offline;
-  const job = saving.job?.book === book ? saving.job : null;
+  const job = offline && saving.job?.book === offline.book ? saving.job : null;
 
   async function save() {
-    if (state.job) return;
+    if (!offline || state.job) return;
+    const { book, chapters } = offline;
     if ((await plusFeaturesNow()) === false) {
       upgrade.open("offline", { overPlayer: true });
       return;
@@ -106,6 +113,16 @@ export function SaveOffline({ src, className }: { src: string | null; className?
     );
     set({ job: null, failed: missed > 0 ? book : null });
   }
+
+  return { offline, job, saving, save };
+}
+
+/** The download mark, at the end of the title's line. */
+export function SaveOffline({ src, className }: { src: string | null; className?: string }) {
+  const { t } = useTranslate();
+  const { offline, job, saving, save } = useSaveBook(src);
+  if (!offline) return null;
+  const { book, name, saved } = offline;
 
   const box = cn(
     "tap-press grid h-11 w-11 shrink-0 place-items-center rounded-full motion-safe:transition-colors",
@@ -164,6 +181,74 @@ export function SaveOffline({ src, className }: { src: string | null; className?
         <path d="M7 10l5 5 5-5" />
         <path d="M12 15V3" />
       </svg>
+    </button>
+  );
+}
+
+/**
+ * Save for offline as a row of the player's ••• sheet (1.8): what the mark
+ * does, in words. Save the book; while it saves, how far it has come; once
+ * saved, the book and Remove. Only where the mark is: a chapter of the Bible
+ * playing, in the apps. Starting the saving closes the sheet (`onLeave`), so
+ * the upgrade sheet, for a reader without Plus, never opens over another,
+ * and the saving goes on, shown over the player's controls.
+ */
+export function SaveOfflineRow({ src, onLeave, className }: { src: string | null; onLeave: () => void; className?: string }) {
+  const { t } = useTranslate();
+  const { offline, job, save } = useSaveBook(src);
+  if (!offline) return null;
+  const { book, name, saved } = offline;
+  const row = cn(
+    "flex min-h-12 w-full items-center gap-3 rounded-pill border border-paper/15 bg-paper/[0.04] px-3.5 text-start font-sans text-detail font-medium text-paper/85",
+    className,
+  );
+  const mark = (
+    <svg width={16} height={16} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.8} strokeLinecap="round" strokeLinejoin="round" aria-hidden className="shrink-0">
+      <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+      <path d="M7 10l5 5 5-5" />
+      <path d="M12 15V3" />
+    </svg>
+  );
+
+  if (job) {
+    return (
+      <p role="status" className={row}>
+        {mark}
+        <span className="min-w-0 truncate">{t("player.offline.saving", { done: job.done, total: job.total })}</span>
+      </p>
+    );
+  }
+
+  if (saved) {
+    return (
+      <div className={row}>
+        {mark}
+        <span className="min-w-0 flex-1 truncate">{t("player.offline.saved", { book: name })}</span>
+        <button
+          type="button"
+          onClick={() => {
+            set({ open: null });
+            void removeBook(book);
+          }}
+          className="tap-press hit-44 shrink-0 font-semibold text-paper hover:underline"
+        >
+          {t("player.offline.remove")}
+        </button>
+      </div>
+    );
+  }
+
+  return (
+    <button
+      type="button"
+      onClick={() => {
+        onLeave();
+        void save();
+      }}
+      className={cn(row, "hover:border-paper/30 hover:bg-paper/10")}
+    >
+      {mark}
+      <span className="min-w-0 truncate">{t("player.offline.save", { book: name })}</span>
     </button>
   );
 }

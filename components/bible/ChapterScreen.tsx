@@ -24,7 +24,7 @@ import { TranslationSwitcher } from "@/components/bible/TranslationSwitcher";
 import { VerseFocusFlash } from "@/components/bible/VerseFocusFlash";
 import { SourceList, marked, type ListedSource } from "@/components/citations/Marked";
 import { T } from "@/components/i18n/T";
-import { ReaderFocusButton, ReaderFocusController, ReaderPrefsProvider } from "@/components/reader/ReaderPrefs";
+import { BIBLE_START_SIZE, ReaderFocusButton, ReaderFocusController, ReaderPrefsProvider } from "@/components/reader/ReaderPrefs";
 import { KeepDay } from "@/components/streak/KeepDay";
 import type { BibleBook, NamedPassageId } from "@/lib/bible/books";
 import { hebrewLine } from "@/lib/bible/psalmNumbers";
@@ -65,18 +65,21 @@ const INTRO_SOURCE = "intro-source-";
  *
  * Phones and tablets, 1.8: the page (the owner's pick B of round 2, locked
  * 2026-10-27; Homebase/boards/purify-master/variants/02-bible). No bar at
- * all: the way back, Aa and ••• stand on round plates over the page (the
- * page's `topBar`, MobileTopBar `plates`), and the chapter opens like a
- * book, on its words: the book's name over "Chapter 1", a short rule, then
- * the first lines, arriving one after another (globals.css, "The page").
- * What stood above the title until 1.7 (the row of pills, the search, the
- * chapter strip) and the top bar's own buttons are in the ••• sheet
- * (ReaderMoreSheet) and the Aa sheet; the floating pill at the foot turns
- * the chapter, says the verse and the minutes left, and holds Listen. The
- * plates and the pill step away as the reader reads on and come back on a
- * scroll up (lib/ui/scrollAway.ts). On a tablet the text is one column in
- * the middle, the Fathers open in the sheet a phone uses. The computer keeps
- * its toolbar, its popovers and the study rail, and opens on the same title.
+ * all: the way back and ••• stand on two round plates over the page (the
+ * page's `topBar`, MobileTopBar `plates`; Aa went inside ••• on the owner's
+ * pick B of 2026-10-28), and the chapter opens like a book, on its words:
+ * the book's name over "Chapter 1", a short rule, then the first lines,
+ * arriving one after another (globals.css, "The page"). What stood above the
+ * title until 1.7 (the row of pills, the search, the chapter strip), the top
+ * bar's own buttons and the reader's settings are in the ••• sheet
+ * (ReaderMoreSheet); the floating pill at the foot turns the chapter, says
+ * the verse and the minutes left, and holds Listen. The plates, the pill
+ * and, in the apps, the tab bar step away as the reader reads on and come
+ * back on a scroll up (lib/ui/scrollAway.ts). The words are Large for a
+ * reader who has never chosen a size (BIBLE_START_SIZE). On a tablet the
+ * text is one column in the middle, the Fathers open in the sheet a phone
+ * uses. The computer keeps its toolbar, its popovers and the study rail, and
+ * opens on the same title.
  */
 export function ChapterScreen({
   book,
@@ -129,8 +132,8 @@ export function ChapterScreen({
 }) {
   const slug = book.slug;
   const psalmLine = slug === "psalms" ? hebrewLine(chapter) : null;
-  // The round buttons over the page and the pill at its foot step away while
-  // the reader reads on, and come back on a scroll up.
+  // The round buttons over the page, the pill at its foot and the app's tab
+  // bar step away while the reader reads on, and come back on a scroll up.
   useScrollAway();
   return (
     <ReaderPrefsProvider>
@@ -180,7 +183,7 @@ export function ChapterScreen({
                       note 25): the computer's place for the phone's sound
                       button on the chapter's pill. */}
                   <AmbienceButton variant="toolbar" />
-                  <ReaderSettingsMenu showInterlinear={showInterlinear} />
+                  <ReaderSettingsMenu showInterlinear={showInterlinear} startSize={BIBLE_START_SIZE} />
                   {showInterlinear && <InterlinearToggle />}
                   <ReaderFocusButton />
                 </div>

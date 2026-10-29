@@ -126,11 +126,14 @@ function known(s: ListState): LiveList | "unknown" | ListFailure {
 /**
  * Whether each recording may play, kept current: the list is asked for when
  * the first screen that needs it appears, and asked again when the phone
- * comes back online after a failure.
+ * comes back online after a failure. `ask` false (1.8, the player, which is
+ * always mounted) reads what is known without asking: the player asks only
+ * while a chant is playing.
  */
-export function useChantAvailability(): (slug: string, variant: { id: string; audio: { src: string } }) => Availability {
+export function useChantAvailability(ask: boolean = true): (slug: string, variant: { id: string; audio: { src: string } }) => Availability {
   const s = useSyncExternalStore(subscribe, () => state, () => IDLE);
   useEffect(() => {
+    if (!ask) return;
     void loadLiveList();
     const retry = () => {
       if (state.status === "failed") {
@@ -140,7 +143,7 @@ export function useChantAvailability(): (slug: string, variant: { id: string; au
     };
     window.addEventListener("online", retry);
     return () => window.removeEventListener("online", retry);
-  }, []);
+  }, [ask]);
   const list = useMemo(() => known(s), [s]);
   return useCallback((slug, variant) => availabilityOf(list, slug, variant), [list]);
 }

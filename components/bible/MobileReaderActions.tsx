@@ -5,25 +5,29 @@ import { ReaderSettingsSheet } from "@/components/bible/ReaderSettingsMenu";
 import { ReaderMoreSheet } from "@/components/bible/ReaderMoreSheet";
 import { More } from "@/components/ui/icons/More";
 import { useTranslate } from "@/components/i18n/MessagesProvider";
+import { BIBLE_START_SIZE } from "@/components/reader/ReaderPrefs";
 
 /**
- * The Bible reader's round buttons over the page, beside the way back (1.8,
+ * The Bible reader's round button over the page, opposite the way back (1.8,
  * the owner's pick B of round 2, "The page": "No bar at all, only two round
  * buttons over the page"; Homebase/boards/purify-master/variants/02-bible).
- * They are the page's top bar's `trailing` (MobileTopBar `plates`), which
- * draws them on its round plates.
+ * It is the page's top bar's `trailing` (MobileTopBar `plates`), which draws
+ * it on its round plate.
  *
- *  - Aa: every reader preference (ReaderSettingsSheet): text size, font,
- *    spacing, the reading mode, ambience, focus, paragraphs, keep scrolling
- *    and the Greek. It was the top bar's settings icon in 1.7.
- *  - •••: the search, the book's chapters, the translation, the book, the
- *    Greek, the bookmark and the app's search (ReaderMoreSheet), which stood
- *    above the chapter's title and in the top bar until 1.7.
+ * Two round buttons, not three (the owner's pick B of 2026-10-28,
+ * r18/choose/4-bible-buttons: "Two (Aa inside •••)"): the way back, and •••.
+ * The reader's settings had a round Aa button of their own beside •••; they
+ * are the first row of the ••• sheet now, and open the same sheet
+ * (ReaderSettingsSheet: text size, font, spacing, the reading mode,
+ * ambience, focus, paragraphs, keep scrolling and the Greek). After them the
+ * sheet holds the search, the book's chapters, the translation, the book,
+ * the Greek, the bookmark and the app's search (ReaderMoreSheet), which
+ * stood above the chapter's title and in the top bar until 1.7.
  *
- * "Aa" is the mark readers know for text settings in any language, drawn as
- * the settings sheet draws its sizes, with the letter A; the button's name
- * is the catalog's. Hidden on `md+` on the website, which has the toolbar's
- * pills; a tablet in the apps keeps the phone's buttons.
+ * The settings open on the size this page reads at: Large for a reader who
+ * has never chosen one (BIBLE_START_SIZE). Hidden on `md+` on the website,
+ * which has the toolbar's pills; a tablet in the apps keeps the phone's
+ * button.
  */
 export function MobileReaderActions({
   book,
@@ -46,42 +50,27 @@ export function MobileReaderActions({
 
   return (
     <>
-      <div className="flex items-center gap-2">
-        <button
-          type="button"
-          aria-label={t("bible.readerSettings")}
-          aria-haspopup="dialog"
-          onClick={() => setOpen("settings")}
-          className="tap-press hit-44 inline-flex h-10 w-10 items-center justify-center"
-        >
-          {/* The letter twice, as the settings' own "Aa" previews draw it
-              (ReaderPrefs), so the mark is a drawing and not a word. */}
-          <span aria-hidden className="inline-flex items-baseline font-serif text-[16px] font-semibold leading-none">
-            <span>A</span>
-            <span>a</span>
-          </span>
-        </button>
-        <button
-          type="button"
-          aria-label={t("bible.moreActions")}
-          aria-haspopup="dialog"
-          onClick={() => setOpen("more")}
-          className="tap-press hit-44 inline-flex h-10 w-10 items-center justify-center"
-        >
-          <More size={20} />
-        </button>
-      </div>
+      <button
+        type="button"
+        aria-label={t("bible.moreActions")}
+        aria-haspopup="dialog"
+        onClick={() => setOpen("more")}
+        className="tap-press hit-44 inline-flex h-10 w-10 items-center justify-center"
+      >
+        <More size={20} />
+      </button>
 
-      <ReaderSettingsSheet open={open === "settings"} onClose={close} showInterlinear={showInterlinear} />
       <ReaderMoreSheet
         open={open === "more"}
         onClose={close}
+        onSettings={() => setOpen("settings")}
         book={book}
         bookName={bookName}
         chapter={chapter}
         showInterlinear={showInterlinear}
         configuredLicensed={configuredLicensed}
       />
+      <ReaderSettingsSheet open={open === "settings"} onClose={close} showInterlinear={showInterlinear} startSize={BIBLE_START_SIZE} />
     </>
   );
 }

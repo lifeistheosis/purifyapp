@@ -21,6 +21,7 @@ import { VerseRow } from "./VerseRow";
 import { MobileCommentarySheet } from "./MobileCommentarySheet";
 import { HighlightLegend } from "./HighlightLegend";
 import {
+  BIBLE_START_SIZE,
   FONT_CLASSES,
   SIZE_CLASSES,
   useReaderPrefs,
@@ -73,7 +74,8 @@ export function ChapterReader({
    *  data/bible/paragraphs.json. None: the chapter stays a verse a line. */
   paragraphStarts?: number[];
 }) {
-  const { size, font, leadingValue } = useReaderPrefs();
+  // Large for a reader who has never chosen a size (1.8): BIBLE_START_SIZE.
+  const { size, font, leadingValue } = useReaderPrefs(BIBLE_START_SIZE);
   // Paragraph view: where the chapter has paragraphs, and not while the
   // Greek stands beside each verse.
   const { paragraphs } = useReadingFlow();

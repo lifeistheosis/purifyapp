@@ -1,3 +1,4 @@
+import { readSpeed } from "@/lib/player/speed";
 import { getAudioSnapshot, pause, play, seek, setLoopMode, setTrack, subscribeAudio } from "@/lib/prayers/persistentAudioStore";
 import { hasReadAloud, readAloudManifest, readAloudSrc, verseCaptions, type ReadAloudManifest } from "@/lib/readAloud/chapters";
 import { readAloudCover } from "@/lib/readAloud/covers";
@@ -14,6 +15,9 @@ import type { FlowItem } from "./flow";
  * It plays through the app's one player, so the mini player, Now Playing and
  * the lock screen show it, with the evangelist or apostle on the cover.
  * Playing anything else ends it; so does the last verse of the last passage.
+ * It plays at the reader's speed (lib/player/speed.ts), as Listen does, and
+ * from 1.8 the player's previous and next step from one reading to the one
+ * before or after it (listeningPlace, stepListening).
  */
 
 /** One span to hear: a run of verses in one chapter. */
@@ -70,6 +74,42 @@ type Run = {
 let run: Run | null = null;
 let stopWatching: (() => void) | null = null;
 
+/**
+ * Where the readings are, for the player's previous and next (1.8): the
+ * recording being heard, and the reading before and after the one being
+ * heard by their titles, or null at either end. Null when no reading is
+ * being heard.
+ */
+export type ListeningPlace = { src: string; previous: string | null; next: string | null };
+
+let place: ListeningPlace | null = null;
+const placeWatchers = new Set<() => void>();
+
+/** Say where the readings are now, to whoever shows it, when it changes. */
+function tellPlace(): void {
+  const current = run;
+  const next: ListeningPlace | null =
+    current && current.at >= 0
+      ? { src: current.src, previous: current.parts[current.at - 1]?.title ?? null, next: current.parts[current.at + 1]?.title ?? null }
+      : null;
+  if (next?.src === place?.src && next?.previous === place?.previous && next?.next === place?.next) return;
+  place = next;
+  for (const watcher of placeWatchers) watcher();
+}
+
+/** Where the readings are now (ListeningPlace). */
+export function listeningPlace(): ListeningPlace | null {
+  return place;
+}
+
+/** Be told when the readings move on, start or stop. */
+export function subscribeListening(watcher: () => void): () => void {
+  placeWatchers.add(watcher);
+  return () => {
+    placeWatchers.delete(watcher);
+  };
+}
+
 /** Whether today's readings are what the player is reading now. */
 export function isListening(): boolean {
   return run !== null;
@@ -89,6 +129,21 @@ export function stopListening(): void {
   stopWatching?.();
   stopWatching = null;
   run = null;
+  tellPlace();
+}
+
+/**
+ * The reading before (-1) or after (1) the one being heard, from its first
+ * verse (1.8, the player's previous and next). Nothing at either end.
+ */
+export function stepListening(by: -1 | 1): void {
+  const current = run;
+  if (!current || current.at < 0) return;
+  const to = current.at + by;
+  if (to < 0 || to >= current.parts.length) return;
+  // Marked first, so the player's news of the change does not move it on twice.
+  current.loading = true;
+  void playPart(to);
 }
 
 async function playPart(i: number): Promise<void> {
@@ -112,6 +167,7 @@ async function playPart(i: number): Promise<void> {
   const src = readAloudSrc(part.book, part.chapter);
   const cover = readAloudCover(part.book);
   Object.assign(current, { at: i, src, start: times.start, end: times.end, last: times.start });
+  tellPlace();
   setTrack(src, {
     title: part.title,
     artist: part.artist,
@@ -119,6 +175,7 @@ async function playPart(i: number): Promise<void> {
     artFallback: cover.fallback,
     artSize: cover.size ?? undefined,
     captions: verseCaptions(manifest),
+    rate: readSpeed(),
   });
   setLoopMode("off");
   // A second span in the chapter already loaded can be placed at once; a

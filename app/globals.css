@@ -650,16 +650,28 @@ html.is-native .under-plates {
    chapter. Hidden once faded, not only clear, so a tap
    reaches the words under them and a screen reader does not find them. The
    pill's own fade, while a sheet or a verse's tools stand over it, rides on
-   the same transition. */
+   the same transition.
+
+   In the apps the tab bar goes with them, sinking with the pill (the owner's
+   "add everything we left out", 2026-10-28, with his pick B of the reader's
+   buttons, r18/choose/4-bible-buttons), and comes back with them. It is every
+   screen's bar, so its rules are keyed on data-reader-screen, which only the
+   reader's screen sets while it is open (scrollAway.ts): on every other
+   screen it keeps its own fade for the sheets and nothing else. What stands
+   on it, the mini player and today's readings' bar, comes down to the foot
+   while it is away, as in focus mode, and goes back up with it; on the web,
+   which has no tab bar, nothing moves. */
 [data-mobile-topbar][data-plates] [data-plates-row],
-[data-reader-pill] {
+[data-reader-pill],
+body[data-reader-screen] [data-tab-bar] {
  transition:
   opacity var(--duration-fast) var(--ease-house),
   transform var(--duration-fast) var(--ease-house),
   visibility 0s;
 }
 body[data-reader-away] [data-mobile-topbar][data-plates] [data-plates-row],
-body[data-reader-away] [data-reader-pill] {
+body[data-reader-away] [data-reader-pill],
+body[data-reader-screen][data-reader-away] [data-tab-bar] {
  opacity: 0;
  visibility: hidden;
  transition:
@@ -670,22 +682,33 @@ body[data-reader-away] [data-reader-pill] {
 body[data-reader-away] [data-mobile-topbar][data-plates] [data-plates-row] {
  transform: translateY(-8px);
 }
-body[data-reader-away] [data-reader-pill] {
+body[data-reader-away] [data-reader-pill],
+body[data-reader-screen][data-reader-away] [data-tab-bar] {
  transform: translateY(12px);
+}
+body[data-reader-screen] .now-playing-lift {
+ transition: translate var(--duration-fast) var(--ease-house);
+}
+html.is-native:not(.reader-focus) body[data-reader-screen][data-reader-away] .now-playing-lift {
+ translate: 0 calc(var(--tab-bar-h) - 0.375rem);
 }
 /* A control the keyboard is on stays in sight; one a finger tapped does not
    hold the plates up. A rule of its own, so a WebView that cannot read
    :has() still puts them away. */
 body[data-reader-away] [data-mobile-topbar][data-plates] [data-plates-row]:has(:focus-visible),
-body[data-reader-away] [data-reader-pill]:has(:focus-visible) {
+body[data-reader-away] [data-reader-pill]:has(:focus-visible),
+body[data-reader-screen][data-reader-away] [data-tab-bar]:has(:focus-visible) {
  opacity: 1;
  visibility: visible;
  transform: none;
 }
 :where([data-motion="reduce"]) [data-mobile-topbar][data-plates] [data-plates-row],
 :where([data-motion="reduce"]) [data-reader-pill],
+:where([data-motion="reduce"]) body[data-reader-screen] [data-tab-bar],
+:where([data-motion="reduce"]) body[data-reader-screen] .now-playing-lift,
 :where([data-motion="reduce"]) body[data-reader-away] [data-mobile-topbar][data-plates] [data-plates-row],
-:where([data-motion="reduce"]) body[data-reader-away] [data-reader-pill] {
+:where([data-motion="reduce"]) body[data-reader-away] [data-reader-pill],
+:where([data-motion="reduce"]) body[data-reader-screen][data-reader-away] [data-tab-bar] {
  transition: none;
 }
 

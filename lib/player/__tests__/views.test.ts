@@ -40,11 +40,45 @@ describe("Now Playing: the cover and the words, never merged", () => {
   });
 
   it("keeps every control in one block under both views", () => {
-    for (const control of ["<PositionBar", "<Transport", "setLoopMode(", 'variant="option"', "setSleepMenu(true)", "<SaveOfflineNote"]) {
+    for (const control of ["<PositionBar", "<PlayerTransport", "setLoopMode(", 'variant="option"', "setSleepMenu(true)", "<SaveOfflineNote"]) {
       expect(block, control).toContain(control);
       expect(cover, control).not.toContain(control);
       expect(words, control).not.toContain(control);
     }
+  });
+
+  // 1.8, what round 8 A drew and the first build left out (the owner's "add
+  // everything we left out", 2026-10-28): previous and next, Speed, Read and
+  // •••, with every control the player had where it was.
+  it("keeps the choices in their order, Speed and Read added: Loop, Speed, Ambience, the sleep timer, Read", () => {
+    const row = block.slice(block.indexOf("The choices under the controls"), block.indexOf("<PlayerMoreSheet"));
+    const order = ["setLoopMode(", 't("player.speed")', 'variant="option"', "setSleepMenu(true)", 't("player.read")'].map((m) => row.indexOf(m));
+    expect(order.every((at) => at > -1), String(order)).toBe(true);
+    expect([...order].sort((a, b) => a - b)).toEqual(order);
+    // Each an even share of one row, so five fit a 360px phone in any language.
+    expect(row).toContain('className="mt-5 grid grid-flow-col auto-cols-[minmax(0,1fr)] items-start gap-1"');
+    expect(read("components/player/Transport.tsx")).toContain("[overflow-wrap:anywhere] hyphens-auto");
+  });
+
+  it("puts ••• at the right of the top bar, opening a sheet over the player", () => {
+    const top = src.slice(src.indexOf("Top: put it away"), src.indexOf("The middle: the cover, or the words"));
+    expect(top).toMatch(/onClick=\{\(\) => setMoreMenu\(true\)\}\s*aria-label=\{t\("bible\.moreActions"\)\}\s*aria-haspopup="dialog"/);
+    expect(top).toContain("<More size={20} />");
+    expect(top).not.toContain('<span className="h-11 w-11 shrink-0" aria-hidden />');
+    // A sheet over the player: Escape and the back button are its own.
+    expect(src).toContain("const covered = sleepMenu || moreMenu || (ambienceSheet.open && ambienceSheet.overPlayer);");
+  });
+
+  it("holds in ••• what the player does that has no button in that corner, and Share", () => {
+    const more = read("components/player/PlayerMore.tsx");
+    const rows = ["<SaveOfflineRow", 't("player.sleep")', 't("ambience.title")', 't("common.share")'].map((m) => more.indexOf(m));
+    expect(rows.every((at) => at > -1), String(rows)).toBe(true);
+    expect([...rows].sort((a, b) => a - b)).toEqual(rows);
+    expect(more).toContain('<Sheet open={open} onClose={onClose} title={title} desktop layer="over-player">');
+    // It goes first when a row opens another sheet.
+    expect(more).toMatch(/onClose\(\);\s*onSleep\(\);/);
+    expect(more).toMatch(/onClose\(\);\s*openAmbience\(\{ overPlayer: true \}\);/);
+    expect(read("components/player/SaveOffline.tsx")).toMatch(/onLeave\(\);\s*void save\(\);/);
   });
 
   it("switches in the top bar, and remembers the choice", () => {

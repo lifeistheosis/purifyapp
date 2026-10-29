@@ -75,7 +75,7 @@ vi.mock("@/lib/readAloud/covers", () => ({
   readAloudCover: () => ({ src: "/covers/read/x.jpg", fallback: "/x.jpg", size: null }),
 }));
 
-const { isListening, listenParts, spanTimes, startListening, stopListening } = await import("../listen");
+const { isListening, listenParts, listeningPlace, spanTimes, startListening, stepListening, stopListening, subscribeListening } = await import("../listen");
 
 const flush = () => new Promise((r) => setTimeout(r, 0));
 const names = (item: { label: string; kind: string }) => ({ title: item.label, artist: item.kind });
@@ -164,6 +164,52 @@ describe("hearing them", () => {
     expect(isListening()).toBe(false);
     set({ currentTime: 50 });
     expect(calls).not.toContain("pause");
+  });
+
+  it("tells the player the reading before and after the one being heard, and nothing at the ends", async () => {
+    let told = 0;
+    const stop = subscribeListening(() => told++);
+    startListening(parts());
+    await flush();
+    expect(listeningPlace()).toEqual({ src: "/audio/read/romans/12.mp3", previous: null, next: "Matthew 9:10-11" });
+    set({ duration: 60 });
+    set({ currentTime: 20.1 });
+    await flush();
+    expect(listeningPlace()).toEqual({ src: "/audio/read/matthew/9.mp3", previous: "Romans 12:2-3", next: null });
+    stopListening();
+    expect(listeningPlace()).toBeNull();
+    expect(told).toBe(3);
+    stop();
+  });
+
+  it("steps to the next reading and back, from its first verse, and stays in the readings", async () => {
+    startListening(parts());
+    await flush();
+    set({ duration: 60 });
+    set({ currentTime: 9 });
+    stepListening(1);
+    await flush();
+    expect(calls.slice(-2)).toEqual(["track /audio/read/matthew/9.mp3 Matthew 9:10-11", "play"]);
+    set({ duration: 40 });
+    expect(calls.at(-1)).toBe("seek 10.5");
+    expect(isListening()).toBe(true);
+    stepListening(-1);
+    await flush();
+    expect(calls.slice(-2)).toEqual(["track /audio/read/romans/12.mp3 Romans 12:2-3", "play"]);
+    set({ duration: 60 });
+    expect(calls.at(-1)).toBe("seek 6.5");
+    expect(listeningPlace()?.next).toBe("Matthew 9:10-11");
+  });
+
+  it("goes nowhere past either end", async () => {
+    startListening(parts());
+    await flush();
+    set({ duration: 60 });
+    const before = calls.length;
+    stepListening(-1);
+    await flush();
+    expect(calls.length).toBe(before);
+    expect(listeningPlace()?.previous).toBeNull();
   });
 
   it("does not move on when the reader pauses in the middle of a span", async () => {

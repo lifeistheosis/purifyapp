@@ -4,6 +4,7 @@ import { useEffect, useRef } from "react";
 import { ScriptureAttribution } from "./ScriptureAttribution";
 import { Fums } from "./Fums";
 import {
+ BIBLE_START_SIZE,
  FONT_CLASSES,
  SIZE_CLASSES,
  useReaderPrefs,
@@ -39,7 +40,8 @@ export function LicensedChapterReader({
  transId: string;
  translationLabel: string;
 }) {
- const { size, font, leadingValue } = useReaderPrefs();
+ // Large for a reader who has never chosen a size, as the public-domain reader (1.8).
+ const { size, font, leadingValue } = useReaderPrefs(BIBLE_START_SIZE);
  const contentRef = useRef<HTMLDivElement>(null);
  const notesRef = useRef<HTMLDivElement>(null);
 
