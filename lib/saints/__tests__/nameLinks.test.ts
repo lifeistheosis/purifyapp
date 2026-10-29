@@ -24,6 +24,33 @@ describe("the name table", () => {
     for (const slug of [...Object.keys(KNOWN_FORMS), ...Object.keys(NOT_BY_NAME)]) expect(slugs.has(slug), slug).toBe(true);
   });
 
+  it("holds only forms of the saint's own name: every word of one is in that saint's card", () => {
+    // "Theodosius the Cenobiarch" was written against theodosius-the-great,
+    // which is the emperor, so the Cenobiarch's name opened the emperor's
+    // card. Nothing the emperor's card says has "Cenobiarch" in it. Six
+    // letters are enough, so Nazianzen finds Nazianzus and Damascene finds
+    // Damascus.
+    const SMALL = new Set(["the", "of", "st", "st.", "saint", "apostle", "abba", "son"]);
+    const bySlug = new Map(SAINTS.map((s) => [s.slug, s]));
+    for (const [slug, forms] of Object.entries(KNOWN_FORMS)) {
+      const s = bySlug.get(slug);
+      const card = s ? [s.name, s.byname, s.epithet, s.see, s.shortBio, ...s.life].join(" ").toLowerCase() : "";
+      for (const form of forms) {
+        for (const word of form.toLowerCase().replace(/,/g, "").split(/\s+/)) {
+          if (SMALL.has(word)) continue;
+          expect(card.includes(word.slice(0, 6)), `"${form}" (${slug}): "${word}" is nowhere in the card`).toBe(true);
+        }
+      }
+    }
+  });
+
+  it("opens no card for St Theodosius the Cenobiarch, who is not the emperor", () => {
+    // January 11, +529, the founder of the common life in Palestine; the
+    // emperor is January 17, +395. The Cenobiarch has no card of his own.
+    expect(SAINT_NAME_FORMS.filter(([form]) => /Cenobiarch/i.test(form))).toEqual([]);
+    expect(links("St. Theodosius the Cenobiarch founded the first communal monastery in Palestine.")).toEqual([]);
+  });
+
   it("takes the honorific off a registry name", () => {
     expect(nameCore("St. Leo the Great")).toBe("Leo the Great");
     expect(nameCore("Holy Apostle Paul")).toBe("Apostle Paul");
@@ -84,7 +111,8 @@ describe("segmentNames", () => {
     expect([...done]).toEqual(["cyril-of-alexandria"]);
   });
 
-  it("leaves the emperor called Theodosius the Great alone", () => {
+  it("does not link Theodosius the Great, which names the Cenobiarch as well as the emperor", () => {
     expect(links("the emperor Theodosius the Great")).toEqual([]);
+    expect(links("St. Theodosius the Great, the Cenobiarch")).toEqual([]);
   });
 });

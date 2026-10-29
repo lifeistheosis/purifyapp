@@ -99,7 +99,7 @@ describe("the head as the apps' export bakes it", () => {
         createElement(PrayersHero, null, createElement(RuleToday, { hourPart: "morning" })),
       ),
     );
-    expect(html).toContain('src="/sections/prayers.v3.jpg"');
+    expect(html).toContain('src="/sections/prayers.v4.jpg"');
     expect(html).toContain("Pray without ceasing.");
     expect(html).toContain("1 Thessalonians 5:17");
     // Nothing of the reader's is in the page as built: neither a rule nor the offer to make one.

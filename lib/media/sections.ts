@@ -92,21 +92,24 @@ export const SECTION_MEDIA: Partial<Record<SectionKey, SectionMedia>> = {
   // ... without the lines". A new name, so no cache keeps the old one. Since
   // 1.8, when Prayers opens on it full width, the same framing is cut from the
   // Commons original itself (801 wide) rather than the shop's smaller copy:
-  // prayers.v3.jpg, 619 by 652, the most that file holds. The record is in
+  // prayers.v3.jpg, 619 by 652, the most that file holds. And since the
+  // owner's pick that same evening (B of two, 2026-10-28), the same framing
+  // from a larger photograph of the icon on Commons, 2023 by 3774, cooler than
+  // the one before: prayers.v4.jpg, 1290 by 1359. The record is in
   // docs/licensing/SECTION_MEDIA.md.
   prayers: {
-    src: "/sections/prayers.v3.jpg",
+    src: "/sections/prayers.v4.jpg",
     alt: "Christ Pantocrator, the sixth-century icon kept at St Catherine's Monastery on Sinai: his face, close, within the gold of his halo.",
     work: "Christ Pantocrator, St Catherine's Monastery, Sinai",
     artist: "Anonymous",
     workDate: "6th century",
-    source: "File:Christ Icon Sinai 6th century.jpg",
+    source: "File:Spas vsederzhitel sinay.jpg",
     license: "Public domain",
     evidenceUrl:
-      "https://commons.wikimedia.org/wiki/File%3AChrist_Icon_Sinai_6th_century.jpg",
+      "https://commons.wikimedia.org/wiki/File%3ASpas_vsederzhitel_sinay.jpg",
     portrait: true,
-    width: 619,
-    height: 652,
+    width: 1290,
+    height: 1359,
   },
   discover: {
     src: "/sections/discover.jpg",

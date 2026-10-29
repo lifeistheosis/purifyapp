@@ -21,7 +21,6 @@ export const SAINT_NAME_FORMS: [string, string][] = [
   ["Nicholas the Wonderworker", "nicholas-the-wonderworker"],
   ["Seven Sleepers of Ephesus", "seven-sleepers-of-ephesus"],
   ["Symeon the New Theologian", "symeon-the-new-theologian"],
-  ["Theodosius the Cenobiarch", "theodosius-the-great"],
   ["Agathonicus of Nicomedia", "agathonicus-of-nicomedia"],
   ["Apostle Simon the Zealot", "apostle-simon-zealot"],
   ["Athanasius of Alexandria", "athanasius-the-great"],

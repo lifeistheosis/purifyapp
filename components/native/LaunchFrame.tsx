@@ -1,7 +1,7 @@
 import { readFileSync } from "node:fs";
 import { join } from "node:path";
 
-import { LAUNCH_CROSS_PX, LIFT_AT_FIRST_PAINT } from "@/lib/platform/launchFrame";
+import { INTRO_PACE_AT_FIRST_PAINT, LAUNCH_CROSS_PX, LIFT_AT_FIRST_PAINT } from "@/lib/platform/launchFrame";
 
 import { HORIZON_STARS, HorizonDrawing } from "./Horizon";
 
@@ -36,6 +36,12 @@ import { HORIZON_STARS, HorizonDrawing } from "./Horizon";
  * reader's language: NativeBridge) and data-intro="played" (the intro has had
  * its time: the script below). So that screen can come in pieces unseen, as
  * it did under the logo.
+ *
+ * TWO PACES. Slow on the first cold start of the reader's day, quick on every
+ * later one that day (the owner, 2026-10-28). The script above the cover marks
+ * which on <html> before the cover is in the page, and the stylesheet and the
+ * script below follow the mark. Each star carries its own moment as
+ * `--star-at`, so the quick pace can bring it forward (app/globals.css).
  */
 
 // The real cross, not a redraw, read at build and written into the document
@@ -47,6 +53,9 @@ const CROSS_W = (LAUNCH_CROSS_PX * 177) / 311;
 export function LaunchFrame() {
   return (
     <>
+      {/* The intro's pace, before the cover, so the cover is never in the page
+          on the wrong one. */}
+      <script suppressHydrationWarning dangerouslySetInnerHTML={{ __html: INTRO_PACE_AT_FIRST_PAINT }} />
       <div data-launch-frame="" aria-hidden="true" className="dark-island fixed inset-0 z-[200] overflow-hidden bg-night">
         {/* Everything that lifts away together when the cover goes. */}
         <div data-launch-stage="" className="absolute inset-0 text-paper">
@@ -55,7 +64,7 @@ export function LaunchFrame() {
               <i
                 key={`${s.left}${s.top}`}
                 className="absolute rounded-full bg-paper"
-                style={{ left: s.left, top: s.top, width: s.size, height: s.size, opacity: s.opacity, animationDelay: `${s.delay}ms` }}
+                style={{ left: s.left, top: s.top, width: s.size, height: s.size, opacity: s.opacity, ["--star-at" as string]: `${s.delay}ms` }}
               />
             ))}
           </div>

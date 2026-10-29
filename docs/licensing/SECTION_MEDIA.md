@@ -17,10 +17,10 @@ be public domain, so no attribution string is load-bearing, but
 | File | Section | Work | Artist | Date | License | Source |
 | --- | --- | --- | --- | --- | --- | --- |
 | `bible.jpg` | bible | Codex Sinaiticus, Matthew 6:4-32 | Anonymous | 4th century | Public domain | [Commons](https://commons.wikimedia.org/wiki/File%3ACodex_Sinaiticus_Matthew_6%2C4-32.JPG) |
-| `prayers.v3.jpg` | prayers | Christ Pantocrator, St Catherine's Monastery, Sinai | Anonymous | 6th century | Public domain (PD-Art, PD-old-100-expired) | [Commons](https://commons.wikimedia.org/wiki/File%3AChrist_Icon_Sinai_6th_century.jpg) |
+| `prayers.v4.jpg` | prayers | Christ Pantocrator, St Catherine's Monastery, Sinai | Anonymous | 6th century | Public domain (PD-Art, PD-old-100-expired) | [Commons](https://commons.wikimedia.org/wiki/File%3ASpas_vsederzhitel_sinay.jpg) |
 | `discover.jpg` | discover | Menologion of Basil II, the Circumcision of Christ (f. 287) | Byzantine illuminators of the Menologion of Basil II | c. 985 | Public domain | [Commons](https://commons.wikimedia.org/wiki/File%3AMenologion_of_Basil_047.jpg) |
 | `reading.jpg` | reading | Ostromir Gospels, the Evangelist Luke | Anonymous | 1056 | Public domain | [Commons](https://commons.wikimedia.org/wiki/File%3AOstromir_luke.jpg) |
-| `you.jpg` | you | The Ladder of Divine Ascent, St Catherine's Monastery, Sinai | Anonymous (photograph by Florian Prischl) | 12th century | Public domain | [Commons](https://commons.wikimedia.org/wiki/File%3AThe_Ladder_of_Divine_Ascent.jpg) |
+| `you.jpg` | you | The Ladder of Divine Ascent, St Catherine's Monastery, Sinai | Anonymous (image by Michel Bakni) | 12th century | Public domain | [Commons](https://commons.wikimedia.org/wiki/File%3AThe_Ladder_of_Divine_Ascent-Sinai.jpg) |
 
 `prayers.jpg` was replaced on 2026-10-05, for 1.5.2. It is the bust of the
 Sinai Pantocrator (629 by 660), cut with sharp from the copy of the same
@@ -60,9 +60,40 @@ pictures' stand-in (`lib/onboarding/pictures.ts`). When the two branches met
 on release/1.8 the stand-in moved to `prayers.v3.jpg` and v2 left the disk
 (2026-10-28).
 
-Two larger scans of the same icon are on Commons, and neither is used, because
-each is another photograph and so a change of picture, not more pixels of this
-one. They are listed under "Rejected" below, so the next run sees them.
+`prayers.v4.jpg` replaced v3 the same evening (2026-10-28, for 1.8). The
+owner was shown v3 beside the same framing cut from a larger photograph of the
+icon, which until then was listed under "Rejected" below as his call. His word
+was "any", and the larger one was taken. The photograph is
+`File:Spas vsederzhitel sinay.jpg`, 2023 by 3774, whose file page gives its
+source as icons.pstgu.ru/icon/2036. It is another photograph of the same
+panel, not more pixels of the old one: cooler, the halo paler, the hair near
+black. Its licence was read from the Commons API that day: LicenseShortName
+"Public domain", Copyrighted "False", and on the file page
+`{{PD-Art|PD-old-100-expired}}` (the page as revised on 2026-02-28). The
+download matched the API's sha1 and was opened and looked at before it was
+cut: the whole panel, and no watermark. v3's framing was found in it by
+matching v3 against it (a box 1552.6 by 1623.1 at 228.5, 235.7), and v3's
+shape was kept around that box: 1554 by 1637 from 228px in and 229px down,
+brought down to 1290 by 1359, nothing enlarged. JPEG (mozjpeg) at quality
+86, 358 KB. Laid beside v3 at the same size, the eyes, the parting of the
+hair, the mouth and the edge of the halo fall on the same lines; the colour is
+the new photograph's own and was not matched to the old. It has no white at
+any edge (`node scripts/check-picture-edges.mjs sections`). The onboarding
+stand-in and Start here moved to it with Prayers. `prayers.v3.jpg` stays in
+`public/sections/` for now, only because two places that came into
+release/1.8 beside this change still name it: the Pray card on Today and the
+verse picture's Christ look (`lib/share/verseCard.ts`). It goes when they move
+to v4.
+
+A third photograph of the icon on Commons, larger still, is not used. It is
+listed under "Rejected" below, so the next run sees it.
+
+`you.jpg` has been a flat scan of the Ladder since 1.7 (the owner,
+2026-10-15: the photograph through the glass it replaced was "a super blurry
+photo"), cut from the 1920 px copy of a 9400 by 13200 file. Its row above
+still named the old photograph until 2026-10-28, when
+`lib/media/__tests__/sections.test.ts` began holding every row to the
+registry's own link.
 
 ## Rejected, and why
 
@@ -76,7 +107,6 @@ license field will not tell you any of this. Open the image and look at it.**
 | `File:Menologion of Basil 326.jpg` | The 985 miniature is public domain, but the Vatican Library scan carries a diagonal "RESERVED" watermark across the image. |
 | `File:Sanahin - Armenia (2933442321).jpg` | Armenian Apostolic, not Eastern Orthodox, and the frame is a bare grey stone hall that does not read as a reading room. |
 | `File:Chora Church Constantinople (11).JPG` | Genuine Byzantine mosaic, but the frame is mostly exposed brick and a broken medallion, so it reads as ruin rather than library. |
-| `File:Spas vsederzhitel sinay.jpg` | The Sinai Pantocrator at 2023 by 3774 (PD-Art, PD-old-100-expired), which would give the Prayers hero 1290 wide. Not used in 1.8: it is another photograph of the icon, cooler than the one Purify shows, with the halo paler, the hair near black and a blue-grey ground at the corners. Whether that is worth it is the owner's call. |
 | `File:CHRIST PANTOCRATOR-SINAI(6th Century).jpg` | The Sinai Pantocrator at 7264 by 13120 (50 MB). A third photograph: browner and greener, cut inside the board so the halo meets the top edge. Not used. |
 | `File:Hagia Sophia Deesis mosaic.JPG` | Shipped as the Prayers plate until 1.5.2, then withdrawn. The photograph is soft, and the 16:9 crop of it ended at the beard: the face of Christ was cut by the frame, and the wash over the plate's lower half hid what was left. The owner, 2026-10-05: "it just doesn't look good overall". A wide crop of a face that fills its picture will always cut it. |
 

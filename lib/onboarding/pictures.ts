@@ -64,7 +64,7 @@ export const ANSWER_PICTURES: Readonly<Record<Intent, AnswerPicture>> = {
   feasts: { src: "/discover/tiles/calendar.v2.webp", focus: "50% 25%" },
   // Stand-in: Christ Pantocrator of Sinai, 6th century, the picture Prayers
   // wears (docs/licensing/SECTION_MEDIA.md, lib/media/sections.ts).
-  prayer: { slot: "onboarding-rule", src: "/sections/prayers.v3.jpg", focus: "50% 40%" },
+  prayer: { slot: "onboarding-rule", src: "/sections/prayers.v4.jpg", focus: "50% 40%" },
   // Stand-in: St Gregory Palamas, the teacher of stillness, his icon on his
   // own page (lib/saints/iconRights.ts). Not History's larger copy: the apps
   // ask the website for History's pictures, and a first open may have no
