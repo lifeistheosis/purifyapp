@@ -712,6 +712,25 @@ body[data-reader-screen][data-reader-away] [data-tab-bar]:has(:focus-visible) {
  transition: none;
 }
 
+/* A work's section pill arrives gently (1.8, the owner's note 14 of build 80:
+   opening the Conferences, "Section 1 of 603" appeared at once). It comes
+   into the page with the work's text, which in the apps is read from the
+   bundle after the page has opened (components/saints/LazyWritingReader.tsx),
+   so it used to land after the page's own fade, all at once. It fades in on
+   its own as it arrives, whenever that is. On the pill's face, not on
+   [data-reader-pill], whose opacity is the away and covered fades above, so
+   the three never fight; opacity only, filling backwards, so nothing is left
+   behind once it has played. */
+@keyframes reader-pill-in {
+ from { opacity: 0; }
+}
+.reader-pill-in {
+ animation: reader-pill-in var(--duration-slow) var(--ease-house) backwards;
+}
+:where([data-motion="reduce"]) .reader-pill-in {
+ animation: none;
+}
+
 /* The fade the pill floats on, as drawn: the words go quiet under it, down
    to the tab bar. The page's own ground, so every palette has it. */
 .pill-fade {
