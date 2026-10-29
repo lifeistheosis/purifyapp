@@ -31,7 +31,7 @@ Account deletion is built in: Account → Data → Danger zone → Delete accoun
 ## Data safety facts (for privacy labels / data-safety forms)
 
 - Collected, linked to identity: email address (account creation only).
-- Collected, not linked: anonymized page-view analytics (self-hosted, 90-day purge).
+- Collected, not linked: anonymized page-view analytics (self-hosted, kept with no scheduled purge).
 - NOT collected: location, contacts, photos, health, ads identifiers. No
   third-party ad/tracking SDKs. Full policy: https://purifyapp.net/privacy
 - Sign-out does NOT delete local reading data (verified in smoke test).

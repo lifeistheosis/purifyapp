@@ -80,7 +80,7 @@ Connect record exactly.
 - Data linked to you: **Contact Info > Email Address** (purpose: App
   Functionality; only if the user creates the optional account)
 - Data not linked to you: **Usage Data > Product Interaction**
-  (purpose: Analytics; anonymized page views, 90-day purge)
+  (purpose: Analytics; anonymized page views, kept with no scheduled purge)
 
 **Review notes** (paste, then add the test account credentials):
 > Purify is an Orthodox Christian prayer and reading app. The whole library is free and there are no ads. This build contains no in-app purchases: a subscription (Purify Plus) exists on other platforms, and the pricing screen describes it, but it is not purchasable here and the app says so rather than offering a button that cannot complete. No account is needed to read anything; the optional account exists to synchronize bookmarks and highlights across devices, and offers Google and Sign in with Apple alongside email. A password-based test account is provided below (the app also supports emailed magic links, but the password path is faster for review). Suggested flow: Today tab, then Bible > John 1 > tap a verse for patristic commentary, then Prayers > Morning prayers, then Discover > Saints. Account deletion is built in at Account > Data > Danger zone. All texts are public-domain translations with sources named in-app. Privacy policy: https://purifyapp.net/privacy. Terms: https://purifyapp.net/terms.

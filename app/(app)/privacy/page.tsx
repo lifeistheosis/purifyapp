@@ -310,13 +310,18 @@ export default async function PrivacyPage() {
  on your device.
 </p>
 
- {/* Retention */}
+ {/* Retention. Until 2026-10-29 this said a scheduled job deleted
+ these rows at 90 days. That job (docs/operations/analytics-retention.md)
+ was never switched on, and the owner chose to have the page say what
+ happens rather than start it. */}
  <p className="mt-10 font-sans text-caption font-semibold text-paper/45">
  How long we keep it
  </p>
  <p className="mt-3 font-serif text-body text-paper/85 leading-[1.7]">
- Anonymous session and pageview rows older than 90 days are
- deleted by a scheduled job. Sync data tied to your account
+ We keep the anonymous visit data: the session and pageview rows,
+ and the catechism, welcome-question and screen counts described
+ above. Nothing deletes them on a schedule; we keep them to see how
+ Purify is used over time. Sync data tied to your account
  (highlights, bookmarks, etc.) is kept as long as your account
  exists; deleting your account from{" "}
  <Link
@@ -891,8 +896,9 @@ function PrivacyDe() {
  Wie lange wir es behalten
  </p>
  <p className="mt-3 font-serif text-body text-paper/85 leading-[1.7]">
- Anonyme Sitzungs- und Seitenaufruf-Zeilen, die älter als 90 Tage
- sind, werden von einem geplanten Auftrag gelöscht. Abgleichsdaten,
+ Die anonymen Sitzungs- und Seitenaufruf-Zeilen behalten wir, damit
+ wir sehen können, wie Purify über die Zeit genutzt wird; kein
+ geplanter Auftrag löscht sie. Abgleichsdaten,
  die an dein Konto gebunden sind (Markierungen, Lesezeichen usw.),
  werden so lange behalten, wie dein Konto besteht; die Löschung
  deines Kontos von{" "}

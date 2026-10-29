@@ -1,5 +1,7 @@
 # Analytics retention, 90-day rolling window
 
+> **Not in force (2026-10-29).** This prune was never scheduled on production, so the 90 days were never kept: on 2026-10-04 the page views spanned 136 days. Offered the choice of starting it or changing the page, the owner chose the page, and `/privacy` now says the anonymous visit rows are kept with no scheduled deletion. This file stays as the plan should a limit ever be set; setting one means changing `/privacy` (both languages) first, as its "Changes to this page" section promises.
+
 The `/privacy` page promises that anonymous session and pageview rows are pruned at 90 days. This doc is the implementation of that promise.
 
 **Activated:** see [analytics-retention-activated-2026-05-23.md](./analytics-retention-activated-2026-05-23.md) for the activation log and the proof-of-schedule screenshot. Until that file shows an activation entry, the privacy promise is documented but not enforced, the operator who runs the schedule statement below is responsible for updating that file in the same commit.

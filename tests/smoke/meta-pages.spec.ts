@@ -35,5 +35,8 @@ test("/privacy mentions the recorded fields", async ({ page }) => {
  expect(text).toMatch(/user-agent/i);
  expect(text).toMatch(/Supabase/);
  expect(text).toMatch(/API\.Bible/);
- expect(text).toMatch(/90 days/);
+ // And how long it is kept: no 90-day deletion runs, so the page may
+ // not promise one (it did until 2026-10-29).
+ expect(text).toMatch(/Nothing deletes them on a schedule/);
+ expect(text).not.toMatch(/older than 90 days/);
 });

@@ -39,7 +39,11 @@ The privacy page at [`/privacy`](../../app/(app)/privacy/page.tsx) promises 90-d
   - Verification query output (paste it raw, or link to a screenshot).
 -->
 
-### (pending)
+### 2026-10-29, withdrawn, never activated
+
+The schedule was never run on production. The owner chose to have `/privacy` say the anonymous visit rows are kept rather than start it, so nothing here is pending any more. See the note at the top of [analytics-retention.md](./analytics-retention.md).
+
+### (pending, as first written)
 
 The schedule has not yet been activated on production as of the commit that introduced this file. The next operator who runs the `cron.schedule()` statement in the production Supabase console should replace this `(pending)` block with a real entry following the format below.
 
