@@ -366,12 +366,17 @@ html.is-native {
  --inset-top: env(safe-area-inset-top, 0px);
  --inset-bottom: env(safe-area-inset-bottom, 0px);
 }
-/* The actual app-shell padding only applies inside the native shell. */
+/* The actual app-shell padding only applies inside the native shell.
+   It makes room for the mini player too (--now-playing-h, 0 when none is
+   showing): until build 80 it made room for the tab bar alone, so the
+   now-playing card, which stands above the tab bar, covered the last lines
+   of every page. The owner, 2026-10-29: "it hides the bottom, the very
+   bottom of the screen where it says show words" (Today's Remember card). */
 html.is-native .safe-pb {
- padding-bottom: calc(var(--inset-bottom) + var(--tab-bar-h));
+ padding-bottom: calc(var(--inset-bottom) + var(--tab-bar-h) + var(--now-playing-h));
 }
 html.is-native .safe-pb-reader {
- padding-bottom: calc(var(--inset-bottom) + var(--tab-bar-h) + 68px);
+ padding-bottom: calc(var(--inset-bottom) + var(--tab-bar-h) + var(--now-playing-h) + 68px);
 }
 /* The now-playing bar sits ABOVE the tab bar, not on top of it.
    Both were pinned to bottom-0 and the player carried the higher z-index
