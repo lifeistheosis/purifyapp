@@ -1,27 +1,31 @@
 "use client";
 
-// Remember the verse (1.7, Purify Plus; named and set out again in 1.7.1):
-// one of the reader's saved verses a day, to say from memory. The card says
-// what it is and what to do, then sets the verse out as its words' first
-// letters, each on a small tile of its own with the verse's punctuation kept,
-// so the hint reads as words to recall. The reader checks a word at a time
-// ("Next word") or the whole verse ("Show the words"), then says how it went,
-// "I know it" or "Not yet" (lib/remember/schedule.ts says when it comes back).
-// Only when the reader has saved a verse.
+// Remember the verse (1.7, Purify Plus; set out again in 1.7.1 and 1.8): one
+// of the reader's saved verses a day, to say from memory. Only when the
+// reader has saved a verse.
 //
-// 1.7 drew the hint as one run of letters and underscores under a small
-// "Remember" ("F__ G__ s_ l____"). The owner's note of 2026-10-17: at first
-// he did not understand it, and it looked like a bunch of random text. Hence
-// the name in his words, the line under it, and the tiles.
+// 1.8, the owner's "a mix of A and B with a good design" of round 16
+// (Homebase/boards/purify-master/r18/choose/16b-remember-AB.png): the light
+// card of the Verse of the Day (his pick B of round 10) with the saved
+// verse's reference large, and the verse with some of its words left blank:
+// the longer words, the same ones every time for that verse
+// (lib/remember/blanks.ts). "Say the missing words, then check." Show the
+// words lights the blanked words up white; Hide puts the blanks back. "I know
+// it" says it is known; once the words are shown, "Not yet" brings it back
+// tomorrow (lib/remember/schedule.ts says when it comes back).
+//
+// Before 1.8 every word was a tile with its first letter on it, and a word
+// could be shown one at a time ("Next word"): the blanks leave the verse
+// readable and ask only for the words that carry it.
 //
 // A Plus feature is never hidden (the owner's rule, components/billing/
-// UpgradeModal.tsx): a reader without Plus sees the card, its tiles and its
-// mark, and "Show the words" opens the upgrade sheet named for it.
+// UpgradeModal.tsx): a reader without Plus sees the card, its blanks and its
+// name, and "Show the words" opens the upgrade sheet named for it.
 
 import Link from "next/link";
-import { Fragment, useEffect, useMemo, useRef, useState, useSyncExternalStore, type ReactNode } from "react";
+import { Fragment, useEffect, useMemo, useRef, useState, useSyncExternalStore } from "react";
 
-import { PlusLock, PlusMark } from "@/components/billing/PlusMark";
+import { PlusLock } from "@/components/billing/PlusMark";
 import { useUpgradeModal } from "@/components/billing/UpgradeModal";
 import { useTranslate } from "@/components/i18n/MessagesProvider";
 import { Check } from "@/components/ui/icons/Check";
@@ -31,43 +35,31 @@ import { localBookNames, referenceIn } from "@/lib/bible/books";
 import { useBookmarks } from "@/lib/bookmarks";
 import { cn } from "@/lib/cn";
 import { usePlusFeatures } from "@/lib/entitlements/usePlusFeatures";
+import { blankedWords, type BlankedWord } from "@/lib/remember/blanks";
 import {
   INTERVALS,
   addDays,
   answer,
   dayOf,
   dueVerse,
-  hintWords,
   keepText,
   textOf,
   verseKey,
   type Entry,
-  type HintWord,
   type SavedVerse,
 } from "@/lib/remember/schedule";
 
 const noop = () => () => {};
 
-/** How many words are shown, and how many were shown before the last tap. */
-type Reveal = { key: string; n: number; from: number };
-
-const PILL = "tap-press inline-flex h-11 items-center gap-1.5 rounded-pill px-4 font-sans text-caption font-semibold disabled:opacity-50";
+const PILL = "tap-press inline-flex h-11 items-center gap-1.5 rounded-pill px-[18px] font-sans text-ui font-semibold disabled:opacity-50";
 const SOLID = "bg-paper text-night";
-const QUIET = "border border-paper/20 text-paper/85";
+const QUIET = "border border-paper/20 text-paper";
 
-// A word's first letter on a tile of its own. Sized in em so it follows the
-// verse's type, and shorter than the line so two rows of tiles never touch.
-const TILE =
-  "mx-px inline-flex h-[1.6em] min-w-[1.6em] items-center justify-center rounded-[0.4em] bg-paper/[0.07] px-[0.35em] font-medium text-paper ring-1 ring-inset ring-paper/[0.12]";
-
-// A word coming out from under its tile: it clears into place, with the
-// motion switch on (a browser without @starting-style shows it at once).
-const WORD_IN =
-  "inline-block motion-safe:transition-[opacity,filter] motion-safe:duration-[var(--duration-base)] motion-safe:ease-[var(--ease-house)] motion-safe:starting:opacity-0 motion-safe:starting:blur-[3px]";
-
-/** Shown together, the words come in one after another, as the verse is read. */
-const STAGGER_MS = 18;
-const STAGGER_MAX_MS = 360;
+// A blank: the word is there but unseen, so the line does not move when it
+// is shown, over a line where it goes. Shown, it lights up white, with the
+// motion switch on (lib/ui/motion.ts) as a fade.
+const BLANK =
+  "inline-block border-b-[1.5px] border-paper/70 leading-[1.15] motion-safe:transition-[color,text-shadow] motion-safe:duration-[var(--duration-base)] motion-safe:ease-[var(--ease-house)]";
 
 export function RememberCard({ className }: { className?: string }) {
   const { t } = useTranslate();
@@ -77,7 +69,7 @@ export function RememberCard({ className }: { className?: string }) {
   // The schedule lives on the device: nothing is drawn until the page is.
   const client = useSyncExternalStore(noop, () => true, () => false);
   const [today] = useState(() => dayOf(new Date()));
-  const [reveal, setReveal] = useState<Reveal | null>(null);
+  const [shownFor, setShownFor] = useState<string | null>(null);
   const [answered, setAnswered] = useState<{ entry: Entry; knew: boolean } | null>(null);
   const [fetched, setFetched] = useState<{ key: string; text: string | null } | null>(null);
   // Keyboard focus stays in the card when the buttons under it change.
@@ -97,10 +89,8 @@ export function RememberCard({ className }: { className?: string }) {
   const due = useMemo(() => (client && !answered ? dueVerse(saved, today) : null), [client, answered, saved, today]);
   const kept = due ? textOf(due.key) : null;
   const text = kept ?? (fetched && due && fetched.key === due.key ? fetched.text : null);
-  const words = useMemo(() => (text ? hintWords(text) : []), [text]);
-  const said = useMemo(() => words.filter((w) => w.word).map((w) => w.lead + w.word + w.tail), [words]);
-  const step = reveal && due && reveal.key === due.key ? reveal : { n: 0, from: 0 };
-  const done = said.length > 0 && step.n >= said.length;
+  const words = useMemo(() => (text ? blankedWords(text) : []), [text]);
+  const shown = Boolean(due && shownFor === due.key);
 
   // The words, the first time: from the website, then kept on the device.
   useEffect(() => {
@@ -123,11 +113,10 @@ export function RememberCard({ className }: { className?: string }) {
 
   useEffect(() => {
     if (!regain.current) return;
-    if (answered) statusRef.current?.focus();
-    else if (done) rowRef.current?.querySelector("button")?.focus();
-    else return;
     regain.current = false;
-  }, [answered, done]);
+    if (answered) statusRef.current?.focus();
+    else rowRef.current?.querySelector("button")?.focus();
+  }, [answered, shown]);
 
   if (!client || (!due && !answered)) return null;
   const books = localBookNames(t);
@@ -144,11 +133,10 @@ export function RememberCard({ className }: { className?: string }) {
   const holdFocus = () => {
     regain.current = rowRef.current?.contains(document.activeElement) ?? false;
   };
-  const showTo = (n: number) => {
+  const show = (open: boolean) => {
     if (!due) return;
-    const next = Math.min(n, said.length);
-    if (next >= said.length) holdFocus();
-    setReveal({ key: due.key, n: next, from: step.n });
+    holdFocus();
+    setShownFor(open ? due.key : null);
   };
   const reply = (knew: boolean) => {
     if (!due) return;
@@ -157,122 +145,112 @@ export function RememberCard({ className }: { className?: string }) {
   };
 
   return (
-    <section aria-labelledby="remember-title" className={cn("rounded-2xl border border-paper/10 bg-paper/[0.03] p-4", className)}>
-      <p id="remember-title" className="font-heading text-title-sm font-semibold leading-tight text-paper">
-        {t("remember.title")}
-      </p>
-
-      {back ? (
-        <p ref={statusRef} tabIndex={-1} role="status" className="mt-2 flex items-center gap-2 font-sans text-ui text-paper/75 outline-none">
-          {answered?.knew ? <Check size={16} className="check-draw shrink-0" /> : null}
-          {back}
+    <section
+      aria-labelledby="remember-title"
+      className={cn("lm-card relative overflow-hidden rounded-[24px] border border-paper/10 bg-night-deep px-5 pb-[18px] pt-[22px] text-center", className)}
+    >
+      {/* The Verse of the Day's light, behind the words. */}
+      <span aria-hidden className="verse-light pointer-events-none absolute left-1/2 top-[-120px] h-[300px] w-[380px] -translate-x-1/2" />
+      <div className="relative">
+        <p id="remember-title" className="font-sans text-[12.5px] font-semibold text-paper/60">
+          {t("remember.title")}
+          <span className="text-paper/45"> · {t("plus.badge")}</span>
         </p>
-      ) : due ? (
-        <>
-          <p className="mt-1 font-sans text-detail leading-snug text-paper/65">{t("remember.line")}</p>
 
-          {/* The mark sits on the reference's row, where it leaves the
-              title one line on the narrowest phone. */}
-          <div className="mt-4 flex items-center justify-between gap-3">
+        {back ? (
+          <p ref={statusRef} tabIndex={-1} role="status" className="mt-3 flex items-center justify-center gap-2 font-sans text-ui text-paper/75 outline-none">
+            {answered?.knew ? <Check size={16} className="check-draw shrink-0" /> : null}
+            {back}
+          </p>
+        ) : due ? (
+          <>
             <Link
               href={`/bible/${due.book}/${due.chapter}#v${due.verse}`}
-              className="tap-press hit-44 inline-block font-sans text-detail font-semibold text-paper/80"
+              className="tap-press mt-2 inline-block font-heading text-[24px] font-bold leading-tight text-paper"
             >
               {referenceIn(due.label, due.book, books)}
             </Link>
-            {locked ? <PlusMark className="shrink-0" /> : null}
-          </div>
 
-          {/* Tall lines while tiles stand in them; the verse's own once it is all shown. */}
-          {text ? (
-            <p className={cn("mt-1 font-serif text-body text-paper/90", done ? "leading-[1.6]" : "leading-[2.05]")} dir="auto">
-              <VerseWords words={words} n={step.n} from={step.from} />
+            {text ? (
+              <>
+                <p className="mt-2.5 font-serif text-[18px] leading-[1.62] text-paper/90" dir="auto">
+                  <BlankedVerse words={words} shown={shown} blank={t("remember.blank")} />
+                </p>
+                <p className="mt-2 font-sans text-caption text-paper/50">{t("remember.lineBlanks")}</p>
+              </>
+            ) : fetched ? (
+              <p className="mt-2 font-sans text-detail italic text-paper/50">{t("remember.offline")}</p>
+            ) : (
+              <div aria-hidden className="mt-3 space-y-3 pb-1">
+                <Skeleton className="mx-auto h-5 w-full" weight="faint" />
+                <Skeleton className="mx-auto h-5 w-2/3" weight="faint" />
+              </div>
+            )}
+
+            {/* What Show the words lights up, said for a screen reader. */}
+            <p aria-live="polite" className="sr-only">
+              {shown ? words.filter((w) => w.blank).map((w) => w.word).join(", ") : ""}
             </p>
-          ) : fetched ? (
-            <p className="mt-2 font-sans text-detail italic text-paper/50">{t("remember.offline")}</p>
-          ) : (
-            <div aria-hidden className="mt-3 space-y-3 pb-1">
-              <Skeleton className="h-5 w-full" weight="faint" />
-              <Skeleton className="h-5 w-2/3" weight="faint" />
-            </div>
-          )}
 
-          {/* What a tap shows, said for a screen reader. */}
-          <p aria-live="polite" className="sr-only">
-            {step.n > step.from ? said.slice(step.from, step.n).join(" ") : ""}
-          </p>
-
-          {text || !fetched ? (
-            <div ref={rowRef} className="mt-3 flex flex-wrap items-center gap-2">
-              {locked ? (
-                <button type="button" disabled={!text} onClick={() => upgrade.open("remember")} className={cn(PILL, SOLID)}>
-                  {t("remember.show")}
-                  <PlusLock size={13} />
-                </button>
-              ) : done ? (
-                <>
-                  <button type="button" onClick={() => reply(false)} className={cn(PILL, QUIET)}>
-                    {t("remember.notYet")}
-                  </button>
-                  <button type="button" onClick={() => reply(true)} className={cn(PILL, QUIET)}>
-                    <Check size={15} className="shrink-0" />
-                    {t("remember.knew")}
-                  </button>
-                </>
-              ) : (
-                <>
-                  <button type="button" disabled={!text} onClick={() => showTo(step.n + 1)} className={cn(PILL, QUIET)}>
-                    {t("remember.nextWord")}
-                  </button>
-                  <button type="button" disabled={!text} onClick={() => showTo(said.length)} className={cn(PILL, SOLID)}>
+            {text || !fetched ? (
+              <div ref={rowRef} className="mt-4 flex flex-wrap items-center justify-center gap-2">
+                {locked ? (
+                  <button type="button" disabled={!text} onClick={() => upgrade.open("remember")} className={cn(PILL, SOLID)}>
                     {t("remember.show")}
+                    <PlusLock size={13} />
                   </button>
-                </>
-              )}
-            </div>
-          ) : null}
-        </>
-      ) : null}
+                ) : shown ? (
+                  <>
+                    <button type="button" onClick={() => show(false)} className={cn(PILL, QUIET)}>
+                      {t("remember.hide")}
+                    </button>
+                    <button type="button" onClick={() => reply(false)} className={cn(PILL, QUIET)}>
+                      {t("remember.notYet")}
+                    </button>
+                    <button type="button" onClick={() => reply(true)} className={cn(PILL, SOLID)}>
+                      {t("remember.knew")}
+                    </button>
+                  </>
+                ) : (
+                  <>
+                    <button type="button" disabled={!text} onClick={() => show(true)} className={cn(PILL, QUIET)}>
+                      {t("remember.show")}
+                    </button>
+                    <button type="button" disabled={!text} onClick={() => reply(true)} className={cn(PILL, SOLID)}>
+                      {t("remember.knew")}
+                    </button>
+                  </>
+                )}
+              </div>
+            ) : null}
+          </>
+        ) : null}
+      </div>
     </section>
   );
 }
 
-/** The verse as its words: the first `n` shown, the rest as first-letter tiles. */
-function VerseWords({ words, n, from }: { words: HintWord[]; n: number; from: number }) {
-  const out: ReactNode[] = [];
-  let index = 0;
-  for (const [i, w] of words.entries()) {
-    const gap = i ? " " : null;
-    if (!w.word) {
-      out.push(
-        <Fragment key={i}>
-          {gap}
+/** The verse with its blanks: each blanked word unseen over its line, lit white once shown. */
+function BlankedVerse({ words, shown, blank }: { words: BlankedWord[]; shown: boolean; blank: string }) {
+  return words.map((w, i) => (
+    <Fragment key={i}>
+      {i ? " " : null}
+      {w.blank ? (
+        <span className="whitespace-nowrap">
           {w.lead}
-        </Fragment>,
-      );
-      continue;
-    }
-    const open = index < n;
-    const delay = open && index >= from ? Math.min((index - from) * STAGGER_MS, STAGGER_MAX_MS) : 0;
-    index += 1;
-    out.push(
-      <Fragment key={i}>
-        {gap}
-        <span className={cn("whitespace-nowrap", !open && "text-paper/55")}>
-          {w.lead}
-          {open ? (
-            <span key="word" className={WORD_IN} style={delay ? { transitionDelay: `${delay}ms` } : undefined}>
-              {w.word}
-            </span>
-          ) : (
-            <span key="tile" className={TILE}>
-              {w.first}
-            </span>
-          )}
+          <span className={cn(BLANK, shown ? "remember-lit text-paper" : "select-none text-transparent")}>
+            <span aria-hidden={shown ? undefined : true}>{w.word}</span>
+            {shown ? null : <span className="sr-only">{blank}</span>}
+          </span>
           {w.tail}
         </span>
-      </Fragment>,
-    );
-  }
-  return out;
+      ) : (
+        <>
+          {w.lead}
+          {w.word}
+          {w.tail}
+        </>
+      )}
+    </Fragment>
+  ));
 }
