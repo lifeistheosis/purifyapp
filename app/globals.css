@@ -4671,9 +4671,18 @@ html.is-native :is(input, textarea, select, [contenteditable]:not([contenteditab
    so with motion off (no animations at all) the cover is simply the
    finished picture.
 
+   That is the first cold start of the reader's day. Every later one that day
+   plays the first pace again, built in 0.9 s and gone in 0.36 s: the owner,
+   the same evening, "a slow intro on their first use of the day and then a
+   fast one for the rest of the day". The document marks which on <html>
+   (data-intro-pace) before the cover is in the page
+   (lib/platform/launchFrame.ts), and the quick lines below change only how
+   long each part takes and when it starts, never which animation runs, so
+   the motion-off lines still take every part away on either pace.
+
    It covers the page until <html> carries both data-launch="ready" (NativeBridge,
    when the app's first screen is drawn) and data-intro="played" (the
-   document's own lines, INTRO_BUILD_MS after the logo screen was asked to go).
+   document's own lines, a whole build after the logo screen was asked to go).
    Then the cross, the stars and the horizon lift away with a short blur, as
    the cards' words leave, and the night fades over the screen that has
    arrived under it. The taps go through from that instant, not from the end
@@ -4702,8 +4711,10 @@ html[data-launch="ready"][data-intro="played"] [data-launch-stage] {
  transform: translateY(-14px);
  filter: blur(6px);
 }
+/* Each star comes out at its own moment, --star-at, written on it. */
 .launch-stars > i {
  animation: launch-star 840ms ease-out both;
+ animation-delay: var(--star-at);
 }
 @keyframes launch-star {
  from {
@@ -4738,11 +4749,41 @@ html[data-launch="ready"][data-intro="played"] [data-launch-stage] {
   filter: drop-shadow(0 0 0 rgb(255 255 255 / 0)) drop-shadow(0 0 0 rgb(255 255 255 / 0));
  }
 }
+/* The quick pace, every cold start after the first of the reader's day: the
+   first pace, from before the owner asked for it slower. Every part done by
+   900 ms (INTRO_QUICK_BUILD_MS), each star at half its moment, and gone in
+   360 ms. Lengths and delays only. */
+html[data-intro-pace="quick"] [data-launch-frame] {
+ transition-duration: 340ms, 0s;
+ transition-delay: 20ms, 360ms;
+}
+html[data-intro-pace="quick"] [data-launch-stage] {
+ transition-duration: 360ms;
+}
+html[data-intro-pace="quick"] .launch-stars > i {
+ animation-duration: 420ms;
+ animation-delay: calc(var(--star-at) / 2);
+}
+html[data-intro-pace="quick"] .launch-horizon {
+ animation-duration: 780ms;
+}
+html[data-intro-pace="quick"] .launch-level {
+ animation-duration: 760ms;
+ animation-delay: 140ms;
+}
+html[data-intro-pace="quick"] .launch-cross {
+ animation-duration: 600ms;
+ animation-delay: 300ms;
+}
 :where([data-motion="reduce"]) [data-launch-frame],
 :where([data-motion="reduce"]) [data-launch-stage] {
  transition: none;
 }
-:where([data-motion="reduce"]) [data-launch-frame] * {
+/* The stars' own line names their element as well as a class, which
+   outweighs [data-launch-frame] * alone, so they are named here too: without
+   it they faded in with motion off. */
+:where([data-motion="reduce"]) [data-launch-frame] *,
+:where([data-motion="reduce"]) .launch-stars > i {
  animation: none;
 }
 

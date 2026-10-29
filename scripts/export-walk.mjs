@@ -1480,8 +1480,10 @@ await section(23, async () => {
 // start frame by frame: the intro is up before the app has drawn anything,
 // the logo screen is asked to go once and by the document itself, the intro
 // covers the page until the app says it is ready AND it has played, and then
-// it is gone and the tab bar answers a tap. Last, with the app's code held
-// back altogether, the intro still comes up, and still goes.
+// it is gone and the tab bar answers a tap. That first cold start of the day
+// plays the slow pace; a second the same day plays the quick one, and the
+// first of a new day is slow again (the owner, 2026-10-28). Last, with the
+// app's code held back altogether, the intro still comes up, and still goes.
 //
 // What this cannot see is the phone's own logo screen going. A browser has
 // none. That part needs a real phone.
@@ -1494,17 +1496,31 @@ await section(24, async () => {
   const outline = at > 0 ? doc.slice(doc.lastIndexOf("<div", at), scriptAt).replace(/data:image\/png;base64,[A-Za-z0-9+/=]+/, "") : "";
   must(outline.length > 200 && outline.replace(/<[^>]+>/g, "").trim() === "", `and it has no words in it (${outline.length} bytes of shapes)`);
   must(at > 0 && doc.slice(scriptAt, scriptAt + 1200).includes("nativePromise"), "the lines that lift the logo screen follow it in the document");
-  // The intro's build as the document carries it (lib/platform/launchFrame.ts
-  // INTRO_BUILD_MS), and how long the cover takes to go (app/globals.css).
-  const buildMs = Number(/setTimeout\(played,(\d+)\)/.exec(doc.slice(scriptAt, scriptAt + 1200))?.[1] ?? NaN);
-  must(buildMs >= 900, `the document plays the intro for ${buildMs} ms`);
-  const leaveMs = Number(/\[data-launch-frame\] \{\s*transition:[^;]*visibility 0s linear (\d+)ms;/.exec(fs.readFileSync("app/globals.css", "utf8"))?.[1] ?? 600);
+  // The lines that choose its pace by the reader's day (the owner,
+  // 2026-10-28: slow on the day's first cold start, quick on every later one)
+  // come just before it, so it is never in the page on the wrong one.
+  const paceAt = at > 0 ? doc.lastIndexOf("<script", at) : -1;
+  const paceLines = paceAt > 0 ? doc.slice(paceAt, doc.lastIndexOf("<div", at)) : "";
+  must(paceLines.includes("data-intro-pace") && paceLines.includes("purify.intro.day"), "the lines that choose its pace come just before it in the document");
+  // The intro's builds as the document carries them (lib/platform/launchFrame.ts
+  // INTRO_BUILD_MS on the day's first cold start, INTRO_QUICK_BUILD_MS on every
+  // later one), how long the cover takes to go on each, and how long the
+  // horizon takes to rise on each (app/globals.css).
+  const builds = /setTimeout\(played,d\.getAttribute\('data-intro-pace'\)==='quick'\?(\d+):(\d+)\)/.exec(doc.slice(scriptAt, scriptAt + 1200));
+  const quickMs = Number(builds?.[1] ?? NaN);
+  const buildMs = Number(builds?.[2] ?? NaN);
+  must(buildMs >= 900 && quickMs >= 600 && quickMs < buildMs, `the document plays the intro for ${buildMs} ms on the day's first cold start, ${quickMs} ms on every later one`);
+  const css = fs.readFileSync("app/globals.css", "utf8");
+  const leaveMs = Number(/\[data-launch-frame\] \{\s*transition:[^;]*visibility 0s linear (\d+)ms;/.exec(css)?.[1] ?? 600);
+  const quickLeaveMs = Number(/html\[data-intro-pace="quick"\] \[data-launch-frame\] \{\s*transition-duration:[^;]*;\s*transition-delay: \d+ms, (\d+)ms;/.exec(css)?.[1] ?? 360);
+  const riseMs = Number(/\n\.launch-horizon \{\s*animation: launch-rise (\d+)ms/.exec(css)?.[1] ?? NaN);
+  const quickRiseMs = Number(/html\[data-intro-pace="quick"\] \.launch-horizon \{\s*animation-duration: (\d+)ms;/.exec(css)?.[1] ?? NaN);
 
   // Every frame from the first. The shell's own handle is stood in for, so a
   // call to it is seen: only the document's lines use it here, because the
   // app's own call goes through the plugin, which in a browser does nothing.
   const watch = () => {
-    const log = { asks: [], first: null, frame: null, ready: null, played: null, leaving: null, covered: [], words: [] };
+    const log = { asks: [], first: null, frame: null, ready: null, played: null, leaving: null, covered: [], words: [], pace: null, rise: null };
     window.__open = log;
     window.Capacitor = {
       nativePromise: (plugin, method) => {
@@ -1521,6 +1537,13 @@ await section(24, async () => {
         const up = style.visibility !== "hidden" && Number(style.opacity) > 0.99;
         const state = root.dataset.launch ?? "";
         const today = !!document.querySelector("[data-route-content]");
+        // The pace on the first frame, and how long the stylesheet gives the
+        // horizon to rise on it.
+        if (log.pace === null) {
+          log.pace = root.dataset.introPace ?? "";
+          const horizon = el.querySelector(".launch-horizon");
+          log.rise = horizon ? Math.round(parseFloat(getComputedStyle(horizon).animationDuration) * 1000) : null;
+        }
         if (up && log.first === null) log.first = now;
         if (!up && log.first !== null && log.leaving === null) log.leaving = now;
         if (state === "frame" && log.frame === null) log.frame = { at: now, today };
@@ -1553,7 +1576,7 @@ await section(24, async () => {
     return { visibility: style.visibility, opacity: Number(style.opacity), takesTheMiddle: !!hit && el.contains(hit), state: document.documentElement.dataset.launch ?? "" };
   };
 
-  // A cold start, as it goes.
+  // A cold start, as it goes. A new phone's first, so the first of its day.
   {
     const { ctx, page, errors } = await open({ width: 390, height: 844, phone: true });
     await ctx.addInitScript(watch);
@@ -1561,6 +1584,7 @@ await section(24, async () => {
     await page.waitForFunction(() => window.__open?.ready && window.__open?.played, null, { timeout: 20000 }).catch(() => {});
     await page.waitForTimeout(leaveMs + 400);
     const log = await page.evaluate(() => window.__open);
+    must(log.pace === "slow" && log.rise === riseMs, `the first cold start of the day plays the slow pace (marked "${log.pace}", the horizon rising in ${log.rise} ms of ${riseMs})`);
     must(log.first !== null && log.ready && log.first < log.ready.at, `the intro is painted before the app is ready (at ${log.first} ms; the app says ready at ${log.ready?.at} ms)`);
     must(log.asks.length === 1 && log.asks[0][1] === "SplashScreen" && log.asks[0][2] === "hide", `the document asks the phone to lift its logo screen, once (${log.asks.map((a) => `${a[1]}.${a[2]} at ${a[0]} ms`).join(", ") || "never"})`);
     must(log.frame && log.ready && log.frame.at <= log.ready.at && log.asks[0]?.[0] <= log.ready.at, `and it asks before the app is ready (marked at ${log.frame?.at} ms)`);
@@ -1578,12 +1602,42 @@ await section(24, async () => {
     await tap(page.locator("[data-tab-label]").nth(1));
     await page.waitForFunction(() => location.pathname !== "/", null, { timeout: 15000 }).catch(() => {});
     must(new URL(page.url()).pathname !== "/", `and the tab bar answers a tap (went to ${new URL(page.url()).pathname})`);
-    must(errors.length === 0, `no page errors${errors.length ? ": " + errors.slice(0, 2).join(" | ") : ""}`);
     say("  intro painted, ms", log.first);
     say("  logo asked to go, ms", log.asks[0]?.[0] ?? "never");
     say("  app ready, ms", log.ready?.at ?? "never");
     say("  intro played, ms", log.played ?? "never");
     say("  intro starts to go, ms", log.leaving ?? "never");
+
+    // A second cold start the same day: the quick pace, the intro's first.
+    // Not go(), which moves within the app: the document is loaded again, as
+    // a phone loads it when the app is opened after it was closed.
+    await page.goto(`${ORIGIN}/`, { waitUntil: "load", timeout: 120000 });
+    await page.waitForFunction(() => window.__open?.ready && window.__open?.played, null, { timeout: 20000 }).catch(() => {});
+    await page.waitForTimeout(quickLeaveMs + 400);
+    const again = await page.evaluate(() => window.__open);
+    must(again.pace === "quick" && again.rise === quickRiseMs, `a second cold start the same day plays the quick pace (marked "${again.pace}", the horizon rising in ${again.rise} ms of ${quickRiseMs})`);
+    const quickBuild = again.played !== null && again.asks[0] ? again.played - again.asks[0][0] : null;
+    must(quickBuild !== null && quickBuild >= quickMs - 20 && quickBuild <= quickMs + 200, `and plays in full on it: marked played ${quickBuild} ms after the logo was asked to go (its build is ${quickMs} ms)`);
+    must(again.covered.length > 0 && again.covered.every((n) => n === 9) && again.words.length === 0, `and while it is up it covers the page, with no words (${again.covered.length} frames)`);
+    must(again.leaving !== null && again.leaving >= Math.max(again.ready?.at ?? 0, again.played ?? 0) - 20, `and it goes only once the app is ready and it has played (starts to go at ${again.leaving} ms)`);
+    const gone = await page.evaluate(outlineNow);
+    must(gone && gone.visibility === "hidden" && gone.opacity === 0 && !gone.takesTheMiddle, `then it is gone, ${quickLeaveMs} ms after it starts to go (visibility ${gone?.visibility}, opacity ${gone?.opacity})`);
+    say("  second cold start: intro played, ms", again.played ?? "never");
+    say("  second cold start: intro starts to go, ms", again.leaving ?? "never");
+
+    // The day it keeps is the phone's own. Put back a day, as the next
+    // morning finds it, and the next cold start is slow again.
+    const day = await page.evaluate(() => {
+      const t = new Date();
+      const two = (n) => String(n).padStart(2, "0");
+      return { kept: localStorage.getItem("purify.intro.day"), today: `${t.getFullYear()}-${two(t.getMonth() + 1)}-${two(t.getDate())}` };
+    });
+    must(day.kept === day.today, `the day it keeps is the reader's own (${day.kept}; the phone says ${day.today})`);
+    await page.evaluate(() => localStorage.setItem("purify.intro.day", "2000-01-01"));
+    await page.goto(`${ORIGIN}/`, { waitUntil: "load", timeout: 120000 });
+    const next = await page.evaluate(() => ({ pace: document.documentElement.dataset.introPace ?? "", kept: localStorage.getItem("purify.intro.day") }));
+    must(next.pace === "slow" && next.kept === day.today, `and the first cold start of a new day is slow again (marked "${next.pace}", the day kept now ${next.kept})`);
+    must(errors.length === 0, `no page errors${errors.length ? ": " + errors.slice(0, 2).join(" | ") : ""}`);
     await ctx.close();
   }
 

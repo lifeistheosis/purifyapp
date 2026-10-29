@@ -27,7 +27,7 @@ import { useRouter } from "next/navigation";
 
 import { whenLanguageSettled } from "@/lib/i18n/launchLanguage";
 import { ENTRY_KEY, FRONT_DOOR_MARK, entryAction } from "@/lib/nav/entry";
-import { INTRO_BUILD_MS, LIFT_ANYWAY_MS } from "@/lib/platform/launchFrame";
+import { INTRO_BUILD_MS, INTRO_QUICK_BUILD_MS, LIFT_ANYWAY_MS } from "@/lib/platform/launchFrame";
 import { isNativeClient } from "@/lib/platform/native";
 import { refreshNative, relinkNative } from "@/lib/push/native";
 import { onlyTheHashChanges, setPushOpener } from "@/lib/push/open";
@@ -193,10 +193,12 @@ export function NativeBridge() {
       // The other is the intro's own, set by the document's lines
       // (lib/platform/launchFrame.ts). This sets it too, a full intro after
       // ready, as a net: were those lines never to run, the cover would wait
-      // for a mark nobody sets, with the app alive under it.
+      // for a mark nobody sets, with the app alive under it. A full intro on
+      // the pace the document chose: quick on any open after the day's first.
+      const build = document.documentElement.dataset.introPace === "quick" ? INTRO_QUICK_BUILD_MS : INTRO_BUILD_MS;
       playedNet ??= setTimeout(() => {
         document.documentElement.dataset.intro = "played";
-      }, INTRO_BUILD_MS);
+      }, build);
       try {
         const { SplashScreen } = await import("@capacitor/splash-screen");
         if (!cancelled) await SplashScreen.hide();

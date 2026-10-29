@@ -5,7 +5,9 @@
 // every open, which is only slow. Or English words under the logo on a Greek
 // phone. Or the cross jumping in size as the logo goes. Or, worst, a cover
 // that never goes away, with the app alive underneath it and no way to reach
-// it.
+// it. And since 2026-10-28: the slow intro on every open of the day, or the
+// quick one on the first, or an intro that starts on one pace and jumps to
+// the other.
 
 import fs from "node:fs";
 import path from "node:path";
@@ -17,12 +19,24 @@ import { describe, expect, it } from "vitest";
 
 import { LaunchFrame } from "@/components/native/LaunchFrame";
 
-import { INTRO_BUILD_MS, LAUNCH_CROSS_PX, LAUNCH_FRAME_MAX_MS, LIFT_ANYWAY_MS, LIFT_AT_FIRST_PAINT, OPEN_AT_FIRST_PAINT } from "../launchFrame";
+import {
+  INTRO_BUILD_MS,
+  INTRO_DAY_KEY,
+  INTRO_PACE_AT_FIRST_PAINT,
+  INTRO_QUICK_BUILD_MS,
+  LAUNCH_CROSS_PX,
+  LAUNCH_FRAME_MAX_MS,
+  LIFT_ANYWAY_MS,
+  LIFT_AT_FIRST_PAINT,
+  OPEN_AT_FIRST_PAINT,
+} from "../launchFrame";
 
 const ROOT = process.cwd();
 const read = (file: string) => fs.readFileSync(path.join(ROOT, file), "utf8");
 const html = renderToStaticMarkup(createElement(LaunchFrame));
-const cover = html.slice(0, html.indexOf("<script"));
+// The cover alone: after the lines that choose its pace, before the lines
+// that lift the logo screen.
+const cover = html.slice(html.indexOf("<div data-launch-frame"), html.lastIndexOf("<script"));
 // The cross is written in as the file's own bytes; the checks on words and
 // colours read everything else.
 const CROSS_URI = `data:image/png;base64,${fs.readFileSync(path.join(ROOT, "public/purify-cross-mark.png")).toString("base64")}`;
@@ -100,8 +114,17 @@ describe("the intro", () => {
     }
   });
 
-  it("is followed by its script, in the document, after it", () => {
-    expect(html.indexOf("<script")).toBeGreaterThan(html.indexOf("data-launch-frame"));
+  it("sits between its two scripts: the pace before it, the lift after it", () => {
+    // The pace is on <html> before the cover is in the page, so no frame of
+    // it is ever on the wrong one. The lift needs the cover in the page.
+    const pace = html.indexOf(INTRO_PACE_AT_FIRST_PAINT);
+    const frame = html.indexOf("<div data-launch-frame");
+    const lift = html.indexOf(LIFT_AT_FIRST_PAINT);
+    expect(html.startsWith("<script")).toBe(true);
+    expect(pace).toBeGreaterThan(0);
+    expect(frame).toBeGreaterThan(pace);
+    expect(lift).toBeGreaterThan(frame);
+    expect(html.split("<script").length - 1).toBe(2);
     expect(html).toContain("nativePromise");
   });
 });
@@ -142,9 +165,10 @@ describe("the phone's own logo screens, drawn to match", () => {
 
 describe("the script that lifts the logo screen", () => {
   type Shell = "bridge" | "throws" | "rejects" | "none" | "empty";
-  const run = (shell: Shell, { frames: hasFrames = true } = {}) => {
+  const run = (shell: Shell, { frames: hasFrames = true, pace }: { frames?: boolean; pace?: string } = {}) => {
     const calls: unknown[][] = [];
-    const attrs: Record<string, string> = {};
+    // The mark the lines before the cover left, if any.
+    const attrs: Record<string, string> = pace === undefined ? {} : { "data-intro-pace": pace };
     const frames: (() => void)[] = [];
     const timers: { fn: () => void; ms: number }[] = [];
     const caught: unknown[] = [];
@@ -198,7 +222,7 @@ describe("the script that lifts the logo screen", () => {
   });
 
   it("marks the intro played a full build after it asks, and only once", () => {
-    const { attrs, frames, timers } = run("bridge");
+    const { attrs, frames, timers } = run("bridge", { pace: "slow" });
     frames[0]();
     frames[1]();
     timer(timers, LIFT_ANYWAY_MS).fn();
@@ -208,6 +232,24 @@ describe("the script that lifts the logo screen", () => {
     expect(attrs["data-intro"]).toBe("played");
     // Played is not ready: the app still says that.
     expect(attrs["data-launch"]).toBe("frame");
+  });
+
+  it("waits the quick build when the pace is quick, and the slow one otherwise", () => {
+    // The build the mark asks for, and no other.
+    const built = (pace?: string) => {
+      const { frames, timers } = run("bridge", { pace });
+      frames[0]();
+      frames[1]();
+      return timers.map((t) => t.ms).filter((ms) => ms !== LIFT_ANYWAY_MS && ms !== LAUNCH_FRAME_MAX_MS);
+    };
+    expect(built("quick")).toEqual([INTRO_QUICK_BUILD_MS]);
+    expect(built("slow")).toEqual([INTRO_BUILD_MS]);
+    // No mark at all (the lines before the cover never ran): the slow one,
+    // which the stylesheet also plays with no mark.
+    expect(built()).toEqual([INTRO_BUILD_MS]);
+    expect(built("anything else")).toEqual([INTRO_BUILD_MS]);
+    expect(INTRO_QUICK_BUILD_MS).toBe(900);
+    expect(INTRO_BUILD_MS).toBe(2400);
   });
 
   it("does not wait for frames that never come", () => {
@@ -281,10 +323,107 @@ describe("the script that lifts the logo screen", () => {
     expect(attrs["data-launch"]).toBe("frame");
   });
 
-  it("is plain enough for an old web view", () => {
-    expect(LIFT_AT_FIRST_PAINT).not.toMatch(/=>|\?\.|\blet\b|\bconst\b|`/);
-    // And it closes no tag early: it is written into the document as it is.
-    expect(LIFT_AT_FIRST_PAINT).not.toMatch(/<\/|<!--/);
+  it("is plain enough for an old web view, as are the lines that choose the pace", () => {
+    for (const lines of [LIFT_AT_FIRST_PAINT, INTRO_PACE_AT_FIRST_PAINT]) {
+      expect(lines).not.toMatch(/=>|\?\.|\blet\b|\bconst\b|`|padStart/);
+      // And it closes no tag early: it is written into the document as it is.
+      expect(lines).not.toMatch(/<\/|<!--/);
+    }
+  });
+});
+
+describe("the pace, by the reader's day", () => {
+  // The owner, 2026-10-28: "a slow intro on their first use of the day and
+  // then a fast one for the rest of the day". The lines before the cover,
+  // run as the document runs them, against a phone's storage and clock.
+  type Storage = "works" | "refuses" | "absent" | "full";
+  const open = ({ stored, today, storage = "works" }: { stored?: string; today: [number, number, number]; storage?: Storage }) => {
+    const attrs: Record<string, string> = {};
+    const kept = new Map<string, string>(stored === undefined ? [] : [[INTRO_DAY_KEY, stored]]);
+    const writes: [string, string][] = [];
+    // The phone's clock, in the reader's own time.
+    class PhoneDate {
+      getFullYear() {
+        return today[0];
+      }
+      getMonth() {
+        return today[1] - 1;
+      }
+      getDate() {
+        return today[2];
+      }
+    }
+    const sandbox: Record<string, unknown> = {
+      Date: PhoneDate,
+      document: {
+        documentElement: {
+          getAttribute: (k: string) => attrs[k] ?? null,
+          setAttribute: (k: string, v: string) => {
+            attrs[k] = v;
+          },
+        },
+      },
+    };
+    if (storage === "refuses") {
+      Object.defineProperty(sandbox, "localStorage", {
+        get() {
+          throw new Error("SecurityError");
+        },
+      });
+    } else if (storage === "absent") {
+      sandbox.localStorage = null;
+    } else {
+      sandbox.localStorage = {
+        getItem: (k: string) => kept.get(k) ?? null,
+        setItem: (k: string, v: string) => {
+          if (storage === "full") throw new Error("QuotaExceededError");
+          writes.push([k, v]);
+          kept.set(k, v);
+        },
+      };
+    }
+    sandbox.window = sandbox;
+    expect(() => vm.runInNewContext(INTRO_PACE_AT_FIRST_PAINT, sandbox)).not.toThrow();
+    return { pace: attrs["data-intro-pace"], writes, kept: kept.get(INTRO_DAY_KEY) };
+  };
+
+  it("plays slow on the first open ever, and writes the day down", () => {
+    expect(open({ today: [2026, 10, 28] })).toEqual({ pace: "slow", writes: [[INTRO_DAY_KEY, "2026-10-28"]], kept: "2026-10-28" });
+  });
+
+  it("plays quick on every later open the same day, and writes nothing", () => {
+    expect(open({ stored: "2026-10-28", today: [2026, 10, 28] })).toEqual({ pace: "quick", writes: [], kept: "2026-10-28" });
+  });
+
+  it("plays slow again on the first open of the next day, and of any later one", () => {
+    expect(open({ stored: "2026-10-28", today: [2026, 10, 29] })).toEqual({ pace: "slow", writes: [[INTRO_DAY_KEY, "2026-10-29"]], kept: "2026-10-29" });
+    expect(open({ stored: "2026-10-28", today: [2027, 1, 3] })).toMatchObject({ pace: "slow", kept: "2027-01-03" });
+    // A clock set back is a different day too, and never a quick open.
+    expect(open({ stored: "2026-10-28", today: [2026, 10, 27] })).toMatchObject({ pace: "slow", kept: "2026-10-27" });
+  });
+
+  it("goes by the reader's own calendar day, written the same way every time", () => {
+    // Month and day with their leading zero, so one day is one string.
+    expect(open({ today: [2026, 1, 5] }).kept).toBe("2026-01-05");
+    expect(open({ stored: "2026-01-05", today: [2026, 1, 5] }).pace).toBe("quick");
+    expect(open({ stored: "2026-1-5", today: [2026, 1, 5] }).pace).toBe("slow");
+    expect(open({ stored: "2026-12-31", today: [2027, 1, 1] }).pace).toBe("slow");
+  });
+
+  it("plays slow, and never throws, on a phone whose storage cannot be read or written", () => {
+    for (const storage of ["refuses", "absent", "full"] as const) {
+      expect(open({ stored: "2026-10-28", today: [2026, 10, 29], storage }).pace, storage).toBe("slow");
+    }
+    // Storage that reads but will not write still knows a later open.
+    expect(open({ stored: "2026-10-28", today: [2026, 10, 28], storage: "full" }).pace).toBe("quick");
+  });
+
+  it("keeps its day on the device, outside what a reader's export carries", () => {
+    // The export, the import and Clear local data all take the "purify:" keys
+    // (components/profile/ProfileData.tsx, ProfileDanger.tsx).
+    expect(INTRO_DAY_KEY).toBe("purify.intro.day");
+    expect(INTRO_DAY_KEY.startsWith("purify:")).toBe(false);
+    expect(INTRO_PACE_AT_FIRST_PAINT).toContain(`'${INTRO_DAY_KEY}'`);
   });
 });
 
@@ -307,18 +446,80 @@ describe("where it is written, and how it goes", () => {
     expect(css).not.toMatch(/html\[data-launch="ready"\]\s+\[data-launch-frame\]/);
   });
 
-  it("builds inside INTRO_BUILD_MS, so the cover never leaves on a half-risen horizon", () => {
-    // Every part's delay and length, from the stylesheet and the stars' own.
-    const ends = [...css.matchAll(/^\.launch-[a-z]+(?: > i)? \{[^}]*?animation: launch-[a-z]+ (\d+)ms [^;]*?(?: (\d+)ms)? both;/gm)].map((m) => Number(m[1]) + Number(m[2] ?? 0));
-    expect(ends.length).toBe(4);
-    const star = Number(/animation: launch-star (\d+)ms/.exec(css)?.[1]);
-    const latest = Math.max(...[...cover.matchAll(/animation-delay:(\d+)ms/g)].map((m) => Number(m[1])));
-    expect(Math.max(...ends, star + latest)).toBeLessThanOrEqual(INTRO_BUILD_MS);
+  // A rule's body, by its selector as the stylesheet writes it at a line's start.
+  const body = (selector: string) => {
+    const at = css.indexOf(`\n${selector} {`);
+    return at < 0 ? "" : css.slice(at, css.indexOf("}", at));
+  };
+  // The intro's four moving parts, and the latest moment any star comes out.
+  const PARTS = [".launch-stars > i", ".launch-horizon", ".launch-level", ".launch-cross"];
+  const latestStar = Math.max(...[...cover.matchAll(/--star-at:(\d+)ms/g)].map((m) => Number(m[1])));
+  /** A part's [length, delay] in ms at a pace, as the stylesheet times it. */
+  const timing = (part: string, pace: "slow" | "quick"): [number, number] => {
+    const slow = /animation: launch-[a-z]+ (\d+)ms [^;]*?(?:(\d+)ms )?both;/.exec(body(part));
+    let length = Number(slow?.[1]);
+    let delay = part === ".launch-stars > i" ? latestStar : Number(slow?.[2] ?? 0);
+    if (pace === "quick") {
+      const quick = body(`html[data-intro-pace="quick"] ${part}`);
+      length = Number(/animation-duration: (\d+)ms;/.exec(quick)?.[1] ?? length);
+      const at = /animation-delay: ([^;]+);/.exec(quick)?.[1];
+      if (at === "calc(var(--star-at) / 2)") delay = latestStar / 2;
+      else if (at !== undefined) delay = Number(/^(\d+)ms$/.exec(at)?.[1] ?? NaN);
+    }
+    return [length, delay];
+  };
+  const built = (pace: "slow" | "quick") => Math.max(...PARTS.map((part) => timing(part, pace)).map(([length, delay]) => length + delay));
+
+  it("builds inside its pace's build, so the cover never leaves on a half-risen horizon", () => {
+    // Each star's moment is its own, written on it, and the stylesheet uses it.
+    expect(body(".launch-stars > i")).toContain("animation-delay: var(--star-at);");
+    expect(cover).not.toContain("animation-delay");
+    expect(latestStar).toBeGreaterThan(0);
+    // The first open of the day: done by 1800 ms, then held still to 2400.
+    expect(built("slow")).toBeLessThanOrEqual(INTRO_BUILD_MS);
+    expect(built("slow")).toBe(1800);
+    // Every later one: done by 900 ms, and held for nothing.
+    expect(built("quick")).toBeLessThanOrEqual(INTRO_QUICK_BUILD_MS);
+    expect(built("quick")).toBe(900);
   });
 
-  it("with motion off it is the finished picture, and goes at once", () => {
-    expect(css).toMatch(/:where\(\[data-motion="reduce"\]\) \[data-launch-frame\] \* \{\s*animation: none;/);
+  it("plays the first pace on every later open: each part at half its slow time", () => {
+    // The pace the owner first saw (built in 0.9 s), and asked to be slower
+    // for the day's first open only.
+    for (const part of PARTS) {
+      const [length, delay] = timing(part, "slow");
+      expect(timing(part, "quick"), part).toEqual([length / 2, delay / 2]);
+    }
+  });
+
+  it("goes in 600 ms on the first open of the day, and in 360 ms on every later one", () => {
+    expect(body("[data-launch-frame]")).toMatch(/transition: opacity 580ms [^;]* 20ms, visibility 0s linear 600ms;/);
+    expect(body("[data-launch-stage]").match(/ 600ms /g)).toHaveLength(3);
+    expect(body('html[data-intro-pace="quick"] [data-launch-frame]')).toMatch(/transition-duration: 340ms, 0s;\s*transition-delay: 20ms, 360ms;/);
+    expect(body('html[data-intro-pace="quick"] [data-launch-stage]')).toMatch(/transition-duration: 360ms;/);
+  });
+
+  it("with motion off it is the finished picture, and goes at once, on either pace", () => {
     expect(css).toMatch(/:where\(\[data-motion="reduce"\]\) \[data-launch-frame\],\s*:where\(\[data-motion="reduce"\]\) \[data-launch-stage\] \{\s*transition: none;/);
+    expect(css).toMatch(/:where\(\[data-motion="reduce"\]\) \[data-launch-frame\] \*,\s*:where\(\[data-motion="reduce"\]\) \.launch-stars > i \{\s*animation: none;/);
+    // The motion-off line comes after every part's, at the weight of one
+    // class. A part whose line weighs more (more than one class, or an
+    // element as well) would outweigh it and still move, as the stars did
+    // until 2026-10-28, so the line names that part too.
+    expect(css.indexOf(':where([data-motion="reduce"]) [data-launch-frame] *')).toBeGreaterThan(css.indexOf("\n.launch-cross {"));
+    for (const part of PARTS) {
+      if (!/^\.[a-z-]+$/.test(part)) expect(css, part).toContain(`:where([data-motion="reduce"]) ${part}`);
+    }
+    // The quick lines set lengths and delays only, never which animation
+    // runs nor what moves, so they cannot bring back what motion off takes
+    // away, though they weigh more.
+    const quick = [...css.matchAll(/\nhtml\[data-intro-pace="quick"\][^{]*\{([^}]*)\}/g)].map((m) => m[1]);
+    expect(quick).toHaveLength(6);
+    for (const rule of quick) {
+      for (const [, property] of rule.matchAll(/([a-z-]+):/g)) {
+        expect(["animation-duration", "animation-delay", "transition-duration", "transition-delay"]).toContain(property);
+      }
+    }
   });
 
   it("is still lifted by the app itself, with its own limit, as before", () => {
@@ -330,7 +531,9 @@ describe("where it is written, and how it goes", () => {
   });
 
   it("and the app marks the intro played too, a full intro after ready, in case the document's lines never ran", () => {
-    expect(bridge).toMatch(/playedNet \?\?= setTimeout\(\(\) => \{\s*document\.documentElement\.dataset\.intro = "played";\s*\}, INTRO_BUILD_MS\);/);
+    // On the pace the document chose.
+    expect(bridge).toContain('const build = document.documentElement.dataset.introPace === "quick" ? INTRO_QUICK_BUILD_MS : INTRO_BUILD_MS;');
+    expect(bridge).toMatch(/playedNet \?\?= setTimeout\(\(\) => \{\s*document\.documentElement\.dataset\.intro = "played";\s*\}, build\);/);
     expect(bridge).toContain("clearTimeout(playedNet)");
   });
 

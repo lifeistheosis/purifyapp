@@ -36,7 +36,8 @@ export const HORIZON_STARS: readonly HorizonStar[] = (() => {
     const opacity = 0.18 + 0.5 * rnd();
     // Coming out over the first 0.9 s of the intro's build (the owner's
     // slower pace, 2026-10-28), so the sky fills while the horizon is still
-    // rising.
+    // rising. On the intro's quick pace, every open after the day's first,
+    // each comes out at half its moment (app/globals.css).
     const delay = Math.round(80 + rnd() * 800);
     if (Math.abs(x - 50) < 11 && Math.abs(y - 50) < 9) continue;
     out.push({ left: `${x.toFixed(1)}%`, top: `${y.toFixed(1)}%`, size: Number((1 + 1.5 * u ** 5).toFixed(2)), opacity: Number(opacity.toFixed(2)), delay });
