@@ -16,6 +16,26 @@ import { SECTION_MEDIA, sectionMedia } from "@/lib/media/sections";
 // Identical to lib/history/__tests__/events.integrity.test.ts.
 const ALLOWED = /^(public domain|pd-art|cc0|cc by(-sa)?( \d\.\d)?)$/i;
 
+/** The record, with its line ends as the repository keeps them. */
+const RECORD = fs.readFileSync(path.join(process.cwd(), "docs/licensing/SECTION_MEDIA.md"), "utf8").replace(/\r\n/g, "\n");
+
+/** A JPEG's pixel size, read from its frame header. */
+function jpegSize(buf: Buffer): { width: number; height: number } | null {
+  if (buf[0] !== 0xff || buf[1] !== 0xd8) return null;
+  let i = 2;
+  while (i + 9 < buf.length) {
+    if (buf[i] !== 0xff) return null;
+    const marker = buf[i + 1];
+    const len = buf.readUInt16BE(i + 2);
+    // SOF0 to SOF15, except DHT (C4), JPG (C8) and DAC (CC).
+    if (marker >= 0xc0 && marker <= 0xcf && ![0xc4, 0xc8, 0xcc].includes(marker)) {
+      return { height: buf.readUInt16BE(i + 5), width: buf.readUInt16BE(i + 7) };
+    }
+    i += 2 + len;
+  }
+  return null;
+}
+
 describe("section media registry", () => {
   const entries = Object.entries(SECTION_MEDIA);
 
@@ -64,6 +84,21 @@ describe("section media registry", () => {
         expect(isJpeg || isPng, `${key} is not a real image`).toBe(true);
       });
 
+      it("holds the size it records, when it records one", () => {
+        // A portrait holds its place before it loads by these numbers, so a
+        // new cut that keeps the old ones lays the page out wrong.
+        if (media.width === undefined && media.height === undefined) return;
+        const onDisk = path.join(process.cwd(), "public", media.src.replace(/^\//, ""));
+        expect(jpegSize(fs.readFileSync(onDisk)), media.src).toEqual({ width: media.width, height: media.height });
+      });
+
+      it("is recorded in docs/licensing/SECTION_MEDIA.md, with the page its licence was read on", () => {
+        const file = media.src.replace("/sections/", "");
+        const row = RECORD.split("\n").find((line) => line.startsWith(`| \`${file}\` |`));
+        expect(row, `no row for ${file} in SECTION_MEDIA.md`).toBeDefined();
+        expect(row).toContain(media.evidenceUrl);
+      });
+
       it("keeps the file small enough to bundle into the Android export", () => {
         const onDisk = path.join(process.cwd(), "public", media.src.replace(/^\//, ""));
         const kb = fs.statSync(onDisk).size / 1024;
@@ -95,15 +130,56 @@ describe("section media registry", () => {
     if (!fs.existsSync(dir)) return;
     const onDisk = fs.readdirSync(dir).filter((f) => /\.(jpe?g|png)$/i.test(f));
     // Files a screen outside this registry draws, so they stay when the
-    // registry moves on. None today: prayers.v2.jpg was kept for the
-    // onboarding stand-in until that moved to prayers.v3.jpg (1.8), and then
-    // left the disk.
-    const keptForOthers: string[] = [];
+    // registry moves on. prayers.v2.jpg was kept for the onboarding stand-in
+    // until that moved to prayers.v3.jpg (1.8), and then left the disk.
+    // prayers.v3.jpg is kept the same way now that Prayers wears v4: two
+    // places that came into release/1.8 beside this change still name it, the
+    // Pray card on Today and the verse picture's Christ look
+    // (lib/share/verseCard.ts). Take it out of this list when they move to v4
+    // and the file goes.
+    const keptForOthers: string[] = ["prayers.v3.jpg"];
     const referenced = new Set([
       ...Object.values(SECTION_MEDIA).map((m) => m.src.replace("/sections/", "")),
       ...keptForOthers,
     ]);
     const orphans = onDisk.filter((f) => !referenced.has(f));
     expect(orphans, `orphaned section images: ${orphans.join(", ")}`).toEqual([]);
+  });
+});
+
+describe("the Prayers Pantocrator", () => {
+  // The owner's pick of 2026-10-28 (B, Homebase/boards/purify-master/r18/
+  // choose/2-pantocrator.png): v3's framing, cut from the larger photograph
+  // of the icon on Commons, up to 1290 wide.
+  const media = SECTION_MEDIA.prayers;
+
+  it("is the larger photograph, at v3's framing and no wider than 1290", () => {
+    expect(media?.src).toBe("/sections/prayers.v4.jpg");
+    expect(media?.source).toBe("File:Spas vsederzhitel sinay.jpg");
+    expect(media?.evidenceUrl).toBe("https://commons.wikimedia.org/wiki/File%3ASpas_vsederzhitel_sinay.jpg");
+    expect(media?.license).toBe("Public domain");
+    expect({ width: media?.width, height: media?.height }).toEqual({ width: 1290, height: 1359 });
+    // v3 was 619 by 652: the same shape, so every place it is drawn crops it the same.
+    expect(Math.abs(1290 / 1359 - 619 / 652)).toBeLessThan(0.001);
+  });
+
+  it("is what the onboarding's stand-in wears too", () => {
+    const pictures = fs.readFileSync(path.join(process.cwd(), "lib/onboarding/pictures.ts"), "utf8");
+    expect(pictures).toContain('src: "/sections/prayers.v4.jpg"');
+    expect(pictures).not.toContain("prayers.v3.jpg");
+  });
+
+  it("records where it came from, its licence as read, and how it was cut", () => {
+    const at = RECORD.indexOf("`prayers.v4.jpg` replaced v3");
+    expect(at).toBeGreaterThan(0);
+    // One paragraph, read as one line.
+    const record = RECORD.slice(at, RECORD.indexOf("\n\n", at)).replace(/\s+/g, " ");
+    expect(record).toContain("`File:Spas vsederzhitel sinay.jpg`, 2023 by 3774");
+    expect(record).toContain("`{{PD-Art|PD-old-100-expired}}`");
+    expect(record).toContain("1554 by 1637 from 228px in and 229px down");
+    expect(record).toContain("1290 by 1359, nothing enlarged");
+    // No longer listed among the candidates turned down.
+    const rejected = RECORD.slice(RECORD.indexOf("## Rejected"), RECORD.indexOf("## Today has no entry"));
+    expect(rejected).not.toContain("Spas vsederzhitel sinay");
   });
 });
