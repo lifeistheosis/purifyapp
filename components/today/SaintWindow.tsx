@@ -1,7 +1,8 @@
 "use client";
 
+import dynamic from "next/dynamic";
 import Link from "next/link";
-import { useState } from "react";
+import { useMemo, useState } from "react";
 
 import { SourceLine } from "@/components/citations/SourceLine";
 import { useTranslate } from "@/components/i18n/MessagesProvider";
@@ -17,6 +18,10 @@ import { SaintFace } from "./SaintFace";
 
 type WindowSaint = Pick<SaintBrief, "slug" | "name" | "epithet">;
 
+// Loaded on the tap, as the verse card loads it: Today carries no canvas for
+// a reader who never shares.
+const PictureSheet = dynamic(() => import("@/components/share/PictureSheet").then((m) => m.PictureSheet), { ssr: false });
+
 /**
  * The saint's window (1.8, the owner's round 12: "a tap on him opens a window
  * to share an image or read where the quote is from";
@@ -30,10 +35,12 @@ type WindowSaint = Pick<SaintBrief, "slug" | "name" | "epithet">;
  * quotation wears (components/citations/SourceLine.tsx); then the two
  * actions:
  *
- *   Share as a picture    the verse's picture (lib/share/drawVerseCard.ts):
- *                         his words, and his name where a verse has its
- *                         reference. The look of a saint's picture follows
- *                         the owner's reference when it comes.
+ *   Share as a picture    the picture sheet the verse uses
+ *                         (components/share/PictureSheet.tsx, his mix of A
+ *                         and B): its looks, words and sizes, his words, his
+ *                         name where a verse has its reference and the work
+ *                         under it, signed Purify App. The look of a saint's
+ *                         picture follows the owner's reference when it comes.
  *   Read where it's from  the work's page at that place (the source line's
  *                         own link). A text the library does not carry has no
  *                         page to open, so there it is not offered.
@@ -54,48 +61,45 @@ export function SaintWindow({
   words: SaintWords;
   picture: SaintPicture | null;
 }) {
-  const { t } = useTranslate();
-  const [said, setSaid] = useState<string | null>(null);
-
-  const say = (key: string) => {
-    setSaid(t(key));
-    setTimeout(() => setSaid(null), 1800);
-  };
-
-  /**
-   * His words as a picture, handed to the phone's share sheet (lib/share).
-   * The drawing is loaded here, on the tap, as the verse card's is, so Today
-   * carries no canvas for a reader who never shares.
-   */
-  async function sharePicture() {
-    try {
-      const [{ renderVerseCard }, { shareImage }, { cardFileName }] = await Promise.all([
-        import("@/lib/share/drawVerseCard"),
-        import("@/lib/share/shareImage"),
-        import("@/lib/share/verseCard"),
-      ]);
-      const made = await renderVerseCard(saintPictureInput(words, saint.name));
-      if (!made) return say("today.verse.couldNotMakePicture");
-      const work = words.shown.kind === "father" || words.shown.kind === "text" ? words.shown.work : null;
-      const outcome = await shareImage(made, cardFileName(saint.name), work ? `${saint.name}\n${work}` : saint.name);
-      if (outcome === "saved") say("today.verse.pictureSaved");
-      if (outcome === "failed") say("today.verse.couldNotMakePicture");
-    } catch {
-      say("today.verse.couldNotMakePicture");
-    }
-  }
+  const [making, setMaking] = useState(false);
+  const work = words.shown.kind === "father" || words.shown.kind === "text" ? words.shown.work : null;
+  // The same object while the words are the same: the sheet draws its
+  // preview again when they change.
+  const pictureWords = useMemo(() => ({ ...saintPictureInput(words, saint.name), ...(work ? { note: work } : {}) }), [words, saint.name, work]);
 
   return (
-    <Sheet
-      open={open}
-      onClose={onClose}
-      title={saint.name}
-      desktop
-      openFull
-      header={<SaintWindowHead saint={saint} words={words} picture={picture} onClose={onClose} />}
-    >
-      <SaintWindowBody words={words} onShare={() => void sharePicture()} onLeave={onClose} said={said} />
-    </Sheet>
+    <>
+      <Sheet
+        open={open}
+        onClose={onClose}
+        title={saint.name}
+        desktop
+        openFull
+        header={<SaintWindowHead saint={saint} words={words} picture={picture} onClose={onClose} />}
+      >
+        <SaintWindowBody
+          words={words}
+          onShare={() => {
+            // One sheet at a time: the window steps aside for the picture's.
+            setMaking(true);
+            onClose();
+          }}
+          onLeave={onClose}
+          said={null}
+        />
+      </Sheet>
+      {making ? (
+        <PictureSheet
+          open={making}
+          onClose={() => setMaking(false)}
+          words={pictureWords}
+          title={saint.name}
+          name={saint.name}
+          caption={work ? `${saint.name}\n${work}` : saint.name}
+          referenceLabel={saint.name}
+        />
+      ) : null}
+    </>
   );
 }
 
