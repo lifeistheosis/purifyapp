@@ -312,13 +312,20 @@ function QuotationCard({ q }: { q: Quotation }) {
           {q.gloss}
         </p>
       ) : null}
-      <div className="mt-2 flex items-center gap-4">
+      {/* Source, Gather and its Plus mark on one baseline, one gap apart
+          (1.8, the owner's note 22 of build 80: they were 16px and 6px
+          apart, and Source sat about 2px above Gather, because the row
+          centred Source's small line against the page's taller one that
+          Gather's button stands on). The gap is the one Gather keeps from
+          its mark, components/florilegium/AddToFlorilegium.tsx. */}
+      <div data-quote-tools="" className="mt-2 flex items-baseline gap-3">
         {q.source ? (
           <p className="font-sans text-caption text-paper/40">
             <a
               href={q.source}
               target="_blank"
               rel="noopener noreferrer"
+              data-quote-source=""
               className="underline decoration-paper/20 underline-offset-4 hover:text-paper/60"
             >
               <T k="study.source" />
