@@ -12,6 +12,7 @@
 import { pushProfilePrefs } from "@/lib/profile/preferences";
 import { createClient } from "@/lib/supabase/client";
 import { ONBOARDING_VERSION, readBackground, readFastingRule, readIntent, readIntents, readLevel } from "./state";
+import { isTesting } from "./testing";
 
 /**
  * Best effort. Signed out, offline or failing, the answers stay on the device.
@@ -21,8 +22,12 @@ import { ONBOARDING_VERSION, readBackground, readFastingRule, readIntent, readIn
  * devices take these answers and do not ask again. A change made in Settings
  * keeps whatever version the copy already carried: changing one answer there
  * is not going through the questions.
+ *
+ * Never in Testers mode (./testing.ts): the answers on the device are a test
+ * then, and the account keeps the reader's own.
  */
 export async function saveSpaceToAccount(opts: { finished?: boolean } = {}): Promise<void> {
+  if (isTesting()) return;
   const level = readLevel();
   // Nothing answered yet (a skipped flow): nothing worth keeping.
   if (!level) return;

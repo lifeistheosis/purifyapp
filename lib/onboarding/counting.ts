@@ -15,8 +15,17 @@
 
 import { BACKGROUNDS, FASTING_RULES, INTENTS, LEVELS, type Background, type Intent, type Level } from "./space";
 
-/** Raise with the questions: a count says which version of them it answers. */
-export const COUNT_VERSION = 3;
+/**
+ * Raise with the questions: a count says which version of them it answers.
+ *
+ *   3  2026-10-27: the counts begin. "What are you looking for?" is counted
+ *      by its first pick alone, and where the reader comes from is kept but
+ *      not yet asked.
+ *   4  1.8: "Where are you coming from?" is asked, first of the questions;
+ *      "What are you looking for?" offers eleven answers, and every pick is
+ *      counted, each with its place in the order tapped (picksToCount).
+ */
+export const COUNT_VERSION = 4;
 
 export const ONBOARDING_STEPS = [
   "welcome",
@@ -53,6 +62,16 @@ export const COUNT_QUESTIONS = Object.keys(COUNT_ANSWERS) as CountQuestion[];
 
 export function isCountAnswer(question: CountQuestion, answer: string): boolean {
   return (COUNT_ANSWERS[question] as readonly string[]).includes(answer);
+}
+
+/**
+ * "What are you looking for?" counted in full (1.8): every pick, not only the
+ * first, each as one answer with its place in the order the reader tapped
+ * them, 1 for the first. The first is the intent, the one answer counted
+ * before; a row from version 3 has no place, and was a first pick.
+ */
+export function picksToCount(picks: readonly Intent[]): { answer: Intent; place: number }[] {
+  return [...new Set(picks)].map((answer, i) => ({ answer, place: i + 1 }));
 }
 
 /**

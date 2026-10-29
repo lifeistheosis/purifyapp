@@ -12,6 +12,7 @@ import {
   shouldShowOnboarding,
 } from "@/lib/onboarding/state";
 import { countReturns } from "@/lib/onboarding/count";
+import { isTesting } from "@/lib/onboarding/testing";
 import { isDesktopApp } from "@/lib/desktop/bridge";
 import { DESKTOP_HOME } from "@/lib/desktop/homeRedirect";
 import { useIsNative } from "@/lib/platform/native";
@@ -37,7 +38,7 @@ const NEW_ACCOUNT_WINDOW_MS = 30 * 60 * 1000;
  * in order:
  *
  *   1. Mid-flow across a sign-in redirect (the resume stage): straight back
- *      to the first question.
+ *      to the first question ("Where are you coming from?" since 1.8).
  *   2. Signed in, and the account already answered this version on another
  *      device: those answers are taken and nothing is asked.
  *   3. Signed in. A brand-new account that never saw the flow (signed up on
@@ -56,6 +57,11 @@ const NEW_ACCOUNT_WINDOW_MS = 30 * 60 * 1000;
  * there way 4 never fires; instead the flow opens on /signup, at the account
  * step, for a visitor who is not signed in and has not been through it. Ways
  * 1 to 3 still apply, since each follows an account.
+ *
+ * Testers mode's "First open" (lib/onboarding/testers.ts, 1.8) is way 4 on
+ * any home, the mobile website's included: the whole flow from the welcome,
+ * as a new visitor meets it, whatever account is signed in here and with
+ * nothing taken from it.
  */
 export function FirstRunGate({
   catechismAvailable = false,
@@ -102,6 +108,10 @@ export function FirstRunGate({
         return;
       }
       if (isOnboarded()) return;
+      if (isTesting()) {
+        if (alive) setStart("welcome");
+        return;
+      }
       try {
         const {
           data: { session },

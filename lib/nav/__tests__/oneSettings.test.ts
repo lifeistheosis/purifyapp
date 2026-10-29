@@ -114,6 +114,7 @@ describe("the one Settings", () => {
     expect(drawn).toEqual([
       "AccountSection",
       "SpaceSection",
+      "TestersSection", // 1.8, admins alone: lib/onboarding/__tests__/testers.test.ts
       "Section", // Reading
       "Section", // The calendar
       "MotionSection",
@@ -163,6 +164,17 @@ describe("the one Settings", () => {
       expect(en[key], key).toBeTruthy();
       expect(source.includes(`t("${key}")`), key).toBe(true);
     }
+  });
+
+  it("draws Testers mode only once the server has said the reader is an admin", () => {
+    // The list of admins never reaches the screen: the section asks
+    // /api/admin/whoami (lib/admin/useIsAdmin.ts) and draws nothing until it says yes.
+    const at = source.indexOf("function TestersSection(");
+    const testers = source.slice(at, source.indexOf("\nfunction ", at + 10));
+    expect(testers).toMatch(/const admin = useIsAdmin\(signedIn\);/);
+    expect(testers).toMatch(/if \(!admin\) return null;/);
+    expect(source).not.toMatch(/ADMIN_EMAILS|adminEmails|isAdminEmail/);
+    expect(code("lib/admin/useIsAdmin.ts")).toMatch(/apiFetch\("\/api\/admin\/whoami"/);
   });
 
   it("is named once on a phone", () => {

@@ -2863,6 +2863,50 @@ html[data-reading-mode="parchment"] .lic-notes .lic-note:target {
 }
 .ob-pop { animation: ob-pop 320ms var(--ease-pop) backwards; }
 
+/* "Where are you coming from?" (1.8, the owner's pick "E + I · Pills that
+   answer", components/onboarding/WhereFrom.tsx): the intro's night carried
+   on. The stars come out as they do in the intro, the horizon rises a short
+   way into place under the question, and the cross is lit as the intro's is.
+   A chosen pill is lit white with a soft white glow, and the line it answers
+   with comes in under the pills with its short rule glowing (the owner,
+   2026-10-28: the accent is a glowing white, never yellow). On Parchment,
+   where white cannot glow, the pill and the rule are the ink and nothing
+   glows. Transform and opacity only, and all of it still with motion off. */
+@keyframes ob-wf-star {
+ from { opacity: 0; }
+}
+.ob-wf-stars > i { animation: ob-wf-star 840ms ease-out backwards; }
+@keyframes ob-wf-rise {
+ from { opacity: 0; transform: translateY(14vh); }
+}
+.ob-wf-horizon { animation: ob-wf-rise 1100ms var(--ease-house) backwards; }
+.ob-wf-cross {
+ filter: drop-shadow(0 0 10px rgb(255 255 255 / 0.7)) drop-shadow(0 0 26px rgb(255 255 255 / 0.25));
+}
+.ob-pill {
+ transition: background-color 240ms ease, color 240ms ease, border-color 240ms ease, box-shadow 320ms var(--ease-house), transform 160ms ease;
+}
+.ob-pill:active { transform: scale(0.97); }
+.ob-pill[aria-pressed="true"] {
+ box-shadow: 0 0 22px rgb(255 255 255 / 0.55), 0 0 2px rgb(255 255 255 / 0.9);
+}
+@keyframes ob-says-in {
+ from { opacity: 0; transform: translateY(6px); }
+}
+.ob-says { animation: ob-says-in 360ms var(--ease-house) backwards; }
+.ob-says-ln { box-shadow: 0 0 10px rgb(255 255 255 / 0.8); }
+html[data-reading-mode="parchment"] .ob-wf-cross { filter: none; }
+html[data-reading-mode="parchment"] .ob-pill[aria-pressed="true"],
+html[data-reading-mode="parchment"] .ob-says-ln {
+ box-shadow: none;
+}
+:where([data-motion="reduce"]) .ob-wf-stars > i,
+:where([data-motion="reduce"]) .ob-wf-horizon,
+:where([data-motion="reduce"]) .ob-says {
+ animation: none;
+}
+:where([data-motion="reduce"]) .ob-pill { transition: none; }
+
 /* "What are you looking for?" (1.8, the owner's pick B of round 14,
    components/onboarding/LookingFor.tsx): picture cards, each pick numbered
    in the order it was tapped. A picked card is lit, a ring of the page's ink
@@ -3013,6 +3057,15 @@ html[data-reading-mode="parchment"] .ob-pick-n {
 :where([data-motion="reduce"]) .ob-pick,
 :where([data-motion="reduce"]) .ob-pick::after,
 :where([data-motion="reduce"]) .ob-pick img { transition: none; }
+
+/* Testers mode's mark (1.8, components/onboarding/TestersMark.tsx): at the
+   foot of the screen on the reading side, over the tab bar and the player,
+   so it covers neither. Its dot glows white, and on Parchment is plain ink. */
+.testers-mark {
+ bottom: calc(env(safe-area-inset-bottom, 0px) + var(--tab-bar-h) + var(--now-playing-h) + 12px);
+}
+.testers-dot { box-shadow: 0 0 8px rgb(255 255 255 / 0.8); }
+html[data-reading-mode="parchment"] .testers-dot { box-shadow: none; }
 
 /* ── Plus paywall entrance ────────────────────────────────────────────
    The subscription screen plays the same calm cascade as first-run

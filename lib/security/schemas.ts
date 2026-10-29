@@ -643,9 +643,14 @@ export const trackEventSchema = z.discriminatedUnion("name", [
         route: z.enum(COUNT_ROUTES),
         question: z.enum(tuple(COUNT_QUESTIONS)),
         answer: z.string().max(24),
+        // "What are you looking for?" counts every pick (1.8), each with its
+        // place in the order tapped: 1 for the first, never more places than
+        // there are answers.
+        place: z.number().int().min(1).max(INTENTS.length).optional(),
       })
       .strict()
-      .refine((p) => isCountAnswer(p.question, p.answer), "answer is not one the question offers"),
+      .refine((p) => isCountAnswer(p.question, p.answer), "answer is not one the question offers")
+      .refine((p) => p.place === undefined || p.question === "intent", "only a pick has a place"),
   }),
   z.object({
     name: z.literal("onboarding_skipped"),

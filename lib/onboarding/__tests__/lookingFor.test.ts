@@ -50,30 +50,63 @@ function continueButton(html: string): string {
 
 const CSS = fs.readFileSync(path.join(process.cwd(), "app/globals.css"), "utf8").replace(/\/\*[\s\S]*?\*\//g, "");
 
+/** A name as React writes it into HTML. */
+const html = (s: string) => s.replace(/'/g, "&#x27;");
+
+/** The answers' list items, whatever they carry. */
+const items = (drawn: string) => [...drawn.matchAll(/<li(?:\s[^>]*)?>([\s\S]*?)<\/li>/g)];
+
 describe("What are you looking for?", () => {
-  it("asks the question with its line, and draws the app's four answers as picture cards, two across", () => {
-    const html = draw([]);
-    expect(html).toContain("What are you looking for?");
-    expect(html).toContain("Pick as many as you like. The order you tap is the order Purify puts them in.");
-    expect(html).toContain("grid-cols-2");
-    // The screen before's four answers, in its order, each with its picture.
-    expect(cards(html).map((c) => c.src)).toEqual(INTENTS.map((i) => ANSWER_PICTURES[i].src));
-    for (const name of ["Daily quiet", "The Liturgy", "Study", "A rule of prayer"]) expect(html, name).toContain(`>${name}<`);
+  it("asks the question with its line, and draws every answer as a picture card, two across", () => {
+    const drawn = draw([]);
+    expect(drawn).toContain("What are you looking for?");
+    expect(drawn).toContain("Pick as many as you like. The order you tap is the order Purify puts them in.");
+    expect(drawn).toContain("grid-cols-2");
+    // Every answer in its order, each with its picture: the mockup's eight
+    // (its "The services" being the app's "The Liturgy"), then the app's
+    // other three (the owner's "add everything we left out", 2026-10-28).
+    expect(cards(drawn).map((c) => c.src)).toEqual(INTENTS.map((i) => ANSWER_PICTURES[i].src));
+    for (const name of [
+      "The saints' lives",
+      "The Fathers' writings",
+      "The Gospels",
+      "The councils",
+      "Church history",
+      "What the Orthodox believe",
+      "The Liturgy",
+      "Fasts and feasts",
+      "A rule of prayer",
+      "Daily quiet",
+      "Study",
+    ]) {
+      expect(drawn, name).toContain(`>${html(name)}<`);
+    }
     // The step had an eyebrow and its old question; the design has neither.
-    expect(html).not.toContain("Where to begin");
-    expect(html).not.toContain("What are you hoping to focus on first?");
+    expect(drawn).not.toContain("Where to begin");
+    expect(drawn).not.toContain("What are you hoping to focus on first?");
+  });
+
+  it("draws the mockup's short strips, the odd last one across the screen", () => {
+    const drawn = draw([]);
+    expect(cards(drawn)).toHaveLength(INTENTS.length);
+    expect(drawn.match(/class="ob-pick [^"]*\bh-28\b/g)).toHaveLength(INTENTS.length);
+    const list = items(drawn).map((m) => m[0].slice(0, m[0].indexOf(">") + 1));
+    expect(INTENTS.length % 2).toBe(1);
+    expect(list.at(-1)).toBe('<li class="col-span-2">');
+    expect(list.slice(0, -1).every((li) => li === "<li>")).toBe(true);
   });
 
   it("numbers each pick in the order it was tapped", () => {
     const drawn = cards(draw(["study", "quiet"]));
-    // quiet, liturgy, study, prayer: the cards keep their places, the numbers follow the taps.
-    expect(drawn.map((c) => c.pressed)).toEqual([true, false, true, false]);
-    expect(drawn.map((c) => c.number)).toEqual(["2", null, "1", null]);
+    // The cards keep their places, the numbers follow the taps: Study (last)
+    // was tapped first, Daily quiet (the one before it) second.
+    expect(drawn.map((c) => c.pressed)).toEqual(INTENTS.map((i) => i === "study" || i === "quiet"));
+    expect(drawn.map((c) => c.number)).toEqual(INTENTS.map((i) => (i === "study" ? "1" : i === "quiet" ? "2" : null)));
   });
 
   it("closes the numbers up when a pick is taken out", () => {
     const picks = togglePick(["study", "quiet", "prayer"], "study");
-    expect(cards(draw(picks)).map((c) => c.number)).toEqual(["1", null, null, "2"]);
+    expect(cards(draw(picks)).map((c) => c.number)).toEqual(INTENTS.map((i) => (i === "quiet" ? "1" : i === "prayer" ? "2" : null)));
   });
 
   it("says how many it continues with, and waits while nothing is picked", () => {
@@ -86,10 +119,10 @@ describe("What are you looking for?", () => {
   });
 
   it("draws no line under an answer, and gives each one's line to a screen reader", () => {
-    const items = [...draw([]).matchAll(/<li>([\s\S]*?)<\/li>/g)].map((m) => m[1]);
-    expect(items).toHaveLength(INTENTS.length);
-    items.forEach((item, k) => {
-      const line = getMessages("en")[`onboard.intent.${INTENTS[k]}Sub`];
+    const inner = items(draw([])).map((m) => m[1]);
+    expect(inner).toHaveLength(INTENTS.length);
+    inner.forEach((item, k) => {
+      const line = html(getMessages("en")[`onboard.intent.${INTENTS[k]}Sub`]);
       const id = /aria-describedby="([^"]+)"/.exec(item)?.[1];
       expect(id, INTENTS[k]).toBeTruthy();
       expect(item, INTENTS[k]).toContain(`<span id="${id}" hidden="">${line}</span>`);
@@ -105,7 +138,13 @@ describe("What are you looking for?", () => {
       expect(html, code).not.toContain("{count}");
       expect(continueButton(html), code).toContain(">" + messages["onboard.intent.continueWith"].replace("{count}", "2") + "<");
       if (code === "en") continue;
-      for (const key of ["onboard.intent.lookingFor", "onboard.intent.lookingForSub", "onboard.intent.continueWith"]) {
+      for (const key of [
+        "onboard.intent.lookingFor",
+        "onboard.intent.lookingForSub",
+        "onboard.intent.continueWith",
+        ...INTENTS.flatMap((i) => [`onboard.intent.${i}`, `onboard.intent.${i}Sub`]),
+      ]) {
+        expect(messages[key], `${code} ${key}`).toBeTruthy();
         expect(messages[key], `${code} ${key}`).not.toBe(getMessages("en")[key]);
       }
       expect(html, code).not.toBe(english);

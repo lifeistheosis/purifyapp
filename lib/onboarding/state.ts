@@ -17,6 +17,7 @@ import {
   type Intent,
   type Level,
 } from "./space";
+import { isTesting } from "./testing";
 
 /**
  * The flow a reader finished, stored when they finish it.
@@ -56,6 +57,25 @@ const STAGE_KEY = "purify:onboarding.stage";
 // "1" when the flow this reader finished was the one for a reader who is
 // back. Their first step is then called a next step, not a Day 1.
 const AGAIN_KEY = "purify:onboarding.again";
+
+/**
+ * Every key above: the answers and the flow's own marks. Testers mode
+ * (./testers.ts) keeps them as one before a test and puts them back exactly.
+ */
+export const SPACE_KEYS: readonly string[] = [
+  ONBOARDED_KEY,
+  FOCUS_KEY,
+  DEPTH_KEY,
+  NUDGE_DISMISSED_KEY,
+  NUDGE_ELIGIBLE_KEY,
+  LEVEL_KEY,
+  INTENT_KEY,
+  INTENTS_KEY,
+  FASTING_KEY,
+  BACKGROUND_KEY,
+  STAGE_KEY,
+  AGAIN_KEY,
+];
 
 /** Fired in-tab whenever onboarding state changes. */
 export const ONBOARDING_EVENT = "purify:onboarding";
@@ -306,6 +326,8 @@ export function writeFastingRule(rule: FastingRule): void {
  * holds an answered space, so a caller can spare the reader the questions.
  */
 export function fillSpaceFromAccount(remote: unknown): boolean {
+  // Testers mode: the device holds a test, and the account's answers stay out of it.
+  if (isTesting()) return false;
   if (!remote || typeof remote !== "object") return false;
   const r = remote as Record<string, unknown>;
   if (!isLevel(r.level)) return false;

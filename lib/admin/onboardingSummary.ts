@@ -33,8 +33,18 @@ export type OnboardingSummary = {
   skippedAt: Tally;
   skipped: number;
   finished: number;
-  /** Each question's answers, as given (not only by those who finished). */
+  /**
+   * Each question's answers, as given (not only by those who finished).
+   * "What are you looking for?" is every pick from version 4 on, the first
+   * pick alone before it.
+   */
   answers: Record<CountQuestion, Tally>;
+  /**
+   * "What are you looking for?" by place in the order tapped: how many put
+   * each answer first, and each answer's count at each place (1.8). A row
+   * from before places were counted was a first pick.
+   */
+  picks: { first: Tally; places: Record<string, Tally> };
   /** Those who finished, by what they said and how they came. */
   finishedBy: { background: Tally; level: Tally; intent: Tally; platform: Tally; door: Tally; route: Tally; account: Tally };
   /** Day 1 steps opened from Today. */
@@ -69,8 +79,24 @@ export const BACKGROUND_WORDS: Record<string, [string, string]> = {
   catholic: ["Catholic", "Catholics"],
   protestant: ["Protestant", "Protestants"],
   "other-faith": ["reader of another faith", "readers of another faith"],
-  none: ["reader of no faith", "readers of no faith"],
+  // The question's own words for this answer: "Just curious" (1.8).
+  none: ["reader who is just curious", "readers who are just curious"],
   "prefer-not": ["reader who would rather not say", "readers who would rather not say"],
+};
+
+/** Each answer to "What are you looking for?", as a sentence says it. */
+export const INTENT_WORDS: Record<string, string> = {
+  saints: "the saints' lives",
+  fathers: "the Fathers' writings",
+  gospels: "the Gospels",
+  councils: "the councils",
+  history: "Church history",
+  beliefs: "what the Orthodox believe",
+  liturgy: "the Liturgy",
+  feasts: "fasts and feasts",
+  prayer: "a rule of prayer",
+  quiet: "daily quiet",
+  study: "study",
 };
 const LEVEL_WORDS: Record<string, string> = { inquirer: "completely new", learning: "learning", practicing: "practicing" };
 export const STEP_WORDS: Record<string, string> = {
@@ -85,13 +111,24 @@ export const STEP_WORDS: Record<string, string> = {
   handoff: "the last screen",
 };
 
-/** The screen each way in opens on (lib/onboarding/counting.ts, routeFor). */
-const FIRST_STEP: Record<CountRoute, CountStep> = {
-  new: "welcome",
-  signup: "account",
-  "signed-in": "level",
-  returning: "returning",
-};
+/**
+ * The screen each way in opens on (lib/onboarding/counting.ts, routeFor). A
+ * reader signed in already is taken straight to the questions, which open on
+ * "Where are you coming from?" from version 4 of them and on familiarity
+ * before it.
+ */
+function firstStep(route: CountRoute, v: number): CountStep {
+  switch (route) {
+    case "new":
+      return "welcome";
+    case "signup":
+      return "account";
+    case "signed-in":
+      return v >= 4 ? "background" : "level";
+    case "returning":
+      return "returning";
+  }
+}
 
 const plural = (n: number, one: string, many: string) => `${n} ${n === 1 ? one : many}`;
 
@@ -114,6 +151,8 @@ export function summarizeOnboarding(rows: OnboardingRow[], now: Date, days: numb
   ) as Record<CountRoute, Record<CountStep, number>>;
   const answers = Object.fromEntries(Object.keys(COUNT_ANSWERS).map((q) => [q, {}])) as Record<CountQuestion, Tally>;
   const finishedBy = { background: {}, level: {}, intent: {}, platform: {}, door: {}, route: {}, account: {} } as OnboardingSummary["finishedBy"];
+  const picks: OnboardingSummary["picks"] = { first: {}, places: {} };
+  let began = 0;
   const skippedAt: Tally = {};
   const dayOne: Tally = {};
   const returned = Object.fromEntries(
@@ -143,12 +182,22 @@ export function summarizeOnboarding(rows: OnboardingRow[], now: Date, days: numb
     switch (r.name) {
       case "onboarding_step": {
         const step = str(p.step) as CountStep | undefined;
-        if (route && step && steps[route] && step in steps[route]) steps[route][step] += 1;
+        if (route && step && steps[route] && step in steps[route]) {
+          steps[route][step] += 1;
+          // Began: the first screen of each way in, not every screen seen.
+          if (step === firstStep(route, typeof p.v === "number" ? p.v : 3)) began += 1;
+        }
         break;
       }
       case "onboarding_answer": {
         const q = str(p.question) as CountQuestion | undefined;
         if (q && answers[q]) bump(answers[q], p.answer);
+        const answer = str(p.answer);
+        if (q === "intent" && answer) {
+          const place = typeof p.place === "number" ? p.place : 1;
+          if (place === 1) bump(picks.first, answer);
+          bump((picks.places[answer] ??= {}), String(place));
+        }
         break;
       }
       case "onboarding_skipped":
@@ -189,11 +238,12 @@ export function summarizeOnboarding(rows: OnboardingRow[], now: Date, days: numb
   const summary: OnboardingSummary = {
     days,
     steps,
-    began: COUNT_ROUTES.reduce((n, route) => n + steps[route][FIRST_STEP[route]], 0),
+    began,
     skippedAt,
     skipped,
     finished,
     answers,
+    picks,
     finishedBy,
     dayOne,
     returned,
@@ -222,6 +272,15 @@ export function sentencesFor(s: OnboardingSummary): string[] {
   }
   const lv = Object.entries(s.finishedBy.level).sort((a, b) => b[1] - a[1]);
   if (lv.length) out.push(`How familiar: ${list(lv.map(([k, n]) => `${n} ${LEVEL_WORDS[k] ?? k}`))}.`);
+
+  const looked = Object.entries(s.answers.intent).sort((a, b) => b[1] - a[1]).slice(0, 3);
+  if (looked.length) {
+    const first = Object.entries(s.picks.first).sort((a, b) => b[1] - a[1])[0];
+    out.push(
+      `What they look for most: ${list(looked.map(([k, n]) => `${INTENT_WORDS[k] ?? k} (${n})`))}` +
+        (first ? `; picked first most often, ${INTENT_WORDS[first[0]] ?? first[0]} (${first[1]}).` : "."),
+    );
+  }
 
   const stop = Object.entries(s.skippedAt).sort((a, b) => b[1] - a[1])[0];
   if (stop) out.push(`Most skipped at ${STEP_WORDS[stop[0]] ?? stop[0]} (${stop[1]}).`);

@@ -1,8 +1,14 @@
+import fs from "node:fs";
+import path from "node:path";
+
 import { describe, expect, it } from "vitest";
 
 import en from "@/lib/i18n/messages/en.json";
 import lessons from "@/data/prayers/learning/lessons.json";
+import { getPlan } from "@/lib/plans/plans";
 import {
+  BACKGROUND_PILLS,
+  BACKGROUNDS,
   INTENTS,
   LEVELS,
   asksRule,
@@ -63,14 +69,43 @@ describe("the Day 1 step", () => {
   });
 
   it("lands every combination on a page that exists", () => {
+    const appPage = (href: string) => fs.existsSync(path.join(process.cwd(), "app/(app)", href, "page.tsx"));
     for (const [l, i] of combos) {
       const { href } = dayOneFor(l, i);
       const lesson = href.match(/^\/prayers\/learning\/(.+)$/);
+      const plan = href.match(/^\/plans\/(.+)$/);
       if (lesson) {
         expect(lessonIds.has(lesson[1]), `${l}/${i}: ${href}`).toBe(true);
+      } else if (plan) {
+        expect(getPlan(plan[1]), `${l}/${i}: ${href}`).toBeTruthy();
+      } else if (["/bible/john/1", "/bible/job/1", "/walkthroughs/job"].includes(href)) {
+        // Pages of a book, each written at build from its own data.
       } else {
-        expect(["/prayers/morning", "/calendar", "/bible/john/1", "/bible/job/1", "/walkthroughs/job", "/start/first-liturgy"]).toContain(href);
+        expect(appPage(href), `${l}/${i}: ${href}`).toBe(true);
       }
+    }
+  });
+
+  it("opens the door the app has for each answer added in 1.8", () => {
+    // Round 14 B's answers, every one a real page in the app.
+    expect(dayOneFor("practicing", "saints")).toEqual({ key: "saintsLives", href: "/saints" });
+    expect(dayOneFor("inquirer", "fathers")).toEqual({ key: "readingPaths", href: "/reading/paths" });
+    expect(dayOneFor("learning", "gospels")).toEqual({ key: "gospelsPlan", href: "/plans/gospels" });
+    expect(dayOneFor(null, "councils")).toEqual({ key: "councils", href: "/councils" });
+    expect(dayOneFor("practicing", "history")).toEqual({ key: "history", href: "/history" });
+    expect(dayOneFor("practicing", "feasts")).toEqual({ key: "feasts", href: "/calendar" });
+    // What the Orthodox believe: Start here for the completely new, Theology for the rest.
+    expect(dayOneFor("inquirer", "beliefs")).toEqual({ key: "startHere", href: "/start" });
+    expect(dayOneFor("learning", "beliefs")).toEqual({ key: "theology", href: "/theology" });
+    expect(dayOneFor("practicing", "beliefs")).toEqual({ key: "theology", href: "/theology" });
+  });
+
+  it("gives each answer a first step of its own", () => {
+    // The four the app had keep theirs; each answer added has one no other answer leads to.
+    const added = ["saints", "fathers", "gospels", "councils", "history", "beliefs", "feasts"] as const;
+    const before = new Set(INTENTS.filter((i) => !(added as readonly string[]).includes(i)).flatMap((i) => [...LEVELS, null].map((l) => dayOneFor(l, i).key)));
+    for (const i of added) {
+      for (const l of [...LEVELS, null]) expect(before.has(dayOneFor(l, i).key), `${l}/${i}`).toBe(false);
     }
   });
 
@@ -92,12 +127,42 @@ describe("the Day 1 step", () => {
   });
 });
 
+describe("the answers", () => {
+  it("are the mockup's eight, its services being the Liturgy, then the app's other three", () => {
+    expect(INTENTS).toEqual(["saints", "fathers", "gospels", "councils", "history", "beliefs", "liturgy", "feasts", "prayer", "quiet", "study"]);
+  });
+
+  it("each have a name and a line in English", () => {
+    for (const i of INTENTS) {
+      expect(messages[`onboard.intent.${i}`], i).toBeTruthy();
+      expect(messages[`onboard.intent.${i}Sub`], i).toBeTruthy();
+    }
+  });
+});
+
+describe("where the reader comes from", () => {
+  it("draws five answers as pills and keeps Prefer not to say for under them", () => {
+    expect([...BACKGROUND_PILLS, "prefer-not"]).toEqual([...BACKGROUNDS]);
+  });
+
+  it("has a name for every answer and, for each pill, the line that says where Purify starts", () => {
+    for (const b of BACKGROUNDS) expect(messages[`onboard.background.${b}`], b).toBeTruthy();
+    for (const b of BACKGROUND_PILLS) expect(messages[`onboard.background.start.${b}`], b).toBeTruthy();
+    expect(messages["onboard.background.startWith"]).toContain("{what}");
+  });
+});
+
 describe("focus", () => {
   it("keeps the older focus picks pointing the same way as the intent", () => {
     expect(focusFor("quiet")).toBe("prayer");
     expect(focusFor("prayer")).toBe("prayer");
     expect(focusFor("liturgy")).toBe("calendar");
     expect(focusFor("study")).toBe("scripture");
+    // 1.8's answers, in the four words the older picks have.
+    expect(focusFor("saints")).toBe("saints");
+    expect(focusFor("fathers")).toBe("saints");
+    expect(focusFor("feasts")).toBe("calendar");
+    for (const i of ["gospels", "councils", "history", "beliefs"] as const) expect(focusFor(i), i).toBe("scripture");
   });
 
   it("keeps several picks' focus in the order picked, none twice", () => {
