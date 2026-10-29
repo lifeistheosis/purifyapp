@@ -1,11 +1,19 @@
 // The Purify premium plan, single-sourced.
 //
 // Standard / Plus / Pro tier content, prices, the opening offer, and the
-// freewill-gift copy live here so the checkout page (/pricing), the
-// marketing showcase (/premium), and the native paywall can never drift
-// on what a tier costs or includes. Prices and subscription terms are a
-// release stop-condition: change them deliberately, in one place, EN and
-// DE together.
+// freewill-gift copy live here so the marketing showcase (/premium) and Your
+// plan can never drift on what a tier costs or includes. Prices and
+// subscription terms are a release stop-condition: change them deliberately,
+// in one place, EN and DE together.
+//
+// The paywall no longer reads this file (1.8). Its three places, the upgrade
+// sheet, the apps' screen and the website's /pricing, take every price from
+// the store at runtime, and their words from the catalogs in all twenty-one
+// languages: the Plus rows in lib/premium/plusRows.ts PLUS_ROWS, and the Pro
+// rows and the EIKON Box's terms in PRO_ROWS and PRO_TERMS there, whose
+// English and German are this file's own, held to it letter for letter by
+// lib/premium/__tests__/paywallPlus2.test.ts. Change a Pro row here and there
+// together.
 //
 // The ladder (Beta 2.1): Standard is the complete Orthodox foundation,
 // free forever. Plus is utility, the premium reading and study

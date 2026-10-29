@@ -7,22 +7,28 @@
 // bottom, and the billed price the big number with what it comes to a month
 // small beside it, which is what App Review looks for.
 //
-// Three parts, shared by the two places the paywall stands: the upgrade sheet
-// a lock opens (components/billing/UpgradeModal.tsx) and the apps' full
-// screen at /pricing (components/billing/PlusPaywall.tsx).
+// Four parts, shared by the three places the paywall stands: the upgrade
+// sheet a lock opens (components/billing/UpgradeModal.tsx), the apps' full
+// screen at /pricing (components/billing/PlusPaywall.tsx) and the website's
+// /pricing (components/billing/WebPaywall.tsx).
 //
 //   KeptHero         the scribe of St Prochorus's icon, and why Plus exists:
 //                    "Purify is kept by those it helps", with the app's own
 //                    line under it (plus.footer).
 //   PlusFeatureRows  every Plus feature, each with a small working picture,
 //                    in the app's own words (lib/premium/plusRows.ts).
+//   PlusReviews      two or three of the stores' own reviews, word for word,
+//                    after the features and before the plans (the owner's
+//                    second round, 2026-10-28; lib/premium/paywallReviews.ts).
 //   PlansDock        the plans, the price, the trial, the button and the
 //                    small print, held at the bottom while the rows scroll.
 //
 // Every figure in the dock is the store's (lib/billing/offers.ts): the price
-// it bills, the month a year comes to, the trial it grants this reader. None
-// is written here. "Kept by those it helps" is the headline and its line, as
-// the design draws it, and nothing more: no reviews and no reader counts.
+// it bills, the month a year comes to, the trial it grants this reader, and
+// so the button's own words, "Start 7 days free" only where the store gives
+// this reader seven days. None is written here. "Kept by those it helps" is
+// the headline and its line, as the design draws it; the reviews are real
+// ones, quoted as written, and there are no reader counts.
 //
 // Black, white and grey (the owner, 2026-10-28: "that yellow is vibe
 // coded"): where something must stand out, the chosen plan and the feature a
@@ -32,12 +38,14 @@ import Link from "next/link";
 import type { CSSProperties, ReactNode } from "react";
 
 import { useTranslate } from "@/components/i18n/MessagesProvider";
+import { STORE_NAME, Stars } from "@/components/marketing/storeBits";
 import { FeatureMark, PREMIUM_CTA, SoonPill } from "@/components/premium/PremiumUI";
 import { AMBIENCE_TRACKS } from "@/lib/ambience/ambience";
 import { offeredPlans, savingsPct, type Plan, type PlusOffers, type TrialPeriod } from "@/lib/billing/offers";
 import { cn } from "@/lib/cn";
 import { dateLocale } from "@/lib/i18n/deviceDates";
 import type { LocaleCode } from "@/lib/i18n/locales";
+import { paywallReviews } from "@/lib/premium/paywallReviews";
 import { plusRowsLedBy } from "@/lib/premium/plusRows";
 
 /* ── The scribe, and why ─────────────────────────────────────────────────── */
@@ -240,6 +248,52 @@ export function PlusFeatureRows({ lead, className }: { lead?: string | null; cla
   );
 }
 
+/* ── What readers say ────────────────────────────────────────────────────── */
+
+/**
+ * Two or three of the stores' own reviews (lib/premium/paywallReviews.ts),
+ * quiet, after the features and before the plans: each with the stars its
+ * reviewer gave, the name as the store shows it, and the store. The words are
+ * the reviewer's, as written, and they are a quotation in English: marked as
+ * English, and set left to right on every page, Arabic and Urdu too, so the
+ * marks stay where the reviewer put them. Only the stars' label is the
+ * reader's language. No title and no month, to keep them quiet.
+ */
+export function PlusReviews({ className }: { className?: string }) {
+  const { t } = useTranslate();
+  const reviews = paywallReviews();
+  if (reviews.length === 0) return null;
+  return (
+    <div className={className} data-plus-reviews="">
+      <p className="font-sans text-caption font-semibold text-paper/55">{t("home.reviews.title")}</p>
+      <ul
+        aria-label={t("home.reviews.region")}
+        className="mt-2 divide-y divide-paper/[0.07] rounded-[18px] bg-paper/[0.025] px-3.5 ring-1 ring-inset ring-paper/[0.06]"
+      >
+        {reviews.map((r) => (
+          <li key={r.id} data-plus-review={r.id} className="py-3">
+            <figure dir="ltr">
+              <span className="block opacity-70">
+                <Stars label={t("home.apps.outOfFive", { rating: r.stars.toFixed(1) })} count={r.stars} outOf={5} size={11} tone="ink" />
+              </span>
+              <blockquote lang="en" className="mt-1.5 font-serif text-[13.5px] leading-[1.5] text-paper/75">
+                {`“${r.quote}”`}
+              </blockquote>
+              <figcaption className="mt-1.5 font-sans text-[11.5px] leading-snug text-paper/45">
+                <span lang="en" className="font-semibold text-paper/65">
+                  {r.name}
+                </span>
+                {" · "}
+                {STORE_NAME[r.store]}
+              </figcaption>
+            </figure>
+          </li>
+        ))}
+      </ul>
+    </div>
+  );
+}
+
 /* ── The plans, held at the bottom ───────────────────────────────────────── */
 
 /** A trial's length in the reader's language: days in the app's own count words, a month or a year by the device. */
@@ -316,9 +370,17 @@ export type BuyPlace = "store" | "web";
  *
  * The billed price is the big number and what a year comes to a month the
  * small one, both as the store formats them. The trial is said only when the
- * store grants it to this reader. With no offers (signed out, no billing, the
- * store did not answer) no price is shown at all, never a remembered one, and
- * the action leads to /pricing (`href`).
+ * store grants it to this reader, and then the action says it too: "Start 7
+ * days free", the owner's pick B on sheet 3 of his second round (2026-10-28),
+ * in the store's length and the reader's language; with no trial it says
+ * "Join Plus". With no offers (signed out, no billing, the store did not
+ * answer) no price is shown at all, never a remembered one, and the action
+ * leads to /pricing (`href`).
+ *
+ * The small print says what the action commits to in the store's price, that
+ * it renews automatically until it is cancelled (App Review looks for that
+ * line), then who bills it and that it can be cancelled any time, in the
+ * words the paywall has always used.
  *
  * Its fill is solid, with no blur: the features scroll under it, a feature's
  * title showed faintly through the old 90% glass, and the app keeps blur off
@@ -369,17 +431,19 @@ export function PlansDock({
   const yearly = plan === "yearly";
   const billed = chosen ? t(yearly ? "plus.perYear" : "plus.perMonth", { price: chosen.price }) : null;
   const trial = chosen?.trial ? trialWords(chosen.trial, tn, locale) : null;
-  const join = t(tier === "pro" ? "plus.joinPro" : "plus.join");
+  // The store's own trial, when it grants this reader one, in the button too.
+  const join = trial ? t("plus.cta.trial", { trial }) : t(tier === "pro" ? "plus.cta.joinPro" : "plus.cta.join");
   const action = cn(PREMIUM_CTA, "mt-3.5 min-h-[50px] w-full text-[16px]");
-  // What the action commits to, in the store's own price, then how it is
-  // billed and that it can be cancelled: the line every selling state of the
-  // paywall has carried.
+  // What the action commits to, in the store's own price, that it renews
+  // until cancelled, then how it is billed and that it can be cancelled: the
+  // line every selling state of the paywall carries.
   const terms = chosen
     ? trial
       ? t(yearly ? "plus.fine.trialYear" : "plus.fine.trialMonth", { trial, price: chosen.price })
       : t(yearly ? "plus.fine.year" : "plus.fine.month", { price: chosen.price })
     : null;
   const cancel = place === "store" ? t("plus.billedThroughStore") : chosen ? t("plus.billedOnWeb") : null;
+  const renews = terms || cancel ? t("plus.fine.renews") : null;
   const links = "inline-flex min-h-11 items-center transition-colors hover:text-paper";
 
   return (
@@ -421,7 +485,7 @@ export function PlansDock({
 
         {terms || cancel ? (
           <p className="mt-2 text-center font-sans text-[11.5px] leading-[1.45] text-paper/45">
-            {[terms, cancel].filter(Boolean).join(" ")}
+            {[terms, renews, cancel].filter(Boolean).join(" ")}
           </p>
         ) : null}
 

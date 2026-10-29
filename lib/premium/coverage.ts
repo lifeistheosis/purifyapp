@@ -1,10 +1,10 @@
 // Does the tier a reader already holds cover the tier a plan card is selling?
 //
-// Pure so both plan surfaces apply the identical rule and can be tested
-// without a session: /premium's PlanUpgradeCta and /pricing's
-// TierPurchaseOrStatus (components/premium/PlanStatus.tsx). Pro is a superset
-// of Plus, so it covers both cards; Plus covers only the Plus card and must
-// still be shown the Pro upgrade path.
+// Pure so the rule can be tested without a session: /premium's
+// PlanUpgradeCta (components/premium/PlanStatus.tsx). /pricing reads the same
+// rule in its own words since 1.8 (components/billing/WebPaywall.tsx). Pro is
+// a superset of Plus, so it covers both cards; Plus covers only the Plus card
+// and must still be shown the Pro upgrade path.
 
 import type { PremiumTier } from "@/lib/entitlements/client";
 

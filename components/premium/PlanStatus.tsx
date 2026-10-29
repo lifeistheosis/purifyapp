@@ -1,6 +1,8 @@
 "use client";
 
-// Current-plan recognition for the /premium and /pricing surfaces. Reads the
+// Current-plan recognition for the /premium surface (and, until the owner's
+// second round of 1.8 redrew /pricing as R2, for /pricing too: what a reader
+// holds is now read there by components/billing/WebPaywall.tsx). Reads the
 // signed-in user's REAL entitlement tier (getClientPremiumTier, straight off
 // the entitlements row — not the enforcement-gated getClientEntitlements, so a
 // comped or paid subscriber is recognized even pre-launch). Renders nothing
@@ -77,61 +79,6 @@ export function PlanUpgradeCta({
     </Link>
   );
 }
-
-/**
- * Wraps a tier's purchase surface so an existing subscriber is never sold what
- * they already hold.
- *
- * The purchase component (WebSubscribeCheckout) decides "subscribed" from
- * RevenueCat Web Billing, which is dormant until web billing is configured —
- * so it falls back to "Get it in the app" for EVERYONE, including a paid or
- * comped subscriber. The entitlements row is the real answer, and it is what
- * the banner above already reads, so consult it first and only fall through to
- * the purchase UI when the tier genuinely isn't held.
- *
- * `loading` renders a skeleton rather than the buy CTA: usePremiumTier adopts
- * its cached value before paint, so this only shows on a first-ever visit, and
- * flashing "subscribe" at a subscriber is the exact thing being fixed.
- */
-export function TierPurchaseOrStatus({
-  tier,
-  children,
-}: {
-  tier: "plus" | "pro";
-  children: React.ReactNode;
-}) {
-  const { t } = useTranslate();
-  const userTier = usePremiumTier();
-
-  if (userTier === "loading") {
-    return (
-      <div className="mt-7 border-t border-paper/8 pt-6">
-        <div className="h-12 w-full max-w-[320px] animate-pulse rounded-pill bg-paper/[0.06]" />
-      </div>
-    );
-  }
-
-  if (!coversTier(userTier, tier)) return <>{children}</>;
-  const label = ownedLabel(userTier, tier);
-
-  return (
-    <div className="mt-7 border-t border-paper/8 pt-6">
-      <div className="flex flex-wrap items-center gap-3">
-        <span className="inline-flex min-h-12 items-center gap-2 rounded-pill border border-paper/15 bg-paper/[0.05] px-6 font-sans text-ui font-semibold text-paper/90">
-          <PlusCheck />
-          {label}
-        </span>
-        <Link
-          href="/account"
-          className="font-sans text-caption font-semibold text-paper/55 underline underline-offset-4 hover:text-paper"
-        >
-          {t("ui.manageSubscription")}
-        </Link>
-      </div>
-    </div>
-  );
-}
-
 
 function ArrowRight() {
   return (
