@@ -2478,7 +2478,8 @@ await section(31, async () => {
 // narrow Android width and on an iPhone's, in English, Greek and Filipino
 // (Filipino has the longest tab name, "Mga Panalangin"), and measures the
 // bar: the name whole, the pill and the two buttons where they are on every
-// other tab, no Support and no star, and all of it inside the screen. Then
+// other tab and one even step apart, no Support and no star, and all of it
+// inside the screen. Then
 // Today's pill, which left the screen for /pricing until 1.7, opens the
 // upgrade sheet as the other four do. lib/nav/__tests__/oneTopBar.test.ts
 // holds the source.
@@ -2546,6 +2547,17 @@ await section(32, async () => {
         `${where}: the pill ends where it does on every tab, search and the bell stand in one place, and the bar is one height (pill ends at ${seen.map((s) => Math.round(s.got?.pill?.right ?? -1)).join(", ")}; bar ends at ${seen.map((s) => Math.round(s.got?.bar?.bottom ?? -1)).join(", ")})`,
       );
       must(seen.every((s) => s.got && s.got.searchSays === w["search.open"] && s.got.search && s.got.bell && s.got.search.width >= 44 && s.got.search.height >= 44 && s.got.bell.width >= 44 && s.got.bell.height >= 44 && s.got.pill && s.got.pill.height >= 44), `${where}: search, the bell and the pill's box are 44px on every tab`);
+      // One even step between the three boxes (the owner's build 80 note 5:
+      // search touched the bell while the pill stood 2px off, which showed
+      // on Prayers' round plates). The row's own 8px, on every tab.
+      const steps = (g) => (g?.pill && g.search && g.bell ? [g.search.left - g.pill.right, g.bell.left - g.search.right] : null);
+      must(
+        seen.every((s) => {
+          const st = steps(s.got);
+          return !!st && near(st[0], st[1], 0.5) && st[0] >= 7.5;
+        }),
+        `${where}: the pill, search and the bell stand one even step apart (${seen.map((s) => steps(s.got)?.map((v) => v.toFixed(1)).join(" and ") ?? "?").join("; ")} px)`,
+      );
       must(seen.every((s) => s.got && s.got.painted && near(s.got.painted.height, seen[0].got.painted?.height, 0.5)), `${where}: the pill is one size on every tab (${seen.map((s) => Math.round(s.got?.painted?.height ?? -1)).join(", ")} px tall)`);
       must(seen.every((s) => s.got && !s.got.support && !s.got.star), `${where}: no Support in the bar and no star in the pill`);
       must(

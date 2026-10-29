@@ -109,9 +109,14 @@ export function MobileHeader({
         </h1>
         {/* data-tab-actions: where the bar stands over a page's picture
             (Prayers, 1.8), globals.css sets the round buttons on plates,
-            the Premium pill keeping its own. */}
-        <div data-tab-actions="" className="flex shrink-0 items-center">
-          <span className="me-0.5 inline-flex">
+            the Premium pill keeping its own.
+            One gap between the three, the row's own 8px, and no margin on
+            any of them: the pill stood 2px from search and search had no
+            room at all from the bell, so on those plates the two touched
+            while the pill did not (the owner's build 80 note 5). Each keeps
+            its own 44px box; the gap is between the boxes. */}
+        <div data-tab-actions="" className="flex shrink-0 items-center gap-2">
+          <span className="inline-flex">
             <MobilePremiumButton />
           </span>
           <SearchTrigger iconSize={24} className="text-paper/80" />
