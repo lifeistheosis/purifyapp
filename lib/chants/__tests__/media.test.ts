@@ -12,11 +12,25 @@ import fs from "node:fs";
 import { describe, expect, it } from "vitest";
 
 import { availabilityOf, readLiveList } from "@/lib/chants/live";
-import { CHANT_MEDIA_PREFIX, LIVE_LIST_PATH, chantMediaUrl, englishOver, formatDuration, isStreamed, streamedPaths, subLines, variantRef } from "@/lib/chants/media";
+import {
+  CHANT_MEDIA_PREFIX,
+  CHANT_RECORDINGS,
+  LIVE_LIST_PATH,
+  bucketRecording,
+  chantMediaUrl,
+  englishOver,
+  formatDuration,
+  inBucket,
+  isStreamed,
+  streamedPaths,
+  subLines,
+  variantRef,
+} from "@/lib/chants/media";
 import { SITE_URL } from "@/lib/site";
 
 const streamed = { id: "en", audio: { src: "/audio/chants/prayer-rope-anthem/en.mp3" } };
 const bundled = { id: "en", audio: { src: "/audio/some-bundled.mp3" } };
+const inTheBucket = { id: "el", audio: { src: "https://audio.purifyapp.net/chants/psalm-135/el.mp3" } };
 
 describe("a chant's media address", () => {
   it("is the page's own on the website, the website's in the apps", () => {
@@ -32,8 +46,23 @@ describe("a chant's media address", () => {
       audio: `${CHANT_MEDIA_PREFIX}psalm-103/znamenny.mp3`,
       timing: `${CHANT_MEDIA_PREFIX}psalm-103/znamenny.json`,
     });
+    expect(bucketRecording("psalm-103", "znamenny")).toBe(`${CHANT_RECORDINGS}psalm-103/znamenny.mp3`);
     expect(variantRef("psalm-103", "znamenny")).toBe("psalm-103/znamenny");
     expect(LIVE_LIST_PATH).toBe("/audio/chants/live.json");
+  });
+
+  it("plays a recording kept in Purify's bucket from there, on the website and in the apps alike (1.8)", () => {
+    // The owner, 2026-10-30: "R2, like the Bible audio".
+    expect(CHANT_RECORDINGS).toBe("https://audio.purifyapp.net/chants/");
+    expect(inBucket(inTheBucket.audio.src)).toBe(true);
+    expect(isStreamed(inTheBucket.audio.src)).toBe(true);
+    expect(chantMediaUrl(inTheBucket.audio.src, false)).toBe(inTheBucket.audio.src);
+    expect(chantMediaUrl(inTheBucket.audio.src, true)).toBe(inTheBucket.audio.src);
+    // Its timing file is still the website's.
+    expect(chantMediaUrl("/audio/chants/psalm-135/el.json", true)).toBe(`${SITE_URL}/audio/chants/psalm-135/el.json`);
+    expect(inBucket("https://audio.purifyapp.net/read/john/1.mp3")).toBe(false);
+    // The website's pages may play from the bucket (the read-aloud opened it).
+    expect(fs.readFileSync("lib/security/headers.ts", "utf8")).toContain(`"media-src 'self' https://audio.purifyapp.net"`);
   });
 
   it("is said as minutes and seconds", () => {
@@ -107,6 +136,15 @@ describe("which recordings may play", () => {
   it("takes a recording down with one line, bundled ones too", () => {
     expect(availabilityOf(list, "prayer-rope-anthem", { ...streamed, id: "fr" })).toBe("pulled");
     expect(availabilityOf(list, "other", bundled)).toBe("pulled");
+  });
+
+  it("holds a bucket recording to the list as it holds the website's (1.8)", () => {
+    // Taken down with one line, if a choir objects: the owner's word of 2026-10-30.
+    expect(availabilityOf({ live: ["psalm-135/el"], pulled: [] }, "psalm-135", inTheBucket)).toBe("playable");
+    expect(availabilityOf({ live: [], pulled: ["psalm-135/el"] }, "psalm-135", inTheBucket)).toBe("pulled");
+    expect(availabilityOf({ live: [], pulled: [] }, "psalm-135", inTheBucket)).toBe("pulled");
+    expect(availabilityOf(null, "psalm-135", inTheBucket)).toBe("offline");
+    expect(availabilityOf("unknown", "psalm-135", inTheBucket)).toBe("checking");
   });
 
   it("plays a bundled recording with no signal", () => {

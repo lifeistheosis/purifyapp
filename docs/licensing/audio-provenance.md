@@ -12,10 +12,23 @@ Chants section below, as **not licensed** by the owner's decision of
 avoiding the choirs whose own recordings they are known to be, and took the
 risk knowingly ("this is a risk I am willing to take ... it's more of a
 tradition"). No row here may ever state a licence that does not exist. Each
-such recording streams from the website and never ships inside the apps
-(`public/audio/chants/` is set aside by `scripts/native-build.mjs`), credits
-its performer where known, and can be taken down from every installed app
-with one edit (its takedown line).
+such recording streams and never ships inside the apps (`public/audio/chants/`
+is set aside by `scripts/native-build.mjs`, and since 1.8 a recording is kept
+in Purify's bucket instead, below), credits its performer where known, and can
+be taken down from every installed app with one edit (its takedown line).
+
+**Amended 2026-10-30 (1.8), the owner's decision on six recordings:** "Add all
+6 now". The six chant recordings he downloaded on 2026-10-28
+(`Homebase/boards/purify-master/r18/CHANTS-INTAKE.md`) go live, each credited
+by name, and each is taken down with one edit if a choir objects. For these six
+this overrides the rule of 2026-10-16 above of avoiding the choirs whose own
+recordings they are known to be: five of them are (two of Eikona's, the Mount
+Lebanon Orthodox Choir with Theodoros Vassilikos, the Choir of Beirut, and the
+Beirut men's choir), and he chose to carry them anyway. They are not licensed,
+and their rows say so. The rule of 2026-10-16 still stands for every recording
+after these. On the same day, "R2, like the Bible audio": they play from
+Purify's own bucket at audio.purifyapp.net, as the Bible read aloud does
+(`lib/chants/media.ts`), and are not in the repository.
 
 ## Removed (no documented rights)
 
@@ -46,19 +59,38 @@ Also not shipping: `valley` (64MB source, already excluded via
 
 ## Chants (1.7): recordings the owner sends, not licensed
 
-Every recording under `public/audio/chants/`, one row each. These stream from
-the website and are not in the apps' bundle. **Takedown:** move the
-recording's `<slug>/<id>` from `live` to `pulled` in
-`public/audio/chants/live.json` and push the website; every app stops offering
-it within minutes (`lib/chants/live.ts`), with no store release. The data
-test (`lib/chants/__tests__/data.test.ts`) fails if a chant recording has no
-row here, or if a row in this section names any licence other than none.
+Every chant recording, one row each: the Anthem's three under
+`public/audio/chants/`, on the website, and every one since in Purify's bucket
+on Cloudflare R2 (1.8, the owner's word of 2026-10-30), named by its address
+there. None is in the apps' bundle, and none since the Anthem's is in the
+repository. **Takedown:** move the recording's `<slug>/<id>` from `live` to
+`pulled` in `public/audio/chants/live.json` and push the website; every app
+stops offering it within minutes (`lib/chants/live.ts`), with no store
+release, and the website stops with it. A bucket recording can also be
+deleted from the bucket, which the list does not need. The data test
+(`lib/chants/__tests__/data.test.ts`) fails if a chant recording has no row
+here, if a row's last cell is not its own takedown line, or if a row in this
+section names any licence other than none.
 
 | File | Chant and version | Where it came from | Performer | Licence | Received | Decision | Takedown |
 | --- | --- | --- | --- | --- | --- | --- | --- |
 | `public/audio/chants/prayer-rope-anthem/en.mp3` | The Prayer Rope Anthem, English | Not recorded. Until 1.7 this file was `public/audio/prayer-rope-anthem.mp3`, and its row here called it a first-party Purify production with an open action for the owner to confirm, which was never closed; nothing in the repo says who made the recording. Recorded here as not licensed until he says otherwise. | not known | none | in the repo since 2026-06 or earlier | owner's decision 2026-10-16; **owner to confirm the source** | `prayer-rope-anthem/en` |
 | `public/audio/chants/prayer-rope-anthem/fr.mp3` | The Prayer Rope Anthem, French | Shared with its synchronised words by BOX on the Purify Discord (the Alpha v9.6 patch note of 2026-06-08 and the code's own comment say so). Until 1.7 `public/audio/prayer-rope-anthem-fr.mp3`, wrongly called first-party here. | not known (shared by BOX) | none | in the repo since 2026-06 or earlier | owner's decision 2026-10-16; **owner to confirm the source** | `prayer-rope-anthem/fr` |
 | `public/audio/chants/prayer-rope-anthem/ar.mp3` | The Prayer Rope Anthem, Arabic | Shared by Silouan on the Purify Discord, as a link (the Alpha v9.6 patch note of 2026-06-08 and the code's own comment say so). Until 1.7 `public/audio/prayer-rope-anthem-ar.mp3`, wrongly called first-party here. Its words are an automatic transcription, not yet checked. | not known (shared by Silouan) | none | in the repo since 2026-06 or earlier | owner's decision 2026-10-16; **owner to confirm the source** | `prayer-rope-anthem/ar` |
+| `https://audio.purifyapp.net/chants/psalm-135/ar.mp3` | Psalm 135, Arabic | YouTube: "Psalm 135 Arabic", uploaded by Simi_6290 on 2023-08-27, 4:16, with no description (https://www.youtube.com/watch?v=PPxVelmOJqw). The owner's loose copy is named for that uploader, and the copy he filed names the singers. The note he filed beside it links https://www.youtube.com/watch?v=FgzUkaaMB1I, which is the Paschal Canon's upload (its row below), not this one. The same 4:16 recording is also distributed as "Psalm 135 (Arabic)" by "Hymns of Redemption" (DistroKid, 2025; https://www.youtube.com/watch?v=q7gHwyJ7VmM), which names no singer. | Mount Lebanon Orthodox Choir and Theodoros Vassilikos (Arkhon Protopsaltis), as the owner's filed copy names them; neither upload names them | none | 2026-10-28 | owner's decision 2026-10-30 ("Add all 6 now") | `psalm-135/ar` |
+| `https://audio.purifyapp.net/chants/psalm-135/en.mp3` | Psalm 135, English | Eikona's own release: "Psalm 135 O Give Thanks", on the album Abundant Mercy (The Polyeleos), ℗ 2015 Eikona, released 2015-03-26 through TuneCore, 9:01; on YouTube as Eikona - Topic (https://www.youtube.com/watch?v=YjbGxXFp2RA). | Eikona | none | 2026-10-28 | owner's decision 2026-10-30 ("Add all 6 now") | `psalm-135/en` |
+| `https://audio.purifyapp.net/chants/psalm-135/el.mp3` | Psalm 135, Greek | YouTube: Psalm 135, Byzantine Chant (Intro Theme), uploaded by Living Orthodox on 2023-04-27, 8:30 (https://www.youtube.com/watch?v=sATnkD8wLQg). Its description says the uploader does not own it and that it "is performed by the Beirut men's choir". | Beirut men's choir, as the upload names it (it gives no fuller name) | none | 2026-10-28 | owner's decision 2026-10-30 ("Add all 6 now") | `psalm-135/el` |
+| `https://audio.purifyapp.net/chants/psalm-135/sr.mp3` | Psalm 135, Serbian | YouTube: "SERBIAN ORTHODOX CHURCH MUSIC / PSALM 135", uploaded by xCZ99x on 2008-05-30, 7:19 (https://www.youtube.com/watch?v=_MkA1UeHi_4). Its description names the psalm (Slavite Gospoda) and no singer. | not known (the upload names none; credited here as uploaded by xCZ99x) | none | 2026-10-28 | owner's decision 2026-10-30 ("Add all 6 now") | `psalm-135/sr` |
+| `https://audio.purifyapp.net/chants/psalm-117/ar.mp3` | Psalm 117, Arabic | YouTube: "Psalm 117 (Arabic) - Give thanks to the Lord", with its Arabic title beside it, uploaded by ܝܘܣܦ ܓܘܪܓܝܣ (@user-wf1kl6dy3h) on 2016-08-09, 5:56 (https://www.youtube.com/watch?v=o3LLR8zPvVk). YouTube's music panel on that page names the track "Ihmadou Al Rab" by Choir of Beirut, from the album "Psalms - مزامير". | Choir of Beirut | none | 2026-10-28 | owner's decision 2026-10-30 ("Add all 6 now") | `psalm-117/ar` |
+| `https://audio.purifyapp.net/chants/paschal-canon/en.mp3` | The Paschal Canon, English | YouTube: "The Paschal Canon", uploaded by Orthodox Christian Chants on 2017-04-27, 29:19, described "Chanted by Eikona" (https://www.youtube.com/watch?v=FgzUkaaMB1I); YouTube's music panel names its parts as Eikona's Ode 1 and Odes 3 to 9. Both notes the owner filed (beside this recording and beside the Arabic Psalm 135) link this upload. | Eikona | none | 2026-10-28 | owner's decision 2026-10-30 ("Add all 6 now") | `paschal-canon/en` |
+
+The six recordings above were encoded from the owner's downloads by
+`scripts/chants/prepare-audio.mjs` on 2026-10-30 (silence trimmed at both ends,
+loudness evened to about -16 LUFS, 128 kbps MP3; the ffmpeg was the one
+Remotion carries in `Homebase/projects/purify-ads`, as nothing else on that PC
+has one), then uploaded by `Homebase/tools/r2/upload.mjs` under the bucket's
+own prefix, `chants/`. The downloads, 320 kbps copies of the uploads, stay with
+the owner.
 
 The Anthem's cover, `public/audio/art/anthem.jpg`, is a square crop of St
 Andrei Rublev's Holy Trinity (Commons, File:Angelsatmamre-trinity-rublev-1410.jpg,

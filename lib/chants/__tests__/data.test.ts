@@ -13,7 +13,7 @@ import path from "node:path";
 import { describe, expect, it } from "vitest";
 
 import { LOCALES } from "@/lib/i18n/locales";
-import { isStreamed, readTiming, streamedPaths } from "@/lib/chants/media";
+import { bucketRecording, inBucket, isStreamed, readTiming, streamedPaths } from "@/lib/chants/media";
 import { chantLineKey, chantTitleKey, kindKey, traditionKey } from "@/lib/chants/names";
 import { allChants, chantIndex } from "@/lib/chants/registry.server";
 import { chantSchema } from "@/lib/chants/schema";
@@ -127,6 +127,17 @@ describe("each version of a chant", () => {
     for (const { c, v, id } of versions) {
       if (!isStreamed(v.audio.src)) continue;
       const want = streamedPaths(c.slug, v.id);
+      if (inBucket(v.audio.src)) {
+        // 1.8: the sound is the bucket's alone, and never also in the
+        // repository; its timing file, where it has one, is the website's.
+        expect(v.audio.src, id).toBe(bucketRecording(c.slug, v.id));
+        expect(fs.existsSync(onDisk(want.audio)), `${id}: a copy of a bucket recording is in the repository`).toBe(false);
+        if (v.timing) {
+          expect(v.timing, id).toBe(want.timing);
+          expect(fs.existsSync(onDisk(v.timing)), `${id}: ${v.timing} is not on disk`).toBe(true);
+        }
+        continue;
+      }
       expect(v.audio.src, id).toBe(want.audio);
       expect(v.timing, id).toBe(want.timing);
       expect(fs.existsSync(onDisk(v.audio.src)), `${id}: ${v.audio.src} is not on disk`).toBe(true);
@@ -136,11 +147,26 @@ describe("each version of a chant", () => {
   });
 
   it("records the length its recording really has", () => {
+    // A bucket recording's length was read from the file that was uploaded
+    // (scripts/chants/prepare-audio.mjs prints it); its timing file, below,
+    // holds the same length.
     for (const { v, id } of versions) {
+      if (inBucket(v.audio.src)) continue;
       const file = onDisk(v.audio.src);
       if (!fs.existsSync(file) || !file.endsWith(".mp3")) continue;
       expect(Math.abs(mp3Duration(file) - v.audio.durationSec), id).toBeLessThan(1);
     }
+  });
+
+  it("keeps every recording since the Anthem out of the repository", () => {
+    // The owner, 2026-10-30: the recordings live in the bucket, not in the
+    // public repository. Only the Anthem's three, from 1.7, stay.
+    expect(fs.readFileSync(path.join(ROOT, ".gitignore"), "utf8")).toMatch(/^public\/audio\/chants\/\*\*\/\*\.mp3$/m);
+    const mp3s = fs
+      .readdirSync(path.join(ROOT, "public", "audio", "chants"), { recursive: true })
+      .map((f) => String(f).split(path.sep).join("/"))
+      .filter((f) => f.endsWith(".mp3"));
+    expect(mp3s.sort()).toEqual(["prayer-rope-anthem/ar.mp3", "prayer-rope-anthem/en.mp3", "prayer-rope-anthem/fr.mp3"]);
   });
 
   it("is timed line for line on the Church's words, never the transcript's", () => {
@@ -199,10 +225,10 @@ describe("the rights and the takedown list", () => {
   };
   const refs = new Set(allChants().flatMap((c) => c.variants.map((v) => `${c.slug}/${v.id}`)));
 
-  it("records every recording in the provenance document, by its path", () => {
+  it("records every recording in the provenance document, by its path or its address", () => {
     for (const c of allChants()) {
       for (const v of c.variants) {
-        const file = `public${v.audio.src}`;
+        const file = inBucket(v.audio.src) ? v.audio.src : `public${v.audio.src}`;
         expect(doc.includes("`" + file + "`"), `${file} has no row in docs/licensing/audio-provenance.md`).toBe(true);
       }
     }
@@ -213,8 +239,21 @@ describe("the rights and the takedown list", () => {
     // licensed, and the record says so. The chants' rows say "none".
     const section = doc.slice(doc.indexOf("## Chants"));
     expect(doc.indexOf("## Chants"), "the Chants section of the provenance document").toBeGreaterThan(-1);
-    for (const row of section.split("\n").filter((l) => l.startsWith("| `public/audio/chants/"))) {
-      expect(row, row).toMatch(/\|\s*none\s*\|/i);
+    const rows = section.split("\n").filter((l) => l.startsWith("| `public/audio/chants/") || l.startsWith("| `https://audio.purifyapp.net/chants/"));
+    expect(rows.length).toBeGreaterThanOrEqual(allChants().flatMap((c) => c.variants).length);
+    for (const row of rows) expect(row, row).toMatch(/\|\s*none\s*\|/i);
+  });
+
+  it("can take every recording down with one line, each row naming its own", () => {
+    // The takedown line is the row's last cell: the "<slug>/<id>" that moves
+    // from live to pulled in live.json.
+    for (const c of allChants()) {
+      for (const v of c.variants) {
+        const file = inBucket(v.audio.src) ? v.audio.src : `public${v.audio.src}`;
+        const row = doc.split("\n").find((l) => l.startsWith("| `" + file + "`"));
+        expect(row, file).toBeDefined();
+        expect(row!.trim().endsWith("| `" + `${c.slug}/${v.id}` + "` |"), `${file}: its takedown line`).toBe(true);
+      }
     }
   });
 

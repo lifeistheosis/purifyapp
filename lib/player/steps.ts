@@ -27,8 +27,12 @@ import { readingOfSrc } from "@/lib/readAloud/chapters";
 /** The Bible read aloud: a chapter. A chant: its slug. */
 export type Playing = { kind: "chapter"; book: string; chapter: number } | { kind: "chant"; slug: string } | null;
 
-/** Where a chant's recordings are kept: /audio/chants/<slug>/<version>.mp3, the website's own in the apps. */
-const CHANT_RECORDING = /\/audio\/chants\/([a-z0-9-]+)\/[^/?#]+\.mp3(?:$|[?#])/;
+/**
+ * Where a chant's recordings are kept: Purify's bucket since 1.8
+ * (audio.purifyapp.net/chants/<slug>/<version>.mp3, lib/chants/media.ts), or
+ * the website's /audio/chants/<slug>/<version>.mp3, its own in the apps.
+ */
+const CHANT_RECORDING = /(?:\/audio\/chants|\/\/audio\.purifyapp\.net\/chants)\/([a-z0-9-]+)\/[^/?#]+\.mp3(?:$|[?#])/;
 
 /** A chant's row as the player needs it: its slug and its versions' recordings, in order. */
 export type ChantRowLike<V extends ChantVersionLike = ChantVersionLike> = { slug: string; variants: readonly V[] };

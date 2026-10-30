@@ -10,10 +10,19 @@ notes 15, 26 and 28, 2026-10-16):
 - He sends the recordings: the popular, widely reposted ones, not the
   recordings of the choirs known to own them. They are **not licensed**, he
   knows the risk, and the record says so honestly. Never write a licence that
-  does not exist.
-- The audio streams from the website. It never ships inside the apps (the
-  bundle is at its 85 MB packed ceiling): `public/audio/chants/` is set aside
-  by `scripts/native-build.mjs`.
+  does not exist. (On 2026-10-30 he carried six named choirs' recordings
+  anyway, "Add all 6 now", credited and with a takedown line each; that was
+  his decision for those six, recorded in `docs/licensing/audio-provenance.md`,
+  not a new rule.)
+- The audio streams and never ships inside the apps (the bundle is at its
+  85 MB packed ceiling). Since 1.8 every recording is in Purify's bucket on
+  Cloudflare R2, at `https://audio.purifyapp.net/chants/<slug>/<id>.mp3`, as
+  the Bible read aloud is (his "R2, like the Bible audio", 2026-10-30), and
+  **never in this repository**: `.gitignore` refuses
+  `public/audio/chants/**/*.mp3`, and the data test fails on one. The timing
+  files and `live.json` stay on the website, under `public/audio/chants/`,
+  which `scripts/native-build.mjs` sets aside from the apps. The Prayer Rope
+  Anthem's three recordings, from 1.7, are the only ones on the website.
 - The words on screen are the Church's published text, never a transcript.
   His transcript only gives each line its time.
 - No priest reviews Purify yet. Write the prose as canonically as it can be
@@ -27,19 +36,31 @@ For a chant with the slug `christ-is-risen` and a version `el-byzantine`:
 | File | What |
 | --- | --- |
 | `data/chants/christ-is-risen.json` | The chant: the shape is `lib/chants/types.ts`, checked by `lib/chants/schema.ts`. Its name must be its slug. |
-| `public/audio/chants/christ-is-risen/el-byzantine.mp3` | The recording, made by `scripts/chants/prepare-audio.mjs`. |
-| `public/audio/chants/christ-is-risen/el-byzantine.json` | Its timed words, made by `scripts/chants/timing-from-transcript.mjs`. |
-| `public/audio/chants/christ-is-risen/cover.webp` | Optional: a public-domain icon, square. Without one the page draws the plain plate. |
+| `https://audio.purifyapp.net/chants/christ-is-risen/el-byzantine.mp3` | The recording, in the bucket: made by `scripts/chants/prepare-audio.mjs` into a staging folder outside the repository, then uploaded. Its data file's `audio.src` is this address. |
+| `public/audio/chants/christ-is-risen/el-byzantine.json` | Its timed words, made by `scripts/chants/timing-from-transcript.mjs`. Optional: a version with none has its words without Sing along. |
 | `public/audio/chants/live.json` | Add `"christ-is-risen/el-byzantine"` to `live`. A recording plays only while it is listed there. |
-| `docs/licensing/audio-provenance.md` | One row in the Chants section: where it came from in his words, the performer or "not known", licence **none**, the day it came, his decision of 2026-10-16, and its takedown line. |
+| `docs/licensing/audio-provenance.md` | One row in the Chants section, named by the recording's bucket address: where it came from (the upload's link, its uploader and date), the performer or "not known", licence **none**, the day it came, his decision, and its takedown line. |
+
+A cover is optional: a public-domain icon, square, at
+`public/audio/chants/<slug>/cover.webp` (on the website, streamed like the
+timing files) or one the bundle already carries (as the Anthem's
+`/audio/art/anthem.jpg` is). Without one the page draws the plain plate.
 | `lib/i18n/messages/*.json` | Two lines in all 21 languages: `chants.item.<key>.title` (English exactly the data file's `title`) and `chants.item.<key>.line`, one sentence for the cover. |
 
 ## Steps
 
-1. **The recording.** `node scripts/chants/prepare-audio.mjs <file> <slug> <id>`.
-   With ffmpeg it trims the silence and evens the loudness; without it an MP3
-   is copied as it is. It prints the `audio` and `timing` lines for the data
-   file.
+1. **The recording.** `node scripts/chants/prepare-audio.mjs <file> <slug> <id> --out <staging folder>`,
+   the folder outside the repository. With ffmpeg it trims the silence and
+   evens the loudness; without it an MP3 is copied as it is. It needs only
+   silencedetect, atrim, loudnorm and libmp3lame, so the ffmpeg Remotion
+   carries will do: on the owner's PC, set
+   `FFMPEG=Homebase/projects/purify-ads/node_modules/@remotion/compositor-win32-x64-msvc/ffmpeg.exe`.
+   It prints the `audio` and `timing` lines for the data file. Then upload
+   the staging folder: `node Homebase/tools/r2/upload.mjs <staging folder> chants --dry`,
+   read what it would put (nothing already in the bucket is touched unless its
+   name is the same), then the same without `--dry`. Check each address
+   answers 200 with its size and the CORS header for `https://localhost` and
+   `https://purifyapp.net` before its line goes into `live.json`.
 2. **The words.** Take them from a published, public-domain text and cite it
    in `sources`: Greek and Church Slavonic from the printed service books,
    English from Hapgood's Service Book (1906, 1922), Brenton for the Psalms
@@ -53,7 +74,9 @@ For a chant with the slug `christ-is-risen` and a version `el-byzantine`:
 3. **The times.** `node scripts/chants/timing-from-transcript.mjs <transcript> <slug> <id>`.
    It lays the transcript's segments on the data file's lines one for one and
    refuses when the counts differ. Lines marked `?` share few words with the
-   transcript: listen to those.
+   transcript: listen to those. A bucket recording's length is taken from its
+   data file. Where no transcript can be made (no speech model on the PC for
+   its language), leave `timing` out: the words show without Sing along.
 4. **The prose.** `about.what`, `about.history` and `about.when`, in English,
    plain, with no em dash, nothing invented, every claim resting on a source
    in `sources`. Set `review` to `{ "status": "awaiting-clergy-review", "since": "<today>" }`.
@@ -81,5 +104,6 @@ Move its `<slug>/<id>` from `live` to `pulled` in
 `public/audio/chants/live.json` and push the website. Every installed app
 stops offering it within minutes (`lib/chants/live.ts` reads the list; the
 website keeps it fresh for five minutes, `next.config.ts`). Nothing else has
-to change, and no store release is needed. To take a whole chant away from
-the next release, set its `status` to `"hidden"`.
+to change, and no store release is needed. A bucket recording can also be
+deleted from the bucket afterwards; the list does not need it. To take a
+whole chant away from the next release, set its `status` to `"hidden"`.

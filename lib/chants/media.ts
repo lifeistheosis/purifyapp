@@ -1,40 +1,64 @@
 import { streamedUrl } from "@/lib/media/streamed";
 import type { CaptionSource } from "@/lib/prayers/persistentAudioStore";
 
-import type { ChantLine, ChantTiming } from "./types";
+import { CHANT_RECORDINGS, type ChantLine, type ChantTiming } from "./types";
 
 /**
  * Where a chant's recordings, timed words and cover are, and how they are
  * reached (1.7).
  *
- * Chant audio streams from the website and never ships inside the apps: the
- * bundle is at its 85 MB packed ceiling, and the owner's recordings are
- * taken down with one edit to a list on the website (live.json, below), not
- * with a store release. Everything under /audio/chants/ is kept out of the
- * apps' export (scripts/native-build.mjs, STASH_PATHS), so in the apps it is
- * asked of SITE_URL, and on the website it is the site's own file.
- * next.config.ts lets the apps' origins read it (Cross-Origin-Resource-
- * Policy and Access-Control-Allow-Origin on /audio/chants), which a curl
- * that answers 200 does not prove: a browser refuses a same-origin file to
- * another origin while the server says 200.
+ * Chant audio streams and never ships inside the apps: the bundle is at its
+ * 85 MB packed ceiling, and the owner's recordings are taken down with one
+ * edit to a list on the website (live.json, below), not with a store
+ * release.
+ *
+ * Since 1.8 a recording is kept in Purify's bucket on Cloudflare R2
+ * (CHANT_RECORDINGS, audio.purifyapp.net/chants/<slug>/<id>.mp3), as the
+ * Bible read aloud is: the owner's word of 2026-10-30, "R2, like the Bible
+ * audio", which keeps the recordings out of the public repository the
+ * website is built from. Its address is the same on the website and in the
+ * apps, the bucket answers the website's and both apps' origins (its CORS
+ * policy, Homebase/tools/r2/README.md), and the website lets its pages play
+ * from it (lib/security/headers.ts, media-src). The Prayer Rope Anthem's
+ * three recordings, from 1.7, stay on the website.
+ *
+ * Everything else streamed lives under /audio/chants/ on the website: the
+ * Anthem's recordings, every recording's timing file and the live list. It
+ * is kept out of the apps' export (scripts/native-build.mjs, STASH_PATHS),
+ * so in the apps it is asked of SITE_URL, and on the website it is the
+ * site's own file. next.config.ts lets the apps' origins read it
+ * (Cross-Origin-Resource-Policy and Access-Control-Allow-Origin on
+ * /audio/chants), which a curl that answers 200 does not prove: a browser
+ * refuses a same-origin file to another origin while the server says 200.
  *
  * Any other path (the Anthem's cover, /audio/art/anthem.jpg) is in the
- * bundle and is used as it is. The way a streamed file is reached is shared
- * with the read-aloud covers (lib/media/streamed.ts), so moving streamed
- * media to another host later is one change there.
+ * bundle and is used as it is. The way a website file is reached is shared
+ * with the read-aloud covers (lib/media/streamed.ts).
  */
 export const CHANT_MEDIA_PREFIX = "/audio/chants/";
+
+export { CHANT_RECORDINGS };
 
 /** The list that says which streamed recordings may play. */
 export const LIVE_LIST_PATH = `${CHANT_MEDIA_PREFIX}live.json`;
 
-export function isStreamed(path: string): boolean {
-  return path.startsWith(CHANT_MEDIA_PREFIX);
+/** A recording kept in Purify's bucket (since 1.8). */
+export function inBucket(src: string): boolean {
+  return src.startsWith(CHANT_RECORDINGS);
 }
 
-/** The address to load: the website's in the apps, the page's own on the web. */
+/** Streamed: on the website or in the bucket, never in the bundle, and played only while the live list names it. */
+export function isStreamed(path: string): boolean {
+  return path.startsWith(CHANT_MEDIA_PREFIX) || inBucket(path);
+}
+
+/**
+ * The address to load: a website file is the website's in the apps and the
+ * page's own on the web; a bucket recording, and anything the bundle
+ * carries, is used as it is.
+ */
 export function chantMediaUrl(path: string, native?: boolean): string {
-  if (!isStreamed(path)) return path;
+  if (!path.startsWith(CHANT_MEDIA_PREFIX)) return path;
   return streamedUrl(path, native);
 }
 
@@ -43,12 +67,17 @@ export function variantRef(slug: string, variantId: string): string {
   return `${slug}/${variantId}`;
 }
 
-/** The conventional paths of a streamed recording and its timing file. */
+/** The conventional paths of a recording on the website and of its timing file. */
 export function streamedPaths(slug: string, variantId: string): { audio: string; timing: string } {
   return {
     audio: `${CHANT_MEDIA_PREFIX}${slug}/${variantId}.mp3`,
     timing: `${CHANT_MEDIA_PREFIX}${slug}/${variantId}.json`,
   };
+}
+
+/** A recording's address in Purify's bucket: one folder per chant, a file per version. */
+export function bucketRecording(slug: string, variantId: string): string {
+  return `${CHANT_RECORDINGS}${slug}/${variantId}.mp3`;
 }
 
 /** A timing file, checked by hand rather than with the schema, so the client stays small. */

@@ -1,0 +1,82 @@
+{
+  "slug": "psalm-117",
+  "key": "psalm117",
+  "title": "Psalm 117",
+  "kind": "psalm",
+  "psalm": 117,
+  "when": {
+    "services": [
+      "Matins: God is the Lord, with four of this psalm's verses",
+      "The Matins of Pascha: verse 24, with Christ is risen"
+    ]
+  },
+  "about": {
+    "what": "A psalm of thanksgiving, the hundred and seventeenth as the Church counts the psalms, by the Septuagint. It begins and ends with the same verse, “Give thanks to the Lord; for he is good: for his mercy endures for ever” (verses 1 and 29), and in it are “The stone which the builders rejected, the same is become the head of the corner” (verse 22) and “This is the day which the Lord has made: let us exult and rejoice in it” (verse 24), quoted here in Brenton's English.",
+    "history": "The Church sings this psalm's verses in her services. At Matins the choir sings “God is the Lord”, from the psalm's verses 27 and 26, four times, and the deacon sets four of its verses between: verse 1, verse 10, verse 17, and verses 22 and 23 (Hapgood's Service Book, 1906, Matins, pp. 26 and 27). At the Matins of Pascha its verse 24 is one of the verses sung with “Christ is risen from the dead” (the same book, p. 226).",
+    "when": "At Matins, after the Great Litany, with God is the Lord; and at the Matins of Pascha, with Christ is risen."
+  },
+  "sources": [
+    {
+      "title": "The Septuagint Version of the Old Testament, with an English Translation",
+      "author": "Sir Lancelot C. L. Brenton",
+      "year": "1851",
+      "note": "The English of Psalm 117 quoted above and set over the Arabic, as Purify's Bible has it."
+    },
+    {
+      "title": "Service Book of the Holy Orthodox-Catholic Apostolic (Greco-Russian) Church",
+      "author": "Isabel Florence Hapgood",
+      "year": "1906",
+      "url": "https://archive.org/details/cu31924029363128",
+      "note": "Matins, pp. 26 and 27: God is the Lord and the four verses of this psalm set between. Easter, p. 226: the verses sung with Christ is risen."
+    },
+    {
+      "title": "The Holy Bible in Arabic (the Van Dyck translation)",
+      "author": "The Syrian Mission (Eli Smith and Cornelius Van Dyck)",
+      "year": "1865",
+      "url": "https://ebible.org/arb-vd/PSA118.htm",
+      "note": "The Arabic of the psalm's first verse (Psalm 118 in this Bible's own count), read at eBible.org. Public domain."
+    }
+  ],
+  "review": {
+    "status": "awaiting-clergy-review",
+    "since": "2026-10-30"
+  },
+  "related": [
+    "psalm-135"
+  ],
+  "status": "live",
+  "addedOn": "2026-10-30",
+  "variants": [
+    {
+      "id": "ar",
+      "language": "ar",
+      "label": "العربية",
+      "tradition": "antiochian",
+      "performer": "Choir of Beirut",
+      "audio": {
+        "src": "https://audio.purifyapp.net/chants/psalm-117/ar.mp3",
+        "durationSec": 355.4
+      },
+      "preview": {
+        "from": 0,
+        "to": 20
+      },
+      "rtl": true,
+      "lines": [
+        {
+          "text": "اِحْمَدُوا ٱلرَّبَّ لِأَنَّهُ صَالِحٌ،",
+          "en": "Give thanks to the Lord; for he is good:"
+        },
+        {
+          "text": "لِأَنَّ إِلَى ٱلْأَبَدِ رَحْمَتَهُ.",
+          "en": "for his mercy endures for ever."
+        }
+      ],
+      "wordsSource": "Only the opening verse. The recording's upload gives it under the video, and it is printed here as the Van Dyck Arabic Bible has it (1865, public domain). The rest of what the choir sings is on the video's screen and has not been taken down yet, so this version has no Sing along.",
+      "translation": {
+        "kind": "public-domain",
+        "title": "Brenton's English of the Septuagint (1851), the same verse"
+      }
+    }
+  ]
+}

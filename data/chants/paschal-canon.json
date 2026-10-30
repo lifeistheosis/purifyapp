@@ -1,0 +1,227 @@
+{
+  "slug": "paschal-canon",
+  "key": "paschalCanon",
+  "title": "The Paschal Canon",
+  "kind": "hymn",
+  "when": {
+    "windows": [
+      {
+        "paschal": [
+          0,
+          6
+        ]
+      }
+    ],
+    "services": [
+      "The Matins of Pascha, begun at midnight"
+    ]
+  },
+  "about": {
+    "what": "The canon of Pascha: eight odes of hymns on the Resurrection, each opening with its irmos, with a refrain between its hymns, and each followed by “Christ is risen from the dead”. Its first irmos, in Hapgood's English: “The Day of Resurrection! Let us be illumined, O ye people! The Passover, the Passover of the Lord!”",
+    "history": "The Service Book names its author: the canon was “composed by St. John of Damascus” (Hapgood, 1906, p. 227). J. M. Neale, who put its odes into English verse, calls it the Golden Canon, or the Queen of Canons, and counts it among the saint's three great canons; he writes that St John retired to the monastery of St Sabas in Palestine and died after 754 (Hymns of the Eastern Church, 1862). Hapgood prints eight odes, the first and the third to the ninth, in the first tone.",
+    "when": "At the Matins of Pascha, which begins at midnight. After the procession round the church and “Christ is risen from the dead” sung at its closed doors, the priest begins the canon, and after each ode the choirs sing its irmos again and “Christ is risen” thrice (Hapgood, pp. 226 to 233)."
+  },
+  "sources": [
+    {
+      "title": "Service Book of the Holy Orthodox-Catholic Apostolic (Greco-Russian) Church",
+      "author": "Isabel Florence Hapgood",
+      "year": "1906",
+      "url": "https://archive.org/details/cu31924029363128",
+      "note": "Easter: the Matins at midnight, p. 226; the canon and the hymns sung with it, pp. 227 to 233, read on the page images of the Cornell scan. The words of this version."
+    },
+    {
+      "title": "Hymns of the Eastern Church",
+      "author": "J. M. Neale",
+      "year": "1862",
+      "url": "https://sacred-texts.com/chr/hec/hec20.htm",
+      "note": "S. John Damascene, and the Canon for Easter Day, called the Golden Canon, or the Queen of Canons (read in the edition of 1884)."
+    }
+  ],
+  "review": {
+    "status": "awaiting-clergy-review",
+    "since": "2026-10-30"
+  },
+  "status": "live",
+  "addedOn": "2026-10-30",
+  "variants": [
+    {
+      "id": "en",
+      "language": "en",
+      "label": "English",
+      "tradition": "greek",
+      "setting": "Byzantine chant",
+      "performer": "Eikona",
+      "audio": {
+        "src": "https://audio.purifyapp.net/chants/paschal-canon/en.mp3",
+        "durationSec": 1758.2
+      },
+      "timing": "/audio/chants/paschal-canon/en.json",
+      "preview": {
+        "from": 0,
+        "to": 22
+      },
+      "lines": [
+        {
+          "text": "The Day of Resurrection! Let us be illumined, O ye people! The Passover, the Passover of the Lord! From death unto life, and from earth unto heaven hath Christ our God brought us over, singing a song of victory!"
+        },
+        {
+          "text": "Let us purify our senses and we shall behold Christ, radiant with the light ineffable of the Resurrection, and shall hear him say, in accents clear: Rejoice! as we sing the song of victory."
+        },
+        {
+          "text": "For meet is it that the heavens should rejoice, and that the earth should be glad, and that the whole world, both visible and invisible, should keep the Feast. For Christ is risen, the everlasting joy!"
+        },
+        {
+          "text": "Christ is risen from the dead, trampling down Death by death, and upon those in the tomb bestowing life."
+        },
+        {
+          "text": "Jesus having risen from the grave, as he foretold, hath given unto us life eternal, and great mercy."
+        },
+        {
+          "text": "O come, let us quaff a beverage new, not from a barren rock miraculously called forth; but the Fountain of Immortality springing from the tomb of Christ: on whom also we are founded."
+        },
+        {
+          "text": "Now are all things filled with light; heaven, and earth, and the places under the earth. All Creation doth celebrate the Resurrection of Christ, on whom also it is founded."
+        },
+        {
+          "text": "Yesterday, O Christ, was I buried with thee, and to-day I rise again with thy rising. Yesterday was I crucified with thee: Do thou thyself glorify me, O Saviour, in thy kingdom."
+        },
+        {
+          "text": "Christ is risen from the dead, trampling down Death by death, and upon those in the tomb bestowing life."
+        },
+        {
+          "text": "Jesus having risen from the grave, as he foretold, hath given unto us life eternal, and great mercy."
+        },
+        {
+          "text": "When they who with the Marys came, forestalling the dawn, and found the stone rolled away from the sepulchre, they heard from the Angel: Why seek ye among the dead, as he were mortal, him who abideth in everlasting light? Behold the grave-clothes. Go quickly, and proclaim to the world that the Lord is risen, and hath slain Death. For he is the Son of God who saveth mankind."
+        },
+        {
+          "text": "May Habakkuk, divinely speaking, now stand with us in watch divine, and show the radiant Angel crying clearly: To-day is salvation come into the world: For Christ is risen, in that he is almighty."
+        },
+        {
+          "text": "Christ revealed himself as of the male sex when he opened the Virgin's womb, and as mortal was called the Lamb. Without blemish, also, is our Passover, in that he tasted not corruption; and as very God perfect was proclaimed."
+        },
+        {
+          "text": "Christ, the blessed Crown, like unto a yearling Lamb, of his own good will did sacrifice himself for all, a Passover of purification: and from the grave did he, the glorious Sun of Righteousness, shine forth again upon us."
+        },
+        {
+          "text": "David, the ancestor of our God, danced with leaping before the symbolical Ark of the Covenant. Let us also, the holy people of God, beholding the fulfilment of the symbol, rejoice in godly wise: For Christ is risen, in that he is almighty."
+        },
+        {
+          "text": "Christ is risen from the dead, trampling down Death by death, and upon those in the tomb bestowing life."
+        },
+        {
+          "text": "Jesus having risen from the grave, as he foretold, hath given unto us life eternal, and great mercy."
+        },
+        {
+          "text": "Right early let us wake, and unto the Lord bring a song instead of myrrh, and we shall behold Christ, the Sun of Righteousness, who lighteth the life of all mankind."
+        },
+        {
+          "text": "When they who were led captive in the bonds of Hell beheld thy loving-kindness infinite, O Christ, they hastened to the light with joyful feet, exalting the Passover Everlasting."
+        },
+        {
+          "text": "Bearing lights, let us go forth to meet Christ, who cometh forth from the grave like a bridegroom. And with the hierarchy of Angels who love and praise, let us celebrate the ransoming Passover of God."
+        },
+        {
+          "text": "Christ is risen from the dead, trampling down Death by death, and upon those in the tomb bestowing life."
+        },
+        {
+          "text": "Jesus having risen from the grave, as he foretold, hath given unto us life eternal, and great mercy."
+        },
+        {
+          "text": "Thou didst descend into the nethermost parts of the earth, O Christ, and didst shatter the bonds eternal which held the prisoners in captivity: and after three days thou didst rise again from the grave, like Jonah from the whale."
+        },
+        {
+          "text": "O Christ, who didst not break the Virgin's gate by thy birth, thou didst rise again from the dead, having kept intact the seals; and thou hast opened unto us the gates of Paradise."
+        },
+        {
+          "text": "O my Saviour, the sacrifice living and unslain, which, inasmuch as thou art God could not be slain! When thou, of thine own will, hadst offered up thyself unto the Father, thou didst raise up with thee also, in that thou thyself didst rise from the grave, Adam, the father of our race."
+        },
+        {
+          "text": "Christ is risen from the dead, trampling down Death by death, and upon those in the tomb bestowing life."
+        },
+        {
+          "text": "Jesus having risen from the grave, as he foretold, hath given unto us life eternal, and great mercy."
+        },
+        {
+          "text": "Though thou didst descend into the grave, O Deathless One, yet didst thou annihilate the power of Hell, and didst rise again as conqueror, O Christ our God, announcing unto the Myrrh-bearing Women: Rejoice! and giving peace unto thine Apostles, and bestowing Resurrection upon the fallen."
+        },
+        {
+          "text": "The Myrrh-bearing Women forestalled the dawn, ere the rising of the sun, seeking, as it were day, the Sun which had once set in the tomb, and crying one to another: O friends! Come, let us anoint with sweet-smelling spices the life-bringing and buried body of him who raiseth again in the flesh fallen Adam, which lieth in the grave. Let us go, let us seek, like the Wise Men, and let us fall down in worship before him, and bring unto him an offering of myrrh; not unto him in swaddling-clothes, but in his winding-sheet. And let us weep and cry aloud: Arise, O Master, who givest Resurrection unto the fallen!"
+        },
+        {
+          "text": "In that we have beheld the Resurrection of Christ, let us bow down before the holy Lord Jesus, the only sinless One. Thy Cross do we adore, O Christ, and thy holy Resurrection we laud and glorify: for thou art our God, and we know none other beside thee, we call upon thy Name. O come, all ye faithful, let us adore Christ's holy Resurrection: for lo, through his Cross is joy come into all the world. Ever blessing the Lord, let us sing his Resurrection: for in that he endured the Cross, he hath destroyed Death by death."
+        },
+        {
+          "text": "Jesus having risen from the grave, as he foretold, hath given unto us life eternal, and great mercy."
+        },
+        {
+          "text": "He who delivered the Holy Children from the fiery furnace, when he was made man did suffer like unto a mortal; and through his Passion he doth clothe the mortal in the dignity of immortality, he, the only God of our fathers, blessed and exceedingly glorified."
+        },
+        {
+          "text": "The godly-wise women followed after thee in haste with sweet-smelling spices. But him whom they sought with tears as dead, they joyfully adored as the living God, and announced unto thy disciples, O Christ, the glad tidings of the mystical Passover."
+        },
+        {
+          "text": "We celebrate the death of Death, the annihilation of Hell, the beginning of a life new and everlasting. And in ecstasy we sing praises unto the author thereof, the only God of our fathers, blessed and exceeding glorious."
+        },
+        {
+          "text": "For holy, in very truth, and worthy of all solemn triumph, is this redeeming and radiantly effulgent night, the harbinger of the bright-beaming Day of the Resurrection, on which the Light Eternal that hath no bounds shone forth in the flesh from the grave for all mankind."
+        },
+        {
+          "text": "Christ is risen from the dead, trampling down Death by death, and upon those in the tomb bestowing life."
+        },
+        {
+          "text": "Jesus having risen from the grave, as he foretold, hath given unto us life eternal, and great mercy."
+        },
+        {
+          "text": "This is the chosen and holy Day, like unto no other, the King and Lord of Sabbaths, the Feast of Feasts, and the Triumph of Triumphs: Wherein let us bless Christ forevermore!"
+        },
+        {
+          "text": "O come, on this auspicious day of the Resurrection, let us partake of the fruit from the new vine of divine gladness, of the kingdom of Christ, in song magnifying him as God forevermore."
+        },
+        {
+          "text": "Cast thine eyes about thee, O Zion, and behold! For lo! from the West and from the North, and from the Sea and from the East, as to a light by God illumined, have thy children assembled unto thee, blessing Christ forevermore."
+        },
+        {
+          "text": "O Father Almighty, the Word and the Spirit, one Essence in Three Persons, exceeding high and most divine! Into thee have we been baptized, and thee will we bless unto all the ages."
+        },
+        {
+          "text": "Christ is risen from the dead, trampling down Death by death, and upon those in the tomb bestowing life."
+        },
+        {
+          "text": "Jesus having risen from the grave, as he foretold, hath given unto us life eternal, and great mercy."
+        },
+        {
+          "text": "My soul doth magnify him who, of his own good will, suffered and was buried, and rose again on the third day."
+        },
+        {
+          "text": "Shine, shine, O New Jerusalem! for the glory of the Lord is risen upon thee. Keep high holiday now and be glad, O Zion! And rejoice thou, O pure Birth-giver of God, in the rising again of him whom thou didst bear!"
+        },
+        {
+          "text": "My soul doth magnify the Life-giver, who rose again from the grave on the third day."
+        },
+        {
+          "text": "O how divine! O how loving-kind! O how most sweet is thy word, O Christ! For thou hast faithfully promised to be with us, even unto the end of the world. Having, therefore, this firm foundation of hope, we faithful do rejoice."
+        },
+        {
+          "text": "Christ the New Passover, the living Sacrifice, the Lamb of God, taketh away the sins of the world."
+        },
+        {
+          "text": "O Christ, the Passover great and most holy! O Wisdom, Word and Power of God! Grant that we may more perfectly partake of thee in the day which knoweth no night of thy kingdom."
+        },
+        {
+          "text": "The Angel cried unto her who is full of grace: Hail, O Pure Virgin! And again, I say: Hail! Thy Son is risen from his three days' sojourn in the grave, and hath raised up the dead: Rejoice, O ye people!"
+        },
+        {
+          "text": "Shine, shine, O New Jerusalem! for the glory of the Lord is risen upon thee. Keep high holiday now and be glad, O Zion! And rejoice thou, O pure Birth-giver of God, in the rising again of him whom thou didst bear!"
+        },
+        {
+          "text": "Christ is risen from the dead, trampling down Death by death, and upon those in the tomb bestowing life."
+        },
+        {
+          "text": "Jesus having risen from the grave, as he foretold, hath given unto us life eternal, and great mercy."
+        }
+      ],
+      "wordsSource": "Hapgood's Service Book (1906, pp. 227 to 233): each hymn the recording sings, one line each, in the order it sings them. The recording sings an English translation of our own time, which is not in the public domain; Hapgood's English of the same hymns is, and its words differ. Between the hymns the recording sings a refrain glorifying the Lord's holy Resurrection, where Hapgood's book has “Christ is risen from the dead!”; those refrains, the little litanies between the odes, and the reading for the day after the sixth ode are not in the words."
+    }
+  ]
+}

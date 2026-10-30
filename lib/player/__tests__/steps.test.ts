@@ -28,6 +28,8 @@ describe("what is playing", () => {
   it("knows a chant, by where its recordings are, in the apps and on the website", () => {
     expect(playingOf("/audio/chants/prayer-rope-anthem/fr.mp3")).toEqual({ kind: "chant", slug: "prayer-rope-anthem" });
     expect(playingOf("https://purifyapp.net/audio/chants/prayer-rope-anthem/ar.mp3")).toEqual({ kind: "chant", slug: "prayer-rope-anthem" });
+    // 1.8: a recording in Purify's bucket, the same address everywhere.
+    expect(playingOf("https://audio.purifyapp.net/chants/psalm-135/el.mp3")).toEqual({ kind: "chant", slug: "psalm-135" });
   });
 
   it("knows a chant by the library's index too, wherever its recording is kept", () => {
