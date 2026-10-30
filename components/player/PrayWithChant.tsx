@@ -22,6 +22,7 @@
 import Link from "next/link";
 import { useCallback, useEffect, useRef, useState } from "react";
 
+import { CrossPlate } from "@/components/ui/CrossPlate";
 import { Sheet } from "@/components/ui/Sheet";
 import { useTranslate } from "@/components/i18n/MessagesProvider";
 import { availabilityKey } from "@/components/chants/ChantPlay";
@@ -136,7 +137,7 @@ export function ChantPicker({ open, onClose }: { open: boolean; onClose: () => v
                     // eslint-disable-next-line @next/next/no-img-element -- a static export serves files as they are.
                     <img src={chantMediaUrl(chant.cover.src)} alt="" className="h-11 w-11 shrink-0 rounded-[10px] object-cover" />
                   ) : (
-                    <span aria-hidden className="h-11 w-11 shrink-0 rounded-[10px] bg-paper/10" />
+                    <CrossPlate size="thumb" className="h-11 w-11 shrink-0 rounded-[10px]" />
                   )}
                   <span className="min-w-0 flex-1">
                     <span className="block truncate font-sans text-ui font-semibold text-paper">{title}</span>

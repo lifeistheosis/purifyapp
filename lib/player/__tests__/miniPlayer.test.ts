@@ -170,9 +170,13 @@ describe("the ring", () => {
     const html = renderToStaticMarkup(createElement(RingCover, { art: null, played: 0, lit: true, size: "pill" }));
     expect(html.match(/<circle/g)?.length).toBe(1);
     expect(html).not.toContain("mini-player-ring-lit");
-    // No picture: an empty disc, never a broken image.
+    // No picture (a chant with no cover): the plate's cross in the disc, never
+    // a broken image or an empty disc (1.8, the coordinator's walk of 2026-10-30).
     expect(html).not.toContain("<img");
-    expect(html).toContain('class="relative rounded-full size-6 bg-paper/10"');
+    expect(html).not.toContain("bg-paper/10");
+    expect(html).toContain('data-cover="plate"');
+    expect(html).toMatch(/class="[^"]*rounded-full size-6[^"]*"/);
+    expect(html).toContain("cross-plate-mark");
   });
 
   it("is white and glowing while it plays, grey while it waits, from the top round", () => {

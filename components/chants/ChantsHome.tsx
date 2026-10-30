@@ -11,10 +11,10 @@ import { useCalendarStyleDefault } from "@/lib/calendar/useCalendarStyleDefault"
 import { useToday } from "@/lib/calendar/useToday";
 import { chantLineKey, chantTitleKey, traditionKey } from "@/lib/chants/names";
 import { warmTiming } from "@/lib/chants/play";
-import { chantsHome, inTradition, newestChant, traditionsIn, type HomeSection } from "@/lib/chants/select";
+import { chantsHome, inTradition, restingChant, traditionsIn, type HomeSection } from "@/lib/chants/select";
 import type { ChantIndexRow, ChantIndexVariant, ChantTradition } from "@/lib/chants/types";
 
-import { ChantCover } from "./ChantCover";
+import { ChantCover, languagesOf } from "./ChantCover";
 import { AvailabilityLine, PlayPill, useChantPlay } from "./ChantPlay";
 import { ChantListItem, ChantRow, metaOf } from "./ChantRow";
 import { ChantVersions } from "./ChantVersions";
@@ -28,7 +28,7 @@ import { ChantVersions } from "./ChantVersions";
  * Phone first, one tree for every width (a centred column on a tablet and a
  * computer). The chant to open on is chosen on the device, for the reader's
  * own day and calendar (lib/chants/select.ts); before the day is known the
- * newest chant stands there, and no row is drawn.
+ * newest chant with a cover stands there, and no row is drawn.
  *
  * Built to read as finished with one chant, which is the library on the day
  * it opens: the chant, its versions to play, and one quiet line that more are
@@ -42,7 +42,8 @@ export function ChantsHome({ index }: { index: ChantIndexRow[] }) {
   const [tradition, setTradition] = useState<ChantTradition | null>(null);
 
   const home = useMemo(() => (today ? chantsHome(index, today, style) : null), [index, today, style]);
-  const featured = home?.featured ?? newestChant(index);
+  // Before the day is known, the chant the home rests on: the newest with a cover.
+  const featured = home?.featured ?? restingChant(index);
   const sections = home?.sections ?? [];
   const traditions = traditionsIn(index);
   const one = index.length === 1;
@@ -127,8 +128,7 @@ function Featured({ row, withVersions }: { row: ChantIndexRow; withVersions: boo
       <Link href={href} className="press-card mx-auto block w-[min(300px,76vw)]" tabIndex={-1} aria-hidden>
         <ChantCover
           cover={row.cover}
-          title={title}
-          tradition={t(traditionKey(variant.tradition))}
+          languages={languagesOf(row.variants)}
           size="hero"
           className="w-full rounded-[14px] shadow-[0_24px_60px_-20px_rgba(0,0,0,0.7)]"
         />

@@ -3096,18 +3096,50 @@ await section(34, async () => {
   must(tiles.includes("/chants") && !tiles.some((h) => h.startsWith("/kitchen")), `Discover has a Chants tile and no Kitchen (${tiles.filter((h) => /chants|kitchen/.test(h)).join(", ") || "neither"})`);
   must(tiles.indexOf("/chants") === tiles.indexOf("/theology") + 1, "in the Kitchen's place, after Theology");
 
-  // The home: the Anthem at the top with its versions, and nothing empty.
+  // The home (1.8, the six chants of 2026-10-30): the chant at the top has a
+  // cover (the Prayer Rope Anthem, the one with an icon), except the Paschal
+  // Canon in its own season, Palm Sunday through Bright Week
+  // (lib/chants/select.ts); every row drawn holds a chant; every chant is in
+  // All chants; and no cover is an empty box: a chant with none has the
+  // plate, the cross glowing white (components/ui/CrossPlate.tsx).
+  const library = JSON.parse(fs.readFileSync(path.join(OUT, "chants-index.json"), "utf8"));
+  must(library.every((c) => inBundle(OUT, `/chants/${c.slug}/`)), `every chant's page is in the bundle (${library.length}: ${library.map((c) => c.slug).join(", ")})`);
   await go(page, "/chants/");
-  await page.waitForFunction((w) => document.body.innerText.includes(w), en["chants.item.prayerRopeAnthem.title"], { timeout: 20000 }).catch(() => {});
+  await page.waitForFunction(() => document.querySelector("[data-route-content] section[aria-labelledby=chants-featured] [data-cover]"), null, { timeout: 20000 }).catch(() => {});
   await page.waitForTimeout(1500);
-  const home = await page.evaluate(() => ({
-    text: document.querySelector("[data-route-content]")?.innerText ?? "",
-    headings: [...document.querySelectorAll("[data-route-content] [role=heading], [data-route-content] h1, [data-route-content] h2")].map((h) => (h.textContent ?? "").trim()),
-  }));
-  must(home.text.includes(en["chants.item.prayerRopeAnthem.title"]) && home.text.includes(en["chants.moreComing"]), "the Chants home opens on the Prayer Rope Anthem and says more are coming");
-  must(["English", "Français", "العربية"].every((l) => home.text.includes(l)), "with its three versions to play");
+  const home = await page.evaluate(() => {
+    const root = document.querySelector("[data-route-content]");
+    const featured = root?.querySelector("section[aria-labelledby=chants-featured]");
+    const all = root?.querySelector("section[aria-labelledby=chants-all]");
+    return {
+      text: root?.innerText ?? "",
+      featured: featured
+        ? {
+            title: (featured.querySelector("h2")?.textContent ?? "").trim(),
+            cover: featured.querySelector("[data-cover]")?.getAttribute("data-cover") ?? null,
+            buttons: [...featured.querySelectorAll("button")].map((b) => (b.textContent ?? "").trim()),
+          }
+        : null,
+      rows: [...(root?.querySelectorAll("section[aria-labelledby^=chants-row-]") ?? [])].map((s) => ({
+        heading: (s.querySelector("[role=heading]")?.textContent ?? "").trim(),
+        chants: s.querySelectorAll("a[href*='/chants/']").length,
+      })),
+      all: all ? all.querySelectorAll("li a[href*='/chants/']").length : 0,
+      covers: [...(root?.querySelectorAll("[data-cover]") ?? [])].map((c) =>
+        c.getAttribute("data-cover") === "img" ? Boolean(c.querySelector("img")) : Boolean(c.querySelector("svg line")),
+      ),
+    };
+  });
+  const anthemTitle = en["chants.item.prayerRopeAnthem.title"];
+  must(
+    Boolean(home.featured) && (home.featured.cover === "img" || home.featured.title === en["chants.item.paschalCanon.title"]),
+    `the Chants home opens on a chant with a cover, or on the Paschal Canon in its season (${home.featured ? `${home.featured.title}, ${home.featured.cover}` : "nothing at the top"})`,
+  );
+  if (home.featured?.title === anthemTitle) must(["English", "Français", "العربية"].every((l) => home.featured.buttons.includes(l)), "with the Anthem's three versions to choose between");
   must(home.text.includes(en["chants.needsConnection"]), "and with no signal it says they play with a connection");
-  must(![en["chants.row.feast"], en["chants.row.psalms"], en["chants.row.short"], en["chants.row.all"]].some((h) => home.headings.includes(h)), "no row is drawn with nothing in it");
+  must(home.rows.length > 0 && home.rows.every((r) => r.chants > 0), `every row drawn holds a chant, none empty (${home.rows.map((r) => `${r.heading} ${r.chants}`).join(", ") || "no rows"})`);
+  must(home.all === library.length, `All chants lists every chant (${home.all} of ${library.length})`);
+  must(home.covers.length > 0 && home.covers.every(Boolean), `no cover is an empty box: each is an icon or the plate's cross (${home.covers.filter(Boolean).length} of ${home.covers.length})`);
   await page.screenshot({ path: path.join(SHOTS, "chants-home-phone.png"), fullPage: true });
 
   // The Anthem's page (1.8, Sing along, the owner's round 9 A): its name,

@@ -71,7 +71,11 @@ export type HomeSection =
   | { id: "short"; rows: ChantIndexRow[] };
 
 export type ChantsHome = {
-  /** The chant at the top: today's feast, else this week's tone, else the newest. */
+  /**
+   * The chant at the top: today's feast, cover or not, in its own season;
+   * else the one with a cover among this week's tone, else the newest with a
+   * cover (restingChant).
+   */
   featured: ChantIndexRow | null;
   sections: HomeSection[];
   /** The traditions to filter by: empty unless there are two to choose between. */
@@ -80,9 +84,19 @@ export type ChantsHome = {
   all: ChantIndexRow[] | null;
 };
 
-/** The chant added last, the one to open on when nothing else is due. */
+/** The chant added last. */
 export function newestChant(index: ChantIndexRow[]): ChantIndexRow | null {
   return [...index].sort((a, b) => b.addedOn.localeCompare(a.addedOn) || a.title.localeCompare(b.title))[0] ?? null;
+}
+
+/**
+ * The chant to open on when nothing is due (1.8): the newest that has a
+ * cover, so the first thing on Chants is a picture and not a plate. The
+ * coordinator's walk of 2026-10-30 found the home opening on Psalm 117, the
+ * newest, with no cover. Only with no cover anywhere is it the newest of all.
+ */
+export function restingChant(index: ChantIndexRow[]): ChantIndexRow | null {
+  return newestChant(index.filter((r) => r.cover)) ?? newestChant(index);
 }
 
 /** The traditions present in a list, in the order the browse row gives them. */
@@ -100,7 +114,13 @@ export function chantsHome(index: ChantIndexRow[], date: Date, style: CalStyle):
   const tone = toneOfWeek(date)?.tone ?? null;
   const feast = index.filter((r) => isDue(r.when, date, style, FEAST_AHEAD_DAYS));
   const toned = tone ? index.filter((r) => r.tone === tone) : [];
-  const featured = feast[0] ?? toned[0] ?? newestChant(index);
+  // A feast's chant opens the home in its own season, picture or not (the
+  // Paschal Canon from Palm Sunday through Bright Week). Out of season the
+  // top is a chant with a cover: this week's tone's, else the newest's; and
+  // only where none has a cover, the week's tone's, else the newest's.
+  const covered = index.filter((r) => r.cover);
+  const featured =
+    feast.find((r) => r.cover) ?? feast[0] ?? toned.find((r) => r.cover) ?? newestChant(covered) ?? toned[0] ?? newestChant(index);
 
   const sections: HomeSection[] = [];
   // A row with nothing in it, or only the chant already at the top, is not drawn.

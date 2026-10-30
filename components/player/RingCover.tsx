@@ -1,4 +1,5 @@
 import { CoverArt } from "@/components/player/CoverArt";
+import { CrossPlate } from "@/components/ui/CrossPlate";
 import { cn } from "@/lib/cn";
 
 /**
@@ -81,7 +82,8 @@ export function RingCover({
       {art ? (
         <CoverArt src={art} fallback={fallback} size={disc} className={cn(discClass, "object-[50%_18%]")} />
       ) : (
-        <span className={cn(discClass, "bg-paper/10")} />
+        // No picture (a chant with no cover): the plate's cross, never an empty disc.
+        <CrossPlate size="disc" className={discClass} />
       )}
     </span>
   );

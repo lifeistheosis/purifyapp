@@ -6,6 +6,7 @@ import { useEffect, useState } from "react";
 import { Reference } from "@/components/bible/Reference";
 import { useTranslate } from "@/components/i18n/MessagesProvider";
 import { BarSwitch } from "@/components/ui/BarSwitch";
+import { CrossPlate } from "@/components/ui/CrossPlate";
 import { Sheet } from "@/components/ui/Sheet";
 import { Book } from "@/components/ui/icons/Book";
 import { Check } from "@/components/ui/icons/Check";
@@ -284,7 +285,13 @@ export function NowPlayingSheet() {
                     size={340}
                     className="aspect-square h-auto max-h-full w-[min(100cqw,100cqh,340px)] max-w-full rounded-[18px] object-[50%_18%] shadow-[0_24px_50px_rgba(0,0,0,0.55)]"
                   />
-                ) : null}
+                ) : (
+                  // No picture (a chant with no cover): the plate, never an empty space (1.8).
+                  <CrossPlate
+                    size="hero"
+                    className="aspect-square w-[min(100cqw,100cqh,340px)] max-w-full rounded-[18px] shadow-[0_24px_50px_rgba(0,0,0,0.55)]"
+                  />
+                )}
               </div>
               <div className="mx-auto mt-6 flex w-full max-w-[340px] items-end justify-between gap-3">
                 <div className="min-w-0">
@@ -312,7 +319,9 @@ export function NowPlayingSheet() {
                       size={48}
                       className="h-12 w-12 shrink-0 rounded-[10px] object-[50%_18%]"
                     />
-                  ) : null}
+                  ) : (
+                    <CrossPlate size="thumb" className="h-12 w-12 shrink-0 rounded-[10px]" />
+                  )}
                   <div className="min-w-0 flex-1">
                     <p className="truncate font-sans text-[15.5px] font-semibold leading-tight text-paper">{audio.title}</p>
                     {verse ? (

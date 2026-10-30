@@ -1,7 +1,8 @@
 import { describe, expect, it } from "vitest";
 
+import { orthodoxPascha } from "@/lib/calendar/pascha";
 import { chantIndex } from "@/lib/chants/registry.server";
-import { FEAST_AHEAD_DAYS, SHORT_SECONDS, chantsHome, inTradition, isDue, traditionsIn } from "@/lib/chants/select";
+import { FEAST_AHEAD_DAYS, SHORT_SECONDS, chantsHome, inTradition, isDue, restingChant, traditionsIn } from "@/lib/chants/select";
 import type { ChantIndexRow, ChantTradition, ChantWhen } from "@/lib/chants/types";
 
 const day = (y: number, m: number, d: number) => new Date(Date.UTC(y, m - 1, d, 12));
@@ -25,18 +26,28 @@ function row(slug: string, over: Partial<ChantIndexRow> = {}): ChantIndexRow {
 }
 
 describe("the Chants home with the library as it is today", () => {
-  // One chant: the Prayer Rope Anthem. The home must read as finished with it
-  // alone: the chant at the top, and nothing empty under it.
+  // 1.8: the Prayer Rope Anthem, the one chant with a cover, and since the
+  // owner's "Add all 6 now" of 2026-10-30 Psalm 117, Psalm 135 and the
+  // Paschal Canon, with none. The coordinator's walk of 2026-10-30 found the
+  // home opening on Psalm 117's empty square: the top is a chant with a
+  // cover, except the Paschal Canon in its own season.
   const index = chantIndex();
+  const pascha2027 = orthodoxPascha(2027);
+  const fromPascha = (days: number) => new Date(pascha2027.getTime() + days * 86_400_000);
 
-  it("opens on the one chant there is, and draws no row, chip or list for it", () => {
-    expect(index.length).toBeGreaterThanOrEqual(1);
-    if (index.length !== 1) return;
-    const home = chantsHome(index, day(2026, 10, 16), "new");
+  it("opens on the chant with a cover out of season, and draws no row with nothing in it", () => {
+    const home = chantsHome(index, day(2026, 10, 30), "new");
     expect(home.featured?.slug).toBe("prayer-rope-anthem");
-    expect(home.sections).toEqual([]);
-    expect(home.traditions).toEqual([]);
-    expect(home.all).toBeNull();
+    expect(home.featured?.cover).toBeDefined();
+    expect(restingChant(index)?.slug).toBe("prayer-rope-anthem");
+    for (const s of home.sections) expect(s.rows.length, s.id).toBeGreaterThan(0);
+    expect(home.sections.find((s) => s.id === "psalms")?.rows.map((r) => r.slug)).toEqual(["psalm-117", "psalm-135"]);
+    expect(home.all?.length).toBe(index.length);
+  });
+
+  it("opens on the Paschal Canon from Palm Sunday through Bright Week, and on the Anthem either side", () => {
+    for (const d of [-7, 0, 6]) expect(chantsHome(index, fromPascha(d), "new").featured?.slug, `Pascha ${d}`).toBe("paschal-canon");
+    for (const d of [-8, 7]) expect(chantsHome(index, fromPascha(d), "new").featured?.slug, `Pascha ${d}`).toBe("prayer-rope-anthem");
   });
 });
 
@@ -52,6 +63,20 @@ describe("what the home offers", () => {
     expect(chantsHome([tone2, pascha, newest], day(2026, 4, 12), "new").featured?.slug).toBe("christ-is-risen");
     expect(chantsHome([pascha, tone2, newest], day(2026, 10, 11), "new").featured?.slug).toBe("tone-two");
     expect(chantsHome([pascha, newest], day(2026, 10, 11), "new").featured?.slug).toBe("newest");
+  });
+
+  it("opens out of season on a chant with a cover, the newest of them, before any without (1.8)", () => {
+    const cover = { src: "/audio/art/anthem.jpg", alt: "an icon", credit: "public domain" };
+    const older = row("older-with-cover", { addedOn: "2026-09-01", cover });
+    // The newest has no cover, so the top is the newest that has one.
+    expect(chantsHome([older, newest, tone2], day(2026, 10, 16), "new").featured?.slug).toBe("older-with-cover");
+    expect(restingChant([older, newest])?.slug).toBe("older-with-cover");
+    // This week's tone with a cover comes before it; without one, after it.
+    expect(chantsHome([older, newest, row("tone-two-covered", { tone: 2, cover })], day(2026, 10, 11), "new").featured?.slug).toBe("tone-two-covered");
+    expect(chantsHome([older, newest, tone2], day(2026, 10, 11), "new").featured?.slug).toBe("older-with-cover");
+    // In its own season the feast's chant opens the home, with a cover or without.
+    expect(chantsHome([older, newest, pascha], day(2026, 4, 12), "new").featured?.slug).toBe("christ-is-risen");
+    expect(restingChant([])).toBeNull();
   });
 
   it("offers a feast's chants a week ahead, and on the Old Calendar thirteen days later", () => {

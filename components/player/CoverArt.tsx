@@ -2,6 +2,7 @@
 
 import { useState, type CSSProperties } from "react";
 
+import { CrossPlate, type CrossPlateSize } from "@/components/ui/CrossPlate";
 import { cn } from "@/lib/cn";
 import { useArrivingImage } from "@/lib/ui/useArrivingImage";
 
@@ -14,7 +15,8 @@ import { useArrivingImage } from "@/lib/ui/useArrivingImage";
  * website and not in the apps (lib/readAloud/covers.ts). An app with no
  * signal cannot load it, so on an error the picture becomes the fallback the
  * track named, the bundled manuscript plate, and the cover is never a broken
- * image. With no fallback, or if that fails too, it is an empty tile.
+ * image. With no fallback, or if that fails too, it is the plate with the
+ * cross (components/ui/CrossPlate.tsx, 1.8), never an empty tile.
  */
 export function CoverArt({
   src,
@@ -39,7 +41,7 @@ export function CoverArt({
   // The cover fades in when it arrives (the mini player's thumb popped in).
   const { ref, onArrive } = useArrivingImage(shown);
 
-  if (!shown) return <span aria-hidden className={cn("block bg-paper/10", className)} style={style} />;
+  if (!shown) return <CrossPlate size={plateSize(size)} className={className} style={style} />;
   return (
     // eslint-disable-next-line @next/next/no-img-element -- a static export serves files as they are, and the cover may be another origin's.
     <img
@@ -57,4 +59,9 @@ export function CoverArt({
       style={style}
     />
   );
+}
+
+/** The plate's cross in proportion to the picture it stands for. */
+export function plateSize(px: number): CrossPlateSize {
+  return px >= 200 ? "hero" : px >= 96 ? "card" : "thumb";
 }

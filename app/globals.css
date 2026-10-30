@@ -479,6 +479,17 @@ html[data-reading-mode="parchment"] .mini-player-ring-lit {
  filter: none;
 }
 
+/* The cross on the plate in a picture's place (components/ui/CrossPlate.tsx,
+   a chant with no cover, a track with no picture): white with a soft white
+   glow, as the ring's lit arc; on Parchment the plain ink. On the svg, for
+   the same reason as the ring. Still, so nothing for reduced motion. */
+.cross-plate-mark {
+ filter: drop-shadow(0 0 3px rgb(255 255 255 / 0.85)) drop-shadow(0 0 10px rgb(255 255 255 / 0.35));
+}
+html[data-reading-mode="parchment"] .cross-plate-mark {
+ filter: none;
+}
+
 html.is-native .safe-pt {
  padding-top: var(--inset-top);
 }

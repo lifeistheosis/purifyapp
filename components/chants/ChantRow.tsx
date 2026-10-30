@@ -9,7 +9,7 @@ import { formatDuration } from "@/lib/chants/media";
 import { chantTitleKey, kindKey, traditionKey } from "@/lib/chants/names";
 import type { ChantIndexRow } from "@/lib/chants/types";
 
-import { ChantCover } from "./ChantCover";
+import { ChantCover, languagesOf } from "./ChantCover";
 
 /**
  * A row of chants under a name (1.7): this week's tone, the feast, the
@@ -47,7 +47,7 @@ export function ChantCard({ row }: { row: ChantIndexRow }) {
   const title = t(chantTitleKey(row.key));
   return (
     <Link href={`/chants/${row.slug}`} className="press-card group block">
-      <ChantCoverFor row={row} title={title} size="card" className="w-full rounded-[12px]" />
+      <ChantCover cover={row.cover} languages={languagesOf(row.variants)} size="card" className="w-full rounded-[12px]" />
       <span className="mt-2 block line-clamp-2 font-sans text-detail font-semibold leading-snug text-paper">{title}</span>
       <span className="mt-0.5 block truncate font-sans text-caption text-paper/50">{metaOf(row, t).join(" · ")}</span>
     </Link>
@@ -63,7 +63,7 @@ export function ChantListItem({ row }: { row: ChantIndexRow }) {
       href={`/chants/${row.slug}`}
       className="tap-press flex items-center gap-3 rounded-[12px] py-1.5 motion-safe:transition-colors hover:bg-paper/[0.04]"
     >
-      <ChantCoverFor row={row} title={title} size="thumb" className="w-12 shrink-0 rounded-[8px]" />
+      <ChantCover cover={row.cover} size="thumb" className="w-12 shrink-0 rounded-[8px]" />
       <span className="min-w-0 flex-1">
         <span className="block truncate font-sans text-ui font-semibold text-paper">{title}</span>
         <span className="mt-0.5 block truncate font-sans text-caption text-paper/50">{metaOf(row, t).join(" · ")}</span>
@@ -81,27 +81,4 @@ export function metaOf(row: ChantIndexRow, t: (key: string, vars?: Record<string
     row.tone ? t("chants.tone", { n: row.tone }) : null,
     formatDuration(row.shortest),
   ].filter((x): x is string => Boolean(x));
-}
-
-function ChantCoverFor({
-  row,
-  title,
-  size,
-  className,
-}: {
-  row: ChantIndexRow;
-  title: string;
-  size: "card" | "thumb";
-  className?: string;
-}) {
-  const { t } = useTranslate();
-  return (
-    <ChantCover
-      cover={row.cover}
-      title={title}
-      tradition={row.traditions[0] ? t(traditionKey(row.traditions[0])) : undefined}
-      size={size}
-      className={className}
-    />
-  );
 }

@@ -131,7 +131,7 @@ export function ChantPage({ chant, row, related }: { chant: Chant; row: ChantInd
         aria-hidden={!past}
       >
         <div className="mx-auto flex h-14 w-full max-w-[720px] items-center gap-3">
-          <ChantCover cover={chant.cover} title={title} size="thumb" className="w-9 shrink-0 rounded-[7px]" />
+          <ChantCover cover={chant.cover} size="thumb" className="w-9 shrink-0 rounded-[7px]" />
           <p className="min-w-0 flex-1 truncate font-sans text-ui font-semibold text-paper">{title}</p>
           <PlayPill
             size="sm"
@@ -152,13 +152,7 @@ export function ChantPage({ chant, row, related }: { chant: Chant; row: ChantInd
             <ChantWordsOptions variant={variant} className="-me-2" />
           </div>
           <div className="mt-1 flex items-center gap-3.5">
-            <ChantCover
-              cover={chant.cover}
-              title={title}
-              tradition={t(traditionKey(variant.tradition))}
-              size="thumb"
-              className="w-[70px] shrink-0 rounded-[14px]"
-            />
+            <ChantCover cover={chant.cover} size="thumb" className="w-[70px] shrink-0 rounded-[14px]" />
             <div className="min-w-0 flex-1">
               <h1 className="font-serif text-[24px] font-bold leading-tight text-paper">{title}</h1>
               {chant.originalTitle ? (
