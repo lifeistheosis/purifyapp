@@ -1,6 +1,7 @@
 import { NextResponse, type NextRequest } from "next/server";
 import { z } from "zod";
 import { endpointsToLetGo } from "@/lib/push/browserLimit";
+import { EVENING_DEFAULT, MORNING_DEFAULT } from "@/lib/push/times";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { createClient } from "@/lib/supabase/server";
 
@@ -61,20 +62,42 @@ export async function POST(req: NextRequest) {
     await admin.from("push_subscriptions").delete().eq("user_id", user.id).in("endpoint", letGo);
   }
 
+  // Only the times the request carries are written. A time it leaves out is
+  // not in the upsert at all, so the row keeps its own: the account screen
+  // sends only the time the reader changed (components/profile/PushOptIn.tsx).
+  // A time left out used to be written as null, which is no reminder at that
+  // hour, so every save had to restate both, and the screen restated the
+  // default it showed in place of the reader's own. null sent on purpose
+  // still means no reminder.
+  const row = {
+    endpoint: parsed.endpoint,
+    user_id: user.id,
+    p256dh: parsed.keys.p256dh,
+    auth: parsed.keys.auth,
+    timezone: parsed.timezone ?? "UTC",
+    ...(parsed.morningTime !== undefined ? { morning_time: parsed.morningTime } : {}),
+    ...(parsed.eveningTime !== undefined ? { evening_time: parsed.eveningTime } : {}),
+  };
+
+  // A browser the table does not have yet is made first, with the default
+  // for a time left out, or it would start with that reminder off. ON
+  // CONFLICT DO NOTHING: a row that exists is not touched by this.
+  if (parsed.morningTime === undefined || parsed.eveningTime === undefined) {
+    const { error: made } = await admin
+      .from("push_subscriptions")
+      .upsert(
+        { morning_time: MORNING_DEFAULT, evening_time: EVENING_DEFAULT, ...row },
+        { onConflict: "endpoint", ignoreDuplicates: true },
+      );
+    if (made) {
+      console.warn("[push/subscribe] save failed", made.message);
+      return NextResponse.json({ error: "Could not save this browser." }, { status: 500 });
+    }
+  }
+
   const { error } = await admin
     .from("push_subscriptions")
-    .upsert(
-      {
-        endpoint: parsed.endpoint,
-        user_id: user.id,
-        p256dh: parsed.keys.p256dh,
-        auth: parsed.keys.auth,
-        morning_time: parsed.morningTime ?? null,
-        evening_time: parsed.eveningTime ?? null,
-        timezone: parsed.timezone ?? "UTC",
-      },
-      { onConflict: "endpoint" },
-    );
+    .upsert(row, { onConflict: "endpoint" });
   if (error) {
     console.warn("[push/subscribe] save failed", error.message);
     return NextResponse.json({ error: "Could not save this browser." }, { status: 500 });

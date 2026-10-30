@@ -15,8 +15,16 @@
 
 import { apiFetch } from "@/lib/api/client";
 import { nativePlatform as platform } from "@/lib/platform/native";
-import { MORNING_DEFAULT, EVENING_DEFAULT } from "./client";
 import { openFromPush } from "./open";
+import {
+  EVENING_DEFAULT,
+  MORNING_DEFAULT,
+  reminderChange,
+  shownTimes,
+  type ReminderChange,
+  type ReminderTimes,
+  type SaveResult,
+} from "./times";
 
 const TOKEN_KEY = "purify:push.native-token"; // last token we registered
 const ON_KEY = "purify:push.native-on"; // "1" while reminders are on
@@ -71,10 +79,7 @@ async function attachListeners(): Promise<void> {
     const plat = platform();
     if (!plat) return;
     setItem(TOKEN_KEY, token.value);
-    const raw = getItem(TIMES_KEY);
-    const times = raw
-      ? (JSON.parse(raw) as { morning: string; evening: string })
-      : { morning: MORNING_DEFAULT, evening: EVENING_DEFAULT };
+    const times = nativeReminderTimes();
     const payload = {
       token: token.value,
       platform: plat,
@@ -171,29 +176,55 @@ export async function disableNative(): Promise<void> {
   }
 }
 
-export async function updateNativeTimes(
-  morning: string,
-  evening: string,
-): Promise<void> {
-  const token = getItem(TOKEN_KEY);
-  setItem(TIMES_KEY, JSON.stringify({ morning, evening }));
-  if (!token) return;
-  const plat = platform();
-  if (!plat) return;
+/** The real times in this phone's copy, and only those. */
+function keptTimes(): ReminderChange {
   try {
-    await apiFetch("/api/push/device", {
+    return reminderChange(JSON.parse(getItem(TIMES_KEY) ?? "null"));
+  } catch {
+    return {};
+  }
+}
+
+/**
+ * The times this phone's reminders come at. The phone's own copy, which it
+ * sends with its token at every launch, so it is also what the server holds;
+ * the defaults only where the phone has none. The account screen showed the
+ * defaults after every launch instead, and saved them on the next change.
+ */
+export function nativeReminderTimes(): ReminderTimes {
+  return shownTimes(keptTimes());
+}
+
+/**
+ * Change this phone's times. The time the reader changed goes into the
+ * phone's copy and the other stays as the copy has it; then the phone sends
+ * both from that copy, as it does at every launch. Both, so that a server
+ * from before 2026-10-30, which takes a time left out as no reminder at all,
+ * is never handed half a pair; and both are the reader's, never a default
+ * shown in place of one. "kept" when the server did not take it: the copy
+ * goes up with the token at the next launch, or the next sign-in.
+ */
+export async function updateNativeTimes(change: ReminderChange): Promise<SaveResult> {
+  const times = { ...nativeReminderTimes(), ...reminderChange(change) };
+  setItem(TIMES_KEY, JSON.stringify(times));
+  const token = getItem(TOKEN_KEY);
+  const plat = platform();
+  if (!token || !plat) return "kept";
+  try {
+    const res = await apiFetch("/api/push/device", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
         token,
         platform: plat,
-        morningTime: morning,
-        eveningTime: evening,
+        morningTime: times.morning,
+        eveningTime: times.evening,
         timezone: tz(),
       }),
     });
+    return res.ok ? "saved" : "kept";
   } catch {
-    /* ignore */
+    return "kept";
   }
 }
 
@@ -275,6 +306,27 @@ export async function unlinkNative(): Promise<void> {
   clearTimeout(timer);
 }
 
+/**
+ * A kept registration, with the times this phone holds now. It was kept with
+ * the times of its moment, and the reader can have changed them since (signed
+ * in and offline, say). Sent as it was, it put those older times, onboarding's
+ * defaults as often as not, over the reader's new ones until the next launch.
+ */
+function withKeptTimes(raw: string): string {
+  const kept = keptTimes();
+  if (!kept.morning && !kept.evening) return raw;
+  try {
+    const payload = JSON.parse(raw) as Record<string, unknown>;
+    return JSON.stringify({
+      ...payload,
+      ...(kept.morning ? { morningTime: kept.morning } : {}),
+      ...(kept.evening ? { eveningTime: kept.evening } : {}),
+    });
+  } catch {
+    return raw;
+  }
+}
+
 /** Persist a token captured while signed-out, now that the user is in. */
 export async function flushPendingNative(): Promise<void> {
   const raw = getItem(PENDING_KEY);
@@ -283,7 +335,7 @@ export async function flushPendingNative(): Promise<void> {
     const res = await apiFetch("/api/push/device", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: raw,
+      body: withKeptTimes(raw),
     });
     if (res.ok) {
       removeItem(PENDING_KEY);
