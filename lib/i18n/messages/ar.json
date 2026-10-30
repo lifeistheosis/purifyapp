@@ -4954,6 +4954,8 @@
   "chants.item.prayerRopeAnthem.line": "ترنيمة من زماننا للمسبحة، بالإنكليزية والفرنسية والعربية.",
   "chants.item.psalm117.title": "المزمور 117",
   "chants.item.psalm117.line": "مزمور شكر تُرتَّل آياته في صلاة السحر، وهو هنا بالعربية.",
+  "chants.item.paschalCanon.title": "قانون الفصح",
+  "chants.item.paschalCanon.line": "القانون الذي يُرتَّل في صلاة سحر الفصح، وهو هنا بالإنكليزية.",
   "common.undo": "تراجع",
   "common.remove": "إزالة",
   "saved.removed": "تمت الإزالة",

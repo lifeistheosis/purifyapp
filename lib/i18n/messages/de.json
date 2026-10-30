@@ -4691,6 +4691,8 @@
   "chants.item.prayerRopeAnthem.line": "Eine Hymne unserer Zeit für das Gebetsseil, auf Englisch, Französisch und Arabisch.",
   "chants.item.psalm117.title": "Psalm 117",
   "chants.item.psalm117.line": "Ein Dankpsalm, dessen Verse im Orthros gesungen werden, hier auf Arabisch.",
+  "chants.item.paschalCanon.title": "Der Pascha-Kanon",
+  "chants.item.paschalCanon.line": "Der Kanon, der im Orthros von Pascha gesungen wird, hier auf Englisch.",
   "common.undo": "Rückgängig",
   "common.remove": "Entfernen",
   "saved.removed": "Entfernt",

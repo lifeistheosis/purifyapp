@@ -4689,6 +4689,8 @@
   "chants.item.prayerRopeAnthem.line": "Korunk himnusza az imafüzérhez, angolul, franciául és arabul.",
   "chants.item.psalm117.title": "117. zsoltár",
   "chants.item.psalm117.line": "Hálaadó zsoltár, amelynek verseit az utrenyén éneklik, itt arabul.",
+  "chants.item.paschalCanon.title": "A pászkai kánon",
+  "chants.item.paschalCanon.line": "A kánon, amelyet a pászka utrenyéjén énekelnek, itt angolul.",
   "common.undo": "Visszavonás",
   "common.remove": "Eltávolítás",
   "saved.removed": "Eltávolítva",

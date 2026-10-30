@@ -4829,6 +4829,8 @@
   "chants.item.prayerRopeAnthem.line": "Гімн нашого часу для вервиці, англійською, французькою та арабською.",
   "chants.item.psalm117.title": "Псалом 117",
   "chants.item.psalm117.line": "Псалом подяки, вірші якого співають на утрені, тут арабською.",
+  "chants.item.paschalCanon.title": "Пасхальний канон",
+  "chants.item.paschalCanon.line": "Канон, який співають на пасхальній утрені, тут англійською.",
   "common.undo": "Скасувати",
   "common.remove": "Прибрати",
   "saved.removed": "Прибрано",

@@ -4689,6 +4689,8 @@
   "chants.item.prayerRopeAnthem.line": "Himne masa kini untuk tali doa, dalam bahasa Inggris, Prancis, dan Arab.",
   "chants.item.psalm117.title": "Mazmur 117",
   "chants.item.psalm117.line": "Mazmur syukur yang ayat-ayatnya dinyanyikan dalam Ibadat Pagi, di sini dalam bahasa Arab.",
+  "chants.item.paschalCanon.title": "Kanon Paskah",
+  "chants.item.paschalCanon.line": "Kanon yang dinyanyikan dalam Ibadat Pagi Paskah, di sini dalam bahasa Inggris.",
   "common.undo": "Urungkan",
   "common.remove": "Hapus",
   "saved.removed": "Dihapus",

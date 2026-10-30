@@ -4760,6 +4760,8 @@
   "chants.item.prayerRopeAnthem.line": "Химна нашег времена за бројаницу, на енглеском, француском и арапском.",
   "chants.item.psalm117.title": "Псалам 117",
   "chants.item.psalm117.line": "Благодарствени псалам чији се стихови певају на јутрењу, овде на арапском.",
+  "chants.item.paschalCanon.title": "Васкршњи канон",
+  "chants.item.paschalCanon.line": "Канон који се пева на васкршњем јутрењу, овде на енглеском.",
   "common.undo": "Опозови",
   "common.remove": "Уклони",
   "saved.removed": "Уклоњено",

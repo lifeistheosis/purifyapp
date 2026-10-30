@@ -4709,6 +4709,8 @@
   "chants.item.prayerRopeAnthem.line": "A hymn of our own time for the prayer rope, in English, French and Arabic.",
   "chants.item.psalm117.title": "Psalm 117",
   "chants.item.psalm117.line": "A psalm of thanksgiving whose verses are sung at Matins, here in Arabic.",
+  "chants.item.paschalCanon.title": "The Paschal Canon",
+  "chants.item.paschalCanon.line": "The canon sung at the Matins of Pascha, here in English.",
   "common.undo": "Undo",
   "common.remove": "Remove",
   "saved.removed": "Removed",

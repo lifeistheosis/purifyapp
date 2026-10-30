@@ -4689,6 +4689,8 @@
   "chants.item.prayerRopeAnthem.line": "Химн от нашето време за броеницата, на английски, френски и арабски.",
   "chants.item.psalm117.title": "Псалом 117",
   "chants.item.psalm117.line": "Благодарствен псалом, чиито стихове се пеят на утреня, тук на арабски.",
+  "chants.item.paschalCanon.title": "Пасхалният канон",
+  "chants.item.paschalCanon.line": "Канонът, който се пее на пасхалната утреня, тук на английски.",
   "common.undo": "Отмяна",
   "common.remove": "Премахване",
   "saved.removed": "Премахнато",

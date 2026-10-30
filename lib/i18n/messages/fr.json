@@ -4714,6 +4714,8 @@
   "chants.item.prayerRopeAnthem.line": "Une hymne de notre temps pour le chapelet, en anglais, en français et en arabe.",
   "chants.item.psalm117.title": "Psaume 117",
   "chants.item.psalm117.line": "Un psaume d'action de grâces dont les versets sont chantés aux Matines, ici en arabe.",
+  "chants.item.paschalCanon.title": "Le Canon pascal",
+  "chants.item.paschalCanon.line": "Le canon chanté aux Matines de Pâques, ici en anglais.",
   "common.undo": "Annuler",
   "common.remove": "Retirer",
   "saved.removed": "Retiré",
