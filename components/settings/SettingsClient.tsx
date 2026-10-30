@@ -38,20 +38,49 @@
 //   Purify         Privacy, Support Purify, What's new, About.
 //   Sign out
 //
+// From 1.8 it is made of lit panels, the owner's pick A of round 3 (Homebase/
+// boards/purify-master/variants/r3-01-settings, locked 2026-10-30), after his
+// note 9 of build 80 ("it feels vibe coded, like clicking buttons on a
+// screen"): each group a raised panel, each row led by its glyph on a lit
+// plate, each choice a carved track, on and off a switch (./LitPanel.tsx).
+// The three he named are drawn anew: the size on a verse of John with a
+// slider (./ReaderSize.tsx), the reading modes as small pages in their own
+// colours (./ReadingModePages.tsx), First focus as onboarding's picture
+// cards (./FirstFocus.tsx). The rest works as it did.
+//
 // No new words: every heading and row is a line the catalogs already held,
 // but for Testers mode, which is new in 1.8 and has its own.
-// lib/nav/__tests__/oneSettings.test.ts holds this list and the You tab's.
+// lib/nav/__tests__/oneSettings.test.ts holds this list and the You tab's;
+// lib/settings/__tests__/litPanels.test.ts holds how it is drawn.
 
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useLayoutEffect, useState, useSyncExternalStore } from "react";
+import { useEffect, useLayoutEffect, useState, useSyncExternalStore } from "react";
 
 import { cn } from "@/lib/cn";
 
 import { LanguagePicker } from "@/components/i18n/LanguagePicker";
 import { useTranslate } from "@/components/i18n/MessagesProvider";
-import { ReaderPrefsProvider, useReaderPrefs, type ReaderFont, type ReaderSize } from "@/components/reader/ReaderPrefs";
-import { ReadingModeChips } from "@/components/reader/ReadingModeChips";
+import { FONT_CLASSES, ReaderPrefsProvider, useReaderPrefs, type ReaderFont } from "@/components/reader/ReaderPrefs";
+import { Bell } from "@/components/ui/icons/Bell";
+import { Bolt } from "@/components/ui/icons/Bolt";
+import { Book } from "@/components/ui/icons/Book";
+import { Calendar } from "@/components/ui/icons/Calendar";
+import { Church } from "@/components/ui/icons/Church";
+import { Compass } from "@/components/ui/icons/Compass";
+import { Cross } from "@/components/ui/icons/Cross";
+import { Erase } from "@/components/ui/icons/Erase";
+import { HaloedHead } from "@/components/ui/icons/HaloedHead";
+import { Info } from "@/components/ui/icons/Info";
+import { Lampada } from "@/components/ui/icons/Lampada";
+import { Lock } from "@/components/ui/icons/Lock";
+import { Share } from "@/components/ui/icons/Share";
+import { Shield } from "@/components/ui/icons/Shield";
+import { Sparkle } from "@/components/ui/icons/Sparkle";
+import { Sun } from "@/components/ui/icons/Sun";
+import { User } from "@/components/ui/icons/User";
+import { Wheat } from "@/components/ui/icons/Wheat";
+import { Wind } from "@/components/ui/icons/Wind";
 import { WidgetTipSheet, useWidgetPlatform } from "@/components/widget/WidgetTip";
 import { useInterlinear } from "@/lib/bible/interlinear";
 import { useCalendarStyleDefault } from "@/lib/calendar/useCalendarStyleDefault";
@@ -79,195 +108,19 @@ import {
   writeIntent,
   writeLevel,
 } from "@/lib/onboarding/state";
-import { BACKGROUNDS, FASTING_RULES, INTENTS, LEVELS, depthFor, focusFor } from "@/lib/onboarding/space";
+import { BACKGROUNDS, FASTING_RULES, LEVELS, depthFor, focusFor } from "@/lib/onboarding/space";
 import { isDeveloperEmail } from "@/lib/dev/developer";
 import { useShowSupporterMark } from "@/lib/profile/useShowSupporterMark";
 import { readLocalSessionUser } from "@/lib/supabase/localSession";
 import { resolveUser } from "@/lib/supabase/resolveUser";
 
-function Section({
-  id,
-  title,
-  hint,
-  children,
-}: {
-  /** Lets the app-wide search open this screen at the section: its rows for
-   *  settings point at /settings#<id> (lib/search/buildCorpus.ts). */
-  id?: string;
-  /** Left out for a group that is one row and says what it is: Sign out. */
-  title?: React.ReactNode;
-  hint?: React.ReactNode;
-  children: React.ReactNode;
-}) {
-  return (
-    // scroll-mt clears the bar fixed to the top of a phone.
-    <section id={id} className="mt-10 scroll-mt-24 first:mt-0">
-      {title ? (
-        <h2 className="font-sans text-caption font-semibold text-gold/80">
-          {title}
-        </h2>
-      ) : null}
-      {hint ? (
-        <p className="mt-1.5 font-serif italic text-detail text-paper/55 leading-[1.55]">
-          {hint}
-        </p>
-      ) : null}
-      <div className="mt-4 rounded-xl border border-paper/12 bg-paper/[0.02] divide-y divide-paper/8">
-        {children}
-      </div>
-    </section>
-  );
-}
+import { FirstFocus, useOnboardedAgain } from "./FirstFocus";
+import { ButtonRow, LinkRow, Plate, Row, Section, Switch, Track } from "./LitPanel";
+import { ReaderSizeRow } from "./ReaderSize";
+import { ReadingModePages } from "./ReadingModePages";
+import { AlphaGlyph, FacesGlyph, GlobeGlyph } from "./glyphs";
 
-function Row({
-  label,
-  description,
-  stacked = false,
-  children,
-}: {
-  label: React.ReactNode;
-  description?: React.ReactNode;
-  /** The control on its own line under the label, for choices too wide to
-   *  sit beside it: side by side, the label column was squeezed to one word
-   *  a line. */
-  stacked?: boolean;
-  children?: React.ReactNode;
-}) {
-  if (stacked) {
-    return (
-      <div className="px-5 py-4">
-        <p className="font-sans text-ui text-paper">{label}</p>
-        {description ? (
-          <p className="mt-0.5 font-sans text-caption text-paper/55 leading-[1.5]">
-            {description}
-          </p>
-        ) : null}
-        {children ? <div className="mt-3">{children}</div> : null}
-      </div>
-    );
-  }
-  return (
-    <div className="flex flex-wrap items-center justify-between gap-x-6 gap-y-3 px-5 py-4">
-      <div className="min-w-0 flex-1">
-        <p className="font-sans text-ui text-paper">{label}</p>
-        {description ? (
-          <p className="mt-0.5 font-sans text-caption text-paper/55 leading-[1.5]">
-            {description}
-          </p>
-        ) : null}
-      </div>
-      {children ? <div className="shrink-0">{children}</div> : null}
-    </div>
-  );
-}
-
-function Choice<T extends string>({
-  value,
-  options,
-  onChange,
-  label,
-  block = false,
-}: {
-  /** Null when never answered: no option shows as chosen. */
-  value: T | null;
-  options: { value: T; label: string }[];
-  onChange: (v: T) => void;
-  label: string;
-  /** Fill the row, options sharing it evenly and wrapping as a grid on a
-   *  narrow screen, each a full 44px target. */
-  block?: boolean;
-}) {
-  return (
-    <div
-      role="radiogroup"
-      aria-label={label}
-      className={
-        block
-          ? "flex flex-wrap gap-1 rounded-[22px] border border-paper/15 p-1"
-          : "inline-flex flex-wrap gap-1 rounded-pill border border-paper/15 p-1"
-      }
-    >
-      {options.map((o) => (
-        <button
-          key={o.value}
-          type="button"
-          role="radio"
-          aria-checked={value === o.value}
-          onClick={() => onChange(o.value)}
-          className={cn(
-            "rounded-pill font-sans text-caption",
-            block ? "min-h-11 flex-1 whitespace-nowrap px-4" : "px-3 py-1",
-            value === o.value ? "bg-paper font-semibold text-night" : "text-paper/65 hover:text-paper",
-          )}
-        >
-          {o.label}
-        </button>
-      ))}
-    </div>
-  );
-}
-
-/** A link out to something that genuinely needs an account. */
-function LinkRow({
-  href,
-  label,
-  description,
-}: {
-  href: string;
-  label: React.ReactNode;
-  description?: React.ReactNode;
-}) {
-  return (
-    <Link
-      href={href}
-      className="tap-press flex items-center justify-between gap-4 px-5 py-4 transition-colors hover:bg-paper/[0.04]"
-    >
-      <div className="min-w-0">
-        <p className="font-sans text-ui text-paper">{label}</p>
-        {description ? (
-          <p className="mt-0.5 font-sans text-caption text-paper/55 leading-[1.5]">
-            {description}
-          </p>
-        ) : null}
-      </div>
-      <span aria-hidden className="shrink-0 font-serif text-body text-paper/30">
-        →
-      </span>
-    </Link>
-  );
-}
-
-/** A row that does something here, drawn as a LinkRow is. */
-function ButtonRow({
-  label,
-  description,
-  onClick,
-  disabled = false,
-}: {
-  label: React.ReactNode;
-  description?: React.ReactNode;
-  onClick: () => void;
-  disabled?: boolean;
-}) {
-  return (
-    <button
-      type="button"
-      onClick={onClick}
-      disabled={disabled}
-      className="tap-press flex w-full items-center justify-between gap-4 px-5 py-4 text-start transition-colors hover:bg-paper/[0.04] disabled:pointer-events-none disabled:opacity-45"
-    >
-      <span className="min-w-0">
-        <span className="block font-sans text-ui text-paper">{label}</span>
-        {description ? (
-          <span className="mt-0.5 block font-sans text-caption text-paper/55 leading-[1.5]">{description}</span>
-        ) : null}
-      </span>
-      <span aria-hidden className="shrink-0 font-serif text-body text-paper/30">
-        →
-      </span>
-    </button>
-  );
-}
+const FACES: readonly ReaderFont[] = ["serif", "display", "sans"];
 
 /**
  * Who is signed in on this device, for the rows that differ: nothing here
@@ -317,6 +170,7 @@ function AccountSection({ reader }: { reader: Reader }) {
       <Section id="account" title={t("settings.account")}>
         <LinkRow
           href="/signin?next=/settings"
+          icon={<User size={18} strokeWidth={1.7} />}
           label={t("common.signIn")}
           description={t("ui.syncAcrossDevicesOptional")}
         />
@@ -325,10 +179,16 @@ function AccountSection({ reader }: { reader: Reader }) {
   }
   return (
     <Section id="account" title={t("settings.account")}>
-      <LinkRow href="/account/profile" label={t("account.tabs.profile")} description={reader.email || undefined} />
-      <LinkRow href="/account/security" label={t("account.tabs.security")} />
+      <LinkRow
+        href="/account/profile"
+        icon={<User size={18} strokeWidth={1.7} />}
+        label={t("account.tabs.profile")}
+        description={reader.email || undefined}
+      />
+      <LinkRow href="/account/security" icon={<Lock size={17} />} label={t("account.tabs.security")} />
       <LinkRow
         href="/account/notifications"
+        icon={<Bell size={17} />}
         label={t("settings.notifications")}
         description={t("settings.notificationsHint")}
       />
@@ -347,21 +207,20 @@ function SupporterMarkRow() {
   const { t } = useTranslate();
   const [showMark, toggleShowMark] = useShowSupporterMark();
   return (
-    // Stacked: the hint is three sentences, and beside the switch it was
-    // squeezed into a column six lines tall.
-    <Row label={t("settings.showSupporterMark")} description={t("settings.showSupporterMarkHint")} stacked>
-      <Choice
-        value={showMark ? "on" : "off"}
-        options={[
-          { value: "on", label: t("common.on") },
-          { value: "off", label: t("common.off") },
-        ]}
-        onChange={(v) => {
-          if ((v === "on") !== showMark) toggleShowMark();
-        }}
-        label={t("settings.showSupporterMark")}
-      />
-    </Row>
+    <Row
+      icon={<Cross size={17} />}
+      label={t("settings.showSupporterMark")}
+      description={t("settings.showSupporterMarkHint")}
+      control={
+        <Switch
+          on={showMark}
+          onChange={(on) => {
+            if (on !== showMark) toggleShowMark();
+          }}
+          label={t("settings.showSupporterMark")}
+        />
+      }
+    />
   );
 }
 
@@ -371,25 +230,30 @@ function DataSection({ signedIn }: { signedIn: boolean }) {
   const { t } = useTranslate();
   return (
     <Section id="data" title={t("account.tabs.data")}>
-      <LinkRow href="/account/export" label={t("settings.export")} description={t("settings.exportHint")} />
-      {signedIn ? <LinkRow href="/account/data#danger" label={t("account.deleteAccount")} /> : null}
+      <LinkRow
+        href="/account/export"
+        icon={<Share size={17} />}
+        label={t("settings.export")}
+        description={t("settings.exportHint")}
+      />
+      {signedIn ? <LinkRow href="/account/data#danger" icon={<Erase size={17} />} label={t("account.deleteAccount")} /> : null}
     </Section>
   );
 }
 
 /** About Purify itself. These four closed the You tab's list. On a phone this
  *  is where giving lives: the lamp that stood in each tab's bar went in 1.7
- *  (the owner: it "does nothing useful there"). */
+ *  (the owner: it "does nothing useful there"); its row wears the lit candle. */
 function AboutSection({ developer }: { developer: boolean }) {
   const { t } = useTranslate();
   return (
     <Section id="about" title={t("settings.eyebrow")}>
       {/* No second line under these: each name says what it opens. */}
-      <LinkRow href="/privacy" label={t("footer.privacy")} />
-      <LinkRow href="/support" label={t("nav.supportPurify")} />
-      <LinkRow href="/whats-new" label={t("nav.whatsNew")} />
-      <LinkRow href="/about" label={t("nav.about")} />
-      {developer ? <LinkRow href="/account/developer" label={t("ui.developer")} /> : null}
+      <LinkRow href="/privacy" icon={<Shield size={17} />} label={t("footer.privacy")} />
+      <LinkRow href="/support" icon={<Lampada size={18} />} label={t("nav.supportPurify")} />
+      <LinkRow href="/whats-new" icon={<Sparkle size={16} />} label={t("nav.whatsNew")} />
+      <LinkRow href="/about" icon={<Info size={17} />} label={t("nav.about")} />
+      {developer ? <LinkRow href="/account/developer" icon={<Bolt size={16} strokeWidth={1.7} />} label={t("ui.developer")} /> : null}
     </Section>
   );
 }
@@ -399,11 +263,7 @@ function SignOutSection() {
   const { t } = useTranslate();
   return (
     <Section>
-      <Link
-        href="/signout"
-        data-sign-out=""
-        className="tap-press flex items-center px-5 py-4 font-sans text-ui text-crimson-soft transition-colors hover:bg-paper/[0.04]"
-      >
+      <Link href="/signout" data-sign-out="" className="set-row set-link font-sans text-ui font-semibold text-crimson-soft">
         {t("common.signOut")}
       </Link>
     </Section>
@@ -416,15 +276,23 @@ function SignOutSection() {
  * so changing either brings that card back with the new step; fasting decides
  * how the fast shows on Today. None of it needs an account, and each change
  * is copied to the account when there is one.
+ *
+ * Each choice says under it what it means, in onboarding's own words, and
+ * First focus is onboarding's picture cards with the Day 1 they give
+ * (./FirstFocus.tsx, which says how it reads and writes the answers).
  */
 function SpaceSection() {
   const { t } = useTranslate();
   const { level, intent, fasting } = useSpace();
+  const again = useOnboardedAgain();
   return (
     <Section id="space" title={t("settings.space")} hint={t("settings.spaceHint")}>
-      <Row label={t("settings.level")} stacked>
-        <Choice
-          block
+      <Row
+        icon={<HaloedHead size={18} />}
+        label={t("settings.level")}
+        sub={level ? t(`onboard.level.${level}Sub`) : null}
+      >
+        <Track
           value={level}
           options={LEVELS.map((l) => ({ value: l, label: t(`onboard.level.${l}`) }))}
           onChange={(l) => {
@@ -436,9 +304,13 @@ function SpaceSection() {
           label={t("settings.level")}
         />
       </Row>
-      <Row label={t("settings.fasting")} description={t("settings.fastingHint")} stacked>
-        <Choice
-          block
+      <Row
+        icon={<Wheat size={22} strokeWidth={1.35} />}
+        label={t("settings.fasting")}
+        description={t("settings.fastingHint")}
+        sub={t(`onboard.fasting.${fasting}Sub`)}
+      >
+        <Track
           value={fasting}
           options={FASTING_RULES.map((f) => ({ value: f, label: t(`onboard.fasting.${f}`) }))}
           onChange={(f) => {
@@ -448,18 +320,18 @@ function SpaceSection() {
           label={t("settings.fasting")}
         />
       </Row>
-      <Row label={t("settings.focus")} stacked>
-        <Choice
-          block
-          value={intent}
-          options={INTENTS.map((i) => ({ value: i, label: t(`onboard.intent.${i}`) }))}
-          onChange={(i) => {
+      <Row icon={<Compass size={17} strokeWidth={1.7} />} label={t("settings.focus")}>
+        <FirstFocus
+          intent={intent}
+          level={level}
+          again={again}
+          label={t("settings.focus")}
+          onPick={(i) => {
             writeIntent(i);
             writeFocus([focusFor(i)]);
             refreshDayOne();
             void saveSpaceToAccount();
           }}
-          label={t("settings.focus")}
         />
       </Row>
     </Section>
@@ -490,18 +362,17 @@ function TestersSection({ signedIn }: { signedIn: boolean }) {
   if (!admin) return null;
   return (
     <Section id="testers" title={t("testers.title")} hint={t("testers.hint")}>
-      <Row label={t("testers.from")} stacked>
-        <Choice
-          block
+      <Row icon={<Church size={18} />} label={t("testers.from")}>
+        <Track
           value={background}
           options={BACKGROUNDS.map((b) => ({ value: b, label: t(`onboard.background.${b}`) }))}
           onChange={(b) => testAs({ background: b })}
           label={t("testers.from")}
+          cols={3}
         />
       </Row>
-      <Row label={t("settings.level")} stacked>
-        <Choice
-          block
+      <Row icon={<HaloedHead size={18} />} label={t("settings.level")}>
+        <Track
           value={level}
           options={LEVELS.map((l) => ({ value: l, label: t(`onboard.level.${l}`) }))}
           onChange={(l) => testAs({ level: l })}
@@ -509,6 +380,7 @@ function TestersSection({ signedIn }: { signedIn: boolean }) {
         />
       </Row>
       <ButtonRow
+        icon={<Sparkle size={16} />}
         label={t("testers.firstOpen")}
         description={t("testers.firstOpenHint")}
         onClick={() => {
@@ -516,7 +388,13 @@ function TestersSection({ signedIn }: { signedIn: boolean }) {
           router.push("/");
         }}
       />
-      <ButtonRow label={t("testers.back")} description={t("testers.backHint")} onClick={() => backToMyOwn()} disabled={!testing} />
+      <ButtonRow
+        icon={<User size={18} strokeWidth={1.7} />}
+        label={t("testers.back")}
+        description={t("testers.backHint")}
+        onClick={() => backToMyOwn()}
+        disabled={!testing}
+      />
     </Section>
   );
 }
@@ -545,17 +423,12 @@ function MotionSection() {
   if (!visible) return null;
   return (
     <Section title={t("settings.motion")} hint={t("settings.motionHint")}>
-      <Row label={t("settings.animations")} description={t("settings.animationsHint")}>
-        <Choice
-          value={reduced ? "off" : "on"}
-          options={[
-            { value: "on", label: t("common.on") },
-            { value: "off", label: t("common.off") },
-          ]}
-          onChange={(v) => setMotionPreference(v)}
-          label={t("settings.animations")}
-        />
-      </Row>
+      <Row
+        icon={<Wind size={18} />}
+        label={t("settings.animations")}
+        description={t("settings.animationsHint")}
+        control={<Switch on={!reduced} onChange={(on) => setMotionPreference(on ? "on" : "off")} label={t("settings.animations")} />}
+      />
     </Section>
   );
 }
@@ -591,15 +464,16 @@ function WidgetSection() {
   return (
     <>
       <Section title={t("settings.widget")}>
-        <Row label={t("settings.widgetRow")} description={t("settings.widgetHint")}>
-          <button
-            type="button"
-            onClick={() => setOpen(true)}
-            className="inline-flex min-h-11 items-center rounded-pill border border-paper/20 px-4 font-sans text-ui text-paper transition-colors hover:border-paper/40"
-          >
-            {t("widgetTip.show")}
-          </button>
-        </Row>
+        <Row
+          icon={<Sun size={18} />}
+          label={t("settings.widgetRow")}
+          description={t("settings.widgetHint")}
+          control={
+            <button type="button" onClick={() => setOpen(true)} className="set-btn hit-44">
+              {t("widgetTip.show")}
+            </button>
+          }
+        />
       </Section>
       <WidgetTipSheet open={open} onClose={() => setOpen(false)} platform={platform} />
     </>
@@ -608,23 +482,18 @@ function WidgetSection() {
 
 function Body() {
   const { t } = useTranslate();
-  const { size, setSize, font, setFont } = useReaderPrefs();
+  // The size is ReaderSizeRow's, which asks as the Bible does (BIBLE_START_SIZE).
+  const { font, setFont } = useReaderPrefs();
   const { on: interlinearOn, toggle: toggleInterlinear } = useInterlinear();
   const [calStyle, pickCalStyle] = useCalendarStyleDefault();
   const reader = useReader();
   const signedIn = reader.known && reader.email !== null;
 
-  const sizeOptions: { value: ReaderSize; label: string }[] = [
-    { value: "sm", label: t("settings.sizeSmall") },
-    { value: "md", label: t("settings.sizeMedium") },
-    { value: "lg", label: t("settings.sizeLarge") },
-    { value: "xl", label: t("settings.sizeExtraLarge") },
-  ];
-  const fontOptions: { value: ReaderFont; label: string }[] = [
-    { value: "serif", label: t("bible.fontSerif") },
-    { value: "display", label: t("settings.fontDisplay") },
-    { value: "sans", label: t("settings.fontSans") },
-  ];
+  const faceNames: Record<ReaderFont, string> = {
+    serif: t("bible.fontSerif"),
+    display: t("settings.fontDisplay"),
+    sans: t("settings.fontSans"),
+  };
 
   return (
     <>
@@ -639,49 +508,52 @@ function Body() {
         title={t("settings.reading")}
         hint={t("settings.readingHint")}
       >
-        <div className="px-5 py-4">
-          <ReadingModeChips />
-        </div>
-        <Row
-          label={t("ui.readerFont")}
-          description={t("settings.fontHint")}
-        >
-          <Choice
+        <Row icon={<Book size={18} />} label={t("ui.readingMode")}>
+          <ReadingModePages />
+        </Row>
+        <Row icon={<FacesGlyph />} label={t("ui.readerFont")} description={t("settings.fontHint")}>
+          <Track
+            faces
             value={font}
-            options={fontOptions}
+            options={FACES.map((f) => ({
+              value: f,
+              label: faceNames[f],
+              // Each face drawn in itself, its name under it; the letters
+              // left to right in every language, as the plate's are.
+              face: (
+                <>
+                  <span aria-hidden dir="ltr" className={cn("set-face", FONT_CLASSES[f])}>
+                    <span>A</span>
+                    <span>a</span>
+                  </span>
+                  <span className="set-face-name">{faceNames[f]}</span>
+                </>
+              ),
+            }))}
             onChange={setFont}
             label={t("ui.readerFont")}
           />
         </Row>
-        <Row label={t("ui.readerSize")} description={t("settings.sizeHint")}>
-          <Choice
-            value={size}
-            options={sizeOptions}
-            onChange={setSize}
-            label={t("ui.readerSize")}
-          />
-        </Row>
+        <ReaderSizeRow />
         <Row
+          icon={<AlphaGlyph />}
           label={t("ui.interlinearByDefault")}
           description={t("settings.interlinearHint")}
-        >
-          <Choice
-            value={interlinearOn ? "on" : "off"}
-            options={[
-              { value: "on", label: t("common.on") },
-              { value: "off", label: t("common.off") },
-            ]}
-            onChange={(v) => {
-              if ((v === "on") !== interlinearOn) toggleInterlinear();
-            }}
-            label={t("ui.interlinearByDefault")}
-          />
-        </Row>
+          control={
+            <Switch
+              on={interlinearOn}
+              onChange={(on) => {
+                if (on !== interlinearOn) toggleInterlinear();
+              }}
+              label={t("ui.interlinearByDefault")}
+            />
+          }
+        />
       </Section>
 
       <Section id="calendar" title={t("settings.calendar")} hint={t("settings.calendarHint")}>
-        <Row label={t("ui.calendarReckoning")}>
-          <Choice
+        <Row icon={<Calendar size={18} />} label={t("ui.calendarReckoning")}>
+          <Track
             value={calStyle}
             options={[
               { value: "new" as CalendarStyleDefault, label: t("calendar.styleNew") },
@@ -695,9 +567,16 @@ function Body() {
 
       <MotionSection />
 
+      {/* The picker names the language itself, in its own words, so the row
+          has its globe and the picker and no second "Language". */}
       <Section id="language" title={t("settings.language")}>
-        <div className="px-5 py-4">
-          <LanguagePicker />
+        <div className="set-row">
+          <div className="set-lab">
+            <Plate>
+              <GlobeGlyph />
+            </Plate>
+            <LanguagePicker />
+          </div>
         </div>
       </Section>
 
@@ -712,12 +591,33 @@ function Body() {
   );
 }
 
+/**
+ * Up once the screen has been drawn as the device holds it. The choices here
+ * are read from the device after the page is put together, so on a page
+ * loaded whole a choice can change under the first frame; their motion waits
+ * for this, a whole frame later, and the screen opens still (app/globals.css,
+ * "Settings: lit panels").
+ */
+function useLive(): boolean {
+  const [live, setLive] = useState(false);
+  useEffect(() => {
+    let frame = requestAnimationFrame(() => {
+      frame = requestAnimationFrame(() => setLive(true));
+    });
+    return () => cancelAnimationFrame(frame);
+  }, []);
+  return live;
+}
+
 export function SettingsClient() {
-  // ReadingModeChips and the font/size rows read ReaderPrefs, which is
+  const live = useLive();
+  // ReadingModePages and the font and size rows read ReaderPrefs, which is
   // provided per route rather than globally.
   return (
     <ReaderPrefsProvider>
-      <Body />
+      <div className="set-root" data-live={live ? "" : undefined}>
+        <Body />
+      </div>
     </ReaderPrefsProvider>
   );
 }

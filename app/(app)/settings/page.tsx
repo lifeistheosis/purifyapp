@@ -21,7 +21,10 @@ export default function SettingsPage() {
   return (
     <>
       <MobileTopBar titleKey="settings.title" back backFallback="/account" />
-      <section className="bg-night min-h-screen px-5 py-6 md:px-8 md:py-16">
+      {/* 16px at a phone's sides, as the lit panels are drawn (the owner's
+          pick A of round 3, components/settings/LitPanel.tsx): each panel
+          runs to that margin and its heading sits a little inside it. */}
+      <section className="bg-night min-h-screen px-4 py-6 md:px-8 md:py-16">
         <article className="mx-auto w-full max-w-[720px]">
           {/* Desktop only. On a phone the bar above already says Settings, and
               this said it again in large letters over a sentence, a screen of
