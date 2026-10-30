@@ -1,0 +1,774 @@
+{
+  "slug": "psalm-135",
+  "key": "psalm135",
+  "title": "Psalm 135",
+  "kind": "psalm",
+  "psalm": 135,
+  "when": {
+    "services": [
+      "Matins of the All-Night Vigil: the Polyeleos, with Psalm 134"
+    ]
+  },
+  "about": {
+    "what": "A psalm of thanksgiving, the hundred and thirty-fifth as the Church counts the psalms, by the Septuagint. Its twenty-six verses give thanks for the works of God, in creation and in bringing Israel out of Egypt, and every one of them ends with the same answer, “for his mercy endures for ever”, quoted here in Brenton's English.",
+    "history": "Psalm 135 is the second of the two psalms of the Polyeleos, after Psalm 134, which opens “Praise ye the name of the Lord”. Hapgood's Service Book prints them at Matins of the All-Night Vigil, sung with Alleluia when the holy door is opened and the priest censes the sanctuary, the holy images, the people and the whole temple (1906, p. 28, where the two psalms are numbered cxxxv and cxxxvi, as in the Hebrew). Its notes give the sense of the name: from the Greek for much and for mercy, or oil, because these psalms repeat the word mercy, and because the lamps are lit while they are sung (Appendix B, p. 595).",
+    "when": "At Matins of the All-Night Vigil, kept on the eve of Sundays and feasts, after the readings from the Psalter: the Polyeleos (Hapgood, pp. 15 and 28)."
+  },
+  "sources": [
+    {
+      "title": "The Septuagint Version of the Old Testament, with an English Translation",
+      "author": "Sir Lancelot C. L. Brenton",
+      "year": "1851",
+      "url": "https://ebible.org/grcbrent/PSA135.htm",
+      "note": "The English of the psalm, as Purify's Bible has it, and its Greek, read at eBible.org. Public domain."
+    },
+    {
+      "title": "Service Book of the Holy Orthodox-Catholic Apostolic (Greco-Russian) Church",
+      "author": "Isabel Florence Hapgood",
+      "year": "1906",
+      "url": "https://archive.org/details/cu31924029363128",
+      "note": "The All-Night Vigil: p. 15, kept on the eve of Sundays and feasts; p. 28, the Polyeleos, Psalms cxxxv and cxxxvi in the book's own count, which follows the Hebrew. Appendix B, p. 595, note 6: the name."
+    },
+    {
+      "title": "Sveto Pismo ili Biblija",
+      "author": "Vuk Karadžić and Đura Daničić",
+      "year": "1868",
+      "url": "https://ebible.org/srp1865/PSA136.htm",
+      "note": "The Serbian of the psalm (Psalm 136 in this Bible's own count), in eBible.org's text in Latin letters. Public domain."
+    }
+  ],
+  "review": {
+    "status": "awaiting-clergy-review",
+    "since": "2026-10-30"
+  },
+  "related": [
+    "psalm-117"
+  ],
+  "status": "live",
+  "addedOn": "2026-10-30",
+  "variants": [
+    {
+      "id": "ar",
+      "language": "ar",
+      "label": "العربية",
+      "tradition": "antiochian",
+      "setting": "Byzantine chant",
+      "performer": "Mount Lebanon Orthodox Choir and Theodoros Vassilikos",
+      "audio": {
+        "src": "https://audio.purifyapp.net/chants/psalm-135/ar.mp3",
+        "durationSec": 253.18
+      },
+      "preview": {
+        "from": 0,
+        "to": 20
+      },
+      "rtl": true,
+      "lines": [
+        {
+          "text": "اعترفوا للرب فإنه صالح،",
+          "translit": "I'tarifu lir-Rabbi fa-innahu salihun,",
+          "en": "Give thanks to the Lord: for he is good:"
+        },
+        {
+          "text": "فإن إلى الأبد رحمته.",
+          "translit": "fa-inna ila l-abadi rahmatahu.",
+          "en": "for his mercy endures for ever."
+        }
+      ],
+      "wordsSource": "Only the first verse, as the owner took it down beside the recording in Latin letters, set here in Arabic letters by Purify, with a transliteration of ours; not yet checked word by word against the recording. Each half is followed by Alleluia. The verses after it are not taken down yet, so this version has no Sing along.",
+      "translation": {
+        "kind": "public-domain",
+        "title": "Brenton's English of the Septuagint (1851), the same verse"
+      }
+    },
+    {
+      "id": "en",
+      "language": "en",
+      "label": "English",
+      "tradition": "greek",
+      "setting": "Byzantine chant",
+      "performer": "Eikona",
+      "audio": {
+        "src": "https://audio.purifyapp.net/chants/psalm-135/en.mp3",
+        "durationSec": 534.96
+      },
+      "timing": "/audio/chants/psalm-135/en.json",
+      "preview": {
+        "from": 0,
+        "to": 21
+      },
+      "lines": [
+        {
+          "text": "Give thanks to the Lord: for he is good:"
+        },
+        {
+          "text": "for his mercy endures for ever."
+        },
+        {
+          "text": "Give thanks to the God of gods;"
+        },
+        {
+          "text": "for his mercy endures for ever."
+        },
+        {
+          "text": "Give thanks to the Lord of lords:"
+        },
+        {
+          "text": "for his mercy endures for ever."
+        },
+        {
+          "text": "To him who alone has wrought great wonders:"
+        },
+        {
+          "text": "for his mercy endures for ever."
+        },
+        {
+          "text": "To him who made the heavens by understanding;"
+        },
+        {
+          "text": "for his mercy endures for ever."
+        },
+        {
+          "text": "To him who established the earth on the waters;"
+        },
+        {
+          "text": "for his mercy endures for ever."
+        },
+        {
+          "text": "To him who alone made great lights;"
+        },
+        {
+          "text": "for his mercy endures for ever."
+        },
+        {
+          "text": "The sun to rule by day;"
+        },
+        {
+          "text": "for his mercy endures for ever."
+        },
+        {
+          "text": "The moon and the stars to rule the night;"
+        },
+        {
+          "text": "for his mercy endures for ever."
+        },
+        {
+          "text": "To him who smote Egypt with their first-born;"
+        },
+        {
+          "text": "for his mercy endures for ever."
+        },
+        {
+          "text": "And brought Israel out of the midst of them;"
+        },
+        {
+          "text": "for his mercy endures for ever:"
+        },
+        {
+          "text": "with a strong hand, and a high arm:"
+        },
+        {
+          "text": "for his mercy endures for ever."
+        },
+        {
+          "text": "To him who divided the Red Sea into parts:"
+        },
+        {
+          "text": "for his mercy endures for ever:"
+        },
+        {
+          "text": "and brought Israel through the midst of it:"
+        },
+        {
+          "text": "for his mercy endures for ever:"
+        },
+        {
+          "text": "and overthrew Pharao and his host in the Red Sea:"
+        },
+        {
+          "text": "for his mercy endures for ever."
+        },
+        {
+          "text": "To him who led his people through the wilderness:"
+        },
+        {
+          "text": "for his mercy endures for ever."
+        },
+        {
+          "text": "To him who smote great kings:"
+        },
+        {
+          "text": "for his mercy endures for ever:"
+        },
+        {
+          "text": "and slew mighty kings;"
+        },
+        {
+          "text": "for his mercy endures for ever:"
+        },
+        {
+          "text": "Seon king of the Amorites:"
+        },
+        {
+          "text": "for his mercy endures for ever:"
+        },
+        {
+          "text": "and Og king of Basan:"
+        },
+        {
+          "text": "for his mercy endures for ever:"
+        },
+        {
+          "text": "and gave their land for an inheritance:"
+        },
+        {
+          "text": "for his mercy endures for ever:"
+        },
+        {
+          "text": "even an inheritance to Israel his servant:"
+        },
+        {
+          "text": "for his mercy endures for ever."
+        },
+        {
+          "text": "For the Lord remembered us in our low estate;"
+        },
+        {
+          "text": "for his mercy endures for ever:"
+        },
+        {
+          "text": "and redeemed us from our enemies;"
+        },
+        {
+          "text": "for his mercy endures for ever."
+        },
+        {
+          "text": "Who gives food to all flesh;"
+        },
+        {
+          "text": "for his mercy endures for ever."
+        },
+        {
+          "text": "Give thanks to the God of heaven;"
+        },
+        {
+          "text": "for his mercy endures for ever."
+        }
+      ],
+      "wordsSource": "Brenton's English of the Septuagint (1851), the psalm's twenty-six verses as the recording sings them, each half followed by Alleluia. The recording sings an English psalter of our own time, close to Brenton's but not in his words; the words here are Brenton's, which are in the public domain, timed to the singing."
+    },
+    {
+      "id": "el",
+      "language": "el",
+      "label": "Ελληνικά",
+      "tradition": "greek",
+      "setting": "Byzantine chant",
+      "performer": "Beirut men's choir",
+      "audio": {
+        "src": "https://audio.purifyapp.net/chants/psalm-135/el.mp3",
+        "durationSec": 504.53
+      },
+      "preview": {
+        "from": 0,
+        "to": 20
+      },
+      "lines": [
+        {
+          "text": "Ἐξομολογεῖσθε τῷ Κυρίῳ, ὅτι ἀγαθὸς,",
+          "translit": "Exomologiste to Kyrio, oti agathos,",
+          "en": "Give thanks to the Lord: for he is good:"
+        },
+        {
+          "text": "ὅτι εἰς τὸν αἰῶνα τὸ ἔλεος αὐτοῦ.",
+          "translit": "oti is ton eona to eleos aftou.",
+          "en": "for his mercy endures for ever."
+        },
+        {
+          "text": "Ἐξομολογεῖσθε τῷ Θεῷ τῶν θεῶν,",
+          "translit": "Exomologiste to Theo ton theon,",
+          "en": "Give thanks to the God of gods;"
+        },
+        {
+          "text": "ὅτι εἰς τὸν αἰῶνα τὸ ἔλεος αὐτοῦ.",
+          "translit": "oti is ton eona to eleos aftou.",
+          "en": "for his mercy endures for ever."
+        },
+        {
+          "text": "Ἐξομολογεῖσθε τῷ Κυρίῳ τῶν κυρίων,",
+          "translit": "Exomologiste to Kyrio ton kyrion,",
+          "en": "Give thanks to the Lord of lords:"
+        },
+        {
+          "text": "ὅτι εἰς τὸν αἰῶνα τὸ ἔλεος αὐτοῦ.",
+          "translit": "oti is ton eona to eleos aftou.",
+          "en": "for his mercy endures for ever."
+        },
+        {
+          "text": "Τῷ ποιήσαντι θαυμάσια μεγάλα μόνῳ,",
+          "translit": "To piisanti thavmasia megala mono,",
+          "en": "To him who alone has wrought great wonders:"
+        },
+        {
+          "text": "ὅτι εἰς τὸν αἰῶνα τὸ ἔλεος αὐτοῦ.",
+          "translit": "oti is ton eona to eleos aftou.",
+          "en": "for his mercy endures for ever."
+        },
+        {
+          "text": "Τῷ ποιήσαντι τοὺς οὐρανοὺς ἐν συνέσει,",
+          "translit": "To piisanti tous ouranous en synesi,",
+          "en": "To him who made the heavens by understanding;"
+        },
+        {
+          "text": "ὅτι εἰς τὸν αἰῶνα τὸ ἔλεος αὐτοῦ.",
+          "translit": "oti is ton eona to eleos aftou.",
+          "en": "for his mercy endures for ever."
+        },
+        {
+          "text": "Τῷ στερεώσαντι τὴν γῆν ἐπὶ τῶν ὑδάτων,",
+          "translit": "To stereosanti tin gin epi ton ydaton,",
+          "en": "To him who established the earth on the waters;"
+        },
+        {
+          "text": "ὅτι εἰς τὸν αἰῶνα τὸ ἔλεος αὐτοῦ.",
+          "translit": "oti is ton eona to eleos aftou.",
+          "en": "for his mercy endures for ever."
+        },
+        {
+          "text": "Τῷ ποιήσαντι φῶτα μεγάλα μόνῳ,",
+          "translit": "To piisanti fota megala mono,",
+          "en": "To him who alone made great lights;"
+        },
+        {
+          "text": "ὅτι εἰς τὸν αἰῶνα τὸ ἔλεος αὐτοῦ.",
+          "translit": "oti is ton eona to eleos aftou.",
+          "en": "for his mercy endures for ever."
+        },
+        {
+          "text": "Τὸν ἥλιον εἰς ἐξουσίαν τῆς ἡμέρας,",
+          "translit": "Ton ilion is exousian tis imeras,",
+          "en": "The sun to rule by day;"
+        },
+        {
+          "text": "ὅτι εἰς τὸν αἰῶνα τὸ ἔλεος αὐτοῦ·",
+          "translit": "oti is ton eona to eleos aftou;",
+          "en": "for his mercy endures for ever."
+        },
+        {
+          "text": "Τὴν σελήνην καὶ τοὺς ἀστέρας εἰς ἐξουσίαν τῆς νυκτός,",
+          "translit": "Tin selinin ke tous asteras is exousian tis nyktos,",
+          "en": "The moon and the stars to rule the night;"
+        },
+        {
+          "text": "ὅτι εἰς τὸν αἰῶνα τὸ ἔλεος αὐτοῦ.",
+          "translit": "oti is ton eona to eleos aftou.",
+          "en": "for his mercy endures for ever."
+        },
+        {
+          "text": "Τῷ πατάξαντι Αἴγυπτον σὺν τοῖς πρωτοτόκοις αὐτῶν,",
+          "translit": "To pataxanti Egypton syn tis prototokis afton,",
+          "en": "To him who smote Egypt with their first-born;"
+        },
+        {
+          "text": "ὅτι εἰς τὸν αἰῶνα τὸ ἔλεος αὐτοῦ.",
+          "translit": "oti is ton eona to eleos aftou.",
+          "en": "for his mercy endures for ever."
+        },
+        {
+          "text": "Καὶ ἐξαγαγόντι τὸν Ἰσραὴλ ἐκ μέσου αὐτῶν,",
+          "translit": "Ke exagagonti ton Israil ek mesou afton,",
+          "en": "And brought Israel out of the midst of them;"
+        },
+        {
+          "text": "ὅτι εἰς τὸν αἰῶνα τὸ ἔλεος αὐτοῦ·",
+          "translit": "oti is ton eona to eleos aftou;",
+          "en": "for his mercy endures for ever:"
+        },
+        {
+          "text": "Ἐν χειρὶ κραταιᾷ καὶ ἐν βραχίονι ὑψηλῷ,",
+          "translit": "En chiri kratea ke en vrachioni ypsilo,",
+          "en": "with a strong hand, and a high arm:"
+        },
+        {
+          "text": "ὅτι εἰς τὸν αἰῶνα τὸ ἔλεος αὐτοῦ.",
+          "translit": "oti is ton eona to eleos aftou.",
+          "en": "for his mercy endures for ever."
+        },
+        {
+          "text": "Τῷ καταδιελόντι τὴν ἐρυθρὰν θάλασσαν εἰς διαιρέσεις,",
+          "translit": "To katadielonti tin erythran thalassan is dieresis,",
+          "en": "To him who divided the Red Sea into parts:"
+        },
+        {
+          "text": "ὅτι εἰς τὸν αἰῶνα τὸ ἔλεος αὐτοῦ·",
+          "translit": "oti is ton eona to eleos aftou;",
+          "en": "for his mercy endures for ever:"
+        },
+        {
+          "text": "Καὶ διαγαγόντι τὸν Ἰσραὴλ διὰ μέσου αὐτῆς,",
+          "translit": "Ke diagagonti ton Israil dia mesou aftis,",
+          "en": "and brought Israel through the midst of it:"
+        },
+        {
+          "text": "ὅτι εἰς τὸν αἰῶνα τὸ ἔλεος αὐτοῦ·",
+          "translit": "oti is ton eona to eleos aftou;",
+          "en": "for his mercy endures for ever:"
+        },
+        {
+          "text": "Καὶ ἐκτινάξαντι Φαραὼ καὶ τὴν δύναμιν αὐτοῦ εἰς θάλασσαν ἐρυθράν,",
+          "translit": "Ke ektinaxanti Farao ke tin dynamin aftou is thalassan erythran,",
+          "en": "and overthrew Pharao and his host in the Red Sea:"
+        },
+        {
+          "text": "ὅτι εἰς τὸν αἰῶνα τὸ ἔλεος αὐτοῦ.",
+          "translit": "oti is ton eona to eleos aftou.",
+          "en": "for his mercy endures for ever."
+        },
+        {
+          "text": "Τῷ διαγαγόντι τὸν λαὸν αὐτοῦ ἐν τῇ ἐρήμῳ,",
+          "translit": "To diagagonti ton laon aftou en ti erimo,",
+          "en": "To him who led his people through the wilderness:"
+        },
+        {
+          "text": "ὅτι εἰς τὸν αἰῶνα τὸ ἔλεος αὐτοῦ.",
+          "translit": "oti is ton eona to eleos aftou.",
+          "en": "for his mercy endures for ever."
+        },
+        {
+          "text": "Τῷ πατάξαντι βασιλεῖς μεγάλους,",
+          "translit": "To pataxanti vasilis megalous,",
+          "en": "To him who smote great kings:"
+        },
+        {
+          "text": "ὅτι εἰς τὸν αἰῶνα τὸ ἔλεος αὐτοῦ.",
+          "translit": "oti is ton eona to eleos aftou.",
+          "en": "for his mercy endures for ever:"
+        },
+        {
+          "text": "Καὶ ἀποκτείναντι βασιλεῖς κραταιούς,",
+          "translit": "Ke apoktinanti vasilis krateous,",
+          "en": "and slew mighty kings;"
+        },
+        {
+          "text": "ὅτι εἰς τὸν αἰῶνα τὸ ἔλεος αὐτοῦ.",
+          "translit": "oti is ton eona to eleos aftou.",
+          "en": "for his mercy endures for ever:"
+        },
+        {
+          "text": "Τὸν Σηὼν βασιλέα τῶν Ἀμοῤῥαίων,",
+          "translit": "Ton Sion vasilea ton Amorreon,",
+          "en": "Seon king of the Amorites:"
+        },
+        {
+          "text": "ὅτι εἰς τὸν αἰῶνα τὸ ἔλεος αὐτοῦ.",
+          "translit": "oti is ton eona to eleos aftou.",
+          "en": "for his mercy endures for ever:"
+        },
+        {
+          "text": "Καὶ τὸν Ὢγ βασιλέα τῆς Βασάν,",
+          "translit": "Ke ton Og vasilea tis Vasan,",
+          "en": "and Og king of Basan:"
+        },
+        {
+          "text": "ὅτι εἰς τὸν αἰῶνα τὸ ἔλεος αὐτοῦ.",
+          "translit": "oti is ton eona to eleos aftou.",
+          "en": "for his mercy endures for ever:"
+        },
+        {
+          "text": "Καὶ δόντι τὴν γῆν αὐτῶν κληρονομίαν,",
+          "translit": "Ke donti tin gin afton klironomian,",
+          "en": "and gave their land for an inheritance:"
+        },
+        {
+          "text": "ὅτι εἰς τὸν αἰῶνα τὸ ἔλεος αὐτοῦ·",
+          "translit": "oti is ton eona to eleos aftou;",
+          "en": "for his mercy endures for ever:"
+        },
+        {
+          "text": "κληρονομίαν Ἰσραὴλ δούλῳ αὐτοῦ,",
+          "translit": "klironomian Israil doulo aftou,",
+          "en": "even an inheritance to Israel his servant:"
+        },
+        {
+          "text": "ὅτι εἰς τὸν αἰῶνα τὸ ἔλεος αὐτοῦ.",
+          "translit": "oti is ton eona to eleos aftou.",
+          "en": "for his mercy endures for ever."
+        },
+        {
+          "text": "Ὅτι ἐν τῇ ταπεινώσει ἡμῶν ἐμνήσθη ἡμῶν ὁ Κύριος,",
+          "translit": "Oti en ti tapinosi imon emnisthi imon o Kyrios,",
+          "en": "For the Lord remembered us in our low estate;"
+        },
+        {
+          "text": "ὅτι εἰς τὸν αἰῶνα τὸ ἔλεος αὐτοῦ.",
+          "translit": "oti is ton eona to eleos aftou.",
+          "en": "for his mercy endures for ever:"
+        },
+        {
+          "text": "Καὶ ἐλυτρώσατο ἡμᾶς ἐκ τῶν ἐχθρῶν ἡμῶν,",
+          "translit": "Ke elytrosato imas ek ton echthron imon,",
+          "en": "and redeemed us from our enemies;"
+        },
+        {
+          "text": "ὅτι εἰς τὸν αἰῶνα τὸ ἔλεος αὐτοῦ.",
+          "translit": "oti is ton eona to eleos aftou.",
+          "en": "for his mercy endures for ever."
+        },
+        {
+          "text": "Ὁ διδοὺς τροφὴν πάσῃ σαρκὶ,",
+          "translit": "O didous trofin pasi sarki,",
+          "en": "Who gives food to all flesh;"
+        },
+        {
+          "text": "ὅτι εἰς τὸν αἰῶνα τὸ ἔλεος αὐτοῦ.",
+          "translit": "oti is ton eona to eleos aftou.",
+          "en": "for his mercy endures for ever."
+        },
+        {
+          "text": "Ἐξομολογεῖσθε τῷ Θεῷ τοῦ οὐρανοῦ,",
+          "translit": "Exomologiste to Theo tou ouranou,",
+          "en": "Give thanks to the God of heaven;"
+        },
+        {
+          "text": "ὅτι εἰς τὸν αἰῶνα τὸ ἔλεος αὐτοῦ.",
+          "translit": "oti is ton eona to eleos aftou.",
+          "en": "for his mercy endures for ever."
+        }
+      ],
+      "wordsSource": "Brenton's Greek of the Septuagint (1851), as eBible.org transcribes it: the whole psalm, each verse in two halves. The owner's note beside the recording takes down its first four verses as sung, each half followed by Alleluia, and they are these words. That it goes on through the whole psalm is known only from fragments of later verses picked out by a speech model, not checked verse by verse, so this version has no Sing along. The transliteration is ours.",
+      "translation": {
+        "kind": "public-domain",
+        "title": "Brenton's English of the Septuagint (1851), line for line"
+      }
+    },
+    {
+      "id": "sr",
+      "language": "sr-Latn",
+      "label": "Srpski",
+      "tradition": "serbian",
+      "performer": null,
+      "audio": {
+        "src": "https://audio.purifyapp.net/chants/psalm-135/sr.mp3",
+        "durationSec": 429.32
+      },
+      "preview": {
+        "from": 0,
+        "to": 20
+      },
+      "lines": [
+        {
+          "text": "Slavite Gospoda, jer je dobar;",
+          "en": "Give thanks to the Lord: for he is good:"
+        },
+        {
+          "text": "jer je doveka milost Njegova;",
+          "en": "for his mercy endures for ever."
+        },
+        {
+          "text": "Slavite Boga nad bogovima;",
+          "en": "Give thanks to the God of gods;"
+        },
+        {
+          "text": "jer je doveka milost Njegova.",
+          "en": "for his mercy endures for ever."
+        },
+        {
+          "text": "Slavite Gospodara nad gospodarima;",
+          "en": "Give thanks to the Lord of lords:"
+        },
+        {
+          "text": "jer je doveka milost Njegova;",
+          "en": "for his mercy endures for ever."
+        },
+        {
+          "text": "Onog, koji jedan tvori čudesa velika;",
+          "en": "To him who alone has wrought great wonders:"
+        },
+        {
+          "text": "jer je doveka milost Njegova;",
+          "en": "for his mercy endures for ever."
+        },
+        {
+          "text": "Koji je stvorio nebesa premudro;",
+          "en": "To him who made the heavens by understanding;"
+        },
+        {
+          "text": "jer je doveka milost Njegova;",
+          "en": "for his mercy endures for ever."
+        },
+        {
+          "text": "Utvrdio zemlju na vodi;",
+          "en": "To him who established the earth on the waters;"
+        },
+        {
+          "text": "jer je doveka milost Njegova;",
+          "en": "for his mercy endures for ever."
+        },
+        {
+          "text": "Stvorio velika videla;",
+          "en": "To him who alone made great lights;"
+        },
+        {
+          "text": "jer je doveka milost Njegova;",
+          "en": "for his mercy endures for ever."
+        },
+        {
+          "text": "Sunce, da upravlja danom;",
+          "en": "The sun to rule by day;"
+        },
+        {
+          "text": "jer je doveka milost Njegova;",
+          "en": "for his mercy endures for ever."
+        },
+        {
+          "text": "Mesec i zvezde, da upravljaju noću;",
+          "en": "The moon and the stars to rule the night;"
+        },
+        {
+          "text": "jer je doveka milost Njegova;",
+          "en": "for his mercy endures for ever."
+        },
+        {
+          "text": "Koji pobi Misir u prvencima njegovim;",
+          "en": "To him who smote Egypt with their first-born;"
+        },
+        {
+          "text": "jer je doveka milost Njegova;",
+          "en": "for his mercy endures for ever."
+        },
+        {
+          "text": "Izvede iz njega Izrailja;",
+          "en": "And brought Israel out of the midst of them;"
+        },
+        {
+          "text": "jer je doveka milost Njegova;",
+          "en": "for his mercy endures for ever:"
+        },
+        {
+          "text": "Rukom krepkom i mišicom podignutom;",
+          "en": "with a strong hand, and a high arm:"
+        },
+        {
+          "text": "jer je doveka milost Njegova;",
+          "en": "for his mercy endures for ever."
+        },
+        {
+          "text": "Koji razdvoji Crveno More;",
+          "en": "To him who divided the Red Sea into parts:"
+        },
+        {
+          "text": "jer je doveka milost Njegova;",
+          "en": "for his mercy endures for ever:"
+        },
+        {
+          "text": "I provede Izrailja kroz sred njega;",
+          "en": "and brought Israel through the midst of it:"
+        },
+        {
+          "text": "jer je doveka milost Njegova;",
+          "en": "for his mercy endures for ever:"
+        },
+        {
+          "text": "A Faraona i vojsku njegovu vrže u more crveno;",
+          "en": "and overthrew Pharao and his host in the Red Sea:"
+        },
+        {
+          "text": "jer je doveka milost Njegova;",
+          "en": "for his mercy endures for ever."
+        },
+        {
+          "text": "Prevede narod svoj preko pustinje;",
+          "en": "To him who led his people through the wilderness:"
+        },
+        {
+          "text": "jer je doveka milost Njegova;",
+          "en": "for his mercy endures for ever."
+        },
+        {
+          "text": "Pobi careve velike;",
+          "en": "To him who smote great kings:"
+        },
+        {
+          "text": "jer je doveka milost Njegova;",
+          "en": "for his mercy endures for ever:"
+        },
+        {
+          "text": "I izgubi careve znatne;",
+          "en": "and slew mighty kings;"
+        },
+        {
+          "text": "jer je doveka milost Njegova;",
+          "en": "for his mercy endures for ever:"
+        },
+        {
+          "text": "Siona, cara amorejskog;",
+          "en": "Seon king of the Amorites:"
+        },
+        {
+          "text": "jer je doveka milost Njegova;",
+          "en": "for his mercy endures for ever:"
+        },
+        {
+          "text": "I Oga, cara vasanskog;",
+          "en": "and Og king of Basan:"
+        },
+        {
+          "text": "jer je doveka milost Njegova;",
+          "en": "for his mercy endures for ever:"
+        },
+        {
+          "text": "I dade zemlju njihovu u dostojanje;",
+          "en": "and gave their land for an inheritance:"
+        },
+        {
+          "text": "jer je doveka milost Njegova;",
+          "en": "for his mercy endures for ever:"
+        },
+        {
+          "text": "U dostojanje Izrailju, sluzi svom;",
+          "en": "even an inheritance to Israel his servant:"
+        },
+        {
+          "text": "jer je doveka milost Njegova;",
+          "en": "for his mercy endures for ever."
+        },
+        {
+          "text": "Koji nas se opomenu u poniženju našem;",
+          "en": "For the Lord remembered us in our low estate;"
+        },
+        {
+          "text": "jer je doveka milost Njegova;",
+          "en": "for his mercy endures for ever:"
+        },
+        {
+          "text": "I izbavi nas od neprijatelja naših;",
+          "en": "and redeemed us from our enemies;"
+        },
+        {
+          "text": "jer je doveka milost Njegova;",
+          "en": "for his mercy endures for ever."
+        },
+        {
+          "text": "Koji daje hranu svakom telu;",
+          "en": "Who gives food to all flesh;"
+        },
+        {
+          "text": "jer je doveka milost Njegova;",
+          "en": "for his mercy endures for ever."
+        },
+        {
+          "text": "Slavite Boga nebeskog;",
+          "en": "Give thanks to the God of heaven;"
+        },
+        {
+          "text": "jer je doveka milost Njegova.",
+          "en": "for his mercy endures for ever."
+        }
+      ],
+      "wordsSource": "Daničić's Serbian (the Karadžić and Daničić Bible, 1868), the whole psalm as eBible.org has it, in Latin letters. The upload names the psalm by its opening words, Slavite Gospoda, which are Daničić's; the verses have not been checked against what the choir sings, which may differ in places, so this version has no Sing along.",
+      "translation": {
+        "kind": "public-domain",
+        "title": "Brenton's English of the Septuagint (1851), line for line"
+      }
+    }
+  ]
+}
