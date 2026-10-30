@@ -417,6 +417,36 @@ export const SAINTS: Saint[] = [
  ],
  },
  {
+ slug: "macarius-the-great",
+ byname: "The Egyptian",
+ iconUrl: "/saints/icons/macarius-the-great.jpg",
+ name: "St. Macarius the Great",
+ epithet: "Of Egypt · Father of Scetis",
+ born: "c. 300 (Upper Egypt)",
+ reposed: "c. 390 (Scetis)",
+ feastDays: ["January 19"],
+ shortBio:
+ "The priest of the inner desert of Scetis, called an old man while he was still young for his discernment, renowned for his healings, his prophecy and his unceasing prayer.",
+ life: [
+ "Macarius was born in Upper Egypt about the year 300 and is counted among the disciples of St. Antony. He went into the desert at thirty and made such progress that, though young, he was called an old man for his discernment. At forty he received the grace of healing and of foreseeing what was to come, and he was ordained a priest.",
+ "He lived in the inner desert of Scetis with two disciples, one to serve the many who came to be healed and one to rest in a cell nearby. It was said of him that he was almost always rapt in God, spending far more time with Him than with the things of the earth. So that he could pray unseen, he dug a tunnel a short way underground from his cell to a cave, and said twenty-four prayers on the way there and twenty-four on the way back.",
+ "Palladius tells of a woman whom a magician's spell had made all others, her husband too, see as a mare. Macarius saw her as she was, a woman, and by his prayer made her appear so to all; then he charged her never to stay away from the Holy Communion. It was also reported in the desert that he raised a dead man to persuade a heretic of the resurrection of the body.",
+ "Socrates names him with St. Macarius of Alexandria as the two great Macarii of that age: the Egyptian stern with those who came to him, yet drawing their reverence, the Alexandrian cheerful with all. When the Arian Lucius held the see of Alexandria under the emperor Valens, both were banished to an island where no Christian lived, and there they freed the pagan priest's daughter from a demon and brought the whole island to the faith.",
+ "He fell asleep in Scetis about the year 390, at ninety, having lived sixty years in the desert, and monasteries in the desert of Egypt still bear his name. The Church keeps his memory on the nineteenth of January.",
+ ],
+ works: [
+ {
+ slug: "life-of-macarius",
+ title: "The Life of St. Macarius the Great",
+ subtitle: "From Palladius and Socrates",
+ year: "c. 420 to 440",
+ blurb:
+ "Palladius's chapter on Macarius of Egypt, written by one who came to the desert a year after his death, with Socrates on the two Macarii and their exile to an island under the Arian emperor Valens. In the public-domain English of W. K. Lowther Clarke (1918) and the Nicene and Post-Nicene Fathers.",
+ topics: ["Monasticism", "Desert", "Prayer", "Miracles", "Communion"],
+ },
+ ],
+ },
+ {
  slug: "athanasius-the-great",
  byname: "Pillar of Orthodoxy",
  iconUrl: "/saints/icons/athanasius-the-great.v2.jpg",

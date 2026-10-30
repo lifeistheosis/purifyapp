@@ -625,6 +625,17 @@ export const ICON_RIGHTS: Record<string, IconRights> = {
     license: "CC0",
     evidenceUrl: "https://commons.wikimedia.org/wiki/File:Church_of_Panagia_tou_Arakos,_nave,_southwest_bay,_wall_paintings,_Lagoudera,_Cyprus_-_West_soffit,_St._Hilarion,_detail_of_upper_half,_before_cleaning_-_MSBZ004_BF_S_1979_2198D_-_Dumbarton_Oaks.jpg",
   },
+  "macarius-the-great.jpg": {
+    status: "verified",
+    inspectedOn: "2026-10-30",
+    alt: "A wall painting in pale ochre and white of a figure dissolved in white light under a great ochre halo, only the small dark face and the two dark open hands, raised in prayer, drawn clearly.",
+    work: "Fresco of St Macarius the Great, the Church of the Transfiguration on Ilyina Street, Veliky Novgorod, the whole image",
+    artist: "Theophanes the Greek",
+    workDate: "1378",
+    source: "Wikimedia Commons, scanned from V. N. Alexandrov, History of Russian Art (2004)",
+    license: "Public domain",
+    evidenceUrl: "https://commons.wikimedia.org/wiki/File:Spas_na_Ilyine_-_Saint_Macarius_the_Great.jpg",
+  },
   "job-of-pochaev.jpg": {
     status: "verified",
     inspectedOn: "2026-08-12",

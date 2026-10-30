@@ -129,6 +129,7 @@ export const AUTHOR_META: Readonly<Record<string, MetaRow>> = {
   "pachomius-the-great": { traditions: ["egypt", "desert"], era: "councils" },
   "ammon-of-nitria": { traditions: ["egypt", "desert"], era: "councils" },
   "hilarion-the-great": { traditions: ["desert"], era: "councils" },
+  "macarius-the-great": { traditions: ["egypt", "desert"], era: "councils" },
   // Of Antioch, and of Constantinople, whose archbishop he was.
   "john-chrysostom": { traditions: ["greek", "antioch"], era: "councils" },
   "meletius-of-antioch": { traditions: ["antioch"], era: "councils" },
@@ -1104,6 +1105,14 @@ export const ENTRIES: Readonly<Record<WorkKey, ReadingEntry>> = {
       t("chastity", "Amoun and his wife keep their virginity through eighteen years of marriage, Palladius VIII", { sections: [[2, 2]] }),
       t("death", "Antony sees Amun's soul carried up at his death, Life of Antony 60", { sections: [[3, 3]] }),
     ],
+    review: R,
+  },
+  "macarius-the-great/life-of-macarius": {
+    by: null,
+    about: "macarius-the-great",
+    form: "life",
+    scope: "selections",
+    themes: [t("prayer", "Palladius XVII: in continual ecstasy, longer with God than with things below; the tunnel to the cave and his twenty-four prayers", { sections: [[1, 1]] })],
     review: R,
   },
   "herman-of-alaska/the-north-american-elder": { by: null, about: "herman-of-alaska", form: "retelling", scope: "complete", themes: [], review: R },

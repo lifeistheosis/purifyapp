@@ -170,7 +170,7 @@ Alaska, St Tikhon of Zadonsk, St Thaddeus of Edessa, St Titus, St Euplus,
 the Maccabean Martyrs, the Seven Sleepers. They work with no signal.
 
 Added 2026-10-30, the same way, for the Lives of the fathers of the desert:
-St Pachomius, St Ammon of Nitria, St Hilarion (his Sayings; his Life keeps
+St Pachomius, St Ammon of Nitria, St Macarius the Great, St Hilarion (his Sayings; his Life keeps
 the Lagoudera cover above, which is the same wall painting).
 
 ## Turned down
