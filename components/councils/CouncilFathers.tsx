@@ -5,7 +5,8 @@ import { useEffect, useState, type CSSProperties } from "react";
 
 import { useTranslate } from "@/components/i18n/MessagesProvider";
 import { cn } from "@/lib/cn";
-import type { CouncilFace } from "@/lib/councils/fathers";
+import { faceLabelSize } from "@/lib/councils/faceLabel";
+import type { CouncilFace, FacePicture as FacePictureData } from "@/lib/councils/fathers";
 import { useArrivingImage } from "@/lib/ui/useArrivingImage";
 
 /**
@@ -56,11 +57,12 @@ export function CouncilFathers({ fathers }: { fathers: CouncilFace[] }) {
         )}
       </div>
       {fathers.length > 1 ? (
-        <ul className="mt-4 grid grid-cols-6 gap-x-1 gap-y-3 md:max-w-[440px]" aria-label={t("study.councils.fathersAssociated")}>
+        <ul className="mt-4 grid grid-cols-6 gap-y-3 md:max-w-[440px]" aria-label={t("study.councils.fathersAssociated")}>
           {fathers.map((x, i) => {
             const on = i === shown;
             return (
-              <li key={x.name} className="min-w-0">
+              // A size container, so the word under the face is sized to its column and never cut.
+              <li key={x.name} className="@container min-w-0">
                 <button
                   type="button"
                   aria-pressed={on}
@@ -81,10 +83,12 @@ export function CouncilFathers({ fathers }: { fathers: CouncilFace[] }) {
                   </span>
                   <span
                     aria-hidden
+                    data-father-label=""
                     className={cn(
-                      "block max-w-full truncate font-sans text-[10.5px] font-semibold leading-tight motion-safe:transition-colors motion-safe:duration-200",
+                      "block whitespace-nowrap font-sans text-[10.5px] font-semibold leading-tight motion-safe:transition-colors motion-safe:duration-200",
                       on ? "text-paper" : "text-paper/50",
                     )}
+                    style={{ fontSize: faceLabelSize(x.label) }}
                   >
                     {x.label}
                   </span>
@@ -103,12 +107,17 @@ export function CouncilFathers({ fathers }: { fathers: CouncilFace[] }) {
  * picture, cut nearer to his face, fading in as it arrives; or, with none, a
  * halo and his initial. Either way a dark island, as a cover is, on every
  * palette.
+ *
+ * With no signal (build 83's walk of the apps) a portrait the website streams
+ * cannot come: then the icon the app carries of him, where its rights are
+ * settled (lib/councils/fathers.ts, `fallback`), and only then his name.
  */
 export function FatherFace({ face, shape }: { face: Pick<CouncilFace, "picture" | "initial">; shape: "portrait" | "round" }) {
-  // A picture that cannot come (no signal in the apps) leaves him drawn by his name.
-  const [failed, setFailed] = useState<string | null>(null);
+  // The pictures that could not come, so the next is tried, and then his name.
+  const [gone, setGone] = useState<readonly string[]>([]);
   const box = shape === "portrait" ? "h-32 w-24 rounded-[12px]" : "size-11 rounded-full";
-  const picture = face.picture && failed !== face.picture.src ? face.picture : null;
+  const tries: FacePictureData[] = face.picture ? [face.picture, ...(face.picture.fallback ? [face.picture.fallback] : [])] : [];
+  const picture = tries.find((p) => !gone.includes(p.src)) ?? null;
   return (
     <span
       aria-hidden
@@ -118,7 +127,12 @@ export function FatherFace({ face, shape }: { face: Pick<CouncilFace, "picture" 
       )}
     >
       {picture ? (
-        <FacePicture picture={picture} zoom={shape === "round" ? 1.9 : 1.4} onFail={() => setFailed(picture.src)} />
+        <FacePicture
+          key={picture.src}
+          picture={picture}
+          zoom={shape === "round" ? 1.9 : 1.4}
+          onFail={() => setGone((g) => (g.includes(picture.src) ? g : [...g, picture.src]))}
+        />
       ) : (
         <Halo initial={face.initial} shape={shape} />
       )}
@@ -127,7 +141,7 @@ export function FatherFace({ face, shape }: { face: Pick<CouncilFace, "picture" 
   );
 }
 
-function FacePicture({ picture, zoom, onFail }: { picture: NonNullable<CouncilFace["picture"]>; zoom: number; onFail: () => void }) {
+function FacePicture({ picture, zoom, onFail }: { picture: FacePictureData; zoom: number; onFail: () => void }) {
   const { ref, onArrive } = useArrivingImage(picture.src);
   // One that failed before the page could listen.
   useEffect(() => {
