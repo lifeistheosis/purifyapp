@@ -267,7 +267,7 @@ describe("shouldShowBack", () => {
 
   it("shows on an ordinary inner page, which is the whole point", () => {
     expect(shouldShowBack("/saints")).toBe(true);
-    expect(shouldShowBack("/councils/nicaea-325")).toBe(true);
+    expect(shouldShowBack("/heresies/arianism")).toBe(true);
     expect(shouldShowBack("/bible/john/1/commentary")).toBe(true);
     expect(shouldShowBack("/shop/eikon")).toBe(true);
   });
@@ -282,6 +282,13 @@ describe("shouldShowBack", () => {
     expect(shouldShowBack("/privacy")).toBe(false);
     expect(shouldShowBack("/terms")).toBe(false);
     expect(shouldShowBack("/settings")).toBe(false);
+    // The councils carry their own from 1.8 (the owner's pick of r3-03): a
+    // council's bar is clear over its icon, as a saint's is, and a document
+    // is a book in the room's reader.
+    expect(shouldShowBack("/councils")).toBe(false);
+    expect(shouldShowBack("/councils/first-nicaea")).toBe(false);
+    expect(shouldShowBack("/councils/first-nicaea/the-symbol-of-the-faith")).toBe(false);
+    expect(shouldShowBack("/reading/councils/first-nicaea")).toBe(false);
   });
 
   it("hides on all six account routes, whose bar comes from their layout", () => {

@@ -14,6 +14,7 @@ import {
 } from "./catalog";
 import { orthodoxPascha } from "@/lib/calendar/pascha";
 
+import type { CoverWindow } from "./coverWindow";
 import type { FeelingDoor } from "./feelings";
 import { readingSeason, type CalendarStyle } from "./seasons";
 import { workHref } from "./workHref";
@@ -46,7 +47,8 @@ export type Card = {
   selections?: true;
   retelling?: true;
   begin?: true;
-  cover?: { src: string; focusY: number };
+  /** The picture: `crop` when the book is a part of a larger one (a council's document, lib/reading/coverWindow.ts). */
+  cover?: { src: string; focusY: number; crop?: CoverWindow };
   /** The registry's own topics, for the search. */
   topics: string[];
 };

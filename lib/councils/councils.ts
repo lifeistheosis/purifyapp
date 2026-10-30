@@ -915,6 +915,7 @@ export const COUNCILS: Council[] = [
  ],
  principalFathers: [
  {
+ slug: "cyprian-of-carthage",
  name: "St. Cyprian of Carthage",
  role: "Bishop of Carthage, teacher of the unity of the Church and hieromartyr under Valerian in 258; convened and presided over both councils and gave the last sentence.",
  },

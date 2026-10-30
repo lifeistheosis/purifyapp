@@ -154,6 +154,7 @@ export function CoverTile({
           author={author}
           iconUrl={card.cover?.src}
           focusY={card.cover?.focusY}
+          crop={card.cover?.crop}
           size="row"
           priority={priority}
           eager={near}

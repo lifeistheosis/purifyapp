@@ -37,6 +37,12 @@ import { cn } from "@/lib/cn";
  * A band is a link (`href`), or the summary of a <details> that opens to
  * what it holds (`summary`, Theology's subjects). Either way it is one tap
  * target the width of the page.
+ *
+ * A tall band may carry a `kicker` at its top, apart from the name at its
+ * foot (1.8, the Ecumenical Councils, the owner's pick of r3-03: each of the
+ * seven a band with its numeral and its year above, "like Theology and
+ * Discover"). The line under the name then keeps to two lines, so the name
+ * never climbs into the kicker.
  */
 export function GalleryBand({
   picture,
@@ -45,6 +51,7 @@ export function GalleryBand({
   credit,
   title,
   line,
+  kicker,
   badge,
   mark,
   size = "short",
@@ -62,6 +69,8 @@ export function GalleryBand({
   credit?: string;
   title: ReactNode;
   line: ReactNode;
+  /** Set at the top of a tall band, apart from the name at its foot (a council's numeral and year). */
+  kicker?: ReactNode;
   /** Set at the top corner of the name (Chat's unread dot). */
   badge?: ReactNode;
   /** Set in the band's far corner (Theology's open-and-close chevron). */
@@ -106,6 +115,7 @@ export function GalleryBand({
           tall ? "w-[62%] justify-end pt-4 pb-3.5" : "w-[66%] justify-center py-3",
         )}
       >
+        {tall && kicker ? <span className="mb-auto">{kicker}</span> : null}
         <Heading className="text-lede leading-[1.15] text-paper">
           {badge ? (
             // Room on the right, where the dot is drawn in either direction.
@@ -120,7 +130,7 @@ export function GalleryBand({
         <span
           className={cn(
             "font-sans text-caption text-paper/70",
-            tall ? "mt-1.5 line-clamp-4 leading-[1.4]" : "mt-1 line-clamp-2 leading-[1.38]",
+            tall ? cn("mt-1.5 leading-[1.4]", kicker ? "line-clamp-2" : "line-clamp-4") : "mt-1 line-clamp-2 leading-[1.38]",
           )}
         >
           {line}
