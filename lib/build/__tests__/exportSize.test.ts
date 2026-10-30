@@ -143,7 +143,7 @@ describe("what the build prints", () => {
     const set = sizeLines(measure(348.6, 100), { warnWithoutNextBytes: 0.6 * GB, stopDiskBytes: 400 * MB, stopPackedBytes: null });
     expect(set.join("\n")).toContain("ceiling: 400.0 MB on disk, none packed");
     // The ones in force, as a build prints them.
-    expect(sizeLines(measure(222.7, 79.8)).join("\n")).toContain("ceiling: 235.0 MB on disk, 85.0 MB packed");
+    expect(sizeLines(measure(222.7, 79.8)).join("\n")).toContain("ceiling: 240.0 MB on disk, 85.0 MB packed");
   });
 
   it("lists as many folders as it is asked for", () => {
@@ -164,10 +164,11 @@ describe("the limits in force", () => {
   });
 
   // The two ceilings are the owner's. He set them on 2026-10-12: 235 MB on
-  // disk and 85 MB packed. A different number here is a decision somebody
-  // made, so this test has to be changed with it, on purpose.
+  // disk and 85 MB packed, and raised the disk one to 240 MB on 2026-10-30
+  // (1.8's round 3 at 234.9 MB). A different number here is a decision
+  // somebody made, so this test has to be changed with it, on purpose.
   it("holds the owner's two ceilings", () => {
-    expect(EXPORT_LIMITS.stopDiskBytes).toBe(235 * MB);
+    expect(EXPORT_LIMITS.stopDiskBytes).toBe(240 * MB);
     expect(EXPORT_LIMITS.stopPackedBytes).toBe(85 * MB);
   });
 

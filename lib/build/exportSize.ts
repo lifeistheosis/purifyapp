@@ -57,18 +57,20 @@ const GB = 1024 ** 3;
  * plus 15 percent. docs/build/app-size.md says it wants to come down to about
  * 0.38 GB once a store build has confirmed the number.
  *
- * THE TWO CEILINGS: 235 MB on disk, 85 MB packed. The owner set them on
- * 2026-10-12 (Master Board, "Megabyte ceiling"), the day the app weighed
- * 255.4 MB and 90.7 MB with the unused content package in it and about
+ * THE TWO CEILINGS: 240 MB on disk, 85 MB packed. The owner set them on
+ * 2026-10-12 (Master Board, "Megabyte ceiling") at 235 and 85, the day the app
+ * weighed 255.4 MB and 90.7 MB with the unused content package in it and about
  * 222.7 and 79.8 without. They sit a little over the second pair on purpose:
  * room for a release's ordinary growth, and none for a second Bible or a
  * package nobody reads to come back unnoticed. A build over either one fails
  * with the measure in its last lines. Raising one is his decision: change
- * the number here and say why in the commit.
+ * the number here and say why in the commit. He raised the disk ceiling to
+ * 240 on 2026-10-30, when 1.8's round 3 (the new screens' code and six
+ * chants' words) brought the export to 234.9 MB with nothing unused in it.
  */
 export const EXPORT_LIMITS: SizeLimits = {
   warnWithoutNextBytes: 0.6 * GB,
-  stopDiskBytes: 235 * MB,
+  stopDiskBytes: 240 * MB,
   stopPackedBytes: 85 * MB,
 };
 
