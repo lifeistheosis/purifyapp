@@ -581,6 +581,20 @@ export const ICON_RIGHTS: Record<string, IconRights> = {
     license: "CC0",
     evidenceUrl: "https://commons.wikimedia.org/wiki/File:Fethiye_Camii,_parekklesion,_southwest_bay,_mosaics,_Istanbul,_Turkey_-_North_arch,_east_soffit,_St._Arsenius,_detail_of_bust_-_MSBZ004_BF_T_F_040_A_-_Dumbarton_Oaks.jpg",
   },
+  // Added 2026-10-30 for the desert fathers of the History event "The Desert".
+  // Each was read on its Commons page, opened and looked at before it was
+  // cut, and again after: the right saint, the whole head and halo.
+  "pachomius-the-great.jpg": {
+    status: "verified",
+    inspectedOn: "2026-10-30",
+    alt: "A dark-bearded monk turned to the right with his face lifted, in a brown mantle and a dark green schema marked with small gold crosses, within a red-ringed halo on a worn gold ground, under a Church Slavonic inscription naming him the Venerable Pachomius the Great.",
+    work: "Russian icon of St Pachomius the Great, St Alexander Nevsky, St Dmitry the Tsarevich and St Mary Magdalene, in a metal basma oklad, Moscow: St Pachomius alone, under his inscription",
+    artist: "Anonymous Russian icon painter",
+    workDate: "18th century",
+    source: "Wikimedia Commons (a private collection)",
+    license: "Public domain",
+    evidenceUrl: "https://commons.wikimedia.org/wiki/File:Pakhomy,_Alexander_Nevsky,_Dmitry_and_Mary_Magdalene_(18th_c,_priv.coll).jpg",
+  },
   "job-of-pochaev.jpg": {
     status: "verified",
     inspectedOn: "2026-08-12",

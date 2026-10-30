@@ -169,6 +169,9 @@ Forerunner, St Cyprian, St Lawrence, St Sixtus, St Pimen, St Herman of
 Alaska, St Tikhon of Zadonsk, St Thaddeus of Edessa, St Titus, St Euplus,
 the Maccabean Martyrs, the Seven Sleepers. They work with no signal.
 
+Added 2026-10-30, the same way, for the Lives of the fathers of the desert:
+St Pachomius.
+
 ## Turned down
 
 Picked by the search and then not used (St Augustine's Champaigne and St

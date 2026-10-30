@@ -126,6 +126,7 @@ export const AUTHOR_META: Readonly<Record<string, MetaRow>> = {
   "mary-of-egypt": { traditions: ["egypt", "desert"], era: "councils" },
   "isidora-of-tabenna": { traditions: ["egypt", "desert"], era: "councils" },
   "pimen-the-great": { traditions: ["egypt", "desert"], era: "councils" },
+  "pachomius-the-great": { traditions: ["egypt", "desert"], era: "councils" },
   // Of Antioch, and of Constantinople, whose archbishop he was.
   "john-chrysostom": { traditions: ["greek", "antioch"], era: "councils" },
   "meletius-of-antioch": { traditions: ["antioch"], era: "councils" },
@@ -1056,6 +1057,19 @@ export const ENTRIES: Readonly<Record<WorkKey, ReadingEntry>> = {
     form: "retelling",
     scope: "complete",
     themes: [t("humility", "Weep for your own sins and not your neighbour's")],
+    review: R,
+  },
+  // 2026-10-30: the witnesses' own words (Palladius), with our short introductions.
+  "pachomius-the-great/life-of-pachomius": {
+    by: null,
+    about: "pachomius-the-great",
+    form: "life",
+    scope: "selections",
+    themes: [
+      t("work", "Palladius XXXII: every brother at a craft, from the forge to the scriptorium, the work of the hands part of the rule", { sections: [[2, 2]] }),
+      t("humility", "Macarius of Alexandria at Tabennisi in Lent, and Pachomius's thanks that his monks were kept from pride", { sections: [[4, 4]] }),
+      t("lent", "Macarius of Alexandria keeps the forty days at Tabennisi standing in silence", { sections: [[4, 4]] }),
+    ],
     review: R,
   },
   "herman-of-alaska/the-north-american-elder": { by: null, about: "herman-of-alaska", form: "retelling", scope: "complete", themes: [], review: R },

@@ -45,6 +45,7 @@ export const KNOWN_FORMS: Record<string, string[]> = {
   "titus-of-crete": ["Titus of Crete"],
   "sixtus-of-rome": ["Sixtus of Rome"],
   "pimen-the-great": ["Abba Poemen"],
+  "pachomius-the-great": ["Pachomius of Tabennisi"],
   "john-of-shanghai": ["John of Shanghai"],
   "xenia-of-petersburg": ["Xenia of Petersburg"],
   "theotokos": ["Mother of God"],

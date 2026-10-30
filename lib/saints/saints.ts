@@ -312,6 +312,43 @@ export const SAINTS: Saint[] = [
  },
  ],
  },
+ // Fathers of the desert the Orthodox History event "The Desert" names
+ // (data/history/anthony-and-the-desert.json), added 2026-10-30. Each Life is
+ // the witnesses' own public-domain words (data/saints/{slug}/). The brief,
+ // the epithet, the byname and the life below are ours, written from the
+ // public-domain sources each Life names and from the calendar of the Church,
+ // and they wait for a clergy review with the rest of our framing
+ // (docs/editorial-standards.md, Clergy / theological review, item 24).
+ {
+ slug: "pachomius-the-great",
+ byname: "Father of the Common Life",
+ iconUrl: "/saints/icons/pachomius-the-great.jpg",
+ name: "St. Pachomius the Great",
+ epithet: "Abbot of Tabennisi · The Great",
+ born: "Late 3rd century (Egypt)",
+ reposed: "c. 346 or 348 (the Thebaid, Upper Egypt)",
+ feastDays: ["May 15"],
+ shortBio:
+ "The young Egyptian who came to Christ through the kindness of Christians, gathered the monks of the Thebaid into monasteries under one rule, and is honored as the father of the common life.",
+ life: [
+ "Pachomius was born to pagan parents in Egypt toward the end of the third century. As a young man he was conscripted into the army in the civil wars of Constantine's day, and the kindness that Christians showed to him and his fellow recruits in their distress drew him to Christ. After his baptism he gave himself to the ascetic life under an old hermit, Palaemon, praying and fasting with him and weaving the rough garments of the monks.",
+ "Withdrawing to Tabennisi, a deserted village in the Thebaid of Upper Egypt, he was bidden in a vision to stay and build a monastery for the many who would come to him. His elder brother came first, and then others, and Pachomius did for them what no one had yet done: he joined the solitaries into one common life, in houses within an enclosure, with their meals, their work and their prayers kept by rule.",
+ "Palladius records that an angel showed him the rule on a tablet of brass. It let each brother eat and fast as his strength allowed, set the strong to the heavier labours and the weak to the lighter, and divided the brethren into twenty-four classes named by the letters of the Greek alphabet. Work with the hands was part of the life itself: the brethren were farmers, gardeners, smiths, bakers, carpenters, fullers, basket-makers, tanners, shoemakers and copyists, and they learned the Scriptures by heart.",
+ "His houses grew quickly. Before his death nine monasteries of men kept his rule, the house where he lived, Pabau, being the mother of the rest, and two of women, the sisters living across the river from the brethren under the same rule. Palladius tells how St. Macarius of Alexandria once came to Tabennisi in disguise and kept the whole of Lent standing in silence, and how Pachomius, when God showed him who the stranger was, thanked him for teaching his monks humility.",
+ "He fell asleep about the year 346; the calendars of the Church give 348. Among his disciples was St. Theodore the Sanctified, remembered on the day after him, who in time led his monasteries. His rule, put into Latin by St. Jerome, shaped the common life of monks in East and West. The Church keeps his memory on the fifteenth of May.",
+ ],
+ works: [
+ {
+ slug: "life-of-pachomius",
+ title: "The Life of St. Pachomius",
+ subtitle: "From the Lausiac History of Palladius",
+ year: "c. 420",
+ blurb:
+ "Palladius's chapters on Pachomius and his monks of Tabennisi: the rule an angel gave him on a tablet of brass, the life and labour of the great monastery, the house of the sisters across the river, and the Lent when St. Macarius of Alexandria came to him in disguise. In the public-domain English of W. K. Lowther Clarke (1918).",
+ topics: ["Monasticism", "Common Life", "Rule", "Obedience", "Work"],
+ },
+ ],
+ },
  {
  slug: "athanasius-the-great",
  byname: "Pillar of Orthodoxy",
