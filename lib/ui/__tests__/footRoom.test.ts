@@ -59,6 +59,39 @@ describe("the page's foot", () => {
     expect(css).toMatch(/\.ob-foot \{[^}]*bottom: calc\(-1 \* var\(--inset-bottom, 0px\)\)/);
   });
 
+  it("follows the card as it draws in to its pill, so nothing is left under either", () => {
+    // 1.8, the owner's pick B of r3-05: on a scroll down the card draws in to
+    // a 40px pill over the tabs, and every page's foot keeps room for it as it
+    // is at that moment, full or drawn in. In the apps the room is the card
+    // itself; on the web it carries its own 6px pad.
+    const room = (selector: string) =>
+      css.match(new RegExp(`(?:^|\\n)${selector} \\{\\s*--now-playing-h: (\\d+)px;\\s*\\}`))?.[1];
+    expect(room("html\\.is-native\\.has-now-playing")).toBe("56");
+    expect(room("html\\.is-native\\.has-now-playing\\.now-playing-drawn")).toBe("40");
+    expect(room("html\\.has-now-playing")).toBe("62");
+    expect(room("html\\.has-now-playing\\.now-playing-drawn")).toBe("46");
+    // The surface is as tall as the room says: 3.5rem is 56px, 2.5rem 40px.
+    expect(css).toMatch(/\n\.mini-player \{[^}]*height: 3\.5rem;/);
+    expect(css).toMatch(/\[data-mini-player\]\[data-drawn\] \.mini-player \{[^}]*height: 2\.5rem;/);
+    // The class that gives the room back goes on and off with the pill, and
+    // what it gives back is the difference, 16px, on the web and in the apps.
+    const bar = fs.readFileSync(path.join(process.cwd(), "components/prayers/NowPlayingBar.tsx"), "utf8");
+    expect(bar).toMatch(/if \(!drawn\) return;[\s\S]*?root\.classList\.add\("now-playing-drawn"\);[\s\S]*?root\.classList\.remove\("now-playing-drawn"\);/);
+    const given = Number(bar.match(/const ROOM_GIVEN_BACK = (\d+);/)?.[1]);
+    expect(given).toBe(16);
+    expect(Number(room("html\\.is-native\\.has-now-playing")) - Number(room("html\\.is-native\\.has-now-playing\\.now-playing-drawn"))).toBe(given);
+    expect(Number(room("html\\.has-now-playing")) - Number(room("html\\.has-now-playing\\.now-playing-drawn"))).toBe(given);
+  });
+
+  it("keeps the card's room at a page's very end, rather than move the page under the reader", () => {
+    // Giving 16px back there would make the browser move the page to its new
+    // end as the pill forms. The watchers are told whenever the foot moves,
+    // so a move the page makes is never read as the reader scrolling up.
+    const bar = fs.readFileSync(path.join(process.cwd(), "components/prayers/NowPlayingBar.tsx"), "utf8");
+    expect(bar).toMatch(/const left = root\.scrollHeight - \(window\.scrollY \+ window\.innerHeight\);\s*if \(left < ROOM_GIVEN_BACK\) return;/);
+    expect(bar.match(/noteFootMoved\(\);/g)?.length).toBe(4);
+  });
+
   it("gives the card no room when no card is showing", () => {
     // The default is 0, set before any rule that raises it.
     expect(css).toMatch(/--now-playing-h:\s*0px;/);

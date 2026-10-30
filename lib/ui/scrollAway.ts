@@ -34,8 +34,15 @@ import { useEffect } from "react";
  *    pager there offers the next chapter already.
  *  - Only the reader's own hand decides. A scroll the page makes by itself
  *    (a verse landed on from a link, a place given back on the way back, the
- *    reading kept in view while it is read aloud) leaves the controls as
- *    they were, except at the top.
+ *    reading kept in view while it is read aloud, the page moved back to its
+ *    new end when the room at its foot shrinks) leaves the controls as they
+ *    were, except at the top.
+ *
+ * The mini player steps aside by the same rule, on every page (1.8, the
+ * owner's pick B of r3-05, "the small pill": components/prayers/
+ * NowPlayingBar.tsx). It runs a watcher of its own, which answers as the
+ * reader's does, so on the reader's screen the two leave and come back
+ * together.
  */
 
 /** Down this far, one way, and the controls go. */
@@ -46,6 +53,8 @@ export const BACK_AFTER_PX = 10;
 export const TOP_PX = 64;
 /** A scroll this long after the reader's hand last moved is the page's own. */
 export const HAND_MS = 1200;
+/** A scroll this soon after the page's foot moved is the page's own. */
+export const FOOT_SETTLE_MS = 300;
 
 /** Away or not, how far the reader has gone the one way, and from where. */
 export type Away = { away: boolean; run: number; y: number };
@@ -68,6 +77,22 @@ export function stepAway(prev: Away, y: number, byHand: boolean): Away {
 /** What a reader's own hand on the page sends: a finger, a wheel, a press, a key. */
 const HANDS = ["touchstart", "touchmove", "wheel", "pointerdown", "keydown"] as const;
 
+/** Until when every scroll is the page's own, whoever's hand is on the glass. */
+let footSettlesAt = -Infinity;
+
+/**
+ * Says the room the page keeps at its foot has just changed: the mini player
+ * came, went, drew in or came back (app/globals.css, --now-playing-h). Where
+ * the room shrinks at the very end of a page, the browser moves the page back
+ * to its new end, and that move reads as the reader scrolling up: the mini
+ * player would come straight back each time it drew in there, and on the
+ * Bible's page the reader's own controls with it. For FOOT_SETTLE_MS from
+ * now, every watcher counts a scroll as the page's own.
+ */
+export function noteFootMoved(): void {
+  footSettlesAt = performance.now() + FOOT_SETTLE_MS;
+}
+
 /** Watches the window's scroll and says when the answer changes. Answers the way to stop. */
 export function watchScrollAway(onChange: (away: boolean) => void): () => void {
   let state: Away = { away: false, run: 0, y: window.scrollY };
@@ -75,7 +100,8 @@ export function watchScrollAway(onChange: (away: boolean) => void): () => void {
   let raf = 0;
   const check = () => {
     raf = 0;
-    const byHand = performance.now() - hand <= HAND_MS;
+    const now = performance.now();
+    const byHand = now - hand <= HAND_MS && now >= footSettlesAt;
     const next = stepAway(state, window.scrollY, byHand);
     if (next.away !== state.away) onChange(next.away);
     state = next;

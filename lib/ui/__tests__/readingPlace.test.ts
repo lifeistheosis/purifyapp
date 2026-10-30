@@ -360,8 +360,9 @@ describe("the bars a place keeps clear of", () => {
     ["components/nav/NativeBackBar.tsx", "top", 1],
     ["components/nav/AppNav.tsx", "top", 1],
     ["components/nav/MobileTabBar.tsx", "bottom", 1],
-    // The track's bar and the sound's own.
-    ["components/prayers/NowPlayingBar.tsx", "bottom", 2],
+    // The track's bar and the sound's own, one shell since the card draws
+    // in to its pill (1.8, r3-05 B): the card, or the pill, is what covers.
+    ["components/prayers/NowPlayingBar.tsx", "bottom", 1],
     ["components/bible/MobileChapterPill.tsx", "bottom", 1],
     ["components/flow/FlowBarShell.tsx", "bottom", 1],
     ["components/bible/MobileVerseToolbar.tsx", "bottom", 1],
