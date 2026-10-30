@@ -39,7 +39,7 @@
 // stores' own reviews between the features and the plans; and the renewal
 // said plainly wherever the screen sells.
 
-import { useCallback, useEffect, useState, type CSSProperties, type ReactNode } from "react";
+import { useCallback, useEffect, useRef, useState, type CSSProperties, type ReactNode } from "react";
 import Link from "next/link";
 import {
   initBilling,
@@ -70,8 +70,10 @@ import {
   PlusReviews,
   type BuyPlace,
 } from "@/components/billing/KeptPaywall";
+import { PlusTryHead, PlusTryPage, usePlusTry, type PlusTry } from "@/components/billing/PlusTry";
 import { PREMIUM_CTA, PREMIUM_GHOST } from "@/components/premium/PremiumUI";
 import { cn } from "@/lib/cn";
+import { useAndroidBack } from "@/lib/platform/useAndroidBack";
 
 type Phase = "loading" | "signed-out" | "unavailable" | "ready" | "subscribed";
 export type Tier = "plus" | "pro";
@@ -248,18 +250,7 @@ export function PlusPaywall() {
   if (!isNative || phase === "loading") return null;
 
   if (phase === "signed-out") {
-    return (
-      <PaywallScreen>
-        <KeptHero place="screen" eyebrow={t("plus.sheet.title")} heading="h1" />
-        {/* The same features the ready phase shows, and what readers say,
-            so the screen sells the thing before asking for a sign-in. */}
-        <section className="mx-auto mt-5 w-full max-w-[520px] px-5">
-          <PlusFeatureRows />
-          <PlusReviews className="mt-6" />
-        </section>
-        <SignedOutFoot place="store" />
-      </PaywallScreen>
-    );
+    return <SignedOutScreen />;
   }
 
   if (phase === "unavailable") {
@@ -323,6 +314,21 @@ export function TierScreen({
   children: ReactNode;
 }) {
   const { t } = useTranslate();
+  const list = useRef<HTMLElement>(null);
+  const tryer = usePlusTry(null, list);
+  useAndroidBack(tryer.row !== null, tryer.back);
+
+  // A Plus feature being tried (r3-07 A): its screen in place of the list,
+  // the plans still held at the foot.
+  if (tier === "plus" && tryer.row) {
+    return (
+      <PaywallScreen>
+        <TryingOnScreen tryer={tryer} />
+        {children}
+      </PaywallScreen>
+    );
+  }
+
   return (
     <PaywallScreen>
       <KeptHero place="screen" eyebrow={t(tier === "pro" ? "profile.badge.pro" : "plus.sheet.title")} heading="h1" />
@@ -332,11 +338,12 @@ export function TierScreen({
         <TierSwitch tier={tier} onSwitch={onTier} />
       </div>
 
-      {/* The features working, in depth. Plus in the app's own words; Pro
-          with the terms of the EIKON Box under it, as before; every word in
-          the reader's language. Then what readers say, before the plans. */}
-      <section className="mx-auto mt-4 w-full max-w-[520px] px-5">
-        {tier === "pro" ? <ProRows /> : <PlusFeatureRows />}
+      {/* The features working, in depth. Plus in the app's own words, each
+          ending in Try it; Pro with the terms of the EIKON Box under it, as
+          before; every word in the reader's language. Then what readers say,
+          before the plans. */}
+      <section ref={list} className="mx-auto mt-4 w-full max-w-[520px] px-5">
+        {tier === "pro" ? <ProRows /> : <PlusFeatureRows onTry={tryer.start} />}
         {tier === "plus" && place === "web" ? (
           <p className="mt-3 font-sans text-caption leading-[1.5] text-paper/45">{t("plus.promise.supporters")}</p>
         ) : null}
@@ -345,6 +352,48 @@ export function TierScreen({
 
       {children}
     </PaywallScreen>
+  );
+}
+
+/** The apps' screen signed out: the features to try, what readers say, then the way to sign in. */
+function SignedOutScreen() {
+  const { t } = useTranslate();
+  const list = useRef<HTMLElement>(null);
+  const tryer = usePlusTry(null, list);
+  useAndroidBack(tryer.row !== null, tryer.back);
+  return (
+    <PaywallScreen>
+      {tryer.row ? (
+        <TryingOnScreen tryer={tryer} />
+      ) : (
+        <>
+          <KeptHero place="screen" eyebrow={t("plus.sheet.title")} heading="h1" />
+          {/* The same features the ready phase shows, and what readers say,
+              so the screen sells the thing before asking for a sign-in. */}
+          <section ref={list} className="mx-auto mt-5 w-full max-w-[520px] px-5">
+            <PlusFeatureRows onTry={tryer.start} />
+            <PlusReviews className="mt-6" />
+          </section>
+        </>
+      )}
+      <SignedOutFoot place="store" />
+    </PaywallScreen>
+  );
+}
+
+/** A feature tried on the full screen: its title bar (no close: the screen is the page), then its screen. */
+function TryingOnScreen({ tryer }: { tryer: PlusTry }) {
+  const { t } = useTranslate();
+  if (!tryer.row) return null;
+  return (
+    <div className="mx-auto w-full max-w-[520px] px-5 pt-2">
+      <PlusTryPage
+        row={tryer.row}
+        next={tryer.next}
+        onNext={tryer.start}
+        head={<PlusTryHead name={t(tryer.row.name)} onBack={tryer.back} />}
+      />
+    </div>
   );
 }
 
@@ -615,10 +664,9 @@ function ProRows() {
   return (
     <>
       <ul className="flex flex-col gap-2.5" aria-label={t("profile.badge.pro")}>
-        {PRO_ROWS.map((row, i) => (
+        {PRO_ROWS.map((row) => (
           <FeatureRow
             key={row.id}
-            index={i}
             id={row.id}
             name={t(row.name)}
             body={t(row.body)}

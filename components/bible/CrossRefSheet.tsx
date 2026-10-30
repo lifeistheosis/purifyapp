@@ -37,10 +37,24 @@ export function CrossRefSheet({
       desktop
       bodyClassName="px-5 pb-6 pt-1"
     >
+      <CrossRefList items={items} onLeave={onClose} />
+    </Sheet>
+  );
+}
+
+/**
+ * The references themselves, the sheet's body, with the credit under them.
+ * Also what the Plus page's preview of cross-references shows
+ * (components/billing/plusTry/TryCrossRefs.tsx).
+ */
+export function CrossRefList({ items, onLeave }: { items: CrossRefItem[]; onLeave?: () => void }) {
+  const { t } = useTranslate();
+  return (
+    <>
       <ol className="divide-y divide-paper/10">
         {items.map((ref) => (
           <li key={`${ref.book}-${ref.chapter}-${ref.verse}`}>
-            <Link href={crossRefHref(ref)} onClick={onClose} className="group block py-3.5">
+            <Link href={crossRefHref(ref)} onClick={onLeave} className="group block py-3.5">
               <p className="font-sans text-detail font-semibold text-premium-ink group-hover:text-premium-bright">
                 {t(`bible.books.${ref.book}`)} {crossRefNumbers(ref)}
               </p>
@@ -50,6 +64,6 @@ export function CrossRefSheet({
         ))}
       </ol>
       <p className="mt-4 font-sans text-caption text-paper/45">{t("bible.crossRefsCredit")}</p>
-    </Sheet>
+    </>
   );
 }

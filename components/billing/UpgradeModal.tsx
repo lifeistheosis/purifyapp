@@ -13,7 +13,9 @@ import {
 } from "react";
 
 import { DockNote, KeptHero, PlansDock, PlusFeatureRows, PlusReviews, ScribePicture } from "@/components/billing/KeptPaywall";
+import { PlusTryHead, PlusTryPage, bringRowBack, useTryRows } from "@/components/billing/PlusTry";
 import { PREMIUM_CTA } from "@/components/premium/PremiumUI";
+import { beginTry, endTrySound } from "@/lib/premium/plusTrySound";
 import { Sheet } from "@/components/ui/Sheet";
 import { cn } from "@/lib/cn";
 import { useTranslate } from "@/components/i18n/MessagesProvider";
@@ -93,6 +95,12 @@ import {
  * not; the small print says the plan renews automatically until cancelled;
  * and two or three of the stores' own reviews, word for word, stand between
  * the features and the plans.
+ *
+ * Try each feature (r3-07, his pick A, 2026-10-30): every row ends in Try
+ * it, and the sheet becomes that feature's own screen for a moment
+ * (components/billing/PlusTry.tsx), its title bar the way back, Next on to
+ * the following feature, the plans still held at the foot. A preview shows
+ * and never grants: entitlements are the server's alone.
  */
 
 /** Which lock the reader just met. Chooses which feature leads the sheet, lit, and its words; nothing else. */
@@ -173,12 +181,28 @@ export function UpgradeModalProvider({
   // already closed and opened again cannot land in the new one.
   const openSeq = useRef(0);
   const isNative = useIsNative();
+  // The feature being tried in the sheet (r3-07 A, components/billing/
+  // PlusTry.tsx), by its row's id, or null for the list.
+  const [trying, setTrying] = useState<string | null>(null);
 
   const close = useCallback(() => {
     setFeature(null);
+    // A preview's sound goes with the sheet; the preview itself is left
+    // until the next open, so the sheet does not change as it slides away.
+    endTrySound();
     // Left until the next open so the exit animation does not show the pitch
     // flashing back in behind a fading confirmation.
     setPhase("pitch");
+  }, []);
+
+  const tryFeature = useCallback((id: string) => {
+    beginTry(id);
+    setTrying(id);
+  }, []);
+
+  const leaveTry = useCallback(() => {
+    endTrySound();
+    setTrying(null);
   }, []);
 
   const open = useCallback((next: UpgradeFeature, opts?: OpenOptions) => {
@@ -186,6 +210,8 @@ export function UpgradeModalProvider({
     setFeature(next);
     setOverPlayer(Boolean(opts?.overPlayer));
     setPhase("pitch");
+    endTrySound();
+    setTrying(null);
     setOffers(null);
     setPlan("yearly");
     setCanBuyHere(false);
@@ -250,6 +276,7 @@ export function UpgradeModalProvider({
     if (pathname === firstPath.current) return;
     firstPath.current = pathname;
     setFeature(null);
+    endTrySound();
   }, [pathname]);
 
   const buy = useCallback(async () => {
@@ -338,6 +365,9 @@ export function UpgradeModalProvider({
         onBuy={buy}
         onRestore={restorePurchases}
         onClose={close}
+        trying={trying}
+        onTry={tryFeature}
+        onLeaveTry={leaveTry}
       />
     </UpgradeModalContext.Provider>
   );
@@ -376,6 +406,9 @@ function UpgradeSheet({
   onBuy,
   onRestore,
   onClose,
+  trying,
+  onTry,
+  onLeaveTry,
 }: {
   feature: UpgradeFeature | null;
   overPlayer: boolean;
@@ -389,9 +422,18 @@ function UpgradeSheet({
   onBuy: () => void;
   onRestore: () => void;
   onClose: () => void;
+  /** The feature being tried, by its row's id (r3-07 A). */
+  trying: string | null;
+  onTry: (id: string) => void;
+  onLeaveTry: () => void;
 }) {
   const { t } = useTranslate();
   const done = phase === "active";
+  const list = useRef<HTMLDivElement>(null);
+  const tryer = useTryRows(feature, done ? null : trying, onTry, () => {
+    onLeaveTry();
+    if (trying) bringRowBack(list, trying);
+  });
 
   return (
     <Sheet
@@ -401,6 +443,11 @@ function UpgradeSheet({
       desktop
       openFull
       layer={overPlayer ? "over-player" : undefined}
+      // A feature tried: the sheet's title bar becomes the preview's, the way
+      // back to the list beside the feature's name, and the sheet may rise to
+      // the top of the screen (r3-07 A: "the sheet rises to the top").
+      header={tryer.row ? <PlusTryHead name={t(tryer.row.name)} onBack={tryer.back} onClose={onClose} /> : undefined}
+      panelClassName={tryer.row ? "max-h-[calc(100dvh-env(safe-area-inset-top,0px)-0.75rem)]" : undefined}
       // No padding under the body: the plans stand on its bottom edge.
       bodyClassName={done ? "px-5 pb-6 pt-1" : "px-5 pt-1 !pb-0"}
     >
@@ -439,23 +486,33 @@ function UpgradeSheet({
         </>
       ) : (
         <>
-          {/* Kept by those it helps: the scribe, the headline and the app's
-              own line, plus.footer, which used to close the sheet. */}
-          <KeptHero place="sheet" />
+          {tryer.row ? (
+            // A feature tried: its own screen for a moment, then Next.
+            <PlusTryPage row={tryer.row} next={tryer.next} onNext={tryer.start} />
+          ) : (
+            <>
+              {/* Kept by those it helps: the scribe, the headline and the
+                  app's own line, plus.footer, which used to close the sheet. */}
+              <KeptHero place="sheet" />
 
-          {/* The features working, in depth: the one this lock was for
-              first, lit, with what stays free beside it. */}
-          <PlusFeatureRows lead={feature} className="mt-4" />
+              {/* The features working, in depth: the one this lock was for
+                  first, lit, with what stays free beside it, each ending in
+                  Try it (r3-07 A). */}
+              <div ref={list}>
+                <PlusFeatureRows lead={feature} onTry={tryer.start} className="mt-4" />
+              </div>
 
-          {/* What readers say: the stores' own reviews, word for word. */}
-          <PlusReviews className="mt-6" />
+              {/* What readers say: the stores' own reviews, word for word. */}
+              <PlusReviews className="mt-6" />
+            </>
+          )}
 
-          {/* The plans, held at the bottom while the features scroll. The
-              price is whatever the store just said; when the store did not
-              answer, no price is shown at all rather than a remembered one,
-              and the action goes to /pricing. The store's small print
-              (plus.billedThroughStore) stands in the apps whatever happens,
-              as it always has. */}
+          {/* The plans, held at the bottom while the features scroll, and
+              while a feature is tried. The price is whatever the store just
+              said; when the store did not answer, no price is shown at all
+              rather than a remembered one, and the action goes to /pricing.
+              The store's small print (plus.billedThroughStore) stands in the
+              apps whatever happens, as it always has. */}
           <PlansDock
             className="sticky bottom-0 z-10 -mx-5 mt-5 pb-1"
             offers={canBuyHere ? offers : null}

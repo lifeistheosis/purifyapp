@@ -181,7 +181,8 @@ export function ProfileHeader({
         {profile.clergy ? <ClergySeal mark={profile.clergy.rank ?? "clergy"} size={20} /> : null}
       </Name>
       <p className="mt-0.5 flex flex-wrap items-center gap-x-2 gap-y-1 font-sans text-detail text-paper/70">
-        <span>@{profile.handle}</span>
+        {/* No handle, no lone @: a reader not signed in, on the Plus page's preview of profile extras. */}
+        {profile.handle ? <span>@{profile.handle}</span> : null}
         {afterHandle}
         {profile.streak ? <StreakChip days={profile.streak} /> : null}
       </p>

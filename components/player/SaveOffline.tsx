@@ -124,15 +124,65 @@ export function SaveOffline({ src, className }: { src: string | null; className?
   if (!offline) return null;
   const { book, name, saved } = offline;
 
+  if (job) {
+    return (
+      <SaveOfflineMark
+        look="saving"
+        share={job.total > 0 ? job.done / job.total : 0}
+        label={t("player.offline.saving", { done: job.done, total: job.total })}
+        className={className}
+      />
+    );
+  }
+
+  if (saved) {
+    const open = saving.open === book;
+    return (
+      <SaveOfflineMark
+        look="saved"
+        expanded={open}
+        onClick={() => set({ open: open ? null : book })}
+        label={t("player.offline.saved", { book: name })}
+        className={className}
+      />
+    );
+  }
+
+  return <SaveOfflineMark look="save" onClick={() => void save()} label={t("player.offline.save", { book: name })} className={className} />;
+}
+
+/**
+ * The mark's three looks: a book to save, its chapters saving (a ring that
+ * fills), and saved (a check with a soft light). Drawn from what it is given,
+ * so the player and the Plus page's preview of Listen offline
+ * (components/billing/plusTry/TryOffline.tsx) are the one mark.
+ */
+export function SaveOfflineMark({
+  look,
+  share = 0,
+  label,
+  onClick,
+  expanded,
+  className,
+}: {
+  look: "save" | "saving" | "saved";
+  /** While saving: how far it has come, 0 to 1. */
+  share?: number;
+  /** What the mark says to a screen reader. */
+  label: string;
+  onClick?: () => void;
+  /** Saved: whether the saved line under the player is open. */
+  expanded?: boolean;
+  className?: string;
+}) {
   const box = cn(
     "tap-press grid h-11 w-11 shrink-0 place-items-center rounded-full motion-safe:transition-colors",
     className,
   );
 
-  if (job) {
-    const share = job.total > 0 ? job.done / job.total : 0;
+  if (look === "saving") {
     return (
-      <span role="img" aria-label={t("player.offline.saving", { done: job.done, total: job.total })} className={cn(box, "text-paper")}>
+      <span role="img" aria-label={label} className={cn(box, "text-paper")}>
         <svg width={24} height={24} viewBox="0 0 24 24" aria-hidden>
           <circle cx="12" cy="12" r="9" fill="none" stroke="currentColor" strokeOpacity={0.2} strokeWidth={2} />
           <circle
@@ -151,14 +201,13 @@ export function SaveOffline({ src, className }: { src: string | null; className?
     );
   }
 
-  if (saved) {
-    const open = saving.open === book;
+  if (look === "saved") {
     return (
       <button
         type="button"
-        onClick={() => set({ open: open ? null : book })}
-        aria-expanded={open}
-        aria-label={t("player.offline.saved", { book: name })}
+        onClick={onClick}
+        aria-expanded={expanded}
+        aria-label={label}
         className={cn(box, "text-paper hover:bg-paper/[0.06] [filter:drop-shadow(0_0_6px_rgba(255,255,255,0.45))]")}
       >
         <svg width={23} height={23} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.8} strokeLinecap="round" strokeLinejoin="round" aria-hidden>
@@ -172,8 +221,8 @@ export function SaveOffline({ src, className }: { src: string | null; className?
   return (
     <button
       type="button"
-      onClick={() => void save()}
-      aria-label={t("player.offline.save", { book: name })}
+      onClick={onClick}
+      aria-label={label}
       className={cn(box, "text-paper/80 hover:bg-paper/[0.06] hover:text-paper")}
     >
       <svg width={22} height={22} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.8} strokeLinecap="round" strokeLinejoin="round" aria-hidden>

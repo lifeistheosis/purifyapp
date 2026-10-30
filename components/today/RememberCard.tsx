@@ -23,7 +23,7 @@
 // name, and "Show the words" opens the upgrade sheet named for it.
 
 import Link from "next/link";
-import { Fragment, useEffect, useMemo, useRef, useState, useSyncExternalStore } from "react";
+import { Fragment, useEffect, useId, useMemo, useRef, useState, useSyncExternalStore, type ReactNode } from "react";
 
 import { PlusLock } from "@/components/billing/PlusMark";
 import { useUpgradeModal } from "@/components/billing/UpgradeModal";
@@ -72,10 +72,6 @@ export function RememberCard({ className }: { className?: string }) {
   const [shownFor, setShownFor] = useState<string | null>(null);
   const [answered, setAnswered] = useState<{ entry: Entry; knew: boolean } | null>(null);
   const [fetched, setFetched] = useState<{ key: string; text: string | null } | null>(null);
-  // Keyboard focus stays in the card when the buttons under it change.
-  const rowRef = useRef<HTMLDivElement>(null);
-  const statusRef = useRef<HTMLParagraphElement>(null);
-  const regain = useRef(false);
 
   const saved = useMemo<SavedVerse[]>(
     () =>
@@ -89,7 +85,6 @@ export function RememberCard({ className }: { className?: string }) {
   const due = useMemo(() => (client && !answered ? dueVerse(saved, today) : null), [client, answered, saved, today]);
   const kept = due ? textOf(due.key) : null;
   const text = kept ?? (fetched && due && fetched.key === due.key ? fetched.text : null);
-  const words = useMemo(() => (text ? blankedWords(text) : []), [text]);
   const shown = Boolean(due && shownFor === due.key);
 
   // The words, the first time: from the website, then kept on the device.
@@ -111,65 +106,139 @@ export function RememberCard({ className }: { className?: string }) {
     };
   }, [due, kept]);
 
+  if (!client || (!due && !answered)) return null;
+  const books = localBookNames(t);
+
+  return (
+    <RememberCardView
+      className={className}
+      reference={due ? referenceIn(due.label, due.book, books) : ""}
+      href={due ? `/bible/${due.book}/${due.chapter}#v${due.verse}` : undefined}
+      text={text}
+      failed={Boolean(fetched) && !text}
+      shown={shown}
+      back={answered ? backWords(t, answered.entry, today) : null}
+      knew={answered?.knew ?? false}
+      locked={plus === false}
+      onShow={(open) => {
+        if (due) setShownFor(open ? due.key : null);
+      }}
+      onReply={(knew) => {
+        if (due) setAnswered({ entry: answer(due.key, knew, today), knew });
+      }}
+      onLocked={() => upgrade.open("remember")}
+    />
+  );
+}
+
+/** When an answered verse comes back, in the reader's language: tomorrow, in some days, or once a month once known. */
+export function backWords(t: (key: string, values?: Record<string, string | number>) => string, entry: Entry, today: string): string {
+  if (entry.box > INTERVALS.length) return t("remember.known");
+  if (entry.due === addDays(today, 1)) return t("remember.backTomorrow");
+  return t("remember.backIn", { count: Math.round((Date.parse(entry.due) - Date.parse(today)) / 86_400_000) });
+}
+
+/**
+ * The card itself, as Today draws it: the reference large, the verse with
+ * its blanks, and Show the words, Not yet and I know it. Drawn from what it
+ * is given, so the card on Today and the Plus page's preview of Remember the
+ * verse (components/billing/plusTry/TryRemember.tsx) are the one card.
+ */
+export function RememberCardView({
+  reference,
+  href,
+  text,
+  failed,
+  shown,
+  back,
+  knew,
+  locked,
+  onShow,
+  onReply,
+  onLocked,
+  badge,
+  className,
+}: {
+  /** The verse's reference, as the reader's language writes it. */
+  reference: string;
+  /** Where the reference leads; with none it is not a link. */
+  href?: string;
+  /** The verse's words, or null while they come (or when they could not). */
+  text: string | null;
+  /** The words could not be read (no signal the first time). */
+  failed: boolean;
+  /** The blanked words are shown. */
+  shown: boolean;
+  /** Once answered: when the verse comes back. */
+  back: string | null;
+  /** The answer was "I know it". */
+  knew: boolean;
+  /** No Plus: Show the words carries the lock and opens the upgrade sheet. */
+  locked: boolean;
+  onShow: (open: boolean) => void;
+  onReply: (knew: boolean) => void;
+  onLocked: () => void;
+  /** Beside the card's name: a mark the place showing it adds (the preview's Example). */
+  badge?: ReactNode;
+  className?: string;
+}) {
+  const { t } = useTranslate();
+  const words = useMemo(() => (text ? blankedWords(text) : []), [text]);
+  // Keyboard focus stays in the card when the buttons under it change.
+  const rowRef = useRef<HTMLDivElement>(null);
+  const statusRef = useRef<HTMLParagraphElement>(null);
+  const regain = useRef(false);
+  // Its own name: Today and the Plus page's preview may both draw one.
+  const titleId = useId();
+
   useEffect(() => {
     if (!regain.current) return;
     regain.current = false;
-    if (answered) statusRef.current?.focus();
+    if (back) statusRef.current?.focus();
     else rowRef.current?.querySelector("button")?.focus();
-  }, [answered, shown]);
-
-  if (!client || (!due && !answered)) return null;
-  const books = localBookNames(t);
-  const locked = plus === false;
-  const back = answered
-    ? answered.entry.box > INTERVALS.length
-      ? t("remember.known")
-      : answered.entry.due === addDays(today, 1)
-        ? t("remember.backTomorrow")
-        : t("remember.backIn", { count: Math.round((Date.parse(answered.entry.due) - Date.parse(today)) / 86_400_000) })
-    : null;
+  }, [back, shown]);
 
   // Only when the buttons the reader is on are about to be replaced.
   const holdFocus = () => {
     regain.current = rowRef.current?.contains(document.activeElement) ?? false;
   };
   const show = (open: boolean) => {
-    if (!due) return;
     holdFocus();
-    setShownFor(open ? due.key : null);
+    onShow(open);
   };
-  const reply = (knew: boolean) => {
-    if (!due) return;
+  const reply = (answer: boolean) => {
     holdFocus();
-    setAnswered({ entry: answer(due.key, knew, today), knew });
+    onReply(answer);
   };
 
   return (
     <section
-      aria-labelledby="remember-title"
+      aria-labelledby={titleId}
       className={cn("lm-card relative overflow-hidden rounded-[24px] border border-paper/10 bg-night-deep px-5 pb-[18px] pt-[22px] text-center", className)}
     >
       {/* The Verse of the Day's light, behind the words. */}
       <span aria-hidden className="verse-light pointer-events-none absolute left-1/2 top-[-120px] h-[300px] w-[380px] -translate-x-1/2" />
       <div className="relative">
-        <p id="remember-title" className="font-sans text-[12.5px] font-semibold text-paper/60">
+        <p id={titleId} className="font-sans text-[12.5px] font-semibold text-paper/60">
           {t("remember.title")}
           <span className="text-paper/45"> · {t("plus.badge")}</span>
+          {badge}
         </p>
 
         {back ? (
           <p ref={statusRef} tabIndex={-1} role="status" className="mt-3 flex items-center justify-center gap-2 font-sans text-ui text-paper/75 outline-none">
-            {answered?.knew ? <Check size={16} className="check-draw shrink-0" /> : null}
+            {knew ? <Check size={16} className="check-draw shrink-0" /> : null}
             {back}
           </p>
-        ) : due ? (
+        ) : (
           <>
-            <Link
-              href={`/bible/${due.book}/${due.chapter}#v${due.verse}`}
-              className="tap-press mt-2 inline-block font-heading text-[24px] font-bold leading-tight text-paper"
-            >
-              {referenceIn(due.label, due.book, books)}
-            </Link>
+            {href ? (
+              <Link href={href} className="tap-press mt-2 inline-block font-heading text-[24px] font-bold leading-tight text-paper">
+                {reference}
+              </Link>
+            ) : (
+              <p className="mt-2 font-heading text-[24px] font-bold leading-tight text-paper">{reference}</p>
+            )}
 
             {text ? (
               <>
@@ -178,7 +247,7 @@ export function RememberCard({ className }: { className?: string }) {
                 </p>
                 <p className="mt-2 font-sans text-caption text-paper/50">{t("remember.lineBlanks")}</p>
               </>
-            ) : fetched ? (
+            ) : failed ? (
               <p className="mt-2 font-sans text-detail italic text-paper/50">{t("remember.offline")}</p>
             ) : (
               <div aria-hidden className="mt-3 space-y-3 pb-1">
@@ -192,10 +261,10 @@ export function RememberCard({ className }: { className?: string }) {
               {shown ? words.filter((w) => w.blank).map((w) => w.word).join(", ") : ""}
             </p>
 
-            {text || !fetched ? (
+            {text || !failed ? (
               <div ref={rowRef} className="mt-4 flex flex-wrap items-center justify-center gap-2">
                 {locked ? (
-                  <button type="button" disabled={!text} onClick={() => upgrade.open("remember")} className={cn(PILL, SOLID)}>
+                  <button type="button" disabled={!text} onClick={onLocked} className={cn(PILL, SOLID)}>
                     {t("remember.show")}
                     <PlusLock size={13} />
                   </button>
@@ -224,7 +293,7 @@ export function RememberCard({ className }: { className?: string }) {
               </div>
             ) : null}
           </>
-        ) : null}
+        )}
       </div>
     </section>
   );

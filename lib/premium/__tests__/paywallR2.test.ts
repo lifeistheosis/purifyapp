@@ -143,24 +143,26 @@ describe("the features, in depth", () => {
     expect(new Set(PLUS_ROWS.map((r) => r.id)).size).toBe(PLUS_ROWS.length);
   });
 
-  it("show the new ambience by the names the ambience sheet gives its sounds", () => {
+  it("show the new ambience by the names the ambience sheet gives its sounds, in its live look", () => {
+    // r3-07 took the sounds out of the row, where they stood as a cloud of
+    // pills, and into Ambience's preview, as the ambience sheet's own tiles
+    // (lib/premium/__tests__/plusTry.test.ts).
     expect(AMBIENCE_TRACKS.map((t) => t.id)).toEqual(expect.arrayContaining(["peal", "sea", "wind"]));
-    expect(bare("components/billing/KeptPaywall.tsx")).toContain("AMBIENCE_TRACKS.map");
+    expect(bare("components/billing/plusTry/TryAmbience.tsx")).toContain("AMBIENCE_TRACKS.map");
+    expect(bare("components/billing/KeptPaywall.tsx")).not.toContain("AMBIENCE_TRACKS");
   });
 
-  it("each wear a picture: the Greek word, Candlelight's own page, or the feature's mark", () => {
+  it("each wear a picture on the one grey tile: the Greek word, Aa, or the feature's mark", () => {
     const ui = code("components/premium/PremiumUI.tsx");
     for (const row of PLUS_ROWS) {
       if (row.id === "word-study" || row.id === "reading-modes") continue;
       expect(ui, row.id).toMatch(new RegExp(`(?:^|\\s)(?:"${row.id}"|${row.id}): \\(`, "m"));
     }
-    // Candlelight as the palette is, black and light grey (app/globals.css).
-    const css = code("app/globals.css");
-    const candle = /html\[data-reading-mode="candlelight"\] \{([^}]*)\}/.exec(css)?.[1] ?? "";
-    const kept = code("components/billing/KeptPaywall.tsx");
-    expect(candle).toContain("--color-night: #0a0a0a;");
-    expect(candle).toContain("--color-paper: #d4d4d8;");
-    expect(kept).toContain('{ page: "#0a0a0a", ink: "#d4d4d8" }');
+    // The owner's note 39 of build 80: "the A is black and everything else
+    // is gray". Candlelight's page is shown in its preview now, not its tile.
+    const kept = bare("components/billing/KeptPaywall.tsx");
+    expect(kept).not.toMatch(/#0a0a0a|#d4d4d8/);
+    expect(kept).toContain('const box = "grid h-[66px] w-[66px] shrink-0 place-items-center overflow-hidden rounded-[14px] bg-paper/[0.08] text-paper";');
   });
 });
 

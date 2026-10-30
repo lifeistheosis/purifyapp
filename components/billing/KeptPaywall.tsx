@@ -16,7 +16,9 @@
 //                    "Purify is kept by those it helps", with the app's own
 //                    line under it (plus.footer).
 //   PlusFeatureRows  every Plus feature, each with a small working picture,
-//                    in the app's own words (lib/premium/plusRows.ts).
+//                    in the app's own words (lib/premium/plusRows.ts), and
+//                    since r3-07 A each ending in Try it: the feature's own
+//                    screen for a moment (components/billing/PlusTry.tsx).
 //   PlusReviews      two or three of the stores' own reviews, word for word,
 //                    after the features and before the plans (the owner's
 //                    second round, 2026-10-28; lib/premium/paywallReviews.ts).
@@ -35,12 +37,12 @@
 // reader came for, it is white with a soft white glow.
 
 import Link from "next/link";
-import type { CSSProperties, ReactNode } from "react";
+import { useId, type CSSProperties, type ReactNode } from "react";
 
 import { useTranslate } from "@/components/i18n/MessagesProvider";
 import { STORE_NAME, Stars } from "@/components/marketing/storeBits";
+import { ChevronRight } from "@/components/ui/icons/ChevronRight";
 import { FeatureMark, PREMIUM_CTA, SoonPill } from "@/components/premium/PremiumUI";
-import { AMBIENCE_TRACKS } from "@/lib/ambience/ambience";
 import { offeredPlans, savingsPct, type Plan, type PlusOffers, type TrialPeriod } from "@/lib/billing/offers";
 import { cn } from "@/lib/cn";
 import { dateLocale } from "@/lib/i18n/deviceDates";
@@ -125,16 +127,19 @@ export function KeptHero({
 
 /* ── The features, in depth ──────────────────────────────────────────────── */
 
-/** Candlelight's own page and ink (app/globals.css, html[data-reading-mode="candlelight"]): black and light grey. */
-const CANDLELIGHT = { page: "#0a0a0a", ink: "#d4d4d8" } as const;
-
-/** A feature's small working picture: the Greek word itself, the page in Candlelight, or the feature's mark. */
+/**
+ * A feature's small picture: the Greek word itself, a reading page's "Aa",
+ * or the feature's mark, every one on the same grey tile. The owner's note
+ * 39 of build 80: "the A is black and everything else is gray", the
+ * Candlelight row's tile stood on Candlelight's own black. Candlelight
+ * itself is now one tap away, in that row's live look.
+ */
 function FeaturePicture({ id }: { id: string }) {
-  const box = "grid h-[66px] w-[66px] shrink-0 place-items-center overflow-hidden rounded-[14px]";
+  const box = "grid h-[66px] w-[66px] shrink-0 place-items-center overflow-hidden rounded-[14px] bg-paper/[0.08] text-paper";
   if (id === "word-study") {
     return (
-      <span aria-hidden className={cn(box, "bg-paper/[0.08]")}>
-        <span lang="grc" className="font-serif text-[19px] font-semibold text-paper">
+      <span aria-hidden className={box}>
+        <span lang="grc" className="font-serif text-[19px] font-semibold">
           λόγος
         </span>
       </span>
@@ -142,21 +147,31 @@ function FeaturePicture({ id }: { id: string }) {
   }
   if (id === "reading-modes") {
     return (
-      <span aria-hidden className={cn(box, "ring-1 ring-inset ring-paper/10")} style={{ background: CANDLELIGHT.page }}>
-        <span className="font-serif text-[26px]" style={{ color: CANDLELIGHT.ink }}>
-          Aa
-        </span>
+      <span aria-hidden className={box}>
+        <span className="font-serif text-[26px]">Aa</span>
       </span>
     );
   }
   return (
-    <span aria-hidden className={cn(box, "bg-paper/[0.08] text-paper/85")}>
+    <span aria-hidden className={cn(box, "text-paper/85")}>
       <FeatureMark id={id} size={26} />
     </span>
   );
 }
 
-/** One feature, with its picture. `lit` is the one a reader came for: white, softly glowing. */
+/**
+ * One feature, with its picture. `lit` is the one a reader came for: white,
+ * softly glowing. With `onTry` it ends in Try it (r3-07 A): the feature's
+ * own screen, for a moment, in the Plus page (components/billing/PlusTry.tsx),
+ * and a tap anywhere on the row does the same.
+ *
+ * The rows no longer rise in one after another. The owner's photo of build
+ * 80 (his note 39) shows a tall empty gap where the fifth row stands, Listen
+ * offline: the last of the five that rose in turn, each from nothing, and the
+ * only one wholly below the sheet's fold when it opens, which is the likeliest
+ * reason its entrance was never painted. The list rises as one block now
+ * (PlusFeatureRows), so no row's showing waits on an animation of its own.
+ */
 export function FeatureRow({
   id,
   name,
@@ -164,8 +179,8 @@ export function FeatureRow({
   soon,
   keep,
   lit = false,
+  onTry,
   children,
-  index,
 }: {
   id: string;
   name: string;
@@ -173,50 +188,47 @@ export function FeatureRow({
   soon?: string;
   keep?: string | null;
   lit?: boolean;
+  /** Try this feature: the row ends in Try it. */
+  onTry?: () => void;
   children?: ReactNode;
-  /** Its place in the list: the first few rise in, one after another. */
-  index: number;
 }) {
-  const rise = index < 5;
+  const { t } = useTranslate();
+  const nameId = useId();
   return (
     <li
       data-plus-feature={id}
       data-lit={lit ? "" : undefined}
       className={cn(
-        "flex items-center gap-3.5 rounded-[18px] p-3 ring-1 ring-inset",
+        "relative flex items-center gap-3.5 rounded-[18px] p-3 ring-1 ring-inset",
         lit ? "bg-paper/[0.07] ring-paper/50 shadow-[0_0_30px_-10px_rgba(255,255,255,0.5)]" : "bg-paper/[0.035] ring-paper/[0.08]",
-        rise && "paywall-in",
+        onTry && "has-[button:active]:bg-paper/[0.07]",
       )}
-      style={rise ? { animationDelay: `${280 + index * 70}ms` } : undefined}
     >
       <FeaturePicture id={id} />
       <div className="min-w-0 flex-1">
-        <p className="font-sans text-[15px] font-semibold leading-snug text-paper">
+        <p id={nameId} className="font-sans text-[15px] font-semibold leading-snug text-paper">
           {name}
           {soon ? <SoonPill label={soon} /> : null}
         </p>
         <p className="mt-0.5 font-sans text-[12.5px] leading-[1.4] text-paper/60">{body}</p>
         {children}
         {keep ? <p className="mt-1.5 font-sans text-caption leading-[1.45] text-paper/45">{keep}</p> : null}
+        {onTry ? (
+          // The whole row is the button's (its ::after covers the row), and
+          // it is named with the feature, so "Try it" is never said alone.
+          <button
+            type="button"
+            onClick={onTry}
+            aria-describedby={nameId}
+            data-plus-try-open={id}
+            className="mt-1.5 inline-flex cursor-pointer items-center gap-0.5 font-sans text-[13px] font-semibold text-paper after:absolute after:inset-0 after:rounded-[18px] after:content-[''] focus-visible:outline-none focus-visible:after:ring-2 focus-visible:after:ring-paper/70"
+          >
+            {t("plus.try.open")}
+            <ChevronRight size={14} className="rtl:-scale-x-100" />
+          </button>
+        ) : null}
       </div>
     </li>
-  );
-}
-
-/** The sounds Ambience plays, by the names the ambience sheet gives them: the 1.8 ones among them. */
-function AmbienceSounds() {
-  const { t } = useTranslate();
-  return (
-    <ul className="mt-2 flex flex-wrap gap-1.5" aria-label={t("ambience.title")}>
-      {AMBIENCE_TRACKS.map((track) => (
-        <li
-          key={track.id}
-          className="rounded-pill bg-paper/[0.06] px-2 py-0.5 font-sans text-[11px] font-medium text-paper/70 ring-1 ring-inset ring-paper/10"
-        >
-          {t(track.labelKey)}
-        </li>
-      ))}
-    </ul>
   );
 }
 
@@ -225,21 +237,39 @@ function AmbienceSounds() {
  * opened the sheet on leads, lit, in the words the sheet has always had for
  * that lock: its headline, what it does, and what stays free beside it. With
  * none, the free core is said once under the list, as the sheet always said it.
+ *
+ * With `onTry`, every row ends in Try it (r3-07 A, the owner's notes 8 and
+ * 39: every one of them, in depth). The list rises in as one block.
  */
-export function PlusFeatureRows({ lead, className }: { lead?: string | null; className?: string }) {
+export function PlusFeatureRows({
+  lead,
+  onTry,
+  className,
+}: {
+  lead?: string | null;
+  /** Try a feature (components/billing/PlusTry.tsx): called from the tap itself. */
+  onTry?: (id: string) => void;
+  className?: string;
+}) {
   const { t } = useTranslate();
   const rows = plusRowsLedBy(lead);
   const ledBy = lead ? rows[0]?.feature === lead : false;
   return (
     <div className={className}>
-      <ul className="flex flex-col gap-2.5" aria-label={t("plus.sheet.title")}>
+      <ul className="paywall-in flex flex-col gap-2.5" style={{ animationDelay: "280ms" }} aria-label={t("plus.sheet.title")}>
         {rows.map((row, i) => {
           const lit = ledBy && i === 0;
           const name = lit && row.title ? t(row.title) : t(row.name);
           return (
-            <FeatureRow key={row.id} index={i} id={row.id} name={name} body={t(row.body)} lit={lit} keep={lit && row.keep ? t(row.keep) : null}>
-              {row.id === "ambience" ? <AmbienceSounds /> : null}
-            </FeatureRow>
+            <FeatureRow
+              key={row.id}
+              id={row.id}
+              name={name}
+              body={t(row.body)}
+              lit={lit}
+              keep={lit && row.keep ? t(row.keep) : null}
+              onTry={onTry ? () => onTry(row.id) : undefined}
+            />
           );
         })}
       </ul>
