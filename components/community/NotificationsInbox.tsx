@@ -28,6 +28,7 @@ import { useTranslate } from "@/components/i18n/MessagesProvider";
 import { Check } from "@/components/ui/icons/Check";
 import { Hands } from "@/components/ui/icons/Hands";
 import { Sparkle } from "@/components/ui/icons/Sparkle";
+import { SkeletonList } from "@/components/ui/Skeleton";
 import { cn } from "@/lib/cn";
 import {
   getInbox,
@@ -206,9 +207,17 @@ const ROW = "flex w-full items-center gap-3 px-3.5 py-3 text-left";
 
 export function NotificationsInbox({
   onOpen,
+  whole = false,
 }: {
   /** The page opens what the row is about (lib/community/notificationTarget). */
   onOpen: (n: CommunityNotification) => void;
+  /**
+   * The whole inbox, as the body of Community's bell (1.8, the owner's pick
+   * of r3-02 B: the inbox left the top of the feed for the bell). Every row,
+   * no heading of its own (the sheet's title is it), and a line saying so
+   * when there is nothing yet.
+   */
+  whole?: boolean;
 }) {
   const { t, tn } = useTranslate();
   const inbox = useInbox();
@@ -236,11 +245,104 @@ export function NotificationsInbox({
     };
   }, []);
 
-  // Nothing at all, including before the migration lands.
-  if (!inbox.loaded || inbox.notifications.length === 0) return null;
+  if (whole) {
+    // The bell was asked, so the sheet says what it found: rows while they
+    // come, and a line when there is nothing.
+    if (!inbox.loaded) {
+      return (
+        <div aria-busy aria-label={t("community.gathering")}>
+          <SkeletonList rows={2} />
+        </div>
+      );
+    }
+    if (inbox.notifications.length === 0) {
+      return <p className="px-1 py-3 font-sans text-detail text-paper/55">{t("notifications.readersEmpty")}</p>;
+    }
+  } else if (!inbox.loaded || inbox.notifications.length === 0) {
+    // Nothing at all, including before the migration lands.
+    return null;
+  }
 
-  const shown = all ? inbox.notifications : inbox.notifications.slice(0, PREVIEW);
-  const hidden = inbox.notifications.length - PREVIEW;
+  const shown = all || whole ? inbox.notifications : inbox.notifications.slice(0, PREVIEW);
+  const hidden = whole ? 0 : inbox.notifications.length - PREVIEW;
+
+  const list = (
+    <ul className={cn("divide-y divide-paper/8 overflow-hidden rounded-2xl border border-paper/12 bg-paper/[0.02]", !whole && "mt-3")}>
+      {shown.map((n) => {
+        const isNew = fresh.has(n.id);
+        const opens = notificationTarget(n).kind !== "none";
+        const inner = (
+          <>
+            <span
+              aria-hidden
+              className={cn(
+                "relative inline-flex size-9 shrink-0 items-center justify-center rounded-full ring-1 ring-inset",
+                isNew
+                  ? "bg-paper/[0.1] text-paper ring-paper/25"
+                  : "bg-paper/[0.05] text-paper/60 ring-paper/10",
+              )}
+            >
+              <KindGlyph kind={n.kind} />
+              {/* New since the reader last looked: a white dot, softly lit
+                  (the owner's accent, never a colour). */}
+              {isNew ? (
+                <span className="reader-lit absolute -right-0.5 -top-0.5 size-2.5 rounded-full bg-paper ring-2 ring-night" />
+              ) : null}
+            </span>
+            <span className="min-w-0 flex-1">
+              <span className={cn("block font-sans text-detail", isNew ? "text-paper" : "text-paper/85")}>
+                <span className="font-semibold">{n.actor_name}</span>{" "}
+                {t(KIND_KEYS[n.kind] ?? "community.repliedToYou")}
+              </span>
+              {n.excerpt ? (
+                <span className="mt-0.5 block truncate font-serif text-caption italic text-paper/60">
+                  {n.excerpt}
+                </span>
+              ) : null}
+            </span>
+            <span className="shrink-0 font-sans text-caption tabular-nums text-paper/40">
+              {when(n.created_at)}
+            </span>
+            {opens ? (
+              <svg
+                width="14"
+                height="14"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth={2}
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                aria-hidden
+                className="shrink-0 text-paper/30 rtl:-scale-x-100"
+              >
+                <path d="m9 6 6 6-6 6" />
+              </svg>
+            ) : null}
+          </>
+        );
+        return (
+          <li key={n.id}>
+            {opens ? (
+              <button
+                type="button"
+                onClick={() => onOpen(n)}
+                className={cn(ROW, "press-card transition-colors hover:bg-paper/[0.04]")}
+              >
+                {inner}
+              </button>
+            ) : (
+              // Nothing left to open (a row from before profiles whose post
+              // is gone): said, but not offered as a button.
+              <div className={ROW}>{inner}</div>
+            )}
+          </li>
+        );
+      })}
+    </ul>
+  );
+
+  if (whole) return list;
 
   return (
     <section className="mb-8">
@@ -256,77 +358,7 @@ export function NotificationsInbox({
           </span>
         ) : null}
       </div>
-      <ul className="mt-3 divide-y divide-paper/8 overflow-hidden rounded-2xl border border-paper/12 bg-paper/[0.02]">
-        {shown.map((n) => {
-          const isNew = fresh.has(n.id);
-          const opens = notificationTarget(n).kind !== "none";
-          const inner = (
-            <>
-              <span
-                aria-hidden
-                className={cn(
-                  "relative inline-flex size-9 shrink-0 items-center justify-center rounded-full ring-1 ring-inset",
-                  isNew
-                    ? "bg-paper/[0.1] text-paper ring-paper/25"
-                    : "bg-paper/[0.05] text-paper/60 ring-paper/10",
-                )}
-              >
-                <KindGlyph kind={n.kind} />
-                {isNew ? (
-                  <span className="absolute -right-0.5 -top-0.5 size-2.5 rounded-full bg-crimson ring-2 ring-night" />
-                ) : null}
-              </span>
-              <span className="min-w-0 flex-1">
-                <span className={cn("block font-sans text-detail", isNew ? "text-paper" : "text-paper/85")}>
-                  <span className="font-semibold">{n.actor_name}</span>{" "}
-                  {t(KIND_KEYS[n.kind] ?? "community.repliedToYou")}
-                </span>
-                {n.excerpt ? (
-                  <span className="mt-0.5 block truncate font-serif text-caption italic text-paper/60">
-                    {n.excerpt}
-                  </span>
-                ) : null}
-              </span>
-              <span className="shrink-0 font-sans text-caption tabular-nums text-paper/40">
-                {when(n.created_at)}
-              </span>
-              {opens ? (
-                <svg
-                  width="14"
-                  height="14"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth={2}
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  aria-hidden
-                  className="shrink-0 text-paper/30 rtl:-scale-x-100"
-                >
-                  <path d="m9 6 6 6-6 6" />
-                </svg>
-              ) : null}
-            </>
-          );
-          return (
-            <li key={n.id}>
-              {opens ? (
-                <button
-                  type="button"
-                  onClick={() => onOpen(n)}
-                  className={cn(ROW, "press-card transition-colors hover:bg-paper/[0.04]")}
-                >
-                  {inner}
-                </button>
-              ) : (
-                // Nothing left to open (a row from before profiles whose post
-                // is gone): said, but not offered as a button.
-                <div className={ROW}>{inner}</div>
-              )}
-            </li>
-          );
-        })}
-      </ul>
+      {list}
       {hidden > 0 ? (
         <button
           type="button"

@@ -2818,6 +2818,8 @@
   "profile.effectName.theophany-drops": "იორდანის წყლები",
   "profile.err.out_of_season": "ის თავის დროზე დაბრუნდება.",
   "community.title": "საზოგადოება",
+  "community.prayTogether": "ილოცეთ ერთად",
+  "community.talkTogether": "ისაუბრეთ ერთად",
   "community.subtitle": "ისაუბრეთ ერთად რწმენაზე და გააზიარეთ ის, რასაც წმინდა წერილიდან და წმინდა მამათაგან აგროვებთ.",
   "community.filterLabel": "პოსტების ჩვენება",
   "community.filterAll": "ყველა",

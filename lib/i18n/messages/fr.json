@@ -2820,6 +2820,8 @@
   "profile.effectName.theophany-drops": "Eaux du Jourdain",
   "profile.err.out_of_season": "Celui-ci reviendra en sa saison.",
   "community.title": "Communauté",
+  "community.prayTogether": "Prier ensemble",
+  "community.talkTogether": "Parler ensemble",
   "community.subtitle": "Parlez ensemble de la foi et partagez ce que vous recueillez de l’Écriture et des Pères.",
   "community.filterLabel": "Afficher les publications",
   "community.filterAll": "Tout",

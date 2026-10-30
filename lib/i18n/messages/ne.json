@@ -2818,6 +2818,8 @@
   "profile.effectName.theophany-drops": "यर्दनको जल",
   "profile.err.out_of_season": "त्यो आफ्नै ऋतुमा फर्किन्छ।",
   "community.title": "समुदाय",
+  "community.prayTogether": "सँगै प्रार्थना गर्नुहोस्",
+  "community.talkTogether": "सँगै कुरा गर्नुहोस्",
   "community.subtitle": "विश्वासबारे सँगै कुरा गर्नुहोस्, र धर्मशास्त्र र पिताहरूबाट तपाईंले सँगालेका कुरा साझा गर्नुहोस्।",
   "community.filterLabel": "पोस्टहरू देखाउनुहोस्",
   "community.filterAll": "सबै",

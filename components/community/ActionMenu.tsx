@@ -21,6 +21,11 @@ import { cn } from "@/lib/cn";
  * inside the post: post cards skip rendering while off screen
  * (content-visibility), which also clips anything that spills out of them, so
  * a list inside a short post would be cut off at its edge.
+ *
+ * From 1.8 it is also Talk together's sliders (the owner's pick of r3-02, B:
+ * Following, Scripture and the Fathers sit behind them): a `glyph` in place
+ * of the dots, items that are choices (`checked`), and the button `lit` while
+ * one of them is on.
  */
 
 export type ActionMenuItem = {
@@ -28,6 +33,12 @@ export type ActionMenuItem = {
   onSelect: () => void;
   danger?: boolean;
   disabled?: boolean;
+  /**
+   * For a menu of choices, one of which can be on (Talk together's sliders,
+   * 1.8): the item is then a radio item, checked or not, with a check drawn
+   * beside the one that is on.
+   */
+  checked?: boolean;
 };
 
 type Place = { top?: number; bottom?: number; right: number };
@@ -37,12 +48,22 @@ export function ActionMenu({
   items,
   className,
   size = "sm",
+  glyph,
+  lit = false,
 }: {
   /** The button's accessible name, e.g. "More actions". */
   label: string;
   items: ActionMenuItem[];
   className?: string;
   size?: "sm" | "md";
+  /**
+   * What the button shows in place of the three dots (1.8: the sliders over
+   * Talk together's feed, and the word of the choice that is on). The button
+   * then grows to fit it.
+   */
+  glyph?: React.ReactNode;
+  /** The button is lit, white with a soft glow: a choice in the menu is on. */
+  lit?: boolean;
 }) {
   const [open, setOpen] = useState(false);
   const [place, setPlace] = useState<Place | null>(null);
@@ -111,15 +132,22 @@ export function ActionMenu({
         onKeyDown={onKeyDown}
         className={cn(
           "hit-44 inline-flex items-center justify-center rounded-pill text-paper/55 transition-colors hover:bg-paper/[0.07] hover:text-paper",
-          size === "md" ? "size-9 border border-paper/15 bg-black/20 text-paper/80" : "size-8",
+          glyph
+            ? "h-8 min-w-8 gap-1.5 px-1.5 font-sans text-detail font-semibold text-paper/65"
+            : size === "md"
+              ? "size-9 border border-paper/15 bg-black/20 text-paper/80"
+              : "size-8",
+          lit && "community-lit text-paper",
           open && "bg-paper/[0.08] text-paper",
         )}
       >
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" focusable="false">
-          <circle cx="5.5" cy="12" r="1.7" />
-          <circle cx="12" cy="12" r="1.7" />
-          <circle cx="18.5" cy="12" r="1.7" />
-        </svg>
+        {glyph ?? (
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" focusable="false">
+            <circle cx="5.5" cy="12" r="1.7" />
+            <circle cx="12" cy="12" r="1.7" />
+            <circle cx="18.5" cy="12" r="1.7" />
+          </svg>
+        )}
       </button>
       {open && place && typeof document !== "undefined"
         ? createPortal(
@@ -137,7 +165,8 @@ export function ActionMenu({
                 <button
                   key={item.label}
                   type="button"
-                  role="menuitem"
+                  role={item.checked === undefined ? "menuitem" : "menuitemradio"}
+                  aria-checked={item.checked}
                   disabled={item.disabled}
                   onClick={() => {
                     setOpen(false);
@@ -145,12 +174,20 @@ export function ActionMenu({
                   }}
                   className={cn(
                     "block w-full whitespace-nowrap px-4 py-2.5 text-left font-sans text-detail font-medium transition-colors disabled:cursor-default disabled:opacity-55",
+                    item.checked !== undefined && "flex items-center justify-between gap-6",
                     item.danger
                       ? "text-crimson-soft hover:bg-crimson/[0.12] focus-visible:bg-crimson/[0.12]"
-                      : "text-paper/85 hover:bg-paper/[0.07] focus-visible:bg-paper/[0.07]",
+                      : item.checked
+                        ? "font-semibold text-paper hover:bg-paper/[0.07] focus-visible:bg-paper/[0.07]"
+                        : "text-paper/85 hover:bg-paper/[0.07] focus-visible:bg-paper/[0.07]",
                   )}
                 >
                   {item.label}
+                  {item.checked ? (
+                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true" focusable="false">
+                      <path d="M5 12.5l4.4 4.4L19 7.2" />
+                    </svg>
+                  ) : null}
                 </button>
               ))}
             </div>,
