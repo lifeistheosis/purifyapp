@@ -3104,6 +3104,59 @@ html[data-reading-mode="parchment"] .ob-pick-n {
  box-shadow: none;
 }
 
+/* The moment reminders turn on (1.8, the owner's pick C of round 3, sheet
+   r3-08: the reminders themselves as Purify's cards,
+   components/onboarding/RemindersOn.tsx). The instant Allow lands, what the
+   question showed fades where it stood (`ob-on-leave`) while the heading
+   glides up (a FLIP, played by OnboardingFlow). The line fades in where the
+   body was, the two cards settle in one after the other on the day's line
+   (`ob-on-card`, their times `ob-on-fade`), each mark lights white as its card
+   lands (`ob-on-mark`), the line runs down from the first mark to the second
+   (`ob-on-line`), and Continue rises (`ob-rise`). The delays are the
+   component's, on the sheet's clock. Opacity and transform only, every
+   entrance filling backwards, so nothing is left holding a transform. On
+   Parchment, where white cannot glow, a mark is the ink and nothing glows.
+   With Purify's motion off the finished screen stands at once. */
+@keyframes ob-on-leave {
+ to { opacity: 0; }
+}
+.ob-on-leave { animation: ob-on-leave 220ms var(--ease-house) forwards; }
+@keyframes ob-on-fade {
+ from { opacity: 0; }
+}
+.ob-on-fade { animation: ob-on-fade 360ms var(--ease-house) backwards; }
+@keyframes ob-on-card {
+ from { opacity: 0; transform: translateY(18px) scale(0.97); }
+}
+.ob-on-card { animation: ob-on-card 620ms var(--ease-house) backwards; }
+@keyframes ob-on-mark {
+ from { opacity: 0; transform: scale(0.4); }
+}
+.ob-on-mark {
+ box-shadow: 0 0 0 4px color-mix(in oklab, var(--color-paper) 12%, transparent), 0 0 10px rgb(255 255 255 / 0.7);
+ animation: ob-on-mark 420ms var(--ease-house) backwards;
+}
+@keyframes ob-on-line {
+ from { transform: scaleY(0); }
+}
+.ob-on-line {
+ transform-origin: 50% 0;
+ animation: ob-on-line 520ms var(--ease-house) backwards;
+}
+html[data-reading-mode="parchment"] .ob-on-mark {
+ box-shadow: 0 0 0 4px color-mix(in oklab, var(--color-paper) 12%, transparent);
+}
+:where([data-motion="reduce"]) .ob-on-leave {
+ animation: none;
+ display: none;
+}
+:where([data-motion="reduce"]) .ob-on-fade,
+:where([data-motion="reduce"]) .ob-on-card,
+:where([data-motion="reduce"]) .ob-on-mark,
+:where([data-motion="reduce"]) .ob-on-line {
+ animation: none;
+}
+
 /* The handoff slate. */
 @keyframes ob-slate-ring {
  from { stroke-dashoffset: 100; }
