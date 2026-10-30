@@ -12,10 +12,23 @@ Chants section below, as **not licensed** by the owner's decision of
 avoiding the choirs whose own recordings they are known to be, and took the
 risk knowingly ("this is a risk I am willing to take ... it's more of a
 tradition"). No row here may ever state a licence that does not exist. Each
-such recording streams from the website and never ships inside the apps
-(`public/audio/chants/` is set aside by `scripts/native-build.mjs`), credits
-its performer where known, and can be taken down from every installed app
-with one edit (its takedown line).
+such recording streams and never ships inside the apps (`public/audio/chants/`
+is set aside by `scripts/native-build.mjs`, and since 1.8 a recording is kept
+in Purify's bucket instead, below), credits its performer where known, and can
+be taken down from every installed app with one edit (its takedown line).
+
+**Amended 2026-10-30 (1.8), the owner's decision on six recordings:** "Add all
+6 now". The six chant recordings he downloaded on 2026-10-28
+(`Homebase/boards/purify-master/r18/CHANTS-INTAKE.md`) go live, each credited
+by name, and each is taken down with one edit if a choir objects. For these six
+this overrides the rule of 2026-10-16 above of avoiding the choirs whose own
+recordings they are known to be: five of them are (two of Eikona's, the Mount
+Lebanon Orthodox Choir with Theodoros Vassilikos, the Choir of Beirut, and the
+Beirut men's choir), and he chose to carry them anyway. They are not licensed,
+and their rows say so. The rule of 2026-10-16 still stands for every recording
+after these. On the same day, "R2, like the Bible audio": they play from
+Purify's own bucket at audio.purifyapp.net, as the Bible read aloud does
+(`lib/chants/media.ts`), and are not in the repository.
 
 ## Removed (no documented rights)
 
@@ -46,13 +59,18 @@ Also not shipping: `valley` (64MB source, already excluded via
 
 ## Chants (1.7): recordings the owner sends, not licensed
 
-Every recording under `public/audio/chants/`, one row each. These stream from
-the website and are not in the apps' bundle. **Takedown:** move the
-recording's `<slug>/<id>` from `live` to `pulled` in
-`public/audio/chants/live.json` and push the website; every app stops offering
-it within minutes (`lib/chants/live.ts`), with no store release. The data
-test (`lib/chants/__tests__/data.test.ts`) fails if a chant recording has no
-row here, or if a row in this section names any licence other than none.
+Every chant recording, one row each: the Anthem's three under
+`public/audio/chants/`, on the website, and every one since in Purify's bucket
+on Cloudflare R2 (1.8, the owner's word of 2026-10-30), named by its address
+there. None is in the apps' bundle, and none since the Anthem's is in the
+repository. **Takedown:** move the recording's `<slug>/<id>` from `live` to
+`pulled` in `public/audio/chants/live.json` and push the website; every app
+stops offering it within minutes (`lib/chants/live.ts`), with no store
+release, and the website stops with it. A bucket recording can also be
+deleted from the bucket, which the list does not need. The data test
+(`lib/chants/__tests__/data.test.ts`) fails if a chant recording has no row
+here, if a row's last cell is not its own takedown line, or if a row in this
+section names any licence other than none.
 
 | File | Chant and version | Where it came from | Performer | Licence | Received | Decision | Takedown |
 | --- | --- | --- | --- | --- | --- | --- | --- |

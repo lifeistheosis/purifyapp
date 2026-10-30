@@ -155,3 +155,9 @@ public/widget-day-table.json
 # (1.8, lib/readAloud/chapters.ts READ_ALOUD_RECORDINGS), never in this public
 # repository. Their timings (.json) and the list stay here.
 public/audio/read/**/*.mp3
+
+# Chants: every recording since the Prayer Rope Anthem is in the same bucket
+# (1.8, lib/chants/types.ts CHANT_RECORDINGS), never in this repository; the
+# timing files and live.json stay here. The Anthem's three, from 1.7, stay.
+public/audio/chants/**/*.mp3
+!public/audio/chants/prayer-rope-anthem/*.mp3

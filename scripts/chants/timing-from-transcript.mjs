@@ -122,8 +122,13 @@ if (segments.length !== lines.length) {
   process.exit(1);
 }
 
-const audio = path.resolve("public", variant.audio.src.replace(/^\//, ""));
-const durationSec = durationArg ?? (fs.existsSync(audio) && audio.endsWith(".mp3") ? mp3Duration(audio) : null);
+// A recording on the website is measured; one in Purify's bucket (1.8) is
+// not in the repository, so its length is the one its data file records,
+// which prepare-audio.mjs printed from the file it made.
+const inBucket = /^https:\/\//.test(variant.audio.src);
+const audio = inBucket ? null : path.resolve("public", variant.audio.src.replace(/^\//, ""));
+const durationSec =
+  durationArg ?? (audio && fs.existsSync(audio) && audio.endsWith(".mp3") ? mp3Duration(audio) : inBucket ? variant.audio.durationSec : null);
 if (!durationSec) {
   console.error("no length for the recording: put the MP3 in place first (prepare-audio.mjs), or pass --duration <seconds>");
   process.exit(1);

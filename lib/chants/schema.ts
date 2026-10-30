@@ -1,6 +1,6 @@
 import { z } from "zod";
 
-import { CHANT_KINDS, CHANT_TRADITIONS } from "./types";
+import { CHANT_KINDS, CHANT_RECORDINGS, CHANT_TRADITIONS } from "./types";
 
 /**
  * The chant data file, checked. lib/chants/registry.server.ts reads every
@@ -13,6 +13,10 @@ const day = z.string().regex(/^\d{4}-\d{2}-\d{2}$/, "a YYYY-MM-DD date");
 const monthDay = z.string().regex(/^(0[1-9]|1[0-2])-(0[1-9]|[12]\d|3[01])$/, "an MM-DD date");
 const slug = z.string().regex(/^[a-z0-9]+(?:-[a-z0-9]+)*$/, "a slug of lowercase words and hyphens");
 const seconds = z.number().min(0);
+/** A recording: in Purify's bucket (since 1.8), or a path of the website's or the bundle's. */
+const recording = z
+  .string()
+  .refine((s) => s.startsWith("/audio/") || s.startsWith(CHANT_RECORDINGS), `a path under /audio/ or an address under ${CHANT_RECORDINGS}`);
 
 const line = z
   .object({
@@ -35,7 +39,7 @@ const variant = z
     tradition: z.enum(CHANT_TRADITIONS),
     setting: z.string().trim().min(1).optional(),
     performer: z.string().trim().min(1).nullable(),
-    audio: z.object({ src: z.string().startsWith("/audio/"), durationSec: seconds.positive() }).strict(),
+    audio: z.object({ src: recording, durationSec: seconds.positive() }).strict(),
     timing: z.string().startsWith("/audio/").optional(),
     preview: z.object({ from: seconds, to: seconds }).strict(),
     underPrayer: z.boolean().optional(),

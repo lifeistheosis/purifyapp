@@ -36,6 +36,16 @@ export const CHANT_TRADITIONS = [
 ] as const;
 export type ChantTradition = (typeof CHANT_TRADITIONS)[number];
 
+/**
+ * Where the recordings added from 1.8 on are kept: Purify's own bucket on
+ * Cloudflare R2, at audio.purifyapp.net, as the Bible read aloud is
+ * (lib/readAloud/chapters.ts). The owner's word of 2026-10-30, "R2, like the
+ * Bible audio": out of the public repository, the same address on the
+ * website and in the apps. A recording there is `<this><slug>/<id>.mp3`;
+ * its timing file stays on the website (lib/chants/media.ts).
+ */
+export const CHANT_RECORDINGS = "https://audio.purifyapp.net/chants/";
+
 /** What kind of hymn it is, as the service books name them. */
 export const CHANT_KINDS = [
   "troparion",
@@ -109,12 +119,16 @@ export type ChantVariant = {
   /** Who sings it, when known. Never invented: null says "not known". */
   performer: string | null;
   /**
-   * The recording. Under /audio/chants/ it is on the website only and
-   * streams to the apps (lib/chants/media.ts); any other path is in the
-   * bundle.
+   * The recording. In Purify's bucket (CHANT_RECORDINGS, every recording
+   * since 1.8) or under /audio/chants/ (the Prayer Rope Anthem's, from 1.7)
+   * it streams, on the website and in the apps (lib/chants/media.ts); any
+   * other path is in the bundle.
    */
   audio: { src: string; durationSec: number };
-  /** The timing file beside a streamed recording: each line's start and end. */
+  /**
+   * The timing file of a streamed recording, on the website: each line's
+   * start and end. A recording with none has its words without Sing along.
+   */
   timing?: string;
   /** The stretch a preview plays, in seconds: the part it is known by. */
   preview: { from: number; to: number };
