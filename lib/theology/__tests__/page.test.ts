@@ -9,8 +9,10 @@ import path from "node:path";
 import { describe, expect, it } from "vitest";
 
 import {
+  CARD_LINES,
+  CARD_TEXT,
   DOCTRINE_DOORS,
-  cardTextSize,
+  SLIM_SIZES,
   doctrineDoors,
   doorsForAddress,
   epigraphIndex,
@@ -19,6 +21,8 @@ import {
   medallionInitial,
   medallionName,
   openingDoor,
+  slimLinesHeight,
+  slimSize,
   subjectOfStudy,
 } from "@/lib/theology/page";
 import { THEOLOGY_TOPICS } from "@/lib/theology/topics";
@@ -131,11 +135,41 @@ describe("the passage the deck opens on (the study's epigraph)", () => {
   });
 });
 
-describe("a card's words", () => {
-  it("are set a step up when short and down when long, the design's 15px between", () => {
-    expect(cardTextSize(120)).toBe(16.5);
-    expect(cardTextSize(343)).toBe(15);
-    expect(cardTextSize(700)).toBe(14);
-    expect(cardTextSize(1508)).toBe(13);
+describe("a card's words (build 83: no card as tall as the deck's longest passage)", () => {
+  it("are the design's 15px, and fold after a few lines", () => {
+    expect(CARD_TEXT).toEqual({ size: 15, lineHeight: 1.45 });
+    expect(CARD_LINES).toBe(7);
+  });
+
+  it("each have somewhere Read where it's from opens them whole", () => {
+    // The fold is resolved there: a place in the app, or a public-domain page.
+    for (const { slug, body } of studies) {
+      for (const q of shown(body)) {
+        const inApp = q.cite ? ["work", "council", "inexact", "scripture"].includes(q.cite.kind) : false;
+        expect(inApp || Boolean(q.source), `${slug}: ${q.author}`).toBe(true);
+      }
+    }
+  });
+});
+
+describe("the doors' slim row (build 83: its labels were cut at 390px)", () => {
+  it("sets its labels at the largest size, 13px down to 9px by halves, at which all read whole", () => {
+    expect(SLIM_SIZES).toMatchObject({ from: 13, floor: 9, step: 0.5 });
+    expect(slimSize(() => true)).toBe(13);
+    expect(slimSize((size) => size <= 11.5)).toBe(11.5);
+    expect(slimSize((size) => size <= 9)).toBe(9);
+    const tried: number[] = [];
+    expect(
+      slimSize((size) => {
+        tried.push(size);
+        return false;
+      }),
+    ).toBeNull();
+    expect(tried).toEqual([13, 12.5, 12, 11.5, 11, 10.5, 10, 9.5, 9]);
+  });
+
+  it("lets a label run to two lines of its own leading, and no more", () => {
+    expect(slimLinesHeight(13, 2)).toBeCloseTo(28.6);
+    expect(slimLinesHeight(9, 1)).toBeCloseTo(9.9);
   });
 });

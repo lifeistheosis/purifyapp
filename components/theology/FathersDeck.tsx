@@ -2,7 +2,7 @@
 
 import dynamic from "next/dynamic";
 import Link from "next/link";
-import { useCallback, useEffect, useMemo, useRef, useState, type ReactNode } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState, type CSSProperties, type ReactNode } from "react";
 
 import { AddToFlorilegium } from "@/components/florilegium/AddToFlorilegium";
 import { useTranslate } from "@/components/i18n/MessagesProvider";
@@ -15,7 +15,7 @@ import { cn } from "@/lib/cn";
 import { streamedUrl } from "@/lib/media/streamed";
 import { isNativeClient } from "@/lib/platform/native";
 import { FOOT, portraitLook, type Look } from "@/lib/share/verseCard";
-import { cardTextSize, medallionInitial, medallionName } from "@/lib/theology/page";
+import { CARD_LINES, CARD_TEXT, medallionInitial, medallionName } from "@/lib/theology/page";
 import { SAINT_FACES, coverFile } from "@/lib/today/saintFaces";
 import { scrollBehavior } from "@/lib/ui/motion";
 import { useMounted } from "@/lib/useMounted";
@@ -128,6 +128,34 @@ export function FathersDeck({ passages, fathers, opening }: { passages: DeckPass
   }, []);
 
   useEffect(() => () => window.cancelAnimationFrame(frame.current), []);
+
+  // A passage longer than its card folds after CARD_LINES lines and ends in
+  // the soft fade every fold in Purify ends in, never an ellipsis (app/
+  // globals.css, .post-fold, the owner's note 19 of build 80): the fade is
+  // drawn only where words run past the fold (data-cut). Measured by a
+  // ResizeObserver, which answers before a card is first painted and again
+  // when its words' box changes (their face arriving, a wider screen), and
+  // written straight to the element, as Community's folds are.
+  useEffect(() => {
+    const el = deck.current;
+    if (!el || typeof ResizeObserver === "undefined") return;
+    const cut = (words: Element) => words.toggleAttribute("data-cut", words.scrollHeight > words.clientHeight + 1);
+    const watch = new ResizeObserver((entries) => {
+      for (const entry of entries) cut(entry.target);
+    });
+    const all = el.querySelectorAll("[data-card-words]");
+    for (const words of all) watch.observe(words);
+    // A fold already full keeps its size as the words' own face arrives and
+    // sets them on more lines, so they are looked at once more then.
+    let live = true;
+    void document.fonts?.ready.then(() => {
+      if (live) for (const words of all) cut(words);
+    });
+    return () => {
+      live = false;
+      watch.disconnect();
+    };
+  }, [list]);
 
   function onScroll() {
     window.cancelAnimationFrame(frame.current);
@@ -254,8 +282,24 @@ export function FathersDeck({ passages, fathers, opening }: { passages: DeckPass
                     </span>
                   )}
                 </div>
-                <div className="px-[22px] pt-2 text-center">
-                  <blockquote lang="en" className="font-serif font-medium leading-[1.45] text-paper" style={{ fontSize: cardTextSize(p.text.length) }}>
+                {/* The words and their line, in the middle of what the card has
+                    between his face and its signature: the cards share one
+                    height, so a short passage is centred, never left over a
+                    gap. A long one folds after CARD_LINES lines. */}
+                <div className="flex flex-1 flex-col justify-center px-[22px] pt-2 text-center">
+                  <blockquote
+                    lang="en"
+                    data-card-words=""
+                    className="post-fold font-serif font-medium text-paper"
+                    style={
+                      {
+                        fontSize: CARD_TEXT.size,
+                        lineHeight: CARD_TEXT.lineHeight,
+                        "--fold-lines": CARD_LINES,
+                        "--fold-lead": CARD_TEXT.lineHeight,
+                      } as CSSProperties
+                    }
+                  >
                     {p.text}
                   </blockquote>
                   <div aria-hidden className="mx-auto mt-3 h-[1.5px] w-[30px] bg-paper/70" />

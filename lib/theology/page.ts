@@ -125,13 +125,36 @@ export function medallionInitial(name: string): string {
 }
 
 /**
- * How large a passage is set on its card, by its length: the design's 15px
- * for most, a step up for a short one and down for a long one, so a deck of
- * passages from 40 to 1,500 letters still reads as one deck. Pixels.
+ * A card of the Fathers' deck (C): its words at the design's 15px, on lines
+ * 1.45 of that apart, and never more than CARD_LINES of them. Build 83's walk
+ * found every card as tall as the deck's longest passage, so a short one
+ * stood over a gap of several hundred pixels: St Irenaeus's three lines on
+ * The Essence and the Energies, beside a passage of seven hundred letters.
+ * Now a longer passage folds after its seventh line, under a soft fade, and
+ * Read where it's from opens it whole (every one of the 136 has a place in
+ * the app or a public-domain page). The cards share one height, so the deck,
+ * its two buttons and the line under it hold still as it is swiped; a
+ * shorter passage sits in the middle of its card.
  */
-export function cardTextSize(length: number): number {
-  if (length <= 220) return 16.5;
-  if (length <= 560) return 15;
-  if (length <= 900) return 14;
-  return 13;
+export const CARD_TEXT = { size: 15, lineHeight: 1.45 } as const;
+export const CARD_LINES = 7;
+
+/**
+ * The doors' slim row, pinned under the bar (DoctrineDoors): the sizes its
+ * labels are tried at, from the row's own 13px down to 9px by half a pixel,
+ * and their line height.
+ */
+export const SLIM_SIZES = { from: 13, floor: 9, step: 0.5, lineHeight: 1.1 } as const;
+
+/** The largest size at which every label reads whole (`fits`), or null when none does. */
+export function slimSize(fits: (size: number) => boolean): number | null {
+  for (let size = SLIM_SIZES.from; size >= SLIM_SIZES.floor; size -= SLIM_SIZES.step) {
+    if (fits(size)) return size;
+  }
+  return null;
+}
+
+/** How tall `lines` lines of a slim label are at `size` pixels. */
+export function slimLinesHeight(size: number, lines: number): number {
+  return size * SLIM_SIZES.lineHeight * lines;
 }
