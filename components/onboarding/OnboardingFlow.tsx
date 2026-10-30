@@ -1,7 +1,8 @@
 "use client";
 
 import Link from "next/link";
-import { useCallback, useEffect, useMemo, useRef, useState, type ReactNode } from "react";
+import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState, type ReactNode } from "react";
+import { measureRows, playFlip, type FlipSnapshot } from "@/lib/ui/flip";
 import { lockBodyScroll, unlockBodyScroll } from "@/lib/ui/overlay";
 import { useTranslate } from "@/components/i18n/MessagesProvider";
 import { readCalendarStyleDefault, writeCalendarStyleDefault } from "@/lib/calendar/styleDefault";
@@ -37,7 +38,7 @@ import {
 import { saveSpaceToAccount } from "@/lib/onboarding/accountSync";
 import { beginCountRun, countFinished, countOnboarding, countPicks } from "@/lib/onboarding/count";
 import { routeFor, type CountQuestion } from "@/lib/onboarding/counting";
-import { enableReminders as enablePush, remindersStatus } from "@/lib/push/reminders";
+import { EVENING_DEFAULT, MORNING_DEFAULT, enableReminders as enablePush, remindersStatus } from "@/lib/push/reminders";
 import { PurifyMark } from "@/components/ui/PurifyMark";
 import { OAuthButtons } from "@/components/auth/OAuthButtons";
 import { recordAcceptance } from "@/lib/legal/recordAcceptance";
@@ -49,6 +50,7 @@ import { Cross } from "@/components/ui/icons/Cross";
 import { HandoffSlate, type SlateLine } from "./HandoffSlate";
 import { LookingFor } from "./LookingFor";
 import { PrimaryButton } from "./PrimaryButton";
+import { GLIDE_MS, RemindersOn, preloadReminderArt, type ReminderTimes } from "./RemindersOn";
 import { WhereFrom, WhereFromSky } from "./WhereFrom";
 
 /**
@@ -63,7 +65,8 @@ import { WhereFrom, WhereFromSky } from "./WhereFrom";
  *   rule       calendar and fasting, asked of the practicing only
  *   intent     "What are you looking for?": as many answers as fit, in the
  *              order tapped, the first of them the intent (1.8, ./LookingFor)
- *   reminders  a benefit-first priming screen before the OS prompt
+ *   reminders  a benefit-first priming screen before the OS prompt, and once
+ *              they are allowed, the reminders themselves (./RemindersOn)
  *   handoff    a three-second slate that sets the space up and hands over
  *
  * The questions come AFTER the account step, as the specification places
@@ -139,7 +142,17 @@ export function OnboardingFlow({
   const [index, setIndex] = useState(0);
   const [dir, setDir] = useState<"fwd" | "back">("fwd");
   const [busy, setBusy] = useState(false);
+  // Why reminders could not be turned on, said in place of the button.
   const [reminderNote, setReminderNote] = useState<string | null>(null);
+  // The reminders just switched on, at the times they were switched on at,
+  // which the step then shows as Purify's own cards (./RemindersOn). Fresh
+  // while the reader is still on the screen where they allowed them, so the
+  // moment plays on from the question as it stood; back on the screen later,
+  // it arrives as any step does.
+  const [remindersSet, setRemindersSet] = useState<{ times: ReminderTimes; fresh: boolean } | null>(null);
+  // Where the question stood as Allow landed, for the heading's glide.
+  const reminderGlide = useRef<FlipSnapshot | null>(null);
+  const stepRef = useRef<HTMLDivElement>(null);
   const [exiting, setExiting] = useState(false);
   // One answer, one advance: a second tap during the pause must not skip the
   // next question.
@@ -211,6 +224,8 @@ export function OnboardingFlow({
     (to: number) => {
       setDir(to >= index ? "fwd" : "back");
       setIndex(Math.max(0, Math.min(to, steps.length - 1)));
+      // Leaving the screen where reminders were allowed: the moment has played.
+      setRemindersSet((set) => (set?.fresh ? { ...set, fresh: false } : set));
     },
     [index, steps.length],
   );
@@ -236,6 +251,21 @@ export function OnboardingFlow({
     // questions resume when it comes back.
     if (step === "account") setResumeStage("assessment");
   }, [step]);
+
+  // The reminders' two icons, fetched while the question is still up.
+  useEffect(() => {
+    if (step === "reminders") preloadReminderArt();
+  }, [step]);
+
+  // Allow has landed and the question has given way to the reminders: the
+  // heading glides on from where it stood, before the first paint, so it is
+  // never seen to jump. Reduced motion skips it (playFlip asks).
+  useLayoutEffect(() => {
+    const from = reminderGlide.current;
+    if (!from) return;
+    reminderGlide.current = null;
+    playFlip(stepRef.current, from, { durationMs: GLIDE_MS, easing: "var(--ease-house)" });
+  }, [remindersSet]);
 
   function advanceSoon() {
     advancing.current = true;
@@ -354,11 +384,14 @@ export function OnboardingFlow({
   async function enableReminders() {
     setBusy(true);
     setReminderNote(null);
+    // Named here because the screen shows them: the times switched on are
+    // the times the reader sees.
+    const times: ReminderTimes = { morning: MORNING_DEFAULT, evening: EVENING_DEFAULT };
     try {
       // Native push (APNs/FCM) inside the Capacitor shell, Web Push in the
       // browser. Signed-out subscriptions are stashed and flushed on first
       // sign-in (PostSignInBridge), handled inside the facade.
-      const result = await enablePush();
+      const result = await enablePush(times.morning, times.evening);
       if (!result.ok) {
         countAnswer("reminders", result.reason === "denied" ? "blocked" : result.reason === "unsupported" ? "unsupported" : "failed");
         if (result.reason === "denied") setReminderNote(t("onboard.reminders.blocked"));
@@ -369,7 +402,13 @@ export function OnboardingFlow({
         return;
       }
       countAnswer("reminders", "on");
-      setReminderNote(t("onboard.reminders.done"));
+      // The question as it stands now, the busy button still in it. A reader
+      // who went back while the prompt was up is not on it, and later finds
+      // the reminders already standing.
+      const from = measureRows(stepRef.current);
+      const fresh = from.has("reminders");
+      if (fresh) reminderGlide.current = from;
+      setRemindersSet({ times, fresh });
     } catch {
       countAnswer("reminders", "failed");
       setReminderNote(t("prayers.push.failed"));
@@ -458,6 +497,7 @@ export function OnboardingFlow({
           centred. */}
       <div
         key={step}
+        ref={stepRef}
         className={`${stepClass} mx-auto flex w-full max-w-md flex-1 flex-col px-6 ${
           step === "intent"
             ? "pt-5 md:justify-center md:py-10"
@@ -596,27 +636,33 @@ export function OnboardingFlow({
 
         {step === "intent" && <LookingFor picks={picks} onToggle={toggleIntent} onContinue={leaveIntent} />}
 
-        {step === "reminders" && (
-          <Step eyebrow={t("onboard.reminders.eyebrow")} title={t("onboard.reminders.title")} body={t("onboard.reminders.body")}>
-            {reminderNote ? (
-              <p className="mb-4 font-serif text-detail leading-[1.55] text-gold">{reminderNote}</p>
-            ) : (
-              <PrimaryButton onClick={enableReminders} disabled={busy}>
-                {busy ? "…" : t("onboard.reminders.enable")}
-              </PrimaryButton>
-            )}
-            <button
-              type="button"
-              onClick={() => {
-                if (!reminderNote) countAnswer("reminders", "not-now");
-                next();
-              }}
-              className="mt-2 inline-flex min-h-11 items-center self-center rounded-pill px-4 font-sans text-caption text-paper/55 transition-colors hover:text-paper"
-            >
-              {reminderNote ? t("onboard.continue") : t("onboard.reminders.notNow")}
-            </button>
-          </Step>
-        )}
+        {step === "reminders" &&
+          (remindersSet ? (
+            <RemindersOn times={remindersSet.times} fresh={remindersSet.fresh} onContinue={next} />
+          ) : (
+            // The key the heading's glide is measured by (RemindersOn's root carries it too).
+            <div data-flip-key="reminders">
+              <Step eyebrow={t("onboard.reminders.eyebrow")} title={t("onboard.reminders.title")} body={t("onboard.reminders.body")}>
+                {reminderNote ? (
+                  <p className="mb-4 font-serif text-detail leading-[1.55] text-paper/85">{reminderNote}</p>
+                ) : (
+                  <PrimaryButton onClick={enableReminders} disabled={busy}>
+                    {busy ? "…" : t("onboard.reminders.enable")}
+                  </PrimaryButton>
+                )}
+                <button
+                  type="button"
+                  onClick={() => {
+                    if (!reminderNote) countAnswer("reminders", "not-now");
+                    next();
+                  }}
+                  className="mt-2 inline-flex min-h-11 items-center self-center rounded-pill px-4 font-sans text-caption text-paper/55 transition-colors hover:text-paper"
+                >
+                  {reminderNote ? t("onboard.continue") : t("onboard.reminders.notNow")}
+                </button>
+              </Step>
+            </div>
+          ))}
 
         {step === "handoff" && <HandoffSlate lines={slateLines} onFinish={() => finish(true)} />}
       </div>
