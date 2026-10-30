@@ -1,4 +1,5 @@
 import { cn } from "@/lib/cn";
+import { iconFace } from "@/lib/saints/iconFaces";
 import type { WebNode } from "@/lib/saints/webLayout";
 
 /**
@@ -6,6 +7,12 @@ import type { WebNode } from "@/lib/saints/webLayout";
  * or his initial in Lora where the app carries no icon of him; a council as a
  * rounded square with its number in the seven. Decorative: the name beside it
  * says who it is.
+ *
+ * The icon is cut where his face is (lib/saints/iconFaces.ts): 20% from the
+ * top for a head and shoulders, nearer the top for a standing figure, so St
+ * John Chrysostom's circle shows his face and not his chest (round 3, r3-06).
+ * It never starts a picture drag of its own: on the web a mouse moves the
+ * saint, not his icon.
  */
 export function WebAvatar({ node, size, className }: { node: WebNode; size: number; className?: string }) {
   if (node.kind === "council") {
@@ -35,7 +42,15 @@ export function WebAvatar({ node, size, className }: { node: WebNode; size: numb
     >
       {icon ? (
         // eslint-disable-next-line @next/next/no-img-element -- the app's own icon, as it is.
-        <img src={icon} alt="" loading="lazy" decoding="async" className="h-full w-full object-cover object-[50%_20%]" />
+        <img
+          src={icon}
+          alt=""
+          loading="lazy"
+          decoding="async"
+          draggable={false}
+          className="h-full w-full object-cover"
+          style={{ objectPosition: `50% ${iconFace(icon)}%` }}
+        />
       ) : (
         initial
       )}
