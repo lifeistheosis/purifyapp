@@ -739,6 +739,8 @@ export const SCHEMES: Readonly<Record<string, Scheme>> = {
   "cyprian-of-carthage/the-life-and-passion-of-cyprian": { title: { re: /^Chapter (\d+)$/, levels: ["chapter"] }, edition: "ANF 5" },
   "jerome-of-stridon/life-of-paulus-the-first-hermit": { title: { re: /^(\d+)$/, levels: ["chapter"] }, edition: NPNF("II", 6) },
   "jerome-of-stridon/life-of-saint-hilarion": { title: { re: /^(\d+)$/, levels: ["chapter"] }, edition: NPNF("II", 6) },
+  // The same Life, registered under St. Hilarion too (as the Life of Antony is under both).
+  "hilarion-the-great/life-of-saint-hilarion": { title: { re: /^(\d+)$/, levels: ["chapter"] }, edition: NPNF("II", 6) },
   "jerome-of-stridon/life-of-malchus-the-captive-monk": { title: { re: /^(\d+)$/, levels: ["chapter"] }, edition: NPNF("II", 6) },
   "jerome-of-stridon/the-perpetual-virginity-of-blessed-mary": { title: { re: /^(\d+)$/, levels: ["section"] }, edition: NPNF("II", 6) },
   "gregory-of-nyssa/the-great-catechism": { title: { re: /^Chapter (\d+)$/, levels: ["chapter"] }, edition: NPNF("II", 5) },

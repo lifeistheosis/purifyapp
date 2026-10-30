@@ -581,6 +581,61 @@ export const ICON_RIGHTS: Record<string, IconRights> = {
     license: "CC0",
     evidenceUrl: "https://commons.wikimedia.org/wiki/File:Fethiye_Camii,_parekklesion,_southwest_bay,_mosaics,_Istanbul,_Turkey_-_North_arch,_east_soffit,_St._Arsenius,_detail_of_bust_-_MSBZ004_BF_T_F_040_A_-_Dumbarton_Oaks.jpg",
   },
+  // Added 2026-10-30 for the desert fathers of the History event "The Desert".
+  // Each was read on its Commons page, opened and looked at before it was
+  // cut, and again after: the right saint, the whole head and halo.
+  "pachomius-the-great.jpg": {
+    status: "verified",
+    inspectedOn: "2026-10-30",
+    alt: "A dark-bearded monk turned to the right with his face lifted, in a brown mantle and a dark green schema marked with small gold crosses, within a red-ringed halo on a worn gold ground, under a Church Slavonic inscription naming him the Venerable Pachomius the Great.",
+    work: "Russian icon of St Pachomius the Great, St Alexander Nevsky, St Dmitry the Tsarevich and St Mary Magdalene, in a metal basma oklad, Moscow: St Pachomius alone, under his inscription",
+    artist: "Anonymous Russian icon painter",
+    workDate: "18th century",
+    source: "Wikimedia Commons (a private collection)",
+    license: "Public domain",
+    evidenceUrl: "https://commons.wikimedia.org/wiki/File:Pakhomy,_Alexander_Nevsky,_Dmitry_and_Mary_Magdalene_(18th_c,_priv.coll).jpg",
+  },
+  // No old Orthodox icon of him passed: the Menologion of Basil II miniature
+  // on Commons (his repose, Antony looking on) carries the Vatican Library's
+  // watermark, and the icon in the Russian Lives of the Saints (1903 to 1911)
+  // is a coarse black-and-white print. So an old Western engraving stands in
+  // its place, as old Western paintings do for the Fathers of the Latin West
+  // (docs/licensing/COVER_ICONS.md). Named on the plate: S. Ammon Nitriota.
+  "ammon-of-nitria.jpg": {
+    status: "verified",
+    inspectedOn: "2026-10-30",
+    alt: "A black-and-white engraving of an old hermit with long unkempt hair and a flowing beard, his head ringed with rays of light, his hands clasped in prayer before him and a heavy mantle drawn over his shoulders.",
+    work: "S. Ammon Nitriota, plate 21 of Sylva anachoretica Aegypti et Palaestinae: his head and clasped hands",
+    artist: "Boetius à Bolswert, after Abraham Bloemaert",
+    workDate: "1619",
+    source: "Wikimedia Commons, from the copy in the Radboud University Library, Nijmegen",
+    license: "Public domain",
+    evidenceUrl: "https://commons.wikimedia.org/wiki/File:Bloemaert_-_1619_-_Sylva_anachoretica_Aegypti_et_Palaestinae_-_UB_Radboud_Uni_Nijmegen_-_512890366_21_S_Ammon_Nitriota.jpeg",
+  },
+  // The wall painting his books already wear in the reading room
+  // (lib/reading/authorCovers.ts, hilarion.v1.jpg), cut to the icons' size.
+  "hilarion-the-great.jpg": {
+    status: "verified",
+    inspectedOn: "2026-10-30",
+    alt: "A wall painting of an old monk with a bald crown, deep-set eyes and a long white beard, in a brown mantle, holding a slender cross, within a large ochre halo on a mottled blue-green ground, his Greek name in white letters on either side.",
+    work: "Wall painting of St Hilarion, the church of the Panagia tou Arakos, Lagoudera, Cyprus, before its cleaning: the upper half",
+    artist: "Unknown (the photograph is David Winfield's for Dumbarton Oaks)",
+    workDate: "Not given on its page (the church's paintings are generally dated 1192)",
+    source: "Wikimedia Commons, Dumbarton Oaks (Byzantine Institute and Dumbarton Oaks Fieldwork Records)",
+    license: "CC0",
+    evidenceUrl: "https://commons.wikimedia.org/wiki/File:Church_of_Panagia_tou_Arakos,_nave,_southwest_bay,_wall_paintings,_Lagoudera,_Cyprus_-_West_soffit,_St._Hilarion,_detail_of_upper_half,_before_cleaning_-_MSBZ004_BF_S_1979_2198D_-_Dumbarton_Oaks.jpg",
+  },
+  "macarius-the-great.jpg": {
+    status: "verified",
+    inspectedOn: "2026-10-30",
+    alt: "A wall painting in pale ochre and white of a figure dissolved in white light under a great ochre halo, only the small dark face and the two dark open hands, raised in prayer, drawn clearly.",
+    work: "Fresco of St Macarius the Great, the Church of the Transfiguration on Ilyina Street, Veliky Novgorod, the whole image",
+    artist: "Theophanes the Greek",
+    workDate: "1378",
+    source: "Wikimedia Commons, scanned from V. N. Alexandrov, History of Russian Art (2004)",
+    license: "Public domain",
+    evidenceUrl: "https://commons.wikimedia.org/wiki/File:Spas_na_Ilyine_-_Saint_Macarius_the_Great.jpg",
+  },
   "job-of-pochaev.jpg": {
     status: "verified",
     inspectedOn: "2026-08-12",

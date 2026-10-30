@@ -312,6 +312,140 @@ export const SAINTS: Saint[] = [
  },
  ],
  },
+ // Fathers of the desert the Orthodox History event "The Desert" names
+ // (data/history/anthony-and-the-desert.json), added 2026-10-30. Each Life is
+ // the witnesses' own public-domain words (data/saints/{slug}/). The brief,
+ // the epithet, the byname and the life below are ours, written from the
+ // public-domain sources each Life names and from the calendar of the Church,
+ // and they wait for a clergy review with the rest of our framing
+ // (docs/editorial-standards.md, Clergy / theological review, item 24).
+ {
+ slug: "pachomius-the-great",
+ byname: "Father of the Common Life",
+ iconUrl: "/saints/icons/pachomius-the-great.jpg",
+ name: "St. Pachomius the Great",
+ epithet: "Abbot of Tabennisi · The Great",
+ born: "Late 3rd century (Egypt)",
+ reposed: "c. 346 or 348 (the Thebaid, Upper Egypt)",
+ feastDays: ["May 15"],
+ shortBio:
+ "The young Egyptian who came to Christ through the kindness of Christians, gathered the monks of the Thebaid into monasteries under one rule, and is honored as the father of the common life.",
+ life: [
+ "Pachomius was born to pagan parents in Egypt toward the end of the third century. As a young man he was conscripted into the army in the civil wars of Constantine's day, and the kindness that Christians showed to him and his fellow recruits in their distress drew him to Christ. After his baptism he gave himself to the ascetic life under an old hermit, Palaemon, praying and fasting with him and weaving the rough garments of the monks.",
+ "Withdrawing to Tabennisi, a deserted village in the Thebaid of Upper Egypt, he was bidden in a vision to stay and build a monastery for the many who would come to him. His elder brother came first, and then others, and Pachomius did for them what no one had yet done: he joined the solitaries into one common life, in houses within an enclosure, with their meals, their work and their prayers kept by rule.",
+ "Palladius records that an angel showed him the rule on a tablet of brass. It let each brother eat and fast as his strength allowed, set the strong to the heavier labours and the weak to the lighter, and divided the brethren into twenty-four classes named by the letters of the Greek alphabet. Work with the hands was part of the life itself: the brethren were farmers, gardeners, smiths, bakers, carpenters, fullers, basket-makers, tanners, shoemakers and copyists, and they learned the Scriptures by heart.",
+ "His houses grew quickly. Before his death nine monasteries of men kept his rule, the house where he lived, Pabau, being the mother of the rest, and two of women, the sisters living across the river from the brethren under the same rule. Palladius tells how St. Macarius of Alexandria once came to Tabennisi in disguise and kept the whole of Lent standing in silence, and how Pachomius, when God showed him who the stranger was, thanked him for teaching his monks humility.",
+ "He fell asleep about the year 346; the calendars of the Church give 348. Among his disciples was St. Theodore the Sanctified, remembered on the day after him, who in time led his monasteries. His rule, put into Latin by St. Jerome, shaped the common life of monks in East and West. The Church keeps his memory on the fifteenth of May.",
+ ],
+ works: [
+ {
+ slug: "life-of-pachomius",
+ title: "The Life of St. Pachomius",
+ subtitle: "From the Lausiac History of Palladius",
+ year: "c. 420",
+ blurb:
+ "Palladius's chapters on Pachomius and his monks of Tabennisi: the rule an angel gave him on a tablet of brass, the life and labour of the great monastery, the house of the sisters across the river, and the Lent when St. Macarius of Alexandria came to him in disguise. In the public-domain English of W. K. Lowther Clarke (1918).",
+ topics: ["Monasticism", "Common Life", "Rule", "Obedience", "Work"],
+ },
+ ],
+ },
+ {
+ slug: "ammon-of-nitria",
+ byname: "Father of Nitria",
+ iconUrl: "/saints/icons/ammon-of-nitria.jpg",
+ name: "St. Ammon of Nitria",
+ epithet: "Of Nitria · The Egyptian",
+ reposed: "Before St. Antony, in the 4th century (Nitria)",
+ feastDays: ["October 4"],
+ shortBio:
+ "The Egyptian who kept virginity with his wife through eighteen years of marriage, then went out to the mountain of Nitria and became the father of its monks; St. Antony saw his soul carried up to heaven.",
+ life: [
+ "Ammon, whom Palladius calls Amoun and St. Athanasius Amun, was an Egyptian of the generation of St. Antony. He was left an orphan, and at about twenty-two his uncle pressed him into marriage. On the night of the wedding he read to his bride from the Apostle and the Gospels and persuaded her to keep her virginity with him, and for eighteen years they lived in one house as brother and sister, he working by day in his garden and among his balsam bushes and praying with her in the evening.",
+ "In the end it was his wife who asked that they live apart, so that a virtue like his should not stay hidden. He went out to the inner part of the mountain of Nitria, south of Lake Mareotis, where there were as yet no monasteries, and built himself two round cells. He lived there twenty-two years more and saw his wife twice a year. Disciples gathered about him, and the mountain filled with monks: when Palladius came there, some five thousand men lived on it.",
+ "Two wonders were told of him. Once, when he had to cross the canal called the Lycus and would not be seen unclothed, he found himself carried over to the far bank without touching the water. And when he died, St. Antony, thirteen days' journey away, saw his soul carried up to heaven, and the monks who came from Nitria a month later found that he had died on that very day and hour.",
+ "He is remembered as the father of the monks of Nitria, from whom the settlements of Nitria and Scetis grew. The Church keeps his memory on the fourth of October.",
+ ],
+ works: [
+ {
+ slug: "life-of-ammon",
+ title: "The Life of St. Ammon of Nitria",
+ subtitle: "From Palladius, St. Athanasius and Sozomen",
+ year: "c. 360 to 440",
+ blurb:
+ "Palladius's chapter on Amoun of Nitria, St. Athanasius's account of the vision in which St. Antony saw his soul carried up, and Sozomen's history of him: a marriage kept in virginity, the first monks of Nitria, and the crossing of the river Lycus. In the public-domain English of W. K. Lowther Clarke (1918) and the Nicene and Post-Nicene Fathers.",
+ topics: ["Monasticism", "Chastity", "Marriage", "Desert", "Miracles"],
+ },
+ ],
+ },
+ {
+ slug: "hilarion-the-great",
+ byname: "Father of the Monks of Palestine",
+ iconUrl: "/saints/icons/hilarion-the-great.jpg",
+ name: "St. Hilarion the Great",
+ epithet: "Of Gaza · The Great",
+ born: "c. 291 (Thabatha, near Gaza)",
+ reposed: "c. 371 (Cyprus)",
+ feastDays: ["October 21"],
+ shortBio:
+ "The young man of Gaza who learned the ascetic life from St. Antony and carried it home, so that the monks of Palestine begin with him; a healer sought by crowds, who spent his old age fleeing their praise.",
+ life: [
+ "Hilarion was born about the year 291 at Thabatha, a village south of Gaza in Palestine, to pagan parents, who sent him to study at Alexandria. There he came to believe in Christ, and he loved the assemblies of the Church more than the circus and the theatre. Hearing of St. Antony, he went into the desert to see him, and stayed with him about two months, learning his prayer, his humility and his rule of life.",
+ "Finding the crowds around Antony too great, he went home, gave what his dead parents had left him to his brothers and to the poor, and at about fifteen went out alone into the wilderness near Majuma, the port of Gaza. He lived there in a hut of reeds and sedge, and later in a cell hardly larger than a tomb, on a few figs a day or a little bread, weaving baskets and singing the Psalms, and he fought for years against hunger, sleep, the flesh and the demons.",
+ "After twenty-two years in the wilderness the sick began to find him, and the healings and deliverances God worked through him made his name known through Palestine, Syria and Egypt. Monasteries sprang up after his pattern throughout Palestine, and St. Antony, hearing of him, wrote to him and sent the sick of Syria to him, calling him his son. St. Jerome writes that before Hilarion there were no monasteries in Palestine, and that as the Lord had Antony in Egypt, so He had Hilarion in Palestine.",
+ "In old age, weighed down by the crowds and the honour, he fled. He went to Egypt, to the places where Antony had lived and died, then to the oasis of the desert, to Sicily, to Dalmatia and at last to Cyprus, and wherever he hid, the sick and the possessed found him out. His faithful disciple Hesychius followed and found him again and again.",
+ "He fell asleep in a remote place in the mountains of Cyprus about the year 371, in his eightieth year, leaving Hesychius his Gospel book and his poor clothes. He was buried there at once, as he had asked, and Hesychius afterwards brought his body home to his old monastery at Majuma. St. Jerome wrote his Life at Bethlehem about twenty years later. The Church keeps his memory on the twenty-first of October.",
+ ],
+ works: [
+ {
+ slug: "life-of-saint-hilarion",
+ title: "The Life of S. Hilarion",
+ subtitle: "Written by St. Jerome",
+ year: "c. 390",
+ blurb:
+ "St. Jerome's Life of the hermit who learned from St. Antony and carried the desert into Palestine: his years in the wilderness of Gaza, the crowds that came to be healed, and his flight in old age through Egypt, Sicily and Dalmatia to Cyprus, where he died. The same text as on St. Jerome's page, in the public-domain English of the Nicene and Post-Nicene Fathers (1893).",
+ topics: ["Hagiography", "Asceticism", "Desert", "Miracles", "Humility"],
+ },
+ {
+ slug: "sayings-of-abba-hilarion",
+ title: "Sayings of Abba Hilarion",
+ subtitle: "From the Paradise of the Holy Fathers",
+ year: "5th century",
+ blurb:
+ "His greeting to St. Antony on the mountain, and the hunting dog that runs on alone after the hare while the others turn back: the two sayings the Syriac collection gives in his name, verbatim from the public-domain English of Budge's Paradise of the Holy Fathers (1907).",
+ topics: ["Perseverance", "Desert", "Sayings"],
+ },
+ ],
+ },
+ {
+ slug: "macarius-the-great",
+ byname: "The Egyptian",
+ iconUrl: "/saints/icons/macarius-the-great.jpg",
+ name: "St. Macarius the Great",
+ epithet: "Of Egypt · Father of Scetis",
+ born: "c. 300 (Upper Egypt)",
+ reposed: "c. 390 (Scetis)",
+ feastDays: ["January 19"],
+ shortBio:
+ "The priest of the inner desert of Scetis, called an old man while he was still young for his discernment, renowned for his healings, his prophecy and his unceasing prayer.",
+ life: [
+ "Macarius was born in Upper Egypt about the year 300 and is counted among the disciples of St. Antony. He went into the desert at thirty and made such progress that, though young, he was called an old man for his discernment. At forty he received the grace of healing and of foreseeing what was to come, and he was ordained a priest.",
+ "He lived in the inner desert of Scetis with two disciples, one to serve the many who came to be healed and one to rest in a cell nearby. It was said of him that he was almost always rapt in God, spending far more time with Him than with the things of the earth. So that he could pray unseen, he dug a tunnel a short way underground from his cell to a cave, and said twenty-four prayers on the way there and twenty-four on the way back.",
+ "Palladius tells of a woman whom a magician's spell had made all others, her husband too, see as a mare. Macarius saw her as she was, a woman, and by his prayer made her appear so to all; then he charged her never to stay away from the Holy Communion. It was also reported in the desert that he raised a dead man to persuade a heretic of the resurrection of the body.",
+ "Socrates names him with St. Macarius of Alexandria as the two great Macarii of that age: the Egyptian stern with those who came to him, yet drawing their reverence, the Alexandrian cheerful with all. When the Arian Lucius held the see of Alexandria under the emperor Valens, both were banished to an island where no Christian lived, and there they freed the pagan priest's daughter from a demon and brought the whole island to the faith.",
+ "He fell asleep in Scetis about the year 390, at ninety, having lived sixty years in the desert, and monasteries in the desert of Egypt still bear his name. The Church keeps his memory on the nineteenth of January.",
+ ],
+ works: [
+ {
+ slug: "life-of-macarius",
+ title: "The Life of St. Macarius the Great",
+ subtitle: "From Palladius and Socrates",
+ year: "c. 420 to 440",
+ blurb:
+ "Palladius's chapter on Macarius of Egypt, written by one who came to the desert a year after his death, with Socrates on the two Macarii and their exile to an island under the Arian emperor Valens. In the public-domain English of W. K. Lowther Clarke (1918) and the Nicene and Post-Nicene Fathers.",
+ topics: ["Monasticism", "Desert", "Prayer", "Miracles", "Communion"],
+ },
+ ],
+ },
  {
  slug: "athanasius-the-great",
  byname: "Pillar of Orthodoxy",

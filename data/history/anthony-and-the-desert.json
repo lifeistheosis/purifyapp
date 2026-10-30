@@ -159,18 +159,22 @@
     },
     {
       "name": "St Pachomius",
+      "saint": "pachomius-the-great",
       "role": "Founder of the Tabennesian monks of the Thebaid, who lived in common under one rule."
     },
     {
       "name": "St Ammon of Nitria",
+      "saint": "ammon-of-nitria",
       "role": "Founder of the monasteries of Nitria, south of Lake Mareotis."
     },
     {
       "name": "St Macarius the Egyptian",
+      "saint": "macarius-the-great",
       "role": "With Macarius of Alexandria, one of the two leading fathers of Scetis."
     },
     {
       "name": "St Hilarion",
+      "saint": "hilarion-the-great",
       "role": "Native of Thabatha near Gaza who learned the monastic life with Anthony and carried it to Palestine."
     },
     {

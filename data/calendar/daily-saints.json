@@ -159,6 +159,7 @@
   "01-19": [
     {
       "name": "St. Macarius the Great of Egypt",
+      "slug": "macarius-the-great",
       "note": "+ca. 391"
     }
   ],
@@ -999,6 +1000,7 @@
   "05-15": [
     {
       "name": "St. Pachomius the Great",
+      "slug": "pachomius-the-great",
       "note": "father of cenobitic monasticism, +348"
     },
     {
@@ -2716,6 +2718,7 @@
   "10-21": [
     {
       "name": "St. Hilarion the Great",
+      "slug": "hilarion-the-great",
       "note": "Palestinian hermit, +371"
     },
     {
