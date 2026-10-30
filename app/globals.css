@@ -866,15 +866,292 @@ body[data-reader-screen][data-reader-away] [data-tab-bar]:has(:focus-visible) {
 
 /* ── The saint web (1.8) ──
    The owner's round 1, A and B with a switch (components/saints/web). The
-   sheet that tells how two saints are joined stays at the foot of the screen
-   while the web scrolls past it, above the app's tab bar and the player, and
-   settles under the web at its end. The Timeline's line runs dashed after
-   the saint's repose, as the design draws it. */
+   Timeline's line runs dashed after the saint's repose, as the design draws
+   it.
+
+   Round 3, sheet r3-06 (his build 80 notes 15 and 30; he left the pick to the
+   design job on 2026-10-30, and it is card A with drag B). The card that tells
+   how two saints are joined is short at the foot of the screen, 78px over the
+   tab bar, and stands above whatever the foot already holds, the mini player
+   and Today's readings bar (--now-playing-h, --readings-flow-h). Pulled up it
+   grows to what it holds; tucked, it is a handle on the foot's edge, just
+   under its lip. The page keeps room under the web for the card, so the web's
+   last saints scroll clear of it. The key over the web is a carved track. A
+   moved saint is painted as `translate` on every frame of its springs
+   (lib/saints/webMotion.ts), so no transition here names `translate` for a
+   saint: it would trail the finger. Tokens throughout, with the house's
+   fallback first for a WebView without color-mix (Android before 111). */
+.saint-web-room {
+ padding-bottom: calc(var(--saint-web-card-h, 78px) + env(safe-area-inset-bottom, 0px) + var(--now-playing-h) + var(--readings-flow-h) + 28px);
+}
+html.is-native .saint-web-room {
+ padding-bottom: calc(var(--saint-web-card-h, 78px) + 20px);
+}
 .saint-web-sheet {
- bottom: calc(var(--tab-bar-h) + var(--now-playing-h));
+ bottom: calc(env(safe-area-inset-bottom, 0px) + var(--now-playing-h) + var(--readings-flow-h) + 12px);
+}
+@media (min-width: 768px) {
+ .saint-web-sheet {
+  bottom: calc(var(--now-playing-h) + var(--readings-flow-h) + 24px);
+ }
 }
 html.is-native .saint-web-sheet {
- bottom: calc(var(--inset-bottom) + var(--tab-bar-h) + var(--now-playing-h));
+ bottom: calc(var(--inset-bottom) + var(--tab-bar-h) + var(--now-playing-h) + var(--readings-flow-h) + 4px);
+}
+.saint-web-card {
+ border-radius: 22px;
+ background: var(--color-night-soft);
+ background: linear-gradient(180deg, color-mix(in srgb, var(--color-paper) 4%, var(--color-night-soft)), color-mix(in srgb, #000 10%, var(--color-night-soft)));
+ box-shadow: inset 0 0 0 1px rgb(255 255 255 / 0.075), inset 0 1px 0 rgb(var(--panel-sheen) / 0.09), 0 16px 36px rgb(0 0 0 / 0.62), 0 2px 6px rgb(0 0 0 / 0.4);
+ box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--color-paper) 7.5%, transparent), inset 0 1px 0 rgb(var(--panel-sheen) / 0.09), 0 16px 36px rgb(0 0 0 / 0.62), 0 2px 6px rgb(0 0 0 / 0.4);
+ translate: 0 var(--saint-web-pull, 0px);
+ transition:
+  height var(--duration-slow) var(--ease-house),
+  translate var(--duration-base) var(--ease-house),
+  opacity var(--duration-fast) var(--ease-house),
+  border-radius var(--duration-base) var(--ease-house);
+}
+.saint-web-card[data-state="tall"] {
+ border-radius: 24px;
+}
+/* Under the finger the card follows it at once; its height still eases. */
+.saint-web-card[data-pulling] {
+ transition: height var(--duration-slow) var(--ease-house);
+}
+.saint-web-card[data-away] {
+ translate: 0 calc(100% + 28px);
+ opacity: 0;
+ pointer-events: none;
+}
+/* The saint's own icon, as a soft grey light at the card's start. */
+.saint-web-card-light {
+ position: absolute;
+ inset-inline-start: -46px;
+ top: -56px;
+ width: 220px;
+ height: 200px;
+ background-size: cover;
+ background-position: 50% 22%;
+ filter: blur(24px) grayscale(1) brightness(1.25);
+ opacity: 0.24;
+ pointer-events: none;
+}
+html[data-reading-mode="parchment"] .saint-web-card-light {
+ display: none;
+}
+.saint-web-grab {
+ position: absolute;
+ top: 7px;
+ left: 50%;
+ z-index: 2;
+ width: 36px;
+ height: 4px;
+ margin-left: -18px;
+ border-radius: 2px;
+ background: rgb(255 255 255 / 0.24);
+ background: color-mix(in srgb, var(--color-paper) 24%, transparent);
+ pointer-events: none;
+}
+.saint-web-grab-small {
+ top: 4px;
+ width: 22px;
+ height: 3px;
+ margin-left: -11px;
+}
+.saint-web-card-short,
+.saint-web-card-tall {
+ transition: opacity var(--duration-fast) var(--ease-house);
+}
+.saint-web-card[data-state="tall"] .saint-web-card-short,
+.saint-web-card:not([data-state="tall"]) .saint-web-card-tall {
+ opacity: 0;
+ pointer-events: none;
+}
+.saint-web-card:not([data-state="tall"]) .saint-web-card-tall {
+ overflow: hidden;
+}
+/* What a pull starts on: the page does not scroll under it. */
+.saint-web-pull {
+ touch-action: none;
+ -webkit-tap-highlight-color: transparent;
+ -webkit-user-select: none;
+ user-select: none;
+}
+.saint-web-roundel {
+ display: grid;
+ flex: none;
+ place-items: center;
+ width: 30px;
+ height: 30px;
+ border-radius: 9999px;
+ color: rgb(255 255 255 / 0.5);
+ color: color-mix(in srgb, var(--color-paper) 50%, transparent);
+ background: rgb(255 255 255 / 0.05);
+ background: color-mix(in srgb, var(--color-paper) 5%, transparent);
+ box-shadow: inset 0 0 0 1px rgb(255 255 255 / 0.07);
+ box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--color-paper) 7%, transparent);
+}
+.saint-web-card-face {
+ box-shadow: 0 0 0 1px rgb(255 255 255 / 0.16), 0 6px 14px rgb(0 0 0 / 0.5);
+ box-shadow: 0 0 0 1px color-mix(in srgb, var(--color-paper) 16%, transparent), 0 6px 14px rgb(0 0 0 / 0.5);
+}
+.saint-web-handle-face {
+ box-shadow: 0 0 0 1px rgb(255 255 255 / 0.22);
+ box-shadow: 0 0 0 1px color-mix(in srgb, var(--color-paper) 22%, transparent);
+}
+/* The way on that matters most, lit: white with a soft white glow. */
+.saint-web-way-lit {
+ box-shadow: 0 0 18px rgb(255 255 255 / 0.18);
+}
+html[data-reading-mode="parchment"] .saint-web-way-lit {
+ box-shadow: none;
+}
+/* Tucked: the handle stands on the foot's edge, its lip under it. */
+.saint-web-handle {
+ bottom: calc(env(safe-area-inset-bottom, 0px) + var(--now-playing-h) + var(--readings-flow-h));
+ background: var(--color-night-soft);
+ background: linear-gradient(180deg, color-mix(in srgb, var(--color-paper) 6%, var(--color-night-soft)), color-mix(in srgb, var(--color-paper) 1%, var(--color-night-soft)));
+ border: 1px solid rgb(255 255 255 / 0.13);
+ border: 1px solid color-mix(in srgb, var(--color-paper) 13%, transparent);
+ border-bottom: 0;
+ box-shadow: inset 0 1px 0 rgb(var(--panel-sheen) / 0.12), 0 -6px 16px rgb(0 0 0 / 0.42);
+ translate: -50% 12px;
+ opacity: 0;
+ pointer-events: none;
+ transition: translate var(--duration-base) var(--ease-house), opacity var(--duration-fast) var(--ease-house);
+}
+.saint-web-handle[data-shown] {
+ translate: -50% 0;
+ opacity: 1;
+ pointer-events: auto;
+ transition-delay: 90ms;
+}
+@media (min-width: 768px) {
+ .saint-web-handle {
+  bottom: calc(var(--now-playing-h) + var(--readings-flow-h));
+ }
+}
+html.is-native .saint-web-handle {
+ bottom: calc(var(--inset-bottom) + var(--tab-bar-h) + var(--now-playing-h) + var(--readings-flow-h) - 6px);
+}
+/* Put back: over the short card's end, or over the handle when tucked. */
+.saint-web-putback {
+ inset-inline-end: max(16px, calc(50% - 280px));
+ bottom: calc(env(safe-area-inset-bottom, 0px) + var(--now-playing-h) + var(--readings-flow-h) + 50px);
+ background: var(--color-night-soft);
+ background: linear-gradient(180deg, color-mix(in srgb, var(--color-paper) 6%, var(--color-night-soft)), color-mix(in srgb, var(--color-paper) 1%, var(--color-night-soft)));
+ box-shadow: inset 0 0 0 1px rgb(255 255 255 / 0.12), 0 8px 20px rgb(0 0 0 / 0.55);
+ box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--color-paper) 12%, transparent), 0 8px 20px rgb(0 0 0 / 0.55);
+ -webkit-tap-highlight-color: transparent;
+ translate: 0 -50px;
+ opacity: 0;
+ pointer-events: none;
+ transition: translate var(--duration-base) var(--ease-house), opacity var(--duration-fast) var(--ease-house), scale 90ms ease-out;
+}
+.saint-web-putback[data-low] {
+ translate: 0 0;
+}
+.saint-web-putback[data-shown] {
+ opacity: 1;
+ pointer-events: auto;
+}
+.saint-web-putback:active {
+ scale: var(--press-scale-sm);
+}
+@media (min-width: 768px) {
+ .saint-web-putback {
+  bottom: calc(var(--now-playing-h) + var(--readings-flow-h) + 62px);
+ }
+}
+html.is-native .saint-web-putback {
+ bottom: calc(var(--inset-bottom) + var(--tab-bar-h) + var(--now-playing-h) + var(--readings-flow-h) + 42px);
+}
+/* The key: the kinds as one carved track, the chosen part raised and lit. */
+.saint-web-key {
+ background: rgb(0 0 0 / 0.32);
+ background: linear-gradient(180deg, rgb(0 0 0 / 0.42), color-mix(in srgb, var(--color-paper) 2.5%, transparent));
+ box-shadow: inset 0 2px 5px rgb(0 0 0 / 0.65), inset 0 0 0 1px rgb(255 255 255 / 0.055), 0 1px 0 rgb(var(--panel-sheen) / 0.05);
+ box-shadow: inset 0 2px 5px rgb(0 0 0 / 0.65), inset 0 0 0 1px color-mix(in srgb, var(--color-paper) 5.5%, transparent), 0 1px 0 rgb(var(--panel-sheen) / 0.05);
+}
+.saint-web-key-part {
+ color: rgb(255 255 255 / 0.52);
+ color: color-mix(in srgb, var(--color-paper) 52%, transparent);
+}
+.saint-web-key-count {
+ color: rgb(255 255 255 / 0.34);
+ color: color-mix(in srgb, var(--color-paper) 34%, transparent);
+}
+.saint-web-key-part[aria-pressed="true"] {
+ color: var(--color-paper);
+ background: var(--color-night-soft);
+ background: linear-gradient(180deg, color-mix(in srgb, var(--color-paper) 8%, var(--color-night-soft)), color-mix(in srgb, var(--color-paper) 2%, var(--color-night-soft)));
+ box-shadow: inset 0 0 0 1px rgb(255 255 255 / 0.12), inset 0 1px 0 rgb(var(--panel-sheen) / 0.14), 0 6px 14px rgb(0 0 0 / 0.5), 0 0 18px rgb(255 255 255 / 0.07);
+ box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--color-paper) 12%, transparent), inset 0 1px 0 rgb(var(--panel-sheen) / 0.14), 0 6px 14px rgb(0 0 0 / 0.5), 0 0 18px rgb(255 255 255 / 0.07);
+}
+.saint-web-key-part[aria-pressed="true"] .saint-web-key-word {
+ text-shadow: 0 0 10px rgb(255 255 255 / 0.45);
+}
+.saint-web-key-part[aria-pressed="true"] .saint-web-key-count {
+ color: rgb(255 255 255 / 0.6);
+ color: color-mix(in srgb, var(--color-paper) 60%, transparent);
+}
+.saint-web-key-part[aria-pressed="true"] svg {
+ filter: drop-shadow(0 0 3px rgb(255 255 255 / 0.8));
+}
+html[data-reading-mode="parchment"] .saint-web-key {
+ background: color-mix(in srgb, var(--color-paper) 7%, var(--color-night));
+ box-shadow: inset 0 2px 4px rgb(0 0 0 / 0.14), inset 0 0 0 1px color-mix(in srgb, var(--color-paper) 8%, transparent);
+}
+html[data-reading-mode="parchment"] .saint-web-key-part[aria-pressed="true"] {
+ background: var(--color-night);
+ box-shadow: 0 0 0 1px color-mix(in srgb, var(--color-paper) 12%, transparent), 0 3px 8px rgb(0 0 0 / 0.12);
+}
+html[data-reading-mode="parchment"] .saint-web-key-part[aria-pressed="true"] .saint-web-key-word {
+ text-shadow: none;
+}
+html[data-reading-mode="parchment"] .saint-web-key-part[aria-pressed="true"] svg {
+ filter: none;
+}
+/* A saint on the web. His circle is where a finger takes him (his name still
+   scrolls the page); lifted, he grows a little and casts a shadow. */
+[data-saint-web-canvas] .saint-web-node {
+ -webkit-touch-callout: none;
+ -webkit-user-select: none;
+ user-select: none;
+ transition: transform 220ms var(--ease-house), scale var(--duration-fast) var(--ease-house), opacity var(--duration-fast) ease-out;
+}
+[data-saint-web-canvas] [data-web-grip] {
+ touch-action: none;
+}
+.saint-web-ring {
+ transition: box-shadow var(--duration-fast) var(--ease-house);
+}
+.saint-web-ring-on {
+ box-shadow: 0 0 0 3px var(--color-night), 0 0 0 4.5px var(--color-paper), 0 0 16px 4px rgb(255 255 255 / 0.4);
+}
+[data-saint-web-canvas] .saint-web-node[data-held] {
+ z-index: 5;
+ scale: 1.08;
+}
+[data-saint-web-canvas] .saint-web-node[data-held] .saint-web-ring {
+ box-shadow: 0 0 0 3px var(--color-night), 0 0 0 4.5px var(--color-paper), 0 0 16px 4px rgb(255 255 255 / 0.4), 0 14px 26px rgb(0 0 0 / 0.6);
+}
+html[data-reading-mode="parchment"] .saint-web-ring-on {
+ box-shadow: 0 0 0 3px var(--color-night), 0 0 0 4.5px var(--color-paper);
+}
+:where([data-motion="reduce"]) .saint-web-card,
+:where([data-motion="reduce"]) .saint-web-card[data-pulling],
+:where([data-motion="reduce"]) .saint-web-card-short,
+:where([data-motion="reduce"]) .saint-web-card-tall,
+:where([data-motion="reduce"]) .saint-web-handle,
+:where([data-motion="reduce"]) .saint-web-putback,
+:where([data-motion="reduce"]) .saint-web-ring,
+:where([data-motion="reduce"]) [data-saint-web-canvas] .saint-web-node {
+ transition: none;
+}
+:where([data-motion="reduce"]) .saint-web-putback:active,
+:where([data-motion="reduce"]) [data-saint-web-canvas] .saint-web-node[data-held] {
+ scale: none;
 }
 .saint-web-after {
  /* For a WebView without color-mix (Android before 111). */

@@ -68,6 +68,9 @@ const WEB_FILES = [
   "components/saints/web/SaintWebScreen.tsx",
   "components/saints/web/WebViewSwitch.tsx",
   "components/saints/web/WebConstellation.tsx",
+  "components/saints/web/WebKey.tsx",
+  "components/saints/web/WebCard.tsx",
+  "components/saints/web/WebLineMark.tsx",
   "components/saints/web/WebTimeline.tsx",
   "components/saints/web/WebAvatar.tsx",
   "components/saints/web/webWords.ts",
@@ -220,6 +223,7 @@ describe("a saint's page", () => {
       "saints.web.openHisPage",
       "saints.web.openHerPage",
       "saints.web.center",
+      "saints.web.putBack",
       "saints.web.openCouncil",
       "saints.web.yearByYearHis",
       "saints.web.yearByYearHer",
@@ -252,7 +256,7 @@ describe("the saint web", () => {
     // The page mounts its own bar, as every page does, the switch in it.
     expect(code(WEB)).toMatch(/<MobileTopBar[\s\S]*?center=\{<WebViewSwitch idBase="saint-web-bar" \/>\}/);
     const screen = code("components/saints/web/SaintWebScreen.tsx");
-    expect(screen).toContain("<WebConstellation data={data} />");
+    expect(screen).toMatch(/<WebConstellation\b[^>]*\bdata=\{data\}/);
     expect(screen).toContain("<WebTimeline data={data} />");
     expect(screen).not.toMatch(/<MobileTopBar/);
     // The view is kept in the address, and back still leaves the screen.
