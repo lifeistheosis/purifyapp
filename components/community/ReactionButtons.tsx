@@ -70,7 +70,7 @@ import {
  * ── Pressed has to LOOK pressed ────────────────────────────────────────
  *
  * The same report: a gold tint at 12% on a dark row is not an answer to "did
- * that work". A held reaction now fills the thumb, deepens the tint, and says
+ * that work". A held reaction now fills the thumb, lights it white, and says
  * what a second press will do, so it reads in a glance and reads without
  * colour alone.
  */
@@ -190,20 +190,22 @@ export function ReactionButtons({
     }
   }
 
-  // One pill for the pair, split by a hairline (2026-10-19, the owner: the
-  // row should be cleaner and not a mess). Two pills of their own, beside
-  // the responses' pills, wrapped the row onto two lines on a phone. The
-  // half the reader holds is filled in the paper's own light, never gold:
-  // gold is not Purify's, and the filled thumb carries the state without
-  // any colour at all.
+  // Bare on the page (1.8, the owner's pick of r3-02, B: posts set like a
+  // page, no boxes): the thumb and its count, the opposite thumb beside it,
+  // no pill around them. The one the reader holds is filled and lit white,
+  // softly (community-lit), never gold: the filled thumb carries the state
+  // without any colour at all, and the light says it at a glance.
+  //
+  // Each is at least 44px wide, so `hit-44` only grows the touch upward and
+  // downward and two thumbs side by side never take each other's taps.
   const compact = size === "reply";
   const base = cn(
-    "tap-press inline-flex items-center justify-center font-sans font-medium transition-colors disabled:opacity-50",
-    compact ? "hit-44 h-7 gap-1 px-2.5 text-eyebrow" : "h-9 gap-1.5 px-3 text-caption",
+    "tap-press hit-44 inline-flex min-w-11 items-center justify-center rounded-pill font-sans font-semibold transition-colors disabled:opacity-50",
+    compact ? "h-7 gap-1 px-1 text-eyebrow" : "h-9 gap-1.5 px-1.5 text-[13px]",
   );
-  const held = "bg-paper/[0.12] font-semibold text-paper";
-  const rest = "text-paper/65 hover:bg-paper/[0.06] hover:text-paper";
-  const iconSize = compact ? 12 : 14;
+  const held = "community-lit text-paper";
+  const rest = "text-paper/60 hover:text-paper";
+  const iconSize = compact ? 12 : 15;
   const liked = state === 1;
   const disliked = state === -1;
 
@@ -212,8 +214,8 @@ export function ReactionButtons({
     // `flex items-center` and spaces itself. The mt-3 that used to be here
     // pushed the pills 12px below the replies button beside them, so the row
     // was centred on paper and visibly stepped on screen.
-    <div className="inline-flex items-center gap-2">
-      <div className="inline-flex items-center rounded-pill border border-paper/15">
+    <div className="inline-flex items-center">
+      <div className="inline-flex items-center">
         <button
           type="button"
           onClick={() => press(1)}
@@ -227,13 +229,12 @@ export function ReactionButtons({
                 : t("community.like")
               : t("community.signInToReact")
           }
-          className={cn(base, "rounded-s-pill ps-3.5", compact && "ps-3", liked ? held : rest)}
+          className={cn(base, liked ? held : rest)}
         >
           <ThumbIcon up filled={liked} size={iconSize} />
           {/* tabular-nums so the row does not shift as the count changes. */}
           <span className="tabular-nums">{counts.like}</span>
         </button>
-        <span aria-hidden className={cn("w-px self-stretch bg-paper/15", compact ? "my-1" : "my-2")} />
 
         <button
           type="button"
@@ -248,7 +249,7 @@ export function ReactionButtons({
                 : t("community.dislike")
               : t("community.signInToReact")
           }
-          className={cn(base, "rounded-e-pill pe-3.5", compact && "pe-3", disliked ? held : rest)}
+          className={cn(base, disliked ? held : rest)}
         >
           <ThumbIcon filled={disliked} size={iconSize} />
           {SHOW_DISLIKE_COUNT ? (

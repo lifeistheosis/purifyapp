@@ -48,7 +48,9 @@ describe("SupporterMark", () => {
 
   it("uses palette tokens, not literal colours", () => {
     const html = render("pro");
-    expect(html).toContain("var(--color-festal)");
+    // The Premium silver from 1.8 (the owner's pick of r3-02: the marks in
+    // the house greys), where it was the liturgical gold's token.
+    expect(html).toContain("var(--color-premium)");
     expect(html).toContain("var(--color-crimson)");
     expect(html).not.toMatch(/#[0-9a-f]{3,6}\b/i);
   });

@@ -4582,6 +4582,198 @@ details[open] > .band-open {
  mask-image: linear-gradient(to bottom, #000 calc(100% - var(--fold-lead) * 1.5em), transparent);
 }
 
+/* ── Community: Pray together and Talk together (1.8) ─────────────────
+   The owner's pick of r3-02, "B with A's top" (Homebase/boards/
+   purify-master/variants/r3-02-community.html): one switch, its two halves
+   in one well carved into the page, the open half raised out of it and lit
+   white; three words across Talk together, a lit rule under the open one;
+   posts set like a page; a shared line as a card worth sharing; and Pray
+   together opening with A's head, the Pentecost icon fading in behind the
+   name and melting into the page. Drawn from the page's own tokens, each
+   with a plain value first for a WebView without color-mix (Android before
+   111). On Parchment, where white cannot glow, every light is the plain ink.
+
+   The well, and the raised half that slides between its two halves. */
+.community-halves {
+ background-color: rgb(0 0 0 / 0.38);
+ box-shadow: inset 0 3px 10px rgb(0 0 0 / 0.65), 0 1px 0 rgb(255 255 255 / 0.05);
+}
+.community-on-picture .community-halves {
+ -webkit-backdrop-filter: blur(10px);
+ backdrop-filter: blur(10px);
+}
+.community-half-thumb {
+ background: linear-gradient(180deg, #2c2c31, #1e1e22);
+ background: linear-gradient(180deg, color-mix(in srgb, var(--color-paper) 10%, var(--color-night-soft)), var(--color-night-soft));
+ box-shadow:
+  inset 0 1px 0 rgb(255 255 255 / 0.13),
+  0 0 0 1px rgb(255 255 255 / 0.16),
+  0 8px 16px -8px rgb(0 0 0 / 0.9),
+  0 0 22px rgb(255 255 255 / 0.07);
+ transition: translate var(--duration-base) var(--ease-house);
+}
+.community-half[aria-selected="true"] {
+ text-shadow: 0 0 12px rgb(255 255 255 / 0.55);
+}
+.community-half[aria-selected="true"] svg {
+ filter: drop-shadow(0 0 6px rgb(255 255 255 / 0.75));
+}
+:where([data-motion="reduce"]) .community-half-thumb {
+ transition: none;
+}
+
+/* The open word over Talk together's feed: white, a lit rule under it. */
+.community-tab[aria-selected="true"] {
+ text-shadow: 0 0 12px rgb(255 255 255 / 0.45);
+}
+.community-tab[aria-selected="true"]::after {
+ content: "";
+ position: absolute;
+ inset-inline: 0;
+ bottom: -1px;
+ height: 2px;
+ border-radius: 2px;
+ background: var(--color-paper);
+ box-shadow: 0 0 10px rgb(255 255 255 / 0.9);
+}
+
+/* What is lit on the page: a held reaction or response, the sliders with a
+   choice on, the clergy answer's label. */
+.community-lit {
+ text-shadow: 0 0 10px rgb(255 255 255 / 0.5);
+}
+.community-lit svg {
+ filter: drop-shadow(0 0 5px rgb(255 255 255 / 0.7));
+}
+
+/* The marks beside a name, in the house greys (the sheet's open question,
+   built as drawn): the clergy seal is the white one, softly lit; the
+   verified tick's disc a grey mixed from the page's own ink and ground. The
+   Plus cross is the Premium silver (components/community/SupporterMark). */
+.clergy-seal {
+ filter: drop-shadow(0 0 4px rgb(255 255 255 / 0.45));
+}
+.verified-tick-disc {
+ fill: #a9abb3;
+ fill: color-mix(in srgb, var(--color-paper) 62%, var(--color-night));
+}
+
+/* The rail a thread hangs from, under the writer's picture. */
+.community-rail {
+ background: linear-gradient(rgb(255 255 255 / 0.2), rgb(255 255 255 / 0.05));
+ background: linear-gradient(color-mix(in srgb, var(--color-paper) 20%, transparent), color-mix(in srgb, var(--color-paper) 5%, transparent));
+}
+
+/* The composer's field, set into the page. */
+.community-well {
+ box-shadow: inset 0 2px 6px rgb(0 0 0 / 0.5);
+}
+
+/* A shared line, as a card worth sharing: a little light from above. */
+.community-quote {
+ background: radial-gradient(120% 90% at 50% 0%, rgb(255 255 255 / 0.1), rgb(255 255 255 / 0.02) 62%), #141417;
+ background: radial-gradient(120% 90% at 50% 0%, rgb(255 255 255 / 0.1), rgb(255 255 255 / 0.02) 62%), color-mix(in srgb, var(--color-paper) 2%, var(--color-night));
+ box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.09), 0 16px 28px -18px rgb(0 0 0 / 0.95);
+}
+.community-quote-mark {
+ filter: drop-shadow(0 0 6px rgb(255 255 255 / 0.6));
+}
+
+/* The clergy answer in a question's thread, standing first in its own light. */
+.community-clergy-answer {
+ background: linear-gradient(180deg, rgb(255 255 255 / 0.08), rgb(255 255 255 / 0.035));
+ box-shadow: 0 0 24px rgb(255 255 255 / 0.07), inset 0 1px 0 rgb(255 255 255 / 0.12);
+}
+
+/* The campaign running now, under Pray together's head (none runs in 1.8):
+   its picture fading into the card, the prayer fading where the card ends. */
+.community-campaign {
+ background: linear-gradient(180deg, #202024, #17171a);
+ background: linear-gradient(180deg, color-mix(in srgb, var(--color-paper) 6%, var(--color-night-soft)), var(--color-night-soft));
+ box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.07), 0 16px 28px -16px rgb(0 0 0 / 0.95);
+}
+.community-campaign-edge {
+ background: linear-gradient(90deg, transparent 60%, rgb(29 29 32 / 0.6));
+ background: linear-gradient(90deg, transparent 60%, color-mix(in srgb, var(--color-night-soft) 60%, transparent));
+}
+.community-campaign-prayer {
+ max-height: calc(2 * 1.45em);
+ overflow: hidden;
+ -webkit-mask-image: linear-gradient(to bottom, #000 50%, transparent);
+ mask-image: linear-gradient(to bottom, #000 50%, transparent);
+}
+
+/* Pray together's head: the Pentecost icon fades in behind the name, from a
+   little larger, and melts into the page under the switch. 900ms is past the
+   duration ladder's top on purpose, as the Prayers picture's is: a picture
+   arriving behind the head is the exception the ladder names. With motion
+   off it is simply there. On a wide screen it fades at its sides too. */
+@keyframes community-picture-in {
+ from {
+  opacity: 0;
+  transform: scale(1.04);
+ }
+}
+.community-head-img {
+ animation: community-picture-in 900ms var(--ease-house) backwards;
+}
+.community-head-shade {
+ background: linear-gradient(to bottom, rgb(16 16 19 / 0.55) 0%, rgb(16 16 19 / 0.25) 34%, rgb(16 16 19 / 0.72) 64%, #101013 96%);
+ background: linear-gradient(
+  to bottom,
+  color-mix(in srgb, var(--color-night) 55%, transparent) 0%,
+  color-mix(in srgb, var(--color-night) 25%, transparent) 34%,
+  color-mix(in srgb, var(--color-night) 72%, transparent) 64%,
+  var(--color-night) 96%
+ );
+}
+.community-on-picture .community-head-title {
+ text-shadow: 0 2px 18px rgb(0 0 0 / 0.8);
+}
+@media (min-width: 768px) {
+ .community-head-picture {
+  -webkit-mask-image: linear-gradient(90deg, transparent, #000 18%, #000 82%, transparent);
+  mask-image: linear-gradient(90deg, transparent, #000 18%, #000 82%, transparent);
+ }
+}
+:where([data-motion="reduce"]) .community-head-img {
+ animation: none;
+}
+
+html[data-reading-mode="parchment"] .community-halves {
+ background-color: rgb(120 95 50 / 0.08);
+ box-shadow: inset 0 2px 6px rgb(70 52 20 / 0.18);
+}
+html[data-reading-mode="parchment"] .community-half-thumb {
+ background: #fbf6ea;
+ box-shadow: 0 0 0 1px rgb(43 35 23 / 0.16), 0 6px 14px -8px rgb(70 52 20 / 0.45);
+}
+html[data-reading-mode="parchment"] :is(.community-half[aria-selected="true"], .community-tab[aria-selected="true"], .community-lit, .community-on-picture .community-head-title) {
+ text-shadow: none;
+}
+html[data-reading-mode="parchment"] :is(.community-half[aria-selected="true"] svg, .community-lit svg, .clergy-seal, .community-quote-mark) {
+ filter: none;
+}
+html[data-reading-mode="parchment"] .community-tab[aria-selected="true"]::after {
+ box-shadow: none;
+}
+html[data-reading-mode="parchment"] .community-well {
+ box-shadow: inset 0 1px 3px rgb(70 52 20 / 0.18);
+}
+html[data-reading-mode="parchment"] .community-quote,
+html[data-reading-mode="parchment"] .community-campaign {
+ background: linear-gradient(155deg, #f9f3e5 0%, #efe5d0 100%);
+ box-shadow: 0 12px 28px -18px rgb(70 52 20 / 0.45);
+}
+html[data-reading-mode="parchment"] .community-clergy-answer {
+ background: rgb(255 255 255 / 0.45);
+ box-shadow: none;
+}
+/* On paper the icon is a watermark behind the ink of the name. */
+html[data-reading-mode="parchment"] .community-head-shade {
+ background: linear-gradient(to bottom, rgb(241 232 212 / 0.82) 0%, rgb(241 232 212 / 0.74) 40%, rgb(241 232 212 / 0.9) 70%, #f1e8d4 96%);
+}
+
 /* Route entrance. The in-app routes wrap their page content in
    app/(app)/template.tsx, which re-mounts on navigation; this fades that
    content in so a tab switch or a drill-in arrives gently instead of

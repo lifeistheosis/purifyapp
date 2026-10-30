@@ -7,7 +7,7 @@ import { cn } from "@/lib/cn";
 /**
  * The supporter mark beside a subscriber's name in the community.
  *
- * Plus is a single small gold cross. Pro is the same cross inside a thin
+ * Plus is a single small silver cross. Pro is the same cross inside a thin
  * red ring. Nothing else: no glow, no animation, no number, because the
  * mark says "this reader keeps the work going" and must not turn into a
  * rank. Derived from entitlements on the server and gone the moment the
@@ -17,9 +17,12 @@ import { cn } from "@/lib/cn";
  * Drawn in-house, like the verified tick: the cross is two strokes and the
  * ring is a circle, both in palette tokens so every reading palette,
  * Parchment included, gets a readable mark without a variant per theme.
- * The gold is --color-festal, the real liturgical gold, rather than
- * --color-gold, which despite its name is a near-white grey on the default
- * surface and would draw a white cross.
+ * The cross is --color-premium, the Premium silver (1.8, the owner's pick of
+ * r3-02 drew the marks in the house greys, an open question built as drawn:
+ * the clergy seal white, the verified tick grey, the Plus cross silver). It
+ * was --color-festal, the liturgical gold, which had already turned to a
+ * light grey when the app gave up gold; Premium is silver on the dark
+ * palettes and an ink grey on Parchment.
  *
  * Same contract as VerifiedBadge: role="img" with the label from i18n so
  * the meaning is spoken and not only seen, the SVG aria-hidden so it is
@@ -71,12 +74,12 @@ export function SupporterMark({
         {/*
           A plain cross, upright bar and one crossbar above centre. At 15px
           the strokes are about 1.5 device pixels on a 1x screen, which is
-          the thinnest that still reads as gold rather than as a smudge.
+          the thinnest that still reads as silver rather than as a smudge.
         */}
         <path
           d={pro ? "M12 6.2v11.6M8.4 9.6h7.2" : "M12 3.6v16.8M6.8 8.6h10.4"}
           fill="none"
-          stroke="var(--color-festal)"
+          stroke="var(--color-premium)"
           strokeWidth={pro ? 2.2 : 2.6}
           strokeLinecap="round"
         />

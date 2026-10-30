@@ -1,20 +1,31 @@
 "use client";
 
+import dynamic from "next/dynamic";
 import Link from "next/link";
-import { createContext, memo, useCallback, useContext, useEffect, useLayoutEffect, useMemo, useRef, useState, type CSSProperties } from "react";
+import { createContext, Fragment, memo, useCallback, useContext, useEffect, useLayoutEffect, useMemo, useRef, useState, type CSSProperties } from "react";
 
-import { CampaignsClient } from "@/components/campaigns/CampaignsClient";
 import { ActionMenu, type ActionMenuItem } from "@/components/community/ActionMenu";
 import { MentionField } from "@/components/community/MentionField";
 import { CommunityAvatar as Avatar } from "@/components/community/CommunityAvatar";
+import { CommunityBell } from "@/components/community/CommunityBell";
+import { CommunityHead } from "@/components/community/CommunityHead";
+import { FeedTabs } from "@/components/community/FeedTabs";
 import { MyProfileCard, PlusProfileNudge } from "@/components/community/CommunitySide";
-import { NotificationsInbox } from "@/components/community/NotificationsInbox";
+import { PrayTogether } from "@/components/community/PrayTogether";
 import type { CommunityNotification } from "@/lib/community/inbox";
 import { notificationTarget } from "@/lib/community/notificationTarget";
 import { ProfileHoverCard, type HoverTarget } from "@/components/community/profile/ProfileHoverCard";
 import { ProfileViewer } from "@/components/community/profile/ProfileViewer";
 import { useTranslate } from "@/components/i18n/MessagesProvider";
-import { campaignsEnabled } from "@/lib/campaigns/flags";
+import {
+  feedSliders,
+  feedTabs,
+  halfFromHash,
+  hashForHalf,
+  type CommunityHalf,
+  type FeedFilter,
+} from "@/lib/community/halves";
+import { runningCampaign } from "@/lib/community/runningCampaign";
 import {
   addReply,
   createCommunityPost,
@@ -35,7 +46,6 @@ import {
   POST_KIND_KEYS,
   timeAgo,
   type CommunityPost,
-  type CommunityPostKind,
   type CommunityReply,
 } from "@/lib/community/types";
 import {
@@ -49,7 +59,6 @@ import { reconcilePosts, sameEntries, sameMembers } from "@/lib/community/reconc
 import { ReactionButtons } from "@/components/community/ReactionButtons";
 import { ResponseButtons } from "@/components/community/ResponseButtons";
 import { ClergySeal } from "@/components/community/ClergySeal";
-import { PrayerWall } from "@/components/community/PrayerWall";
 import { SupporterMark } from "@/components/community/SupporterMark";
 import type { ReactionState } from "@/lib/community/reactions";
 import { countsOf, type ResponseKind } from "@/lib/community/responses";
@@ -57,8 +66,11 @@ import { validChapterRef } from "@/lib/community/chapterRef";
 import { getBook } from "@/lib/bible/books";
 import { nameColorClass } from "@/lib/profile/nameColor";
 import { Skeleton, SkeletonList } from "@/components/ui/Skeleton";
-import { ScrollRail } from "@/components/ui/ScrollRail";
+import { Book } from "@/components/ui/icons/Book";
 import { Cross as CrossIcon } from "@/components/ui/icons/Cross";
+import { Quill } from "@/components/ui/icons/Quill";
+import { Share } from "@/components/ui/icons/Share";
+import { PurifyMark } from "@/components/ui/PurifyMark";
 import { ConfirmDialog } from "@/components/ui/ConfirmDialog";
 import { ImageCropSheet } from "@/components/profile/ImageCropSheet";
 import { SymbolText } from "@/components/community/SymbolText";
@@ -71,8 +83,22 @@ import { haptic, scrollBehavior } from "@/lib/ui/motion";
 import { Close } from "@/components/ui/icons/Close";
 import { ChevronDown } from "@/components/ui/icons/ChevronDown";
 
+// A line shared as a picture opens the picture sheet the verse and the
+// saints use, loaded on the first tap: the feed carries no canvas for a
+// reader who never shares.
+const PictureSheet = dynamic(() => import("@/components/share/PictureSheet").then((m) => m.PictureSheet), { ssr: false });
+
 /**
- * The Community tab: prayer campaigns and conversations side by side.
+ * Community: Pray together and Talk together.
+ *
+ * 1.8, the owner's pick of r3-02, "B with A's top" (Homebase/boards/
+ * purify-master/variants/r3-02-community.html; his notes 18 and 19 of build
+ * 80): one switch at the top. Talk together is the conversation, with three
+ * words across it (All, Ask a Priest, Discussion), Following, Scripture and
+ * the Fathers behind the sliders, and posts set like a page, with no boxes.
+ * Pray together opens with A's head, the Pentecost icon fading in behind the
+ * name and the campaign running now under it (none runs in 1.8), and the
+ * prayer wall, which left the bar of pills.
  *
  * Conversations carry three kinds of post: a discussion in the reader's own
  * words, or a VERBATIM shared line from the reader's Florilegium (scripture
@@ -81,10 +107,11 @@ import { ChevronDown } from "@/components/ui/icons/ChevronDown";
  * fresh doctrinal text enters the app through this surface.
  */
 
-type Panel = "campaigns" | "conversations";
+/** The feed's filters: everything, who you follow, Ask a Priest, or one kind. */
+type Filter = FeedFilter;
 
-/** The feed's tabs: everything, who you follow, Ask a Priest, the prayer wall, or one kind. */
-type Filter = "all" | "following" | "questions" | "prayer" | CommunityPostKind;
+/** The switch's ids: `${HALF_ID}-tab-pray`, and the panel under it. */
+const HALF_ID = "community-half";
 
 /** A stable empty list, so a post nobody answered keeps one identity across renders. */
 const NO_KINDS: ResponseKind[] = [];
@@ -143,26 +170,14 @@ function replyAnchorId(replyId: string): string {
  */
 type PostFocus = { postId: string; replyId: string | null; nonce: number };
 
-/** How long the gold light on a post or a reply lasts before it is cleared. */
+/** How long the light on a post or a reply lasts before it is cleared. */
 const LIT_MS = 2800;
 
 /**
- * Which panel the URL is asking for.
- *
- * The panel used to be plain `useState("campaigns")`, which meant the tab
- * could not be linked to and, worse, that every notification in the inbox
- * linked to `/community#post-<id>` and landed the reader on Campaigns with
- * no post in sight. Reading the hash fixes both, and costs no router.
+ * A post's words are set at 15px on 22px lines (1.8, r3-02 B). The fold
+ * counts its lines in these ems where a browser cannot count in lines.
  */
-function panelFromHash(hash: string, campaigns: boolean): Panel {
-  if (!campaigns) return "conversations";
-  if (hash === CONVERSATIONS_HASH) return "conversations";
-  if (hash.startsWith("#post-")) return "conversations";
-  if (hash.startsWith("#group-")) return "conversations";
-  // A shared profile link, /community#@handle.
-  if (hash.startsWith("#@")) return "conversations";
-  return "campaigns";
-}
+const BODY_LEAD = 22 / 15;
 
 /** The parish group whose thread the URL is asking for, if any. */
 function groupFromHash(hash: string): string | null {
@@ -174,13 +189,21 @@ function groupFromHash(hash: string): string | null {
   return /^[0-9a-fA-F-]{36}$/.test(id) ? id : null;
 }
 
+/**
+ * The half and the group's thread the address asks for, and the switch.
+ *
+ * Until 1.8 this chose between two panels, Prayer campaigns and
+ * Conversations, and drew that choice only while campaigns were on, which
+ * they have not been since 2026-08-26. The switch is now always there, Pray
+ * together and Talk together (lib/community/halves.ts), and the campaigns'
+ * old board is no longer set inside Community: in 1.9 campaigns come into
+ * Pray together, under its head (lib/community/runningCampaign.ts).
+ *
+ * The half is read from the address, so it can be linked to (#pray) and a
+ * notification's #post- or #@handle lands in Talk together, where those are.
+ */
 export function CommunityClient() {
-  const { t } = useTranslate();
-  // Read once: this is a build-time NEXT_PUBLIC_ value, not reactive state.
-  const campaigns = campaignsEnabled();
-  const [panel, setPanel] = useState<Panel>(() =>
-    campaigns ? "campaigns" : "conversations",
-  );
+  const [half, setHalf] = useState<CommunityHalf>("talk");
   const [groupId, setGroupId] = useState<string | null>(null);
 
   // Read the hash after mount rather than during render: the server render
@@ -189,79 +212,30 @@ export function CommunityClient() {
   useEffect(() => {
     const apply = () => {
       const hash = window.location.hash;
-      setPanel(panelFromHash(hash, campaigns));
+      setHalf(halfFromHash(hash));
       setGroupId(groupFromHash(hash));
     };
     apply();
     window.addEventListener("hashchange", apply);
     return () => window.removeEventListener("hashchange", apply);
-  }, [campaigns]);
-
-  const choose = useCallback((next: Panel) => {
-    setPanel(next);
-    // Switching tabs by hand leaves any group scope behind: the pills are
-    // the global surfaces, and a group thread is only ever reached by its
-    // own link.
-    setGroupId(null);
-    // replaceState, not a router push: switching a tab is not a new page in
-    // the reader's history, and pushing would make Back walk the pills.
-    const url =
-      next === "conversations"
-        ? CONVERSATIONS_HASH
-        : window.location.pathname + window.location.search;
-    window.history.replaceState(null, "", url);
   }, []);
 
-  return (
-    <div>
-      {/* A real heading for the page. Community opened straight onto a
-          composer with nothing above it to say where the reader was. */}
-      <header className="mx-auto w-full max-w-[720px] px-5 pt-8 md:pt-12 lg:max-w-[1060px]">
-        <h1 className="text-heading leading-[1.1] text-paper">{t("community.title")}</h1>
-        <p className="mt-2 max-w-[540px] font-sans text-ui leading-relaxed text-paper/60">
-          {t("community.subtitle")}
-        </p>
-        {/* The tabs only exist when there is a choice to make. With campaigns
-            dark, a "Prayer campaigns" tab led to an empty board that said
-            "No campaigns here yet. Be the first to ask" and two buttons into a
-            coming-soon shell, on a primary mobile tab. `campaignsEnabled()` was
-            honoured in four other places and missed here. */}
-        {campaigns ? (
-          <div
-            role="tablist"
-            aria-label={t("community.title")}
-            className="mt-6 inline-flex gap-1 rounded-pill border border-paper/12 bg-paper/[0.03] p-1"
-          >
-            {(
-              [
-                ["campaigns", t("community.prayerCampaigns")],
-                ["conversations", t("community.conversations")],
-              ] as [Panel, string][]
-            ).map(([id, label]) => (
-              <button
-                key={id}
-                type="button"
-                role="tab"
-                onClick={() => choose(id)}
-                aria-selected={panel === id}
-                className={
-                  "rounded-pill px-4 py-1.5 font-sans text-detail font-semibold transition-colors " +
-                  (panel === id ? "bg-paper text-night" : "text-paper/65 hover:text-paper")
-                }
-              >
-                {label}
-              </button>
-            ))}
-          </div>
-        ) : null}
-      </header>
-      {campaigns && panel === "campaigns" ? (
-        <CampaignsClient embedded />
-      ) : (
-        <ConversationsPanel groupId={groupId} />
-      )}
-    </div>
-  );
+  const choose = useCallback((next: CommunityHalf) => {
+    setHalf(next);
+    // Switching halves by hand leaves any group scope behind: a group thread
+    // is only ever reached by its own link.
+    setGroupId(null);
+    // replaceState, not a router push: switching a half is not a new page in
+    // the reader's history, and pushing would make Back walk the switch.
+    window.history.replaceState(null, "", window.location.pathname + window.location.search + hashForHalf(next));
+  }, []);
+
+  // A post asked for from Pray together (a notification, a post on someone's
+  // profile) is in Talk together, so the page goes there to show it. The
+  // address is the post's, set by whoever asked.
+  const showTalk = useCallback(() => setHalf("talk"), []);
+
+  return <CommunityScreen half={half} groupId={groupId} onChoose={choose} onShowTalk={showTalk} />;
 }
 
 /* ── Opening profiles ──────────────────────────────────────────────────── */
@@ -278,10 +252,25 @@ type ProfileOpener = {
 };
 const ProfileOpenerContext = createContext<ProfileOpener | null>(null);
 
-/* ── Conversations ─────────────────────────────────────────────────────── */
+/* ── The screen: the head, then Pray together or Talk together ──────────── */
 
-function ConversationsPanel({ groupId }: { groupId: string | null }) {
+function CommunityScreen({
+  half,
+  groupId,
+  onChoose,
+  onShowTalk,
+}: {
+  half: CommunityHalf;
+  groupId: string | null;
+  onChoose: (next: CommunityHalf) => void;
+  /** Open Talk together without touching the address (a post was asked for). */
+  onShowTalk: () => void;
+}) {
   const { t, tn } = useTranslate();
+  // Pray together, unless a group's thread is open: that is a conversation.
+  const praying = half === "pray" && !groupId;
+  // The campaign running now, for Pray together's head. None runs in 1.8.
+  const campaign = runningCampaign();
   const [me, setMe] = useState<Me>(null);
   const [authSettled, setAuthSettled] = useState(false);
   // undefined = still loading. Otherwise the discriminated result from
@@ -578,6 +567,7 @@ function ConversationsPanel({ groupId }: { groupId: string | null }) {
     const nonce = ++focusSeq.current;
     setGone(false);
     setFilter("all");
+    onShowTalk();
     setFocus({ postId, replyId, nonce });
     if (feedIdsRef.current.has(postId)) {
       setLinked(null);
@@ -592,7 +582,7 @@ function ConversationsPanel({ groupId }: { groupId: string | null }) {
         setGone(true);
       }
     });
-  }, []);
+  }, [onShowTalk]);
   const openNotification = useCallback(
     (n: CommunityNotification) => {
       const target = notificationTarget(n);
@@ -690,24 +680,39 @@ function ConversationsPanel({ groupId }: { groupId: string | null }) {
         ? (followingPosts ?? [])
         : filter === "questions"
           ? (questionPosts ?? [])
-          : filter === "prayer"
-            ? []
-            : feedPosts
-          ? // Sorted here as well as in the query. The server already returns
-            // announcements first, so this is a guard rather than the mechanism:
-            // it costs one pass over fifty rows and means a cached response from
-            // before pinning existed, or any future path that assembles this list
-            // locally, still cannot put an ordinary post above an announcement.
-            sortPinnedFirst(feedPosts).filter((p) => filter === "all" || p.kind === filter)
-          : [],
+          : feedPosts
+            ? // Sorted here as well as in the query. The server already returns
+              // announcements first, so this is a guard rather than the mechanism:
+              // it costs one pass over fifty rows and means a cached response from
+              // before pinning existed, or any future path that assembles this list
+              // locally, still cannot put an ordinary post above an announcement.
+              sortPinnedFirst(feedPosts).filter((p) => filter === "all" || p.kind === filter)
+            : [],
     [feedPosts, followingPosts, questionPosts, filter],
   );
 
   return (
     <ProfileOpenerContext.Provider value={opener}>
-    <section className="mx-auto w-full max-w-[720px] px-5 pb-16 pt-6 lg:grid lg:max-w-[1060px] lg:grid-cols-[minmax(0,1fr)_300px] lg:items-start lg:gap-10">
-      <div className="min-w-0">
-        {result?.state === "dark" ? (
+    {/* The head: the page's name and the bell, the switch, and in Pray
+        together the Pentecost icon behind them. */}
+    <CommunityHead
+      half={half}
+      onChoose={onChoose}
+      showSwitch={!groupId}
+      idBase={HALF_ID}
+      bell={authSettled && me ? <CommunityBell onOpen={openNotification} onPicture={praying} /> : null}
+    />
+    {/* Positioned, so it is painted over the foot of Pray together's picture,
+        which reaches down behind it, and not under it. */}
+    <section className="relative mx-auto w-full max-w-[720px] px-5 pb-16 pt-6 lg:grid lg:max-w-[1060px] lg:grid-cols-[minmax(0,1fr)_300px] lg:items-start lg:gap-10">
+      <div
+        className="min-w-0"
+        // The half the switch has open. A group's thread has no switch.
+        {...(groupId ? {} : { role: "tabpanel", id: `${HALF_ID}-panel-${half}`, "aria-labelledby": `${HALF_ID}-tab-${half}` })}
+      >
+        {praying ? (
+          <PrayTogether signedIn={Boolean(me)} campaign={campaign} onOpenProfile={(h, seed) => openProfile(h, seed)} />
+        ) : result?.state === "dark" ? (
           <div className="rounded-2xl border border-paper/10 bg-black/20 p-8 text-center">
             <p className="font-serif text-lede text-paper/80">
               {t("community.openingSoon")}
@@ -722,7 +727,7 @@ function ConversationsPanel({ groupId }: { groupId: string | null }) {
                 Without this the reader has a feed that looks like the global
                 one but is not, and no way to tell. */}
             {groupId ? (
-              <div className="mb-6 flex items-center justify-between gap-3 rounded-xl border border-gold/25 bg-gold/[0.04] px-4 py-3">
+              <div className="mb-5 flex items-center justify-between gap-3 rounded-xl border border-gold/25 bg-gold/[0.04] px-4 py-3">
                 <p className="min-w-0 font-sans text-detail text-paper/80">
                   {t("community.groupThreadHeading")}
                 </p>
@@ -734,20 +739,93 @@ function ConversationsPanel({ groupId }: { groupId: string | null }) {
                 </Link>
               </div>
             ) : null}
-            {/* What came back to you, above what you might say next. Renders
-                nothing when there is nothing, including before the
-                notifications migration is applied. */}
-            {authSettled && me && !groupId ? <NotificationsInbox onOpen={openNotification} /> : null}
+
+            {/* What kind of post to show: three words, and the rest behind
+                the sliders (FeedTabs). The feed is fifty posts, already here,
+                so a kind filters on the device and asks nothing of the server.
+                Following and Ask a Priest ask: each is its own list. */}
+            {result === undefined ? (
+              <div aria-hidden className="flex h-11 items-end gap-6 border-b border-paper/[0.08] pb-3">
+                {[28, 84, 76].map((w) => (
+                  <Skeleton key={w} weight="faint" className="h-3.5 shrink-0" style={{ width: w }} />
+                ))}
+              </div>
+            ) : (
+              <FeedTabs
+                tabs={feedTabs(Boolean(groupId))}
+                sliders={feedSliders({ signedIn: Boolean(me), inGroup: Boolean(groupId) })}
+                filter={filter}
+                onFilter={setFilter}
+              />
+            )}
+
+            <div className="mt-3.5">
+              {authSettled && me ? (
+                <Composer
+                  me={me}
+                  groupId={groupId}
+                  decoration={myProfile?.cosmetics.decoration ?? null}
+                  onOpenProfile={
+                    myProfile
+                      ? () => openProfile(myProfile.handle, { handle: myProfile.handle, name: myProfile.name, avatar: myProfile.avatar })
+                      : undefined
+                  }
+                  onPosted={reload}
+                  onAvatarChanged={(url) => setMe((m) => (m ? { ...m, avatar: url } : m))}
+                  about={about}
+                  asking={filter === "questions"}
+                />
+              ) : authSettled ? (
+                <div className="rounded-2xl border border-paper/10 bg-paper/[0.03] p-5 text-center">
+                  <p className="font-sans text-ui text-paper/70">
+                    {t("community.signInToPost")}
+                  </p>
+                  <Link
+                    href="/signin?next=/community"
+                    className="mt-3 inline-flex items-center rounded-pill bg-paper px-5 py-2 font-sans text-ui font-semibold text-night"
+                  >
+                    {t("community.signIn")}
+                  </Link>
+                </div>
+              ) : (
+                // The sign-in is still being read. The row holds its place, so
+                // what follows does not start at the top of the screen and get
+                // pushed down a moment later (filmed 2026-10-05: the page
+                // arrived in four steps, each one moving the last).
+                <Skeleton weight="faint" rounded="rounded-[14px]" className="h-[42px] w-full" />
+              )}
+            </div>
+
+            {giftSent ? (
+              <p role="status" className="mt-5 rounded-xl border border-premium/30 bg-premium/[0.06] px-4 py-3 font-sans text-detail text-paper/85">
+                {t("community.giftSent")}
+              </p>
+            ) : null}
+
+            {/* The moderators' way to the queue, with how much waits. */}
+            {moderator && !groupId ? (
+              <Link
+                href="/community/moderate"
+                className="mt-5 flex items-center justify-between gap-3 rounded-xl border border-paper/15 bg-paper/[0.04] px-4 py-3 font-sans text-detail text-paper/85 transition-colors hover:border-paper/30"
+              >
+                <span className="font-semibold">{t("community.modButton")}</span>
+                <span className={cn("rounded-pill px-2.5 py-0.5 text-caption font-semibold", modWaiting ? "reader-lit bg-paper text-night" : "bg-paper/10 text-paper/60")}>
+                  {modWaiting === null ? "…" : tn("community.modWaiting", modWaiting)}
+                </span>
+              </Link>
+            ) : null}
+
             {gone ? (
-              <p role="status" className="mb-6 rounded-xl border border-paper/12 bg-paper/[0.03] px-4 py-3 font-sans text-detail text-paper/70">
+              <p role="status" className="mt-5 rounded-xl border border-paper/12 bg-paper/[0.03] px-4 py-3 font-sans text-detail text-paper/70">
                 {t("community.postGone")}
               </p>
             ) : null}
             {/* The post a notification pointed at, when the feed no longer
                 holds it. The same card as in the feed, so everything a reader
-                can do to a post they can do here. */}
+                can do to a post they can do here, and a line under it before
+                the feed begins. */}
             {linked && !feedPostIds.has(linked.id) ? (
-              <div className="relative mb-6">
+              <div className="relative mt-3 border-b border-paper/[0.08]">
                 <PostCard
                   post={linked}
                   me={me}
@@ -766,135 +844,30 @@ function ConversationsPanel({ groupId }: { groupId: string | null }) {
                     setLinked(null);
                     setFocus(null);
                   }}
-                  className="absolute -right-2 -top-2 inline-flex size-9 items-center justify-center rounded-full border border-paper/15 bg-night text-paper/70 shadow-pop transition-colors hover:text-paper"
+                  className="absolute -right-2 top-1 inline-flex size-9 items-center justify-center rounded-full border border-paper/15 bg-night text-paper/70 shadow-pop transition-colors hover:text-paper"
                 >
                   <Close size={15} />
                 </button>
               </div>
             ) : null}
-            {authSettled && me ? (
-              <Composer
-                me={me}
-                groupId={groupId}
-                decoration={myProfile?.cosmetics.decoration ?? null}
-                onOpenProfile={
-                  myProfile
-                    ? () => openProfile(myProfile.handle, { handle: myProfile.handle, name: myProfile.name, avatar: myProfile.avatar })
-                    : undefined
-                }
-                onPosted={reload}
-                onAvatarChanged={(url) => setMe((m) => (m ? { ...m, avatar: url } : m))}
-                about={about}
-                asking={filter === "questions"}
-              />
-            ) : authSettled ? (
-              <div className="rounded-2xl border border-paper/10 bg-paper/[0.03] p-5 text-center">
-                <p className="font-sans text-ui text-paper/70">
-                  {t("community.signInToPost")}
-                </p>
-                <Link
-                  href="/signin?next=/community"
-                  className="mt-3 inline-flex items-center rounded-pill bg-paper px-5 py-2 font-sans text-ui font-semibold text-night"
-                >
-                  {t("community.signIn")}
-                </Link>
-              </div>
-            ) : (
-              // The sign-in is still being read. The box holds its place, so
-              // what follows does not start at the top of the screen and get
-              // pushed down a moment later (filmed 2026-10-05: the page
-              // arrived in four steps, each one moving the last).
-              <Skeleton weight="faint" rounded="rounded-2xl" className="h-[112px] w-full" />
-            )}
 
-            {giftSent ? (
-              <p role="status" className="mt-5 rounded-xl border border-premium/30 bg-premium/[0.06] px-4 py-3 font-sans text-detail text-paper/85">
-                {t("community.giftSent")}
-              </p>
-            ) : null}
-
-            {/* The moderators' way to the queue, with how much waits. */}
-            {moderator && !groupId ? (
-              <Link
-                href="/community/moderate"
-                className="mt-5 flex items-center justify-between gap-3 rounded-xl border border-sage/30 bg-sage/[0.06] px-4 py-3 font-sans text-detail text-paper/85 transition-colors hover:border-sage/50"
-              >
-                <span className="font-semibold">{t("community.modButton")}</span>
-                <span className={cn("rounded-pill px-2.5 py-0.5 text-caption font-semibold", modWaiting ? "bg-crimson/80 text-white" : "bg-paper/10 text-paper/60")}>
-                  {modWaiting === null ? "…" : tn("community.modWaiting", modWaiting)}
-                </span>
-              </Link>
-            ) : null}
-
-            {/* What kind of post to show. The feed is fifty posts, already
-                here, so this filters on the device and asks nothing of the
-                server. Following, Ask a Priest and the prayer wall ask: each
-                is its own list. */}
-            {result === undefined ? (
-              <div aria-hidden className="mt-6 flex gap-1.5 overflow-hidden">
-                {[56, 96, 104, 112].map((w) => (
-                  <Skeleton key={w} weight="faint" rounded="rounded-pill" className="h-10 shrink-0" style={{ width: w }} />
-                ))}
-              </div>
-            ) : null}
-            {result?.state === "ok" && result.posts.length > 0 ? (
-              <ScrollRail
-                role="tablist"
-                label={t("community.filterLabel")}
-                current={filter}
-                arrows={false}
-                className="-mx-5 mt-6"
-                trackClassName="gap-1.5 px-5"
-              >
-                {(
-                  [
-                    ["all", t("community.filterAll")],
-                    ...(me && !groupId ? [["following", t("community.filterFollowing")]] : []),
-                    ...(!groupId
-                      ? [
-                          ["questions", t("community.filterQuestions")],
-                          ["prayer", t("community.filterPrayer")],
-                        ]
-                      : []),
-                    ["discussion", t("community.kindDiscussion")],
-                    ["scripture", t("community.kindScripture")],
-                    ["father", t("community.kindFather")],
-                  ] as [Filter, string][]
-                ).map(([id, label]) => (
-                  <button
-                    key={id}
-                    type="button"
-                    role="tab"
-                    aria-selected={filter === id}
-                    onClick={() => setFilter(id)}
-                    className={cn(
-                      "inline-flex min-h-10 shrink-0 items-center rounded-pill border px-4 font-sans text-detail font-semibold transition-colors",
-                      filter === id
-                        ? "border-paper/40 bg-paper/[0.1] text-paper"
-                        : "border-paper/12 text-paper/60 hover:border-paper/30 hover:text-paper",
-                    )}
-                  >
-                    {label}
-                  </button>
-                ))}
-              </ScrollRail>
-            ) : null}
-
-            <div className="mt-4 space-y-4">
+            {/* The feed, set like a page: no box around a post, a hairline
+                between one and the next. */}
+            <div className="mt-2">
               {result === undefined ? (
                 // The conversations feed is fetched on the device, so a route
                 // loading.tsx never covers this wait. Skeleton rows rather than
                 // a line of text: they say how much is coming and where it will
                 // sit, and the swap is a change of contents rather than a
                 // reflow. The word "Gathering" is kept as the accessible name.
-                <div aria-busy aria-label={t("community.gathering")}>
+                <div aria-busy aria-label={t("community.gathering")} className="pt-3">
                   <SkeletonList rows={4} />
                 </div>
               ) : result.state === "error" ? (
                 // Say so, and offer the way out. Rendering the empty state here
                 // would tell the reader the community is quiet when in fact we
                 // could not reach it.
-                <div className="rounded-2xl border border-paper/10 bg-black/20 p-8 text-center">
+                <div className="mt-3 rounded-2xl border border-paper/10 bg-black/20 p-8 text-center">
                   <p className="font-serif text-lede text-paper/80">
                     {t("community.loadFailed")}
                   </p>
@@ -907,7 +880,7 @@ function ConversationsPanel({ groupId }: { groupId: string | null }) {
                   </button>
                 </div>
               ) : result.posts.length === 0 ? (
-                <div className="rounded-2xl border border-paper/10 bg-black/20 p-8 text-center">
+                <div className="mt-3 rounded-2xl border border-paper/10 bg-black/20 p-8 text-center">
                   <p className="font-serif text-lede text-paper/80">
                     {t("community.quietHere")}
                   </p>
@@ -915,10 +888,8 @@ function ConversationsPanel({ groupId }: { groupId: string | null }) {
                     {t("community.quietHereBody")}
                   </p>
                 </div>
-              ) : filter === "prayer" ? (
-                <PrayerWall signedIn={Boolean(me)} onOpenProfile={(h, seed) => openProfile(h, seed)} />
               ) : (filter === "following" && followingFeed === undefined) || (filter === "questions" && questionsFeed === undefined) ? (
-                <div aria-busy aria-label={t("community.gathering")}>
+                <div aria-busy aria-label={t("community.gathering")} className="pt-3">
                   <SkeletonList rows={3} />
                 </div>
               ) : shownPosts.length === 0 ? (
@@ -930,19 +901,21 @@ function ConversationsPanel({ groupId }: { groupId: string | null }) {
                       : t("community.filterEmpty")}
                 </p>
               ) : (
-                shownPosts.map((p) => (
-                  <PostCard
-                    key={p.id}
-                    post={p}
-                    me={me}
-                    myPostIds={myPostIds}
-                    myReaction={myReactions[p.id] ?? null}
-                    myReplyReactions={myReplyReactions}
-                    myResponses={myResponses[p.id] ?? NO_KINDS}
-                    myReplyResponses={myReplyResponses}
-                    onChanged={reload}
-                    focus={focus && focus.postId === p.id ? focus : null}
-                  />
+                shownPosts.map((p, i) => (
+                  <Fragment key={p.id}>
+                    {i > 0 ? <hr className="border-paper/[0.08]" /> : null}
+                    <PostCard
+                      post={p}
+                      me={me}
+                      myPostIds={myPostIds}
+                      myReaction={myReactions[p.id] ?? null}
+                      myReplyReactions={myReplyReactions}
+                      myResponses={myResponses[p.id] ?? NO_KINDS}
+                      myReplyResponses={myReplyResponses}
+                      onChanged={reload}
+                      focus={focus && focus.postId === p.id ? focus : null}
+                    />
+                  </Fragment>
                 ))
               )}
             </div>
@@ -1164,7 +1137,7 @@ function Composer({
       aria-label={t("profile.yourProfile")}
       className="tap-press shrink-0 rounded-full"
     >
-      <Avatar name={me.name} url={me.avatar} size={40} decoration={decoration} />
+      <Avatar name={me.name} url={me.avatar} size={36} decoration={decoration} />
     </button>
   ) : (
     <button
@@ -1175,7 +1148,7 @@ function Composer({
       aria-label={t("community.changePhoto")}
       className="tap-press shrink-0 rounded-full disabled:opacity-50"
     >
-      <Avatar name={me.name} url={me.avatar} size={40} />
+      <Avatar name={me.name} url={me.avatar} size={36} />
     </button>
   );
 
@@ -1210,7 +1183,7 @@ function Composer({
   ) : null;
 
   const noticeLine = notice ? (
-    <p role="status" className="mt-2 rounded-lg border border-sage/30 bg-sage/[0.07] px-3 py-2 font-sans text-detail text-paper/80">
+    <p role="status" className="mt-2 rounded-lg border border-paper/15 bg-paper/[0.05] px-3 py-2 font-sans text-detail text-paper/80">
       {notice}
     </p>
   ) : null;
@@ -1223,23 +1196,26 @@ function Composer({
   })();
 
   if (!expanded) {
+    // Folded, one line with no box around it (1.8, r3-02 B): the reader's
+    // picture, a field set into the page, and Share a line beside it.
     return (
-      <div className="rounded-2xl border border-paper/10 bg-paper/[0.03] p-3">
-        <div className="flex items-center gap-3">
+      <div data-composer="">
+        <div className="flex items-center gap-2.5">
           {avatarButton}
           {fileInput}
           <button
             type="button"
             onClick={() => start(asking ? "question" : "discussion")}
-            className="min-h-11 min-w-0 flex-1 truncate rounded-pill border border-paper/12 bg-night px-4 text-left font-sans text-ui text-paper/45 transition-colors hover:border-paper/30 hover:text-paper/65"
+            className="community-well min-h-[42px] min-w-0 flex-1 truncate rounded-[14px] border border-paper/[0.09] bg-black/30 px-3.5 text-left font-sans text-ui text-paper/45 transition-colors hover:border-paper/25 hover:text-paper/65"
           >
             {asking ? t("community.askPrompt") : groupId ? t("community.composePromptGroup") : t("community.composePrompt")}
           </button>
           <button
             type="button"
             onClick={() => start("share")}
-            className="min-h-11 shrink-0 rounded-pill border border-paper/15 px-3.5 font-sans text-caption font-semibold text-paper/70 transition-colors hover:border-paper/35 hover:text-paper"
+            className="tap-press inline-flex min-h-[42px] shrink-0 items-center gap-1.5 rounded-[14px] border border-paper/10 bg-gradient-to-b from-paper/[0.08] to-paper/[0.03] px-3 font-sans text-detail font-semibold text-paper/80 transition-colors hover:border-paper/30 hover:text-paper"
           >
+            <Quill size={16} className="shrink-0" />
             {t("community.shareALine")}
           </button>
         </div>
@@ -1545,7 +1521,16 @@ function PostCardInner({
   // Long posts fold to a few lines. The pinned 1.4 announcement ran to
   // several screens, so a reader met one post before the conversation.
   const [unfolded, setUnfolded] = useState(false);
+  // A shared line being made into a picture (PictureSheet).
+  const [making, setMaking] = useState(false);
   const mine = myPostIds.has(post.id);
+  // The words of a shared line, as a picture carries them: the same object
+  // while they are the same, since the sheet draws its preview again when
+  // they change.
+  const pictureWords = useMemo(
+    () => (post.quote_text ? { text: post.quote_text, reference: post.quote_source ?? "" } : null),
+    [post.quote_text, post.quote_source],
+  );
 
   // Guards the async gap between "Enter pressed" and setBusy landing. Two
   // fast Enters both passed the state check and both posted, so the reply
@@ -1806,426 +1791,492 @@ function PostCardInner({
     });
   }
 
+  // A thread hangs from the writer's picture while the post has replies.
+  const threadHangs = shownCount > 0 || open;
+
   return (
     <article
       ref={cardRef}
       id={postAnchorId(post.id)}
+      // Set like a page (1.8, the owner's pick of r3-02, B): no box around a
+      // post, the writer's picture in a rail at the start and the words beside
+      // it, a hairline between one post and the next (drawn by the feed). The
+      // row reaches a little past the column on each side, inside its own
+      // box, so the light a notification brings (notify-lit) has room around
+      // the words: content-visibility clips anything drawn outside the box.
+      //
       // scroll-mt clears the sticky mobile top bar when a notification link
       // scrolls this row into view.
       //
       // A PINNED POST IS MARKED, NOT JUST MOVED. Sitting at the top of a
       // reverse-chronological feed is ambiguous: it reads as the newest post,
       // and a reader who came back an hour later would think nothing had been
-      // written since. The gold edge and the label say the position is
-      // deliberate.
+      // written since. The label over it says the position is deliberate.
       className={cn(
         // content-visibility: a card off screen is not laid out or painted
         // until it comes near, which is most of what scrolling a long feed
         // costs. The intrinsic size keeps the scrollbar honest meanwhile.
-        "scroll-mt-24 rounded-2xl border p-5 [contain-intrinsic-size:auto_320px] [content-visibility:auto]",
-        pinned
-          ? "border-gold/35 bg-gold/[0.06]"
-          : "border-paper/10 bg-paper/[0.03]",
+        "community-post -mx-3 scroll-mt-24 rounded-2xl px-3 py-4 [contain-intrinsic-size:auto_320px] [content-visibility:auto]",
         lit === "post" && "notify-lit",
       )}
     >
-      {feast ? (
-        <p className="mb-3 inline-flex items-center gap-1.5 rounded-pill border border-premium/45 bg-premium/[0.10] px-2.5 py-1 font-sans text-eyebrow font-semibold text-premium-ink">
-          <CrossIcon size={12} />
-          {pinned ? t("community.feastToday") : t("community.feastDay")}
-        </p>
-      ) : question ? (
-        <p className="mb-3 flex flex-wrap items-center gap-1.5">
-          <span className="inline-flex items-center gap-1.5 rounded-pill border border-premium/40 bg-premium/[0.08] px-2.5 py-1 font-sans text-eyebrow font-semibold text-premium-ink">
-            {t("community.askAPriest")}
-          </span>
-          {(post.clergy_reply_count ?? 0) > 0 ? (
-            <span className="inline-flex items-center gap-1 rounded-pill border border-paper/15 px-2.5 py-1 font-sans text-eyebrow font-semibold text-paper/80">
-              <ClergySeal mark="clergy" size={12} />
-              {t("community.answeredByClergy")}
+      {/* What the post is for, over it, in small capitals: no pills. */}
+      {feast || question || pinned ? (
+        <p className="mb-2.5 flex flex-wrap items-center gap-x-2 gap-y-1 font-sans text-[10.5px] font-bold uppercase leading-tight tracking-[0.1em] text-paper/65">
+          {feast ? (
+            <span className="inline-flex items-center gap-1.5 text-premium-ink">
+              <CrossIcon size={12} />
+              {pinned ? t("community.feastToday") : t("community.feastDay")}
+            </span>
+          ) : question ? (
+            <>
+              <span>{t("community.askAPriest")}</span>
+              {(post.clergy_reply_count ?? 0) > 0 ? (
+                <>
+                  <span aria-hidden className="text-paper/30">·</span>
+                  <span className="inline-flex items-center gap-1 text-paper/85">
+                    <ClergySeal mark="clergy" size={13} />
+                    {t("community.answeredByClergy")}
+                  </span>
+                </>
+              ) : null}
+            </>
+          ) : null}
+          {pinned && !feast ? (
+            <span className="inline-flex items-center gap-1.5 text-paper/80">
+              <svg
+                width="12"
+                height="12"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                aria-hidden="true"
+                focusable="false"
+              >
+                <path d="M12 17v5" />
+                <path d="M9 10.8V4h6v6.8l3 3.2H6l3-3.2Z" />
+              </svg>
+              {t("community.announcement")}
             </span>
           ) : null}
         </p>
       ) : null}
-      {pinned && !feast && (
-        <p className="mb-3 inline-flex items-center gap-1.5 rounded-pill border border-gold/40 bg-gold/[0.10] px-2.5 py-1 font-sans text-eyebrow font-semibold text-gold">
-          <svg
-            width="12"
-            height="12"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="2"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            aria-hidden="true"
-            focusable="false"
-          >
-            <path d="M12 17v5" />
-            <path d="M9 10.8V4h6v6.8l3 3.2H6l3-3.2Z" />
-          </svg>
-          {t("community.announcement")}
-        </p>
-      )}
-      <div className="flex items-center gap-3">
-        {/* The name and picture open the author's profile. */}
-        <AuthorButton seed={seed} className="flex min-w-0 items-center gap-3">
-          <Avatar name={post.author_name} url={post.author_avatar} decoration={post.author_decoration} />
-          <span className="block min-w-0">
-            <span className="flex items-center gap-1 font-sans text-ui font-semibold text-paper">
-              <span
-                className={cn(
-                  "truncate",
-                  nameColorClass(post.author_name_color),
-                  authorHandle && "decoration-paper/40 underline-offset-2 group-hover:underline",
-                )}
-              >
-                {post.author_name}
+
+      <div className="grid grid-cols-[38px_minmax(0,1fr)] gap-x-3">
+        {/* The rail: the writer's picture, and while the post has replies a
+            line running down from it, as a thread hangs from what was said. */}
+        <div className="flex flex-col items-center">
+          <AuthorButton seed={seed} decorative className="shrink-0 rounded-full">
+            <Avatar name={post.author_name} url={post.author_avatar} size={38} decoration={post.author_decoration} />
+          </AuthorButton>
+          {threadHangs ? <span aria-hidden className="community-rail mb-1.5 mt-2 w-[1.5px] flex-1 rounded-full" /> : null}
+        </div>
+
+        <div className="min-w-0">
+          <div className="flex items-start gap-1">
+            {/* The name opens the author's profile; when and what, after it. */}
+            <p className="flex min-w-0 flex-1 flex-wrap items-baseline gap-x-1.5 pt-0.5 leading-tight">
+              <AuthorButton seed={seed} className="inline-flex min-w-0 max-w-full items-center gap-1 font-sans text-[14.5px] font-semibold text-paper">
+                <span
+                  className={cn(
+                    "truncate",
+                    nameColorClass(post.author_name_color),
+                    authorHandle && "decoration-paper/40 underline-offset-2 group-hover:underline",
+                  )}
+                >
+                  {post.author_name}
+                </span>
+                <ClergySeal mark={post.author_clergy} />
+                {post.author_verified ? <VerifiedBadge /> : null}
+                {/* After the tick when both: standing first, support second. */}
+                <SupporterMark tier={post.author_mark} />
+              </AuthorButton>
+              <span className="font-sans text-[12.5px] text-paper/50">
+                · {timeAgo(post.created_at)} · {t(POST_KIND_KEYS[post.kind])}
               </span>
-              <ClergySeal mark={post.author_clergy} />
-              {post.author_verified ? <VerifiedBadge /> : null}
-              {/* After the tick when both: standing first, support second. */}
-              <SupporterMark tier={post.author_mark} />
-            </span>
-            <span className="block font-sans text-eyebrow text-paper/45">
-              {timeAgo(post.created_at)} · {t(POST_KIND_KEYS[post.kind])}
-            </span>
-          </span>
-        </AuthorButton>
-        <ActionMenu className="ml-auto shrink-0" label={t("community.postActions")} items={menuItems} />
-        <ConfirmDialog
-          open={confirmingBlock}
-          title={t("community.blockConfirmTitle", { name: post.author_name })}
-          description={t("community.blockConfirmBody")}
-          confirmLabel={t("community.block")}
-          cancelLabel={t("common.cancel")}
-          destructive
-          onConfirm={() => void block()}
-          onCancel={() => setConfirmingBlock(false)}
-        />
-        <ConfirmDialog
-          open={confirmingDelete}
-          title={t("community.deleteConfirmTitle")}
-          description={t("community.deleteConfirmBody")}
-          confirmLabel={t("community.delete")}
-          cancelLabel={t("common.cancel")}
-          destructive
-          pending={busy}
-          onConfirm={() => void removePost()}
-          onCancel={() => setConfirmingDelete(false)}
-        />
-        <ConfirmDialog
-          open={askReply !== null}
-          title={t("community.filteredTitle")}
-          description={t("community.filteredBody")}
-          confirmLabel={t("community.filteredPost")}
-          cancelLabel={t("community.filteredEdit")}
-          pending={busy}
-          onConfirm={() => {
-            const text = askReply;
-            setAskReply(null);
-            if (text) void sendReply(text, undefined, true);
-          }}
-          onCancel={() => {
-            // Back to the box, as written, to change.
-            if (askReply) setDraft(askReply);
-            setAskReply(null);
-          }}
-        />
-      </div>
+            </p>
+            <ActionMenu className="-me-1.5 -mt-1 shrink-0" label={t("community.postActions")} items={menuItems} />
+            <ConfirmDialog
+              open={confirmingBlock}
+              title={t("community.blockConfirmTitle", { name: post.author_name })}
+              description={t("community.blockConfirmBody")}
+              confirmLabel={t("community.block")}
+              cancelLabel={t("common.cancel")}
+              destructive
+              onConfirm={() => void block()}
+              onCancel={() => setConfirmingBlock(false)}
+            />
+            <ConfirmDialog
+              open={confirmingDelete}
+              title={t("community.deleteConfirmTitle")}
+              description={t("community.deleteConfirmBody")}
+              confirmLabel={t("community.delete")}
+              cancelLabel={t("common.cancel")}
+              destructive
+              pending={busy}
+              onConfirm={() => void removePost()}
+              onCancel={() => setConfirmingDelete(false)}
+            />
+            <ConfirmDialog
+              open={askReply !== null}
+              title={t("community.filteredTitle")}
+              description={t("community.filteredBody")}
+              confirmLabel={t("community.filteredPost")}
+              cancelLabel={t("community.filteredEdit")}
+              pending={busy}
+              onConfirm={() => {
+                const text = askReply;
+                setAskReply(null);
+                if (text) void sendReply(text, undefined, true);
+              }}
+              onCancel={() => {
+                // Back to the box, as written, to change.
+                if (askReply) setDraft(askReply);
+                setAskReply(null);
+              }}
+            />
+          </div>
 
-      {post.title ? (
-        <h3 className="mt-3 text-title-sm leading-snug text-paper">
-          <SymbolText text={post.title} />
-        </h3>
-      ) : null}
-
-      {post.quote_text ? (
-        // The house treatment for a verbatim quotation, matching the five
-        // other surfaces that carry one: ApologeticsReader, TopicReader,
-        // FlorilegiumDetail and FlorilegiumPickerSheet all use a 1px gold
-        // rule at 40% with no fill. This was the only one that reached for a
-        // 2px rule on a filled rounded card, which read as a callout rather
-        // than a quotation and made the same Father look different depending
-        // on which screen you met him.
-        <blockquote className="mt-3 border-l border-gold/40 pl-5">
-          <p
-            ref={quoteFold}
-            className={cn(
-              "font-serif italic text-body leading-[1.7] text-paper/90",
-              longQuote && folded && "post-fold",
-            )}
-            style={longQuote && folded ? foldLines(6, 1.7) : undefined}
-          >
-            {post.quote_text}
-          </p>
-          <footer className="mt-2 font-sans text-caption text-paper/55">
-            {post.quote_href ? (
-              <Link href={post.quote_href} className="hover:text-paper">
-                {post.quote_source}
-              </Link>
-            ) : (
-              post.quote_source
-            )}
-          </footer>
-        </blockquote>
-      ) : null}
-
-      {post.body ? (
-        <p
-          ref={bodyFold}
-          className={cn(
-            "mt-3 whitespace-pre-wrap break-words font-sans text-ui leading-relaxed text-paper/80",
-            longBody && folded && "post-fold",
-          )}
-          style={longBody && folded ? foldLines(pinned ? 4 : 6, 1.625) : undefined}
-        >
-          {/* Folded or not, the writer's own lines and paragraphs. The fold
-              ends in a soft fade, so one that lands on the blank line between
-              two paragraphs reads as well as any other. */}
-          <MentionText text={post.body} />
-        </p>
-      ) : null}
-      {longBody || longQuote ? (
-        <button
-          type="button"
-          onClick={() => setUnfolded((v) => !v)}
-          aria-expanded={unfolded}
-          className="hit-44 mt-2 font-sans text-detail font-semibold text-paper/70 hover:text-paper"
-        >
-          {unfolded ? t("community.showLess") : t("community.readMore")}
-        </button>
-      ) : null}
-      {feast && post.feast_slug ? (
-        <Link
-          href={`/saints/${post.feast_slug}`}
-          className="mt-2 inline-flex font-sans text-detail font-semibold text-premium-ink hover:text-paper"
-        >
-          {t("community.feastReadLife")}
-        </Link>
-      ) : null}
-
-      {/* One action row. Reactions and replies are both "what you can do with
-          this post", and stacking them put a lone like button above a lone
-          reply count with nothing tying them together. */}
-      <div className="mt-4 flex flex-wrap items-center gap-2">
-        <ReactionButtons
-          postId={post.id}
-          likeCount={post.like_count}
-          dislikeCount={post.dislike_count}
-          mine={myReaction}
-          canReact={Boolean(me)}
-        />
-        <ResponseButtons postId={post.id} counts={countsOf(post)} mine={myResponses} canRespond={Boolean(me)} />
-        <button
-          type="button"
-          onClick={() => void toggleReplies()}
-          aria-expanded={open}
-          // h-9 to match the reaction pills exactly. items-center alone cannot
-          // line up two things of different heights when one of them is a bare
-          // text button: the optical baseline lands wherever the shorter one's
-          // box happens to put it.
-          className="ms-auto inline-flex h-9 items-center ps-1 font-sans text-detail font-medium text-paper/55 hover:text-paper"
-        >
-          {tn("community.replyCount", shownCount)}
-          <ChevronDown size={14} className={open ? "ml-1 rotate-180 transition-transform" : "ml-1 transition-transform"} />
-        </button>
-      </div>
-
-      {actionError ? (
-        <p className="mt-2 font-sans text-detail text-rose-300" role="alert">
-          {actionError}
-        </p>
-      ) : null}
-
-      {open ? (
-        <div className="mt-3 space-y-3 border-t border-white/6 pt-3">
-          {question ? (
-            <p className="font-sans text-caption leading-relaxed text-paper/50">{t("community.askThreadNote")}</p>
+          {post.title ? (
+            <h3 className="mt-1.5 text-[19px] leading-[1.28] tracking-[-0.005em] text-paper">
+              <SymbolText text={post.title} />
+            </h3>
           ) : null}
-          {repliesState === "loading" && replies === null ? (
-            <div aria-busy aria-label={t("community.loadingReplies")}>
-              <SkeletonList rows={2} />
-            </div>
-          ) : repliesState === "error" && replies === null ? (
-            <div className="rounded-lg border border-paper/10 bg-black/20 p-4 text-center">
-              <p className="font-sans text-detail text-paper/70">
-                {t("community.repliesFailed")}
-              </p>
-              <button
-                type="button"
-                onClick={() => void loadReplies()}
-                className="mt-2 font-sans text-detail font-semibold text-gold-pale hover:text-paper"
-              >
-                {t("community.tryAgain")}
-              </button>
-            </div>
-          ) : (
-            orderedReplies.map((r) =>
-              r.author_muted && !opened.has(r.id) ? (
-                <button
-                  key={r.id}
-                  type="button"
-                  onClick={() => setOpened((s) => new Set(s).add(r.id))}
-                  className="block w-full rounded-lg border border-dashed border-paper/12 px-3 py-2 text-left font-sans text-caption text-paper/45 hover:text-paper/70"
+
+          {post.quote_text ? (
+            // A line from Scripture or a Father is a card worth sharing (the
+            // owner's rule, 1.8): the words whole under the cross, where they
+            // are from, a tap to read them there and Share as a picture. Until
+            // 1.8 it was the house quotation, a rule beside the words, which
+            // the sheet replaces with this card (r3-02, Anna's verse).
+            <figure className="community-quote mt-2.5 rounded-[18px] border border-paper/[0.11] px-4 pb-3 pt-4 text-center">
+              <PurifyMark size={22} className="community-quote-mark mx-auto mb-2.5 block text-paper" />
+              <blockquote>
+                <p
+                  ref={quoteFold}
+                  className={cn(
+                    "whitespace-pre-line font-serif text-[17px] font-medium leading-[1.5] text-paper",
+                    longQuote && folded && "post-fold",
+                  )}
+                  style={longQuote && folded ? foldLines(6, 1.5) : undefined}
                 >
-                  {t("community.mutedReply")}
-                </button>
-              ) : (
-              <div
-                key={r.id}
-                id={replyAnchorId(r.id)}
-                className={cn(
-                  "flex scroll-mt-28 items-start gap-2.5 rounded-xl",
-                  question && r.author_clergy && "border border-premium/30 bg-premium/[0.05] p-2.5",
-                  // The light reaches a little past the words (the loose
-                  // variant), so it reads as a row and the row does not move.
-                  lit === r.id && "notify-lit notify-lit-loose",
+                  {post.quote_text}
+                </p>
+              </blockquote>
+              <span aria-hidden className="mx-auto mt-3 block h-[1.5px] w-7 rounded-full bg-paper/70" />
+              <figcaption className="mt-2.5 flex items-center justify-between gap-2">
+                {post.quote_href ? (
+                  <Link
+                    href={post.quote_href}
+                    aria-label={t("today.saintWords.readSource")}
+                    title={t("today.saintWords.readSource")}
+                    className="tap-press hit-44 inline-flex size-8 shrink-0 items-center justify-center rounded-full border border-paper/10 bg-paper/[0.07] text-paper/85 hover:text-paper"
+                  >
+                    <Book size={15} />
+                  </Link>
+                ) : (
+                  <span aria-hidden className="size-8 shrink-0" />
                 )}
-              >
-                <AuthorButton
-                  seed={replySeed(r)}
-                  decorative
-                  className="shrink-0 rounded-full"
+                <span className="min-w-0 font-sans text-[10.5px] font-bold uppercase leading-snug tracking-[0.16em] text-paper/70">
+                  {post.quote_source}
+                </span>
+                <button
+                  type="button"
+                  onClick={() => setMaking(true)}
+                  aria-label={t("today.verse.shareAsPicture")}
+                  title={t("today.verse.shareAsPicture")}
+                  className="tap-press hit-44 inline-flex size-8 shrink-0 items-center justify-center rounded-full border border-paper/10 bg-paper/[0.07] text-paper/85 hover:text-paper"
                 >
-                  <Avatar name={r.author_name} url={r.author_avatar} size={28} decoration={r.author_decoration} />
-                </AuthorButton>
-                <div className="min-w-0">
-                  <p className="flex flex-wrap items-center gap-1 font-sans text-caption text-paper/50">
-                    {r.author_handle ? (
-                      <AuthorButton
-                        seed={replySeed(r)}
-                        className={cn(
-                          "font-semibold text-paper/80 decoration-paper/40 underline-offset-2 hover:text-paper hover:underline",
-                          nameColorClass(r.author_name_color),
-                        )}
-                      >
-                        {r.author_name}
-                      </AuthorButton>
-                    ) : (
-                      <span className={cn("font-semibold text-paper/80", nameColorClass(r.author_name_color))}>{r.author_name}</span>
-                    )}
-                    <ClergySeal mark={r.author_clergy} size={14} />
-                    <SupporterMark tier={r.author_mark} size={14} />
-                    <span>· {timeAgo(r.created_at)}</span>
-                    {question && r.author_clergy ? (
-                      <span className="rounded-pill bg-premium/15 px-2 py-0.5 font-semibold text-premium-ink">{t("community.clergyAnswer")}</span>
-                    ) : null}
-                  </p>
-                  <p className="whitespace-pre-wrap break-words font-sans text-detail leading-relaxed text-paper/80">
-                    <MentionText text={r.body} />
-                  </p>
-                  {/*
-                    Asked for twice by readers, on 25 August and again on 20
-                    September ("it would be cool to be able to like responses").
-                    Everything underneath already supported it: the table
-                    carries the counts, a trigger keeps them, the reactions
-                    route takes a replyId, and /api/community/mine returns the
-                    reader's own. The thread never selected the counts and the
-                    row never drew the button.
-                  */}
-                  <div className="mt-1.5 flex flex-wrap items-center gap-2">
-                    <ReactionButtons
-                      replyId={r.id}
-                      likeCount={r.like_count ?? 0}
-                      dislikeCount={r.dislike_count ?? 0}
-                      mine={myReplyReactions[r.id] ?? null}
-                      canReact={Boolean(me)}
-                      size="reply"
-                    />
-                    <ResponseButtons
-                      replyId={r.id}
-                      counts={countsOf(r)}
-                      mine={myReplyResponses[r.id] ?? NO_KINDS}
-                      canRespond={Boolean(me)}
-                      size="reply"
-                    />
-                  </div>
-                </div>
-              </div>
-              ),
-            )
-          )}
-          {replyNotice ? (
-            <p role="status" className="rounded-lg border border-sage/30 bg-sage/[0.07] px-3 py-2 font-sans text-caption text-paper/80">
-              {replyNotice}
+                  <Share size={15} />
+                </button>
+              </figcaption>
+            </figure>
+          ) : null}
+
+          {post.body ? (
+            <p
+              ref={bodyFold}
+              className={cn(
+                "mt-2 whitespace-pre-wrap break-words font-sans text-[15px] leading-[22px] text-paper/85",
+                longBody && folded && "post-fold",
+              )}
+              style={longBody && folded ? foldLines(pinned ? 4 : 6, BODY_LEAD) : undefined}
+            >
+              {/* Folded or not, the writer's own lines and paragraphs. The fold
+                  ends in a soft fade, so one that lands on the blank line between
+                  two paragraphs reads as well as any other. */}
+              <MentionText text={post.body} />
+            </p>
+          ) : null}
+          {longBody || longQuote ? (
+            <button
+              type="button"
+              onClick={() => setUnfolded((v) => !v)}
+              aria-expanded={unfolded}
+              className="hit-44 mt-1.5 inline-flex items-center gap-1 font-sans text-[13.5px] font-semibold text-paper/90 hover:text-paper"
+            >
+              {unfolded ? t("community.showLess") : t("community.readMore")}
+              <ChevronDown size={15} className={cn("motion-safe:transition-transform", unfolded && "rotate-180")} />
+            </button>
+          ) : null}
+          {feast && post.feast_slug ? (
+            <Link
+              href={`/saints/${post.feast_slug}`}
+              className="mt-2 inline-flex font-sans text-detail font-semibold text-premium-ink hover:text-paper"
+            >
+              {t("community.feastReadLife")}
+            </Link>
+          ) : null}
+
+          {/* One action row, bare words and marks on the page: the like and its
+              opposite, Amen and the rest, and the replies at the far end. */}
+          <div className="mt-2.5 flex flex-wrap items-center gap-x-3.5 gap-y-1">
+            <ReactionButtons
+              postId={post.id}
+              likeCount={post.like_count}
+              dislikeCount={post.dislike_count}
+              mine={myReaction}
+              canReact={Boolean(me)}
+            />
+            <ResponseButtons postId={post.id} counts={countsOf(post)} mine={myResponses} canRespond={Boolean(me)} />
+            <button
+              type="button"
+              onClick={() => void toggleReplies()}
+              aria-expanded={open}
+              // h-9 to match the reactions exactly. items-center alone cannot
+              // line up two things of different heights when one of them is a bare
+              // text button: the optical baseline lands wherever the shorter one's
+              // box happens to put it.
+              className="ms-auto inline-flex h-9 items-center gap-1 ps-1 font-sans text-[13px] font-semibold text-paper/60 hover:text-paper"
+            >
+              {tn("community.replyCount", shownCount)}
+              <ChevronDown size={14} className={cn("motion-safe:transition-transform", open && "rotate-180")} />
+            </button>
+          </div>
+
+          {actionError ? (
+            <p className="mt-2 font-sans text-detail text-rose-300" role="alert">
+              {actionError}
             </p>
           ) : null}
 
-          {/* The reader's own replies, still in flight or failed. */}
-          {pending.map((p) => (
-            <div key={p.tempId} className="flex items-start gap-2.5">
-              <Avatar name={me?.name ?? "R"} url={me?.avatar ?? null} size={28} />
-              <div className="min-w-0 flex-1">
-                <p className="font-sans text-caption text-paper/50">
-                  <span className="font-semibold text-paper/80">
-                    {me?.name ?? ""}
-                  </span>{" "}
-                  ·{" "}
-                  {p.status === "sending"
-                    ? t("community.replySending")
-                    : t("community.replyNotSent")}
-                </p>
-                <p
-                  className={
-                    "whitespace-pre-wrap font-sans text-detail leading-relaxed " +
-                    (p.status === "failed" ? "text-paper/50" : "text-paper/60")
+          {open ? (
+            <div className="mt-3 space-y-3.5 border-t border-paper/[0.06] pt-3.5">
+              {question ? (
+                <p className="font-sans text-caption leading-relaxed text-paper/50">{t("community.askThreadNote")}</p>
+              ) : null}
+              {repliesState === "loading" && replies === null ? (
+                <div aria-busy aria-label={t("community.loadingReplies")}>
+                  <SkeletonList rows={2} />
+                </div>
+              ) : repliesState === "error" && replies === null ? (
+                <div className="rounded-lg border border-paper/10 bg-black/20 p-4 text-center">
+                  <p className="font-sans text-detail text-paper/70">
+                    {t("community.repliesFailed")}
+                  </p>
+                  <button
+                    type="button"
+                    onClick={() => void loadReplies()}
+                    className="mt-2 font-sans text-detail font-semibold text-gold-pale hover:text-paper"
+                  >
+                    {t("community.tryAgain")}
+                  </button>
+                </div>
+              ) : (
+                orderedReplies.map((r) => {
+                  if (r.author_muted && !opened.has(r.id)) {
+                    return (
+                      <button
+                        key={r.id}
+                        type="button"
+                        onClick={() => setOpened((s) => new Set(s).add(r.id))}
+                        className="block w-full rounded-lg border border-dashed border-paper/12 px-3 py-2 text-left font-sans text-caption text-paper/45 hover:text-paper/70"
+                      >
+                        {t("community.mutedReply")}
+                      </button>
+                    );
                   }
-                >
-                  {p.body}
+                  // In a question, what verified clergy said stands first, in
+                  // its own light: a raised panel, white edged, its label lit.
+                  const clergyAnswer = question && Boolean(r.author_clergy);
+                  return (
+                    <div
+                      key={r.id}
+                      id={replyAnchorId(r.id)}
+                      className={cn(
+                        "scroll-mt-28 rounded-xl",
+                        clergyAnswer && "community-clergy-answer rounded-2xl border border-paper/25 px-3 pb-2 pt-2.5",
+                        // The light reaches a little past the words (the loose
+                        // variant), so it reads as a row and the row does not move.
+                        lit === r.id && "notify-lit notify-lit-loose",
+                      )}
+                    >
+                      {clergyAnswer ? (
+                        <p className="community-lit mb-2 flex items-center gap-1.5 font-sans text-[10.5px] font-bold uppercase tracking-[0.1em] text-paper">
+                          <ClergySeal mark={r.author_clergy} size={14} />
+                          {t("community.clergyAnswer")}
+                        </p>
+                      ) : null}
+                      <div className="flex items-start gap-2.5">
+                        <AuthorButton
+                          seed={replySeed(r)}
+                          decorative
+                          className="shrink-0 rounded-full"
+                        >
+                          <Avatar name={r.author_name} url={r.author_avatar} size={28} decoration={r.author_decoration} />
+                        </AuthorButton>
+                        <div className="min-w-0">
+                          <p className="flex flex-wrap items-center gap-1 font-sans text-caption text-paper/50">
+                            {r.author_handle ? (
+                              <AuthorButton
+                                seed={replySeed(r)}
+                                className={cn(
+                                  "font-semibold text-paper/85 decoration-paper/40 underline-offset-2 hover:text-paper hover:underline",
+                                  nameColorClass(r.author_name_color),
+                                )}
+                              >
+                                {r.author_name}
+                              </AuthorButton>
+                            ) : (
+                              <span className={cn("font-semibold text-paper/85", nameColorClass(r.author_name_color))}>{r.author_name}</span>
+                            )}
+                            <ClergySeal mark={r.author_clergy} size={14} />
+                            {r.author_verified ? <VerifiedBadge size={14} /> : null}
+                            <SupporterMark tier={r.author_mark} size={14} />
+                            <span>· {timeAgo(r.created_at)}</span>
+                          </p>
+                          <p className="mt-0.5 whitespace-pre-wrap break-words font-sans text-[13.5px] leading-[1.48] text-paper/85">
+                            <MentionText text={r.body} />
+                          </p>
+                          {/*
+                            Asked for twice by readers, on 25 August and again on 20
+                            September ("it would be cool to be able to like responses").
+                            Everything underneath already supported it: the table
+                            carries the counts, a trigger keeps them, the reactions
+                            route takes a replyId, and /api/community/mine returns the
+                            reader's own. The thread never selected the counts and the
+                            row never drew the button.
+                          */}
+                          <div className="mt-1 flex flex-wrap items-center gap-x-2.5 gap-y-1">
+                            <ReactionButtons
+                              replyId={r.id}
+                              likeCount={r.like_count ?? 0}
+                              dislikeCount={r.dislike_count ?? 0}
+                              mine={myReplyReactions[r.id] ?? null}
+                              canReact={Boolean(me)}
+                              size="reply"
+                            />
+                            <ResponseButtons
+                              replyId={r.id}
+                              counts={countsOf(r)}
+                              mine={myReplyResponses[r.id] ?? NO_KINDS}
+                              canRespond={Boolean(me)}
+                              size="reply"
+                            />
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  );
+                })
+              )}
+              {replyNotice ? (
+                <p role="status" className="rounded-lg border border-paper/15 bg-paper/[0.05] px-3 py-2 font-sans text-caption text-paper/80">
+                  {replyNotice}
                 </p>
-                {p.status === "failed" ? (
-                  <div className="mt-1 flex gap-3">
-                    <button
-                      type="button"
-                      onClick={() => void sendReply(p.body, p.tempId)}
-                      disabled={busy}
-                      className="font-sans text-caption font-semibold text-gold-pale hover:text-paper disabled:opacity-50"
-                    >
-                      {t("community.tryAgain")}
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => discardPending(p.tempId)}
-                      className="font-sans text-caption font-semibold text-paper/45 hover:text-paper/80"
-                    >
-                      {t("community.discard")}
-                    </button>
-                  </div>
-                ) : null}
-              </div>
-            </div>
-          ))}
+              ) : null}
 
-          {me ? (
-            <div className="flex gap-2">
-              <MentionField
-                as="input"
-                value={draft}
-                onChange={setDraft}
-                maxLength={2000}
-                placeholder={t("community.replyPlaceholder")}
-                className={field + " !py-2"}
-                onKeyDown={(e) => {
-                  if (e.key !== "Enter" || e.shiftKey) return;
-                  e.preventDefault();
-                  // Same guard the button carries. Without it, Enter was the
-                  // one path that could post an empty or duplicate reply.
-                  if (busy || !draft.trim()) return;
-                  void sendReply(draft.trim());
-                }}
-              />
-              <button
-                type="button"
-                onClick={() => void sendReply(draft.trim())}
-                disabled={busy || !draft.trim()}
-                className="shrink-0 rounded-pill bg-paper px-4 font-sans text-detail font-semibold text-night disabled:opacity-50"
-              >
-                {t("community.reply")}
-              </button>
+              {/* The reader's own replies, still in flight or failed. */}
+              {pending.map((p) => (
+                <div key={p.tempId} className="flex items-start gap-2.5">
+                  <Avatar name={me?.name ?? "R"} url={me?.avatar ?? null} size={28} />
+                  <div className="min-w-0 flex-1">
+                    <p className="font-sans text-caption text-paper/50">
+                      <span className="font-semibold text-paper/80">
+                        {me?.name ?? ""}
+                      </span>{" "}
+                      ·{" "}
+                      {p.status === "sending"
+                        ? t("community.replySending")
+                        : t("community.replyNotSent")}
+                    </p>
+                    <p
+                      className={
+                        "whitespace-pre-wrap font-sans text-detail leading-relaxed " +
+                        (p.status === "failed" ? "text-paper/50" : "text-paper/60")
+                      }
+                    >
+                      {p.body}
+                    </p>
+                    {p.status === "failed" ? (
+                      <div className="mt-1 flex gap-3">
+                        <button
+                          type="button"
+                          onClick={() => void sendReply(p.body, p.tempId)}
+                          disabled={busy}
+                          className="font-sans text-caption font-semibold text-gold-pale hover:text-paper disabled:opacity-50"
+                        >
+                          {t("community.tryAgain")}
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => discardPending(p.tempId)}
+                          className="font-sans text-caption font-semibold text-paper/45 hover:text-paper/80"
+                        >
+                          {t("community.discard")}
+                        </button>
+                      </div>
+                    ) : null}
+                  </div>
+                </div>
+              ))}
+
+              {me ? (
+                <div className="flex gap-2">
+                  <MentionField
+                    as="input"
+                    value={draft}
+                    onChange={setDraft}
+                    maxLength={2000}
+                    placeholder={t("community.replyPlaceholder")}
+                    className={field + " !py-2"}
+                    onKeyDown={(e) => {
+                      if (e.key !== "Enter" || e.shiftKey) return;
+                      e.preventDefault();
+                      // Same guard the button carries. Without it, Enter was the
+                      // one path that could post an empty or duplicate reply.
+                      if (busy || !draft.trim()) return;
+                      void sendReply(draft.trim());
+                    }}
+                  />
+                  <button
+                    type="button"
+                    onClick={() => void sendReply(draft.trim())}
+                    disabled={busy || !draft.trim()}
+                    className="shrink-0 rounded-pill bg-paper px-4 font-sans text-detail font-semibold text-night disabled:opacity-50"
+                  >
+                    {t("community.reply")}
+                  </button>
+                </div>
+              ) : null}
             </div>
           ) : null}
         </div>
+      </div>
+
+      {/* A shared line as a picture: the sheet the verse and the saints use. */}
+      {making && pictureWords ? (
+        <PictureSheet
+          open={making}
+          onClose={() => setMaking(false)}
+          words={pictureWords}
+          title={post.kind === "scripture" ? t("picture.title") : (post.quote_source ?? "")}
+          name={post.quote_source ?? ""}
+          caption={post.quote_source ?? ""}
+        />
       ) : null}
     </article>
   );
@@ -2366,28 +2417,33 @@ function MentionText({ text }: { text: string }) {
  *
  * aria-label rather than a decorative hidden icon. Whether an account is
  * verified is information, not ornament, and a screen reader should say so.
+ *
+ * Grey from 1.8, in the house greys beside a name (the owner's pick of r3-02
+ * drew the marks so, an open question built as drawn): the clergy seal is
+ * the white one, lit (ClergySeal), the tick a quiet grey under it, and the
+ * Plus cross silver (SupporterMark). The disc's grey is mixed from the page's
+ * own ink and ground (app/globals.css, .verified-tick), so it is grey on
+ * every palette, Parchment included.
  */
-function VerifiedBadge() {
+function VerifiedBadge({ size = 15 }: { size?: number }) {
   const { t } = useTranslate();
   return (
     <svg
-      width="15"
-      height="15"
+      width={size}
+      height={size}
       viewBox="0 0 24 24"
-      className="shrink-0"
+      className="verified-tick shrink-0"
       role="img"
       aria-label={t("community.verified")}
     >
       <path
-        fill="currentColor"
-        className="text-gold"
-        d="M12 1.6l2.3 2.1 3.1-.4 1.2 2.9 2.9 1.2-.4 3.1L23.2 14l-2.1 2.3.4 3.1-2.9 1.2-1.2 2.9-3.1-.4L12 25.2 9.7 23.1l-3.1.4-1.2-2.9-2.9-1.2.4-3.1L.8 14l2.1-2.3-.4-3.1 2.9-1.2 1.2-2.9 3.1.4z"
-        transform="translate(0 -1.6) scale(1)"
+        className="verified-tick-disc"
+        d="M12 1.6l2.36 1.64 2.84-.44 1.2 2.62 2.6 1.24-.46 2.84L22.4 12l-1.86 2.46.46 2.84-2.6 1.24-1.2 2.62-2.84-.44L12 22.4l-2.36-1.64-2.84.44-1.2-2.62-2.6-1.24.46-2.84L1.6 12l1.86-2.46-.46-2.84 2.6-1.24 1.2-2.62 2.84.44L12 1.6z"
       />
       <path
-        d="M8.2 12.4l2.6 2.6 5-5.2"
+        d="M7.6 12.3l2.9 2.9 5.9-6.1"
         fill="none"
-        stroke="var(--color-night, #14121a)"
+        stroke="var(--color-night, #101013)"
         strokeWidth="2.2"
         strokeLinecap="round"
         strokeLinejoin="round"

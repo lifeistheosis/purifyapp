@@ -18,10 +18,10 @@ import {
 /**
  * Amen, Praying, Glory to God, beside the like (lib/community/responses.ts).
  *
- * Quiet by default: a response shows as a small pill only once somebody has
- * given it, with its count, and the praying-hands button opens all three.
- * Any pill is a toggle for the reader's own response. A reader may give all
- * three; each is theirs once.
+ * Quiet by default: a response shows only once somebody has given it, as its
+ * word and its count, and the praying figure before them opens all three.
+ * Any of them is a toggle for the reader's own response. A reader may give
+ * all three; each is theirs once.
  *
  * Like the like button, nothing waits on the network: a tap moves the pill at
  * once and sends the END state wanted for that one response, so quick taps
@@ -77,8 +77,29 @@ export function ResponseButtons({ postId, replyId, counts, mine, canRespond, siz
   const compact = size === "reply";
   const visible = RESPONSE_KINDS.filter((k) => open || shown.counts[k] > 0 || shown.mine.includes(k));
 
+  // Bare on the page, as the like is (1.8, the owner's pick of r3-02, B):
+  // the praying figure that opens the three, then each response given, its
+  // word and its count, with no pill around it. The one the reader holds is
+  // lit white, softly, never gold (the owner, 2026-10-19 and 2026-10-28).
+  // Each is at least 44px wide, so `hit-44` only grows the touch up and down.
   return (
-    <div className="inline-flex flex-wrap items-center gap-1.5">
+    <div className="inline-flex flex-wrap items-center">
+      {canRespond ? (
+        <button
+          type="button"
+          onClick={() => setOpen((v) => !v)}
+          aria-expanded={open}
+          aria-label={open ? t("community.respondClose") : t("community.respond")}
+          title={open ? t("community.respondClose") : t("community.respond")}
+          className={cn(
+            "tap-press hit-44 inline-flex min-w-11 items-center justify-center rounded-pill text-paper/60 transition-colors hover:text-paper",
+            compact ? "h-7" : "h-9",
+            open && "community-lit text-paper",
+          )}
+        >
+          <Orans size={compact ? 13 : 16} />
+        </button>
+      ) : null}
       {visible.map((k) => {
         const held = shown.mine.includes(k);
         const label = t(RESPONSE_KEYS[k]);
@@ -91,13 +112,9 @@ export function ResponseButtons({ postId, replyId, counts, mine, canRespond, siz
             aria-pressed={held}
             title={canRespond ? label : t("community.signInToReact")}
             className={cn(
-              "tap-press inline-flex items-center gap-1 rounded-pill border font-sans font-medium transition-colors disabled:opacity-60",
-              compact ? "hit-44 h-7 px-2.5 text-eyebrow" : "h-9 px-3 text-caption",
-              // A response the reader holds is filled in the paper's light, as
-              // a held like is, never gold (the owner, 2026-10-19).
-              held
-                ? "border-paper/35 bg-paper/[0.12] font-semibold text-paper"
-                : "border-paper/15 text-paper/65 hover:border-paper/35 hover:text-paper",
+              "tap-press hit-44 inline-flex min-w-11 items-center justify-center gap-1 rounded-pill font-sans font-semibold transition-colors disabled:opacity-60",
+              compact ? "h-7 px-1.5 text-eyebrow" : "h-9 px-1.5 text-[13px]",
+              held ? "community-lit text-paper" : "text-paper/60 hover:text-paper",
             )}
           >
             <span>{label}</span>
@@ -105,22 +122,6 @@ export function ResponseButtons({ postId, replyId, counts, mine, canRespond, siz
           </button>
         );
       })}
-      {canRespond ? (
-        <button
-          type="button"
-          onClick={() => setOpen((v) => !v)}
-          aria-expanded={open}
-          aria-label={open ? t("community.respondClose") : t("community.respond")}
-          title={open ? t("community.respondClose") : t("community.respond")}
-          className={cn(
-            "tap-press inline-flex items-center justify-center rounded-pill border border-paper/15 text-paper/60 transition-colors hover:border-paper/35 hover:text-paper",
-            compact ? "hit-44 size-7" : "size-9",
-            open && "border-paper/35 text-paper",
-          )}
-        >
-          <Orans size={compact ? 13 : 15} />
-        </button>
-      ) : null}
       {error ? (
         <span role="alert" className="font-sans text-eyebrow text-crimson-soft">
           {error}

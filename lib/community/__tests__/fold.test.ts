@@ -37,22 +37,31 @@ const rule = (selector: string) => {
 describe("a long message, folded", () => {
   it("keeps the writer's own lines and paragraphs", () => {
     // The body is handed over as written, folded or not, and set so its line
-    // breaks and blank lines show.
+    // breaks and blank lines show. From 1.8 (r3-02 B) at 15px on 22px lines,
+    // set like a page.
     expect(client).toContain("<MentionText text={post.body} />");
     expect(client).not.toMatch(/post\.body\.replace\(/);
-    expect(client).toMatch(/"mt-3 whitespace-pre-wrap break-words font-sans text-ui leading-relaxed text-paper\/80"/);
+    expect(client).toMatch(/"mt-2 whitespace-pre-wrap break-words font-sans text-\[15px\] leading-\[22px\] text-paper\/85"/);
+    // A shared line keeps its own lines too, in its card.
+    expect(client).toMatch(/"whitespace-pre-line font-serif text-\[17px\] font-medium leading-\[1\.5\] text-paper"/);
   });
 
   it("folds the body and a long quotation by a number of lines, never by a line clamp", () => {
     expect(client).toMatch(/longBody && folded && "post-fold"/);
     expect(client).toMatch(/longQuote && folded && "post-fold"/);
     // An announcement folds sooner, as before: four lines, and six for the rest.
-    expect(client).toContain("foldLines(pinned ? 4 : 6, 1.625)");
-    expect(client).toContain("foldLines(6, 1.7)");
-    // The ems each fold counts in are the text's own leading: relaxed is 1.625.
-    expect(client).toMatch(/leading-relaxed text-paper\/80",\s*longBody && folded && "post-fold"/);
-    expect(client).toMatch(/"font-serif italic text-body leading-\[1\.7\] text-paper\/90",\s*longQuote && folded && "post-fold"/);
+    expect(client).toContain("foldLines(pinned ? 4 : 6, BODY_LEAD)");
+    expect(client).toContain("foldLines(6, 1.5)");
+    // The ems each fold counts in are the text's own leading: 22px lines on
+    // 15px words, and the quotation's 1.5.
+    expect(client).toContain("const BODY_LEAD = 22 / 15;");
+    expect(client).toMatch(/leading-\[22px\] text-paper\/85",\s*longBody && folded && "post-fold"/);
+    expect(client).toMatch(/leading-\[1\.5\] text-paper",\s*longQuote && folded && "post-fold"/);
     expect(client).not.toMatch(/folded && \(?[^)]*"line-clamp-/);
+  });
+
+  it("ends in Read more with a chevron that turns, only with motion on", () => {
+    expect(client).toMatch(/\{unfolded \? t\("community\.showLess"\) : t\("community\.readMore"\)\}\s*<ChevronDown size=\{15\} className=\{cn\("motion-safe:transition-transform", unfolded && "rotate-180"\)\} \/>/);
   });
 
   it("ends the fold in a soft fade, only where the words run past it", () => {
