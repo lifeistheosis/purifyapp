@@ -94,6 +94,7 @@ export const SAINT_NAME_FORMS: [string, string][] = [
   ["Daniel the Stylite", "daniel-the-stylite"],
   ["Ephraim the Syrian", "ephraim-the-syrian"],
   ["Gabriel of Georgia", "gabriel-of-georgia"],
+  ["Hilarion the Great", "hilarion-the-great"],
   ["Hilary of Poitiers", "hilary-of-poitiers"],
   ["Isidora of Tabenna", "isidora-of-tabenna"],
   ["Isidore of Seville", "isidore-of-seville"],

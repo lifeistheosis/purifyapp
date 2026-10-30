@@ -128,6 +128,7 @@ export const AUTHOR_META: Readonly<Record<string, MetaRow>> = {
   "pimen-the-great": { traditions: ["egypt", "desert"], era: "councils" },
   "pachomius-the-great": { traditions: ["egypt", "desert"], era: "councils" },
   "ammon-of-nitria": { traditions: ["egypt", "desert"], era: "councils" },
+  "hilarion-the-great": { traditions: ["desert"], era: "councils" },
   // Of Antioch, and of Constantinople, whose archbishop he was.
   "john-chrysostom": { traditions: ["greek", "antioch"], era: "councils" },
   "meletius-of-antioch": { traditions: ["antioch"], era: "councils" },
@@ -177,7 +178,11 @@ export const AUTHOR_META: Readonly<Record<string, MetaRow>> = {
 /**
  * Saints a Life is about who have no page of their own yet: St Jerome's three
  * Lives. Their names are the covers' and the search's; their days are the
- * Menaion's.
+ * Menaion's. St. Hilarion has had a page since 2026-10-30 (hilarion-the-great,
+ * where his Life is registered too, sameAs St Jerome's copy). He keeps this
+ * key for the Life all the same, because his cover's file on the website, which
+ * the apps already in readers' hands ask for, carries its name
+ * (lib/reading/authorCovers.ts, hilarion.v1.jpg; lib/today/saintFaces.ts).
  */
 export const SUBJECTS: Readonly<Record<string, MetaRow & { name: string; feasts: readonly string[] }>> = {
   "paul-of-thebes": { name: "St. Paul of Thebes", traditions: ["egypt", "desert"], era: "councils", feasts: ["January 15"] },
@@ -980,6 +985,23 @@ export const ENTRIES: Readonly<Record<WorkKey, ReadingEntry>> = {
     review: R,
   },
   "jerome-of-stridon/life-of-saint-hilarion": { by: "jerome-of-stridon", about: "hilarion", form: "life", scope: "complete", themes: [], review: R },
+  // Registered under St. Hilarion as well, from the same text; shown once, as St Jerome's.
+  "hilarion-the-great/life-of-saint-hilarion": {
+    by: "jerome-of-stridon",
+    about: "hilarion",
+    sameAs: "jerome-of-stridon/life-of-saint-hilarion",
+    form: "life",
+    scope: "complete",
+    themes: [],
+    review: R,
+  },
+  "hilarion-the-great/sayings-of-abba-hilarion": {
+    by: "hilarion-the-great",
+    form: "sayings",
+    scope: "selections",
+    themes: [t("patience", "The hunting dog that runs on after the hare when the others turn back: perseverance to the Cross", { sections: [[3, 3]] })],
+    review: R,
+  },
   "jerome-of-stridon/life-of-malchus-the-captive-monk": {
     by: "jerome-of-stridon",
     about: "malchus",

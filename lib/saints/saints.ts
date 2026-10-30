@@ -378,6 +378,45 @@ export const SAINTS: Saint[] = [
  ],
  },
  {
+ slug: "hilarion-the-great",
+ byname: "Father of the Monks of Palestine",
+ iconUrl: "/saints/icons/hilarion-the-great.jpg",
+ name: "St. Hilarion the Great",
+ epithet: "Of Gaza · The Great",
+ born: "c. 291 (Thabatha, near Gaza)",
+ reposed: "c. 371 (Cyprus)",
+ feastDays: ["October 21"],
+ shortBio:
+ "The young man of Gaza who learned the ascetic life from St. Antony and carried it home, so that the monks of Palestine begin with him; a healer sought by crowds, who spent his old age fleeing their praise.",
+ life: [
+ "Hilarion was born about the year 291 at Thabatha, a village south of Gaza in Palestine, to pagan parents, who sent him to study at Alexandria. There he came to believe in Christ, and he loved the assemblies of the Church more than the circus and the theatre. Hearing of St. Antony, he went into the desert to see him, and stayed with him about two months, learning his prayer, his humility and his rule of life.",
+ "Finding the crowds around Antony too great, he went home, gave what his dead parents had left him to his brothers and to the poor, and at about fifteen went out alone into the wilderness near Majuma, the port of Gaza. He lived there in a hut of reeds and sedge, and later in a cell hardly larger than a tomb, on a few figs a day or a little bread, weaving baskets and singing the Psalms, and he fought for years against hunger, sleep, the flesh and the demons.",
+ "After twenty-two years in the wilderness the sick began to find him, and the healings and deliverances God worked through him made his name known through Palestine, Syria and Egypt. Monasteries sprang up after his pattern throughout Palestine, and St. Antony, hearing of him, wrote to him and sent the sick of Syria to him, calling him his son. St. Jerome writes that before Hilarion there were no monasteries in Palestine, and that as the Lord had Antony in Egypt, so He had Hilarion in Palestine.",
+ "In old age, weighed down by the crowds and the honour, he fled. He went to Egypt, to the places where Antony had lived and died, then to the oasis of the desert, to Sicily, to Dalmatia and at last to Cyprus, and wherever he hid, the sick and the possessed found him out. His faithful disciple Hesychius followed and found him again and again.",
+ "He fell asleep in a remote place in the mountains of Cyprus about the year 371, in his eightieth year, leaving Hesychius his Gospel book and his poor clothes. He was buried there at once, as he had asked, and Hesychius afterwards brought his body home to his old monastery at Majuma. St. Jerome wrote his Life at Bethlehem about twenty years later. The Church keeps his memory on the twenty-first of October.",
+ ],
+ works: [
+ {
+ slug: "life-of-saint-hilarion",
+ title: "The Life of S. Hilarion",
+ subtitle: "Written by St. Jerome",
+ year: "c. 390",
+ blurb:
+ "St. Jerome's Life of the hermit who learned from St. Antony and carried the desert into Palestine: his years in the wilderness of Gaza, the crowds that came to be healed, and his flight in old age through Egypt, Sicily and Dalmatia to Cyprus, where he died. The same text as on St. Jerome's page, in the public-domain English of the Nicene and Post-Nicene Fathers (1893).",
+ topics: ["Hagiography", "Asceticism", "Desert", "Miracles", "Humility"],
+ },
+ {
+ slug: "sayings-of-abba-hilarion",
+ title: "Sayings of Abba Hilarion",
+ subtitle: "From the Paradise of the Holy Fathers",
+ year: "5th century",
+ blurb:
+ "His greeting to St. Antony on the mountain, and the hunting dog that runs on alone after the hare while the others turn back: the two sayings the Syriac collection gives in his name, verbatim from the public-domain English of Budge's Paradise of the Holy Fathers (1907).",
+ topics: ["Perseverance", "Desert", "Sayings"],
+ },
+ ],
+ },
+ {
  slug: "athanasius-the-great",
  byname: "Pillar of Orthodoxy",
  iconUrl: "/saints/icons/athanasius-the-great.v2.jpg",

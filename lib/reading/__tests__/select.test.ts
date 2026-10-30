@@ -32,10 +32,13 @@ const labels: SearchLabels = {
 const day = (y: number, m: number, d: number) => new Date(Date.UTC(y, m - 1, d, 12));
 
 describe("the room's cards", () => {
-  it("are every work once, the twin registration left out", () => {
+  it("are every work once, the twin registrations left out", () => {
     const works = SAINTS.reduce((n, s) => n + s.works.length, 0);
-    expect(room.cards).toHaveLength(works - 1);
+    // Two Lives registered twice: Antony's under St Antony, and (since
+    // 2026-10-30) Hilarion's under St Hilarion. Each is shown once, as its author's.
+    expect(room.cards).toHaveLength(works - 2);
     expect(room.cards.some((c) => c.key === "anthony-the-great/life-of-antony")).toBe(false);
+    expect(room.cards.some((c) => c.key === "hilarion-the-great/life-of-saint-hilarion")).toBe(false);
     expect(new Set(room.cards.map((c) => c.key)).size).toBe(room.cards.length);
   });
 

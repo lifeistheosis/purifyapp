@@ -612,6 +612,19 @@ export const ICON_RIGHTS: Record<string, IconRights> = {
     license: "Public domain",
     evidenceUrl: "https://commons.wikimedia.org/wiki/File:Bloemaert_-_1619_-_Sylva_anachoretica_Aegypti_et_Palaestinae_-_UB_Radboud_Uni_Nijmegen_-_512890366_21_S_Ammon_Nitriota.jpeg",
   },
+  // The wall painting his books already wear in the reading room
+  // (lib/reading/authorCovers.ts, hilarion.v1.jpg), cut to the icons' size.
+  "hilarion-the-great.jpg": {
+    status: "verified",
+    inspectedOn: "2026-10-30",
+    alt: "A wall painting of an old monk with a bald crown, deep-set eyes and a long white beard, in a brown mantle, holding a slender cross, within a large ochre halo on a mottled blue-green ground, his Greek name in white letters on either side.",
+    work: "Wall painting of St Hilarion, the church of the Panagia tou Arakos, Lagoudera, Cyprus, before its cleaning: the upper half",
+    artist: "Unknown (the photograph is David Winfield's for Dumbarton Oaks)",
+    workDate: "Not given on its page (the church's paintings are generally dated 1192)",
+    source: "Wikimedia Commons, Dumbarton Oaks (Byzantine Institute and Dumbarton Oaks Fieldwork Records)",
+    license: "CC0",
+    evidenceUrl: "https://commons.wikimedia.org/wiki/File:Church_of_Panagia_tou_Arakos,_nave,_southwest_bay,_wall_paintings,_Lagoudera,_Cyprus_-_West_soffit,_St._Hilarion,_detail_of_upper_half,_before_cleaning_-_MSBZ004_BF_S_1979_2198D_-_Dumbarton_Oaks.jpg",
+  },
   "job-of-pochaev.jpg": {
     status: "verified",
     inspectedOn: "2026-08-12",

@@ -110,6 +110,7 @@ export const COVER_ART: Readonly<Record<string, CoverArt>> = {
   "seven-sleepers-of-ephesus": bundled("seven-sleepers-of-ephesus.jpg", 55),
   "pachomius-the-great": bundled("pachomius-the-great.jpg", 62),
   "ammon-of-nitria": bundled("ammon-of-nitria.jpg", 34),
+  "hilarion-the-great": bundled("hilarion-the-great.jpg", 30),
 
   // From Wikimedia Commons for the covers (lib/reading/authorCovers.ts).
   ...AUTHOR_COVERS,
