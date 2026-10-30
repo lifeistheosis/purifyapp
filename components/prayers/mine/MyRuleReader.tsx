@@ -6,6 +6,7 @@ import { useEffect, useMemo, useRef } from "react";
 import { useTranslate } from "@/components/i18n/MessagesProvider";
 import { PrayerRuleReader } from "@/components/prayers/PrayerRuleReader";
 import { RecordPrayerOpened } from "@/components/prayers/RecordPrayerOpened";
+import { goToPrayer } from "@/components/prayers/service/useLitLine";
 import { ChevronRight } from "@/components/ui/icons/ChevronRight";
 import { libraryRule } from "@/lib/prayers/library";
 import { MY_RULE_IDS, composeRule, type MyRulePart } from "@/lib/prayers/myRule";
@@ -57,17 +58,16 @@ export function MyRuleReader({ part }: { part: MyRulePart }) {
   // Your rule today on Prayers (components/prayers/RuleToday.tsx, 1.8) opens
   // a part at one of its prayers, /prayers/personal/<part>#<step>. Until the
   // page has read the rule there is nothing to go to, so it goes once it has,
-  // and the prayer's name takes the focus, as Begin gives it.
+  // at once, as Begin goes (goToPrayer): the prayer's first line at the
+  // reading place, lit there, and its name, just above, takes the focus. It
+  // stood the prayer at the very top, under the bar, until build 81.
   const landed = useRef(false);
   const steps = composed.rule.prayers.length;
   useEffect(() => {
     if (!mounted || steps === 0 || landed.current) return;
     landed.current = true;
     const id = decodeURIComponent(window.location.hash.slice(1));
-    const step = id ? document.getElementById(id) : null;
-    if (!step) return;
-    step.scrollIntoView({ block: "start" });
-    document.getElementById(`${id}-title`)?.focus({ preventScroll: true });
+    if (id) goToPrayer(id, { smooth: false });
   }, [mounted, steps]);
 
   // The rule lives on the device: nothing to show until the page has read it.

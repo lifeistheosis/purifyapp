@@ -25,6 +25,7 @@ import { hasReadAloud, readAloudManifest, readAloudSrc, useHasReadAloud, verseAt
 import { startReading } from "@/lib/readAloud/play";
 import { currentTimeNow, pause, play, usePersistentAudio } from "@/lib/prayers/persistentAudioStore";
 import { cn } from "@/lib/cn";
+import { goToReadingPlace, inReadingZone, visibleBand } from "@/lib/ui/readingPlace";
 
 import { ReaderPill } from "./ReaderPill";
 
@@ -136,7 +137,20 @@ export function ReadAloudPillButton({ book, chapter, title }: { book: string; ch
   );
 }
 
-/** Lights the verse being read and keeps it in view. Draws nothing itself. */
+/**
+ * Lights the verse being read and keeps it at the reading place. Draws
+ * nothing itself.
+ *
+ * Kept in the middle of what the reader can see, between the round buttons
+ * and the pill, the mini player and the tab bar (lib/ui/readingPlace.ts). It
+ * was kept between 90px and 72% of the WINDOW and centred in the window, so
+ * the verse being read sank to just over the pill, the mini player and the
+ * tab bar before it moved, and moved to a middle a quarter of which they
+ * cover (the owner's photo of Colossians 4 on build 81, verse 7 being read
+ * low on the screen). Now it is moved back to the reading place once it
+ * leaves the band's middle, and left alone for a while after the reader
+ * scrolls.
+ */
 export function ReadAloudFollow({ book, chapter }: { book: string; chapter: number }) {
   const { t } = useTranslate();
   const router = useRouter();
@@ -212,10 +226,8 @@ export function ReadAloudFollow({ book, chapter }: { book: string; chapter: numb
       el.dataset.readNow = "";
       root.dataset.readAloud = "";
       if (performance.now() - lastHand.current > HANDS_OFF_MS) {
-        const r = el.getBoundingClientRect();
-        if (r.top < 90 || r.bottom > window.innerHeight * 0.72) {
-          el.scrollIntoView({ block: "center", behavior: document.documentElement.dataset.motion === "reduce" ? "auto" : "smooth" });
-        }
+        const band = visibleBand();
+        if (!inReadingZone(band, el.getBoundingClientRect())) goToReadingPlace(el, { band });
       }
     };
     const loop = () => {

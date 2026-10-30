@@ -74,6 +74,8 @@ export function NativeBackBar() {
       // double-pads at rest. Reproducing that by hand here is how the bar ends
       // up half under the status bar again. See globals.css.
       className="topbar-safe sticky top-0 z-30 flex items-center border-b border-white/8 bg-night/92 px-1 backdrop-blur"
+      // What stands at the top of the screen (lib/ui/readingPlace.ts).
+      data-screen-edge="top"
     >
       <button
         type="button"

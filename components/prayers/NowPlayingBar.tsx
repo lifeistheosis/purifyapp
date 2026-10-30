@@ -76,7 +76,10 @@ export function NowPlayingBar() {
   if (soundOnly && sound) {
     const name = t(sound.labelKey);
     return (
-      <div className="now-playing-lift pointer-events-none fixed inset-x-0 bottom-0 z-[55] px-3 pb-[calc(env(safe-area-inset-bottom)+0.375rem)] md:pb-2">
+      <div
+        data-screen-edge="bottom"
+        className="now-playing-lift pointer-events-none fixed inset-x-0 bottom-0 z-[55] px-3 pb-[calc(env(safe-area-inset-bottom)+0.375rem)] md:pb-2"
+      >
         <div className="pointer-events-auto relative mx-auto flex h-14 max-w-md items-center gap-3 overflow-hidden rounded-[14px] bg-night-soft pl-2 pr-1.5 shadow-[0_10px_28px_rgba(0,0,0,0.55)] ring-1 ring-inset ring-paper/[0.06]">
           <button
             type="button"
@@ -116,6 +119,9 @@ export function NowPlayingBar() {
       // as long as the anthem played. On the web there is no tab bar and it
       // stays at the bottom with its own safe-area padding.
       className="now-playing-lift pointer-events-none fixed inset-x-0 bottom-0 z-[55] px-3 pb-[calc(env(safe-area-inset-bottom)+0.375rem)] md:pb-2"
+      // What stands at the foot of the screen, which a page going to a place
+      // keeps clear of (lib/ui/readingPlace.ts). The sound's own bar above too.
+      data-screen-edge="bottom"
     >
       <div className="pointer-events-auto relative mx-auto flex h-14 max-w-md items-center gap-3 overflow-hidden rounded-[14px] bg-night-soft pl-2 pr-1.5 shadow-[0_10px_28px_rgba(0,0,0,0.55)] ring-1 ring-inset ring-paper/[0.06]">
         <button

@@ -56,6 +56,8 @@ export function AppNav() {
       // header with it (globals.css, "One bar on a phone"); the attribute is
       // what that rule finds.
       data-appnav
+      // What stands at the top of the screen (lib/ui/readingPlace.ts).
+      data-screen-edge="top"
       // Clear the iOS notch / status bar on mobile web. viewport-fit=cover
       // (app/layout.tsx) lets the page run under the notch, so without this the
       // back button and menu toggle sit under the status bar and can't be

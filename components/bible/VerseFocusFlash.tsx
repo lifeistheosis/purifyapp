@@ -3,11 +3,20 @@
 import { useEffect } from "react";
 import { usePathname } from "next/navigation";
 
+import { goToReadingPlace } from "@/lib/ui/readingPlace";
+
 /**
  * When a chapter page loads with a `#v123` hash, whether from the
  * BibleSearch result, a shared deep link, or a copy-link click, find
- * the matching verse element, scroll it into view, and let the rest of the
- * chapter step back for a moment so the eye lands on the right line.
+ * the matching verse element, take it to the reading place, and let the rest
+ * of the chapter step back for a moment so the eye lands on the right line.
+ *
+ * The reading place is the standard of lib/ui/readingPlace.ts (1.8, the
+ * owner's build 81 note): the middle of what the reader can see between the
+ * bars, a short verse centred there. It was the middle of the WINDOW, a
+ * quarter of which, at its foot, is the pill, the mini player and the tab
+ * bar, so a verse landed on sat low; and it glided there with Purify's
+ * motion setting off too.
  *
  * It used to ring the verse in a gold box with a glow. In paragraph view the
  * verses run inline, so that box broke on every line into a stack of outlines
@@ -38,7 +47,6 @@ export function VerseFocusFlash() {
  requestAnimationFrame(() => {
  const head = document.getElementById(`v${from}`);
  if (!head) return;
- head.scrollIntoView({ behavior: "smooth", block: "center" });
 
  const flashed: HTMLElement[] = [];
  const root = document.documentElement;
@@ -49,6 +57,9 @@ export function VerseFocusFlash() {
  flashed.push(el);
  }
  }
+ // A range stands there together: centred when it is short, its first
+ // verse at the reading place when it is not.
+ goToReadingPlace(flashed);
  root.setAttribute("data-verse-focus", "");
  if (timer) clearTimeout(timer);
  timer = setTimeout(() => {

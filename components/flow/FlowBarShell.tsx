@@ -25,6 +25,8 @@ export function FlowBarShell({ children }: { children: React.ReactNode }) {
     <div
       className="now-playing-lift pointer-events-none fixed inset-x-0 bottom-0 z-[54] px-3 pb-[calc(env(safe-area-inset-bottom)+0.375rem)] md:pb-4"
       style={{ transform: "translateY(calc(-1 * var(--now-playing-h, 0px)))" }}
+      // What stands at the foot of the screen (lib/ui/readingPlace.ts).
+      data-screen-edge="bottom"
     >
       <div className="pointer-events-auto mx-auto flex max-w-md items-center gap-2 rounded-[18px] bg-night-soft py-2 pl-4 pr-2 shadow-[0_14px_34px_rgba(0,0,0,0.5)] ring-1 ring-inset ring-paper/10">
         {children}

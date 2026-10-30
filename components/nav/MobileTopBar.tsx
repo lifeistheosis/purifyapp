@@ -162,7 +162,10 @@ export function MobileTopBar({
         className="md:hidden native-md-flex pointer-events-none fixed inset-x-0 top-0 z-30 flex flex-col"
         style={{ paddingTop: "env(safe-area-inset-top, 0px)" }}
       >
-        <div data-plates-row className="flex h-[52px] items-center justify-between gap-2 px-3">
+        {/* The row, not the bar around it, stands at the top of the screen
+            (lib/ui/readingPlace.ts): it steps away while the reader reads
+            on, and the strip over the status bar stays. */}
+        <div data-plates-row data-screen-edge="top" className="flex h-[52px] items-center justify-between gap-2 px-3">
           {backControl ?? <span aria-hidden />}
           <div className="flex items-center gap-2">
             {trailing}
@@ -180,6 +183,8 @@ export function MobileTopBar({
       ref={barRef}
       // The marker globals.css looks for to give a phone this bar alone.
       data-mobile-topbar
+      // What stands at the top of the screen (lib/ui/readingPlace.ts).
+      data-screen-edge="top"
       data-overlay={overlay && revealTitleOn ? "" : undefined}
       className={cn(
         "md:hidden native-md-flex sticky top-0 z-30",
