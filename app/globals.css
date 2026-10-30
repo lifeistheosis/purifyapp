@@ -1812,6 +1812,21 @@ html[data-reading-mode="parchment"] [data-hl-color]:not(.dark-island *) {
  display: none;
 }
 
+/* The apps draw no scroll bar anywhere (the owner, 2026-10-30: the bar at
+ the screen's edge took the immersion out of the app). On a phone every
+ reader scrolls by hand, the reading screens show where a reader is with
+ their own marks (the reader's progress, the chapter pill), and a bar that
+ flashes at the edge pulls the eye away from a prayer. The website keeps its
+ bars: a computer needs them. The web views' own bars are switched off too,
+ in MainActivity (Android) and PurifyBridgeViewController (iOS). */
+html.is-native,
+html.is-native * {
+ scrollbar-width: none;
+}
+html.is-native ::-webkit-scrollbar {
+ display: none;
+}
+
 /* ----------------------------------------------------------------------
  Licensed translation (API.Bible) prose, NKJV / NIV / NLT.
  The chapter HTML is rendered verbatim; these rules only RESTYLE the

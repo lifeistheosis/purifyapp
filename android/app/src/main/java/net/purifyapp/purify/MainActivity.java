@@ -53,6 +53,13 @@ public class MainActivity extends BridgeActivity {
         // default grey and showed as a large grey box on the sign-in form.
         // Matching it to #101013 makes that gap blend into the app.
         getWindow().setBackgroundDrawable(new ColorDrawable(Color.parseColor("#101013")));
+        // No scroll bar at the screen's edge (the owner, 2026-10-30): the app
+        // shows where a reader is with its own marks, and the web view's bar
+        // read as a website's. The page's own bars are hidden in app/globals.css.
+        if (getBridge() != null && getBridge().getWebView() != null) {
+            getBridge().getWebView().setVerticalScrollBarEnabled(false);
+            getBridge().getWebView().setHorizontalScrollBarEnabled(false);
+        }
         createPushChannel();
     }
 
