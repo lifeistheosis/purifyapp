@@ -1,28 +1,50 @@
 "use client";
 
+import dynamic from "next/dynamic";
 import Link from "next/link";
-import { useEffect, useId, useMemo, useRef, useState } from "react";
+import { useRouter } from "next/navigation";
+import { useCallback, useEffect, useId, useMemo, useRef, useState } from "react";
 
 import { useTranslate } from "@/components/i18n/MessagesProvider";
-import type { MapItem, MapPlace } from "@/lib/councils/map";
+import { Play } from "@/components/ui/icons/Play";
+import { DOOR_ASPECT, stillView } from "@/lib/councils/atlas";
+import type { MapItem, MapPlace, MapStep } from "@/lib/councils/map";
+import { prefersReducedMotion } from "@/lib/ui/motion";
+
+/** The atlas's script comes when it is first wanted, not with the page. */
+const loadAtlas = () => import("./MapAtlas");
+const MapAtlas = dynamic(() => loadAtlas().then((m) => m.MapAtlas), { ssr: false });
 
 /**
- * Where the councils met (1.8): the Mediterranean's coastline, a mark for
- * each city, and under it the cities with their councils, each opening its
- * page. A slider walks the years from the first council to the last; a
- * city lights up when its first council has met, and the councils still to
- * come are quiet in the list. Purify's own dark, the marks softly lit (the
+ * A step's page opened from the atlas, so that coming back to this page
+ * (Back) opens the atlas again where the reader was. In memory only: a
+ * reload starts afresh.
+ */
+let away: { path: string; step: number; back: boolean } | null = null;
+
+/**
+ * Where it happened (1.8): the map of History's events and the councils
+ * (lib/history/map.ts), and on Councils of the councils alone
+ * (lib/councils/map.ts). Purify's own dark, the marks softly lit (the
  * owner's pick of 2026-10-24 over an old-map look). No tiles, no map service.
  *
- * The history page draws the same map with its events among the councils
- * (lib/history/map.ts), its own title, and the events too far off for the
- * map listed under it.
+ * Round 3 (the owner's pick C of r3-10, "the atlas", 2026-10-30): on the page
+ * the map is a door, its still with every place and Move through the years.
+ * It opens the atlas (MapAtlas.tsx), the map as a screen of its own: until
+ * then it was drawn 780 px wide in a box that scrolled sideways, its names
+ * cut at both edges, with the browser's own range input under it (his note
+ * 40 of build 80). It opens at the first event and plays, as the door's own
+ * play mark says; with Purify's motion off it opens ready to play. Closed and
+ * opened again it carries on from where the reader left it. Under the door
+ * the places are listed with their councils and events, each opening its
+ * page, as before.
  */
 export function CouncilMap({
   view,
   land,
   places,
   beyond,
+  steps,
   titleKey = "councils.map.title",
   introKey = "councils.map.intro",
 }: {
@@ -30,27 +52,76 @@ export function CouncilMap({
   land: string;
   places: MapPlace[];
   beyond?: MapItem[];
+  steps: MapStep[];
   titleKey?: string;
   introKey?: string;
 }) {
   const { t } = useTranslate();
+  const router = useRouter();
   const id = useId().replace(/:/g, "");
-  const years = useMemo(
-    () => [...new Set([...places.flatMap((p) => p.items.map((c) => c.year)), ...(beyond ?? []).map((c) => c.year)])].sort((a, b) => a - b),
-    [places, beyond],
-  );
-  const [step, setStep] = useState(years.length - 1);
-  const year = years[step];
-  const latest = [...places.flatMap((p) => p.items), ...(beyond ?? [])].find((c) => c.year === year);
-  const [w, h] = view;
-  // On a phone the map is drawn wider than the screen so its names stay
-  // readable (at the screen's width they came out about 5 px tall), and it
-  // pans sideways; it opens on the east, where most of the places are.
-  const scroller = useRef<HTMLDivElement>(null);
+  const door = useRef<HTMLButtonElement>(null);
+  const left = useRef<number | null>(null);
+  const [atlas, setAtlas] = useState<{ start: number; play: boolean } | null>(null);
+  const [closing, setClosing] = useState(false);
+  const still = useMemo(() => stillView(places, view, DOOR_ASPECT), [places, view]);
+  const n = steps.length;
+
+  // Back from a step's page opened in the atlas: the atlas again, at that step.
   useEffect(() => {
-    const el = scroller.current;
-    if (el && el.scrollWidth > el.clientWidth) el.scrollLeft = (el.scrollWidth - el.clientWidth) * 0.75;
+    const was = away;
+    if (!was || !was.back || was.path !== window.location.pathname) return;
+    away = null;
+    if (was.step < 0 || was.step >= n) return;
+    left.current = was.step;
+    // Once, on arriving: what the reader left open is only known on the device.
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    setAtlas({ start: was.step, play: false });
+  }, [n]);
+
+  /** The atlas fading out, so that opening it again in that moment keeps it open. */
+  const leaving = useRef(0);
+
+  const open = useCallback(() => {
+    const at = left.current;
+    window.clearTimeout(leaving.current);
+    setClosing(false);
+    setAtlas({ start: at === null || at >= n - 1 ? 0 : at, play: !prefersReducedMotion() });
+  }, [n]);
+
+  const close = useCallback((step: number) => {
+    left.current = step;
+    const done = () => {
+      setAtlas(null);
+      setClosing(false);
+      door.current?.focus({ preventScroll: true });
+    };
+    window.clearTimeout(leaving.current);
+    if (prefersReducedMotion()) return done();
+    setClosing(true);
+    leaving.current = window.setTimeout(done, 200);
   }, []);
+
+  useEffect(() => {
+    const timer = leaving;
+    return () => window.clearTimeout(timer.current);
+  }, []);
+
+  const openStep = useCallback(
+    (step: number) => {
+      const href = steps[step]?.href;
+      if (!href) return;
+      const mark = { path: window.location.pathname, step, back: false };
+      away = mark;
+      // Coming back is a Back: the atlas opens again only then.
+      window.addEventListener("popstate", () => (mark.back = true), { once: true });
+      router.push(href);
+    },
+    [router, steps],
+  );
+
+  const first = steps[0]?.year;
+  const last = steps[n - 1]?.year;
+  const warm = () => void loadAtlas();
 
   return (
     <section aria-labelledby={`${id}-title`} className="mt-14">
@@ -59,91 +130,91 @@ export function CouncilMap({
       </h2>
       <p className="mt-2 max-w-[720px] font-sans text-detail leading-[1.6] text-paper/55">{t(introKey)}</p>
 
-      {/* dark-island: the map is dark by design (his pick), on Light too. */}
-      <div ref={scroller} className="dark-island scrollbar-thin mt-5 overflow-x-auto overflow-y-hidden rounded-md border border-paper/12 bg-[#0d0d0e]">
-        <svg viewBox={`0 0 ${w} ${h}`} role="img" aria-labelledby={`${id}-title`} className="block h-auto w-[780px] max-w-none md:w-full">
-          <defs>
-            <filter id={`${id}-glow`} x="-200%" y="-200%" width="500%" height="500%">
-              <feGaussianBlur stdDeviation="5" />
-            </filter>
-          </defs>
-          <path d={land} fill="#1d1d1f" stroke="#3d3d40" strokeWidth={0.6} />
-          {places.map((p) => {
-            const met = p.items[0].year <= year;
-            const lx = p.side === "left" ? p.x - 11 : p.side === "right" ? p.x + 11 : p.x;
-            const ly = p.side === "up" ? p.y - 13 : p.side === "down" ? p.y + 25 : p.y + 5;
-            const anchor = p.side === "left" ? "end" : p.side === "right" ? "start" : "middle";
-            const href = p.items.length === 1 ? p.items[0].href : `#place-${p.id}`;
-            return (
-              <a
-                key={p.id}
-                href={href}
-                aria-label={p.items.length === 1 ? `${p.items[0].name}, ${p.items[0].year}` : p.place}
-              >
-                <g opacity={met ? 1 : 0.18}>
-                <circle cx={p.x} cy={p.y} r={p.items.length > 1 ? 11 : 9} fill="#f3f0ea" opacity={0.35} filter={`url(#${id}-glow)`} />
-                <circle cx={p.x} cy={p.y} r={p.items.length > 1 ? 5.5 : 4.5} fill="#f3f0ea" />
-                <text
-                  x={lx}
-                  y={ly}
-                  textAnchor={anchor}
-                  fontSize={15}
-                  fill="#d9d5cd"
-                  className="font-sans"
-                >
-                  {p.label ?? p.place}
-                </text>
-                </g>
-              </a>
-            );
-          })}
-        </svg>
-      </div>
-
-      <div className="mt-4">
-        <label htmlFor={`${id}-years`} className="flex items-baseline justify-between gap-3 font-sans text-caption text-paper/60">
-          <span>{t("councils.map.slider")}</span>
-          <span className="tabular-nums text-paper/80">
-            {t("councils.map.until", { year })}
-            {latest ? ` · ${latest.name}` : ""}
+      {n > 0 ? (
+        // dark-island: the map is dark by design (his pick), on Light too.
+        <button
+          ref={door}
+          type="button"
+          onClick={open}
+          onPointerEnter={warm}
+          onPointerDown={warm}
+          onFocus={warm}
+          aria-haspopup="dialog"
+          className="atlas-door dark-island press-card mt-5"
+        >
+          <svg viewBox={still.join(" ")} preserveAspectRatio="xMidYMid slice" className="atlas-door-still" aria-hidden="true">
+            <defs>
+              <radialGradient id={`${id}-glow`}>
+                <stop offset="0" stopColor="#fff" stopOpacity={0.42} />
+                <stop offset="1" stopColor="#fff" stopOpacity={0} />
+              </radialGradient>
+              <radialGradient id={`${id}-vig`} r="75%">
+                <stop offset="0.55" stopColor="#000" stopOpacity={0} />
+                <stop offset="1" stopColor="#000" stopOpacity={0.6} />
+              </radialGradient>
+            </defs>
+            <rect x={still[0]} y={still[1]} width={still[2]} height={still[3]} fill="#0d0d0e" />
+            <path d={land} fill="#1d1d1f" stroke="#3d3d40" strokeWidth={0.8} vectorEffect="non-scaling-stroke" />
+            {places.map((p) => (
+              <g key={p.id}>
+                <circle cx={p.x} cy={p.y} r={15} fill={`url(#${id}-glow)`} />
+                <circle cx={p.x} cy={p.y} r={5.5} fill="#fff" opacity={0.92} />
+              </g>
+            ))}
+            <rect x={still[0]} y={still[1]} width={still[2]} height={still[3]} fill={`url(#${id}-vig)`} />
+          </svg>
+          <span className="atlas-door-foot">
+            <span className="atlas-door-years">
+              {first}
+              <span>–</span>
+              {last}
+            </span>
+            <span className="atlas-door-go">
+              <Play size={14} />
+              <span>{t("councils.map.slider")}</span>
+            </span>
           </span>
-        </label>
-        <input
-          id={`${id}-years`}
-          type="range"
-          min={0}
-          max={years.length - 1}
-          step={1}
-          value={step}
-          onChange={(e) => setStep(Number(e.target.value))}
-          aria-valuetext={t("councils.map.until", { year })}
-          className="mt-2 w-full accent-paper"
-        />
-      </div>
+        </button>
+      ) : null}
 
       <ul className="mt-5 grid grid-cols-1 gap-x-8 gap-y-3 sm:grid-cols-2">
         {places.map((p) => (
           <li key={p.id} id={`place-${p.id}`} className="scroll-mt-24">
             <p className="font-sans text-caption font-semibold text-paper/70">{p.place}</p>
-            <PlaceItems items={p.items} year={year} />
+            <PlaceItems items={p.items} />
           </li>
         ))}
         {beyond?.length ? (
           <li id={`place-${id}-beyond`} className="scroll-mt-24">
             <p className="font-sans text-caption font-semibold text-paper/70">{t("history.map.beyond")}</p>
-            <PlaceItems items={beyond} year={year} />
+            <PlaceItems items={beyond} />
           </li>
         ) : null}
       </ul>
+
+      {atlas ? (
+        <MapAtlas
+          view={view}
+          land={land}
+          places={places}
+          steps={steps}
+          titleKey={titleKey}
+          start={atlas.start}
+          play={atlas.play}
+          closing={closing}
+          onClose={close}
+          onOpenStep={openStep}
+        />
+      ) : null}
     </section>
   );
 }
 
-function PlaceItems({ items, year }: { items: MapItem[]; year: number }) {
+function PlaceItems({ items }: { items: MapItem[] }) {
   return (
     <ul className="mt-1 space-y-0.5">
       {items.map((c) => (
-        <li key={c.href} className={c.year <= year ? "" : "opacity-40"}>
+        <li key={c.href}>
           <Link href={c.href} className="font-serif text-ui text-paper/85 underline-offset-4 hover:underline">
             {c.name}
           </Link>{" "}

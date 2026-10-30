@@ -226,3 +226,51 @@ describe("attachScrollTicks", () => {
     expect(p.calls).toEqual([]);
   });
 });
+
+// The atlas's wheel of events (components/councils/atlasEngine.ts) is turned
+// by a hand but is not a scrolling row: it clicks through handTicks.
+describe("handTicks", () => {
+  async function loadHand(platform: Platform, p: ReturnType<typeof plugin>) {
+    vi.resetModules();
+    vi.doMock("@/lib/platform/native", () => ({
+      isNativeClient: () => platform !== null,
+      nativePlatform: () => platform,
+    }));
+    vi.doMock("@capacitor/haptics", p.factory);
+    return (await import("../scrollTicks")).handTicks;
+  }
+
+  it("clicks once a step, never closer than MIN_GAP_MS, and not after it ends", async () => {
+    const p = plugin();
+    const hand = (await loadHand("android", p))();
+    hand.tick();
+    clock += 10;
+    hand.tick(); // 10 ms after: dropped
+    clock += 100;
+    hand.tick();
+    hand.end();
+    clock += 100;
+    hand.tick(); // after the end: silent
+    await vi.waitFor(() => expect(p.calls).toEqual(["vibrate:10", "vibrate:10"]), soon);
+  });
+
+  it("uses the picker's selection click on iOS, between a start and an end", async () => {
+    const p = plugin();
+    const hand = (await loadHand("ios", p))();
+    clock += 100;
+    hand.tick();
+    hand.end();
+    hand.end();
+    await vi.waitFor(() => expect(p.calls).toEqual(["selectionStart", "selectionChanged", "selectionEnd"]), soon);
+  });
+
+  it("is silent in a browser, and loads nothing", async () => {
+    const p = plugin();
+    const hand = (await loadHand(null, p))();
+    hand.tick();
+    hand.end();
+    await settle();
+    expect(p.calls).toEqual([]);
+    expect(p.loads).toBe(0);
+  });
+});
