@@ -393,19 +393,20 @@ function calm(m: WebMotion): boolean {
   return true;
 }
 
-/** What a page keeps of the web while the reader stays on it: where each saint rests and stands. */
-export type WebPlaces = { anchor: (Point | null)[]; p: Point[] };
+/** What a page keeps of the web while the reader stays on it: where each moved saint rests (null: his own place). */
+export type WebPlaces = { anchor: (Point | null)[] };
 
 export function keepPlaces(m: WebMotion): WebPlaces {
-  return {
-    anchor: m.anchor.map((a, i) => (i > 0 && dist(a, m.home[i]) > 0.5 ? copy(a) : null)),
-    p: m.p.map(copy),
-  };
+  return { anchor: m.anchor.map((a, i) => (i > 0 && dist(a, m.home[i]) > 0.5 ? copy(a) : null)) };
 }
 
-/** The web as the reader left it, on coming back to the Web from the Timeline. */
+/**
+ * The web as the reader left it, on coming back to the Web from the Timeline:
+ * each moved saint at his place, the rest at theirs, ready for `settle` to
+ * make room round them again.
+ */
 export function restorePlaces(m: WebMotion, kept: WebPlaces | undefined): void {
-  if (!kept || kept.p.length !== m.p.length) return;
+  if (!kept || kept.anchor.length !== m.p.length) return;
   for (let i = 1; i < m.p.length; i++) {
     const a = kept.anchor[i];
     if (!a) continue;
@@ -413,9 +414,9 @@ export function restorePlaces(m: WebMotion, kept: WebPlaces | undefined): void {
     m.k[i] = MOTION.stay;
     m.zeta[i] = MOTION.stayDamping;
   }
-  for (let i = 1; i < m.p.length; i++) m.rest[i] = dist(m.anchor[i], restEnd(m, i));
   for (let i = 0; i < m.p.length; i++) {
-    m.p[i] = copy(kept.p[i]);
+    if (i > 0) m.rest[i] = dist(m.anchor[i], restEnd(m, i));
+    m.p[i] = copy(m.anchor[i]);
     m.v[i] = { x: 0, y: 0 };
   }
   m.held = -1;

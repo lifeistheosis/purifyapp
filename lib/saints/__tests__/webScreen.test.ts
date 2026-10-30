@@ -154,10 +154,7 @@ describe("the web a reader comes back to from the Timeline", () => {
           data: john,
           kept: {
             selectedId: john.nodes[3].id,
-            places: {
-              anchor: [null, { x: 330, y: 60 }, ...john.nodes.slice(1).map(() => null)],
-              p: [{ x: 195, y: 272 }, { x: 330, y: 60 }, ...john.nodes.slice(1).map(() => ({ x: 0, y: 0 }))],
-            },
+            places: { anchor: [null, { x: 330, y: 60 }, ...john.nodes.slice(1).map(() => null)] },
           },
         }),
       ),

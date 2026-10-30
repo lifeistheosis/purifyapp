@@ -339,10 +339,11 @@ export function WebConstellation({
       settle(m);
       m.exact = false;
       paint();
-      keepNow(m);
     } else {
       run();
     }
+    // Kept at once, so the Timeline and back finds him even before the web is still.
+    keepNow(m);
   }
 
   function onPutBack() {
@@ -353,10 +354,10 @@ export function WebConstellation({
     if (prefersReducedMotion()) {
       settle(m);
       paint();
-      keepNow(m);
     } else {
       run();
     }
+    keepNow(m);
   }
 
   const putBackShown = shifted && !dragging && !tall;

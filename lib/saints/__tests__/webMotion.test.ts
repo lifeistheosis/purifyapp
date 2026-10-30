@@ -255,6 +255,19 @@ describe("the places kept on a visit", () => {
     expect(moved(again)).toBe(true);
   });
 
+  it("make room again round a saint left on another's place", () => {
+    const layout = webLayout(9);
+    const m = webMotion(layout, none(9));
+    moveTo(m, 0, { ...m.home[5] });
+    run(m, 6);
+    const again = webMotion(layout, none(9));
+    restorePlaces(again, keepPlaces(m));
+    settle(again);
+    expect(far(again.p[1], m.p[1])).toBeLessThan(3);
+    expect(meet(again, 1, 5)).toBeGreaterThan(0.8);
+    expect(far(again.p[0], again.home[0])).toBeLessThan(0.5);
+  });
+
   it("are left alone when they belong to another web", () => {
     const m = webMotion(webLayout(3), none(3));
     restorePlaces(m, keepPlaces(webMotion(webLayout(9), none(9))));
