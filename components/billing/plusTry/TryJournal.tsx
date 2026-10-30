@@ -41,7 +41,8 @@ export default function TryJournal({ row }: TryProps) {
   const [now] = useState(() => new Date());
 
   const [items, setItems] = useState<JournalItem[]>(() => {
-    const yesterday = new Date(now.getFullYear(), now.getMonth(), now.getDate() - 1, now.getHours(), now.getMinutes());
+    // The example of the day before: a day earlier, at about this time.
+    const yesterday = new Date(now.getTime() - 24 * 60 * 60 * 1000);
     return [exampleItem("today", TRY_EXAMPLES.journalToday, now), exampleItem("yesterday", TRY_EXAMPLES.journalYesterday, yesterday)].filter(
       (i): i is JournalItem => i !== null,
     );
