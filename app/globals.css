@@ -3205,6 +3205,83 @@ html[data-reading-mode="parchment"] .testers-dot { box-shadow: none; }
 html[data-reading-mode="parchment"] .paywall-title:not(.dark-island *) {
  text-shadow: none;
 }
+/* Try each feature (r3-07, the owner's pick A, components/billing/PlusTry.tsx):
+   the feature's own screen in a window set into the Plus page, lit softly
+   from its top; the carved track its choices sit in; the chosen tile white
+   with a soft white glow; a sound's minute passing as a thin white line; and
+   the light that crosses between two devices in the sync preview. On Light
+   the window is a page a shade deeper, with no glow and no shade; with motion
+   turned down nothing moves, and the minute's line stands still. */
+.plus-try-window {
+ box-shadow:
+  inset 0 0 0 1px rgb(255 255 255 / 0.11),
+  inset 0 1px 0 rgb(255 255 255 / 0.1),
+  0 22px 40px -22px rgb(0 0 0 / 0.95),
+  0 0 0 5px rgb(255 255 255 / 0.025);
+}
+.plus-try-glow {
+ background: radial-gradient(closest-side, rgb(255 255 255 / 0.09), rgb(255 255 255 / 0));
+}
+.plus-try-track {
+ background: rgb(0 0 0 / 0.35);
+ box-shadow: inset 0 2px 6px rgb(0 0 0 / 0.6), inset 0 0 0 1px rgb(255 255 255 / 0.08);
+}
+.plus-try-tile-lit {
+ box-shadow: 0 0 22px -4px rgb(255 255 255 / 0.65), 0 0 0 1px rgb(255 255 255 / 0.9);
+}
+.plus-try-mark {
+ filter: drop-shadow(0 0 4px rgb(255 255 255 / 0.5));
+}
+html[data-reading-mode="parchment"] .plus-try-window:not(.dark-island *) {
+ box-shadow: inset 0 0 0 1px rgb(43 35 23 / 0.14), 0 14px 30px -24px rgb(43 35 23 / 0.6);
+}
+html[data-reading-mode="parchment"] .plus-try-glow:not(.dark-island *),
+html[data-reading-mode="parchment"] .plus-try-mark:not(.dark-island *) {
+ background: none;
+ filter: none;
+}
+html[data-reading-mode="parchment"] .plus-try-track:not(.dark-island *) {
+ background: rgb(43 35 23 / 0.06);
+ box-shadow: inset 0 1px 3px rgb(43 35 23 / 0.18), inset 0 0 0 1px rgb(43 35 23 / 0.1);
+}
+html[data-reading-mode="parchment"] .plus-try-tile-lit:not(.dark-island *) {
+ box-shadow: none;
+}
+@keyframes plus-try-minute {
+ from { transform: scaleX(0); }
+ to { transform: scaleX(1); }
+}
+.plus-try-minute-fill {
+ transform: scaleX(0);
+ box-shadow: 0 0 8px rgb(255 255 255 / 0.8);
+ animation: plus-try-minute 60s linear both;
+}
+.plus-try-minute-fill.is-ended {
+ animation: none;
+ transform: scaleX(1);
+}
+@keyframes plus-try-carry {
+ 0% { transform: translate(-29px, 25px); opacity: 0; }
+ 15% { opacity: 1; }
+ 50% { transform: translate(0, 0); }
+ 85% { opacity: 1; }
+ 100% { transform: translate(29px, 13px); opacity: 0; }
+}
+.plus-try-carry {
+ animation: plus-try-carry 2.6s var(--ease-house) infinite;
+}
+/* The lock's own words, coming into the window once a sound's minute is up. */
+.plus-try-rest {
+ animation: paywall-glow-in 700ms ease-out both;
+}
+:where([data-motion="reduce"]) .plus-try-minute-fill,
+:where([data-motion="reduce"]) .plus-try-rest {
+ animation: none;
+}
+:where([data-motion="reduce"]) .plus-try-carry {
+ animation: none;
+ opacity: 1;
+}
 
 /* ── Touch feedback ───────────────────────────────────────────────────
    The native app shell has no hover state, so taps can feel inert — a

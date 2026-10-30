@@ -26,6 +26,12 @@ const SURFACES = [
   "app/(app)/premium/page.tsx",
   "components/community/CommunitySide.tsx",
   "components/community/profile/ProfileEditor.tsx",
+  // r3-07 A: each Plus feature tried in the Plus page, and its frame.
+  "components/billing/PlusTry.tsx",
+  ...fs
+    .readdirSync("components/billing/plusTry")
+    .filter((f) => /\.tsx?$/.test(f))
+    .map((f) => `components/billing/plusTry/${f}`),
 ];
 
 describe("the premium surfaces", () => {
