@@ -4809,16 +4809,40 @@ html[data-reading-mode="parchment"] .doctrine-shadow {
  background: linear-gradient(180deg, color-mix(in srgb, var(--color-paper) 8.5%, transparent), color-mix(in srgb, var(--color-paper) 3%, transparent));
  box-shadow: inset 0 1px 0 rgb(var(--panel-sheen) / 0.09), 0 12px 22px -14px rgb(0 0 0 / 0.95);
 }
-/* Read the study opens the study under the bar and the doors' slim row. */
+/* The doors again as one slim row, pinned under the bar once they have gone
+   up under it. Each door its label alone, at the row's size (--slim-size),
+   which DoctrineDoors brings down from 13px until every label reads whole;
+   the doors share the row, and one is never narrower than its longest word.
+   A label wraps between its words and is never cut; only should nothing fit
+   at 9px may a word break inside itself (data-squeezed). Build 83's walk
+   found "The s...", "Scrip..." here at 390px, when each door carried its
+   icon too. */
+.doctrine-slim {
+ --slim-size: 13px;
+}
+.doctrine-slim-door {
+ min-width: min-content;
+ font-size: var(--slim-size);
+}
+.doctrine-slim-label {
+ display: block;
+ max-width: 100%;
+ hyphens: manual;
+}
+.doctrine-slim[data-squeezed] .doctrine-slim-label {
+ overflow-wrap: anywhere;
+}
+/* Read the study opens the study under the bar and the doors' slim row
+   (its band's 16px, its border and padding, and a door of 44px). */
 .doctrine-panels {
- scroll-margin-top: calc(3rem + 66px + env(safe-area-inset-top, 0px));
+ scroll-margin-top: calc(3rem + 70px + env(safe-area-inset-top, 0px));
 }
 html.is-native .doctrine-panels {
- scroll-margin-top: calc(3rem + 66px + var(--inset-top));
+ scroll-margin-top: calc(3rem + 70px + var(--inset-top));
 }
 @media (min-width: 768px) {
  html:not(.is-native) .doctrine-panels {
-  scroll-margin-top: calc(72px + 66px);
+  scroll-margin-top: calc(72px + 70px);
  }
 }
 

@@ -17,7 +17,7 @@ import { Codex } from "@/components/ui/icons/Codex";
 import { HaloedHead } from "@/components/ui/icons/HaloedHead";
 import { LinkChain } from "@/components/ui/icons/LinkChain";
 import { cn } from "@/lib/cn";
-import { doorsForAddress, type DoctrineDoor } from "@/lib/theology/page";
+import { SLIM_SIZES, doorsForAddress, slimLinesHeight, slimSize, type DoctrineDoor } from "@/lib/theology/page";
 import { scrollBehavior } from "@/lib/ui/motion";
 import { hashFor, tabFromHash } from "@/lib/ui/sectionTabs";
 
@@ -67,8 +67,17 @@ const DOOR =
 const DOOR_OFF = "theology-door border-paper/10 text-paper hover:bg-paper/[0.1]";
 const DOOR_ON = "reader-lit border-paper bg-paper text-night";
 
+/**
+ * A door in the slim row: its label alone, no icon, set at the row's size
+ * (--slim-size, which fitSlimRow below brings down until every label reads
+ * whole). The doors share the row equally, and a door whose longest word
+ * needs more takes it from the others (its min-content width, globals.css
+ * .doctrine-slim-door). A label wraps between its words, onto two lines at
+ * most; it is never cut. Build 83's walk found it cut at 390px ("The s...",
+ * "Scrip...") when each door carried its icon as well.
+ */
 const SLIM =
-  "flex min-h-11 min-w-0 items-center justify-center gap-1.5 truncate rounded-pill px-2 font-sans text-detail font-semibold";
+  "doctrine-slim-door flex min-h-11 flex-1 basis-0 items-center justify-center rounded-pill px-1 py-1 text-center font-sans font-semibold leading-[1.1]";
 
 const DOOR_EVENT = "purify:doctrine-door";
 
@@ -79,6 +88,29 @@ function subscribe(onChange: () => void): () => void {
     window.removeEventListener("hashchange", onChange);
     window.removeEventListener(DOOR_EVENT, onChange);
   };
+}
+
+/**
+ * Set the slim row's labels at the largest size, 13px down to 9px, at which
+ * every one reads whole: the row holds all four doors, no label is wider
+ * than its door, and none runs past two lines (lib/theology/page.ts,
+ * slimSize). The longest of the 21 catalogs' labels (Georgian's
+ * დაკავშირებული, Russian's Священное Писание) come down a step or two at
+ * 360px. Should nothing fit even at 9px, a word may break inside itself
+ * (data-squeezed) rather than be cut.
+ */
+function fitSlimRow(row: HTMLElement): void {
+  delete row.dataset.squeezed;
+  const labels = [...row.querySelectorAll<HTMLElement>("[data-slim-label]")];
+  const fits = (size: number) => {
+    row.style.setProperty("--slim-size", `${size}px`);
+    if (row.scrollWidth > row.clientWidth + 1) return false;
+    return labels.every((label) => label.scrollWidth <= label.clientWidth + 1 && label.offsetHeight <= slimLinesHeight(size, 2) + 1);
+  };
+  if (slimSize(fits) === null) {
+    row.style.setProperty("--slim-size", `${SLIM_SIZES.floor}px`);
+    row.dataset.squeezed = "";
+  }
 }
 
 /** Open a door from outside the doors (Read the study), and bring its part into view. */
@@ -105,10 +137,31 @@ export function DoctrineDoors({ doors, panels }: { doors: readonly DoctrineDoor[
   );
   const doorsRef = useRef<HTMLDivElement>(null);
   const stripRef = useRef<HTMLDivElement>(null);
+  const slimRef = useRef<HTMLDivElement>(null);
   const panelsRef = useRef<HTMLDivElement>(null);
   const settle = useRef(false);
   const [pinned, setPinned] = useState(false);
   const many = doors.length > 1;
+  const labels = doors.map((door) => t(LABEL[door])).join("\n");
+
+  // The slim row's labels read whole in every language and at every width:
+  // set again when the words change (another language) and when the screen
+  // or the fonts do. Hidden until pinned, but laid out, so it can be measured.
+  useIsoLayoutEffect(() => {
+    const row = slimRef.current;
+    if (!many || !row) return;
+    const fit = () => fitSlimRow(row);
+    fit();
+    let live = true;
+    void document.fonts?.ready.then(() => {
+      if (live) fit();
+    });
+    window.addEventListener("resize", fit);
+    return () => {
+      live = false;
+      window.removeEventListener("resize", fit);
+    };
+  }, [many, labels]);
 
   // The slim row arrives once the doors have gone up under the bar, as on a
   // saint's page: one observer on the doors, speaking only when they cross
@@ -193,10 +246,16 @@ export function DoctrineDoors({ doors, panels }: { doors: readonly DoctrineDoor[
           aria-hidden
           data-pinned={pinned ? "" : undefined}
           // On a phone a solid band under the bar; on a computer the row alone.
-          className="saint-doors-pin fixed inset-x-0 top-12 below-topbar z-20 bg-night px-5 py-2 md:pointer-events-none md:top-[72px] md:bg-transparent md:px-8"
+          // 16px at its sides on a phone, a little less than the page's 20,
+          // so the labels have the room at 360px.
+          className="saint-doors-pin fixed inset-x-0 top-12 below-topbar z-20 bg-night px-4 py-2 md:pointer-events-none md:top-[72px] md:bg-transparent md:px-8"
         >
           <div className="mx-auto w-full max-w-[760px]">
-            <div className="mx-auto grid max-w-[420px] grid-flow-col auto-cols-fr gap-1 rounded-pill border border-paper/10 bg-paper/[0.03] p-1 md:pointer-events-auto md:mx-0 md:bg-night">
+            <div
+              ref={slimRef}
+              data-doctrine-slim=""
+              className="doctrine-slim mx-auto flex max-w-[420px] gap-1 overflow-hidden rounded-pill border border-paper/10 bg-paper/[0.03] p-1 md:pointer-events-auto md:mx-0 md:bg-night"
+            >
               {doors.map((door) => (
                 <button
                   key={door}
@@ -205,8 +264,9 @@ export function DoctrineDoors({ doors, panels }: { doors: readonly DoctrineDoor[
                   onClick={() => select(door, true)}
                   className={cn(SLIM, door === current ? "bg-paper text-night" : "text-paper/65 hover:text-paper")}
                 >
-                  <DoorIcon door={door} size={15} />
-                  <span className="truncate">{t(LABEL[door])}</span>
+                  <span data-slim-label="" className="doctrine-slim-label">
+                    {t(LABEL[door])}
+                  </span>
                 </button>
               ))}
             </div>
