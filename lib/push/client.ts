@@ -7,12 +7,19 @@
 // auth (401 otherwise). The onboarding flow therefore stashes the
 // subscription locally and flushes it on first sign-in (see PostSignInBridge).
 
+import { createClient } from "@/lib/supabase/client";
 import { readLocalSessionUser } from "@/lib/supabase/localSession";
 
+import {
+  reminderChange,
+  shownTimes,
+  type ReminderChange,
+  type ReminderTimes,
+  type SaveResult,
+} from "./times";
 import { browserVapidKey } from "./vapid";
 
-export const MORNING_DEFAULT = "07:00";
-export const EVENING_DEFAULT = "21:00";
+export { EVENING_DEFAULT, MORNING_DEFAULT } from "./times";
 
 const PENDING_KEY = "purify:push.pending";
 /** "1" once the reader has turned reminders off in this browser. */
@@ -21,6 +28,8 @@ const OFF_KEY = "purify:push.web-off";
 const SAVED_KEY = "purify:push.saved";
 /** How long to wait for the service worker before calling it a failure. */
 const READY_TIMEOUT_MS = 8000;
+/** How long the account screen waits for the saved times before showing what this browser knows. */
+const READ_TIMEOUT_MS = 8000;
 
 export type SubscribeResult =
   | { ok: true; subscription: PushSubscription }
@@ -179,8 +188,12 @@ function isSaved(endpoint: string): boolean {
  *     account page. A reader who signed in and never opened that page, or
  *     whose save failed, had reminders "on" that the server knew nothing of.
  *
- * Saved under the times chosen when it was kept, or the defaults. No request
- * is made for a browser that is already saved, or while nobody is signed in.
+ * Saved with the times kept with it, as they were kept, or with none when
+ * none were: the route then leaves a saved row's own times as they are and
+ * gives a new row the defaults. It used to send the defaults for a browser
+ * kept without times, which put them over the reader's own whenever a saved
+ * browser lost its mark. No request is made for a browser that is already
+ * saved, or while nobody is signed in.
  */
 export async function healWebPush(): Promise<"healed" | "stashed" | "none"> {
   if (!pushSupported() || Notification.permission !== "granted") return "none";
@@ -207,21 +220,20 @@ export async function healWebPush(): Promise<"healed" | "stashed" | "none"> {
 
   const kept = readPending();
   const mine = kept && kept.endpoint === sub.endpoint ? kept : null;
-  const morning = mine?.morningTime ?? MORNING_DEFAULT;
-  const evening = mine?.eveningTime ?? EVENING_DEFAULT;
+  const times = mine ? pendingTimes(mine) : {};
   if (!readLocalSessionUser()) {
     // Nobody to save it under yet. Kept, as onboarding keeps it.
-    if (!mine) stashPending(sub, morning, evening);
+    if (!mine) stashPending(sub, times);
     return "stashed";
   }
   try {
-    const res = await persistSubscription(sub, morning, evening);
+    const res = await persistSubscription(sub, times);
     if (res.ok) {
       markSaved(sub.endpoint);
       clearPending();
       return "healed";
     }
-    if (res.status === 401 && !mine) stashPending(sub, morning, evening);
+    if (res.status === 401 && !mine) stashPending(sub, times);
     return res.status === 401 ? "stashed" : "none";
   } catch {
     // Offline at that moment. The next visit tries again.
@@ -231,8 +243,7 @@ export async function healWebPush(): Promise<"healed" | "stashed" | "none"> {
 
 function bodyFor(
   sub: Pick<PushSubscription, "endpoint" | "getKey">,
-  morningTime: string,
-  eveningTime: string,
+  times: ReminderChange,
 ) {
   return JSON.stringify({
     endpoint: sub.endpoint,
@@ -240,24 +251,114 @@ function bodyFor(
       p256dh: bufToB64(sub.getKey("p256dh")),
       auth: bufToB64(sub.getKey("auth")),
     },
-    morningTime,
-    eveningTime,
+    // A time left out is not sent, and the route leaves it as the row has it.
+    morningTime: times.morning,
+    eveningTime: times.evening,
     timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
   });
 }
 
-/** Persist a subscription on the server. Returns the raw Response so callers
- *  can detect 401 (signed-out) and stash for later. */
+/** Persist a subscription on the server, with the times given and no others.
+ *  Returns the raw Response so callers can detect 401 (signed-out) and stash
+ *  for later. */
 export async function persistSubscription(
   sub: PushSubscription,
-  morningTime: string = MORNING_DEFAULT,
-  eveningTime: string = EVENING_DEFAULT,
+  times: ReminderChange,
 ): Promise<Response> {
   return fetch("/api/push/subscribe", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: bodyFor(sub, morningTime, eveningTime),
+    body: bodyFor(sub, times),
   });
+}
+
+// --- The times this browser's reminders come at ---------------------------
+
+type SavedRow = { endpoint: string; morning_time: string | null; evening_time: string | null };
+
+/**
+ * This browser's times as its saved row holds them, read as the reader
+ * (push_subscriptions_self_select: their own rows and no one else's). All of
+ * the reader's rows are asked for and this browser's is picked out here,
+ * which keeps the endpoint, the address that can send to this browser, out
+ * of the request's URL. Null when there is nothing to read: signed out,
+ * offline, or no row for this browser under this account.
+ */
+async function readSavedTimes(endpoint: string): Promise<ReminderChange | null> {
+  const user = readLocalSessionUser();
+  if (!user) return null;
+  let timer: ReturnType<typeof setTimeout> | undefined;
+  try {
+    const read = createClient()
+      .from("push_subscriptions")
+      .select("endpoint, morning_time, evening_time")
+      .eq("user_id", user.id);
+    const result = await Promise.race([
+      read,
+      new Promise<null>((resolve) => {
+        timer = setTimeout(() => resolve(null), READ_TIMEOUT_MS);
+      }),
+    ]);
+    if (!result || result.error || !Array.isArray(result.data)) return null;
+    const row = (result.data as SavedRow[]).find((r) => r.endpoint === endpoint);
+    return row ? reminderChange({ morning: row.morning_time, evening: row.evening_time }) : null;
+  } catch {
+    return null;
+  } finally {
+    clearTimeout(timer);
+  }
+}
+
+/**
+ * The times this browser's reminders come at, for the account screen: what
+ * still waits on this browser to be sent, over what its saved row holds,
+ * over the defaults. Until 2026-10-30 the screen asked neither and showed
+ * 07:00 and 21:00 after every reload, whatever the reader had saved.
+ */
+export async function webReminderTimes(): Promise<ReminderTimes> {
+  const sub = await getExistingSubscription();
+  if (!sub) return shownTimes();
+  const kept = readPending();
+  const waiting = kept && kept.endpoint === sub.endpoint ? pendingTimes(kept) : null;
+  // Both still wait here, so they are the answer and the server is not asked.
+  if (waiting?.morning && waiting.evening) return shownTimes(waiting);
+  return shownTimes(waiting, await readSavedTimes(sub.endpoint));
+}
+
+/**
+ * Save a change to this browser's times: only the time the reader changed,
+ * and the route leaves the other as the row has it. A browser still waiting
+ * to be saved sends what waits along with the change.
+ *
+ * A change the server did not take (signed out, offline, a failed save) is
+ * kept on this browser with whatever already waits, and the browser is
+ * marked unsaved, so the sign-in (flushPending) or the next visit that is
+ * signed in (healWebPush) sends it. This used to look for an ok and do
+ * nothing otherwise: a time changed while signed out was dropped, and after
+ * the sign-in the browser went on at the times it had before.
+ */
+export async function updateWebTimes(change: ReminderChange): Promise<SaveResult> {
+  const sub = await getExistingSubscription();
+  if (!sub) return "failed";
+  const kept = readPending();
+  const waiting = kept && kept.endpoint === sub.endpoint ? pendingTimes(kept) : null;
+  const times: ReminderChange = { ...waiting, ...reminderChange(change) };
+  try {
+    const res = await persistSubscription(sub, times);
+    if (res.ok) {
+      markSaved(sub.endpoint);
+      if (waiting) clearPending();
+      return "saved";
+    }
+    // Refused for what it is, not for who sent it or when: kept, it would
+    // only go up again to be refused again.
+    if (res.status !== 401 && res.status < 500) return "failed";
+  } catch {
+    // Offline at that moment.
+  }
+  stashPending(sub, times);
+  markSaved(null);
+  return "kept";
 }
 
 export async function removeSubscription(): Promise<void> {
@@ -276,29 +377,30 @@ export async function removeSubscription(): Promise<void> {
 
 // --- Anonymous → signed-in handoff --------------------------------------
 
+/**
+ * A subscription the server has not taken yet, with the times to send with
+ * it. A time is absent when the reader changed only the other one: then the
+ * saved row's own is the one that stands.
+ */
 type PendingPush = {
   endpoint: string;
   p256dh: string;
   auth: string;
-  morningTime: string;
-  eveningTime: string;
+  morningTime?: string;
+  eveningTime?: string;
   timezone: string;
 };
 
 /** Stash a subscription captured while signed-out, to persist after login. */
-export function stashPending(
-  sub: PushSubscription,
-  morningTime: string = MORNING_DEFAULT,
-  eveningTime: string = EVENING_DEFAULT,
-): void {
+export function stashPending(sub: PushSubscription, times: ReminderChange): void {
   if (typeof window === "undefined") return;
   try {
     const pending: PendingPush = {
       endpoint: sub.endpoint,
       p256dh: bufToB64(sub.getKey("p256dh")),
       auth: bufToB64(sub.getKey("auth")),
-      morningTime,
-      eveningTime,
+      morningTime: times.morning,
+      eveningTime: times.evening,
       timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
     };
     window.localStorage.setItem(PENDING_KEY, JSON.stringify(pending));
@@ -319,6 +421,11 @@ function readPending(): PendingPush | null {
   }
 }
 
+/** The real times a stash carries, and only those. */
+function pendingTimes(pending: PendingPush): ReminderChange {
+  return reminderChange({ morning: pending.morningTime, evening: pending.eveningTime });
+}
+
 function clearPending(): void {
   try {
     window.localStorage.removeItem(PENDING_KEY);
@@ -331,6 +438,9 @@ function clearPending(): void {
 export async function flushPending(): Promise<void> {
   const pending = readPending();
   if (!pending) return;
+  // Only the times that were kept: one the reader did not change is left as
+  // the saved row has it.
+  const times = pendingTimes(pending);
   try {
     const res = await fetch("/api/push/subscribe", {
       method: "POST",
@@ -338,8 +448,8 @@ export async function flushPending(): Promise<void> {
       body: JSON.stringify({
         endpoint: pending.endpoint,
         keys: { p256dh: pending.p256dh, auth: pending.auth },
-        morningTime: pending.morningTime,
-        eveningTime: pending.eveningTime,
+        morningTime: times.morning,
+        eveningTime: times.evening,
         timezone: pending.timezone,
       }),
     });

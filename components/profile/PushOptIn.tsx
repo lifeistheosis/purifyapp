@@ -11,15 +11,21 @@ import {
   MORNING_DEFAULT,
   disableReminders,
   enableReminders,
+  reminderTimes,
   remindersStatus,
   updateReminderTimes,
+  type ReminderTimes,
 } from "@/lib/push/reminders";
+import { timeChange } from "@/lib/push/times";
 import { useTranslate } from "@/components/i18n/MessagesProvider";
 
 type State =
   | { kind: "loading" }
   | { kind: "unsupported" }
-  | { kind: "subscribed"; morningTime: string | null; eveningTime: string | null }
+  // The times as saved, read before the fields are drawn, so each field
+  // starts at the reader's own time. It used to hold nothing after a reload
+  // and the fields fell back to 07:00 and 21:00.
+  | { kind: "subscribed"; times: ReminderTimes }
   | { kind: "not-subscribed" }
   | { kind: "denied" };
 
@@ -32,14 +38,19 @@ export function PushOptIn() {
   const [failed, setFailed] = useState(false);
 
   useEffect(() => {
+    let alive = true;
     (async () => {
       const status = await remindersStatus();
-      setState(
-        status === "subscribed"
-          ? { kind: "subscribed", morningTime: null, eveningTime: null }
-          : { kind: status },
-      );
+      if (status !== "subscribed") {
+        if (alive) setState({ kind: status });
+        return;
+      }
+      const times = await reminderTimes();
+      if (alive) setState({ kind: "subscribed", times });
     })();
+    return () => {
+      alive = false;
+    };
   }, []);
 
   async function subscribe() {
@@ -56,8 +67,7 @@ export function PushOptIn() {
       }
       setState({
         kind: "subscribed",
-        morningTime: MORNING_DEFAULT,
-        eveningTime: EVENING_DEFAULT,
+        times: { morning: MORNING_DEFAULT, evening: EVENING_DEFAULT },
       });
     } catch {
       setFailed(true);
@@ -76,16 +86,23 @@ export function PushOptIn() {
     }
   }
 
-  async function updateTimes(morning: string, evening: string) {
+  // Leaving a field saves that field's time, only when it changed, and never
+  // the other one. Both used to go, the other as the screen showed it, which
+  // after a reload was its default: moving the evening put the morning back
+  // to 07:00 (lib/push/times.ts, timeChange).
+  async function saveTime(which: keyof ReminderTimes, value: string) {
     if (state.kind !== "subscribed") return;
+    const change = timeChange(state.times, which, value);
+    if (!change) return;
     setBusy(true);
     try {
-      await updateReminderTimes(morning, evening);
-      setState({
-        kind: "subscribed",
-        morningTime: morning,
-        eveningTime: evening,
-      });
+      // "kept" is the reader's time too: held on this device and sent on by
+      // itself, after a sign-in or at the next visit or launch.
+      if ((await updateReminderTimes(change)) !== "failed") {
+        setState((s) =>
+          s.kind === "subscribed" ? { kind: "subscribed", times: { ...s.times, ...change } } : s,
+        );
+      }
     } finally {
       setBusy(false);
     }
@@ -138,10 +155,8 @@ export function PushOptIn() {
               </span>
               <input
                 type="time"
-                defaultValue={state.morningTime ?? "07:00"}
-                onBlur={(e) =>
-                  updateTimes(e.target.value, state.eveningTime ?? "21:00")
-                }
+                defaultValue={state.times.morning}
+                onBlur={(e) => saveTime("morning", e.target.value)}
                 className="rounded-md border border-paper/15 bg-night px-3 py-1.5 font-sans text-detail text-paper [color-scheme:dark] focus:outline-none focus:border-gold/45 transition-colors"
               />
             </label>
@@ -151,10 +166,8 @@ export function PushOptIn() {
               </span>
               <input
                 type="time"
-                defaultValue={state.eveningTime ?? "21:00"}
-                onBlur={(e) =>
-                  updateTimes(state.morningTime ?? "07:00", e.target.value)
-                }
+                defaultValue={state.times.evening}
+                onBlur={(e) => saveTime("evening", e.target.value)}
                 className="rounded-md border border-paper/15 bg-night px-3 py-1.5 font-sans text-detail text-paper [color-scheme:dark] focus:outline-none focus:border-gold/45 transition-colors"
               />
             </label>
