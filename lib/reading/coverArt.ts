@@ -108,7 +108,7 @@ export const COVER_ART: Readonly<Record<string, CoverArt>> = {
   "euplus-of-catania": bundled("euplus-of-catania.jpg", 22),
   "maccabean-martyrs": bundled("maccabean-martyrs.jpg", 50),
   "seven-sleepers-of-ephesus": bundled("seven-sleepers-of-ephesus.jpg", 55),
-  "pachomius-the-great": bundled("pachomius-the-great.jpg", 62),
+  "pachomius-the-great": bundled("pachomius-the-great.jpg", 44),
   "ammon-of-nitria": bundled("ammon-of-nitria.jpg", 34),
   "hilarion-the-great": bundled("hilarion-the-great.jpg", 30),
   "macarius-the-great": bundled("macarius-the-great.jpg", 42),

@@ -587,8 +587,8 @@ export const ICON_RIGHTS: Record<string, IconRights> = {
   "pachomius-the-great.jpg": {
     status: "verified",
     inspectedOn: "2026-10-30",
-    alt: "A dark-bearded monk turned to the right with his face lifted, in a brown mantle and a dark green schema marked with small gold crosses, within a red-ringed halo on a worn gold ground, under a Church Slavonic inscription naming him the Venerable Pachomius the Great.",
-    work: "Russian icon of St Pachomius the Great, St Alexander Nevsky, St Dmitry the Tsarevich and St Mary Magdalene, in a metal basma oklad, Moscow: St Pachomius alone, under his inscription",
+    alt: "A dark-bearded monk turned to the right with his face lifted and one hand raised, in a brown mantle and a dark green schema marked with a gold cross, within a red-ringed halo on a worn gold ground.",
+    work: "Russian icon of St Pachomius the Great, St Alexander Nevsky, St Dmitry the Tsarevich and St Mary Magdalene, in a metal basma oklad, Moscow: St Pachomius alone, his head and shoulders (recut 2026-10-30 so the face, not the inscription above it, heads a square crop)",
     artist: "Anonymous Russian icon painter",
     workDate: "18th century",
     source: "Wikimedia Commons (a private collection)",
