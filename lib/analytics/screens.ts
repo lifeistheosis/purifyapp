@@ -90,6 +90,8 @@ export const SCREENS = [
   "reading-collection",
   "reading-paths",
   "reading-path",
+  "reading-councils",
+  "reading-council",
   "start",
   "first-liturgy",
   // The reader's own.
@@ -198,6 +200,8 @@ const RULES: readonly (readonly [string, ScreenKey])[] = [
   ["/reading/collections/*", "reading-collection"],
   ["/reading/paths", "reading-paths"],
   ["/reading/paths/*", "reading-path"],
+  ["/reading/councils", "reading-councils"],
+  ["/reading/councils/*", "reading-council"],
   ["/start", "start"],
   ["/start/first-liturgy", "first-liturgy"],
 

@@ -101,6 +101,8 @@ export const SCREEN_NAMES: Record<ScreenKey, string> = {
   "reading-collection": "A reading collection",
   "reading-paths": "Reading paths",
   "reading-path": "A reading path",
+  "reading-councils": "The councils' shelves",
+  "reading-council": "A council's shelf",
   start: "Start here",
   "first-liturgy": "Your first Liturgy",
   "account-settings": "An account setting",

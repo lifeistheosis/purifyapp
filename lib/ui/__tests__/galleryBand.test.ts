@@ -117,6 +117,19 @@ describe("the gallery band", () => {
     expect(code(BAND)).toMatch(/<img\s+src=\{picture\}\s+alt=""/);
   });
 
+  // The Ecumenical Councils (1.8, the owner's pick of r3-03, "the seven as a
+  // gallery of bands with their icons, like Theology and Discover"): each
+  // band's numeral and year at its top, its name and line at its foot.
+  it("carries a kicker at the top of a tall band, apart from the name, and then keeps its line to two", () => {
+    const band = code(BAND);
+    expect(band).toContain('{tall && kicker ? <span className="mb-auto">{kicker}</span> : null}');
+    expect(band).toContain('cn("mt-1.5 leading-[1.4]", kicker ? "line-clamp-2" : "line-clamp-4")');
+    const councils = code("app/(app)/councils/page.tsx");
+    expect(councils).toContain('import { GalleryBand } from "@/components/ui/GalleryBand";');
+    expect(councils).toMatch(/<GalleryBand\s+href=\{`\/councils\/\$\{c\.slug\}`\}\s+size="tall"/);
+    expect(councils).toContain("kicker={");
+  });
+
   it("opens with motion only while Purify's motion is on", () => {
     const css = read("app/globals.css").replace(/\/\*[\s\S]*?\*\//g, "");
     const open = /details\[open\] > \.band-open\s*\{([^}]*)\}/.exec(css)?.[1] ?? "";

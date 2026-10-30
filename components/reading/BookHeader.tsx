@@ -151,8 +151,10 @@ export function BookHeader({
  * Start reading, at the first section; or, where this device has a place
  * saved in the work (lib/reader/position.ts), Continue reading there, with
  * which section it is. Decided after the page wakes: the server cannot know.
+ * A council's document keeps its place the same way, under "councils/<its
+ * council>" (components/councils/CouncilBookHeader.tsx).
  */
-function StartReading({ saintSlug, workSlug, first, total }: { saintSlug: string; workSlug: string; first: number; total: number }) {
+export function StartReading({ saintSlug, workSlug, first, total }: { saintSlug: string; workSlug: string; first: number; total: number }) {
   const { t } = useTranslate();
   const [saved, setSaved] = useState<number | null>(null);
   useEffect(() => {

@@ -5,6 +5,7 @@ import { useEffect, useRef, useState, type CSSProperties } from "react";
 import { cn } from "@/lib/cn";
 import { avifFor } from "@/lib/media/streamed";
 import { GEOMETRY, SIZES, coverWords, type CoverScale, type CoverSize } from "@/lib/reading/coverText";
+import { windowStyle, type CoverWindow } from "@/lib/reading/coverWindow";
 
 /**
  * One cover for every book, shared by the reading room (note 18), a saint's
@@ -54,6 +55,11 @@ import { GEOMETRY, SIZES, coverWords, type CoverScale, type CoverSize } from "@/
  * the wait at once, and the poster arrives with its plate; one slower than
  * HOLD_MS lets the plate come first, and then fades in over it, as an
  * unheld cover's does.
+ *
+ * A WINDOW (1.8, the councils' books, the owner's pick of r3-03): a book that
+ * is a part of a larger picture shows that part, `crop` (lib/reading/
+ * coverWindow.ts), in place of the face `focusY` names. Each of a council's
+ * documents is a window onto the council's own icon.
  *
  * LOADING. `priority` is the one cover a screen opens on (eager, and first
  * in line); `eager` is a cover near the screen (a row that is about to be
@@ -125,6 +131,7 @@ export function WorkCover({
   author,
   iconUrl,
   focusY = 22,
+  crop,
   imageUrl,
   size,
   priority = false,
@@ -139,6 +146,8 @@ export function WorkCover({
   iconUrl?: string | null;
   /** Where the face sits in the icon, percent from its top. */
   focusY?: number;
+  /** A part of a larger picture, in place of the face (a council's document on its council's icon). */
+  crop?: CoverWindow;
   /** The book's own cover, when there is one the site may show. */
   imageUrl?: string | null;
   size: CoverSize;
@@ -264,7 +273,7 @@ export function WorkCover({
             fades && "motion-safe:transition-opacity motion-safe:duration-500 motion-safe:ease-out",
             shown ? "opacity-100" : "opacity-0",
           )}
-          style={imageUrl ? undefined : { objectPosition: `50% ${focusY}%` }}
+          style={imageUrl ? undefined : crop ? windowStyle(crop) : { objectPosition: `50% ${focusY}%` }}
         />
       </picture>
     ) : null;

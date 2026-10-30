@@ -119,6 +119,16 @@ export const OWN_HEADER_PATTERNS: RegExp[] = [
   /^\/reading\/paths\/[^/]+$/,
   /^\/fathers-on$/,
   /^\/fathers-on\/[^/]+$/,
+  // The Ecumenical Councils (1.8, the owner's pick of r3-03): the councils,
+  // a council's page (its bar clear over its icon, as a saint's is) and a
+  // document, which is a book in the room's reader; and the councils'
+  // shelves in the reading room. The councils lead back to Discover, a
+  // council to the councils, a document to its shelf, a shelf to its council.
+  /^\/councils$/,
+  /^\/councils\/[^/]+$/,
+  /^\/councils\/[^/]+\/[^/]+$/,
+  /^\/reading\/councils$/,
+  /^\/reading\/councils\/[^/]+$/,
 ];
 
 /**
