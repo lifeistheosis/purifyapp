@@ -12,7 +12,7 @@
     "assets:generate:ios": "capacitor-assets generate --ios --splashBackgroundColor \"#101013\" --splashBackgroundColorDark \"#101013\" --iosProject ios/App && node scripts/launch-assets.mjs",
     "start": "next start",
     "lint": "eslint",
-    "typecheck": "tsc --noEmit",
+    "typecheck": "node --max-old-space-size=4096 node_modules/typescript/bin/tsc --noEmit",
     "test:unit": "vitest run",
     "test:unit:watch": "vitest",
     "test:e2e": "playwright test",

@@ -11,7 +11,7 @@ Purify is an Eastern Orthodox prayer, Scripture, saints, councils, and study pla
 ## Canonical commands
 
 ```
-npm run typecheck        # tsc --noEmit (must be 0)
+npm run typecheck        # tsc --noEmit with a 4 GB heap (must be 0; it needs ~2.2 GB since 1.8 round 3)
 npm run test:unit        # vitest (must be green; ~250 tests)
 npm run lint             # eslint
 npm run build            # WEB production build (SSR)
