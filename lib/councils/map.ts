@@ -1,6 +1,9 @@
 import outline from "@/data/maps/mediterranean.json";
+import { eraForYear, publishedEvents, type Era, type HistoryEventMeta } from "@/lib/history/events";
+import { EVENT_PLACES } from "@/lib/history/places";
 
-import { COUNCILS } from "./councils";
+import { COUNCILS, type Council } from "./councils";
+import { placeOf } from "./page";
 
 /**
  * The councils on a map (1.8, the owner's word of 2026-10-24). Each council
@@ -10,6 +13,11 @@ import { COUNCILS } from "./councils";
  * the map names them all, so a mark is never a guess at which council it is.
  * The history page draws the same marks with its events beside them, on a
  * taller cut that reaches Kyiv and Moscow (lib/history/map.ts).
+ *
+ * From 1.8's round 3 (the owner's pick C of r3-10, "the atlas") the map is a
+ * door on the page and a screen of its own: its steps are the rows of the
+ * atlas's wheel, one for each council (and on History each event), in order
+ * of time, each with what led to it (MapStep below).
  */
 
 export type Side = "left" | "right" | "up" | "down";
@@ -66,6 +74,30 @@ export type MapPlace = {
   items: MapItem[];
 };
 
+/**
+ * One row of the atlas's wheel: a council, or on History an event, at its
+ * place in time. Every word is the registry's own English, as the rest of an
+ * account is; the screen looks up only its own words (the eras' names).
+ */
+export type MapStep = {
+  href: string;
+  /** The row's name: a council's byname, an event's short title (its title when that is only a year, "1054"). */
+  name: string;
+  year: number;
+  /** Its date where that says more than the year ("Summer 325", "c. 46–62"). */
+  date?: string;
+  /** Where, as its account says it ("Nicaea in Bithynia", "Asia Minor & Greece"). */
+  where: string;
+  era: Era;
+  /** Its mark on this map, or null for an event beyond it (Alaska, America). */
+  mark: string | null;
+  /** The name its mark carries while this is the latest thing lit there, where that is not the mark's own (Nicomedia, then Nicaea). */
+  at?: string;
+  /** The marks of what led here, the app's own "What led here" (rel.precededBy): a thread is drawn from each, never from anywhere else. */
+  from: string[];
+  council?: true;
+};
+
 export function placeId(place: string): string {
   return place.toLowerCase().replace(/[^a-z]+/g, "-");
 }
@@ -81,13 +113,98 @@ export function addToMark(
   marks.get(id)!.items.push(item);
 }
 
-/** The marks: one per city, its councils in order of year. */
-export function councilMap(): { view: [number, number]; land: string; places: MapPlace[] } {
+/**
+ * A council's own account among History's events: the event that names it,
+ * happened where it met, over years that hold its year. The Sixth Council sat
+ * from November 680 to September 681, so its account starts in 680 and the
+ * council is dated 681; until 1.8's round 3 only the same year counted, and
+ * History's map listed that council twice. An event that names a council but
+ * happened elsewhere (Arius at Alexandria, the estrangement after Chalcedon)
+ * is not its account.
+ */
+export function councilAccount(c: Pick<Council, "slug" | "year">, events: HistoryEventMeta[] = publishedEvents()): HistoryEventMeta | undefined {
+  const met = COUNCIL_PLACES[c.slug]?.place;
+  if (!met) return undefined;
+  return events.find((e) => {
+    if (!e.rel?.councils?.includes(c.slug)) return false;
+    const at = EVENT_PLACES[e.slug];
+    return at !== undefined && at !== "beyond" && at.place === met && c.year >= e.yearStart && c.year <= (e.yearEnd ?? e.yearStart);
+  });
+}
+
+/** A step before its threads are known: the events it stands for on the map, and what led to them. */
+export type StepSource = MapStep & { stands: string[]; ledBy: string[] };
+
+/** A council as a row of the wheel: its account's date and age where it has one, else its year's. */
+export function councilSource(c: Council, mark: string, account: HistoryEventMeta | undefined): StepSource {
+  return {
+    href: `/councils/${c.slug}`,
+    name: c.byname,
+    year: c.year,
+    ...(account && account.displayDate !== String(c.year) ? { date: account.displayDate } : {}),
+    where: placeOf(c.location),
+    era: account?.era ?? eraForYear(c.year).id,
+    mark,
+    at: COUNCIL_PLACES[c.slug]?.place,
+    from: [],
+    council: true,
+    stands: account ? [account.slug] : [],
+    ledBy: account?.rel?.precededBy ?? [],
+  };
+}
+
+/**
+ * The steps in order of time, each with its threads: from the mark of every
+ * step that stands for an event in its "What led here", never its own mark.
+ * In one year what led to a step comes first (Ukraine's autocephaly, then
+ * the schism it led to); otherwise the order given holds.
+ */
+export function stepsFrom(sources: StepSource[], places: MapPlace[]): MapStep[] {
+  const named = new Map(places.map((p) => [p.id, p.label ?? p.place]));
+  const standsFor = new Map<string, StepSource>();
+  for (const s of sources) for (const slug of s.stands) standsFor.set(slug, s);
+  const depth = new Map<StepSource, number>();
+  const depthOf = (s: StepSource, path: Set<StepSource>): number => {
+    const known = depth.get(s);
+    if (known !== undefined) return known;
+    let d = 0;
+    for (const slug of s.ledBy) {
+      const before = standsFor.get(slug);
+      if (before && before !== s && before.year === s.year && !path.has(before)) {
+        d = Math.max(d, depthOf(before, new Set(path).add(s)) + 1);
+      }
+    }
+    depth.set(s, d);
+    return d;
+  };
+  const ordered = sources
+    .map((s, i) => ({ s, i, d: depthOf(s, new Set()) }))
+    .sort((a, b) => a.s.year - b.s.year || a.d - b.d || a.i - b.i)
+    .map((o) => o.s);
+  return ordered.map((s) => {
+    const from = [...new Set(s.ledBy.map((slug) => standsFor.get(slug)?.mark ?? null))].filter(
+      (m): m is string => m !== null && m !== s.mark,
+    );
+    const own = s.mark ? named.get(s.mark) : undefined;
+    const step: MapStep = { href: s.href, name: s.name, year: s.year, where: s.where, era: s.era, mark: s.mark, from };
+    if (s.date) step.date = s.date;
+    if (s.at && s.mark && s.at !== own) step.at = s.at;
+    if (s.council) step.council = true;
+    return step;
+  });
+}
+
+/** The marks: one per city, its councils in order of year; and the councils as the atlas's steps. */
+export function councilMap(): { view: [number, number]; land: string; places: MapPlace[]; steps: MapStep[] } {
   const marks = new Map<string, MapPlace>();
+  const events = publishedEvents();
+  const sources: StepSource[] = [];
   for (const c of [...COUNCILS].sort((a, b) => a.year - b.year)) {
     const at = COUNCIL_PLACES[c.slug];
     if (!at) continue;
     addToMark(marks, { ...at, ...project(at.lat, at.lon) }, { href: `/councils/${c.slug}`, name: c.byname, year: c.year });
+    sources.push(councilSource(c, placeId(at.place), councilAccount(c, events)));
   }
-  return { view: outline.view as [number, number], land: outline.land, places: [...marks.values()] };
+  const places = [...marks.values()];
+  return { view: outline.view as [number, number], land: outline.land, places, steps: stepsFrom(sources, places) };
 }

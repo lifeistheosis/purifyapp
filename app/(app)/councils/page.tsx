@@ -22,8 +22,9 @@ export const metadata = {
  * galleries (components/ui/GalleryBand.tsx): each band its numeral and year
  * at the top, its name and History's one line on it at the foot. Under them
  * the local and regional councils, as rows by year. Then the posture the
- * pages keep, and the map of where they met, which stays where it was (its
- * own design round is next).
+ * pages keep, and the map of where they met, which stays where it was: its
+ * door, opening the atlas of the nineteen (r3-10, the owner's pick C;
+ * components/councils/CouncilMap.tsx).
  *
  * Until 1.8 the page was nineteen text cards in one column, with no
  * pictures (his build 80 note 10: "the page where you pick a council").

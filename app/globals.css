@@ -5841,6 +5841,424 @@ html.is-native .history-line {
  to { transform: scale(1.1) translate3d(-1.5%, -1.5%, 0); }
 }
 
+/* ── Where it happened: the door and the atlas ─────────────────────────────
+   The map of History and of the Councils (1.8, the owner's pick C of r3-10,
+   "the atlas"; his note 40 of build 80: "revamp this screen and the slider,
+   make the animations better, make the slider its own design, and don't
+   just hide it in the bottom"). On the page the map is a door: its still
+   with every place, and Move through the years (components/councils/
+   CouncilMap.tsx). It opens the atlas, the map as a screen of its own over
+   the tab bar (MapAtlas.tsx; the drawing atlasEngine.ts, the sums
+   lib/councils/atlas.ts). Purify's own dark on every palette, the owner's
+   pick of 2026-10-24 (both are dark-islands), the lit marks a soft white.
+   Nothing here is blurred: a blurred layer over the moving map is painted
+   again every frame on Android, so the panel and the plates are solid. */
+.atlas-door {
+ position: relative;
+ display: block;
+ width: 100%;
+ max-width: 720px;
+ overflow: hidden;
+ border-radius: 24px;
+ background: #0d0d0e;
+ text-align: start;
+ box-shadow: 0 22px 40px -12px rgb(0 0 0 / 0.75);
+}
+.atlas-door::after {
+ content: "";
+ position: absolute;
+ inset: 0;
+ border-radius: inherit;
+ box-shadow: inset 0 0 0 1px rgb(255 255 255 / 0.08);
+ pointer-events: none;
+}
+.atlas-door:focus-visible {
+ outline: 2px solid var(--color-paper);
+ outline-offset: 3px;
+}
+.atlas-door-still {
+ display: block;
+ width: 100%;
+ height: auto;
+ aspect-ratio: 362 / 236;
+}
+/* One row as drawn; where a language's words are long or the phone narrow,
+   the years over the button rather than either cut. */
+.atlas-door-foot {
+ display: flex;
+ flex-wrap: wrap;
+ align-items: center;
+ justify-content: space-between;
+ gap: 10px 12px;
+ min-height: 76px;
+ padding: 16px 14px 16px 20px;
+ background: linear-gradient(180deg, #26262b, #1a1a1e);
+ box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.08);
+}
+.atlas-door-years {
+ font-family: var(--font-serif);
+ font-size: 21px;
+ font-weight: 700;
+ color: #fff;
+ white-space: nowrap;
+ font-variant-numeric: lining-nums tabular-nums;
+}
+.atlas-door-years span {
+ margin-inline: 7px;
+ font-family: var(--font-sans);
+ font-size: 13px;
+ font-weight: 500;
+ color: rgb(255 255 255 / 0.5);
+}
+.atlas-door-go {
+ display: inline-flex;
+ align-items: center;
+ gap: 7px;
+ min-width: 0;
+ max-width: 100%;
+ height: 44px;
+ padding-inline: 13px 16px;
+ border-radius: 999px;
+ background: #fff;
+ color: #101013;
+ font-size: 13.5px;
+ font-weight: 600;
+ white-space: nowrap;
+ box-shadow: 0 0 20px rgb(255 255 255 / 0.22);
+}
+.atlas-door-go svg {
+ flex: none;
+ translate: 1px 0;
+}
+.atlas-door-go span {
+ overflow: hidden;
+ text-overflow: ellipsis;
+}
+
+/* The atlas. Nothing under it moves: every touch on it is its own. */
+.atlas {
+ overflow: hidden;
+ background: #0d0d0e;
+ color: #fff;
+ touch-action: none;
+ overscroll-behavior: contain;
+ user-select: none;
+ -webkit-user-select: none;
+ -webkit-tap-highlight-color: transparent;
+}
+/* It comes down onto the screen, and leaves by fading. */
+:where([data-motion="full"]) .atlas {
+ animation: atlas-in 380ms var(--ease-house) backwards;
+ transition: opacity var(--duration-fast) var(--ease-house);
+}
+@keyframes atlas-in {
+ from {
+  opacity: 0;
+  transform: scale(1.02);
+ }
+}
+.atlas[data-closing] {
+ opacity: 0;
+ pointer-events: none;
+}
+:where([data-motion="reduce"]) .atlas {
+ animation: none;
+ transition: none;
+}
+.atlas-map {
+ position: absolute;
+ inset: 0;
+ display: block;
+ width: 100%;
+ height: 100%;
+}
+.atlas-vignette {
+ position: absolute;
+ inset: 0;
+ pointer-events: none;
+ background: radial-gradient(72% 72% at 50% 50%, rgb(0 0 0 / 0) 60%, rgb(0 0 0 / 0.5) 100%);
+}
+.atlas-topfade {
+ position: absolute;
+ inset-inline: 0;
+ top: 0;
+ height: calc(300px + env(safe-area-inset-top, 0px));
+ pointer-events: none;
+ background: linear-gradient(rgb(10 10 12 / 0.9) 0%, rgb(10 10 12 / 0.78) 22%, rgb(10 10 12 / 0.5) 48%, rgb(10 10 12 / 0.2) 72%, rgb(10 10 12 / 0) 100%);
+}
+.atlas-top {
+ position: absolute;
+ top: calc(env(safe-area-inset-top, 0px) + 2px);
+ inset-inline-start: 14px;
+ display: flex;
+ align-items: center;
+ gap: 10px;
+ height: 44px;
+}
+.atlas-close {
+ display: grid;
+ place-items: center;
+ width: 44px;
+ height: 44px;
+ border-radius: 999px;
+ color: #fff;
+}
+.atlas-close:focus-visible,
+.atlas-play:focus-visible {
+ outline: 2px solid #fff;
+ outline-offset: 2px;
+}
+.atlas-plate {
+ display: grid;
+ place-items: center;
+ width: 40px;
+ height: 40px;
+ border-radius: 999px;
+ background: rgb(44 44 49 / 0.92);
+ box-shadow: inset 0 0 0 1px rgb(255 255 255 / 0.12), 0 4px 12px rgb(0 0 0 / 0.4);
+}
+.atlas-title {
+ font-size: 15.5px;
+ font-weight: 600;
+ line-height: 1.2;
+}
+.atlas-year {
+ position: absolute;
+ top: calc(env(safe-area-inset-top, 0px) + 60px);
+ inset-inline-start: 22px;
+ pointer-events: none;
+}
+/* The year: each digit a wheel of 0 to 9, three times over, turned to its
+   digit (atlasEngine.ts, setYear). Lora's lining figures, a soft white glow. */
+.atlas-odo {
+ display: flex;
+ height: 1em;
+ overflow: hidden;
+ direction: ltr;
+ font-family: var(--font-serif);
+ font-size: 58px;
+ font-weight: 700;
+ line-height: 1;
+ font-variant-numeric: lining-nums tabular-nums;
+ filter: drop-shadow(0 0 14px rgb(255 255 255 / 0.3));
+}
+.atlas-odo-col {
+ display: block;
+ flex: none;
+ height: 1em;
+ overflow: hidden;
+ text-align: center;
+}
+.atlas-odo-strip {
+ display: flex;
+ flex-direction: column;
+}
+.atlas-odo-strip > span {
+ display: block;
+ height: 1em;
+ line-height: 1;
+}
+:where([data-motion="full"]) .atlas-odo-col[data-roll] {
+ transition:
+  width 560ms var(--ease-house),
+  opacity 370ms var(--ease-house);
+}
+:where([data-motion="full"]) .atlas-odo-col[data-roll] > .atlas-odo-strip {
+ transition: transform 560ms var(--ease-house);
+}
+:where([data-motion="reduce"]) .atlas-odo-col,
+:where([data-motion="reduce"]) .atlas-odo-strip {
+ transition: none;
+}
+.atlas-era {
+ margin-top: 9px;
+ font-size: 13px;
+ font-weight: 500;
+ color: rgb(255 255 255 / 0.64);
+}
+/* An event off the map (Alaska, America): said over the wheel. */
+.atlas-beyond {
+ position: absolute;
+ inset-inline: 0;
+ bottom: calc(254px + max(34px, env(safe-area-inset-bottom, 0px)));
+ text-align: center;
+ font-size: 13px;
+ font-weight: 600;
+ color: rgb(255 255 255 / 0.7);
+ opacity: 0;
+ pointer-events: none;
+}
+.atlas-beyond[data-on] {
+ opacity: 1;
+}
+:where([data-motion="full"]) .atlas-beyond {
+ transition: opacity var(--duration-base) var(--ease-house);
+}
+/* The wheel's panel, at the foot: solid, its edge the screen's own. */
+.atlas-panel {
+ position: absolute;
+ inset-inline: 0;
+ bottom: 0;
+ max-width: 560px;
+ height: calc(236px + max(34px, env(safe-area-inset-bottom, 0px)));
+ margin-inline: auto;
+ overflow: hidden;
+ border-radius: 30px 30px 0 0;
+ background: linear-gradient(180deg, #28282d, #16161a);
+ box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.13), inset 0 0 0 1px rgb(255 255 255 / 0.06), 0 -18px 40px rgb(0 0 0 / 0.55);
+}
+.atlas-grab {
+ width: 38px;
+ height: 5px;
+ margin: 9px auto 0;
+ border-radius: 3px;
+ background: rgb(255 255 255 / 0.2);
+}
+.atlas-head {
+ position: absolute;
+ inset-inline: 22px 14px;
+ top: 22px;
+ z-index: 2;
+ display: flex;
+ align-items: center;
+ justify-content: space-between;
+ gap: 14px;
+ height: 44px;
+}
+/* The whole history, small: a tooth for each step, the ages as runs, a lit point for now. */
+.atlas-mini {
+ display: block;
+ flex: 1;
+ min-width: 0;
+ height: 44px;
+ overflow: visible;
+ touch-action: none;
+ cursor: pointer;
+}
+.atlas-play {
+ display: grid;
+ flex: none;
+ place-items: center;
+ width: 44px;
+ height: 44px;
+ border-radius: 999px;
+ background: #fff;
+ color: #101013;
+ box-shadow: 0 0 0 5px rgb(255 255 255 / 0.06), 0 0 22px rgb(255 255 255 / 0.26), 0 6px 14px rgb(0 0 0 / 0.5);
+}
+.atlas-play [data-icon="play"] {
+ translate: 1px 0;
+}
+.atlas-play [data-icon="pause"],
+.atlas-play[data-playing] [data-icon="play"] {
+ display: none;
+}
+.atlas-play[data-playing] [data-icon="pause"] {
+ display: block;
+}
+/* The wheel of events: a row for each, the one in the band now. */
+.atlas-wheel {
+ position: absolute;
+ inset-inline: 0;
+ top: 68px;
+ bottom: 0;
+ z-index: 1;
+ touch-action: none;
+ cursor: grab;
+ -webkit-mask-image: linear-gradient(transparent 2px, #000 32px, #000 146px, transparent 186px);
+ mask-image: linear-gradient(transparent 2px, #000 32px, #000 146px, transparent 186px);
+}
+.atlas-wheel:focus-visible {
+ outline: none;
+}
+.atlas-band,
+.atlas-band-link {
+ position: absolute;
+ inset-inline: 12px;
+ top: 113px;
+ height: 60px;
+ border-radius: 17px;
+ pointer-events: none;
+}
+.atlas-band {
+ z-index: 0;
+ background: linear-gradient(180deg, rgb(255 255 255 / 0.08), rgb(255 255 255 / 0.035));
+ box-shadow: inset 0 0 0 1px rgb(255 255 255 / 0.085), inset 0 1px 0 rgb(255 255 255 / 0.11), 0 8px 18px rgb(0 0 0 / 0.35);
+}
+.atlas-wheel:focus-visible ~ .atlas-band,
+.atlas-band-link:focus-visible {
+ outline: 2px solid #fff;
+ outline-offset: 2px;
+}
+/* The band's own link, for a keyboard and a screen reader: the row shows its words. */
+.atlas-band-link {
+ z-index: 2;
+ overflow: hidden;
+ color: transparent;
+ white-space: nowrap;
+}
+.atlas-row {
+ position: absolute;
+ inset-inline: 22px;
+ top: 0;
+ display: flex;
+ align-items: center;
+ gap: 14px;
+ height: 50px;
+ visibility: hidden;
+ will-change: transform;
+}
+.atlas-row-year {
+ flex: none;
+ width: 56px;
+ text-align: end;
+ font-family: var(--font-serif);
+ font-size: 15px;
+ font-weight: 700;
+ line-height: 1.2;
+ color: #fff;
+ font-variant-numeric: lining-nums tabular-nums;
+}
+.atlas-row-text {
+ flex: 1;
+ min-width: 0;
+}
+.atlas-row-name {
+ display: block;
+ overflow: hidden;
+ font-size: 15px;
+ font-weight: 500;
+ line-height: 1.25;
+ color: rgb(255 255 255 / 0.9);
+ white-space: nowrap;
+ text-overflow: ellipsis;
+}
+.atlas-row[data-on] .atlas-row-name {
+ font-family: var(--font-serif);
+ font-weight: 600;
+ color: #fff;
+}
+.atlas-row-line {
+ display: none;
+ margin-top: 2px;
+ overflow: hidden;
+ font-size: 12px;
+ color: rgb(255 255 255 / 0.55);
+ white-space: nowrap;
+ text-overflow: ellipsis;
+}
+.atlas-row-line i {
+ margin-inline: 5px;
+ font-style: normal;
+ color: rgb(255 255 255 / 0.3);
+}
+.atlas-row-era {
+ flex: none;
+ font-size: 10.5px;
+ font-weight: 600;
+ color: rgb(255 255 255 / 0.55);
+}
+
 /* ── Gift box ───────────────────────────────────────────────────────────────
    The claim animation (components/gifts/GiftBox.tsx): a sealed reliquary that
    strains, cracks its beeswax seal, holds one beat, then floods with light.

@@ -63,6 +63,40 @@ export function slotAt(middles: readonly number[], mid: number): number {
 }
 
 /**
+ * The same click for a wheel that a hand turns but that is not a scrolling
+ * row (the atlas's wheel of events, components/councils/atlasEngine.ts):
+ * begun when a hand takes it, `tick` for each step it passes, `end` when it
+ * comes to rest. The same pulse and the same spacing as a row's; in a
+ * browser, an inert pair that loads nothing.
+ */
+export function handTicks(): { tick: () => void; end: () => void } {
+  if (!isNativeClient()) return { tick: () => {}, end: () => {} };
+  const ios = nativePlatform() === "ios";
+  let lastAt = -Infinity;
+  let ended = false;
+  // iOS clicks only between a start and an end.
+  if (ios) void haptics().then((h) => h?.Haptics.selectionStart().catch(() => {}));
+  return {
+    tick() {
+      if (ended) return;
+      const now = performance.now();
+      if (now - lastAt < MIN_GAP_MS) return;
+      lastAt = now;
+      void haptics().then((h) => {
+        if (!h) return;
+        const done = ios ? h.Haptics.selectionChanged() : h.Haptics.vibrate({ duration: PULSE_MS });
+        return done.catch(() => {});
+      });
+    },
+    end() {
+      if (ended) return;
+      ended = true;
+      if (ios) void haptics().then((h) => h?.Haptics.selectionEnd().catch(() => {}));
+    },
+  };
+}
+
+/**
  * Clicks as `ref`'s row is scrolled by hand past the items `items` picks out
  * (a selector run from the row; its children by default).
  */
