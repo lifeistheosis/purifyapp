@@ -670,7 +670,7 @@ export const HISTORY_EVENTS: HistoryEventMeta[] = [
     reviewedBy: "Purify editorial, pending review",
     rel: {
       scripture: ["Matthew 19:21", "Matthew 6:34"],
-      saints: ["anthony-the-great", "athanasius-the-great", "pachomius-the-great", "augustine-of-hippo"],
+      saints: ["anthony-the-great", "athanasius-the-great", "pachomius-the-great", "ammon-of-nitria", "augustine-of-hippo"],
     },
     media: {
       hero: "/history/media/anthony-and-the-desert.v1.jpg",

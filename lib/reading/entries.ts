@@ -127,6 +127,7 @@ export const AUTHOR_META: Readonly<Record<string, MetaRow>> = {
   "isidora-of-tabenna": { traditions: ["egypt", "desert"], era: "councils" },
   "pimen-the-great": { traditions: ["egypt", "desert"], era: "councils" },
   "pachomius-the-great": { traditions: ["egypt", "desert"], era: "councils" },
+  "ammon-of-nitria": { traditions: ["egypt", "desert"], era: "councils" },
   // Of Antioch, and of Constantinople, whose archbishop he was.
   "john-chrysostom": { traditions: ["greek", "antioch"], era: "councils" },
   "meletius-of-antioch": { traditions: ["antioch"], era: "councils" },
@@ -1069,6 +1070,17 @@ export const ENTRIES: Readonly<Record<WorkKey, ReadingEntry>> = {
       t("work", "Palladius XXXII: every brother at a craft, from the forge to the scriptorium, the work of the hands part of the rule", { sections: [[2, 2]] }),
       t("humility", "Macarius of Alexandria at Tabennisi in Lent, and Pachomius's thanks that his monks were kept from pride", { sections: [[4, 4]] }),
       t("lent", "Macarius of Alexandria keeps the forty days at Tabennisi standing in silence", { sections: [[4, 4]] }),
+    ],
+    review: R,
+  },
+  "ammon-of-nitria/life-of-ammon": {
+    by: null,
+    about: "ammon-of-nitria",
+    form: "life",
+    scope: "selections",
+    themes: [
+      t("chastity", "Amoun and his wife keep their virginity through eighteen years of marriage, Palladius VIII", { sections: [[2, 2]] }),
+      t("death", "Antony sees Amun's soul carried up at his death, Life of Antony 60", { sections: [[3, 3]] }),
     ],
     review: R,
   },

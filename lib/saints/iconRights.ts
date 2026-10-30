@@ -595,6 +595,23 @@ export const ICON_RIGHTS: Record<string, IconRights> = {
     license: "Public domain",
     evidenceUrl: "https://commons.wikimedia.org/wiki/File:Pakhomy,_Alexander_Nevsky,_Dmitry_and_Mary_Magdalene_(18th_c,_priv.coll).jpg",
   },
+  // No old Orthodox icon of him passed: the Menologion of Basil II miniature
+  // on Commons (his repose, Antony looking on) carries the Vatican Library's
+  // watermark, and the icon in the Russian Lives of the Saints (1903 to 1911)
+  // is a coarse black-and-white print. So an old Western engraving stands in
+  // its place, as old Western paintings do for the Fathers of the Latin West
+  // (docs/licensing/COVER_ICONS.md). Named on the plate: S. Ammon Nitriota.
+  "ammon-of-nitria.jpg": {
+    status: "verified",
+    inspectedOn: "2026-10-30",
+    alt: "A black-and-white engraving of an old hermit with long unkempt hair and a flowing beard, his head ringed with rays of light, his hands clasped in prayer before him and a heavy mantle drawn over his shoulders.",
+    work: "S. Ammon Nitriota, plate 21 of Sylva anachoretica Aegypti et Palaestinae: his head and clasped hands",
+    artist: "Boetius à Bolswert, after Abraham Bloemaert",
+    workDate: "1619",
+    source: "Wikimedia Commons, from the copy in the Radboud University Library, Nijmegen",
+    license: "Public domain",
+    evidenceUrl: "https://commons.wikimedia.org/wiki/File:Bloemaert_-_1619_-_Sylva_anachoretica_Aegypti_et_Palaestinae_-_UB_Radboud_Uni_Nijmegen_-_512890366_21_S_Ammon_Nitriota.jpeg",
+  },
   "job-of-pochaev.jpg": {
     status: "verified",
     inspectedOn: "2026-08-12",

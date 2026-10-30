@@ -350,6 +350,34 @@ export const SAINTS: Saint[] = [
  ],
  },
  {
+ slug: "ammon-of-nitria",
+ byname: "Father of Nitria",
+ iconUrl: "/saints/icons/ammon-of-nitria.jpg",
+ name: "St. Ammon of Nitria",
+ epithet: "Of Nitria · The Egyptian",
+ reposed: "Before St. Antony, in the 4th century (Nitria)",
+ feastDays: ["October 4"],
+ shortBio:
+ "The Egyptian who kept virginity with his wife through eighteen years of marriage, then went out to the mountain of Nitria and became the father of its monks; St. Antony saw his soul carried up to heaven.",
+ life: [
+ "Ammon, whom Palladius calls Amoun and St. Athanasius Amun, was an Egyptian of the generation of St. Antony. He was left an orphan, and at about twenty-two his uncle pressed him into marriage. On the night of the wedding he read to his bride from the Apostle and the Gospels and persuaded her to keep her virginity with him, and for eighteen years they lived in one house as brother and sister, he working by day in his garden and among his balsam bushes and praying with her in the evening.",
+ "In the end it was his wife who asked that they live apart, so that a virtue like his should not stay hidden. He went out to the inner part of the mountain of Nitria, south of Lake Mareotis, where there were as yet no monasteries, and built himself two round cells. He lived there twenty-two years more and saw his wife twice a year. Disciples gathered about him, and the mountain filled with monks: when Palladius came there, some five thousand men lived on it.",
+ "Two wonders were told of him. Once, when he had to cross the canal called the Lycus and would not be seen unclothed, he found himself carried over to the far bank without touching the water. And when he died, St. Antony, thirteen days' journey away, saw his soul carried up to heaven, and the monks who came from Nitria a month later found that he had died on that very day and hour.",
+ "He is remembered as the father of the monks of Nitria, from whom the settlements of Nitria and Scetis grew. The Church keeps his memory on the fourth of October.",
+ ],
+ works: [
+ {
+ slug: "life-of-ammon",
+ title: "The Life of St. Ammon of Nitria",
+ subtitle: "From Palladius, St. Athanasius and Sozomen",
+ year: "c. 360 to 440",
+ blurb:
+ "Palladius's chapter on Amoun of Nitria, St. Athanasius's account of the vision in which St. Antony saw his soul carried up, and Sozomen's history of him: a marriage kept in virginity, the first monks of Nitria, and the crossing of the river Lycus. In the public-domain English of W. K. Lowther Clarke (1918) and the Nicene and Post-Nicene Fathers.",
+ topics: ["Monasticism", "Chastity", "Marriage", "Desert", "Miracles"],
+ },
+ ],
+ },
+ {
  slug: "athanasius-the-great",
  byname: "Pillar of Orthodoxy",
  iconUrl: "/saints/icons/athanasius-the-great.v2.jpg",

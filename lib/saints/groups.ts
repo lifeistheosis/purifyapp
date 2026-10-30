@@ -202,6 +202,7 @@ export const SAINT_GROUP_MEMBERSHIP: Record<string, SaintGroupId[]> = {
   "mary-of-egypt": ["desert-monastics", "women"],
   "isidora-of-tabenna": ["desert-monastics", "women"],
   "pachomius-the-great": ["desert-monastics"],
+  "ammon-of-nitria": ["desert-monastics"],
   "paisios-the-athonite": ["desert-monastics"],
   "seraphim-of-sarov": ["desert-monastics", "wonderworkers"],
   "olympias-the-deaconess": ["women"],
