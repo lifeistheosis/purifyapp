@@ -98,15 +98,30 @@ describe("a council's page (C, at a glance)", () => {
 
   it("draws a Father with no settled picture as a halo and his initial, and the one shown lit in the page's ink, never gold", () => {
     const fathers = code("components/councils/CouncilFathers.tsx");
-    // His settled picture, and his name in its place when it cannot come.
-    expect(fathers).toContain("const picture = face.picture && failed !== face.picture.src ? face.picture : null;");
-    expect(fathers).toMatch(/\{picture \? \(\s*<FacePicture picture=\{picture\}/);
+    // His settled picture; with no signal the settled icon the app carries,
+    // where he has one (build 83's walk of the apps); then his name.
+    expect(fathers).toContain(
+      "const tries: FacePictureData[] = face.picture ? [face.picture, ...(face.picture.fallback ? [face.picture.fallback] : [])] : [];",
+    );
+    expect(fathers).toContain("const picture = tries.find((p) => !gone.includes(p.src)) ?? null;");
+    expect(fathers).toMatch(/\{picture \? \(\s*<FacePicture\s+key=\{picture\.src\}\s+picture=\{picture\}/);
     expect(fathers).toContain('<Halo initial={face.initial} shape={shape} />');
     expect(fathers).toContain('data-father-halo=""');
     expect(fathers).toContain("aria-pressed={on}");
     expect(fathers).toContain("0_0_0_3.5px_var(--color-paper),0_0_18px_3px_rgb(255_255_255/0.3)");
     // A council with one Father has no row to choose from.
     expect(fathers).toContain("fathers.length > 1 ?");
+    // The word under each face is whole, never cut (build 83: "Athanasi..." at
+    // 390 px): sized to its column, each cell a size container.
+    expect(fathers).toContain('<li key={x.name} className="@container min-w-0">');
+    expect(fathers).toContain("style={{ fontSize: faceLabelSize(x.label) }}");
+    const label = /data-father-label=""[\s\S]*?\{x\.label\}/.exec(fathers)?.[0] ?? "";
+    expect(label).toContain("whitespace-nowrap");
+    expect(label).not.toMatch(/\btruncate\b|text-ellipsis|line-clamp/);
+    // The row draws no registry: its sizes come from a file of their own.
+    expect(fathers).toContain('import { faceLabelSize } from "@/lib/councils/faceLabel";');
+    expect(fathers).toMatch(/import type \{[^}]*\} from "@\/lib\/councils\/fathers";/);
+    expect(fathers).not.toMatch(/import \{[^}]*\} from "@\/lib\/councils\/fathers";/);
   });
 
   it("opens its books in the reading room: a door with how many and how long, and a fan of their covers", () => {

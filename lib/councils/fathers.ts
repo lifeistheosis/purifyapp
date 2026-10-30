@@ -1,5 +1,7 @@
 import { coverArtFor, coverSrc } from "@/lib/reading/coverArt";
+import { iconRightsFor } from "@/lib/saints/iconRights";
 import { getSaint } from "@/lib/saints/saints";
+import { ICON_FOCUS } from "@/lib/today/saintFaces";
 
 import type { Council } from "./councils";
 
@@ -17,7 +19,22 @@ import type { Council } from "./councils";
  * room's covers and the widgets already do (the sheet's "A Father with no
  * settled icon"). Of the thirty-six Fathers the councils name, fifteen have a
  * settled picture (lib/councils/__tests__/page.test.ts counts them).
+ *
+ * WITH NO SIGNAL (build 83's walk of the apps). Most of those pictures are
+ * cover portraits on the website, which the apps ask for, so with no signal
+ * a Father fell back to his initial. A Father whose portrait streams falls
+ * back first to the icon the app carries of him, as Theology's medallions
+ * do, but only where that icon's rights are settled, a row in
+ * lib/saints/iconRights.ts (verified, or used with permission, as the room's
+ * carried covers are); the rest keep the halo and initial, as drawn.
  */
+export type FacePicture = {
+  /** Its address, decided by the build: the website's in the apps for a streamed portrait. */
+  src: string;
+  /** Where his face is, percent from its top. */
+  focusY: number;
+};
+
 export type CouncilFace = {
   /** His name as the council names him. */
   name: string;
@@ -31,8 +48,8 @@ export type CouncilFace = {
   role: string;
   /** His saint's page, when Purify has one. */
   href?: string;
-  /** His settled picture: its address (decided by the build) and where his face is, percent from its top. */
-  picture?: { src: string; focusY: number };
+  /** His settled picture, and for one the website streams, the settled icon the app carries for when it cannot come. */
+  picture?: FacePicture & { fallback?: FacePicture };
 };
 
 /** The words before a name that are not his name. */
@@ -49,6 +66,11 @@ function lastWordOf(name: string): string {
   return words[words.length - 1] ?? name;
 }
 
+/** The icon the app carries of a saint, only where its rights are settled (lib/saints/iconRights.ts). */
+export function carriedIcon(saint: { iconUrl?: string } | null | undefined): FacePicture | null {
+  return saint?.iconUrl && iconRightsFor(saint.iconUrl) ? { src: saint.iconUrl, focusY: ICON_FOCUS } : null;
+}
+
 export function fatherFaces(c: Pick<Council, "principalFathers">, native: boolean): CouncilFace[] {
   const fathers = c.principalFathers ?? [];
   const firsts = fathers.map((f) => firstNameOf(f.name));
@@ -56,6 +78,8 @@ export function fatherFaces(c: Pick<Council, "principalFathers">, native: boolea
     const shared = firsts.filter((n) => n === firsts[i]).length > 1;
     const saint = f.slug ? getSaint(f.slug) : undefined;
     const art = saint ? coverArtFor(saint.slug) : null;
+    // A portrait from the website has a carried icon behind it, where one is settled.
+    const fallback = art?.kind === "streamed" ? carriedIcon(saint) : null;
     return {
       name: f.name,
       label: shared ? lastWordOf(f.name) : firsts[i],
@@ -63,7 +87,7 @@ export function fatherFaces(c: Pick<Council, "principalFathers">, native: boolea
       ...(saint?.byname ? { byname: saint.byname } : {}),
       role: f.role,
       ...(saint ? { href: `/saints/${saint.slug}` } : {}),
-      ...(art ? { picture: { src: coverSrc(art, native), focusY: art.focusY } } : {}),
+      ...(art ? { picture: { src: coverSrc(art, native), focusY: art.focusY, ...(fallback ? { fallback } : {}) } } : {}),
     };
   });
 }

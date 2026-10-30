@@ -9,7 +9,8 @@
 import { describe, expect, it } from "vitest";
 
 import { COUNCILS, getCouncil } from "../councils";
-import { fatherFaces, firstNameOf } from "../fathers";
+import { LABEL_PX, LETTER_EM, faceLabelSize } from "../faceLabel";
+import { carriedIcon, fatherFaces, firstNameOf } from "../fathers";
 import {
   CROPS,
   authorLine,
@@ -27,7 +28,9 @@ import {
   shortName,
 } from "../page";
 import { COVER_ART } from "@/lib/reading/coverArt";
+import { iconRightsFor, isUnverified } from "@/lib/saints/iconRights";
 import { SAINTS } from "@/lib/saints/saints";
+import { ICON_FOCUS } from "@/lib/today/saintFaces";
 
 const council = (slug: string) => {
   const c = getCouncil(slug);
@@ -191,5 +194,59 @@ describe("the Holy Fathers principally associated", () => {
     const athanasius = fatherFaces(council("first-nicaea"), true)[0];
     expect(athanasius.picture?.src).toMatch(/^https:\/\/.+\/covers\/authors\/athanasius-the-great\.v1\.jpg$/);
     expect(fatherFaces(council("first-nicaea"), false)[0].picture?.src).toBe("/covers/authors/athanasius-the-great.v1.jpg");
+  });
+
+  // Build 83's walk of the apps with no signal: every streamed portrait gave
+  // way to an initial. Behind a portrait the website streams stands the icon
+  // the app carries of him, but only one whose rights are settled.
+  it("puts the icon the app carries behind a streamed portrait, only where its rights are settled", () => {
+    expect(carriedIcon({ iconUrl: "/saints/icons/cyprian-of-carthage.jpg" })).toEqual({ src: "/saints/icons/cyprian-of-carthage.jpg", focusY: ICON_FOCUS });
+    expect(carriedIcon({ iconUrl: "/saints/icons/athanasius-the-great.v2.jpg" })).toBeNull();
+    expect(carriedIcon({})).toBeNull();
+    const bySlug = new Map(SAINTS.map((s) => [s.slug, s]));
+    for (const f of all) {
+      const saint = f.href ? bySlug.get(f.href.replace("/saints/", "")) : undefined;
+      const art = saint ? COVER_ART[saint.slug] : undefined;
+      const settled = saint?.iconUrl ? iconRightsFor(saint.iconUrl) : null;
+      if (f.picture?.fallback) {
+        // Never an icon nobody has checked, and never one that is not his.
+        expect(iconRightsFor(f.picture.fallback.src), f.name).not.toBeNull();
+        expect(isUnverified(f.picture.fallback.src), f.name).toBe(false);
+        expect(f.picture.fallback.src, f.name).toBe(saint?.iconUrl);
+      }
+      // Every streamed portrait whose carried icon is settled has it behind it.
+      if (art?.kind === "streamed" && settled) expect(f.picture?.fallback?.src, f.name).toBe(saint?.iconUrl);
+      // A carried cover (St. Cyprian's) needs nothing behind it.
+      if (art?.kind === "bundled") expect(f.picture?.fallback, f.name).toBeUndefined();
+    }
+  });
+});
+
+describe("the word under each face", () => {
+  // Build 83's walk: "Athanasi..." at 390 px. It is never cut: the design's
+  // size where the word fits its column, smaller where it would not.
+  const column = (screen: number) => (screen - 2 * 20) / 6;
+  const px = (label: string, screen: number) => {
+    const cqw = Number(/, ([\d.]+)cqw\)$/.exec(faceLabelSize(label))?.[1]);
+    return Math.min(LABEL_PX, (cqw * column(screen)) / 100);
+  };
+
+  it("keeps the design's 10.5 px where the word fits, and shrinks a long one to its column", () => {
+    expect(faceLabelSize("Athanasius")).toBe("min(10.5px, 16.13cqw)");
+    expect(px("Leo", 390)).toBe(LABEL_PX);
+    expect(px("Nicholas", 390)).toBe(LABEL_PX);
+    expect(px("Athanasius", 390)).toBeLessThan(LABEL_PX);
+    expect(px("Athanasius", 390)).toBeGreaterThan(9);
+  });
+
+  it("fits every council's words whole in their columns, on a 390 px phone and a 320 px one", () => {
+    for (const c of COUNCILS) {
+      for (const f of fatherFaces(c, false)) {
+        for (const screen of [320, 390]) {
+          const width = LETTER_EM * px(f.label, screen) * f.label.length;
+          expect(width, `${c.slug}: ${f.label} at ${screen}`).toBeLessThanOrEqual(column(screen) + 0.01);
+        }
+      }
+    }
   });
 });
