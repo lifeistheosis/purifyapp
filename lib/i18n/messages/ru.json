@@ -4828,6 +4828,8 @@
   "chants.kind.response": "Ответ",
   "chants.item.prayerRopeAnthem.title": "Гимн молитвенных чёток",
   "chants.item.prayerRopeAnthem.line": "Гимн нашего времени для чёток, на английском, французском и арабском.",
+  "chants.item.psalm117.title": "Псалом 117",
+  "chants.item.psalm117.line": "Благодарственный псалом, стихи которого поют на утрене, здесь на арабском.",
   "common.undo": "Отменить",
   "common.remove": "Убрать",
   "saved.removed": "Убрано",

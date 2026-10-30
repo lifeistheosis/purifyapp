@@ -4952,6 +4952,8 @@
   "chants.kind.response": "جواب",
   "chants.item.prayerRopeAnthem.title": "ترنيمة مسبحة الصلاة",
   "chants.item.prayerRopeAnthem.line": "ترنيمة من زماننا للمسبحة، بالإنكليزية والفرنسية والعربية.",
+  "chants.item.psalm117.title": "المزمور 117",
+  "chants.item.psalm117.line": "مزمور شكر تُرتَّل آياته في صلاة السحر، وهو هنا بالعربية.",
   "common.undo": "تراجع",
   "common.remove": "إزالة",
   "saved.removed": "تمت الإزالة",

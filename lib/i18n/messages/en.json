@@ -4707,6 +4707,8 @@
   "chants.kind.response": "Response",
   "chants.item.prayerRopeAnthem.title": "The Prayer Rope Anthem",
   "chants.item.prayerRopeAnthem.line": "A hymn of our own time for the prayer rope, in English, French and Arabic.",
+  "chants.item.psalm117.title": "Psalm 117",
+  "chants.item.psalm117.line": "A psalm of thanksgiving whose verses are sung at Matins, here in Arabic.",
   "common.undo": "Undo",
   "common.remove": "Remove",
   "saved.removed": "Removed",

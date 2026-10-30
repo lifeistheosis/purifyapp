@@ -4758,6 +4758,8 @@
   "chants.kind.response": "Одговор",
   "chants.item.prayerRopeAnthem.title": "Химна молитвених бројаница",
   "chants.item.prayerRopeAnthem.line": "Химна нашег времена за бројаницу, на енглеском, француском и арапском.",
+  "chants.item.psalm117.title": "Псалам 117",
+  "chants.item.psalm117.line": "Благодарствени псалам чији се стихови певају на јутрењу, овде на арапском.",
   "common.undo": "Опозови",
   "common.remove": "Уклони",
   "saved.removed": "Уклоњено",
