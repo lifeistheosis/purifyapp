@@ -64,6 +64,11 @@ export const OWN_HEADER_PATTERNS: RegExp[] = [
   /^\/walkthroughs$/,
   /^\/walkthroughs\/[^/]+$/,
   /^\/walkthroughs\/[^/]+\/[^/]+$/,
+  // A doctrine's own page (1.8, round 3 r3-04): the bar starts clear over
+  // the subject's icon and turns solid with the study's name, as a saint's
+  // does, its way back leading to Theology. Not the doctrine index
+  // (/theology/doctrine), which keeps the back bar.
+  /^\/theology\/(?!doctrine$)[^/]+$/,
   // The pages under Prayers (1.7, the owner's note 16): every rule, the Hours,
   // the akathists, Learn to pray, Your rule and today's prayers are phone
   // pages with their own bar, which takes the page's name once its heading

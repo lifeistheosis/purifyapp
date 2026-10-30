@@ -4204,6 +4204,243 @@ details[open] > .band-open {
  animation: none;
 }
 
+/* ── Theology, round 3 (1.8, r3-04) ──
+   The owner's pick of 2026-10-30 (Homebase/boards/purify-master/variants/
+   r3-04-theology): "one A, two B and C, hybrid, three, C". Surfaces are the
+   ground and the ink and their mixes, so each holds in every palette; what is
+   lit glows white, softly, and the glow steps aside on Parchment, where white
+   on paper is no light. The rgb values come first for a WebView without
+   color-mix (Android before 111).
+
+   A raised surface: a subject's tray of rows, the search's kinds, a
+   doctrine's Scripture and Related rows. */
+.theology-tray {
+ background: linear-gradient(180deg, rgb(28 28 31) 0%, rgb(21 21 24) 100%);
+ background: linear-gradient(180deg, color-mix(in srgb, var(--color-paper) 5%, var(--color-night)) 0%, color-mix(in srgb, var(--color-paper) 2%, var(--color-night)) 100%);
+ border: 1px solid rgb(255 255 255 / 0.085);
+ border-color: color-mix(in srgb, var(--color-paper) 8.5%, transparent);
+ box-shadow: inset 0 1px 0 rgb(var(--panel-sheen) / 0.07), 0 24px 38px -22px rgb(0 0 0 / 0.95), 0 2px 6px rgb(0 0 0 / 0.35);
+}
+/* The subject's own icon behind the tray's head (FaithMap), blurred and grey:
+   its light, not a picture. Still: nothing here moves. */
+.faith-tray-glow {
+ position: absolute;
+ inset-inline: -15%;
+ top: -70px;
+ height: 170px;
+ background-size: cover;
+ background-position: center 40%;
+ filter: blur(36px) grayscale(1) brightness(1.25);
+ opacity: 0.2;
+ pointer-events: none;
+}
+/* A hairline between rows, from past the glyph's plate to the end. */
+.faith-rows > li + li,
+.theology-rule + .theology-rule {
+ position: relative;
+}
+.faith-rows > li + li::before,
+.theology-rule + .theology-rule::before {
+ content: "";
+ position: absolute;
+ inset-inline: 58px 16px;
+ top: 0;
+ height: 1px;
+ background: rgb(255 255 255 / 0.06);
+ background: color-mix(in srgb, var(--color-paper) 6%, transparent);
+}
+.theology-rule + .theology-rule::before {
+ inset-inline-start: 18px;
+}
+/* A row lights white as it is pressed, and for the keyboard (A's chosen row). */
+.theology-row {
+ -webkit-tap-highlight-color: transparent;
+ transition: background-color var(--duration-fast) var(--ease-house), box-shadow var(--duration-fast) var(--ease-house);
+}
+.theology-row:hover {
+ background-color: rgb(255 255 255 / 0.04);
+ background-color: color-mix(in srgb, var(--color-paper) 4%, transparent);
+}
+.theology-row:active,
+.theology-row:focus-visible {
+ outline: none;
+ background: linear-gradient(180deg, rgb(255 255 255 / 0.11), rgb(255 255 255 / 0.05));
+ background: linear-gradient(180deg, color-mix(in srgb, var(--color-paper) 11%, transparent), color-mix(in srgb, var(--color-paper) 5%, transparent));
+ box-shadow: inset 0 0 0 1px rgb(255 255 255 / 0.3), 0 0 26px rgb(255 255 255 / 0.12);
+ box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--color-paper) 30%, transparent), 0 0 26px rgb(255 255 255 / 0.12);
+}
+html[data-reading-mode="parchment"] .theology-row:is(:active, :focus-visible) {
+ box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--color-paper) 30%, transparent);
+}
+/* Its glyph's plate lights with it, white with the ground's glyph in it. */
+.theology-row:is(:active, :focus-visible) .theology-plate {
+ color: var(--color-night);
+ background: var(--color-paper);
+ border-color: var(--color-paper);
+ box-shadow: 0 0 16px rgb(255 255 255 / 0.45);
+}
+html[data-reading-mode="parchment"] .theology-row:is(:active, :focus-visible) .theology-plate {
+ box-shadow: none;
+}
+:where([data-motion="reduce"]) .theology-row {
+ transition: none;
+}
+/* A row's glyph on its small raised plate. */
+.theology-plate {
+ background: linear-gradient(180deg, rgb(255 255 255 / 0.1), rgb(255 255 255 / 0.035));
+ background: linear-gradient(180deg, color-mix(in srgb, var(--color-paper) 10%, transparent), color-mix(in srgb, var(--color-paper) 3.5%, transparent));
+ border: 1px solid rgb(255 255 255 / 0.1);
+ border-color: color-mix(in srgb, var(--color-paper) 10%, transparent);
+ box-shadow: inset 0 1px 0 rgb(var(--panel-sheen) / 0.1), 0 4px 10px -4px rgb(0 0 0 / 0.85);
+}
+
+/* A doctrine's page, C's head: the subject's icon as the cover. On a phone it
+   starts at the top of the screen under the clear bar (.under-topbar) and
+   shows 137px below it, as drawn; the title is set over its last 116px.
+   Faded into the page by a mask, so no colour is laid over the page. */
+.doctrine-cover {
+ height: 240px;
+ -webkit-mask-image: linear-gradient(to bottom, #000 0, #000 38%, rgb(0 0 0 / 0.5) 66%, transparent 100%);
+ mask-image: linear-gradient(to bottom, #000 0, #000 38%, rgb(0 0 0 / 0.5) 66%, transparent 100%);
+}
+@media (max-width: 767.98px) {
+ .doctrine-cover {
+  height: calc(3rem + env(safe-area-inset-top, 0px) + 137px);
+ }
+ html.is-native .doctrine-cover {
+  height: calc(3rem + var(--inset-top) + 137px);
+ }
+}
+.doctrine-title {
+ margin-top: -116px;
+}
+.doctrine-shadow {
+ text-shadow: 0 2px 18px rgb(0 0 0 / 0.7);
+}
+html[data-reading-mode="parchment"] .doctrine-shadow {
+ text-shadow: none;
+}
+/* A door not open: the saint page's doors, raised (components/theology/DoctrineDoors.tsx). */
+.theology-door {
+ background: linear-gradient(180deg, rgb(255 255 255 / 0.085), rgb(255 255 255 / 0.03));
+ background: linear-gradient(180deg, color-mix(in srgb, var(--color-paper) 8.5%, transparent), color-mix(in srgb, var(--color-paper) 3%, transparent));
+ box-shadow: inset 0 1px 0 rgb(var(--panel-sheen) / 0.09), 0 12px 22px -14px rgb(0 0 0 / 0.95);
+}
+/* Read the study opens the study under the bar and the doors' slim row. */
+.doctrine-panels {
+ scroll-margin-top: calc(3rem + 66px + env(safe-area-inset-top, 0px));
+}
+html.is-native .doctrine-panels {
+ scroll-margin-top: calc(3rem + 66px + var(--inset-top));
+}
+@media (min-width: 768px) {
+ html:not(.is-native) .doctrine-panels {
+  scroll-margin-top: calc(72px + 66px);
+ }
+}
+
+/* The Fathers' medallions (B): a face in a ring of the ground, its count on
+   a small plate; the chosen one ringed in white light. "All", and a Father
+   with no picture, is a dark coin with his initial. */
+.theology-face {
+ box-shadow: inset 0 0 0 1px rgb(255 255 255 / 0.2);
+ box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--color-paper) 20%, transparent);
+ transition: box-shadow var(--duration-fast) var(--ease-house);
+}
+.theology-face-on {
+ box-shadow: 0 0 0 2px var(--color-night), 0 0 0 3.5px var(--color-paper), 0 0 20px rgb(255 255 255 / 0.45);
+}
+html[data-reading-mode="parchment"] .theology-face-on {
+ box-shadow: 0 0 0 2px var(--color-night), 0 0 0 3.5px var(--color-paper);
+}
+.theology-face-name {
+ text-shadow: 0 0 10px rgb(255 255 255 / 0.5);
+}
+html[data-reading-mode="parchment"] .theology-face-name {
+ text-shadow: none;
+}
+.theology-count {
+ box-shadow: 0 0 0 2px var(--color-night);
+}
+.theology-all {
+ background: radial-gradient(circle at 35% 28%, rgb(44 44 49), rgb(23 23 26) 72%);
+ background: radial-gradient(circle at 35% 28%, color-mix(in srgb, var(--color-paper) 11%, var(--color-night)), color-mix(in srgb, var(--color-paper) 3%, var(--color-night)) 72%);
+ box-shadow: inset 0 0 0 1px rgb(255 255 255 / 0.16);
+ box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--color-paper) 16%, transparent);
+}
+:where([data-motion="reduce"]) .theology-face {
+ transition: none;
+}
+
+/* C's deck: each passage a card that is the picture it shares (the verse
+   picture's look): his face above, faded into the card and never written
+   over. The card in view stands full; the others wait smaller and dim, as
+   drawn. */
+.theology-card {
+ background-color: var(--color-night-deep);
+ border: 1px solid rgb(255 255 255 / 0.11);
+ border-color: color-mix(in srgb, var(--color-paper) 11%, transparent);
+ box-shadow: 0 26px 40px -22px rgb(0 0 0 / 0.95), 0 2px 8px rgb(0 0 0 / 0.4);
+ transition: opacity var(--duration-base) var(--ease-house), scale var(--duration-base) var(--ease-house);
+}
+.theology-card:not([data-current]) {
+ opacity: 0.5;
+ scale: 0.92;
+}
+:where([data-motion="reduce"]) .theology-card {
+ transition: none;
+}
+.theology-card-picture {
+ -webkit-mask-image: linear-gradient(to bottom, #000 40%, transparent 100%);
+ mask-image: linear-gradient(to bottom, #000 40%, transparent 100%);
+}
+.theology-ring {
+ box-shadow: inset 0 0 0 1px rgb(255 255 255 / 0.3), 0 0 22px rgb(255 255 255 / 0.12);
+ box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--color-paper) 30%, transparent), 0 0 22px rgb(255 255 255 / 0.12);
+}
+
+/* Part 3, C: the foot as shelves. A tile is a raised card; its glyph glows. */
+.theology-tile {
+ background: linear-gradient(180deg, rgb(30 30 34), rgb(22 22 25));
+ background: linear-gradient(180deg, color-mix(in srgb, var(--color-paper) 5.5%, var(--color-night)), color-mix(in srgb, var(--color-paper) 2.5%, var(--color-night)));
+ border: 1px solid rgb(255 255 255 / 0.085);
+ border-color: color-mix(in srgb, var(--color-paper) 8.5%, transparent);
+ box-shadow: inset 0 1px 0 rgb(var(--panel-sheen) / 0.07), 0 18px 30px -20px rgb(0 0 0 / 0.95);
+}
+.theology-glyph {
+ display: inline-flex;
+ filter: drop-shadow(0 0 7px rgb(255 255 255 / 0.55));
+}
+html[data-reading-mode="parchment"] .theology-glyph {
+ filter: none;
+}
+/* The search pill, over the tab bar, the mini player and Today's readings
+   bar by their own heights, as the Bible's pill stands (MobileChapterPill). */
+.theology-search-pill {
+ bottom: calc(var(--tab-bar-h) + var(--now-playing-h) + var(--readings-flow-h, 0px) + env(safe-area-inset-bottom, 0px) + 12px);
+}
+@media (min-width: 768px) {
+ html:not(.is-native) .theology-search-pill {
+  bottom: 24px;
+ }
+}
+.theology-search-button {
+ box-shadow: 0 0 0 1px rgb(255 255 255 / 0.04), 0 0 26px rgb(255 255 255 / 0.14), 0 16px 32px -10px rgb(0 0 0 / 0.9), inset 0 1px 0 rgb(var(--panel-sheen) / 0.12);
+}
+html[data-reading-mode="parchment"] .theology-search-button {
+ box-shadow: 0 10px 26px -10px rgb(0 0 0 / 0.35);
+}
+/* The search field, carved into its sheet. */
+.theology-field {
+ background-color: rgb(0 0 0 / 0.36);
+ background-color: color-mix(in srgb, var(--color-night-deep) 70%, transparent);
+ box-shadow: inset 0 2px 6px rgb(0 0 0 / 0.55), 0 1px 0 rgb(var(--panel-sheen) / 0.04);
+}
+.theology-field:focus-within {
+ border-color: rgb(255 255 255 / 0.4);
+ border-color: color-mix(in srgb, var(--color-paper) 40%, transparent);
+}
+
 /* ── Tab select ───────────────────────────────────────────────────────
    The pop the newly-selected tab icon makes. It replaces the sliding
    compartment that used to sit behind the active tab: that animated `left`,

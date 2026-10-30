@@ -6,6 +6,7 @@
 import Link from "next/link";
 
 import { TheologyNav } from "./TheologyNav";
+import { TheologySearch } from "./TheologySearch";
 import { T } from "@/components/i18n/T";
 
 export function TheologyShell({
@@ -40,6 +41,8 @@ export function TheologyShell({
 
         <div className="mt-9 md:mt-12">{children}</div>
       </div>
+      {/* Search the library, above the tab bar on every Theology screen (1.8, round 3 r3-04). */}
+      <TheologySearch />
     </section>
   );
 }

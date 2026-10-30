@@ -97,6 +97,14 @@ export type TheologyBody = {
   origin?: string;
   essay: EssayBlock[];
   florilegium: Quotation[];
+  /**
+   * The editors' epigraph for the study (1.8, round 3 r3-04): the opening
+   * words of one passage of the florilegium, which the Fathers' deck on the
+   * study's page opens on (lib/theology/page.ts, epigraphIndex). None chosen
+   * yet: the deck opens on the first passage. An editorial choice, so it is
+   * set here by the editors and never by a script.
+   */
+  epigraph?: string;
   councils?: CouncilCitation[];
   scripture?: ScriptureRef[];
   /** Slugs of related theology topics. */

@@ -358,6 +358,11 @@ export function loadPicture(src: string): Promise<LoadedImage | null> {
     loading = new Promise<LoadedImage | null>((resolve) => {
       const img = new Image();
       img.decoding = "async";
+      // A picture the apps ask of the website (a Father's portrait under
+      // /covers/, lib/media/streamed.ts) is another origin: asked for
+      // without credentials, which the website allows the apps, so the
+      // canvas it is drawn on can still be saved.
+      if (/^https?:\/\//.test(src)) img.crossOrigin = "anonymous";
       img.onload = () => resolve({ source: img, width: img.naturalWidth, height: img.naturalHeight });
       img.onerror = () => {
         pictures.delete(src);

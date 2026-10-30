@@ -83,6 +83,8 @@ export function PictureSheet({
   name,
   caption,
   referenceLabel,
+  lead,
+  leadLabel,
 }: {
   open: boolean;
   onClose: () => void;
@@ -96,10 +98,18 @@ export function PictureSheet({
   caption: string;
   /** The switch for the line under the words, by its name. "Reference" by default. */
   referenceLabel?: string;
+  /**
+   * A look of the words' own, first in the row and chosen as the sheet
+   * opens: a Father's portrait over his words (lib/share/verseCard.ts,
+   * portraitLook), from the Fathers' deck on a doctrine's page.
+   */
+  lead?: Look;
+  /** The name under the lead look's tile. */
+  leadLabel?: string;
 }) {
   const { t } = useTranslate();
   const id = useId();
-  const [style, setStyle] = useState<PictureStyle>(DEFAULT_STYLE);
+  const [style, setStyle] = useState<PictureStyle>(() => (lead ? { ...DEFAULT_STYLE, look: lead.id } : DEFAULT_STYLE));
   const [tab, setTab] = useState<Tab>("look");
   const [photo, setPhoto] = useState<LoadedImage | null>(null);
   const [fits, setFits] = useState(true);
@@ -230,6 +240,15 @@ export function PictureSheet({
         {tab === "look" ? (
           <>
             <div role="group" aria-label={t("picture.tab.look")} className="no-scrollbar -mx-1 flex justify-between gap-1 overflow-x-auto px-1">
+              {lead ? (
+                <LookTile
+                  look={lead}
+                  image={null}
+                  on={style.look === lead.id}
+                  label={leadLabel ?? ""}
+                  onClick={() => change({ look: lead.id })}
+                />
+              ) : null}
               {LOOKS.map((look) => (
                 <LookTile
                   key={look.id}

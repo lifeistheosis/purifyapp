@@ -3,6 +3,7 @@ import { notFound } from "next/navigation";
 import { ApologeticsReader } from "@/components/apologetics/ApologeticsReader";
 import { TheologyArticleNav } from "@/components/theology/TheologyArticleNav";
 import { RelatedRail } from "@/components/theology/RelatedRail";
+import { TheologySearch } from "@/components/theology/TheologySearch";
 import { getApologeticsMeta, apologeticsParams } from "@/lib/apologetics/topics";
 import { loadApologeticsBody } from "@/lib/apologetics/load";
 import { buildRelated } from "@/lib/theology/relations";
@@ -57,6 +58,8 @@ export default async function ApologeticsTopicPage({
       <div className="mx-auto max-w-[760px] w-full">
         <RelatedRail groups={groups} title={<T k="study.apologetics.goDeeper" />} />
       </div>
+      {/* Search the library, above the tab bar on every Theology screen (1.8, round 3 r3-04). */}
+      <TheologySearch />
     </section>
   );
 }
