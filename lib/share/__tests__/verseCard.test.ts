@@ -21,6 +21,7 @@ import {
   lineHeightFor,
   lookOf,
   planPicture,
+  portraitLook,
   sizesFrom,
   wrap,
   type Measure,
@@ -175,6 +176,25 @@ describe("an icon is never written over", () => {
       expect(plan.words.top + plan.words.lines.length * plan.words.lineHeight, why).toBeLessThanOrEqual(plan.height * (1 - ICON_PAD_BOTTOM));
     }
     expect(planned).toBeGreaterThan(100);
+  });
+
+  it("stands a Father's portrait as an icon, known by its id alone (round 3 r3-04, the Fathers' deck)", () => {
+    const look = portraitLook("https://purifyapp.net/covers/authors/basil-the-great.v1.jpg", 0.2);
+    expect(look).toEqual({
+      id: "portrait:0.2:https://purifyapp.net/covers/authors/basil-the-great.v1.jpg",
+      kind: "icon",
+      src: "https://purifyapp.net/covers/authors/basil-the-great.v1.jpg",
+      focus: [0.5, 0.2],
+    });
+    expect(lookOf(look.id)).toEqual(look);
+    expect(lookOf(portraitLook("/covers/authors/john-of-damascus.v1.jpg", 0.25).id).kind).toBe("icon");
+    // Where his face sits is held to the picture.
+    const held = portraitLook("/x.jpg", 1.4);
+    expect(held.kind === "icon" ? held.focus : null).toEqual([0.5, 1]);
+    const plan = planPicture({ text: SHORT, reference: "St. Basil the Great" }, style({ look: look.id }), measures)!;
+    expect(plan.look).toEqual(look);
+    expect(plan.icon).not.toBeNull();
+    expect(plan.mark).toBeNull();
   });
 
   it("keeps the cross over every other look, when the reader leaves it on", () => {

@@ -1,7 +1,13 @@
 import Link from "next/link";
+import type { ComponentType, SVGProps } from "react";
 
 import { T } from "@/components/i18n/T";
+import { Book } from "@/components/ui/icons/Book";
 import { ChevronDown } from "@/components/ui/icons/ChevronDown";
+import { ChevronRight } from "@/components/ui/icons/ChevronRight";
+import { Church } from "@/components/ui/icons/Church";
+import { Cross } from "@/components/ui/icons/Cross";
+import { Scroll } from "@/components/ui/icons/Scroll";
 import { GalleryBand } from "@/components/ui/GalleryBand";
 
 import { COUNCILS } from "@/lib/councils/councils";
@@ -17,19 +23,32 @@ import { loadAllTopics } from "@/lib/topics/topics";
  * 12-theology.png). One band per subject in the order of the Creed, at the
  * head of Theology.
  *
- * Until then each subject was a card with its icon small beside it and, under
- * it, everything the app holds on it: the question, the studies, the errors
- * and the councils. The gallery keeps all of that one tap away: a band opens
- * where it stands to those same links, and closes again. The chevron in its
- * corner is the one mark the mockup does not draw, so a reader can tell that
- * the band opens rather than leads away.
+ * A band opens where it stands to everything the app holds on its subject.
+ * Until round 3 that was a cloud of pills of one look, as many as eleven for
+ * the Trinity, and what each one was said only to a screen reader. The
+ * owner's note 21 of build 80: "a bunch of pills just like are splattered
+ * around ... we should stop doing that". His pick for opening a card, round
+ * 3 r3-04, part 1, A, "Contents": the band opens to a raised tray of rows,
+ * each kind named once with how many there are: the question with how many
+ * of the Fathers it cites, the studies with their length, the errors with
+ * their century, the councils with their year. The subject's own icon lies
+ * blurred and grey behind the tray's head, its light. A row lights white as
+ * it is pressed.
  *
- * Server-drawn: every label comes from its registry as the page builds. A
- * <details> opens without a line of script, in the apps' export as on the web.
+ * Server-drawn: every label comes from its registry as the page builds, and
+ * every word of the app's own is a <T> island. A <details> opens without a
+ * line of script, in the apps' export as on the web.
  */
+
+type Row = { href: string; title: string; sub?: React.ReactNode; meta?: React.ReactNode };
+type Group = {
+  kind: "questions" | "studies" | "errors" | "councils";
+  Icon: ComponentType<SVGProps<SVGSVGElement> & { size?: number }>;
+  rows: Row[];
+};
+
 export async function FaithMap({ className }: { className?: string }) {
   const topics = await loadAllTopics();
-  const topicTitle = (slug: string) => topics.find((t) => t.slug === slug)?.title;
 
   return (
     // The mockup leads with the bands, so the heading and its line are said
@@ -44,26 +63,49 @@ export async function FaithMap({ className }: { className?: string }) {
 
       <ul className="grid items-start gap-2.5 md:grid-cols-2 lg:grid-cols-3">
         {THEOLOGY_SUBJECTS.map((s, index) => {
-          const links = [
-            ...s.topics.map((slug) => ({ href: `/topics/${slug}`, label: topicTitle(slug), kind: "Question" })),
-            ...s.studies.map((slug) => ({ href: `/theology/${slug}`, label: getTopicMeta(slug)?.title, kind: "Study" })),
-            ...s.heresies.map((slug) => ({
-              href: `/heresies/${slug}`,
-              label: HERESIES.find((h) => h.slug === slug)?.name,
-              kind: "Error",
-            })),
-            ...s.councils.map((slug) => ({
-              href: `/councils/${slug}`,
-              label: COUNCILS.find((c) => c.slug === slug)?.byname,
-              kind: "Council",
-            })),
-          ]
-            .filter((l): l is { href: string; label: string; kind: string } => Boolean(l.label))
-            // A question and a study can share a name (The Theotokos): the
-            // second says which it is.
-            .map((l, i, all) =>
-              all.findIndex((x) => x.label === l.label) < i ? { ...l, label: `${l.label} (${l.kind.toLowerCase()})` } : l,
-            );
+          const groups: Group[] = [
+            {
+              kind: "questions" as const,
+              Icon: Book,
+              rows: s.topics.flatMap((slug) => {
+                const topic = topics.find((t) => t.slug === slug);
+                return topic
+                  ? [{ href: `/topics/${slug}`, title: topic.title, sub: <T k="topics.citations" count={topic.citations.length} /> }]
+                  : [];
+              }),
+            },
+            {
+              kind: "studies" as const,
+              Icon: Cross,
+              rows: s.studies.flatMap((slug) => {
+                const meta = getTopicMeta(slug);
+                if (!meta || meta.planned) return [];
+                return [
+                  {
+                    href: `/theology/${slug}`,
+                    title: meta.title,
+                    meta: meta.estimatedMinutes ? <T k="bible.minRead" replacements={{ minutes: meta.estimatedMinutes }} /> : undefined,
+                  },
+                ];
+              }),
+            },
+            {
+              kind: "errors" as const,
+              Icon: Scroll,
+              rows: s.heresies.flatMap((slug) => {
+                const h = HERESIES.find((x) => x.slug === slug);
+                return h ? [{ href: `/heresies/${slug}`, title: h.name, meta: h.era }] : [];
+              }),
+            },
+            {
+              kind: "councils" as const,
+              Icon: Church,
+              rows: s.councils.flatMap((slug) => {
+                const c = COUNCILS.find((x) => x.slug === slug);
+                return c ? [{ href: `/councils/${slug}`, title: c.byname, meta: String(c.year) }] : [];
+              }),
+            },
+          ].filter((g) => g.rows.length > 0);
 
           return (
             <li key={s.id}>
@@ -88,19 +130,40 @@ export async function FaithMap({ className }: { className?: string }) {
                     </span>
                   }
                 />
-                <ul className="band-open flex flex-wrap gap-1.5 px-1 pt-2.5 pb-2">
-                  {links.map((l) => (
-                    <li key={l.href}>
-                      <Link
-                        href={l.href}
-                        className="tap-press inline-flex min-h-[32px] items-center rounded-full border border-paper/15 px-2.5 font-sans text-caption text-paper/80 transition-colors hover:border-paper/40 hover:text-paper"
-                      >
-                        <span className="sr-only">{l.kind}: </span>
-                        {l.label}
-                      </Link>
-                    </li>
+                <div data-faith-tray="" className="band-open theology-tray relative mt-2 overflow-hidden rounded-[20px] pb-[5px]">
+                  {/* The subject's own icon, blurred and grey: the light behind the tray's head. */}
+                  <span aria-hidden className="faith-tray-glow" style={{ backgroundImage: `url(${s.picture.src})` }} />
+                  {groups.map((g) => (
+                    <div key={g.kind} className="relative">
+                      <h4 className="flex items-baseline justify-between px-3.5 pb-1 pt-[11px] font-sans text-[10.5px] font-bold uppercase tracking-[0.12em] text-paper/50">
+                        <T k={`study.theology.tray.${g.kind}`} count={g.rows.length} />
+                        <span className="text-[11.5px] font-semibold normal-case tracking-normal tabular-nums text-paper/40">{g.rows.length}</span>
+                      </h4>
+                      <ul className="faith-rows">
+                        {g.rows.map((row) => (
+                          <li key={row.href}>
+                            <Link
+                              href={row.href}
+                              className="theology-row mx-1.5 flex min-h-[42px] items-center gap-3 rounded-[14px] px-2 py-[5px]"
+                            >
+                              <span className="theology-plate grid size-8 shrink-0 place-items-center rounded-[10px] text-paper/85">
+                                <g.Icon size={17} />
+                              </span>
+                              <span className="min-w-0 flex-1">
+                                <span className="block font-serif text-[15px] font-semibold leading-[1.24] text-paper/92">{row.title}</span>
+                                {row.sub ? <span className="mt-0.5 block font-sans text-caption text-paper/50">{row.sub}</span> : null}
+                              </span>
+                              {row.meta ? (
+                                <span className="shrink-0 whitespace-nowrap font-sans text-caption font-medium tabular-nums text-paper/52">{row.meta}</span>
+                              ) : null}
+                              <ChevronRight size={14} className="shrink-0 text-paper/32 rtl:-scale-x-100" />
+                            </Link>
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
                   ))}
-                </ul>
+                </div>
               </details>
             </li>
           );

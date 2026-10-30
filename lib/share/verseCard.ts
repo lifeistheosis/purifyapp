@@ -80,10 +80,27 @@ export const LOOKS: readonly Look[] = [
 /** The reader's own photo: chosen on the phone and drawn there, never sent anywhere. Its picture is handed to the drawing. */
 export const YOURS: Look = { id: "yours", kind: "picture", src: "", focus: [0.5, 0.5], nameKey: "picture.look.yours" };
 
+/**
+ * A Father's portrait as a look (1.8, round 3 r3-04, the Fathers' deck on a
+ * doctrine's page): his cover portrait (lib/today/saintFaces.ts, every one
+ * opened and its rights recorded), standing whole above his words as an icon
+ * does, so the picture shared is the card the reader was looking at. Its
+ * picture and where his face sits (0 to 1 down) are carried in its id, so
+ * lookOf knows it with no list of its own.
+ */
+export function portraitLook(src: string, focusY: number): Look {
+  const y = Math.max(0, Math.min(1, focusY));
+  return { id: `portrait:${y}:${src}`, kind: "icon", src, focus: [0.5, y] };
+}
+
 /** The look with this id; the first for one that is not known. */
 export function lookOf(id: string): Look {
   if (id === YOURS.id) return YOURS;
-  return LOOKS.find((look) => look.id === id) ?? LOOKS[0];
+  const listed = LOOKS.find((look) => look.id === id);
+  if (listed) return listed;
+  const portrait = /^portrait:(0(?:\.\d+)?|1):(.+)$/.exec(id);
+  if (portrait) return portraitLook(portrait[2], Number(portrait[1]));
+  return LOOKS[0];
 }
 
 /** The grounds and the ink: black with no tint, the light's a breath warmer, the words off-white. */

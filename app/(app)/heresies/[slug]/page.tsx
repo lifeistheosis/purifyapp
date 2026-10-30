@@ -13,6 +13,7 @@ import { CONCILIAR_HERESIES, CONDEMNATIONS, OTHER_COUNCILS } from "@/lib/heresie
 const HERESY_SOURCE = "heresy-source-";
 import { TheologyArticleNav } from "@/components/theology/TheologyArticleNav";
 import { RelatedRail } from "@/components/theology/RelatedRail";
+import { TheologySearch } from "@/components/theology/TheologySearch";
 import { buildRelated } from "@/lib/theology/relations";
 import { T } from "@/components/i18n/T";
 import { named } from "@/components/saints/SaintNames";
@@ -250,6 +251,8 @@ export default async function HeresyProfilePage({
           </p>
         )}
       </article>
+      {/* Search the library, above the tab bar on every Theology screen (1.8, round 3 r3-04). */}
+      <TheologySearch />
     </section>
   );
 }

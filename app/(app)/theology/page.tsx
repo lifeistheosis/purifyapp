@@ -1,30 +1,23 @@
 import Link from "next/link";
 
-import {
-  TheologyFilter,
-  type StudyItem,
-} from "@/components/theology/TheologyFilter";
-import {
-  THEOLOGY_TOPICS,
-  THEOLOGY_GROUP_ORDER,
-  THEOLOGY_GROUP_LABEL,
-  topicsByGroup,
-  type TheologyGroup,
-} from "@/lib/theology/topics";
-import { loadTopicBody, saintsCitedIn } from "@/lib/theology/load";
-import { buildRelated, type RelatedLink } from "@/lib/theology/relations";
 import { APOLOGETICS_TOPICS } from "@/lib/apologetics/topics";
-import { loadApologeticsBody } from "@/lib/apologetics/load";
-import { HERESIES } from "@/lib/heresies/heresies";
-import { loadAllTopics } from "@/lib/topics/topics";
 import { COUNCILS } from "@/lib/councils/councils";
+import { TILE_PREVIEWS } from "@/lib/discover/tilePreviews.generated";
+import { HERESIES } from "@/lib/heresies/heresies";
 import { getSaint } from "@/lib/saints/saints";
-import { Cross } from "@/components/ui/icons/Cross";
+import { loadTopicBody, saintsCitedIn } from "@/lib/theology/load";
+import { THEOLOGY_TOPICS, getTopicMeta } from "@/lib/theology/topics";
+import { loadAllTopics } from "@/lib/topics/topics";
 import { Book } from "@/components/ui/icons/Book";
+import { ChevronRight } from "@/components/ui/icons/ChevronRight";
+import { Cross } from "@/components/ui/icons/Cross";
 import { Scroll } from "@/components/ui/icons/Scroll";
 import { Shield } from "@/components/ui/icons/Shield";
+import { GalleryBand } from "@/components/ui/GalleryBand";
 import { T } from "@/components/i18n/T";
 import { FaithMap } from "@/components/theology/FaithMap";
+import { FathersShelf } from "@/components/theology/FathersShelf";
+import { TheologySearch } from "@/components/theology/TheologySearch";
 
 export const metadata = {
   title: "Theology",
@@ -34,62 +27,49 @@ export const metadata = {
 
 export const revalidate = 3600;
 
-type Section = StudyItem["section"];
-
+/**
+ * The four ways into the study library, as tiles: each mode's name, the kind
+ * of writing it holds and how many (round 3 r3-04, part 3, C). The names
+ * and kinds are the app's own, from the catalogs.
+ */
 const MODES = [
-  {
-    label: "Doctrine",
-    kicker: "Treatise",
-    href: "/theology/doctrine",
-    blurb:
-      "Long-form dogmatic studies, traced through Scripture, the Fathers, and the Councils.",
-    Icon: Cross,
-  },
-  {
-    label: "Topics",
-    kicker: "Reference",
-    href: "/topics",
-    blurb: "Focused questions, answered plainly, each with the Fathers' own words.",
-    Icon: Book,
-  },
-  {
-    label: "Heresies",
-    kicker: "Dossier",
-    href: "/heresies",
-    blurb:
-      "The chief errors the Church condemned, what was claimed and why it was rejected.",
-    Icon: Scroll,
-  },
-  {
-    label: "Apologetics",
-    kicker: "Defense",
-    href: "/apologetics",
-    blurb: "Objections and replies, a reasoned answer to the questions an objector brings.",
-    Icon: Shield,
-  },
+  { key: "doctrine", label: "study.doctrine", kicker: "study.theology.kicker.doctrine", href: "/theology/doctrine", Icon: Cross },
+  { key: "topics", label: "discover.tile.topics", kicker: "study.theology.kicker.topics", href: "/topics", Icon: Book },
+  { key: "heresies", label: "discover.tile.heresies", kicker: "study.theology.kicker.heresies", href: "/heresies", Icon: Scroll },
+  { key: "apologetics", label: "discover.tile.apologetics", kicker: "study.theology.kicker.apologetics", href: "/apologetics", Icon: Shield },
 ] as const;
 
-// Flagship study + the question it settles, for the hero focal point.
+// The flagship study and the question it settles: Begin here.
 const FLAGSHIP = {
   slug: "filioque",
   question: "Does the Holy Spirit proceed from the Father alone?",
 };
-const FEATURED = ["filioque", "papacy", "the-theotokos"]; // doctrine slugs
 
-type Study = {
-  slug: string;
-  title: string;
-  href: string;
-  section: Section;
-  summary?: string;
-  date?: string;
-  group?: TheologyGroup;
-  council?: RelatedLink | null;
-  father?: RelatedLink | null;
-};
+const BEGIN_PICTURE = "/discover/tiles/theology.v2.webp";
+const HISTORY_PICTURE = "/discover/tiles/history.v2.webp";
 
+/**
+ * Theology (1.8). The head is the owner's pick of 2026-10-27 (round 12, A, "A
+ * gallery"): the name, then the subjects of the faith as bands that open
+ * where they stand (FaithMap). The foot is his pick of 2026-10-30 for round
+ * 3 r3-04, part 3, C (Homebase/boards/purify-master/variants/r3-04-theology):
+ * his note 24 of build 80 asked for everything from "One connected study of
+ * the Faith" down to be designed again, and for "Search the library" to stop
+ * being the very last thing.
+ *
+ * The foot as shelves: the library's line; Begin here as a band like the
+ * subjects above it; the four ways in as tiles with how many each holds;
+ * then the Ecumenical Councils by year. The Fathers the studies quote and
+ * Church History, which the foot had, are kept as shelves after them. The
+ * search is a pill floating above the tab bar on every Theology screen
+ * (TheologySearch), in reach of the thumb.
+ *
+ * Left out, as the design draws the foot: the search field and its scope
+ * pills (the pill's sheet has them as rows), Featured studies, Recently
+ * added, Doctrinal categories, and the closing line with Read the Doctrine.
+ */
 export default async function TheologyHubPage() {
-  const [topics, doctrine, apologetics] = await Promise.all([
+  const [topics, doctrine] = await Promise.all([
     loadAllTopics(),
     Promise.all(
       THEOLOGY_TOPICS.filter((t) => !t.planned).map(async (meta) => ({
@@ -97,131 +77,30 @@ export default async function TheologyHubPage() {
         body: await loadTopicBody(meta.slug),
       })),
     ),
-    Promise.all(
-      APOLOGETICS_TOPICS.filter((t) => !t.planned).map(async (meta) => ({
-        meta,
-        body: await loadApologeticsBody(meta.slug),
-      })),
-    ),
   ]);
 
-  const studies: Study[] = [
-    ...doctrine.map(({ meta, body }) => ({
-      slug: meta.slug,
-      title: meta.title,
-      href: `/theology/${meta.slug}`,
-      section: "Doctrine" as const,
-      summary: meta.summary,
-      date: body?.curatedOn,
-      group: meta.group,
-    })),
-    ...topics.map((t) => ({
-      slug: t.slug,
-      title: t.title,
-      href: `/topics/${t.slug}`,
-      section: "Topics" as const,
-      summary: t.definition,
-      date: t.curatedOn,
-    })),
-    ...HERESIES.map((h) => ({
-      slug: h.slug,
-      title: h.name,
-      href: `/heresies/${h.slug}`,
-      section: "Heresies" as const,
-      summary: h.shortBio,
-      date: h.curatedOn,
-    })),
-    ...apologetics.map(({ meta, body }) => ({
-      slug: meta.slug,
-      title: meta.title,
-      href: `/apologetics/${meta.slug}`,
-      section: "Apologetics" as const,
-      summary: meta.summary,
-      date: body?.curatedOn,
-    })),
-  ];
-
-  const counts: Record<Section, number> = {
-    Doctrine: doctrine.length,
-    Topics: topics.length,
-    Heresies: HERESIES.length,
-    Apologetics: apologetics.length,
-    Councils: 0,
-    Fathers: 0,
+  const counts: Record<(typeof MODES)[number]["key"], number> = {
+    doctrine: doctrine.length,
+    topics: topics.length,
+    heresies: HERESIES.length,
+    apologetics: APOLOGETICS_TOPICS.filter((t) => !t.planned).length,
   };
 
-  // Featured doctrine studies, enriched with a related council + Father.
-  function enrich(slug: string): Study | null {
-    const entry = doctrine.find((d) => d.meta.slug === slug);
-    if (!entry) return null;
-    const base = studies.find(
-      (s) => s.section === "Doctrine" && s.slug === slug,
-    )!;
-    let council: RelatedLink | null = null;
-    let father: RelatedLink | null = null;
-    if (entry.body) {
-      const groups = buildRelated("doctrine", slug, {
-        councils: (entry.body.councils ?? [])
-          .map((c) => c.councilSlug)
-          .filter((x): x is string => Boolean(x)),
-        saints: saintsCitedIn(entry.body).map((s) => s.saintSlug),
-      });
-      council = groups.councils[0] ?? null;
-      father = groups.saints[0] ?? null;
-    }
-    return { ...base, council, father };
-  }
-  const featured = FEATURED.map(enrich).filter(Boolean) as Study[];
-  const [primary, ...secondary] = featured;
+  const flagship = getTopicMeta(FLAGSHIP.slug);
 
-  const recent = studies
-    .filter((s) => s.date)
-    .sort((a, b) => (a.date! < b.date! ? 1 : a.date! > b.date! ? -1 : 0))
-    .slice(0, 6);
-  const newestDate = recent[0]?.date;
-
-  // Fathers cited across the doctrine studies, with their short role.
+  // The Fathers cited across the doctrine studies, in the order they are first quoted.
   const fatherSlugs: string[] = [];
-  const seen = new Set<string>();
   for (const { body } of doctrine) {
     if (!body) continue;
-    for (const s of saintsCitedIn(body))
-      if (!seen.has(s.saintSlug)) {
-        seen.add(s.saintSlug);
-        fatherSlugs.push(s.saintSlug);
-      }
+    for (const s of saintsCitedIn(body)) if (!fatherSlugs.includes(s.saintSlug)) fatherSlugs.push(s.saintSlug);
   }
   const fathers = fatherSlugs
     .map((slug) => getSaint(slug))
     .filter((s): s is NonNullable<typeof s> => Boolean(s))
-    .slice(0, 8);
+    .slice(0, 8)
+    .map((s) => ({ slug: s.slug, name: s.name, ...(s.iconUrl ? { iconUrl: s.iconUrl } : {}) }));
 
   const ecumenical = COUNCILS.filter((c) => c.kind !== "local").slice(0, 7);
-
-  // Search corpus: every mode plus councils + Fathers, so the chips reach all six.
-  const filterItems: StudyItem[] = [
-    ...studies.map(({ slug, title, href, section, summary }) => ({
-      slug,
-      title,
-      href,
-      section,
-      summary,
-    })),
-    ...ecumenical.map((c) => ({
-      slug: c.slug,
-      title: c.byname,
-      href: `/councils/${c.slug}`,
-      section: "Councils" as const,
-      summary: c.shortBio,
-    })),
-    ...fathers.map((s) => ({
-      slug: s.slug,
-      title: s.name,
-      href: `/saints/${s.slug}`,
-      section: "Fathers" as const,
-      summary: s.byname ?? s.epithet,
-    })),
-  ];
 
   return (
     <section className="bg-night px-5 md:px-8 pt-6 pb-10 md:py-14">
@@ -230,8 +109,7 @@ export default async function TheologyHubPage() {
             The owner's pick of 2026-10-27 (round 12, A, "A gallery"): the
             name, then the subjects as bands. On a phone the name is set at
             the size the mockup draws it, so the first screen is the gallery;
-            the computer keeps its display size. The lede and Begin here,
-            which stood between the two, open the study library below. */}
+            the computer keeps its display size. */}
         <header>
           <p className="font-sans text-caption font-semibold text-paper/45">
             <T k="study.theology.studyLibrary" />
@@ -244,340 +122,120 @@ export default async function TheologyHubPage() {
         {/* ── The faith, by subject (1.8), a gallery since round 12 ─────── */}
         <FaithMap className="mt-5 md:mt-8" />
 
-        {/* ── The study library: its four modes, and where to begin ─────── */}
-        <section className="mt-12 border-t border-paper/10 pt-10 md:mt-14 md:pt-12">
-          <p className="max-w-[60ch] font-serif text-lede text-paper/80 leading-[1.7]">
-            <T k="study.oneConnectedStudyOfThe" />
+        {/* ── The foot, as shelves (round 3 r3-04, part 3, C) ───────────── */}
+        <section aria-labelledby="theology-foot" className="mt-5 md:mt-12">
+          <h2 id="theology-foot" className="font-serif text-[22px] font-bold leading-[1.22] text-paper">
+            <T k="study.theology.footHead" />
+          </h2>
+          <p className="mt-2 max-w-[60ch] font-sans text-[13.5px] leading-[1.55] text-paper/60">
+            <T k="study.theology.footLine" />
           </p>
 
-          {/* Highlighted theological question, the focal point. */}
-          {primary ? (
-            <Link
-              href={primary.href}
-              className="group mt-8 flex items-center justify-between gap-5 rounded-xl border border-paper/25 bg-paper/[0.04] px-5 py-4 transition-colors hover:border-paper/45 hover:bg-paper/[0.07]"
-            >
-              <div>
-                <p className="font-sans text-caption font-semibold text-paper/75">
-                  <T k="study.theology.beginHere" />
-                </p>
-                <p className="mt-1.5 font-serif text-title-sm text-paper leading-snug">
-                  {FLAGSHIP.question}
-                </p>
-                <p className="mt-1 font-sans text-detail text-paper/55">
-                  {primary.title}
-                </p>
-              </div>
-              <span
-                aria-hidden
-                className="shrink-0 font-sans text-title-sm text-paper/60 transition-transform group-hover:translate-x-0.5 group-hover:text-paper"
-              >
-                →
-              </span>
-            </Link>
+          {/* Begin here, as a band like the subjects above it. */}
+          {flagship ? (
+            <div className="mt-3.5" data-theology-begin="">
+              <GalleryBand
+                href={`/theology/${FLAGSHIP.slug}`}
+                size="tall"
+                heading="h3"
+                picture={BEGIN_PICTURE}
+                focus="50% 35%"
+                preview={TILE_PREVIEWS[BEGIN_PICTURE]?.src}
+                // The band is Begin here, as drawn: its question fills it, so
+                // its name is said to a screen reader and not drawn.
+                title={
+                  <>
+                    <span className="sr-only">
+                      <T k="study.theology.beginHere" />:{" "}
+                    </span>
+                    {FLAGSHIP.question}
+                  </>
+                }
+                line={
+                  <>
+                    {flagship.title}
+                    {flagship.estimatedMinutes ? (
+                      <>
+                        {" · "}
+                        <T k="bible.minRead" replacements={{ minutes: flagship.estimatedMinutes }} />
+                      </>
+                    ) : null}
+                  </>
+                }
+              />
+            </div>
           ) : null}
 
-          <div className="mt-8 grid grid-cols-1 sm:grid-cols-2 gap-px overflow-hidden rounded-xl border border-paper/[0.1] bg-paper/[0.08]">
+          {/* The four ways in, as tiles, with how many each holds. */}
+          <ul className="mt-3.5 grid grid-cols-2 gap-2.5 md:grid-cols-4" data-theology-ways="">
             {MODES.map((m) => (
-              <Link
-                key={m.href}
-                href={m.href}
-                className="group flex flex-col bg-night p-5 md:p-6 transition-colors hover:bg-paper/[0.02]"
-              >
-                <div className="flex items-center justify-between">
-                  <span className="text-paper/55 transition-colors group-hover:text-paper">
+              <li key={m.key}>
+                <Link
+                  href={m.href}
+                  className="theology-tile press-card flex h-[86px] flex-col justify-between rounded-[18px] px-3.5 pb-3 pt-[13px]"
+                >
+                  <span className="theology-glyph text-paper">
                     <m.Icon size={22} />
                   </span>
-                  <span className="font-sans text-caption text-paper/35 tabular-nums">
-                    {m.kicker} · {counts[m.label]}
-                  </span>
-                </div>
-                <p className="mt-4 font-serif text-title-sm font-semibold text-paper transition-colors group-hover:text-paper">
-                  {m.label}
-                </p>
-                <p className="mt-1.5 font-serif text-ui text-paper/65 leading-[1.6]">
-                  {m.blurb}
-                </p>
-                <span
-                  aria-hidden
-                  className="mt-4 font-sans text-detail text-paper/30 transition-colors group-hover:text-paper"
-                >
-                  <T k="study.enter" />
-                </span>
-              </Link>
-            ))}
-          </div>
-        </section>
-
-        {/* ── Search ────────────────────────────────────────────────────── */}
-        <section className="mt-12">
-          <SectionHead title={<T k="study.theology.searchLibrary" />} />
-          <TheologyFilter items={filterItems} />
-        </section>
-
-        {/* ── Orthodox History cross-link ───────────────────────────────── */}
-        <section className="mt-14">
-          <Link
-            href="/history"
-            className="group block rounded-xl border border-paper/[0.1] bg-paper/[0.02] px-6 py-6 transition-colors hover:border-paper/25"
-          >
-            <p className="font-sans text-caption font-semibold text-paper/80">
-              <T k="study.theology.newTimeline" />
-            </p>
-            <p className="mt-2 font-serif text-title-sm md:text-title text-paper leading-tight transition-colors group-hover:text-paper">
-              <T k="study.theology.exploreHistory" />
-            </p>
-            <p className="mt-2 max-w-[560px] font-serif italic text-ui text-paper/65 leading-[1.6]">
-              <T k="study.everyDoctrineHereWasConfessed" />
-            </p>
-          </Link>
-        </section>
-
-        {/* ── Featured studies ──────────────────────────────────────────── */}
-        {featured.length > 0 ? (
-          <section className="mt-14">
-            <SectionHead title={<T k="study.theology.featured" />} />
-            <div className="grid grid-cols-1 lg:grid-cols-[1.5fr_1fr] gap-6">
-              {primary ? <FeaturedPrimary study={primary} /> : null}
-              <div className="flex flex-col divide-y divide-paper/[0.08] rounded-xl border border-paper/[0.1] bg-paper/[0.02]">
-                {secondary.map((s) => (
-                  <FeaturedSecondary key={s.href} study={s} />
-                ))}
-              </div>
-            </div>
-          </section>
-        ) : null}
-
-        {/* ── Recently added ────────────────────────────────────────────── */}
-        <section className="mt-14">
-          <SectionHead title={<T k="study.theology.recentlyAdded" />} />
-          <ul className="divide-y divide-paper/[0.07] border-t border-paper/[0.07]">
-            {recent.map((s) => (
-              <li key={s.href}>
-                <Link
-                  href={s.href}
-                  className="group flex items-baseline gap-4 py-3.5"
-                >
-                  <span className="shrink-0 w-24 pt-0.5 font-sans text-caption text-paper/40">
-                    {s.section}
-                  </span>
-                  <span className="min-w-0 flex-1">
-                    <span className="flex items-center gap-2">
-                      <span className="font-serif text-ui font-semibold text-paper transition-colors group-hover:text-paper">
-                        {s.title}
-                      </span>
-                      {s.date && s.date === newestDate ? (
-                        <span className="shrink-0 rounded-full bg-paper/15 px-2 py-0.5 font-sans text-[0.625rem] font-semibold text-paper/90">
-                          <T k="calendar.styleNew" />
-                        </span>
-                      ) : null}
+                  <span className="min-w-0">
+                    <span className="block truncate font-serif text-[16.5px] font-bold leading-tight text-paper">
+                      <T k={m.label} />
                     </span>
-                    {s.summary ? (
-                      <span className="mt-0.5 block font-serif text-detail text-paper/55 leading-[1.5] line-clamp-1">
-                        {s.summary}
-                      </span>
-                    ) : null}
+                    <span className="block truncate font-sans text-[11.5px] text-paper/50">
+                      <T k={m.kicker} /> · <span className="tabular-nums">{counts[m.key]}</span>
+                    </span>
                   </span>
                 </Link>
               </li>
             ))}
           </ul>
-        </section>
 
-        {/* ── Doctrinal categories ──────────────────────────────────────── */}
-        <section className="mt-14">
-          <SectionHead title={<T k="study.theology.doctrinalCategories" />} />
-          <ul className="grid grid-cols-1 sm:grid-cols-2 gap-x-10 gap-y-px">
-            {THEOLOGY_GROUP_ORDER.map((g) => {
-              const label = THEOLOGY_GROUP_LABEL[g];
-              const n = topicsByGroup(g).filter((t) => !t.planned).length;
-              return (
-                <li key={g}>
+          {/* The Ecumenical Councils, by year. */}
+          <section className="mt-5" data-theology-councils="">
+            <Link href="/councils" className="tap-press flex items-baseline justify-between gap-3">
+              <h3 className="font-serif text-[17px] font-bold leading-tight text-paper">
+                <T k="study.theology.ecumenicalCouncils" />
+              </h3>
+              <span className="flex shrink-0 items-center gap-1 font-sans text-[12.5px] tabular-nums text-paper/50">
+                {ecumenical.length}
+                <ChevronRight size={13} className="rtl:-scale-x-100" />
+              </span>
+            </Link>
+            <ul className="no-scrollbar -mx-5 mt-2.5 flex gap-2.5 overflow-x-auto px-5 pb-1 md:mx-0 md:px-0">
+              {ecumenical.map((c) => (
+                <li key={c.slug} className="shrink-0">
                   <Link
-                    href="/theology/doctrine"
-                    className="group block border-b border-paper/[0.07] py-3"
+                    href={`/councils/${c.slug}`}
+                    className="theology-tile press-card block h-full w-[132px] rounded-[16px] px-3 pb-3 pt-[11px]"
                   >
-                    <span className="flex items-baseline justify-between gap-3">
-                      <span className="font-serif text-ui font-semibold text-paper transition-colors group-hover:text-paper">
-                        {label.en}
-                      </span>
-                      {n > 0 ? (
-                        <span className="shrink-0 font-sans text-caption text-paper/35 tabular-nums">
-                          {n}
-                        </span>
-                      ) : null}
-                    </span>
-                    <span className="mt-0.5 block font-serif text-detail text-paper/50 leading-[1.5]">
-                      {label.subtitle}
-                    </span>
-                  </Link>
-                </li>
-              );
-            })}
-          </ul>
-        </section>
-
-        {/* ── Ecumenical Councils ───────────────────────────────────────── */}
-        <section className="mt-14">
-          <SectionHead
-            title={<T k="study.theology.ecumenicalCouncils" />}
-            seeAll={{ href: "/councils", text: "All councils" }}
-          />
-          <ul className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-            {ecumenical.map((c) => (
-              <li key={c.slug}>
-                <Link
-                  href={`/councils/${c.slug}`}
-                  className="group block h-full rounded-lg border border-paper/[0.1] bg-paper/[0.02] px-4 py-3.5 transition-colors hover:border-paper/35 hover:bg-paper/[0.04]"
-                >
-                  <div className="flex items-baseline justify-between gap-3">
-                    <span className="font-serif text-ui font-semibold text-paper transition-colors group-hover:text-paper">
-                      {c.byname}
-                    </span>
-                    <span className="shrink-0 font-sans text-caption text-paper/40 tabular-nums">
-                      {c.year}
-                    </span>
-                  </div>
-                  <p className="mt-0.5 font-sans text-caption text-paper/45">
-                    {c.location}
-                  </p>
-                  <p className="mt-2 font-serif text-detail text-paper/60 leading-[1.5] line-clamp-2">
-                    {c.shortBio}
-                  </p>
-                </Link>
-              </li>
-            ))}
-          </ul>
-        </section>
-
-        {/* ── Fathers in these studies ──────────────────────────────────── */}
-        {fathers.length > 0 ? (
-          <section className="mt-14">
-            <SectionHead
-              title={<T k="study.theology.fathersInStudies" />}
-              seeAll={{ href: "/saints", text: "All saints" }}
-            />
-            <ul className="grid grid-cols-1 sm:grid-cols-2 gap-x-8 gap-y-px">
-              {fathers.map((s) => (
-                <li key={s.slug}>
-                  <Link
-                    href={`/saints/${s.slug}`}
-                    className="group flex items-baseline justify-between gap-3 border-b border-paper/[0.07] py-3"
-                  >
-                    <span className="font-serif text-ui text-paper/90 transition-colors group-hover:text-paper">
-                      {s.name}
-                    </span>
-                    {s.byname ? (
-                      <span className="shrink-0 font-serif italic text-detail text-paper/45">
-                        {s.byname}
-                      </span>
-                    ) : null}
+                    <span className="block font-serif text-[20px] font-bold tabular-nums leading-tight text-paper">{c.year}</span>
+                    <span className="mt-[3px] block font-sans text-[11.5px] leading-[1.35] text-paper/55">{c.byname}</span>
                   </Link>
                 </li>
               ))}
             </ul>
           </section>
-        ) : null}
 
-        {/* ── Closing bridge ────────────────────────────────────────────── */}
-        <section className="mt-16 border-t border-paper/10 pt-10 text-center">
-          <p className="font-serif italic text-ui text-paper/55">
-            <T k="study.theology.beginWhereChurchBegins" />
-          </p>
-          <Link
-            href="/theology/doctrine"
-            className="group mt-3 inline-flex items-center gap-2 font-serif text-title-sm font-semibold text-paper transition-colors hover:text-paper"
-          >
-            <T k="study.readTheDoctrine" />
-            <span
-              aria-hidden
-              className="text-paper/70 transition-transform group-hover:translate-x-0.5"
-            >
-              →
-            </span>
-          </Link>
+          {/* Kept from the old foot: the Fathers the studies quote, now by face. */}
+          <FathersShelf fathers={fathers} />
+
+          {/* Kept from the old foot: Church History, as a band. */}
+          <div className="mt-7">
+            <GalleryBand
+              href="/history"
+              heading="h3"
+              picture={HISTORY_PICTURE}
+              focus="50% 40%"
+              preview={TILE_PREVIEWS[HISTORY_PICTURE]?.src}
+              title={<T k="study.theology.exploreHistory" />}
+              line={<T k="study.everyDoctrineHereWasConfessed" />}
+            />
+          </div>
         </section>
       </div>
+
+      {/* Search the library: a pill above the tab bar, on every Theology screen. */}
+      <TheologySearch />
     </section>
-  );
-}
-
-function SectionHead({
-  title,
-  seeAll,
-}: {
-  title: React.ReactNode;
-  seeAll?: { href: string; text: React.ReactNode };
-}) {
-  return (
-    <div className="mb-5 flex items-baseline justify-between gap-4 border-b border-paper/[0.08] pb-2.5">
-      <h2 className="font-sans text-caption font-semibold text-paper/45">
-        {title}
-      </h2>
-      {seeAll ? (
-        <Link
-          href={seeAll.href}
-          className="font-sans text-caption text-paper/45 hover:text-paper underline decoration-paper/20 underline-offset-4"
-        >
-          {seeAll.text}
-        </Link>
-      ) : null}
-    </div>
-  );
-}
-
-function FeaturedPrimary({ study }: { study: Study }) {
-  const category = study.group
-    ? THEOLOGY_GROUP_LABEL[study.group].en
-    : "Doctrine";
-  return (
-    <Link
-      href={study.href}
-      className="group flex flex-col rounded-xl border border-paper/[0.12] bg-paper/[0.03] p-6 md:p-7 transition-colors hover:border-paper/35"
-    >
-      <p className="font-sans text-caption font-semibold text-paper/75">
-        {category}
-      </p>
-      <p className="mt-3 font-serif text-title font-semibold text-paper leading-tight transition-colors group-hover:text-paper">
-        {study.title}
-      </p>
-      {study.summary ? (
-        <p className="mt-3 font-serif text-ui text-paper/70 leading-[1.7] line-clamp-4">
-          {study.summary}
-        </p>
-      ) : null}
-      {study.council || study.father ? (
-        <p className="mt-5 flex flex-wrap items-center gap-x-2 gap-y-1 font-sans text-caption text-paper/45">
-          {study.council ? <span>{study.council.label}</span> : null}
-          {study.council && study.father ? (
-            <span className="text-paper/20">·</span>
-          ) : null}
-          {study.father ? <span>{study.father.label}</span> : null}
-        </p>
-      ) : null}
-    </Link>
-  );
-}
-
-function FeaturedSecondary({ study }: { study: Study }) {
-  const category = study.group
-    ? THEOLOGY_GROUP_LABEL[study.group].en
-    : "Doctrine";
-  return (
-    <Link
-      href={study.href}
-      className="group block p-5 transition-colors hover:bg-paper/[0.02]"
-    >
-      <p className="font-sans text-caption font-semibold text-paper/40">
-        {category}
-      </p>
-      <p className="mt-2 font-serif text-lede font-semibold text-paper leading-snug transition-colors group-hover:text-paper">
-        {study.title}
-      </p>
-      {study.summary ? (
-        <p className="mt-1.5 font-serif text-detail text-paper/55 leading-[1.55] line-clamp-2">
-          {study.summary}
-        </p>
-      ) : null}
-    </Link>
   );
 }

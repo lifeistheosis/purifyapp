@@ -9,6 +9,7 @@ import { CitationCard } from "@/components/citations/CitationCard";
 import { RecordRead } from "@/components/reading/RecordRead";
 import { TheologyArticleNav } from "@/components/theology/TheologyArticleNav";
 import { RelatedRail } from "@/components/theology/RelatedRail";
+import { TheologySearch } from "@/components/theology/TheologySearch";
 import { buildRelated } from "@/lib/theology/relations";
 import { T } from "@/components/i18n/T";
 
@@ -116,6 +117,8 @@ export default async function TopicPage({ params }: { params: Params }) {
           </p>
         ) : null}
       </article>
+      {/* Search the library, above the tab bar on every Theology screen (1.8, round 3 r3-04). */}
+      <TheologySearch />
     </section>
   );
 }
