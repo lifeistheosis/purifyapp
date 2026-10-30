@@ -41,8 +41,21 @@ describe("admin pages (1.8 admin silent patch)", () => {
     expect(ops.length).toBeLessThanOrEqual(14);
   });
 
-  it("opens on Today", () => {
+  it("opens on Home, the page that was Today, under its old id", () => {
+    // The owner's pick A (2026-10-28). The id stays so #tab=today still lands.
     expect(ADMIN_PAGES[0].id).toBe("today");
+    expect(ADMIN_PAGES[0].label).toBe("Home");
+    expect(ADMIN_PAGES[0].sentence).toBe("What needs you, the money and the visitors, in one look.");
+    expect(ADMIN_PAGES[0].views.map((v) => v.tab)).toEqual(["today", "goals", "calendar"]);
+  });
+
+  it("starts the rail as he picked it: Daily, When needed, and a quiet Tools line", () => {
+    const ops = ADMIN_PAGE_GROUPS.filter((g) => g.mode === "ops");
+    expect(ops.map((g) => [g.group, g.pages.map((p) => p.label), Boolean(g.quiet)])).toEqual([
+      ["Daily", ["Home", "Traffic", "Money", "Users"], false],
+      ["When needed", ["Orders", "Messages", "Catalogue"], false],
+      ["Tools", ["Releases", "Content", "Community", "EIKON Box", "Services", "Audit log"], true],
+    ]);
   });
 
   it("writes one plain sentence per page, without an em dash", () => {
@@ -55,5 +68,12 @@ describe("admin pages (1.8 admin silent patch)", () => {
   it("labels a view by its page when the page holds more than one", () => {
     expect(viewLabel("fulfillment")).toBe("Orders: Fulfillment");
     expect(viewLabel("messages")).toBe("Messages");
+    expect(viewLabel("goals")).toBe("Home: Goals");
+  });
+
+  it("does not say a page's name twice for its first view", () => {
+    expect(viewLabel("today")).toBe("Home");
+    expect(viewLabel("traffic")).toBe("Traffic");
+    expect(viewLabel("overview")).toBe("Money: Overview");
   });
 });

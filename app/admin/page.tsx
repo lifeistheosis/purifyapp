@@ -1,5 +1,7 @@
+import { cookies } from "next/headers";
 import { notFound } from "next/navigation";
 import { getAdminUser } from "@/lib/admin/access";
+import { RAIL_COOKIE } from "@/lib/admin/rail";
 import { getOwnerUser } from "@/lib/owner/access";
 import { AdminShell } from "@/components/admin/AdminShell";
 // admin-theme.css is imported by app/admin/layout.tsx, which also sets the
@@ -25,9 +27,15 @@ export default async function AdminPage() {
   // the fetch-then-import() in components/admin/OwnerSection.tsx.
   const owner = await getOwnerUser();
 
+  // The rail's order as this browser last worked it out from the usage log
+  // (lib/admin/rail.ts). Read here so the rail is drawn in that order from
+  // the first paint instead of moving once the page is up. Page ids only;
+  // the shell checks every one and falls back to the picked rail.
+  const savedRail = (await cookies()).get(RAIL_COOKIE)?.value ?? null;
+
   return (
     // The shell owns its own ground and width now: the rail has to reach the
     // full height of the viewport, which a padded max-w wrapper prevented.
-    <AdminShell adminEmail={admin.email ?? "admin"} isOwner={Boolean(owner)} />
+    <AdminShell adminEmail={admin.email ?? "admin"} isOwner={Boolean(owner)} savedRail={savedRail} />
   );
 }

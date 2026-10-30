@@ -3,7 +3,7 @@
 import { useState, type ReactNode } from "react";
 
 import type { OnboardingAdminPayload } from "@/app/api/admin/onboarding/route";
-import { BACKGROUND_WORDS, STEP_WORDS } from "@/lib/admin/onboardingSummary";
+import { BACKGROUND_WORDS, INTENT_WORDS, STEP_WORDS } from "@/lib/admin/onboardingSummary";
 import { BACKGROUNDS, INTENTS } from "@/lib/onboarding/space";
 
 import { useAdminFetch } from "../adminFetch";
@@ -33,16 +33,25 @@ const BACKGROUND_LABELS: Record<string, string> = {
   catholic: "Catholic",
   protestant: "Protestant",
   "other-faith": "Another faith",
-  none: "No faith",
+  // The question's own words for it (onboard.background.none).
+  none: "Just curious",
   "prefer-not": "Prefer not to say",
 };
 
-// The reader's own words for each focus (onboard.intent.* in the messages).
+// The reader's own words for each answer to "What are you looking for?"
+// (onboard.intent.* in the messages), eleven from 1.8.
 const INTENT_LABELS: Record<string, string> = {
-  prayer: "A rule of prayer",
-  study: "Study",
-  quiet: "Daily quiet",
+  saints: "The saints' lives",
+  fathers: "The Fathers' writings",
+  gospels: "The Gospels",
+  councils: "The councils",
+  history: "Church history",
+  beliefs: "What the Orthodox believe",
   liturgy: "The Liturgy",
+  feasts: "Fasts and feasts",
+  prayer: "A rule of prayer",
+  quiet: "Daily quiet",
+  study: "Study",
 };
 
 function Quiet({ children }: { children: ReactNode }) {
@@ -99,7 +108,9 @@ export function OnboardingTab() {
   const weekTop = top(week.byBackground);
   const door = top(data.finishedBy.door);
   const who = barRows(background, BACKGROUNDS, BACKGROUND_LABELS);
-  const focus = barRows(data.answers.intent, INTENTS, INTENT_LABELS);
+  // Every pick, from version 4 of the questions (the first pick alone before it).
+  const looking = barRows(data.answers.intent, INTENTS, INTENT_LABELS);
+  const firstPick = top(data.picks.first);
 
   return (
     <div className="space-y-6">
@@ -131,8 +142,15 @@ export function OnboardingTab() {
         <Card title="Who is coming">
           {who.length ? <BarChart rows={who} /> : <Quiet>Fills once the app asks where readers come from.</Quiet>}
         </Card>
-        <Card title="What they focus on">
-          {focus.length ? <BarChart rows={focus} /> : <Quiet>No answers yet.</Quiet>}
+        <Card title="What they look for">
+          {looking.length ? <BarChart rows={looking} /> : <Quiet>No answers yet.</Quiet>}
+          {firstPick ? (
+            <div className="mt-3 border-t pt-3" style={{ borderColor: "var(--adm-line)" }}>
+              <p className="font-sans text-[13px]" style={{ color: "var(--adm-ink-2)" }}>
+                Every pick counted. Picked first most often: {INTENT_WORDS[firstPick[0]] ?? firstPick[0]} ({firstPick[1]}).
+              </p>
+            </div>
+          ) : null}
         </Card>
         <Card title="Finished, week by week">
           {data.weeks.length ? (
