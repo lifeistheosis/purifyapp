@@ -23,18 +23,25 @@ export function DiscordPreviewCard({
   status,
   example,
   on,
+  origin = "",
 }: {
   request: PresenceRequest | null;
   status: PresenceStatus | null;
   /** The request is an example (Reading, away from a text). */
   example?: boolean;
   on: boolean;
+  /**
+   * Where the pictures are drawn: this site (the default, the desktop app
+   * and the website), or the website's address from the apps, which have no
+   * server of their own (the Plus page's preview, components/billing/plusTry).
+   */
+  origin?: string;
 }) {
   const { t } = useTranslate();
 
   const art = request?.art ? artQuery(request.art) : "";
-  const large = art ? `/api/discord/art?${art}` : "/icon-192.png";
-  const small = request?.badge ? `/api/discord/art?badge=${request.badge}` : art ? "/icon-192.png" : null;
+  const large = art ? `${origin}/api/discord/art?${art}` : "/icon-192.png";
+  const small = request?.badge ? `${origin}/api/discord/art?badge=${request.badge}` : art ? "/icon-192.png" : null;
 
   const badge = !on || !status
     ? null

@@ -202,6 +202,11 @@ export function stopAmbience(): void {
   void playAmbience(null);
 }
 
+/** The sound playing now, read once (the Plus preview gives it back when its minute ends). */
+export function getAmbiencePlaying(): AmbienceId | null {
+  return current;
+}
+
 /** Go quiet slowly: the sleep timer running out (lib/player/sleep.ts). */
 export function fadeOutAmbience(seconds: number): void {
   if (!voice && !loading) return;

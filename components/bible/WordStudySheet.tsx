@@ -71,6 +71,34 @@ export function WordStudySheet({
   startIn: "ot" | "nt";
   onClose: () => void;
 }) {
+  const { t } = useTranslate();
+  return (
+    <Sheet open={strongs !== null} onClose={onClose} title={t("bible.wordStudyTitle")} desktop bodyClassName="px-5 pb-6 pt-1">
+      <WordStudyBody strongs={strongs} lemma={lemma} startIn={startIn} onLeave={onClose} />
+    </Sheet>
+  );
+}
+
+/**
+ * The study itself, the sheet's body: the word, its dictionary entry, the
+ * two testaments with how often it stands in each, and its verses. Also what
+ * the Plus page's preview of the word study shows (components/billing/
+ * plusTry/TryWordStudy.tsx), so the preview is the study, not a picture of it.
+ */
+export function WordStudyBody({
+  strongs,
+  lemma,
+  startIn,
+  onLeave,
+}: {
+  /** The Strong's number to study; null keeps what is shown (a sheet closing). */
+  strongs: string | null;
+  lemma?: string | null;
+  /** Which testament to open on. */
+  startIn: "ot" | "nt";
+  /** Called as a verse's link is followed (the sheet closes). */
+  onLeave?: () => void;
+}) {
   const { t, tn } = useTranslate();
   // Mounted afresh for each word (the caller keys it), so it opens in the
   // testament being read with nothing left over from the last word.
@@ -124,7 +152,7 @@ export function WordStudySheet({
 
   const title = answer?.lemma ?? lemma ?? "";
   return (
-    <Sheet open={strongs !== null} onClose={onClose} title={t("bible.wordStudyTitle")} desktop bodyClassName="px-5 pb-6 pt-1">
+    <>
       <p lang="grc" style={GREEK} className="text-title text-paper">
         {title}
       </p>
@@ -163,7 +191,7 @@ export function WordStudySheet({
       <ol className="mt-4 divide-y divide-paper/10">
         {items.map((it) => (
           <li key={it.ref}>
-            <Link href={it.href} onClick={onClose} className="group block py-3.5">
+            <Link href={it.href} onClick={onLeave} className="group block py-3.5">
               <p className="font-sans text-detail font-semibold text-premium-ink group-hover:text-premium-bright">
                 {t(`bible.books.${it.book}`)} {it.chapter}:{it.verse}
               </p>
@@ -194,6 +222,6 @@ export function WordStudySheet({
         </button>
       ) : null}
       <p className="mt-5 font-sans text-caption text-paper/45">{t("bible.wordStudyCredit")}</p>
-    </Sheet>
+    </>
   );
 }

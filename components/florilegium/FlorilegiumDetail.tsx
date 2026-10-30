@@ -130,7 +130,11 @@ export function FlorilegiumDetail({ id }: { id: string }) {
   );
 }
 
-function ItemCard({
+/**
+ * One gathered line as its collection shows it. Also what the Plus page's
+ * preview of the Florilegium draws (components/billing/plusTry/TryFlorilegium.tsx).
+ */
+export function ItemCard({
   item,
   onRemove,
   onNote,
