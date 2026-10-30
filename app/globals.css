@@ -322,6 +322,21 @@ html.is-native.has-now-playing {
  --now-playing-h: 56px;
 }
 
+/* The mini player draws in (1.8, the owner's pick B of r3-05, "the small
+   pill"): on a scroll down the card draws in to a pill over the tabs, 40px
+   tall, and comes back on a scroll up and at the top of every page
+   (components/prayers/NowPlayingBar.tsx, lib/ui/scrollAway.ts). The room
+   follows it, so no page leaves anything under it, full or drawn in: the
+   pill, and on the web its own 6px pad, as above. At the very end of a page
+   the pill keeps the card's room instead, since giving 16px back there would
+   move the page under the reader's eyes. */
+html.has-now-playing.now-playing-drawn {
+ --now-playing-h: 46px;
+}
+html.is-native.has-now-playing.now-playing-drawn {
+ --now-playing-h: 40px;
+}
+
 /* The same for today's readings bar (components/bible/ReadingsFlowBar.tsx,
    1.7), which sits over the mini player: its card, about 64px, and its own
    pad under it, 6px on a phone and 17px on a wide screen. Every piece that
@@ -403,6 +418,67 @@ html.is-native .now-playing-lift {
  bottom: calc(var(--inset-bottom) + var(--tab-bar-h));
  padding-bottom: 0;
 }
+
+/* The card and its pill are one surface. Drawing in, it narrows to the
+   pill's own width (measured into --mini-player-pill-w), lowers to its
+   height and rounds to its ends, while the card's face fades out and the
+   pill's fades in after it; coming back, the other way. A face not shown
+   is hidden once it has faded, so neither a tap nor a key reaches it.
+   Solid, with no blur, for the reason the component gives; the sheen is
+   the palette's own (--panel-sheen), so Parchment and True black keep
+   theirs. */
+.mini-player {
+ width: 100%;
+ height: 3.5rem;
+ border-radius: 14px;
+ background-image: linear-gradient(to bottom, rgb(var(--panel-sheen) / 0.035), transparent 72%);
+ transition:
+  width var(--duration-base) var(--ease-house),
+  height var(--duration-base) var(--ease-house),
+  border-radius var(--duration-base) var(--ease-house);
+}
+[data-mini-player][data-drawn] .mini-player {
+ width: var(--mini-player-pill-w, 9rem);
+ height: 2.5rem;
+ border-radius: 1.25rem;
+}
+.mini-player-card,
+[data-mini-player][data-drawn] .mini-player-pill {
+ opacity: 1;
+ visibility: visible;
+ pointer-events: auto;
+ transition:
+  opacity var(--duration-fast) var(--ease-house) 120ms,
+  visibility 0s;
+}
+.mini-player-pill,
+[data-mini-player][data-drawn] .mini-player-card {
+ opacity: 0;
+ visibility: hidden;
+ pointer-events: none;
+ transition:
+  opacity var(--duration-fast) var(--ease-house),
+  visibility 0s linear var(--duration-fast);
+}
+:where([data-motion="reduce"]) .mini-player,
+:where([data-motion="reduce"]) .mini-player-card,
+:where([data-motion="reduce"]) .mini-player-pill,
+:where([data-motion="reduce"]) [data-mini-player][data-drawn] .mini-player-card,
+:where([data-motion="reduce"]) [data-mini-player][data-drawn] .mini-player-pill {
+ transition: none;
+}
+
+/* The cover's ring, lit while it plays: white with a soft white glow (the
+   owner, 2026-10-28: the accent is a glowing white). On Parchment, where
+   white cannot glow, it is the plain ink. On the svg, not on the arc: a
+   filter on an svg's own shape is not drawn by every WebView. */
+.mini-player-ring-lit {
+ filter: drop-shadow(0 0 3px rgb(255 255 255 / 0.95)) drop-shadow(0 0 7px rgb(255 255 255 / 0.45));
+}
+html[data-reading-mode="parchment"] .mini-player-ring-lit {
+ filter: none;
+}
+
 html.is-native .safe-pt {
  padding-top: var(--inset-top);
 }
