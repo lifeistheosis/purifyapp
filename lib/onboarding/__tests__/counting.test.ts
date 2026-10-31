@@ -85,9 +85,17 @@ describe("the onboarding's counts", () => {
     ]);
   });
 
-  it("says which version of the questions a count answers: the fourth, from 1.8", () => {
-    // "Where are you coming from?" asked, eleven answers, every pick counted.
-    expect(COUNT_VERSION).toBe(4);
+  it("says which version of the questions a count answers: the fifth, from 1.8.x", () => {
+    // 4: "Where are you coming from?" asked, eleven answers, every pick counted.
+    // 5: the practicing asked "Are you a priest, a deacon, or a layman?".
+    expect(COUNT_VERSION).toBe(5);
+  });
+
+  it("counts the clergy's question as a screen reached, never by its answer, and none of a priest's own screens", () => {
+    expect(ONBOARDING_STEPS).toContain("role");
+    expect(ONBOARDING_STEPS.indexOf("role")).toBe(ONBOARDING_STEPS.indexOf("level") + 1);
+    for (const step of ["clergyWhere", "clergyJurisdiction", "clergyParish"]) expect(ONBOARDING_STEPS as readonly string[]).not.toContain(step);
+    expect(COUNT_QUESTIONS as readonly string[]).not.toContain("role");
   });
 });
 
@@ -161,6 +169,16 @@ describe("the server takes only what is on the lists", () => {
     expect(
       trackEventSchema.safeParse({ name: "onboarding_answer", props: { ...props, question: "level", answer: "catholic" } }).success,
     ).toBe(false);
+  });
+
+  it("takes the clergy's question as a screen and a skip, and never its answer or a priest's own screens", () => {
+    expect(trackEventSchema.safeParse({ name: "onboarding_step", props: { ...props, step: "role" } }).success).toBe(true);
+    expect(trackEventSchema.safeParse({ name: "onboarding_skipped", props: { ...props, at: "role" } }).success).toBe(true);
+    expect(trackEventSchema.safeParse({ name: "onboarding_answer", props: { ...props, question: "role", answer: "priest" } }).success).toBe(false);
+    for (const step of ["clergyWhere", "clergyJurisdiction", "clergyParish"]) {
+      expect(trackEventSchema.safeParse({ name: "onboarding_step", props: { ...props, step } }).success, step).toBe(false);
+      expect(trackEventSchema.safeParse({ name: "onboarding_skipped", props: { ...props, at: step } }).success, step).toBe(false);
+    }
   });
 
   it("takes a place only for a pick, and only a place there can be", () => {

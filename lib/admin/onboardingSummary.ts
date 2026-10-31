@@ -105,6 +105,7 @@ export const STEP_WORDS: Record<string, string> = {
   account: "the account screen",
   background: "where they come from",
   level: "how familiar they are",
+  role: "priest, deacon or layman",
   rule: "calendar and fast",
   intent: "what to focus on",
   reminders: "reminders",

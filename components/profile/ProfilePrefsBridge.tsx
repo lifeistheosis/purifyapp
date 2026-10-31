@@ -21,10 +21,16 @@
 // Collection progress (lib/catechism/progressSync.ts) rides the same two
 // moments, for the same reason: the reader who finished a collection signed
 // out and then signs in is the reader whose set must reach the account.
+//
+// So does a priest's or deacon's request for the clergy seal (1.8.x): answered
+// in the welcome questions without an account, it waits on the device and goes
+// to the team at the first sign-in (lib/onboarding/clergyRequest.ts). It does
+// nothing when no request is waiting.
 
 import { useEffect } from "react";
 
 import { syncCollectionProgressOnSignIn } from "@/lib/catechism/progressSync";
+import { flushClergyRequest } from "@/lib/onboarding/clergyRequest";
 import { syncProfilePrefsOnSignIn } from "@/lib/profile/preferences";
 import { createClient } from "@/lib/supabase/client";
 
@@ -42,6 +48,7 @@ export function ProfilePrefsBridge() {
         if (user && !cancelled) {
           await syncProfilePrefsOnSignIn();
           await syncCollectionProgressOnSignIn();
+          await flushClergyRequest();
         }
       } catch {
         /* ignore */
@@ -58,6 +65,9 @@ export function ProfilePrefsBridge() {
       if (event === "SIGNED_IN" || event === "INITIAL_SESSION") {
         void syncProfilePrefsOnSignIn();
         void syncCollectionProgressOnSignIn();
+        // On a timer: it asks for the session, and the callback runs inside
+        // the auth lock (lib/profile/myPicture.ts says why that must wait).
+        window.setTimeout(() => void flushClergyRequest(), 0);
       }
     });
 

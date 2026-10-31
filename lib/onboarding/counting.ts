@@ -24,8 +24,13 @@ import { BACKGROUNDS, FASTING_RULES, INTENTS, LEVELS, type Background, type Inte
  *   4  1.8: "Where are you coming from?" is asked, first of the questions;
  *      "What are you looking for?" offers eleven answers, and every pick is
  *      counted, each with its place in the order tapped (picksToCount).
+ *   5  1.8.x: the practicing are asked "Are you a priest, a deacon, or a
+ *      layman?" ("role", lib/onboarding/clergy.ts). The screen is counted as
+ *      reached, never by its answer, and a priest's or deacon's own screens
+ *      after it are not counted at all (a skip there counts at "role"): those
+ *      answers leave the device only inside a request for the clergy seal.
  */
-export const COUNT_VERSION = 4;
+export const COUNT_VERSION = 5;
 
 export const ONBOARDING_STEPS = [
   "welcome",
@@ -33,6 +38,7 @@ export const ONBOARDING_STEPS = [
   "account",
   "background",
   "level",
+  "role",
   "rule",
   "intent",
   "reminders",
