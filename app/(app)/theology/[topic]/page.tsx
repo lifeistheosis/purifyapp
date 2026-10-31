@@ -1,7 +1,6 @@
 import { notFound } from "next/navigation";
 
 import { TopicReader } from "@/components/theology/TopicReader";
-import { TheologySearch } from "@/components/theology/TheologySearch";
 import { MobileTopBar } from "@/components/nav/MobileTopBar";
 import { ShareButton } from "@/components/ui/ShareButton";
 import { eventsForTheologyTopic } from "@/lib/history/events";
@@ -30,13 +29,14 @@ export async function generateMetadata({
 }
 
 /**
- * A doctrine's own page (1.8, round 3 r3-04, the owner's B and C mix): on a
- * phone the bar starts clear over the subject's icon, the way back and Share
- * on round plates, and turns solid with the study's name once its title has
- * gone up under it, as a saint's page does (lib/nav/backBar.ts lists the
- * address, so the apps show this bar alone). The head, the doors and the
- * deck are components/theology/TopicReader.tsx; the search pill floats over
- * the foot, as on every Theology screen.
+ * A doctrine's own page (1.8, round 3 r3-13, the owner's hybrid of B and C):
+ * on a phone the bar starts clear over the cover, a Father's words over his
+ * portrait, the way back and Share on round plates, and turns solid with the
+ * study's name once its title has gone up under it, as a saint's page does
+ * (lib/nav/backBar.ts lists the address, so the apps show this bar alone).
+ * Its search opens turned to Theology (lib/search/open.ts). The cover, the
+ * study's parts and Begin are components/theology/TopicReader.tsx; the study
+ * is read part by part at /theology/<slug>/read.
  */
 export default async function TheologyTopicPage({
   params,
@@ -64,11 +64,11 @@ export default async function TheologyTopicPage({
         backFallback="/theology"
         revealTitleOn="doctrine-title"
         overlay
+        searchPlace="theology"
         trailing={<ShareButton title={meta.title} round />}
       />
       <section className="bg-night px-5 pb-10 md:px-8 md:py-14">
         <TopicReader body={body} groups={groups} events={eventsForTheologyTopic(topic)} />
-        <TheologySearch />
       </section>
     </>
   );

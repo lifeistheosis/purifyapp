@@ -69,6 +69,13 @@ export const OWN_HEADER_PATTERNS: RegExp[] = [
   // does, its way back leading to Theology. Not the doctrine index
   // (/theology/doctrine), which keeps the back bar.
   /^\/theology\/(?!doctrine$)[^/]+$/,
+  // Theology's hub, a step of its path and a study read part by part (1.8,
+  // round 3 r3-13): phone pages with their own bar, whose search opens
+  // turned to Theology. The hub leads back to Discover, a step to the hub
+  // (its bar clear over the step's icon), a study's reading to the study.
+  /^\/theology$/,
+  /^\/theology\/path\/[^/]+$/,
+  /^\/theology\/[^/]+\/read$/,
   // The pages under Prayers (1.7, the owner's note 16): every rule, the Hours,
   // the akathists, Learn to pray, Your rule and today's prayers are phone
   // pages with their own bar, which takes the page's name once its heading

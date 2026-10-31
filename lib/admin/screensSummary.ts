@@ -85,6 +85,8 @@ export const SCREEN_NAMES: Record<ScreenKey, string> = {
   theology: "Theology",
   doctrine: "Doctrine",
   "theology-topic": "A theology topic",
+  "theology-step": "A step of Theology's path",
+  "theology-reading": "A theology study, read part by part",
   topics: "Topics",
   topic: "A topic",
   apologetics: "Apologetics",

@@ -6,7 +6,10 @@ import { usePathname, useRouter } from "next/navigation";
 import { cn } from "@/lib/cn";
 import { goBack } from "@/lib/nav/goBack";
 import { ChevronLeft } from "@/components/ui/icons/ChevronLeft";
+import { Search } from "@/components/ui/icons/Search";
 import { SearchTrigger } from "@/components/search/SearchTrigger";
+import { openSearch } from "@/lib/search/open";
+import { haptic } from "@/lib/ui/motion";
 import { SiteMenuButton } from "@/components/nav/SiteMenuButton";
 import { WebOnly } from "@/components/platform/PlatformGate";
 import { useTranslate } from "@/components/i18n/MessagesProvider";
@@ -50,6 +53,8 @@ import { useTranslate } from "@/components/i18n/MessagesProvider";
  *   page's own buttons there. The plates step away while the reader reads
  *   on and come back on a scroll up, with the page's pill (lib/ui/
  *   scrollAway.ts, globals.css "The page: the Bible reader with no bar").
+ * - `searchPlace` (1.8, round 3 r3-13): the bar's search opens turned to
+ *   this place (lib/search/open.ts), as Theology's screens ask it to.
  *
  * No Support link rides in a phone bar (the owner, 2026-10-16: it "does
  * nothing useful there"). Giving is a row in Settings, and the computer's
@@ -69,6 +74,7 @@ export function MobileTopBar({
   overlay = false,
   center,
   plates = false,
+  searchPlace,
 }: {
   title?: string;
   /** Catalog key resolved client-side; wins over title. */
@@ -87,6 +93,8 @@ export function MobileTopBar({
   center?: React.ReactNode;
   /** No bar: the way back and the page's buttons on round plates over the page. */
   plates?: boolean;
+  /** The place the bar's search opens turned to (lib/search/open.ts). */
+  searchPlace?: string;
 }) {
   const router = useRouter();
   const { t } = useTranslate();
@@ -229,7 +237,23 @@ export function MobileTopBar({
           say) must not thereby lose the only way a phone has to open the
           palette. The menu closes the row on the web. */}
       <div className="flex shrink-0 items-center gap-0.5">
-        <SearchTrigger />
+        {searchPlace ? (
+          <button
+            type="button"
+            onClick={() => {
+              haptic("light");
+              openSearch(searchPlace);
+            }}
+            aria-label={t("search.open")}
+            title={t("search.open")}
+            data-search-place={searchPlace}
+            className="h-11 w-11 inline-flex shrink-0 items-center justify-center rounded-pill text-paper/70 transition-colors hover:text-paper focus-visible:outline-2 focus-visible:outline-paper focus-visible:outline-offset-2"
+          >
+            <Search size={20} aria-hidden />
+          </button>
+        ) : (
+          <SearchTrigger />
+        )}
         {trailing}
         <WebOnly>
           <SiteMenuButton />

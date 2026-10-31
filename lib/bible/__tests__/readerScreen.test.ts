@@ -392,7 +392,7 @@ describe("the plates, the pill and the tab bar step away as the reader reads on"
   });
 });
 
-describe("the tab bar steps away on the reader's page, and on no other", () => {
+describe("the tab bar steps away on the reading screens, and on no other", () => {
   it("is marked for it, and has no way of leaving of its own", () => {
     const bar = code("components/nav/MobileTabBar.tsx");
     expect(bar).toMatch(/<nav\s+aria-label=\{t\("nav\.tabBarLabel"\)\}\s+data-tab-bar\b/);
@@ -412,12 +412,14 @@ describe("the tab bar steps away on the reader's page, and on no other", () => {
     expect(away).toContain('export const SCREEN_ATTR = "data-reader-screen";');
     expect(away).toMatch(/body\.setAttribute\(SCREEN_ATTR, ""\);/);
     expect(away).toMatch(/return \(\) => \{\s*stop\(\);\s*body\.removeAttribute\(AWAY_ATTR\);\s*body\.removeAttribute\(SCREEN_ATTR\);/);
-    // The hook is mounted by the chapter's screen and nowhere else.
+    // The hook is mounted by the reading screens and nowhere else: the
+    // chapter's, and since round 3 r3-13 a theology study read part by part,
+    // where "the tab bar steps away, as in the Bible".
     const mounts = execFileSync("git", ["grep", "-l", "useScrollAway();", "--", "app", "components", "lib"], { cwd: root, encoding: "utf8" })
       .split("\n")
       .filter(Boolean)
       .filter((f) => !f.includes("__tests__"));
-    expect(mounts).toEqual([SCREEN]);
+    expect(mounts.sort()).toEqual([SCREEN, "components/theology/StudyReader.tsx"].sort());
   });
 
   it("brings what stands on it to the foot while it is away, in the apps alone, as focus mode does", () => {
