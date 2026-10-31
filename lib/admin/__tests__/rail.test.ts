@@ -282,7 +282,9 @@ describe("the rail cookie", () => {
     expect(ids(back.groups)).toEqual([
       ["today", "traffic", "overview", "users"],
       ["shop", "messages", "orders"],
-      ["drop", "content", "community", "eikon-box", "health", "audit"],
+      // The Audit log page goes by its first view, Your week (usage), since
+      // his pick B on r3-17.
+      ["drop", "content", "community", "eikon-box", "health", "usage"],
     ]);
   });
 

@@ -6,8 +6,17 @@ import { isTableAbsent } from "@/lib/admin/tableAbsent";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { isColumnAbsent } from "@/lib/supabase/columnAbsent";
 import { CAMPAIGN_BUCKET, campaignImage } from "@/lib/campaigns/image";
+import {
+  campaignKey,
+  countWaiting,
+  holdKey,
+  recipeKey,
+  recipeNewKey,
+  reportKey,
+  reviewKey,
+} from "@/lib/admin/communityQueue";
 import { MAX_PINNED } from "@/lib/community/pinning";
-import { moderatorFor, readOpenReports, runModAction, type ModAction } from "@/lib/community/moderation";
+import { logMod, moderatorFor, readOpenReports, runModAction, type ModAction } from "@/lib/community/moderation";
 import { forgetUploads, removeOwnedUpload } from "@/lib/security/uploadOwners";
 import { HOUSE_PHOTOS, housePhotoCredit } from "@/lib/trapeza/housePhotos";
 import { KITCHEN_BUCKET, kitchenObjectPath } from "@/lib/trapeza/photos";
@@ -114,31 +123,54 @@ export async function GET(req: Request) {
 
   const admin = createAdminClient();
 
-  // ?summary=1: the queue as four HEAD counts, for the attention strip. Same
-  // filters as the four lists below, so the number here is the number the
-  // tab shows, minus the tab's 200-row cap. The full route runs five selects
-  // with joins and was load-once from its tab; the strip asks every ten
-  // minutes and needs two numbers. Any failed count is a 500: this route's
-  // own comment below says why an unread queue must never read as empty.
+  // ?summary=1: the queue counted, for the strip and the rail's badge. Since
+  // his pick A on r3-17 (one queue, one row per thing) the count is the
+  // number of ROWS the page shows: the holds and reports that name the same
+  // post are one, and held posts count (the badge used to leave them out).
+  // lib/admin/communityQueue.ts keys both, so the two cannot disagree. Thin
+  // reads of ids only; any failed read is a 500, because this route's own
+  // comment below says why an unread queue must never read as empty.
   if (new URL(req.url).searchParams.get("summary") === "1") {
-    const head = (table: string) => admin.from(table).select("id", { count: "exact", head: true });
-    const [recipes, campaignReports, recipeReports, conversationReports] = await Promise.all([
-      head("trapeza_recipes").eq("status", "pending"),
-      head("prayer_campaign_reports"),
-      head("trapeza_recipe_reports"),
-      head("community_reports").eq("status", "open"),
+    const [recipes, campaignReports, recipeReportsFirst, reportsFirst, holdsRead] = await Promise.all([
+      admin.from("trapeza_recipes").select("id").eq("status", "pending").limit(1000),
+      admin.from("prayer_campaign_reports").select("id, campaign_id").limit(1000),
+      admin.from("trapeza_recipe_reports").select("id, recipe_id, review_id").limit(1000),
+      admin.from("community_reports").select("id, post_id, reply_id, profile_id").eq("status", "open").limit(1000),
+      admin.from("community_text_holds").select("id, post_id, reply_id").eq("status", "pending").limit(1000),
     ]);
-    const err =
-      recipes.error ?? campaignReports.error ?? recipeReports.error ?? conversationReports.error;
+    // Older shapes: no review_id before the Kitchen migration, no profile_id
+    // before profile reports, no holds table before the filter.
+    const recipeReports = isColumnAbsent(recipeReportsFirst.error)
+      ? await admin.from("trapeza_recipe_reports").select("id, recipe_id").limit(1000)
+      : recipeReportsFirst;
+    const reports = isColumnAbsent(reportsFirst.error)
+      ? await admin.from("community_reports").select("id, post_id, reply_id").eq("status", "open").limit(1000)
+      : reportsFirst;
+    const holds = isTableAbsent(holdsRead.error) ? { data: [], error: null } : holdsRead;
+    const err = recipes.error ?? campaignReports.error ?? recipeReports.error ?? reports.error ?? holds.error;
     if (err) {
       console.error("[admin/community] moderation count failed", err.message);
       return NextResponse.json({ error: "The moderation queue could not be counted." }, { status: 500 });
     }
+    type Id = { id: string };
+    const holdRows = (holds.data ?? []) as (Id & { post_id: string | null; reply_id: string | null })[];
+    const reportRows = (reports.data ?? []) as (Id & { post_id: string | null; reply_id: string | null; profile_id?: string | null })[];
+    const recipeRows = (recipeReports.data ?? []) as (Id & { recipe_id: string | null; review_id?: string | null })[];
+    const campaignRows = (campaignReports.data ?? []) as (Id & { campaign_id: string | null })[];
+    const keys = [
+      ...holdRows.map(holdKey),
+      ...reportRows.map((r) => reportKey(r, r.profile_id ?? null)),
+      ...((recipes.data ?? []) as Id[]).map((r) => recipeNewKey(r.id)),
+      ...recipeRows.map((r) => (r.review_id ? reviewKey(r.review_id, r.id) : recipeKey(r.recipe_id, r.id))),
+      ...campaignRows.map((r) => campaignKey(r.campaign_id, r.id)),
+    ];
     return NextResponse.json(
       {
-        recipes: recipes.count ?? 0,
-        reports:
-          (campaignReports.count ?? 0) + (recipeReports.count ?? 0) + (conversationReports.count ?? 0),
+        recipes: (recipes.data ?? []).length,
+        reports: reportRows.length + recipeRows.length + campaignRows.length,
+        held: holdRows.length,
+        // The rows the page shows, and the number the rail wears.
+        waiting: countWaiting(keys),
       },
       { headers: { "Cache-Control": "no-store" } },
     );
@@ -321,6 +353,13 @@ export async function POST(req: Request) {
     return NextResponse.json({ ok: true });
   }
 
+  // What the decision was about, read before it is made: a dismissed report
+  // is deleted below, so its words have to be kept first. "Dismiss keeps a
+  // record" (his pick A for Community, r3-17): these decisions were logged
+  // nowhere, so the moderation log, and the audit log's record that reads
+  // it, never saw a recipe, a campaign, a review or a pin.
+  const summary = await describeTarget(admin, action, id);
+
   let error: { message: string } | null = null;
   switch (action) {
     case "publish_recipe":
@@ -455,5 +494,57 @@ export async function POST(req: Request) {
     console.warn("[admin/community] action failed", error.message);
     return NextResponse.json({ error: error.message }, { status: 500 });
   }
+  const actor = await moderatorFor(admin, adminUser);
+  if (actor) {
+    await logMod(admin, actor, {
+      action,
+      target: action.startsWith("dismiss_") ? "report" : action.endsWith("community_post") ? "post" : null,
+      targetId: id,
+      summary,
+    });
+  }
   return NextResponse.json({ ok: true });
+}
+
+type Described = { title?: string | null; body?: string | null; author_name?: string | null; reason?: string | null };
+const one = <T,>(v: T | T[] | null | undefined): T | null => (Array.isArray(v) ? (v[0] ?? null) : (v ?? null));
+
+/** A line naming what a kitchen, campaign or pin decision was about, for the log. Best effort. */
+async function describeTarget(admin: AdminClient, action: string, id: string): Promise<string | null> {
+  try {
+    const read = async (table: string, cols: string) => {
+      const { data } = await admin.from(table).select(cols).eq("id", id).maybeSingle();
+      return (data ?? null) as (Described & Record<string, unknown>) | null;
+    };
+    const title = (v: unknown) => one(v as Described | Described[] | null)?.title ?? null;
+    switch (action) {
+      case "publish_recipe":
+      case "remove_recipe":
+        return (await read("trapeza_recipes", "title"))?.title ?? null;
+      case "remove_campaign":
+        return (await read("prayer_campaigns", "title"))?.title ?? null;
+      case "dismiss_campaign_report": {
+        const r = await read("prayer_campaign_reports", "reason, campaign:prayer_campaigns(title)");
+        return r ? `A report on ${title(r.campaign) ?? "a campaign"}${r.reason ? `: ${r.reason}` : ""}` : null;
+      }
+      case "dismiss_recipe_report": {
+        const r = await read("trapeza_recipe_reports", "reason, recipe:trapeza_recipes(title)");
+        return r ? `A report on ${title(r.recipe) ?? "a recipe"}${r.reason ? `: ${r.reason}` : ""}` : null;
+      }
+      case "remove_review": {
+        const r = await read("trapeza_recipe_reviews", "author_name, recipe:trapeza_recipes(title)");
+        return r ? `${r.author_name ?? "A reader"}'s review of ${title(r.recipe) ?? "a recipe"}` : null;
+      }
+      case "pin_community_post":
+      case "unpin_community_post": {
+        const r = await read("community_posts", "title, body, author_name");
+        const text = (r?.title || r?.body || "").replace(/\s+/g, " ").trim();
+        return r ? `${r.author_name ?? "A reader"}: ${text.length > 80 ? `${text.slice(0, 80)}…` : text}` : null;
+      }
+      default:
+        return null;
+    }
+  } catch {
+    return null;
+  }
 }

@@ -133,6 +133,9 @@ export async function GET() {
       views30d: saintViews.get(s.slug) ?? 0,
       complete: ov === null || ov === undefined ? Boolean(s.complete) : Boolean(ov),
       overridden: ov !== null && ov !== undefined,
+      // The saint's own icon, for the editors' desk (his pick A for Content):
+      // each saint asked for is shown with its icon, drawn in grey there.
+      icon: s.iconUrl ?? null,
     };
   });
 

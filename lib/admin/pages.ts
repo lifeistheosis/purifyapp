@@ -43,6 +43,14 @@ export type AdminPageView = {
   title?: string;
   /** The sentence under that heading, when it is not the page's. */
   sentence?: string;
+  /**
+   * Reached from inside its page rather than from a tab of its own: a step
+   * of Releases, the ratings card on Content, the library line on Services
+   * (the owner's picks on r3-17, 2026-10-30). Its #tab= link still lands, on
+   * that place in the page, and the search box still finds it; the page's
+   * tab row and the rail leave it out. tabViews() below is that rule.
+   */
+  folded?: true;
 };
 
 /**
@@ -172,34 +180,42 @@ export const ADMIN_PAGE_GROUPS: AdminPageGroup[] = [
     mode: "ops",
     quiet: true,
     pages: [
+      // Releases, A, one path (r3-17): the release is one page in the drop's
+      // order. Patch notes is step 1 (Claude's proposals) and the notes
+      // under Records, Push is step 5, Email is step 4; each old link lands
+      // on its step.
       {
         id: "drop",
         label: "Releases",
         sentence: "Everything that tells readers about an update.",
         views: [
-          { tab: "drop", label: "Drop" },
-          { tab: "patch-notes", label: "Patch notes" },
-          { tab: "push", label: "Push" },
-          { tab: "email", label: "Email" },
+          { tab: "drop", label: "Releases" },
+          { tab: "patch-notes", label: "Patch notes", folded: true },
+          { tab: "push", label: "Push", folded: true },
+          { tab: "email", label: "Email", folded: true },
         ],
       },
+      // Content, A, the editors' desk: the saints readers asked for, the
+      // front page's ratings as one card, Catechism as one line.
       {
         id: "content",
         label: "Content",
         sentence: "What readers open, the daily catechism, and the store ratings.",
         views: [
-          { tab: "content", label: "Reading" },
-          { tab: "catechism", label: "Catechism" },
-          { tab: "ratings", label: "Ratings" },
+          { tab: "content", label: "Content" },
+          { tab: "catechism", label: "Catechism", folded: true },
+          { tab: "ratings", label: "Ratings", folded: true },
         ],
       },
+      // Community, A, one queue: its parts (Waiting, Announcements, Filter
+      // and log, Kitchen photos, Ambassadors) are a switch inside the page.
       {
         id: "community",
         label: "Community",
         sentence: "Campaigns, the Kitchen, and the readers who share the shop.",
         views: [
           { tab: "community", label: "Community" },
-          { tab: "ambassadors", label: "Ambassadors" },
+          { tab: "ambassadors", label: "Ambassadors", folded: true },
         ],
       },
       {
@@ -208,53 +224,48 @@ export const ADMIN_PAGE_GROUPS: AdminPageGroup[] = [
         sentence: "The monthly drops and who claimed them.",
         views: [{ tab: "eikon-box", label: "EIKON Box" }],
       },
+      // Services, A, quiet until it is not: Library files is one line under
+      // the services, its list one tap away.
       {
         id: "health",
         label: "Services",
         sentence: "Whether the services we rely on answer, and what the library holds.",
         views: [
           { tab: "health", label: "Services" },
-          { tab: "content-health", label: "Library files" },
+          { tab: "content-health", label: "Library files", folded: true },
         ],
       },
+      // Audit log, B, your week: his week first, and the record (A's
+      // timeline) as the second view. The page goes by its first view, so
+      // its id is usage now; #tab=audit lands on the record as it always did.
       {
-        id: "audit",
+        id: "usage",
         label: "Audit log",
         sentence: "Who did what in the admin, and how the admin is used.",
         views: [
-          { tab: "audit", label: "Audit log" },
-          { tab: "usage", label: "Your use" },
+          { tab: "usage", label: "Your week" },
+          { tab: "audit", label: "Record" },
         ],
       },
     ],
   },
+  // Strategy, B, the plan against what happened (r3-17): one page that
+  // opens on the plan, with Counted, The model and Markets as its doors.
+  // Each keeps its own #tab= id, so /owner's redirect to owner-today lands.
   {
     group: "Strategy",
     mode: "owner",
     pages: [
       {
-        id: "owner-today",
-        label: "Where we are",
-        sentence: "Counted, not assumed.",
-        views: [{ tab: "owner-today", label: "Where we are" }],
-      },
-      {
-        id: "owner-model",
-        label: "Projection",
-        sentence: "What the assumptions say.",
-        views: [{ tab: "owner-model", label: "Projection" }],
-      },
-      {
-        id: "owner-markets",
-        label: "Markets",
-        sentence: "Where the reach could come from.",
-        views: [{ tab: "owner-markets", label: "Markets" }],
-      },
-      {
         id: "owner-investors",
-        label: "Investors",
-        sentence: "The plan against what happened.",
-        views: [{ tab: "owner-investors", label: "Investors" }],
+        label: "Strategy",
+        sentence: "The plan against what happened, and what it rests on.",
+        views: [
+          { tab: "owner-investors", label: "The plan" },
+          { tab: "owner-today", label: "Counted" },
+          { tab: "owner-model", label: "The model" },
+          { tab: "owner-markets", label: "Markets" },
+        ],
       },
     ],
   },
@@ -292,6 +303,15 @@ export const RETIRED_VIEWS: Record<string, { tab: string; intent?: string }> = {
 export function landingOf(tab: string): { tab: string; intent?: string } | null {
   if (ADMIN_VIEW_TABS.includes(tab)) return { tab };
   return Object.prototype.hasOwnProperty.call(RETIRED_VIEWS, tab) ? RETIRED_VIEWS[tab] : null;
+}
+
+/**
+ * The views a page draws as its tabs, and the rail as its rows: every view
+ * that is not folded into the page itself. A page left with one has no tab
+ * row at all.
+ */
+export function tabViews(page: AdminPage): AdminPageView[] {
+  return page.views.filter((v) => !v.folded);
 }
 
 /** The page a tab id is a view of, or null for an id no page holds. */

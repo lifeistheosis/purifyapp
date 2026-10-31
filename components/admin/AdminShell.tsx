@@ -79,11 +79,12 @@ import {
   headingOf,
   landingOf,
   pageOf,
+  tabViews,
   viewName,
   type AdminFigure,
   type AdminPage,
 } from "@/lib/admin/pages";
-import { decodeRail, encodeRail, railCookie, railDay, railFromUsage, type ViewUse } from "@/lib/admin/rail";
+import { decodeRail } from "@/lib/admin/rail";
 import { railFigure, type RailFigure } from "@/lib/admin/railFigures";
 import { setViewIntent } from "@/lib/admin/viewIntent";
 import { useUsageLog } from "@/lib/admin/useUsageLog";
@@ -261,7 +262,7 @@ function NavItem({
   viewBadge: (tab: string) => Badge | null;
   onSelect: (id: string) => void;
 }) {
-  const unfold = on && page.views.length > 1;
+  const unfold = on && tabViews(page).length > 1;
   return (
     <li>
       {/* A word per page, the open page solid ink and lit, its figure a quiet
@@ -272,7 +273,7 @@ function NavItem({
         type="button"
         onClick={() => onSelect(page.id)}
         aria-current={on ? "page" : undefined}
-        aria-expanded={page.views.length > 1 ? on : undefined}
+        aria-expanded={tabViews(page).length > 1 ? on : undefined}
         className="adm-control flex min-h-[33px] w-full items-center gap-2 rounded-[var(--adm-radius-sm)] px-2.5 text-left font-sans text-[13.5px]"
         style={
           on
@@ -316,7 +317,7 @@ function NavItem({
       </button>
       {unfold ? (
         <ul className="adm-rail-views" aria-label={`${page.label} views`}>
-          {page.views.map((v) => {
+          {tabViews(page).map((v) => {
             const b = viewBadge(v.tab);
             return (
               <li key={v.tab}>
@@ -596,37 +597,16 @@ export function AdminShell({
 
   const current = TABS.find((t) => t.id === active) ?? TABS[0];
 
-  // THE RAIL, SORTED BY HIS USE (the owner's pick A, 2026-10-28). Decoded from
-  // what the server read, so the first paint is already in that order, and
-  // fixed for the whole visit: moving a rail under the pointer that is
-  // reaching for it is worse than a rail that never moves.
+  // THE RAIL, SORTED BY HIS USE (the owner's pick A, 2026-10-28). Daily, When
+  // needed, and the quiet Tools line, in the order he last said yes to.
+  // Decoded from what the server read, so the first paint is already in that
+  // order, and fixed for the whole visit: moving a rail under the pointer
+  // that is reaching for it is worse than a rail that never moves.
   const rail = decodeRail(savedRail);
-
-  // ...and the NEXT visit's order, worked out at most once a day from the
-  // route the "Your use" readout already reads, and left in the cookie for
-  // the server. A log that does not answer leaves the rail as it is.
-  useEffect(() => {
-    const today = railDay(new Date());
-    if (rail.day === today) return;
-    let alive = true;
-    void (async () => {
-      try {
-        const r = await fetch("/api/admin/usage", { cache: "no-store" });
-        if (!alive || !r.ok) return;
-        const body = (await r.json()) as { views?: ViewUse[] };
-        if (!alive || !Array.isArray(body.views)) return;
-        document.cookie = railCookie(
-          encodeRail(railFromUsage(body.views), today),
-          window.location.protocol === "https:",
-        );
-      } catch {
-        // Offline, or a body that is not JSON: no new order this time.
-      }
-    })();
-    return () => {
-      alive = false;
-    };
-  }, [rail.day]);
+  // The NEXT order is his to give. The rail used to work it out by itself
+  // once a day and move; since his pick B for the Audit log (r3-17,
+  // 2026-10-30) it moves only on his yes: Your week suggests a move and its
+  // "Do it" writes this cookie (components/admin/tabs/UsageTab.tsx).
 
   const visiblePageGroups =
     mode === "ops"
@@ -637,7 +617,7 @@ export function AdminShell({
   const crumbs = [
     visiblePageGroups.find((g) => g.pages.some((p) => p.id === page.id))?.group,
     page.label,
-    page.views.length > 1 ? page.views.find((v) => v.tab === active)?.label : undefined,
+    tabViews(page).length > 1 ? tabViews(page).find((v) => v.tab === active)?.label : undefined,
   ].filter((c, i, all): c is string => Boolean(c) && c !== all[i - 1]);
 
   // A view's badge counts what its own id counts and what every retired id
@@ -949,11 +929,13 @@ export function AdminShell({
               <p className="mt-1 font-sans text-[13.5px]" style={{ color: "var(--adm-ink-3)" }}>
                 {heading.sentence}
               </p>
-              {page.views.length > 1 ? (
+              {/* Folded views (lib/admin/pages.ts) are reached from inside
+                  their page, so they are not in this switch. */}
+              {tabViews(page).length > 1 ? (
                 <div className="mt-3.5 lg:hidden">
                   <Segmented<string>
                     label={`${page.label} views`}
-                    options={page.views.map((v) => [v.tab, v.label] as const)}
+                    options={tabViews(page).map((v) => [v.tab, v.label] as const)}
                     value={active}
                     onChange={select}
                     scroll

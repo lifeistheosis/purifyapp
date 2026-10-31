@@ -13,6 +13,7 @@ import {
   landingOf,
   pageOf,
   pageOfAny,
+  tabViews,
   viewLabel,
 } from "../pages";
 import { OWNER_TAB_IDS } from "../tabs";
@@ -174,5 +175,45 @@ describe("admin pages", () => {
     // his old weeks still says where he was.
     expect(viewLabel("verification")).toBe("Users: Readers");
     expect(viewLabel("nope")).toBe("nope");
+  });
+});
+
+describe("the Tools pages and Strategy as he picked them (r3-17, 2026-10-30)", () => {
+  const page = (id: string) => ADMIN_PAGES.find((p) => p.id === id);
+  const tabs = (id: string) => tabViews(page(id)!).map((v) => v.tab);
+
+  it("folds a view into its page without losing its link", () => {
+    // Every folded view is still a view of exactly one page, so the shell
+    // still routes its #tab= id, and it is never a page's first view.
+    for (const p of ADMIN_PAGES) {
+      expect(p.views[0].folded, p.id).toBeUndefined();
+      for (const v of p.views.filter((x) => x.folded)) expect(pageOf(v.tab)?.id).toBe(p.id);
+    }
+  });
+
+  it("draws Releases, Content, Community and Services as one page each", () => {
+    // Releases A: one path; Content A: the editors' desk; Community A: one
+    // queue with its own switch; Services A: the library is one line.
+    for (const id of ["drop", "content", "community", "health"]) expect(tabs(id), id).toEqual([id]);
+    expect(pageOf("patch-notes")?.id).toBe("drop");
+    expect(pageOf("push")?.id).toBe("drop");
+    expect(pageOf("email")?.id).toBe("drop");
+    expect(pageOf("catechism")?.id).toBe("content");
+    expect(pageOf("ratings")?.id).toBe("content");
+    expect(pageOf("ambassadors")?.id).toBe("community");
+    expect(pageOf("content-health")?.id).toBe("health");
+  });
+
+  it("opens the Audit log on his week, with the record second", () => {
+    expect(tabs("usage")).toEqual(["usage", "audit"]);
+    expect(viewLabel("usage")).toBe("Audit log: Your week");
+    expect(viewLabel("audit")).toBe("Audit log: Record");
+  });
+
+  it("keeps Strategy one page that opens on the plan, with its three doors", () => {
+    const owner = ADMIN_PAGE_GROUPS.filter((g) => g.mode === "owner").flatMap((g) => g.pages);
+    expect(owner.map((p) => p.label)).toEqual(["Strategy"]);
+    expect(tabs("owner-investors")).toEqual(["owner-investors", "owner-today", "owner-model", "owner-markets"]);
+    expect(owner[0].views.map((v) => v.label)).toEqual(["The plan", "Counted", "The model", "Markets"]);
   });
 });

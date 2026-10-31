@@ -1,0 +1,453 @@
+"use client";
+
+// Email: everything Purify sends by mail, and everything it has sent.
+//
+// Since his pick A for Releases on r3-17 (2026-10-30) the release email is
+// step 4 of the one path (the day a store has it), and the rest of the desk
+// is under the path's Records:
+//   Emails going out  the month's budget, sends too big for one day and their
+//                     controls, the daily account email, the two lists and
+//                     the terms notice.
+//   Who Purify has written to  every mailing (who got it, who never did),
+//                     and every account with the email it has had.
+//
+// The budget: the plan allows a fixed number of emails a month and some of
+// it is held back for mail a reader is waiting on (lib/email/budget.ts).
+
+import { useCallback, useEffect, useState } from "react";
+
+import { adminJson } from "@/lib/admin/fetchJson";
+import { JOB_ORDER_LABEL, type JobOrder } from "@/lib/email/audienceOrder";
+import type { Budget } from "@/lib/email/budget";
+import type { EmailJob } from "@/lib/email/jobs";
+import type { LifecycleReport } from "@/lib/email/lifecycle";
+import { WELCOME_SENDS_PER_RUN } from "@/lib/email/lifecyclePlan";
+import { Card, Modal, Pill, ToolbarButton } from "../primitives";
+import { BudgetCard } from "../email/BudgetCard";
+import { CampaignCard } from "../email/CampaignCard";
+import { SendOrderControls } from "../email/SendOrderControls";
+import { JobsCard } from "../email/JobsCard";
+import { PeopleCard } from "../email/PeopleCard";
+import { TrackingCard } from "../email/TrackingCard";
+
+type TermsPreview = {
+  version: string;
+  effective: string;
+  subject: string;
+  text: string;
+  accounts: number | null;
+  complete: boolean;
+  audienceError: string | null;
+  alreadySent: number | null;
+};
+
+type TermsResult = {
+  version: string;
+  accounts: number;
+  sent: number;
+  skipped: number;
+  failed: number;
+  duplicate: number;
+  unavailable: number;
+  deferred: number;
+  /** Accounts still owed the notice after this run. The job sends those on later days. */
+  owed: number;
+  /** Set when Resend's sending quota stopped the send part way. */
+  quota: string | null;
+};
+
+const KIND_LABEL: Record<keyof LifecycleReport["byKind"], string> = {
+  plus_ending: "Plus ends in three days",
+  plus_ended: "Plus has ended",
+  winback: "A month on (winback)",
+  claim_closing: "EIKON claims close soon",
+  welcome: "Welcome (catch-up)",
+  order_address: "Order needs an address",
+  care_guide: "Care guide",
+  review_ask: "Review request",
+  name_day: "Name day",
+  community_digest: "The week in Community",
+};
+
+const COUNT_COLUMNS = [
+  "sent",
+  "duplicate",
+  "skipped",
+  "failed",
+  "deferred",
+  "unavailable",
+  "no_address",
+  "held",
+  "not_opted_in",
+] as const;
+
+const ink = { color: "var(--adm-ink)" } as const;
+const ink2 = { color: "var(--adm-ink-2)" } as const;
+const ink3 = { color: "var(--adm-ink-3)" } as const;
+
+async function post<T>(url: string, body?: unknown): Promise<{ ok: boolean; data: T | null; error: string | null }> {
+  try {
+    const r = await fetch(url, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: body === undefined ? undefined : JSON.stringify(body),
+    });
+    const data = (await r.json().catch(() => null)) as (T & { error?: string }) | null;
+    if (!r.ok && r.status !== 207) return { ok: false, data: null, error: data?.error ?? `Request failed (${r.status})` };
+    return { ok: true, data, error: null };
+  } catch (e) {
+    return { ok: false, data: null, error: (e as Error).message };
+  }
+}
+
+type Ops = { jobs: EmailJob[]; budget: Budget; ready: boolean };
+
+/** The email desk's read: the budget and the sends going out. */
+export function useEmailOps() {
+  const [ops, setOps] = useState<Ops | null>(null);
+  const [loading, setLoading] = useState(true);
+  const load = useCallback(async () => {
+    const d = await adminJson<Ops>("/api/admin/email/jobs");
+    setOps(d);
+    setLoading(false);
+  }, []);
+  useEffect(() => {
+    /* eslint-disable-next-line react-hooks/set-state-in-effect -- the mount
+       read shares its path with Refresh; every write is past an await. */
+    void load();
+  }, [load]);
+  return { ops, loading, load };
+}
+
+/**
+ * A record of the email desk, under the path's Records: "going" is the
+ * month's budget, the sends going out and every way to send; "people" is
+ * who has been written to.
+ */
+export function EmailRecord({ part }: { part: "going" | "people" }) {
+  const { ops, loading, load } = useEmailOps();
+  if (part === "people") {
+    return (
+      <div className="space-y-5">
+        <TrackingCard />
+        <PeopleCard />
+      </div>
+    );
+  }
+  return (
+    <div className="space-y-5">
+      <BudgetCard budget={ops?.budget ?? null} jobs={ops?.jobs ?? []} onRefresh={load} refreshing={loading} />
+      <JobsCard jobs={ops?.jobs ?? []} ready={ops?.ready ?? false} onChange={load} />
+      <LifecycleCard />
+      <CampaignCard onStarted={load} />
+      <TermsCard onStarted={load} />
+    </div>
+  );
+}
+
+function LifecycleCard() {
+  const [busy, setBusy] = useState(false);
+  const [report, setReport] = useState<LifecycleReport | null>(null);
+  const [error, setError] = useState<string | null>(null);
+
+  async function run() {
+    setBusy(true);
+    setError(null);
+    const r = await post<LifecycleReport>("/api/admin/email/lifecycle");
+    setBusy(false);
+    if (!r.ok) setError(r.error);
+    else setReport(r.data);
+  }
+
+  return (
+    <Card
+      title="Daily account email"
+      subtitle="Sent from the dates on each membership. Press Run now any time; nothing goes twice."
+      action={
+        <ToolbarButton variant="primary" loading={busy} onClick={run}>
+          Run now
+        </ToolbarButton>
+      }
+    >
+      <ul className="space-y-1.5 font-sans text-[12.5px] leading-[1.55]" style={ink2}>
+        <li>
+          <span style={ink}>Plus ends in three days.</span> Only to members who turned renewal off, never to
+          someone renewing, and not to anyone who already had the payment email this month.
+        </li>
+        <li>
+          <span style={ink}>Plus has ended.</span> Within two days of the membership ending.
+        </li>
+        <li>
+          <span style={ink}>A month on.</span>{" "}
+          Once in a member&apos;s life, thirty days after it ended, and only to those who turned on the library
+          list, because it is a come-back email. Held until EMAIL_POSTAL_ADDRESS is set. Mentions the EIKON Box
+          only to those who had Pro.
+        </li>
+        <li>
+          <span style={ink}>EIKON claims close soon.</span> In the last 48 hours of an open drop, to Pro members who
+          have not claimed.
+        </li>
+      </ul>
+      <ul className="mt-1.5 space-y-1.5 font-sans text-[12.5px] leading-[1.55]" style={ink2}>
+        <li>
+          <span style={ink}>Welcome, catch-up.</span> Any account under seven days old that did not get its welcome
+          at sign-up. Password sign-ups without email confirmation can miss it; this is where they get it. At most{" "}
+          {WELCOME_SENDS_PER_RUN} a run, newest first, so a backlog cannot use up the day&apos;s sending; the rest
+          show as deferred and wait for the next run.
+        </li>
+        <li>
+          <span style={ink}>Order needs an address.</span> A paid shop order with no address, a day in, and a
+          reminder from day four. Checkout collects addresses, so this should rarely fire. Replies come to the shop
+          inbox.
+        </li>
+        <li>
+          <span style={ink}>Care guide.</span> Once per order, five to thirty days after you mark it delivered. How to
+          look after an icon and a prayer rope. Sells nothing.
+        </li>
+        <li>
+          <span style={ink}>Name day.</span>{" "}
+          The morning of a saint&apos;s feast, to readers who chose that saint as their patron and turned on the
+          library list. Mentions the saint&apos;s icon when the shop carries one. Held until
+          EMAIL_POSTAL_ADDRESS is set.
+        </li>
+      </ul>
+      <p className="mt-2 font-sans text-[11.5px]" style={ink3}>
+        Payment failed, membership active and account deleted are not here: they go out the moment their event
+        happens. Welcome usually does too, at sign-in on the web or in the app.
+      </p>
+
+      {error && (
+        <p role="alert" className="mt-3 font-sans text-[12.5px]" style={{ color: "var(--adm-critical)" }}>
+          {error}
+        </p>
+      )}
+
+      {report && (
+        <div className="mt-4 space-y-2">
+          <p className="font-sans text-[12.5px]" style={ink2}>
+            Ran {new Date(report.ranAt).toLocaleString()}. {report.planned} email
+            {report.planned === 1 ? "" : "s"} due.
+          </p>
+          <div className="overflow-x-auto">
+            <table className="w-full font-sans text-[12px] tabular-nums">
+              <thead>
+                <tr style={ink3}>
+                  <th className="py-1 pr-3 text-left font-medium">Email</th>
+                  {COUNT_COLUMNS.map((c) => (
+                    <th key={c} className="py-1 px-2 text-right font-medium">
+                      {c.replace("_", " ")}
+                    </th>
+                  ))}
+                </tr>
+              </thead>
+              <tbody>
+                {(Object.keys(KIND_LABEL) as (keyof LifecycleReport["byKind"])[]).map((k) => (
+                  <tr key={k} className="border-t" style={{ borderColor: "var(--adm-line)" }}>
+                    <td className="py-1.5 pr-3" style={ink}>
+                      {KIND_LABEL[k]}
+                    </td>
+                    {COUNT_COLUMNS.map((c) => (
+                      <td key={c} className="py-1.5 px-2 text-right" style={report.byKind[k][c] ? ink : ink3}>
+                        {report.byKind[k][c]}
+                      </td>
+                    ))}
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+          {!report.renewalStateKnown && (
+            <p className="font-sans text-[12px]" style={{ color: "var(--adm-warn)" }}>
+              Renewal state could not be read, so &ldquo;Plus ends in three days&rdquo; was held back. Apply
+              supabase/migrations/20260914000100_email_sends.sql.
+            </p>
+          )}
+          {Object.values(report.byKind).some((counts) => counts.unavailable > 0) && (
+            <p className="font-sans text-[12px]" style={{ color: "var(--adm-warn)" }}>
+              Unavailable means email_sends is not applied, so nothing could be sent exactly once, and nothing
+              was sent.
+            </p>
+          )}
+          {report.errors.length > 0 && (
+            <ul className="font-sans text-[12px]" style={{ color: "var(--adm-critical)" }}>
+              {report.errors.map((e) => (
+                <li key={e}>{e}</li>
+              ))}
+            </ul>
+          )}
+        </div>
+      )}
+    </Card>
+  );
+}
+
+function TermsCard({ onStarted }: { onStarted: () => void }) {
+  const [preview, setPreview] = useState<TermsPreview | null>(null);
+  const [order, setOrder] = useState<JobOrder>("oldest");
+  const [perDay, setPerDay] = useState<number | null>(null);
+  const [loadError, setLoadError] = useState(false);
+  const [confirming, setConfirming] = useState(false);
+  const [busy, setBusy] = useState(false);
+  const [result, setResult] = useState<TermsResult | null>(null);
+  const [error, setError] = useState<string | null>(null);
+
+  const load = useCallback(async () => {
+    const p = await adminJson<TermsPreview>("/api/admin/email/terms");
+    setPreview(p);
+    setLoadError(p === null);
+  }, []);
+
+  useEffect(() => {
+    let alive = true;
+    adminJson<TermsPreview>("/api/admin/email/terms").then((p) => {
+      if (!alive) return;
+      setPreview(p);
+      setLoadError(p === null);
+    });
+    return () => {
+      alive = false;
+    };
+  }, []);
+
+  async function send() {
+    if (!preview) return;
+    setBusy(true);
+    setError(null);
+    const r = await post<TermsResult>("/api/admin/email/terms", {
+      confirm: true,
+      version: preview.version,
+      order,
+      perDay,
+    });
+    setBusy(false);
+    setConfirming(false);
+    if (!r.ok) setError(r.error);
+    else setResult(r.data);
+    void load();
+    onStarted();
+  }
+
+  const ledgerMissing = preview?.alreadySent === null;
+  const canSend = !!preview && !ledgerMissing && preview.complete && (preview.accounts ?? 0) > 0;
+
+  return (
+    <Card
+      title="Terms change notice"
+      subtitle="Goes to every account, whatever their email preferences, once per terms version. It goes a share at a time: the first at once, the rest by themselves on the hour."
+      action={
+        // No preview, no button: the dialog it opens is built from the
+        // preview, and a button that opens nothing reads as broken.
+        preview ? (
+          <ToolbarButton
+            variant="primary"
+            onClick={() => setConfirming(true)}
+            title={canSend ? undefined : "See the note below"}
+          >
+            {preview.accounts ? `Send to ${preview.accounts} accounts` : "Send"}
+          </ToolbarButton>
+        ) : undefined
+      }
+    >
+      {loadError && (
+        <p className="font-sans text-[12.5px]" style={ink3}>
+          The preview did not load. This needs a signed-in admin session.
+        </p>
+      )}
+
+      {preview && (
+        <div className="space-y-3">
+          <div className="flex flex-wrap items-center gap-2 font-sans text-[12.5px]" style={ink2}>
+            <Pill>Terms {preview.version}</Pill>
+            <span>Effective {preview.effective}</span>
+            <span style={ink3}>·</span>
+            <span>
+              {preview.alreadySent === null
+                ? "Send log not applied"
+                : `${preview.alreadySent} already sent for this version`}
+            </span>
+          </div>
+
+          <div className="rounded-[var(--adm-radius-sm)] border p-3" style={{ borderColor: "var(--adm-line)" }}>
+            <p className="font-sans text-[13px] font-semibold" style={ink}>
+              {preview.subject}
+            </p>
+            <p className="mt-2 whitespace-pre-wrap font-sans text-[12.5px] leading-[1.6]" style={ink2}>
+              {preview.text}
+            </p>
+          </div>
+
+          <SendOrderControls order={order} onOrder={setOrder} perDay={perDay} onPerDay={setPerDay} />
+
+          <p className="font-sans text-[11.5px]" style={ink3}>
+            This wording is a draft for your review. The terms themselves are a stop condition in AGENTS.md, so
+            read the email above before sending it the first time.
+          </p>
+
+          {ledgerMissing && (
+            <p className="font-sans text-[12px]" style={{ color: "var(--adm-warn)" }}>
+              Send is off until supabase/migrations/20260914000100_email_sends.sql is applied: without the send log,
+              nothing guarantees each account gets this once.
+            </p>
+          )}
+          {preview.audienceError && (
+            <p className="font-sans text-[12px]" style={{ color: "var(--adm-critical)" }}>
+              {preview.audienceError}
+            </p>
+          )}
+          {!preview.complete && !preview.audienceError && (
+            <p className="font-sans text-[12px]" style={{ color: "var(--adm-warn)" }}>
+              There are more accounts than one pass reads, so Send refuses rather than reach only some of them.
+            </p>
+          )}
+        </div>
+      )}
+
+      {error && (
+        <p role="alert" className="mt-3 font-sans text-[12.5px]" style={{ color: "var(--adm-critical)" }}>
+          {error}
+        </p>
+      )}
+
+      {result && (
+        <div className="mt-3 space-y-1.5 font-sans text-[12.5px]" style={ink2}>
+          <p>
+            Terms {result.version}: {result.sent} sent, {result.failed} failed, of {result.accounts} accounts.{" "}
+            {result.owed > 0
+              ? `${result.owed} still to go. They go by themselves on the hour until everyone has it; watch it under Going out.`
+              : "Every account has it."}
+          </p>
+          {result.quota && <p style={{ color: "var(--adm-warn)" }}>{result.quota}</p>}
+        </div>
+      )}
+
+      {confirming && preview && (
+        <Modal
+          title={`Send the terms notice to ${preview.accounts ?? 0} accounts?`}
+          subtitle={`Terms ${preview.version}, effective ${preview.effective}. Accounts that already have it are skipped, and the rest go ${JOB_ORDER_LABEL[order].toLowerCase()}.`}
+          onClose={() => setConfirming(false)}
+        >
+          <div className="space-y-4">
+            {!canSend ? (
+              <p className="font-sans text-[12.5px]" style={{ color: "var(--adm-warn)" }}>
+                This cannot send yet. Close this and read the note on the card.
+              </p>
+            ) : (
+              <p className="font-sans text-[12.5px] leading-[1.6]" style={ink2}>
+                Every account gets &ldquo;{preview.subject}&rdquo;. This cannot be unsent. The first share goes at
+                once and the rest follow on the hour, until you pause or stop it under Going out.
+              </p>
+            )}
+            <div className="flex justify-end gap-2">
+              <ToolbarButton onClick={() => setConfirming(false)}>Cancel</ToolbarButton>
+              {canSend && (
+                <ToolbarButton variant="primary" loading={busy} onClick={send}>
+                  Send it
+                </ToolbarButton>
+              )}
+            </div>
+          </div>
+        </Modal>
+      )}
+    </Card>
+  );
+}
