@@ -90,13 +90,18 @@ export function newestChant(index: ChantIndexRow[]): ChantIndexRow | null {
 }
 
 /**
- * The chant to open on when nothing is due (1.8): the newest that has a
- * cover, so the first thing on Chants is a picture and not a plate. The
- * coordinator's walk of 2026-10-30 found the home opening on Psalm 117, the
- * newest, with no cover. Only with no cover anywhere is it the newest of all.
+ * The chant to open on when nothing is due (1.8): of the chants with a
+ * cover, the one sung in the most languages, so most readers meet one they
+ * can follow (the owner, 2026-10-31: Psalm 135, in four, over Psalm 117, in
+ * Arabic only), and the newest of those where two tie. A cover first, so the
+ * first thing on Chants is a picture and not a plate. Only with no cover
+ * anywhere is it the newest of all.
  */
 export function restingChant(index: ChantIndexRow[]): ChantIndexRow | null {
-  return newestChant(index.filter((r) => r.cover)) ?? newestChant(index);
+  const covered = index.filter((r) => r.cover);
+  if (!covered.length) return newestChant(index);
+  const most = Math.max(...covered.map((r) => r.variants.length));
+  return newestChant(covered.filter((r) => r.variants.length === most));
 }
 
 /** The traditions present in a list, in the order the browse row gives them. */

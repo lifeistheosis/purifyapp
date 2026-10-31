@@ -31,26 +31,27 @@ describe("the Chants home with the library as it is today", () => {
   // walk of 2026-10-30 found the home opening on Psalm 117's empty square, so
   // the top became a chant with a cover, except the Paschal Canon in its own
   // season; until the owner's note 57 (2026-10-31) that was the Anthem alone.
-  // Now every chant has its icon, and out of season the top is the newest
-  // again: the three added on 2026-10-30, Psalm 117 first by its name.
+  // Now every chant has its icon, and out of season the top is the chant sung
+  // in the most languages (the owner, 2026-10-31): Psalm 135, in four, rather
+  // than Psalm 117, the newest by name but in Arabic only.
   const index = chantIndex();
   const pascha2027 = orthodoxPascha(2027);
   const fromPascha = (days: number) => new Date(pascha2027.getTime() + days * 86_400_000);
 
-  it("opens on the newest chant out of season, with its icon, and draws no row with nothing in it", () => {
+  it("opens out of season on the chant in the most languages, with its icon, and draws no row with nothing in it", () => {
     expect(index.every((r) => r.cover)).toBe(true);
     const home = chantsHome(index, day(2026, 10, 30), "new");
-    expect(home.featured?.slug).toBe("psalm-117");
+    expect(home.featured?.slug).toBe("psalm-135");
     expect(home.featured?.cover?.src).toBe("/audio/art/david.v1.jpg");
-    expect(restingChant(index)?.slug).toBe("psalm-117");
+    expect(restingChant(index)?.slug).toBe("psalm-135");
     for (const s of home.sections) expect(s.rows.length, s.id).toBeGreaterThan(0);
     expect(home.sections.find((s) => s.id === "psalms")?.rows.map((r) => r.slug)).toEqual(["psalm-117", "psalm-135"]);
     expect(home.all?.length).toBe(index.length);
   });
 
-  it("opens on the Paschal Canon from Palm Sunday through Bright Week, and on the newest either side", () => {
+  it("opens on the Paschal Canon from Palm Sunday through Bright Week, and on Psalm 135 either side", () => {
     for (const d of [-7, 0, 6]) expect(chantsHome(index, fromPascha(d), "new").featured?.slug, `Pascha ${d}`).toBe("paschal-canon");
-    for (const d of [-8, 7]) expect(chantsHome(index, fromPascha(d), "new").featured?.slug, `Pascha ${d}`).toBe("psalm-117");
+    for (const d of [-8, 7]) expect(chantsHome(index, fromPascha(d), "new").featured?.slug, `Pascha ${d}`).toBe("psalm-135");
   });
 });
 
