@@ -64,6 +64,41 @@ export function useVisibleFrame(): VisibleFrame | null {
   return useSyncExternalStore(subscribeFrame, readFrame, noFrame);
 }
 
+/**
+ * The tallest the visible part has been at this width: the screen with no
+ * keyboard. A phone that lays its keyboard over the page leaves the window
+ * as it was and shortens the visible part; one that resizes the page for it
+ * (an Android app's window) shortens the window too. Measured against the
+ * tallest the visible part has been, the keyboard shows either way. A turn
+ * of the phone changes the width and starts the measure again.
+ */
+let tallest = { width: 0, height: 0 };
+
+/** Whether a keyboard covers the foot of the screen. Pure but for the measure above. */
+export function keyboardCovers(width: number, height: number, top: number, windowHeight: number): boolean {
+  if (width !== tallest.width) tallest = { width, height };
+  else if (height > tallest.height) tallest = { width, height };
+  return tallest.height - height > 120 || windowHeight - (top + height) > 120;
+}
+
+function readKeyboard(): boolean {
+  if (typeof window === "undefined") return false;
+  const vv = window.visualViewport;
+  if (!vv || Math.abs(vv.scale - 1) > 0.01) return false;
+  return keyboardCovers(Math.round(vv.width), Math.round(vv.height), Math.round(vv.offsetTop), window.innerHeight);
+}
+
+const noKeyboard = () => false;
+
+/**
+ * Whether the on-screen keyboard is up (1.8, the one search: its field sits
+ * over the keyboard, and what it shows changes when the keyboard steps
+ * away). False where the browser cannot tell, and on the server.
+ */
+export function useKeyboardUp(): boolean {
+  return useSyncExternalStore(subscribeFrame, readKeyboard, noKeyboard);
+}
+
 const PHONE = "(max-width: 767.98px)";
 
 function subscribePhone(onChange: () => void): () => void {

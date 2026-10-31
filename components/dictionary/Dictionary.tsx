@@ -1,18 +1,25 @@
 "use client";
 
-// The Orthodox dictionary (1.7): one page, the words A to Z, a field that
-// finds a word as it is typed, and each word's own anchor (/dictionary#theosis)
-// so the app's search can open it where it stands. Drawn like Start here: a
-// short header, then one ruled list. One tree for phone and desktop.
+// The Orthodox dictionary (1.7): one page, the words A to Z, and each word's
+// own anchor (/dictionary#theosis) so the app's search can open it where it
+// stands. Drawn like Start here: a short header, then one ruled list. One
+// tree for phone and desktop.
+//
+// Its field is the door to the one search, turned to the dictionary (1.8,
+// the owner's pick of r3-12, "C, with the mix of B"): Theology's door with
+// its Dictionary chosen, where a word is found by its name, its other names,
+// its Greek and, as this page's own field found it, its definition. Until
+// 1.8 the field filtered this page in place.
 //
 // The words of the page go through the catalog; the definitions are English
 // data (lib/dictionary/terms.ts) and say so in other languages.
 
 import Link from "next/link";
-import { useMemo, useState, useSyncExternalStore } from "react";
+import { useMemo, useSyncExternalStore } from "react";
 
 import { useTranslate } from "@/components/i18n/MessagesProvider";
-import { DICTIONARY, fold, letterOf, termsMatching, type DictionaryTerm } from "@/lib/dictionary/terms";
+import { SearchDoor } from "@/components/search/SearchField";
+import { DICTIONARY, fold, letterOf, type DictionaryTerm } from "@/lib/dictionary/terms";
 
 // The word the address points at (/dictionary#theosis), lit so the eye finds
 // it where the page scrolled to. Read from the address rather than with
@@ -75,11 +82,8 @@ function Entry({ term, lit }: { term: DictionaryTerm; lit: boolean }) {
 
 export function Dictionary() {
   const { t, locale } = useTranslate();
-  const [query, setQuery] = useState("");
-  const found = useMemo(() => termsMatching(query), [query]);
   const lit = useSyncExternalStore(subscribeHash, hashNow, noHash);
-  // A-Z under letters while nothing is typed; the best matches first once
-  // something is.
+  // A-Z under letters.
   const letters = useMemo(() => {
     const by = new Map<string, DictionaryTerm[]>();
     const sorted = [...DICTIONARY].sort((a, b) => fold(a.term).localeCompare(fold(b.term), "en"));
@@ -106,47 +110,25 @@ export function Dictionary() {
           ) : null}
         </header>
 
-        <label className="mt-8 block">
-          <span className="sr-only">{t("dictionary.filter")}</span>
-          <input
-            type="search"
-            value={query}
-            onChange={(e) => setQuery(e.target.value)}
-            placeholder={t("dictionary.filter")}
-            autoComplete="off"
-            className="h-12 w-full rounded-[14px] border border-paper/10 bg-paper/[0.04] px-4 font-sans text-ui text-paper placeholder:text-paper/45 focus:border-paper/30 focus:outline-none"
-          />
-        </label>
+        <SearchDoor place="dictionary" placeholderKey="dictionary.filter" className="mt-8" />
 
-        {query.trim() ? (
-          found.length > 0 ? (
-            <div className="mt-4 divide-y divide-paper/[0.07]">
-              {found.map((term) => (
-                <Entry key={term.id} term={term} lit={term.id === lit} />
-              ))}
-            </div>
-          ) : (
-            <p className="mt-6 font-sans text-ui text-paper/55">{t("dictionary.none", { query: query.trim() })}</p>
-          )
-        ) : (
-          <div className="mt-6">
-            {letters.map(([letter, terms]) => (
-              <section key={letter} aria-labelledby={`letter-${letter}`} className="mt-6 first:mt-0">
-                <p
-                  id={`letter-${letter}`}
-                  className="border-b border-paper/[0.08] pb-2 font-sans text-caption font-semibold text-paper/45"
-                >
-                  {letter}
-                </p>
-                <div className="divide-y divide-paper/[0.07]">
-                  {terms.map((term) => (
-                    <Entry key={term.id} term={term} lit={term.id === lit} />
-                  ))}
-                </div>
-              </section>
-            ))}
-          </div>
-        )}
+        <div className="mt-6">
+          {letters.map(([letter, terms]) => (
+            <section key={letter} aria-labelledby={`letter-${letter}`} className="mt-6 first:mt-0">
+              <p
+                id={`letter-${letter}`}
+                className="border-b border-paper/[0.08] pb-2 font-sans text-caption font-semibold text-paper/45"
+              >
+                {letter}
+              </p>
+              <div className="divide-y divide-paper/[0.07]">
+                {terms.map((term) => (
+                  <Entry key={term.id} term={term} lit={term.id === lit} />
+                ))}
+              </div>
+            </section>
+          ))}
+        </div>
       </div>
     </section>
   );

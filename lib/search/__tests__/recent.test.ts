@@ -1,55 +1,48 @@
-// The search's recent rows (lib/search/recent.ts): the last five results a
-// reader opened, newest first, kept on this device only.
+// The search's recent words (lib/search/recent.ts): the last five searches a
+// reader made, newest first, kept on this phone only (1.8, the owner's pick
+// of r3-12, confirmed 2026-10-30: "recent searches keep the words typed").
 //
-// What a reader would notice if this broke: the same result listed twice,
-// an old one never giving way, or a search that does not open at all because
+// What a reader would notice if this broke: the same words listed twice, an
+// old search never giving way, or a search that does not open at all because
 // storage held something it did not expect.
 
 import { describe, expect, it } from "vitest";
 
-import { RECENT_MAX, clearRecent, parseRecent, readRecent, rememberRecent, withRecent } from "../recent";
-import type { SearchItem } from "../types";
+import { RECENT_KEY, RECENT_MAX, clearWords, parseWords, readWords, rememberWords, tidy, withWords } from "../recent";
 
-const item = (id: string, href = `/x/${id}`): SearchItem => ({ id, label: id.toUpperCase(), href, group: "Other" });
-
-describe("the recent rows", () => {
-  it("keep the newest first, once, and five at most", () => {
-    let list = withRecent([], item("a"));
-    list = withRecent(list, item("b"));
-    list = withRecent(list, item("a"));
-    expect(list.map((r) => r.id)).toEqual(["a", "b"]);
-    for (const id of ["c", "d", "e", "f", "g"]) list = withRecent(list, item(id));
+describe("the recent words", () => {
+  it("keep the newest first, once whatever the case, and five at most", () => {
+    let list = withWords([], "nicaea");
+    list = withWords(list, "jesus prayer");
+    list = withWords(list, "Nicaea");
+    expect(list).toEqual(["Nicaea", "jesus prayer"]);
+    for (const w of ["a1", "b2", "c3", "d4", "e5"]) list = withWords(list, w);
     expect(RECENT_MAX).toBe(5);
-    expect(list.map((r) => r.id)).toEqual(["g", "f", "e", "d", "c"]);
+    expect(list).toEqual(["e5", "d4", "c3", "b2", "a1"]);
   });
 
-  it("keep one row for one address, whatever it was found as", () => {
-    const list = withRecent(withRecent([], item("ref-john-3-16", "/bible/john/3#v16")), item("john-3", "/bible/john/3#v16"));
-    expect(list.map((r) => r.id)).toEqual(["john-3"]);
+  it("keep the words as typed, spaces tidied, and nothing for nothing", () => {
+    expect(tidy("  prayer   rope ")).toBe("prayer rope");
+    expect(withWords(["basil"], "   ")).toEqual(["basil"]);
+    expect(tidy("x".repeat(200))).toHaveLength(80);
   });
 
-  it("keep only what a row needs", () => {
-    const [kept] = withRecent([], { ...item("a"), keywords: "x y", labelKey: "nav.today" });
-    expect(kept).toEqual({ id: "a", label: "A", href: "/x/a", group: "Other" });
+  it("read back only words, once each", () => {
+    expect(parseWords(null)).toEqual([]);
+    expect(parseWords("not json")).toEqual([]);
+    expect(parseWords(JSON.stringify({ words: "a" }))).toEqual([]);
+    expect(parseWords(JSON.stringify(["pascha", 3, null, " basil ", "Pascha", ""]))).toEqual(["pascha", "basil"]);
+    expect(parseWords(JSON.stringify(Array.from({ length: 9 }, (_, i) => `w${i}`)))).toHaveLength(RECENT_MAX);
   });
 
-  it("read back only what was written, and nothing that leaves the app", () => {
-    expect(parseRecent(null)).toEqual([]);
-    expect(parseRecent("not json")).toEqual([]);
-    expect(parseRecent(JSON.stringify({ id: "a" }))).toEqual([]);
-    const good = { id: "a", label: "A", href: "/a", group: "Saints" };
-    expect(parseRecent(JSON.stringify([good, 3, null, "x"]))).toEqual([good]);
-    for (const href of ["https://example.com", "//example.com", "javascript:alert(1)", ""]) {
-      expect(parseRecent(JSON.stringify([{ ...good, href }])), href).toEqual([]);
-    }
-    expect(parseRecent(JSON.stringify([{ ...good, group: "Nowhere" }]))).toEqual([]);
-    expect(parseRecent(JSON.stringify(Array.from({ length: 9 }, (_, i) => ({ ...good, id: `a${i}`, href: `/a${i}` }))))).toHaveLength(RECENT_MAX);
+  it("are kept under their own name, apart from 1.7's list of results opened", () => {
+    expect(RECENT_KEY).toBe("purify:search:words");
   });
 
   it("never throw where there is no storage at all", () => {
     // vitest runs in node: there is no window here, as in a page's first render.
-    expect(readRecent()).toEqual([]);
-    expect(() => clearRecent()).not.toThrow();
-    expect(rememberRecent(item("a")).map((r) => r.id)).toEqual(["a"]);
+    expect(readWords()).toEqual([]);
+    expect(() => clearWords()).not.toThrow();
+    expect(rememberWords("nicaea")).toEqual(["nicaea"]);
   });
 });

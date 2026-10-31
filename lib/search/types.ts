@@ -36,6 +36,20 @@ export type SearchItem = {
    * is then a plural one, and each language says the number its own way.
    */
   sublabelCount?: number;
+  /**
+   * The row's own picture, a path under public/ the apps carry: a saint's
+   * icon, a council's. The search draws a saint by the face in it and the
+   * top result as a band over it (1.8, r3-12); a row without one borrows its
+   * door's picture (./places.ts).
+   */
+  picture?: string;
+  /**
+   * A line on what the row is, longer than the sublabel: a theology study's
+   * summary, a dictionary word's definition. Merged in on the device from
+   * the theology library's own list (./engine.ts, mergeIndex), and searched
+   * after the name, as the theology library's search always searched it.
+   */
+  line?: string;
 };
 
 /** The order result groups render in. Bible first, as the spec asks. */

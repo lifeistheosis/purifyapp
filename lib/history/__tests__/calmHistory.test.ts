@@ -113,11 +113,14 @@ describe("the timeline", () => {
   it("opens a row in a movable sheet on a phone, and every pop-up is the shared sheet", () => {
     const page = code("components/history/HistoryTimelinePage.tsx");
     expect(page).toContain("<EventPeekSheet");
-    expect(page).toContain("<HistorySearchSheet");
     const peek = code("components/history/EventPeekSheet.tsx");
     expect(peek).toMatch(/<Sheet\b/);
+    // The search is the app's one search, turned to History (1.8, the owner's
+    // pick of r3-12), on a phone as on a computer: no layer of its own.
+    expect(page).toContain("<HistorySearchInline");
+    expect(page).not.toContain("HistorySearchSheet");
     const search = code("components/history/HistorySearch.tsx");
-    expect(search).toMatch(/<Sheet\b/);
+    expect(search).toContain('place="history"');
     expect(search).not.toMatch(/fixed inset-0/);
   });
 

@@ -7,9 +7,9 @@
 // the scroll restore, deep links and the scroll spy key off). What changes
 // with the width is around it:
 //   < lg   a phone and a tablet held upright: the line in one column; a tap
-//          on a row opens its peek sheet. On a phone the search field opens
-//          the search in a sheet, and Filter opens its sheet; from md the
-//          field searches in place, with Eras and Filter beside it.
+//          on a row opens its peek sheet. The search field opens the one
+//          search turned to History (1.8, r3-12), Filter its sheet beside it;
+//          from md Eras is beside them too.
 //   lg     a tablet held sideways: the line, and the rail of the chosen event.
 //   xl     a computer: the eras, the century slider, the search and the
 //          filters in a column of their own, the line, and the rail. The
@@ -30,7 +30,6 @@ import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useMemo, useRef, useState, type ReactNode } from "react";
 
 import { useTranslate } from "@/components/i18n/MessagesProvider";
-import { Search } from "@/components/ui/icons/Search";
 import { Sliders } from "@/components/ui/icons/Sliders";
 import { Sheet } from "@/components/ui/Sheet";
 import { centuriesInDataset, centuryOf, publishedEvents, type Era } from "@/lib/history/events";
@@ -51,7 +50,7 @@ import { ContinueExploring } from "./ContinueExploring";
 import { EraJumpList } from "./EraJumpList";
 import { EventContextRail } from "./EventContextRail";
 import { EventPeekSheet } from "./EventPeekSheet";
-import { HistorySearchInline, HistorySearchSheet } from "./HistorySearch";
+import { HistorySearchInline } from "./HistorySearch";
 import { TimelineCore } from "./TimelineCore";
 import { ActiveFilterChips, TimelineFilters } from "./TimelineFilters";
 
@@ -72,7 +71,6 @@ export function HistoryTimelinePage({ lead }: { lead?: ReactNode }) {
   const [hydrated, setHydrated] = useState(false);
   const [filtersOpen, setFiltersOpen] = useState(false);
   const [erasOpen, setErasOpen] = useState(false);
-  const [searchOpen, setSearchOpen] = useState(false);
   const [peek, setPeek] = useState<string | null>(null);
   const [activeEra, setActiveEra] = useState<Era | undefined>(undefined);
 
@@ -265,7 +263,8 @@ export function HistoryTimelinePage({ lead }: { lead?: ReactNode }) {
         {/* The computer's own column: search, eras, centuries, filters. */}
         <aside className="hidden xl:block">
           <div className="sticky top-[88px] max-h-[calc(100vh-110px)] space-y-8 overflow-y-auto pe-2 pt-2 scrollbar-thin">
-            <HistorySearchInline id="history-search-sidebar" />
+            {/* A 250px column: the short line fits it in every language. */}
+            <HistorySearchInline short />
             <div>
               <p className="mb-2 font-sans text-caption font-semibold text-paper/60">{t("study.eras")}</p>
               <EraJumpList activeEra={activeEra} counts={eraCounts} onJump={jumpToEra} />
@@ -285,22 +284,14 @@ export function HistoryTimelinePage({ lead }: { lead?: ReactNode }) {
           {lead}
           <ContinueExploring onGo={jumpToEvent} />
 
-          {/* A phone: the search opens in a sheet, Filter beside it. */}
+          {/* A phone: the field opens the one search on History, Filter beside it. */}
           <div className="mt-5 flex items-center gap-2 md:hidden">
-            <button
-              type="button"
-              onClick={() => setSearchOpen(true)}
-              aria-haspopup="dialog"
-              className="tap-press inline-flex min-h-11 min-w-0 flex-1 items-center gap-2.5 rounded-pill border border-paper/15 bg-night-soft px-4 text-start font-sans text-ui text-paper/55 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-paper"
-            >
-              <Search size={17} className="shrink-0 text-paper/60" />
-              <span className="truncate">{t("study.history.searchChurchHistory")}</span>
-            </button>
+            <HistorySearchInline short className="min-w-0 flex-1" />
             {filterButton}
           </div>
-          {/* A tablet: the field in place, the eras and the filters beside it. */}
+          {/* A tablet: the field, the eras and the filters beside it. */}
           <div className="mt-6 hidden items-center gap-2 md:flex xl:hidden">
-            <HistorySearchInline id="history-search-toolbar" className="min-w-0 flex-1" />
+            <HistorySearchInline className="min-w-0 flex-1" />
             <button type="button" onClick={() => setErasOpen(true)} aria-haspopup="dialog" className={BUTTON}>
               {t("study.eras")}
             </button>
@@ -376,7 +367,6 @@ export function HistoryTimelinePage({ lead }: { lead?: ReactNode }) {
         />
       </Sheet>
 
-      <HistorySearchSheet key={String(searchOpen)} open={searchOpen} onClose={() => setSearchOpen(false)} />
       <EventPeekSheet slug={peek} onClose={() => setPeek(null)} />
     </div>
   );

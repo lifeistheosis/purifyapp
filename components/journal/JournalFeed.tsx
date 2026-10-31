@@ -14,10 +14,10 @@ import { useMemo, useState } from "react";
 
 import { useTranslate } from "@/components/i18n/MessagesProvider";
 import { KIND_KEY } from "@/components/journal/JournalComposer";
+import { SearchField } from "@/components/search/SearchField";
 import { ChipScroller } from "@/components/ui/ChipScroller";
 import { FilterChip } from "@/components/ui/FilterChip";
 import { SwipeRow } from "@/components/ui/SwipeRow";
-import { Search } from "@/components/ui/icons/Search";
 import { dateLocale } from "@/lib/i18n/deviceDates";
 import type { JournalSource } from "@/lib/journal/entries";
 import { byDay, filterKind, journalChips, localDayKey, type JournalFilter, type JournalItem } from "@/lib/journal/feed";
@@ -104,17 +104,8 @@ export function JournalFeed({
       ) : null}
 
       {items.length > SEARCH_ABOVE ? (
-        <label className="relative mt-5 flex min-h-12 items-center">
-          <span className="sr-only">{t("journal.search")}</span>
-          <Search size={17} className="pointer-events-none absolute start-4 text-paper/45" />
-          <input
-            type="search"
-            value={query}
-            onChange={(e) => setQuery(e.target.value)}
-            placeholder={t("journal.search")}
-            className="h-12 w-full rounded-pill border border-paper/12 bg-paper/[0.04] pe-4 ps-11 font-sans text-ui text-paper placeholder:text-paper/40 focus:border-paper/30 focus:outline-none"
-          />
-        </label>
+        // The journal filters itself in place, in the app's one field (1.8, r3-12).
+        <SearchField value={query} onChange={setQuery} placeholder={t("journal.search")} className="mt-5" />
       ) : null}
 
       {groups.map((g) => (

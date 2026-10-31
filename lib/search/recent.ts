@@ -1,80 +1,66 @@
-// The last few things a reader opened from the search, on this device only.
+// The words a reader searched for lately, on this phone only.
 //
-// The search used to open on the same eight rows for everyone, every time,
-// whatever the reader had looked for before (the owner, 2026-10-16: "Today's
-// search could look better"). It now keeps the last five results the reader
-// opened, newest first, and shows them before anything is typed.
+// From 1.7 the search kept the last five RESULTS a reader opened. The owner's
+// pick of r3-12 (1.8) keeps the WORDS instead, the way a phone's own search
+// does, and he confirmed it on 2026-10-30 ("Yes, those are good. Incorporate
+// that into the search engine."): before anything is typed the search lists
+// the last words searched, newest first, and a tap puts one back in the field.
 //
 // Kept in this device's storage and nowhere else: it is not synced and never
 // leaves the phone. Every read and write is guarded, because storage can be
 // missing, full or refused (a private window, a cleared app), and the search
-// must open whatever happens here.
+// must open whatever happens here. The 1.7 list of results, under its old
+// key, is dropped the first time the words are cleared.
 
-import { GROUP_ORDER, type SearchGroup, type SearchItem } from "./types";
-
-export const RECENT_KEY = "purify:search:recent";
+export const RECENT_KEY = "purify:search:words";
+/** Where 1.7 kept the results opened; read by nothing now, removed on Clear. */
+export const OLD_RECENT_KEY = "purify:search:recent";
 export const RECENT_MAX = 5;
+/** Longer than this is not a search a reader would want back. */
+const LONGEST = 80;
 
-/** What is kept of a result: enough to draw its row and open it again. */
-export type RecentItem = {
-  id: string;
-  label: string;
-  sublabel?: string;
-  href: string;
-  group: SearchGroup;
-};
-
-function isRecent(value: unknown): value is RecentItem {
-  if (!value || typeof value !== "object") return false;
-  const v = value as Record<string, unknown>;
-  return (
-    typeof v.id === "string" &&
-    typeof v.label === "string" &&
-    typeof v.href === "string" &&
-    // An address inside the app, and only that: what is opened again is
-    // read back from storage, so it is held to the app's own paths.
-    v.href.startsWith("/") &&
-    !v.href.startsWith("//") &&
-    typeof v.group === "string" &&
-    (GROUP_ORDER as readonly string[]).includes(v.group) &&
-    (v.sublabel === undefined || typeof v.sublabel === "string")
-  );
+/** The words as they are kept: trimmed, spaces folded, never longer than LONGEST. */
+export function tidy(words: string): string {
+  return words.replace(/\s+/g, " ").trim().slice(0, LONGEST);
 }
 
-/** The list with `item` first, once, and no longer than `max`. Pure. */
-export function withRecent(list: readonly RecentItem[], item: SearchItem, max: number = RECENT_MAX): RecentItem[] {
-  const kept: RecentItem = {
-    id: item.id,
-    label: item.label,
-    ...(item.sublabel ? { sublabel: item.sublabel } : {}),
-    href: item.href,
-    group: item.group,
-  };
-  return [kept, ...list.filter((r) => r.id !== item.id && r.href !== item.href)].slice(0, max);
+/** The list with `words` first, once (in any case), and no longer than `max`. Pure. */
+export function withWords(list: readonly string[], words: string, max: number = RECENT_MAX): string[] {
+  const kept = tidy(words);
+  if (!kept) return list.slice(0, max);
+  const key = kept.toLocaleLowerCase();
+  return [kept, ...list.filter((w) => w.toLocaleLowerCase() !== key)].slice(0, max);
 }
 
-/** What storage holds, cleaned: anything that is not a kept result is dropped. Pure. */
-export function parseRecent(raw: string | null): RecentItem[] {
+/** What storage holds, cleaned: anything that is not a list of words is dropped. Pure. */
+export function parseWords(raw: string | null): string[] {
   if (!raw) return [];
   try {
     const parsed: unknown = JSON.parse(raw);
-    return Array.isArray(parsed) ? parsed.filter(isRecent).slice(0, RECENT_MAX) : [];
+    if (!Array.isArray(parsed)) return [];
+    const out: string[] = [];
+    for (const v of parsed) {
+      if (typeof v !== "string") continue;
+      const w = tidy(v);
+      if (w && !out.some((o) => o.toLocaleLowerCase() === w.toLocaleLowerCase())) out.push(w);
+    }
+    return out.slice(0, RECENT_MAX);
   } catch {
     return [];
   }
 }
 
-export function readRecent(): RecentItem[] {
+export function readWords(): string[] {
   try {
-    return parseRecent(window.localStorage.getItem(RECENT_KEY));
+    return parseWords(window.localStorage.getItem(RECENT_KEY));
   } catch {
     return [];
   }
 }
 
-/** Keep `item` as the newest, and hand back the list as it now stands. */
-export function rememberRecent(item: SearchItem): RecentItem[] {
-  const next = withRecent(readRecent(), item);
+/** Keep `words` as the newest, and hand back the list as it now stands. */
+export function rememberWords(words: string): string[] {
+  const next = withWords(readWords(), words);
   try {
     window.localStorage.setItem(RECENT_KEY, JSON.stringify(next));
   } catch {
@@ -83,9 +69,10 @@ export function rememberRecent(item: SearchItem): RecentItem[] {
   return next;
 }
 
-export function clearRecent(): void {
+export function clearWords(): void {
   try {
     window.localStorage.removeItem(RECENT_KEY);
+    window.localStorage.removeItem(OLD_RECENT_KEY);
   } catch {
     // Nothing to do: a list that cannot be read is already not shown.
   }

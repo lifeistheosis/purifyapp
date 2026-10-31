@@ -8,11 +8,11 @@ import { HighlightNamesSheet } from "@/components/bible/HighlightNamesSheet";
 import { FlorilegiumRow } from "@/components/saved/FlorilegiumRow";
 import { KIND_LABEL_KEY, savedSource, savedTitle, shortDate } from "@/components/saved/kinds";
 import { SavedRow, verseOf } from "@/components/saved/SavedRow";
+import { SearchField } from "@/components/search/SearchField";
 import { ChipScroller } from "@/components/ui/ChipScroller";
 import { FilterChip } from "@/components/ui/FilterChip";
 import { UndoBar } from "@/components/ui/UndoBar";
 import { Pen } from "@/components/ui/icons/Pen";
-import { Search } from "@/components/ui/icons/Search";
 import { Star } from "@/components/ui/icons/Star";
 import { readVerseAnnotation, writeVerseAnnotation } from "@/lib/bible/annotations";
 import { localBookNames } from "@/lib/bible/books";
@@ -264,17 +264,8 @@ export function SavedList() {
           ) : null}
 
           {filter !== "history" && feed.length >= SEARCH_FROM ? (
-            <label className="relative mt-5 flex min-h-12 items-center">
-              <span className="sr-only">{t("saved.search")}</span>
-              <Search size={17} className="pointer-events-none absolute start-4 text-paper/45" />
-              <input
-                type="search"
-                value={query}
-                onChange={(e) => setQuery(e.target.value)}
-                placeholder={t("saved.search")}
-                className="h-12 w-full rounded-pill border border-paper/12 bg-paper/[0.04] pe-4 ps-11 font-sans text-ui text-paper placeholder:text-paper/40 focus:border-paper/30 focus:outline-none"
-              />
-            </label>
+            // What is kept filters itself in place, in the app's one field (1.8, r3-12).
+            <SearchField value={query} onChange={setQuery} placeholder={t("search.open")} label={t("saved.search")} className="mt-5" />
           ) : null}
 
           {filter === "history" ? (

@@ -15,7 +15,9 @@ export function normalize(s: string): string {
  * Lower is better; -1 means it does not answer it.
  */
 export function score(item: SearchItem, q: string): number {
-  const hay = normalize(`${item.label} ${item.sublabel ?? ""} ${item.keywords ?? ""}`);
+  // The line under a theology study or a dictionary word is searched after
+  // the name, as the theology library's own search always searched it.
+  const hay = normalize(`${item.label} ${item.sublabel ?? ""} ${item.keywords ?? ""} ${item.line ?? ""}`);
   const label = normalize(item.label);
   if (label.startsWith(q)) return 0;
   const wordStart = new RegExp(`\\b${q.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}`);
