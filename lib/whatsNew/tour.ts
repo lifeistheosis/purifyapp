@@ -92,7 +92,6 @@ const TOUR_1_8: Tour = {
       target: "search",
       title: "tour.step.search.title",
       body: "tour.step.search.body",
-      awaiting: true,
     },
     {
       id: "quote-picture",
@@ -100,7 +99,6 @@ const TOUR_1_8: Tour = {
       target: "quote-picture",
       title: "tour.step.quote.title",
       body: "tour.step.quote.body",
-      awaiting: true,
     },
     {
       id: "mini-player",
@@ -115,7 +113,6 @@ const TOUR_1_8: Tour = {
       target: "theology-path",
       title: "tour.step.theology.title",
       body: "tour.step.theology.body",
-      awaiting: true,
     },
     {
       id: "saint-web",

@@ -126,7 +126,10 @@ describe("the app's one search, opened from Theology", () => {
   it("is asked by an event on window, with the place it opens turned to", () => {
     const open = code("lib/search/open.ts");
     expect(open).toContain("export function openSearch(place?: string): void");
-    expect(open).toContain('new CustomEvent("purify:search-open", { detail: { place } })');
+    // One file, the search job's (r3-12): the event's name and the place it carries.
+    expect(open).toContain('SEARCH_OPEN_EVENT = "purify:search-open"');
+    expect(open).toContain("const detail: SearchOpenDetail = place ? { place } : {};");
+    expect(open).toContain("new CustomEvent<SearchOpenDetail>(SEARCH_OPEN_EVENT, { detail })");
   });
 
   it("is what the bar's magnifier asks for on every Theology screen this round draws", () => {

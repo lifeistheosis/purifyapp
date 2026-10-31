@@ -368,7 +368,7 @@ function SaintBand({ saint }: { saint: BandSaint }) {
   const look = "relative block min-h-[124px] w-full overflow-hidden rounded-[18px] bg-night-deep text-start";
   if (saint.open) {
     return (
-      <button type="button" onClick={saint.open} aria-haspopup="dialog" data-today-band="saint" className={cn("press-card", look)}>
+      <button type="button" onClick={saint.open} aria-haspopup="dialog" data-today-band="saint" data-tour="quote-picture" className={cn("press-card", look)}>
         {body}
       </button>
     );

@@ -92,18 +92,22 @@ export function TheologyHub({
           {slots.councils}
         </section>
         {slots.more}
-        <FoldedPath steps={steps} states={states} label={of} />
+        <div data-tour="theology-path">
+          <FoldedPath steps={steps} states={states} label={of} />
+        </div>
       </div>
     );
   }
 
   return (
     <div data-theology-head={head}>
-      {head === "first" ? (
-        <FirstStep steps={steps} progress={progress} />
-      ) : (
-        <WhereYouLeftOff steps={steps} states={states} progress={progress} />
-      )}
+      <div data-tour="theology-path">
+        {head === "first" ? (
+          <FirstStep steps={steps} progress={progress} />
+        ) : (
+          <WhereYouLeftOff steps={steps} states={states} progress={progress} />
+        )}
+      </div>
 
       <section aria-labelledby="theology-path" className="mt-7">
         <div className="flex items-baseline justify-between gap-3">

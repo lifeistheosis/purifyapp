@@ -122,7 +122,9 @@ export function MobileHeader({
           <span className="inline-flex">
             <MobilePremiumButton />
           </span>
-          <SearchTrigger iconSize={24} className="text-paper/80" />
+          <span data-tour="search" className="inline-flex">
+            <SearchTrigger iconSize={24} className="text-paper/80" />
+          </span>
           <NotificationsButton />
         </div>
       </div>

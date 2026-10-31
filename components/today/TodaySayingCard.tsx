@@ -69,6 +69,7 @@ export function TodaySayingCard({ saying }: { saying: Saying }) {
         aria-label={t("today.verse.shareAsPicture")}
         aria-haspopup="dialog"
         data-saying-share=""
+        data-tour="quote-picture"
         className="tap-press hit-44 absolute end-2.5 top-2.5 grid size-[30px] place-items-center rounded-full bg-night/55 text-paper"
       >
         <ShareMark size={15} />
