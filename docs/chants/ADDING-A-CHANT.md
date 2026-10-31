@@ -40,11 +40,7 @@ For a chant with the slug `christ-is-risen` and a version `el-byzantine`:
 | `public/audio/chants/christ-is-risen/el-byzantine.json` | Its timed words, made by `scripts/chants/timing-from-transcript.mjs`. Optional: a version with none has its words without Sing along. |
 | `public/audio/chants/live.json` | Add `"christ-is-risen/el-byzantine"` to `live`. A recording plays only while it is listed there. |
 | `docs/licensing/audio-provenance.md` | One row in the Chants section, named by the recording's bucket address: where it came from (the upload's link, its uploader and date), the performer or "not known", licence **none**, the day it came, his decision, and its takedown line. |
-
-A cover is optional: a public-domain icon, square, at
-`public/audio/chants/<slug>/cover.webp` (on the website, streamed like the
-timing files) or one the bundle already carries (as the Anthem's
-`/audio/art/anthem.jpg` is). Without one the page draws the plain plate.
+| `public/audio/art/<icon>.v1.jpg` | Its cover (1.8, the owner's note 57: every chant has one): a public-domain icon matched to its words, a square of 640 by 640 in the bundle, with its row under "The chants' covers" in `docs/licensing/audio-provenance.md`. A cover another chant already has is used again (King David for a psalm). |
 | `lib/i18n/messages/*.json` | Two lines in all 21 languages: `chants.item.<key>.title` (English exactly the data file's `title`) and `chants.item.<key>.line`, one sentence for the cover. |
 
 ## Steps
@@ -98,9 +94,14 @@ timing files) or one the bundle already carries (as the Anthem's
    from Pascha; `fixed` is `MM-DD` to `MM-DD`, kept on the reader's own
    calendar); `tone` puts it in that week's row; `kind: "psalm"` and `psalm`
    (the Septuagint number) put it under the Psalms.
-5. **The cover.** A public-domain icon, opened and looked at before it ships
-   (the subject is what you meant, no face cut off, no watermark, no white
-   edge), with its credit in `cover.credit`.
+5. **The cover.** A public-domain icon matched to the chant's words, never a
+   picture made by AI, opened and looked at before it ships (the subject is
+   what you meant, every face whole, no watermark, no white edge:
+   `node scripts/check-picture-edges.mjs audio/art`), cut square and brought
+   down to 640 by 640 (JPEG through mozjpeg at quality 80, about 100 KB: the
+   bundle is near its ceiling), with its credit in `cover.credit` and its row
+   in the provenance document. `lib/chants/__tests__/cover.test.ts` fails on
+   a chant without one.
 6. **The rights.** The provenance row, and the line in `live.json`.
 7. **The checks.** `npx vitest run lib/chants lib/player lib/search` and
    `node scripts/i18n-check.mjs`. The data test fails on a missing catalog

@@ -2,6 +2,11 @@
   "slug": "psalm-117",
   "key": "psalm117",
   "title": "Psalm 117",
+  "cover": {
+    "src": "/audio/art/david.v1.jpg",
+    "alt": "King David the psalmist, crowned, with his scroll",
+    "credit": "The Prophet and King David, from the prophets' row of the iconostasis of the Dormition cathedral, Kirillo-Belozersky Monastery, 1497. Public domain."
+  },
   "kind": "psalm",
   "psalm": 117,
   "when": {

@@ -149,7 +149,16 @@ export function ChantPage({ chant, row, related }: { chant: Chant; row: ChantInd
         <div ref={stageRef} className="scroll-mt-24">
           <div className="flex justify-end gap-1">
             <ShareButton titleKey={chantTitleKey(chant.key)} className="h-9" />
-            <ChantWordsOptions variant={variant} className="-me-2" />
+            {/* The words' button keeps its place (the owner's note 61): its
+                box is drawn at full size for every version, empty and
+                unseen for a version with nothing to switch (English sung in
+                English), so choosing another version never moves Share or
+                anything under this row. Measured on the 1.8 export: the
+                button's arrival pushed the page down 8px and Share 43px
+                along. */}
+            <span data-chant-words-slot="" className="-me-2 grid h-11 w-11 shrink-0 place-items-center">
+              <ChantWordsOptions variant={variant} />
+            </span>
           </div>
           <div className="mt-1 flex items-center gap-3.5">
             <ChantCover cover={chant.cover} size="thumb" className="w-[70px] shrink-0 rounded-[14px]" />

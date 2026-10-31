@@ -1,11 +1,16 @@
 "use client";
 
-import { useState } from "react";
+import { useCallback, useEffect, useLayoutEffect, useRef, useState } from "react";
 
 import { CrossPlate } from "@/components/ui/CrossPlate";
+import { keepCover, keptCover } from "@/lib/chants/keptCovers";
 import { chantMediaUrl, isStreamed } from "@/lib/chants/media";
 import { cn } from "@/lib/cn";
 import { useMounted } from "@/lib/useMounted";
+
+// On the server there is no picture to read, and useLayoutEffect only warns
+// (the same choice components/nav/ScrollResetBridge.tsx makes).
+const useIsoLayoutEffect = typeof window !== "undefined" ? useLayoutEffect : useEffect;
 
 /**
  * A chant's cover (1.7): its public-domain icon, square, or with no picture
@@ -20,6 +25,8 @@ import { useMounted } from "@/lib/useMounted";
  * on the bare ground, and a thumb was an empty square; the coordinator's walk
  * of 2026-10-30 found the Chants home opening on a blank grey box. The name
  * is written beside or under every cover, so the plate does not repeat it.
+ * Since the owner's note 57 (2026-10-31) every chant has its icon, and the
+ * plate is for a cover that cannot be reached.
  */
 export function ChantCover({
   cover,
@@ -35,6 +42,7 @@ export function ChantCover({
   className?: string;
 }) {
   const [failed, setFailed] = useState(false);
+  const fail = useCallback(() => setFailed(true), []);
   const mounted = useMounted();
   const box = cn("relative aspect-square overflow-hidden", className);
   // A streamed cover's address is the website's in the apps and the page's
@@ -43,22 +51,75 @@ export function ChantCover({
   const ready = cover && (!isStreamed(cover.src) || mounted);
 
   if (cover && ready && !failed) {
+    const src = chantMediaUrl(cover.src);
     return (
       <div data-cover="img" className={cn(box, "bg-night-soft ring-1 ring-inset ring-paper/10")}>
-        {/* eslint-disable-next-line @next/next/no-img-element -- a static export serves files as they are. */}
-        <img
-          src={chantMediaUrl(cover.src)}
-          alt={cover.alt}
-          loading={size === "hero" ? "eager" : "lazy"}
-          decoding="async"
-          onError={() => setFailed(true)}
-          className="absolute inset-0 h-full w-full object-cover object-[50%_20%]"
-        />
+        <CoverPicture key={src} src={src} alt={cover.alt} eager={size === "hero"} onFail={fail} />
       </div>
     );
   }
 
   return <CrossPlate size={size} caption={languages?.length ? languages.join(" · ") : undefined} className={box} />;
+}
+
+/**
+ * The icon itself, never shown half arrived (the owner's note 52, the rule
+ * components/history/EventPlate.tsx keeps): unseen until every byte is in
+ * and decoded, then faded in on the app's motion (with it off, it simply
+ * appears), over the box's own dark ground.
+ *
+ * A cover already shown in this visit is drawn from its kept copy instead
+ * (lib/chants/keptCovers.ts), whole in the first frame and with no fade, so
+ * going back to Chants from a chant brings its covers back as they were
+ * (the owner's note 58).
+ */
+function CoverPicture({ src, alt, eager, onFail }: { src: string; alt: string; eager: boolean; onFail: () => void }) {
+  const ref = useRef<HTMLImageElement>(null);
+  // Read once, as the picture is first drawn: its kept copy, or none yet.
+  const [kept] = useState(() => keptCover(src));
+  const [arrived, setArrived] = useState(kept !== null);
+
+  // Shown once it is decoded too, so it never paints in bands; and kept.
+  const arrive = useCallback(
+    (img: HTMLImageElement) => {
+      const done = () => {
+        setArrived(true);
+        void keepCover(src);
+      };
+      img.decode().then(done, done);
+    },
+    [src],
+  );
+
+  // A picture that loaded or failed before the page could listen (the
+  // website's first paint, or one the browser already had) is read from the
+  // <img> itself, before the frame is painted.
+  useIsoLayoutEffect(() => {
+    const img = ref.current;
+    if (kept !== null || !img || !img.complete) return;
+    if (img.naturalWidth === 0) onFail();
+    else arrive(img);
+  }, [arrive, kept, onFail]);
+
+  return (
+    // eslint-disable-next-line @next/next/no-img-element -- a static export serves files as they are.
+    <img
+      ref={ref}
+      src={kept ?? src}
+      alt={alt}
+      loading={eager || kept !== null ? "eager" : "lazy"}
+      decoding={kept !== null ? "sync" : "async"}
+      onLoad={(e) => {
+        if (!arrived) arrive(e.currentTarget);
+      }}
+      onError={onFail}
+      className={cn(
+        "absolute inset-0 h-full w-full object-cover object-[50%_20%]",
+        kept === null && "motion-safe:transition-opacity motion-safe:duration-500 motion-safe:ease-house",
+        arrived ? "opacity-100" : "opacity-0",
+      )}
+    />
+  );
 }
 
 /** A chant's versions' names, each once, in the chant's order: the plate's line. */
