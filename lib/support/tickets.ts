@@ -45,6 +45,48 @@ export async function createTicket(input: {
   return ticket as Ticket;
 }
 
+/**
+ * A conversation the admin starts, from an order's page (the owner's r3-16
+ * Orders pick: Reply beside every order). The opening message is staff's,
+ * and the ticket starts as waiting on the reader. The address is the order's,
+ * passed in by the route after reading the order, never one typed in.
+ * Service role.
+ */
+export async function startStaffThread(input: {
+  email: string;
+  name: string | null;
+  userId: string | null;
+  orderId: string;
+  subject: string;
+  body: string;
+}): Promise<Ticket | null> {
+  const admin = createAdminClient();
+  const { data: ticket, error } = await admin
+    .from("support_tickets")
+    .insert({
+      email: input.email,
+      name: input.name,
+      subject: input.subject,
+      user_id: input.userId,
+      order_id: input.orderId,
+      status: "pending",
+    })
+    .select("*")
+    .single();
+  if (error || !ticket) {
+    console.warn("[support] staff thread insert failed", error?.message);
+    return null;
+  }
+  const { error: msgErr } = await admin
+    .from("support_ticket_messages")
+    .insert({ ticket_id: ticket.id, author: "staff", body: input.body });
+  if (msgErr) {
+    console.warn("[support] staff thread message insert failed", msgErr.message);
+    return null;
+  }
+  return ticket as Ticket;
+}
+
 /** Append a staff reply and reopen/bump the ticket. Returns the ticket so the
  *  caller can email the customer. Service role. */
 export async function addStaffReply(

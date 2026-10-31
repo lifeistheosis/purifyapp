@@ -2,6 +2,7 @@ import { NextResponse, type NextRequest } from "next/server";
 import { revalidatePath } from "next/cache";
 import { z } from "zod";
 import { getAdminUser } from "@/lib/admin/access";
+import { logActivity } from "@/lib/admin/activityLog";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { SAINTS } from "@/lib/saints/saints";
 
@@ -52,20 +53,43 @@ export async function POST(req: NextRequest) {
       if (!SAINT_SLUGS.has(parsed.slug)) {
         return NextResponse.json({ error: "Unknown saint" }, { status: 404 });
       }
-      if (parsed.complete === null) {
-        // Clear override entirely.
-        await supa.from("saint_overrides").delete().eq("slug", parsed.slug);
-      } else {
-        await supa.from("saint_overrides").upsert(
-          {
-            slug: parsed.slug,
-            complete: parsed.complete,
-            updated_at: new Date().toISOString(),
-            updated_by_email: adminEmail,
-          },
-          { onConflict: "slug" },
-        );
+      // What it was, for the record: Undo on the editors' desk puts exactly
+      // this back, and the audit log says what changed from what.
+      const { data: before } = await supa
+        .from("saint_overrides")
+        .select("complete")
+        .eq("slug", parsed.slug)
+        .maybeSingle<{ complete: boolean | null }>();
+      // The write is checked now. It was awaited and thrown away, so a
+      // failed save answered ok and the desk said "Marked complete" over a
+      // saint that was still open.
+      const { error } =
+        parsed.complete === null
+          ? // Clear override entirely.
+            await supa.from("saint_overrides").delete().eq("slug", parsed.slug)
+          : await supa.from("saint_overrides").upsert(
+              {
+                slug: parsed.slug,
+                complete: parsed.complete,
+                updated_at: new Date().toISOString(),
+                updated_by_email: adminEmail,
+              },
+              { onConflict: "slug" },
+            );
+      if (error) {
+        console.warn("[admin/actions] saint-complete failed", error.message);
+        return NextResponse.json({ error: "That did not save. Nothing changed." }, { status: 500 });
       }
+      // One line in the audit log per change (his pick A for Content on
+      // r3-17: Mark complete answers in place, with Undo, and is recorded).
+      await logActivity({
+        actorEmail: admin.email ?? null,
+        action:
+          parsed.complete === null ? "saint.registry" : parsed.complete ? "saint.complete" : "saint.reopen",
+        entityType: "saint",
+        entityId: parsed.slug,
+        detail: { complete: parsed.complete, before: before ? before.complete : "registry" },
+      });
       revalidatePath(`/saints/${parsed.slug}`);
       revalidatePath("/saints");
       return NextResponse.json({ ok: true, slug: parsed.slug, complete: parsed.complete });

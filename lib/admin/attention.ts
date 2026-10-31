@@ -162,7 +162,13 @@ export type OverviewAlertFields = {
 };
 
 export type ProbeSlice = {
-  probes: { service: string; status: "ok" | "fail" | "skipped"; detail: string }[];
+  probes: {
+    service: string;
+    status: "ok" | "fail" | "skipped";
+    detail: string;
+    /** Render only: its newest deploy failed (lib/admin/renderDeploy.ts), with its commit. */
+    deploy?: { failed: boolean; commit: string | null };
+  }[];
 };
 
 export type AttentionInputs = {
@@ -171,7 +177,12 @@ export type AttentionInputs = {
   outbound: SourceState<ProbeSlice>;
   support: SourceState<{ open: number }>;
   verification: SourceState<{ requested: number }>;
-  community: SourceState<{ recipes: number; reports: number }>;
+  /**
+   * held and waiting arrive with the one queue (his pick A for Community on
+   * r3-17): waiting is the rows the page shows, one per thing, held posts
+   * included. An older payload without them counts recipes and reports.
+   */
+  community: SourceState<{ recipes: number; reports: number; held?: number; waiting?: number }>;
   /** The week's board: deadlines past their day, and ones due today. */
   planner: SourceState<{ overdue: number; today: number }>;
   apiLimits: SourceState<{ calls: LimitReading; mau: LimitReading }>;
@@ -423,6 +434,13 @@ function probeFindings(source: "internal" | "outbound", slice: ProbeSlice): Atte
         fault(source, "api-bible", "serious", "API.Bible probe failed", "Licensed Scripture is not loading",
           "The API.Bible probe failed, so NIV, NKJV and NLT readers are getting errors.", go),
       );
+    } else if (s.includes("render") && p.deploy?.failed) {
+      // Render answered and its newest deploy failed: not a probe that went
+      // unanswered, so it is said as what it is (Services, his pick A).
+      out.push(
+        fault(source, "probe:render", "warn", "Render: the latest deploy failed", "The latest deploy failed",
+          `${p.deploy.commit ? `Build ${p.deploy.commit} failed. ` : ""}The site still serves the deploy before it, so readers see nothing wrong. Render's log says why.`, go),
+      );
     } else {
       const short = s.includes("buy me a coffee")
         ? "Buy Me a Coffee"
@@ -557,19 +575,30 @@ export function deriveAttention(i: AttentionInputs): AttentionSummary {
         n === 1
           ? "1 person asked for the blue check and is waiting on a decision."
           : `${n} people asked for the blue check and are waiting on a decision.`,
-        { tab: "verification", label: "Open Verification" }),
+        // "verification" is a retired id now: it lands on the readers'
+        // directory with its Waiting on you filter on (lib/admin/pages.ts).
+        { tab: "verification", label: "Open Readers" }),
     );
   }
 
   seen("community", i.community);
   if (i.community.status === "failed") unmeasured.push(unmeasuredItem("community"));
   else if (i.community.status === "ok" && i.community.data) {
-    const { recipes, reports } = i.community.data;
-    const n = recipes + reports;
+    const { recipes, reports, held = 0, waiting } = i.community.data;
+    // The rows the queue shows (one per post, held posts counted), so the
+    // rail's badge and the page agree. Without that count, the old sum.
+    const n = waiting ?? recipes + reports + held;
     if (n > 0) {
+      const parts = [
+        held > 0 ? plural(held, "post held", "posts held") : null,
+        reports > 0 ? plural(reports, "report", "reports") : null,
+        recipes > 0 ? plural(recipes, "recipe", "recipes") : null,
+      ].filter((p): p is string => p !== null);
+      const said =
+        parts.length > 1 ? `${parts.slice(0, -1).join(", ")} and ${parts[parts.length - 1]}` : (parts[0] ?? plural(n, "thing", "things"));
       queues.push(
         queue("community", "moderation", n, `${n} awaiting moderation`, "Moderation queue",
-          `${plural(recipes, "recipe", "recipes")} and ${plural(reports, "report", "reports")} are waiting for a decision.`,
+          `${said} ${parts.length <= 1 && /^1 /.test(said) ? "is" : "are"} waiting for a decision.`,
           { tab: "community", label: "Open Community" }),
       );
     }

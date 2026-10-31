@@ -1,15 +1,16 @@
 "use client";
 
-// Messages — the operator's inbox in one place. Support tickets (reply,
-// which emails the customer) reuse the existing SupportConsole wholesale;
-// shop buyer<->store threads are read-only oversight (close/reopen), the
-// same capability the Marketplace console has, calling the same routes.
-// The Marketplace tab keeps its own copy untouched.
+// Messages, the owner's pick A (r3-16, 2026-10-30): the requests, the
+// thread, and the reader beside it, with the support console from his note
+// 28 (components/admin/SupportConsole.tsx). The shop's buyer and store
+// threads are one quiet link away at the top, read-only oversight with
+// close and reopen, the same routes the Marketplace uses.
 
 import { useEffect, useState } from "react";
 import { adminJson } from "@/lib/admin/fetchJson";
-import { Card, StatCard, DataTable, Email, Pill, SubTabs, ToolbarButton } from "../primitives";
+import { Card, StatCard, DataTable, Email, Pill, ToolbarButton } from "../primitives";
 import { SupportConsole } from "../SupportConsole";
+import { Icon } from "../needed/parts";
 import type { Ticket, TicketMessage } from "@/lib/support/ticketNumber";
 
 type FullTicket = Ticket & { messages: TicketMessage[] };
@@ -79,20 +80,9 @@ function SupportInbox() {
   }
 
   if (!tickets) {
-    return <p className="font-sans text-detail text-paper/45">Loading tickets…</p>;
+    return <p className="font-sans text-detail text-paper/45">Reading the requests…</p>;
   }
-  const open = tickets.filter(
-    (t) => t.status === "open" || t.status === "pending",
-  ).length;
-  return (
-    <div className="space-y-6">
-      <div className="grid grid-cols-2 gap-3 lg:grid-cols-4">
-        <StatCard label="Tickets" value={tickets.length} />
-        <StatCard label="Open / pending" value={open} accent />
-      </div>
-      <SupportConsole initial={tickets} />
-    </div>
-  );
+  return <SupportConsole initial={tickets} syncAddress />;
 }
 
 /* ── Shop conversations (read-only + close/reopen) ─────────────────────── */
@@ -281,16 +271,52 @@ function ShopInbox() {
 /* ── Tab shell ─────────────────────────────────────────────────────────── */
 
 type Panel = "support" | "shop";
-const TABS = [
-  ["support", "Support tickets"],
-  ["shop", "Shop threads"],
-] as const;
 
+/**
+ * The requests are the page; the shop's threads are a quiet link at its
+ * top right, as drawn ("Shop threads 1 >"), with their open count.
+ */
 export function MessagesTab() {
   const [panel, setPanel] = useState<Panel>("support");
+  const [openThreads, setOpenThreads] = useState<number | null>(null);
+
+  useEffect(() => {
+    let alive = true;
+    void adminJson<{ conversations?: { status: string }[] }>("/api/admin/shop/conversations").then((d) => {
+      if (alive && d) setOpenThreads((d.conversations ?? []).filter((c) => c.status === "open").length);
+    });
+    return () => {
+      alive = false;
+    };
+  }, []);
+
   return (
-    <div className="space-y-6">
-      <SubTabs tabs={TABS} active={panel} onChange={setPanel} />
+    <div className="space-y-4">
+      <div className="flex justify-end">
+        <button
+          type="button"
+          onClick={() => setPanel(panel === "support" ? "shop" : "support")}
+          className="inline-flex min-h-9 items-center gap-1.5 font-sans text-[12.5px]"
+          style={{ color: "var(--adm-ink-3)" }}
+        >
+          {panel === "support" ? (
+            <>
+              Shop threads
+              {openThreads ? (
+                <span className="font-mono text-[11.5px]" style={{ color: "var(--adm-ink-2)" }}>
+                  {openThreads}
+                </span>
+              ) : null}
+              <Icon name="chev" size={12} />
+            </>
+          ) : (
+            <>
+              <Icon name="back" size={12} />
+              Back to the requests
+            </>
+          )}
+        </button>
+      </div>
       {panel === "support" ? <SupportInbox /> : <ShopInbox />}
     </div>
   );

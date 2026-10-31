@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, type ReactNode } from "react";
 
 import { focusablesIn, nextIndex } from "@/lib/ui/focusTrap";
 import { useReducedMotion } from "@/lib/ui/motion";
@@ -9,6 +9,7 @@ import { useDraggableSheet } from "@/lib/ui/useDraggableSheet";
 import { larpOn, setLarp } from "@/lib/admin/larp";
 
 import { ADMIN_TAB_ICONS, ADMIN_TAB_ICON_FALLBACK } from "./nav-icons";
+import { StatusDot } from "./primitives";
 import { cn } from "@/lib/cn";
 
 /**
@@ -16,48 +17,58 @@ import { cn } from "@/lib/cn";
  *
  * ── Why a bar and not the rail ──────────────────────────────────────────
  *
- * The desktop rail carries twenty tabs in five labelled groups down the left
- * edge. That is the right shape for a 1400px window and there is no honest way
- * to fold it into 390px: a scaled rail is a 44px-wide column of truncated
- * words, and a hamburger charges a tap for every move an operator makes.
+ * The desktop rail is the right shape for a wide window and there is no
+ * honest way to fold it into 390px. So the phone gets a different structure
+ * rather than a squeezed one. Four destinations sit in the thumb's arc: the
+ * rail's Daily, Home and the three pages he reads most (the owner's pick A,
+ * 2026-10-28). Everything else is one tap away behind More.
  *
- * So the phone gets a different structure rather than a squeezed one. Four
- * destinations sit in the thumb's arc: the rail's Daily, Home and the three
- * pages he reads most (the owner's pick A, 2026-10-28). They used to be
- * Today, Orders, Messages and Shop, chosen from what he said he does standing
- * up, and his own log showed him pressing More every time to reach Traffic
- * and Money. Everything else lives one tap away behind More, still in its
- * groups, because full parity was the brief.
+ * ── More, as rows (the owner's pick A on sheet r3-15, 2026-10-30) ───────
+ *
+ * More used to open a grid of boxed tiles over the whole screen. It is a
+ * sheet above the bar now, and the bar stays in sight under it with More lit:
+ * When needed as rows, each page with what it is for and who is waiting
+ * behind it; the Tools as quiet two-column rows; and You, the account, when
+ * the numbers were true, the Operations | Owner switch, Settings and Sign
+ * out.
  *
  * ── Matching the app, not inventing a second grammar ────────────────────
  *
  * lg, NOT md: the desktop rail is `hidden lg:flex`, so a bar that stopped at
- * md would leave 768 to 1023 with no navigation at all.
- *
- * Purify already has a bottom bar in components/nav/MobileTabBar.tsx. This
- * borrows its geometry deliberately: the same 58px target, the same
- * safe-bottom-pad, the same rounded slab. An operator who uses both should not
- * have to learn two bottom bars.
- *
- * No backdrop blur. The surface is opaque. A blurred bar over a scrolling
- * table asks the compositor to re-blur on every frame of the scroll, which is
- * the same cost that made the product dialog crawl.
+ * md would leave 768 to 1023 with no navigation at all. The geometry is
+ * borrowed from components/nav/MobileTabBar.tsx: the same 58px target, the
+ * same safe-bottom pad. No backdrop blur: a blurred bar over a scrolling
+ * table re-blurs on every frame of the scroll.
  */
 
-export type MobileNavTab = { id: string; label: string };
+export type MobileNavTab = {
+  id: string;
+  label: string;
+  /** The page's sentence, under its name in the sheet. */
+  sentence?: string;
+  /** Who is waiting behind the page, or null. */
+  badge?: { count: number; title: string } | null;
+};
 export type MobileNavGroup = {
   group: string;
   tabs: MobileNavTab[];
-  /** The rail's Tools: drawn as quiet text rows in the sheet, not tiles. */
+  /** The rail's Tools: drawn as quiet text rows in the sheet. */
   quiet?: boolean;
 };
+
+/**
+ * The bar's height, which the sheet stops above. 58px items with 8px over
+ * them and at least 8px under, plus the home indicator. .adm-canvas in
+ * admin-theme.css clears the same figure; change them together.
+ */
+const BAR_H = "calc(74px + env(safe-area-inset-bottom, 0px))";
 
 export function AdminMobileNav({
   groups,
   primary: primaryIds,
   active,
   onSelect,
-  footer,
+  you,
 }: {
   groups: MobileNavGroup[];
   /**
@@ -68,18 +79,15 @@ export function AdminMobileNav({
   active: string;
   onSelect: (id: string) => void;
   /**
-   * The account block and the cache controls that used to live at the bottom
-   * of the Sections drawer. They come here rather than being dropped, because
-   * removing that drawer would otherwise make "Sign out" and "Rebuild caches"
-   * unreachable on any screen below lg.
+   * The You rows: the account, the mode switch, Settings and Sign out. They
+   * come here because the rail's foot is not on screen below lg, and without
+   * them Sign out would be unreachable on a phone.
    */
-  footer?: React.ReactNode;
+  you?: ReactNode;
 }) {
   const [sheetOpen, setSheetOpen] = useState(false);
   // The sheet follows the finger like every pop-up card: it slides with the
-  // drag, closes on a flick down, and the scrim dims and blurs in step. The
-  // panel is its own scroller, so it is both the panel and the body the hook
-  // pulls from (a touch drag down from its top moves the sheet).
+  // drag, closes on a flick down, and the scrim dims in step.
   const reduced = useReducedMotion();
   const {
     mounted,
@@ -93,21 +101,20 @@ export function AdminMobileNav({
   const primary = primaryIds
     .map((id) => all.find((t) => t.id === id))
     .filter((t): t is MobileNavTab => !!t);
-  // "More" carries the badge of being current whenever the open tab is not one
-  // of the four, so the bar never shows nothing selected.
+  const primarySet = new Set(primary.map((t) => t.id));
+  // The sheet holds what the bar does not: When needed, the Tools, You.
+  const sheetGroups = groups
+    .map((g) => ({ ...g, tabs: g.tabs.filter((t) => !primarySet.has(t.id)) }))
+    .filter((g) => g.tabs.length > 0);
+  // More is lit whenever the open page is not one of the four, or the sheet
+  // is open, so the bar never shows nothing selected.
   const activeIsPrimary = primary.some((t) => t.id === active);
+  const moreOn = sheetOpen || !activeIsPrimary;
 
   const hasOpened = useRef(false);
 
-  // LARP MODE, the phone's way in.
-  //
-  // On a desktop the mode is armed by typing "larp" with focus outside a text
-  // field. A phone cannot do that: the soft keyboard only opens WHEN a field is
-  // focused, and the listener deliberately ignores keystrokes from one, so the
-  // gesture is unreachable on exactly the screens the mode was built to help
-  // design. Five taps on the grab handle is the mobile equivalent: deliberate
-  // enough that nobody arrives here by accident, on a target that is decorative
-  // and does nothing else.
+  // LARP MODE, the phone's way in: five taps on the grab handle. A phone
+  // cannot type "larp" outside a text field, which is how the desktop arms it.
   const taps = useRef({ count: 0, at: 0 });
   function tapHandle() {
     const now = Date.now();
@@ -117,21 +124,12 @@ export function AdminMobileNav({
     if (s.count >= 5) {
       s.count = 0;
       setLarp(!larpOn());
-      // Same reason as the keyboard path: every tab reads through adminJson, so
-      // a full reload is the honest way to get a consistent panel.
       window.location.reload();
     }
   }
 
-  // Escape closes, and Tab cycles INSIDE the sheet.
-  //
-  // The trap is not decoration. This panel claims aria-modal="true", and Modal
-  // in primitives.tsx already spells out why that claim without a trap is worse
-  // than neither: the reader goes quiet about the page while Tab walks straight
-  // out into it. DOM order puts the <nav> after the sheet, so one Tab past the
-  // last section button landed on the bottom bar, which is aria-hidden and
-  // painted under the scrim, and kept going into the topbar search and every
-  // control in the tab behind it.
+  // Escape closes, and Tab cycles INSIDE the sheet: it claims aria-modal, and
+  // that claim without a trap lets Tab walk out into the page behind it.
   useEffect(() => {
     if (!sheetOpen) return;
     function onKey(e: KeyboardEvent) {
@@ -156,25 +154,17 @@ export function AdminMobileNav({
     return () => document.removeEventListener("keydown", onKey);
   }, [sheetOpen, sheetRef]);
 
-  // Freeze the page behind the sheet, through the same refcounted helper every
-  // other overlay here uses. In ops mode the list is 19 tabs plus five group
-  // headers plus the footer, comfortably more than the 78dvh the panel gets, so
-  // the flick that reaches its end chained out into the document and closing
-  // the sheet left the operator somewhere else in the tab they were reading.
+  // Freeze the page behind the sheet, through the refcounted helper every
+  // other overlay here uses, so a flick that reaches the sheet's end does not
+  // chain out and scroll the page.
   useEffect(() => {
     if (!mounted) return;
     lockBodyScroll();
     return unlockBodyScroll;
   }, [mounted]);
 
-  // Focus into the sheet on open, back to More on close.
-  //
-  // hasOpened is the entire reason this ref exists. Without it the else branch
-  // runs on the FIRST commit, when sheetOpen is already false, so every load of
-  // /admin below lg dropped focus on the last control in the document. The
-  // preventScroll that keeps it visually quiet is what made it hard to see: the
-  // only symptom was that the first Space pressed opened the sections sheet
-  // instead of scrolling the page.
+  // Focus into the sheet on open, back to More on close. hasOpened keeps the
+  // first commit, when the sheet is already closed, from moving focus at all.
   useEffect(() => {
     if (sheetOpen) {
       hasOpened.current = true;
@@ -192,13 +182,11 @@ export function AdminMobileNav({
   return (
     <>
       {mounted ? (
-        <div className="adm lg:hidden fixed inset-0 z-[60] flex flex-col justify-end">
+        // Above the bar, not over it: the container stops at the bar's top,
+        // so the bar stays in sight with More lit while the sheet is open.
+        <div className="adm lg:hidden fixed inset-x-0 top-0 z-[60] flex flex-col justify-end" style={{ bottom: BAR_H }}>
           {/* Tap-anywhere-to-close, and nothing else. aria-hidden and out of
-              the tab order for the reason Modal states: a viewport-sized
-              control announced only as "Close" was otherwise the first thing a
-              reader met inside the dialog, ahead of the section list. Escape
-              is the keyboard path, and unlike an invisible button it is one an
-              operator can be told about. */}
+              the tab order: Escape is the keyboard path. */}
           <button
             ref={scrimRef}
             type="button"
@@ -215,44 +203,39 @@ export function AdminMobileNav({
             }}
             role="dialog"
             aria-modal="true"
-            aria-label="All admin sections"
+            aria-label="More admin pages"
             tabIndex={-1}
-            className="relative max-h-[78dvh] overflow-y-auto overscroll-contain rounded-t-[var(--adm-radius-lg)] border-t px-4 pb-[max(1.25rem,env(safe-area-inset-bottom))] pt-3 outline-none will-change-transform"
+            className="relative mx-2 mb-2 max-h-[78dvh] overflow-y-auto overscroll-contain rounded-[22px] border px-4 pb-3 pt-1.5 outline-none will-change-transform"
             style={{
               background: "var(--adm-rail)",
-              borderColor: "var(--adm-line)",
+              borderColor: "var(--adm-line-strong)",
+              boxShadow: "var(--adm-shadow-pop)",
             }}
           >
-            {/* Grab handle: the affordance that says this panel came from the
-                bottom and goes back there. */}
+            {/* Grab handle: this panel came from the bottom and goes back
+                there. Five taps on it is the phone's way into larp mode. */}
             <button
               type="button"
               aria-hidden
               tabIndex={-1}
               onClick={tapHandle}
-              // Padding, not a height class: the hairline stays 4px while the
-              // tappable box is ~40px, so the secret is findable by someone who
-              // knows it is there and invisible to everyone else.
-              className="mx-auto mb-2 block px-6 py-3"
+              className="mx-auto mb-1 block px-6 py-3"
             >
-              <span
-                className="block h-1 w-10 rounded-full"
-                style={{ background: "var(--adm-line)" }}
-              />
+              <span className="block h-[4px] w-10 rounded-full" style={{ background: "var(--adm-line-strong)" }} />
             </button>
-            {groups.map((g) => (
-              <div key={g.group} className="mb-5 last:mb-0">
-                {/* The same words, set the same way, as the group names in the
-                    desktop rail. They were spaced capitals here and sentence
-                    case there. */}
-                <p className="mb-2 font-sans text-caption font-medium text-[color:var(--adm-ink-3)]">
+            {sheetGroups.map((g) => (
+              <div key={g.group} className="mb-4">
+                {/* The same words, set the same way, as the rail's group names. */}
+                <p className="mb-2 px-0.5 font-sans text-[11.5px]" style={{ color: "var(--adm-ink-3)" }}>
                   {g.group}
                 </p>
                 {g.quiet ? (
-                  // The Tools, quiet here too: text rows with no box, still a
-                  // full thumb's height each, so a folded page is one tap
-                  // away without asking to be looked at.
-                  <div className="grid grid-cols-2 gap-x-2">
+                  // The Tools, quiet here too: two columns of text rows in one
+                  // box, each a full thumb's height.
+                  <div
+                    className="grid grid-cols-2 gap-x-3 rounded-[12px] border px-2 py-1"
+                    style={{ borderColor: "var(--adm-line)", background: "var(--adm-panel)" }}
+                  >
                     {g.tabs.map((t) => {
                       const on = t.id === active;
                       return (
@@ -261,52 +244,81 @@ export function AdminMobileNav({
                           type="button"
                           onClick={() => go(t.id)}
                           aria-current={on ? "page" : undefined}
-                          className={cn(
-                            "flex min-h-11 items-center rounded-xl px-3 text-left font-sans text-detail",
-                            on
-                              ? "bg-[var(--adm-panel-2)] font-semibold text-paper"
-                              : "text-[color:var(--adm-ink-2)] active:bg-[var(--adm-panel-2)]",
-                          )}
+                          className="flex min-h-11 items-center rounded-[8px] px-2 text-left font-sans text-[13.5px]"
+                          style={{ color: on ? "var(--adm-ink)" : "var(--adm-ink-2)", fontWeight: on ? 600 : 400 }}
                         >
                           <span className="min-w-0 truncate">{t.label}</span>
+                          {t.badge ? (
+                            <span className="ml-1.5 font-mono text-[11px]" style={{ color: "var(--adm-ink-3)" }} title={t.badge.title}>
+                              {t.badge.count}
+                            </span>
+                          ) : null}
                         </button>
                       );
                     })}
                   </div>
                 ) : (
-                  <div className="grid grid-cols-2 gap-2">
+                  // When needed as rows: the page's glyph, its name and what
+                  // it is for, and who is waiting behind it as a ring and a
+                  // count at the right.
+                  <ul
+                    className="divide-y rounded-[12px] border px-3.5"
+                    style={{ borderColor: "var(--adm-line)", background: "var(--adm-panel)" }}
+                  >
                     {g.tabs.map((t) => {
                       const on = t.id === active;
                       return (
-                        <button
-                          key={t.id}
-                          type="button"
-                          onClick={() => go(t.id)}
-                          aria-current={on ? "page" : undefined}
-                          className={cn(
-                            "flex min-h-[52px] items-center gap-2.5 rounded-2xl border px-3 py-2.5 text-left font-sans text-detail transition-colors",
-                            on
-                              ? "border-[color:var(--adm-ink)] bg-[var(--adm-panel-2)] font-semibold text-paper"
-                              : "border-[color:var(--adm-line)] text-paper/80 active:bg-[var(--adm-panel-2)]",
-                          )}
-                        >
-                          <span className="shrink-0 opacity-80">
-                            {ADMIN_TAB_ICONS[t.id] ?? ADMIN_TAB_ICON_FALLBACK}
-                          </span>
-                          <span className="min-w-0 truncate">{t.label}</span>
-                        </button>
+                        <li key={t.id} className="border-[color:var(--adm-line)]">
+                          <button
+                            type="button"
+                            onClick={() => go(t.id)}
+                            aria-current={on ? "page" : undefined}
+                            className="flex min-h-[52px] w-full items-center gap-3 py-2 text-left font-sans"
+                          >
+                            <span className="shrink-0" style={{ color: on ? "var(--adm-ink)" : "var(--adm-ink-2)" }}>
+                              {ADMIN_TAB_ICONS[t.id] ?? ADMIN_TAB_ICON_FALLBACK}
+                            </span>
+                            <span className="min-w-0 flex-1">
+                              <span
+                                className="block truncate text-[13.5px]"
+                                style={{ color: "var(--adm-ink)", fontWeight: on ? 600 : 400 }}
+                              >
+                                {t.label}
+                              </span>
+                              {t.sentence ? (
+                                <span className="mt-0.5 block truncate text-[12px]" style={{ color: "var(--adm-ink-3)" }}>
+                                  {t.sentence}
+                                </span>
+                              ) : null}
+                            </span>
+                            {t.badge ? (
+                              <span
+                                className="flex shrink-0 items-center gap-1.5 text-[12px]"
+                                style={{ color: "var(--adm-ink-3)" }}
+                                title={t.badge.title}
+                              >
+                                <StatusDot tone="wait" />
+                                {t.badge.count} waiting
+                              </span>
+                            ) : (
+                              <svg width="12" height="12" viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden style={{ color: "var(--adm-ink-3)" }}>
+                                <path d="M8 4.5l5.5 5.5L8 15.5" />
+                              </svg>
+                            )}
+                          </button>
+                        </li>
                       );
                     })}
-                  </div>
+                  </ul>
                 )}
               </div>
             ))}
-            {footer ? (
-              <div
-                className="mt-5 space-y-3 border-t pt-4"
-                style={{ borderColor: "var(--adm-line)" }}
-              >
-                {footer}
+            {you ? (
+              <div className="mb-1">
+                <p className="mb-2 px-0.5 font-sans text-[11.5px]" style={{ color: "var(--adm-ink-3)" }}>
+                  You
+                </p>
+                {you}
               </div>
             ) : null}
           </div>
@@ -314,43 +326,32 @@ export function AdminMobileNav({
       ) : null}
 
       <nav
-        // Distinct from the desktop rail, which is also a <nav aria-label="Admin
-        // sections">. Both sit in the DOM at once (each hides by breakpoint, not by
-        // unmounting), and two landmarks sharing one accessible name is a real
-        // navigation ambiguity for a screen reader even when only one is painted.
+        // Distinct from the desktop rail's "Admin sections": both sit in the
+        // DOM at once, and two landmarks sharing a name is ambiguous for a
+        // screen reader even when only one is painted.
         aria-label="Admin sections, primary"
-        aria-hidden={sheetOpen || undefined}
-        className="adm lg:hidden fixed inset-x-0 bottom-0 z-50 px-3 pb-[max(0.5rem,env(safe-area-inset-bottom))] pt-2"
+        className="adm lg:hidden fixed inset-x-0 bottom-0 z-50 px-1.5 pb-[max(0.5rem,env(safe-area-inset-bottom))] pt-2"
         style={{
-          // Opaque, with a hairline. See the note above on why this is not a
-          // blurred bar.
           background: "var(--adm-rail)",
           borderTop: "1px solid var(--adm-line)",
         }}
       >
         <ul className="flex items-stretch justify-between gap-1">
           {primary.map((t) => {
-            const on = t.id === active;
+            const on = t.id === active && !sheetOpen;
             return (
               <li key={t.id} className="min-w-0 flex-1">
                 <button
                   type="button"
                   onClick={() => go(t.id)}
-                  aria-current={on ? "page" : undefined}
-                  className={cn(
-                    "flex h-[58px] w-full flex-col items-center justify-center gap-1 rounded-2xl px-1 transition-colors",
-                    on ? "text-[color:var(--adm-accent-line)]" : "text-paper/55 active:text-paper/80",
-                  )}
+                  aria-current={t.id === active ? "page" : undefined}
+                  className="flex h-[58px] w-full flex-col items-center justify-center gap-1 rounded-2xl px-1"
+                  style={{ color: on ? "var(--adm-ink)" : "var(--adm-ink-3)" }}
                 >
-                  <span className={on ? "opacity-100" : "opacity-70"}>
+                  <span style={on ? { filter: "var(--adm-glow)" } : undefined}>
                     {ADMIN_TAB_ICONS[t.id] ?? ADMIN_TAB_ICON_FALLBACK}
                   </span>
-                  <span
-                    className={cn(
-                      "w-full truncate text-center font-sans text-eyebrow",
-                      on ? "font-semibold" : "font-medium",
-                    )}
-                  >
+                  <span className={cn("w-full truncate text-center font-sans text-[11px]", on ? "font-semibold" : "font-medium")}>
                     {t.label}
                   </span>
                 </button>
@@ -361,22 +362,18 @@ export function AdminMobileNav({
             <button
               ref={moreRef}
               type="button"
-              onClick={() => setSheetOpen(true)}
+              onClick={() => setSheetOpen((v) => !v)}
               aria-haspopup="dialog"
               aria-expanded={sheetOpen}
-              className={cn(
-                "flex h-[58px] w-full flex-col items-center justify-center gap-1 rounded-2xl px-1 transition-colors",
-                activeIsPrimary
-                  ? "text-paper/55 active:text-paper/80"
-                  : "text-[color:var(--adm-accent-line)]",
-              )}
+              className="flex h-[58px] w-full flex-col items-center justify-center gap-1 rounded-2xl px-1"
+              style={{ color: moreOn ? "var(--adm-ink)" : "var(--adm-ink-3)" }}
             >
-              <span aria-hidden className="flex h-[18px] items-end gap-[3px]">
+              <span aria-hidden className="flex h-[18px] items-center gap-[3px]" style={moreOn ? { filter: "var(--adm-glow)" } : undefined}>
                 <i className="h-1 w-1 rounded-full bg-current" />
                 <i className="h-1 w-1 rounded-full bg-current" />
                 <i className="h-1 w-1 rounded-full bg-current" />
               </span>
-              <span className="w-full truncate text-center font-sans text-eyebrow font-medium">
+              <span className={cn("w-full truncate text-center font-sans text-[11px]", moreOn ? "font-semibold" : "font-medium")}>
                 More
               </span>
             </button>

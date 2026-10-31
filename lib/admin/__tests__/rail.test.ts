@@ -91,7 +91,7 @@ const HIS_WEEK: ViewUse[] = [
   viewUse("goals", 1, 1, 3_000),
   // An owner page, and a tab no page holds: neither is an operations page.
   viewUse("owner-today", 9, 0, 400_000),
-  viewUse("growth", 30, 0, 900_000),
+  viewUse("nope", 30, 0, 900_000),
 ];
 
 describe("the rail as he picked it", () => {
@@ -211,8 +211,22 @@ describe("railFromUsage", () => {
   });
 
   it("ignores owner pages and tabs that no page holds", () => {
-    const only = [viewUse("owner-model", 500, 0, 9_000_000), viewUse("growth", 500, 0, 9_000_000)];
+    const only = [viewUse("owner-model", 500, 0, 9_000_000), viewUse("nope", 500, 0, 9_000_000)];
     expect(ids(railFromUsage(only))).toEqual(ids(pickedRail()));
+  });
+
+  it("counts a retired id for the page it now lands on", () => {
+    // Weeks on Verification are weeks on Users (sheet r3-15 made it a filter
+    // of the readers' directory): they lift Users into Daily as they would
+    // have lifted the page that held them.
+    const rail = railFromUsage([
+      viewUse("verification", 80, 0, 2_000_000),
+      viewUse("orders", 40, 0, 900_000),
+      viewUse("messages", 30, 0, 800_000),
+      viewUse("shop", 20, 0, 700_000),
+    ]);
+    expectWhole(rail);
+    expect(ids(rail)[0]).toEqual(["today", "users", "orders", "messages"]);
   });
 
   it("keeps every page reachable whatever the log says", () => {
@@ -268,7 +282,9 @@ describe("the rail cookie", () => {
     expect(ids(back.groups)).toEqual([
       ["today", "traffic", "overview", "users"],
       ["shop", "messages", "orders"],
-      ["drop", "content", "community", "eikon-box", "health", "audit"],
+      // The Audit log page goes by its first view, Your week (usage), since
+      // his pick B on r3-17.
+      ["drop", "content", "community", "eikon-box", "health", "usage"],
     ]);
   });
 

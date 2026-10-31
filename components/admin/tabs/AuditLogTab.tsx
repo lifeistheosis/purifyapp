@@ -1,242 +1,194 @@
 "use client";
 
+// The record: the Audit log's second view (his pick B on r3-17, 2026-10-30,
+// keeps A's timeline as it). "One record of who did what, the admin's and
+// Community's moderation together, by day, newest first. Search any name,
+// email, order or word; a switch narrows to Money, Shop, Readers, Community
+// or Releases. A row opens to its detail in words, not only in the CSV."
+//
+// NOT A FEED, A RECORD. The question it answers is "show me every refund
+// last Tuesday" or "who removed that reply", and it answers by searching
+// what /api/admin/activity-log reads: the newest 200 admin actions
+// (lib/admin/activityLog.ts) and the newest 100 lines of the moderation log.
+// The lines are lib/admin/auditRecord.ts.
+
 import { useMemo, useState } from "react";
 
-import { Card, DataTable, Pill, StatCard, Email } from "../primitives";
+import { KINDS, buildRecord, byDay, filterRecord, type ActivityEntry, type Kind, type ModLine } from "@/lib/admin/auditRecord";
+import { downloadCsv, toCsv } from "@/lib/admin/csv";
+
 import { useAdminFetch } from "../adminFetch";
+import { Email, SubTabs, ToolbarButton } from "../primitives";
+import { BOX, BOX_STYLE, ink, ink2, ink3, line } from "../tools/look";
 
-/**
- * Who did what, and when.
- *
- * WHY THIS TAB EXISTS. lib/admin/activityLog.ts has been recording privileged
- * writes since 20260823 and nothing has ever read them back. Its own header
- * explains what is at stake: comping a subscription overwrites plus_until
- * rather than extending it and replaces plus_source, so a paying subscriber
- * loses the record that they ever paid. Refunds, store provisioning and
- * entitlement writes sit in the same category. All of it was written to a
- * table with no reader, which is the same as not having a log at all right up
- * until the moment somebody asks what happened.
- *
- * NOT A FEED, A RECORD. It is deliberately plain and filterable rather than
- * decorated: the question it answers is "show me every entitlement write last
- * Tuesday", and that is a table.
- */
-
-type Entry = {
-  id: string;
-  actor_email: string | null;
-  action: string;
-  entity_type: string;
-  entity_id: string | null;
-  detail: Record<string, unknown> | null;
-  created_at: string;
+type Payload = {
+  entries: ActivityEntry[];
+  limit: number;
+  truncated: boolean;
+  mod?: ModLine[];
+  modReadable?: boolean;
+  me?: string | null;
 };
 
-type Payload = { entries: Entry[]; limit: number; truncated: boolean };
-
-/** The verbs worth colouring. Everything else reads as ordinary. */
-function toneFor(action: string): "rose" | "gold" | "emerald" | "neutral" {
-  if (/refund|remove|delete|revoke|unverify|decline/.test(action)) return "rose";
-  if (/comp|grant|entitle|verif|publish|pin/.test(action)) return "gold";
-  if (/create|provision|add/.test(action)) return "emerald";
-  return "neutral";
-}
-
-function when(iso: string): string {
-  return new Date(iso).toLocaleString(undefined, {
-    month: "short",
-    day: "numeric",
-    hour: "numeric",
-    minute: "2-digit",
-  });
-}
-
-/** The detail blob, as one readable line rather than raw JSON. */
-function summarise(detail: Record<string, unknown> | null): string {
-  if (!detail || typeof detail !== "object") return "";
-  const parts: string[] = [];
-  for (const [k, v] of Object.entries(detail)) {
-    if (v === null || v === undefined || v === "") continue;
-    // Nested objects are rare here and unreadable inline; the row is a
-    // pointer, and the full blob is one click away in the JSON column.
-    parts.push(`${k}: ${typeof v === "object" ? "…" : String(v)}`);
-  }
-  return parts.join(" · ");
-}
+type Switch = "All" | Kind;
 
 export function AuditLogTab() {
-  const [actor, setActor] = useState("");
-  const [action, setAction] = useState("");
+  const { data, error, reload } = useAdminFetch<Payload>("/api/admin/activity-log");
+  const [query, setQuery] = useState("");
+  const [kind, setKind] = useState<Switch>("All");
+  const [open, setOpen] = useState<string | null>(null);
 
-  const qs = useMemo(() => {
-    const p = new URLSearchParams();
-    if (actor.trim()) p.set("actor", actor.trim());
-    if (action.trim()) p.set("action", action.trim());
-    const s = p.toString();
-    return s ? `?${s}` : "";
-  }, [actor, action]);
+  const rows = useMemo(() => (data ? buildRecord(data.entries, data.mod ?? [], data.me ?? null) : []), [data]);
+  const shown = filterRecord(rows, query, kind);
+  const days = byDay(shown, new Date());
 
-  const { data, error, reload } = useAdminFetch<Payload>(
-    `/api/admin/activity-log${qs}`,
-  );
-
-  // Memoised, so the `?? []` cannot hand useMemo a fresh array identity on
-  // every render and defeat the memo it feeds.
-  const entries = useMemo(() => data?.entries ?? [], [data]);
-  const actors = useMemo(
-    () => new Set(entries.map((e) => e.actor_email).filter(Boolean)).size,
-    [entries],
-  );
+  function csv() {
+    downloadCsv(
+      "admin-record.csv",
+      toCsv(
+        ["when", "who", "what", "kind", "detail"],
+        shown.map((r) => [r.at, r.email ?? r.who, r.what, r.kind, r.detail.map(([k, v]) => `${k}: ${v}`).join("; ")]),
+      ),
+    );
+  }
 
   return (
-    <div className="space-y-6">
-      <div className="grid grid-cols-2 gap-3 lg:grid-cols-4">
-        <StatCard label="Entries shown" value={entries.length} accent />
-        <StatCard label="Distinct admins" value={actors} />
-        <StatCard
-          label="Newest"
-          value={entries[0] ? when(entries[0].created_at) : "—"}
-        />
-        <StatCard
-          label="Oldest shown"
-          value={entries.length ? when(entries[entries.length - 1].created_at) : "—"}
-        />
+    <div className="space-y-4">
+      <div className="flex flex-wrap items-center gap-2">
+        <label className="flex h-[34px] min-w-[14rem] flex-1 items-center gap-2 rounded-[var(--adm-radius-sm)] border px-2.5" style={{ borderColor: "var(--adm-line-strong)", background: "var(--adm-control)" }}>
+          <svg width="14" height="14" viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" aria-hidden style={ink3}>
+            <circle cx="9" cy="9" r="5.6" />
+            <path d="M13.2 13.2 17 17" />
+          </svg>
+          <input
+            value={query}
+            onChange={(e) => setQuery(e.target.value)}
+            placeholder="Search a name, an email, an order or a word"
+            aria-label="Search the record"
+            autoComplete="off"
+            spellCheck={false}
+            className="min-w-0 flex-1 bg-transparent font-sans text-[13px] outline-none"
+            style={ink}
+          />
+        </label>
+        <div className="hidden lg:block">
+          <SubTabs<Switch> tabs={[["All", "All"], ...KINDS.map((k) => [k, k] as const)]} active={kind} onChange={setKind} />
+        </div>
+        <select
+          value={kind}
+          onChange={(e) => setKind(e.target.value as Switch)}
+          aria-label="Which kind"
+          className="h-[34px] rounded-[var(--adm-radius-sm)] border px-2 font-sans text-[12.5px] lg:hidden"
+          style={{ borderColor: "var(--adm-line-strong)", background: "var(--adm-control)", color: "var(--adm-ink)" }}
+        >
+          <option value="All">All kinds</option>
+          {KINDS.map((k) => (
+            <option key={k} value={k}>
+              {k}
+            </option>
+          ))}
+        </select>
+        <ToolbarButton onClick={csv}>CSV</ToolbarButton>
       </div>
 
-      {error && (
-        <p role="alert" className="font-sans text-detail text-[color:var(--adm-critical)]">
-          {error}
+      {error ? (
+        <p role="alert" className="font-sans text-[12.5px]" style={{ color: "var(--adm-critical)" }}>
+          The record could not be read. If the audit log table is not on this database yet,
+          supabase/migrations/20260823000000_admin_activity_log.sql has not been applied.
         </p>
-      )}
-
-      {data?.truncated && (
-        <p className="font-sans text-detail text-[color:var(--adm-ink-3)]">
-          Showing the newest {data.limit}. Narrow with the filters to see past
-          them. This is not the whole log.
+      ) : null}
+      {data?.truncated ? (
+        <p className="font-sans text-[12px]" style={ink3}>
+          The newest {data.limit} admin actions are here, not the whole log; search narrows within them.
         </p>
-      )}
+      ) : null}
+      {data && data.modReadable === false ? (
+        <p className="font-sans text-[12px]" style={ink3}>
+          Community&apos;s moderation log did not answer, so its lines are missing below.
+        </p>
+      ) : null}
 
-      <Card
-        title="Admin activity"
-        subtitle="Every privileged write, with who made it. Filter by admin or by the start of an action name"
-      >
-        <div className="mb-3 flex flex-wrap items-end gap-2">
-          <label className="min-w-[180px] flex-1">
-            <span
-              className="mb-1 block font-sans text-[11.5px]"
-              style={{ color: "var(--adm-ink-3)" }}
-            >
-              Admin email
-            </span>
-            <input
-              value={actor}
-              onChange={(e) => setActor(e.target.value)}
-              placeholder="anyone"
-              autoComplete="off"
-              spellCheck={false}
-              className="h-10 w-full rounded-[var(--adm-radius-sm)] border px-3 font-sans text-[13px] outline-none"
-              style={{
-                background: "var(--adm-control)",
-                borderColor: "var(--adm-line)",
-                color: "var(--adm-ink)",
-              }}
-            />
-          </label>
-          <label className="min-w-[180px] flex-1">
-            <span
-              className="mb-1 block font-sans text-[11.5px]"
-              style={{ color: "var(--adm-ink-3)" }}
-            >
-              Action starts with
-            </span>
-            <input
-              value={action}
-              onChange={(e) => setAction(e.target.value)}
-              placeholder="shop., user., subscription."
-              autoComplete="off"
-              spellCheck={false}
-              className="h-10 w-full rounded-[var(--adm-radius-sm)] border px-3 font-sans text-[13px] outline-none"
-              style={{
-                background: "var(--adm-control)",
-                borderColor: "var(--adm-line)",
-                color: "var(--adm-ink)",
-              }}
-            />
-          </label>
+      {!data && !error ? (
+        <p className="font-sans text-[12.5px]" style={ink3}>
+          Reading the record.
+        </p>
+      ) : data && shown.length === 0 ? (
+        <p className={`${BOX} px-4 py-3 font-sans text-[12.5px]`} style={{ ...BOX_STYLE, ...ink3 }}>
+          {query || kind !== "All" ? "Nothing matches." : "Nothing recorded yet."}
+        </p>
+      ) : (
+        <div className={BOX} style={BOX_STYLE}>
+          {days.map((d, di) => (
+            <section key={d.day}>
+              <p className={`px-4 pb-1.5 pt-2.5 font-sans text-[11.5px] font-semibold ${di ? "border-t" : ""}`} style={{ ...line, ...ink2 }}>
+                {d.day}
+              </p>
+              <ul>
+                {d.rows.map((r) => {
+                  const isOpen = open === r.id;
+                  return (
+                    <li key={r.id} className="border-t" style={line}>
+                      <button
+                        type="button"
+                        onClick={() => setOpen(isOpen ? null : r.id)}
+                        aria-expanded={isOpen}
+                        className="grid min-h-11 w-full grid-cols-[3rem_minmax(0,1fr)_auto] items-center gap-x-3 px-4 py-2 text-left font-sans text-[13px] md:grid-cols-[3rem_9rem_minmax(0,1fr)_auto_14px]"
+                        style={isOpen ? { background: "var(--adm-panel-2)" } : undefined}
+                      >
+                        <span className="font-mono text-[12px]" style={ink3}>
+                          {new Date(r.at).toLocaleTimeString(undefined, { hour: "2-digit", minute: "2-digit", hour12: false })}
+                        </span>
+                        <span className="hidden truncate font-semibold md:block" style={ink}>
+                          {r.you || !r.email ? r.who : <Email value={r.email} />}
+                        </span>
+                        <span className="min-w-0" style={ink2}>
+                          <span className="font-semibold md:hidden" style={ink}>
+                            {r.you || !r.email ? r.who : <Email value={r.email} />}{" "}
+                          </span>
+                          <span className="adm-sensitive">{r.what}</span>
+                        </span>
+                        <span
+                          className="rounded-[var(--adm-radius-xs)] px-1.5 font-sans text-[11.5px] font-medium"
+                          style={{ background: "var(--adm-panel-2)", color: "var(--adm-ink-2)" }}
+                        >
+                          {r.kind}
+                        </span>
+                        <span aria-hidden className="hidden md:block" style={ink3}>
+                          {isOpen ? "⌄" : "›"}
+                        </span>
+                      </button>
+                      {isOpen ? (
+                        <dl className="adm-sensitive grid grid-cols-[auto_1fr] gap-x-4 gap-y-1 px-4 pb-3 pt-1 font-mono text-[11.5px] md:pl-[13.5rem]" style={{ background: "var(--adm-panel-2)" }}>
+                          {r.detail.length === 0 ? (
+                            <dd className="col-span-2" style={ink3}>
+                              Nothing more was recorded.
+                            </dd>
+                          ) : (
+                            r.detail.map(([k, v], i) => (
+                              <div key={`${k}${i}`} className="contents">
+                                <dt style={ink3}>{k}</dt>
+                                <dd className="break-all" style={ink2}>
+                                  {v}
+                                </dd>
+                              </div>
+                            ))
+                          )}
+                        </dl>
+                      ) : null}
+                    </li>
+                  );
+                })}
+              </ul>
+            </section>
+          ))}
         </div>
+      )}
 
-        <DataTable<Entry>
-          csvFilename="admin-activity-log.csv"
-          columns={[
-            {
-              key: "when",
-              label: "When",
-              render: (e) => (
-                <span className="whitespace-nowrap text-paper/70">
-                  {when(e.created_at)}
-                </span>
-              ),
-              csv: (e) => e.created_at,
-            },
-            {
-              key: "actor",
-              label: "Admin",
-              // Through <Email>, so streamer mode covers it like every other
-              // address in the panel.
-              render: (e) =>
-                e.actor_email ? (
-                  <Email value={e.actor_email} className="text-paper/85" />
-                ) : (
-                  <Pill tone="rose">unknown</Pill>
-                ),
-              csv: (e) => e.actor_email ?? "",
-            },
-            {
-              key: "action",
-              label: "Action",
-              render: (e) => <Pill tone={toneFor(e.action)}>{e.action}</Pill>,
-              csv: (e) => e.action,
-            },
-            {
-              key: "entity",
-              label: "On",
-              render: (e) => (
-                <span className="text-paper/70">
-                  {e.entity_type}
-                  {e.entity_id ? (
-                    <span className="text-paper/40"> · {e.entity_id}</span>
-                  ) : null}
-                </span>
-              ),
-              csv: (e) => `${e.entity_type} ${e.entity_id ?? ""}`.trim(),
-            },
-            {
-              key: "detail",
-              label: "Detail",
-              render: (e) => (
-                <span className="text-paper/60">{summarise(e.detail)}</span>
-              ),
-              csv: (e) => JSON.stringify(e.detail ?? {}),
-            },
-          ]}
-          rows={entries}
-          rowKey={(e) => e.id}
-          empty={
-            actor || action
-              ? "Nothing matches those filters."
-              : "No admin activity recorded yet."
-          }
-        />
-
-        <button
-          type="button"
-          onClick={reload}
-          className="mt-3 font-sans text-[12px]"
-          style={{ color: "var(--adm-ink-3)" }}
-        >
-          Refresh
+      {data ? (
+        <button type="button" onClick={reload} className="min-h-11 font-sans text-[12px] underline underline-offset-[3px]" style={ink3}>
+          Read it again
         </button>
-      </Card>
+      ) : null}
     </div>
   );
 }

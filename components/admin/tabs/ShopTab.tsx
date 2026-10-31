@@ -5,7 +5,7 @@
 // (admin-gated, service role). This is the only UI where sourcing and
 // supplier data appear.
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, type ReactNode } from "react";
 import Image from "next/image";
 
 import {
@@ -25,11 +25,24 @@ import { hasSupplierImage, orderedMedia } from "@/lib/shop/imageRights";
 import { slugify, uniqueSlug } from "@/lib/shop/importListing";
 import { ProductMediaManager } from "../ProductMediaManager";
 import { ImportListingPanel, type ImportDraftRequest } from "../ImportListingPanel";
-import { GrowthPanel } from "../shop/GrowthPanel";
+import { Btn, Segmented } from "../needed/parts";
+import { LowStockCard } from "../shop/LowStockCard";
+import { ShelfCard } from "../shop/ShelfCard";
+import {
+  SHELF_VIEWS,
+  inShelfView,
+  matchesPiece,
+  shelfCounts,
+  shelfState,
+  shelfWarning,
+  type LastCheck,
+  type ShelfView,
+} from "@/lib/admin/catalogue";
 
 import {
   Card,
   DataTable,
+  Disclosure,
   FilterBar,
   FilterChips,
   FilterSelect,
@@ -309,39 +322,15 @@ function supplierHost(url: string): string {
   }
 }
 
-/* ── Tab shell ─────────────────────────────────────────────────────────── */
+/* ── The panels ────────────────────────────────────────────────────────────
+ * The Catalogue page (components/admin/tabs/ShopHubTab.tsx) composes these:
+ * the shelf, and the quiet line of its other parts (the owner's pick A,
+ * r3-16, 2026-10-30). They were five sub-tabs here, under two more on the
+ * hub. */
 
-type Panel = "products" | "deals" | "requests" | "applications" | "reviews";
+/* ── Products: the shelf ───────────────────────────────────────────────── */
 
-export function ShopTab() {
-  const [panel, setPanel] = useState<Panel>("products");
-  return (
-    <div className="space-y-6">
-      <SubTabs
-        tabs={
-          [
-            ["products", "Products"],
-            ["deals", "Deals & shipping"],
-            ["requests", "Icon requests"],
-            ["applications", "Merchant applications"],
-            ["reviews", "Reviews"],
-          ] as const
-        }
-        active={panel}
-        onChange={setPanel}
-      />
-      {panel === "products" && <ProductsPanel />}
-      {panel === "deals" && <GrowthPanel />}
-      {panel === "requests" && <RequestsPanel />}
-      {panel === "applications" && <ApplicationsPanel />}
-      {panel === "reviews" && <ReviewsPanel />}
-    </div>
-  );
-}
-
-/* ── Products ──────────────────────────────────────────────────────────── */
-
-function ProductsPanel() {
+export function ProductsPanel({ lead }: { lead?: ReactNode } = {}) {
   const [products, setProducts] = useState<AdminProduct[]>([]);
   const [sourcing, setSourcing] = useState<Sourcing[]>([]);
   // Stores were already in the response and were being thrown away. The
@@ -448,13 +437,15 @@ function ProductsPanel() {
   const [version, setVersion] = useState(0);
   const load = () => setVersion((v) => v + 1);
 
-  // Table filters. Catalog-scale data, so filtering and sorting run inline on
-  // every render instead of hiding behind memo hooks.
+  // The shelf's switch and search (the owner's pick A, r3-16: a four-part
+  // switch in place of the status chips). Catalogue-scale data, so the
+  // filtering runs inline on every render.
   const [query, setQuery] = useState("");
-  const [statusFilter, setStatusFilter] = useState("all");
-  const [category, setCategory] = useState("all");
-  const [availability, setAvailability] = useState("all");
-  const [sort, setSort] = useState("newest");
+  const [view, setView] = useState<ShelfView | "deleted">("live");
+  const [importOpen, setImportOpen] = useState(false);
+  // The latest supplier price check per piece, which dashes a card whose
+  // Temu price moved (lib/admin/catalogue.ts shelfWarning).
+  const [lastChecks, setLastChecks] = useState<Record<string, LastCheck>>({});
 
   useEffect(() => {
     let alive = true;
@@ -470,12 +461,14 @@ function ProductsPanel() {
         deleted?: DeletedProduct[];
         sourcing: Sourcing[];
         stores?: { id: string; status: string }[];
+        lastChecks?: Record<string, LastCheck>;
       };
       if (!alive) return;
       setProducts(data.products);
       setDeleted(data.deleted ?? []);
       setSourcing(data.sourcing);
       setStores(data.stores ?? []);
+      setLastChecks(data.lastChecks ?? {});
       setStatus(null);
     }
     run();
@@ -511,79 +504,22 @@ function ProductsPanel() {
   const gatedHidden = (p: AdminProduct) =>
     p.status === "published" && hasSupplierImage(p.media);
 
-  const q = query.trim().toLowerCase();
-  // "deleted" swaps the table's rows for the deleted list rather than
-  // filtering the live one, so a restore is one click from where it is found.
-  const showingDeleted = statusFilter === "deleted";
+  // A piece's state on the shelf. Published but hidden by the image-rights
+  // gate is Hidden, dashed, because the shop does not show it.
+  const stateOf = (p: AdminProduct) => shelfState(p, gatedHidden(p));
+  const counts = shelfCounts(products.map(stateOf));
+  // "deleted" swaps the shelf for the deleted pieces rather than filtering
+  // the live ones, so a restore is one tap from where it is found.
+  const showingDeleted = view === "deleted";
   const visible = (showingDeleted ? deleted : products).filter((p) => {
-    if (statusFilter === "hidden") {
-      if (!gatedHidden(p)) return false;
-    } else if (!showingDeleted && statusFilter !== "all" && p.status !== statusFilter) return false;
-    if (category !== "all" && p.category !== category) return false;
-    if (availability !== "all" && p.inventory_status !== availability) return false;
-    if (!q) return true;
+    if (!showingDeleted && !inShelfView(stateOf(p), view)) return false;
     const s = sourcingOf(p.id);
-    return [p.title, p.slug, p.maker_name, p.category, s?.supplier_sku, s?.supplier_url]
-      .filter(Boolean)
-      .join(" ")
-      .toLowerCase()
-      .includes(q);
+    return matchesPiece(p, [p.maker_name, s?.supplier_sku, s?.supplier_url], query);
   });
-
-  const roiOf = (p: AdminProduct) => {
-    const cost = sourcingOf(p.id)?.supplier_cost_cents;
-    return cost != null && cost > 0
-      ? (p.price_cents - cost) / cost
-      : Number.NEGATIVE_INFINITY;
-  };
-  if (sort === "title") visible.sort((a, b) => a.title.localeCompare(b.title));
-  else if (sort === "price_desc") visible.sort((a, b) => b.price_cents - a.price_cents);
-  else if (sort === "price_asc") visible.sort((a, b) => a.price_cents - b.price_cents);
-  else if (sort === "views") visible.sort((a, b) => (b.view_count ?? 0) - (a.view_count ?? 0));
-  else if (sort === "sold") visible.sort((a, b) => (b.units_sold ?? 0) - (a.units_sold ?? 0));
-  else if (sort === "roi") visible.sort((a, b) => roiOf(b) - roiOf(a));
-  // "newest" keeps the API order (created_at desc).
-
-  const filtersActive =
-    q !== "" || statusFilter !== "all" || category !== "all" || availability !== "all";
-  const clearFilters = () => {
-    setQuery("");
-    setStatusFilter("all");
-    setCategory("all");
-    setAvailability("all");
-  };
-
-  // Catalog totals stay pinned to the WHOLE catalog, not the filtered view,
-  // so the strip reads as "state of the shop" while filters narrow the table.
-  let views = 0;
-  let sold = 0;
-  let revenue = 0;
-  let profit = 0;
-  for (const p of products) {
-    views += p.view_count ?? 0;
-    sold += p.units_sold ?? 0;
-    revenue += (p.units_sold ?? 0) * p.price_cents;
-    const cost = sourcingOf(p.id)?.supplier_cost_cents;
-    // Contribution, not price minus cost. Same reason as the per-product
-    // figures below: the processing fee is real money and is regressive, so
-    // omitting it overstates every small item.
-    if (cost != null) {
-      profit += (p.units_sold ?? 0) * unitEconomics(p.price_cents, cost).contributionCents;
-    }
-  }
-  // "Published" counts what the STOREFRONT shows (status published AND past
-  // the image-rights gate); the gap is surfaced as its own number.
-  const hiddenByGate = products.filter(gatedHidden).length;
-  const published =
-    products.filter((p) => p.status === "published").length - hiddenByGate;
-  const drafts = products.filter((p) => p.status === "draft").length;
   // So an imported listing cannot land on a slug the shop already uses. The
   // deleted ones count: a deleted product keeps its slug for good, so an old
   // link or an order never starts pointing at something else.
   const takenSlugs = [...products, ...deleted].map((p) => p.slug);
-  const outOfStock = products.filter(
-    (p) => p.inventory_status === "out_of_stock",
-  ).length;
 
   // The shop checked against itself. See lib/shop/integrity.ts for what each
   // kind means and why markup is reported rather than judged.
@@ -635,45 +571,19 @@ function ProductsPanel() {
         </div>
       ) : null}
 
-      <div className="grid grid-cols-2 gap-2 sm:grid-cols-3 lg:grid-cols-6">
-        <Metric
-          label="Products"
-          value={String(products.length)}
-          hint={drafts > 0 ? `${drafts} draft` : undefined}
-        />
-        <Metric
-          label="Live in shop"
-          value={String(published)}
-          tone={published > 0 ? "text-[color:var(--adm-good)]" : undefined}
-          hint={hiddenByGate > 0 ? `${hiddenByGate} hidden by image rights` : undefined}
-        />
-        <Metric
-          label="Out of stock"
-          value={String(outOfStock)}
-          tone={outOfStock > 0 ? "text-[color:var(--adm-warn)]" : "text-paper/40"}
-        />
-        <Metric label="Views" value={views.toLocaleString()} />
-        <Metric
-          label="Units sold"
-          value={sold.toLocaleString()}
-          tone={sold > 0 ? "text-[color:var(--adm-good)]" : undefined}
-        />
-        {/* NOT "Revenue". This is units_sold multiplied by the price the
-            product carries RIGHT NOW, and units_sold is a monotonic counter
-            that refunds never decrement. Raise a price from this tab's own
-            editor and the figure rises with no sale having happened, while
-            the Revenue tab keeps reporting the real number because it sums
-            shop_order_items.unit_price_cents, a genuine sale-time snapshot.
-            Two tabs of one panel would disagree the moment a price moved.
-
-            Renamed rather than recomputed, so there is exactly one place in
-            the panel that claims to state booked revenue, and it is the one
-            reading the orders. */}
-        <Metric
-          label="Sold at today's price"
-          value={money(revenue)}
-          hint={profit > 0 ? `${money(profit)} contribution` : undefined}
-        />
+      {/* The page's own row, as drawn: the quiet line of the Catalogue's
+          other parts on the left, and the two ways a piece is made on the
+          right. */}
+      <div className="flex flex-wrap items-start justify-between gap-3">
+        <div className="min-w-0 flex-1">{lead}</div>
+        <div className="flex shrink-0 gap-2">
+          <Btn icon="attach" onClick={() => setImportOpen(true)}>
+            From a link
+          </Btn>
+          <Btn primary icon="plus" onClick={startNew}>
+            New piece
+          </Btn>
+        </div>
       </div>
 
       {unsaved.length > 0 ? (
@@ -717,316 +627,99 @@ function ProductsPanel() {
         </Card>
       ) : null}
 
+      {status ? (
+        <p className="font-sans text-detail text-[color:var(--adm-critical)]">{status}</p>
+      ) : null}
+      {notice ? (
+        <p role="status" className="font-sans text-detail text-[color:var(--adm-good)]">
+          {notice}
+        </p>
+      ) : null}
+
+      {/* The four-part switch, in place of the status chips, and the search. */}
+      <div className="flex flex-wrap items-center justify-between gap-3">
+        <Segmented
+          label="Which pieces"
+          value={view}
+          onChange={setView}
+          options={[
+            ...SHELF_VIEWS.map(([id, label]) => [id, label, counts[id]] as const),
+            ...(showingDeleted ? ([["deleted", "Deleted", deleted.length]] as const) : []),
+          ]}
+        />
+        <SearchInput value={query} onChange={setQuery} placeholder="Search pieces" className="w-full sm:w-60" />
+      </div>
+      <p className="-mt-3 font-sans text-[11.5px]" style={{ color: "var(--adm-ink-3)" }}>
+        Stock is one count per piece today, shown as general stock: the split into shippable and quality control is not
+        recorded yet, and a piece kept for quality control is never shipped.
+      </p>
+
+      {visible.length === 0 ? (
+        <p className="font-sans text-[13px]" style={{ color: "var(--adm-ink-3)" }}>
+          {showingDeleted
+            ? "Nothing deleted."
+            : products.length
+              ? "No pieces here."
+              : "No pieces yet. Make one from a link, or start a new piece."}
+        </p>
+      ) : (
+        <ul className="grid grid-cols-2 gap-2.5 sm:grid-cols-3 lg:grid-cols-4 2xl:grid-cols-5">
+          {visible.map((p) => {
+            const cost = sourcingOf(p.id)?.supplier_cost_cents ?? null;
+            return (
+              <li key={p.id}>
+                <ShelfCard
+                  title={p.title}
+                  priceCents={p.price_cents}
+                  costCents={cost}
+                  quantity={p.quantity_available}
+                  photo={orderedMedia(p.media)[0]?.media_url ?? null}
+                  state={showingDeleted ? "archived" : stateOf(p)}
+                  warning={showingDeleted ? null : shelfWarning(p, cost, lastChecks[p.id])}
+                  onOpen={showingDeleted ? undefined : () => openProduct(p)}
+                  action={
+                    showingDeleted ? (
+                      <ToolbarButton onClick={() => void restore(p)}>Restore</ToolbarButton>
+                    ) : undefined
+                  }
+                />
+              </li>
+            );
+          })}
+        </ul>
+      )}
+
+      {deleted.length > 0 ? (
+        <button
+          type="button"
+          onClick={() => setView(showingDeleted ? "live" : "deleted")}
+          className="font-sans text-[12px] underline underline-offset-[3px]"
+          style={{ color: "var(--adm-ink-3)" }}
+        >
+          {showingDeleted ? "Back to the shelf" : `Deleted pieces: ${deleted.length}`}
+        </button>
+      ) : null}
+
+      <Disclosure
+        title="Restock lines"
+        hint="Each counted piece against the line that sends you a push when a sale crosses it."
+      >
+        <LowStockCard />
+      </Disclosure>
+
       {/* Paste a distributor's link, get a draft. The panel does the reading
           and this owns the one thing it must not: turning what was read into a
           product the editor can save. */}
-      <Card
-        title="Make a listing from a link"
-        subtitle="Paste a distributor's product page and check what came back"
-      >
-        <ImportListingPanel onDraft={(req) => setDraft(draftFromImport(req, takenSlugs))} />
-      </Card>
-
-      <Card
-        title="EIKON products"
-        subtitle="Publish, pause, and keep availability honest"
-        action={
-          <button
-            type="button"
-            onClick={startNew}
-            className="rounded-pill border adm-outline bg-[var(--adm-control)] px-3 py-1 font-sans text-caption font-semibold text-gold-pale"
-          >
-            New product
-          </button>
-        }
-      >
-        {status ? (
-          <p className="mb-3 font-sans text-detail text-[color:var(--adm-critical)]">{status}</p>
-        ) : null}
-        {notice ? (
-          <p role="status" className="mb-3 font-sans text-detail text-[color:var(--adm-good)]">
-            {notice}
-          </p>
-        ) : null}
-        <FilterBar
-          matched={visible.length}
-          total={products.length}
-          noun="products"
-          onClear={filtersActive ? clearFilters : null}
-        >
-          <SearchInput
-            value={query}
-            onChange={setQuery}
-            placeholder="Search title, slug, maker, supplier…"
-            className="w-full sm:w-72"
+      {importOpen ? (
+        <Modal title="A piece from a link" subtitle="Paste a distributor's product page and check what came back" onClose={() => setImportOpen(false)} wide>
+          <ImportListingPanel
+            onDraft={(req) => {
+              setImportOpen(false);
+              setDraft(draftFromImport(req, takenSlugs));
+            }}
           />
-          <FilterChips
-            options={[
-              { id: "all", label: "All", count: products.length },
-              ...PRODUCT_STATUSES.map((s) => ({
-                id: s,
-                label: s,
-                count: products.filter((p) => p.status === s).length,
-              })),
-              ...(hiddenByGate > 0 || statusFilter === "hidden"
-                ? [{ id: "hidden", label: "hidden", count: hiddenByGate }]
-                : []),
-              ...(deleted.length > 0 || statusFilter === "deleted"
-                ? [{ id: "deleted", label: "deleted", count: deleted.length }]
-                : []),
-            ]}
-            active={statusFilter}
-            onChange={setStatusFilter}
-          />
-          <FilterSelect
-            label="Category"
-            value={category}
-            onChange={setCategory}
-            options={[
-              ["all", "All"],
-              ...PRODUCT_CATEGORIES.map((c) => [c, pretty(c)] as const),
-            ]}
-          />
-          <FilterSelect
-            label="Availability"
-            value={availability}
-            onChange={setAvailability}
-            options={[
-              ["all", "All"],
-              ...INVENTORY_STATUSES.map((s) => [s, pretty(s)] as const),
-            ]}
-          />
-          <FilterSelect
-            label="Sort"
-            value={sort}
-            onChange={setSort}
-            options={[
-              ["newest", "Newest"],
-              ["title", "Title A-Z"],
-              ["price_desc", "Price: high to low"],
-              ["price_asc", "Price: low to high"],
-              ["views", "Most viewed"],
-              ["sold", "Best selling"],
-              ["roi", "Best ROI"],
-            ]}
-          />
-        </FilterBar>
-        <DataTable<AdminProduct>
-          rows={visible}
-          rowKey={(p) => p.id}
-          csvFilename="eikon-products.csv"
-          empty={
-            showingDeleted
-              ? "Nothing deleted."
-              : products.length
-                ? "No products match these filters."
-                : "No products yet. Apply the migration, then seed or create one."
-          }
-          columns={[
-            {
-              key: "title",
-              label: "Product",
-              render: (p) => (
-                <button
-                  type="button"
-                  onClick={() => (showingDeleted ? undefined : openProduct(p))}
-                  disabled={showingDeleted}
-                  className="group flex items-center gap-3 text-left disabled:cursor-default"
-                >
-                  <span className="relative h-9 w-9 shrink-0 overflow-hidden rounded-[var(--adm-radius-sm)] border border-white/8 bg-night-soft/60">
-                    {orderedMedia(p.media)[0] ? (
-                      <Image
-                        src={orderedMedia(p.media)[0].media_url}
-                        alt=""
-                        fill
-                        sizes="36px"
-                        className="object-cover"
-                      />
-                    ) : (
-                      <span className="flex h-full w-full items-center justify-center font-sans text-eyebrow text-paper/25">
-                        ·
-                      </span>
-                    )}
-                  </span>
-                  <span className="min-w-0">
-                    <span className="block max-w-[280px] truncate font-medium text-paper group-hover:text-gold-pale">
-                      {p.title}
-                    </span>
-                    <span className="block max-w-[280px] truncate font-sans text-eyebrow text-paper/40">
-                      {p.slug} · {pretty(p.category)}
-                    </span>
-                  </span>
-                </button>
-              ),
-              csv: (p) => p.title,
-            },
-            {
-              key: "source",
-              label: "Source",
-              render: (p) => {
-                const s = sourcing.find((x) => x.product_id === p.id);
-                if (!s?.supplier_url) {
-                  return <span className="text-paper/30">—</span>;
-                }
-                return (
-                  <a
-                    href={s.supplier_url}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    title={s.supplier_url}
-                    className="inline-flex items-center gap-1 whitespace-nowrap font-sans text-detail text-gold-pale hover:underline"
-                  >
-                    {supplierHost(s.supplier_url)}
-                    {s.supplier_sku ? (
-                      <span className="text-paper/40">· {s.supplier_sku}</span>
-                    ) : null}
-                  </a>
-                );
-              },
-              csv: (p) =>
-                sourcing.find((x) => x.product_id === p.id)?.supplier_url ?? "",
-            },
-            {
-              key: "price",
-              label: "Price",
-              align: "right",
-              render: (p) => money(p.price_cents),
-              csv: (p) => p.price_cents / 100,
-            },
-            {
-              key: "roi",
-              label: "Cost · ROI",
-              align: "right",
-              render: (p) => {
-                const cost = sourcing.find((x) => x.product_id === p.id)?.supplier_cost_cents;
-                if (cost == null) return <span className="text-paper/30">—</span>;
-                const profit = p.price_cents - cost;
-                const roi = cost > 0 ? (profit / cost) * 100 : null;
-                const tone =
-                  roi == null
-                    ? "text-paper/60"
-                    : roi < 0
-                      ? "text-[color:var(--adm-critical)]"
-                      : roi < 100
-                        ? "text-[color:var(--adm-warn)]"
-                        : "text-[color:var(--adm-good)]";
-                return (
-                  <span className="whitespace-nowrap font-sans text-detail">
-                    <span className="text-paper/50">{money(cost)}</span>
-                    {roi != null ? (
-                      <span className={"ml-2 font-semibold " + tone}>{roi.toFixed(0)}%</span>
-                    ) : null}
-                  </span>
-                );
-              },
-              csv: (p) => {
-                const cost = sourcing.find((x) => x.product_id === p.id)?.supplier_cost_cents;
-                if (cost == null || cost <= 0) return "";
-                return (((p.price_cents - cost) / cost) * 100).toFixed(0);
-              },
-            },
-            {
-              key: "inventory",
-              label: "Availability",
-              render: (p) => (
-                <Select
-                  size="sm"
-                  value={p.inventory_status as ShopInventoryStatus}
-                  onChange={(v) => void quickUpdate(p, { inventory_status: v })}
-                  ariaLabel={`Availability for ${p.title}`}
-                  options={INVENTORY_OPTIONS}
-                  disabled={showingDeleted}
-                  menuMinWidth={240}
-                />
-              ),
-              csv: (p) => p.inventory_status,
-            },
-            {
-              key: "dispatch",
-              label: "Dispatch",
-              render: (p) => `${p.dispatch_min_days}–${p.dispatch_max_days}d`,
-              csv: (p) => `${p.dispatch_min_days}-${p.dispatch_max_days}`,
-            },
-            {
-              key: "engagement",
-              label: "Views · Buys",
-              align: "right",
-              render: (p) => {
-                const v = p.view_count ?? 0;
-                const b = p.units_sold ?? 0;
-                const conv = v > 0 ? Math.round((b / v) * 100) : null;
-                return (
-                  <span className="whitespace-nowrap font-sans text-detail tabular-nums">
-                    <span className="text-paper/55">{v}</span>
-                    <span className="mx-1 text-paper/25">·</span>
-                    <span className="font-semibold text-[color:var(--adm-good)]">{b}</span>
-                    {conv != null ? (
-                      <span className="ml-1.5 text-eyebrow text-paper/40">
-                        {conv}%
-                      </span>
-                    ) : null}
-                  </span>
-                );
-              },
-              csv: (p) => `${p.view_count ?? 0}/${p.units_sold ?? 0}`,
-            },
-            {
-              key: "status",
-              label: "Status",
-              render: (p) =>
-                gatedHidden(p) ? (
-                  <span
-                    title="Published, but the storefront hides it: the primary image is on a supplier CDN. Replace it with an owned photo to make it live."
-                    className="inline-flex"
-                  >
-                    <Pill tone="gold">hidden</Pill>
-                  </span>
-                ) : (
-                  <Pill tone={p.status === "published" ? "emerald" : p.status === "paused" ? "rose" : "neutral"}>
-                    {p.status}
-                  </Pill>
-                ),
-              csv: (p) => (gatedHidden(p) ? "published (hidden)" : p.status),
-            },
-            {
-              key: "actions",
-              label: "",
-              render: (p) =>
-                showingDeleted ? (
-                  <button
-                    type="button"
-                    onClick={() => void restore(p)}
-                    className="rounded-pill border border-paper/20 px-3 py-1 font-sans text-caption text-paper/70 hover:text-paper"
-                  >
-                    Restore
-                  </button>
-                ) : (
-                  <span className="inline-flex gap-1.5">
-                    <button
-                      type="button"
-                      onClick={() =>
-                        void quickUpdate(p, {
-                          status: p.status === "published" ? "paused" : "published",
-                        })
-                      }
-                      className="rounded-pill border border-paper/20 px-3 py-1 font-sans text-caption text-paper/70 hover:text-paper"
-                    >
-                      {p.status === "published" ? "Pause" : "Publish"}
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => setPendingDelete(p)}
-                      aria-label={`Delete ${p.title}`}
-                      className="rounded-pill border border-[color:color-mix(in_oklab,var(--adm-critical),transparent_60%)] px-3 py-1 font-sans text-caption text-[color:var(--adm-critical)] hover:bg-[color:color-mix(in_oklab,var(--adm-critical),transparent_90%)]"
-                    >
-                      Delete
-                    </button>
-                  </span>
-                ),
-            },
-          ]}
-        />
-      </Card>
+        </Modal>
+      ) : null}
 
       {editing && draftId ? (
         <ProductSheet
@@ -2405,7 +2098,7 @@ function ProductEditor({
 
 /* ── Requests ──────────────────────────────────────────────────────────── */
 
-function RequestsPanel() {
+export function RequestsPanel() {
   const [requests, setRequests] = useState<IconRequest[]>([]);
   const [error, setError] = useState<string | null>(null);
   const [version, setVersion] = useState(0);
@@ -2549,7 +2242,7 @@ function RequestsPanel() {
 
 /* ── Applications ──────────────────────────────────────────────────────── */
 
-function ApplicationsPanel() {
+export function ApplicationsPanel() {
   const [apps, setApps] = useState<Application[]>([]);
   const [notes, setNotes] = useState<AppNote[]>([]);
   const [noteDraft, setNoteDraft] = useState<Record<string, string>>({});
@@ -2798,7 +2491,7 @@ function starLabel(n: number): string {
   return "★★★★★".slice(0, n) + "☆☆☆☆☆".slice(0, 5 - n);
 }
 
-function ReviewsPanel() {
+export function ReviewsPanel() {
   const [data, setData] = useState<ReviewsData | null>(null);
   const [status, setStatus] = useState<string | null>(null);
   const [version, setVersion] = useState(0);

@@ -58,7 +58,14 @@ export function readProbeSlice(d: unknown): ProbeSlice | null {
     if (!isObj(p) || typeof p.service !== "string") return null;
     const status = p.status;
     if (status !== "ok" && status !== "fail" && status !== "skipped") return null;
-    out.push({ service: p.service, status, detail: typeof p.detail === "string" ? p.detail : "" });
+    // Render's deploy facts ride along (lib/admin/renderDeploy.ts); anything
+    // else in that field is dropped rather than trusted.
+    const d = isObj(p.deploy) ? p.deploy : null;
+    const deploy =
+      d && typeof d.failed === "boolean"
+        ? { failed: d.failed, commit: typeof d.commit === "string" ? d.commit : null }
+        : undefined;
+    out.push({ service: p.service, status, detail: typeof p.detail === "string" ? p.detail : "", ...(deploy ? { deploy } : {}) });
   }
   // An empty probe list is a route that ran nothing, which is not a measurement.
   if (out.length === 0) return null;
@@ -90,11 +97,20 @@ export function readPlannerSlice(d: unknown): { overdue: number; today: number }
   return { overdue: d.overdue, today: d.today };
 }
 
-export function readCommunitySlice(d: unknown): { recipes: number; reports: number } | null {
+export function readCommunitySlice(
+  d: unknown,
+): { recipes: number; reports: number; held?: number; waiting?: number } | null {
   if (!isObj(d)) return null;
-  // The counts-only shape the strip asks for (?summary=1).
+  // The counts-only shape the strip asks for (?summary=1). held and waiting
+  // arrive with the one queue (r3-17): the rows the page shows, held posts
+  // included, which is the number the rail wears.
   if (typeof d.recipes === "number" && typeof d.reports === "number") {
-    return { recipes: d.recipes, reports: d.reports };
+    return {
+      recipes: d.recipes,
+      reports: d.reports,
+      ...(typeof d.held === "number" ? { held: d.held } : {}),
+      ...(typeof d.waiting === "number" ? { waiting: d.waiting } : {}),
+    };
   }
   const keys = ["pendingRecipes", "campaignReports", "recipeReports", "conversationReports"];
   if (!keys.every((k) => Array.isArray(d[k]))) return null;

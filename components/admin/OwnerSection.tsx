@@ -57,6 +57,16 @@ const OwnerDashboard = dynamic(
   },
 );
 
+/**
+ * The gate's last answer, kept for a few minutes. Strategy is one page with
+ * four views since his pick B on r3-17 (2026-10-30), and each view mounts
+ * this afresh: without it every move between them read the database again.
+ * Only a 200 is kept, so a refusal is always asked again, and the chunk is
+ * still imported only after the server said yes once in this visit.
+ */
+const GATE: { payload: ActualsPayload | null; at: number } = { payload: null, at: 0 };
+const GATE_KEEP_MS = 5 * 60_000;
+
 export function OwnerSection({
   ownerEmail,
   panel,
@@ -64,10 +74,15 @@ export function OwnerSection({
   ownerEmail: string;
   panel: Panel;
 }) {
-  const [state, setState] = useState<"checking" | "allowed" | "denied">("checking");
-  const [payload, setPayload] = useState<ActualsPayload | null>(null);
+  const [state, setState] = useState<"checking" | "allowed" | "denied">(() =>
+    GATE.payload && Date.now() - GATE.at < GATE_KEEP_MS ? "allowed" : "checking",
+  );
+  const [payload, setPayload] = useState<ActualsPayload | null>(() =>
+    GATE.payload && Date.now() - GATE.at < GATE_KEEP_MS ? GATE.payload : null,
+  );
 
   useEffect(() => {
+    if (GATE.payload && Date.now() - GATE.at < GATE_KEEP_MS) return;
     let alive = true;
     adminJson<ActualsPayload>("/api/owner/actuals").then((d) => {
       if (!alive) return;
@@ -75,6 +90,8 @@ export function OwnerSection({
         setState("denied");
         return;
       }
+      GATE.payload = d;
+      GATE.at = Date.now();
       setPayload(d);
       setState("allowed");
     });

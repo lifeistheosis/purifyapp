@@ -90,6 +90,8 @@
 
   /* One hover wash for rows and controls. */
   --adm-hover: rgb(242 242 242 / 0.06);
+  /* The inset shade inside a switch's well (sheet r3-15). */
+  --adm-well-inset: inset 0 1px 2px rgb(0 0 0 / 0.55);
 
   /* Hairlines. Two weights only: one that separates, one that outlines a
      control. Opaque greys rather than a white wash, so a line is the same
@@ -208,6 +210,39 @@
 
   /* Modal backdrop. */
   --adm-scrim: rgb(0 0 0 / 0.72);
+
+  /* ── Lit: the one thing that needs him (sheet r3-15, 2026-10-30) ───────
+     The open page in the rail, the chosen segment, the readers on the site
+     now and the most visited countries are white with a soft glow; the rest
+     of the panel stays flat. In Light the lit thing is solid ink with a soft
+     shadow instead (the Light block below), because a glow on white is
+     invisible.
+
+       --adm-lit       a chosen control: an ink ring and a glow around it
+       --adm-lit-soft  a chosen segment inside a switch: the glow alone
+       --adm-lit-text  a lit figure, set in text
+       --adm-glow      an SVG mark: a point, the last value of a chart */
+  --adm-lit: 0 0 0 1px rgb(255 255 255 / 0.9), 0 0 24px -3px rgb(255 255 255 / 0.45);
+  --adm-lit-soft: 0 0 14px -2px rgb(255 255 255 / 0.55);
+  --adm-lit-text: 0 0 18px rgb(255 255 255 / 0.4);
+  --adm-glow: drop-shadow(0 0 4px rgb(255 255 255 / 0.8));
+
+  /* The heat map's six steps (components/admin/map/HeatMap.tsx): none, then
+     five rising fills, the most visited white with the glow. Light runs the
+     other way, more readers darker. */
+  --adm-heat-0: #161616;
+  --adm-heat-1: #2c2c2c;
+  --adm-heat-2: #474747;
+  --adm-heat-3: #6c6c6c;
+  --adm-heat-4: #a2a2a2;
+  --adm-heat-5: #f2f2f2;
+  --adm-heat-hot: drop-shadow(0 0 5px rgb(255 255 255 / 0.55));
+  /* A reader on the site now: a lit point with a faint ring. */
+  --adm-live: #ffffff;
+  --adm-live-ring: rgb(255 255 255 / 0.14);
+  --adm-live-glow: 0 0 0 3px rgb(255 255 255 / 0.14), 0 0 10px 1px rgb(255 255 255 / 0.75);
+  /* The edge a lit point keeps on the map, so it reads over the brightest fill. */
+  --adm-live-edge: transparent;
 
   /* ── Structure. Identical in both themes. ─────────────────────────────
      Reach for these, never for a named Tailwind radius: app/globals.css
@@ -683,6 +718,7 @@
   --adm-panel-2: #f3f3f3;
   --adm-control: #ffffff;
   --adm-hover: rgb(10 10 10 / 0.05);
+  --adm-well-inset: inset 0 1px 2px rgb(0 0 0 / 0.08);
 
   --adm-line: #e3e3e3;
   --adm-line-strong: #c4c4c4;
@@ -738,6 +774,27 @@
   --adm-scrim: rgb(10 10 10 / 0.5);
 
   --adm-shadow-pop: 0 24px 60px -18px rgb(0 0 0 / 0.38), 0 2px 8px rgb(0 0 0 / 0.08);
+
+  /* Lit, on white: solid ink with a soft shadow, no glow (sheet r3-15, "the
+     lit white a solid black"). */
+  --adm-lit: 0 0 0 1px #0a0a0a, 0 6px 16px -6px rgb(0 0 0 / 0.45);
+  --adm-lit-soft: 0 1px 3px rgb(0 0 0 / 0.3);
+  --adm-lit-text: none;
+  --adm-glow: none;
+
+  /* The heat map the other way round: none is the palest grey, the most
+     visited the ink. */
+  --adm-heat-0: #f0f0f0;
+  --adm-heat-1: #dadada;
+  --adm-heat-2: #b4b4b4;
+  --adm-heat-3: #828282;
+  --adm-heat-4: #484848;
+  --adm-heat-5: #0a0a0a;
+  --adm-heat-hot: none;
+  --adm-live: #0a0a0a;
+  --adm-live-ring: rgb(0 0 0 / 0.12);
+  --adm-live-glow: 0 0 0 3px rgb(0 0 0 / 0.1);
+  --adm-live-edge: #ffffff;
 
   color-scheme: light;
 }
@@ -1482,3 +1539,196 @@
     font-size: 10pt;
   }
 }
+
+/* ── The Daily pages (sheet r3-15, the owner's picks of 2026-10-30) ──────
+ * The quieter rail (pick A), the switch, the figures, the marks and the heat
+ * map. Every value is a token from the palettes above, so Light is the same
+ * structure with the ink and the ground swapped and the glow turned into a
+ * soft shadow.
+ */
+
+/* The open page's views, unfolded under it in the rail: a hairline down the
+   left, the open view in the well with a short lit bar beside it. */
+.adm-rail-views {
+  position: relative;
+  margin: 6px 0 6px 15px;
+  padding-left: 9px;
+}
+.adm-rail-views::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 3px;
+  bottom: 3px;
+  width: 1px;
+  background: var(--adm-line-strong);
+}
+.adm-rail-view {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  min-height: 28px;
+  padding: 0 9px;
+  border-radius: 5px;
+  font-size: 12.5px;
+  text-align: left;
+  color: var(--adm-ink-3);
+  transition: color 140ms var(--adm-ease), background-color 140ms var(--adm-ease);
+}
+.adm-rail-view:hover {
+  color: var(--adm-ink);
+  background: var(--adm-hover);
+}
+.adm-rail-view[aria-current="page"] {
+  color: var(--adm-ink);
+  font-weight: 500;
+  background: var(--adm-panel-2);
+}
+.adm-rail-view[aria-current="page"]::before {
+  content: "";
+  position: absolute;
+  left: -11px;
+  top: 7px;
+  bottom: 7px;
+  width: 3px;
+  border-radius: 2px;
+  background: var(--adm-ink);
+  box-shadow: var(--adm-lit-soft);
+}
+
+/* The switch: a well with the chosen segment solid and lit. */
+.adm-seg {
+  display: inline-flex;
+  gap: 2px;
+  padding: 3px;
+  border-radius: 8px;
+  background: var(--adm-panel-2);
+  box-shadow: var(--adm-well-inset);
+  max-width: 100%;
+}
+.adm-seg-btn {
+  display: inline-grid;
+  place-items: center;
+  min-height: 27px;
+  padding: 0 11px;
+  border-radius: 6px;
+  font-size: 12.5px;
+  white-space: nowrap;
+  color: var(--adm-ink-2);
+  transition: color 140ms var(--adm-ease), background-color 140ms var(--adm-ease), box-shadow 140ms var(--adm-ease);
+}
+.adm-seg-btn:hover {
+  color: var(--adm-ink);
+}
+.adm-seg-btn[aria-pressed="true"] {
+  background: var(--adm-ink);
+  color: var(--adm-on-accent);
+  font-weight: 600;
+  box-shadow: var(--adm-lit-soft);
+}
+/* On a phone the switch is a row the thumb slides along, faded at its end
+   when there is more to it. */
+.adm-seg-scroll {
+  overflow-x: auto;
+  scrollbar-width: none;
+  -webkit-mask-image: linear-gradient(90deg, #000 88%, transparent);
+  mask-image: linear-gradient(90deg, #000 88%, transparent);
+}
+.adm-seg-scroll::-webkit-scrollbar {
+  display: none;
+}
+
+/* A figure: the mono face, tight. Lit when it is the one that needs him. */
+.adm-fig {
+  font-family: var(--font-mono);
+  font-weight: 500;
+  line-height: 1.05;
+  letter-spacing: -0.03em;
+  color: var(--adm-ink);
+  white-space: nowrap;
+}
+.adm-fig[data-lit] {
+  text-shadow: var(--adm-lit-text);
+}
+
+/* An estimate wears a dashed line under it, and the word beside it. */
+.adm-est {
+  border-bottom: 1.5px dashed var(--adm-ink-3);
+  padding-bottom: 2px;
+}
+
+/* A reader on the site now: a lit point with a faint ring. */
+.adm-live-dot {
+  display: inline-block;
+  flex: none;
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--adm-live);
+  box-shadow: var(--adm-live-glow);
+}
+
+/* A row of figures as bars: a label, a track, a number. The first bar of a
+   list is the lit one. */
+.adm-hbar-track {
+  position: relative;
+  flex: 1;
+  height: 6px;
+  border-radius: 3px;
+  background: var(--adm-panel-2);
+  overflow: hidden;
+}
+.adm-hbar-fill {
+  position: absolute;
+  inset: 0 auto 0 0;
+  border-radius: 3px;
+  background: var(--adm-ink-2);
+}
+.adm-hbar-fill[data-lit] {
+  background: var(--adm-ink);
+  box-shadow: var(--adm-lit-soft);
+}
+
+/* The heat map. */
+.adm-map path[data-step] {
+  stroke: var(--adm-bg);
+  stroke-width: 0.7px;
+  vector-effect: non-scaling-stroke;
+  stroke-linejoin: round;
+  transition: fill 220ms var(--adm-ease);
+}
+.adm-map path[data-step="0"] { fill: var(--adm-heat-0); }
+.adm-map path[data-step="1"] { fill: var(--adm-heat-1); }
+.adm-map path[data-step="2"] { fill: var(--adm-heat-2); }
+.adm-map path[data-step="3"] { fill: var(--adm-heat-3); }
+.adm-map path[data-step="4"] { fill: var(--adm-heat-4); }
+.adm-map path[data-step="5"] {
+  fill: var(--adm-heat-5);
+  filter: var(--adm-heat-hot);
+}
+.adm-map path[data-hover] {
+  fill: none;
+  stroke: var(--adm-ink);
+  stroke-width: 1.8px;
+  vector-effect: non-scaling-stroke;
+  pointer-events: none;
+}
+.adm-map .adm-map-live {
+  fill: var(--adm-live);
+  stroke: var(--adm-live-edge);
+  stroke-width: 1.2px;
+  vector-effect: non-scaling-stroke;
+  filter: var(--adm-glow);
+  pointer-events: none;
+}
+.adm-map .adm-map-live-ring {
+  fill: var(--adm-live-ring);
+  pointer-events: none;
+}
+.adm-map-swatch[data-step="1"] { background: var(--adm-heat-1); }
+.adm-map-swatch[data-step="2"] { background: var(--adm-heat-2); }
+.adm-map-swatch[data-step="3"] { background: var(--adm-heat-3); }
+.adm-map-swatch[data-step="4"] { background: var(--adm-heat-4); }
+.adm-map-swatch[data-step="5"] { background: var(--adm-heat-5); box-shadow: var(--adm-lit-soft); }
