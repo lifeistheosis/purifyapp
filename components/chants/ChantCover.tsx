@@ -32,6 +32,7 @@ export function ChantCover({
   cover,
   languages,
   size,
+  picture,
   className,
 }: {
   cover?: { src: string; alt: string };
@@ -39,12 +40,15 @@ export function ChantCover({
   languages?: string[];
   /** The plate's lettering: large on a hero, small on a card, none on a thumb. */
   size: "hero" | "card" | "thumb";
+  /** Where the icon is held in its box (an object-position class): a little above its middle unless told. */
+  picture?: string;
+  /** The box's own classes, which win over its ground and its ring. */
   className?: string;
 }) {
   const [failed, setFailed] = useState(false);
   const fail = useCallback(() => setFailed(true), []);
   const mounted = useMounted();
-  const box = cn("relative aspect-square overflow-hidden", className);
+  const box = "relative aspect-square overflow-hidden";
   // A streamed cover's address is the website's in the apps and the page's
   // own on the web, which only the device knows: it is drawn once mounted,
   // so the page's first markup (the plate) is the same everywhere.
@@ -53,13 +57,13 @@ export function ChantCover({
   if (cover && ready && !failed) {
     const src = chantMediaUrl(cover.src);
     return (
-      <div data-cover="img" className={cn(box, "bg-night-soft ring-1 ring-inset ring-paper/10")}>
-        <CoverPicture key={src} src={src} alt={cover.alt} eager={size === "hero"} onFail={fail} />
+      <div data-cover="img" className={cn(box, "bg-night-soft ring-1 ring-inset ring-paper/10", className)}>
+        <CoverPicture key={src} src={src} alt={cover.alt} eager={size === "hero"} picture={picture} onFail={fail} />
       </div>
     );
   }
 
-  return <CrossPlate size={size} caption={languages?.length ? languages.join(" · ") : undefined} className={box} />;
+  return <CrossPlate size={size} caption={languages?.length ? languages.join(" · ") : undefined} className={cn(box, className)} />;
 }
 
 /**
@@ -73,7 +77,19 @@ export function ChantCover({
  * going back to Chants from a chant brings its covers back as they were
  * (the owner's note 58).
  */
-function CoverPicture({ src, alt, eager, onFail }: { src: string; alt: string; eager: boolean; onFail: () => void }) {
+function CoverPicture({
+  src,
+  alt,
+  eager,
+  picture,
+  onFail,
+}: {
+  src: string;
+  alt: string;
+  eager: boolean;
+  picture?: string;
+  onFail: () => void;
+}) {
   const ref = useRef<HTMLImageElement>(null);
   // Read once, as the picture is first drawn: its kept copy, or none yet.
   const [kept] = useState(() => keptCover(src));
@@ -115,6 +131,7 @@ function CoverPicture({ src, alt, eager, onFail }: { src: string; alt: string; e
       onError={onFail}
       className={cn(
         "absolute inset-0 h-full w-full object-cover object-[50%_20%]",
+        picture,
         kept === null && "motion-safe:transition-opacity motion-safe:duration-500 motion-safe:ease-house",
         arrived ? "opacity-100" : "opacity-0",
       )}

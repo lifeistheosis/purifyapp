@@ -141,6 +141,11 @@ export const OWN_HEADER_PATTERNS: RegExp[] = [
   /^\/councils\/[^/]+\/[^/]+$/,
   /^\/reading\/councils$/,
   /^\/reading\/councils\/[^/]+$/,
+  // A chant's own page (1.8, sheet r3-18 B, the owner's pick of 2026-10-31):
+  // its bar clear over the chant's icon, as a saint's is, with the way back
+  // and Share, solid with the chant's name once the name has gone up under
+  // it. It leads back to Chants. Not Chants itself, which keeps the back bar.
+  /^\/chants\/[^/]+$/,
 ];
 
 /**

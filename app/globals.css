@@ -8446,17 +8446,45 @@ html.is-native .pray-chip {
 [data-sung-look="player"] [data-sung="far"] [data-sung-under] {
  opacity: 0.15;
 }
-/* A chant's Sing along: the line being sung 25px over 20px, the original
-   under each line in italic (round 9 A). */
+/* A chant's own page (1.8, sheet r3-18, the owner's pick of 2026-10-31, B's
+   page): the words as they are sung lead, 21px, the line being sung 26px; a
+   line longer than a hymn's verse (data-sung-long, a hymn of the Canon) is
+   lit where it stands at its own size. Arabic letters a little larger, as the
+   page sets them. Its English under it, the sans at 13.5px a step back
+   (data-sung-gloss): under the line being sung only, and under every line
+   while nothing is sung, so the words read whole on their own. Its sound
+   alone (Transliteration) in the sans. */
 [data-sung-look="page"] li[data-sung] {
- margin-bottom: 18px;
+ margin-bottom: 15px;
 }
 [data-sung-look="page"] [data-sung-main] {
- font-size: 20px;
- line-height: 1.45;
+ font-size: 21px;
+ line-height: 1.42;
 }
 [data-sung-look="page"] [data-sung="lit"] [data-sung-main] {
- font-size: 25px;
+ font-size: 26px;
+}
+[data-sung-look="page"] [data-sung="lit"][data-sung-long] [data-sung-main] {
+ font-size: 21px;
+}
+[data-sung-look="page"] [data-sung-main][lang="ar"] [data-sung-grow] {
+ font-size: 1.12em;
+}
+[data-sung-look="page"] [data-sung-main][data-sung-latin] {
+ font-family: var(--font-sans);
+}
+[data-sung-gloss] {
+ display: none;
+}
+[data-sung-look="page"] [data-sung="lit"] [data-sung-gloss],
+[data-sung-look="page"] [data-sung="rest"] [data-sung-gloss] {
+ display: block;
+ margin-top: 4px;
+ font-family: var(--font-sans);
+ font-size: 13.5px;
+ line-height: 1.45;
+ color: var(--color-paper);
+ opacity: 0.6;
 }
 [data-sung-look="page"] [data-sung-under] {
  margin-top: 3px;
@@ -8465,7 +8493,7 @@ html.is-native .pray-chip {
  opacity: 0.62;
 }
 [data-sung-look="page"] [data-sung="near"] [data-sung-main] {
- opacity: 0.35;
+ opacity: 0.36;
 }
 [data-sung-look="page"] [data-sung="far"] [data-sung-main] {
  opacity: 0.3;
@@ -8488,41 +8516,154 @@ html[data-reading-mode="parchment"] [data-sung-look="page"] [data-sung-under] sp
 :where([data-motion="reduce"]) [data-sung-under] {
  transition: none;
 }
-/* The words' own switch (1.8, notes 56 and 59): the words as sung, their
-   sound, or both, on the words themselves (components/chants/ChantWords.tsx).
-   A small carved track, as Settings draws its choices (.set-track), the
-   chosen part lit white with a soft white glow. */
+/* The words' own switch (1.8, notes 56 and 59): the words as sung, named as
+   the version names itself, their sound, or both, on the words themselves
+   (components/chants/ChantWords.tsx). Drawn as sheet r3-18 B draws it (the
+   owner's pick of 2026-10-31): an underlined strip under the doors, so the
+   two never read as two tracks, the chosen part lit white with a soft white
+   glow and a line under it. A part with nothing to show for the version on
+   the page (English sung in English) is greyed, never taken away, so choosing
+   another version moves nothing (note 61). The line is ::before: .hit-44's
+   touch box is ::after. */
 .words-view {
- display: inline-grid;
- grid-auto-flow: column;
- grid-auto-columns: minmax(0, 1fr);
- gap: 2px;
+ display: flex;
+ align-items: stretch;
+ gap: 4px;
+ min-height: 38px;
  max-width: 100%;
- padding: 3px;
- border-radius: 13px;
- background: var(--color-night-deep);
- box-shadow:
-  inset 0 2px 5px rgb(0 0 0 / 0.75),
-  inset 0 0 0 1px rgb(0 0 0 / 0.5),
-  0 1px 0 color-mix(in srgb, var(--color-paper) 7%, transparent);
 }
 .words-view > button {
  position: relative;
- isolation: isolate;
+ flex: none;
  min-width: 0;
- min-height: 30px;
- padding: 4px 12px;
- border-radius: 10px;
+ max-width: 46%;
+ padding: 0 8px;
  font-family: var(--font-sans);
- font-size: 12.5px;
+ font-size: 13.5px;
  font-weight: 600;
  line-height: 1.15;
  color: color-mix(in srgb, var(--color-paper) 55%, transparent);
  -webkit-tap-highlight-color: transparent;
  /* With .tap-press's own spring back, which this list replaces. */
- transition: color 240ms var(--ease-house), transform 220ms var(--ease-house);
+ transition: color 240ms var(--ease-house), text-shadow 240ms var(--ease-house), transform 220ms var(--ease-house);
 }
 .words-view > button::before {
+ content: "";
+ position: absolute;
+ inset-inline: 8px;
+ bottom: 4px;
+ height: 2px;
+ border-radius: 1px;
+ background: var(--color-paper);
+ box-shadow: 0 0 8px rgb(255 255 255 / 0.6);
+ opacity: 0;
+ scale: 0.5 1;
+ transition: opacity 240ms var(--ease-house), scale 320ms var(--ease-house);
+}
+.words-view > button[aria-checked="true"] {
+ color: var(--color-paper);
+ text-shadow: 0 0 12px rgb(255 255 255 / 0.35);
+}
+.words-view > button[aria-checked="true"]::before {
+ opacity: 1;
+ scale: 1;
+}
+/* Greyed by its own light, so it reads as greyed on every palette and in a
+   WebView without color-mix: about a quarter of the ink, as the sheet draws. */
+.words-view > button:disabled {
+ opacity: 0.44;
+}
+@media (hover: hover) {
+ .words-view > button[aria-checked="false"]:not(:disabled):hover {
+  color: var(--color-paper);
+ }
+}
+html[data-reading-mode="parchment"] .words-view > button[aria-checked="true"] {
+ text-shadow: none;
+}
+html[data-reading-mode="parchment"] .words-view > button::before {
+ box-shadow: none;
+}
+:where([data-motion="reduce"]) .words-view > button,
+:where([data-motion="reduce"]) .words-view > button::before {
+ transition: none;
+}
+
+/* A chant's own page (1.8, sheet r3-18, the owner's pick of 2026-10-31: "a
+   mix of A and B. I want the player to be at the bottom, like how A has it.
+   But I want the options. Actually, how B has it."; components/chants/
+   ChantPage.tsx). B's page: the icon across the top under the clear bar, the
+   name and who sings it on its foot, three doors (Words, About, Versions)
+   switching what is below in place. A's player: docked at the foot, over the
+   tab bar, never under it.
+
+   The page is the screen. Its column is at least the screen's height less
+   the bar at the top and what stands at the foot (the tab bar, the mini
+   player while something else plays, Today's readings bar), so with Words
+   open nothing scrolls but the words in their own box, which takes all the
+   room between the doors and the dock. About and Versions run longer and the
+   page scrolls, the dock held over the tab bar (sticky, so it keeps its room
+   in the page and nothing runs under it at the page's end). Every control is
+   drawn at its full size in the first frame, here in CSS, so it is the same
+   in the website's first page and in the apps (note 61). */
+.chant-screen {
+ display: flex;
+ flex-direction: column;
+ min-height: calc(100vh - 3rem - env(safe-area-inset-top, 0px) - env(safe-area-inset-bottom, 0px) - var(--now-playing-h) - var(--readings-flow-h) - 2px);
+ min-height: calc(100svh - 3rem - env(safe-area-inset-top, 0px) - env(safe-area-inset-bottom, 0px) - var(--now-playing-h) - var(--readings-flow-h) - 2px);
+}
+@media (min-width: 768px) {
+ .chant-screen {
+  min-height: calc(100vh - 72px - env(safe-area-inset-top, 0px) - env(safe-area-inset-bottom, 0px) - var(--now-playing-h) - var(--readings-flow-h) - 2px);
+  min-height: calc(100svh - 72px - env(safe-area-inset-top, 0px) - env(safe-area-inset-bottom, 0px) - var(--now-playing-h) - var(--readings-flow-h) - 2px);
+ }
+}
+html.is-native .chant-screen {
+ min-height: calc(100vh - 3rem - var(--inset-top) - var(--inset-bottom) - var(--tab-bar-h) - var(--now-playing-h) - var(--readings-flow-h) - 2px);
+}
+/* The icon across the top of a phone, seven wide by six tall as the sheet
+   draws it, and never more than two fifths of a short screen, so the words
+   keep their room. On a tablet and a computer, a rounded square beside the
+   name. */
+@media (max-width: 767.98px) {
+ .chant-hero {
+  aspect-ratio: 7 / 6;
+  max-height: 40vh;
+  max-height: 40svh;
+ }
+}
+/* The doors: a carved track, as Settings draws its choices (.set-track),
+   the open door raised out of it and lit white with a soft white glow. */
+.chant-doors {
+ display: grid;
+ grid-auto-flow: column;
+ grid-auto-columns: minmax(0, 1fr);
+ gap: 3px;
+ padding: 4px;
+ border-radius: 15px;
+ background: var(--color-night-deep);
+ box-shadow:
+  inset 0 2px 5px rgb(0 0 0 / 0.7),
+  inset 0 0 0 1px rgb(0 0 0 / 0.45),
+  0 1px 0 rgb(255 255 255 / 0.07);
+}
+.chant-doors > button {
+ position: relative;
+ isolation: isolate;
+ min-width: 0;
+ min-height: 38px;
+ padding: 4px 6px;
+ border-radius: 11px;
+ font-family: var(--font-sans);
+ font-size: 13px;
+ font-weight: 600;
+ line-height: 1.15;
+ color: color-mix(in srgb, var(--color-paper) 62%, transparent);
+ -webkit-tap-highlight-color: transparent;
+ /* With .tap-press's own spring back, which this list replaces. */
+ transition: color 240ms var(--ease-house), transform 220ms var(--ease-house);
+}
+.chant-doors > button::before {
  content: "";
  position: absolute;
  inset: 0;
@@ -8531,34 +8672,120 @@ html[data-reading-mode="parchment"] [data-sung-look="page"] [data-sung-under] sp
  background: var(--color-paper);
  background: linear-gradient(180deg, var(--color-paper) 0%, color-mix(in srgb, var(--color-paper) 92%, var(--color-night)) 100%);
  box-shadow:
-  0 0 16px rgb(255 255 255 / 0.28),
-  0 3px 6px rgb(0 0 0 / 0.6),
+  0 0 20px rgb(255 255 255 / 0.3),
+  0 3px 6px rgb(0 0 0 / 0.55),
   inset 0 -1px 0 rgb(0 0 0 / 0.12);
  opacity: 0;
  scale: 0.94;
  transition: opacity 240ms var(--ease-house), scale 320ms var(--ease-house);
 }
-.words-view > button[aria-checked="true"] {
+.chant-doors > button[aria-selected="true"] {
  color: var(--color-night);
 }
-.words-view > button[aria-checked="true"]::before {
+.chant-doors > button[aria-selected="true"]::before {
  opacity: 1;
  scale: 1;
 }
 @media (hover: hover) {
- .words-view > button[aria-checked="false"]:hover {
+ .chant-doors > button[aria-selected="false"]:hover {
   color: var(--color-paper);
  }
 }
-html[data-reading-mode="parchment"] .words-view {
- box-shadow: inset 0 2px 4px rgb(70 52 20 / 0.22), inset 0 0 0 1px rgb(43 35 23 / 0.08);
+html[data-reading-mode="parchment"] .chant-doors {
+ box-shadow: inset 0 2px 4px rgb(70 52 20 / 0.22), inset 0 0 0 1px rgb(43 35 23 / 0.08), 0 1px 0 rgb(255 255 255 / 0.6);
 }
-html[data-reading-mode="parchment"] .words-view > button::before {
- box-shadow: 0 2px 5px rgb(70 52 20 / 0.3);
+html[data-reading-mode="parchment"] .chant-doors > button::before {
+ box-shadow: 0 2px 5px rgb(70 52 20 / 0.35);
 }
-:where([data-motion="reduce"]) .words-view > button,
-:where([data-motion="reduce"]) .words-view > button::before {
+/* A door opened by the reader: what is below it fades in where it stands. */
+@keyframes chant-door-in {
+ from {
+  opacity: 0;
+ }
+}
+.chant-door-in {
+ animation: chant-door-in var(--duration-fast) var(--ease-house) backwards;
+}
+/* The dock (A's player): where the recording is, back 15, Play and forward
+   15, over the tab bar with the gap the sheet draws, and over the mini player
+   and Today's readings bar when they show. Solid, with no blur, for the
+   reason the mini player gives (a blurred layer over a moving page drops
+   frames on Android). The page keeps the dock's room at its foot: the dock
+   is the column's last part. */
+.chant-dock {
+ position: sticky;
+ z-index: 20;
+ bottom: calc(env(safe-area-inset-bottom, 0px) + var(--now-playing-h) + var(--readings-flow-h) + 12px);
+ flex: none;
+ height: 104px;
+ margin-top: auto;
+ margin-bottom: 12px;
+ border-radius: 24px;
+ background-color: var(--color-night-soft);
+ background-image: linear-gradient(to bottom, rgb(var(--panel-sheen) / 0.035), transparent 72%);
+ box-shadow:
+  inset 0 0 0 1px rgb(255 255 255 / 0.1),
+  inset 0 1px 0 rgb(var(--panel-sheen) / 0.08),
+  0 -10px 30px -12px rgb(0 0 0 / 0.6);
+}
+html.is-native .chant-dock {
+ bottom: calc(var(--inset-bottom) + var(--tab-bar-h) + var(--now-playing-h) + var(--readings-flow-h) + 8px);
+ margin-bottom: 8px;
+}
+html[data-reading-mode="parchment"] .chant-dock {
+ box-shadow: inset 0 0 0 1px rgb(43 35 23 / 0.1), inset 0 1px 0 rgb(255 255 255 / 0.6), 0 -8px 22px -12px rgb(60 40 10 / 0.3);
+}
+/* The versions, each a row in one raised panel lit from above: its name in
+   its own script, who sings it by name, what it is, and Play. */
+.chant-versions {
+ border-radius: 20px;
+ background: var(--color-night-soft);
+ background: linear-gradient(172deg, color-mix(in srgb, var(--color-night-soft) 96%, var(--color-paper)) 0%, var(--color-night-soft) 48%, color-mix(in srgb, var(--color-night-soft) 70%, var(--color-night)) 100%);
+ box-shadow:
+  inset 0 1px 0 rgb(255 255 255 / 0.09),
+  inset 0 0 0 1px rgb(255 255 255 / 0.05),
+  0 18px 34px -16px rgb(0 0 0 / 0.8),
+  0 2px 5px rgb(0 0 0 / 0.3);
+}
+.chant-versions > li {
+ position: relative;
+ padding-inline: 16px 14px;
+}
+.chant-versions > li + li::before {
+ content: "";
+ position: absolute;
+ top: 0;
+ inset-inline: 16px 0;
+ height: 1px;
+ background: rgb(255 255 255 / 0.07);
+ background: color-mix(in srgb, var(--color-paper) 7%, transparent);
+ box-shadow: 0 1px 0 rgb(0 0 0 / 0.3);
+ pointer-events: none;
+}
+html[data-reading-mode="parchment"] .chant-versions {
+ box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.7), inset 0 0 0 1px rgb(80 60 20 / 0.1), 0 14px 26px -16px rgb(60 40 10 / 0.4);
+}
+html[data-reading-mode="parchment"] .chant-versions > li + li::before {
+ box-shadow: none;
+}
+/* The version on the page: a small lit mark beside its name. */
+.chant-version-dot {
+ flex: none;
+ width: 7px;
+ height: 7px;
+ border-radius: 9999px;
+ background: var(--color-paper);
+ box-shadow: 0 0 10px rgb(255 255 255 / 0.8);
+}
+html[data-reading-mode="parchment"] .chant-version-dot {
+ box-shadow: none;
+}
+:where([data-motion="reduce"]) .chant-doors > button,
+:where([data-motion="reduce"]) .chant-doors > button::before {
  transition: none;
+}
+:where([data-motion="reduce"]) .chant-door-in {
+ animation: none;
 }
 
 /* The prayer reader (1.7): a prayer flows down the page line by line, as the

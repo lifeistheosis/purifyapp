@@ -134,11 +134,20 @@ export function lineAt(lines: CaptionLine[], t: number, lead = 0.15): number {
  * The sung part carries how its reader chose to see it (notes 56 and 59):
  * `latin`, its sound in Latin letters in place of the words, or `pairs`,
  * each word's sound to draw under that word.
+ *
+ * A chant's own page (1.8, sheet r3-18, the owner's pick of 2026-10-31,
+ * B's page) puts the sung words first (`english: "under"`): the words as
+ * they are sung lead, and the English is a `gloss` under them, which the page
+ * shows under the line being sung only (app/globals.css, "Sung words"). Now
+ * Playing keeps round 8's order, the English over the sung words.
  */
 export type LinePart = { text: string; sung: boolean; latin?: true; pairs?: string[] };
-export type LineParts = { main: LinePart; under: LinePart[] };
+export type LineParts = { main: LinePart; under: LinePart[]; gloss?: string };
 
-export function lineParts(line: { text: string; en?: string; sub?: string[]; latin?: boolean; pairs?: string[] }): LineParts {
+export function lineParts(
+  line: { text: string; en?: string; sub?: string[]; latin?: boolean; pairs?: string[] },
+  english: "over" | "under" = "over",
+): LineParts {
   const subs = (line.sub ?? []).map((text) => ({ text, sung: false }));
   const sung: LinePart = {
     text: line.text,
@@ -146,6 +155,7 @@ export function lineParts(line: { text: string; en?: string; sub?: string[]; lat
     ...(line.latin ? { latin: true as const } : {}),
     ...(line.pairs?.length ? { pairs: line.pairs } : {}),
   };
+  if (line.en && english === "under") return { main: sung, under: subs, gloss: line.en };
   if (line.en) return { main: { text: line.en, sung: false }, under: [sung, ...subs] };
   return { main: sung, under: subs };
 }

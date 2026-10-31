@@ -93,6 +93,8 @@ export function readTiming(value: unknown): ChantTiming | null {
 }
 
 const timings = new Map<string, Promise<ChantTiming | null>>();
+/** The timing files that have arrived, to hand over at once. */
+const arrived = new Map<string, ChantTiming>();
 
 /** A recording's timing file, fetched once per session; null when it cannot be read. */
 export function loadTiming(path: string): Promise<ChantTiming | null> {
@@ -104,11 +106,21 @@ export function loadTiming(path: string): Promise<ChantTiming | null> {
       .catch(() => null);
     // A failure is not kept: a reader who comes back online can try again.
     p.then((t) => {
-      if (!t) timings.delete(path);
+      if (t) arrived.set(path, t);
+      else timings.delete(path);
     });
     timings.set(path, p);
   }
   return p;
+}
+
+/**
+ * A timing file already here, or null: so a chant's page opened while its
+ * version plays (Now Playing's Read, a page come back to) lights the line
+ * being sung in its first frame, not a frame after (sheet r3-18, note 61).
+ */
+export function timingInHand(path: string | undefined): ChantTiming | null {
+  return path ? (arrived.get(path) ?? null) : null;
 }
 
 /**

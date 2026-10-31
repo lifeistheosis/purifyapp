@@ -170,6 +170,30 @@ describe("Sing along (1.8, round 9 A): each line drawn from its own data and not
     }
   });
 
+  it("on a chant's own page (r3-18 B), leads with the words as sung and puts the English under them", () => {
+    // The owner's pick of 2026-10-31, B's page: "the words as sung, large and
+    // lit, and the English under the line being sung, only there". The same
+    // captions as Now Playing's, drawn in the other order; Now Playing keeps
+    // round 8's, the English over the words.
+    const fr = version("fr");
+    captionsFor(fr.lines, timing("fr"), ALL).forEach((line, i) => {
+      expect(lineParts(line, "under")).toEqual({ main: { text: fr.lines[i].text, sung: true }, under: [], gloss: fr.lines[i].en });
+      expect(lineParts(line).main).toEqual({ text: fr.lines[i].en, sung: false });
+    });
+    const greek = { text: "Χριστὸς ἀνέστη ἐκ νεκρῶν", translit: "Christos anesti ek nekron", en: "Christ is risen from the dead" };
+    const [both] = captionsFor([greek], null, ALL);
+    expect(lineParts(both, "under")).toEqual({
+      main: { text: greek.text, sung: true, pairs: ["Christos", "anesti", "ek", "nekron"] },
+      under: [],
+      gloss: greek.en,
+    });
+    // A line with no English has nothing under it, in either order.
+    const v = version("en");
+    captionsFor(v.lines, timing("en"), ALL).forEach((line, i) => {
+      expect(lineParts(line, "under")).toEqual({ main: { text: v.lines[i].text, sung: true }, under: [] });
+    });
+  });
+
   it("puts a transliteration with the sung words, never over them", () => {
     const greek = { text: "Χριστὸς ἀνέστη ἐκ νεκρῶν", translit: "Christos anesti ek nekron", en: "Christ is risen from the dead" };
     const [line] = captionsFor([greek], null, ALL);

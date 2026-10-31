@@ -34,6 +34,8 @@ const state = vi.hoisted(() => ({
     duration: 120,
   },
   sound: null as string | null,
+  /** The recordings the page on the screen plays with its own player (lib/player/pagePlayer.ts). */
+  own: [] as string[],
 }));
 
 vi.mock("@/lib/prayers/persistentAudioStore", async (importOriginal) => ({
@@ -48,9 +50,14 @@ vi.mock("@/lib/ambience/player", async (importOriginal) => ({
   ...(await importOriginal<typeof import("@/lib/ambience/player")>()),
   useAmbience: () => ({ playing: state.sound, loading: null, failed: null, volume: 0.5, balance: 0.5 }),
 }));
+vi.mock("@/lib/player/pagePlayer", async (importOriginal) => ({
+  ...(await importOriginal<typeof import("@/lib/player/pagePlayer")>()),
+  usePagePlayer: () => state.own,
+}));
 
 import { RING_SIZES, RingCover, ringArc } from "@/components/player/RingCover";
 import { NowPlayingBar } from "@/components/prayers/NowPlayingBar";
+import { playsOnPage } from "@/lib/player/pagePlayer";
 
 const ROOT = path.resolve(__dirname, "..", "..", "..");
 const css = fs.readFileSync(path.join(ROOT, "app/globals.css"), "utf8");
@@ -146,6 +153,45 @@ describe("the pill it draws in to", () => {
       state.audio.src = track;
       state.sound = null;
     }
+  });
+});
+
+describe("a page with its own player (r3-18)", () => {
+  // A chant's page docks its player over the tab bar (the owner's pick of
+  // 2026-10-31, "the player at the bottom, like how A has it"), so while
+  // what this bar would show is one of that chant's recordings the bar steps
+  // aside: one player for one singing. Anything else playing keeps it.
+  const chant = "https://audio.purifyapp.net/chants/psalm-135/en.mp3";
+  const anthem = "/audio/chants/prayer-rope-anthem/en.mp3";
+
+  it("steps aside for the page's own recording, and only for it", () => {
+    const track = state.audio.src;
+    try {
+      state.own = [chant, anthem];
+      state.audio.src = chant;
+      expect(render(true).html).toBe("");
+      // In the apps a website recording is asked for at the website's own address.
+      state.audio.src = `https://purifyapp.net${anthem}`;
+      expect(render(false).html).toBe("");
+      // Something else playing keeps the bar, and the page's dock stands above it.
+      state.audio.src = track;
+      expect(render(false).html).toContain('data-mini-player=""');
+      // Leaving the page gives the bar back at once.
+      state.own = [];
+      state.audio.src = chant;
+      expect(render(false).html).toContain('data-mini-player=""');
+    } finally {
+      state.audio.src = track;
+      state.own = [];
+    }
+  });
+
+  it("knows the page's recordings by their path, whole", () => {
+    expect(playsOnPage(chant, [chant])).toBe(true);
+    expect(playsOnPage(`https://purifyapp.net${anthem}`, [anthem])).toBe(true);
+    expect(playsOnPage("https://audio.purifyapp.net/chants/psalm-135/el.mp3", [chant])).toBe(false);
+    expect(playsOnPage(null, [chant])).toBe(false);
+    expect(playsOnPage(chant, [""])).toBe(false);
   });
 });
 

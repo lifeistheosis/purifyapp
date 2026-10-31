@@ -218,23 +218,37 @@ describe("a cover comes back whole (the owner's note 58)", () => {
   });
 });
 
-describe("a chant's page keeps every control in its place (the owner's note 61)", () => {
+describe("a chant's page has no button that arrives late (the owner's note 61)", () => {
   // "if a button does come up or whatever, it doesn't mess up the screen and
-  // move the whole entire UI". The words' button is there only for a version
-  // with a transliteration or an English line to switch; its box is held at
-  // full size for every version, so Share and everything under the row stay
-  // put. Walked on the 1.8 export: Psalm 135 from English to Greek moved Share
-  // 43px along and the page 8px down, and back again.
+  // move the whole entire UI". Walked on the 1.8 export: Psalm 135 from
+  // English to Greek brought the words' sliders button beside Share, moved
+  // Share 43px along and the page 8px down. Since r3-18 the button and its
+  // sheet are gone (the English shows under the line being sung, the switch
+  // stands on the words for every version), and Share stands alone in the
+  // bar from the first frame. lib/chants/__tests__/chantPage.test.ts holds
+  // every control's box.
   const page = fs.readFileSync("components/chants/ChantPage.tsx", "utf8");
+  const words = fs.readFileSync("components/chants/ChantWords.tsx", "utf8");
 
-  it("holds the words' button's box whether the version has one or not", () => {
-    expect(page).toMatch(
-      /<span data-chant-words-slot="" className="-me-2 grid h-11 w-11 shrink-0 place-items-center">\s*<ChantWordsOptions variant=\{variant\} \/>\s*<\/span>/,
-    );
-    // The box is the button's own size.
-    const words = fs.readFileSync("components/chants/ChantWords.tsx", "utf8");
-    const button = words.slice(words.indexOf("export function ChantWordsOptions"));
-    expect(button).toContain('"tap-press grid h-11 w-11 shrink-0 place-items-center rounded-full');
+  it("draws no words' button beside Share, and no sheet behind one", () => {
+    expect(words).not.toContain("export function ChantWordsOptions");
+    expect(words).not.toContain("<Sheet");
+    expect(page).not.toContain("ChantWordsOptions");
+    expect(page).not.toContain("data-chant-words-slot");
+  });
+
+  it("puts the icon across the top from the cover the Chants home kept, whole in its first frame", () => {
+    // Going back and forth between Chants and a chant draws each from its
+    // kept copy (note 58), so neither waits on its picture.
+    expect(page).toMatch(/<ChantCover\s+cover=\{chant\.cover\}\s+size="hero"\s+picture="object-top"/);
+    const html = render(createElement(ChantCover, { cover: { src: "/audio/art/david.v1.jpg", alt: "King David" }, size: "hero", picture: "object-top", className: "chant-hero bg-night ring-0" }));
+    const box = /<div data-cover="img" class="([^"]*)"/.exec(html)?.[1] ?? "";
+    // The page's classes win over the box's own ground and ring.
+    expect(box.split(" ")).toEqual(expect.arrayContaining(["chant-hero", "bg-night", "ring-0"]));
+    expect(box).not.toMatch(/\bbg-night-soft\b|\bring-1\b/);
+    const img = /<img [^>]*>/.exec(html)?.[0] ?? "";
+    expect(img).toContain("object-top");
+    expect(img).not.toContain("object-[50%_20%]");
   });
 });
 

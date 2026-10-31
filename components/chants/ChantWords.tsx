@@ -4,10 +4,8 @@ import { useCallback, useEffect, useMemo, useRef, useState, type KeyboardEvent }
 
 import { useTranslate } from "@/components/i18n/MessagesProvider";
 import { LiveCaptions } from "@/components/player/LiveCaptions";
-import { Sliders } from "@/components/ui/icons/Sliders";
-import { Sheet } from "@/components/ui/Sheet";
 import { cn } from "@/lib/cn";
-import { captionsFor, chantMediaUrl, loadTiming, WORDS_VIEWS, type WordsView } from "@/lib/chants/media";
+import { captionsFor, chantMediaUrl, loadTiming, timingInHand, WORDS_VIEWS, type WordsView } from "@/lib/chants/media";
 import { useChantPlayback } from "@/lib/chants/play";
 import type { ChantIndexVariant, ChantTiming, ChantVariant } from "@/lib/chants/types";
 import { setWordsPrefs, useWordsPrefs } from "@/lib/chants/wordsPrefs";
@@ -16,28 +14,27 @@ import { getAudioSnapshot, play, seek, setTrack } from "@/lib/prayers/persistent
 import { tabForKey } from "@/lib/ui/sectionTabs";
 
 /**
- * A version's words as a chant's Sing along (1.8, the owner's pick of
- * 2026-10-27, round 9 A, Homebase/boards/purify-master/variants/09-chants):
- * "the words move with the singing, the original under each English line".
+ * A version's words on its chant's page, behind the Words door (1.8, sheet
+ * r3-18, the owner's pick of 2026-10-31, B's page: "the words as sung, large
+ * and lit, and the English under the line being sung, only there").
  *
  * Each line is drawn from the version's own data, nothing added
- * (lib/chants/media.ts captionsFor, lib/player/captions.ts lineParts):
+ * (lib/chants/media.ts captionsFor, lib/player/captions.ts lineParts): the
+ * words as they are sung lead, and a line's English (`en`, a version sung in
+ * another language) stands under it, under the line being sung only, and
+ * under every line while nothing is being sung, so the words read whole on
+ * their own (components/player/LiveCaptions.tsx, `english="under"`).
  *
- *   - a line with its English (`en`, a version sung in another language,
- *     the French anthem's line-for-line English) reads the English, large,
- *     and carries the words as they are sung (`text`) under it, in italic;
- *   - any other line (the English anthem, the Arabic one, which has no
- *     English beside its lines) is its own words.
- *
- * A version sung in a script other than Latin, with its sound written out
- * (`translit`), carries its own switch on the words (notes 56 and 59, the
- * owner: "there should be Arabic, right? But you should also have the option
- * to switch it to English transliteration", "and there's an option to show
- * both at the same time"): the words as sung, their sound, or each word over
- * its sound, read right to left for Arabic, so a reader can match word to
- * sound. The choice is kept on the device (lib/chants/wordsPrefs.ts) and
- * Now Playing shows the words the same way. The English over them stays the
- * reader's to keep or leave in the sheet, as in 1.7.
+ * The switch on the words (notes 56 and 59, the owner: "there should be
+ * Arabic, right? But you should also have the option to switch it to English
+ * transliteration", "and there's an option to show both at the same time"):
+ * the words as sung, their sound, or each word over its sound, read right to
+ * left for Arabic, so a reader can match word to sound. Drawn for every
+ * version of a chant some version of which has its sound written out
+ * (`switchable`), its parts greyed for a version with none, never taken away,
+ * so choosing another version moves nothing (note 61). The choice is kept on
+ * the device (lib/chants/wordsPrefs.ts) and Now Playing shows the words the
+ * same way.
  *
  * While this version plays, the line being sung is lit and rises, and its
  * words light as they are sung, from the one clock Now Playing's words read
@@ -46,25 +43,36 @@ import { tabForKey } from "@/lib/ui/sectionTabs";
  * every line at full strength.
  *
  * The words are the Church's published text, never a transcript (note 28),
- * and where they come from is said under the controls (ChantWordsSource).
+ * and where they come from is said under the last line (ChantWordsSource).
  */
 export function ChantWords({
   variant,
   indexVariant,
+  switchable,
+  active = true,
   className,
 }: {
   variant: ChantVariant;
   indexVariant: ChantIndexVariant;
+  /** The chant has a version with its sound written out: the switch is drawn, for every version. */
+  switchable: boolean;
+  /** The Words door is open. */
+  active?: boolean;
   className?: string;
 }) {
   const prefs = useWordsPrefs();
   const { loaded } = useChantPlayback(indexVariant);
   const hasSound = variant.lines.some((l) => l.translit);
+  // A version with no sound written out shows its words as sung, whatever
+  // was chosen for another; the choice stays for that other.
+  const view: WordsView = hasSound ? prefs.view : "original";
+  const shown = useMemo(() => ({ view, en: true }), [view]);
 
-  // The line times, from the timing file beside the recording. Without a
-  // signal there are none, and the words are simply the words.
-  // Kept with the file it came from, so another version's times never light
-  // this version's words.
+  // The line times, from the timing file beside the recording, at once when
+  // it is already here (Now Playing's Read opens the page on the line being
+  // sung). Without a signal there are none, and the words are simply the
+  // words. Kept with the file it came from, so another version's times never
+  // light this version's words.
   const [loadedTiming, setLoadedTiming] = useState<{ path: string; timing: ChantTiming | null } | null>(null);
   useEffect(() => {
     let alive = true;
@@ -78,13 +86,12 @@ export function ChantWords({
       alive = false;
     };
   }, [variant.timing]);
-  const timing = loadedTiming && loadedTiming.path === variant.timing ? loadedTiming.timing : null;
-  const source = useMemo(() => captionsFor(variant.lines, timing, prefs), [prefs, timing, variant.lines]);
+  const timing = loadedTiming && loadedTiming.path === variant.timing ? loadedTiming.timing : timingInHand(variant.timing);
+  const source = useMemo(() => captionsFor(variant.lines, timing, shown), [shown, timing, variant.lines]);
   const sung = useSungLines(source, variant.audio.durationSec, loaded);
 
   // One set of words: while this version plays, Now Playing shows these same
-  // lines, the English kept or left and the sound shown as the reader keeps
-  // them here.
+  // lines, the sound shown as the reader keeps it here.
   useEffect(() => {
     if (!loaded || !sung.timed) return;
     const snap = getAudioSnapshot();
@@ -98,27 +105,32 @@ export function ChantWords({
     if (!getAudioSnapshot().playing) play();
   }, []);
 
+  // Under the last line, in the same box: where the words come from. Made
+  // once per version, so the words are not drawn again with every render.
+  const footer = useMemo(() => <ChantWordsSource variant={variant} className="mt-6 border-t border-paper/[0.08] pt-3.5" />, [variant]);
+
   // Their sound alone reads left to right, in Latin letters.
-  const latin = hasSound && prefs.view === "translit";
-  const words = (
-    <LiveCaptions
-      source={source}
-      lines={sung.lines}
-      timed={sung.timed}
-      current={sung.current}
-      live={loaded}
-      look="page"
-      rtl={variant.rtl && !latin}
-      lang={variant.language}
-      onSeek={onSeek}
-      className={hasSound ? "mt-2 min-h-0 flex-1" : className}
-    />
-  );
-  if (!hasSound) return words;
+  const latin = hasSound && view === "translit";
   return (
     <div className={cn("flex flex-col", className)}>
-      <WordsViewSwitch variant={variant} view={prefs.view} className="shrink-0 self-center" />
-      {words}
+      {switchable ? <WordsViewSwitch variant={variant} view={view} disabled={!hasSound} className="shrink-0 -ms-2" /> : null}
+      <div className="relative min-h-0 flex-1">
+        <LiveCaptions
+          source={source}
+          lines={sung.lines}
+          timed={sung.timed}
+          current={sung.current}
+          live={loaded}
+          active={active}
+          look="page"
+          english="under"
+          rtl={variant.rtl && !latin}
+          lang={variant.language}
+          onSeek={onSeek}
+          footer={footer}
+          className="absolute inset-0"
+        />
+      </div>
     </div>
   );
 }
@@ -126,18 +138,23 @@ export function ChantWords({
 /**
  * The words' own switch (notes 56 and 59): the words as sung, named as the
  * version names itself ("العربية", "Ελληνικά"), their transliteration, or
- * both. Three parts in one carved track (app/globals.css, .words-view), a
- * radio group: the arrows move in the reading direction, Home and End go to
- * the ends, and only the chosen part is in the tab order. In its place from
- * the first frame: it needs nothing but the version's own words.
+ * both. Three parts in a strip (app/globals.css, .words-view), a radio group:
+ * the arrows move in the reading direction, Home and End go to the ends, and
+ * only the chosen part is in the tab order. In its place from the first
+ * frame: it needs nothing but the version's own words. For a version with no
+ * sound written out (`disabled`) only its own words are offered, the other
+ * two greyed where they stand.
  */
 export function WordsViewSwitch({
   variant,
   view,
+  disabled = false,
   className,
 }: {
   variant: Pick<ChantVariant, "label" | "language">;
   view: WordsView;
+  /** This version has no sound written out. */
+  disabled?: boolean;
   className?: string;
 }) {
   const { t } = useTranslate();
@@ -149,6 +166,7 @@ export function WordsViewSwitch({
   };
 
   function onKeyDown(e: KeyboardEvent<HTMLButtonElement>) {
+    if (disabled) return;
     const rtl = typeof document !== "undefined" && document.documentElement.dir === "rtl";
     const next = tabForKey(e.key, Math.max(0, WORDS_VIEWS.indexOf(view)), WORDS_VIEWS.length, rtl);
     if (next === null) return;
@@ -158,7 +176,13 @@ export function WordsViewSwitch({
   }
 
   return (
-    <div ref={rowRef} role="radiogroup" aria-label={t("chants.tab.words")} className={cn("words-view", className)}>
+    <div
+      ref={rowRef}
+      role="radiogroup"
+      aria-label={t("chants.tab.words")}
+      data-chant-control="words-view"
+      className={cn("words-view", className)}
+    >
       {WORDS_VIEWS.map((id) => (
         <button
           key={id}
@@ -166,6 +190,7 @@ export function WordsViewSwitch({
           role="radio"
           aria-checked={view === id}
           tabIndex={view === id ? 0 : -1}
+          disabled={disabled && id !== "original"}
           onClick={() => setWordsPrefs({ view: id })}
           onKeyDown={onKeyDown}
           lang={id === "original" ? variant.language : undefined}
@@ -177,40 +202,6 @@ export function WordsViewSwitch({
         </button>
       ))}
     </div>
-  );
-}
-
-/**
- * The English over the sung words, the reader's to keep or leave (1.7). A
- * button, and its sheet; nothing where the version has no English. The
- * transliteration has its own switch on the words since notes 56 and 59.
- */
-export function ChantWordsOptions({ variant, className }: { variant: ChantVariant; className?: string }) {
-  const { t } = useTranslate();
-  const prefs = useWordsPrefs();
-  const [open, setOpen] = useState(false);
-  const hasEnglish = variant.lines.some((l) => l.en);
-  if (!hasEnglish) return null;
-  return (
-    <>
-      <button
-        type="button"
-        onClick={() => setOpen(true)}
-        aria-haspopup="dialog"
-        aria-label={t("chants.tab.words")}
-        className={cn(
-          "tap-press grid h-11 w-11 shrink-0 place-items-center rounded-full text-paper/70 motion-safe:transition-colors hover:bg-paper/[0.06] hover:text-paper",
-          className,
-        )}
-      >
-        <Sliders size={19} />
-      </button>
-      <Sheet open={open} onClose={() => setOpen(false)} title={t("chants.tab.words")} desktop>
-        <div className="space-y-1 pb-2">
-          <Switch label={t("chants.words.english")} on={prefs.en} onChange={(v) => setWordsPrefs({ en: v })} />
-        </div>
-      </Sheet>
-    </>
   );
 }
 
@@ -235,27 +226,5 @@ export function ChantWordsSource({ variant, className }: { variant: ChantVariant
         </div>
       ) : null}
     </dl>
-  );
-}
-
-function Switch({ label, on, onChange }: { label: string; on: boolean; onChange: (v: boolean) => void }) {
-  return (
-    <button
-      type="button"
-      role="switch"
-      aria-checked={on}
-      onClick={() => onChange(!on)}
-      className="flex min-h-12 w-full items-center justify-between gap-3 text-start"
-    >
-      <span className="font-sans text-ui text-paper/85">{label}</span>
-      <span aria-hidden className={cn("relative h-6 w-10 shrink-0 rounded-full motion-safe:transition-colors", on ? "bg-paper" : "bg-paper/20")}>
-        <span
-          className={cn(
-            "absolute top-0.5 h-5 w-5 rounded-full motion-safe:transition-transform",
-            on ? "translate-x-[18px] bg-night" : "translate-x-0.5 bg-paper/80",
-          )}
-        />
-      </span>
-    </button>
   );
 }
