@@ -19,6 +19,15 @@
 // PictureWords), so a saint's words and his name open it the same way;
 // `referenceLabel` names the switch for that line.
 //
+// Given whose words they are (`quote`: a saint's, a council's, a saying of
+// the Desert Fathers), the Look tab is theirs (1.8, round 3 r3-11 and r3-11b,
+// the owner's "Let's do all of them. A, B, and C."): a Layout row of three
+// tiles, Portrait, Page and Seal, each drawing the words in that layout, and
+// under it a row of round swatches, one for each look, the chosen one ringed
+// white, scrolling sideways. Changing the layout keeps the look; changing the
+// look keeps the layout. Words and Size stay as they are; the cross and the
+// alignment are the Portrait's own, so on the Page and the Seal they rest.
+//
 // VerseCardActions loads it on the first tap of Share (next/dynamic), so
 // Today carries no canvas for a reader who never shares.
 
@@ -32,17 +41,27 @@ import {
   loadPicture,
   lookSrc,
   paintPrepared,
+  paintPreparedQuote,
+  paintQuoteSwatch,
   paintTile,
   preparePicture,
+  prepareQuote,
   readPhoto,
+  renderQuoteCard,
   renderVerseCard,
+  swatchPlate,
   type LoadedImage,
 } from "@/lib/share/drawVerseCard";
 import { saveImage, shareImage } from "@/lib/share/shareImage";
 import {
   DEFAULT_STYLE,
+  FLOWER_PLATES,
   FONT_ORDER,
+  LAYOUT_KEYS,
+  LAYOUT_ORDER,
   LOOKS,
+  QUOTE_LOOKS,
+  QUOTE_STYLE,
   SHAPES,
   SHAPE_ORDER,
   SHAPE_RATIOS,
@@ -54,6 +73,9 @@ import {
   type Look,
   type PictureStyle,
   type PictureWords,
+  type QuoteLayout,
+  type QuoteLook,
+  type QuoteSubject,
   type Shape,
 } from "@/lib/share/verseCard";
 
@@ -62,6 +84,10 @@ const PREVIEW_SCALE = 0.5;
 /** A look's tile, as the design draws it, and how many pixels it is drawn with. */
 const TILE = 50;
 const TILE_SCALE = 3;
+/** A layout's tile, as r3-11b draws it: its picture 38 wide and 44 tall, a post cut at its foot. */
+const LAYOUT_TILE = { width: 38, height: 44 };
+/** A look's round swatch, 46 across. */
+const SWATCH = 46;
 
 type Tab = "look" | "words" | "size";
 const TABS: readonly { id: Tab; key: string }[] = [
@@ -85,6 +111,7 @@ export function PictureSheet({
   referenceLabel,
   lead,
   leadLabel,
+  quote,
 }: {
   open: boolean;
   onClose: () => void;
@@ -106,10 +133,17 @@ export function PictureSheet({
   lead?: Look;
   /** The name under the lead look's tile. */
   leadLabel?: string;
+  /**
+   * Whose words these are (lib/share/verseCard.ts, QuoteSubject): with it the
+   * sheet offers the quote's own layouts and looks in place of the verse's,
+   * and opens on his portrait, on Night, as a post. Keep it the same object
+   * while it is the same, as `words`.
+   */
+  quote?: QuoteSubject;
 }) {
   const { t } = useTranslate();
   const id = useId();
-  const [style, setStyle] = useState<PictureStyle>(() => (lead ? { ...DEFAULT_STYLE, look: lead.id } : DEFAULT_STYLE));
+  const [style, setStyle] = useState<PictureStyle>(() => (quote ? QUOTE_STYLE : lead ? { ...DEFAULT_STYLE, look: lead.id } : DEFAULT_STYLE));
   const [tab, setTab] = useState<Tab>("look");
   const [photo, setPhoto] = useState<LoadedImage | null>(null);
   const [fits, setFits] = useState(true);
@@ -121,7 +155,9 @@ export function PictureSheet({
   const fileRef = useRef<HTMLInputElement>(null);
   const tabRefs = useRef<(HTMLButtonElement | null)[]>([]);
   const shape = SHAPES[style.shape];
-  const icon = lookOf(style.look).kind === "icon";
+  const icon = !quote && lookOf(style.look).kind === "icon";
+  // The cross and the alignment are the Portrait's: the Page is set from its margin under its plate, the Seal is its own mark.
+  const portraitOnly = Boolean(quote) && (style.layout ?? "portrait") !== "portrait";
 
   const change = (patch: Partial<PictureStyle>) => {
     setStatus(null);
@@ -129,19 +165,26 @@ export function PictureSheet({
   };
 
   // The preview, drawn when its canvas is mounted and again whenever the
-  // words, the style or the photo change.
+  // words, the style, the photo or whose words they are change.
   useEffect(() => {
     if (!canvas) return;
     let live = true;
-    void preparePicture(words, style, { photo }).then((prepared) => {
-      if (!live) return;
-      if (prepared) paintPrepared(canvas, prepared, PREVIEW_SCALE);
-      setFits(Boolean(prepared));
+    const drawn = quote
+      ? prepareQuote(words, quote, style).then((prepared) => {
+          if (live && prepared) paintPreparedQuote(canvas, prepared, PREVIEW_SCALE);
+          return Boolean(prepared);
+        })
+      : preparePicture(words, style, { photo }).then((prepared) => {
+          if (live && prepared) paintPrepared(canvas, prepared, PREVIEW_SCALE);
+          return Boolean(prepared);
+        });
+    void drawn.then((fitted) => {
+      if (live) setFits(fitted);
     });
     return () => {
       live = false;
     };
-  }, [canvas, words, style, photo]);
+  }, [canvas, words, style, photo, quote]);
 
   async function pickPhoto(file: File | undefined) {
     if (!file) return;
@@ -165,7 +208,7 @@ export function PictureSheet({
     setBusy(true);
     setStatus(null);
     try {
-      const picture = await renderVerseCard(words, style, { photo });
+      const picture = quote ? await renderQuoteCard(words, quote, style) : await renderVerseCard(words, style, { photo });
       if (!picture) {
         setStatus(t("today.verse.couldNotMakePicture"));
         return;
@@ -237,7 +280,15 @@ export function PictureSheet({
       </div>
 
       <div id={`${id}-panel`} role="tabpanel" aria-labelledby={`${id}-tab-${tab}`} className="mt-3.5 min-h-[136px]">
-        {tab === "look" ? (
+        {tab === "look" && quote ? (
+          <QuoteLooks
+            words={words}
+            quote={quote}
+            style={style}
+            onLayout={(layout) => change({ layout })}
+            onLook={(look) => change({ look })}
+          />
+        ) : tab === "look" ? (
           <>
             <div role="group" aria-label={t("picture.tab.look")} className="no-scrollbar -mx-1 flex justify-between gap-1 overflow-x-auto px-1">
               {lead ? (
@@ -315,14 +366,14 @@ export function PictureSheet({
                 {referenceLabel ?? t("picture.reference")}
               </Choice>
               {/* Never over an icon: with Christ or the Trinity the cross is off and cannot be put on. */}
-              <Choice on={style.cross && !icon} disabled={icon} onClick={() => change({ cross: !style.cross })}>
+              <Choice on={style.cross && !icon && !portraitOnly} disabled={icon || portraitOnly} onClick={() => change({ cross: !style.cross })}>
                 {t("picture.cross")}
               </Choice>
               <span role="group" aria-label={t("picture.align")} className="flex gap-2">
-                <Choice on={style.align === "left"} onClick={() => change({ align: "left" })}>
+                <Choice on={style.align === "left" && !portraitOnly} disabled={portraitOnly} onClick={() => change({ align: "left" })}>
                   {t("picture.left")}
                 </Choice>
-                <Choice on={style.align === "center"} onClick={() => change({ align: "center" })}>
+                <Choice on={style.align === "center" && !portraitOnly} disabled={portraitOnly} onClick={() => change({ align: "center" })}>
                   {t("picture.centre")}
                 </Choice>
               </span>
@@ -432,6 +483,140 @@ function LookTile({
         {drawn ? <canvas ref={ref} width={TILE * TILE_SCALE} height={TILE * TILE_SCALE} aria-hidden className="block size-full" /> : children}
       </span>
       <span className={cn("line-clamp-2 max-w-full break-words text-center font-sans text-[10.5px] leading-tight hyphens-auto", on ? "font-semibold text-paper" : "text-paper/60")}>{label}</span>
+    </button>
+  );
+}
+
+/**
+ * A quote's Look tab (r3-11b, "The sheet holds them all"): the Layout row, a
+ * tile for each of the three with the words drawn in it in the chosen look,
+ * then the Look row, a round swatch for each look, scrolling sideways with
+ * the one cut at its edge saying so. No pill cloud: two rows, one choice each.
+ */
+function QuoteLooks({
+  words,
+  quote,
+  style,
+  onLayout,
+  onLook,
+}: {
+  words: PictureWords;
+  quote: QuoteSubject;
+  style: PictureStyle;
+  onLayout: (layout: QuoteLayout) => void;
+  onLook: (look: string) => void;
+}) {
+  const { t } = useTranslate();
+  const id = useId();
+  const layout = style.layout ?? "portrait";
+  const row = useRef<HTMLDivElement>(null);
+  // The chosen look in sight as the tab opens, when it is past the row's edge.
+  useEffect(() => {
+    row.current?.querySelector<HTMLElement>('[aria-pressed="true"]')?.scrollIntoView({ block: "nearest", inline: "nearest" });
+  }, []);
+  return (
+    <div data-quote-looks="">
+      <p id={`${id}-layout`} className="font-sans text-caption font-semibold text-paper/55">
+        {t("picture.layout")}
+      </p>
+      <div role="group" aria-labelledby={`${id}-layout`} className="mt-1.5 flex gap-2">
+        {LAYOUT_ORDER.map((l) => (
+          <LayoutTile key={l} layout={l} words={words} quote={quote} style={style} on={layout === l} label={t(LAYOUT_KEYS[l])} onClick={() => onLayout(l)} />
+        ))}
+      </div>
+      <p id={`${id}-look`} className="mt-3 font-sans text-caption font-semibold text-paper/55">
+        {t("picture.tab.look")}
+      </p>
+      <div ref={row} role="group" aria-labelledby={`${id}-look`} className="no-scrollbar -mx-4 mt-1.5 flex gap-2.5 overflow-x-auto px-4 pb-1 pt-1">
+        {QUOTE_LOOKS.map((look) => (
+          <Swatch key={look.id} look={look} on={style.look === look.id} label={t(look.nameKey)} onClick={() => onLook(look.id)} />
+        ))}
+      </div>
+    </div>
+  );
+}
+
+/** A layout's tile: the words in that layout and the chosen look, a post cut at its foot, and its name. */
+function LayoutTile({
+  layout,
+  words,
+  quote,
+  style,
+  on,
+  label,
+  onClick,
+}: {
+  layout: QuoteLayout;
+  words: PictureWords;
+  quote: QuoteSubject;
+  style: PictureStyle;
+  on: boolean;
+  label: string;
+  onClick: () => void;
+}) {
+  const ref = useRef<HTMLCanvasElement>(null);
+  const { look, font } = style;
+  useEffect(() => {
+    const canvas = ref.current;
+    if (!canvas) return;
+    let live = true;
+    void prepareQuote(words, quote, { ...QUOTE_STYLE, look, font, layout }).then((prepared) => {
+      if (!live || !prepared) return;
+      const scale = (LAYOUT_TILE.width * TILE_SCALE) / prepared.plan.width;
+      paintPreparedQuote(canvas, prepared, scale, (LAYOUT_TILE.height * prepared.plan.width) / LAYOUT_TILE.width);
+    });
+    return () => {
+      live = false;
+    };
+  }, [layout, words, quote, look, font]);
+  return (
+    <button
+      type="button"
+      aria-pressed={on}
+      onClick={onClick}
+      className={cn(
+        "tap-press flex h-[58px] min-w-0 flex-1 items-center gap-2 rounded-[14px] border px-2 font-sans text-[12.5px] font-semibold",
+        on ? "reader-lit border-[1.5px] border-paper text-paper" : "border-paper/10 bg-linear-to-b from-paper/[0.07] to-paper/[0.025] text-paper/70",
+      )}
+    >
+      <span className="block h-[44px] w-[38px] shrink-0 overflow-hidden rounded-[7px] bg-night-deep">
+        <canvas ref={ref} width={LAYOUT_TILE.width * TILE_SCALE} height={LAYOUT_TILE.height * TILE_SCALE} aria-hidden className="block h-full w-full" />
+      </span>
+      {/* A longer word in another language takes two lines rather than an ellipsis. */}
+      <span className="line-clamp-2 min-w-0 break-words text-start leading-tight hyphens-auto">{label}</span>
+    </button>
+  );
+}
+
+/** A look's round swatch: its ground, drawn small, with its flowers; ringed white when chosen. */
+function Swatch({ look, on, label, onClick }: { look: QuoteLook; on: boolean; label: string; onClick: () => void }) {
+  const ref = useRef<HTMLCanvasElement>(null);
+  useEffect(() => {
+    const canvas = ref.current;
+    if (!canvas) return;
+    let live = true;
+    const plate = swatchPlate(look);
+    void (plate ? loadPicture(FLOWER_PLATES[plate].src) : Promise.resolve(null)).then((flower) => {
+      const ctx = canvas.getContext("2d");
+      if (live && ctx) paintQuoteSwatch(ctx, look, SWATCH, TILE_SCALE, flower);
+    });
+    return () => {
+      live = false;
+    };
+  }, [look]);
+  return (
+    <button type="button" aria-pressed={on} onClick={onClick} className="tap-press flex w-[50px] shrink-0 flex-col items-center gap-1.5">
+      <span
+        className={cn(
+          "relative block size-[46px] rounded-full",
+          on && "shadow-[0_0_0_2px_var(--color-night),0_0_0_3.5px_var(--color-paper),0_0_16px_rgb(255_255_255/0.45)]",
+        )}
+      >
+        <canvas ref={ref} width={SWATCH * TILE_SCALE} height={SWATCH * TILE_SCALE} aria-hidden className="block size-full rounded-full" />
+        {/* The hairline round it, over the drawing so a dark look keeps its edge on the dark sheet. */}
+        {on ? null : <span aria-hidden className="pointer-events-none absolute inset-0 rounded-full ring-1 ring-paper/20 ring-inset" />}
+      </span>
+      <span className={cn("line-clamp-2 max-w-full break-words text-center font-sans text-[10px] leading-tight hyphens-auto", on ? "font-semibold text-paper" : "text-paper/60")}>{label}</span>
     </button>
   );
 }

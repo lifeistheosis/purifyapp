@@ -22,10 +22,15 @@
 import sayings from "@/data/today/sayings.json";
 
 import type { Cite, ShownCite } from "@/lib/citations/cite";
+import type { QuoteFace, QuoteSubject } from "@/lib/share/verseCard";
 
 export type Saying = {
   text: string;
   attribution: string;
+  /** The page of the Father who speaks, where he has one: St Antony's, for his face on the picture of the saying (1.8, round 3 r3-11). */
+  speaker?: string;
+  /** The one word lit on that picture, chosen by hand where one word plainly carries the line; none elsewhere. */
+  lit?: string;
   /**
    * Where the words stand (1.8, lib/citations/cite.ts): a paragraph of the
    * library's Life of Antony or of St John Cassian's Conferences, word for
@@ -73,4 +78,31 @@ export function sayingForDay(day: Date): Saying | null {
 /** Every saying, for tests and for a future index. */
 export function allSayings(): Saying[] {
   return SAYINGS;
+}
+
+/**
+ * The saying as a quote's picture (lib/share/verseCard.ts, QuoteSubject;
+ * round 3 r3-11 found that Today's saying, the quote Today shows on most
+ * days, could not be shared): the Father named on it, the Life or the
+ * Conferences that keep his words and their place, "From the Desert Fathers"
+ * (`head`, in the reader's language) over the cross and as the Page's running
+ * head, his face where he has a page with a cover (St Antony), else the
+ * picture's form with no portrait.
+ */
+export function sayingQuote(saying: Saying, { head, face, lang }: { head: string; face: QuoteFace | null; lang?: string }): QuoteSubject {
+  const shown = saying.shown;
+  const kept = shown && (shown.kind === "father" || shown.kind === "text") ? shown : null;
+  const by = kept ? [kept.author, kept.work].filter(Boolean).join(", ") : "";
+  return {
+    name: saying.attribution,
+    head,
+    ...(by ? { byline: by } : {}),
+    ...(kept?.place ? { source: kept.place } : {}),
+    pageHead: head,
+    ...(kept ? { pageSource: [kept.author, kept.work, kept.place].filter(Boolean).join(", ") } : {}),
+    ring: `${saying.attribution} · ${head}`,
+    ...(saying.lit ? { lit: saying.lit } : {}),
+    face,
+    ...(lang ? { lang } : {}),
+  };
 }

@@ -18,20 +18,61 @@
 // quotation in the app has (components/citations/SourceLine.tsx), written
 // into the sayings file with them, which opens the paragraph of the Life of
 // Antony or of St John Cassian's Conferences that holds them.
+//
+// And Share as a picture (1.8, round 3 r3-11, which found this, the quote
+// Today shows on most days, was the one that could not be shared): the round
+// share mark at the card's corner, as the saint's band carries it, opens the
+// picture sheet with the saying's own looks, the Portrait, the Page and the
+// Seal (components/share/PictureSheet.tsx), St Antony's face on his.
 
-import type { Saying } from "@/lib/today/saying";
+import dynamic from "next/dynamic";
+import { useMemo, useState } from "react";
+
+import { sayingQuote, type Saying } from "@/lib/today/saying";
 import { SourceLine } from "@/components/citations/SourceLine";
 import { useTranslate } from "@/components/i18n/MessagesProvider";
 import { staticShown } from "@/lib/citations/cite";
+import { isNativeClient } from "@/lib/platform/native";
+import { quoteFace } from "@/lib/today/saintFaces";
+
+import { ShareMark } from "./SaintWindow";
+
+// Loaded on the tap, as the verse's and the saint's are: Today carries no canvas for a reader who never shares.
+const PictureSheet = dynamic(() => import("@/components/share/PictureSheet").then((m) => m.PictureSheet), { ssr: false });
 
 export function TodaySayingCard({ saying }: { saying: Saying }) {
-  const { t } = useTranslate();
+  const { t, locale } = useTranslate();
+  const [making, setMaking] = useState(false);
   const line = saying.shown ?? staticShown(saying.cite);
+  // The same objects while the saying is the same: the sheet draws its preview again when they change.
+  const words = useMemo(() => ({ text: saying.text, reference: saying.attribution, lang: "en" }), [saying]);
+  const quote = useMemo(
+    () =>
+      making
+        ? sayingQuote(saying, {
+            head: t("today.sayingEyebrow"),
+            face: saying.speaker ? quoteFace({ slug: saying.speaker }, isNativeClient()) : null,
+            lang: locale,
+          })
+        : undefined,
+    [making, saying, t, locale],
+  );
+  const work = line && (line.kind === "father" || line.kind === "text") ? line.work : null;
   return (
-    <article className="rounded-2xl border border-paper/10 bg-paper/[0.03] p-3.5">
-      <p className="font-sans text-caption text-paper/55">
+    <article className="relative rounded-2xl border border-paper/10 bg-paper/[0.03] p-3.5">
+      <p className="pe-10 font-sans text-caption text-paper/55">
         {t("today.sayingEyebrow")}
       </p>
+      <button
+        type="button"
+        onClick={() => setMaking(true)}
+        aria-label={t("today.verse.shareAsPicture")}
+        aria-haspopup="dialog"
+        data-saying-share=""
+        className="tap-press hit-44 absolute end-2.5 top-2.5 grid size-[30px] place-items-center rounded-full bg-night/55 text-paper"
+      >
+        <ShareMark size={15} />
+      </button>
       <blockquote className="mt-2 font-serif text-ui leading-[1.5] text-paper/85">
         {saying.text}
       </blockquote>
@@ -39,6 +80,18 @@ export function TodaySayingCard({ saying }: { saying: Saying }) {
         {saying.attribution}
       </p>
       {line ? <SourceLine cite={line} className="mt-1" /> : null}
+      {making ? (
+        <PictureSheet
+          open={making}
+          onClose={() => setMaking(false)}
+          words={words}
+          title={saying.attribution}
+          name={saying.attribution}
+          caption={work ? `${saying.attribution}\n${work}` : saying.attribution}
+          referenceLabel={saying.attribution}
+          quote={quote}
+        />
+      ) : null}
     </article>
   );
 }

@@ -14,9 +14,11 @@ import { MobileTopBar } from "@/components/nav/MobileTopBar";
 import { ShareButton } from "@/components/ui/ShareButton";
 import { CouncilHero } from "@/components/councils/CouncilHero";
 import { CouncilFathers } from "@/components/councils/CouncilFathers";
+import { CouncilWords } from "@/components/councils/CouncilWords";
 import { DocumentsDoor } from "@/components/councils/DocumentsDoor";
 import { councilBooks, shelfSize } from "@/lib/councils/books";
 import { fatherFaces } from "@/lib/councils/fathers";
+import { councilQuote, lineOfCouncil } from "@/lib/councils/lines";
 import { councilFocus, councilPicture, ordinalKey, placeOf } from "@/lib/councils/page";
 import { cn } from "@/lib/cn";
 
@@ -99,6 +101,16 @@ export default async function CouncilProfilePage({
  const sideBySide = facts.length === 2 && facts.every((f) => f.value.length <= SHORT_FACT);
  const books = councilBooks(c, IS_STATIC_EXPORT);
  const shelf = shelfSize(books);
+
+ // The council in its own words, one line of its document, to share as a
+ // picture (1.8, round 3 r3-11; lib/councils/lines.ts). Its picture is the
+ // head's, asked of the website in the apps.
+ const line = lineOfCouncil(c.slug);
+ const lineShown = line ? shownCite(line.cite) : null;
+ const lineSubject =
+  line && lineShown?.kind === "father"
+   ? councilQuote(c, { line, documentTitle: lineShown.work, pageHead: "", picture: picture?.src ?? null })
+   : null;
 
  return (
  <>
@@ -210,6 +222,17 @@ export default async function CouncilProfilePage({
  </ul>
  </div>
  )}
+
+ {/* The council in its own words, to share as a picture or read where it stands. */}
+ {line && lineShown && lineSubject ? (
+ <CouncilWords
+  text={line.words}
+  shown={lineShown}
+  subject={lineSubject}
+  pageHeadKey={c.kind === "local" ? "study.councils.localCouncil" : "study.theology.ecumenicalCouncils"}
+  name={c.name}
+ />
+ ) : null}
 
  {/* Defined / Condemned */}
  <div className="mt-12 grid grid-cols-1 md:grid-cols-2 gap-8">

@@ -10,13 +10,15 @@ import { Book } from "@/components/ui/icons/Book";
 import { ChevronRight } from "@/components/ui/icons/ChevronRight";
 import { Close } from "@/components/ui/icons/Close";
 import { Sheet } from "@/components/ui/Sheet";
+import { isNativeClient } from "@/lib/platform/native";
 import type { SaintBrief } from "@/lib/saints/brief";
-import type { SaintPicture } from "@/lib/today/saintFaces";
-import { quoted, readWhereFrom, saintByline, saintPictureInput, type SaintWords } from "@/lib/today/saintWords";
+import { feastDaysIn } from "@/lib/saints/feastDay";
+import { quoteFace, type SaintPicture } from "@/lib/today/saintFaces";
+import { quoted, readWhereFrom, saintByline, saintPictureInput, saintQuote, type SaintWords } from "@/lib/today/saintWords";
 
 import { SaintFace } from "./SaintFace";
 
-type WindowSaint = Pick<SaintBrief, "slug" | "name" | "epithet">;
+type WindowSaint = Pick<SaintBrief, "slug" | "name" | "epithet"> & Partial<Pick<SaintBrief, "feastDays" | "iconUrl">>;
 
 // Loaded on the tap, as the verse card loads it: Today carries no canvas for
 // a reader who never shares.
@@ -36,11 +38,13 @@ const PictureSheet = dynamic(() => import("@/components/share/PictureSheet").the
  * actions:
  *
  *   Share as a picture    the picture sheet the verse uses
- *                         (components/share/PictureSheet.tsx, his mix of A
- *                         and B): its looks, words and sizes, his words, his
- *                         name where a verse has its reference and the work
- *                         under it, signed Purify App. The look of a saint's
- *                         picture follows the owner's reference when it comes.
+ *                         (components/share/PictureSheet.tsx), with his own
+ *                         looks since round 3 (r3-11, the owner's pick of all
+ *                         three): the Portrait, his cover portrait beside his
+ *                         words; the Page, the picture as a plate over a page;
+ *                         the Seal, his words alone with his face as a seal;
+ *                         each in nine looks (r3-11b). His face is his cover
+ *                         portrait (lib/today/saintFaces.ts, quoteFace).
  *   Read where it's from  the work's page at that place (the source line's
  *                         own link). A text the library does not carry has no
  *                         page to open, so there it is not offered.
@@ -61,11 +65,27 @@ export function SaintWindow({
   words: SaintWords;
   picture: SaintPicture | null;
 }) {
+  const { t, locale } = useTranslate();
   const [making, setMaking] = useState(false);
   const work = words.shown.kind === "father" || words.shown.kind === "text" ? words.shown.work : null;
   // The same object while the words are the same: the sheet draws its
   // preview again when they change.
   const pictureWords = useMemo(() => ({ ...saintPictureInput(words, saint.name), ...(work ? { note: work } : {}) }), [words, saint.name, work]);
+  // Whose words they are, for his own looks in the sheet: made when the sheet opens.
+  const quote = useMemo(
+    () =>
+      making
+        ? saintQuote({
+            saint,
+            words,
+            face: quoteFace(saint, isNativeClient()),
+            pageHead: t("saints.inHisOwnWords"),
+            feast: saint.feastDays?.[0] ? feastDaysIn([saint.feastDays[0]], locale, "long", t) : undefined,
+            lang: locale,
+          })
+        : undefined,
+    [making, saint, words, t, locale],
+  );
 
   return (
     <>
@@ -97,6 +117,7 @@ export function SaintWindow({
           name={saint.name}
           caption={work ? `${saint.name}\n${work}` : saint.name}
           referenceLabel={saint.name}
+          quote={quote}
         />
       ) : null}
     </>

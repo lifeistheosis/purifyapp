@@ -6,9 +6,11 @@ import { describe, expect, it } from "vitest";
 import rows from "@/data/calendar/profiled-saints.json";
 import { COVER_ART } from "@/lib/reading/coverArt";
 import type { SaintBrief } from "@/lib/saints/brief";
+import { ICON_RIGHTS, MISSING_ATTRIBUTION } from "@/lib/saints/iconRights";
 import { SITE_URL } from "@/lib/site";
+import { SAINT_WORDS_SLUGS } from "@/lib/today/saintWords";
 
-import { ICON_FOCUS, SAINT_FACES, coverFile, saintPicture } from "../saintFaces";
+import { COVER_FACES, ICON_FOCUS, SAINT_FACES, SHAREABLE_ICONS, coverFile, quoteFace, saintPicture } from "../saintFaces";
 
 // The day's saint's face on Today (1.8, the owner's round 12: "St. John
 // Chrysostom" himself): his cover portrait where there is one, else the icon
@@ -70,5 +72,50 @@ describe("the saint's band picture", () => {
     expect(bare).toBeDefined();
     expect(saintPicture(bare, false)).toBeNull();
     expect(saintPicture(null, false)).toBeNull();
+  });
+});
+
+// His face when his words are shared as a picture (1.8, round 3 r3-11): where
+// the face is on each cover and which way he looks, so the Portrait stands
+// him on the side he looks from and the Seal is cut round his face.
+describe("his face on the picture of his words", () => {
+  it("is placed on every cover Today knows, and on no other", () => {
+    expect(Object.keys(COVER_FACES).sort()).toEqual(Object.keys(SAINT_FACES).sort());
+    for (const [slug, [x, y, looks]] of Object.entries(COVER_FACES)) {
+      expect(x, slug).toBeGreaterThan(0);
+      expect(x, slug).toBeLessThan(1);
+      expect(y, slug).toBeGreaterThan(0);
+      expect(y, slug).toBeLessThan(0.6);
+      expect(["left", "right", "ahead"], slug).toContain(looks);
+    }
+    // The sheet's own, kept; St Augustine looks up to the right, to the light.
+    expect(COVER_FACES["john-chrysostom"]).toEqual([0.3, 0.25, "left"]);
+    expect(COVER_FACES["augustine-of-hippo"][2]).toBe("right");
+  });
+
+  it("is his cover, asked of the website in the apps, where it is", () => {
+    const chrysostom = brief("john-chrysostom");
+    expect(quoteFace(chrysostom, false)).toEqual({ src: "/covers/authors/john-chrysostom.v1.jpg", point: [0.3, 0.25], looks: "left", fallback: null });
+    expect(quoteFace(chrysostom, true)?.src).toBe(`${SITE_URL}/covers/authors/john-chrysostom.v1.jpg`);
+  });
+
+  it("falls back only to a carried icon whose rights are recorded, never one in the debt", () => {
+    for (const file of SHAREABLE_ICONS) {
+      expect(ICON_RIGHTS[file], file).toBeDefined();
+      expect(MISSING_ATTRIBUTION, file).not.toContain(file);
+    }
+    // St John Chrysostom's carried icon is still in the debt: with no signal his picture has no face.
+    expect(quoteFace(brief("john-chrysostom"), true)?.fallback).toBeNull();
+    // St Cyprian has no cover; his icon's rights are recorded, so it is his face.
+    expect(quoteFace(brief("cyprian-of-carthage"), true)).toEqual({ src: "/saints/icons/cyprian-of-carthage.jpg", point: [0.49, 0.32], looks: "ahead", fallback: null });
+    // A saint with neither a cover nor a recorded icon has none.
+    const none = BRIEFS.find((s) => !(s.slug in SAINT_FACES) && !(s.iconUrl && SHAREABLE_ICONS.has(s.iconUrl.replace("/saints/icons/", ""))))!;
+    expect(quoteFace(none, false)).toBeNull();
+    expect(quoteFace(null, false)).toBeNull();
+  });
+
+  it("is known for most of the saints whose words Today shows", () => {
+    const faced = SAINT_WORDS_SLUGS.filter((slug) => quoteFace(brief(slug), false));
+    expect(faced.length).toBeGreaterThanOrEqual(15);
   });
 });
