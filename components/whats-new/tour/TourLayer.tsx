@@ -99,10 +99,10 @@ const FOOT_GUESS_PX = 300;
 /**
  * The room after a page's end while the tour runs: half the screen, more than
  * the story's foot takes in any language, so it is given once and not again
- * for each stop. Giving it lays the whole page out anew, which on Today took
- * 0.4 s of the first frame after See what's new on the export slowed four
- * times; so on the title page it is given under the night, ROOM_AFTER_MS in,
- * where nothing moves.
+ * for each stop. Giving it lays the whole page out anew: given at See what's
+ * new, the first frame after the tap took 1.1 s on Today on the export slowed
+ * four times, and 0.34 s with it given before. So on the title page it is
+ * given under the night, ROOM_AFTER_MS in, where nothing moves.
  */
 const ROOM_SHARE = 0.5;
 const ROOM_AFTER_MS = 1500;

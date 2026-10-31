@@ -172,12 +172,14 @@ export const REPLAN_PX = 24;
  * moves with nothing rendered; with the light gone out the box is nothing
  * and the four cover the whole screen.
  */
-export function tapBlockers(tryIt: boolean): { name: string; style: Record<string, string | number> }[] {
+export type Blocker = { name: string; style: Record<string, string | number> };
+
+export function tapBlockers(tryIt: boolean): Blocker[] {
   const x = "var(--tour-x, 0px)";
   const y = "var(--tour-y, 0px)";
   const w = "var(--tour-w, 0px)";
   const h = "var(--tour-h, 0px)";
-  const parts = [
+  const parts: Blocker[] = [
     { name: "above", style: { top: 0, left: 0, right: 0, height: y } },
     { name: "below", style: { top: `calc(${y} + ${h})`, left: 0, right: 0, bottom: 0 } },
     { name: "before", style: { top: y, height: h, left: 0, width: x } },
