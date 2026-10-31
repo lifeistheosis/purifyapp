@@ -557,7 +557,9 @@ export function deriveAttention(i: AttentionInputs): AttentionSummary {
         n === 1
           ? "1 person asked for the blue check and is waiting on a decision."
           : `${n} people asked for the blue check and are waiting on a decision.`,
-        { tab: "verification", label: "Open Verification" }),
+        // "verification" is a retired id now: it lands on the readers'
+        // directory with its Waiting on you filter on (lib/admin/pages.ts).
+        { tab: "verification", label: "Open Readers" }),
     );
   }
 

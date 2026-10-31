@@ -1,13 +1,16 @@
 "use client";
 
-// Users hub — the existing profiles view plus two shopping-intent panels:
-// live carts (server-synced, guests included) and abandoned checkouts
-// (started-but-unpaid orders). Both read /api/admin/carts.
+// Live carts and abandoned checkouts: what readers are about to buy, and the
+// checkouts they started and left. Both read /api/admin/carts.
+//
+// They were two panels inside the Users tab, beside the profiles. The owner's
+// pick A for the rail on sheet r3-15 (2026-10-30) has one level of views, so
+// they are views of Users now, under the readers' directory. They stay in
+// Users rather than moving to Orders while his answer on that is open.
 
 import { useEffect, useState } from "react";
 import { adminJson } from "@/lib/admin/fetchJson";
-import { Card, StatCard, DataTable, Pill, SubTabs, Email } from "../primitives";
-import { UsersTab } from "./UsersTab";
+import { Card, StatCard, DataTable, Pill, Email } from "../primitives";
 import { formatPrice } from "@/lib/shop/format";
 
 type LiveCart = {
@@ -45,8 +48,8 @@ function ago(iso: string): string {
 }
 
 function itemsLabel(items: { title: string; quantity: number }[]): string {
-  if (items.length === 0) return "—";
-  return items.map((i) => `${i.title} ×${i.quantity}`).join(", ");
+  if (items.length === 0) return "none";
+  return items.map((i) => `${i.title} x${i.quantity}`).join(", ");
 }
 
 function useCartsData() {
@@ -88,14 +91,14 @@ function useCartsData() {
   return { liveCarts, abandoned, loaded, failed };
 }
 
-function LiveCartsPanel() {
+export function LiveCartsTab() {
   const { liveCarts, loaded, failed } = useCartsData();
   return (
     <div className="space-y-6">
       <div className="grid grid-cols-2 gap-3 lg:grid-cols-4">
         <StatCard
           label="Live carts"
-          value={failed ? "Unavailable" : loaded ? liveCarts.length : "—"}
+          value={failed ? "Unavailable" : loaded ? liveCarts.length : "Loading"}
           accent
         />
         <StatCard
@@ -108,7 +111,7 @@ function LiveCartsPanel() {
                     liveCarts.reduce((a, c) => a + c.subtotalCents, 0),
                     "usd",
                   )
-                : "—"
+                : "Loading"
           }
         />
       </div>
@@ -125,7 +128,7 @@ function LiveCartsPanel() {
               ? "The carts could not be read, so this is not an empty list."
               : loaded
                 ? "No live carts. (Needs the shop_carts migration applied.)"
-                : "Loading…"
+                : "Loading"
           }
           columns={[
             {
@@ -169,7 +172,7 @@ function LiveCartsPanel() {
                 c.email ? (
                   <Email value={c.email} className="font-sans text-detail text-paper/70" />
                 ) : (
-                  <span className="text-paper/25">—</span>
+                  <span className="text-paper/25">none</span>
                 ),
               csv: (c) => c.email ?? "",
             },
@@ -180,7 +183,7 @@ function LiveCartsPanel() {
               // cart stays readable.
               render: (c) =>
                 c.items.length === 0 ? (
-                  <span className="text-paper/25">—</span>
+                  <span className="text-paper/25">none</span>
                 ) : (
                   <ul className="space-y-0.5">
                     {c.items.map((i) => (
@@ -189,7 +192,7 @@ function LiveCartsPanel() {
                         className="font-sans text-detail text-paper/80"
                       >
                         {i.title}
-                        <span className="text-paper/40"> ×{i.quantity}</span>
+                        <span className="text-paper/40"> x{i.quantity}</span>
                       </li>
                     ))}
                   </ul>
@@ -223,15 +226,15 @@ function LiveCartsPanel() {
   );
 }
 
-function AbandonedPanel() {
-  const { abandoned, loaded } = useCartsData();
+export function AbandonedTab() {
+  const { abandoned, loaded, failed } = useCartsData();
   return (
     <div className="space-y-6">
       <div className="grid grid-cols-2 gap-3 lg:grid-cols-4">
-        <StatCard label="Unpaid checkouts" value={loaded ? abandoned.length : "—"} />
+        <StatCard label="Unpaid checkouts" value={failed ? "Unavailable" : loaded ? abandoned.length : "Loading"} />
         <StatCard
-          label="Abandoned (>1d)"
-          value={loaded ? abandoned.filter((a) => a.stale).length : "—"}
+          label="Abandoned (over a day)"
+          value={failed ? "Unavailable" : loaded ? abandoned.filter((a) => a.stale).length : "Loading"}
           accent
         />
       </div>
@@ -243,9 +246,15 @@ function AbandonedPanel() {
           rows={abandoned}
           rowKey={(a) => a.id}
           csvFilename="abandoned-checkouts.csv"
-          empty={loaded ? "No unpaid checkouts." : "Loading…"}
+          empty={
+            failed
+              ? "The checkouts could not be read, so this is not an empty list."
+              : loaded
+                ? "No unpaid checkouts."
+                : "Loading"
+          }
           columns={[
-            { key: "email", label: "Buyer", render: (a) => a.email, csv: (a) => a.email },
+            { key: "email", label: "Buyer", render: (a) => <Email value={a.email} />, csv: (a) => a.email },
             {
               key: "items",
               label: "Items",
@@ -270,33 +279,14 @@ function AbandonedPanel() {
               label: "State",
               render: (a) => (
                 <Pill tone={a.stale ? "rose" : "neutral"}>
-                  {a.stale ? "abandoned" : "in-flight"}
+                  {a.stale ? "abandoned" : "in flight"}
                 </Pill>
               ),
-              csv: (a) => (a.stale ? "abandoned" : "in-flight"),
+              csv: (a) => (a.stale ? "abandoned" : "in flight"),
             },
           ]}
         />
       </Card>
-    </div>
-  );
-}
-
-type Panel = "profiles" | "carts" | "abandoned";
-const TABS = [
-  ["profiles", "Profiles"],
-  ["carts", "Live carts"],
-  ["abandoned", "Abandoned checkouts"],
-] as const;
-
-export function UsersHubTab() {
-  const [panel, setPanel] = useState<Panel>("profiles");
-  return (
-    <div className="space-y-6">
-      <SubTabs tabs={TABS} active={panel} onChange={setPanel} />
-      {panel === "profiles" && <UsersTab />}
-      {panel === "carts" && <LiveCartsPanel />}
-      {panel === "abandoned" && <AbandonedPanel />}
     </div>
   );
 }

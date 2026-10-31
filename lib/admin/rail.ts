@@ -39,7 +39,7 @@
  * Pure: no fetch, no clock read, no document. The shell does those.
  */
 
-import { ADMIN_PAGE_GROUPS, pageOf, type AdminPage, type AdminPageGroup } from "./pages";
+import { ADMIN_PAGE_GROUPS, pageOfAny, type AdminPage, type AdminPageGroup } from "./pages";
 
 /** One view's use over the window, as /api/admin/usage returns it. */
 export type ViewUse = { tab: string; opens: number; totalMs: number; quickExits: number };
@@ -126,14 +126,16 @@ export function pickedRail(): AdminPageGroup[] {
 
 /**
  * The rail sorted by use. `views` is the usage readout's list, any order;
- * views of owner pages and of tabs no page holds are ignored.
+ * views of owner pages and of tabs no page holds are ignored. A retired id
+ * counts for the page it now lands on (lib/admin/pages.ts RETIRED_VIEWS), so
+ * the weeks he spent on Verification still count for Users.
  */
 export function railFromUsage(views: readonly ViewUse[] | null | undefined): AdminPageGroup[] {
   if (!views || views.length === 0) return pickedRail();
 
   const use = new Map<string, { stays: number; ms: number }>();
   for (const v of views) {
-    const page = pageOf(v.tab);
+    const page = pageOfAny(v.tab);
     if (!page || !BY_ID.has(page.id)) continue;
     const u = use.get(page.id) ?? { stays: 0, ms: 0 };
     u.stays += Math.max(0, (v.opens || 0) - (v.quickExits || 0));
