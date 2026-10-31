@@ -636,6 +636,88 @@ export const ICON_RIGHTS: Record<string, IconRights> = {
     license: "Public domain",
     evidenceUrl: "https://commons.wikimedia.org/wiki/File:Spas_na_Ilyine_-_Saint_Macarius_the_Great.jpg",
   },
+  // Added 2026-10-31 for the Desert Fathers' sayings on Today: the owner's
+  // picks of round 3 sheet r3-22 (Homebase/boards/purify-master/variants/
+  // r3-22-desert-icons.png, card 2 for Abba Moses, card 6 for Abba Isaac and
+  // every saying with no named Father). Each was read on its Commons page,
+  // opened and looked at before it was cut, and again after. The fresco also
+  // takes the place of moses-the-black.jpg on St Moses's own page: a modern
+  // icon whose painter and source were never found, cleared from the debt
+  // below in the same commit.
+  "moses-the-black.v2.jpg": {
+    status: "verified",
+    inspectedOn: "2026-10-31",
+    alt: "A wall painting of a monk with grey hair and a full grey beard facing us inside a gold halo, his right hand raised palm outward and a furled scroll in his left, a green mantle over a rose-pink robe, on a deep blue ground with his Greek name in white letters on either side of the halo.",
+    work: "Fresco of St Moses the Ethiopian, Dionysiou Monastery, Mount Athos, inscribed with his name, Moses the Ethiopian: the upper part, from the halo to the scroll in his hand (cut 2026-10-31, above a white loss on his robe)",
+    artist: "Tzortzis (Zorzis Foukas), as the Commons page names the painter",
+    workDate: "1547",
+    source: "Wikimedia Commons (from pravicon.com)",
+    license: "Public domain",
+    evidenceUrl: "https://commons.wikimedia.org/wiki/File:Venerable_Moses._Tzortzi_(Zorzis)_Foukas._Fresco._Athos_(Dionysiou).jpg",
+  },
+  "fathers-of-sinai.jpg": {
+    status: "verified",
+    inspectedOn: "2026-10-31",
+    alt: "An icon with a worn red border of forty monks in dark and russet habits standing in four rows on an ochre ground, above a green strip, under Christ enthroned in a circle at the top between six standing saints, the paint lost in places along the edges.",
+    work: "Icon of the Holy Fathers of Sinai, St Catherine's Monastery, Sinai: the panel, cut inside the white of the scan round its worn edges",
+    artist: "Anonymous icon painter",
+    workDate: "Early 13th century",
+    source: "Wikimedia Commons",
+    license: "Public domain",
+    evidenceUrl: "https://commons.wikimedia.org/wiki/File:Saints_of_Sinai.jpg",
+  },
+  // Added 2026-10-31 for the words of the day's saint on Today: the owner's
+  // picks of round 3 sheet r3-23 (Homebase/boards/purify-master/variants/
+  // r3-23-saint-faces.png; card 1 for St John Chrysostom, 6 for St Cyril of
+  // Jerusalem, 7 for St Photius, 10 for St Justinian). Each was read on its
+  // Commons page, opened and looked at before it was cut and again after. Each
+  // takes the place of a file that was in the debt below, on the saint's own
+  // page too; St John's streamed cover is unchanged, and this is the picture
+  // the app carries for when it cannot be had.
+  "john-chrysostom.v2.jpg": {
+    status: "verified",
+    inspectedOn: "2026-10-31",
+    alt: "A gold mosaic of a bishop facing us inside a large halo, his hair receding to a curl at the crown and short dark curls at the sides, wide eyes under arched brows, a short brown beard, a white omophorion with large black crosses over a dark robe, the letters of his name in the gold on either side.",
+    work: "Mosaic of St John Chrysostom, the south-east conch of the nave, katholikon of Hosios Loukas, Boeotia, inscribed with his name: his head and shoulders, cut inside the white page of the book it was scanned from (cut 2026-10-31)",
+    artist: "Unknown Byzantine mosaicists; scanned from M. Chatzidakis, Byzantine Art in Greece",
+    workDate: "Early 11th century",
+    source: "Wikimedia Commons",
+    license: "Public domain",
+    evidenceUrl: "https://commons.wikimedia.org/wiki/File:Hosios_Loukas_(nave,_south_east_conch)_-_John_Chrysostom_-_detail.jpg",
+  },
+  "cyril-of-jerusalem.v2.jpg": {
+    status: "verified",
+    inspectedOn: "2026-10-31",
+    alt: "A wall painting of a grey-haired bishop with a long grey beard, his head bowed a little inside a gold halo, a white omophorion with dark red crosses over a white and dark checkered vestment, an open scroll in his hands, on a dark ground with his Slavonic name in white letters beside the halo.",
+    work: "Fresco of St Cyril of Jerusalem, Gracanica monastery, Kosovo, inscribed St Cyril of Jerusalem in Slavonic: the upper part, four wide by five tall as sheet r3-23 cut it",
+    artist: "Unknown painters of the Gracanica frescoes",
+    workDate: "c. 1321 (Commons: 14th to 16th century)",
+    source: "Wikimedia Commons (from johnsanidopoulos.com)",
+    license: "Public domain",
+    evidenceUrl: "https://commons.wikimedia.org/wiki/File:Serbian_Fresco_Icon_of_Saint_Cyril_of_Jerusalem.jpg",
+  },
+  "photius-the-great.v2.jpg": {
+    status: "verified",
+    inspectedOn: "2026-10-31",
+    alt: "A manuscript miniature of a white-bearded old man with a pale halo, turned to the right with both hands raised in prayer, in a dark green mantle over a white robe, beside a red and gold column, part of a youth in pale blue at the left edge, on the bare parchment of the page, a red Greek label above him.",
+    work: "Patriarch Photius at prayer, a miniature of the Madrid Skylitzes (Synopsis of Histories), fol. 107, Biblioteca Nacional de Espana, labelled the Patriarch Photius: the upper part, four wide by five tall as sheet r3-23 cut it",
+    artist: "Illuminators of the Madrid Skylitzes",
+    workDate: "12th century (Commons: 11th century)",
+    source: "Wikimedia Commons (from the Biblioteca Digital Hispanica)",
+    license: "Public domain",
+    evidenceUrl: "https://commons.wikimedia.org/wiki/File:Patriarch_Photius,_Madrid_Skylitzes.jpg",
+  },
+  "justinian-the-great.v2.jpg": {
+    status: "verified",
+    inspectedOn: "2026-10-31",
+    alt: "A mosaic of a young emperor facing us inside a gold halo, wearing a jewelled crown with hanging pearls and a purple cloak fastened by a great jewelled brooch, a golden bowl in his hands, a courtier in white on either side of him, on a gold ground.",
+    work: "Mosaic of the Emperor Justinian I and his court, apse of San Vitale, Ravenna: his head and shoulders with the courtiers beside him, four wide by five tall as sheet r3-23 cut it; scanned from E. Ferte, L'art de Byzance (Mazenod, 1981)",
+    artist: "Unknown mosaicists of San Vitale",
+    workDate: "Before 547",
+    source: "Wikimedia Commons (scan uploaded by Michel Bakni)",
+    license: "Public domain",
+    evidenceUrl: "https://commons.wikimedia.org/wiki/File:Mosaic_of_Justinian_I_-_Basilica_San_Vitale(6th_Century).jpg",
+  },
   "job-of-pochaev.jpg": {
     status: "verified",
     inspectedOn: "2026-08-12",
@@ -795,8 +877,6 @@ export const UNVERIFIED_ICONS: Record<string, string> = {
     "No source, licence or attribution recorded. Fetched before scripts/fetch-missing-icons.mjs had a licence gate. Referenced by SAINTS.iconUrl for cyril-and-methodius. 336x420 JPG, 33 KB. Not yet opened and inspected.",
   "cyril-of-alexandria.jpg":
     "No source, licence or attribution recorded. Fetched before scripts/fetch-missing-icons.mjs had a licence gate. Referenced by SAINTS.iconUrl for cyril-of-alexandria and AUTHOR_ICONS. 316x420 JPG, 21 KB. Not yet opened and inspected.",
-  "cyril-of-jerusalem.jpg":
-    "No source, licence or attribution recorded. Fetched before scripts/fetch-missing-icons.mjs had a licence gate. Referenced by SAINTS.iconUrl for cyril-of-jerusalem. 339x420 JPG, 33 KB. Not yet opened and inspected.",
   "dumitru-staniloae.jpg":
     "No source, licence or attribution recorded. Fetched before scripts/fetch-missing-icons.mjs had a licence gate. Referenced by SAINTS.iconUrl for dumitru-staniloae. 336x420 JPG, 38 KB. Not yet opened and inspected.",
   "ephraim-the-syrian.jpg":
@@ -835,8 +915,6 @@ export const UNVERIFIED_ICONS: Record<string, string> = {
     "No source, licence or attribution recorded. Fetched before scripts/fetch-missing-icons.mjs had a licence gate. Referenced by SAINTS.iconUrl for isidora-of-tabenna. 274x420 JPG, 23 KB. Not yet opened and inspected.",
   "john-cassian.jpg":
     "No source, licence or attribution recorded. Fetched before scripts/fetch-missing-icons.mjs had a licence gate. Referenced by SAINTS.iconUrl for john-cassian. 313x420 JPG, 28 KB. Not yet opened and inspected.",
-  "john-chrysostom.jpg":
-    "No source, licence or attribution recorded. Fetched before scripts/fetch-missing-icons.mjs had a licence gate. Referenced by SAINTS.iconUrl for john-chrysostom and AUTHOR_ICONS. 140x420 JPG, 15 KB. Not yet opened and inspected.",
   "john-of-damascus.jpg":
     "No source, licence or attribution recorded. Fetched before scripts/fetch-missing-icons.mjs had a licence gate. Referenced by SAINTS.iconUrl for john-of-damascus and AUTHOR_ICONS. 364x420 JPG, 47 KB. Not yet opened and inspected.",
   "john-the-wonderworker.jpg":
@@ -845,8 +923,6 @@ export const UNVERIFIED_ICONS: Record<string, string> = {
     "No source, licence or attribution recorded. Fetched before scripts/fetch-missing-icons.mjs had a licence gate. Referenced by SAINTS.iconUrl for justin-martyr. 275x420 JPG, 28 KB. Not yet opened and inspected.",
   "justin-popovic.jpg":
     "No source, licence or attribution recorded. Fetched before scripts/fetch-missing-icons.mjs had a licence gate. Referenced by SAINTS.iconUrl for justin-popovic. 316x420 JPG, 14 KB. Not yet opened and inspected.",
-  "justinian-the-great.jpg":
-    "No source, licence or attribution recorded. Fetched before scripts/fetch-missing-icons.mjs had a licence gate. Referenced by SAINTS.iconUrl for justinian-the-great. 195x259 JPG, 24 KB. Not yet opened and inspected.",
   "juvenal-of-jerusalem.jpg":
     "No source, licence or attribution recorded. Fetched before scripts/fetch-missing-icons.mjs had a licence gate. Referenced by SAINTS.iconUrl for juvenal-of-jerusalem. 281x400 JPG, 27 KB. Not yet opened and inspected.",
   "kosmos-aitolia.jpg":
@@ -873,8 +949,6 @@ export const UNVERIFIED_ICONS: Record<string, string> = {
     "No source, licence or attribution recorded. Fetched before scripts/fetch-missing-icons.mjs had a licence gate. Referenced by SAINTS.iconUrl for meletius-of-antioch. 297x420 JPG, 30 KB. Not yet opened and inspected.",
   "memnon-of-ephesus.v2.jpg":
     "No source, licence or attribution recorded. Fetched before scripts/fetch-missing-icons.mjs had a licence gate. Referenced by SAINTS.iconUrl for memnon-of-ephesus. 415x280 JPG, 24 KB, cut on 2026-10-17 from the 420x286 file, inside the white lines at its edges; a website's watermark is still at its foot, right (1.7.1). Its source is not yet looked into.",
-  "moses-the-black.jpg":
-    "No source, licence or attribution recorded. Fetched before scripts/fetch-missing-icons.mjs had a licence gate. Referenced by SAINTS.iconUrl for moses-the-ethiopian. 306x420 JPG, 31 KB. Not yet opened and inspected.",
   "nectarius-of-constantinople.jpg":
     "No source, licence or attribution recorded. Fetched before scripts/fetch-missing-icons.mjs had a licence gate. Referenced by SAINTS.iconUrl for nectarius-of-constantinople. 250x364 JPG, 33 KB. Not yet opened and inspected.",
   "nektarios-of-aegina.jpg":
@@ -901,8 +975,6 @@ export const UNVERIFIED_ICONS: Record<string, string> = {
     "No source, licence or attribution recorded. Fetched before scripts/fetch-missing-icons.mjs had a licence gate. Referenced by SAINTS.iconUrl for papias-of-hierapolis and AUTHOR_ICONS. 279x420 JPG, 22 KB. Not yet opened and inspected.",
   "philoumenos-of-jacobs-well.jpg":
     "No source, licence or attribution recorded. Fetched before scripts/fetch-missing-icons.mjs had a licence gate. Referenced by SAINTS.iconUrl for philoumenos-of-jacobs-well. 420x360 JPG, 31 KB. Not yet opened and inspected.",
-  "photius-the-great.jpg":
-    "No source, licence or attribution recorded. Fetched before scripts/fetch-missing-icons.mjs had a licence gate. Referenced by SAINTS.iconUrl for photius-the-great. 311x420 JPG, 32 KB. Not yet opened and inspected.",
   "polycarp-of-smyrna.jpg":
     "No source, licence or attribution recorded. Fetched before scripts/fetch-missing-icons.mjs had a licence gate. Referenced by SAINTS.iconUrl for polycarp-of-smyrna and AUTHOR_ICONS. 276x420 JPG, 20 KB. Not yet opened and inspected.",
   "praying.jpg":

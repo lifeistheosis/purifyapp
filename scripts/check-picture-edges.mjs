@@ -71,7 +71,10 @@ const ACCEPTED = {
   "saints/icons/anatolius-of-constantinople.jpg": "his white omophorion, at the foot",
   "saints/icons/sophronius-of-jerusalem.jpg": "his white omophorion, at the foot",
   "saints/icons/apostle-paul.jpg": "Rublev's Paul: the panel's own worn ground, pale all across",
-  "saints/icons/justinian-the-great.jpg": "the white tesserae of his robe, at the foot of the mosaic",
+  // Looked at on 2026-10-31, the owner's picks of round 3 sheet r3-23: the light is the work's own.
+  "saints/icons/justinian-the-great.v2.jpg": "the white tesserae of the courtiers' robes beside him, at the left and the foot of the mosaic",
+  "saints/icons/cyril-of-jerusalem.v2.jpg": "his white omophorion and the open scroll in his hands, at the foot and the right",
+  "saints/icons/photius-the-great.v2.jpg": "the bare parchment the Skylitzes miniature is painted on: its own ground",
   "saints/icons/prophet-samuel.jpg": "the white highlights of the painted ribbons",
   "saints/icons/symeon-the-new-theologian.jpg": "the icon's own white ground above him",
   "saints/icons/thaddeus-of-edessa.jpg": "the gold leaf, photographed bright, where it meets the foot",

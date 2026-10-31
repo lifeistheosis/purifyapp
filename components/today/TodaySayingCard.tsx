@@ -3,13 +3,13 @@
 // A saying of the Desert Fathers, shown on the days the saint of the day has
 // no profile to open.
 //
-// Its own card, not a line in the saint's row, and that is the whole design
+// Its own band, not a line in the saint's, and that is the whole design
 // decision. A quotation sitting under a commemorated saint's name reads as that
 // saint's words, and inventing or misattributing patristic text is the one
-// absolute prohibition in docs/editorial-standards.md. Separate card, own
+// absolute prohibition in docs/editorial-standards.md. Separate band, own
 // heading, Father named on the quotation.
 //
-// The card itself does not link anywhere: a card that reads whole and asks
+// The band itself does not link anywhere: a card that reads whole and asks
 // nothing is the right shape here, and it matches the voice guide's rule to
 // stop when the thought is complete. Only the source line opens the words
 // where they stand.
@@ -21,21 +21,31 @@
 //
 // And Share as a picture (1.8, round 3 r3-11, which found this, the quote
 // Today shows on most days, was the one that could not be shared): the round
-// share mark at the card's corner, as the saint's band carries it, opens the
-// picture sheet with the saying's own looks, the Portrait, the Page and the
-// Seal (components/share/PictureSheet.tsx), St Antony's face on his.
+// share mark at the band's corner opens the picture sheet with the saying's
+// own looks, the Portrait, the Page and the Seal
+// (components/share/PictureSheet.tsx).
+//
+// Since round 3 r3-21 (the owner's pick A, "The face beside the words") the
+// Father stands beside his saying, as the day's saint stands beside his words
+// (components/today/SpeakerBand.tsx): St Antony's cover from the reading room
+// beside his, the fresco of St Moses the Ethiopian at Dionysiou beside Abba
+// Moses', and the Fathers of Sinai beside Abba Isaac's and any Father's with
+// no picture of his own (the owner's picks of sheet r3-22); the lit cross
+// where no checked picture stands, never a stand-in. Who stands beside which
+// saying is one small map, lib/today/saintFaces.ts SAYING_FACES, so a picture
+// checked later is one entry there; the picture of the saying shares the same
+// face.
 
 import dynamic from "next/dynamic";
 import { useMemo, useState } from "react";
 
 import { sayingQuote, type Saying } from "@/lib/today/saying";
-import { SourceLine } from "@/components/citations/SourceLine";
 import { useTranslate } from "@/components/i18n/MessagesProvider";
 import { staticShown } from "@/lib/citations/cite";
 import { isNativeClient } from "@/lib/platform/native";
-import { quoteFace } from "@/lib/today/saintFaces";
+import { sayingFace } from "@/lib/today/saintFaces";
 
-import { ShareMark } from "./SaintWindow";
+import { SpeakerBand } from "./SpeakerBand";
 
 // Loaded on the tap, as the verse's and the saint's are: Today carries no canvas for a reader who never shares.
 const PictureSheet = dynamic(() => import("@/components/share/PictureSheet").then((m) => m.PictureSheet), { ssr: false });
@@ -44,43 +54,27 @@ export function TodaySayingCard({ saying }: { saying: Saying }) {
   const { t, locale } = useTranslate();
   const [making, setMaking] = useState(false);
   const line = saying.shown ?? staticShown(saying.cite);
+  const face = useMemo(() => sayingFace(saying, isNativeClient()), [saying]);
   // The same objects while the saying is the same: the sheet draws its preview again when they change.
   const words = useMemo(() => ({ text: saying.text, reference: saying.attribution, lang: "en" }), [saying]);
   const quote = useMemo(
-    () =>
-      making
-        ? sayingQuote(saying, {
-            head: t("today.sayingEyebrow"),
-            face: saying.speaker ? quoteFace({ slug: saying.speaker }, isNativeClient()) : null,
-            lang: locale,
-          })
-        : undefined,
-    [making, saying, t, locale],
+    () => (making ? sayingQuote(saying, { head: t("today.sayingEyebrow"), face, lang: locale }) : undefined),
+    [making, saying, face, t, locale],
   );
   const work = line && (line.kind === "father" || line.kind === "text") ? line.work : null;
   return (
-    <article className="relative rounded-2xl border border-paper/10 bg-paper/[0.03] p-3.5">
-      <p className="pe-10 font-sans text-caption text-paper/55">
-        {t("today.sayingEyebrow")}
-      </p>
-      <button
-        type="button"
-        onClick={() => setMaking(true)}
-        aria-label={t("today.verse.shareAsPicture")}
-        aria-haspopup="dialog"
-        data-saying-share=""
+    <>
+      <SpeakerBand
+        data-today-saying=""
         data-tour="quote-picture"
-        className="tap-press hit-44 absolute end-2.5 top-2.5 grid size-[30px] place-items-center rounded-full bg-night/55 text-paper"
-      >
-        <ShareMark size={15} />
-      </button>
-      <blockquote className="mt-2 font-serif text-ui leading-[1.5] text-paper/85">
-        {saying.text}
-      </blockquote>
-      <p className="mt-2.5 font-sans text-caption text-paper/55">
-        {saying.attribution}
-      </p>
-      {line ? <SourceLine cite={line} className="mt-1" /> : null}
+        eyebrow={t("today.sayingEyebrow")}
+        words={saying.text}
+        who={saying.attribution}
+        cite={line}
+        face={face}
+        onShare={() => setMaking(true)}
+        shareMark="data-saying-share"
+      />
       {making ? (
         <PictureSheet
           open={making}
@@ -93,6 +87,6 @@ export function TodaySayingCard({ saying }: { saying: Saying }) {
           quote={quote}
         />
       ) : null}
-    </article>
+    </>
   );
 }

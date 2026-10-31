@@ -119,6 +119,18 @@ export function dayMarks(lead: DayLead | null, fast: FastingStatus, rule: Fastin
   };
 }
 
+/**
+ * Pascha's count on the date line (1.8, round 3 r3-21, the owner's pick A):
+ * it left The Church today's rows, where it was a seventh thing to read, for
+ * the line every reader has at the top of Today, written as the Prayers day
+ * card writes it: "170 days until Pascha", and on the day itself "Pascha is
+ * today". The count is always to the next Pascha (lib/calendar/orthodox.ts,
+ * paschaInfo), so it is never behind.
+ */
+export function paschaCount(daysAway: number): { key: "calendar.daysUntilPascha"; count: number } | { key: "prayers.paschaToday" } {
+  return daysAway > 0 ? { key: "calendar.daysUntilPascha", count: daysAway } : { key: "prayers.paschaToday" };
+}
+
 /** The learning reader's one line, by what leads the day. */
 export function learningLineKey(lead: DayLead): "today.greet.greatFeastLine" | "today.greet.feastLine" | "today.greet.saintLine" {
   return lead.kind === "great-feast"

@@ -21,6 +21,7 @@ import {
   greetingKind,
   hourPrayer,
   learningLineKey,
+  paschaCount,
   type DayPart,
   type HourVerses,
 } from "@/lib/today/greeting";
@@ -42,9 +43,14 @@ import { useMounted } from "@/lib/useMounted";
  * the server, as words that never change (components/today/TodayGreeting.tsx).
  * The dateline is blank for the frame before the day is known rather than
  * wrong, and is reserved with a non-breaking space so nothing shifts.
+ *
+ * Every reader's dateline ends with Pascha's count (1.8, round 3 r3-21, the
+ * owner's pick A): "Friday, November 13 · Friday fast · 170 days until
+ * Pascha". It was a row of The Church today, a seventh thing to read on a
+ * saint's day (lib/today/greeting.ts, paschaCount).
  */
 export function GreetingHeader({ verses }: { verses: HourVerses | null }) {
-  const { locale, t } = useTranslate();
+  const { locale, t, tn } = useTranslate();
   const mounted = useMounted();
   const day = useChurchDay();
   const [style] = useCalendarStyleDefault();
@@ -74,6 +80,8 @@ export function GreetingHeader({ verses }: { verses: HourVerses | null }) {
         timeZone: "UTC",
       }).format(day.today)
     : " ";
+  const toPascha = day ? paschaCount(day.pascha.daysAway) : null;
+  const pascha = toPascha ? ("count" in toPascha ? tn(toPascha.key, toPascha.count) : t(toPascha.key)) : null;
 
   const lead = day ? dayLead(day, shiftForStyle(day.today, style)) : null;
   const verse = verses?.[part] ?? null;
@@ -102,6 +110,7 @@ export function GreetingHeader({ verses }: { verses: HourVerses | null }) {
         : marks.fast.kind === "plain"
           ? t("today.fastPlain.label")
           : t(`calendar.fast.${marks.fast.ruleId}.label`),
+      pascha,
     ]
       .filter(Boolean)
       .join(" · ");
@@ -155,7 +164,7 @@ export function GreetingHeader({ verses }: { verses: HourVerses | null }) {
 
   return (
     <header className="mb-5">
-      <p className="font-sans text-detail text-paper/60">{date}</p>
+      <p className="font-sans text-detail text-paper/60">{pascha ? `${date} · ${pascha}` : date}</p>
       {/* h2, not h1: the tab bar above names the screen ("Today") and owns
           its one h1 (1.7). The size is the classes', so nothing moves. */}
       <h2 className="title-in mt-1.5 font-serif text-heading leading-[1.1] text-paper">{greet}</h2>

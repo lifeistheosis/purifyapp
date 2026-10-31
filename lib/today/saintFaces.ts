@@ -189,20 +189,25 @@ export const SHAREABLE_ICONS: ReadonlySet<string> = new Set([
   "arsenius-the-great.jpg",
   "basil-the-blessed.jpg",
   "cyprian-of-carthage.jpg",
+  "cyril-of-jerusalem.v2.jpg",
   "dalmatus-of-constantinople.jpg",
   "daniel-the-stylite.jpg",
   "diomedes-the-physician.jpg",
   "dometius-the-persian.jpg",
   "eusignius-of-antioch.jpg",
   "euplus-of-catania.jpg",
+  "fathers-of-sinai.jpg",
   "floros-and-lauros.jpg",
   "herman-of-alaska.jpg",
   "hilarion-the-great.jpg",
   "job-of-pochaev.jpg",
+  "john-chrysostom.v2.jpg",
+  "justinian-the-great.v2.jpg",
   "lawrence-the-archdeacon.jpg",
   "lupus-of-thessaloniki.jpg",
   "maccabean-martyrs.jpg",
   "macarius-the-great.jpg",
+  "moses-the-black.v2.jpg",
   "myron-of-crete.jpg",
   "myron-of-cyzicus.jpg",
   "nikolaj-velimirovic.jpg",
@@ -212,6 +217,7 @@ export const SHAREABLE_ICONS: ReadonlySet<string> = new Set([
   "peter-of-moscow.jpg",
   "phanourios-the-newly-revealed.jpg",
   "photius-and-anicetus.jpg",
+  "photius-the-great.v2.jpg",
   "pimen-the-great.jpg",
   "prophet-micah.jpg",
   "prophet-samuel.jpg",
@@ -227,10 +233,37 @@ export const SHAREABLE_ICONS: ReadonlySet<string> = new Set([
   "titus-of-crete.jpg",
 ]);
 
-/** Where the face is on a carried icon placed by eye; any other is a standing figure, his head near its top. */
-const ICON_FACES: Readonly<Record<string, readonly [number, number]>> = {
+/**
+ * Where the face is on a carried icon placed by eye: the point, 0 to 1 across
+ * and down, and where the icon was cut as a circle round the face, the
+ * circle's width as a share of the picture's (the seal of its picture). Any
+ * other is a standing figure, his head near its top.
+ *
+ * Those of 2026-10-31 are the owner's picks of round 3, each point and circle
+ * as the sheet cut them, in the files as cut: of sheet r3-22, St Moses the
+ * Ethiopian's fresco at Dionysiou, his face, and the Fathers of Sinai, the
+ * three monks at the middle of their first row; of sheet r3-23, the faces for
+ * the words of St John Chrysostom (the mosaic his band shows when his streamed
+ * cover cannot be had), St Cyril of Jerusalem, St Photius and St Justinian.
+ */
+const ICON_FACES: Readonly<Record<string, readonly [number, number, number?]>> = {
   "cyprian-of-carthage.jpg": [0.49, 0.32],
+  "moses-the-black.v2.jpg": [0.49, 0.27, 0.41],
+  "fathers-of-sinai.jpg": [0.46, 0.29, 0.29],
+  "john-chrysostom.v2.jpg": [0.53, 0.39, 0.78],
+  "cyril-of-jerusalem.v2.jpg": [0.42, 0.32, 0.49],
+  "photius-the-great.v2.jpg": [0.52, 0.3, 0.32],
+  "justinian-the-great.v2.jpg": [0.5, 0.27, 0.51],
 };
+
+/** A carried icon whose rights are recorded, as a face: its point, its circle where it has one, facing us. */
+function carriedFace(file: string, src: string): QuoteFace | null {
+  if (!SHAREABLE_ICONS.has(file)) return null;
+  const at = ICON_FACES[file];
+  const point = at ? ([at[0], at[1]] as const) : ([0.5, ICON_FOCUS / 100 + 0.04] as const);
+  const circle = at?.[2];
+  return { src, point, looks: "ahead", ...(circle ? { seal: [point[0], point[1], circle] as const } : {}), fallback: null };
+}
 
 /**
  * His face for a picture of his words (lib/share/verseCard.ts, QuoteFace):
@@ -242,10 +275,110 @@ const ICON_FACES: Readonly<Record<string, readonly [number, number]>> = {
 export function quoteFace(saint: { slug: string; iconUrl?: string } | null | undefined, native: boolean): QuoteFace | null {
   if (!saint) return null;
   const file = saint.iconUrl?.startsWith("/saints/icons/") ? saint.iconUrl.slice("/saints/icons/".length) : null;
-  const carried = file && SHAREABLE_ICONS.has(file) ? { src: saint.iconUrl!, point: ICON_FACES[file] ?? [0.5, ICON_FOCUS / 100 + 0.04], looks: "ahead" as const } : null;
+  const carried = file ? carriedFace(file, saint.iconUrl!) : null;
   const face = COVER_FACES[saint.slug];
   if (face && saint.slug in SAINT_FACES) {
-    return { src: streamedUrl(coverFile(saint.slug), native), point: [face[0], face[1]], looks: face[2], fallback: carried };
+    const fallback = carried ? { src: carried.src, point: carried.point, looks: carried.looks } : null;
+    return { src: streamedUrl(coverFile(saint.slug), native), point: [face[0], face[1]], looks: face[2], fallback };
   }
-  return carried ? { ...carried, fallback: null } : null;
+  return carried;
+}
+
+/**
+ * Who stands beside a saying of the Desert Fathers on Today (1.8, round 3
+ * r3-21, the owner's pick A, "The face beside the words"; BUILD-80-NOTES 64),
+ * the same face the picture of the saying shares. One entry for each Father
+ * with a picture that has been checked, keyed by his page where the saying
+ * names one (data/today/sayings.json, `speaker`), else by his name as the
+ * saying gives it ("Abba Moses"). `cover` is a cover portrait of the reading
+ * room (COVER_FACES); `icon` is an icon the app carries whose rights are
+ * recorded (SHAREABLE_ICONS), placed by its face in ICON_FACES. The entry
+ * under DESERT_FATHERS stands beside every Father with none of his own.
+ *
+ * The owner's picks of 2026-10-31 (round 3 sheet r3-22, Homebase/boards/
+ * purify-master/variants/r3-22-desert-icons.png): Abba Moses, card 2, the
+ * fresco of 1547 at Dionysiou on Mount Athos that names him "the Ethiopian"
+ * (Cassian does not say his Abba Moses is St Moses the Ethiopian; tradition
+ * joins them, and the owner took it); Abba Isaac and every saying with no
+ * named Father, card 6, the Fathers of Sinai of the early thirteenth century,
+ * since no icon of Abba Isaac exists, and never isaac-the-syrian.jpg, another
+ * Isaac three centuries later. A Father with no entry, where no picture
+ * stands for all of them, has the lit cross where he would stand, never a
+ * stand-in.
+ */
+export const SAYING_FACES: Readonly<Record<string, SayingFace>> = {
+  // St Antony's eight, his own words and the one Abba Isaac tells.
+  "anthony-the-great": { cover: "anthony-the-great" },
+  // r3-22 card 2.
+  "Abba Moses": { icon: "moses-the-black.v2.jpg" },
+  // r3-22 card 6: Abba Isaac, and any Father with no picture of his own.
+  "desert-fathers": { icon: "fathers-of-sinai.jpg" },
+};
+
+/** The key of the one picture that stands beside every Father with none of his own. */
+export const DESERT_FATHERS = "desert-fathers";
+
+export type SayingFace = { cover: string } | { icon: string };
+
+/** The Father's face beside his saying, and on its picture; null for the lit cross. */
+export function sayingFace(
+  saying: { speaker?: string; attribution: string },
+  native: boolean,
+  faces: Readonly<Record<string, SayingFace>> = SAYING_FACES,
+): QuoteFace | null {
+  const entry = faces[saying.speaker ?? saying.attribution] ?? faces[DESERT_FATHERS];
+  if (!entry) return null;
+  if ("cover" in entry) return quoteFace({ slug: entry.cover }, native);
+  // An icon whose rights are not recorded is no face, whatever the entry says.
+  return carriedFace(entry.icon, `/saints/icons/${entry.icon}`);
+}
+
+/** A side of a band, as the eye sees it: a face looks the same way in every language. */
+export type BandSide = "left" | "right";
+
+/**
+ * Which side of a band of The Church today the speaker stands on (round 3
+ * r3-21 A): the side he looks from, so he looks into his words, as the shared
+ * Portrait stands him. One who faces us stands at the band's end, where the
+ * saint's face stood before, as the sheet drew it.
+ */
+export function standsOn(looks: Gaze, rtl = false): BandSide {
+  if (looks === "left") return "right";
+  if (looks === "right") return "left";
+  return rtl ? "left" : "right";
+}
+
+/**
+ * The portrait as r3-21 sets it on a band (its inject script's fitPics): the
+ * band at least 216 px tall, the picture 1.45 times its height, the face a
+ * third of the way down and 78% across on the right, 20% on the left.
+ */
+export const BAND_PORTRAIT = { minHeight: 216, zoom: 1.45, eye: 0.33, across: { right: 0.78, left: 0.2 } } as const;
+
+/**
+ * Where a portrait stands in a band `box` (px) so his face (`point`, 0 to 1
+ * across and down the picture) lands where the sheet set it. `aspect` is the
+ * picture's width over its height: the covers are 4 wide by 5 tall. It covers
+ * the band from top to foot and reaches the band's edge on his side, so the
+ * face is never cut and no ground shows past him. A long saying makes a tall
+ * band: the picture then grows only until it is as wide as the band, so his
+ * face does not grow with the words.
+ */
+export function placePortrait(
+  box: { width: number; height: number },
+  point: readonly [number, number],
+  side: BandSide,
+  aspect = 0.8,
+): { left: number; top: number; width: number; height: number } {
+  const { width: W, height: H } = box;
+  const height = Math.max(H, Math.min(H * BAND_PORTRAIT.zoom, W / aspect));
+  const width = height * aspect;
+  const left = BAND_PORTRAIT.across[side] * W - point[0] * width;
+  const top = BAND_PORTRAIT.eye * H - point[1] * height;
+  return {
+    left: side === "right" ? Math.max(left, W - width) : Math.min(left, 0),
+    top: Math.min(0, Math.max(H - height, top)),
+    width,
+    height,
+  };
 }

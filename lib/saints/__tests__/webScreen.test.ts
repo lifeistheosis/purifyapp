@@ -143,13 +143,16 @@ describe("St John Chrysostom's web, as it arrives", () => {
   it("lights the ground behind the middle saint grey from his icon, never in its colour", () => {
     const light = element(html, /<div[^>]*class="saint-web-light[^"]*"[^>]*>/);
     expect(light).toContain('style="top:');
-    expect(light).toContain("background-image:url(/saints/icons/john-chrysostom.jpg)");
+    expect(light).toContain("background-image:url(/saints/icons/john-chrysostom.v2.jpg)");
     // Its look is the rule's alone (globals.css): no colour or blur of its own.
     expect(light).not.toMatch(/\b(?:opacity-\d+|blur-\[)/);
   });
 
-  it("cuts St John's tall icon at his face, and every other icon as before", () => {
-    expect(html).toMatch(/src="\/saints\/icons\/john-chrysostom\.jpg"[^>]*style="object-position:50% 2%"/);
+  it("cuts St John's icon at his face, and every other icon as before", () => {
+    // His icon is the Hosios Loukas mosaic of his head and shoulders since round
+    // 3 sheet r3-23, which the cut every icon keeps suits; the standing figure
+    // it replaced needed its own (lib/saints/iconFaces.ts).
+    expect(html).toMatch(/src="\/saints\/icons\/john-chrysostom\.v2\.jpg"[^>]*style="object-position:50% 20%"/);
     expect(html).toMatch(/src="\/saints\/icons\/olympias-the-deaconess\.jpg"[^>]*style="object-position:50% 20%"/);
     expect(html).not.toContain("object-[50%_20%]");
   });

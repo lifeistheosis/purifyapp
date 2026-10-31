@@ -11,14 +11,16 @@ import { dateYear } from "@/lib/saints/web";
 
 import { litSpan } from "@/lib/share/verseCard";
 
-import { SAINT_WORDS_SLUGS, quoteSource, readWhereFrom, saintByline, saintByname, saintPictureInput, saintQuote, saintWordsFor, wordsOpening } from "../saintWords";
+import { SAINT_WORDS_SLUGS, bandCite, quoteSource, readWhereFrom, saintByline, saintByname, saintPictureInput, saintQuote, saintWordsFor } from "../saintWords";
 
 // Today's saint in their own words (1.8): every line is the saint's, word
 // for word in the paragraph its source line opens, or a traced quotation of
 // theirs; the card says "In his own words", so no saint here is a woman
-// until it can say "her". Since round 12 the words open on the saint's band
-// and a tap opens his window: his face, name and years, the words, where they
-// come from, Share as a picture and Read where it's from.
+// until it can say "her". Since round 12 the words stood on the saint's band
+// and a tap opened his window: his face, name and years, the words, where they
+// come from, Share as a picture and Read where it's from. Since round 3 r3-21
+// the band holds them whole with both actions, and the window is not opened
+// from Today; its parts are held here while it is in the code.
 
 type ProviderProps = Parameters<typeof MessagesProvider>[0];
 const en = getMessages("en");
@@ -67,22 +69,31 @@ describe("Today's saint in their own words", () => {
   });
 });
 
-describe("the words on the saint's band", () => {
-  it("open with their first phrase, as round 12 drew them", () => {
-    expect(wordsOpening(saintWordsFor("john-chrysostom")!.text)).toBe("Let no one fear death…");
+// Since round 3 r3-21 (the owner's pick A) the band holds his words whole
+// (lib/today/__tests__/churchToday.test.ts draws it), with the source line
+// cut as the sheet drew it.
+describe("the source line on the saint's band", () => {
+  it("names the work and a short place, as his picture prints them: the homily, not the translator's note", () => {
+    const shown = saintWordsFor("john-chrysostom")!.shown;
+    expect(bandCite(shown)).toEqual({ ...shown, work: "The Paschal Homily", place: "" });
+    expect(bandCite(saintWordsFor("gregory-theologian")!.shown)).toMatchObject({ work: "The First Theological Oration", place: "Chapter 3", edition: "NPNF II 7" });
+    expect(bandCite(saintWordsFor("augustine-of-hippo")!.shown)).toMatchObject({ work: "Confessions", place: "Book I, Chapter 1" });
+    // A run of pages, or a note in brackets, is left to the page the line opens.
+    expect(bandCite(saintWordsFor("justinian-the-great")!.shown)).toMatchObject({ place: "" });
+    expect(bandCite(saintWordsFor("eustathius-of-antioch")!.shown)).toMatchObject({ place: "" });
   });
 
-  it("are the words' own beginning, never more than the band carries", () => {
+  it("opens the words where they stand, as the full line does, for every saint", () => {
     for (const slug of SAINT_WORDS_SLUGS) {
-      const text = saintWordsFor(slug)!.text;
-      const opening = wordsOpening(text);
-      expect(opening.length, slug).toBeLessThanOrEqual(45);
-      expect(opening.endsWith("…"), slug).toBe(true);
-      expect(text.startsWith(opening.slice(0, -1)), slug).toBe(true);
-      // Cut between words, not inside one.
-      expect(text.charAt(opening.length - 1), slug).toMatch(/[\s,;:.!?]/);
+      const shown = saintWordsFor(slug)!.shown;
+      const cut = bandCite(shown);
+      expect(cut.kind, slug).toBe(shown.kind);
+      if ("href" in shown) expect("href" in cut && cut.href, slug).toBe(shown.href);
+      if (cut.kind === "father" || cut.kind === "text") {
+        expect(cut.work.includes(". "), slug).toBe(false);
+        expect(cut.place.length, slug).toBeLessThanOrEqual(28);
+      }
     }
-    expect(wordsOpening("Glory to God for all things.")).toBe("Glory to God for all things.");
   });
 });
 

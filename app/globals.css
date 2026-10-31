@@ -8206,6 +8206,73 @@ html[data-reading-mode="parchment"] .today-glyph-lit {
  -webkit-mask-image: linear-gradient(to left, rgb(0 0 0 / 0.1) 30%, rgb(0 0 0 / 0.65));
  mask-image: linear-gradient(to left, rgb(0 0 0 / 0.1) 30%, rgb(0 0 0 / 0.65));
 }
+/* Under the readings card's own readings, where the saints' readings open
+   and Read all and Listen stand (round 3 r3-21, the owner's pick A), the page
+   calms: whole to 104px down, a fifth of itself from 190px, as a shade of the
+   band's ground at 78% would leave it, faded by a mask for the reason above. */
+.today-readings-calm {
+ -webkit-mask-image: linear-gradient(to bottom, rgb(0 0 0) 104px, rgb(0 0 0 / 0.22) 190px);
+ mask-image: linear-gradient(to bottom, rgb(0 0 0) 104px, rgb(0 0 0 / 0.22) 190px);
+}
+/* The speaker beside his words (round 3 r3-21, the owner's pick A, "The face
+   beside the words"; components/today/SpeakerBand.tsx and FacePortrait.tsx):
+   the saint's words and the Desert Fathers' saying. His portrait stands on
+   the side he looks from and fades into the band's own ground by two masks,
+   one across and one up from the foot (two elements, one inside the other, so
+   the two multiply on every engine), never under a shade laid over it, for
+   the corners' reason above. The figures are the sheet's shade turned over:
+   across, nothing of him to 55% of the band's width from his side, 14% at
+   59%, 48% at 64%, 80% at 69% and all of him from 74%; up, 28% at the foot
+   and all from a third of the way up. On Parchment he fades into the paper as
+   on Dark into the night. The soft light round his face, or round the lit
+   cross where no face stands, is left out on Parchment, where white cannot
+   glow. */
+.today-face-right {
+ -webkit-mask-image: linear-gradient(to right, rgb(0 0 0 / 0) 55%, rgb(0 0 0 / 0.14) 59%, rgb(0 0 0 / 0.48) 64%, rgb(0 0 0 / 0.8) 69%, rgb(0 0 0) 74%);
+ mask-image: linear-gradient(to right, rgb(0 0 0 / 0) 55%, rgb(0 0 0 / 0.14) 59%, rgb(0 0 0 / 0.48) 64%, rgb(0 0 0 / 0.8) 69%, rgb(0 0 0) 74%);
+}
+.today-face-left {
+ -webkit-mask-image: linear-gradient(to left, rgb(0 0 0 / 0) 55%, rgb(0 0 0 / 0.14) 59%, rgb(0 0 0 / 0.48) 64%, rgb(0 0 0 / 0.8) 69%, rgb(0 0 0) 74%);
+ mask-image: linear-gradient(to left, rgb(0 0 0 / 0) 55%, rgb(0 0 0 / 0.14) 59%, rgb(0 0 0 / 0.48) 64%, rgb(0 0 0 / 0.8) 69%, rgb(0 0 0) 74%);
+}
+.today-face-foot {
+ -webkit-mask-image: linear-gradient(to top, rgb(0 0 0 / 0.28), rgb(0 0 0) 32%);
+ mask-image: linear-gradient(to top, rgb(0 0 0 / 0.28), rgb(0 0 0) 32%);
+}
+.today-band-glow {
+ background: radial-gradient(closest-side, rgb(255 255 255 / 0.1), rgb(255 255 255 / 0));
+}
+html[data-reading-mode="parchment"] .today-band-glow {
+ display: none;
+}
+/* A tap anywhere on the saint's band opens his page: the link on his name
+   reaches over the band, under the source line and the share mark, which sit
+   above it, and the band dips as a pressed card does (.press-card), only for
+   that link, not when the share mark or the source line is pressed. */
+.today-band-link {
+ -webkit-tap-highlight-color: transparent;
+}
+.today-band-link::after {
+ content: "";
+ position: absolute;
+ inset: 0;
+}
+.today-band-link:active::after {
+ background-color: rgb(255 255 255 / 0.03);
+}
+.today-band {
+ transition: transform 220ms var(--ease-house);
+}
+.today-band:has(.today-band-link:active) {
+ transform: scale(var(--press-scale-card));
+ transition-duration: 90ms;
+}
+:where([data-motion="reduce"]) .today-band {
+ transition: none;
+}
+:where([data-motion="reduce"]) .today-band:has(.today-band-link:active) {
+ transform: none;
+}
 
 /* ── The apps select nothing by themselves (1.5.2) ────────────────────
    The owner, 2026-10-05, of holding the screen in the app and moving: "it

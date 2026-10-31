@@ -134,12 +134,74 @@ describe("Today's readings band", () => {
     }
   });
 
-  it("leaves the saint's band as it is: its wash lies over no picture at a corner", () => {
+  it("calms the page under the card's foot by a mask too, never a shade over it (round 3 r3-21)", () => {
+    // The sheet's shade there was the band's ground at nothing to 104px and
+    // 78% from 190px: the page shows all of itself and then 22%.
+    expect(band).toContain('<span aria-hidden className="today-readings-calm pointer-events-none absolute inset-0">');
+    expect(band.indexOf("today-readings-calm")).toBeLessThan(band.indexOf("<img"));
+    const body = rule(".today-readings-calm");
+    const mask = /-webkit-mask-image: linear-gradient\(to bottom, ([^;]+)\);/.exec(body)?.[1] ?? "";
+    expect(mask).toBe("rgb(0 0 0) 104px, rgb(0 0 0 / 0.22) 190px");
+    expect(body).toContain(` mask-image: linear-gradient(to bottom, ${mask});`);
+    expect(body).not.toMatch(/animation|transition/);
+  });
+
+  it("leaves the band of a saint with no words of his own as it is: its wash lies over no picture at a corner", () => {
     // His face fills the end 54% of the band and the wash is opaque only up
     // to 46%, where the face begins, and clear by 76%, so at the start
     // corners there is no picture under it and at the end corners nothing
     // over the face.
     expect(rail).toContain('className="pointer-events-none absolute inset-y-0 end-0 w-[54%] overflow-hidden"');
     expect(rail).toContain('className="pointer-events-none absolute inset-0 bg-gradient-to-r from-night-deep from-[46%] to-transparent to-[76%] rtl:bg-gradient-to-l"');
+  });
+});
+
+// The speaker beside his words (round 3 r3-21, the owner's pick A): the
+// saint's words and the Desert Fathers' saying. His portrait fades into the
+// band's ground by masks with the sheet's shade turned over, so nothing lies
+// over the picture at a corner, on any side he stands.
+describe("the speaker's portrait on a band", () => {
+  const portrait = code("components/today/FacePortrait.tsx");
+  const speaker = code("components/today/SpeakerBand.tsx");
+
+  it("lays nothing over the portrait: two masks, one inside the other, and the band's own ground", () => {
+    expect(portrait).toContain('side === "left" ? "today-face-left" : "today-face-right"');
+    expect(portrait).toContain('<span className="today-face-foot absolute inset-0">');
+    expect(portrait.match(/<img\b/g)?.length).toBe(1);
+    expect(`${portrait}\n${speaker}`).not.toMatch(/bg-gradient-to-|\bfrom-night-deep\/|\bto-night-deep\//);
+    expect(speaker).toContain('className="today-band relative isolate overflow-hidden rounded-[18px] bg-night-deep text-start"');
+  });
+
+  it("fades him across with the shade's figures turned over, from the side he stands on", () => {
+    // The shade was the ground at all of it to 55% of the band from his side,
+    // then 86%, 52%, 20% and nothing at 59, 64, 69 and 74%.
+    const shade = [
+      { a: 1, at: 55 },
+      { a: 0.86, at: 59 },
+      { a: 0.52, at: 64 },
+      { a: 0.2, at: 69 },
+      { a: 0, at: 74 },
+    ];
+    for (const [selector, side] of [
+      [".today-face-right", "right"],
+      [".today-face-left", "left"],
+    ]) {
+      const body = rule(selector);
+      const mask = new RegExp(`-webkit-mask-image: linear-gradient\\(to ${side}, ([^;]+)\\);`).exec(body)?.[1] ?? "";
+      expect(mask, selector).not.toBe("");
+      expect(body, selector).toContain(` mask-image: linear-gradient(to ${side}, ${mask});`);
+      expect(stops(mask), selector).toEqual(shade.map((s) => ({ shows: Number((1 - s.a).toFixed(2)), at: s.at })));
+      expect(body, selector).not.toMatch(/animation|transition/);
+    }
+  });
+
+  it("and up from the foot, 28% there and all of him from a third of the way up", () => {
+    const body = rule(".today-face-foot");
+    const mask = /-webkit-mask-image: linear-gradient\(to top, ([^;]+)\);/.exec(body)?.[1] ?? "";
+    expect(stops(mask)).toEqual([
+      { shows: 0.28, at: null },
+      { shows: 1, at: 32 },
+    ]);
+    expect(body).toContain(` mask-image: linear-gradient(to top, ${mask});`);
   });
 });

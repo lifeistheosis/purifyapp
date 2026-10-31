@@ -86,8 +86,8 @@ export function allSayings(): Saying[] {
  * days, could not be shared): the Father named on it, the Life or the
  * Conferences that keep his words and their place, "From the Desert Fathers"
  * (`head`, in the reader's language) over the cross and as the Page's running
- * head, his face where he has a page with a cover (St Antony), else the
- * picture's form with no portrait.
+ * head, and his face as Today sets it beside his words (lib/today/
+ * saintFaces.ts, sayingFace), else the picture's form with no portrait.
  */
 export function sayingQuote(saying: Saying, { head, face, lang }: { head: string; face: QuoteFace | null; lang?: string }): QuoteSubject {
   const shown = saying.shown;

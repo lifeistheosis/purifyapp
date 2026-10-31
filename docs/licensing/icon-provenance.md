@@ -112,6 +112,54 @@ Priority order: the twentieth-century figures first, since a photograph of a
 modern person is the least likely to be public domain. `dumitru-staniloae.jpg`
 and `iakovos-of-evia.jpg` are the clearest cases.
 
+## The Desert Fathers' sayings (2026-10-31)
+
+Today stands each Father beside his saying (1.8, round 3 r3-21, the owner's
+pick A). The owner chose two pictures from sheet r3-22
+(`Homebase/boards/purify-master/variants/r3-22-desert-icons.png`, candidates
+and their `sources.json` in `Homebase/boards/purify-master/r18/icon-candidates/`).
+Both are public domain on their Commons pages, were opened and looked at
+before they were cut and again after, and have their rows in `ICON_RIGHTS`:
+
+| File | The work | Commons page and licence line |
+| --- | --- | --- |
+| `moses-the-black.v2.jpg` | St Moses the Ethiopian, fresco by Tzortzis (Zorzis Foukas), Dionysiou Monastery, Mount Athos, 1547, inscribed with his name and "the Ethiopian"; its upper part, cut above a white loss on his robe, 465x560 | [File:Venerable Moses. Tzortzi (Zorzis) Foukas. Fresco. Athos (Dionysiou).jpg](https://commons.wikimedia.org/wiki/File:Venerable_Moses._Tzortzi_(Zorzis)_Foukas._Fresco._Athos_(Dionysiou).jpg), public domain, `{{PD-old-70}}` |
+| `fathers-of-sinai.jpg` | The Holy Fathers of Sinai, St Catherine's Monastery, early 13th century; the panel, cut inside the white of the scan round its worn edges, 618x800 | [File:Saints of Sinai.jpg](https://commons.wikimedia.org/wiki/File:Saints_of_Sinai.jpg), public domain, `{{PD-Art\|PD-old-100-expired}}` |
+
+The fresco stands beside Abba Moses' sayings and, in place of the modern icon
+`moses-the-black.jpg` (painter and source never found, so it was in the debt
+and is now deleted), on St Moses the Ethiopian's own page. The Fathers of
+Sinai stand beside Abba Isaac's saying, of whom no icon exists, and beside any
+Father with no picture of his own. `lib/today/saintFaces.ts` keeps where each
+face is (`ICON_FACES`, the point and the circle as the sheet cut them) and who
+stands beside which saying (`SAYING_FACES`).
+
+## Faces for the saints' words (2026-10-31)
+
+The day's saint stands beside his words on Today the same way. The owner
+chose four faces from sheet r3-23
+(`Homebase/boards/purify-master/variants/r3-23-saint-faces.png`, candidates
+and their `sources.json` in `Homebase/boards/purify-master/r18/icon-candidates/`),
+each public domain on its Commons page, opened and looked at before it was
+cut and again after, with its row in `ICON_RIGHTS`:
+
+| File | The work | Commons page and licence line |
+| --- | --- | --- |
+| `john-chrysostom.v2.jpg` | St John Chrysostom, mosaic in the south-east conch of the nave, Hosios Loukas, Boeotia, early 11th century, scanned from M. Chatzidakis, Byzantine Art in Greece; his head and shoulders, cut inside the white page of the book, 640x800 | [File:Hosios Loukas (nave, south east conch) - John Chrysostom - detail.jpg](https://commons.wikimedia.org/wiki/File:Hosios_Loukas_(nave,_south_east_conch)_-_John_Chrysostom_-_detail.jpg), public domain, `{{PD-old}}` |
+| `cyril-of-jerusalem.v2.jpg` | St Cyril of Jerusalem, fresco, Gracanica monastery, Kosovo, about 1321 (Commons: 14th to 16th century), named in Slavonic; the upper part, 293x366 | [File:Serbian Fresco Icon of Saint Cyril of Jerusalem.jpg](https://commons.wikimedia.org/wiki/File:Serbian_Fresco_Icon_of_Saint_Cyril_of_Jerusalem.jpg), public domain, `{{PD-old-70}}` |
+| `photius-the-great.v2.jpg` | Patriarch Photius at prayer, the Madrid Skylitzes, fol. 107, 12th century (Commons: 11th), labelled the Patriarch Photius; the upper part, 378x472 | [File:Patriarch Photius, Madrid Skylitzes.jpg](https://commons.wikimedia.org/wiki/File:Patriarch_Photius,_Madrid_Skylitzes.jpg), public domain, `{{PD-Art\|PD-old-100}}` |
+| `justinian-the-great.v2.jpg` | The Emperor Justinian I and his court, apse mosaic of San Vitale, Ravenna, before 547, scanned from E. Ferte, L'art de Byzance (Mazenod, 1981); his head and shoulders with the courtiers beside him, 640x800 | [File:Mosaic of Justinian I - Basilica San Vitale(6th Century).jpg](https://commons.wikimedia.org/wiki/File:Mosaic_of_Justinian_I_-_Basilica_San_Vitale(6th_Century).jpg), public domain, `{{PD-Italy}}`: the scan is an Italian simple photograph more than 20 years old, not tagged PD-Art |
+
+Each takes the place of the file its saint's page showed, which had no
+recorded source and is now deleted: `john-chrysostom.jpg` (a standing figure,
+140x420), `cyril-of-jerusalem.jpg` and `photius-the-great.jpg` (modern icons)
+and `justinian-the-great.jpg` (a San Vitale crop whose photograph was never
+traced). St John Chrysostom's streamed cover is unchanged; the mosaic is the
+picture the app carries for when the cover cannot be had. St Alexander of
+Alexandria has none: no public-domain icon of him with a face that can be
+checked was found, so his words keep the lit cross. `lib/today/saintFaces.ts`
+keeps each face's point and circle as the sheet cut them (`ICON_FACES`).
+
 ## Section photography
 
 Recorded in `SECTION_MEDIA.md`, carrying the same required fields the history

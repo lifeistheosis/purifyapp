@@ -59,12 +59,21 @@ describe("the picture sheet", () => {
   });
 
   it("is opened with whose words they are from Today's saint, Today's saying and a council's page", () => {
-    for (const file of ["components/today/SaintWindow.tsx", "components/today/TodaySayingCard.tsx", "components/councils/CouncilWords.tsx"]) {
+    // Today's saint opens it from his band since round 3 r3-21 (the owner's
+    // pick A); his window, which opened it before, still does.
+    for (const file of [
+      "components/today/ChurchTodayRail.tsx",
+      "components/today/SaintWindow.tsx",
+      "components/today/TodaySayingCard.tsx",
+      "components/councils/CouncilWords.tsx",
+    ]) {
       const source = read(file);
       expect(source, file).toMatch(/dynamic\(\(\) => import\("@\/components\/share\/PictureSheet"\)/);
       expect(source, file).toContain("quote={quote}");
     }
     expect(read("components/today/SaintWindow.tsx")).toContain("face: quoteFace(saint, isNativeClient())");
-    expect(read("components/today/TodaySayingCard.tsx")).toContain("quoteFace({ slug: saying.speaker }, isNativeClient())");
+    // The face on the picture is the face beside the words on the band.
+    expect(read("components/today/ChurchTodayRail.tsx")).toContain("const face = useMemo(() => quoteFace(saint, isNativeClient()), [saint]);");
+    expect(read("components/today/TodaySayingCard.tsx")).toContain("const face = useMemo(() => sayingFace(saying, isNativeClient()), [saying]);");
   });
 });
