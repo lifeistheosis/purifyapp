@@ -8,6 +8,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import {
   HOLD_MS,
   TRAVERSAL_MS,
+  cameBack,
   endScrollHold,
   noteTraversal,
   onRouteCommitted,
@@ -16,12 +17,12 @@ import {
 
 type Listener = () => void;
 
-function stubBrowser(hash = "") {
+function stubBrowser(hash = "", pathname = "/discover/") {
   const listeners = new Map<string, Set<Listener>>();
   const style = new Map<string, string>();
   const scrolls: [number, number][] = [];
   const win = {
-    location: { hash },
+    location: { hash, pathname },
     scrollTo: (x: number, y: number) => {
       scrolls.push([x, y]);
     },
@@ -142,5 +143,68 @@ describe("scroll reset on a forward navigation", () => {
 
   it("does nothing where there is no window", () => {
     expect(onRouteCommitted()).toBe("none");
+  });
+});
+
+// A page that keeps its own place asks how it was reached, and puts the place
+// back on Back alone: Orthodox History, opened from Discover, jumped to the
+// last visit's place after it had arrived (the owner's note 66 of build 80).
+describe("whether the reader came back", () => {
+  beforeEach(() => {
+    vi.useFakeTimers();
+    resetScrollResetForTests();
+  });
+
+  afterEach(() => {
+    vi.restoreAllMocks();
+    resetScrollResetForTests();
+    vi.useRealTimers();
+    delete (globalThis as { window?: unknown }).window;
+    delete (globalThis as { document?: unknown }).document;
+  });
+
+  it("is yes for the page a step back through history brought, and no for one opened forward", () => {
+    const b = stubBrowser("", "/history/");
+    noteTraversal();
+    onRouteCommitted();
+    expect(cameBack()).toBe(true);
+    // Discover, from the tab bar, then the timeline again from Discover.
+    b.win.location.pathname = "/discover/";
+    onRouteCommitted();
+    b.win.location.pathname = "/history/";
+    onRouteCommitted();
+    expect(cameBack()).toBe(false);
+  });
+
+  it("is yes before the bridge has looked, while the popstate's mark is fresh", () => {
+    stubBrowser("", "/history/");
+    noteTraversal();
+    expect(cameBack()).toBe(true);
+    vi.advanceTimersByTime(TRAVERSAL_MS + 1);
+    expect(cameBack()).toBe(false);
+  });
+
+  it("is for the page it was asked about: Back to one page says nothing of the next", () => {
+    const b = stubBrowser("", "/history/first-council-of-nicaea/");
+    noteTraversal();
+    onRouteCommitted();
+    b.win.location.pathname = "/history/";
+    expect(cameBack()).toBe(false);
+  });
+
+  it("on the visit's first page, takes the browser's word: a reload or its Back to the site", () => {
+    stubBrowser("", "/history/");
+    const entries = vi.spyOn(performance, "getEntriesByType");
+    const visit = (type: NavigationTimingType) => [{ type }] as unknown as PerformanceEntryList;
+    entries.mockReturnValue(visit("navigate"));
+    expect(cameBack()).toBe(false);
+    entries.mockReturnValue(visit("reload"));
+    expect(cameBack()).toBe(true);
+    entries.mockReturnValue(visit("back_forward"));
+    expect(cameBack()).toBe(true);
+  });
+
+  it("is no where there is no window", () => {
+    expect(cameBack()).toBe(false);
   });
 });

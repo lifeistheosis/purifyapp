@@ -6670,6 +6670,15 @@ html.is-native .history-line {
  /* A jump to a row lands it under the pinned era name (about 3.1rem). */
  scroll-margin-top: calc(var(--history-sticky-top) + 3.25rem);
 }
+/* Back to the timeline (lib/history/scroll.ts, restorePosition): every row
+   is drawn at its real height while the reader's place is put back, so the
+   place is measured on the page as it will be painted, and each row keeps
+   that height as its placeholder once it is let go (`auto` above). Measured
+   on the 128px guesses, Back painted the row 145px low for a frame and then
+   jumped (the owner's note 66 of build 80). */
+html[data-history-whole] .history-cv {
+ content-visibility: visible;
+}
 /* A jump to an era lands its name where it pins. */
 .history-era {
  scroll-margin-top: var(--history-sticky-top);
@@ -6748,6 +6757,18 @@ html.is-native .history-line {
  transition-property: color, fill;
  transition-duration: 200ms;
  transition-timing-function: var(--ease-house);
+}
+
+/* An event's Save, in its page's bar (1.8, the owner's note 67 of build 80):
+   saved, the drawn bookmark is lit white with a soft white glow, as every
+   lit mark is (the owner, 2026-10-28: "just use a glowly white"). On
+   Parchment, where white cannot glow, it is the plain ink. On the svg, as
+   the player's lit ring is. Still, so there is nothing to reduce. */
+.history-saved-lit {
+ filter: drop-shadow(0 0 3px rgb(255 255 255 / 0.85)) drop-shadow(0 0 8px rgb(255 255 255 / 0.35));
+}
+html[data-reading-mode="parchment"] .history-saved-lit {
+ filter: none;
 }
 
 /* The century slider in the Eras sheet and the computer's side column: a

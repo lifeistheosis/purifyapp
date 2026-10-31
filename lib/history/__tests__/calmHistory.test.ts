@@ -36,7 +36,8 @@ const code = (path: string) =>
 const COMPONENTS = readdirSync(join(root, "components", "history"))
   .filter((f) => f.endsWith(".tsx") || f.endsWith(".ts"))
   .map((f) => `components/history/${f}`);
-const PAGES = ["app/(app)/history/page.tsx", "app/(app)/history/[slug]/page.tsx", "app/(app)/history/loading.tsx"];
+// No loading.tsx, on purpose: see "arrives whole and still" below.
+const PAGES = ["app/(app)/history/page.tsx", "app/(app)/history/[slug]/page.tsx"];
 const FILES = [...COMPONENTS, ...PAGES, "components/ui/icons/TimelineNode.tsx"];
 
 describe("Orthodox History's look", () => {
@@ -129,10 +130,43 @@ describe("the timeline", () => {
     expect(timeline).toMatch(/<MobileTopBar titleKey="nav\.discoverMenu\.history" back backFallback="\/discover" revealTitleOn="history-title" \/>/);
     expect(timeline).toContain('id="history-title"');
     const event = code("app/(app)/history/[slug]/page.tsx");
-    expect(event).toMatch(/<MobileTopBar title=\{meta\.shortTitle \?\? meta\.title\} back backFallback="\/history" revealTitleOn="event-title" \/>/);
+    expect(event).toMatch(
+      /<MobileTopBar\s+title=\{meta\.shortTitle \?\? meta\.title\}\s+back\s+backFallback="\/history"\s+revealTitleOn="event-title"\s+trailing=\{<EventBarActions meta=\{meta\} \/>\}\s+\/>/,
+    );
     const backBar = read("lib/nav/backBar.ts");
     expect(backBar).toContain("/^\\/history$/,");
     expect(backBar).toContain("/^\\/history\\/[^/]+$/,");
+  });
+
+  it("arrives whole and still: no loading screen, what the device kept read in the first render, the place put back on Back alone", () => {
+    // The owner's note 66 of build 80: "when you're on Discover section and
+    // then you click the historical timeline ... there's like a frame where
+    // it bugs in". Filmed on the export, the processor slowed four times: a
+    // black frame and a skeleton with no bar, its bars still arriving one by
+    // one, cut to the page after at least the 300ms React holds a fallback;
+    // on a later visit the page drawn at its top, a "Continue at" row pushed
+    // in a moment later, then a jump to the last visit's place (64px with the
+    // reader at the top, 2,600px further down).
+    expect(existsSync(join(root, "app", "(app)", "history", "loading.tsx")), "the timeline's loading screen").toBe(false);
+    const page = code("components/history/HistoryTimelinePage.tsx");
+    expect(page).toContain("const client = useMounted();");
+    expect(page).toContain("useState<TimelineState>(() => (client ? readState() : EMPTY_STATE))");
+    expect(page).toContain("useState<scroll.TimelinePosition | null>(() => (client ? scroll.loadKeptPlace() : null))");
+    // A visit that stays at the top keeps Back's place but not Continue's.
+    expect(page).toContain("scroll.savePosition(slug, offset, { mirror: !(top === rows[0] && offset > 0) });");
+    // Put back in a layout effect, so before the paint, and on Back alone.
+    const back = page.slice(page.indexOf("useIsoLayoutEffect(() => {"));
+    expect(back).toMatch(/^useIsoLayoutEffect\(\(\) => \{\s+if \(!hydrated \|\| !cameBack\(\) \|\| isReturning\(\)\) return;/);
+    expect(back).toContain("return scroll.restorePosition(saved);");
+    expect(page).not.toContain("window.scrollBy");
+    // Measured with every row at its real height, not on the 128px guesses
+    // that painted Back's row 145px low for a frame.
+    const css = read("app/globals.css");
+    expect(css).toMatch(/\nhtml\[data-history-whole\] \.history-cv \{\n content-visibility: visible;\n\}/);
+    expect(css).toMatch(/\.history-cv \{\n content-visibility: auto;\n contain-intrinsic-size: auto 128px;/);
+    // Continue at is handed its row with the page; it reads nothing after it.
+    expect(page).toContain("<ContinueExploring slug={continueAt} onGo={jumpToEvent} />");
+    expect(code("components/history/ContinueExploring.tsx")).not.toMatch(/useEffect|useState|loadPosition/);
   });
 });
 
@@ -151,6 +185,31 @@ describe("an event's page", () => {
     for (const file of FILES.filter((f) => f !== "components/history/EventArticle.tsx" && f !== "app/(app)/history/page.tsx")) {
       expect(code(file), file).not.toMatch(/<h1\b/);
     }
+  });
+
+  it("carries Share and Save in its bar, so its head is the date and place, the title and the summary", () => {
+    // The owner's note 67 of build 80: "Optimize the share in the bookmark
+    // button. In the individual historical timeline event. Because they're
+    // just floating there." A Share pill and a bookmark stood in a row of
+    // their own under the summary. They are a pair of the bar's 44px icon
+    // buttons now, after its search, as on a doctrine's page and a council's.
+    expect(code("app/(app)/history/[slug]/page.tsx")).toContain("trailing={<EventBarActions meta={meta} />}");
+    const article = code("components/history/EventArticle.tsx");
+    const head = article.slice(article.indexOf("export function EventHeader"), article.indexOf("export function EventBarActions"));
+    expect(head).toContain('id="event-title"');
+    expect(head).not.toMatch(/<ShareButton|<BookmarkEventButton/);
+    const bar = article.slice(article.indexOf("export function EventBarActions"), article.indexOf("export function EventArticle"));
+    expect(bar).toMatch(/<ShareButton[^>]*\bround\b[\s\S]*<BookmarkEventButton/);
+    expect(bar).toContain('className="border-0 bg-transparent text-paper/70 hover:text-paper"');
+    const save = code("components/history/BookmarkEventButton.tsx");
+    expect(save).toContain("inline-flex h-11 w-11 shrink-0");
+    // It knows its state in the first frame: no gate that draws it unsaved first.
+    expect(save).not.toMatch(/useEffect|useState|mounted/);
+    // Saved, lit white with a soft white glow; on Parchment the plain ink.
+    expect(save).toContain('className={saved ? "history-saved-lit" : undefined}');
+    const css = read("app/globals.css");
+    expect(css).toMatch(/\n\.history-saved-lit \{\n filter: drop-shadow\(0 0 3px rgb\(255 255 255 \/ 0\.85\)\) drop-shadow\(0 0 8px rgb\(255 255 255 \/ 0\.35\)\);\n\}/);
+    expect(css).toMatch(/\nhtml\[data-reading-mode="parchment"\] \.history-saved-lit \{\n filter: none;\n\}/);
   });
 
   it("lands a tapped part at the foot of the pinned row of parts", () => {

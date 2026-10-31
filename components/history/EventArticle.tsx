@@ -204,7 +204,10 @@ function Scripture({ refs }: { refs: string[] }) {
   );
 }
 
-/** The event's head: its age, date and place, its title (the page's one h1), its summary, Share and Save. */
+/**
+ * The event's head: its age, date and place, its title (the page's one h1)
+ * and its summary. Share and Save are in the page's bar (EventBarActions).
+ */
 export function EventHeader({ meta }: { meta: HistoryEventMeta }) {
   return (
     <header>
@@ -220,11 +223,32 @@ export function EventHeader({ meta }: { meta: HistoryEventMeta }) {
       </h1>
       <p className="mt-4 font-sans text-lede leading-[1.55] text-paper/80">{meta.summary}</p>
       <InEnglishNote />
-      <div className="mt-5 flex flex-wrap items-center gap-2.5">
-        <ShareButton title={meta.title} text={meta.preview} className="min-h-11 px-4" />
-        <BookmarkEventButton event={meta} />
-      </div>
     </header>
+  );
+}
+
+/**
+ * Share and Save, a pair of icon buttons at the right of the page's bar,
+ * after its search, the way a doctrine's page and a council's carry search
+ * and Share there (1.8, the owner's note 67 of build 80: "Optimize the share
+ * in the bookmark button... Because they're just floating there", a lone
+ * Share pill and a bookmark in a row of their own under the summary). Each
+ * the bar's own 44px box and ink, as its search is. Save is handed the four
+ * things it names, not the event's whole record.
+ */
+export function EventBarActions({ meta }: { meta: HistoryEventMeta }) {
+  return (
+    <>
+      <ShareButton
+        title={meta.title}
+        text={meta.preview}
+        round
+        className="border-0 bg-transparent text-paper/70 hover:text-paper"
+      />
+      <BookmarkEventButton
+        event={{ slug: meta.slug, title: meta.title, shortTitle: meta.shortTitle, displayDate: meta.displayDate }}
+      />
+    </>
   );
 }
 
