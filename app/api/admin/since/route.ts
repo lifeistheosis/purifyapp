@@ -68,7 +68,10 @@ export async function GET(req: NextRequest) {
       .eq("actor_email", adminUser.email ?? "")
       .gte("at", since30)
       .order("at", { ascending: false })
-      .limit(2000);
+      // One request's worth is enough: the line needs only his newest rows,
+      // back to the first pause of half an hour, and a visit writes a few
+      // dozen at most.
+      .limit(1000);
     if (error) note(unread, "your use log", error);
     else rows = (data ?? []) as UsageMark[];
   }

@@ -42,7 +42,7 @@ import {
   useState,
   type ComponentType,
 } from "react";
-import { CommerceOverviewTab } from "./tabs/CommerceOverviewTab";
+import { MoneyOverviewTab } from "./tabs/MoneyOverviewTab";
 import { OrdersTab } from "./tabs/OrdersTab";
 import { RevenueTab } from "./tabs/RevenueTab";
 import { AmbassadorsTab } from "./tabs/AmbassadorsTab";
@@ -99,11 +99,9 @@ import { AdminMobileNav, type MobileNavGroup } from "./AdminMobileNav";
 import { installLarpWriteGuard, larpOn, setLarp, useLarpOn } from "@/lib/admin/larp";
 import { TabBoundary } from "./TabBoundary";
 import { OwnerSection } from "./OwnerSection";
-import { HeroRow } from "./HeroRow";
 import { AttentionStrip } from "./AttentionStrip";
 import { useAttention } from "@/lib/admin/useAttention";
 import { badgeFor } from "@/lib/admin/attention";
-import { type PeriodId } from "./hero";
 import { Freshness } from "./Freshness";
 import { TabSearch } from "./TabSearch";
 import { useLiveData } from "@/lib/admin/useLiveData";
@@ -174,7 +172,7 @@ type Tab = {
 // A, 2026-10-28), so every #tab=today bookmark still lands on it.
 const COMPONENTS: Partial<Record<TabId, ComponentType>> = {
   today: HomeTab,
-  overview: CommerceOverviewTab,
+  overview: MoneyOverviewTab,
   orders: OrdersTab,
   fulfillment: FulfillmentTab,
   revenue: RevenueTab,
@@ -531,7 +529,6 @@ export function AdminShell({
     return () => window.removeEventListener("keydown", onKey);
   }, []);
 
-  const [period, setPeriod] = useState<PeriodId>("30d");
   // Bumped by the tab boundary's Try again, so a recovered panel re-mounts and
   // re-fetches instead of needing a page reload.
   const [reloadKey, setReloadKey] = useState(0);
@@ -969,23 +966,6 @@ export function AdminShell({
                 </div>
               ) : null}
             </header>
-
-            {/* Money's Overview keeps the hero row above its view until its
-                own page replaces it. */}
-            {mode === "ops" && active === "overview" ? (
-              <HeroRow
-                period={period}
-                onPeriod={setPeriod}
-                onOpenTab={select}
-                summary={attention.summary}
-                onRetry={attention.refresh}
-                revenueSeries={overview.data?.revenueSeries ?? []}
-                revenueTodayCents={overview.data?.revenueTodayCents ?? null}
-                revenueMeasured={overview.data !== null && !overview.data.ordersDegraded}
-                revenueLoading={overview.loading}
-                revenueSource={overview.data?.revenueSource ?? "shop"}
-              />
-            ) : null}
 
             {/* Keyed so the panel remounts on a change of view and its
                 entrance replays: one 180ms move, not a cascade. The boundary
