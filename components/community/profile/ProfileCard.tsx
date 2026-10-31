@@ -9,6 +9,7 @@ import { BadgeRow } from "@/components/community/profile/ProfileBadges";
 import { SocialLinkIcon } from "@/components/community/profile/SocialLinkIcon";
 import { SymbolText } from "@/components/community/SymbolText";
 import { StreakChip } from "@/components/streak/StreakChip";
+import { ArrivingImage } from "@/components/ui/ArrivingImage";
 import { Book } from "@/components/ui/icons/Book";
 import { useTranslate } from "@/components/i18n/MessagesProvider";
 import { cn } from "@/lib/cn";
@@ -59,17 +60,16 @@ export function ProfileBanner({
   const color = cosmetics.bannerColor ?? cosmetics.themePrimary;
   return (
     <div
-      className={cn("relative w-full overflow-hidden", !color && !cosmetics.bannerUrl && "bg-paper/[0.08]", className)}
+      className={cn("relative w-full overflow-hidden", !color && "bg-paper/[0.08]", className)}
       style={color ? { backgroundColor: color } : undefined}
     >
       {cosmetics.bannerUrl ? (
         // A plain img: the banner is a reader's upload on our own storage,
         // shown at the size it was cut for, and the optimizer would add a
-        // second copy of every banner for nothing.
-        // eslint-disable-next-line @next/next/no-img-element
-        <img
+        // second copy of every banner for nothing. It arrives whole over the
+        // banner's colour, never a band at a time (build 85, note 52).
+        <ArrivingImage
           src={cosmetics.bannerUrl}
-          alt=""
           className={cn("absolute inset-0 h-full w-full object-cover", cosmetics.bannerMotion === "drift" && "banner-drift-img")}
           referrerPolicy="no-referrer"
           decoding="async"

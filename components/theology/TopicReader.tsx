@@ -11,6 +11,7 @@ import type { RelatedGroups } from "@/lib/theology/relations";
 import { hasAnyRelated } from "@/lib/theology/relations";
 import type { HistoryEventMeta } from "@/lib/history/events";
 import { T } from "@/components/i18n/T";
+import { ArrivingImage } from "@/components/ui/ArrivingImage";
 import { ChevronRight } from "@/components/ui/icons/ChevronRight";
 import { HaloedHead } from "@/components/ui/icons/HaloedHead";
 import { Timer } from "@/components/ui/icons/Timer";
@@ -88,9 +89,9 @@ export function TopicReader({
               data-study-step=""
               className="tap-press inline-flex max-w-full items-center gap-[9px] font-sans text-[10.5px] font-bold uppercase tracking-[0.14em] text-paper/55 hover:text-paper"
             >
-              <span aria-hidden className="block size-6 shrink-0 overflow-hidden rounded-full ring-1 ring-paper/20">
-                {/* eslint-disable-next-line @next/next/no-img-element -- a static export serves files as they are. */}
-                <img src={subject.picture.src} alt="" className="h-full w-full object-cover" style={{ objectPosition: subject.picture.focus ?? "50% 30%" }} />
+              <span aria-hidden className="block size-6 shrink-0 overflow-hidden rounded-full bg-paper/[0.05] ring-1 ring-paper/20">
+                {/* Whole or not yet at all (build 85, note 52). */}
+                <ArrivingImage src={subject.picture.src} className="h-full w-full object-cover" style={{ objectPosition: subject.picture.focus ?? "50% 30%" }} />
               </span>
               <span className="truncate">
                 {stepNumeral(n)} · {subject.title} · <T k="readingsFlow.of" replacements={{ n, total: THEOLOGY_SUBJECTS.length }} />

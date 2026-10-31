@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 
 import { useTranslate } from "@/components/i18n/MessagesProvider";
+import { ArrivingImage } from "@/components/ui/ArrivingImage";
 import { cn } from "@/lib/cn";
 import { avifFor } from "@/lib/media/streamed";
 
@@ -90,14 +91,15 @@ export function SaintHeroPicture({
         )}
       >
         {iconUrl ? (
-          // eslint-disable-next-line @next/next/no-img-element -- the app's own icon, as it is.
-          <img
+          // The app's own icon, as it is, standing in until the hero comes:
+          // it too arrives whole (build 85, note 52), and goes as the hero does.
+          <ArrivingImage
             src={iconUrl}
             alt={failed ? alt : ""}
             aria-hidden={failed ? undefined : true}
             decoding="async"
             className={cn(
-              "absolute inset-0 m-auto h-[240px] max-h-[70%] w-auto rounded-[10px] ring-1 ring-paper/10 motion-safe:transition-opacity motion-safe:duration-500",
+              "absolute inset-0 m-auto h-[240px] max-h-[70%] w-auto rounded-[10px] ring-1 ring-paper/10",
               shown ? "opacity-0" : "opacity-100",
             )}
           />
@@ -114,7 +116,12 @@ export function SaintHeroPicture({
               height={hero.height}
               decoding="async"
               fetchPriority="high"
-              onLoad={() => setShown(true)}
+              onLoad={(e) => {
+                // Shown once it is decoded too, so it never paints in bands
+                // (build 85, note 52, the rule of lib/ui/useArrivingImage.ts).
+                const done = () => setShown(true);
+                e.currentTarget.decode().then(done, done);
+              }}
               onError={(e) => {
                 if (avif && !jpegOnly && e.currentTarget.currentSrc.endsWith(".avif")) setJpegOnly(true);
                 else fail();
@@ -138,8 +145,8 @@ export function SaintHeroPicture({
   if (!iconUrl) return null;
   return (
     <div data-saint-hero="plate" className="saint-icon-in flex justify-center pt-6 md:block md:pt-0">
-      {/* eslint-disable-next-line @next/next/no-img-element -- the app's own icon, as it is. */}
-      <img
+      {/* The app's own icon, as it is: whole or not yet at all (build 85, note 52). */}
+      <ArrivingImage
         src={iconUrl}
         alt={alt}
         decoding="async"

@@ -3780,19 +3780,31 @@ html[data-reading-mode="parchment"] .lic-notes .lic-note:target {
 }
 /* Backwards, not both: a chosen card has to be free to take its press scale. */
 .ob-rise { animation: ob-rise 520ms var(--ease-house) backwards; }
-/* A small picture that arrives (lib/ui/useArrivingImage.ts: the player's
-   covers, the mini player's thumb, a work's byline icon). While the browser
-   fetches it, it is drawn as nothing, then it fades in; one already in hand
-   is shown at once. The mark is set by script only, so a page without it
-   shows its pictures as before. */
+/* A picture that arrives whole (lib/ui/useArrivingImage.ts: every face,
+   icon and cover that comes over the network; build 85, note 52, the prayer
+   wall's faces loaded "in half and then the other half"). It is drawn as
+   nothing until script marks it `data-arrived`, once every byte is in and
+   it is decoded, so not even the server's page shows a band of it; then it
+   fades in. One already in hand is marked before it is first painted, and is
+   simply there. */
 .img-arrive {
  transition: opacity 320ms var(--ease-house);
 }
-.img-arrive[data-arriving] {
+.img-arrive:not([data-arrived]) {
  opacity: 0;
  transition: none;
 }
 :where([data-motion="reduce"]) .img-arrive {
+ transition: none;
+}
+/* What stands in a picture's place while it comes (an avatar's initials),
+   written just after it: it steps away once the picture has faded in over it,
+   so a picture with clear parts never shows a letter through them. */
+.img-arrive[data-arrived] + .img-arrive-under {
+ visibility: hidden;
+ transition: visibility 0s 320ms;
+}
+:where([data-motion="reduce"]) .img-arrive[data-arrived] + .img-arrive-under {
  transition: none;
 }
 /* The welcome questions' way on (components/onboarding/LookingFor.tsx), held
@@ -3904,8 +3916,10 @@ html[data-reading-mode="parchment"] .ob-says-ln {
 .ob-pick[aria-pressed="true"]::after {
  box-shadow: inset 0 0 0 2px var(--color-paper);
 }
+/* The picture's own fade as it arrives whole (.img-arrive) rides beside the
+   dimming, which would otherwise take the transition from it. */
 .ob-pick img {
- transition: filter 320ms var(--ease-house);
+ transition: filter 320ms var(--ease-house), opacity 320ms var(--ease-house);
 }
 .ob-pick[aria-pressed="false"] img {
  filter: grayscale(0.3) brightness(0.75);
@@ -4795,7 +4809,7 @@ html[data-reading-mode="parchment"] .testers-dot { box-shadow: none; }
 .set-root[data-live] .set-focus-card img {
  transition: opacity 320ms var(--ease-house), filter 320ms var(--ease-house);
 }
-.set-root .set-focus-card img[data-arriving] {
+.set-root .set-focus-card img:not([data-arrived]) {
  opacity: 0;
  transition: none;
 }

@@ -2,6 +2,7 @@ import Link from "next/link";
 import type { ComponentType, SVGProps } from "react";
 
 import { T } from "@/components/i18n/T";
+import { ArrivingImage } from "@/components/ui/ArrivingImage";
 import { Book } from "@/components/ui/icons/Book";
 import { ChevronRight } from "@/components/ui/icons/ChevronRight";
 import { Cross } from "@/components/ui/icons/Cross";
@@ -117,10 +118,9 @@ export function CouncilFilm({ councils }: { councils: FilmCouncil[] }) {
                 <span aria-hidden className="absolute inset-0 scale-110 bg-cover bg-center blur-md" style={{ backgroundImage: `url(${c.picture.preview})` }} />
               ) : null}
               {c.picture ? (
-                // eslint-disable-next-line @next/next/no-img-element -- a static export serves files as they are.
-                <img
+                // The website's picture, whole over its preview (build 85, note 52).
+                <ArrivingImage
                   src={c.picture.src}
-                  alt=""
                   title={c.picture.credit}
                   loading="lazy"
                   decoding="async"

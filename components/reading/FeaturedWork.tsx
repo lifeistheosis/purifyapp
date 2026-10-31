@@ -102,7 +102,12 @@ export function FeaturedWork({
               src={art.src}
               alt=""
               decoding="async"
-              onLoad={() => setLit(art.src)}
+              onLoad={(e) => {
+                // Lit once it is decoded too, so it never paints in bands
+                // (build 85, note 52, the rule of lib/ui/useArrivingImage.ts).
+                const done = () => setLit(art.src);
+                e.currentTarget.decode().then(done, done);
+              }}
               onError={(e) => {
                 if (artAvif && e.currentTarget.currentSrc.endsWith(".avif")) setArtJpeg(art.src);
                 else setGone(art.src);

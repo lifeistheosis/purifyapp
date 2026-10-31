@@ -4,6 +4,7 @@ import Link from "next/link";
 import type { ReactNode } from "react";
 
 import { useTranslate } from "@/components/i18n/MessagesProvider";
+import { ArrivingImage } from "@/components/ui/ArrivingImage";
 import { ChevronDown } from "@/components/ui/icons/ChevronDown";
 import { ChevronRight } from "@/components/ui/icons/ChevronRight";
 import { Search } from "@/components/ui/icons/Search";
@@ -266,8 +267,8 @@ function NextRow({ step, steps, progress, short = false }: { step: PathStep; ste
   return (
     <Link href={`/theology/path/${next.id}`} data-next-read="" className={ROW}>
       <span className="theology-plate mt-px grid size-8 shrink-0 place-items-center overflow-hidden rounded-[10px]">
-        {/* eslint-disable-next-line @next/next/no-img-element -- a static export serves files as they are. */}
-        <img src={next.picture.src} alt="" className="h-full w-full object-cover" style={{ objectPosition: next.picture.focus ?? "50% 30%" }} />
+        {/* Whole or not yet at all, over the plate (build 85, note 52). */}
+        <ArrivingImage src={next.picture.src} className="h-full w-full object-cover" style={{ objectPosition: next.picture.focus ?? "50% 30%" }} />
       </span>
       <span className="min-w-0 flex-1">
         <span className="block font-serif text-[15.5px] font-semibold leading-[1.26] text-paper">{next.title}</span>

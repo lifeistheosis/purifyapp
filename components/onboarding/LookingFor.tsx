@@ -3,6 +3,7 @@
 import { useId } from "react";
 
 import { useTranslate } from "@/components/i18n/MessagesProvider";
+import { ArrivingImage } from "@/components/ui/ArrivingImage";
 import { ANSWER_PICTURES } from "@/lib/onboarding/pictures";
 import { INTENTS, type Intent } from "@/lib/onboarding/space";
 
@@ -84,11 +85,9 @@ export function LookingFor({
                 className="ob-pick ob-rise relative block h-28 w-full overflow-hidden rounded-2xl bg-night-soft text-start"
                 style={{ animationDelay: `${300 + Math.min(i, 7) * 50}ms` }}
               >
-                {/* eslint-disable-next-line @next/next/no-img-element -- a static
-                    export serves files as they are; next/image would add nothing. */}
-                <img
+                {/* Whole over the card's ground, or not yet at all (build 85, note 52). */}
+                <ArrivingImage
                   src={picture.src}
-                  alt=""
                   decoding="async"
                   draggable={false}
                   className="absolute inset-0 h-full w-full object-cover"
