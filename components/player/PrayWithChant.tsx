@@ -22,6 +22,7 @@
 import Link from "next/link";
 import { useCallback, useEffect, useRef, useState } from "react";
 
+import { ArrivingImage } from "@/components/ui/ArrivingImage";
 import { CrossPlate } from "@/components/ui/CrossPlate";
 import { Sheet } from "@/components/ui/Sheet";
 import { useTranslate } from "@/components/i18n/MessagesProvider";
@@ -134,8 +135,8 @@ export function ChantPicker({ open, onClose }: { open: boolean; onClose: () => v
                   className="tap-press flex min-h-11 min-w-0 flex-1 items-center gap-3 text-start disabled:cursor-default"
                 >
                   {chant.cover ? (
-                    // eslint-disable-next-line @next/next/no-img-element -- a static export serves files as they are.
-                    <img src={chantMediaUrl(chant.cover.src)} alt="" className="h-11 w-11 shrink-0 rounded-[10px] object-cover" />
+                    // The website's cover, whole or not yet at all (build 85, note 52).
+                    <ArrivingImage src={chantMediaUrl(chant.cover.src)} className="h-11 w-11 shrink-0 rounded-[10px] object-cover" />
                   ) : (
                     <CrossPlate size="thumb" className="h-11 w-11 shrink-0 rounded-[10px]" />
                   )}

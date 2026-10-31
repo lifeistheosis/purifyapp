@@ -1,6 +1,9 @@
+"use client";
+
 import Image from "next/image";
 import type { Saint } from "@/lib/saints/saints";
 import { cn } from "@/lib/cn";
+import { useArrivingImage } from "@/lib/ui/useArrivingImage";
 
 // Renders a saint's icon as a small framed panel reminiscent of an Orthodox
 // icon: dark wood ground, gold inner frame, halo, initials.
@@ -8,8 +11,10 @@ import { cn } from "@/lib/cn";
 // The gradient + gold-frame + halo + initials always render as an instant
 // CSS placeholder. When `iconUrl` is set, the real JPG layers on top, so
 // while the file is loading, the user sees a stylized frame in place of empty
-// space, and the JPG paints progressively over it instead of appearing to
-// load "piece by piece."
+// space. The JPG waits unseen until it has loaded and decoded, then fades in
+// over the frame, whole (build 85, note 52; lib/ui/useArrivingImage.ts): a
+// progressive JPEG painting itself blurry-to-sharp, band by band, is the
+// "piece by piece" the owner keeps sending back.
 
 type Size = "sm" | "md" | "lg";
 
@@ -37,6 +42,7 @@ export function SaintIcon({
  className?: string;
 }) {
  const d = dims[size];
+ const { ref, onArrive } = useArrivingImage(saint.iconUrl ?? null);
 
  const initials = saint.name
  .replace(/^St\.?\s+/i, "")
@@ -85,20 +91,21 @@ export function SaintIcon({
  </span>
  </div>
 
- {/* Real icon overlays the placeholder. Progressive JPEG (mozjpeg)
- means it paints blurry-to-sharp over the gold frame, never leaving
- empty space visible. */}
+ {/* Real icon overlays the placeholder, once it is whole. */}
  {saint.iconUrl && (
  <Image
+ key={saint.iconUrl}
+ ref={ref}
  src={saint.iconUrl}
  alt={`Icon of ${saint.name}`}
  fill
  sizes={`${d.w}px`}
  priority={priority}
+ onLoad={onArrive}
  // object-top keeps the face in frame for tall full-body portraits
  // (Wikimedia icons are typically 1:3 bust/full-body crops where
  // the face sits in the top third).
- className="object-cover object-top relative z-10"
+ className="img-arrive object-cover object-top relative z-10"
  />
  )}
  </div>

@@ -4,6 +4,7 @@ import type { ReactNode } from "react";
 
 import { PrayTalkSwitch } from "@/components/community/PrayTalkSwitch";
 import { useTranslate } from "@/components/i18n/MessagesProvider";
+import { ArrivingImage } from "@/components/ui/ArrivingImage";
 import { cn } from "@/lib/cn";
 import type { CommunityHalf } from "@/lib/community/halves";
 import { TILE_PREVIEWS } from "@/lib/discover/tilePreviews.generated";
@@ -51,17 +52,19 @@ export function CommunityHead({
           {preview ? (
             <span className="absolute inset-0 scale-110 bg-cover bg-center blur-md" style={{ backgroundImage: `url(${preview})` }} />
           ) : null}
-          {/* eslint-disable-next-line @next/next/no-img-element -- a static
-              export serves files as they are; next/image would add nothing. */}
-          <img
-            src={COMMUNITY_PICTURE}
-            alt=""
-            width={507}
-            height={396}
-            decoding="async"
-            fetchPriority="high"
-            className="community-head-img absolute inset-0 h-full w-full object-cover object-[50%_34%]"
-          />
+          {/* The head's entrance moves the frame; the picture in it waits
+              unseen until it is whole and decoded, then fades in over the
+              preview, never a band at a time (build 85, note 52). */}
+          <span className="community-head-img absolute inset-0">
+            <ArrivingImage
+              src={COMMUNITY_PICTURE}
+              width={507}
+              height={396}
+              decoding="async"
+              fetchPriority="high"
+              className="absolute inset-0 h-full w-full object-cover object-[50%_34%]"
+            />
+          </span>
           <span className="community-head-shade absolute inset-0" />
         </div>
       ) : null}

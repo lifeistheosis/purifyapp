@@ -6,6 +6,7 @@
 
 import Link from "next/link";
 
+import { ArrivingImage } from "@/components/ui/ArrivingImage";
 import { ChevronRight } from "@/components/ui/icons/ChevronRight";
 import type { EventPerson } from "@/lib/history/load";
 import { getSaint } from "@/lib/saints/saints";
@@ -19,16 +20,18 @@ export function EventPeople({ people }: { people: EventPerson[] }) {
         const body = (
           <>
             {saint?.iconUrl ? (
-              // eslint-disable-next-line @next/next/no-img-element -- the app's own icon, as it is.
-              <img
-                src={saint.iconUrl}
-                alt=""
-                width={48}
-                height={48}
-                loading="lazy"
-                decoding="async"
-                className="h-12 w-12 shrink-0 rounded-[10px] object-cover object-top ring-1 ring-paper/10"
-              />
+              // The app's own icon, as it is, coming into its frame whole
+              // (build 85, note 52); the frame stands at once.
+              <span aria-hidden className="relative h-12 w-12 shrink-0 overflow-hidden rounded-[10px] bg-paper/[0.05] ring-1 ring-paper/10">
+                <ArrivingImage
+                  src={saint.iconUrl}
+                  width={48}
+                  height={48}
+                  loading="lazy"
+                  decoding="async"
+                  className="absolute inset-0 h-full w-full object-cover object-top"
+                />
+              </span>
             ) : null}
             <span className="min-w-0 flex-1">
               <span className="block font-sans text-ui font-semibold leading-snug text-paper">{person.name}</span>

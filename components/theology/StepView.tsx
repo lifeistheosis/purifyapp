@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useEffect } from "react";
 
 import { useTranslate } from "@/components/i18n/MessagesProvider";
+import { ArrivingImage } from "@/components/ui/ArrivingImage";
 import { Check } from "@/components/ui/icons/Check";
 import { ChevronRight } from "@/components/ui/icons/ChevronRight";
 import {
@@ -207,8 +208,8 @@ function ReadMark({ read }: { read: PathRead }) {
         {read.picture.preview ? (
           <span className="absolute inset-0 scale-110 bg-cover bg-center blur-sm" style={{ backgroundImage: `url(${read.picture.preview})` }} />
         ) : null}
-        {/* eslint-disable-next-line @next/next/no-img-element -- a static export serves files as they are. */}
-        <img src={read.picture.src} alt="" loading="lazy" decoding="async" className="absolute inset-0 h-full w-full object-cover" style={{ objectPosition: read.picture.focus }} />
+        {/* The website's picture, whole over its preview (build 85, note 52). */}
+        <ArrivingImage src={read.picture.src} loading="lazy" decoding="async" className="absolute inset-0 h-full w-full object-cover" style={{ objectPosition: read.picture.focus }} />
       </span>
     );
   }

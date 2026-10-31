@@ -1,5 +1,6 @@
 import type { ReactNode } from "react";
 
+import { ArrivingImage } from "@/components/ui/ArrivingImage";
 import { cn } from "@/lib/cn";
 
 /**
@@ -8,7 +9,8 @@ import { cn } from "@/lib/cn";
  * cropped". The icon stands at its own proportions in the middle of its
  * frame, and the same icon, blurred and grey, fills the frame behind it
  * (globals.css, .whole-icon). The frame's size is the caller's. Decoration:
- * the subject's name beside it says what it is.
+ * the subject's name beside it says what it is. The icon comes into its
+ * light whole, never a band at a time (build 85, note 52).
  */
 export function WholeIcon({
   src,
@@ -25,8 +27,7 @@ export function WholeIcon({
   return (
     <span className={cn("whole-icon relative block overflow-hidden", className)}>
       <span aria-hidden className="whole-icon-light" style={{ backgroundImage: `url(${src})` }} />
-      {/* eslint-disable-next-line @next/next/no-img-element -- a static export serves files as they are. */}
-      <img src={src} alt="" aria-hidden loading={eager ? "eager" : "lazy"} decoding="async" className="whole-icon-picture" />
+      <ArrivingImage src={src} aria-hidden loading={eager ? "eager" : "lazy"} decoding="async" className="whole-icon-picture" />
       {children}
     </span>
   );

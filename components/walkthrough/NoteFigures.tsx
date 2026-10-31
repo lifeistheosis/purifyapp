@@ -48,7 +48,16 @@ function PortraitIcon({ portrait }: { portrait: Portrait }) {
         src={src}
         alt=""
         decoding="async"
-        onLoad={(e) => setState(e.currentTarget.naturalWidth > 1 ? "shown" : "gone")}
+        onLoad={(e) => {
+          if (e.currentTarget.naturalWidth <= 1) {
+            setState("gone");
+            return;
+          }
+          // Shown once it is decoded too, so it never paints in bands
+          // (build 85, note 52, the rule of lib/ui/useArrivingImage.ts).
+          const done = () => setState("shown");
+          e.currentTarget.decode().then(done, done);
+        }}
         onError={() => setState("gone")}
         className={cn(
           "absolute max-w-none motion-safe:transition-opacity motion-safe:duration-300 motion-safe:ease-out",

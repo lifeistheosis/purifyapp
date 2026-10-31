@@ -1,3 +1,4 @@
+import { ArrivingImage } from "@/components/ui/ArrivingImage";
 import { cn } from "@/lib/cn";
 import { serviceArt } from "@/lib/prayers/serviceArt";
 
@@ -27,10 +28,9 @@ export function ArtPlate({ id, size, className }: { id: string; size: ArtSize; c
       aria-hidden
       className={cn("relative block aspect-[3/4] shrink-0 overflow-hidden bg-night-soft", BOX[size], className)}
     >
-      {/* eslint-disable-next-line @next/next/no-img-element -- a static export serves files as they are. */}
-      <img
+      {/* Whole on its plate, or not yet at all (build 85, note 52). */}
+      <ArrivingImage
         src={art.src}
-        alt=""
         loading={size === "sm" ? "lazy" : "eager"}
         decoding="async"
         className="absolute inset-0 h-full w-full object-cover object-top"

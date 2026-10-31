@@ -1,3 +1,4 @@
+import { ArrivingImage } from "@/components/ui/ArrivingImage";
 import type { StepState } from "@/lib/theology/path";
 
 /**
@@ -44,9 +45,9 @@ export function PathMedal({
           />
         ))}
       </svg>
-      <span className="absolute overflow-hidden rounded-full ring-1 ring-paper/15" style={{ left: at, top: at, width: inner, height: inner }}>
-        {/* eslint-disable-next-line @next/next/no-img-element -- a static export serves files as they are. */}
-        <img src={src} alt="" decoding="async" className="h-full w-full object-cover" style={{ objectPosition: focus }} />
+      <span className="absolute overflow-hidden rounded-full bg-paper/[0.05] ring-1 ring-paper/15" style={{ left: at, top: at, width: inner, height: inner }}>
+        {/* Whole or not yet at all, in a frame that stands at once (build 85, note 52). */}
+        <ArrivingImage src={src} decoding="async" className="h-full w-full object-cover" style={{ objectPosition: focus }} />
       </span>
     </span>
   );

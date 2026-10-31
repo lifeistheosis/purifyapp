@@ -1,11 +1,16 @@
+"use client";
+
 import Image from "next/image";
 import { getPrayerIcon } from "@/lib/prayers/icons";
 import { cn } from "@/lib/cn";
+import { useArrivingImage } from "@/lib/ui/useArrivingImage";
 
 /**
  * Renders a Byzantine theme icon inside an Orthodox-frame chrome:
  * outer warm-brown border, inner gold frame, the icon photo behind.
  * Same visual vocabulary as SaintIcon, scaled for prayer-section use.
+ * The icon comes in whole over its ground, never a band at a time (build
+ * 85, note 52; lib/ui/useArrivingImage.ts).
  *
  * Sizes:
  * sm 72 × 96 , thumbnail (Hours grid card top)
@@ -35,18 +40,22 @@ export function PrayerIcon({
  className?: string;
 }) {
  const icon = getPrayerIcon(slug);
+ const { ref, onArrive } = useArrivingImage(icon?.src ?? null);
  if (!icon) return null;
 
  if (size === "hero") {
  return (
  <div className={cn("absolute inset-0", className)} aria-hidden>
  <Image
+ key={icon.src}
+ ref={ref}
  src={icon.src}
  alt={icon.alt}
  fill
  priority={priority}
  sizes="100vw"
- className="object-cover object-top"
+ onLoad={onArrive}
+ className="img-arrive object-cover object-top"
  />
  </div>
  );
@@ -69,12 +78,15 @@ export function PrayerIcon({
  className="absolute inset-1 rounded-sm border border-gold/40 pointer-events-none z-10"
  />
  <Image
+ key={icon.src}
+ ref={ref}
  src={icon.src}
  alt={icon.alt}
  fill
  priority={priority}
  sizes={`${d.w}px`}
- className="object-cover object-top"
+ onLoad={onArrive}
+ className="img-arrive object-cover object-top"
  />
  </div>
  );

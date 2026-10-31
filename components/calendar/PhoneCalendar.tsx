@@ -53,6 +53,7 @@ import {
 } from "@/lib/calendar/orthodox";
 import { cn } from "@/lib/cn";
 import { dateLocale } from "@/lib/i18n/deviceDates";
+import { useArrivingImage } from "@/lib/ui/useArrivingImage";
 
 import { LEGEND, weekdayNames } from "./CalendarGrid";
 import { GREEK_COLOPHON } from "./Colophon";
@@ -225,11 +226,22 @@ function FastFact({ fast }: { fast: FastingStatus }) {
 function CommemorationItem({ c, first }: { c: Commemoration; first: boolean }) {
   const { t } = useTranslate();
   const saint = c.saint ?? null;
+  // The icon comes into its frame whole, never a band at a time (build 85, note 52).
+  const { ref, onArrive } = useArrivingImage(saint?.iconUrl ?? null);
   const body = (
     <>
       {saint?.iconUrl ? (
         <span className="relative h-14 w-[42px] shrink-0 overflow-hidden rounded-md bg-paper/[0.06] ring-1 ring-inset ring-paper/10">
-          <Image src={saint.iconUrl} alt="" fill sizes="42px" className="object-cover object-top" />
+          <Image
+            key={saint.iconUrl}
+            ref={ref}
+            src={saint.iconUrl}
+            alt=""
+            fill
+            sizes="42px"
+            onLoad={onArrive}
+            className="img-arrive object-cover object-top"
+          />
         </span>
       ) : null}
       <span className="min-w-0 flex-1">

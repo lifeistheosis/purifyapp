@@ -3,6 +3,7 @@
 import Link from "next/link";
 
 import { useTranslate } from "@/components/i18n/MessagesProvider";
+import { ArrivingImage } from "@/components/ui/ArrivingImage";
 import { Book } from "@/components/ui/icons/Book";
 import { Play } from "@/components/ui/icons/Play";
 import { shiftForStyle } from "@/lib/calendar/orthodox";
@@ -114,13 +115,15 @@ export function GreetingHeader({ verses }: { verses: HourVerses | null }) {
         <p className="font-sans text-detail text-paper/60">{line}</p>
         <div className="mt-2.5 flex items-start gap-3.5">
           {lead.iconUrl ? (
-            // eslint-disable-next-line @next/next/no-img-element -- the app's own icon, as it is (NameDayCard draws it the same way).
-            <img
-              src={lead.iconUrl}
-              alt=""
-              decoding="async"
-              className="h-[78px] w-[62px] shrink-0 rounded-[12px] object-cover object-[50%_18%] ring-1 ring-paper/14"
-            />
+            // The app's own icon, in a frame of its size that stands at once;
+            // the icon comes into it whole (build 85, note 52).
+            <span aria-hidden className="relative h-[78px] w-[62px] shrink-0 overflow-hidden rounded-[12px] bg-paper/[0.05] ring-1 ring-paper/14">
+              <ArrivingImage
+                src={lead.iconUrl}
+                decoding="async"
+                className="absolute inset-0 h-full w-full object-cover object-[50%_18%]"
+              />
+            </span>
           ) : null}
           {/* h2, not h1: the bar above names the screen ("Today") and owns
               its one h1 (1.7). The calendar's names are English. */}

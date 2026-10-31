@@ -4,6 +4,7 @@ import Link from "next/link";
 
 import { useTranslate } from "@/components/i18n/MessagesProvider";
 import { readingTime } from "@/components/reading/CoverRow";
+import { ArrivingImage } from "@/components/ui/ArrivingImage";
 import { cn } from "@/lib/cn";
 import { windowStyle, type CoverWindow } from "@/lib/reading/coverWindow";
 
@@ -76,10 +77,9 @@ function MiniCover({ book, width }: { book: FanBook; width: number }) {
       }}
     >
       {book.src ? (
-        // eslint-disable-next-line @next/next/no-img-element -- the council's icon, a window onto it.
-        <img
+        // The council's icon, a window onto it, coming in whole (build 85, note 52).
+        <ArrivingImage
           src={book.src}
-          alt=""
           loading="lazy"
           decoding="async"
           onError={(e) => {

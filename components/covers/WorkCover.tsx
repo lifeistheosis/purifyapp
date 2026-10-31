@@ -260,8 +260,14 @@ export function WorkCover({
           decoding="async"
           fetchPriority={priority ? "high" : undefined}
           onLoad={(e) => {
-            if (e.currentTarget.naturalWidth <= 1) setGone(src);
-            else setLoaded(src);
+            if (e.currentTarget.naturalWidth <= 1) {
+              setGone(src);
+              return;
+            }
+            // Shown once it is decoded too, so it never paints in bands
+            // (build 85, note 52, the rule of lib/ui/useArrivingImage.ts).
+            const done = () => setLoaded(src);
+            e.currentTarget.decode().then(done, done);
           }}
           onError={(e) => {
             if (avif && jpegOnly !== src && e.currentTarget.currentSrc.endsWith(".avif")) setJpegOnly(src);

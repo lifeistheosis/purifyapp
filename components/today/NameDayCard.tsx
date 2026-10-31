@@ -16,6 +16,7 @@ import { useEffect, useState } from "react";
 
 import { SourceLine } from "@/components/citations/SourceLine";
 import { useTranslate } from "@/components/i18n/MessagesProvider";
+import { ArrivingImage } from "@/components/ui/ArrivingImage";
 import profiledSaints from "@/data/calendar/profiled-saints.json";
 import { apiFetch } from "@/lib/api/client";
 import { readCalendarStyleDefault } from "@/lib/calendar/styleDefault";
@@ -92,13 +93,13 @@ export function NameDayCard({ className }: { className?: string }) {
     <article data-name-day="" className={cn("rounded-2xl border border-paper/10 bg-paper/[0.03] p-3.5", className)}>
       <div className="flex items-center gap-3">
         {saint.iconUrl ? (
-          // eslint-disable-next-line @next/next/no-img-element -- the app's own icon, as it is.
-          <img
-            src={saint.iconUrl}
-            alt=""
-            decoding="async"
-            className="h-14 w-auto shrink-0 rounded-[8px] ring-1 ring-paper/10"
-          />
+          // The app's own icon, in the calendar's frame (three wide by four
+          // tall, the icons' own middle shape): the frame stands at once and
+          // the icon comes into it whole, so the name beside it never moves
+          // (build 85, note 52). It was as wide as the icon, nothing until it came.
+          <span aria-hidden className="relative h-14 w-[42px] shrink-0 overflow-hidden rounded-[8px] bg-paper/[0.05] ring-1 ring-paper/10">
+            <ArrivingImage src={saint.iconUrl} decoding="async" className="absolute inset-0 h-full w-full object-cover object-top" />
+          </span>
         ) : null}
         <div className="min-w-0">
           <h2 className="font-heading text-ui font-semibold leading-tight text-paper">{t("today.nameDay.title")}</h2>

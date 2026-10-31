@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useState } from "react";
 
 import { useTranslate } from "@/components/i18n/MessagesProvider";
+import { ArrivingImage } from "@/components/ui/ArrivingImage";
 import { Check } from "@/components/ui/icons/Check";
 import { Lampada } from "@/components/ui/icons/Lampada";
 import { Plus } from "@/components/ui/icons/Plus";
@@ -58,8 +59,8 @@ export function CampaignCard({
     <article data-campaign-card="" className="community-campaign overflow-hidden rounded-[18px] border border-paper/[0.09]">
       <div className="flex gap-3">
         <div className="relative w-[92px] shrink-0">
-          {/* eslint-disable-next-line @next/next/no-img-element -- a static export serves files as they are. */}
-          <img
+          {/* Whole or not at all, as the wall's faces (build 85, note 52). */}
+          <ArrivingImage
             src={campaign.picture.src}
             alt={campaign.picture.alt}
             decoding="async"

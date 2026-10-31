@@ -16,6 +16,7 @@ import { useUpgradeModal } from "@/components/billing/UpgradeModal";
 import { DiscordPreviewCard } from "@/components/desktop/DiscordPreviewCard";
 import { usePlusCustom } from "@/components/desktop/usePlusCustom";
 import { useTranslate } from "@/components/i18n/MessagesProvider";
+import { ArrivingImage } from "@/components/ui/ArrivingImage";
 import { SearchSelect, type SearchSelectOption } from "@/components/ui/SearchSelect";
 import { useCalendarStyleDefault } from "@/lib/calendar/useCalendarStyleDefault";
 import { cn } from "@/lib/cn";
@@ -137,10 +138,9 @@ function ModeIcon({ mode }: { mode: Exclude<PresenceMode, "off"> }) {
 function Portrait({ saint }: { saint: SaintRecord }) {
   if (!saint.iconUrl) return null;
   return (
-    // eslint-disable-next-line @next/next/no-img-element -- a 44px icon the library already serves
-    <img
+    // A 44px icon the library already serves, whole or not yet at all (build 85, note 52).
+    <ArrivingImage
       src={saint.iconUrl}
-      alt=""
       width={44}
       height={58}
       className="h-[58px] w-11 shrink-0 rounded-md border border-gold/40 object-cover object-top"

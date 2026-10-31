@@ -3,6 +3,7 @@
 import type { ComponentType, ReactNode, SVGProps } from "react";
 
 import { useTranslate } from "@/components/i18n/MessagesProvider";
+import { ArrivingImage } from "@/components/ui/ArrivingImage";
 import { ArrowUpLeft } from "@/components/ui/icons/ArrowUpLeft";
 import { Book } from "@/components/ui/icons/Book";
 import { Calendar } from "@/components/ui/icons/Calendar";
@@ -116,7 +117,11 @@ export function Eyebrow({ label, count, end, className }: { label: ReactNode; co
   );
 }
 
-/** A saint by the face in his icon; a halo and his initial where there is no icon. */
+/**
+ * A saint by the face in his icon; a halo and his initial where there is no
+ * icon, and while the icon comes: it arrives whole over the initial, never a
+ * band at a time (build 85, note 52).
+ */
 export function Face({ src, name, size }: { src?: string; name: string; size: number }) {
   const initial = name.replace(/^(St\.?|Saint|Holy|Blessed)\s+/i, "").charAt(0).toUpperCase();
   return (
@@ -126,20 +131,17 @@ export function Face({ src, name, size }: { src?: string; name: string; size: nu
       style={{ width: size, height: size }}
     >
       {src ? (
-        // eslint-disable-next-line @next/next/no-img-element -- a static export serves files as they are
-        <img
+        <ArrivingImage
           src={src}
-          alt=""
           loading="lazy"
           decoding="async"
           className="absolute inset-0 h-full w-full object-cover"
           style={{ objectPosition: `50% ${iconFace(src)}%` }}
         />
-      ) : (
-        <span className="font-serif font-bold text-paper/70" style={{ fontSize: size * 0.4 }}>
-          {initial}
-        </span>
-      )}
+      ) : null}
+      <span className={cn("font-serif font-bold text-paper/70", src && "img-arrive-under")} style={{ fontSize: size * 0.4 }}>
+        {initial}
+      </span>
       <span className="pointer-events-none absolute inset-0 rounded-full shadow-[inset_0_0_0_1px_rgb(255_255_255/0.2)]" />
     </span>
   );
@@ -363,10 +365,8 @@ export function TopBand({
       <span aria-hidden className="absolute inset-0 bg-night" />
       {picture ? (
         <span aria-hidden className="band-picture-tall absolute inset-0 bg-night-soft">
-          {/* eslint-disable-next-line @next/next/no-img-element -- a static export serves files as they are */}
-          <img
+          <ArrivingImage
             src={picture.src}
-            alt=""
             decoding="async"
             className="absolute inset-0 h-full w-full object-cover"
             style={{ objectPosition: picture.focus ?? "50% 30%" }}
@@ -436,10 +436,8 @@ export function Doors({
               style={{ width: size, height: size }}
             >
               {door.picture ? (
-                // eslint-disable-next-line @next/next/no-img-element -- a static export serves files as they are
-                <img
+                <ArrivingImage
                   src={door.picture}
-                  alt=""
                   loading="lazy"
                   decoding="async"
                   className="absolute inset-0 h-full w-full object-cover"
