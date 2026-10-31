@@ -11,22 +11,20 @@ export const metadata: Metadata = {
 };
 
 // Static shell; the form island resolves auth + query prefill client-side so
-// it works in the native local-first export.
+// it works in the native local-first export. Requests A of r3-19 (the
+// owner's pick of 2026-10-31): the title and one line, then the one field.
 export default function RequestIconPage() {
   return (
     <div className="mx-auto w-full max-w-[680px] px-5 md:px-8">
-      <header className="pt-10 md:pt-14">
-        <p className="font-sans text-caption font-semibold text-paper/60">
-          <T k="shop.purifyShop" />
-        </p>
-        <h1 className="mt-2 font-display-serif text-heading md:text-display-sm text-paper">
+      <header className="pt-6 md:pt-14">
+        <h1 className="font-heading text-[28px] font-semibold leading-[1.12] tracking-[-0.2px] text-paper">
           <T k="shop.requestAnIcon" />
         </h1>
-        <p className="mt-3 font-serif text-lede text-paper/70 leading-[1.6]">
-          <T k="shop.theSaintsOfTheChurch" />
+        <p className="mt-1.5 font-sans text-[13.5px] leading-snug text-paper/65">
+          <T k="shop.tellUsWhoYouRe" />
         </p>
       </header>
-      <div className="mt-8 pb-8">
+      <div className="mt-4 pb-8">
         <Suspense fallback={null}>
           <RequestFormIsland />
         </Suspense>

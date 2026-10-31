@@ -1692,6 +1692,291 @@ html.is-native body {
  animation: none;
 }
 
+/* ── The shop's own pages for a buyer (1.8) ──────────────────────────
+   The owner's picks of r3-19 (Homebase/boards/purify-master/variants/
+   r3-19-shop-account, "B. A. A.", 2026-10-31), from his note 62 of build
+   85: Orders B, the whole story; Messages A, the order beside the thread;
+   Requests A, the saint's icon. components/shop/OrdersClient.tsx,
+   OrderDetailClient.tsx, OrderStory.tsx, MessagesClient.tsx,
+   ConversationClient.tsx, MessageThread.tsx, TicketThread.tsx,
+   RequestsClient.tsx and RequestIconForm.tsx.
+
+   One set of marks for every life on these pages, an order's and a
+   request's: done solid, now lit (white with a soft white glow), ahead
+   hollow, and dashed for the way still to go and a checkout not finished.
+   They are the admin's own marks for the same order (r3-16, Orders B).
+
+   All of it on the page's tokens, so every palette carries it. On
+   Parchment nothing glows (white cannot glow on paper): what is lit is the
+   ink, and a raised panel is paper a shade lighter under a warm shadow. On
+   True black a panel is the card's grey, since no shadow shows on black.
+   EIKON's seal and its box stay black on every palette: they are printed
+   things. */
+.shop-raise {
+ background: var(--color-night-soft);
+ background: linear-gradient(180deg, color-mix(in srgb, var(--color-paper) 4.5%, var(--color-night-soft)), color-mix(in srgb, #000 8%, var(--color-night-soft)));
+ box-shadow:
+  inset 0 0 0 1px color-mix(in srgb, var(--color-paper) 7.5%, transparent),
+  inset 0 1px 0 rgb(var(--panel-sheen) / 0.09),
+  0 16px 34px -6px rgb(0 0 0 / 0.55),
+  0 2px 6px rgb(0 0 0 / 0.35);
+}
+/* Carved into the page: the estimate under a lit step, a field. */
+.shop-well {
+ background: var(--color-night-deep);
+ background: linear-gradient(180deg, rgb(0 0 0 / 0.42), color-mix(in srgb, var(--color-paper) 2.5%, transparent)), var(--color-night);
+ box-shadow:
+  inset 0 2px 5px rgb(0 0 0 / 0.65),
+  inset 0 0 0 1px color-mix(in srgb, var(--color-paper) 5.5%, transparent),
+  0 1px 0 rgb(var(--panel-sheen) / 0.05);
+}
+/* A small button raised out of the panel: Remove, a row's door. */
+.shop-knob {
+ background: var(--color-night-soft);
+ background: linear-gradient(180deg, color-mix(in srgb, var(--color-paper) 9%, var(--color-night-soft)), color-mix(in srgb, var(--color-paper) 2%, var(--color-night-soft)));
+ box-shadow:
+  inset 0 0 0 1px color-mix(in srgb, var(--color-paper) 14%, transparent),
+  inset 0 1px 0 rgb(var(--panel-sheen) / 0.14),
+  0 6px 14px rgb(0 0 0 / 0.5);
+}
+/* What is lit: the word of the step it is on, the date of an unread thread. */
+.shop-lit {
+ text-shadow: 0 0 14px color-mix(in srgb, var(--color-paper) 42%, transparent);
+}
+/* The one white button on a page (Track your package, Send request). */
+.shop-btn-lit {
+ background-color: var(--color-paper);
+ color: var(--color-night);
+ box-shadow: 0 0 22px color-mix(in srgb, var(--color-paper) 22%, transparent);
+}
+.shop-mark {
+ position: relative;
+ z-index: 1;
+ flex: none;
+ width: 12px;
+ height: 12px;
+ border-radius: 50%;
+ background-color: var(--color-night-soft);
+ box-shadow: inset 0 0 0 1.5px color-mix(in srgb, var(--color-paper) 30%, transparent);
+}
+.shop-mark[data-size="sm"] {
+ width: 9px;
+ height: 9px;
+}
+.shop-mark[data-state="done"],
+.shop-mark[data-state="now"] {
+ background-color: var(--color-paper);
+ box-shadow: none;
+}
+.shop-mark[data-state="now"] {
+ box-shadow:
+  0 0 0 4px color-mix(in srgb, var(--color-paper) 15%, transparent),
+  0 0 14px color-mix(in srgb, var(--color-paper) 85%, transparent);
+}
+.shop-mark[data-state="dashed"] {
+ background-color: transparent;
+ box-shadow: none;
+ border: 1.5px dashed color-mix(in srgb, var(--color-paper) 70%, transparent);
+}
+/* The spine between two steps: solid where the order has been, fading from
+   the lit step to the next, dashed for the way still to go. */
+.shop-step-line {
+ position: absolute;
+ top: 16px;
+ bottom: -2px;
+ inset-inline-start: 5.25px;
+ width: 1.5px;
+ transform-origin: top;
+}
+.shop-step-line[data-line="done"] {
+ background: var(--color-paper);
+}
+.shop-step-line[data-line="lead"] {
+ background: linear-gradient(var(--color-paper), color-mix(in srgb, var(--color-paper) 18%, transparent));
+}
+.shop-step-line[data-line="ahead"] {
+ background: repeating-linear-gradient(color-mix(in srgb, var(--color-paper) 28%, transparent) 0 3px, transparent 3px 7px);
+}
+/* Your orders: the spine the words hang on, fading out under the last. */
+.shop-spine {
+ position: absolute;
+ inset-inline-start: 5.25px;
+ top: 10px;
+ bottom: 30px;
+ width: 1.5px;
+ background: linear-gradient(var(--color-paper), var(--color-paper) 55%, transparent);
+ opacity: 0.25;
+}
+/* The same life on one line: an order beside its thread, a request's marks. */
+.shop-seg {
+ flex: 1 1 0%;
+ height: 1.5px;
+ background: color-mix(in srgb, var(--color-paper) 18%, transparent);
+}
+.shop-seg[data-done] {
+ background: var(--color-paper);
+}
+/* An unread thread's dot, lit. */
+.shop-dot {
+ flex: none;
+ width: 7px;
+ height: 7px;
+ border-radius: 50%;
+ background: var(--color-paper);
+ box-shadow:
+  0 0 0 4px color-mix(in srgb, var(--color-paper) 15%, transparent),
+  0 0 14px color-mix(in srgb, var(--color-paper) 85%, transparent);
+}
+/* The heart given to a message: the app's own drawing, white, with a short
+   glow (no emoji, no red). */
+.shop-heart {
+ color: var(--color-paper);
+ background-color: var(--color-night);
+ box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--color-paper) 18%, transparent);
+ filter: drop-shadow(0 0 6px color-mix(in srgb, var(--color-paper) 45%, transparent));
+}
+/* A thread's bubbles: the reader's own quiet on the page, theirs raised. */
+.shop-bubble-me {
+ background-color: var(--color-night-soft);
+ background-color: color-mix(in srgb, var(--color-paper) 13%, var(--color-night));
+}
+/* The composer, held clear of the last message and above the tab bar, the
+   mini player and today's readings bar on a phone; in the thread's own
+   column, at its foot, from a tablet up. */
+.shop-composer {
+ position: fixed;
+ z-index: 30;
+ inset-inline: 12px;
+ bottom: calc(12px + env(safe-area-inset-bottom, 0px) + var(--now-playing-h) + var(--readings-flow-h));
+}
+html.is-native .shop-composer {
+ bottom: calc(var(--inset-bottom) + var(--tab-bar-h) + var(--now-playing-h) + var(--readings-flow-h) + 10px);
+}
+@media (min-width: 768px) {
+ .shop-composer,
+ html.is-native .shop-composer {
+  position: sticky;
+  inset-inline: auto;
+  bottom: calc(16px + var(--inset-bottom, 0px) + var(--tab-bar-h) + var(--now-playing-h) + var(--readings-flow-h));
+ }
+}
+/* The thread's end, brought into view on opening and on every new message:
+   it stops above the foot's room, so the last message lands clear of the
+   composer rather than under it. */
+.shop-thread-end {
+ scroll-margin-bottom: calc(16px + env(safe-area-inset-bottom, 0px) + var(--now-playing-h) + var(--readings-flow-h));
+}
+html.is-native .shop-thread-end {
+ scroll-margin-bottom: calc(var(--inset-bottom) + var(--tab-bar-h) + var(--now-playing-h) + var(--readings-flow-h) + 16px);
+}
+/* EIKON's seal, the black sticker with its white cross (r3-09). */
+.eikon-seal {
+ position: relative;
+ display: grid;
+ flex: none;
+ place-items: center;
+ border-radius: 50%;
+ color: #f7f5f0;
+ background: radial-gradient(circle at 34% 26%, #1d1d20, #0e0e10 58%, #08080a);
+ box-shadow: 0 1px 2px rgb(0 0 0 / 0.5), inset 0 0 0 1px rgb(255 255 255 / 0.1);
+}
+.eikon-seal::after {
+ content: "";
+ position: absolute;
+ inset: 8%;
+ border-radius: 50%;
+ box-shadow: inset 0 0 0 1px rgb(255 255 255 / 0.3);
+}
+/* EIKON's box, closed, its white seal on the lid's front edge: where a
+   shipped order waits, and what carries it. */
+.eikon-box {
+ position: relative;
+ flex: none;
+ filter: drop-shadow(0 2px 2px rgb(0 0 0 / 0.35)) drop-shadow(0 10px 10px rgb(0 0 0 / 0.35));
+}
+.eikon-box-lid {
+ position: absolute;
+ inset-inline: 0;
+ top: 0;
+ border-radius: 3px;
+ background: linear-gradient(158deg, #26262a, #18181b 45%, #121214);
+ box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.09), inset 0 -2px 2px -1px rgb(255 255 255 / 0.06);
+}
+.eikon-box-edge {
+ position: absolute;
+ inset-inline: 0;
+ bottom: 0;
+ height: 8px;
+ border-radius: 0 0 3px 3px;
+ background: linear-gradient(#111113, #08080a);
+}
+
+/* The motion, each with its escape. The spine draws down to the lit step a
+   step at a time (60ms each, the step's --i), and the lit mark's glow comes
+   up last; a new message rises a few pixels as it fades in. All fill
+   backwards only, so nothing keeps a transform once it has played. */
+@keyframes shop-spine-draw {
+ from { scale: 1 0; }
+}
+@keyframes shop-glow-up {
+ from { box-shadow: 0 0 0 0 transparent, 0 0 0 transparent; }
+}
+@keyframes shop-rise {
+ from { opacity: 0; translate: 0 6px; }
+}
+.shop-step-line[data-line="done"],
+.shop-step-line[data-line="lead"] {
+ animation: shop-spine-draw 220ms var(--ease-house) backwards;
+ animation-delay: calc(var(--i, 0) * 60ms);
+}
+.shop-mark[data-state="now"] {
+ animation: shop-glow-up 420ms ease-out backwards;
+ animation-delay: calc(var(--i, 0) * 60ms + 200ms);
+}
+.shop-rise {
+ animation: shop-rise 260ms var(--ease-house) backwards;
+}
+:where([data-motion="reduce"]) .shop-step-line[data-line="done"],
+:where([data-motion="reduce"]) .shop-step-line[data-line="lead"],
+:where([data-motion="reduce"]) .shop-mark[data-state="now"],
+:where([data-motion="reduce"]) .shop-rise {
+ animation: none;
+}
+
+/* Parchment: paper lit from above, its shadows warm, and nothing glows. */
+html[data-reading-mode="parchment"] .shop-raise {
+ background: linear-gradient(180deg, color-mix(in srgb, #fff 30%, var(--color-night-soft)), var(--color-night-soft));
+ box-shadow:
+  inset 0 0 0 1px color-mix(in srgb, var(--color-paper) 11%, transparent),
+  0 12px 26px -16px rgb(70 50 20 / 0.5),
+  0 1px 3px rgb(70 50 20 / 0.12);
+}
+html[data-reading-mode="parchment"] .shop-well {
+ background: linear-gradient(180deg, rgb(80 60 30 / 0.1), transparent), var(--color-night-deep);
+ box-shadow: inset 0 2px 4px rgb(70 50 20 / 0.18), inset 0 0 0 1px color-mix(in srgb, var(--color-paper) 10%, transparent);
+}
+html[data-reading-mode="parchment"] .shop-knob {
+ background: linear-gradient(180deg, #fffaf0, #f6eedb);
+ box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--color-paper) 22%, transparent), 0 4px 10px -4px rgb(70 50 20 / 0.4);
+}
+html[data-reading-mode="parchment"] .shop-lit {
+ text-shadow: none;
+}
+html[data-reading-mode="parchment"] .shop-btn-lit {
+ box-shadow: none;
+}
+html[data-reading-mode="parchment"] .shop-mark[data-state="now"],
+html[data-reading-mode="parchment"] .shop-dot {
+ box-shadow: 0 0 0 3px color-mix(in srgb, var(--color-paper) 16%, transparent);
+}
+html[data-reading-mode="parchment"] .shop-heart {
+ filter: none;
+}
+/* True black: the card's grey, lit from above by its hairline alone. */
+html[data-reading-mode="black"] .shop-raise {
+ background: linear-gradient(180deg, #1b1b1b, #121212);
+}
+
 /* The niche a section's icon stands in (components/mobile/SectionMasthead,
    the portrait plate): the palette's raised surface with a warm light from
    the side the icon is on, the same light the shop's vitrine gives a piece.

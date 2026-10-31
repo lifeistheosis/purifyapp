@@ -8,6 +8,7 @@ import { useTranslate } from "@/components/i18n/MessagesProvider";
 import { Cart } from "@/components/ui/icons/Cart";
 import { ScrollRail } from "@/components/ui/ScrollRail";
 import { shouldShowBack } from "@/lib/nav/backBar";
+import { currentShopTab, SHOP_TABS } from "@/lib/shop/shopTabs";
 
 /**
  * The shop's own bar on `< md`: its sections, and the cart. Desktop carries
@@ -35,38 +36,19 @@ import { shouldShowBack } from "@/lib/nav/backBar";
  * heart on every product and Saved under You, and the account is You. Four
  * tabs fit a phone's width, so the bar no longer scrolls.
  */
-const TABS: { labelKey: string; href: string; exact?: boolean }[] = [
-  { labelKey: "shop.tabs.explore", href: "/shop", exact: true },
-  { labelKey: "shop.tabs.requests", href: "/shop/requests" },
-  { labelKey: "shop.tabs.orders", href: "/shop/orders" },
-  { labelKey: "shop.messages", href: "/shop/messages" },
-];
-
-/** The shop's browsing pages, which all belong to the Explore tab. */
-const BROWSE = ["/shop/category", "/shop/icons", "/shop/stores", "/shop/eikon"];
+const TABS = SHOP_TABS;
 
 export function ShopSubTabs() {
   const { t, tn } = useTranslate();
   const pathname = usePathname() ?? "";
   const count = cartCount(useCart());
-  // The apps' export builds with `trailingSlash: true`, so the shop's front
-  // page arrives there as "/shop/" and an exact match against "/shop" lit
-  // nothing: the bar stood with no tab marked on the one screen every reader
-  // opens first. Same normalisation as shouldShowBack() in lib/nav/backBar.
-  const path = pathname !== "/" ? pathname.replace(/\/+$/, "") : "/";
 
   // The seller console carries its own navigation; stacking the buyer
   // tabs above it would read as two competing menus.
-  if (path.startsWith("/shop/seller")) return null;
+  if (pathname.startsWith("/shop/seller")) return null;
 
-  const isActive = (tab: (typeof TABS)[number]) =>
-    tab.exact ? path === tab.href : path === tab.href || path.startsWith(tab.href + "/");
-  // Browsing is Explore: a category, a piece, the stores. Without this the
-  // gold line went out the moment a reader tapped a chip, as if they had left
-  // the shop's front room. The cart, checkout and the seller pages are not
-  // browsing, and light nothing.
-  const browsing = BROWSE.some((p) => path === p || path.startsWith(p + "/"));
-  const current = TABS.find(isActive)?.href ?? (browsing ? "/shop" : null);
+  // Request an icon lights Requests; browsing lights Explore (lib/shop/shopTabs.ts).
+  const current = currentShopTab(pathname);
 
   return (
     <nav
