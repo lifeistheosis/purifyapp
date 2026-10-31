@@ -10,19 +10,36 @@ import {
   clearResumeStage,
   markOnboarded,
   readBackground,
+  readClergy,
   readFastingRule,
   readIntents,
   readLevel,
+  readRole,
   setResumeStage,
   writeBackground,
+  writeClergy,
   writeDepth,
   writeFastingRule,
   writeFocus,
   writeIntents,
   writeLevel,
+  writeRole,
 } from "@/lib/onboarding/state";
 import {
-  asksRule,
+  NO_ANSWERS,
+  OTHER,
+  TYPED_MAX,
+  asksClergy,
+  clergyComplete,
+  isClergyRole,
+  isClergyStep,
+  type ClergyAnswers,
+  type ParishAnswer,
+  type Role,
+} from "@/lib/onboarding/clergy";
+import { fileClergyRequest } from "@/lib/onboarding/clergyRequest";
+import { flowSteps, progressPath, type StepId } from "@/lib/onboarding/flowSteps";
+import {
   dayOneFor,
   defaultsFor,
   depthFor,
@@ -47,6 +64,7 @@ import { createClient } from "@/lib/supabase/client";
 import { Compass } from "@/components/ui/icons/Compass";
 import { Book } from "@/components/ui/icons/Book";
 import { Cross } from "@/components/ui/icons/Cross";
+import { ClergyJurisdiction, ClergyParish, ClergyWhere } from "./ClergySteps";
 import { HandoffSlate, type SlateLine } from "./HandoffSlate";
 import { LookingFor } from "./LookingFor";
 import { PrimaryButton } from "./PrimaryButton";
@@ -62,6 +80,12 @@ import { WhereFrom, WhereFromSky } from "./WhereFrom";
  *   background "Where are you coming from?" (1.8, ./WhereFrom): the first
  *              question, on the intro's night and horizon
  *   level      the baseline fork: completely new, learning, or practicing
+ *   role       "Are you a priest, a deacon, or a layman?", asked of the
+ *              practicing only (1.8.x, the owner's note 54); a priest or
+ *              deacon then answers where they serve, their jurisdiction, and
+ *              in the United States their parish (./ClergySteps,
+ *              lib/onboarding/clergy.ts), which asks the team for the clergy
+ *              seal when the questions end and shows no mark by itself
  *   rule       calendar and fasting, asked of the practicing only
  *   intent     "What are you looking for?": as many answers as fit, in the
  *              order tapped, the first of them the intent (1.8, ./LookingFor)
@@ -102,7 +126,7 @@ import { WhereFrom, WhereFromSky } from "./WhereFrom";
  *  from before this version of the questions. */
 export type OnboardingStart = "welcome" | "account" | "level" | "returning";
 
-type StepId = "welcome" | "returning" | "account" | "background" | "level" | "rule" | "intent" | "reminders" | "handoff";
+// The screens, in order, are lib/onboarding/flowSteps.ts (tested there).
 
 const AUTO_ADVANCE_MS = 420;
 
@@ -136,6 +160,13 @@ export function OnboardingFlow({
   // first is the intent, the one answer the Day 1 step and the counts read.
   const [picks, setPicks] = useState<Intent[]>(() => (returning ? readIntents() : []));
   const intent = picks[0] ?? null;
+  // A priest, a deacon or a layman, and a priest's or deacon's answers after
+  // it (1.8.x). Marked for a reader who is back, as every answer is.
+  const [role, setRole] = useState<Role | null>(() => (returning ? readRole() : null));
+  const [clergy, setClergy] = useState<ClergyAnswers>(() => (returning ? readClergy() : NO_ANSWERS));
+  // Whether a request for the seal goes at the end or waits for a sign-in,
+  // for the handoff's line. Asked of the device as the clergy's questions open.
+  const [signedIn, setSignedIn] = useState(false);
   // Reminders already on, on this device: a reader who is back is not asked
   // to turn on what is on. Unknown until the device has answered.
   const [remindersOn, setRemindersOn] = useState(false);
@@ -158,25 +189,10 @@ export function OnboardingFlow({
   // next question.
   const advancing = useRef(false);
 
-  const steps = useMemo<StepId[]>(() => {
-    const head: StepId[] =
-      startAt === "level"
-        ? []
-        : startAt === "returning"
-          ? ["returning"]
-          : startAt === "account"
-            ? ["account"]
-            : ["welcome", "account"];
-    return [
-      ...head,
-      "background",
-      "level",
-      ...(asksRule(level) ? (["rule"] as StepId[]) : []),
-      "intent",
-      ...(returning && remindersOn ? [] : (["reminders"] as StepId[])),
-      "handoff",
-    ];
-  }, [startAt, level, returning, remindersOn]);
+  const steps = useMemo<StepId[]>(
+    () => flowSteps({ startAt, level, role, country: clergy.country, remindersOn }),
+    [startAt, level, role, clergy.country, remindersOn],
+  );
   const step = steps[Math.min(index, steps.length - 1)];
   const dayOne = useMemo(() => dayOneFor(level, intent), [level, intent]);
   const route = routeFor(startAt);
@@ -194,8 +210,32 @@ export function OnboardingFlow({
     beginCountRun();
   }, []);
   useEffect(() => {
+    // A priest's or deacon's own screens are not counted: that one was
+    // reached would tell what was answered, and those answers leave the
+    // device only inside their request for the seal. The role question is
+    // counted as reached, never by its answer.
+    if (isClergyStep(step)) return;
     countOnboarding({ name: "onboarding_step", props: { route, step } });
   }, [route, step]);
+
+  // Signed in or not, asked once the clergy's question is reached and again
+  // at the handoff (a sign-in may have come between).
+  useEffect(() => {
+    if (step !== "role" && step !== "handoff") return;
+    let alive = true;
+    void createClient()
+      .auth.getSession()
+      .then(
+        ({ data }) => {
+          if (alive) setSignedIn(Boolean(data.session));
+        },
+        () => {},
+      );
+    return () => {
+      alive = false;
+    };
+  }, [step]);
+
   const countAnswer = useCallback(
     (question: CountQuestion, answer: string) => {
       countOnboarding({ name: "onboarding_answer", props: { route, question, answer } });
@@ -320,6 +360,44 @@ export function OnboardingFlow({
     advanceSoon();
   }
 
+  // "Are you a priest, a deacon, or a layman?" (1.8.x): kept on the device
+  // and moved on from at once, as the level is. Never counted by its answer.
+  function chooseRole(r: Role) {
+    if (advancing.current) return;
+    setRole(r);
+    writeRole(r);
+    advanceSoon();
+  }
+
+  // A priest's or deacon's answers, each kept as it is given. Where they serve
+  // is a tap that moves on; a new country asks its own jurisdiction again, and
+  // a parish only in the United States.
+  function saveClergy(nextAnswers: ClergyAnswers) {
+    setClergy(nextAnswers);
+    writeClergy(nextAnswers);
+  }
+
+  function chooseCountry(c: string) {
+    if (advancing.current) return;
+    saveClergy(c === clergy.country ? clergy : { ...NO_ANSWERS, country: c });
+    advanceSoon();
+  }
+
+  // A listed jurisdiction moves on; "Another jurisdiction" waits for its name.
+  function chooseJurisdiction(j: string) {
+    if (advancing.current) return;
+    saveClergy({ ...clergy, jurisdiction: j });
+    if (j !== OTHER) advanceSoon();
+  }
+
+  function nameJurisdiction(name: string) {
+    saveClergy({ ...clergy, otherJurisdiction: name.slice(0, TYPED_MAX) });
+  }
+
+  function pickParish(parish: ParishAnswer | null) {
+    saveClergy({ ...clergy, parish });
+  }
+
   function chooseCalendar(c: CalendarChoice) {
     setCalendar(c);
     writeCalendarStyleDefault(c);
@@ -363,6 +441,11 @@ export function OnboardingFlow({
       // Stamped with this version of the questions, so the reader's other
       // devices take these answers and do not ask again.
       void saveSpaceToAccount({ finished: true });
+      // A priest or deacon who answered where they serve asks the team for
+      // the clergy seal now, with the answers as they stand at the end; signed
+      // out, it waits on the device for a sign-in. Nothing shows until the
+      // team has verified it (lib/onboarding/clergyRequest.ts).
+      void fileClergyRequest();
       if (reached) {
         const kept = readBackground();
         const answers = { ...(kept ? { background: kept } : {}), ...(level ? { level } : {}), ...(intent ? { intent } : {}) };
@@ -373,7 +456,9 @@ export function OnboardingFlow({
             () => countFinished(route, answers, false),
           );
       } else {
-        countOnboarding({ name: "onboarding_skipped", props: { route, at: step } });
+        // A skip from a priest's or deacon's own screens counts at the role
+        // question, so the count never says which answer led there.
+        countOnboarding({ name: "onboarding_skipped", props: { route, at: isClergyStep(step) ? "role" : step } });
       }
       setExiting(true);
       window.setTimeout(() => onDone(reached ? dayOne : null), 420);
@@ -424,6 +509,11 @@ export function OnboardingFlow({
     },
     { label: t("onboard.handoff.fasting"), value: t(`onboard.fasting.${fasting}`) },
     ...(intent ? [{ label: t("onboard.handoff.focus"), value: t(`onboard.intent.${intent}`) }] : []),
+    // A priest or deacon who answered where they serve: their request goes to
+    // the team, who check it before any seal shows. Says so, and shows none.
+    ...(asksClergy(level) && isClergyRole(role) && clergyComplete(role, clergy)
+      ? [{ label: t("onboard.handoff.clergy"), value: signedIn ? t("onboard.handoff.clergySent") : t("onboard.handoff.clergyLater") }]
+      : []),
     // A reader who is back is not on their first day.
     {
       label: returning ? t("onboard.returning.next") : t("onboard.handoff.first"),
@@ -431,18 +521,10 @@ export function OnboardingFlow({
     },
   ];
 
-  // Measured against the longest path, the one with the rule step, so the
-  // line only ever grows: choosing "Practicing" adds a step, and counting
-  // against the live list would pull the line back just as the reader moved
-  // forward. Everyone else skips that segment in one longer stride.
-  const progressPath: StepId[] = startAt === "level"
-    ? ["background", "level", "rule", "intent", "reminders", "handoff"]
-    : startAt === "returning"
-      ? ["returning", "background", "level", "rule", "intent", "reminders", "handoff"]
-      : startAt === "account"
-        ? ["account", "background", "level", "rule", "intent", "reminders", "handoff"]
-        : ["welcome", "account", "background", "level", "rule", "intent", "reminders", "handoff"];
-  const progress = Math.max(0, progressPath.indexOf(step)) / (progressPath.length - 1);
+  // Measured against the longest way through, so the line only ever grows
+  // (lib/onboarding/flowSteps.ts, progressPath).
+  const path = progressPath(startAt);
+  const progress = Math.max(0, path.indexOf(step)) / (path.length - 1);
   const stepClass = dir === "fwd" ? "ob-step-fwd" : "ob-step-back";
 
   return (
@@ -493,8 +575,10 @@ export function OnboardingFlow({
 
       {/* "What are you looking for?" stands at the top of a phone with its
           button held at the foot, as its design draws it, and "Where are you
-          coming from?" a little lower, over its horizon; every other step is
-          centred. */}
+          coming from?" a little lower, over its horizon; a priest's or
+          deacon's lists stand at the top on every screen, since a centred
+          list longer than the window would lose its head; every other step
+          is centred. */}
       <div
         key={step}
         ref={stepRef}
@@ -503,7 +587,9 @@ export function OnboardingFlow({
             ? "pt-5 md:justify-center md:py-10"
             : step === "background"
               ? "pb-6 pt-16 md:justify-center md:py-10"
-              : "justify-center py-10"
+              : isClergyStep(step)
+                ? "pb-6 pt-5"
+                : "justify-center py-10"
         }`}
       >
         {step === "welcome" && (
@@ -587,6 +673,35 @@ export function OnboardingFlow({
               />
             </div>
           </Step>
+        )}
+
+        {/* The baptized Orthodox only (1.8.x, the owner's note 54). A priest
+            or deacon goes on to where they serve; a layman to the rule. */}
+        {step === "role" && (
+          <Step eyebrow={t("onboard.level.eyebrow")} title={t("onboard.role.title")} body={t("onboard.role.body")}>
+            <div className="flex flex-col gap-2.5">
+              <ChoiceCard selected={role === "priest"} onClick={() => chooseRole("priest")} title={t("clergy.rank.priest")} delay={0} />
+              <ChoiceCard selected={role === "deacon"} onClick={() => chooseRole("deacon")} title={t("clergy.rank.deacon")} delay={1} />
+              <ChoiceCard selected={role === "layman"} onClick={() => chooseRole("layman")} title={t("onboard.role.layman")} delay={2} />
+            </div>
+          </Step>
+        )}
+
+        {step === "clergyWhere" && <ClergyWhere country={clergy.country} onChoose={chooseCountry} />}
+
+        {step === "clergyJurisdiction" && clergy.country && (
+          <ClergyJurisdiction
+            country={clergy.country}
+            jurisdiction={clergy.jurisdiction}
+            otherName={clergy.otherJurisdiction}
+            onChoose={chooseJurisdiction}
+            onOtherName={nameJurisdiction}
+            onContinue={next}
+          />
+        )}
+
+        {step === "clergyParish" && (
+          <ClergyParish jurisdiction={clergy.jurisdiction} parish={clergy.parish} onPick={pickParish} onContinue={next} />
         )}
 
         {step === "rule" && (
@@ -899,7 +1014,8 @@ function ChoiceCard({
   selected: boolean;
   onClick: () => void;
   title: string;
-  sub: string;
+  /** The line under the title; the role question's answers stand on their titles. */
+  sub?: string;
   icon?: ReactNode;
   compact?: boolean;
   /** Position in its list, for the staggered entrance. */
@@ -931,7 +1047,7 @@ function ChoiceCard({
       ) : null}
       <span className="min-w-0 flex-1">
         <span className="block font-sans text-ui font-semibold text-paper">{title}</span>
-        <span className="mt-0.5 block font-sans text-caption leading-[1.45] text-paper/60">{sub}</span>
+        {sub ? <span className="mt-0.5 block font-sans text-caption leading-[1.45] text-paper/60">{sub}</span> : null}
       </span>
       <span
         aria-hidden

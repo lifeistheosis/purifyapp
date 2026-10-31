@@ -11,6 +11,7 @@ import { WhereFrom, WhereFromSky } from "@/components/onboarding/WhereFrom";
 import { getMessages } from "@/lib/i18n";
 import { LOCALES } from "@/lib/i18n/locales";
 
+import { flowSteps, progressPath } from "../flowSteps";
 import { BACKGROUND_PILLS, type Background } from "../space";
 
 /**
@@ -165,9 +166,15 @@ describe("in the flow", () => {
   const flow = fs.readFileSync(path.join(process.cwd(), "components/onboarding/OnboardingFlow.tsx"), "utf8");
 
   it("is the first question, before familiarity, on every way in", () => {
-    expect(flow).toMatch(/\.\.\.head,\s*"background",\s*"level",/);
-    // The progress line of each of the four ways in counts it.
-    expect(flow.match(/"background", "level", "rule", "intent", "reminders", "handoff"\]/g)).toHaveLength(4);
+    // The order lives in lib/onboarding/flowSteps.ts since 1.8.x (the clergy's question).
+    for (const startAt of ["welcome", "account", "level", "returning"] as const) {
+      const steps = flowSteps({ startAt, level: null, role: null, country: null, remindersOn: false });
+      expect(steps.indexOf("background"), startAt).toBe(steps.indexOf("level") - 1);
+      expect(steps.slice(0, steps.indexOf("background")).every((s) => s === "welcome" || s === "account" || s === "returning"), startAt).toBe(true);
+      // The progress line of each of the four ways in counts it.
+      const line = progressPath(startAt);
+      expect(line.indexOf("background"), startAt).toBe(line.indexOf("level") - 1);
+    }
   });
 
   it("stands on its night only while it shows", () => {

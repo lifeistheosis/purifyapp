@@ -6,6 +6,7 @@
 // be imported anywhere; the only React surface is the small reader inside
 // the onboarding components, which use `useEffect`.
 
+import { NO_ANSWERS, isRole, parseClergyAnswers, type ClergyAnswers, type Role } from "./clergy";
 import {
   cleanIntents,
   isBackground,
@@ -50,6 +51,13 @@ const INTENT_KEY = "purify:intent"; // Intent
 const INTENTS_KEY = "purify:intents"; // JSON array of Intent, in the order tapped (1.8)
 const FASTING_KEY = "purify:fasting-rule"; // FastingRule; absent = "strict"
 const BACKGROUND_KEY = "purify:background"; // Background (1.8); absent = not asked or not answered
+// "Are you a priest, a deacon, or a layman?" and a priest's or deacon's
+// answers after it (1.8.x, ./clergy.ts). On this device only: never copied to
+// the account's space and never counted, sent only inside a request for the
+// clergy seal (./clergyRequest.ts), whose state is the third key.
+const ROLE_KEY = "purify:role"; // Role; absent = not asked or not answered
+const CLERGY_KEY = "purify:clergy"; // JSON ClergyAnswers
+const CLERGY_REQUEST_KEY = "purify:clergy.request"; // JSON ClergyRequestState
 // Set on the way into the sign-in step and cleared when the flow ends, so a
 // Google or Apple sign-in, which leaves the page and comes back, resumes the
 // questions instead of landing a brand-new account on an unasked Today.
@@ -73,6 +81,9 @@ export const SPACE_KEYS: readonly string[] = [
   INTENTS_KEY,
   FASTING_KEY,
   BACKGROUND_KEY,
+  ROLE_KEY,
+  CLERGY_KEY,
+  CLERGY_REQUEST_KEY,
   STAGE_KEY,
   AGAIN_KEY,
 ];
@@ -323,6 +334,52 @@ export function readBackground(): Background | null {
 }
 export function writeBackground(background: Background | null): void {
   writeString(BACKGROUND_KEY, background);
+}
+
+/** A priest, a deacon or a layman (1.8.x), as answered on this device. */
+export function readRole(): Role | null {
+  const v = readString(ROLE_KEY);
+  return isRole(v) ? v : null;
+}
+export function writeRole(role: Role | null): void {
+  writeString(ROLE_KEY, role);
+}
+
+/** Where a priest or deacon serves, their jurisdiction and parish, as answered on this device. */
+export function readClergy(): ClergyAnswers {
+  return parseClergyAnswers(readString(CLERGY_KEY));
+}
+
+/**
+ * Kept as each is answered. A changed answer forgets that a request was
+ * sent, so the next end of the questions asks again with what is true now
+ * (./clergyRequest.ts reads the team's side first and never overwrites a
+ * request already with them).
+ */
+export function writeClergy(answers: ClergyAnswers | null): void {
+  const before = readString(CLERGY_KEY);
+  const next = answers && JSON.stringify(answers) !== JSON.stringify(NO_ANSWERS) ? JSON.stringify(answers) : null;
+  if (next !== before) writeString(CLERGY_REQUEST_KEY, null);
+  writeString(CLERGY_KEY, next);
+}
+
+/**
+ * Where the request for the clergy seal stands on this device: waiting to be
+ * sent (signed out, or a send that failed at `tried`), or sent.
+ */
+export type ClergyRequestState = { state: "pending" | "sent"; tried?: number };
+
+export function readClergyRequest(): ClergyRequestState | null {
+  try {
+    const r = JSON.parse(readString(CLERGY_REQUEST_KEY) ?? "null") as Partial<ClergyRequestState> | null;
+    if (!r || (r.state !== "pending" && r.state !== "sent")) return null;
+    return typeof r.tried === "number" && Number.isFinite(r.tried) ? { state: r.state, tried: r.tried } : { state: r.state };
+  } catch {
+    return null;
+  }
+}
+export function writeClergyRequest(s: ClergyRequestState | null): void {
+  writeString(CLERGY_REQUEST_KEY, s ? JSON.stringify(s) : null);
 }
 
 /** "strict" when never set, which is how fasting showed before the choice existed. */
