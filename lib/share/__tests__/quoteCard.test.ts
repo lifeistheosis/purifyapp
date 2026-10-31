@@ -295,6 +295,27 @@ describe("every layout, in every look and size", () => {
     }
   });
 
+  it("sets every quote the app shares whole in every layout, as a post and as a story, at the size the sheet opens on", async () => {
+    const saints = (await import("@/data/today/saint-words.json")).default as unknown as { words: Record<string, { text: string; lit?: string }> };
+    const sayings = (await import("@/data/today/sayings.json")).default as unknown as { sayings: { text: string; lit?: string }[] };
+    const { COUNCIL_LINES } = await import("@/lib/councils/lines");
+    const all = [
+      ...Object.values(saints.words).map((w) => w.text),
+      ...sayings.sayings.map((s) => s.text),
+      ...Object.values(COUNCIL_LINES).map((l) => l.words),
+    ];
+    expect(all.length).toBeGreaterThan(45);
+    for (const text of all) {
+      for (const layout of LAYOUT_ORDER) {
+        for (const shape of ["post", "story"] as const) {
+          for (const picture of [cover, miniature, null]) {
+            expect(plan(text, { layout, shape }, picture), `${layout} ${shape}: ${text.slice(0, 40)}`).not.toBeNull();
+          }
+        }
+      }
+    }
+  });
+
   it("never cuts the words: too long for a layout and a size is no picture at all", () => {
     const longest = Array.from({ length: 12 }, () => GREGORY).join(" ");
     for (const layout of LAYOUT_ORDER) expect(plan(longest, { layout }), layout).toBeNull();
