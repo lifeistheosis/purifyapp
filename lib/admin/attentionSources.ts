@@ -97,11 +97,20 @@ export function readPlannerSlice(d: unknown): { overdue: number; today: number }
   return { overdue: d.overdue, today: d.today };
 }
 
-export function readCommunitySlice(d: unknown): { recipes: number; reports: number } | null {
+export function readCommunitySlice(
+  d: unknown,
+): { recipes: number; reports: number; held?: number; waiting?: number } | null {
   if (!isObj(d)) return null;
-  // The counts-only shape the strip asks for (?summary=1).
+  // The counts-only shape the strip asks for (?summary=1). held and waiting
+  // arrive with the one queue (r3-17): the rows the page shows, held posts
+  // included, which is the number the rail wears.
   if (typeof d.recipes === "number" && typeof d.reports === "number") {
-    return { recipes: d.recipes, reports: d.reports };
+    return {
+      recipes: d.recipes,
+      reports: d.reports,
+      ...(typeof d.held === "number" ? { held: d.held } : {}),
+      ...(typeof d.waiting === "number" ? { waiting: d.waiting } : {}),
+    };
   }
   const keys = ["pendingRecipes", "campaignReports", "recipeReports", "conversationReports"];
   if (!keys.every((k) => Array.isArray(d[k]))) return null;

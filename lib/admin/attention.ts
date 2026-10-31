@@ -177,7 +177,12 @@ export type AttentionInputs = {
   outbound: SourceState<ProbeSlice>;
   support: SourceState<{ open: number }>;
   verification: SourceState<{ requested: number }>;
-  community: SourceState<{ recipes: number; reports: number }>;
+  /**
+   * held and waiting arrive with the one queue (his pick A for Community on
+   * r3-17): waiting is the rows the page shows, one per thing, held posts
+   * included. An older payload without them counts recipes and reports.
+   */
+  community: SourceState<{ recipes: number; reports: number; held?: number; waiting?: number }>;
   /** The week's board: deadlines past their day, and ones due today. */
   planner: SourceState<{ overdue: number; today: number }>;
   apiLimits: SourceState<{ calls: LimitReading; mau: LimitReading }>;
@@ -577,12 +582,21 @@ export function deriveAttention(i: AttentionInputs): AttentionSummary {
   seen("community", i.community);
   if (i.community.status === "failed") unmeasured.push(unmeasuredItem("community"));
   else if (i.community.status === "ok" && i.community.data) {
-    const { recipes, reports } = i.community.data;
-    const n = recipes + reports;
+    const { recipes, reports, held = 0, waiting } = i.community.data;
+    // The rows the queue shows (one per post, held posts counted), so the
+    // rail's badge and the page agree. Without that count, the old sum.
+    const n = waiting ?? recipes + reports + held;
     if (n > 0) {
+      const parts = [
+        held > 0 ? plural(held, "post held", "posts held") : null,
+        reports > 0 ? plural(reports, "report", "reports") : null,
+        recipes > 0 ? plural(recipes, "recipe", "recipes") : null,
+      ].filter((p): p is string => p !== null);
+      const said =
+        parts.length > 1 ? `${parts.slice(0, -1).join(", ")} and ${parts[parts.length - 1]}` : (parts[0] ?? plural(n, "thing", "things"));
       queues.push(
         queue("community", "moderation", n, `${n} awaiting moderation`, "Moderation queue",
-          `${plural(recipes, "recipe", "recipes")} and ${plural(reports, "report", "reports")} are waiting for a decision.`,
+          `${said} ${parts.length <= 1 && /^1 /.test(said) ? "is" : "are"} waiting for a decision.`,
           { tab: "community", label: "Open Community" }),
       );
     }

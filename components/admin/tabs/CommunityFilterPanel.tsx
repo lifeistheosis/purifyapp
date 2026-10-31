@@ -1,36 +1,21 @@
 "use client";
 
-// The word and spam filter's moderator side (lib/moderation,
-// lib/community/spam.ts): posts and replies that went up with words masked,
-// and the ones held from everyone (spam, a new account's link, hidden by
-// readers' reports), waiting on a decision; the team's own words and blocked
-// web addresses on top of the built-in lists; handles that carry a listed
-// word; and the moderation log, theirs and the moderators' in the app alike.
-// Reads and writes go through /api/admin/community/filter (admin-gated,
-// service role).
+// Community's "Filter and log" (his pick A on r3-17, 2026-10-30): the word and
+// spam filter's own settings, the handles that carry a listed word, and the
+// moderation log, theirs and the moderators' in the app alike. The items the
+// filter holds back are no longer here: they are rows of the one queue, under
+// Waiting, beside the reports on the same post (lib/admin/communityQueue.ts).
+//
+// The page reads /api/admin/community/filter once and hands it here, because
+// the queue needs the same read. Writes still go through that route
+// (admin-gated, service role).
 
-import { useCallback, useEffect, useState } from "react";
+import { useState } from "react";
 
-import { Card, Pill, ToolbarButton } from "../primitives";
+import { Pill, ToolbarButton } from "../primitives";
 
-type Hold = {
-  id: string;
-  post_id: string | null;
-  reply_id: string | null;
-  /** Why it waits (20261005); "words" before it. */
-  reason?: "words" | "spam" | "links" | "new_account" | "reports";
-  detail?: string | null;
-  original_title: string | null;
-  original_body: string | null;
-  hits: number;
-  created_at: string;
-  post: { id: string; title: string | null; body: string | null; author_name: string; author_handle: string | null; status: string } | null;
-  reply: { id: string; post_id: string; body: string; author_name: string; author_handle: string | null; status: string } | null;
-  /** A prayer request's words (1.7.1): who asked, and the words as shown now. */
-  profile?: { handle: string | null; name: string | null; intention: string | null } | null;
-};
-type Term = { term: string; scope: "text" | "handle" | "link"; whole_word: boolean; created_at: string };
-type LogLine = {
+export type FilterTerm = { term: string; scope: "text" | "handle" | "link"; whole_word: boolean; created_at: string };
+export type FilterLogLine = {
   id: string;
   actor_name: string;
   actor_email?: string | null;
@@ -39,20 +24,12 @@ type LogLine = {
   summary: string | null;
   created_at: string;
 };
-type FilterData = {
+export type FilterData = {
   live: { holds: boolean; terms: boolean; log?: boolean };
-  holds: Hold[];
-  terms: Term[];
+  holds: unknown[];
+  terms: FilterTerm[];
   flaggedHandles: string[];
-  log?: LogLine[];
-};
-
-const REASON_LABEL: Record<NonNullable<Hold["reason"]>, string> = {
-  words: "Masked words",
-  spam: "Spam",
-  links: "Short link",
-  new_account: "New account link",
-  reports: "Hidden by reports",
+  log?: FilterLogLine[];
 };
 
 async function act(body: Record<string, unknown>): Promise<string | null> {
@@ -70,50 +47,25 @@ async function act(body: Record<string, unknown>): Promise<string | null> {
   }
 }
 
-async function fetchFilter(): Promise<{ data: FilterData } | { error: string }> {
-  try {
-    const r = await fetch("/api/admin/community/filter", { cache: "no-store" });
-    const j = (await r.json()) as FilterData & { error?: string };
-    return r.ok ? { data: j } : { error: j.error ?? "The word filter queue could not be read." };
-  } catch {
-    return { error: "The word filter queue could not be read." };
-  }
-}
+const ink = { color: "var(--adm-ink)" } as const;
+const ink2 = { color: "var(--adm-ink-2)" } as const;
+const ink3 = { color: "var(--adm-ink-3)" } as const;
+const line = { borderColor: "var(--adm-line)" } as const;
 
-export function CommunityFilterPanel() {
-  const [data, setData] = useState<FilterData | null>(null);
-  const [error, setError] = useState<string | null>(null);
+export function CommunityFilterPanel({ data, onChanged }: { data: FilterData; onChanged: () => void }) {
   const [busy, setBusy] = useState<string | null>(null);
+  const [error, setError] = useState<string | null>(null);
   const [term, setTerm] = useState("");
   const [scope, setScope] = useState<"text" | "handle" | "link">("text");
   const [wholeWord, setWholeWord] = useState(true);
 
-  const apply = useCallback((res: { data: FilterData } | { error: string }) => {
-    if ("error" in res) setError(res.error);
-    else {
-      setError(null);
-      setData(res.data);
-    }
-  }, []);
-  const load = useCallback(async () => apply(await fetchFilter()), [apply]);
-
-  useEffect(() => {
-    let alive = true;
-    void (async () => {
-      const res = await fetchFilter();
-      if (alive) apply(res);
-    })();
-    return () => {
-      alive = false;
-    };
-  }, [apply]);
-
   async function run(key: string, body: Record<string, unknown>) {
     setBusy(key);
+    setError(null);
     const problem = await act(body);
     setBusy(null);
     if (problem) setError(problem);
-    else await load();
+    else onChanged();
   }
 
   async function addTerm() {
@@ -123,58 +75,24 @@ export function CommunityFilterPanel() {
     setTerm("");
   }
 
-  if (error && !data) {
-    return (
-      <Card title="Word filter">
-        <p role="alert" className="font-sans text-detail text-[color:var(--adm-critical)]">
-          {error}
-        </p>
-      </Card>
-    );
-  }
-  if (!data) {
-    return (
-      <Card title="Word filter">
-        <p className="font-sans text-detail text-paper/40">Loading…</p>
-      </Card>
-    );
-  }
-
   return (
-    <Card
-      title="Word and spam filter"
-      subtitle="Masked words wait for your decision; spam, a new account's link and posts readers' reports hid wait unseen until you approve or remove them"
-      accent={data.holds.length > 0}
-    >
+    <div className="space-y-6">
       {error ? (
-        <p role="alert" className="mb-3 font-sans text-detail text-[color:var(--adm-critical)]">
+        <p role="alert" className="font-sans text-[12.5px]" style={{ color: "var(--adm-critical)" }}>
           {error}
         </p>
       ) : null}
       {!data.live.holds ? (
-        <p className="font-sans text-detail text-paper/50">
+        <p className="font-sans text-[12.5px]" style={ink3}>
           The review queue and your own words switch on with 20261004000000_community_filter.sql. The built-in list already works.
         </p>
       ) : null}
 
       <section className="space-y-2">
-        <h3 className="font-sans text-ui font-semibold text-paper">
-          Held for review <Pill tone={data.holds.length > 0 ? "rose" : "neutral"}>{data.holds.length}</Pill>
+        <h3 className="font-sans text-[13.5px] font-semibold" style={ink}>
+          Your words and blocked web addresses
         </h3>
-        {data.holds.length === 0 ? (
-          <p className="font-sans text-detail text-paper/40">Nothing waiting.</p>
-        ) : (
-          <ul className="space-y-2">
-            {data.holds.map((h) => (
-              <HoldRow key={h.id} hold={h} busy={busy} run={run} />
-            ))}
-          </ul>
-        )}
-      </section>
-
-      <section className="mt-6 space-y-2">
-        <h3 className="font-sans text-ui font-semibold text-paper">Your words and blocked web addresses</h3>
-        <p className="font-sans text-detail text-paper/50">
+        <p className="font-sans text-[12.5px] leading-[1.55]" style={ink3}>
           On top of the built-in list, which stays on the server and is not shown here. A writing word is masked in posts and
           replies and refused in handles; a handle word is only refused in handles. A web address holds any post that links to
           it for review, and is refused as a profile link.
@@ -193,19 +111,21 @@ export function CommunityFilterPanel() {
               maxLength={60}
               placeholder="A word or phrase"
               aria-label="Word to add"
-              className="h-11 min-w-[12rem] flex-1 rounded-[var(--adm-radius-sm)] border border-paper/15 bg-transparent px-3 font-sans text-ui text-paper placeholder:text-paper/35"
+              className="h-11 min-w-[12rem] flex-1 rounded-[var(--adm-radius-sm)] border bg-transparent px-3 font-sans text-[13px]"
+              style={{ borderColor: "var(--adm-line-strong)", color: "var(--adm-ink)" }}
             />
             <select
               value={scope}
               onChange={(e) => setScope(e.target.value as "text" | "handle" | "link")}
               aria-label="Where it applies"
-              className="h-11 rounded-[var(--adm-radius-sm)] border border-paper/15 bg-[var(--adm-panel)] px-2 font-sans text-detail text-paper"
+              className="h-11 rounded-[var(--adm-radius-sm)] border px-2 font-sans text-[12.5px]"
+              style={{ borderColor: "var(--adm-line-strong)", background: "var(--adm-panel)", color: "var(--adm-ink)" }}
             >
               <option value="text">Writing and handles</option>
               <option value="handle">Handles only</option>
               <option value="link">A web address</option>
             </select>
-            <label className="inline-flex min-h-11 items-center gap-2 font-sans text-detail text-paper/70">
+            <label className="inline-flex min-h-11 items-center gap-2 font-sans text-[12.5px]" style={ink2}>
               <input type="checkbox" checked={wholeWord} onChange={(e) => setWholeWord(e.target.checked)} />
               Whole word only
             </label>
@@ -215,16 +135,21 @@ export function CommunityFilterPanel() {
           </form>
         ) : null}
         {data.terms.length > 0 ? (
-          <ul className="flex flex-wrap gap-2">
-            {data.terms.map((t) => (
-              <li key={t.term} className="inline-flex items-center gap-2 rounded-[var(--adm-radius-sm)] border border-paper/10 px-2.5 py-1">
-                <span className="adm-sensitive font-sans text-detail text-paper">{t.term}</span>
-                <Pill>{t.scope === "text" ? "writing" : t.scope === "link" ? "web address" : "handles"}</Pill>
-                {!t.whole_word ? <Pill tone="gold">inside words</Pill> : null}
+          <ul className="rounded-[var(--adm-radius)] border" style={line}>
+            {data.terms.map((t, i) => (
+              <li key={t.term} className={`flex flex-wrap items-center gap-3 px-3 py-1.5 ${i ? "border-t" : ""}`} style={line}>
+                <span className="adm-sensitive min-w-0 flex-1 truncate font-sans text-[13px]" style={ink}>
+                  {t.term}
+                </span>
+                <span className="font-sans text-[12px]" style={ink3}>
+                  {t.scope === "text" ? "writing" : t.scope === "link" ? "web address" : "handles"}
+                  {!t.whole_word ? ", inside words too" : ""}
+                </span>
                 <button
                   type="button"
                   onClick={() => void run(`rm:${t.term}`, { action: "remove_term", term: t.term })}
-                  className="hit-44 font-sans text-caption text-paper/50 hover:text-paper"
+                  className="min-h-11 font-sans text-[12px] underline underline-offset-[3px]"
+                  style={ink2}
                   aria-label={`Remove ${t.term}`}
                 >
                   Remove
@@ -233,25 +158,31 @@ export function CommunityFilterPanel() {
             ))}
           </ul>
         ) : data.live.terms ? (
-          <p className="font-sans text-detail text-paper/40">None added yet.</p>
+          <p className="font-sans text-[12.5px]" style={ink3}>
+            None added yet.
+          </p>
         ) : null}
       </section>
 
-      <section className="mt-6 space-y-2">
-        <h3 className="font-sans text-ui font-semibold text-paper">
-          Handles to reset <Pill tone={data.flaggedHandles.length > 0 ? "rose" : "neutral"}>{data.flaggedHandles.length}</Pill>
+      <section className="space-y-2">
+        <h3 className="flex items-center gap-2 font-sans text-[13.5px] font-semibold" style={ink}>
+          Handles to reset {data.flaggedHandles.length > 0 ? <Pill tone="gold">{data.flaggedHandles.length}</Pill> : null}
         </h3>
-        <p className="font-sans text-detail text-paper/50">
+        <p className="font-sans text-[12.5px] leading-[1.55]" style={ink3}>
           Handles made before the filter, or that carry one of your words. Each is also swapped on its own the next time that reader
           posts or opens their profile.
         </p>
         {data.flaggedHandles.length === 0 ? (
-          <p className="font-sans text-detail text-paper/40">None.</p>
+          <p className="font-sans text-[12.5px]" style={ink3}>
+            None.
+          </p>
         ) : (
-          <ul className="flex flex-wrap gap-2">
-            {data.flaggedHandles.map((h) => (
-              <li key={h} className="inline-flex items-center gap-2 rounded-[var(--adm-radius-sm)] border border-paper/10 px-2.5 py-1">
-                <span className="adm-sensitive font-sans text-detail text-paper">@{h}</span>
+          <ul className="rounded-[var(--adm-radius)] border" style={line}>
+            {data.flaggedHandles.map((h, i) => (
+              <li key={h} className={`flex items-center gap-3 px-3 py-1.5 ${i ? "border-t" : ""}`} style={line}>
+                <span className="adm-sensitive min-w-0 flex-1 truncate font-sans text-[13px]" style={ink}>
+                  @{h}
+                </span>
                 <ToolbarButton loading={busy === `h:${h}`} onClick={() => run(`h:${h}`, { action: "reset_handle", handle: h })}>
                   Give a plain handle
                 </ToolbarButton>
@@ -262,94 +193,46 @@ export function CommunityFilterPanel() {
       </section>
 
       {data.log ? (
-        <section className="mt-6 space-y-2">
-          <h3 className="font-sans text-ui font-semibold text-paper">Moderation log</h3>
-          <p className="font-sans text-detail text-paper/50">
-            Who did what: you, the moderators working the queue from Community, and the filters on their own. Newest first.
+        <section className="space-y-2">
+          <h3 className="font-sans text-[13.5px] font-semibold" style={ink}>
+            Moderation log
+          </h3>
+          <p className="font-sans text-[12.5px] leading-[1.55]" style={ink3}>
+            Who did what: you, the moderators working the queue from Community, and the filters on their own. Newest first. The
+            Audit log&apos;s record reads it too.
           </p>
           {data.log.length === 0 ? (
-            <p className="font-sans text-detail text-paper/40">{data.live.log === false ? "The log opens with 20261005000000_community_three.sql." : "Nothing yet."}</p>
+            <p className="font-sans text-[12.5px]" style={ink3}>
+              {data.live.log === false ? "The log opens with 20261005000000_community_three.sql." : "Nothing yet."}
+            </p>
           ) : (
-            <ul className="divide-y divide-paper/8 rounded-[var(--adm-radius)] border border-paper/10">
-              {data.log.map((l) => (
-                <li key={l.id} className="px-3 py-2 font-sans text-detail">
-                  <span className="font-semibold text-paper">{l.actor_name}</span>
-                  {l.actor_email ? <span className="adm-sensitive text-paper/45"> ({l.actor_email})</span> : null}
-                  <span className="text-paper/70"> {l.action.replace(/_/g, " ")}</span>
-                  {l.summary ? <span className="adm-sensitive block text-caption text-paper/55">{l.summary}</span> : null}
-                  <span className="block text-caption text-paper/40">{new Date(l.created_at).toLocaleString()}</span>
+            <ul className="rounded-[var(--adm-radius)] border" style={line}>
+              {data.log.map((l, i) => (
+                <li key={l.id} className={`px-3 py-2 font-sans text-[12.5px] ${i ? "border-t" : ""}`} style={line}>
+                  <span className="font-semibold" style={ink}>
+                    {l.actor_name}
+                  </span>
+                  {l.actor_email ? (
+                    <span className="adm-sensitive" style={ink3}>
+                      {" "}
+                      ({l.actor_email})
+                    </span>
+                  ) : null}
+                  <span style={ink2}> {l.action.replace(/_/g, " ")}</span>
+                  {l.summary ? (
+                    <span className="adm-sensitive block text-[12px]" style={ink3}>
+                      {l.summary}
+                    </span>
+                  ) : null}
+                  <span className="block text-[11.5px]" style={ink3}>
+                    {new Date(l.created_at).toLocaleString()}
+                  </span>
                 </li>
               ))}
             </ul>
           )}
         </section>
       ) : null}
-    </Card>
-  );
-}
-
-function HoldRow({
-  hold,
-  busy,
-  run,
-}: {
-  hold: Hold;
-  busy: string | null;
-  run: (key: string, body: Record<string, unknown>) => Promise<void>;
-}) {
-  const [showOriginal, setShowOriginal] = useState(false);
-  const reason = hold.reason ?? "words";
-  const words = reason === "words";
-  const item = hold.post ?? hold.reply;
-  const request = hold.profile ?? null;
-  const shown = request
-    ? (request.intention ?? "")
-    : hold.post
-      ? [hold.post.title, hold.post.body].filter(Boolean).join("\n")
-      : (hold.reply?.body ?? "");
-  const written = [hold.original_title, hold.original_body].filter(Boolean).join("\n");
-  const authorName = request ? request.name : item?.author_name;
-  const authorHandle = request ? request.handle : item?.author_handle;
-  return (
-    <li className="rounded-[var(--adm-radius)] border border-paper/10 bg-paper/[0.02] p-4">
-      <div className="flex flex-wrap items-center gap-2 font-sans text-caption text-paper/55">
-        <Pill tone={words ? "gold" : "rose"}>{REASON_LABEL[reason]}</Pill>
-        <Pill>{request ? "Prayer request" : hold.post ? "Post" : "Reply"}</Pill>
-        <span className="adm-sensitive">
-          {authorName ?? "A reader"}
-          {authorHandle ? ` @${authorHandle}` : ""}
-        </span>
-        <span>· {new Date(hold.created_at).toLocaleString()}</span>
-        {item?.status === "removed" ? <Pill tone="rose">removed</Pill> : null}
-        {item?.status === "held" ? <Pill>hidden from readers</Pill> : null}
-      </div>
-      {hold.detail ? <p className="mt-1 font-sans text-caption text-paper/55">{hold.detail}</p> : null}
-      <p className="mt-2 whitespace-pre-wrap break-words font-sans text-detail text-paper/85">{shown}</p>
-      <div className="mt-2">
-        {!words ? null : showOriginal ? (
-          <div className="rounded-[var(--adm-radius-sm)] border border-[color:var(--adm-critical)]/30 p-2">
-            <p className="font-sans text-caption font-semibold text-paper/55">As written</p>
-            <p className="adm-sensitive mt-1 whitespace-pre-wrap break-words font-sans text-detail text-paper/85">{written}</p>
-          </div>
-        ) : (
-          <button type="button" onClick={() => setShowOriginal(true)} className="min-h-11 font-sans text-caption text-paper/55 underline hover:text-paper">
-            Show what was written
-          </button>
-        )}
-      </div>
-      <div className="mt-3 flex flex-wrap gap-2">
-        <ToolbarButton loading={busy === `a:${hold.id}`} onClick={() => run(`a:${hold.id}`, { action: "approve_hold", id: hold.id })}>
-          {words ? "Approve as written" : "Approve and show"}
-        </ToolbarButton>
-        {words ? (
-          <ToolbarButton variant="primary" loading={busy === `k:${hold.id}`} onClick={() => run(`k:${hold.id}`, { action: "keep_hold", id: hold.id })}>
-            Keep hidden
-          </ToolbarButton>
-        ) : null}
-        <ToolbarButton variant="danger" loading={busy === `r:${hold.id}`} onClick={() => run(`r:${hold.id}`, { action: "remove_hold", id: hold.id })}>
-          Remove
-        </ToolbarButton>
-      </div>
-    </li>
+    </div>
   );
 }

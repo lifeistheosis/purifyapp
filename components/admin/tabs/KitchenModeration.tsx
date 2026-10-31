@@ -66,16 +66,26 @@ export function KitchenModeration({
   busy,
   act,
   reload,
+  showReported = true,
+  waitingOn,
 }: {
   kitchen: KitchenBlock | undefined;
   busy: string | null;
   act: Act;
   reload: () => void;
+  /**
+   * False under Community's Kitchen photos (his pick A on r3-17): reported
+   * reviews are rows of the one queue there, not a card of their own.
+   */
+  showReported?: boolean;
+  /** A review whose removal is held for Undo: the seconds left and the Undo. */
+  waitingOn?: (reviewId: string) => { seconds: number; undo: () => void } | null;
 }) {
   if (!kitchen) return null;
   const { live } = kitchen;
   return (
     <>
+      {showReported ? (
       <Card
         title="Reported reviews"
         subtitle="Kitchen reviews readers have flagged. Removing hides the review, deletes its photos and clears its reports."
@@ -120,6 +130,7 @@ export function KitchenModeration({
           </div>
         )}
       </Card>
+      ) : null}
 
       <Card
         title="Latest reviews"
@@ -138,15 +149,25 @@ export function KitchenModeration({
                 recipeTitle={r.recipe?.title ?? "(deleted recipe)"}
                 reason={null}
                 when={r.created_at}
-                actions={
-                  <ToolbarButton
-                    variant="danger"
-                    loading={busy === r.id + "remove_review"}
-                    onClick={() => act("remove_review", r.id)}
-                  >
-                    Remove
-                  </ToolbarButton>
-                }
+                actions={(() => {
+                  // Held ten seconds with Undo before it is written, like
+                  // every removal on Community (his pick A on r3-17).
+                  const w = waitingOn?.(r.id) ?? null;
+                  return w ? (
+                    <span className="inline-flex items-center gap-2 font-sans text-[12px] text-paper/70" role="status">
+                      Removed. It is written in {w.seconds} {w.seconds === 1 ? "second" : "seconds"}.
+                      <ToolbarButton onClick={w.undo}>Undo</ToolbarButton>
+                    </span>
+                  ) : (
+                    <ToolbarButton
+                      variant="danger"
+                      loading={busy === r.id + "remove_review"}
+                      onClick={() => act("remove_review", r.id)}
+                    >
+                      Remove
+                    </ToolbarButton>
+                  );
+                })()}
               />
             ))}
           </div>
