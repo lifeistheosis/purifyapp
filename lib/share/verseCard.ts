@@ -1076,9 +1076,9 @@ type PlanArgs = {
 /** A: the portrait beside his words. */
 function planPortrait({ m, text, lang, subject, style, picture, look, W, H, scale }: PlanArgs): QuotePlan | null {
   const story = H / W > 1.5;
-  const side = picture ? (picture.looks === "left" ? "right" : "left") : null;
+  const side: "left" | "right" | null = picture ? (picture.looks === "left" ? "right" : "left") : null;
   const pw = W * (story ? 0.64 : 0.6);
-  const portrait = side ? { x: side === "left" ? 0 : W - pw, width: pw, faceX: side === "left" ? W * 0.26 : W * 0.74 - (W - pw), side } : null;
+  const portrait: QuotePlan["portrait"] = side ? { x: side === "left" ? 0 : W - pw, width: pw, faceX: side === "left" ? W * 0.26 : W * 0.74 - (W - pw), side } : null;
   const wordsSide = side === "left" ? "right" : side === "right" ? "left" : "both";
   const beds = flowerBeds(look, W, H, wordsSide);
 
