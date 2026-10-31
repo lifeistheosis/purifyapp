@@ -1122,6 +1122,7 @@
   "onboard.clergy.otherName": "თქვენი იურისდიქციის სახელი",
   "onboard.clergy.parishTitle": "რომელ სამრევლოში მსახურობთ?",
   "onboard.clergy.parishBody": "მოძებნეთ ამერიკის შეერთებული შტატების მართლმადიდებლური სამრევლოები სახელით, ქალაქით ან შტატით.",
+  "onboard.clergy.parishWrite": "დაწერეთ თქვენი სამრევლოს სახელი, მისი ქალაქი და შტატი.",
   "onboard.clergy.parishSearch": "სახელი, ქალაქი ან შტატი",
   "onboard.clergy.notListed": "ჩემი სამრევლო სიაში არ არის",
   "onboard.clergy.parishPlace": "ქალაქი და შტატი",

@@ -14,7 +14,10 @@
 //   jurisdiction  in the United States, the jurisdictions of the Assembly of
 //                 Canonical Orthodox Bishops; elsewhere the local Churches,
 //                 the country's own first where the Churches agree whose it is
-//   parish        in the United States only: a search of the parishes there
+//   parish        in the United States only: written by the reader, its name
+//                 and its city and state; a search of a list of the parishes
+//                 there only once such a list is permitted
+//                 (lib/parishes/listSwitch.ts, off)
 //
 // Answering priest or deacon never shows a mark. The answers stay on the
 // device and leave it only inside a request for the clergy seal, which the
@@ -509,7 +512,7 @@ export function clergyRequestBody(role: ClergyRole, a: ClergyAnswers, opts: { co
     us && a.parish
       ? a.parish.kind === "listed"
         ? `Parish picked from Purify's list${a.parish.sample ? " (the SAMPLE list)" : ""}.`
-        : "Parish typed in by them, not from the list."
+        : "Parish as they wrote it."
       : null,
     "They gave no way to check: look them up in the jurisdiction's own directory, or write to them.",
   ].filter((n): n is string => n !== null);

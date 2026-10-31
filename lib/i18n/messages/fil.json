@@ -1122,6 +1122,7 @@
   "onboard.clergy.otherName": "Pangalan ng iyong hurisdiksyon",
   "onboard.clergy.parishTitle": "Saang parokya ka naglilingkod?",
   "onboard.clergy.parishBody": "Hanapin ang mga parokyang Ortodokso sa Estados Unidos ayon sa pangalan, lungsod, o estado.",
+  "onboard.clergy.parishWrite": "Isulat ang pangalan ng iyong parokya, at ang lungsod at estado nito.",
   "onboard.clergy.parishSearch": "Pangalan, lungsod, o estado",
   "onboard.clergy.notListed": "Wala sa listahan ang aking parokya",
   "onboard.clergy.parishPlace": "Lungsod at estado",

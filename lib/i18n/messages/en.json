@@ -1122,6 +1122,7 @@
   "onboard.clergy.otherName": "Name your jurisdiction",
   "onboard.clergy.parishTitle": "Which parish do you serve?",
   "onboard.clergy.parishBody": "Search the Orthodox parishes of the United States by name, city or state.",
+  "onboard.clergy.parishWrite": "Write the name of your parish, and its city and state.",
   "onboard.clergy.parishSearch": "Name, city or state",
   "onboard.clergy.notListed": "My parish is not listed",
   "onboard.clergy.parishPlace": "City and state",

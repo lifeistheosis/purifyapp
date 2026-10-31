@@ -1122,6 +1122,7 @@
   "onboard.clergy.otherName": "Nombre de tu jurisdicción",
   "onboard.clergy.parishTitle": "¿En qué parroquia sirves?",
   "onboard.clergy.parishBody": "Busca entre las parroquias ortodoxas de Estados Unidos por nombre, ciudad o estado.",
+  "onboard.clergy.parishWrite": "Escribe el nombre de tu parroquia, y su ciudad y estado.",
   "onboard.clergy.parishSearch": "Nombre, ciudad o estado",
   "onboard.clergy.notListed": "Mi parroquia no está en la lista",
   "onboard.clergy.parishPlace": "Ciudad y estado",

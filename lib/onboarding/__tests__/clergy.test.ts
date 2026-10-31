@@ -295,7 +295,7 @@ describe("the request", () => {
     expect(body.evidence).toContain("SAMPLE list");
   });
 
-  it("names a typed parish and another jurisdiction as typed, and says so", () => {
+  it("carries the parish exactly as they wrote it, the way the shipped screen takes it, and another jurisdiction as typed", () => {
     const body = clergyRequestBody(
       "priest",
       us({ jurisdiction: OTHER, otherJurisdiction: "  Holy Protection Monastery  ", parish: { kind: "typed", name: "Holy Protection", place: "Waterford, CT" } }),
@@ -304,7 +304,13 @@ describe("the request", () => {
     expect(body.jurisdiction).toBe("Holy Protection Monastery");
     expect(body.parish).toBe("Holy Protection, Waterford, CT");
     expect(body.evidence).toContain("Jurisdiction typed in");
-    expect(body.evidence).toContain("Parish typed in");
+    expect(body.evidence).toContain("Parish as they wrote it.");
+    expect(body.evidence).not.toContain("list (the SAMPLE");
+  });
+
+  it("carries a written parish with no city as its name alone", () => {
+    const body = clergyRequestBody("deacon", us({ parish: { kind: "typed", name: "St. Mary", place: "  " } }), COUNTRY_EN);
+    expect(body.parish).toBe("St. Mary");
   });
 
   it("names a local Church in English outside the US, with no parish", () => {

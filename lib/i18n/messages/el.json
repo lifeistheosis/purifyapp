@@ -1122,6 +1122,7 @@
   "onboard.clergy.otherName": "Όνομα της δικαιοδοσίας σας",
   "onboard.clergy.parishTitle": "Σε ποια ενορία υπηρετείτε;",
   "onboard.clergy.parishBody": "Αναζητήστε τις Ορθόδοξες ενορίες των Ηνωμένων Πολιτειών με όνομα, πόλη ή πολιτεία.",
+  "onboard.clergy.parishWrite": "Γράψτε το όνομα της ενορίας σας, καθώς και την πόλη και την πολιτεία της.",
   "onboard.clergy.parishSearch": "Όνομα, πόλη ή πολιτεία",
   "onboard.clergy.notListed": "Η ενορία μου δεν είναι στη λίστα",
   "onboard.clergy.parishPlace": "Πόλη και πολιτεία",

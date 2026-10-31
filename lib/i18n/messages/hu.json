@@ -1122,6 +1122,7 @@
   "onboard.clergy.otherName": "A joghatóságod neve",
   "onboard.clergy.parishTitle": "Melyik parókián szolgálsz?",
   "onboard.clergy.parishBody": "Keress az Egyesült Államok ortodox parókiái között név, város vagy állam szerint.",
+  "onboard.clergy.parishWrite": "Írd be a parókiád nevét, valamint a városát és az államát.",
   "onboard.clergy.parishSearch": "Név, város vagy állam",
   "onboard.clergy.notListed": "A parókiám nincs a listán",
   "onboard.clergy.parishPlace": "Város és állam",

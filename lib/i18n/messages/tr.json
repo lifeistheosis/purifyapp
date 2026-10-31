@@ -1122,6 +1122,7 @@
   "onboard.clergy.otherName": "Yargı bölgenizin adı",
   "onboard.clergy.parishTitle": "Hangi kilisede hizmet ediyorsunuz?",
   "onboard.clergy.parishBody": "Amerika Birleşik Devletleri'ndeki Ortodoks kiliselerini ada, şehre veya eyalete göre arayın.",
+  "onboard.clergy.parishWrite": "Kilisenizin adını, şehrini ve eyaletini yazın.",
   "onboard.clergy.parishSearch": "Ad, şehir veya eyalet",
   "onboard.clergy.notListed": "Kilisem listede yok",
   "onboard.clergy.parishPlace": "Şehir ve eyalet",

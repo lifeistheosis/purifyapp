@@ -1145,6 +1145,7 @@
   "onboard.clergy.otherName": "Назва вашої юрисдикції",
   "onboard.clergy.parishTitle": "На якій парафії ви служите?",
   "onboard.clergy.parishBody": "Шукайте православні парафії Сполучених Штатів за назвою, містом або штатом.",
+  "onboard.clergy.parishWrite": "Напишіть назву вашої парафії, а також її місто і штат.",
   "onboard.clergy.parishSearch": "Назва, місто або штат",
   "onboard.clergy.notListed": "Моєї парафії немає в списку",
   "onboard.clergy.parishPlace": "Місто і штат",

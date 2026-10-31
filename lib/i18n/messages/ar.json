@@ -1162,6 +1162,7 @@
   "onboard.clergy.otherName": "اسم كرسيك الكنسي",
   "onboard.clergy.parishTitle": "في أي رعية تخدم؟",
   "onboard.clergy.parishBody": "ابحث في الرعايا الأرثوذكسية في الولايات المتحدة بالاسم أو المدينة أو الولاية.",
+  "onboard.clergy.parishWrite": "اكتب اسم رعيتك، ومدينتها وولايتها.",
   "onboard.clergy.parishSearch": "الاسم أو المدينة أو الولاية",
   "onboard.clergy.notListed": "رعيتي ليست في القائمة",
   "onboard.clergy.parishPlace": "المدينة والولاية",

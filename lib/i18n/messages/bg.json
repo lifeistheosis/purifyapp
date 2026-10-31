@@ -1122,6 +1122,7 @@
   "onboard.clergy.otherName": "Името на вашата юрисдикция",
   "onboard.clergy.parishTitle": "В коя енория служите?",
   "onboard.clergy.parishBody": "Търсете сред православните енории в Съединените щати по име, град или щат.",
+  "onboard.clergy.parishWrite": "Напишете името на енорията си, както и града и щата ѝ.",
   "onboard.clergy.parishSearch": "Име, град или щат",
   "onboard.clergy.notListed": "Енорията ми я няма в списъка",
   "onboard.clergy.parishPlace": "Град и щат",

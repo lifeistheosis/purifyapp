@@ -1122,6 +1122,7 @@
   "onboard.clergy.otherName": "Nom de votre juridiction",
   "onboard.clergy.parishTitle": "Dans quelle paroisse servez-vous ?",
   "onboard.clergy.parishBody": "Cherchez parmi les paroisses orthodoxes des États-Unis par nom, ville ou État.",
+  "onboard.clergy.parishWrite": "Écrivez le nom de votre paroisse, ainsi que sa ville et son État.",
   "onboard.clergy.parishSearch": "Nom, ville ou État",
   "onboard.clergy.notListed": "Ma paroisse n’est pas dans la liste",
   "onboard.clergy.parishPlace": "Ville et État",

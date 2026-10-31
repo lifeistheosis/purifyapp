@@ -1122,6 +1122,7 @@
   "onboard.clergy.otherName": "Nome della tua giurisdizione",
   "onboard.clergy.parishTitle": "In quale parrocchia servi?",
   "onboard.clergy.parishBody": "Cerca tra le parrocchie ortodosse degli Stati Uniti per nome, città o stato.",
+  "onboard.clergy.parishWrite": "Scrivi il nome della tua parrocchia, con la sua città e il suo stato.",
   "onboard.clergy.parishSearch": "Nome, città o stato",
   "onboard.clergy.notListed": "La mia parrocchia non è nell’elenco",
   "onboard.clergy.parishPlace": "Città e stato",

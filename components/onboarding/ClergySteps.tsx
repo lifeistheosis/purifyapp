@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useId, useMemo, useRef, useState, type ReactNode } from "react";
+import { useEffect, useId, useMemo, useRef, useState, type ReactNode, type Ref } from "react";
 
 import { useTranslate } from "@/components/i18n/MessagesProvider";
 import {
@@ -17,6 +17,7 @@ import {
   usJurisdictionGroups,
   type ParishAnswer,
 } from "@/lib/onboarding/clergy";
+import { US_PARISH_LIST_ON } from "@/lib/parishes/listSwitch";
 import { placeLine, searchParishes } from "@/lib/parishes/search";
 import type { UsParish, UsParishList } from "@/lib/parishes/usParishes";
 
@@ -33,9 +34,13 @@ import { PrimaryButton } from "./PrimaryButton";
  *                       Orthodox Bishops' jurisdictions under their Mother
  *                       Churches; elsewhere the local Churches, the country's
  *                       own first; and "Another jurisdiction", named
- *   ClergyParish        in the United States only: a search of the parishes
- *                       there by name, city or state (SAMPLE until a whole
- *                       list is ours to use, lib/parishes/usParishes.ts)
+ *   ClergyParish        in the United States only: a short form that asks
+ *                       them to write their parish, its name and its city
+ *                       and state. Until a list of parishes is permitted
+ *                       (lib/parishes/listSwitch.ts, off) that is all it is;
+ *                       with a permitted list switched on it becomes a search
+ *                       of that list by name, city or state, the form kept
+ *                       for a parish the list lacks
  *
  * No design sheet was drawn for these. They are the level question's own
  * parts, its heading and its lit card with the tick that draws itself, made
@@ -314,25 +319,85 @@ function parishSub(p: UsParish): ReactNode {
   );
 }
 
-/**
- * "Which parish do you serve?", in the United States: search, pick, and
- * Continue. "My parish is not listed" takes a name and a place instead.
- */
-export function ClergyParish({
-  jurisdiction,
-  parish,
-  onPick,
-  onContinue,
-  list: given,
-}: {
-  /** The reader's jurisdiction: its parishes lead among equals. */
+type ParishProps = {
+  /** The reader's jurisdiction: with a list on, its parishes lead among equals. */
   jurisdiction: string | null;
   parish: ParishAnswer | null;
   onPick: (parish: ParishAnswer | null) => void;
   onContinue: () => void;
-  /** The list, when the caller already holds it (a test). Otherwise it is loaded on demand, offline. */
-  list?: UsParishList;
-}) {
+};
+
+type WrittenParish = Extract<ParishAnswer, { kind: "typed" }>;
+
+/** The two fields a parish is written in: its name, and its city and state. */
+function ParishFields({ typed, onPick, nameRef }: { typed: WrittenParish; onPick: (parish: ParishAnswer) => void; nameRef?: Ref<HTMLInputElement> }) {
+  const { t } = useTranslate();
+  return (
+    <>
+      <input
+        ref={nameRef}
+        value={typed.name}
+        onChange={(e) => onPick({ ...typed, name: e.target.value })}
+        maxLength={TYPED_MAX}
+        placeholder={t("clergy.parish")}
+        aria-label={t("clergy.parish")}
+        autoComplete="off"
+        className={FIELD}
+      />
+      <input
+        value={typed.place}
+        onChange={(e) => onPick({ ...typed, place: e.target.value })}
+        maxLength={TYPED_MAX}
+        placeholder={t("onboard.clergy.parishPlace")}
+        aria-label={t("onboard.clergy.parishPlace")}
+        autoComplete="off"
+        className={FIELD}
+      />
+    </>
+  );
+}
+
+/**
+ * "Which parish do you serve?", in the United States. Until a list of the
+ * parishes there is permitted, the screen asks the reader to write theirs,
+ * and the list (still the SAMPLE) is never loaded or shown. One switch,
+ * lib/parishes/listSwitch.ts, turns a permitted list's search on.
+ */
+export function ClergyParish({ list, ...props }: ParishProps & { list?: UsParishList }) {
+  return US_PARISH_LIST_ON ? <ParishSearch {...props} list={list} /> : <ParishWritten {...props} />;
+}
+
+/**
+ * Their parish, written: its name, and its city and state, and Continue once
+ * there is a name. What they write is what the team reads in the request.
+ */
+function ParishWritten({ parish, onPick, onContinue }: ParishProps) {
+  const { t } = useTranslate();
+  const id = useId();
+  // A parish picked from a list (a build with one on) is offered back as written.
+  const typed: WrittenParish =
+    parish?.kind === "typed" ? parish : parish ? { kind: "typed", name: parish.name, place: placeLine(parish) } : { kind: "typed", name: "", place: "" };
+
+  return (
+    <div data-ob-clergy="parish" className="flex flex-1 flex-col md:flex-none">
+      <Heading id={`${id}q`} title={t("onboard.clergy.parishTitle")} body={t("onboard.clergy.parishWrite")} />
+      <div role="group" aria-labelledby={`${id}q`} className="onboard-step-in mt-6 flex flex-col gap-2.5" style={{ animationDelay: "260ms" }}>
+        <ParishFields typed={typed} onPick={onPick} />
+      </div>
+      <Foot>
+        <PrimaryButton onClick={onContinue} disabled={!parishGiven(parish)}>
+          {t("onboard.continue")}
+        </PrimaryButton>
+      </Foot>
+    </div>
+  );
+}
+
+/**
+ * With a permitted list switched on: search it, pick, and Continue; "My
+ * parish is not listed" opens the written form for a parish the list lacks.
+ */
+function ParishSearch({ jurisdiction, parish, onPick, onContinue, list: given }: ParishProps & { list?: UsParishList }) {
   const { t } = useTranslate();
   const id = useId();
   const [loaded, setLoaded] = useState<UsParishList | null>(null);
@@ -423,23 +488,7 @@ export function ClergyParish({
       </button>
       {parish?.kind === "typed" ? (
         <div className="mt-1 flex flex-col gap-2.5">
-          <input
-            ref={nameField}
-            value={parish.name}
-            onChange={(e) => onPick({ ...parish, name: e.target.value })}
-            maxLength={TYPED_MAX}
-            placeholder={t("clergy.parish")}
-            aria-label={t("clergy.parish")}
-            className={FIELD}
-          />
-          <input
-            value={parish.place}
-            onChange={(e) => onPick({ ...parish, place: e.target.value })}
-            maxLength={TYPED_MAX}
-            placeholder={t("onboard.clergy.parishPlace")}
-            aria-label={t("onboard.clergy.parishPlace")}
-            className={FIELD}
-          />
+          <ParishFields typed={parish} onPick={onPick} nameRef={nameField} />
         </div>
       ) : null}
 

@@ -8,6 +8,7 @@ import { describe, expect, it } from "vitest";
 import { MessagesProvider } from "@/components/i18n/MessagesProvider";
 import { ClergyJurisdiction, ClergyParish, ClergyWhere } from "@/components/onboarding/ClergySteps";
 import { getMessages } from "@/lib/i18n";
+import { US_PARISH_LIST_ON } from "@/lib/parishes/listSwitch";
 import { US_PARISH_LIST } from "@/lib/parishes/usParishes";
 
 import { COUNTRIES, OTHER, US_JURISDICTIONS, type ParishAnswer } from "../clergy";
@@ -17,7 +18,9 @@ import { COUNTRIES, OTHER, US_JURISDICTIONS, type ParishAnswer } from "../clergy
  * 54): where they serve, their jurisdiction, their parish in the United
  * States. No design sheet was drawn for them; they are the level question's
  * own parts. Above all, none of them shows a mark: answering asks the team,
- * who verify before any seal appears.
+ * who verify before any seal appears. And until a parish list is permitted,
+ * the parish is written, never picked from the SAMPLE list; the list's own
+ * screen, behind its switch, is clergyParishList.test.ts.
  */
 
 type ProviderProps = Parameters<typeof MessagesProvider>[0];
@@ -127,48 +130,67 @@ describe("the jurisdiction", () => {
   });
 });
 
-describe("the parish, in the United States", () => {
-  it("marks the list SAMPLE while it is one, and shows it whole with a search by name, city or state", () => {
-    const html = draw(createElement(ClergyParish, { jurisdiction: null, parish: null, onPick: noop, onContinue: noop, list: US_PARISH_LIST }));
+describe("the parish, in the United States, as the app ships it", () => {
+  const written = (name: string, place = ""): ParishAnswer => ({ kind: "typed", name, place });
+  const parishScreen = (parish: ParishAnswer | null, locale = "en") =>
+    // The SAMPLE list handed in as well: the switch, not the caller, decides.
+    draw(createElement(ClergyParish, { jurisdiction: "romanian", parish, onPick: noop, onContinue: noop, list: US_PARISH_LIST }), locale);
+
+  it("keeps the parish list switched off until a list is permitted, and can be switched on only with one that is", () => {
+    expect(US_PARISH_LIST_ON).toBe(false);
+    // Turning it on is a data change and this one line: a permitted list in
+    // lib/parishes/usParishes.ts, no longer the sample, naming who gave it.
+    if (US_PARISH_LIST_ON) {
+      expect(US_PARISH_LIST.sample).toBe(false);
+      expect(US_PARISH_LIST.source).toBeTruthy();
+    }
+  });
+
+  it("asks the reader to write their parish: its name, and its city and state", () => {
+    const html = parishScreen(null);
     expect(html).toContain("Which parish do you serve?");
-    expect(html).toMatch(/data-ob-sample[^>]*>[\s\S]*?SAMPLE[\s\S]*?A short sample list for now/);
-    expect(html).toMatch(/<input[^>]*type="search"[^>]*placeholder="Name, city or state"/);
-    expect(rows(html).filter((x) => x.text[0] !== "My parish is not listed")).toHaveLength(US_PARISH_LIST.parishes.length);
-    expect(continueButton(html)).toMatch(/disabled=""/);
-  });
-
-  it("says SAMPLE in the reader's language", () => {
-    expect(draw(createElement(ClergyParish, { jurisdiction: null, parish: null, onPick: noop, onContinue: noop, list: US_PARISH_LIST }), "el")).toContain(
-      "ΔΕΙΓΜΑ",
-    );
-  });
-
-  it("does not say SAMPLE once the list is a whole one", () => {
-    const whole = { ...US_PARISH_LIST, sample: false, source: "a list the owner cleared" };
-    const html = draw(createElement(ClergyParish, { jurisdiction: null, parish: null, onPick: noop, onContinue: noop, list: whole }));
-    expect(html).not.toContain("data-ob-sample");
-    expect(html).not.toContain("SAMPLE");
-  });
-
-  it("lights the parish picked, with its city and jurisdiction, and lets the reader go on", () => {
-    const html = draw(createElement(ClergyParish, { jurisdiction: "romanian", parish: LISTED, onPick: noop, onContinue: noop, list: US_PARISH_LIST }));
-    const picked = rows(html).filter((x) => x.pressed);
-    expect(picked).toHaveLength(1);
-    expect(picked[0].text).toEqual(["Ss. Constantine and Helen Cathedral", "Chicago, IL", "Romanian Orthodox Metropolia of the Americas"]);
-    // The reader's own jurisdiction leads the list.
-    expect(rows(html)[0].text[0]).toBe("Ss. Constantine and Helen Cathedral");
-    expect(continueButton(html)).not.toMatch(/disabled=""/);
-  });
-
-  it("takes a parish that is not listed as a name and a place, and goes on once it has a name", () => {
-    const typed = (name: string): ParishAnswer => ({ kind: "typed", name, place: "Austin, TX" });
-    const html = draw(createElement(ClergyParish, { jurisdiction: null, parish: typed(""), onPick: noop, onContinue: noop, list: US_PARISH_LIST }));
-    expect(html).toMatch(/aria-pressed="true"[^>]*>My parish is not listed/);
+    expect(html).toContain("Write the name of your parish, and its city and state.");
     expect(html).toMatch(/<input[^>]*placeholder="Parish or monastery"/);
-    expect(html).toMatch(/<input[^>]*placeholder="City and state"[^>]*value="Austin, TX"|<input[^>]*value="Austin, TX"[^>]*placeholder="City and state"/);
-    expect(continueButton(html)).toMatch(/disabled=""/);
-    const named = draw(createElement(ClergyParish, { jurisdiction: null, parish: typed("St. Mary"), onPick: noop, onContinue: noop, list: US_PARISH_LIST }));
-    expect(continueButton(named)).not.toMatch(/disabled=""/);
+    expect(html).toMatch(/<input[^>]*placeholder="City and state"/);
+    expect([...html.matchAll(/<input/g)]).toHaveLength(2);
+  });
+
+  it("never shows the SAMPLE list, its search, or a word about a list that missed them", () => {
+    for (const html of [parishScreen(null), parishScreen(written("St. Mary")), parishScreen(null, "el")]) {
+      expect(html).not.toContain("data-ob-sample");
+      expect(html).not.toMatch(/SAMPLE|ΔΕΙΓΜΑ/);
+      expect(html).not.toContain('type="search"');
+      expect(html).not.toContain("Search the Orthodox parishes");
+      expect(html).not.toContain("not listed");
+      expect(rows(html)).toEqual([]);
+      for (const p of US_PARISH_LIST.parishes) expect(html).not.toContain(p.name.replace(/“|”/g, ""));
+    }
+  });
+
+  it("goes on once a name is written, and shows what was written", () => {
+    expect(continueButton(parishScreen(null))).toMatch(/disabled=""/);
+    expect(continueButton(parishScreen(written(" ")))).toMatch(/disabled=""/);
+    const html = parishScreen(written("St. Mary", "Austin, TX"));
+    expect(continueButton(html)).not.toMatch(/disabled=""/);
+    expect(html).toMatch(/value="St. Mary"/);
+    expect(html).toMatch(/value="Austin, TX"/);
+    // The city and state are welcome, not required.
+    expect(continueButton(parishScreen(written("St. Mary")))).not.toMatch(/disabled=""/);
+  });
+
+  it("asks in the reader's language", () => {
+    const html = parishScreen(null, "el");
+    expect(html).toContain("Γράψτε το όνομα της ενορίας σας");
+    expect(html).toMatch(/placeholder="Ενορία ή μονή"/);
+  });
+
+  it("loads the list only behind the switch, so the shipped app never fetches it", () => {
+    const src = fs.readFileSync(path.join(process.cwd(), "components/onboarding/ClergySteps.tsx"), "utf8");
+    // Types only at the top: the data itself is imported on demand, inside the list's own screen.
+    expect(src).not.toMatch(/^import (?!type )[^;]*from "@\/lib\/parishes\/usParishes"/m);
+    const load = src.indexOf('import("@/lib/parishes/usParishes")');
+    expect(load).toBeGreaterThan(src.indexOf("function ParishSearch("));
+    expect(src).toMatch(/US_PARISH_LIST_ON \? <ParishSearch [^>]*\/> : <ParishWritten [^>]*\/>/);
   });
 });
 

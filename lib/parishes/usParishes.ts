@@ -2,7 +2,11 @@
 // welcome questions (the owner's note 54, 2026-10-31: "a search for the
 // parishes in America, and they could pick any in America").
 //
-// THIS IS A SAMPLE, and the screen says so. No list of every parish is ours
+// THIS IS A SAMPLE, AND READERS NEVER SEE IT. ./listSwitch.ts keeps the list
+// and its search off until a list is permitted; until then the parish screen
+// asks readers to write their parish, and this file is never loaded. Should
+// the switch be turned on with this sample still here, the screen would mark
+// it SAMPLE, and a test refuses that state. No list of every parish is ours
 // to copy yet. The Assembly of Canonical Orthodox Bishops keeps the one
 // directory of every member jurisdiction (assemblyofbishops.org/directories/
 // parishes), but it publishes no terms that let anyone reuse it, and its
@@ -15,12 +19,13 @@
 // keeps it; that question is the owner's (Homebase/boards/purify-master/r18/
 // BUILD-80-NOTES.md, note 54).
 //
-// Until then: twelve parishes, a cathedral or a parish of most of the
-// Assembly's jurisdictions, each read on the parish's or its diocese's own
-// website on the day given (`from`), and "My parish is not listed" for
-// everyone else. When a real list arrives it replaces `parishes` and `sample`
-// turns false; the screen and its search do not change. It is imported only
-// by the parish screen, on demand, so it never rides in any other page.
+// Kept so the search is built and tested: twelve parishes, a cathedral or a
+// parish of most of the Assembly's jurisdictions, each read on the parish's
+// or its diocese's own website on the day given (`from`). When a permitted
+// list arrives it replaces `parishes`, `sample` turns false and `source` names
+// who gave it, and the switch is set true; the screen and its search do not
+// change. It is imported only by the parish screen, on demand and only with
+// the switch on, so it never rides in any other page.
 //
 // Size: this sample is about 2.5 KB. A full list in this shape (about 70
 // bytes a parish, a few thousand parishes at most: the 2020 census of

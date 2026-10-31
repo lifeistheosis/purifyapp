@@ -1134,6 +1134,7 @@
   "onboard.clergy.otherName": "Назив ваше јурисдикције",
   "onboard.clergy.parishTitle": "На којој парохији служите?",
   "onboard.clergy.parishBody": "Претражите православне парохије у Сједињеним Државама по називу, граду или савезној држави.",
+  "onboard.clergy.parishWrite": "Напишите назив своје парохије, као и њен град и савезну државу.",
   "onboard.clergy.parishSearch": "Назив, град или савезна држава",
   "onboard.clergy.notListed": "Моја парохија није на списку",
   "onboard.clergy.parishPlace": "Град и савезна држава",

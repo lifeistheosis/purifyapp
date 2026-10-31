@@ -54,7 +54,7 @@ function storage() {
 
 let store: ReturnType<typeof storage>;
 
-/** A US priest who answered every screen. */
+/** A US priest who answered every screen, his parish written as the shipped screen takes it. */
 function answeredPriest() {
   writeLevel("practicing");
   writeRole("priest");
@@ -62,7 +62,7 @@ function answeredPriest() {
     country: "US",
     jurisdiction: "antiochian",
     otherJurisdiction: "",
-    parish: { kind: "listed", id: "antiochian-brooklyn-st-nicholas", name: "St. Nicholas Antiochian Orthodox Cathedral", city: "Brooklyn", state: "NY", sample: true },
+    parish: { kind: "typed", name: "St. Nicholas Antiochian Orthodox Cathedral", place: "Brooklyn, NY" },
   });
 }
 
@@ -96,6 +96,7 @@ describe("filing the request", () => {
       parish: "St. Nicholas Antiochian Orthodox Cathedral, Brooklyn, NY",
     });
     expect((body as { evidence: string }).evidence).toContain("Country they serve in: United States.");
+    expect((body as { evidence: string }).evidence).toContain("Parish as they wrote it.");
     expect(body).not.toHaveProperty("status");
     expect(readClergyRequest()).toEqual({ state: "sent" });
     // Sent is sent: the end of the questions again asks nothing more.

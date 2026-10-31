@@ -1148,6 +1148,7 @@
   "onboard.clergy.otherName": "Nazwa twojej jurysdykcji",
   "onboard.clergy.parishTitle": "W jakiej parafii posługujesz?",
   "onboard.clergy.parishBody": "Szukaj wśród parafii prawosławnych w Stanach Zjednoczonych według nazwy, miasta lub stanu.",
+  "onboard.clergy.parishWrite": "Wpisz nazwę swojej parafii oraz jej miasto i stan.",
   "onboard.clergy.parishSearch": "Nazwa, miasto lub stan",
   "onboard.clergy.notListed": "Mojej parafii nie ma na liście",
   "onboard.clergy.parishPlace": "Miasto i stan",

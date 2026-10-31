@@ -1141,6 +1141,7 @@
   "onboard.clergy.otherName": "Numele jurisdicției tale",
   "onboard.clergy.parishTitle": "La ce parohie slujești?",
   "onboard.clergy.parishBody": "Caută parohiile ortodoxe din Statele Unite după nume, oraș sau stat.",
+  "onboard.clergy.parishWrite": "Scrie numele parohiei tale, împreună cu orașul și statul ei.",
   "onboard.clergy.parishSearch": "Nume, oraș sau stat",
   "onboard.clergy.notListed": "Parohia mea nu este în listă",
   "onboard.clergy.parishPlace": "Oraș și stat",

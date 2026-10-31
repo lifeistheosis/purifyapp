@@ -1146,6 +1146,7 @@
   "onboard.clergy.otherName": "Название вашей юрисдикции",
   "onboard.clergy.parishTitle": "На каком приходе вы служите?",
   "onboard.clergy.parishBody": "Ищите православные приходы Соединённых Штатов по названию, городу или штату.",
+  "onboard.clergy.parishWrite": "Напишите название вашего прихода, а также его город и штат.",
   "onboard.clergy.parishSearch": "Название, город или штат",
   "onboard.clergy.notListed": "Моего прихода нет в списке",
   "onboard.clergy.parishPlace": "Город и штат",

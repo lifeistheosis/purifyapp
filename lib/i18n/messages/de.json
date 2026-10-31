@@ -1122,6 +1122,7 @@
   "onboard.clergy.otherName": "Name deiner Jurisdiktion",
   "onboard.clergy.parishTitle": "In welcher Gemeinde dienst du?",
   "onboard.clergy.parishBody": "Durchsuche die orthodoxen Gemeinden der Vereinigten Staaten nach Name, Stadt oder Bundesstaat.",
+  "onboard.clergy.parishWrite": "Schreib den Namen deiner Gemeinde, dazu Stadt und Bundesstaat.",
   "onboard.clergy.parishSearch": "Name, Stadt oder Bundesstaat",
   "onboard.clergy.notListed": "Meine Gemeinde ist nicht dabei",
   "onboard.clergy.parishPlace": "Stadt und Bundesstaat",

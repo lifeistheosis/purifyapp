@@ -1122,6 +1122,7 @@
   "onboard.clergy.otherName": "Nama yurisdiksi Anda",
   "onboard.clergy.parishTitle": "Di paroki mana Anda melayani?",
   "onboard.clergy.parishBody": "Cari paroki Ortodoks di Amerika Serikat menurut nama, kota, atau negara bagian.",
+  "onboard.clergy.parishWrite": "Tuliskan nama paroki Anda, beserta kota dan negara bagiannya.",
   "onboard.clergy.parishSearch": "Nama, kota, atau negara bagian",
   "onboard.clergy.notListed": "Paroki saya tidak ada di daftar",
   "onboard.clergy.parishPlace": "Kota dan negara bagian",
