@@ -29,6 +29,7 @@ import { type Place, tallyCountries, tallyRegions, type Visit } from "@/lib/admi
 import {
   appsLine,
   liveFigures,
+  mapTitle,
   PERIODS,
   PERIOD_WORD,
   periodSums,
@@ -392,7 +393,7 @@ export function TrafficOverviewTab() {
         />
       </div>
 
-      <MapCard period={period} stats={stats.data} title={`Where readers are ${PERIOD_WORD[period]}`} />
+      <MapCard period={period} stats={stats.data} title={mapTitle(period)} />
 
       <div className="grid gap-3.5 lg:grid-cols-2">
         <Panel title="Where website visits came from" action={<PanelLink onClick={() => open("sources")}>Sources</PanelLink>} pad="px-4 pt-3.5 pb-2.5">

@@ -18,13 +18,18 @@ export const PERIODS: readonly (readonly [Period, string])[] = [
   ["30d", "30 days"],
 ];
 
-/** What a period is called in a sentence: "visits now", "no visits today". */
+/** What a period is called in a sentence: "visits now", "no visits today", "most visits over 7 days". */
 export const PERIOD_WORD: Record<Period, string> = {
   now: "now",
   "1d": "today",
-  "7d": "in 7 days",
-  "30d": "in 30 days",
+  "7d": "over 7 days",
+  "30d": "over 30 days",
 };
+
+/** The map's heading for a period: where readers are now or today, where they were over days. */
+export function mapTitle(period: Period): string {
+  return period === "now" || period === "1d" ? `Where readers are ${PERIOD_WORD[period]}` : `Where readers were, the last ${period === "7d" ? 7 : 30} days`;
+}
 
 export type Tally = { key: string; label: string; count: number };
 

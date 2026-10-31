@@ -1,6 +1,6 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
-import { appsLine, liveFigures, periodSums, share, topSearch } from "../trafficFigures";
+import { appsLine, liveFigures, mapTitle, PERIOD_WORD, periodSums, share, topSearch } from "../trafficFigures";
 
 /**
  * /api/admin/traffic/map over sessions held in memory, and Traffic's four
@@ -116,6 +116,13 @@ describe("/api/admin/traffic/map", () => {
 });
 
 describe("Traffic's four numbers", () => {
+  it("names the period the way a sentence reads it, and the map's heading with it", () => {
+    expect(PERIOD_WORD["7d"]).toBe("over 7 days");
+    expect(mapTitle("1d")).toBe("Where readers are today");
+    expect(mapTitle("now")).toBe("Where readers are now");
+    expect(mapTitle("30d")).toBe("Where readers were, the last 30 days");
+  });
+
   it("says a share in words, never a bare zero for something that happened", () => {
     expect(share(31, 100)).toBe("31%");
     expect(share(1, 400)).toBe("under 1%");
