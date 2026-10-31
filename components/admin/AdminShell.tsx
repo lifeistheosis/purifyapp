@@ -61,8 +61,7 @@ import { DropTab } from "./tabs/DropTab";
 import { ShopHubTab } from "./tabs/ShopHubTab";
 import { EikonBoxTab } from "./tabs/EikonBoxTab";
 import { CommunityTab } from "./tabs/CommunityTab";
-import { TrafficHubTab } from "./tabs/TrafficHubTab";
-import { LiveTab } from "./tabs/LiveTab";
+import { ScreensView, TrafficMapTab, TrafficOverviewTab } from "./tabs/TrafficViews";
 import { SourcesTab } from "./tabs/SourcesTab";
 import { ContentTab } from "./tabs/ContentTab";
 import { PatchNotesTab } from "./tabs/PatchNotesTab";
@@ -75,7 +74,6 @@ import { SourcingTab } from "./tabs/SourcingTab";
 import { HomeTab } from "./tabs/HomeTab";
 import { UsageTab } from "./tabs/UsageTab";
 import { OnboardingTab } from "./tabs/OnboardingTab";
-import { ScreensTab } from "./tabs/ScreensTab";
 import { Segmented } from "./daily/parts";
 import {
   ADMIN_PAGE_GROUPS,
@@ -194,11 +192,11 @@ const COMPONENTS: Partial<Record<TabId, ComponentType>> = {
   drop: DropTab,
   push: PushTab,
   email: EmailTab,
-  traffic: TrafficHubTab,
-  "traffic-map": LiveTab,
+  traffic: TrafficOverviewTab,
+  "traffic-map": TrafficMapTab,
   sources: SourcesTab,
   onboarding: OnboardingTab,
-  screens: ScreensTab,
+  screens: ScreensView,
   goals: GoalsTab,
   calendar: CalendarTab,
   content: ContentTab,

@@ -11,7 +11,7 @@
  * numbers down.
  */
 
-import type { CSSProperties, ReactNode } from "react";
+import { useId, type CSSProperties, type ReactNode } from "react";
 
 import { SENSITIVE } from "@/lib/admin/streamer";
 
@@ -336,6 +336,69 @@ export function Spark({
           boxShadow: "var(--adm-lit-soft)",
         }}
       />
+    </div>
+  );
+}
+
+/**
+ * A period as a line over a soft area, the period before it dashed, the last
+ * point lit, and three marks under it (its first day, its middle, today).
+ * The line stretches with its card; the marks and the point are HTML so they
+ * keep their size.
+ */
+export function TrendLine({
+  values,
+  before,
+  marks,
+  height = 150,
+  label,
+}: {
+  values: readonly number[];
+  before?: readonly number[];
+  marks: [string, string, string];
+  height?: number;
+  label: string;
+}) {
+  const W = 600;
+  // Letters and digits only: the id goes into url(#...), where React's own marks are awkward.
+  const gid = `adm-trend-${useId().replace(/[^a-zA-Z0-9]/g, "")}`;
+  if (values.length < 2) return <Quiet className="py-6">Not enough days to draw yet.</Quiet>;
+  const max = Math.max(1, ...values, ...(before ?? [])) * 1.12;
+  const x = (i: number, n: number) => (i * W) / Math.max(1, n - 1);
+  const y = (v: number) => height - (v / max) * height;
+  const path = (a: readonly number[]) => a.map((v, i) => `${i ? "L" : "M"}${x(i, a.length).toFixed(1)},${y(v).toFixed(1)}`).join("");
+  const last = values.length - 1;
+  return (
+    <div>
+      <div className="relative" style={{ height }}>
+        <svg role="img" aria-label={label} width="100%" height={height} viewBox={`0 0 ${W} ${height}`} preserveAspectRatio="none" className="block overflow-visible">
+          <defs>
+            <linearGradient id={gid} x1="0" x2="0" y1="0" y2="1">
+              <stop offset="0" stopColor="var(--adm-ink)" stopOpacity={0.17} />
+              <stop offset="1" stopColor="var(--adm-ink)" stopOpacity={0} />
+            </linearGradient>
+          </defs>
+          {[1, 2, 3].map((k) => (
+            <line key={k} x1={0} x2={W} y1={(height * k) / 4} y2={(height * k) / 4} stroke="var(--chart-grid)" vectorEffect="non-scaling-stroke" />
+          ))}
+          <line x1={0} x2={W} y1={height} y2={height} stroke="var(--adm-line-strong)" vectorEffect="non-scaling-stroke" />
+          {before && before.length > 1 ? (
+            <path d={path(before)} fill="none" stroke="var(--adm-ink-3)" strokeWidth={1.3} strokeDasharray="4 4" vectorEffect="non-scaling-stroke" />
+          ) : null}
+          <path d={`${path(values)}L${x(last, values.length)},${height}L0,${height}Z`} fill={`url(#${gid})`} />
+          <path d={path(values)} fill="none" stroke="var(--adm-ink)" strokeWidth={1.8} strokeLinejoin="round" vectorEffect="non-scaling-stroke" />
+        </svg>
+        <span
+          aria-hidden
+          className="absolute h-[7px] w-[7px] -translate-x-1/2 -translate-y-1/2 rounded-full"
+          style={{ left: "100%", top: y(values[last]), background: "var(--adm-ink)", boxShadow: "var(--adm-lit-soft)" }}
+        />
+      </div>
+      <div aria-hidden className="mt-1.5 flex justify-between font-mono text-[10.5px]" style={{ color: "var(--adm-ink-3)" }}>
+        {marks.map((m, i) => (
+          <span key={i}>{m}</span>
+        ))}
+      </div>
     </div>
   );
 }
