@@ -46,6 +46,9 @@ export function Skeleton({
   return (
     <div
       aria-hidden
+      // A page still arriving: the update tour waits while one is drawn
+      // (lib/whatsNew/tourDom.ts, pageArriving).
+      data-skeleton=""
       style={style}
       className={cn(WEIGHT[weight], rounded, "animate-pulse", className)}
     />

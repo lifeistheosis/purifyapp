@@ -192,14 +192,19 @@ function standing(el: Element): boolean {
   return style.visibility !== "hidden" && parseFloat(style.opacity) > 0;
 }
 
-/** Measures what the band is made of, now. */
-export function readScreen(): Screen {
+/**
+ * Measures what the band is made of, now. `around` leaves out the bar that
+ * holds it (or that it holds): the update tour lights Today's magnifier in
+ * Today's own bar, and the mini player is a piece at the foot itself.
+ */
+export function readScreen(around?: Element | null): Screen {
   const height = window.innerHeight;
   const insets = phoneInsets();
   const marked = document.querySelectorAll(`[${SCREEN_EDGE_ATTR}]`);
   if (marked.length === 0) return { height, insets, edges: null, cssFoot: cssFoot() };
   const edges = { top: [] as Span[], bottom: [] as Span[] };
   marked.forEach((el) => {
+    if (around && (el.contains(around) || around.contains(el))) return;
     const r = el.getBoundingClientRect();
     if (r.width <= 0 || r.height <= 0 || !standing(el)) return;
     (el.getAttribute(SCREEN_EDGE_ATTR) === "top" ? edges.top : edges.bottom).push({ top: r.top, bottom: r.bottom });
@@ -207,10 +212,10 @@ export function readScreen(): Screen {
   return { height, insets, edges, cssFoot: 0 };
 }
 
-/** The part of the screen the reader can see the page through, now. */
-export function visibleBand(): Span {
+/** The part of the screen the reader can see the page through, now (`around`: as readScreen). */
+export function visibleBand(around?: Element | null): Span {
   if (typeof window === "undefined") return { top: 0, bottom: 0 };
-  return bandOf(readScreen());
+  return bandOf(readScreen(around));
 }
 
 /**

@@ -15,10 +15,12 @@
 // A STEP names a page, an element on it and two catalog keys. The element is
 // the one carrying data-tour="<target>". The tour goes to the page with the
 // app's own client navigation (so the export and the apps move offline), waits
-// for the element, and lights it. When the element does not come (a screen not
-// in this build, or not drawn for this reader: the mini player with nothing
-// loaded), the step is passed over after a short wait, and the tour is never
-// stuck on it.
+// for the element, and lights it. It waits for the page rather than for a
+// clock: while the page is still arriving (its skeleton, its parts drawn one
+// after another) the tour waits, and only a page that has come and gone still
+// without the element (a screen not in this build, or one not drawn for this
+// reader) is passed over, so the tour is never stuck on it
+// (./tourDom.ts, lookVerdict).
 //
 // No React and no DOM here, so all of it is tested in node
 // (lib/whatsNew/__tests__/tour.test.ts).
@@ -33,13 +35,13 @@ export type TourStep = {
   id: string;
   /**
    * The page the step lives on, as the app's own address ("/theology"). Null
-   * for something drawn on every page (the mini player): it is looked for on
-   * the page the reader is already on.
+   * for something drawn on every page (a player): it is looked for on the
+   * page the reader is already on.
    */
   route: string | null;
   /** The element to light: the one carrying data-tour="<target>". */
   target: string;
-  /** Catalog keys: a title and one line. */
+  /** Catalog keys: a title, and the stop's one line of the story. */
   title: string;
   body: string;
   /**
@@ -69,74 +71,74 @@ export type Tour = {
 };
 
 /**
- * 1.8. In the order a reader meets them: Today first (the one search, a
- * saint's words as a picture, the player's pill), then the library (the
- * Theology path, the saint web, the atlas, Chants), then Community and
- * Settings.
+ * 1.8, told as the story of 1.8 (the owner's pick B of sheet r3-14,
+ * 2026-10-31): the eight stops the sheet draws, in its order, each a page of
+ * the story. One search, the saint web, Community's two rooms, the New
+ * Testament read aloud, the Theology path, the atlas, a saint's words as a
+ * picture, and Settings. Chants are left out until their rights are settled,
+ * as the sheet leaves them out; the player's pill is told within the New
+ * Testament's page, as the sheet tells it, so no stop depends on something
+ * playing.
  *
- * Three anchors are placed after round 3's last builds merge, because their
- * screens are being built beside this one: "search" (Today's magnifier),
- * "quote-picture" (Today's saint and his words) and "theology-path" (the
- * Theology path). Until then those three steps are `awaiting`: passed over
- * without looking, and left out of the pop-up.
+ * `body` is the stop's line of the story (tour.story.*), and the title page
+ * names the first three, as the sheet's title page does.
  */
 const TOUR_1_8: Tour = {
   version: "1.8",
   name: "whatsnew.highlights.eyebrow",
   line: "whatsnew.highlights.title",
-  highlights: ["theology", "search", "quote-picture"],
+  highlights: ["search", "saint-web", "community"],
   steps: [
     {
       id: "search",
       route: "/",
       target: "search",
       title: "tour.step.search.title",
-      body: "tour.step.search.body",
-    },
-    {
-      id: "quote-picture",
-      route: "/",
-      target: "quote-picture",
-      title: "tour.step.quote.title",
-      body: "tour.step.quote.body",
-    },
-    {
-      id: "mini-player",
-      route: null,
-      target: "mini-player",
-      title: "tour.step.player.title",
-      body: "tour.step.player.body",
-    },
-    {
-      id: "theology",
-      route: "/theology",
-      target: "theology-path",
-      title: "tour.step.theology.title",
-      body: "tour.step.theology.body",
+      body: "tour.story.search",
     },
     {
       id: "saint-web",
       route: "/saints/john-chrysostom",
       target: "saint-web",
       title: "tour.step.saintWeb.title",
-      body: "tour.step.saintWeb.body",
+      body: "tour.story.saintWeb",
     },
-    { id: "atlas", route: "/history", target: "atlas", title: "history.map.title", body: "tour.step.atlas.body" },
-    { id: "chants", route: "/chants", target: "chants", title: "nav.discoverMenu.chants", body: "tour.step.chants.body" },
     {
       id: "community",
       route: "/community",
       target: "community-halves",
       title: "tour.step.community.title",
-      body: "tour.step.community.body",
+      body: "tour.story.community",
       tryIt: true,
+    },
+    {
+      id: "listen",
+      route: "/bible/matthew/1",
+      target: "listen",
+      title: "tour.step.listen.title",
+      body: "tour.story.listen",
+    },
+    {
+      id: "theology",
+      route: "/theology",
+      target: "theology-path",
+      title: "tour.step.theology.title",
+      body: "tour.story.theology",
+    },
+    { id: "atlas", route: "/history", target: "atlas", title: "history.map.title", body: "tour.story.atlas" },
+    {
+      id: "quote-picture",
+      route: "/",
+      target: "quote-picture",
+      title: "tour.step.quote.title",
+      body: "tour.story.quote",
     },
     {
       id: "settings",
       route: "/settings",
       target: "settings-panels",
       title: "tour.step.settings.title",
-      body: "tour.step.settings.body",
+      body: "tour.story.settings",
     },
   ],
 };

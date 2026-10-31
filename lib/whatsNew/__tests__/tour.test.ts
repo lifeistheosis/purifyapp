@@ -67,18 +67,22 @@ describe("the 1.8 tour as data", () => {
     expect(tourFor(CURRENT_VERSION)?.version).toBe(featureRelease(CURRENT_VERSION));
   });
 
-  it("names each thing the owner listed, in the order a reader meets them", () => {
+  it("tells the eight stops of the story of 1.8, in the order the owner's pick draws them", () => {
+    // Sheet r3-14, direction B (his pick, 2026-10-31): Chants left out until
+    // their rights are settled, the player's pill told within the New
+    // Testament's page.
     expect(TOUR.steps.map((s) => s.id)).toEqual([
       "search",
-      "quote-picture",
-      "mini-player",
-      "theology",
       "saint-web",
-      "atlas",
-      "chants",
       "community",
+      "listen",
+      "theology",
+      "atlas",
+      "quote-picture",
       "settings",
     ]);
+    // The title page names the first three, as the sheet's does.
+    expect(TOUR.highlights).toEqual(["search", "saint-web", "community"]);
   });
 
   it("gives every step a unique id and target, and every release a unique version", () => {
@@ -96,8 +100,8 @@ describe("the 1.8 tour as data", () => {
       expect(s.route, s.id).toMatch(/^\/[a-z0-9/-]*$/);
       expect(s.route.endsWith("/") && s.route !== "/", s.id).toBe(false);
     }
-    // The mini player is drawn on every page: it is looked for where the reader is.
-    expect(TOUR.steps.find((s) => s.id === "mini-player")?.route).toBeNull();
+    // Every stop has a page of its own: none waits on something being played.
+    for (const s of TOUR.steps) expect(s.route, s.id).not.toBeNull();
   });
 
   it("goes to pages that exist in this build", () => {
@@ -143,7 +147,7 @@ describe("the 1.8 tour as data", () => {
 
 describe("the tour's words", () => {
   const keys = [TOUR.name, TOUR.line, ...TOUR.steps.flatMap((s) => [s.title, s.body])];
-  const own = ["tour.offer.see", "tour.end.title", "tour.end.body", "tour.replay"];
+  const own = ["tour.offer.see", "tour.close.title", "tour.close.body", "tour.replay"];
   const all = [...new Set([...keys, ...own])];
   const newKeys = all.filter((k) => k.startsWith("tour."));
 
@@ -161,6 +165,18 @@ describe("the tour's words", () => {
       const copied = newKeys.filter((k) => CATALOGS[lang][k] === CATALOGS.en[k]);
       expect(copied, lang).toEqual([]);
     }
+  });
+
+  it("keep the close's release number and its bell in every language", () => {
+    for (const lang of LANGS) {
+      expect(CATALOGS[lang]["tour.close.title"], lang).toContain("{version}");
+      expect(CATALOGS[lang]["tour.close.body"].split("{bell}").length, lang).toBe(2);
+    }
+  });
+
+  it("tell each stop's line of the story, every one its own", () => {
+    for (const s of TOUR.steps) expect(s.body.startsWith("tour.story."), s.id).toBe(true);
+    expect(new Set(TOUR.steps.map((s) => s.body)).size).toBe(TOUR.steps.length);
   });
 
   it("are short: a title and one line for each step", () => {
