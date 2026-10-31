@@ -12,7 +12,31 @@ is listed in the next /whats-new letter."
 
 ## Owed
 
-Nothing owed.
+All three are owed by the 1.8 note. Written down on 2026-10-30, after the
+fact: the note of 2026-10-27 came before the second and third, and none of the
+three was entered here on its day.
+
+- **2026-10-27, the welcome questions are counted.** On the privacy page since
+  that day (`260f2f04`, live with `99edb873` and `74b91f9d`): each screen of
+  the welcome questions reached, each answer, a skip, a finish, and a note from
+  the reader's own device on the second, seventh and thirtieth day that they
+  came back. Totals in `analytics_events`: no session id, no account, no
+  device id, the day and not the time.
+- **The screens are counted (live with the 1.8 push).** The paragraph is on
+  `release/1.8` (privacy page, "The screens are counted in the same table"):
+  when the app is put away or the page closed, one row says what kind of
+  screen was showing and roughly how long, and a device says once that it
+  first opened Purify and once each when it comes back a day, a week and a
+  month later. The sender, `lib/analytics/screenCount.ts`, is not on `main`
+  before that push, so the counting and the paragraph go live together.
+- **The visit data is kept (live with the 1.8 push).** The page said a
+  scheduled job deleted anonymous session and pageview rows after 90 days. No
+  such job ever ran, and the owner chose the words over starting one
+  (2026-10-29, `496e863f`): the rows are kept, with no scheduled deletion.
+
+The draft of the 1.8 note that says all three is in
+`Homebase/boards/purify-master/r18/release-1.8/PATCH-NOTE.md`, under Bugs and
+Maintenance. When the note is published, move these to "Said" with its words.
 
 ## Said
 
