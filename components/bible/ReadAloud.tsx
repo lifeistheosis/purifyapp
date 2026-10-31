@@ -70,7 +70,8 @@ export function ListenButton({ book, chapter, bookName }: { book: string; chapte
 
   return (
     // The word on it says what a tap does, so it carries no pressed state.
-    <ReaderPill onClick={start} className="shrink-0">
+    // What the release's tour lights for the New Testament read aloud (lib/whatsNew/tour.ts).
+    <ReaderPill onClick={start} className="shrink-0" data-tour="listen">
       {playing ? (
         <Pause size={15} className="shrink-0" />
       ) : loaded ? (
@@ -121,6 +122,8 @@ export function ReadAloudPillButton({ book, chapter, title }: { book: string; ch
     <button
       type="button"
       data-read-aloud-play
+      // What the release's tour lights for the New Testament read aloud (lib/whatsNew/tour.ts).
+      data-tour="listen"
       onClick={toggle}
       aria-label={word}
       className="reader-lit tap-press hit-44 ms-1 inline-flex h-10 shrink-0 items-center justify-center gap-1.5 rounded-pill bg-paper px-3 font-sans text-ui font-semibold text-night focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-paper min-[390px]:px-4"

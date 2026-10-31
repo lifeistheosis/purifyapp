@@ -130,8 +130,6 @@ function Featured({ row, withVersions }: { row: ChantIndexRow; withVersions: boo
         className="press-card mx-auto block w-[min(300px,76vw)]"
         tabIndex={-1}
         aria-hidden
-        // What the release's tour lights for Chants (lib/whatsNew/tour.ts).
-        data-tour="chants"
       >
         <ChantCover
           cover={row.cover}
