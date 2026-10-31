@@ -61,7 +61,7 @@ describe("the saint's band picture", () => {
       kind: "cover",
       src: "/covers/authors/john-chrysostom.v1.jpg",
       avif: "/covers/authors/john-chrysostom.v1.avif",
-      fallback: "/saints/icons/john-chrysostom.jpg",
+      fallback: "/saints/icons/john-chrysostom.v2.jpg",
       focusY: 20,
     });
   });
@@ -70,7 +70,7 @@ describe("the saint's band picture", () => {
     const pic = saintPicture(brief("john-chrysostom"), true);
     expect(pic).toMatchObject({ kind: "cover", src: `${SITE_URL}/covers/authors/john-chrysostom.v1.jpg` });
     // The icon he falls back to is the app's own, there with no signal.
-    expect(pic?.kind === "cover" ? pic.fallback : null).toBe("/saints/icons/john-chrysostom.jpg");
+    expect(pic?.kind === "cover" ? pic.fallback : null).toBe("/saints/icons/john-chrysostom.v2.jpg");
   });
 
   it("is his cover alone when the app carries no icon of him", () => {
@@ -94,6 +94,9 @@ describe("the saint's band picture", () => {
 // the face is on each cover and which way he looks, so the Portrait stands
 // him on the side he looks from and the Seal is cut round his face.
 describe("his face on the picture of his words", () => {
+  // The picture the app carries for St John, for when his cover cannot be had (sheet r3-23, card 1).
+  const CHRYSOSTOM_MOSAIC = { src: "/saints/icons/john-chrysostom.v2.jpg", point: [0.53, 0.39], looks: "ahead" };
+
   it("is placed on every cover Today knows, and on no other", () => {
     expect(Object.keys(COVER_FACES).sort()).toEqual(Object.keys(SAINT_FACES).sort());
     for (const [slug, [x, y, looks]] of Object.entries(COVER_FACES)) {
@@ -110,7 +113,7 @@ describe("his face on the picture of his words", () => {
 
   it("is his cover, asked of the website in the apps, where it is", () => {
     const chrysostom = brief("john-chrysostom");
-    expect(quoteFace(chrysostom, false)).toEqual({ src: "/covers/authors/john-chrysostom.v1.jpg", point: [0.3, 0.25], looks: "left", fallback: null });
+    expect(quoteFace(chrysostom, false)).toEqual({ src: "/covers/authors/john-chrysostom.v1.jpg", point: [0.3, 0.25], looks: "left", fallback: CHRYSOSTOM_MOSAIC });
     expect(quoteFace(chrysostom, true)?.src).toBe(`${SITE_URL}/covers/authors/john-chrysostom.v1.jpg`);
   });
 
@@ -119,8 +122,9 @@ describe("his face on the picture of his words", () => {
       expect(ICON_RIGHTS[file], file).toBeDefined();
       expect(MISSING_ATTRIBUTION, file).not.toContain(file);
     }
-    // St John Chrysostom's carried icon is still in the debt: with no signal his picture has no face.
-    expect(quoteFace(brief("john-chrysostom"), true)?.fallback).toBeNull();
+    // St John Chrysostom's carried icon is the Hosios Loukas mosaic since sheet r3-23, its rights
+    // recorded: with no signal it is his face, never the cross.
+    expect(quoteFace(brief("john-chrysostom"), true)?.fallback).toEqual(CHRYSOSTOM_MOSAIC);
     // St Cyprian has no cover; his icon's rights are recorded, so it is his face.
     expect(quoteFace(brief("cyprian-of-carthage"), true)).toEqual({ src: "/saints/icons/cyprian-of-carthage.jpg", point: [0.49, 0.32], looks: "ahead", fallback: null });
     // A saint with neither a cover nor a recorded icon has none.
@@ -129,9 +133,9 @@ describe("his face on the picture of his words", () => {
     expect(quoteFace(null, false)).toBeNull();
   });
 
-  it("is known for most of the saints whose words Today shows", () => {
-    const faced = SAINT_WORDS_SLUGS.filter((slug) => quoteFace(brief(slug), false));
-    expect(faced.length).toBeGreaterThanOrEqual(15);
+  it("is known for every saint whose words Today shows but St Alexander of Alexandria, whose words keep the lit cross", () => {
+    const faceless = SAINT_WORDS_SLUGS.filter((slug) => !quoteFace(brief(slug), false));
+    expect(faceless).toEqual(["alexander-of-alexandria"]);
   });
 });
 
@@ -207,7 +211,7 @@ describe("the speaker on a band", () => {
 describe("the Fathers beside their sayings", () => {
   const ANTONY = { src: "/covers/authors/anthony-the-great.v1.jpg", point: [0.48, 0.3], looks: "right", fallback: null };
   const MOSES = { src: "/saints/icons/moses-the-black.v2.jpg", point: [0.49, 0.27], looks: "ahead", seal: [0.49, 0.27, 0.41], fallback: null };
-  const SINAI = { src: "/saints/icons/fathers-of-sinai.jpg", point: [0.45, 0.31], looks: "ahead", seal: [0.45, 0.31, 0.27], fallback: null };
+  const SINAI = { src: "/saints/icons/fathers-of-sinai.jpg", point: [0.46, 0.29], looks: "ahead", seal: [0.46, 0.29, 0.29], fallback: null };
 
   it("is St Antony's cover beside each of his sayings, the one Abba Isaac tells among them", () => {
     const his = allSayings().filter((s) => s.speaker === "anthony-the-great");
@@ -274,5 +278,46 @@ describe("the Fathers beside their sayings", () => {
     expect(sayingFace(allSayings()[0], false, own)).toEqual(ANTONY);
     // An icon in the rights debt is no face, whatever an entry says: never a stand-in.
     expect(sayingFace(moses, false, { "Abba Moses": { icon: "isaac-the-syrian.jpg" } })).toBeNull();
+  });
+});
+
+// The faces for the saints' words (round 3 sheet r3-23, the owner's picks):
+// each the picture his own page shows too, cut and placed as the sheet cut it.
+describe("the faces for the saints' words", () => {
+  const PICKS = {
+    "john-chrysostom": "john-chrysostom.v2.jpg",
+    "cyril-of-jerusalem": "cyril-of-jerusalem.v2.jpg",
+    "photius-the-great": "photius-the-great.v2.jpg",
+    "justinian-the-great": "justinian-the-great.v2.jpg",
+  } as const;
+
+  it("is each saint's own picture on his page, opened, public domain and recorded, in place of the file with no source", () => {
+    for (const [slug, file] of Object.entries(PICKS)) {
+      expect(brief(slug).iconUrl, slug).toBe(`/saints/icons/${file}`);
+      const row = ICON_RIGHTS[file];
+      expect(row?.status, slug).toBe("verified");
+      expect(row?.license, slug).toBe("Public domain");
+      expect(row && "evidenceUrl" in row ? (row.evidenceUrl ?? "").startsWith("https://commons.wikimedia.org/wiki/File:") : false, slug).toBe(true);
+      expect(SHAREABLE_ICONS.has(file), slug).toBe(true);
+      expect(fs.existsSync(path.join(process.cwd(), "public/saints/icons", file.replace(".v2.jpg", ".jpg"))), `${slug}: the old file is gone`).toBe(false);
+    }
+  });
+
+  it("stands beside the words of St Cyril, St Photius and St Justinian, the face and its circle as the sheet cut them", () => {
+    expect(quoteFace(brief("cyril-of-jerusalem"), false)).toEqual({ src: "/saints/icons/cyril-of-jerusalem.v2.jpg", point: [0.42, 0.32], looks: "ahead", seal: [0.42, 0.32, 0.49], fallback: null });
+    expect(quoteFace(brief("photius-the-great"), false)).toEqual({ src: "/saints/icons/photius-the-great.v2.jpg", point: [0.52, 0.3], looks: "ahead", seal: [0.52, 0.3, 0.32], fallback: null });
+    expect(quoteFace(brief("justinian-the-great"), false)).toEqual({ src: "/saints/icons/justinian-the-great.v2.jpg", point: [0.5, 0.27], looks: "ahead", seal: [0.5, 0.27, 0.51], fallback: null });
+    // Carried, so the same with no signal.
+    expect(quoteFace(brief("photius-the-great"), true)?.src).toBe("/saints/icons/photius-the-great.v2.jpg");
+  });
+
+  it("keeps St John Chrysostom's streamed cover online, and the mosaic for when it cannot be had", () => {
+    const face = quoteFace(brief("john-chrysostom"), true);
+    expect(face?.src).toBe(`${SITE_URL}/covers/authors/john-chrysostom.v1.jpg`);
+    expect(face?.fallback).toEqual({ src: "/saints/icons/john-chrysostom.v2.jpg", point: [0.53, 0.39], looks: "ahead" });
+  });
+
+  it("keeps the lit cross for St Alexander of Alexandria, whose own icon has no recorded rights", () => {
+    expect(quoteFace(brief("alexander-of-alexandria"), false)).toBeNull();
   });
 });

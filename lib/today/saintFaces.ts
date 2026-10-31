@@ -189,6 +189,7 @@ export const SHAREABLE_ICONS: ReadonlySet<string> = new Set([
   "arsenius-the-great.jpg",
   "basil-the-blessed.jpg",
   "cyprian-of-carthage.jpg",
+  "cyril-of-jerusalem.v2.jpg",
   "dalmatus-of-constantinople.jpg",
   "daniel-the-stylite.jpg",
   "diomedes-the-physician.jpg",
@@ -200,6 +201,8 @@ export const SHAREABLE_ICONS: ReadonlySet<string> = new Set([
   "herman-of-alaska.jpg",
   "hilarion-the-great.jpg",
   "job-of-pochaev.jpg",
+  "john-chrysostom.v2.jpg",
+  "justinian-the-great.v2.jpg",
   "lawrence-the-archdeacon.jpg",
   "lupus-of-thessaloniki.jpg",
   "maccabean-martyrs.jpg",
@@ -214,6 +217,7 @@ export const SHAREABLE_ICONS: ReadonlySet<string> = new Set([
   "peter-of-moscow.jpg",
   "phanourios-the-newly-revealed.jpg",
   "photius-and-anicetus.jpg",
+  "photius-the-great.v2.jpg",
   "pimen-the-great.jpg",
   "prophet-micah.jpg",
   "prophet-samuel.jpg",
@@ -235,15 +239,21 @@ export const SHAREABLE_ICONS: ReadonlySet<string> = new Set([
  * circle's width as a share of the picture's (the seal of its picture). Any
  * other is a standing figure, his head near its top.
  *
- * The two of 2026-10-31 are the owner's picks of round 3 sheet r3-22 (cards 2
- * and 6), each point and circle as the sheet cut them: St Moses the
- * Ethiopian's fresco at Dionysiou, his face; the Fathers of Sinai, the three
- * monks at the middle of their first row.
+ * Those of 2026-10-31 are the owner's picks of round 3, each point and circle
+ * as the sheet cut them, in the files as cut: of sheet r3-22, St Moses the
+ * Ethiopian's fresco at Dionysiou, his face, and the Fathers of Sinai, the
+ * three monks at the middle of their first row; of sheet r3-23, the faces for
+ * the words of St John Chrysostom (the mosaic his band shows when his streamed
+ * cover cannot be had), St Cyril of Jerusalem, St Photius and St Justinian.
  */
 const ICON_FACES: Readonly<Record<string, readonly [number, number, number?]>> = {
   "cyprian-of-carthage.jpg": [0.49, 0.32],
   "moses-the-black.v2.jpg": [0.49, 0.27, 0.41],
-  "fathers-of-sinai.jpg": [0.45, 0.31, 0.27],
+  "fathers-of-sinai.jpg": [0.46, 0.29, 0.29],
+  "john-chrysostom.v2.jpg": [0.53, 0.39, 0.78],
+  "cyril-of-jerusalem.v2.jpg": [0.42, 0.32, 0.49],
+  "photius-the-great.v2.jpg": [0.52, 0.3, 0.32],
+  "justinian-the-great.v2.jpg": [0.5, 0.27, 0.51],
 };
 
 /** A carried icon whose rights are recorded, as a face: its point, its circle where it has one, facing us. */

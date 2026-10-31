@@ -1613,10 +1613,11 @@ await section(23, async () => {
     // with his two readings folded into one line and Read all and Listen at
     // its foot, the Nativity path at the fast's foot in the week before the
     // fast, and Pascha's count on the date line. His face is his cover
-    // portrait on the website; this walk has no network, and the app carries
-    // no icon of his whose rights are recorded, so the band must stand without
-    // a face, the lit cross where he would stand, and never a broken picture.
-    await page.waitForFunction(() => document.querySelector('[data-today-band="saint"]')?.getAttribute("data-face") === "none", null, { timeout: 10000 }).catch(() => {});
+    // portrait on the website; this walk has no network, so it must be the
+    // picture the app carries for him, the Hosios Loukas mosaic (round 3
+    // sheet r3-23), placed by its face on the side his cover would stand, and
+    // never a broken picture or the cross.
+    await page.waitForFunction(() => { const img = document.querySelector('[data-today-band="saint"] img[data-face-shown]'); return !!img && img.complete && img.naturalWidth > 0 && img.getAttribute("src") === "/saints/icons/john-chrysostom.v2.jpg"; }, null, { timeout: 10000 }).catch(() => {});
     const bands = await page.evaluate(() => {
       const rail = document.querySelector("[data-church-today]");
       const saint = rail?.querySelector('[data-today-band="saint"]');
@@ -1627,6 +1628,7 @@ await section(23, async () => {
         saint: (saint?.textContent ?? "").replace(/\s+/g, " "),
         words: (saint?.querySelector("[data-band-words]")?.textContent ?? "").trim(),
         face: saint?.getAttribute("data-face") ?? null,
+        shown: (() => { const img = saint?.querySelector("img[data-face-shown]"); return img ? { src: img.getAttribute("src"), ok: img.complete && img.naturalWidth > 0 } : null; })(),
         cross: !!saint?.querySelector("[data-band-cross]"),
         tour: saint?.getAttribute("data-tour") ?? "",
         share: !!saint?.querySelector("[data-saint-share]"),
@@ -1645,7 +1647,10 @@ await section(23, async () => {
     });
     must(bands.order.join(",") === "saint,fast,readings", `The Church today is three bands, the saint, the fast and the readings (${bands.order.join(", ")})`);
     must(bands.saint.includes("St. John Chrysostom") && bands.words === "“Let no one fear death, for the Saviour's death hath set us free.”", `the saint's band names him and sets his words whole (${bands.words.slice(0, 70) || bands.saint.slice(0, 70)})`);
-    must(bands.face === "none" && bands.cross && bands.broken.length === 0, `with no signal his cover cannot be had, so the lit cross stands where he would, and nothing is broken (face: ${bands.face}${bands.broken.length ? "; broken: " + bands.broken.join(", ") : ""})`);
+    must(
+      bands.face === "right" && bands.shown?.src === "/saints/icons/john-chrysostom.v2.jpg" && bands.shown.ok && !bands.cross && bands.broken.length === 0,
+      `with no signal his face is the mosaic the app carries, on his side of the band, and nothing is broken (${bands.shown?.src ?? "no picture"}, side ${bands.face}${bands.broken.length ? "; broken: " + bands.broken.join(", ") : ""})`,
+    );
     must(bands.share && /^\/saints\/john-chrysostom\/paschal-homily\/?#p-1-4$/.test(bands.source) && /^\/saints\/john-chrysostom\/?$/.test(bands.page) && bands.tour === "quote-picture", `with Share as a picture, the source line at the homily (${bands.source || "none"}), his page from the band (${bands.page || "none"}), and the tour's mark on it`);
     must(bands.lit.join(",") === "wine,oil" && bands.struck.join(",") === "fish,meat", `the Friday fast lights wine and oil and strikes fish and meat (${bands.lit.join(", ")} | ${bands.struck.join(", ")})`);
     must(/^\/reading\/paths\/nativity\/?$/.test(bands.path), `the Nativity path stands at the foot of the fast in the week before it (${bands.path || "none"})`);

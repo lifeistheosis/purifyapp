@@ -4,7 +4,7 @@
 
 export const AUTHOR_ICONS: Record<string, string> = {
   // The Cappadocians + Alexandrians + Antiochenes.
-  "St. John Chrysostom": "/saints/icons/john-chrysostom.jpg",
+  "St. John Chrysostom": "/saints/icons/john-chrysostom.v2.jpg",
   "St. Athanasius the Great": "/saints/icons/athanasius-the-great.v2.jpg",
   "St. Athanasius": "/saints/icons/athanasius-the-great.v2.jpg",
   "St. Basil the Great": "/saints/icons/basil-the-great.jpg",

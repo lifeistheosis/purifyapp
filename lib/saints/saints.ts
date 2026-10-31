@@ -553,7 +553,7 @@ export const SAINTS: Saint[] = [
  {
  slug: "john-chrysostom",
  byname: "Golden-Mouth",
- iconUrl: "/saints/icons/john-chrysostom.jpg",
+ iconUrl: "/saints/icons/john-chrysostom.v2.jpg",
  name: "St. John Chrysostom",
  epithet: "Archbishop of Constantinople · Golden-Mouth",
  born: "c. 349 (Antioch)",
@@ -3039,7 +3039,7 @@ export const SAINTS: Saint[] = [
  {
  slug: "cyril-of-jerusalem",
  byname: "Catechist of the Holy City",
- iconUrl: "/saints/icons/cyril-of-jerusalem.jpg",
+ iconUrl: "/saints/icons/cyril-of-jerusalem.v2.jpg",
  name: "St. Cyril of Jerusalem",
  epithet: "Patriarch of Jerusalem · Catechist · Father of the Second Council",
  born: "c. 315 (Jerusalem)",
@@ -3415,7 +3415,7 @@ export const SAINTS: Saint[] = [
  },
  {
  slug: "photius-the-great",
- iconUrl: "/saints/icons/photius-the-great.jpg",
+ iconUrl: "/saints/icons/photius-the-great.v2.jpg",
  byname: "The Great",
  name: "St. Photius the Great",
  epithet: "Patriarch of Constantinople · Pillar of Orthodoxy · Defender of the Procession of the Spirit",
@@ -3697,7 +3697,7 @@ export const SAINTS: Saint[] = [
  {
  slug: "justinian-the-great",
  byname: "The Great",
- iconUrl: "/saints/icons/justinian-the-great.jpg",
+ iconUrl: "/saints/icons/justinian-the-great.v2.jpg",
  name: "St. Justinian the Great",
  epithet: "Emperor of the Romans · Convener of the Fifth Ecumenical Council · Builder of Hagia Sophia",
  born: "c. 482 (Tauresium, Illyria)",

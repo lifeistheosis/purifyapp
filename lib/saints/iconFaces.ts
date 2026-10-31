@@ -5,12 +5,13 @@
  * The web cuts every icon to a circle 20% from its top, which suits an icon of
  * a saint's head and shoulders, most of them. A standing figure is three times
  * as tall as it is wide, and 20% down him is his chest: on his own web, St John
- * Chrysostom's circle showed his vestments and not his face. These are the
- * icons that cut misses, each opened and its face found by eye, as a share
- * from the top for `object-position` (0 is the icon's top edge, 100 its foot).
- * Every other icon keeps 20%. lib/saints/__tests__/iconFaces.test.ts holds
- * that every icon two and a half times as tall as it is wide, or more, has
- * its row here.
+ * Chrysostom's circle showed his vestments and not his face, until his icon
+ * became the Hosios Loukas mosaic of his head and shoulders (round 3 sheet
+ * r3-23), which the 20% cut suits. These are the icons that cut misses, each
+ * opened and its face found by eye, as a share from the top for
+ * `object-position` (0 is the icon's top edge, 100 its foot). Every other icon
+ * keeps 20%. lib/saints/__tests__/iconFaces.test.ts holds that every icon two
+ * and a half times as tall as it is wide, or more, has its row here.
  *
  * Not lib/today/saintFaces.ts: those are the faces in the cover portraits the
  * website streams (lib/reading/coverArt.ts), a different picture cut four wide
@@ -27,8 +28,6 @@ export const ICON_FACES: Readonly<Record<string, number>> = {
   "anthony-the-great.jpg": 2,
   // 118 by 420, standing: the face a seventh down, under the halo.
   "celestine-of-rome.jpg": 2,
-  // 140 by 420, standing: the face a tenth down, his halo near the top edge.
-  "john-chrysostom.jpg": 2,
 };
 
 /** Where to cut an icon for a round frame: its own point, or 20%. */

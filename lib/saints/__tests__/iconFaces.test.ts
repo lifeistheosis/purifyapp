@@ -54,19 +54,20 @@ describe("where the web cuts an icon", () => {
   });
 
   it("shows St John Chrysostom's face: his circle starts within the icon's top tenth", () => {
-    const { width, height } = jpegSize(path.join(DIR, "john-chrysostom.jpg"));
-    const point = iconFace("/saints/icons/john-chrysostom.jpg");
+    // His icon is the Hosios Loukas mosaic of his head and shoulders since round
+    // 3 (sheet r3-23), four wide by five tall, so the 20% every icon keeps suits it.
+    const { width, height } = jpegSize(path.join(DIR, "john-chrysostom.v2.jpg"));
+    const point = iconFace("/saints/icons/john-chrysostom.v2.jpg");
+    expect(point).toBe(WEB_FACE_DEFAULT);
     // object-position: the share of the overflow above the circle.
     const top = ((height - width) * point) / 100 / height;
     expect(top).toBeLessThan(0.1);
-    // The old cut, 20%, started the circle below his face.
-    expect(((height - width) * WEB_FACE_DEFAULT) / 100 / height).toBeGreaterThan(0.12);
   });
 
   it("keeps 20% for every other icon, and reads the file from any address", () => {
     expect(iconFace(undefined)).toBe(WEB_FACE_DEFAULT);
     expect(iconFace("/saints/icons/basil-the-great.jpg")).toBe(20);
-    expect(iconFace("/saints/icons/john-chrysostom.jpg?v=2")).toBe(ICON_FACES["john-chrysostom.jpg"]);
+    expect(iconFace("/saints/icons/celestine-of-rome.jpg?v=2")).toBe(ICON_FACES["celestine-of-rome.jpg"]);
     expect(iconFace("https://purifyapp.net/saints/icons/celestine-of-rome.jpg")).toBe(ICON_FACES["celestine-of-rome.jpg"]);
   });
 });
