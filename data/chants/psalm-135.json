@@ -86,7 +86,7 @@
           "en": "Alleluia."
         }
       ],
-      "wordsSource": "Only the first of the ten verses the choir sings: the rest of its Arabic has not been taken down, so the words stop there while the singing goes on. This verse is as the owner took it down beside the recording, in Latin letters, set here in Arabic letters by Purify, and each half is followed by Alliluia, sung without the h of the Arabic Bible's hallelujah. Heard again in the recording, its syllables agree with these words (i'tarifu, salihun, fa-inna, rahmatahu). They are not the Van Dyck Bible's wording (احمدوا الرب), and no public-domain printing of them has been found yet to check them against. Each line is timed to the recording. The transliteration is ours.",
+      "wordsSource": "Only the first of the ten verses the choir sings. A speech model heard all ten (verses 1 to 6 and 23 to 26, each half followed by Alliluia): they are the Antiochian Church's Arabic, not the Van Dyck Bible's (احمدوا الرب), and no public-domain printing of that wording has been found, so the words stop after the first verse while the singing goes on. That verse is as the owner took it down beside the recording, in Latin letters, set here in Arabic letters by Purify, and the model heard it word for word (i'tarifu lir-Rabbi fa-innahu salihun, Alliluia, fa-inna ila l-abadi rahmatahu, Alliluia), sung without the h of the Arabic Bible's hallelujah. Each line is timed to the recording. The transliteration is ours.",
       "translation": {
         "kind": "public-domain",
         "title": "Brenton's English of the Septuagint (1851), the same verse"
@@ -962,7 +962,7 @@
           "en": "Alleluia."
         }
       ],
-      "wordsSource": "Brenton's Greek of the Septuagint (1851), as eBible.org transcribes it: the whole psalm, each verse in two halves, and after each half the Alleluia the choir sings, Ἀλληλούϊα as the same edition writes it at the head of this psalm. The owner's note beside the recording takes down its first four verses as sung, each half followed by Alleluia, and they are these words. That the choir goes on through all twenty-six verses in order was read from the recording, verse by verse, by the length of each verse against its words; the later verses were not heard word by word, as no speech model on Purify's computer hears Greek. Each line is timed to the recording. The transliteration is ours.",
+      "wordsSource": "Brenton's Greek of the Septuagint (1851), as eBible.org transcribes it: the whole psalm, each verse in two halves, and after each half the Alleluia the choir sings, Ἀλληλούϊα as the same edition writes it at the head of this psalm. The owner's note beside the recording takes down its first four verses as sung. A Greek speech model then heard the recording verse by verse, and all twenty-six verses, each with its two Alleluias, agree with these words, in this order, as far as a model can hear a choir. Each line is timed to the recording. The transliteration is ours.",
       "translation": {
         "kind": "public-domain",
         "title": "Brenton's English of the Septuagint (1851), line for line"
@@ -1401,7 +1401,7 @@
           "en": "Alleluia."
         }
       ],
-      "wordsSource": "Daničić's Serbian (the Karadžić and Daničić Bible, 1868), the whole psalm as eBible.org has it, in Latin letters, and after each half the Aliluja the singer sings, spelt as Daničić spells it at the head and foot of the psalm before (Psalm 135 in his count). The upload names the psalm by its opening words, Slavite Gospoda, which are Daničić's, and the few words a speech model could pick out (Siona, cara amorejskog, in the nineteenth verse) are his too; the rest were not heard word by word, as no speech model on Purify's computer hears Serbian, so the singer's wording may differ in places. Each line is timed to the recording.",
+      "wordsSource": "Daničić's Serbian (the Karadžić and Daničić Bible, 1868), the whole psalm as eBible.org has it, in Latin letters, and after each half the Aliluja the singer sings, spelt as Daničić spells it at the head and foot of the psalm before (Psalm 135 in his count). A Serbian speech model heard the recording verse by verse: all twenty-six verses agree with Daničić's in order, except that the singer sings u nasleđe where Daničić has u dostojanje (verses 21 and 22) and sluzi svojemu for sluzi svom (verse 22). Daničić's words stand, as the public-domain text. Each line is timed to the recording.",
       "translation": {
         "kind": "public-domain",
         "title": "Brenton's English of the Septuagint (1851), line for line"
