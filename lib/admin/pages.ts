@@ -112,13 +112,14 @@ export const ADMIN_PAGE_GROUPS: AdminPageGroup[] = [
         views: [{ tab: "messages", label: "Messages" }],
       },
       {
+        // One view since the owner's r3-16 pick A (2026-10-30): the shelf of
+        // photo cards, with Sourcing and the hub's other parts in one quiet
+        // line above it. #tab=sourcing lands here and opens Sourcing
+        // (AdminShell's RETIRED_TABS, ShopHubTab).
         id: "shop",
         label: "Catalogue",
         sentence: "The pieces we sell, and whether their prices still work.",
-        views: [
-          { tab: "shop", label: "Products" },
-          { tab: "sourcing", label: "Sourcing" },
-        ],
+        views: [{ tab: "shop", label: "Catalogue" }],
       },
     ],
   },

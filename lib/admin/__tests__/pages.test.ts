@@ -84,6 +84,7 @@ describe("admin pages (1.8 admin silent patch)", () => {
       expect(ADMIN_VIEW_TABS, `${from} lands on ${to}`).toContain(to);
     }
     expect(retired.fulfillment).toBe("orders");
+    expect(retired.sourcing).toBe("shop");
   });
 
   it("does not say a page's name twice for its first view", () => {

@@ -63,7 +63,6 @@ import { EmailTab } from "./tabs/EmailTab";
 import { ContentHealthTab } from "./tabs/ContentHealthTab";
 import { HealthTab } from "./tabs/HealthTab";
 import { AuditLogTab } from "./tabs/AuditLogTab";
-import { SourcingTab } from "./tabs/SourcingTab";
 import { HomeTab } from "./tabs/HomeTab";
 import { UsageTab } from "./tabs/UsageTab";
 import { OnboardingTab } from "./tabs/OnboardingTab";
@@ -174,7 +173,6 @@ const COMPONENTS: Partial<Record<TabId, ComponentType>> = {
   ambassadors: AmbassadorsTab,
   shop: ShopHubTab,
   "eikon-box": EikonBoxTab,
-  sourcing: SourcingTab,
   drop: DropTab,
   push: PushTab,
   email: EmailTab,
@@ -223,6 +221,9 @@ const RETIRED_TABS: Record<string, TabId> = {
   // Fulfillment's tiles and board retired into Orders (the owner's r3-16
   // pick B, 2026-10-30): every order opens there as its whole story.
   fulfillment: "orders",
+  // Sourcing is the first link of the Catalogue's quiet line (his pick A),
+  // and the page opens it when the address named it.
+  sourcing: "shop",
 };
 
 /** A tab id from a URL, following a retired id to its replacement. */
