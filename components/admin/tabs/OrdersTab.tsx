@@ -111,6 +111,9 @@ export function OrdersTab() {
 
   async function move(to: ShopFulfillmentStatus, extra: { note?: string; tracking?: string }): Promise<string | null> {
     if (!selected) return "No order is open.";
+    // Pin the open order: the list re-sorts after a move, and the story must
+    // stay on the order that was just moved, not on whatever is now first.
+    setOpenId(selected.id);
     try {
       const res = await fetch("/api/admin/shop/orders", {
         method: "PATCH",
@@ -133,6 +136,7 @@ export function OrdersTab() {
 
   function act(a: StoryAction) {
     if (!selected) return;
+    setOpenId(selected.id);
     if (a === "reply") {
       // The request about this order, if the reader wrote; else a new message
       // to the address the order was bought with. Messages decides which.

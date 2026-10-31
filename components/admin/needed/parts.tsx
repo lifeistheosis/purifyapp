@@ -311,22 +311,22 @@ export function Btn({
   title?: string;
   type?: "button" | "submit";
 }) {
-  const style = (
-    primary
-      ? {
-          "--_bd": "transparent",
-          "--_bd-hover": "transparent",
-          "--_bg": "var(--adm-accent)",
-          "--_bg-hover": "color-mix(in oklab, var(--adm-accent), var(--adm-bg) 14%)",
-          color: "var(--adm-on-accent)",
-        }
-      : {
-          "--_bd": "var(--adm-line-strong)",
-          "--_bg": "var(--adm-control)",
-          "--_bg-hover": "var(--adm-panel-2)",
-          color: "var(--adm-ink)",
-        }
-  ) as CSSProperties;
+  // Custom properties handed to .adm-control, as ToolbarButton does: an
+  // inline background would beat the hover rule.
+  const style: CSSProperties = primary
+    ? ({
+        "--_bd": "transparent",
+        "--_bd-hover": "transparent",
+        "--_bg": "var(--adm-accent)",
+        "--_bg-hover": "color-mix(in oklab, var(--adm-accent), var(--adm-bg) 14%)",
+        color: "var(--adm-on-accent)",
+      } as CSSProperties)
+    : ({
+        "--_bd": "var(--adm-line-strong)",
+        "--_bg": "var(--adm-control)",
+        "--_bg-hover": "var(--adm-panel-2)",
+        color: "var(--adm-ink)",
+      } as CSSProperties);
   const cls =
     "adm-control adm-outline inline-flex items-center justify-center gap-1.5 rounded-[var(--adm-radius-sm)] border font-sans font-medium disabled:cursor-not-allowed disabled:opacity-45 " +
     (tall

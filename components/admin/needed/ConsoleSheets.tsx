@@ -33,7 +33,11 @@ import { GIFT_LENGTHS, THANK_YOU_DAYS, giftLine, lengthWord, storeName, type Sto
 import { orderConfirmationNumber } from "@/lib/shop/orderNumber";
 import { trackingLink } from "@/lib/shop/trackingLink";
 
-export type SheetOrder = StoryOrder & { events: StoryEvent[] };
+export type SheetOrder = StoryOrder & {
+  events: StoryEvent[];
+  /** The latest refund request on the order, when the reader's file carries it. */
+  refund?: { status: string; amount_cents: number | null } | null;
+};
 
 export type Sides = {
   supplierByProduct: Record<string, { url: string | null; sku: string | null; cost: number | null }>;
