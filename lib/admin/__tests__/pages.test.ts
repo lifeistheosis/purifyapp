@@ -130,6 +130,15 @@ describe("admin pages", () => {
     expect(aliasesOf("traffic")).toEqual(["growth"]);
   });
 
+  it("lands Fulfillment on Orders and Sourcing on the Catalogue (sheet r3-16)", () => {
+    expect(pageOf("fulfillment")).toBeNull();
+    expect(pageOf("sourcing")).toBeNull();
+    expect(landingOf("fulfillment")).toEqual({ tab: "orders" });
+    expect(landingOf("sourcing")).toEqual({ tab: "shop" });
+    expect(pageOf("orders")?.views).toHaveLength(1);
+    expect(pageOf("shop")?.views).toHaveLength(1);
+  });
+
   it("writes one plain sentence per page and per view that has its own, without an em dash", () => {
     const dash = String.fromCharCode(0x2014);
     for (const p of ADMIN_PAGES) {
@@ -154,8 +163,9 @@ describe("admin pages", () => {
   });
 
   it("labels a view by its page when the page holds more than one", () => {
-    expect(viewLabel("fulfillment")).toBe("Orders: Fulfillment");
+    expect(viewLabel("revenue")).toBe("Money: Revenue");
     expect(viewLabel("messages")).toBe("Messages");
+    expect(viewLabel("orders")).toBe("Orders");
     expect(viewLabel("goals")).toBe("Home: Goals");
     expect(viewLabel("today")).toBe("Home: Today");
     expect(viewLabel("traffic")).toBe("Traffic: Overview");

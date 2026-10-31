@@ -8,6 +8,7 @@ import { T } from "@/lib/email/theme";
 import { adminEmails } from "@/lib/admin/access";
 import { SITE_URL } from "@/lib/site";
 import { ticketNumber, type Ticket } from "./ticketNumber";
+import { cardHeadline, type TrackingCard } from "./trackingCard";
 
 /**
  * The three support emails.
@@ -42,15 +43,26 @@ export async function sendTicketReceivedEmail(ticket: Ticket, body: string) {
   });
 }
 
-/** Sent to the customer when staff replies. */
-export async function sendTicketReplyEmail(ticket: Ticket, reply: string) {
+/**
+ * Sent to the customer when staff replies. With a card when the reply is
+ * about their parcel (the support console's Send tracking): the order's
+ * number, where it is in their own five words, and the carrier's link.
+ */
+export async function sendTicketReplyEmail(ticket: Ticket, reply: string, card?: TrackingCard | null) {
   const num = ticketNumber(ticket.id);
+  const cardHtml = card
+    ? microLabel(`Your order ${card.number}`) +
+      bigValue(escapeHtml(cardHeadline(card))) +
+      (card.step > 0 ? p(`Step ${card.step} of ${card.of}`) : "") +
+      (card.url ? button({ label: card.carrier ? `Track with ${card.carrier}` : "Track the parcel", href: card.url }) : "")
+    : "";
   const html = emailLayout({
     heading: "A reply to your request",
     eyebrow: "Support",
     bodyHtml:
       pHtml(`Ticket ${escapeHtml(num)} &middot; ${escapeHtml(ticket.subject)}`, `color:${T.muted};font-size:15px;`) +
       well(reply) +
+      cardHtml +
       note("Reply to this email to continue the conversation."),
     footer: SUPPORT_FOOTER,
   });

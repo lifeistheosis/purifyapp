@@ -140,13 +140,14 @@ export const ADMIN_PAGE_GROUPS: AdminPageGroup[] = [
     mode: "ops",
     pages: [
       {
+        // One view since the owner's r3-16 pick B (2026-10-30): a list where
+        // each order opens as its whole story. Fulfillment's tiles and board
+        // retired into it, and #tab=fulfillment lands here (RETIRED_VIEWS
+        // below).
         id: "orders",
         label: "Orders",
         sentence: "Every order, and what still has to be posted.",
-        views: [
-          { tab: "orders", label: "Orders" },
-          { tab: "fulfillment", label: "Fulfillment" },
-        ],
+        views: [{ tab: "orders", label: "Orders" }],
       },
       {
         id: "messages",
@@ -155,13 +156,14 @@ export const ADMIN_PAGE_GROUPS: AdminPageGroup[] = [
         views: [{ tab: "messages", label: "Messages" }],
       },
       {
+        // One view since the owner's r3-16 pick A (2026-10-30): the shelf of
+        // photo cards, with Sourcing and the hub's other parts in one quiet
+        // line above it. #tab=sourcing lands here and opens Sourcing
+        // (RETIRED_VIEWS below, ShopHubTab).
         id: "shop",
         label: "Catalogue",
         sentence: "The pieces we sell, and whether their prices still work.",
-        views: [
-          { tab: "shop", label: "Products" },
-          { tab: "sourcing", label: "Sourcing" },
-        ],
+        views: [{ tab: "shop", label: "Catalogue" }],
       },
     ],
   },
@@ -279,6 +281,11 @@ export const RETIRED_VIEWS: Record<string, { tab: string; intent?: string }> = {
   // reader's card.
   verification: { tab: "users", intent: "waiting" },
   badges: { tab: "users", intent: "badges" },
+  // Fulfillment's tiles and board retired into Orders (the owner's r3-16
+  // pick B), and Sourcing into the Catalogue, which opens Sourcing when the
+  // admin was opened on its old address (lib/admin/handoff.ts).
+  fulfillment: { tab: "orders" },
+  sourcing: { tab: "shop" },
 };
 
 /** Where an id lands: itself when it is a view, its replacement when it is retired, null otherwise. */

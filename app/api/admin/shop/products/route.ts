@@ -3,6 +3,7 @@ import { z } from "zod";
 
 import { getAdminUser } from "@/lib/admin/access";
 import { logActivity } from "@/lib/admin/activityLog";
+import { latestChecks } from "@/lib/admin/catalogue";
 import { SHOP_CATEGORIES, SHOP_CLASSIFICATIONS } from "@/lib/security/schemas";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { pageAllSettled } from "@/lib/supabase/pageAll";
@@ -136,13 +137,32 @@ export async function GET() {
   const deleted = rows
     .filter((p) => p.deleted_at != null)
     .sort((a, b) => String(b.deleted_at).localeCompare(String(a.deleted_at)));
+
+  // The latest supplier price check per piece, for the Catalogue's shelf (the
+  // owner's r3-16 pick A): a card is dashed when Temu's price moved at the
+  // last check and the price has not been looked at since. Four months back
+  // is plenty, because the Sourcing list asks for a check every day one is
+  // due. A database without the checks table answers with none, never a 500.
+  const checks = await pageAllSettled((from, to) =>
+    admin
+      .from("shop_cost_checks")
+      .select("product_id, outcome, cost_cents, price_cents, created_at")
+      .gte("created_at", new Date(Date.now() - 120 * 86_400_000).toISOString())
+      .order("created_at", { ascending: false })
+      .order("id")
+      .range(from, to),
+  );
+
   return NextResponse.json({
     products: live,
     deleted,
     sourcing: sourcing.data ?? [],
     stores: stores.data ?? [],
+    lastChecks: checks.error ? {} : latestChecks((checks.data ?? []) as CheckRow[]),
   });
 }
+
+type CheckRow = { product_id: string; outcome: string; cost_cents: number | null; price_cents: number; created_at: string };
 
 export async function POST(req: Request) {
   const adminUser = await getAdminUser();

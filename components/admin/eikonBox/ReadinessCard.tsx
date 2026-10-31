@@ -8,6 +8,7 @@ import { useCallback, useEffect, useState } from "react";
 
 import { adminJson } from "@/lib/admin/fetchJson";
 
+import { Mark } from "../needed/parts";
 import { Card, ToolbarButton } from "../primitives";
 
 type Transport = {
@@ -100,6 +101,64 @@ function checks(r: Readiness): { label: string; state: State; detail: string }[]
         : "No email provider is configured (RESEND_API_KEY), so the announcement email is skipped.",
     },
   ];
+}
+
+const SHAPE: Record<State, "done" | "wait" | "late"> = { ok: "done", warn: "wait", blocked: "late" };
+
+/**
+ * The same checks as a short list (the EIKON Box month, the owner's r3-16
+ * pick, A's "Can it run" beside the month): a mark and a name per check,
+ * solid when it is in place, a ring when it needs a look, dashed when it
+ * stops the drop. The reason sits under a check that is not in place, and
+ * on every check's hover.
+ */
+export function ReadinessList() {
+  const [data, setData] = useState<Readiness | null>(null);
+  const [failed, setFailed] = useState(false);
+
+  useEffect(() => {
+    let alive = true;
+    void adminJson<Readiness>("/api/admin/eikon-box/readiness").then((d) => {
+      if (!alive) return;
+      if (d) setData(d);
+      else setFailed(true);
+    });
+    return () => {
+      alive = false;
+    };
+  }, []);
+
+  if (failed) {
+    return (
+      <p className="font-sans text-[12px]" style={{ color: "var(--adm-critical)" }}>
+        The checks could not be read. That is not the same as everything being in place.
+      </p>
+    );
+  }
+  if (!data) {
+    return (
+      <p className="font-sans text-[12px]" style={{ color: "var(--adm-ink-3)" }}>
+        Checking the box end to end…
+      </p>
+    );
+  }
+  return (
+    <ul>
+      {checks(data).map((c) => (
+        <li key={c.label} className="border-t py-1.5 font-sans text-[12px] first:border-t-0" style={{ borderColor: "var(--adm-line)" }} title={c.detail}>
+          <span className="flex items-center gap-2" style={c.state === "ok" ? ink2 : ink}>
+            <Mark kind={SHAPE[c.state]} />
+            {c.label}
+          </span>
+          {c.state === "ok" ? null : (
+            <span className="mt-0.5 block pl-[18px] text-[11.5px] leading-snug" style={{ color: "var(--adm-ink-3)" }}>
+              {c.detail}
+            </span>
+          )}
+        </li>
+      ))}
+    </ul>
+  );
 }
 
 export function ReadinessCard() {

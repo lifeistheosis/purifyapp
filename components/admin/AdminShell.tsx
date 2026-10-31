@@ -50,7 +50,6 @@ import { SustainabilityTab } from "./tabs/SustainabilityTab";
 import { GoalsTab } from "./tabs/GoalsTab";
 import { CalendarTab } from "./tabs/CalendarTab";
 import { CatechismTab } from "./tabs/CatechismTab";
-import { FulfillmentTab } from "./tabs/FulfillmentTab";
 import { InsightsProvider } from "@/lib/admin/insights/store";
 import { SubscriptionsTab } from "./tabs/SubscriptionsTab";
 import { MessagesTab } from "./tabs/MessagesTab";
@@ -70,7 +69,6 @@ import { EmailTab } from "./tabs/EmailTab";
 import { ContentHealthTab } from "./tabs/ContentHealthTab";
 import { HealthTab } from "./tabs/HealthTab";
 import { AuditLogTab } from "./tabs/AuditLogTab";
-import { SourcingTab } from "./tabs/SourcingTab";
 import { HomeTab } from "./tabs/HomeTab";
 import { UsageTab } from "./tabs/UsageTab";
 import { OnboardingTab } from "./tabs/OnboardingTab";
@@ -174,7 +172,6 @@ const COMPONENTS: Partial<Record<TabId, ComponentType>> = {
   today: HomeTab,
   overview: MoneyOverviewTab,
   orders: OrdersTab,
-  fulfillment: FulfillmentTab,
   revenue: RevenueTab,
   costs: SustainabilityTab,
   subscriptions: SubscriptionsTab,
@@ -186,7 +183,6 @@ const COMPONENTS: Partial<Record<TabId, ComponentType>> = {
   ambassadors: AmbassadorsTab,
   shop: ShopHubTab,
   "eikon-box": EikonBoxTab,
-  sourcing: SourcingTab,
   drop: DropTab,
   push: PushTab,
   email: EmailTab,
