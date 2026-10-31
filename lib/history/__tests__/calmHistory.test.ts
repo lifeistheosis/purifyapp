@@ -36,7 +36,8 @@ const code = (path: string) =>
 const COMPONENTS = readdirSync(join(root, "components", "history"))
   .filter((f) => f.endsWith(".tsx") || f.endsWith(".ts"))
   .map((f) => `components/history/${f}`);
-const PAGES = ["app/(app)/history/page.tsx", "app/(app)/history/[slug]/page.tsx", "app/(app)/history/loading.tsx"];
+// No loading.tsx, on purpose: see "arrives whole and still" below.
+const PAGES = ["app/(app)/history/page.tsx", "app/(app)/history/[slug]/page.tsx"];
 const FILES = [...COMPONENTS, ...PAGES, "components/ui/icons/TimelineNode.tsx"];
 
 describe("Orthodox History's look", () => {
@@ -133,6 +134,30 @@ describe("the timeline", () => {
     const backBar = read("lib/nav/backBar.ts");
     expect(backBar).toContain("/^\\/history$/,");
     expect(backBar).toContain("/^\\/history\\/[^/]+$/,");
+  });
+
+  it("arrives whole and still: no loading screen, what the device kept read in the first render, the place put back on Back alone", () => {
+    // The owner's note 66 of build 80: "when you're on Discover section and
+    // then you click the historical timeline ... there's like a frame where
+    // it bugs in". Filmed on the export, the processor slowed four times: a
+    // black frame and a skeleton with no bar, its bars still arriving one by
+    // one, cut to the page after at least the 300ms React holds a fallback;
+    // on a later visit the page drawn at its top, a "Continue at" row pushed
+    // in a moment later, then a jump to the last visit's place (64px with the
+    // reader at the top, 2,600px further down).
+    expect(existsSync(join(root, "app", "(app)", "history", "loading.tsx")), "the timeline's loading screen").toBe(false);
+    const page = code("components/history/HistoryTimelinePage.tsx");
+    expect(page).toContain("const client = useMounted();");
+    expect(page).toContain("useState<TimelineState>(() => (client ? readState() : EMPTY_STATE))");
+    expect(page).toContain("useState<scroll.TimelinePosition | null>(() => (client ? scroll.loadPosition() : null))");
+    // Put back in a layout effect, so before the paint, and on Back alone.
+    const back = page.slice(page.indexOf("useIsoLayoutEffect(() => {"));
+    expect(back).toMatch(/^useIsoLayoutEffect\(\(\) => \{\s+if \(!hydrated \|\| !cameBack\(\) \|\| isReturning\(\)\) return;/);
+    expect(back).toContain("return scroll.restorePosition(saved);");
+    expect(page).not.toContain("window.scrollBy");
+    // Continue at is handed its row with the page; it reads nothing after it.
+    expect(page).toContain("<ContinueExploring slug={continueAt} onGo={jumpToEvent} />");
+    expect(code("components/history/ContinueExploring.tsx")).not.toMatch(/useEffect|useState|loadPosition/);
   });
 });
 

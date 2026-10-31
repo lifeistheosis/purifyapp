@@ -142,6 +142,16 @@ export function endReturn(): void {
 }
 
 /**
+ * Whether a page reached by going back is being moved to the link the reader
+ * had tapped. A page that keeps a place of its own (Orthodox History's row,
+ * lib/history/scroll.ts) leaves the page to this then, so the two never pull
+ * it two ways.
+ */
+export function isReturning(): boolean {
+  return stopWatching !== null;
+}
+
+/**
  * Call when a page reached by going back has committed. If the reader left
  * it by a link, moves the page until that link is where their thumb was.
  * Returns whether it had a place to return to, for the test and nothing else.

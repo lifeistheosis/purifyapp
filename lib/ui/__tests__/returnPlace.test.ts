@@ -10,6 +10,7 @@ import {
   TAP_MS,
   WATCH_FRAMES,
   endReturn,
+  isReturning,
   keepPlace,
   noteLinkTap,
   resetReturnPlaceForTests,
@@ -173,6 +174,17 @@ describe("going back returns the reader to the link they tapped", () => {
     b.state.scrollY = 12805;
     b.frame();
     expect(saint.getBoundingClientRect().top).toBe(300);
+  });
+
+  it("says it is moving the page while it does, so a page with a place of its own waits", () => {
+    // Orthodox History's own row (lib/history/scroll.ts) stands aside for it.
+    const b = stubBrowser();
+    expect(isReturning()).toBe(false);
+    leaveAndComeBack(b, 3022);
+    returnToPlace();
+    expect(isReturning()).toBe(true);
+    b.run();
+    expect(isReturning()).toBe(false);
   });
 
   it("lets go once the link has sat still, and leaves nothing behind", () => {

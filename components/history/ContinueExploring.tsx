@@ -2,30 +2,20 @@
 
 // "Continue at ...", on the timeline's first screen only when the reader has
 // a place on the line to go back to (1.7: a quiet row with a drawn chevron;
-// it was a pill with a red dot). Drawn on the device only (the place is in
-// the device's storage), so it never disagrees with the server's page.
-
-import { useEffect, useState } from "react";
+// it was a pill with a red dot). The place is in the device's storage, so
+// the timeline reads it in its first render and hands it here
+// (HistoryTimelinePage, lib/history/scroll.ts placeToContinue): the row is
+// there with the page, where it used to arrive a moment after it and push the
+// line down by its height (the owner's note 66 of build 80).
 
 import { useTranslate } from "@/components/i18n/MessagesProvider";
 import { ChevronRight } from "@/components/ui/icons/ChevronRight";
 import { eventBySlug } from "@/lib/history/events";
-import { loadPosition } from "@/lib/history/scroll";
 
-export function ContinueExploring({ onGo }: { onGo: (slug: string) => void }) {
+export function ContinueExploring({ slug, onGo }: { slug: string | null; onGo: (slug: string) => void }) {
   const { t } = useTranslate();
-  const [slug, setSlug] = useState<string | null>(null);
-
-  /* eslint-disable react-hooks/set-state-in-effect -- one-time hydration
-     gate: localStorage can't be read during SSR (Sheet.tsx precedent). */
-  useEffect(() => {
-    const pos = loadPosition();
-    if (pos && eventBySlug(pos.anchorSlug)) setSlug(pos.anchorSlug);
-  }, []);
-  /* eslint-enable react-hooks/set-state-in-effect */
-
-  if (!slug) return null;
-  const event = eventBySlug(slug)!;
+  const event = slug ? eventBySlug(slug) : undefined;
+  if (!slug || !event) return null;
 
   return (
     <button

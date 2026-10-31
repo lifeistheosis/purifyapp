@@ -52,6 +52,8 @@ const RELEASE_EVENTS = ["touchstart", "wheel", "keydown", "pointerdown"] as cons
 
 let lastTraversalAt = Number.NEGATIVE_INFINITY;
 let releaseHold: (() => void) | null = null;
+/** The page that committed last, and whether a step through history brought it. */
+let arrival: { path: string; back: boolean } | null = null;
 
 function now(): number {
   return typeof performance !== "undefined" ? performance.now() : Date.now();
@@ -69,6 +71,34 @@ function takeTraversal(): boolean {
   return recent;
 }
 
+function currentPath(): string {
+  return typeof window !== "undefined" ? (window.location?.pathname ?? "") : "";
+}
+
+/**
+ * Whether the reader came back to the page now showing by a step through
+ * history (Back, Forward, a phone's Back), and not by going forward to it.
+ *
+ * For a page that keeps its own place, which it should put back on Back and
+ * not on a fresh visit (Orthodox History, the owner's note 66 of build 80:
+ * opened from Discover it jumped to where the reader had been the last time).
+ * Asked from the page's own layout effect, which runs after the bridge's in
+ * the same commit (the bridge stands before the page in RootFrame); a mark
+ * still fresh means the bridge has not looked yet. On the visit's first page
+ * the browser's own word is used: a reload or the browser's Back to the site.
+ */
+export function cameBack(): boolean {
+  if (typeof window === "undefined") return false;
+  if (now() - lastTraversalAt < TRAVERSAL_MS) return true;
+  if (arrival) return arrival.back && arrival.path === currentPath();
+  try {
+    const [first] = performance.getEntriesByType("navigation") as PerformanceNavigationTiming[];
+    return first?.type === "reload" || first?.type === "back_forward";
+  } catch {
+    return false;
+  }
+}
+
 /** Hands scroll anchoring back to the browser. Safe to call at any time. */
 export function endScrollHold(): void {
   releaseHold?.();
@@ -80,7 +110,9 @@ export function endScrollHold(): void {
  */
 export function onRouteCommitted(): "reset" | "traversal" | "hash" | "none" {
   if (typeof window === "undefined" || typeof document === "undefined") return "none";
-  if (takeTraversal()) return "traversal";
+  const back = takeTraversal();
+  arrival = { path: currentPath(), back };
+  if (back) return "traversal";
   if (window.location.hash) return "hash";
 
   endScrollHold();
@@ -110,4 +142,5 @@ export function resetScrollResetForTests(): void {
   endScrollHold();
   lastTraversalAt = Number.NEGATIVE_INFINITY;
   releaseHold = null;
+  arrival = null;
 }

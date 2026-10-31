@@ -3,6 +3,12 @@
 // on return scroll that card back into place. Anchors survive filter-induced
 // height changes and virtualized rendering, where a raw scrollY would not.
 //
+// The place is put back on Back alone (a step through history, or a reload of
+// the timeline on the web). A fresh visit, from Discover or anywhere, opens at
+// the top, and "Continue at ..." (placeToContinue) is the way to the place
+// kept from the last visit: put back on every visit, it was a jump the reader
+// saw after the page had arrived (the owner's note 66 of build 80).
+//
 // Two storage tiers:
 //  - sessionStorage: browser-session semantics (Back/Forward, reload), the
 //    web expectation.
@@ -122,6 +128,76 @@ export function loadPosition(): TimelinePosition | null {
   } catch {
     return null;
   }
+}
+
+/**
+ * The event "Continue at ..." offers, from the place kept: the row the reader
+ * had reached on the line. Not when that place is the line's first row still
+ * under the pinned name (`offsetPx` above zero): the reader was at the top of
+ * the timeline, where the offer led nowhere ("Continue at Pentecost" over
+ * Pentecost).
+ */
+export function placeToContinue(pos: TimelinePosition | null, firstSlug: string | undefined): string | null {
+  if (!pos) return null;
+  if (pos.anchorSlug === firstSlug && pos.offsetPx > 0) return null;
+  return pos.anchorSlug;
+}
+
+/** How many frames a put-back place is watched for, at about sixty a second. */
+export const RESTORE_WATCH_FRAMES = 60;
+/** The watch ends once the row has sat still this many frames... */
+export const RESTORE_STEADY_FRAMES = 6;
+/** ...and not before this many, through a browser that puts its own number back late. */
+export const RESTORE_SETTLE_FRAMES = 12;
+
+const RESTORE_STOP_EVENTS = ["touchstart", "wheel", "keydown", "pointerdown"] as const;
+
+/**
+ * Puts the kept row back at its place under the pinned era name, once at the
+ * call (from a layout effect, so before the timeline is painted) and then
+ * frame by frame while rows around it are first drawn at their real heights
+ * (`content-visibility`, globals.css .history-cv), until it has sat still.
+ * The reader's own hand ends it at once. Returns the way to end it early (an
+ * unmount). The same watch as lib/ui/returnPlace.ts, for a row instead of a
+ * link.
+ */
+export function restorePosition(saved: TimelinePosition): () => void {
+  if (!hasWindow()) return () => {};
+  const put = (): boolean => {
+    const el = document.getElementById(`event-${saved.anchorSlug}`);
+    if (!el) return false;
+    const off = el.getBoundingClientRect().top - (referenceLine() + saved.offsetPx);
+    if (Math.abs(off) <= 1) return true;
+    // At once, whatever the page's own scroll behaviour says: a correction,
+    // not a journey.
+    window.scrollBy({ top: off, left: 0, behavior: "instant" as ScrollBehavior });
+    return false;
+  };
+
+  let frames = 0;
+  let steady = 0;
+  let frame = 0;
+  let done = false;
+  const stop = () => {
+    if (done) return;
+    done = true;
+    if (frame) window.cancelAnimationFrame(frame);
+    for (const type of RESTORE_STOP_EVENTS) window.removeEventListener(type, stop);
+  };
+  const look = () => {
+    if (done) return;
+    frames += 1;
+    steady = put() ? steady + 1 : 0;
+    if (frames >= RESTORE_WATCH_FRAMES || (steady >= RESTORE_STEADY_FRAMES && frames >= RESTORE_SETTLE_FRAMES)) {
+      stop();
+      return;
+    }
+    frame = window.requestAnimationFrame(look);
+  };
+  for (const type of RESTORE_STOP_EVENTS) window.addEventListener(type, stop, { passive: true });
+  put();
+  frame = window.requestAnimationFrame(look);
+  return stop;
 }
 
 export function clearPosition(): void {
