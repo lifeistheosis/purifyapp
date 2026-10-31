@@ -191,9 +191,12 @@ describe("the tour's words", () => {
 });
 
 describe("where each step's element is marked", () => {
+  // `data-tour="x"` on an element, or `tour="x"` on a component that draws
+  // it on its own button (SearchTrigger, so Today's magnifier stays a
+  // direct child of its row and keeps its plate over Prayers' picture).
   const marked = (target: string): string[] => {
     try {
-      return execFileSync("git", ["grep", "-l", "-F", `data-tour="${target}"`, "--", "app", "components"], {
+      return execFileSync("git", ["grep", "-l", "-F", `tour="${target}"`, "--", "app", "components"], {
         cwd: ROOT,
         encoding: "utf8",
       })

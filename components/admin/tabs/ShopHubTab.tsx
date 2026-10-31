@@ -40,7 +40,7 @@ function AlsoHere({ part, onPick }: { part: Part; onPick: (p: Part) => void }) {
     const name = ALSO.find(([id]) => id === part)?.[1];
     return (
       <p className="flex flex-wrap items-center gap-1.5 font-sans text-[12.5px]" style={ink3}>
-        <button type="button" onClick={() => onPick("shelf")} className="inline-flex min-h-9 items-center gap-1 underline underline-offset-[3px]">
+        <button type="button" onClick={() => onPick("shelf")} className="hit-44 inline-flex min-h-9 items-center gap-1 underline underline-offset-[3px]">
           <Icon name="back" size={12} />
           The shelf
         </button>

@@ -582,10 +582,10 @@ function MonthCard({
       </p>
 
       <div className="mt-3 flex flex-wrap gap-x-4 gap-y-1 border-t pt-2.5 font-sans text-[12px]" style={{ borderColor: "var(--adm-line)", color: "var(--adm-ink-2)" }}>
-        <button type="button" onClick={() => onDialog("roster")} className="min-h-9 underline underline-offset-[3px]">
+        <button type="button" onClick={() => onDialog("roster")} className="hit-44 min-h-9 underline underline-offset-[3px]">
           Who claimed
         </button>
-        <button type="button" onClick={() => onDialog("edit")} className="min-h-9 underline underline-offset-[3px]">
+        <button type="button" onClick={() => onDialog("edit")} className="hit-44 min-h-9 underline underline-offset-[3px]">
           Edit the drop
         </button>
         <span className="min-h-9 py-2" style={ink3}>

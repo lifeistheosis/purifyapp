@@ -21,10 +21,13 @@ export { openSearch };
 export function SearchTrigger({
   className,
   iconSize = 20,
+  tour,
 }: {
   className?: string;
   /** 22 in the phone tab bar, where it is drawn the size of the bell beside it. */
   iconSize?: number;
+  /** The update tour's mark (lib/whatsNew/tour.ts), on the one instance a stop rings. */
+  tour?: string;
 }) {
   const { t } = useTranslate();
   return (
@@ -36,6 +39,7 @@ export function SearchTrigger({
       }}
       aria-label={t("search.open")}
       title={t("search.open")}
+      data-tour={tour}
       // 44px, the platform's touch target, in the phone tab bar (MobileHeader)
       // and in the 48px bar of the inner pages (MobileTopBar) alike.
       className={cn(

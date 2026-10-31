@@ -206,7 +206,7 @@ describe("search and the bell", () => {
     expect(bar).toContain('<div data-tab-actions="" className="flex shrink-0 items-center gap-2">');
     // Still wrapped, so the plates over Prayers' picture (globals.css,
     // `[data-tab-actions] > button`) leave the pill its own silver.
-    expect(bar).toMatch(/<span className="inline-flex">\s*<MobilePremiumButton \/>\s*<\/span>\s*<SearchTrigger iconSize=\{24\} className="text-paper\/80" \/>\s*<NotificationsButton \/>\s*<\/div>/);
+    expect(bar).toMatch(/<span className="inline-flex">\s*<MobilePremiumButton \/>\s*<\/span>\s*<SearchTrigger iconSize=\{24\} className="text-paper\/80"(?: tour="search")? \/>\s*<NotificationsButton \/>\s*<\/div>/);
     // No margin on any of the three, so the one gap is all the room between them.
     const margin = /(?:^|[\s"'`:])-?m[sexylrtb]?-(?:\d|\[|px\b|auto\b)/;
     const cluster = bar.slice(bar.indexOf("data-tab-actions"), bar.indexOf("</header>"));

@@ -117,6 +117,11 @@ const ANOTHER_QUESTION: Record<string, string> = {
     "Which rule a mark is filed under, split at noon on purpose. See the header of ruleForHour.ts.",
   "lib/streak/useStreak.ts":
     "RISK_HOUR: when the at-risk card starts to ask. When to nudge, not what to call the hour.",
+  // The admin (sheet r3-15), never shown to a reader.
+  "lib/admin/since.ts":
+    "The owner's own feed headings (This morning, Overnight) in his local time. A log's heading, not a reader's day part or Hour.",
+  "components/admin/tabs/MoneyOverviewTab.tsx": "Writes a time as 09:38 for the admin. Decides no day part.",
+  "components/admin/tabs/ReaderCard.tsx": "Writes a time as 9:38 for the admin. Decides no day part.",
 };
 
 /**
