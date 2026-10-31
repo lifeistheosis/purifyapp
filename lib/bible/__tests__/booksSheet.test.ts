@@ -163,7 +163,7 @@ describe("the ways to it", () => {
     const screen = code(SCREEN);
     const header = screen.slice(screen.indexOf('<header id="chapter-title"'), screen.indexOf("</header>"));
     const h1 = /<h1[^>]*>([\s\S]*?)<\/h1>/.exec(header)?.[1] ?? "";
-    expect(h1).toMatch(/<T k="bible\.chapterN" replacements=\{\{ n: chapter \}\} \/>\s*<span aria-hidden className="ms-\[5px\] inline-flex align-\[-3px\] text-paper\/50 md:hidden native-md-inline-flex">\s*<ChevronDown size=\{17\} \/>/);
+    expect(h1).toMatch(/<T k="bible\.chapterN" replacements=\{\{ n: chapter \}\} \/>\s*<span aria-hidden data-reader-chrome className="ms-\[5px\] inline-flex align-\[-3px\] text-paper\/50 md:hidden native-md-inline-flex">\s*<ChevronDown size=\{17\} \/>/);
     // The way to the books lies over the heading, beside it and not in it.
     expect(h1).not.toContain("<button");
     expect(header).toMatch(/<div className="relative">\s*<h1[\s\S]*?<\/h1>\s*<TitleOpensBooks slug=\{slug\} chapter=\{chapter\} \/>\s*<\/div>/);
@@ -171,6 +171,10 @@ describe("the ways to it", () => {
     expect(button).toContain("onClick={openBooks}");
     expect(button).toContain('aria-haspopup="dialog"');
     expect(button).toContain('aria-label={t("bible.pickChapterCurrentAria", { book: t(`bible.books.${slug}`), chapter })}');
+    // Focus puts the way and its chevron away with the pill (globals.css,
+    // html.reader-focus [data-reader-chrome]), so a tap on the title there
+    // only brings back the way out.
+    expect(button).toMatch(/data-title-books=""\s*data-reader-chrome\s*onClick=\{openBooks\}/);
     // A phone's and a tablet's: the computer chooses from its toolbar.
     expect(button).toContain('className="absolute inset-0 rounded-2xl md:hidden native-md-block"');
   });

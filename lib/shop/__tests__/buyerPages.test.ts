@@ -159,10 +159,10 @@ describe("every page", () => {
   it("moves only on the app's motion switch, and keeps nothing once it has played", () => {
     expect(rule('.shop-step-line[data-line="done"],\n.shop-step-line[data-line="lead"]')).toMatch(/shop-spine-draw [^;]*backwards;/);
     expect(rule('.shop-mark[data-state="now"]')).toMatch(/animation: shop-glow-up [^;]*backwards;/);
-    expect(rule(".shop-rise")).toMatch(/animation: shop-rise [^;]*backwards;/);
+    expect(rule(".shop-arrive")).toMatch(/animation: shop-arrive [^;]*backwards;/);
     expect(
       rule(
-        ':where([data-motion="reduce"]) .shop-step-line[data-line="done"],\n:where([data-motion="reduce"]) .shop-step-line[data-line="lead"],\n:where([data-motion="reduce"]) .shop-mark[data-state="now"],\n:where([data-motion="reduce"]) .shop-rise',
+        ':where([data-motion="reduce"]) .shop-step-line[data-line="done"],\n:where([data-motion="reduce"]) .shop-step-line[data-line="lead"],\n:where([data-motion="reduce"]) .shop-mark[data-state="now"],\n:where([data-motion="reduce"]) .shop-arrive',
       ),
     ).toMatch(/animation: none;/);
   });

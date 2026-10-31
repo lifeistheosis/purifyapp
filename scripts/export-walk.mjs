@@ -2232,17 +2232,34 @@ await section(27, async () => {
     }, n);
   const kept = (page) => page.evaluate(() => { try { return JSON.parse(localStorage.getItem("purify:bible:last") ?? "null"); } catch { return null; } });
   const versesDrawn = (page) => page.waitForFunction(() => document.querySelectorAll("[data-verse][id^='v']").length > 10, null, { timeout: 20000 }).catch(() => {});
-  /** The reader's own scroll (a wheel), until verse n is over the line. */
+  /**
+   * The reader's own scroll (a wheel), until verse n is over the line, read
+   * down as a reader reads. The bars go on the way down and come back on the
+   * way up, and the line moves with them (65px on a phone), so a walk that
+   * steps up and down past the verse never settles: build 86's first walk
+   * swung between 13 and 15 six times. So the bars are sent away first, and
+   * every step is measured against the room they leave; a step past the
+   * verse goes up well clear of it and comes down again, which leaves the
+   * bars away and the verse where the measure said.
+   */
   const readTo = async (page, n) => {
     await page.mouse.move(195, 420);
+    await page.mouse.wheel(0, 300);
+    await page.waitForTimeout(600);
     for (let i = 0; i < 6; i++) {
       const { off } = await atLine(page, n);
       if (off === null || Math.abs(off) <= 6) break;
-      await page.mouse.wheel(0, off);
+      if (off > 0) {
+        await page.mouse.wheel(0, off);
+      } else {
+        await page.mouse.wheel(0, off - 400);
+        await page.waitForTimeout(600);
+        await page.mouse.wheel(0, 400);
+      }
       await page.waitForTimeout(600);
     }
-    // One more touch of the wheel once the bars have gone, so the page reads
-    // the place against the same room this walk does.
+    // One more touch of the wheel with the bars away, so the page reads the
+    // place against the same room this walk does.
     await page.mouse.wheel(0, 2);
     await page.waitForTimeout(400);
   };
@@ -3264,9 +3281,9 @@ await section(33, async () => {
       });
     const bars = await page.evaluate(() => {
       const shown = (n) => !!n && n.getBoundingClientRect().height > 0 && getComputedStyle(n).display !== "none";
-      return { focus: document.documentElement.classList.contains("reader-focus"), bar: shown(document.querySelector("[data-mobile-topbar]")), pill: shown(document.querySelector("[aria-label='Chapter switcher']")) };
+      return { focus: document.documentElement.classList.contains("reader-focus"), bar: shown(document.querySelector("[data-mobile-topbar]")), pill: shown(document.querySelector("[aria-label='Chapter switcher']")), books: shown(document.querySelector("[data-title-books]")) };
     });
-    must(bars.focus && !bars.bar && !bars.pill, `${where}: the round buttons and the chapter pill are put away (focus ${bars.focus}, plates ${bars.bar}, pill ${bars.pill})`);
+    must(bars.focus && !bars.bar && !bars.pill && !bars.books, `${where}: the round buttons, the chapter pill and the title's way to the books are put away (focus ${bars.focus}, plates ${bars.bar}, pill ${bars.pill}, books ${bars.books})`);
     const exit = await exitNow();
     must(Boolean(exit) && exit.opacity > 0.95 && exit.top >= exit.vh - 140 && exit.bottom <= exit.vh && Math.abs(exit.middle - exit.vw / 2) <= 2, `${where}: the way out is at the foot, in the middle, in sight as focus begins (${exit ? `${exit.top}..${exit.bottom} of ${exit.vh}, opacity ${exit.opacity}` : "none"})`);
     await page.screenshot({ path: path.join(SHOTS, `reader-focus-${size.width}.png`) });
@@ -3371,10 +3388,14 @@ await section(34, async () => {
   // A's player docked at the foot, over the tab bar, never under it. Every
   // control keeps its place from the first frame (the owner's note 61): its
   // box is recorded on every frame from the first one the page draws, and
-  // once everything has answered it must be where it was.
+  // once everything has answered it must be where it was. Frames count only
+  // once the address is the chant being watched, and each watch keeps its own
+  // list and ends the one before: the walk moves in place (go, the router),
+  // and in build 86's first walk the Canon's recorder, still running, wrote
+  // the Canon's last frames into the Anthem's list as its first.
   const chantLabels = { share: en["common.share"], back: en["nav.back"], play: en["prayers.play"] };
-  const watchChant = () =>
-    page.evaluate((labels) => {
+  const watchChant = (at) =>
+    page.evaluate(({ labels, at }) => {
       const box = (el) => {
         if (!el) return null;
         const r = el.getBoundingClientRect();
@@ -3397,14 +3418,17 @@ await section(34, async () => {
         };
       };
       window.__chantSeen = seen;
-      window.__chantFrames = [];
+      const frames = (window.__chantFrames = []);
+      const watch = (window.__chantWatch = (window.__chantWatch ?? 0) + 1);
       let n = 0;
       const tick = () => {
-        if (document.querySelector('[data-route-content] [data-chant-control="doors"]')) window.__chantFrames.push(seen());
+        if (window.__chantWatch !== watch) return;
+        const here = location.pathname.replace(/\/$/, "") === at;
+        if (here && document.querySelectorAll('[data-route-content] [data-chant-control="doors"]').length === 1) frames.push(seen());
         if (++n < 300) requestAnimationFrame(tick);
       };
       requestAnimationFrame(tick);
-    }, chantLabels);
+    }, { labels: chantLabels, at });
   const chantNow = () => page.evaluate(() => (window.__chantSeen ? window.__chantSeen() : null));
   const moved = (a, b, keys = Object.keys(a)) => keys.filter((k) => a[k] !== b[k]).map((k) => `${k} ${a[k]} to ${b[k]}`);
   const chantFoot = () =>
@@ -3422,7 +3446,7 @@ await section(34, async () => {
     });
 
   // Psalm 135, opened from Chants: the first frame and every one after.
-  await watchChant();
+  await watchChant("/chants/psalm-135");
   await go(page, "/chants/psalm-135/");
   await page.waitForTimeout(2500);
   const psalmFrames = await page.evaluate(() => window.__chantFrames ?? []);
@@ -3490,7 +3514,7 @@ await section(34, async () => {
   must(!back.cover || (back.cover.whole && back.cover.shown === "1"), `and Chants comes back whole, its cover drawn at once (${back.cover ? `${back.cover.whole ? "whole" : "not yet"}, opacity ${back.cover.shown}` : "no picture"})`);
 
   // The Paschal Canon: one version, no switch, its hymns lit at their own size.
-  await watchChant();
+  await watchChant("/chants/paschal-canon");
   await go(page, "/chants/paschal-canon/");
   await page.waitForTimeout(2000);
   const canonFrames = await page.evaluate(() => window.__chantFrames ?? []);
@@ -3511,7 +3535,7 @@ await section(34, async () => {
 
   // The Anthem's page: its name, the words on the page with no signal, its
   // three versions in Versions, each naming who sings it or that nobody is known.
-  await watchChant();
+  await watchChant("/chants/prayer-rope-anthem");
   await go(page, "/chants/prayer-rope-anthem/");
   await page.waitForTimeout(2000);
   const anthemFrames = await page.evaluate(() => window.__chantFrames ?? []);

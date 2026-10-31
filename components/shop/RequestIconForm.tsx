@@ -160,7 +160,7 @@ export function RequestIconForm({
   return (
     <form onSubmit={onSubmit}>
       {chosen ? (
-        <div className="shop-raise shop-rise flex items-center gap-3.5 rounded-[20px] p-3.5" data-chosen>
+        <div className="shop-raise shop-arrive flex items-center gap-3.5 rounded-[20px] p-3.5" data-chosen>
           <RequestIcon src={chosen.saint?.icon ?? null} width={66} height={88} className="rounded-[10px]" />
           <div className="min-w-0 flex-1">
             <p className="font-sans text-[11.5px] text-paper/60">{t("shop.saintOrSubject")}</p>

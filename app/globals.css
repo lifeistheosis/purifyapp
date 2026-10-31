@@ -1927,7 +1927,7 @@ html.is-native .shop-thread-end {
 @keyframes shop-glow-up {
  from { box-shadow: 0 0 0 0 transparent, 0 0 0 transparent; }
 }
-@keyframes shop-rise {
+@keyframes shop-arrive {
  from { opacity: 0; translate: 0 6px; }
 }
 .shop-step-line[data-line="done"],
@@ -1939,13 +1939,13 @@ html.is-native .shop-thread-end {
  animation: shop-glow-up 420ms ease-out backwards;
  animation-delay: calc(var(--i, 0) * 60ms + 200ms);
 }
-.shop-rise {
- animation: shop-rise 260ms var(--ease-house) backwards;
+.shop-arrive {
+ animation: shop-arrive 260ms var(--ease-house) backwards;
 }
 :where([data-motion="reduce"]) .shop-step-line[data-line="done"],
 :where([data-motion="reduce"]) .shop-step-line[data-line="lead"],
 :where([data-motion="reduce"]) .shop-mark[data-state="now"],
-:where([data-motion="reduce"]) .shop-rise {
+:where([data-motion="reduce"]) .shop-arrive {
  animation: none;
 }
 

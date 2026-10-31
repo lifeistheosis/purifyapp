@@ -33,7 +33,7 @@ const DOUBLE_TAP_MS = 300;
  * button) hearts a message, and the viewer's latest message shows a truthful
  * Delivered/Read receipt derived from the counterparty's last_read_at. A
  * message that arrives while the thread is open rises a few pixels as it
- * fades in (`.shop-rise`, on the app's motion switch).
+ * fades in (`.shop-arrive`, on the app's motion switch).
  */
 export function MessageThread({
   conversationId,
@@ -168,7 +168,7 @@ export function MessageThread({
                   "flex items-end gap-2",
                   mine ? "justify-end" : "justify-start",
                   reacted ? "mb-5" : "mb-2.5",
-                  !opened.has(m.id) && "shop-rise",
+                  !opened.has(m.id) && "shop-arrive",
                 )}
               >
                 {!mine ? (

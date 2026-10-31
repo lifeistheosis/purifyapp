@@ -224,7 +224,9 @@ export function ChapterScreen({
                     the owner's pick A of r3-20): the Bible tab is the
                     chapter now, so the books are chosen from it, and a small
                     chevron after "Chapter 1" says so. The heading stays one
-                    heading; the way to the books lies over it. */}
+                    heading; the way to the books lies over it. Focus puts
+                    the way and its chevron away with the pill, so a tap on
+                    the title only brings back the way out of focus. */}
                 <header id="chapter-title" className="mb-5 text-center">
                   <div className="relative">
                     <h1 className="font-heading text-paper">
@@ -233,7 +235,7 @@ export function ChapterScreen({
                       </span>{" "}
                       <span className="page-open-sub mt-1.5 block font-sans text-ui font-normal tracking-normal text-paper/55">
                         <T k="bible.chapterN" replacements={{ n: chapter }} />
-                        <span aria-hidden className="ms-[5px] inline-flex align-[-3px] text-paper/50 md:hidden native-md-inline-flex">
+                        <span aria-hidden data-reader-chrome className="ms-[5px] inline-flex align-[-3px] text-paper/50 md:hidden native-md-inline-flex">
                           <ChevronDown size={17} />
                         </span>
                       </span>
@@ -417,6 +419,7 @@ function TitleOpensBooks({ slug, chapter }: { slug: string; chapter: number }) {
       aria-haspopup="dialog"
       aria-label={t("bible.pickChapterCurrentAria", { book: t(`bible.books.${slug}`), chapter })}
       data-title-books=""
+      data-reader-chrome
       onClick={openBooks}
       className="absolute inset-0 rounded-2xl md:hidden native-md-block"
     />

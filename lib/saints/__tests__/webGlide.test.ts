@@ -520,13 +520,14 @@ describe("a picture on the web (the build 85 note 52)", () => {
   });
 
   it("arrives on the first paint unseen over the circle's ground, cut at his face", () => {
+    // St Anthony's standing icon has a point of its own (lib/saints/iconFaces.ts); St John's mosaic no longer does.
     const html = renderToString(
       createElement(WebAvatar, {
-        node: { kind: "saint", id: "saint:x", person: { slug: "john-chrysostom", name: "St. John Chrysostom", short: "John Chrysostom", icon: "/saints/icons/john-chrysostom.jpg", initial: "J", pronoun: "his" }, ties: [] },
+        node: { kind: "saint", id: "saint:x", person: { slug: "anthony-the-great", name: "St. Anthony the Great", short: "Anthony the Great", icon: "/saints/icons/anthony-the-great.jpg", initial: "A", pronoun: "his" }, ties: [] },
         size: 48,
       }),
     );
-    expect(html).toMatch(/<img[^>]*src="\/saints\/icons\/john-chrysostom\.jpg"[^>]*class="[^"]*opacity-0[^"]*"[^>]*style="object-position:50% 2%"/);
+    expect(html).toMatch(/<img[^>]*src="\/saints\/icons\/anthony-the-great\.jpg"[^>]*class="[^"]*opacity-0[^"]*"[^>]*style="object-position:50% 2%"/);
     expect(html).toContain("bg-night-soft");
   });
 });

@@ -123,7 +123,7 @@ function TicketMessages({ thread, name }: { thread: TicketThreadData; name: stri
               className={cn(
                 "mb-2.5 flex items-end gap-2",
                 mine ? "justify-end" : "justify-start",
-                !opened.has(m.id) && "shop-rise",
+                !opened.has(m.id) && "shop-arrive",
               )}
             >
               {!mine ? (
