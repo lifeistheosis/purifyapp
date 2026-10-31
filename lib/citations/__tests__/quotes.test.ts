@@ -591,10 +591,16 @@ describe("a Father, or a council, in a study of Theology or Apologetics", () => 
   });
 
   it("shows the line under each quotation", () => {
-    for (const file of ["components/theology/TopicReader.tsx", "components/apologetics/ApologeticsReader.tsx"]) {
-      const reader = fs.readFileSync(path.join(ROOT, file), "utf8");
-      expect(reader, file).toContain("shownCite(q.cite)");
-      expect(reader, file).toContain("<SourceLine cite={");
+    // A study of Theology resolves its passages in lib/theology/passages.ts
+    // and draws its councils' words in StudyPartText since round 3 r3-13,
+    // where it is read part by part.
+    const readers: [string, string][] = [
+      ["lib/theology/passages.ts", "components/theology/StudyPartText.tsx"],
+      ["components/apologetics/ApologeticsReader.tsx", "components/apologetics/ApologeticsReader.tsx"],
+    ];
+    for (const [file, line] of readers) {
+      expect(fs.readFileSync(path.join(ROOT, file), "utf8"), file).toContain("shownCite(q.cite)");
+      expect(fs.readFileSync(path.join(ROOT, line), "utf8"), line).toContain("<SourceLine cite={");
     }
   });
 });

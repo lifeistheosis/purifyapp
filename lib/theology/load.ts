@@ -48,6 +48,14 @@ export type Quotation = {
   /** PD source URL (NPNF, ANF, CCEL, NewAdvent, Patrologia). */
   source?: string;
   /**
+   * Where the passage stands when the study is read part by part (1.8, round
+   * 3 r3-13): the number of the part it is set in at the end of, or "end"
+   * for the Fathers at the study's end. An editorial choice, set by the
+   * editors and never by a script; where it is not set, the passage stands
+   * after the first paragraph that names its Father (lib/theology/parts.ts).
+   */
+  placement?: number | "end";
+  /**
    * Where the words stand in the app, or that they do not (1.8,
    * lib/citations/cite.ts): a paragraph of a work in the library, the
    * passage they are close to ("Not word for word"), or the plain word that
@@ -98,11 +106,12 @@ export type TheologyBody = {
   essay: EssayBlock[];
   florilegium: Quotation[];
   /**
-   * The editors' epigraph for the study (1.8, round 3 r3-04): the opening
-   * words of one passage of the florilegium, which the Fathers' deck on the
-   * study's page opens on (lib/theology/page.ts, epigraphIndex). None chosen
-   * yet: the deck opens on the first passage. An editorial choice, so it is
-   * set here by the editors and never by a script.
+   * The editors' epigraph for the study (1.8, round 3 r3-04 and r3-13): the
+   * opening words of one passage of the florilegium, which the study's page
+   * opens on as its cover, his words over his portrait (lib/theology/
+   * page.ts, epigraphIndex). None chosen yet: the cover is the first
+   * passage. An editorial choice, so it is set here by the editors and never
+   * by a script.
    */
   epigraph?: string;
   councils?: CouncilCitation[];

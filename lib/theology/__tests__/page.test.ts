@@ -1,7 +1,8 @@
-// A doctrine's own page and Theology's round 3 (1.8, r3-04): the owner's pick
-// of 2026-10-30, "one A, two B and C, hybrid, three, C". The pure parts of
-// the page: which doors a study has and which opens, the Fathers' medallions
-// in order, the passage the deck opens on, and each study's cover.
+// A doctrine's own page (1.8): the pure parts. Round 3 r3-04 made it B's
+// doors and C's deck; round 3 r3-13 (the owner's hybrid of B and C,
+// 2026-10-30) made it B's cover, a Father's words over his portrait, and C's
+// "before you read". Held here: the Fathers in order, the passage the cover
+// opens on, each study's subject, and the cards' words.
 
 import fs from "node:fs";
 import path from "node:path";
@@ -11,18 +12,13 @@ import { describe, expect, it } from "vitest";
 import {
   CARD_LINES,
   CARD_TEXT,
-  DOCTRINE_DOORS,
-  SLIM_SIZES,
-  doctrineDoors,
-  doorsForAddress,
+  COVER_LINES,
+  COVER_TEXT,
   epigraphIndex,
   fatherGroups,
   fatherKey,
   medallionInitial,
   medallionName,
-  openingDoor,
-  slimLinesHeight,
-  slimSize,
   subjectOfStudy,
 } from "@/lib/theology/page";
 import { THEOLOGY_TOPICS } from "@/lib/theology/topics";
@@ -36,33 +32,9 @@ const studies = THEOLOGY_TOPICS.filter((t) => !t.planned).map((t) => ({
 /** The passages a reader is shown (lib/theology/load.ts, shownOnly). */
 const shown = (body: TheologyBody) => body.florilegium.filter((q) => q.cite?.kind !== "untraced");
 
-describe("a doctrine's doors", () => {
-  it("are B's four, in the design's order", () => {
-    expect(DOCTRINE_DOORS).toEqual(["study", "fathers", "scripture", "related"]);
-    expect(doctrineDoors({ passages: 3, scripture: 2, related: 1 })).toEqual(["study", "fathers", "scripture", "related"]);
-  });
-
-  it("are only the ones with something behind them; the study is always there", () => {
-    expect(doctrineDoors({ passages: 0, scripture: 0, related: 0 })).toEqual(["study"]);
-    expect(doctrineDoors({ passages: 4, scripture: 0, related: 2 })).toEqual(["study", "fathers", "related"]);
-  });
-
-  it("open on the Fathers, where the study has them, and the plain address names that door", () => {
-    expect(openingDoor(["study", "fathers", "scripture"])).toBe("fathers");
-    expect(openingDoor(["study", "scripture"])).toBe("study");
-    // lib/ui/sectionTabs.ts gives the first part no #: the opening door.
-    expect(doorsForAddress(["study", "fathers", "scripture", "related"])).toEqual(["fathers", "study", "scripture", "related"]);
-    expect(doorsForAddress(["study", "related"])).toEqual(["study", "related"]);
-  });
-
-  it("every study has passages, so every page opens on the deck", () => {
+describe("a doctrine's subject", () => {
+  it("is the subject the study belongs to, for every study, its icon on disk", () => {
     expect(studies.length).toBe(14);
-    for (const { slug, body } of studies) expect(shown(body).length, slug).toBeGreaterThan(0);
-  });
-});
-
-describe("a doctrine's cover", () => {
-  it("is the icon of the subject the study belongs to, for every study", () => {
     for (const { slug } of studies) {
       const subject = subjectOfStudy(slug);
       expect(subject, slug).not.toBeNull();
@@ -71,9 +43,13 @@ describe("a doctrine's cover", () => {
     expect(subjectOfStudy("essence-energies")?.id).toBe("salvation");
     expect(subjectOfStudy("no-such-study")).toBeNull();
   });
+
+  it("every study has passages, so every page has a cover of a Father's words", () => {
+    for (const { slug, body } of studies) expect(shown(body).length, slug).toBeGreaterThan(0);
+  });
 });
 
-describe("the Fathers' medallions", () => {
+describe("a study's Fathers", () => {
   it("are most quoted first, Fathers quoted as often in the order the study first quotes them", () => {
     const groups = fatherGroups([
       { saintSlug: "a", author: "A" },
@@ -92,7 +68,7 @@ describe("the Fathers' medallions", () => {
     ]);
   });
 
-  it("count every passage once, so All is the sum of the faces", () => {
+  it("count every passage once", () => {
     for (const { slug, body } of studies) {
       const passages = shown(body);
       const groups = fatherGroups(passages);
@@ -110,7 +86,7 @@ describe("the Fathers' medallions", () => {
   });
 });
 
-describe("the passage the deck opens on (the study's epigraph)", () => {
+describe("the passage the cover opens on (the study's epigraph)", () => {
   const passages = [{ text: "First words." }, { text: "It is plain, then,  that there is a God." }, { text: "Third." }];
 
   it("is the editors' pick, by its opening words, where the study has one", () => {
@@ -135,10 +111,12 @@ describe("the passage the deck opens on (the study's epigraph)", () => {
   });
 });
 
-describe("a card's words (build 83: no card as tall as the deck's longest passage)", () => {
-  it("are the design's 15px, and fold after a few lines", () => {
-    expect(CARD_TEXT).toEqual({ size: 15, lineHeight: 1.45 });
+describe("a card's words and the cover's (build 83: no card as tall as the longest passage)", () => {
+  it("are B's 15.5px on a card and 18px on the cover, and fold after a few lines", () => {
+    expect(CARD_TEXT).toEqual({ size: 15.5, lineHeight: 1.5 });
     expect(CARD_LINES).toBe(7);
+    expect(COVER_TEXT).toEqual({ size: 18, lineHeight: 1.45 });
+    expect(COVER_LINES).toBe(6);
   });
 
   it("each have somewhere Read where it's from opens them whole", () => {
@@ -149,27 +127,5 @@ describe("a card's words (build 83: no card as tall as the deck's longest passag
         expect(inApp || Boolean(q.source), `${slug}: ${q.author}`).toBe(true);
       }
     }
-  });
-});
-
-describe("the doors' slim row (build 83: its labels were cut at 390px)", () => {
-  it("sets its labels at the largest size, 13px down to 9px by halves, at which all read whole", () => {
-    expect(SLIM_SIZES).toMatchObject({ from: 13, floor: 9, step: 0.5 });
-    expect(slimSize(() => true)).toBe(13);
-    expect(slimSize((size) => size <= 11.5)).toBe(11.5);
-    expect(slimSize((size) => size <= 9)).toBe(9);
-    const tried: number[] = [];
-    expect(
-      slimSize((size) => {
-        tried.push(size);
-        return false;
-      }),
-    ).toBeNull();
-    expect(tried).toEqual([13, 12.5, 12, 11.5, 11, 10.5, 10, 9.5, 9]);
-  });
-
-  it("lets a label run to two lines of its own leading, and no more", () => {
-    expect(slimLinesHeight(13, 2)).toBeCloseTo(28.6);
-    expect(slimLinesHeight(9, 1)).toBeCloseTo(9.9);
   });
 });

@@ -4698,21 +4698,6 @@ html[data-reading-mode="parchment"] .plus-try-tile-lit:not(.dark-island *) {
  mask-image: linear-gradient(to left, rgb(0 0 0 / 0.1) 35%, rgb(0 0 0 / 0.85));
 }
 
-/* A gallery band that opens (Theology's subjects, components/theology/
-   FaithMap.tsx): what it holds settles in under it as it opens. The rule
-   matches only while the <details> is open, so it plays again on every
-   opening. Filled backwards, so the list is handed back to transform: none
-   when it lands. */
-@keyframes band-open {
- from { opacity: 0; transform: translateY(-4px); }
-}
-details[open] > .band-open {
- animation: band-open var(--duration-base) var(--ease-house) backwards;
-}
-:where([data-motion="reduce"]) details[open] > .band-open {
- animation: none;
-}
-
 /* ── Theology, round 3 (1.8, r3-04) ──
    The owner's pick of 2026-10-30 (Homebase/boards/purify-master/variants/
    r3-04-theology): "one A, two B and C, hybrid, three, C". Surfaces are the
@@ -4730,8 +4715,9 @@ details[open] > .band-open {
  border-color: color-mix(in srgb, var(--color-paper) 8.5%, transparent);
  box-shadow: inset 0 1px 0 rgb(var(--panel-sheen) / 0.07), 0 24px 38px -22px rgb(0 0 0 / 0.95), 0 2px 6px rgb(0 0 0 / 0.35);
 }
-/* The subject's own icon behind the tray's head (FaithMap), blurred and grey:
-   its light, not a picture. Still: nothing here moves. */
+/* The subject's own icon behind a card's head (the path's cards on the hub,
+   components/theology/TheologyHub.tsx), blurred and grey: its light, not a
+   picture. Still: nothing here moves. */
 .faith-tray-glow {
  position: absolute;
  inset-inline: -15%;
@@ -4743,23 +4729,18 @@ details[open] > .band-open {
  opacity: 0.2;
  pointer-events: none;
 }
-/* A hairline between rows, from past the glyph's plate to the end. */
-.faith-rows > li + li,
+/* A hairline between rows, from past the row's start to the end. */
 .theology-rule + .theology-rule {
  position: relative;
 }
-.faith-rows > li + li::before,
 .theology-rule + .theology-rule::before {
  content: "";
  position: absolute;
- inset-inline: 58px 16px;
+ inset-inline: 18px 16px;
  top: 0;
  height: 1px;
  background: rgb(255 255 255 / 0.06);
  background: color-mix(in srgb, var(--color-paper) 6%, transparent);
-}
-.theology-rule + .theology-rule::before {
- inset-inline-start: 18px;
 }
 /* A row lights white as it is pressed, and for the keyboard (A's chosen row). */
 .theology-row {
@@ -4803,97 +4784,22 @@ html[data-reading-mode="parchment"] .theology-row:is(:active, :focus-visible) .t
  box-shadow: inset 0 1px 0 rgb(var(--panel-sheen) / 0.1), 0 4px 10px -4px rgb(0 0 0 / 0.85);
 }
 
-/* A doctrine's page, C's head: the subject's icon as the cover. On a phone it
-   starts at the top of the screen under the clear bar (.under-topbar) and
-   shows 137px below it, as drawn; the title is set over its last 116px.
-   Faded into the page by a mask, so no colour is laid over the page. */
-.doctrine-cover {
- height: 240px;
- -webkit-mask-image: linear-gradient(to bottom, #000 0, #000 38%, rgb(0 0 0 / 0.5) 66%, transparent 100%);
- mask-image: linear-gradient(to bottom, #000 0, #000 38%, rgb(0 0 0 / 0.5) 66%, transparent 100%);
-}
-@media (max-width: 767.98px) {
- .doctrine-cover {
-  height: calc(3rem + env(safe-area-inset-top, 0px) + 137px);
- }
- html.is-native .doctrine-cover {
-  height: calc(3rem + var(--inset-top) + 137px);
- }
-}
-.doctrine-title {
- margin-top: -116px;
-}
+/* Words set over a picture keep a soft shadow under them; on Parchment,
+   where the picture lies under paper, none. */
 .doctrine-shadow {
  text-shadow: 0 2px 18px rgb(0 0 0 / 0.7);
 }
 html[data-reading-mode="parchment"] .doctrine-shadow {
  text-shadow: none;
 }
-/* A door not open: the saint page's doors, raised (components/theology/DoctrineDoors.tsx). */
-.theology-door {
- background: linear-gradient(180deg, rgb(255 255 255 / 0.085), rgb(255 255 255 / 0.03));
- background: linear-gradient(180deg, color-mix(in srgb, var(--color-paper) 8.5%, transparent), color-mix(in srgb, var(--color-paper) 3%, transparent));
- box-shadow: inset 0 1px 0 rgb(var(--panel-sheen) / 0.09), 0 12px 22px -14px rgb(0 0 0 / 0.95);
-}
-/* The doors again as one slim row, pinned under the bar once they have gone
-   up under it. Each door its label alone, at the row's size (--slim-size),
-   which DoctrineDoors brings down from 13px until every label reads whole;
-   the doors share the row, and one is never narrower than its longest word.
-   A label wraps between its words and is never cut; only should nothing fit
-   at 9px may a word break inside itself (data-squeezed). Build 83's walk
-   found "The s...", "Scrip..." here at 390px, when each door carried its
-   icon too. */
-.doctrine-slim {
- --slim-size: 13px;
-}
-.doctrine-slim-door {
- min-width: min-content;
- font-size: var(--slim-size);
-}
-.doctrine-slim-label {
- display: block;
- max-width: 100%;
- hyphens: manual;
-}
-.doctrine-slim[data-squeezed] .doctrine-slim-label {
- overflow-wrap: anywhere;
-}
-/* Read the study opens the study under the bar and the doors' slim row
-   (its band's 16px, its border and padding, and a door of 44px). */
-.doctrine-panels {
- scroll-margin-top: calc(3rem + 70px + env(safe-area-inset-top, 0px));
-}
-html.is-native .doctrine-panels {
- scroll-margin-top: calc(3rem + 70px + var(--inset-top));
-}
-@media (min-width: 768px) {
- html:not(.is-native) .doctrine-panels {
-  scroll-margin-top: calc(72px + 70px);
- }
-}
 
-/* The Fathers' medallions (B): a face in a ring of the ground, its count on
-   a small plate; the chosen one ringed in white light. "All", and a Father
-   with no picture, is a dark coin with his initial. */
+/* A Father's face (the Fathers the studies quote, the faces beside a
+   study's parts): a face in a ring of the ground. A Father with no picture
+   is a dark coin with his initial. */
 .theology-face {
  box-shadow: inset 0 0 0 1px rgb(255 255 255 / 0.2);
  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--color-paper) 20%, transparent);
  transition: box-shadow var(--duration-fast) var(--ease-house);
-}
-.theology-face-on {
- box-shadow: 0 0 0 2px var(--color-night), 0 0 0 3.5px var(--color-paper), 0 0 20px rgb(255 255 255 / 0.45);
-}
-html[data-reading-mode="parchment"] .theology-face-on {
- box-shadow: 0 0 0 2px var(--color-night), 0 0 0 3.5px var(--color-paper);
-}
-.theology-face-name {
- text-shadow: 0 0 10px rgb(255 255 255 / 0.5);
-}
-html[data-reading-mode="parchment"] .theology-face-name {
- text-shadow: none;
-}
-.theology-count {
- box-shadow: 0 0 0 2px var(--color-night);
 }
 .theology-all {
  background: radial-gradient(circle at 35% 28%, rgb(44 44 49), rgb(23 23 26) 72%);
@@ -4905,10 +4811,10 @@ html[data-reading-mode="parchment"] .theology-face-name {
  transition: none;
 }
 
-/* C's deck: each passage a card that is the picture it shares (the verse
-   picture's look): his face above, faded into the card and never written
-   over. The card in view stands full; the others wait smaller and dim, as
-   drawn. */
+/* The deck at a part's end (components/theology/PassageDeck.tsx): each
+   passage a picture card, B's, his portrait above, faded into the card and
+   never written over, his words, and its three actions on its foot. The card
+   in view stands full; the others wait smaller and dim, as C draws them. */
 .theology-card {
  background-color: var(--color-night-deep);
  border: 1px solid rgb(255 255 255 / 0.11);
@@ -4932,7 +4838,8 @@ html[data-reading-mode="parchment"] .theology-face-name {
  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--color-paper) 30%, transparent), 0 0 22px rgb(255 255 255 / 0.12);
 }
 
-/* Part 3, C: the foot as shelves. A tile is a raised card; its glyph glows. */
+/* The four ways in as tiles (the library first, for a practicing reader). A
+   tile is a raised card; its glyph glows. */
 .theology-tile {
  background: linear-gradient(180deg, rgb(30 30 34), rgb(22 22 25));
  background: linear-gradient(180deg, color-mix(in srgb, var(--color-paper) 5.5%, var(--color-night)), color-mix(in srgb, var(--color-paper) 2.5%, var(--color-night)));
@@ -5174,6 +5081,288 @@ html[data-reading-mode="parchment"] .search-tab[aria-selected="true"]::after {
 }
 .search-tab:focus-visible {
  outline-offset: 0;
+}
+
+/* ── Theology, the revamp (1.8, round 3 r3-13) ──
+   The owner's pick of 2026-10-30, a hybrid of B and C (Homebase/boards/
+   purify-master/variants/r3-13-theology-revamp, INDEX.md): C's design, the
+   path through the faith in the order of the Creed, with B's images, each
+   subject's icon whole in its own light. The same ground, ink and mixes as
+   round 3 above, so every palette holds; what is lit glows white, softly,
+   and on Parchment the glow steps aside for the plain ink.
+
+   A subject's icon whole, in its own light (components/theology/
+   WholeIcon.tsx): the icon at its own proportions, and the same icon
+   blurred and grey filling the frame behind it. Still: nothing moves. */
+.whole-icon {
+ background-color: var(--color-night-deep);
+}
+.whole-icon-light {
+ position: absolute;
+ inset: -14%;
+ background-size: cover;
+ background-position: center;
+ filter: blur(22px) grayscale(1) brightness(1.15);
+ opacity: 0.42;
+ pointer-events: none;
+}
+html[data-reading-mode="parchment"] .whole-icon-light {
+ opacity: 0.3;
+}
+.whole-icon-picture {
+ position: absolute;
+ inset: 0;
+ width: 100%;
+ height: 100%;
+ object-fit: contain;
+}
+
+/* The nine as plates (components/theology/PathPlates.tsx): each icon framed
+   on a mat of the deepest ground, the step in hand ringed in white light, a
+   walked step marked with a check. */
+.path-plate {
+ position: relative;
+ display: block;
+ border-radius: 6px;
+ padding: 3px;
+ background-color: var(--color-night-deep);
+ border: 1px solid rgb(255 255 255 / 0.2);
+ border-color: color-mix(in srgb, var(--color-paper) 20%, transparent);
+ box-shadow: inset 0 1px 0 rgb(var(--panel-sheen) / 0.05), 0 14px 22px -12px rgb(0 0 0 / 0.9), 0 1px 3px rgb(0 0 0 / 0.3);
+ transition: border-color var(--duration-fast) var(--ease-house), box-shadow var(--duration-fast) var(--ease-house);
+}
+.path-plate[data-state="current"] {
+ border-color: var(--color-paper);
+ box-shadow: 0 0 0 1px var(--color-paper), 0 0 22px rgb(255 255 255 / 0.32), 0 14px 22px -12px rgb(0 0 0 / 0.9);
+}
+html[data-reading-mode="parchment"] .path-plate[data-state="current"] {
+ box-shadow: 0 0 0 1px var(--color-paper);
+}
+.path-plate-check {
+ box-shadow: 0 0 10px rgb(255 255 255 / 0.45);
+}
+html[data-reading-mode="parchment"] .path-plate-check {
+ box-shadow: none;
+}
+:where([data-motion="reduce"]) .path-plate {
+ transition: none;
+}
+
+/* What is in hand, lit white: the next read on a card, the question a step
+   opens on. Its glyph's plate lights with it. */
+.path-lit {
+ background: linear-gradient(180deg, rgb(255 255 255 / 0.11), rgb(255 255 255 / 0.05));
+ background: linear-gradient(180deg, color-mix(in srgb, var(--color-paper) 11%, transparent), color-mix(in srgb, var(--color-paper) 5%, transparent));
+ box-shadow: inset 0 0 0 1px rgb(255 255 255 / 0.3), 0 0 26px rgb(255 255 255 / 0.12);
+ box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--color-paper) 30%, transparent), 0 0 26px rgb(255 255 255 / 0.12);
+}
+html[data-reading-mode="parchment"] .path-lit {
+ box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--color-paper) 30%, transparent);
+}
+.path-lit .theology-plate {
+ color: var(--color-night);
+ background: var(--color-paper);
+ border-color: var(--color-paper);
+ box-shadow: 0 0 16px rgb(255 255 255 / 0.45);
+}
+html[data-reading-mode="parchment"] .path-lit .theology-plate {
+ box-shadow: none;
+}
+/* The ring of the path round a step's medallion: the segment in hand glows. */
+.path-ring-lit {
+ filter: drop-shadow(0 0 4px rgb(255 255 255 / 0.55));
+}
+html[data-reading-mode="parchment"] .path-ring-lit {
+ filter: none;
+}
+
+/* A node on the path's line (a step's reads, a study's parts): a ring of the
+   ink; filled with a check once read; ringed white with a lit centre while
+   it is the next. The line runs behind the nodes, on the page's ground. */
+.path-node {
+ position: relative;
+ z-index: 1;
+ display: grid;
+ place-items: center;
+ width: 22px;
+ height: 22px;
+ flex: none;
+ border-radius: 9999px;
+ background-color: var(--color-night);
+ box-shadow: inset 0 0 0 1.5px rgb(255 255 255 / 0.28);
+ box-shadow: inset 0 0 0 1.5px color-mix(in srgb, var(--color-paper) 28%, transparent);
+}
+.path-node[data-state="read"] {
+ color: var(--color-night);
+ background-color: rgb(255 255 255 / 0.82);
+ background-color: color-mix(in srgb, var(--color-paper) 82%, transparent);
+ box-shadow: none;
+}
+.path-node[data-state="next"] {
+ box-shadow: 0 0 0 2px var(--color-paper), 0 0 16px rgb(255 255 255 / 0.4);
+}
+.path-node[data-state="next"]::after {
+ content: "";
+ width: 8px;
+ height: 8px;
+ border-radius: 9999px;
+ background-color: var(--color-paper);
+}
+html[data-reading-mode="parchment"] .path-node[data-state="next"] {
+ box-shadow: 0 0 0 2px var(--color-paper);
+}
+.path-line {
+ position: absolute;
+ inset-inline-start: 10.25px;
+ width: 1.5px;
+ background-color: rgb(255 255 255 / 0.14);
+ background-color: color-mix(in srgb, var(--color-paper) 14%, transparent);
+}
+.path-line[data-done] {
+ background-color: rgb(255 255 255 / 0.5);
+ background-color: color-mix(in srgb, var(--color-paper) 50%, transparent);
+}
+
+/* A step is a room over its icon (B's "a subject opens into a room over its
+   icon"): on a phone the icon stays behind as the page scrolls, and the
+   page rises over it on its own ground. The icon's foot melts into the
+   ground, so the name set over it reads. On a computer and a tablet the
+   room is the top of the page. */
+.step-room::after {
+ content: "";
+ position: absolute;
+ inset: 0;
+ background: linear-gradient(to bottom, transparent 42%, rgb(16 16 19 / 0.9) 84%, var(--color-night));
+ background: linear-gradient(to bottom, transparent 42%, color-mix(in srgb, var(--color-night) 90%, transparent) 84%, var(--color-night));
+ pointer-events: none;
+}
+.step-room {
+ position: relative;
+ height: 420px;
+ overflow: hidden;
+ border-radius: 20px;
+}
+@media (max-width: 767.98px) {
+ .step-room {
+  position: fixed;
+  inset-inline: 0;
+  top: 0;
+  height: min(70svh, 600px);
+  border-radius: 0;
+  z-index: 0;
+ }
+ /* The page starts with the room in view, its name over the icon's last
+    190px: the room's height, less the bar and the status bar above the
+    page, which the room lies under. */
+ .step-room-gap {
+  height: calc(min(70svh, 600px) - 3rem - env(safe-area-inset-top, 0px) - 190px);
+ }
+ html.is-native .step-room-gap {
+  height: calc(min(70svh, 600px) - 3rem - var(--inset-top) - 190px);
+ }
+}
+/* The page that rises over the room, with a soft edge so it does not cut. */
+.step-body {
+ background-color: var(--color-night);
+}
+.step-body::before {
+ content: "";
+ position: absolute;
+ inset-inline: 0;
+ top: -40px;
+ height: 40px;
+ background: linear-gradient(to bottom, transparent, var(--color-night));
+ pointer-events: none;
+}
+
+/* A doctrine's cover (B's "a Father's words as the cover"): his portrait
+   above his words, faded into the page, and the icon of the study's subject
+   whole in its light behind, which is all that shows when he has no
+   portrait or it cannot be had. On a phone it starts under the clear bar. */
+.study-cover {
+ height: 300px;
+}
+@media (max-width: 767.98px) {
+ .study-cover {
+  height: calc(3rem + env(safe-area-inset-top, 0px) + 300px);
+ }
+ html.is-native .study-cover {
+  height: calc(3rem + var(--inset-top) + 300px);
+ }
+}
+.study-cover-picture {
+ -webkit-mask-image: linear-gradient(to bottom, #000 0, #000 40%, rgb(0 0 0 / 0.55) 70%, transparent 100%);
+ mask-image: linear-gradient(to bottom, #000 0, #000 40%, rgb(0 0 0 / 0.55) 70%, transparent 100%);
+}
+.study-cover-words {
+ margin-top: -120px;
+}
+
+/* Faces in a row that overlap, each ringed in the ground (a part's Fathers). */
+.face-stack > * + * {
+ margin-inline-start: -8px;
+}
+.face-stack > * {
+ box-shadow: 0 0 0 2px var(--color-night);
+}
+
+/* The field that opens the search, carved into the page (the library first). */
+.theology-entry {
+ background-color: rgb(0 0 0 / 0.36);
+ background-color: color-mix(in srgb, var(--color-night-deep) 75%, transparent);
+ border: 1px solid rgb(255 255 255 / 0.12);
+ border-color: color-mix(in srgb, var(--color-paper) 12%, transparent);
+ box-shadow: inset 0 2px 6px rgb(0 0 0 / 0.45), 0 1px 0 rgb(var(--panel-sheen) / 0.04);
+}
+
+/* A council's own picture on the filmstrip, its year and name on its foot. */
+.council-film::after {
+ content: "";
+ position: absolute;
+ inset: 0;
+ background: linear-gradient(180deg, transparent 35%, rgb(16 16 19 / 0.92) 100%);
+ background: linear-gradient(180deg, transparent 35%, color-mix(in srgb, var(--color-night) 92%, transparent) 100%);
+ pointer-events: none;
+}
+
+/* Reading a study (components/theology/StudyReader.tsx): the text on the
+   subject's light in grey (B), the parts as a bar of segments under the bar
+   (C), the part read lit, the parts behind it filled. */
+.reader-light {
+ position: absolute;
+ inset-inline: -60px;
+ top: -80px;
+ height: 420px;
+ background-size: cover;
+ background-position: center;
+ filter: blur(48px) grayscale(1) brightness(1.15);
+ opacity: 0.26;
+ pointer-events: none;
+}
+html[data-reading-mode="parchment"] .reader-light {
+ opacity: 0.16;
+}
+.part-segment {
+ display: block;
+ height: 4px;
+ border-radius: 2px;
+ background-color: rgb(255 255 255 / 0.14);
+ background-color: color-mix(in srgb, var(--color-paper) 14%, transparent);
+ transition: background-color var(--duration-fast) var(--ease-house), box-shadow var(--duration-fast) var(--ease-house);
+}
+.part-segment[data-state="read"] {
+ background-color: rgb(255 255 255 / 0.6);
+ background-color: color-mix(in srgb, var(--color-paper) 60%, transparent);
+}
+.part-segment[data-state="current"] {
+ background-color: var(--color-paper);
+ box-shadow: 0 0 10px rgb(255 255 255 / 0.4);
+}
+html[data-reading-mode="parchment"] .part-segment[data-state="current"] {
+ box-shadow: none;
+}
+:where([data-motion="reduce"]) .part-segment {
+ transition: none;
 }
 
 /* ── Tab select ───────────────────────────────────────────────────────

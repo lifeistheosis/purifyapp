@@ -21,7 +21,7 @@ const code = (file: string) =>
     .replace(/^\s*\/\/.*$/gm, "");
 
 const BAND = "components/ui/GalleryBand.tsx";
-const THEOLOGY = "components/theology/FaithMap.tsx";
+const THEOLOGY = "app/(app)/theology/page.tsx";
 const DISCOVER = "components/mobile/DiscoverMobile.tsx";
 
 describe("the gallery band", () => {
@@ -30,9 +30,10 @@ describe("the gallery band", () => {
     const discover = code(DISCOVER);
     expect(theology).toContain('import { GalleryBand } from "@/components/ui/GalleryBand";');
     expect(discover).toContain('import { GalleryBand } from "@/components/ui/GalleryBand";');
-    // Theology's subjects are the tall bands that open where they stand;
-    // Discover's doors are the short bands that lead away.
-    expect(theology).toMatch(/<details className="group">\s*<GalleryBand\s+summary\s+size="tall"\s+heading="h3"/);
+    // Discover's doors are the short bands that lead away. Theology's
+    // subjects are the path's plates since round 3 r3-13 (the owner's hybrid
+    // of B and C); its door to Church History is still a band.
+    expect(theology).toMatch(/<GalleryBand\s+href="\/history"/);
     expect(discover).toMatch(/<GalleryBand\s+href=\{e\.href\}/);
     expect(discover).not.toMatch(/size="tall"/);
   });
@@ -130,14 +131,10 @@ describe("the gallery band", () => {
     expect(councils).toContain("kicker={");
   });
 
-  it("opens with motion only while Purify's motion is on", () => {
+  it("keeps no opening animation for bands, now that no band opens where it stands", () => {
+    // Theology's subjects opened as <details> to a tray (round 12, r3-04);
+    // the path's plates lead to a step instead (r3-13), so the keyframes went.
     const css = read("app/globals.css").replace(/\/\*[\s\S]*?\*\//g, "");
-    const open = /details\[open\] > \.band-open\s*\{([^}]*)\}/.exec(css)?.[1] ?? "";
-    expect(open).toMatch(/animation:\s*band-open var\(--duration-base\) var\(--ease-house\) backwards;/);
-    expect(css).toMatch(/:where\(\[data-motion="reduce"\]\) details\[open\] > \.band-open\s*\{\s*animation:\s*none;\s*\}/);
-    const theology = code(THEOLOGY);
-    expect(theology).toContain('className="band-open ');
-    // The chevron turns as the band opens, and only with motion on.
-    expect(theology).toMatch(/group-open:rotate-180 motion-reduce:transition-none/);
+    expect(css).not.toContain("band-open");
   });
 });
