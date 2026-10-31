@@ -121,11 +121,17 @@ export function chantsHome(index: ChantIndexRow[], date: Date, style: CalStyle):
   const toned = tone ? index.filter((r) => r.tone === tone) : [];
   // A feast's chant opens the home in its own season, picture or not (the
   // Paschal Canon from Palm Sunday through Bright Week). Out of season the
-  // top is a chant with a cover: this week's tone's, else the newest's; and
-  // only where none has a cover, the week's tone's, else the newest's.
+  // top is a chant with a cover: this week's tone's, else the resting chant
+  // (restingChant: the one in the most languages); and only where none has a
+  // cover, the week's tone's, else the newest's.
   const covered = index.filter((r) => r.cover);
   const featured =
-    feast.find((r) => r.cover) ?? feast[0] ?? toned.find((r) => r.cover) ?? newestChant(covered) ?? toned[0] ?? newestChant(index);
+    feast.find((r) => r.cover) ??
+    feast[0] ??
+    toned.find((r) => r.cover) ??
+    restingChant(covered) ??
+    toned[0] ??
+    newestChant(index);
 
   const sections: HomeSection[] = [];
   // A row with nothing in it, or only the chant already at the top, is not drawn.
