@@ -162,7 +162,13 @@ export type OverviewAlertFields = {
 };
 
 export type ProbeSlice = {
-  probes: { service: string; status: "ok" | "fail" | "skipped"; detail: string }[];
+  probes: {
+    service: string;
+    status: "ok" | "fail" | "skipped";
+    detail: string;
+    /** Render only: its newest deploy failed (lib/admin/renderDeploy.ts), with its commit. */
+    deploy?: { failed: boolean; commit: string | null };
+  }[];
 };
 
 export type AttentionInputs = {
@@ -422,6 +428,13 @@ function probeFindings(source: "internal" | "outbound", slice: ProbeSlice): Atte
       out.push(
         fault(source, "api-bible", "serious", "API.Bible probe failed", "Licensed Scripture is not loading",
           "The API.Bible probe failed, so NIV, NKJV and NLT readers are getting errors.", go),
+      );
+    } else if (s.includes("render") && p.deploy?.failed) {
+      // Render answered and its newest deploy failed: not a probe that went
+      // unanswered, so it is said as what it is (Services, his pick A).
+      out.push(
+        fault(source, "probe:render", "warn", "Render: the latest deploy failed", "The latest deploy failed",
+          `${p.deploy.commit ? `Build ${p.deploy.commit} failed. ` : ""}The site still serves the deploy before it, so readers see nothing wrong. Render's log says why.`, go),
       );
     } else {
       const short = s.includes("buy me a coffee")

@@ -58,7 +58,14 @@ export function readProbeSlice(d: unknown): ProbeSlice | null {
     if (!isObj(p) || typeof p.service !== "string") return null;
     const status = p.status;
     if (status !== "ok" && status !== "fail" && status !== "skipped") return null;
-    out.push({ service: p.service, status, detail: typeof p.detail === "string" ? p.detail : "" });
+    // Render's deploy facts ride along (lib/admin/renderDeploy.ts); anything
+    // else in that field is dropped rather than trusted.
+    const d = isObj(p.deploy) ? p.deploy : null;
+    const deploy =
+      d && typeof d.failed === "boolean"
+        ? { failed: d.failed, commit: typeof d.commit === "string" ? d.commit : null }
+        : undefined;
+    out.push({ service: p.service, status, detail: typeof p.detail === "string" ? p.detail : "", ...(deploy ? { deploy } : {}) });
   }
   // An empty probe list is a route that ran nothing, which is not a measurement.
   if (out.length === 0) return null;

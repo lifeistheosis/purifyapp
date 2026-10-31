@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { getAdminUser } from "@/lib/admin/access";
+import { readRenderDeploys, renderDashboardUrl, type DeployFacts } from "@/lib/admin/renderDeploy";
 import { licensedBibleEnabled } from "@/lib/bible/api-bible";
 import { createAdminClient } from "@/lib/supabase/admin";
 
@@ -11,6 +12,15 @@ type Probe = {
   status: "ok" | "fail" | "skipped";
   detail: string;
   latencyMs: number | null;
+  /**
+   * Render only: what its deploy list says (lib/admin/renderDeploy.ts), so
+   * the Services page can say "the latest deploy failed, the site still
+   * serves the one before" instead of a raw status word. Absent when the
+   * API did not answer.
+   */
+  deploy?: DeployFacts | null;
+  /** Render only: where "Open Render" goes. */
+  url?: string;
 };
 
 // On-demand probes for the services Purify depends on. Pure liveness check,
@@ -206,23 +216,39 @@ async function probeRender(): Promise<Probe> {
       latencyMs: null,
     };
   }
+  // Ten, not one: the newest deploy says whether the last push went live, and
+  // the newest LIVE one among them is what readers are being served. This
+  // used to read one deploy and report OK whenever Render answered, so a
+  // build that died showed as OK (found on the r3-17 sheet, 2026-10-30, the
+  // day a deploy died in its build). A failed newest deploy is now a failed
+  // probe, which the strip above every page and Home's list both pick up.
   const { result, ms, error } = await timed(async () => {
     const r = await fetch(
-      `https://api.render.com/v1/services/${serviceId}/deploys?limit=1`,
+      `https://api.render.com/v1/services/${serviceId}/deploys?limit=10`,
       {
         headers: { Authorization: `Bearer ${key}`, Accept: "application/json" },
         signal: AbortSignal.timeout(6000),
       },
     );
     if (!r.ok) throw new Error(`HTTP ${r.status}`);
-    const arr = (await r.json()) as Array<{ deploy?: { status?: string; commit?: { id?: string } } }>;
-    const latest = arr?.[0]?.deploy;
-    return `${latest?.status ?? "?"} · ${latest?.commit?.id?.slice(0, 7) ?? "?"}`;
+    return readRenderDeploys(await r.json(), serviceId);
   });
+  if (error || !result) {
+    return {
+      service: "Render (deploys)",
+      status: "fail",
+      detail: error ?? "Render did not answer",
+      latencyMs: ms,
+      deploy: null,
+      url: renderDashboardUrl(serviceId, null),
+    };
+  }
   return {
     service: "Render (deploys)",
-    status: error ? "fail" : "ok",
-    detail: error ? error : `latest deploy: ${result}`,
+    status: result.status,
+    detail: result.detail,
     latencyMs: ms,
+    deploy: result.deploy,
+    url: result.deploy?.url ?? renderDashboardUrl(serviceId, null),
   };
 }
