@@ -2,6 +2,11 @@
   "slug": "psalm-135",
   "key": "psalm135",
   "title": "Psalm 135",
+  "cover": {
+    "src": "/audio/art/david.v1.jpg",
+    "alt": "King David the psalmist, crowned, with his scroll",
+    "credit": "The Prophet and King David, from the prophets' row of the iconostasis of the Dormition cathedral, Kirillo-Belozersky Monastery, 1497. Public domain."
+  },
   "kind": "psalm",
   "psalm": 135,
   "when": {

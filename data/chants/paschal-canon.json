@@ -2,6 +2,11 @@
   "slug": "paschal-canon",
   "key": "paschalCanon",
   "title": "The Paschal Canon",
+  "cover": {
+    "src": "/audio/art/anastasis.v1.jpg",
+    "alt": "The Anastasis, Christ raising Adam and Eve from the tombs",
+    "credit": "The Descent into Hades, the Anastasis, from the feast row of the iconostasis of the Dormition cathedral, Kirillo-Belozersky Monastery, 1497. Public domain."
+  },
   "kind": "hymn",
   "when": {
     "windows": [
