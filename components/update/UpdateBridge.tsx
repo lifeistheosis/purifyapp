@@ -24,6 +24,7 @@ import {
 } from "@/lib/appUpdate/check";
 import { useTranslate } from "@/components/i18n/MessagesProvider";
 import { Sheet } from "@/components/ui/Sheet";
+import { claimUpdateScreen } from "@/lib/whatsNew/tourState";
 
 /** One check per app open, not per client-side navigation. */
 let promptedThisSession = false;
@@ -41,6 +42,10 @@ export function UpdateBridge() {
     checkForUpdate()
       .then((found) => {
         if (!alive || !found) return;
+        // One update screen per open (1.8): when the pop-up for the release
+        // the reader has just updated to is already up, this waits for the
+        // next open (lib/whatsNew/tourState.ts).
+        if (!claimUpdateScreen("store")) return;
         setStatus(found);
         setOpen(true);
       })

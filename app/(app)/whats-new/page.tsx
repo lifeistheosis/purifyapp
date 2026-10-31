@@ -6,6 +6,7 @@ import { TranslationDisclaimer } from "@/components/i18n/TranslationDisclaimer";
 import { T } from "@/components/i18n/T";
 import { ReleaseDetails } from "@/components/whats-new/ReleaseDetails";
 import { ReleaseHighlights } from "@/components/whats-new/ReleaseHighlights";
+import { TakeTheTour } from "@/components/whats-new/TakeTheTour";
 import type { Entry } from "@/lib/whatsNew/entries";
 import { RELEASE_HIGHLIGHTS } from "@/lib/whatsNew/highlights";
 import { getPatchNotes } from "@/lib/whatsNew/notes";
@@ -155,6 +156,13 @@ async function WhatsNewContent() {
  one, is read from the notes here and handed down. */}
  <div className="mt-10">
  <ReleaseHighlights name={releaseName(RELEASE_HIGHLIGHTS.version, entries)} />
+ </div>
+
+ {/* The release's guided tour, again or for the first time (1.8). The
+ tour's end card names this row. Draws nothing for a release with no
+ tour. */}
+ <div className="mt-4">
+ <TakeTheTour />
  </div>
 
  {/* The weekly note. Written into data/changelog/board.json, newest first.

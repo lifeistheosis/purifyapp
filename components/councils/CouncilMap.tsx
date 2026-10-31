@@ -140,6 +140,8 @@ export function CouncilMap({
           onPointerDown={warm}
           onFocus={warm}
           aria-haspopup="dialog"
+          // What the release's tour lights for the atlas (lib/whatsNew/tour.ts).
+          data-tour="atlas"
           className="atlas-door dark-island press-card mt-5"
         >
           <svg viewBox={still.join(" ")} preserveAspectRatio="xMidYMid slice" className="atlas-door-still" aria-hidden="true">

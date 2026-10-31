@@ -24,24 +24,34 @@ export function featureRelease(version: string): string {
 export const WHATS_NEW_SEEN_KEY = "purify:whatsNewSeen";
 
 /**
+ * Two versions in order: below 0 when `a` is the older, 0 when they are the
+ * same release ("1.6.0" is "1.6"), above 0 when `a` is the newer. Read number
+ * by number, not as text: "1.10" is newer than "1.9". Null when either is not
+ * a version at all.
+ */
+export function compareVersions(a: string, b: string): number | null {
+  const parts = (v: string) => v.trim().split(".").map((p) => (/^\d+$/.test(p) ? Number(p) : NaN));
+  const x = parts(a);
+  const y = parts(b);
+  if (x.some(Number.isNaN) || y.some(Number.isNaN)) return null;
+  for (let i = 0; i < Math.max(x.length, y.length); i++) {
+    const p = x[i] ?? 0;
+    const q = y[i] ?? 0;
+    if (p !== q) return p < q ? -1 : 1;
+  }
+  return 0;
+}
+
+/**
  * Whether a release is newer than the one this device last saw, for the
  * bell in the phone tab bar (components/nav/NotificationsButton.tsx).
  *
- * Read number by number, not as text: "1.10" is newer than "1.9", and a
- * stored version above this build's (a device that ran a later build, or a
+ * A stored version above this build's (a device that ran a later build, or a
  * test that stores one to say "seen") is not a new release. Nothing stored,
  * or something that is not a version, counts as not seen.
  */
 export function whatsNewUnseen(seen: string | null, current: string = CURRENT_VERSION): boolean {
   if (!seen) return true;
-  const parts = (v: string) => v.trim().split(".").map((p) => (/^\d+$/.test(p) ? Number(p) : NaN));
-  const a = parts(seen);
-  const b = parts(current);
-  if (a.some(Number.isNaN) || b.some(Number.isNaN)) return true;
-  for (let i = 0; i < Math.max(a.length, b.length); i++) {
-    const x = a[i] ?? 0;
-    const y = b[i] ?? 0;
-    if (x !== y) return x < y;
-  }
-  return false;
+  const order = compareVersions(seen, current);
+  return order === null || order < 0;
 }

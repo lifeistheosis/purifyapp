@@ -304,6 +304,8 @@ function MiniPlayer({ card, pill }: { card: ReactNode; pill: ReactNode }) {
       <div className="mx-auto max-w-md">
         <div
           ref={surfaceRef}
+          // What the release's tour lights for the pill (lib/whatsNew/tour.ts).
+          data-tour="mini-player"
           className="mini-player pointer-events-auto relative mx-auto bg-night-soft shadow-[0_10px_28px_rgba(0,0,0,0.55)] ring-1 ring-inset ring-paper/[0.06]"
         >
           <div

@@ -48,6 +48,7 @@ import { AppThemeController } from "@/components/theme/AppThemeController";
 import { InputModality } from "@/components/ui/InputModality";
 import { MotionRoot } from "@/components/ui/MotionRoot";
 import { UpdateBridge } from "@/components/update/UpdateBridge";
+import { TourHost } from "@/components/whats-new/tour/TourHost";
 import type { LocaleCode } from "@/lib/i18n/locales";
 
 export function RootFrame({
@@ -98,6 +99,12 @@ export function RootFrame({
             the web, and nothing on native until lib/appUpdate/release.ts
             declares a versionCode above the installed one. */}
         <UpdateBridge />
+        {/* And for the same reason: the pop-up for a reader who has updated,
+            and the guided tour of what the release brings (1.8), are shown
+            on Today. It shares one update screen per open with the prompt
+            above. Renders nothing until the tour is on, and loads the tour's
+            layer only then. */}
+        <TourHost />
         {/* Here for the same reason as the bridges above: the desktop app
             opens on Today, and a reader's Discord status should follow them
             from there. Renders nothing, and does nothing outside the desktop

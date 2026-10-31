@@ -125,7 +125,14 @@ function Featured({ row, withVersions }: { row: ChantIndexRow; withVersions: boo
 
   return (
     <section aria-labelledby="chants-featured" className="mt-8">
-      <Link href={href} className="press-card mx-auto block w-[min(300px,76vw)]" tabIndex={-1} aria-hidden>
+      <Link
+        href={href}
+        className="press-card mx-auto block w-[min(300px,76vw)]"
+        tabIndex={-1}
+        aria-hidden
+        // What the release's tour lights for Chants (lib/whatsNew/tour.ts).
+        data-tour="chants"
+      >
         <ChantCover
           cover={row.cover}
           languages={languagesOf(row.variants)}
