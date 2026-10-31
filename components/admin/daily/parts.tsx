@@ -281,6 +281,65 @@ export function Bars({
   );
 }
 
+/**
+ * Two weeks as a line, under a figure: no axis, the last point lit. `dash` is
+ * the period before, dashed, when there is one. Nothing is drawn for fewer
+ * than two points, because a line needs two.
+ */
+export function Spark({
+  values,
+  dash,
+  width = 158,
+  height = 26,
+  label,
+}: {
+  values: readonly number[];
+  dash?: readonly number[];
+  width?: number;
+  height?: number;
+  /** What the line shows, for a screen reader. */
+  label: string;
+}) {
+  if (values.length < 2) return <div style={{ height }} aria-hidden />;
+  const all = dash ? [...values, ...dash] : [...values];
+  const max = Math.max(...all);
+  const min = Math.min(...all);
+  const x = (i: number, n: number) => 2 + (i * (width - 6)) / Math.max(1, n - 1);
+  const y = (v: number) => height - 3 - ((v - min) / (max - min || 1)) * (height - 7);
+  const path = (a: readonly number[]) => a.map((v, i) => `${i ? "L" : "M"}${x(i, a.length).toFixed(1)},${y(v).toFixed(1)}`).join("");
+  const last = values.length - 1;
+  return (
+    // The line stretches with its card; the last point is drawn over it in
+    // HTML so it stays a round point at any width.
+    <div className="relative" style={{ height }}>
+      <svg
+        role="img"
+        aria-label={label}
+        width="100%"
+        height={height}
+        viewBox={`0 0 ${width} ${height}`}
+        preserveAspectRatio="none"
+        className="block overflow-visible"
+      >
+        {dash && dash.length > 1 ? (
+          <path d={path(dash)} fill="none" stroke="var(--adm-ink-3)" strokeWidth={1.2} strokeDasharray="3 3" vectorEffect="non-scaling-stroke" />
+        ) : null}
+        <path d={path(values)} fill="none" stroke="var(--adm-ink)" strokeWidth={1.5} strokeLinejoin="round" vectorEffect="non-scaling-stroke" />
+      </svg>
+      <span
+        aria-hidden
+        className="absolute h-[5px] w-[5px] -translate-x-1/2 -translate-y-1/2 rounded-full"
+        style={{
+          left: `${((x(last, values.length) / width) * 100).toFixed(2)}%`,
+          top: y(values[last]),
+          background: "var(--adm-ink)",
+          boxShadow: "var(--adm-lit-soft)",
+        }}
+      />
+    </div>
+  );
+}
+
 /** A quiet line of words, for a panel that has nothing to draw yet or could not read. */
 export function Quiet({ children, className = "" }: { children: ReactNode; className?: string }) {
   return (
