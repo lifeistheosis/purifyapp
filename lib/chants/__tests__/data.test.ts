@@ -202,6 +202,10 @@ describe("each version of a chant", () => {
   });
 
   it("sings a psalm in Brenton's words, verbatim, when its English is Brenton's", () => {
+    // Alleluia, sung after each half verse of the Polyeleos, is the Church's
+    // refrain (Hapgood, 1906, p. 28) and Brenton's own title of the psalm
+    // (Psalms 117 and 135 open "Alleluia."), not a line of its verses.
+    const REFRAIN = "Alleluia.";
     for (const { c, v, id } of versions) {
       if (c.kind !== "psalm" || !c.psalm) continue;
       const brenton = (JSON.parse(fs.readFileSync(path.join(ROOT, "data", "bible", "psalms", `${c.psalm}.json`), "utf8")) as {
@@ -212,7 +216,24 @@ describe("each version of a chant", () => {
       const english = v.language.startsWith("en") ? v.lines.map((l) => l.text) : v.lines.map((l) => l.en).filter(Boolean);
       const isBrenton = v.translation?.title.includes("Brenton") || v.language.startsWith("en");
       if (!isBrenton) continue;
-      for (const line of english) expect(brenton.includes(line as string), `${id}: "${line}" is not Brenton's`).toBe(true);
+      for (const line of english) {
+        if (line === REFRAIN) continue;
+        expect(brenton.includes(line as string), `${id}: "${line}" is not Brenton's`).toBe(true);
+      }
+    }
+  });
+
+  it("shows every Alleluia where it is sung in Psalm 135, one line after each half verse (note 59)", () => {
+    // The owner: "he says hallelujah at the end, and it's not referenced in
+    // the caption." Every version of the psalm sings it after each half.
+    const psalm = allChants().find((c) => c.slug === "psalm-135")!;
+    const ALLELUIA: Record<string, string> = { en: "Alleluia.", el: "Ἀλληλούϊα.", "sr-Latn": "Aliluja.", ar: "الليلويا." };
+    for (const v of psalm.variants) {
+      const refrain = ALLELUIA[v.language];
+      expect(refrain, v.id).toBeDefined();
+      v.lines.forEach((line, i) => expect(line.text === refrain, `${v.id} line ${i + 1}: "${line.text}"`).toBe(i % 2 === 1));
+      // Every version is timed now, so the lit line follows the voice.
+      expect(v.timing, `${v.id} has no timing file`).toBeDefined();
     }
   });
 });
