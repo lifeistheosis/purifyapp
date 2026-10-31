@@ -38,8 +38,9 @@ import { countsLine, sameRegion, type Place } from "@/lib/admin/map/tally";
 import { Chevron, Figure, LiveDot } from "../daily/parts";
 
 type Shape = { key: string; name: string; d: string; c: [number, number] };
-type WorldFile = { countries: { a2: string; name: string; d: string; c: [number, number] }[] };
-type RegionsFile = { regions: { name: string; d: string; c: [number, number] }[] };
+// As the JSON reads: a centre is two numbers, typed as a list by the import.
+type WorldFile = { countries: { a2: string; name: string; d: string; c: number[] }[] };
+type RegionsFile = { regions: { name: string; d: string; c: number[] }[] };
 
 /** The countries whose regions are drawn, and where their shapes are. Add one here when its shapes are added. */
 export const REGION_SHAPES: Record<string, () => Promise<RegionsFile>> = {
@@ -61,7 +62,7 @@ function useWorld(): Shape[] | null {
     let alive = true;
     void import("@/lib/admin/map/world.json").then((m) => {
       const file = m.default as WorldFile;
-      worldCache = file.countries.map((c) => ({ key: c.a2, name: c.name, d: c.d, c: c.c }));
+      worldCache = file.countries.map((c): Shape => ({ key: c.a2, name: c.name, d: c.d, c: [c.c[0], c.c[1]] }));
       if (alive) setShapes(worldCache);
     });
     return () => {
@@ -77,7 +78,7 @@ function useRegions(code: string | null): Shape[] | null {
     if (!code || !opensRegions(code) || regionCache.has(code)) return;
     let alive = true;
     void REGION_SHAPES[code]().then((file) => {
-      const shapes = file.regions.map((r) => ({ key: r.name, name: r.name, d: r.d, c: r.c }));
+      const shapes = file.regions.map((r): Shape => ({ key: r.name, name: r.name, d: r.d, c: [r.c[0], r.c[1]] }));
       regionCache.set(code, shapes);
       if (alive) setGot({ code, shapes });
     });

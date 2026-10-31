@@ -74,22 +74,22 @@ function Kv({ k, children }: { k: string; children: ReactNode }) {
 const btn = (primary: boolean) =>
   ({
     className: "adm-control inline-flex min-h-11 items-center justify-center gap-1.5 rounded-[6px] border px-3 font-sans text-[12.5px] md:min-h-[32px]",
-    style: (primary
-      ? {
+    style: primary
+      ? ({
           "--_bg": "var(--adm-accent)",
           "--_bg-hover": "color-mix(in oklab, var(--adm-accent), var(--adm-bg) 14%)",
           borderColor: "var(--adm-accent)",
           color: "var(--adm-on-accent)",
           fontWeight: 600,
           boxShadow: "var(--adm-lit-soft)",
-        }
-      : {
+        } as React.CSSProperties)
+      : ({
           "--_bg": "transparent",
           "--_bg-hover": "var(--adm-panel-2)",
           borderColor: "var(--adm-line-strong)",
           color: "var(--adm-ink-2)",
-        }) as React.CSSProperties,
-  }) as const;
+        } as React.CSSProperties),
+  });
 
 const Check = () => (
   <svg width="14" height="14" viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
