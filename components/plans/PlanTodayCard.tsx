@@ -63,7 +63,12 @@ export function PlanTodayCard({
         >
           {t("plans.begin")}
           {lockPlace ? (
-            <span aria-hidden={locked ? undefined : true} className={cn(PREMIUM_CHIP, !locked && "invisible")}>
+            // The chip is drawn for a dark ground; inside the light Begin
+            // button it takes the button's own ink, or it reads white on white.
+            <span
+              aria-hidden={locked ? undefined : true}
+              className={cn(PREMIUM_CHIP, "border-night/25 bg-night/5 text-night/80", !locked && "invisible")}
+            >
               {t("study.purifyPlus")}
             </span>
           ) : null}

@@ -82,6 +82,7 @@ describe("a plan's own words, handed to its page at build", () => {
     expect(client).toContain("const lockPlace = locked || (plus === null && expectedPlus !== true);");
     expect(client).toContain("lockPlace={lockPlace}");
     const card = read("components/plans/PlanTodayCard.tsx");
-    expect(card).toContain('className={cn(PREMIUM_CHIP, !locked && "invisible")}');
+    // The chip takes the white button's ink, or it reads white on white.
+    expect(card).toContain('className={cn(PREMIUM_CHIP, "border-night/25 bg-night/5 text-night/80", !locked && "invisible")}');
   });
 });
