@@ -46,7 +46,6 @@ import { SustainabilityTab } from "./tabs/SustainabilityTab";
 import { GoalsTab } from "./tabs/GoalsTab";
 import { CalendarTab } from "./tabs/CalendarTab";
 import { CatechismTab } from "./tabs/CatechismTab";
-import { FulfillmentTab } from "./tabs/FulfillmentTab";
 import { InsightsProvider } from "@/lib/admin/insights/store";
 import { SubscriptionsTab } from "./tabs/SubscriptionsTab";
 import { MessagesTab } from "./tabs/MessagesTab";
@@ -164,7 +163,6 @@ const COMPONENTS: Partial<Record<TabId, ComponentType>> = {
   today: HomeTab,
   overview: CommerceOverviewTab,
   orders: OrdersTab,
-  fulfillment: FulfillmentTab,
   revenue: RevenueTab,
   costs: SustainabilityTab,
   subscriptions: SubscriptionsTab,
@@ -222,6 +220,9 @@ function isTabId(s: string | null): s is TabId {
 // reads as the panel ignoring the link.
 const RETIRED_TABS: Record<string, TabId> = {
   growth: "traffic",
+  // Fulfillment's tiles and board retired into Orders (the owner's r3-16
+  // pick B, 2026-10-30): every order opens there as its whole story.
+  fulfillment: "orders",
 };
 
 /** A tab id from a URL, following a retired id to its replacement. */

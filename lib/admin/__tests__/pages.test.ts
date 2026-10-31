@@ -66,9 +66,24 @@ describe("admin pages (1.8 admin silent patch)", () => {
   });
 
   it("labels a view by its page when the page holds more than one", () => {
-    expect(viewLabel("fulfillment")).toBe("Orders: Fulfillment");
+    expect(viewLabel("revenue")).toBe("Money: Revenue");
     expect(viewLabel("messages")).toBe("Messages");
+    expect(viewLabel("orders")).toBe("Orders");
     expect(viewLabel("goals")).toBe("Home: Goals");
+  });
+
+  it("lands a retired view's bookmark on the page it retired into", () => {
+    // The owner's r3-16 picks (2026-10-30): Fulfillment's tiles and board
+    // retired into Orders, and Sourcing into the Catalogue's shelf. No page
+    // holds them as views any more, so the shell's RETIRED_TABS must carry
+    // them, or #tab=fulfillment would quietly open Home.
+    const block = SHELL.slice(SHELL.indexOf("const RETIRED_TABS"), SHELL.indexOf("};", SHELL.indexOf("const RETIRED_TABS")));
+    const retired = Object.fromEntries([...block.matchAll(/^\s+"?([a-z][a-z-]*)"?:\s*"([a-z][a-z-]*)"/gm)].map((m) => [m[1], m[2]]));
+    for (const [from, to] of Object.entries(retired)) {
+      expect(pageOf(from), from).toBeNull();
+      expect(ADMIN_VIEW_TABS, `${from} lands on ${to}`).toContain(to);
+    }
+    expect(retired.fulfillment).toBe("orders");
   });
 
   it("does not say a page's name twice for its first view", () => {

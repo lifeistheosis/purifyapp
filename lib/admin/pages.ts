@@ -96,13 +96,14 @@ export const ADMIN_PAGE_GROUPS: AdminPageGroup[] = [
     mode: "ops",
     pages: [
       {
+        // One view since the owner's r3-16 pick B (2026-10-30): a list where
+        // each order opens as its whole story. Fulfillment's tiles and board
+        // retired into it, and #tab=fulfillment lands here (AdminShell's
+        // RETIRED_TABS).
         id: "orders",
         label: "Orders",
         sentence: "Every order, and what still has to be posted.",
-        views: [
-          { tab: "orders", label: "Orders" },
-          { tab: "fulfillment", label: "Fulfillment" },
-        ],
+        views: [{ tab: "orders", label: "Orders" }],
       },
       {
         id: "messages",
