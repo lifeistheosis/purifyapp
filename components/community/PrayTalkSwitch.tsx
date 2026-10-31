@@ -49,6 +49,8 @@ export function PrayTalkSwitch({
       ref={listRef}
       role="tablist"
       aria-label={t("community.title")}
+      // What the release's tour lights, and lets the reader try (lib/whatsNew/tour.ts).
+      data-tour="community-halves"
       className="community-halves relative grid h-[60px] grid-cols-2 rounded-[21px] border border-paper/[0.08] p-[5px]"
     >
       {/* The raised half, under the words: it moves, the words stay. */}

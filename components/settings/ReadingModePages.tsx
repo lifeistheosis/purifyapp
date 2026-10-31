@@ -63,7 +63,14 @@ export function ModePages({
   const book = t("bible.books.john");
   const chapter = t("bible.chapterN", { n: PREVIEW_CHAPTER });
   return (
-    <div role="group" aria-label={t("ui.readingMode")} className="set-modes" data-count={modes.length}>
+    <div
+      role="group"
+      aria-label={t("ui.readingMode")}
+      className="set-modes"
+      data-count={modes.length}
+      // What the release's tour lights for Settings (lib/whatsNew/tour.ts).
+      data-tour="settings-panels"
+    >
       {modes.map((mode) => {
         const allowed = allows(mode.id);
         const on = theme === mode.id && allowed;

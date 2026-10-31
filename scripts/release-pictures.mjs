@@ -57,10 +57,13 @@ for (const shot of shots) {
     colorScheme: "dark",
     ...(shot.phone ? { isMobile: true, hasTouch: true, userAgent: PHONE_UA } : {}),
   });
-  // A returning visitor: no first-run sheet over the page.
+  // A returning visitor: no first-run sheet over the page, and the release's
+  // tour already taken, so its pop-up is not over the page either
+  // (lib/whatsNew/tourState.ts keeps the mark per release, as "1.8", never "1.8.1").
+  const release = version.split(".").slice(0, 2).join(".");
   await context.addInitScript((values) => {
     for (const [k, v] of Object.entries(values)) window.localStorage.setItem(k, v);
-  }, { "purify:onboarded": "3", ...(shot.set ?? {}) });
+  }, { "purify:onboarded": "3", "purify:tour": JSON.stringify({ [release]: "finished" }), ...(shot.set ?? {}) });
   const page = await context.newPage();
   await page.goto(SITE + shot.url, { waitUntil: "networkidle", timeout: 90_000 });
   await page.evaluate(() => document.fonts.ready);

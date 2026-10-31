@@ -108,6 +108,22 @@ export function isOnboarded(): boolean {
   }
 }
 
+/**
+ * Whether any version of the flow was finished on this device, the one this
+ * build asks or an older one. A new install finishes it only after its first
+ * open, so on that first open this is the sign of a reader who had an earlier
+ * build (lib/whatsNew/tourState.ts, who is offered a release's tour).
+ */
+export function onboardedBefore(): boolean {
+  if (typeof window === "undefined") return false;
+  try {
+    const v = window.localStorage.getItem(ONBOARDED_KEY);
+    return v != null && Number(v) >= 1;
+  } catch {
+    return false;
+  }
+}
+
 // Prefixes of localStorage keys that only exist once a user has actually
 // engaged — saved something, changed a preference, read, or prayed. We match
 // against these (an allowlist) rather than sweeping every `purify*` key,

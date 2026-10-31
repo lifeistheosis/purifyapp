@@ -188,6 +188,8 @@ export function SaintDoors({
               href={webHref!}
               prefetch={false}
               aria-label={t("saints.door.webAria", { name: saintName })}
+              // What the release's tour lights for the saint web (lib/whatsNew/tour.ts).
+              data-tour="saint-web"
               className={cn(DOOR, DOOR_OFF)}
             >
               <DoorIcon door={door} size={20} />

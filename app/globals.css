@@ -2443,6 +2443,456 @@ html.is-native ::-webkit-scrollbar {
  animation: none;
 }
 
+/* ── What's New: the tour (1.8) ──────────────────────────────────────────
+   The owner's note 49 of build 80: a reader who has updated gets an animated
+   pop-up for the release, See what's new and Skip, and See what's new is a
+   guided tour that lights each new thing on its own screen in turn, with
+   Next, Back, the step count and Skip at every step
+   (components/whats-new/tour/). This is its look until his pick of sheet
+   r3-14 replaces it, and only its look: TourLook.tsx draws these classes
+   from what it is handed and decides nothing.
+
+   Drawn in Settings' material: a card raised and lit from above, the accent
+   a glowing white, the page dimmed in its own night. All of it on the page's
+   tokens, so every palette carries it; on Parchment the light is the ink and
+   nothing glows. It stands over the tab bar and the mini player (z 90), its
+   foot at the screen's own edge (.safe-pb-edge in the apps). Each animation
+   has its escape under data-motion="reduce" at the end of the block: the
+   pop-up and the words dissolve, the ring stands still, nothing travels. */
+.tour-root {
+ position: fixed;
+ inset: 0;
+ z-index: 90;
+ pointer-events: none;
+}
+.tour-spot {
+ position: absolute;
+ inset: 0;
+ overflow: hidden;
+}
+/* The whole page dimmed: while the tour moves to the next screen, and under
+   the end card. */
+.tour-veil {
+ position: absolute;
+ inset: 0;
+ opacity: 0;
+ /* For a WebView without color-mix (Android before 111). */
+ background: rgb(0 0 0 / 0.62);
+ background: color-mix(in srgb, var(--color-night) 72%, transparent);
+ transition: opacity var(--duration-base) var(--ease-house);
+}
+.tour-veil[data-on] {
+ opacity: 1;
+}
+/* The hole: the lit element left clear in a white ring, the page around it
+   dimmed by the hole's own shadow, and a soft white light that breathes. It
+   follows its element as the page brings it into place, and moves from one
+   element to the next on the same page (data-glide, for that move only). */
+.tour-hole {
+ position: absolute;
+ box-shadow: 0 0 0 2px var(--color-paper), 0 0 0 200vmax rgb(0 0 0 / 0.62);
+ box-shadow:
+  0 0 0 2px var(--color-paper),
+  0 0 0 200vmax color-mix(in srgb, var(--color-night) 72%, transparent);
+ animation: tour-hole-in 360ms var(--ease-house) backwards;
+}
+.tour-hole[data-glide] {
+ transition:
+  top 420ms var(--ease-house),
+  left 420ms var(--ease-house),
+  width 420ms var(--ease-house),
+  height 420ms var(--ease-house),
+  border-radius 420ms var(--ease-house);
+}
+.tour-hole::after {
+ content: "";
+ position: absolute;
+ inset: -2px;
+ border-radius: inherit;
+ box-shadow: 0 0 24px 5px rgb(255 255 255 / 0.3);
+ animation: tour-breathe 2600ms ease-in-out infinite;
+}
+@keyframes tour-hole-in {
+ from {
+  opacity: 0;
+ }
+}
+@keyframes tour-breathe {
+ 0%,
+ 100% {
+  opacity: 0.55;
+ }
+ 50% {
+  opacity: 1;
+ }
+}
+/* What takes a tap around the hole and does nothing with it (TourLayer). */
+.tour-block {
+ position: absolute;
+ pointer-events: auto;
+ touch-action: none;
+}
+
+/* The two layers that hold a card: the pop-up's, and a step's or the end's. */
+.tour-offer-layer,
+.tour-caption-layer {
+ position: absolute;
+ inset: 0;
+ display: flex;
+ flex-direction: column;
+ align-items: center;
+ justify-content: flex-end;
+ padding: 0 12px env(safe-area-inset-bottom, 0px);
+}
+.tour-offer-layer {
+ pointer-events: auto;
+}
+.tour-caption-layer {
+ pointer-events: none;
+}
+.tour-caption-layer[data-place="top"] {
+ justify-content: flex-start;
+ padding-top: calc(var(--inset-top, env(safe-area-inset-top, 0px)) + 12px);
+}
+@media (min-width: 640px) {
+ .tour-offer-layer {
+  justify-content: center;
+ }
+}
+.tour-scrim {
+ position: absolute;
+ inset: 0;
+ background: rgb(0 0 0 / 0.55);
+ background: color-mix(in srgb, var(--color-night) 70%, transparent);
+ animation: tour-fade-in var(--duration-base) var(--ease-house) backwards;
+}
+
+/* The card: raised, lit from above, as Settings' panels are. */
+.tour-card {
+ position: relative;
+ width: 100%;
+ max-width: 420px;
+ margin-bottom: 12px;
+ overflow: hidden;
+ border-radius: 26px;
+ padding: 20px 20px 14px;
+ pointer-events: auto;
+ color: var(--color-paper);
+ background: var(--color-night-soft);
+ background:
+  radial-gradient(120% 70% at 88% 0%, rgb(var(--panel-sheen) / 0.08), transparent 52%),
+  linear-gradient(172deg, color-mix(in srgb, var(--color-night-soft) 95%, var(--color-paper)) 0%, var(--color-night-soft) 50%, color-mix(in srgb, var(--color-night-soft) 72%, var(--color-night)) 100%);
+ box-shadow:
+  inset 0 1px 0 color-mix(in srgb, var(--color-paper) 10%, transparent),
+  inset 0 0 0 1px color-mix(in srgb, var(--color-paper) 6%, transparent),
+  0 24px 48px -16px rgb(0 0 0 / 0.75),
+  0 2px 6px rgb(0 0 0 / 0.3);
+}
+.tour-caption-layer[data-place="top"] .tour-card {
+ margin-bottom: 0;
+}
+
+/* The pop-up rises in, its rows after it, and a band of light crosses it once. */
+.tour-offer {
+ padding: 24px 22px 14px;
+ animation: tour-offer-in 560ms var(--ease-house) 60ms backwards;
+}
+.tour-offer::after {
+ content: "";
+ position: absolute;
+ inset: 0 auto 0 0;
+ width: 40%;
+ pointer-events: none;
+ background: linear-gradient(90deg, transparent, rgb(var(--panel-sheen) / 0.1), transparent);
+ transform: translateX(-120%) skewX(-18deg);
+ animation: tour-sheen 1400ms var(--ease-house) 700ms 1 backwards;
+}
+@keyframes tour-offer-in {
+ from {
+  opacity: 0;
+  transform: translateY(28px) scale(0.97);
+ }
+}
+@keyframes tour-sheen {
+ from {
+  transform: translateX(-120%) skewX(-18deg);
+ }
+ to {
+  transform: translateX(260%) skewX(-18deg);
+ }
+}
+@keyframes tour-fade-in {
+ from {
+  opacity: 0;
+ }
+}
+@keyframes tour-fade-out {
+ to {
+  opacity: 0;
+ }
+}
+.tour-offer-layer[data-leaving] {
+ pointer-events: none;
+ animation: tour-fade-out 200ms var(--ease-house) forwards;
+}
+.tour-eyebrow {
+ font-size: 12px;
+ font-weight: 600;
+ letter-spacing: 0.02em;
+ color: color-mix(in srgb, var(--color-paper) 62%, transparent);
+}
+.tour-title {
+ margin-top: 8px;
+ font-family: var(--font-heading);
+ font-size: 22px;
+ font-weight: 700;
+ line-height: 1.2;
+ letter-spacing: -0.01em;
+ text-wrap: balance;
+ color: var(--color-paper);
+}
+.tour-highlights {
+ margin-top: 14px;
+}
+.tour-highlight {
+ position: relative;
+ display: flex;
+ min-height: 44px;
+ align-items: center;
+ gap: 12px;
+ padding: 10px 2px;
+ font-size: 15px;
+ line-height: 1.35;
+ color: color-mix(in srgb, var(--color-paper) 86%, transparent);
+ animation: tour-rise 420ms var(--ease-house) backwards;
+ animation-delay: calc(240ms + var(--i, 0) * var(--stagger-step));
+}
+/* The carved line between rows, as Settings draws it. */
+.tour-highlight + .tour-highlight::before {
+ content: "";
+ position: absolute;
+ top: 0;
+ inset-inline: 22px 0;
+ height: 1px;
+ background: color-mix(in srgb, var(--color-paper) 7%, transparent);
+ box-shadow: 0 1px 0 rgb(0 0 0 / 0.35);
+}
+.tour-light {
+ flex: none;
+ width: 8px;
+ height: 8px;
+ border-radius: 50%;
+ background: var(--color-paper);
+ box-shadow: 0 0 10px 1px rgb(255 255 255 / 0.65);
+}
+@keyframes tour-rise {
+ from {
+  opacity: 0;
+  transform: translateY(8px);
+ }
+}
+.tour-offer-actions {
+ margin-top: 16px;
+ display: grid;
+ gap: 2px;
+}
+
+/* The buttons. The way on is the lit one: white with a soft white glow. */
+.tour-primary,
+.tour-secondary,
+.tour-quiet {
+ display: inline-flex;
+ min-height: 44px;
+ align-items: center;
+ justify-content: center;
+ border-radius: 999px;
+ font-size: 15px;
+ font-weight: 600;
+ line-height: 1.2;
+ text-align: center;
+ transition:
+  opacity var(--duration-fast) var(--ease-house),
+  background-color var(--duration-fast) var(--ease-house),
+  color var(--duration-fast) var(--ease-house),
+  scale var(--duration-instant) var(--ease-house);
+}
+.tour-primary {
+ min-height: 48px;
+ padding: 0 24px;
+ background: var(--color-paper);
+ color: var(--color-night);
+ box-shadow: 0 0 18px rgb(255 255 255 / 0.22), 0 6px 14px rgb(0 0 0 / 0.35);
+}
+.tour-secondary {
+ padding: 0 18px;
+ font-weight: 500;
+ color: color-mix(in srgb, var(--color-paper) 86%, transparent);
+ box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--color-paper) 18%, transparent);
+}
+.tour-quiet {
+ padding: 0 14px;
+ font-size: 14px;
+ font-weight: 500;
+ color: color-mix(in srgb, var(--color-paper) 64%, transparent);
+}
+.tour-primary:active:not(:disabled),
+.tour-secondary:active:not(:disabled),
+.tour-quiet:active {
+ scale: var(--press-scale-sm);
+}
+.tour-primary:disabled,
+.tour-secondary:disabled {
+ opacity: 0.35;
+}
+
+/* A step's words: the count and Skip, the title and one line, Back and Next.
+   The card comes in from the edge it stands at. */
+.tour-caption {
+ --tour-from: 14px;
+ animation: tour-caption-in 360ms var(--ease-house) backwards;
+}
+.tour-caption-layer[data-place="top"] .tour-caption {
+ --tour-from: -14px;
+}
+@keyframes tour-caption-in {
+ from {
+  opacity: 0;
+  transform: translateY(var(--tour-from, 14px));
+ }
+}
+.tour-caption-head {
+ display: flex;
+ align-items: center;
+ justify-content: space-between;
+ margin: -10px -10px 0 0;
+}
+.tour-count {
+ font-size: 12px;
+ font-weight: 600;
+ font-variant-numeric: tabular-nums;
+ color: color-mix(in srgb, var(--color-paper) 56%, transparent);
+}
+.tour-words {
+ animation: tour-words-in 320ms var(--ease-house) backwards;
+}
+@keyframes tour-words-in {
+ from {
+  opacity: 0;
+  transform: translateY(6px);
+ }
+}
+.tour-caption[data-moving] .tour-words {
+ opacity: 0.45;
+ transition: opacity var(--duration-fast) var(--ease-house);
+}
+.tour-step-title {
+ font-family: var(--font-heading);
+ font-size: 19px;
+ font-weight: 700;
+ line-height: 1.25;
+ text-wrap: balance;
+ color: var(--color-paper);
+}
+.tour-step-body {
+ margin-top: 6px;
+ font-size: 14px;
+ line-height: 1.5;
+ color: color-mix(in srgb, var(--color-paper) 76%, transparent);
+}
+.tour-caption-foot {
+ display: flex;
+ justify-content: space-between;
+ gap: 10px;
+ margin-top: 14px;
+}
+.tour-caption-foot .tour-primary {
+ min-width: 112px;
+}
+.tour-end .tour-caption-foot {
+ justify-content: flex-end;
+}
+/* The lit candle (components/ui/icons/Lampada.tsx) on a lit plate: on the end
+   card, and on What's New's Take the tour (components/whats-new/TakeTheTour). */
+.tour-mark {
+ display: grid;
+ flex: none;
+ width: 40px;
+ height: 40px;
+ place-items: center;
+ border-radius: 50%;
+ color: var(--color-paper);
+ background: var(--color-night-soft);
+ background: linear-gradient(180deg, color-mix(in srgb, var(--color-night-soft) 88%, var(--color-paper)), var(--color-night-soft));
+ box-shadow: inset 0 1px 0 color-mix(in srgb, var(--color-paper) 14%, transparent), 0 0 18px rgb(255 255 255 / 0.16), 0 4px 10px rgb(0 0 0 / 0.45);
+}
+.tour-end .tour-mark {
+ margin-bottom: 12px;
+}
+
+/* Parchment: paper lit from above, its shadows warm, and nothing glows. */
+html[data-reading-mode="parchment"] .tour-card {
+ background:
+  radial-gradient(115% 90% at 88% 8%, rgb(255 255 255 / 0.55) 0%, transparent 55%),
+  linear-gradient(155deg, #f9f3e5 0%, #f4ecda 60%, #efe5d0 100%);
+ box-shadow:
+  inset 0 1px 0 rgb(255 255 255 / 0.7),
+  inset 0 0 0 1px rgb(43 35 23 / 0.08),
+  0 18px 36px -18px rgb(70 52 20 / 0.5);
+}
+html[data-reading-mode="parchment"] .tour-highlight + .tour-highlight::before {
+ box-shadow: 0 1px 0 rgb(255 255 255 / 0.6);
+}
+html[data-reading-mode="parchment"] .tour-light,
+html[data-reading-mode="parchment"] .tour-primary {
+ box-shadow: none;
+}
+html[data-reading-mode="parchment"] .tour-mark {
+ background: linear-gradient(180deg, #fdf9f0, #ece2cb);
+ box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.9), inset 0 0 0 1px rgb(43 35 23 / 0.1), 0 2px 5px rgb(70 52 20 / 0.22);
+}
+html[data-reading-mode="parchment"] .tour-hole::after,
+html[data-reading-mode="parchment"] .tour-offer::after {
+ display: none;
+}
+/* True black: the card's grey inside a hairline, since no shadow shows on black. */
+html[data-reading-mode="black"] .tour-card {
+ background: var(--color-night-soft);
+ box-shadow: inset 0 0 0 1px rgb(255 255 255 / 0.12);
+}
+:where([data-motion="reduce"]) .tour-veil,
+:where([data-motion="reduce"]) .tour-hole[data-glide],
+:where([data-motion="reduce"]) .tour-primary,
+:where([data-motion="reduce"]) .tour-secondary,
+:where([data-motion="reduce"]) .tour-quiet,
+:where([data-motion="reduce"]) .tour-caption[data-moving] .tour-words {
+ transition: none;
+}
+:where([data-motion="reduce"]) .tour-hole,
+:where([data-motion="reduce"]) .tour-hole::after,
+:where([data-motion="reduce"]) .tour-highlight,
+:where([data-motion="reduce"]) .tour-caption,
+:where([data-motion="reduce"]) .tour-words {
+ animation: none;
+}
+:where([data-motion="reduce"]) .tour-offer::after {
+ animation: none;
+ display: none;
+}
+/* The pop-up and its dimmed page dissolve; nothing rises. */
+:where([data-motion="reduce"]) .tour-offer,
+:where([data-motion="reduce"]) .tour-scrim {
+ animation: tour-fade-in var(--duration-fast) linear backwards;
+}
+:where([data-motion="reduce"]) .tour-offer-layer[data-leaving] {
+ animation: none;
+ opacity: 0;
+}
+:where([data-motion="reduce"]) .tour-primary:active:not(:disabled),
+:where([data-motion="reduce"]) .tour-secondary:active:not(:disabled),
+:where([data-motion="reduce"]) .tour-quiet:active {
+ scale: none;
+}
+
 /* Emoji and symbols in readers' own words (components/community/SymbolText),
    drawn by fonts already on the device. Through the text faces, one ✨ or ●
    in a post fetched the web fonts' "symbols" subsets while a profile was
