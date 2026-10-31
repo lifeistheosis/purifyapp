@@ -77,8 +77,10 @@ const PictureSheet = dynamic(() => import("@/components/share/PictureSheet").the
  *
  * Pascha's count went up to the date line at the top of Today
  * (GreetingHeader.tsx). The Desert Fathers' saying, on a day whose saint has
- * no page, stands under the bands as a band of the same kind, St Antony
- * beside his words, the lit cross for a Father with no face.
+ * no page, stands under the bands as a band of the same kind, each Father
+ * beside his words: St Antony's cover, St Moses's fresco for Abba Moses, the
+ * Fathers of Sinai for Abba Isaac and any Father with no picture of his own
+ * (sheet r3-22), and the lit cross where no checked picture stands.
  *
  * This is a client component ON PURPOSE, and it is the same component
  * /prayers/today renders, so the two cannot drift. It used to be computed in

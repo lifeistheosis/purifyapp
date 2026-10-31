@@ -201,9 +201,13 @@ describe("the speaker on a band", () => {
 });
 
 // Who stands beside a saying of the Desert Fathers (r3-21 A): one small map,
-// so a picture checked later is one entry.
+// so a picture checked later is one entry. The owner's picks of sheet r3-22:
+// card 2 for Abba Moses, card 6 for Abba Isaac and any Father with no picture
+// of his own.
 describe("the Fathers beside their sayings", () => {
   const ANTONY = { src: "/covers/authors/anthony-the-great.v1.jpg", point: [0.48, 0.3], looks: "right", fallback: null };
+  const MOSES = { src: "/saints/icons/moses-the-black.v2.jpg", point: [0.49, 0.27], looks: "ahead", seal: [0.49, 0.27, 0.41], fallback: null };
+  const SINAI = { src: "/saints/icons/fathers-of-sinai.jpg", point: [0.45, 0.31], looks: "ahead", seal: [0.45, 0.31, 0.27], fallback: null };
 
   it("is St Antony's cover beside each of his sayings, the one Abba Isaac tells among them", () => {
     const his = allSayings().filter((s) => s.speaker === "anthony-the-great");
@@ -214,37 +218,61 @@ describe("the Fathers beside their sayings", () => {
     expect(sayingFace(his[0], true)?.src).toBe(`${SITE_URL}/covers/authors/anthony-the-great.v1.jpg`);
   });
 
-  it("is no face at all for a Father without a checked icon: the lit cross for Abba Moses and Abba Isaac, never a stand-in", () => {
-    const faceless = allSayings().filter((s) => !s.speaker);
-    expect(new Set(faceless.map((s) => s.attribution))).toEqual(new Set(["Abba Moses", "Abba Isaac"]));
-    for (const s of faceless) expect(sayingFace(s, false), s.attribution).toBeNull();
-    // St Moses the Ethiopian's icon has no rights recorded, and isaac-the-syrian.jpg is another Isaac.
-    const named = Object.values(SAYING_FACES).map((f) => ("icon" in f ? f.icon : f.cover));
-    expect(named).not.toContain("moses-the-black.jpg");
-    expect(named).not.toContain("isaac-the-syrian.jpg");
-    expect(SAYING_FACES[DESERT_FATHERS]).toBeUndefined();
+  it("is the fresco of St Moses the Ethiopian beside Abba Moses, cut round his face as the sheet cut it", () => {
+    const his = allSayings().filter((s) => s.attribution === "Abba Moses");
+    expect(his.length).toBe(3);
+    for (const s of his) expect(sayingFace(s, false), s.text).toEqual(MOSES);
+    // The app carries it, so it is the same with no signal.
+    expect(sayingFace(his[0], true)).toEqual(MOSES);
   });
 
-  it("names only pictures that are checked: a cover of the reading room, or an icon whose rights are recorded", () => {
+  it("is the Fathers of Sinai beside Abba Isaac, of whom no icon exists, and beside any Father with no picture of his own", () => {
+    const isaac = allSayings().find((s) => s.attribution === "Abba Isaac")!;
+    expect(sayingFace(isaac, false)).toEqual(SINAI);
+    expect(sayingFace({ attribution: "An elder of Scetis" }, false)).toEqual(SINAI);
+    expect(SAYING_FACES[DESERT_FATHERS]).toEqual({ icon: "fathers-of-sinai.jpg" });
+    // Never St Isaac the Syrian, another man three centuries later.
+    const named = Object.values(SAYING_FACES).map((f) => ("icon" in f ? f.icon : f.cover));
+    expect(named).not.toContain("isaac-the-syrian.jpg");
+  });
+
+  it("names only pictures that are checked: a cover of the reading room, or an icon opened, public domain and recorded", () => {
     for (const [who, face] of Object.entries(SAYING_FACES)) {
-      if ("cover" in face) expect(face.cover in COVER_FACES && face.cover in SAINT_FACES, who).toBe(true);
-      else expect(SHAREABLE_ICONS.has(face.icon), who).toBe(true);
+      if ("cover" in face) {
+        expect(face.cover in COVER_FACES && face.cover in SAINT_FACES, who).toBe(true);
+        continue;
+      }
+      expect(SHAREABLE_ICONS.has(face.icon), who).toBe(true);
+      const row = ICON_RIGHTS[face.icon];
+      expect(row?.status, who).toBe("verified");
+      expect(row?.license, who).toBe("Public domain");
+      expect(row && "evidenceUrl" in row ? row.evidenceUrl : "", who).toMatch(/^https:\/\/commons\.wikimedia\.org\/wiki\/File:/);
+      expect(fs.existsSync(path.join(process.cwd(), "public/saints/icons", face.icon)), who).toBe(true);
     }
   });
 
-  it("takes a Father's icon, or one for all the Fathers, as one entry, and refuses an icon whose rights are not recorded", () => {
+  it("gives St Moses's own page the checked fresco in place of the modern icon with no rights", () => {
+    const moses = brief("moses-the-ethiopian");
+    expect(moses.iconUrl).toBe("/saints/icons/moses-the-black.v2.jpg");
+    expect(quoteFace(moses, false)).toEqual(MOSES);
+    expect(fs.existsSync(path.join(process.cwd(), "public/saints/icons/moses-the-black.jpg"))).toBe(false);
+  });
+
+  it("takes a Father's picture as one entry, has the lit cross where none stands, and refuses an icon whose rights are not recorded", () => {
     const moses = allSayings().find((s) => s.attribution === "Abba Moses")!;
     const isaac = allSayings().find((s) => s.attribution === "Abba Isaac")!;
     const recorded = "pimen-the-great.jpg";
     expect(SHAREABLE_ICONS.has(recorded)).toBe(true);
-    const withMoses = { ...SAYING_FACES, "Abba Moses": { icon: recorded, point: [0.5, 0.3] as const, looks: "ahead" as const } };
-    expect(sayingFace(moses, false, withMoses)).toEqual({ src: `/saints/icons/${recorded}`, point: [0.5, 0.3], looks: "ahead", fallback: null });
-    expect(sayingFace(isaac, false, withMoses)).toBeNull();
-    const forAll = { ...SAYING_FACES, [DESERT_FATHERS]: { icon: recorded, point: [0.5, 0.3] as const, looks: "ahead" as const } };
-    expect(sayingFace(isaac, false, forAll)?.src).toBe(`/saints/icons/${recorded}`);
-    // St Antony keeps his own.
-    expect(sayingFace(allSayings()[0], false, forAll)).toEqual(ANTONY);
-    // An icon in the rights debt is no face, whatever an entry says.
-    expect(sayingFace(moses, false, { "Abba Moses": { icon: "moses-the-black.jpg", point: [0.5, 0.3], looks: "ahead" } })).toBeNull();
+    // One entry: a recorded icon with no face placed by eye stands by the head of a standing figure.
+    const withIsaac = { ...SAYING_FACES, "Abba Isaac": { icon: recorded } };
+    expect(sayingFace(isaac, false, withIsaac)).toEqual({ src: `/saints/icons/${recorded}`, point: [0.5, ICON_FOCUS / 100 + 0.04], looks: "ahead", fallback: null });
+    // With no entry and no picture for all the Fathers, the lit cross.
+    const { [DESERT_FATHERS]: _all, ...own } = SAYING_FACES;
+    void _all;
+    expect(sayingFace(isaac, false, own)).toBeNull();
+    // St Antony keeps his own whatever stands for the rest.
+    expect(sayingFace(allSayings()[0], false, own)).toEqual(ANTONY);
+    // An icon in the rights debt is no face, whatever an entry says: never a stand-in.
+    expect(sayingFace(moses, false, { "Abba Moses": { icon: "isaac-the-syrian.jpg" } })).toBeNull();
   });
 });

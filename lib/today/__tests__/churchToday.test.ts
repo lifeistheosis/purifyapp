@@ -25,10 +25,12 @@ vi.mock("@/lib/onboarding/useSpace", () => ({ useSpace: () => ({ fasting: live.f
 
 import { MessagesProvider } from "@/components/i18n/MessagesProvider";
 import { ChurchTodayRail, SaintsFold } from "@/components/today/ChurchTodayRail";
+import { SpeakerBand } from "@/components/today/SpeakerBand";
 import { dayReadings, fastingStatus, readingsOptionsFor } from "@/lib/calendar/orthodox";
 import { getMessages } from "@/lib/i18n";
 import { sectionMedia } from "@/lib/media/sections";
 import { dayWalk, hrefOf } from "@/lib/readings/flow";
+import { sayingForDay } from "@/lib/today/saying";
 
 import { fastMarks } from "../fastMarks";
 
@@ -267,19 +269,44 @@ describe("the Desert Fathers' saying, as a band of its own", () => {
     expect(band).toMatch(/data-cite="father" class="[^"]*\bpr-8\b/);
   });
 
-  it("gives a Father with no face the lit cross where he would stand, never a stand-in: Abba Isaac and Abba Moses", () => {
-    for (const [d, who] of [
-      [OCT_31, "Abba Isaac"],
-      [NOV_2, "Abba Moses"],
+  it("stands Abba Moses and Abba Isaac beside their words with the owner's picks of sheet r3-22, the icons the app carries", () => {
+    for (const [d, who, file] of [
+      [NOV_2, "Abba Moses", "moses-the-black.v2.jpg"],
+      [OCT_31, "Abba Isaac", "fathers-of-sinai.jpg"],
     ] as const) {
       const band = element(draw(d), "data-today-saying", "article");
-      expect(band, who).toMatch(/^<article data-today-saying="" data-tour="quote-picture" data-face="none"/);
+      // Both face us, so each stands at the band's end.
+      expect(band, who).toMatch(/^<article data-today-saying="" data-tour="quote-picture" data-face="right"/);
       expect(words(band), who).toContain(who);
-      expect(band, who).not.toContain("<img");
-      expect(band, who).toMatch(/<span aria-hidden="true" data-band-cross="" class="verse-cross-lit/);
-      // The share mark goes up to the corner the face would have held.
-      expect(band, who).toMatch(/<button[^>]*data-saying-share=""[^>]*class="[^"]*end-2\.5 top-2\.5/);
+      expect(band, who).toContain(`src="/saints/icons/${file}"`);
+      // Carried, not streamed: no AVIF is asked for.
+      expect(band, who).not.toContain('type="image/avif"');
+      expect(band, who).not.toContain("data-band-cross");
     }
+  });
+
+  it("gives a speaker with no face the app may show the lit cross where he would stand, never a stand-in", () => {
+    // Abba Isaac's saying as it would stand were there no picture for the Fathers.
+    const isaac = sayingForDay(OCT_31)!;
+    expect(isaac.attribution).toBe("Abba Isaac");
+    const band = provide(
+      createElement(SpeakerBand, {
+        "data-today-saying": "",
+        eyebrow: en["today.sayingEyebrow"],
+        words: isaac.text,
+        who: isaac.attribution,
+        cite: isaac.shown ?? null,
+        face: null,
+        onShare: () => {},
+        shareMark: "data-saying-share",
+      }),
+    );
+    expect(band).toMatch(/^<article data-today-saying="" data-face="none"/);
+    expect(band).not.toContain("<img");
+    expect(band).toMatch(/<span aria-hidden="true" data-band-cross="" class="verse-cross-lit/);
+    // The share mark goes up to the corner the face would have held.
+    expect(band).toMatch(/<button[^>]*data-saying-share=""[^>]*class="[^"]*end-2\.5 top-2\.5/);
+    expect(band).not.toContain("min-height");
   });
 
   it("is under the bands only on a day whose saint has no page", () => {

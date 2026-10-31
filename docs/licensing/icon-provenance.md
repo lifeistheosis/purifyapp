@@ -112,6 +112,28 @@ Priority order: the twentieth-century figures first, since a photograph of a
 modern person is the least likely to be public domain. `dumitru-staniloae.jpg`
 and `iakovos-of-evia.jpg` are the clearest cases.
 
+## The Desert Fathers' sayings (2026-10-31)
+
+Today stands each Father beside his saying (1.8, round 3 r3-21, the owner's
+pick A). The owner chose two pictures from sheet r3-22
+(`Homebase/boards/purify-master/variants/r3-22-desert-icons.png`, candidates
+and their `sources.json` in `Homebase/boards/purify-master/r18/icon-candidates/`).
+Both are public domain on their Commons pages, were opened and looked at
+before they were cut and again after, and have their rows in `ICON_RIGHTS`:
+
+| File | The work | Commons page and licence line |
+| --- | --- | --- |
+| `moses-the-black.v2.jpg` | St Moses the Ethiopian, fresco by Tzortzis (Zorzis Foukas), Dionysiou Monastery, Mount Athos, 1547, inscribed with his name and "the Ethiopian"; its upper part, cut above a white loss on his robe, 465x560 | [File:Venerable Moses. Tzortzi (Zorzis) Foukas. Fresco. Athos (Dionysiou).jpg](https://commons.wikimedia.org/wiki/File:Venerable_Moses._Tzortzi_(Zorzis)_Foukas._Fresco._Athos_(Dionysiou).jpg), public domain, `{{PD-old-70}}` |
+| `fathers-of-sinai.jpg` | The Holy Fathers of Sinai, St Catherine's Monastery, early 13th century; the whole panel, 600x800 | [File:Saints of Sinai.jpg](https://commons.wikimedia.org/wiki/File:Saints_of_Sinai.jpg), public domain, `{{PD-Art\|PD-old-100-expired}}` |
+
+The fresco stands beside Abba Moses' sayings and, in place of the modern icon
+`moses-the-black.jpg` (painter and source never found, so it was in the debt
+and is now deleted), on St Moses the Ethiopian's own page. The Fathers of
+Sinai stand beside Abba Isaac's saying, of whom no icon exists, and beside any
+Father with no picture of his own. `lib/today/saintFaces.ts` keeps where each
+face is (`ICON_FACES`, the point and the circle as the sheet cut them) and who
+stands beside which saying (`SAYING_FACES`).
+
 ## Section photography
 
 Recorded in `SECTION_MEDIA.md`, carrying the same required fields the history

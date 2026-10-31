@@ -636,6 +636,36 @@ export const ICON_RIGHTS: Record<string, IconRights> = {
     license: "Public domain",
     evidenceUrl: "https://commons.wikimedia.org/wiki/File:Spas_na_Ilyine_-_Saint_Macarius_the_Great.jpg",
   },
+  // Added 2026-10-31 for the Desert Fathers' sayings on Today: the owner's
+  // picks of round 3 sheet r3-22 (Homebase/boards/purify-master/variants/
+  // r3-22-desert-icons.png, card 2 for Abba Moses, card 6 for Abba Isaac and
+  // every saying with no named Father). Each was read on its Commons page,
+  // opened and looked at before it was cut, and again after. The fresco also
+  // takes the place of moses-the-black.jpg on St Moses's own page: a modern
+  // icon whose painter and source were never found, cleared from the debt
+  // below in the same commit.
+  "moses-the-black.v2.jpg": {
+    status: "verified",
+    inspectedOn: "2026-10-31",
+    alt: "A wall painting of a monk with grey hair and a full grey beard facing us inside a gold halo, his right hand raised palm outward and a furled scroll in his left, a green mantle over a rose-pink robe, on a deep blue ground with his Greek name in white letters on either side of the halo.",
+    work: "Fresco of St Moses the Ethiopian, Dionysiou Monastery, Mount Athos, inscribed with his name, Moses the Ethiopian: the upper part, from the halo to the scroll in his hand (cut 2026-10-31, above a white loss on his robe)",
+    artist: "Tzortzis (Zorzis Foukas), as the Commons page names the painter",
+    workDate: "1547",
+    source: "Wikimedia Commons (from pravicon.com)",
+    license: "Public domain",
+    evidenceUrl: "https://commons.wikimedia.org/wiki/File:Venerable_Moses._Tzortzi_(Zorzis)_Foukas._Fresco._Athos_(Dionysiou).jpg",
+  },
+  "fathers-of-sinai.jpg": {
+    status: "verified",
+    inspectedOn: "2026-10-31",
+    alt: "An icon with a worn red border of forty monks in dark and russet habits standing in four rows on an ochre ground, above a green strip, under Christ enthroned in a circle at the top between six standing saints, the paint lost in places along the edges.",
+    work: "Icon of the Holy Fathers of Sinai, St Catherine's Monastery, Sinai: the whole panel",
+    artist: "Anonymous icon painter",
+    workDate: "Early 13th century",
+    source: "Wikimedia Commons",
+    license: "Public domain",
+    evidenceUrl: "https://commons.wikimedia.org/wiki/File:Saints_of_Sinai.jpg",
+  },
   "job-of-pochaev.jpg": {
     status: "verified",
     inspectedOn: "2026-08-12",
@@ -873,8 +903,6 @@ export const UNVERIFIED_ICONS: Record<string, string> = {
     "No source, licence or attribution recorded. Fetched before scripts/fetch-missing-icons.mjs had a licence gate. Referenced by SAINTS.iconUrl for meletius-of-antioch. 297x420 JPG, 30 KB. Not yet opened and inspected.",
   "memnon-of-ephesus.v2.jpg":
     "No source, licence or attribution recorded. Fetched before scripts/fetch-missing-icons.mjs had a licence gate. Referenced by SAINTS.iconUrl for memnon-of-ephesus. 415x280 JPG, 24 KB, cut on 2026-10-17 from the 420x286 file, inside the white lines at its edges; a website's watermark is still at its foot, right (1.7.1). Its source is not yet looked into.",
-  "moses-the-black.jpg":
-    "No source, licence or attribution recorded. Fetched before scripts/fetch-missing-icons.mjs had a licence gate. Referenced by SAINTS.iconUrl for moses-the-ethiopian. 306x420 JPG, 31 KB. Not yet opened and inspected.",
   "nectarius-of-constantinople.jpg":
     "No source, licence or attribution recorded. Fetched before scripts/fetch-missing-icons.mjs had a licence gate. Referenced by SAINTS.iconUrl for nectarius-of-constantinople. 250x364 JPG, 33 KB. Not yet opened and inspected.",
   "nektarios-of-aegina.jpg":

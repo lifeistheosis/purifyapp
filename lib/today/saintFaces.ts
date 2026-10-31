@@ -195,6 +195,7 @@ export const SHAREABLE_ICONS: ReadonlySet<string> = new Set([
   "dometius-the-persian.jpg",
   "eusignius-of-antioch.jpg",
   "euplus-of-catania.jpg",
+  "fathers-of-sinai.jpg",
   "floros-and-lauros.jpg",
   "herman-of-alaska.jpg",
   "hilarion-the-great.jpg",
@@ -203,6 +204,7 @@ export const SHAREABLE_ICONS: ReadonlySet<string> = new Set([
   "lupus-of-thessaloniki.jpg",
   "maccabean-martyrs.jpg",
   "macarius-the-great.jpg",
+  "moses-the-black.v2.jpg",
   "myron-of-crete.jpg",
   "myron-of-cyzicus.jpg",
   "nikolaj-velimirovic.jpg",
@@ -227,10 +229,31 @@ export const SHAREABLE_ICONS: ReadonlySet<string> = new Set([
   "titus-of-crete.jpg",
 ]);
 
-/** Where the face is on a carried icon placed by eye; any other is a standing figure, his head near its top. */
-const ICON_FACES: Readonly<Record<string, readonly [number, number]>> = {
+/**
+ * Where the face is on a carried icon placed by eye: the point, 0 to 1 across
+ * and down, and where the icon was cut as a circle round the face, the
+ * circle's width as a share of the picture's (the seal of its picture). Any
+ * other is a standing figure, his head near its top.
+ *
+ * The two of 2026-10-31 are the owner's picks of round 3 sheet r3-22 (cards 2
+ * and 6), each point and circle as the sheet cut them: St Moses the
+ * Ethiopian's fresco at Dionysiou, his face; the Fathers of Sinai, the three
+ * monks at the middle of their first row.
+ */
+const ICON_FACES: Readonly<Record<string, readonly [number, number, number?]>> = {
   "cyprian-of-carthage.jpg": [0.49, 0.32],
+  "moses-the-black.v2.jpg": [0.49, 0.27, 0.41],
+  "fathers-of-sinai.jpg": [0.45, 0.31, 0.27],
 };
+
+/** A carried icon whose rights are recorded, as a face: its point, its circle where it has one, facing us. */
+function carriedFace(file: string, src: string): QuoteFace | null {
+  if (!SHAREABLE_ICONS.has(file)) return null;
+  const at = ICON_FACES[file];
+  const point = at ? ([at[0], at[1]] as const) : ([0.5, ICON_FOCUS / 100 + 0.04] as const);
+  const circle = at?.[2];
+  return { src, point, looks: "ahead", ...(circle ? { seal: [point[0], point[1], circle] as const } : {}), fallback: null };
+}
 
 /**
  * His face for a picture of his words (lib/share/verseCard.ts, QuoteFace):
@@ -242,12 +265,13 @@ const ICON_FACES: Readonly<Record<string, readonly [number, number]>> = {
 export function quoteFace(saint: { slug: string; iconUrl?: string } | null | undefined, native: boolean): QuoteFace | null {
   if (!saint) return null;
   const file = saint.iconUrl?.startsWith("/saints/icons/") ? saint.iconUrl.slice("/saints/icons/".length) : null;
-  const carried = file && SHAREABLE_ICONS.has(file) ? { src: saint.iconUrl!, point: ICON_FACES[file] ?? [0.5, ICON_FOCUS / 100 + 0.04], looks: "ahead" as const } : null;
+  const carried = file ? carriedFace(file, saint.iconUrl!) : null;
   const face = COVER_FACES[saint.slug];
   if (face && saint.slug in SAINT_FACES) {
-    return { src: streamedUrl(coverFile(saint.slug), native), point: [face[0], face[1]], looks: face[2], fallback: carried };
+    const fallback = carried ? { src: carried.src, point: carried.point, looks: carried.looks } : null;
+    return { src: streamedUrl(coverFile(saint.slug), native), point: [face[0], face[1]], looks: face[2], fallback };
   }
-  return carried ? { ...carried, fallback: null } : null;
+  return carried;
 }
 
 /**
@@ -258,29 +282,33 @@ export function quoteFace(saint: { slug: string; iconUrl?: string } | null | und
  * names one (data/today/sayings.json, `speaker`), else by his name as the
  * saying gives it ("Abba Moses"). `cover` is a cover portrait of the reading
  * room (COVER_FACES); `icon` is an icon the app carries whose rights are
- * recorded (SHAREABLE_ICONS), with the point between his eyes and his mouth
- * and the way he looks. An entry under DESERT_FATHERS, once an icon of the
- * desert Fathers together is checked, stands beside every Father with none of
- * his own.
+ * recorded (SHAREABLE_ICONS), placed by its face in ICON_FACES. The entry
+ * under DESERT_FATHERS stands beside every Father with none of his own.
  *
- * Abba Moses and Abba Isaac have none, so their sayings stand with the lit
- * cross where the Father would stand, never a stand-in: no public-domain icon
- * of either has been checked, the app's St Moses the Ethiopian has no rights
- * recorded and Cassian never says his Abba Moses is that Moses, and
- * isaac-the-syrian.jpg is another Isaac, of the seventh century. The owner's
- * word of 2026-10-31: Abba Moses stays without a face until he says.
+ * The owner's picks of 2026-10-31 (round 3 sheet r3-22, Homebase/boards/
+ * purify-master/variants/r3-22-desert-icons.png): Abba Moses, card 2, the
+ * fresco of 1547 at Dionysiou on Mount Athos that names him "the Ethiopian"
+ * (Cassian does not say his Abba Moses is St Moses the Ethiopian; tradition
+ * joins them, and the owner took it); Abba Isaac and every saying with no
+ * named Father, card 6, the Fathers of Sinai of the early thirteenth century,
+ * since no icon of Abba Isaac exists, and never isaac-the-syrian.jpg, another
+ * Isaac three centuries later. A Father with no entry, where no picture
+ * stands for all of them, has the lit cross where he would stand, never a
+ * stand-in.
  */
 export const SAYING_FACES: Readonly<Record<string, SayingFace>> = {
   // St Antony's eight, his own words and the one Abba Isaac tells.
   "anthony-the-great": { cover: "anthony-the-great" },
+  // r3-22 card 2.
+  "Abba Moses": { icon: "moses-the-black.v2.jpg" },
+  // r3-22 card 6: Abba Isaac, and any Father with no picture of his own.
+  "desert-fathers": { icon: "fathers-of-sinai.jpg" },
 };
 
 /** The key of the one picture that stands beside every Father with none of his own. */
 export const DESERT_FATHERS = "desert-fathers";
 
-export type SayingFace =
-  | { cover: string }
-  | { icon: string; point: readonly [number, number]; looks: Gaze };
+export type SayingFace = { cover: string } | { icon: string };
 
 /** The Father's face beside his saying, and on its picture; null for the lit cross. */
 export function sayingFace(
@@ -292,8 +320,7 @@ export function sayingFace(
   if (!entry) return null;
   if ("cover" in entry) return quoteFace({ slug: entry.cover }, native);
   // An icon whose rights are not recorded is no face, whatever the entry says.
-  if (!SHAREABLE_ICONS.has(entry.icon)) return null;
-  return { src: `/saints/icons/${entry.icon}`, point: entry.point, looks: entry.looks, fallback: null };
+  return carriedFace(entry.icon, `/saints/icons/${entry.icon}`);
 }
 
 /** A side of a band, as the eye sees it: a face looks the same way in every language. */

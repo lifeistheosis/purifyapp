@@ -4144,7 +4144,7 @@ export const SAINTS: Saint[] = [
   },
   {
     slug: "moses-the-ethiopian",
-    iconUrl: "/saints/icons/moses-the-black.jpg",
+    iconUrl: "/saints/icons/moses-the-black.v2.jpg",
     name: "St. Moses the Ethiopian",
     byname: "Moses the Black, the Strong",
     epithet: "Desert Father of Scetis · Once a robber, then a monk and martyr",

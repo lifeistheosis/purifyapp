@@ -28,11 +28,13 @@
 // Since round 3 r3-21 (the owner's pick A, "The face beside the words") the
 // Father stands beside his saying, as the day's saint stands beside his words
 // (components/today/SpeakerBand.tsx): St Antony's cover from the reading room
-// beside his, and the lit cross where a Father with no face we may show would
-// stand, Abba Moses and Abba Isaac among them, never a stand-in. Who stands
-// beside which saying is one small map, lib/today/saintFaces.ts SAYING_FACES,
-// so an icon checked later for Abba Moses, or one of the desert Fathers
-// together, is one entry there; the picture of the saying shares the same face.
+// beside his, the fresco of St Moses the Ethiopian at Dionysiou beside Abba
+// Moses', and the Fathers of Sinai beside Abba Isaac's and any Father's with
+// no picture of his own (the owner's picks of sheet r3-22); the lit cross
+// where no checked picture stands, never a stand-in. Who stands beside which
+// saying is one small map, lib/today/saintFaces.ts SAYING_FACES, so a picture
+// checked later is one entry there; the picture of the saying shares the same
+// face.
 
 import dynamic from "next/dynamic";
 import { useMemo, useState } from "react";
