@@ -97,6 +97,11 @@ type Pull = {
  * (--now-playing-h, --readings-flow-h; globals.css, "The saint web"). Solid,
  * never blurred: a blurred layer over a moving page is repainted on every
  * frame on Android.
+ *
+ * "Center the web here" (the build 80 note 55) stays a link to the saint's own
+ * web, for a new tab and for a screen that cannot glide; where the screen can
+ * (`onCenter`), the web glides to his in the same room instead, and the card
+ * comes down short as it goes.
  */
 export function WebCard({
   node,
@@ -104,6 +109,7 @@ export function WebCard({
   away,
   onState,
   onMove,
+  onCenter,
 }: {
   node: WebNode;
   state: CardState;
@@ -112,6 +118,8 @@ export function WebCard({
   onState: (next: CardState) => void;
   /** Where the card is, on every frame it moves. */
   onMove?: (move: CardMove) => void;
+  /** Glide to this saint's web in place of opening it as a page. */
+  onCenter?: (slug: string) => void;
 }) {
   const { t } = useTranslate();
   const cardId = useId();
@@ -122,6 +130,8 @@ export function WebCard({
   const pullRef = useRef<Pull | null>(null);
   const swallow = useRef(false);
   const focusNext = useRef<"tall" | "short" | null>(null);
+  /** "Center the web here" pressed from a key, not a finger: the focus then goes to the short card it leaves behind. */
+  const centerByKey = useRef(false);
   const [content, setContent] = useState(0);
   const [room, setRoom] = useState(0);
 
@@ -137,6 +147,14 @@ export function WebCard({
   /** Where the card is drawn, the height it pulls up to, and its spring after a finger. */
   const at = useRef({ height: SHORT_CARD_H, drop: 0 });
   const full = useRef(tallHeight);
+  /**
+   * Coming down to short on its spring, the card keeps the height it pulls up
+   * to until it is there (`latest` waits meanwhile): a card that turns to
+   * another saint on the way, taller or shorter (the glide of note 55), is
+   * never seen to open again as it comes down.
+   */
+  const down = useRef(false);
+  const latest = useRef(tallHeight);
   const spring = useRef<Glide | null>(null);
   const raf = useRef(0);
   const placed = useRef(false);
@@ -188,6 +206,8 @@ export function WebCard({
     raf.current = 0;
     spring.current = null;
     cardRef.current?.removeAttribute("data-moving");
+    down.current = false;
+    full.current = latest.current;
   }, []);
 
   /** To a height on the spring, from where the card is, carrying on with a finger's speed. */
@@ -200,6 +220,8 @@ export function WebCard({
         draw(height, 0, false, reduced);
         return;
       }
+      down.current = height <= SHORT_CARD_H + 0.5;
+      if (!down.current) full.current = latest.current;
       // A spring already under way keeps its speed unless a finger gives it a new one.
       const was = spring.current;
       spring.current = glide(
@@ -232,7 +254,8 @@ export function WebCard({
   // Short, pulled up, or out of sight: the card goes there on its spring. On
   // its first paint, and out of sight, it is simply there.
   useLayoutEffect(() => {
-    full.current = tallHeight;
+    latest.current = tallHeight;
+    if (!down.current) full.current = tallHeight;
     if (pullRef.current?.moved) return;
     const height = tall ? tallHeight : SHORT_CARD_H;
     if (!placed.current || away) {
@@ -278,6 +301,8 @@ export function WebCard({
         cancelAnimationFrame(raf.current);
         raf.current = 0;
         spring.current = null;
+        down.current = false;
+        full.current = latest.current;
         g.start = { ...at.current };
         g.yAt = e.clientY;
         cardRef.current?.setAttribute("data-moving", "");
@@ -453,6 +478,17 @@ export function WebCard({
                   </Link>
                   <Link
                     href={`/saints/${node.person.slug}/web`}
+                    prefetch={false}
+                    onClick={(e) => {
+                      centerByKey.current = e.detail === 0;
+                    }}
+                    onNavigate={(e) => {
+                      // A plain press: the web glides to his here. Next has already left a press for a new tab alone.
+                      if (!onCenter) return;
+                      e.preventDefault();
+                      if (centerByKey.current) focusNext.current = "short";
+                      onCenter(node.person.slug);
+                    }}
                     className="tap-press grid min-h-11 flex-1 place-items-center rounded-pill border border-paper/25 bg-paper/[0.03] px-3 text-center font-sans text-ui font-semibold text-paper"
                   >
                     {t("saints.web.center")}

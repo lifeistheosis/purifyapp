@@ -17,7 +17,9 @@ import { hashFor, tabForKey, tabFromHash } from "@/lib/ui/sectionTabs";
  * reader back from a saint's page finds the view he left, back still leaves
  * the screen, and the switch in the top bar (which the page mounts, as every
  * page mounts its own bar) and the screen below it read one value without
- * sharing a parent.
+ * sharing a parent. Back and Forward between two saints' webs on one screen
+ * (the glide of note 55) move between whole addresses, so the view is read
+ * again on those too.
  */
 export type WebView = "web" | "timeline";
 export const WEB_VIEWS: readonly WebView[] = ["web", "timeline"];
@@ -25,9 +27,11 @@ const VIEW_EVENT = "purify:saint-web-view";
 
 function subscribe(onChange: () => void): () => void {
   window.addEventListener("hashchange", onChange);
+  window.addEventListener("popstate", onChange);
   window.addEventListener(VIEW_EVENT, onChange);
   return () => {
     window.removeEventListener("hashchange", onChange);
+    window.removeEventListener("popstate", onChange);
     window.removeEventListener(VIEW_EVENT, onChange);
   };
 }
