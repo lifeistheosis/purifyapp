@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import {
+  useCallback,
   useEffect,
   useId,
   useLayoutEffect,
@@ -16,6 +17,18 @@ import { ChevronDown } from "@/components/ui/icons/ChevronDown";
 import { ChevronRight } from "@/components/ui/icons/ChevronRight";
 import { cn } from "@/lib/cn";
 import { lineStyle, type WebNode } from "@/lib/saints/webLayout";
+import {
+  advanceGlide,
+  afterPull,
+  fingerSpeed,
+  glide,
+  keepTrack,
+  openOf,
+  pullCard,
+  type Glide,
+  type Track,
+} from "@/lib/saints/webMotion";
+import { prefersReducedMotion } from "@/lib/ui/motion";
 
 import { WebAvatar } from "./WebAvatar";
 import { WebLineMark } from "./WebLineMark";
@@ -26,15 +39,34 @@ export type CardState = "short" | "tall" | "tucked";
 /** The short card, as the design draws it: all of St John's web stays in view above it. */
 export const SHORT_CARD_H = 78;
 
+/**
+ * Where the card is, as it moves: its height, how far it has dropped below
+ * its place toward the handle, the height it pulls up to, whether a finger
+ * has it, and whether it was simply put there (on its first paint, or out of
+ * sight in its handle) rather than moved. Said on every frame it moves, so the
+ * web goes with it.
+ */
+export type CardMove = { height: number; drop: number; tall: number; live: boolean; jump: boolean };
+
 /** What the tall card leaves above it: the bar, and the saint it is about. */
 const TOP_ROOM = 210;
-/** Movement before a press becomes a pull, and how far a pull must go to count. */
+/** Movement before a press becomes a pull. */
 const PULL_SLOP = 6;
-const PULL_DECIDE = 26;
-/** A flick: px per ms. */
-const FLICK = 0.45;
+/** The fastest a finger hands the card to its spring, pixels a second. */
+const MAX_THROW = 4000;
 
-type Pull = { id: number; y0: number; t0: number; dy: number; moved: boolean; from: "short" | "tall" | "handle" };
+type Pull = {
+  id: number;
+  /** Where the finger pressed, and where the card began to follow it. */
+  y0: number;
+  yAt: number;
+  dy: number;
+  moved: boolean;
+  from: "short" | "tall" | "handle";
+  /** The card as the finger took it, perhaps halfway along its spring. */
+  start: { height: number; drop: number };
+  track: Track;
+};
 
 /**
  * The saint web's card (1.8, round 3, sheet r3-06, card A "the handle"; the
@@ -51,6 +83,15 @@ type Pull = { id: number; y0: number; t0: number; dy: number; moved: boolean; fr
  * which a tap or a pull brings back. While a finger moves a saint it ducks
  * into the handle by itself (`away`).
  *
+ * The build 84 note 45 ("make sure it's very motiony"): the card is under the
+ * finger the whole way. Pulled up it grows with the finger to its full height
+ * and gives past it, its short face giving way to the tall one as it goes;
+ * pulled down it comes with the finger. Let go, it settles on the middle
+ * saint's spring (lib/saints/webMotion.ts) with the finger's speed, and a tap
+ * moves it on the same spring. Each frame it says where it is (`onMove`), and
+ * the web above goes with it. With Purify's motion off it is simply where it
+ * goes.
+ *
  * It stands over the foot of the screen and above whatever the foot already
  * holds, the mini player and Today's readings bar included
  * (--now-playing-h, --readings-flow-h; globals.css, "The saint web"). Solid,
@@ -62,15 +103,15 @@ export function WebCard({
   state,
   away,
   onState,
-  onTallHeight,
+  onMove,
 }: {
   node: WebNode;
   state: CardState;
   /** Out of sight in its handle: tucked, or ducked while a saint is moved. */
   away: boolean;
   onState: (next: CardState) => void;
-  /** The height the card takes when it is pulled up, for the page's room and its scroll. */
-  onTallHeight?: (height: number) => void;
+  /** Where the card is, on every frame it moves. */
+  onMove?: (move: CardMove) => void;
 }) {
   const { t } = useTranslate();
   const cardId = useId();
@@ -92,6 +133,17 @@ export function WebCard({
   const kinds = kindsOf(node);
   const tall = state === "tall" && !away;
   const tallHeight = Math.max(SHORT_CARD_H, room ? Math.min(content, room) : content);
+
+  /** Where the card is drawn, the height it pulls up to, and its spring after a finger. */
+  const at = useRef({ height: SHORT_CARD_H, drop: 0 });
+  const full = useRef(tallHeight);
+  const spring = useRef<Glide | null>(null);
+  const raf = useRef(0);
+  const placed = useRef(false);
+  const onMoveRef = useRef(onMove);
+  useEffect(() => {
+    onMoveRef.current = onMove;
+  }, [onMove]);
 
   // What the card holds when it is pulled up, and how much of the screen it
   // may take. The observer's first word comes before the first paint.
@@ -117,9 +169,80 @@ export function WebCard({
     };
   }, [node.id]);
 
-  useEffect(() => {
-    onTallHeight?.(tallHeight);
-  }, [tallHeight, onTallHeight]);
+  /** The card where it is, painted straight onto it, and said to the web. */
+  const draw = useCallback((height: number, drop: number, live: boolean, jump = false) => {
+    at.current = { height, drop };
+    const card = cardRef.current;
+    if (card) {
+      card.style.height = `${Math.round(height * 100) / 100}px`;
+      if (Math.abs(drop) >= 0.01) card.style.setProperty("--saint-web-pull", `${Math.round(drop * 100) / 100}px`);
+      else card.style.removeProperty("--saint-web-pull");
+      // The short face gives way to the tall one as the card is pulled up (globals.css).
+      card.style.setProperty("--saint-web-open", String(Math.round(openOf(height, SHORT_CARD_H, full.current) * 1000) / 1000));
+    }
+    onMoveRef.current?.({ height, drop, tall: full.current, live, jump });
+  }, []);
+
+  const stop = useCallback(() => {
+    cancelAnimationFrame(raf.current);
+    raf.current = 0;
+    spring.current = null;
+    cardRef.current?.removeAttribute("data-moving");
+  }, []);
+
+  /** To a height on the spring, from where the card is, carrying on with a finger's speed. */
+  const settleTo = useCallback(
+    (height: number, speed?: { height: number; drop: number }) => {
+      const there = Math.abs(at.current.height - height) < 0.25 && Math.abs(at.current.drop) < 0.25;
+      const reduced = prefersReducedMotion();
+      if (reduced || (!spring.current && !speed && there)) {
+        stop();
+        draw(height, 0, false, reduced);
+        return;
+      }
+      // A spring already under way keeps its speed unless a finger gives it a new one.
+      const was = spring.current;
+      spring.current = glide(
+        was ? was.p : { x: at.current.height, y: at.current.drop },
+        { x: height, y: 0 },
+        speed ? { x: speed.height, y: speed.drop } : (was?.v ?? { x: 0, y: 0 }),
+      );
+      cardRef.current?.setAttribute("data-moving", "");
+      if (raf.current) return;
+      let last = performance.now();
+      const frame = (now: number) => {
+        const s = spring.current;
+        if (!s) {
+          raf.current = 0;
+          return;
+        }
+        const going = advanceGlide(s, Math.max(0, (now - last) / 1000));
+        last = now;
+        draw(s.p.x, s.p.y, false);
+        if (going) raf.current = requestAnimationFrame(frame);
+        else stop();
+      };
+      raf.current = requestAnimationFrame(frame);
+    },
+    [draw, stop],
+  );
+
+  useEffect(() => () => cancelAnimationFrame(raf.current), []);
+
+  // Short, pulled up, or out of sight: the card goes there on its spring. On
+  // its first paint, and out of sight, it is simply there.
+  useLayoutEffect(() => {
+    full.current = tallHeight;
+    if (pullRef.current?.moved) return;
+    const height = tall ? tallHeight : SHORT_CARD_H;
+    if (!placed.current || away) {
+      placed.current = true;
+      stop();
+      draw(height, 0, false, true);
+      return;
+    }
+    settleTo(height);
+  }, [tall, tallHeight, away, draw, settleTo, stop]);
 
   // A keyboard that opened or closed the card keeps its place on the control that closes or opens it.
   useEffect(() => {
@@ -132,26 +255,37 @@ export function WebCard({
   function pullStart(from: Pull["from"], e: ReactPointerEvent<HTMLElement>) {
     if (e.pointerType === "mouse" && e.button !== 0) return;
     swallow.current = false;
-    pullRef.current = { id: e.pointerId, y0: e.clientY, t0: e.timeStamp, dy: 0, moved: false, from };
+    const track: Track = [];
+    keepTrack(track, e.timeStamp, e.clientX, e.clientY);
+    pullRef.current = { id: e.pointerId, y0: e.clientY, yAt: e.clientY, dy: 0, moved: false, from, start: { ...at.current }, track };
   }
 
   function pullMove(e: ReactPointerEvent<HTMLElement>) {
     const g = pullRef.current;
     if (!g || g.id !== e.pointerId) return;
-    const dy = e.clientY - g.y0;
+    keepTrack(g.track, e.timeStamp, e.clientX, e.clientY);
+    g.dy = e.clientY - g.y0;
     if (!g.moved) {
-      if (Math.abs(dy) < PULL_SLOP) return;
+      if (Math.abs(g.dy) < PULL_SLOP) return;
       g.moved = true;
       try {
         e.currentTarget.setPointerCapture(e.pointerId);
       } catch {
         /* the pointer is already gone */
       }
-      if (g.from !== "handle") cardRef.current?.setAttribute("data-pulling", "");
+      if (g.from !== "handle") {
+        // The finger takes the card where it is, even halfway along its spring, and it follows from here.
+        cancelAnimationFrame(raf.current);
+        raf.current = 0;
+        spring.current = null;
+        g.start = { ...at.current };
+        g.yAt = e.clientY;
+        cardRef.current?.setAttribute("data-moving", "");
+      }
     }
-    g.dy = dy;
-    // The card follows the finger down, and gives a little going up.
-    if (g.from !== "handle") cardRef.current?.style.setProperty("--saint-web-pull", `${Math.round(dy < 0 ? dy * 0.3 : dy)}px`);
+    if (g.from === "handle") return;
+    const next = pullCard(g.start, e.clientY - g.yAt, SHORT_CARD_H, full.current, g.from === "short");
+    draw(next.height, next.drop, true);
   }
 
   function pullEnd(e: ReactPointerEvent<HTMLElement>) {
@@ -164,21 +298,22 @@ export function WebCard({
     setTimeout(() => {
       swallow.current = false;
     }, 0);
-    const card = cardRef.current;
-    card?.removeAttribute("data-pulling");
-    card?.style.removeProperty("--saint-web-pull");
-    if (e.type === "pointercancel") return;
-    const speed = g.dy / Math.max(16, e.timeStamp - g.t0);
-    const up = g.dy < -PULL_DECIDE || speed < -FLICK;
-    const down = g.dy > PULL_DECIDE || speed > FLICK;
-    if (g.from === "short") {
-      if (up) onState("tall");
-      else if (down) onState("tucked");
-    } else if (g.from === "tall") {
-      if (down) onState("short");
-    } else if (up) {
-      onState("short");
+    const v = fingerSpeed(g.track, e.timeStamp);
+    const next = e.type === "pointercancel" ? null : afterPull(g.from, g.dy, v.y / 1000);
+    if (g.from === "handle") {
+      if (next) onState(next);
+      return;
     }
+    if (next === "tucked") {
+      // Its own slide carries it down from where the finger left it (globals.css, data-away).
+      stop();
+      onState("tucked");
+      return;
+    }
+    const to = next ?? g.from;
+    const speed = Math.max(-MAX_THROW, Math.min(MAX_THROW, v.y));
+    settleTo(to === "tall" ? full.current : SHORT_CARD_H, { height: -speed, drop: at.current.drop > 0 ? speed : 0 });
+    if (next) onState(next);
   }
 
   function tapped(e: ReactMouseEvent, next: CardState, focus?: "tall" | "short") {
@@ -202,7 +337,7 @@ export function WebCard({
         inert={away}
         aria-label={name}
         className="saint-web-sheet saint-web-card fixed inset-x-3 z-20 mx-auto max-w-[560px] overflow-hidden"
-        style={{ height: tall ? tallHeight : SHORT_CARD_H }}
+        style={{ height: SHORT_CARD_H }}
       >
         {icon ? <span aria-hidden className="saint-web-card-light" style={{ backgroundImage: `url(${icon})` }} /> : null}
         <span aria-hidden className="saint-web-grab" />

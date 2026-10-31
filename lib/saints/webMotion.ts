@@ -25,6 +25,10 @@
  * (`settle`), so a drag still moves the saint and nothing swings after.
  * Imports nothing but the web's own shapes, so the app's script carries no
  * more than this file.
+ *
+ * Below the saints' springs is the web's own place on the screen (the build
+ * 84 note 45): where the whole web stands for the card, and the card's pull,
+ * both on the middle saint's spring.
  */
 
 import { BOX, CENTER_BOX, WEB_WIDTH, type WebLayout } from "./webLayout";
@@ -445,4 +449,341 @@ export function threadThinning(from: Point, to: Point, rest: number): number {
   const len = dist(from, to);
   if (len <= 0) return 1;
   return Math.max(0.72, Math.min(1, rest / len));
+}
+
+/* ---- The web's place on the screen (1.8, the build 84 note 45) ----
+ *
+ * The owner, with a photo of St Macarius's web and its card short at the
+ * foot: "when the text is at the bottom, there's a big gap. Allow us to move
+ * the middle photo of Macarius the Great so it shows up in the middle ... But
+ * when you pull the window at the bottom back up, it moves it to the top. So
+ * make sure it's very motiony ... it just feels like you have to put your
+ * finger on these very small images for anything to actually move."
+ *
+ * So the whole web has a place on the screen, apart from where each saint
+ * rests on it:
+ *  - With the card short or tucked, the middle saint stands at the middle of
+ *    the band between the bar and the card (dropToMiddle), as near as the room
+ *    allows: never above the web's own place under the key, never so low that
+ *    its last name meets the card. A web too tall for the band keeps its own
+ *    place, and the page scrolls as before.
+ *  - Pulled up, the chosen saint stands in the middle of what the card leaves
+ *    above it (liftToChosen). Between the two the web goes with the card: its
+ *    place is a share of the way, the share the card is pulled up (framed),
+ *    frame by frame under the finger and on the card's spring after it.
+ *  - A reader can move the whole web by hand, by the middle saint or by the
+ *    empty web, until the middle saint reaches the edge of the space; past it
+ *    the web gives (panRange, givePan). Put back brings it home.
+ *
+ * The card's own pull is here too (pullCard, afterPull), so the card and the
+ * web move by one set of numbers, on the middle saint's spring (MOTION.middle).
+ * Distances are the screen's pixels, down from the window's top.
+ */
+
+/** A stretch of the screen, down from the window's top. */
+export type Band = { top: number; bottom: number };
+
+/** How far the web's last name stays clear of the card's top. */
+export const CARD_CLEAR = 16;
+/** How far from the space's edges the middle saint's centre stays when the web is moved by hand. */
+export const KEEP_IN_SIGHT = 56;
+
+/**
+ * The web's own box, from its layout, in pixels down the canvas: the middle
+ * saint's centre, the top of the highest saint's circle and the foot of the
+ * lowest saint's name.
+ */
+export function webBox(layout: WebLayout): { middle: number; top: number; bottom: number } {
+  let top: number = layout.center.y + CENTER_BOX[0].top;
+  let bottom: number = layout.center.y + CENTER_BOX[1].bottom;
+  for (const p of layout.places) {
+    top = Math.min(top, p.y - BOX.up);
+    bottom = Math.max(bottom, p.y + BOX.down);
+  }
+  return { middle: layout.center.y, top, bottom };
+}
+
+/**
+ * With the card short or tucked: how far below its own place the web stands,
+ * so the middle saint's centre is at the band's middle. Never above its own
+ * place, never so low that its last name comes within CARD_CLEAR of the card
+ * or past `floor` (the foot of the room it is drawn in, where it would be cut).
+ * `web` is where the web stands with no move, on the screen.
+ */
+export function dropToMiddle(band: Band, web: { middle: number; bottom: number }, floor = Infinity): number {
+  const want = (band.top + band.bottom) / 2 - web.middle;
+  const room = Math.min(band.bottom - CARD_CLEAR, floor) - web.bottom;
+  return Math.max(0, Math.min(want, room));
+}
+
+/**
+ * With the card pulled up: how far the web moves so the chosen saint's box
+ * (his circle, his name and its line) stands in the middle of what the card
+ * leaves above it; where that is less than his box, his circle just under the
+ * bar. Negative is up.
+ */
+export function liftToChosen(band: Band, box: { top: number; bottom: number }): number {
+  if (box.bottom - box.top >= band.bottom - band.top) return band.top + 4 - box.top;
+  return (band.top + band.bottom) / 2 - (box.top + box.bottom) / 2;
+}
+
+/** Which side of the card a reader's move of the web was made on. */
+export type CardSide = "short" | "tall";
+
+/**
+ * The web's place between the card short (`low`, open 0) and pulled up
+ * (`high`, open 1), the card pulled up `open` of the way, with a reader's own
+ * move of the web. A move belongs to the side it was made on: pulling the card
+ * to the other side leaves it behind, so the chosen saint always arrives in
+ * view above the pulled-up card, and the middle saint back in the middle.
+ */
+export function framed(low: number, high: number, open: number, pan: Point, panOn: CardSide): Point {
+  const o = Math.min(1, Math.max(0, open));
+  if (panOn === "tall") return { x: pan.x * o, y: low + (high + pan.y - low) * o };
+  return { x: pan.x * (1 - o), y: low + pan.y + (high - low - pan.y) * o };
+}
+
+/** Everything the web's place is measured from, on the screen now. */
+export type WebScreen = {
+  /** The foot of what stands at the top: the bar, or the website's header. */
+  bandTop: number;
+  /** The short card's top, the pulled-up card's top, and the tucked handle's top. */
+  shortTop: number;
+  tallTop: number;
+  handleTop: number;
+  /** The web at its own place with the page at its top (webBox, on the screen). */
+  web: { middle: number; top: number; bottom: number };
+  /** The foot of the room the web is drawn in, with the page at its top. */
+  floor: number;
+  /** The chosen saint's box where he rests, on the screen now. */
+  chosen: { top: number; bottom: number };
+};
+
+/** The card, as the web follows it: how far it is pulled up (0 to 1), how far it has dropped toward its handle, and whether it is tucked. */
+export type CardNow = { open: number; drop: number; tucked: boolean };
+
+/** Where the web is drawn, from its own place: across, and down. */
+export function webTarget(s: WebScreen, card: CardNow, pan: Point, panOn: CardSide): Point {
+  // The short card dropping toward its handle frees the band as it goes, down to the handle.
+  const handle = Math.max(s.handleTop, s.shortTop);
+  const foot = card.tucked ? handle : Math.min(handle, s.shortTop + Math.max(0, card.drop));
+  const low = dropToMiddle({ top: s.bandTop, bottom: foot }, s.web, s.floor);
+  const high = s.tallTop < s.shortTop - 1 ? liftToChosen({ top: s.bandTop, bottom: s.tallTop }, s.chosen) : low;
+  return framed(low, high, card.open, pan, panOn);
+}
+
+/* ---- The card under a finger ---- */
+
+/** How far a pull on the card must go to count. */
+export const PULL_DECIDE = 26;
+/** A flick: pixels a millisecond. */
+export const FLICK = 0.45;
+
+/**
+ * How a sheet gives when it is pulled past where it can go: one for one at
+ * first, then less and less, never more than `room`.
+ */
+export function giveway(over: number, room = 96): number {
+  if (over <= 0) return 0;
+  return room * (1 - 1 / (over / room + 1));
+}
+
+/** How far the card is pulled up: 0 short, 1 at its full height. */
+export function openOf(height: number, short: number, tall: number): number {
+  if (tall <= short + 0.5) return height > short + 0.5 ? 1 : 0;
+  return Math.min(1, Math.max(0, (height - short) / (tall - short)));
+}
+
+/**
+ * The card under a finger that has moved `dy` (down) since it took the card
+ * at `start`: its height, and how far it has dropped below its place. Up to
+ * its full height it follows the finger one for one, and past it gives. Down
+ * past short, a card taken short drops with the finger toward its handle; one
+ * taken tall gives there, since it comes down only to short.
+ */
+export function pullCard(
+  start: { height: number; drop: number },
+  dy: number,
+  short: number,
+  tall: number,
+  tuckable: boolean,
+): { height: number; drop: number } {
+  const full = Math.max(short, tall);
+  const raw = start.height - start.drop - dy;
+  if (raw > full) return { height: full + giveway(raw - full), drop: 0 };
+  if (raw >= short) return { height: raw, drop: 0 };
+  const under = short - raw;
+  return { height: short, drop: tuckable ? under : giveway(under) };
+}
+
+/**
+ * Where a pull leaves the card: up (a pull or a flick) opens it, down from
+ * the short card tucks it away, down from the tall one brings it back short;
+ * less than that leaves it as it was (null). From the handle only up counts.
+ * `speed` is the finger's speed when it let go, pixels a millisecond (down).
+ */
+export function afterPull(from: "short" | "tall" | "handle", dy: number, speed: number): "short" | "tall" | "tucked" | null {
+  const up = dy < -PULL_DECIDE || speed < -FLICK;
+  const down = dy > PULL_DECIDE || speed > FLICK;
+  if (from === "short") return up ? "tall" : down ? "tucked" : null;
+  if (from === "tall") return down ? "short" : null;
+  return up ? "short" : null;
+}
+
+/** How far back a finger's speed is read when it lets go, in milliseconds. */
+export const SPEED_WINDOW = 80;
+
+/** A finger's last moves: when, and where. */
+export type Track = { t: number; x: number; y: number }[];
+
+/** Keeps the moves a speed is read from: the last SPEED_WINDOW, and never fewer than two. */
+export function keepTrack(track: Track, t: number, x: number, y: number): void {
+  track.push({ t, x, y });
+  while (track.length > 2 && t - track[0].t > SPEED_WINDOW) track.shift();
+}
+
+/** The finger's speed as it lets go at `now`, pixels a second; nothing if it had stopped. */
+export function fingerSpeed(track: Track, now: number): Point {
+  if (track.length < 2) return { x: 0, y: 0 };
+  const a = track[0];
+  const b = track[track.length - 1];
+  const dt = (b.t - a.t) / 1000;
+  if (dt <= 0 || now - b.t > SPEED_WINDOW) return { x: 0, y: 0 };
+  return { x: (b.x - a.x) / dt, y: (b.y - a.y) / dt };
+}
+
+/* ---- One spring for the web's place and the card ---- */
+
+/** Close enough, and slow enough, to be still: pixels, and pixels a second. */
+const GLIDE_STILL = 0.25;
+const GLIDE_STILL_SPEED = 4;
+
+/**
+ * A body on the middle saint's spring (MOTION.middle, stiff and calm) to a
+ * point: the card's height and drop after a finger lets it go, and what is
+ * left of the web's way to its place.
+ */
+export type Glide = { p: Point; v: Point; to: Point; still: boolean };
+
+export function glide(p: Point, to: Point = p, v: Point = { x: 0, y: 0 }): Glide {
+  return { p: copy(p), v: copy(v), to: copy(to), still: dist(p, to) < GLIDE_STILL && Math.hypot(v.x, v.y) < GLIDE_STILL_SPEED };
+}
+
+/** One step of a glide. */
+export function stepGlide(g: Glide, dt: number = STEP): void {
+  if (g.still) return;
+  const k = MOTION.middle;
+  const c = 2 * MOTION.middleDamping * Math.sqrt(k);
+  g.v.x += (k * (g.to.x - g.p.x) - c * g.v.x) * dt;
+  g.v.y += (k * (g.to.y - g.p.y) - c * g.v.y) * dt;
+  g.p.x += g.v.x * dt;
+  g.p.y += g.v.y * dt;
+  if (dist(g.p, g.to) < GLIDE_STILL && Math.hypot(g.v.x, g.v.y) < GLIDE_STILL_SPEED) {
+    g.p = copy(g.to);
+    g.v = { x: 0, y: 0 };
+    g.still = true;
+  }
+}
+
+/** A frame's worth of a glide (a thirtieth of a second at most, as `advance`). True while it moves. */
+export function advanceGlide(g: Glide, seconds: number): boolean {
+  if (g.still) return false;
+  const steps = Math.max(1, Math.min(8, Math.round(Math.min(seconds, 1 / 30) / STEP)));
+  for (let s = 0; s < steps && !g.still; s++) stepGlide(g);
+  return !g.still;
+}
+
+/**
+ * The whole web's place: where it is aimed, and the way still left to it,
+ * which glides to nothing. It is drawn at `to` plus `left.p`.
+ */
+export type WebFrame = { to: Point; left: Glide };
+
+const ORIGIN: Point = { x: 0, y: 0 };
+
+export function webFrame(to: Point = ORIGIN): WebFrame {
+  return { to: copy(to), left: glide(ORIGIN) };
+}
+
+/** Where the web is drawn now, from its own place. */
+export function frameAt(f: WebFrame): Point {
+  return { x: f.to.x + f.left.p.x, y: f.to.y + f.left.p.y };
+}
+
+/**
+ * Aim the web. Carried, it is there at once: a finger, or the card on its own
+ * spring, already moves it smoothly, frame by frame. Otherwise it glides
+ * there from where it is drawn.
+ */
+export function aimFrame(f: WebFrame, to: Point, carried: boolean): void {
+  if (!carried) {
+    f.left.p.x += f.to.x - to.x;
+    f.left.p.y += f.to.y - to.y;
+    if (dist(f.left.p, ORIGIN) >= GLIDE_STILL) f.left.still = false;
+  }
+  f.to = copy(to);
+}
+
+/** Let go with a speed (pixels a second): the web carries on with it as it glides to its place. */
+export function throwFrame(f: WebFrame, v: Point): void {
+  f.left.v = copy(v);
+  if (Math.hypot(v.x, v.y) >= GLIDE_STILL_SPEED) f.left.still = false;
+}
+
+/** The web where it is aimed, at once: Purify's motion off. */
+export function settleFrame(f: WebFrame): void {
+  f.left = glide(ORIGIN);
+}
+
+/* ---- The web moved by hand ---- */
+
+/** How far the web may be moved from where the card puts it, across and down. */
+export type PanRange = { x0: number; x1: number; y0: number; y1: number };
+
+/**
+ * Until the middle saint, at `at` where the card puts the web, reaches the
+ * edge of `space`. No move at all is always inside it, even where the card
+ * puts him past an edge (the card pulled up and the chosen saint shown).
+ */
+export function panRange(at: Point, space: { left: number; right: number; top: number; bottom: number }): PanRange {
+  const span = (lo: number, hi: number, c: number): [number, number] => {
+    // A space narrower than nothing: its middle.
+    const a = hi < lo ? (lo + hi) / 2 : lo;
+    const b = hi < lo ? a : hi;
+    return [Math.min(0, a - c), Math.max(0, b - c)];
+  };
+  const [x0, x1] = span(space.left, space.right, at.x);
+  const [y0, y1] = span(space.top, space.bottom, at.y);
+  return { x0, x1, y0, y1 };
+}
+
+/** How far past its range the web gives under a finger, at most. */
+const PAN_GIVE = 64;
+
+/** The web under a finger: where it is moved inside its range, and giving past it. */
+export function givePan(p: Point, r: PanRange): Point {
+  const give = (v: number, lo: number, hi: number) =>
+    v < lo ? lo - giveway(lo - v, PAN_GIVE) : v > hi ? hi + giveway(v - hi, PAN_GIVE) : v;
+  return { x: give(p.x, r.x0, r.x1), y: give(p.y, r.y0, r.y1) };
+}
+
+/** Where the web rests once let go: inside its range. */
+export function keepPan(p: Point, r: PanRange): Point {
+  return { x: Math.min(r.x1, Math.max(r.x0, p.x)), y: Math.min(r.y1, Math.max(r.y0, p.y)) };
+}
+
+/** How long a flick carries the web on at the speed it was let go with, in seconds. */
+export const FLING = 0.1;
+/** Slower than this (pixels a second) a finger let go is not a flick: a hand resting on the glass trembles. */
+export const MIN_FLING = 300;
+
+/** A finger's speed as it lets go, if it is a flick; nothing if it is not. */
+export function flickOf(v: Point): Point {
+  return Math.hypot(v.x, v.y) < MIN_FLING ? { x: 0, y: 0 } : { x: v.x, y: v.y };
+}
+
+/** Where a flick leaves the web: a moment on, inside its range. */
+export function flingPan(p: Point, v: Point, r: PanRange): Point {
+  const f = flickOf(v);
+  return keepPan({ x: p.x + f.x * FLING, y: p.y + f.y * FLING }, r);
 }

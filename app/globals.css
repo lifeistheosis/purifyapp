@@ -967,12 +967,67 @@ body[data-reader-screen][data-reader-away] [data-tab-bar]:has(:focus-visible) {
    moved saint is painted as `translate` on every frame of its springs
    (lib/saints/webMotion.ts), so no transition here names `translate` for a
    saint: it would trail the finger. Tokens throughout, with the house's
-   fallback first for a WebView without color-mix (Android before 111). */
+   fallback first for a WebView without color-mix (Android before 111).
+
+   The build 84 note 45: the web stands in the middle of the space between
+   the bar and the card, goes up with the card as it is pulled, and is moved
+   by hand (components/saints/web/WebConstellation.tsx). The room it is drawn
+   in reaches from the bar to the foot of the screen (--saint-web-top is where
+   it starts, measured; the phone's bar until then), so the web can stand
+   anywhere in it without making the page longer, and is cut at its edges, at
+   the bar's own foot at the top. It keeps room under the web for the short
+   card (78px, SHORT_CARD_H), so a web taller than the screen scrolls clear of
+   it. A finger on it moves the saints and the web; where the page scrolls
+   (data-page-scrolls) a finger that starts up or down still scrolls it. */
 .saint-web-room {
- padding-bottom: calc(var(--saint-web-card-h, 78px) + env(safe-area-inset-bottom, 0px) + var(--now-playing-h) + var(--readings-flow-h) + 28px);
+ position: relative;
+ overflow: clip;
+ padding-bottom: calc(78px + env(safe-area-inset-bottom, 0px) + var(--now-playing-h) + var(--readings-flow-h) + 28px);
+ touch-action: none;
+ -webkit-tap-highlight-color: transparent;
+ -webkit-touch-callout: none;
+ -webkit-user-select: none;
+ user-select: none;
+}
+.saint-web-room[data-page-scrolls] {
+ touch-action: pan-y pinch-zoom;
+}
+@media (max-width: 767.98px) {
+ .saint-web-room {
+  min-height: calc(100vh - var(--saint-web-top, calc(3rem + env(safe-area-inset-top, 0px))) - var(--now-playing-h) - var(--readings-flow-h));
+  min-height: calc(100svh - var(--saint-web-top, calc(3rem + env(safe-area-inset-top, 0px))) - var(--now-playing-h) - var(--readings-flow-h));
+ }
 }
 html.is-native .saint-web-room {
- padding-bottom: calc(var(--saint-web-card-h, 78px) + 20px);
+ padding-bottom: calc(78px + 20px);
+ min-height: calc(100vh - var(--saint-web-top, calc(3rem + var(--inset-top))) - var(--inset-bottom) - var(--tab-bar-h) - var(--now-playing-h) - var(--readings-flow-h) - 2px);
+}
+/* The key stands over the web, on the page's own ground, so a web moved up
+   passes under it; pulled up, the card sends it up under the bar. */
+.saint-web-key-place {
+ position: relative;
+ z-index: 3;
+}
+/* The whole web, moved as one: painted as `translate` on every frame it
+   moves, on its own layer. A saint under a finger rises over the key. */
+.saint-web-canvas {
+ will-change: translate;
+}
+.saint-web-canvas[data-holding] {
+ z-index: 4;
+}
+/* The middle icon's light behind him: a grey from the icon's own lightness,
+   never its hue (St Macarius's golden fresco lit the ground gold, the owner's
+   photo of build 84), so white light on the dark grounds. On Parchment a
+   white light cannot be seen: the icon is a soft ink shade there. */
+.saint-web-light {
+ filter: blur(52px) grayscale(1) brightness(1.15);
+ opacity: 0.3;
+ will-change: translate;
+}
+html[data-reading-mode="parchment"] .saint-web-light {
+ filter: blur(52px) grayscale(1) brightness(0.7);
+ opacity: 0.12;
 }
 .saint-web-sheet {
  bottom: calc(env(safe-area-inset-bottom, 0px) + var(--now-playing-h) + var(--readings-flow-h) + 12px);
@@ -993,7 +1048,6 @@ html.is-native .saint-web-sheet {
  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--color-paper) 7.5%, transparent), inset 0 1px 0 rgb(var(--panel-sheen) / 0.09), 0 16px 36px rgb(0 0 0 / 0.62), 0 2px 6px rgb(0 0 0 / 0.4);
  translate: 0 var(--saint-web-pull, 0px);
  transition:
-  height var(--duration-slow) var(--ease-house),
   translate var(--duration-base) var(--ease-house),
   opacity var(--duration-fast) var(--ease-house),
   border-radius var(--duration-base) var(--ease-house);
@@ -1001,9 +1055,11 @@ html.is-native .saint-web-sheet {
 .saint-web-card[data-state="tall"] {
  border-radius: 24px;
 }
-/* Under the finger the card follows it at once; its height still eases. */
-.saint-web-card[data-pulling] {
- transition: height var(--duration-slow) var(--ease-house);
+/* Under a finger, or on its spring after one (lib/saints/webMotion.ts), the
+   card's height and drop are painted on every frame: nothing here trails
+   them. Its height is never eased by CSS; the spring moves it. */
+.saint-web-card[data-moving] {
+ transition: opacity var(--duration-fast) var(--ease-house), border-radius var(--duration-base) var(--ease-house);
 }
 .saint-web-card[data-away] {
  translate: 0 calc(100% + 28px);
@@ -1045,13 +1101,17 @@ html[data-reading-mode="parchment"] .saint-web-card-light {
  height: 3px;
  margin-left: -11px;
 }
-.saint-web-card-short,
+/* The short face gives way to the tall one as the card is pulled up
+   (--saint-web-open, 0 short to 1 pulled up, painted with its height): the
+   short one gone a third of the way, the tall one there by three quarters. */
+.saint-web-card-short {
+ opacity: calc(1 - var(--saint-web-open, 0) * 3);
+}
 .saint-web-card-tall {
- transition: opacity var(--duration-fast) var(--ease-house);
+ opacity: calc(var(--saint-web-open, 0) * 2.5 - 0.75);
 }
 .saint-web-card[data-state="tall"] .saint-web-card-short,
 .saint-web-card:not([data-state="tall"]) .saint-web-card-tall {
- opacity: 0;
  pointer-events: none;
 }
 .saint-web-card:not([data-state="tall"]) .saint-web-card-tall {
@@ -1153,10 +1213,11 @@ html.is-native .saint-web-handle {
 html.is-native .saint-web-putback {
  bottom: calc(var(--inset-bottom) + var(--tab-bar-h) + var(--now-playing-h) + var(--readings-flow-h) + 42px);
 }
-/* The key: the kinds as one carved track, the chosen part raised and lit. */
+/* The key: the kinds as one carved track, the chosen part raised and lit,
+   on the page's own ground so a web moved under it does not show through. */
 .saint-web-key {
- background: rgb(0 0 0 / 0.32);
- background: linear-gradient(180deg, rgb(0 0 0 / 0.42), color-mix(in srgb, var(--color-paper) 2.5%, transparent));
+ background: linear-gradient(rgb(0 0 0 / 0.32), rgb(0 0 0 / 0.32)) var(--color-night);
+ background: linear-gradient(180deg, rgb(0 0 0 / 0.42), color-mix(in srgb, var(--color-paper) 2.5%, transparent)), var(--color-night);
  box-shadow: inset 0 2px 5px rgb(0 0 0 / 0.65), inset 0 0 0 1px rgb(255 255 255 / 0.055), 0 1px 0 rgb(var(--panel-sheen) / 0.05);
  box-shadow: inset 0 2px 5px rgb(0 0 0 / 0.65), inset 0 0 0 1px color-mix(in srgb, var(--color-paper) 5.5%, transparent), 0 1px 0 rgb(var(--panel-sheen) / 0.05);
 }
@@ -1199,16 +1260,18 @@ html[data-reading-mode="parchment"] .saint-web-key-part[aria-pressed="true"] .sa
 html[data-reading-mode="parchment"] .saint-web-key-part[aria-pressed="true"] svg {
  filter: none;
 }
-/* A saint on the web. His circle is where a finger takes him (his name still
-   scrolls the page); lifted, he grows a little and casts a shadow. */
+/* A saint on the web. A finger takes him by his whole box, his circle, his
+   name and its line, and by a margin round it (.saint-web-hit, drawn behind
+   every saint); lifted, he grows a little and casts a shadow. */
 [data-saint-web-canvas] .saint-web-node {
  -webkit-touch-callout: none;
  -webkit-user-select: none;
  user-select: none;
  transition: transform 220ms var(--ease-house), scale var(--duration-fast) var(--ease-house), opacity var(--duration-fast) ease-out;
 }
-[data-saint-web-canvas] [data-web-grip] {
- touch-action: none;
+.saint-web-hit {
+ border-radius: 18px;
+ -webkit-touch-callout: none;
 }
 .saint-web-ring {
  transition: box-shadow var(--duration-fast) var(--ease-house);
@@ -1227,9 +1290,7 @@ html[data-reading-mode="parchment"] .saint-web-ring-on {
  box-shadow: 0 0 0 3px var(--color-night), 0 0 0 4.5px var(--color-paper);
 }
 :where([data-motion="reduce"]) .saint-web-card,
-:where([data-motion="reduce"]) .saint-web-card[data-pulling],
-:where([data-motion="reduce"]) .saint-web-card-short,
-:where([data-motion="reduce"]) .saint-web-card-tall,
+:where([data-motion="reduce"]) .saint-web-card[data-moving],
 :where([data-motion="reduce"]) .saint-web-handle,
 :where([data-motion="reduce"]) .saint-web-putback,
 :where([data-motion="reduce"]) .saint-web-ring,
