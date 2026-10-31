@@ -70,7 +70,7 @@ import { UsageTab } from "./tabs/UsageTab";
 import { OnboardingTab } from "./tabs/OnboardingTab";
 import { ScreensTab } from "./tabs/ScreensTab";
 import { SubTabs } from "./primitives";
-import { ADMIN_PAGE_GROUPS, pageOf, viewName, type AdminPage } from "@/lib/admin/pages";
+import { ADMIN_PAGE_GROUPS, pageOf, tabViews, viewName, type AdminPage } from "@/lib/admin/pages";
 import { decodeRail } from "@/lib/admin/rail";
 import { useUsageLog } from "@/lib/admin/useUsageLog";
 import { AdminThemeToggle } from "./AdminThemeToggle";
@@ -659,7 +659,7 @@ export function AdminShell({
   const crumbs = [
     visiblePageGroups.find((g) => g.pages.some((p) => p.id === page.id))?.group,
     page.label,
-    page.views.length > 1 ? page.views.find((v) => v.tab === active)?.label : undefined,
+    tabViews(page).length > 1 ? tabViews(page).find((v) => v.tab === active)?.label : undefined,
   ].filter((c, i, all): c is string => Boolean(c) && c !== all[i - 1]);
   // A page's badge is the first of its views that has people waiting.
   const pageBadge = (p: AdminPage) =>
@@ -1096,10 +1096,12 @@ export function AdminShell({
               <p className="mt-1 font-sans text-[13.5px]" style={{ color: "var(--adm-ink-3)" }}>
                 {page.sentence}
               </p>
-              {page.views.length > 1 ? (
+              {/* Folded views (lib/admin/pages.ts) are reached from inside
+                  their page, so they are not tabs here. */}
+              {tabViews(page).length > 1 ? (
                 <div className="mt-4">
                   <SubTabs
-                    tabs={page.views.map((v) => [v.tab as TabId, v.label] as const)}
+                    tabs={tabViews(page).map((v) => [v.tab as TabId, v.label] as const)}
                     active={active}
                     onChange={select}
                   />
