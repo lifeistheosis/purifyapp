@@ -91,6 +91,63 @@ export const TRY_WORDS: readonly { strongs: string; lemma: string }[] = [
   { strongs: "5457", lemma: "φῶς" },
 ];
 
+/**
+ * Switching the word the preview studies (the owner's note 43 of build 80:
+ * "it's also buggy in a couple frames and it's not smooth"). The three words
+ * are loaded as the preview opens. The switch moves at once; the study shown
+ * stays until the chosen word's verses are here, then the chosen comes in
+ * over it while it goes out (components/billing/plusTry/TryWordStudy.tsx).
+ * It used to be dropped at the tap, and the window stood nearly empty, the
+ * word and "Finding every place", until the verses came over the network.
+ */
+export type WordSwitch = {
+  /** The word chosen on the switch. */
+  chosen: string;
+  /** The word whose study the window shows. */
+  shown: string;
+  /** The study going out under the one coming in, and how far it was scrolled. */
+  leaving: { strongs: string; y: number } | null;
+  /** The words whose verses are here, or whose asking failed: a failure is shown, not waited on. */
+  ready: readonly string[];
+};
+
+export type WordSwitchStep =
+  | { type: "choose"; strongs: string; y: number }
+  | { type: "ready"; strongs: string; y: number }
+  | { type: "left" };
+
+/** How long the study going out takes to go, in ms (app/globals.css, .plus-try-word-out). */
+export const WORD_FADE_MS = 200;
+
+export function startWordSwitch(first: string): WordSwitch {
+  return { chosen: first, shown: first, leaving: null, ready: [] };
+}
+
+/** The chosen word comes in, the shown one going out from where it was scrolled to. */
+function bringIn(s: WordSwitch, y: number): WordSwitch {
+  if (s.chosen === s.shown) return s;
+  return { ...s, shown: s.chosen, leaving: { strongs: s.shown, y } };
+}
+
+export function stepWordSwitch(s: WordSwitch, step: WordSwitchStep): WordSwitch {
+  switch (step.type) {
+    case "choose": {
+      if (step.strongs === s.chosen) return s;
+      // Nothing is shown yet (the first word still coming): nothing to keep.
+      if (!s.ready.includes(s.shown)) return { ...s, chosen: step.strongs, shown: step.strongs, leaving: null };
+      const next = { ...s, chosen: step.strongs };
+      return s.ready.includes(step.strongs) ? bringIn(next, step.y) : next;
+    }
+    case "ready": {
+      if (s.ready.includes(step.strongs)) return s;
+      const next = { ...s, ready: [...s.ready, step.strongs] };
+      return step.strongs === s.chosen ? bringIn(next, step.y) : next;
+    }
+    case "left":
+      return s.leaving ? { ...s, leaving: null } : s;
+  }
+}
+
 /** The verses of John 1 whose cross-references the preview offers, by number. */
 export const TRY_REF_VERSES: readonly number[] = [1, 3, 4, 5, 14];
 
