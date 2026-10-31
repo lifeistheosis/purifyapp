@@ -6,6 +6,9 @@
 // offered to a saint nobody is joined to, or a Timeline that loses people the
 // web shows.
 
+import fs from "node:fs";
+import path from "node:path";
+
 import { describe, expect, it } from "vitest";
 
 import { COUNCILS } from "@/lib/councils/councils";
@@ -177,6 +180,21 @@ describe("a saint's web", () => {
     expect(basil.center.years).toBe("c. 330–379");
     expect(basil.timeline.map((r) => r.kind)).toEqual(["born", "life", "life", "life", "reposed"]);
     expect(basil.timeline.find((r) => r.kind === "life" && r.year === "370")).toBeTruthy();
+  });
+
+  it("tells the Council of 381 as the witnesses do: St Meletius presided at its opening, St Gregory after his death (the owner's note 48 of build 80)", () => {
+    // Socrates V.8, Sozomen VII.7 to 8 and Theodoret V.8 (NPNF II 2 and 3) and the 1894 editors of NPNF II 7:
+    // no witness has Gregory open the council (docs/editorial-standards.md, clergy queue item 25).
+    const row = saintWeb("gregory-theologian")!.timeline.find((r) => r.kind === "life" && r.at === 381);
+    expect(row?.kind === "life" && row.text).toBe(
+      "When the Second Ecumenical Council met at Constantinople in 381, St. Meletius of Antioch presided at its opening and confirmed Gregory as archbishop of the city, and when Meletius died during the council, Gregory presided in his place.",
+    );
+    expect(row?.kind === "life" && row.people).toContain("saint:meletius-of-antioch");
+    const english = SAINTS.find((s) => s.slug === "gregory-theologian")!.life.join(" ");
+    const german = (JSON.parse(fs.readFileSync(path.join(process.cwd(), "data/saints/gregory-theologian/i18n/de.json"), "utf8")) as { life: string[] }).life.join(" ");
+    expect(english).not.toMatch(/opened the Second Ecumenical Council/);
+    expect(german).not.toMatch(/Konzil[^.]*eröffnete/);
+    expect(german).toContain("präsidierte der heilige Meletius von Antiochien dessen Eröffnung und bestätigte Gregor als Erzbischof der Stadt; als Meletius während des Konzils starb, präsidierte Gregor an seiner Stelle.");
   });
 
   it("names a council by its place and year, and a saint without his St.", () => {

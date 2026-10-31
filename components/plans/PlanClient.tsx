@@ -9,8 +9,8 @@ import { PlanFinish } from "@/components/plans/PlanFinish";
 import { PlanPath } from "@/components/plans/PlanPath";
 import { PlanTodayCard } from "@/components/plans/PlanTodayCard";
 import { localBookNames } from "@/lib/bible/books";
-import { usePlusFeatures } from "@/lib/entitlements/usePlusFeatures";
-import { dayGuide } from "@/lib/plans/guide";
+import { useExpectedPlusFeatures, usePlusFeatures } from "@/lib/entitlements/usePlusFeatures";
+import { dayGuide, type PlanWords } from "@/lib/plans/guide";
 import { usePlanGuide } from "@/lib/plans/guideContent";
 import { dayLabel, getPlan } from "@/lib/plans/plans";
 import { completeDay, nextDay, planStreak, resetPlan, startPlan, uncompleteDay, usePlans } from "@/lib/plans/progress";
@@ -31,17 +31,29 @@ import { useMounted } from "@/lib/useMounted";
  * Plus is shown, never hidden: every reader sees the whole plan; without
  * Plus, Begin and the day circles carry or lead to the upgrade sheet named
  * for the plans. Progress is kept on this device (lib/plans/progress.ts).
+ *
+ * The page arrives whole (the owner's note 42 of build 80, "there's a frame
+ * where it bugs out"): the day's intro, its verses, the questions and the
+ * sayings come with the page (`words`, lib/plans/words.ts) instead of being
+ * loaded after it was drawn, and Begin keeps the place of its Plus mark while
+ * the answer is on its way (the pattern of components/player/PrayWith.tsx).
  */
-export function PlanClient({ id, minutes }: { id: string; minutes: number[] }) {
+export function PlanClient({ id, minutes, words }: { id: string; minutes: number[]; words: PlanWords }) {
   const { t, tn, locale } = useTranslate();
   const router = useRouter();
   const mounted = useMounted();
   const upgrade = useUpgradeModal();
-  const locked = usePlusFeatures() === false;
+  const plus = usePlusFeatures();
+  const expectedPlus = useExpectedPlusFeatures();
+  const locked = plus === false;
+  // The mark's place, kept while the answer is unknown unless this device
+  // last knew Plus: drawn only when locked, so Begin does not widen when the
+  // answer comes a moment after the page.
+  const lockPlace = locked || (plus === null && expectedPlus !== true);
   const plan = getPlan(id);
   const state = usePlans();
   const finished = useJustFinished(id);
-  const guide = usePlanGuide(locale, true);
+  const guide = usePlanGuide(locale, true, words);
   const [confirmReset, setConfirmReset] = useState(false);
 
   const books = useMemo(() => localBookNames(t), [t]);
@@ -79,6 +91,7 @@ export function PlanClient({ id, minutes }: { id: string; minutes: number[] }) {
           day={finished.day}
           next={next}
           guide={guide}
+          sayings={words.sayings}
           streak={streak}
           bookName={bookName}
           onBack={() => {
@@ -94,6 +107,7 @@ export function PlanClient({ id, minutes }: { id: string; minutes: number[] }) {
           guide={guide ? dayGuide(guide.own, guide.en, id, next, guide.cites) : null}
           minutes={minutes[next] ?? null}
           locked={locked}
+          lockPlace={lockPlace}
           onBegin={() => begin(next)}
         />
       ) : (

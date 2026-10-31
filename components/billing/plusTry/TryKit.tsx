@@ -6,7 +6,7 @@
 // on words that are not the reader's own. Light on purpose: the Plus page
 // draws the window while a feature's screen is still being read.
 
-import type { CSSProperties, ReactNode } from "react";
+import type { CSSProperties, ReactNode, Ref } from "react";
 
 import { useTranslate } from "@/components/i18n/MessagesProvider";
 import { Skeleton } from "@/components/ui/Skeleton";
@@ -26,6 +26,7 @@ export function TryWindow({
   overlay,
   className,
   style,
+  scrollRef,
 }: {
   children?: ReactNode;
   /** The feature's screen is still coming. */
@@ -38,6 +39,8 @@ export function TryWindow({
   overlay?: ReactNode;
   className?: string;
   style?: CSSProperties;
+  /** The part that scrolls, for a screen that puts its page back at the top. */
+  scrollRef?: Ref<HTMLDivElement>;
 }) {
   return (
     <div
@@ -49,7 +52,7 @@ export function TryWindow({
       style={style}
     >
       <span aria-hidden className="plus-try-glow pointer-events-none absolute left-1/2 top-[-150px] -z-10 h-[300px] w-[420px] -translate-x-1/2" />
-      <div className={cn("overflow-y-auto overscroll-contain scrollbar-thin", tall ? "h-[clamp(220px,40dvh,340px)]" : "h-[clamp(200px,34dvh,290px)]")}>
+      <div ref={scrollRef} className={cn("overflow-y-auto overscroll-contain scrollbar-thin", tall ? "h-[clamp(220px,40dvh,340px)]" : "h-[clamp(200px,34dvh,290px)]")}>
         {loading ? (
           <div aria-hidden className="space-y-3 px-5 pt-8">
             <Skeleton className="mx-auto h-7 w-1/3" weight="faint" />

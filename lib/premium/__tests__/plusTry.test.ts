@@ -27,10 +27,14 @@ import {
   TRY_SAVE_MS,
   TRY_SOUND,
   TRY_WORDS,
+  WORD_FADE_MS,
   nextTryRow,
   paletteVars,
   savedSoFar,
+  startWordSwitch,
+  stepWordSwitch,
   trySoundOf,
+  type WordSwitch,
 } from "@/lib/premium/plusTry";
 
 const ROOT = path.resolve(__dirname, "..", "..", "..");
@@ -250,6 +254,61 @@ describe("the palettes the Candlelight preview switches between", () => {
   });
 });
 
+describe("switching the word study's word (his note 43 of build 80: \"buggy in a couple frames and it's not smooth\")", () => {
+  const [logos, zoe, phos] = TRY_WORDS.map((w) => w.strongs);
+  const ready = (s: WordSwitch, ...words: string[]) => words.reduce((acc, w) => stepWordSwitch(acc, { type: "ready", strongs: w, y: 0 }), s);
+
+  it("keeps the word shown until the chosen one's verses are here, then brings it in over it", () => {
+    let s = ready(startWordSwitch(logos), logos);
+    expect(s).toMatchObject({ chosen: logos, shown: logos, leaving: null });
+    // Chosen before its verses came: the switch moves, the window keeps λόγος.
+    s = stepWordSwitch(s, { type: "choose", strongs: zoe, y: 140 });
+    expect(s).toMatchObject({ chosen: zoe, shown: logos, leaving: null });
+    // Here: ζωή comes in, λόγος goes out from where it was scrolled to.
+    s = stepWordSwitch(s, { type: "ready", strongs: zoe, y: 160 });
+    expect(s).toMatchObject({ chosen: zoe, shown: zoe, leaving: { strongs: logos, y: 160 } });
+    s = stepWordSwitch(s, { type: "left" });
+    expect(s.leaving).toBeNull();
+    // A word already here comes in at the tap.
+    s = ready(s, phos);
+    s = stepWordSwitch(s, { type: "choose", strongs: phos, y: 0 });
+    expect(s).toMatchObject({ chosen: phos, shown: phos, leaving: { strongs: zoe, y: 0 } });
+  });
+
+  it("goes back without waiting, and never brings in a word no longer chosen", () => {
+    let s = ready(startWordSwitch(logos), logos);
+    s = stepWordSwitch(s, { type: "choose", strongs: zoe, y: 0 });
+    s = stepWordSwitch(s, { type: "choose", strongs: logos, y: 0 });
+    expect(s).toMatchObject({ chosen: logos, shown: logos, leaving: null });
+    s = stepWordSwitch(s, { type: "ready", strongs: zoe, y: 0 });
+    expect(s).toMatchObject({ chosen: logos, shown: logos, leaving: null });
+  });
+
+  it("shows the first word chosen while nothing has come yet, with nothing to keep", () => {
+    const s = stepWordSwitch(startWordSwitch(logos), { type: "choose", strongs: phos, y: 0 });
+    expect(s).toMatchObject({ chosen: phos, shown: phos, leaving: null });
+  });
+
+  it("loads all three as the preview opens, through the study's own asking, and waits in the window's own height", () => {
+    const tryWord = bare(`${TRY_DIR}/TryWordStudy.tsx`);
+    expect(tryWord).toMatch(/for \(const w of TRY_WORDS\) \{\s*void preloadWordStudy\(w\.strongs, "nt"\)/);
+    expect(tryWord).toContain("loading={!state.ready.includes(shown)}");
+    // The one going out stands where it was, out of the flow, so the study coming in sets the height inside.
+    expect(tryWord).toContain('"plus-try-word-out pointer-events-none absolute inset-x-0"');
+    expect(tryWord).toContain("style={out && leaving ? { top: -leaving.y } : undefined}");
+    expect(tryWord).toContain("window.setTimeout(() => dispatch({ type: \"left\" }), WORD_FADE_MS)");
+    // The window's height is its own, never the study's.
+    expect(bare(`${TRY_DIR}/TryKit.tsx`)).toContain('tall ? "h-[clamp(220px,40dvh,340px)]"');
+    // A study already here opens whole, not from "Finding every place".
+    const study = bare("components/bible/WordStudySheet.tsx");
+    expect(study).toContain("useState<Answer | null>(() => (strongs ? (answered.get(addressOf(strongs, startIn)) ?? null) : null))");
+    expect(study).toContain("useState(() => answer === null)");
+    expect(study).toMatch(/askFor\(strongs, tab\)\s*\.then/);
+    // The going out lasts as long as it is kept.
+    expect(code("app/globals.css")).toContain(`animation: plus-try-word-out ${WORD_FADE_MS}ms var(--ease-house) both;`);
+  });
+});
+
 describe("the other previews' facts", () => {
   it("study the three words John 1 begins with", () => {
     expect(TRY_WORDS.map((w) => w.lemma)).toEqual(["λόγος", "ζωή", "φῶς"]);
@@ -324,7 +383,7 @@ describe("the look", () => {
 
   it("stands still with motion turned down", () => {
     const css = code("app/globals.css");
-    for (const cls of ["plus-try-minute-fill", "plus-try-carry", "plus-try-rest"]) {
+    for (const cls of ["plus-try-minute-fill", "plus-try-carry", "plus-try-rest", "plus-try-word-in", "plus-try-word-out"]) {
       expect(css, cls).toMatch(new RegExp(`\\.${cls} \\{[^}]*animation:`));
       expect(css, cls).toMatch(new RegExp(`:where\\(\\[data-motion="reduce"\\]\\) \\.${cls}[,\\s]`));
     }

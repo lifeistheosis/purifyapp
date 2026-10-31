@@ -5,6 +5,7 @@ import { T } from "@/components/i18n/T";
 import { MobileTopBar } from "@/components/nav/MobileTopBar";
 import { dayMinutes } from "@/lib/plans/minutes";
 import { READING_PLANS, getPlan } from "@/lib/plans/plans";
+import { planWords } from "@/lib/plans/words";
 
 type Params = Promise<{ id: string }>;
 
@@ -20,7 +21,9 @@ export const metadata = { title: "Reading plan" };
 /* One reading plan (1.7, the owner's note 22): the phone's bar, which goes up
    to the plans, the plan's name and what it is, then the client's day card,
    finish and path (components/plans/PlanClient.tsx). Each day's minutes are
-   counted here at build (lib/plans/minutes.ts) and handed over as numbers. */
+   counted here at build (lib/plans/minutes.ts) and handed over as numbers,
+   and the plan's own words go with them (lib/plans/words.ts), so the day's
+   card is whole in the page's first frame (the owner's note 42 of build 80). */
 export default async function PlanPage({ params }: { params: Params }) {
   const { id } = await params;
   const plan = getPlan(id);
@@ -38,7 +41,7 @@ export default async function PlanPage({ params }: { params: Params }) {
               <T k={`plans.${id}.body`} />
             </p>
           </header>
-          <PlanClient id={id} minutes={dayMinutes(plan)} />
+          <PlanClient id={id} minutes={dayMinutes(plan)} words={planWords(id)} />
         </div>
       </section>
     </>

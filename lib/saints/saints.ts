@@ -873,7 +873,7 @@ export const SAINTS: Saint[] = [
  life: [
  "Son of the bishop of Nazianzus, Gregory was given to God by his mother Nonna at his birth. He studied at Caesarea, Alexandria, and Athens, where his friendship with Basil the Great deepened into what he later called 'one soul in two bodies.'",
  "He desired the silence of philosophy and the monastic life, but was repeatedly drawn into the labor of the Church: first as priest in his father's parish, then briefly as bishop of the dusty crossroads of Sasima, then, against his will, to Constantinople in 379 to lead the small remnant of the orthodox flock in a city held by Arians.",
- "From a private chapel called the Anastasis, 'Resurrection', he preached the Five Theological Orations that gave him his surname. Within two years he had so recalled the city to the Nicene faith that he opened the Second Ecumenical Council of 381 as archbishop of Constantinople.",
+ "From a private chapel called the Anastasis, 'Resurrection', he preached the Five Theological Orations that gave him his surname. Within two years he had recalled the city to the Nicene faith. When the Second Ecumenical Council met at Constantinople in 381, St. Meletius of Antioch presided at its opening and confirmed Gregory as archbishop of the city, and when Meletius died during the council, Gregory presided in his place.",
  "He resigned the see almost immediately, longing for the rest he had never had. He returned to Cappadocia, withdrew to his family estate at Arianzus, and spent his last years writing poetry and ascetical letters until his repose on January 25, 390.",
  ],
  works: [

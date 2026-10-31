@@ -30,6 +30,55 @@ type Answer = {
 
 const GREEK = { fontFamily: "var(--font-greek), serif" } as const;
 
+/**
+ * The studies already asked for, by address, kept for the visit: the Bible
+ * does not change (the server keeps an answer a day). A study asked for
+ * again, or loaded ahead (the Plus page's preview loads its three words as
+ * it opens, the owner's note 43 of build 80), is drawn whole at once rather
+ * than from "Finding every place". A failure is not kept: it is asked again.
+ */
+const asked = new Map<string, Promise<Answer>>();
+const answered = new Map<string, Answer>();
+/** Enough for a visit's studies; the oldest go first. */
+const KEEP = 24;
+
+/** A study's first verses in one testament: what a study opens on. */
+function addressOf(strongs: string, tab: "ot" | "nt"): string {
+  return `/api/bible/word?s=${encodeURIComponent(strongs)}&t=${tab}&offset=0`;
+}
+
+function askFor(strongs: string, tab: "ot" | "nt"): Promise<Answer> {
+  const at = addressOf(strongs, tab);
+  const known = asked.get(at);
+  if (known) return known;
+  const p = apiFetch(at)
+    .then((r) => (r.ok ? (r.json() as Promise<Answer>) : Promise.reject(new Error(String(r.status)))))
+    .then((a) => {
+      answered.set(at, a);
+      return a;
+    })
+    .catch((e: unknown) => {
+      asked.delete(at);
+      throw e;
+    });
+  asked.set(at, p);
+  while (asked.size > KEEP) {
+    const oldest = asked.keys().next().value;
+    if (oldest === undefined) break;
+    asked.delete(oldest);
+    answered.delete(oldest);
+  }
+  return p;
+}
+
+/** Load a word's study ahead, its first verses in one testament. True once here, false if it failed. */
+export function preloadWordStudy(strongs: string, tab: "ot" | "nt"): Promise<boolean> {
+  return askFor(strongs, tab).then(
+    () => true,
+    () => false,
+  );
+}
+
 /** The verse's Greek with the word's own forms marked. */
 function Marked({ text, forms }: { text: string; forms: string[] }) {
   if (forms.length === 0) return <>{text}</>;
@@ -101,18 +150,18 @@ export function WordStudyBody({
 }) {
   const { t, tn } = useTranslate();
   // Mounted afresh for each word (the caller keys it), so it opens in the
-  // testament being read with nothing left over from the last word.
+  // testament being read with nothing left over from the last word. A study
+  // already here opens whole.
   const [tab, setTab] = useState<"ot" | "nt">(startIn);
-  const [answer, setAnswer] = useState<Answer | null>(null);
-  const [items, setItems] = useState<Item[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [answer, setAnswer] = useState<Answer | null>(() => (strongs ? (answered.get(addressOf(strongs, startIn)) ?? null) : null));
+  const [items, setItems] = useState<Item[]>(() => answer?.items ?? []);
+  const [loading, setLoading] = useState(() => answer === null);
   const [failed, setFailed] = useState(false);
 
   useEffect(() => {
     if (!strongs) return;
     let alive = true;
-    apiFetch(`/api/bible/word?s=${encodeURIComponent(strongs)}&t=${tab}&offset=0`)
-      .then((r) => (r.ok ? (r.json() as Promise<Answer>) : Promise.reject(new Error(String(r.status)))))
+    askFor(strongs, tab)
       .then((a) => {
         if (!alive) return;
         setAnswer(a);

@@ -108,6 +108,7 @@ describe("a line of Scripture in a reading plan's guide", () => {
     const questions = fs.readFileSync(path.join(ROOT, "components/plans/PlanQuestions.tsx"), "utf8");
     expect(questions).toContain("<SourceLine key={k} cite={s}");
     const plan = fs.readFileSync(path.join(ROOT, "components/plans/PlanClient.tsx"), "utf8");
-    expect(plan).toContain("usePlanGuide(locale, true)");
+    // The verses come with the page (lib/plans/words.ts, the owner's note 42 of build 80).
+    expect(plan).toContain("usePlanGuide(locale, true, words)");
   });
 });

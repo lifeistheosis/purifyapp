@@ -4567,6 +4567,34 @@ html[data-reading-mode="parchment"] .plus-try-tile-lit:not(.dark-island *) {
  animation: none;
  opacity: 1;
 }
+/* The word study's words switching (the owner's note 43 of build 80): the
+   word chosen comes in over the one it replaces once its verses are here,
+   and the one replaced goes out under it, from where it was scrolled to
+   (components/billing/plusTry/TryWordStudy.tsx). Opacity only. The going
+   out lasts WORD_FADE_MS (lib/premium/plusTry.ts) and holds at nothing
+   until it is let go; the coming in hands back to the page's own opacity
+   when it ends. With motion turned down the new word is simply there. */
+@keyframes plus-try-word-in {
+ from { opacity: 0; }
+ to { opacity: 1; }
+}
+@keyframes plus-try-word-out {
+ from { opacity: 1; }
+ to { opacity: 0; }
+}
+.plus-try-word-in {
+ animation: plus-try-word-in var(--duration-base) var(--ease-house) backwards;
+}
+.plus-try-word-out {
+ animation: plus-try-word-out 200ms var(--ease-house) both;
+}
+:where([data-motion="reduce"]) .plus-try-word-in {
+ animation: none;
+}
+:where([data-motion="reduce"]) .plus-try-word-out {
+ animation: none;
+ display: none;
+}
 
 /* ── Touch feedback ───────────────────────────────────────────────────
    The native app shell has no hover state, so taps can feel inert — a
