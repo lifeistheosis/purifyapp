@@ -195,11 +195,12 @@ describe("whether the reader came back", () => {
   it("on the visit's first page, takes the browser's word: a reload or its Back to the site", () => {
     stubBrowser("", "/history/");
     const entries = vi.spyOn(performance, "getEntriesByType");
-    entries.mockReturnValue([{ type: "navigate" } as PerformanceEntry]);
+    const visit = (type: NavigationTimingType) => [{ type }] as unknown as PerformanceEntryList;
+    entries.mockReturnValue(visit("navigate"));
     expect(cameBack()).toBe(false);
-    entries.mockReturnValue([{ type: "reload" } as PerformanceEntry]);
+    entries.mockReturnValue(visit("reload"));
     expect(cameBack()).toBe(true);
-    entries.mockReturnValue([{ type: "back_forward" } as PerformanceEntry]);
+    entries.mockReturnValue(visit("back_forward"));
     expect(cameBack()).toBe(true);
   });
 
