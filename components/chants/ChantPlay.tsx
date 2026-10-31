@@ -3,9 +3,10 @@
 import { useCallback } from "react";
 
 import { useTranslate } from "@/components/i18n/MessagesProvider";
-import { PositionBar, Transport } from "@/components/player/Transport";
+import { clock, Transport } from "@/components/player/Transport";
 import { Pause } from "@/components/ui/icons/Pause";
 import { Play } from "@/components/ui/icons/Play";
+import { Slider } from "@/components/ui/Slider";
 import { cn } from "@/lib/cn";
 import { useChantAvailability, type Availability } from "@/lib/chants/live";
 import { playChant, useChantPlayback } from "@/lib/chants/play";
@@ -131,28 +132,74 @@ export function PlayPill({
 }
 
 /**
- * A chant's own controls on its page (1.8, the owner's pick of 2026-10-27,
- * round 9 A, "Sing along"): where the recording is and how long it is, then
- * back 15, Play and forward 15, the same controls Now Playing wears
- * (components/player/Transport.tsx), for the version the page shows. Before
- * it plays, the line shows the version's length and only Play answers.
+ * A chant's own player on its page, docked at the foot over the tab bar (1.8,
+ * sheet r3-18, the owner's pick of 2026-10-31: "I want the player to be at
+ * the bottom, like how A has it"; A's ChantDock): where the recording is and
+ * how far it has to go, then back 15, Play and forward 15, the controls Now
+ * Playing wears (components/player/Transport.tsx), for the version the page
+ * shows. Its place is app/globals.css, .chant-dock: over the tab bar, and
+ * over the mini player and Today's readings bar when they show.
+ *
+ * Every part is drawn at its full size in the first frame (the owner's note
+ * 61): before the version plays the line is still and shows its length, the
+ * skips are dim, and Play waits dim while the list of recordings is read,
+ * then lights where it is. A version that cannot play says why in the
+ * line's middle, between the two times, so nothing moves when it does.
  */
-export function ChantTransport({
+export function ChantDock({
   variant,
   play: chant,
+  label,
   className,
 }: {
   variant: ChantIndexVariant;
   play: ReturnType<typeof useChantPlay>;
+  /** What it plays, for assistive technology: the chant's name and the version's. */
+  label: string;
   className?: string;
 }) {
+  const { t } = useTranslate();
   const audio = usePersistentAudio();
   const { loaded } = chant;
   const current = loaded ? audio.currentTime : 0;
   const duration = loaded && audio.duration > 0 ? audio.duration : variant.audio.durationSec;
+  // How far it has to go, as Now Playing's line says it.
+  const left = `-${clock(Math.max(0, duration - current))}`;
+  const why = availabilityKey(chant.availability);
   return (
-    <div className={className}>
-      <PositionBar current={current} duration={duration} onSeek={loaded ? (at) => seek(at) : undefined} />
+    <div
+      role="region"
+      aria-label={label}
+      data-chant-control="dock"
+      // What stands at the foot of the screen (lib/ui/readingPlace.ts).
+      data-screen-edge="bottom"
+      className={cn("chant-dock", className)}
+    >
+      {/* Where it is: the line 17px down, as the sheet draws it, in a box 44px tall for a thumb. */}
+      <div className="absolute inset-x-5 -top-[5px]">
+        {loaded ? (
+          <Slider
+            value={current}
+            max={duration > 0 ? duration : 0}
+            step={5}
+            onChange={(at) => seek(at)}
+            label={t("player.position")}
+            valueText={`${clock(current)} / ${clock(duration)}`}
+          />
+        ) : (
+          // The same line, still: nothing is playing here to move it.
+          <div aria-hidden className="relative h-11">
+            <div className="absolute inset-x-0 top-1/2 h-[3px] -translate-y-1/2 rounded-full bg-paper/15" />
+          </div>
+        )}
+      </div>
+      <div className="pointer-events-none absolute inset-x-5 top-[25px] flex items-baseline justify-between gap-3 font-sans text-[11.5px] tabular-nums leading-none text-paper/55">
+        <span>{clock(current)}</span>
+        <span aria-live="polite" className="min-w-0 truncate text-center text-paper/70">
+          {why ? t(why) : null}
+        </span>
+        <span>{left}</span>
+      </div>
       <Transport
         playing={chant.playing}
         onToggle={chant.toggle}
@@ -160,8 +207,8 @@ export function ChantTransport({
         canPlay={loaded || chant.availability === "playable"}
         canSkip={loaded}
         busy={chant.availability === "checking"}
-        size={64}
-        className="mt-2"
+        size={54}
+        className="absolute inset-x-0 top-[42px] gap-[30px]"
       />
     </div>
   );

@@ -1,26 +1,26 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 
 import { useTranslate } from "@/components/i18n/MessagesProvider";
-import { SegmentedSwitch } from "@/components/ui/SegmentedSwitch";
 import { ShareButton } from "@/components/ui/ShareButton";
 import { cn } from "@/lib/cn";
+import type { ChantDoor } from "@/lib/chants/doors";
 import { useChantAvailability } from "@/lib/chants/live";
-import { usePersistentAudio } from "@/lib/prayers/persistentAudioStore";
-import { chantLineKey, chantTitleKey, kindKey, traditionKey } from "@/lib/chants/names";
-import { formatDuration } from "@/lib/chants/media";
+import { chantLineKey, chantTitleKey, kindKey } from "@/lib/chants/names";
 import { playChant, warmTiming } from "@/lib/chants/play";
 import type { Chant, ChantIndexRow } from "@/lib/chants/types";
 import { useWordsPrefs } from "@/lib/chants/wordsPrefs";
-import { scrollBehavior } from "@/lib/ui/motion";
+import { useOwnPlayer } from "@/lib/player/pagePlayer";
+import { usePersistentAudio } from "@/lib/prayers/persistentAudioStore";
 
 import { ChantAbout } from "./ChantAbout";
 import { ChantCover } from "./ChantCover";
-import { AvailabilityLine, ChantTransport, PlayPill, useChantPlay } from "./ChantPlay";
+import { ChantDoors, openChantDoor, useChantDoor } from "./ChantDoors";
+import { ChantDock, useChantPlay } from "./ChantPlay";
 import { ChantRow } from "./ChantRow";
 import { ChantVersions } from "./ChantVersions";
-import { ChantWords, ChantWordsOptions, ChantWordsSource } from "./ChantWords";
+import { ChantWords, ChantWordsSource } from "./ChantWords";
 import { firstVersion } from "./ChantsHome";
 
 /**
@@ -28,28 +28,39 @@ import { firstVersion } from "./ChantsHome";
  * of 2026-10-16 ("every chant gets its own page in one format: what it is,
  * where it comes from, its variants").
  *
- * 1.8, the owner's pick of 2026-10-27 (round 9, A, "Sing along",
- * Homebase/boards/purify-master/variants/09-chants): the page opens on the
- * words. The cover small beside the name, then the words, which move with
- * the singing, the line being sung lit and the original under each English
- * line (ChantWords); the recording's language below them, as a row of the
- * versions by their own names; then where it is, back 15, Play and forward
- * 15. Play stays on the page and sings along here; it does not open Now
- * Playing over it. Under the controls, where the words come from, then the
- * chant's About and its Versions, one switch between the two, and the chants
- * related to it. A slim bar with the name and Play takes over at the top
- * once the controls have scrolled away. One tree for every width: a centred
- * column on a tablet and a computer.
+ * 1.8, sheet r3-18 (Homebase/boards/purify-master/variants/r3-18-chant-page),
+ * the owner's pick of 2026-10-31: "a mix of A and B. I want the player to be
+ * at the bottom, like how A has it. But I want the options. Actually, how B
+ * has it." So B's page, a saint's page for a chant (his 3b D): the icon across
+ * the top of the screen under the clear bar (MobileTopBar, from the route),
+ * the chant's name and who sings it standing on its foot, then three doors,
+ * Words, About and Versions, switching what is below them in place
+ * (ChantDoors, the open one kept in the address so Back finds it). Words
+ * opens first: the switch on the words as an underlined strip, the words as
+ * sung, large and lit, and the English under the line being sung only
+ * (ChantWords). About is the chant's own about and its sources, then the
+ * chants related to it; Versions, each recording with its singer by name,
+ * and Play. In place of B's Play row, A's player, docked at the foot over the
+ * tab bar (ChantDock): where it is, back 15, Play and forward 15.
  *
- * No counter of any kind (the ban on a digital prayer rope stands; the
- * Anthem is a hymn), and the page carries only this chant.
+ * The page is the screen (app/globals.css, .chant-screen): with Words open
+ * nothing scrolls but the words in their own box, between the doors and the
+ * dock. Every control is drawn at its full size in the first frame and keeps
+ * its place when an answer arrives or another version is chosen (the owner's
+ * note 61): the switch is drawn for every version of a chant that has one,
+ * greyed where a version has nothing to switch; Play waits dim in the dock;
+ * the name block grows up into the icon, never down onto the doors.
+ *
+ * Play stays on the page and sings along here; it does not open Now Playing
+ * over it, and while one of this chant's versions plays the mini player
+ * steps aside for the dock (lib/player/pagePlayer.ts). No counter of any
+ * kind (the ban on a digital prayer rope stands; the Anthem is a hymn), and
+ * the page carries only this chant. One tree for every width: on a tablet and
+ * a computer the icon is a rounded square beside the name.
  */
-type Part = "about" | "versions";
-
 export function ChantPage({ chant, row, related }: { chant: Chant; row: ChantIndexRow; related: ChantIndexRow[] }) {
   const { t, locale } = useTranslate();
   const title = t(chantTitleKey(chant.key));
-  const [part, setPart] = useState<Part>("about");
   const [chosen, setChosen] = useState<string | null>(null);
   // Until the reader chooses, the page shows the version playing, if one of
   // this chant's is: the player's Read opens this page to its words, lit
@@ -68,31 +79,25 @@ export function ChantPage({ chant, row, related }: { chant: Chant; row: ChantInd
   });
   const availabilityFor = useChantAvailability();
   const prefs = useWordsPrefs();
-  const stageRef = useRef<HTMLDivElement>(null);
+  const door = useChantDoor();
+  // A door the reader opened fades in where it stands; the page's first door does not.
+  const [opened, setOpened] = useState(false);
 
   // The timed words, asked for as the page opens, so they light at once.
   useEffect(() => warmTiming(indexVariant), [indexVariant]);
 
-  // The slim bar: shown once the controls have scrolled up under the bars at
-  // the top.
-  const controlsRef = useRef<HTMLDivElement>(null);
-  const [past, setPast] = useState(false);
-  useEffect(() => {
-    const el = controlsRef.current;
-    if (!el || typeof IntersectionObserver === "undefined") return;
-    const io = new IntersectionObserver(([entry]) => setPast(!entry.isIntersecting && entry.boundingClientRect.top < 120), {
-      rootMargin: "-120px 0px 0px 0px",
-    });
-    io.observe(el);
-    return () => io.disconnect();
-  }, []);
+  // The dock is this chant's player here: while what the mini player would
+  // show is one of these recordings, it steps aside.
+  useOwnPlayer(row.variants.map((v) => v.audio.src));
 
-  const meta = [
-    t(traditionKey(variant.tradition)),
-    t(kindKey(chant.kind)),
-    chant.tone ? t("chants.tone", { n: chant.tone }) : null,
-    formatDuration(variant.audio.durationSec),
-  ].filter((x): x is string => Boolean(x));
+  // The switch on the words, for every version of a chant that has a version
+  // with its sound written out, so choosing another never takes it away.
+  const switchable = chant.variants.some((v) => v.lines.some((l) => l.translit));
+  const sings = variant.performer ? t("chants.sungBy", { name: variant.performer }) : t("chants.performerUnknown");
+  // What it is, after the version's own name: B's Play row's line.
+  const what = [t(kindKey(chant.kind)), chant.tone ? t("chants.tone", { n: chant.tone }) : null, variant.setting ?? null].filter(
+    (x): x is string => Boolean(x),
+  );
 
   /**
    * Choose a version: its words on the page. While the version shown is
@@ -110,129 +115,118 @@ export function ChantPage({ chant, row, related }: { chant: Chant; row: ChantInd
     playChant({ slug: chant.slug, title, variant: nextIndex, lines: next.lines, coverSrc: chant.cover?.src, prefs, open: false });
   };
 
-  /** A version started from the list: its words, at the top of the page. */
-  const showStage = (id: string) => {
-    setChosen(id);
-    stageRef.current?.scrollIntoView({ block: "start", behavior: scrollBehavior() });
+  const openDoor = (next: ChantDoor) => {
+    if (next === door) return;
+    setOpened(true);
+    openChantDoor(next);
   };
 
+  /** A version chosen in Versions, or started there: its words, behind Words. */
+  const chooseFromList = (id: string) => {
+    choose(id);
+    openDoor("words");
+  };
+  const playFromList = (id: string) => {
+    setChosen(id);
+    openDoor("words");
+  };
+
+  const panel = (id: ChantDoor) => ({
+    id: `chant-panel-${id}`,
+    role: "tabpanel" as const,
+    "aria-labelledby": `chant-tab-${id}`,
+    hidden: door !== id,
+  });
+
   return (
-    <section className="relative bg-night px-5 pb-16 pt-3 md:px-8 md:pt-10">
-      {/* The slim bar. Sticky below whatever bar is above it (the apps' way
-          back, the website's header), out of the flow until it is needed. */}
-      <div
-        className={cn(
-          "sticky sticky-safe-top under-back-bar z-20 -mx-5 -mb-14 h-14 border-b border-paper/[0.08] bg-night px-5 md:-mx-8 md:px-8",
-          // `translate`, not `transform`: Tailwind 4 writes -translate-y-1 as
-          // its own property, so a transform-only list let the bar jump.
-          "motion-safe:transition-[opacity,translate] motion-safe:duration-200",
-          past ? "opacity-100" : "pointer-events-none -translate-y-1 opacity-0",
-        )}
-        aria-hidden={!past}
-      >
-        <div className="mx-auto flex h-14 w-full max-w-[720px] items-center gap-3">
-          <ChantCover cover={chant.cover} size="thumb" className="w-9 shrink-0 rounded-[7px]" />
-          <p className="min-w-0 flex-1 truncate font-sans text-ui font-semibold text-paper">{title}</p>
-          <PlayPill
-            size="sm"
-            playing={play.playing}
-            availability={play.availability}
-            onToggle={play.toggle}
-            className={past ? "" : "invisible"}
+    <section className="relative bg-night px-5 md:px-8">
+      <div className="chant-screen mx-auto w-full max-w-[720px]">
+        {/* The icon, and on its foot the name and who sings it. On a phone
+            the icon starts at the top of the screen under the clear bar
+            (.under-topbar) and melts into the page (.picture-melt); the name
+            block is held at its foot, so a credit on two lines grows up into
+            the picture and nothing under it moves. With B's Play row gone to
+            the dock, the doors take its place, over the icon's melted foot
+            (-mb-10), as the sheet stands them under the name: the words keep
+            that room. */}
+        <header className="under-topbar relative -mb-10 md:mb-0 md:mt-10 md:flex md:items-end md:gap-7">
+          <div className="relative -mx-5 md:mx-0 md:shrink-0">
+            <ChantCover
+              cover={chant.cover}
+              size="hero"
+              picture="object-top"
+              className="chant-hero picture-melt w-full rounded-none bg-night ring-0 md:w-[200px] md:rounded-[14px] md:bg-night-soft md:ring-1"
+            />
+            {/* The clock and the bar's plates stay readable over the icon. */}
+            <div aria-hidden className="pointer-events-none absolute inset-x-0 top-0 h-36 bg-gradient-to-b from-night/80 to-transparent md:hidden" />
+          </div>
+          <div data-chant-control="name" className="absolute inset-x-0 bottom-[46px] md:static md:min-w-0 md:flex-1 md:pb-1">
+            <h1
+              id="chant-name"
+              className="doctrine-shadow font-serif text-[30px] font-bold leading-[1.12] tracking-[-0.01em] text-balance text-paper"
+            >
+              {title}
+            </h1>
+            {chant.originalTitle ? (
+              <p dir="auto" className="doctrine-shadow mt-1 font-serif text-ui text-paper/70">
+                {chant.originalTitle}
+              </p>
+            ) : null}
+            <p className="doctrine-shadow mt-[7px] line-clamp-2 font-sans text-[14px] font-semibold leading-[19px] text-paper/90">{sings}</p>
+            <p className="doctrine-shadow mt-1 truncate font-sans text-[13px] leading-[18px] text-paper/60">
+              <bdi lang={variant.language}>{variant.label}</bdi>
+              {what.map((w) => (
+                <span key={w}> · {w}</span>
+              ))}
+            </p>
+            {/* Share on a computer, which has no bar; the phone's is in the bar. */}
+            <ShareButton titleKey={chantTitleKey(chant.key)} round className="mt-4 hidden md:inline-flex native-md-hidden" />
+          </div>
+        </header>
+
+        {/* Over the icon's foot, so drawn over it and answering every tap. */}
+        <ChantDoors open={door} onOpen={openDoor} label={title} className="relative z-[1] mt-3.5 md:mt-6" />
+
+        <div {...panel("words")} className={cn("flex min-h-[180px] flex-1 flex-col pt-2", opened && "chant-door-in")}>
+          <ChantWords
+            variant={variant}
+            indexVariant={indexVariant}
+            switchable={switchable}
+            active={door === "words"}
+            className="min-h-0 flex-1"
           />
         </div>
-      </div>
 
-      <div className="mx-auto w-full max-w-[720px]">
-        {/* Sing along: the name, the words, the recording's language, the
-            controls. */}
-        <div ref={stageRef} className="scroll-mt-24">
-          <div className="flex justify-end gap-1">
-            <ShareButton titleKey={chantTitleKey(chant.key)} className="h-9" />
-            <ChantWordsOptions variant={variant} className="-me-2" />
-          </div>
-          <div className="mt-1 flex items-center gap-3.5">
-            <ChantCover cover={chant.cover} size="thumb" className="w-[70px] shrink-0 rounded-[14px]" />
-            <div className="min-w-0 flex-1">
-              <h1 className="font-serif text-[24px] font-bold leading-tight text-paper">{title}</h1>
-              {chant.originalTitle ? (
-                <p dir="auto" className="mt-0.5 font-serif text-detail text-paper/60">
-                  {chant.originalTitle}
-                </p>
-              ) : null}
-              <p className="mt-1 font-sans text-[13.5px] text-paper/55">{meta.join(" · ")}</p>
-            </div>
-          </div>
-
-          <ChantWords variant={variant} indexVariant={indexVariant} className="mt-3 h-[clamp(240px,46svh,440px)]" />
-
-          {chant.variants.length > 1 ? (
-            <div role="radiogroup" aria-label={t("chants.tab.versions")} className="mt-3 flex flex-wrap gap-2">
-              {chant.variants.map((v) => (
-                <button
-                  key={v.id}
-                  type="button"
-                  role="radio"
-                  aria-checked={v.id === variant.id}
-                  onClick={() => choose(v.id)}
-                  dir="auto"
-                  lang={v.language}
-                  className={cn(
-                    "tap-press hit-44 inline-flex min-h-8 items-center rounded-pill border px-[13px] font-sans text-[13.5px] font-medium motion-safe:transition-[color,background-color,border-color,box-shadow]",
-                    v.id === variant.id
-                      ? "border-paper bg-paper font-semibold text-night shadow-[0_0_14px_rgba(255,255,255,0.22)]"
-                      : "border-paper/10 bg-paper/[0.06] text-paper/80 hover:border-paper/30 hover:text-paper",
-                  )}
-                >
-                  {v.label}
-                </button>
-              ))}
-            </div>
-          ) : null}
-
-          <div ref={controlsRef}>
-            <AvailabilityLine availability={play.availability} reserve className="mt-2" />
-            <ChantTransport variant={indexVariant} play={play} className="mt-3" />
-          </div>
+        <div {...panel("about")} className={cn("pb-10 pt-6", opened && "chant-door-in")}>
+          <p className="mb-8 max-w-[52ch] font-sans text-detail leading-[1.55] text-paper/65">{t(chantLineKey(chant.key))}</p>
+          <ChantAbout chant={chant} />
+          <ChantWordsSource variant={variant} className="mt-8 border-t border-paper/[0.08] pt-5" />
+          <ChantRow id="related" heading={t("chants.related")} rows={related} />
         </div>
 
-        <ChantWordsSource variant={variant} className="mt-8 border-t border-paper/[0.08] pt-5" />
+        <div {...panel("versions")} className={cn("pb-10 pt-5", opened && "chant-door-in")}>
+          <ChantVersions
+            slug={chant.slug}
+            title={title}
+            variants={row.variants}
+            linesOf={(id) => chant.variants.find((v) => v.id === id)?.lines}
+            coverSrc={chant.cover?.src}
+            selected={variant.id}
+            onSelect={chooseFromList}
+            onPlay={playFromList}
+            open={false}
+            preview={false}
+            className="chant-versions divide-y-0"
+          />
+          <ChantWordsSource variant={variant} className="mt-5 px-0.5" />
+        </div>
 
-        {/* About and Versions. */}
-        <SegmentedSwitch
-          label={title}
-          idBase="chant"
-          items={[
-            { id: "about", label: t("chants.tab.about") },
-            { id: "versions", label: t("chants.tab.versions") },
-          ]}
-          selected={part}
-          onSelect={setPart}
-          className="mt-10"
+        <ChantDock
+          variant={indexVariant}
+          play={play}
+          label={`${title} (${variant.label})`}
+          className="-mx-2 md:mx-auto md:w-full md:max-w-md"
         />
-
-        <div id={`chant-panel-${part}`} role="tabpanel" aria-labelledby={`chant-tab-${part}`} className="mt-6">
-          {part === "about" ? (
-            <>
-              <p className="mb-8 max-w-[52ch] font-sans text-detail leading-[1.55] text-paper/65">{t(chantLineKey(chant.key))}</p>
-              <ChantAbout chant={chant} />
-            </>
-          ) : (
-            <ChantVersions
-              slug={chant.slug}
-              title={title}
-              variants={row.variants}
-              linesOf={(id) => chant.variants.find((v) => v.id === id)?.lines}
-              coverSrc={chant.cover?.src}
-              selected={variant.id}
-              onSelect={showStage}
-              onPlay={showStage}
-              open={false}
-            />
-          )}
-        </div>
-
-        <ChantRow id="related" heading={t("chants.related")} rows={related} />
       </div>
     </section>
   );

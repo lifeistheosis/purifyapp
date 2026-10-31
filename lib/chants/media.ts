@@ -1,4 +1,5 @@
 import { streamedUrl } from "@/lib/media/streamed";
+import { wordsOf } from "@/lib/player/captions";
 import type { CaptionSource } from "@/lib/prayers/persistentAudioStore";
 
 import { CHANT_RECORDINGS, type ChantLine, type ChantTiming } from "./types";
@@ -92,6 +93,8 @@ export function readTiming(value: unknown): ChantTiming | null {
 }
 
 const timings = new Map<string, Promise<ChantTiming | null>>();
+/** The timing files that have arrived, to hand over at once. */
+const arrived = new Map<string, ChantTiming>();
 
 /** A recording's timing file, fetched once per session; null when it cannot be read. */
 export function loadTiming(path: string): Promise<ChantTiming | null> {
@@ -103,19 +106,66 @@ export function loadTiming(path: string): Promise<ChantTiming | null> {
       .catch(() => null);
     // A failure is not kept: a reader who comes back online can try again.
     p.then((t) => {
-      if (!t) timings.delete(path);
+      if (t) arrived.set(path, t);
+      else timings.delete(path);
     });
     timings.set(path, p);
   }
   return p;
 }
 
-/** Which lines go with each sung line: its transliteration, its English. */
-export type WordsPrefs = { translit: boolean; en: boolean };
+/**
+ * A timing file already here, or null: so a chant's page opened while its
+ * version plays (Now Playing's Read, a page come back to) lights the line
+ * being sung in its first frame, not a frame after (sheet r3-18, note 61).
+ */
+export function timingInHand(path: string | undefined): ChantTiming | null {
+  return path ? (arrived.get(path) ?? null) : null;
+}
 
-/** The lines under the sung words: the transliteration, where the reader keeps it. */
-export function subLines(line: ChantLine, prefs: WordsPrefs): string[] {
-  return prefs.translit && line.translit ? [line.translit] : [];
+/**
+ * How the words of a version sung in a script other than Latin are shown, the
+ * reader's choice (1.8, notes 56 and 59; the owner: "there should be Arabic,
+ * right? But you should also have the option to switch it to English
+ * transliteration", and "an option to show both at the same time"): the
+ * words as they are sung, their sound in Latin letters, or each word over its
+ * sound. The original first, as he put it.
+ */
+export const WORDS_VIEWS = ["original", "translit", "both"] as const;
+export type WordsView = (typeof WORDS_VIEWS)[number];
+
+export function isWordsView(value: unknown): value is WordsView {
+  return typeof value === "string" && (WORDS_VIEWS as readonly string[]).includes(value);
+}
+
+/** What goes with the sung words: how they are shown, and the English over them. */
+export type WordsPrefs = { view: WordsView; en: boolean };
+
+/**
+ * The sound of each sung word, word for word: the transliteration split as
+ * the line is, where it has a word for every word sung (the data test holds
+ * every Arabic and Greek line to this), else null.
+ */
+export function wordSounds(line: ChantLine): string[] | null {
+  if (!line.translit) return null;
+  const sounds = wordsOf(line.translit);
+  return sounds.length === wordsOf(line.text).length ? sounds : null;
+}
+
+/**
+ * The sung words as the reader chose to see them, where the line has a
+ * transliteration: its sound in their place (`latin`), or each word over its
+ * sound (`pairs`), or, where the two do not go word for word, the sound under
+ * the whole line (`sub`). A line with none is always its own words.
+ */
+export function sungAs(
+  line: ChantLine,
+  view: WordsView,
+): { text: string; latin?: true; pairs?: string[]; sub?: string[] } {
+  if (!line.translit || view === "original") return { text: line.text };
+  if (view === "translit") return { text: line.translit, latin: true };
+  const pairs = wordSounds(line);
+  return pairs ? { text: line.text, pairs } : { text: line.text, sub: [line.translit] };
 }
 
 /**
@@ -136,20 +186,19 @@ export function englishOver(line: ChantLine, prefs: WordsPrefs): string | undefi
  * Now Playing simply shows the picture.
  *
  * Each line is drawn as lib/player/captions.ts lineParts says: its English
- * over it where it has one (`en`), the sung words (`text`) under that, and
- * the transliteration (`sub`) under them. A chant's page and Now Playing draw
- * the same captions, so they read the same.
+ * over it where it has one (`en`), and the sung words (`text`) under that,
+ * shown as the reader chose (sungAs): as sung, as their sound, or each word
+ * over its sound. A chant's page and Now Playing draw the same captions, so
+ * they read the same.
  */
 export function captionsFor(lines: ChantLine[], timing: ChantTiming | null, prefs: WordsPrefs): CaptionSource {
   const timed = timing && timing.lines.length === lines.length ? timing.lines : null;
   return lines.map((line, i) => {
     const en = englishOver(line, prefs);
-    const sub = subLines(line, prefs);
     return {
       ...(timed ? { time: timed[i].at, end: timed[i].end } : {}),
-      text: line.text,
+      ...sungAs(line, prefs.view),
       ...(en ? { en } : {}),
-      ...(sub.length ? { sub } : {}),
     };
   });
 }

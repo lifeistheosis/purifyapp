@@ -8,7 +8,7 @@ import { ChevronRight } from "@/components/ui/icons/ChevronRight";
 import { ChipScroller } from "@/components/ui/ChipScroller";
 import { cn } from "@/lib/cn";
 import { useCalendarStyleDefault } from "@/lib/calendar/useCalendarStyleDefault";
-import { useToday } from "@/lib/calendar/useToday";
+import { useTodayAtOnce } from "@/lib/calendar/useToday";
 import { chantLineKey, chantTitleKey, traditionKey } from "@/lib/chants/names";
 import { warmTiming } from "@/lib/chants/play";
 import { chantsHome, inTradition, restingChant, traditionsIn, type HomeSection } from "@/lib/chants/select";
@@ -30,6 +30,12 @@ import { ChantVersions } from "./ChantVersions";
  * own day and calendar (lib/chants/select.ts); before the day is known the
  * newest chant with a cover stands there, and no row is drawn.
  *
+ * The day is known in the first frame on the device (useTodayAtOnce, 1.8):
+ * only the website's first page, drawn on the server, starts without it. So
+ * the home comes back from a chant whole, its rows already in place, and the
+ * reader's place among them is found at once (the owner's note 58: the rows
+ * used to arrive a frame late, and everything under them jumped).
+ *
  * Built to read as finished with one chant, which is the library on the day
  * it opens: the chant, its versions to play, and one quiet line that more are
  * coming. A row, a chip or a list appears only once there are chants to put
@@ -37,7 +43,7 @@ import { ChantVersions } from "./ChantVersions";
  */
 export function ChantsHome({ index }: { index: ChantIndexRow[] }) {
   const { t } = useTranslate();
-  const today = useToday();
+  const today = useTodayAtOnce();
   const [style] = useCalendarStyleDefault();
   const [tradition, setTradition] = useState<ChantTradition | null>(null);
 

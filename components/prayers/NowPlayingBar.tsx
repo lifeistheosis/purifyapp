@@ -43,6 +43,12 @@
 // Renders nothing at all when nothing is loaded, so it costs an empty
 // component on every other surface.
 //
+// A PAGE WITH ITS OWN PLAYER (1.8, sheet r3-18): a chant's page docks its
+// own controls over the tab bar, so while what this bar would show is one of
+// that chant's recordings, the bar steps aside (lib/player/pagePlayer.ts):
+// one player on the screen for one singing. It is back the moment the reader
+// leaves the page, and anything else playing keeps it there.
+//
 // AMBIENCE (1.7, the owner's note 25 of 2026-10-16). The ambience plays on
 // every screen until it is stopped, and until 1.7 nothing outside the
 // reader's settings showed it or could stop it. So the bar shows it too:
@@ -64,6 +70,7 @@ import { getAmbienceTrack } from "@/lib/ambience/ambience";
 import { stopAmbience, useAmbience } from "@/lib/ambience/player";
 import { openAmbience } from "@/lib/ambience/sheet";
 import { connectLockScreen } from "@/lib/player/lockScreen";
+import { playsOnPage, usePagePlayer } from "@/lib/player/pagePlayer";
 import { openNowPlaying, useNowPlayingSheet } from "@/lib/player/sheet";
 import { pause, play, unload, usePersistentAudio } from "@/lib/prayers/persistentAudioStore";
 import { noteFootMoved, watchScrollAway } from "@/lib/ui/scrollAway";
@@ -74,11 +81,12 @@ export function NowPlayingBar() {
   const { open } = useNowPlayingSheet();
   const ambience = useAmbience();
   const sound = getAmbienceTrack(ambience.playing ?? ambience.loading);
+  const ownPlayer = usePagePlayer();
 
-  // Whether the bar paints: a track loaded and Now Playing not covering it,
-  // or a sound playing on its own.
+  // Whether the bar paints: a track loaded, with neither Now Playing nor the
+  // page's own player showing it, or a sound playing on its own.
   const soundOnly = !src && Boolean(sound);
-  const visible = (Boolean(src) && !open) || soundOnly;
+  const visible = (Boolean(src) && !open && !playsOnPage(src, ownPlayer)) || soundOnly;
 
   // The lock screen and the notification's controls (1.8), in the apps only.
   // Here because this bar is mounted once for the whole app (RootFrame).

@@ -201,9 +201,62 @@ describe("each version of a chant", () => {
     }
   });
 
+  it("gives every Arabic line its sound, and every sound a word for each word sung (notes 56 and 59)", () => {
+    // The owner: "you should also have the option to switch it to English
+    // transliteration. So you could see the pronunciation of each Arabic
+    // word." Both together draws each word over its sound, so a line's
+    // transliteration has exactly as many words as the line.
+    const words = (s: string) => s.split(/\s+/).filter(Boolean);
+    for (const { v, id } of versions) {
+      if (v.language === "ar") for (const line of v.lines) expect(line.translit, `${id}: "${line.text}" has no transliteration`).toBeTruthy();
+      for (const line of v.lines) {
+        if (!line.translit) continue;
+        expect(words(line.translit).length, `${id}: "${line.text}" / "${line.translit}"`).toBe(words(line.text).length);
+        // One plain scheme an English reader can say: Latin letters, an
+        // apostrophe and a hyphen, no scholar's marks.
+        expect(line.translit, `${id}: "${line.translit}"`).toMatch(/^[A-Za-z' ,.;:!?-]+$/);
+      }
+    }
+  });
+
+  it("sings Psalm 135's English as the choir does, every line verbatim from a public-domain printing", () => {
+    // The owner, 2026-10-31: "give thanks unto the Lord. You can't copyright
+    // those words." The choir sings a modern psalter; each line here is the
+    // King James's, or where its wording differs from the singing, the
+    // nearest line of another public-domain printing, word for word
+    // (docs/chants/psalm-135-english.md). Never the choir's own psalter.
+    const fixture = JSON.parse(fs.readFileSync(path.join(ROOT, "lib/chants/__tests__/fixtures/psalm-135-en-printings.json"), "utf8")) as {
+      printings: Record<string, { halves: string[]; refrain?: string }>;
+    };
+    const printings = Object.values(fixture.printings);
+    expect(printings.every((p) => p.halves.length === 26)).toBe(true);
+    const en = allChants().find((c) => c.slug === "psalm-135")!.variants.find((v) => v.id === "en")!;
+    expect(en.lines).toHaveLength(104);
+    en.lines.forEach((line, i) => {
+      const verse = Math.floor(i / 4);
+      if (i % 2 === 1) expect(line.text, `line ${i + 1}`).toBe("Alleluia.");
+      else if (i % 4 === 2) expect(line.text, `line ${i + 1}`).toBe(fixture.printings.kjv.refrain);
+      else expect(printings.some((p) => p.halves[verse] === line.text), `line ${i + 1}: "${line.text}" is in no printing of verse ${verse + 1}`).toBe(true);
+    });
+    // The King James is the base: the choir's first verse, its refrain and its last verse are its words.
+    expect(en.lines[0].text).toBe(fixture.printings.kjv.halves[0]);
+    expect(en.lines[100].text).toBe(fixture.printings.kjv.halves[25]);
+    // The fixture holds Brenton as Purify's Bible has it.
+    const brenton135 = (JSON.parse(fs.readFileSync(path.join(ROOT, "data", "bible", "psalms", "135.json"), "utf8")) as { verses: { text: string }[] }).verses
+      .map((x) => x.text)
+      .join(" ");
+    for (const half of fixture.printings.brenton.halves) expect(brenton135.includes(half), half).toBe(true);
+  });
+
   it("sings a psalm in Brenton's words, verbatim, when its English is Brenton's", () => {
+    // Alleluia, sung after each half verse of the Polyeleos, is the Church's
+    // refrain (Hapgood, 1906, p. 28) and Brenton's own title of the psalm
+    // (Psalms 117 and 135 open "Alleluia."), not a line of its verses.
+    const REFRAIN = "Alleluia.";
     for (const { c, v, id } of versions) {
       if (c.kind !== "psalm" || !c.psalm) continue;
+      // Psalm 135's English is held line by line to its printings, above.
+      if (c.slug === "psalm-135" && v.language.startsWith("en")) continue;
       const brenton = (JSON.parse(fs.readFileSync(path.join(ROOT, "data", "bible", "psalms", `${c.psalm}.json`), "utf8")) as {
         verses: { text: string }[];
       }).verses
@@ -212,7 +265,24 @@ describe("each version of a chant", () => {
       const english = v.language.startsWith("en") ? v.lines.map((l) => l.text) : v.lines.map((l) => l.en).filter(Boolean);
       const isBrenton = v.translation?.title.includes("Brenton") || v.language.startsWith("en");
       if (!isBrenton) continue;
-      for (const line of english) expect(brenton.includes(line as string), `${id}: "${line}" is not Brenton's`).toBe(true);
+      for (const line of english) {
+        if (line === REFRAIN) continue;
+        expect(brenton.includes(line as string), `${id}: "${line}" is not Brenton's`).toBe(true);
+      }
+    }
+  });
+
+  it("shows every Alleluia where it is sung in Psalm 135, one line after each half verse (note 59)", () => {
+    // The owner: "he says hallelujah at the end, and it's not referenced in
+    // the caption." Every version of the psalm sings it after each half.
+    const psalm = allChants().find((c) => c.slug === "psalm-135")!;
+    const ALLELUIA: Record<string, string> = { en: "Alleluia.", el: "Ἀλληλούϊα.", "sr-Latn": "Aliluja.", ar: "الليلويا." };
+    for (const v of psalm.variants) {
+      const refrain = ALLELUIA[v.language];
+      expect(refrain, v.id).toBeDefined();
+      v.lines.forEach((line, i) => expect(line.text === refrain, `${v.id} line ${i + 1}: "${line.text}"`).toBe(i % 2 === 1));
+      // Every version is timed now, so the lit line follows the voice.
+      expect(v.timing, `${v.id} has no timing file`).toBeDefined();
     }
   });
 });

@@ -14,19 +14,22 @@ import { availabilityKey, isBlocked, useChantPlay } from "./ChantPlay";
 
 /**
  * A chant's versions, one row each (1.7): the version's name in its own
- * script, its tradition and setting, who sings it (or that nobody is known:
- * a performer is never invented), its length, a preview of the part it is
- * known by, and Play.
+ * script, who sings it (or that nobody is known: a performer is never
+ * invented), what it is and its length, and Play.
  *
  * 1.7.1, after the owner's "the buttons load and then it disappears because
  * it says plays with a connection": nothing in a row moves when the list of
  * recordings answers. The buttons stay where they are, dimmed while the list
  * is read and while a version cannot play, and the reason takes the place of
- * the singer's line, so the row keeps its height.
+ * what it is, so the row keeps its height.
  *
- * 1.8: on a chant's page, a row's Play plays that version where the page
- * sings along (round 9 A), not in Now Playing: the page shows that version's
- * words (onPlay) and they light there.
+ * 1.8, sheet r3-18 B (the owner's pick of 2026-10-31), behind a chant's
+ * Versions door: who sings it is named in full, the choir by name, on as
+ * many lines as it takes ("Performer not known", in italic, where nobody is
+ * known), and the version on the page carries a small lit mark. A row's Play
+ * plays that version where the page sings along, not in Now Playing, and the
+ * page opens on its words (onPlay). The page's rows have no preview: Play
+ * there plays the whole version with its words lit; the Chants home keeps it.
  */
 export function ChantVersions({
   slug,
@@ -38,6 +41,8 @@ export function ChantVersions({
   onSelect,
   onPlay,
   open = true,
+  preview = true,
+  className,
 }: {
   slug: string;
   /** The chant's name in the reader's language. */
@@ -53,10 +58,13 @@ export function ChantVersions({
   onPlay?: (id: string) => void;
   /** Open Now Playing on its words when a row starts playing. */
   open?: boolean;
+  /** A preview of the part each version is known by, beside its Play. */
+  preview?: boolean;
+  className?: string;
 }) {
-  const preview = usePreview();
+  const clips = usePreview();
   return (
-    <ul className="divide-y divide-paper/[0.07]">
+    <ul className={cn("divide-y divide-paper/[0.07]", className)}>
       {variants.map((v) => (
         <VersionRow
           key={v.id}
@@ -69,7 +77,7 @@ export function ChantVersions({
           onSelect={onSelect}
           onPlay={onPlay}
           open={open}
-          preview={preview}
+          preview={preview ? clips : null}
         />
       ))}
     </ul>
@@ -97,31 +105,47 @@ function VersionRow({
   onSelect?: (id: string) => void;
   onPlay?: (id: string) => void;
   open: boolean;
-  preview: ReturnType<typeof usePreview>;
+  preview: ReturnType<typeof usePreview> | null;
 }) {
   const { t } = useTranslate();
   const { availability, playing, toggle } = useChantPlay({ slug, title, variant, lines, coverSrc, open });
-  const previewing = preview.playingId === `${slug}/${variant.id}`;
-  const meta = [t(traditionKey(variant.tradition)), variant.setting, formatDuration(variant.audio.durationSec)].filter(Boolean);
+  const previewing = preview?.playingId === `${slug}/${variant.id}`;
+  // What it is: its setting where it is known, else its tradition, and its length.
+  const meta = [variant.setting ?? t(traditionKey(variant.tradition)), formatDuration(variant.audio.durationSec)].filter(Boolean);
   const sings = variant.performer ? t("chants.sungBy", { name: variant.performer }) : t("chants.performerUnknown");
   const blocked = isBlocked(availability);
   const why = availabilityKey(availability);
 
   const about = (
     <>
-      <span dir="auto" className={cn("block truncate font-sans text-ui font-semibold", current ? "text-paper" : "text-paper/85")}>
-        {variant.label}
+      <span className="flex min-w-0 items-center gap-2">
+        <span
+          dir="auto"
+          lang={variant.language}
+          className={cn("truncate font-sans text-[15.5px] font-semibold leading-snug", current ? "text-paper" : "text-paper/85")}
+        >
+          {variant.label}
+        </span>
+        {current ? <span aria-hidden className="chant-version-dot" /> : null}
       </span>
-      <span className="mt-0.5 block truncate font-sans text-caption text-paper/55">{meta.join(" · ")}</span>
-      {/* One line either way: who sings it, or why it cannot play now. */}
-      <span className={cn("mt-0.5 block truncate font-sans text-caption", why ? "text-paper/70" : "text-paper/45")}>
-        {why ? t(why) : sings}
+      {/* Who sings it, in full: the choir by name, never cut short. */}
+      <span
+        className={cn(
+          "mt-[3px] block text-[13px] leading-[1.4]",
+          variant.performer ? "font-sans text-paper/80" : "font-serif italic text-paper/50",
+        )}
+      >
+        {sings}
+      </span>
+      {/* One line either way: what it is, or why it cannot play now. */}
+      <span className={cn("mt-0.5 block truncate font-sans text-caption", why ? "text-paper/70" : "text-paper/50")}>
+        {why ? t(why) : meta.join(" · ")}
       </span>
     </>
   );
 
   return (
-    <li className="flex items-center gap-3 py-3.5">
+    <li className="flex items-center gap-3 py-[13px]">
       {onSelect ? (
         // Choosing a version shows its words on the page.
         <button
@@ -135,21 +159,23 @@ function VersionRow({
       ) : (
         <div className="min-w-0 flex-1">{about}</div>
       )}
-      <PreviewButton
-        playing={previewing}
-        progress={preview.progress}
-        disabled={availability !== "playable"}
-        label={previewing ? t("chant.stopPreview") : t("chant.preview", { title: `${title} (${variant.label})` })}
-        onToggle={() =>
-          previewing
-            ? preview.stop()
-            : preview.start({ id: `${slug}/${variant.id}`, src: chantMediaUrl(variant.audio.src), ...variant.preview })
-        }
-      />
+      {preview ? (
+        <PreviewButton
+          playing={previewing}
+          progress={preview.progress}
+          disabled={availability !== "playable"}
+          label={previewing ? t("chant.stopPreview") : t("chant.preview", { title: `${title} (${variant.label})` })}
+          onToggle={() =>
+            previewing
+              ? preview.stop()
+              : preview.start({ id: `${slug}/${variant.id}`, src: chantMediaUrl(variant.audio.src), ...variant.preview })
+          }
+        />
+      ) : null}
       <button
         type="button"
         onClick={() => {
-          preview.stop();
+          preview?.stop();
           if (!playing && availability === "playable") onPlay?.(variant.id);
           toggle();
         }}

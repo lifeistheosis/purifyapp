@@ -40,11 +40,7 @@ For a chant with the slug `christ-is-risen` and a version `el-byzantine`:
 | `public/audio/chants/christ-is-risen/el-byzantine.json` | Its timed words, made by `scripts/chants/timing-from-transcript.mjs`. Optional: a version with none has its words without Sing along. |
 | `public/audio/chants/live.json` | Add `"christ-is-risen/el-byzantine"` to `live`. A recording plays only while it is listed there. |
 | `docs/licensing/audio-provenance.md` | One row in the Chants section, named by the recording's bucket address: where it came from (the upload's link, its uploader and date), the performer or "not known", licence **none**, the day it came, his decision, and its takedown line. |
-
-A cover is optional: a public-domain icon, square, at
-`public/audio/chants/<slug>/cover.webp` (on the website, streamed like the
-timing files) or one the bundle already carries (as the Anthem's
-`/audio/art/anthem.jpg` is). Without one the page draws the plain plate.
+| `public/audio/art/<icon>.v1.jpg` | Its cover (1.8, the owner's note 57: every chant has one): a public-domain icon matched to its words, a square of 640 by 640 in the bundle, with its row under "The chants' covers" in `docs/licensing/audio-provenance.md`. A cover another chant already has is used again (King David for a psalm). |
 | `lib/i18n/messages/*.json` | Two lines in all 21 languages: `chants.item.<key>.title` (English exactly the data file's `title`) and `chants.item.<key>.line`, one sentence for the cover. |
 
 ## Steps
@@ -71,12 +67,26 @@ timing files) or one the bundle already carries (as the Anthem's
    machine translation presented as the Church's text. A transliteration goes
    only under a script that is not Latin, and it is ours. Any Arabic or
    Georgian word you are not sure of goes back to the owner, marked.
+   Since 1.8 (notes 56 and 59) the reader switches the words themselves
+   between the original, its transliteration, and both, both drawing each
+   word over its sound: so a transliteration has exactly one word for each
+   word of its line (a prefix joined with a hyphen, `lir-Rabbi`, `l-abadi`),
+   in one plain scheme an English reader can say (Latin letters, an
+   apostrophe for the Arabic ayn and hamza, no scholar's marks), written as
+   the recording sings it. Every Arabic line has one. The data test holds
+   both. A refrain the singers add after each half verse (the Alleluia of the
+   Polyeleos) is its own line, so it lights when it is sung.
 3. **The times.** `node scripts/chants/timing-from-transcript.mjs <transcript> <slug> <id>`.
    It lays the transcript's segments on the data file's lines one for one and
    refuses when the counts differ. Lines marked `?` share few words with the
    transcript: listen to those. A bucket recording's length is taken from its
    data file. Where no transcript can be made (no speech model on the PC for
-   its language), leave `timing` out: the words show without Sing along.
+   its language), the lines can still be timed by the recording itself, as
+   Psalm 135's Greek, Serbian and Arabic were (2026-10-31): read one verse's
+   line starts by hand on a spectrogram (Homebase/projects/purify-ads,
+   `edits/tools/speechmap.mjs`), then find every other verse by its breaths
+   and by matching that verse's refrain and Alleluia along the recording.
+   Never take a speech model's word times as they are: they run late.
 4. **The prose.** `about.what`, `about.history` and `about.when`, in English,
    plain, with no em dash, nothing invented, every claim resting on a source
    in `sources`. Set `review` to `{ "status": "awaiting-clergy-review", "since": "<today>" }`.
@@ -84,9 +94,14 @@ timing files) or one the bundle already carries (as the Anthem's
    from Pascha; `fixed` is `MM-DD` to `MM-DD`, kept on the reader's own
    calendar); `tone` puts it in that week's row; `kind: "psalm"` and `psalm`
    (the Septuagint number) put it under the Psalms.
-5. **The cover.** A public-domain icon, opened and looked at before it ships
-   (the subject is what you meant, no face cut off, no watermark, no white
-   edge), with its credit in `cover.credit`.
+5. **The cover.** A public-domain icon matched to the chant's words, never a
+   picture made by AI, opened and looked at before it ships (the subject is
+   what you meant, every face whole, no watermark, no white edge:
+   `node scripts/check-picture-edges.mjs audio/art`), cut square and brought
+   down to 640 by 640 (JPEG through mozjpeg at quality 80, about 100 KB: the
+   bundle is near its ceiling), with its credit in `cover.credit` and its row
+   in the provenance document. `lib/chants/__tests__/cover.test.ts` fails on
+   a chant without one.
 6. **The rights.** The provenance row, and the line in `live.json`.
 7. **The checks.** `npx vitest run lib/chants lib/player lib/search` and
    `node scripts/i18n-check.mjs`. The data test fails on a missing catalog

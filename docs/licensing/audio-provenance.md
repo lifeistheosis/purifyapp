@@ -97,6 +97,37 @@ Andrei Rublev's Holy Trinity (Commons, File:Angelsatmamre-trinity-rublev-1410.jp
 public domain; the shop carries the same picture, `docs/licensing/SHOP_MEDIA.md`).
 It stays in the bundle.
 
+### The chants' covers (1.8)
+
+The owner's note 57 of 2026-10-31: every chant has an icon for its cover,
+matched to its words, never a picture made by AI. Each below is public domain
+as its own Commons page states it, read through the Commons API on the day it
+was cut (LicenseShortName "Public domain", Copyrighted "False", and the
+licence template on the page), each download matched the API's sha1, and each
+was opened and looked at before and after it was cut: the right subject, every
+face whole, nothing outside the icon's own board, no white at an edge
+(`node scripts/check-picture-edges.mjs audio/art`). Each is a square of 640 by
+640, JPEG through mozjpeg at quality 80, in the bundle beside the Anthem's, so
+a chant's cover is there with no signal; the two added in 1.8 are 205 KB
+together. A chant's versions in other languages take its cover.
+`lib/chants/__tests__/cover.test.ts` holds every chant to a cover in this
+table.
+
+| File | Chants | Work | Artist | Date | Licence | Source | The cut |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+| `public/audio/art/anthem.jpg` | The Prayer Rope Anthem | The Holy Trinity, Tretyakov Gallery | St Andrei Rublev | early 15th century | Public domain | [Commons](https://commons.wikimedia.org/wiki/File:Angelsatmamre-trinity-rublev-1410.jpg) | A square crop (1.7), above; it opens on the prayer the rope begins with, "Most Holy Trinity, save us all" |
+| `public/audio/art/david.v1.jpg` | Psalm 135, Psalm 117 | The Prophet and King David, from the prophets' row of the iconostasis of the Dormition cathedral, Kirillo-Belozersky Monastery, board 04 (middle) | Anonymous Russian icon painters | 1497 | Public domain (PD-Art, PD-old-70; read 2026-10-31) | [Commons](https://commons.wikimedia.org/wiki/File:Kirillo-Belozersky_iconostasis_04._Daniel,_David,_Solomon.jpg), 4000 by 1513 | The read-aloud cover of the Psalms, `public/covers/david.v1.jpg` (`READ_COVERS.md`), the same square brought down from 1024 to 640: his crowned head whole, his hand raised at the left edge, his scroll at the right; 101 KB |
+| `public/audio/art/anastasis.v1.jpg` | The Paschal Canon | The Descent into Hades, the Anastasis: Christ raising Adam and Eve from their tombs over the broken gates of Hades, the kings and the righteous on either side; from the feast row of the same iconostasis, board 20 | Anonymous Russian icon painters | 1497 | Public domain (PD-Art, PD-old-70; read 2026-10-31) | [Commons](https://commons.wikimedia.org/wiki/File:Kirillo-Belozersky_iconostasis_20_-_Harrowing.jpg), 2000 by 2655 | 1610 by 1610 from 172 px in and 760 px down, brought down to 640: the whole scene from the kings' crowns to the broken gates, every face whole, the mountains above it and the worn inscription left out; 103 KB |
+
+Two candidates were looked at and not used. The Walters Greek Resurrection
+(`public/shop/media/anastasis-pascha-icon.jpg`, `SHOP_MEDIA.md`) has two
+registers with crowds from edge to edge, so no square of it keeps every face
+whole without its frame and the heads of the women at the tomb below. The
+Russian Anastasis of about 1500 in `public/icons/prayer/` is 542 pixels wide
+and its Commons file is still not recorded. The one used is from the same
+iconostasis as David's, so the covers read as one family, as the read-aloud
+covers do.
+
 ## Restoring the ambience shelf
 
 Restored in 1.7 (2026-10-15) with the three tracks in the table above. The

@@ -3173,32 +3173,170 @@ await section(34, async () => {
   must(home.covers.length > 0 && home.covers.every(Boolean), `no cover is an empty box: each is an icon or the plate's cross (${home.covers.filter(Boolean).length} of ${home.covers.length})`);
   await page.screenshot({ path: path.join(SHOTS, "chants-home-phone.png"), fullPage: true });
 
-  // The Anthem's page (1.8, Sing along, the owner's round 9 A): its name,
-  // the words on the page with no signal, the three versions, then About and
-  // Versions as the switch under them.
-  await go(page, "/chants/prayer-rope-anthem/");
-  await page.waitForFunction(() => document.querySelectorAll("[data-route-content] [role=tab]").length >= 2, null, { timeout: 20000 }).catch(() => {});
-  await page.waitForTimeout(1500);
-  const anthem = await page.evaluate((play) => ({
+  // A chant's own page (1.8, sheet r3-18, the owner's pick of 2026-10-31: "a
+  // mix of A and B. I want the player to be at the bottom, like how A has
+  // it"): B's page, the icon across the top with the name and who sings it on
+  // it, the doors Words, About and Versions, the words as sung leading; and
+  // A's player docked at the foot, over the tab bar, never under it. Every
+  // control keeps its place from the first frame (the owner's note 61): its
+  // box is recorded on every frame from the first one the page draws, and
+  // once everything has answered it must be where it was.
+  const chantLabels = { share: en["common.share"], back: en["nav.back"], play: en["prayers.play"] };
+  const watchChant = () =>
+    page.evaluate((labels) => {
+      const box = (el) => {
+        if (!el) return null;
+        const r = el.getBoundingClientRect();
+        return [r.left, r.top, r.width, r.height].map((v) => Math.round(v)).join(",");
+      };
+      const seen = () => {
+        const bar = document.querySelector("[data-mobile-topbar]");
+        const named = (label) => (bar ? ([...bar.querySelectorAll("button, a")].find((b) => b.getAttribute("aria-label") === label) ?? null) : null);
+        const q = (s) => document.querySelector(`[data-route-content] ${s}`);
+        return {
+          back: box(named(labels.back)),
+          share: box(named(labels.share)),
+          icon: box(q("header [data-cover]")),
+          name: box(q('[data-chant-control="name"]')),
+          doors: box(q('[data-chant-control="doors"]')),
+          switch: box(q('[data-chant-control="words-view"]')),
+          words: box(q("[data-sung-look=page]")),
+          dock: box(q('[data-chant-control="dock"]')),
+          play: box(q(`[data-chant-control="dock"] button[aria-label="${labels.play}"]`)),
+        };
+      };
+      window.__chantSeen = seen;
+      window.__chantFrames = [];
+      let n = 0;
+      const tick = () => {
+        if (document.querySelector('[data-route-content] [data-chant-control="doors"]')) window.__chantFrames.push(seen());
+        if (++n < 300) requestAnimationFrame(tick);
+      };
+      requestAnimationFrame(tick);
+    }, chantLabels);
+  const chantNow = () => page.evaluate(() => (window.__chantSeen ? window.__chantSeen() : null));
+  const moved = (a, b, keys = Object.keys(a)) => keys.filter((k) => a[k] !== b[k]).map((k) => `${k} ${a[k]} to ${b[k]}`);
+  const chantFoot = () =>
+    page.evaluate(() => {
+      const dock = document.querySelector('[data-route-content] [data-chant-control="dock"]')?.getBoundingClientRect();
+      const tabs = document.querySelector("[data-tab-bar] > div")?.getBoundingClientRect();
+      const mini = document.querySelector("[data-mini-player]");
+      return {
+        dock: dock ? { top: Math.round(dock.top), bottom: Math.round(dock.bottom) } : null,
+        tabs: tabs ? Math.round(tabs.top) : null,
+        mini: Boolean(mini),
+        height: innerHeight,
+        scrolls: document.documentElement.scrollHeight - innerHeight,
+      };
+    });
+
+  // Psalm 135, opened from Chants: the first frame and every one after.
+  await watchChant();
+  await go(page, "/chants/psalm-135/");
+  await page.waitForTimeout(2500);
+  const psalmFrames = await page.evaluate(() => window.__chantFrames ?? []);
+  const firstFrame = psalmFrames[0];
+  must(Boolean(firstFrame && firstFrame.doors && firstFrame.dock && firstFrame.share), `Psalm 135 draws its controls in its first frame (${psalmFrames.length} frames: ${firstFrame ? Object.keys(firstFrame).filter((k) => firstFrame[k]).join(", ") : "none"})`);
+  if (firstFrame) {
+    const changed = moved(firstFrame, psalmFrames.at(-1));
+    must(changed.length === 0, `and nothing moves after it, the list of recordings and the icon answered (${changed.join("; ") || `${psalmFrames.length} frames, every box held`})`);
+  }
+  const psalmFoot = await chantFoot();
+  must(
+    Boolean(psalmFoot.dock) && psalmFoot.dock.top >= 0 && (psalmFoot.tabs === null || psalmFoot.dock.bottom <= psalmFoot.tabs),
+    `the player is docked over the tab bar, never under it (dock ${psalmFoot.dock ? `${psalmFoot.dock.top} to ${psalmFoot.dock.bottom}` : "none"}, tab bar from ${psalmFoot.tabs ?? "none"})`,
+  );
+  must(psalmFoot.scrolls <= 1, `with Words open the page is the screen: only the words scroll (${psalmFoot.scrolls}px past it)`);
+  const psalm = await page.evaluate((play) => ({
     title: document.querySelector("[data-route-content] h1")?.textContent?.trim() ?? "",
     tabs: [...document.querySelectorAll("[data-route-content] [role=tab]")].map((t) => (t.textContent ?? "").trim()),
-    versions: [...document.querySelectorAll("[data-route-content] [role=radiogroup] [role=radio]")].map((r) => (r.textContent ?? "").trim()),
-    lines: document.querySelectorAll("[data-route-content] [data-sung-look=page] ol > li").length,
-    plays: [...document.querySelectorAll("[data-route-content] button")].filter((b) => (b.textContent ?? "").trim() === play).map((b) => b.disabled),
+    parts: [...document.querySelectorAll('[data-route-content] [data-chant-control="words-view"] [role=radio]')].map((r) => `${(r.textContent ?? "").trim()}${r.disabled ? " (grey)" : ""}`),
+    dock: document.querySelector('[data-route-content] [data-chant-control="dock"]')?.innerText ?? "",
+    play: document.querySelector(`[data-route-content] [data-chant-control="dock"] button[aria-label="${play}"]`)?.disabled ?? null,
   }), en["prayers.play"]);
-  must(anthem.title === en["chants.item.prayerRopeAnthem.title"], `the Anthem's page is named (${anthem.title})`);
-  must(anthem.tabs.join("|") === [en["chants.tab.about"], en["chants.tab.versions"]].join("|"), `with About and Versions under the words (${anthem.tabs.join(", ")})`);
-  must(anthem.versions.length === 3, `three versions to choose between (${anthem.versions.join(", ")})`);
-  must(anthem.lines === 24, `the English words on the page, all 24 lines, with no signal (${anthem.lines})`);
-  must(anthem.plays.length > 0 && anthem.plays.every((d) => d), "and Play waits for a connection instead of failing");
+  must(psalm.title === en["chants.item.psalm135.title"], `the page is named on the icon (${psalm.title})`);
+  must(psalm.tabs.join("|") === [en["chants.tab.words"], en["chants.tab.about"], en["chants.tab.versions"]].join("|"), `with the doors Words, About and Versions (${psalm.tabs.join(", ")})`);
+  must(psalm.parts.join("|") === `English|${en["chants.words.translit"]} (grey)|${en["chants.words.both"]} (grey)`, `the switch on the English words, its sound and both greyed, never taken away (${psalm.parts.join(", ")})`);
+  must(psalm.play === true && psalm.dock.includes(en["chants.needsConnection"]), `and Play waits in the dock for a connection, saying so (${psalm.dock.replace(/\s+/g, " ").trim()})`);
+  await page.screenshot({ path: path.join(SHOTS, "chants-psalm-135-phone.png") });
+
+  // Each of its four versions, chosen in Versions: the words take the English's
+  // place, and nothing else moves (note 61: choosing Ελληνικά moved Share 43px).
+  for (const [label, sound] of [["العربية", true], ["Ελληνικά", true], ["Srpski", false], ["English", false]]) {
+    await page.getByRole("tab", { name: en["chants.tab.versions"] }).tap().catch(() => {});
+    await page.waitForTimeout(400);
+    await tap(page.locator("[data-route-content] #chant-panel-versions li button[aria-pressed]", { hasText: label }).first());
+    await page.waitForTimeout(700);
+    const now = await chantNow();
+    const parts = await page.evaluate(() => [...document.querySelectorAll('[data-route-content] [data-chant-control="words-view"] [role=radio]')].map((r) => r.disabled));
+    const door = await page.evaluate(() => location.hash);
+    const changed = now && firstFrame ? moved(firstFrame, now, ["back", "share", "icon", "doors", "switch", "words", "dock", "play"]) : ["nothing measured"];
+    must(door === "" && changed.length === 0, `${label}: back on Words with every control where it was (${changed.join("; ") || "held"})`);
+    must(parts.length === 3 && parts[1] === !sound && parts[2] === !sound, `${label}: its sound and both ${sound ? "offered" : "greyed"} (${parts.join(", ")})`);
+  }
+
+  // About, kept in the address, and the way back out.
   await page.getByRole("tab", { name: en["chants.tab.about"] }).tap().catch(() => {});
   await page.waitForTimeout(600);
-  const about = await page.evaluate(() => document.querySelector("[data-route-content] [role=tabpanel]")?.innerText ?? "");
+  const about = await page.evaluate(() => ({ hash: location.hash, text: document.querySelector("[data-route-content] #chant-panel-about")?.innerText ?? "" }));
+  must(about.hash === "#about", `About is kept in the address, so Back finds it (${about.hash || "no #"})`);
   must(
-    about.includes(en["chants.about.what"]) && about.includes(en["chants.about.history"]) && about.includes(en["chants.about.when"]),
+    about.text.includes(en["chants.about.what"]) && about.text.includes(en["chants.about.history"]) && about.text.includes(en["chants.about.when"]),
     "About says what it is, where it comes from and when it is sung",
   );
-  await page.screenshot({ path: path.join(SHOTS, "chants-anthem-phone.png"), fullPage: true });
+  await page.screenshot({ path: path.join(SHOTS, "chants-psalm-135-about-phone.png") });
+  await tap(page.locator(`[data-mobile-topbar] button[aria-label="${en["nav.back"]}"]`).first());
+  await page.waitForFunction(() => location.pathname.replace(/\/$/, "") === "/chants", null, { timeout: 10000 }).catch(() => {});
+  await page.waitForTimeout(150);
+  const back = await page.evaluate(() => ({
+    at: location.pathname,
+    cover: (() => {
+      const img = document.querySelector("[data-route-content] section[aria-labelledby=chants-featured] [data-cover] img");
+      return img ? { whole: img.complete && img.naturalWidth > 0, shown: getComputedStyle(img).opacity } : null;
+    })(),
+  }));
+  must(back.at.replace(/\/$/, "") === "/chants", `Back leaves the page for Chants in one step, through no door (${back.at})`);
+  must(!back.cover || (back.cover.whole && back.cover.shown === "1"), `and Chants comes back whole, its cover drawn at once (${back.cover ? `${back.cover.whole ? "whole" : "not yet"}, opacity ${back.cover.shown}` : "no picture"})`);
+
+  // The Paschal Canon: one version, no switch, its hymns lit at their own size.
+  await watchChant();
+  await go(page, "/chants/paschal-canon/");
+  await page.waitForTimeout(2000);
+  const canonFrames = await page.evaluate(() => window.__chantFrames ?? []);
+  const canon = await page.evaluate(() => ({
+    title: document.querySelector("[data-route-content] h1")?.textContent?.trim() ?? "",
+    switch: Boolean(document.querySelector('[data-route-content] [data-chant-control="words-view"]')),
+    long: document.querySelectorAll("[data-route-content] [data-sung-look=page] li[data-sung-long]").length,
+  }));
+  must(canon.title === en["chants.item.paschalCanon.title"] && !canon.switch, `the Paschal Canon: named, and no switch for words it has only in English (${canon.title})`);
+  must(canon.long > 0, `its long hymns marked to light at their own size (${canon.long})`);
+  if (canonFrames[0]) {
+    const changed = moved(canonFrames[0], canonFrames.at(-1));
+    must(changed.length === 0, `and nothing moves after its first frame (${changed.join("; ") || "held"})`);
+  }
+  const canonFoot = await chantFoot();
+  must(Boolean(canonFoot.dock) && (canonFoot.tabs === null || canonFoot.dock.bottom <= canonFoot.tabs), `its player over the tab bar (${canonFoot.dock ? canonFoot.dock.bottom : "none"} over ${canonFoot.tabs ?? "none"})`);
+  await page.screenshot({ path: path.join(SHOTS, "chants-canon-phone.png") });
+
+  // The Anthem's page: its name, the words on the page with no signal, its
+  // three versions in Versions, each naming who sings it or that nobody is known.
+  await watchChant();
+  await go(page, "/chants/prayer-rope-anthem/");
+  await page.waitForTimeout(2000);
+  const anthemFrames = await page.evaluate(() => window.__chantFrames ?? []);
+  const anthem = await page.evaluate(() => ({
+    title: document.querySelector("[data-route-content] h1")?.textContent?.trim() ?? "",
+    lines: document.querySelectorAll("[data-route-content] [data-sung-look=page] ol > li").length,
+    versions: [...document.querySelectorAll("[data-route-content] #chant-panel-versions li")].map((li) => (li.innerText ?? "").replace(/\s+/g, " ").trim()),
+  }));
+  must(anthem.title === en["chants.item.prayerRopeAnthem.title"], `the Anthem's page is named (${anthem.title})`);
+  must(anthem.lines === 24, `the English words on the page, all 24 lines, with no signal (${anthem.lines})`);
+  must(anthem.versions.length === 3 && anthem.versions.every((v) => v.includes(en["chants.performerUnknown"])), `three versions, each saying no singer is known, none invented (${anthem.versions.length})`);
+  if (anthemFrames[0]) {
+    const changed = moved(anthemFrames[0], anthemFrames.at(-1));
+    must(changed.length === 0, `and nothing moves after its first frame (${changed.join("; ") || "held"})`);
+  }
+  await page.screenshot({ path: path.join(SHOTS, "chants-anthem-phone.png") });
   must(errors.length === 0, `no page errors${errors.length ? ": " + errors.slice(0, 2).join(" | ") : ""}`);
   await ctx.close();
 });

@@ -1,6 +1,9 @@
 import { notFound } from "next/navigation";
 
 import { ChantPage } from "@/components/chants/ChantPage";
+import { MobileTopBar } from "@/components/nav/MobileTopBar";
+import { ShareButton } from "@/components/ui/ShareButton";
+import { chantTitleKey } from "@/lib/chants/names";
 import { chantBySlug, chantIndex, firstSentence, indexRow, liveChants } from "@/lib/chants/registry.server";
 
 type Params = Promise<{ slug: string }>;
@@ -21,7 +24,15 @@ export async function generateMetadata({ params }: { params: Params }) {
 }
 
 // A chant's page carries that chant (its words, its history, its versions)
-// and, for the row under it, only the index rows of the chants it names.
+// and, for the row under its About, only the index rows of the chants it
+// names.
+//
+// Its bar is a saint's page's own (1.8, sheet r3-18 B, the owner's pick of
+// 2026-10-31): clear over the chant's icon, the way back and Share on round
+// plates, solid with the chant's name once the name has gone up under it.
+// The way back leads to Chants when there is nothing of the app behind the
+// page. Share is in the bar from the first frame, alone: the button that
+// arrived beside it late and moved it 43px (the owner's note 61) is gone.
 export default async function ChantRoute({ params }: { params: Params }) {
   const { slug } = await params;
   const chant = chantBySlug(slug);
@@ -29,5 +40,24 @@ export default async function ChantRoute({ params }: { params: Params }) {
   const related = (chant.related ?? [])
     .map((s) => chantIndex().find((r) => r.slug === s))
     .filter((r): r is NonNullable<typeof r> => Boolean(r));
-  return <ChantPage chant={chant} row={indexRow(chant)} related={related} />;
+  return (
+    <>
+      <MobileTopBar
+        title={chant.title}
+        titleKey={chantTitleKey(chant.key)}
+        back
+        backFallback="/chants"
+        revealTitleOn="chant-name"
+        overlay
+        trailing={
+          <ShareButton
+            titleKey={chantTitleKey(chant.key)}
+            round
+            className="h-10 w-10 border-0 bg-transparent text-paper/80 hover:text-paper"
+          />
+        }
+      />
+      <ChantPage chant={chant} row={indexRow(chant)} related={related} />
+    </>
+  );
 }

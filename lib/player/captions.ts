@@ -30,6 +30,10 @@ export type CaptionLine = {
   sub?: string[];
   /** A verse's number. */
   n?: number;
+  /** `text` is the sung words' sound in Latin letters (a chant's reader chose it). */
+  latin?: boolean;
+  /** Each sung word's sound, word for word, drawn under it. */
+  pairs?: string[];
 };
 
 /** The share of a line's time its words are spread over when the line ends
@@ -83,11 +87,22 @@ export function captionLines(source: CaptionSource, duration = 0): CaptionLine[]
       ...(line.en ? { en: line.en } : {}),
       ...(line.sub?.length ? { sub: line.sub } : {}),
       ...(typeof line.n === "number" ? { n: line.n } : {}),
+      ...(line.latin ? { latin: true } : {}),
+      ...(line.pairs?.length === parts.length ? { pairs: line.pairs } : {}),
     };
   });
 }
 
-/** The line being sung at `t`, or -1 before the first. A line is taken a
+/** After a chant's last line: once its singing has been over this long,
+ *  nothing is lit. A version whose words stop before its recording does (the
+ *  Arabic Psalm 135 has words for its first verse only) is then not shown
+ *  singing its last line through every verse after it, and its words stand
+ *  at rest, as they do with nothing playing. A chapter read aloud keeps its
+ *  last verse to the end. */
+const WORDS_DONE = 6;
+
+/** The line being sung at `t`, or -1 before the first (and once a chant's
+ *  last line is long over, WORDS_DONE). A line is taken a
  *  breath early, so the eye is there when the voice is. And where the line
  *  before it ended in a pause (a read-aloud verse: the voice stops, then the
  *  next verse begins about half a second later), it is taken as soon as that
@@ -103,6 +118,8 @@ export function lineAt(lines: CaptionLine[], t: number, lead = 0.15): number {
     const done = before && before.end < lines[i].at ? before.end : Infinity;
     if (Math.min(lines[i].at - lead, done) <= t) at = i;
   }
+  const last = lines[at];
+  if (last && at === lines.length - 1 && typeof last.n !== "number" && t > last.end + WORDS_DONE) return -1;
   return at;
 }
 
@@ -113,14 +130,34 @@ export function lineAt(lines: CaptionLine[], t: number, lead = 0.15): number {
  * English and carries the sung words under it; any other line is its own
  * words, with its transliteration under them. Nothing is added: every part
  * is a field of the line as the data gives it.
+ *
+ * The sung part carries how its reader chose to see it (notes 56 and 59):
+ * `latin`, its sound in Latin letters in place of the words, or `pairs`,
+ * each word's sound to draw under that word.
+ *
+ * A chant's own page (1.8, sheet r3-18, the owner's pick of 2026-10-31,
+ * B's page) puts the sung words first (`english: "under"`): the words as
+ * they are sung lead, and the English is a `gloss` under them, which the page
+ * shows under the line being sung only (app/globals.css, "Sung words"). Now
+ * Playing keeps round 8's order, the English over the sung words.
  */
-export type LinePart = { text: string; sung: boolean };
-export type LineParts = { main: LinePart; under: LinePart[] };
+export type LinePart = { text: string; sung: boolean; latin?: true; pairs?: string[] };
+export type LineParts = { main: LinePart; under: LinePart[]; gloss?: string };
 
-export function lineParts(line: { text: string; en?: string; sub?: string[] }): LineParts {
+export function lineParts(
+  line: { text: string; en?: string; sub?: string[]; latin?: boolean; pairs?: string[] },
+  english: "over" | "under" = "over",
+): LineParts {
   const subs = (line.sub ?? []).map((text) => ({ text, sung: false }));
-  if (line.en) return { main: { text: line.en, sung: false }, under: [{ text: line.text, sung: true }, ...subs] };
-  return { main: { text: line.text, sung: true }, under: subs };
+  const sung: LinePart = {
+    text: line.text,
+    sung: true,
+    ...(line.latin ? { latin: true as const } : {}),
+    ...(line.pairs?.length ? { pairs: line.pairs } : {}),
+  };
+  if (line.en && english === "under") return { main: sung, under: subs, gloss: line.en };
+  if (line.en) return { main: { text: line.en, sung: false }, under: [sung, ...subs] };
+  return { main: sung, under: subs };
 }
 
 /**

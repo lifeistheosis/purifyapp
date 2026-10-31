@@ -115,7 +115,7 @@ describe("one clock for every place the words are lit", () => {
   });
 });
 
-describe("a chant's page sings along itself (round 9 A)", () => {
+describe("a chant's page sings along itself (r3-18: B's page with A's player)", () => {
   const page = read("components/chants/ChantPage.tsx");
 
   it("keeps Play on the page rather than opening Now Playing over it", () => {
@@ -124,12 +124,16 @@ describe("a chant's page sings along itself (round 9 A)", () => {
     expect(page).toMatch(/<ChantVersions[\s\S]*?open=\{false\}/);
   });
 
-  it("draws the words, then the recording's language, then the controls", () => {
-    const words = page.indexOf("<ChantWords variant");
-    const languages = page.indexOf('role="radiogroup"');
-    const controls = page.indexOf("<ChantTransport");
-    expect(words).toBeGreaterThan(-1);
-    expect(languages).toBeGreaterThan(words);
-    expect(controls).toBeGreaterThan(languages);
+  it("draws the icon and the name, then the doors, then what they open, then the player docked at the foot", () => {
+    const at = (marker: string) => {
+      const i = page.indexOf(marker);
+      expect(i, marker).toBeGreaterThan(-1);
+      return i;
+    };
+    const order = ["<ChantCover", 'id="chant-name"', "<ChantDoors", '{...panel("words")}', '{...panel("about")}', '{...panel("versions")}', "<ChantDock"].map(at);
+    expect([...order].sort((a, b) => a - b)).toEqual(order);
+    // The player, with no row of its own under the name: B's Play row is A's dock.
+    expect(page).not.toContain("<ChantTransport");
+    expect(page).not.toContain("<PlayPill");
   });
 });

@@ -1,6 +1,6 @@
 "use client";
 
-import { memo, useEffect, useLayoutEffect, useRef } from "react";
+import { memo, useEffect, useLayoutEffect, useRef, type ReactNode } from "react";
 
 import { clockNow, subscribeClock } from "@/lib/player/clock";
 import { lineAt, lineParts, wordsOf, type CaptionLine } from "@/lib/player/captions";
@@ -32,6 +32,14 @@ import { cn } from "@/lib/cn";
  * glides with the voice, and only the line being sung is touched each frame.
  * Everything is drawn in the page's ink (opacity, never a colour), so on a
  * light palette the words are ink and nothing glows.
+ *
+ * A chant's own page (1.8, sheet r3-18, the owner's pick of 2026-10-31, B's
+ * page) leads with the words as they are sung and puts a line's English under
+ * them (`english="under"`), shown under the line being sung only, and under
+ * every line while nothing is being sung (app/globals.css, "Sung words").
+ * Since lines then change height as the light moves, every row the change
+ * moves is carried from where it was by its own amount, not only the rows
+ * under the line.
  */
 const WAIT = 0.36;
 /** Where the line being sung stands in the box, from the top. */
@@ -66,8 +74,18 @@ function reduced(): boolean {
   return typeof document !== "undefined" && document.documentElement.dataset.motion === "reduce";
 }
 
-/** Where the rows that move were, before the line changed. */
-type First = { from: number; to: number; nextTop: number; afterTop: number | null; nextShift: number; prevShift: number; nextSize: number; prevSize: number };
+/** A line longer than this keeps its size when it is sung (a hymn of the Canon is one long line, r3-18). */
+export const LONG_LINE = 80;
+
+/** Where the words fade at the box's top and foot: Now Playing's, and a chant's page's, as each sheet draws it. */
+const FADE_PLAYER = "linear-gradient(180deg, transparent 0, #000 36px, #000 calc(100% - 64px), transparent 100%)";
+const FADE_PAGE = "linear-gradient(180deg, transparent 0, #000 20px, #000 calc(100% - 40px), transparent 100%)";
+
+/**
+ * Where the rows were, before the line changed: every row's top, and the
+ * parts of the line coming and the line going that change size.
+ */
+type First = { from: number; to: number; tops: number[]; nextShift: number; prevShift: number; nextSize: number; prevSize: number };
 
 // Drawn again only when its words or the line being sung change: the player
 // around it draws four times a second, and a chapter is hundreds of words.
@@ -82,6 +100,8 @@ export const LiveCaptions = memo(function LiveCaptions({
   rtl = false,
   lang,
   onSeek,
+  english = "over",
+  footer,
   className,
 }: {
   /** Every line, as it is drawn: timed or not, the words are the words. */
@@ -101,6 +121,13 @@ export const LiveCaptions = memo(function LiveCaptions({
   /** The language the words are sung in. */
   lang?: string;
   onSeek: (at: number) => void;
+  /**
+   * Where a line's English stands: over the sung words (Now Playing, round 8),
+   * or under them, the sung words leading (a chant's page, r3-18).
+   */
+  english?: "over" | "under";
+  /** Under the last line, in the same box: where the words come from. */
+  footer?: ReactNode;
   className?: string;
 }) {
   const boxRef = useRef<HTMLDivElement>(null);
@@ -120,26 +147,92 @@ export const LiveCaptions = memo(function LiveCaptions({
   const parts = (el: HTMLLIElement | null | undefined) => ({
     grow: el?.querySelector<HTMLElement>("[data-sung-grow]") ?? null,
     shift: el?.querySelector<HTMLElement>("[data-sung-shift]") ?? null,
+    gloss: el?.querySelector<HTMLElement>("[data-sung-gloss]") ?? null,
   });
 
   function measureFirst(from: number, to: number): First | null {
-    const next = rowRefs.current[to];
-    if (!next || to < 0) return null;
+    if (to < 0 && from < 0) return null;
+    const next = to >= 0 ? rowRefs.current[to] : null;
+    if (to >= 0 && !next) return null;
     const prev = from >= 0 ? rowRefs.current[from] : null;
-    const after = rowRefs.current[to + 1];
     const size = (el: HTMLElement | null) => (el ? parseFloat(getComputedStyle(el).fontSize) || 0 : 0);
     const n = parts(next);
     const p = parts(prev);
     return {
       from,
       to,
-      nextTop: next.offsetTop,
-      afterTop: after ? after.offsetTop : null,
-      nextShift: n.shift ? n.shift.offsetTop - next.offsetTop : 0,
+      tops: rowRefs.current.map((row) => (row ? row.offsetTop : Number.NaN)),
+      nextShift: n.shift && next ? n.shift.offsetTop - next.offsetTop : 0,
       prevShift: p.shift && prev ? p.shift.offsetTop - prev.offsetTop : 0,
       nextSize: size(n.grow),
       prevSize: size(p.grow),
     };
+  }
+
+  /**
+   * The move from one line to the next, or between the words at rest and a
+   * line being sung (First, Last, Invert, Play, as lib/ui/flip.ts does for
+   * lists): every row that can be seen and that the change moved is carried
+   * back to where it was, by its own amount; the line coming grows from its
+   * old size and the line going gives its size back; what is under each rides
+   * on it. Then the house curve carries every part home (app/globals.css,
+   * "Sung words"). A line's English arriving under it fades in.
+   */
+  function flip(first: First, from: number, to: number) {
+    const box = boxRef.current;
+    if (!box) return;
+    const next = to >= 0 ? rowRefs.current[to] : null;
+    const prev = from >= 0 ? rowRefs.current[from] : null;
+    const n = parts(next);
+    const p = parts(prev);
+    const moves: { el: HTMLElement; transform: string; origin?: string }[] = [];
+    // A screen's worth either side of what shows: the rows the box is about
+    // to glide past are carried too.
+    const seenTop = box.scrollTop - box.clientHeight;
+    const seenFoot = box.scrollTop + box.clientHeight * 2;
+    rowRefs.current.forEach((row, i) => {
+      const was = first.tops[i];
+      if (!row || !Number.isFinite(was)) return;
+      const now = row.offsetTop;
+      const d = was - now;
+      if (Math.abs(d) < 1 || Math.max(was, now) + row.offsetHeight < seenTop || Math.min(was, now) > seenFoot) return;
+      moves.push({ el: row, transform: `translateY(${d}px)` });
+    });
+    const origin = (el: HTMLElement) => (getComputedStyle(el).direction !== "rtl" ? "0 0" : "100% 0");
+    const resize = (grow: HTMLElement | null, was: number) => {
+      if (!grow || !was) return;
+      const size = parseFloat(getComputedStyle(grow).fontSize) || 0;
+      if (size && Math.abs(size - was) > 0.5) moves.push({ el: grow, transform: `scale(${was / size})`, origin: origin(grow) });
+    };
+    resize(n.grow, first.nextSize);
+    resize(p.grow, first.prevSize);
+    // What is under a line rides on the line: measured from the line's own top.
+    if (n.shift && next) {
+      const d = first.nextShift - (n.shift.offsetTop - next.offsetTop);
+      if (Math.abs(d) >= 1) moves.push({ el: n.shift, transform: `translateY(${d}px)` });
+    }
+    if (p.shift && prev) {
+      const d = first.prevShift - (p.shift.offsetTop - prev.offsetTop);
+      if (Math.abs(d) >= 1) moves.push({ el: p.shift, transform: `translateY(${d}px)` });
+    }
+    // Invert, with no transition, then let go.
+    for (const m of moves) {
+      m.el.style.transition = "none";
+      if (m.origin) m.el.style.transformOrigin = m.origin;
+      m.el.style.transform = m.transform;
+    }
+    void box.offsetHeight;
+    for (const m of moves) {
+      m.el.style.transition = "";
+      m.el.style.transform = "";
+    }
+    flipped.current = moves.map((m) => m.el);
+    // The English that was not shown under the line coming (it was a line
+    // beside the one being sung) fades in as the line grows.
+    if (n.gloss && from >= 0 && typeof n.gloss.animate === "function") {
+      const shown = getComputedStyle(n.gloss).opacity || "1";
+      n.gloss.animate([{ opacity: 0 }, { opacity: shown }], { duration: MOVE_MS, easing: "cubic-bezier(0.22, 1, 0.36, 1)" });
+    }
   }
 
   /** Put down a move in progress at once: its rows where they belong. */
@@ -259,69 +352,22 @@ export const LiveCaptions = memo(function LiveCaptions({
     shown.current = current;
     const first = pending.current;
     pending.current = null;
-    if (!active || current < 0) {
-      // Back before the first line (a seek to the start): to the top.
-      if (active && live && from >= 0 && current < 0) scrollTo(0, true);
+    const box = boxRef.current;
+    if (!active || !box) return;
+    settleFlip();
+    // One line to the next, or the words at rest to a line or back: one
+    // smooth move. A jump further (a seek, a tap on a line) stands in place.
+    const step = current === from + 1 || from < 0 || current < 0;
+    if (first && first.from === from && first.to === current && current !== from && step && !reduced()) {
+      flip(first, from, current);
+    }
+    if (current < 0) {
+      // Back before the first line (a seek to the start), or the singing
+      // long over: to the top.
+      if (live && from >= 0) scrollTo(0, true);
       return;
     }
-    const box = boxRef.current;
-    const next = rowRefs.current[current];
-    if (!box || !next) return;
-    settleFlip();
-    const adjacent = first && first.from === from && first.to === current && (current === from + 1 || (from < 0 && current === 0));
-    if (adjacent && first && !reduced()) {
-      const n = parts(next);
-      const prev = from >= 0 ? rowRefs.current[from] : null;
-      const p = parts(prev);
-      const moves: { el: HTMLElement; transform: string; origin?: string }[] = [];
-      const dy = first.nextTop - next.offsetTop;
-      if (Math.abs(dy) >= 1) moves.push({ el: next, transform: `translateY(${dy}px)` });
-      const grownTo = n.grow ? parseFloat(getComputedStyle(n.grow).fontSize) || 0 : 0;
-      if (n.grow && first.nextSize && grownTo && Math.abs(grownTo - first.nextSize) > 0.5) {
-        const ltr = getComputedStyle(n.grow).direction !== "rtl";
-        moves.push({ el: n.grow, transform: `scale(${first.nextSize / grownTo})`, origin: ltr ? "0 0" : "100% 0" });
-      }
-      // What is under a line rides on the line: measured from the line's own top.
-      const nextShift = n.shift ? first.nextShift - (n.shift.offsetTop - next.offsetTop) : 0;
-      if (n.shift && Math.abs(nextShift) >= 1) moves.push({ el: n.shift, transform: `translateY(${nextShift}px)` });
-      if (p.grow && first.prevSize) {
-        const shrunkTo = parseFloat(getComputedStyle(p.grow).fontSize) || 0;
-        if (shrunkTo && Math.abs(shrunkTo - first.prevSize) > 0.5) {
-          const ltr = getComputedStyle(p.grow).direction !== "rtl";
-          moves.push({ el: p.grow, transform: `scale(${first.prevSize / shrunkTo})`, origin: ltr ? "0 0" : "100% 0" });
-        }
-      }
-      const prevShift = p.shift && prev ? first.prevShift - (p.shift.offsetTop - prev.offsetTop) : 0;
-      if (p.shift && Math.abs(prevShift) >= 1) moves.push({ el: p.shift, transform: `translateY(${prevShift}px)` });
-      // The rows under the line moved by one amount: those that can be seen
-      // are carried back and let go with it.
-      const after = rowRefs.current[current + 1];
-      if (after && first.afterTop !== null) {
-        const d = first.afterTop - after.offsetTop;
-        if (Math.abs(d) >= 1) {
-          const bottom = box.scrollTop + box.clientHeight + 160;
-          for (let i = current + 1; i < rowRefs.current.length; i++) {
-            const row = rowRefs.current[i];
-            if (!row) continue;
-            if (row.offsetTop > bottom) break;
-            moves.push({ el: row, transform: `translateY(${d}px)` });
-          }
-        }
-      }
-      // Invert, with no transition, then let go: the house curve carries
-      // every part home (app/globals.css, "Sung words").
-      for (const m of moves) {
-        m.el.style.transition = "none";
-        if (m.origin) m.el.style.transformOrigin = m.origin;
-        m.el.style.transform = m.transform;
-      }
-      void box.offsetHeight;
-      for (const m of moves) {
-        m.el.style.transition = "";
-        m.el.style.transform = "";
-      }
-      flipped.current = moves.map((m) => m.el);
-    }
+    if (!rowRefs.current[current]) return;
     if (performance.now() - lastHand.current > HANDS_OFF_MS) {
       const top = targetFor(current);
       // Arriving (the words just shown, a version just chosen) stands the
@@ -374,59 +420,90 @@ export const LiveCaptions = memo(function LiveCaptions({
   useEffect(() => () => settleFlip(), []);
 
   const seekable = live && timed;
+  // The words fade out at the box's edges: shorter fades on a chant's page,
+  // whose box is the room between its doors and its player (r3-18 B).
+  const fade = look === "page" ? FADE_PAGE : FADE_PLAYER;
 
   return (
     <div
       ref={boxRef}
       data-sung-look={look}
       className={cn("no-scrollbar relative overflow-y-auto overflow-x-hidden overscroll-contain", className)}
-      style={{
-        maskImage: "linear-gradient(180deg, transparent 0, #000 36px, #000 calc(100% - 64px), transparent 100%)",
-        WebkitMaskImage: "linear-gradient(180deg, transparent 0, #000 36px, #000 calc(100% - 64px), transparent 100%)",
-      }}
+      style={{ maskImage: fade, WebkitMaskImage: fade }}
     >
-      <ol dir={rtl ? "rtl" : undefined} className="pb-24 pt-9">
+      <ol dir={rtl ? "rtl" : undefined} className={cn(look === "page" ? "pt-5" : "pt-9", footer ? "pb-2" : "pb-24")}>
         {source.map((line, i) => {
-          const { main, under } = lineParts(line);
+          const { main, under, gloss } = lineParts(line, english);
           const state = current < 0 ? "rest" : i === current ? "lit" : Math.abs(i - current) === 1 ? "near" : "far";
           const said = timed ? lines[i].words.map((w) => w.text) : wordsOf(line.text);
+          const part = main.sung ? main : under.find((u) => u.sung);
+          // Each word over its sound (notes 56 and 59): one stack a word, lit
+          // as one, read in the line's own direction.
+          const sounds = part?.pairs && part.pairs.length === said.length ? part.pairs : null;
+          const latinLang = lang ? `${lang}-Latn` : undefined;
+          const sungLang = part?.latin ? latinLang : lang;
+          const ref = (j: number) => (el: HTMLSpanElement | null) => {
+            (wordRefs.current[i] ??= [])[j] = el;
+          };
           const sung = (
             <>
-              {said.map((word, j) => (
-                <span
-                  key={j}
-                  ref={(el) => {
-                    (wordRefs.current[i] ??= [])[j] = el;
-                  }}
-                >
-                  {word}
-                  {j < said.length - 1 ? " " : ""}
-                </span>
-              ))}
+              {said.map((word, j) =>
+                sounds ? (
+                  <span key={j}>
+                    <span ref={ref(j)} data-sung-pair>
+                      <span>{word}</span>
+                      <span data-sung-sound dir="ltr" lang={latinLang}>
+                        {sounds[j]}
+                      </span>
+                    </span>
+                    {j < said.length - 1 ? " " : ""}
+                  </span>
+                ) : (
+                  <span key={j} ref={ref(j)}>
+                    {word}
+                    {j < said.length - 1 ? " " : ""}
+                  </span>
+                ),
+              )}
             </>
           );
           const body = (
             <>
-              <span data-sung-main dir="auto" lang={main.sung ? lang : "en"} className="block">
+              <span
+                data-sung-main
+                data-sung-latin={main.sung && main.latin ? "" : undefined}
+                dir="auto"
+                lang={main.sung ? sungLang : "en"}
+                className="block"
+              >
                 <span data-sung-grow className="block">
                   {main.sung ? sung : main.text}
                 </span>
               </span>
-              {under.length ? (
+              {under.length || gloss ? (
                 <span data-sung-shift className="block">
-                  <span data-sung-under className="block">
-                    {under.map((u, k) => (
-                      <span
-                        key={k}
-                        dir="auto"
-                        lang={u.sung ? lang : lang ? `${lang}-Latn` : undefined}
-                        data-sung-part={u.sung ? "sung" : "translit"}
-                        className="block"
-                      >
-                        {u.sung ? sung : u.text}
-                      </span>
-                    ))}
-                  </span>
+                  {under.length ? (
+                    <span data-sung-under className="block">
+                      {under.map((u, k) => (
+                        <span
+                          key={k}
+                          dir="auto"
+                          lang={u.sung ? sungLang : latinLang}
+                          data-sung-part={u.sung ? "sung" : "translit"}
+                          className="block"
+                        >
+                          {u.sung ? sung : u.text}
+                        </span>
+                      ))}
+                    </span>
+                  ) : null}
+                  {/* The English, under the sung words: shown under the line
+                      being sung only, and under every line at rest. */}
+                  {gloss ? (
+                    <span data-sung-gloss dir="auto" lang="en">
+                      {gloss}
+                    </span>
+                  ) : null}
                 </span>
               ) : null}
             </>
@@ -438,6 +515,7 @@ export const LiveCaptions = memo(function LiveCaptions({
                 rowRefs.current[i] = el;
               }}
               data-sung={state}
+              data-sung-long={main.text.length > LONG_LINE ? "" : undefined}
               aria-current={state === "lit" ? "true" : undefined}
             >
               {seekable ? (
@@ -451,6 +529,7 @@ export const LiveCaptions = memo(function LiveCaptions({
           );
         })}
       </ol>
+      {footer ? <div className="pb-24">{footer}</div> : null}
     </div>
   );
 });
