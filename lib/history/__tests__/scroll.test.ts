@@ -20,6 +20,7 @@ import {
   RESTORE_SETTLE_FRAMES,
   RESTORE_STEADY_FRAMES,
   RESTORE_WATCH_FRAMES,
+  WHOLE_ATTR,
   loadKeptPlace,
   loadPosition,
   placeToContinue,
@@ -38,6 +39,11 @@ function stubTimeline() {
   /** Rows by slug: their top on the PAGE. The screen's top is `top - scrollY`. */
   const rows = new Map<string, number>();
   const head = { offsetHeight: 55 };
+  const attrs = new Set<string>();
+  const root = {
+    setAttribute: (name: string) => void attrs.add(name),
+    removeAttribute: (name: string) => void attrs.delete(name),
+  };
 
   const win = {
     getComputedStyle: () => ({ top: "48px" }),
@@ -61,6 +67,7 @@ function stubTimeline() {
     },
   };
   const doc = {
+    documentElement: root,
     querySelector: (selector: string) => (selector === ".history-era-head" ? head : null),
     getElementById: (id: string) => {
       const slug = id.replace(/^event-/, "");
@@ -74,6 +81,8 @@ function stubTimeline() {
   return {
     state,
     rows,
+    /** Whether the rows are drawn whole (html[data-history-whole]). */
+    whole: () => attrs.has(WHOLE_ATTR),
     /** The row's top on the screen now. */
     screenTop: (slug: string) => rows.get(slug)! - state.scrollY,
     frame: () => {
@@ -106,27 +115,32 @@ afterEach(() => {
 });
 
 describe("the timeline's place, put back on Back", () => {
-  it("is there before the page is painted: the row back on the line, less its offset, at the call", () => {
+  it("is there before the page is painted: the rows drawn whole, the row back on the line less its offset, at the call", () => {
     const b = stubTimeline();
     b.rows.set("first-council-of-nicaea", 2700);
     restorePosition(kept("first-council-of-nicaea", -79));
-    // No frame has run: the layout effect's own call put it there.
+    // No frame has run: the layout effect's own call put it there, measured
+    // with every row at its real height.
+    expect(b.whole()).toBe(true);
     expect(b.screenTop("first-council-of-nicaea")).toBe(103 - 79);
     expect(b.state.scrolls).toHaveLength(1);
   });
 
-  it("is held while the rows around it are first drawn at their real heights, then let go", () => {
+  it("is held through the browser putting its own number back late, then the rows are let go", () => {
     const b = stubTimeline();
     b.rows.set("first-council-of-nicaea", 2700);
     restorePosition(kept("first-council-of-nicaea", -79));
-    // The rows above are drawn at last, 50px taller than their placeholders.
-    b.rows.set("first-council-of-nicaea", 2750);
+    // The browser's own number for this entry arrives after the page drew.
+    b.state.scrollY = 2600;
     b.frame();
     expect(b.screenTop("first-council-of-nicaea")).toBe(24);
+    expect(b.whole()).toBe(true);
     const ran = b.run();
-    // Watched until still, and not a frame past the watch.
-    expect(ran + 1).toBeGreaterThanOrEqual(RESTORE_SETTLE_FRAMES);
-    expect(ran + 1).toBeLessThanOrEqual(RESTORE_WATCH_FRAMES);
+    // Watched until still, not a frame past the watch, and two more before
+    // the rows are let go, their real heights kept as placeholders.
+    expect(ran + 1).toBeGreaterThanOrEqual(RESTORE_SETTLE_FRAMES + 2);
+    expect(ran + 1).toBeLessThanOrEqual(RESTORE_WATCH_FRAMES + 2);
+    expect(b.whole()).toBe(false);
     expect(b.waiting()).toBe(0);
     expect(b.listening("touchstart")).toBe(0);
     expect(RESTORE_STEADY_FRAMES).toBeLessThan(RESTORE_SETTLE_FRAMES);
@@ -138,8 +152,10 @@ describe("the timeline's place, put back on Back", () => {
     restorePosition(kept("great-schism-1054", -20));
     b.fire("touchstart");
     b.rows.set("great-schism-1054", 5300);
-    expect(b.run()).toBe(0);
+    // Only the two frames that let the rows go: nothing moves.
+    expect(b.run()).toBe(2);
     expect(b.state.scrolls).toHaveLength(1);
+    expect(b.whole()).toBe(false);
     for (const type of ["touchstart", "wheel", "keydown", "pointerdown"]) expect(b.listening(type)).toBe(0);
   });
 
@@ -148,8 +164,24 @@ describe("the timeline's place, put back on Back", () => {
     b.rows.set("pentecost", 549);
     const stop = restorePosition(kept("pentecost", 446));
     stop();
+    b.run();
+    expect(b.whole()).toBe(false);
     expect(b.waiting()).toBe(0);
     expect(b.listening("wheel")).toBe(0);
+  });
+
+  it("lets a newer put-back keep the rows whole when an older one lets go", () => {
+    const b = stubTimeline();
+    b.rows.set("pentecost", 549);
+    const first = restorePosition(kept("pentecost", 446));
+    first();
+    restorePosition(kept("pentecost", 446));
+    // The first one's two frames pass (and one of the second's watch between
+    // them); the second still holds the rows whole.
+    for (let i = 0; i < 3; i++) b.frame();
+    expect(b.whole()).toBe(true);
+    b.run();
+    expect(b.whole()).toBe(false);
   });
 
   it("moves nothing when the kept row is not on the line", () => {

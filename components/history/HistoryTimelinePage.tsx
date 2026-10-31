@@ -35,8 +35,8 @@
 // the last visit's place on every visit: a jump of 64px with the reader at
 // the top, of 2,600px with them further down, filmed on the export. The route
 // has no loading screen either: it cut to the page after at least the 300ms
-// React holds a fallback, by which time the page's own code had long been
-// there (app/(app)/history/ has no loading.tsx, on purpose).
+// React holds a fallback, when the page's own code was already there
+// (app/(app)/history/ has no loading.tsx, on purpose).
 
 import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState, type ReactNode } from "react";

@@ -159,6 +159,11 @@ describe("the timeline", () => {
     expect(back).toMatch(/^useIsoLayoutEffect\(\(\) => \{\s+if \(!hydrated \|\| !cameBack\(\) \|\| isReturning\(\)\) return;/);
     expect(back).toContain("return scroll.restorePosition(saved);");
     expect(page).not.toContain("window.scrollBy");
+    // Measured with every row at its real height, not on the 128px guesses
+    // that painted Back's row 145px low for a frame.
+    const css = read("app/globals.css");
+    expect(css).toMatch(/\nhtml\[data-history-whole\] \.history-cv \{\n content-visibility: visible;\n\}/);
+    expect(css).toMatch(/\.history-cv \{\n content-visibility: auto;\n contain-intrinsic-size: auto 128px;/);
     // Continue at is handed its row with the page; it reads nothing after it.
     expect(page).toContain("<ContinueExploring slug={continueAt} onGo={jumpToEvent} />");
     expect(code("components/history/ContinueExploring.tsx")).not.toMatch(/useEffect|useState|loadPosition/);

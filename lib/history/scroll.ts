@@ -173,16 +173,44 @@ export const RESTORE_SETTLE_FRAMES = 12;
 const RESTORE_STOP_EVENTS = ["touchstart", "wheel", "keydown", "pointerdown"] as const;
 
 /**
+ * Set on the page while a place is put back: every row is drawn at its real
+ * height (globals.css, History, `html[data-history-whole]`).
+ */
+export const WHOLE_ATTR = "data-history-whole";
+let wholeBy: object | null = null;
+
+/**
  * Puts the kept row back at its place under the pinned era name, once at the
  * call (from a layout effect, so before the timeline is painted) and then
- * frame by frame while rows around it are first drawn at their real heights
- * (`content-visibility`, globals.css .history-cv), until it has sat still.
- * The reader's own hand ends it at once. Returns the way to end it early (an
- * unmount). The same watch as lib/ui/returnPlace.ts, for a row instead of a
- * link.
+ * frame by frame until it has sat still, through a browser that puts its own
+ * number back late. The reader's own hand ends it at once. Returns the way to
+ * end it early (an unmount). The same watch as lib/ui/returnPlace.ts, for a
+ * row instead of a link.
+ *
+ * The rows are drawn whole while it works. A row off the screen is a 128px
+ * guess until it is drawn (`content-visibility`, globals.css .history-cv), so
+ * the place was measured on guesses, and the rows around it then took their
+ * real heights in the first painted frame: filmed on the export, Back showed
+ * the row 145px low for a frame and then jumped to it. Drawn whole, the place
+ * is measured on the page as it will be painted, and each row keeps its real
+ * height as its placeholder after (`contain-intrinsic-size: auto`), so
+ * nothing moves when the rows are let go two frames after the watch.
  */
 export function restorePosition(saved: TimelinePosition): () => void {
   if (!hasWindow()) return () => {};
+  const root = document.documentElement;
+  const token = {};
+  wholeBy = token;
+  root.setAttribute(WHOLE_ATTR, "");
+  // Two frames on, so the rows' heights have been taken as their placeholders.
+  const letGo = () =>
+    window.requestAnimationFrame(() =>
+      window.requestAnimationFrame(() => {
+        if (wholeBy !== token) return;
+        wholeBy = null;
+        root.removeAttribute(WHOLE_ATTR);
+      }),
+    );
   const put = (): boolean => {
     const el = document.getElementById(`event-${saved.anchorSlug}`);
     if (!el) return false;
@@ -203,6 +231,7 @@ export function restorePosition(saved: TimelinePosition): () => void {
     done = true;
     if (frame) window.cancelAnimationFrame(frame);
     for (const type of RESTORE_STOP_EVENTS) window.removeEventListener(type, stop);
+    letGo();
   };
   const look = () => {
     if (done) return;

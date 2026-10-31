@@ -6631,6 +6631,15 @@ html.is-native .history-line {
  /* A jump to a row lands it under the pinned era name (about 3.1rem). */
  scroll-margin-top: calc(var(--history-sticky-top) + 3.25rem);
 }
+/* Back to the timeline (lib/history/scroll.ts, restorePosition): every row
+   is drawn at its real height while the reader's place is put back, so the
+   place is measured on the page as it will be painted, and each row keeps
+   that height as its placeholder once it is let go (`auto` above). Measured
+   on the 128px guesses, Back painted the row 145px low for a frame and then
+   jumped (the owner's note 66 of build 80). */
+html[data-history-whole] .history-cv {
+ content-visibility: visible;
+}
 /* A jump to an era lands its name where it pins. */
 .history-era {
  scroll-margin-top: var(--history-sticky-top);
