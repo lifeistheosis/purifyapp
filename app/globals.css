@@ -8394,6 +8394,26 @@ html.is-native .pray-chip {
  font-family: var(--font-sans);
  font-size: 0.9em;
 }
+/* Both (1.8, notes 56 and 59): each sung word over its sound, one stack a
+   word, read in the line's own direction (right to left for Arabic), so a
+   reader can match word to sound. The stack lights as one word. The sound in
+   the sans, about half the line's size and never under 11px, a step back. */
+[data-sung-pair] {
+ display: inline-flex;
+ flex-direction: column;
+ align-items: center;
+ vertical-align: top;
+}
+[data-sung-sound] {
+ margin-top: 1px;
+ font-family: var(--font-sans);
+ font-size: max(0.56em, 11px);
+ font-style: normal;
+ font-weight: 500;
+ line-height: 1.3;
+ opacity: 0.72;
+ white-space: nowrap;
+}
 /* Now Playing: the verse being read 29px over 24px (round 8 B). */
 [data-sung-look="player"] li[data-sung] {
  margin-bottom: 20px;
@@ -8466,6 +8486,78 @@ html[data-reading-mode="parchment"] [data-sung-look="page"] [data-sung-under] sp
 :where([data-motion="reduce"]) [data-sung-shift],
 :where([data-motion="reduce"]) [data-sung-main],
 :where([data-motion="reduce"]) [data-sung-under] {
+ transition: none;
+}
+/* The words' own switch (1.8, notes 56 and 59): the words as sung, their
+   sound, or both, on the words themselves (components/chants/ChantWords.tsx).
+   A small carved track, as Settings draws its choices (.set-track), the
+   chosen part lit white with a soft white glow. */
+.words-view {
+ display: inline-grid;
+ grid-auto-flow: column;
+ grid-auto-columns: minmax(0, 1fr);
+ gap: 2px;
+ max-width: 100%;
+ padding: 3px;
+ border-radius: 13px;
+ background: var(--color-night-deep);
+ box-shadow:
+  inset 0 2px 5px rgb(0 0 0 / 0.75),
+  inset 0 0 0 1px rgb(0 0 0 / 0.5),
+  0 1px 0 color-mix(in srgb, var(--color-paper) 7%, transparent);
+}
+.words-view > button {
+ position: relative;
+ isolation: isolate;
+ min-width: 0;
+ min-height: 30px;
+ padding: 4px 12px;
+ border-radius: 10px;
+ font-family: var(--font-sans);
+ font-size: 12.5px;
+ font-weight: 600;
+ line-height: 1.15;
+ color: color-mix(in srgb, var(--color-paper) 55%, transparent);
+ -webkit-tap-highlight-color: transparent;
+ /* With .tap-press's own spring back, which this list replaces. */
+ transition: color 240ms var(--ease-house), transform 220ms var(--ease-house);
+}
+.words-view > button::before {
+ content: "";
+ position: absolute;
+ inset: 0;
+ z-index: -1;
+ border-radius: inherit;
+ background: var(--color-paper);
+ background: linear-gradient(180deg, var(--color-paper) 0%, color-mix(in srgb, var(--color-paper) 92%, var(--color-night)) 100%);
+ box-shadow:
+  0 0 16px rgb(255 255 255 / 0.28),
+  0 3px 6px rgb(0 0 0 / 0.6),
+  inset 0 -1px 0 rgb(0 0 0 / 0.12);
+ opacity: 0;
+ scale: 0.94;
+ transition: opacity 240ms var(--ease-house), scale 320ms var(--ease-house);
+}
+.words-view > button[aria-checked="true"] {
+ color: var(--color-night);
+}
+.words-view > button[aria-checked="true"]::before {
+ opacity: 1;
+ scale: 1;
+}
+@media (hover: hover) {
+ .words-view > button[aria-checked="false"]:hover {
+  color: var(--color-paper);
+ }
+}
+html[data-reading-mode="parchment"] .words-view {
+ box-shadow: inset 0 2px 4px rgb(70 52 20 / 0.22), inset 0 0 0 1px rgb(43 35 23 / 0.08);
+}
+html[data-reading-mode="parchment"] .words-view > button::before {
+ box-shadow: 0 2px 5px rgb(70 52 20 / 0.3);
+}
+:where([data-motion="reduce"]) .words-view > button,
+:where([data-motion="reduce"]) .words-view > button::before {
  transition: none;
 }
 

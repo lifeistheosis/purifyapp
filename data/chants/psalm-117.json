@@ -65,10 +65,12 @@
       "lines": [
         {
           "text": "اِحْمَدُوا ٱلرَّبَّ لِأَنَّهُ صَالِحٌ،",
+          "translit": "Ihmadu r-Rabba li-annahu salihun,",
           "en": "Give thanks to the Lord; for he is good:"
         },
         {
           "text": "لِأَنَّ إِلَى ٱلْأَبَدِ رَحْمَتَهُ.",
+          "translit": "li-anna ila l-abadi rahmatahu.",
           "en": "for his mercy endures for ever."
         }
       ],

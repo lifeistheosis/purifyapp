@@ -201,6 +201,24 @@ describe("each version of a chant", () => {
     }
   });
 
+  it("gives every Arabic line its sound, and every sound a word for each word sung (notes 56 and 59)", () => {
+    // The owner: "you should also have the option to switch it to English
+    // transliteration. So you could see the pronunciation of each Arabic
+    // word." Both together draws each word over its sound, so a line's
+    // transliteration has exactly as many words as the line.
+    const words = (s: string) => s.split(/\s+/).filter(Boolean);
+    for (const { v, id } of versions) {
+      if (v.language === "ar") for (const line of v.lines) expect(line.translit, `${id}: "${line.text}" has no transliteration`).toBeTruthy();
+      for (const line of v.lines) {
+        if (!line.translit) continue;
+        expect(words(line.translit).length, `${id}: "${line.text}" / "${line.translit}"`).toBe(words(line.text).length);
+        // One plain scheme an English reader can say: Latin letters, an
+        // apostrophe and a hyphen, no scholar's marks.
+        expect(line.translit, `${id}: "${line.translit}"`).toMatch(/^[A-Za-z' ,.;:!?-]+$/);
+      }
+    }
+  });
+
   it("sings a psalm in Brenton's words, verbatim, when its English is Brenton's", () => {
     // Alleluia, sung after each half verse of the Polyeleos, is the Church's
     // refrain (Hapgood, 1906, p. 28) and Brenton's own title of the psalm

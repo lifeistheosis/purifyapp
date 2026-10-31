@@ -41,8 +41,19 @@ export type LoopMode = "off" | "inf" | 3 | 7 | 12;
  *  line sung in another language, drawn over it as the line to read, the
  *  sung words under it. `sub` goes under the sung words: a transliteration
  *  where the script is not Latin. `n` is a verse's number, for "Verse 4 of
- *  51" over the words. */
-export type CaptionSource = { time?: number; end?: number; text: string; en?: string; sub?: string[]; n?: number }[];
+ *  51" over the words. Where a chant's reader chose (notes 56 and 59),
+ *  `latin` says `text` is the sung words' sound in Latin letters, and `pairs`
+ *  is each sung word's sound, word for word, drawn under that word. */
+export type CaptionSource = {
+  time?: number;
+  end?: number;
+  text: string;
+  en?: string;
+  sub?: string[];
+  n?: number;
+  latin?: boolean;
+  pairs?: string[];
+}[];
 
 /** Whether the player stops by itself at the end of the track. A timer of
  *  so many minutes is lib/player/sleep.ts's (1.7): it times the ambience
