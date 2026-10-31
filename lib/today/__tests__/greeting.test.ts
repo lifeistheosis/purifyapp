@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 
-import { commemorationsOn, fastingStatus, shiftForStyle, type CalStyle } from "@/lib/calendar/orthodox";
+import { commemorationsOn, fastingStatus, paschaInfo, shiftForStyle, type CalStyle } from "@/lib/calendar/orthodox";
 import { GREAT_FEASTS, feastDate } from "@/lib/shop/feasts";
 
 import {
@@ -11,6 +11,7 @@ import {
   greetingKind,
   hourPrayer,
   learningLineKey,
+  paschaCount,
   type DayLead,
 } from "../greeting";
 import { loadHourVerses } from "../hourVerse.server";
@@ -153,5 +154,19 @@ describe("the new reader's verse for the hour", () => {
     expect(verses!.evening.text).toMatch(/^Let my prayer be set forth before thee as incense/);
     expect(verses!.afternoon.ref).toBe("54:17");
     expect(verses!.afternoon.text).toMatch(/at noon/);
+  });
+});
+
+// Pascha's count on the date line (round 3 r3-21, the owner's pick A).
+describe("Pascha's count on the date line", () => {
+  it("counts the days to the next Pascha, and says so on the day itself", () => {
+    expect(paschaCount(170)).toEqual({ key: "calendar.daysUntilPascha", count: 170 });
+    expect(paschaCount(1)).toEqual({ key: "calendar.daysUntilPascha", count: 1 });
+    expect(paschaCount(0)).toEqual({ key: "prayers.paschaToday" });
+    // The count is always to the next Pascha: the day after this one counts to next year's.
+    const after = paschaInfo(civil(2027, 5, 3));
+    expect(after.daysAway).toBeGreaterThan(300);
+    expect(paschaCount(after.daysAway)).toMatchObject({ key: "calendar.daysUntilPascha" });
+    expect(paschaInfo(civil(2026, 11, 13)).daysAway).toBe(170);
   });
 });

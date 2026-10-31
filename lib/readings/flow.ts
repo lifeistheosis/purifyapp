@@ -1,5 +1,6 @@
 import { useSyncExternalStore } from "react";
 
+import type { ReadingRef } from "@/lib/calendar/orthodox";
 import { localDay } from "@/lib/player/chantAsk";
 import { leavePlanSession } from "@/lib/plans/session";
 import { markRuleCompletedToday } from "@/lib/prayers/storage";
@@ -60,6 +61,22 @@ export function hrefOf(item: FlowItem): string {
 
 export function inRanges(verse: number, ranges: [number, number][]): boolean {
   return ranges.some(([a, b]) => verse >= a && verse <= b);
+}
+
+/** A reading of the calendar's as a step of the walk. */
+export function flowItemOf(r: ReadingRef): FlowItem {
+  return { book: r.book, chapter: r.chapter, ranges: rangesOf(r.label, r.from, r.to), label: r.label, kind: r.kind };
+}
+
+/**
+ * Every reading of the day in the order Today lists them (lib/calendar/
+ * useChurchDay.ts): the day's own, or a great feast's; under a great feast,
+ * the day's own pair; then the readings for the day's saints. Today's Read
+ * all walks them all (1.8, round 3 r3-21, the owner's pick A), as Read them
+ * in one go did, and Listen plays the same list.
+ */
+export function dayWalk(day: { readings: ReadingRef[]; ordinaryReadings: ReadingRef[]; commemorationReadings: ReadingRef[] }): FlowItem[] {
+  return [...day.readings, ...day.ordinaryReadings, ...day.commemorationReadings].map(flowItemOf);
 }
 
 function read(): ReadingsFlow | null {

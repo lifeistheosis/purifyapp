@@ -10,6 +10,7 @@ import { useTranslate } from "@/components/i18n/MessagesProvider";
 import { Skeleton } from "@/components/ui/Skeleton";
 import { cn } from "@/lib/cn";
 import { dateLocale } from "@/lib/i18n/deviceDates";
+import { paschaCount } from "@/lib/today/greeting";
 
 /**
  * The dateline of /prayers/today, with the day's fasting register set
@@ -50,7 +51,8 @@ const FAST_SHORT_KEY: Record<FastKind, string> = {
 };
 
 export function TodayMasthead({ day }: { day: ChurchDay | null }) {
-  const { t, locale } = useTranslate();
+  const { t, tn, locale } = useTranslate();
+  const toPascha = day ? paschaCount(day.pascha.daysAway) : null;
   const [style] = useCalendarStyleDefault();
 
   const weekday = day
@@ -132,6 +134,15 @@ export function TodayMasthead({ day }: { day: ChurchDay | null }) {
           ) : (
             <Skeleton className="h-[23px] w-[150px]" />
           )}
+          {/* Pascha's count, under the fast (1.8): The Church today beside
+              it carried the count as a row until round 3 r3-21 put it on the
+              dateline of the apps' Today, so it stands on this page's
+              dateline now, where that column shows (a computer). */}
+          {toPascha ? (
+            <p className="mt-1.5 hidden font-sans text-caption text-paper/55 md:block native-md-hidden">
+              {"count" in toPascha ? tn(toPascha.key, toPascha.count) : t(toPascha.key)}
+            </p>
+          ) : null}
         </div>
       </div>
 

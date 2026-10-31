@@ -249,3 +249,99 @@ export function quoteFace(saint: { slug: string; iconUrl?: string } | null | und
   }
   return carried ? { ...carried, fallback: null } : null;
 }
+
+/**
+ * Who stands beside a saying of the Desert Fathers on Today (1.8, round 3
+ * r3-21, the owner's pick A, "The face beside the words"; BUILD-80-NOTES 64),
+ * the same face the picture of the saying shares. One entry for each Father
+ * with a picture that has been checked, keyed by his page where the saying
+ * names one (data/today/sayings.json, `speaker`), else by his name as the
+ * saying gives it ("Abba Moses"). `cover` is a cover portrait of the reading
+ * room (COVER_FACES); `icon` is an icon the app carries whose rights are
+ * recorded (SHAREABLE_ICONS), with the point between his eyes and his mouth
+ * and the way he looks. An entry under DESERT_FATHERS, once an icon of the
+ * desert Fathers together is checked, stands beside every Father with none of
+ * his own.
+ *
+ * Abba Moses and Abba Isaac have none, so their sayings stand with the lit
+ * cross where the Father would stand, never a stand-in: no public-domain icon
+ * of either has been checked, the app's St Moses the Ethiopian has no rights
+ * recorded and Cassian never says his Abba Moses is that Moses, and
+ * isaac-the-syrian.jpg is another Isaac, of the seventh century. The owner's
+ * word of 2026-10-31: Abba Moses stays without a face until he says.
+ */
+export const SAYING_FACES: Readonly<Record<string, SayingFace>> = {
+  // St Antony's eight, his own words and the one Abba Isaac tells.
+  "anthony-the-great": { cover: "anthony-the-great" },
+};
+
+/** The key of the one picture that stands beside every Father with none of his own. */
+export const DESERT_FATHERS = "desert-fathers";
+
+export type SayingFace =
+  | { cover: string }
+  | { icon: string; point: readonly [number, number]; looks: Gaze };
+
+/** The Father's face beside his saying, and on its picture; null for the lit cross. */
+export function sayingFace(
+  saying: { speaker?: string; attribution: string },
+  native: boolean,
+  faces: Readonly<Record<string, SayingFace>> = SAYING_FACES,
+): QuoteFace | null {
+  const entry = faces[saying.speaker ?? saying.attribution] ?? faces[DESERT_FATHERS];
+  if (!entry) return null;
+  if ("cover" in entry) return quoteFace({ slug: entry.cover }, native);
+  // An icon whose rights are not recorded is no face, whatever the entry says.
+  if (!SHAREABLE_ICONS.has(entry.icon)) return null;
+  return { src: `/saints/icons/${entry.icon}`, point: entry.point, looks: entry.looks, fallback: null };
+}
+
+/** A side of a band, as the eye sees it: a face looks the same way in every language. */
+export type BandSide = "left" | "right";
+
+/**
+ * Which side of a band of The Church today the speaker stands on (round 3
+ * r3-21 A): the side he looks from, so he looks into his words, as the shared
+ * Portrait stands him. One who faces us stands at the band's end, where the
+ * saint's face stood before, as the sheet drew it.
+ */
+export function standsOn(looks: Gaze, rtl = false): BandSide {
+  if (looks === "left") return "right";
+  if (looks === "right") return "left";
+  return rtl ? "left" : "right";
+}
+
+/**
+ * The portrait as r3-21 sets it on a band (its inject script's fitPics): the
+ * band at least 216 px tall, the picture 1.45 times its height, the face a
+ * third of the way down and 78% across on the right, 20% on the left.
+ */
+export const BAND_PORTRAIT = { minHeight: 216, zoom: 1.45, eye: 0.33, across: { right: 0.78, left: 0.2 } } as const;
+
+/**
+ * Where a portrait stands in a band `box` (px) so his face (`point`, 0 to 1
+ * across and down the picture) lands where the sheet set it. `aspect` is the
+ * picture's width over its height: the covers are 4 wide by 5 tall. It covers
+ * the band from top to foot and reaches the band's edge on his side, so the
+ * face is never cut and no ground shows past him. A long saying makes a tall
+ * band: the picture then grows only until it is as wide as the band, so his
+ * face does not grow with the words.
+ */
+export function placePortrait(
+  box: { width: number; height: number },
+  point: readonly [number, number],
+  side: BandSide,
+  aspect = 0.8,
+): { left: number; top: number; width: number; height: number } {
+  const { width: W, height: H } = box;
+  const height = Math.max(H, Math.min(H * BAND_PORTRAIT.zoom, W / aspect));
+  const width = height * aspect;
+  const left = BAND_PORTRAIT.across[side] * W - point[0] * width;
+  const top = BAND_PORTRAIT.eye * H - point[1] * height;
+  return {
+    left: side === "right" ? Math.max(left, W - width) : Math.min(left, 0),
+    top: Math.min(0, Math.max(H - height, top)),
+    width,
+    height,
+  };
+}

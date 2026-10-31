@@ -28,8 +28,12 @@ const PictureSheet = dynamic(() => import("@/components/share/PictureSheet").the
  * The saint's window (1.8, the owner's round 12: "a tap on him opens a window
  * to share an image or read where the quote is from";
  * Homebase/boards/purify-master/r18/choose/12b-church-saint.png, "2. Tap him:
- * share or read"). Opened from his band in The Church today, on a day whose
- * saint has words of his own the app can show where they stand.
+ * share or read"). It was opened from his band in The Church today, on a day
+ * whose saint has words of his own the app can show where they stand, until
+ * round 3 r3-21 (the owner's pick A, "The face beside the words") set his
+ * words whole on the band itself, with the source line and Share as a picture
+ * there (components/today/SpeakerBand.tsx). Nothing opens it now; ShareMark
+ * below is still the share mark of the bands.
  *
  * His face, his name and years (the first of his titles and the year he
  * reposed), and they open his page, which the band opened before it had a

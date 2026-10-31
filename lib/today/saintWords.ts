@@ -12,10 +12,12 @@ import type { QuoteFace, QuoteSubject } from "@/lib/share/verseCard";
  * each to its paragraph). A saint with none shows nothing new.
  *
  * Since round 12 (his pick B, "Bands", with St John Chrysostom himself) the
- * words open on the saint's band in The Church today, and a tap on him opens
- * his window: his face, his name and years, the words large, where they come
- * from, and two actions, Share as a picture and Read where it's from
- * (components/today/SaintWindow.tsx). `reposed` is the year of his repose as
+ * words stand on the saint's band in The Church today, and since round 3
+ * r3-21 (his pick A, "The face beside the words") they stand whole beside his
+ * cover portrait, with the source line and Share as a picture on the band
+ * itself (components/today/SpeakerBand.tsx); his window
+ * (components/today/SaintWindow.tsx), which held them whole before, is no
+ * longer opened from Today. `reposed` is the year of his repose as
  * the registry gives it (lib/saints/web.ts, dateYear), kept here so Today
  * need not read the registry for one number; the test holds the two together.
  *
@@ -47,25 +49,6 @@ export function saintByline(epithet: string | undefined, reposed: string | undef
 /** Words set as his, in quotation marks, as round 12 drew them on the band and in the window. */
 export function quoted(text: string): string {
   return `“${text}”`;
-}
-
-/** The shortest and the longest a phrase may be to stand for the words on the band. */
-const OPENING = { min: 18, max: 44 } as const;
-
-/**
- * The words as they open on the band, "Let no one fear death…": the first
- * phrase when it stands on its own and fits, else as many whole words as fit.
- * Never more than the band can carry; the window has them whole.
- */
-export function wordsOpening(text: string, max: number = OPENING.max): string {
-  const clean = text.replace(/\s+/g, " ").trim();
-  if (clean.length <= max) return clean;
-  const phrase = /^(.+?)[,;:.!?](\s|$)/.exec(clean)?.[1];
-  if (phrase && phrase.length >= OPENING.min && phrase.length <= max) return `${phrase}…`;
-  const cut = clean.slice(0, max + 1);
-  const at = cut.lastIndexOf(" ");
-  const head = (at > OPENING.min ? cut.slice(0, at) : clean.slice(0, max)).replace(/[\s,;:.!?]+$/, "");
-  return `${head}…`;
 }
 
 /**
@@ -100,6 +83,22 @@ export function quoteSource(shown: ShownCite): string | undefined {
   const place = shown.place?.trim() ?? "";
   const short = place && place.length <= 28 && !/[()]/.test(place) && !/^pages?\b/i.test(place);
   return short ? `${work}, ${place}` : work;
+}
+
+/**
+ * The source line under his words on Today's band (1.8, round 3 r3-21, the
+ * owner's pick A): the line every quotation wears, with the work cut and the
+ * place kept on the rule the picture prints them by (quoteSource), so a
+ * translator's note or a run of pages does not run on beside his face. "St.
+ * John Chrysostom, The Paschal Homily", as the sheet drew it. The link is the
+ * same, and opens the words where they stand, where the place is given whole.
+ */
+export function bandCite(shown: ShownCite): ShownCite {
+  if (shown.kind !== "father" && shown.kind !== "text") return shown;
+  const work = shown.work.split(". ")[0].trim();
+  const place = shown.place?.trim() ?? "";
+  const keep = place && place.length <= 28 && !/[()]/.test(place) && !/^pages?\b/i.test(place);
+  return { ...shown, work, place: keep ? place : "" };
 }
 
 /** The second of his titles, the name the Church knows him by ("Golden-Mouth", "The Theologian"), for the head of his picture. */

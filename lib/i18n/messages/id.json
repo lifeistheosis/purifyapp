@@ -564,6 +564,8 @@
   "today.fastMarks.allowed": "{food}: diperbolehkan",
   "today.fastMarks.notAllowed": "{food}: tidak diperbolehkan",
   "today.readingsEyebrow": "Bacaan Hari Ini",
+  "today.readings.more.other": "{count} lagi",
+  "today.readings.readAll.other": "Baca semua {count}",
   "today.nameDay.title": "Selamat hari santo pelindungmu",
   "today.nativity.label": "Puasa Kelahiran",
   "today.nativity.invite": "Jalan untuk masa puasa: para Bapa, hari demi hari",

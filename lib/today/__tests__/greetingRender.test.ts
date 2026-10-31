@@ -89,6 +89,26 @@ describe("the greeting, drawn", () => {
     expect(fresh).toContain("Psalm 5:3");
   });
 
+  // Pascha's count left The Church today's rows for the date line (round 3
+  // r3-21, the owner's pick A), as the Prayers day card writes it.
+  it("ends every reader's date line with Pascha's count", async () => {
+    const orthodox = await draw("orthodox", new Date(Date.UTC(2026, 10, 13, 12)));
+    expect(orthodox).toContain(`Friday, November 13 · ${en["calendar.fast.fridayFast.label"]} · 170 days until Pascha`);
+    // A feast's marks first, then the fast, then the count.
+    expect(await draw("orthodox", NOV_8)).toContain("Sunday, November 8 · Feast · No fast · 175 days until Pascha");
+    for (const type of ["learning", "new"] as const) {
+      expect(await draw(type, NOV_8), type).toContain("Sunday, November 8 · 175 days until Pascha");
+    }
+    // On the day itself, and one day before it.
+    expect(await draw("learning", new Date(Date.UTC(2027, 4, 2, 12)))).toContain(`Sunday, May 2 · ${en["prayers.paschaToday"]}`);
+    expect(await draw("learning", new Date(Date.UTC(2027, 4, 1, 12)))).toContain("Saturday, May 1 · 1 day until Pascha");
+  });
+
+  it("says no count before the day is known", async () => {
+    const out = await draw("new", null);
+    expect(out).not.toContain("Pascha");
+  });
+
   it("speaks the reader's language around the calendar's English names", async () => {
     live.type = "learning";
     live.today = NOV_21;
