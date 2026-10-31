@@ -7,7 +7,9 @@ import {
   draftStoreReply,
   draftTrackingReply,
   giftLine,
+  giftsLine,
   greeting,
+  planLine,
   inInbox,
   orderNumberIn,
   readerSince,
@@ -162,6 +164,22 @@ describe("the drafts", () => {
       draftStoreReply("A", storeRefundRule("google"), null) ?? "",
     ].join("\n");
     expect(all.includes(String.fromCharCode(0x2014))).toBe(false);
+  });
+});
+
+describe("the plan and the gifts, in a line each", () => {
+  it("names the plan and where it was bought, and nothing when there is none now", () => {
+    expect(planLine({ tier: "plus", until: null, source: "google", renews: null, store: null })).toBe("Purify Plus · Google Play");
+    expect(planLine({ tier: "pro", until: null, source: null, renews: null, store: null })).toBe("Purify Pro");
+    expect(planLine({ tier: null, until: null, source: "apple", renews: null, store: null })).toBeNull();
+    expect(planLine(null)).toBeNull();
+  });
+
+  it("counts the gifts and says which wait to be opened", () => {
+    const g = (claimed: boolean) => ({ tier: "plus", days: 90, created_at: "2026-08-12T00:00:00Z", claimed_at: claimed ? "2026-08-13T00:00:00Z" : null });
+    expect(giftsLine([])).toBe("no gifts yet");
+    expect(giftsLine([g(true)])).toBe("1 gift, opened");
+    expect(giftsLine([g(true), g(false)])).toBe("2 gifts, 1 waiting");
   });
 });
 

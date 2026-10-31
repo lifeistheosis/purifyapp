@@ -22,7 +22,53 @@
 import { orderConfirmationNumber } from "@/lib/shop/orderNumber";
 import { trackingLink } from "@/lib/shop/trackingLink";
 import type { BuyerOrderStatus } from "@/lib/shop/status";
+import type { ShopFulfillmentStatus } from "@/lib/shop/types";
 import type { TicketStatus } from "@/lib/support/ticketNumber";
+
+/** What /api/admin/support/reader answers: the reader beside a request. */
+export type ReaderFile = {
+  reader: { email: string; name: string | null; userId: string | null; since: string | null };
+  orders: {
+    id: string;
+    email: string | null;
+    total_cents: number;
+    currency: string | null;
+    payment_status: "pending" | "paid" | "refunded" | "cancelled";
+    fulfillment_status: ShopFulfillmentStatus;
+    created_at: string;
+    updated_at: string;
+    paid_at: string | null;
+    outbound_tracking: string | null;
+    inbound_tracking: string | null;
+    shipping_address: unknown;
+    items: { title: string; quantity: number; unit_price_cents: number; product_id: string | null }[];
+    events: { to_status: string; at: string }[];
+    refund: { status: string; amount_cents: number | null } | null;
+  }[];
+  plan: { tier: "plus" | "pro" | null; until: string | null; source: string | null; renews: string | null; store: string | null } | null;
+  gifts: { tier: string; days: number; created_at: string; claimed_at: string | null }[];
+  supplierByProduct: Record<string, { url: string | null; sku: string | null; cost: number | null }>;
+  imageByProduct: Record<string, string>;
+  stockByProduct: Record<string, number | null>;
+  /** Parts that could not be read, named rather than shown as empty. */
+  failed: string[];
+};
+
+/** "Purify Plus" and where it was bought, or null when they have no plan now. */
+export function planLine(plan: ReaderFile["plan"]): string | null {
+  if (!plan?.tier) return null;
+  const store = storeName(plan.source);
+  return `Purify ${plan.tier === "pro" ? "Pro" : "Plus"}${store ? ` · ${store}` : ""}`;
+}
+
+/** "no gifts yet", "1 gift, opened", "2 gifts, 1 waiting". */
+export function giftsLine(gifts: ReaderFile["gifts"]): string {
+  if (gifts.length === 0) return "no gifts yet";
+  const waiting = gifts.filter((g) => !g.claimed_at).length;
+  const head = `${gifts.length} gift${gifts.length === 1 ? "" : "s"}`;
+  if (waiting === 0) return `${head}, opened`;
+  return `${head}, ${waiting} waiting`;
+}
 
 /** Where a request stands: on him, on the reader, or done. */
 export type RequestState = "you" | "them" | "done";

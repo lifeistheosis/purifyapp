@@ -136,7 +136,7 @@ export function OrdersTab() {
     if (a === "reply") {
       // The request about this order, if the reader wrote; else a new message
       // to the address the order was bought with. Messages decides which.
-      handTo("messages", { order: selected.id });
+      handTo("messages", { order: selected.id, email: selected.email ?? "" });
       return;
     }
     setSheet(a);
