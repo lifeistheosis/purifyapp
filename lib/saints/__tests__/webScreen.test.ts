@@ -7,6 +7,9 @@
 // that cannot be pulled up or tucked away, a Put back offered before anything
 // moved, or St John's circle showing his chest.
 
+import fs from "node:fs";
+import path from "node:path";
+
 import { createElement } from "react";
 import { renderToString } from "react-dom/server";
 import { describe, expect, it } from "vitest";
@@ -103,16 +106,46 @@ describe("St John Chrysostom's web, as it arrives", () => {
     expect(put.replace(/<[^>]+>/g, "").trim()).toBe("Put back");
   });
 
-  it("draws every saint as a button a finger can take by his circle, the first one chosen and lit", () => {
+  it("draws every saint as a button, the first one chosen and lit", () => {
     const canvas = element(html, /<div[^>]*data-saint-web-canvas[^>]*>/);
     const nodes = [...canvas.matchAll(/<button[^>]*aria-pressed="(true|false)"[^>]*>/g)];
     expect(nodes).toHaveLength(john.nodes.length);
     expect(nodes.map((n) => n[1]).filter((p) => p === "true")).toHaveLength(1);
     expect(nodes[0][1]).toBe("true");
-    expect((canvas.match(/data-web-grip/g) ?? []).length).toBe(john.nodes.length);
     expect(canvas).toMatch(/class="saint-web-ring rounded-full saint-web-ring-on"/);
     // A thread to each, from the saint to the one his line runs to.
     expect((canvas.match(/<path /g) ?? []).length).toBe(john.nodes.length);
+  });
+
+  it("lets a finger take a saint by his whole box and a margin round it, not his small circle alone (note 45)", () => {
+    const canvas = element(html, /<div[^>]*data-saint-web-canvas[^>]*>/);
+    // Each saint's button is his circle, his name and its line, and says which saint it is.
+    const buttons = [...canvas.matchAll(/<button[^>]*data-web-node="(\d+)"[^>]*>/g)].map((m) => Number(m[1]));
+    expect(buttons).toEqual(john.nodes.map((_, i) => i));
+    expect(canvas).not.toContain("data-web-grip");
+    // Behind them all, a hit area for each: his box (97px) and 20px over his
+    // circle, 4px under his line, 10px each side, so at least 44px of it stand
+    // round his circle's centre every way, on a phone as narrow as 320px.
+    const hits = [...canvas.matchAll(/<span[^>]*data-web-hit="(\d+)"[^>]*style="([^"]*)"[^>]*>/g)];
+    expect(hits.map((m) => Number(m[1]))).toEqual(john.nodes.map((_, i) => i));
+    const tops = [...canvas.matchAll(/<button[^>]*data-web-node="\d+"[^>]*style="[^"]*top:(-?[\d.]+)px/g)].map((m) => Number(m[1]));
+    hits.forEach(([, , style], i) => {
+      expect(style).toContain("width:calc(25.6% + 20px)");
+      expect(style).toContain("height:121px");
+      // 20px over the top of his circle, so 44px over its centre.
+      expect(style).toContain(`top:${tops[i] - 20}px`);
+    });
+    expect(canvas.indexOf("data-web-hit")).toBeLessThan(canvas.indexOf("data-web-node"));
+    // The middle saint is a handle for the whole web.
+    expect(canvas).toContain("data-web-middle");
+  });
+
+  it("lights the ground behind the middle saint grey from his icon, never in its colour", () => {
+    const light = element(html, /<div[^>]*class="saint-web-light[^"]*"[^>]*>/);
+    expect(light).toContain('style="top:');
+    expect(light).toContain("background-image:url(/saints/icons/john-chrysostom.jpg)");
+    // Its look is the rule's alone (globals.css): no colour or blur of its own.
+    expect(light).not.toMatch(/\b(?:opacity-\d+|blur-\[)/);
   });
 
   it("cuts St John's tall icon at his face, and every other icon as before", () => {
@@ -121,8 +154,46 @@ describe("St John Chrysostom's web, as it arrives", () => {
     expect(html).not.toContain("object-[50%_20%]");
   });
 
-  it("keeps room under the web for the card", () => {
-    expect(html).toMatch(/class="saint-web-room" style="--saint-web-card-h:78px"/);
+  it("draws the web in a room of its own, the page left to scroll until it is measured", () => {
+    const room = element(html, /<div[^>]*class="saint-web-room[^"]*"[^>]*>/);
+    expect(room).not.toBe("");
+    // Full width on a phone and up to the bar's foot, so the web can be moved to any part of the screen.
+    expect(room).toMatch(/^<div[^>]*class="saint-web-room -mx-5 -mt-2 px-5 pt-2 md:mx-0 md:mt-0 md:px-0 md:pt-0"/);
+    expect(room).toMatch(/^<div[^>]*data-page-scrolls=""/);
+    // The key and the canvas are in it; the card and Put back stand outside it.
+    expect(room).toContain('class="saint-web-key-place"');
+    expect(room).toContain("data-saint-web-canvas");
+    expect(room).not.toContain("data-saint-web-card");
+    expect(room).not.toContain("saint-web-putback");
+  });
+});
+
+describe("the saint web's rules (app/globals.css)", () => {
+  const css = fs.readFileSync(path.join(process.cwd(), "app/globals.css"), "utf8").replace(/\/\*[\s\S]*?\*\//g, "");
+  const rule = (selector: string) => {
+    const at = css.indexOf(`${selector} {`);
+    return at < 0 ? "" : css.slice(at, css.indexOf("}", at) + 1);
+  };
+
+  it("cuts the moved web at the room's edges, and leaves the page's scroll to a finger that starts up or down where it scrolls", () => {
+    expect(rule(".saint-web-room")).toContain("overflow: clip;");
+    expect(rule(".saint-web-room")).toContain("touch-action: none;");
+    expect(rule(".saint-web-room[data-page-scrolls]")).toContain("touch-action: pan-y pinch-zoom;");
+    // The room reaches the foot of the screen in the apps, so the web can stand in its middle without a longer page.
+    expect(rule("html.is-native .saint-web-room")).toMatch(/min-height: calc\(100vh - var\(--saint-web-top/);
+  });
+
+  it("greys the middle icon's light, white on the dark grounds and ink on Parchment", () => {
+    expect(rule(".saint-web-light")).toContain("grayscale(1)");
+    expect(rule('html[data-reading-mode="parchment"] .saint-web-light')).toContain("grayscale(1)");
+  });
+
+  it("never eases the card's height: the spring moves it, with the web, and nothing trails it under a finger", () => {
+    const card = rule(".saint-web-card");
+    expect(card).toContain("transition:");
+    expect(card).not.toMatch(/\bheight var\(/);
+    expect(rule(".saint-web-card[data-moving]")).not.toMatch(/\b(?:height|translate) var\(/);
+    expect(css).toContain(':where([data-motion="reduce"]) .saint-web-card[data-moving]');
   });
 });
 
