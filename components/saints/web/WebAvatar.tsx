@@ -1,3 +1,7 @@
+"use client";
+
+import { useLayoutEffect, useRef, useState } from "react";
+
 import { cn } from "@/lib/cn";
 import { iconFace } from "@/lib/saints/iconFaces";
 import type { WebNode } from "@/lib/saints/webLayout";
@@ -40,20 +44,65 @@ export function WebAvatar({ node, size, className }: { node: WebNode; size: numb
       )}
       style={{ width: size, height: size, fontSize: icon ? undefined : Math.round(size * 0.38) }}
     >
-      {icon ? (
-        // eslint-disable-next-line @next/next/no-img-element -- the app's own icon, as it is.
-        <img
-          src={icon}
-          alt=""
-          loading="lazy"
-          decoding="async"
-          draggable={false}
-          className="h-full w-full object-cover"
-          style={{ objectPosition: `50% ${iconFace(icon)}%` }}
-        />
-      ) : (
-        initial
-      )}
+      {/* One picture per address: another saint's icon is another picture, waited for in its turn. */}
+      {icon ? <WebIcon key={icon} src={icon} /> : initial}
     </span>
+  );
+}
+
+/**
+ * Pictures already whole on this visit. The web draws the same icon again and
+ * again (a saint chosen, his card, its handle, the glide of note 55 bringing
+ * him to the middle), each a new picture element; one whose picture is in
+ * hand shows it at once instead of waiting for it all over again.
+ */
+const WHOLE = new Set<string>();
+
+/**
+ * The icon itself, under the build 85 note 52: a picture never paints in
+ * halves. It stays unseen until every byte is in and decoded (`onLoad`, then
+ * `decode()`), then fades in on the app's motion switch, as
+ * components/history/EventPlate.tsx does, over the circle's own ground. A
+ * picture that finished before the page could listen (the website's first
+ * paint, or one the browser already holds) is read from the element before
+ * the first paint, and shown as it is.
+ */
+function WebIcon({ src }: { src: string }) {
+  const ref = useRef<HTMLImageElement>(null);
+  // "kept": whole before it was drawn here, so simply there; "faded": it arrived while the circle waited.
+  const [shown, setShown] = useState<"waiting" | "kept" | "faded">(() => (WHOLE.has(src) ? "kept" : "waiting"));
+
+  useLayoutEffect(() => {
+    const img = ref.current;
+    if (!img || !img.complete || img.naturalWidth === 0) return;
+    WHOLE.add(src);
+    // Read once, before the first paint, so a picture already whole never blinks.
+    setShown((s) => (s === "waiting" ? "kept" : s));
+  }, [src]);
+
+  return (
+    // eslint-disable-next-line @next/next/no-img-element -- the app's own icon, as it is.
+    <img
+      ref={ref}
+      src={src}
+      alt=""
+      loading="lazy"
+      decoding="async"
+      draggable={false}
+      onLoad={(e) => {
+        // Shown once it is decoded too, so it never paints in bands.
+        const done = () => {
+          WHOLE.add(src);
+          setShown((s) => (s === "waiting" ? "faded" : s));
+        };
+        e.currentTarget.decode().then(done, done);
+      }}
+      className={cn(
+        "h-full w-full object-cover",
+        shown === "waiting" ? "opacity-0" : "opacity-100",
+        shown === "faded" && "motion-safe:transition-opacity motion-safe:duration-300 motion-safe:ease-house",
+      )}
+      style={{ objectPosition: `50% ${iconFace(src)}%` }}
+    />
   );
 }

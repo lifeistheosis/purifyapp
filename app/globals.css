@@ -1022,12 +1022,34 @@ html.is-native .saint-web-room {
    white light cannot be seen: the icon is a soft ink shade there. */
 .saint-web-light {
  filter: blur(52px) grayscale(1) brightness(1.15);
- opacity: 0.3;
+ opacity: calc(0.3 * var(--saint-web-arrive, 1));
  will-change: translate;
 }
 html[data-reading-mode="parchment"] .saint-web-light {
  filter: blur(52px) grayscale(1) brightness(0.7);
- opacity: 0.12;
+ opacity: calc(0.12 * var(--saint-web-arrive, 1));
+}
+/* The glide from one saint's web to another's (the build 80 note 55,
+   lib/saints/webGlide.ts): each saint's place, size and fade, the threads and
+   the two lights (--saint-web-arrive, 0 to 1) are painted on every frame of
+   the house springs, so nothing here eases them while it lasts; the old web's
+   last look (its threads, the saints leaving it, the old names of the two who
+   change places) is drawn over the new one until it is done. A web come in
+   place of another brings its own key, fading in. */
+.saint-web-canvas[data-gliding] .saint-web-node,
+.saint-web-canvas[data-gliding] .saint-web-ring,
+.saint-web-ghost,
+.saint-web-ghost * {
+ transition: none;
+}
+/* The saint chosen in the new web (the one the reader came from) takes his
+   lit ring once the glide is done, on the ring's own fade; meanwhile the old
+   web's rings go with the two who change places (WebConstellation). */
+.saint-web-canvas[data-gliding] .saint-web-node .saint-web-ring-on {
+ box-shadow: none;
+}
+.saint-web-key-place[data-new] {
+ animation: saint-icon-in var(--duration-base) var(--ease-house) backwards;
 }
 .saint-web-sheet {
  bottom: calc(env(safe-area-inset-bottom, 0px) + var(--now-playing-h) + var(--readings-flow-h) + 12px);
@@ -1300,6 +1322,9 @@ html[data-reading-mode="parchment"] .saint-web-ring-on {
 :where([data-motion="reduce"]) .saint-web-putback:active,
 :where([data-motion="reduce"]) [data-saint-web-canvas] .saint-web-node[data-held] {
  scale: none;
+}
+:where([data-motion="reduce"]) .saint-web-key-place[data-new] {
+ animation: none;
 }
 .saint-web-after {
  /* For a WebView without color-mix (Android before 111). */
