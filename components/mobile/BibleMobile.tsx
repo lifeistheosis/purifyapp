@@ -1,18 +1,22 @@
-import {
-  getOldTestamentCategories,
-  getNewTestamentCategories,
-} from "@/lib/bible/books";
 import { MobileShell } from "./MobileShell";
 import { MobileHeader } from "./MobileHeader";
 import { SectionMasthead } from "./SectionMasthead";
 import { BibleMobileContinue } from "./BibleMobileContinue";
 import { BibleStudyRow } from "./BibleStudyRow";
-import { BibleTabs } from "./BibleTabs";
+import { BibleBooks } from "./BibleBooks";
 import { BibleAppointedToday } from "./BibleAppointedToday";
 import { T } from "@/components/i18n/T";
 
 /**
- * Bible mobile shell: the picture, then an index.
+ * The phone's /bible: the picture, then an index, with both Testaments as
+ * one list.
+ *
+ * The Bible tab does not open here since 1.8: it opens the chapter the
+ * reader left, at the verse, and John 1 for a reader who has read nothing
+ * (the owner's pick A of r3-20, "Straight into the book";
+ * components/nav/MobileTabBar.tsx). This page stays as the whole list: the
+ * chapter's way back (its round button at the top left), the website's, and
+ * every old link's.
  *
  *   1. Header. Its magnifier is the app-wide search, which opens a typed
  *      reference since 1.6. Until then this tab carried a second magnifier
@@ -22,8 +26,10 @@ import { T } from "@/components/i18n/T";
  *   3. Continue reading: one row, only when localStorage has a last chapter.
  *   4. The day's readings: one row each.
  *   5. Reading plans and the journal: one row of two halves.
- *   6. Segmented Old/New Testament tabs.
- *   7. Categorised vertical list of books, a single tappable row per book.
+ *   6. The books, both Testaments in the Church's order, each under its
+ *      name. The Old and New Testament switch over them went with r3-20 A
+ *      (the owner's note 65: "cut out the whole entire Old Testament and New
+ *      Testament selectors").
  *
  * Everything under the picture is one kind of thing: the rows of
  * IndexRows.tsx. This header always said so ("no hero feed card ... no
@@ -39,13 +45,9 @@ import { T } from "@/components/i18n/T";
  * The appointed readings live in a CLIENT child on purpose. This component
  * used to compute them here with `startOfDayUtc(new Date())`, which under
  * `output: "export"` froze them at build time; see BibleAppointedToday.
- * Do not move that back up here. The book categories below are static and
- * are correctly resolved on the server.
+ * Do not move that back up here.
  */
 export function BibleMobile() {
-  const otCats = getOldTestamentCategories();
-  const ntCats = getNewTestamentCategories();
-
   return (
     <MobileShell
       header={<MobileHeader titleKey="nav.bible" />}
@@ -58,8 +60,8 @@ export function BibleMobile() {
       <BibleAppointedToday />
       <BibleStudyRow />
 
-      <div className="mt-6">
-        <BibleTabs ot={otCats} nt={ntCats} />
+      <div className="mt-3">
+        <BibleBooks />
       </div>
     </MobileShell>
   );

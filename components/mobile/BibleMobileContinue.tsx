@@ -3,9 +3,9 @@
 // Tiny client island: reads the "last read" pointer from localStorage so the
 // mobile Bible shell can offer a one-tap way back into the chapter. The
 // pointer (purify:bible:last) is written by ReadingProgressBar as the reader
-// scrolls, and carries the in-view verse + chapter length, so this row can
-// resume at the exact verse via a #v{n} deep link (picked up by
-// VerseFocusFlash).
+// scrolls, and carries the verse at the reading place + chapter length, so
+// this row can resume at the exact verse via a #v{n} deep link (picked up by
+// VerseFocusFlash). The Bible tab opens on the same place since 1.8.
 //
 // One row since 1.6, in the row language of the book list under it
 // (IndexRows.tsx): the chapter at the start, where it picks up at the end.

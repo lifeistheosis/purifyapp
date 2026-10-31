@@ -1,7 +1,8 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Link from "next/link";
+import { BOOKS_OPEN_EVENT } from "@/lib/bible/booksSheet";
 import { nextChapter, prevChapter, getBook } from "@/lib/bible/books";
 import { useTranslate } from "@/components/i18n/MessagesProvider";
 import { ChapterVerseStatus } from "./ChapterVerseStatus";
@@ -53,8 +54,10 @@ function Arrow({
  * tablet (1.8, the owner's pick B of round 2, "The page": "The floating pill
  * comes back when you scroll up, with Listen"; Homebase/boards/purify-master/
  * variants/02-bible). The arrows step back and forward through the canon,
- * and the name between them opens the book and chapter sheet
- * (MobileChapterSheet). After a hairline, the sound button, then Listen,
+ * and the name between them opens the books sheet (MobileChapterSheet),
+ * which the chapter's title opens too since the Bible tab became the chapter
+ * (1.8, the owner's pick A of r3-20: lib/bible/booksSheet.ts). The pill
+ * holds that one sheet for both. After a hairline, the sound button, then Listen,
  * white and softly lit, where the chapter has a reading. Over the pill, once
  * the title has gone up, a running line says the verse being read and the
  * minutes left (ChapterVerseStatus, which was the top bar's second line
@@ -101,6 +104,12 @@ export function MobileChapterPill({
   const covered = useOverlayOpen();
   // Only a chapter that has a reading carries Listen.
   const reads = useHasReadAloud(slug, chapter);
+  // The chapter's title asks for the same sheet (ChapterScreen).
+  useEffect(() => {
+    const open = () => setSheetOpen(true);
+    window.addEventListener(BOOKS_OPEN_EVENT, open);
+    return () => window.removeEventListener(BOOKS_OPEN_EVENT, open);
+  }, []);
   if (!book) return null;
 
   return (
@@ -154,6 +163,7 @@ export function MobileChapterPill({
           />
           <button
             type="button"
+            aria-haspopup="dialog"
             onClick={() => setSheetOpen(true)}
             aria-label={t("bible.pickChapterCurrentAria", {
               book: bookName,

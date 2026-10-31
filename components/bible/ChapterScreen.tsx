@@ -23,10 +23,12 @@ import { RestoreTranslation } from "@/components/bible/RestoreTranslation";
 import { TranslationSwitcher } from "@/components/bible/TranslationSwitcher";
 import { VerseFocusFlash } from "@/components/bible/VerseFocusFlash";
 import { SourceList, marked, type ListedSource } from "@/components/citations/Marked";
+import { useTranslate } from "@/components/i18n/MessagesProvider";
 import { T } from "@/components/i18n/T";
 import { BIBLE_START_SIZE, ReaderFocusButton, ReaderFocusController, ReaderPrefsProvider } from "@/components/reader/ReaderPrefs";
 import { KeepDay } from "@/components/streak/KeepDay";
 import type { BibleBook, NamedPassageId } from "@/lib/bible/books";
+import { openBooks } from "@/lib/bible/booksSheet";
 import { hebrewLine } from "@/lib/bible/psalmNumbers";
 import { ChevronDown } from "@/components/ui/icons/ChevronDown";
 import { cn } from "@/lib/cn";
@@ -217,16 +219,27 @@ export function ChapterScreen({
                     from its middle and the first lines come in one after
                     another (globals.css, "The page"); with motion off they
                     are simply there. "John 1" on one line with Listen at its
-                    end was the 1.7 title; Listen ends the pill now. */}
+                    end was the 1.7 title; Listen ends the pill now.
+                    On a phone and a tablet the title opens the books (1.8,
+                    the owner's pick A of r3-20): the Bible tab is the
+                    chapter now, so the books are chosen from it, and a small
+                    chevron after "Chapter 1" says so. The heading stays one
+                    heading; the way to the books lies over it. */}
                 <header id="chapter-title" className="mb-5 text-center">
-                  <h1 className="font-heading text-paper">
-                    <span className="page-open-title block text-balance break-words text-[40px] leading-[1.08] tracking-[-0.3px] min-[380px]:text-[44px]">
-                      <T k={`bible.books.${slug}`} />
-                    </span>{" "}
-                    <span className="page-open-sub mt-1.5 block font-sans text-ui font-normal tracking-normal text-paper/55">
-                      <T k="bible.chapterN" replacements={{ n: chapter }} />
-                    </span>
-                  </h1>
+                  <div className="relative">
+                    <h1 className="font-heading text-paper">
+                      <span className="page-open-title block text-balance break-words text-[40px] leading-[1.08] tracking-[-0.3px] min-[380px]:text-[44px]">
+                        <T k={`bible.books.${slug}`} />
+                      </span>{" "}
+                      <span className="page-open-sub mt-1.5 block font-sans text-ui font-normal tracking-normal text-paper/55">
+                        <T k="bible.chapterN" replacements={{ n: chapter }} />
+                        <span aria-hidden className="ms-[5px] inline-flex align-[-3px] text-paper/50 md:hidden native-md-inline-flex">
+                          <ChevronDown size={17} />
+                        </span>
+                      </span>
+                    </h1>
+                    <TitleOpensBooks slug={slug} chapter={chapter} />
+                  </div>
                   {/* The passages the Church knows by name, said where a reader looks.
                       Daniel 13 IS Susanna and 14 IS Bel and the Dragon, so they get their
                       name as a subtitle; Daniel 3 holds the Prayer of Azariah and the Song
@@ -385,5 +398,27 @@ export function ChapterScreen({
         </section>
       </div>
     </ReaderPrefsProvider>
+  );
+}
+
+/**
+ * The title's way to the books, on a phone and a tablet (1.8, r3-20 A): a
+ * button over the heading, so the heading itself stays the page's one h1,
+ * read as "John, Chapter 1", and this is read as what the pill's name says
+ * it does. It opens the sheet the pill holds (lib/bible/booksSheet.ts). The
+ * computer chooses a book from its toolbar's Book pill and has no sheet, so
+ * it has no button here either.
+ */
+function TitleOpensBooks({ slug, chapter }: { slug: string; chapter: number }) {
+  const { t } = useTranslate();
+  return (
+    <button
+      type="button"
+      aria-haspopup="dialog"
+      aria-label={t("bible.pickChapterCurrentAria", { book: t(`bible.books.${slug}`), chapter })}
+      data-title-books=""
+      onClick={openBooks}
+      className="absolute inset-0 rounded-2xl md:hidden native-md-block"
+    />
   );
 }

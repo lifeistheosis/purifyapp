@@ -41,6 +41,28 @@ describe("the tab bar", () => {
     expect(list).not.toContain('href: "/community"');
   });
 
+  it("opens the Bible at the reader's place, and John 1 with nothing read (r3-20 A)", () => {
+    // The owner's pick A of r3-20, "Straight into the book": the tab is the
+    // chapter. /bible stays the tab's root (the back bar's list of roots,
+    // the chapter's way back); a tap goes to the place, from
+    // lib/bible/lastRead.ts (lib/bible/__tests__/lastRead.test.ts).
+    const bible = tabs.get("bible")!;
+    expect(bible).toContain('href: "/bible"');
+    expect(bible).toContain("open: bibleHref,");
+    expect(bar).toContain("const bibleHref = useBibleTabHref();");
+    expect(bar).toContain("href={open ?? href}");
+    // In the chapter it would open, it goes nowhere: no move, no fade.
+    expect(bar).toMatch(/if \(open && alreadyAtPlace\(pathname, open\)\) \{\s*e\.preventDefault\(\);\s*return;\s*\}/);
+    // From the whole list, the plans and the journal, where it is lit, it moves.
+    expect(bar).toMatch(/if \(!active \|\| open\) \{\s*haptic\("light"\);\s*beginRouteExit\(\);/);
+    // Still lit everywhere it was.
+    for (const route of ['p === "/bible"', 'p.startsWith("/bible/")', 'p === "/plans"', 'p === "/journal"', 'p === "/walkthroughs"']) {
+      expect(bible, route).toContain(route);
+    }
+    // No other tab has a place of its own.
+    for (const [key, tab] of tabs) if (key !== "bible") expect(tab, key).not.toContain("open:");
+  });
+
   it("opens the reader's own screen from You, and lights You there", () => {
     const you = tabs.get("you")!;
     expect(you).toContain('href: "/account"');

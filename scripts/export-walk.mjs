@@ -2188,28 +2188,211 @@ await section(26, async () => {
   }
 });
 
-// ---- 27. The Bible tab: its picture, then an index.
-// The owner said of this screen on 2026-10-13: "this design has way too much
-// stuff going on here". Under the picture it was an empty card saying a card
-// would appear, two tinted pills, a band with a button and a lone half width
-// tile, and the first book began 1007 px down a phone 844 tall. He was shown
-// it with and without the picture and kept the picture; everything under it
-// is now the rows the book list always had. Where the first book lands, and
-// what a phone with nothing read is shown, only a built app can say.
+// ---- 27. The Bible tab opens the chapter; /bible is the whole list.
+// The owner's pick A of r3-20, "Straight into the book" (his note 65: "just
+// go straight into the book when you click the Bible"): the Bible tab opens
+// the chapter the reader left, at the verse, and John 1 with nothing read;
+// the chapter's title and the name on its pill open one books sheet (the
+// search, both Testaments as one list, the book being read open at its
+// chapters, today's readings, the plans and the journal at its foot); and
+// /bible stays the whole list, its picture and then rows, with no Old and
+// New Testament switch. And his note 68: the verse a reader stopped at is
+// kept, leaving by any tap writes nothing, and a landing keeps its verse.
+// The source is held by lib/bible/__tests__/lastRead.test.ts,
+// booksSheet.test.ts and bibleAddresses.test.ts, lib/ui/__tests__/
+// bibleIndex.test.ts and ownScroll.test.ts; what the phone does, only a
+// built app can say.
 await section(27, async () => {
-  console.log("\n27. The Bible tab is its picture, then rows");
+  console.log("\n27. The Bible tab opens the chapter, and /bible is the whole list");
   const words = (code) => JSON.parse(fs.readFileSync(path.resolve(`lib/i18n/messages/${code}.json`), "utf8"));
   const en = words("en");
   const el = { ...en, ...words("el") };
   const squeeze = (s) => String(s ?? "").replace(/\s+/g, " ").trim();
+  // The verse over the reading line, the middle of what can be seen between
+  // the bars standing at the top and at the foot (lib/ui/readingPlace.ts,
+  // KEPT_AT), and how far verse n's middle is from that line.
+  const atLine = (page, n) =>
+    page.evaluate((n) => {
+      const h = innerHeight;
+      let top = 0;
+      let bottom = h;
+      for (const e of document.querySelectorAll("[data-screen-edge]")) {
+        const s = getComputedStyle(e);
+        const r = e.getBoundingClientRect();
+        if (r.width <= 0 || r.height <= 0 || s.visibility === "hidden" || parseFloat(s.opacity) <= 0) continue;
+        if (e.getAttribute("data-screen-edge") === "top" && r.bottom > 0 && r.top < h / 2) top = Math.max(top, Math.min(r.bottom, h));
+        if (e.getAttribute("data-screen-edge") === "bottom" && r.top < h && r.bottom > h / 2) bottom = Math.min(bottom, Math.max(r.top, 0));
+      }
+      const line = (top + bottom) / 2;
+      const verses = [...document.querySelectorAll("[data-verse][id^='v']")];
+      let at = verses[0];
+      for (const v of verses) if (v.getBoundingClientRect().top <= line) at = v;
+      const want = document.getElementById(`v${n}`)?.getBoundingClientRect();
+      return { verse: at ? Number(at.id.slice(1)) : 0, off: want ? Math.round((want.top + want.bottom) / 2 - line) : null };
+    }, n);
+  const kept = (page) => page.evaluate(() => { try { return JSON.parse(localStorage.getItem("purify:bible:last") ?? "null"); } catch { return null; } });
+  const versesDrawn = (page) => page.waitForFunction(() => document.querySelectorAll("[data-verse][id^='v']").length > 10, null, { timeout: 20000 }).catch(() => {});
+  /** The reader's own scroll (a wheel), until verse n is over the line. */
+  const readTo = async (page, n) => {
+    await page.mouse.move(195, 420);
+    for (let i = 0; i < 6; i++) {
+      const { off } = await atLine(page, n);
+      if (off === null || Math.abs(off) <= 6) break;
+      await page.mouse.wheel(0, off);
+      await page.waitForTimeout(600);
+    }
+    // One more touch of the wheel once the bars have gone, so the page reads
+    // the place against the same room this walk does.
+    await page.mouse.wheel(0, 2);
+    await page.waitForTimeout(400);
+  };
+  const bibleTab = (page) => page.locator("[data-tab-bar] a").nth(1);
+  const where = (page) => page.evaluate(() => ({ path: location.pathname, hash: location.hash }));
+
+  {
+    // A phone that has read nothing: the tab is John 1.
+    const { ctx, page, errors } = await open({ width: 390, height: 844, phone: true });
+    await go(page, "/");
+    await page.waitForFunction(() => document.documentElement.dataset.launch === "ready", null, { timeout: 20000 }).catch(() => {});
+    await page.waitForTimeout(1200);
+    const href = await bibleTab(page).getAttribute("href");
+    must(/^\/bible\/john\/1\/?$/.test(href ?? ""), `with nothing read the Bible tab opens John 1 (${href})`);
+    await tap(bibleTab(page));
+    await page.waitForFunction(() => location.pathname.startsWith("/bible/john/1"), null, { timeout: 15000 }).catch(() => {});
+    await versesDrawn(page);
+    await page.waitForTimeout(900);
+    const first = await page.evaluate(() => ({
+      path: location.pathname,
+      title: (document.querySelector("#chapter-title h1")?.textContent ?? "").replace(/\s+/g, " ").trim(),
+      chevron: !!document.querySelector("#chapter-title h1 svg"),
+      button: (() => { const b = document.querySelector("[data-title-books]"); return b ? getComputedStyle(b).display !== "none" : false; })(),
+      lit: document.querySelector("[data-tab-bar] a[aria-current='page'] [data-tab-label]")?.textContent?.trim() ?? "",
+      back: document.querySelector("[data-plates-row] a")?.getAttribute("href") ?? "",
+    }));
+    must(/^\/bible\/john\/1\/?$/.test(first.path), `and lands there (${first.path})`);
+    must(first.title.startsWith(en["bible.books.john"]) && first.title.includes(en["bible.chapterN"].replace("{n}", "1")) && first.chevron && first.button, `John 1 opens on its title, with the chevron that says the title opens the books (${first.title})`);
+    must(first.lit === en["nav.bible"], `with the Bible tab lit (${first.lit})`);
+    must(/^\/bible\/?$/.test(first.back), `and the way back at the top left still goes to the whole list (${first.back})`);
+    const opened = await kept(page);
+    must(opened?.book === "john" && opened?.chapter === 1 && opened?.verse === 1, `the place is John 1 from its top (${JSON.stringify(opened)})`);
+    await page.screenshot({ path: path.join(SHOTS, "bible-tab-first.png") });
+
+    // The books from the title: the sheet opens on John, John 1 lit.
+    await tap(page.locator("[data-title-books]"));
+    await page.waitForFunction(() => document.querySelector("[data-books-sheet]"), null, { timeout: 10000 }).catch(() => {});
+    await page.waitForTimeout(700);
+    const sheet = await page.evaluate(() => {
+      const d = document.querySelector("[data-books-sheet]")?.closest("[role=dialog]");
+      if (!d) return null;
+      const open = d.querySelector("[data-open-book]");
+      const lit = d.querySelector("[aria-current='page']");
+      const body = d.querySelector("[data-books-sheet]").parentElement.getBoundingClientRect();
+      const grid = open?.nextElementSibling?.getBoundingClientRect();
+      return {
+        title: d.getAttribute("aria-label"),
+        search: !!d.querySelector("[data-bible-search-open]"),
+        headings: [...d.querySelectorAll("[data-books-sheet] h2")].map((h) => h.textContent.trim()),
+        switch: d.querySelectorAll("[role=tablist], [role=tab]").length,
+        books: d.querySelectorAll("[data-book]").length,
+        open: open?.getAttribute("data-book") ?? null,
+        lit: lit?.textContent?.trim() ?? null,
+        litGlow: lit ? getComputedStyle(lit).boxShadow : "",
+        gridShown: !!grid && grid.top >= body.top - 1 && grid.bottom <= body.bottom + 1,
+        doors: [...d.querySelectorAll("[data-books-doors] a")].map((a) => ({ href: a.getAttribute("href"), text: a.textContent.trim() })),
+        gold: d.querySelectorAll("[class*='gold']").length,
+      };
+    });
+    must(!!sheet && sheet.title === `${en["bible.books.john"]} 1` && sheet.search, `the title opens the books sheet, named for the chapter, with the Bible's search (${sheet?.title})`);
+    must(!!sheet && sheet.headings.join(" | ") === `${en["bible.theOldTestament"]} | ${en["bible.theNewTestament"]}` && sheet.switch === 0 && sheet.books === 78, `both Testaments as one list, all 78 books, and no switch (${sheet?.headings.join(" | ")}; ${sheet?.books} books; ${sheet?.switch} tabs)`);
+    must(!!sheet && sheet.open === "john" && sheet.lit === "1" && sheet.gridShown, `opened at John, its chapters whole on the screen, the one being read lit (${sheet?.open}, ${sheet?.lit})`);
+    must(!!sheet && /rgba?\(255, 255, 255/.test(sheet.litGlow) && sheet.gold === 0, `lit white with its soft glow, and nothing gold (${sheet?.litGlow})`);
+    must(
+      !!sheet && sheet.doors.length === 3 && /^\/bible\/[a-z0-9-]+\/\d+\/?#v\d+$/.test(sheet.doors[0].href) && sheet.doors[0].text === en["readingsFlow.startLabel"] && bare(sheet.doors[1].href) === "/plans" && sheet.doors[1].text === en["plans.title"] && bare(sheet.doors[2].href) === "/journal" && sheet.doors[2].text === en["journal.title"],
+      `at its foot today's readings, the plans and the journal (${sheet?.doors.map((d) => `${d.text} ${d.href}`).join(", ")})`,
+    );
+    await page.screenshot({ path: path.join(SHOTS, "bible-books-sheet.png") });
+
+    // Another book opens its grid in its place, and a chapter goes there.
+    await tap(page.locator("[data-books-sheet] [data-book='romans']"));
+    await page.waitForTimeout(500);
+    await tap(page.locator("[data-books-sheet] [data-open-book] + ul li").nth(7));
+    await page.waitForFunction(() => location.pathname.startsWith("/bible/romans/8"), null, { timeout: 15000 }).catch(() => {});
+    must((await where(page)).path.startsWith("/bible/romans/8"), `Romans opens at its chapters, and 8 goes to Romans 8 (${(await where(page)).path})`);
+
+    // And from the pill's name, the same sheet, now on Romans 8.
+    await versesDrawn(page);
+    await page.waitForTimeout(900);
+    const pillName = en["bible.pickChapterCurrentAria"].replace("{book}", en["bible.books.romans"]).replace("{chapter}", "8");
+    await tap(page.locator(`[data-reader-pill] button[aria-label="${pillName}"]`));
+    await page.waitForFunction(() => document.querySelector("[data-books-sheet] [data-open-book]"), null, { timeout: 10000 }).catch(() => {});
+    await page.waitForTimeout(600);
+    const fromPill = await page.evaluate(() => ({ open: document.querySelector("[data-books-sheet] [data-open-book]")?.getAttribute("data-book") ?? null, lit: document.querySelector("[data-books-sheet] [aria-current='page']")?.textContent?.trim() ?? null }));
+    must(fromPill.open === "romans" && fromPill.lit === "8", `the pill's name opens the same sheet, on Romans 8 (${fromPill.open} ${fromPill.lit})`);
+    await page.keyboard.press("Escape");
+    must(errors.length === 0, `no page errors${errors.length ? ": " + errors.slice(0, 2).join(" | ") : ""}`);
+    await ctx.close();
+  }
+  {
+    // John 3 read down to verse 14, left by Today, and come back to by the tab.
+    const { ctx, page, errors } = await open({ width: 390, height: 844, phone: true });
+    await go(page, "/bible/john/3/");
+    await versesDrawn(page);
+    await page.waitForTimeout(1200);
+    await readTo(page, 14);
+    await page.waitForTimeout(1000);
+    const read = await atLine(page, 14);
+    const before = await kept(page);
+    must(read.verse === 14 && before?.book === "john" && before?.chapter === 3 && before?.verse === 14, `read down to verse 14 by hand, the place is John 3:14 (at the line ${read.verse}, kept ${before?.verse})`);
+    await go(page, "/");
+    await page.waitForTimeout(1200);
+    const left = await kept(page);
+    must(left?.chapter === 3 && left?.verse === 14, `leaving by Today keeps verse 14, not verse 1 (${left?.verse})`);
+    const href = await bibleTab(page).getAttribute("href");
+    must(/^\/bible\/john\/3\/?#v14$/.test(href ?? ""), `the Bible tab now opens John 3 at verse 14 (${href})`);
+    await tap(bibleTab(page));
+    await page.waitForFunction(() => location.pathname.startsWith("/bible/john/3") && location.hash === "#v14", null, { timeout: 15000 }).catch(() => {});
+    await versesDrawn(page);
+    await page.waitForTimeout(2600);
+    const back = await atLine(page, 14);
+    const after = await kept(page);
+    must(back.verse === 14, `it lands with verse 14 at the reading place (the verse there ${back.verse}, its middle ${back.off}px from the line)`);
+    must(after?.verse === 14, `and the landing keeps 14 (${after?.verse})`);
+    await page.screenshot({ path: path.join(SHOTS, "bible-tab-return.png") });
+
+    // A return that lands on verse 16 keeps 16: build 85 kept 13.
+    await go(page, "/");
+    await page.waitForTimeout(600);
+    await go(page, "/bible/john/3/#v16");
+    await versesDrawn(page);
+    await page.waitForTimeout(2600);
+    const sixteen = await kept(page);
+    const there = await atLine(page, 16);
+    must(sixteen?.verse === 16 && there.verse === 16, `a link to John 3:16 lands on it and keeps it (kept ${sixteen?.verse}, at the line ${there.verse})`);
+
+    // The read-aloud's Read (lib/player/steps.ts, readHref) opens its
+    // chapter at the verse being read, as before.
+    await go(page, "/bible/colossians/4/#v7");
+    await versesDrawn(page);
+    await page.waitForTimeout(2600);
+    const aloud = await atLine(page, 7);
+    must(aloud.verse === 7 && (await kept(page))?.verse === 7, `the read-aloud's address lands on its verse and keeps it (Colossians 4:7, at the line ${aloud.verse})`);
+    must(errors.length === 0, `no page errors${errors.length ? ": " + errors.slice(0, 2).join(" | ") : ""}`);
+    await ctx.close();
+  }
+
+  // /bible, the whole list: the picture, then rows, and the books as one list.
+  // The owner said of this screen on 2026-10-13: "this design has way too
+  // much stuff going on here". Under the picture it was an empty card saying
+  // a card would appear, two tinted pills, a band with a button and a lone
+  // half width tile, and the first book began 1007 px down a phone 844 tall.
   const look = (page) =>
     page.evaluate(() => {
-      const tablist = document.querySelector("[role=tablist]");
-      const body = tablist?.closest(".cascade");
+      const books = document.querySelector("[data-bible-books]");
+      const body = books?.closest(".cascade");
       if (!body) return null;
       const flat = (n) => (n?.textContent ?? "").replace(/\s+/g, " ").trim();
       const bar = document.querySelector("[data-tab-label]")?.closest("nav");
-      const firstBook = tablist.parentElement.querySelector("ul li a");
+      const firstBook = books.querySelector("ul li a");
       const cont = body.querySelector("[data-bible-continue] a");
       return {
         kinds: [...body.children].map((n) => n.tagName).join(" "),
@@ -2218,24 +2401,28 @@ await section(27, async () => {
         heading: flat(body.querySelector("[data-bible-readings] p")),
         readings: [...body.querySelectorAll("[data-bible-readings] li a")].map((a) => ({ href: a.getAttribute("href"), start: flat(a.children[0]), end: flat(a.children[1]) })),
         study: [...body.querySelectorAll("[data-bible-study] a")].map((a) => ({ href: a.getAttribute("href"), text: flat(a) })),
+        testaments: [...books.querySelectorAll("h2")].map(flat),
+        books: books.querySelectorAll("ul li a").length,
+        first: firstBook ? { href: firstBook.getAttribute("href"), text: flat(firstBook.children[0]) } : null,
+        switch: document.querySelectorAll("[data-route-content] [role=tablist]").length,
         // Anything drawn in another look: the old band, a tinted card or tile, a pill, gold.
         others: body.querySelectorAll(".lm-feature, .lm-card, [class*='premium'], [class*='gold'], [class*='rounded-pill']").length,
-        firstBookAt: Math.round(firstBook.getBoundingClientRect().top),
+        firstBookAt: Math.round(firstBook ? firstBook.getBoundingClientRect().top : innerHeight * 3),
         barTop: Math.round(bar ? bar.getBoundingClientRect().top : innerHeight),
       };
     });
-  const openTab = async (page) => {
+  const openList = async (page) => {
     await go(page, "/bible/");
-    await page.waitForFunction(() => document.querySelector("[data-bible-readings] li a") && document.querySelector("[role=tablist]"), null, { timeout: 20000 }).catch(() => {});
+    await page.waitForFunction(() => document.querySelector("[data-bible-readings] li a") && document.querySelector("[data-bible-books]"), null, { timeout: 20000 }).catch(() => {});
     await page.waitForTimeout(1200);
   };
   const READING = /^\/bible\/[a-z0-9-]+\/\d+\/?#v\d+$/;
   {
     // A phone that has read nothing.
     const { ctx, page, errors } = await open({ width: 390, height: 844, phone: true });
-    await openTab(page);
+    await openList(page);
     const got = await look(page);
-    must(!!got && got.kinds === "P FIGURE SECTION NAV DIV", `a phone that has read nothing is shown the picture, the day's readings, the study row and the books, and nothing else (${got?.kinds})`);
+    must(!!got && got.kinds === "P FIGURE SECTION NAV DIV", `/bible with nothing read is the picture, the day's readings, the study row and the books, and nothing else (${got?.kinds})`);
     must(!!got && got.picture && got.cont === null, "with no Continue row, and no card saying one will appear");
     must(
       !!got && got.readings.length >= 1 && got.readings.length <= 3 && got.readings.every((r) => READING.test(r.href) && /\d/.test(r.start) && [en["bible.kindGospelLong"], en["bible.kindEpistleLong"], en["bible.kindOtLong"]].includes(r.end)),
@@ -2243,6 +2430,8 @@ await section(27, async () => {
     );
     must(!!got && [en["bible.appointedToday"], en["bible.readForCommemoration"]].includes(got.heading), `under the heading the tab always gave them (${got?.heading})`);
     must(!!got && got.study.length === 2 && got.study[0].href.replace(/\/$/, "") === "/plans" && got.study[1].href.replace(/\/$/, "") === "/journal" && got.study[0].text === en["plans.title"] && got.study[1].text === en["journal.title"], "Reading plans and Your journal are one row of two halves");
+    must(!!got && got.switch === 0 && got.testaments.join(" | ") === `${en["bible.theOldTestament"]} | ${en["bible.theNewTestament"]}` && got.books === 78, `the books are both Testaments as one list, all 78, with no switch (${got?.testaments.join(" | ")}; ${got?.books} rows; ${got?.switch} switches)`);
+    must(!!got && /^\/bible\/genesis\/1\/?$/.test(got.first?.href ?? "") && got.first?.text === en["bible.books.genesis"], `in the Church's order, Genesis first (${got?.first?.text} ${got?.first?.href})`);
     must(!!got && got.others === 0, `nothing under the header is drawn in another look: no band, tinted card, pill or gold (${got?.others})`);
     must(!!got && got.firstBookAt < got.barTop - 40, `the first book is on the first screen (its row begins at ${got?.firstBookAt} px, the bar at ${got?.barTop}; it began at 1007)`);
     // The picture's foot corners are as dark as its wash, with no line of
@@ -2264,22 +2453,24 @@ await section(27, async () => {
   {
     // A phone part way through a chapter.
     const { ctx, page } = await open({ width: 390, height: 844, phone: true, set: { "purify:bible:last": JSON.stringify({ book: "john", bookName: "John", chapter: 3, verse: 16, totalVerses: 36, ts: 1 }) } });
-    await openTab(page);
+    await openList(page);
     const got = await look(page);
     must(!!got && got.kinds === "P FIGURE UL SECTION NAV DIV", `a phone part way through a chapter has one more row, over the readings (${got?.kinds})`);
     must(!!got?.cont && /^\/bible\/john\/3\/?#v16$/.test(got.cont.href) && got.cont.start === `${en["bible.books.john"]} 3` && got.cont.end === squeeze(en["bible.continueAtVerseOf"].replace("{verse}", "16").replace("{total}", "36")), `which goes back to the verse (${got?.cont?.start} / ${got?.cont?.end}, to ${got?.cont?.href})`);
-    say("  first book's row begins at, px", got?.firstBookAt);
+    const href = await page.locator("[data-tab-bar] a").nth(1).getAttribute("href");
+    must(/^\/bible\/john\/3\/?#v16$/.test(href ?? ""), `and the Bible tab goes there too (${href})`);
     await page.screenshot({ path: path.join(SHOTS, "bible-tab-phone-continue.png") });
     await ctx.close();
   }
   {
     // A phone set to Greek, at the top of a chapter whose book has a long name.
     const { ctx, page, errors } = await open({ width: 390, height: 844, phone: true, locale: "el-GR", set: { "purify:bible:last": JSON.stringify({ book: "1-thessalonians", bookName: "1 Thessalonians", chapter: 5, verse: 1, totalVerses: 28, ts: 1 }) } });
-    await openTab(page);
+    await openList(page);
     const got = await look(page);
     must(!!got?.cont && /^\/bible\/1-thessalonians\/5\/?$/.test(got.cont.href) && got.cont.start === `${el["bible.books.1-thessalonians"]} 5` && got.cont.end === el["bible.continueReading"], `a phone set to Greek names the book and the way back in Greek (${got?.cont?.start} / ${got?.cont?.end})`);
     must(!!got && [el["bible.appointedToday"], el["bible.readForCommemoration"]].includes(got.heading) && got.readings.every((r) => [el["bible.kindGospelLong"], el["bible.kindEpistleLong"], el["bible.kindOtLong"]].includes(r.end)), `and the readings' heading and kinds (${got?.heading}: ${got?.readings.map((r) => r.end).join(", ")})`);
     must(!!got && got.study.length === 2 && got.study[0].text === el["plans.title"] && got.study[1].text === el["journal.title"], `and the study row (${got?.study.map((s) => s.text).join(", ")})`);
+    must(!!got && got.testaments.join(" | ") === `${el["bible.theOldTestament"]} | ${el["bible.theNewTestament"]}`, `and the two Testaments (${got?.testaments.join(" | ")})`);
     await page.screenshot({ path: path.join(SHOTS, "bible-tab-phone-el.png") });
     must(errors.length === 0, `no page errors${errors.length ? ": " + errors.slice(0, 2).join(" | ") : ""}`);
     await ctx.close();
