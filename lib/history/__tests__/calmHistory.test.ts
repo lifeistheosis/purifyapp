@@ -130,7 +130,9 @@ describe("the timeline", () => {
     expect(timeline).toMatch(/<MobileTopBar titleKey="nav\.discoverMenu\.history" back backFallback="\/discover" revealTitleOn="history-title" \/>/);
     expect(timeline).toContain('id="history-title"');
     const event = code("app/(app)/history/[slug]/page.tsx");
-    expect(event).toMatch(/<MobileTopBar title=\{meta\.shortTitle \?\? meta\.title\} back backFallback="\/history" revealTitleOn="event-title" \/>/);
+    expect(event).toMatch(
+      /<MobileTopBar\s+title=\{meta\.shortTitle \?\? meta\.title\}\s+back\s+backFallback="\/history"\s+revealTitleOn="event-title"\s+trailing=\{<EventBarActions meta=\{meta\} \/>\}\s+\/>/,
+    );
     const backBar = read("lib/nav/backBar.ts");
     expect(backBar).toContain("/^\\/history$/,");
     expect(backBar).toContain("/^\\/history\\/[^/]+$/,");
@@ -176,6 +178,31 @@ describe("an event's page", () => {
     for (const file of FILES.filter((f) => f !== "components/history/EventArticle.tsx" && f !== "app/(app)/history/page.tsx")) {
       expect(code(file), file).not.toMatch(/<h1\b/);
     }
+  });
+
+  it("carries Share and Save in its bar, so its head is the date and place, the title and the summary", () => {
+    // The owner's note 67 of build 80: "Optimize the share in the bookmark
+    // button. In the individual historical timeline event. Because they're
+    // just floating there." A Share pill and a bookmark stood in a row of
+    // their own under the summary. They are a pair of the bar's 44px icon
+    // buttons now, after its search, as on a doctrine's page and a council's.
+    expect(code("app/(app)/history/[slug]/page.tsx")).toContain("trailing={<EventBarActions meta={meta} />}");
+    const article = code("components/history/EventArticle.tsx");
+    const head = article.slice(article.indexOf("export function EventHeader"), article.indexOf("export function EventBarActions"));
+    expect(head).toContain('id="event-title"');
+    expect(head).not.toMatch(/<ShareButton|<BookmarkEventButton/);
+    const bar = article.slice(article.indexOf("export function EventBarActions"), article.indexOf("export function EventArticle"));
+    expect(bar).toMatch(/<ShareButton[^>]*\bround\b[\s\S]*<BookmarkEventButton/);
+    expect(bar).toContain('className="border-0 bg-transparent text-paper/70 hover:text-paper"');
+    const save = code("components/history/BookmarkEventButton.tsx");
+    expect(save).toContain("inline-flex h-11 w-11 shrink-0");
+    // It knows its state in the first frame: no gate that draws it unsaved first.
+    expect(save).not.toMatch(/useEffect|useState|mounted/);
+    // Saved, lit white with a soft white glow; on Parchment the plain ink.
+    expect(save).toContain('className={saved ? "history-saved-lit" : undefined}');
+    const css = read("app/globals.css");
+    expect(css).toMatch(/\n\.history-saved-lit \{\n filter: drop-shadow\(0 0 3px rgb\(255 255 255 \/ 0\.85\)\) drop-shadow\(0 0 8px rgb\(255 255 255 \/ 0\.35\)\);\n\}/);
+    expect(css).toMatch(/\nhtml\[data-reading-mode="parchment"\] \.history-saved-lit \{\n filter: none;\n\}/);
   });
 
   it("lands a tapped part at the foot of the pinned row of parts", () => {

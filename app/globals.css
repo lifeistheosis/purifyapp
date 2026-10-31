@@ -6711,6 +6711,18 @@ html.is-native .history-line {
  transition-timing-function: var(--ease-house);
 }
 
+/* An event's Save, in its page's bar (1.8, the owner's note 67 of build 80):
+   saved, the drawn bookmark is lit white with a soft white glow, as every
+   lit mark is (the owner, 2026-10-28: "just use a glowly white"). On
+   Parchment, where white cannot glow, it is the plain ink. On the svg, as
+   the player's lit ring is. Still, so there is nothing to reduce. */
+.history-saved-lit {
+ filter: drop-shadow(0 0 3px rgb(255 255 255 / 0.85)) drop-shadow(0 0 8px rgb(255 255 255 / 0.35));
+}
+html[data-reading-mode="parchment"] .history-saved-lit {
+ filter: none;
+}
+
 /* The century slider in the Eras sheet and the computer's side column: a
    styled native range input, draggable, steppable by arrow keys and
    tappable on the track. The thumb firms in the page's ink while held. */

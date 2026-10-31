@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 
-import { EventArticle, EventHeader } from "@/components/history/EventArticle";
+import { EventArticle, EventBarActions, EventHeader } from "@/components/history/EventArticle";
 import { EventPictures } from "@/components/history/EventPictures";
 import { peopleFromSaints } from "@/components/history/EventPeople";
 import { EventRelations } from "@/components/history/EventRelations";
@@ -46,9 +46,10 @@ export async function generateMetadata({
 
 /**
  * An event of Orthodox History (1.7, the owner's note 20), phone first: the
- * page's own bar (back to the timeline, and the event's name once its title
- * has scrolled away), the event's picture, its head, the row of its four
- * parts, the account in those parts, and the way along the line at its foot.
+ * page's own bar (back to the timeline, the event's name once its title has
+ * scrolled away, and at its right search, Share and Save, the owner's note 67
+ * of build 80), the event's picture, its head, the row of its four parts,
+ * the account in those parts, and the way along the line at its foot.
  */
 export default async function HistoryEventPage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
@@ -82,7 +83,13 @@ export default async function HistoryEventPage({ params }: { params: Promise<{ s
   return (
     <>
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
-      <MobileTopBar title={meta.shortTitle ?? meta.title} back backFallback="/history" revealTitleOn="event-title" />
+      <MobileTopBar
+        title={meta.shortTitle ?? meta.title}
+        back
+        backFallback="/history"
+        revealTitleOn="event-title"
+        trailing={<EventBarActions meta={meta} />}
+      />
       <section className="history-line bg-night px-5 pb-16 pt-5 md:px-8 md:pt-12">
         <div className="mx-auto w-full max-w-[760px]">
           <EventPictures picture={picture} gallery={gallery} className="mb-7" />
