@@ -254,7 +254,7 @@ export function AbandonedTab() {
                 : "Loading"
           }
           columns={[
-            { key: "email", label: "Buyer", render: (a) => <Email value={a.email} />, csv: (a) => a.email },
+            { key: "email", label: "Buyer", render: (a) => <Email value={a.email} fallback="no address" />, csv: (a) => a.email },
             {
               key: "items",
               label: "Items",
