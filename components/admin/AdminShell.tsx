@@ -54,7 +54,7 @@ import { FulfillmentTab } from "./tabs/FulfillmentTab";
 import { InsightsProvider } from "@/lib/admin/insights/store";
 import { SubscriptionsTab } from "./tabs/SubscriptionsTab";
 import { MessagesTab } from "./tabs/MessagesTab";
-import { UsersTab } from "./tabs/UsersTab";
+import { ReadersTab } from "./tabs/ReadersTab";
 import { LiveCartsTab, AbandonedTab } from "./tabs/CartsTab";
 import { PushTab } from "./tabs/PushTab";
 import { DropTab } from "./tabs/DropTab";
@@ -178,7 +178,7 @@ const COMPONENTS: Partial<Record<TabId, ComponentType>> = {
   revenue: RevenueTab,
   costs: SustainabilityTab,
   subscriptions: SubscriptionsTab,
-  users: UsersTab,
+  users: ReadersTab,
   carts: LiveCartsTab,
   abandoned: AbandonedTab,
   messages: MessagesTab,

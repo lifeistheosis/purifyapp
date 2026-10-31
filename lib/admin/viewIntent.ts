@@ -8,23 +8,21 @@
  * (the owner's pick C on sheet r3-15), and the link should land on the
  * readers who are waiting on him, not on all of them.
  *
- * So the shell leaves the intent here as it opens the view, and the view
- * takes it once, as it mounts. Taking it clears it, so coming back to the
- * view later opens it plainly. Module state on purpose: one admin, one
- * browser tab, and nothing to share between them.
+ * So the shell leaves the intent here every time it opens a view (no intent
+ * at all for a plain open), and the view reads it as it mounts. Reading does
+ * not clear it, so React's double render in development reads the same
+ * thing twice; the next open of any view replaces it. Module state on
+ * purpose: one admin, one browser tab, and nothing to share between them.
  */
 
 let pending: { tab: string; intent: string } | null = null;
 
-/** Called by the shell as it opens `tab` for a link that carried an intent. */
+/** Called by the shell on every open of a view, with the intent the link carried or none. */
 export function setViewIntent(tab: string, intent: string | undefined): void {
   pending = intent ? { tab, intent } : null;
 }
 
-/** Called once by the view as it mounts. Null when nothing was asked for. */
-export function takeViewIntent(tab: string): string | null {
-  if (!pending || pending.tab !== tab) return null;
-  const { intent } = pending;
-  pending = null;
-  return intent;
+/** Read by the view as it mounts. Null when the open that brought it here asked for nothing. */
+export function readViewIntent(tab: string): string | null {
+  return pending && pending.tab === tab ? pending.intent : null;
 }

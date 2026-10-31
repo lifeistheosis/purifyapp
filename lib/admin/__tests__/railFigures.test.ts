@@ -4,7 +4,7 @@ import { join } from "node:path";
 import { describe, expect, it } from "vitest";
 
 import { railFigure, railMoney, type RailReadings } from "../railFigures";
-import { setViewIntent, takeViewIntent } from "../viewIntent";
+import { readViewIntent, setViewIntent } from "../viewIntent";
 
 // The owner's pick A for the rail on sheet r3-15 (2026-10-30): each Daily page
 // carries the one figure he opens it for, "4 waiting", "37 now", "$96", "+58".
@@ -53,17 +53,18 @@ describe("the rail's figures", () => {
 });
 
 describe("a view's intent", () => {
-  it("is taken once, by the view it was left for", () => {
+  it("is read by the view it was left for, as often as it mounts", () => {
     setViewIntent("users", "waiting");
-    expect(takeViewIntent("traffic")).toBeNull();
-    expect(takeViewIntent("users")).toBe("waiting");
-    expect(takeViewIntent("users")).toBeNull();
+    expect(readViewIntent("traffic")).toBeNull();
+    expect(readViewIntent("users")).toBe("waiting");
+    // React's double render in development reads it twice.
+    expect(readViewIntent("users")).toBe("waiting");
   });
 
-  it("is cleared by a plain open of any view", () => {
+  it("is cleared by the next plain open of any view", () => {
     setViewIntent("users", "waiting");
-    setViewIntent("users", undefined);
-    expect(takeViewIntent("users")).toBeNull();
+    setViewIntent("traffic", undefined);
+    expect(readViewIntent("users")).toBeNull();
   });
 });
 
