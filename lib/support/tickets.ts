@@ -199,17 +199,33 @@ export async function addCustomerReplyByNumber(num: string, body: string): Promi
     .limit(1)
     .maybeSingle();
   if (!found) return null;
+  return addCustomerReply((found as Ticket).id, body, "emailed");
+}
+
+/**
+ * A customer's answer to their own ticket, joined to it and reopening it so
+ * it waits on the console again: by email (above), or from the shop's
+ * Messages in the apps and on the website (1.8, r3-19 Messages A, through
+ * app/api/support/tickets/reply, which proves the ticket is the caller's
+ * before it calls this). Service role.
+ */
+export async function addCustomerReply(
+  ticketId: string,
+  body: string,
+  via: "emailed" | "app" = "app",
+): Promise<Ticket | null> {
+  const admin = createAdminClient();
   const { error } = await admin
     .from("support_ticket_messages")
-    .insert({ ticket_id: (found as Ticket).id, author: "customer", body });
+    .insert({ ticket_id: ticketId, author: "customer", body });
   if (error) {
-    console.warn("[support] emailed reply insert failed", error.message);
+    console.warn(`[support] ${via} reply insert failed`, error.message);
     return null;
   }
   const { data: ticket } = await admin
     .from("support_tickets")
     .update({ status: "open", updated_at: new Date().toISOString() })
-    .eq("id", (found as Ticket).id)
+    .eq("id", ticketId)
     .select("*")
     .maybeSingle();
   return (ticket as Ticket) ?? null;
