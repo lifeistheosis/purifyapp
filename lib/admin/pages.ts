@@ -182,33 +182,23 @@ export const ADMIN_PAGE_GROUPS: AdminPageGroup[] = [
       },
     ],
   },
+  // Strategy, B, the plan against what happened (r3-17): one page that
+  // opens on the plan, with Counted, The model and Markets as its doors.
+  // Each keeps its own #tab= id, so /owner's redirect to owner-today lands.
   {
     group: "Strategy",
     mode: "owner",
     pages: [
       {
-        id: "owner-today",
-        label: "Where we are",
-        sentence: "Counted, not assumed.",
-        views: [{ tab: "owner-today", label: "Where we are" }],
-      },
-      {
-        id: "owner-model",
-        label: "Projection",
-        sentence: "What the assumptions say.",
-        views: [{ tab: "owner-model", label: "Projection" }],
-      },
-      {
-        id: "owner-markets",
-        label: "Markets",
-        sentence: "Where the reach could come from.",
-        views: [{ tab: "owner-markets", label: "Markets" }],
-      },
-      {
         id: "owner-investors",
-        label: "Investors",
-        sentence: "The plan against what happened.",
-        views: [{ tab: "owner-investors", label: "Investors" }],
+        label: "Strategy",
+        sentence: "The plan against what happened, and what it rests on.",
+        views: [
+          { tab: "owner-investors", label: "The plan" },
+          { tab: "owner-today", label: "Counted" },
+          { tab: "owner-model", label: "The model" },
+          { tab: "owner-markets", label: "Markets" },
+        ],
       },
     ],
   },

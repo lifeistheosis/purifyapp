@@ -36,6 +36,24 @@ const num = (n: number) => Math.round(n).toLocaleString("en-US");
 
 type Panel = "today" | "model" | "markets" | "investors";
 
+/**
+ * The assumptions as he last left them, for the length of the visit. Moving
+ * between Strategy's views remounts this dashboard, and before his pick B on
+ * r3-17 that put every slider back to moderate.
+ */
+const KEPT: { a: Assumptions | null; measured: boolean } = { a: null, measured: false };
+
+/** The scenario a set of assumptions is, by its three sliders, for a door's words. */
+function scenarioName(a: Assumptions): string {
+  const k = (["conservative", "moderate", "aggressive"] as const).find(
+    (s) =>
+      a.installRate === SCENARIOS[s].installRate &&
+      a.payRate === SCENARIOS[s].payRate &&
+      a.annualRevenuePerSubscriber === SCENARIOS[s].annualRevenuePerSubscriber,
+  );
+  return k ?? "these assumptions";
+}
+
 /** A label that says which kind of number sits next to it. */
 function Tag({ kind }: { kind: "measured" | "modelled" | "unavailable" }) {
   const map = {
@@ -151,8 +169,14 @@ export function OwnerDashboard({
   const [actuals, setActuals] = useState<Actuals | null>(initial?.actuals ?? null);
   const [gateIsExplicit, setGateIsExplicit] = useState(initial?.ownerListIsExplicit ?? true);
   const [failed, setFailed] = useState(false);
-  const [a, setA] = useState<Assumptions>(SCENARIOS.moderate);
-  const [useMeasuredPayRate, setUseMeasuredPayRate] = useState(false);
+  // Kept across Strategy's views (his pick B on r3-17): each view mounts
+  // this afresh, and every slider used to go back to moderate on the move.
+  const [a, setA] = useState<Assumptions>(() => KEPT.a ?? SCENARIOS.moderate);
+  const [useMeasuredPayRate, setUseMeasuredPayRate] = useState(() => KEPT.measured);
+  useEffect(() => {
+    KEPT.a = a;
+    KEPT.measured = useMeasuredPayRate;
+  }, [a, useMeasuredPayRate]);
 
   useEffect(() => {
     if (initial) return;
@@ -679,7 +703,26 @@ export function OwnerDashboard({
           </div>
         )}
 
-        {panel === "investors" && <InvestorPanel />}
+        {panel === "investors" && (
+          // The plan, with its three doors in words: what was counted, what
+          // the model says at the assumptions as they stand, and the market
+          // that would add the most (his pick B on r3-17).
+          <InvestorPanel
+            doors={{
+              counted: actuals ? { accounts: actuals.totalUsers, paying: actuals.paidSubscribers } : null,
+              model: {
+                annual: p.totals.annualRevenueUsd,
+                scenario: scenarioName(effective),
+                install: effective.installRate,
+                pay: effective.payRate,
+                price: effective.annualRevenuePerSubscriber,
+              },
+              markets: lifts[0]
+                ? { name: lifts[0].market.name, delta: lifts[0].deltaAnnualRevenueUsd, scenario: scenarioName(effective) }
+                : null,
+            }}
+          />
+        )}
 
         {panel === "markets" && (
           <div className="space-y-6">
