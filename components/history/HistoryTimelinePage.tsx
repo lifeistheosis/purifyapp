@@ -105,8 +105,8 @@ export function HistoryTimelinePage({ lead }: { lead?: ReactNode }) {
   // server's page, drawn with nothing kept, and reads it a moment later.
   const client = useMounted();
   const [state, setState] = useState<TimelineState>(() => (client ? readState() : EMPTY_STATE));
-  // Where the reader was the last time, for "Continue at ...": read once.
-  const [kept, setKept] = useState<scroll.TimelinePosition | null>(() => (client ? scroll.loadPosition() : null));
+  // Where the reader had got to on the line, for "Continue at ...": read once.
+  const [kept, setKept] = useState<scroll.TimelinePosition | null>(() => (client ? scroll.loadKeptPlace() : null));
   const [hydrated, setHydrated] = useState(client);
   const [filtersOpen, setFiltersOpen] = useState(false);
   const [erasOpen, setErasOpen] = useState(false);
@@ -119,7 +119,7 @@ export function HistoryTimelinePage({ lead }: { lead?: ReactNode }) {
   useEffect(() => {
     if (hydrated) return;
     setState(readState());
-    setKept(scroll.loadPosition());
+    setKept(scroll.loadKeptPlace());
     setHydrated(true);
   }, [hydrated]);
   /* eslint-enable react-hooks/set-state-in-effect */
@@ -208,8 +208,11 @@ export function HistoryTimelinePage({ lead }: { lead?: ReactNode }) {
         if (!window.matchMedia(WIDE).matches) top.setAttribute("data-current", "");
         current = top;
       }
-      // One rect, on the trailing edge, for one row.
-      scroll.savePosition(slug, Math.round(top.getBoundingClientRect().top - line));
+      // One rect, on the trailing edge, for one row. Back returns to it
+      // wherever it is; the device keeps it for "Continue at ..." only once
+      // the reader has gone into the line, past its first row's place.
+      const offset = Math.round(top.getBoundingClientRect().top - line);
+      scroll.savePosition(slug, offset, { mirror: !(top === rows[0] && offset > 0) });
     };
 
     const observer = new IntersectionObserver(

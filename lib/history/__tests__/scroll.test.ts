@@ -14,14 +14,17 @@
 // arrives, Back lands somewhere else, or "Continue at" offers the row they
 // are already looking at.
 
-import { afterEach, describe, expect, it } from "vitest";
+import { afterEach, describe, expect, it, vi } from "vitest";
 
 import {
   RESTORE_SETTLE_FRAMES,
   RESTORE_STEADY_FRAMES,
   RESTORE_WATCH_FRAMES,
+  loadKeptPlace,
+  loadPosition,
   placeToContinue,
   restorePosition,
+  savePosition,
   type TimelinePosition,
 } from "../scroll";
 
@@ -171,8 +174,42 @@ describe("Continue at, on a fresh visit", () => {
   });
 
   it("offers nothing when the reader was at the top, the line's first row still under the pinned name", () => {
-    // What the spy keeps on a first visit that never scrolled: Pentecost 446px under the line.
+    // What the spy kept on a first visit that never scrolled: Pentecost 446px under the line.
     expect(placeToContinue(kept("pentecost", 446), "pentecost")).toBeNull();
     expect(placeToContinue(null, "pentecost")).toBeNull();
+  });
+});
+
+describe("the place kept, for Back and for a later visit", () => {
+  function storage() {
+    const m = new Map<string, string>();
+    return {
+      getItem: (k: string) => m.get(k) ?? null,
+      setItem: (k: string, v: string) => void m.set(k, v),
+      removeItem: (k: string) => void m.delete(k),
+    };
+  }
+
+  afterEach(() => {
+    vi.unstubAllGlobals();
+  });
+
+  it("keeps the top for Back, and the place reached on the line for Continue at", () => {
+    vi.stubGlobal("window", {});
+    vi.stubGlobal("sessionStorage", storage());
+    vi.stubGlobal("localStorage", storage());
+    // Read down to Nicaea: kept for both.
+    savePosition("first-council-of-nicaea", -79);
+    expect(loadKeptPlace()?.anchorSlug).toBe("first-council-of-nicaea");
+    // A later visit opens at the top and goes no further: Back returns to the
+    // top, and the next visit still offers Nicaea.
+    savePosition("pentecost", 446, { mirror: false });
+    expect(loadPosition()).toMatchObject({ anchorSlug: "pentecost", offsetPx: 446 });
+    expect(loadKeptPlace()).toMatchObject({ anchorSlug: "first-council-of-nicaea", offsetPx: -79 });
+  });
+
+  it("is nothing where there is no window", () => {
+    expect(loadKeptPlace()).toBeNull();
+    expect(() => savePosition("pentecost", 0)).not.toThrow();
   });
 });

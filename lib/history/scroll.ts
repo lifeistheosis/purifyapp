@@ -11,9 +11,10 @@
 //
 // Two storage tiers:
 //  - sessionStorage: browser-session semantics (Back/Forward, reload), the
-//    web expectation.
-//  - localStorage mirror: cold-start resume for the native shell (process
-//    death, app relaunch) and the "Continue exploring" entry point.
+//    web expectation, and Back in the apps.
+//  - localStorage mirror: the "Continue at ..." entry point of a later visit,
+//    after the app was closed too. Written only once the reader has gone
+//    into the line (savePosition's `mirror`).
 //
 // Both writes are fire-and-forget; every read is validated and TTL-bound.
 
@@ -94,7 +95,15 @@ export function partJumpTop({
   return Math.max(0, Math.round(scrollY + partTop - (rowTop + rowHeight)));
 }
 
-export function savePosition(anchorSlug: string, offsetPx: number): void {
+/**
+ * Keeps the reader's place. The session's copy is always written: it is where
+ * Back returns, the top of the timeline included. The device's copy, which
+ * "Continue at ..." offers on a later visit, is written only with `mirror`:
+ * the timeline passes false while the reader is at its top, so a visit that
+ * opens at the top and goes no further does not wipe out the place reached
+ * the time before.
+ */
+export function savePosition(anchorSlug: string, offsetPx: number, { mirror = true }: { mirror?: boolean } = {}): void {
   if (!hasWindow()) return;
   const value = JSON.stringify({
     anchorSlug,
@@ -106,10 +115,21 @@ export function savePosition(anchorSlug: string, offsetPx: number): void {
   } catch {
     /* ignore */
   }
+  if (!mirror) return;
   try {
     localStorage.setItem(SCROLL_KEY, value);
   } catch {
     /* ignore */
+  }
+}
+
+/** The place kept on the device, for "Continue at ...": the last one the reader reached on the line. */
+export function loadKeptPlace(): TimelinePosition | null {
+  if (!hasWindow()) return null;
+  try {
+    return parse(localStorage.getItem(SCROLL_KEY));
+  } catch {
+    return null;
   }
 }
 

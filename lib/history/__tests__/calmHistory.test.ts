@@ -151,7 +151,9 @@ describe("the timeline", () => {
     const page = code("components/history/HistoryTimelinePage.tsx");
     expect(page).toContain("const client = useMounted();");
     expect(page).toContain("useState<TimelineState>(() => (client ? readState() : EMPTY_STATE))");
-    expect(page).toContain("useState<scroll.TimelinePosition | null>(() => (client ? scroll.loadPosition() : null))");
+    expect(page).toContain("useState<scroll.TimelinePosition | null>(() => (client ? scroll.loadKeptPlace() : null))");
+    // A visit that stays at the top keeps Back's place but not Continue's.
+    expect(page).toContain("scroll.savePosition(slug, offset, { mirror: !(top === rows[0] && offset > 0) });");
     // Put back in a layout effect, so before the paint, and on Back alone.
     const back = page.slice(page.indexOf("useIsoLayoutEffect(() => {"));
     expect(back).toMatch(/^useIsoLayoutEffect\(\(\) => \{\s+if \(!hydrated \|\| !cameBack\(\) \|\| isReturning\(\)\) return;/);
