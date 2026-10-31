@@ -35,6 +35,9 @@
  *    under the reading place starts a tenth of the way down, so as much of it
  *    shows as can.
  *  - Smooth, unless Purify's motion setting is off.
+ *  - Read back the same way (the owner's note 68): the block the reader is
+ *    at is the one over the band's middle (KEPT_AT, blockAt), the line every
+ *    block set here covers, so the Bible keeps the verse it lands on.
  *
  * The arithmetic is pure and tested (lib/ui/__tests__/readingPlace.test.ts);
  * the measuring is apart from it, in readScreen().
@@ -139,6 +142,40 @@ export function shiftToReadingPlace(band: Span, block: Span, align: Align = "aut
 /** Whether the block stands in the band's middle, where read aloud leaves it alone. */
 export function inReadingZone(band: Span, block: Span): boolean {
   return block.top >= placeIn(band, ZONE_TOP) && block.bottom <= placeIn(band, ZONE_FOOT);
+}
+
+/**
+ * The line a page reads which block the reader is at (1.8, the owner's note
+ * 68: the Bible keeps the verse a reader stopped at). The middle of the band,
+ * because every way shiftToReadingPlace stands a block leaves it over this
+ * line: a short one centred on it, a longer one from the reading place above
+ * it to below it, a tall one from a tenth of the way down to past seven
+ * tenths. So a place read here and gone back to is read here again as the
+ * same block: a return never walks.
+ */
+export const KEPT_AT = 0.5;
+
+/**
+ * Which of a run of blocks, in the page's order, the reader is at: the last
+ * one whose top is at or above the line (one that starts lower has not been
+ * reached). The first when none is, the reader being above them all.
+ * `topOf` is asked for as few tops as a halving search needs, so a page can
+ * hand it a measure of its own.
+ */
+export function blockAt(count: number, topOf: (i: number) => number, line: number): number {
+  let lo = 0;
+  let hi = count - 1;
+  let at = 0;
+  while (lo <= hi) {
+    const mid = (lo + hi) >> 1;
+    if (topOf(mid) <= line) {
+      at = mid;
+      lo = mid + 1;
+    } else {
+      hi = mid - 1;
+    }
+  }
+  return at;
 }
 
 /** One span around them all: a verse that runs over several lines, or a range of verses. */

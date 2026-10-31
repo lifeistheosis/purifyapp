@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useTranslate } from "@/components/i18n/MessagesProvider";
+import { VERSE_ROWS, verseAtReadingPlace } from "@/lib/bible/verseInView";
 import { cn } from "@/lib/cn";
 
 /**
@@ -18,10 +19,13 @@ import { cn } from "@/lib/cn";
  * browser that strip pinned at 48px under a 72px web header and cut through
  * it (the owner's screenshot, 2026-10-01).
  *
- * The verse is the one most in view near the top of the reading area, read
- * from every `<div id="v{n}">` VerseRow renders. aria-hidden, as the strip
- * was: a counter rewriting itself as the page scrolls is noise to a screen
- * reader, and the chapter is already the bar's heading.
+ * The verse is the one over the reading line, the middle of what can be seen
+ * between the bars (lib/bible/verseInView.ts): the same verse the Bible keeps
+ * as the reader's place and a link lands on (1.8, the owner's note 68). It
+ * was the one with the most of itself near the top of the screen, so a
+ * return that landed on verse 16 read "v 14 of 36" over it. aria-hidden, as
+ * the strip was: a counter rewriting itself as the page scrolls is noise to a
+ * screen reader, and the chapter is already the bar's heading.
  */
 /** Scripture read with attention, a little under the usual silent pace. */
 const WORDS_A_MINUTE = 200;
@@ -63,11 +67,9 @@ export function ChapterVerseStatus({
     return () => obs.disconnect();
   }, [chapterKey]);
 
-  // The verse with the largest share of the band under the bar.
+  // The verse over the reading line, as the page scrolls and as it opens.
   useEffect(() => {
-    const verses = Array.from(document.querySelectorAll<HTMLElement>("[id^='v']")).filter((el) =>
-      /^v\d+$/.test(el.id),
-    );
+    const verses = Array.from(document.querySelectorAll<HTMLElement>(VERSE_ROWS));
     if (verses.length === 0) return;
     // The words from each verse to the end, read from the English of each
     // row (the Greek beside it is not counted).
@@ -78,24 +80,11 @@ export function ChapterVerseStatus({
       sum += text.split(/\s+/).filter(Boolean).length;
       wordsFrom.set(Number(verses[i].id.slice(1)), sum);
     }
-    const ratios = new Map<Element, number>();
     let current = 1;
+    let raf = 0;
     const settle = () => {
-      let best: Element | null = null;
-      let bestRatio = 0;
-      for (const [el, r] of ratios) {
-        if (r > bestRatio) {
-          bestRatio = r;
-          best = el;
-        }
-      }
-      // No verse in the band: the reader is past the last one (the foot of
-      // the chapter, Keep scrolling), or jumped there without passing
-      // through. The last verse above the band is where they are.
-      let n = best ? Number(best.id.slice(1)) : 0;
-      for (let i = verses.length - 1; !n && i >= 0; i -= 1) {
-        if (verses[i].getBoundingClientRect().top < 80) n = Number(verses[i].id.slice(1));
-      }
+      raf = 0;
+      const n = verseAtReadingPlace();
       if (n && n !== current) {
         current = n;
         setVerse(n);
@@ -104,31 +93,17 @@ export function ChapterVerseStatus({
         setMinutes(words >= WORDS_A_MINUTE ? Math.round(words / WORDS_A_MINUTE) : null);
       }
     };
-    const obs = new IntersectionObserver(
-      (entries) => {
-        for (const e of entries) ratios.set(e.target, e.intersectionRatio);
-        settle();
-      },
-      { rootMargin: "-80px 0px -55% 0px", threshold: [0, 0.25, 0.5, 0.75, 1] },
-    );
-    verses.forEach((v) => obs.observe(v));
-    // A jump that lands where no verse was or is in the band changes no
-    // verse's crossing, so the observer says nothing: the scroll asks too.
-    let raf = 0;
+    // Once a frame at most, whatever moved the page.
     const onScroll = () => {
-      if (raf) return;
-      raf = requestAnimationFrame(() => {
-        raf = 0;
-        let any = false;
-        for (const r of ratios.values()) if (r > 0) any = true;
-        if (!any) settle();
-      });
+      if (!raf) raf = requestAnimationFrame(settle);
     };
+    raf = requestAnimationFrame(settle);
     window.addEventListener("scroll", onScroll, { passive: true });
+    window.addEventListener("resize", onScroll);
     return () => {
-      obs.disconnect();
       cancelAnimationFrame(raf);
       window.removeEventListener("scroll", onScroll);
+      window.removeEventListener("resize", onScroll);
     };
   }, [chapterKey]);
 

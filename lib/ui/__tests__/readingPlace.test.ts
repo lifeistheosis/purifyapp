@@ -24,10 +24,12 @@ vi.mock("../motion", () => ({ prefersReducedMotion: () => motion.reduce }));
 
 import {
   HAIR_PX,
+  KEPT_AT,
   MIN_BAND_PX,
   READING_PLACE,
   SCREEN_EDGE_ATTR,
   bandOf,
+  blockAt,
   goToReadingPlace,
   inReadingZone,
   placeIn,
@@ -177,6 +179,58 @@ describe("read aloud's middle", () => {
     // Down to seven tenths of the band, and no further.
     expect(inReadingZone(BAND, { top: 400, bottom: 76 + 0.7 * 605 })).toBe(true);
     expect(inReadingZone(BAND, { top: 400, bottom: 76 + 0.7 * 605 + 1 })).toBe(false);
+  });
+});
+
+describe("reading back where the reader is (note 68)", () => {
+  // A chapter's verses down the page: each one's height, with 8px between.
+  // Short ones of a line or two, a long one, and a very long one.
+  const HEIGHTS = [72, 36, 108, 72, 180, 36, 72, 400, 108, 72, 36, 144, 72, 72, 36, 108, 72, 36, 72, 72];
+  const GAP = 8;
+  /** The verses' spans with the page at its top, from 900px down. */
+  const SPANS: Span[] = [];
+  for (let i = 0, y = 900; i < HEIGHTS.length; i++) {
+    SPANS.push({ top: y, bottom: y + HEIGHTS[i] });
+    y += HEIGHTS[i] + GAP;
+  }
+  /** Which verse is over the line a place is read at, the page moved by `shift`. */
+  const at = (shift: number) => blockAt(SPANS.length, (i) => SPANS[i].top - shift, placeIn(BAND, KEPT_AT));
+
+  it("reads the middle of the band", () => {
+    expect(KEPT_AT).toBe(0.5);
+  });
+
+  it("takes the last block whose top is at or above the line, and the first above them all", () => {
+    const tops = [100, 200, 300, 400];
+    const top = (i: number) => tops[i];
+    expect(blockAt(4, top, 250)).toBe(1);
+    expect(blockAt(4, top, 300)).toBe(2);
+    expect(blockAt(4, top, 99)).toBe(0);
+    expect(blockAt(4, top, 5000)).toBe(3);
+    expect(blockAt(1, top, 0)).toBe(0);
+  });
+
+  it("asks for as few tops as a halving search needs", () => {
+    const asked: number[] = [];
+    const tops = Array.from({ length: 176 }, (_, i) => i * 50);
+    blockAt(tops.length, (i) => (asked.push(i), tops[i]), 4321);
+    expect(asked.length).toBeLessThanOrEqual(8);
+  });
+
+  it("reads every verse a landing sets back as that verse, short, longer or very long: a return never walks", () => {
+    for (let v = 0; v < SPANS.length; v++) {
+      const shift = shiftToReadingPlace(BAND, SPANS[v]);
+      expect(at(shift), `verse ${v + 1} (${HEIGHTS[v]}px)`).toBe(v);
+    }
+  });
+
+  it("lands on verse 16 and keeps 16, where the topmost verse on the screen said 13", () => {
+    const v16 = 15;
+    const shift = shiftToReadingPlace(BAND, SPANS[v16]);
+    expect(at(shift)).toBe(v16);
+    // Build 85's rule: the topmost verse whose top had gone under the bar.
+    const topmost = blockAt(SPANS.length, (i) => SPANS[i].top - shift, BAND.top + 4);
+    expect(topmost).toBeLessThan(v16);
   });
 });
 
