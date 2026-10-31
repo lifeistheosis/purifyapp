@@ -390,24 +390,40 @@ export const LiveCaptions = memo(function LiveCaptions({
           const { main, under } = lineParts(line);
           const state = current < 0 ? "rest" : i === current ? "lit" : Math.abs(i - current) === 1 ? "near" : "far";
           const said = timed ? lines[i].words.map((w) => w.text) : wordsOf(line.text);
+          const part = main.sung ? main : under.find((u) => u.sung);
+          // Each word over its sound (notes 56 and 59): one stack a word, lit
+          // as one, read in the line's own direction.
+          const sounds = part?.pairs && part.pairs.length === said.length ? part.pairs : null;
+          const latinLang = lang ? `${lang}-Latn` : undefined;
+          const sungLang = part?.latin ? latinLang : lang;
+          const ref = (j: number) => (el: HTMLSpanElement | null) => {
+            (wordRefs.current[i] ??= [])[j] = el;
+          };
           const sung = (
             <>
-              {said.map((word, j) => (
-                <span
-                  key={j}
-                  ref={(el) => {
-                    (wordRefs.current[i] ??= [])[j] = el;
-                  }}
-                >
-                  {word}
-                  {j < said.length - 1 ? " " : ""}
-                </span>
-              ))}
+              {said.map((word, j) =>
+                sounds ? (
+                  <span key={j}>
+                    <span ref={ref(j)} data-sung-pair>
+                      <span>{word}</span>
+                      <span data-sung-sound dir="ltr" lang={latinLang}>
+                        {sounds[j]}
+                      </span>
+                    </span>
+                    {j < said.length - 1 ? " " : ""}
+                  </span>
+                ) : (
+                  <span key={j} ref={ref(j)}>
+                    {word}
+                    {j < said.length - 1 ? " " : ""}
+                  </span>
+                ),
+              )}
             </>
           );
           const body = (
             <>
-              <span data-sung-main dir="auto" lang={main.sung ? lang : "en"} className="block">
+              <span data-sung-main dir="auto" lang={main.sung ? sungLang : "en"} className="block">
                 <span data-sung-grow className="block">
                   {main.sung ? sung : main.text}
                 </span>
@@ -419,7 +435,7 @@ export const LiveCaptions = memo(function LiveCaptions({
                       <span
                         key={k}
                         dir="auto"
-                        lang={u.sung ? lang : lang ? `${lang}-Latn` : undefined}
+                        lang={u.sung ? sungLang : latinLang}
                         data-sung-part={u.sung ? "sung" : "translit"}
                         className="block"
                       >

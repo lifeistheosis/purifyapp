@@ -22,9 +22,12 @@ import {
   formatDuration,
   inBucket,
   isStreamed,
+  isWordsView,
   streamedPaths,
-  subLines,
+  sungAs,
   variantRef,
+  wordSounds,
+  WORDS_VIEWS,
 } from "@/lib/chants/media";
 import { SITE_URL } from "@/lib/site";
 
@@ -71,15 +74,31 @@ describe("a chant's media address", () => {
     expect(formatDuration(0)).toBe("0:00");
   });
 
-  it("puts the English over the sung words and the transliteration under them, as the reader chose (1.8, Sing along)", () => {
-    const line = { text: "Χριστὸς ἀνέστη", translit: "Christós anésti", en: "Christ is risen" };
-    expect(subLines(line, { translit: true, en: true })).toEqual(["Christós anésti"]);
-    expect(subLines(line, { translit: false, en: true })).toEqual([]);
-    expect(englishOver(line, { translit: false, en: true })).toBe("Christ is risen");
-    expect(englishOver(line, { translit: true, en: false })).toBeUndefined();
+  it("puts the English over the sung words, as the reader chose (1.8, Sing along)", () => {
+    const line = { text: "Χριστὸς ἀνέστη", translit: "Christos anesti", en: "Christ is risen" };
+    expect(englishOver(line, { view: "original", en: true })).toBe("Christ is risen");
+    expect(englishOver(line, { view: "both", en: false })).toBeUndefined();
     // A line that is English already has no English over it.
-    expect(englishOver({ text: "Christ is risen", en: "Christ is risen" }, { translit: true, en: true })).toBeUndefined();
-    expect(englishOver({ text: "Christ is risen" }, { translit: true, en: true })).toBeUndefined();
+    expect(englishOver({ text: "Christ is risen", en: "Christ is risen" }, { view: "both", en: true })).toBeUndefined();
+    expect(englishOver({ text: "Christ is risen" }, { view: "both", en: true })).toBeUndefined();
+  });
+
+  it("shows the sung words as sung, as their sound, or each word over its sound (notes 56 and 59)", () => {
+    const line = { text: "اعترفوا للرب فإنه صالح،", translit: "I'tarifu lir-Rabbi fa-innahu salihun," };
+    expect(WORDS_VIEWS).toEqual(["original", "translit", "both"]);
+    expect(sungAs(line, "original")).toEqual({ text: line.text });
+    expect(sungAs(line, "translit")).toEqual({ text: line.translit, latin: true });
+    expect(sungAs(line, "both")).toEqual({ text: line.text, pairs: ["I'tarifu", "lir-Rabbi", "fa-innahu", "salihun,"] });
+    // Word for word: the n-th sound is the n-th sung word's.
+    expect(wordSounds(line)).toEqual(["I'tarifu", "lir-Rabbi", "fa-innahu", "salihun,"]);
+    // Where the two do not go word for word, the sound goes under the line whole.
+    const loose = { text: "Χριστὸς ἀνέστη", translit: "Christos anesti ek nekron" };
+    expect(wordSounds(loose)).toBeNull();
+    expect(sungAs(loose, "both")).toEqual({ text: loose.text, sub: [loose.translit] });
+    // A line with no sound written out is always its own words.
+    for (const view of WORDS_VIEWS) expect(sungAs({ text: "Give thanks to the Lord" }, view)).toEqual({ text: "Give thanks to the Lord" });
+    expect(isWordsView("both")).toBe(true);
+    expect(isWordsView("sound")).toBe(false);
   });
 });
 

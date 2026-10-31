@@ -71,12 +71,26 @@ timing files) or one the bundle already carries (as the Anthem's
    machine translation presented as the Church's text. A transliteration goes
    only under a script that is not Latin, and it is ours. Any Arabic or
    Georgian word you are not sure of goes back to the owner, marked.
+   Since 1.8 (notes 56 and 59) the reader switches the words themselves
+   between the original, its transliteration, and both, both drawing each
+   word over its sound: so a transliteration has exactly one word for each
+   word of its line (a prefix joined with a hyphen, `lir-Rabbi`, `l-abadi`),
+   in one plain scheme an English reader can say (Latin letters, an
+   apostrophe for the Arabic ayn and hamza, no scholar's marks), written as
+   the recording sings it. Every Arabic line has one. The data test holds
+   both. A refrain the singers add after each half verse (the Alleluia of the
+   Polyeleos) is its own line, so it lights when it is sung.
 3. **The times.** `node scripts/chants/timing-from-transcript.mjs <transcript> <slug> <id>`.
    It lays the transcript's segments on the data file's lines one for one and
    refuses when the counts differ. Lines marked `?` share few words with the
    transcript: listen to those. A bucket recording's length is taken from its
    data file. Where no transcript can be made (no speech model on the PC for
-   its language), leave `timing` out: the words show without Sing along.
+   its language), the lines can still be timed by the recording itself, as
+   Psalm 135's Greek, Serbian and Arabic were (2026-10-31): read one verse's
+   line starts by hand on a spectrogram (Homebase/projects/purify-ads,
+   `edits/tools/speechmap.mjs`), then find every other verse by its breaths
+   and by matching that verse's refrain and Alleluia along the recording.
+   Never take a speech model's word times as they are: they run late.
 4. **The prose.** `about.what`, `about.history` and `about.when`, in English,
    plain, with no em dash, nothing invented, every claim resting on a source
    in `sources`. Set `review` to `{ "status": "awaiting-clergy-review", "since": "<today>" }`.

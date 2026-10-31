@@ -2,7 +2,7 @@ import fs from "node:fs";
 
 import { describe, expect, it } from "vitest";
 
-import { captionsFor, readTiming } from "@/lib/chants/media";
+import { captionsFor, readTiming, WORDS_VIEWS } from "@/lib/chants/media";
 import type { Chant, ChantTiming } from "@/lib/chants/types";
 import { verseCaptions, type ReadAloudManifest } from "@/lib/readAloud/chapters";
 import { captionLines, lineAt, lineParts, verseOf } from "../captions";
@@ -13,7 +13,7 @@ const anthem = JSON.parse(fs.readFileSync("data/chants/prayer-rope-anthem.json",
 const timing = (id: string): ChantTiming =>
   readTiming(JSON.parse(fs.readFileSync(`public/audio/chants/prayer-rope-anthem/${id}.json`, "utf8")))!;
 const version = (id: string) => anthem.variants.find((v) => v.id === id)!;
-const NONE = { translit: false, en: false };
+const NONE = { view: "original" as const, en: false };
 
 describe("live captions", () => {
   const en = version("en");
@@ -45,7 +45,24 @@ describe("live captions", () => {
     expect(lineAt(lines, 0)).toBe(-1);
     expect(lineAt(lines, 3.1)).toBe(0); // 3.2 starts, taken 0.15 early
     expect(lineAt(lines, 24)).toBe(4);
-    expect(lineAt(lines, 200)).toBe(lines.length - 1);
+    const last = lines.at(-1)!;
+    expect(lineAt(lines, last.end + 1)).toBe(lines.length - 1);
+  });
+
+  it("lights nothing once a chant's words are done and its recording goes on (notes 56 and 59)", () => {
+    // The Arabic Psalm 135 has words for its first verse only: its last line
+    // is not shown being sung through every verse after it.
+    const firstVerse = captionLines([
+      { time: 0.6, end: 4.2, text: "اعترفوا للرب فإنه صالح،" },
+      { time: 4.2, end: 11.4, text: "الليلويا." },
+    ]);
+    expect(lineAt(firstVerse, 10)).toBe(1);
+    expect(lineAt(firstVerse, 11.4 + 5.9)).toBe(1);
+    expect(lineAt(firstVerse, 11.4 + 6.1)).toBe(-1);
+    expect(lineAt(firstVerse, 200)).toBe(-1);
+    // A chapter read aloud keeps its last verse lit to the end.
+    const read = captionLines([{ time: 0, end: 3, text: "In the beginning was the Word", n: 1 }]);
+    expect(lineAt(read, 60)).toBe(0);
   });
 
   it("works for every version, French included", () => {
@@ -78,11 +95,11 @@ describe("the lines under a sung line", () => {
 
   it("follow the reader's choice: the English over the French anthem, the French under it, or the French alone", () => {
     const fr = version("fr");
-    const shown = captionsFor(fr.lines, timing("fr"), { translit: true, en: true });
+    const shown = captionsFor(fr.lines, timing("fr"), { view: "both", en: true });
     expect(shown[0].text).toBe(fr.lines[0].text);
     expect(shown[0].en).toBe(fr.lines[0].en);
     expect(shown.every((l) => !l.sub)).toBe(true);
-    const hidden = captionsFor(fr.lines, timing("fr"), { translit: true, en: false });
+    const hidden = captionsFor(fr.lines, timing("fr"), { view: "both", en: false });
     expect(hidden.every((l) => !l.en && !l.sub)).toBe(true);
   });
 
@@ -96,7 +113,7 @@ describe("the lines under a sung line", () => {
 });
 
 describe("Sing along (1.8, round 9 A): each line drawn from its own data and nothing else", () => {
-  const ALL = { translit: true, en: true };
+  const ALL = { view: "both" as const, en: true };
 
   it("reads the French anthem in its English, the French as sung under each line", () => {
     const fr = version("fr");
@@ -108,35 +125,65 @@ describe("Sing along (1.8, round 9 A): each line drawn from its own data and not
     });
   });
 
-  it("draws the English anthem and the Arabic one as they are sung, with nothing under them", () => {
-    for (const id of ["en", "ar"]) {
-      const v = version(id);
-      captionsFor(v.lines, timing(id), ALL).forEach((line, i) => {
+  it("draws the English anthem as it is sung, with nothing under it", () => {
+    const v = version("en");
+    for (const view of WORDS_VIEWS) {
+      captionsFor(v.lines, timing("en"), { view, en: true }).forEach((line, i) => {
         expect(lineParts(line)).toEqual({ main: { text: v.lines[i].text, sung: true }, under: [] });
       });
     }
   });
 
+  it("draws the Arabic anthem as the reader chose: as sung, as its sound, or each word over its sound (notes 56 and 59)", () => {
+    const v = version("ar");
+    const t = timing("ar");
+    captionsFor(v.lines, t, { view: "original", en: true }).forEach((line, i) => {
+      expect(lineParts(line)).toEqual({ main: { text: v.lines[i].text, sung: true }, under: [] });
+    });
+    captionsFor(v.lines, t, { view: "translit", en: true }).forEach((line, i) => {
+      expect(lineParts(line)).toEqual({ main: { text: v.lines[i].translit, sung: true, latin: true }, under: [] });
+    });
+    const both = captionLines(captionsFor(v.lines, t, ALL));
+    both.forEach((line, i) => {
+      const parts = lineParts(line);
+      expect(parts.main.text).toBe(v.lines[i].text);
+      // A sound for every word sung, in order: the n-th under the n-th.
+      expect(parts.main.pairs).toEqual(v.lines[i].translit!.split(/\s+/));
+      expect(parts.main.pairs).toHaveLength(line.words.length);
+      expect(parts.under).toEqual([]);
+    });
+  });
+
   it("invents no text: every part drawn is a field of the version's own line", () => {
     for (const v of anthem.variants) {
-      captionsFor(v.lines, timing(v.id), ALL).forEach((line, i) => {
-        const { main, under } = lineParts(line);
-        const own = [v.lines[i].text, v.lines[i].en, v.lines[i].translit].filter(Boolean);
-        for (const part of [main, ...under]) expect(own).toContain(part.text);
-        // The sung words are drawn once, so they light once.
-        expect([main, ...under].filter((p) => p.sung).map((p) => p.text)).toEqual([v.lines[i].text]);
-      });
+      for (const view of WORDS_VIEWS) {
+        captionsFor(v.lines, timing(v.id), { view, en: true }).forEach((line, i) => {
+          const { main, under } = lineParts(line);
+          const own = [v.lines[i].text, v.lines[i].en, v.lines[i].translit].filter(Boolean);
+          for (const part of [main, ...under]) expect(own).toContain(part.text);
+          for (const part of [main, ...under]) if (part.pairs) expect(part.pairs.join(" ")).toBe(v.lines[i].translit);
+          // The sung words are drawn once, so they light once.
+          const sung = view === "translit" && v.lines[i].translit ? v.lines[i].translit : v.lines[i].text;
+          expect([main, ...under].filter((p) => p.sung).map((p) => p.text)).toEqual([sung]);
+        });
+      }
     }
   });
 
-  it("puts a transliteration under the sung words, never over them", () => {
-    const greek = { text: "Χριστὸς ἀνέστη ἐκ νεκρῶν", translit: "Christós anésti ek nekrón", en: "Christ is risen from the dead" };
+  it("puts a transliteration with the sung words, never over them", () => {
+    const greek = { text: "Χριστὸς ἀνέστη ἐκ νεκρῶν", translit: "Christos anesti ek nekron", en: "Christ is risen from the dead" };
     const [line] = captionsFor([greek], null, ALL);
     expect(lineParts(line)).toEqual({
       main: { text: greek.en, sung: false },
+      under: [{ text: greek.text, sung: true, pairs: ["Christos", "anesti", "ek", "nekron"] }],
+    });
+    // Where the sound does not go word for word, it goes under the line whole.
+    const [loose] = captionsFor([{ ...greek, translit: "Christos anesti ek nekron, alliluia" }], null, ALL);
+    expect(lineParts(loose)).toEqual({
+      main: { text: greek.en, sung: false },
       under: [
         { text: greek.text, sung: true },
-        { text: greek.translit, sung: false },
+        { text: "Christos anesti ek nekron, alliluia", sung: false },
       ],
     });
   });

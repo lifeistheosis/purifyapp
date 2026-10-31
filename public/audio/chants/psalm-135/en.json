@@ -3,264 +3,524 @@
   "durationSec": 534.96,
   "lines": [
     {
-      "at": 1.3,
-      "end": 11.8,
-      "text": "Give thanks to the Lord: for he is good:"
+      "at": 0.66,
+      "end": 8.32,
+      "text": "O give thanks unto the Lord; for he is good:"
     },
     {
-      "at": 11.8,
-      "end": 21.7,
-      "text": "for his mercy endures for ever."
+      "at": 8.32,
+      "end": 11.47,
+      "text": "Alleluia."
     },
     {
-      "at": 21.7,
-      "end": 31.1,
-      "text": "Give thanks to the God of gods;"
+      "at": 11.47,
+      "end": 17.96,
+      "text": "for his mercy endureth for ever."
     },
     {
-      "at": 31.1,
-      "end": 41,
-      "text": "for his mercy endures for ever."
+      "at": 17.96,
+      "end": 21.19,
+      "text": "Alleluia."
     },
     {
-      "at": 41,
-      "end": 50.3,
-      "text": "Give thanks to the Lord of lords:"
+      "at": 21.19,
+      "end": 27.64,
+      "text": "O give thanks unto the God of gods:"
     },
     {
-      "at": 50.3,
-      "end": 59.4,
-      "text": "for his mercy endures for ever."
+      "at": 27.64,
+      "end": 30.9,
+      "text": "Alleluia."
     },
     {
-      "at": 59.4,
-      "end": 69.8,
+      "at": 30.9,
+      "end": 37.2,
+      "text": "for his mercy endureth for ever."
+    },
+    {
+      "at": 37.2,
+      "end": 40.8,
+      "text": "Alleluia."
+    },
+    {
+      "at": 40.8,
+      "end": 46.76,
+      "text": "Oh give thanks unto the Lord of lords;"
+    },
+    {
+      "at": 46.76,
+      "end": 50.1,
+      "text": "Alleluia."
+    },
+    {
+      "at": 50.1,
+      "end": 56.48,
+      "text": "for his mercy endureth for ever."
+    },
+    {
+      "at": 56.48,
+      "end": 59.2,
+      "text": "Alleluia."
+    },
+    {
+      "at": 59.2,
+      "end": 66,
       "text": "To him who alone has wrought great wonders:"
     },
     {
-      "at": 69.8,
-      "end": 78.6,
-      "text": "for his mercy endures for ever."
+      "at": 66,
+      "end": 69.6,
+      "text": "Alleluia."
     },
     {
-      "at": 78.6,
-      "end": 88.6,
+      "at": 69.6,
+      "end": 75.64,
+      "text": "for his mercy endureth for ever."
+    },
+    {
+      "at": 75.64,
+      "end": 78.31,
+      "text": "Alleluia."
+    },
+    {
+      "at": 78.31,
+      "end": 85.16,
       "text": "To him who made the heavens by understanding;"
     },
     {
-      "at": 88.6,
-      "end": 97.8,
-      "text": "for his mercy endures for ever."
+      "at": 85.16,
+      "end": 88.26,
+      "text": "Alleluia."
     },
     {
-      "at": 97.8,
-      "end": 109.2,
+      "at": 88.26,
+      "end": 94.84,
+      "text": "for his mercy endureth for ever."
+    },
+    {
+      "at": 94.84,
+      "end": 97.6,
+      "text": "Alleluia."
+    },
+    {
+      "at": 97.6,
+      "end": 105.6,
       "text": "To him who established the earth on the waters;"
     },
     {
-      "at": 109.2,
-      "end": 118.4,
-      "text": "for his mercy endures for ever."
+      "at": 105.6,
+      "end": 108.74,
+      "text": "Alleluia."
     },
     {
-      "at": 118.4,
-      "end": 127.5,
+      "at": 108.74,
+      "end": 115.2,
+      "text": "for his mercy endureth for ever."
+    },
+    {
+      "at": 115.2,
+      "end": 118.58,
+      "text": "Alleluia."
+    },
+    {
+      "at": 118.58,
+      "end": 124,
       "text": "To him who alone made great lights;"
     },
     {
-      "at": 127.5,
-      "end": 138.8,
-      "text": "for his mercy endures for ever."
+      "at": 124,
+      "end": 127.3,
+      "text": "Alleluia."
     },
     {
-      "at": 138.8,
-      "end": 148.1,
-      "text": "The sun to rule by day;"
+      "at": 127.3,
+      "end": 135.8,
+      "text": "for his mercy endureth for ever."
     },
     {
-      "at": 148.1,
-      "end": 159.2,
-      "text": "for his mercy endures for ever."
+      "at": 135.8,
+      "end": 138.9,
+      "text": "Alleluia."
     },
     {
-      "at": 159.2,
-      "end": 172.3,
+      "at": 138.9,
+      "end": 144.12,
+      "text": "the sun to rule the day:"
+    },
+    {
+      "at": 144.12,
+      "end": 147.9,
+      "text": "Alleluia."
+    },
+    {
+      "at": 147.9,
+      "end": 156.32,
+      "text": "for his mercy endureth for ever."
+    },
+    {
+      "at": 156.32,
+      "end": 159,
+      "text": "Alleluia."
+    },
+    {
+      "at": 159,
+      "end": 168.24,
       "text": "The moon and the stars to rule the night;"
     },
     {
-      "at": 172.3,
-      "end": 183.2,
-      "text": "for his mercy endures for ever."
+      "at": 168.24,
+      "end": 172.1,
+      "text": "Alleluia."
     },
     {
-      "at": 183.2,
-      "end": 194.8,
-      "text": "To him who smote Egypt with their first-born;"
+      "at": 172.1,
+      "end": 180.2,
+      "text": "for his mercy endureth for ever."
     },
     {
-      "at": 194.8,
-      "end": 205.6,
-      "text": "for his mercy endures for ever."
+      "at": 180.2,
+      "end": 183,
+      "text": "Alleluia."
     },
     {
-      "at": 205.6,
-      "end": 216.1,
+      "at": 183,
+      "end": 191.2,
+      "text": "To him that smote Egypt in their firstborn:"
+    },
+    {
+      "at": 191.2,
+      "end": 194.6,
+      "text": "Alleluia."
+    },
+    {
+      "at": 194.6,
+      "end": 202.04,
+      "text": "for his mercy endureth for ever."
+    },
+    {
+      "at": 202.04,
+      "end": 205.68,
+      "text": "Alleluia."
+    },
+    {
+      "at": 205.68,
+      "end": 212.6,
       "text": "And brought Israel out of the midst of them;"
     },
     {
-      "at": 216.1,
-      "end": 227.1,
-      "text": "for his mercy endures for ever:"
+      "at": 212.6,
+      "end": 215.9,
+      "text": "Alleluia."
     },
     {
-      "at": 227.1,
-      "end": 236.7,
+      "at": 215.9,
+      "end": 223.44,
+      "text": "for his mercy endureth for ever."
+    },
+    {
+      "at": 223.44,
+      "end": 226.52,
+      "text": "Alleluia."
+    },
+    {
+      "at": 226.52,
+      "end": 233,
       "text": "with a strong hand, and a high arm:"
     },
     {
-      "at": 236.7,
-      "end": 246.8,
-      "text": "for his mercy endures for ever."
+      "at": 233,
+      "end": 236.19,
+      "text": "Alleluia."
     },
     {
-      "at": 246.8,
-      "end": 259.5,
-      "text": "To him who divided the Red Sea into parts:"
+      "at": 236.19,
+      "end": 244.04,
+      "text": "for his mercy endureth for ever."
     },
     {
-      "at": 259.5,
-      "end": 269.3,
-      "text": "for his mercy endures for ever:"
+      "at": 244.04,
+      "end": 246.6,
+      "text": "Alleluia."
     },
     {
-      "at": 269.3,
-      "end": 278.8,
-      "text": "and brought Israel through the midst of it:"
+      "at": 246.6,
+      "end": 255.84,
+      "text": "To him which divided the Red sea into parts:"
     },
     {
-      "at": 278.8,
-      "end": 288,
-      "text": "for his mercy endures for ever:"
+      "at": 255.84,
+      "end": 259.3,
+      "text": "Alleluia."
     },
     {
-      "at": 288,
-      "end": 301.4,
+      "at": 259.3,
+      "end": 265.44,
+      "text": "for his mercy endureth for ever."
+    },
+    {
+      "at": 265.44,
+      "end": 269.1,
+      "text": "Alleluia."
+    },
+    {
+      "at": 269.1,
+      "end": 275.04,
+      "text": "And led Israel through the midst thereof:"
+    },
+    {
+      "at": 275.04,
+      "end": 278.6,
+      "text": "Alleluia."
+    },
+    {
+      "at": 278.6,
+      "end": 284.68,
+      "text": "for his mercy endureth for ever."
+    },
+    {
+      "at": 284.68,
+      "end": 287.73,
+      "text": "Alleluia."
+    },
+    {
+      "at": 287.73,
+      "end": 297.8,
       "text": "and overthrew Pharao and his host in the Red Sea:"
     },
     {
-      "at": 301.4,
-      "end": 311.6,
-      "text": "for his mercy endures for ever."
+      "at": 297.8,
+      "end": 301,
+      "text": "Alleluia."
     },
     {
-      "at": 311.6,
-      "end": 323.2,
-      "text": "To him who led his people through the wilderness:"
+      "at": 301,
+      "end": 308.64,
+      "text": "for his mercy endureth for ever."
     },
     {
-      "at": 323.2,
-      "end": 333.1,
-      "text": "for his mercy endures for ever."
+      "at": 308.64,
+      "end": 311.4,
+      "text": "Alleluia."
     },
     {
-      "at": 333.1,
-      "end": 342.4,
-      "text": "To him who smote great kings:"
+      "at": 311.4,
+      "end": 319.46,
+      "text": "To him that led his people through the wilderness;"
     },
     {
-      "at": 342.4,
-      "end": 351.2,
-      "text": "for his mercy endures for ever:"
+      "at": 319.46,
+      "end": 322.59,
+      "text": "Alleluia."
     },
     {
-      "at": 351.2,
-      "end": 359,
+      "at": 322.59,
+      "end": 330.28,
+      "text": "for his mercy endureth for ever."
+    },
+    {
+      "at": 330.28,
+      "end": 332.9,
+      "text": "Alleluia."
+    },
+    {
+      "at": 332.9,
+      "end": 338.94,
+      "text": "To him that smote great kings;"
+    },
+    {
+      "at": 338.94,
+      "end": 342.2,
+      "text": "Alleluia."
+    },
+    {
+      "at": 342.2,
+      "end": 348.14,
+      "text": "for his mercy endureth for ever."
+    },
+    {
+      "at": 348.14,
+      "end": 351,
+      "text": "Alleluia."
+    },
+    {
+      "at": 351,
+      "end": 355.32,
       "text": "and slew mighty kings;"
     },
     {
-      "at": 359,
-      "end": 368.7,
-      "text": "for his mercy endures for ever:"
+      "at": 355.32,
+      "end": 358.8,
+      "text": "Alleluia."
     },
     {
-      "at": 368.7,
-      "end": 378.2,
-      "text": "Seon king of the Amorites:"
+      "at": 358.8,
+      "end": 365,
+      "text": "for his mercy endureth for ever."
     },
     {
-      "at": 378.2,
-      "end": 387.2,
-      "text": "for his mercy endures for ever:"
+      "at": 365,
+      "end": 368.06,
+      "text": "Alleluia."
     },
     {
-      "at": 387.2,
-      "end": 396.2,
-      "text": "and Og king of Basan:"
+      "at": 368.06,
+      "end": 374.6,
+      "text": "Sihon king of the Amorites:"
     },
     {
-      "at": 396.2,
-      "end": 405.2,
-      "text": "for his mercy endures for ever:"
+      "at": 374.6,
+      "end": 378,
+      "text": "Alleluia."
     },
     {
-      "at": 405.2,
-      "end": 415.4,
+      "at": 378,
+      "end": 384.22,
+      "text": "for his mercy endureth for ever."
+    },
+    {
+      "at": 384.22,
+      "end": 386.66,
+      "text": "Alleluia."
+    },
+    {
+      "at": 386.66,
+      "end": 392.64,
+      "text": "And Og the king of Bashan:"
+    },
+    {
+      "at": 392.64,
+      "end": 395.75,
+      "text": "Alleluia."
+    },
+    {
+      "at": 395.75,
+      "end": 402.22,
+      "text": "for his mercy endureth for ever."
+    },
+    {
+      "at": 402.22,
+      "end": 405.32,
+      "text": "Alleluia."
+    },
+    {
+      "at": 405.32,
+      "end": 411.78,
       "text": "and gave their land for an inheritance:"
     },
     {
-      "at": 415.4,
-      "end": 425.3,
-      "text": "for his mercy endures for ever:"
+      "at": 411.78,
+      "end": 415.2,
+      "text": "Alleluia."
     },
     {
-      "at": 425.3,
-      "end": 436.9,
-      "text": "even an inheritance to Israel his servant:"
+      "at": 415.2,
+      "end": 421.46,
+      "text": "for his mercy endureth for ever."
     },
     {
-      "at": 436.9,
-      "end": 446.7,
-      "text": "for his mercy endures for ever."
+      "at": 421.46,
+      "end": 425.1,
+      "text": "Alleluia."
     },
     {
-      "at": 446.7,
-      "end": 458.7,
-      "text": "For the Lord remembered us in our low estate;"
+      "at": 425.1,
+      "end": 433.4,
+      "text": "an inheritance for Israel his servant;"
     },
     {
-      "at": 458.7,
-      "end": 468.5,
-      "text": "for his mercy endures for ever:"
+      "at": 433.4,
+      "end": 436.58,
+      "text": "Alleluia."
     },
     {
-      "at": 468.5,
-      "end": 477.8,
+      "at": 436.58,
+      "end": 443.24,
+      "text": "for his mercy endureth for ever."
+    },
+    {
+      "at": 443.24,
+      "end": 446.5,
+      "text": "Alleluia."
+    },
+    {
+      "at": 446.5,
+      "end": 454.96,
+      "text": "because in our affliction the Lord remembered us;"
+    },
+    {
+      "at": 454.96,
+      "end": 458.5,
+      "text": "Alleluia."
+    },
+    {
+      "at": 458.5,
+      "end": 464.6,
+      "text": "for his mercy endureth for ever."
+    },
+    {
+      "at": 464.6,
+      "end": 468.3,
+      "text": "Alleluia."
+    },
+    {
+      "at": 468.3,
+      "end": 474.24,
       "text": "and redeemed us from our enemies;"
     },
     {
-      "at": 477.8,
-      "end": 487.3,
-      "text": "for his mercy endures for ever."
+      "at": 474.24,
+      "end": 477.39,
+      "text": "Alleluia."
     },
     {
-      "at": 487.3,
-      "end": 497,
-      "text": "Who gives food to all flesh;"
+      "at": 477.39,
+      "end": 483.84,
+      "text": "for his mercy endureth for ever."
     },
     {
-      "at": 497,
-      "end": 506.7,
-      "text": "for his mercy endures for ever."
+      "at": 483.84,
+      "end": 486.87,
+      "text": "Alleluia."
     },
     {
-      "at": 506.7,
-      "end": 516.3,
-      "text": "Give thanks to the God of heaven;"
+      "at": 486.87,
+      "end": 493.36,
+      "text": "Who giveth food to all flesh:"
     },
     {
-      "at": 516.3,
-      "end": 534.9,
-      "text": "for his mercy endures for ever."
+      "at": 493.36,
+      "end": 496.47,
+      "text": "Alleluia."
+    },
+    {
+      "at": 496.47,
+      "end": 503,
+      "text": "for his mercy endureth for ever."
+    },
+    {
+      "at": 503,
+      "end": 506.21,
+      "text": "Alleluia."
+    },
+    {
+      "at": 506.21,
+      "end": 512.64,
+      "text": "O give thanks unto the God of heaven:"
+    },
+    {
+      "at": 512.64,
+      "end": 516.1,
+      "text": "Alleluia."
+    },
+    {
+      "at": 516.1,
+      "end": 522.56,
+      "text": "for his mercy endureth for ever."
+    },
+    {
+      "at": 522.56,
+      "end": 532.19,
+      "text": "Alleluia."
     }
   ]
 }
