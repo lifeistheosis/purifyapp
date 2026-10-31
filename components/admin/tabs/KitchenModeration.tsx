@@ -155,8 +155,10 @@ export function KitchenModeration({
                   const w = waitingOn?.(r.id) ?? null;
                   return w ? (
                     <span className="inline-flex items-center gap-2 font-sans text-[12px] text-paper/70" role="status">
-                      Removed. It is written in {w.seconds} {w.seconds === 1 ? "second" : "seconds"}.
-                      <ToolbarButton onClick={w.undo}>Undo</ToolbarButton>
+                      {w.seconds > 0
+                        ? `Removed. It is written in ${w.seconds} ${w.seconds === 1 ? "second" : "seconds"}.`
+                        : "Removed. Writing it now."}
+                      {w.seconds > 0 ? <ToolbarButton onClick={w.undo}>Undo</ToolbarButton> : null}
                     </span>
                   ) : (
                     <ToolbarButton

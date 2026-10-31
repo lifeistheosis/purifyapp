@@ -75,9 +75,18 @@ export function usePendingRemovals(onWritten: (key: string, error: string | null
         key,
         window.setTimeout(() => {
           const due = s.waiting.get(key);
-          drop(key);
+          s.timers.delete(key);
           if (!due) return;
-          void runCalls(due.action.calls).then((err) => written.current(key, err));
+          // Being written now: out of what leaving the page would send, and
+          // still on its row, at nought seconds and with no Undo, until the
+          // server answers. Dropping it first let the row show its buttons
+          // again for the length of the request.
+          s.waiting.delete(key);
+          setNow(Date.now());
+          void runCalls(due.action.calls).then((err) => {
+            drop(key);
+            written.current(key, err);
+          });
         }, UNDO_MS),
       );
     },

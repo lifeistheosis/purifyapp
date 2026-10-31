@@ -86,10 +86,11 @@ function QueueItem({
             {who ? ` · ${who}` : ""}
           </p>
           <p className="mt-0.5 font-sans text-[13px]" style={ink}>
-            Removed. It is written in {seconds} {seconds === 1 ? "second" : "seconds"}.
+            {seconds > 0 ? `Removed. It is written in ${seconds} ${seconds === 1 ? "second" : "seconds"}.` : "Removed. Writing it now."}
           </p>
         </div>
-        <ToolbarButton onClick={() => onUndo(row.key)}>Undo</ToolbarButton>
+        {/* Undo while it waits; once it is being written there is nothing to take back here. */}
+        {seconds > 0 ? <ToolbarButton onClick={() => onUndo(row.key)}>Undo</ToolbarButton> : null}
       </li>
     );
   }
