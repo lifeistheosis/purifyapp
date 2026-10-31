@@ -71,7 +71,7 @@ import { OnboardingTab } from "./tabs/OnboardingTab";
 import { ScreensTab } from "./tabs/ScreensTab";
 import { SubTabs } from "./primitives";
 import { ADMIN_PAGE_GROUPS, pageOf, viewName, type AdminPage } from "@/lib/admin/pages";
-import { decodeRail, encodeRail, railCookie, railDay, railFromUsage, type ViewUse } from "@/lib/admin/rail";
+import { decodeRail } from "@/lib/admin/rail";
 import { useUsageLog } from "@/lib/admin/useUsageLog";
 import { AdminThemeToggle } from "./AdminThemeToggle";
 import { AdminSoundToggle } from "./AdminSoundToggle";
@@ -640,37 +640,15 @@ export function AdminShell({
   const current = currentMeta ?? TABS[0];
 
   // THE RAIL, SORTED BY HIS USE (the owner's pick A, 2026-10-28). Daily, When
-  // needed, and the quiet Tools line, in the order the usage log last put
-  // them in. Decoded from what the server read, so the first paint is already
-  // in that order, and fixed for the whole visit: moving a rail under the
-  // pointer that is reaching for it is worse than a rail that never moves.
+  // needed, and the quiet Tools line, in the order he last said yes to.
+  // Decoded from what the server read, so the first paint is already in that
+  // order, and fixed for the whole visit: moving a rail under the pointer
+  // that is reaching for it is worse than a rail that never moves.
   const rail = decodeRail(savedRail);
-
-  // ...and the NEXT visit's order, worked out at most once a day from the
-  // route the "Your use" readout already reads, and left in the cookie for
-  // the server. A log that does not answer leaves the rail as it is.
-  useEffect(() => {
-    const today = railDay(new Date());
-    if (rail.day === today) return;
-    let alive = true;
-    void (async () => {
-      try {
-        const r = await fetch("/api/admin/usage", { cache: "no-store" });
-        if (!alive || !r.ok) return;
-        const body = (await r.json()) as { views?: ViewUse[] };
-        if (!alive || !Array.isArray(body.views)) return;
-        document.cookie = railCookie(
-          encodeRail(railFromUsage(body.views), today),
-          window.location.protocol === "https:",
-        );
-      } catch {
-        // Offline, or a body that is not JSON: no new order this time.
-      }
-    })();
-    return () => {
-      alive = false;
-    };
-  }, [rail.day]);
+  // The NEXT order is his to give. The rail used to work it out by itself
+  // once a day and move; since his pick B for the Audit log (r3-17,
+  // 2026-10-30) it moves only on his yes: Your week suggests a move and its
+  // "Do it" writes this cookie (components/admin/tabs/UsageTab.tsx).
 
   const visiblePageGroups =
     mode === "ops"

@@ -1,6 +1,7 @@
 import { NextResponse, type NextRequest } from "next/server";
 
 import { getAdminUser } from "@/lib/admin/access";
+import { readModLog } from "@/lib/community/moderation";
 import { createAdminClient } from "@/lib/supabase/admin";
 
 export const dynamic = "force-dynamic";
@@ -73,6 +74,22 @@ export async function GET(req: NextRequest) {
     );
   }
 
+  // Community's own who-did-what, read beside it: the record is ONE record
+  // since his pick B for the Audit log on r3-17 (the second view, A's
+  // timeline, is "the admin's and Community's moderation together"). Best
+  // effort: a log that cannot be read leaves the admin's own entries whole
+  // and says so.
+  let mod: Awaited<ReturnType<typeof readModLog>>["rows"] = [];
+  let modReadable = true;
+  if (!actor && !action) {
+    try {
+      mod = (await readModLog(supa, { limit: 100, withEmail: true })).rows;
+    } catch (e) {
+      modReadable = false;
+      console.warn("[admin/activity-log] moderation log not read", (e as Error).message);
+    }
+  }
+
   return NextResponse.json(
     {
       entries: data ?? [],
@@ -80,6 +97,10 @@ export async function GET(req: NextRequest) {
       // So the UI can say "the newest 200" rather than implying it is all of
       // them, which on a busy month it will not be.
       truncated: (data?.length ?? 0) >= LIMIT,
+      mod,
+      modReadable,
+      // Who is asking, so the record can say "You".
+      me: adminUser.email ?? null,
     },
     { headers: { "Cache-Control": "no-store" } },
   );

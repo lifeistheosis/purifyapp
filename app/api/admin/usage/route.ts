@@ -14,7 +14,11 @@ export const dynamic = "force-dynamic";
  * The admin's own usage log (lib/admin/usage.ts says what and why).
  *
  * POST records a batch of view and action events for the signed-in admin.
- * GET returns the readout for the last 30 days, every admin's use together.
+ * GET returns the readout for the signed-in admin's own visits, over the
+ * last 30 days or, with ?days=7, the last seven. It used to count every
+ * admin's use together, so another admin's visits read as his and could
+ * move his rail (his pick B for the Audit log on r3-17, 2026-10-30: "Only
+ * your own visits count").
  *
  * SERVICE ROLE, ADMIN GATE. admin_usage has RLS on and no policies, so this
  * route is its only door, the same posture as admin_activity_log. The table
@@ -54,11 +58,20 @@ export async function POST(req: NextRequest) {
   return new NextResponse(null, { status: 204 });
 }
 
-export async function GET() {
+export async function GET(req: NextRequest) {
   const adminUser = await getAdminUser();
   if (!adminUser) return NextResponse.json({ error: "Forbidden" }, { status: 403 });
 
-  const since = new Date(Date.now() - DAYS * 86_400_000).toISOString();
+  const days = new URL(req.url).searchParams.get("days") === "7" ? 7 : DAYS;
+  const known = ADMIN_VIEW_TABS.filter((t) => !t.startsWith("owner-"));
+  // Rows are kept by the address that made them. An account without one has
+  // no rows of its own to read, and is never handed somebody else's.
+  const email = adminUser.email ?? null;
+  if (!email) {
+    return NextResponse.json({ days, ...summarizeUsage([], known) }, { headers: { "Cache-Control": "no-store" } });
+  }
+
+  const since = new Date(Date.now() - days * 86_400_000).toISOString();
   // In pages: one request answers at most 1,000 rows (lib/supabase/pageAll.ts),
   // and a month of use passes that within days.
   const admin = createAdminClient();
@@ -67,6 +80,7 @@ export async function GET() {
       admin
         .from("admin_usage")
         .select("id, kind, tab, ms, from_tab, label, at")
+        .eq("actor_email", email)
         .gte("at", since)
         .order("id", { ascending: false })
         .range(from, to),
@@ -86,9 +100,8 @@ export async function GET() {
     );
   }
 
-  const known = ADMIN_VIEW_TABS.filter((t) => !t.startsWith("owner-"));
   return NextResponse.json(
-    { days: DAYS, ...summarizeUsage((data ?? []) as UsageRow[], known) },
+    { days, ...summarizeUsage((data ?? []) as UsageRow[], known) },
     { headers: { "Cache-Control": "no-store" } },
   );
 }
