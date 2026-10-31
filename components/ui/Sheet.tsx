@@ -47,6 +47,9 @@ import { useTranslate } from "@/components/i18n/MessagesProvider";
  *  - `header` replaces the title row (a sheet with its own Cancel and Done);
  *    the handle above it still drags. `panelClassName` sizes the panel on a
  *    computer (a wider writing panel).
+ *  - `lead` and `foot` (1.8, the Bible's books sheet, r3-20 A) stand still
+ *    over and under the part that scrolls: a field the list scrolls under,
+ *    and a row of doors at the sheet's foot.
  *  - `keyboard` (1.7.1, the highlight colours' names): a short sheet with a
  *    field in it. It keeps its own height, as any sheet does, and stands on
  *    the on-screen keyboard while one is up, in the same box `fill` uses, so
@@ -93,6 +96,10 @@ export function Sheet({
   header,
   /** Added to the panel's classes, after the defaults (a computer's width). */
   panelClassName,
+  /** Under the title, over the part that scrolls, and still while it does. */
+  lead,
+  /** At the sheet's foot, under the part that scrolls, and still while it does. */
+  foot,
 }: {
   open: boolean;
   onClose: () => void;
@@ -107,6 +114,8 @@ export function Sheet({
   keyboard?: boolean;
   header?: React.ReactNode;
   panelClassName?: string;
+  lead?: React.ReactNode;
+  foot?: React.ReactNode;
 }) {
   const { t } = useTranslate();
   const reduced = useReducedMotion();
@@ -222,12 +231,14 @@ export function Sheet({
               </div>
             )}
           </div>
+          {lead ? <div className="shrink-0 px-4">{lead}</div> : null}
           <div
             ref={bodyRef}
             className={"flex-1 overflow-y-auto overscroll-contain scrollbar-thin px-4 pb-5 " + (bodyClassName ?? "")}
           >
             {children}
           </div>
+          {foot ? <div className="shrink-0">{foot}</div> : null}
         </div>
       </div>
     </div>,

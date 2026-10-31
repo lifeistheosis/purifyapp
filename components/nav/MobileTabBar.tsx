@@ -35,6 +35,7 @@ import { OrthodoxCross } from "@/components/ui/icons/tab/OrthodoxCross";
 import { PrayingHands } from "@/components/ui/icons/tab/PrayingHands";
 import { NotificationsBadge } from "@/components/community/NotificationsInbox";
 import { useTranslate } from "@/components/i18n/MessagesProvider";
+import { alreadyAtPlace, useBibleTabHref } from "@/lib/bible/lastRead";
 import { haptic } from "@/lib/ui/motion";
 import { useOverlayOpen } from "@/lib/ui/overlay";
 import { beginRouteExit } from "@/lib/ui/routeTransition";
@@ -80,12 +81,23 @@ import { beginRouteExit } from "@/lib/ui/routeTransition";
  * The selected tab is still signalled three ways, only one of which is
  * colour: text colour, font weight, and icon stroke weight. That keeps the
  * state legible without relying on hue alone.
+ *
+ * The Bible tab is the chapter (1.8, the owner's pick A of r3-20, "Straight
+ * into the book"): a tap opens the chapter the reader left, at the verse,
+ * and John 1 for a reader who has read nothing yet (lib/bible/lastRead.ts).
+ * The place is on the phone, so the static pages carry John 1 and the
+ * reader's own place takes over as the page wakes. Tapped in the chapter it
+ * would open, it goes nowhere. /bible, the whole list, stays the tab's root:
+ * the way back from a chapter, the website's, and every old link's.
  */
 
 type Tab = {
   key: string;
   label: string;
+  /** The tab's root: where it lives, for the back bar's list of roots. */
   href: string;
+  /** Where a tap goes, when it is not the root: the Bible's, the reader's place. */
+  open?: string;
   Icon: typeof Sun;
   /**
    * Where this glyph's lines are in its 24-unit drawing, without their
@@ -135,6 +147,8 @@ export function MobileTabBar() {
   // Hiding the bar for the duration also makes the sheet a real modal: an
   // aria-modal dialog should not have live navigation sitting over it.
   const overlayOpen = useOverlayOpen();
+  // Where the Bible tab opens: the reader's place, or John 1.
+  const bibleHref = useBibleTabHref();
 
   const TABS: Tab[] = [
     {
@@ -149,6 +163,7 @@ export function MobileTabBar() {
       key: "bible",
       label: t("nav.bible"),
       href: "/bible",
+      open: bibleHref,
       Icon: BookOpen,
       box: [4.2, 4.41, 15.6, 15.49],
       // A walkthrough is Scripture read a chapter at a time, so it lights the
@@ -361,7 +376,7 @@ export function MobileTabBar() {
         )}
       >
         <ul ref={listRef} className="flex items-stretch gap-1 max-[359px]:gap-0">
-          {TABS.map(({ key, label, href, Icon, box, lines = TAB_LINES, matches }) => {
+          {TABS.map(({ key, label, href, open, Icon, box, lines = TAB_LINES, matches }) => {
             const active = matches(pathname);
             // Every glyph at one size: see lib/ui/tabGlyphFrame.ts.
             const frame = frameGlyph(box, lines[0]);
@@ -373,7 +388,7 @@ export function MobileTabBar() {
               // Romanian and Russian.
               <li key={key} className="flex-1 min-w-0">
                 <Link
-                  href={href}
+                  href={open ?? href}
                   aria-current={active ? "page" : undefined}
                   // A tick on selection, and only on a real change of tab.
                   // Firing it when you re-tap the tab you are already on makes
@@ -390,8 +405,17 @@ export function MobileTabBar() {
                   // `!active` check: re-tapping the current tab navigates
                   // nowhere, and fading the screen for it would be a flicker
                   // with no destination. See lib/ui/routeTransition.ts.
-                  onClick={() => {
-                    if (!active) {
+                  //
+                  // The Bible tab is lit on its whole list, the plans and the
+                  // journal too, and from those it does go somewhere: to the
+                  // reader's place. In the chapter it would open it goes
+                  // nowhere at all.
+                  onClick={(e) => {
+                    if (open && alreadyAtPlace(pathname, open)) {
+                      e.preventDefault();
+                      return;
+                    }
+                    if (!active || open) {
                       haptic("light");
                       beginRouteExit();
                     }

@@ -458,6 +458,20 @@ export function getNewTestamentCategories(): BookCategory[] {
   return resolveCategories(NT_CATEGORIES);
 }
 
+/**
+ * Both Testaments as one list, in the Church's order: the Old (the
+ * Pentateuch to the Prophets), then the New (the Gospels to Revelation). The
+ * phone's way to the books since 1.8 has no switch between the two (the
+ * owner's note 65 and his pick A of r3-20): the books sheet and /bible each
+ * draw this one list.
+ */
+export function bibleCanon(): { testament: Testament; categories: BookCategory[] }[] {
+  return [
+    { testament: "OT", categories: getOldTestamentCategories() },
+    { testament: "NT", categories: getNewTestamentCategories() },
+  ];
+}
+
 export function allChapterParams(): { book: string; chapter: string }[] {
   const out: { book: string; chapter: string }[] = [];
   for (const b of BOOKS) {

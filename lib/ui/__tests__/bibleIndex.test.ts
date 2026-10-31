@@ -1,10 +1,14 @@
-// The phone's Bible tab is its picture and then an index: rows, one look.
+// The phone's /bible is its picture and then an index: rows, one look.
 //
-// What a reader would notice if this broke: the tab opening on a stack of
+// What a reader would notice if this broke: the page opening on a stack of
 // different cards again (a card saying a card will appear, tinted pills, a
 // band with a button, a lone tile) with the first book a whole screen down.
 // The owner said of that screen on 2026-10-13: "this design has way too much
-// stuff going on here", and chose the picture and then plain rows.
+// stuff going on here", and chose the picture and then plain rows. Or the Old
+// and New Testament switch back over the books, which his pick A of r3-20 took
+// away (his note 65: "cut out the whole entire Old Testament and New
+// Testament selectors"). The Bible tab opens the chapter itself since then
+// (lib/bible/__tests__/lastRead.test.ts); this page is the whole list.
 //
 // This reads the source. How the screen is drawn in a built app is section 27
 // of scripts/export-walk.mjs.
@@ -13,6 +17,7 @@ import { readFileSync } from "node:fs";
 import { join } from "node:path";
 import { describe, expect, it } from "vitest";
 
+import { BOOKS, bibleCanon } from "@/lib/bible/books";
 import { getMessages } from "@/lib/i18n";
 
 const root = join(__dirname, "..", "..", "..");
@@ -27,10 +32,10 @@ const SHELL = "components/mobile/BibleMobile.tsx";
 const CONTINUE = "components/mobile/BibleMobileContinue.tsx";
 const READINGS = "components/mobile/BibleAppointedToday.tsx";
 const STUDY = "components/mobile/BibleStudyRow.tsx";
-const BOOKS = "components/mobile/BibleTabs.tsx";
-const UNDER_THE_PICTURE = [CONTINUE, READINGS, STUDY, BOOKS];
+const BOOKS_LIST = "components/mobile/BibleBooks.tsx";
+const UNDER_THE_PICTURE = [CONTINUE, READINGS, STUDY, BOOKS_LIST];
 
-describe("the phone's Bible tab", () => {
+describe("the phone's /bible", () => {
   it("is the picture, then four pieces, in this order, and nothing else", () => {
     const shell = code(SHELL);
     const body = shell.slice(shell.indexOf("<MobileShell"), shell.indexOf("</MobileShell>"));
@@ -43,7 +48,7 @@ describe("the phone's Bible tab", () => {
       "BibleMobileContinue",
       "BibleAppointedToday",
       "BibleStudyRow",
-      "BibleTabs",
+      "BibleBooks",
     ]);
   });
 
@@ -53,7 +58,7 @@ describe("the phone's Bible tab", () => {
     }
     // The three lists are that file's list and rows; the study row, which is
     // two halves and not a list of links, wears the same list's look.
-    for (const piece of [CONTINUE, READINGS, BOOKS]) {
+    for (const piece of [CONTINUE, READINGS, BOOKS_LIST]) {
       expect(code(piece), piece).toMatch(/<IndexList[\s>]/);
       expect(code(piece), piece).toMatch(/<IndexRow\s/);
     }
@@ -69,11 +74,26 @@ describe("the phone's Bible tab", () => {
     }
   });
 
+  it("lists both Testaments as one list, with no switch between them", () => {
+    const books = code(BOOKS_LIST);
+    expect(books).toContain("bibleCanon().map(");
+    expect(books).toContain('t(testament === "OT" ? "bible.theOldTestament" : "bible.theNewTestament")');
+    for (const gone of ['role="tablist"', 'role="tab"', "lastTestament", "useState", "footer.oldTestament", "footer.newTestament"]) {
+      expect(books.includes(gone), gone).toBe(false);
+    }
+    // Every book once, the Old Testament's first, each opening at its first chapter.
+    expect(books).toContain("href={`/bible/${b.slug}/1`}");
+    const listed = bibleCanon().flatMap(({ categories }) => categories.flatMap((c) => c.books.map((b) => b.slug)));
+    expect(listed).toHaveLength(BOOKS.length);
+    expect(new Set(listed).size).toBe(BOOKS.length);
+    expect(bibleCanon().map((t) => t.testament)).toEqual(["OT", "NT"]);
+  });
+
   it("draws nothing for Continue reading when there is nothing to continue", () => {
     const source = code(CONTINUE);
     expect(source).toMatch(/if \(!last\) return null;/);
     // The empty card's line, "Open any chapter and this card will remember
-    // where you left off.", is not drawn anywhere on the tab.
+    // where you left off.", is not drawn anywhere on the page.
     for (const piece of [SHELL, ...UNDER_THE_PICTURE]) {
       expect(code(piece).includes("ui.openAnyChapterAndThis"), piece).toBe(false);
     }
@@ -94,6 +114,9 @@ describe("the phone's Bible tab", () => {
       "plans.title",
       "journal.title",
       "plans.studyTools",
+      "bible.theOldTestament",
+      "bible.theNewTestament",
+      "bible.chAbbrev",
     ];
     const en = getMessages("en");
     for (const key of keys) expect(en[key], key).toBeTruthy();

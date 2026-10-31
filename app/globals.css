@@ -847,6 +847,12 @@ body[data-reader-screen][data-reader-away] [data-tab-bar]:has(:focus-visible) {
 .reader-lit {
  box-shadow: 0 0 14px -2px rgb(255 255 255 / 0.42);
 }
+/* On Parchment what is lit is ink, and nothing glows, as everywhere on Light
+   (the owner's pick A of r3-20, drawn in Light: the chapter being read in the
+   books sheet). A white glow there is only a pale ring round the ink. */
+html[data-reading-mode="parchment"] .reader-lit {
+ box-shadow: none;
+}
 
 /* The chapter opens like a book (ChapterScreen, ChapterReader): the book's
    name rises into place, its chapter comes in under it, the short rule draws
