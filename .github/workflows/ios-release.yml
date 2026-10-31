@@ -522,7 +522,9 @@ jobs:
           OUT_PATH: ${{ runner.temp }}/purify.mobileprovision
         run: |
           set -euo pipefail
-          OUTPUT="$(python3 scripts/ios-provisioning-profile.py)"
+          # The script prints its ::error:: line to stdout, which this captures:
+          # echo it on a failure too, or Apple's reason never reaches the log.
+          OUTPUT="$(python3 scripts/ios-provisioning-profile.py)" || { printf '%s\n' "$OUTPUT"; exit 1; }
           printf '%s\n' "$OUTPUT"
           UUID="$(printf '%s\n' "$OUTPUT" | sed -n 's/^UUID=//p')"
           NAME="$(printf '%s\n' "$OUTPUT" | sed -n 's/^NAME=//p')"
@@ -575,7 +577,9 @@ jobs:
           OUT_PATH: ${{ runner.temp }}/widgets.mobileprovision
         run: |
           set -euo pipefail
-          OUTPUT="$(python3 scripts/ios-provisioning-profile.py)"
+          # The script prints its ::error:: line to stdout, which this captures:
+          # echo it on a failure too, or Apple's reason never reaches the log.
+          OUTPUT="$(python3 scripts/ios-provisioning-profile.py)" || { printf '%s\n' "$OUTPUT"; exit 1; }
           printf '%s\n' "$OUTPUT"
           echo "(push and Sign in with Apple are the app's; MISSING is right for the widgets.)"
           UUID="$(printf '%s\n' "$OUTPUT" | sed -n 's/^UUID=//p')"
