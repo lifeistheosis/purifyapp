@@ -70,11 +70,13 @@ describe("the page wrappers do not leave permanent stacking contexts", () => {
   });
 });
 
-describe("the search dropdowns can clear what follows them", () => {
-  // Both search components render an absolutely positioned z-50 dropdown over
-  // whatever block comes next on the page. An explicit z-index on the wrapper
-  // makes that hold even while the entrance animation still has it as a
-  // stacking context.
+describe("the search fields drop nothing over the page", () => {
+  // The Saints' and the Bible's fields each rendered an absolutely positioned
+  // z-50 dropdown over whatever block came next, which needed an explicit
+  // z-index on the wrapper while the entrance animation made it a stacking
+  // context. From 1.8 (the owner's pick of r3-12) both are doors to the one
+  // search, drawn fixed by the root frame, outside every page's stacking
+  // context, so no page's animation can hold it under what follows.
   const files = [
     join(process.cwd(), "components", "saints", "SaintSearch.tsx"),
     join(process.cwd(), "components", "bible", "BibleSearch.tsx"),
@@ -83,18 +85,15 @@ describe("the search dropdowns can clear what follows them", () => {
   for (const file of files) {
     const name = file.split(/[\\/]/).pop();
 
-    it(`${name} gives its wrapper an explicit z-index`, () => {
+    it(`${name} opens the one search instead of a dropdown`, () => {
       const src = readFileSync(file, "utf8");
-      expect(src, `${name}: wrapper needs a z-index, not just \`relative\``).toMatch(
-        /className=\{`relative z-\d+ \$\{className \?\? ""\}`\}/,
-      );
-    });
-
-    it(`${name} caps the dropdown height so it cannot run under the tab bar`, () => {
-      const src = readFileSync(file, "utf8");
-      expect(src, `${name}: dropdown needs a max-height and its own scroll`).toMatch(
-        /absolute z-50[^"]*max-h-\[[^\]]+\][^"]*overflow-y-auto/,
-      );
+      expect(src, name).toContain("<SearchDoor");
+      expect(src, name).not.toMatch(/absolute z-50/);
     });
   }
+
+  it("draws the one search fixed over the whole screen", () => {
+    const screen = readFileSync(join(process.cwd(), "components", "search", "CommandPalette.tsx"), "utf8");
+    expect(screen).toContain('className="fixed inset-0 z-[120]');
+  });
 });

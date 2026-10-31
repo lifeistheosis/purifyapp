@@ -254,12 +254,26 @@ describe("the one search's list", () => {
     expect(inReadersLanguage(items, (key) => key).every((item, i) => item === items[i])).toBe(true);
   });
 
-  it("keeps the first screen of an empty search to prayers", async () => {
-    // The palette opens on the first eight Prayers and Other rows, in list
-    // order. New rows go after the prayer rules so that screen does not move.
-    const first = (await fullCorpus())
-      .filter((i) => i.group === "Prayers" || i.group === "Other")
-      .slice(0, 8);
-    expect(first.every((i) => i.id.startsWith("rule-"))).toBe(true);
+  it("carries the pictures the search draws, all of them files the apps ship", async () => {
+    // 1.8, r3-12: the saints by their faces, the top result over its picture.
+    // (Until then an empty search opened on the first eight prayer rows,
+    // which this test held; it opens on the library's doors now.)
+    const items = await fullCorpus();
+    const pictured = items.filter((i) => i.picture);
+    expect(pictured.filter((i) => i.group === "Saints").length).toBeGreaterThan(100);
+    for (const item of pictured) {
+      expect(item.picture!.startsWith("/"), item.id).toBe(true);
+      expect(fs.existsSync(path.join("public", item.picture!)), `${item.id}: ${item.picture}`).toBe(true);
+    }
+    expect(items.find((i) => i.href === "/theology")?.picture).toBe("/discover/tiles/theology.v2.webp");
+  });
+
+  it("names the prayer book's rules as the prayer book does, in every language", async () => {
+    const rules = (await fullCorpus()).filter((i) => i.id.startsWith("rule-"));
+    expect(rules.length).toBeGreaterThan(10);
+    expect(rules.filter((i) => i.labelKey).length).toBeGreaterThan(10);
+    const greek = inReadersLanguage(rules, (key) => (el as Record<string, string>)[key] ?? key);
+    const morning = greek.find((i) => i.id === "rule-morning");
+    expect(morning?.label).toBe((el as Record<string, string>)["prayers.rule.morning.title"]);
   });
 });

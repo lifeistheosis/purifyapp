@@ -2,8 +2,8 @@
 
 import { useState } from "react";
 
+import { SearchField } from "@/components/search/SearchField";
 import { Close } from "@/components/ui/icons/Close";
-import { Search } from "@/components/ui/icons/Search";
 import { Sliders } from "@/components/ui/icons/Sliders";
 import { Sheet } from "@/components/ui/Sheet";
 import { cn } from "@/lib/cn";
@@ -79,32 +79,15 @@ export function ShopBrowseControls({
   return (
     <div>
       <div className="flex items-center gap-2.5">
-        {/* Search field */}
-        <label className="relative flex min-h-[46px] flex-1 items-center">
-          <span className="sr-only">{t("shop.searchTheShop")}</span>
-          <span className="pointer-events-none absolute left-4 text-paper/45">
-            <Search size={16} />
-          </span>
-          <input
-            type="search"
-            inputMode="search"
-            enterKeyHint="search"
-            value={filters.q ?? ""}
-            onChange={(e) => onChange({ ...filters, q: e.target.value })}
-            placeholder={searchPlaceholder ?? t("shop.searchPlaceholder")}
-            className="h-[46px] w-full rounded-pill border border-paper/15 bg-paper/[0.04] pl-11 pr-10 font-sans text-ui text-paper placeholder:text-paper/40 outline-none transition-colors focus:border-paper/40 [&::-webkit-search-cancel-button]:hidden"
-          />
-          {filters.q ? (
-            <button
-              type="button"
-              aria-label={t("shop.clearSearch")}
-              onClick={() => onChange({ ...filters, q: "" })}
-              className="absolute right-2 inline-flex h-8 w-8 items-center justify-center rounded-full text-paper/55 hover:text-paper"
-            >
-              <Close size={14} />
-            </button>
-          ) : null}
-        </label>
+        {/* The shop filters itself in place, in the app's one field (1.8,
+            r3-12): its search key, its clear button, its light. */}
+        <SearchField
+          value={filters.q ?? ""}
+          onChange={(q) => onChange({ ...filters, q })}
+          placeholder={searchPlaceholder ?? t("search.open")}
+          label={t("shop.searchTheShop")}
+          className="flex-1"
+        />
 
         {/* Filters trigger: sheet on phones, inline panel on md+. */}
         <button
@@ -118,7 +101,7 @@ export function ShopBrowseControls({
           }}
           aria-expanded={panelOpen || sheetOpen}
           className={cn(
-            "tap-press inline-flex min-h-[46px] shrink-0 items-center gap-2 rounded-pill border px-4 font-sans text-ui font-semibold transition-colors",
+            "tap-press inline-flex min-h-[48px] shrink-0 items-center gap-2 rounded-pill border px-4 font-sans text-ui font-semibold transition-colors",
             count > 0
               ? "border-paper/50 bg-paper/12 text-paper"
               : "border-paper/15 bg-paper/[0.04] text-paper/80 hover:border-paper/35 hover:text-paper",

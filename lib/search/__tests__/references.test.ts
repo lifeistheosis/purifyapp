@@ -5,7 +5,7 @@ import en from "@/lib/i18n/messages/en.json";
 import roMessages from "@/lib/i18n/messages/ro.json";
 import { searchBible } from "@/lib/bible/books";
 import { referenceHref } from "@/lib/bible/parseReferences";
-import { referenceItems, referencesIn } from "@/lib/search/references";
+import { bookSlugsIn, referenceItems, referencesIn } from "@/lib/search/references";
 
 const MESSAGES = en as Record<string, string>;
 
@@ -155,5 +155,18 @@ describe("a reference typed in the reader's own language", () => {
     expect(greek("κάτι άλλο 4")).toEqual([]);
     // In English too: before 1.6 this was read as all 78 books.
     expect(rows("Иоанн 3")).toEqual([]);
+  });
+});
+
+describe("a book named the Bible's own way, for the one search (1.8)", () => {
+  it("finds it by an abbreviation, as the Bible's own search bar did", () => {
+    expect(bookSlugsIn("mt", t)).toEqual(["matthew"]);
+    expect(bookSlugsIn("gen", t)).toContain("genesis");
+  });
+
+  it("leaves a chapter, a verse or several to the references", () => {
+    expect(bookSlugsIn("john 3:16", t)).toEqual([]);
+    expect(bookSlugsIn("1 Tim 2:5, Prov 8:7", t)).toEqual([]);
+    expect(bookSlugsIn("   ", t)).toEqual([]);
   });
 });

@@ -232,7 +232,9 @@ describe("what the app reads to open", () => {
 
   it("would catch the import if it came back", () => {
     // The walk is only worth trusting if it can see a registry import at all.
-    const someScreen = "components/saints/SaintSearch.tsx";
+    // (SaintSearch was this example until 1.8, when it became a door to the
+    // one search and stopped carrying the registry.)
+    const someScreen = "components/history/EventPeople.tsx";
     expect(read(someScreen).eager).toContain(REGISTRY);
     // And a type is not a value: this card names the type and ships no saint.
     expect(read("components/saints/SaintIcon.tsx").eager).not.toContain(REGISTRY);

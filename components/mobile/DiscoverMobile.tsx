@@ -2,7 +2,7 @@ import type { ReactNode } from "react";
 
 import { MobileShell } from "./MobileShell";
 import { MobileHeader } from "./MobileHeader";
-import { SearchField } from "@/components/search/SearchField";
+import { SearchDoor } from "@/components/search/SearchField";
 import { GalleryBand } from "@/components/ui/GalleryBand";
 import { TILE_PREVIEWS } from "@/lib/discover/tilePreviews.generated";
 import { shopEnabled } from "@/lib/shop/flags";
@@ -217,7 +217,9 @@ export function DiscoverMobile() {
     // right as on the other four, the owner's "same design on all". The
     // field under the title stays too: it says what the search finds.
     <MobileShell header={<MobileHeader titleKey="nav.discover" />}>
-      <SearchField className="mb-4" />
+      {/* The one search, opened on Everything (1.8, r3-12), under the line
+          that fits a 360px phone in every language, "Search Purify". */}
+      <SearchDoor placeholderKey="search.ariaLabel" className="mb-4" />
 
       <ul className="flex flex-col gap-2.5">
         {entries.map((e, i) => (

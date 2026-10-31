@@ -7,9 +7,8 @@ import { preload } from "react-dom";
 
 import { useTranslate } from "@/components/i18n/MessagesProvider";
 import { MobileHeader } from "@/components/mobile/MobileHeader";
+import { SearchField } from "@/components/search/SearchField";
 import { ChevronRight } from "@/components/ui/icons/ChevronRight";
-import { Close } from "@/components/ui/icons/Close";
-import { Search } from "@/components/ui/icons/Search";
 import { cn } from "@/lib/cn";
 import { useCalendarStyleDefault } from "@/lib/calendar/useCalendarStyleDefault";
 import { useToday } from "@/lib/calendar/useToday";
@@ -295,49 +294,24 @@ export function ReadingRoom({ room, library }: { room: Room; library: LibraryLin
             {t("nav.reading")}
           </h1>
 
-          <form
-            role="search"
-            onSubmit={(e) => {
-              e.preventDefault();
-              input.current?.blur();
-            }}
-            className="relative z-10 flex items-center gap-2 md:mt-5 md:max-w-[560px]"
-          >
-            <label className="relative flex h-11 min-w-0 flex-1 items-center rounded-pill border border-paper/12 bg-paper/[0.05] ps-4 pe-1 focus-within:border-paper/35">
-              <Search size={18} className="shrink-0 text-paper/50" />
-              <span className="sr-only">{t("reading.searchPlaceholder")}</span>
-              <input
-                ref={input}
-                type="search"
-                inputMode="search"
-                enterKeyHint="search"
-                autoComplete="off"
-                value={query}
-                onFocus={openSearch}
-                onChange={(e) => setQuery(e.target.value)}
-                placeholder={t("reading.searchPlaceholder")}
-                className="h-full min-w-0 flex-1 bg-transparent ps-2.5 font-sans text-ui text-paper placeholder:text-paper/45 focus:outline-none [&::-webkit-search-cancel-button]:hidden"
-              />
-              {query ? (
-                <button
-                  type="button"
-                  aria-label={t("reading.search.clear")}
-                  onClick={() => {
-                    setQuery("");
-                    input.current?.focus();
-                  }}
-                  className="inline-flex size-9 shrink-0 items-center justify-center rounded-full text-paper/55 hover:text-paper"
-                >
-                  <Close size={15} />
-                </button>
-              ) : null}
-            </label>
+          {/* The room filters itself in place, in the app's one field (1.8,
+              r3-12): its search key, its clear button, its light. Cancel
+              beside it leaves the search. */}
+          <div className="relative z-10 flex items-center gap-2 md:mt-5 md:max-w-[560px]">
+            <SearchField
+              inputRef={input}
+              value={query}
+              onFocus={openSearch}
+              onChange={setQuery}
+              placeholder={t("search.open")}
+              className="flex-1"
+            />
             {open ? (
               <button type="button" onClick={close} className="tap-press hit-44 shrink-0 px-1 font-sans text-ui font-medium text-paper/75 hover:text-paper">
                 {t("common.cancel")}
               </button>
             ) : null}
-          </form>
+          </div>
 
           <Suspense fallback={null}>
             <AddressSync onAddress={onAddress} />

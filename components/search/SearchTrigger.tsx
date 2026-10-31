@@ -1,26 +1,22 @@
 "use client";
 
-// The door to the command palette.
+// The magnifier: the door to the one search from the bar.
 //
-// The palette is mounted once in the root layout and renders nothing until it
-// is opened, so a trigger cannot reach it through props or context. It asks by
-// dispatching SEARCH_OPEN_EVENT on window instead, the same shape the reader
-// preferences use (`purify:reader-prefs`).
-//
-// Desktop has Cmd+K and does not need this. It exists because a phone has no
-// keyboard shortcut, and until now had no way at all to open a search that was
-// already shipping in the bundle.
+// The search screen is mounted once in the root frame and renders nothing
+// until it is opened, so a trigger cannot reach it through props or context.
+// It asks by the one event instead (lib/search/open.ts). The magnifier names
+// no place, so the screen opens turned to the place the reader is in (the
+// owner's pick of r3-12, "C, with the mix of B"): on Theology, Theology; on
+// Today, Everything.
 
 import { Search } from "@/components/ui/icons/Search";
 import { useTranslate } from "@/components/i18n/MessagesProvider";
 import { haptic } from "@/lib/ui/motion";
 import { cn } from "@/lib/cn";
-import { SEARCH_OPEN_EVENT } from "./CommandPalette";
+import { openSearch } from "@/lib/search/open";
 
-export function openSearch(): void {
-  if (typeof window === "undefined") return;
-  window.dispatchEvent(new Event(SEARCH_OPEN_EVENT));
-}
+// Kept here too for the callers that import it from the magnifier.
+export { openSearch };
 
 export function SearchTrigger({
   className,

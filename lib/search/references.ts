@@ -124,6 +124,26 @@ export function referencesIn(query: string, books: LocalBooks = {}): Reference[]
   return (close.length > 0 ? close : hits).slice(0, MOST);
 }
 
+/**
+ * The books a query names by the Bible's own reckoning, an abbreviation
+ * included ("mt", "1 cor", "ps"), as the Bible's search bar found them before
+ * it opened the one search (1.8). The one search's list finds a book by its
+ * name alone, so these are put beside what the list finds.
+ */
+export function bookSlugsIn(rawQuery: string, t: Translate): string[] {
+  const query = rawQuery.trim();
+  // A chapter or a verse is a reference (referenceItems), and a book too
+  // short for the chapter typed is no answer to it ("john 3:16" is not 2 John).
+  if (!query || isMultiReferenceQuery(query) || TRAILING_REFERENCE.test(query)) return [];
+  const books = localBookNames(t);
+  const hits = searchBible(query, 8, {}, books).filter((h) => h.kind === "book");
+  // As referencesIn keeps them: a book a word of whose name begins as typed,
+  // or, when none does, the abbreviation's own book.
+  const typed = namedBook(query);
+  const close = hits.filter((h) => beginsAWord(h.book.name, typed) || beginsAWord(books[h.book.slug], typed));
+  return (close.length > 0 ? close : hits).map((h) => h.book.slug);
+}
+
 export function referenceItems(
   rawQuery: string,
   t: Translate,

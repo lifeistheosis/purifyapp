@@ -3,6 +3,7 @@
 import { useMemo, useState, useSyncExternalStore } from "react";
 
 import { useTranslate } from "@/components/i18n/MessagesProvider";
+import { SearchField } from "@/components/search/SearchField";
 import { Sheet } from "@/components/ui/Sheet";
 import { Check } from "@/components/ui/icons/Check";
 import { ChevronDown } from "@/components/ui/icons/ChevronDown";
@@ -124,14 +125,9 @@ export function LibrarySheet({
 
   return (
     <Sheet open={open} onClose={onClose} title={t("prayers.mine.add")} desktop>
-      <input
-        type="search"
-        value={query}
-        onChange={(e) => setQuery(e.target.value)}
-        placeholder={t("prayers.searchPlaceholder")}
-        aria-label={t("prayers.searchPlaceholder")}
-        className="mb-3 min-h-11 w-full rounded-pill bg-paper/[0.06] px-4 font-sans text-ui text-paper placeholder:text-paper/45 focus:outline-none focus-visible:ring-2 focus-visible:ring-paper/40"
-      />
+      {/* The prayer book to choose from filters itself in place, in the app's
+          one field (1.8, r3-12). */}
+      <SearchField value={query} onChange={setQuery} placeholder={t("prayers.searchPlaceholder")} className="mb-3" />
 
       {q ? (
         found.length ? (

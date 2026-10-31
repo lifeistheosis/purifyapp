@@ -3,7 +3,7 @@
 import { useState } from "react";
 
 import { useTranslate } from "@/components/i18n/MessagesProvider";
-import { openSearch } from "@/components/search/SearchTrigger";
+import { openSearch } from "@/lib/search/open";
 import { ChevronRight } from "@/components/ui/icons/ChevronRight";
 import { Search } from "@/components/ui/icons/Search";
 import { Sheet } from "@/components/ui/Sheet";
@@ -117,7 +117,8 @@ export function ReaderMoreSheet({
               icon={<Search size={16} className="shrink-0" />}
               onClick={() => {
                 onClose();
-                openSearch();
+                // All of Purify: the field above is the Bible's own door.
+                openSearch("all");
               }}
             />
           </div>

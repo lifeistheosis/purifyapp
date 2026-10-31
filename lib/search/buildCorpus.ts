@@ -173,17 +173,29 @@ export async function buildSearchCorpus(): Promise<SearchItem[]> {
       href: `/saints/${s.slug}`,
       group: "Saints",
       keywords: s.byname,
+      // The icon the saint's own page shows, so the search can draw the
+      // saint by the face in it (1.8, r3-12: "the saints by their faces").
+      ...(s.iconUrl ? { picture: s.iconUrl } : {}),
     });
   }
 
   for (const r of RULES) {
     if (r.planned) continue;
+    // The prayer book's own name for the rule, by its catalog line, so the
+    // row reads in the reader's language as the prayer book does (the
+    // Prayers tab's search showed them so before it opened this one, 1.8).
+    const titleKey = `prayers.rule.${r.id}.title`;
+    const descriptionKey = `prayers.rule.${r.id}.description`;
     items.push({
       id: `rule-${r.id}`,
-      label: r.title,
-      sublabel: r.description,
+      label: MESSAGES[titleKey] || r.title,
+      ...(MESSAGES[titleKey] ? { labelKey: titleKey } : {}),
+      sublabel: (r.description && MESSAGES[descriptionKey]) || r.description,
+      ...(r.description && MESSAGES[descriptionKey] ? { sublabelKey: descriptionKey } : {}),
       href: r.href,
       group: "Prayers",
+      // The registry's English stays findable in every language.
+      ...(MESSAGES[titleKey] && MESSAGES[titleKey] !== r.title ? { keywords: r.title } : {}),
     });
   }
 
@@ -366,10 +378,32 @@ export async function buildSearchCorpus(): Promise<SearchItem[]> {
   // name it keeps it, except Settings, where several rows open one screen
   // on purpose.
   const seen = new Set<string>();
-  return items.filter((item) => {
-    if (item.group === "Settings") return true;
-    if (seen.has(item.href)) return false;
-    seen.add(item.href);
-    return true;
-  });
+  return items
+    .filter((item) => {
+      if (item.group === "Settings") return true;
+      if (seen.has(item.href)) return false;
+      seen.add(item.href);
+      return true;
+    })
+    .map((item) => (!item.picture && PAGE_PICTURES[item.href] ? { ...item, picture: PAGE_PICTURES[item.href] } : item));
 }
+
+/**
+ * A screen that is a door of Discover wears Discover's picture for it when
+ * the search draws it as its top result (1.8, r3-12). The same files the
+ * bands show (components/mobile/DiscoverMobile.tsx), all in the apps.
+ */
+const PAGE_PICTURES: Readonly<Record<string, string>> = {
+  "/saints": "/discover/tiles/saints.webp",
+  "/reading": "/discover/tiles/reading.v2.webp",
+  "/history": "/discover/tiles/history.v2.webp",
+  "/councils": "/discover/tiles/councils.v2.webp",
+  "/theology": "/discover/tiles/theology.v2.webp",
+  "/chants": "/discover/tiles/chants.webp",
+  "/calendar": "/discover/tiles/calendar.v2.webp",
+  "/walkthroughs": "/discover/tiles/walkthroughs.webp",
+  "/shop": "/discover/tiles/shop.v2.webp",
+  "/community": "/discover/tiles/chat.webp",
+  "/start": "/discover/tiles/start.v2.webp",
+  "/parishes": "/discover/tiles/parishes.v2.webp",
+};

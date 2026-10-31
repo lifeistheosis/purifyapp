@@ -1227,7 +1227,7 @@ await section(20, async () => {
   // sentence, the History band and the reading-room card left the screen;
   // the search field and the Reading and Walkthroughs tiles came.
   const discover = await read(page, "/discover/", [
-    "search.placeholder", "discover.tile.saints", "discover.tile.reading", "discover.tile.history", "discover.tile.councils",
+    "search.ariaLabel", "discover.tile.saints", "discover.tile.reading", "discover.tile.history", "discover.tile.councils",
     "discover.tile.theology", "discover.tile.calendar", "nav.discoverMenu.walkthroughs", "discover.tile.start", "discover.tile.startBlurb",
     "discover.tile.parishes", "discover.tile.parishesBlurb", "nav.shop", "nav.chat",
   ]);
@@ -1258,7 +1258,7 @@ await section(20, async () => {
     await page.waitForFunction((w) => document.body.innerText.includes(w), en["discover.tile.saints"], { timeout: 20000 }).catch(() => {});
     const text = await page.evaluate(() => document.body.innerText);
     // 1.7: the library first (the owner's pick of 2026-10-15).
-    const lines = ["search.placeholder", "discover.tile.saints", "discover.tile.reading", "discover.tile.calendar", "nav.discoverMenu.walkthroughs", "discover.tile.start", "nav.chat"];
+    const lines = ["search.ariaLabel", "discover.tile.saints", "discover.tile.reading", "discover.tile.calendar", "nav.discoverMenu.walkthroughs", "discover.tile.start", "nav.chat"];
     const there = lines.filter((k) => text.toLowerCase().includes(en[k].toLowerCase()));
     must(there.length === lines.length, `a phone set to English: Discover reads as it should (${there.length} of ${lines.length} lines)`);
     // The History band and the reading room's card left the screen: History

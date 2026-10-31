@@ -242,7 +242,10 @@ describe("3, the foot of Theology: C, shelves and a search pill", () => {
     expect(search).toContain('<div aria-hidden className="h-20" />');
     // It steps aside while a sheet is open.
     expect(search).toContain("useOverlayOpen()");
-    expect(search).toContain('fetch("/theology-search.json")');
+    // It opens the app's one search, turned to Theology (1.8, the owner's
+    // pick of r3-12), which reads the library's list.
+    expect(search).toContain('openSearch("theology")');
+    expect(code("components/search/CommandPalette.tsx")).toContain('"/theology-search.json"');
   });
 
   it("is a file in the apps' export, so the search works with no signal", () => {
@@ -287,7 +290,8 @@ describe("the theology library's search", () => {
 
   it("names its kinds in the hub's order, each in the reader's language", () => {
     expect(THEOLOGY_SECTIONS).toEqual(["Doctrine", "Topics", "Heresies", "Apologetics", "Councils", "Fathers"]);
-    const search = code(SEARCH);
+    // The one search's strip names them (1.8, r3-12).
+    const search = code("lib/search/places.ts");
     for (const key of ["study.doctrine", "discover.tile.topics", "discover.tile.heresies", "discover.tile.apologetics", "nav.councils", "bible.fathersTag"]) {
       expect(search).toContain(`"${key}"`);
       expect(EN[key], key).toBeTruthy();

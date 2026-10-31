@@ -16,6 +16,7 @@
 
 import { useState } from "react";
 import { useTranslate } from "@/components/i18n/MessagesProvider";
+import { SearchField } from "@/components/search/SearchField";
 import { Plus } from "@/components/ui/icons/Plus";
 import {
   deleteIntention,
@@ -92,14 +93,8 @@ function DiptychSection({
       <p className="mt-1.5 font-sans text-detail leading-[1.6] text-paper/60">{intro}</p>
 
       {items.length > 5 && (
-        <input
-          type="search"
-          placeholder={t("common.search")}
-          aria-label={t("common.search")}
-          value={query}
-          onChange={(e) => setQuery(e.target.value)}
-          className={`${FIELD} mt-4`}
-        />
+        // The names filter in place, in the app's one field (1.8, r3-12).
+        <SearchField value={query} onChange={setQuery} placeholder={t("common.search")} className="mt-4" />
       )}
 
       {adding && (

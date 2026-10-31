@@ -237,7 +237,8 @@ describe("the ••• sheet: the reader's settings, and what stood above the t
     expect(more).toMatch(/<SheetRow label=\{t\("bible\.bookLabel"\)\} value=\{name\}/);
     expect(more).toMatch(/\{showInterlinear \? \(\s*<ToggleRow on=\{greek\} touch label=\{t\("bible\.interlinearGreek"\)\} onClick=\{toggleGreek\} \/>/);
     expect(more).toMatch(/<ToggleRow on=\{saved\} touch label=\{t\("bible\.bookmarkThisChapter"\)\} onClick=\{toggleSaved\} \/>/);
-    expect(more).toMatch(/label=\{t\("search\.ariaLabel"\)\}[\s\S]*?onClose\(\);\s*openSearch\(\);/);
+    // The app's search, on Everything: the field above it is the Bible's own door.
+    expect(more).toMatch(/label=\{t\("search\.ariaLabel"\)\}[\s\S]*?onClose\(\);\s*openSearch\("all"\);/);
     // The bookmark is the same one the computer's Save writes.
     expect(more).toMatch(/kind: "bible-chapter",\s*book,\s*bookName,\s*chapter,/);
   });
@@ -273,31 +274,29 @@ describe("the ••• sheet: the reader's settings, and what stood above the t
     expect(rules()).toMatch(/\.reader-lit \{\s*box-shadow: 0 0 14px -2px rgb\(255 255 255 \/ 0\.42\);/);
   });
 
-  it("opens search as a screen of its own, over the pill, down to the keyboard", () => {
+  it("opens the one search as a screen of its own, turned to the Bible, over the pill, down to the keyboard", () => {
     // The owner, 1.7.1: search on the Bible screen "conflicts with the bottom
-    // and the Matthew one, or like the pill". The phone's and the tablet's
-    // field opens a layer; the computer keeps its dropdown.
+    // and the Matthew one, or like the pill". From 1.8 (his pick of r3-12,
+    // "C, with the mix of B") the field is the door to the app's one search,
+    // turned to the Bible, on a phone, a tablet and a computer alike.
     const search = code("components/bible/BibleSearch.tsx");
     expect(search).toContain("data-bible-search-open");
-    // Drawn on the body, so no wrapper of the page holds it under the pill
-    // (the pill is z-40 and fixed) or the tab bar.
-    expect(search).toMatch(/createPortal\(\s*<div\s+data-bible-search-layer/);
-    expect(search).toContain("document.body,");
-    expect(search).toContain('className="fixed inset-0 z-[120] bg-night"');
+    expect(search).toContain('place="bible"');
+    // Nothing is left under the search: the ••• sheet closes as it opens.
+    expect(search).toContain("onOpen={onNavigate}");
+    const screen = code("components/search/CommandPalette.tsx");
+    // Over the pill (z-40 and fixed) and the tab bar, mounted in the root frame.
+    expect(screen).toContain('className="fixed inset-0 z-[120] max-md:bg-night');
     expect(code(PILL)).toMatch(/fixed inset-x-0 z-40 /);
     // The results end where the keyboard begins.
-    expect(search).toContain("const frame = useVisibleFrame();");
-    expect(search).toContain("style={frame ? { top: frame.top, height: frame.height } : undefined}");
+    expect(screen).toContain("const frame = useVisibleFrame();");
+    expect(screen).toContain("style={phone && frame ? { top: frame.top, height: frame.height } : undefined}");
     // The tab bar and the way out of focus step aside, the page holds still,
-    // and Cancel and the back button leave it.
-    expect(search).toContain("setOverlayOpen(true);");
-    expect(search).toContain("lockBodyScroll();");
-    expect(search).toContain("useAndroidBack(true, onClose);");
-    expect(search).toMatch(/onClick=\{onClose\}[\s\S]*?\{t\("common\.cancel"\)\}/);
-    // A tap inside the layer must not close it as a tap outside the dropdown does.
-    expect(search).toMatch(/if \(layer\) return;\s*function onDocClick/);
-    // A result opened closes the ••• sheet under it.
-    expect(search.match(/onNavigate\?\.\(\);/g)?.length).toBe(3);
+    // and the plate and the back button leave it.
+    expect(screen).toContain("setOverlayOpen(true);");
+    expect(screen).toContain("lockBodyScroll();");
+    expect(screen).toContain("useAndroidBack(open, close);");
+    expect(screen).toMatch(/onClick=\{close\}\s*aria-label=\{t\("common\.close"\)\}/);
   });
 });
 
@@ -471,7 +470,7 @@ describe("the reader's pill and what rises over it", () => {
     const tools = code("components/bible/MobileVerseToolbar.tsx");
     expect(tools).toContain("setOverlayOpen(true);");
     expect(tools).toContain(PLACE);
-    expect(code("components/bible/BibleSearch.tsx")).toContain("setOverlayOpen(true);");
+    expect(code("components/search/CommandPalette.tsx")).toContain("setOverlayOpen(true);");
   });
 });
 

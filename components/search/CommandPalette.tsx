@@ -1,216 +1,237 @@
 "use client";
 
-// Cross-surface command palette. Cmd+K (Mac) / Ctrl+K (Win/Linux) opens a
-// modal over any app surface; type to filter saints and their works,
-// prayers, Bible books, councils, heresies, topics, settings and key pages,
-// or type a reference ("john 3:16") to open it; arrows + Enter to navigate;
-// Escape (or a backdrop tap) to close.
+// Search: one screen, the same from anywhere (1.8, the owner's pick of r3-12,
+// "C, with the mix of B", locked 2026-10-30; his note 46 of build 80).
 //
-// It used to be desktop only, and that was the defect. The keyboard listener
-// and the dialog itself were both gated to md+ pointers, while the corpus,
-// app/search-corpus.json, shipped into the native bundle regardless. Every
-// phone reader carried roughly 59 KB for a dialog they could not open, on the
-// platform where three disconnected per-surface searches were the only way to
-// find anything. The gates are gone and SearchTrigger opens it by event.
+// The app had fourteen searches, each drawn its own way and opening its own
+// way (a full screen, a sheet, a dropdown, in place), and on Theology two on
+// one screen that gave two answers to the same word. Now the places that
+// search the whole library all open this screen, and the places that filter
+// their own list keep filtering in place in the same field
+// (components/search/SearchField.tsx). It opens from anywhere by one event,
+// `openSearch(place?)` (lib/search/open.ts): Cmd+K or Ctrl+K on a computer,
+// the bar's magnifier, Discover's field, a place's own field, Theology's pill.
 //
-// The whole subtree still renders nothing until first opened, and the corpus
-// is still fetched lazily on that first open, so the cost is unchanged.
+// C, on a phone:
+//   - the field docked at the foot, over the keyboard, in reach of the thumb
+//     (the frame the keyboard leaves, lib/ui/viewport.ts), with a round plate
+//     beside it to leave; Back and Escape leave too;
+//   - before anything is typed, "Search", then Look in: the library's doors in
+//     the app's own pictures, and the reader's recent words just over the
+//     field (on this phone only, lib/search/recent.ts);
+//   - while typing, the doors count what each found, the top result is drawn
+//     as a band over its picture, and the words that finish the one being
+//     typed sit nearest the thumb;
+//   - after the Search key, the results: in Everything the top result, then
+//     each group three at a time with All, the saints by their faces; behind
+//     a door, its kinds; nothing found says so once and offers a near
+//     spelling ("Did you mean"), then the doors to browse.
+// B, mixed in: opened from inside a place the screen starts turned to that
+// place's door, with the place's kinds under the doors as an underlined
+// strip to narrow it, and with nothing typed a kind lists itself whole.
 //
-// Visual register matches ConfirmDialog: night surface, thin gold hairline,
-// display-serif group labels, sans rows.
+// A computer keeps a card with the field at its head, as it always had: the
+// same doors, strip and rows, arrows and Enter to choose, Escape to close.
 //
-// A phone gets its own layout (1.5.2). It used to get the computer's card,
-// floating a tenth of the way down the screen: the field's focus ring drew a
-// square box across the card's round corners, every result broke its title
-// over two lines to leave room for a description beside it, the placeholder
-// was cut mid-word, the keyboard covered the lower results, and the only
-// ways out were a tap on the sliver of backdrop or the hardware back. Below
-// md it is now the whole screen: a round field with Cancel beside it, one
-// result per row with its description under it, and a list that ends where
-// the keyboard begins (lib/ui/viewport.ts). A computer keeps the card.
-//
-// Before anything is typed (1.7, the owner: "Today's search could look
-// better") a phone is shown the day first, its saint, readings and fast
-// (SearchToday, loaded on first open), then the last five results this reader
-// opened from here (lib/search/recent.ts, this device only), then the list's
-// own rows and the line that says a reference can be typed. Typing works
-// exactly as it did.
+// NO SIGNAL. Everything it looks through is two files in the apps' export
+// (app/search-corpus.json, app/theology-search.json), fetched with relative
+// addresses, so it answers on a plane as anywhere. With no connection one
+// quiet line over the field says it is searching what Purify keeps on this
+// phone, and the shop, which needs the network, goes grey.
 
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState, useSyncExternalStore } from "react";
+import { flushSync } from "react-dom";
 import { useRouter } from "next/navigation";
-import { cn } from "@/lib/cn";
-import { lockBodyScroll, setOverlayOpen, unlockBodyScroll } from "@/lib/ui/overlay";
-import { useIsPhoneWidth, useVisibleFrame } from "@/lib/ui/viewport";
-import { useAndroidBack } from "@/lib/platform/useAndroidBack";
+
 import { useTranslate } from "@/components/i18n/MessagesProvider";
-import { Close } from "@/components/ui/icons/Close";
-import { Search } from "@/components/ui/icons/Search";
-import { inReadersLanguage, matches } from "@/lib/search/match";
-import { clearRecent, readRecent, rememberRecent, type RecentItem } from "@/lib/search/recent";
-import { GROUP_ORDER, type SearchItem, type SearchGroup } from "@/lib/search/types";
+import { ChevronDown } from "@/components/ui/icons/ChevronDown";
+import { cn } from "@/lib/cn";
+import { useAndroidBack } from "@/lib/platform/useAndroidBack";
+import {
+  behind,
+  completions as finishing,
+  doorCounts,
+  doorsFound,
+  groupSections,
+  inDoor,
+  kindCounts,
+  kindIn,
+  kindSections,
+  mergeIndex,
+  nearSpelling,
+  pictureFor,
+  prepare,
+  results,
+  vocabulary,
+  withDefinitions,
+  type SearchRow,
+  type Section,
+  type TheologyEntry,
+} from "@/lib/search/engine";
+import { inReadersLanguage } from "@/lib/search/match";
+import { SEARCH_OPEN_EVENT, placeOf } from "@/lib/search/open";
+import {
+  DOORS,
+  DOOR_HINT,
+  DOOR_KINDS,
+  EVERYTHING,
+  GROUP_LABEL,
+  KIND_LABEL,
+  doorOf,
+  placeForPath,
+  turnFor,
+  type DoorId,
+  type KindId,
+  type Turn,
+} from "@/lib/search/places";
+import { clearWords, readWords, rememberWords } from "@/lib/search/recent";
+import type { SearchItem } from "@/lib/search/types";
+import { lockBodyScroll, setOverlayOpen, unlockBodyScroll } from "@/lib/ui/overlay";
+import { useIsPhoneWidth, useKeyboardUp, useVisibleFrame } from "@/lib/ui/viewport";
 
-/** Dispatched on window to open the palette from anywhere. */
-export const SEARCH_OPEN_EVENT = "purify:search-open";
+import { SearchField } from "./SearchField";
+import {
+  Doors,
+  EmptyLine,
+  Eyebrow,
+  Face,
+  FaceStrip,
+  Handoff,
+  KindStrip,
+  OfflineLine,
+  ResultRow,
+  TopBand,
+  WordRow,
+} from "./SearchRows";
 
-/**
- * Catalog key per result group. The group values themselves are stable
- * English identifiers in the corpus, so the heading is looked up rather
- * than printed, and the four that already exist in the nav are reused.
- */
-const GROUP_LABEL_KEYS: Record<SearchGroup, string> = {
-  Bible: "nav.bible",
-  Saints: "nav.saints",
-  Reading: "nav.reading",
-  Prayers: "nav.prayers",
-  "Councils & Heresies": "search.group.councilsHeresies",
-  History: "search.group.history",
-  Topics: "nav.topics",
-  Settings: "nav.settings",
-  Other: "search.group.other",
-};
+/* ── The lists, fetched once per app open and shared by every opening ─────
+   Module scope rather than state: they are fixed for the life of the build.
+   Relative addresses on purpose, NOT apiFetch: the apps serve the export from
+   https://localhost, where both files are bundled, so they load with no
+   network, as lib/content/bootstrap.ts loads the content package. A list that
+   fails to load is an empty list: the screen still opens and still says it
+   found nothing. */
 
-/**
- * The corpus, fetched once per app open and shared by every mount.
- *
- * Module scope rather than state, because it is immutable for the life of
- * the build and a second palette mount should not fetch it twice. The
- * in-flight promise is cached too, so two opens in quick succession share
- * one request.
- */
-let corpusCache: SearchItem[] | null = null;
-let corpusInFlight: Promise<SearchItem[]> | null = null;
-
-function loadCorpus(): Promise<SearchItem[]> {
-  if (corpusCache) return Promise.resolve(corpusCache);
-  if (corpusInFlight) return corpusInFlight;
-  // Relative on purpose, NOT apiFetch. This file is bundled into the export
-  // and served from https://localhost inside the native shell, so a relative
-  // fetch is the one that works offline. Same posture as
-  // lib/content/bootstrap.ts loading the bundled content package.
-  corpusInFlight = fetch("/search-corpus.json")
-    .then((r) => (r.ok ? r.json() : []))
-    .then((items: SearchItem[]) => {
-      corpusCache = Array.isArray(items) ? items : [];
-      return corpusCache;
-    })
-    .catch(() => {
-      // A palette with nothing in it still opens, still takes a query, and
-      // still says it found nothing. It never blocks the app.
-      corpusCache = [];
-      return corpusCache;
-    })
-    .finally(() => {
-      corpusInFlight = null;
-    });
-  return corpusInFlight;
+function loader<T>(url: string): () => Promise<T[]> {
+  let cache: T[] | null = null;
+  let inFlight: Promise<T[]> | null = null;
+  return () => {
+    if (cache) return Promise.resolve(cache);
+    if (inFlight) return inFlight;
+    inFlight = fetch(url)
+      .then((r) => (r.ok ? r.json() : []))
+      .then((items: unknown) => {
+        cache = Array.isArray(items) ? (items as T[]) : [];
+        return cache;
+      })
+      .catch(() => {
+        cache = [];
+        return cache;
+      })
+      .finally(() => {
+        inFlight = null;
+      });
+    return inFlight;
+  };
 }
 
-/**
- * The reference parser (lib/search/references.ts), fetched with the corpus on
- * first open and for the same reason: it carries the book list, and a
- * dialog most readers never open should not put that on every screen.
- */
-type ReferenceItems = typeof import("@/lib/search/references").referenceItems;
-let referenceItems: ReferenceItems | null = null;
+const loadCorpus = loader<SearchItem>("/search-corpus.json");
+const loadTheology = loader<TheologyEntry>("/theology-search.json");
 
-function loadReferences(): Promise<boolean> {
-  if (referenceItems) return Promise.resolve(true);
+/**
+ * The reference parser (lib/search/references.ts), fetched with the lists on
+ * first open: it carries the Bible's book list, and a screen mounted on every
+ * page must not put that on each of them.
+ */
+type References = typeof import("@/lib/search/references");
+let referencesModule: References | null = null;
+function loadReferences(): Promise<References | null> {
+  if (referencesModule) return Promise.resolve(referencesModule);
   return import("@/lib/search/references")
-    .then((m) => {
-      referenceItems = m.referenceItems;
-      return true;
-    })
-    // Without it the palette still searches everything it lists.
-    .catch(() => false);
-}
-
-/**
- * The day's rows shown before anything is typed (SearchToday, 1.7), fetched
- * the first time a phone opens the search, for the same reason as the two
- * above: they are worked out from the Church's calendar, which the search,
- * mounted on every screen, must not carry to each of them.
- */
-type TodayRows = typeof import("./SearchToday").SearchToday;
-let todayRows: TodayRows | null = null;
-
-function loadSearchToday(): Promise<TodayRows | null> {
-  if (todayRows) return Promise.resolve(todayRows);
-  return import("./SearchToday")
-    .then((m) => {
-      todayRows = m.SearchToday;
-      return todayRows;
-    })
-    // Without them the search opens as it did, on the list's own rows.
+    .then((m) => (referencesModule = m))
+    // Without it the search still finds everything its lists hold.
     .catch(() => null);
 }
+
+/**
+ * The dictionary's definitions, fetched only when its words are looked
+ * through (opened from the dictionary, or its tab chosen): its own field
+ * found a word by its definition too, and still does.
+ */
+type Definition = { id: string; definition: string };
+let definitionsCache: Definition[] | null = null;
+function loadDefinitions(): Promise<Definition[] | null> {
+  if (definitionsCache) return Promise.resolve(definitionsCache);
+  return import("@/lib/dictionary/terms")
+    .then((m) => (definitionsCache = m.DICTIONARY.map((d) => ({ id: d.id, definition: d.definition }))))
+    .catch(() => null);
+}
+
+/* ── The connection, read live ─────────────────────────────────────────── */
+
+function subscribeOnline(onChange: () => void): () => void {
+  window.addEventListener("online", onChange);
+  window.addEventListener("offline", onChange);
+  return () => {
+    window.removeEventListener("online", onChange);
+    window.removeEventListener("offline", onChange);
+  };
+}
+const readOnline = () => navigator.onLine !== false;
+const serverOnline = () => true;
+
+/** Kinds a door holds a saint as, so its rows draw the larger face. */
+const FACE_KINDS: ReadonlySet<KindId> = new Set(["saints", "fathers"]);
 
 export function CommandPalette() {
   const router = useRouter();
   const { t, tn } = useTranslate();
   const [open, setOpen] = useState(false);
+  const [turn, setTurn] = useState<Turn>(EVERYTHING);
   const [query, setQuery] = useState("");
+  // After the Search key, a door or a kind chosen: the results in full.
+  const [submitted, setSubmitted] = useState(false);
+  const [expanded, setExpanded] = useState<ReadonlySet<string>>(() => new Set());
   const [active, setActive] = useState(0);
-  const [items, setItems] = useState<SearchItem[]>(corpusCache ?? []);
-  const [referencesReady, setReferencesReady] = useState(referenceItems !== null);
-  // What this reader opened from here before, read again on each open.
-  const [recent, setRecent] = useState<RecentItem[]>([]);
-  const [Today, setToday] = useState<TodayRows | null>(() => todayRows);
+  const [recent, setRecent] = useState<string[]>([]);
+  const [corpus, setCorpus] = useState<SearchItem[] | null>(null);
+  const [theology, setTheology] = useState<TheologyEntry[]>([]);
+  const [refs, setRefs] = useState<References | null>(referencesModule);
+  const [definitions, setDefinitions] = useState<Definition[] | null>(definitionsCache);
   const inputRef = useRef<HTMLInputElement | null>(null);
   const listRef = useRef<HTMLDivElement | null>(null);
   const phone = useIsPhoneWidth();
-  // On a phone the surface is the part of the screen the keyboard has left.
+  // On a phone the screen is the part the keyboard has left.
   const frame = useVisibleFrame();
+  const online = useSyncExternalStore(subscribeOnline, readOnline, serverOnline);
+  // Where the browser can tell: the keyboard up over the screen's foot.
+  const keyboard = useKeyboardUp();
 
-  // Fetched on first open, not on mount: the palette is on every screen and
-  // most readers never open it, so this costs nothing until it is wanted.
-  useEffect(() => {
-    if (!open || (corpusCache && referenceItems)) return;
-    let alive = true;
-    if (!corpusCache) {
-      loadCorpus().then((c) => {
-        if (alive) setItems(c);
-      });
-    }
-    if (!referenceItems) {
-      loadReferences().then((ready) => {
-        if (alive && ready) setReferencesReady(true);
-      });
-    }
-    return () => {
-      alive = false;
-    };
-  }, [open]);
+  const show = useCallback((place?: string) => {
+    setTurn(turnFor(place ?? placeForPath(window.location.pathname)));
+    setQuery("");
+    setSubmitted(false);
+    setExpanded(new Set());
+    setActive(0);
+    setRecent(readWords());
+    setOpen(true);
+  }, []);
 
-  // The day's rows, on a phone, the first time the search opens there.
-  useEffect(() => {
-    if (!open || !phone || Today) return;
-    let alive = true;
-    loadSearchToday().then((rows) => {
-      if (alive && rows) setToday(() => rows);
-    });
-    return () => {
-      alive = false;
-    };
-  }, [open, phone, Today]);
+  const close = useCallback(() => setOpen(false), []);
 
-  // Opened from anywhere: components/search/SearchTrigger dispatches this.
-  // A custom event rather than context, because the trigger and the palette
-  // are mounted in different trees (the bar is per page, the palette once in
-  // the root layout) and the palette renders null until it is opened.
+  // Opened from anywhere (lib/search/open.ts). Drawn at once, inside the tap
+  // that asked, so the field can take the focus in it: a phone raises its
+  // keyboard only for focus given inside the reader's own tap.
   useEffect(() => {
-    function onOpen() {
-      setQuery("");
-      setActive(0);
-      setRecent(readRecent());
-      setOpen(true);
+    function onOpen(e: Event) {
+      flushSync(() => show(placeOf(e)));
+      inputRef.current?.focus();
     }
     window.addEventListener(SEARCH_OPEN_EVENT, onOpen);
     return () => window.removeEventListener(SEARCH_OPEN_EVENT, onOpen);
-  }, []);
+  }, [show]);
 
-  // Global Cmd/Ctrl+K toggle. No longer gated to md+ pointers: the gate was
-  // the desktop half of a pair that also hid the dialog itself, which left
-  // every phone reader paying for a corpus they could not open.
+  // Cmd+K or Ctrl+K, on any screen.
   useEffect(() => {
     function onKey(e: KeyboardEvent) {
       if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === "k") {
@@ -218,295 +239,481 @@ export function CommandPalette() {
         if (open) {
           setOpen(false);
         } else {
-          setQuery("");
-          setActive(0);
-          setRecent(readRecent());
-          setOpen(true);
+          flushSync(() => show());
+          inputRef.current?.focus();
         }
       }
     }
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
-  }, [open]);
+  }, [open, show]);
 
+  // The lists, the first time it opens: it is on every screen and most
+  // readers never open it, so nothing is fetched until they do.
+  useEffect(() => {
+    if (!open) return;
+    let alive = true;
+    void loadCorpus().then((c) => alive && setCorpus(c));
+    void loadTheology().then((list) => alive && setTheology(list));
+    if (!refs) void loadReferences().then((m) => alive && m && setRefs(m));
+    return () => {
+      alive = false;
+    };
+  }, [open, refs]);
+
+  const wantsDefinitions = turn.door === "theology" && turn.kind === "dictionary";
+  useEffect(() => {
+    if (!open || !wantsDefinitions || definitions) return;
+    let alive = true;
+    void loadDefinitions().then((d) => alive && d && setDefinitions(d));
+    return () => {
+      alive = false;
+    };
+  }, [open, wantsDefinitions, definitions]);
+
+  // The page holds still under it, the tab bar and the floating pills step
+  // aside (lib/ui/overlay.ts), and the field has the keyboard.
   useEffect(() => {
     if (!open) return;
     setOverlayOpen(true);
-    // The page behind must not scroll under a finger that is on the results.
     lockBodyScroll();
-    const id = requestAnimationFrame(() => inputRef.current?.focus());
     return () => {
-      cancelAnimationFrame(id);
       setOverlayOpen(false);
       unlockBodyScroll();
     };
   }, [open]);
+  useLayoutEffect(() => {
+    if (open) inputRef.current?.focus();
+  }, [open]);
 
-  // Android's back button closes the search, as the note on the esc hint has
-  // always said it did. It was never wired: back left the screen instead.
-  useAndroidBack(open, () => setOpen(false));
+  // Android's back button leaves the search, not the page under it.
+  useAndroidBack(open, close);
 
-  // The list is one file in English for every language. The rows the
-  // catalog can name (books, settings, plans, some screens) are shown, and
-  // found, as the reader's own language says them.
-  const shown = useMemo(() => inReadersLanguage(items, t, tn), [items, t, tn]);
+  /* ── What it looks through ──────────────────────────────────────────── */
 
-  const results = useMemo(() => {
-    if (!query.trim()) {
-      // Empty query: a short, useful default set, not the whole corpus.
-      return shown
-        .filter((i) => i.group === "Prayers" || i.group === "Other")
-        .slice(0, 8);
-    }
-    // A typed reference leads: it is the one query with a single right
-    // answer, and it is in no list, so nothing below would have found it.
-    const references = referencesReady && referenceItems ? referenceItems(query, t, tn) : [];
-    return [...references, ...matches(shown, query, 40 - references.length)];
-  }, [shown, query, referencesReady, t, tn]);
+  // The list is one file in English for every language; the rows the catalog
+  // can name are shown, and found, as the reader's own language says them.
+  const shown = useMemo(() => inReadersLanguage(corpus ?? [], t, tn), [corpus, t, tn]);
+  const rows = useMemo(() => {
+    const merged = mergeIndex(shown, theology);
+    return definitions ? withDefinitions(merged, definitions) : merged;
+  }, [shown, theology, definitions]);
+  const prepared = useMemo(() => prepare(rows), [rows]);
+  const vocabAll = useMemo(() => vocabulary(rows), [rows]);
+  const vocabHere = useMemo(() => (turn.door === "all" ? vocabAll : vocabulary(behind(rows, turn.door))), [rows, turn.door, vocabAll]);
 
-  // Before anything is typed: what this reader opened from here last, newest
-  // first (1.7). A row the list knows is drawn as the list draws it, in the
-  // reader's language today; any other (a typed reference) as it was kept.
-  const recentRows = useMemo<SearchItem[]>(() => {
-    if (query.trim() || recent.length === 0) return [];
-    const known = new Map(shown.map((i) => [i.id, i]));
-    return recent.map((r) => known.get(r.id) ?? r);
-  }, [recent, shown, query]);
+  const q = query.trim();
+  const typing = q.length > 0;
+  // A typed Bible reference leads: it is in no list, and has one right answer.
+  const lead = useMemo<SearchRow[]>(() => (refs && q ? refs.referenceItems(q, t, tn) : []), [refs, q, t, tn]);
+  const boost = useMemo(() => (refs && q ? refs.bookSlugsIn(q, t).map((slug) => `book-${slug}`) : []), [refs, q, t]);
+  const found = useMemo(() => (q ? results(prepared, q, { lead, boost }) : []), [prepared, q, lead, boost]);
+  const counts = useMemo(() => doorCounts(found), [found]);
+  const here = useMemo(() => found.filter((r) => inDoor(r, turn.door)), [found, turn.door]);
+  const narrowed = useMemo(
+    () => (turn.kind ? here.filter((r) => kindIn(r, turn.door) === turn.kind) : here),
+    [here, turn],
+  );
 
-  // Group the visible results, preserving GROUP_ORDER, with the reader's own
-  // recent rows first and not again below.
-  const grouped = useMemo(() => {
-    const flat: SearchItem[] = [...recentRows];
-    const sections: { key: string; label: string; items: SearchItem[] }[] = [];
-    if (recentRows.length) sections.push({ key: "recent", label: t("search.recent"), items: recentRows });
-    const already = new Set(recentRows.map((i) => i.id));
-    const map = new Map<SearchGroup, SearchItem[]>();
-    for (const item of results) {
-      if (already.has(item.id)) continue;
-      const arr = map.get(item.group) ?? [];
-      arr.push(item);
-      map.set(item.group, arr);
-    }
-    for (const g of GROUP_ORDER) {
-      const arr = map.get(g);
-      if (arr && arr.length) {
-        sections.push({ key: g, label: t(GROUP_LABEL_KEYS[g]), items: arr });
-        flat.push(...arr);
-      }
-    }
-    return { sections, flat };
-  }, [results, recentRows, t]);
+  // B's strip: the place's kinds, each with how many it holds (everything
+  // there before anything is typed, what the words found after).
+  const placeRows = useMemo(() => (typing ? here : behind(rows, turn.door)), [typing, here, rows, turn.door]);
+  const kindTotals = useMemo(() => kindCounts(placeRows, turn.door), [placeRows, turn.door]);
+  const stripKinds = (DOOR_KINDS[turn.door] ?? []).filter((k) => (kindTotals.get(k) ?? 0) > 0 || k === turn.kind);
 
-  function goTo(href: string) {
+  // The doors before anything is typed: every part of the library this build
+  // has (the shop only where it is on).
+  const hasShop = useMemo(() => rows.some((r) => inDoor(r, "shop")), [rows]);
+  const restDoors = useMemo(() => DOORS.map((d) => d.id).filter((id) => id !== "shop" || hasShop), [hasShop]);
+  const offDoors = useMemo<ReadonlySet<DoorId>>(() => (online ? new Set() : new Set<DoorId>(["shop"])), [online]);
+
+  // While the reader is still typing on a phone, the keyboard up: what
+  // answers before the Search key (C, 2). Once the keyboard steps away, the
+  // results (C, 3). Where the browser cannot tell, the results as typed.
+  const keyboardUp = phone && keyboard;
+  const compose = phone && typing && !submitted && keyboardUp;
+
+  const completions = useMemo(() => (compose ? finishing(vocabHere, query) : []), [compose, vocabHere, query]);
+
+  // Nothing anywhere: the words as the library spells them, when near.
+  const fix = useMemo(() => (typing && found.length === 0 ? nearSpelling(vocabAll, q) : null), [typing, found.length, vocabAll, q]);
+  const fixFound = useMemo(() => (fix ? results(prepared, fix) : []), [fix, prepared]);
+  const fixHere = turn.door === "all" ? fixFound : fixFound.filter((r) => inDoor(r, turn.door));
+
+  const top: SearchRow | undefined = typing ? (turn.door === "all" ? found[0] : narrowed[0]) : undefined;
+  const showBand = Boolean(top) && (compose || turn.door === "all");
+
+  /* ── What a tap does ────────────────────────────────────────────────── */
+
+  const go = (row: SearchRow | undefined) => {
+    if (!row) return;
+    if (q) setRecent(rememberWords(q));
     setOpen(false);
-    router.push(href);
-  }
+    router.push(row.href);
+  };
 
-  function go(item: SearchItem | undefined) {
-    if (!item) return;
-    rememberRecent(item);
-    goTo(item.href);
-  }
+  const searchFor = (words: string) => {
+    setQuery(words);
+    setActive(0);
+    setExpanded(new Set());
+    setSubmitted(true);
+    setRecent(rememberWords(words));
+    inputRef.current?.blur();
+  };
 
-  function onKeyDown(e: React.KeyboardEvent) {
+  const fill = (words: string) => {
+    setQuery(words);
+    setSubmitted(false);
+    inputRef.current?.focus();
+  };
+
+  const pickDoor = (door: DoorId) => {
+    setTurn({ door, kind: null });
+    setExpanded(new Set());
+    setActive(0);
+    if (typing) setSubmitted(true);
+  };
+
+  const browseDoor = (door: DoorId) => {
+    setQuery("");
+    setSubmitted(false);
+    pickDoor(door);
+  };
+
+  const pickKind = (kind: KindId | null) => {
+    setTurn((cur) => ({ ...cur, kind }));
+    setActive(0);
+    if (typing) setSubmitted(true);
+  };
+
+  /* ── The rows a keyboard moves through, in the order they are drawn ──── */
+
+  const sections = useMemo<Section[]>(() => {
+    if (!typing) return [];
+    if (turn.door === "all") return groupSections(found.filter((r) => r !== top));
+    if (turn.kind) return narrowed.length ? [{ key: turn.kind, kind: turn.kind, rows: narrowed }] : [];
+    return kindSections(here, turn.door);
+  }, [typing, turn, found, top, narrowed, here]);
+
+  const limitOf = (key: string, group?: string) => (turn.door !== "all" || expanded.has(key) ? Infinity : group === "Saints" ? 4 : 3);
+  const flat = useMemo(() => {
+    const out: SearchRow[] = [];
+    if (top && showBand) out.push(top);
+    for (const s of sections) {
+      if (turn.door === "all" && s.group === "Saints" && !expanded.has(s.key)) continue;
+      out.push(...s.rows.slice(0, limitOf(s.key, s.group)));
+    }
+    return out;
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [top, showBand, sections, expanded, turn.door]);
+
+  // Keep the chosen row in view as the arrows move it.
+  useEffect(() => {
+    listRef.current?.querySelector<HTMLElement>(`[data-idx="${active}"]`)?.scrollIntoView({ block: "nearest" });
+  }, [active]);
+
+  function onKeyDown(e: React.KeyboardEvent<HTMLInputElement>) {
     if (e.key === "Escape") {
       e.preventDefault();
-      setOpen(false);
-    } else if (e.key === "ArrowDown") {
+      close();
+    } else if (!phone && e.key === "ArrowDown") {
       e.preventDefault();
-      setActive((a) => Math.min(a + 1, grouped.flat.length - 1));
-    } else if (e.key === "ArrowUp") {
+      setActive((a) => Math.min(a + 1, Math.max(0, flat.length - 1)));
+    } else if (!phone && e.key === "ArrowUp") {
       e.preventDefault();
       setActive((a) => Math.max(a - 1, 0));
-    } else if (e.key === "Enter") {
+    } else if (!phone && e.key === "Enter" && flat[active]) {
+      // A computer opens the chosen row; a phone's Search key shows the results.
       e.preventDefault();
-      go(grouped.flat[active]);
+      go(flat[active]);
     }
   }
-
-  // Keep the active row in view as arrows move it.
-  useEffect(() => {
-    const el = listRef.current?.querySelector<HTMLElement>(
-      `[data-idx="${active}"]`,
-    );
-    el?.scrollIntoView({ block: "nearest" });
-  }, [active]);
 
   if (!open) return null;
 
+  /* ── Drawing ────────────────────────────────────────────────────────── */
+
+  const idxOf = (row: SearchRow) => flat.indexOf(row);
+  const rowFor = (row: SearchRow, door: DoorId, faceSize = 30) => {
+    const idx = idxOf(row);
+    const shop = inDoor(row, "shop");
+    return (
+      <ResultRow
+        key={row.id}
+        row={row}
+        query={q}
+        door={door}
+        onOpen={go}
+        idx={idx >= 0 ? idx : undefined}
+        active={!phone && idx >= 0 && idx === active}
+        face={faceSize}
+        dim={shop && !online}
+        sub={shop && !online ? t("ambience.needsConnection") : undefined}
+      />
+    );
+  };
+
+  const doorsTyped = (
+    <Doors small doors={doorsFound(counts, turn.door)} current={turn.door} counts={counts} off={offDoors} onPick={pickDoor} />
+  );
+
+  const strip = stripKinds.length ? (
+    <KindStrip kinds={stripKinds} counts={kindTotals} total={placeRows.length} current={turn.kind} onPick={pickKind} />
+  ) : null;
+
+  const topBlock =
+    top && showBand ? (
+      <div className="mt-4">
+        <Eyebrow label={t("search.topResult")} className="mx-5 mb-2" />
+        <div className="px-4">
+          {pictureFor(top) ? (
+            <TopBand row={top} query={q} eyebrow={t(GROUP_LABEL[top.group])} onOpen={go} active={!phone && active === 0} />
+          ) : (
+            rowFor(top, turn.door)
+          )}
+        </div>
+      </div>
+    ) : null;
+
+  const nothing = (
+    <div className="mt-10">
+      <EmptyLine>{t("search.nothingFound", { query: q })}</EmptyLine>
+      {fix && fixFound[0] ? (
+        <>
+          <Eyebrow label={t("search.didYouMean")} className="mx-5 mb-2.5 mt-[30px]" />
+          <div className="mx-4 rounded-[18px] border border-paper/[0.085] bg-paper/[0.035] px-3.5 pb-1.5 pt-3.5">
+            <button type="button" onClick={() => go(fixFound[0])} className="search-row -mx-1.5 flex w-[calc(100%+0.75rem)] items-center gap-3.5 rounded-[14px] px-1.5 py-1 text-start">
+              {fixFound[0].group === "Saints" ? <Face src={fixFound[0].picture} name={fixFound[0].label} size={64} /> : null}
+              <span className="min-w-0">
+                <span className="block font-serif text-[18px] font-bold leading-[1.2] text-paper">{fixFound[0].label}</span>
+                {fixFound[0].sublabel ? <span className="mt-1 block truncate font-sans text-[12.5px] text-paper/55">{fixFound[0].sublabel}</span> : null}
+              </span>
+            </button>
+            <div className="mt-2.5 border-t border-paper/[0.06] pt-1">
+              <WordRow kind="complete" typed={fix} count={fixHere.length || fixFound.length} onSearch={() => searchFor(fix)} onFill={() => fill(fix)} />
+            </div>
+          </div>
+        </>
+      ) : null}
+      <Eyebrow label={t("search.lookIn")} className="mx-5 mb-3 mt-[30px]" />
+      <Doors doors={restDoors.filter((d) => d !== "all")} current={null} off={offDoors} onPick={browseDoor} />
+    </div>
+  );
+
+  const backToEverything = (
+    <Handoff onClick={() => pickDoor("all")}>
+      {t("search.backToEverything", { query: q })}
+      <span className="ms-1.5 tabular-nums text-paper/55">{counts.get("all") ?? 0}</span>
+    </Handoff>
+  );
+
+  let body: React.ReactNode;
+  if (!typing) {
+    // Before anything is typed (C, 1): the doors, the place's kinds, and the
+    // recent words just over the field. A kind chosen lists itself whole.
+    const hint = DOOR_HINT[turn.door];
+    const whole = turn.kind ? behind(rows, turn.door, turn.kind) : [];
+    body = (
+      <>
+        {phone ? <div className="min-h-4 flex-1" /> : null}
+        <h2 className="px-5 font-serif text-[30px] font-bold leading-tight tracking-[-0.01em] text-paper">{t("search.open")}</h2>
+        <Eyebrow label={t("search.lookIn")} className="mx-5 mb-3 mt-[18px]" />
+        <Doors doors={restDoors} current={turn.door} off={offDoors} onPick={pickDoor} />
+        {strip ? <div className="mt-3">{strip}</div> : null}
+        {turn.kind ? (
+          <div className="px-4 pt-3">
+            <Eyebrow label={t(KIND_LABEL[turn.kind])} count={whole.length} className="mx-1.5 mb-1" />
+            {whole.map((row) => rowFor(row, turn.door, FACE_KINDS.has(turn.kind as KindId) ? 46 : 30))}
+          </div>
+        ) : (
+          <>
+            {hint ? <p className="px-5 pt-4 font-sans text-detail leading-[1.55] text-paper/55">{t(hint)}</p> : null}
+            {recent.length ? (
+              <div className="px-5 pt-[22px]">
+                <Eyebrow
+                  label={t("search.recent")}
+                  end={
+                    <button
+                      type="button"
+                      onClick={() => {
+                        clearWords();
+                        setRecent([]);
+                      }}
+                      className="hit-44 font-sans text-[12.5px] font-semibold text-paper/62 hover:text-paper"
+                    >
+                      {t("study.clear")}
+                    </button>
+                  }
+                />
+                <div className="mt-1">
+                  {recent.map((words) => (
+                    <WordRow key={words} kind="recent" typed={words} onSearch={() => searchFor(words)} onFill={() => fill(words)} />
+                  ))}
+                </div>
+              </div>
+            ) : null}
+          </>
+        )}
+      </>
+    );
+  } else if (compose) {
+    // Typing (C, 2): the doors count what they found; nearest the thumb the
+    // words that finish the one typed, and over them the top result.
+    body = (
+      <>
+        <div className="pt-2">{doorsTyped}</div>
+        {strip}
+        <div className="flex-1" />
+        {found.length === 0 ? nothing : here.length === 0 ? <div className="mt-8 space-y-4 px-4"><EmptyLine>{t("search.nothingFound", { query: q })}</EmptyLine>{backToEverything}</div> : topBlock}
+        {completions.length ? (
+          <div className="px-5 pt-1.5">
+            {completions.map((c) => (
+              <WordRow key={c.full} kind="complete" typed={c.typed} rest={c.rest} onSearch={() => searchFor(c.full)} onFill={() => fill(c.full)} />
+            ))}
+          </div>
+        ) : null}
+      </>
+    );
+  } else {
+    // The results (C, 3 and 4).
+    body = (
+      <>
+        <div className="pt-2">{doorsTyped}</div>
+        {strip}
+        {found.length === 0 ? (
+          nothing
+        ) : here.length === 0 ? (
+          <div className="mt-8 space-y-4 px-4">
+            <EmptyLine>{t("search.nothingFound", { query: q })}</EmptyLine>
+            {backToEverything}
+          </div>
+        ) : narrowed.length === 0 ? (
+          <div className="mt-8 px-4">
+            <EmptyLine>{t("search.nothingFound", { query: q })}</EmptyLine>
+          </div>
+        ) : (
+          <>
+            {turn.door === "all" ? topBlock : null}
+            <div className="px-4 pb-2">
+              {sections.map((s) => {
+                const whole = turn.door !== "all" || expanded.has(s.key);
+                const limit = limitOf(s.key, s.group);
+                const more = !whole && s.rows.length > limit;
+                const label = s.kind ? t(KIND_LABEL[s.kind]) : s.group ? t(GROUP_LABEL[s.group]) : t(doorOf(turn.door).labelKey);
+                const faces = turn.door === "all" && s.group === "Saints" && !whole;
+                return (
+                  <section key={s.key} className="mt-3.5">
+                    <Eyebrow
+                      label={label}
+                      count={s.rows.length}
+                      className="mx-1.5 mb-1"
+                      end={
+                        more ? (
+                          <button
+                            type="button"
+                            onClick={() => setExpanded((cur) => new Set(cur).add(s.key))}
+                            className="hit-44 font-sans text-[12.5px] font-semibold text-paper/62 hover:text-paper"
+                          >
+                            {t("common.all")} <span className="tabular-nums">{s.rows.length}</span>
+                          </button>
+                        ) : undefined
+                      }
+                    />
+                    {faces ? (
+                      <FaceStrip rows={s.rows.slice(0, limit)} onOpen={go} />
+                    ) : (
+                      s.rows
+                        .slice(0, limit)
+                        .map((row) => rowFor(row, turn.door, turn.door === "saints" || (s.kind && FACE_KINDS.has(s.kind)) ? 46 : 30))
+                    )}
+                  </section>
+                );
+              })}
+              {turn.door !== "all" ? <div className="mt-4">{backToEverything}</div> : null}
+            </div>
+          </>
+        )}
+      </>
+    );
+  }
+
+  const field = (
+    <SearchField
+      inputRef={inputRef}
+      value={query}
+      onChange={(value) => {
+        setQuery(value);
+        setActive(0);
+        setSubmitted(false);
+        setExpanded(new Set());
+      }}
+      onSubmit={() => {
+        if (q) searchFor(query);
+      }}
+      onKeyDown={onKeyDown}
+      placeholder={t("search.ariaLabel")}
+      className="flex-1"
+    />
+  );
+
   return (
     <div
-      className="fixed inset-0 z-[120] md:flex md:items-start md:justify-center md:px-4 md:pt-[12vh]"
+      data-search-screen=""
+      className="fixed inset-0 z-[120] max-md:bg-night md:flex md:items-start md:justify-center md:px-4 md:pt-[10vh]"
       role="dialog"
       aria-modal="true"
       aria-label={t("search.ariaLabel")}
     >
-      <button
-        type="button"
-        aria-hidden
-        tabIndex={-1}
-        onClick={() => setOpen(false)}
-        // Flat, no backdrop-filter. The Android WebView bleeds imagery through
-        // it and drops frames, which is why MobileTabBar and ShopSubTabs are
-        // flat too. It never mattered here while the dialog was desktop only.
-        className="absolute inset-0 bg-night/90"
-      />
+      {/* A computer's backdrop: a tap outside the card closes it. Flat, no
+          blur: the Android WebView bleeds pictures through one and drops frames. */}
+      <button type="button" aria-hidden tabIndex={-1} onClick={close} className="absolute inset-0 bg-night/90 max-md:hidden" />
       <div
         className={cn(
-          "flex flex-col bg-night",
-          // A phone: the whole screen, down to the keyboard.
-          "max-md:absolute max-md:inset-x-0 max-md:top-0 max-md:h-full",
-          // A computer: the floating card.
-          "md:relative md:w-full md:max-w-[560px] md:overflow-hidden md:rounded-card md:border md:border-gold/25 md:shadow-2xl",
+          "search-ground flex flex-col",
+          phone
+            ? "absolute inset-x-0 top-0 h-full"
+            : "relative max-h-[78vh] w-full max-w-[640px] overflow-hidden rounded-card border border-paper/12 shadow-2xl",
         )}
         style={phone && frame ? { top: frame.top, height: frame.height } : undefined}
       >
-        <div
-          className="flex shrink-0 items-center gap-1.5 border-b border-paper/10 px-3 max-md:pb-2.5 md:gap-3 md:px-4"
-          // Below the status bar and the notch: this surface starts at the
-          // very top of the screen, in the apps and on the web alike.
-          style={phone ? { paddingTop: "calc(env(safe-area-inset-top, 0px) + 0.625rem)" } : undefined}
-        >
-          <label className="flex min-w-0 flex-1 items-center gap-2.5 max-md:rounded-pill max-md:border max-md:border-paper/15 max-md:bg-paper/[0.05] max-md:pl-3.5 max-md:pr-1 max-md:transition-colors max-md:focus-within:border-paper/45">
-            <Search size={18} className="shrink-0 text-paper/45" />
-            <input
-              ref={inputRef}
-              value={query}
-              onKeyDown={onKeyDown}
-              onChange={(e) => {
-                setQuery(e.target.value);
-                setActive(0);
-              }}
-              // The long line names everything; a phone has room for two words.
-              placeholder={phone ? t("search.ariaLabel") : t("search.placeholder")}
-              aria-label={t("search.ariaLabel")}
-              enterKeyHint="search"
-              autoComplete="off"
-              autoCorrect="off"
-              autoCapitalize="none"
-              spellCheck={false}
-              className="min-w-0 flex-1 bg-transparent py-2.5 font-sans text-body text-paper placeholder:text-paper/35 md:py-4"
-              // The field's own frame says where typing goes. The app-wide
-              // focus ring is a square box, which cut across the round
-              // corners here; inline, because that ring is unlayered and
-              // outranks every utility.
-              style={{ outline: "none" }}
-            />
-            {query ? (
-              <button
-                type="button"
-                aria-label={t("study.clear")}
-                onClick={() => {
-                  setQuery("");
-                  setActive(0);
-                  inputRef.current?.focus();
-                }}
-                className="inline-flex size-9 shrink-0 items-center justify-center rounded-full text-paper/55 transition-colors hover:text-paper"
-              >
-                <Close size={16} />
-              </button>
-            ) : null}
-          </label>
-          {/* A phone has no escape key, so it gets a word to tap. */}
-          <button
-            type="button"
-            onClick={() => setOpen(false)}
-            className="inline-flex min-h-11 shrink-0 items-center rounded-pill px-2.5 font-sans text-detail font-medium text-paper/75 transition-colors hover:text-paper md:hidden"
-          >
-            {t("common.cancel")}
-          </button>
-          <kbd className="hidden shrink-0 rounded-md border border-paper/15 px-1.5 py-0.5 font-sans text-caption text-paper/35 md:inline-block">
-            {t("search.escKey")}
-          </kbd>
-        </div>
-
+        {phone ? null : (
+          <div className="flex shrink-0 items-center gap-3 border-b border-paper/10 px-3 py-3">
+            {field}
+            <kbd className="shrink-0 rounded-md border border-paper/15 px-1.5 py-0.5 font-sans text-caption text-paper/35">{t("search.escKey")}</kbd>
+          </div>
+        )}
         <div
           ref={listRef}
-          className="min-h-0 flex-1 overflow-y-auto overscroll-contain py-2 max-md:pb-[calc(env(safe-area-inset-bottom,0px)+0.75rem)] md:max-h-[52vh] md:flex-none"
+          data-search-body=""
+          className="search-in flex min-h-0 flex-1 flex-col overflow-y-auto overscroll-contain pb-3"
+          // Below the status bar and the notch: on a phone this screen starts
+          // at the very top, in the apps and on the web alike.
+          style={phone ? { paddingTop: "calc(var(--inset-top, env(safe-area-inset-top, 0px)) + 0.75rem)" } : { paddingTop: "0.5rem" }}
         >
-          {/* The day first, on a phone, before anything is typed: its saint,
-              its readings and the fast (1.7). */}
-          {!query.trim() && phone && Today ? <Today onGo={goTo} /> : null}
-          {grouped.flat.length === 0 ? (
-            // Only once something has been typed. The list arrives a moment
-            // after the dialog on first open, and until it did this read
-            // "Nothing found for" an empty pair of quotation marks.
-            query.trim() ? (
-              <p className="px-4 py-8 text-center font-serif italic text-detail text-paper/40">
-                {t("search.nothingFound", { query: query.trim() })}
-              </p>
-            ) : null
-          ) : (
-            grouped.sections.map((section) => (
-              <div key={section.key} className="mb-1">
-                {section.key === "recent" ? (
-                  <div className="flex items-center justify-between gap-3 px-4 pb-1 pt-3">
-                    <p className="font-sans text-caption text-paper/35">{section.label}</p>
-                    <button
-                      type="button"
-                      onClick={() => {
-                        clearRecent();
-                        setRecent([]);
-                        setActive(0);
-                      }}
-                      className="hit-44 font-sans text-caption text-paper/55 transition-colors hover:text-paper"
-                    >
-                      {t("study.clear")}
-                    </button>
-                  </div>
-                ) : (
-                  <p className="px-4 pb-1 pt-3 font-sans text-caption text-paper/35">{section.label}</p>
-                )}
-                {section.items.map((item) => {
-                  const idx = grouped.flat.indexOf(item);
-                  const isActive = idx === active;
-                  return (
-                    <button
-                      key={item.id}
-                      type="button"
-                      data-idx={idx}
-                      onMouseMove={() => setActive(idx)}
-                      onClick={() => go(item)}
-                      className={cn(
-                        "flex w-full px-4 text-left transition-colors",
-                        // A phone: the name, and what it is under it, each on
-                        // one line, in a row tall enough for a thumb.
-                        "max-md:min-h-[52px] max-md:flex-col max-md:justify-center max-md:gap-0.5 max-md:py-2",
-                        // A computer: one line, the description beside it.
-                        "md:items-baseline md:gap-3 md:py-2",
-                        // A phone has no pointer resting on a row, so nothing
-                        // is lit until a keyboard moves through the list.
-                        isActive ? "md:bg-paper/8" : "hover:bg-paper/5",
-                      )}
-                    >
-                      <span
-                        className={cn(
-                          "font-sans text-detail max-md:truncate max-md:text-ui",
-                          isActive ? "text-paper" : "text-paper/85",
-                        )}
-                      >
-                        {item.label}
-                      </span>
-                      {item.sublabel && (
-                        <span className="truncate font-sans text-caption text-paper/35 max-md:text-paper/50">
-                          {item.sublabel}
-                        </span>
-                      )}
-                    </button>
-                  );
-                })}
-              </div>
-            ))
-          )}
-          {/* Before anything is typed, say the one thing the rows cannot:
-              that a reference can be typed here. The Bible tab's own
-              search used to carry this line, and it left with that box. */}
-          {!query.trim() && referencesReady ? (
-            <p className="px-4 pb-2 pt-4 font-sans text-caption italic text-paper/45">
-              {t("ui.tryJohn3161")}
-            </p>
+          {body}
+          {!online ? (
+            <div className={cn("px-4 pt-3", phone && typing && !compose && "mt-auto")}>
+              <OfflineLine />
+            </div>
           ) : null}
         </div>
+        {phone ? (
+          // The field at the foot, over the keyboard. With the keyboard down
+          // it stands clear of the screen's own edge (.safe-pb-edge).
+          <div data-search-dock="" className={cn("search-dock shrink-0", !keyboardUp && "safe-pb-edge max-md:pb-[env(safe-area-inset-bottom,0px)]")}>
+            <div className="flex items-center gap-1.5 px-2.5 py-2">
+              <button
+                type="button"
+                onClick={close}
+                aria-label={t("common.close")}
+                className="search-plate grid size-[38px] shrink-0 place-items-center rounded-full text-paper"
+              >
+                <ChevronDown size={20} strokeWidth={1.9} />
+              </button>
+              {field}
+            </div>
+          </div>
+        ) : null}
       </div>
     </div>
   );

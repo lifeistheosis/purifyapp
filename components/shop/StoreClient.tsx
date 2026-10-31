@@ -212,12 +212,10 @@ export function StoreClient({ slug }: { slug: string }) {
       {/* Search + facets over the store's own catalog. */}
       {products.length > 0 ? (
         <div className="mt-8">
-          <ShopBrowseControls
-            filters={filters}
-            onChange={setFilters}
-            resultCount={filtered.length}
-            searchPlaceholder={`Search ${store.public_name}…`}
-          />
+          {/* The field says "Search" in the reader's language, as every
+              field beside its Filters does (1.8, r3-12): the English "Search
+              <store>…" was cut at 360px and read in English everywhere. */}
+          <ShopBrowseControls filters={filters} onChange={setFilters} resultCount={filtered.length} />
         </div>
       ) : null}
 
