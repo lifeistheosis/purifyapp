@@ -1203,16 +1203,22 @@ function fitPage(m: QuoteMeasure, text: string, face: { family: "serif" | "sans"
     const capHeight = m.ink(font, "H").ascent;
     const weight = Math.max(600, face.weight);
     const rise = m.ink({ ...font, weight, size: 100 }, first).ascent || 70;
+    let short = false;
     for (const n of [3, 2]) {
       const initialFont: QuoteFont = { family: face.family, weight, size: (((n - 1) * lineHeight + capHeight) / rise) * 100 };
       const ink = m.ink(initialFont, first);
       const indent = ink.right + ink.left + size * 0.42;
       const lines = wrapQuote(rest, width, (i) => (i < n ? w - indent : w));
-      if (lines.length < (n === 3 ? 5 : 2)) continue;
+      if (lines.length < (n === 3 ? 5 : 2)) {
+        short = n === 2;
+        continue;
+      }
       if (lines.length * lineHeight > maxHeight) continue;
       if (!lines.every((l, i) => width(l) <= (i < n ? w - indent : w) + 0.5)) continue;
       return { body: { font, track: 0, lines, lineHeight }, initial: { text: first, font: initialFont, left: -ink.left, indent, lines: n } };
     }
+    // Long enough for a large first letter and not fitting here: a smaller plate or size is tried, as the sheet does.
+    if (!short) return null;
   }
   // Words a line long, or that open with a mark, want no large first letter.
   const lines = wrapQuote(text, width, () => w);

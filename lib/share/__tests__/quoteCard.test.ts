@@ -370,6 +370,14 @@ describe("B, the page", () => {
     expect(p.runs.filter((r) => r.role === "head").map((r) => r.text)).toEqual(["IN HIS OWN WORDS", "NOVEMBER 13"]);
   });
 
+  it("opens short words with their large first letter too, the plate a little smaller rather than the letter lost", () => {
+    const p = plan(CHRYSOSTOM, { layout: "page" })!;
+    expect(p.runs.find((r) => r.role === "initial")?.text).toBe("L");
+    expect(p.plate!.width).toBeLessThan(1080 * 0.44);
+    // Words a line long have none.
+    expect(plan("Pray.", { layout: "page" })!.runs.some((r) => r.role === "initial")).toBe(false);
+  });
+
   it("gives a council's wide miniature the page's width, and a saying with no picture the cross where the plate would be", () => {
     const wide = plan(GREGORY, { layout: "page" }, miniature)!;
     expect(wide.plate!.width).toBeGreaterThanOrEqual(1080 * 0.6 - 0.5);
