@@ -69,6 +69,13 @@ export type Saying = {
 };
 export type SayingsContent = Record<string, Record<string, Saying | undefined> | undefined>;
 
+/**
+ * A plan's own words, handed to its page at build (lib/plans/words.ts): its
+ * English guide, where the verses that guide quotes stand, and the Fathers'
+ * sayings, for that plan alone.
+ */
+export type PlanWords = { en: GuideContent; cites: GuideCites; sayings: SayingsContent };
+
 export type GuideQuestion = {
   key: string;
   text: string;

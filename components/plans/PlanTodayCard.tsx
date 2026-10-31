@@ -6,11 +6,14 @@
 // and Begin, which opens the passage with the plan's bar at its foot.
 //
 // Plus is shown, never hidden: without it Begin carries the Plus mark and
-// opens the upgrade sheet named for the plans.
+// opens the upgrade sheet named for the plans. While the answer is on its way
+// the mark's place is kept, unseen (`lockPlace`), so Begin does not widen a
+// moment after the page arrives (the owner's note 42 of build 80).
 
 import { SourceList, marked } from "@/components/citations/Marked";
 import { useTranslate } from "@/components/i18n/MessagesProvider";
 import { PREMIUM_CHIP } from "@/components/premium/PremiumUI";
+import { cn } from "@/lib/cn";
 import type { DayGuide } from "@/lib/plans/guide";
 
 /** Where a mark in the day's intro leads: its verse, under the intro. */
@@ -23,6 +26,7 @@ export function PlanTodayCard({
   guide,
   minutes,
   locked,
+  lockPlace = locked,
   onBegin,
 }: {
   dayNumber: number;
@@ -32,6 +36,8 @@ export function PlanTodayCard({
   guide: DayGuide | null;
   minutes: number | null;
   locked: boolean;
+  /** Keep the mark's place, unseen unless locked, while the answer is unknown. */
+  lockPlace?: boolean;
   onBegin: () => void;
 }) {
   const { t } = useTranslate();
@@ -56,7 +62,11 @@ export function PlanTodayCard({
           className="tap-press inline-flex h-12 items-center gap-2 rounded-pill bg-paper px-7 font-sans text-ui font-semibold text-night motion-safe:transition-colors hover:bg-paper/90"
         >
           {t("plans.begin")}
-          {locked ? <span className={PREMIUM_CHIP}>{t("study.purifyPlus")}</span> : null}
+          {lockPlace ? (
+            <span aria-hidden={locked ? undefined : true} className={cn(PREMIUM_CHIP, !locked && "invisible")}>
+              {t("study.purifyPlus")}
+            </span>
+          ) : null}
         </button>
         {minutes ? <span className="font-sans text-caption text-paper/55">{t("prayers.reader.aboutMin", { min: minutes })}</span> : null}
       </div>

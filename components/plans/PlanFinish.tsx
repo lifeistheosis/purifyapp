@@ -5,13 +5,15 @@
 // skip, one saying of the Fathers on the passage, and a look at tomorrow").
 // Shown at the top of the plan's page when the plan bar's Done brings the
 // reader back (lib/plans/session.ts, justFinished), until Back to the plan.
+// The questions and the saying are the plan's own words, which came with the
+// page (lib/plans/words.ts), so the finish is whole in its first frame.
 
 import { FinishMoment } from "@/components/flow/FinishMoment";
 import { useTranslate } from "@/components/i18n/MessagesProvider";
 import { PlanQuestions } from "@/components/plans/PlanQuestions";
 import { PlanSaying } from "@/components/plans/PlanSaying";
-import { dayGuide, firstLine, sayingFor } from "@/lib/plans/guide";
-import { useSayings, type LoadedGuide } from "@/lib/plans/guideContent";
+import { dayGuide, firstLine, sayingFor, type SayingsContent } from "@/lib/plans/guide";
+import type { LoadedGuide } from "@/lib/plans/guideContent";
 import { dayLabel, type ReadingPlan } from "@/lib/plans/plans";
 
 export function PlanFinish({
@@ -19,6 +21,7 @@ export function PlanFinish({
   day,
   next,
   guide,
+  sayings,
   streak,
   bookName,
   onBack,
@@ -29,12 +32,13 @@ export function PlanFinish({
   /** The next day not yet read, or null when the plan is finished. */
   next: number | null;
   guide: LoadedGuide | null;
+  /** The plan's sayings of the Fathers, English. */
+  sayings: SayingsContent | null;
   streak: number;
   bookName: (slug: string) => string;
   onBack: () => void;
 }) {
   const { t, tn } = useTranslate();
-  const sayings = useSayings(true);
   const today = guide ? dayGuide(guide.own, guide.en, plan.id, day, guide.cites) : null;
   const tomorrow = guide && next !== null ? dayGuide(guide.own, guide.en, plan.id, next) : null;
   const saying = sayingFor(sayings, plan.id, day);
