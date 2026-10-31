@@ -32,9 +32,11 @@
  *
  * WHY A COOKIE. The order is worked out in the browser, after the page has
  * drawn, and moving the rail under the owner's pointer as he reaches for it
- * would be worse than a rail that never moved. So the browser writes the new
- * order into a cookie, at most once a day, and the server draws the rail from
- * it on the next load. Within one visit the rail never moves.
+ * would be worse than a rail that never moved. So the new order is written
+ * into a cookie, and the server draws the rail from it on the next load.
+ * Within one visit the rail never moves. Since his pick B for the Audit log
+ * (r3-17, 2026-10-30) the cookie is written only on his yes: Your week
+ * suggests a move and its "Do it" writes it (components/admin/tabs/UsageTab.tsx).
  *
  * Pure: no fetch, no clock read, no document. The shell does those.
  */
