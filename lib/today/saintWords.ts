@@ -1,6 +1,7 @@
 import file from "@/data/today/saint-words.json";
 
 import type { ShownCite } from "@/lib/citations/cite";
+import type { QuoteFace, QuoteSubject } from "@/lib/share/verseCard";
 
 /**
  * Today's saint in their own words (1.8, the owner's word of 2026-10-24): on
@@ -17,8 +18,12 @@ import type { ShownCite } from "@/lib/citations/cite";
  * (components/today/SaintWindow.tsx). `reposed` is the year of his repose as
  * the registry gives it (lib/saints/web.ts, dateYear), kept here so Today
  * need not read the registry for one number; the test holds the two together.
+ *
+ * `lit` is the one word lit on the picture of his words (round 3 r3-11),
+ * chosen by hand where one word plainly carries the line, and absent where
+ * none does: an emphasis the Father did not give, so it is used sparingly.
  */
-export type SaintWords = { text: string; shown: ShownCite; reposed?: string };
+export type SaintWords = { text: string; shown: ShownCite; reposed?: string; lit?: string };
 
 const WORDS = (file as unknown as { words: Record<string, SaintWords> }).words;
 
@@ -81,4 +86,62 @@ export function readWhereFrom(shown: ShownCite): string | null {
  */
 export function saintPictureInput(words: SaintWords, name: string): { text: string; reference: string; lang: string } {
   return { text: words.text, reference: name, lang: "en" };
+}
+
+/**
+ * The work the words are from, as a quote's picture prints it under his name:
+ * its title to the first full stop ("The First Theological Oration"), then
+ * its place where that is short ("Chapter 3"), not a translator's long note
+ * or a run of pages.
+ */
+export function quoteSource(shown: ShownCite): string | undefined {
+  if (shown.kind !== "father" && shown.kind !== "text") return undefined;
+  const work = shown.work.split(". ")[0].trim();
+  const place = shown.place?.trim() ?? "";
+  const short = place && place.length <= 28 && !/[()]/.test(place) && !/^pages?\b/i.test(place);
+  return short ? `${work}, ${place}` : work;
+}
+
+/** The second of his titles, the name the Church knows him by ("Golden-Mouth", "The Theologian"), for the head of his picture. */
+export function saintByname(epithet: string | undefined): string | undefined {
+  return (epithet ?? "").split(" · ")[1]?.trim() || undefined;
+}
+
+/**
+ * His words as a quote's picture (lib/share/verseCard.ts, QuoteSubject, the
+ * owner's pick of all three of r3-11): his byname over the cross, his name,
+ * his first title and his repose, the work; the Page's running head (`pageHead`,
+ * "In his own words" in the reader's language) with his feast; round the seal
+ * his name and his repose; the lit word; his face.
+ */
+export function saintQuote({
+  saint,
+  words,
+  face,
+  pageHead,
+  feast,
+  lang,
+}: {
+  saint: { name: string; epithet?: string };
+  words: SaintWords;
+  face: QuoteFace | null;
+  pageHead: string;
+  feast?: string;
+  lang?: string;
+}): QuoteSubject {
+  const head = saintByname(saint.epithet);
+  const byline = saintByline(saint.epithet, words.reposed);
+  const source = quoteSource(words.shown);
+  return {
+    name: saint.name,
+    ...(head ? { head } : {}),
+    ...(byline ? { byline } : {}),
+    ...(source ? { source } : {}),
+    pageHead,
+    ...(feast ? { pageRight: feast } : {}),
+    ring: words.reposed ? `${saint.name} · †${words.reposed}` : saint.name,
+    ...(words.lit ? { lit: words.lit } : {}),
+    face,
+    ...(lang ? { lang } : {}),
+  };
 }

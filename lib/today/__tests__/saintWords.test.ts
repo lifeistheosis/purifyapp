@@ -9,7 +9,9 @@ import { getMessages } from "@/lib/i18n";
 import { SAINTS } from "@/lib/saints/saints";
 import { dateYear } from "@/lib/saints/web";
 
-import { SAINT_WORDS_SLUGS, readWhereFrom, saintByline, saintPictureInput, saintWordsFor, wordsOpening } from "../saintWords";
+import { litSpan } from "@/lib/share/verseCard";
+
+import { SAINT_WORDS_SLUGS, quoteSource, readWhereFrom, saintByline, saintByname, saintPictureInput, saintQuote, saintWordsFor, wordsOpening } from "../saintWords";
 
 // Today's saint in their own words (1.8): every line is the saint's, word
 // for word in the paragraph its source line opens, or a traced quotation of
@@ -132,6 +134,54 @@ describe("the saint's window", () => {
     expect(saintPictureInput(words, chrysostom.name)).toEqual({
       text: "Let no one fear death, for the Saviour's death hath set us free.",
       reference: "St. John Chrysostom",
+      lang: "en",
+    });
+  });
+});
+
+// The picture of his words (1.8, round 3 r3-11, the owner's pick of all three
+// layouts): one word lit where one plainly carries the line, chosen by hand
+// and kept with the words; none elsewhere.
+describe("his words as a picture", () => {
+  const chrysostomEpithet = "Archbishop of Constantinople · Golden-Mouth";
+
+  it("light one whole word of the words where one is chosen, and only a few of them", () => {
+    const lit = SAINT_WORDS_SLUGS.filter((slug) => saintWordsFor(slug)!.lit);
+    for (const slug of lit) {
+      const w = saintWordsFor(slug)!;
+      expect(litSpan(w.text, w.lit), `${slug}: ${w.lit}`).not.toBeNull();
+      expect(w.lit, slug).toMatch(/^\p{L}+$/u);
+    }
+    // As the sheets lit them.
+    expect(saintWordsFor("john-chrysostom")!.lit).toBe("free");
+    expect(saintWordsFor("gregory-theologian")!.lit).toBe("God");
+    expect(saintWordsFor("augustine-of-hippo")!.lit).toBe("restless");
+    // Emphasis the Father did not give: kept for the lines one word carries.
+    expect(lit.length).toBeLessThan(SAINT_WORDS_SLUGS.length / 2);
+    expect(saintWordsFor("john-of-damascus")!.lit).toBeUndefined();
+  });
+
+  it("names the work as the picture prints it: its title to the first stop, and a short place", () => {
+    expect(quoteSource(saintWordsFor("gregory-theologian")!.shown)).toBe("The First Theological Oration, Chapter 3");
+    expect(quoteSource(saintWordsFor("john-chrysostom")!.shown)).toBe("The Paschal Homily");
+    expect(quoteSource(saintWordsFor("augustine-of-hippo")!.shown)).toBe("Confessions, Book I, Chapter 1");
+    expect(quoteSource({ kind: "untraced" })).toBeUndefined();
+  });
+
+  it("is his subject: his byname over the cross, his first title and repose, the work, in his own words with his feast, his name round the seal", () => {
+    expect(saintByname(chrysostomEpithet)).toBe("Golden-Mouth");
+    expect(saintByname("Hymnographer")).toBeUndefined();
+    const face = { src: "/covers/authors/john-chrysostom.v1.jpg", point: [0.3, 0.25] as const, looks: "left" as const, fallback: null };
+    expect(saintQuote({ saint: { name: "St. John Chrysostom", epithet: chrysostomEpithet }, words: saintWordsFor("john-chrysostom")!, face, pageHead: "In his own words", feast: "November 13", lang: "en" })).toEqual({
+      name: "St. John Chrysostom",
+      head: "Golden-Mouth",
+      byline: "Archbishop of Constantinople, †407",
+      source: "The Paschal Homily",
+      pageHead: "In his own words",
+      pageRight: "November 13",
+      ring: "St. John Chrysostom · †407",
+      lit: "free",
+      face,
       lang: "en",
     });
   });

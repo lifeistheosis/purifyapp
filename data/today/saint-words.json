@@ -1,5 +1,5 @@
 {
- "comment": "Today's saint in their own words (1.8): the saint's first quotation traced to a work the app carries or a public-domain text (lib/saints/saints.ts), else a sentence picked by hand from a work of theirs the reading room checked word for word; each with its source line. lib/today/__tests__/saintWords.test.ts holds every one to its paragraph.",
+ "comment": "Today's saint in their own words (1.8): the saint's first quotation traced to a work the app carries or a public-domain text (lib/saints/saints.ts), else a sentence picked by hand from a work of theirs the reading room checked word for word; each with its source line. lib/today/__tests__/saintWords.test.ts holds every one to its paragraph. `lit` is the one word lit on the picture of his words (1.8, round 3 r3-11), chosen by hand where one word plainly carries the line, and absent elsewhere; the test holds it to a whole word of the text.",
  "words": {
   "anthony-the-great": {
    "text": "Let this especially be the common aim of all, neither to give way having once begun, nor to faint in trouble, nor to say: We have lived in the discipline a long time: but rather as though making a beginning daily let us increase our earnestness.",
@@ -23,7 +23,8 @@
     "place": "Chapter 54",
     "edition": "NPNF II 4"
    },
-   "reposed": "373"
+   "reposed": "373",
+   "lit": "God"
   },
   "john-chrysostom": {
    "text": "Let no one fear death, for the Saviour's death hath set us free.",
@@ -34,7 +35,8 @@
     "work": "The Paschal Homily",
     "place": "The Catechetical Address read at Paschal Matins (Hapgood, Service Book, 1906, pp. 235-236)"
    },
-   "reposed": "407"
+   "reposed": "407",
+   "lit": "free"
   },
   "basil-the-great": {
    "text": "Through His aid hearts are lifted up, the weak are held by the hand, and they who are advancing are brought to perfection.",
@@ -47,7 +49,8 @@
     "mark": "§23",
     "edition": "NPNF II 8"
    },
-   "reposed": "379"
+   "reposed": "379",
+   "lit": "lifted"
   },
   "gregory-theologian": {
    "text": "Not to every one, my friends, does it belong to philosophize about God; not to every one; the Subject is not so cheap and low; and I will add, not before every audience, nor at all times, nor on all points; but on certain occasions, and before certain persons, and within certain limits.",
@@ -59,7 +62,8 @@
     "place": "Chapter 3",
     "edition": "NPNF II 7"
    },
-   "reposed": "390"
+   "reposed": "390",
+   "lit": "God"
   },
   "john-of-damascus": {
    "text": "Energy is the efficient (drastike) and essential activity of nature: the capacity for energy is the nature from which proceeds energy: the product of energy is that which is effected by energy: and the agent of energy is the person or subsistence which uses the energy.",
@@ -83,7 +87,8 @@
     "place": "Chapter 4",
     "edition": "ANF 1"
    },
-   "reposed": "c. 108"
+   "reposed": "c. 108",
+   "lit": "bread"
   },
   "augustine-of-hippo": {
    "text": "Thou madest us for Thyself, and our heart is restless, until it repose in Thee.",
@@ -96,7 +101,8 @@
     "mark": "§1",
     "edition": "tr. Pusey"
    },
-   "reposed": "430"
+   "reposed": "430",
+   "lit": "restless"
   },
   "cyril-of-alexandria": {
    "text": "And it is with reference to this notion of a union without confusion that we proclaim the holy Virgin to be the mother of God, because God the Word was made flesh and became man, and by the act of conception united to Himself the temple that He received from her.",
@@ -132,7 +138,8 @@
     "place": "Chapter 9",
     "edition": "ANF 1"
    },
-   "reposed": "c. 155"
+   "reposed": "c. 155",
+   "lit": "Saviour"
   },
   "alexander-of-alexandria": {
    "text": "Who that hears John saying, “In the beginning was the Word,” does not condemn those who say there was a time when He was not?",
@@ -167,7 +174,8 @@
     "place": "Lecture 6, §36",
     "edition": "NPNF II 7"
    },
-   "reposed": "386"
+   "reposed": "386",
+   "lit": "Church"
   },
   "justin-martyr": {
    "text": "But straightway a flame was kindled in my soul; and a love of the prophets, and of those men who are friends of Christ, possessed me; and whilst revolving his words in my mind, I found this philosophy alone to be safe and profitable.",
@@ -238,7 +246,8 @@
     "place": "Chapter 6",
     "edition": "ANF 5"
    },
-   "reposed": "258"
+   "reposed": "258",
+   "lit": "Church"
   }
  }
 }

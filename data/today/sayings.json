@@ -1,9 +1,11 @@
 {
-  "source": "Sayings of the Desert Fathers, word for word from the library's public-domain texts: St Athanasius's Life of Antony (tr. H. Ellershaw, NPNF II 4) and St John Cassian's Conferences (tr. E. C. S. Gibson, NPNF II 11). Shown on Today when the saint of the day has no profile, rotated by day of the year so the same line does not appear two days running. Each carries its place (`cite`) and the line under it as the card shows it (`shown`, written from the cite and held to it by lib/citations/__tests__/quotes.test.ts).",
+  "source": "Sayings of the Desert Fathers, word for word from the library's public-domain texts: St Athanasius's Life of Antony (tr. H. Ellershaw, NPNF II 4) and St John Cassian's Conferences (tr. E. C. S. Gibson, NPNF II 11). Shown on Today when the saint of the day has no profile, rotated by day of the year so the same line does not appear two days running. Each carries its place (`cite`) and the line under it as the card shows it (`shown`, written from the cite and held to it by lib/citations/__tests__/quotes.test.ts). `speaker` is the page of the Father who speaks, where he has one, for his face on the picture of the saying; `lit` is the one word lit on that picture, chosen by hand where one word plainly carries the line (1.8, round 3 r3-11).",
   "sayings": [
     {
       "text": "Wherefore fear them not, but rather ever breathe Christ, and trust Him. Live as though dying daily.",
       "attribution": "St. Antony the Great",
+      "speaker": "anthony-the-great",
+      "lit": "daily",
       "cite": {
         "kind": "work",
         "saint": "anthony-the-great",
@@ -42,6 +44,7 @@
     {
       "text": "But fear not to hear of virtue, nor be astonished at the name. For it is not far from us, nor is it without ourselves, but it is within us, and is easy if only we are willing.",
       "attribution": "St. Antony the Great",
+      "speaker": "anthony-the-great",
       "cite": {
         "kind": "work",
         "saint": "anthony-the-great",
@@ -80,6 +83,7 @@
     {
       "text": "So then we ought to fear God only, and despise the demons, and be in no fear of them.",
       "attribution": "St. Antony the Great",
+      "speaker": "anthony-the-great",
       "cite": {
         "kind": "work",
         "saint": "anthony-the-great",
@@ -99,6 +103,7 @@
     {
       "text": "For discretion is the mother of all virtues, as well as their guardian and regulator.",
       "attribution": "Abba Moses",
+      "lit": "discretion",
       "cite": {
         "kind": "work",
         "saint": "john-cassian",
@@ -118,6 +123,7 @@
     {
       "text": "Nor let us think, as we look at the world, that we have renounced anything of much consequence, for the whole earth is very small compared with all the heaven.",
       "attribution": "St. Antony the Great",
+      "speaker": "anthony-the-great",
       "cite": {
         "kind": "work",
         "saint": "anthony-the-great",
@@ -137,6 +143,7 @@
     {
       "text": "That is not, said he, a perfect prayer, wherein a monk understands himself and the words which he prays.",
       "attribution": "Abba Antony, as Abba Isaac tells it",
+      "speaker": "anthony-the-great",
       "cite": {
         "kind": "work",
         "saint": "john-cassian",
@@ -156,6 +163,7 @@
     {
       "text": "Let us consider and lay to heart that while the Lord is with us, our foes can do us no hurt.",
       "attribution": "St. Antony the Great",
+      "speaker": "anthony-the-great",
       "cite": {
         "kind": "work",
         "saint": "anthony-the-great",
@@ -175,6 +183,7 @@
     {
       "text": "True discretion, said he, is only secured by true humility.",
       "attribution": "Abba Moses",
+      "lit": "humility",
       "cite": {
         "kind": "work",
         "saint": "john-cassian",
@@ -194,6 +203,7 @@
     {
       "text": "Believe on the Lord and love Him; keep yourselves from filthy thoughts and fleshly pleasures.",
       "attribution": "St. Antony the Great",
+      "speaker": "anthony-the-great",
       "cite": {
         "kind": "work",
         "saint": "anthony-the-great",
@@ -213,6 +223,7 @@
     {
       "text": "Let this especially be the common aim of all, neither to give way having once begun, nor to faint in trouble, nor to say: We have lived in the discipline a long time: but rather as though making a beginning daily let us increase our earnestness.",
       "attribution": "St. Antony the Great",
+      "speaker": "anthony-the-great",
       "cite": {
         "kind": "work",
         "saint": "anthony-the-great",

@@ -42,6 +42,7 @@ const FILES = [
   "components/councils/CouncilShelves.tsx",
   "components/councils/CouncilBookHeader.tsx",
   "components/councils/CouncilReader.tsx",
+  "components/councils/CouncilWords.tsx",
 ];
 
 describe("the selection page (A)", () => {
