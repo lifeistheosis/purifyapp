@@ -14,19 +14,26 @@ const field =
  * into a one-field composer; on send the buyer lands in the thread,
  * where replies will arrive. Reuses the order's open thread server-side
  * so double-tapping never forks the conversation.
+ *
+ * On an order's page (1.8, r3-19 Orders B) the Message tile opens it already
+ * unfolded (`startOpen`), and Cancel folds the tile's panel away (`onCancel`).
  */
 export function BuyerMessageButton({
   orderId,
   storeName,
   subject,
+  startOpen = false,
+  onCancel,
 }: {
   orderId: string;
   storeName: string;
   subject: string;
+  startOpen?: boolean;
+  onCancel?: () => void;
 }) {
   const { t } = useTranslate();
   const router = useRouter();
-  const [open, setOpen] = useState(false);
+  const [open, setOpen] = useState(startOpen);
   const [body, setBody] = useState("");
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -52,9 +59,9 @@ export function BuyerMessageButton({
         router.push(`/shop/messages/detail?id=${data.conversationId}`);
         return;
       }
-      setError(data.error ?? "Couldn't send the message.");
+      setError(data.error ?? t("shop.messageSendFailed"));
     } catch {
-      setError("Couldn't send the message.");
+      setError(t("shop.messageSendFailed"));
     } finally {
       setBusy(false);
     }
@@ -81,7 +88,7 @@ export function BuyerMessageButton({
           onChange={(e) => setBody(e.target.value)}
           rows={3}
           maxLength={4000}
-          placeholder={`Write to ${storeName} about this order…`}
+          placeholder={t("shop.writeToPlaceholder", { name: storeName })}
           className={field}
         />
       </label>
@@ -96,12 +103,15 @@ export function BuyerMessageButton({
           disabled={busy || !body.trim()}
           className="tap-press inline-flex min-h-[44px] items-center rounded-pill bg-paper px-6 font-sans text-ui font-semibold text-night hover:bg-paper/90 disabled:opacity-60"
         >
-          {busy ? "Sending…" : "Send"}
+          {busy ? `${t("shop.sending")}…` : t("shop.send")}
         </button>
         <button
           type="button"
           disabled={busy}
-          onClick={() => setOpen(false)}
+          onClick={() => {
+            setOpen(false);
+            onCancel?.();
+          }}
           className="font-sans text-detail font-medium text-paper/60 hover:text-paper"
         >
           {t("common.cancel")}

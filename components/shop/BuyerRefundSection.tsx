@@ -19,12 +19,19 @@ const field =
  * (status + withdraw while undecided), a resolved history line, or the
  * quiet "Request a refund" path that unfolds into a two-field form —
  * reason first, because the reason decides everything downstream.
+ *
+ * On an order's page (1.8, r3-19 Orders B) the Something wrong tile opens the
+ * form directly (`startOpen`), the intro card is the tile's (`hideIntro`),
+ * and Never mind folds the tile's panel away (`onCancel`).
  */
 export function BuyerRefundSection({
   orderId,
   eligible,
   latest,
   onChanged,
+  startOpen = false,
+  hideIntro = false,
+  onCancel,
 }: {
   orderId: string;
   eligible: boolean;
@@ -35,10 +42,13 @@ export function BuyerRefundSection({
   /** Client pages pass a reload; without it we fall back to router.refresh()
    *  for the server-rendered seller context. */
   onChanged?: () => void;
+  startOpen?: boolean;
+  hideIntro?: boolean;
+  onCancel?: () => void;
 }) {
   const { t } = useTranslate();
   const router = useRouter();
-  const [open, setOpen] = useState(false);
+  const [open, setOpen] = useState(startOpen);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -138,6 +148,7 @@ export function BuyerRefundSection({
   }
 
   if (!eligible) return null;
+  if (!open && hideIntro) return null;
 
   return (
     <div className="rounded-lg border border-paper/10 bg-night-soft/60 p-5">
@@ -199,7 +210,10 @@ export function BuyerRefundSection({
             <button
               type="button"
               disabled={busy}
-              onClick={() => setOpen(false)}
+              onClick={() => {
+                setOpen(false);
+                onCancel?.();
+              }}
               className="font-sans text-detail font-medium text-paper/60 hover:text-paper"
             >
               {t("shop.neverMind")}

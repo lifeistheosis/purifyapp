@@ -46,7 +46,8 @@ export default function ShopPoliciesPage() {
           <T k="shop.tellUsAsSoonAs" />
         </p>
 
-        <h2 className={H2}><T k="shop.returns" /></h2>
+        {/* An order's Returns tile lands here (components/shop/OrderDetailClient.tsx). */}
+        <h2 id="returns" className={`${H2} scroll-mt-28`}><T k="shop.returns" /></h2>
         <p className={P}>
           <T k="shop.standardStockedItemsMayBe" />{" "}
           <Link href="/support/contact" className={A}>

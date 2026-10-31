@@ -1,28 +1,24 @@
 "use client";
 
-import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 
+import { useTranslate } from "@/components/i18n/MessagesProvider";
 import { MessageThread } from "@/components/shop/MessageThread";
-import {
-  ShopError,
-  ShopLoading,
-  ShopSignInPrompt,
-} from "@/components/shop/ShopStates";
-import type { ShopConversation, ShopMessage } from "@/lib/shop/types";
+import { OrderPin } from "@/components/shop/OrderPin";
+import { ShopError, ShopLoading, ShopSignInPrompt } from "@/components/shop/ShopStates";
+import { ThreadFrame, ThreadHead, ThreadNotFound } from "@/components/shop/ThreadFrame";
+import { TicketThread } from "@/components/shop/TicketThread";
+import { readOrder, type BuyerOrder } from "@/lib/shop/buyerReads";
 import { fetchThreadMessages } from "@/lib/shop/messages";
+import type { ShopConversation, ShopMessage } from "@/lib/shop/types";
 import { useAsyncData } from "@/lib/shop/useAsyncData";
 import { createClient } from "@/lib/supabase/client";
-import {
-  AUTH_UNRESOLVED_MESSAGE,
-  resolveUser,
-} from "@/lib/supabase/resolveUser";
-import { useTranslate } from "@/components/i18n/MessagesProvider";
+import { AUTH_UNRESOLVED_MESSAGE, resolveUser } from "@/lib/supabase/resolveUser";
 
-type Row = ShopConversation & { store: { public_name: string } | null };
+type Row = ShopConversation & { store: { public_name: string; slug: string | null } | null };
 type Result =
   | { signedIn: false }
-  | { signedIn: true; conversation: Row | null; messages: ShopMessage[] };
+  | { signedIn: true; conversation: Row | null; messages: ShopMessage[]; order: BuyerOrder | null; now: number };
 
 async function load(id: string): Promise<Result> {
   // Auth-required page: an unresolved check (auth lock, network) must land
@@ -34,28 +30,42 @@ async function load(id: string): Promise<Result> {
 
   const { data } = await supabase
     .from("shop_conversations")
-    .select("*, store:shop_stores(public_name)")
+    .select("*, store:shop_stores(public_name, slug)")
     .eq("id", id)
     .eq("buyer_user_id", auth.user.id)
     .maybeSingle();
   const conversation = (data as Row | null) ?? null;
-  if (!conversation) return { signedIn: true, conversation: null, messages: [] };
+  if (!conversation) return { signedIn: true, conversation: null, messages: [], order: null, now: Date.now() };
 
-  const messages = await fetchThreadMessages(supabase, conversation.id);
-
-  return {
-    signedIn: true,
-    conversation,
-    messages,
-  };
+  const [messages, order] = await Promise.all([
+    fetchThreadMessages(supabase, conversation.id),
+    conversation.order_id ? readOrder(supabase, conversation.order_id).catch(() => null) : Promise.resolve(null),
+  ]);
+  return { signedIn: true, conversation, messages, order, now: Date.now() };
 }
 
+/**
+ * A thread, Messages A, "The order beside the thread" (r3-19, the owner's
+ * pick of 2026-10-31). `?id=` is a conversation with a store: its seal or
+ * initial and name, the order it is about pinned under them (its piece, its
+ * number, its step lit; build 85 had a text link), then the thread.
+ * `?ticket=` is one of the reader's support tickets, the console's replies
+ * (TicketThread). Both are static routes that read their id on the device,
+ * so they stay exportable for the apps.
+ */
 export function ConversationClient() {
+  const params = useSearchParams();
+  const ticket = params.get("ticket");
+  if (ticket) return <TicketThread id={ticket} />;
+  return <ConversationView id={params.get("id") ?? ""} />;
+}
+
+function ConversationView({ id }: { id: string }) {
   const { t } = useTranslate();
-  const id = useSearchParams().get("id") ?? "";
   const { data, error, loading, reload } = useAsyncData(() => load(id), [id]);
 
-  if (loading) return <ShopLoading label={t("shop.openingTheConversation")} />;
+  // Asking again after a send keeps the thread on screen, so the new message rises in.
+  if (loading && !data) return <ShopLoading label={t("shop.openingTheConversation")} />;
   if (error) return <ShopError message={error} onRetry={reload} />;
   if (data && !data.signedIn) {
     return (
@@ -66,57 +76,32 @@ export function ConversationClient() {
       />
     );
   }
-  if (!data || !data.conversation) {
-    return (
-      <div className="mx-auto max-w-[520px] px-5 py-20 text-center">
-        <h1 className="font-display-serif text-heading text-paper">
-          {t("shop.conversationNotFound")}
-        </h1>
-        <Link
-          href="/shop/messages"
-          className="tap-press mt-6 inline-flex min-h-[44px] items-center rounded-pill border border-paper/25 px-6 font-sans text-ui font-semibold text-paper hover:border-paper/45"
-        >
-          {t("shop.messages")}
-        </Link>
-      </div>
-    );
-  }
+  if (!data || !data.conversation) return <ThreadNotFound />;
 
   const conv = data.conversation;
+  const name = conv.store?.public_name ?? "EIKON";
+  const seal = conv.store?.slug ? conv.store.slug === "eikon" : name === "EIKON";
 
   return (
-    <div className="mx-auto w-full max-w-[680px] px-5 pb-16 md:px-8">
-      <header className="pt-10 md:pt-14">
-        <Link
-          href="/shop/messages"
-          className="font-sans text-detail font-medium text-paper/60 hover:text-paper"
-        >
-          {t("shop.messagesX")}
-        </Link>
-        <h1 className="mt-3 font-display-serif text-title text-paper">
-          {conv.subject}
-        </h1>
-        {conv.order_id ? (
-          <Link
-            href={`/shop/orders/detail?id=${conv.order_id}`}
-            className="mt-1 inline-block font-sans text-detail font-medium text-paper"
-          >
-            {t("shop.viewTheOrder")}
-          </Link>
-        ) : null}
-      </header>
-
-      <div className="mt-6">
+    <ThreadFrame current={`/shop/messages/detail?id=${conv.id}`} order={data.order} now={data.now}>
+      <ThreadHead name={name} seal={seal} line={seal ? t("shop.eikonOwnStore") : null} />
+      {data.order ? (
+        <div className="lg:hidden">
+          <OrderPin order={data.order} />
+        </div>
+      ) : null}
+      <div className="mt-2">
         <MessageThread
           conversationId={conv.id}
           messages={data.messages}
           viewer="buyer"
           closed={conv.status === "closed"}
-          counterpartyName={conv.store?.public_name ?? "Store"}
+          counterpartyName={name}
+          counterpartySeal={seal}
           counterpartyLastReadAt={conv.seller_last_read_at}
           onSent={reload}
         />
       </div>
-    </div>
+    </ThreadFrame>
   );
 }
