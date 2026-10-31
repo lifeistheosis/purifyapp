@@ -1584,9 +1584,9 @@ await section(23, async () => {
     await go(page, "/");
     await page.waitForFunction(() => document.querySelector('a[href*="/bible/"][href*="#v"]'), null, { timeout: 20000 }).catch(() => {});
     await page.waitForTimeout(900);
-    // 1.8 (the owner's pick B of round 12, "Bands"): the feast's pair is on
-    // the readings band and the day's own pair in the rows under the bands,
-    // all inside The Church today.
+    // 1.8 (the owner's pick B of round 12, "Bands", and round 3 r3-21 A): the
+    // feast's pair leads the readings card and the day's own pair follows it
+    // under "For the day", all inside The Church today.
     const card = await page.evaluate(() => (document.querySelector("[data-church-today]")?.textContent ?? "").replace(/\s+/g, " "));
     const order = ["Hebrews 9:1-7", "Luke 10:38-42; 11:27-28", en["bible.readForDay"], "Galatians 1:3-10", "Luke 9:57-62"].map((w) => card.indexOf(w));
     must(
@@ -1608,30 +1608,51 @@ await section(23, async () => {
     must(!text.includes(en["bible.readForDay"]), `and on an ordinary day nothing is headed "${en["bible.readForDay"]}"`);
 
     // The Church today as bands (1.8, the owner's pick B of round 12), on St
-    // John Chrysostom's day. His face is his cover portrait on the website;
-    // this walk has no network, so it must be his icon from the bundle, and
-    // never a broken picture.
-    await page.waitForFunction(() => { const img = document.querySelector('[data-today-band="saint"] img'); return !!img && img.complete && img.naturalWidth > 0 && img.getAttribute("src")?.startsWith("/saints/icons/"); }, null, { timeout: 10000 }).catch(() => {});
+    // John Chrysostom's day, as round 3 r3-21 A has them ("The face beside
+    // the words"): his words whole beside his face, the readings as one card
+    // with his two readings folded into one line and Read all and Listen at
+    // its foot, the Nativity path at the fast's foot in the week before the
+    // fast, and Pascha's count on the date line. His face is his cover
+    // portrait on the website; this walk has no network, and the app carries
+    // no icon of his whose rights are recorded, so the band must stand without
+    // a face, the lit cross where he would stand, and never a broken picture.
+    await page.waitForFunction(() => document.querySelector('[data-today-band="saint"]')?.getAttribute("data-face") === "none", null, { timeout: 10000 }).catch(() => {});
     const bands = await page.evaluate(() => {
       const rail = document.querySelector("[data-church-today]");
       const saint = rail?.querySelector('[data-today-band="saint"]');
-      const img = saint?.querySelector("img");
+      const fold = rail?.querySelector("[data-saints-fold]");
+      const all = rail?.querySelector("[data-read-all]");
       return {
         order: [...(rail?.querySelectorAll("[data-today-band]") ?? [])].map((b) => b.getAttribute("data-today-band")),
         saint: (saint?.textContent ?? "").replace(/\s+/g, " "),
-        opens: saint?.tagName === "BUTTON" && saint.getAttribute("aria-haspopup") === "dialog",
-        face: img ? { src: img.getAttribute("src"), ok: img.complete && img.naturalWidth > 0 } : null,
+        words: (saint?.querySelector("[data-band-words]")?.textContent ?? "").trim(),
+        face: saint?.getAttribute("data-face") ?? null,
+        cross: !!saint?.querySelector("[data-band-cross]"),
+        tour: saint?.getAttribute("data-tour") ?? "",
+        share: !!saint?.querySelector("[data-saint-share]"),
+        source: saint?.querySelector("[data-cite]")?.getAttribute("href") ?? "",
+        page: saint?.querySelector("a.today-band-link")?.getAttribute("href") ?? "",
         broken: [...(rail?.querySelectorAll("img") ?? [])].filter((i) => i.complete && i.naturalWidth === 0 && i.getClientRects().length > 0).map((i) => i.getAttribute("src")),
         lit: [...(rail?.querySelectorAll("[data-fast-mark][data-allowed]") ?? [])].map((m) => m.getAttribute("data-fast-mark")),
         struck: [...(rail?.querySelectorAll("[data-fast-mark]:not([data-allowed])") ?? [])].map((m) => m.getAttribute("data-fast-mark")),
         read: !!rail?.querySelector('[data-today-band="readings"] a[href*="/bible/1-thessalonians/5"]') && !!rail?.querySelector('[data-today-band="readings"] a[href*="/bible/luke/13"]'),
+        path: rail?.querySelector('[data-today-band="fast"] [data-nativity-path]')?.getAttribute("href") ?? "",
+        fold: fold ? { line: (fold.textContent ?? "").replace(/\s+/g, " ").trim(), open: fold.getAttribute("aria-expanded") } : null,
+        all: all ? { words: (all.textContent ?? "").trim(), href: all.getAttribute("href") ?? "" } : null,
+        listen: !!rail?.querySelector("[data-listen]"),
+        dateline: (document.querySelector("header.mb-5 > p")?.textContent ?? "").trim(),
       };
     });
     must(bands.order.join(",") === "saint,fast,readings", `The Church today is three bands, the saint, the fast and the readings (${bands.order.join(", ")})`);
-    must(bands.saint.includes("St. John Chrysostom") && bands.saint.includes("“Let no one fear death…”") && bands.opens, `the saint's band names him, opens his words, and opens his window (${bands.saint.slice(0, 80)})`);
-    must(!!bands.face?.ok && bands.face.src === "/saints/icons/john-chrysostom.jpg" && bands.broken.length === 0, `with no signal his face is his icon from the bundle, and nothing is broken (${bands.face?.src ?? "no picture"}${bands.broken.length ? "; broken: " + bands.broken.join(", ") : ""})`);
+    must(bands.saint.includes("St. John Chrysostom") && bands.words === "“Let no one fear death, for the Saviour's death hath set us free.”", `the saint's band names him and sets his words whole (${bands.words.slice(0, 70) || bands.saint.slice(0, 70)})`);
+    must(bands.face === "none" && bands.cross && bands.broken.length === 0, `with no signal his cover cannot be had, so the lit cross stands where he would, and nothing is broken (face: ${bands.face}${bands.broken.length ? "; broken: " + bands.broken.join(", ") : ""})`);
+    must(bands.share && /^\/saints\/john-chrysostom\/paschal-homily\/?#p-1-4$/.test(bands.source) && /^\/saints\/john-chrysostom\/?$/.test(bands.page) && bands.tour === "quote-picture", `with Share as a picture, the source line at the homily (${bands.source || "none"}), his page from the band (${bands.page || "none"}), and the tour's mark on it`);
     must(bands.lit.join(",") === "wine,oil" && bands.struck.join(",") === "fish,meat", `the Friday fast lights wine and oil and strikes fish and meat (${bands.lit.join(", ")} | ${bands.struck.join(", ")})`);
-    must(bands.read, "the readings band opens 1 Thessalonians 5 and Luke 13");
+    must(/^\/reading\/paths\/nativity\/?$/.test(bands.path), `the Nativity path stands at the foot of the fast in the week before it (${bands.path || "none"})`);
+    must(bands.read, "the readings card opens 1 Thessalonians 5 and Luke 13");
+    must(bands.fold?.line === `${en["bible.readForCommemoration"]} · 2 more` && bands.fold.open === "false", `his two readings are one line, shut ("${bands.fold?.line ?? "none"}")`);
+    must(bands.all?.words === "Read all 4" && bands.all.href.includes("/bible/1-thessalonians/5") && bands.listen, `Read all 4 walks from the day's Epistle, and Listen is beside it (${bands.all?.words ?? "none"}, ${bands.all?.href ?? ""})`);
+    must(bands.dateline.endsWith("170 days until Pascha"), `Pascha's count is on the date line ("${bands.dateline}")`);
     // The readings band's start corners are as dark as its shade, with no
     // line of the manuscript round them: the shade lay over the page and was
     // clipped to the curve on its own (found with the owner's build 80 note
@@ -1647,26 +1668,31 @@ await section(23, async () => {
       must(false, `the readings band's corners could not be measured: ${firstLine(e)}`);
     }
 
-    // A tap on him opens his window: his words whole, Share as a picture,
-    // and Read where it's from at the homily's paragraph.
-    await tap(page.locator('[data-today-band="saint"]'));
-    await page.waitForFunction(() => !!document.querySelector('[role="dialog"] [data-saint-words]'), null, { timeout: 10000 }).catch(() => {});
+    // His two readings open in place under the line.
+    await tap(page.locator("[data-saints-fold]"));
     await page.waitForTimeout(500);
-    const sheet = await page.evaluate(() => {
-      const d = document.querySelector('[role="dialog"]');
-      return {
-        words: (d?.querySelector("[data-saint-words]")?.textContent ?? "").trim(),
-        share: !!d?.querySelector("[data-saint-share]"),
-        source: d?.querySelector("[data-saint-source]")?.getAttribute("href") ?? "",
-        page: !!d?.querySelector('a[href^="/saints/john-chrysostom"]:not([data-saint-source]):not([data-cite])'),
-      };
+    const opened = await page.evaluate(() => {
+      const fold = document.querySelector("[data-saints-fold]");
+      const body = fold ? document.getElementById(fold.getAttribute("aria-controls") ?? "") : null;
+      const rows = [...(body?.querySelectorAll("a") ?? [])].map((a) => ({ href: a.getAttribute("href") ?? "", tall: a.getBoundingClientRect().height }));
+      return { open: fold?.getAttribute("aria-expanded"), inert: body?.hasAttribute("inert") ?? true, rows };
     });
-    must(sheet.words === "“Let no one fear death, for the Saviour's death hath set us free.”", `his window sets his words whole (${sheet.words.slice(0, 60)})`);
-    must(sheet.share && /^\/saints\/john-chrysostom\/paschal-homily\/?#p-1-4$/.test(sheet.source) && sheet.page, `with Share as a picture, Read where it's from at the homily (${sheet.source || "none"}), and his page from his name`);
+    must(
+      opened.open === "true" && !opened.inert && opened.rows.length === 2 && opened.rows[0].href.includes("/bible/hebrews/7") && opened.rows[1].href.includes("/bible/john/10") && opened.rows.every((r) => r.tall >= 43),
+      `a tap on the line opens Hebrews 7 and John 10 in place, each a 44px row (${opened.rows.map((r) => `${r.href} ${Math.round(r.tall)}px`).join(", ") || "none"})`,
+    );
+
+    // The share mark makes the picture, from the band itself.
+    await tap(page.locator("[data-saint-share]"));
+    await page.waitForFunction(() => !!document.querySelector('[role="dialog"]'), null, { timeout: 10000 }).catch(() => {});
+    must(await page.evaluate(() => !!document.querySelector('[role="dialog"]')), "the share mark on his band opens the picture sheet");
+    await page.keyboard.press("Escape");
+    await page.waitForFunction(() => !document.querySelector('[role="dialog"]'), null, { timeout: 5000 }).catch(() => {});
+    await page.waitForTimeout(400);
     if (inBundle(OUT, "/saints/john-chrysostom/paschal-homily/")) {
-      await tap(page.locator("[data-saint-source]"));
+      await tap(page.locator('[data-today-band="saint"] [data-cite]'));
       await page.waitForFunction(() => location.pathname.startsWith("/saints/john-chrysostom/paschal-homily"), null, { timeout: 15000 }).catch(() => {});
-      must(await page.evaluate(() => location.pathname.startsWith("/saints/john-chrysostom/paschal-homily") && location.hash === "#p-1-4"), "and Read where it's from opens the homily at those words");
+      must(await page.evaluate(() => location.pathname.startsWith("/saints/john-chrysostom/paschal-homily") && location.hash === "#p-1-4"), "and the source line under his words opens the homily at those words");
     }
     must(errors.length === 0, `no page errors${errors.length ? ": " + errors.slice(0, 2).join(" | ") : ""}`);
     await ctx.close();
