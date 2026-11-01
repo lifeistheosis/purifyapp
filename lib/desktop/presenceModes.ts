@@ -11,7 +11,7 @@
 //   Reading         what is open, Scripture or a saint's work: the portrait of
 //                   whoever wrote it, where the reader is, and a live bar
 //   Plus custom     any of the three, framed in the church season's color,
-//                   with an optional gold rule
+//                   with an optional silver rule
 //
 // What never changes from the first version (activity.ts): prayer shows only
 // as "At prayer", private pages only as "In Purify", no clock is ever sent
@@ -22,6 +22,13 @@ import { activityFor } from "@/lib/desktop/activity";
 export type PresenceMode = "off" | "patron" | "favorite" | "reading" | "plus";
 export type PlusBase = "patron" | "favorite" | "reading";
 
+/**
+ * The season colors, by id. "gold" is drawn and named silver since 1.8 (the
+ * owner, 2026-10-31: gold only in a Plus member's Community profile, and
+ * nowhere else; refinement 2). The id stays: installed desktop apps check it
+ * (presence.rs SEASONS) and put it in the picture's address, and a reader's
+ * saved choice is kept by it.
+ */
 export const SEASON_COLORS = ["gold", "purple", "crimson", "green", "blue", "white"] as const;
 export type SeasonColor = (typeof SEASON_COLORS)[number];
 
@@ -33,7 +40,7 @@ export type PresencePrefs = {
   followSeason: boolean;
   /** Plus custom: the color when not following the calendar. */
   season: SeasonColor;
-  /** Plus custom: a thin gold rule inside the frame. */
+  /** Plus custom: a thin silver rule inside the frame (the id is from when it was gold). */
   gilded: boolean;
   /** Reading: say the chapter or section, not only the book or work. */
   showPlace: boolean;

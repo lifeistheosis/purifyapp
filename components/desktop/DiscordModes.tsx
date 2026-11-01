@@ -46,9 +46,9 @@ import { usePresencePrefs } from "@/lib/desktop/presencePref";
 import type { SeasonReason } from "@/lib/desktop/seasonColor";
 import { dateLocale } from "@/lib/i18n/deviceDates";
 
-/** The swatches' own colors: the frames on the pictures (artRender.ts). */
+/** The swatches' own colors: the frames on the pictures (artRender.ts). "gold" is silver since 1.8. */
 const SWATCH: Record<SeasonColor, string> = {
-  gold: "#b8892f",
+  gold: "#a3a7b0",
   purple: "#5b2d86",
   crimson: "#8a1f2f",
   green: "#2f6d3e",

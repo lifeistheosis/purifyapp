@@ -12,8 +12,14 @@ import { getSaint } from "@/lib/saints/saints";
 // The pictures the desktop app shows on Discord, drawn to the approved
 // design (26 September 2026): a portrait, head and shoulders, with the
 // reading bar along its foot; under Plus custom, a frame in the church
-// season's color and an optional gold rule inside it. The small picture is a
-// disc of the season's color with the Orthodox cross.
+// season's color and an optional silver rule inside it. The small picture is
+// a disc of the season's color with the Orthodox cross.
+//
+// No gold since 1.8 (the owner, 2026-10-31: gold only in a Plus member's
+// Community profile; refinement 2). What was gold is silver: the frame and
+// disc of Pascha and ordinary days (the season id "gold", see
+// presenceModes.ts), their bar, the rule inside the frame, the cross on every
+// disc, and the plain reading bar every reader's picture carries.
 //
 // Discord shows the large picture as a square, whatever it is sent, so a
 // standing icon is cropped from the top: the face and the halo stay.
@@ -21,9 +27,9 @@ import { getSaint } from "@/lib/saints/saints";
 const SIZE = 512;
 const BADGE = 128;
 
-/** The approved design's colors, at 76px scaled to 512. */
+/** The approved design's colors, at 76px scaled to 512, with silver for gold. */
 const FRAME: Record<SeasonColor, string> = {
-  gold: "#b8892f",
+  gold: "#a3a7b0",
   purple: "#5b2d86",
   crimson: "#8a1f2f",
   green: "#2f6d3e",
@@ -31,7 +37,7 @@ const FRAME: Record<SeasonColor, string> = {
   white: "#cfc4a6",
 };
 const BAR: Record<SeasonColor, string> = {
-  gold: "#f0d48a",
+  gold: "#e6e8ec",
   purple: "#c7a3ef",
   crimson: "#ef9aa6",
   green: "#9bd9ad",
@@ -39,15 +45,18 @@ const BAR: Record<SeasonColor, string> = {
   white: "#fffaf0",
 };
 const DISC: Record<SeasonColor, string> = { ...FRAME, white: "#f6f1e3" };
+/** The cross on the disc: silver white on the dark seasons, dark on the two light discs. */
 const DISC_INK: Record<SeasonColor, string> = {
-  gold: "#fbeec5",
-  purple: "#f3d68c",
-  crimson: "#f3d68c",
-  green: "#f3d68c",
-  blue: "#f3d68c",
-  white: "#8a6420",
+  gold: "#2a2c31",
+  purple: "#eceef2",
+  crimson: "#eceef2",
+  green: "#eceef2",
+  blue: "#eceef2",
+  white: "#5c5f66",
 };
-const GOLD_RULE = "#e6c886";
+const SILVER_RULE = "#d9dce2";
+/** The plain reading bar, with no season: silver, dark to light. */
+const PLAIN_BAR: readonly [string, string] = ["#8e9199", "#e3e5e9"];
 const GROUND = "#15120e";
 
 export class UnknownSaintError extends Error {}
@@ -75,7 +84,7 @@ function barSvg(inset: number, inner: number, progress: number, fill: string, gr
   return `<svg xmlns="http://www.w3.org/2000/svg" width="${SIZE}" height="${SIZE}">
 <defs>
 <linearGradient id="s" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#0c0b0a" stop-opacity="0"/><stop offset="1" stop-color="#0c0b0a" stop-opacity="0.82"/></linearGradient>
-<linearGradient id="g" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#b8892f"/><stop offset="1" stop-color="#e6c886"/></linearGradient>
+<linearGradient id="g" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="${PLAIN_BAR[0]}"/><stop offset="1" stop-color="${PLAIN_BAR[1]}"/></linearGradient>
 </defs>
 <rect x="${inset}" y="${inset + inner - 160}" width="${inner}" height="160" fill="url(#s)"/>
 <rect x="${trackX}" y="${trackY}" width="${trackW}" height="26" rx="13" fill="#efe8dc" fill-opacity="0.3"/>
@@ -114,7 +123,7 @@ export async function renderArt(
   if (rule) {
     layers.push({
       input: Buffer.from(
-        `<svg xmlns="http://www.w3.org/2000/svg" width="${SIZE}" height="${SIZE}"><rect x="${frame}" y="${frame}" width="${SIZE - 2 * frame}" height="${SIZE - 2 * frame}" fill="${GOLD_RULE}"/></svg>`,
+        `<svg xmlns="http://www.w3.org/2000/svg" width="${SIZE}" height="${SIZE}"><rect x="${frame}" y="${frame}" width="${SIZE - 2 * frame}" height="${SIZE - 2 * frame}" fill="${SILVER_RULE}"/></svg>`,
       ),
       top: 0,
       left: 0,

@@ -66,11 +66,8 @@ const ALLOWED: Record<string, string> = {
   // The owner's own documents and tools, not a reader's screen.
   "app/invest/deck.html": "the investor overview at /invest, an owner's document, its metal look left for his call",
   "lib/drop/page.ts": "the drop kit, the owner's own tool in its violet house look (its 'warn' amber)",
-  // The Church's season colours on the Discord status (desktop app, Plus custom): his call.
-  "lib/desktop/artRender.ts":
-    "the Discord status pictures' church-season frames (gold for Pascha and ordinary time) and their gold rule, drawn for Discord",
-  "components/desktop/DiscordModes.tsx": "the same season colours as swatches in the desktop app's Discord settings",
-  "components/billing/plusTry/TryDiscord.tsx": "the same season swatches in Plus's try window for the Discord status",
+  // Not here, by his word of 2026-10-31 ("fix all of them"): the Discord
+  // status's season colours, silver for Pascha and ordinary days since 1.8.
 };
 
 /**

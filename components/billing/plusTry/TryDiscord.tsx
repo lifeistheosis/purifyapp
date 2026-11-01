@@ -6,7 +6,9 @@
 // status's own builder, lib/desktop/presenceModes.ts, from Settings' own
 // example: St John's Gospel, halfway through chapter 3). Under Plus custom
 // the portrait wears a frame in the color of the church's season, today's
-// unless another is chosen, with a thin gold rule inside it if wished.
+// unless another is chosen, with a thin silver rule inside it if wished.
+// Pascha and ordinary days are silver, not gold, since 1.8 (gold only in a
+// Plus member's Community profile, the owner's word of 2026-10-31).
 //
 // The pictures are drawn by the website, as Discord's are
 // (app/api/discord/art), so the apps ask the website for them. The choices
@@ -30,7 +32,7 @@ import { TrySwitch, TryWindow } from "./TryKit";
 
 /** The swatches' own colors, as Settings draws them (components/desktop/DiscordModes.tsx, SWATCH). */
 export const SWATCH: Record<SeasonColor, string> = {
-  gold: "#b8892f",
+  gold: "#a3a7b0",
   purple: "#5b2d86",
   crimson: "#8a1f2f",
   green: "#2f6d3e",

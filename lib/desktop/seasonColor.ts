@@ -4,10 +4,12 @@
 // commemoration table).
 //
 // The usage followed is the common Russian one, with the owner's "Paschal
-// gold" (approved 26 September 2026, revisable in 1.5):
+// gold" (approved 26 September 2026), drawn silver since 1.8: gold stays
+// only in a Plus member's Community profile (his word of 2026-10-31). The
+// id is still "gold" (presenceModes.ts SEASON_COLORS says why).
 //
 //   crimson  Holy Week, and the Elevation of the Cross (14 September)
-//   gold     Pascha to its leave-taking; Sundays and ordinary days
+//   gold     (silver) Pascha to its leave-taking; Sundays and ordinary days
 //   green    Palm Sunday, Pentecost and the Monday of the Holy Spirit
 //   white    the Nativity through Theophany, and the Transfiguration
 //   blue     the feasts of the Theotokos: her Nativity, Entry, the
