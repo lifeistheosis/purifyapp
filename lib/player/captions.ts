@@ -8,16 +8,23 @@ import type { CaptionSource } from "@/lib/prayers/persistentAudioStore";
  * there's a nice clean design" (2026-10-15), the Prayer Rope Anthem first.
  *
  * A chant's lines carry a start time each, from its timing file beside the
- * recording (lib/chants/media.ts, captionsFor). Its words do not, yet: until they are
- * measured, each line's words are spread over most of the line by their
- * length, which keeps the light at the pace of the singing. A read-aloud
- * voice will hand over each word's own time, and this takes those as given.
+ * recording (lib/chants/media.ts, captionsFor), and since build 86 note 78
+ * ("each word timestamped and followed in the lyrics section") each word its
+ * own start and end, measured against the recording (a version 2 timing file,
+ * `wordTimes` below). Those are taken as given. A line without them (a timing
+ * file of version 1, a chapter read aloud) has its words spread over most of
+ * the line by their length, which keeps the light at the pace of the voice.
  *
  * 1.8: the same lines light Now Playing's words and a chant's Sing along
  * (the owner's picks of 2026-10-27, rounds 8 and 9), from one clock
  * (lib/player/clock.ts), so the two can never light different lines.
  */
-export type CaptionWord = { text: string; at: number };
+export type CaptionWord = {
+  text: string;
+  at: number;
+  /** When it has been sung, where the timing file says (note 78): lit until then. */
+  end?: number;
+};
 export type CaptionLine = {
   at: number;
   end: number;
@@ -70,11 +77,16 @@ export function captionLines(source: CaptionSource, duration = 0): CaptionLine[]
       next ??
       (duration > line.time ? Math.min(duration, line.time + LAST_LINE) : line.time + LAST_LINE);
     const parts = wordsOf(line.text);
+    // Each word's own time, where the line has one for every word shown
+    // (note 78): the n-th time is the n-th word's, in whichever of the views
+    // (the words as sung, their sound, or both) the words are drawn.
+    const given = line.wordTimes?.length === parts.length ? line.wordTimes : null;
     const weights = parts.map(weight);
     const total = weights.reduce((a, b) => a + b, 0) || 1;
     const span = (end - line.time) * (known !== undefined ? SPOKEN : SUNG);
     let acc = 0;
-    const words = parts.map((text, j) => {
+    const words: CaptionWord[] = parts.map((text, j) => {
+      if (given) return { text, at: given[j][0], end: given[j][1] };
       const at = line.time + (span * acc) / total;
       acc += weights[j];
       return { text, at };
@@ -121,6 +133,35 @@ export function lineAt(lines: CaptionLine[], t: number, lead = 0.15): number {
   const last = lines[at];
   if (last && at === lines.length - 1 && typeof last.n !== "number" && t > last.end + WORDS_DONE) return -1;
   return at;
+}
+
+/** The word being sung at `t` in a line: the last one started, or -1 before the first. */
+export function wordAt(words: CaptionWord[], t: number): number {
+  let at = -1;
+  for (let j = 0; j < words.length; j++) if (words[j].at <= t) at = j;
+  return at;
+}
+
+/**
+ * Where the words' box scrolls to keep the word being sung in sight (build
+ * 86 note 78: "each word timestamped and followed in the lyrics section"):
+ * null while the word is in sight (inside the box and clear of its fades,
+ * `clear` of the height at the top and at the foot), else the scroll that
+ * stands the word where the line being sung stands (`anchor`), within what
+ * the box can scroll. A line longer than the box (a hymn of the Canon runs to
+ * a dozen rows) is followed row by row this way, not only from its start.
+ * Positions are in the box's own scroll space: from the top of its content.
+ */
+export function followWord(
+  word: { top: number; bottom: number },
+  box: { scrollTop: number; height: number; max: number },
+  anchor = 0.3,
+  clear = { top: 0.12, foot: 0.22 },
+): number | null {
+  const lo = box.scrollTop + box.height * clear.top;
+  const hi = box.scrollTop + box.height * (1 - clear.foot);
+  if (word.top >= lo && word.bottom <= hi) return null;
+  return Math.max(0, Math.min(box.max, Math.round(word.top - box.height * anchor)));
 }
 
 /**

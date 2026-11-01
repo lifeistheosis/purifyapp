@@ -43,7 +43,9 @@ export type LoopMode = "off" | "inf" | 3 | 7 | 12;
  *  where the script is not Latin. `n` is a verse's number, for "Verse 4 of
  *  51" over the words. Where a chant's reader chose (notes 56 and 59),
  *  `latin` says `text` is the sung words' sound in Latin letters, and `pairs`
- *  is each sung word's sound, word for word, drawn under that word. */
+ *  is each sung word's sound, word for word, drawn under that word.
+ *  `wordTimes` (build 86 note 78) is each word of `text`'s own start and
+ *  end, from a chant's version 2 timing file, word for word. */
 export type CaptionSource = {
   time?: number;
   end?: number;
@@ -53,6 +55,7 @@ export type CaptionSource = {
   n?: number;
   latin?: boolean;
   pairs?: string[];
+  wordTimes?: [number, number][];
 }[];
 
 /** Whether the player stops by itself at the end of the track. A timer of

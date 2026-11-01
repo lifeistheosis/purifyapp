@@ -232,15 +232,24 @@ export function englishOver(line: ChantLine, prefs: WordsPrefs): string | undefi
  * shown as the reader chose (sungAs): as sung, as their sound, or each word
  * over its sound. A chant's page and Now Playing draw the same captions, so
  * they read the same.
+ *
+ * Where the timing file times each word (build 86 note 78, version 2), the
+ * line carries those times (`wordTimes`), word for word the words as sung.
+ * Their sound has a word for each word sung (the data test holds it), so the
+ * same times light the same words in all three views: the n-th word sung,
+ * its n-th sound, or the n-th word over its sound.
  */
 export function captionsFor(lines: ChantLine[], timing: ChantTiming | null, prefs: WordsPrefs): CaptionSource {
   const timed = timing && timing.lines.length === lines.length ? timing.lines : null;
   return lines.map((line, i) => {
     const en = englishOver(line, prefs);
+    const sung = sungAs(line, prefs.view);
+    const times = timed ? lineWordTimes(timed[i], line.text) : undefined;
     return {
       ...(timed ? { time: timed[i].at, end: timed[i].end } : {}),
-      ...sungAs(line, prefs.view),
+      ...sung,
       ...(en ? { en } : {}),
+      ...(times && times.length === wordsOf(sung.text).length ? { wordTimes: times } : {}),
     };
   });
 }
