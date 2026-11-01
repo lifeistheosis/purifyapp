@@ -97,3 +97,17 @@ describe("the progress line", () => {
     }
   });
 });
+
+describe("a reader back from the sign-in their reminders asked for", () => {
+  it("is shown the reminders and the end, and nothing answered again", () => {
+    expect(steps({ startAt: "reminders", level: "practicing", role: "priest", country: "US" })).toEqual(["reminders", "handoff"]);
+    // Even one whose reminders are on by now: the step is where they left it.
+    expect(steps({ startAt: "reminders", remindersOn: true })).toEqual(["reminders", "handoff"]);
+  });
+
+  it("finds the progress line where they left it, near its end", () => {
+    const path = progressPath("reminders");
+    expect(path).toEqual(progressPath("level"));
+    expect(path.indexOf("reminders")).toBe(path.length - 2);
+  });
+});

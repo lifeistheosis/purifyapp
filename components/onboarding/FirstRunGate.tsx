@@ -38,7 +38,8 @@ const NEW_ACCOUNT_WINDOW_MS = 30 * 60 * 1000;
  * in order:
  *
  *   1. Mid-flow across a sign-in redirect (the resume stage): straight back
- *      to the first question ("Where are you coming from?" since 1.8).
+ *      to the first question ("Where are you coming from?" since 1.8), or to
+ *      the reminders when they were what sent the reader to sign in.
  *   2. Signed in, and the account already answered this version on another
  *      device: those answers are taken and nothing is asked.
  *   3. Signed in. A brand-new account that never saw the flow (signed up on
@@ -103,8 +104,11 @@ export function FirstRunGate({
         if (alive) setStart("account");
         return;
       }
-      if (readResumeStage()) {
-        if (alive) setStart("level");
+      const resume = readResumeStage();
+      if (resume) {
+        // Back from a sign-in: at the first question, or at the reminders
+        // when it was the reminders that asked for the sign-in.
+        if (alive) setStart(resume === "reminders" ? "reminders" : "level");
         return;
       }
       if (isOnboarded()) return;

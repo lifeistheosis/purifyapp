@@ -1148,6 +1148,7 @@
   "onboard.reminders.eveningBody": "افتح قانون المساء حين تنام.",
   "onboard.reminders.blocked": "الإشعارات محظورة في إعدادات متصفحك. اسمح بها هناك، وستتمكن من تفعيل التذكيرات لاحقًا.",
   "onboard.reminders.blockedPhone": "الإشعارات محظورة في إعدادات هاتفك. اسمح بها هناك، وستتمكن من تفعيل التذكيرات لاحقًا.",
+  "onboard.reminders.needsAccount": "تصل التذكيرات إلى هذا الجهاز عبر حسابك. سجّل الدخول، وستُفعَّل.",
   "onboard.reminders.unsupported": "هذا الجهاز لا يدعم التذكيرات، لكن كل شيء آخر يعمل.",
   "onboard.account.eyebrow": "احفظ مسيرتك",
   "onboard.account.title": "احمل صلواتك معك على كل جهاز.",

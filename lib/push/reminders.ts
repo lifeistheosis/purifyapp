@@ -3,6 +3,7 @@
 // priming step and the account opt-in toggle, don't branch themselves.
 
 import { isNativeClient } from "@/lib/platform/native";
+import { readLocalSessionUser } from "@/lib/supabase/localSession";
 import {
   getExistingSubscription,
   markSaved,
@@ -39,44 +40,64 @@ export type ReminderStatus =
   | "not-subscribed"
   | "subscribed";
 
+/**
+ * "signed-out": nobody is signed in, so there is no account to keep the
+ * reminders with, and nothing was asked of the device. The caller asks for a
+ * sign-in (components/onboarding/OnboardingFlow, the reminders step).
+ */
 export type EnableResult =
   | { ok: true }
-  | { ok: false; reason: "denied" | "unsupported" | "no-vapid" | "failed" };
+  | { ok: false; reason: "denied" | "unsupported" | "no-vapid" | "failed" | "signed-out" };
 
+/**
+ * Whether this device has reminders. "subscribed" only with an account
+ * signed in: a phone's token and a browser's subscription are kept for an
+ * account and nowhere else, so with nobody signed in nothing can come, and
+ * the device is never shown as having reminders.
+ */
 export async function remindersStatus(): Promise<ReminderStatus> {
   if (isNativeClient()) return nativeStatus();
   if (!pushSupported()) return "unsupported";
   if (permissionDenied()) return "denied";
+  if (!readLocalSessionUser()) return "not-subscribed";
   return (await getExistingSubscription()) ? "subscribed" : "not-subscribed";
 }
 
+/**
+ * Turn reminders on for this device: "ok" only once the server holds it.
+ *
+ * Until 2026-10-31 a reader with no account was told "on" by both: the
+ * browser's subscription and the phone's token were kept on the device for
+ * an account that might never come, and nothing was sent in the meantime.
+ * Now nobody signed in means "signed-out" before the device is asked
+ * anything, and a server that does not take it means "failed" now, though a
+ * browser keeps its subscription for the next visit to send (healWebPush).
+ */
 export async function enableReminders(
   morning: string = MORNING_DEFAULT,
   evening: string = EVENING_DEFAULT,
 ): Promise<EnableResult> {
   if (isNativeClient()) return enableNative(morning, evening);
+  if (!readLocalSessionUser()) return { ok: false, reason: "signed-out" };
 
   const result = await requestAndSubscribe();
   if (!result.ok) return { ok: false, reason: result.reason };
   try {
     const res = await persistSubscription(result.subscription, { morning, evening });
-    if (res.status === 401) {
-      // Signed-out web visitor: keep the browser subscription, persist on login.
-      stashPending(result.subscription, { morning, evening });
-    } else if (!res.ok) {
-      // The browser is subscribed and the server did not take it: saying
-      // "on" would promise reminders that have nowhere to come from. Kept
-      // with its times, so the next visit sends it again (healWebPush).
-      stashPending(result.subscription, { morning, evening });
-      return { ok: false, reason: "failed" };
-    } else {
+    if (res.ok) {
       markSaved(result.subscription.endpoint);
+      return { ok: true };
     }
-  } catch {
-    // Offline at that moment: keep it for the next sign-in or visit.
+    // The browser is subscribed and the server did not take it: saying "on"
+    // would promise reminders that have nowhere to come from. Kept with its
+    // times, so a sign-in (flushPending) or the next visit sends it again.
     stashPending(result.subscription, { morning, evening });
+    return { ok: false, reason: res.status === 401 ? "signed-out" : "failed" };
+  } catch {
+    // Offline at that moment: kept for the next visit, and not called "on".
+    stashPending(result.subscription, { morning, evening });
+    return { ok: false, reason: "failed" };
   }
-  return { ok: true };
 }
 
 export async function disableReminders(): Promise<void> {

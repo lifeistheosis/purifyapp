@@ -20,6 +20,7 @@ const state = vi.hoisted(() => ({
 }));
 
 vi.mock("@/lib/platform/native", () => ({ nativePlatform: () => state.platform }));
+vi.mock("@/lib/supabase/localSession", () => ({ readLocalSessionUser: () => ({ id: "ben" }) }));
 vi.mock("@/lib/api/client", () => ({
   apiFetch: () => Promise.resolve({ status: 200, ok: true }),
 }));
@@ -32,7 +33,9 @@ vi.mock("@capacitor/push-notifications", () => ({
       state.listeners.set(name, fn);
       return { remove: async () => {} };
     },
-    register: async () => {},
+    register: async () => {
+      await state.listeners.get("registration")?.({ value: "the-phones-token" });
+    },
   },
 }));
 

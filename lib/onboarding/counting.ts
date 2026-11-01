@@ -101,13 +101,16 @@ export const RETURN_DAYS = [2, 7, 30] as const;
 export type ReturnDay = (typeof RETURN_DAYS)[number];
 
 /** The flow's starting point, as the route it counts under. */
-export function routeFor(start: "welcome" | "account" | "level" | "returning"): CountRoute {
+export function routeFor(start: "welcome" | "account" | "level" | "returning" | "reminders"): CountRoute {
   switch (start) {
     case "welcome":
       return "new";
     case "account":
       return "signup";
+    // Back from the sign-in the reminders step asked for: signed in now, and
+    // counted with the readers who came in signed in.
     case "level":
+    case "reminders":
       return "signed-in";
     case "returning":
       return "returning";

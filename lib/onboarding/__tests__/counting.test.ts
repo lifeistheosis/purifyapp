@@ -35,6 +35,8 @@ describe("the onboarding's counts", () => {
     expect(routeFor("welcome")).toBe("new");
     expect(routeFor("account")).toBe("signup");
     expect(routeFor("level")).toBe("signed-in");
+    // Back from the sign-in the reminders step asked for: signed in now.
+    expect(routeFor("reminders")).toBe("signed-in");
     expect(routeFor("returning")).toBe("returning");
   });
 

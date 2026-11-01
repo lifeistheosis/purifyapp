@@ -230,12 +230,20 @@ export function wasOnboardedAgain(): boolean {
 
 // --- Resuming across a sign-in redirect --------------------------------
 
-export type ResumeStage = "assessment";
+/**
+ * Where the questions pick up after a sign-in that left the page.
+ * "assessment": the account step was reached, so the first question.
+ * "reminders": the reader asked for reminders without an account and was
+ * sent to sign in (reminders are kept with an account, lib/push/wish.ts), so
+ * straight back to the reminders, with what they asked for kept.
+ */
+export type ResumeStage = "assessment" | "reminders";
 
 export function readResumeStage(): ResumeStage | null {
   if (typeof window === "undefined") return null;
   try {
-    return window.localStorage.getItem(STAGE_KEY) === "assessment" ? "assessment" : null;
+    const stage = window.localStorage.getItem(STAGE_KEY);
+    return stage === "assessment" || stage === "reminders" ? stage : null;
   } catch {
     return null;
   }

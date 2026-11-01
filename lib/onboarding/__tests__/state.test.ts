@@ -250,6 +250,16 @@ describe("onboarding state", () => {
       expect(shouldShowOnboarding()).toBe(false);
     });
 
+    it("resumes at the reminders after the sign-in they asked for", () => {
+      // Reminders are kept with an account, so asking for them signed out
+      // sends the reader to sign in, and the questions pick up there.
+      setResumeStage("reminders");
+      expect(readResumeStage()).toBe("reminders");
+      expect(shouldShowOnboarding()).toBe(true);
+      markOnboarded();
+      expect(readResumeStage()).toBeNull();
+    });
+
     it("clears the resume stage and offers a fresh Day 1 card when the flow ends", () => {
       dismissNudge();
       setResumeStage("assessment");

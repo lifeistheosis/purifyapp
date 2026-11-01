@@ -1098,6 +1098,7 @@
   "onboard.reminders.eveningBody": "Bukalah aturan doa malam saat Anda berbaring.",
   "onboard.reminders.blocked": "Notifikasi diblokir di pengaturan peramban Anda. Izinkan di sana, lalu Anda bisa menyalakan pengingat nanti.",
   "onboard.reminders.blockedPhone": "Notifikasi diblokir di pengaturan ponsel Anda. Izinkan di sana, lalu Anda bisa menyalakan pengingat nanti.",
+  "onboard.reminders.needsAccount": "Pengingat sampai ke perangkat ini melalui akun Anda. Masuk, lalu pengingat akan menyala.",
   "onboard.reminders.unsupported": "Perangkat ini tidak mendukung pengingat, tetapi semua yang lain tetap berfungsi.",
   "onboard.account.eyebrow": "Simpan perjalanan Anda",
   "onboard.account.title": "Bawa doa-doa Anda di setiap perangkat.",

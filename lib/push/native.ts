@@ -15,6 +15,7 @@
 
 import { apiFetch } from "@/lib/api/client";
 import { nativePlatform as platform } from "@/lib/platform/native";
+import { readLocalSessionUser } from "@/lib/supabase/localSession";
 import { openFromPush } from "./open";
 import {
   EVENING_DEFAULT,
@@ -40,9 +41,40 @@ const OPENED_KEPT = 20;
 /** How long a sign-out waits for the phone to be taken off its account. */
 export const UNLINK_WAIT_MS = 2500;
 
+/** How long turning reminders on waits for the server to take this phone. */
+export const SAVE_WAIT_MS = 10_000;
+
 export type NativeEnableResult =
   | { ok: true }
-  | { ok: false; reason: "denied" | "unsupported" };
+  | { ok: false; reason: "denied" | "unsupported" | "signed-out" | "failed" };
+
+/** What the server said to this phone's token, for a reader turning reminders on. */
+type SaveOutcome = "saved" | "signed-out" | "failed";
+let awaitingSave: ((outcome: SaveOutcome) => void) | null = null;
+
+/** Tell a reader waiting on enableNative what the server said. */
+function settleSave(outcome: SaveOutcome): void {
+  const done = awaitingSave;
+  awaitingSave = null;
+  done?.(outcome);
+}
+
+/** Wait for the next answer to a registration, or SAVE_WAIT_MS, whichever comes first. */
+function waitForSave(): Promise<SaveOutcome> {
+  settleSave("failed");
+  return new Promise((resolve) => {
+    const timer = setTimeout(() => {
+      if (awaitingSave === finish) awaitingSave = null;
+      resolve("failed");
+    }, SAVE_WAIT_MS);
+    // Declared after the timer it clears, and called only after both exist.
+    function finish(outcome: SaveOutcome) {
+      clearTimeout(timer);
+      resolve(outcome);
+    }
+    awaitingSave = finish;
+  });
+}
 
 type Receive = "prompt" | "prompt-with-rationale" | "granted" | "denied";
 
@@ -166,21 +198,32 @@ async function attachListeners(): Promise<void> {
       if (res.status === 401) {
         // Signed-out: keep the token and persist on first sign-in.
         setItem(PENDING_KEY, JSON.stringify(payload));
+        settleSave("signed-out");
       } else if (res.ok) {
         setItem(ON_KEY, "1");
         setItem(ZONE_KEY, payload.timezone);
+        settleSave("saved");
+      } else {
+        settleSave("failed");
       }
     } catch {
       setItem(PENDING_KEY, JSON.stringify(payload));
+      settleSave("failed");
     }
   });
 
   await PushNotifications.addListener("registrationError", () => {
     removeItem(ON_KEY);
+    settleSave("failed");
   });
 }
 
-/** Current native reminder status, mapped to the same vocabulary as web. */
+/**
+ * Current native reminder status, mapped to the same vocabulary as web.
+ * "subscribed" only with an account signed in: the server keeps a phone's
+ * token for an account and nowhere else, so with nobody signed in nothing
+ * can come, whatever this phone remembers choosing.
+ */
 export async function nativeStatus(): Promise<
   "unsupported" | "denied" | "not-subscribed" | "subscribed"
 > {
@@ -190,18 +233,31 @@ export async function nativeStatus(): Promise<
     const perm = await PushNotifications.checkPermissions();
     const receive = perm.receive as Receive;
     if (receive === "denied") return "denied";
-    if (receive === "granted" && getItem(ON_KEY) === "1") return "subscribed";
+    if (receive === "granted" && getItem(ON_KEY) === "1" && readLocalSessionUser()) return "subscribed";
     return "not-subscribed";
   } catch {
     return "unsupported";
   }
 }
 
+/**
+ * Turn this phone's reminders on: "ok" only once the server holds its token.
+ *
+ * With nobody signed in nothing is asked of the phone: there is no account to
+ * keep the token with, and the caller asks for a sign-in first. It used to
+ * ask the phone's question, keep the token on the phone for an account that
+ * might never come, and say "on" while nothing could be sent. And it used to
+ * say "on" as soon as the phone was asked for a token, before the server had
+ * it; now it waits for the server's answer (SAVE_WAIT_MS at most), and a
+ * token the server did not take is not kept to go up later behind the
+ * reader's back: they were told it did not work, and they ask again.
+ */
 export async function enableNative(
   morning: string = MORNING_DEFAULT,
   evening: string = EVENING_DEFAULT,
 ): Promise<NativeEnableResult> {
   if (!platform()) return { ok: false, reason: "unsupported" };
+  if (!readLocalSessionUser()) return { ok: false, reason: "signed-out" };
   try {
     const { PushNotifications } = await import("@capacitor/push-notifications");
     const perm = await PushNotifications.requestPermissions();
@@ -212,9 +268,12 @@ export async function enableNative(
     // the desired times so that handler can persist them.
     setItem(TIMES_KEY, JSON.stringify({ morning, evening }));
     await attachListeners();
+    const saved = waitForSave();
     await PushNotifications.register();
-    setItem(ON_KEY, "1"); // optimistic; cleared on registrationError
-    return { ok: true };
+    const outcome = await saved;
+    if (outcome === "saved") return { ok: true };
+    removeItem(PENDING_KEY);
+    return { ok: false, reason: outcome === "signed-out" ? "signed-out" : "failed" };
   } catch {
     return { ok: false, reason: "unsupported" };
   }

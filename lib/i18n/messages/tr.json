@@ -1100,6 +1100,7 @@
   "onboard.reminders.eveningBody": "Yattığında akşam kuralını aç.",
   "onboard.reminders.blocked": "Bildirimler tarayıcı ayarlarınızda engellenmiş. Oradan izin verin, hatırlatıcıları daha sonra açabilirsiniz.",
   "onboard.reminders.blockedPhone": "Bildirimler telefonunuzun ayarlarında engellenmiş. Oradan izin verin, hatırlatıcıları daha sonra açabilirsiniz.",
+  "onboard.reminders.needsAccount": "Hatırlatmalar bu cihaza hesabınız aracılığıyla ulaşır. Giriş yapın, hatırlatmalar açılacak.",
   "onboard.reminders.unsupported": "Bu cihaz hatırlatmaları desteklemiyor, ama diğer her şey çalışıyor.",
   "onboard.account.eyebrow": "Yolculuğunuzu saklayın",
   "onboard.account.title": "Dualarınızı her cihazda yanınızda taşıyın.",

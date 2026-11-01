@@ -1102,6 +1102,7 @@
   "onboard.reminders.eveningBody": "Ouvrez la règle du soir à votre coucher.",
   "onboard.reminders.blocked": "Les notifications sont bloquées dans les paramètres de votre navigateur. Autorisez-les là, et vous pourrez activer les rappels plus tard.",
   "onboard.reminders.blockedPhone": "Les notifications sont bloquées dans les paramètres de votre téléphone. Autorisez-les là, et vous pourrez activer les rappels plus tard.",
+  "onboard.reminders.needsAccount": "Les rappels arrivent sur cet appareil par votre compte. Connectez-vous, et ils seront activés.",
   "onboard.reminders.unsupported": "Cet appareil ne prend pas en charge les rappels, mais tout le reste fonctionne.",
   "onboard.account.eyebrow": "Gardez votre cheminement",
   "onboard.account.title": "Emportez vos prières sur tous vos appareils.",

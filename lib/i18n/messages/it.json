@@ -1102,6 +1102,7 @@
   "onboard.reminders.eveningBody": "Apri la regola della sera quando ti corichi.",
   "onboard.reminders.blocked": "Le notifiche sono bloccate nelle impostazioni del browser. Consentile lì e potrai attivare i promemoria più tardi.",
   "onboard.reminders.blockedPhone": "Le notifiche sono bloccate nelle impostazioni del telefono. Consentile lì e potrai attivare i promemoria più tardi.",
+  "onboard.reminders.needsAccount": "I promemoria arrivano su questo dispositivo tramite il tuo account. Accedi e si attiveranno.",
   "onboard.reminders.unsupported": "Questo dispositivo non supporta i promemoria, ma tutto il resto funziona.",
   "onboard.account.eyebrow": "Conserva il tuo cammino",
   "onboard.account.title": "Porta le tue preghiere su ogni dispositivo.",

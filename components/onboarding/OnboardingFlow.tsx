@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState, type ReactNode } from "react";
 import { measureRows, playFlip, type FlipSnapshot } from "@/lib/ui/flip";
 import { lockBodyScroll, unlockBodyScroll } from "@/lib/ui/overlay";
@@ -56,7 +57,9 @@ import { saveSpaceToAccount } from "@/lib/onboarding/accountSync";
 import { beginCountRun, countFinished, countOnboarding, countPicks } from "@/lib/onboarding/count";
 import { routeFor, type CountQuestion } from "@/lib/onboarding/counting";
 import { EVENING_DEFAULT, MORNING_DEFAULT, enableReminders as enablePush, remindersStatus } from "@/lib/push/reminders";
+import { clearReminderWish, keepReminderWish, readReminderWish } from "@/lib/push/wish";
 import { isNativeClient } from "@/lib/platform/native";
+import { readLocalSessionUser } from "@/lib/supabase/localSession";
 import { PurifyMark } from "@/components/ui/PurifyMark";
 import { OAuthButtons } from "@/components/auth/OAuthButtons";
 import { recordAcceptance } from "@/lib/legal/recordAcceptance";
@@ -124,8 +127,9 @@ import { WhereFrom, WhereFromSky } from "./WhereFrom";
  *  question when they are signed in already ("level", the name it kept when
  *  "Where are you coming from?" was put before familiarity in 1.8, so the
  *  way in counts under the same name), "returning" for a signed-in reader
- *  from before this version of the questions. */
-export type OnboardingStart = "welcome" | "account" | "level" | "returning";
+ *  from before this version of the questions, and "reminders" for a reader
+ *  back from the sign-in the reminders step sent them to. */
+export type OnboardingStart = "welcome" | "account" | "level" | "returning" | "reminders";
 
 // The screens, in order, are lib/onboarding/flowSteps.ts (tested there).
 
@@ -145,26 +149,31 @@ export function OnboardingFlow({
   catechismAvailable?: boolean;
 }) {
   const { t } = useTranslate();
+  const router = useRouter();
   const returning = startAt === "returning";
+  // Back from the sign-in the reminders step sent them to: every answer
+  // before it is given already, and the end shows them as they were.
+  const resumed = startAt === "reminders";
+  const answered = returning || resumed;
   // A reader who is back starts from what they have: the answers they gave
   // before are the ones marked, and the calendar and fast are the ones they
   // keep. Read once, as the overlay opens (it only ever opens on the client).
-  const [level, setLevel] = useState<Level | null>(() => (returning ? readLevel() : null));
+  const [level, setLevel] = useState<Level | null>(() => (answered ? readLevel() : null));
   // Where they come from (1.8). Marked for a reader who is back, and for one
   // coming back to the questions from a sign-in, who may have answered it.
   const [background, setBackground] = useState<Background | null>(() =>
-    returning || startAt === "level" ? readBackground() : null,
+    answered || startAt === "level" ? readBackground() : null,
   );
-  const [calendar, setCalendar] = useState<CalendarChoice>(() => (returning ? readCalendarStyleDefault() : "new"));
-  const [fasting, setFasting] = useState<FastingRule>(() => (returning ? readFastingRule() : "strict"));
+  const [calendar, setCalendar] = useState<CalendarChoice>(() => (answered ? readCalendarStyleDefault() : "new"));
+  const [fasting, setFasting] = useState<FastingRule>(() => (answered ? readFastingRule() : "strict"));
   // "What are you looking for?" (1.8): every pick in the order tapped. The
   // first is the intent, the one answer the Day 1 step and the counts read.
-  const [picks, setPicks] = useState<Intent[]>(() => (returning ? readIntents() : []));
+  const [picks, setPicks] = useState<Intent[]>(() => (answered ? readIntents() : []));
   const intent = picks[0] ?? null;
   // A priest, a deacon or a layman, and a priest's or deacon's answers after
   // it (1.8.x). Marked for a reader who is back, as every answer is.
-  const [role, setRole] = useState<Role | null>(() => (returning ? readRole() : null));
-  const [clergy, setClergy] = useState<ClergyAnswers>(() => (returning ? readClergy() : NO_ANSWERS));
+  const [role, setRole] = useState<Role | null>(() => (answered ? readRole() : null));
+  const [clergy, setClergy] = useState<ClergyAnswers>(() => (answered ? readClergy() : NO_ANSWERS));
   // Whether a request for the seal goes at the end or waits for a sign-in,
   // for the handoff's line. Asked of the device as the clergy's questions open.
   const [signedIn, setSignedIn] = useState(false);
@@ -176,6 +185,9 @@ export function OnboardingFlow({
   const [busy, setBusy] = useState(false);
   // Why reminders could not be turned on, said in place of the button.
   const [reminderNote, setReminderNote] = useState<string | null>(null);
+  // Reminders asked for with nobody signed in: the step asks for a sign-in
+  // in place of the button (signInForReminders).
+  const [needsAccount, setNeedsAccount] = useState(false);
   // The reminders just switched on, at the times they were switched on at,
   // which the step then shows as Purify's own cards (./RemindersOn). Fresh
   // while the reader is still on the screen where they allowed them, so the
@@ -439,6 +451,7 @@ export function OnboardingFlow({
     (reached: boolean) => {
       markOnboarded({ again: returning });
       clearResumeStage();
+      clearReminderWish();
       // Stamped with this version of the questions, so the reader's other
       // devices take these answers and do not ask again.
       void saveSpaceToAccount({ finished: true });
@@ -467,17 +480,26 @@ export function OnboardingFlow({
     [onDone, dayOne, returning, level, intent, route, step],
   );
 
-  async function enableReminders() {
+  const enableReminders = useCallback(async () => {
     setBusy(true);
     setReminderNote(null);
+    setNeedsAccount(false);
     // Named here because the screen shows them: the times switched on are
     // the times the reader sees.
     const times: ReminderTimes = { morning: MORNING_DEFAULT, evening: EVENING_DEFAULT };
     try {
       // Native push (APNs/FCM) inside the Capacitor shell, Web Push in the
-      // browser. Signed-out subscriptions are stashed and flushed on first
-      // sign-in (PostSignInBridge), handled inside the facade.
+      // browser. Both are kept with an account and nowhere else, so with
+      // nobody signed in the facade asks nothing of the device and says so.
       const result = await enablePush(times.morning, times.evening);
+      if (!result.ok && result.reason === "signed-out") {
+        // Asked to sign in now (signInForReminders), and brought back here.
+        // Never "on" while there is no account to keep them with.
+        setNeedsAccount(true);
+        return;
+      }
+      // Asked for and answered: nothing waits for a sign-in any more.
+      clearReminderWish();
       if (!result.ok) {
         countAnswer("reminders", result.reason === "denied" ? "blocked" : result.reason === "unsupported" ? "unsupported" : "failed");
         // Where to allow them again: on a phone it is the phone's settings
@@ -499,12 +521,44 @@ export function OnboardingFlow({
       if (fresh) reminderGlide.current = from;
       setRemindersSet({ times, fresh });
     } catch {
+      clearReminderWish();
       countAnswer("reminders", "failed");
       setReminderNote(t("prayers.push.failed"));
     } finally {
       setBusy(false);
     }
+  }, [countAnswer, t]);
+
+  // Reminders are kept with an account (a phone's token, a browser's
+  // subscription), so a reader with none is sent to the app's own sign-in,
+  // with their wish kept and the questions set to pick up at the reminders
+  // (lib/push/wish.ts, the resume stage). Nothing is marked finished: they
+  // come back to this screen and the end after it.
+  function signInForReminders() {
+    keepReminderWish({ morning: MORNING_DEFAULT, evening: EVENING_DEFAULT });
+    setResumeStage("reminders");
+    setExiting(true);
+    window.setTimeout(() => {
+      onDone(null);
+      router.push("/signin?next=/");
+    }, 420);
   }
+
+  // Back from that sign-in. On a phone the tap before it was the reader's
+  // answer, so the reminders go on now: the phone's own question, then the
+  // cards. A browser shows its question only after a tap of its own, so
+  // there the button waits, the wish kept until it is pressed or declined.
+  // Deferred a tick, so no state is set from the effect's own body.
+  const resumedWish = useRef(false);
+  useEffect(() => {
+    if (step !== "reminders" || resumedWish.current || !isNativeClient()) return;
+    if (!readReminderWish() || !readLocalSessionUser()) return;
+    const id = window.setTimeout(() => {
+      resumedWish.current = true;
+      void enableReminders();
+    }, 0);
+    return () => window.clearTimeout(id);
+  }, [step, enableReminders]);
 
   const slateLines: SlateLine[] = [
     {
@@ -764,8 +818,15 @@ export function OnboardingFlow({
               <Step eyebrow={t("onboard.reminders.eyebrow")} title={t("onboard.reminders.title")} body={t("onboard.reminders.body")}>
                 {reminderNote ? (
                   <p className="mb-4 font-serif text-detail leading-[1.55] text-paper/85">{reminderNote}</p>
+                ) : needsAccount ? (
+                  <>
+                    <p className="mb-4 font-serif text-detail leading-[1.55] text-paper/85">
+                      {t("onboard.reminders.needsAccount")}
+                    </p>
+                    <PrimaryButton onClick={signInForReminders}>{t("common.signIn")}</PrimaryButton>
+                  </>
                 ) : (
-                  <PrimaryButton onClick={enableReminders} disabled={busy}>
+                  <PrimaryButton onClick={() => void enableReminders()} disabled={busy}>
                     {busy ? "…" : t("onboard.reminders.enable")}
                   </PrimaryButton>
                 )}
@@ -773,6 +834,8 @@ export function OnboardingFlow({
                   type="button"
                   onClick={() => {
                     if (!reminderNote) countAnswer("reminders", "not-now");
+                    // Declined: nothing waits for a sign-in any more.
+                    clearReminderWish();
                     next();
                   }}
                   className="mt-2 inline-flex min-h-11 items-center self-center rounded-pill px-4 font-sans text-caption text-paper/55 transition-colors hover:text-paper"

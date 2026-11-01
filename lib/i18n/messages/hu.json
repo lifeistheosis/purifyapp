@@ -1100,6 +1100,7 @@
   "onboard.reminders.eveningBody": "Nyisd meg az esti imaszabályt, amikor lefekszel.",
   "onboard.reminders.blocked": "Az értesítések le vannak tiltva a böngésződ beállításaiban. Engedélyezd őket ott, és később bekapcsolhatod az emlékeztetőket.",
   "onboard.reminders.blockedPhone": "Az értesítések le vannak tiltva a telefonod beállításaiban. Engedélyezd őket ott, és később bekapcsolhatod az emlékeztetőket.",
+  "onboard.reminders.needsAccount": "Az emlékeztetők a fiókodon keresztül érkeznek erre az eszközre. Jelentkezz be, és bekapcsolódnak.",
   "onboard.reminders.unsupported": "Ez az eszköz nem támogatja az emlékeztetőket, de minden más működik.",
   "onboard.account.eyebrow": "Őrizd meg az utad",
   "onboard.account.title": "Vidd magaddal az imáidat minden eszközön.",
