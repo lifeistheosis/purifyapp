@@ -31,6 +31,10 @@ const ON_KEY = "purify:push.native-on"; // "1" while reminders are on
 const TIMES_KEY = "purify:push.native-times"; // desired times for the next token
 const PENDING_KEY = "purify:push.pending-native"; // captured signed-out, flush on login
 const USER_KEY = "purify:push.native-user"; // the account this phone was last given to
+const OPENED_KEY = "purify:push.opened"; // ids of the taps already opened, newest last
+
+/** How many opened taps are remembered: far more than can wait in a shade. */
+const OPENED_KEPT = 20;
 
 /** How long a sign-out waits for the phone to be taken off its account. */
 export const UNLINK_WAIT_MS = 2500;
@@ -68,9 +72,74 @@ function removeItem(key: string) {
 }
 
 let listenersAttached = false;
+let tapsAttached = false;
 
-/** Attach the registration/tap listeners exactly once per app lifetime. */
+/**
+ * True the first time a tapped notification is seen, false when the same one
+ * comes again.
+ *
+ * Android keeps the intent an activity was started with and hands it back
+ * whenever it builds the activity again: after the app was cleared from
+ * memory in the background, or after a restart, when the reader opens it
+ * from the recent apps list (MainActivity has the same note for shortcuts).
+ * Capacitor reads that intent each time and reports the tap again, so a
+ * reader who once opened Purify from a reminder would be carried back to that
+ * reminder's screen at every such return. Each push has its own id (Firebase's
+ * message id, Apple's notification id), so the ones already opened are kept.
+ * A tap without an id is opened, as every tap was before.
+ */
+function firstTap(id: unknown): boolean {
+  if (typeof id !== "string" || id === "") return true;
+  let opened: unknown;
+  try {
+    opened = JSON.parse(getItem(OPENED_KEY) ?? "[]");
+  } catch {
+    opened = [];
+  }
+  const kept = Array.isArray(opened) ? opened.filter((x): x is string => typeof x === "string") : [];
+  if (kept.includes(id)) return false;
+  setItem(OPENED_KEY, JSON.stringify([...kept, id].slice(-OPENED_KEPT)));
+  return true;
+}
+
+/**
+ * Open what a tapped notification is about, from the moment the app starts.
+ *
+ * Called by components/native/NativeBridge.tsx as soon as the app is up, on
+ * every phone, whether or not its reminders are on. The tap listener used to
+ * be attached only with the registration ones: by enableNative, or by
+ * refreshNative three seconds after launch and only when this phone's own
+ * note said reminders were on. So a notification that launched the app
+ * showed Today for three seconds before its screen, and one that arrived
+ * while the note was missing (a Community notification on a phone whose
+ * stored note had been cleared, a reminder in flight as the reader turned
+ * them off) opened only Today. Both platforms keep a tap until a listener
+ * takes it, so attaching early loses nothing, and attaching asks nothing of
+ * the reader: no permission, no registration.
+ */
+export async function listenForTaps(): Promise<void> {
+  if (tapsAttached || !platform()) return;
+  tapsAttached = true;
+  try {
+    const { PushNotifications } = await import("@capacitor/push-notifications");
+    // Tap on a delivered notification: open the screen it is about, through
+    // the app's router. It used to be a hard navigation, which inside the shell
+    // is handed the front door whatever it asked for, so every tapped reminder
+    // and every tapped reply opened Today (lib/push/open.ts).
+    await PushNotifications.addListener("pushNotificationActionPerformed", (action) => {
+      if (action.actionId === "dismiss") return;
+      if (!firstTap(action.notification?.id)) return;
+      openFromPush(action.notification?.data?.url);
+    });
+  } catch {
+    // The plugin could not be reached: the next launch tries again.
+    tapsAttached = false;
+  }
+}
+
+/** Attach the registration listeners exactly once per app lifetime, and the tap one with them. */
 async function attachListeners(): Promise<void> {
+  await listenForTaps();
   if (listenersAttached) return;
   listenersAttached = true;
   const { PushNotifications } = await import("@capacitor/push-notifications");
@@ -107,17 +176,6 @@ async function attachListeners(): Promise<void> {
   await PushNotifications.addListener("registrationError", () => {
     removeItem(ON_KEY);
   });
-
-  // Tap on a delivered notification: open the screen it is about, through
-  // the app's router. It used to be a hard navigation, which inside the shell
-  // is handed the front door whatever it asked for, so every tapped reminder
-  // and every tapped reply opened Today (lib/push/open.ts).
-  await PushNotifications.addListener(
-    "pushNotificationActionPerformed",
-    (action) => {
-      openFromPush(action.notification?.data?.url);
-    },
-  );
 }
 
 /** Current native reminder status, mapped to the same vocabulary as web. */
