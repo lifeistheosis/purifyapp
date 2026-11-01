@@ -1,6 +1,9 @@
 import Link from "next/link";
 
+import { ArrivingImage } from "@/components/ui/ArrivingImage";
+import { cn } from "@/lib/cn";
 import { TILE_PREVIEWS } from "@/lib/discover/tilePreviews.generated";
+import { cropStyle, type Crop } from "@/lib/prayers/iconCrops";
 
 /**
  * Shared mobile design-language primitives for the Figma-style rework:
@@ -73,41 +76,7 @@ export function SoftTile({
   const Tag = external ? "a" : Link;
   if (picture && !wide) {
     return (
-      <Tag
-        href={href}
-        {...(external ? { target: "_blank", rel: "noopener noreferrer" } : {})}
-        className="lm-card press-card group relative flex min-h-[132px] flex-col justify-end overflow-hidden rounded-[22px] p-4 shadow-[0_12px_28px_-14px_rgba(0,0,0,0.55)] ring-1 ring-inset ring-paper/10"
-        style={{ background: TONES[tone] }}
-      >
-        {/* The picture's tiny preview, blurred, at once (1.8): the tile is
-            never an empty box while its picture comes. */}
-        {TILE_PREVIEWS[picture] ? (
-          <span
-            aria-hidden
-            className="absolute inset-0 scale-110 bg-cover bg-center blur-md"
-            style={{ backgroundImage: `url(${TILE_PREVIEWS[picture].src})` }}
-          />
-        ) : null}
-        {/* eslint-disable-next-line @next/next/no-img-element -- a static
-            export serves files as they are; next/image would add nothing. */}
-        <img
-          src={picture}
-          alt=""
-          loading={priority ? "eager" : "lazy"}
-          decoding="async"
-          className="absolute inset-0 h-full w-full object-cover"
-        />
-        <span
-          aria-hidden
-          className="absolute inset-0 bg-[linear-gradient(180deg,rgba(0,0,0,0)_30%,rgba(0,0,0,0.78)_100%)]"
-        />
-        {/* A long one-word name breaks at a hyphen rather than running out of
-            the tile ("Walkthroughs" did on a 375 px phone, 1.8), as the
-            calendar's cells do. */}
-        <h2 className="relative font-serif text-title-sm leading-tight text-paper [overflow-wrap:anywhere] hyphens-auto [text-shadow:0_1px_8px_rgba(0,0,0,0.6)]">
-          {label}
-        </h2>
-      </Tag>
+      <PictureTile href={href} label={label} sub={sub} picture={picture} tone={tone} external={external} priority={priority} />
     );
   }
   return (
@@ -125,14 +94,11 @@ export function SoftTile({
         className="tile-sheen pointer-events-none absolute -right-5 -bottom-6 h-24 w-24 rounded-full bg-paper/10 blur-xl"
       />
       {picture && wide ? (
-        // eslint-disable-next-line @next/next/no-img-element -- a static export serves files as they are.
-        <img
-          src={picture}
-          alt=""
-          loading="lazy"
-          decoding="async"
-          className="relative h-12 w-12 shrink-0 rounded-2xl object-cover ring-1 ring-inset ring-paper/15"
-        />
+        // Whole, or not yet at all (build 85, note 52): its plate is its box meanwhile.
+        <span aria-hidden className="relative h-12 w-12 shrink-0 overflow-hidden rounded-2xl bg-paper/[0.07]">
+          <ArrivingImage src={picture} loading="lazy" decoding="async" className="absolute inset-0 h-full w-full object-cover" />
+          <span className="pointer-events-none absolute inset-0 rounded-[inherit] ring-1 ring-inset ring-paper/15" />
+        </span>
       ) : (
         <span
           aria-hidden
@@ -167,6 +133,96 @@ export function SoftTile({
           ) : null}
         </>
       )}
+    </Tag>
+  );
+}
+
+/**
+ * A door drawn as its picture, two across: the name set low on a soft shade,
+ * a line under it, and no glyph. Discover's library tiles from 1.7 (the
+ * owner's pick of 2026-10-15, after Hallow's Discover), and since 1.8 the
+ * Prayers tab's Practices, each in its icon (the owner's pick of r3-26, "A,
+ * the icon tiles", note 72), which brought the line under the name, the cut
+ * and the lit tile.
+ *
+ * The shade is the page's ground (`night`) and the words its ink (`paper`),
+ * as on a gallery band (components/ui/GalleryBand.tsx), so the tile follows
+ * every palette: on Parchment a wash of paper over the picture's foot, with
+ * the ink on it. The picture arrives whole (components/ui/ArrivingImage.tsx)
+ * over the tile's own ground; `picture` null is a tile whose picture is not
+ * known yet (the Hours, until the page has read the clock), and its words
+ * stand as they will.
+ */
+export function PictureTile({
+  href,
+  label,
+  sub,
+  picture,
+  crop,
+  lit = false,
+  heading = "h2",
+  tone = "a",
+  external = false,
+  priority = false,
+}: {
+  href: string;
+  label: React.ReactNode;
+  /** One line under the name. */
+  sub?: React.ReactNode;
+  /** A path under public/, or null while it is not known. */
+  picture: string | null;
+  /** Where the picture is held and how close it is drawn (lib/prayers/iconCrops.ts). */
+  crop?: Crop;
+  /** The door that is now (the Hour the clock is in): ringed and glowing white, ink on Parchment. */
+  lit?: boolean;
+  /** h3 under a section's own heading (Prayers' Practices). */
+  heading?: "h2" | "h3";
+  tone?: Tone;
+  external?: boolean;
+  /** On the first screen: its picture is asked for at once, not when scrolled to. */
+  priority?: boolean;
+}) {
+  const Tag = external ? "a" : Link;
+  const Heading = heading;
+  return (
+    <Tag
+      href={href}
+      {...(external ? { target: "_blank", rel: "noopener noreferrer" } : {})}
+      data-lit={lit || undefined}
+      className={cn(
+        "lm-card press-card group relative flex min-h-[146px] flex-col justify-end overflow-hidden rounded-[22px] pb-3 ps-3.5 pe-3 pt-3 shadow-[0_12px_28px_-14px_rgba(0,0,0,0.55)] ring-1 ring-inset ring-paper/10",
+        lit && "tile-lit",
+      )}
+      style={{ background: TONES[tone] }}
+    >
+      {/* The picture's tiny preview, blurred, at once (1.8): the tile is
+          never an empty box while its picture comes. */}
+      {picture && TILE_PREVIEWS[picture] ? (
+        <span
+          aria-hidden
+          className="absolute inset-0 scale-110 bg-cover bg-center blur-md"
+          style={{ backgroundImage: `url(${TILE_PREVIEWS[picture].src})` }}
+        />
+      ) : null}
+      {picture ? (
+        <ArrivingImage
+          src={picture}
+          loading={priority ? "eager" : "lazy"}
+          decoding="async"
+          className="absolute inset-0 h-full w-full object-cover"
+          style={crop ? cropStyle(crop) : undefined}
+        />
+      ) : null}
+      <span aria-hidden className="tile-shade absolute inset-0" />
+      {/* A long one-word name breaks at a hyphen rather than running out of
+          the tile ("Walkthroughs" did on a 375 px phone, 1.8), as the
+          calendar's cells do. */}
+      <Heading className="tile-name relative text-[21px] leading-[1.12] text-paper [overflow-wrap:anywhere] hyphens-auto">
+        {label}
+      </Heading>
+      {sub ? (
+        <p className={cn("tile-line relative mt-1 font-sans text-caption leading-[1.35]", lit ? "text-paper" : "text-paper/80")}>{sub}</p>
+      ) : null}
     </Tag>
   );
 }
