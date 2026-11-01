@@ -14,6 +14,7 @@ import { apnsConfigured, sendApns } from "./providers/apns";
 import { fcmConfigured, sendFcm } from "./providers/fcm";
 import { webPushClient, webPushConfigured, webPushProblem } from "./providers/webpush";
 import { addFailure, emptyTally, type FailureTally } from "./failures";
+import { nativeDelivery, REMINDER_KINDS, REMINDER_TTL_SECONDS } from "./lifetime";
 
 export { apnsConfigured, fcmConfigured, webPushConfigured, webPushProblem };
 
@@ -23,14 +24,6 @@ export type NativeToken = { token: string; platform: "ios" | "android" };
 
 /** How long one push service may take to answer before the send is given up. */
 const WEB_SEND_TIMEOUT_MS = 10_000;
-/**
- * How long a push service may hold a reminder for a browser that is not
- * running. The library's default is four weeks, which would hand a reader
- * opening a laptop on Friday every morning reminder since Monday. A reminder
- * that is hours late is no longer a reminder.
- */
-const REMINDER_TTL_SECONDS = 6 * 60 * 60;
-const REMINDER_KINDS = new Set(["morning", "evening", "campaign"]);
 
 /**
  * Send one Web Push message. Updates last_sent_at on success; prunes the
@@ -79,18 +72,23 @@ export async function sendWebPushOne(
  * success; prunes the token when the provider reports it gone. A failure
  * carries the provider's reason (lib/push/failures.ts) so a caller can say
  * why, instead of counting it and moving on.
+ *
+ * A reminder's `kind` gives it the lifetime and the tag the browser's
+ * reminders already had (./lifetime.ts); any other push goes as it always did.
  */
 export async function sendNativeOne(
   supa: SupabaseClient,
   t: NativeToken,
-  payload: PushPayload,
+  payload: PushPayload & { kind?: string },
 ): Promise<{ ok: boolean; gone: boolean; skipped: boolean; reason?: string }> {
   const configured = t.platform === "ios" ? apnsConfigured() : fcmConfigured();
   if (!configured) return { ok: false, gone: false, skipped: true };
+  const msg = { title: payload.title, body: payload.body, url: payload.url };
+  const delivery = nativeDelivery(payload.kind);
   const res =
     t.platform === "ios"
-      ? await sendApns(t.token, payload)
-      : await sendFcm(t.token, payload);
+      ? await sendApns(t.token, msg, delivery)
+      : await sendFcm(t.token, msg, delivery);
   if (res.ok) {
     await supa
       .from("device_push_tokens")

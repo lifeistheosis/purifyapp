@@ -10,6 +10,7 @@ import "server-only";
 
 import { parseServiceAccount } from "../credentials";
 import { fcmTokenGone, reasonOf } from "../failures";
+import type { NativeDelivery } from "../lifetime";
 import type { SendResult } from "./apns";
 
 export type { SendResult };
@@ -95,26 +96,47 @@ export const ANDROID_CHANNEL_ID = "purify";
  */
 let proven = false;
 
+/**
+ * The message Firebase is handed for one push. Pure, so a test can read it.
+ *
+ * A reminder carries a lifetime (`ttl`, in milliseconds here, which the
+ * library turns into the seconds FCM wants) and a tag (lib/push/lifetime.ts):
+ * without the first, Firebase holds a message for a phone out of signal for
+ * four weeks and hands over every one of them when it comes back; without
+ * the second, each unread reminder stays in the shade beside the next one.
+ * Every other push goes without either, as before.
+ */
+export function fcmMessage(
+  token: string,
+  msg: { title: string; body: string; url: string },
+  delivery: NativeDelivery = {},
+) {
+  return {
+    token,
+    notification: { title: msg.title, body: msg.body },
+    data: { url: msg.url },
+    android: {
+      priority: "high" as const,
+      ...(delivery.ttlSeconds !== undefined ? { ttl: delivery.ttlSeconds * 1000 } : {}),
+      notification: {
+        channelId: ANDROID_CHANNEL_ID,
+        sound: "default",
+        // Android 7 and older have no channels and read this instead.
+        priority: "high" as const,
+        ...(delivery.tag ? { tag: delivery.tag } : {}),
+      },
+    },
+  };
+}
+
 export async function sendFcm(
   token: string,
   msg: { title: string; body: string; url: string },
+  delivery: NativeDelivery = {},
 ): Promise<SendResult> {
   const messaging = await getMessaging();
   try {
-    await messaging.send({
-      token,
-      notification: { title: msg.title, body: msg.body },
-      data: { url: msg.url },
-      android: {
-        priority: "high",
-        notification: {
-          channelId: ANDROID_CHANNEL_ID,
-          sound: "default",
-          // Android 7 and older have no channels and read this instead.
-          priority: "high",
-        },
-      },
-    });
+    await messaging.send(fcmMessage(token, msg, delivery));
     proven = true;
     return { ok: true };
   } catch (e) {

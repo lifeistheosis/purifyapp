@@ -16,6 +16,7 @@ import "server-only";
 
 import { parseP8 } from "../credentials";
 import { apnsVerdict, reasonOf } from "../failures";
+import type { NativeDelivery } from "../lifetime";
 
 export type SendResult = { ok: true } | { ok: false; gone: boolean; reason: string };
 
@@ -127,17 +128,40 @@ function apnsReason(e: unknown): string {
   return reason.startsWith("FAST_JWT") ? "InvalidSigningKey" : reason;
 }
 
-export async function sendApns(
-  token: string,
+/**
+ * What Apple is handed for one push, besides the token. Pure, so a test can
+ * read it.
+ *
+ * A reminder carries an expiration and a collapse id (lib/push/lifetime.ts).
+ * Without the first, Apple keeps the latest push for a phone that is off or
+ * out of signal for as long as it likes, so the morning's reminder could
+ * arrive at night. With the second, a reminder takes the place of the one
+ * of its kind still in Notification Center instead of joining it. Every
+ * other push goes without either, as before.
+ */
+export function apnsOptions(
   msg: { title: string; body: string; url: string },
-): Promise<SendResult> {
-  const { Notification } = await import("apns2");
-  const note = new Notification(token, {
+  delivery: NativeDelivery = {},
+  now: number = Date.now(),
+) {
+  return {
     alert: { title: msg.title, body: msg.body },
     topic: process.env.APNS_BUNDLE_ID as string,
     sound: "default",
     data: { url: msg.url },
-  });
+    // Seconds since 1970, as the apns-expiration header wants it.
+    ...(delivery.ttlSeconds !== undefined ? { expiration: Math.floor(now / 1000) + delivery.ttlSeconds } : {}),
+    ...(delivery.tag ? { collapseId: delivery.tag } : {}),
+  };
+}
+
+export async function sendApns(
+  token: string,
+  msg: { title: string; body: string; url: string },
+  delivery: NativeDelivery = {},
+): Promise<SendResult> {
+  const { Notification } = await import("apns2");
+  const note = new Notification(token, apnsOptions(msg, delivery));
   let reason = "unknown";
   for (const server of serverOrder()) {
     try {

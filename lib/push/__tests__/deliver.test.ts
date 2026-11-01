@@ -11,6 +11,7 @@ const state = vi.hoisted(() => ({
   tables: {} as Record<string, Record<string, unknown>[]>,
   webSent: [] as { endpoint: string; kind?: string }[],
   nativeSent: [] as { token: string; platform: string }[],
+  nativeKinds: [] as (string | undefined)[],
 }));
 
 vi.mock("@/lib/supabase/pageAll", () => ({
@@ -29,8 +30,9 @@ vi.mock("../send", () => ({
     state.webSent.push({ endpoint: sub.endpoint, kind: payload.kind });
     return { ok: true, gone: false };
   }),
-  sendNativeOne: vi.fn(async (_supa: unknown, t: { token: string; platform: string }) => {
+  sendNativeOne: vi.fn(async (_supa: unknown, t: { token: string; platform: string }, payload: { kind?: string }) => {
     state.nativeSent.push(t);
+    state.nativeKinds.push(payload.kind);
     return { ok: true, gone: false, skipped: false };
   }),
 }));
@@ -64,6 +66,7 @@ beforeEach(() => {
   state.tables = {};
   state.webSent = [];
   state.nativeSent = [];
+  state.nativeKinds = [];
 });
 
 describe("reminderHourKey", () => {
@@ -90,6 +93,18 @@ describe("deliverRemindersOnce", () => {
     expect(run.claimed).toBe(true);
     expect(state.webSent).toEqual([{ endpoint: "https://push.example/a", kind: "morning" }]);
     expect(state.nativeSent).toEqual([{ token: "t-android", platform: "android" }]);
+  });
+
+  it("tells a phone's push service which reminder it is, as it tells a browser's", async () => {
+    // The kind is what gives a reminder its lifetime and its tag on a phone
+    // (lib/push/lifetime.ts). It was sent to browsers only, so a phone out of
+    // signal for days was handed every reminder it had missed at once.
+    state.tables.device_push_tokens = [
+      { token: "t-ios", platform: "ios", morning_time: "07:00", evening_time: "21:00", timezone: "UTC" },
+      { token: "t-android", platform: "android", morning_time: "06:00", evening_time: "07:00", timezone: "UTC" },
+    ];
+    await deliverRemindersOnce(supa, sevenUtc);
+    expect(state.nativeKinds).toEqual(["morning", "evening"]);
   });
 
   it("lets only the first run of an hour send", async () => {

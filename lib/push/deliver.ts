@@ -225,10 +225,12 @@ async function deliverNative(
   // A count alone is how 135 iPhones went unreached without a word.
   const failures = emptyTally();
   for (const c of candidates) {
+    // With its kind, so the phone's push service drops it once it is hours
+    // late and a newer one replaces it on the screen (lib/push/lifetime.ts).
     const res = await sendNativeOne(
       supa,
       { token: c.token, platform: c.platform },
-      reminderPayload(c.kind),
+      { kind: c.kind, ...reminderPayload(c.kind) },
     );
     if (res.ok) sent++;
     else if (res.skipped) skipped++;
@@ -408,7 +410,7 @@ async function deliverCampaigns(
     }
     if (apnsConfigured() || fcmConfigured()) {
       for (const n of t.native) {
-        const r = await sendNativeOne(supa, n, payload);
+        const r = await sendNativeOne(supa, n, { kind: "campaign", ...payload });
         if (r.ok) sent++;
         else if (r.skipped) skipped++;
         else {
