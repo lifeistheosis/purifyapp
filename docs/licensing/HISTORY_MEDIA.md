@@ -136,6 +136,79 @@ the folder.
   woodcut: cut to its printed frame, the heading whole. The frame is not quite
   square, so its top right corner is the print's own paper.
 
+## The Fall of Constantinople's gallery (1.8, 2026-10-31)
+
+The owner's note 84 of build 86: "add alot more photos to the fall of
+Constantinople section". The event had its hero alone; these eleven are its
+gallery (Immersive History, Plus), in the order the account speaks of them.
+Each is public domain as its own Commons page states it, read on 2026-10-31
+(the file's `LicenseShortName` and the licence on the page); none carries a
+CC BY, BY-SA or GFDL licence beside it. Each was opened and looked at before
+it was cut, and each cut was opened again, by the rules above: the right
+subject, whole heads, nothing outside the work (no mount, no book page, no
+film edge, no colour bar, no printed caption), never enlarged, written to fit
+1,200 by 1,200 at JPEG quality 80. The downloads were deleted once the cuts
+were made; each source below is the file to cut again from.
+
+A plate prints work, artist and licence, not the date, so each work line here
+carries its date too: Zonaro's painting of 1903 must not read as a picture of
+1453.
+
+| File | Where the account speaks of it | The work | Artist, as the page gives it | Date of the work | Licence (Commons) | Source | The cut |
+|---|---|---|---|---|---|---|---|
+| `fall-of-constantinople-bellini.v1.jpg` | Mehmed II becomes sultan | Portrait of Sultan Mehmed II, the National Gallery, London | Gentile Bellini (died 1507) | 1480 | Public domain (PD-art, PD-old-100-expired) | [Bellini, Gentile - Portrait of Mehmed II - National Gallery, London.jpg](https://commons.wikimedia.org/wiki/File:Bellini,_Gentile_-_Portrait_of_Mehmed_II_-_National_Gallery,_London.jpg) | Whole, from Commons' copy 1,920 wide of the 4,439 by 6,000 file: 888 by 1,200 |
+| `fall-of-constantinople-constantine-xi.v1.jpg` | Constantine XI and his crown | Constantine XI Palaiologos, the 162nd imperial portrait in the chronicle of Zonaras, Mutinensis gr. 122, Biblioteca Estense, Modena | anonymous | 15th century | Public domain (PD-Art, PD-old-100-expired) | [162 - Constantine XI Palaiologos (Mutinensis - color).png](https://commons.wikimedia.org/wiki/File:162_-_Constantine_XI_Palaiologos_(Mutinensis_-_color).png) | Whole, 493 by 682, the library's own colour |
+| `fall-of-constantinople-rumeli-hisar.v1.jpg` | The fortress on the Bosporus, 1452 | Rumeli Hisarı and the Asian shore at Anadolu Hisarı, photochrom, Library of Congress (LCCN 2001699445) | Photochrom Print Collection (the print's "P. Z." is Photoglob, Zürich) | between 1890 and 1900 | Public domain (PD-1923) | [Bosphorus (i.e., Bosporus), Rumeli and Anadali-Hissar, ... LCCN2001699445.jpg](https://commons.wikimedia.org/wiki/File:Bosphorus_(i.e.,_Bosporus),_Rumeli_and_Anadali-Hissar,_(i.e.,_Anadolu_Hisar%C4%B1)_Constantinople,_Turkey-LCCN2001699445.jpg) | Inside the print's black border, and above its printed number and title at the foot |
+| `fall-of-constantinople-buondelmonti.v1.jpg` | The land walls and the Golden Horn | Constantinople and Pera, the map in Cristoforo Buondelmonti's Liber insularum Archipelagi, the copy in Venice | Cristoforo Buondelmonti (died about 1430) | 1420s to 1430s (this copy, as its page dates it) | Public domain (PD-Art, PD-old-100) | [Constantinople mediaeval map.jpg](https://commons.wikimedia.org/wiki/File:Constantinople_mediaeval_map.jpg) | The page, less the light outer edge at the left and a white line at the foot |
+| `fall-of-constantinople-zonaro-gun.v1.jpg` | The army and Urban's great gun | Mehmed II conquering Constantinople, Dolmabahçe Palace | Fausto Zonaro (died 1929) | 1903 | Public domain (PD-old) | [Conquest of Constantinople, Zonaro.jpg](https://commons.wikimedia.org/wiki/File:Conquest_of_Constantinople,_Zonaro.jpg) | Whole but a dark line at the left. Its white cloud at the top left is the painting's sky, accepted in `scripts/check-picture-edges.mjs` |
+| `fall-of-constantinople-land-walls.v1.jpg` | The bombardment and the land walls | Les Murs, Library of Congress (LCCN 2003677076) | Abdullah Frères | 1880 | Public domain (PD-old-70-1923) | [Les Murs - Abdullah Frères. LCCN2003677076.tif](https://commons.wikimedia.org/wiki/File:Les_Murs_-_Abdullah_Fr%C3%A8res._LCCN2003677076.tif) | Inside the mount; above the studio's name and title written in the negative at the foot, and below a faint inked word in the sky |
+| `fall-of-constantinople-zonaro-ships.v1.jpg` | The ships hauled overland | Mehmed II at the siege of Constantinople, overseeing the ships hauled overland (as the page describes it), Dolmabahçe Palace | Fausto Zonaro (died 1929) | undated on its page | Public domain (PD-old) | [Kusatma Zonaro.jpg](https://commons.wikimedia.org/wiki/File:Kusatma_Zonaro.jpg) | Whole, 694 by 502, never enlarged |
+| `fall-of-constantinople-moldovita.v1.jpg` | The procession with the icons, 28 May | The siege of Constantinople, fresco on the church of the Moldovița monastery: the siege of 626 told in the Akathist, its besiegers painted with the cannon and dress of 1453 (as the page says) | Moldavian fresco painters; photograph by Man vyi | 1537 (photographed 2010) | Public domain (PD-self: the photographer's release; the fresco is of 1537) | [Moldovita murals 2010 16.jpg](https://commons.wikimedia.org/wiki/File:Moldovita_murals_2010_16.jpg) | The City and its procession: below the band over the scene, its painted title whole; inside its border at the right; leaving out the storm that sinks the besiegers' boats, with their drowning men, at the left, and the waves at the foot. Visitors' names scratched into the plaster over the centuries stay on its walls, as on the church |
+| `fall-of-constantinople-hagia-sophia.v1.jpg` | The last service in the Great Church | St. Sophie, Library of Congress (LCCN 2003677065) | Abdullah Frères | 1880 | Public domain (PD-old-70-1923) | [St. Sophie - Abdullah Frères. LCCN2003677065.tif](https://commons.wikimedia.org/wiki/File:St._Sophie_-_Abdullah_Fr%C3%A8res._LCCN2003677065.tif) | Inside the mount, above the studio's name and title at the foot and a white spot on the print |
+| `fall-of-constantinople-fossati.v1.jpg` | Hagia Sophia becomes a mosque | Vue générale de la grande nef, en regardant l'orient, plate 3 of Aya Sofia, Constantinople, as recently restored by order of H.M. the Sultan Abdul-Medjid (London, 1852) | Gaspare Fossati (died 1883), drawn; Louis Haghe (died 1885), lithographed | 1852 | Public domain (PD-old-70-1923) | [Vue générale de la grande nef, en regardant l'orient LCCN2004666257.tif](https://commons.wikimedia.org/wiki/File:Vue_g%C3%A9n%C3%A9rale_de_la_grande_nef,_en_regardant_l%27orient_LCCN2004666257.tif) | Inside the plate's printed edge, so the book page, the film's edge and the colour bar are gone. The plate sits a little askew on its page, so the cut is taken inside it on every side |
+| `fall-of-constantinople-zografos.v1.jpg` | The Church under the sultan | The Fall of Constantinople, from the paintings of the Greek struggle made for General Makriyannis | Panagiotis Zografos | 1836 to 1839 (the series; the page gives no date) | Public domain (PD-Art, PD-old-100) | [Zografos-Makriyannis 02 The fall of Konstantinople.jpg](https://commons.wikimedia.org/wiki/File:Zografos-Makriyannis_02_The_fall_of_Konstantinople.jpg) | Inside the painted frame line, leaving out the writing above and below it and a number written under its corner. The painting's own numbers for its legend stay |
+
+Eleven JPEGs of 1,720,364 bytes and their AVIFs of 991,159 bytes, on the
+website alone: the apps ask for them (`lib/media/streamed.ts`).
+
+### Considered for the gallery and left
+
+- **Benjamin-Constant, The Entry of Mehmed II into Constantinople (1876)**
+  (`File:Benjamin-Constant-The Entry of Mahomet II into Constantinople-1876.jpg`,
+  public domain): the dead across its whole foreground, the reason it left the
+  hero in 1.7.
+- **Zonaro, Mehmed II entering Constantinople (1903)** (`File:Zonaro
+  GatesofConst.jpg`, public domain): fallen soldiers across its foot, and a
+  cut that leaves them out goes through the horse's legs and a soldier at the
+  right.
+- **Theophilos, Constantine Palaiologos going out to the battle** (1914 to
+  1932, several versions on Commons): their pages give only PD-old-80 (the
+  painter died in 1934) and no United States public-domain tag, so each
+  painting's status there rests on when it was first published, which no page
+  records. Not taken while that is unknown.
+- **Buondelmonti, the Paris copy** (BnF Ge FF 9351, the copy behind Commons'
+  familiar file of "1422"; `File:Map of Constantinople, Buondelmonti.jpg`): the
+  library's red stamp sits on the water at the lower right, and no cut leaves
+  it out without losing the south of the City. The Walters copy (a black and
+  white reproduction from a journal), the Düsseldorf copy (faded) and the
+  Greenwich copy (its colour faint) were set aside for the Venice one.
+- **Constantine XI, `File:Constantine XI Palaiologos miniature.jpg`** (681 by
+  904): photographed from a printed book, its colours cold and grey; the
+  library's own colour was used, smaller.
+- **Zonaro's ships, `File:Fausto Zonaro - Konstantinopolun mühasirəsi ...
+  1908.jpg`** (2,148 by 1,546): the page gives the photograph under CC BY-SA
+  4.0; the public-domain copy, smaller, was used.
+- **The land walls in colour**: the Albert Kahn autochromes of 1922 are CC
+  BY-SA 4.0 on their pages, and Agence Rol's press photograph of 1915 is of
+  the 20th century; the note asked for the 19th.
+- **The assault in Jean Chartier's chronicle** (BnF fr. 2691, about 1460,
+  `File:Siege constantinople bnf fr2691.jpg`, public domain): a good
+  miniature, left to keep the gallery near ten, the hero being a miniature of
+  the same years.
+- **W. H. Bartlett, Top Kapousi, or the Cannon Gate (1838)**: the gate of St
+  Romanus, where Giustiniani fell, but the engraving is of camels and a coffee
+  house before it.
+
 ## Rejected
 
 - **Nicaea, `File:Nicaea icon.jpg`** (1,024 by 1,388, PD-Art-100-1923): no

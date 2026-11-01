@@ -80,6 +80,8 @@ const ACCEPTED = {
   "saints/icons/thaddeus-of-edessa.jpg": "the gold leaf, photographed bright, where it meets the foot",
   "saints/icons/mary-of-egypt.jpg": "the painted light of heaven, with Christ on the cloud",
   "saints/icons/or-of-the-thebaid.jpg": "a drawing on white paper: the white is its ground",
+  // Looked at on 2026-10-31, the Fall of Constantinople's gallery (the owner's note 84): the light is the work's own.
+  "history/media/fall-of-constantinople-zonaro-gun.v1.jpg": "Zonaro's painted sky: a white cloud over the banners, at the top left; a cut would lose the banners or the horsemen",
   // Kept on the website for the 1.7 apps, which ask for these by name; 1.7.1
   // shows the .v2 cut beside each.
   "history/media/council-of-jerusalem.v1.jpg": "kept for the 1.7 apps; 1.7.1 shows council-of-jerusalem.v2.jpg",
