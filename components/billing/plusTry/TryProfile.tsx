@@ -2,9 +2,10 @@
 
 // Try profile extras (r3-07 A): the Community profile card as the profile
 // editor's live card draws it (components/community/profile/ProfileEditor.tsx,
-// from ProfileCard.tsx's own pieces): the effect over the card, the banner,
-// the picture in its frame, the name, and the card in a two-colour theme.
-// Under it, the frames, the effects and the themes, to try each on.
+// from ProfileCard.tsx's own pieces, r3-28 A since 1.8): the effect over the
+// card, the light or the banner at the top, the picture in its frame, the
+// name, and the card in a two-colour theme. Under it, the frames, the
+// effects and the themes, to try each on.
 //
 // It is the reader's own card where there is one: a signed-in reader's
 // profile is read (lib/profile/client.ts, fetchMyProfile, a read and nothing
@@ -17,7 +18,7 @@ import { useEffect, useMemo, useState } from "react";
 
 import type { TryProps } from "@/components/billing/PlusTry";
 import { CommunityAvatar } from "@/components/community/CommunityAvatar";
-import { ProfileAbout, ProfileBanner, ProfileHeader, profileSurface } from "@/components/community/profile/ProfileCard";
+import { ProfileAboutDoor, ProfileFace, ProfileTop, profileSurface, surfaceClass } from "@/components/community/profile/ProfileCard";
 import { ProfileEffect } from "@/components/community/profile/ProfileEffect";
 import { useTranslate } from "@/components/i18n/MessagesProvider";
 import { Sparkle } from "@/components/ui/icons/Sparkle";
@@ -80,13 +81,13 @@ export default function TryProfile({ row }: TryProps) {
     badges: profile?.badges ?? [],
     cosmetics,
     clergy: profile?.clergy ?? null,
-    streak: profile?.streak ?? null,
     bio: profile?.bio ?? null,
     patronSaint: profile?.patronSaint ?? null,
     favoriteVerse: profile?.favoriteVerse ?? null,
     joinedAt: profile?.joinedAt ?? null,
     parish: profile?.parish ?? null,
     links: profile?.links ?? [],
+    private: false,
   };
   const surface = profileSurface(cosmetics);
 
@@ -95,24 +96,19 @@ export default function TryProfile({ row }: TryProps) {
       <TryWindow label={t(row.name)}>
         <div className="px-4 pb-16 pt-5">
           <div
-            className={cn(
-              "relative overflow-hidden rounded-2xl border shadow-xl",
-              surface.themed ? "dark-island border-white/10" : "border-paper/10 bg-night-soft",
-            )}
+            className={cn("relative overflow-hidden rounded-2xl border shadow-xl", surfaceClass(surface), surface.themed ? "border-white/10" : "border-paper/10")}
             style={surface.style}
           >
-            <ProfileEffect effect={cosmetics.effect} />
-            <div className="relative z-10">
-              <ProfileBanner cosmetics={cosmetics} className="h-24" />
-              <div className="px-4 pb-5">
-                <ProfileHeader profile={shown} avatarSize={76} ring={5} nameAs="p" />
-                {/* What they wrote about themselves, when there is a profile to read. */}
-                {profile ? (
-                  <div className="mt-4">
-                    <ProfileAbout profile={shown} compact />
-                  </div>
-                ) : null}
-              </div>
+            <ProfileEffect effect={cosmetics.effect} quiet />
+            <div className="relative z-10 px-4 pb-5 pt-9">
+              <ProfileTop cosmetics={cosmetics} height={220} />
+              <ProfileFace profile={shown} nameAs="p" compact />
+              {/* What they wrote about themselves, when there is a profile to read. */}
+              {profile ? (
+                <div className="mt-5">
+                  <ProfileAboutDoor profile={shown} />
+                </div>
+              ) : null}
             </div>
           </div>
         </div>

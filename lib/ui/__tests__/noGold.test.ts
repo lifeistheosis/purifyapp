@@ -207,9 +207,11 @@ const READERS: { re: RegExp; exts: RegExp; rgb: (m: RegExpMatchArray) => Rgb | "
   },
   // A hex inside an SVG data URI in a stylesheet: %23rrggbb.
   { re: /%23([0-9a-fA-F]{6})(?![0-9a-fA-F])/g, exts: /./, rgb: (m) => rgbOfHex(`#${m[1]}`) },
-  // rgb() and rgba(), with commas or spaces.
+  // rgb() and rgba(), with commas or spaces, or with Tailwind's underscores
+  // in a class (shadow-[0_0_28px_rgb(201_162_90/0.45)]): until 1.8 a name
+  // day's gold light on every profile passed unseen written that way.
   {
-    re: /rgba?\(\s*([\d.]+%?)[\s,]+([\d.]+%?)[\s,]+([\d.]+%?)/gi,
+    re: /rgba?\(\s*([\d.]+%?)[\s,_]+([\d.]+%?)[\s,_]+([\d.]+%?)/gi,
     exts: /./,
     rgb: (m) => [channel(m[1]), channel(m[2]), channel(m[3])].map(Math.round) as unknown as Rgb,
   },
@@ -391,9 +393,10 @@ describe("the gold scanner", () => {
       "const dot = cond && 'bg-amber-300';",
       "const season = { color: \"gold\", reason: \"pascha\" };",
       "const tw = `text-yellow-200 ${x}`;",
+      'const glow = "shadow-[0_0_0_2px_rgb(201_162_90/0.9),0_0_28px_6px_rgb(255_255_255/0.3)]";',
     ].join("\n");
-    // The ring, the stroke, the two classes; not the comment, the address, or the season's id.
-    expect(findGold(tsx, "tsx").map((f) => f.line).sort((a, b) => a - b)).toEqual([2, 4, 5, 7]);
+    // The ring, the stroke, the two classes, the Tailwind glow; not the comment, the address, or the season's id.
+    expect(findGold(tsx, "tsx").map((f) => f.line).sort((a, b) => a - b)).toEqual([2, 4, 5, 7, 8]);
   });
 
   it("knows a stylesheet rule's selector, so the Plus cosmetics' rules can be told apart", () => {

@@ -1,13 +1,22 @@
 "use client";
 
 import Link from "next/link";
-import { useCallback, useEffect, useRef, useState, type ReactNode } from "react";
+import { useEffect, useRef, useState, type ReactNode } from "react";
 import { createPortal } from "react-dom";
 
 import { ActionMenu, type ActionMenuItem } from "@/components/community/ActionMenu";
 import { CommunityAvatar } from "@/components/community/CommunityAvatar";
-import { BadgeList } from "@/components/community/profile/ProfileBadges";
-import { ProfileAbout, ProfileBanner, ProfileHeader, profileSurface } from "@/components/community/profile/ProfileCard";
+import { MedalCase } from "@/components/community/profile/ProfileBadges";
+import {
+  ProfileAboutDoor,
+  ProfileFace,
+  ProfileMoment,
+  ProfileTop,
+  followClass,
+  profileSurface,
+  surfaceClass,
+} from "@/components/community/profile/ProfileCard";
+import { ProfileDoors } from "@/components/community/profile/ProfileDoors";
 import { ProfileEffect } from "@/components/community/profile/ProfileEffect";
 import { SymbolText } from "@/components/community/SymbolText";
 import { useTranslate } from "@/components/i18n/MessagesProvider";
@@ -21,7 +30,6 @@ import { blockCommunityAuthor, muteCommunityAuthor, unmuteCommunityAuthor } from
 import { POST_KIND_KEYS, timeAgo } from "@/lib/community/types";
 import { useIsNative } from "@/lib/platform/native";
 import { useAndroidBack } from "@/lib/platform/useAndroidBack";
-import type { BadgeId } from "@/lib/profile/badges";
 import { cachedProfile, loadProfile, patchCachedProfile } from "@/lib/profile/cache";
 import {
   fetchRelation,
@@ -31,6 +39,7 @@ import {
   setFollow,
   startGiftCheckout,
 } from "@/lib/profile/client";
+import { profileDoors } from "@/lib/profile/doors";
 import type { ProfileRelation, ProfileSeed, PublicProfile } from "@/lib/profile/publicProfile";
 import { SITE_URL } from "@/lib/site";
 import { useReducedMotion } from "@/lib/ui/motion";
@@ -41,11 +50,20 @@ import { copyText as putOnClipboard } from "@/lib/ui/copyText";
 /**
  * A reader's profile, opened from their name or picture in Community.
  *
+ * Laid out as the owner picked it, r3-28 A, "fade and doors" (notes 75 and
+ * 81, 2026-10-31): a reader's page set like a saint's. A soft light at the
+ * top, where a Plus member's banner fades in; the picture in the middle in
+ * its frame; the name in Lora; the status as one quiet line; Follow and the
+ * ⋯ menu (Edit on your own); a name day or a prayer request when there is
+ * one; then the doors, About, Badges and Posts (Campaigns in 1.9), each
+ * opening what is below it (components/community/profile/ProfileDoors.tsx).
+ * The readers you both follow are at the foot of About. No streak: it lives
+ * on Today and You (refinement 4).
+ *
  * One card, two shapes, like every pop-up in Purify (lib/ui/useDraggableSheet):
  * on a phone a sheet that follows the finger and closes on a flick down; above
- * `md` a centred card in Discord's full-profile layout, the banner across the
- * top, the reader on the left and Posts, Badges and In common on the right.
- * Either way the backdrop dims and blurs in step with the card.
+ * `md` a centred card. Either way the backdrop dims and blurs in step with
+ * the card.
  *
  * Read by @handle from /api/community/profile, which serves a fixed
  * projection: nothing here can learn an auth id or an email. How the viewer
@@ -63,8 +81,6 @@ type Loaded =
   | { state: "loading" }
   | { state: "ok"; profile: PublicProfile }
   | { state: "missing" | "unavailable" | "error" };
-
-type Tab = "posts" | "badges" | "common";
 
 const NO_COSMETICS = {
   bannerColor: null,
@@ -141,28 +157,31 @@ export function ProfileViewer({
   const [loaded, setLoaded] = useState<Loaded>({ state: "loading" });
   const [relation, setRelation] = useState<ProfileRelation | null>(null);
   const [version, setVersion] = useState(0);
-  const [tab, setTab] = useState<Tab>("posts");
-  const [highlight, setHighlight] = useState<BadgeId | null>(null);
   const [notice, setNotice] = useState<string | null>(null);
   const [reported, setReported] = useState(false);
   const [confirmingBlock, setConfirmingBlock] = useState(false);
   const [effectReady, setEffectReady] = useState(false);
   const [busy, setBusy] = useState<"follow" | "greet" | "pray" | "gift" | null>(null);
+  // The verse's picture sheet stands over the card (VerseCard): while it is
+  // up, Escape and the Android back button are its, not the card's.
+  const [picturing, setPicturing] = useState(false);
+  // When it last went down: one press of back is heard by every listener, the
+  // sheet's and the card's, in whichever order they were added.
+  const picture = useRef({ up: false, downAt: 0 });
   const closeRef = useRef<HTMLButtonElement | null>(null);
 
   const { mounted, panelRef, scrimRef, bodyRef, grab } = useDraggableSheet({ open, onClose, reduced, half: 1 });
 
-  // Each opening starts on the first tab with nothing left over from the
-  // last one. Done while rendering, not in an effect, so the first frame of
-  // the card is already the right profile.
+  // Each opening starts on the first door with nothing left over from the
+  // last one (the doors are keyed by the handle). Done while rendering, not
+  // in an effect, so the first frame of the card is already the right profile.
   const [openedFor, setOpenedFor] = useState<string | null>(handle);
   if (handle !== openedFor) {
     setOpenedFor(handle);
     if (handle !== null) {
       setShown(handle);
-      setTab("posts");
-      setHighlight(null);
       setNotice(null);
+      setPicturing(false);
       setReported(false);
       setRelation(null);
       setEffectReady(false);
@@ -233,41 +252,32 @@ export function ProfileViewer({
 
   useEffect(() => {
     if (!mounted) return;
-    // An open ⋯ menu answers Escape itself and stops it there.
+    // An open ⋯ menu answers Escape itself and stops it there, and an open
+    // picture sheet closes itself.
     function onKey(e: KeyboardEvent) {
-      if (e.key !== "Escape" || confirmingBlock) return;
+      if (e.key !== "Escape" || confirmingBlock || picturing) return;
       e.preventDefault();
       onClose();
     }
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
-  }, [mounted, confirmingBlock, onClose]);
+  }, [mounted, confirmingBlock, picturing, onClose]);
 
-  useAndroidBack(mounted, onClose);
+  useAndroidBack(mounted, () => {
+    if (!picture.current.up && Date.now() - picture.current.downAt > 400) onClose();
+  });
 
-  const showBadge = useCallback(
-    (id: BadgeId) => {
-      setTab("badges");
-      setHighlight(id);
-      // Bring the tab into view on a phone, where it sits below the panel.
-      // A timeout rather than a frame: it runs once the tab has rendered,
-      // and a frame callback never fires in a hidden webview.
-      window.setTimeout(() =>
-        document.getElementById(`badge-${id}`)?.scrollIntoView({ block: "nearest", behavior: reduced ? "auto" : "smooth" }),
-      );
-    },
-    [reduced],
-  );
+  function onPicture(up: boolean) {
+    picture.current = { up, downAt: up ? 0 : Date.now() };
+    setPicturing(up);
+  }
 
   /** Change the profile on screen and in the cache together. */
-  const patchProfile = useCallback(
-    (patch: Partial<PublicProfile>) => {
-      if (!shown) return;
-      patchCachedProfile(shown, patch);
-      setLoaded((prev) => (prev.state === "ok" ? { state: "ok", profile: { ...prev.profile, ...patch } } : prev));
-    },
-    [shown],
-  );
+  function patchProfile(patch: Partial<PublicProfile>) {
+    if (!shown) return;
+    patchCachedProfile(shown, patch);
+    setLoaded((prev) => (prev.state === "ok" ? { state: "ok", profile: { ...prev.profile, ...patch } } : prev));
+  }
 
   async function copyLink() {
     if (!shown) return;
@@ -385,7 +395,8 @@ export function ProfileViewer({
         ? seedProfile(seed)
         : null;
   const ready = loaded.state === "ok";
-  const surface = profile ? profileSurface(profile.cosmetics) : { themed: false, style: undefined };
+  const cosmetics = profile?.cosmetics ?? NO_COSMETICS;
+  const surface = profileSurface(cosmetics);
   const mine = Boolean(profile && myHandle && profile.handle === myHandle);
 
   const menuItems: ActionMenuItem[] = [{ label: t("profile.copyLink"), onSelect: () => void copyLink() }];
@@ -404,42 +415,104 @@ export function ProfileViewer({
 
   const actions = profile ? (
     mine ? (
-      <Link
-        href="/account/profile/edit"
-        onClick={onClose}
-        className="inline-flex h-11 items-center rounded-pill bg-paper px-5 font-sans text-detail font-semibold text-night hover:bg-paper/90"
-      >
+      <Link href="/account/profile/edit" onClick={onClose} className={followClass(false)}>
         {t("profile.edit")}
       </Link>
     ) : (
       <>
         {relation && !relation.mine ? (
-          <button
-            type="button"
-            onClick={() => void toggleFollow()}
-            aria-pressed={relation.following}
-            className={cn(
-              "inline-flex h-11 items-center rounded-pill px-5 font-sans text-detail font-semibold transition-colors",
-              relation.following
-                ? "border border-paper/25 text-paper/85 hover:border-paper/45"
-                : "bg-paper text-night hover:bg-paper/90",
-            )}
-          >
+          <button type="button" onClick={() => void toggleFollow()} aria-pressed={relation.following} className={followClass(relation.following)}>
             {relation.following ? t("profile.following") : t("profile.follow")}
           </button>
         ) : null}
-        <ActionMenu size="md" label={t("profile.moreActions")} items={menuItems} />
+        <ActionMenu size="lg" label={t("profile.moreActions")} items={menuItems} />
       </>
     )
   ) : null;
 
   const posts = profile?.posts ?? [];
   const mutuals = relation?.mutuals ?? [];
-  const tabs: [Tab, string, number][] = [];
-  if (profile && !profile.postsHidden) tabs.push(["posts", t("profile.tabPosts"), posts.length]);
-  if (profile && !profile.private) tabs.push(["badges", t("profile.tabBadges"), profile.badges.length]);
-  if (mutuals.length > 0) tabs.push(["common", t("profile.tabCommon"), mutuals.length]);
-  const activeTab: Tab | null = tabs.some(([id]) => id === tab) ? tab : (tabs[0]?.[0] ?? null);
+  const doors = profile && ready ? profileDoors(profile, { inCommon: mutuals.length }) : [];
+
+  const postList =
+    posts.length === 0 ? (
+      <p className="py-6 text-center font-sans text-detail text-paper/50">{t("profile.noPosts")}</p>
+    ) : (
+      <ul className="space-y-2">
+        {posts.map((p) => {
+          const inFeed = Boolean(onOpenPost && feedPostIds?.has(p.id));
+          const body = (
+            <>
+              <p className="font-sans text-caption text-paper/50">
+                {t(POST_KIND_KEYS[p.kind])} · {timeAgo(p.createdAt)}
+              </p>
+              {p.title ? (
+                <p className="mt-1 font-serif text-[16px] font-semibold leading-snug text-paper">
+                  <SymbolText text={p.title} />
+                </p>
+              ) : null}
+              {p.excerpt ? (
+                <p className="mt-1 line-clamp-3 font-sans text-detail leading-relaxed text-paper/75">
+                  <SymbolText text={p.excerpt} />
+                </p>
+              ) : null}
+              {p.quoteSource ? <p className="mt-1 font-sans text-caption text-paper/50">{p.quoteSource}</p> : null}
+              <p className="mt-2 font-sans text-caption text-paper/45">
+                {tn("profile.likeCount", p.likes)} · {tn("community.replyCount", p.replies)}
+              </p>
+            </>
+          );
+          const card =
+            "block w-full rounded-[20px] border border-paper/[0.085] bg-gradient-to-b from-paper/[0.07] to-paper/[0.025] px-[15px] py-[13px] text-left";
+          return (
+            <li key={p.id}>
+              {inFeed ? (
+                <button
+                  type="button"
+                  onClick={() => {
+                    onClose();
+                    onOpenPost?.(p.id);
+                  }}
+                  className={cn(card, "press-card hover:border-paper/25")}
+                >
+                  {body}
+                </button>
+              ) : (
+                <div className={card}>{body}</div>
+              )}
+            </li>
+          );
+        })}
+      </ul>
+    );
+
+  // The readers you both follow, at the foot of About.
+  const inCommon =
+    mutuals.length > 0 ? (
+      <section aria-labelledby="profile-common" className="pt-3">
+        <p id="profile-common" role="heading" aria-level={3} className="px-1 font-sans text-caption font-semibold text-paper/52">
+          {t("profile.tabCommon")}
+        </p>
+        <p className="mt-0.5 px-1 font-sans text-caption text-paper/45">{t("profile.commonHint")}</p>
+        <ul className="mt-2 grid gap-2 sm:grid-cols-2">
+          {mutuals.map((m) => (
+            <li key={m.handle}>
+              <button
+                type="button"
+                onClick={() => onOpenProfile?.(m.handle, { handle: m.handle, name: m.name, avatar: m.avatar })}
+                className="press-card flex w-full items-center gap-3 rounded-2xl border border-paper/10 bg-paper/[0.04] p-2.5 text-left hover:border-paper/25"
+              >
+                <CommunityAvatar name={m.name} url={m.avatar} size={36} />
+                <span className="min-w-0">
+                  <span className="block truncate font-sans text-ui font-semibold text-paper">{m.name}</span>
+                  <span className="block truncate font-sans text-caption text-paper/55">@{m.handle}</span>
+                </span>
+              </button>
+            </li>
+          ))}
+        </ul>
+      </section>
+    ) : null;
 
   return createPortal(
     <div
@@ -462,15 +535,16 @@ export function ProfileViewer({
         ref={panelRef}
         data-profile-card
         className={cn(
-          "relative flex max-h-[92dvh] w-full flex-col overflow-hidden rounded-t-3xl border-t shadow-2xl will-change-transform md:max-h-[86vh] md:max-w-[880px] md:rounded-2xl md:border",
-          surface.themed ? "dark-island border-white/10" : "border-paper/15 bg-night-soft",
+          "relative flex max-h-[92dvh] w-full flex-col overflow-hidden rounded-t-3xl border-t shadow-2xl will-change-transform md:max-h-[86vh] md:max-w-[600px] md:rounded-2xl md:border",
+          surfaceClass(surface),
+          surface.themed ? "border-white/10" : "border-paper/15",
         )}
         style={{ ...surface.style, paddingBottom: "env(safe-area-inset-bottom, 0px)" }}
       >
-        {effectReady && ready ? <ProfileEffect effect={profile?.cosmetics.effect} /> : null}
+        {effectReady && ready ? <ProfileEffect effect={cosmetics.effect} quiet /> : null}
 
-        {/* The grab strip over the banner's top edge: on a phone the card
-            drags from here both ways, and from its body when scrolled up. */}
+        {/* The grab strip over the top edge: on a phone the card drags from
+            here both ways, and from its body when scrolled up. */}
         <div className="absolute inset-x-0 top-0 z-20 h-8 cursor-grab touch-none select-none active:cursor-grabbing md:hidden" {...grab}>
           <div className="flex justify-center pt-2.5">
             <span aria-hidden className="block h-1.5 w-11 rounded-full bg-white/55 shadow-sm" />
@@ -487,205 +561,81 @@ export function ProfileViewer({
         </button>
 
         <div ref={bodyRef} className="relative z-10 flex-1 overflow-y-auto overscroll-contain scrollbar-thin">
-          <ProfileBanner cosmetics={profile?.cosmetics ?? NO_COSMETICS} className="h-28 md:h-40" />
+          {/* The soft light, or the banner fading in once the profile is
+              read (the seed from the feed knows no banner). */}
+          <ProfileTop cosmetics={ready ? cosmetics : NO_COSMETICS} />
 
           {profile ? (
-            <div className="relative px-4 pb-8 md:grid md:grid-cols-[300px_minmax(0,1fr)] md:gap-7 md:px-6">
-              <div className="min-w-0">
-                <ProfileHeader
-                  profile={profile}
-                  actions={actions}
-                  actionsInCorner
-                  onBadge={showBadge}
-                  celebrating={Boolean(profile.nameDay)}
-                  afterHandle={
-                    relation?.followsYou ? (
-                      <span className="rounded-md bg-paper/[0.09] px-1.5 py-0.5 font-sans text-caption font-medium text-paper/75">
-                        {t("profile.followsYou")}
-                      </span>
+            <div className="relative mx-auto w-full max-w-[560px] px-4 pb-8 pt-[50px] md:px-6">
+              <ProfileFace
+                profile={profile}
+                actions={actions}
+                celebrating={Boolean(profile.nameDay)}
+                afterHandle={
+                  relation?.followsYou ? (
+                    <span className="rounded-md bg-paper/[0.09] px-1.5 py-0.5 font-sans text-caption font-semibold text-paper/72">
+                      {t("profile.followsYou")}
+                    </span>
+                  ) : null
+                }
+              />
+              {notice ? (
+                <p role="status" className="mt-3 text-center font-sans text-detail text-paper/75">
+                  {notice}
+                </p>
+              ) : null}
+
+              {profile.nameDay ? (
+                <ProfileMoment
+                  icon={<Sparkle size={16} />}
+                  title={t("profile.nameDayToday")}
+                  detail={profile.nameDay.saint}
+                  count={profile.nameDay.greetings > 0 ? tn("profile.greetingCount", profile.nameDay.greetings) : null}
+                  action={
+                    relation && !relation.mine ? (
+                      <MomentButton done={relation.greeted} onClick={() => void greet()}>
+                        {relation.greeted ? t("profile.greeted") : t("profile.greet")}
+                      </MomentButton>
                     ) : null
                   }
                 />
-                {notice ? (
-                  <p role="status" className="mt-3 font-sans text-detail text-paper/75">
-                    {notice}
-                  </p>
-                ) : null}
-
-                {profile.nameDay ? (
-                  <Moment
-                    tone="gold"
-                    icon={<Sparkle size={16} />}
-                    title={t("profile.nameDayToday")}
-                    detail={profile.nameDay.saint}
-                    count={profile.nameDay.greetings > 0 ? tn("profile.greetingCount", profile.nameDay.greetings) : null}
-                    action={
-                      relation && !relation.mine ? (
-                        <MomentButton done={relation.greeted} onClick={() => void greet()}>
-                          {relation.greeted ? t("profile.greeted") : t("profile.greet")}
-                        </MomentButton>
-                      ) : null
-                    }
-                  />
-                ) : null}
-
-                {profile.prayerRequest ? (
-                  <Moment
-                    tone="sage"
-                    icon={<Orans size={16} />}
-                    title={mine ? t("profile.prayerRequestMine") : t("profile.prayerRequest")}
-                    detail={profile.prayerRequest.intention ?? undefined}
-                    count={tn("profile.prayedCount", profile.prayerRequest.count)}
-                    action={
-                      relation && !relation.mine ? (
-                        <MomentButton done={relation.prayed} onClick={() => void pray()}>
-                          {relation.prayed ? t("profile.prayed") : t("profile.pray")}
-                        </MomentButton>
-                      ) : null
-                    }
-                  />
-                ) : null}
-
-                <div className="mt-4">
-                  {!ready ? (
-                    <div aria-busy aria-label={t("profile.loading")}>
-                      <SkeletonList rows={2} />
-                    </div>
-                  ) : profile.private ? (
-                    <p className="rounded-xl border border-paper/[0.08] bg-black/20 p-4 font-sans text-detail text-paper/70">
-                      {t("profile.privateNotice")}
-                    </p>
-                  ) : (
-                    <ProfileAbout profile={profile} onNavigate={onClose} />
-                  )}
-                </div>
-              </div>
-
-              {ready && activeTab ? (
-                // On a wide card the actions take the top-right corner, so
-                // the tabs start below them.
-                <div className="mt-6 min-w-0 md:mt-16">
-                  <div role="tablist" aria-label={t("profile.sections")} className="flex flex-wrap gap-1.5">
-                    {tabs.map(([id, label, count]) => (
-                      <button
-                        key={id}
-                        type="button"
-                        role="tab"
-                        id={`profile-tab-${id}`}
-                        aria-selected={activeTab === id}
-                        aria-controls={`profile-panel-${id}`}
-                        onClick={() => setTab(id)}
-                        className={cn(
-                          "inline-flex min-h-11 items-center rounded-pill px-4 font-sans text-detail font-semibold transition-colors",
-                          activeTab === id ? "bg-paper/[0.12] text-paper" : "text-paper/60 hover:bg-paper/[0.05] hover:text-paper",
-                        )}
-                      >
-                        {label}
-                        <span className="ml-1.5 text-paper/45">{count}</span>
-                      </button>
-                    ))}
-                  </div>
-
-                  {/* Every panel sits in the same grid cell and the hidden
-                      ones keep their room, so the card is as tall as its
-                      tallest tab whichever is open. A panel that unmounted
-                      on a switch changed the card's height, and the card,
-                      pinned to the bottom of a phone and centred on a
-                      desktop, jumped with it (the owner, 2026-10-02). */}
-                  <div className="mt-3 grid">
-                    {tabs.map(([id]) => (
-                      <div
-                        key={id}
-                        role="tabpanel"
-                        id={`profile-panel-${id}`}
-                        aria-labelledby={`profile-tab-${id}`}
-                        aria-hidden={activeTab !== id}
-                        inert={activeTab !== id}
-                        className={cn("col-start-1 row-start-1 min-w-0", activeTab !== id && "invisible")}
-                      >
-                        {id === "posts" ? (
-                          posts.length === 0 ? (
-                            <p className="py-6 text-center font-sans text-detail text-paper/50">{t("profile.noPosts")}</p>
-                          ) : (
-                            <ul className="space-y-2">
-                              {posts.map((p) => {
-                                const inFeed = Boolean(onOpenPost && feedPostIds?.has(p.id));
-                                const body = (
-                                  <>
-                                    <p className="font-sans text-caption text-paper/50">
-                                      {t(POST_KIND_KEYS[p.kind])} · {timeAgo(p.createdAt)}
-                                    </p>
-                                    {p.title ? (
-                                      <p className="mt-1 font-serif text-ui font-semibold leading-snug text-paper">
-                                        <SymbolText text={p.title} />
-                                      </p>
-                                    ) : null}
-                                    {p.excerpt ? (
-                                      <p className="mt-1 line-clamp-3 font-sans text-detail leading-relaxed text-paper/75">
-                                        <SymbolText text={p.excerpt} />
-                                      </p>
-                                    ) : null}
-                                    {p.quoteSource ? (
-                                      <p className="mt-1 font-sans text-caption text-paper/50">{p.quoteSource}</p>
-                                    ) : null}
-                                    <p className="mt-2 font-sans text-caption text-paper/45">
-                                      {tn("profile.likeCount", p.likes)} · {tn("community.replyCount", p.replies)}
-                                    </p>
-                                  </>
-                                );
-                                return (
-                                  <li key={p.id}>
-                                    {inFeed ? (
-                                      <button
-                                        type="button"
-                                        onClick={() => {
-                                          onClose();
-                                          onOpenPost?.(p.id);
-                                        }}
-                                        className="block w-full rounded-xl border border-paper/10 bg-black/15 p-3 text-left transition-colors hover:border-paper/25 hover:bg-black/25"
-                                      >
-                                        {body}
-                                      </button>
-                                    ) : (
-                                      <div className="rounded-xl border border-paper/10 bg-black/15 p-3">{body}</div>
-                                    )}
-                                  </li>
-                                );
-                              })}
-                            </ul>
-                          )
-                        ) : id === "badges" ? (
-                          <BadgeList badges={profile.badges} highlight={highlight} />
-                        ) : (
-                          <div>
-                            <p className="mb-2 font-sans text-caption text-paper/50">{t("profile.commonHint")}</p>
-                            <ul className="grid gap-2 sm:grid-cols-2">
-                              {mutuals.map((m) => (
-                                <li key={m.handle}>
-                                  <button
-                                    type="button"
-                                    onClick={() => onOpenProfile?.(m.handle, { handle: m.handle, name: m.name, avatar: m.avatar })}
-                                    className="flex w-full items-center gap-3 rounded-xl border border-paper/10 bg-black/15 p-2.5 text-left transition-colors hover:border-paper/25"
-                                  >
-                                    <CommunityAvatar name={m.name} url={m.avatar} size={36} />
-                                    <span className="min-w-0">
-                                      <span className="block truncate font-sans text-ui font-semibold text-paper">{m.name}</span>
-                                      <span className="block truncate font-sans text-caption text-paper/55">@{m.handle}</span>
-                                    </span>
-                                  </button>
-                                </li>
-                              ))}
-                            </ul>
-                          </div>
-                        )}
-                      </div>
-                    ))}
-                  </div>
-                </div>
               ) : null}
+
+              {profile.prayerRequest ? (
+                <ProfileMoment
+                  icon={<Orans size={16} />}
+                  title={mine ? t("profile.prayerRequestMine") : t("profile.prayerRequest")}
+                  detail={profile.prayerRequest.intention ?? undefined}
+                  count={tn("profile.prayedCount", profile.prayerRequest.count)}
+                  action={
+                    relation && !relation.mine ? (
+                      <MomentButton done={relation.prayed} onClick={() => void pray()}>
+                        {relation.prayed ? t("profile.prayed") : t("profile.pray")}
+                      </MomentButton>
+                    ) : null
+                  }
+                />
+              ) : null}
+
+              {!ready ? (
+                <div className="mt-6" aria-busy aria-label={t("profile.loading")}>
+                  <SkeletonList rows={2} />
+                </div>
+              ) : (
+                <ProfileDoors
+                  key={profile.handle}
+                  doors={doors}
+                  label={t("profile.sections")}
+                  panels={{
+                    about: <ProfileAboutDoor profile={profile} onNavigate={onClose} onPicture={onPicture} inCommon={inCommon} />,
+                    badges: <MedalCase badges={profile.badges} />,
+                    posts: postList,
+                  }}
+                />
+              )}
             </div>
           ) : (
-            <div className="px-4 pb-10 pt-6 md:px-6">
+            <div className="relative px-4 pb-10 pt-16 md:px-6">
               {loaded.state === "loading" ? (
                 <div aria-busy aria-label={t("profile.loading")}>
                   <SkeletonList rows={3} />
@@ -733,48 +683,6 @@ export function ProfileViewer({
   );
 }
 
-/** A name day or a prayer request: a small lit card under the name. */
-function Moment({
-  tone,
-  icon,
-  title,
-  detail,
-  count,
-  action,
-}: {
-  tone: "gold" | "sage";
-  icon: ReactNode;
-  title: string;
-  detail?: string;
-  count: string | null;
-  action: ReactNode;
-}) {
-  return (
-    <div
-      className={cn(
-        "mt-4 flex flex-wrap items-center gap-3 rounded-xl border p-3",
-        tone === "gold" ? "border-premium/35 bg-premium/[0.08]" : "border-sage/35 bg-sage/[0.08]",
-      )}
-    >
-      <span
-        className={cn(
-          "inline-flex size-9 shrink-0 items-center justify-center rounded-lg",
-          tone === "gold" ? "bg-premium/15 text-premium-ink" : "bg-sage/15 text-sage-soft",
-        )}
-        aria-hidden="true"
-      >
-        {icon}
-      </span>
-      <span className="min-w-[9rem] flex-1">
-        <span className="block font-sans text-detail font-semibold text-paper">{title}</span>
-        {detail ? <span className="block break-words font-sans text-caption text-paper/65">{detail}</span> : null}
-        {count ? <span className="block font-sans text-caption text-paper/55">{count}</span> : null}
-      </span>
-      {action}
-    </div>
-  );
-}
-
 function MomentButton({ done, onClick, children }: { done: boolean; onClick: () => void; children: ReactNode }) {
   return (
     <button
@@ -783,7 +691,7 @@ function MomentButton({ done, onClick, children }: { done: boolean; onClick: () 
       disabled={done}
       aria-pressed={done}
       className={cn(
-        "inline-flex min-h-11 shrink-0 items-center rounded-pill px-4 font-sans text-detail font-semibold transition-colors",
+        "inline-flex min-h-11 shrink-0 items-center rounded-pill px-4 font-sans text-detail font-semibold motion-safe:transition-colors",
         done ? "border border-paper/20 text-paper/70" : "bg-paper text-night hover:bg-paper/90",
       )}
     >

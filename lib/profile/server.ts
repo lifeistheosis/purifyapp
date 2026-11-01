@@ -248,8 +248,6 @@ export async function buildProfile(
   /** Every badge, before the reader's own choice of which to show. */
   allBadges: ReturnType<typeof deriveBadges>;
   clergyRow: ClergyRow | null;
-  /** The streak as it stands, before the reader's choice to show it. */
-  streak: number;
 }> {
   const now = opts.now ?? new Date();
   const saint = row.patron_saint ? getSaint(row.patron_saint) : null;
@@ -354,9 +352,11 @@ export async function buildProfile(
         }
       : null,
     links: isPrivate ? [] : shownLinks(row.social_links),
-    streak: !isPrivate && row.show_streak !== false && streak.current > 0 ? streak.current : null,
+    // No streak on a profile (1.8, refinement 4): a count of days kept, shown
+    // to everyone, runs against "on prayer, no figures". The streak lives on
+    // Today and You; its badges stay, as prayer rope medals with no number.
   };
-  return { profile, saved, subscribed: paid !== null, allBadges: badges, clergyRow: clergyData, streak: streak.current };
+  return { profile, saved, subscribed: paid !== null, allBadges: badges, clergyRow: clergyData };
 }
 
 type ClergyRow = {
@@ -389,9 +389,6 @@ export async function buildMyProfile(admin: SupabaseClient, row: ProfileRow): Pr
   const next = saint ? nameDay(saint.feastDays, row.calendar_reckoning, now) : null;
   return {
     ...built.profile,
-    // The editor's preview draws the flame from the switch; the number is
-    // here whether it is on or off, so turning it on shows it at once.
-    streak: built.streak > 0 ? built.streak : null,
     private: row.profile_private === true,
     saved: built.saved,
     subscribed: built.subscribed,

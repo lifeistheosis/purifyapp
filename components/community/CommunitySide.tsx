@@ -4,7 +4,7 @@ import Link from "next/link";
 
 import { useUpgradeModal } from "@/components/billing/UpgradeModal";
 import { CommunityAvatar } from "@/components/community/CommunityAvatar";
-import { ProfileBanner, ProfileHeader, profileSurface } from "@/components/community/profile/ProfileCard";
+import { ProfileFace, ProfileTop, profileSurface, surfaceClass } from "@/components/community/profile/ProfileCard";
 import { useTranslate } from "@/components/i18n/MessagesProvider";
 import { PREMIUM_CTA } from "@/components/premium/PremiumUI";
 import { cn } from "@/lib/cn";
@@ -24,16 +24,13 @@ export function MyProfileCard({ profile, onView }: { profile: MyProfile; onView:
   const surface = profileSurface(profile.cosmetics);
   return (
     <div
-      className={cn(
-        "overflow-hidden rounded-2xl border",
-        surface.themed ? "dark-island border-white/10" : "border-paper/10 bg-night-soft",
-      )}
+      className={cn("overflow-hidden rounded-2xl border", surfaceClass(surface), surface.themed ? "border-white/10" : "border-paper/10")}
       style={surface.style}
     >
-      <ProfileBanner cosmetics={profile.cosmetics} className="h-16" />
-      <div className="px-4 pb-4">
-        <ProfileHeader profile={profile} avatarSize={56} ring={4} nameAs="p" />
-        <div className="mt-4 flex gap-2">
+      <div className="relative px-4 pb-4 pt-7">
+        <ProfileTop cosmetics={profile.cosmetics} height={150} />
+        <ProfileFace profile={profile} nameAs="p" compact />
+        <div className="relative mt-4 flex gap-2">
           <button
             type="button"
             onClick={onView}

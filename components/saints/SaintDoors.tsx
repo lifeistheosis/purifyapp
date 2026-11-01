@@ -69,10 +69,11 @@ function DoorIcon({ door, size }: { door: SaintDoor; size: number }) {
 
 const COLS: Record<number, string> = { 2: "grid-cols-2", 3: "grid-cols-3", 4: "grid-cols-4" };
 
-const DOOR =
+/** A door's drawing, shared with a reader's profile (components/community/profile/ProfileDoors.tsx). */
+export const DOOR =
   "tap-press flex h-[74px] min-w-0 flex-col items-center justify-center gap-[7px] rounded-[16px] border px-1 font-sans text-detail font-semibold leading-none motion-safe:transition-colors";
-const DOOR_OFF = "border-paper/[0.09] bg-paper/[0.06] text-paper hover:bg-paper/[0.1]";
-const DOOR_ON = "border-paper bg-paper text-night";
+export const DOOR_OFF = "border-paper/[0.09] bg-paper/[0.06] text-paper hover:bg-paper/[0.1]";
+export const DOOR_ON = "border-paper bg-paper text-night";
 
 const SLIM =
   "flex min-h-11 min-w-0 items-center justify-center gap-1.5 truncate rounded-pill px-2 font-sans text-detail font-semibold";

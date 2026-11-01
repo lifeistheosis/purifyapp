@@ -3,7 +3,7 @@
 import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 
-import { ProfileBanner, ProfileHeader, profileSurface } from "@/components/community/profile/ProfileCard";
+import { ProfileFace, ProfileTop, profileSurface, surfaceClass } from "@/components/community/profile/ProfileCard";
 import { useTranslate } from "@/components/i18n/MessagesProvider";
 import { cn } from "@/lib/cn";
 import { cachedProfile, loadProfile } from "@/lib/profile/cache";
@@ -93,18 +93,19 @@ export function ProfileHoverCard({
       onPointerLeave={onLeave}
       className={cn(
         "fixed z-[70] overflow-hidden rounded-2xl border shadow-2xl",
-        surface.themed ? "dark-island border-white/10" : "border-paper/15 bg-night-soft",
+        surfaceClass(surface),
+        surface.themed ? "border-white/10" : "border-paper/15",
       )}
       style={{ ...place, width: WIDTH, ...surface.style }}
     >
-      <ProfileBanner cosmetics={card.cosmetics} className="h-14" />
-      <div className="px-4 pb-4">
-        <ProfileHeader profile={card} avatarSize={52} ring={4} nameAs="p" celebrating={Boolean(shown?.nameDay)} />
-        {shown?.bio ? <p className="mt-2 line-clamp-2 font-sans text-detail text-paper/75">{shown.bio}</p> : null}
+      <div className="relative px-4 pb-4 pt-7">
+        <ProfileTop cosmetics={card.cosmetics} height={150} />
+        <ProfileFace profile={card} nameAs="p" compact celebrating={Boolean(shown?.nameDay)} />
+        {shown?.bio ? <p className="relative mt-2 line-clamp-2 text-center font-sans text-detail text-paper/75">{shown.bio}</p> : null}
         <button
           type="button"
           onClick={() => onOpen(target.handle, target.seed)}
-          className="mt-3 inline-flex h-11 w-full items-center justify-center rounded-pill border border-paper/20 font-sans text-detail font-semibold text-paper/85 hover:border-paper/40 hover:text-paper"
+          className="relative mt-3 inline-flex h-11 w-full items-center justify-center rounded-pill border border-paper/20 font-sans text-detail font-semibold text-paper/85 hover:border-paper/40 hover:text-paper"
         >
           {t("profile.openProfile")}
         </button>

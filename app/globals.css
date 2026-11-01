@@ -7936,13 +7936,95 @@ html[data-reading-mode="parchment"] .history-saved-lit {
  opacity: 0;
 }
 
+/* ── The Community profile: fade and doors (1.8, r3-28 A) ───────────────
+   The owner's pick of 2026-10-31 (notes 75 and 81): a reader's profile laid
+   out like a saint's page (components/community/profile/ProfileCard.tsx,
+   ProfileViewer.tsx). At the top a soft light, or, for a Plus member, their
+   banner fading in: a colour drawn as vestment cloth, lit from above with a
+   faint woven cross, or their picture; then the picture centred in its
+   frame, the name, the status as one quiet line, Follow, and the doors.
+   The top is as tall as --profile-top-h (300px on the full profile), held
+   behind the words, and catches no pointer. A free profile's banner is one
+   of four greys (lib/profile/cosmetics.ts, GREYS); a profile with a banner,
+   a theme or an effect is a dark island (light drawn over a dark card), so
+   on Parchment it keeps its dark ground and its light words. */
+.profile-top {
+ position: absolute;
+ inset-inline: 0;
+ top: 0;
+ height: var(--profile-top-h, 300px);
+ overflow: hidden;
+ pointer-events: none;
+}
+.profile-light {
+ position: absolute;
+ inset: 0;
+ background: radial-gradient(90% 75% at 50% -8%, rgb(255 255 255 / 0.15), rgb(255 255 255 / 0.045) 45%, rgb(255 255 255 / 0) 72%);
+}
+/* The banner fades from whole at the top to nothing under the status. */
+.profile-banner {
+ position: absolute;
+ inset: 0;
+ -webkit-mask-image: linear-gradient(180deg, #000 0, #000 30%, rgb(0 0 0 / 0.4) 62%, transparent 92%);
+ mask-image: linear-gradient(180deg, #000 0, #000 30%, rgb(0 0 0 / 0.4) 62%, transparent 92%);
+}
+/* A shade behind the name, so the words read over any picture. */
+.profile-banner::after {
+ content: "";
+ position: absolute;
+ inset: 0;
+ background: radial-gradient(60% 46% at 50% 62%, rgb(10 10 12 / 0.55), rgb(10 10 12 / 0));
+}
+.profile-banner .profile-banner-picture {
+ filter: brightness(0.72) contrast(1.05);
+}
+/* A banner colour as vestment cloth (--cloth): lit from above, a faint
+   woven cross, the colour deepening toward the foot. The plain colour
+   first, for a WebView without color-mix (Android before 111). */
+.profile-cloth {
+ background-color: var(--cloth);
+ background-image:
+  radial-gradient(120% 140% at 50% -20%, rgb(255 255 255 / 0.2), rgb(255 255 255 / 0) 60%),
+  url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='22' height='22'%3E%3Cg fill='none' stroke='rgba(255,255,255,0.075)' stroke-width='.8'%3E%3Cpath d='M11 4.5v13M6.8 11h8.4'/%3E%3Cpath d='M11 1.5l3.2 3.2M11 1.5L7.8 4.7M11 20.5l3.2-3.2M11 20.5l-3.2-3.2M1.5 11l3.2 3.2M1.5 11l3.2-3.2M20.5 11l-3.2 3.2M20.5 11l-3.2-3.2'/%3E%3C/g%3E%3Cg fill='rgba(255,255,255,0.105)'%3E%3Ccircle r='1'/%3E%3Ccircle cx='22' r='1'/%3E%3Ccircle cy='22' r='1'/%3E%3Ccircle cx='22' cy='22' r='1'/%3E%3C/g%3E%3C/svg%3E");
+}
+@supports (color: color-mix(in oklab, red, blue)) {
+ .profile-cloth {
+  background-image:
+   radial-gradient(120% 140% at 50% -20%, rgb(255 255 255 / 0.2), rgb(255 255 255 / 0) 60%),
+   url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='22' height='22'%3E%3Cg fill='none' stroke='rgba(255,255,255,0.075)' stroke-width='.8'%3E%3Cpath d='M11 4.5v13M6.8 11h8.4'/%3E%3Cpath d='M11 1.5l3.2 3.2M11 1.5L7.8 4.7M11 20.5l3.2-3.2M11 20.5l-3.2-3.2M1.5 11l3.2 3.2M1.5 11l3.2-3.2M20.5 11l-3.2 3.2M20.5 11l-3.2-3.2'/%3E%3C/g%3E%3Cg fill='rgba(255,255,255,0.105)'%3E%3Ccircle r='1'/%3E%3Ccircle cx='22' r='1'/%3E%3Ccircle cy='22' r='1'/%3E%3Ccircle cx='22' cy='22' r='1'/%3E%3C/g%3E%3C/svg%3E"),
+   linear-gradient(180deg, var(--cloth), color-mix(in oklab, var(--cloth) 70%, #000));
+ }
+}
+/* The banner arrives as the profile does: a fade, as a saint's icon does. */
+.profile-top-in {
+ animation: saint-icon-in 900ms var(--ease-house) backwards;
+}
+/* A medal tapped in the case lights; the one before goes out. */
+.profile-medal {
+ filter: drop-shadow(0 5px 7px rgb(0 0 0 / 0.55));
+ transition: filter var(--duration-base) var(--ease-house);
+}
+.profile-medal[data-lit] {
+ filter: drop-shadow(0 0 10px rgb(255 255 255 / 0.55));
+}
+:where([data-motion="reduce"]) .profile-top-in {
+ animation: none;
+}
+:where([data-motion="reduce"]) .profile-medal {
+ transition: none;
+}
+
 /* ── Profile effects and frames (Purify Plus, 2026-10-01) ─────────────
    The light over a Community profile card (components/community/profile/
    ProfileEffect.tsx) and the candle on the candle frame (AvatarFrame.tsx).
-   Transform and opacity only, nothing fills forwards, and under the motion
-   switch every particle holds its resting place: the effect stays as
-   decoration and nothing moves. Each escape repeats its rule's own
-   selector weight (.pfx .pfx-p against .pfx-incense .pfx-p). */
+   Redrawn in 1.8 as the owner's sheet r3-28b draws them (notes 75, 81):
+   near and far, the near ones larger and softer (.pfx-near), and on a
+   profile the ones that cross the card thin out below the words
+   (.pfx-quiet). Transform and opacity only, nothing fills forwards, and
+   under the motion switch every particle holds its resting place: the
+   effect stays as decoration and nothing moves. Each escape repeats its
+   rule's own selector weight (.pfx .pfx-p against .pfx-incense .pfx-p).
+   Gold here is a Plus cosmetic's (lib/ui/__tests__/noGold.test.ts). */
 .pfx {
  position: absolute;
  inset: 0;
@@ -7956,6 +8038,11 @@ html[data-reading-mode="parchment"] .history-saved-lit {
  display: block;
  border-radius: 999px;
 }
+/* On a profile: whole over the picture and the name, three tenths below. */
+.pfx.pfx-quiet {
+ -webkit-mask-image: linear-gradient(180deg, #000 0, #000 30%, rgb(0 0 0 / 0.3) 44%, rgb(0 0 0 / 0.3) 100%);
+ mask-image: linear-gradient(180deg, #000 0, #000 30%, rgb(0 0 0 / 0.3) 44%, rgb(0 0 0 / 0.3) 100%);
+}
 
 /* Smoke: tall soft wisps that widen, lean and thin out as they climb. */
 @keyframes pfx-rise {
@@ -7966,13 +8053,17 @@ html[data-reading-mode="parchment"] .history-saved-lit {
 }
 .pfx-incense .pfx-p {
  bottom: -60px;
- width: 70px;
- height: 130px;
+ width: calc(70px * var(--s, 1));
+ height: calc(130px * var(--s, 1));
+ margin-left: calc(-35px * var(--s, 1));
  border-radius: 50%;
- background: radial-gradient(closest-side, rgb(236 230 220 / 0.6), rgb(236 230 220 / 0.2) 55%, rgb(236 230 220 / 0));
- filter: blur(7px);
+ background: radial-gradient(closest-side, rgb(236 232 226 / 0.62), rgb(236 232 226 / 0.2) 55%, rgb(236 232 226 / 0));
+ filter: blur(9px);
  opacity: var(--o, 0.3);
  animation: pfx-rise var(--d, 8s) ease-out var(--delay, 0s) infinite backwards;
+}
+.pfx-incense .pfx-p.pfx-near {
+ filter: blur(12px);
 }
 
 @keyframes pfx-fall {
@@ -7981,19 +8072,27 @@ html[data-reading-mode="parchment"] .history-saved-lit {
  85% { opacity: 0.9; }
  100% { transform: translate3d(var(--dx, 0px), 320px, 0); opacity: 0; }
 }
+/* Gold dust: each speck with its own small light, the near ones larger. */
 .pfx-gold-dust .pfx-p {
- width: 3px;
- height: 3px;
- background: #efd9a3;
- box-shadow: 0 0 6px 1px rgb(201 162 90 / 0.7);
+ width: 2px;
+ height: 2px;
+ background: #f3dda2;
+ box-shadow: 0 0 4px 1px rgb(214 170 88 / 0.75);
  animation: pfx-fall var(--d, 10s) linear var(--delay, 0s) infinite backwards;
+}
+.pfx-gold-dust .pfx-p.pfx-near {
+ box-shadow: 0 0 7px 1.5px rgb(214 170 88 / 0.75);
 }
 .pfx-snowfall .pfx-p {
  width: 4px;
  height: 4px;
- background: rgb(255 255 255 / 0.85);
- box-shadow: 0 0 4px rgb(255 255 255 / 0.4);
+ background: rgb(255 255 255 / 0.88);
+ box-shadow: 0 0 4px rgb(255 255 255 / 0.45);
  animation: pfx-fall var(--d, 13s) linear var(--delay, 0s) infinite backwards;
+}
+.pfx-snowfall .pfx-p.pfx-near {
+ background: rgb(255 255 255 / 0.7);
+ filter: blur(0.8px);
 }
 
 @keyframes pfx-breathe {
@@ -8002,17 +8101,29 @@ html[data-reading-mode="parchment"] .history-saved-lit {
  55% { transform: scale(0.97); opacity: 0.6; }
  78% { transform: scale(1.03); opacity: 0.8; }
 }
+/* Two pools of warm light at the foot, over a faint still ground. */
 .pfx-candlelight .pfx-p {
  bottom: -120px;
  width: 60%;
  height: 260px;
- background: radial-gradient(closest-side, rgb(239 190 110 / 0.34), rgb(239 190 110 / 0));
- opacity: 0.7;
+ background: radial-gradient(closest-side, rgb(239 190 110 / 0.5), rgb(239 190 110 / 0));
+ opacity: 0.95;
  animation: pfx-breathe var(--d, 3.6s) ease-in-out var(--delay, 0s) infinite backwards;
 }
+.pfx-candlelight .pfx-p.pfx-alt {
+ background: radial-gradient(closest-side, rgb(239 190 110 / 0.44), rgb(239 190 110 / 0));
+ opacity: 0.85;
+}
+.pfx-candlelight .pfx-p.pfx-still {
+ bottom: -150px;
+ height: 300px;
+ background: radial-gradient(closest-side, rgb(239 190 110 / 0.16), rgb(239 190 110 / 0));
+ opacity: 0.9;
+ animation: none;
+}
 
-/* Seasonal (Purify Plus, 2026-10-02). Paschal embers rise, red and gold;
-   the waters of Theophany fall. */
+/* Seasonal (Purify Plus, 2026-10-02). The light of Pascha rises, red and
+   gold; the waters of Theophany fall. */
 @keyframes pfx-ember {
  0% { transform: translate3d(0, 0, 0); opacity: 0; }
  15% { opacity: 1; }
@@ -8021,22 +8132,29 @@ html[data-reading-mode="parchment"] .history-saved-lit {
 }
 .pfx-paschal-embers .pfx-p {
  bottom: -8px;
- width: 4px;
- height: 4px;
+ width: 3px;
+ height: 3px;
  background: #e0553f;
- box-shadow: 0 0 8px 2px rgb(224 85 63 / 0.6);
+ box-shadow: 0 0 6px 1.5px rgb(224 85 63 / 0.6);
  animation: pfx-ember var(--d, 7s) ease-out var(--delay, 0s) infinite backwards;
 }
 .pfx-paschal-embers .pfx-p.pfx-alt {
  background: #f3c46b;
- box-shadow: 0 0 8px 2px rgb(243 196 107 / 0.6);
+ box-shadow: 0 0 6px 1.5px rgb(243 196 107 / 0.6);
+}
+.pfx-paschal-embers .pfx-p.pfx-near {
+ filter: blur(0.5px);
 }
 .pfx-theophany-drops .pfx-p {
  width: 2px;
  height: 12px;
  border-radius: 2px;
- background: linear-gradient(180deg, rgb(205 228 255 / 0), rgb(205 228 255 / 0.85));
+ background: linear-gradient(180deg, rgb(205 228 255 / 0), rgb(214 236 255 / 0.9));
  animation: pfx-fall var(--d, 3.5s) linear var(--delay, 0s) infinite backwards;
+}
+.pfx-theophany-drops .pfx-p.pfx-near {
+ width: 2.5px;
+ height: 16px;
 }
 
 :where([data-motion="reduce"]) .pfx .pfx-p {
@@ -8109,7 +8227,10 @@ html[data-reading-mode="parchment"] .name-color-jordan:not(.dark-island *) { bac
    Slow light over a profile's banner, its colour or its picture
    (ProfileBanner in components/community/profile/ProfileCard.tsx). One
    layer each, transform and opacity only, no filters, nothing fills
-   forwards; under the motion switch the light holds still where it rests. */
+   forwards; under the motion switch the light holds still where it rests.
+   Redrawn in 1.8 as the owner's sheet r3-28b draws them (note 81): Dome
+   light's rays are white and turn from above, the candle's glow breathes
+   lower at the foot; Aurora, Slow drift and Gold leaf as they were. */
 .banner-motion {
  position: absolute;
  inset: 0;
@@ -8169,12 +8290,12 @@ html[data-reading-mode="parchment"] .name-color-jordan:not(.dark-island *) { bac
  width: 300%;
  height: 300%;
  margin-left: -150%;
- background: repeating-conic-gradient(from 0deg, rgb(255 240 200 / 0.13) 0deg 5deg, rgb(255 240 200 / 0) 5deg 15deg);
+ background: repeating-conic-gradient(from 0deg, rgb(255 255 255 / 0.09) 0deg 4deg, rgb(255 255 255 / 0) 4deg 13deg);
  animation: bm-rays 60s linear infinite;
 }
 .banner-motion-rays::after {
  inset: 0;
- background: linear-gradient(180deg, rgb(0 0 0 / 0), rgb(0 0 0 / 0.35));
+ background: linear-gradient(180deg, rgb(28 28 32 / 0) 20%, rgb(28 28 32 / 0.8));
 }
 
 @keyframes bm-glow {
@@ -8183,12 +8304,12 @@ html[data-reading-mode="parchment"] .name-color-jordan:not(.dark-island *) { bac
  70% { transform: scale(0.98); opacity: 0.65; }
 }
 .banner-motion-glow::before {
- left: 10%;
- right: 10%;
- bottom: -70%;
- height: 140%;
+ left: 5%;
+ right: 5%;
+ bottom: -95%;
+ height: 220%;
  border-radius: 50%;
- background: radial-gradient(closest-side, rgb(239 190 110 / 0.45), rgb(239 190 110 / 0));
+ background: radial-gradient(closest-side, rgb(239 190 110 / 0.5), rgb(239 190 110 / 0));
  animation: bm-glow 4.8s ease-in-out infinite;
 }
 

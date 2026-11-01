@@ -1,6 +1,18 @@
 import type { SVGProps } from "react";
 
 /**
+ * The candle's parts, in its 24 box: the candle frame of a Plus profile
+ * (components/community/profile/AvatarFrame.tsx) stands this same lit candle
+ * on its ring, so the two never drift apart.
+ */
+export const LAMPADA_PATHS = {
+  flame: "M12 2.8 C13.5 4.6, 13.7 6.4, 12 8.2 C10.3 6.4, 10.5 4.6, 12 2.8 Z",
+  wick: "M12 8.2 V9.6",
+  taper: "M10.1 21 V10.4 C10.1 10 10.4 9.7 10.8 9.7 H13.2 C13.6 9.7 13.9 10 13.9 10.4 V21",
+  ground: "M8 21 H16",
+} as const;
+
+/**
  * A church candle, lit: a beeswax taper on its line of ground, its flame
  * filled in so it reads as lit at the smallest size. The "lit" glyph for the
  * Hours, today and fast-free days, Daily quiet and the rest. Inherits
@@ -29,13 +41,13 @@ export function Lampada({
       {...props}
     >
       {/* the flame, filled: lit */}
-      <path d="M12 2.8 C13.5 4.6, 13.7 6.4, 12 8.2 C10.3 6.4, 10.5 4.6, 12 2.8 Z" fill="currentColor" />
+      <path d={LAMPADA_PATHS.flame} fill="currentColor" />
       {/* the wick */}
-      <path d="M12 8.2 V9.6" />
+      <path d={LAMPADA_PATHS.wick} />
       {/* the taper */}
-      <path d="M10.1 21 V10.4 C10.1 10 10.4 9.7 10.8 9.7 H13.2 C13.6 9.7 13.9 10 13.9 10.4 V21" />
+      <path d={LAMPADA_PATHS.taper} />
       {/* the ground it stands on */}
-      <path d="M8 21 H16" />
+      <path d={LAMPADA_PATHS.ground} />
     </svg>
   );
 }
