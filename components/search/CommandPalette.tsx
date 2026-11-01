@@ -17,8 +17,11 @@
 //     (the frame the keyboard leaves, lib/ui/viewport.ts), with a round plate
 //     beside it to leave; Back and Escape leave too;
 //   - before anything is typed, "Search", then Look in: the library's doors in
-//     the app's own pictures, and the reader's recent words just over the
-//     field (on this phone only, lib/search/recent.ts);
+//     the app's own pictures, and the reader's recent words under them (on
+//     this phone only, lib/search/recent.ts), all standing from the top of
+//     the screen, so only the field moves when the keyboard comes and goes
+//     (build 87, the owner's note 83: they stood on the field, and jumped up
+//     the keyboard's height a moment after the screen opened);
 //   - while typing, the doors count what each found, the top result is drawn
 //     as a band over its picture, and the words that finish the one being
 //     typed sit nearest the thumb;
@@ -320,6 +323,10 @@ export function CommandPalette() {
   const placeRows = useMemo(() => (typing ? here : behind(rows, turn.door)), [typing, here, rows, turn.door]);
   const kindTotals = useMemo(() => kindCounts(placeRows, turn.door), [placeRows, turn.door]);
   const stripKinds = (DOOR_KINDS[turn.door] ?? []).filter((k) => (kindTotals.get(k) ?? 0) > 0 || k === turn.kind);
+  // The strip counts what the lists hold, and on the first opening they
+  // arrive a moment after the screen: its place is kept until then, so what
+  // stands under it never drops by its height under the reader's eyes.
+  const stripComing = corpus === null && (DOOR_KINDS[turn.door]?.length ?? 0) > 0;
 
   // The doors before anything is typed: every part of the library this build
   // has (the shop only where it is on).
@@ -510,16 +517,19 @@ export function CommandPalette() {
   let body: React.ReactNode;
   if (!typing) {
     // Before anything is typed (C, 1): the doors, the place's kinds, and the
-    // recent words just over the field. A kind chosen lists itself whole.
+    // recent words under them. A kind chosen lists itself whole. It stands
+    // from the top: until build 87 a spacer over the title held it all on
+    // the field, so it rose with the keyboard and left the top of the screen
+    // empty (the owner's note 83). Nothing here moves as the keyboard comes
+    // and goes; the field alone rides it.
     const hint = DOOR_HINT[turn.door];
     const whole = turn.kind ? behind(rows, turn.door, turn.kind) : [];
     body = (
       <>
-        {phone ? <div className="min-h-4 flex-1" /> : null}
         <h2 className="px-5 font-serif text-[30px] font-bold leading-tight tracking-[-0.01em] text-paper">{t("search.open")}</h2>
         <Eyebrow label={t("search.lookIn")} className="mx-5 mb-3 mt-[18px]" />
         <Doors doors={restDoors} current={turn.door} off={offDoors} onPick={pickDoor} />
-        {strip ? <div className="mt-3">{strip}</div> : null}
+        {strip ? <div className="mt-3">{strip}</div> : stripComing ? <div aria-hidden className="mt-3 h-[44px]" /> : null}
         {turn.kind ? (
           <div className="px-4 pt-3">
             <Eyebrow label={t(KIND_LABEL[turn.kind])} count={whole.length} className="mx-1.5 mb-1" />
@@ -529,7 +539,7 @@ export function CommandPalette() {
           <>
             {hint ? <p className="px-5 pt-4 font-sans text-detail leading-[1.55] text-paper/55">{t(hint)}</p> : null}
             {recent.length ? (
-              <div className="px-5 pt-[22px]">
+              <div data-search-recent="" className="px-5 pt-[22px]">
                 <Eyebrow
                   label={t("search.recent")}
                   end={

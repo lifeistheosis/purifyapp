@@ -5532,6 +5532,198 @@ await section(43, async () => {
     await ctx.close();
   }
 });
+// ---- 44. The one search opens still (build 87, the owner's notes 82 and 83).
+// Build 86 on his phone: the Bible's ••• sheet held two searches doing one
+// job (note 82), and "when you click search it leads you to this screen but
+// buggy" (note 83). Build 86's export, recorded frame by frame: the screen
+// drew "Search", Look in and the doors at its foot, held on the field by a
+// spacer over the title, and when the keyboard came up a moment after the tap
+// they all jumped up by the keyboard's height, leaving the top third of the
+// screen empty; on a first opening a place's kinds arrived with the lists and
+// pushed the recent searches down too. The screen stands from the top now,
+// and only the field rides the keyboard. The keyboard is stood in late, as a
+// phone's comes: up 150ms after the field takes the focus, down 150ms after
+// it lets go (one there from the first frame would hide a screen that moves
+// when it comes). Every frame is recorded from the first one the screen
+// draws, and its title, Look in, the doors and the recent searches must stay
+// where that frame put them while the keyboard comes and goes, as a chant
+// page's controls do (section 34). Each is opened from a place and must open
+// on it: Saints from its own field (the first opening, the lists not yet
+// in), then the Bible from the ••• sheet over John 2, whose chapters open on
+// the one being read at a book's start, middle and end.
+// lib/search/__tests__/oneField.test.ts and lib/bible/__tests__/
+// readerScreen.test.ts hold the source.
+await section(44, async () => {
+  console.log("\n44. The one search opens still");
+  const en = JSON.parse(fs.readFileSync(path.resolve("lib/i18n/messages/en.json"), "utf8"));
+  const TALL = 915;
+  const KEYBOARD = 300;
+  const lateKeyboard = ({ kb, after }) => {
+    const target = new EventTarget();
+    let up = 0;
+    let timer;
+    const vv = {
+      get width() { return innerWidth; },
+      get height() { return innerHeight - up; },
+      offsetTop: 0,
+      offsetLeft: 0,
+      get pageTop() { return scrollY; },
+      get pageLeft() { return scrollX; },
+      scale: 1,
+      onresize: null,
+      onscroll: null,
+      addEventListener: (...a) => target.addEventListener(...a),
+      removeEventListener: (...a) => target.removeEventListener(...a),
+      dispatchEvent: (e) => target.dispatchEvent(e),
+    };
+    try {
+      Object.defineProperty(window, "visualViewport", { configurable: true, get: () => vv });
+      window.__standInKeyboard = true;
+    } catch {
+      /* the check below says so */
+    }
+    const set = (px) => {
+      clearTimeout(timer);
+      timer = setTimeout(() => {
+        if (up === px) return;
+        up = px;
+        target.dispatchEvent(new Event("resize"));
+      }, after);
+    };
+    const typing = (el) => el instanceof HTMLElement && el.matches("textarea, input:not([type=checkbox]):not([type=radio]):not([type=button]):not([type=submit])");
+    document.addEventListener("focusin", (e) => set(typing(e.target) ? kb : 0), true);
+    document.addEventListener("focusout", () => set(0), true);
+  };
+  const { ctx, page, errors } = await open({ width: 412, height: TALL, phone: true, set: { "purify:search:words": JSON.stringify(["pascha", "jesus prayer", "basil"]) } });
+  await page.addInitScript(lateKeyboard, { kb: KEYBOARD, after: 150 });
+
+  // Each frame from the first one the search draws: where each part of it is.
+  // Each watch keeps its own list and ends the one before.
+  const watch = () =>
+    page.evaluate(() => {
+      const box = (el) => {
+        if (!el) return null;
+        const r = el.getBoundingClientRect();
+        return [r.left, r.top, r.width, r.height].map((v) => Math.round(v)).join(",");
+      };
+      const frames = (window.__searchFrames = []);
+      const watching = (window.__searchWatch = (window.__searchWatch ?? 0) + 1);
+      let n = 0;
+      const tick = () => {
+        if (window.__searchWatch !== watching) return;
+        const screen = document.querySelector("[data-search-screen]");
+        const body = screen?.querySelector("[data-search-body]");
+        if (body) {
+          const title = body.querySelector("h2");
+          frames.push({
+            t: Math.round(performance.now()),
+            title: box(title),
+            look: box(title?.nextElementSibling),
+            doors: box(body.querySelector("[data-search-doors]")),
+            recent: box(body.querySelector("[data-search-recent]")),
+            lit: body.querySelector("[data-search-doors] [aria-pressed=true]")?.getAttribute("data-door") ?? null,
+            kinds: body.querySelectorAll("[data-search-kinds] [role=tab]").length,
+            dock: box(screen.querySelector("[data-search-dock]")),
+            visible: Math.round(window.visualViewport.height),
+          });
+        }
+        if (++n < 420) requestAnimationFrame(tick);
+      };
+      requestAnimationFrame(tick);
+    });
+  // The keyboard comes up after the tap; then the field lets go and it goes.
+  const comeAndGo = async () => {
+    await page.waitForTimeout(1600);
+    await page.evaluate(() => document.activeElement?.blur?.());
+    await page.waitForTimeout(1200);
+    return page.evaluate(() => window.__searchFrames ?? []);
+  };
+  const PARTS = ["title", "look", "doors", "recent"];
+  const still = (label, frames, door) => {
+    const first = frames[0];
+    const up = frames.filter((f) => f.visible <= TALL - KEYBOARD);
+    const foot = (f) => {
+      const [, top, , height] = (f?.dock ?? "").split(",").map(Number);
+      return top + height;
+    };
+    must(frames.length > 20 && PARTS.every((k) => Boolean(first?.[k])), `${label}: the search draws its title, Look in, the doors and the recent searches in its first frame (${frames.length} frames${first ? `; missing: ${PARTS.filter((k) => !first[k]).join(", ") || "none"}` : ""})`);
+    must(frames.length > 0 && frames.every((f) => f.lit === door), `${label}: opened from a place, it opens on that place (${[...new Set(frames.map((f) => f.lit))].join(", ") || "nothing"} lit)`);
+    const top = Number((first?.title ?? "").split(",")[1]);
+    must(Number.isFinite(top) && top <= 80, `${label}: "Search" stands at the top of the screen, not over the field (${Number.isFinite(top) ? `${top}px down` : "no title"})`);
+    must(up.length > 0 && Math.abs(foot(up.at(-1)) - up.at(-1).visible) <= 1 && frames.at(-1)?.visible === TALL, `${label}: the keyboard came up after the screen did, the field on it, and went (${up.length ? `field ends at ${foot(up.at(-1))} on a keyboard from ${up.at(-1).visible}` : "never came"}; ${frames.at(-1)?.visible ?? "?"} at the end)`);
+    const moved = frames.flatMap((f) => PARTS.filter((k) => f[k] !== first[k]).map((k) => `${k} ${first[k]} to ${f[k]} at +${f.t - first.t}ms`));
+    must(moved.length === 0, `${label}: and nothing on it moves from its first frame while the keyboard comes and goes (${moved.slice(0, 3).join("; ") || `${frames.length} frames, every box held`})`);
+  };
+  const closeSearch = async () => {
+    await tap(page.locator(`[data-search-dock] button[aria-label="${en["common.close"]}"]`));
+    await page.waitForTimeout(600);
+  };
+
+  // Saints, from its own field: the first opening, the lists not yet in.
+  await go(page, "/saints/");
+  await page.waitForFunction(() => !!document.querySelector('[data-route-content] [data-search-door="saints"]'), null, { timeout: 20000 }).catch(() => {});
+  await page.waitForTimeout(1500);
+  must(await page.evaluate(() => window.__standInKeyboard === true && window.visualViewport.height === innerHeight), "the stand-in keyboard is in place, and down");
+  await watch();
+  await tap(page.locator('[data-route-content] [data-search-door="saints"]').first());
+  const saints = await comeAndGo();
+  still("Saints", saints, "saints");
+  must((saints.at(-1)?.kinds ?? 0) > 0, `Saints: its kinds came with the lists, under the doors (${saints.at(-1)?.kinds ?? 0} tabs)`);
+  await page.screenshot({ path: path.join(SHOTS, "search-saints-412.png") });
+  await closeSearch();
+
+  // The ••• sheet's chapters: on the one being read, at the end, the middle and the start of John.
+  const opened = (want) => page.waitForFunction((w) => (document.getElementById("chapter-title")?.querySelector("h1")?.textContent ?? "").replace(/\s+/g, " ").trim() === w, want, { timeout: 20000 }).catch(() => {});
+  const moreSheet = async (chapter) => {
+    await tap(page.getByRole("button", { name: en["bible.moreActions"] }));
+    await page.waitForFunction((label) => [...document.querySelectorAll("[role=dialog]")].some((d) => d.getAttribute("aria-label") === label), `John ${chapter}`, { timeout: 8000 }).catch(() => {});
+    await page.waitForTimeout(800);
+    return page.evaluate((label) => {
+      const d = [...document.querySelectorAll("[role=dialog]")].find((x) => x.getAttribute("aria-label") === label);
+      const row = d?.querySelector("[role=group]");
+      const lit = row?.querySelector('a[aria-current="page"]');
+      if (!d || !row || !lit) return null;
+      const r = row.getBoundingClientRect();
+      const c = lit.getBoundingClientRect();
+      return {
+        doors: [...d.querySelectorAll("[data-search-door]")].map((b) => b.getAttribute("data-search-door")),
+        rows: [...d.querySelectorAll("button")].map((b) => (b.innerText ?? "").replace(/\s+/g, " ").trim()).filter(Boolean),
+        lit: lit.textContent.trim(),
+        inView: c.left >= r.left - 0.5 && c.right <= r.right + 0.5,
+        offMiddle: Math.round((c.left + c.right) / 2 - (r.left + r.right) / 2),
+        chip: Math.round(c.width),
+        at: Math.round(row.scrollLeft),
+        end: row.scrollWidth - row.clientWidth,
+      };
+    }, `John ${chapter}`);
+  };
+  for (const chapter of [21, 15, 2]) {
+    await go(page, `/bible/john/${chapter}/`);
+    await opened(`John Chapter ${chapter}`);
+    await page.waitForTimeout(1200);
+    const s = await moreSheet(chapter);
+    const where = chapter === 21 ? "the row at its end" : chapter === 15 ? "in the middle" : "the row at its start";
+    const placed = !s ? false : chapter === 21 ? s.at >= s.end - 1 : chapter === 15 ? Math.abs(s.offMiddle) <= s.chip : s.at === 0;
+    must(Boolean(s) && s.lit === String(chapter) && s.inView && placed, `John ${chapter}: the ••• sheet's chapters open on ${chapter}, lit and in view, ${where} (${s ? `${s.lit} lit, scrolled ${s.at} of ${s.end}, ${s.offMiddle}px from the middle` : "no strip"})`);
+    if (chapter !== 2) {
+      await page.keyboard.press("Escape");
+      await page.waitForTimeout(700);
+      continue;
+    }
+    must(Boolean(s) && s.doors.join(",") === "bible" && !s.rows.some((t) => t.startsWith(en["search.ariaLabel"])), `John 2: the sheet holds one search, the Bible's (${s ? `${s.doors.join(", ") || "none"}; ${s.rows.join(" | ")}` : "no sheet"})`);
+    await page.screenshot({ path: path.join(SHOTS, "reader-more-sheet-john2-412.png") });
+  }
+
+  // The one search, from the sheet over John 2.
+  await watch();
+  await tap(page.locator("[role=dialog] [data-bible-search-open] [data-search-door]").first());
+  const bible = await comeAndGo();
+  still("The Bible's ••• sheet", bible, "bible");
+  await page.screenshot({ path: path.join(SHOTS, "search-bible-412.png") });
+  await closeSearch();
+  must(errors.length === 0, `no page errors${errors.length ? ": " + errors.slice(0, 2).join(" | ") : ""}`);
+  await ctx.close();
+});
 await browser.close();
 if (!everySection) console.log(`\nOnly the sections chosen were walked: ${walked.join(", ") || "none"}.`);
 console.log(failed ? `\n${failed} check(s) failed.` : "\nEvery check passed.");
