@@ -2836,7 +2836,7 @@
   "community.respond.amen": "Амінь",
   "community.respond.glory": "Слава Богу",
   "community.respond.praying": "Молюся",
-  "community.respondClose": "Закрити",
+  "community.respondCandle": "Амінь, Молюся або Слава Богу",
   "community.respondFailed": "Не вдалося зберегти.",
   "community.unmute": "Повернути в стрічку",
   "community.unmuteAria": "Повернути в стрічку: {name}",

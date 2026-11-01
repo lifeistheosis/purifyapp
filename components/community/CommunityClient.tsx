@@ -2032,7 +2032,8 @@ function PostCardInner({
           ) : null}
 
           {/* One action row, bare words and marks on the page: the like and its
-              opposite, Amen and the rest, and the replies at the far end. */}
+              opposite, the candle that opens Amen and the rest in a tray over
+              the row (r3-30 A), and the replies at the far end. */}
           <div className="mt-2.5 flex flex-wrap items-center gap-x-3.5 gap-y-1">
             <ReactionButtons
               postId={post.id}

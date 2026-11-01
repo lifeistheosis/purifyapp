@@ -2787,7 +2787,7 @@
   "community.respond.amen": "Αμήν",
   "community.respond.glory": "Δόξα τω Θεώ",
   "community.respond.praying": "Προσεύχομαι",
-  "community.respondClose": "Κλείσιμο",
+  "community.respondCandle": "Αμήν, Προσεύχομαι ή Δόξα τω Θεώ",
   "community.respondFailed": "Δεν ήταν δυνατή η αποθήκευση.",
   "community.unmute": "Άρση σίγασης",
   "community.unmuteAria": "Άρση σίγασης για {name}",

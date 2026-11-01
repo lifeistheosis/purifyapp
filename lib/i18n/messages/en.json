@@ -2787,7 +2787,7 @@
   "community.respond.amen": "Amen",
   "community.respond.glory": "Glory to God",
   "community.respond.praying": "Praying",
-  "community.respondClose": "Close",
+  "community.respondCandle": "Amen, Praying or Glory to God",
   "community.respondFailed": "Couldn't save that.",
   "community.unmute": "Unmute",
   "community.unmuteAria": "Unmute {name}",

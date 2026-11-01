@@ -2813,7 +2813,7 @@
   "community.respond.amen": "Амин",
   "community.respond.glory": "Слава Богу",
   "community.respond.praying": "Молим се",
-  "community.respondClose": "Затвори",
+  "community.respondCandle": "Амин, Молим се или Слава Богу",
   "community.respondFailed": "Нисмо успели да сачувамо.",
   "community.unmute": "Поништи утишавање",
   "community.unmuteAria": "Поништи утишавање: {name}",

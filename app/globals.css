@@ -7180,6 +7180,89 @@ html[data-reading-mode="parchment"] .part-segment[data-state="current"] {
  filter: drop-shadow(0 0 5px rgb(255 255 255 / 0.7));
 }
 
+/* Amen, Praying and Glory to God, in a small tray over the row: the owner's
+   pick of r3-30, A, with the lit candle of r3-30b (note 80 of build 86: the
+   praying figure opened them inside the row, so the row grew a line and every
+   post under it moved). The candle opens it (ResponseButtons). It is drawn at
+   the top of the page, fixed over the candle, never inside the post: a post
+   is content-visibility: auto, which clips what spills out of its box. A
+   raised surface lit from above, with a fine grain, a hairline and a long
+   soft shadow, its caret on the candle's middle (--caret, measured); stood
+   under the row when a bar covers the room over it, the caret points up. A
+   reply's tray is one size smaller. Plain values first, for a WebView without
+   color-mix (Android before 111). It rises out of the candle in 180ms, and
+   with Purify's motion off it is simply there. */
+.community-tray {
+ --tray-caret: 13px;
+ --tray-rise: 6px;
+ border: 1px solid rgb(255 255 255 / 0.14);
+ border-color: color-mix(in srgb, var(--color-paper) 14%, transparent);
+ background-color: var(--color-night-soft);
+ background-image:
+  url("data:image/svg+xml;utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 1 0 0 0 0 1 0 0 0 0 1 0 0 0 0.6 0'/%3E%3C/filter%3E%3Crect width='180' height='180' filter='url(%23n)' opacity='0.05'/%3E%3C/svg%3E"),
+  linear-gradient(180deg, rgb(255 255 255 / 0.07), rgb(255 255 255 / 0) 70%);
+ box-shadow:
+  inset 0 1px 0 rgb(255 255 255 / 0.14),
+  0 20px 36px -10px rgb(0 0 0 / 0.95),
+  0 5px 14px rgb(0 0 0 / 0.6),
+  0 0 30px rgb(255 255 255 / 0.06);
+}
+.community-tray[data-response-tray="reply"] {
+ --tray-caret: 11px;
+}
+/* The caret: a square turned on its point, its two outer edges the tray's
+   hairline, its face the tray's own ground where it joins. --caret is
+   measured from the tray's outer edge, and this is placed inside its 1px
+   hairline, so the hairline comes off. */
+.community-tray::after {
+ content: "";
+ position: absolute;
+ left: calc(var(--caret, 50%) - var(--tray-caret) / 2 - 1px);
+ bottom: calc(var(--tray-caret) / -2);
+ width: var(--tray-caret);
+ height: var(--tray-caret);
+ transform: rotate(45deg);
+ background-color: var(--color-night-soft);
+ border: 0 solid rgb(255 255 255 / 0.14);
+ border-color: color-mix(in srgb, var(--color-paper) 14%, transparent);
+ border-right-width: 1px;
+ border-bottom-width: 1px;
+ pointer-events: none;
+}
+.community-tray[data-below]::after {
+ top: calc(var(--tray-caret) / -2);
+ bottom: auto;
+ border-width: 1px 0 0 1px;
+ background-image: linear-gradient(rgb(255 255 255 / 0.07), rgb(255 255 255 / 0.07));
+}
+/* The three: the words a little under full white, the reader's own lit. */
+.community-tray-choice {
+ color: var(--color-paper);
+ color: color-mix(in srgb, var(--color-paper) 88%, transparent);
+}
+.community-tray-choice[aria-pressed="true"] {
+ color: var(--color-paper);
+}
+@keyframes community-tray-in {
+ from {
+  opacity: 0;
+  transform: translateY(var(--tray-rise)) scale(0.94);
+ }
+}
+/* backwards, not both: once it has arrived the tray is its own again, so a
+   press on one of the three is not held off by a finished animation. */
+.community-tray[data-placed] {
+ transform-origin: var(--caret, 50%) 100%;
+ animation: community-tray-in 180ms var(--ease-house) backwards;
+}
+.community-tray[data-below] {
+ --tray-rise: -6px;
+ transform-origin: var(--caret, 50%) 0;
+}
+:where([data-motion="reduce"]) .community-tray[data-placed] {
+ animation: none;
+}
+
 /* The marks beside a name, in the house greys (the sheet's open question,
    built as drawn): the clergy seal is the white one, softly lit; the
    verified tick's disc a grey mixed from the page's own ink and ground. The
@@ -7302,6 +7385,25 @@ html[data-reading-mode="parchment"] .community-campaign {
 html[data-reading-mode="parchment"] .community-clergy-answer {
  background: rgb(255 255 255 / 0.45);
  box-shadow: none;
+}
+/* The responses' tray on paper: paper a shade lighter than the page, inside a
+   hairline of the ink, under a warm shadow; no grain and no glow. A word
+   cannot glow here, so the reader's own is the full ink and the rest a
+   lighter ink (5.6 to 1 on the tray, the full ink 14 to 1). */
+html[data-reading-mode="parchment"] .community-tray,
+html[data-reading-mode="parchment"] .community-tray::after {
+ border-color: rgb(43 35 23 / 0.16);
+ background-color: #fbf6ea;
+ background-image: none;
+}
+html[data-reading-mode="parchment"] .community-tray {
+ box-shadow: 0 14px 28px -12px rgb(70 52 20 / 0.45), 0 3px 8px rgb(70 52 20 / 0.12);
+}
+html[data-reading-mode="parchment"] .community-tray-choice {
+ color: rgb(43 35 23 / 0.7);
+}
+html[data-reading-mode="parchment"] .community-tray-choice[aria-pressed="true"] {
+ color: var(--color-paper);
 }
 /* On paper the icon is a watermark behind the ink of the name. */
 html[data-reading-mode="parchment"] .community-head-shade {

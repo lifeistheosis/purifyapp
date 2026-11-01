@@ -2787,7 +2787,7 @@
   "community.respond.amen": "Ámen",
   "community.respond.glory": "Dicsőség Istennek",
   "community.respond.praying": "Imádkozom",
-  "community.respondClose": "Bezárás",
+  "community.respondCandle": "Ámen, Imádkozom vagy Dicsőség Istennek",
   "community.respondFailed": "Ezt nem sikerült elmenteni.",
   "community.unmute": "Némítás feloldása",
   "community.unmuteAria": "{name} némításának feloldása",
