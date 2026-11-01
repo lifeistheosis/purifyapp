@@ -1,10 +1,10 @@
 import fs from "node:fs";
 import path from "node:path";
 
-import { describe, expect, it } from "vitest";
+import { afterEach, describe, expect, it, vi } from "vitest";
 
 import { LOCALES } from "@/lib/i18n/locales";
-import { reposeDateText } from "@/lib/prayers/storage";
+import { deleteIntention, readIntentions, reposeDateText, restoreIntention, writeIntentions, type Intention } from "@/lib/prayers/storage";
 
 /**
  * The page of Your rule (/prayers/personal), held to what a design round
@@ -12,6 +12,7 @@ import { reposeDateText } from "@/lib/prayers/storage";
  *
  *  1. both lists' lines printed a web address, "/prayers/today";
  *  2. a repose date printed as typed, 2019-03-04;
+ *  3. removing a name asked in the browser's own confirm box;
  *
  * Each fix is measured on the built page by scripts/export-walk.mjs too.
  */
@@ -20,6 +21,38 @@ const ROOT = process.cwd();
 const catalog = (code: string): Record<string, string> =>
   JSON.parse(fs.readFileSync(path.join(ROOT, "lib", "i18n", "messages", `${code}.json`), "utf8"));
 const read = (rel: string) => fs.readFileSync(path.join(ROOT, rel), "utf8").replace(/\r\n/g, "\n");
+/** The code without its comments, so a note about the old page is not read as the page. */
+const code = (rel: string) =>
+  read(rel)
+    .replace(/\/\*[\s\S]*?\*\//g, "")
+    .replace(/(^|[^:])\/\/.*$/gm, "$1");
+
+function walk(dir: string, out: string[] = []): string[] {
+  for (const e of fs.readdirSync(path.join(ROOT, dir), { withFileTypes: true })) {
+    const rel = `${dir}/${e.name}`;
+    if (e.isDirectory()) walk(rel, out);
+    else if (/\.tsx?$/.test(e.name)) out.push(rel);
+  }
+  return out;
+}
+
+/** This device's storage, in memory. */
+function deviceStorage() {
+  const kept = new Map<string, string>();
+  vi.stubGlobal("window", {
+    localStorage: {
+      getItem: (k: string) => kept.get(k) ?? null,
+      setItem: (k: string, v: string) => void kept.set(k, v),
+      removeItem: (k: string) => void kept.delete(k),
+    },
+    dispatchEvent: () => true,
+  });
+  vi.stubGlobal("CustomEvent", class extends Event {});
+}
+
+afterEach(() => {
+  vi.unstubAllGlobals();
+});
 
 describe("the lists' lines", () => {
   it("name Today in words, in every language, and print no address", () => {
@@ -55,5 +88,43 @@ describe("a repose date", () => {
     const src = read("components/prayers/Diptychs.tsx");
     expect(src).toContain("reposeDateText(entry.repose, locale)");
     expect(src).not.toMatch(/reposedLabel"\)\} \$\{entry\.repose\}/);
+  });
+});
+
+describe("removing a name", () => {
+  const name = (id: string): Intention => ({ id, name: id, addedAt: "2026-10-31T00:00:00.000Z" });
+
+  it("asks nothing in the browser's own boxes, anywhere in the prayer pages", () => {
+    const files = [...walk("components/prayers"), ...walk("app/(app)/prayers")];
+    expect(files.length).toBeGreaterThan(20);
+    const asking = files.filter((f) => /(^|[^\w.])(window\.)?(confirm|alert|prompt)\(/m.test(code(f)));
+    expect(asking).toEqual([]);
+  });
+
+  it("takes it out at once, with the rule's own Removed line and Undo", () => {
+    const src = code("components/prayers/Diptychs.tsx");
+    expect(src).toContain("onDelete={() => remove(entry)}");
+    expect(src).toMatch(/deleteIntention\(kind, entry\.id\);\s*window\.clearTimeout\(undoTimer\.current\);\s*setUndo\(\{ entry, index \}\);/);
+    expect(src).toContain('<p role="status"');
+    expect(src).toContain('removedLine(t("prayers.mine.removed"), undo.entry.name)');
+    expect(src).toContain('t("prayers.mine.undo")');
+    expect(src).toContain("restoreIntention(kind, undo.entry, undo.index)");
+  });
+
+  it("and Undo puts it back where it stood, once", () => {
+    deviceStorage();
+    writeIntentions("living", [name("anna"), name("basil"), name("clare")]);
+    deleteIntention("living", "basil");
+    expect(readIntentions("living").map((n) => n.id)).toEqual(["anna", "clare"]);
+    restoreIntention("living", name("basil"), 1);
+    expect(readIntentions("living").map((n) => n.id)).toEqual(["anna", "basil", "clare"]);
+    // A second Undo, or one after the name came back by sync, adds nothing.
+    restoreIntention("living", name("basil"), 0);
+    expect(readIntentions("living").map((n) => n.id)).toEqual(["anna", "basil", "clare"]);
+    // A place past the end, after others were removed meanwhile, is the end.
+    deleteIntention("living", "clare");
+    deleteIntention("living", "anna");
+    restoreIntention("living", name("clare"), 2);
+    expect(readIntentions("living").map((n) => n.id)).toEqual(["basil", "clare"]);
   });
 });

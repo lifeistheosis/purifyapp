@@ -272,6 +272,14 @@ export function deleteIntention(kind: IntentionKind, id: string) {
   writeIntentions(kind, list);
 }
 
+/** Put a removed name back where it stood (Undo after Remove); nothing when it is there again. */
+export function restoreIntention(kind: IntentionKind, item: Intention, index: number) {
+  const list = readIntentions(kind);
+  if (list.some((x) => x.id === item.id)) return;
+  const at = Math.max(0, Math.min(index, list.length));
+  writeIntentions(kind, [...list.slice(0, at), item, ...list.slice(at)]);
+}
+
 /**
  * A repose date (YYYY-MM-DD) as the reader's language writes a date: "Mar 4,
  * 2019" in English, "4. März 2019" in German. It printed as typed,

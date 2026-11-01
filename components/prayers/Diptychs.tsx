@@ -13,14 +13,19 @@
 // 1.7: hairline lists in place of tinted cards, the add and save controls in
 // the page's own ink, and Edit and Remove always shown: they were drawn only
 // on a mouse's hover, so a phone never had them.
+//
+// 1.8 (note 73): Remove takes a name out at once, with an Undo for a few
+// seconds, as the rule's own rows do; it asked in the browser's own confirm
+// box, the only one in the prayer pages.
 
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useTranslate } from "@/components/i18n/MessagesProvider";
 import { SearchField } from "@/components/search/SearchField";
 import { Plus } from "@/components/ui/icons/Plus";
 import {
   deleteIntention,
   reposeDateText,
+  restoreIntention,
   upsertIntention,
   useIntentions,
   uuid,
@@ -30,6 +35,18 @@ import {
 
 const FIELD =
   "min-h-11 w-full rounded-[10px] bg-paper/[0.06] px-3 py-2 font-sans text-ui text-paper placeholder:text-paper/45 focus:outline-none focus-visible:ring-2 focus-visible:ring-paper/40";
+
+/** How long "Removed ... Undo" stays, as under the rule's own rows (MyRuleBuilder). */
+const UNDO_MS = 5000;
+
+/**
+ * The catalog's "Removed {title}." with a name set in once, exactly as
+ * written: the catalogs' own interpolation reads a "$&" inside a value as a
+ * pattern (lib/prayers/commemoration.ts, wallLine).
+ */
+function removedLine(template: string, name: string): string {
+  return template.replace("{title}", () => name);
+}
 
 export function Diptychs() {
   const { t } = useTranslate();
@@ -63,6 +80,25 @@ function DiptychSection({
   const [adding, setAdding] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
   const [query, setQuery] = useState("");
+  const [undo, setUndo] = useState<{ entry: Intention; index: number } | null>(null);
+  const undoTimer = useRef<number | undefined>(undefined);
+
+  useEffect(() => () => window.clearTimeout(undoTimer.current), []);
+
+  function remove(entry: Intention) {
+    const index = items.findIndex((i) => i.id === entry.id);
+    deleteIntention(kind, entry.id);
+    window.clearTimeout(undoTimer.current);
+    setUndo({ entry, index });
+    undoTimer.current = window.setTimeout(() => setUndo(null), UNDO_MS);
+  }
+
+  function putBack() {
+    if (!undo) return;
+    restoreIntention(kind, undo.entry, undo.index);
+    window.clearTimeout(undoTimer.current);
+    setUndo(null);
+  }
 
   const filtered = query.trim()
     ? items.filter(
@@ -134,15 +170,24 @@ function DiptychSection({
               kind={kind}
               entry={entry}
               onEdit={() => setEditingId(entry.id)}
-              onDelete={() => {
-                if (confirm(t("prayers.diptychs.removeConfirm", { name: entry.name }))) {
-                  deleteIntention(kind, entry.id);
-                }
-              }}
+              onDelete={() => remove(entry)}
             />
           ),
         )}
       </ul>
+
+      {undo ? (
+        <p role="status" className="mt-3 flex min-h-11 items-center gap-3 font-sans text-detail text-paper/75">
+          <span className="min-w-0 truncate">{removedLine(t("prayers.mine.removed"), undo.entry.name)}</span>
+          <button
+            type="button"
+            onClick={putBack}
+            className="tap-press inline-flex min-h-11 shrink-0 items-center px-2 font-semibold text-paper underline underline-offset-4"
+          >
+            {t("prayers.mine.undo")}
+          </button>
+        </p>
+      ) : null}
     </section>
   );
 }
