@@ -30,7 +30,9 @@
 //   --groups  lines with no times yet: [{ "from": s, "to": s, "lines": [first, last] }],
 //             each group's words aligned along its stretch together and each
 //             line starting where its first word does (a new verse sung in a
-//             stretch already known).
+//             stretch already known), moved to the first sound after the
+//             breath before it where there is one; or with "starts": [s, ...],
+//             each line's start as read by hand.
 //   --keep    a file to keep what the model found, by stretch and words: a
 //             second run asks the model only what it has not answered.
 //   --dry     the report only, nothing written.
@@ -252,6 +254,43 @@ function firstSound(at, end) {
   return at;
 }
 
+/**
+ * The first sound after the breath before a line, where there is one: the
+ * deepest dip in the voice's level from 1.2 s before the alignment's start
+ * of the line to 0.4 s after it, if it lies 8 dB under the loudest second and
+ * a half either side, and then the moment the level is back within 6 dB of
+ * the next second's loudest. The alignment gives the line's first word too
+ * late after a word held long (a refrain's last word, before its Alleluia),
+ * by most of a second on the Arabic Psalm 135, whose breaths are clear.
+ * Otherwise, where the alignment put it.
+ */
+const smooth = level.map((_, i) => {
+  let sum = 0;
+  let n = 0;
+  for (let k = Math.max(0, i - 2); k <= Math.min(level.length - 1, i + 2); k++) {
+    sum += level[k];
+    n++;
+  }
+  return sum / n;
+});
+function afterBreath(t) {
+  const i0 = Math.max(0, Math.round((t - 1.2) / HOP));
+  const i1 = Math.min(smooth.length - 1, Math.round((t + 0.4) / HOP));
+  let dip = i0;
+  for (let i = i0; i <= i1; i++) if (smooth[i] < smooth[dip]) dip = i;
+  const span = Math.round(1.5 / HOP);
+  let left = -Infinity;
+  let right = -Infinity;
+  for (let k = Math.max(0, dip - span); k < dip; k++) left = Math.max(left, smooth[k]);
+  for (let k = dip + 1; k < Math.min(smooth.length, dip + span); k++) right = Math.max(right, smooth[k]);
+  if (Math.min(left, right) - smooth[dip] < 8) return t;
+  let top = -Infinity;
+  for (let k = dip; k < Math.min(smooth.length, dip + 100); k++) top = Math.max(top, smooth[k]);
+  let on = dip;
+  while (on < smooth.length - 1 && smooth[on] < top - 6) on++;
+  return on * HOP;
+}
+
 /** A stretch's word starts, the first from the sound and the rest a lead earlier. */
 const led = (starts) => starts.map((s, k) => (k ? s - LEAD : s));
 
@@ -292,13 +331,23 @@ if (groups) {
   // each line from its first word to the next line's.
   for (const g of groups) {
     const members = lines.slice(g.lines[0], g.lines[1] + 1);
-    const words = members.flatMap((l) => l.words);
-    const { starts, end } = await align(g.from - AROUND, g.to + AROUND, words);
-    const times = wordTimes(led(starts), firstSound(g.from, g.to), g.to, end);
-    let k = 0;
-    for (const l of members) {
-      l.at = times[k][0];
-      k += l.words.length;
+    if (Array.isArray(g.starts)) {
+      if (g.starts.length !== members.length) throw new Error(`a group of ${members.length} lines with ${g.starts.length} starts`);
+      members.forEach((l, j) => {
+        l.at = g.starts[j];
+      });
+    } else {
+      const words = members.flatMap((l) => l.words);
+      const { starts, end } = await align(g.from - AROUND, g.to + AROUND, words);
+      const times = wordTimes(led(starts), firstSound(g.from, g.to), g.to, end);
+      let k = 0;
+      members.forEach((l, j) => {
+        const aligned = times[k][0];
+        const breath = j ? round(afterBreath(aligned)) : aligned;
+        // Never before the line before it has had its moment.
+        l.at = j && breath <= members[j - 1].at + 0.3 ? aligned : breath;
+        k += l.words.length;
+      });
     }
     members.forEach((l, j) => {
       l.end = j + 1 < members.length ? members[j + 1].at : round(g.to);

@@ -23,6 +23,10 @@ const line = z
     text: z.string().trim().min(1),
     translit: z.string().trim().min(1).optional(),
     en: z.string().trim().min(1).optional(),
+    // Note 78: the nearest public-domain wording, not the words sung.
+    nearest: z.literal(true).optional(),
+    // Note 78: why the words are not confirmed against the recording yet.
+    unsure: z.string().trim().min(10).optional(),
   })
   .strict();
 

@@ -16,7 +16,7 @@ import { LOCALES } from "@/lib/i18n/locales";
 import { bucketRecording, chantPaths, inBucket, isStreamed, legacyTimingPath, readTiming } from "@/lib/chants/media";
 import { timingFiles } from "@/lib/chants/timing.server";
 import { chantLineKey, chantTitleKey, kindKey, traditionKey } from "@/lib/chants/names";
-import { allChants, chantIndex } from "@/lib/chants/registry.server";
+import { allChants, chantIndex, forPage } from "@/lib/chants/registry.server";
 import { chantSchema, timingSchema } from "@/lib/chants/schema";
 import { CHANT_KINDS, CHANT_TIMING, CHANT_TRADITIONS } from "@/lib/chants/types";
 // Plain ESM, shared with the intake script that prints a recording's length.
@@ -337,6 +337,82 @@ describe("each version of a chant", () => {
       v.lines.forEach((line, i) => expect(line.text === refrain, `${v.id} line ${i + 1}: "${line.text}"`).toBe(i % 2 === 1));
       // Every version is timed now, so the lit line follows the voice.
       expect(v.timing, `${v.id} has no timing file`).toBeDefined();
+    }
+  });
+
+  it("marks every line that is the nearest public-domain wording rather than the words sung (note 78)", () => {
+    // The owner wants the words one to one with the singing. Where they are
+    // free to copy they are the words sung; where a choir sings a wording
+    // still under copyright, or one no public-domain printing has, the line
+    // is the nearest public-domain wording, and the data says so.
+    const nearest = (slug: string, id: string) =>
+      allChants()
+        .find((c) => c.slug === slug)!
+        .variants.find((v) => v.id === id)!
+        .lines.flatMap((l, i) => (l.nearest ? [i] : []));
+    // Psalm 135 in English: the thirteen first halves no public-domain
+    // printing has as the choir sings them (docs/chants/psalm-135-english.md).
+    expect(nearest("psalm-135", "en")).toEqual([4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 20, 23, 25].map((v) => (v - 1) * 4));
+    // The Arabic: Van Dyck's first halves where the choir sings the Antiochian Arabic.
+    expect(nearest("psalm-135", "ar")).toEqual([1, 2, 3, 4, 5, 6, 7, 8, 9].map((k) => k * 4));
+    // The Serbian: Daničić's u dostojanje, where the singer sings otherwise.
+    expect(nearest("psalm-135", "sr")).toEqual([80, 84]);
+    expect(nearest("psalm-135", "el")).toEqual([]);
+    // The Paschal Canon: every hymn Hapgood's (1906); the recording sings a translation of our own time.
+    const canon = allChants().find((c) => c.slug === "paschal-canon")!.variants[0];
+    expect(nearest("paschal-canon", "en")).toHaveLength(canon.lines.length);
+    // A song of our own time has no printing to be nearer to.
+    for (const v of allChants().find((c) => c.slug === "prayer-rope-anthem")!.variants) expect(nearest("prayer-rope-anthem", v.id)).toEqual([]);
+  });
+
+  it("sings the Arabic Psalm 135 whole: ten verses, each half with its Alliluia, the halves it lacks as sung from Van Dyck (note 78)", () => {
+    // Through build 86 it showed the first verse only and lit nothing after
+    // it. The choir sings verses 1 to 6 and 23 to 26.
+    const fixture = JSON.parse(fs.readFileSync(path.join(ROOT, "lib/chants/__tests__/fixtures/psalm-136-van-dyck.json"), "utf8")) as {
+      verses: Record<string, string>;
+    };
+    const ar = allChants().find((c) => c.slug === "psalm-135")!.variants.find((v) => v.id === "ar")!;
+    expect(ar.lines).toHaveLength(40);
+    const sungRefrain = ar.lines[2].text;
+    ar.lines.forEach((line, i) => {
+      if (i % 4 === 2) expect(line.text, `line ${i + 1}`).toBe(sungRefrain);
+      if (i % 4 === 0 && i > 0) {
+        // Verbatim the first half of a verse of Van Dyck's, up to its comma.
+        const verse = [2, 3, 4, 5, 6, 23, 24, 25, 26][i / 4 - 1];
+        expect(fixture.verses[verse].startsWith(line.text), `line ${i + 1}: verse ${verse}`).toBe(true);
+        expect(line.nearest, `line ${i + 1}`).toBe(true);
+      }
+    });
+    // Every line is timed, the singing followed to its end.
+    const t = JSON.parse(fs.readFileSync(inData(ar.timing!), "utf8")) as { lines: { at: number; end: number }[]; durationSec: number };
+    expect(t.lines).toHaveLength(40);
+    expect(t.lines.at(-1)!.end).toBeGreaterThan(t.durationSec - 5);
+  });
+
+  it("keeps those marks for the data: a page carries the words, not the marks", () => {
+    for (const c of allChants()) {
+      const page = forPage(c);
+      page.variants.forEach((v, k) => {
+        expect(v.lines.map((l) => l.text), c.slug).toEqual(c.variants[k].lines.map((l) => l.text));
+        for (const l of v.lines) expect("nearest" in l || "unsure" in l, c.slug).toBe(false);
+      });
+    }
+  });
+
+  it("says in the data why a line's words are unsure", () => {
+    // The Arabic wants a listener who knows it: what a speech model heard only
+    // in part is marked on its line until one confirms it.
+    const unsure = (slug: string, id: string) =>
+      allChants()
+        .find((c) => c.slug === slug)!
+        .variants.find((v) => v.id === id)!
+        .lines.flatMap((l, i) => (l.unsure ? [i] : []));
+    expect(unsure("prayer-rope-anthem", "ar")).toEqual(expect.arrayContaining([0, 1, 9, 12, 15, 16]));
+    expect(unsure("psalm-117", "ar")).toEqual(expect.arrayContaining([17, 29]));
+    for (const { v, id } of versions) {
+      for (const l of v.lines) {
+        if (l.unsure) expect(l.unsure.length, `${id}: "${l.text}"`).toBeGreaterThan(20);
+      }
     }
   });
 });

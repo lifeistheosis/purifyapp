@@ -75,8 +75,25 @@ export type ChantKind = (typeof CHANT_KINDS)[number];
  * One line of the words: the line as it is sung, then, under it, a
  * transliteration where the script is not Latin (ours, and labelled so) and
  * an English line.
+ *
+ * Build 86 note 78 asks for the words one to one with the singing. Where they
+ * are free to copy they are the words sung. Where a choir sings a wording
+ * still under copyright, or one no public-domain printing has, the line is
+ * the nearest public-domain wording instead, and says so (`nearest`); its
+ * words as sung can be shown only once their holder clears them
+ * (lib/chants/cleared.ts). A line whose words could not be confirmed against
+ * the recording says why (`unsure`), for a listener to settle. Neither is
+ * shown to readers: the version's words-source line says it in prose.
  */
-export type ChantLine = { text: string; translit?: string; en?: string };
+export type ChantLine = {
+  text: string;
+  translit?: string;
+  en?: string;
+  /** The nearest public-domain wording, not the words sung. */
+  nearest?: true;
+  /** Why these words are not confirmed against the recording yet. */
+  unsure?: string;
+};
 
 /**
  * When in the year a chant is the Church's song of the day, so the home can

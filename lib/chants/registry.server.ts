@@ -50,6 +50,22 @@ export function chantBySlug(slug: string): Chant | null {
   return liveChants().find((c) => c.slug === slug) ?? null;
 }
 
+/**
+ * A chant as its page shows it: everything but what its words carry for the
+ * data alone (build 86 note 78: which lines are the nearest public-domain
+ * wording, which are unsure, and why), which no reader sees; the version's
+ * words-source line says it in prose. A page carries what it shows.
+ */
+export function forPage(chant: Chant): Chant {
+  return {
+    ...chant,
+    variants: chant.variants.map((v) => ({
+      ...v,
+      lines: v.lines.map((l) => ({ text: l.text, ...(l.translit ? { translit: l.translit } : {}), ...(l.en ? { en: l.en } : {}) })),
+    })),
+  };
+}
+
 /** A chant as a list shows it: no words, no prose. */
 export function indexRow(chant: Chant): ChantIndexRow {
   const traditions: ChantTradition[] = [];

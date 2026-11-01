@@ -87,12 +87,14 @@
         {
           "text": "اِحْمَدُوا ٱلرَّبَّ لِأَنَّهُ صَالِحٌ،",
           "translit": "Ihmadu r-Rabba li-annahu salihun,",
-          "en": "Give thanks to the Lord; for he is good:"
+          "en": "Give thanks to the Lord; for he is good:",
+          "nearest": true
         },
         {
           "text": "لِأَنَّ إِلَى ٱلْأَبَدِ رَحْمَتَهُ.",
           "translit": "li-anna ila l-abadi rahmatahu.",
-          "en": "for his mercy endures for ever."
+          "en": "for his mercy endures for ever.",
+          "nearest": true
         },
         {
           "text": "هَلِّلُويَا.",
@@ -102,7 +104,8 @@
         {
           "text": "مِنَ ٱلضِّيقِ دَعَوْتُ ٱلرَّبَّ فَأَجَابَنِي مِنَ ٱلرُّحْبِ.",
           "translit": "Mina d-diqi da'awtu r-Rabba fa-ajabani mina r-ruhbi.",
-          "en": "I called on the Lord out of affliction: and he hearkened to me, so as to bring me into a wide place."
+          "en": "I called on the Lord out of affliction: and he hearkened to me, so as to bring me into a wide place.",
+          "nearest": true
         },
         {
           "text": "لِأَنَّ إِلَى ٱلْأَبَدِ رَحْمَتَهُ.",
@@ -117,12 +120,14 @@
         {
           "text": "ٱلِٱحْتِمَاءُ بِٱلرَّبِّ",
           "translit": "Al-ihtima'u bir-Rabbi",
-          "en": "It is better to trust in the Lord"
+          "en": "It is better to trust in the Lord",
+          "nearest": true
         },
         {
           "text": "خَيْرٌ مِنَ ٱلتَّوَكُّلِ عَلَى إِنْسَانٍ.",
           "translit": "khayrun mina t-tawakkuli 'ala insanin.",
-          "en": "than to trust in man."
+          "en": "than to trust in man.",
+          "nearest": true
         },
         {
           "text": "لِأَنَّ إِلَى ٱلْأَبَدِ رَحْمَتَهُ.",
@@ -137,12 +142,14 @@
         {
           "text": "ٱلِٱحْتِمَاءُ بِٱلرَّبِّ",
           "translit": "Al-ihtima'u bir-Rabbi",
-          "en": "It is better to hope in the Lord,"
+          "en": "It is better to hope in the Lord,",
+          "nearest": true
         },
         {
           "text": "خَيْرٌ مِنَ ٱلتَّوَكُّلِ عَلَى ٱلرُّؤَسَاءِ.",
           "translit": "khayrun mina t-tawakkuli 'ala r-ru'asa'i.",
-          "en": "than to hope in princes."
+          "en": "than to hope in princes.",
+          "nearest": true
         },
         {
           "text": "لِأَنَّ إِلَى ٱلْأَبَدِ رَحْمَتَهُ.",
@@ -157,7 +164,8 @@
         {
           "text": "قُوَّتِي وَتَرَنُّمِي ٱلرَّبُّ، وَقَدْ صَارَ لِي خَلَاصًا.",
           "translit": "Quwwati wa-tarannumi r-Rabbu, wa-qad sara li khalasan.",
-          "en": "The Lord is my strength and my song, and is become my salvation."
+          "en": "The Lord is my strength and my song, and is become my salvation.",
+          "unsure": "Heard only in part by the speech model; it wants a listener who knows Arabic."
         },
         {
           "text": "لِأَنَّ إِلَى ٱلْأَبَدِ رَحْمَتَهُ.",
@@ -172,7 +180,8 @@
         {
           "text": "يَمِينُ ٱلرَّبِّ مُرْتَفِعَةٌ. يَمِينُ ٱلرَّبِّ صَانِعَةٌ بِبَأْسٍ.",
           "translit": "Yaminu r-Rabbi murtafi'atun. Yaminu r-Rabbi sani'atun bi-ba'sin.",
-          "en": "The right hand of the Lord has exalted me: the right hand of the Lord has wrought powerfully."
+          "en": "The right hand of the Lord has exalted me: the right hand of the Lord has wrought powerfully.",
+          "nearest": true
         },
         {
           "text": "لِأَنَّ إِلَى ٱلْأَبَدِ رَحْمَتَهُ.",
@@ -217,7 +226,8 @@
         {
           "text": "هَذَا ٱلْبَابُ لِلرَّبِّ. ٱلصِّدِّيقُونَ يَدْخُلُونَ فِيهِ.",
           "translit": "Hadha l-babu lir-Rabbi. As-siddiquna yadkhuluna fihi.",
-          "en": "This is the gate of the Lord: the righteous shall enter by it."
+          "en": "This is the gate of the Lord: the righteous shall enter by it.",
+          "unsure": "Heard only in part by the speech model; it wants a listener who knows Arabic."
         },
         {
           "text": "لِأَنَّ إِلَى ٱلْأَبَدِ رَحْمَتَهُ.",
@@ -232,7 +242,8 @@
         {
           "text": "أَحْمَدُكَ لِأَنَّكَ ٱسْتَجَبْتَ لِي وَصِرْتَ لِي خَلَاصًا.",
           "translit": "Ahmaduka li-annaka stajabta li wa-sirta li khalasan.",
-          "en": "I will give thanks to thee; because thou hast heard me, and art become my salvation."
+          "en": "I will give thanks to thee; because thou hast heard me, and art become my salvation.",
+          "nearest": true
         },
         {
           "text": "لِأَنَّ إِلَى ٱلْأَبَدِ رَحْمَتَهُ.",
@@ -247,7 +258,8 @@
         {
           "text": "ٱلْحَجَرُ ٱلَّذِي رَفَضَهُ ٱلْبَنَّاؤُونَ قَدْ صَارَ رَأْسَ ٱلزَّاوِيَةِ.",
           "translit": "Al-hajaru lladhi rafadahu l-banna'una qad sara ra'sa z-zawiyati.",
-          "en": "The stone which the builders rejected, the same is become the head of the corner."
+          "en": "The stone which the builders rejected, the same is become the head of the corner.",
+          "nearest": true
         },
         {
           "text": "لِأَنَّ إِلَى ٱلْأَبَدِ رَحْمَتَهُ.",
@@ -277,22 +289,26 @@
         {
           "text": "هَذَا هُوَ ٱلْيَوْمُ ٱلَّذِي صَنَعُهُ ٱلرَّبُّ، نَبْتَهِجُ وَنَفْرَحُ فِيهِ.",
           "translit": "Hadha huwa l-yawmu lladhi sana'ahu r-Rabbu, nabtahiju wa-nafrahu fihi.",
-          "en": "This is the day which the Lord has made: let us exult and rejoice in it."
+          "en": "This is the day which the Lord has made: let us exult and rejoice in it.",
+          "nearest": true
         },
         {
           "text": "آهِ يَارَبُّ خَلِّصْ! آهِ يَارَبُّ أَنْقِذْ!",
           "translit": "Ahi ya-Rabbu khallis! Ahi ya-Rabbu anqidh!",
-          "en": "O Lord, save now: O Lord, send now prosperity."
+          "en": "O Lord, save now: O Lord, send now prosperity.",
+          "nearest": true
         },
         {
           "text": "إِلَهِي أَنْتَ فَأَحْمَدُكَ، إِلَهِي فَأَرْفَعُكَ.",
           "translit": "Ilahi anta fa-ahmaduka, ilahi fa-arfa'uka.",
-          "en": "Thou art my God, and I will give thee thanks: thou art my God, and I will exalt thee."
+          "en": "Thou art my God, and I will give thee thanks: thou art my God, and I will exalt thee.",
+          "nearest": true
         },
         {
           "text": "أَحْمَدُكَ لِأَنَّكَ ٱسْتَجَبْتَ لِي وَصِرْتَ لِي خَلَاصًا.",
           "translit": "Ahmaduka li-annaka stajabta li wa-sirta li khalasan.",
-          "en": "I will give thanks to thee; because thou hast heard me, and art become my salvation."
+          "en": "I will give thanks to thee; because thou hast heard me, and art become my salvation.",
+          "nearest": true
         },
         {
           "text": "ٱحْمَدُوا ٱلرَّبَّ لِأَنَّهُ صَالِحٌ،",

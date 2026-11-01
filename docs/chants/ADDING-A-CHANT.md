@@ -106,6 +106,11 @@ For a chant with the slug `christ-is-risen` and a version `el-byzantine`:
    version 2, each word with its start and end. Then the model hears every
    stretch on its own, and a word it did not hear is listed as `unheard` on
    its line: read the report, and listen to every line marked `?`.
+   A line whose words could not be confirmed carries `unsure` in the data
+   file, saying why; a line that is the nearest public-domain wording rather
+   than the words sung (a choir singing a wording still under copyright, or
+   one no public-domain printing has) carries `nearest`. Neither is shown to
+   readers: the version's `wordsSource` says it in prose.
 4. **The prose.** `about.what`, `about.history` and `about.when`, in English,
    plain, with no em dash, nothing invented, every claim resting on a source
    in `sources`. Set `review` to `{ "status": "awaiting-clergy-review", "since": "<today>" }`.

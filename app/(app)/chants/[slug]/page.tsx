@@ -4,7 +4,7 @@ import { ChantPage } from "@/components/chants/ChantPage";
 import { MobileTopBar } from "@/components/nav/MobileTopBar";
 import { ShareButton } from "@/components/ui/ShareButton";
 import { chantTitleKey } from "@/lib/chants/names";
-import { chantBySlug, chantIndex, firstSentence, indexRow, liveChants } from "@/lib/chants/registry.server";
+import { chantBySlug, chantIndex, firstSentence, forPage, indexRow, liveChants } from "@/lib/chants/registry.server";
 
 type Params = Promise<{ slug: string }>;
 
@@ -57,7 +57,7 @@ export default async function ChantRoute({ params }: { params: Params }) {
           />
         }
       />
-      <ChantPage chant={chant} row={indexRow(chant)} related={related} />
+      <ChantPage chant={forPage(chant)} row={indexRow(chant)} related={related} />
     </>
   );
 }
