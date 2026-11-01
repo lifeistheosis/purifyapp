@@ -60,7 +60,7 @@
         "src": "https://audio.purifyapp.net/chants/paschal-canon/en.mp3",
         "durationSec": 1758.2
       },
-      "timing": "/audio/chants/paschal-canon/en.json",
+      "timing": "/chant-timing/paschal-canon/en.json",
       "preview": {
         "from": 0,
         "to": 22

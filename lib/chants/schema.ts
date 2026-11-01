@@ -1,6 +1,6 @@
 import { z } from "zod";
 
-import { CHANT_KINDS, CHANT_RECORDINGS, CHANT_TRADITIONS } from "./types";
+import { CHANT_KINDS, CHANT_RECORDINGS, CHANT_TIMING, CHANT_TRADITIONS } from "./types";
 
 /**
  * The chant data file, checked. lib/chants/registry.server.ts reads every
@@ -40,7 +40,8 @@ const variant = z
     setting: z.string().trim().min(1).optional(),
     performer: z.string().trim().min(1).nullable(),
     audio: z.object({ src: recording, durationSec: seconds.positive() }).strict(),
-    timing: z.string().startsWith("/audio/").optional(),
+    // In the bundle (CHANT_TIMING), never asked of the website (note 78).
+    timing: z.string().regex(new RegExp(`^${CHANT_TIMING}[a-z0-9-]+/[a-z0-9-]+\\.json$`), `a file under ${CHANT_TIMING}`).optional(),
     preview: z.object({ from: seconds, to: seconds }).strict(),
     underPrayer: z.boolean().optional(),
     rtl: z.boolean().optional(),

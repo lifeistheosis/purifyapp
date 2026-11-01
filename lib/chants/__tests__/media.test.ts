@@ -15,15 +15,17 @@ import { availabilityOf, readLiveList } from "@/lib/chants/live";
 import {
   CHANT_MEDIA_PREFIX,
   CHANT_RECORDINGS,
+  CHANT_TIMING,
   LIVE_LIST_PATH,
   bucketRecording,
   chantMediaUrl,
+  chantPaths,
   englishOver,
   formatDuration,
   inBucket,
   isStreamed,
   isWordsView,
-  streamedPaths,
+  legacyTimingPath,
   sungAs,
   variantRef,
   wordSounds,
@@ -45,10 +47,16 @@ describe("a chant's media address", () => {
   });
 
   it("follows one layout: a folder per chant, a file per version", () => {
-    expect(streamedPaths("psalm-103", "znamenny")).toEqual({
+    expect(chantPaths("psalm-103", "znamenny")).toEqual({
       audio: `${CHANT_MEDIA_PREFIX}psalm-103/znamenny.mp3`,
-      timing: `${CHANT_MEDIA_PREFIX}psalm-103/znamenny.json`,
+      // In the bundle since note 78, never asked of the website.
+      timing: `${CHANT_TIMING}psalm-103/znamenny.json`,
     });
+    expect(CHANT_TIMING).toBe("/chant-timing/");
+    expect(isStreamed(chantPaths("psalm-103", "znamenny").timing)).toBe(false);
+    expect(chantMediaUrl(chantPaths("psalm-103", "znamenny").timing, true)).toBe("/chant-timing/psalm-103/znamenny.json");
+    // Where the builds through 86 still look, on the website.
+    expect(legacyTimingPath("psalm-103", "znamenny")).toBe(`${CHANT_MEDIA_PREFIX}psalm-103/znamenny.json`);
     expect(bucketRecording("psalm-103", "znamenny")).toBe(`${CHANT_RECORDINGS}psalm-103/znamenny.mp3`);
     expect(variantRef("psalm-103", "znamenny")).toBe("psalm-103/znamenny");
     expect(LIVE_LIST_PATH).toBe("/audio/chants/live.json");
@@ -61,8 +69,8 @@ describe("a chant's media address", () => {
     expect(isStreamed(inTheBucket.audio.src)).toBe(true);
     expect(chantMediaUrl(inTheBucket.audio.src, false)).toBe(inTheBucket.audio.src);
     expect(chantMediaUrl(inTheBucket.audio.src, true)).toBe(inTheBucket.audio.src);
-    // Its timing file is still the website's.
-    expect(chantMediaUrl("/audio/chants/psalm-135/el.json", true)).toBe(`${SITE_URL}/audio/chants/psalm-135/el.json`);
+    // Its timing file rides in the app (note 78).
+    expect(chantMediaUrl("/chant-timing/psalm-135/el.json", true)).toBe("/chant-timing/psalm-135/el.json");
     expect(inBucket("https://audio.purifyapp.net/read/john/1.mp3")).toBe(false);
     // The website's pages may play from the bucket (the read-aloud opened it).
     expect(fs.readFileSync("lib/security/headers.ts", "utf8")).toContain(`"media-src 'self' https://audio.purifyapp.net"`);

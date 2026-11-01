@@ -42,9 +42,21 @@ export type ChantTradition = (typeof CHANT_TRADITIONS)[number];
  * (lib/readAloud/chapters.ts). The owner's word of 2026-10-30, "R2, like the
  * Bible audio": out of the public repository, the same address on the
  * website and in the apps. A recording there is `<this><slug>/<id>.mp3`;
- * its timing file stays on the website (lib/chants/media.ts).
+ * its timing file rides in the app (CHANT_TIMING).
  */
 export const CHANT_RECORDINGS = "https://audio.purifyapp.net/chants/";
+
+/**
+ * Where a version's timing file is read (1.8, build 86 note 78): beside the
+ * page, in the apps' bundle and on the website alike, at
+ * `<this><slug>/<id>.json`. The file is `data/chants/timing/<slug>/<id>.json`,
+ * written out by app/chant-timing at build time, so a build always carries
+ * the timing of the words it shows. Through build 86 the apps asked the
+ * website for it, and the website still ran 1.8 as launched: Psalm 135 and
+ * Psalm 117 were not timed on the owner's phone ("So the chats they're not
+ * timed"). The recordings still stream.
+ */
+export const CHANT_TIMING = "/chant-timing/";
 
 /** What kind of hymn it is, as the service books name them. */
 export const CHANT_KINDS = [
@@ -126,7 +138,7 @@ export type ChantVariant = {
    */
   audio: { src: string; durationSec: number };
   /**
-   * The timing file of a streamed recording, on the website: each line's
+   * The recording's timing file, in the bundle (CHANT_TIMING): each line's
    * start and end. A recording with none has its words without Sing along.
    */
   timing?: string;

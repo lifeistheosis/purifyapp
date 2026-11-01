@@ -37,7 +37,7 @@
         "src": "/audio/chants/prayer-rope-anthem/en.mp3",
         "durationSec": 126.9
       },
-      "timing": "/audio/chants/prayer-rope-anthem/en.json",
+      "timing": "/chant-timing/prayer-rope-anthem/en.json",
       "preview": {
         "from": 17.9,
         "to": 31.4
@@ -129,7 +129,7 @@
         "src": "/audio/chants/prayer-rope-anthem/fr.mp3",
         "durationSec": 140.23
       },
-      "timing": "/audio/chants/prayer-rope-anthem/fr.json",
+      "timing": "/chant-timing/prayer-rope-anthem/fr.json",
       "preview": {
         "from": 17.3,
         "to": 33.2
@@ -249,7 +249,7 @@
         "src": "/audio/chants/prayer-rope-anthem/ar.mp3",
         "durationSec": 121.44
       },
-      "timing": "/audio/chants/prayer-rope-anthem/ar.json",
+      "timing": "/chant-timing/prayer-rope-anthem/ar.json",
       "preview": {
         "from": 18.8,
         "to": 35.2

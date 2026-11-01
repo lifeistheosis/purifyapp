@@ -50,15 +50,17 @@ const PICTURE_SOURCES = [
   "/_next/image",
 ];
 
-// CHANT MEDIA is the other exception (1.7). Every chant's recordings, timed
-// words and cover live under /audio/chants/ on the website alone: the apps'
-// export leaves them out (scripts/native-build.mjs) and the apps ask the
-// website for them (lib/chants/media.ts). The apps are another origin
-// (https://localhost, capacitor://localhost), so without these the browser in
-// the app refuses a recording the server answered 200 for, as it refused the
-// email pictures above. The audio element needs the resource policy; the
-// timing files and live.json are read with fetch() and need the CORS header.
-// All of it is public and served with no reader's cookies.
+// CHANT MEDIA is the other exception (1.7). The Anthem's recordings, live.json
+// and the old timing files the builds through 86 still read live under
+// /audio/chants/ on the website alone: the apps' export leaves them out
+// (scripts/native-build.mjs) and the apps ask the website for them
+// (lib/chants/media.ts). The apps are another origin (https://localhost,
+// capacitor://localhost), so without these the browser in the app refuses a
+// recording the server answered 200 for, as it refused the email pictures
+// above. The audio element needs the resource policy; live.json and the old
+// timing files are read with fetch() and need the CORS header. All of it is
+// public and served with no reader's cookies. (The timing files this build
+// reads ride in the app, app/chant-timing: note 78.)
 //
 // live.json is the takedown list: kept fresh for minutes, not a day, so a
 // pulled recording stops quickly everywhere. The rule after the general one

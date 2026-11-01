@@ -13,11 +13,12 @@ import path from "node:path";
 import { describe, expect, it } from "vitest";
 
 import { LOCALES } from "@/lib/i18n/locales";
-import { bucketRecording, inBucket, isStreamed, readTiming, streamedPaths } from "@/lib/chants/media";
+import { bucketRecording, chantPaths, inBucket, isStreamed, legacyTimingPath, readTiming } from "@/lib/chants/media";
+import { timingFiles } from "@/lib/chants/timing.server";
 import { chantLineKey, chantTitleKey, kindKey, traditionKey } from "@/lib/chants/names";
 import { allChants, chantIndex } from "@/lib/chants/registry.server";
 import { chantSchema } from "@/lib/chants/schema";
-import { CHANT_KINDS, CHANT_TRADITIONS } from "@/lib/chants/types";
+import { CHANT_KINDS, CHANT_TIMING, CHANT_TRADITIONS } from "@/lib/chants/types";
 // Plain ESM, shared with the intake script that prints a recording's length.
 import { mp3Duration } from "../../../scripts/chants/mp3.mjs";
 
@@ -30,6 +31,8 @@ const CATALOGS = Object.fromEntries(LOCALES.map((l) => [l.code, catalog(l.code)]
 const EN = CATALOGS.en;
 const LONG_DASH = String.fromCharCode(0x2014);
 const onDisk = (webPath: string) => path.join(ROOT, "public", webPath.replace(/^\//, ""));
+/** A timing file's source: /chant-timing/<slug>/<id>.json is data/chants/timing/<slug>/<id>.json. */
+const inData = (webPath: string) => path.join(ROOT, "data", "chants", "timing", webPath.slice(CHANT_TIMING.length));
 
 /** Letters of a script other than Latin: a line in it is given a transliteration. */
 const NON_LATIN = /[Ͱ-Ͽἀ-῿Ѐ-ԯ֐-׿؀-ۿݐ-ݿႠ-ჿᲐ-Ჿ԰-֏]/;
@@ -123,27 +126,51 @@ describe("each version of a chant", () => {
     }
   });
 
-  it("keeps a streamed recording, its timing file and its cover where the apps look for them", () => {
+  it("keeps a streamed recording and its cover where the apps look for them", () => {
     for (const { c, v, id } of versions) {
       if (!isStreamed(v.audio.src)) continue;
-      const want = streamedPaths(c.slug, v.id);
+      const want = chantPaths(c.slug, v.id);
       if (inBucket(v.audio.src)) {
         // 1.8: the sound is the bucket's alone, and never also in the
-        // repository; its timing file, where it has one, is the website's.
+        // repository.
         expect(v.audio.src, id).toBe(bucketRecording(c.slug, v.id));
         expect(fs.existsSync(onDisk(want.audio)), `${id}: a copy of a bucket recording is in the repository`).toBe(false);
-        if (v.timing) {
-          expect(v.timing, id).toBe(want.timing);
-          expect(fs.existsSync(onDisk(v.timing)), `${id}: ${v.timing} is not on disk`).toBe(true);
-        }
         continue;
       }
       expect(v.audio.src, id).toBe(want.audio);
-      expect(v.timing, id).toBe(want.timing);
       expect(fs.existsSync(onDisk(v.audio.src)), `${id}: ${v.audio.src} is not on disk`).toBe(true);
-      expect(fs.existsSync(onDisk(v.timing!)), `${id}: ${v.timing} is not on disk`).toBe(true);
     }
     for (const c of allChants()) if (c.cover) expect(fs.existsSync(onDisk(c.cover.src)), `${c.slug} cover`).toBe(true);
+  });
+
+  it("carries its timing file in the app, beside its words (note 78)", () => {
+    // Build 86: the apps asked the website for each timing file, the website
+    // still ran 1.8 as launched, and Psalm 135 and Psalm 117 were not timed
+    // on the owner's phone. The file is in the bundle now, written out at
+    // build time from data/chants/timing by app/chant-timing.
+    const served = new Set(timingFiles().map((f) => `${CHANT_TIMING}${f.slug}/${f.file}`));
+    for (const { c, v, id } of versions) {
+      if (!v.timing) continue;
+      expect(v.timing, id).toBe(chantPaths(c.slug, v.id).timing);
+      expect(fs.existsSync(inData(v.timing)), `${id}: ${inData(v.timing)} is not on disk`).toBe(true);
+      expect(served.has(v.timing), `${id}: ${v.timing} is not written out by app/chant-timing`).toBe(true);
+    }
+    // Nothing written out that no version reads.
+    const read = new Set(versions.map(({ v }) => v.timing).filter(Boolean));
+    expect([...served].filter((p) => !read.has(p))).toEqual([]);
+  });
+
+  it("leaves the website's old timing files as the builds through 86 read them", () => {
+    // Those builds ask the website for /audio/chants/<slug>/<id>.json and
+    // read only a version 1 file whose lines are their own words, so the
+    // copies stay there, frozen as build 86 had them. Never edit one.
+    for (const { c, v, id } of versions) {
+      const legacy = onDisk(legacyTimingPath(c.slug, v.id));
+      if (!fs.existsSync(legacy)) continue;
+      const old = JSON.parse(fs.readFileSync(legacy, "utf8")) as { v: number; lines: unknown[] };
+      expect(old.v, `${id}: ${legacy}`).toBe(1);
+      expect(Array.isArray(old.lines) && old.lines.length > 0, id).toBe(true);
+    }
   });
 
   it("records the length its recording really has", () => {
@@ -176,7 +203,7 @@ describe("each version of a chant", () => {
     // recording.
     for (const { v, id } of versions) {
       if (!v.timing) continue;
-      const timing = readTiming(JSON.parse(fs.readFileSync(onDisk(v.timing), "utf8")));
+      const timing = readTiming(JSON.parse(fs.readFileSync(inData(v.timing), "utf8")));
       expect(timing, `${id}: the timing file does not read`).not.toBeNull();
       expect(timing!.lines.map((l) => l.text), id).toEqual(v.lines.map((l) => l.text));
       expect(Math.abs(timing!.durationSec - v.audio.durationSec), id).toBeLessThan(1);

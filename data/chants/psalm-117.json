@@ -62,7 +62,7 @@
         "src": "https://audio.purifyapp.net/chants/psalm-117/ar.mp3",
         "durationSec": 355.4
       },
-      "timing": "/audio/chants/psalm-117/ar.json",
+      "timing": "/chant-timing/psalm-117/ar.json",
       "preview": {
         "from": 0,
         "to": 20

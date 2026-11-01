@@ -2,7 +2,7 @@ import { streamedUrl } from "@/lib/media/streamed";
 import { wordsOf } from "@/lib/player/captions";
 import type { CaptionSource } from "@/lib/prayers/persistentAudioStore";
 
-import { CHANT_RECORDINGS, type ChantLine, type ChantTiming } from "./types";
+import { CHANT_RECORDINGS, CHANT_TIMING, type ChantLine, type ChantTiming } from "./types";
 
 /**
  * Where a chant's recordings, timed words and cover are, and how they are
@@ -24,13 +24,20 @@ import { CHANT_RECORDINGS, type ChantLine, type ChantTiming } from "./types";
  * three recordings, from 1.7, stay on the website.
  *
  * Everything else streamed lives under /audio/chants/ on the website: the
- * Anthem's recordings, every recording's timing file and the live list. It
- * is kept out of the apps' export (scripts/native-build.mjs, STASH_PATHS),
- * so in the apps it is asked of SITE_URL, and on the website it is the
- * site's own file. next.config.ts lets the apps' origins read it
- * (Cross-Origin-Resource-Policy and Access-Control-Allow-Origin on
- * /audio/chants), which a curl that answers 200 does not prove: a browser
- * refuses a same-origin file to another origin while the server says 200.
+ * Anthem's recordings and the live list. It is kept out of the apps' export
+ * (scripts/native-build.mjs, STASH_PATHS), so in the apps it is asked of
+ * SITE_URL, and on the website it is the site's own file. next.config.ts
+ * lets the apps' origins read it (Cross-Origin-Resource-Policy and
+ * Access-Control-Allow-Origin on /audio/chants), which a curl that answers
+ * 200 does not prove: a browser refuses a same-origin file to another origin
+ * while the server says 200.
+ *
+ * The timing files are not streamed (1.8, build 86 note 78): each rides in
+ * the app beside the words it times (CHANT_TIMING, app/chant-timing), so a
+ * build never shows words its timing cannot reach. The copies still under
+ * /audio/chants/<slug>/<id>.json on the website are kept, frozen, for the
+ * builds that asked the website for them (build 86 and before); nothing in
+ * this build reads them.
  *
  * Any other path (the Anthem's cover, /audio/art/anthem.jpg) is in the
  * bundle and is used as it is. The way a website file is reached is shared
@@ -38,7 +45,7 @@ import { CHANT_RECORDINGS, type ChantLine, type ChantTiming } from "./types";
  */
 export const CHANT_MEDIA_PREFIX = "/audio/chants/";
 
-export { CHANT_RECORDINGS };
+export { CHANT_RECORDINGS, CHANT_TIMING };
 
 /** The list that says which streamed recordings may play. */
 export const LIVE_LIST_PATH = `${CHANT_MEDIA_PREFIX}live.json`;
@@ -68,12 +75,20 @@ export function variantRef(slug: string, variantId: string): string {
   return `${slug}/${variantId}`;
 }
 
-/** The conventional paths of a recording on the website and of its timing file. */
-export function streamedPaths(slug: string, variantId: string): { audio: string; timing: string } {
+/**
+ * The conventional paths of a version: its recording on the website (the
+ * Anthem's, from 1.7), and its timing file, in the bundle.
+ */
+export function chantPaths(slug: string, variantId: string): { audio: string; timing: string } {
   return {
     audio: `${CHANT_MEDIA_PREFIX}${slug}/${variantId}.mp3`,
-    timing: `${CHANT_MEDIA_PREFIX}${slug}/${variantId}.json`,
+    timing: `${CHANT_TIMING}${slug}/${variantId}.json`,
   };
+}
+
+/** Where the builds through 86 ask the website for a timing file: kept there, frozen, for them alone. */
+export function legacyTimingPath(slug: string, variantId: string): string {
+  return `${CHANT_MEDIA_PREFIX}${slug}/${variantId}.json`;
 }
 
 /** A recording's address in Purify's bucket: one folder per chant, a file per version. */
@@ -96,7 +111,11 @@ const timings = new Map<string, Promise<ChantTiming | null>>();
 /** The timing files that have arrived, to hand over at once. */
 const arrived = new Map<string, ChantTiming>();
 
-/** A recording's timing file, fetched once per session; null when it cannot be read. */
+/**
+ * A recording's timing file, read once per session; null when it cannot be
+ * read. It is in the bundle (CHANT_TIMING), so in the apps it comes from the
+ * app itself, with no signal and whatever the website runs.
+ */
 export function loadTiming(path: string): Promise<ChantTiming | null> {
   let p = timings.get(path);
   if (!p) {

@@ -3320,7 +3320,7 @@ await section(34, async () => {
   const en = JSON.parse(fs.readFileSync(path.resolve("lib/i18n/messages/en.json"), "utf8"));
   must(!inBundle(OUT, "/kitchen/") && !inBundle(OUT, "/kitchen/recipe/") && !inBundle(OUT, "/kitchen/new/"), "the Kitchen's screens are not in the bundle");
   must(!fs.existsSync(path.join(OUT, "kitchen-photos")), "nor its photos: they stay on the website");
-  must(!fs.existsSync(path.join(OUT, "audio", "chants")), "no chant recording, timing file or takedown list ships inside the app");
+  must(!fs.existsSync(path.join(OUT, "audio", "chants")), "no chant recording or takedown list ships inside the app");
   must(fs.existsSync(path.join(OUT, "chants-index.json")), "the library's index ships, so Pray with chant lists it with no signal");
   must(inBundle(OUT, "/chants/") && inBundle(OUT, "/chants/prayer-rope-anthem/"), "Chants and the Anthem's page are in the bundle");
   must(!inBundle(OUT, "/prayers/anthem/"), "and the Anthem's old page is not");
