@@ -99,6 +99,17 @@ public class MainActivity extends BridgeActivity {
      * broadcast Firebase had accepted looked like nothing arrived. Creating a
      * channel that exists changes nothing, and a reader's own setting for it
      * always wins.
+     *
+     * No badge on the app icon. Android puts a dot on the launcher icon for
+     * every notification left unread, and some launchers (Samsung's among
+     * them) draw it as a number: an unread count on Purify's own icon, which
+     * CONTRIBUTING's fourth clause on reminders forbids ("no badge, no unread
+     * count, no red dot") and the bell in the app was built without. Android
+     * reads this only when the channel is first made, so it holds on every
+     * phone that installs this build fresh; a phone that already has the
+     * channel keeps the badge until the reader turns it off in the channel's
+     * own settings (lib/push/__tests__/androidChannel.test.ts says why the id
+     * was not changed instead).
      */
     private void createPushChannel() {
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) return;
@@ -110,6 +121,7 @@ public class MainActivity extends BridgeActivity {
             NotificationManager.IMPORTANCE_HIGH
         );
         channel.setDescription(getString(R.string.push_channel_description));
+        channel.setShowBadge(false);
         manager.createNotificationChannel(channel);
     }
 }
