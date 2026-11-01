@@ -14,9 +14,9 @@ import { previewSrc } from "@/lib/player/preview";
 
 const MESSAGES = en as Record<string, string>;
 
-/** A recording's line starts: from its timing file. */
+/** A recording's line starts: from its timing file, kept beside the words (note 78: it rides in the app as /chant-timing/...). */
 function lineTimes(v: ChantIndexVariant): number[] {
-  const file = path.join("public", v.timing!.replace(/^\//, ""));
+  const file = path.join("data", "chants", "timing", v.timing!.replace(/^\/chant-timing\//, ""));
   return readTiming(JSON.parse(fs.readFileSync(file, "utf8")))!.lines.map((l) => l.at);
 }
 

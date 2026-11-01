@@ -127,7 +127,8 @@ describe("Read", () => {
   it("opens a chant's page, which shows the version playing", () => {
     expect(readHref(playingOf("/audio/chants/prayer-rope-anthem/fr.mp3"), 3)).toBe("/chants/prayer-rope-anthem");
     const page = read("components/chants/ChantPage.tsx");
-    expect(page).toContain("?? playingHere ?? firstVersion(chant.variants, locale)");
+    // Its versions as shown: with the cleared words where they are on (note 78).
+    expect(page).toContain("?? playingHere ?? firstVersion(variants, locale)");
   });
 
   it("is not drawn for what it cannot open", () => {

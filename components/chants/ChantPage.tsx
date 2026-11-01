@@ -1,10 +1,12 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 
 import { useTranslate } from "@/components/i18n/MessagesProvider";
 import { ShareButton } from "@/components/ui/ShareButton";
 import { cn } from "@/lib/cn";
+import { withCleared } from "@/lib/chants/cleared";
+import { useClearedWords } from "@/lib/chants/clearedClient";
 import type { ChantDoor } from "@/lib/chants/doors";
 import { useChantAvailability } from "@/lib/chants/live";
 import { chantLineKey, chantTitleKey, kindKey } from "@/lib/chants/names";
@@ -62,18 +64,24 @@ export function ChantPage({ chant, row, related }: { chant: Chant; row: ChantInd
   const { t, locale } = useTranslate();
   const title = t(chantTitleKey(chant.key));
   const [chosen, setChosen] = useState<string | null>(null);
+  // Each version as it is shown: with its words as sung where their
+  // clearance is switched on in the admin (build 86 note 78), read at run
+  // time; otherwise, and with no signal, the words the app carries.
+  const cleared = useClearedWords();
+  const variants = useMemo(() => withCleared(chant, cleared).variants, [chant, cleared]);
   // Until the reader chooses, the page shows the version playing, if one of
   // this chant's is: the player's Read opens this page to its words, lit
   // where the singing has got to (1.8, components/player/NowPlayingSheet.tsx).
   const { src: playingSrc } = usePersistentAudio();
-  const playingHere = playingSrc ? chant.variants.find((v) => playingSrc === v.audio.src || playingSrc.endsWith(v.audio.src)) : undefined;
-  const variant = chant.variants.find((v) => v.id === chosen) ?? playingHere ?? firstVersion(chant.variants, locale);
+  const playingHere = playingSrc ? variants.find((v) => playingSrc === v.audio.src || playingSrc.endsWith(v.audio.src)) : undefined;
+  const variant = variants.find((v) => v.id === chosen) ?? playingHere ?? firstVersion(variants, locale);
   const indexVariant = row.variants.find((v) => v.id === variant.id) ?? row.variants[0];
   const play = useChantPlay({
     slug: chant.slug,
     title,
     variant: indexVariant,
     lines: variant.lines,
+    timing: variant.clearedTiming,
     coverSrc: chant.cover?.src,
     open: false,
   });
@@ -92,7 +100,7 @@ export function ChantPage({ chant, row, related }: { chant: Chant; row: ChantInd
 
   // The switch on the words, for every version of a chant that has a version
   // with its sound written out, so choosing another never takes it away.
-  const switchable = chant.variants.some((v) => v.lines.some((l) => l.translit));
+  const switchable = variants.some((v) => v.lines.some((l) => l.translit));
   const sings = variant.performer ? t("chants.sungBy", { name: variant.performer }) : t("chants.performerUnknown");
   // What it is, after the version's own name: B's Play row's line.
   const what = [t(kindKey(chant.kind)), chant.tone ? t("chants.tone", { n: chant.tone }) : null, variant.setting ?? null].filter(
@@ -109,10 +117,10 @@ export function ChantPage({ chant, row, related }: { chant: Chant; row: ChantInd
     const wasPlaying = play.playing;
     setChosen(id);
     if (!wasPlaying) return;
-    const next = chant.variants.find((v) => v.id === id);
+    const next = variants.find((v) => v.id === id);
     const nextIndex = row.variants.find((v) => v.id === id);
     if (!next || !nextIndex || availabilityFor(chant.slug, nextIndex) !== "playable") return;
-    playChant({ slug: chant.slug, title, variant: nextIndex, lines: next.lines, coverSrc: chant.cover?.src, prefs, open: false });
+    playChant({ slug: chant.slug, title, variant: nextIndex, lines: next.lines, timing: next.clearedTiming, coverSrc: chant.cover?.src, prefs, open: false });
   };
 
   const openDoor = (next: ChantDoor) => {
@@ -209,7 +217,7 @@ export function ChantPage({ chant, row, related }: { chant: Chant; row: ChantInd
             slug={chant.slug}
             title={title}
             variants={row.variants}
-            linesOf={(id) => chant.variants.find((v) => v.id === id)?.lines}
+            linesOf={(id) => variants.find((v) => v.id === id)?.lines}
             coverSrc={chant.cover?.src}
             selected={variant.id}
             onSelect={chooseFromList}

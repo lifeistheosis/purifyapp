@@ -37,7 +37,7 @@
         "src": "/audio/chants/prayer-rope-anthem/en.mp3",
         "durationSec": 126.9
       },
-      "timing": "/audio/chants/prayer-rope-anthem/en.json",
+      "timing": "/chant-timing/prayer-rope-anthem/en.json",
       "preview": {
         "from": 17.9,
         "to": 31.4
@@ -129,7 +129,7 @@
         "src": "/audio/chants/prayer-rope-anthem/fr.mp3",
         "durationSec": 140.23
       },
-      "timing": "/audio/chants/prayer-rope-anthem/fr.json",
+      "timing": "/chant-timing/prayer-rope-anthem/fr.json",
       "preview": {
         "from": 17.3,
         "to": 33.2
@@ -249,7 +249,7 @@
         "src": "/audio/chants/prayer-rope-anthem/ar.mp3",
         "durationSec": 121.44
       },
-      "timing": "/audio/chants/prayer-rope-anthem/ar.json",
+      "timing": "/chant-timing/prayer-rope-anthem/ar.json",
       "preview": {
         "from": 18.8,
         "to": 35.2
@@ -259,11 +259,13 @@
       "lines": [
         {
           "text": "قد أمسكت المسبحة كي يرفع عني دعائي",
-          "translit": "Qad amsaktu l-misbaha kay yurfa'a 'anni du'a'i"
+          "translit": "Qad amsaktu l-misbaha kay yurfa'a 'anni du'a'i",
+          "unsure": "Its first word (qad) was heard only in part; it wants a listener who knows Arabic."
         },
         {
           "text": "بقوة الصلاة أرتقي بين السماء،",
-          "translit": "Bi-quwwati s-salati artaqi bayna s-sama',"
+          "translit": "Bi-quwwati s-salati artaqi bayna s-sama',",
+          "unsure": "Its first words (bi-quwwati s-salati) were heard only in part; it wants a listener who knows Arabic."
         },
         {
           "text": "بتكرارها الكثير سوف أغلب الشرير.",
@@ -295,7 +297,8 @@
         },
         {
           "text": "الصلاة الثالثة لوالدة الإله،",
-          "translit": "As-salatu th-thalitha li-walidati l-ilah,"
+          "translit": "As-salatu th-thalitha li-walidati l-ilah,",
+          "unsure": "Heard only in part by the speech model; it wants a listener who knows Arabic."
         },
         {
           "text": "أيتها الفائقة القداسة خلّصينا،",
@@ -307,7 +310,8 @@
         },
         {
           "text": "الصلاة الرابعة ليوحنا المعمدان،",
-          "translit": "As-salatu r-rabi'a li-Yuhanna l-ma'madan,"
+          "translit": "As-salatu r-rabi'a li-Yuhanna l-ma'madan,",
+          "unsure": "Heard only in part by the speech model; it wants a listener who knows Arabic."
         },
         {
           "text": "يا صابغ المسيح تشفّع لعبيدك،",
@@ -319,11 +323,13 @@
         },
         {
           "text": "الصلاة الخامسة لجميع القديسين،",
-          "translit": "As-salatu l-khamisa li-jami'i l-qiddisin,"
+          "translit": "As-salatu l-khamisa li-jami'i l-qiddisin,",
+          "unsure": "Heard only in part by the speech model; it wants a listener who knows Arabic."
         },
         {
           "text": "يا قديسي الله تشفّعوا بنا،",
-          "translit": "Ya qiddisi llah tashaffa'u bina,"
+          "translit": "Ya qiddisi llah tashaffa'u bina,",
+          "unsure": "Heard only in part by the speech model; it wants a listener who knows Arabic."
         },
         {
           "text": "بتكرارها الكثير سوف أغلب الشرير.",

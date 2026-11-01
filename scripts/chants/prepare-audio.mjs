@@ -114,6 +114,6 @@ const seconds = mp3Duration(out);
 const bytes = fs.statSync(out).size;
 console.log(`\n${out}: ${seconds} s, ${(bytes / 1048576).toFixed(2)} MB`);
 console.log("\nFor the version in data/chants/" + slug + ".json:");
-console.log(JSON.stringify({ audio: { src: `${BUCKET}${slug}/${id}.mp3`, durationSec: seconds }, timing: `/audio/chants/${slug}/${id}.json` }, null, 2));
+console.log(JSON.stringify({ audio: { src: `${BUCKET}${slug}/${id}.mp3`, durationSec: seconds }, timing: `/chant-timing/${slug}/${id}.json` }, null, 2));
 console.log(`\nNext: upload ${path.resolve(outRoot)} (Homebase/tools/r2/upload.mjs, prefix chants), the timed words`);
 console.log("(scripts/chants/timing-from-transcript.mjs; leave out `timing` where none can be made), the provenance row, and the live list.");

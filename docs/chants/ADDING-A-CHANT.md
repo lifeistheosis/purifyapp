@@ -19,10 +19,17 @@ notes 15, 26 and 28, 2026-10-16):
   Cloudflare R2, at `https://audio.purifyapp.net/chants/<slug>/<id>.mp3`, as
   the Bible read aloud is (his "R2, like the Bible audio", 2026-10-30), and
   **never in this repository**: `.gitignore` refuses
-  `public/audio/chants/**/*.mp3`, and the data test fails on one. The timing
-  files and `live.json` stay on the website, under `public/audio/chants/`,
-  which `scripts/native-build.mjs` sets aside from the apps. The Prayer Rope
+  `public/audio/chants/**/*.mp3`, and the data test fails on one. `live.json`
+  stays on the website, under `public/audio/chants/`, which
+  `scripts/native-build.mjs` sets aside from the apps. The Prayer Rope
   Anthem's three recordings, from 1.7, are the only ones on the website.
+- The timing files ride in the apps (build 86 note 78): each is
+  `data/chants/timing/<slug>/<id>.json`, written out at build time as
+  `/chant-timing/<slug>/<id>.json` (`app/chant-timing`), so a build always
+  carries the timing of the words it shows. Through build 86 the apps asked
+  the website for them, and a website still running an older build left a
+  chant untimed on the phone. The old copies under `public/audio/chants/`
+  stay, frozen, for those builds: never edit one, and never add one.
 - The words on screen are the Church's published text, never a transcript.
   His transcript only gives each line its time.
 - No priest reviews Purify yet. Write the prose as canonically as it can be
@@ -37,7 +44,7 @@ For a chant with the slug `christ-is-risen` and a version `el-byzantine`:
 | --- | --- |
 | `data/chants/christ-is-risen.json` | The chant: the shape is `lib/chants/types.ts`, checked by `lib/chants/schema.ts`. Its name must be its slug. |
 | `https://audio.purifyapp.net/chants/christ-is-risen/el-byzantine.mp3` | The recording, in the bucket: made by `scripts/chants/prepare-audio.mjs` into a staging folder outside the repository, then uploaded. Its data file's `audio.src` is this address. |
-| `public/audio/chants/christ-is-risen/el-byzantine.json` | Its timed words, made by `scripts/chants/timing-from-transcript.mjs`. Optional: a version with none has its words without Sing along. |
+| `data/chants/timing/christ-is-risen/el-byzantine.json` | Its timed words, made by `scripts/chants/timing-from-transcript.mjs`. Rides in the app as `/chant-timing/christ-is-risen/el-byzantine.json`, the data file's `timing`. Optional: a version with none has its words without Sing along. |
 | `public/audio/chants/live.json` | Add `"christ-is-risen/el-byzantine"` to `live`. A recording plays only while it is listed there. |
 | `docs/licensing/audio-provenance.md` | One row in the Chants section, named by the recording's bucket address: where it came from (the upload's link, its uploader and date), the performer or "not known", licence **none**, the day it came, his decision, and its takedown line. |
 | `public/audio/art/<icon>.v1.jpg` | Its cover (1.8, the owner's note 57: every chant has one): a public-domain icon matched to its words, a square of 640 by 640 in the bundle, with its row under "The chants' covers" in `docs/licensing/audio-provenance.md`. A cover another chant already has is used again (King David for a psalm). |
@@ -87,6 +94,23 @@ For a chant with the slug `christ-is-risen` and a version `el-byzantine`:
    `edits/tools/speechmap.mjs`), then find every other verse by its breaths
    and by matching that verse's refrain and Alleluia along the recording.
    Never take a speech model's word times as they are: they run late.
+   **Then each word** (build 86 note 78, "each word timestamped and followed
+   in the lyrics section"): `node scripts/chants/time-words.mjs <slug> <id>
+   --wav <the recording at 16 kHz, mono> --transformers <transformers.node.mjs>
+   --cache <the models' folder> --keep <a file outside the repository>
+   --report <a file outside the repository>`, through
+   `purify-ads/tools/renderlock.mjs`. It hands Whisper small each line's own
+   words and their stretch of the recording, takes where its attention puts
+   each word (a tenth of a second early, as its times run late; the first
+   word where the line is first heard), and writes the timing file as
+   version 2, each word with its start and end. Then the model hears every
+   stretch on its own, and a word it did not hear is listed as `unheard` on
+   its line: read the report, and listen to every line marked `?`.
+   A line whose words could not be confirmed carries `unsure` in the data
+   file, saying why; a line that is the nearest public-domain wording rather
+   than the words sung (a choir singing a wording still under copyright, or
+   one no public-domain printing has) carries `nearest`. Neither is shown to
+   readers: the version's `wordsSource` says it in prose.
 4. **The prose.** `about.what`, `about.history` and `about.when`, in English,
    plain, with no em dash, nothing invented, every claim resting on a source
    in `sources`. Set `review` to `{ "status": "awaiting-clergy-review", "since": "<today>" }`.

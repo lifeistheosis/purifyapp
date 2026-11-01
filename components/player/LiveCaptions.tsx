@@ -3,7 +3,7 @@
 import { memo, useEffect, useLayoutEffect, useRef, type ReactNode } from "react";
 
 import { clockNow, subscribeClock } from "@/lib/player/clock";
-import { lineAt, lineParts, wordsOf, type CaptionLine } from "@/lib/player/captions";
+import { followWord, lineAt, lineParts, wordAt, wordsOf, type CaptionLine } from "@/lib/player/captions";
 import { getAudioSnapshot, type CaptionSource } from "@/lib/prayers/persistentAudioStore";
 import { cn } from "@/lib/cn";
 
@@ -19,7 +19,11 @@ import { cn } from "@/lib/cn";
  *     the lines beside it a step back, the rest further. Its words light one
  *     by one as each is reached, where they are the words being sung: a line
  *     read in its English is lit whole, and the sung words under it light
- *     word by word.
+ *     word by word. Where the timing file times each word (build 86 note 78,
+ *     "each word timestamped and followed in the lyrics section"), a word
+ *     lights when it is sung and keeps its glow for as long as it is held,
+ *     then lets it go; and the word being sung is kept in sight, so a line
+ *     longer than the box is followed row by row.
  *   - The words move: the line being sung rises to a third of the way down,
  *     unless the reader has just scrolled to look elsewhere. The box scrolls
  *     like any list, so every line can be read with nothing playing.
@@ -142,6 +146,8 @@ export const LiveCaptions = memo(function LiveCaptions({
   const flipped = useRef<HTMLElement[]>([]);
   const currentRef = useRef(current);
   const followingRef = useRef(false);
+  /** The word last kept in sight: its line and its place. */
+  const sungWord = useRef({ line: -1, word: -1 });
   const following = live && timed && active;
 
   const parts = (el: HTMLLIElement | null | undefined) => ({
@@ -254,6 +260,33 @@ export const LiveCaptions = memo(function LiveCaptions({
     scrolling.current = 0;
   }
 
+  /**
+   * The word being sung, kept in sight (note 78): where it has gone under the
+   * box's fade at the foot (a long line, row after row) or over its top, the
+   * box moves it to where the line being sung stands, gliding on the house
+   * curve, at once with Purify's motion off (scrollTo). Measured on the
+   * layout, not on the screen, so the line's own grow does not mislead it,
+   * and never while the reader has just scrolled the words or the box is
+   * already moving.
+   */
+  function keepInSight(el: HTMLElement | null | undefined) {
+    const box = boxRef.current;
+    if (!box || !el || scrolling.current || performance.now() - lastHand.current < HANDS_OFF_MS) return;
+    let top = 0;
+    let node: HTMLElement | null = el;
+    while (node && node !== box) {
+      top += node.offsetTop;
+      node = node.offsetParent as HTMLElement | null;
+    }
+    if (node !== box) return;
+    const to = followWord(
+      { top, bottom: top + el.offsetHeight },
+      { scrollTop: box.scrollTop, height: box.clientHeight, max: box.scrollHeight - box.clientHeight },
+      ANCHOR,
+    );
+    if (to !== null && Math.abs(to - box.scrollTop) >= 1) scrollTo(to, true);
+  }
+
   /** The scroll that stands line `i` at the anchor, within what the box can scroll. */
   function targetFor(i: number): number | null {
     const box = boxRef.current;
@@ -302,7 +335,8 @@ export const LiveCaptions = memo(function LiveCaptions({
       }
       if (cur < 0) return;
       const els = wordRefs.current[cur] ?? [];
-      lines[cur].words.forEach((w, j) => {
+      const words = lines[cur].words;
+      words.forEach((w, j) => {
         const el = els[j];
         if (!el) return;
         if (t < w.at) {
@@ -312,17 +346,27 @@ export const LiveCaptions = memo(function LiveCaptions({
         }
         const since = t - w.at;
         const o = WAIT + (1 - WAIT) * Math.min(1, since / 0.12);
-        const glow = Math.exp(-since / 0.5);
+        // A word timed to its end (note 78) glows while it is held, and the
+        // glow fades once it is sung; one with no end fades from its start.
+        const after = typeof w.end === "number" ? Math.max(0, t - w.end) : since;
+        const glow = Math.exp(-after / 0.5);
         el.style.opacity = o >= 0.999 ? "" : o.toFixed(3);
         el.style.textShadow =
           glow > 0.02 ? `0 0 ${(10 + 10 * glow).toFixed(1)}px rgba(255,255,255,${(0.55 * glow).toFixed(3)})` : "";
       });
+      // The word being sung, kept in sight as it moves on (note 78).
+      const k = wordAt(words, t);
+      if (k >= 0 && (sungWord.current.line !== cur || sungWord.current.word !== k)) {
+        sungWord.current = { line: cur, word: k };
+        if (k > 0) keepInSight(els[k]);
+      }
     });
     return () => {
       unsubscribe();
       clear(painted.current);
       painted.current = -1;
       pending.current = null;
+      sungWord.current = { line: -1, word: -1 };
     };
     // measureFirst reads refs only.
     // eslint-disable-next-line react-hooks/exhaustive-deps

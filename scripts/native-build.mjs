@@ -144,11 +144,12 @@ const STASH_PATHS = [
   // 1.6 apps carry their own copies. About 3.7 MB packed of a bundle at its
   // 85 MB ceiling.
   ["public", "kitchen-photos"],
-  // Every chant's recordings, timed words and cover, and live.json, the list
-  // that can pull a recording from every installed app with one edit
-  // (lib/chants/media.ts reads them from SITE_URL in the apps). Chant audio
-  // streams; it never ships inside the app. Appended, for the slot-index
-  // reason above.
+  // The Prayer Rope Anthem's recordings, the old timing files kept for the
+  // builds through 86, and live.json, the list that can pull a recording from
+  // every installed app with one edit (lib/chants/media.ts reads them from
+  // SITE_URL in the apps). Chant audio streams; it never ships inside the
+  // app. The timing files the app reads ride in it since note 78
+  // (app/chant-timing). Appended, for the slot-index reason above.
   ["public", "audio", "chants"],
   // The read-aloud covers: an icon of each book's saint or prophet, about
   // 160 KB each (lib/readAloud/covers.ts). The apps ask the website for them

@@ -8,7 +8,8 @@
 // text, in the chant's data file. The transcript only gives each line its
 // time. So this reads the transcript's segments in order, lays them on the
 // data file's lines one for one, and writes
-// public/audio/chants/<slug>/<id>.json:
+// data/chants/timing/<slug>/<id>.json, which rides in the app as
+// /chant-timing/<slug>/<id>.json (build 86 note 78):
 //
 //   { "v": 1, "durationSec": 126.9, "lines": [{ "at": 3.2, "end": 8.35, "text": "<the data file's line>" }] }
 //
@@ -149,8 +150,10 @@ for (let i = 0; i < out.length; i++) {
   console.log(`${share < 0.3 ? "?" : " "} ${String(i + 1).padStart(3)}  ${out[i].at.toFixed(2).padStart(7)}  ${Math.round(share * 100).toString().padStart(3)}% heard  ${lines[i]}`);
 }
 
-const target = path.resolve("public", "audio", "chants", slug, `${id}.json`);
+const target = path.resolve("data", "chants", "timing", slug, `${id}.json`);
 fs.mkdirSync(path.dirname(target), { recursive: true });
-fs.writeFileSync(target, JSON.stringify({ v: 1, durationSec: round(durationSec), lines: out }, null, 2) + "\n");
+// A caption line to a line of the file: small in the bundle, and a diff a person can read.
+const body = out.map((l) => JSON.stringify(l)).join(",\n");
+fs.writeFileSync(target, `{"v":1,"durationSec":${round(durationSec)},"lines":[\n${body}\n]}\n`);
 console.log(`\nwrote ${path.relative(process.cwd(), target)}: ${out.length} lines over ${round(durationSec)} s`);
 if (weak) console.log(`${weak} line(s) marked ? share few words with the transcript: listen to those, the segments may be off by one.`);

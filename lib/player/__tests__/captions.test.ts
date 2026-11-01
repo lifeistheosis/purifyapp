@@ -5,13 +5,13 @@ import { describe, expect, it } from "vitest";
 import { captionsFor, readTiming, WORDS_VIEWS } from "@/lib/chants/media";
 import type { Chant, ChantTiming } from "@/lib/chants/types";
 import { verseCaptions, type ReadAloudManifest } from "@/lib/readAloud/chapters";
-import { captionLines, lineAt, lineParts, verseOf } from "../captions";
+import { captionLines, followWord, lineAt, lineParts, verseOf, wordAt } from "../captions";
 
 // The Prayer Rope Anthem, the first chant (data/chants/prayer-rope-anthem.json),
-// with each version's line times from its timing file beside the recording.
+// with each version's line and word times from its timing file, which rides in the app (note 78).
 const anthem = JSON.parse(fs.readFileSync("data/chants/prayer-rope-anthem.json", "utf8")) as Chant;
 const timing = (id: string): ChantTiming =>
-  readTiming(JSON.parse(fs.readFileSync(`public/audio/chants/prayer-rope-anthem/${id}.json`, "utf8")))!;
+  readTiming(JSON.parse(fs.readFileSync(`data/chants/timing/prayer-rope-anthem/${id}.json`, "utf8")))!;
 const version = (id: string) => anthem.variants.find((v) => v.id === id)!;
 const NONE = { view: "original" as const, en: false };
 
@@ -28,7 +28,9 @@ describe("live captions", () => {
 
   it("lights each word inside its own line, one after another", () => {
     for (const line of lines) {
-      expect(line.words[0].at).toBe(line.at);
+      // The first word where the line is first heard (note 78): at its start, or just after.
+      expect(line.words[0].at).toBeGreaterThanOrEqual(line.at);
+      expect(line.words[0].at).toBeLessThan(line.at + 1);
       for (let j = 1; j < line.words.length; j++) expect(line.words[j].at).toBeGreaterThan(line.words[j - 1].at);
       expect(line.words.at(-1)!.at).toBeLessThan(line.end);
     }
@@ -272,5 +274,70 @@ describe("a chapter read aloud, as the words view counts it (1.8, round 8 B)", (
     const en = version("en");
     const chant = captionLines(captionsFor(en.lines, timing("en"), NONE));
     expect(verseOf(chant, 3)).toBeNull();
+  });
+});
+
+describe("each word timed and followed (build 86 note 78)", () => {
+  // The owner: "each word timestamped and followed in the lyrics section".
+  it("takes each word's own start and end where the line has one for every word", () => {
+    const [line] = captionLines([{ time: 2, end: 6, text: "O give thanks", wordTimes: [[2, 2.4], [2.4, 3.9], [3.9, 6]] }]);
+    expect(line.words).toEqual([
+      { text: "O", at: 2, end: 2.4 },
+      { text: "give", at: 2.4, end: 3.9 },
+      { text: "thanks", at: 3.9, end: 6 },
+    ]);
+    // Not one for every word (another view's words, a line changed): the line's pace.
+    const [paced] = captionLines([{ time: 2, end: 6, text: "O give thanks", wordTimes: [[2, 3]] }]);
+    expect(paced.words.every((w) => w.end === undefined)).toBe(true);
+    expect(paced.words[0].at).toBe(2);
+  });
+
+  it("knows the word being sung at any moment", () => {
+    const [line] = captionLines([{ time: 2, end: 6, text: "O give thanks", wordTimes: [[2, 2.4], [2.4, 3.9], [3.9, 6]] }]);
+    expect(wordAt(line.words, 1.9)).toBe(-1);
+    expect(wordAt(line.words, 2)).toBe(0);
+    expect(wordAt(line.words, 3)).toBe(1);
+    expect(wordAt(line.words, 5.9)).toBe(2);
+  });
+
+  it("keeps the word being sung in sight: still while it is, and stood where the line stands when it is not", () => {
+    const box = { scrollTop: 400, height: 500, max: 3000 };
+    // In the middle of the box: nothing moves.
+    expect(followWord({ top: 650, bottom: 680 }, box)).toBeNull();
+    // Gone under the fade at the foot (a long line, its seventh row): up to the anchor.
+    expect(followWord({ top: 820, bottom: 850 }, box)).toBe(820 - 150);
+    // Over the top: back down to it.
+    expect(followWord({ top: 380, bottom: 410 }, box)).toBe(380 - 150);
+    // Never past what the box can scroll.
+    expect(followWord({ top: 3400, bottom: 3430 }, box)).toBe(3000);
+    expect(followWord({ top: 40, bottom: 70 }, { scrollTop: 300, height: 500, max: 3000 })).toBe(0);
+  });
+});
+
+describe("the same words lit in every view (notes 56 and 78)", () => {
+  it("lights the Arabic Anthem's n-th word at the same moment as sung, as its sound, and as both", () => {
+    const v = version("ar");
+    const t = timing("ar");
+    const at = (view: "original" | "translit" | "both") =>
+      captionLines(captionsFor(v.lines, t, { view, en: false })).map((line) => line.words.map((w) => [w.at, w.end]));
+    const sung = at("original");
+    expect(sung.flat().every(([, end]) => typeof end === "number")).toBe(true);
+    expect(at("translit")).toEqual(sung);
+    expect(at("both")).toEqual(sung);
+    // Each word lights inside its own line, one after another.
+    const lines = captionLines(captionsFor(v.lines, t, { view: "original", en: false }));
+    for (const line of lines) {
+      for (const w of line.words) {
+        expect(w.at).toBeGreaterThanOrEqual(line.at - 0.005);
+        expect(w.end!).toBeLessThanOrEqual(line.end + 0.005);
+      }
+    }
+  });
+
+  it("lights at the line's pace where the timing file does not time each word", () => {
+    const v = version("en");
+    const linesOnly = { ...timing("en"), v: 1 as const, lines: timing("en").lines.map(({ at, end, text }) => ({ at, end, text })) };
+    const lines = captionLines(captionsFor(v.lines, linesOnly, NONE));
+    expect(lines.every((line) => line.words.every((w) => w.end === undefined))).toBe(true);
   });
 });

@@ -42,9 +42,21 @@ export type ChantTradition = (typeof CHANT_TRADITIONS)[number];
  * (lib/readAloud/chapters.ts). The owner's word of 2026-10-30, "R2, like the
  * Bible audio": out of the public repository, the same address on the
  * website and in the apps. A recording there is `<this><slug>/<id>.mp3`;
- * its timing file stays on the website (lib/chants/media.ts).
+ * its timing file rides in the app (CHANT_TIMING).
  */
 export const CHANT_RECORDINGS = "https://audio.purifyapp.net/chants/";
+
+/**
+ * Where a version's timing file is read (1.8, build 86 note 78): beside the
+ * page, in the apps' bundle and on the website alike, at
+ * `<this><slug>/<id>.json`. The file is `data/chants/timing/<slug>/<id>.json`,
+ * written out by app/chant-timing at build time, so a build always carries
+ * the timing of the words it shows. Through build 86 the apps asked the
+ * website for it, and the website still ran 1.8 as launched: Psalm 135 and
+ * Psalm 117 were not timed on the owner's phone ("So the chats they're not
+ * timed"). The recordings still stream.
+ */
+export const CHANT_TIMING = "/chant-timing/";
 
 /** What kind of hymn it is, as the service books name them. */
 export const CHANT_KINDS = [
@@ -63,8 +75,25 @@ export type ChantKind = (typeof CHANT_KINDS)[number];
  * One line of the words: the line as it is sung, then, under it, a
  * transliteration where the script is not Latin (ours, and labelled so) and
  * an English line.
+ *
+ * Build 86 note 78 asks for the words one to one with the singing. Where they
+ * are free to copy they are the words sung. Where a choir sings a wording
+ * still under copyright, or one no public-domain printing has, the line is
+ * the nearest public-domain wording instead, and says so (`nearest`); its
+ * words as sung can be shown only once their holder clears them
+ * (lib/chants/cleared.ts). A line whose words could not be confirmed against
+ * the recording says why (`unsure`), for a listener to settle. Neither is
+ * shown to readers: the version's words-source line says it in prose.
  */
-export type ChantLine = { text: string; translit?: string; en?: string };
+export type ChantLine = {
+  text: string;
+  translit?: string;
+  en?: string;
+  /** The nearest public-domain wording, not the words sung. */
+  nearest?: true;
+  /** Why these words are not confirmed against the recording yet. */
+  unsure?: string;
+};
 
 /**
  * When in the year a chant is the Church's song of the day, so the home can
@@ -126,7 +155,7 @@ export type ChantVariant = {
    */
   audio: { src: string; durationSec: number };
   /**
-   * The timing file of a streamed recording, on the website: each line's
+   * The recording's timing file, in the bundle (CHANT_TIMING): each line's
    * start and end. A recording with none has its words without Sing along.
    */
   timing?: string;
@@ -179,12 +208,42 @@ export type Chant = {
   variants: ChantVariant[];
 };
 
-/** A timing file: the read-aloud's shape (lines with a start and an end). */
+/** One sung word's time (a version 2 timing file): when it starts and when it ends, in seconds. */
+export type ChantWordTime = [at: number, end: number];
+
+/** One line of a timing file. */
+export type ChantTimingLine = {
+  at: number;
+  end: number;
+  text: string;
+  /**
+   * Version 2: each word's start and end, word for word the line's words as
+   * spaces split them (lib/player/captions.ts, wordsOf). The first starts
+   * with the line.
+   */
+  words?: ChantWordTime[];
+  /**
+   * Version 2: the words, by place from 0, that the speech model's own
+   * hearing did not find, so their times rest on the alignment alone. A line
+   * with most of its words here is one to hear again by ear.
+   */
+  unheard?: number[];
+};
+
+/**
+ * A timing file: the read-aloud's shape (lines with a start and an end).
+ * Version 1 times the lines (through build 86); version 2 (1.8, build 86
+ * note 78, the owner's "each word timestamped and followed in the lyrics
+ * section") times each word too, made by scripts/chants/time-words.mjs.
+ * Both are read.
+ */
 export type ChantTiming = {
-  v: 1;
+  v: 1 | 2;
   durationSec: number;
+  /** Version 2: how the word times were made, and when (YYYY-MM-DD). */
+  made?: { by: string; on: string };
   /** Line for line the variant's words; the text is checked against them. */
-  lines: { at: number; end: number; text: string }[];
+  lines: ChantTimingLine[];
 };
 
 /** What a list needs of a recording: no words. */

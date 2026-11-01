@@ -1,6 +1,6 @@
 import { z } from "zod";
 
-import { CHANT_KINDS, CHANT_RECORDINGS, CHANT_TRADITIONS } from "./types";
+import { CHANT_KINDS, CHANT_RECORDINGS, CHANT_TIMING, CHANT_TRADITIONS } from "./types";
 
 /**
  * The chant data file, checked. lib/chants/registry.server.ts reads every
@@ -23,6 +23,10 @@ const line = z
     text: z.string().trim().min(1),
     translit: z.string().trim().min(1).optional(),
     en: z.string().trim().min(1).optional(),
+    // Note 78: the nearest public-domain wording, not the words sung.
+    nearest: z.literal(true).optional(),
+    // Note 78: why the words are not confirmed against the recording yet.
+    unsure: z.string().trim().min(10).optional(),
   })
   .strict();
 
@@ -40,7 +44,8 @@ const variant = z
     setting: z.string().trim().min(1).optional(),
     performer: z.string().trim().min(1).nullable(),
     audio: z.object({ src: recording, durationSec: seconds.positive() }).strict(),
-    timing: z.string().startsWith("/audio/").optional(),
+    // In the bundle (CHANT_TIMING), never asked of the website (note 78).
+    timing: z.string().regex(new RegExp(`^${CHANT_TIMING}[a-z0-9-]+/[a-z0-9-]+\\.json$`), `a file under ${CHANT_TIMING}`).optional(),
     preview: z.object({ from: seconds, to: seconds }).strict(),
     underPrayer: z.boolean().optional(),
     rtl: z.boolean().optional(),
@@ -103,13 +108,39 @@ export const chantSchema = z
   })
   .strict();
 
-export const timingSchema = z
-  .object({
-    v: z.literal(1),
-    durationSec: seconds.positive(),
-    lines: z.array(z.object({ at: seconds, end: seconds, text: z.string().min(1) }).strict()).min(1),
-  })
-  .strict();
+const timedLine = z.object({ at: seconds, end: seconds, text: z.string().min(1) });
+
+/**
+ * A timing file: version 1 times each line (through build 86), version 2
+ * each word too (note 78; lib/chants/types.ts, ChantTiming), with how its
+ * word times were made.
+ */
+export const timingSchema = z.union([
+  z
+    .object({
+      v: z.literal(1),
+      durationSec: seconds.positive(),
+      lines: z.array(timedLine.strict()).min(1),
+    })
+    .strict(),
+  z
+    .object({
+      v: z.literal(2),
+      durationSec: seconds.positive(),
+      made: z.object({ by: z.string().trim().min(1), on: day }).strict(),
+      lines: z
+        .array(
+          timedLine
+            .extend({
+              words: z.array(z.tuple([seconds, seconds])).min(1),
+              unheard: z.array(z.number().int().min(0)).min(1).optional(),
+            })
+            .strict(),
+        )
+        .min(1),
+    })
+    .strict(),
+]);
 
 export const liveListSchema = z
   .object({

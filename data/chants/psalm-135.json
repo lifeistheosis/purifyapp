@@ -63,7 +63,7 @@
         "src": "https://audio.purifyapp.net/chants/psalm-135/ar.mp3",
         "durationSec": 253.18
       },
-      "timing": "/audio/chants/psalm-135/ar.json",
+      "timing": "/chant-timing/psalm-135/ar.json",
       "preview": {
         "from": 0,
         "to": 20
@@ -89,12 +89,202 @@
           "text": "الليلويا.",
           "translit": "Alliluia.",
           "en": "Alleluia."
+        },
+        {
+          "text": "ٱحْمَدُوا إِلَهَ ٱلْآلِهَةِ،",
+          "translit": "Ihmadu ilaha l-alihati,",
+          "en": "Give thanks to the God of gods;",
+          "nearest": true
+        },
+        {
+          "text": "الليلويا.",
+          "translit": "Alliluia.",
+          "en": "Alleluia."
+        },
+        {
+          "text": "فإن إلى الأبد رحمته.",
+          "translit": "fa-inna ila l-abadi rahmatahu.",
+          "en": "for his mercy endures for ever."
+        },
+        {
+          "text": "الليلويا.",
+          "translit": "Alliluia.",
+          "en": "Alleluia."
+        },
+        {
+          "text": "ٱحْمَدُوا رَبَّ ٱلْأَرْبَابِ،",
+          "translit": "Ihmadu rabba l-arbabi,",
+          "en": "Give thanks to the Lord of lords:",
+          "nearest": true
+        },
+        {
+          "text": "الليلويا.",
+          "translit": "Alliluia.",
+          "en": "Alleluia."
+        },
+        {
+          "text": "فإن إلى الأبد رحمته.",
+          "translit": "fa-inna ila l-abadi rahmatahu.",
+          "en": "for his mercy endures for ever."
+        },
+        {
+          "text": "الليلويا.",
+          "translit": "Alliluia.",
+          "en": "Alleluia."
+        },
+        {
+          "text": "ٱلصَّانِعَ ٱلْعَجَائِبَ ٱلْعِظَامَ وَحْدَهُ،",
+          "translit": "As-sani'a l-'aja'iba l-'izama wahdahu,",
+          "en": "To him who alone has wrought great wonders:",
+          "nearest": true
+        },
+        {
+          "text": "الليلويا.",
+          "translit": "Alliluia.",
+          "en": "Alleluia."
+        },
+        {
+          "text": "فإن إلى الأبد رحمته.",
+          "translit": "fa-inna ila l-abadi rahmatahu.",
+          "en": "for his mercy endures for ever."
+        },
+        {
+          "text": "الليلويا.",
+          "translit": "Alliluia.",
+          "en": "Alleluia."
+        },
+        {
+          "text": "ٱلصَّانِعَ ٱلسَّمَاوَاتِ بِفَهْمٍ،",
+          "translit": "As-sani'a s-samawati bi-fahmin,",
+          "en": "To him who made the heavens by understanding;",
+          "nearest": true
+        },
+        {
+          "text": "الليلويا.",
+          "translit": "Alliluia.",
+          "en": "Alleluia."
+        },
+        {
+          "text": "فإن إلى الأبد رحمته.",
+          "translit": "fa-inna ila l-abadi rahmatahu.",
+          "en": "for his mercy endures for ever."
+        },
+        {
+          "text": "الليلويا.",
+          "translit": "Alliluia.",
+          "en": "Alleluia."
+        },
+        {
+          "text": "ٱلْبَاسِطَ ٱلْأَرْضَ عَلَى ٱلْمِيَاهِ،",
+          "translit": "Al-basita l-arda 'ala l-miyahi,",
+          "en": "To him who established the earth on the waters;",
+          "nearest": true
+        },
+        {
+          "text": "الليلويا.",
+          "translit": "Alliluia.",
+          "en": "Alleluia."
+        },
+        {
+          "text": "فإن إلى الأبد رحمته.",
+          "translit": "fa-inna ila l-abadi rahmatahu.",
+          "en": "for his mercy endures for ever."
+        },
+        {
+          "text": "الليلويا.",
+          "translit": "Alliluia.",
+          "en": "Alleluia."
+        },
+        {
+          "text": "ٱلَّذِي فِي مَذَلَّتِنَا ذَكَرَنَا،",
+          "translit": "Alladhi fi madhallatina dhakarana,",
+          "en": "For the Lord remembered us in our low estate;",
+          "nearest": true
+        },
+        {
+          "text": "الليلويا.",
+          "translit": "Alliluia.",
+          "en": "Alleluia."
+        },
+        {
+          "text": "فإن إلى الأبد رحمته.",
+          "translit": "fa-inna ila l-abadi rahmatahu.",
+          "en": "for his mercy endures for ever:"
+        },
+        {
+          "text": "الليلويا.",
+          "translit": "Alliluia.",
+          "en": "Alleluia."
+        },
+        {
+          "text": "وَنَجَّانَا مِنْ أَعْدَائِنَا،",
+          "translit": "Wa-najjana min a'da'ina,",
+          "en": "and redeemed us from our enemies;",
+          "nearest": true
+        },
+        {
+          "text": "الليلويا.",
+          "translit": "Alliluia.",
+          "en": "Alleluia."
+        },
+        {
+          "text": "فإن إلى الأبد رحمته.",
+          "translit": "fa-inna ila l-abadi rahmatahu.",
+          "en": "for his mercy endures for ever."
+        },
+        {
+          "text": "الليلويا.",
+          "translit": "Alliluia.",
+          "en": "Alleluia."
+        },
+        {
+          "text": "ٱلَّذِي يُعْطِي خُبْزًا لِكُلِّ بَشَرٍ،",
+          "translit": "Alladhi yu'ti khubzan li-kulli basharin,",
+          "en": "Who gives food to all flesh;",
+          "nearest": true
+        },
+        {
+          "text": "الليلويا.",
+          "translit": "Alliluia.",
+          "en": "Alleluia."
+        },
+        {
+          "text": "فإن إلى الأبد رحمته.",
+          "translit": "fa-inna ila l-abadi rahmatahu.",
+          "en": "for his mercy endures for ever."
+        },
+        {
+          "text": "الليلويا.",
+          "translit": "Alliluia.",
+          "en": "Alleluia."
+        },
+        {
+          "text": "ٱحْمَدُوا إِلَهَ ٱلسَّمَاوَاتِ،",
+          "translit": "Ihmadu ilaha s-samawati,",
+          "en": "Give thanks to the God of heaven;",
+          "nearest": true
+        },
+        {
+          "text": "الليلويا.",
+          "translit": "Alliluia.",
+          "en": "Alleluia."
+        },
+        {
+          "text": "فإن إلى الأبد رحمته.",
+          "translit": "fa-inna ila l-abadi rahmatahu.",
+          "en": "for his mercy endures for ever."
+        },
+        {
+          "text": "الليلويا.",
+          "translit": "Alliluia.",
+          "en": "Alleluia.",
+          "unsure": "Sung long, with a breath halfway (at 4:06.5): perhaps a second Alliluia. One line holds both until a listener who knows the chant confirms it."
         }
       ],
-      "wordsSource": "Only the first of the ten verses the choir sings. A speech model heard all ten (verses 1 to 6 and 23 to 26, each half followed by Alliluia): they are the Antiochian Church's Arabic, not the Van Dyck Bible's (احمدوا الرب), and no public-domain printing of that wording has been found, so the words stop after the first verse while the singing goes on. That verse is as the owner took it down beside the recording, in Latin letters, set here in Arabic letters by Purify, and the model heard it word for word (i'tarifu lir-Rabbi fa-innahu salihun, Alliluia, fa-inna ila l-abadi rahmatahu, Alliluia), sung without the h of the Arabic Bible's hallelujah. Each line is timed to the recording. The transliteration is ours.",
+      "wordsSource": "All ten verses the choir sings (1 to 6 and 23 to 26), in its order, each half followed by the Alliluia it sings. The first verse is as the owner took it down beside the recording, in Latin letters, set here in Arabic letters by Purify, and a speech model heard it word for word (i'tarifu lir-Rabbi fa-innahu salihun, Alliluia, fa-inna ila l-abadi rahmatahu, Alliluia), sung without the h of the Arabic Bible's hallelujah; the same refrain and Alliluia close every verse. The choir sings the first half of the other nine verses in the Antiochian Church's own Arabic, and no public-domain printing of that wording has been found, so each of those nine lines is the nearest public-domain wording, printed verbatim from the Van Dyck Arabic Bible (1865; Psalm 136 in its count), and not the words sung. Each line is timed to the recording, word by word. The transliteration is ours.",
       "translation": {
         "kind": "public-domain",
-        "title": "Brenton's English of the Septuagint (1851), the same verse"
+        "title": "Brenton's English of the Septuagint (1851), verse for verse"
       }
     },
     {
@@ -108,7 +298,7 @@
         "src": "https://audio.purifyapp.net/chants/psalm-135/en.mp3",
         "durationSec": 534.96
       },
-      "timing": "/audio/chants/psalm-135/en.json",
+      "timing": "/chant-timing/psalm-135/en.json",
       "preview": {
         "from": 0,
         "to": 21
@@ -151,7 +341,8 @@
           "text": "Alleluia."
         },
         {
-          "text": "To him who alone has wrought great wonders:"
+          "text": "To him who alone has wrought great wonders:",
+          "nearest": true
         },
         {
           "text": "Alleluia."
@@ -163,7 +354,8 @@
           "text": "Alleluia."
         },
         {
-          "text": "To him who made the heavens by understanding;"
+          "text": "To him who made the heavens by understanding;",
+          "nearest": true
         },
         {
           "text": "Alleluia."
@@ -175,7 +367,8 @@
           "text": "Alleluia."
         },
         {
-          "text": "To him who established the earth on the waters;"
+          "text": "To him who established the earth on the waters;",
+          "nearest": true
         },
         {
           "text": "Alleluia."
@@ -187,7 +380,8 @@
           "text": "Alleluia."
         },
         {
-          "text": "To him who alone made great lights;"
+          "text": "To him who alone made great lights;",
+          "nearest": true
         },
         {
           "text": "Alleluia."
@@ -199,7 +393,8 @@
           "text": "Alleluia."
         },
         {
-          "text": "the sun to rule the day:"
+          "text": "the sun to rule the day:",
+          "nearest": true
         },
         {
           "text": "Alleluia."
@@ -211,7 +406,8 @@
           "text": "Alleluia."
         },
         {
-          "text": "The moon and the stars to rule the night;"
+          "text": "The moon and the stars to rule the night;",
+          "nearest": true
         },
         {
           "text": "Alleluia."
@@ -223,7 +419,8 @@
           "text": "Alleluia."
         },
         {
-          "text": "To him that smote Egypt in their firstborn:"
+          "text": "To him that smote Egypt in their firstborn:",
+          "nearest": true
         },
         {
           "text": "Alleluia."
@@ -235,7 +432,8 @@
           "text": "Alleluia."
         },
         {
-          "text": "And brought Israel out of the midst of them;"
+          "text": "And brought Israel out of the midst of them;",
+          "nearest": true
         },
         {
           "text": "Alleluia."
@@ -247,7 +445,8 @@
           "text": "Alleluia."
         },
         {
-          "text": "with a strong hand, and a high arm:"
+          "text": "with a strong hand, and a high arm:",
+          "nearest": true
         },
         {
           "text": "Alleluia."
@@ -259,7 +458,8 @@
           "text": "Alleluia."
         },
         {
-          "text": "To him which divided the Red sea into parts:"
+          "text": "To him which divided the Red sea into parts:",
+          "nearest": true
         },
         {
           "text": "Alleluia."
@@ -343,7 +543,8 @@
           "text": "Alleluia."
         },
         {
-          "text": "And Og the king of Bashan:"
+          "text": "And Og the king of Bashan:",
+          "nearest": true
         },
         {
           "text": "Alleluia."
@@ -379,7 +580,8 @@
           "text": "Alleluia."
         },
         {
-          "text": "because in our affliction the Lord remembered us;"
+          "text": "because in our affliction the Lord remembered us;",
+          "nearest": true
         },
         {
           "text": "Alleluia."
@@ -403,7 +605,8 @@
           "text": "Alleluia."
         },
         {
-          "text": "Who giveth food to all flesh:"
+          "text": "Who giveth food to all flesh:",
+          "nearest": true
         },
         {
           "text": "Alleluia."
@@ -427,7 +630,7 @@
           "text": "Alleluia."
         }
       ],
-      "wordsSource": "The words the choir sings, line by line, each line printed verbatim from a public-domain English psalter: the King James Version (1611), which has the choir's “O give thanks unto the Lord” and its refrain “for his mercy endureth for ever”, and where the King James words differ from the singing, the line of the printing nearest to it: Brenton's Septuagint (1851), Thomson's Septuagint (1808), the American Standard Version (1901) or the Douay-Rheims (Challoner). The choir sings a modern psalter whose own wording is not copied; where no public-domain printing has a sung line, the nearest printed line stands, and each line's printing and what is sung beside it are listed in docs/chants/psalm-135-english.md. After each half, the Alleluia the choir sings, the psalm's own first word in Brenton. Each line is timed to the singing."
+      "wordsSource": "The words the choir sings, line by line, each line printed verbatim from a public-domain English psalter: the King James Version (1611), which has the choir's “O give thanks unto the Lord” and its refrain “for his mercy endureth for ever”, and where the King James words differ from the singing, the line of the printing nearest to it: Brenton's Septuagint (1851), Thomson's Septuagint (1808), the American Standard Version (1901) or the Douay-Rheims (Challoner). The choir sings a modern psalter whose own wording is not copied; where no public-domain printing has a sung line, the nearest printed line stands, and each line's printing, and whether it is the words sung or the nearest wording, is listed in docs/chants/psalm-135-english.md. After each half, the Alleluia the choir sings, the psalm's own first word in Brenton. Each line is timed to the singing."
     },
     {
       "id": "el",
@@ -440,7 +643,7 @@
         "src": "https://audio.purifyapp.net/chants/psalm-135/el.mp3",
         "durationSec": 504.53
       },
-      "timing": "/audio/chants/psalm-135/el.json",
+      "timing": "/chant-timing/psalm-135/el.json",
       "preview": {
         "from": 0,
         "to": 20
@@ -983,7 +1186,7 @@
         "src": "https://audio.purifyapp.net/chants/psalm-135/sr.mp3",
         "durationSec": 429.32
       },
-      "timing": "/audio/chants/psalm-135/sr.json",
+      "timing": "/chant-timing/psalm-135/sr.json",
       "preview": {
         "from": 0,
         "to": 20
@@ -1311,7 +1514,8 @@
         },
         {
           "text": "I dade zemlju njihovu u dostojanje;",
-          "en": "and gave their land for an inheritance:"
+          "en": "and gave their land for an inheritance:",
+          "nearest": true
         },
         {
           "text": "Aliluja.",
@@ -1327,7 +1531,8 @@
         },
         {
           "text": "U dostojanje Izrailju, sluzi svom;",
-          "en": "even an inheritance to Israel his servant:"
+          "en": "even an inheritance to Israel his servant:",
+          "nearest": true
         },
         {
           "text": "Aliluja.",

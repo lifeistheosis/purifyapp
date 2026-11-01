@@ -13,11 +13,12 @@ import path from "node:path";
 import { describe, expect, it } from "vitest";
 
 import { LOCALES } from "@/lib/i18n/locales";
-import { bucketRecording, inBucket, isStreamed, readTiming, streamedPaths } from "@/lib/chants/media";
+import { bucketRecording, chantPaths, inBucket, isStreamed, legacyTimingPath, readTiming } from "@/lib/chants/media";
+import { timingFiles } from "@/lib/chants/timing.server";
 import { chantLineKey, chantTitleKey, kindKey, traditionKey } from "@/lib/chants/names";
-import { allChants, chantIndex } from "@/lib/chants/registry.server";
-import { chantSchema } from "@/lib/chants/schema";
-import { CHANT_KINDS, CHANT_TRADITIONS } from "@/lib/chants/types";
+import { allChants, chantIndex, forPage } from "@/lib/chants/registry.server";
+import { chantSchema, timingSchema } from "@/lib/chants/schema";
+import { CHANT_KINDS, CHANT_TIMING, CHANT_TRADITIONS } from "@/lib/chants/types";
 // Plain ESM, shared with the intake script that prints a recording's length.
 import { mp3Duration } from "../../../scripts/chants/mp3.mjs";
 
@@ -30,6 +31,8 @@ const CATALOGS = Object.fromEntries(LOCALES.map((l) => [l.code, catalog(l.code)]
 const EN = CATALOGS.en;
 const LONG_DASH = String.fromCharCode(0x2014);
 const onDisk = (webPath: string) => path.join(ROOT, "public", webPath.replace(/^\//, ""));
+/** A timing file's source: /chant-timing/<slug>/<id>.json is data/chants/timing/<slug>/<id>.json. */
+const inData = (webPath: string) => path.join(ROOT, "data", "chants", "timing", webPath.slice(CHANT_TIMING.length));
 
 /** Letters of a script other than Latin: a line in it is given a transliteration. */
 const NON_LATIN = /[Ͱ-Ͽἀ-῿Ѐ-ԯ֐-׿؀-ۿݐ-ݿႠ-ჿᲐ-Ჿ԰-֏]/;
@@ -123,27 +126,51 @@ describe("each version of a chant", () => {
     }
   });
 
-  it("keeps a streamed recording, its timing file and its cover where the apps look for them", () => {
+  it("keeps a streamed recording and its cover where the apps look for them", () => {
     for (const { c, v, id } of versions) {
       if (!isStreamed(v.audio.src)) continue;
-      const want = streamedPaths(c.slug, v.id);
+      const want = chantPaths(c.slug, v.id);
       if (inBucket(v.audio.src)) {
         // 1.8: the sound is the bucket's alone, and never also in the
-        // repository; its timing file, where it has one, is the website's.
+        // repository.
         expect(v.audio.src, id).toBe(bucketRecording(c.slug, v.id));
         expect(fs.existsSync(onDisk(want.audio)), `${id}: a copy of a bucket recording is in the repository`).toBe(false);
-        if (v.timing) {
-          expect(v.timing, id).toBe(want.timing);
-          expect(fs.existsSync(onDisk(v.timing)), `${id}: ${v.timing} is not on disk`).toBe(true);
-        }
         continue;
       }
       expect(v.audio.src, id).toBe(want.audio);
-      expect(v.timing, id).toBe(want.timing);
       expect(fs.existsSync(onDisk(v.audio.src)), `${id}: ${v.audio.src} is not on disk`).toBe(true);
-      expect(fs.existsSync(onDisk(v.timing!)), `${id}: ${v.timing} is not on disk`).toBe(true);
     }
     for (const c of allChants()) if (c.cover) expect(fs.existsSync(onDisk(c.cover.src)), `${c.slug} cover`).toBe(true);
+  });
+
+  it("carries its timing file in the app, beside its words (note 78)", () => {
+    // Build 86: the apps asked the website for each timing file, the website
+    // still ran 1.8 as launched, and Psalm 135 and Psalm 117 were not timed
+    // on the owner's phone. The file is in the bundle now, written out at
+    // build time from data/chants/timing by app/chant-timing.
+    const served = new Set(timingFiles().map((f) => `${CHANT_TIMING}${f.slug}/${f.file}`));
+    for (const { c, v, id } of versions) {
+      if (!v.timing) continue;
+      expect(v.timing, id).toBe(chantPaths(c.slug, v.id).timing);
+      expect(fs.existsSync(inData(v.timing)), `${id}: ${inData(v.timing)} is not on disk`).toBe(true);
+      expect(served.has(v.timing), `${id}: ${v.timing} is not written out by app/chant-timing`).toBe(true);
+    }
+    // Nothing written out that no version reads.
+    const read = new Set(versions.map(({ v }) => v.timing).filter(Boolean));
+    expect([...served].filter((p) => !read.has(p))).toEqual([]);
+  });
+
+  it("leaves the website's old timing files as the builds through 86 read them", () => {
+    // Those builds ask the website for /audio/chants/<slug>/<id>.json and
+    // read only a version 1 file whose lines are their own words, so the
+    // copies stay there, frozen as build 86 had them. Never edit one.
+    for (const { c, v, id } of versions) {
+      const legacy = onDisk(legacyTimingPath(c.slug, v.id));
+      if (!fs.existsSync(legacy)) continue;
+      const old = JSON.parse(fs.readFileSync(legacy, "utf8")) as { v: number; lines: unknown[] };
+      expect(old.v, `${id}: ${legacy}`).toBe(1);
+      expect(Array.isArray(old.lines) && old.lines.length > 0, id).toBe(true);
+    }
   });
 
   it("records the length its recording really has", () => {
@@ -176,7 +203,7 @@ describe("each version of a chant", () => {
     // recording.
     for (const { v, id } of versions) {
       if (!v.timing) continue;
-      const timing = readTiming(JSON.parse(fs.readFileSync(onDisk(v.timing), "utf8")));
+      const timing = readTiming(JSON.parse(fs.readFileSync(inData(v.timing), "utf8")));
       expect(timing, `${id}: the timing file does not read`).not.toBeNull();
       expect(timing!.lines.map((l) => l.text), id).toEqual(v.lines.map((l) => l.text));
       expect(Math.abs(timing!.durationSec - v.audio.durationSec), id).toBeLessThan(1);
@@ -187,6 +214,33 @@ describe("each version of a chant", () => {
         expect(l.end, id).toBeLessThanOrEqual(timing!.durationSec + 0.01);
         last = l.at;
       }
+    }
+  });
+
+  it("times every word it shows, each inside its line and in order (note 78)", () => {
+    // The owner: "each word timestamped and followed in the lyrics section".
+    // Every timing file is version 2 (scripts/chants/time-words.mjs): a start
+    // and an end for every word of every line, as the app splits the line.
+    for (const { v, id } of versions) {
+      if (!v.timing) continue;
+      const raw = JSON.parse(fs.readFileSync(inData(v.timing), "utf8"));
+      const parsed = timingSchema.safeParse(raw);
+      expect(parsed.success, `${id}: ${parsed.success ? "" : JSON.stringify(parsed.error.issues[0])}`).toBe(true);
+      expect(raw.v, `${id} is not timed word by word`).toBe(2);
+      raw.lines.forEach((l: { at: number; end: number; text: string; words: [number, number][]; unheard?: number[] }, i: number) => {
+        const where = `${id} line ${i + 1}`;
+        const words = l.text.split(/\s+/).filter(Boolean);
+        expect(l.words.length, where).toBe(words.length);
+        let last = -Infinity;
+        for (const [at, end] of l.words) {
+          expect(at, where).toBeGreaterThanOrEqual(l.at - 0.005);
+          expect(end, where).toBeLessThanOrEqual(l.end + 0.005);
+          expect(end, where).toBeGreaterThanOrEqual(at);
+          expect(at, where).toBeGreaterThan(last);
+          last = at;
+        }
+        for (const k of l.unheard ?? []) expect(k, where).toBeLessThan(words.length);
+      });
     }
   });
 
@@ -283,6 +337,82 @@ describe("each version of a chant", () => {
       v.lines.forEach((line, i) => expect(line.text === refrain, `${v.id} line ${i + 1}: "${line.text}"`).toBe(i % 2 === 1));
       // Every version is timed now, so the lit line follows the voice.
       expect(v.timing, `${v.id} has no timing file`).toBeDefined();
+    }
+  });
+
+  it("marks every line that is the nearest public-domain wording rather than the words sung (note 78)", () => {
+    // The owner wants the words one to one with the singing. Where they are
+    // free to copy they are the words sung; where a choir sings a wording
+    // still under copyright, or one no public-domain printing has, the line
+    // is the nearest public-domain wording, and the data says so.
+    const nearest = (slug: string, id: string) =>
+      allChants()
+        .find((c) => c.slug === slug)!
+        .variants.find((v) => v.id === id)!
+        .lines.flatMap((l, i) => (l.nearest ? [i] : []));
+    // Psalm 135 in English: the thirteen first halves no public-domain
+    // printing has as the choir sings them (docs/chants/psalm-135-english.md).
+    expect(nearest("psalm-135", "en")).toEqual([4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 20, 23, 25].map((v) => (v - 1) * 4));
+    // The Arabic: Van Dyck's first halves where the choir sings the Antiochian Arabic.
+    expect(nearest("psalm-135", "ar")).toEqual([1, 2, 3, 4, 5, 6, 7, 8, 9].map((k) => k * 4));
+    // The Serbian: Daničić's u dostojanje, where the singer sings otherwise.
+    expect(nearest("psalm-135", "sr")).toEqual([80, 84]);
+    expect(nearest("psalm-135", "el")).toEqual([]);
+    // The Paschal Canon: every hymn Hapgood's (1906); the recording sings a translation of our own time.
+    const canon = allChants().find((c) => c.slug === "paschal-canon")!.variants[0];
+    expect(nearest("paschal-canon", "en")).toHaveLength(canon.lines.length);
+    // A song of our own time has no printing to be nearer to.
+    for (const v of allChants().find((c) => c.slug === "prayer-rope-anthem")!.variants) expect(nearest("prayer-rope-anthem", v.id)).toEqual([]);
+  });
+
+  it("sings the Arabic Psalm 135 whole: ten verses, each half with its Alliluia, the halves it lacks as sung from Van Dyck (note 78)", () => {
+    // Through build 86 it showed the first verse only and lit nothing after
+    // it. The choir sings verses 1 to 6 and 23 to 26.
+    const fixture = JSON.parse(fs.readFileSync(path.join(ROOT, "lib/chants/__tests__/fixtures/psalm-136-van-dyck.json"), "utf8")) as {
+      verses: Record<string, string>;
+    };
+    const ar = allChants().find((c) => c.slug === "psalm-135")!.variants.find((v) => v.id === "ar")!;
+    expect(ar.lines).toHaveLength(40);
+    const sungRefrain = ar.lines[2].text;
+    ar.lines.forEach((line, i) => {
+      if (i % 4 === 2) expect(line.text, `line ${i + 1}`).toBe(sungRefrain);
+      if (i % 4 === 0 && i > 0) {
+        // Verbatim the first half of a verse of Van Dyck's, up to its comma.
+        const verse = [2, 3, 4, 5, 6, 23, 24, 25, 26][i / 4 - 1];
+        expect(fixture.verses[verse].startsWith(line.text), `line ${i + 1}: verse ${verse}`).toBe(true);
+        expect(line.nearest, `line ${i + 1}`).toBe(true);
+      }
+    });
+    // Every line is timed, the singing followed to its end.
+    const t = JSON.parse(fs.readFileSync(inData(ar.timing!), "utf8")) as { lines: { at: number; end: number }[]; durationSec: number };
+    expect(t.lines).toHaveLength(40);
+    expect(t.lines.at(-1)!.end).toBeGreaterThan(t.durationSec - 5);
+  });
+
+  it("keeps those marks for the data: a page carries the words, not the marks", () => {
+    for (const c of allChants()) {
+      const page = forPage(c);
+      page.variants.forEach((v, k) => {
+        expect(v.lines.map((l) => l.text), c.slug).toEqual(c.variants[k].lines.map((l) => l.text));
+        for (const l of v.lines) expect("nearest" in l || "unsure" in l, c.slug).toBe(false);
+      });
+    }
+  });
+
+  it("says in the data why a line's words are unsure", () => {
+    // The Arabic wants a listener who knows it: what a speech model heard only
+    // in part is marked on its line until one confirms it.
+    const unsure = (slug: string, id: string) =>
+      allChants()
+        .find((c) => c.slug === slug)!
+        .variants.find((v) => v.id === id)!
+        .lines.flatMap((l, i) => (l.unsure ? [i] : []));
+    expect(unsure("prayer-rope-anthem", "ar")).toEqual(expect.arrayContaining([0, 1, 9, 12, 15, 16]));
+    expect(unsure("psalm-117", "ar")).toEqual(expect.arrayContaining([17, 29]));
+    for (const { v, id } of versions) {
+      for (const l of v.lines) {
+        if (l.unsure) expect(l.unsure.length, `${id}: "${l.text}"`).toBeGreaterThan(20);
+      }
     }
   });
 });

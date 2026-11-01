@@ -2,7 +2,7 @@ import { streamedUrl } from "@/lib/media/streamed";
 import { wordsOf } from "@/lib/player/captions";
 import type { CaptionSource } from "@/lib/prayers/persistentAudioStore";
 
-import { CHANT_RECORDINGS, type ChantLine, type ChantTiming } from "./types";
+import { CHANT_RECORDINGS, CHANT_TIMING, type ChantLine, type ChantTiming, type ChantTimingLine, type ChantWordTime } from "./types";
 
 /**
  * Where a chant's recordings, timed words and cover are, and how they are
@@ -24,13 +24,20 @@ import { CHANT_RECORDINGS, type ChantLine, type ChantTiming } from "./types";
  * three recordings, from 1.7, stay on the website.
  *
  * Everything else streamed lives under /audio/chants/ on the website: the
- * Anthem's recordings, every recording's timing file and the live list. It
- * is kept out of the apps' export (scripts/native-build.mjs, STASH_PATHS),
- * so in the apps it is asked of SITE_URL, and on the website it is the
- * site's own file. next.config.ts lets the apps' origins read it
- * (Cross-Origin-Resource-Policy and Access-Control-Allow-Origin on
- * /audio/chants), which a curl that answers 200 does not prove: a browser
- * refuses a same-origin file to another origin while the server says 200.
+ * Anthem's recordings and the live list. It is kept out of the apps' export
+ * (scripts/native-build.mjs, STASH_PATHS), so in the apps it is asked of
+ * SITE_URL, and on the website it is the site's own file. next.config.ts
+ * lets the apps' origins read it (Cross-Origin-Resource-Policy and
+ * Access-Control-Allow-Origin on /audio/chants), which a curl that answers
+ * 200 does not prove: a browser refuses a same-origin file to another origin
+ * while the server says 200.
+ *
+ * The timing files are not streamed (1.8, build 86 note 78): each rides in
+ * the app beside the words it times (CHANT_TIMING, app/chant-timing), so a
+ * build never shows words its timing cannot reach. The copies still under
+ * /audio/chants/<slug>/<id>.json on the website are kept, frozen, for the
+ * builds that asked the website for them (build 86 and before); nothing in
+ * this build reads them.
  *
  * Any other path (the Anthem's cover, /audio/art/anthem.jpg) is in the
  * bundle and is used as it is. The way a website file is reached is shared
@@ -38,7 +45,7 @@ import { CHANT_RECORDINGS, type ChantLine, type ChantTiming } from "./types";
  */
 export const CHANT_MEDIA_PREFIX = "/audio/chants/";
 
-export { CHANT_RECORDINGS };
+export { CHANT_RECORDINGS, CHANT_TIMING };
 
 /** The list that says which streamed recordings may play. */
 export const LIVE_LIST_PATH = `${CHANT_MEDIA_PREFIX}live.json`;
@@ -68,12 +75,20 @@ export function variantRef(slug: string, variantId: string): string {
   return `${slug}/${variantId}`;
 }
 
-/** The conventional paths of a recording on the website and of its timing file. */
-export function streamedPaths(slug: string, variantId: string): { audio: string; timing: string } {
+/**
+ * The conventional paths of a version: its recording on the website (the
+ * Anthem's, from 1.7), and its timing file, in the bundle.
+ */
+export function chantPaths(slug: string, variantId: string): { audio: string; timing: string } {
   return {
     audio: `${CHANT_MEDIA_PREFIX}${slug}/${variantId}.mp3`,
-    timing: `${CHANT_MEDIA_PREFIX}${slug}/${variantId}.json`,
+    timing: `${CHANT_TIMING}${slug}/${variantId}.json`,
   };
+}
+
+/** Where the builds through 86 ask the website for a timing file: kept there, frozen, for them alone. */
+export function legacyTimingPath(slug: string, variantId: string): string {
+  return `${CHANT_MEDIA_PREFIX}${slug}/${variantId}.json`;
 }
 
 /** A recording's address in Purify's bucket: one folder per chant, a file per version. */
@@ -81,22 +96,49 @@ export function bucketRecording(slug: string, variantId: string): string {
   return `${CHANT_RECORDINGS}${slug}/${variantId}.mp3`;
 }
 
-/** A timing file, checked by hand rather than with the schema, so the client stays small. */
+/**
+ * A timing file, checked by hand rather than with the schema, so the client
+ * stays small: version 1 (each line's start and end) or version 2 (each
+ * word's too, note 78). A line's word times are checked where they are used
+ * (lineWordTimes), so a line whose words do not match falls back to its
+ * line's time alone, and the file still times every line.
+ */
 export function readTiming(value: unknown): ChantTiming | null {
   if (!value || typeof value !== "object") return null;
   const v = value as Partial<ChantTiming>;
-  if (v.v !== 1 || typeof v.durationSec !== "number" || !Array.isArray(v.lines)) return null;
+  if ((v.v !== 1 && v.v !== 2) || typeof v.durationSec !== "number" || !Array.isArray(v.lines)) return null;
   for (const line of v.lines) {
     if (!line || typeof line.at !== "number" || typeof line.end !== "number" || typeof line.text !== "string") return null;
   }
   return v as ChantTiming;
 }
 
+/**
+ * A line's word times, where its timing file gives one for each of the words
+ * shown (`text`, split as the app splits it), each a start and an end that
+ * move forward; otherwise undefined, and the words are lit at the pace of the
+ * line (lib/player/captions.ts).
+ */
+export function lineWordTimes(line: ChantTimingLine | undefined, text: string): ChantWordTime[] | undefined {
+  const times = line?.words;
+  if (!Array.isArray(times) || times.length !== wordsOf(text).length) return undefined;
+  let last = -Infinity;
+  for (const t of times) {
+    if (!Array.isArray(t) || typeof t[0] !== "number" || typeof t[1] !== "number" || t[0] < last || t[1] < t[0]) return undefined;
+    last = t[0];
+  }
+  return times;
+}
+
 const timings = new Map<string, Promise<ChantTiming | null>>();
 /** The timing files that have arrived, to hand over at once. */
 const arrived = new Map<string, ChantTiming>();
 
-/** A recording's timing file, fetched once per session; null when it cannot be read. */
+/**
+ * A recording's timing file, read once per session; null when it cannot be
+ * read. It is in the bundle (CHANT_TIMING), so in the apps it comes from the
+ * app itself, with no signal and whatever the website runs.
+ */
 export function loadTiming(path: string): Promise<ChantTiming | null> {
   let p = timings.get(path);
   if (!p) {
@@ -190,15 +232,24 @@ export function englishOver(line: ChantLine, prefs: WordsPrefs): string | undefi
  * shown as the reader chose (sungAs): as sung, as their sound, or each word
  * over its sound. A chant's page and Now Playing draw the same captions, so
  * they read the same.
+ *
+ * Where the timing file times each word (build 86 note 78, version 2), the
+ * line carries those times (`wordTimes`), word for word the words as sung.
+ * Their sound has a word for each word sung (the data test holds it), so the
+ * same times light the same words in all three views: the n-th word sung,
+ * its n-th sound, or the n-th word over its sound.
  */
 export function captionsFor(lines: ChantLine[], timing: ChantTiming | null, prefs: WordsPrefs): CaptionSource {
   const timed = timing && timing.lines.length === lines.length ? timing.lines : null;
   return lines.map((line, i) => {
     const en = englishOver(line, prefs);
+    const sung = sungAs(line, prefs.view);
+    const times = timed ? lineWordTimes(timed[i], line.text) : undefined;
     return {
       ...(timed ? { time: timed[i].at, end: timed[i].end } : {}),
-      ...sungAs(line, prefs.view),
+      ...sung,
       ...(en ? { en } : {}),
+      ...(times && times.length === wordsOf(sung.text).length ? { wordTimes: times } : {}),
     };
   });
 }

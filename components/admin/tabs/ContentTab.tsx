@@ -10,10 +10,11 @@
 // front page's ratings sit beside it as one card, whose Update and Edit open
 // the two editors as sheets, and the catechism is one line until its bank is
 // in. What readers open in 30 days, which Traffic also shows, is folded at
-// the foot.
+// the foot. Under the catechism, Chant words is one line too (build 86 note
+// 78): each chant version's cleared words and the switch that shows them.
 //
-// #tab=ratings and #tab=catechism land here, on their card. The words and
-// the order are lib/admin/contentDesk.ts.
+// #tab=ratings, #tab=catechism and #tab=chant-words land here, on their
+// card. The words and the order are lib/admin/contentDesk.ts.
 
 import Image from "next/image";
 import { useEffect, useRef, useState } from "react";
@@ -34,6 +35,7 @@ import { ratingText } from "@/lib/marketing/storeRatings";
 
 import { BarChart } from "../charts";
 import { CatechismDetail } from "../content/catechism";
+import { ChantWordsDetail } from "../content/chantWords";
 import { PlayCard, ReviewsCard, sourceLine } from "../content/ratings";
 import { Disclosure, Modal, StatusDot, SubTabs, ToolbarButton } from "../primitives";
 import { BOX, BOX_STYLE, LIT, ink, ink2, ink3, line } from "../tools/look";
@@ -83,7 +85,7 @@ export function ContentTab() {
   return <ContentDesk />;
 }
 
-export function ContentDesk({ focus }: { focus?: "ratings" | "catechism" }) {
+export function ContentDesk({ focus }: { focus?: "ratings" | "catechism" | "chant-words" }) {
   const [data, setData] = useState<Payload | null>(null);
   const [failed, setFailed] = useState(false);
   const [ratings, setRatings] = useState<RatingsPayload | null>(null);
@@ -96,8 +98,10 @@ export function ContentDesk({ focus }: { focus?: "ratings" | "catechism" }) {
   const [problem, setProblem] = useState<string | null>(null);
   const [sheet, setSheet] = useState<"play" | "reviews" | null>(null);
   const [catechismOpen, setCatechismOpen] = useState(focus === "catechism");
+  const [chantWordsOpen, setChantWordsOpen] = useState(focus === "chant-words");
   const ratingsRef = useRef<HTMLElement | null>(null);
   const catechismRef = useRef<HTMLElement | null>(null);
+  const chantWordsRef = useRef<HTMLElement | null>(null);
 
   useEffect(() => {
     let alive = true;
@@ -126,7 +130,14 @@ export function ContentDesk({ focus }: { focus?: "ratings" | "catechism" }) {
 
   // Landing from an old link: bring its card into view, once.
   useEffect(() => {
-    const el = focus === "ratings" ? ratingsRef.current : focus === "catechism" ? catechismRef.current : null;
+    const el =
+      focus === "ratings"
+        ? ratingsRef.current
+        : focus === "catechism"
+          ? catechismRef.current
+          : focus === "chant-words"
+            ? chantWordsRef.current
+            : null;
     el?.scrollIntoView({ block: "start", behavior: "smooth" });
   }, [focus]);
 
@@ -448,6 +459,33 @@ export function ContentDesk({ focus }: { focus?: "ratings" | "catechism" }) {
                 ) : null}
               </div>
             ) : null}
+          </section>
+
+          {/* ── Chant words, one line (build 86 note 78) ──────────────── */}
+          <section ref={chantWordsRef} className={`${BOX} scroll-mt-24 px-4 py-3.5`} style={BOX_STYLE}>
+            <h2 className="font-sans text-[13.5px] font-semibold" style={ink}>
+              Chant words
+            </h2>
+            <p className="mt-1 font-sans text-[12px] leading-[1.5]" style={ink3}>
+              Each chant version shows its public-domain wording until a clearance comes; then its words as sung are
+              entered here and switched on.
+            </p>
+            <div className="mt-2">
+              <button
+                type="button"
+                onClick={() => setChantWordsOpen((v) => !v)}
+                className="min-h-11 font-sans text-[12.5px] underline underline-offset-[3px]"
+                style={ink2}
+                aria-expanded={chantWordsOpen}
+              >
+                {chantWordsOpen ? "Close" : "The versions, and their clearances"}
+              </button>
+              {chantWordsOpen ? (
+                <div className="mt-2 border-t pt-3" style={line}>
+                  <ChantWordsDetail />
+                </div>
+              ) : null}
+            </div>
           </section>
         </div>
       </div>
