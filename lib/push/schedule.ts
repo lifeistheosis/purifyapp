@@ -195,13 +195,19 @@ export function dueKind(row: ScheduleRow, now: Date): ReminderKind | null {
   return null;
 }
 
-/** The notification content for a given rule (shared by every transport). */
-export function reminderPayload(kind: ReminderKind): {
+/**
+ * The notification content for a given rule (shared by every transport), in
+ * the reader's words when their catalog is given, else in English.
+ */
+export function reminderPayload(
+  kind: ReminderKind,
+  words?: Readonly<Record<string, string>>,
+): {
   title: string;
   body: string;
   url: string;
 } {
-  return reminderCopy(kind);
+  return reminderCopy(kind, words);
 }
 
 /** One formatter per zone: making one is the slow part, and a run asks thousands of times. */

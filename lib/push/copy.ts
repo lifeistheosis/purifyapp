@@ -246,29 +246,53 @@ export function communityPushCopy(
   words?: Readonly<Record<string, string>>,
 ): { title: string; body: string; url: string } {
   const row = NOTIFICATION_COPY[COMMUNITY_ROW[kind]];
-  const keys = COMMUNITY_PUSH_KEYS[kind];
-  const translated = { title: words?.[keys.title], body: words?.[keys.body] };
-  const usable =
-    typeof translated.title === "string" &&
-    typeof translated.body === "string" &&
-    checkNotificationCopy({ title: translated.title, body: translated.body }).length === 0;
+  const own = translated(words, COMMUNITY_PUSH_KEYS[kind]);
   const url =
     typeof row.url === "function" ? (target ? row.url({ id: target }) : "/community#conversations") : row.url;
-  return {
-    title: usable ? (translated.title as string) : row.title,
-    body: usable ? (translated.body as string) : row.body,
-    url,
-  };
+  return { title: own?.title ?? row.title, body: own?.body ?? row.body, url };
 }
 
-/** The scheduled prayer rules. Takes no caller text, deliberately. */
-export function reminderCopy(kind: "morning" | "evening"): {
+/**
+ * Where the reminders' words are kept in every language: the same lines the
+ * welcome questions show as the reminders' cards (components/onboarding/
+ * RemindersOn.tsx), so the card and the lock screen say one thing.
+ */
+export const REMINDER_PUSH_KEYS: Record<"morning" | "evening", { title: string; body: string }> = {
+  morning: { title: "onboard.reminders.morningTitle", body: "onboard.reminders.morningBody" },
+  evening: { title: "onboard.reminders.eveningTitle", body: "onboard.reminders.eveningBody" },
+};
+
+/**
+ * Words from a reader's catalog, when both are there and clear the bar;
+ * otherwise null, and the caller keeps the English row. A missing or broken
+ * translation never reaches a lock screen, and never leaves it empty.
+ */
+function translated(
+  words: Readonly<Record<string, string>> | undefined,
+  keys: { title: string; body: string },
+): { title: string; body: string } | null {
+  const title = words?.[keys.title];
+  const body = words?.[keys.body];
+  if (typeof title !== "string" || typeof body !== "string") return null;
+  return checkNotificationCopy({ title, body }).length === 0 ? { title, body } : null;
+}
+
+/**
+ * The scheduled prayer rules. Takes no caller text, deliberately: `words` is
+ * the reader's message catalog (lib/i18n getMessages, on the server), and
+ * only the catalog's own lines for the reminders are read from it.
+ */
+export function reminderCopy(
+  kind: "morning" | "evening",
+  words?: Readonly<Record<string, string>>,
+): {
   title: string;
   body: string;
   url: string;
 } {
   const row = NOTIFICATION_COPY[kind];
-  return { title: row.title, body: row.body, url: row.url as string };
+  const own = translated(words, REMINDER_PUSH_KEYS[kind]);
+  return { title: own?.title ?? row.title, body: own?.body ?? row.body, url: row.url as string };
 }
 
 /**

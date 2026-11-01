@@ -14,6 +14,11 @@ const state = vi.hoisted(() => ({
   webSent: [] as { endpoint: string; kind?: string }[],
   nativeSent: [] as { token: string; platform: string }[],
   nativeKinds: [] as (string | undefined)[],
+  /** What each push said, by transport, in the order sent. */
+  webWords: [] as string[],
+  nativeWords: [] as string[],
+  /** The readers' languages, or a read that fails (the column not applied). */
+  languagesFail: false,
 }));
 
 vi.mock("@/lib/supabase/pageAll", () => ({
@@ -21,25 +26,37 @@ vi.mock("@/lib/supabase/pageAll", () => ({
     const table = (page(0, 999) as unknown as { table: string }).table;
     return { data: state.tables[table] ?? [], error: null };
   }),
-  pageAllIn: vi.fn(async () => []),
+  pageAllIn: vi.fn(async (ids: string[], page: (some: string[], from: number, to: number) => unknown) => {
+    const table = (page(ids, 0, 999) as { table: string }).table;
+    if (table !== "profiles") return [];
+    if (state.languagesFail) throw new Error("column profiles.preferred_language does not exist");
+    return (state.tables.profiles ?? []).filter((p) => ids.includes(p.id as string));
+  }),
 }));
 
 vi.mock("../send", () => ({
   webPushConfigured: () => true,
   apnsConfigured: () => true,
   fcmConfigured: () => true,
-  sendWebPushOne: vi.fn(async (_supa: unknown, sub: { endpoint: string }, payload: { kind?: string }) => {
+  sendWebPushOne: vi.fn(async (_supa: unknown, sub: { endpoint: string }, payload: { kind?: string; title: string; body: string }) => {
     state.webSent.push({ endpoint: sub.endpoint, kind: payload.kind });
+    state.webWords.push(`${payload.title} / ${payload.body}`);
     return { ok: true, gone: false };
   }),
-  sendNativeOne: vi.fn(async (_supa: unknown, t: { token: string; platform: string }, payload: { kind?: string }) => {
+  sendNativeOne: vi.fn(async (_supa: unknown, t: { token: string; platform: string }, payload: { kind?: string; title: string; body: string }) => {
     state.nativeSent.push(t);
     state.nativeKinds.push(payload.kind);
+    state.nativeWords.push(`${payload.title} / ${payload.body}`);
     return { ok: true, gone: false, skipped: false };
   }),
 }));
 
+import { readFileSync } from "node:fs";
+import { join } from "node:path";
+
 import { deliverRemindersOnce, reminderHourKey, reminderStepKey } from "../deliver";
+
+const REPO = join(__dirname, "..", "..", "..");
 
 /**
  * A stand-in client. Each query remembers its table, which is all pageAll's
@@ -77,6 +94,9 @@ beforeEach(() => {
   state.webSent = [];
   state.nativeSent = [];
   state.nativeKinds = [];
+  state.webWords = [];
+  state.nativeWords = [];
+  state.languagesFail = false;
 });
 
 describe("the claims' names", () => {
@@ -117,6 +137,38 @@ describe("deliverRemindersOnce", () => {
     ];
     await deliverRemindersOnce(supa, sevenUtc);
     expect(state.nativeKinds).toEqual(["morning", "evening"]);
+  });
+
+  it("speaks each reader's own language on the lock screen, and English where it is not known", async () => {
+    state.tables.profiles = [
+      { id: "greek", preferred_language: "el" },
+      { id: "romanian", preferred_language: "ro" },
+      { id: "unset", preferred_language: null },
+    ];
+    state.tables.device_push_tokens = [
+      { token: "t-el", user_id: "greek", platform: "android", morning_time: "07:00", evening_time: null, timezone: "UTC" },
+      { token: "t-none", user_id: "unset", platform: "ios", morning_time: "07:00", evening_time: null, timezone: "UTC" },
+    ];
+    state.tables.push_subscriptions = [
+      { endpoint: "https://push.example/ro", user_id: "romanian", p256dh: "p", auth: "a", morning_time: "07:00", evening_time: null, timezone: "UTC" },
+    ];
+    await deliverRemindersOnce(supa, sevenUtc);
+    const el = JSON.parse(readFileSync(join(REPO, "lib", "i18n", "messages", "el.json"), "utf8")) as Record<string, string>;
+    const ro = JSON.parse(readFileSync(join(REPO, "lib", "i18n", "messages", "ro.json"), "utf8")) as Record<string, string>;
+    expect(state.nativeWords).toEqual([
+      `${el["onboard.reminders.morningTitle"]} / ${el["onboard.reminders.morningBody"]}`,
+      "Morning prayer / Open the morning rule when you rise.",
+    ]);
+    expect(state.webWords).toEqual([`${ro["onboard.reminders.morningTitle"]} / ${ro["onboard.reminders.morningBody"]}`]);
+  });
+
+  it("sends every reminder in English, and none fewer, where languages cannot be read", async () => {
+    state.languagesFail = true;
+    state.tables.device_push_tokens = [
+      { token: "t-el", user_id: "greek", platform: "android", morning_time: "07:00", evening_time: null, timezone: "UTC" },
+    ];
+    await deliverRemindersOnce(supa, sevenUtc);
+    expect(state.nativeWords).toEqual(["Morning prayer / Open the morning rule when you rise."]);
   });
 
   it("lets only the first run of a step send", async () => {

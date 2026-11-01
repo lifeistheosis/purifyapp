@@ -29,11 +29,11 @@ import { PrimaryButton } from "./PrimaryButton";
  * lock-screen glass, so nobody takes a card for a real notification.
  *
  * The times are the ones just switched on, written as the reader's language
- * tells the time. The words are the pushes' own (lib/push/copy.ts), which are
- * English only: the catalogs carry them in every language, so outside English
- * a card says in the reader's words what the lock screen will say in English.
- * lib/onboarding/__tests__/remindersOn.test.ts holds the English to the
- * pushes, so the two cannot drift apart.
+ * tells the time. The words are the pushes' own (lib/push/copy.ts): the server
+ * sends each reminder in the reader's language from these same catalog lines
+ * (REMINDER_PUSH_KEYS, from profiles.preferred_language), so a card says what
+ * the lock screen will say. lib/onboarding/__tests__/remindersOn.test.ts
+ * holds the English to the pushes, so the two cannot drift apart.
  *
  * The motion is CSS (app/globals.css, "The moment reminders turn on") on the
  * sheet's own clock, below. With Purify's motion off the finished screen

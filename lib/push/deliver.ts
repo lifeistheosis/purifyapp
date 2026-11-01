@@ -1,5 +1,6 @@
 import "server-only";
 
+import { getMessages } from "@/lib/i18n";
 import { pageAllIn, pageAllSettled } from "@/lib/supabase/pageAll";
 import type { createAdminClient } from "@/lib/supabase/admin";
 import { addFailure, emptyTally, tallyIsEmpty } from "./failures";
@@ -169,6 +170,33 @@ export async function deliverRemindersOnce(
   return { claimed: true, steps: sent.map((s) => s.step), ...last, errors };
 }
 
+/**
+ * Each reader's language, for the words their reminder is sent in
+ * (profiles.preferred_language, 20260719): read only for the readers due in
+ * this run, a hundred at a time. Where the column is not applied, or the read
+ * fails, the map is empty and every reminder goes in English, as before;
+ * never a missing reminder for want of a language.
+ */
+async function languagesOf(supa: Admin, userIds: (string | null)[]): Promise<Map<string, string | null>> {
+  const ids = [...new Set(userIds.filter((id): id is string => typeof id === "string" && id !== ""))];
+  if (ids.length === 0) return new Map();
+  try {
+    const rows = await pageAllIn(ids, (some, from, to) =>
+      supa.from("profiles").select("id, preferred_language").in("id", some).order("id").range(from, to),
+    );
+    return new Map(
+      (rows as { id: string; preferred_language?: string | null }[]).map((r) => [r.id, r.preferred_language ?? null]),
+    );
+  } catch {
+    return new Map();
+  }
+}
+
+/** The reminder in the words of the reader it goes to. */
+function wordsFor(languages: Map<string, string | null>, userId: string | null): Readonly<Record<string, string>> {
+  return getMessages(userId ? languages.get(userId) : null);
+}
+
 // --- Web Push -----------------------------------------------------------
 
 async function deliverWeb(
@@ -181,7 +209,7 @@ async function deliverWeb(
   const { data: rows, error } = await pageAllSettled((from, to) =>
     supa
       .from("push_subscriptions")
-      .select("endpoint, p256dh, auth, morning_time, evening_time, timezone")
+      .select("endpoint, p256dh, auth, user_id, morning_time, evening_time, timezone")
       .order("endpoint")
       .range(from, to),
   );
@@ -191,6 +219,7 @@ async function deliverWeb(
     endpoint: string;
     p256dh: string;
     auth: string;
+    userId: string | null;
     kind: ReminderKind;
   }[] = [];
   for (const r of rows ?? []) {
@@ -200,6 +229,7 @@ async function deliverWeb(
         endpoint: r.endpoint as string,
         p256dh: r.p256dh as string,
         auth: r.auth as string,
+        userId: (r.user_id as string | null) ?? null,
         kind,
       });
   }
@@ -215,11 +245,12 @@ async function deliverWeb(
 
   let sent = 0;
   let failed = 0;
+  const languages = await languagesOf(supa, candidates.map((c) => c.userId));
   for (const c of candidates) {
     const r = await sendWebPushOne(
       supa,
       { endpoint: c.endpoint, p256dh: c.p256dh, auth: c.auth },
-      { kind: c.kind, ...reminderPayload(c.kind) },
+      { kind: c.kind, ...reminderPayload(c.kind, wordsFor(languages, c.userId)) },
     );
     if (r.ok) sent++;
     else failed++;
@@ -237,7 +268,7 @@ async function deliverNative(
   const { data: rows, error } = await pageAllSettled((from, to) =>
     supa
       .from("device_push_tokens")
-      .select("token, platform, morning_time, evening_time, timezone")
+      .select("token, platform, user_id, morning_time, evening_time, timezone")
       .order("token")
       .range(from, to),
   );
@@ -246,6 +277,7 @@ async function deliverNative(
   const candidates: {
     token: string;
     platform: "ios" | "android";
+    userId: string | null;
     kind: ReminderKind;
   }[] = [];
   for (const r of rows ?? []) {
@@ -254,6 +286,7 @@ async function deliverNative(
       candidates.push({
         token: r.token as string,
         platform: r.platform as "ios" | "android",
+        userId: (r.user_id as string | null) ?? null,
         kind,
       });
   }
@@ -273,13 +306,15 @@ async function deliverNative(
   // Why each failure failed, so the run's own answer (and the log) says it.
   // A count alone is how 135 iPhones went unreached without a word.
   const failures = emptyTally();
+  const languages = await languagesOf(supa, candidates.map((c) => c.userId));
   for (const c of candidates) {
     // With its kind, so the phone's push service drops it once it is hours
-    // late and a newer one replaces it on the screen (lib/push/lifetime.ts).
+    // late and a newer one replaces it on the screen (lib/push/lifetime.ts),
+    // and in the words of the reader it goes to.
     const res = await sendNativeOne(
       supa,
       { token: c.token, platform: c.platform },
-      { kind: c.kind, ...reminderPayload(c.kind) },
+      { kind: c.kind, ...reminderPayload(c.kind, wordsFor(languages, c.userId)) },
     );
     if (res.ok) sent++;
     else if (res.skipped) skipped++;

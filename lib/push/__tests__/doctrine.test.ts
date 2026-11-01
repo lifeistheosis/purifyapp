@@ -6,6 +6,7 @@ import { checkNotificationCopy, isDoctrinal, MAX_BODY, MAX_TITLE } from "../doct
 import {
   COMMUNITY_PUSH_KEYS,
   NOTIFICATION_COPY,
+  REMINDER_PUSH_KEYS,
   broadcastTemplates,
   campaignCopy,
   communityPushCopy,
@@ -171,6 +172,27 @@ describe("community notifications (lib/community/push.ts)", () => {
         expect(`${c.title} ${c.body}`.includes(String.fromCharCode(0x2014)), `${lang} ${kind}`).toBe(false);
       }
     }
+  });
+
+  it("leave the prayer reminders in the reader's language too, from the cards' own lines", () => {
+    // The welcome questions show the reminders as cards in the reader's words
+    // (components/onboarding/RemindersOn.tsx); the lock screen now says the
+    // same, in all 21 languages, each clearing the bar.
+    for (const lang of LANGS) {
+      const words = catalog(lang);
+      for (const kind of ["morning", "evening"] as const) {
+        const c = reminderCopy(kind, words);
+        expect(checkNotificationCopy(c), `${lang} ${kind}`).toEqual([]);
+        expect(c.title, `${lang} ${kind}`).toBe(words[REMINDER_PUSH_KEYS[kind].title]);
+        expect(c.body, `${lang} ${kind}`).toBe(words[REMINDER_PUSH_KEYS[kind].body]);
+        expect(c.url).toBe(kind === "morning" ? "/prayers/morning" : "/prayers/evening");
+      }
+    }
+    // English is the rows' own words, and a missing or loud translation gives way to them.
+    expect(reminderCopy("morning", catalog("en"))).toEqual(reminderCopy("morning"));
+    expect(reminderCopy("evening", {}).title).toBe("Evening prayer");
+    const loud = { "onboard.reminders.morningTitle": "Pray now!", "onboard.reminders.morningBody": "3 left." };
+    expect(reminderCopy("morning", loud).title).toBe("Morning prayer");
   });
 
   it("are the English rows' own words in English", () => {
