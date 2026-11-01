@@ -2,7 +2,7 @@ import { streamedUrl } from "@/lib/media/streamed";
 import { wordsOf } from "@/lib/player/captions";
 import type { CaptionSource } from "@/lib/prayers/persistentAudioStore";
 
-import { CHANT_RECORDINGS, CHANT_TIMING, type ChantLine, type ChantTiming } from "./types";
+import { CHANT_RECORDINGS, CHANT_TIMING, type ChantLine, type ChantTiming, type ChantTimingLine, type ChantWordTime } from "./types";
 
 /**
  * Where a chant's recordings, timed words and cover are, and how they are
@@ -96,15 +96,38 @@ export function bucketRecording(slug: string, variantId: string): string {
   return `${CHANT_RECORDINGS}${slug}/${variantId}.mp3`;
 }
 
-/** A timing file, checked by hand rather than with the schema, so the client stays small. */
+/**
+ * A timing file, checked by hand rather than with the schema, so the client
+ * stays small: version 1 (each line's start and end) or version 2 (each
+ * word's too, note 78). A line's word times are checked where they are used
+ * (lineWordTimes), so a line whose words do not match falls back to its
+ * line's time alone, and the file still times every line.
+ */
 export function readTiming(value: unknown): ChantTiming | null {
   if (!value || typeof value !== "object") return null;
   const v = value as Partial<ChantTiming>;
-  if (v.v !== 1 || typeof v.durationSec !== "number" || !Array.isArray(v.lines)) return null;
+  if ((v.v !== 1 && v.v !== 2) || typeof v.durationSec !== "number" || !Array.isArray(v.lines)) return null;
   for (const line of v.lines) {
     if (!line || typeof line.at !== "number" || typeof line.end !== "number" || typeof line.text !== "string") return null;
   }
   return v as ChantTiming;
+}
+
+/**
+ * A line's word times, where its timing file gives one for each of the words
+ * shown (`text`, split as the app splits it), each a start and an end that
+ * move forward; otherwise undefined, and the words are lit at the pace of the
+ * line (lib/player/captions.ts).
+ */
+export function lineWordTimes(line: ChantTimingLine | undefined, text: string): ChantWordTime[] | undefined {
+  const times = line?.words;
+  if (!Array.isArray(times) || times.length !== wordsOf(text).length) return undefined;
+  let last = -Infinity;
+  for (const t of times) {
+    if (!Array.isArray(t) || typeof t[0] !== "number" || typeof t[1] !== "number" || t[0] < last || t[1] < t[0]) return undefined;
+    last = t[0];
+  }
+  return times;
 }
 
 const timings = new Map<string, Promise<ChantTiming | null>>();

@@ -17,7 +17,7 @@ import { bucketRecording, chantPaths, inBucket, isStreamed, legacyTimingPath, re
 import { timingFiles } from "@/lib/chants/timing.server";
 import { chantLineKey, chantTitleKey, kindKey, traditionKey } from "@/lib/chants/names";
 import { allChants, chantIndex } from "@/lib/chants/registry.server";
-import { chantSchema } from "@/lib/chants/schema";
+import { chantSchema, timingSchema } from "@/lib/chants/schema";
 import { CHANT_KINDS, CHANT_TIMING, CHANT_TRADITIONS } from "@/lib/chants/types";
 // Plain ESM, shared with the intake script that prints a recording's length.
 import { mp3Duration } from "../../../scripts/chants/mp3.mjs";
@@ -214,6 +214,33 @@ describe("each version of a chant", () => {
         expect(l.end, id).toBeLessThanOrEqual(timing!.durationSec + 0.01);
         last = l.at;
       }
+    }
+  });
+
+  it("times every word it shows, each inside its line and in order (note 78)", () => {
+    // The owner: "each word timestamped and followed in the lyrics section".
+    // Every timing file is version 2 (scripts/chants/time-words.mjs): a start
+    // and an end for every word of every line, as the app splits the line.
+    for (const { v, id } of versions) {
+      if (!v.timing) continue;
+      const raw = JSON.parse(fs.readFileSync(inData(v.timing), "utf8"));
+      const parsed = timingSchema.safeParse(raw);
+      expect(parsed.success, `${id}: ${parsed.success ? "" : JSON.stringify(parsed.error.issues[0])}`).toBe(true);
+      expect(raw.v, `${id} is not timed word by word`).toBe(2);
+      raw.lines.forEach((l: { at: number; end: number; text: string; words: [number, number][]; unheard?: number[] }, i: number) => {
+        const where = `${id} line ${i + 1}`;
+        const words = l.text.split(/\s+/).filter(Boolean);
+        expect(l.words.length, where).toBe(words.length);
+        let last = -Infinity;
+        for (const [at, end] of l.words) {
+          expect(at, where).toBeGreaterThanOrEqual(l.at - 0.005);
+          expect(end, where).toBeLessThanOrEqual(l.end + 0.005);
+          expect(end, where).toBeGreaterThanOrEqual(at);
+          expect(at, where).toBeGreaterThan(last);
+          last = at;
+        }
+        for (const k of l.unheard ?? []) expect(k, where).toBeLessThan(words.length);
+      });
     }
   });
 

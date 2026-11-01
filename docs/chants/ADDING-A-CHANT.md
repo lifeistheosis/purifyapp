@@ -94,6 +94,18 @@ For a chant with the slug `christ-is-risen` and a version `el-byzantine`:
    `edits/tools/speechmap.mjs`), then find every other verse by its breaths
    and by matching that verse's refrain and Alleluia along the recording.
    Never take a speech model's word times as they are: they run late.
+   **Then each word** (build 86 note 78, "each word timestamped and followed
+   in the lyrics section"): `node scripts/chants/time-words.mjs <slug> <id>
+   --wav <the recording at 16 kHz, mono> --transformers <transformers.node.mjs>
+   --cache <the models' folder> --keep <a file outside the repository>
+   --report <a file outside the repository>`, through
+   `purify-ads/tools/renderlock.mjs`. It hands Whisper small each line's own
+   words and their stretch of the recording, takes where its attention puts
+   each word (a tenth of a second early, as its times run late; the first
+   word where the line is first heard), and writes the timing file as
+   version 2, each word with its start and end. Then the model hears every
+   stretch on its own, and a word it did not hear is listed as `unheard` on
+   its line: read the report, and listen to every line marked `?`.
 4. **The prose.** `about.what`, `about.history` and `about.when`, in English,
    plain, with no em dash, nothing invented, every claim resting on a source
    in `sources`. Set `review` to `{ "status": "awaiting-clergy-review", "since": "<today>" }`.

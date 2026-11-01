@@ -104,13 +104,39 @@ export const chantSchema = z
   })
   .strict();
 
-export const timingSchema = z
-  .object({
-    v: z.literal(1),
-    durationSec: seconds.positive(),
-    lines: z.array(z.object({ at: seconds, end: seconds, text: z.string().min(1) }).strict()).min(1),
-  })
-  .strict();
+const timedLine = z.object({ at: seconds, end: seconds, text: z.string().min(1) });
+
+/**
+ * A timing file: version 1 times each line (through build 86), version 2
+ * each word too (note 78; lib/chants/types.ts, ChantTiming), with how its
+ * word times were made.
+ */
+export const timingSchema = z.union([
+  z
+    .object({
+      v: z.literal(1),
+      durationSec: seconds.positive(),
+      lines: z.array(timedLine.strict()).min(1),
+    })
+    .strict(),
+  z
+    .object({
+      v: z.literal(2),
+      durationSec: seconds.positive(),
+      made: z.object({ by: z.string().trim().min(1), on: day }).strict(),
+      lines: z
+        .array(
+          timedLine
+            .extend({
+              words: z.array(z.tuple([seconds, seconds])).min(1),
+              unheard: z.array(z.number().int().min(0)).min(1).optional(),
+            })
+            .strict(),
+        )
+        .min(1),
+    })
+    .strict(),
+]);
 
 export const liveListSchema = z
   .object({

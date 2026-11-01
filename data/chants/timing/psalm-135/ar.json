@@ -1,6 +1,6 @@
-{"v":1,"durationSec":253.18,"lines":[
-{"at":0.56,"end":8.2,"text":"اعترفوا للرب فإنه صالح،"},
-{"at":8.2,"end":11.56,"text":"الليلويا."},
-{"at":11.56,"end":20.27,"text":"فإن إلى الأبد رحمته."},
-{"at":20.27,"end":24.2,"text":"الليلويا."}
+{"v":2,"durationSec":253.18,"made":{"by":"whisper-small_timestamped (q8): each line's printed words aligned to its stretch of the recording (starts 0.1 s early, the first at the first sound), then checked against the model's own hearing","on":"2026-11-01"},"lines":[
+{"at":0.56,"end":8.2,"text":"اعترفوا للرب فإنه صالح،","words":[[0.56,3.2],[3.2,4.42],[4.42,5.84],[5.84,8.2]]},
+{"at":8.2,"end":11.56,"text":"الليلويا.","words":[[8.2,11.56]]},
+{"at":11.56,"end":20.27,"text":"فإن إلى الأبد رحمته.","words":[[11.56,13.94],[13.94,15.42],[15.42,17.5],[17.5,20.27]]},
+{"at":20.27,"end":24.2,"text":"الليلويا.","words":[[20.27,24.2]]}
 ]}

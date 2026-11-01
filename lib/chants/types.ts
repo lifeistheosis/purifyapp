@@ -191,12 +191,42 @@ export type Chant = {
   variants: ChantVariant[];
 };
 
-/** A timing file: the read-aloud's shape (lines with a start and an end). */
+/** One sung word's time (a version 2 timing file): when it starts and when it ends, in seconds. */
+export type ChantWordTime = [at: number, end: number];
+
+/** One line of a timing file. */
+export type ChantTimingLine = {
+  at: number;
+  end: number;
+  text: string;
+  /**
+   * Version 2: each word's start and end, word for word the line's words as
+   * spaces split them (lib/player/captions.ts, wordsOf). The first starts
+   * with the line.
+   */
+  words?: ChantWordTime[];
+  /**
+   * Version 2: the words, by place from 0, that the speech model's own
+   * hearing did not find, so their times rest on the alignment alone. A line
+   * with most of its words here is one to hear again by ear.
+   */
+  unheard?: number[];
+};
+
+/**
+ * A timing file: the read-aloud's shape (lines with a start and an end).
+ * Version 1 times the lines (through build 86); version 2 (1.8, build 86
+ * note 78, the owner's "each word timestamped and followed in the lyrics
+ * section") times each word too, made by scripts/chants/time-words.mjs.
+ * Both are read.
+ */
 export type ChantTiming = {
-  v: 1;
+  v: 1 | 2;
   durationSec: number;
+  /** Version 2: how the word times were made, and when (YYYY-MM-DD). */
+  made?: { by: string; on: string };
   /** Line for line the variant's words; the text is checked against them. */
-  lines: { at: number; end: number; text: string }[];
+  lines: ChantTimingLine[];
 };
 
 /** What a list needs of a recording: no words. */
