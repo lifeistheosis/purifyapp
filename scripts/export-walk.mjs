@@ -6449,6 +6449,269 @@ await section(49, async () => {
     await ctx.close();
   }
 });
+// ---- 47. Making a post in Community, a page of its own (1.8).
+// The owner's pick of r3-24, "B, a page of its own" (his note 69 of build 86,
+// "So I want this create a post screen revamped"): the open form left the
+// feed for a page over everything, the kind's picture at its head, the kinds
+// as a saint's page's doors, who reads it and Post at the thumb, riding the
+// keyboard (components/community/ComposePage.tsx). lib/community/compose.ts
+// holds what each way in opens on, and its test holds the rules; this is the
+// built app opening it all four ways a reader can (the feed, a parish group,
+// Start a conversation under a Bible chapter, the Ask a Priest tab), signed
+// in as the walk's stand-in reader with no network, so the feed says it
+// could not load while the row and the page, which are the device's own,
+// are all there.
+//
+// A headless browser has no keyboard, so one is stood in, raised and lowered
+// by hand (window.__keyboard), apart from the focus: a phone gives the field
+// its focus at once and then slides its keyboard up over a moment, and while
+// it does nothing on the page may move but the foot, which rides up on it.
+await section(47, async () => {
+  console.log("\n47. Making a post in Community, a page of its own");
+  const en = JSON.parse(fs.readFileSync(path.resolve("lib/i18n/messages/en.json"), "utf8"));
+  must(inBundle(OUT, "/community/"), "/community/ is in the bundle");
+  const session = JSON.stringify({ access_token: "walk", token_type: "bearer", user: { id: "00000000-0000-4000-8000-000000000000", email: "reader@example.com", created_at: "2026-01-01T00:00:00Z", identities: [], user_metadata: { display_name: "Walk Reader" } } });
+  // Two lines in the reader's Florilegium, verbatim (King James), for Share a line.
+  const JOHN_3_16 = "For God so loved the world, that he gave his only begotten Son, that whosoever believeth in him should not perish, but have everlasting life.";
+  const GAL_6_2 = "Bear ye one another's burdens, and so fulfil the law of Christ.";
+  const florilegia = JSON.stringify([
+    {
+      id: "walk-gathering",
+      title: "Walk",
+      createdAt: 1,
+      updatedAt: 2,
+      items: [
+        { id: "walk-john-3-16", addedAt: 2, kind: "scripture", text: JOHN_3_16, reference: "John 3:16", book: "john", chapter: 3, verse: 16 },
+        { id: "walk-gal-6-2", addedAt: 1, kind: "scripture", text: GAL_6_2, reference: "Galatians 6:2", book: "galatians", chapter: 6, verse: 2 },
+      ],
+    },
+  ]);
+  const KEYBOARD = 300;
+  const GROUP = "11111111-2222-4333-8444-555555555555";
+  const handKeyboard = () => {
+    const target = new EventTarget();
+    let up = 0;
+    const vv = {
+      get width() { return innerWidth; },
+      get height() { return innerHeight - up; },
+      offsetTop: 0,
+      offsetLeft: 0,
+      get pageTop() { return scrollY; },
+      get pageLeft() { return scrollX; },
+      scale: 1,
+      onresize: null,
+      onscroll: null,
+      addEventListener: (...a) => target.addEventListener(...a),
+      removeEventListener: (...a) => target.removeEventListener(...a),
+      dispatchEvent: (e) => target.dispatchEvent(e),
+    };
+    try {
+      Object.defineProperty(window, "visualViewport", { configurable: true, get: () => vv });
+    } catch {
+      return;
+    }
+    window.__keyboard = (px) => {
+      if (up === px) return;
+      up = px;
+      target.dispatchEvent(new Event("resize"));
+    };
+  };
+  // The page as it stands: what it opened on, and where its parts are.
+  const measure = (page) =>
+    page.evaluate(() => {
+      const root = document.querySelector("[data-compose-page]");
+      if (!root) return null;
+      const box = (sel) => {
+        const el = root.querySelector(sel);
+        if (!el) return null;
+        const r = el.getBoundingClientRect();
+        return { top: Math.round(r.top), bottom: Math.round(r.bottom) };
+      };
+      const text = (sel) => (root.querySelector(sel)?.textContent ?? "").replace(/\s+/g, " ").trim();
+      const words = root.querySelector("[data-compose-words] textarea");
+      const send = root.querySelector("[data-compose-send]");
+      return {
+        kind: root.getAttribute("data-compose-kind"),
+        folded: root.hasAttribute("data-folded"),
+        title: text("[data-compose-title]"),
+        picture: root.querySelector("[data-compose-picture] img")?.getAttribute("src") ?? "",
+        doors: [...root.querySelectorAll("[data-compose-door]")].map((b) => `${b.getAttribute("data-compose-door")}${b.getAttribute("aria-pressed") === "true" ? "*" : ""}`).join(" "),
+        audience: text("[data-compose-audience]"),
+        send: text("[data-compose-send]"),
+        sendOn: Boolean(send) && !send.disabled,
+        about: text("[data-compose-about]"),
+        card: text("[data-compose-card]"),
+        note: Boolean(root.querySelector("[data-compose-note]")),
+        head: box("[data-compose-title]"),
+        doorsBox: box("[data-compose-doors]"),
+        field: box("[data-compose-field]"),
+        words: box("[data-compose-words]"),
+        foot: box("[data-compose-foot]"),
+        sendBox: box("[data-compose-send]"),
+        strip: box("[data-compose-strip]"),
+        writing: Boolean(words) && document.activeElement === words,
+        draft: words?.value ?? "",
+        visible: Math.round(window.visualViewport.height),
+        inner: innerHeight,
+        overlay: document.body.dataset.overlayOpen === "1",
+        tabBar: (() => {
+          const bar = document.querySelector("[data-tab-bar]");
+          return !bar ? "none" : bar.getAttribute("aria-hidden") === "true" && getComputedStyle(bar).opacity === "0" ? "aside" : "showing";
+        })(),
+      };
+    });
+  const opened = (page) => page.waitForFunction(() => !!document.querySelector("[data-compose-page]"), null, { timeout: 10000 }).then(() => page.waitForTimeout(800), () => {});
+  const shut = async (page) => {
+    await tap(page.locator("[data-compose-close]"));
+    await page.waitForTimeout(500);
+    return page.evaluate(() => !document.querySelector("[data-compose-page]") && document.body.dataset.overlayOpen !== "1");
+  };
+  const row = (page) => page.waitForFunction(() => !!document.querySelector('[data-composer] [data-compose-open="field"]'), null, { timeout: 20000 }).then(
+    () => page.evaluate(() => (document.querySelector('[data-compose-open="field"]')?.textContent ?? "").trim()),
+    () => null,
+  );
+  const tops = (m) => ["head", "doorsBox", "field", "words"].map((k) => `${k} ${m?.[k]?.top ?? "?"}`).join(", ");
+  const held = (a, b) => ["head", "doorsBox", "field", "words"].every((k) => a?.[k] && b?.[k] && Math.abs(a[k].top - b[k].top) <= 1);
+
+  for (const [width, height] of [[390, 844], [360, 740]]) {
+    const where = `${width}x${height}`;
+    const { ctx, page, errors } = await open({ width, height, phone: true, set: { "sb-walk-auth-token": session, "purify:florilegia": florilegia } });
+    await page.addInitScript(handKeyboard);
+    await go(page, "/community/");
+
+    // 1. The feed: the folded row stays, and its field opens the page on a discussion.
+    const asks = await row(page);
+    must(asks === en["community.composePrompt"], `${where}, the feed: the folded row stays, its field asking "${asks ?? "no row"}"`);
+    await tap(page.locator('[data-compose-open="field"]'));
+    await opened(page);
+    const rest = await measure(page);
+    must(
+      Boolean(rest) && rest.kind === "discussion" && rest.title === en["community.composeTitle"] && rest.doors === "discussion* question share" && !rest.folded,
+      `${where}, the feed: its field opens a page of its own on a discussion, three doors under its head (${rest ? `${rest.kind}, "${rest.title}", ${rest.doors}` : "no page"})`,
+    );
+    must(rest?.picture === "/discover/tiles/chat.webp", `${where}: Pentecost at its head (${rest?.picture || "none"})`);
+    must(
+      rest?.audience === en["community.postingPublicly"] && rest.send === en["community.post"] && !rest.sendOn,
+      `${where}: who reads it beside Post at the foot, Post waiting for words ("${rest?.audience}", "${rest?.send}")`,
+    );
+    must(Boolean(rest?.overlay) && rest.tabBar !== "showing", `${where}: over everything, the tab bar stepped aside behind it (${rest?.tabBar})`);
+    must(Boolean(rest?.writing), `${where}: the words have the cursor as it opens`);
+    if (width === 390) await page.screenshot({ path: path.join(SHOTS, "compose-feed.png") });
+
+    // The keyboard comes: nothing on the page moves, and the foot rides up on it.
+    const stood = await page.evaluate(() => typeof window.__keyboard === "function" && window.visualViewport.height === innerHeight);
+    must(stood, `${where}: the keyboard is stood in, and down`);
+    const down = await measure(page);
+    await page.evaluate((px) => window.__keyboard(px), KEYBOARD);
+    await page.waitForTimeout(600);
+    const up = await measure(page);
+    must(held(down, up), `${where}: nothing moves as the keyboard comes, the title, the doors, the title field and the words where they were (${tops(down)}; then ${tops(up)})`);
+    must(
+      Boolean(down?.foot && up?.foot) && Math.abs(down.foot.bottom - down.inner) <= 1 && up.visible <= up.inner - KEYBOARD + 1 && Math.abs(up.foot.bottom - up.visible) <= 1 && up.sendBox.bottom <= up.visible,
+      `${where}: who reads it and Post ride up on the keyboard (the foot's end ${down?.foot?.bottom} of ${down?.inner}, then ${up?.foot?.bottom} on a keyboard from ${up?.visible})`,
+    );
+    must(Boolean(up?.words) && up.words.top < up.foot.top - 20, `${where}: the words are still in view above it (at ${up?.words?.top}, the foot from ${up?.foot?.top})`);
+    if (width === 390) await page.screenshot({ path: path.join(SHOTS, "compose-keyboard.png") });
+
+    // The first words fold the head: the doors pin as a slim row under the bar, the words under it.
+    await page.keyboard.type("Reading John 3 tonight.");
+    await page.waitForTimeout(1000);
+    const typed = await measure(page);
+    must(
+      Boolean(typed?.folded && typed.strip && typed.words) && typed.words.top >= typed.strip.bottom - 1 && typed.foot.bottom <= typed.visible + 1 && typed.sendOn,
+      `${where}: the first words fold the head under the bar, the words below it and Post lit on the keyboard (${typed?.folded ? "folded" : "not folded"}, the row to ${typed?.strip?.bottom}, the words from ${typed?.words?.top})`,
+    );
+    if (width === 390) await page.screenshot({ path: path.join(SHOTS, "compose-typed.png") });
+    await page.evaluate(() => window.__keyboard(0));
+    must(await shut(page), `${where}: its close button puts it away, and the feed is back`);
+    await tap(page.locator('[data-compose-open="field"]'));
+    await opened(page);
+    const again = await measure(page);
+    must(again?.draft === "Reading John 3 tonight.", `${where}: closing keeps the draft for the next opening ("${again?.draft ?? "no page"}")`);
+    await page.keyboard.press("Escape");
+    await page.waitForTimeout(500);
+    must(await page.evaluate(() => !document.querySelector("[data-compose-page]")), `${where}: Escape closes it too`);
+
+    if (width === 390) {
+      // Share a line: the newest line gathered stands as the card it becomes in the feed.
+      await tap(page.locator('[data-compose-open="share"]'));
+      await opened(page);
+      const share = await measure(page);
+      must(
+        share?.kind === "share" && share.title === en["community.shareALine"] && share.picture === "/premium/scribe.v1.webp" && share.doors === "discussion question share*",
+        `the feed's Share a line opens on Share a line, under St Prochorus writing (${share ? `${share.kind}, ${share.picture}, ${share.doors}` : "no page"})`,
+      );
+      must(Boolean(share?.card.includes(JOHN_3_16.slice(0, 40)) && share.card.includes("John 3:16")) && share.sendOn, `the newest line stands as its card, Post lit ("${share?.card.slice(0, 50) ?? ""}")`);
+      await tap(page.locator('[data-compose-line="walk-gal-6-2"]'));
+      await page.waitForTimeout(400);
+      const picked = await measure(page);
+      must(Boolean(picked?.card.includes(GAL_6_2.slice(0, 30)) && picked.card.includes("Galatians 6:2")), `a tap on another line makes it the card ("${picked?.card.slice(0, 50) ?? ""}")`);
+      await page.screenshot({ path: path.join(SHOTS, "compose-share.png") });
+      must(await shut(page), "and closing it brings back the feed");
+
+      // The Ask a Priest tab: a question, under the Three Hierarchs, sent as Ask.
+      await tap(page.locator('[data-feed-tab="questions"]'));
+      await page.waitForTimeout(700);
+      const askRow = await row(page);
+      must(askRow === en["community.askPrompt"], `the Ask a Priest tab: the row asks "${askRow ?? "no row"}"`);
+      await tap(page.locator('[data-compose-open="field"]'));
+      await opened(page);
+      const ask = await measure(page);
+      must(
+        ask?.kind === "question" && ask.title === en["community.askAPriest"] && ask.doors === "discussion question* share" && ask.picture === "/icons/prayer/three-hierarchs.v2.jpg",
+        `it opens on a question under the Three Hierarchs (${ask ? `${ask.kind}, "${ask.title}", ${ask.picture}` : "no page"})`,
+      );
+      must(Boolean(ask?.note) && ask.send === en["community.askSend"] && ask.audience === en["community.postingPublicly"], `its note under the seal, Ask at the thumb, and public as before ("${ask?.send}", "${ask?.audience}")`);
+      await page.screenshot({ path: path.join(SHOTS, "compose-ask.png") });
+      must(await shut(page), "and it closes back to the questions");
+
+      // A parish group: two doors, the group's own words; the post goes to the group alone.
+      await go(page, "/");
+      await go(page, `/community/#group-${GROUP}`);
+      const groupRow = await row(page);
+      must(groupRow === en["community.composePromptGroup"], `a parish group: the row asks "${groupRow ?? "no row"}"`);
+      await tap(page.locator('[data-compose-open="field"]'));
+      await opened(page);
+      const group = await measure(page);
+      must(
+        group?.kind === "discussion" && group.title === en["community.composeTitleGroup"] && group.doors === "discussion* share" && group.audience === en["community.postingToGroup"],
+        `it opens with two doors and the group's words ("${group?.title}", ${group?.doors}, "${group?.audience}")`,
+      );
+      await page.screenshot({ path: path.join(SHOTS, "compose-group.png") });
+      must(await shut(page), "and closes back to the group's conversation");
+
+      // Start a conversation under a Bible chapter: the page opens straight from it, about it.
+      await go(page, "/bible/john/3/");
+      await page.waitForTimeout(1500);
+      const start = page.locator('a[href*="about=john"]').first();
+      if (await start.count()) {
+        await start.scrollIntoViewIfNeeded().catch(() => {});
+        await tap(start);
+      } else {
+        // The chapter shows the way only where the build has Community on.
+        say("47, the chapter", "no Start a conversation in this build; its address is opened instead");
+        await go(page, "/community/?about=john%2F3#conversations");
+      }
+      await opened(page);
+      const chapter = await measure(page);
+      const aboutJohn = en["community.aboutChapter"].replace("{chapter}", "John 3");
+      must(
+        chapter?.kind === "discussion" && chapter.about === aboutJohn && chapter.title === en["community.composeTitle"],
+        `Start a conversation under John 3 opens the page on a discussion about it ("${chapter?.about ?? "no page"}")`,
+      );
+      must(
+        Boolean(chapter?.picture) && (chapter.picture.endsWith("/covers/john.v1.jpg") || chapter.picture === "/sections/bible.jpg"),
+        `St John's cover at its head, or with no signal the plate the apps carry (${chapter?.picture || "none"})`,
+      );
+      await page.screenshot({ path: path.join(SHOTS, "compose-chapter.png") });
+      const landed = await shut(page);
+      const feed = await page.evaluate(() => location.pathname);
+      must(landed && /^\/community\/?$/.test(feed) && (await row(page)) !== null, `closing it lands in the feed (${feed})`);
+    }
+    must(errors.length === 0, `${where}: no page errors${errors.length ? ": " + errors.slice(0, 2).join(" | ") : ""}`);
+    await ctx.close();
+  }
+});
 await browser.close();
 if (!everySection) console.log(`\nOnly the sections chosen were walked: ${walked.join(", ") || "none"}.`);
 console.log(failed ? `\n${failed} check(s) failed.` : "\nEvery check passed.");

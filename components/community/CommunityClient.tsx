@@ -3,12 +3,14 @@
 import dynamic from "next/dynamic";
 import Link from "next/link";
 import { createContext, Fragment, memo, useCallback, useContext, useEffect, useLayoutEffect, useMemo, useRef, useState, type CSSProperties } from "react";
+import { flushSync } from "react-dom";
 
 import { ActionMenu, type ActionMenuItem } from "@/components/community/ActionMenu";
 import { MentionField } from "@/components/community/MentionField";
 import { CommunityAvatar as Avatar } from "@/components/community/CommunityAvatar";
 import { CommunityBell } from "@/components/community/CommunityBell";
 import { CommunityHead } from "@/components/community/CommunityHead";
+import { ComposePage, type ComposeRequest } from "@/components/community/ComposePage";
 import { FeedTabs } from "@/components/community/FeedTabs";
 import { MyProfileCard, PlusProfileNudge } from "@/components/community/CommunitySide";
 import { PrayTogether } from "@/components/community/PrayTogether";
@@ -28,7 +30,6 @@ import {
 import { runningCampaign } from "@/lib/community/runningCampaign";
 import {
   addReply,
-  createCommunityPost,
   deleteCommunityPost,
   fetchMyCommunityIds,
   fetchModWaiting,
@@ -37,7 +38,6 @@ import {
   reportCommunityItem,
   fetchCommunityPost,
   fetchCommunityPosts,
-  type CommunityResult,
   type PostsResult,
   fetchReplies,
   uploadAvatar,
@@ -48,10 +48,6 @@ import {
   type CommunityPost,
   type CommunityReply,
 } from "@/lib/community/types";
-import {
-  useFlorilegia,
-  type FlorilegiumItem,
-} from "@/lib/florilegium/florilegium";
 import { resolveUser } from "@/lib/supabase/resolveUser";
 import { cn } from "@/lib/cn";
 import { sortPinnedFirst } from "@/lib/community/pinning";
@@ -63,7 +59,8 @@ import { SupporterMark } from "@/components/community/SupporterMark";
 import type { ReactionState } from "@/lib/community/reactions";
 import { countsOf, type ResponseKind } from "@/lib/community/responses";
 import { validChapterRef } from "@/lib/community/chapterRef";
-import { getBook } from "@/lib/bible/books";
+import type { AuthorMark } from "@/lib/community/authorMark";
+import { composeOpening, type ComposeWay } from "@/lib/community/compose";
 import { nameColorClass } from "@/lib/profile/nameColor";
 import { Skeleton, SkeletonList } from "@/components/ui/Skeleton";
 import { Book } from "@/components/ui/icons/Book";
@@ -765,6 +762,7 @@ function CommunityScreen({
                   me={me}
                   groupId={groupId}
                   decoration={myProfile?.cosmetics.decoration ?? null}
+                  tier={myProfile?.tier ?? null}
                   onOpenProfile={
                     myProfile
                       ? () => openProfile(myProfile.handle, { handle: myProfile.handle, name: myProfile.name, avatar: myProfile.avatar })
@@ -966,10 +964,22 @@ function CommunityScreen({
 
 /* ── Composer ──────────────────────────────────────────────────────────── */
 
+/**
+ * The folded row in the feed, and the page it opens (1.8, the owner's pick
+ * of r3-24, "B, a page of its own": his note 69). The row is as it was, one
+ * line with no box around it (r3-02 B): the reader's picture, a field set
+ * into the page, and Share a line beside it. The form itself is a page of its
+ * own over the feed (components/community/ComposePage.tsx), which keeps the
+ * draft when it is closed. lib/community/compose.ts is what each way in opens
+ * on: the field a discussion (a question on the Ask a Priest tab), Share a
+ * line a shared line, and a chapter's Start a conversation a discussion about
+ * that chapter.
+ */
 function Composer({
   me,
   groupId,
   decoration,
+  tier,
   onOpenProfile,
   onPosted,
   onAvatarChanged,
@@ -982,6 +992,8 @@ function Composer({
   groupId: string | null;
   /** The reader's Plus frame, so their own picture wears it here too. */
   decoration: string | null;
+  /** The Plus or Pro mark the reader shows beside their name. */
+  tier: AuthorMark;
   /** Opens the reader's own profile. Absent until profiles are open, and
    *  then the picture keeps its old job of changing the photo. */
   onOpenProfile?: () => void;
@@ -989,132 +1001,41 @@ function Composer({
   onAvatarChanged: (url: string) => void;
   /** A Bible chapter the reader came from ("john/3"), to write about. */
   about: string | null;
-  /** The Ask a Priest tab is open: the composer offers a question first. */
+  /** The Ask a Priest tab is open: the page opens on a question. */
   asking: boolean;
 }) {
   const { t } = useTranslate();
-  const [mode, setMode] = useState<"discussion" | "share" | "question">("discussion");
-  // The chapter this post is about, from "Start a conversation" on its page.
-  const [chapter, setChapter] = useState<string | null>(null);
-  // Said once after posting: it went up, or it waits for a moderator.
+  // The page, and how it was last asked to open.
+  const [open, setOpen] = useState(false);
+  const [request, setRequest] = useState<ComposeRequest>({ kind: "discussion", chapter: null, seq: 0 });
+  // Said once after posting: it waits for a moderator.
   const [notice, setNotice] = useState<string | null>(null);
-  // Folded to one line until the reader starts. Open, the form was the
-  // tallest thing on the page, above every post, for the many readers who
-  // come to read rather than to write.
-  const [expanded, setExpanded] = useState(false);
-  const [title, setTitle] = useState("");
-  const [body, setBody] = useState("");
-  const [picked, setPicked] = useState<FlorilegiumItem | null>(null);
-  const [busy, setBusy] = useState(false);
-  const [error, setError] = useState<string | null>(null);
   const [avatarBusy, setAvatarBusy] = useState(false);
-  // Kept apart from `error`: an avatar failure used to render in the post
+  // Kept apart from the page's own: an avatar failure used to render in the
   // composer's error slot, so "Couldn't update your photo" appeared under a
   // discussion draft that was perfectly fine.
   const [avatarError, setAvatarError] = useState<string | null>(null);
   // A photo being placed before it is saved (ImageCropSheet).
   const [crop, setCrop] = useState<{ file: File; open: boolean } | null>(null);
-  // The word filter's question, after a post it would mask.
-  const [askFiltered, setAskFiltered] = useState(false);
   const fileRef = useRef<HTMLInputElement>(null);
-  const bodyRef = useRef<HTMLTextAreaElement | HTMLInputElement | null>(null);
-  const { florilegia } = useFlorilegia();
+  const closePage = useCallback(() => setOpen(false), []);
 
-  const gathered = florilegia.flatMap((f) => f.items);
-  const GATHERED_SHOWN = 40;
+  function show(way: ComposeWay) {
+    const { kind, chapter } = composeOpening(way, { inGroup: groupId !== null, asking });
+    setRequest((r) => ({ kind, chapter, seq: r.seq + 1 }));
+    setOpen(true);
+    setNotice(null);
+  }
+  // What the field opens on, so it asks in the same words (a question only outside a group).
+  const fieldAsks = composeOpening({ from: "field" }, { inGroup: groupId !== null, asking }).kind === "question";
 
-  // Opening the form is asking to write, so the cursor goes where the words do.
-  useEffect(() => {
-    if (expanded && mode !== "share") bodyRef.current?.focus({ preventScroll: true });
-  }, [expanded, mode]);
-
-  // From a chapter's page: open on a discussion about that chapter. Adjusted
-  // while rendering rather than in an effect, so the first frame is right.
+  // From a chapter's page: the page opens straight on a discussion about that
+  // chapter. Adjusted while rendering rather than in an effect, so the first
+  // frame is right.
   const [aboutSeen, setAboutSeen] = useState<string | null>(null);
   if (about && about !== aboutSeen) {
     setAboutSeen(about);
-    setChapter(about);
-    setMode("discussion");
-    setExpanded(true);
-  }
-
-  function start(next: "discussion" | "share" | "question") {
-    setMode(next);
-    setExpanded(true);
-    setNotice(null);
-  }
-
-  /** The spam filter's refusals, in the reader's language (lib/community/guard.ts). */
-  function refusal(res: CommunityResult): string | null {
-    switch (res.code) {
-      case "duplicate":
-        return t("community.err.duplicate");
-      case "too_many_links":
-        return t("community.err.tooManyLinks", { count: res.limit ?? 0 });
-      case "too_many_mentions":
-        return t("community.err.tooManyMentions", { count: res.limit ?? 0 });
-      case "slow_down_new":
-        return t("community.err.slowDownNew");
-      case "slow_down":
-        return t("community.err.slowDown");
-      default:
-        return null;
-    }
-  }
-
-  async function submit(confirmFiltered = false) {
-    if (busy) return;
-    setBusy(true);
-    setError(null);
-    const res =
-      mode === "discussion" || mode === "question"
-        ? await createCommunityPost({
-            kind: "discussion",
-            title: title.trim() || null,
-            body: body.trim(),
-            groupId,
-            confirmFiltered,
-            category: mode === "question" ? "question" : null,
-            chapterRef: chapter,
-          })
-        : picked
-          ? await (async () => {
-              // Send WHERE the line came from, never the line itself. The
-              // server rebuilds the quotation from our library and refuses
-              // anything it cannot find there.
-              const loc = shareLocator(picked);
-              if (!loc) {
-                return {
-                  ok: false as const,
-                  error: t("community.untraceableLine"),
-                };
-              }
-              return createCommunityPost({
-                ...loc,
-                body: body.trim() || null,
-                groupId,
-                confirmFiltered,
-              });
-            })()
-          : { ok: false, error: t("community.pickALine") };
-    setBusy(false);
-    setAskFiltered(false);
-    if (res.ok) {
-      setTitle("");
-      setBody("");
-      setPicked(null);
-      setChapter(null);
-      setExpanded(false);
-      // Kept, and shown to nobody until a moderator looks: say so plainly,
-      // so the reader does not post it again thinking it was lost.
-      setNotice(res.held ? t("community.heldNotice") : null);
-      onPosted();
-    } else if (res.code === "filtered") {
-      // The word filter would mask some of it: ask before it goes up.
-      setAskFiltered(true);
-    } else {
-      setError(refusal(res) ?? res.error ?? t("community.postFailed"));
-    }
+    show({ from: "chapter", chapter: about });
   }
 
   async function changeAvatar(file: File) {
@@ -1152,296 +1073,77 @@ function Composer({
     </button>
   );
 
-  const fileInput = (
-    <>
-      <input
-        ref={fileRef}
-        type="file"
-        accept="image/jpeg,image/png,image/webp"
-        className="hidden"
-        onChange={(e) => {
-          const f = e.target.files?.[0];
-          if (f) setCrop({ file: f, open: true });
-          e.target.value = "";
-        }}
-      />
-      <ImageCropSheet
-        open={crop?.open ?? false}
-        file={crop?.file ?? null}
-        shape="avatar"
-        onCancel={() => setCrop((c) => (c ? { ...c, open: false } : c))}
-        onConfirm={(cropped) => {
-          setCrop((c) => (c ? { ...c, open: false } : c));
-          void changeAvatar(cropped);
-        }}
-      />
-    </>
-  );
-
-  const avatarErrorLine = avatarError ? (
-    <p className="mt-2 font-sans text-detail text-rose-300">{avatarError}</p>
-  ) : null;
-
-  const noticeLine = notice ? (
-    <p role="status" className="mt-2 rounded-lg border border-paper/15 bg-paper/[0.05] px-3 py-2 font-sans text-detail text-paper/80">
-      {notice}
-    </p>
-  ) : null;
-
-  const chapterLabel = (() => {
-    if (!chapter) return null;
-    const [slug, n] = chapter.split("/");
-    const book = getBook(slug);
-    return book ? `${book.name} ${n}` : null;
-  })();
-
-  if (!expanded) {
-    // Folded, one line with no box around it (1.8, r3-02 B): the reader's
-    // picture, a field set into the page, and Share a line beside it.
-    return (
-      <div data-composer="">
-        <div className="flex items-center gap-2.5">
-          {avatarButton}
-          {fileInput}
-          <button
-            type="button"
-            onClick={() => start(asking ? "question" : "discussion")}
-            className="community-well min-h-[42px] min-w-0 flex-1 truncate rounded-[14px] border border-paper/[0.09] bg-black/30 px-3.5 text-left font-sans text-ui text-paper/45 transition-colors hover:border-paper/25 hover:text-paper/65"
-          >
-            {asking ? t("community.askPrompt") : groupId ? t("community.composePromptGroup") : t("community.composePrompt")}
-          </button>
-          <button
-            type="button"
-            onClick={() => start("share")}
-            className="tap-press inline-flex min-h-[42px] shrink-0 items-center gap-1.5 rounded-[14px] border border-paper/10 bg-gradient-to-b from-paper/[0.08] to-paper/[0.03] px-3 font-sans text-detail font-semibold text-paper/80 transition-colors hover:border-paper/30 hover:text-paper"
-          >
-            <Quill size={16} className="shrink-0" />
-            {t("community.shareALine")}
-          </button>
-        </div>
-        {avatarErrorLine}
-        {noticeLine}
-      </div>
-    );
-  }
-
+  // Folded, one line with no box around it (1.8, r3-02 B): the reader's
+  // picture, a field set into the page, and Share a line beside it. Each
+  // opens the page inside the tap, so the page can hand its field the focus
+  // there, where a phone raises its keyboard for it.
   return (
-    <div className="rounded-2xl border border-paper/10 bg-paper/[0.03] p-5">
-      <div className="flex items-center gap-3">
+    <div data-composer="">
+      <div className="flex items-center gap-2.5">
         {avatarButton}
-        {fileInput}
-        <div className="min-w-0">
-          <p className="truncate font-sans text-ui font-semibold text-paper">
-            {me.name}
-          </p>
-          <p className="font-sans text-eyebrow text-paper/45">
-            {onOpenProfile
-              ? groupId
-                ? t("community.postingToGroup")
-                : t("community.postingPublicly")
-              : avatarBusy
-                ? t("community.uploadingPhoto")
-                : t("community.tapPhotoToChange")}
-          </p>
-        </div>
-        <div className="ml-auto flex gap-1.5">
-          {(
-            [
-              ["discussion", t("community.discussion")],
-              ...(groupId ? [] : [["question", t("community.askAPriest")]]),
-              ["share", t("community.shareALine")],
-            ] as ["discussion" | "share" | "question", string][]
-          ).map(([id, label]) => (
-            <button
-              key={id}
-              type="button"
-              onClick={() => setMode(id)}
-              aria-pressed={mode === id}
-              className={
-                "rounded-pill border px-3 py-1 font-sans text-caption font-semibold transition-colors " +
-                (mode === id
-                  ? "border-gold/50 bg-gold/10 text-gold-pale"
-                  : "border-paper/15 text-paper/60 hover:border-paper/30")
-              }
-            >
-              {label}
-            </button>
-          ))}
-        </div>
+        <input
+          ref={fileRef}
+          type="file"
+          accept="image/jpeg,image/png,image/webp"
+          className="hidden"
+          onChange={(e) => {
+            const f = e.target.files?.[0];
+            if (f) setCrop({ file: f, open: true });
+            e.target.value = "";
+          }}
+        />
+        <ImageCropSheet
+          open={crop?.open ?? false}
+          file={crop?.file ?? null}
+          shape="avatar"
+          onCancel={() => setCrop((c) => (c ? { ...c, open: false } : c))}
+          onConfirm={(cropped) => {
+            setCrop((c) => (c ? { ...c, open: false } : c));
+            void changeAvatar(cropped);
+          }}
+        />
+        <button
+          type="button"
+          data-compose-open="field"
+          onClick={() => flushSync(() => show({ from: "field" }))}
+          className="community-well min-h-[42px] min-w-0 flex-1 truncate rounded-[14px] border border-paper/[0.09] bg-black/30 px-3.5 text-left font-sans text-ui text-paper/45 transition-colors hover:border-paper/25 hover:text-paper/65"
+        >
+          {fieldAsks ? t("community.askPrompt") : groupId ? t("community.composePromptGroup") : t("community.composePrompt")}
+        </button>
+        <button
+          type="button"
+          data-compose-open="share"
+          onClick={() => flushSync(() => show({ from: "share" }))}
+          className="tap-press inline-flex min-h-[42px] shrink-0 items-center gap-1.5 rounded-[14px] border border-paper/10 bg-gradient-to-b from-paper/[0.08] to-paper/[0.03] px-3 font-sans text-detail font-semibold text-paper/80 transition-colors hover:border-paper/30 hover:text-paper"
+        >
+          <Quill size={16} className="shrink-0" />
+          {t("community.shareALine")}
+        </button>
       </div>
-
-      {avatarErrorLine}
-
-      {mode !== "share" ? (
-        <div className="mt-4 space-y-2.5">
-          {mode === "question" ? (
-            <p className="rounded-lg border border-premium/25 bg-premium/[0.06] px-3 py-2 font-sans text-caption leading-relaxed text-paper/75">
-              {t("community.askNote")}
-            </p>
-          ) : null}
-          {chapterLabel ? (
-            <p className="flex items-center gap-2">
-              <span className="inline-flex items-center gap-1.5 rounded-pill border border-gold/30 bg-gold/[0.06] px-3 py-1 font-sans text-caption font-semibold text-paper/80">
-                {t("community.aboutChapter", { chapter: chapterLabel })}
-              </span>
-              <button
-                type="button"
-                onClick={() => setChapter(null)}
-                className="hit-44 font-sans text-caption text-paper/50 hover:text-paper"
-                aria-label={t("community.aboutRemove")}
-              >
-                {t("community.aboutRemove")}
-              </button>
-            </p>
-          ) : null}
-          <input
-            value={title}
-            onChange={(e) => setTitle(e.target.value)}
-            maxLength={160}
-            placeholder={mode === "question" ? t("community.questionTitlePlaceholder") : t("community.titlePlaceholder")}
-            className={field}
-          />
-          <MentionField
-            as="textarea"
-            fieldRef={bodyRef}
-            value={body}
-            onChange={setBody}
-            rows={3}
-            maxLength={4000}
-            placeholder={mode === "question" ? t("community.questionPlaceholder") : t("community.bodyPlaceholder")}
-            className={field}
-          />
-        </div>
-      ) : (
-        <div className="mt-4 space-y-2.5">
-          {gathered.length === 0 ? (
-            <p className="rounded-lg border border-paper/10 bg-night p-4 font-sans text-detail text-paper/60">
-              {t("community.emptyFlorilegium")}{" "}
-              <Link href="/florilegium" className="font-semibold text-gold-pale hover:text-paper">
-                {t("community.openFlorilegium")}
-              </Link>
-            </p>
-          ) : (
-            <div className="max-h-56 space-y-1.5 overflow-y-auto pr-1">
-              {gathered.slice(0, GATHERED_SHOWN).map((item) => (
-                <button
-                  key={item.id}
-                  type="button"
-                  onClick={() => setPicked(item)}
-                  aria-pressed={picked?.id === item.id}
-                  className={
-                    "block w-full rounded-lg border p-3 text-left transition-colors " +
-                    (picked?.id === item.id
-                      ? "border-gold/50 bg-gold/[0.07]"
-                      : "border-paper/10 bg-night hover:border-paper/25")
-                  }
-                >
-                  <p className="line-clamp-2 font-serif text-detail text-paper/85">
-                    {item.text}
-                  </p>
-                  <p className="mt-1 font-sans text-eyebrow text-paper/50">
-                    {shareSource(item)}
-                  </p>
-                </button>
-              ))}
-              {/* The picker used to cut off at 40 with no sign it had. A
-                  reader with a full Florilegium looked for a line that was
-                  there and concluded the app had lost it. */}
-              {gathered.length > GATHERED_SHOWN ? (
-                <p className="px-1 pt-1 font-sans text-eyebrow text-paper/40">
-                  {t("community.moreInFlorilegium", {
-                    count: gathered.length - GATHERED_SHOWN,
-                  })}
-                </p>
-              ) : null}
-            </div>
-          )}
-          <MentionField
-            as="textarea"
-            value={body}
-            onChange={setBody}
-            rows={2}
-            maxLength={4000}
-            placeholder={t("community.reflectionPlaceholder")}
-            className={field}
-          />
-        </div>
-      )}
-
-      {error ? (
-        <p className="mt-2 font-sans text-detail text-rose-300">{error}</p>
+      {avatarError ? <p className="mt-2 font-sans text-detail text-rose-300">{avatarError}</p> : null}
+      {notice ? (
+        <p role="status" className="mt-2 rounded-lg border border-paper/15 bg-paper/[0.05] px-3 py-2 font-sans text-detail text-paper/80">
+          {notice}
+        </p>
       ) : null}
-      <div className="mt-3 flex items-center justify-end gap-2">
-        {/* Folding keeps the draft: nothing typed is lost to a stray tap. */}
-        <button
-          type="button"
-          onClick={() => setExpanded(false)}
-          disabled={busy}
-          className="rounded-pill px-4 py-2 font-sans text-ui font-medium text-paper/60 hover:text-paper disabled:opacity-50"
-        >
-          {t("common.cancel")}
-        </button>
-        <button
-          type="button"
-          onClick={() => void submit()}
-          disabled={
-            busy ||
-            (mode === "share" ? !picked : body.trim().length < 2)
-          }
-          className="rounded-pill bg-paper px-6 py-2 font-sans text-ui font-semibold text-night disabled:opacity-50"
-        >
-          {busy ? t("community.posting") : mode === "question" ? t("community.askSend") : t("community.post")}
-        </button>
-      </div>
-      <ConfirmDialog
-        open={askFiltered}
-        title={t("community.filteredTitle")}
-        description={t("community.filteredBody")}
-        confirmLabel={t("community.filteredPost")}
-        cancelLabel={t("community.filteredEdit")}
-        pending={busy}
-        onConfirm={() => void submit(true)}
-        onCancel={() => setAskFiltered(false)}
+      <ComposePage
+        open={open}
+        request={request}
+        me={me}
+        groupId={groupId}
+        decoration={decoration}
+        tier={tier}
+        onClose={closePage}
+        onPosted={(held) => {
+          setOpen(false);
+          // Kept, and shown to nobody until a moderator looks: say so
+          // plainly, so the reader does not post it again thinking it was lost.
+          setNotice(held ? t("community.heldNotice") : null);
+          onPosted();
+        }}
       />
     </div>
   );
-}
-
-function shareSource(item: FlorilegiumItem): string {
-  if (item.kind === "scripture") return item.reference;
-  return item.work ? `${item.author}, ${item.work}` : item.author;
-}
-
-/**
- * The locator the server needs to rebuild this quotation from our own
- * library, or null when it cannot be traced.
- *
- * Scripture always resolves: the item carries book, chapter and verse.
- * A Father resolves only when we can name the WORK, which means parsing the
- * work slug out of the deep link, since `item.work` is a printed title
- * ("On the Incarnation") and the loader needs a slug.
- *
- * Null means the line cannot be verified against the work it claims, and the
- * composer refuses to share it rather than asking the server to take the
- * text on trust. That is the whole point: see lib/community/verifyQuote.ts.
- */
-function shareLocator(
-  item: FlorilegiumItem,
-):
-  | { kind: "scripture"; book: string; chapter: number; verse: number }
-  | { kind: "father"; saintSlug: string; work: string; quoteText: string }
-  | null {
-  if (item.kind === "scripture") {
-    return {
-      kind: "scripture",
-      book: item.book,
-      chapter: item.chapter,
-      verse: item.verse,
-    };
-  }
-  const m = item.href?.match(/^\/saints\/([a-z0-9-]+)\/([a-z0-9-]+)/);
-  if (!m) return null;
-  return { kind: "father", saintSlug: m[1], work: m[2], quoteText: item.text };
 }
 
 /* ── Post card ─────────────────────────────────────────────────────────── */

@@ -83,6 +83,7 @@ const HOOKED = [
 const DRAWN = [
   "components/community/CampaignCard.tsx",
   "components/community/CommunityHead.tsx",
+  "components/community/ComposePage.tsx",
   "components/community/profile/ProfileCard.tsx",
   "components/today/GreetingHeader.tsx",
   "components/today/NameDayCard.tsx",
