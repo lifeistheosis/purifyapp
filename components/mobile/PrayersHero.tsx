@@ -1,16 +1,11 @@
 "use client";
 
-import { useLayoutEffect, useRef, type ReactNode } from "react";
+import { useRef, type ReactNode } from "react";
 
 import { useTranslate } from "@/components/i18n/MessagesProvider";
 import { sectionMedia } from "@/lib/media/sections";
 
-/**
- * The attribute on <html> that turns the tab bar solid again once this
- * picture has gone up under it (app/globals.css, "Prayers: the picture at the
- * top"). Until then the bar is clear over it, from the first paint.
- */
-export const BAR_SOLID = "data-bar-solid";
+import { useBarOverPicture } from "./barOverPicture";
 
 /**
  * The head of Prayers on a phone (1.8): the owner's merged pick of round 4,
@@ -27,10 +22,9 @@ export const BAR_SOLID = "data-bar-solid";
  * The tab bar is the one bar every tab wears (components/mobile/MobileHeader).
  * While this picture is on the page the bar is clear over it, its round
  * buttons on plates, decided in CSS before the first paint (html:has); once
- * the picture has gone up under the bar, this sets data-bar-solid on <html>
- * and the bar is solid again. One observer that speaks only when the
- * picture's foot crosses the bar's, and nothing done while scrolling. On a
- * tablet the bar stays solid and the picture sits under it, in the column.
+ * the picture has gone up under the bar it is solid again (./barOverPicture,
+ * which the Ladder at the top of You shares since note 71). On a tablet the
+ * bar stays solid and the picture sits under it, in the column.
  *
  * The picture is the section's own, from the rights-checked registry
  * (lib/media/sections.ts). The plate it stood on until 1.8 printed its credit
@@ -41,35 +35,7 @@ export function PrayersHero({ children }: { children?: ReactNode }) {
   const { t } = useTranslate();
   const media = sectionMedia("prayers");
   const picture = useRef<HTMLDivElement>(null);
-
-  // Before the paint, so a page come back to scrolled down never shows the
-  // bar clear over its words for a frame.
-  useLayoutEffect(() => {
-    const root = document.documentElement;
-    const el = picture.current;
-    const bar = document.querySelector<HTMLElement>("[data-tab-topbar]");
-    const solid = (on: boolean) => {
-      if (on) root.setAttribute(BAR_SOLID, "");
-      else root.removeAttribute(BAR_SOLID);
-    };
-    if (!el || !bar || typeof IntersectionObserver === "undefined") {
-      // With no way to know when the picture has gone, the bar stays solid.
-      solid(true);
-      return () => solid(false);
-    }
-    const top = Math.round(bar.getBoundingClientRect().height);
-    // Where the page is now, before the observer's first word a frame later.
-    solid(el.getBoundingClientRect().bottom <= top);
-    const io = new IntersectionObserver(([entry]) => solid(!entry.isIntersecting), {
-      rootMargin: `-${top}px 0px 0px 0px`,
-      threshold: 0,
-    });
-    io.observe(el);
-    return () => {
-      io.disconnect();
-      solid(false);
-    };
-  }, []);
+  useBarOverPicture(picture);
 
   return (
     <section className="prayers-hero relative md:mx-auto md:mt-6 md:w-full md:max-w-[760px] lg:max-w-[880px]">

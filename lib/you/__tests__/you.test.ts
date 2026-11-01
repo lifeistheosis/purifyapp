@@ -7,7 +7,7 @@ import { describe, expect, it } from "vitest";
 import type { Bookmark } from "@/lib/bookmarks";
 import { countFor, savedFeed, type SavedHighlight, type SavedPassage } from "@/lib/saved/feed";
 
-import { KEPT_GROUPS, countSince, dayNumber, keptRows, latestFirst, verseForDay, weekStart } from "../you";
+import { KEPT_GROUPS, countSince, dayNumber, howFar, keptRows, latestFirst, verseForDay, weekStart } from "../you";
 
 const day = (d: number) => Date.parse(`2026-10-${String(d).padStart(2, "0")}T12:00:00Z`);
 
@@ -107,10 +107,15 @@ describe("one of the reader's own verses a day", () => {
 });
 
 describe("this week", () => {
-  it("is today and the six days before it, from the start of the first", () => {
-    const now = new Date(2026, 9, 18, 15, 30);
-    const from = weekStart(now);
-    expect(new Date(from)).toEqual(new Date(2026, 9, 12, 0, 0, 0, 0));
+  it("begins on its Monday, from the start of the day, as the prayer rope's knots do", () => {
+    // Wednesday 21 October: the week began on Monday the 19th.
+    expect(new Date(weekStart(new Date(2026, 9, 21, 15, 30)))).toEqual(new Date(2026, 9, 19, 0, 0, 0, 0));
+    // A Monday is its own week's first day.
+    expect(new Date(weekStart(new Date(2026, 9, 19, 0, 0, 1)))).toEqual(new Date(2026, 9, 19, 0, 0, 0, 0));
+    // A Sunday is the last day of the week that began six days before.
+    expect(new Date(weekStart(new Date(2026, 9, 25, 23, 59)))).toEqual(new Date(2026, 9, 19, 0, 0, 0, 0));
+    // Across a month's end.
+    expect(new Date(weekStart(new Date(2026, 10, 1, 9)))).toEqual(new Date(2026, 9, 26, 0, 0, 0, 0));
   });
 
   it("counts what was kept or written in it, and nothing undated", () => {
@@ -122,6 +127,17 @@ describe("this week", () => {
 });
 
 describe("where to pick up", () => {
+  it("says how far in a place is, and nothing when its whole is not known", () => {
+    // The sheet's own figures (r3-25 A): v16 of 36, section 4 of 11, day 3 of 89.
+    expect(Math.round((howFar(16, 36) ?? 0) * 100)).toBe(44);
+    expect(Math.round((howFar(4, 11) ?? 0) * 100)).toBe(36);
+    expect(Math.round((howFar(3, 89) ?? 0) * 100)).toBe(3);
+    expect(howFar(40, 36)).toBe(1);
+    expect(howFar(3, 0)).toBeNull();
+    expect(howFar(3, null)).toBeNull();
+    expect(howFar(Number.NaN, 10)).toBeNull();
+  });
+
   it("is the most recent first, as many as asked, the undated last", () => {
     const places = [
       { key: "work", at: 300 },

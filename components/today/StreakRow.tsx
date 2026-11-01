@@ -9,7 +9,7 @@ import { cn } from "@/lib/cn";
 import { useDayOneShown } from "@/lib/onboarding/useDayOne";
 import { todayKey } from "@/lib/rhythm/dayKey";
 import { ropeRow, ropeWeek } from "@/lib/streak/rope";
-import { useStreak } from "@/lib/streak/useStreak";
+import { useStreak, type StreakView } from "@/lib/streak/useStreak";
 
 /**
  * The streak on Today, as the prayer rope (1.8): the owner's pick B of round
@@ -28,15 +28,33 @@ import { useStreak } from "@/lib/streak/useStreak";
  * rules are lib/streak/rope.ts, ropeRow.
  */
 export function StreakRow({ className }: { className?: string }) {
-  const { t, tn } = useTranslate();
   const view = useStreak();
   const dayOne = useDayOneShown();
-  const [open, setOpen] = useState(false);
   const place = ropeRow(view, dayOne);
   if (place === "none") return null;
   // The rope's height, held before the streak is read, so the cards under it
   // do not jump when it lands.
   if (place === "hold") return <div aria-hidden className={cn("h-[92px]", className)} />;
+  return <Rope view={view} className={className} />;
+}
+
+/**
+ * The same rope on the You tab (1.8, note 71): the owner's pick A of r3-25,
+ * "the Ladder, then the day", where it took the place of the red flame card
+ * (components/streak/StreakCard.tsx; refinement 4). Always drawn there: the
+ * Day 1 card and the evening card are Today's, and You keeps the streak in
+ * view whatever the hour. Its card is the You tab's to dress (`className`).
+ */
+export function StreakRope({ className }: { className?: string }) {
+  const view = useStreak();
+  if (!view.ready) return <div aria-hidden className={cn("h-[92px]", className)} />;
+  return <Rope view={view} className={className} />;
+}
+
+/** "N days" and its line over this week's knots; a tap opens the streak's sheet. */
+function Rope({ view, className }: { view: StreakView; className?: string }) {
+  const { t, tn } = useTranslate();
+  const [open, setOpen] = useState(false);
   const line = view.keptToday ? t("streak.rope.kept") : t("streak.rope.keep");
   const week = ropeWeek(view.strip, todayKey(), view.keptToday);
   return (

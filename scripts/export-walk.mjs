@@ -2542,24 +2542,16 @@ await section(28, async () => {
     await page.waitForFunction(() => document.querySelector("[data-you-rows] li"), null, { timeout: 20000 }).catch(() => {});
     await page.waitForTimeout(1200);
     const you = await youRows(page);
-    const want = ["/signin?next=/account", "/pricing", "/prayers/personal", "/campaigns/mine", "/settings"];
+    // 1.8, note 71 (r3-25 A): Sign in left the list for the name's place on
+    // the Ladder, and the Purify Premium row went, the pill in the bar being
+    // the subscription's one door. Section 46 walks the rest of the tab.
+    const want = ["/prayers/personal", "/campaigns/mine", "/settings"];
     must(
-      you.rows.length >= 4 && you.rows.length <= 5 && you.rows.every((r) => want.includes(bare(r.href))) && bare(you.rows.at(-1).href) === "/settings",
+      you.rows.length >= 2 && you.rows.length <= 3 && you.rows.every((r) => want.includes(bare(r.href))) && bare(you.rows.at(-1).href) === "/settings",
       `the You tab's list is the reader's own rows and one door (${you.rows.map((r) => r.label).join(", ")})`,
     );
     must(you.rows.at(-1).label === en["settings.title"] && !you.door, `the door is Settings, the list's last row, and the bar is the tabs' own with no second door (${you.door ? "a door in the bar" : "none in the bar"})`);
     must(you.onlyTheList, "with no heading over the list");
-    // The Ladder's foot corners are as dark as its wash, as the Bible tab's
-    // (section 27): SectionMasthead.tsx, .masthead-picture in globals.css.
-    try {
-      await page.evaluate(() => window.scrollTo(0, 0));
-      await page.waitForFunction(() => { const img = document.querySelector(".cascade > figure img"); return !!img && img.complete && img.naturalWidth > 0; }, null, { timeout: 10000 }).catch(() => {});
-      await page.waitForTimeout(300);
-      const lift = await cornerLift(page, ".cascade > figure", ["bottom-start", "bottom-end"]);
-      must(lift.lift <= 4, `the You tab's picture has its foot corners as dark as its wash (${lift.lift} levels over the plate inside along the curve, ${lift.most} at its lightest; 1.8's markup measured 12)`);
-    } catch (e) {
-      must(false, `the You tab's picture corners could not be measured: ${firstLine(e)}`);
-    }
     await page.evaluate(() => document.querySelector("[data-you-rows]")?.scrollIntoView({ block: "center" }));
     await page.waitForTimeout(300);
     await page.screenshot({ path: path.join(SHOTS, "you-rows-phone.png") });
@@ -2645,6 +2637,229 @@ await section(28, async () => {
     must(sec.headings.length === 1 && sec.headings[0] === en["account.tabs.security"] && bare(sec.back) === "/settings", `an account screen wears its own name and goes back to Settings (${sec.headings.join(" | ")}, back to ${sec.back})`);
     must(!sec.tabs && sec.devices, "with no row of tabs, and where the account is signed in under its passwords");
     await page.screenshot({ path: path.join(SHOTS, "account-security-phone.png") });
+    await ctx.close();
+  }
+});
+
+// ---- 46. You: the Ladder, then the day (1.8, note 71).
+// The owner's pick A of r3-25, 2026-10-31: "A, the ladder, then the day"
+// (Homebase/boards/purify-master/variants/r3-25-you.html). The Ladder of
+// Divine Ascent from the top of the screen under the clear bar, the reader on
+// it (signed out, Sign in in the name's place), the prayer rope where the red
+// flame card was, one lit card for where they left off, the kept verse in the
+// Light with its two actions as one bar, what they kept as covers, and the
+// rows last. One name for the subscription, Plus: the pill alone, and no
+// Premium on the screen. Signed in is a session that is only a name in the
+// phone's storage, as section 28's; the badges are the ones the device keeps,
+// since the walk has no network to ask. The covers are the website's, which
+// the walk refuses, so the books' stand on their bundled plate and a saint's
+// on the cross. lib/you/__tests__/youTab.test.ts holds the source.
+await section(46, async () => {
+  console.log("\n46. You: the Ladder, then the day");
+  const en = JSON.parse(fs.readFileSync(path.resolve("lib/i18n/messages/en.json"), "utf8"));
+  const fill = (s, vars) => Object.entries(vars).reduce((out, [k, v]) => out.replaceAll(`{${k}}`, String(v)), s);
+  const UID = "00000000-0000-4000-8000-000000000000";
+  const session = JSON.stringify({ access_token: "walk", token_type: "bearer", user: { id: UID, email: "reader@example.com", created_at: "2026-01-01T00:00:00Z", identities: [], user_metadata: {} } });
+  const JOHN_3_16 = "For God so loved the world, that he gave his only begotten Son, that whosoever believeth in him should not perish, but have everlasting life.";
+  const kept = () => {
+    const now = Date.now();
+    return {
+      "sb-walk-auth-token": session,
+      "purify:bookmarks": JSON.stringify([
+        { id: "walk-john-3-16", addedAt: now - 60_000, label: "John 3:16", kind: "bible-verse", book: "john", bookName: "John", chapter: 3, verse: 16 },
+        { id: "walk-priesthood", addedAt: now - 3_600_000, label: "On the Priesthood, Book I", kind: "writing-section", saintSlug: "john-chrysostom", saintName: "St. John Chrysostom", workSlug: "on-the-priesthood", workTitle: "On the Priesthood", sectionN: 1, sectionTitle: "Book I" },
+      ]),
+      "purify:remember": JSON.stringify({ entries: {}, texts: { "john/3/16": JOHN_3_16 } }),
+      "purify:bible:last": JSON.stringify({ book: "john", bookName: "John", chapter: 3, verse: 16, totalVerses: 36, ts: now - 30_000 }),
+      "purify:reading-history": JSON.stringify([{ kind: "work", href: "/saints/john-chrysostom/on-the-priesthood", label: "On the Priesthood", at: now - 86_400_000 }]),
+      "purify.myBadges": JSON.stringify({ uid: UID, ids: ["plus", "psalter", "first_share"], at: now }),
+    };
+  };
+  /** The tab as the walk measures it. */
+  const measure = (page) =>
+    page.evaluate(() => {
+      const box = (el) => {
+        const r = el?.getBoundingClientRect();
+        return r ? { top: r.top, bottom: r.bottom, left: r.left, right: r.right, width: r.width, height: r.height } : null;
+      };
+      const hero = document.querySelector("[data-you-hero]");
+      const picture = hero?.querySelector(".you-hero-picture");
+      const img = picture?.querySelector("img");
+      const bar = document.querySelector("[data-route-content] [data-tab-topbar]") ?? document.querySelector("[data-tab-topbar]");
+      const rope = hero?.querySelector("button.you-rope");
+      const route = document.querySelector("[data-route-content]") ?? document.body;
+      return {
+        picture: box(picture),
+        img: img ? { src: img.getAttribute("src") ?? "", natural: img.naturalWidth, complete: img.complete, animation: getComputedStyle(img).animationName } : null,
+        barGround: bar ? getComputedStyle(bar).backgroundColor : "",
+        barBox: box(bar),
+        solid: document.documentElement.hasAttribute("data-bar-solid"),
+        signIn: (() => {
+          const a = document.querySelector("[data-you-signin]");
+          return a ? { href: a.getAttribute("href") ?? "", text: (a.textContent ?? "").replace(/\s+/g, " ").trim(), box: box(a) } : null;
+        })(),
+        who: (hero?.querySelector("[data-you-who]")?.textContent ?? "").replace(/\s+/g, " ").trim(),
+        identity: (() => {
+          const a = document.querySelector("[data-you-identity]");
+          return a
+            ? { href: a.getAttribute("href") ?? "", name: (a.querySelector(".font-heading")?.textContent ?? "").trim(), text: (a.textContent ?? "").replace(/\s+/g, " ").trim(), box: box(a) }
+            : null;
+        })(),
+        badges: [...document.querySelectorAll("[data-you-badges] li[role=img]")].map((li) => ({ label: li.getAttribute("aria-label") ?? "", color: getComputedStyle(li).color })),
+        rope: rope ? { box: box(rope), knots: rope.querySelectorAll("span.rounded-full").length, says: rope.getAttribute("aria-label") ?? "" } : null,
+        // The old card's red: its classes, and the flame's own.
+        red: /\b(?:text|bg|border|ring|from|to)-(?:streak|crimson)\b|streak-pulse|streak-flicker/.test(route.innerHTML),
+        premium: /premium/i.test(route.innerText),
+        pill: (document.querySelector("[data-tab-actions] > span > *")?.textContent ?? "").trim(),
+        rows: [...document.querySelectorAll("[data-you-rows] li a")].map((a) => a.getAttribute("href") ?? ""),
+        empty: (document.querySelector("[data-you-kept]")?.textContent ?? "").replace(/\s+/g, " ").trim(),
+      };
+    });
+
+  {
+    // Signed out, a new reader on this device.
+    const { ctx, page, errors } = await open({ width: 390, height: 844, phone: true, set: { "purify.motion": "on" } });
+    await go(page, "/account/");
+    await page.waitForFunction(() => !!document.querySelector("[data-you-signin]") && !!document.querySelector("[data-you-hero] img")?.complete, null, { timeout: 20000 }).catch(() => {});
+    await page.evaluate(() => document.fonts.ready);
+    await page.waitForTimeout(1600);
+    const m = await measure(page);
+    must(!!m.picture && Math.abs(m.picture.top) <= 1 && m.picture.height >= 330, `the Ladder runs from the very top of the screen, under the bar (top ${m.picture ? Math.round(m.picture.top) : "none"}, ${m.picture ? Math.round(m.picture.height) : 0} tall)`);
+    must(!!m.img && /\/sections\/you\.v2\.jpg$/.test(m.img.src) && m.img.natural === 1170, `and is the square cut, sharp on a 3x phone (${m.img?.src ?? "no picture"}, ${m.img?.natural ?? 0} wide)`);
+    must(m.barGround === "rgba(0, 0, 0, 0)" && !m.solid, `the bar is clear over it (${m.barGround})`);
+    must(
+      !!m.signIn && bare(m.signIn.href) === "/signin?next=/account" && m.signIn.text.startsWith(en["common.signIn"]) && m.signIn.text.includes(en["ui.syncAcrossDevicesOptional"]) && !!m.picture && m.signIn.box.top < m.picture.bottom,
+      `signed out, Sign in stands on the picture where the name stands (${m.signIn ? `"${m.signIn.text}" at ${Math.round(m.signIn.box.top)}` : "none"})`,
+    );
+    must(m.who.includes(en["ui.privateOnThisDeviceNo"]), "with the line on where things are kept over it");
+    must(!!m.rope && m.rope.knots === 7 && !!m.picture && m.rope.box.top < m.picture.bottom + 40, `the prayer rope at the picture's foot, seven knots (${m.rope ? `${m.rope.knots} knots at ${Math.round(m.rope.box.top)}` : "no rope"})`);
+    must(!m.red, "and no red and no flame anywhere on the tab");
+    must(!m.premium && m.pill === en["nav.premium"] && en["nav.premium"] === "Plus", `one name for the subscription: the pill says Plus and nothing says Premium (pill "${m.pill}")`);
+    must(m.rows.every((h) => ["/prayers/personal", "/campaigns/mine", "/settings"].includes(bare(h))) && bare(m.rows.at(-1)) === "/settings", `the rows: Your rule and Settings (${m.rows.map(bare).join(", ")})`);
+    must(m.empty.includes(en["saved.emptyLine"]), "nothing kept yet, so the shelf is its one line");
+    must(m.img?.animation === "prayers-picture-in", `the picture fades in as the tab arrives (${m.img?.animation})`);
+    await page.screenshot({ path: path.join(SHOTS, "you-ladder-signed-out.png") });
+    // Once the picture has gone up under the bar, the bar is solid again.
+    await page.evaluate(() => window.scrollTo(0, 600));
+    await page.waitForTimeout(700);
+    const down = await measure(page);
+    must(down.solid && down.barGround !== "rgba(0, 0, 0, 0)", `scrolled on, the bar is solid again (${down.barGround})`);
+    must(errors.length === 0, `no page errors${errors.length ? ": " + errors.slice(0, 2).join(" | ") : ""}`);
+    await ctx.close();
+  }
+
+  {
+    // Signed in, with a verse, a work and a chapter on the device.
+    const { ctx, page, errors } = await open({ width: 390, height: 844, phone: true, set: kept() });
+    await go(page, "/account/");
+    await page.waitForFunction(() => !!document.querySelector("[data-you-identity]") && !!document.querySelector("[data-you-pickup]") && !!document.querySelector("[data-you-verse]"), null, { timeout: 20000 }).catch(() => {});
+    await page.evaluate(() => document.fonts.ready);
+    await page.waitForTimeout(1600);
+    const m = await measure(page);
+    must(!!m.identity && bare(m.identity.href) === "/account/profile" && m.identity.name === "reader" &&m.identity.text.includes(en["profile.yourProfile"]) && !!m.picture && m.identity.box.top < m.picture.bottom, `signed in, the reader's name stands on the picture and opens their profile ("${m.identity?.text ?? "none"}")`);
+    const neutral = (c) => {
+      const [r, g, b] = (c.match(/\d+(\.\d+)?/g) ?? []).map(Number);
+      return Math.max(r, g, b) - Math.min(r, g, b) <= 12;
+    };
+    must(
+      m.badges.map((b) => b.label).join(" | ") === [en["profile.badge.plus"], en["profile.badge.psalter"], en["profile.badge.first_share"]].join(" | ") && m.badges.every((b) => neutral(b.color)),
+      `their badges under it, in the house greys (${m.badges.map((b) => `${b.label} ${b.color}`).join(", ")})`,
+    );
+    must(!m.premium && !m.red, "no Premium, no red");
+    const card = await page.evaluate(() => {
+      const box = document.querySelector("[data-you-pickup] .you-lit");
+      const first = box?.querySelector("a[data-pickup-first]");
+      const bar = first?.querySelector(".you-progress-lit");
+      return {
+        links: box ? box.querySelectorAll("a").length : 0,
+        first: first ? { href: first.getAttribute("href") ?? "", text: (first.textContent ?? "").replace(/\s+/g, " ").trim(), go: first.querySelector(".you-go")?.getBoundingClientRect().width ?? 0 } : null,
+        far: bar ? bar.getBoundingClientRect().width / bar.parentElement.getBoundingClientRect().width : null,
+        work: !!box?.querySelector("a[data-pickup='work']"),
+      };
+    });
+    must(
+      !!card.first && card.first.href.startsWith("/bible/john/3") && card.first.text.includes(fill(en["bible.continueAtVerseOf"], { verse: 16, total: 36 })) && card.first.go >= 43 && card.links === 2 && card.work,
+      `where you left off is one lit card: John 3 large with its way in, the work under it (${card.first?.text.slice(0, 60) ?? "none"}; ${card.links} links)`,
+    );
+    must(card.far !== null && Math.abs(card.far - 16 / 36) < 0.03, `and how far in, v16 of 36 (${card.far === null ? "no bar" : Math.round(card.far * 100) + "%"})`);
+    await page.evaluate(() => document.querySelector("[data-you-verse]")?.scrollIntoView({ block: "center" }));
+    await page.waitForTimeout(500);
+    const verse = await page.evaluate(() => {
+      const box = (el) => el?.getBoundingClientRect();
+      const learn = document.querySelector("[data-you-learn]");
+      const share = document.querySelector("[data-you-share]");
+      const card = document.querySelector("[data-you-verse] .lm-card");
+      return {
+        text: (document.querySelector("[data-you-verse]")?.textContent ?? "").replace(/\s+/g, " "),
+        lit: !!document.querySelector("[data-you-verse] .verse-cross-lit") && !!document.querySelector("[data-you-verse] .verse-light"),
+        oneBar: !!learn && !!share && learn.parentElement === share.parentElement && Math.abs(box(learn).top - box(share).top) < 1 && box(share).bottom <= box(card).bottom + 1,
+        learn: (learn?.textContent ?? "").replace(/\s+/g, " ").trim(),
+        share: (share?.textContent ?? "").trim(),
+      };
+    });
+    must(verse.text.includes(JOHN_3_16.slice(0, 40)) && verse.lit, "the verse kept, in the Light: the cross lit over it");
+    must(verse.oneBar && verse.learn.endsWith(en["you.verse.learn"]) && verse.learn.startsWith("FG") && verse.share === en["common.share"], `Learn by heart and Share are one bar at its foot ("${verse.learn}" | "${verse.share}")`);
+    await page.screenshot({ path: path.join(SHOTS, "you-verse-and-kept.png") });
+    const shelf = await page.evaluate(() => {
+      const tiles = [...document.querySelectorAll("[data-you-kept] a[data-kept]:not([data-kept='all'])")];
+      const all = document.querySelector("[data-you-kept] a[data-kept='all']");
+      return {
+        tiles: tiles.map((a) => ({ kind: a.getAttribute("data-kept"), height: Math.round(a.getBoundingClientRect().height), width: Math.round(a.getBoundingClientRect().width), text: (a.textContent ?? "").replace(/\s+/g, " ").trim() })),
+        all: all ? (all.textContent ?? "").replace(/\s+/g, " ").trim() : "",
+        broken: [...document.querySelectorAll("[data-you-kept] img, [data-you-pickup] img")].filter((i) => i.complete && i.naturalWidth === 0).length,
+      };
+    });
+    must(
+      shelf.tiles.map((t) => t.kind).join(" ") === "verses writings" && shelf.tiles.every((t) => t.height === 130 && Math.abs(t.width - (390 - 40 - 18) / 3) <= 1),
+      `what was kept, as covers three across, each 130 tall (${shelf.tiles.map((t) => `${t.kind} ${t.width}x${t.height}`).join(", ")})`,
+    );
+    must(shelf.tiles[0]?.text.startsWith("1") && shelf.all.startsWith(en["common.seeAll"]) && shelf.all.endsWith("2"), `each with its count, and See all with the total ("${shelf.tiles[0]?.text}"; "${shelf.all}")`);
+    must(shelf.broken === 0, `no cover is a broken picture with no signal (${shelf.broken})`);
+    must(errors.length === 0, `no page errors${errors.length ? ": " + errors.slice(0, 2).join(" | ") : ""}`);
+    await ctx.close();
+  }
+
+  // The five everyday palettes: the reader's name in the palette's own ink,
+  // and nothing gold or yellow in the tab's own chrome; motion off, the
+  // picture is simply there.
+  for (const theme of ["default", "parchment", "black", "candlelight", "monastery"]) {
+    const { ctx, page, errors } = await open({ width: 390, height: 844, phone: true, set: { ...kept(), "purify.reader.theme": theme, "purify.motion": "off" } });
+    await go(page, "/account/");
+    await page.waitForFunction(() => !!document.querySelector("[data-you-identity]") && !!document.querySelector("[data-you-hero] img")?.complete, null, { timeout: 20000 }).catch(() => {});
+    await page.waitForTimeout(1200);
+    const seen = await page.evaluate(() => {
+      const ink = getComputedStyle(document.documentElement).getPropertyValue("--color-paper").trim();
+      const probe = document.createElement("span");
+      probe.style.color = ink;
+      document.body.append(probe);
+      const inkRgb = getComputedStyle(probe).color;
+      probe.remove();
+      const name = document.querySelector("[data-you-identity] .font-heading");
+      // Gold and yellow: a warm hue with real colour in it, in the tab's own text and grounds.
+      const gold = [];
+      for (const el of document.querySelectorAll("[data-you-hero] *, [data-you-pickup] *, [data-you-verse] *, [data-you-kept] > div *, [data-you-rows] *")) {
+        if (el.closest("img, [data-kept] ")) continue;
+        const s = getComputedStyle(el);
+        for (const c of [s.color, s.backgroundColor, s.borderTopColor]) {
+          const [r, g, b, a = 1] = (c.match(/\d+(\.\d+)?/g) ?? []).map(Number);
+          if (a === 0 || r === undefined) continue;
+          const max = Math.max(r, g, b);
+          const min = Math.min(r, g, b);
+          if (max - min > 40 && r >= g && g > b && (g - b) > (r - g)) gold.push(`${el.tagName.toLowerCase()} ${c}`);
+        }
+      }
+      return {
+        mode: document.documentElement.dataset.readingMode ?? "",
+        ink: inkRgb,
+        name: name ? getComputedStyle(name).color : "",
+        gold: gold.slice(0, 3),
+        animation: getComputedStyle(document.querySelector("[data-you-hero] img")).animationName,
+      };
+    });
+    must(seen.name === seen.ink && seen.gold.length === 0, `${theme}: the name in the palette's ink and nothing gold (${seen.mode || "default"}; name ${seen.name}, ink ${seen.ink}${seen.gold.length ? `; gold: ${seen.gold.join(", ")}` : ""})`);
+    must(seen.animation === "none", `${theme}: with motion off the picture is simply there (${seen.animation})`);
+    await page.screenshot({ path: path.join(SHOTS, `you-ladder-${theme}.png`) });
+    must(errors.length === 0, `${theme}: no page errors${errors.length ? ": " + errors.slice(0, 2).join(" | ") : ""}`);
     await ctx.close();
   }
 });

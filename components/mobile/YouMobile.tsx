@@ -8,53 +8,56 @@
 // like the retention is low in terms of those sections ... make the routes
 // better, make the design better, give some sections more usefulness."
 //
-// What was here: the picture, a card that said "Welcome back", the streak,
-// one "where you left off" row, four numbers on four tiles (verses,
-// paragraphs, notes, bookmarks), the three newest things saved, and the
-// reader's rows. The numbers opened the wrong things or nothing of theirs
-// (lib/you/you.ts says how each went wrong), and the newest three were
-// /saved's own first three, shown again.
+// And its sections redrawn on his note 71 of build 86 (2026-10-31): "now I
+// want you to revamp this screens sections". His photo showed one box after
+// another at the same weight, the Plus pill and a Purify Premium row going to
+// the same place, three names for one subscription (Plus, Premium, Pro), and
+// Learn by heart and Share as two loose pills. His pick was A of r3-25, "A,
+// the ladder, then the day" (Homebase/boards/purify-master/variants/
+// r3-25-you.html), and refinements 3 (one name, Plus) and 4 (the rope for
+// the red flame), which he accepted with it.
 //
-// What is here, top to bottom, each part a reason to come back:
+// What is here, top to bottom, each part at its own weight:
 //
-//   1. The picture (the Ladder of Divine Ascent; the owner's pick of
-//      2026-10-15, "B": the picture stays on top), then, signed in, the
-//      reader's own name and picture, which open their Profile.
-//   2. The streak, and under it one quiet line of what this week held.
-//   3. Where you left off: the chapter, the work of the Fathers, the prayer
-//      and the reading plan last open, three at most (./../you/PickUpRows).
-//   4. A verse you kept: one of their own verses each day, to read in its
-//      chapter, learn by heart or send as a picture (../you/KeptVerse).
-//   5. What you have kept, by what it is, each group with its count and its
-//      newest thing, opening Saved on that group; then the journal; then all
-//      of it (../you/KeptRows).
-//   6. The reader's own rows (Premium, Your rule, My prayers) and ONE door to
-//      Settings, which holds the account and everything else once. See the
-//      note at the list below.
+//   1. The Ladder of Divine Ascent under the clear bar, fading into the page
+//      as Prayers' Pantocrator does, and the reader standing on it: their
+//      picture, their name, the way to their profile and their badges; signed
+//      out, Sign in where the name stands (../you/YouHero, ../you/YouIdentity).
+//   2. The prayer rope from Today, where the red flame card was, and under it
+//      one quiet line of what this week held (StreakRope, ../you/WeekLine).
+//   3. Where you left off: one lit card, the newest place large with its
+//      cover and how far in, the two after it small (../you/PickUpCard).
+//   4. A verse you kept, in the Light of Today's verse, with Learn by heart
+//      and Share as one bar at its foot (../you/KeptVerse).
+//   5. What you have kept, as a shelf of covers with their counts, See all
+//      with the total (../you/KeptShelf).
+//   6. The catechisms seen through, in one quiet line.
+//   7. The reader's own rows, the lightest thing on the page: Your rule, and
+//      ONE door to Settings, which holds the account and everything else
+//      once. See the note at the list below.
 //
 // Each part is drawn only when there is something in it, so a new reader
-// meets the picture, the streak to start, one line on how to keep a verse,
-// and the rows.
+// meets the picture with Sign in, the rope to start, one line on how to keep
+// a verse, and the rows.
 //
-// The streak leads the reading life: the red flame, the count and the week
-// (components/streak). This screen once kept no streak by design; the owner
-// reversed that on 2026-09-28 ("go all in on the streak system") and asked
-// for it in red on 2026-10-02.
+// The subscription is named once on this screen, by the pill in the bar,
+// which is its one door: the "Purify Premium" row is gone (refinement 3).
 
 import { useCallback, useEffect, useLayoutEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import { MobileShell } from "./MobileShell";
 import { MobileHeader } from "./MobileHeader";
-import { StreakCard } from "@/components/streak/StreakCard";
-import { SectionMasthead } from "./SectionMasthead";
-import { SettingsList, type SettingsItem } from "./SettingsList";
-import { Skeleton, SkeletonList } from "@/components/ui/Skeleton";
+import { Skeleton } from "@/components/ui/Skeleton";
+import { Seal } from "@/components/ui/icons/Seal";
 import { SettingsGlyph as Glyph } from "./SettingsGlyph";
-import { KeptRows } from "@/components/you/KeptRows";
+import { StreakRope } from "@/components/today/StreakRow";
+import { KeptShelf } from "@/components/you/KeptShelf";
 import { KeptVerse } from "@/components/you/KeptVerse";
-import { PickUpRows } from "@/components/you/PickUpRows";
+import { PickUpCard } from "@/components/you/PickUpCard";
 import { WeekLine } from "@/components/you/WeekLine";
-import { YouIdentity } from "@/components/you/YouIdentity";
+import { YouHero } from "@/components/you/YouHero";
+import { YouRows, type YouRow } from "@/components/you/YouRows";
+import type { YouWho } from "@/components/you/YouIdentity";
 import { readIntentions } from "@/lib/prayers/storage";
 import { useCompletedCollections } from "@/lib/catechism/useCollectionProgress";
 import { useCompletionCount } from "@/lib/catechism/useCompletionCount";
@@ -62,7 +65,6 @@ import { useTranslate } from "@/components/i18n/MessagesProvider";
 import { usePremiumTier } from "@/lib/entitlements/usePremiumTier";
 import { campaignsEnabled } from "@/lib/campaigns/flags";
 import { eikonBoxEnabled } from "@/lib/eikonBox/flags";
-import { deviceDateLocale } from "@/lib/i18n/deviceDates";
 import { localBookNames } from "@/lib/bible/books";
 import { useJournal } from "@/lib/bible/journal";
 import { useBookmarks } from "@/lib/bookmarks";
@@ -86,46 +88,27 @@ import { verseForDay } from "@/lib/you/you";
  * asked the network (getUser) every time it opened, and drew a loading
  * screen while it waited.
  */
-type Reader = { known: false } | { known: true; user: { name: string; joinedAt: string | null } | null };
-
-function useReader(): Reader {
-  const [reader, setReader] = useState<Reader>({ known: false });
+function useReader(): YouWho {
+  const [reader, setReader] = useState<YouWho>({ state: "unknown" });
   useLayoutEffect(() => {
     const local = readLocalSessionUser();
     if (local) {
       /* eslint-disable-next-line react-hooks/set-state-in-effect -- the
          session lives in the device's own storage, which a server render does
          not have: it is adopted after mount, before the first paint. */
-      setReader({ known: true, user: { name: readerName(local), joinedAt: local.created_at ?? null } });
+      setReader({ state: "in", id: local.id, name: readerName(local) });
       return;
     }
     let cancelled = false;
     resolveUser().then((auth) => {
       if (cancelled) return;
-      setReader({
-        known: true,
-        user: auth.state === "signed-in" ? { name: readerName(auth.user), joinedAt: auth.user.created_at ?? null } : null,
-      });
+      setReader(auth.state === "signed-in" ? { state: "in", id: auth.user.id, name: readerName(auth.user) } : { state: "out" });
     });
     return () => {
       cancelled = true;
     };
   }, []);
   return reader;
-}
-
-function formatJoined(iso: string | null): string {
-  if (!iso) return "";
-  try {
-    const d = new Date(iso);
-    if (!Number.isFinite(d.getTime())) return "";
-    return d.toLocaleDateString(deviceDateLocale(), {
-      year: "numeric",
-      month: "short",
-    });
-  } catch {
-    return "";
-  }
 }
 
 export function YouMobile() {
@@ -135,7 +118,7 @@ export function YouMobile() {
 
   // What the reader has kept and written, read off the device once for the
   // whole screen: every part below draws from the same lists, so a count on
-  // one row is the count on the screen it opens.
+  // one cover is the count on the screen it opens.
   const { bookmarks } = useBookmarks();
   const highlights = useSavedHighlights();
   const passages = useSavedPassages();
@@ -175,7 +158,6 @@ export function YouMobile() {
     };
   }, []);
 
-  const signedIn = reader.known && reader.user !== null;
   const tier = usePremiumTier();
   const catechisms = useCompletionCount();
   const completed = useCompletedCollections();
@@ -198,28 +180,15 @@ export function YouMobile() {
   // what they have kept, and the rows below, each a thing of theirs. Settings
   // (components/settings/SettingsClient.tsx) is everything else, once: the
   // account first, then how the app reads, then data, then about Purify, then
-  // Sign out. From 1.8 the reader's own name at the top opens their Profile
-  // as well, the one account screen that is about who they are.
+  // Sign out. The reader's own name at the top opens their Profile, the one
+  // account screen that is about who they are, and signed out Sign in stands
+  // there in its place (1.8, note 71; it was this list's first row). The
+  // subscription's door is the pill in the bar alone: the Purify Premium row
+  // that led to the same place went with note 71 (refinement 3).
   // lib/nav/__tests__/oneSettings.test.ts holds both lists.
-  const settings: SettingsItem[] = [];
+  const settings: YouRow[] = [];
 
-  if (!signedIn) {
-    settings.push({
-      label: t("common.signIn"),
-      href: "/signin?next=/account",
-      hint: t("ui.syncAcrossDevicesOptional"),
-      icon: <Glyph kind="user" />,
-    });
-  }
-
-  settings.push({
-    label: "Purify Premium",
-    href: "/pricing",
-    hint: t("ui.plusAndProSyncCollections"),
-    icon: <Glyph kind="sparkle" />,
-  });
-
-  // The Pro perk, directly under the tier it belongs to, so it reads as a
+  // The Pro perk, first among the reader's own rows, so it reads as a
   // membership benefit rather than a stray link. Hidden entirely for
   // everyone else: an unclaimable row is worse than no row.
   if (eikonBoxEnabled() && tier === "pro") {
@@ -253,7 +222,7 @@ export function YouMobile() {
             href: "/campaigns/mine",
             hint: t("ui.campaignsYouPrayWithThe"),
             icon: <Glyph kind="halo" />,
-          } satisfies SettingsItem,
+          } satisfies YouRow,
         ]
       : []),
     // The one door, closing the list. Its mark stood in this screen's bar
@@ -270,72 +239,56 @@ export function YouMobile() {
     },
   );
 
-  // Until the device has said who is here. With a session on the device that
-  // is before the first paint; it is a moment longer only when the session
-  // has to be looked for, and the screen's own parts are read off the device
-  // in the same moment, so they arrive together rather than one by one.
-  if (!reader.known) {
+  // The Ladder and the rope come at once: neither waits on who is here. The
+  // reader's name stands on the picture once the device has said, before the
+  // first paint when a session is on the device; until then its place is
+  // kept, so nothing under it moves.
+  const hero = (
+    <YouHero who={reader}>
+      {/* For everyone: a reader keeps a streak on this device before they
+          ever sign in. The week's line says what it held. */}
+      <StreakRope className="you-rope" />
+      <WeekLine className="mt-2.5" feed={feed} journal={journal} />
+    </YouHero>
+  );
+
+  // The rest waits for the same moment, and the screen's own parts are read
+  // off the device in it, so they arrive together rather than one by one.
+  if (reader.state === "unknown") {
     return (
-      <MobileShell
-        header={<MobileHeader titleKey="nav.you" />}
-      >
-        {/* The picture, the streak, a list, and the rows. */}
-        <Skeleton weight="mid" rounded="rounded-2xl" className="aspect-[16/9] w-full" />
-        <Skeleton weight="mid" rounded="rounded-2xl" className="mt-5 h-[168px] w-full" />
-        <div className="mt-7">
+      <MobileShell header={<MobileHeader titleKey="nav.you" />} hero={hero}>
+        {/* The lit card, the verse, the shelf, and the rows. */}
+        <Skeleton weight="mid" rounded="rounded-[22px]" className="h-[178px] w-full" />
+        <Skeleton weight="mid" rounded="rounded-[24px]" className="mt-6 h-[230px] w-full" />
+        <div className="mt-6">
           <Skeleton weight="faint" className="h-3 w-28" />
-          <Skeleton weight="faint" rounded="rounded-2xl" className="mt-2 h-[132px] w-full" />
+          <Skeleton weight="faint" rounded="rounded-2xl" className="mt-2.5 h-[130px] w-full" />
         </div>
-        <SkeletonList rows={3} className="mt-7" />
+        <Skeleton weight="faint" rounded="rounded-[18px]" className="mt-6 h-[124px] w-full" />
       </MobileShell>
     );
   }
 
   return (
-    <MobileShell
-      header={<MobileHeader titleKey="nav.you" />}
-      // Signed out, one line on where this reader's things are kept. Signed
-      // in, their name says whose screen it is, under the picture.
-      eyebrow={signedIn ? undefined : t("ui.privateOnThisDeviceNo")}
-    >
-      {/* The Ladder of Divine Ascent. The personal page is about one's own
-          ascent, and it is the only picture the surface carries. */}
-      <SectionMasthead section="you" />
+    <MobileShell header={<MobileHeader titleKey="nav.you" />} hero={hero}>
+      <PickUpCard />
 
-      {/* A signed-in reader's own name and picture, which open their Profile.
-          A reader on this device alone used to get a big card here asking
-          them to sign in, the third ask on the screen; from 1.7 Sign in is
-          the first row of the list below and the screen opens on their own
-          things (the owner's pick of 2026-10-15, "B": the picture stays on
-          top, Homebase/boards/purify-master/r17/shots/ask-you-calm.png). */}
-      {reader.known && reader.user ? (
-        <YouIdentity className="mt-4" name={reader.user.name} since={formatJoined(reader.user.joinedAt)} />
-      ) : null}
+      {verseToday ? <KeptVerse className="mt-6 first:mt-0" verse={verseToday} /> : null}
 
-      {/* For everyone: a reader keeps a streak on this device before they
-          ever sign in. The week's line says what it held. */}
-      <div className="mt-5">
-        <StreakCard />
-        <WeekLine className="mt-2.5" feed={feed} journal={journal} />
-      </div>
-
-      <PickUpRows className="mt-7" />
-
-      {verseToday ? <KeptVerse className="mt-7" verse={verseToday} /> : null}
-
-      <KeptRows className="mt-7" feed={feed} journal={journal} verseLabel={verseLabel} />
+      <KeptShelf className="mt-6 first:mt-0" feed={feed} journal={journal} verseLabel={verseLabel} />
 
       {/* One quiet line, and only once there is something to say. No streak,
           no "today", no count of what was not done. */}
       {catechisms > 0 && (
-        <p className="mt-4 px-1 font-serif text-detail text-paper/60">
+        <p data-you-catechisms="" className="mt-5 flex items-center gap-[9px] px-1 font-serif text-[13.5px] leading-snug text-paper/60">
+          <Seal size={17} className="shrink-0 text-paper/70" />
           {tn("catechism.accountCount", catechisms)}
         </p>
       )}
       {/* And the collections seen through, one line each, for everyone. The
           only place a completion is shown outside the collections page. */}
       {completed.length > 0 && (
-        <ul className={catechisms > 0 ? "mt-1 flex flex-col gap-0.5 px-1" : "mt-4 flex flex-col gap-0.5 px-1"}>
+        <ul className={catechisms > 0 ? "mt-1 flex flex-col gap-0.5 px-1" : "mt-5 flex flex-col gap-0.5 px-1"}>
           {completed.map((c) => (
             <li key={c.slug} className="font-serif text-detail text-paper/60">
               <Link href="/catechism/collections" className="hover:text-paper transition-colors [transition-duration:var(--duration-fast)] motion-reduce:transition-none">
@@ -350,8 +303,8 @@ export function YouMobile() {
           and "Settings" to everyone else, over rows that were neither: one
           more name for this screen. The supporter mark's switch that sat
           under it is the account's, and is in Settings with the account. */}
-      <div className="mt-7" data-you-rows="">
-        <SettingsList items={settings} />
+      <div className="mt-6" data-you-rows="">
+        <YouRows items={settings} />
       </div>
     </MobileShell>
   );

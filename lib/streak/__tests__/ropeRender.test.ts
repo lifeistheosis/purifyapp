@@ -22,7 +22,7 @@ vi.mock("@/lib/onboarding/useDayOne", async (importOriginal) => ({
 
 import { MessagesProvider } from "@/components/i18n/MessagesProvider";
 import { StreakAtRisk } from "@/components/streak/StreakAtRisk";
-import { StreakRow } from "@/components/today/StreakRow";
+import { StreakRope, StreakRow } from "@/components/today/StreakRow";
 import { getMessages } from "@/lib/i18n";
 import { todayKey } from "@/lib/rhythm/dayKey";
 
@@ -99,5 +99,28 @@ describe("the rope on Today, drawn", () => {
     live.dayOne = true;
     expect(draw(StreakAtRisk, { waitsForDayOne: true })).toBe("");
     expect(draw(StreakAtRisk)).toContain("3 days");
+  });
+});
+
+// The same rope on the You tab (1.8, note 71): the owner's pick A of r3-25,
+// where it took the red flame card's place (refinement 4). There it is always
+// drawn: the Day 1 card and the evening card are Today's.
+describe("the rope on You, drawn", () => {
+  it("is the rope, with no flame and no red, whatever Today is showing", () => {
+    for (const [over, dayOne] of [[{}, true], [{ current: 3, best: 3, atRisk: true }, false]] as const) {
+      live.view = view(over);
+      live.dayOne = dayOne;
+      const out = draw(StreakRope, { className: "you-rope" });
+      expect(out).toContain("you-rope");
+      expect(knots(out)).toBe(7);
+      expect(out).not.toMatch(RED);
+      expect(out).not.toMatch(/streak-pulse|StreakFlame|flame/i);
+    }
+  });
+
+  it("holds its height until the streak is read", () => {
+    live.view = view({ ready: false });
+    live.dayOne = false;
+    expect(draw(StreakRope)).toMatch(/^<div aria-hidden="true" class="h-\[92px\]"><\/div>$/);
   });
 });
