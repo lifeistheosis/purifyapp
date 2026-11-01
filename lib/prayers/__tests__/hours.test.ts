@@ -8,8 +8,24 @@
 // every hour of the day must resolve to exactly one Hour, and the small hours
 // before the First Hour must resolve backwards to it rather than to nothing.
 
+import fs from "node:fs";
+import path from "node:path";
+
 import { describe, expect, it } from "vitest";
 import { currentHourSlug, getHour, listHours } from "@/lib/prayers/hours";
+import { HOUR_STARTS, currentHourSlug as hourNow } from "@/lib/prayers/hourNow";
+
+describe("the Hours' own hours, apart from their texts (1.8, note 72)", () => {
+  it("are one list: the registry reads them from lib/prayers/hourNow.ts", () => {
+    expect(listHours().map((h) => [h.slug, h.approxHour])).toEqual(HOUR_STARTS.map((h) => [h.slug, h.approxHour]));
+    expect(currentHourSlug).toBe(hourNow);
+  });
+
+  it("carry none of the five services, so a screen that lights the Hour does not download them", () => {
+    const src = fs.readFileSync(path.join(process.cwd(), "lib/prayers/hourNow.ts"), "utf8");
+    expect(src).not.toMatch(/^import\b/m);
+  });
+});
 
 describe("listHours", () => {
   it("returns the five canonical Hours in clock order", () => {

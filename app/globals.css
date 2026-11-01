@@ -1808,6 +1808,165 @@ html[data-reading-mode="black"] .rule-med-disc:not([data-add]) {
  transition: none;
 }
 
+/* ── Prayers: Practices and the prayer book (1.8, note 72) ──
+   The owner's pick of r3-26, a mix (2026-10-31): "A, the icon tiles. C, one
+   prayer book." (Homebase/boards/purify-master/variants/
+   r3-26-prayers-practices). Practices are four tiles in their icons
+   (PictureTile, components/mobile/SoftTiles.tsx), the Hours lit by the
+   clock; under them one prayer book whose chapters open one at a time
+   (components/prayers/PrayerBookContents.tsx). Every surface is the ground
+   and the ink and their mixes, so it holds in every palette; what is lit
+   glows white, and the glow steps aside on Parchment, where white on paper
+   is no light. The rgb values come first for a WebView without color-mix
+   (Android before 111).
+
+   A picture tile's shade is the page's ground, laid over the picture's foot
+   under the name; the words keep a soft shadow over the picture. On
+   Parchment the shade is paper and the words the ink, so the paper lies
+   deeper under them than a dark shade needs to (ink on half a picture is
+   lost in it) and their shadow is a halo of the paper. */
+.tile-shade {
+ background: linear-gradient(180deg, transparent 26%, rgb(16 16 19 / 0.82) 100%);
+ background: linear-gradient(180deg, transparent 26%, color-mix(in srgb, var(--color-night) 82%, transparent) 100%);
+}
+html[data-reading-mode="parchment"] .tile-shade {
+ background: linear-gradient(180deg, transparent 30%, color-mix(in srgb, var(--color-night) 70%, transparent) 62%, color-mix(in srgb, var(--color-night) 92%, transparent) 100%);
+}
+.tile-name {
+ text-shadow: 0 1px 8px rgb(0 0 0 / 0.6);
+}
+.tile-line {
+ text-shadow: 0 1px 6px rgb(0 0 0 / 0.7);
+}
+html[data-reading-mode="parchment"] .tile-name,
+html[data-reading-mode="parchment"] .tile-line {
+ text-shadow: 0 0 8px color-mix(in srgb, var(--color-night) 90%, transparent);
+}
+/* The tile that is now, the Hours in the Hour the clock is in: a ring of the
+   ink and a soft white glow; on Parchment the ring alone, and the paper's
+   own warm shadow. */
+.tile-lit {
+ box-shadow: 0 0 0 1.5px rgb(255 255 255 / 0.7), 0 0 26px rgb(255 255 255 / 0.2), 0 12px 28px -14px rgb(0 0 0 / 0.55);
+ box-shadow: 0 0 0 1.5px color-mix(in srgb, var(--color-paper) 70%, transparent), 0 0 26px rgb(255 255 255 / 0.2), 0 12px 28px -14px rgb(0 0 0 / 0.55);
+}
+html[data-reading-mode="parchment"] .tile-lit {
+ box-shadow: 0 0 0 1.5px rgb(43 35 23 / 0.7), 0 12px 28px -18px rgb(70 52 20 / 0.45);
+ box-shadow: 0 0 0 1.5px color-mix(in srgb, var(--color-paper) 70%, transparent), 0 12px 28px -18px rgb(70 52 20 / 0.45);
+}
+/* The lit point before "Now": a white light, the ink on Parchment. */
+.tile-dot {
+ display: inline-block;
+ width: 7px;
+ height: 7px;
+ margin-inline-end: 6px;
+ vertical-align: 1px;
+ border-radius: 9999px;
+ background: var(--color-paper);
+ box-shadow: 0 0 9px rgb(255 255 255 / 0.95), 0 0 2px rgb(255 255 255);
+}
+html[data-reading-mode="parchment"] .tile-dot {
+ box-shadow: none;
+}
+
+/* The prayer book: one card, its chapters parted by a hairline. Scroll
+   anchoring stays out of it, so the page that opens or shuts never moves the
+   chapter that was tapped on one engine and not on the other: the component
+   puts that chapter back under the finger itself, in Chromium as in WebKit,
+   which has no scroll anchoring. */
+.prayer-book {
+ overflow-anchor: none;
+}
+.book-chapter + .book-chapter::before {
+ content: "";
+ position: absolute;
+ inset-inline: 14px;
+ top: 0;
+ height: 1px;
+ background: rgb(255 255 255 / 0.075);
+ background: color-mix(in srgb, var(--color-paper) 7.5%, transparent);
+}
+/* A chapter's page: a shallow well in the card, its rows on it. On Parchment
+   a warm shade a step into the paper, as the app's other wells are. */
+.book-leaf {
+ background: linear-gradient(180deg, rgb(0 0 0 / 0.3), rgb(0 0 0 / 0.16));
+ box-shadow: inset 0 9px 14px -10px rgb(0 0 0 / 0.85), inset 0 0 0 1px rgb(255 255 255 / 0.05);
+ box-shadow: inset 0 9px 14px -10px rgb(0 0 0 / 0.85), inset 0 0 0 1px color-mix(in srgb, var(--color-paper) 5%, transparent);
+}
+html[data-reading-mode="parchment"] .book-leaf {
+ background: rgb(120 95 50 / 0.07);
+ box-shadow: inset 0 7px 12px -10px rgb(70 52 20 / 0.35), inset 0 0 0 1px color-mix(in srgb, var(--color-paper) 8%, transparent);
+}
+/* The dotted leader from a prayer's name to its length. */
+.book-leader {
+ background: radial-gradient(circle at 1.5px 2px, rgb(255 255 255 / 0.3) 1px, transparent 1.25px) 0 0 / 6px 4px repeat-x;
+ background: radial-gradient(circle at 1.5px 2px, color-mix(in srgb, var(--color-paper) 30%, transparent) 1px, transparent 1.25px) 0 0 / 6px 4px repeat-x;
+}
+/* The row that is now, the Hours in the daily rule: lit white, its plate
+   ringed; ink grey on Parchment, nothing glowing. */
+.book-lit {
+ background: linear-gradient(180deg, rgb(255 255 255 / 0.1), rgb(255 255 255 / 0.045));
+ background: linear-gradient(180deg, color-mix(in srgb, var(--color-paper) 10%, transparent), color-mix(in srgb, var(--color-paper) 4.5%, transparent));
+ box-shadow: inset 0 0 0 1px rgb(255 255 255 / 0.3), 0 0 24px rgb(255 255 255 / 0.1);
+ box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--color-paper) 30%, transparent), 0 0 24px rgb(255 255 255 / 0.1);
+}
+.book-lit .book-lit-name {
+ text-shadow: 0 0 12px rgb(255 255 255 / 0.35);
+}
+.book-lit .book-plate {
+ box-shadow: 0 0 0 1.5px var(--color-night), 0 0 0 2.5px rgb(255 255 255 / 0.9), 0 0 14px rgb(255 255 255 / 0.35);
+ box-shadow: 0 0 0 1.5px var(--color-night), 0 0 0 2.5px color-mix(in srgb, var(--color-paper) 90%, transparent), 0 0 14px rgb(255 255 255 / 0.35);
+}
+html[data-reading-mode="parchment"] .book-lit {
+ box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--color-paper) 30%, transparent);
+}
+html[data-reading-mode="parchment"] .book-lit .book-lit-name {
+ text-shadow: none;
+}
+html[data-reading-mode="parchment"] .book-lit .book-plate {
+ box-shadow: 0 0 0 1.5px var(--color-night), 0 0 0 2.5px color-mix(in srgb, var(--color-paper) 90%, transparent);
+}
+/* A chapter folds open onto its page in 240 ms on the house curve, its rows
+   rising a few pixels into place, as the saints' readings do on Today, and
+   its chevron turns. A chapter shut above the one tapped shuts at once
+   (data-snap), so the page can be put back under the finger before it is
+   painted. With motion off each simply opens and shuts. */
+.book-fold {
+ display: grid;
+ grid-template-rows: 0fr;
+ transition: grid-template-rows 240ms var(--ease-house);
+}
+.book-fold[data-open] {
+ grid-template-rows: 1fr;
+}
+.book-fold > * {
+ min-height: 0;
+ overflow: hidden;
+}
+.book-page {
+ opacity: 0;
+ translate: 0 4px;
+ transition: opacity 240ms var(--ease-house), translate 240ms var(--ease-house);
+}
+.book-fold[data-open] .book-page {
+ opacity: 1;
+ translate: none;
+}
+.book-fold[data-snap],
+.book-fold[data-snap] .book-page {
+ transition: none;
+}
+.book-turn {
+ transition: rotate 240ms var(--ease-house);
+}
+[aria-expanded="true"] > .book-turn {
+ rotate: 180deg;
+}
+:where([data-motion="reduce"]) .book-fold,
+:where([data-motion="reduce"]) .book-page,
+:where([data-motion="reduce"]) .book-turn {
+ transition: none;
+}
+
 /* The shop's floating cart button (56px, right-6 bottom-6) shares the
    bottom-right corner with the app-level back-to-top button (44px, right-7
    bottom-7), so on shop pages they rendered on top of each other. CartFab sets

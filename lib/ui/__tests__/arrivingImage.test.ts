@@ -97,6 +97,9 @@ const DRAWN = [
   "components/theology/TheologyLibrary.tsx",
   "components/theology/WholeIcon.tsx",
   "components/prayers/ArtPlate.tsx",
+  // Prayers' Practices in their icons and the prayer book's plates (1.8, note 72).
+  "components/mobile/SoftTiles.tsx",
+  "components/prayers/PrayerBookContents.tsx",
   "components/desktop/DiscordModes.tsx",
   "components/player/PrayWithChant.tsx",
   "components/onboarding/LookingFor.tsx",
