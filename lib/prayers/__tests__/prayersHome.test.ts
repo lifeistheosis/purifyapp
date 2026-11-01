@@ -383,7 +383,7 @@ describe("the prayer book (note 72, r3-26 C: one prayer book)", () => {
     const parchment = /html\[data-reading-mode="parchment"\] \.book-lit \{([^}]*)\}/.exec(css)?.[1] ?? "";
     expect(parchment).toContain("var(--color-paper) 30%");
     expect(parchment).not.toContain("0 0 24px");
-    expect(css).toMatch(/html\[data-reading-mode="parchment"\] \.book-leaf \{\s*background: rgb\(120 95 50 \/ 0\.07\);/);
+    expect(css).toMatch(/html\[data-reading-mode="parchment"\] \.book-leaf \{\s*background: rgb\(43 35 23 \/ 0\.05\);/);
     // The picture tile, not the glyph tile beside it in the same file, whose
     // plate is text-gold-pale, a token kept under its old name and a near
     // white on every dark palette (app/globals.css).
