@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useId, useLayoutEffect, useRef, useState } from "react";
+import { useEffect, useId, useLayoutEffect, useRef, useState } from "react";
 
 import { useTranslate } from "@/components/i18n/MessagesProvider";
 import { ArrivingImage } from "@/components/ui/ArrivingImage";
@@ -13,6 +13,7 @@ import type { HourSlug } from "@/lib/prayers/hourNow";
 import { cropStyle, plateCrop } from "@/lib/prayers/iconCrops";
 import type { RuleMeta } from "@/lib/prayers/rules";
 import { serviceArt } from "@/lib/prayers/serviceArt";
+import { prefersReducedMotion } from "@/lib/ui/motion";
 
 /**
  * The prayer book on a phone (1.8, note 72): the owner's pick of r3-26, "C,
@@ -36,7 +37,21 @@ import { serviceArt } from "@/lib/prayers/serviceArt";
  * painted (as the Bible's books sheet does), and its own page opens under
  * it. The card keeps scroll anchoring out (.prayer-book), so this is the
  * same on both engines.
+ *
+ * And the card holds its length while it does (`min-height`, until the new
+ * page has opened into the room). The book closes the Prayers tab, so a
+ * reader opening Devotional is often scrolled to the foot of the screen: the
+ * daily rule shutting there made the page 321px shorter at once, the browser
+ * pulled the scroll up to the new foot (a page cannot be scrolled past its
+ * end, so the chapter could not be put back), and as Devotional's page grew
+ * the scroll went down with it again, carrying the tapped chapter 278px up
+ * the screen (build 87's walk, section 48). Held, the page never shortens
+ * under the finger, so the chapter can always be put back; the hold lets go
+ * once the fold has run, and at once with Purify's motion off.
  */
+
+/** How long a page takes to open (.book-fold in app/globals.css), and a frame or two over. */
+const FOLD_HOLD_MS = 240 + 80;
 
 const BOOK_BG = {
   background:
@@ -56,25 +71,39 @@ export function PrayerBookContents({ hourNow }: { hourNow: HourSlug | null }) {
   const book = useRef<HTMLDivElement | null>(null);
   /** The chapter just tapped and where it stood, so it stays under the finger. */
   const tapped = useRef<{ at: number; top: number } | null>(null);
+  /** When the card lets go of the length it held. */
+  const letGo = useRef<number | undefined>(undefined);
 
   function toggle(at: number, head: HTMLElement) {
     tapped.current = { at, top: head.getBoundingClientRect().top };
-    setOpen((now) =>
-      now.at === at
-        ? { at: null, snap: null }
-        : // The page shutting above the one opening shuts at once.
-          { at, snap: now.at !== null && now.at < at ? now.at : null },
-    );
+    // The page shutting above the one opening shuts at once, and the card
+    // holds its length until the new page has opened into it.
+    const next: Open = open.at === at ? { at: null, snap: null } : { at, snap: open.at !== null && open.at < at ? open.at : null };
+    const card = book.current;
+    if (next.snap !== null && card) card.style.minHeight = `${card.offsetHeight}px`;
+    setOpen(next);
   }
 
   useLayoutEffect(() => {
     const was = tapped.current;
     tapped.current = null;
-    const head = was ? book.current?.querySelector<HTMLElement>(`[data-chapter-at="${was.at}"]`) : null;
-    if (!was || !head) return;
-    const off = head.getBoundingClientRect().top - was.top;
-    if (Math.abs(off) > 1) window.scrollBy({ top: off, left: 0, behavior: "instant" as ScrollBehavior });
+    const card = book.current;
+    const head = was ? card?.querySelector<HTMLElement>(`[data-chapter-at="${was.at}"]`) : null;
+    if (was && head) {
+      const off = head.getBoundingClientRect().top - was.top;
+      if (Math.abs(off) > 1) window.scrollBy({ top: off, left: 0, behavior: "instant" as ScrollBehavior });
+    }
+    if (card?.style.minHeight) {
+      window.clearTimeout(letGo.current);
+      const release = () => {
+        card.style.minHeight = "";
+      };
+      if (prefersReducedMotion()) release();
+      else letGo.current = window.setTimeout(release, FOLD_HOLD_MS);
+    }
   }, [open]);
+
+  useEffect(() => () => window.clearTimeout(letGo.current), []);
 
   // A catalog title when the rule has one, else the registry's English: a
   // missing key must never reach the screen as the key itself.

@@ -7127,14 +7127,31 @@ await section(48, async () => {
     await opened(page);
     await tilesInView(page);
 
-    // Practices: four tiles in their icons, two across, the Hours lit.
+    // Practices: four tiles in their icons, two across, the Hours lit. Across
+    // the page's own column, as the book under them and every section are:
+    // the app's root is 17px, so its gutters (px-5) are 21.25px and the
+    // grid's gap (gap-3) 12.75px, where the sheet drew 20 and 12 (build 87's
+    // walk measured 167.4 at 390 against the sheet's 169).
     const t = await tiles(page);
-    const vw = await page.evaluate(() => document.documentElement.clientWidth);
-    const each = (vw - 40 - 12) / 2;
+    const col = await page.evaluate(() => {
+      const grid = document.querySelector("[data-practices] a")?.parentElement;
+      const book = document.querySelector("[data-prayer-book]")?.getBoundingClientRect();
+      const r = grid?.getBoundingClientRect();
+      return grid && r && book ? { left: r.left, width: r.width, gap: parseFloat(getComputedStyle(grid).columnGap), book: [book.left, book.width] } : null;
+    });
+    const each = col ? (col.width - col.gap) / 2 : -1;
     must(t.length === 4 && t.map((x) => bare(x.href)).join(" ") === TILES.join(" "), `${w}: Practices are the Hours, Akathists, Learn to pray and Your rule, and Today's tile is gone (${t.map((x) => bare(x.href)).join(", ")})`);
     must(
-      t.length === 4 && t[0].top === t[1].top && t[2].top === t[3].top && t[2].top >= t[0].top + t[0].height && t[0].left < t[1].left && t.every((x) => Math.abs(x.width - each) <= 1.5 && x.height >= 146),
-      `${w}: two across, each ${Math.round(each)}px wide and at least 146 tall (${t.map((x) => `${x.width}x${x.height} at ${x.left},${x.top}`).join("; ")})`,
+      !!col &&
+        Math.abs(col.book[0] - col.left) <= 0.5 &&
+        Math.abs(col.book[1] - col.width) <= 0.5 &&
+        t.length === 4 &&
+        t[0].top === t[1].top &&
+        t[2].top === t[3].top &&
+        t[2].top >= t[0].top + t[0].height &&
+        t[0].left < t[1].left &&
+        t.every((x) => Math.abs(x.width - each) <= 1 && x.height >= 146),
+      `${w}: two across the page's column, the book's (${col ? `${col.width.toFixed(1)}px from ${col.left.toFixed(2)}, gap ${col.gap}` : "no grid"}), each ${each.toFixed(1)}px wide and at least 146 tall (${t.map((x) => `${x.width}x${x.height} at ${x.left},${x.top}`).join("; ")})`,
     );
     must(
       t.map((x) => x.name).join("|") === [en["ui.theHours"], en["prayers.akathists"], en["ui.learnToPray"], en["prayers.mine.title"]].join("|"),

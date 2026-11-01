@@ -343,10 +343,27 @@ describe("the prayer book (note 72, r3-26 C: one prayer book)", () => {
     expect(src).toContain("aria-controls={pageId}");
     expect(src).toContain('inert={!isOpen} data-open={isOpen || undefined} data-snap={snap || undefined} className="book-fold"');
     // A page open above the one tapped shuts at once; the one tapped shuts as it folds.
-    expect(src).toMatch(/now\.at === at\s*\?\s*\{ at: null, snap: null \}\s*:[\s\S]*?\{ at, snap: now\.at !== null && now\.at < at \? now\.at : null \}/);
+    expect(src).toContain("const next: Open = open.at === at ? { at: null, snap: null } : { at, snap: open.at !== null && open.at < at ? open.at : null };");
     expect(src).toContain('window.scrollBy({ top: off, left: 0, behavior: "instant" as ScrollBehavior });');
     const css = read(CSS);
     expect(css).toMatch(/\.prayer-book \{\s*overflow-anchor: none;/);
+  });
+
+  it("holds the card's length while a page above shuts, so the page never shortens under the finger (build 87's walk)", () => {
+    // At the foot of the tab the daily rule shutting made the page 321px
+    // shorter at once: the scroll was pulled up to the new foot, the chapter
+    // could not be put back, and as Devotional's page grew the scroll went
+    // down with it, carrying the tapped chapter 278px up the screen.
+    const src = code(BOOK);
+    expect(src).toContain("if (next.snap !== null && card) card.style.minHeight = `${card.offsetHeight}px`;");
+    // Let go once the new page has opened into the room, and at once with Purify's motion off.
+    expect(src).toMatch(/if \(card\?\.style\.minHeight\) \{\s*window\.clearTimeout\(letGo\.current\);[\s\S]*?card\.style\.minHeight = "";[\s\S]*?if \(prefersReducedMotion\(\)\) release\(\);\s*else letGo\.current = window\.setTimeout\(release, FOLD_HOLD_MS\);/);
+    expect(src).toContain("useEffect(() => () => window.clearTimeout(letGo.current), []);");
+    // The hold outlasts the fold it waits for, and the two are the same 240 ms.
+    const hold = /const FOLD_HOLD_MS = (\d+) \+ (\d+);/.exec(read(BOOK));
+    expect(hold?.[1]).toBe("240");
+    expect(Number(hold?.[2])).toBeGreaterThan(0);
+    expect(read(CSS)).toMatch(/\.book-fold \{[^}]*transition: grid-template-rows 240ms var\(--ease-house\);/);
   });
 
   it("folds on the house curve, and with Purify's motion off simply opens and shuts", () => {
