@@ -40,6 +40,7 @@ export function CouncilBookHeader({
   docSlug,
   first,
   total,
+  heading = "h1",
 }: {
   title: string;
   subtitle?: string;
@@ -58,8 +59,11 @@ export function CouncilBookHeader({
   docSlug: string;
   first: number;
   total: number;
+  /** The page's heading; inside About this book (r3-29 A) the section's head is the page's. */
+  heading?: "h1" | "h2";
 }) {
   const { t } = useTranslate();
+  const Heading = heading;
   return (
     <header data-book-header="" data-council-book="" className="border-b border-paper/8 pb-8 pt-6 md:pb-12 md:pt-14">
       <nav aria-label={t("study.councils.theCouncils")} className="mb-10 hidden items-center gap-1.5 font-sans text-detail text-paper/55 md:flex native-md-hidden">
@@ -86,9 +90,9 @@ export function CouncilBookHeader({
           className="shadow-[0_24px_60px_-24px_rgba(0,0,0,0.75)]"
         />
         <div className="mt-6 flex min-w-0 max-w-[620px] flex-col items-center md:mt-1 md:items-start">
-          <h1 id="work-title" lang="en" className="text-title font-semibold leading-[1.12] tracking-[-0.01em] text-paper text-balance md:text-heading">
+          <Heading id={heading === "h1" ? "work-title" : undefined} lang="en" className="text-title font-semibold leading-[1.12] tracking-[-0.01em] text-paper text-balance md:text-heading">
             {title}
-          </h1>
+          </Heading>
           {subtitle ? (
             <p lang="en" className="mt-2 font-sans text-ui leading-[1.5] text-paper/60 text-balance">
               {subtitle}

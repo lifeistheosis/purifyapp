@@ -1,245 +1,202 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { Sheet } from "@/components/ui/Sheet";
+
 import { useTranslate } from "@/components/i18n/MessagesProvider";
-import { ChevronLeft } from "@/components/ui/icons/ChevronLeft";
 import { AmbienceButton } from "@/components/player/AmbienceButton";
+import { ChevronLeft } from "@/components/ui/icons/ChevronLeft";
+import { WORDS_PER_MINUTE } from "@/lib/bible/readability";
 import { cn } from "@/lib/cn";
-import { contentsNumbers } from "@/lib/reading/contentsNumbers";
+import type { SectionHead } from "@/lib/saints/parts";
+import { PLACE_ROWS, parsePlace } from "@/lib/saints/paragraphInView";
+import { openWorkContents } from "@/lib/saints/workNow";
 import { useOverlayOpen } from "@/lib/ui/overlay";
+import { KEPT_AT, blockAt, placeIn, visibleBand } from "@/lib/ui/readingPlace";
 
-/** A section as the pill and the contents list it: `label` is its number as the edition prints it. */
-export type ContentsSection = { n: number; title: string; label?: string };
-
-/** The numbers beside the titles, or null where every title says its own. */
-export function numbersOf(sections: readonly ContentsSection[]): string[] | null {
-  return contentsNumbers(sections.map((s) => ({ title: s.title, label: s.label ?? String(s.n) })));
-}
+import { usePartWords } from "./partWords";
+import { WORK_HEAD_ID } from "./WorkHead";
 
 /**
- * Mobile-only floating pill for the saint-works reader, modeled on
- * `MobileChapterPill` in the Bible reader. Shows `‹ Section N of M ›`
- * where N is the section currently scrolled into view (detected via
- * IntersectionObserver on the `s${n}` anchors `WritingReader` already
- * stamps on each section).
+ * A work's pill, floating at the foot of the page on a phone and a tablet:
+ * the Bible's (components/bible/MobileChapterPill.tsx), as the owner picked
+ * it for the books of the Fathers (1.8, A of r3-29, "As the Bible reads"):
+ * the arrow back, Conference 10 · 10, the arrow on and, after a hairline, the sound. The arrows turn
+ * the chapter; the name opens the contents, as the chapter's title does.
+ * Over it, once the title has gone up, a running line says where in the part
+ * the reader is and the minutes left in the chapter, "Chapter 10 of 14 · 10
+ * min left", counted from the line being read (lib/ui/readingPlace.ts), so a
+ * chapter of one long paragraph counts down as it is read. The names are the
+ * work's own (lib/saints/parts.ts): one name for the parts, here, at the
+ * head and in the contents; build 86 said "Section 1 of 603" here and "All
+ * 603 chapters" at the top.
  *
- * Tapping the label opens a bottom sheet with the full TOC, so a reader
- * can jump anywhere in a long work without scrolling back to the
- * `<details>` block at the top.
- *
- * Hidden on `md+`, desktop has the in-page TOC. Reader chrome: focus mode
- * puts it away (1.7), where the way out of focus stands at the foot.
- *
- * It ends in the sound button, as the chapter pill does (1.7, the owner's
- * note 25): ambience under a work of the Fathers too.
- *
- * Like the chapter pill it steps aside while anything rises over the text
- * (lib/ui/overlay.ts): a hold's Copy pill and a paragraph's tools stand in
- * its very place (1.7.1, the owner's screenshot: "pill buttons colliding
- * here", Copy over "Section").
- *
- * It appears with the work's text, nothing else: no measurement and no
- * scroll holds it back, and it reads "Section 1 of N" from its first frame.
- * In the apps that text is read from the bundle after the page has opened, so
- * the pill used to land a moment later, all at once (1.8, the owner's note 14
- * of build 80, on the Conferences). Its face fades in as it arrives
- * (app/globals.css, .reader-pill-in), on the app's motion switch.
+ * It floats on the page's fade, steps away with the round buttons over the
+ * page and the tab bar while the reader reads on, and comes back on a scroll
+ * up (lib/ui/scrollAway.ts; globals.css, "The page"), so it is never over
+ * the words at rest: the page keeps its own height of room at its foot
+ * (safe-pb-reader). It steps aside while anything rises over the reader
+ * (lib/ui/overlay.ts). Its face fades in as it arrives with the work's text
+ * (globals.css, .reader-pill-in), on the motion switch. Reader chrome: focus
+ * mode puts it away.
  */
 export function MobileWorkPill({
-  sections,
+  head,
+  prev,
+  next,
+  onGo,
+  words,
 }: {
-  sections: ContentsSection[];
+  head: SectionHead;
+  prev: SectionHead | null;
+  next: SectionHead | null;
+  onGo: (n: number) => void;
+  /** The chapter's words, paragraph by paragraph, for the minutes left. */
+  words: readonly number[];
 }) {
   const { t } = useTranslate();
-  const [currentIdx, setCurrentIdx] = useState(0);
-  const [tocOpen, setTocOpen] = useState(false);
+  const { pill } = usePartWords();
   const covered = useOverlayOpen();
-
-  useEffect(() => {
-    if (sections.length === 0) return;
-    const ids = sections.map((s) => `s${s.n}`);
-    const elements = ids
-      .map((id) => document.getElementById(id))
-      .filter((el): el is HTMLElement => !!el);
-    if (elements.length === 0) return;
-
-    // Track which sections are intersecting; pick the topmost one in view.
-    const visible = new Set<string>();
-    const observer = new IntersectionObserver(
-      (entries) => {
-        for (const e of entries) {
-          if (e.isIntersecting) visible.add(e.target.id);
-          else visible.delete(e.target.id);
-        }
-        // Pick the lowest-index section that is currently visible. If
-        // none, keep the previous current (reader is between sections).
-        for (let i = 0; i < ids.length; i++) {
-          if (visible.has(ids[i])) {
-            setCurrentIdx(i);
-            return;
-          }
-        }
-      },
-      {
-        // Trigger when the section header crosses the top quarter of the
-        // viewport, feels like "I'm reading this one."
-        rootMargin: "-15% 0px -70% 0px",
-        threshold: 0,
-      },
-    );
-    for (const el of elements) observer.observe(el);
-    return () => observer.disconnect();
-  }, [sections]);
-
-  if (sections.length === 0) return null;
-  const total = sections.length;
-  const current = sections[currentIdx];
-  const prev = currentIdx > 0 ? sections[currentIdx - 1] : null;
-  const next = currentIdx < total - 1 ? sections[currentIdx + 1] : null;
-
-  function jumpTo(n: number) {
-    window.location.hash = `#s${n}`;
-    // The hashchange listener in WritingReader expands the section and
-    // scrolls it; nothing else to do here.
-  }
-
+  const name = pill(head);
+  const arrow = "h-10 w-10 shrink-0 inline-flex items-center justify-center";
   return (
-    <>
+    <div
+      aria-label={t("bible.chapterSwitcher")}
+      data-reader-chrome
+      data-reader-pill
+      data-work-pill=""
+      // What stands at the foot of the screen (lib/ui/readingPlace.ts): the
+      // place a return lands on stands clear of it.
+      data-screen-edge="bottom"
+      aria-hidden={covered || undefined}
+      className={cn(
+        "md:hidden native-md-flex fixed inset-x-0 z-40 flex flex-col items-center gap-1.5 px-4 pointer-events-none motion-safe:transition-opacity motion-safe:duration-200",
+        covered && "opacity-0",
+      )}
+      style={{
+        bottom: "calc(var(--tab-bar-h) + var(--now-playing-h) + var(--readings-flow-h, 0px) + env(safe-area-inset-bottom, 0px) + 12px)",
+      }}
+    >
+      {/* The fade the pill floats on, down to the tab bar, behind it. */}
+      <span aria-hidden className="pill-fade pointer-events-none absolute inset-x-0 -bottom-3 -z-10 h-44" />
+      <RunningLine head={head} words={words} />
       <div
-        aria-label={t("saints.sectionSwitcher")}
-        data-reader-chrome
-        data-reader-pill
-        // Out of reach and out of hearing while something stands over it.
-        aria-hidden={covered || undefined}
         className={cn(
-          "md:hidden native-md-flex fixed inset-x-0 z-40 flex justify-center pointer-events-none motion-safe:transition-opacity motion-safe:duration-200",
-          covered && "opacity-0",
+          "reader-pill-in flex h-14 min-w-0 max-w-full items-center gap-0.5 rounded-pill border border-paper/10 bg-night-soft px-1.5 shadow-[0_14px_34px_rgba(0,0,0,0.55)]",
+          covered ? "pointer-events-none" : "pointer-events-auto",
         )}
-        style={{
-          bottom:
-            "calc(var(--tab-bar-h) + var(--now-playing-h) + var(--readings-flow-h, 0px) + env(safe-area-inset-bottom, 0px) + 12px)",
-        }}
       >
-        {/* The pill's face fades in as it arrives, with the work's text
-            (app/globals.css, .reader-pill-in). */}
-        <div
-          className={cn(
-            "reader-pill-in inline-flex items-center gap-1 rounded-pill bg-night/95 backdrop-blur border border-white/15 shadow-raise pl-1 pr-1 py-1 max-w-[92vw]",
-            covered ? "pointer-events-none" : "pointer-events-auto",
-          )}
+        <button
+          type="button"
+          disabled={!prev}
+          onClick={() => prev && onGo(prev.n)}
+          aria-label={prev ? t("bible.previousTargetAria", { book: pill(prev), chapter: "" }).trim() : t("bible.noPreviousChapter")}
+          className={cn(arrow, prev ? "text-paper/85 hover:text-paper" : "text-paper/25")}
         >
-          <button
-            type="button"
-            aria-label={prev ? `Previous: ${prev.title}` : "No previous section"}
-            disabled={!prev}
-            onClick={() => prev && jumpTo(prev.n)}
-            className={
-              "h-10 w-10 inline-flex items-center justify-center font-sans text-lede leading-none " +
-              (prev ? "text-paper/85 hover:text-paper" : "text-paper/25")
-            }
-          >
-            {/* Drawn chevrons, not the ‹ › characters, which sit in the
-                fonts' symbol files: showing one made the phone fetch a
-                font and lay a long work out again as it opened. */}
-            <ChevronLeft size={20} className="rtl:-scale-x-100" />
-          </button>
-          <button
-            type="button"
-            onClick={() => setTocOpen(true)}
-            className="px-3 h-10 inline-flex items-center font-sans text-detail font-semibold text-paper truncate max-w-[60vw]"
-          >
-            {/* Counted by place, not by the file's numbers: the Confessions'
-                Book II is its section 102 (contentsNumbers). */}
-            {t("saints.sectionOf", { n: currentIdx + 1, total })}
-          </button>
-          <button
-            type="button"
-            aria-label={next ? `Next: ${next.title}` : "No next section"}
-            disabled={!next}
-            onClick={() => next && jumpTo(next.n)}
-            className={
-              "h-10 w-10 inline-flex items-center justify-center font-sans text-lede leading-none " +
-              (next ? "text-paper/85 hover:text-paper" : "text-paper/25")
-            }
-          >
-            <ChevronLeft size={20} className="-scale-x-100 rtl:scale-x-100" />
-          </button>
-          <span aria-hidden className="mx-0.5 h-5 w-px bg-white/15" />
-          <AmbienceButton variant="pill" />
-        </div>
+          <ChevronLeft size={20} className="rtl:-scale-x-100" />
+        </button>
+        <button
+          type="button"
+          aria-haspopup="dialog"
+          onClick={openWorkContents}
+          aria-label={t("bible.pickChapterCurrentAria", { book: name, chapter: "" }).trim()}
+          data-pill-name=""
+          className="flex h-11 min-w-0 items-center px-2 font-sans text-[15px] font-semibold leading-tight text-paper"
+        >
+          {/* A long name gives way, at its end. */}
+          <span lang={"text" in head.pill.name ? "en" : undefined} className="truncate">
+            {name}
+          </span>
+        </button>
+        <button
+          type="button"
+          disabled={!next}
+          onClick={() => next && onGo(next.n)}
+          aria-label={next ? t("bible.nextTargetAria", { book: pill(next), chapter: "" }).trim() : t("bible.noNextChapter")}
+          className={cn(arrow, next ? "text-paper/85 hover:text-paper" : "text-paper/25")}
+        >
+          <ChevronLeft size={20} className="-scale-x-100 rtl:scale-x-100" />
+        </button>
+        <span aria-hidden className="mx-1.5 h-6 w-px shrink-0 bg-paper/15" />
+        <AmbienceButton variant="pill" />
       </div>
-
-      <WorkContents
-        open={tocOpen}
-        onClose={() => setTocOpen(false)}
-        sections={sections}
-        current={current.n}
-        onJump={jumpTo}
-      />
-    </>
+    </div>
   );
 }
 
 /**
- * A work's contents in the shared movable sheet: every section, its number
- * as the edition prints it (none where the titles already say it) and its
- * title, the one being read marked. Opened from the section pill and from
- * the chapters at the top of a work (components/reading/ChaptersList.tsx).
+ * The words left in the chapter from the line being read: the paragraphs
+ * after the one over the reading line, and what is still under the line of
+ * that one. Pure, for its test.
  */
-export function WorkContents({
-  open,
-  onClose,
-  sections,
-  current,
-  onJump,
-  desktop = false,
-}: {
-  open: boolean;
-  onClose: () => void;
-  sections: ContentsSection[];
-  /** The section being read, by its number. */
-  current?: number;
-  onJump: (n: number) => void;
-  /** Also on a computer: the chapters list opens it at every width. */
-  desktop?: boolean;
-}) {
+export function wordsLeft(words: readonly number[], at: number, read: number): number {
+  let left = Math.round((words[at] ?? 0) * Math.min(1, Math.max(0, 1 - read)));
+  for (let i = at + 1; i < words.length; i++) left += words[i] ?? 0;
+  return left;
+}
+
+/** "Chapter 10 of 14 · 10 min left", once the chapter's title has gone up. */
+function RunningLine({ head, words }: { head: SectionHead; words: readonly number[] }) {
   const { t } = useTranslate();
-  const numbers = numbersOf(sections);
-  const width = numbers ? `${Math.max(2, ...numbers.map((x) => x.length))}ch` : undefined;
+  const { count } = usePartWords();
+  const [show, setShow] = useState(false);
+  const [minutes, setMinutes] = useState<number | null>(null);
+  const [seen, setSeen] = useState(head.n);
+  if (seen !== head.n) {
+    setSeen(head.n);
+    setShow(false);
+    setMinutes(null);
+  }
+
+  useEffect(() => {
+    const title = document.getElementById(WORK_HEAD_ID);
+    if (!title || typeof IntersectionObserver === "undefined") return;
+    const io = new IntersectionObserver(([e]) => setShow(e.boundingClientRect.bottom < 0), { threshold: 0 });
+    io.observe(title);
+    return () => io.disconnect();
+  }, [head.n]);
+
+  useEffect(() => {
+    let raf = 0;
+    const settle = () => {
+      raf = 0;
+      const rows = document.querySelectorAll<HTMLElement>(PLACE_ROWS);
+      if (!rows.length) return;
+      const line = placeIn(visibleBand(), KEPT_AT);
+      const at = blockAt(rows.length, (i) => rows[i].getBoundingClientRect().top, line);
+      const place = parsePlace(rows[at].getAttribute("data-place"));
+      if (!place) return;
+      const r = rows[at].getBoundingClientRect();
+      const left = wordsLeft(words, place.paragraph, r.height > 0 ? (line - r.top) / r.height : 0);
+      // Under a minute's reading left says nothing worth a line.
+      setMinutes(left >= WORDS_PER_MINUTE ? Math.round(left / WORDS_PER_MINUTE) : null);
+    };
+    const onScroll = () => {
+      if (!raf) raf = requestAnimationFrame(settle);
+    };
+    raf = requestAnimationFrame(settle);
+    window.addEventListener("scroll", onScroll, { passive: true });
+    window.addEventListener("resize", onScroll);
+    return () => {
+      cancelAnimationFrame(raf);
+      window.removeEventListener("scroll", onScroll);
+      window.removeEventListener("resize", onScroll);
+    };
+  }, [head.n, words]);
+
+  const where = count(head);
+  const text = [where, minutes ? t("bible.minLeft", { min: minutes }) : null].filter(Boolean).join(" · ");
   return (
-    <Sheet open={open} onClose={onClose} title={t("saints.contents")} desktop={desktop}>
-      <ol className="grid grid-cols-1 gap-y-1 font-sans text-ui">
-        {sections.map((s, i) => {
-          const active = s.n === current;
-          return (
-            <li key={s.n}>
-              <button
-                type="button"
-                aria-current={active ? "true" : undefined}
-                onClick={() => {
-                  onClose();
-                  onJump(s.n);
-                }}
-                className={
-                  "w-full text-left flex items-baseline gap-3 py-2.5 px-2 rounded-md " +
-                  (active ? "font-semibold text-paper" : "text-paper/75 hover:bg-paper/[0.04]")
-                }
-              >
-                {numbers ? (
-                  <span
-                    className={"tabular-nums shrink-0 text-right font-semibold " + (active ? "text-paper" : "text-paper/40")}
-                    style={{ minWidth: width }}
-                  >
-                    {numbers[i]}
-                  </span>
-                ) : null}
-                <span className="flex-1 min-w-0 truncate">{s.title}</span>
-              </button>
-            </li>
-          );
-        })}
-      </ol>
-    </Sheet>
+    <span
+      aria-hidden
+      data-running-line=""
+      className={cn(
+        "grid max-w-full motion-safe:transition-[grid-template-rows,opacity] motion-safe:duration-300 motion-safe:ease-house",
+        show && text ? "grid-rows-[1fr] opacity-100" : "grid-rows-[0fr] opacity-0",
+      )}
+    >
+      <span className="max-w-full justify-self-center truncate rounded-pill bg-night px-2.5 py-0.5 font-sans text-eyebrow font-medium leading-[1.35] tabular-nums text-paper/60">
+        {text}
+      </span>
+    </span>
   );
 }

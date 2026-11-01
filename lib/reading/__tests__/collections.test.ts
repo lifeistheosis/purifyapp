@@ -140,9 +140,9 @@ describe("a passage of the Fathers", () => {
     for (const { p } of fathers) {
       expect(passageHref(p)).toBe(`/saints/${p.saint}/${p.work}#p-${p.section}-${p.paragraph}`);
     }
-    // The reader answers that address: it opens the section and scrolls to
-    // the paragraph (components/saints/WritingReader.tsx, ParagraphRow).
-    const reader = fs.readFileSync(path.join(ROOT, "components/saints/WritingReader.tsx"), "utf8");
+    // The reader answers that address: it opens the chapter and lands on
+    // the paragraph (lib/reader/position.ts, placeOfHash; ParagraphRow).
+    const reader = fs.readFileSync(path.join(ROOT, "lib/reader/position.ts"), "utf8");
     expect(reader).toContain("p-(\\d+)-(\\d+)");
     expect(fs.readFileSync(path.join(ROOT, "components/saints/ParagraphRow.tsx"), "utf8")).toContain("id={`p-${sectionN}-${paragraphIdx}`}");
   });

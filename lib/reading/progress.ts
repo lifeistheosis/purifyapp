@@ -2,16 +2,18 @@
 
 import { useSyncExternalStore } from "react";
 
+import type { SectionHead } from "@/lib/saints/parts";
+
 /**
  * How far a reader is in each work (1.7, the reading room's Continue row and
- * a book page's Continue button). The reader writes it as the page scrolls
- * (components/saints/WritingReader.tsx, beside the resume position of
- * lib/reader/position.ts, which keeps its own seven-day life for the silent
- * resume): the section in view, its place among the work's sections, and
- * whether the last one has been reached.
+ * a book page's Continue button). The reader writes it as the reader reads
+ * (components/saints/useWorkPlace.ts, with the place lib/reader/position.ts
+ * keeps to the paragraph, with no expiry, since 1.8's round 6): the section
+ * being read, its place among the work's sections, its name as the reader
+ * says it, and whether the last one has been reached.
  *
  * Storage, per device, like the reading history (lib/reading/history.ts):
- *   purify:reading-progress = { "<saint>/<work>": { n, i, of, at, done? } }
+ *   purify:reading-progress = { "<saint>/<work>": { n, i, of, at, done?, pill? } }
  * No expiry: a book half read in March is still half read in May. The
  * oldest are let go past CAP.
  */
@@ -27,6 +29,12 @@ export type Progress = {
   at: number;
   /** The last section was reached. */
   done?: true;
+  /**
+   * The chapter's name as the reader says it (1.8, r3-29 A: one name for the
+   * parts everywhere), "Conference 10 · 10", for the Continue rows. None
+   * for a reading kept before it, which says "Section 3 of 12".
+   */
+  pill?: SectionHead["pill"];
 };
 
 const STORAGE_KEY = "purify:reading-progress";
@@ -47,12 +55,12 @@ function parse(raw: string | null): Store {
 }
 
 /** The next store after a reading: pure, so the test can hold it. */
-export function withProgress(store: Store, key: string, at: { n: number; i: number; of: number }, now: number): Store {
+export function withProgress(store: Store, key: string, at: { n: number; i: number; of: number; pill?: SectionHead["pill"] }, now: number): Store {
   if (!Number.isFinite(at.i) || !Number.isFinite(at.of) || at.of < 1 || at.i < 0) return store;
   const done = at.i >= at.of - 1;
   const prev = store[key];
   // A book once finished stays finished when its reader looks back into it.
-  const next: Progress = { n: at.n, i: Math.min(at.i, at.of - 1), of: at.of, at: now, ...(done || prev?.done ? { done: true as const } : {}) };
+  const next: Progress = { n: at.n, i: Math.min(at.i, at.of - 1), of: at.of, at: now, ...(done || prev?.done ? { done: true as const } : {}), ...(at.pill ? { pill: at.pill } : {}) };
   const entries = Object.entries({ ...store, [key]: next }).sort((a, b) => b[1].at - a[1].at);
   return Object.fromEntries(entries.slice(0, CAP));
 }
@@ -108,7 +116,7 @@ export function moveProgress(
   }
 }
 
-export function recordProgress(key: string, at: { n: number; i: number; of: number }) {
+export function recordProgress(key: string, at: { n: number; i: number; of: number; pill?: SectionHead["pill"] }) {
   if (typeof window === "undefined") return;
   try {
     const next = withProgress(parse(window.localStorage.getItem(STORAGE_KEY)), key, at, Date.now());

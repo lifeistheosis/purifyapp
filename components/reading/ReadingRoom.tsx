@@ -16,7 +16,8 @@ import { avifFor } from "@/lib/media/streamed";
 import { useSpace } from "@/lib/onboarding/useSpace";
 import { ERA_IDS, LENGTH_IDS, THEME_IDS, TRADITION_IDS, partKey, themeKey, traditionKey } from "@/lib/reading/catalog";
 import { useReadingHistory } from "@/lib/reading/history";
-import { useReadingProgress } from "@/lib/reading/progress";
+import { useReadingProgress, type Progress } from "@/lib/reading/progress";
+import { usePartWords } from "@/components/saints/partWords";
 import { readingSeason } from "@/lib/reading/seasons";
 import {
   beginRow,
@@ -131,6 +132,7 @@ function warm(cover: Card["cover"], first = false) {
  */
 export function ReadingRoom({ room, library }: { room: Room; library: LibraryLink[] }) {
   const { t } = useTranslate();
+  const { sayPill } = usePartWords();
   const mounted = useMounted();
   const today = useToday();
   const [style] = useCalendarStyleDefault();
@@ -217,14 +219,14 @@ export function ReadingRoom({ room, library }: { room: Room; library: LibraryLin
   // What the reader is in the middle of: works opened, not finished, newest first.
   const continuing = useMemo(() => {
     if (!mounted) return [];
-    const out: { card: Card; at?: number; of?: number; n?: number }[] = [];
+    const out: { card: Card; at?: number; of?: number; n?: number; pill?: Progress["pill"] }[] = [];
     for (const e of history) {
       if (e.kind !== "work") continue;
       const key = keyOf(e.href);
       const card = cardOf(key);
       const p = progress[key];
       if (!card || p?.done || out.some((o) => o.card.key === card.key)) continue;
-      out.push({ card, at: p?.i, of: p?.of, n: p?.n });
+      out.push({ card, at: p?.i, of: p?.of, n: p?.n, pill: p?.pill });
       if (out.length >= 10) break;
     }
     return out;
@@ -333,12 +335,13 @@ export function ReadingRoom({ room, library }: { room: Room; library: LibraryLin
 
               {continuing.length ? (
                 <CoverRow id="continue" title={t("reading.continue")} eager>
-                  {continuing.map(({ card, at, of, n }) => (
+                  {continuing.map(({ card, at, of, n, pill }) => (
                     <CoverTile
                       key={card.key}
                       card={card}
                       href={n !== undefined ? `${cardHref(card)}#s${n}` : cardHref(card)}
-                      meta={at !== undefined && of ? t("saints.sectionOf", { n: at + 1, total: of }) : cardMeta(card, t)}
+                      // The chapter by the work's own name (r3-29 A); a reading kept before it by its place.
+                      meta={pill ? sayPill(pill) : at !== undefined && of ? t("saints.sectionOf", { n: at + 1, total: of }) : cardMeta(card, t)}
                       progress={at !== undefined && of ? (at + 1) / of : undefined}
                     />
                   ))}

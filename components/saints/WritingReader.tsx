@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import type { WritingContent, Section } from "@/lib/saints/load";
 import type { Saint } from "@/lib/saints/saints";
 import {
@@ -8,7 +8,6 @@ import {
   divisionsOf,
   findAt,
   parseAt,
-  sectionLabel,
   shownMarks,
   placeWords,
   synopsisChapter,
@@ -19,43 +18,60 @@ import {
 import { moveLegacyAnnotations } from "@/lib/saints/layoutMoves";
 import { carryMovedPlaces } from "@/lib/saints/carryMoves";
 import { movesInto, movesOutOf } from "@/lib/saints/workMoves";
+import { partsOf, neighbours, type SectionHead } from "@/lib/saints/parts";
 import { placeOf } from "@/lib/citations/cite";
 import { ParagraphRow } from "./ParagraphRow";
 import { VoiceBand } from "./VoiceBand";
-import { SectionBookmarkButton } from "./SectionBookmarkButton";
 import { MobileWorkPill } from "./MobileWorkPill";
+import { WorkHead } from "./WorkHead";
+import { WorkContents } from "./WorkContents";
+import { KeepReading } from "./KeepReading";
+import { usePartWords } from "./partWords";
+import { chapterOf, useChapterTarget, useGoToChapter, useKeepPlace, useLanding } from "./useWorkPlace";
 import { FONT_CLASSES, SIZE_CLASSES, useReaderPrefs } from "@/components/reader/ReaderPrefs";
-import {
-  arrivalPlace,
-  clearPosition,
-  loadPosition,
-  placeOfHash,
-  savePosition,
-  type WorkPlace,
-} from "@/lib/reader/position";
-import { elementOfPlace, paragraphAtReadingPlace } from "@/lib/saints/paragraphInView";
-import { goToReadingPlace } from "@/lib/ui/readingPlace";
-import { watchOwnScroll } from "@/lib/ui/ownScroll";
+import { BookHeader } from "@/components/reading/BookHeader";
+import { MoreLikeThis } from "@/components/reading/MoreLikeThis";
+import { Sheet } from "@/components/ui/Sheet";
+import { ChevronLeft } from "@/components/ui/icons/ChevronLeft";
+import { WORK_ABOUT_EVENT, WORK_CONTENTS_EVENT, setWorkNow } from "@/lib/saints/workNow";
+import { useScrollAway } from "@/lib/ui/scrollAway";
 import { useTranslate } from "@/components/i18n/MessagesProvider";
 import { unitFor } from "@/lib/desktop/presenceModes";
-import { inputSince, watchInput } from "@/lib/ui/lastInput";
-import { ChevronDown } from "@/components/ui/icons/ChevronDown";
-import { ChaptersList } from "@/components/reading/ChaptersList";
-import { recordProgress } from "@/lib/reading/progress";
-import { readsAsChapters } from "@/lib/saints/readsAsChapters";
+import type { TileCard } from "@/lib/reading/select";
 
-// Long works render as an accordion: each section's body (and its
-// per-paragraph annotation components) mounts only when the section is
-// expanded. This keeps very long works, e.g. Chrysostom's 88 Homilies on
-// John or the Confessions' thirteen books, from mounting thousands of
-// paragraph components at once (lib/saints/readsAsChapters.ts says which).
-// Shorter works render continuously (all sections expanded), unchanged.
+/** What About this book shows: the book's page, as the page draws it on a computer. */
+export type AboutBook = { header: React.ComponentProps<typeof BookHeader>; key: string; like: TileCard[] };
 
+/**
+ * The reader of a Father's work (1.8, round 6, the owner's pick A of r3-29,
+ * "As the Bible reads", his note 79): each chapter as the Bible's page.
+ *
+ * Build 86 drew a long work as an accordion, every chapter a box with its
+ * number, its title in bold sans, a chevron and a star in a ring, the words
+ * inside it; "All 603 chapters" at the top, "Section 1 of 603" on a pill
+ * over the words. Now one chapter is drawn at a time, as its own page, in
+ * the work's own page: the head as the Bible's (WorkHead: "Conference 1",
+ * "Chapter 1" and its chevron, the chapter's own title in italic, the rule),
+ * the words with no box round them, and the next chapter waiting under the
+ * last line (KeepReading). The Bible's pill turns the chapters (MobileWorkPill),
+ * its books sheet is the contents (WorkContents), and ••• holds the settings,
+ * the bookmark, About this book and the search (MobileWorkActions). The round
+ * buttons, the pill and the tab bar step away while the reader reads on
+ * (lib/ui/scrollAway.ts). The parts have one name everywhere, the work's own
+ * (lib/saints/parts.ts). Chapters stay inside the work's page: the works'
+ * 4,739 parts as pages would not fit the apps' 240 MB.
+ *
+ * Which chapter: the address's (#sN, #p-N-I, #at-1.1.1), else the kept place
+ * (lib/reader/position.ts), else the first. A return lands on the paragraph
+ * the reader stopped at and the rest of the chapter steps back for a moment,
+ * as a verse lands (globals.css, data-place-focus), on the motion switch.
+ */
 export function WritingReader({
  saint,
  content,
  openedAt,
  author,
+ about,
 }: {
  saint: Saint;
  content: WritingContent;
@@ -72,263 +88,83 @@ export function WritingReader({
   * cited by its title alone; the saint's name when it is not given.
   */
  author?: string | null;
+ /** The book's page, for About this book; none where the work has none. */
+ about?: AboutBook | null;
 }) {
-  const { t } = useTranslate();
- const isLong = readsAsChapters(content.sections);
- const [open, setOpen] = useState<Set<number>>(() => new Set());
- // Shared reader prefs, same provider as the Bible reader, so a font
- // and size chosen in Scripture carry over to the Fathers.
+ const { t } = useTranslate();
  const { size, font } = useReaderPrefs();
+ const { pill } = usePartWords();
+ const key = `${saint.slug}/${content.slug}`;
+ // The round buttons over the page, the pill and the tab bar step away while
+ // the reader reads on, and come back on a scroll up.
+ useScrollAway();
 
- // The edition's own divisions laid over the text (1.8,
- // lib/saints/divisions.ts): how each paragraph is cited and opened, the
- // numbers shown quietly where the text prints none, and the section's
- // number as the edition prints it.
- const divisions = useMemo(() => divisionsOf(`${saint.slug}/${content.slug}`, content), [saint.slug, content]);
+ // The edition's own divisions laid over the text (1.8, lib/saints/
+ // divisions.ts), and the parts' names read from them (lib/saints/parts.ts).
+ const divisions = useMemo(() => divisionsOf(key, content), [key, content]);
+ const { heads, contents } = useMemo(() => partsOf(content.sections, divisions, content.title), [content.sections, divisions, content.title]);
 
  // Highlights and notes kept under a work's old layout follow their
- // paragraphs to where they stand now (lib/saints/layoutMoves.ts).
+ // paragraphs to where they stand now (lib/saints/layoutMoves.ts), and what
+ // was kept under the address of a part that has left this work, or come
+ // into it, follows it there (lib/saints/workMoves.ts).
  useEffect(() => {
  moveLegacyAnnotations(saint.slug, content.slug);
- // And what was kept under the address of a part that has left this work,
- // or come into it, follows it there (lib/saints/workMoves.ts).
  if (movesOutOf(saint.slug, content.slug).length || movesInto(saint.slug, content.slug).length) carryMovedPlaces();
  }, [saint.slug, content.slug]);
 
- // ── The reader's place (1.8, round 6, the owner's note 79) ────────────────
- // Kept to the paragraph, with no expiry, the way the Bible keeps its verse
- // since note 68 (lib/reader/position.ts, arrivalPlace): as the work opens,
- // at the place its address lands on, or where the reader had it, or at its
- // beginning; after that only the reader's own scroll moves it (lib/ui/
- // ownScroll.ts), and it is the paragraph over the reading line
- // (lib/saints/paragraphInView.ts). Until then only the chapter was kept,
- // for seven days, and every scroll wrote it, a landing's own among them.
- //
- // `saved` is the place as the work opened, read once, before the arrival is
- // written over it: an address naming the chapter the reader is in (the
- // book's Continue, the reading room's row) lands on their paragraph.
- const saved = useRef<WorkPlace | null | undefined>(undefined);
- // Read once, by the first effect that asks (never while rendering).
- function savedPlace(): WorkPlace | null {
- if (saved.current === undefined) {
- const pos = loadPosition(saint.slug, content.slug);
- saved.current = pos ? { sectionN: pos.sectionN, paragraph: pos.paragraph } : null;
- }
- return saved.current;
- }
+ // ── Which chapter (components/saints/useWorkPlace.ts) ─────────────────────
+ const target = useChapterTarget(saint.slug, content.slug);
+ const at = useMemo(
+ () =>
+ chapterOf(target, content.sections, (place) => {
+ const path = parseAt(place);
+ return divisions && path ? findAt(divisions, content, path) : null;
+ }),
+ [target, content, divisions],
+ );
+ const sec = content.sections.find((s) => s.n === at.n) ?? content.sections[0];
+ const head = heads.find((h) => h.n === sec.n) ?? heads[0];
+ const { prev, next } = neighbours(heads, sec.n);
+ const words = useMemo(() => sec.paragraphs.map((p) => (p.trim() ? p.trim().split(/\s+/).length : 0)), [sec]);
 
- // A section a place stands in, opened when the work reads as chapters.
- function openSection(n: number) {
- if (!isLong) return;
- setOpen((prev) => {
- if (prev.has(n)) return prev;
- const next = new Set(prev);
- next.add(n);
- return next;
- });
- }
+ const go = useGoToChapter();
 
- // Open the place the URL hash names, on load and on change, and stand it at
- // the reading place: a section (#sN, at the reader's paragraph if their
- // place is in it), or one paragraph of it (#p-N-I, 1.8: a passage in a
- // Purify collection opens where it stands, lib/reading/collections.ts), or a
- // place by the edition's own numbers (#at-1.1.1, 1.8: the Confessions, Book
- // I, chapter 1, section 1). A long work opens the section first. A short one
- // is open already, but in the apps its text lands after the page has
- // opened, so the browser never scrolled to the place: this does.
+ // The chapter on the screen, for the ••• sheet over the page (lib/saints/workNow.ts).
  useEffect(() => {
- function openFromHash() {
- const m = window.location.hash.match(/^#(?:s(\d+)|p-(\d+)-(\d+)|at-(\d+(?:\.\d+)*))$/);
- if (!m) return;
- let place: WorkPlace;
- if (m[4]) {
- const path = parseAt(m[4]);
- const found = divisions && path ? findAt(divisions, content, path) : null;
- if (!found) return;
- place = { sectionN: found.n, paragraph: found.i };
- } else {
- const landing = placeOfHash(window.location.hash);
- const arrival = landing ? arrivalPlace(savedPlace(), landing) : null;
- if (!arrival) return;
- place = arrival;
- }
- openSection(place.sectionN);
- // Kept at once: the glide to it is not the reader's scroll.
- savePosition(saint.slug, content.slug, place.sectionN, place.paragraph);
- saved.current = place;
- // Defer the scroll until the section body has mounted: a paragraph of a
- // section just opened is in the page a frame or two later.
- const land = (tries: number) => {
- const el = elementOfPlace(place);
- if (el && (place.paragraph === 0 || el.id !== `s${place.sectionN}` || tries === 0)) goToReadingPlace(el, { smooth: false });
- else if (tries > 0) requestAnimationFrame(() => land(tries - 1));
- };
- requestAnimationFrame(() => land(8));
- }
- openFromHash();
- window.addEventListener("hashchange", openFromHash);
- return () => window.removeEventListener("hashchange", openFromHash);
- // `saved` is a ref, and `openSection` reads only `isLong`.
- // eslint-disable-next-line react-hooks/exhaustive-deps
- }, [isLong, divisions, content, saint.slug]);
+ setWorkNow({ saintSlug: saint.slug, saintName: saint.name, workSlug: content.slug, workTitle: content.title, sectionN: sec.n, sectionTitle: sec.title, label: pill(head) });
+ }, [saint.slug, saint.name, content.slug, content.title, sec.n, sec.title, head, pill]);
+ useEffect(() => () => setWorkNow(null), []);
 
- // Back where the reader stopped: on opening the work with no address, its
- // section is opened and the paragraph stood at the reading place, silently,
- // no toast, no modal. If the URL has a hash, that wins (above).
- //
- // The setOpen call is deferred via a 0-delay timer so it happens outside
- // the effect body proper, matching the project's set-state-in-effect
- // discipline (see InstallPrompt.tsx for the same pattern).
- const positionRestoredRef = useRef(false);
+ // ── The sheets ─────────────────────────────────────────────────────────
+ const [sheet, setSheet] = useState<"contents" | "about" | null>(null);
  useEffect(() => {
- if (positionRestoredRef.current) return;
- positionRestoredRef.current = true;
- if (typeof window === "undefined") return;
- if (window.location.hash) return; // hash overrides resume
- // A reader who has already started on their own is left where they are:
- // in the apps the text lands a moment after the page opens, and taking
- // them to the saved place then was a jump in the middle of their swipe
- // (lib/ui/lastInput.ts).
- watchInput();
- const opened = openedAt ?? performance.now();
- if (inputSince(opened)) return;
- const pos = savedPlace();
- if (!pos || !content.sections.some((x) => x.n === pos.sectionN)) return;
- const openTimer = isLong
- ? setTimeout(() => {
- if (inputSince(opened)) return;
- openSection(pos.sectionN);
- }, 0)
- : null;
- // Defer the landing so the section body has time to mount in long-work mode.
- const r1 = requestAnimationFrame(() => {
- requestAnimationFrame(() => {
- // And again at the last moment: a thumb that lands between the text
- // arriving and this frame wins.
- if (inputSince(opened)) return;
- const el = elementOfPlace(pos);
- if (el) goToReadingPlace(el, { smooth: false });
- });
- });
+ const contentsOpen = () => setSheet("contents");
+ const aboutOpen = () => setSheet("about");
+ window.addEventListener(WORK_CONTENTS_EVENT, contentsOpen);
+ window.addEventListener(WORK_ABOUT_EVENT, aboutOpen);
  return () => {
- if (openTimer) clearTimeout(openTimer);
- cancelAnimationFrame(r1);
+ window.removeEventListener(WORK_CONTENTS_EVENT, contentsOpen);
+ window.removeEventListener(WORK_ABOUT_EVENT, aboutOpen);
  };
- // `saved` is a ref, read once; `openSection` reads only `isLong`.
- // eslint-disable-next-line react-hooks/exhaustive-deps
- }, [saint.slug, content.slug, content.sections, isLong, openedAt]);
+ }, []);
+ // A chapter opened from inside a sheet (the book's Continue) closes it.
+ const [sheetFor, setSheetFor] = useState(target);
+ if (sheetFor !== target) {
+ setSheetFor(target);
+ if (sheet) setSheet(null);
+ }
 
- // Keep the place as the reader reads: the paragraph over the reading line,
- // written only for the reader's own scroll (a finger and its fling, a
- // wheel, a key, the scroll bar), at most once each 750ms, and the last one
- // never lost (it lands on a timer, as the page is hidden, or as the work
- // goes). Read past the end of the work's last paragraph and the place is let
- // go, so the next visit starts at the beginning. The reading room's
- // progress (lib/reading/progress.ts) is written with it: the chapter, its
- // place among the work's, and a finished book kept finished.
- useEffect(() => {
- if (typeof window === "undefined") return;
- const key = `${saint.slug}/${content.slug}`;
- const of = content.sections.length;
- let lastWrite = 0;
- let pending: WorkPlace | null = null;
- let timer: ReturnType<typeof setTimeout> | null = null;
- let frame = 0;
- let own = false;
- let written = "";
+ // ── Landing, and the place kept (components/saints/useWorkPlace.ts) ─────
+ // A return lands on the paragraph the reader stopped at, the rest of the
+ // chapter stepping back for a moment; the reader's own scroll keeps it,
+ // with the reading room's progress.
+ useLanding(saint.slug, content.slug, target, at, openedAt);
+ const pillOf = useCallback((n: number) => heads.find((h) => h.n === n)?.pill, [heads]);
+ useKeepPlace(saint.slug, content.slug, content.sections, key, pillOf);
 
- function write(p: WorkPlace) {
- lastWrite = Date.now();
- pending = null;
- written = `${p.sectionN}:${p.paragraph}`;
- savePosition(saint.slug, content.slug, p.sectionN, p.paragraph);
- saved.current = p;
- const i = content.sections.findIndex((x) => x.n === p.sectionN);
- if (i >= 0) recordProgress(key, { n: p.sectionN, i, of });
- }
- function persist(p: WorkPlace) {
- if (`${p.sectionN}:${p.paragraph}` === written && pending === null) return;
- pending = p;
- if (Date.now() - lastWrite >= 750) write(p);
- else if (!timer) {
- timer = setTimeout(() => {
- timer = null;
- if (pending) write(pending);
- }, 750);
- }
- }
- function flush() {
- if (timer) {
- clearTimeout(timer);
- timer = null;
- }
- if (pending) write(pending);
- }
- function onFrame() {
- frame = 0;
- if (!own) return;
- own = false;
- const at = paragraphAtReadingPlace();
- if (!at) return;
- if (at.past) {
- // Finished: the next visit starts at the beginning, and the book is read.
- if (timer) clearTimeout(timer);
- timer = null;
- pending = null;
- written = "past";
- clearPosition(saint.slug, content.slug);
- saved.current = null;
- const last = content.sections[of - 1];
- if (last) recordProgress(key, { n: last.n, i: of - 1, of });
- return;
- }
- persist({ sectionN: at.sectionN, paragraph: at.paragraph });
- }
- function onScroll(isOwn: boolean) {
- if (isOwn) own = true;
- if (!frame) frame = requestAnimationFrame(onFrame);
- }
- function onHide() {
- if (document.visibilityState === "hidden") flush();
- }
- const stop = watchOwnScroll(onScroll);
- window.addEventListener("pagehide", flush);
- document.addEventListener("visibilitychange", onHide);
- return () => {
- stop();
- cancelAnimationFrame(frame);
- window.removeEventListener("pagehide", flush);
- document.removeEventListener("visibilitychange", onHide);
- // The reader's last place, if its write was still waiting.
- flush();
- };
- }, [saint.slug, content.slug, content.sections]);
-
- // The section's number as the edition prints it ("8.21", "I"), where the
- // work keeps its divisions; nothing for a section it does not number (a
- // salutation, an editor's note); else the file's own count, as before.
- function numberOf(n: number): string {
- if (!divisions) return String(n).padStart(2, "0");
- return sectionLabel(divisions, content, n) ?? "";
- }
- // The sections as the chapters, the pill and the contents list them, each
- // with its number as the edition prints it, not the file's own (the
- // Confessions' Book II is its section 102; lib/reading/contentsNumbers.ts).
- const navSections = content.sections.map((s) => ({
- n: s.n,
- title: s.title,
- label: divisions ? (sectionLabel(divisions, content, s.n) ?? "") : String(s.n),
- }));
  const cites: Cites = { divisions, author: author === undefined ? saint.name : author };
-
- function toggle(n: number) {
- setOpen((prev) => {
- const next = new Set(prev);
- if (next.has(n)) next.delete(n);
- else next.add(n);
- return next;
- });
- }
+ const many = content.sections.length > 1;
 
  return (
  <article
@@ -338,174 +174,86 @@ export function WritingReader({
  data-presence-author={saint.name}
  data-presence-sections={content.sections.length}
  data-presence-unit={unitFor(content.sections[0]?.title)}
+ data-work-reader=""
  className={`pb-24 safe-pb-reader ${FONT_CLASSES[font]} ${SIZE_CLASSES[size]}`}
  >
- {/* The title, the author, the way back and Start reading are the book's
- header, above the reader (components/reading/BookHeader.tsx), written with
- the page so the apps show it before this text has been read. Here are the
- chapters, on every screen, then the text. */}
- <ChaptersList
- sections={navSections}
- accordion={isLong}
- />
-
- <div className={isLong ? "py-6 space-y-3" : "py-10 space-y-16"}>
- {content.sections.map((sec) => {
- const expanded = !isLong || open.has(sec.n);
- if (isLong) {
- return (
- <section
- key={sec.n}
- id={`s${sec.n}`}
- // A closed section is a place by its top (lib/saints/paragraphInView.ts).
- data-place={expanded ? undefined : `${sec.n}:0`}
- className="scroll-mt-24 rounded-md border border-paper/10 bg-paper/[0.02] overflow-hidden"
- >
- <button
- type="button"
- onClick={() => toggle(sec.n)}
- aria-expanded={expanded}
- className="w-full flex items-center gap-4 px-5 py-4 text-left hover:bg-paper/[0.04] motion-safe:transition-colors"
- >
- <span className="font-sans text-caption font-semibold text-paper/40 tabular-nums">
- {numberOf(sec.n)}
- </span>
- <span className="flex-1 min-w-0 font-sans text-body md:text-lede font-semibold text-paper tracking-[-0.01em]">
- {sec.title}
- </span>
- <span
- aria-hidden
- className={
- "shrink-0 text-paper/40 text-caption motion-safe:transition-transform motion-safe:duration-200 " +
- (expanded ? "rotate-180" : "")
- }
- >
- <ChevronDown size={14} className="block" />
- </span>
- </button>
- {expanded && (
- <div className="px-5 pb-7 pt-1">
- <SectionBody saint={saint} content={content} sec={sec} cites={cites} />
- </div>
- )}
- </section>
- );
- }
- return (
- <section
- key={sec.n}
- id={`s${sec.n}`}
- aria-labelledby={`s-${sec.n}`}
- className="scroll-mt-24 grid grid-cols-1 lg:grid-cols-[minmax(0,680px)_minmax(0,1fr)] gap-x-12 gap-y-8"
- >
- <div className="min-w-0">
- <div className="mb-6 flex items-baseline gap-4">
- <span className="font-sans text-caption font-semibold text-paper/40 tabular-nums">
- {numberOf(sec.n)}
- </span>
- <h2
- id={`s-${sec.n}`}
- className="font-sans text-title-sm md:text-title font-semibold text-paper tracking-[-0.01em] flex-1 min-w-0"
- >
- {sec.title}
- </h2>
- <SectionBookmarkButton
- saintSlug={saint.slug}
- saintName={saint.name}
- workSlug={content.slug}
- workTitle={content.title}
- sectionN={sec.n}
- sectionTitle={sec.title}
- />
- </div>
+ {/* One chapter, as its own page: keyed by its number, so the page opens
+ again as the Bible's chapter does (globals.css, "The page"). */}
+ <section key={sec.n} id={`s${sec.n}`} data-chapter={sec.n} className="mx-auto w-full max-w-[680px] scroll-mt-24">
+ <WorkHead head={head} />
+ <div className="page-open-after">
  <SectionParagraphs saint={saint} content={content} sec={sec} cites={cites} />
  </div>
-
  {sec.notes?.length ? (
- <aside
- aria-label={t("saints.notesOn", { title: sec.title })}
- className="lg:pt-1 lg:border-l lg:border-paper/10 lg:pl-8"
- >
- <p className="font-sans text-caption font-semibold text-paper/45 mb-4">
- {t("saints.notes")}
- </p>
+ <aside aria-label={t("saints.notesOn", { title: sec.title })} className="mt-10 border-t border-paper/10 pt-6">
+ <p className="mb-4 font-sans text-caption font-semibold text-paper/45">{t("saints.notes")}</p>
  <ul className="space-y-4">
  {sec.notes.map((note, i) => (
- <li
- key={i}
- className="font-sans text-ui text-paper/70 leading-[1.55]"
- >
+ <li key={i} className="font-sans text-ui leading-[1.55] text-paper/70">
  {note}
  </li>
  ))}
  </ul>
  </aside>
  ) : null}
- </section>
- );
- })}
- </div>
 
- <footer id="source" className="max-w-[680px] scroll-mt-24 pt-8 border-t border-paper/8">
+ {/* A computer turns the chapter here; a phone has the pill. */}
+ {many ? <Pager prev={prev} next={next} onGo={go} /> : null}
+
+ <KeepReading next={next} onGo={go} />
+ </section>
+
+ <footer id="source" className="mx-auto max-w-[680px] scroll-mt-24 border-t border-paper/8 pt-8">
  <p className="font-sans text-caption text-paper/40">
  {t("prayers.reader.sourceLabel")} {content.source}
  </p>
  </footer>
 
- {/* Mobile floating section switcher, sits above the bottom tab
- bar and exposes the full TOC behind a tap. Hidden on md+. */}
- <MobileWorkPill
- sections={navSections}
+ <MobileWorkPill head={head} prev={prev} next={next} onGo={go} words={words} />
+ <WorkContents
+ open={sheet === "contents"}
+ onClose={() => setSheet(null)}
+ title={content.title}
+ entries={contents}
+ heads={heads}
+ current={sec.n}
+ onGo={go}
+ onAbout={about ? () => setSheet("about") : undefined}
  />
+ {about ? (
+ <Sheet open={sheet === "about"} onClose={() => setSheet(null)} title={t("bible.aboutThisBook")} openFull desktop>
+ <div data-about-sheet="">
+ <BookHeader {...about.header} heading="h2" />
+ <MoreLikeThis workKey={about.key} cards={about.like} />
+ </div>
+ </Sheet>
+ ) : null}
  </article>
  );
 }
 
-// Section body for the accordion (long-work) layout: framing, citation,
-// paragraphs, and notes stacked. Only mounted when the section is expanded.
-function SectionBody({
- saint,
- content,
- sec,
- cites,
-}: {
- saint: Saint;
- content: WritingContent;
- sec: Section;
- cites: Cites;
-}) {
-  const { t } = useTranslate();
+/** The chapter before and after, at the foot of the words on a computer. */
+function Pager({ prev, next, onGo }: { prev: SectionHead | null; next: SectionHead | null; onGo: (n: number) => void }) {
+ const { t } = useTranslate();
+ const { pill } = usePartWords();
+ const side = "inline-flex min-h-11 max-w-[48%] items-center gap-1.5 rounded-pill border border-paper/15 px-4 font-sans text-detail font-semibold text-paper/80 hover:border-paper/35 hover:text-paper";
  return (
- <>
- <div className="flex items-center justify-end mb-2">
- <SectionBookmarkButton
- saintSlug={saint.slug}
- saintName={saint.name}
- workSlug={content.slug}
- workTitle={content.title}
- sectionN={sec.n}
- sectionTitle={sec.title}
- />
- </div>
- <SectionParagraphs saint={saint} content={content} sec={sec} cites={cites} />
- {sec.notes?.length ? (
- <div className="mt-6 pt-5 border-t border-paper/10">
- <p className="font-sans text-caption font-semibold text-paper/45 mb-3">
- {t("saints.notes")}
- </p>
- <ul className="space-y-3">
- {sec.notes.map((note, i) => (
- <li
- key={i}
- className="font-sans text-ui text-paper/70 leading-[1.55]"
- >
- {note}
- </li>
- ))}
- </ul>
- </div>
+ <nav aria-label={t("bible.chapterSwitcher")} data-work-pager="" className="mt-12 hidden items-center justify-between gap-3 md:flex native-md-hidden" data-reader-chrome>
+ {prev ? (
+ <button type="button" onClick={() => onGo(prev.n)} className={side}>
+ <ChevronLeft size={16} className="shrink-0 rtl:-scale-x-100" />
+ <span className="truncate">{pill(prev)}</span>
+ </button>
+ ) : (
+ <span />
+ )}
+ {next ? (
+ <button type="button" onClick={() => onGo(next.n)} className={side}>
+ <span className="truncate">{pill(next)}</span>
+ <ChevronLeft size={16} className="shrink-0 -scale-x-100 rtl:scale-x-100" />
+ </button>
  ) : null}
- </>
+ </nav>
  );
 }
 

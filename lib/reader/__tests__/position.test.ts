@@ -133,11 +133,14 @@ describe("leave at a paragraph, come back to the same paragraph", () => {
   });
 
   it("is written by the reader's own scroll only, never by a page that moves by itself", () => {
-    const reader = code("components/saints/WritingReader.tsx");
-    expect(reader).toContain("watchOwnScroll(onScroll)");
-    expect(reader).toContain("paragraphAtReadingPlace()");
+    const keeper = code("components/saints/useWorkPlace.ts");
+    expect(keeper).toContain("watchOwnScroll(onScroll)");
+    expect(keeper).toContain("paragraphAtReadingPlace()");
+    // Both readers keep it so: a Father's work and a council's document.
+    expect(code("components/saints/WritingReader.tsx")).toContain("useKeepPlace(saint.slug, content.slug, content.sections, key, pillOf)");
+    expect(code("components/councils/CouncilReader.tsx")).toContain("useKeepPlace(positionKey, docSlug, sections, null)");
     // The old keeper: the section most in view, on every scroll, for seven days.
-    expect(reader).not.toContain("IntersectionObserver");
+    expect(code("components/saints/WritingReader.tsx")).not.toContain("IntersectionObserver");
     expect(code("lib/reader/position.ts")).not.toMatch(/TTL_MS|7 \* 24/);
   });
 });

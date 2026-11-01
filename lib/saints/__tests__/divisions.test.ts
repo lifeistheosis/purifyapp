@@ -102,10 +102,13 @@ describe("every work that keeps its edition's divisions", () => {
   });
 
   it("is answered by the reader, which opens #at-1.1.1 and shows the edition's own numbers", () => {
+    // Since r3-29 A the reader draws one chapter at a time, chosen from the
+    // address (components/saints/useWorkPlace.ts) and headed by the edition's
+    // own names for its parts (lib/saints/parts.ts).
+    expect(code("components/saints/useWorkPlace.ts")).toContain("at-(\\d+(?:\\.\\d+)*)");
     const reader = code("components/saints/WritingReader.tsx");
-    expect(reader).toContain("at-(\\d+(?:\\.\\d+)*)");
     expect(reader).toContain("findAt(divisions, content, path)");
-    expect(reader).toContain("sectionLabel(divisions, content, n)");
+    expect(reader).toContain("partsOf(content.sections, divisions, content.title)");
     const row = code("components/saints/ParagraphRow.tsx");
     // A copy carries the citation; a link to a division's first paragraph is by its numbers.
     expect(row).toContain("return cite ?? `${saintName}, ${workTitle}, ${sectionTitle}`;");
