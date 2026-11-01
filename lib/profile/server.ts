@@ -169,7 +169,8 @@ export function profileSettings(row: ProfileRow, now: number = Date.now()): Prof
     showNowReading: row.show_now_reading === true,
     prayerRequest: activePrayerRequest(row, now) !== null,
     calendar: row.calendar_reckoning === "old" ? "old" : "new",
-    pushCommunity: row.push_community !== false,
+    // Asked for, never on by default: only a reader who turned them on.
+    pushCommunity: row.push_community === true,
     showStreak: row.show_streak !== false,
   };
 }

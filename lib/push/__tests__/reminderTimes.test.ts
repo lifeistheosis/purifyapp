@@ -6,11 +6,14 @@ import { describe, expect, it } from "vitest";
 import {
   EVENING_DEFAULT,
   MORNING_DEFAULT,
+  TIME_STEP_MINUTES,
   isReminderTime,
   reminderChange,
   shownTimes,
+  stepTime,
   timeChange,
 } from "../times";
+import { STEP_MINUTES } from "../schedule";
 
 /**
  * The account screen's prayer reminder times (components/profile/PushOptIn.tsx).
@@ -29,7 +32,21 @@ const saved = { morning: "06:15", evening: "22:30" };
 describe("what leaving a time field saves", () => {
   it("saves the time that changed, and not the other", () => {
     expect(timeChange(saved, "evening", "23:00")).toEqual({ evening: "23:00" });
-    expect(timeChange(saved, "morning", "05:45")).toEqual({ morning: "05:45" });
+    expect(timeChange(saved, "morning", "05:40")).toEqual({ morning: "05:40" });
+  });
+
+  it("keeps the server's ten-minute step: a time inside one is saved as its start", () => {
+    // The server sends one ten-minute step a run (lib/push/schedule.ts); the
+    // field says when the reminder comes, not a minute it never keeps.
+    expect(timeChange(saved, "morning", "05:45")).toEqual({ morning: "05:40" });
+    expect(timeChange(saved, "evening", "23:59")).toEqual({ evening: "23:50" });
+    // Inside the saved time's own step: nothing changes.
+    expect(timeChange(saved, "morning", "06:19")).toBeNull();
+    expect(stepTime("07:45")).toBe("07:40");
+    expect(stepTime("07:00")).toBe("07:00");
+    expect(stepTime("7pm")).toBeNull();
+    // The field and the server keep the same step.
+    expect(TIME_STEP_MINUTES).toBe(STEP_MINUTES);
   });
 
   it("saves nothing when the field is left as it was", () => {
@@ -68,10 +85,11 @@ describe("what the screen shows", () => {
 describe("the account screen", () => {
   const src = fs.readFileSync(path.join(ROOT, "components/profile/PushOptIn.tsx"), "utf8");
 
-  it("draws the fields at the saved times, read before they are shown", () => {
+  it("draws the fields at the saved times, read before they are shown, each down to its step", () => {
     expect(src).toMatch(/const times = await reminderTimes\(\);\s*if \(alive\) setState\(\{ kind: "subscribed", times \}\)/);
-    expect(src).toContain("defaultValue={state.times.morning}");
-    expect(src).toContain("defaultValue={state.times.evening}");
+    expect(src).toContain("defaultValue={stepTime(state.times.morning) ?? state.times.morning}");
+    expect(src).toContain("defaultValue={stepTime(state.times.evening) ?? state.times.evening}");
+    expect(src.match(/step=\{TIME_STEP_MINUTES \* 60\}/g)).toHaveLength(2);
   });
 
   it("never stands a default in for a saved time", () => {
@@ -80,9 +98,9 @@ describe("the account screen", () => {
   });
 
   it("saves from each field that field's time only", () => {
-    expect(src).toContain('onBlur={(e) => saveTime("morning", e.target.value)}');
-    expect(src).toContain('onBlur={(e) => saveTime("evening", e.target.value)}');
-    expect(src).toMatch(/const change = timeChange\(state\.times, which, value\);\s*if \(!change\) return;/);
+    expect(src).toContain('onBlur={(e) => saveTime("morning", e.currentTarget)}');
+    expect(src).toContain('onBlur={(e) => saveTime("evening", e.currentTarget)}');
+    expect(src).toMatch(/const change = timeChange\(state\.times, which, input\.value\);\s*if \(!change\) return;/);
     expect(src).toContain("await updateReminderTimes(change)");
   });
 });

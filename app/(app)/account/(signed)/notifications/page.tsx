@@ -1,10 +1,13 @@
 import { PushOptIn } from "@/components/profile/PushOptIn";
+import { CommunityPushSwitch } from "@/components/profile/CommunityPushSwitch";
 import { EmailPreferences } from "@/components/profile/EmailPreferences";
 
 export const metadata = { title: "Notifications" };
 
 /**
- * Prayer reminders and email, on a screen of their own (1.6).
+ * Prayer reminders, Community notifications and email, on a screen of their
+ * own (1.6; Community's switch joined the reminders here in 1.8, from Edit
+ * profile, where it stays as a second way in to the same setting).
  *
  * They lived on the tab called "Data", between the reader's font and the
  * button that deletes the account, and the row that led to them was called
@@ -21,6 +24,7 @@ export default function NotificationsPage() {
   return (
     <div className="flex flex-col gap-8">
       <PushOptIn />
+      <CommunityPushSwitch />
       <EmailPreferences />
     </div>
   );

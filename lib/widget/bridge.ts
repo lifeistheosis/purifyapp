@@ -4,11 +4,13 @@ import { isNativeClient } from "@/lib/platform/native";
  * The app's end of the widget bridge: hands the home screen widgets what only
  * the app knows (docs/WIDGETS.md, section 2).
  *
- * Both phones carry a native plugin named "WidgetBridge" with one method,
+ * Both phones carry a native plugin named "WidgetBridge" with the method
  * update({ entries }). It keeps the six keys below, drops anything else, and
  * asks every placed widget to draw again. Android keeps them in its
  * SharedPreferences `PurifyWidget`, the iPhone in the App Group's
- * UserDefaults.
+ * UserDefaults. On Android the same plugin also answers whether the phone
+ * shows Purify's notifications at all (phoneNotificationsEnabled), the one
+ * other thing the app has to ask its own native code.
  *
  * Three rules, each for a reason:
  *
@@ -42,6 +44,8 @@ export type WidgetEntries = Partial<Record<WidgetKey, string | null | undefined>
 
 type WidgetBridgePlugin = {
   update(options: { entries: Record<string, string | null> }): Promise<unknown>;
+  /** Android only (WidgetBridgePlugin.java); an iPhone or an older build has none. */
+  notificationsEnabled(): Promise<{ enabled?: unknown }>;
 };
 
 /** The plugin, once asked for. Null in a shell that has none. */
@@ -80,6 +84,25 @@ async function send(entries: WidgetEntries): Promise<void> {
   if (!bridge) return;
   await bridge.update({ entries: changed });
   for (const key of WIDGET_KEYS) if (key in changed) sent.set(key, changed[key]);
+}
+
+/**
+ * Whether this Android phone shows Purify's notifications: false when they
+ * are switched off for the app in the phone's settings, or the push channel
+ * is blocked. Null when it cannot say: on the website, on an iPhone (whose
+ * own permission already says so), or in a build from before the bridge
+ * could answer. Never throws.
+ */
+export async function phoneNotificationsEnabled(): Promise<boolean | null> {
+  if (!isNativeClient()) return null;
+  try {
+    const bridge = await loadPlugin();
+    if (!bridge) return null;
+    const { enabled } = await bridge.notificationsEnabled();
+    return typeof enabled === "boolean" ? enabled : null;
+  } catch {
+    return null;
+  }
 }
 
 /**

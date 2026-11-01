@@ -20,10 +20,14 @@ export type StepId =
   | "reminders"
   | "handoff";
 
-/** Where the flow begins (components/onboarding/OnboardingFlow.tsx, OnboardingStart). */
-export type FlowStart = "welcome" | "account" | "level" | "returning";
+/**
+ * Where the flow begins (components/onboarding/OnboardingFlow.tsx,
+ * OnboardingStart). "reminders" is a reader coming back from the sign-in the
+ * reminders step sent them to: every question before it is answered already.
+ */
+export type FlowStart = "welcome" | "account" | "level" | "returning" | "reminders";
 
-function head(startAt: FlowStart): StepId[] {
+function head(startAt: Exclude<FlowStart, "reminders">): StepId[] {
   switch (startAt) {
     case "level":
       return [];
@@ -41,7 +45,8 @@ function head(startAt: FlowStart): StepId[] {
  * they are clergy (1.8.x) and, after it, their calendar and fast; a priest or
  * deacon is asked where they serve, their jurisdiction, and in the United
  * States their parish. A reader who is back is not asked to turn on
- * reminders that are on.
+ * reminders that are on. A reader back from signing in for their reminders
+ * is shown the reminders and the end, and nothing they have answered again.
  */
 export function flowSteps(o: {
   startAt: FlowStart;
@@ -50,6 +55,7 @@ export function flowSteps(o: {
   country: string | null;
   remindersOn: boolean;
 }): StepId[] {
+  if (o.startAt === "reminders") return ["reminders", "handoff"];
   return [
     ...head(o.startAt),
     "background",
@@ -67,11 +73,13 @@ export function flowSteps(o: {
  * US priest's, with every screen anyone can be shown, so the line only ever
  * grows. Choosing "Practicing" adds screens, and counting against the live
  * list would pull the line back just as the reader moved forward; everyone
- * else skips those segments in one longer stride.
+ * else skips those segments in one longer stride. A reader back from signing
+ * in for their reminders is measured as one who was signed in already, so
+ * the line stands where they left it, near its end.
  */
 export function progressPath(startAt: FlowStart): StepId[] {
   return [
-    ...head(startAt),
+    ...head(startAt === "reminders" ? "level" : startAt),
     "background",
     "level",
     "role",

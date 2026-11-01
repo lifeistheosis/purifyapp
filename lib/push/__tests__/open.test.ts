@@ -9,6 +9,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import {
   OPENER_WAIT_MS,
   isAppAddress,
+  isWebOnlyAddress,
   onlyTheHashChanges,
   openFromPush,
   resetPushOpenForTests,
@@ -95,6 +96,20 @@ describe("opening a tapped notification", () => {
     expect(opened).toEqual([]);
     setPushOpener((url) => void opened.push(url));
     expect(opened).toEqual(["/account"]);
+  });
+});
+
+describe("the screens on the website alone", () => {
+  it("are the admin and the owner's pages, where the owner's alerts point", () => {
+    for (const url of ["/admin", "/admin#orders", "/admin?tab=subscriptions", "/admin#goals", "/admin/x", "/owner"]) {
+      expect(isWebOnlyAddress(url), url).toBe(true);
+    }
+  });
+
+  it("are nothing else, and never another site", () => {
+    for (const url of ["/administrator", "/admins", "/prayers/morning", "/community#post-1", "//admin", "https://x/admin", null]) {
+      expect(isWebOnlyAddress(url), String(url)).toBe(false);
+    }
   });
 });
 

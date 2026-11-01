@@ -33,6 +33,7 @@ export type NotificationKey =
   | "fastBegins"
   | "feast"
   | "announcement"
+  | "eikonBoxOpen"
   | "communityReply"
   | "communityMention"
   | "communityFollow"
@@ -100,81 +101,93 @@ export const NOTIFICATION_COPY: Readonly<Record<NotificationKey, NotificationCop
     rationale:
       "The default template for an operator broadcast. Free text remains possible through the admin route, but it passes the same check this row does, so the template is the path of least resistance rather than the only one.",
   },
+  eikonBoxOpen: {
+    key: "eikonBoxOpen",
+    title: "The EIKON Box is open",
+    body: "Claim yours in Purify. We gather each box to the number claimed.",
+    url: "/account/eikon-box",
+    rationale:
+      "The owner's word to Pro members that a drop is open (app/api/admin/eikon-box/announce). It names no date and no count: the claim window is on the drop's own page, and a deadline on a lock screen is a clock on the reader. The ready-made words used to give the closing date, which the bar refuses.",
+  },
 
   // ── Community (lib/community/push.ts) ──────────────────────────────────
   //
   // A person did something that concerns you: answered you, named you,
   // followed you, greeted you, prayed for you. Each is one thing that is
-  // there, from one person, sent only to the reader it concerns and only
-  // while they leave community notifications on. "{name}" is the other
-  // reader's display name; communityPushCopy() fills it, checks the result
-  // against the same bar, and falls back to the row without a name when a
-  // name would break it. What they wrote never reaches the lock screen.
+  // there, sent only to the reader it concerns and only while they leave
+  // community notifications on. NOBODY IS NAMED, since 2026-11-01 (the
+  // owner's word on the notifications findings): the other reader's name
+  // stays in the inbox inside the app, as what they wrote always has, and
+  // the lock screen, read by whoever is in the room, says only what
+  // happened. The words are in every reader's language, under the keys
+  // push.community.* in lib/i18n/messages (communityPushCopy picks them);
+  // these English rows are the same words, and the ones the bar is read
+  // against.
   communityReply: {
     key: "communityReply",
-    title: "{name} replied to you",
-    body: "Their reply is in Community.",
+    title: "Someone replied to your post",
+    body: "It is in Community.",
     url: ({ id }) => `/community#post-${id}`,
     rationale:
-      "A reader answered the reader's own post. It says only that the answer exists and who gave it; the words stay in the app, behind the lock.",
+      "A reader answered the reader's own post. It says only that the answer exists; who gave it and what they said stay in the app, behind the lock.",
   },
   communityMention: {
     key: "communityMention",
-    title: "{name} mentioned you",
-    body: "The conversation is in Community.",
+    title: "Someone mentioned you",
+    body: "It is in Community.",
     url: ({ id }) => `/community#post-${id}`,
     rationale:
       "Somebody addressed the reader by name in a conversation. Being spoken to is the one thing a person would want to know about, and nothing else is said.",
   },
   communityFollow: {
     key: "communityFollow",
-    title: "{name} followed you",
-    body: "Their profile is in Community.",
+    title: "Someone followed you",
+    body: "It is in Community.",
     url: ({ id }) => `/community#@${id}`,
-    rationale: "A person chose to follow the reader. It names them and offers their profile; it does not count followers.",
+    rationale: "A person chose to follow the reader. It says so and opens their profile; it does not count followers or name them.",
   },
   communityNameDay: {
     key: "communityNameDay",
-    title: "{name} wished you many years",
-    body: "A greeting for your name day.",
+    title: "Someone wished you many years",
+    body: "It is in Community.",
     url: ({ id }) => `/community#@${id}`,
     rationale:
       "A greeting from another reader on the reader's name day. The feast supplies the occasion and a person supplies the greeting; the application only carries it.",
   },
   communityPrayed: {
     key: "communityPrayed",
-    title: "{name} prayed for you",
-    body: "In answer to your prayer request.",
+    title: "Someone prayed for you",
+    body: "It is in Community.",
     url: ({ id }) => `/community#@${id}`,
     rationale:
       "The reader asked others to pray for them, and someone has. It is the answer to their own request, and it says nothing about how many have or have not.",
   },
   communityGift: {
     key: "communityGift",
-    title: "{name} sent you a gift",
-    body: "Open Purify to receive it.",
+    title: "Someone gave you Purify Plus",
+    body: "It is in your account.",
     url: "/account",
     rationale: "A gift another reader bought for this one. It is theirs whether or not they open the app today, so nothing here hurries them.",
   },
   communityQuestion: {
     key: "communityQuestion",
-    title: "A question for clergy",
-    body: "A reader asked a question in Community.",
+    title: "Someone asked a question for clergy",
+    body: "It is in Community.",
     url: ({ id }) => `/community#post-${id}`,
     rationale:
       "Sent only to verified clergy, who chose to answer readers' questions. The question itself is not shown: it may be personal, and the lock screen is read by whoever is in the room.",
   },
   communityAnswer: {
     key: "communityAnswer",
-    title: "{name} answered your question",
-    body: "The answer is in Community.",
+    title: "Someone answered your question",
+    body: "It is in Community.",
     url: ({ id }) => `/community#post-${id}`,
     rationale: "Verified clergy answered the reader's own question. The reader asked; this is the reply arriving.",
   },
   communityApproved: {
     key: "communityApproved",
-    title: "Your post is up",
-    body: "A moderator looked at it, and it is in Community now.",
+    title: "Your post was approved",
+    body: "It is in Community.",
     url: ({ id }) => `/community#post-${id}`,
     rationale:
       "The reader's own post waited for a moderator, and they were told so when they wrote it. This closes that, once, and asks for nothing.",
@@ -204,50 +217,82 @@ const COMMUNITY_ROW: Record<CommunityPushKind, NotificationKey> = {
   approved: "communityApproved",
 };
 
-/** The same rows without a person in them, for a name the bar refuses. */
-const NAMELESS: Record<CommunityPushKind, string> = {
-  reply: "A reply to your post",
-  mention: "Someone mentioned you",
-  follow: "A new follower",
-  name_day: "A name day greeting",
-  prayed: "Someone prayed for you",
-  gift: "A gift for you",
-  question: "A question for clergy",
-  answer: "An answer to your question",
-  approved: "Your post is up",
+/** Where each kind's words are kept in the message catalogs, in every language. */
+export const COMMUNITY_PUSH_KEYS: Record<CommunityPushKind, { title: string; body: string }> = {
+  reply: { title: "push.community.reply", body: "push.community.body" },
+  mention: { title: "push.community.mention", body: "push.community.body" },
+  follow: { title: "push.community.follow", body: "push.community.body" },
+  name_day: { title: "push.community.nameDay", body: "push.community.body" },
+  prayed: { title: "push.community.prayed", body: "push.community.body" },
+  gift: { title: "push.community.gift", body: "push.community.giftBody" },
+  question: { title: "push.community.question", body: "push.community.body" },
+  answer: { title: "push.community.answer", body: "push.community.body" },
+  approved: { title: "push.community.approved", body: "push.community.body" },
 };
 
 /**
- * One community notification's words and link.
+ * One community notification's words and link, in the reader's language.
  *
  * `target` is a post id for the kinds about a post, else the actor's @handle,
- * which opens their profile. The finished title is checked against the bar;
- * a name that breaks it (a digit, an exclamation mark) is left out rather
- * than sent.
+ * which opens their profile: an address, read after the phone is unlocked,
+ * and never shown. No name is taken at all, so none can reach a lock screen.
+ * `words` is the reader's message catalog (lib/i18n getMessages, on the
+ * server); a translation that is missing, or that would break the bar, gives
+ * way to the English row, never to nothing.
  */
 export function communityPushCopy(
   kind: CommunityPushKind,
-  actorName: string | null,
   target: string | null,
+  words?: Readonly<Record<string, string>>,
 ): { title: string; body: string; url: string } {
   const row = NOTIFICATION_COPY[COMMUNITY_ROW[kind]];
-  const name = (actorName ?? "").replace(/\s+/g, " ").trim().slice(0, 40);
-  const named = name && row.title.includes("{name}") ? row.title.replace("{name}", name) : null;
-  const title =
-    named && checkNotificationCopy({ title: named, body: row.body }).length === 0 ? named : NAMELESS[kind];
+  const own = translated(words, COMMUNITY_PUSH_KEYS[kind]);
   const url =
     typeof row.url === "function" ? (target ? row.url({ id: target }) : "/community#conversations") : row.url;
-  return { title, body: row.body, url };
+  return { title: own?.title ?? row.title, body: own?.body ?? row.body, url };
 }
 
-/** The scheduled prayer rules. Takes no caller text, deliberately. */
-export function reminderCopy(kind: "morning" | "evening"): {
+/**
+ * Where the reminders' words are kept in every language: the same lines the
+ * welcome questions show as the reminders' cards (components/onboarding/
+ * RemindersOn.tsx), so the card and the lock screen say one thing.
+ */
+export const REMINDER_PUSH_KEYS: Record<"morning" | "evening", { title: string; body: string }> = {
+  morning: { title: "onboard.reminders.morningTitle", body: "onboard.reminders.morningBody" },
+  evening: { title: "onboard.reminders.eveningTitle", body: "onboard.reminders.eveningBody" },
+};
+
+/**
+ * Words from a reader's catalog, when both are there and clear the bar;
+ * otherwise null, and the caller keeps the English row. A missing or broken
+ * translation never reaches a lock screen, and never leaves it empty.
+ */
+function translated(
+  words: Readonly<Record<string, string>> | undefined,
+  keys: { title: string; body: string },
+): { title: string; body: string } | null {
+  const title = words?.[keys.title];
+  const body = words?.[keys.body];
+  if (typeof title !== "string" || typeof body !== "string") return null;
+  return checkNotificationCopy({ title, body }).length === 0 ? { title, body } : null;
+}
+
+/**
+ * The scheduled prayer rules. Takes no caller text, deliberately: `words` is
+ * the reader's message catalog (lib/i18n getMessages, on the server), and
+ * only the catalog's own lines for the reminders are read from it.
+ */
+export function reminderCopy(
+  kind: "morning" | "evening",
+  words?: Readonly<Record<string, string>>,
+): {
   title: string;
   body: string;
   url: string;
 } {
   const row = NOTIFICATION_COPY[kind];
-  return { title: row.title, body: row.body, url: row.url as string };
+  const own = translated(words, REMINDER_PUSH_KEYS[kind]);
+  return { title: own?.title ?? row.title, body: own?.body ?? row.body, url: row.url as string };
 }
 
 /**
@@ -265,6 +310,19 @@ export function campaignCopy(campaignId: string): {
   const row = NOTIFICATION_COPY.campaign;
   const url = row.url as (p: { id: string }) => string;
   return { title: row.title, body: row.body, url: url({ id: campaignId }) };
+}
+
+/**
+ * The ready-made words for announcing an EIKON Box drop (the EIKON Box tab).
+ * The drop's own name when it clears the bar ("The Nativity box is open"),
+ * else the row's title, so the words offered can always be sent as they are.
+ * The owner may change them; the route holds what is sent to the same bar.
+ */
+export function eikonBoxAnnouncement(dropTitle: string): { title: string; body: string; url: string } {
+  const row = NOTIFICATION_COPY.eikonBoxOpen;
+  const named = `${dropTitle.replace(/\s+/g, " ").trim()} is open`;
+  const title = dropTitle.trim() && checkNotificationCopy({ title: named, body: row.body }).length === 0 ? named : row.title;
+  return { title, body: row.body, url: row.url as string };
 }
 
 /**

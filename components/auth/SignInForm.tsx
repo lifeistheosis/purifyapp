@@ -1,14 +1,18 @@
 "use client";
 
 import Link from "next/link";
-import { useState } from "react";
+import { useState, useSyncExternalStore } from "react";
 import { useRouter } from "next/navigation";
+import { nextPath } from "@/lib/auth/nextPath";
 import { createClient } from "@/lib/supabase/client";
 import { useTranslate } from "@/components/i18n/MessagesProvider";
 import { PasswordInput } from "./PasswordInput";
 import { OAuthButtons } from "./OAuthButtons";
 
 type Translate = ReturnType<typeof useTranslate>["t"];
+
+/** The address's query never changes while this form is up. */
+const noChanges = () => () => {};
 
 /**
  * Email + password sign-in. On success, server middleware checks the
@@ -18,6 +22,11 @@ type Translate = ReturnType<typeof useTranslate>["t"];
 export function SignInForm({ next }: { next?: string }) {
   const router = useRouter();
   const { t } = useTranslate();
+  // Where to go once signed in: what the page was asked for, which in the
+  // apps is read here from the address because the export's server cannot
+  // read it (lib/auth/nextPath.ts). Google and Apple go there too.
+  const search = useSyncExternalStore(noChanges, () => window.location.search, () => "");
+  const target = nextPath(next, search);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [pending, setPending] = useState(false);
@@ -34,7 +43,7 @@ export function SignInForm({ next }: { next?: string }) {
         password,
       });
       if (err) throw err;
-      router.push(next && next.startsWith("/") ? next : "/account/profile");
+      router.push(target);
       router.refresh();
     } catch (e) {
       setError(
@@ -107,7 +116,7 @@ export function SignInForm({ next }: { next?: string }) {
         </span>
       </div>
 
-      <OAuthButtons />
+      <OAuthButtons redirectTo={target} />
     </form>
   );
 }

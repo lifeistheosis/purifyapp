@@ -17,6 +17,7 @@ import { Btn, Label, Ladder, Mark, State, StepLine, Thumb, litClass, type MarkKi
 import { downloadCsv } from "@/lib/admin/csv";
 import { trackingLink } from "@/lib/shop/trackingLink";
 import { deadlineFromInput, deadlineInputValue } from "@/lib/eikonBox/deadline";
+import { eikonBoxAnnouncement } from "@/lib/push/copy";
 import {
   claimCounts,
   claimLabelCsv,
@@ -992,10 +993,12 @@ function CreateDropModal({
 }
 
 function AnnouncePanel({ drop }: { drop: AdminDrop }) {
-  const [title, setTitle] = useState(`${drop.title} is open`);
-  const [body, setBody] = useState(
-    `Claim yours by ${fmtDate(drop.claims_close_at)}. We gather each box to the number claimed, so a box that is not claimed is not sent.`,
-  );
+  // Ready-made words that clear the notification bar as they stand
+  // (lib/push/copy.ts, eikonBoxAnnouncement). They used to give the claim
+  // date, which the bar refuses on a lock screen; the route now holds what
+  // is sent to that bar, and the date stays in the email and on the drop.
+  const [title, setTitle] = useState(() => eikonBoxAnnouncement(drop.title).title);
+  const [body, setBody] = useState(() => eikonBoxAnnouncement(drop.title).body);
   const [subject, setSubject] = useState(`Your ${drop.title} is ready to claim`);
   const [withEmail, setWithEmail] = useState(true);
   // Push and email are separate switches: with Apple and Firebase keys

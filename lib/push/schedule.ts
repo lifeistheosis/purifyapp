@@ -57,13 +57,117 @@ export function dueCampaigns(
   const due: CampaignReminderRow[] = [];
   for (const row of rows) {
     if (!row.remind_enabled || !row.remind_time) continue;
-    const tz = row.timezone || "UTC";
-    const hh = String(nowInTz(now, tz).getUTCHours()).padStart(2, "0");
-    if (row.remind_time.slice(0, 2) !== hh) continue;
+    if (!timeIsDue(row.remind_time, now, row.timezone || "UTC")) continue;
     due.push(row);
     if (due.length >= MAX_CAMPAIGN_REMINDERS_PER_RUN) break;
   }
   return due;
+}
+
+/**
+ * The step reminders keep to, in minutes: the heartbeat that sends them
+ * (/api/cron/hourly-goals) runs every ten minutes, and each run sends the
+ * reminders of one ten-minute step. A reminder set for 07:45 comes in the
+ * step that begins at 07:40, and the time field in Account, Notifications
+ * keeps the same step (lib/push/times.ts, stepTime), so what the reader sees
+ * is when it comes. Until 2026-10-31 the run kept to the hour: 07:45 came at
+ * about 07:05.
+ */
+export const STEP_MINUTES = 10;
+const STEP_MS = STEP_MINUTES * 60_000;
+const DAY_MINUTES = 24 * 60;
+
+/** The start of the ten-minute step `date` falls in, on the UTC clock. */
+export function stepStart(date: Date): Date {
+  return new Date(Math.floor(date.getTime() / STEP_MS) * STEP_MS);
+}
+
+/** An "HH:MM" time as minutes of the day, down to its step; null for one that cannot be read. */
+export function reminderStep(time: string): number | null {
+  const m = /^(\d{2}):(\d{2})/.exec(time);
+  if (!m) return null;
+  const hour = Number(m[1]);
+  const minute = Number(m[2]);
+  if (hour > 23 || minute > 59) return null;
+  return hour * 60 + Math.floor(minute / STEP_MINUTES) * STEP_MINUTES;
+}
+
+/**
+ * The rule, on numbers, so a test can run it over every step of a year.
+ * `cur` is the step the reader's clock is in for this run, `earlier` the
+ * steps it showed for the six runs before (ten minutes apart, newest first).
+ *
+ * On an ordinary day a reminder is due when its step is the clock's. On the
+ * two days a year the clocks change that is not enough, because the local
+ * clock moves while the runs keep to UTC:
+ *
+ *   - When the clocks go back, an hour of steps happens twice: 01:00 to 01:59
+ *     in New York on the first Sunday of November, 03:00 to 03:59 in Athens
+ *     on the last Sunday of October (half an hour on Lord Howe Island). A
+ *     reminder set inside it came twice. It now comes the first time only:
+ *     a step the clock already showed within the last hour is not due again.
+ *   - When the clocks go forward, an hour of steps never happens: 02:00 to
+ *     02:59 in New York on the second Sunday of March. A reminder set inside
+ *     it did not come that day. It now comes with the first step after.
+ *
+ * Any other jump (a country moving its clock by more than two hours, about
+ * once a decade somewhere) is treated as an ordinary step, never as a
+ * reason to send a day's reminders at once.
+ */
+export function stepIsDue(target: number, cur: number, earlier: readonly number[]): boolean {
+  if (earlier.includes(cur)) return false;
+  if (target === cur) return true;
+  const prev = earlier[0];
+  if (prev === undefined) return false;
+  const gap = (cur - prev + DAY_MINUTES) % DAY_MINUTES;
+  if (gap <= STEP_MINUTES || gap > STEP_MINUTES + 120) return false;
+  // The steps the clock jumped over since the last run.
+  for (let m = (prev + STEP_MINUTES) % DAY_MINUTES; m !== cur; m = (m + STEP_MINUTES) % DAY_MINUTES) {
+    if (m === target) return true;
+  }
+  return false;
+}
+
+/** The wall-clock step in `tz` at `date`, as minutes of the day. */
+function localStep(date: Date, tz: string): number {
+  // nowInTz encodes the target zone's wall clock into the Date's UTC fields,
+  // so read it with getUTC*: correct whatever the server's own zone.
+  const wall = nowInTz(date, tz);
+  return wall.getUTCHours() * 60 + Math.floor(wall.getUTCMinutes() / STEP_MINUTES) * STEP_MINUTES;
+}
+
+/**
+ * The reader's clock for one run: the step it is in, and the six before.
+ * Read at the start of the run's step, so a zone three quarters of an hour
+ * off UTC (Nepal, Chatham) meets each of its own steps exactly once. Kept for
+ * the run, since every row in a zone asks the same question.
+ */
+const clockCache = new Map<string, { cur: number; earlier: number[] }>();
+function clockFor(now: Date, tz: string): { cur: number; earlier: number[] } {
+  const start = stepStart(now).getTime();
+  const key = `${tz}|${start}`;
+  const hit = clockCache.get(key);
+  if (hit) return hit;
+  if (clockCache.size > 512) clockCache.clear();
+  const at = (k: number) => localStep(new Date(start - k * STEP_MS), tz);
+  const clock = { cur: at(0), earlier: [1, 2, 3, 4, 5, 6].map(at) };
+  clockCache.set(key, clock);
+  return clock;
+}
+
+/**
+ * Whether a reminder at the local step `target` (minutes of the day, a
+ * multiple of STEP_MINUTES) is due in the run for the step `now` is in.
+ */
+export function stepDue(target: number, now: Date, tz: string): boolean {
+  const { cur, earlier } = clockFor(now, tz);
+  return stepIsDue(target, cur, earlier);
+}
+
+/** stepDue for an "HH:MM" time as stored. A time that cannot be read is never due. */
+function timeIsDue(time: string, now: Date, tz: string): boolean {
+  const target = reminderStep(time);
+  return target !== null && stepDue(target, now, tz);
 }
 
 /**
@@ -80,34 +184,38 @@ export function campaignReminderPayload(campaignId: string): {
 }
 
 /**
- * Whether the row is due right now, and for which rule. The cron runs hourly,
- * so we match on the local HOUR (a user's ":15" fires within that hour).
- * Returns null when neither time matches the user's current local hour.
+ * Whether the row is due in this run, and for which rule: the reader's time
+ * down to its ten-minute step, on their own clock, with the change to and
+ * from summer time handled by stepIsDue. Null when neither time is due.
  */
 export function dueKind(row: ScheduleRow, now: Date): ReminderKind | null {
   const tz = row.timezone || "UTC";
-  // nowInTz encodes the target zone's wall clock into the Date's UTC fields,
-  // so read it with getUTCHours() — correct regardless of the server's own
-  // timezone (production runs UTC, but this stays right anywhere).
-  const hh = String(nowInTz(now, tz).getUTCHours()).padStart(2, "0");
-  if (row.morning_time && row.morning_time.slice(0, 2) === hh) return "morning";
-  if (row.evening_time && row.evening_time.slice(0, 2) === hh) return "evening";
+  if (row.morning_time && timeIsDue(row.morning_time, now, tz)) return "morning";
+  if (row.evening_time && timeIsDue(row.evening_time, now, tz)) return "evening";
   return null;
 }
 
-/** The notification content for a given rule (shared by every transport). */
-export function reminderPayload(kind: ReminderKind): {
+/**
+ * The notification content for a given rule (shared by every transport), in
+ * the reader's words when their catalog is given, else in English.
+ */
+export function reminderPayload(
+  kind: ReminderKind,
+  words?: Readonly<Record<string, string>>,
+): {
   title: string;
   body: string;
   url: string;
 } {
-  return reminderCopy(kind);
+  return reminderCopy(kind, words);
 }
 
-/** A clock reading the wall time in an IANA timezone. */
-export function nowInTz(date: Date, tz: string): Date {
-  try {
-    const fmt = new Intl.DateTimeFormat("en-US", {
+/** One formatter per zone: making one is the slow part, and a run asks thousands of times. */
+const formatters = new Map<string, Intl.DateTimeFormat>();
+function formatterFor(tz: string): Intl.DateTimeFormat {
+  let fmt = formatters.get(tz);
+  if (!fmt) {
+    fmt = new Intl.DateTimeFormat("en-US", {
       timeZone: tz,
       hour12: false,
       year: "numeric",
@@ -116,6 +224,16 @@ export function nowInTz(date: Date, tz: string): Date {
       hour: "2-digit",
       minute: "2-digit",
     });
+    if (formatters.size > 512) formatters.clear();
+    formatters.set(tz, fmt);
+  }
+  return fmt;
+}
+
+/** A clock reading the wall time in an IANA timezone. */
+export function nowInTz(date: Date, tz: string): Date {
+  try {
+    const fmt = formatterFor(tz);
     const parts = Object.fromEntries(
       fmt.formatToParts(date).map((p) => [p.type, p.value]),
     );

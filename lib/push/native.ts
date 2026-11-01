@@ -15,7 +15,9 @@
 
 import { apiFetch } from "@/lib/api/client";
 import { nativePlatform as platform } from "@/lib/platform/native";
-import { openFromPush } from "./open";
+import { SITE_URL } from "@/lib/site";
+import { readLocalSessionUser } from "@/lib/supabase/localSession";
+import { isWebOnlyAddress, openFromPush } from "./open";
 import {
   EVENING_DEFAULT,
   MORNING_DEFAULT,
@@ -31,13 +33,49 @@ const ON_KEY = "purify:push.native-on"; // "1" while reminders are on
 const TIMES_KEY = "purify:push.native-times"; // desired times for the next token
 const PENDING_KEY = "purify:push.pending-native"; // captured signed-out, flush on login
 const USER_KEY = "purify:push.native-user"; // the account this phone was last given to
+const OPENED_KEY = "purify:push.opened"; // ids of the taps already opened, newest last
+const ZONE_KEY = "purify:push.native-zone"; // the time zone the server last took from this phone
+
+/** How many opened taps are remembered: far more than can wait in a shade. */
+const OPENED_KEPT = 20;
 
 /** How long a sign-out waits for the phone to be taken off its account. */
 export const UNLINK_WAIT_MS = 2500;
 
+/** How long turning reminders on waits for the server to take this phone. */
+export const SAVE_WAIT_MS = 10_000;
+
 export type NativeEnableResult =
   | { ok: true }
-  | { ok: false; reason: "denied" | "unsupported" };
+  | { ok: false; reason: "denied" | "unsupported" | "signed-out" | "failed" };
+
+/** What the server said to this phone's token, for a reader turning reminders on. */
+type SaveOutcome = "saved" | "signed-out" | "failed";
+let awaitingSave: ((outcome: SaveOutcome) => void) | null = null;
+
+/** Tell a reader waiting on enableNative what the server said. */
+function settleSave(outcome: SaveOutcome): void {
+  const done = awaitingSave;
+  awaitingSave = null;
+  done?.(outcome);
+}
+
+/** Wait for the next answer to a registration, or SAVE_WAIT_MS, whichever comes first. */
+function waitForSave(): Promise<SaveOutcome> {
+  settleSave("failed");
+  return new Promise((resolve) => {
+    const timer = setTimeout(() => {
+      if (awaitingSave === finish) awaitingSave = null;
+      resolve("failed");
+    }, SAVE_WAIT_MS);
+    // Declared after the timer it clears, and called only after both exist.
+    function finish(outcome: SaveOutcome) {
+      clearTimeout(timer);
+      resolve(outcome);
+    }
+    awaitingSave = finish;
+  });
+}
 
 type Receive = "prompt" | "prompt-with-rationale" | "granted" | "denied";
 
@@ -68,9 +106,92 @@ function removeItem(key: string) {
 }
 
 let listenersAttached = false;
+let tapsAttached = false;
 
-/** Attach the registration/tap listeners exactly once per app lifetime. */
+/**
+ * True the first time a tapped notification is seen, false when the same one
+ * comes again.
+ *
+ * Android keeps the intent an activity was started with and hands it back
+ * whenever it builds the activity again: after the app was cleared from
+ * memory in the background, or after a restart, when the reader opens it
+ * from the recent apps list (MainActivity has the same note for shortcuts).
+ * Capacitor reads that intent each time and reports the tap again, so a
+ * reader who once opened Purify from a reminder would be carried back to that
+ * reminder's screen at every such return. Each push has its own id (Firebase's
+ * message id, Apple's notification id), so the ones already opened are kept.
+ * A tap without an id is opened, as every tap was before.
+ */
+function firstTap(id: unknown): boolean {
+  if (typeof id !== "string" || id === "") return true;
+  let opened: unknown;
+  try {
+    opened = JSON.parse(getItem(OPENED_KEY) ?? "[]");
+  } catch {
+    opened = [];
+  }
+  const kept = Array.isArray(opened) ? opened.filter((x): x is string => typeof x === "string") : [];
+  if (kept.includes(id)) return false;
+  setItem(OPENED_KEY, JSON.stringify([...kept, id].slice(-OPENED_KEPT)));
+  return true;
+}
+
+/**
+ * Open what a tapped notification is about, from the moment the app starts.
+ *
+ * Called by components/native/NativeBridge.tsx as soon as the app is up, on
+ * every phone, whether or not its reminders are on. The tap listener used to
+ * be attached only with the registration ones: by enableNative, or by
+ * refreshNative three seconds after launch and only when this phone's own
+ * note said reminders were on. So a notification that launched the app
+ * showed Today for three seconds before its screen, and one that arrived
+ * while the note was missing (a Community notification on a phone whose
+ * stored note had been cleared, a reminder in flight as the reader turned
+ * them off) opened only Today. Both platforms keep a tap until a listener
+ * takes it, so attaching early loses nothing, and attaching asks nothing of
+ * the reader: no permission, no registration.
+ */
+export async function listenForTaps(): Promise<void> {
+  if (tapsAttached || !platform()) return;
+  tapsAttached = true;
+  try {
+    const { PushNotifications } = await import("@capacitor/push-notifications");
+    // Tap on a delivered notification: open the screen it is about, through
+    // the app's router. It used to be a hard navigation, which inside the shell
+    // is handed the front door whatever it asked for, so every tapped reminder
+    // and every tapped reply opened Today (lib/push/open.ts).
+    await PushNotifications.addListener("pushNotificationActionPerformed", (action) => {
+      if (action.actionId === "dismiss") return;
+      if (!firstTap(action.notification?.id)) return;
+      const url: unknown = action.notification?.data?.url;
+      // The owner's alerts open the admin, which is on the website alone:
+      // in the phone's browser, signed in there, never as Today in the app.
+      if (isWebOnlyAddress(url)) openOnWebsite(url);
+      else openFromPush(url);
+    });
+  } catch {
+    // The plugin could not be reached: the next launch tries again.
+    tapsAttached = false;
+  }
+}
+
+/**
+ * Open a website-only address in the phone's own browser: window.open hands
+ * an address on another host to Safari on an iPhone and to the default
+ * browser on Android (the shells open nothing but their own pages inside),
+ * as the paywall's store link does (components/billing/PlusPaywall.tsx).
+ */
+function openOnWebsite(path: string): void {
+  try {
+    window.open(new URL(path, SITE_URL).toString(), "_blank");
+  } catch {
+    /* an address that cannot be made opens nothing */
+  }
+}
+
+/** Attach the registration listeners exactly once per app lifetime, and the tap one with them. */
 async function attachListeners(): Promise<void> {
+  await listenForTaps();
   if (listenersAttached) return;
   listenersAttached = true;
   const { PushNotifications } = await import("@capacitor/push-notifications");
@@ -96,31 +217,54 @@ async function attachListeners(): Promise<void> {
       if (res.status === 401) {
         // Signed-out: keep the token and persist on first sign-in.
         setItem(PENDING_KEY, JSON.stringify(payload));
+        settleSave("signed-out");
       } else if (res.ok) {
         setItem(ON_KEY, "1");
+        setItem(ZONE_KEY, payload.timezone);
+        settleSave("saved");
+      } else {
+        settleSave("failed");
       }
     } catch {
       setItem(PENDING_KEY, JSON.stringify(payload));
+      settleSave("failed");
     }
   });
 
   await PushNotifications.addListener("registrationError", () => {
     removeItem(ON_KEY);
+    settleSave("failed");
   });
-
-  // Tap on a delivered notification: open the screen it is about, through
-  // the app's router. It used to be a hard navigation, which inside the shell
-  // is handed the front door whatever it asked for, so every tapped reminder
-  // and every tapped reply opened Today (lib/push/open.ts).
-  await PushNotifications.addListener(
-    "pushNotificationActionPerformed",
-    (action) => {
-      openFromPush(action.notification?.data?.url);
-    },
-  );
 }
 
-/** Current native reminder status, mapped to the same vocabulary as web. */
+/**
+ * Whether the phone shows Purify's notifications at all, asked of the app's
+ * own bridge (lib/widget/bridge.ts, loaded only when asked). True only when
+ * the phone says they are off; anything it cannot say (an iPhone, whose
+ * permission already answers; an older build) reads as not blocked, as
+ * before.
+ *
+ * On Android 12 and older the push plugin answers "granted" whatever the
+ * reader set, so a reader who switched Purify's notifications off in the
+ * phone's settings was shown reminders as on, and the server kept sending
+ * pushes the phone hid.
+ */
+async function blockedOnPhone(): Promise<boolean> {
+  if (platform() !== "android") return false;
+  try {
+    const { phoneNotificationsEnabled } = await import("@/lib/widget/bridge");
+    return (await phoneNotificationsEnabled()) === false;
+  } catch {
+    return false;
+  }
+}
+
+/**
+ * Current native reminder status, mapped to the same vocabulary as web.
+ * "subscribed" only with an account signed in: the server keeps a phone's
+ * token for an account and nowhere else, so with nobody signed in nothing
+ * can come, whatever this phone remembers choosing.
+ */
 export async function nativeStatus(): Promise<
   "unsupported" | "denied" | "not-subscribed" | "subscribed"
 > {
@@ -130,31 +274,48 @@ export async function nativeStatus(): Promise<
     const perm = await PushNotifications.checkPermissions();
     const receive = perm.receive as Receive;
     if (receive === "denied") return "denied";
-    if (receive === "granted" && getItem(ON_KEY) === "1") return "subscribed";
+    if (receive === "granted" && (await blockedOnPhone())) return "denied";
+    if (receive === "granted" && getItem(ON_KEY) === "1" && readLocalSessionUser()) return "subscribed";
     return "not-subscribed";
   } catch {
     return "unsupported";
   }
 }
 
+/**
+ * Turn this phone's reminders on: "ok" only once the server holds its token.
+ *
+ * With nobody signed in nothing is asked of the phone: there is no account to
+ * keep the token with, and the caller asks for a sign-in first. It used to
+ * ask the phone's question, keep the token on the phone for an account that
+ * might never come, and say "on" while nothing could be sent. And it used to
+ * say "on" as soon as the phone was asked for a token, before the server had
+ * it; now it waits for the server's answer (SAVE_WAIT_MS at most), and a
+ * token the server did not take is not kept to go up later behind the
+ * reader's back: they were told it did not work, and they ask again.
+ */
 export async function enableNative(
   morning: string = MORNING_DEFAULT,
   evening: string = EVENING_DEFAULT,
 ): Promise<NativeEnableResult> {
   if (!platform()) return { ok: false, reason: "unsupported" };
+  if (!readLocalSessionUser()) return { ok: false, reason: "signed-out" };
   try {
     const { PushNotifications } = await import("@capacitor/push-notifications");
     const perm = await PushNotifications.requestPermissions();
-    if ((perm.receive as Receive) !== "granted") {
+    if ((perm.receive as Receive) !== "granted" || (await blockedOnPhone())) {
       return { ok: false, reason: "denied" };
     }
     // The token arrives asynchronously on the "registration" listener; stash
     // the desired times so that handler can persist them.
     setItem(TIMES_KEY, JSON.stringify({ morning, evening }));
     await attachListeners();
+    const saved = waitForSave();
     await PushNotifications.register();
-    setItem(ON_KEY, "1"); // optimistic; cleared on registrationError
-    return { ok: true };
+    const outcome = await saved;
+    if (outcome === "saved") return { ok: true };
+    removeItem(PENDING_KEY);
+    return { ok: false, reason: outcome === "signed-out" ? "signed-out" : "failed" };
   } catch {
     return { ok: false, reason: "unsupported" };
   }
@@ -165,6 +326,7 @@ export async function disableNative(): Promise<void> {
   removeItem(ON_KEY);
   removeItem(PENDING_KEY);
   removeItem(USER_KEY);
+  removeItem(ZONE_KEY);
   if (token) {
     try {
       await apiFetch(`/api/push/device?token=${encodeURIComponent(token)}`, {
@@ -210,6 +372,7 @@ export async function updateNativeTimes(change: ReminderChange): Promise<SaveRes
   const token = getItem(TOKEN_KEY);
   const plat = platform();
   if (!token || !plat) return "kept";
+  const zone = tz();
   try {
     const res = await apiFetch("/api/push/device", {
       method: "POST",
@@ -219,9 +382,10 @@ export async function updateNativeTimes(change: ReminderChange): Promise<SaveRes
         platform: plat,
         morningTime: times.morning,
         eveningTime: times.evening,
-        timezone: tz(),
+        timezone: zone,
       }),
     });
+    if (res.ok) setItem(ZONE_KEY, zone);
     return res.ok ? "saved" : "kept";
   } catch {
     return "kept";
@@ -251,7 +415,7 @@ export async function refreshNative(): Promise<void> {
     const { PushNotifications } = await import("@capacitor/push-notifications");
     const perm = await PushNotifications.checkPermissions();
     const receive = perm.receive as Receive;
-    if (receive === "denied") {
+    if (receive === "denied" || (receive === "granted" && (await blockedOnPhone()))) {
       await disableNative();
       return;
     }
@@ -261,6 +425,26 @@ export async function refreshNative(): Promise<void> {
   } catch {
     /* the next launch tries again */
   }
+}
+
+/**
+ * Send this phone's time zone again when it has moved since the server last
+ * took it. Called each time the app comes back to the front.
+ *
+ * The server matches each reminder against the hour on the reader's own
+ * clock, in the zone this phone last sent, and the phone sent it only at
+ * launch. A phone keeps an app in the background for days, so a reader who
+ * flew from New York to Athens and opened Purify where they had left it was
+ * still reminded on New York's hours (morning prayer at two in the
+ * afternoon) until the app was next closed and opened. Nothing is sent while
+ * the zone is the one the server has, and nothing for a phone that has not
+ * yet recorded one: its launch sends it anyway.
+ */
+export async function refreshNativeIfMoved(): Promise<void> {
+  if (!platform() || getItem(ON_KEY) !== "1") return;
+  const sent = getItem(ZONE_KEY);
+  if (sent === null || sent === tz()) return;
+  await refreshNative();
 }
 
 /**
@@ -307,20 +491,22 @@ export async function unlinkNative(): Promise<void> {
 }
 
 /**
- * A kept registration, with the times this phone holds now. It was kept with
- * the times of its moment, and the reader can have changed them since (signed
- * in and offline, say). Sent as it was, it put those older times, onboarding's
- * defaults as often as not, over the reader's new ones until the next launch.
+ * A kept registration, with the times this phone holds now and the zone it is
+ * in now. It was kept with the times and the zone of its moment, and the
+ * reader can have changed the times since (signed in and offline, say), or
+ * travelled. Sent as it was, it put those older times, onboarding's defaults
+ * as often as not, over the reader's new ones until the next launch, and the
+ * old zone with them.
  */
-function withKeptTimes(raw: string): string {
+function withKeptTimes(raw: string, zone: string): string {
   const kept = keptTimes();
-  if (!kept.morning && !kept.evening) return raw;
   try {
     const payload = JSON.parse(raw) as Record<string, unknown>;
     return JSON.stringify({
       ...payload,
       ...(kept.morning ? { morningTime: kept.morning } : {}),
       ...(kept.evening ? { eveningTime: kept.evening } : {}),
+      timezone: zone,
     });
   } catch {
     return raw;
@@ -331,15 +517,17 @@ function withKeptTimes(raw: string): string {
 export async function flushPendingNative(): Promise<void> {
   const raw = getItem(PENDING_KEY);
   if (!raw) return;
+  const zone = tz();
   try {
     const res = await apiFetch("/api/push/device", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: withKeptTimes(raw),
+      body: withKeptTimes(raw, zone),
     });
     if (res.ok) {
       removeItem(PENDING_KEY);
       setItem(ON_KEY, "1");
+      setItem(ZONE_KEY, zone);
     }
   } catch {
     /* leave stashed; next sign-in retries */

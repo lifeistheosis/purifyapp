@@ -10,9 +10,11 @@
 //   3. re-registers for push when reminders are on, so a token Apple or
 //      Google has changed reaches the server (lib/push/native.ts), and again
 //      after a sign-in, so the phone belongs to the account now signed in,
+//      and when the app comes back to the front in another time zone,
 //   4. gives a tapped notification its way into the app: the router. A
 //      hard navigation inside the shell is always handed the front door, so
-//      a tap that navigated by itself opened Today (lib/push/open.ts), and
+//      a tap that navigated by itself opened Today (lib/push/open.ts). The
+//      tap is listened for from the start, reminders on or not, and
 //   5. puts right the hard loads that still happen (a reload after a password
 //      change, a window.location move): the app comes up as the front door
 //      under another screen's address, and the router is asked for the screen
@@ -29,7 +31,7 @@ import { whenLanguageSettled } from "@/lib/i18n/launchLanguage";
 import { ENTRY_KEY, FRONT_DOOR_MARK, entryAction } from "@/lib/nav/entry";
 import { INTRO_BUILD_MS, INTRO_QUICK_BUILD_MS, LIFT_ANYWAY_MS } from "@/lib/platform/launchFrame";
 import { isNativeClient } from "@/lib/platform/native";
-import { refreshNative, relinkNative } from "@/lib/push/native";
+import { listenForTaps, refreshNative, refreshNativeIfMoved, relinkNative } from "@/lib/push/native";
 import { onlyTheHashChanges, setPushOpener } from "@/lib/push/open";
 import { READING_THEME_KEY, coerceReadingTheme } from "@/lib/reader/readingModes";
 import { createClient } from "@/lib/supabase/client";
@@ -140,11 +142,28 @@ export function NativeBridge() {
       };
       frame = requestAnimationFrame(say);
     });
+    // And the tap itself, from the first moment, whether or not reminders are
+    // on: a notification that launched the app is waiting for exactly this
+    // (lib/push/native.ts, listenForTaps). After the opener, so the tap finds
+    // it. Once per app life; the router changing again does not add another.
+    void listenForTaps();
     return () => {
       cancelAnimationFrame(frame);
       setPushOpener(null);
     };
   }, [router]);
+
+  // Back to the front in another time zone (a flight, with the app waiting in
+  // the background): the reminders follow the phone's clock now, not at the
+  // next launch (refreshNativeIfMoved sends nothing when the zone is the same).
+  useEffect(() => {
+    if (!isNativeClient()) return;
+    const onVisible = () => {
+      if (document.visibilityState === "visible") void refreshNativeIfMoved();
+    };
+    document.addEventListener("visibilitychange", onVisible);
+    return () => document.removeEventListener("visibilitychange", onVisible);
+  }, []);
 
   // A sign-in gives this phone to the account now signed in, without waiting
   // for the next launch (relinkNative). The callback only schedules the work:

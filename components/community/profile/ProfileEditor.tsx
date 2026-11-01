@@ -139,7 +139,7 @@ function draftFrom(p: MyProfile): Draft {
     nameColor: p.saved.nameColor ?? null,
     bannerMotion: p.saved.bannerMotion ?? null,
     hiddenBadges: p.hiddenBadges ?? [],
-    pushCommunity: p.settings?.pushCommunity ?? true,
+    pushCommunity: p.settings?.pushCommunity ?? false,
     showStreak: p.settings?.showStreak ?? true,
   };
 }

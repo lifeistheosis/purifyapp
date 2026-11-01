@@ -10,6 +10,7 @@ import "server-only";
 
 import { parseServiceAccount } from "../credentials";
 import { fcmTokenGone, reasonOf } from "../failures";
+import type { NativeDelivery } from "../lifetime";
 import type { SendResult } from "./apns";
 
 export type { SendResult };
@@ -81,9 +82,16 @@ async function getMessaging(): Promise<MessagingLike> {
  * importance: no banner, only a small icon in the status bar, so a broadcast
  * Firebase had accepted for 157 phones (2026-09-27) looked to a reader like
  * nothing had arrived. A build without the channel ignores the id and uses
- * that fallback, so naming it here is safe before the new build is out.
+ * the manifest's default, so naming it here is safe before the new build is
+ * out.
+ *
+ * "purify-notifications" from 1.8: the same channel without the badge on the
+ * app icon, which Android would not take off the old "purify". The app copies
+ * the reader's choices for the old channel into it and deletes the old one;
+ * a build from before has only "purify", its manifest default, and a push
+ * naming this id lands there.
  */
-export const ANDROID_CHANNEL_ID = "purify";
+export const ANDROID_CHANNEL_ID = "purify-notifications";
 
 /**
  * True once this process has delivered at least one push to Android.
@@ -95,26 +103,47 @@ export const ANDROID_CHANNEL_ID = "purify";
  */
 let proven = false;
 
+/**
+ * The message Firebase is handed for one push. Pure, so a test can read it.
+ *
+ * A reminder carries a lifetime (`ttl`, in milliseconds here, which the
+ * library turns into the seconds FCM wants) and a tag (lib/push/lifetime.ts):
+ * without the first, Firebase holds a message for a phone out of signal for
+ * four weeks and hands over every one of them when it comes back; without
+ * the second, each unread reminder stays in the shade beside the next one.
+ * Every other push goes without either, as before.
+ */
+export function fcmMessage(
+  token: string,
+  msg: { title: string; body: string; url: string },
+  delivery: NativeDelivery = {},
+) {
+  return {
+    token,
+    notification: { title: msg.title, body: msg.body },
+    data: { url: msg.url },
+    android: {
+      priority: "high" as const,
+      ...(delivery.ttlSeconds !== undefined ? { ttl: delivery.ttlSeconds * 1000 } : {}),
+      notification: {
+        channelId: ANDROID_CHANNEL_ID,
+        sound: "default",
+        // Android 7 and older have no channels and read this instead.
+        priority: "high" as const,
+        ...(delivery.tag ? { tag: delivery.tag } : {}),
+      },
+    },
+  };
+}
+
 export async function sendFcm(
   token: string,
   msg: { title: string; body: string; url: string },
+  delivery: NativeDelivery = {},
 ): Promise<SendResult> {
   const messaging = await getMessaging();
   try {
-    await messaging.send({
-      token,
-      notification: { title: msg.title, body: msg.body },
-      data: { url: msg.url },
-      android: {
-        priority: "high",
-        notification: {
-          channelId: ANDROID_CHANNEL_ID,
-          sound: "default",
-          // Android 7 and older have no channels and read this instead.
-          priority: "high",
-        },
-      },
-    });
+    await messaging.send(fcmMessage(token, msg, delivery));
     proven = true;
     return { ok: true };
   } catch (e) {

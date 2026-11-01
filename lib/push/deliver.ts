@@ -1,5 +1,6 @@
 import "server-only";
 
+import { getMessages } from "@/lib/i18n";
 import { pageAllIn, pageAllSettled } from "@/lib/supabase/pageAll";
 import type { createAdminClient } from "@/lib/supabase/admin";
 import { addFailure, emptyTally, tallyIsEmpty } from "./failures";
@@ -8,19 +9,22 @@ import {
   dueCampaigns,
   dueKind,
   reminderPayload,
+  STEP_MINUTES,
+  stepStart,
   type CampaignReminderRow,
   type ReminderKind,
 } from "./schedule";
 import { apnsConfigured, fcmConfigured, sendNativeOne, sendWebPushOne, webPushConfigured } from "./send";
 
-// The hourly delivery of opt-in prayer reminders, across every transport:
+// The delivery of opt-in prayer reminders, every ten minutes, across every
+// transport:
 //   - Web Push (push_subscriptions)  to browsers, signed with the VAPID keys
 //   - iOS      (device_push_tokens)  through APNs
 //   - Android  (device_push_tokens)  through FCM
 // and the one-a-day campaign reminder a reader may have turned on.
 //
-// For each row `dueKind` says whether this UTC hour is the reader's own
-// morning or evening hour (by their stored IANA zone), and the same small
+// For each row `dueKind` says whether this ten-minute step is the reader's
+// own morning or evening time (by their stored IANA zone), and the same small
 // payload goes out by the right transport. Each transport degrades to a dry
 // run (counts only, no throw) while its credentials are absent.
 //
@@ -33,8 +37,8 @@ import { apnsConfigured, fcmConfigured, sendNativeOne, sendWebPushOne, webPushCo
 // It is here so the heartbeat that does run, /api/cron/hourly-goals every ten
 // minutes, can carry it (deliverRemindersOnce), the way it already carries
 // lib/ops/maintenance.ts. The route still answers for a scheduler that calls
-// it directly; both go through the same hourly claim, so two callers in one
-// hour send once.
+// it directly; both go through the same claim on each ten-minute step, so two
+// callers in one step send once.
 
 type Admin = ReturnType<typeof createAdminClient>;
 
@@ -46,7 +50,7 @@ export type ReminderRun = {
   errors: string[];
 };
 
-/** Deliver everything due in this hour. No claim: the caller decides whether it may run. */
+/** Deliver everything due in this step. No claim: the caller decides whether it may run. */
 export async function deliverReminders(supa: Admin, now: Date): Promise<ReminderRun> {
   const web = await deliverWeb(supa, now);
   const native = await deliverNative(supa, now);
@@ -55,69 +59,142 @@ export async function deliverReminders(supa: Admin, now: Date): Promise<Reminder
   return { web, native, campaigns, errors };
 }
 
-/** The UTC hour a run belongs to, as the claim's name. */
+/** The UTC hour a moment belongs to, as the old hourly claim named it. */
 export function reminderHourKey(now: Date): string {
   return now.toISOString().slice(0, 13);
 }
 
-/** How far into the hour a run may still send when the claim cannot be asked. */
-const UNCLAIMED_RUN_MINUTES = 10;
+/** The ten-minute step a moment belongs to, as its claim's name: "2026-10-31T14:20". */
+export function reminderStepKey(now: Date): string {
+  return stepStart(now).toISOString().slice(0, 16);
+}
+
+type Claim = "mine" | "taken" | "unknown";
 
 /**
- * Ask for this UTC hour. "mine": this run took it. "taken": another run has
- * it. "unknown": the claim could not be asked at all.
+ * Ask for one ten-minute step. "mine": this run took it. "taken": another
+ * run has it. "unknown": the claim could not be asked at all.
  *
  * One row in rate_limits, taken atomically by rate_limit_hit: the first
- * caller in a UTC hour is told it is within budget, every later one that it
- * is over. The window is exactly an hour because that function's own tidying
- * drops rows whose window began more than an hour ago, and a claim has to
- * outlive its hour.
+ * caller for a step is told it is within budget, every later one that it is
+ * over. The window stays an hour, and only steps of the current UTC hour are
+ * ever asked for: the function files a row under the hour it is CALLED in
+ * and tidies rows whose hour is over, so a step asked for again in the next
+ * hour would find no row and be taken twice.
  *
  * Asked directly and not through lib/security/ratelimit.ts, which answers
  * "within budget" when the limiter fails. That is right for a request limit
- * and wrong here: it would read a broken limiter as six claims an hour.
+ * and wrong here: it would read a broken limiter as a claim on every run.
  */
-async function claimHour(supa: Admin, now: Date): Promise<"mine" | "taken" | "unknown"> {
+async function claimStep(supa: Admin, step: Date): Promise<Claim> {
   try {
     const { data, error } = await supa.rpc("rate_limit_hit", {
-      p_key: `push-deliver:${reminderHourKey(now)}`,
+      p_key: `push-deliver:${reminderStepKey(step)}`,
       p_window_seconds: 3600,
       p_max: 1,
     });
     if (error) {
-      console.warn("[push/deliver] the hourly claim could not be asked", error.message);
+      console.warn("[push/deliver] the claim could not be asked", error.message);
       return "unknown";
     }
     return data ? "taken" : "mine";
   } catch (e) {
-    console.warn("[push/deliver] the hourly claim could not be asked", e instanceof Error ? e.message : String(e));
+    console.warn("[push/deliver] the claim could not be asked", e instanceof Error ? e.message : String(e));
     return "unknown";
   }
 }
 
 /**
- * Deliver this hour's reminders unless a run has already claimed the hour.
+ * Whether the hourly rule this replaced already sent this UTC hour.
  *
- * Matching is by the reader's local HOUR, so a second run in the same hour
- * would send every due reader the same reminder again. The claim (claimHour)
- * is what lets a caller arrive every ten minutes and send once.
+ * Until 2026-10-31 the first run of each UTC hour claimed the hour
+ * (`push-deliver:2026-10-31T14`) and sent every reminder of it at once. In
+ * the hour this code first runs, that has happened already, and sending its
+ * steps again would remind every reader twice. Read, never written, so the
+ * old claim is never made by this code; its row is tidied with its hour, so
+ * after that hour this is one small read that finds nothing.
+ */
+async function hourAlreadySent(supa: Admin, now: Date): Promise<boolean> {
+  try {
+    const { data, error } = await supa
+      .from("rate_limits")
+      .select("key")
+      .eq("key", `push-deliver:${reminderHourKey(now)}`)
+      .limit(1);
+    return !error && Array.isArray(data) && data.length > 0;
+  } catch {
+    return false;
+  }
+}
+
+/** How many steps back a run looks for one that no run took (a run lost to a restart). */
+const CATCH_UP_STEPS = 5;
+
+/**
+ * Deliver the reminders of every step no run has claimed yet: this step,
+ * and those of the same UTC hour a lost run left behind.
  *
- * When the claim cannot be asked, the clock decides instead: a run in the
- * hour's first ten minutes goes ahead and a later one does not. Sending on
- * every run would be six reminders an hour for as long as the limiter is
- * down, and sending on none is how reminders stopped for a week. One caller
- * in six lands in those ten minutes, so that is still once an hour.
+ * Matching is by the reader's own ten-minute step, so a second run in a step
+ * would send its readers the same reminder again; the claim (claimStep) is
+ * what lets callers arrive at any pace and each step send once. The heartbeat
+ * comes every ten minutes, so a run normally finds one step of its own.
+ *
+ * When the claim cannot be asked, the run sends its own step and no other:
+ * each run is in a step of its own, so that is still once per step, and
+ * sending nothing is how reminders stopped for a week.
  */
 export async function deliverRemindersOnce(
   supa: Admin,
   now: Date,
-): Promise<{ claimed: false } | ({ claimed: true } & ReminderRun)> {
-  const claim = await claimHour(supa, now);
-  if (claim === "taken") return { claimed: false };
-  if (claim === "unknown" && now.getUTCMinutes() >= UNCLAIMED_RUN_MINUTES) return { claimed: false };
-  const run = await deliverReminders(supa, now);
-  if (run.errors.length > 0) console.error("[push/deliver] query failures", run.errors);
-  return { claimed: true, ...run };
+): Promise<{ claimed: false } | ({ claimed: true; steps: string[] } & ReminderRun)> {
+  const current = stepStart(now);
+  const hourStart = new Date(Math.floor(now.getTime() / 3_600_000) * 3_600_000);
+  if (await hourAlreadySent(supa, now)) return { claimed: false };
+  const steps: Date[] = [];
+  for (let k = CATCH_UP_STEPS; k >= 0; k--) {
+    const step = new Date(current.getTime() - k * STEP_MINUTES * 60_000);
+    if (step.getTime() >= hourStart.getTime()) steps.push(step);
+  }
+  const sent: { step: string; run: ReminderRun }[] = [];
+  for (const step of steps) {
+    const claim = await claimStep(supa, step);
+    if (claim === "taken") continue;
+    if (claim === "unknown" && step.getTime() !== current.getTime()) continue;
+    sent.push({ step: reminderStepKey(step), run: await deliverReminders(supa, step) });
+  }
+  if (sent.length === 0) return { claimed: false };
+  const errors = sent.flatMap((s) => s.run.errors);
+  if (errors.length > 0) console.error("[push/deliver] query failures", errors);
+  // The current step's counts, with every step's errors and the steps sent.
+  const last = sent[sent.length - 1].run;
+  return { claimed: true, steps: sent.map((s) => s.step), ...last, errors };
+}
+
+/**
+ * Each reader's language, for the words their reminder is sent in
+ * (profiles.preferred_language, 20260719): read only for the readers due in
+ * this run, a hundred at a time. Where the column is not applied, or the read
+ * fails, the map is empty and every reminder goes in English, as before;
+ * never a missing reminder for want of a language.
+ */
+async function languagesOf(supa: Admin, userIds: (string | null)[]): Promise<Map<string, string | null>> {
+  const ids = [...new Set(userIds.filter((id): id is string => typeof id === "string" && id !== ""))];
+  if (ids.length === 0) return new Map();
+  try {
+    const rows = await pageAllIn(ids, (some, from, to) =>
+      supa.from("profiles").select("id, preferred_language").in("id", some).order("id").range(from, to),
+    );
+    return new Map(
+      (rows as { id: string; preferred_language?: string | null }[]).map((r) => [r.id, r.preferred_language ?? null]),
+    );
+  } catch {
+    return new Map();
+  }
+}
+
+/** The reminder in the words of the reader it goes to. */
+function wordsFor(languages: Map<string, string | null>, userId: string | null): Readonly<Record<string, string>> {
+  return getMessages(userId ? languages.get(userId) : null);
 }
 
 // --- Web Push -----------------------------------------------------------
@@ -132,7 +209,7 @@ async function deliverWeb(
   const { data: rows, error } = await pageAllSettled((from, to) =>
     supa
       .from("push_subscriptions")
-      .select("endpoint, p256dh, auth, morning_time, evening_time, timezone")
+      .select("endpoint, p256dh, auth, user_id, morning_time, evening_time, timezone")
       .order("endpoint")
       .range(from, to),
   );
@@ -142,6 +219,7 @@ async function deliverWeb(
     endpoint: string;
     p256dh: string;
     auth: string;
+    userId: string | null;
     kind: ReminderKind;
   }[] = [];
   for (const r of rows ?? []) {
@@ -151,6 +229,7 @@ async function deliverWeb(
         endpoint: r.endpoint as string,
         p256dh: r.p256dh as string,
         auth: r.auth as string,
+        userId: (r.user_id as string | null) ?? null,
         kind,
       });
   }
@@ -166,11 +245,12 @@ async function deliverWeb(
 
   let sent = 0;
   let failed = 0;
+  const languages = await languagesOf(supa, candidates.map((c) => c.userId));
   for (const c of candidates) {
     const r = await sendWebPushOne(
       supa,
       { endpoint: c.endpoint, p256dh: c.p256dh, auth: c.auth },
-      { kind: c.kind, ...reminderPayload(c.kind) },
+      { kind: c.kind, ...reminderPayload(c.kind, wordsFor(languages, c.userId)) },
     );
     if (r.ok) sent++;
     else failed++;
@@ -188,7 +268,7 @@ async function deliverNative(
   const { data: rows, error } = await pageAllSettled((from, to) =>
     supa
       .from("device_push_tokens")
-      .select("token, platform, morning_time, evening_time, timezone")
+      .select("token, platform, user_id, morning_time, evening_time, timezone")
       .order("token")
       .range(from, to),
   );
@@ -197,6 +277,7 @@ async function deliverNative(
   const candidates: {
     token: string;
     platform: "ios" | "android";
+    userId: string | null;
     kind: ReminderKind;
   }[] = [];
   for (const r of rows ?? []) {
@@ -205,6 +286,7 @@ async function deliverNative(
       candidates.push({
         token: r.token as string,
         platform: r.platform as "ios" | "android",
+        userId: (r.user_id as string | null) ?? null,
         kind,
       });
   }
@@ -224,11 +306,15 @@ async function deliverNative(
   // Why each failure failed, so the run's own answer (and the log) says it.
   // A count alone is how 135 iPhones went unreached without a word.
   const failures = emptyTally();
+  const languages = await languagesOf(supa, candidates.map((c) => c.userId));
   for (const c of candidates) {
+    // With its kind, so the phone's push service drops it once it is hours
+    // late and a newer one replaces it on the screen (lib/push/lifetime.ts),
+    // and in the words of the reader it goes to.
     const res = await sendNativeOne(
       supa,
       { token: c.token, platform: c.platform },
-      reminderPayload(c.kind),
+      { kind: c.kind, ...reminderPayload(c.kind, wordsFor(languages, c.userId)) },
     );
     if (res.ok) sent++;
     else if (res.skipped) skipped++;
@@ -408,7 +494,7 @@ async function deliverCampaigns(
     }
     if (apnsConfigured() || fcmConfigured()) {
       for (const n of t.native) {
-        const r = await sendNativeOne(supa, n, payload);
+        const r = await sendNativeOne(supa, n, { kind: "campaign", ...payload });
         if (r.ok) sent++;
         else if (r.skipped) skipped++;
         else {

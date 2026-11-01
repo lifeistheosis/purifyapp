@@ -30,6 +30,22 @@ export type SaveResult = "saved" | "kept" | "failed";
 const DEFAULTS: ReminderTimes = { morning: MORNING_DEFAULT, evening: EVENING_DEFAULT };
 const HH_MM = /^([01]\d|2[0-3]):[0-5]\d$/;
 
+/**
+ * The step a reminder keeps to, in minutes: the server sends the reminders
+ * of one ten-minute step each time it runs (lib/push/schedule.ts,
+ * STEP_MINUTES, which must stay the same number). The time field offers the
+ * same step, and a time chosen inside one is shown and saved as the step's
+ * start, so the field says when the reminder comes.
+ */
+export const TIME_STEP_MINUTES = 10;
+
+/** A time down to its ten-minute step ("07:45" is "07:40"), or null for one that is not a time. */
+export function stepTime(value: unknown): string | null {
+  if (!isReminderTime(value)) return null;
+  const minute = Math.floor(Number(value.slice(3, 5)) / TIME_STEP_MINUTES) * TIME_STEP_MINUTES;
+  return `${value.slice(0, 2)}:${String(minute).padStart(2, "0")}`;
+}
+
 export function isReminderTime(value: unknown): value is string {
   return typeof value === "string" && HH_MM.test(value);
 }
@@ -54,8 +70,10 @@ export function shownTimes(...layers: (ReminderChange | null | undefined)[]): Re
 }
 
 /**
- * What leaving one time field saves: that time and not the other, and only
- * when it is a time that differs from the saved one. Null: nothing to save.
+ * What leaving one time field saves: that time down to its ten-minute step,
+ * and not the other, and only when its step differs from the saved time's
+ * (a time saved before the step, 06:15, is shown as 06:10 and is left alone
+ * when the field is). Null: nothing to save.
  *
  * The screen used to save both fields whenever either was left, the other
  * as it was shown. It showed 07:00 and 21:00 after every reload, so moving
@@ -66,6 +84,7 @@ export function timeChange(
   which: keyof ReminderTimes,
   value: string,
 ): ReminderChange | null {
-  if (!isReminderTime(value) || value === saved[which]) return null;
-  return which === "morning" ? { morning: value } : { evening: value };
+  const stepped = stepTime(value);
+  if (!stepped || stepped === stepTime(saved[which])) return null;
+  return which === "morning" ? { morning: stepped } : { evening: stepped };
 }

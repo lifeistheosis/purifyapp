@@ -3,7 +3,16 @@ import { readFileSync, readdirSync, statSync } from "node:fs";
 import { join } from "node:path";
 
 import { checkNotificationCopy, isDoctrinal, MAX_BODY, MAX_TITLE } from "../doctrine";
-import { NOTIFICATION_COPY, broadcastTemplates, campaignCopy, communityPushCopy, reminderCopy } from "../copy";
+import {
+  COMMUNITY_PUSH_KEYS,
+  NOTIFICATION_COPY,
+  REMINDER_PUSH_KEYS,
+  broadcastTemplates,
+  campaignCopy,
+  communityPushCopy,
+  eikonBoxAnnouncement,
+  reminderCopy,
+} from "../copy";
 
 /**
  * The test CONTRIBUTING.md has been claiming exists since 2026-08-10.
@@ -122,27 +131,81 @@ describe("the copy table", () => {
 });
 
 describe("community notifications (lib/community/push.ts)", () => {
-  it("name the reader who did it, and link to the post or the person", () => {
-    expect(communityPushCopy("reply", "Maria", "post-uuid")).toEqual({
-      title: "Maria replied to you",
-      body: "Their reply is in Community.",
+  const KINDS = ["reply", "mention", "follow", "name_day", "prayed", "gift", "question", "answer", "approved"] as const;
+  const LANGS = ["ar", "bg", "de", "el", "en", "es", "fil", "fr", "hu", "id", "it", "ka", "ne", "pl", "pt", "ro", "ru", "sr", "tr", "uk", "ur"];
+  const catalog = (lang: string) =>
+    JSON.parse(readFileSync(join(REPO, "lib", "i18n", "messages", `${lang}.json`), "utf8")) as Record<string, string>;
+
+  it("say what happened without naming anyone, and link to the post or the person", () => {
+    // Since 2026-11-01 (the owner's word): the name stays in the inbox, inside
+    // the app, and the lock screen, read by whoever is in the room, says only
+    // what happened.
+    expect(communityPushCopy("reply", "post-uuid")).toEqual({
+      title: "Someone replied to your post",
+      body: "It is in Community.",
       url: "/community#post-post-uuid",
     });
-    expect(communityPushCopy("prayed", "Maria", "maria.p").url).toBe("/community#@maria.p");
+    expect(communityPushCopy("prayed", "maria.p").url).toBe("/community#@maria.p");
+    expect(communityPushCopy("mention", null).url).toBe("/community#conversations");
+    expect(communityPushCopy("gift", null)).toMatchObject({ body: "It is in your account.", url: "/account" });
   });
 
-  it("leave out a name the bar would refuse, rather than send it", () => {
-    // A name with a digit, or an exclamation mark, cannot reach a lock screen.
-    expect(communityPushCopy("follow", "reader123456", "reader123456").title).toBe("A new follower");
-    expect(communityPushCopy("mention", "Hi!!", null).title).toBe("Someone mentioned you");
-    expect(communityPushCopy("mention", "Hi!!", null).url).toBe("/community#conversations");
+  it("take no name at all, so none can reach a lock screen", () => {
+    expect(communityPushCopy.length).toBeLessThanOrEqual(3);
+    expect(readFileSync(join(REPO, "lib", "community", "push.ts"), "utf8")).not.toMatch(/actor_name/);
+    for (const row of Object.values(NOTIFICATION_COPY)) expect(row.title, row.key).not.toContain("{name}");
   });
 
-  it("never carries what was written, and every one clears the bar", () => {
-    for (const kind of ["reply", "mention", "follow", "name_day", "prayed", "gift", "question", "answer", "approved"] as const) {
-      const c = communityPushCopy(kind, "Maria", "x");
-      expect(checkNotificationCopy(c), kind).toEqual([]);
+  it("are in all 21 languages, each its own, and every one clears the bar", () => {
+    const en = catalog("en");
+    for (const lang of LANGS) {
+      const words = catalog(lang);
+      for (const kind of KINDS) {
+        const keys = COMMUNITY_PUSH_KEYS[kind];
+        expect(words[keys.title], `${lang} ${kind}`).toBeTruthy();
+        expect(words[keys.body], `${lang} ${kind}`).toBeTruthy();
+        if (lang !== "en") expect(words[keys.title], `${lang} ${kind}`).not.toBe(en[keys.title]);
+        const c = communityPushCopy(kind, "x", words);
+        expect(checkNotificationCopy(c), `${lang} ${kind}`).toEqual([]);
+        // The reader's own words, not the English fallback.
+        expect(c.title, `${lang} ${kind}`).toBe(words[keys.title]);
+        expect(`${c.title} ${c.body}`.includes(String.fromCharCode(0x2014)), `${lang} ${kind}`).toBe(false);
+      }
     }
+  });
+
+  it("leave the prayer reminders in the reader's language too, from the cards' own lines", () => {
+    // The welcome questions show the reminders as cards in the reader's words
+    // (components/onboarding/RemindersOn.tsx); the lock screen now says the
+    // same, in all 21 languages, each clearing the bar.
+    for (const lang of LANGS) {
+      const words = catalog(lang);
+      for (const kind of ["morning", "evening"] as const) {
+        const c = reminderCopy(kind, words);
+        expect(checkNotificationCopy(c), `${lang} ${kind}`).toEqual([]);
+        expect(c.title, `${lang} ${kind}`).toBe(words[REMINDER_PUSH_KEYS[kind].title]);
+        expect(c.body, `${lang} ${kind}`).toBe(words[REMINDER_PUSH_KEYS[kind].body]);
+        expect(c.url).toBe(kind === "morning" ? "/prayers/morning" : "/prayers/evening");
+      }
+    }
+    // English is the rows' own words, and a missing or loud translation gives way to them.
+    expect(reminderCopy("morning", catalog("en"))).toEqual(reminderCopy("morning"));
+    expect(reminderCopy("evening", {}).title).toBe("Evening prayer");
+    const loud = { "onboard.reminders.morningTitle": "Pray now!", "onboard.reminders.morningBody": "3 left." };
+    expect(reminderCopy("morning", loud).title).toBe("Morning prayer");
+  });
+
+  it("are the English rows' own words in English", () => {
+    const en = catalog("en");
+    for (const kind of KINDS) {
+      expect(communityPushCopy(kind, "x", en), kind).toEqual(communityPushCopy(kind, "x"));
+    }
+  });
+
+  it("fall back to English for a translation that is missing or breaks the bar", () => {
+    expect(communityPushCopy("reply", "x", {}).title).toBe("Someone replied to your post");
+    const loud = { "push.community.reply": "Hurry, 3 replies!", "push.community.body": "Now." };
+    expect(communityPushCopy("reply", "x", loud).title).toBe("Someone replied to your post");
   });
 });
 
@@ -188,6 +251,34 @@ describe("no notification string lives outside the table", () => {
     const title = /title:\s*"([^"]*)"/.exec(sw);
     expect(title, "sw.js no longer declares a fallback title").not.toBeNull();
     expect(checkNotificationCopy({ title: title![1], body: "" })).toEqual([]);
+  });
+
+  it("holds every route that broadcasts to readers to the bar", () => {
+    // The admin broadcast was the first sender of free text the check did not
+    // reach; the EIKON Box announcement, to every Pro member's lock screen,
+    // was the second (until 2026-11-01). A route that broadcasts runs the
+    // same predicate the table is read against, or it fails here.
+    const routes = walk(join(REPO, "app", "api")).filter((f) => f.endsWith("route.ts"));
+    const senders = routes.filter((f) => /import\s*\{[^}]*\bbroadcast\b[^}]*\}\s*from\s*"@\/lib\/push\/send"/.test(readFileSync(f, "utf8")));
+    expect(senders.length).toBeGreaterThanOrEqual(2);
+    for (const file of senders) {
+      const src = readFileSync(file, "utf8");
+      expect(src, file.slice(REPO.length + 1)).toContain("checkNotificationCopy(");
+      // Checked before anything is sent.
+      expect(src.indexOf("checkNotificationCopy("), file.slice(REPO.length + 1)).toBeLessThan(src.indexOf("await broadcast("));
+    }
+  });
+
+  it("offers ready-made EIKON Box words that clear the bar as they stand", () => {
+    for (const name of ["The Nativity box", "Box 12", "Hurry!", "", "  The   Theophany box "]) {
+      const words = eikonBoxAnnouncement(name);
+      expect(checkNotificationCopy(words), name).toEqual([]);
+      expect(words.url).toBe("/account/eikon-box");
+    }
+    expect(eikonBoxAnnouncement("The Nativity box").title).toBe("The Nativity box is open");
+    expect(eikonBoxAnnouncement("Box 12").title).toBe("The EIKON Box is open");
+    // No date and no count in what is offered.
+    expect(eikonBoxAnnouncement("The Nativity box").body).not.toMatch(/\d/);
   });
 
   it("leaves the admin broadcast route with no copy of its own", () => {

@@ -3,6 +3,7 @@ import { ProfileSettings } from "@/components/profile/ProfileSettings";
 import { ProfileData } from "@/components/profile/ProfileData";
 import { ProfileDanger } from "@/components/profile/ProfileDanger";
 import { PushOptIn } from "@/components/profile/PushOptIn";
+import { CommunityPushSwitch } from "@/components/profile/CommunityPushSwitch";
 import { EmailPreferences } from "@/components/profile/EmailPreferences";
 import { PatronSaintPicker } from "@/components/profile/PatronSaintPicker";
 
@@ -20,8 +21,8 @@ export const metadata = { title: "Data" };
  *   - the reader's font, size, interlinear, calendar, language and the
  *     supporter mark are in Settings, where they can also be changed signed
  *     out (five of the six could be changed in both places);
- *   - prayer reminders and email are the Notifications screen
- *     (../notifications/page.tsx);
+ *   - prayer reminders, Community notifications and email are the
+ *     Notifications screen (../notifications/page.tsx);
  *   - the patron saint is on the Profile screen, with the rest of who the
  *     reader is.
  *
@@ -35,6 +36,7 @@ export default function DataTabPage() {
       <div className="hidden md:contents native-md-hidden" data-desktop-only="">
         <ProfileSettings />
         <PushOptIn />
+        <CommunityPushSwitch />
         <EmailPreferences />
         <PatronSaintPicker />
       </div>
