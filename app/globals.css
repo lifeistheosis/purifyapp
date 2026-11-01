@@ -3636,14 +3636,15 @@ html[data-reading-mode="monastery"] {
    black section below.
 
    This palette adds no yellow and no gold, and takes one away: the feast
-   marks, real gold on Dark, turn silver as they do on Candlelight. What
-   Dark colours for a reason is left as Dark has it: the fasting registers
-   (--fast-*, the tan of --fast-fast and the amber of --fast-wine-oil among
-   them), the liturgical ones (--tone-*: crimson, green, and a warm grey
-   where gold once was), and the Premium tokens (--color-premium*), silver
-   and white on every dark palette since 1.8. So a tan and an amber are still
-   seen on this palette wherever Dark shows them. Any of them can be given a
-   neutral value in the block below, and the test then holds that too.
+   marks, real gold on Dark when this was written, turn silver as they do on
+   Candlelight. What Dark colours for a reason is left as Dark has it: the
+   fasting registers (--fast-*: the tan and the amber they had went grey and
+   purple in 1.7.1), the liturgical ones (--tone-*: crimson, green, and the
+   white light where gold once was), and the Premium tokens
+   (--color-premium*), silver and white on every dark palette since 1.8. No
+   gold or yellow is left in any of them (lib/ui/__tests__/noGold.test.ts).
+   Any of them can be given a neutral value in the block below, and the test
+   then holds that too.
    lib/reader/__tests__/trueBlack.test.ts reads these blocks and holds the
    ground, the accents and the neutrality. */
 html[data-reading-mode="black"] {
@@ -3690,8 +3691,10 @@ html[data-reading-mode="parchment"] {
  --ink-rubric: 150 40 32;
 
  /* Vignette and sheen invert: a black wash and a white sheen are both
-    wrong on a light ground. */
- --menaion-vignette: 120 100 60;
+    wrong on a light ground. The vignette is a warm grey of the paper's own
+    ink, as light as the khaki it was (120 100 60) and with none of its gold
+    (1.8, refinement 2). */
+ --menaion-vignette: 110 100 84;
  --panel-sheen: 0 0 0;
 
  /* Liturgical and fasting registers, darkened to hold contrast on paper.
@@ -3771,7 +3774,6 @@ html[data-reading-mode="parchment"] {
  --color-rose-300: #be123c;
  --color-red-300: #b91c1c;
  --color-sky-300: #0369a1;
- --color-amber-200: #92400e;
 }
 
 /* The Premium pill, silver (1.8): on paper the sheen is a pale pearl, lit
@@ -3829,17 +3831,19 @@ html[data-reading-mode="parchment"] .lm-violet {
 html[data-reading-mode="parchment"] .lm-violet-wave {
  fill: rgb(124 82 196 / 0.07);
 }
-/* The soft wave along a hero card's foot. */
+/* The soft wave along a hero card's foot: a shade of the page's own ink
+   (it was a khaki gold, 120 95 50, until refinement 2 of 1.8). */
 html[data-reading-mode="parchment"] .lm-wave {
- fill: rgb(120 95 50 / 0.12);
+ fill: rgb(43 35 23 / 0.08);
 }
 /* The reader's initials disc (components/profile/InitialsAvatar.tsx). */
 html[data-reading-mode="parchment"] .lm-avatar {
  background: linear-gradient(155deg, #fbf6ea 0%, #efe5d0 100%) !important;
 }
-/* Discover's cards: paper with the same gold pool in the corner. */
+/* Discover's cards: paper with a white light in the corner, as a card has
+   (it was a gold pool until refinement 2 of 1.8). */
 html[data-reading-mode="parchment"] .lm-gold {
- background: radial-gradient(120% 100% at 0% 0%, rgb(176 138 46 / 0.16) 0%, transparent 55%),
+ background: radial-gradient(120% 100% at 0% 0%, rgb(255 255 255 / 0.55) 0%, transparent 55%),
   linear-gradient(155deg, #f9f3e5 0%, #f1e8d4 100%) !important;
 }
 
@@ -3856,11 +3860,12 @@ html[data-reading-mode="parchment"] .lm-invert {
 }
 
 /* Wells: bg-black/20 and /30 set a panel or a field a shade into a dark
-   page; on paper they turned grey mud under ink. A warm shade instead.
+   page; on paper they turned grey mud under ink. A warm shade instead, of
+   the page's own ink (a khaki gold until refinement 2 of 1.8).
    Heavier blacks are dim overlays behind a sheet and stay as they are. */
 html[data-reading-mode="parchment"] .bg-black\/20,
 html[data-reading-mode="parchment"] .bg-black\/30 {
- background-color: rgb(120 95 50 / 0.07);
+ background-color: rgb(43 35 23 / 0.05);
 }
 /* Fields follow the page: a date or time picker forced to the dark scheme
    opened as a black panel over paper. */
@@ -3904,7 +3909,6 @@ html[data-reading-mode="parchment"] .dark-island {
  --color-rose-300: oklch(81% 0.117 11.638);
  --color-red-300: oklch(80.8% 0.114 19.571);
  --color-sky-300: oklch(82.8% 0.111 230.318);
- --color-amber-200: oklch(92.4% 0.12 95.746);
  color-scheme: dark;
  color: var(--color-paper);
 }
@@ -4111,36 +4115,39 @@ html[data-reading-mode="parchment"] .lit-surface {
    icon set: the glyphs already resolve through --color-gold and
    --color-paper, so the block IS the icon recolour.
 
-   Brand family only: gold, deep navy, cream, rubric red, and restrained
-   variants of those. Body text (paper on night) holds above 12:1 in both;
-   gold on night holds above 8:1; the rubric red on the Cappadocian ground
-   holds 5.2:1, above AA for the feast names and day numbers it colours.
+   Brand family only: deep navy, cream, rubric red, and the house's white
+   and silver for the accent, as on Dark. They were gold until 1.8; the
+   owner, 2026-10-28: the accent is a glowing white, never yellow
+   (refinement 2). Body text (paper on night) holds above 12:1 in both; the
+   accent on night holds above 14:1; the rubric red on the Cappadocian
+   ground holds 5.2:1, above AA for the feast names and day numbers it
+   colours.
 
    Adding one: copy a block, keep the six --color-* tokens and the well,
    check the contrast pairs above, then follow the list in
    lib/reader/readingModes.ts. */
 
-/* Councils: deep navy and gold, cream ink. */
+/* Councils: deep navy, cream ink, the white and silver accent. */
 html[data-reading-mode="councils"] {
  --color-night: #0a1020;
  --color-night-soft: #141c31;
  --color-night-deep: #060a16;
  --color-paper: #efe7d3;
- --color-gold: #d8b25c;
- --color-gold-soft: #b99640;
- --color-gold-pale: #eddcaa;
+ --color-gold: #eaeaec;
+ --color-gold-soft: #cfcfd3;
+ --color-gold-pale: #f4f4f5;
 }
 
-/* Cappadocian: a warm dusk ground, cream ink, and the rubric red of an
-   icon for the calendar's feast names and numbers. */
+/* Cappadocian: a warm dusk ground, cream ink, the white and silver accent,
+   and the rubric red of an icon for the calendar's feast names and numbers. */
 html[data-reading-mode="cappadocian"] {
  --color-night: #160f12;
  --color-night-soft: #221820;
  --color-night-deep: #0f090c;
  --color-paper: #f1e6d2;
- --color-gold: #cfa65a;
- --color-gold-soft: #ad8a42;
- --color-gold-pale: #e9d6a6;
+ --color-gold: #eaeaec;
+ --color-gold-soft: #cfcfd3;
+ --color-gold-pale: #f4f4f5;
  --ink-rubric: 214 78 62;
 }
 
@@ -4167,12 +4174,14 @@ html[data-reading-mode="parchment"] .lic-notes .fq,
 html[data-reading-mode="parchment"] .lic-notes .fqa {
  color: rgba(43, 35, 23, 0.72);
 }
+/* The cross-references and the note a link lands on: Parchment's accent, the
+   ink grey #45454b, where they were a dark gold until refinement 2 of 1.8. */
 html[data-reading-mode="parchment"] .lic-notes .xt a,
 html[data-reading-mode="parchment"] .lic-notes .xt {
- color: rgba(109, 88, 45, 0.85);
+ color: rgba(69, 69, 75, 0.85);
 }
 html[data-reading-mode="parchment"] .lic-notes .lic-note:target {
- background-color: rgba(124, 98, 29, 0.14);
+ background-color: rgba(69, 69, 75, 0.12);
 }
 
 /* ── Onboarding entrances ─────────────────────────────────────────────
@@ -4952,12 +4961,12 @@ html[data-reading-mode="parchment"] .testers-dot { box-shadow: none; }
 .set-mode-page[data-palette="councils"] {
  --mp-ground: #0a1020;
  --mp-ink: #efe7d3;
- --mp-accent: #d8b25c;
+ --mp-accent: #eaeaec;
 }
 .set-mode-page[data-palette="cappadocian"] {
  --mp-ground: #160f12;
  --mp-ink: #f1e6d2;
- --mp-accent: #cfa65a;
+ --mp-accent: #eaeaec;
 }
 /* The light from above that every page catches. */
 .set-mode-page::after {
@@ -5392,7 +5401,7 @@ html[data-reading-mode="parchment"] .set-slider-track {
  box-shadow: inset 0 2px 5px rgb(70 52 20 / 0.2), inset 0 0 0 1px rgb(43 35 23 / 0.08);
 }
 html[data-reading-mode="parchment"] .set-day {
- background: rgb(120 95 50 / 0.07);
+ background: rgb(43 35 23 / 0.05);
  box-shadow: inset 0 1px 3px rgb(70 52 20 / 0.18), 0 1px 0 rgb(255 255 255 / 0.6);
 }
 
@@ -6901,7 +6910,7 @@ html[data-reading-mode="parchment"] .part-segment[data-state="current"] {
 }
 
 html[data-reading-mode="parchment"] .community-halves {
- background-color: rgb(120 95 50 / 0.08);
+ background-color: rgb(43 35 23 / 0.06);
  box-shadow: inset 0 2px 6px rgb(70 52 20 / 0.18);
 }
 html[data-reading-mode="parchment"] .community-half-thumb {
@@ -9332,7 +9341,7 @@ html[data-reading-mode="parchment"] .chant-dock {
  pointer-events: none;
 }
 html[data-reading-mode="parchment"] .chant-versions {
- box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.7), inset 0 0 0 1px rgb(80 60 20 / 0.1), 0 14px 26px -16px rgb(60 40 10 / 0.4);
+ box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.7), inset 0 0 0 1px rgb(43 35 23 / 0.1), 0 14px 26px -16px rgb(60 40 10 / 0.4);
 }
 html[data-reading-mode="parchment"] .chant-versions > li + li::before {
  box-shadow: none;

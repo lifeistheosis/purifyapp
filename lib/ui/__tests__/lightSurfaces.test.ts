@@ -56,7 +56,7 @@ const SAFE: Record<string, string> = {
   "app/icon.tsx": "the generated favicon, an image",
   "app/apple-icon.tsx": "the generated home screen icon, an image",
   "app/(app)/u/[handle]/opengraph-image.tsx": "a shared profile's link preview card, an image",
-  "components/saints/SaintIcon.tsx": "a gilded icon stand-in: gold on dark on every palette, its letters in fixed cream",
+  "components/saints/SaintIcon.tsx": "an icon stand-in: a dark grey panel on every palette, its letters in fixed cream",
   "components/prayers/PrayerIcon.tsx": "the frame behind an icon image, with nothing written on it",
   "components/prayers/PrayerSlideshow.tsx": "the frame behind an icon image, with nothing written on it",
   "components/profile/ImageCropSheet.tsx": "the stage behind a photo being cropped, with nothing written on it",

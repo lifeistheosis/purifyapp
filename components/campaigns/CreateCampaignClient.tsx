@@ -393,7 +393,7 @@ function SelectCard({
       aria-pressed={selected}
       className={`group relative w-full rounded-xl border px-4 py-3 text-left transition-[transform,translate,scale,border-color,background-color,box-shadow] duration-150 active:scale-[0.98] ${
         selected
-          ? "border-gold/60 bg-gold/[0.10] shadow-[0_0_0_1px_rgba(212,175,55,0.22)]"
+          ? "border-gold/60 bg-gold/[0.10] shadow-[0_0_0_1px_color-mix(in_srgb,var(--color-gold)_22%,transparent)]"
           : "border-paper/12 bg-paper/[0.02] hover:border-paper/30 hover:bg-paper/[0.04]"
       }`}
     >

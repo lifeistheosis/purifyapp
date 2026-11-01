@@ -38,6 +38,7 @@ import {
   SEASONAL_DECORATIONS,
   SEASONAL_EFFECTS,
   THEMES,
+  bannerNeedsPlus,
   inSeason,
   nextSeasonStart,
   normalizeHex,
@@ -55,8 +56,10 @@ import { dateLocale } from "@/lib/i18n/deviceDates";
  * Editing your Community profile, with the card drawn live beside the form.
  *
  * Free for everyone: picture, @handle, status line, about, patron saint,
- * favourite verse and a banner colour. With Purify Plus, like Discord Nitro:
- * a banner picture, a two-colour theme, an avatar frame and a profile effect.
+ * favourite verse and a banner colour, gold excepted. With Purify Plus, like
+ * Discord Nitro: a banner picture, a two-colour theme, an avatar frame, a
+ * profile effect, and a gold banner (lib/profile/cosmetics.ts
+ * bannerNeedsPlus: gold on a profile is Plus only, the owner's word).
  *
  * A reader without Plus can try every Plus option on the preview before
  * paying; only saving it asks for Plus. The server holds the same line
@@ -99,6 +102,13 @@ type Patron = { slug: string; name: string };
 const PARISH_MAX = 80;
 
 const PLUS_KEYS: readonly (keyof Draft)[] = ["themePrimary", "themeAccent", "decoration", "effect", "nameColor", "bannerMotion", "hiddenBadges"];
+
+/**
+ * Where the colour picker starts, and what the moving banners are shown over,
+ * while no banner colour is chosen: a neutral grey. It was the gold banner
+ * until 1.8, which put gold in front of every reader (gold is Plus only).
+ */
+const NO_BANNER = "#3a3a40";
 
 const STATUS_MAX = 60;
 const BIO_MAX = 190;
@@ -148,8 +158,14 @@ function minutesLeft(changedAt: string | null): number {
   return left > 0 ? Math.ceil(left / 60000) : 0;
 }
 
+/** A banner colour changed to gold: a Plus option, tried on like the others. */
+function goldBannerChanged(a: Draft, b: Draft): boolean {
+  return a.bannerColor !== b.bannerColor && bannerNeedsPlus(a.bannerColor);
+}
+
 function plusChanged(a: Draft, b: Draft): boolean {
   return (
+    goldBannerChanged(a, b) ||
     a.themePrimary !== b.themePrimary ||
     a.themeAccent !== b.themeAccent ||
     a.decoration !== b.decoration ||
@@ -292,9 +308,14 @@ export function ProfileEditor() {
   };
 
   const dirty = JSON.stringify(draft) !== JSON.stringify(saved);
+  // A gold banner tried on by a reader without Plus is a Plus option, not a free change.
+  const goldTried = !subscribed && goldBannerChanged(draft, saved);
   // Changes outside the Plus options, which anyone can save.
   const freeDirty = (Object.keys(draft) as (keyof Draft)[]).some(
-    (k) => !PLUS_KEYS.includes(k) && JSON.stringify(draft[k]) !== JSON.stringify(saved[k]),
+    (k) =>
+      !PLUS_KEYS.includes(k) &&
+      !(k === "bannerColor" && goldTried) &&
+      JSON.stringify(draft[k]) !== JSON.stringify(saved[k]),
   );
 
   function errorText(code: string | null): string {
@@ -338,7 +359,8 @@ export function ProfileEditor() {
     if (draft.bio !== saved.bio) patch.bio = draft.bio.trim() || null;
     if (draft.patronSaint !== saved.patronSaint) patch.patronSaint = draft.patronSaint || null;
     if (verse !== verseOf(saved)) patch.favoriteVerse = verse || null;
-    if (draft.bannerColor !== saved.bannerColor) patch.bannerColor = draft.bannerColor;
+    // A gold banner goes only with Plus, as the Plus options below do.
+    if (draft.bannerColor !== saved.bannerColor && !goldTried) patch.bannerColor = draft.bannerColor;
     if (draft.parish !== saved.parish) patch.parish = draft.parish.trim() || null;
     if (draft.private !== saved.private) patch.private = draft.private;
     if (draft.hidePosts !== saved.hidePosts) patch.hidePosts = draft.hidePosts;
@@ -383,6 +405,7 @@ export function ProfileEditor() {
       ? fresh
       : {
           ...fresh,
+          bannerColor: goldTried ? draft.bannerColor : fresh.bannerColor,
           themePrimary: draft.themePrimary,
           themeAccent: draft.themeAccent,
           decoration: draft.decoration,
@@ -723,7 +746,12 @@ export function ProfileEditor() {
                 <Swatch
                   key={c.id}
                   selected={draft.bannerColor === c.hex}
-                  label={t(`profile.color.${c.id}`)}
+                  // Gold is a Plus colour: named so, and tried on like the Plus options.
+                  label={
+                    !subscribed && bannerNeedsPlus(c.hex)
+                      ? `${t(`profile.color.${c.id}`)} · ${t("profile.plusTag")}`
+                      : t(`profile.color.${c.id}`)
+                  }
                   onClick={() => set({ bannerColor: c.hex })}
                 >
                   <span className="block size-full rounded-full" style={{ background: c.hex }} />
@@ -736,7 +764,7 @@ export function ProfileEditor() {
                 </svg>
                 <input
                   type="color"
-                  value={draft.bannerColor ?? "#8f6f35"}
+                  value={draft.bannerColor ?? NO_BANNER}
                   onChange={(e) => set({ bannerColor: e.target.value })}
                   className="absolute inset-0 cursor-pointer opacity-0"
                 />
@@ -933,7 +961,7 @@ export function ProfileEditor() {
               <Field label={t("profile.bannerMotion")}>
                 <div className="flex flex-wrap gap-2" role="radiogroup" aria-label={t("profile.bannerMotion")}>
                   <OptionTile selected={!draft.bannerMotion} label={t("profile.none")} onClick={() => set({ bannerMotion: null })} wide>
-                    <span className="block h-10 w-16 rounded-md" style={{ background: normalizeHex(draft.bannerColor) ?? "#8f6f35" }} />
+                    <span className="block h-10 w-16 rounded-md" style={{ background: normalizeHex(draft.bannerColor) ?? NO_BANNER }} />
                   </OptionTile>
                   {BANNER_MOTIONS.map((m) => (
                     <OptionTile
@@ -944,7 +972,7 @@ export function ProfileEditor() {
                       wide
                     >
                       <ProfileBanner
-                        cosmetics={{ ...cosmetics, bannerMotion: m, bannerColor: normalizeHex(draft.bannerColor) ?? "#8f6f35" }}
+                        cosmetics={{ ...cosmetics, bannerMotion: m, bannerColor: normalizeHex(draft.bannerColor) ?? NO_BANNER }}
                         className="h-10 w-16 rounded-md"
                       />
                     </OptionTile>

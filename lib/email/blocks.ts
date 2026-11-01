@@ -87,9 +87,9 @@ export function bigValue(html: string): string {
   return `<p style="margin:0 0 20px;font-family:${SANS};font-size:24px;font-weight:600;letter-spacing:1px;color:${T.heading}">${html}</p>`;
 }
 
-/** An inline link inside running text. */
+/** An inline link inside running text, underlined: on night it is white beside light grey words. */
 export function link(href: string, label: string): string {
-  return `<a href="${escapeHtml(href)}" style="color:${T.link};text-decoration:none">${label}</a>`;
+  return `<a href="${escapeHtml(href)}" style="color:${T.link};text-decoration:underline">${label}</a>`;
 }
 
 /** The one call to action. A table, because Outlook ignores padding on an <a>. */

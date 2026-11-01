@@ -16,8 +16,9 @@ import type { CSSProperties } from "react";
  *
  * So: the Today tab's neutral fill, a hairline instead of a ring, no glow,
  * and the letters in the reader's own text colour. The saint icon fallback
- * (components/saints/SaintIcon.tsx) is NOT this and keeps its gilding on
- * purpose: it stands in for an icon, and an icon is gilded.
+ * (components/saints/SaintIcon.tsx) is NOT this: it stands in for an icon,
+ * a framed dark panel. It kept its gilding until 1.8, when it went grey too
+ * (no gold anywhere in the app, refinement 2).
  *
  * ── One letter or two ────────────────────────────────────────────────────
  *

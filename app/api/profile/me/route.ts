@@ -6,7 +6,16 @@ import { isTableAbsent } from "@/lib/admin/tableAbsent";
 import { corsPreflight, corsRoute } from "@/lib/api/cors";
 import { getBook } from "@/lib/bible/books";
 import { STANDING_BADGES, isBadgeId } from "@/lib/profile/badges";
-import { inSeason, isBannerMotion, isDecoration, isEffect, isNameColor, normalizeHex, subscriptionTier } from "@/lib/profile/cosmetics";
+import {
+  bannerNeedsPlus,
+  inSeason,
+  isBannerMotion,
+  isDecoration,
+  isEffect,
+  isNameColor,
+  normalizeHex,
+  subscriptionTier,
+} from "@/lib/profile/cosmetics";
 import { findLinks } from "@/lib/community/spam";
 import { cleanSocialLinks } from "@/lib/profile/socialLinks";
 import { censorPost, getBlockedHosts, handleIsBlocked, textHasListedWord } from "@/lib/moderation/server";
@@ -37,8 +46,10 @@ export const dynamic = "force-dynamic";
  * Purify's own library; and the Plus line. A Plus cosmetic is saved only
  * with an active Plus or Pro subscription, judged from the live dates
  * (lib/profile/cosmetics.ts subscriptionTier), never from the pre-launch
- * open gate, the same rule as Pro's free shipping. Clearing one is always
- * allowed, so a lapsed reader can still tidy up.
+ * open gate, the same rule as Pro's free shipping. A gold banner colour is
+ * one (bannerNeedsPlus: gold on a profile is for Plus members only, the
+ * owner's word of 2026-10-31); every other banner colour is free. Clearing
+ * one is always allowed, so a lapsed reader can still tidy up.
  *
  * The banner picture has its own route (../banner), because it is a file.
  */
@@ -326,7 +337,10 @@ async function handlePUT(req: Request) {
   if (p.hiddenBadges !== undefined) {
     hidden = [...new Set(p.hiddenBadges.filter((b) => isBadgeId(b) && !STANDING_BADGES.includes(b)))];
   }
-  if (Object.values(plusSets).some((v) => v !== null) || (hidden && hidden.length > 0)) {
+  // A gold banner colour is Plus (set above with the free fields, refused
+  // here before anything is written); any other colour, or none, is free.
+  const goldBanner = p.bannerColor != null && bannerNeedsPlus(p.bannerColor);
+  if (Object.values(plusSets).some((v) => v !== null) || (hidden && hidden.length > 0) || goldBanner) {
     const { data: ent } = await admin
       .from("entitlements")
       .select("plus_until, pro_until")

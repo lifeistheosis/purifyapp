@@ -21,16 +21,18 @@ export type SpineTint =
   | "catholicEpistle"
   | "revelation";
 
+// No gold or tan bands (1.8, refinement 2): the three that were gold, tan
+// and bronze are silver greys of three weights.
 const BAND: Record<SpineTint, string> = {
-  pentateuch: "bg-[#c89e2c]",
+  pentateuch: "bg-[#c4c4c9]",
   history: "bg-sage",
   wisdom: "bg-[#eaeaec]",
   majorProphets: "bg-[#6b85b5]",
   minorProphets: "bg-[#4f6b8c]",
   deuterocanon: "bg-[#a86c6c]",
   gospel: "bg-crimson",
-  acts: "bg-[#b5854a]",
-  paulineEpistle: "bg-[#8a6c2a]",
+  acts: "bg-[#9b9ba3]",
+  paulineEpistle: "bg-[#7a7a82]",
   catholicEpistle: "bg-[#6b6470]",
   revelation: "bg-[#7400bb]",
 };

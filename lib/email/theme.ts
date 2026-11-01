@@ -41,7 +41,10 @@ export type EmailTheme = {
   label: string;
   /** A feast day, a tracking number, anything the eye should land on. */
   mark: string;
-  /** Links inside running text. Never `accent`: on night that is near-white. */
+  /**
+   * Links inside running text, underlined (lib/email/blocks.ts link), so a
+   * link is found by its line and not only by a colour.
+   */
   link: string;
   /** A recessed well: a quoted support message, a reviewer's note. */
   well: string;
@@ -67,8 +70,10 @@ export const EMAIL_THEMES: Record<EmailMode, EmailTheme> = {
     accent: "#eaeaec",
     onAccent: "#101013",
     label: "#bdbdc3",
-    mark: "#d4af37",
-    link: "#d4af37",
+    // White, as the app's own Dark palette marks a feast since 1.8; it was
+    // the gold #d4af37 (refinement 2: no gold or yellow in Purify).
+    mark: "#ffffff",
+    link: "#ffffff",
     well: "#141417",
     cardRadius: 16,
     buttonRadius: 999,
