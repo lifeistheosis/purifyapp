@@ -9,7 +9,7 @@ import { ChevronRight } from "@/components/ui/icons/ChevronRight";
 import { eraKey, themeKey, traditionKey, type ThemeId } from "@/lib/reading/catalog";
 import type { Provenance } from "@/lib/reading/provenance";
 import type { HeaderCard } from "@/lib/reading/select";
-import { loadPosition } from "@/lib/reader/position";
+import { loadPosition, placeHash, type WorkPlace } from "@/lib/reader/position";
 
 import { readingTime } from "./CoverRow";
 import { RoundIcon } from "./FeaturedWork";
@@ -149,30 +149,31 @@ export function BookHeader({
 
 /**
  * Start reading, at the first section; or, where this device has a place
- * saved in the work (lib/reader/position.ts), Continue reading there, with
- * which section it is. Decided after the page wakes: the server cannot know.
+ * saved in the work (lib/reader/position.ts), Continue reading there, at the
+ * paragraph the reader stopped at (1.8, note 79), with which section it is.
+ * Decided after the page wakes: the server cannot know.
  * A council's document keeps its place the same way, under "councils/<its
  * council>" (components/councils/CouncilBookHeader.tsx).
  */
 export function StartReading({ saintSlug, workSlug, first, total }: { saintSlug: string; workSlug: string; first: number; total: number }) {
   const { t } = useTranslate();
-  const [saved, setSaved] = useState<number | null>(null);
+  const [saved, setSaved] = useState<WorkPlace | null>(null);
   useEffect(() => {
     const pos = loadPosition(saintSlug, workSlug);
     // Read once the page has woken: the server has no saved place to draw.
     // eslint-disable-next-line react-hooks/set-state-in-effect
-    if (pos && pos.sectionN > first) setSaved(pos.sectionN);
+    if (pos && (pos.sectionN > first || pos.paragraph > 0)) setSaved({ sectionN: pos.sectionN, paragraph: pos.paragraph });
   }, [saintSlug, workSlug, first]);
   return (
     <div className="mt-6 flex flex-col items-center gap-1.5 md:items-start">
       <a
-        href={`#s${saved ?? first}`}
+        href={saved ? placeHash(saved) : `#s${first}`}
         className="tap-press inline-flex h-12 items-center rounded-pill bg-paper px-7 font-sans text-ui font-semibold text-night hover:bg-paper/90"
       >
         {saved !== null ? t("reading.continue") : t("reading.work.start")}
       </a>
       {saved !== null ? (
-        <span className="font-sans text-caption text-paper/50">{t("saints.sectionOf", { n: saved - first + 1, total })}</span>
+        <span className="font-sans text-caption text-paper/50">{t("saints.sectionOf", { n: saved.sectionN - first + 1, total })}</span>
       ) : null}
     </div>
   );

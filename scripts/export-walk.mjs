@@ -2847,15 +2847,16 @@ await section(31, async () => {
     }
     await opened.page.waitForFunction(() => document.getElementById("s6"), null, { timeout: 20000 }).catch(() => {});
     await opened.page.waitForTimeout(1500);
-    const at = await opened.page.evaluate(() => ({ y: Math.round(window.scrollY), s6: Math.round(document.getElementById("s6")?.getBoundingClientRect().top ?? -1) }));
+    const at = await opened.page.evaluate(() => ({ y: Math.round(window.scrollY), p6: Math.round(document.getElementById("p-6-0")?.getBoundingClientRect().top ?? -1) }));
     await opened.ctx.close();
     return at;
   };
   const resumed = await visit(false);
-  // The section stops under the bars, not at the very top: the page keeps
-  // 72px clear (scroll-padding-top) and a section keeps six rem more
-  // (scroll-mt-24), about 174px on a phone.
-  must(resumed.y > 200 && resumed.s6 >= 0 && resumed.s6 < 240, `a reader who has not touched the work is taken to their saved section (y ${resumed.y}, section 6 at ${resumed.s6})`);
+  // The place is the paragraph since 1.8's round 6 (note 79): a place saved
+  // before then has none, so the section's first paragraph is stood at the
+  // reading place (lib/ui/readingPlace.ts): centred when short, its top two
+  // fifths down when long, a tenth down when taller than the room.
+  must(resumed.y > 200 && resumed.p6 > 0 && resumed.p6 < 844 * 0.55, `a reader who has not touched the work is taken to their saved section, its first paragraph at the reading place (y ${resumed.y}, at ${resumed.p6})`);
   const left = await visit(true);
   must(left.y < 100, `a reader who touched the page before the text arrived is left where they are (y ${left.y})`);
   const css = fs.readdirSync(path.join(OUT, "_next/static/chunks")).filter((f) => f.endsWith(".css")).map((f) => fs.readFileSync(path.join(OUT, "_next/static/chunks", f), "utf8")).join("\n");

@@ -26,10 +26,16 @@ import { SectionBookmarkButton } from "./SectionBookmarkButton";
 import { MobileWorkPill } from "./MobileWorkPill";
 import { FONT_CLASSES, SIZE_CLASSES, useReaderPrefs } from "@/components/reader/ReaderPrefs";
 import {
+  arrivalPlace,
   clearPosition,
   loadPosition,
+  placeOfHash,
   savePosition,
+  type WorkPlace,
 } from "@/lib/reader/position";
+import { elementOfPlace, paragraphAtReadingPlace } from "@/lib/saints/paragraphInView";
+import { goToReadingPlace } from "@/lib/ui/readingPlace";
+import { watchOwnScroll } from "@/lib/ui/ownScroll";
 import { useTranslate } from "@/components/i18n/MessagesProvider";
 import { unitFor } from "@/lib/desktop/presenceModes";
 import { inputSince, watchInput } from "@/lib/ui/lastInput";
@@ -89,31 +95,31 @@ export function WritingReader({
  if (movesOutOf(saint.slug, content.slug).length || movesInto(saint.slug, content.slug).length) carryMovedPlaces();
  }, [saint.slug, content.slug]);
 
- // Open the place the URL hash names, on load and on change, and scroll it
- // into view: a section (#sN), or one paragraph of it (#p-N-I, 1.8: a
- // passage in a Purify collection opens where it stands,
- // lib/reading/collections.ts), or a place by the edition's own numbers
- // (#at-1.1.1, 1.8: the Confessions, Book I, chapter 1, section 1). A long
- // work opens the section first. A short one is open already, but in the
- // apps its text lands after the page has opened, so the browser never
- // scrolled to the place: this does.
- useEffect(() => {
- function openFromHash() {
- const m = window.location.hash.match(/^#(?:s(\d+)|p-(\d+)-(\d+)|at-(\d+(?:\.\d+)*))$/);
- if (!m) return;
- let n: number;
- let target: string;
- if (m[4]) {
- const path = parseAt(m[4]);
- const found = divisions && path ? findAt(divisions, content, path) : null;
- if (!found) return;
- n = found.n;
- target = `p-${found.n}-${found.i}`;
- } else {
- n = Number(m[1] ?? m[2]);
- target = m[1] ? `s${n}` : `p-${n}-${m[3]}`;
+ // ── The reader's place (1.8, round 6, the owner's note 79) ────────────────
+ // Kept to the paragraph, with no expiry, the way the Bible keeps its verse
+ // since note 68 (lib/reader/position.ts, arrivalPlace): as the work opens,
+ // at the place its address lands on, or where the reader had it, or at its
+ // beginning; after that only the reader's own scroll moves it (lib/ui/
+ // ownScroll.ts), and it is the paragraph over the reading line
+ // (lib/saints/paragraphInView.ts). Until then only the chapter was kept,
+ // for seven days, and every scroll wrote it, a landing's own among them.
+ //
+ // `saved` is the place as the work opened, read once, before the arrival is
+ // written over it: an address naming the chapter the reader is in (the
+ // book's Continue, the reading room's row) lands on their paragraph.
+ const saved = useRef<WorkPlace | null | undefined>(undefined);
+ // Read once, by the first effect that asks (never while rendering).
+ function savedPlace(): WorkPlace | null {
+ if (saved.current === undefined) {
+ const pos = loadPosition(saint.slug, content.slug);
+ saved.current = pos ? { sectionN: pos.sectionN, paragraph: pos.paragraph } : null;
  }
- if (isLong) {
+ return saved.current;
+ }
+
+ // A section a place stands in, opened when the work reads as chapters.
+ function openSection(n: number) {
+ if (!isLong) return;
  setOpen((prev) => {
  if (prev.has(n)) return prev;
  const next = new Set(prev);
@@ -121,30 +127,58 @@ export function WritingReader({
  return next;
  });
  }
+
+ // Open the place the URL hash names, on load and on change, and stand it at
+ // the reading place: a section (#sN, at the reader's paragraph if their
+ // place is in it), or one paragraph of it (#p-N-I, 1.8: a passage in a
+ // Purify collection opens where it stands, lib/reading/collections.ts), or a
+ // place by the edition's own numbers (#at-1.1.1, 1.8: the Confessions, Book
+ // I, chapter 1, section 1). A long work opens the section first. A short one
+ // is open already, but in the apps its text lands after the page has
+ // opened, so the browser never scrolled to the place: this does.
+ useEffect(() => {
+ function openFromHash() {
+ const m = window.location.hash.match(/^#(?:s(\d+)|p-(\d+)-(\d+)|at-(\d+(?:\.\d+)*))$/);
+ if (!m) return;
+ let place: WorkPlace;
+ if (m[4]) {
+ const path = parseAt(m[4]);
+ const found = divisions && path ? findAt(divisions, content, path) : null;
+ if (!found) return;
+ place = { sectionN: found.n, paragraph: found.i };
+ } else {
+ const landing = placeOfHash(window.location.hash);
+ const arrival = landing ? arrivalPlace(savedPlace(), landing) : null;
+ if (!arrival) return;
+ place = arrival;
+ }
+ openSection(place.sectionN);
+ // Kept at once: the glide to it is not the reader's scroll.
+ savePosition(saint.slug, content.slug, place.sectionN, place.paragraph);
+ saved.current = place;
  // Defer the scroll until the section body has mounted: a paragraph of a
  // section just opened is in the page a frame or two later.
- const scrollTo = (tries: number) => {
- const el = document.getElementById(target);
- if (el) el.scrollIntoView({ block: "start" });
- else if (tries > 0) requestAnimationFrame(() => scrollTo(tries - 1));
+ const land = (tries: number) => {
+ const el = elementOfPlace(place);
+ if (el && (place.paragraph === 0 || el.id !== `s${place.sectionN}` || tries === 0)) goToReadingPlace(el, { smooth: false });
+ else if (tries > 0) requestAnimationFrame(() => land(tries - 1));
  };
- requestAnimationFrame(() => scrollTo(8));
+ requestAnimationFrame(() => land(8));
  }
  openFromHash();
  window.addEventListener("hashchange", openFromHash);
  return () => window.removeEventListener("hashchange", openFromHash);
- }, [isLong, divisions, content]);
+ // `saved` is a ref, and `openSection` reads only `isLong`.
+ // eslint-disable-next-line react-hooks/exhaustive-deps
+ }, [isLong, divisions, content, saint.slug]);
 
- // ── Save / restore reading position ──────────────────────────────────────
- // On mount, if a saved position exists for this saint+work AND the URL
- // doesn't already specify a section, open + scroll to the saved section.
- // The user gets a silent resume; no toast, no modal. If the URL has a
- // hash, that wins (the reader navigated here deliberately).
+ // Back where the reader stopped: on opening the work with no address, its
+ // section is opened and the paragraph stood at the reading place, silently,
+ // no toast, no modal. If the URL has a hash, that wins (above).
  //
  // The setOpen call is deferred via a 0-delay timer so it happens outside
  // the effect body proper, matching the project's set-state-in-effect
  // discipline (see InstallPrompt.tsx for the same pattern).
- const lastSectionN = content.sections[content.sections.length - 1]?.n ?? 0;
  const positionRestoredRef = useRef(false);
  useEffect(() => {
  if (positionRestoredRef.current) return;
@@ -158,97 +192,117 @@ export function WritingReader({
  watchInput();
  const opened = openedAt ?? performance.now();
  if (inputSince(opened)) return;
- const pos = loadPosition(saint.slug, content.slug);
- if (!pos) return;
- // If they reached the last section, the next visit shouldn't dump
- // them at the end again — treat as completion.
- if (pos.sectionN >= lastSectionN) {
- clearPosition(saint.slug, content.slug);
- return;
- }
+ const pos = savedPlace();
+ if (!pos || !content.sections.some((x) => x.n === pos.sectionN)) return;
  const openTimer = isLong
  ? setTimeout(() => {
  if (inputSince(opened)) return;
- setOpen((prev) => {
- const next = new Set(prev);
- next.add(pos.sectionN);
- return next;
- });
+ openSection(pos.sectionN);
  }, 0)
  : null;
- // Defer scroll so the section body has time to mount in long-work mode.
+ // Defer the landing so the section body has time to mount in long-work mode.
  const r1 = requestAnimationFrame(() => {
  requestAnimationFrame(() => {
  // And again at the last moment: a thumb that lands between the text
  // arriving and this frame wins.
  if (inputSince(opened)) return;
- document.getElementById(`s${pos.sectionN}`)?.scrollIntoView({ block: "start" });
+ const el = elementOfPlace(pos);
+ if (el) goToReadingPlace(el, { smooth: false });
  });
  });
  return () => {
  if (openTimer) clearTimeout(openTimer);
  cancelAnimationFrame(r1);
  };
- }, [saint.slug, content.slug, isLong, lastSectionN, openedAt]);
+ // `saved` is a ref, read once; `openSection` reads only `isLong`.
+ // eslint-disable-next-line react-hooks/exhaustive-deps
+ }, [saint.slug, content.slug, content.sections, isLong, openedAt]);
 
- // Observe section visibility and debounce-save the most visible section.
- // We use IntersectionObserver instead of scroll position because section
- // heights vary wildly (one homily might be 50 lines, another 500), so a
- // scroll-percent would lie about where the reader actually is.
+ // Keep the place as the reader reads: the paragraph over the reading line,
+ // written only for the reader's own scroll (a finger and its fling, a
+ // wheel, a key, the scroll bar), at most once each 750ms, and the last one
+ // never lost (it lands on a timer, as the page is hidden, or as the work
+ // goes). Read past the end of the work's last paragraph and the place is let
+ // go, so the next visit starts at the beginning. The reading room's
+ // progress (lib/reading/progress.ts) is written with it: the chapter, its
+ // place among the work's, and a finished book kept finished.
  useEffect(() => {
  if (typeof window === "undefined") return;
- const visibleRatios = new Map<number, number>();
- const observer = new IntersectionObserver(
- (entries) => {
- for (const e of entries) {
- const id = e.target.id;
- const m = id.match(/^s(\d+)$/);
- if (!m) continue;
- visibleRatios.set(Number(m[1]), e.intersectionRatio);
+ const key = `${saint.slug}/${content.slug}`;
+ const of = content.sections.length;
+ let lastWrite = 0;
+ let pending: WorkPlace | null = null;
+ let timer: ReturnType<typeof setTimeout> | null = null;
+ let frame = 0;
+ let own = false;
+ let written = "";
+
+ function write(p: WorkPlace) {
+ lastWrite = Date.now();
+ pending = null;
+ written = `${p.sectionN}:${p.paragraph}`;
+ savePosition(saint.slug, content.slug, p.sectionN, p.paragraph);
+ saved.current = p;
+ const i = content.sections.findIndex((x) => x.n === p.sectionN);
+ if (i >= 0) recordProgress(key, { n: p.sectionN, i, of });
  }
- },
- { threshold: [0, 0.25, 0.5, 0.75, 1], rootMargin: "-20% 0px -40% 0px" },
- );
- for (const sec of content.sections) {
- const el = document.getElementById(`s${sec.n}`);
- if (el) observer.observe(el);
- }
- let saveTimer: ReturnType<typeof setTimeout> | null = null;
- function scheduleSave() {
- if (saveTimer) clearTimeout(saveTimer);
- saveTimer = setTimeout(() => {
- let bestN = 0;
- let bestR = 0;
- for (const [n, r] of visibleRatios) {
- if (r > bestR) {
- bestR = r;
- bestN = n;
+ function persist(p: WorkPlace) {
+ if (`${p.sectionN}:${p.paragraph}` === written && pending === null) return;
+ pending = p;
+ if (Date.now() - lastWrite >= 750) write(p);
+ else if (!timer) {
+ timer = setTimeout(() => {
+ timer = null;
+ if (pending) write(pending);
+ }, 750);
  }
  }
- if (bestN > 0 && bestR > 0) {
- // How far in, for the reading room's Continue row and the book's
- // Continue button (lib/reading/progress.ts). It keeps a finished book
- // finished, where the resume position below is let go.
- const i = content.sections.findIndex((x) => x.n === bestN);
- if (i >= 0) recordProgress(`${saint.slug}/${content.slug}`, { n: bestN, i, of: content.sections.length });
- if (bestN >= lastSectionN) {
- // Completion: drop the saved position so a return visit
- // doesn't put the reader back at the end.
+ function flush() {
+ if (timer) {
+ clearTimeout(timer);
+ timer = null;
+ }
+ if (pending) write(pending);
+ }
+ function onFrame() {
+ frame = 0;
+ if (!own) return;
+ own = false;
+ const at = paragraphAtReadingPlace();
+ if (!at) return;
+ if (at.past) {
+ // Finished: the next visit starts at the beginning, and the book is read.
+ if (timer) clearTimeout(timer);
+ timer = null;
+ pending = null;
+ written = "past";
  clearPosition(saint.slug, content.slug);
- } else {
- savePosition(saint.slug, content.slug, bestN);
+ saved.current = null;
+ const last = content.sections[of - 1];
+ if (last) recordProgress(key, { n: last.n, i: of - 1, of });
+ return;
  }
+ persist({ sectionN: at.sectionN, paragraph: at.paragraph });
  }
- }, 800);
+ function onScroll(isOwn: boolean) {
+ if (isOwn) own = true;
+ if (!frame) frame = requestAnimationFrame(onFrame);
  }
- const onScroll = () => scheduleSave();
- window.addEventListener("scroll", onScroll, { passive: true });
+ function onHide() {
+ if (document.visibilityState === "hidden") flush();
+ }
+ const stop = watchOwnScroll(onScroll);
+ window.addEventListener("pagehide", flush);
+ document.addEventListener("visibilitychange", onHide);
  return () => {
- if (saveTimer) clearTimeout(saveTimer);
- window.removeEventListener("scroll", onScroll);
- observer.disconnect();
+ stop();
+ cancelAnimationFrame(frame);
+ window.removeEventListener("pagehide", flush);
+ document.removeEventListener("visibilitychange", onHide);
+ // The reader's last place, if its write was still waiting.
+ flush();
  };
- }, [saint.slug, content.slug, content.sections, lastSectionN]);
+ }, [saint.slug, content.slug, content.sections]);
 
  // The section's number as the edition prints it ("8.21", "I"), where the
  // work keeps its divisions; nothing for a section it does not number (a
@@ -303,6 +357,8 @@ export function WritingReader({
  <section
  key={sec.n}
  id={`s${sec.n}`}
+ // A closed section is a place by its top (lib/saints/paragraphInView.ts).
+ data-place={expanded ? undefined : `${sec.n}:0`}
  className="scroll-mt-24 rounded-md border border-paper/10 bg-paper/[0.02] overflow-hidden"
  >
  <button
@@ -475,6 +531,11 @@ function SectionParagraphs({
  const { divisions } = cites;
  const index = content.sections.indexOf(sec);
  const places = divisions && index >= 0 ? divisions.places[index] ?? [] : [];
+ // The work's last words: read past them and the reader's place is let go.
+ let lastWords = -1;
+ if (index === content.sections.length - 1) {
+ for (let i = 0; i < sec.paragraphs.length; i++) if (sec.paragraphs[i].trim()) lastWords = i;
+ }
  // Only a work whose file prints no numbers of its own (the Confessions)
  // shows them beside the text; elsewhere the edition's numbers are in the
  // text already ("2. Whence then") or in the section's title.
@@ -530,7 +591,7 @@ function SectionParagraphs({
  if (place?.synopsis && divisions) {
  const chapter = synopsisChapter(divisions, p);
  return (
- <div key={i} id={`p-${sec.n}-${i}`} data-division="heading" className="scroll-mt-24 pt-6 first:pt-0">
+ <div key={i} id={`p-${sec.n}-${i}`} data-division="heading" data-place={`${sec.n}:${i}`} className="scroll-mt-24 pt-6 first:pt-0">
  {chapter !== null ? (
  <p className="font-sans text-caption font-semibold text-paper/45 mb-1.5">
  {t("saints.division.chapter", { n: chapter })}
@@ -557,6 +618,7 @@ function SectionParagraphs({
  cite={citeOf(place)}
  at={place && place.begins > 0 ? atOf(place.path) : undefined}
  mark={inner ? String(inner.n) : undefined}
+ workEnd={i === lastWords}
  />
  );
  if (!heads.length) return row;
