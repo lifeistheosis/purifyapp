@@ -33,6 +33,7 @@ export type NotificationKey =
   | "fastBegins"
   | "feast"
   | "announcement"
+  | "eikonBoxOpen"
   | "communityReply"
   | "communityMention"
   | "communityFollow"
@@ -99,6 +100,14 @@ export const NOTIFICATION_COPY: Readonly<Record<NotificationKey, NotificationCop
     url: "/whats-new",
     rationale:
       "The default template for an operator broadcast. Free text remains possible through the admin route, but it passes the same check this row does, so the template is the path of least resistance rather than the only one.",
+  },
+  eikonBoxOpen: {
+    key: "eikonBoxOpen",
+    title: "The EIKON Box is open",
+    body: "Claim yours in Purify. We gather each box to the number claimed.",
+    url: "/account/eikon-box",
+    rationale:
+      "The owner's word to Pro members that a drop is open (app/api/admin/eikon-box/announce). It names no date and no count: the claim window is on the drop's own page, and a deadline on a lock screen is a clock on the reader. The ready-made words used to give the closing date, which the bar refuses.",
   },
 
   // ── Community (lib/community/push.ts) ──────────────────────────────────
@@ -277,6 +286,19 @@ export function campaignCopy(campaignId: string): {
   const row = NOTIFICATION_COPY.campaign;
   const url = row.url as (p: { id: string }) => string;
   return { title: row.title, body: row.body, url: url({ id: campaignId }) };
+}
+
+/**
+ * The ready-made words for announcing an EIKON Box drop (the EIKON Box tab).
+ * The drop's own name when it clears the bar ("The Nativity box is open"),
+ * else the row's title, so the words offered can always be sent as they are.
+ * The owner may change them; the route holds what is sent to the same bar.
+ */
+export function eikonBoxAnnouncement(dropTitle: string): { title: string; body: string; url: string } {
+  const row = NOTIFICATION_COPY.eikonBoxOpen;
+  const named = `${dropTitle.replace(/\s+/g, " ").trim()} is open`;
+  const title = dropTitle.trim() && checkNotificationCopy({ title: named, body: row.body }).length === 0 ? named : row.title;
+  return { title, body: row.body, url: row.url as string };
 }
 
 /**

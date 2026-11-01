@@ -5,6 +5,8 @@ import { getAdminUser } from "@/lib/admin/access";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { pageAllSettled } from "@/lib/supabase/pageAll";
 import { resolveAudience } from "@/lib/push/audience";
+import { eikonBoxAnnouncement } from "@/lib/push/copy";
+import { checkNotificationCopy, explainViolations } from "@/lib/push/doctrine";
 import { broadcast, broadcastStatus } from "@/lib/push/send";
 import { emailEnabled } from "@/lib/email/send";
 import { emailsByUserId } from "@/lib/admin/users";
@@ -66,6 +68,24 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: "Nothing to send." }, { status: 400 });
   }
 
+  // THE COPY BAR APPLIES HERE TOO, as on the admin broadcast: this reaches
+  // every Pro member's lock screen, and it was the one sender of free text the
+  // check did not reach (its ready-made words gave the claim date, a number
+  // and a deadline). Refused before anything goes, email included, so an
+  // announcement is never half sent; named clauses, so the fix takes one pass.
+  if (push) {
+    const violations = checkNotificationCopy({ title: push.title, body: push.body });
+    if (violations.length > 0) {
+      return NextResponse.json(
+        {
+          error: `This message does not clear the notification bar. ${explainViolations(violations)}`,
+          violations,
+        },
+        { status: 400 },
+      );
+    }
+  }
+
   const admin = createAdminClient();
   const { data: drop } = await admin
     .from("eikon_drops")
@@ -87,16 +107,17 @@ export async function POST(req: Request) {
 
   if (push) {
     const resolved = await resolveAudience(admin, "pro");
+    const { url } = eikonBoxAnnouncement(drop.title ?? "");
     const result = await broadcast(
       admin,
-      { title: push.title, body: push.body, url: "/account/eikon-box" },
+      { title: push.title, body: push.body, url },
       { webSubs: resolved.webSubs, tokens: resolved.tokens },
     );
     const status = broadcastStatus(result);
     await admin.from("push_broadcasts").insert({
       title: push.title,
       body: push.body,
-      url: "/account/eikon-box",
+      url,
       audience: "pro",
       recipients_count: resolved.total,
       created_by_email: adminUser.email ?? null,

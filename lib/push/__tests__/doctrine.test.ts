@@ -3,7 +3,15 @@ import { readFileSync, readdirSync, statSync } from "node:fs";
 import { join } from "node:path";
 
 import { checkNotificationCopy, isDoctrinal, MAX_BODY, MAX_TITLE } from "../doctrine";
-import { COMMUNITY_PUSH_KEYS, NOTIFICATION_COPY, broadcastTemplates, campaignCopy, communityPushCopy, reminderCopy } from "../copy";
+import {
+  COMMUNITY_PUSH_KEYS,
+  NOTIFICATION_COPY,
+  broadcastTemplates,
+  campaignCopy,
+  communityPushCopy,
+  eikonBoxAnnouncement,
+  reminderCopy,
+} from "../copy";
 
 /**
  * The test CONTRIBUTING.md has been claiming exists since 2026-08-10.
@@ -221,6 +229,34 @@ describe("no notification string lives outside the table", () => {
     const title = /title:\s*"([^"]*)"/.exec(sw);
     expect(title, "sw.js no longer declares a fallback title").not.toBeNull();
     expect(checkNotificationCopy({ title: title![1], body: "" })).toEqual([]);
+  });
+
+  it("holds every route that broadcasts to readers to the bar", () => {
+    // The admin broadcast was the first sender of free text the check did not
+    // reach; the EIKON Box announcement, to every Pro member's lock screen,
+    // was the second (until 2026-11-01). A route that broadcasts runs the
+    // same predicate the table is read against, or it fails here.
+    const routes = walk(join(REPO, "app", "api")).filter((f) => f.endsWith("route.ts"));
+    const senders = routes.filter((f) => /import\s*\{[^}]*\bbroadcast\b[^}]*\}\s*from\s*"@\/lib\/push\/send"/.test(readFileSync(f, "utf8")));
+    expect(senders.length).toBeGreaterThanOrEqual(2);
+    for (const file of senders) {
+      const src = readFileSync(file, "utf8");
+      expect(src, file.slice(REPO.length + 1)).toContain("checkNotificationCopy(");
+      // Checked before anything is sent.
+      expect(src.indexOf("checkNotificationCopy("), file.slice(REPO.length + 1)).toBeLessThan(src.indexOf("await broadcast("));
+    }
+  });
+
+  it("offers ready-made EIKON Box words that clear the bar as they stand", () => {
+    for (const name of ["The Nativity box", "Box 12", "Hurry!", "", "  The   Theophany box "]) {
+      const words = eikonBoxAnnouncement(name);
+      expect(checkNotificationCopy(words), name).toEqual([]);
+      expect(words.url).toBe("/account/eikon-box");
+    }
+    expect(eikonBoxAnnouncement("The Nativity box").title).toBe("The Nativity box is open");
+    expect(eikonBoxAnnouncement("Box 12").title).toBe("The EIKON Box is open");
+    // No date and no count in what is offered.
+    expect(eikonBoxAnnouncement("The Nativity box").body).not.toMatch(/\d/);
   });
 
   it("leaves the admin broadcast route with no copy of its own", () => {
