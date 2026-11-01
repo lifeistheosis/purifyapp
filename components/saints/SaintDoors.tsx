@@ -12,6 +12,7 @@ import {
 } from "react";
 
 import { useTranslate } from "@/components/i18n/MessagesProvider";
+import { DOOR, DOOR_COLS, DOOR_OFF, DOOR_ON, SLIM, SLIM_OFF, SLIM_ON, SLIM_TRACK } from "@/components/ui/doors";
 import { Book } from "@/components/ui/icons/Book";
 import { ClosedBook } from "@/components/ui/icons/ClosedBook";
 import { Graph } from "@/components/ui/icons/Graph";
@@ -67,15 +68,8 @@ function DoorIcon({ door, size }: { door: SaintDoor; size: number }) {
   return <Note size={size} />;
 }
 
-const COLS: Record<number, string> = { 2: "grid-cols-2", 3: "grid-cols-3", 4: "grid-cols-4" };
-
-const DOOR =
-  "tap-press flex h-[74px] min-w-0 flex-col items-center justify-center gap-[7px] rounded-[16px] border px-1 font-sans text-detail font-semibold leading-none motion-safe:transition-colors";
-const DOOR_OFF = "border-paper/[0.09] bg-paper/[0.06] text-paper hover:bg-paper/[0.1]";
-const DOOR_ON = "border-paper bg-paper text-night";
-
-const SLIM =
-  "flex min-h-11 min-w-0 items-center justify-center gap-1.5 truncate rounded-pill px-2 font-sans text-detail font-semibold";
+// The doors' classes are shared with making a post in Community, which is
+// built like this page (components/ui/doors.ts).
 
 const DOOR_EVENT = "purify:saint-door";
 
@@ -178,7 +172,7 @@ export function SaintDoors({
         ref={doorsRef}
         role="group"
         aria-label={t("saints.sectionSwitcher")}
-        className={cn("saint-head-in mx-auto grid max-w-[420px] gap-2 md:mx-0", COLS[shown.length])}
+        className={cn("saint-head-in mx-auto grid max-w-[420px] gap-2 md:mx-0", DOOR_COLS[shown.length])}
         style={{ "--i": 3 } as CSSProperties}
       >
         {shown.map((door) =>
@@ -222,10 +216,10 @@ export function SaintDoors({
           className="saint-doors-pin fixed inset-x-0 top-12 below-topbar z-20 bg-night px-5 py-2 md:pointer-events-none md:top-[72px] md:bg-transparent md:px-8"
         >
           <div className="mx-auto w-full max-w-[1100px]">
-            <div className="mx-auto grid max-w-[420px] grid-flow-col auto-cols-fr gap-1 rounded-pill border border-paper/10 bg-paper/[0.03] p-1 md:pointer-events-auto md:mx-0 md:bg-night">
+            <div className={cn(SLIM_TRACK, "mx-auto max-w-[420px] md:pointer-events-auto md:mx-0 md:bg-night")}>
               {shown.map((door) =>
                 door === "web" ? (
-                  <Link key={door} href={webHref!} prefetch={false} tabIndex={-1} className={cn(SLIM, "text-paper/65 hover:text-paper")}>
+                  <Link key={door} href={webHref!} prefetch={false} tabIndex={-1} className={cn(SLIM, SLIM_OFF)}>
                     <DoorIcon door={door} size={15} />
                     {t(LABEL[door])}
                   </Link>
@@ -235,7 +229,7 @@ export function SaintDoors({
                     type="button"
                     tabIndex={-1}
                     onClick={() => select(door, true)}
-                    className={cn(SLIM, door === current ? "bg-paper text-night" : "text-paper/65 hover:text-paper")}
+                    className={cn(SLIM, door === current ? SLIM_ON : SLIM_OFF)}
                   >
                     <DoorIcon door={door} size={15} />
                     {t(LABEL[door])}
