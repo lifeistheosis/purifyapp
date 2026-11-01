@@ -63,11 +63,11 @@ const ALLOWED: Record<string, string> = {
     "the yellow highlighter, his word of 2026-10-19: 'bring back yellow highlight option (just for highlighting text)'",
   // Not Purify's to recolour.
   "components/auth/OAuthButtons.tsx": "Google's own G mark, drawn in Google's colours as Google requires",
-  // The owner's own documents and tools, not a reader's screen.
-  "app/invest/deck.html": "the investor overview at /invest, an owner's document, its metal look left for his call",
+  // The owner's own tool, not a reader's screen; its amber kept by his word.
   "lib/drop/page.ts": "the drop kit, the owner's own tool in its violet house look (its 'warn' amber)",
   // Not here, by his word of 2026-10-31 ("fix all of them"): the Discord
-  // status's season colours, silver for Pascha and ordinary days since 1.8.
+  // status's season colours and the investor overview's metal, both silver
+  // since 1.8.
 };
 
 /**

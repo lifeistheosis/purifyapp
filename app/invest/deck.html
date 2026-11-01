@@ -34,9 +34,9 @@
     --muted: #a39ea8;
     --faint: #6f6a73;
     --line: #2a2a2f;
-    --gold: #c9a25a;
-    --gold-hi: #efd9a3;
-    --gold-lo: #9a7433;
+    --gold: #dfe1e6;
+    --gold-hi: #ffffff;
+    --gold-lo: #a9adb5;
     --metal: linear-gradient(180deg, var(--gold-hi) 0%, var(--gold) 50%, var(--gold-lo) 100%);
     --serif: "Lora", Georgia, "Times New Roman", serif;
     --sans: "DM Sans", "Segoe UI", Arial, sans-serif;
@@ -101,13 +101,15 @@
   .note { margin: 0; font-size: 12.5px; line-height: 1.6; color: var(--faint); max-width: 90ch; }
 
   /*
-   * Gold is metal: highlight, body, shadow. A band of light crosses it as its
+   * Silver is metal: highlight, body, shadow (gold until 1.8; the owner wants
+   * no gold anywhere but a Plus member's profile, so the .gold and --gold
+   * names now mean the emphasis, in silver). A band of light crosses it as its
    * section scrolls in (the first background layer, driven by --a) and sits
    * outside the letters at rest.
    */
   .metal {
     color: var(--gold);
-    background-image: linear-gradient(105deg, transparent 42%, rgba(255, 244, 214, 0.8) 50%, transparent 58%), var(--metal);
+    background-image: linear-gradient(105deg, transparent 42%, rgba(255, 255, 255, 0.8) 50%, transparent 58%), var(--metal);
     background-size: 260% 100%, 100% 100%;
     background-repeat: no-repeat;
     background-position: calc(var(--a, 1) * 100%) 0, 0 0;
@@ -117,7 +119,7 @@
   }
 
   /* Glow lives on the type and the charts only, never behind the page. */
-  .metal { filter: drop-shadow(0 0 calc(var(--a, 1) * 14px) rgba(201, 162, 90, 0.38)); }
+  .metal { filter: drop-shadow(0 0 calc(var(--a, 1) * 14px) rgba(223, 225, 230, 0.27)); }
   h1, h2 { text-shadow: 0 0 32px rgba(234, 234, 236, 0.1); }
   .num:not(.metal) { text-shadow: 0 0 22px rgba(234, 234, 236, 0.16); }
   .grow-bar { filter: drop-shadow(0 0 7px rgba(234, 234, 236, 0.18)); }
@@ -144,13 +146,13 @@
     display: inline-block;
     margin-left: 10px;
     padding: 3px 10px;
-    border: 1px solid rgba(201, 162, 90, 0.6);
+    border: 1px solid rgba(223, 225, 230, 0.42);
     border-radius: 999px;
     font-size: 10.5px;
     letter-spacing: 0.14em;
     color: var(--gold-hi);
-    text-shadow: 0 0 10px rgba(201, 162, 90, 0.6);
-    box-shadow: 0 0 16px rgba(201, 162, 90, 0.22);
+    text-shadow: 0 0 10px rgba(223, 225, 230, 0.42);
+    box-shadow: 0 0 16px rgba(223, 225, 230, 0.15);
     vertical-align: 1px;
   }
 
@@ -224,7 +226,7 @@
   .alloc-row .track { grid-column: 1 / -1; height: 3px; background: var(--raised); border-radius: 2px; }
   .alloc-row[aria-selected="true"] .track { background: #26262b; }
   .alloc-row .fill { height: 100%; border-radius: 2px; background: var(--ink-soft); transform-origin: left; box-shadow: 0 0 10px rgba(234, 234, 236, 0.2); }
-  .alloc-row[aria-selected="true"] .fill { background: linear-gradient(90deg, var(--gold-lo), var(--gold) 55%, var(--gold-hi)); box-shadow: 0 0 12px rgba(201, 162, 90, 0.55); }
+  .alloc-row[aria-selected="true"] .fill { background: linear-gradient(90deg, var(--gold-lo), var(--gold) 55%, var(--gold-hi)); box-shadow: 0 0 12px rgba(223, 225, 230, 0.39); }
 
   /* Two readings of one slide, stacked so the slide keeps its height. */
   .views { display: grid; }
@@ -262,7 +264,7 @@
   }
   .chip:hover { color: var(--ink); }
   .chip[aria-pressed="true"] { color: var(--ink); border-color: var(--ink-soft); background: var(--raised); }
-  .chip.gold[aria-pressed="true"] { border-color: var(--gold); background: rgba(201, 162, 90, 0.12); }
+  .chip.gold[aria-pressed="true"] { border-color: var(--gold); background: rgba(223, 225, 230, 0.08); }
   .chip.gold[aria-pressed="true"] span { color: var(--gold); background: var(--metal); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; }
   .map-wrap { position: relative; }
   .map-svg { width: 100%; height: auto; max-height: 400px; display: block; margin: 0 auto; }
@@ -285,7 +287,7 @@
     border-radius: 14px;
     transition: opacity 0.45s ease, transform 0.45s ease;
   }
-  .card.gold { border-color: rgba(201, 162, 90, 0.45); }
+  .card.gold { border-color: rgba(223, 225, 230, 0.32); }
   .card.off { opacity: 0; transform: translateY(10px); }
   .card-kicker { margin: 0; font-size: 11.5px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--muted); }
   .card-row { display: grid; gap: 1px; }
@@ -316,7 +318,7 @@
   /* ── the product: one library, three ways it earns ── */
   .model { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; }
   .step { display: grid; gap: 6px; align-content: start; padding: 18px 20px; border: 1px solid var(--line); border-radius: 14px; position: relative; }
-  .step.gold { border-color: rgba(201, 162, 90, 0.5); box-shadow: 0 0 22px rgba(201, 162, 90, 0.12); }
+  .step.gold { border-color: rgba(223, 225, 230, 0.35); box-shadow: 0 0 22px rgba(223, 225, 230, 0.08); }
   .step-n { font-size: 11.5px; letter-spacing: 0.16em; color: var(--faint); }
   .step b { font-family: var(--serif); font-weight: 500; font-size: 21px; }
   .step > span:last-child { color: var(--muted); font-size: 14px; line-height: 1.5; }
@@ -339,10 +341,10 @@
   .stats .links { grid-column: 1 / -1; }
   .ask-left .links { margin-top: 4px; }
 
-  /* ── the proof: one lane per tradition, the Orthodox lane in gold ── */
+  /* ── the proof: one lane per tradition, the Orthodox lane in silver ── */
   .lanes { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; }
   .lane { display: grid; gap: 6px; align-content: start; padding: 20px 22px; border: 1px solid var(--line); border-radius: 16px; min-width: 0; }
-  .lane.gold { border-color: rgba(201, 162, 90, 0.55); box-shadow: 0 0 28px rgba(201, 162, 90, 0.14); }
+  .lane.gold { border-color: rgba(223, 225, 230, 0.39); box-shadow: 0 0 28px rgba(223, 225, 230, 0.1); }
   .lane-k { font-size: 11.5px; letter-spacing: 0.16em; text-transform: uppercase; color: var(--faint); }
   .lane-name { font-family: var(--serif); font-size: 24px; line-height: 1.2; }
   .lane .num { font-size: 46px; margin-top: 4px; }
@@ -355,13 +357,13 @@
   .ceiling .num { font-size: 40px; }
   .ceiling .label { max-width: 34ch; }
 
-  /* ── the road ahead: a gold line that draws itself through four stops ── */
+  /* ── the road ahead: a silver line that draws itself through four stops ── */
   .road { position: relative; display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 22px; padding-top: 30px; }
   .road-line { position: absolute; left: 0; right: 0; top: 5px; height: 2px; background: var(--line); }
-  .road-line i { display: block; width: 100%; height: 100%; transform-origin: left; background: linear-gradient(90deg, var(--gold-lo), var(--gold) 60%, var(--gold-hi)); box-shadow: 0 0 10px rgba(201, 162, 90, 0.5); }
+  .road-line i { display: block; width: 100%; height: 100%; transform-origin: left; background: linear-gradient(90deg, var(--gold-lo), var(--gold) 60%, var(--gold-hi)); box-shadow: 0 0 10px rgba(223, 225, 230, 0.35); }
   [data-motion="on"] .road-line i { transform: scaleX(clamp(0, calc((var(--e, 1) - 0.18) / 0.7), 1)); }
   .stop { position: relative; display: grid; gap: 6px; align-content: start; min-width: 0; }
-  .stop::before { content: ""; position: absolute; top: -30px; left: 0; width: 12px; height: 12px; border-radius: 50%; background: var(--ground); border: 2px solid var(--gold); box-shadow: 0 0 10px rgba(201, 162, 90, 0.45); }
+  .stop::before { content: ""; position: absolute; top: -30px; left: 0; width: 12px; height: 12px; border-radius: 50%; background: var(--ground); border: 2px solid var(--gold); box-shadow: 0 0 10px rgba(223, 225, 230, 0.32); }
   .stop.gold::before { background: var(--gold); }
   .stop .when { font-size: 11.5px; letter-spacing: 0.16em; text-transform: uppercase; color: var(--gold); }
   .stop b { font-family: var(--serif); font-weight: 500; font-size: 21px; line-height: 1.2; }
@@ -377,11 +379,11 @@
   /* ── the supply: overseas to our shelf to the customer ── */
   .flow { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 30px; }
   .node { position: relative; display: grid; gap: 4px; align-content: start; padding: 16px 18px; border: 1px solid var(--line); border-radius: 14px; min-width: 0; }
-  .node.gold { border-color: rgba(201, 162, 90, 0.55); box-shadow: 0 0 22px rgba(201, 162, 90, 0.14); }
+  .node.gold { border-color: rgba(223, 225, 230, 0.39); box-shadow: 0 0 22px rgba(223, 225, 230, 0.1); }
   .node-k { font-size: 11.5px; letter-spacing: 0.16em; color: var(--faint); }
   .node b { font-family: var(--serif); font-weight: 500; font-size: 20px; line-height: 1.25; }
   .node > span:last-child { color: var(--muted); font-size: 13.5px; line-height: 1.45; }
-  /* A thin gold link between each step. */
+  /* A thin silver link between each step. */
   .node:not(:last-child)::after { content: ""; position: absolute; top: 50%; right: -30px; width: 30px; height: 1px; background: linear-gradient(90deg, var(--line), var(--gold)); }
   .ship { display: grid; gap: 10px; }
   .ship-row { display: grid; grid-template-columns: minmax(0, 15em) minmax(0, 1fr) 7.5em; gap: 14px; align-items: center; font-size: 14px; }
@@ -389,7 +391,7 @@
   .ship-row.gold .sl { color: var(--ink); }
   .ship-row .track { height: 10px; background: var(--raised); border-radius: 5px; }
   .ship-row .fill { display: block; height: 100%; border-radius: 5px; transform-origin: left; background: linear-gradient(90deg, #6f6a73, #c9c8cd); }
-  .ship-row.gold .fill { background: linear-gradient(90deg, var(--gold-lo), var(--gold) 60%, var(--gold-hi)); box-shadow: 0 0 12px rgba(201, 162, 90, 0.55); }
+  .ship-row.gold .fill { background: linear-gradient(90deg, var(--gold-lo), var(--gold) 60%, var(--gold-hi)); box-shadow: 0 0 12px rgba(223, 225, 230, 0.39); }
   .ship-row .sv { text-align: right; font-weight: 500; font-variant-numeric: tabular-nums; }
   [data-motion="on"] .ship-row .fill { transform: scaleX(clamp(0, calc((var(--e, 1) - 0.35 - var(--k, 0) * 0.04) / 0.45), 1)); }
   .first-weeks { display: grid; gap: 12px; min-width: 0; }
@@ -411,7 +413,7 @@
   .sd { display: grid; gap: 4px; }
   .sd .num { font-size: 76px; }
   .sd-arrow { width: 2px; height: 48px; margin-left: 36px; background: var(--line); overflow: hidden; }
-  .sd-arrow i { display: block; width: 100%; height: 100%; transform-origin: top; background: linear-gradient(var(--gold-hi), var(--gold)); box-shadow: 0 0 10px rgba(201, 162, 90, 0.5); }
+  .sd-arrow i { display: block; width: 100%; height: 100%; transform-origin: top; background: linear-gradient(var(--gold-hi), var(--gold)); box-shadow: 0 0 10px rgba(223, 225, 230, 0.35); }
   [data-motion="on"] .sd-arrow i { transform: scaleY(clamp(0, calc((var(--e, 1) - 0.4) / 0.4), 1)); }
   .terms { display: grid; border-top: 1px solid var(--line); }
   .term { display: grid; grid-template-columns: minmax(0, 11.5em) minmax(0, 1fr); gap: 4px 18px; padding: 11px 0; border-bottom: 1px solid var(--line); }
@@ -441,8 +443,8 @@
     color: var(--ink-soft); font-size: 14px; text-decoration: none;
     transition: color 0.3s ease, border-color 0.3s ease, background-color 0.3s ease, box-shadow 0.3s ease;
   }
-  .link-chip.gold { border-color: rgba(201, 162, 90, 0.55); color: var(--gold-hi); }
-  .link-chip:hover, .link-chip:focus-visible { color: var(--ink); border-color: var(--gold); background: rgba(201, 162, 90, 0.1); box-shadow: 0 0 16px rgba(201, 162, 90, 0.25); }
+  .link-chip.gold { border-color: rgba(223, 225, 230, 0.39); color: var(--gold-hi); }
+  .link-chip:hover, .link-chip:focus-visible { color: var(--ink); border-color: var(--gold); background: rgba(223, 225, 230, 0.07); box-shadow: 0 0 16px rgba(223, 225, 230, 0.18); }
   .link-chip:focus-visible { outline: 2px solid var(--gold); outline-offset: 2px; }
   .split .stats.quad { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 
@@ -455,7 +457,7 @@
   .reach-row { display: grid; grid-template-columns: minmax(0, 11em) minmax(0, 1fr) 3.2em; gap: 12px; align-items: center; font-size: 13.5px; }
   .reach-row .rl { color: var(--muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
   .reach-row .track { height: 8px; background: var(--raised); border-radius: 4px; }
-  .reach-row .fill { display: block; height: 100%; border-radius: 4px; transform-origin: left; background: linear-gradient(90deg, var(--gold-lo), var(--gold) 60%, var(--gold-hi)); box-shadow: 0 0 10px rgba(201, 162, 90, 0.45); }
+  .reach-row .fill { display: block; height: 100%; border-radius: 4px; transform-origin: left; background: linear-gradient(90deg, var(--gold-lo), var(--gold) 60%, var(--gold-hi)); box-shadow: 0 0 10px rgba(223, 225, 230, 0.32); }
   .reach-row.us .fill { background: linear-gradient(90deg, #6f6a73, #c9c8cd); box-shadow: 0 0 10px rgba(234, 234, 236, 0.22); }
   .reach-row.us .rl { color: var(--ink); }
   .reach-row .rv { text-align: right; font-weight: 500; font-variant-numeric: tabular-nums; }
@@ -613,13 +615,13 @@
 <svg width="0" height="0" aria-hidden="true" style="position:absolute">
   <defs>
     <linearGradient id="g-area" x1="0" y1="0" x2="0" y2="1">
-      <stop offset="0" stop-color="#c9a25a" stop-opacity="0.3"/>
-      <stop offset="1" stop-color="#c9a25a" stop-opacity="0"/>
+      <stop offset="0" stop-color="#dfe1e6" stop-opacity="0.3"/>
+      <stop offset="1" stop-color="#dfe1e6" stop-opacity="0"/>
     </linearGradient>
     <linearGradient id="g-gold" x1="0" y1="0" x2="0" y2="1">
-      <stop offset="0" stop-color="#efd9a3"/>
-      <stop offset="0.5" stop-color="#c9a25a"/>
-      <stop offset="1" stop-color="#9a7433"/>
+      <stop offset="0" stop-color="#ffffff"/>
+      <stop offset="0.5" stop-color="#dfe1e6"/>
+      <stop offset="1" stop-color="#a9adb5"/>
     </linearGradient>
   </defs>
 </svg>
@@ -734,7 +736,7 @@
         <figure class="r from-right" style="--i:2.4">
           <figcaption class="fig-cap">
             <b>Practising Orthodox who read English</b>
-            <span class="legend"><span><i style="background:#c9c8cd"></i>Where every video so far was aimed</span><span><i style="background:linear-gradient(90deg,#9a7433,#efd9a3)"></i>Not reached yet</span></span>
+            <span class="legend"><span><i style="background:#9d9aa3"></i>Where every video so far was aimed</span><span><i style="background:linear-gradient(90deg,#a9adb5,#ffffff)"></i>Not reached yet</span></span>
           </figcaption>
           <div class="reach" id="reach"></div>
         </figure>
@@ -896,7 +898,7 @@
     const deck = document.getElementById("deck");
     const slides = [...deck.querySelectorAll(".slide")];
     const NS = "http://www.w3.org/2000/svg";
-    const GOLD = "#c9a25a";
+    const GOLD = "#dfe1e6";
     const fmt = (n, d = 0) => n.toLocaleString("en-US", { minimumFractionDigits: d, maximumFractionDigits: d });
     const clamp01 = (v) => Math.max(0, Math.min(1, v));
     const ease = (t) => 1 - Math.pow(1 - t, 3);
@@ -1123,7 +1125,7 @@
       const line = (pts) => pts.map((p, i) => `${i ? "L" : "M"}${x(p.m).toFixed(1)},${y(p.v).toFixed(1)}`).join(" ");
       const area = (pts) => `${line(pts)} L${x(first + span)},${base} L${x(first)},${base} Z`;
 
-      el("path", { d: area(total), fill: "rgba(201, 162, 90, 0.10)", class: "tip" }, svg);
+      el("path", { d: area(total), fill: "rgba(223, 225, 230, 0.07)", class: "tip" }, svg);
       el("path", { d: area(subs), fill: "rgba(234, 234, 236, 0.06)", class: "tip" }, svg);
       const s = el("path", { d: line(subs), fill: "none", stroke: "#eaeaec", "stroke-width": 1.8, "stroke-linejoin": "round", class: "draw" }, svg);
       s.style.filter = "drop-shadow(0 0 4px #eaeaec88)";
@@ -1169,7 +1171,7 @@
         const hot = isGold(i);
         const bar = el("rect", { x: x - bw / 2, y: y(v), width: bw, height: Math.max(2, base - y(v)), fill: hot ? "url(#g-gold)" : "#eaeaec", rx: 3, class: "grow-bar" }, svg);
         bar.style.transformOrigin = `${x}px ${base}px`;
-        if (hot) bar.style.filter = "drop-shadow(0 0 10px rgba(201, 162, 90, 0.55))";
+        if (hot) bar.style.filter = "drop-shadow(0 0 10px rgba(223, 225, 230, 0.39))";
         bar.dataset.delay = String(i * 0.08);
         const t = text(svg, x, y(v) - 10, shown, "val");
         if (hot) t.style.fill = GOLD;
