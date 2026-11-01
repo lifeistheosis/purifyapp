@@ -6,6 +6,11 @@ import android.content.res.TypedArray;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
+import android.graphics.Paint;
+import android.text.Layout;
+import android.text.StaticLayout;
+import android.text.TextPaint;
+import android.util.TypedValue;
 
 import net.purifyapp.purify.R;
 
@@ -17,8 +22,8 @@ import java.util.regex.Pattern;
 /**
  * The pieces the six families after Today draw with (docs/WIDGETS.md): the
  * days to a date the app handed over, a date in words, the word after a
- * count, two colours mixed, the picture a season wears, and a patron saint's
- * icon made small enough for a widget.
+ * count, two colours mixed, whether words fit their lines, the picture a
+ * season wears, and a patron saint's icon made small enough for a widget.
  *
  * <p>The only dates counted here are ones the app has already worked out
  * (the next update, the next name day on the reader's own calendar), and the
@@ -91,6 +96,23 @@ final class WidgetPieces {
     /** A length in dp as pixels on this phone. */
     static int dp(Context context, float dp) {
         return Math.round(dp * context.getResources().getDisplayMetrics().density);
+    }
+
+    /**
+     * Whether `text` fits in `lines` lines `widthDp` wide, at `sizeSp` in the
+     * phone's own sans (the face a widget's TextView draws without a
+     * fontFamily), broken into lines the way a TextView breaks them. For a
+     * line that must never end in an ellipsis over a number.
+     */
+    static boolean fits(Context context, String text, float sizeSp, int widthDp, int lines) {
+        if (widthDp <= 0) return false;
+        TextPaint paint = new TextPaint(Paint.ANTI_ALIAS_FLAG);
+        paint.setTextSize(TypedValue.applyDimension(
+                TypedValue.COMPLEX_UNIT_SP, sizeSp, context.getResources().getDisplayMetrics()));
+        StaticLayout layout = StaticLayout.Builder.obtain(text, 0, text.length(), paint, dp(context, widthDp))
+                .setBreakStrategy(Layout.BREAK_STRATEGY_HIGH_QUALITY)
+                .build();
+        return layout.getLineCount() <= lines;
     }
 
     // ── Pictures ────────────────────────────────────────────────────────

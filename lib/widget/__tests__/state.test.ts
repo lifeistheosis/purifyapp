@@ -109,6 +109,22 @@ describe("the server's word on the patron", () => {
     expect(readPatronAnswer(200, { slug: null })).toEqual({ kind: "none" });
     // Signed out: the widget asks the reader to choose one.
     expect(readPatronAnswer(401, null)).toEqual({ kind: "none" });
+    expect(readPatronAnswer(401, null, false)).toEqual({ kind: "none" });
+  });
+
+  it("is unknown on a 401 while the app holds a session, so a token not yet renewed keeps the saint (note 85)", () => {
+    expect(readPatronAnswer(401, { error: "Sign in first." }, true)).toEqual({ kind: "unknown" });
+    // Every other answer reads the same signed in.
+    expect(readPatronAnswer(200, { slug: "apostle-paul" }, true)).toEqual({ kind: "saint", slug: "apostle-paul" });
+    expect(readPatronAnswer(200, { slug: null }, true)).toEqual({ kind: "none" });
+    expect(readPatronAnswer(503, null, true)).toEqual({ kind: "unknown" });
+  });
+
+  it("reads a patron saved on this device the way it reads the server (lib/profile/patronEvent.ts)", () => {
+    // The event's detail is what the server saved, { slug } or { slug: null }.
+    expect(readPatronAnswer(200, { slug: "apostle-paul" })).toEqual({ kind: "saint", slug: "apostle-paul" });
+    expect(readPatronAnswer(200, { slug: null })).toEqual({ kind: "none" });
+    expect(readPatronAnswer(200, undefined)).toEqual({ kind: "unknown" });
   });
 
   it("is unknown when the server could not say, so the widget keeps its saint", () => {
@@ -134,6 +150,7 @@ describe("the patron saint", () => {
       slug: "nicholas-the-wonderworker",
       name: "St. Nicholas the Wonderworker",
       nameDay: "2026-12-06",
+      nameDayAfter: "2027-12-06",
       daysToNameDay: 53,
       // The rights to this icon are not settled.
       icon: null,
@@ -141,7 +158,7 @@ describe("the patron saint", () => {
   });
 
   it("keeps the name day thirteen days later on the Old Calendar", () => {
-    expect(patronFacts(nicholas, TODAY, "old")).toMatchObject({ nameDay: "2026-12-19", daysToNameDay: 66 });
+    expect(patronFacts(nicholas, TODAY, "old")).toMatchObject({ nameDay: "2026-12-19", nameDayAfter: "2027-12-19", daysToNameDay: 66 });
   });
 
   it("says 0 on the day, and next year's the day after", () => {
@@ -149,9 +166,24 @@ describe("the patron saint", () => {
     expect(patronFacts(nicholas, "2026-12-07", "new")).toMatchObject({ nameDay: "2027-12-06", daysToNameDay: 364 });
   });
 
+  it("hands over next year's too, so the morning after the name day a widget the app has not reached counts to it (note 85)", () => {
+    // Handed over on the day itself, the last time the app was opened.
+    const onTheDay = patronFacts(nicholas, "2026-12-06", "new");
+    expect(onTheDay).toMatchObject({ nameDay: "2026-12-06", nameDayAfter: "2027-12-06" });
+    // What the app hands over the next morning is exactly what the widget
+    // steps to by itself (MySaintWidgetProvider).
+    expect(patronFacts(nicholas, "2026-12-07", "new")?.nameDay).toBe(onTheDay?.nameDayAfter);
+    // The Apostle Paul, June 29, on both calendars.
+    const paul = { kind: "saint", slug: "apostle-paul" } as const;
+    expect(patronFacts(paul, "2027-06-29", "new")).toMatchObject({ nameDay: "2027-06-29", nameDayAfter: "2028-06-29" });
+    expect(patronFacts(paul, "2027-06-29", "old")).toMatchObject({ nameDay: "2027-07-12", nameDayAfter: "2028-07-12" });
+  });
+
   it("finds a late December feast in the new year on the Old Calendar", () => {
     const stephen = { kind: "saint", slug: "stephen-the-protomartyr" } as const;
-    expect(patronFacts(stephen, "2027-01-05", "old")).toMatchObject({ nameDay: "2027-01-09", daysToNameDay: 4 });
+    expect(patronFacts(stephen, "2027-01-05", "old")).toMatchObject({ nameDay: "2027-01-09", nameDayAfter: "2028-01-09", daysToNameDay: 4 });
+    // And the one after a feast that fell in this January is next January's.
+    expect(patronFacts(stephen, "2027-01-09", "old")).toMatchObject({ nameDay: "2027-01-09", nameDayAfter: "2028-01-09", daysToNameDay: 0 });
   });
 
   it("carries the icon only when its rights are settled, at its place in the bundle", () => {
@@ -168,12 +200,13 @@ describe("the patron saint", () => {
     expect(patronFacts({ kind: "saint", slug: "no-such-saint" }, TODAY, "new")).toBeNull();
   });
 
-  it("hands over the four fields of the contract and nothing else", () => {
+  it("hands over the five fields of the contract and nothing else", () => {
     const entry = patronEntry(patronFacts(nicholas, TODAY, "new"));
     expect(JSON.parse(entry!)).toEqual({
       slug: "nicholas-the-wonderworker",
       name: "St. Nicholas the Wonderworker",
       nameDay: "2026-12-06",
+      nameDayAfter: "2027-12-06",
       icon: null,
     });
     expect(patronEntry(null)).toBeNull();

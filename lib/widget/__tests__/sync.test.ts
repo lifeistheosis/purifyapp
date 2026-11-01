@@ -110,7 +110,43 @@ describe("when the sync pushes", () => {
 
   it("asks the server for the patron itself, so no connection is not taken for no saint", () => {
     expect(sync).toContain('apiFetch("/api/profile/patron-saint"');
-    expect(sync).toContain("readPatronAnswer(res.status, body)");
     expect(sync).not.toContain("patronSlug(");
+  });
+
+  it("tells the server's answer whether the app holds a session, so a 401 signed in keeps the saint (note 85)", () => {
+    expect(sync).toMatch(/async function askPatron\(signedIn: boolean\)/);
+    expect(sync).toContain("readPatronAnswer(res.status, body, signedIn)");
+  });
+});
+
+describe("a patron saved on this device (note 85)", () => {
+  const sync = code(SYNC);
+
+  it("reaches the widget at once, not at the app's next return to the front", () => {
+    expect(eager(SYNC)).toContain("@/lib/profile/patronEvent");
+    expect(sync).toMatch(/window\.addEventListener\(PATRON_EVENT, onPatron\)/);
+    expect(sync).toMatch(/window\.removeEventListener\(PATRON_EVENT, onPatron\)/);
+    // What was saved, read as the server's own answer would be.
+    expect(sync).toContain("readPatronAnswer(200, saved)");
+  });
+
+  it("is not overwritten by an answer the server gave before the save", () => {
+    expect(sync).toMatch(/const saves = patronSaves;/);
+    expect(sync).toMatch(/if \(saves !== patronSaves\) \{\s*if \(patronStale\) soon\(\);\s*return;\s*\}/);
+    expect(sync).toMatch(/patronSaves \+= 1;/);
+  });
+
+  it("is announced by both places a reader chooses one, after the server has saved it", () => {
+    const picker = code("components/profile/PatronSaintPicker.tsx");
+    expect(picker).toMatch(/if \(res\?\.ok\) \{[^}]*announcePatron\(next \|\| null\);/);
+    const editor = code("components/community/profile/ProfileEditor.tsx");
+    const saved = editor.indexOf("if (!res.ok) return setMessage");
+    const told = editor.indexOf("announcePatron(res.profile.patronSaint?.slug ?? null)");
+    expect(saved).toBeGreaterThan(0);
+    expect(told).toBeGreaterThan(saved);
+  });
+
+  it("is a light file, since the root frame loads it", () => {
+    expect(eager("lib/profile/patronEvent.ts")).toEqual([]);
   });
 });

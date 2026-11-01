@@ -1,7 +1,9 @@
 package net.purifyapp.purify.widget;
 
+import android.appwidget.AppWidgetManager;
 import android.content.Context;
 import android.graphics.Bitmap;
+import android.os.Bundle;
 import android.view.View;
 import android.widget.RemoteViews;
 
@@ -31,9 +33,35 @@ public class MySaintWidgetProvider extends PurifyWidgetProvider {
     private static final float WIDE_ICON = 0.7f;
     private static final float SMALL_ICON = 1.45f;
 
+    /**
+     * Where the four-cell look begins (note 85). Beside the 96dp icon, 134dp
+     * of the width is icon, gap and padding; the date and the days chip side
+     * by side need about 160dp more, and the mock gives them 204. At the
+     * shared 250 that left 116dp, so three cells on a four-column phone
+     * (about 255 to 295dp) drew the four-cell look crowded. From 300 the words
+     * have 166dp: three cells take the two-cell look on any grid, four cells
+     * on a four-column phone (about 340dp and up) the four-cell one. Four
+     * cells on a narrow five-column grid like the Pixel 4's (276dp) take the
+     * two-cell look too, where the four-cell one would have had 142dp.
+     */
+    static final int WIDE_FROM_DP = 300;
+
+    /** The line under the name in the two-cell looks, as WidgetMeta sets it (res/values/widget_looks.xml). */
+    private static final float META_SP = 12f;
+    /** The narrowest the widget can be made (minResizeWidth, res/xml/mysaint_widget_info.xml), for a launcher that has not said. */
+    private static final int NARROWEST_DP = 110;
+    /** The two-cell looks' padding, both sides together (12dp beside an icon, 15dp without), and 4dp to spare. */
+    private static final int SIDES_ICON_DP = 28;
+    private static final int SIDES_TEXT_DP = 34;
+
     @Override
     protected String family() {
         return "mysaint";
+    }
+
+    @Override
+    protected int wideDp() {
+        return WIDE_FROM_DP;
     }
 
     @Override
@@ -45,6 +73,17 @@ public class MySaintWidgetProvider extends PurifyWidgetProvider {
         }
         String nameDay = WidgetData.text(patron, "nameDay");
         Integer days = WidgetPieces.daysFromToday(nameDay);
+        if (days != null && days < 0) {
+            // The name day has gone by and the app has not been opened since.
+            // The app handed over the one after it too (lib/widget/state.ts),
+            // so count to that rather than ask for the app (note 85).
+            String after = WidgetData.text(patron, "nameDayAfter");
+            Integer daysAfter = WidgetPieces.daysFromToday(after);
+            if (daysAfter != null && daysAfter >= 0) {
+                nameDay = after;
+                days = daysAfter;
+            }
+        }
         String path = WidgetData.text(patron, "icon");
         Bitmap icon = path.isEmpty() ? null : WidgetPieces.icon(context, path, wide ? WIDE_ICON : SMALL_ICON);
         String eyebrow = WidgetData.label(context, "mySaint", "My saint");
@@ -70,12 +109,12 @@ public class MySaintWidgetProvider extends PurifyWidgetProvider {
             views = new RemoteViews(context.getPackageName(), R.layout.widget_mysaint_small);
             views.setImageViewBitmap(R.id.saint_icon, icon);
             views.setTextViewText(R.id.saint_name, name);
-            WidgetFaces.line(views, R.id.saint_meta, countLine(context, days));
+            WidgetFaces.line(views, R.id.saint_meta, countLine(context, days, widthDp(context, id) - SIDES_ICON_DP));
         } else {
             views = new RemoteViews(context.getPackageName(), R.layout.widget_mysaint_small_text);
             views.setTextViewText(R.id.saint_eyebrow, eyebrow);
             views.setTextViewText(R.id.saint_name, name);
-            WidgetFaces.line(views, R.id.saint_meta, countLine(context, days));
+            WidgetFaces.line(views, R.id.saint_meta, countLine(context, days, widthDp(context, id) - SIDES_TEXT_DP));
         }
 
         String slug = WidgetData.text(patron, "slug");
@@ -86,15 +125,34 @@ public class MySaintWidgetProvider extends PurifyWidgetProvider {
 
     /**
      * "Name day in 57 days", or "Name day today" on the day; nothing when the
-     * app knows no name day. A name day gone by (the app not opened since)
-     * asks for the app, which knows the next one.
+     * app knows no name day. A name day gone by with the one after it gone by
+     * too (the app not opened for a year, or an entry from a build before it
+     * handed over nameDayAfter) asks for the app, which knows the next one.
+     *
+     * <p>The digits stay whole (note 85). The sentence may take the line's two
+     * lines (widget_mysaint_small*.xml) in `roomDp`; where even two cannot hold
+     * it, the ellipsis could land on the number, so the count stands alone,
+     * number first, in the words the four-cell chip uses: "57 days".
      */
-    private static String countLine(Context context, Integer days) {
+    private static String countLine(Context context, Integer days, int roomDp) {
         if (days == null) return "";
         if (days < 0) return WidgetData.label(context, "openToRefresh", "Open Purify to refresh");
         if (days == 0) return WidgetData.label(context, "nameDayToday", "Name day today");
         String english = days == 1 ? "Name day in {n} day" : "Name day in {n} days";
-        return WidgetData.label(context, "nameDayIn", english).replace("{n}", String.valueOf(days));
+        String line = WidgetData.label(context, "nameDayIn", english).replace("{n}", String.valueOf(days));
+        if (WidgetPieces.fits(context, line, META_SP, roomDp, 2)) return line;
+        return days + " " + WidgetPieces.daysWord(context, days);
+    }
+
+    /**
+     * The widget's width as the launcher last gave it, in dp: its portrait
+     * width, the narrowest it is drawn at, which is where the two-cell looks
+     * are drawn. The narrowest it can be made when the launcher has not said.
+     */
+    private static int widthDp(Context context, int id) {
+        Bundle options = AppWidgetManager.getInstance(context).getAppWidgetOptions(id);
+        int width = options == null ? 0 : options.getInt(AppWidgetManager.OPTION_APPWIDGET_MIN_WIDTH, 0);
+        return width > 0 ? width : NARROWEST_DP;
     }
 
     /** Four cells: the name day's date, and a chip with the days to it, standing out on the day itself. */
@@ -109,8 +167,16 @@ public class MySaintWidgetProvider extends PurifyWidgetProvider {
             views.setViewVisibility(R.id.saint_chip, View.GONE);
             return;
         }
-        WidgetFaces.line(views, R.id.saint_date, WidgetPieces.dateInWords(context, nameDay));
         boolean today = days == 0;
+        if (today) {
+            // On the day the chip says so, and its words stay whole: the date,
+            // which is today's, gives up its room instead (note 85). Invisible
+            // rather than gone, so the chip keeps its place at the row's end.
+            views.setTextViewText(R.id.saint_date, "");
+            views.setViewVisibility(R.id.saint_date, View.INVISIBLE);
+        } else {
+            WidgetFaces.line(views, R.id.saint_date, WidgetPieces.dateInWords(context, nameDay));
+        }
         views.setTextViewText(R.id.saint_chip, today
                 ? WidgetData.label(context, "nameDayToday", "Name day today")
                 : days + " " + WidgetPieces.daysWord(context, days));

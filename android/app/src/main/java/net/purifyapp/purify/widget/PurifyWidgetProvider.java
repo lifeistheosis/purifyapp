@@ -33,11 +33,20 @@ import java.util.Map;
  */
 public abstract class PurifyWidgetProvider extends AppWidgetProvider {
 
-    /** The narrowest a widget is drawn wide, in dp: about four cells. */
+    /**
+     * The narrowest a widget is drawn wide, in dp: four cells by the old rule
+     * (70 x 4 - 30) and on a five-column grid like the Pixel 4's (73 x 4 - 16
+     * = 276), but nearer three on a phone with four columns.
+     */
     static final int WIDE_DP = 250;
 
     /** The family this provider draws, as docs/WIDGETS.md names it. */
     protected abstract String family();
+
+    /** Where this family's wide look begins, in dp. A family whose wide look needs more room says so. */
+    protected int wideDp() {
+        return WIDE_DP;
+    }
 
     /** One look at one size. May throw; the reader then sees a plain line, never a blank card. */
     protected abstract RemoteViews draw(Context context, int appWidgetId, String variant, boolean wide) throws Exception;
@@ -88,12 +97,12 @@ public abstract class PurifyWidgetProvider extends AppWidgetProvider {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
             Map<SizeF, RemoteViews> sizes = new ArrayMap<>();
             sizes.put(new SizeF(100f, 100f), safely(context, id, variant, false));
-            sizes.put(new SizeF(WIDE_DP, 100f), safely(context, id, variant, true));
+            sizes.put(new SizeF(wideDp(), 100f), safely(context, id, variant, true));
             return new RemoteViews(sizes);
         }
         Bundle options = manager.getAppWidgetOptions(id);
         int minWidth = options == null ? 0 : options.getInt(AppWidgetManager.OPTION_APPWIDGET_MIN_WIDTH, 0);
-        return safely(context, id, variant, minWidth >= WIDE_DP);
+        return safely(context, id, variant, minWidth >= wideDp());
     }
 
     private RemoteViews safely(Context context, int id, String variant, boolean wide) {

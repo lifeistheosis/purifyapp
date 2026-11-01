@@ -14,6 +14,7 @@ import { useEffect, useMemo, useState } from "react";
 import { useTranslate } from "@/components/i18n/MessagesProvider";
 import { SearchSelect, type SearchSelectOption } from "@/components/ui/SearchSelect";
 import { apiFetch } from "@/lib/api/client";
+import { announcePatron } from "@/lib/profile/patronEvent";
 
 type Patron = { slug: string; name: string };
 
@@ -62,8 +63,12 @@ export function PatronSaintPicker() {
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ slug: next || null }),
     }).catch(() => null);
-    if (res?.ok) setSaved(true);
-    else {
+    if (res?.ok) {
+      setSaved(true);
+      // The My saint widget shows the saint now, not after the app's next
+      // return to the front (note 85, lib/profile/patronEvent.ts).
+      announcePatron(next || null);
+    } else {
       setSlug(previous);
       setError(true);
     }

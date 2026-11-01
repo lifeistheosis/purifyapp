@@ -10,6 +10,8 @@
 // the day is worked out the way the widget works it out, on the reader's own
 // calendar (lib/widget/state.ts, patronFacts). The answer is kept for the
 // day on the device, so Today asks the website once a day, not on every open.
+// A patron saved in the app (lib/profile/patronEvent.ts) replaces it at once:
+// the kept answer is forgotten, and a card on the screen takes the saved one.
 
 import Link from "next/link";
 import { useEffect, useState } from "react";
@@ -22,17 +24,16 @@ import { apiFetch } from "@/lib/api/client";
 import { readCalendarStyleDefault } from "@/lib/calendar/styleDefault";
 import { cn } from "@/lib/cn";
 import { useMyPicture } from "@/lib/profile/myPicture";
+import { PATRON_EVENT, TODAY_PATRON_KEY, type PatronChange } from "@/lib/profile/patronEvent";
 import { todayKey } from "@/lib/rhythm/dayKey";
 import type { SaintBrief } from "@/lib/saints/brief";
 import { saintWordsFor } from "@/lib/today/saintWords";
-
-const KEY = "purify:nameday.patron";
 
 type Kept = { day: string; who: string; slug: string | null };
 
 function readKept(day: string, who: string): Kept | null {
   try {
-    const kept = JSON.parse(window.localStorage.getItem(KEY) ?? "null") as Kept | null;
+    const kept = JSON.parse(window.localStorage.getItem(TODAY_PATRON_KEY) ?? "null") as Kept | null;
     return kept && kept.day === day && kept.who === who ? kept : null;
   } catch {
     return null;
@@ -41,7 +42,7 @@ function readKept(day: string, who: string): Kept | null {
 
 function keep(kept: Kept): void {
   try {
-    window.localStorage.setItem(KEY, JSON.stringify(kept));
+    window.localStorage.setItem(TODAY_PATRON_KEY, JSON.stringify(kept));
   } catch {
     /* private mode: Today asks again next time */
   }
@@ -57,30 +58,68 @@ export function NameDayCard({ className }: { className?: string }) {
     // Signed out: nothing to ask, and the card hides below.
     if (who === null) return;
     let alive = true;
+    /** Patrons saved while the card is up, so an answer asked for before one is not taken over it. */
+    let saves = 0;
+
+    /** The card for a patron on a day: shown on their name day, and on no other. */
+    async function show(patron: string | null, day: string) {
+      if (!patron) {
+        if (alive) setSlug(null);
+        return;
+      }
+      const { patronFacts } = await import("@/lib/widget/state");
+      const facts = patronFacts({ kind: "saint", slug: patron }, day, readCalendarStyleDefault());
+      if (alive) setSlug(facts?.daysToNameDay === 0 ? facts.slug : null);
+    }
+
     void (async () => {
       const day = todayKey();
+      const asked = saves;
       let patron = readKept(day, who)?.slug;
       if (patron === undefined) {
         try {
           const res = await apiFetch("/api/profile/patron-saint", { cache: "no-store" });
           const body: unknown = res.ok ? await res.json().catch(() => null) : null;
           const { readPatronAnswer } = await import("@/lib/widget/state");
-          const answer = readPatronAnswer(res.status, body);
+          // Signed in, as the card asks only then: a 401 is a token not yet
+          // renewed and not "no saint" (note 85), so it is asked again.
+          const answer = readPatronAnswer(res.status, body, true);
           // No plain answer (no signal, an error page): ask again next time.
           if (answer.kind === "unknown") return;
+          // A patron saved meanwhile is newer than this answer.
+          if (asked !== saves) return;
           patron = answer.kind === "saint" ? answer.slug : null;
           keep({ day, who, slug: patron });
         } catch {
           return;
         }
       }
-      if (!patron) return;
-      const { patronFacts } = await import("@/lib/widget/state");
-      const facts = patronFacts({ kind: "saint", slug: patron }, day, readCalendarStyleDefault());
-      if (alive) setSlug(facts?.daysToNameDay === 0 ? facts.slug : null);
+      if (asked === saves) await show(patron, day);
     })();
+
+    // A patron saved in the app (lib/profile/patronEvent.ts): the card
+    // follows at once, and keeps the saved one for the day as it keeps the
+    // server's answer. The event carries what the server saved.
+    const onPatron = (event: Event) => {
+      saves += 1;
+      const saved = (event as CustomEvent<PatronChange>).detail;
+      void import("@/lib/widget/state")
+        .then(({ readPatronAnswer }) => {
+          const answer = readPatronAnswer(200, saved);
+          if (!alive || answer.kind === "unknown") return;
+          const day = todayKey();
+          const patron = answer.kind === "saint" ? answer.slug : null;
+          keep({ day, who, slug: patron });
+          return show(patron, day);
+        })
+        .catch(() => {
+          // Offline before the chunk was cached: the card asks when it next shows.
+        });
+    };
+    window.addEventListener(PATRON_EVENT, onPatron);
     return () => {
       alive = false;
+      window.removeEventListener(PATRON_EVENT, onPatron);
     };
   }, [who]);
 

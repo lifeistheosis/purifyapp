@@ -3,6 +3,7 @@ import fs from "node:fs";
 import path from "node:path";
 
 import { buildDayTable } from "../dayTable";
+import { patronEntry, patronFacts } from "../state";
 
 /**
  * The contract between the emitter, the app and the Android widgets
@@ -69,8 +70,13 @@ describe("android widgets: the contract", () => {
       }
     };
     entries.forEach(walk);
-    // And what the app hands over (docs/WIDGETS.md, section 2).
-    for (const k of ["count", "keptToday", "week", "on", "morning", "evening", "slug", "name", "nameDay", "icon", "version", "date"]) known.add(k);
+    // And what the app hands over (docs/WIDGETS.md, section 2): the patron's
+    // fields as lib/widget/state.ts writes them, and the rest as listed.
+    const patron = patronEntry(patronFacts({ kind: "saint", slug: "arsenius-the-great" }, "2026-10-14", "new"));
+    const patronKeys = Object.keys(JSON.parse(patron!));
+    expect(patronKeys).toEqual(["slug", "name", "nameDay", "nameDayAfter", "icon"]);
+    for (const k of patronKeys) known.add(k);
+    for (const k of ["count", "keptToday", "week", "on", "morning", "evening", "version", "date"]) known.add(k);
 
     const java = allJava();
     const asked = new Set<string>();
@@ -81,6 +87,97 @@ describe("android widgets: the contract", () => {
     expect(missing, `the widgets read ${missing.join(", ")}, which nothing writes`).toEqual([]);
     // It must actually read something, or this passes vacuously.
     expect(asked.size).toBeGreaterThan(5);
+  });
+
+  it("counts to the patron's next name day by itself once the one handed over has gone by (note 85)", () => {
+    // Without this, the morning after a name day read "Open Purify to
+    // refresh" until the app was opened. The date is the app's; the widget
+    // only picks the first of the two that has not gone by.
+    const java = read(path.join(JAVA_DIR, "widget/MySaintWidgetProvider.java"));
+    expect(java).toContain('WidgetData.text(patron, "nameDayAfter")');
+  });
+
+  it("draws My saint's four-cell look only where its words have room (note 85)", () => {
+    const base = read(path.join(JAVA_DIR, "widget/PurifyWidgetProvider.java"));
+    // Both ways a size is chosen ask the family: Android 12 and newer, and before.
+    expect(base).toContain("new SizeF(wideDp(), 100f)");
+    expect(base).toContain("minWidth >= wideDp()");
+    const saint = read(path.join(JAVA_DIR, "widget/MySaintWidgetProvider.java"));
+    expect(saint).toMatch(/protected int wideDp\(\) \{\s*return WIDE_FROM_DP;\s*\}/);
+    const from = Number(saint.match(/WIDE_FROM_DP = (\d+);/)?.[1]);
+    // Beside the icon the words get the width less the padding, the icon and
+    // the gap (widget_mysaint.xml): at least the 160dp the date and the days
+    // chip need side by side. The mock gives them 204.
+    const layout = read(path.join(LAYOUTS, "widget_mysaint.xml"));
+    const pad = Number(layout.match(/android:id="@\+id\/widget_root"[\s\S]*?android:padding="(\d+)dp"/)?.[1]);
+    const icon = Number(layout.match(/android:id="@\+id\/saint_icon"[\s\S]*?android:layout_width="(\d+)dp"/)?.[1]);
+    const gap = Number(layout.match(/android:id="@\+id\/saint_icon"[\s\S]*?android:layout_marginEnd="(\d+)dp"/)?.[1]);
+    expect([pad, icon, gap]).toEqual([12, 96, 14]);
+    expect(from - 2 * pad - icon - gap).toBeGreaterThanOrEqual(160);
+    // Three cells take the two-cell look: 203dp on the five-column phone
+    // Android documents (73 x 3 - 16), up to about 295 on a four-column one.
+    expect(from).toBeGreaterThan(295);
+    // And the two-cell look stays within reach: the widget resizes below it.
+    const info = read(path.join(MAIN, "res/xml/mysaint_widget_info.xml"));
+    expect(Number(info.match(/android:minResizeWidth="(\d+)dp"/)?.[1])).toBeLessThan(from);
+  });
+
+  it("ends every line of My saint in an ellipsis, never a word lost unseen, and gives the name day's words the date's room (note 85)", () => {
+    const looks = read(path.join(MAIN, "res/values/widget_looks.xml"));
+    const style = (name: string) => {
+      const block = looks.match(new RegExp(`<style name="${name}"[^>]*>([\\s\\S]*?)</style>`))?.[1] ?? "";
+      const item = (attr: string) => block.match(new RegExp(`<item name="android:${attr}">([^<]+)</item>`))?.[1];
+      return { maxLines: item("maxLines"), ellipsize: item("ellipsize") };
+    };
+    const files = fs.readdirSync(LAYOUTS).filter((f) => /^widget_mysaint(_small|_small_text)?\.xml$/.test(f)).sort();
+    expect(files).toEqual(["widget_mysaint.xml", "widget_mysaint_small.xml", "widget_mysaint_small_text.xml"]);
+    let seen = 0;
+    for (const file of files) {
+      const xml = read(path.join(LAYOUTS, file)).replace(/<!--[\s\S]*?-->/g, "");
+      for (const m of xml.matchAll(/<TextView([\s\S]*?)\/>/g)) {
+        seen++;
+        const attrs = m[1];
+        const own = (attr: string) => attrs.match(new RegExp(`android:${attr}="([^"]+)"`))?.[1];
+        const styled = style(attrs.match(/style="@style\/(\w+)"/)?.[1] ?? "");
+        const id = attrs.match(/android:id="@\+id\/(\w+)"/)?.[1];
+        // A line count, and an ellipsis at its end: with maxLines alone a
+        // word that does not fit wraps onto a line that is never drawn.
+        expect(own("maxLines") ?? styled.maxLines, `${file} ${id}`).toBeTruthy();
+        expect(own("ellipsize") ?? styled.ellipsize, `${file} ${id}`).toBe("end");
+      }
+    }
+    expect(seen).toBe(9);
+    // On the name day the chip says so, and the date gives up its room.
+    const saint = read(path.join(JAVA_DIR, "widget/MySaintWidgetProvider.java"));
+    expect(saint).toMatch(/if \(today\) \{[\s\S]*?setViewVisibility\(R\.id\.saint_date, View\.INVISIBLE\);/);
+  });
+
+  it("never lets an ellipsis land on the days to the name day (note 85)", () => {
+    const saint = read(path.join(JAVA_DIR, "widget/MySaintWidgetProvider.java"));
+    const num = (name: string) => Number(saint.match(new RegExp(`${name} = (\\d+)f?;`))?.[1]);
+    // The sentence when it fits the line's lines at the widget's width, else
+    // the count alone, number first, in the four-cell chip's words.
+    expect(saint).toContain("if (WidgetPieces.fits(context, line, META_SP, roomDp, 2)) return line;");
+    expect(saint).toMatch(/return days \+ " " \+ WidgetPieces\.daysWord\(context, days\);\s*\}/);
+    expect(read(path.join(JAVA_DIR, "widget/WidgetPieces.java"))).toContain("StaticLayout.Builder.obtain(");
+    // Measured in the line's own size, against the layouts as they are.
+    const looks = read(path.join(MAIN, "res/values/widget_looks.xml"));
+    const metaSize = looks.match(/<style name="WidgetMeta">[\s\S]*?<item name="android:textSize">(\d+)sp<\/item>/)?.[1];
+    expect(num("META_SP")).toBe(Number(metaSize));
+    for (const [file, sides] of [
+      ["widget_mysaint_small.xml", "SIDES_ICON_DP"],
+      ["widget_mysaint_small_text.xml", "SIDES_TEXT_DP"],
+    ] as const) {
+      const xml = read(path.join(LAYOUTS, file));
+      const pad = Number(xml.match(/android:id="@\+id\/widget_root"[\s\S]*?android:padding="(\d+)dp"/)?.[1]);
+      expect(pad, file).toBeGreaterThan(0);
+      expect(num(sides), file).toBeGreaterThanOrEqual(2 * pad);
+      // The two lines measured are the two lines the layout draws.
+      const meta = xml.match(/<TextView[^>]*android:id="@\+id\/saint_meta"[^>]*\/>/)?.[0] ?? "";
+      expect(meta.match(/android:maxLines="(\d+)"/)?.[1], file).toBe("2");
+    }
+    const info = read(path.join(MAIN, "res/xml/mysaint_widget_info.xml"));
+    expect(num("NARROWEST_DP")).toBe(Number(info.match(/android:minResizeWidth="(\d+)dp"/)?.[1]));
   });
 
   it("stores exactly the six keys the app may hand over", () => {

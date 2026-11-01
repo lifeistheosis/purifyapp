@@ -218,7 +218,10 @@ export function widgetLabels(input: LabelsInput): WidgetLabels {
     today0: t("calendar.today"),
     nextUpdate: t("widget.nextUpdate"),
     soon: t("bible.translationBadgeSoon"),
-    mySaint: t("desktop.presence.patronHover"),
+    // The mock's own word over the saint, "My saint" (note 85). It was the
+    // Discord status's "My patron saint", twice as long and up to three times
+    // in some languages, and cut short in small capitals at two cells.
+    mySaint: t("widget.mySaint"),
     nameDayToday: t("profile.nameDayToday"),
     nameDayIn: tn("widget.nameDayIn", nameDayIn ?? usualCount(locale)),
     chooseSaint: t("widget.chooseSaint"),

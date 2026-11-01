@@ -29,6 +29,7 @@ import {
   type ProfilePatch,
 } from "@/lib/profile/client";
 import { announcePicture } from "@/lib/profile/myPicture";
+import { announcePatron } from "@/lib/profile/patronEvent";
 import {
   BANNER_COLORS,
   BANNER_MOTIONS,
@@ -374,6 +375,9 @@ export function ProfileEditor() {
     // The Bible reader on this device sends the open chapter only while this
     // is on (lib/profile/client.ts); the server checks the real switch too.
     setNowReadingOn(res.profile.settings?.showNowReading ?? false);
+    // The My saint widget hears of a new patron at once, as it does from the
+    // You tab's picker (note 85, lib/profile/patronEvent.ts).
+    if (patch.patronSaint !== undefined) announcePatron(res.profile.patronSaint?.slug ?? null);
     setProfile(res.profile);
     setCooldownMinutes(minutesLeft(res.profile.handleChangedAt));
     const fresh = draftFrom(res.profile);
