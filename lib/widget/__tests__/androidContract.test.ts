@@ -152,6 +152,34 @@ describe("android widgets: the contract", () => {
     expect(saint).toMatch(/if \(today\) \{[\s\S]*?setViewVisibility\(R\.id\.saint_date, View\.INVISIBLE\);/);
   });
 
+  it("never lets an ellipsis land on the days to the name day (note 85)", () => {
+    const saint = read(path.join(JAVA_DIR, "widget/MySaintWidgetProvider.java"));
+    const num = (name: string) => Number(saint.match(new RegExp(`${name} = (\\d+)f?;`))?.[1]);
+    // The sentence when it fits the line's lines at the widget's width, else
+    // the count alone, number first, in the four-cell chip's words.
+    expect(saint).toContain("if (WidgetPieces.fits(context, line, META_SP, roomDp, 2)) return line;");
+    expect(saint).toMatch(/return days \+ " " \+ WidgetPieces\.daysWord\(context, days\);\s*\}/);
+    expect(read(path.join(JAVA_DIR, "widget/WidgetPieces.java"))).toContain("StaticLayout.Builder.obtain(");
+    // Measured in the line's own size, against the layouts as they are.
+    const looks = read(path.join(MAIN, "res/values/widget_looks.xml"));
+    const metaSize = looks.match(/<style name="WidgetMeta">[\s\S]*?<item name="android:textSize">(\d+)sp<\/item>/)?.[1];
+    expect(num("META_SP")).toBe(Number(metaSize));
+    for (const [file, sides] of [
+      ["widget_mysaint_small.xml", "SIDES_ICON_DP"],
+      ["widget_mysaint_small_text.xml", "SIDES_TEXT_DP"],
+    ] as const) {
+      const xml = read(path.join(LAYOUTS, file));
+      const pad = Number(xml.match(/android:id="@\+id\/widget_root"[\s\S]*?android:padding="(\d+)dp"/)?.[1]);
+      expect(pad, file).toBeGreaterThan(0);
+      expect(num(sides), file).toBeGreaterThanOrEqual(2 * pad);
+      // The two lines measured are the two lines the layout draws.
+      const meta = xml.match(/<TextView[^>]*android:id="@\+id\/saint_meta"[^>]*\/>/)?.[0] ?? "";
+      expect(meta.match(/android:maxLines="(\d+)"/)?.[1], file).toBe("2");
+    }
+    const info = read(path.join(MAIN, "res/xml/mysaint_widget_info.xml"));
+    expect(num("NARROWEST_DP")).toBe(Number(info.match(/android:minResizeWidth="(\d+)dp"/)?.[1]));
+  });
+
   it("stores exactly the six keys the app may hand over", () => {
     const plugin = read(path.join(JAVA_DIR, "widget/WidgetBridgePlugin.java"));
     const listed = plugin.match(/Arrays\.asList\(([\s\S]*?)\)\)/)?.[1] ?? "";

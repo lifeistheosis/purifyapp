@@ -1,7 +1,9 @@
 package net.purifyapp.purify.widget;
 
+import android.appwidget.AppWidgetManager;
 import android.content.Context;
 import android.graphics.Bitmap;
+import android.os.Bundle;
 import android.view.View;
 import android.widget.RemoteViews;
 
@@ -43,6 +45,14 @@ public class MySaintWidgetProvider extends PurifyWidgetProvider {
      * two-cell look too, where the four-cell one would have had 142dp.
      */
     static final int WIDE_FROM_DP = 300;
+
+    /** The line under the name in the two-cell looks, as WidgetMeta sets it (res/values/widget_looks.xml). */
+    private static final float META_SP = 12f;
+    /** The narrowest the widget can be made (minResizeWidth, res/xml/mysaint_widget_info.xml), for a launcher that has not said. */
+    private static final int NARROWEST_DP = 110;
+    /** The two-cell looks' padding, both sides together (12dp beside an icon, 15dp without), and 4dp to spare. */
+    private static final int SIDES_ICON_DP = 28;
+    private static final int SIDES_TEXT_DP = 34;
 
     @Override
     protected String family() {
@@ -99,12 +109,12 @@ public class MySaintWidgetProvider extends PurifyWidgetProvider {
             views = new RemoteViews(context.getPackageName(), R.layout.widget_mysaint_small);
             views.setImageViewBitmap(R.id.saint_icon, icon);
             views.setTextViewText(R.id.saint_name, name);
-            WidgetFaces.line(views, R.id.saint_meta, countLine(context, days));
+            WidgetFaces.line(views, R.id.saint_meta, countLine(context, days, widthDp(context, id) - SIDES_ICON_DP));
         } else {
             views = new RemoteViews(context.getPackageName(), R.layout.widget_mysaint_small_text);
             views.setTextViewText(R.id.saint_eyebrow, eyebrow);
             views.setTextViewText(R.id.saint_name, name);
-            WidgetFaces.line(views, R.id.saint_meta, countLine(context, days));
+            WidgetFaces.line(views, R.id.saint_meta, countLine(context, days, widthDp(context, id) - SIDES_TEXT_DP));
         }
 
         String slug = WidgetData.text(patron, "slug");
@@ -118,13 +128,31 @@ public class MySaintWidgetProvider extends PurifyWidgetProvider {
      * app knows no name day. A name day gone by with the one after it gone by
      * too (the app not opened for a year, or an entry from a build before it
      * handed over nameDayAfter) asks for the app, which knows the next one.
+     *
+     * <p>The digits stay whole (note 85). The sentence may take the line's two
+     * lines (widget_mysaint_small*.xml) in `roomDp`; where even two cannot hold
+     * it, the ellipsis could land on the number, so the count stands alone,
+     * number first, in the words the four-cell chip uses: "57 days".
      */
-    private static String countLine(Context context, Integer days) {
+    private static String countLine(Context context, Integer days, int roomDp) {
         if (days == null) return "";
         if (days < 0) return WidgetData.label(context, "openToRefresh", "Open Purify to refresh");
         if (days == 0) return WidgetData.label(context, "nameDayToday", "Name day today");
         String english = days == 1 ? "Name day in {n} day" : "Name day in {n} days";
-        return WidgetData.label(context, "nameDayIn", english).replace("{n}", String.valueOf(days));
+        String line = WidgetData.label(context, "nameDayIn", english).replace("{n}", String.valueOf(days));
+        if (WidgetPieces.fits(context, line, META_SP, roomDp, 2)) return line;
+        return days + " " + WidgetPieces.daysWord(context, days);
+    }
+
+    /**
+     * The widget's width as the launcher last gave it, in dp: its portrait
+     * width, the narrowest it is drawn at, which is where the two-cell looks
+     * are drawn. The narrowest it can be made when the launcher has not said.
+     */
+    private static int widthDp(Context context, int id) {
+        Bundle options = AppWidgetManager.getInstance(context).getAppWidgetOptions(id);
+        int width = options == null ? 0 : options.getInt(AppWidgetManager.OPTION_APPWIDGET_MIN_WIDTH, 0);
+        return width > 0 ? width : NARROWEST_DP;
     }
 
     /** Four cells: the name day's date, and a chip with the days to it, standing out on the day itself. */
