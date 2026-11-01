@@ -209,6 +209,21 @@ describe("the screen holds still as it opens (build 87, the owner's note 83)", (
     expect(empty.indexOf("<Doors ")).toBeLessThan(empty.indexOf("data-search-recent"));
   });
 
+  it("keeps the rows that scroll sideways at their own height in its column, however long the body runs", () => {
+    // The body is a column that scrolls; a row that scrolls sideways has no
+    // height of its own to keep in one. Build 87's walk: with the day under
+    // the doors the body ran taller than the room the keyboard leaves, and
+    // the doors were squeezed from 107px to 9 as it came up.
+    const rows = code("components/search/SearchRows.tsx");
+    const doors = /data-search-doors="" className=\{cn\("([^"]*)"/.exec(rows)?.[1] ?? "";
+    expect(doors).toContain("overflow-x-auto");
+    expect(doors.split(" ")).toContain("shrink-0");
+    const kinds = /data-search-kinds=""[\s\S]*?className="([^"]*)"/.exec(rows)?.[1] ?? "";
+    expect(kinds).toContain("overflow-x-auto");
+    expect(kinds.split(" ")).toContain("shrink-0");
+    expect(screen).toContain('className="search-in flex min-h-0 flex-1 flex-col overflow-y-auto');
+  });
+
   it("keeps the strip's place while the lists arrive, at the strip's own height", () => {
     expect(screen).toContain("const stripComing = corpus === null && (DOOR_KINDS[turn.door]?.length ?? 0) > 0;");
     expect(empty).toContain('stripComing ? <div aria-hidden className="mt-3 h-[44px]" /> : null');

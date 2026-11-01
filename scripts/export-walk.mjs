@@ -6153,7 +6153,7 @@ await section(44, async () => {
             dayLine: day?.querySelector("span")?.textContent ?? null,
             dayRows: dayRows.map(box).join(" | "),
             dayCount: dayRows.length,
-            dayText: dayRows.map((r) => (r.textContent ?? "").replace(/\s+/g, " ").trim()).join(" | "),
+            dayText: dayRows.map((r) => [...r.querySelectorAll("span.block")].map((s) => (s.textContent ?? "").trim()).join(", ")).join(" | "),
             lit: body.querySelector("[data-search-doors] [aria-pressed=true]")?.getAttribute("data-door") ?? null,
             kinds: body.querySelectorAll("[data-search-kinds] [role=tab]").length,
             dock: box(screen.querySelector("[data-search-dock]")),

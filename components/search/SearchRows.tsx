@@ -469,7 +469,12 @@ export function Doors({
   const size = small ? 58 : 74;
   return (
     // A phone swipes the row sideways; a computer's card, with no swipe, wraps it.
-    <div data-search-doors="" className={cn("no-scrollbar flex overflow-x-auto px-5 pb-1 pt-1 md:flex-wrap md:gap-y-3 md:overflow-x-visible", small ? "gap-[11px]" : "gap-3")}>
+    // shrink-0: the screen's body is a column that scrolls, and a row that
+    // scrolls sideways has no height of its own to keep in one, so when the
+    // body ran taller than the room the keyboard leaves (the day under the
+    // doors, r3-31 B) the doors were squeezed to a sliver and everything
+    // under them rose: build 87's walk, section 44.
+    <div data-search-doors="" className={cn("no-scrollbar flex shrink-0 overflow-x-auto px-5 pb-1 pt-1 md:flex-wrap md:gap-y-3 md:overflow-x-visible", small ? "gap-[11px]" : "gap-3")}>
       {doors.map((id) => {
         const door = doorOf(id);
         const n = counts?.get(id);
