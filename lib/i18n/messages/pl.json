@@ -4503,7 +4503,7 @@
   "prayers.mine.startFromEvening": "Zacznij od modlitw wieczornych",
   "prayers.mine.missing": "Modlitwa, której nie ma już w modlitewniku",
   "prayers.mine.missingNote": "Jednej modlitwy z tej reguły nie ma już w modlitewniku, więc została pominięta.",
-  "prayers.mine.deviceNote": "Na razie Twoja reguła jest przechowywana na tym urządzeniu. Imiona poniżej synchronizują się między Twoimi urządzeniami po zalogowaniu; nic nie jest sprzedawane ani nikomu udostępniane.",
+  "prayers.mine.deviceNote": "Na razie Twoja reguła jest przechowywana na tym urządzeniu. Imiona, które nosisz, synchronizują się między Twoimi urządzeniami po zalogowaniu; nic nie jest sprzedawane ani nikomu udostępniane.",
   "prayers.mine.partEmpty": "W tej części Twojej reguły nic jeszcze nie ma.",
   "prayers.mine.build": "Ułóż swoją regułę",
   "prayers.ruleToday.title": "Twoja reguła na dziś",

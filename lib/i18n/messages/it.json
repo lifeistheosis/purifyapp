@@ -4355,7 +4355,7 @@
   "prayers.mine.startFromEvening": "Parti dalle preghiere della sera",
   "prayers.mine.missing": "Una preghiera non più nel libro",
   "prayers.mine.missingNote": "Una preghiera di questa regola non è più nel libro, quindi è omessa.",
-  "prayers.mine.deviceNote": "Per ora la tua regola resta su questo dispositivo. I nomi qui sotto si sincronizzano tra i tuoi dispositivi quando accedi; nulla viene venduto o condiviso con nessuno.",
+  "prayers.mine.deviceNote": "Per ora la tua regola resta su questo dispositivo. I nomi che porti si sincronizzano tra i tuoi dispositivi quando accedi; nulla viene venduto o condiviso con nessuno.",
   "prayers.mine.partEmpty": "In questa parte della tua regola non c'è ancora niente.",
   "prayers.mine.build": "Componi la tua regola",
   "prayers.ruleToday.title": "La tua regola di oggi",

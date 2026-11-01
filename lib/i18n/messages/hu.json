@@ -4350,7 +4350,7 @@
   "prayers.mine.startFromEvening": "Kezdés az esti imákkal",
   "prayers.mine.missing": "Egy ima, amely már nincs az imakönyvben",
   "prayers.mine.missingNote": "A szabály egyik imája már nincs az imakönyvben, ezért kimarad.",
-  "prayers.mine.deviceNote": "Az imaszabálya egyelőre ezen az eszközön marad. Az alábbi nevek bejelentkezés után szinkronizálódnak az eszközei között; semmit nem adunk el és nem osztunk meg senkivel.",
+  "prayers.mine.deviceNote": "Az imaszabálya egyelőre ezen az eszközön marad. A nevek, amelyeket hordoz, bejelentkezés után szinkronizálódnak az eszközei között; semmit nem adunk el és nem osztunk meg senkivel.",
   "prayers.mine.partEmpty": "Az imaszabálynak ebben a részében még nincs semmi.",
   "prayers.mine.build": "Imaszabály összeállítása",
   "prayers.ruleToday.title": "Mai imaszabály",

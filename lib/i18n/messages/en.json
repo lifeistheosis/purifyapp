@@ -4361,7 +4361,7 @@
   "prayers.mine.startFromEvening": "Start from Evening prayers",
   "prayers.mine.missing": "A prayer no longer in the prayer book",
   "prayers.mine.missingNote": "A prayer in this rule is no longer in the prayer book, so it is left out.",
-  "prayers.mine.deviceNote": "Your rule is kept on this device for now. The names below sync across your devices when you sign in; nothing is sold or shared with anyone.",
+  "prayers.mine.deviceNote": "Your rule is kept on this device for now. The names you carry sync across your devices when you sign in; nothing is sold or shared with anyone.",
   "prayers.mine.partEmpty": "Nothing is in this part of your rule yet.",
   "prayers.mine.build": "Make your rule",
   "prayers.ruleToday.title": "Your rule today",

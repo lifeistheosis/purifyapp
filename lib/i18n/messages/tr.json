@@ -4350,7 +4350,7 @@
   "prayers.mine.startFromEvening": "Akşam dualarıyla başla",
   "prayers.mine.missing": "Artık dua kitabında olmayan bir dua",
   "prayers.mine.missingNote": "Bu kuraldaki bir dua artık dua kitabında olmadığı için atlandı.",
-  "prayers.mine.deviceNote": "Kuralınız şimdilik bu cihazda saklanır. Aşağıdaki isimler giriş yaptığınızda cihazlarınız arasında eşitlenir; hiçbir şey satılmaz, kimseyle paylaşılmaz.",
+  "prayers.mine.deviceNote": "Kuralınız şimdilik bu cihazda saklanır. Taşıdığınız isimler giriş yaptığınızda cihazlarınız arasında eşitlenir; hiçbir şey satılmaz, kimseyle paylaşılmaz.",
   "prayers.mine.partEmpty": "Kuralınızın bu bölümünde henüz bir şey yok.",
   "prayers.mine.build": "Kuralınızı oluşturun",
   "prayers.ruleToday.title": "Bugünkü kuralınız",

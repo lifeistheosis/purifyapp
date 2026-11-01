@@ -4378,7 +4378,7 @@
   "prayers.mine.startFromEvening": "Partir des prières du soir",
   "prayers.mine.missing": "Une prière qui n'est plus dans le livre",
   "prayers.mine.missingNote": "Une prière de cette règle n'est plus dans le livre de prières : elle est donc omise.",
-  "prayers.mine.deviceNote": "Pour l'instant, votre règle est gardée sur cet appareil. Les noms ci-dessous se synchronisent entre vos appareils quand vous êtes connecté ; rien n'est vendu ni partagé avec qui que ce soit.",
+  "prayers.mine.deviceNote": "Pour l'instant, votre règle est gardée sur cet appareil. Les noms que vous portez se synchronisent entre vos appareils quand vous êtes connecté ; rien n'est vendu ni partagé avec qui que ce soit.",
   "prayers.mine.partEmpty": "Cette partie de votre règle est encore vide.",
   "prayers.mine.build": "Composer votre règle",
   "prayers.ruleToday.title": "Votre règle aujourd’hui",

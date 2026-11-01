@@ -13,6 +13,7 @@ import { deleteIntention, readIntentions, reposeDateText, restoreIntention, writ
  *  1. both lists' lines printed a web address, "/prayers/today";
  *  2. a repose date printed as typed, 2019-03-04;
  *  3. removing a name asked in the browser's own confirm box;
+ *  4. the note at the page's foot said "The names below sync", under the names;
  *
  * Each fix is measured on the built page by scripts/export-walk.mjs too.
  */
@@ -126,5 +127,42 @@ describe("removing a name", () => {
     deleteIntention("living", "anna");
     restoreIntention("living", name("clare"), 2);
     expect(readIntentions("living").map((n) => n.id)).toEqual(["basil", "clare"]);
+  });
+});
+
+describe("the note at the page's foot", () => {
+  // Each catalog's word for "below" or "above" in the note as it stood; the
+  // note stands under the names, so it names them and not where they are.
+  const PLACE: Record<string, RegExp> = {
+    ar: /أدناه|أعلاه/,
+    bg: /по-долу|по-горе/,
+    de: /darunter|darüber|unten|oben/,
+    el: /παρακάτω|παραπάνω/,
+    en: /\bbelow\b|\babove\b/i,
+    es: /de abajo|de arriba/,
+    fil: /sa ibaba|sa itaas/,
+    fr: /ci-dessous|ci-dessus/,
+    hu: /alábbi|fenti/,
+    id: /di bawah|di atas/,
+    it: /qui sotto|qui sopra/,
+    ka: /ქვემოთ|ზემოთ/,
+    ne: /तलका|माथिका/,
+    pl: /poniżej|powyżej/,
+    pt: /abaixo|acima/,
+    ro: /de mai jos|de mai sus/,
+    ru: /ниже|выше/,
+    sr: /испод|изнад/,
+    tr: /Aşağıdaki|Yukarıdaki/i,
+    uk: /нижче|вище/,
+    ur: /نیچے|اوپر/,
+  };
+
+  it("names the names it speaks of, wherever it stands, in every language", () => {
+    expect(Object.keys(PLACE).sort()).toEqual(LOCALES.map((l) => l.code).sort());
+    for (const { code } of LOCALES) {
+      const note = catalog(code)["prayers.mine.deviceNote"];
+      expect(note, code).not.toMatch(PLACE[code]);
+    }
+    expect(catalog("en")["prayers.mine.deviceNote"]).toContain("The names you carry sync across your devices");
   });
 });

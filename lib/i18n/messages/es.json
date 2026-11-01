@@ -4360,7 +4360,7 @@
   "prayers.mine.startFromEvening": "Empezar por las oraciones de la noche",
   "prayers.mine.missing": "Una oración que ya no está en el libro",
   "prayers.mine.missingNote": "Una oración de esta regla ya no está en el libro de oraciones, así que se omite.",
-  "prayers.mine.deviceNote": "Por ahora tu regla se guarda en este dispositivo. Los nombres de abajo se sincronizan entre tus dispositivos cuando inicias sesión; no se vende ni se comparte nada con nadie.",
+  "prayers.mine.deviceNote": "Por ahora tu regla se guarda en este dispositivo. Los nombres que llevas se sincronizan entre tus dispositivos cuando inicias sesión; no se vende ni se comparte nada con nadie.",
   "prayers.mine.partEmpty": "Aún no hay nada en esta parte de tu regla.",
   "prayers.mine.build": "Haz tu regla",
   "prayers.ruleToday.title": "Tu regla de hoy",
