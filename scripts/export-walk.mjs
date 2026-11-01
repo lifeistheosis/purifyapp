@@ -3343,6 +3343,45 @@ await section(34, async () => {
   // plate, the cross glowing white (components/ui/CrossPlate.tsx).
   const library = JSON.parse(fs.readFileSync(path.join(OUT, "chants-index.json"), "utf8"));
   must(library.every((c) => inBundle(OUT, `/chants/${c.slug}/`)), `every chant's page is in the bundle (${library.length}: ${library.map((c) => c.slug).join(", ")})`);
+
+  // Build 86 note 78: on the owner's phone Psalm 135 and Psalm 117 were not
+  // timed, because the apps asked the website for each timing file and the
+  // website still ran an older build. Every version with a recording now
+  // carries its timing in the export (app/chant-timing), line for line its
+  // words (data/chants, the words the pages were built from) and word for
+  // word where it times words.
+  const words = (s) => s.split(/\s+/).filter(Boolean);
+  const timingProblems = [];
+  let timedVersions = 0;
+  for (const c of library) {
+    const data = JSON.parse(fs.readFileSync(path.resolve("data", "chants", `${c.slug}.json`), "utf8"));
+    for (const v of c.variants) {
+      const ref = `${c.slug}/${v.id}`;
+      if (!v.audio?.src) continue;
+      if (!v.timing) {
+        timingProblems.push(`${ref}: no timing`);
+        continue;
+      }
+      const file = path.join(OUT, v.timing.replace(/^\//, ""));
+      if (!fs.existsSync(file)) {
+        timingProblems.push(`${ref}: ${v.timing} not in the export`);
+        continue;
+      }
+      let t = null;
+      try {
+        t = JSON.parse(fs.readFileSync(file, "utf8"));
+      } catch {}
+      const lines = data.variants.find((x) => x.id === v.id)?.lines ?? [];
+      if (!t || (t.v !== 1 && t.v !== 2) || !Array.isArray(t.lines)) timingProblems.push(`${ref}: ${v.timing} does not read`);
+      else if (t.lines.length !== lines.length) timingProblems.push(`${ref}: ${t.lines.length} timed lines to ${lines.length} words`);
+      else {
+        const off = t.lines.findIndex((l, i) => l.text !== lines[i].text || (l.words && l.words.length !== words(l.text).length));
+        if (off >= 0) timingProblems.push(`${ref}: line ${off + 1} is not its words`);
+        else timedVersions++;
+      }
+    }
+  }
+  must(timingProblems.length === 0, `every version with a recording has its timing in the export, line for line its words (${timedVersions} timed${timingProblems.length ? `; ${timingProblems.join("; ")}` : ""})`);
   await go(page, "/chants/");
   await page.waitForFunction(() => document.querySelector("[data-route-content] section[aria-labelledby=chants-featured] [data-cover]"), null, { timeout: 20000 }).catch(() => {});
   await page.waitForTimeout(1500);
@@ -3473,6 +3512,14 @@ await section(34, async () => {
   must(psalm.tabs.join("|") === [en["chants.tab.words"], en["chants.tab.about"], en["chants.tab.versions"]].join("|"), `with the doors Words, About and Versions (${psalm.tabs.join(", ")})`);
   must(psalm.parts.join("|") === `English|${en["chants.words.translit"]} (grey)|${en["chants.words.both"]} (grey)`, `the switch on the English words, its sound and both greyed, never taken away (${psalm.parts.join(", ")})`);
   must(psalm.play === true && psalm.dock.includes(en["chants.needsConnection"]), `and Play waits in the dock for a connection, saying so (${psalm.dock.replace(/\s+/g, " ").trim()})`);
+  // Note 78: the lines drawn are the lines the app's own timing file times,
+  // read from the bundle with no signal.
+  const drawnLines = await page.evaluate(() => document.querySelectorAll("[data-route-content] [data-sung-look=page] ol > li").length);
+  let timedLines = null;
+  try {
+    timedLines = JSON.parse(fs.readFileSync(path.join(OUT, "chant-timing", "psalm-135", "en.json"), "utf8")).lines.length;
+  } catch {}
+  must(timedLines !== null && drawnLines === timedLines, `its English words drawn are the lines its bundled timing times (${drawnLines} drawn, ${timedLines ?? "no file"} timed)`);
   await page.screenshot({ path: path.join(SHOTS, "chants-psalm-135-phone.png") });
 
   // Each of its four versions, chosen in Versions: the words take the English's
