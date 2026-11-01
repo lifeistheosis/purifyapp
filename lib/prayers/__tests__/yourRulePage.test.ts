@@ -4,6 +4,8 @@ import path from "node:path";
 import { afterEach, describe, expect, it, vi } from "vitest";
 
 import { LOCALES } from "@/lib/i18n/locales";
+import { getPrayerIcon } from "@/lib/prayers/icons";
+import { WIDE_CUTS, ruleHeadArt, serviceArt } from "@/lib/prayers/serviceArt";
 import { deleteIntention, readIntentions, reposeDateText, restoreIntention, writeIntentions, type Intention } from "@/lib/prayers/storage";
 
 /**
@@ -108,12 +110,14 @@ describe("removing a name", () => {
 
   it("takes it out at once, with the rule's own Removed line and Undo", () => {
     const src = code("components/prayers/Diptychs.tsx");
-    expect(src).toContain("onDelete={() => remove(entry)}");
-    expect(src).toMatch(/deleteIntention\(kind, entry\.id\);\s*window\.clearTimeout\(undoTimer\.current\);\s*setUndo\(\{ entry, index \}\);/);
+    // From the name's own sheet since r3-27 A, a tap on its medallion away.
+    expect(src).toContain("onClick={() => onRemove(kind, entry, items.findIndex((i) => i.id === entry.id))}");
+    expect(src).toMatch(/deleteIntention\(kind, entry\.id\);\s*removed\(\{ kind, entry, index \}\);/);
+    expect(src).toMatch(/function removed\(r: Removed\) \{\s*setSheetOpen\(false\);\s*window\.clearTimeout\(undoTimer\.current\);\s*setUndo\(r\);/);
     expect(src).toContain('<p role="status"');
     expect(src).toContain('removedLine(t("prayers.mine.removed"), undo.entry.name)');
     expect(src).toContain('t("prayers.mine.undo")');
-    expect(src).toContain("restoreIntention(kind, undo.entry, undo.index)");
+    expect(src).toContain("restoreIntention(undo.kind, undo.entry, undo.index)");
   });
 
   it("and Undo puts it back where it stood, once", () => {
@@ -179,5 +183,135 @@ describe("the note at the page's foot", () => {
       expect(note, code).not.toMatch(PLACE[code]);
     }
     expect(catalog("en")["prayers.mine.deviceNote"]).toContain("The names you carry sync across your devices");
+  });
+});
+
+/** A JPEG's own pixels, from its frame header. */
+function jpegSize(rel: string): { width: number; height: number } {
+  const b = fs.readFileSync(path.join(ROOT, "public", rel));
+  for (let i = 2; i < b.length; ) {
+    if (b[i] !== 0xff) {
+      i++;
+      continue;
+    }
+    const marker = b[i + 1];
+    if (marker >= 0xc0 && marker <= 0xcf && marker !== 0xc4 && marker !== 0xc8 && marker !== 0xcc) {
+      return { height: b.readUInt16BE(i + 5), width: b.readUInt16BE(i + 7) };
+    }
+    i += 2 + b.readUInt16BE(i + 2);
+  }
+  throw new Error(`no frame in ${rel}`);
+}
+
+// The owner's pick A of r3-27 (note 73 of build 86, "A with a rule"), "the
+// icon above, the steps below". scripts/export-walk.mjs, section 39, measures
+// it on the built page, empty and with a rule.
+describe("the page as the owner picked it, r3-27 A", () => {
+  const builder = code("components/prayers/mine/MyRuleBuilder.tsx");
+  const head = code("components/prayers/mine/RuleHead.tsx");
+  const track = code("components/prayers/mine/PartSwitch.tsx");
+  const steps = code("components/prayers/mine/ReorderList.tsx");
+  const names = code("components/prayers/Diptychs.tsx");
+  const where = code("components/prayers/mine/RememberedIn.tsx");
+  const ticks = code("components/prayers/PlaceChips.tsx");
+  const css = read("app/globals.css");
+  const block = css.slice(css.indexOf("/* ── Your rule: the icon above, the steps below (1.8) ──"), css.indexOf("/* The shop's floating cart button"));
+
+  it("heads each part with its own icon, as the prayer book pairs them, in the largest copy the app carries", () => {
+    expect(serviceArt("mine-morning").slug).toBe("anastasis");
+    expect(serviceArt("mine-evening").slug).toBe("christ-pantocrator");
+    expect(serviceArt("mine-morning").slug).toBe(serviceArt("morning").slug);
+    expect(serviceArt("mine-evening").slug).toBe(serviceArt("evening").slug);
+    for (const part of ["morning", "evening"] as const) {
+      const art = ruleHeadArt(part);
+      const slug = serviceArt(`mine-${part}`).slug;
+      expect(WIDE_CUTS[slug], part).toBeDefined();
+      // The pixels the page is told are the file's own, and it is no new file.
+      expect(jpegSize(art.src), part).toEqual({ width: art.width, height: art.height });
+      expect(art.alt).toBe(getPrayerIcon(slug)?.alt);
+    }
+    // The evening's is the Prayers tab's own cut, not the prayer pages' 392 pixels.
+    expect(ruleHeadArt("evening").width).toBeGreaterThanOrEqual(1200);
+    // On the clergy list, as every pairing is.
+    expect(read("docs/editorial-standards.md")).toMatch(/26\. \*\*Your rule's two icons/);
+  });
+
+  it("puts the icon under the clear bar, fading in, the name and Pray my rule on it", () => {
+    expect(read("app/(app)/prayers/personal/page.tsx")).toMatch(/<MobileTopBar[^>]*revealTitleOn="mine-title"[^>]*\boverlay\b/);
+    expect(head).toContain("under-topbar picture-melt");
+    expect(head).toContain('<h1 id="mine-title"');
+    expect(head).toContain("data-mine-pray");
+    expect(head).toContain("{pray.meta}");
+    // Both parts' icons once the part is known, the one shown lit.
+    expect(head).toMatch(/part\s*\?\s*MY_RULE_PARTS\.map/);
+    expect(head).toContain('data-on={on ? "" : undefined}');
+    expect(builder).toContain('t("prayers.mine.partMinutes", { part: t(PART_KEY[shown]), min: minutes[shown] })');
+  });
+
+  it("sets Morning and Evening on a carved switch, a tablist kept in the address", () => {
+    expect(track).toContain('role="tablist"');
+    expect(track).toContain("id={`mine-tab-${part}`}");
+    expect(track).toContain("aria-controls={`mine-panel-${part}`}");
+    expect(track).toContain("<Sun ");
+    expect(track).toContain("<Lampada ");
+    expect(track).toContain('className="rule-track"');
+    expect(builder).toContain("window.history.replaceState(null, \"\", `${window.location.pathname}${window.location.search}#${next}`)");
+    expect(builder).toContain("id={`mine-panel-${p}`}");
+  });
+
+  it("draws the prayers as numbered steps on one thread, a handle on each, Add prayers the last stop", () => {
+    expect(steps).toContain('className="rule-thread"');
+    expect(steps).toMatch(/\{row\.lit \? <Orans size=\{15\} \/> : i \+ 1\}/);
+    // The handle at the row's end, after the row's own button.
+    expect(steps.indexOf("data-step-open")).toBeLessThan(steps.indexOf('aria-label={t("prayers.mine.moveRow"'));
+    expect(builder).toContain("lit: true");
+    expect(builder).toContain('data-mine-add');
+    expect(builder).toContain('className="rule-step rule-add');
+  });
+
+  it("offers an empty part's two ways in as one choice of two rows drawn alike, each saying what it brings", () => {
+    const ways = builder.slice(builder.indexOf("data-mine-ways"), builder.indexOf("{undo && undo.part === p"));
+    expect(ways.match(/className="set-link rule-way/g)).toHaveLength(2);
+    expect(ways).toContain('t("prayers.mine.startFromWhat"');
+    expect(ways).toContain('t("prayers.mine.addOneByOne")');
+    expect(ways).toContain('t("prayers.mine.addOneByOneWhat")');
+    expect(catalog("en")["prayers.mine.startFromWhat"]).toBe("The prayer book's own, {prayers} · {minutes}");
+  });
+
+  it("keeps the names as rows of medallions, a tap opening a name, the wall's with their day", () => {
+    expect(names).toContain('className="rule-meds"');
+    expect(names.match(/className="rule-med tap-press"/g)?.length).toBeGreaterThanOrEqual(2);
+    expect(names).toContain("<NameSheet");
+    expect(names).toContain("<WallNameSheet");
+    expect(names).toContain('aria-haspopup="dialog"');
+    // Sentence-case labels: no list's name is set in capitals.
+    expect(names).not.toMatch(/\buppercase\b/);
+  });
+
+  it("asks In which prayers in one row that opens a sheet of lines to tick, never pills", () => {
+    expect(where).toContain("data-remembered-in");
+    expect(where).toContain("<Sheet ");
+    expect(where).toContain("<PlaceChips ");
+    expect(ticks).toContain('className="rule-tick"');
+    expect(ticks).not.toMatch(/rounded-pill|border-paper\/15 text-paper\/70/);
+    // The wall's own add sheet has the same lines.
+    expect(code("components/community/AddToPrayersSheet.tsx")).toContain("<PlaceChips ");
+  });
+
+  it("draws nothing for 1.9's campaigns, which keep their place in words only", () => {
+    for (const src of [builder, head, steps, names]) expect(src).not.toMatch(/campaign/i);
+    expect(read("components/prayers/mine/MyRuleBuilder.tsx")).toMatch(/1\.9 \(note 70\)/);
+  });
+
+  it("is black, white and grey in every palette, and still with motion off", () => {
+    expect(block.length).toBeGreaterThan(2000);
+    expect(block).not.toMatch(/gold|amber|yellow|#d8b25c|#cfa65a/i);
+    // Parchment and True black have their own lines; nothing glows on paper.
+    expect(block).toContain('html[data-reading-mode="parchment"] .rule-pray');
+    expect(block).toContain('html[data-reading-mode="black"] .rule-node');
+    // Each movement has its escape.
+    for (const moving of [".rule-head-img", ".rule-head-img[data-on]", ".rule-track > button", ".rule-track > button::before"]) {
+      expect(block, moving).toContain(`:where([data-motion="reduce"]) ${moving}`);
+    }
   });
 });

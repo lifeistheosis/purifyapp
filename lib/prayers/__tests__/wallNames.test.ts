@@ -184,11 +184,12 @@ describe("on the page of Your rule (the owner's note 73)", () => {
 
   it("are drawn on the page, with the day each leaves, and taken out with an Undo", () => {
     const src = read("components", "prayers", "Diptychs.tsx");
-    expect(src).toContain("<WallSection />");
+    // A row of medallions after the reader's own two lists (r3-27 A), each opening the name.
+    expect(src).toContain("<WallList onOpen=");
     expect(src).toContain("waitingWallNames(useWallNames())");
     expect(src).toContain('t("prayers.diptychs.wallUntil", { date: wallLeavesText(name.until, locale) })');
-    expect(src).toContain("updateWallNames((list) => markWallPrayed(list, [name.id]))");
-    expect(src).toContain("updateWallNames((list) => unmarkWallPrayed(list, [undo.id]))");
+    expect(src).toContain("updateWallNames((list) => markWallPrayed(list, [entry.id]))");
+    expect(src).toContain("updateWallNames((list) => unmarkWallPrayed(list, [id]))");
   });
 
   it("in words of every language", () => {

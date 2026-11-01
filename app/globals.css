@@ -1445,6 +1445,369 @@ html[data-reading-mode="parchment"] .rule-ring-lit {
  filter: none;
 }
 
+/* ── Your rule: the icon above, the steps below (1.8) ──
+   The owner's pick A of round r3-27 (note 73 of build 86, "A with a rule";
+   Homebase/boards/purify-master/variants/r3-27-your-rule.png): the page of
+   Your rule, components/prayers/mine/. The part's own icon fills the top of
+   the screen under the clear bar and fades in, as on Prayers and a saint's
+   page (.under-topbar and .picture-melt above), with the page's name and
+   Pray my rule on its lower half; Morning and Evening on a carved track, as
+   Settings carves its choices (r3-01 A); the prayers as numbered steps on
+   one thread; the names as rows of medallions. The panels, plates and rows
+   the ways in, In which prayers and its ticks stand on are Settings' own
+   (.set-panel, .set-plate, .set-link), so every palette carries them.
+
+   All of it on the page's tokens. On Parchment nothing glows (white cannot
+   glow on paper): what is lit is the ink. Every movement here has its escape
+   under data-motion="reduce", at the end of this block. */
+.rule-head-picture {
+ aspect-ratio: 39 / 34;
+ max-height: 58svh;
+}
+@media (min-width: 768px) {
+ .rule-head-picture {
+  aspect-ratio: 16 / 7;
+  border-radius: 26px;
+ }
+}
+/* Both parts' icons stand in the box, the part shown lit: the switch crosses
+   from one to the other, and the first arrives as a saint's icon does. */
+.rule-head-img {
+ position: absolute;
+ inset: 0;
+ width: 100%;
+ height: 100%;
+ object-fit: cover;
+ opacity: 0;
+ transition: opacity 600ms var(--ease-house);
+}
+.rule-head-img[data-on] {
+ opacity: 1;
+ animation: saint-icon-in 900ms var(--ease-house) backwards;
+}
+/* A shade under the bar, so its buttons read, and one from the icon's middle
+   down to the page, so the words on it read. */
+.rule-head-shade {
+ position: absolute;
+ inset: 0;
+ /* For a WebView without color-mix (Android before 111). */
+ background:
+  linear-gradient(to bottom, rgb(16 16 19 / 0.82) 0%, transparent 32%),
+  linear-gradient(to bottom, transparent 30%, rgb(16 16 19 / 0.52) 46%, rgb(16 16 19 / 0.88) 72%, rgb(16 16 19) 97%);
+ background:
+  linear-gradient(to bottom, color-mix(in srgb, var(--color-night) 82%, transparent) 0%, transparent 32%),
+  linear-gradient(
+   to bottom,
+   transparent 30%,
+   color-mix(in srgb, var(--color-night) 52%, transparent) 46%,
+   color-mix(in srgb, var(--color-night) 88%, transparent) 72%,
+   var(--color-night) 97%
+  );
+}
+/* The name and its line on the icon's lower half. */
+.rule-head-words {
+ margin-top: -196px;
+}
+@media (min-width: 768px) {
+ .rule-head-words {
+  margin-top: -150px;
+  padding-inline: 28px;
+ }
+}
+.rule-head-title {
+ text-shadow: 0 2px 18px rgb(0 0 0 / 0.8);
+}
+.rule-head-line {
+ text-shadow: 0 1px 10px rgb(0 0 0 / 0.8);
+}
+/* Pray my rule, in the icon's light. */
+.rule-pray {
+ box-shadow:
+  0 0 26px rgb(255 255 255 / 0.26),
+  0 6px 14px -4px rgb(0 0 0 / 0.75),
+  inset 0 -1px 0 rgb(0 0 0 / 0.12);
+}
+
+/* Morning and Evening: a carved track, the part shown raised out of it and
+   lit (.set-track's, for a tablist). */
+.rule-track {
+ display: grid;
+ grid-template-columns: repeat(2, minmax(0, 1fr));
+ gap: 3px;
+ padding: 4px;
+ border-radius: 15px;
+ background: var(--color-night-deep);
+ box-shadow:
+  inset 0 2px 5px rgb(0 0 0 / 0.75),
+  inset 0 0 0 1px rgb(0 0 0 / 0.5),
+  0 1px 0 color-mix(in srgb, var(--color-paper) 7%, transparent);
+}
+.rule-track > button {
+ position: relative;
+ isolation: isolate;
+ display: flex;
+ align-items: center;
+ justify-content: center;
+ gap: 7px;
+ min-width: 0;
+ min-height: 44px;
+ padding-inline: 10px;
+ border-radius: 11px;
+ font-size: 14px;
+ font-weight: 600;
+ color: color-mix(in srgb, var(--color-paper) 55%, transparent);
+ transition: color 240ms var(--ease-house);
+ -webkit-tap-highlight-color: transparent;
+}
+.rule-track > button::before {
+ content: "";
+ position: absolute;
+ inset: 0;
+ z-index: -1;
+ border-radius: inherit;
+ background: var(--color-paper);
+ background: linear-gradient(180deg, var(--color-paper) 0%, color-mix(in srgb, var(--color-paper) 92%, var(--color-night)) 100%);
+ box-shadow:
+  0 0 20px rgb(255 255 255 / 0.3),
+  0 3px 6px rgb(0 0 0 / 0.65),
+  inset 0 -1px 0 rgb(0 0 0 / 0.12);
+ opacity: 0;
+ scale: 0.94;
+ transition: opacity 240ms var(--ease-house), scale 320ms var(--ease-house);
+}
+.rule-track > button[aria-selected="true"] {
+ color: var(--color-night);
+}
+.rule-track > button[aria-selected="true"]::before {
+ opacity: 1;
+ scale: 1;
+}
+.rule-track > button:focus-visible {
+ outline: 2px solid var(--color-paper);
+ outline-offset: 2px;
+}
+@media (hover: hover) {
+ .rule-track > button[aria-selected="false"]:hover {
+  color: var(--color-paper);
+ }
+}
+
+/* The steps: one thread from the first node to Add prayers, each node on it
+   numbered, Those I pray for lit, Add prayers dashed; a hairline between the
+   rows, past the nodes. */
+.rule-thread {
+ position: relative;
+}
+.rule-thread::before {
+ content: "";
+ position: absolute;
+ inset-inline-start: 13px;
+ top: 28px;
+ bottom: 28px;
+ width: 1.5px;
+ background: linear-gradient(color-mix(in srgb, var(--color-paper) 22%, transparent), color-mix(in srgb, var(--color-paper) 10%, transparent));
+}
+.rule-step + .rule-step::before,
+.rule-steps + .rule-step::before {
+ content: "";
+ position: absolute;
+ top: 0;
+ inset-inline: 40px 0;
+ height: 1px;
+ background: color-mix(in srgb, var(--color-paper) 6%, transparent);
+}
+.rule-add {
+ position: relative;
+}
+.rule-node {
+ position: relative;
+ z-index: 1;
+ display: grid;
+ flex: none;
+ place-items: center;
+ width: 27px;
+ height: 27px;
+ border-radius: 50%;
+ font-family: var(--font-heading);
+ font-size: 12.5px;
+ font-weight: 600;
+ line-height: 1;
+ font-variant-numeric: lining-nums tabular-nums;
+ color: color-mix(in srgb, var(--color-paper) 80%, transparent);
+ background: var(--color-night-soft);
+ background: radial-gradient(circle at 35% 30%, color-mix(in srgb, var(--color-night-soft) 88%, var(--color-paper)), var(--color-night) 75%);
+ box-shadow:
+  inset 0 0 0 1.5px color-mix(in srgb, var(--color-paper) 24%, transparent),
+  0 2px 6px rgb(0 0 0 / 0.6);
+}
+.rule-node[data-lit] {
+ color: var(--color-night);
+ background: var(--color-paper);
+ box-shadow: 0 0 14px rgb(255 255 255 / 0.55);
+}
+.rule-node[data-dash] {
+ color: color-mix(in srgb, var(--color-paper) 70%, transparent);
+ background: var(--color-night);
+ border: 1.5px dashed color-mix(in srgb, var(--color-paper) 40%, transparent);
+ box-shadow: none;
+}
+
+/* The two ways into an empty part, rows of one lit panel (.set-panel). */
+.rule-way {
+ min-height: 66px;
+ padding: 11px 14px 11px 12px;
+}
+.rule-way-pic {
+ flex: none;
+ width: 34px;
+ height: 45px;
+ overflow: hidden;
+ border-radius: 8px;
+ background: var(--color-night-soft);
+ box-shadow:
+  0 0 0 1px color-mix(in srgb, var(--color-paper) 12%, transparent),
+  0 4px 10px rgb(0 0 0 / 0.6);
+}
+.rule-way-plate {
+ width: 34px;
+ height: 45px;
+ border-radius: 8px;
+}
+
+/* The names: each list's name over its row of medallions. */
+.rule-names-label {
+ font-family: var(--font-sans);
+ font-size: 13px;
+ font-weight: 600;
+ line-height: 1.3;
+ color: color-mix(in srgb, var(--color-paper) 58%, transparent);
+}
+.rule-meds {
+ display: flex;
+ flex-wrap: wrap;
+ gap: 12px 6px;
+ margin-top: 10px;
+}
+.rule-med {
+ display: flex;
+ flex-direction: column;
+ align-items: center;
+ width: 72px;
+ padding-block: 2px;
+ border-radius: 14px;
+ -webkit-tap-highlight-color: transparent;
+}
+.rule-med:focus-visible {
+ outline: 2px solid var(--color-paper);
+ outline-offset: 2px;
+}
+.rule-med-disc {
+ display: grid;
+ place-items: center;
+ width: 52px;
+ height: 52px;
+ border-radius: 50%;
+ font-family: var(--font-heading);
+ font-size: 20px;
+ font-weight: 600;
+ line-height: 1;
+ color: color-mix(in srgb, var(--color-paper) 82%, transparent);
+ background: var(--color-night-soft);
+ background: radial-gradient(circle at 34% 28%, color-mix(in srgb, var(--color-night-soft) 86%, var(--color-paper)), var(--color-night) 72%);
+ box-shadow:
+  inset 0 0 0 1px color-mix(in srgb, var(--color-paper) 16%, transparent),
+  0 6px 14px -4px rgb(0 0 0 / 0.8);
+}
+.rule-med-disc[data-add] {
+ color: color-mix(in srgb, var(--color-paper) 60%, transparent);
+ background: none;
+ border: 1.5px dashed color-mix(in srgb, var(--color-paper) 30%, transparent);
+ box-shadow: none;
+}
+.rule-med-name,
+.rule-med-sub {
+ max-width: 100%;
+ overflow: hidden;
+ text-overflow: ellipsis;
+ white-space: nowrap;
+}
+.rule-med-name {
+ margin-top: 7px;
+ font-size: 12.5px;
+ font-weight: 600;
+ line-height: 1.25;
+ color: color-mix(in srgb, var(--color-paper) 88%, transparent);
+}
+.rule-med-sub {
+ margin-top: 1px;
+ font-size: 10.5px;
+ line-height: 1.3;
+ color: color-mix(in srgb, var(--color-paper) 50%, transparent);
+}
+.rule-meds-none {
+ align-self: center;
+ font-size: 13px;
+ color: color-mix(in srgb, var(--color-paper) 50%, transparent);
+}
+
+/* In which prayers: a tick by each prayer, white and glowing when it is on. */
+.rule-tick {
+ display: grid;
+ flex: none;
+ place-items: center;
+ width: 22px;
+ height: 22px;
+ border-radius: 50%;
+ box-shadow: inset 0 0 0 1.5px color-mix(in srgb, var(--color-paper) 28%, transparent);
+}
+.rule-tick[data-on] {
+ color: var(--color-night);
+ background: var(--color-paper);
+ box-shadow:
+  0 0 12px rgb(255 255 255 / 0.65),
+  0 2px 4px rgb(0 0 0 / 0.5);
+}
+
+/* Parchment: paper lit from above, its shadows warm, and nothing glows. */
+html[data-reading-mode="parchment"] .rule-head-title,
+html[data-reading-mode="parchment"] .rule-head-line {
+ text-shadow: none;
+}
+html[data-reading-mode="parchment"] .rule-pray,
+html[data-reading-mode="parchment"] .rule-node[data-lit],
+html[data-reading-mode="parchment"] .rule-tick[data-on] {
+ box-shadow: none;
+}
+html[data-reading-mode="parchment"] .rule-track {
+ box-shadow: inset 0 2px 4px rgb(70 52 20 / 0.22), inset 0 0 0 1px rgb(43 35 23 / 0.08);
+}
+html[data-reading-mode="parchment"] .rule-track > button::before {
+ box-shadow: 0 2px 5px rgb(70 52 20 / 0.3);
+}
+html[data-reading-mode="parchment"] .rule-node:not([data-lit]):not([data-dash]),
+html[data-reading-mode="parchment"] .rule-med-disc:not([data-add]) {
+ background: linear-gradient(180deg, #fdf9f0, #ece2cb);
+ box-shadow: inset 0 0 0 1px rgb(43 35 23 / 0.14), 0 2px 5px rgb(70 52 20 / 0.22);
+}
+html[data-reading-mode="parchment"] .rule-way-pic {
+ box-shadow: 0 0 0 1px rgb(43 35 23 / 0.14), 0 3px 8px rgb(70 52 20 / 0.3);
+}
+
+/* True black: no shadow shows on black, so the nodes and discs keep a hairline. */
+html[data-reading-mode="black"] .rule-node:not([data-lit]):not([data-dash]),
+html[data-reading-mode="black"] .rule-med-disc:not([data-add]) {
+ box-shadow: inset 0 0 0 1px rgb(255 255 255 / 0.2);
+}
+
+/* With motion off, the icon is simply there and the switch simply turns. */
+:where([data-motion="reduce"]) .rule-head-img,
+:where([data-motion="reduce"]) .rule-head-img[data-on],
+:where([data-motion="reduce"]) .rule-track > button,
+:where([data-motion="reduce"]) .rule-track > button::before {
+ animation: none;
+ transition: none;
+}
+
 /* The shop's floating cart button (56px, right-6 bottom-6) shares the
    bottom-right corner with the app-level back-to-top button (44px, right-7
    bottom-7), so on shop pages they rendered on top of each other. CartFab sets

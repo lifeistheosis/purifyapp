@@ -31,8 +31,10 @@ const ART: Record<string, string> = {
   // The akathist, and the lessons.
   "akathist-theotokos": "theotokos-of-vladimir",
   learning: "three-hierarchs",
-  // A reader's own rule.
-  "mine-morning": "christ-pantocrator",
+  // A reader's own rule: each part under its own icon, as the prayer book
+  // stands its Morning and Evening prayers (1.8, the owner's pick A of
+  // r3-27; docs/editorial-standards.md, Clergy item 26).
+  "mine-morning": "anastasis",
   "mine-evening": "christ-pantocrator",
   mine: "christ-pantocrator",
 };
@@ -48,4 +50,25 @@ export function serviceArt(id: string): PrayerIcon {
 /** The pairings themselves, for the test that every one names a real icon. */
 export function serviceArtPairs(): [string, string][] {
   return Object.entries(ART);
+}
+
+/**
+ * The copy of an icon a page draws across a phone's width, the largest the
+ * app carries, and where in it Christ's face is, so a crop keeps it: the
+ * Prayers tab's own Christ Pantocrator of Sinai, 1290 pixels wide
+ * (lib/media/sections.ts), where the prayer pages' copy is 392; the
+ * Anastasis from the prayer pages' own copy, 542 pixels, the most it holds.
+ * lib/prayers/__tests__/serviceArt.test.ts reads each file's pixels.
+ */
+export const WIDE_CUTS: Readonly<Record<string, { src: string; width: number; height: number; focus: string }>> = {
+  anastasis: { src: "/icons/prayer/anastasis.jpg", width: 542, height: 800, focus: "50% 34%" },
+  "christ-pantocrator": { src: "/sections/prayers.v4.jpg", width: 1290, height: 1359, focus: "50% 30%" },
+};
+
+/** The picture at the head of Your rule (1.8, r3-27 A): the part's own icon, wide. */
+export function ruleHeadArt(part: "morning" | "evening"): { src: string; width: number; height: number; focus: string; alt: string } {
+  const icon = serviceArt(part === "morning" ? "mine-morning" : "mine-evening");
+  // Each part's icon has its wide cut (the test holds it); the Pantocrator otherwise.
+  const slug = WIDE_CUTS[icon.slug] ? icon.slug : DEFAULT_ART;
+  return { ...WIDE_CUTS[slug], alt: (getPrayerIcon(slug) ?? icon).alt };
 }
