@@ -105,76 +105,80 @@ export const NOTIFICATION_COPY: Readonly<Record<NotificationKey, NotificationCop
   //
   // A person did something that concerns you: answered you, named you,
   // followed you, greeted you, prayed for you. Each is one thing that is
-  // there, from one person, sent only to the reader it concerns and only
-  // while they leave community notifications on. "{name}" is the other
-  // reader's display name; communityPushCopy() fills it, checks the result
-  // against the same bar, and falls back to the row without a name when a
-  // name would break it. What they wrote never reaches the lock screen.
+  // there, sent only to the reader it concerns and only while they leave
+  // community notifications on. NOBODY IS NAMED, since 2026-11-01 (the
+  // owner's word on the notifications findings): the other reader's name
+  // stays in the inbox inside the app, as what they wrote always has, and
+  // the lock screen, read by whoever is in the room, says only what
+  // happened. The words are in every reader's language, under the keys
+  // push.community.* in lib/i18n/messages (communityPushCopy picks them);
+  // these English rows are the same words, and the ones the bar is read
+  // against.
   communityReply: {
     key: "communityReply",
-    title: "{name} replied to you",
-    body: "Their reply is in Community.",
+    title: "Someone replied to your post",
+    body: "It is in Community.",
     url: ({ id }) => `/community#post-${id}`,
     rationale:
-      "A reader answered the reader's own post. It says only that the answer exists and who gave it; the words stay in the app, behind the lock.",
+      "A reader answered the reader's own post. It says only that the answer exists; who gave it and what they said stay in the app, behind the lock.",
   },
   communityMention: {
     key: "communityMention",
-    title: "{name} mentioned you",
-    body: "The conversation is in Community.",
+    title: "Someone mentioned you",
+    body: "It is in Community.",
     url: ({ id }) => `/community#post-${id}`,
     rationale:
       "Somebody addressed the reader by name in a conversation. Being spoken to is the one thing a person would want to know about, and nothing else is said.",
   },
   communityFollow: {
     key: "communityFollow",
-    title: "{name} followed you",
-    body: "Their profile is in Community.",
+    title: "Someone followed you",
+    body: "It is in Community.",
     url: ({ id }) => `/community#@${id}`,
-    rationale: "A person chose to follow the reader. It names them and offers their profile; it does not count followers.",
+    rationale: "A person chose to follow the reader. It says so and opens their profile; it does not count followers or name them.",
   },
   communityNameDay: {
     key: "communityNameDay",
-    title: "{name} wished you many years",
-    body: "A greeting for your name day.",
+    title: "Someone wished you many years",
+    body: "It is in Community.",
     url: ({ id }) => `/community#@${id}`,
     rationale:
       "A greeting from another reader on the reader's name day. The feast supplies the occasion and a person supplies the greeting; the application only carries it.",
   },
   communityPrayed: {
     key: "communityPrayed",
-    title: "{name} prayed for you",
-    body: "In answer to your prayer request.",
+    title: "Someone prayed for you",
+    body: "It is in Community.",
     url: ({ id }) => `/community#@${id}`,
     rationale:
       "The reader asked others to pray for them, and someone has. It is the answer to their own request, and it says nothing about how many have or have not.",
   },
   communityGift: {
     key: "communityGift",
-    title: "{name} sent you a gift",
-    body: "Open Purify to receive it.",
+    title: "Someone gave you Purify Plus",
+    body: "It is in your account.",
     url: "/account",
     rationale: "A gift another reader bought for this one. It is theirs whether or not they open the app today, so nothing here hurries them.",
   },
   communityQuestion: {
     key: "communityQuestion",
-    title: "A question for clergy",
-    body: "A reader asked a question in Community.",
+    title: "Someone asked a question for clergy",
+    body: "It is in Community.",
     url: ({ id }) => `/community#post-${id}`,
     rationale:
       "Sent only to verified clergy, who chose to answer readers' questions. The question itself is not shown: it may be personal, and the lock screen is read by whoever is in the room.",
   },
   communityAnswer: {
     key: "communityAnswer",
-    title: "{name} answered your question",
-    body: "The answer is in Community.",
+    title: "Someone answered your question",
+    body: "It is in Community.",
     url: ({ id }) => `/community#post-${id}`,
     rationale: "Verified clergy answered the reader's own question. The reader asked; this is the reply arriving.",
   },
   communityApproved: {
     key: "communityApproved",
-    title: "Your post is up",
-    body: "A moderator looked at it, and it is in Community now.",
+    title: "Your post was approved",
+    body: "It is in Community.",
     url: ({ id }) => `/community#post-${id}`,
     rationale:
       "The reader's own post waited for a moderator, and they were told so when they wrote it. This closes that, once, and asks for nothing.",
@@ -204,40 +208,48 @@ const COMMUNITY_ROW: Record<CommunityPushKind, NotificationKey> = {
   approved: "communityApproved",
 };
 
-/** The same rows without a person in them, for a name the bar refuses. */
-const NAMELESS: Record<CommunityPushKind, string> = {
-  reply: "A reply to your post",
-  mention: "Someone mentioned you",
-  follow: "A new follower",
-  name_day: "A name day greeting",
-  prayed: "Someone prayed for you",
-  gift: "A gift for you",
-  question: "A question for clergy",
-  answer: "An answer to your question",
-  approved: "Your post is up",
+/** Where each kind's words are kept in the message catalogs, in every language. */
+export const COMMUNITY_PUSH_KEYS: Record<CommunityPushKind, { title: string; body: string }> = {
+  reply: { title: "push.community.reply", body: "push.community.body" },
+  mention: { title: "push.community.mention", body: "push.community.body" },
+  follow: { title: "push.community.follow", body: "push.community.body" },
+  name_day: { title: "push.community.nameDay", body: "push.community.body" },
+  prayed: { title: "push.community.prayed", body: "push.community.body" },
+  gift: { title: "push.community.gift", body: "push.community.giftBody" },
+  question: { title: "push.community.question", body: "push.community.body" },
+  answer: { title: "push.community.answer", body: "push.community.body" },
+  approved: { title: "push.community.approved", body: "push.community.body" },
 };
 
 /**
- * One community notification's words and link.
+ * One community notification's words and link, in the reader's language.
  *
  * `target` is a post id for the kinds about a post, else the actor's @handle,
- * which opens their profile. The finished title is checked against the bar;
- * a name that breaks it (a digit, an exclamation mark) is left out rather
- * than sent.
+ * which opens their profile: an address, read after the phone is unlocked,
+ * and never shown. No name is taken at all, so none can reach a lock screen.
+ * `words` is the reader's message catalog (lib/i18n getMessages, on the
+ * server); a translation that is missing, or that would break the bar, gives
+ * way to the English row, never to nothing.
  */
 export function communityPushCopy(
   kind: CommunityPushKind,
-  actorName: string | null,
   target: string | null,
+  words?: Readonly<Record<string, string>>,
 ): { title: string; body: string; url: string } {
   const row = NOTIFICATION_COPY[COMMUNITY_ROW[kind]];
-  const name = (actorName ?? "").replace(/\s+/g, " ").trim().slice(0, 40);
-  const named = name && row.title.includes("{name}") ? row.title.replace("{name}", name) : null;
-  const title =
-    named && checkNotificationCopy({ title: named, body: row.body }).length === 0 ? named : NAMELESS[kind];
+  const keys = COMMUNITY_PUSH_KEYS[kind];
+  const translated = { title: words?.[keys.title], body: words?.[keys.body] };
+  const usable =
+    typeof translated.title === "string" &&
+    typeof translated.body === "string" &&
+    checkNotificationCopy({ title: translated.title, body: translated.body }).length === 0;
   const url =
     typeof row.url === "function" ? (target ? row.url({ id: target }) : "/community#conversations") : row.url;
-  return { title, body: row.body, url };
+  return {
+    title: usable ? (translated.title as string) : row.title,
+    body: usable ? (translated.body as string) : row.body,
+    url,
+  };
 }
 
 /** The scheduled prayer rules. Takes no caller text, deliberately. */

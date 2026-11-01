@@ -3,7 +3,7 @@ import { readFileSync, readdirSync, statSync } from "node:fs";
 import { join } from "node:path";
 
 import { checkNotificationCopy, isDoctrinal, MAX_BODY, MAX_TITLE } from "../doctrine";
-import { NOTIFICATION_COPY, broadcastTemplates, campaignCopy, communityPushCopy, reminderCopy } from "../copy";
+import { COMMUNITY_PUSH_KEYS, NOTIFICATION_COPY, broadcastTemplates, campaignCopy, communityPushCopy, reminderCopy } from "../copy";
 
 /**
  * The test CONTRIBUTING.md has been claiming exists since 2026-08-10.
@@ -122,27 +122,60 @@ describe("the copy table", () => {
 });
 
 describe("community notifications (lib/community/push.ts)", () => {
-  it("name the reader who did it, and link to the post or the person", () => {
-    expect(communityPushCopy("reply", "Maria", "post-uuid")).toEqual({
-      title: "Maria replied to you",
-      body: "Their reply is in Community.",
+  const KINDS = ["reply", "mention", "follow", "name_day", "prayed", "gift", "question", "answer", "approved"] as const;
+  const LANGS = ["ar", "bg", "de", "el", "en", "es", "fil", "fr", "hu", "id", "it", "ka", "ne", "pl", "pt", "ro", "ru", "sr", "tr", "uk", "ur"];
+  const catalog = (lang: string) =>
+    JSON.parse(readFileSync(join(REPO, "lib", "i18n", "messages", `${lang}.json`), "utf8")) as Record<string, string>;
+
+  it("say what happened without naming anyone, and link to the post or the person", () => {
+    // Since 2026-11-01 (the owner's word): the name stays in the inbox, inside
+    // the app, and the lock screen, read by whoever is in the room, says only
+    // what happened.
+    expect(communityPushCopy("reply", "post-uuid")).toEqual({
+      title: "Someone replied to your post",
+      body: "It is in Community.",
       url: "/community#post-post-uuid",
     });
-    expect(communityPushCopy("prayed", "Maria", "maria.p").url).toBe("/community#@maria.p");
+    expect(communityPushCopy("prayed", "maria.p").url).toBe("/community#@maria.p");
+    expect(communityPushCopy("mention", null).url).toBe("/community#conversations");
+    expect(communityPushCopy("gift", null)).toMatchObject({ body: "It is in your account.", url: "/account" });
   });
 
-  it("leave out a name the bar would refuse, rather than send it", () => {
-    // A name with a digit, or an exclamation mark, cannot reach a lock screen.
-    expect(communityPushCopy("follow", "reader123456", "reader123456").title).toBe("A new follower");
-    expect(communityPushCopy("mention", "Hi!!", null).title).toBe("Someone mentioned you");
-    expect(communityPushCopy("mention", "Hi!!", null).url).toBe("/community#conversations");
+  it("take no name at all, so none can reach a lock screen", () => {
+    expect(communityPushCopy.length).toBeLessThanOrEqual(3);
+    expect(readFileSync(join(REPO, "lib", "community", "push.ts"), "utf8")).not.toMatch(/actor_name/);
+    for (const row of Object.values(NOTIFICATION_COPY)) expect(row.title, row.key).not.toContain("{name}");
   });
 
-  it("never carries what was written, and every one clears the bar", () => {
-    for (const kind of ["reply", "mention", "follow", "name_day", "prayed", "gift", "question", "answer", "approved"] as const) {
-      const c = communityPushCopy(kind, "Maria", "x");
-      expect(checkNotificationCopy(c), kind).toEqual([]);
+  it("are in all 21 languages, each its own, and every one clears the bar", () => {
+    const en = catalog("en");
+    for (const lang of LANGS) {
+      const words = catalog(lang);
+      for (const kind of KINDS) {
+        const keys = COMMUNITY_PUSH_KEYS[kind];
+        expect(words[keys.title], `${lang} ${kind}`).toBeTruthy();
+        expect(words[keys.body], `${lang} ${kind}`).toBeTruthy();
+        if (lang !== "en") expect(words[keys.title], `${lang} ${kind}`).not.toBe(en[keys.title]);
+        const c = communityPushCopy(kind, "x", words);
+        expect(checkNotificationCopy(c), `${lang} ${kind}`).toEqual([]);
+        // The reader's own words, not the English fallback.
+        expect(c.title, `${lang} ${kind}`).toBe(words[keys.title]);
+        expect(`${c.title} ${c.body}`.includes(String.fromCharCode(0x2014)), `${lang} ${kind}`).toBe(false);
+      }
     }
+  });
+
+  it("are the English rows' own words in English", () => {
+    const en = catalog("en");
+    for (const kind of KINDS) {
+      expect(communityPushCopy(kind, "x", en), kind).toEqual(communityPushCopy(kind, "x"));
+    }
+  });
+
+  it("fall back to English for a translation that is missing or breaks the bar", () => {
+    expect(communityPushCopy("reply", "x", {}).title).toBe("Someone replied to your post");
+    const loud = { "push.community.reply": "Hurry, 3 replies!", "push.community.body": "Now." };
+    expect(communityPushCopy("reply", "x", loud).title).toBe("Someone replied to your post");
   });
 });
 

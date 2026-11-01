@@ -74,7 +74,7 @@ describe("fcmMessage: what Firebase is handed", () => {
   });
 
   it("sends a community push as it always went: no lifetime, no tag", () => {
-    const reply = communityPushCopy("reply", "Maria", "post-1");
+    const reply = communityPushCopy("reply", "post-1");
     const m = fcmMessage("tok", reply);
     expect(m.android).not.toHaveProperty("ttl");
     expect(m.android.notification).not.toHaveProperty("tag");
@@ -95,7 +95,7 @@ describe("apnsOptions: what Apple is handed", () => {
   });
 
   it("leaves any other push to Apple's own keeping", () => {
-    const o = apnsOptions(communityPushCopy("follow", "Maria", "maria.p"), {}, now);
+    const o = apnsOptions(communityPushCopy("follow", "maria.p"), {}, now);
     expect(o).not.toHaveProperty("expiration");
     expect(o).not.toHaveProperty("collapseId");
   });
@@ -112,7 +112,7 @@ describe("sendNativeOne", () => {
   });
 
   it("hands nothing extra for a push with no kind", async () => {
-    await sendNativeOne(supa, { token: "a", platform: "android" }, communityPushCopy("gift", "Maria", null));
+    await sendNativeOne(supa, { token: "a", platform: "android" }, communityPushCopy("gift", null));
     expect(sent.fcm[0][2]).toEqual({});
   });
 });

@@ -157,14 +157,14 @@ export async function insertNotifications(admin: SupabaseClient, rows: Notificat
  * The same rows on the readers' devices (lib/community/push.ts), after the
  * response has gone, so nobody waits on Apple or Google to see their reply
  * posted. Outside a request (a script, a test) there is nothing to wait for
- * and no push is sent.
+ * and no push is sent. Without the actor's name: it stays in the inbox row,
+ * and a lock screen says only what happened.
  */
 function schedulePushes(admin: SupabaseClient, rows: NotificationRow[]): void {
   const pushes = rows.map((r) => ({
     user_id: r.user_id,
     kind: r.kind,
     post_id: r.post_id ?? null,
-    actor_name: r.actor_name,
     actor_handle: r.actor_handle ?? null,
   }));
   try {

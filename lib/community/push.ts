@@ -2,6 +2,7 @@ import "server-only";
 
 import type { SupabaseClient } from "@supabase/supabase-js";
 
+import { getMessages } from "@/lib/i18n";
 import { communityPushCopy, type CommunityPushKind } from "@/lib/push/copy";
 import { broadcast, type NativeToken, type WebSub } from "@/lib/push/send";
 import { rateLimited } from "@/lib/security/ratelimit";
@@ -13,8 +14,12 @@ import { rateLimited } from "@/lib/security/ratelimit";
 // notifications off (profiles.push_community, 20261005).
 //
 // The words come from lib/push/copy.ts and nowhere else, like every other
-// push. Best effort throughout: a push that cannot go never fails the request
-// that caused it, and the inbox row is already there.
+// push, in the reader's own language (profiles.preferred_language, the
+// catalogs' push.community.* keys), and they name nobody: the other reader's
+// name is in the inbox row, inside the app, and never on a lock screen, so it
+// is not even handed to this module. Best effort throughout: a push that
+// cannot go never fails the request that caused it, and the inbox row is
+// already there.
 
 /** At most this many community pushes reach one reader in an hour. */
 export const PUSH_PER_HOUR = 12;
@@ -23,9 +28,27 @@ export type PushRow = {
   user_id: string;
   kind: CommunityPushKind;
   post_id?: string | null;
-  actor_name: string;
+  /** The address of the actor's profile, opened after the phone is unlocked; never shown. */
   actor_handle?: string | null;
 };
+
+type Prefs = { id: string; push_community?: boolean | null; preferred_language?: string | null };
+
+/**
+ * Who switched community notifications off, and each reader's language.
+ *
+ * Read with the language when the column is there (20260719), and without it
+ * when it is not: asked for together on a database without it, the read
+ * would fail, and a failed read counts everyone as on, the readers who
+ * switched these off included. Before 20261005 push_community is absent too,
+ * and nobody has switched anything off: everyone counts as on, in English.
+ */
+async function readPrefs(admin: SupabaseClient, ids: string[]): Promise<Prefs[]> {
+  const withLanguage = await admin.from("profiles").select("id, push_community, preferred_language").in("id", ids);
+  if (!withLanguage.error) return (withLanguage.data ?? []) as Prefs[];
+  const without = await admin.from("profiles").select("id, push_community").in("id", ids);
+  return without.error ? [] : ((without.data ?? []) as Prefs[]);
+}
 
 /** Where a notification opens: the post when there is one, else the person. */
 function targetOf(row: PushRow): string | null {
@@ -59,12 +82,9 @@ export async function sendCommunityPushes(admin: SupabaseClient, rows: PushRow[]
   try {
     const ids = [...new Set(rows.map((r) => r.user_id))];
     if (ids.length === 0) return;
-    // Who switched community notifications off. Before 20261005 the column
-    // is absent, and nobody has: the read fails and everyone counts as on.
-    const { data: prefs } = await admin.from("profiles").select("id, push_community").in("id", ids);
-    const off = new Set(
-      ((prefs ?? []) as { id: string; push_community?: boolean | null }[]).filter((p) => p.push_community === false).map((p) => p.id),
-    );
+    const prefs = await readPrefs(admin, ids);
+    const off = new Set(prefs.filter((p) => p.push_community === false).map((p) => p.id));
+    const language = new Map(prefs.map((p) => [p.id, p.preferred_language ?? null]));
     const wanted = rows.filter((r) => !off.has(r.user_id));
     if (wanted.length === 0) return;
     const devices = await devicesOf(admin, [...new Set(wanted.map((r) => r.user_id))]);
@@ -74,7 +94,7 @@ export async function sendCommunityPushes(admin: SupabaseClient, rows: PushRow[]
       // A burst (a popular post, a busy name day) reaches the inbox in full
       // and the lock screen only so often.
       if (await rateLimited(`community-push:${row.user_id}`, 3600, PUSH_PER_HOUR)) continue;
-      await broadcast(admin, communityPushCopy(row.kind, row.actor_name, targetOf(row)), targets);
+      await broadcast(admin, communityPushCopy(row.kind, targetOf(row), getMessages(language.get(row.user_id))), targets);
     }
   } catch (e) {
     console.warn("[community] push not sent", e instanceof Error ? e.message : String(e));
