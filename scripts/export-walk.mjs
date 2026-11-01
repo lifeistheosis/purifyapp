@@ -7422,22 +7422,27 @@ await section(50, async () => {
         return { L, C: Math.hypot(a, bb), h: h < 0 ? h + 360 : h };
       };
       const found = [];
+      // How strongly it is laid on: 1 with no alpha, a fraction with one.
+      const alphaOf = (v) => (v === undefined ? 1 : v.endsWith("%") ? parseFloat(v) / 100 : parseFloat(v));
       const read = (text, where) => {
         if (!text || text === "none") return;
         for (const m of text.matchAll(/rgba?\(([\d.]+),?\s*([\d.]+),?\s*([\d.]+)(?:\s*[,/]\s*([\d.]+%?))?\)/g)) {
-          if (m[4] !== undefined && parseFloat(m[4]) === 0) continue;
-          found.push({ where, value: m[0], ...lch(+m[1], +m[2], +m[3]) });
+          const alpha = alphaOf(m[4]);
+          if (alpha === 0) continue;
+          found.push({ where, value: m[0], alpha, ...lch(+m[1], +m[2], +m[3]) });
         }
-        for (const m of text.matchAll(/color\(srgb\s+([\d.]+)\s+([\d.]+)\s+([\d.]+)(?:\s*\/\s*([\d.]+))?\)/g)) {
-          if (m[4] !== undefined && parseFloat(m[4]) === 0) continue;
-          found.push({ where, value: m[0], ...lch(m[1] * 255, m[2] * 255, m[3] * 255) });
+        for (const m of text.matchAll(/color\(srgb\s+([\d.]+)\s+([\d.]+)\s+([\d.]+)(?:\s*\/\s*([\d.]+%?))?\)/g)) {
+          const alpha = alphaOf(m[4]);
+          if (alpha === 0) continue;
+          found.push({ where, value: m[0], alpha, ...lch(m[1] * 255, m[2] * 255, m[3] * 255) });
         }
-        for (const m of text.matchAll(/oklab\(([\d.]+)(%?)\s+(-?[\d.]+)\s+(-?[\d.]+)(?:\s*\/\s*([\d.]+))?\)/g)) {
-          if (m[5] !== undefined && parseFloat(m[5]) === 0) continue;
+        for (const m of text.matchAll(/oklab\(([\d.]+)(%?)\s+(-?[\d.]+)\s+(-?[\d.]+)(?:\s*\/\s*([\d.]+%?))?\)/g)) {
+          const alpha = alphaOf(m[5]);
+          if (alpha === 0) continue;
           const a = +m[3];
           const b = +m[4];
           const h = (Math.atan2(b, a) * 180) / Math.PI;
-          found.push({ where, value: m[0], L: m[2] ? m[1] / 100 : +m[1], C: Math.hypot(a, b), h: h < 0 ? h + 360 : h });
+          found.push({ where, value: m[0], alpha, L: m[2] ? m[1] / 100 : +m[1], C: Math.hypot(a, b), h: h < 0 ? h + 360 : h });
         }
       };
       const PROPS = ["color", "backgroundColor", "backgroundImage", "borderTopColor", "boxShadow", "fill", "stroke", "stopColor", "textShadow", "filter"];
@@ -7452,7 +7457,12 @@ await section(50, async () => {
       return found;
     });
   const gold = (c) => c.h >= 60 && c.h <= 115 && c.C >= 0.06 && c.L >= 0.36;
-  const hued = (c) => c.C >= 0.02;
+  // A colour a reader would see as one: a hue (the four greys are 0.012 at
+  // most), laid on at a tenth of its strength or more. The house's own
+  // shadow, its ink grey at 6% (globals.css --shadow-sm, rgba(73, 66, 78,
+  // 0.06), 0.022 for its faint violet cast), is shade, not colour: it marks
+  // the card's grab handle on every profile, Plus or not.
+  const hued = (c) => c.C >= 0.02 && c.alpha >= 0.1;
   const list = (cs) => [...new Set(cs.map((c) => `${c.where}: ${c.value}`))].slice(0, 4).join("; ");
 
   const face = (page) =>
@@ -7542,7 +7552,7 @@ await section(50, async () => {
         const r = canvas.getBoundingClientRect();
         return sheet.contains(document.elementFromPoint(r.left + r.width / 2, r.top + r.height / 2));
       }, en["picture.title"]);
-      must(over === true, `Share opens the verse's picture over the profile (${over === null ? "no picture sheet" : "under the profile"})`);
+      must(over === true, `Share opens the verse's picture over the profile (${over === null ? "no picture sheet" : over ? "on top" : "under the profile"})`);
       await page.keyboard.press("Escape");
       await page.waitForTimeout(700);
       const after = await page.evaluate((t) => ({ sheet: !!document.querySelector(`[role=dialog][aria-label="${t}"]`), card: !!document.querySelector("[data-profile-card]") }), en["picture.title"]);
@@ -7550,13 +7560,17 @@ await section(50, async () => {
     }
 
     // Badges: a case of medals, the tapped one lit with its meaning; the rope with no number.
-    if (await tap(page.getByRole("tab", { name: en["profile.tabBadges"] }))) {
+    // The open door's panel is the profile's own: Community, under the card,
+    // has a panel of its own too (Talk together's half), first on the page.
+    const OPEN_DOOR = '[data-profile-card] [role=tabpanel]:not([aria-hidden="true"])';
+    const card = page.locator("[data-profile-card]");
+    if (await tap(card.getByRole("tab", { name: en["profile.tabBadges"] }))) {
       await page.waitForTimeout(500);
-      const rope = page.locator('[role=tabpanel]:not([aria-hidden="true"]) button:has([data-medal="streak_7"])');
+      const rope = page.locator(`${OPEN_DOOR} button:has([data-medal="streak_7"])`);
       await tap(rope);
       await page.waitForTimeout(500);
-      const badges = await page.evaluate(() => {
-        const panel = document.querySelector('[role=tabpanel]:not([aria-hidden="true"])');
+      const badges = await page.evaluate((sel) => {
+        const panel = document.querySelector(sel);
         const medal = panel?.querySelector('button [data-medal="streak_7"]');
         return {
           medals: panel?.querySelectorAll("[data-medal]").length ?? 0,
@@ -7565,16 +7579,16 @@ await section(50, async () => {
           words: medal ? medal.textContent : null,
           meaning: panel?.querySelector("[aria-live]")?.textContent ?? "",
         };
-      });
+      }, OPEN_DOOR);
       must(badges.medals === FREE.badges.length + 1, `the Badges door is a case of ${FREE.badges.length} medals and the lit one's meaning (${badges.medals} medals)`);
       must(badges.pressed === "streak_7" && badges.meaning.includes(en["profile.badgeAbout.streak_7"]), `the medal tapped is lit, and says what it means (${badges.pressed}: ${badges.meaning.slice(0, 60)})`);
       must(badges.knots === 14 && badges.words === "", `Seven Days is a prayer rope of seven knots, with no number (${badges.knots / 2} knots, words "${badges.words}")`);
       await page.screenshot({ path: path.join(SHOTS, "profile-free-badges.png") });
     }
-    if (await tap(page.getByRole("tab", { name: en["profile.tabPosts"] }))) {
+    if (await tap(card.getByRole("tab", { name: en["profile.tabPosts"] }))) {
       await page.waitForTimeout(400);
-      const post = await page.evaluate(() => document.querySelector('[role=tabpanel]:not([aria-hidden="true"])')?.textContent ?? "");
-      must(post.includes(FREE.posts[0].title), "the Posts door holds their posts");
+      const post = await page.evaluate((sel) => document.querySelector(sel)?.textContent ?? "", OPEN_DOOR);
+      must(post.includes(FREE.posts[0].title), `the Posts door holds their posts (${post.replace(/\s+/g, " ").trim().slice(0, 60) || "nothing"})`);
     }
     must(errors.length === 0, `no page errors${errors.length ? ": " + errors.slice(0, 2).join(" | ") : ""}`);
     await ctx.close();
