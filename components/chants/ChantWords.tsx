@@ -5,6 +5,7 @@ import { useCallback, useEffect, useMemo, useRef, useState, type KeyboardEvent }
 import { useTranslate } from "@/components/i18n/MessagesProvider";
 import { LiveCaptions } from "@/components/player/LiveCaptions";
 import { cn } from "@/lib/cn";
+import type { ShownVariant } from "@/lib/chants/cleared";
 import { captionsFor, chantMediaUrl, loadTiming, timingInHand, WORDS_VIEWS, type WordsView } from "@/lib/chants/media";
 import { useChantPlayback } from "@/lib/chants/play";
 import type { ChantIndexVariant, ChantTiming, ChantVariant } from "@/lib/chants/types";
@@ -44,6 +45,9 @@ import { tabForKey } from "@/lib/ui/sectionTabs";
  *
  * The words are the Church's published text, never a transcript (note 28),
  * and where they come from is said under the last line (ChantWordsSource).
+ * Where a version's words as sung are cleared and switched on in the admin
+ * (build 86 note 78, lib/chants/cleared.ts), they come with their own
+ * timing, in hand, and are shown the same way.
  */
 export function ChantWords({
   variant,
@@ -52,7 +56,7 @@ export function ChantWords({
   active = true,
   className,
 }: {
-  variant: ChantVariant;
+  variant: ShownVariant;
   indexVariant: ChantIndexVariant;
   /** The chant has a version with its sound written out: the switch is drawn, for every version. */
   switchable: boolean;
@@ -74,10 +78,11 @@ export function ChantWords({
   // words. Kept with the file it came from, so another version's times never
   // light this version's words.
   const [loadedTiming, setLoadedTiming] = useState<{ path: string; timing: ChantTiming | null } | null>(null);
+  const clearedTiming = variant.clearedTiming;
   useEffect(() => {
     let alive = true;
     const path = variant.timing;
-    if (path) {
+    if (path && !clearedTiming) {
       void loadTiming(path).then((found) => {
         if (alive) setLoadedTiming({ path, timing: found });
       });
@@ -85,8 +90,9 @@ export function ChantWords({
     return () => {
       alive = false;
     };
-  }, [variant.timing]);
-  const timing = loadedTiming && loadedTiming.path === variant.timing ? loadedTiming.timing : timingInHand(variant.timing);
+  }, [clearedTiming, variant.timing]);
+  const timing =
+    clearedTiming ?? (loadedTiming && loadedTiming.path === variant.timing ? loadedTiming.timing : timingInHand(variant.timing));
   const source = useMemo(() => captionsFor(variant.lines, timing, shown), [shown, timing, variant.lines]);
   const sung = useSungLines(source, variant.audio.durationSec, loaded);
 

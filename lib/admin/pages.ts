@@ -196,15 +196,18 @@ export const ADMIN_PAGE_GROUPS: AdminPageGroup[] = [
         ],
       },
       // Content, A, the editors' desk: the saints readers asked for, the
-      // front page's ratings as one card, Catechism as one line.
+      // front page's ratings as one card, Catechism as one line, and Chant
+      // words as one line (build 86 note 78: the chants' cleared words and
+      // their switch).
       {
         id: "content",
         label: "Content",
-        sentence: "What readers open, the daily catechism, and the store ratings.",
+        sentence: "What readers open, the daily catechism, the store ratings, and the chants' cleared words.",
         views: [
           { tab: "content", label: "Content" },
           { tab: "catechism", label: "Catechism", folded: true },
           { tab: "ratings", label: "Ratings", folded: true },
+          { tab: "chant-words", label: "Chant words", folded: true },
         ],
       },
       // Community, A, one queue: its parts (Waiting, Announcements, Filter

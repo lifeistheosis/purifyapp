@@ -4,6 +4,7 @@ import { openNowPlaying } from "@/lib/player/sheet";
 import type { CaptionSource } from "@/lib/prayers/persistentAudioStore";
 import { currentSrc, play, setLoopMode, setTrack, usePersistentAudio } from "@/lib/prayers/persistentAudioStore";
 
+import { clearedNow } from "./clearedClient";
 import { captionsFor, chantMediaUrl, loadTiming, type WordsPrefs } from "./media";
 import type { ChantIndexVariant, ChantLine, ChantTiming } from "./types";
 
@@ -25,6 +26,12 @@ export type PlayRequest = {
   variant: ChantIndexVariant;
   /** The words, when the caller has them (a chant's page). */
   lines?: ChantLine[];
+  /**
+   * Their timing, when the caller has it in hand: cleared words switched on
+   * in the admin carry their own (build 86 note 78, lib/chants/cleared.ts).
+   * Otherwise the version's timing file is read.
+   */
+  timing?: ChantTiming;
   coverSrc?: string;
   prefs: WordsPrefs;
   /** Round and round until stopped: Pray with chant, under a prayer. */
@@ -64,11 +71,21 @@ export function playChant(req: PlayRequest): void {
   play();
   if (req.open) openNowPlaying({ view: "words" });
 
+  // The words as sung, where their clearance is on (note 78), whoever asked:
+  // a chant's page hands them over already, Pray with chant hands none.
+  const cleared = clearedNow(req.slug, req.variant.id);
+  const lines = cleared?.lines ?? req.lines;
+  const inHand = cleared?.timing ?? req.timing;
+  if (inHand && lines) {
+    setTrack(src, { ...meta, captions: captionsFor(lines, inHand, req.prefs) });
+    return;
+  }
+
   if (!req.variant.timing) return;
   void loadTiming(req.variant.timing).then((timing) => {
     // Gone, or another recording chosen since the tap: nothing to hand over.
     if (!timing || currentSrc() !== src) return;
-    const captions = req.lines ? captionsFor(req.lines, timing, req.prefs) : captionsFromTiming(timing);
+    const captions = lines ? captionsFor(lines, timing, req.prefs) : captionsFromTiming(timing);
     // Still the same recording: setTrack with the same address keeps the
     // playback where it is and only hands over the words.
     setTrack(src, { ...meta, captions });

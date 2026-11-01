@@ -10,7 +10,7 @@ import { Slider } from "@/components/ui/Slider";
 import { cn } from "@/lib/cn";
 import { useChantAvailability, type Availability } from "@/lib/chants/live";
 import { playChant, useChantPlayback } from "@/lib/chants/play";
-import type { ChantIndexVariant, ChantLine } from "@/lib/chants/types";
+import type { ChantIndexVariant, ChantLine, ChantTiming } from "@/lib/chants/types";
 import { useWordsPrefs } from "@/lib/chants/wordsPrefs";
 import { pause, play, seek, skipBy, usePersistentAudio } from "@/lib/prayers/persistentAudioStore";
 
@@ -26,6 +26,7 @@ export function useChantPlay({
   title,
   variant,
   lines,
+  timing,
   coverSrc,
   open = true,
 }: {
@@ -33,6 +34,8 @@ export function useChantPlay({
   title: string;
   variant: ChantIndexVariant;
   lines?: ChantLine[];
+  /** The words' timing in hand: cleared words switched on carry their own (note 78). */
+  timing?: ChantTiming;
   coverSrc?: string;
   /** Open Now Playing on its words when it starts. A chant's page, which
    *  sings along itself (1.8), does not. */
@@ -47,8 +50,8 @@ export function useChantPlay({
     if (playing) return pause();
     if (loaded) return play();
     if (availability !== "playable") return;
-    playChant({ slug, title, variant, lines, coverSrc, prefs, open });
-  }, [availability, coverSrc, lines, loaded, open, playing, prefs, slug, title, variant]);
+    playChant({ slug, title, variant, lines, timing, coverSrc, prefs, open });
+  }, [availability, coverSrc, lines, loaded, open, playing, prefs, slug, timing, title, variant]);
 
   return { availability, loaded, playing, toggle };
 }

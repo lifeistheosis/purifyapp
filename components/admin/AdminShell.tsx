@@ -50,6 +50,7 @@ import { SustainabilityTab } from "./tabs/SustainabilityTab";
 import { GoalsTab } from "./tabs/GoalsTab";
 import { CalendarTab } from "./tabs/CalendarTab";
 import { CatechismTab } from "./tabs/CatechismTab";
+import { ChantWordsTab } from "./tabs/ChantWordsTab";
 import { InsightsProvider } from "@/lib/admin/insights/store";
 import { SubscriptionsTab } from "./tabs/SubscriptionsTab";
 import { MessagesTab } from "./tabs/MessagesTab";
@@ -145,6 +146,7 @@ type OpsTabId =
   | "content"
   | "patch-notes"
   | "ratings"
+  | "chant-words"
   | "content-health"
   | "health"
   | "sourcing"
@@ -198,6 +200,7 @@ const COMPONENTS: Partial<Record<TabId, ComponentType>> = {
   "patch-notes": PatchNotesTab,
   ratings: RatingsTab,
   catechism: CatechismTab,
+  "chant-words": ChantWordsTab,
   "content-health": ContentHealthTab,
   health: HealthTab,
   audit: AuditLogTab,
