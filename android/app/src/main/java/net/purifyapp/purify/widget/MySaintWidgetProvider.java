@@ -31,9 +31,27 @@ public class MySaintWidgetProvider extends PurifyWidgetProvider {
     private static final float WIDE_ICON = 0.7f;
     private static final float SMALL_ICON = 1.45f;
 
+    /**
+     * Where the four-cell look begins (note 85). Beside the 96dp icon, 134dp
+     * of the width is icon, gap and padding; the date and the days chip side
+     * by side need about 160dp more, and the mock gives them 204. At the
+     * shared 250 that left 116dp, so three cells on a four-column phone
+     * (about 255 to 295dp) drew the four-cell look crowded. From 300 the words
+     * have 166dp: three cells take the two-cell look on any grid, four cells
+     * on a four-column phone (about 340dp and up) the four-cell one. Four
+     * cells on a narrow five-column grid like the Pixel 4's (276dp) take the
+     * two-cell look too, where the four-cell one would have had 142dp.
+     */
+    static final int WIDE_FROM_DP = 300;
+
     @Override
     protected String family() {
         return "mysaint";
+    }
+
+    @Override
+    protected int wideDp() {
+        return WIDE_FROM_DP;
     }
 
     @Override

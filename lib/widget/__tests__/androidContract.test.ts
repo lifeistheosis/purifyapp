@@ -97,6 +97,31 @@ describe("android widgets: the contract", () => {
     expect(java).toContain('WidgetData.text(patron, "nameDayAfter")');
   });
 
+  it("draws My saint's four-cell look only where its words have room (note 85)", () => {
+    const base = read(path.join(JAVA_DIR, "widget/PurifyWidgetProvider.java"));
+    // Both ways a size is chosen ask the family: Android 12 and newer, and before.
+    expect(base).toContain("new SizeF(wideDp(), 100f)");
+    expect(base).toContain("minWidth >= wideDp()");
+    const saint = read(path.join(JAVA_DIR, "widget/MySaintWidgetProvider.java"));
+    expect(saint).toMatch(/protected int wideDp\(\) \{\s*return WIDE_FROM_DP;\s*\}/);
+    const from = Number(saint.match(/WIDE_FROM_DP = (\d+);/)?.[1]);
+    // Beside the icon the words get the width less the padding, the icon and
+    // the gap (widget_mysaint.xml): at least the 160dp the date and the days
+    // chip need side by side. The mock gives them 204.
+    const layout = read(path.join(LAYOUTS, "widget_mysaint.xml"));
+    const pad = Number(layout.match(/android:id="@\+id\/widget_root"[\s\S]*?android:padding="(\d+)dp"/)?.[1]);
+    const icon = Number(layout.match(/android:id="@\+id\/saint_icon"[\s\S]*?android:layout_width="(\d+)dp"/)?.[1]);
+    const gap = Number(layout.match(/android:id="@\+id\/saint_icon"[\s\S]*?android:layout_marginEnd="(\d+)dp"/)?.[1]);
+    expect([pad, icon, gap]).toEqual([12, 96, 14]);
+    expect(from - 2 * pad - icon - gap).toBeGreaterThanOrEqual(160);
+    // Three cells take the two-cell look: 203dp on the five-column phone
+    // Android documents (73 x 3 - 16), up to about 295 on a four-column one.
+    expect(from).toBeGreaterThan(295);
+    // And the two-cell look stays within reach: the widget resizes below it.
+    const info = read(path.join(MAIN, "res/xml/mysaint_widget_info.xml"));
+    expect(Number(info.match(/android:minResizeWidth="(\d+)dp"/)?.[1])).toBeLessThan(from);
+  });
+
   it("stores exactly the six keys the app may hand over", () => {
     const plugin = read(path.join(JAVA_DIR, "widget/WidgetBridgePlugin.java"));
     const listed = plugin.match(/Arrays\.asList\(([\s\S]*?)\)\)/)?.[1] ?? "";
