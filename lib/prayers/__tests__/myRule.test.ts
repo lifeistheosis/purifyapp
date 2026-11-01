@@ -3,7 +3,7 @@ import path from "node:path";
 
 import { describe, expect, it } from "vitest";
 
-import { libraryRule } from "@/lib/prayers/library";
+import { libraryRule, libraryRules } from "@/lib/prayers/library";
 import {
   MY_RULE_CAP,
   MY_RULE_IDS,
@@ -14,14 +14,17 @@ import {
   emptyMyRule,
   insertAt,
   itemKey,
-  minutesForText,
   moveItem,
   parseMyRule,
   partMinutes,
+  partSeconds,
+  prayerMinutes,
   removeAt,
   todayRuleCard,
   type MyRuleItem,
 } from "@/lib/prayers/myRule";
+import { getRuleMeta } from "@/lib/prayers/rules";
+import type { Rule } from "@/lib/prayers/types";
 
 /**
  * Your rule (1.7, the owner's note 17): a reader's own morning and evening
@@ -112,9 +115,58 @@ describe("changing the rule", () => {
   });
 
   it("works out each part's length from the prayers' own words", () => {
-    expect(minutesForText("one two three")).toBe(1);
-    expect(minutesForText(Array.from({ length: 221 }, () => "w").join(" "))).toBe(3);
     expect(partMinutes([p("morning", "trisagion"), { kind: "names" }, p("morning", "gone")], lookup)).toBeGreaterThanOrEqual(2);
+    expect(partMinutes([], lookup)).toBe(0);
+    expect(partMinutes([p("morning", "gone")], lookup)).toBe(0);
+    // A prayer's row says a minute at the least.
+    expect(prayerMinutes(lookup("morning")!.prayers.find((x) => x.id === "glory-to-thee")!, lookup("morning"))).toBe(1);
+  });
+});
+
+describe("how long a part is, as the prayer book says it (note 73)", () => {
+  // What Start from Morning prayers adds (MyRuleBuilder, seed): every prayer
+  // of the prayer book's own rule, in its order.
+  const whole = (id: string, locale = "en"): MyRuleItem[] =>
+    libraryRule(id, locale)!.prayers.map((x) => ({ kind: "prayer", rule: id, prayer: x.id }));
+
+  it("says 8 min for Morning prayers taken whole, as the prayer book does, not 12", () => {
+    expect(getRuleMeta("morning")?.estimatedMinutes).toBe(8);
+    expect(partMinutes(whole("morning"), lookup)).toBe(8);
+    expect(partMinutes(whole("evening"), lookup)).toBe(getRuleMeta("evening")?.estimatedMinutes);
+    // In German too, from the German words.
+    expect(partMinutes(whole("morning", "de"), (id) => libraryRule(id, "de"))).toBe(8);
+    // And a minute more with the reader's names.
+    expect(partMinutes([...whole("morning"), { kind: "names" }], lookup)).toBe(9);
+  });
+
+  it("totals the seconds first and rounds once: each prayer rounded up on its own came to more", () => {
+    const items = whole("morning");
+    const eachRoundedUp = items.reduce((n, item) => n + Math.max(1, Math.ceil(partSeconds([item], lookup) / 60)), 0);
+    expect(eachRoundedUp).toBeGreaterThan(8);
+    expect(partSeconds(items, lookup)).toBe(8 * 60);
+  });
+
+  it("comes to the book's own figure for every rule of the prayer book, and the Hours", () => {
+    for (const locale of ["en", "de"]) {
+      for (const r of libraryRules(locale)) {
+        const items = r.rule.prayers.map((x): MyRuleItem => ({ kind: "prayer", rule: r.id, prayer: x.id }));
+        const at = (id: string) => libraryRule(id, locale);
+        expect(partMinutes(items, at), `${locale} ${r.id}`).toBe(r.rule.estimatedMinutes);
+        // The figure on the prayer book's own row, where it has one.
+        const book = getRuleMeta(r.id)?.estimatedMinutes;
+        if (book !== undefined) expect(partMinutes(items, at), `${locale} ${r.id} in the book`).toBe(book);
+      }
+    }
+  });
+
+  it("reads a rule with no length of its own at about 110 words a minute", () => {
+    const words = (n: number) => Array.from({ length: n }, () => "w").join(" ");
+    const loose: Rule = { id: "loose", kind: "custom", title: "", intro: "", estimatedMinutes: 0, source: "", prayers: [{ id: "a", title: "A", text: words(165) }, { id: "b", title: "B", text: words(165) }] };
+    const at = (id: string) => (id === "loose" ? loose : null);
+    expect(partSeconds([p("loose", "a"), p("loose", "b")], at)).toBe(180);
+    expect(partMinutes([p("loose", "a"), p("loose", "b")], at)).toBe(3);
+    // One of them alone is 90 seconds: rounded once, 2 min.
+    expect(partMinutes([p("loose", "a")], at)).toBe(2);
   });
 });
 

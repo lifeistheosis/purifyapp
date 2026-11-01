@@ -131,7 +131,7 @@ export function LibrarySheet({
 
       {q ? (
         found.length ? (
-          <ul className="divide-y divide-paper/10">{found.map(({ r, p }) => row(r, p.id, p.title, prayerMinutes(p), true))}</ul>
+          <ul className="divide-y divide-paper/10">{found.map(({ r, p }) => row(r, p.id, p.title, prayerMinutes(p, r.rule), true))}</ul>
         ) : (
           <p className="py-6 font-sans text-detail text-paper/55">{t("bible.noMatches")}</p>
         )
@@ -142,7 +142,7 @@ export function LibrarySheet({
               <h3 id="mine-lib-saved" className="font-sans text-caption text-paper/55" style={{ fontFamily: "var(--font-sans)", fontWeight: 600 }}>
                 {t("prayers.mine.saved")}
               </h3>
-              <ul className="divide-y divide-paper/10">{saved.map(({ r, p }) => row(r, p.id, p.title, prayerMinutes(p), true))}</ul>
+              <ul className="divide-y divide-paper/10">{saved.map(({ r, p }) => row(r, p.id, p.title, prayerMinutes(p, r.rule), true))}</ul>
             </section>
           ) : null}
 
@@ -205,7 +205,7 @@ export function LibrarySheet({
                             {all ? t("prayers.mine.allAdded") : t("prayers.mine.addAll")}
                           </button>
                           <ul className="divide-y divide-paper/[0.07]">
-                            {r.rule.prayers.map((p) => row(r, p.id, p.title, prayerMinutes(p), false))}
+                            {r.rule.prayers.map((p) => row(r, p.id, p.title, prayerMinutes(p, r.rule), false))}
                           </ul>
                         </div>
                       ) : null}

@@ -101,7 +101,8 @@ function stepsOf(
       out.push({ kind: "names", key: itemKey(item), part, stepId, title: "", fromRule: "", minutes: 1, done: done.has(stepId), href });
       continue;
     }
-    const prayer = lookup(item.rule)?.prayers.find((p) => p.id === item.prayer);
+    const from = lookup(item.rule);
+    const prayer = from?.prayers.find((p) => p.id === item.prayer);
     if (!prayer) continue;
     out.push({
       kind: "prayer",
@@ -110,7 +111,7 @@ function stepsOf(
       stepId,
       title: prayer.title,
       fromRule: item.rule,
-      minutes: prayerMinutes(prayer),
+      minutes: prayerMinutes(prayer, from),
       done: done.has(stepId),
       href,
     });

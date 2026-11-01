@@ -79,6 +79,20 @@ export function MyRuleBuilder() {
 
   useEffect(() => () => window.clearTimeout(undoTimer.current), []);
 
+  // Each part's length, kept with the rule for Today, which does not carry
+  // the prayer book. A rule kept before the count was made seconds first
+  // (note 73) said 12 min for the book's 8: it is counted again here, where
+  // the words are, and kept only when it changed.
+  const minutes = useMemo(
+    () => ({ morning: partMinutes(rule.morning, lookup), evening: partMinutes(rule.evening, lookup) }),
+    [rule, lookup],
+  );
+  useEffect(() => {
+    if (rule.minutes.morning !== minutes.morning || rule.minutes.evening !== minutes.evening) {
+      writeMyRule(withMinutes(rule, minutes));
+    }
+  }, [rule, minutes]);
+
   function save(next: MyRule) {
     writeMyRule(
       withMinutes(next, {
@@ -137,9 +151,7 @@ export function MyRuleBuilder() {
 
   const has = (part: MyRulePart) => rule[part].length > 0;
   const prayPart: MyRulePart | null = has(hourPart) ? hourPart : MY_RULE_PARTS.find(has) ?? null;
-  const meta = MY_RULE_PARTS.filter(has).map((part) =>
-    t("prayers.mine.partMinutes", { part: t(PART_KEY[part]), min: rule.minutes[part] || partMinutes(rule[part], lookup) }),
-  );
+  const meta = MY_RULE_PARTS.filter(has).map((part) => t("prayers.mine.partMinutes", { part: t(PART_KEY[part]), min: minutes[part] }));
 
   const panel = (part: MyRulePart) => (
     <div>
@@ -155,7 +167,7 @@ export function MyRuleBuilder() {
             }}
           />
           <p className="mt-3 font-sans text-caption text-paper/55">
-            {[tn("prayers.reader.prayerCount", rule[part].length), t("prayers.reader.aboutMin", { min: partMinutes(rule[part], lookup) })].join(" · ")}
+            {[tn("prayers.reader.prayerCount", rule[part].length), t("prayers.reader.aboutMin", { min: minutes[part] })].join(" · ")}
           </p>
         </>
       ) : (

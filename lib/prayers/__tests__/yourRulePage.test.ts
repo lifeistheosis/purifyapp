@@ -14,6 +14,8 @@ import { deleteIntention, readIntentions, reposeDateText, restoreIntention, writ
  *  2. a repose date printed as typed, 2019-03-04;
  *  3. removing a name asked in the browser's own confirm box;
  *  4. the note at the page's foot said "The names below sync", under the names;
+ *  5. Start from Morning prayers brought in what the prayer book calls 8 min,
+ *     and the page said about 12 (the count: lib/prayers/__tests__/myRule.test.ts);
  *
  * Each fix is measured on the built page by scripts/export-walk.mjs too.
  */
@@ -127,6 +129,17 @@ describe("removing a name", () => {
     deleteIntention("living", "anna");
     restoreIntention("living", name("clare"), 2);
     expect(readIntentions("living").map((n) => n.id)).toEqual(["basil", "clare"]);
+  });
+});
+
+describe("a part's length on the page", () => {
+  it("is counted where the words are, the same figure in the head and under the list, and kept for Today", () => {
+    const src = code("components/prayers/mine/MyRuleBuilder.tsx");
+    // Counted afresh, never a figure kept by an older count.
+    expect(src).toMatch(/partMinutes\(rule\.morning, lookup\)/);
+    expect(src).not.toMatch(/rule\.minutes\[part\] \|\|/);
+    // Kept again when the count changed, for Today, which has no prayer book.
+    expect(src).toMatch(/writeMyRule\(withMinutes\(rule, minutes\)\)/);
   });
 });
 
