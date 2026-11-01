@@ -114,12 +114,23 @@ changed since the last call.
 | `labels` | JSON object of label strings (below), in the app's language | the language changes, and on every open |
 | `streak` | JSON `{ count, keptToday, week: boolean[7], on: "YYYY-MM-DD" }` | the streak changes, and on every open |
 | `prayed` | JSON `{ morning: "YYYY-MM-DD" or null, evening: "YYYY-MM-DD" or null }` | a morning or evening rule is finished |
-| `patron` | JSON `{ slug, name, nameDay: "YYYY-MM-DD", icon: "public/..." or null }` or absent | the reader's patron saint changes, and on every open |
+| `patron` | JSON `{ slug, name, nameDay: "YYYY-MM-DD", nameDayAfter: "YYYY-MM-DD", icon: "public/..." or null }` or absent | the reader's patron saint is saved in the app, and on every open |
 | `update` | JSON `{ name, version, date: "YYYY-MM-DD" or null }` | on every open (from the packs when they carry one) |
 
 A value a widget cannot read is treated as absent, and every widget has an
 honest absent state ("Open Purify to see your streak", "Choose your saint in
 Purify").
+
+`patron.nameDay` is the next name day on the reader's calendar, today on the
+day itself, and `nameDayAfter` the one after it, both worked out by the app
+(lib/widget/state.ts). A widget drawn at midnight after the name day, with the
+app not opened since, counts to `nameDayAfter` instead of asking for the app
+(note 85 of build 86; the Android widget does, the iPhone's still shows no
+count on those days). The app asks the server for the patron on every open
+and hands over a patron saved in the app the moment it is saved
+(lib/profile/patronEvent.ts); a 401 while the app still holds a session
+leaves the widget's saint as it is, because only a sign-out the app has seen
+means there is no saint to show.
 
 `labels` keys, all optional, English when missing. Every value is a plain
 string the widget sets as it is, already in the app's language and already

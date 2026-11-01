@@ -3,6 +3,7 @@ import fs from "node:fs";
 import path from "node:path";
 
 import { buildDayTable } from "../dayTable";
+import { patronEntry, patronFacts } from "../state";
 
 /**
  * The contract between the emitter, the app and the Android widgets
@@ -69,8 +70,13 @@ describe("android widgets: the contract", () => {
       }
     };
     entries.forEach(walk);
-    // And what the app hands over (docs/WIDGETS.md, section 2).
-    for (const k of ["count", "keptToday", "week", "on", "morning", "evening", "slug", "name", "nameDay", "icon", "version", "date"]) known.add(k);
+    // And what the app hands over (docs/WIDGETS.md, section 2): the patron's
+    // fields as lib/widget/state.ts writes them, and the rest as listed.
+    const patron = patronEntry(patronFacts({ kind: "saint", slug: "arsenius-the-great" }, "2026-10-14", "new"));
+    const patronKeys = Object.keys(JSON.parse(patron!));
+    expect(patronKeys).toEqual(["slug", "name", "nameDay", "nameDayAfter", "icon"]);
+    for (const k of patronKeys) known.add(k);
+    for (const k of ["count", "keptToday", "week", "on", "morning", "evening", "version", "date"]) known.add(k);
 
     const java = allJava();
     const asked = new Set<string>();
@@ -81,6 +87,14 @@ describe("android widgets: the contract", () => {
     expect(missing, `the widgets read ${missing.join(", ")}, which nothing writes`).toEqual([]);
     // It must actually read something, or this passes vacuously.
     expect(asked.size).toBeGreaterThan(5);
+  });
+
+  it("counts to the patron's next name day by itself once the one handed over has gone by (note 85)", () => {
+    // Without this, the morning after a name day read "Open Purify to
+    // refresh" until the app was opened. The date is the app's; the widget
+    // only picks the first of the two that has not gone by.
+    const java = read(path.join(JAVA_DIR, "widget/MySaintWidgetProvider.java"));
+    expect(java).toContain('WidgetData.text(patron, "nameDayAfter")');
   });
 
   it("stores exactly the six keys the app may hand over", () => {

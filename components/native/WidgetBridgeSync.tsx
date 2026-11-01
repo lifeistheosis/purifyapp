@@ -16,6 +16,8 @@
 //     waits for the same reason);
 //   - when the streak store changes, a prayer is finished, the calendar
 //     setting or the language changes;
+//   - when the reader saves a patron saint in the app, in You or on the
+//     Community profile (lib/profile/patronEvent.ts), with the saint saved;
 //   - when the app comes back to the front, which is also when the day may
 //     have turned and a patron chosen on another device may have arrived.
 //
@@ -39,6 +41,7 @@ import { whenLanguageSettled } from "@/lib/i18n/launchLanguage";
 import { savedPacks, subscribePacks } from "@/lib/packs/store";
 import { useIsNative } from "@/lib/platform/native";
 import { PRAYER_EVENT, readPrayedDates } from "@/lib/prayers/storage";
+import { PATRON_EVENT, type PatronChange } from "@/lib/profile/patronEvent";
 import { todayKey } from "@/lib/rhythm/dayKey";
 import { useStreak, type StreakView } from "@/lib/streak/useStreak";
 import type { PatronAnswer } from "@/lib/widget/state";
@@ -83,6 +86,8 @@ function WidgetSync() {
     let patron: Known | null = null;
     let patronStale = false;
     let asking = false;
+    /** Patrons saved on this device so far, so an answer asked for before one is not taken over it. */
+    let patronSaves = 0;
 
     function soon(ms = GATHER_MS) {
       if (!alive || !started) return;
@@ -93,20 +98,29 @@ function WidgetSync() {
     async function askPatron(signedIn: boolean) {
       if (asking) return;
       asking = true;
+      const saves = patronSaves;
       let answer: PatronAnswer = { kind: "unknown" };
       try {
         const res = await apiFetch("/api/profile/patron-saint", { cache: "no-store" });
         const body: unknown = res.ok ? await res.json().catch(() => null) : null;
         const { readPatronAnswer } = await import("@/lib/widget/state");
-        answer = readPatronAnswer(res.status, body);
+        // Signed in as far as the app knows, a 401 is not "no saint" (note 85).
+        answer = readPatronAnswer(res.status, body, signedIn);
       } catch {
         // No connection: the answer stays unknown.
+      }
+      asking = false;
+      // A saint saved on this device while the server was being asked is
+      // newer than this answer, which may have been read before the save. It
+      // is dropped, and asked again if the saved one has not landed yet.
+      if (saves !== patronSaves) {
+        if (patronStale) soon();
+        return;
       }
       // An answer that says nothing keeps the one before it.
       const kept = answer.kind === "unknown" && patron ? patron.answer : answer;
       patron = { answer: kept, at: Date.now(), signedIn };
       patronStale = false;
-      asking = false;
       soon();
     }
 
@@ -161,6 +175,26 @@ function WidgetSync() {
       if (patron && Date.now() - patron.at > PATRON_FRESH_MS) patronStale = true;
       soon();
     };
+    // A patron saved on this device (lib/profile/patronEvent.ts). The event
+    // carries what the server saved, in the shape the server answers a read
+    // with, so the widget has it without asking again; anything else, or the
+    // chunk not loading, leaves the patron stale and the push asks.
+    const onPatron = (event: Event) => {
+      patronSaves += 1;
+      patronStale = true;
+      const saved: PatronChange | undefined = (event as CustomEvent<PatronChange>).detail;
+      void import("@/lib/widget/state")
+        .then(({ readPatronAnswer }) => {
+          const answer = readPatronAnswer(200, saved);
+          if (answer.kind === "unknown") return;
+          patron = { answer, at: Date.now(), signedIn: latest.current?.streak.signedIn ?? true };
+          patronStale = false;
+        })
+        .catch(() => {
+          // Offline before the chunk was cached: the push asks the server.
+        })
+        .finally(() => soon());
+    };
 
     const start = window.setTimeout(() => {
       void whenLanguageSettled().then(() => {
@@ -170,6 +204,7 @@ function WidgetSync() {
     }, SETTLE_MS);
     window.addEventListener(PRAYER_EVENT, onChange);
     window.addEventListener(CALENDAR_STYLE_EVENT, onChange);
+    window.addEventListener(PATRON_EVENT, onPatron);
     const stopPacks = subscribePacks(onChange);
     document.addEventListener("visibilitychange", onVisible);
 
@@ -180,6 +215,7 @@ function WidgetSync() {
       window.clearTimeout(timer);
       window.removeEventListener(PRAYER_EVENT, onChange);
       window.removeEventListener(CALENDAR_STYLE_EVENT, onChange);
+      window.removeEventListener(PATRON_EVENT, onPatron);
       stopPacks();
       document.removeEventListener("visibilitychange", onVisible);
     };

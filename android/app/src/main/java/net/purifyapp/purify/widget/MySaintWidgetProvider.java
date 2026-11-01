@@ -45,6 +45,17 @@ public class MySaintWidgetProvider extends PurifyWidgetProvider {
         }
         String nameDay = WidgetData.text(patron, "nameDay");
         Integer days = WidgetPieces.daysFromToday(nameDay);
+        if (days != null && days < 0) {
+            // The name day has gone by and the app has not been opened since.
+            // The app handed over the one after it too (lib/widget/state.ts),
+            // so count to that rather than ask for the app (note 85).
+            String after = WidgetData.text(patron, "nameDayAfter");
+            Integer daysAfter = WidgetPieces.daysFromToday(after);
+            if (daysAfter != null && daysAfter >= 0) {
+                nameDay = after;
+                days = daysAfter;
+            }
+        }
         String path = WidgetData.text(patron, "icon");
         Bitmap icon = path.isEmpty() ? null : WidgetPieces.icon(context, path, wide ? WIDE_ICON : SMALL_ICON);
         String eyebrow = WidgetData.label(context, "mySaint", "My saint");
@@ -86,8 +97,9 @@ public class MySaintWidgetProvider extends PurifyWidgetProvider {
 
     /**
      * "Name day in 57 days", or "Name day today" on the day; nothing when the
-     * app knows no name day. A name day gone by (the app not opened since)
-     * asks for the app, which knows the next one.
+     * app knows no name day. A name day gone by with the one after it gone by
+     * too (the app not opened for a year, or an entry from a build before it
+     * handed over nameDayAfter) asks for the app, which knows the next one.
      */
     private static String countLine(Context context, Integer days) {
         if (days == null) return "";

@@ -98,13 +98,19 @@ export function prayedEntry(morning: readonly unknown[], evening: readonly unkno
 export type PatronAnswer = { kind: "saint"; slug: string } | { kind: "none" } | { kind: "unknown" };
 
 /**
- * Read the server's answer. Signed out (401) and no saint chosen are both
- * "none": the widget asks the reader to choose one. Anything else that is not
- * a plain answer, an error page or no answer at all, is "unknown", and the
- * widget keeps what it had.
+ * Read the server's answer. No saint chosen is "none": the widget asks the
+ * reader to choose one. So is signed out (401), but only when the app agrees
+ * that the reader is signed out (`signedIn` false). A 401 while the app holds
+ * a session is a token the server did not take this once, one that ran out
+ * and was not yet renewed on a phone just back from sleep, and reading it as
+ * "none" could wipe a chosen saint off the widget until the app next asked
+ * (note 85). It is "unknown" instead; when the app itself sees the sign-out,
+ * its sync asks again with `signedIn` false. Anything else that is not a plain
+ * answer, an error page or no answer at all, is "unknown", and the widget
+ * keeps what it had.
  */
-export function readPatronAnswer(status: number | null | undefined, body: unknown): PatronAnswer {
-  if (status === 401) return { kind: "none" };
+export function readPatronAnswer(status: number | null | undefined, body: unknown, signedIn = false): PatronAnswer {
+  if (status === 401) return signedIn ? { kind: "unknown" } : { kind: "none" };
   if (status !== 200 || !body || typeof body !== "object") return { kind: "unknown" };
   const slug = (body as { slug?: unknown }).slug;
   if (slug === null) return { kind: "none" };
@@ -115,8 +121,15 @@ export type PatronFacts = {
   slug: string;
   /** English, as every saint's name is in every language of the app. */
   name: string;
-  /** The next name day on the reader's own calendar, YYYY-MM-DD. */
+  /** The next name day on the reader's own calendar, YYYY-MM-DD: today, on the day itself. */
   nameDay: DayKey | null;
+  /**
+   * The name day after that one. A widget draws itself again at midnight
+   * whether or not the app has been opened, so on the days after a name day,
+   * until the app hands over the next one, it counts to this one instead of
+   * reading "Open Purify to refresh" (note 85).
+   */
+  nameDayAfter: DayKey | null;
   /** Days from today to it, 0 on the day. For the label, never sent. */
   daysToNameDay: number | null;
   /** The icon's place in the app's bundle, only when its rights are cleared. */
@@ -151,12 +164,18 @@ export function patronFacts(answer: PatronAnswer, today: DayKey, style: unknown)
   if (answer.kind === "none" || !realDay(today)) return null;
   const saint = SAINTS.find((s) => s.slug === answer.slug);
   if (!saint) return null;
-  const next = nextNameDay(saint.feastDays, noonOf(today), calendarStyleEntry(style), keyOf);
-  const nameDay = next && realDay(next.date) ? next.date : null;
+  const reckoning = calendarStyleEntry(style);
+  // The first name day on or after a day, on the reader's calendar.
+  const from = (day: DayKey): DayKey | null => {
+    const next = nextNameDay(saint.feastDays, noonOf(day), reckoning, keyOf);
+    return next && realDay(next.date) ? next.date : null;
+  };
+  const nameDay = from(today);
   return {
     slug: saint.slug,
     name: saint.name,
     nameDay,
+    nameDayAfter: nameDay ? from(keyOf(new Date(noonOf(nameDay).getTime() + DAY_MS))) : null,
     daysToNameDay: nameDay ? Math.round((noonOf(nameDay).getTime() - noonOf(today).getTime()) / DAY_MS) : null,
     icon: iconOf(saint.iconUrl),
   };
@@ -166,8 +185,8 @@ export function patronFacts(answer: PatronAnswer, today: DayKey, style: unknown)
 export function patronEntry(facts: PatronFacts | null | undefined): string | null | undefined {
   if (facts === undefined) return undefined;
   if (facts === null) return null;
-  const { slug, name, nameDay, icon } = facts;
-  return JSON.stringify({ slug, name, nameDay, icon });
+  const { slug, name, nameDay, nameDayAfter, icon } = facts;
+  return JSON.stringify({ slug, name, nameDay, nameDayAfter, icon });
 }
 
 // ── The next update ─────────────────────────────────────────────────────────
