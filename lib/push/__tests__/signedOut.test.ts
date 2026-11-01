@@ -121,6 +121,9 @@ describe("turning reminders on, signed in", () => {
     vi.useFakeTimers();
     state.answer = "silent";
     const going = enableNative();
+    // The wait begins before the phone is asked for its token, so once the
+    // token has gone to the server the clock it waits on exists.
+    await vi.waitFor(() => expect(state.asked).toContain("POST /api/push/device"));
     await vi.advanceTimersByTimeAsync(SAVE_WAIT_MS);
     expect(await going).toEqual({ ok: false, reason: "failed" });
     expect(state.store.has(ON)).toBe(false);
