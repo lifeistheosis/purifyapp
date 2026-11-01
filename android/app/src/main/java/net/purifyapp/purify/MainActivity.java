@@ -90,6 +90,12 @@ public class MainActivity extends BridgeActivity {
         if (getRequestedOrientation() != wanted) setRequestedOrientation(wanted);
     }
 
+    /** The channel every push is posted to, from 1.8 (createPushChannel). */
+    public static final String PUSH_CHANNEL = "purify-notifications";
+
+    /** The channel before it, made with the launcher badge on: copied from, then deleted. */
+    static final String OLD_PUSH_CHANNEL = "purify";
+
     /**
      * The channel every push is posted to: ANDROID_CHANNEL_ID in
      * lib/push/providers/fcm.ts, and Firebase's default in the manifest.
@@ -104,24 +110,58 @@ public class MainActivity extends BridgeActivity {
      * every notification left unread, and some launchers (Samsung's among
      * them) draw it as a number: an unread count on Purify's own icon, which
      * CONTRIBUTING's fourth clause on reminders forbids ("no badge, no unread
-     * count, no red dot") and the bell in the app was built without. Android
-     * reads this only when the channel is first made, so it holds on every
-     * phone that installs this build fresh; a phone that already has the
-     * channel keeps the badge until the reader turns it off in the channel's
-     * own settings (lib/push/__tests__/androidChannel.test.ts says why the id
-     * was not changed instead).
+     * count, no red dot") and the bell in the app was built without.
+     *
+     * WHY A NEW CHANNEL. Android reads the badge setting only when a channel
+     * is first made, so the channel every phone already had ("purify") could
+     * not lose its badge. This build makes "purify-notifications" without
+     * one and retires the old channel, and because deleting a channel throws
+     * away what the reader chose for it, it first carries those choices over
+     * (copyReadersChoices): how it interrupts, so a channel the reader
+     * silenced stays silent and one they blocked stays blocked, its sound, its
+     * vibration, its light, what the lock screen shows, and Do Not Disturb.
+     * The old channel goes only after the new one exists, and only once: a
+     * phone that has the new channel is never copied over again. A push for
+     * the old id (a website not yet updated) and an older build that has no
+     * new channel both land in the manifest's default, so nothing is lost on
+     * either side of the change.
      */
     private void createPushChannel() {
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) return;
         NotificationManager manager = getSystemService(NotificationManager.class);
         if (manager == null) return;
         NotificationChannel channel = new NotificationChannel(
-            "purify",
+            PUSH_CHANNEL,
             getString(R.string.push_channel_name),
             NotificationManager.IMPORTANCE_HIGH
         );
         channel.setDescription(getString(R.string.push_channel_description));
         channel.setShowBadge(false);
+        NotificationChannel old = manager.getNotificationChannel(OLD_PUSH_CHANNEL);
+        if (old != null && manager.getNotificationChannel(PUSH_CHANNEL) == null) {
+            copyReadersChoices(old, channel);
+        }
         manager.createNotificationChannel(channel);
+        if (old != null) manager.deleteNotificationChannel(OLD_PUSH_CHANNEL);
+    }
+
+    /**
+     * What the reader chose for the old channel, carried to the new one
+     * before it is made (Android takes these only then). Its importance is
+     * the reader's own: lowered to silent, or to none for a channel they
+     * blocked, it stays so.
+     */
+    private static void copyReadersChoices(NotificationChannel from, NotificationChannel to) {
+        to.setImportance(from.getImportance());
+        to.setSound(from.getSound(), from.getAudioAttributes());
+        // The pattern before the switch: setting a pattern also sets whether
+        // the channel vibrates, and the default pattern reads as none.
+        long[] pattern = from.getVibrationPattern();
+        if (pattern != null) to.setVibrationPattern(pattern);
+        to.enableVibration(from.shouldVibrate());
+        to.enableLights(from.shouldShowLights());
+        to.setLightColor(from.getLightColor());
+        to.setLockscreenVisibility(from.getLockscreenVisibility());
+        to.setBypassDnd(from.canBypassDnd());
     }
 }

@@ -82,9 +82,16 @@ async function getMessaging(): Promise<MessagingLike> {
  * importance: no banner, only a small icon in the status bar, so a broadcast
  * Firebase had accepted for 157 phones (2026-09-27) looked to a reader like
  * nothing had arrived. A build without the channel ignores the id and uses
- * that fallback, so naming it here is safe before the new build is out.
+ * the manifest's default, so naming it here is safe before the new build is
+ * out.
+ *
+ * "purify-notifications" from 1.8: the same channel without the badge on the
+ * app icon, which Android would not take off the old "purify". The app copies
+ * the reader's choices for the old channel into it and deletes the old one;
+ * a build from before has only "purify", its manifest default, and a push
+ * naming this id lands there.
  */
-export const ANDROID_CHANNEL_ID = "purify";
+export const ANDROID_CHANNEL_ID = "purify-notifications";
 
 /**
  * True once this process has delivered at least one push to Android.
