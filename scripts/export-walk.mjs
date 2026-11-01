@@ -2720,6 +2720,33 @@ await section(46, async () => {
         empty: (document.querySelector("[data-you-kept]")?.textContent ?? "").replace(/\s+/g, " ").trim(),
       };
     });
+  /**
+   * The bar over a page's picture as it stands now: whether the picture's
+   * foot has gone up past the bar's, whether the page marked the bar solid
+   * (components/mobile/barOverPicture.ts), and the bar's ground. One observer
+   * turns the bar for You's Ladder and Prayers' Pantocrator both.
+   */
+  const barNow = (page) =>
+    page.evaluate(() => {
+      const bar = document.querySelector("[data-route-content] [data-tab-topbar]") ?? document.querySelector("[data-tab-topbar]");
+      const picture = document.querySelector("[data-you-hero] .you-hero-picture, .prayers-hero-picture");
+      const ground = bar ? getComputedStyle(bar).backgroundColor : "";
+      return {
+        y: Math.round(scrollY),
+        // How far the page can scroll at all.
+        room: Math.max(0, Math.round(document.scrollingElement.scrollHeight - innerHeight)),
+        passed: !!bar && !!picture && picture.getBoundingClientRect().bottom <= bar.getBoundingClientRect().bottom + 0.5,
+        solid: document.documentElement.hasAttribute("data-bar-solid"),
+        clear: ground === "rgba(0, 0, 0, 0)",
+        ground,
+      };
+    });
+  /** Scrolled on as far as 600 px, or as far as the page goes. */
+  const scrollOn = async (page, to = 600) => {
+    await page.evaluate((y) => window.scrollTo(0, y), to);
+    await page.waitForTimeout(700);
+    return barNow(page);
+  };
 
   {
     // Signed out, a new reader on this device.
@@ -2744,11 +2771,16 @@ await section(46, async () => {
     must(m.empty.includes(en["saved.emptyLine"]), "nothing kept yet, so the shelf is its one line");
     must(m.img?.animation === "prayers-picture-in", `the picture fades in as the tab arrives (${m.img?.animation})`);
     await page.screenshot({ path: path.join(SHOTS, "you-ladder-signed-out.png") });
-    // Once the picture has gone up under the bar, the bar is solid again.
-    await page.evaluate(() => window.scrollTo(0, 600));
-    await page.waitForTimeout(700);
-    const down = await measure(page);
-    must(down.solid && down.barGround !== "rgba(0, 0, 0, 0)", `scrolled on, the bar is solid again (${down.barGround})`);
+    // A new reader's tab is one screen on this phone: build 87's walk found
+    // it 844 tall in an 844 window, so it does not scroll, the picture never
+    // goes up under the bar, and the bar is right to stay clear over it. On a
+    // page that does go past the picture the bar turns solid (signed in,
+    // below, and Prayers).
+    const down = await scrollOn(page);
+    must(
+      down.passed ? down.solid && !down.clear : !down.solid && down.clear,
+      `${down.passed ? "scrolled past the picture, the bar is solid again" : "the tab is one screen, so the bar stays clear over the picture"} (scrolled ${down.y} of ${down.room}; ${down.ground})`,
+    );
     must(errors.length === 0, `no page errors${errors.length ? ": " + errors.slice(0, 2).join(" | ") : ""}`);
     await ctx.close();
   }
@@ -2761,7 +2793,7 @@ await section(46, async () => {
     await page.evaluate(() => document.fonts.ready);
     await page.waitForTimeout(1600);
     const m = await measure(page);
-    must(!!m.identity && bare(m.identity.href) === "/account/profile" && m.identity.name === "reader" &&m.identity.text.includes(en["profile.yourProfile"]) && !!m.picture && m.identity.box.top < m.picture.bottom, `signed in, the reader's name stands on the picture and opens their profile ("${m.identity?.text ?? "none"}")`);
+    must(!!m.identity && bare(m.identity.href) === "/account/profile" && m.identity.name === "reader" && m.identity.text.includes(en["profile.yourProfile"]) && !!m.picture && m.identity.box.top < m.picture.bottom, `signed in, the reader's name stands on the picture and opens their profile ("${m.identity?.text ?? "none"}")`);
     const neutral = (c) => {
       const [r, g, b] = (c.match(/\d+(\.\d+)?/g) ?? []).map(Number);
       return Math.max(r, g, b) - Math.min(r, g, b) <= 12;
@@ -2787,6 +2819,12 @@ await section(46, async () => {
       `where you left off is one lit card: John 3 large with its way in, the work under it (${card.first?.text.slice(0, 60) ?? "none"}; ${card.links} links)`,
     );
     must(card.far !== null && Math.abs(card.far - 16 / 36) < 0.03, `and how far in, v16 of 36 (${card.far === null ? "no bar" : Math.round(card.far * 100) + "%"})`);
+    // This tab is longer than the screen: scrolled on, the picture goes up
+    // under the bar and the bar is solid; back at the top, clear again.
+    const on = await scrollOn(page);
+    must(on.passed && on.solid && !on.clear, `scrolled past the picture, the bar is solid again (scrolled ${on.y} of ${on.room}; ${on.ground})`);
+    const top = await scrollOn(page, 0);
+    must(!top.passed && !top.solid && top.clear, `and back at the top it is clear over the picture again (${top.ground})`);
     await page.evaluate(() => document.querySelector("[data-you-verse]")?.scrollIntoView({ block: "center" }));
     await page.waitForTimeout(500);
     const verse = await page.evaluate(() => {
@@ -2821,6 +2859,25 @@ await section(46, async () => {
     must(shelf.tiles[0]?.text.startsWith("1") && shelf.all.startsWith(en["common.seeAll"]) && shelf.all.endsWith("2"), `each with its count, and See all with the total ("${shelf.tiles[0]?.text}"; "${shelf.all}")`);
     must(shelf.broken === 0, `no cover is a broken picture with no signal (${shelf.broken})`);
     must(errors.length === 0, `no page errors${errors.length ? ": " + errors.slice(0, 2).join(" | ") : ""}`);
+    await ctx.close();
+  }
+
+  {
+    // Prayers' Pantocrator, which the same observer serves: clear over the
+    // picture at the top, solid once it has gone up under the bar, and clear
+    // again back at the top.
+    const { ctx, page, errors } = await open({ width: 390, height: 844, phone: true });
+    await go(page, "/prayers/");
+    await page.waitForFunction(() => !!document.querySelector(".prayers-hero-picture"), null, { timeout: 20000 }).catch(() => {});
+    await page.waitForTimeout(1200);
+    const at = await barNow(page);
+    const on = await scrollOn(page);
+    const back = await scrollOn(page, 0);
+    must(
+      at.clear && !at.solid && on.passed && on.solid && !on.clear && back.clear && !back.solid,
+      `Prayers' bar too: clear over its picture, solid once it has gone, clear again at the top (${at.ground}, then ${on.ground} at ${on.y}, then ${back.ground})`,
+    );
+    must(errors.length === 0, `Prayers: no page errors${errors.length ? ": " + errors.slice(0, 2).join(" | ") : ""}`);
     await ctx.close();
   }
 
