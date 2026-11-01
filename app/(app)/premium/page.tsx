@@ -14,9 +14,9 @@ import { CARD, CARD_BG } from "@/components/ui/Graphite";
 import { cn } from "@/lib/cn";
 
 export const metadata = {
-  title: "Purify Premium",
+  title: "Purify Plus",
   description:
-    "The whole spiritual treasury of Purify is free, and it stays free. Purify Plus is the premium reading and study experience; Purify Pro adds premium reading modes, the monthly EIKON Box, and EIKON member benefits. See everything each plan includes.",
+    "The whole spiritual treasury of Purify is free, and it stays free. Plus is the reading and study tools; Pro adds the EIKON Box and member benefits. See everything each plan includes.",
 };
 
 // Page chrome (hero + section + card labels). The tier substance — items,
@@ -46,7 +46,7 @@ type PremiumChrome = {
 };
 
 const CHROME_EN: PremiumChrome = {
-  eyebrow: "Purify Premium",
+  eyebrow: "Purify Plus",
   h1: "The whole Church, carried with you.",
   lede: "Everything at the heart of Purify is free, and it stays free. Plus and Pro add an optional layer: your reading on every device, the Church in fuller dress, and a way to keep the lamps lit.",
   seePlus: "See Purify Plus",
@@ -69,7 +69,7 @@ const CHROME_EN: PremiumChrome = {
 };
 
 const CHROME_DE: PremiumChrome = {
-  eyebrow: "Purify Premium",
+  eyebrow: "Purify Plus",
   h1: "Die ganze Kirche, mit dir getragen.",
   lede: "Alles im Herzen von Purify ist frei und bleibt frei. Plus und Pro fügen eine optionale Schicht hinzu: dein Lesen auf jedem Gerät, die Kirche in vollerem Gewand und ein Weg, die Lampen am Brennen zu halten.",
   seePlus: "Purify Plus ansehen",

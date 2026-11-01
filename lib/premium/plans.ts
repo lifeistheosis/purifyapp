@@ -105,7 +105,7 @@ export const PREMIUM_PLAN_EN: PremiumPlanCopy = {
   freeFoot: "No ads. No tracking. No surprise locks. For anyone who needs it.",
   soonLabel: "Coming soon",
   plusTitle: "Purify Plus",
-  plusLede: "The premium reading and study experience.",
+  plusLede: "The reading and study tools.",
   plusItems: [
     {
       id: "cross-refs",
@@ -139,7 +139,7 @@ export const PREMIUM_PLAN_EN: PremiumPlanCopy = {
     },
     {
       id: "reading-modes",
-      title: "Premium Reading Modes",
+      title: "Reading modes",
       sub: "Candlelight and Monastery reading, in the Scriptures and the writings of the Fathers",
     },
     {
@@ -174,7 +174,7 @@ export const PREMIUM_PLAN_EN: PremiumPlanCopy = {
   plusPromise:
     "A promise already made stays made: pre-launch supporters keep lifetime cross-device sync, no subscription required. That promise covers sync itself; the wider Plus tools belong to the subscription.",
   proTitle: "Purify Pro",
-  proLede: "Everything in Plus, and the complete premium experience.",
+  proLede: "Everything in Plus, and the members' layer.",
   proItems: [
     {
       id: "everything-plus",
@@ -225,7 +225,7 @@ export const PREMIUM_PLAN_DE: PremiumPlanCopy = {
     "Keine Werbung. Keine Verfolgung. Keine überraschenden Sperren. Für jeden, der sie braucht.",
   soonLabel: "Bald verfügbar",
   plusTitle: "Purify Plus",
-  plusLede: "Das Premium-Erlebnis fürs Lesen und Studieren.",
+  plusLede: "Die Werkzeuge fürs Lesen und Studieren.",
   plusItems: [
     {
       id: "cross-refs",
@@ -259,7 +259,7 @@ export const PREMIUM_PLAN_DE: PremiumPlanCopy = {
     },
     {
       id: "reading-modes",
-      title: "Premium-Lesemodi",
+      title: "Lesemodi",
       sub: "Kerzenlicht und Kloster, in den Schriften und den Werken der Väter",
     },
     {
@@ -294,7 +294,7 @@ export const PREMIUM_PLAN_DE: PremiumPlanCopy = {
   plusPromise:
     "Ein gegebenes Versprechen bleibt bestehen: Unterstützer aus der Zeit vor dem Start behalten die geräteübergreifende Synchronisierung auf Lebenszeit, ohne Abonnement. Dieses Versprechen gilt der Synchronisierung selbst; die weiteren Plus-Werkzeuge gehören zum Abonnement.",
   proTitle: "Purify Pro",
-  proLede: "Alles aus Plus und das vollständige Premium-Erlebnis.",
+  proLede: "Alles aus Plus und der Mitgliederbereich.",
   proItems: [
     {
       id: "everything-plus",

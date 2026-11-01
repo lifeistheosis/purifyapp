@@ -45,8 +45,9 @@ export type LifecycleRow = EntitlementDates & {
 export type OpenDrop = { id: string; title: string; claims_close_at: string | null };
 
 export type PlannedEmail =
-  | { kind: "plus_ending"; userId: string; dedupeKey: string; endsOn: Date; store: string | null }
-  | { kind: "plus_ended"; userId: string; dedupeKey: string }
+  /** `pro`: the plan ending is the higher one, which the email names (note 71, refinement 3). */
+  | { kind: "plus_ending"; userId: string; dedupeKey: string; endsOn: Date; store: string | null; pro: boolean }
+  | { kind: "plus_ended"; userId: string; dedupeKey: string; pro: boolean }
   | { kind: "winback"; userId: string; dedupeKey: string; wasPro: boolean }
   | { kind: "claim_closing"; userId: string; dedupeKey: string; dropTitle: string; closesAt: Date }
   | { kind: "welcome"; userId: string; dedupeKey: string }
@@ -204,6 +205,9 @@ export function planLifecycle(input: {
 
   for (const row of rows) {
     const state = plusState(row, now);
+    // Which plan is the one that ends: Pro when its date is the later, as a
+    // Pro membership carries Plus with it.
+    const proEnds = ms(row.pro_until) !== null && (ms(row.pro_until) ?? -Infinity) >= (ms(row.plus_until) ?? -Infinity);
 
     if (state === "active" && input.renewalStateKnown !== false && row.auto_renew === false) {
       const end = Math.max(ms(row.plus_until) ?? -Infinity, ms(row.pro_until) ?? -Infinity);
@@ -217,6 +221,7 @@ export function planLifecycle(input: {
           dedupeKey: `plus_ending:${row.user_id}:${isoDay(endsOn)}`,
           endsOn,
           store: row.plus_source,
+          pro: proEnds,
         });
       }
     }
@@ -230,6 +235,7 @@ export function planLifecycle(input: {
             kind: "plus_ended",
             userId: row.user_id,
             dedupeKey: `plus_ended:${row.user_id}:${isoDay(ended)}`,
+            pro: proEnds,
           });
         }
         if (ago >= 30 * DAY && ago <= 33 * DAY) {

@@ -8,8 +8,10 @@ import { useUpgradeModal } from "@/components/billing/UpgradeModal";
 import { PlusCheck } from "@/components/premium/PremiumUI";
 
 /**
- * The "Premium" pill in the site header, shared by the marketing Navbar and
- * the in-app AppNav so the call-to-action is identical everywhere.
+ * The Plus pill in the site header, shared by the marketing Navbar and the
+ * in-app AppNav so the call-to-action is identical everywhere. It said
+ * "Premium" until 1.8, when the subscription took one name, Plus (note 71,
+ * refinement 3): its word is nav.premium, which says Plus.
  *
  * Silver since 1.8, the owner's pick of 2026-10-27 (round 6, B, "Silver", no
  * gold), as on the phone's pill (MobilePremiumButton): the word in the

@@ -8,8 +8,14 @@ import { usePremiumTier } from "@/lib/entitlements/usePremiumTier";
 import { useUpgradeModal } from "@/components/billing/UpgradeModal";
 
 /**
- * The Premium pill in the phone tab bar (MobileHeader), on all five tabs and
+ * The Plus pill in the phone tab bar (MobileHeader), on all five tabs and
  * always in the same place: on the right, just before search and the bell.
+ *
+ * One name for the subscription since 1.8 (note 71, refinement 3, which the
+ * owner accepted with his pick A of r3-25): selling, the pill says Plus
+ * (nav.premium), where it said Premium beside the Plus and Pro of everything
+ * else; held, the plan's own name. It is the subscription's one door on the
+ * You tab, where a "Purify Premium" row went to the same place.
  *
  * The word alone, at one size. It carried a gold star before the word until
  * 1.7; the owner called the star a vibe-coded symbol (2026-10-16), and the
@@ -49,6 +55,9 @@ export function MobilePremiumButton() {
   // walk holds whole).
   const pill = (
     <span
+      // Held, over a page's picture the graphite stands on a plate as search
+      // and the bell do (app/globals.css, "the bar over the picture").
+      data-pill-held={activated ? "" : undefined}
       className={cn(
         "inline-flex h-9 items-center whitespace-nowrap rounded-pill px-3 font-sans text-caption font-semibold min-[380px]:px-3.5 min-[380px]:text-ui transition-[background,border-color,color] duration-150 motion-reduce:transition-none",
         activated

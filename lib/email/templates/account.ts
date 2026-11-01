@@ -80,14 +80,25 @@ export function plusActiveEmail(): EmailContent {
   });
 }
 
-export function plusEndingEmail(opts: { endsOn: Date; store: BillingStore }): EmailContent {
+/**
+ * The plan the reader holds, by its own name: Plus, or Pro for the higher
+ * plan (1.8, note 71, refinement 3: one name for the subscription, Plus, and
+ * Pro only where the higher plan itself is meant). The ending and ended
+ * emails said Plus to a Pro member too.
+ */
+function planName(pro: boolean | undefined): "Plus" | "Pro" {
+  return pro ? "Pro" : "Plus";
+}
+
+export function plusEndingEmail(opts: { endsOn: Date; store: BillingStore; pro?: boolean }): EmailContent {
   const manage = manageSubscription(opts.store);
+  const plan = planName(opts.pro);
   return build({
     eyebrow: "Membership",
-    subject: "Your Plus ends in three days",
-    heading: "Your Plus ends in three days",
+    subject: `Your ${plan} ends in three days`,
+    heading: `Your ${plan} ends in three days`,
     paragraphs: [
-      `Your Purify Plus membership is set not to renew, so it ends on ${longDate(opts.endsOn)}.`,
+      `Your Purify ${plan} membership is set not to renew, so it ends on ${longDate(opts.endsOn)}.`,
       "If that is what you chose, there is nothing to do, and everything you saved stays with your account.",
       `If you would rather keep it, you can turn renewal back on in ${manage.label}.`,
     ],
@@ -95,15 +106,16 @@ export function plusEndingEmail(opts: { endsOn: Date; store: BillingStore }): Em
   });
 }
 
-export function plusEndedEmail(): EmailContent {
+export function plusEndedEmail(opts: { pro?: boolean } = {}): EmailContent {
+  const plan = planName(opts.pro);
   return build({
     eyebrow: "Membership",
-    subject: "Your Plus has ended",
-    heading: "Your Plus has ended",
+    subject: `Your ${plan} has ended`,
+    heading: `Your ${plan} has ended`,
     paragraphs: [
-      "Your Purify Plus membership has ended.",
+      `Your Purify ${plan} membership has ended.`,
       "The library stays free, and everything you saved is still with your account.",
-      "If you ever want Plus again, it is on your account page.",
+      `If you ever want ${plan} again, it is on your account page.`,
     ],
     action: { label: "Your account", href: url("/account") },
   });

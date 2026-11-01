@@ -7,7 +7,7 @@ import { T } from "@/components/i18n/T";
 export const metadata = {
   title: "Pricing & Purify Plus",
   description:
-    "The core spiritual treasury of Purify is free, always. Purify Plus is the premium reading and study experience; Purify Pro adds premium reading modes, the monthly EIKON Box, and EIKON member benefits. What is free today stays free.",
+    "The core spiritual treasury of Purify is free, always. Plus is the reading and study tools; Pro adds the EIKON Box and member benefits. What is free today stays free.",
 };
 
 /*
