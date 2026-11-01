@@ -238,6 +238,28 @@ async function attachListeners(): Promise<void> {
 }
 
 /**
+ * Whether the phone shows Purify's notifications at all, asked of the app's
+ * own bridge (lib/widget/bridge.ts, loaded only when asked). True only when
+ * the phone says they are off; anything it cannot say (an iPhone, whose
+ * permission already answers; an older build) reads as not blocked, as
+ * before.
+ *
+ * On Android 12 and older the push plugin answers "granted" whatever the
+ * reader set, so a reader who switched Purify's notifications off in the
+ * phone's settings was shown reminders as on, and the server kept sending
+ * pushes the phone hid.
+ */
+async function blockedOnPhone(): Promise<boolean> {
+  if (platform() !== "android") return false;
+  try {
+    const { phoneNotificationsEnabled } = await import("@/lib/widget/bridge");
+    return (await phoneNotificationsEnabled()) === false;
+  } catch {
+    return false;
+  }
+}
+
+/**
  * Current native reminder status, mapped to the same vocabulary as web.
  * "subscribed" only with an account signed in: the server keeps a phone's
  * token for an account and nowhere else, so with nobody signed in nothing
@@ -252,6 +274,7 @@ export async function nativeStatus(): Promise<
     const perm = await PushNotifications.checkPermissions();
     const receive = perm.receive as Receive;
     if (receive === "denied") return "denied";
+    if (receive === "granted" && (await blockedOnPhone())) return "denied";
     if (receive === "granted" && getItem(ON_KEY) === "1" && readLocalSessionUser()) return "subscribed";
     return "not-subscribed";
   } catch {
@@ -280,7 +303,7 @@ export async function enableNative(
   try {
     const { PushNotifications } = await import("@capacitor/push-notifications");
     const perm = await PushNotifications.requestPermissions();
-    if ((perm.receive as Receive) !== "granted") {
+    if ((perm.receive as Receive) !== "granted" || (await blockedOnPhone())) {
       return { ok: false, reason: "denied" };
     }
     // The token arrives asynchronously on the "registration" listener; stash
@@ -392,7 +415,7 @@ export async function refreshNative(): Promise<void> {
     const { PushNotifications } = await import("@capacitor/push-notifications");
     const perm = await PushNotifications.checkPermissions();
     const receive = perm.receive as Receive;
-    if (receive === "denied") {
+    if (receive === "denied" || (receive === "granted" && (await blockedOnPhone()))) {
       await disableNative();
       return;
     }
