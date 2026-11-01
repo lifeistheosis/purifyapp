@@ -5522,6 +5522,345 @@ await section(43, async () => {
     await ctx.close();
   }
 });
+// ---- 48. Prayers: Practices and the prayer book (1.8, note 72).
+// The owner's pick of r3-26 for this part of the Prayers tab, a mix
+// (2026-10-31): "A, the icon tiles. C, one prayer book." (Homebase/boards/
+// purify-master/variants/r3-26-prayers-practices). Practices are four tiles
+// in their icons, two across (four on a tablet in the apps), the Hours
+// wearing the icon of the Hour the clock is in, lit and named; Today's tile
+// is gone, its door a row of the daily rule, and Personal is Your rule. Under
+// them one prayer book: chapters I to IV opening one at a time onto a page of
+// prayers run by dotted leaders to their length, a shut chapter naming what
+// is in it, the Hours lit in the daily rule. One search on the screen, the
+// bar's magnifier, turned to Prayers. Drawn at 9:41 in the morning, as the
+// sheet was, so the Hour is the Third; then in the afternoon and at night.
+// Measured at 360 and 390, on the five everyday palettes, with motion on and
+// off, and on a tablet. lib/prayers/__tests__/prayersHome.test.ts holds the
+// source.
+await section(48, async () => {
+  console.log("\n48. Prayers: Practices and the prayer book");
+  const en = JSON.parse(fs.readFileSync(path.resolve("lib/i18n/messages/en.json"), "utf8"));
+  const min = (n) => en["prayers.approxMin.other"].replace("{count}", String(n));
+  const NINE_FORTY_ONE = new Date("2026-10-31T09:41:00");
+  const TILES = ["/prayers/hours", "/prayers/akathists", "/prayers/learning", "/prayers/personal"];
+  const ICONS = ["/icons/prayer/pentecost.jpg", "/icons/prayer/theotokos-of-vladimir.jpg", "/icons/prayer/three-hierarchs.v2.jpg", "/icons/prayer/christ-pantocrator.v2.jpg"];
+  const opened = async (page) => {
+    await go(page, "/prayers/");
+    // The Hours are lit once the page has read the clock.
+    await page.waitForFunction(() => !!document.querySelector("[data-practices] a[data-lit]") && !!document.querySelector("[data-prayer-book] [data-chapter]"), null, { timeout: 20000 }).catch(() => {});
+    await page.evaluate(() => document.fonts.ready);
+    await page.waitForTimeout(1200);
+  };
+  /** Brings the tiles into view and waits for their pictures, which are asked for as they near the screen. */
+  const tilesInView = async (page) => {
+    await page.evaluate(() => document.querySelector("[data-practices]")?.scrollIntoView({ block: "start" }));
+    await page.evaluate(() => window.scrollBy(0, -70));
+    await page.waitForFunction(() => [...document.querySelectorAll("[data-practices] a img")].filter((i) => i.hasAttribute("data-arrived")).length === 4, null, { timeout: 10000 }).catch(() => {});
+    await page.waitForTimeout(500);
+  };
+  const tiles = (page) =>
+    page.evaluate(() =>
+      [...document.querySelectorAll("[data-practices] a")].map((a) => {
+        const r = a.getBoundingClientRect();
+        const img = a.querySelector("img");
+        // How far past its own pixels the picture is drawn on a phone of three
+        // pixels to the point: it covers the tile, then is drawn closer.
+        let past3x = null;
+        if (img?.naturalWidth) {
+          const zoom = new DOMMatrixReadOnly(getComputedStyle(img).transform === "none" ? undefined : getComputedStyle(img).transform).a;
+          past3x = (Math.max(img.offsetWidth, (img.offsetHeight * img.naturalWidth) / img.naturalHeight) * zoom * 3) / img.naturalWidth;
+        }
+        return {
+          href: a.getAttribute("href"),
+          lit: a.hasAttribute("data-lit"),
+          name: a.querySelector("h3")?.textContent?.trim() ?? null,
+          line: a.querySelector("p")?.textContent?.trim() ?? null,
+          left: Math.round(r.left),
+          top: Math.round(r.top),
+          width: Math.round(r.width),
+          height: Math.round(r.height),
+          src: img?.getAttribute("src") ?? null,
+          arrived: !!img?.hasAttribute("data-arrived") && img.naturalWidth > 0,
+          past3x,
+          shadow: getComputedStyle(a).boxShadow,
+        };
+      }),
+    );
+  /** The chapters as they stand: which is open, what a shut one names, its page's height. */
+  const chapters = (page) =>
+    page.evaluate(() =>
+      [...document.querySelectorAll("[data-prayer-book] [data-chapter]")].map((s) => {
+        const b = s.querySelector("button[data-chapter-at]");
+        const leaf = document.getElementById(b?.getAttribute("aria-controls") ?? "");
+        return {
+          id: s.getAttribute("data-chapter"),
+          numeral: b?.querySelector("span[aria-hidden]")?.textContent?.trim() ?? null,
+          open: b?.getAttribute("aria-expanded") === "true",
+          says: (b?.innerText ?? "").replace(/\s+/g, " ").trim(),
+          top: Math.round(b?.getBoundingClientRect().top ?? -1),
+          height: Math.round(leaf?.getBoundingClientRect().height ?? -1),
+          inert: !!leaf?.hasAttribute("inert"),
+          rows: leaf ? [...leaf.querySelectorAll("a")].map((a) => ({ href: a.getAttribute("href"), text: a.innerText.replace(/\s+/g, " ").trim(), lit: a.hasAttribute("data-lit"), leader: Math.round(a.querySelector(".book-leader")?.getBoundingClientRect().width ?? -1), plate: a.querySelector("img")?.getAttribute("src") ?? null })) : [],
+          planned: leaf?.querySelector("p")?.innerText?.replace(/\s+/g, " ").trim() ?? null,
+        };
+      }),
+    );
+
+  for (const size of [{ width: 360, height: 740 }, { width: 390, height: 844 }]) {
+    const w = `${size.width}px`;
+    const { ctx, page, errors } = await open({ ...size, phone: true });
+    await page.clock.setFixedTime(NINE_FORTY_ONE);
+    await opened(page);
+    await tilesInView(page);
+
+    // Practices: four tiles in their icons, two across, the Hours lit.
+    const t = await tiles(page);
+    const vw = await page.evaluate(() => document.documentElement.clientWidth);
+    const each = (vw - 40 - 12) / 2;
+    must(t.length === 4 && t.map((x) => bare(x.href)).join(" ") === TILES.join(" "), `${w}: Practices are the Hours, Akathists, Learn to pray and Your rule, and Today's tile is gone (${t.map((x) => bare(x.href)).join(", ")})`);
+    must(
+      t.length === 4 && t[0].top === t[1].top && t[2].top === t[3].top && t[2].top >= t[0].top + t[0].height && t[0].left < t[1].left && t.every((x) => Math.abs(x.width - each) <= 1.5 && x.height >= 146),
+      `${w}: two across, each ${Math.round(each)}px wide and at least 146 tall (${t.map((x) => `${x.width}x${x.height} at ${x.left},${x.top}`).join("; ")})`,
+    );
+    must(
+      t.map((x) => x.name).join("|") === [en["ui.theHours"], en["prayers.akathists"], en["ui.learnToPray"], en["prayers.mine.title"]].join("|"),
+      `${w}: named as on the sheet, Personal as Your rule (${t.map((x) => x.name).join(", ")})`,
+    );
+    must(
+      t.map((x) => x.line).join("|") === [`${en["prayers.timeline.now"]} · ${en["prayers.rule.third-hour.title"]}`, en["ui.hymnsOfPraise"], en["ui.aBeginnersPath"], en["prayers.mine.youHint"]].join("|"),
+      `${w}: at 9:41 the Hours say "${en["prayers.timeline.now"]} · ${en["prayers.rule.third-hour.title"]}", and Your rule has the You tab's line (${t.map((x) => x.line).join(" | ")})`,
+    );
+    must(t.map((x) => x.lit).join(" ") === "true false false false" && /rgba\(255, 255, 255, 0\.2\)/.test(t[0]?.shadow ?? ""), `${w}: the Hours alone are lit, ringed and glowing white (${t[0]?.shadow ?? "none"})`);
+    must(t.every((x, i) => x.src === ICONS[i] && x.arrived), `${w}: each wears its icon, the Hours the Third Hour's Pentecost, every one arrived (${t.map((x) => `${x.src}${x.arrived ? "" : " not arrived"}`).join(", ")})`);
+    must(t.every((x) => x.past3x !== null && x.past3x <= 1.4), `${w}: no icon drawn more than 1.4 times past its own pixels on a phone at 3x (${t.map((x) => x.past3x?.toFixed(2)).join(", ")})`);
+    if (size.width === 390) await page.screenshot({ path: path.join(SHOTS, "prayers-practices-390.png") });
+
+    // The prayer book: I to IV, the daily rule open, the rest shut and naming what is in them.
+    const c = await chapters(page);
+    must(c.map((x) => `${x.numeral} ${x.id}`).join(", ") === "I daily, II daily-life, III church-year, IV devotional", `${w}: one book, its chapters I to IV (${c.map((x) => `${x.numeral} ${x.id}`).join(", ")})`);
+    must(c.map((x) => x.open).join(" ") === "true false false false" && c.slice(1).every((x) => x.inert && x.height === 0), `${w}: the daily rule open at first, the others shut and out of reach (${c.map((x) => `${x.id} ${x.open ? "open" : "shut"} ${x.height}px${x.inert ? " inert" : ""}`).join(", ")})`);
+    const daily = c[0]?.rows ?? [];
+    must(
+      daily.map((r) => bare(r.href)).join(" ") === "/prayers/morning /prayers/midday /prayers/evening /prayers/creed /prayers/today /prayers/hours",
+      `${w}: the daily rule's page: its prayers, then Today's prayer, then the Hours (${daily.map((r) => bare(r.href)).join(", ")})`,
+    );
+    must(
+      daily.slice(0, 5).every((r) => r.leader >= 14) && daily[0]?.text.includes(min(8)) && daily[1]?.text.includes(min(5)) && daily[4]?.text.includes(en["notFound.todaysPrayer"]),
+      `${w}: each prayer run by a dotted leader to its length, "${en["prayers.rule.morning.title"]} ... ${min(8)}" (leaders ${daily.map((r) => r.leader).join(", ")})`,
+    );
+    const hoursRow = daily[5];
+    must(
+      !!hoursRow && hoursRow.lit && hoursRow.text.includes(`${en["prayers.rule.third-hour.title"]} · ${en["prayers.hoursIndex.nowMark"]}`) && hoursRow.plate === "/icons/prayer/pentecost.jpg",
+      `${w}: the Hours lit in the daily rule, "${en["prayers.rule.third-hour.title"]} · ${en["prayers.hoursIndex.nowMark"]}", on its icon (${hoursRow ? `${hoursRow.text}, ${hoursRow.plate}` : "no row"})`,
+    );
+    must(
+      c[1]?.says.includes(en["prayers.rule.upon-waking.title"]) && c[2]?.says.includes(en["prayers.rule.pascha.title"]) && c[3]?.says.includes(en["prayers.akathists"]),
+      `${w}: a shut chapter names what is in it ("${c[3]?.says ?? ""}")`,
+    );
+
+    // Devotional opened by a tap: the daily rule above it shuts at once and
+    // the chapter stays where the finger left it, its page opening under it.
+    await page.evaluate(() => document.querySelector('[data-prayer-book] button[data-chapter-at="3"]')?.scrollIntoView({ block: "center" }));
+    await page.waitForTimeout(400);
+    const was = (await chapters(page))[3]?.top ?? -1;
+    await tap(page.locator('[data-prayer-book] button[data-chapter-at="3"]'));
+    await page.waitForTimeout(700);
+    const c2 = await chapters(page);
+    const iv = c2[3];
+    must(c2.map((x) => x.open).join(" ") === "false false false true" && c2[0].height === 0 && c2[0].inert, `${w}: one chapter at a time: Devotional open, the daily rule shut (${c2.map((x) => `${x.id} ${x.open ? "open" : "shut"}`).join(", ")})`);
+    must(Math.abs((iv?.top ?? -999) - was) <= 2, `${w}: the tapped chapter stays under the finger as the page above it shuts (${was}px, then ${iv?.top}px)`);
+    must(
+      !!iv && iv.height > 150 && iv.rows.some((r) => bare(r.href) === "/prayers/akathists" && r.text.includes(en["prayers.akathist.theotokos.title"]) && r.plate === "/icons/prayer/theotokos-of-vladimir.jpg") && (iv.planned ?? "").startsWith(en["study.planned"]) && (iv.planned ?? "").includes(en["prayers.rule.psalms-needs.title"]),
+      `${w}: Devotional's page ends on the akathist and what is planned (${iv?.rows.map((r) => bare(r.href)).join(", ")}; "${iv?.planned ?? ""}")`,
+    );
+    if (size.width === 390) await page.screenshot({ path: path.join(SHOTS, "prayers-book-devotional-390.png") });
+
+    // Folded, not flicked: a page opening grows over a few frames on the house curve.
+    const frames = await page.evaluate(
+      () =>
+        new Promise((done) => {
+          const b = document.querySelector('[data-prayer-book] button[data-chapter-at="1"]');
+          const leaf = document.getElementById(b?.getAttribute("aria-controls") ?? "");
+          if (!b || !leaf) return done({ heights: [], duration: null });
+          const heights = [];
+          const t0 = performance.now();
+          b.click();
+          const step = () => {
+            heights.push(Math.round(leaf.getBoundingClientRect().height));
+            if (performance.now() - t0 < 500) requestAnimationFrame(step);
+            else done({ heights, duration: getComputedStyle(leaf).transitionDuration });
+          };
+          requestAnimationFrame(step);
+        }),
+    );
+    const last = frames.heights.at(-1) ?? 0;
+    must(frames.duration === "0.24s" && last > 100 && frames.heights.some((h) => h > 0 && h < last - 4), `${w}: with motion on a chapter folds open over 240 ms (${frames.duration}; ${frames.heights.length} frames, ${frames.heights.slice(0, 6).join(", ")} ... ${last}px)`);
+
+    // One search: no field on the page, and the bar's magnifier opens turned to Prayers.
+    const fields = await page.evaluate(() => [...document.querySelectorAll("[data-search-door], input[type=search]")].filter((e) => e.getClientRects().length > 0 && e.getBoundingClientRect().width > 0).length);
+    await page.evaluate(() => window.scrollTo(0, 0));
+    await page.waitForTimeout(400);
+    await tap(page.locator(`[data-route-content] [data-tab-topbar] button[aria-label="${en["search.open"]}"]`).first());
+    await page.waitForFunction(() => !!document.querySelector("[data-search-screen] [data-door][aria-pressed='true']"), null, { timeout: 10000 }).catch(() => {});
+    const turned = await page.evaluate(() => document.querySelector("[data-search-screen] [data-door][aria-pressed='true']")?.getAttribute("data-door") ?? null);
+    must(fields === 0 && turned === "prayers", `${w}: one search: no field on the page (${fields}), and the bar's magnifier opens turned to Prayers (${turned})`);
+    await page.keyboard.press("Escape");
+    await page.waitForTimeout(500);
+
+    const out = await page.evaluate(sticksOut);
+    must(out.length === 0, `${w}: nothing past the screen's edge${out.length ? ": " + out.join(" | ") : ""}`);
+    must(errors.length === 0, `${w}: no page errors${errors.length ? ": " + errors.slice(0, 2).join(" | ") : ""}`);
+    await ctx.close();
+  }
+
+  // With Purify's motion off, a chapter simply opens.
+  {
+    const { ctx, page, errors } = await open({ width: 390, height: 844, phone: true, set: { "purify.motion": "off" } });
+    await page.clock.setFixedTime(NINE_FORTY_ONE);
+    await opened(page);
+    const still = await page.evaluate(
+      () =>
+        new Promise((done) => {
+          const b = document.querySelector('[data-prayer-book] button[data-chapter-at="2"]');
+          const leaf = document.getElementById(b?.getAttribute("aria-controls") ?? "");
+          if (!b || !leaf) return done(null);
+          b.click();
+          requestAnimationFrame(() =>
+            requestAnimationFrame(() => {
+              const first = Math.round(leaf.getBoundingClientRect().height);
+              setTimeout(() => done({ motion: document.documentElement.dataset.motion ?? "", first, last: Math.round(leaf.getBoundingClientRect().height), duration: getComputedStyle(leaf).transitionDuration }), 500);
+            }),
+          );
+        }),
+    );
+    must(!!still && still.motion === "reduce" && still.duration === "0s" && still.first > 40 && still.first === still.last, `with motion off a chapter opens whole at once (${still ? `${still.motion}, ${still.duration}, ${still.first}px then ${still.last}px` : "no chapter"})`);
+    must(errors.length === 0, `motion off: no page errors${errors.length ? ": " + errors.slice(0, 2).join(" | ") : ""}`);
+    await ctx.close();
+  }
+
+  // The five everyday palettes: the tiles' words over the picture on the
+  // page's own ground, the book's words on its page, the lit tile's glow
+  // stepping aside on Parchment, and nothing gold.
+  const { default: sharp } = await import("sharp");
+  const lumOf = async (page, clip) => {
+    const { data, info } = await sharp(await page.screenshot({ clip })).removeAlpha().raw().toBuffer({ resolveWithObject: true });
+    let sum = 0;
+    for (let i = 0; i < data.length; i += info.channels) sum += 0.2126 * data[i] + 0.7152 * data[i + 1] + 0.0722 * data[i + 2];
+    return sum / (data.length / info.channels);
+  };
+  for (const palette of ["default", "parchment", "black", "candlelight", "monastery"]) {
+    const free = ["default", "parchment", "black"].includes(palette);
+    const { ctx, page, errors } = await open({ width: 390, height: 844, phone: true, set: free ? { "purify.reader.theme": palette } : {} });
+    await page.clock.setFixedTime(NINE_FORTY_ONE);
+    await opened(page);
+    // Candlelight and Monastery are Plus palettes: worn here as the palette controller wears them.
+    if (!free) await page.evaluate((p) => document.documentElement.setAttribute("data-reading-mode", p), palette);
+    await tilesInView(page);
+    const seen = await page.evaluate(() => {
+      const cv = document.createElement("canvas");
+      cv.width = cv.height = 1;
+      const g = cv.getContext("2d", { willReadFrequently: true });
+      const rgb = (c) => {
+        g.clearRect(0, 0, 1, 1);
+        g.fillStyle = "rgba(0, 0, 0, 0)";
+        g.fillStyle = c;
+        g.fillRect(0, 0, 1, 1);
+        return [...g.getImageData(0, 0, 1, 1).data];
+      };
+      const lum = ([r, gg, b]) => 0.2126 * r + 0.7152 * gg + 0.0722 * b;
+      const box = (el) => {
+        const r = el?.getBoundingClientRect();
+        return r ? { x: r.left, y: r.top, width: r.width, height: r.height } : null;
+      };
+      const hours = document.querySelector("[data-practices] a[data-lit]");
+      const book = document.querySelector("[data-prayer-book]");
+      const name = book?.querySelector("button[aria-expanded='true'] span:not([aria-hidden]) > span");
+      const row = book?.querySelector("[data-open] a span.font-serif");
+      // Gold, amber or yellow anywhere on the two, pictures aside.
+      const gold = [...document.querySelectorAll("[data-practices] *, [data-prayer-book], [data-prayer-book] *")]
+        .filter((el) => el.tagName !== "IMG")
+        .flatMap((el) => {
+          const s = getComputedStyle(el);
+          return [s.color, s.backgroundColor, s.borderTopColor].map(rgb).filter(([r, gg, b, a]) => a > 25 && r > 140 && r - b > 70 && gg - b > 35);
+        }).length;
+      return {
+        mode: document.documentElement.dataset.readingMode ?? "default",
+        hours: box(hours),
+        hoursName: lum(rgb(getComputedStyle(hours?.querySelector("h3") ?? document.body).color)),
+        glow: /rgba\(255, 255, 255, 0\.2\)/.test(hours ? getComputedStyle(hours).boxShadow : ""),
+        book: box(book),
+        bookName: lum(rgb(getComputedStyle(name ?? document.body).color)),
+        leaf: box(book?.querySelector("[data-open] .book-leaf")),
+        rowName: lum(rgb(getComputedStyle(row ?? document.body).color)),
+        gold,
+      };
+    });
+    const where = `${palette}`;
+    must(seen.mode === palette, `${where}: the palette is worn (${seen.mode})`);
+    if (seen.hours && seen.book && seen.leaf) {
+      // Under the Hours' line: the shade over the picture's foot.
+      const foot = await lumOf(page, { x: Math.round(seen.hours.x + seen.hours.width * 0.2), y: Math.round(seen.hours.y + seen.hours.height - 8), width: Math.round(seen.hours.width * 0.6), height: 5 });
+      must(Math.abs(seen.hoursName - foot) >= 100, `${where}: a tile's name stands clear of the shade under it (words ${Math.round(seen.hoursName)}, ground ${Math.round(foot)})`);
+      must(palette === "parchment" ? !seen.glow : seen.glow, `${where}: the lit tile ${palette === "parchment" ? "is ringed in ink, with no white glow on paper" : "glows white"}`);
+      await page.evaluate(() => document.querySelector("[data-prayer-book]")?.scrollIntoView({ block: "start" }));
+      await page.evaluate(() => window.scrollBy(0, -70));
+      await page.waitForTimeout(500);
+      const at = await page.evaluate(() => {
+        const b = document.querySelector("[data-prayer-book]")?.getBoundingClientRect();
+        const l = document.querySelector("[data-prayer-book] [data-open] .book-leaf")?.getBoundingClientRect();
+        return b && l ? { book: { x: b.left, y: b.top, width: b.width }, leaf: { x: l.left, y: l.top, width: l.width, height: l.height } } : null;
+      });
+      if (at) {
+        // The card's top margin, and the page's foot under its last row.
+        const card = await lumOf(page, { x: Math.round(at.book.x + at.book.width * 0.3), y: Math.round(at.book.y + 1), width: Math.round(at.book.width * 0.4), height: 3 });
+        const well = await lumOf(page, { x: Math.round(at.leaf.x + at.leaf.width * 0.3), y: Math.round(at.leaf.y + at.leaf.height - 4), width: Math.round(at.leaf.width * 0.4), height: 3 });
+        must(Math.abs(seen.bookName - card) >= 100 && Math.abs(seen.rowName - well) >= 100, `${where}: the book's words stand clear of its card and of the open page (chapter ${Math.round(seen.bookName)} on ${Math.round(card)}, prayer ${Math.round(seen.rowName)} on ${Math.round(well)})`);
+      } else must(false, `${where}: the book's open page is on the screen`);
+    } else must(false, `${where}: the Hours' tile and the book are on the page`);
+    must(seen.gold === 0, `${where}: nothing gold, amber or yellow on Practices or the book (${seen.gold})`);
+    await page.screenshot({ path: path.join(SHOTS, `prayers-book-${palette}.png`) });
+    await tilesInView(page);
+    await page.screenshot({ path: path.join(SHOTS, `prayers-practices-${palette}.png`) });
+    must(errors.length === 0, `${where}: no page errors${errors.length ? ": " + errors.slice(0, 2).join(" | ") : ""}`);
+    await ctx.close();
+  }
+
+  // The afternoon and the night: the Hours tile and the daily rule's row
+  // wear the Hour the clock is in. At night that is Compline, whose icon is
+  // the Vladimir Theotokos, the akathists' too (lib/prayers/serviceArt.ts).
+  for (const [at, hour, icon] of [["2026-10-31T15:30:00", "ninth-hour", "entombment.v2.jpg"], ["2026-10-31T21:30:00", "compline", "theotokos-of-vladimir.jpg"]]) {
+    const { ctx, page, errors } = await open({ width: 390, height: 844, phone: true });
+    await page.clock.setFixedTime(new Date(at));
+    await opened(page);
+    await tilesInView(page);
+    const t = await tiles(page);
+    const row = (await chapters(page))[0]?.rows.find((r) => r.lit) ?? null;
+    const title = en[`prayers.rule.${hour}.title`];
+    must(
+      t[0]?.src === `/icons/prayer/${icon}` && t[0]?.line === `${en["prayers.timeline.now"]} · ${title}` && row?.plate === `/icons/prayer/${icon}` && row.text.includes(title),
+      `at ${at.slice(11, 16)} the Hours wear ${hour}'s icon and name it, on the tile and in the daily rule (${t[0]?.src}, "${t[0]?.line}"; ${row?.plate ?? "no lit row"})`,
+    );
+    must(t.every((x) => x.past3x !== null && x.past3x <= 1.4), `at ${at.slice(11, 16)}: no icon drawn more than 1.4 times past its own pixels at 3x (${t.map((x) => x.past3x?.toFixed(2)).join(", ")})`);
+    await page.screenshot({ path: path.join(SHOTS, `prayers-practices-${hour}.png`) });
+    must(errors.length === 0, `at ${at.slice(11, 16)}: no page errors${errors.length ? ": " + errors.slice(0, 2).join(" | ") : ""}`);
+    await ctx.close();
+  }
+
+  // A tablet in the apps: four across, each the size it is on a phone.
+  {
+    const { ctx, page, errors } = await open({ width: 820, height: 1180, phone: true });
+    await page.clock.setFixedTime(NINE_FORTY_ONE);
+    await opened(page);
+    await tilesInView(page);
+    const t = await tiles(page);
+    const out = await page.evaluate(sticksOut);
+    must(t.length === 4 && t.every((x) => x.top === t[0].top) && t.every((x) => x.width >= 150 && x.width <= 220), `820px: four across, ${t.map((x) => x.width).join(", ")}px wide`);
+    must(t.every((x) => x.past3x !== null && x.past3x <= 1.4) && out.length === 0, `820px: no icon drawn past 1.4 times its pixels at 3x (${t.map((x) => x.past3x?.toFixed(2)).join(", ")}), nothing past the edge${out.length ? ": " + out.join(" | ") : ""}`);
+    await page.screenshot({ path: path.join(SHOTS, "prayers-practices-820.png") });
+    must(errors.length === 0, `820px: no page errors${errors.length ? ": " + errors.slice(0, 2).join(" | ") : ""}`);
+    await ctx.close();
+  }
+});
 await browser.close();
 if (!everySection) console.log(`\nOnly the sections chosen were walked: ${walked.join(", ") || "none"}.`);
 console.log(failed ? `\n${failed} check(s) failed.` : "\nEvery check passed.");
