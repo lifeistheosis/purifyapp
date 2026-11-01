@@ -8,6 +8,10 @@
 -- starts off, and the reader turns them on beside the reminders (the welcome
 -- questions) or in Settings, Notifications.
 --
+-- APPLIED BY HAND on production by the owner, 2026-11-01 (his word in chat:
+-- "I sent this SQL"), before this file reached main. Running it again on
+-- the merge sets the same default and the same comment: harmless.
+--
 -- Only the default changes. No row is written: a reader who has them on
 -- keeps them on, and a reader who switched them off keeps them off.
 
