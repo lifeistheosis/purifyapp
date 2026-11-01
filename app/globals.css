@@ -1909,7 +1909,7 @@ html[data-reading-mode="parchment"] .tile-dot {
  box-shadow: inset 0 9px 14px -10px rgb(0 0 0 / 0.85), inset 0 0 0 1px color-mix(in srgb, var(--color-paper) 5%, transparent);
 }
 html[data-reading-mode="parchment"] .book-leaf {
- background: rgb(120 95 50 / 0.07);
+ background: rgb(43 35 23 / 0.05);
  box-shadow: inset 0 7px 12px -10px rgb(70 52 20 / 0.35), inset 0 0 0 1px color-mix(in srgb, var(--color-paper) 8%, transparent);
 }
 /* The dotted leader from a prayer's name to its length. */

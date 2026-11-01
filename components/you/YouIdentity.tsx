@@ -19,7 +19,7 @@
 import Link from "next/link";
 import type { CSSProperties } from "react";
 
-import { BadgeGlyph } from "@/components/community/profile/ProfileBadges";
+import { Medal } from "@/components/community/profile/ProfileBadges";
 import { useTranslate } from "@/components/i18n/MessagesProvider";
 import { ReaderAvatar } from "@/components/profile/ReaderAvatar";
 import { ChevronLeft } from "@/components/ui/icons/ChevronLeft";
@@ -112,9 +112,7 @@ function YouBadges({ ids }: { ids: readonly BadgeId[] | null }) {
     <ul aria-label={t("profile.badgesLabel")} data-you-badges="" className="mt-3 flex h-[29px] flex-wrap items-center gap-2.5 overflow-hidden">
       {ids.map((id) => (
         <li key={id} role="img" aria-label={t(`profile.badge.${id}`)} className="you-mark grid size-[29px] shrink-0 place-items-center rounded-full text-paper" style={INK}>
-          <span className="you-mark-lit inline-flex">
-            <BadgeGlyph id={id} size={16} />
-          </span>
+          <Medal id={id} size={29} />
         </li>
       ))}
     </ul>

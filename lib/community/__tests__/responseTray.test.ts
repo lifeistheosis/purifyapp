@@ -38,7 +38,6 @@ describe("the row's mark", () => {
   it("leaves the praying figure where it is used elsewhere", () => {
     for (const file of [
       "components/community/PrayerWall.tsx",
-      "components/mobile/PrayersMobile.tsx",
       "app/(app)/prayers/page.tsx",
       "components/search/SearchRows.tsx",
     ]) {
@@ -51,11 +50,12 @@ describe("the row's mark", () => {
     for (const part of ['viewBox="0 0 24 24"', "strokeWidth={1.6}", 'strokeLinecap="round"', 'strokeLinejoin="round"', 'aria-hidden="true"']) {
       expect(candle).toContain(part);
     }
-    const flame = (src: string) => /<path d="([^"]+)" fill="currentColor" \/>/.exec(src)?.[1];
-    expect(flame(candle)).toBeTruthy();
-    expect(flame(candle)).toBe(flame(read("components/ui/icons/Lampada.tsx")));
-    const paths = (src: string) => [...src.matchAll(/<path d="([^"]+)"/g)].map((m) => m[1]);
-    expect(paths(candle)).toEqual(paths(read("components/ui/icons/Lampada.tsx")));
+    // One drawing: the candle takes Lampada's own paths, as the profile's candle frame does.
+    expect(candle).toContain('import { LAMPADA_PATHS } from "./Lampada";');
+    expect(candle).toContain("<path d={LAMPADA_PATHS.flame} fill=\"currentColor\" />");
+    const used = [...candle.matchAll(/<path d=\{LAMPADA_PATHS\.(\w+)\}/g)].map((m) => m[1]);
+    expect(used).toEqual(["flame", "wick", "taper", "ground"]);
+    expect(read("components/ui/icons/Lampada.tsx")).toMatch(/export const LAMPADA_PATHS = \{\n  flame: "M12 2\.8 /);
   });
 
   it("lights once the reader has answered, and while its tray is open", () => {

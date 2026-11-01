@@ -1,5 +1,7 @@
 import type { SVGProps } from "react";
 
+import { LAMPADA_PATHS } from "./Lampada";
+
 /**
  * The lit candle: the door to Amen, Praying and Glory to God under a post and
  * a reply in Community (1.8, the owner's pick of mark 1 on r3-30b, note 80 of
@@ -35,13 +37,13 @@ export function Candle({
       {...props}
     >
       {/* the flame, filled: lit */}
-      <path d="M12 2.8 C13.5 4.6, 13.7 6.4, 12 8.2 C10.3 6.4, 10.5 4.6, 12 2.8 Z" fill="currentColor" />
+      <path d={LAMPADA_PATHS.flame} fill="currentColor" />
       {/* the wick */}
-      <path d="M12 8.2 V9.6" />
+      <path d={LAMPADA_PATHS.wick} />
       {/* the taper */}
-      <path d="M10.1 21 V10.4 C10.1 10 10.4 9.7 10.8 9.7 H13.2 C13.6 9.7 13.9 10 13.9 10.4 V21" />
+      <path d={LAMPADA_PATHS.taper} />
       {/* the ground it stands on */}
-      <path d="M8 21 H16" />
+      <path d={LAMPADA_PATHS.ground} />
     </svg>
   );
 }
