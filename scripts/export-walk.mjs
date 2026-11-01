@@ -4571,6 +4571,7 @@ await section(39, async () => {
           src: lit?.getAttribute("src") ?? "",
           loaded: Boolean(lit && lit.complete && lit.naturalWidth > 0),
           top: box ? Math.round(box.getBoundingClientRect().top) : null,
+          edges: box ? Math.round(box.getBoundingClientRect().left) === 0 && Math.round(box.getBoundingClientRect().right) === document.documentElement.clientWidth : false,
           nameOnIt: Boolean(box && h1 && h1.getBoundingClientRect().top < box.getBoundingClientRect().bottom && h1.getBoundingClientRect().top > 0),
           clearBar: Boolean(bar && bar.hasAttribute("data-overlay") && !bar.hasAttribute("data-revealed")),
           tabs: [...document.querySelectorAll('[role="tablist"] [role="tab"]')].map((tab) => `${tab.id}:${tab.getAttribute("aria-selected")}`),
@@ -4581,8 +4582,8 @@ await section(39, async () => {
       });
     const empty = await ruleHead();
     must(
-      empty.part === "morning" && empty.src === "/icons/prayer/anastasis.jpg" && empty.loaded && empty.top !== null && empty.top <= 1,
-      `${size.width}px: an empty Your rule opens on the morning's Anastasis, from the screen's top under the bar (${empty.src || "no picture"}, top ${empty.top})`,
+      empty.part === "morning" && empty.src === "/icons/prayer/anastasis.jpg" && empty.loaded && empty.top !== null && empty.top <= 1 && empty.edges,
+      `${size.width}px: an empty Your rule opens on the morning's Anastasis, edge to edge from the screen's top, under the bar (${empty.src || "no picture"}, top ${empty.top})`,
     );
     must(empty.clearBar && empty.nameOnIt, `${size.width}px: the bar is clear over the icon, and the page's name stands on it`);
     must(empty.tabs.join(" ") === "mine-tab-morning:true mine-tab-evening:false" && empty.pray === null, `${size.width}px: Morning and Evening on one switch, Morning chosen, and no Pray my rule for an empty part (${empty.tabs.join(" ")})`);
