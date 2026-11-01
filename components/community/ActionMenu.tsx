@@ -55,7 +55,8 @@ export function ActionMenu({
   label: string;
   items: ActionMenuItem[];
   className?: string;
-  size?: "sm" | "md";
+  /** md: 36px; lg: 44px, round, beside a profile's Follow (r3-28 A). */
+  size?: "sm" | "md" | "lg";
   /**
    * What the button shows in place of the three dots (1.8: the sliders over
    * Talk together's feed, and the word of the choice that is on). The button
@@ -134,9 +135,11 @@ export function ActionMenu({
           "hit-44 inline-flex items-center justify-center rounded-pill text-paper/55 transition-colors hover:bg-paper/[0.07] hover:text-paper",
           glyph
             ? "h-8 min-w-8 gap-1.5 px-1.5 font-sans text-detail font-semibold text-paper/65"
-            : size === "md"
-              ? "size-9 border border-paper/15 bg-black/20 text-paper/80"
-              : "size-8",
+            : size === "lg"
+              ? "size-11 border border-paper/15 bg-paper/[0.07] text-paper"
+              : size === "md"
+                ? "size-9 border border-paper/15 bg-black/20 text-paper/80"
+                : "size-8",
           lit && "community-lit text-paper",
           open && "bg-paper/[0.08] text-paper",
         )}

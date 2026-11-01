@@ -5,8 +5,8 @@ import { useEffect, useMemo, useRef, useState, type ReactNode } from "react";
 
 import { useUpgradeModal } from "@/components/billing/UpgradeModal";
 import { CommunityAvatar } from "@/components/community/CommunityAvatar";
-import { ProfileAbout, ProfileBanner, ProfileHeader, profileSurface } from "@/components/community/profile/ProfileCard";
-import { BadgeGlyph, badgeTone } from "@/components/community/profile/ProfileBadges";
+import { ProfileAboutDoor, ProfileBanner, ProfileFace, ProfileTop, profileSurface, surfaceClass } from "@/components/community/profile/ProfileCard";
+import { Medal } from "@/components/community/profile/ProfileBadges";
 import { ProfileEffect } from "@/components/community/profile/ProfileEffect";
 import { ClergyRequestCard } from "@/components/community/profile/ClergyRequestCard";
 import { SocialLinkIcon } from "@/components/community/profile/SocialLinkIcon";
@@ -35,15 +35,18 @@ import {
   BANNER_MOTIONS,
   DECORATIONS,
   EFFECTS,
+  GREYS,
   NAME_COLORS,
   SEASONAL_DECORATIONS,
   SEASONAL_EFFECTS,
   THEMES,
   bannerNeedsPlus,
   inSeason,
+  nearestGrey,
   nextSeasonStart,
   normalizeHex,
   readableThemeColor,
+  themeNeedsPlus,
   type Cosmetics,
 } from "@/lib/profile/cosmetics";
 import { STANDING_BADGES, shownBadges } from "@/lib/profile/badges";
@@ -54,19 +57,23 @@ import { verseRef, type MyProfile, type PublicProfile } from "@/lib/profile/publ
 import { dateLocale } from "@/lib/i18n/deviceDates";
 
 /**
- * Editing your Community profile, with the card drawn live beside the form.
+ * Editing your Community profile, with the card drawn live beside the form,
+ * as others will see it (r3-28 A, the owner's pick for notes 75 and 81).
  *
  * Free for everyone: picture, @handle, status line, about, patron saint,
- * favourite verse and a banner colour, gold excepted. With Purify Plus, like
- * Discord Nitro: a banner picture, a two-colour theme, an avatar frame, a
- * profile effect, and a gold banner (lib/profile/cosmetics.ts
- * bannerNeedsPlus: gold on a profile is Plus only, the owner's word).
+ * favourite verse, and a banner and a theme in the four greys (his "two for
+ * normal users", lib/profile/cosmetics.ts GREYS). With Purify Plus, like
+ * Discord Nitro ("one for plus users"): the Church's colours and any colour
+ * of one's own for the banner and the theme, gold among them, a banner
+ * picture, an avatar frame, a profile effect, a name colour, a moving banner
+ * and a choice of badges.
  *
  * A reader without Plus can try every Plus option on the preview before
  * paying; only saving it asks for Plus. The server holds the same line
  * (app/api/profile/me/route.ts), so this screen is a convenience, never the
  * rule. Saved Plus settings outlive a lapsed subscription and come back with
- * it.
+ * it; until then the card shows a saved colour in its nearest grey, as
+ * others see it. No streak toggle: a profile shows no streak (refinement 4).
  */
 
 type Draft = {
@@ -94,20 +101,20 @@ type Draft = {
   bannerMotion: string | null;
   hiddenBadges: string[];
   pushCommunity: boolean;
-  // 20261006
-  showStreak: boolean;
 };
 
 type Patron = { slug: string; name: string };
 
 const PARISH_MAX = 80;
 
-const PLUS_KEYS: readonly (keyof Draft)[] = ["themePrimary", "themeAccent", "decoration", "effect", "nameColor", "bannerMotion", "hiddenBadges"];
+/** Plus, whatever their value (the banner and the theme are Plus only outside the greys). */
+const PLUS_KEYS: readonly (keyof Draft)[] = ["decoration", "effect", "nameColor", "bannerMotion", "hiddenBadges"];
 
 /**
  * Where the colour picker starts, and what the moving banners are shown over,
- * while no banner colour is chosen: a neutral grey. It was the gold banner
- * until 1.8, which put gold in front of every reader (gold is Plus only).
+ * while no banner colour is chosen: Smoke, the second of the four greys. It
+ * was the gold banner until 1.8, which put gold in front of every reader
+ * (gold is Plus only).
  */
 const NO_BANNER = "#3a3a40";
 
@@ -140,7 +147,6 @@ function draftFrom(p: MyProfile): Draft {
     bannerMotion: p.saved.bannerMotion ?? null,
     hiddenBadges: p.hiddenBadges ?? [],
     pushCommunity: p.settings?.pushCommunity ?? false,
-    showStreak: p.settings?.showStreak ?? true,
   };
 }
 
@@ -159,16 +165,20 @@ function minutesLeft(changedAt: string | null): number {
   return left > 0 ? Math.ceil(left / 60000) : 0;
 }
 
-/** A banner colour changed to gold: a Plus option, tried on like the others. */
-function goldBannerChanged(a: Draft, b: Draft): boolean {
+/** A banner colour changed to one outside the greys: a Plus option, tried on like the others. */
+function plusBannerChanged(a: Draft, b: Draft): boolean {
   return a.bannerColor !== b.bannerColor && bannerNeedsPlus(a.bannerColor);
+}
+
+/** A theme changed to one outside the greys: a Plus option too. */
+function plusThemeChanged(a: Draft, b: Draft): boolean {
+  return (a.themePrimary !== b.themePrimary || a.themeAccent !== b.themeAccent) && themeNeedsPlus(a.themePrimary, a.themeAccent);
 }
 
 function plusChanged(a: Draft, b: Draft): boolean {
   return (
-    goldBannerChanged(a, b) ||
-    a.themePrimary !== b.themePrimary ||
-    a.themeAccent !== b.themeAccent ||
+    plusBannerChanged(a, b) ||
+    plusThemeChanged(a, b) ||
     a.decoration !== b.decoration ||
     a.effect !== b.effect ||
     a.nameColor !== b.nameColor ||
@@ -274,12 +284,23 @@ export function ProfileEditor() {
   const trying = !subscribed && plusChanged(draft, saved);
 
   // The card as it will look, with any Plus option the reader is trying on.
+  // A colour outside the greys kept from before, and not being tried on now,
+  // shows as others see it without Plus: in its nearest grey.
+  const bannerKept = !subscribed && bannerNeedsPlus(draft.bannerColor) && draft.bannerColor === saved.bannerColor;
+  const themeKept =
+    !subscribed &&
+    themeNeedsPlus(draft.themePrimary, draft.themeAccent) &&
+    draft.themePrimary === saved.themePrimary &&
+    draft.themeAccent === saved.themeAccent;
+  const keptTheme = themeKept ? nearestGrey(draft.themePrimary) : null;
   const theme =
     draft.themePrimary && draft.themeAccent
-      ? { primary: readableThemeColor(draft.themePrimary), accent: readableThemeColor(draft.themeAccent) }
+      ? keptTheme
+        ? { primary: readableThemeColor(keptTheme.primary), accent: keptTheme.accent }
+        : { primary: readableThemeColor(draft.themePrimary), accent: readableThemeColor(draft.themeAccent) }
       : { primary: null, accent: null };
   const cosmetics: Cosmetics = {
-    bannerColor: normalizeHex(draft.bannerColor),
+    bannerColor: bannerKept ? (nearestGrey(draft.bannerColor)?.primary ?? null) : normalizeHex(draft.bannerColor),
     bannerUrl: subscribed ? profile.saved.bannerUrl : null,
     themePrimary: theme.primary,
     themeAccent: theme.accent,
@@ -304,18 +325,19 @@ export function ProfileEditor() {
     // kept off (tried on like any Plus option).
     links: shownLinks(draft.links.filter((l) => l.v.trim())),
     badges: shownBadges(profile.allBadges ?? profile.badges, draft.hiddenBadges, true),
-    // The flame as others will see it: the switch decides.
-    streak: draft.showStreak ? (profile.streak ?? null) : null,
   };
 
   const dirty = JSON.stringify(draft) !== JSON.stringify(saved);
-  // A gold banner tried on by a reader without Plus is a Plus option, not a free change.
-  const goldTried = !subscribed && goldBannerChanged(draft, saved);
+  // A banner or a theme outside the greys, tried on by a reader without Plus,
+  // is a Plus option, not a free change.
+  const bannerTried = !subscribed && plusBannerChanged(draft, saved);
+  const themeTried = !subscribed && plusThemeChanged(draft, saved);
   // Changes outside the Plus options, which anyone can save.
   const freeDirty = (Object.keys(draft) as (keyof Draft)[]).some(
     (k) =>
       !PLUS_KEYS.includes(k) &&
-      !(k === "bannerColor" && goldTried) &&
+      !(k === "bannerColor" && bannerTried) &&
+      !((k === "themePrimary" || k === "themeAccent") && themeTried) &&
       JSON.stringify(draft[k]) !== JSON.stringify(saved[k]),
   );
 
@@ -360,8 +382,12 @@ export function ProfileEditor() {
     if (draft.bio !== saved.bio) patch.bio = draft.bio.trim() || null;
     if (draft.patronSaint !== saved.patronSaint) patch.patronSaint = draft.patronSaint || null;
     if (verse !== verseOf(saved)) patch.favoriteVerse = verse || null;
-    // A gold banner goes only with Plus, as the Plus options below do.
-    if (draft.bannerColor !== saved.bannerColor && !goldTried) patch.bannerColor = draft.bannerColor;
+    // A banner or a theme outside the greys goes only with Plus, as the Plus options below do.
+    if (draft.bannerColor !== saved.bannerColor && !bannerTried) patch.bannerColor = draft.bannerColor;
+    if ((draft.themePrimary !== saved.themePrimary || draft.themeAccent !== saved.themeAccent) && !themeTried) {
+      patch.themePrimary = draft.themePrimary && draft.themeAccent ? draft.themePrimary : null;
+      patch.themeAccent = draft.themePrimary && draft.themeAccent ? draft.themeAccent : null;
+    }
     if (draft.parish !== saved.parish) patch.parish = draft.parish.trim() || null;
     if (draft.private !== saved.private) patch.private = draft.private;
     if (draft.hidePosts !== saved.hidePosts) patch.hidePosts = draft.hidePosts;
@@ -369,16 +395,11 @@ export function ProfileEditor() {
     if (draft.showNowReading !== saved.showNowReading) patch.showNowReading = draft.showNowReading;
     if (draft.prayerRequest !== saved.prayerRequest) patch.prayerRequest = draft.prayerRequest;
     if (draft.pushCommunity !== saved.pushCommunity) patch.pushCommunity = draft.pushCommunity;
-    if (draft.showStreak !== saved.showStreak) patch.showStreak = draft.showStreak;
     if (JSON.stringify(draft.links) !== JSON.stringify(saved.links)) {
       patch.socialLinks = draft.links.filter((l) => l.v.trim()).map((l) => ({ k: l.k, v: l.v.trim() }));
     }
     // Plus options go only with Plus. Tried-on ones stay on the preview.
     if (subscribed) {
-      if (draft.themePrimary !== saved.themePrimary || draft.themeAccent !== saved.themeAccent) {
-        patch.themePrimary = draft.themePrimary && draft.themeAccent ? draft.themePrimary : null;
-        patch.themeAccent = draft.themePrimary && draft.themeAccent ? draft.themeAccent : null;
-      }
       if (draft.decoration !== saved.decoration) patch.decoration = draft.decoration;
       if (draft.effect !== saved.effect) patch.effect = draft.effect;
       if (draft.nameColor !== saved.nameColor) patch.nameColor = draft.nameColor;
@@ -409,9 +430,9 @@ export function ProfileEditor() {
       ? fresh
       : {
           ...fresh,
-          bannerColor: goldTried ? draft.bannerColor : fresh.bannerColor,
-          themePrimary: draft.themePrimary,
-          themeAccent: draft.themeAccent,
+          bannerColor: bannerTried ? draft.bannerColor : fresh.bannerColor,
+          themePrimary: themeTried ? draft.themePrimary : fresh.themePrimary,
+          themeAccent: themeTried ? draft.themeAccent : fresh.themeAccent,
           decoration: draft.decoration,
           effect: draft.effect,
           nameColor: draft.nameColor,
@@ -453,22 +474,20 @@ export function ProfileEditor() {
     </span>
   );
 
+  // The card as Community shows it (r3-28 A): the light or the banner at the
+  // top, the picture in its frame, the name, the status, and what About holds.
   const previewCard = (
     <div
-      className={cn(
-        "relative overflow-hidden rounded-2xl border shadow-xl",
-        surface.themed ? "dark-island border-white/10" : "border-paper/10 bg-night-soft",
-      )}
+      className={cn("relative overflow-hidden rounded-2xl border shadow-xl", surfaceClass(surface), surface.themed ? "border-white/10" : "border-paper/10")}
       style={surface.style}
     >
-      <ProfileEffect effect={cosmetics.effect} />
-      <div className="relative z-10">
-        <ProfileBanner cosmetics={cosmetics} className="h-24" />
-        <div className="px-4 pb-5">
-          <ProfileHeader profile={preview} avatarSize={76} ring={5} nameAs="p" />
-          <div className="mt-4">
-            <ProfileAbout profile={preview} compact />
-          </div>
+      <ProfileEffect effect={cosmetics.effect} quiet />
+      <div className="relative z-10 px-4 pb-5 pt-10">
+        <ProfileTop cosmetics={cosmetics} height={240} />
+        <ProfileFace profile={preview} nameAs="p" compact />
+        <div className="mt-5">
+          {/* Your own card shows all of it even while it is private: the preview shows what you are hiding. */}
+          <ProfileAboutDoor profile={{ ...preview, private: false }} />
         </div>
       </div>
       {trying ? (
@@ -694,12 +713,6 @@ export function ProfileEditor() {
 
           <Section title={t("profile.sectionSharing")}>
             <Toggle
-              label={t("profile.streakToggle")}
-              hint={t("profile.streakToggleHint")}
-              on={draft.showStreak}
-              onChange={(v) => set({ showStreak: v })}
-            />
-            <Toggle
               label={t("profile.prayerToggle")}
               hint={t("profile.prayerToggleHint")}
               on={draft.prayerRequest}
@@ -737,43 +750,91 @@ export function ProfileEditor() {
             />
           </Section>
 
-          <Section title={t("profile.sectionBanner")}>
-            <div className="flex flex-wrap items-center gap-2" role="radiogroup" aria-label={t("profile.bannerColor")}>
-              <Swatch
-                selected={!draft.bannerColor}
-                label={t("profile.none")}
-                onClick={() => set({ bannerColor: null })}
-              >
-                <span className="block size-full rounded-full border border-dashed border-paper/35" />
-              </Swatch>
-              {BANNER_COLORS.map((c) => (
-                <Swatch
-                  key={c.id}
-                  selected={draft.bannerColor === c.hex}
-                  // Gold is a Plus colour: named so, and tried on like the Plus options.
-                  label={
-                    !subscribed && bannerNeedsPlus(c.hex)
-                      ? `${t(`profile.color.${c.id}`)} · ${t("profile.plusTag")}`
-                      : t(`profile.color.${c.id}`)
-                  }
-                  onClick={() => set({ bannerColor: c.hex })}
-                >
-                  <span className="block size-full rounded-full" style={{ background: c.hex }} />
+          {/* The banner and the theme (r3-28): the four greys for everyone, then
+              the Church's colours and one's own, which are Plus, tried on here
+              like the Plus options below. */}
+          <Section title={t("profile.sectionColors")}>
+            {!subscribed ? <p className="-mt-1 font-sans text-caption leading-relaxed text-paper/55">{t("profile.colorsHint")}</p> : null}
+            <Field label={t("profile.bannerColor")}>
+              <div className="flex flex-wrap items-center gap-2" role="radiogroup" aria-label={t("profile.bannerColor")}>
+                <Swatch selected={!draft.bannerColor} label={t("profile.none")} onClick={() => set({ bannerColor: null })}>
+                  <span className="block size-full rounded-full border border-dashed border-paper/35" />
                 </Swatch>
-              ))}
-              <label className="relative inline-flex size-11 cursor-pointer items-center justify-center rounded-full border border-paper/20 text-paper/70 hover:border-paper/40">
-                <span className="sr-only">{t("profile.customColor")}</span>
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" aria-hidden="true">
-                  <path d="M12 5v14M5 12h14" />
-                </svg>
-                <input
-                  type="color"
-                  value={draft.bannerColor ?? NO_BANNER}
-                  onChange={(e) => set({ bannerColor: e.target.value })}
-                  className="absolute inset-0 cursor-pointer opacity-0"
+                {GREYS.map((g) => (
+                  <Swatch key={g.id} selected={draft.bannerColor === g.primary} label={t(`profile.color.${g.id}`)} onClick={() => set({ bannerColor: g.primary })}>
+                    <span className="block size-full rounded-full" style={{ background: g.primary }} />
+                  </Swatch>
+                ))}
+                <span aria-hidden className="mx-1 h-7 w-px bg-paper/15" />
+                {BANNER_COLORS.map((c) => (
+                  <Swatch
+                    key={c.id}
+                    selected={draft.bannerColor === c.hex}
+                    // The Church's colours are Plus: named so, and tried on like the Plus options.
+                    label={!subscribed ? `${t(`profile.color.${c.id}`)} · ${t("profile.plusTag")}` : t(`profile.color.${c.id}`)}
+                    onClick={() => set({ bannerColor: c.hex })}
+                  >
+                    <span className="block size-full rounded-full" style={{ background: c.hex }} />
+                  </Swatch>
+                ))}
+                <label className="relative inline-flex size-11 cursor-pointer items-center justify-center rounded-full border border-paper/20 text-paper/70 hover:border-paper/40">
+                  <span className="sr-only">{!subscribed ? `${t("profile.customColor")} · ${t("profile.plusTag")}` : t("profile.customColor")}</span>
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" aria-hidden="true">
+                    <path d="M12 5v14M5 12h14" />
+                  </svg>
+                  <input
+                    type="color"
+                    value={draft.bannerColor ?? NO_BANNER}
+                    onChange={(e) => set({ bannerColor: e.target.value })}
+                    className="absolute inset-0 cursor-pointer opacity-0"
+                  />
+                </label>
+                {!subscribed ? <PlusTag /> : null}
+              </div>
+            </Field>
+
+            <Field label={t("profile.theme")}>
+              <div className="flex flex-wrap items-center gap-2" role="radiogroup" aria-label={t("profile.theme")}>
+                <Swatch
+                  selected={!draft.themePrimary || !draft.themeAccent}
+                  label={t("profile.none")}
+                  onClick={() => set({ themePrimary: null, themeAccent: null })}
+                >
+                  <span className="block size-full rounded-full border border-dashed border-paper/35" />
+                </Swatch>
+                {GREYS.map((g) => (
+                  <Swatch
+                    key={g.id}
+                    selected={draft.themePrimary === g.primary && draft.themeAccent === g.accent}
+                    label={t(`profile.color.${g.id}`)}
+                    onClick={() => set({ themePrimary: g.primary, themeAccent: g.accent })}
+                  >
+                    <span className="block size-full rounded-full" style={{ background: `linear-gradient(180deg, ${g.primary} 0 50%, ${g.accent} 50% 100%)` }} />
+                  </Swatch>
+                ))}
+                <span aria-hidden className="mx-1 h-7 w-px bg-paper/15" />
+                {THEMES.map((th) => (
+                  <Swatch
+                    key={th.id}
+                    selected={draft.themePrimary === th.primary && draft.themeAccent === th.accent}
+                    label={!subscribed ? `${t(`profile.theme.${th.id}`)} · ${t("profile.plusTag")}` : t(`profile.theme.${th.id}`)}
+                    onClick={() => set({ themePrimary: th.primary, themeAccent: th.accent })}
+                  >
+                    <span
+                      className="block size-full rounded-full"
+                      style={{ background: `linear-gradient(180deg, ${th.primary} 0 50%, ${th.accent} 50% 100%)` }}
+                    />
+                  </Swatch>
+                ))}
+                <ColorPair
+                  primary={draft.themePrimary}
+                  accent={draft.themeAccent}
+                  label={!subscribed ? `${t("profile.customTheme")} · ${t("profile.plusTag")}` : t("profile.customTheme")}
+                  onChange={(primary, accent) => set({ themePrimary: primary, themeAccent: accent })}
                 />
-              </label>
-            </div>
+                {!subscribed ? <PlusTag /> : null}
+              </div>
+            </Field>
           </Section>
 
           <section className="rounded-2xl border border-paper/15 bg-paper/[0.04] p-5" aria-labelledby="pe-plus">
@@ -832,37 +893,6 @@ export function ProfileEditor() {
                   />
                 </div>
                 <p className="mt-1.5 font-sans text-caption text-paper/45">{t("profile.bannerHint")}</p>
-              </Field>
-
-              <Field label={t("profile.theme")}>
-                <div className="flex flex-wrap items-center gap-2" role="radiogroup" aria-label={t("profile.theme")}>
-                  <Swatch
-                    selected={!draft.themePrimary || !draft.themeAccent}
-                    label={t("profile.none")}
-                    onClick={() => set({ themePrimary: null, themeAccent: null })}
-                  >
-                    <span className="block size-full rounded-full border border-dashed border-paper/35" />
-                  </Swatch>
-                  {THEMES.map((th) => (
-                    <Swatch
-                      key={th.id}
-                      selected={draft.themePrimary === th.primary && draft.themeAccent === th.accent}
-                      label={t(`profile.theme.${th.id}`)}
-                      onClick={() => set({ themePrimary: th.primary, themeAccent: th.accent })}
-                    >
-                      <span
-                        className="block size-full rounded-full"
-                        style={{ background: `linear-gradient(180deg, ${th.primary} 0 50%, ${th.accent} 50% 100%)` }}
-                      />
-                    </Swatch>
-                  ))}
-                  <ColorPair
-                    primary={draft.themePrimary}
-                    accent={draft.themeAccent}
-                    label={t("profile.customTheme")}
-                    onChange={(primary, accent) => set({ themePrimary: primary, themeAccent: accent })}
-                  />
-                </div>
               </Field>
 
               <Field label={t("profile.frame")}>
@@ -1010,9 +1040,7 @@ export function ProfileEditor() {
                               on ? "border-paper/35 bg-paper/[0.07] text-paper" : "border-paper/12 text-paper/45 line-through",
                             )}
                           >
-                            <span style={{ color: badgeTone(b.id) }} className="inline-flex">
-                              <BadgeGlyph id={b.id} size={14} />
-                            </span>
+                            <Medal id={b.id} size={22} />
                             {t(`profile.badge.${b.id}`)}
                           </button>
                         );

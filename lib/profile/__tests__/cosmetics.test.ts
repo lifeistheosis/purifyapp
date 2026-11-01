@@ -6,6 +6,7 @@ import {
   BANNER_COLORS,
   BANNER_MOTIONS,
   DECORATIONS,
+  GREYS,
   NAME_COLORS,
   EFFECTS,
   THEMES,
@@ -42,12 +43,13 @@ describe("visibleCosmetics", () => {
     expect(visibleCosmetics(saved, true)).toEqual({ ...saved, bannerColor: "#7d1d27" });
   });
 
-  it("keeps only the free banner colour when it does not, and deletes nothing", () => {
+  it("keeps the banner and the theme in their nearest grey when it does not, and deletes nothing", () => {
+    // Paschal red and the Theotokos' blue are both as light as Smoke (r3-28, way 2 for a free profile).
     expect(visibleCosmetics(saved, false)).toEqual({
-      bannerColor: "#7d1d27",
+      bannerColor: "#3a3a40",
       bannerUrl: null,
-      themePrimary: null,
-      themeAccent: null,
+      themePrimary: "#3a3a40",
+      themeAccent: "#121215",
       decoration: null,
       effect: null,
       nameColor: null,
@@ -55,6 +57,7 @@ describe("visibleCosmetics", () => {
     });
     // The saved settings are untouched, ready for the subscription's return.
     expect(saved.decoration).toBe("halo");
+    expect(saved.bannerColor).toBe("#7D1D27");
   });
 
   it("draws a theme only as a pair, and never an id the catalog dropped", () => {
@@ -114,6 +117,17 @@ describe("the catalog", () => {
 
   it("banner colours are stored colours", () => {
     for (const c of BANNER_COLORS) expect(normalizeHex(c.hex)).toBe(c.hex);
+    for (const g of GREYS) {
+      expect(normalizeHex(g.primary)).toBe(g.primary);
+      expect(normalizeHex(g.accent)).toBe(g.accent);
+    }
+  });
+
+  it("the greys keep white words readable on a theme, as drawn (the lightest deepened, as any pale pick is)", () => {
+    for (const g of GREYS) {
+      expect(luminance(g.accent), g.id).toBeLessThanOrEqual(THEME_MAX_LUMINANCE);
+      expect(luminance(readableThemeColor(g.primary)!), g.id).toBeLessThanOrEqual(THEME_MAX_LUMINANCE);
+    }
   });
 
   it("every name colour has a rule for the dark ground and one for Parchment", () => {

@@ -7266,6 +7266,352 @@ await section(48, async () => {
     await ctx.close();
   }
 });
+// ---- 50. A Community profile, free and with Plus (1.8, r3-28 A; notes 75, 81).
+// The owner's pick of 2026-10-31: "A, fade and doors. Two for normal users,
+// one for plus users." A reader's profile set like a saint's page: a soft
+// light at the top where a Plus banner fades in, the picture in the middle in
+// its frame, the name in Lora, the status as one quiet line, then the doors,
+// About, Badges and Posts. A free reader's profile is black, white and grey;
+// a Plus member's may wear the Church's colours and gold. No streak, and the
+// streak's badges are prayer rope medals with no number (refinement 4).
+// The export has no server, so the walk plays the website: two SAMPLE
+// readers answer /api/community/profile and a verse's words /api/bible/verse
+// (no one real, nothing from production). Each profile is opened the app's
+// way, /community/#@handle, on all five palettes.
+await section(50, async () => {
+  console.log("\n50. A Community profile, free and with Plus");
+  const en = JSON.parse(fs.readFileSync(path.resolve("lib/i18n/messages/en.json"), "utf8"));
+  const none = { bannerColor: null, bannerUrl: null, themePrimary: null, themeAccent: null, decoration: null, effect: null, nameColor: null, bannerMotion: null };
+  const since = (d) => `2026-${d}T00:00:00Z`;
+  const base = {
+    avatar: null,
+    verified: false,
+    tier: null,
+    private: false,
+    postsHidden: false,
+    nameDay: null,
+    prayerRequest: null,
+    nowReading: null,
+    clergy: null,
+  };
+  // A free reader, as the server serves one: Plus kept off, colours in grey.
+  const FREE = {
+    ...base,
+    handle: "john.sample",
+    name: "John",
+    joinedAt: since("09-12"),
+    bio: "Catechumen. Learning the Hours one at a time.",
+    status: "Reading the Psalter this month",
+    patronSaint: { slug: "john-chrysostom", name: "St. John Chrysostom" },
+    favoriteVerse: { ref: "john/1/5", label: "John 1:5", href: "/bible/john/1#v5" },
+    cosmetics: none,
+    badges: [
+      { id: "psalter", since: since("10-01") },
+      { id: "gospels", since: since("10-04") },
+      { id: "first_share", since: since("09-20") },
+      { id: "streak_7", since: since("10-08") },
+      { id: "early_reader", since: since("09-12") },
+      { id: "bug_hunter", since: since("10-12") },
+    ],
+    posts: [{ id: "walk-post", kind: "discussion", title: "Which psalms are read at the Ninth Hour?", excerpt: "", quoteSource: null, createdAt: since("10-30"), likes: 0, replies: 0 }],
+    parish: "St. Nicholas, Dallas",
+    links: [{ kind: "instagram", label: "@john.sample", href: "https://www.instagram.com/john.sample" }],
+  };
+  // A Plus member: the Theotokos' blue for the banner and the theme, the
+  // candle frame, gold dust, the gilded name, Dome light over the banner.
+  const PLUS = {
+    ...base,
+    handle: "herman.sample",
+    name: "Herman",
+    tier: "plus",
+    joinedAt: since("07-03"),
+    bio: "Reader at our parish. Slowly learning Byzantine chant.",
+    status: "Learning the Paschal Canon by heart",
+    patronSaint: { slug: "herman-of-alaska", name: "St. Herman of Alaska" },
+    favoriteVerse: { ref: "matthew/5/8", label: "Matthew 5:8", href: "/bible/matthew/5#v8" },
+    cosmetics: { ...none, bannerColor: "#1f3a6b", themePrimary: "#1f3a6b", themeAccent: "#0b1424", decoration: "candle", effect: "gold-dust", nameColor: "gilded", bannerMotion: "rays" },
+    badges: [
+      { id: "plus", since: null },
+      { id: "gospels", since: since("08-02") },
+      { id: "lent", since: since("04-12") },
+      { id: "streak_40", since: since("09-14") },
+      { id: "early_reader", since: since("07-03") },
+      { id: "translator", since: since("10-20") },
+    ],
+    posts: [],
+    parish: null,
+    links: [],
+  };
+  const PEOPLE = { [FREE.handle]: FREE, [PLUS.handle]: PLUS };
+  const VERSES = {
+    "john/1/5": "And the light shineth in darkness; and the darkness comprehended it not.",
+    "matthew/5/8": "Blessed are the pure in heart: for they shall see God.",
+  };
+  const cors = { "Access-Control-Allow-Origin": ORIGIN, Vary: "Origin" };
+
+  async function opened(set = {}) {
+    const o = await open({ width: 390, height: 844, phone: true, set });
+    // The website, played by the walk. Registered after the shell's own
+    // route, so they are asked first.
+    await o.ctx.route(/\/api\/community\/profile\?/, (route) => {
+      const h = new URL(route.request().url()).searchParams.get("h") ?? "";
+      const profile = PEOPLE[h];
+      return route.fulfill(profile
+        ? { status: 200, contentType: "application/json", headers: cors, body: JSON.stringify({ profile }) }
+        : { status: 404, contentType: "application/json", headers: cors, body: JSON.stringify({ error: "Profile not found." }) });
+    });
+    await o.ctx.route(/\/api\/bible\/verse\?/, (route) => {
+      const q = new URL(route.request().url()).searchParams;
+      const text = VERSES[`${q.get("book")}/${q.get("chapter")}/${q.get("verse")}`];
+      return route.fulfill(text
+        ? { status: 200, contentType: "application/json", headers: cors, body: JSON.stringify({ name: "", verses: [{ n: Number(q.get("verse")), text }] }) }
+        : { status: 404, contentType: "application/json", headers: cors, body: "{}" });
+    });
+    return o;
+  }
+
+  // The first time the app's way in; then, on Community already, by the
+  // address's #@handle alone, as a shared link does (a pushed address with
+  // only a new hash tells the page nothing).
+  async function show(page, handle) {
+    const where = await page.evaluate(() => location.pathname).catch(() => "");
+    if (where.startsWith("/community")) await page.evaluate((h) => { location.hash = `@${h}`; }, handle);
+    else await go(page, `/community/#@${handle}`);
+    await page
+      .waitForFunction(
+        (h) => {
+          const card = document.querySelector("[data-profile-card]");
+          return !!card && card.innerText.includes(`@${h}`) && !!card.querySelector("[data-profile-doors]");
+        },
+        handle,
+        { timeout: 25000 },
+      )
+      .catch(() => {});
+    // The banner fades in over 900ms, the effect joins after the slide.
+    await page.waitForTimeout(1600);
+  }
+
+  // Every colour the card wears, from every element and its ::before and
+  // ::after, read in OKLCH as lib/ui/goldTone.ts reads it.
+  const colours = (page) =>
+    page.evaluate(() => {
+      const card = document.querySelector("[data-profile-card]");
+      if (!card) return null;
+      const lin = (c) => { const s = c / 255; return s <= 0.04045 ? s / 12.92 : ((s + 0.055) / 1.055) ** 2.4; };
+      const lch = (r, g, b) => {
+        const [R, G, B] = [r, g, b].map(lin);
+        const l = Math.cbrt(0.4122214708 * R + 0.5363325363 * G + 0.0514459929 * B);
+        const m = Math.cbrt(0.2119034982 * R + 0.6806995451 * G + 0.1073969566 * B);
+        const s = Math.cbrt(0.0883024619 * R + 0.2817188376 * G + 0.6299787005 * B);
+        const L = 0.2104542553 * l + 0.793617785 * m - 0.0040720468 * s;
+        const a = 1.9779984951 * l - 2.428592205 * m + 0.4505937099 * s;
+        const bb = 0.0259040371 * l + 0.7827717662 * m - 0.808675766 * s;
+        const h = (Math.atan2(bb, a) * 180) / Math.PI;
+        return { L, C: Math.hypot(a, bb), h: h < 0 ? h + 360 : h };
+      };
+      const found = [];
+      const read = (text, where) => {
+        if (!text || text === "none") return;
+        for (const m of text.matchAll(/rgba?\(([\d.]+),?\s*([\d.]+),?\s*([\d.]+)(?:\s*[,/]\s*([\d.]+%?))?\)/g)) {
+          if (m[4] !== undefined && parseFloat(m[4]) === 0) continue;
+          found.push({ where, value: m[0], ...lch(+m[1], +m[2], +m[3]) });
+        }
+        for (const m of text.matchAll(/color\(srgb\s+([\d.]+)\s+([\d.]+)\s+([\d.]+)(?:\s*\/\s*([\d.]+))?\)/g)) {
+          if (m[4] !== undefined && parseFloat(m[4]) === 0) continue;
+          found.push({ where, value: m[0], ...lch(m[1] * 255, m[2] * 255, m[3] * 255) });
+        }
+        for (const m of text.matchAll(/oklab\(([\d.]+)(%?)\s+(-?[\d.]+)\s+(-?[\d.]+)(?:\s*\/\s*([\d.]+))?\)/g)) {
+          if (m[5] !== undefined && parseFloat(m[5]) === 0) continue;
+          const a = +m[3];
+          const b = +m[4];
+          const h = (Math.atan2(b, a) * 180) / Math.PI;
+          found.push({ where, value: m[0], L: m[2] ? m[1] / 100 : +m[1], C: Math.hypot(a, b), h: h < 0 ? h + 360 : h });
+        }
+      };
+      const PROPS = ["color", "backgroundColor", "backgroundImage", "borderTopColor", "boxShadow", "fill", "stroke", "stopColor", "textShadow", "filter"];
+      for (const el of [card, ...card.querySelectorAll("*")]) {
+        for (const pseudo of [null, "::before", "::after"]) {
+          const cs = getComputedStyle(el, pseudo);
+          if (pseudo && (cs.content === "none" || cs.content === "normal")) continue;
+          const name = `${el.tagName.toLowerCase()}.${String(el.getAttribute("class") ?? "").split(" ")[0]}${pseudo ?? ""}`;
+          for (const p of PROPS) read(cs[p], `${name} ${p}`);
+        }
+      }
+      return found;
+    });
+  const gold = (c) => c.h >= 60 && c.h <= 115 && c.C >= 0.06 && c.L >= 0.36;
+  const hued = (c) => c.C >= 0.02;
+  const list = (cs) => [...new Set(cs.map((c) => `${c.where}: ${c.value}`))].slice(0, 4).join("; ");
+
+  const face = (page) =>
+    page.evaluate(() => {
+      const card = document.querySelector("[data-profile-card]");
+      const r = (el) => (el ? el.getBoundingClientRect() : null);
+      const name = card?.querySelector("#profile-name");
+      const pic = card?.querySelector("[data-community-avatar]");
+      const status = name?.parentElement?.querySelector("p.italic");
+      const doors = [...(card?.querySelectorAll("[data-profile-doors] [role=tab]") ?? [])];
+      const cs = (el) => (el ? getComputedStyle(el) : null);
+      return {
+        card: r(card) && { left: r(card).left, width: r(card).width },
+        island: card?.classList.contains("dark-island") ?? false,
+        top: card?.querySelector("[data-profile-top]")?.getAttribute("data-profile-top") ?? null,
+        cloth: card?.querySelector(".profile-cloth") ? cs(card.querySelector(".profile-cloth")).backgroundColor : null,
+        picX: pic ? r(pic).left + r(pic).width / 2 : null,
+        nameX: name ? r(name).left + r(name).width / 2 : null,
+        nameFont: cs(name)?.fontFamily ?? "",
+        nameWeight: cs(name)?.fontWeight ?? "",
+        nameColour: cs(name?.querySelector("span"))?.color ?? "",
+        nameClass: name?.querySelector("span")?.className ?? "",
+        ground: cs(card)?.backgroundColor ?? "",
+        status: status ? { text: status.textContent, bg: cs(status).backgroundColor, border: cs(status).borderTopWidth } : null,
+        doors: doors.map((d) => ({ label: d.textContent.trim(), on: d.getAttribute("aria-selected") === "true", h: Math.round(r(d).height) })),
+        frame: card?.querySelector("[data-frame]")?.getAttribute("data-frame") ?? null,
+        effect: card?.querySelector(".pfx")?.className ?? null,
+        motion: card?.querySelector(".banner-motion")?.className ?? null,
+        text: card?.innerText ?? "",
+      };
+    });
+
+  // The luminance contrast of two computed colours, as WCAG reckons it.
+  const contrast = (a, b) => {
+    const rgb = (s) => (s.match(/[\d.]+/g) ?? []).slice(0, 3).map(Number);
+    const lum = ([r, g, b]) => [r, g, b].map((c) => { const s = c / 255; return s <= 0.03928 ? s / 12.92 : ((s + 0.055) / 1.055) ** 2.4; }).reduce((t, v, i) => t + v * [0.2126, 0.7152, 0.0722][i], 0);
+    const [x, y] = [lum(rgb(a)), lum(rgb(b))].sort((p, q) => q - p);
+    return (x + 0.05) / (y + 0.05);
+  };
+
+  // ── Dark, the way the owner draws it: every check.
+  {
+    const { ctx, page, errors } = await opened();
+    await show(page, FREE.handle);
+    const f = await face(page);
+    must(Boolean(f.card), "a free reader's profile opens over Community, from /community/#@handle");
+    must(f.top === "light", `a free reader with no banner has the soft light at the top (${f.top})`);
+    must(f.picX !== null && f.card && Math.abs(f.picX - (f.card.left + f.card.width / 2)) <= 2 && Math.abs(f.nameX - f.picX) <= 2, `the picture and the name stand in the middle (${Math.round(f.picX)} and ${Math.round(f.nameX)}, the card's middle ${Math.round(f.card.left + f.card.width / 2)})`);
+    must(/lora/i.test(f.nameFont) && f.nameWeight === "600", `the name is Lora at 600 (${f.nameFont.split(",")[0]} ${f.nameWeight})`);
+    must(Boolean(f.status) && f.status.text.includes(FREE.status) && /^rgba\(0, 0, 0, 0\)$|transparent/.test(f.status.bg) && f.status.border === "0px", `the status is one quiet line, no bubble (${f.status ? `${f.status.bg}, border ${f.status.border}` : "missing"})`);
+    must(!/streak/i.test(f.text) && !/\b\d+-day\b/.test(f.text), "no streak on the profile, and no count of days");
+    const doorNames = [en["profile.tabAbout"], en["profile.tabBadges"], en["profile.tabPosts"]];
+    must(f.doors.map((d) => d.label).join("|") === doorNames.join("|") && f.doors[0].on, `three doors, About open: ${f.doors.map((d) => `${d.label}${d.on ? " (open)" : ""}`).join(", ")}`);
+    must(f.doors.every((d) => d.h === 74), `the doors are a saint's page's, 74px tall (${f.doors.map((d) => d.h).join(", ")})`);
+    const free = await colours(page);
+    must(Array.isArray(free) && free.length > 20 && free.filter(gold).length === 0, `a free profile wears no gold (${free ? list(free.filter(gold)) || `${free.length} colours, none gold` : "no card"})`);
+    must(Array.isArray(free) && free.filter(hued).length === 0, `nor any colour but black, white and grey (${free ? list(free.filter(hued)) || "none" : "no card"})`);
+    must(f.frame === null && f.effect === null && f.motion === null && !/name-color/.test(f.nameClass), "and none of Plus: no frame, no effect, no moving banner, no name colour");
+
+    // About: the patron, his icon (its rights settled), his name day; the verse whole, Open and Share.
+    const about = await page.evaluate(() => {
+      const patron = document.querySelector("[data-profile-patron]");
+      const img = patron?.querySelector("img");
+      const verse = document.querySelector("[data-profile-verse]");
+      return {
+        patron: patron?.getAttribute("data-profile-patron") ?? null,
+        patronText: patron?.textContent ?? "",
+        icon: img ? { src: img.getAttribute("src"), ok: img.complete && img.naturalWidth > 0 } : null,
+        verse: verse?.textContent ?? "",
+        buttons: [...(verse?.querySelectorAll("a, button") ?? [])].map((b) => b.getAttribute("aria-label")),
+      };
+    });
+    must(about.patron === "john-chrysostom" && about.icon?.ok && /\/saints\/icons\/john-chrysostom[^/]*\.jpg$/.test(about.icon.src ?? ""), `the patron saint's card shows his icon from the bundle (${about.icon ? `${about.icon.src}, ${about.icon.ok ? "loaded" : "not loaded"}` : "no icon"})`);
+    must(about.patronText.includes(en["profile.patronNameDay"].replace("{date}", "November 13")), `and his name day (${about.patronText.replace(/\s+/g, " ").trim()})`);
+    must(about.verse.includes(VERSES["john/1/5"]) && about.verse.includes(en["reading.collection.kjv"]), `the verse is a card, word for word, with its Bible (${about.verse.replace(/\s+/g, " ").slice(0, 90)})`);
+    must(about.buttons.includes(en["today.verse.openChapter"]) && about.buttons.includes(en["today.verse.shareAsPicture"]), `that opens and shares (${about.buttons.join(", ")})`);
+    await page.screenshot({ path: path.join(SHOTS, "profile-free.png") });
+
+    // Share: the picture sheet stands over the profile, and closing it leaves the profile.
+    if (await tap(page.getByRole("button", { name: en["today.verse.shareAsPicture"], exact: true }))) {
+      await page.waitForFunction((t) => !!document.querySelector(`[role=dialog][aria-label="${t}"] canvas`), en["picture.title"], { timeout: 15000 }).catch(() => {});
+      await page.waitForTimeout(900);
+      const over = await page.evaluate((t) => {
+        const sheet = document.querySelector(`[role=dialog][aria-label="${t}"]`);
+        const canvas = sheet?.querySelector("canvas");
+        if (!canvas) return null;
+        const r = canvas.getBoundingClientRect();
+        return sheet.contains(document.elementFromPoint(r.left + r.width / 2, r.top + r.height / 2));
+      }, en["picture.title"]);
+      must(over === true, `Share opens the verse's picture over the profile (${over === null ? "no picture sheet" : "under the profile"})`);
+      await page.keyboard.press("Escape");
+      await page.waitForTimeout(700);
+      const after = await page.evaluate((t) => ({ sheet: !!document.querySelector(`[role=dialog][aria-label="${t}"]`), card: !!document.querySelector("[data-profile-card]") }), en["picture.title"]);
+      must(!after.sheet && after.card, `Escape closes the picture and leaves the profile open (${after.sheet ? "the picture stayed" : after.card ? "ok" : "the profile closed too"})`);
+    }
+
+    // Badges: a case of medals, the tapped one lit with its meaning; the rope with no number.
+    if (await tap(page.getByRole("tab", { name: en["profile.tabBadges"] }))) {
+      await page.waitForTimeout(500);
+      const rope = page.locator('[role=tabpanel]:not([aria-hidden="true"]) button:has([data-medal="streak_7"])');
+      await tap(rope);
+      await page.waitForTimeout(500);
+      const badges = await page.evaluate(() => {
+        const panel = document.querySelector('[role=tabpanel]:not([aria-hidden="true"])');
+        const medal = panel?.querySelector('button [data-medal="streak_7"]');
+        return {
+          medals: panel?.querySelectorAll("[data-medal]").length ?? 0,
+          pressed: panel?.querySelector('button[aria-pressed="true"] [data-medal]')?.getAttribute("data-medal") ?? null,
+          knots: medal ? medal.querySelectorAll('circle[r="3.7"]').length : 0,
+          words: medal ? medal.textContent : null,
+          meaning: panel?.querySelector("[aria-live]")?.textContent ?? "",
+        };
+      });
+      must(badges.medals === FREE.badges.length + 1, `the Badges door is a case of ${FREE.badges.length} medals and the lit one's meaning (${badges.medals} medals)`);
+      must(badges.pressed === "streak_7" && badges.meaning.includes(en["profile.badgeAbout.streak_7"]), `the medal tapped is lit, and says what it means (${badges.pressed}: ${badges.meaning.slice(0, 60)})`);
+      must(badges.knots === 14 && badges.words === "", `Seven Days is a prayer rope of seven knots, with no number (${badges.knots / 2} knots, words "${badges.words}")`);
+      await page.screenshot({ path: path.join(SHOTS, "profile-free-badges.png") });
+    }
+    if (await tap(page.getByRole("tab", { name: en["profile.tabPosts"] }))) {
+      await page.waitForTimeout(400);
+      const post = await page.evaluate(() => document.querySelector('[role=tabpanel]:not([aria-hidden="true"])')?.textContent ?? "");
+      must(post.includes(FREE.posts[0].title), "the Posts door holds their posts");
+    }
+    must(errors.length === 0, `no page errors${errors.length ? ": " + errors.slice(0, 2).join(" | ") : ""}`);
+    await ctx.close();
+  }
+  {
+    const { ctx, page, errors } = await opened();
+    await show(page, PLUS.handle);
+    const f = await face(page);
+    const plus = await colours(page);
+    must(f.top === "banner" && f.cloth === "rgb(31, 58, 107)", `a Plus member's banner fades in at the top, the Theotokos' blue as cloth (${f.top}, ${f.cloth})`);
+    must(f.frame === "candle", `in the candle frame (${f.frame})`);
+    must(Array.isArray(plus) && plus.some(gold), `and may wear gold (${plus ? list(plus.filter(gold)) : "no card"})`);
+    must(/name-color-gilded/.test(f.nameClass) && /pfx-gold-dust/.test(f.effect ?? "") && /pfx-quiet/.test(f.effect ?? "") && /banner-motion-rays/.test(f.motion ?? ""), `the gilded name, gold dust thinning behind the words, Dome light (${f.nameClass}; ${f.effect}; ${f.motion})`);
+    const flame = await page.evaluate(() => {
+      const el = document.querySelector('[data-frame="candle"] .af-flame');
+      return el ? { name: getComputedStyle(el).animationName, fill: getComputedStyle(el).fill } : null;
+    });
+    must(flame?.name === "af-flame" && flame.fill === "rgb(255, 255, 255)", `the candle's flame is the Lampada's, white, and breathes (${flame ? `${flame.fill}, ${flame.name}` : "no flame"})`);
+    must(errors.length === 0, `no page errors${errors.length ? ": " + errors.slice(0, 2).join(" | ") : ""}`);
+    await page.screenshot({ path: path.join(SHOTS, "profile-plus.png") });
+    await ctx.close();
+  }
+
+  // ── The other four palettes, and the motion switch: no gold for the free
+  // reader, the words legible, a Plus card dark on every ground.
+  for (const theme of ["parchment", "black", "candlelight", "monastery"]) {
+    const { ctx, page, errors } = await opened({ "purify.reader.theme": theme, ...(theme === "parchment" ? { "purify.motion": "off" } : {}) });
+    await show(page, FREE.handle);
+    const f = await face(page);
+    const free = await colours(page);
+    must(Array.isArray(free) && free.filter(gold).length === 0, `${theme}: a free profile wears no gold (${free ? list(free.filter(gold)) || "none" : "no card"})`);
+    must(contrast(f.nameColour, f.ground) >= 4.5 && !f.island, `${theme}: it follows the palette, its name legible on it (${f.nameColour} on ${f.ground}, ${contrast(f.nameColour, f.ground).toFixed(1)}:1)`);
+    await show(page, PLUS.handle);
+    const p = await face(page);
+    const plus = await colours(page);
+    const still = await page.evaluate(() => ({
+      flame: getComputedStyle(document.querySelector('[data-frame="candle"] .af-flame') ?? document.body).animationName,
+      dust: [...document.querySelectorAll(".pfx .pfx-p")].map((s) => getComputedStyle(s).animationName),
+      rays: getComputedStyle(document.querySelector(".banner-motion") ?? document.body, "::before").animationName,
+    }));
+    must(p.island && Array.isArray(plus) && plus.some(gold), `${theme}: a Plus card stays dark, its gold its own (${p.island ? "dark" : "follows the palette"}, ${plus ? plus.filter(gold).length : 0} gold)`);
+    if (theme === "parchment") {
+      must(still.flame === "none" && still.dust.length === 10 && still.dust.every((n) => n === "none") && still.rays === "none", `with motion off the flame, the dust and the light hold still (${still.flame}; ${[...new Set(still.dust)].join(",")}; ${still.rays})`);
+      await page.screenshot({ path: path.join(SHOTS, "profile-plus-parchment.png") });
+    }
+    must(errors.length === 0, `${theme}: no page errors${errors.length ? ": " + errors.slice(0, 2).join(" | ") : ""}`);
+    await ctx.close();
+  }
+});
 await browser.close();
 if (!everySection) console.log(`\nOnly the sections chosen were walked: ${walked.join(", ") || "none"}.`);
 console.log(failed ? `\n${failed} check(s) failed.` : "\nEvery check passed.");

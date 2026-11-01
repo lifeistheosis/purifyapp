@@ -15,6 +15,7 @@ import {
   isNameColor,
   normalizeHex,
   subscriptionTier,
+  themeNeedsPlus,
 } from "@/lib/profile/cosmetics";
 import { findLinks } from "@/lib/community/spam";
 import { cleanSocialLinks } from "@/lib/profile/socialLinks";
@@ -46,10 +47,11 @@ export const dynamic = "force-dynamic";
  * Purify's own library; and the Plus line. A Plus cosmetic is saved only
  * with an active Plus or Pro subscription, judged from the live dates
  * (lib/profile/cosmetics.ts subscriptionTier), never from the pre-launch
- * open gate, the same rule as Pro's free shipping. A gold banner colour is
- * one (bannerNeedsPlus: gold on a profile is for Plus members only, the
- * owner's word of 2026-10-31); every other banner colour is free. Clearing
- * one is always allowed, so a lapsed reader can still tidy up.
+ * open gate, the same rule as Pro's free shipping. A banner or theme in any
+ * colour but the four greys is one (bannerNeedsPlus, themeNeedsPlus: the
+ * owner's pick of r3-28, a free profile in black, white and grey, the
+ * Church's colours and gold for Plus members). Clearing one is always
+ * allowed, so a lapsed reader can still tidy up.
  *
  * The banner picture has its own route (../banner), because it is a file.
  */
@@ -294,11 +296,12 @@ async function handlePUT(req: Request) {
 
   if (p.bannerColor !== undefined) patch.banner_color = p.bannerColor === null ? null : normalizeHex(p.bannerColor);
   if (p.bannerUrl === null) patch.banner_url = null;
+  // A theme is free in the four greys and Plus in any other pair (below).
+  if (p.themePrimary !== undefined) patch.theme_primary = p.themePrimary === null ? null : normalizeHex(p.themePrimary);
+  if (p.themeAccent !== undefined) patch.theme_accent = p.themeAccent === null ? null : normalizeHex(p.themeAccent);
 
   // The Plus line. Setting needs a live subscription; clearing never does.
   const plusSets: Record<string, string | null> = {};
-  if (p.themePrimary !== undefined) plusSets.theme_primary = p.themePrimary === null ? null : normalizeHex(p.themePrimary);
-  if (p.themeAccent !== undefined) plusSets.theme_accent = p.themeAccent === null ? null : normalizeHex(p.themeAccent);
   if (p.decoration !== undefined) {
     if (p.decoration !== null && !isDecoration(p.decoration)) {
       return NextResponse.json({ error: "Unknown frame.", code: "decoration" }, { status: 400 });
@@ -337,10 +340,18 @@ async function handlePUT(req: Request) {
   if (p.hiddenBadges !== undefined) {
     hidden = [...new Set(p.hiddenBadges.filter((b) => isBadgeId(b) && !STANDING_BADGES.includes(b)))];
   }
-  // A gold banner colour is Plus (set above with the free fields, refused
-  // here before anything is written); any other colour, or none, is free.
-  const goldBanner = p.bannerColor != null && bannerNeedsPlus(p.bannerColor);
-  if (Object.values(plusSets).some((v) => v !== null) || (hidden && hidden.length > 0) || goldBanner) {
+  // A banner or a theme in a colour that is not one of the four greys is Plus
+  // (set above with the free fields, refused here before anything is
+  // written). The theme is judged as the pair it will be, so changing one of
+  // its two colours cannot slip a Church colour in beside a grey.
+  const plusBanner = p.bannerColor != null && bannerNeedsPlus(p.bannerColor);
+  const themeTouched = p.themePrimary != null || p.themeAccent != null;
+  const nextTheme = {
+    primary: p.themePrimary !== undefined ? p.themePrimary : row.theme_primary,
+    accent: p.themeAccent !== undefined ? p.themeAccent : row.theme_accent,
+  };
+  const plusTheme = themeTouched && themeNeedsPlus(nextTheme.primary, nextTheme.accent);
+  if (Object.values(plusSets).some((v) => v !== null) || (hidden && hidden.length > 0) || plusBanner || plusTheme) {
     const { data: ent } = await admin
       .from("entitlements")
       .select("plus_until, pro_until")

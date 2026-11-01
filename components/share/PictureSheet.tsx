@@ -112,9 +112,15 @@ export function PictureSheet({
   lead,
   leadLabel,
   quote,
+  layer,
 }: {
   open: boolean;
   onClose: () => void;
+  /**
+   * Over a sheet that already stands at z-[80] (components/ui/Sheet.tsx):
+   * a Community profile's verse card opens it over the profile.
+   */
+  layer?: "over-player";
   /** The words and the line under them. Keep it the same object while they are the same: the preview is drawn again when it changes. */
   words: PictureWords;
   /** The sheet's name: "Verse picture". */
@@ -236,7 +242,7 @@ export function PictureSheet({
   }
 
   return (
-    <Sheet open={open} onClose={onClose} title={title} openFull desktop>
+    <Sheet open={open} onClose={onClose} title={title} openFull desktop layer={layer}>
       {/* The picture, as it will be sent. */}
       <div className="relative flex justify-center pt-1">
         <canvas

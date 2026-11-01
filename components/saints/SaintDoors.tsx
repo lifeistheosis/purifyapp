@@ -68,8 +68,8 @@ function DoorIcon({ door, size }: { door: SaintDoor; size: number }) {
   return <Note size={size} />;
 }
 
-// The doors' classes are shared with making a post in Community, which is
-// built like this page (components/ui/doors.ts).
+// The doors' classes are shared with making a post in Community and with a
+// reader's profile, both built like this page (components/ui/doors.ts).
 
 const DOOR_EVENT = "purify:saint-door";
 

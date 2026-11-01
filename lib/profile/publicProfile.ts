@@ -60,12 +60,8 @@ export type PublicProfile = {
   clergy?: PublicClergy | null;
   /** Their links elsewhere, built on the server from what they saved. */
   links?: ShownLink[];
-  /**
-   * Days in a row they have kept, as it stands today in their own zone
-   * (lib/streak, 20261006). Null when none, hidden by them, or private.
-   * Optional for older payloads.
-   */
-  streak?: number | null;
+  // No streak: a profile shows no count of days kept (1.8, refinement 4).
+  // A server from before 1.8's last build may still send one; it is not read.
 };
 
 /** What the reader has chosen to share or hide, for the editor. */
@@ -80,7 +76,11 @@ export type ProfileSettings = {
   calendar: "new" | "old";
   /** Community notifications on the reader's devices (20261005). */
   pushCommunity: boolean;
-  /** The red flame on their profile (20261006). On unless they turn it off. */
+  /**
+   * The streak on their profile (20261006). Read and kept for older apps,
+   * which still send it; since 1.8 no profile shows a streak (refinement 4),
+   * so it changes nothing.
+   */
   showStreak: boolean;
 };
 

@@ -1,26 +1,29 @@
 // What a profile can wear, and who may wear it.
 //
-// Free for every reader: a banner colour (the liturgical colours below, or
-// any colour but gold), a status line, a bio, a favourite verse, a patron
-// saint. Plus and Pro, like Nitro: a banner picture, a two-colour theme, an
-// avatar frame, a profile effect, a name colour, an animated banner, a gold
-// banner colour, and a choice of which badges show
-// (20261005000000_community_three.sql). Saved settings outlive a lapsed
-// subscription and simply stop showing until it returns; nothing is deleted.
+// The owner's pick of r3-28 (notes 75 and 81, 2026-10-31): "Two for normal
+// users, one for plus users". A free reader's profile is the sheet's way 2:
+// black, white and four greys (Night, Smoke, Stone and Silver, GREYS below)
+// for the banner and the theme, and no colour of their own. A Plus or Pro
+// member's is way 1: the Church's colours for the banner and the theme
+// (BANNER_COLORS, THEMES), any colour of their own, and the gold the rest of
+// the app goes without: "gold is allowed for the community profiles by the
+// way but only exclusive to plus members" (his word of the same night; the
+// rest of the app is held to it by lib/ui/__tests__/noGold.test.ts).
 //
-// Gold is Plus only, everywhere on a profile: the owner, 2026-10-31, "gold is
-// allowed for the community profiles by the way but only exclusive to plus
-// members". The frames, effects, name colours, themes and moving banners are
-// Plus already; the one gold a free reader could pick was the banner colour,
-// so bannerNeedsPlus below makes a gold banner Plus too, and the rest of the
-// app stays without gold (lib/ui/__tests__/noGold.test.ts).
+// Free for every reader, then: a banner and a theme in the greys, a status
+// line, a bio, a favourite verse, a patron saint. Plus and Pro, like Nitro: a
+// banner or theme in any other colour, a banner picture, an avatar frame, a
+// profile effect, a name colour, an animated banner, and a choice of which
+// badges show (20261005000000_community_three.sql). Saved settings outlive a
+// lapsed subscription and come back with it; nothing is deleted. Until then
+// a saved colour shows as the grey nearest it (visibleCosmetics).
 //
-// The frames and effects are drawn in the app (components/profile), so the
-// catalog is only ids. The database checks the shape of an id
+// The frames and effects are drawn in the app (components/community/profile),
+// so the catalog is only ids. The database checks the shape of an id
 // (20261001000000_profiles_badges.sql), this file decides which ids exist.
 
 import { orthodoxPascha } from "@/lib/calendar/pascha";
-import { isGoldHex } from "@/lib/ui/goldTone";
+import { oklchOf, rgbOfHex } from "@/lib/ui/goldTone";
 
 export const DECORATIONS = ["halo", "pearls", "laurel", "candle", "paschal", "stars"] as const;
 
@@ -119,8 +122,21 @@ export function nextSeasonStart(id: string | null | undefined, now: Date = new D
 }
 
 /**
+ * Way 2, the free profile's colours: four greys, each a banner (`primary`, its
+ * woven cross drawn over it) and a theme (`primary` at the top, `accent` at
+ * the foot). The sheet's own values (r3-28-kit.js, GREYS).
+ */
+export const GREYS = [
+  { id: "night", primary: "#232327", accent: "#0d0d10" },
+  { id: "smoke", primary: "#3a3a40", accent: "#121215" },
+  { id: "stone", primary: "#55555c", accent: "#18181b" },
+  { id: "silver", primary: "#8c8c94", accent: "#1c1c20" },
+] as const;
+export type Grey = (typeof GREYS)[number];
+
+/**
  * The Church's own colours for the banner, darkened to sit under white text.
- * Gold is a Plus colour (bannerNeedsPlus); the others are free.
+ * Way 1: every one of them is Plus (bannerNeedsPlus), gold among them.
  */
 export const BANNER_COLORS = [
   { id: "gold", hex: "#8f6f35" },
@@ -132,7 +148,7 @@ export const BANNER_COLORS = [
   { id: "theophany", hex: "#5b6e7a" },
 ] as const;
 
-/** Two-colour profile themes for Plus, top colour then bottom. */
+/** Two-colour profile themes in the Church's colours, for Plus: top colour then bottom. */
 export const THEMES = [
   { id: "gilded", primary: "#8f6f35", accent: "#221a0f" },
   { id: "paschal", primary: "#7d1d27", accent: "#220a0d" },
@@ -151,14 +167,52 @@ export function normalizeHex(v: unknown): string | null {
   return HEX.test(s) ? s : null;
 }
 
+/** The grey a colour is, when it is one of the four. */
+export function greyOf(v: unknown): Grey | null {
+  const hex = normalizeHex(v);
+  return GREYS.find((g) => g.primary === hex) ?? null;
+}
+
 /**
- * Whether a banner colour is a Plus cosmetic. Gold is, by the owner's word
- * (see the top of this file); every other colour stays free. Judged by the
- * same measure the app's no-gold guard uses (lib/ui/goldTone.ts), so a
- * custom pick that reads as gold is Plus as well as the gold swatch.
+ * Whether a banner colour is a Plus cosmetic: every colour but the four
+ * greys, the Church's and the reader's own alike, gold among them (see the
+ * top of this file). None at all is free, and so is taking one off.
  */
 export function bannerNeedsPlus(v: unknown): boolean {
-  return isGoldHex(normalizeHex(v));
+  const hex = normalizeHex(v);
+  return hex !== null && greyOf(hex) === null;
+}
+
+/**
+ * Whether a theme is a Plus cosmetic: any pair but one of the four greys'.
+ * No theme at all is free.
+ */
+export function themeNeedsPlus(primary: unknown, accent: unknown): boolean {
+  const a = normalizeHex(primary);
+  const b = normalizeHex(accent);
+  if (a === null && b === null) return false;
+  return !GREYS.some((g) => g.primary === a && g.accent === b);
+}
+
+/**
+ * The grey a colour shows as on a free profile: the one nearest it in
+ * lightness (OKLCH L, the lightness the eye reads), so a deep Paschal red
+ * becomes Smoke and a pale blue Silver. Null when it is not a colour.
+ */
+export function nearestGrey(v: unknown): Grey | null {
+  const rgb = rgbOfHex(normalizeHex(v));
+  if (!rgb) return null;
+  const L = oklchOf(rgb).L;
+  let best: Grey = GREYS[0];
+  let gap = Infinity;
+  for (const g of GREYS) {
+    const d = Math.abs(oklchOf(rgbOfHex(g.primary)!).L - L);
+    if (d < gap) {
+      gap = d;
+      best = g;
+    }
+  }
+  return best;
 }
 
 /** WCAG relative luminance of a #rrggbb colour. */
@@ -217,8 +271,14 @@ export function isBannerMotion(v: unknown): v is BannerMotion {
 }
 
 /** The profile fields only an active Plus or Pro subscription may set. */
-export const PLUS_FIELDS = ["bannerUrl", "themePrimary", "themeAccent", "decoration", "effect", "nameColor", "bannerMotion", "hiddenBadges"] as const;
+export const PLUS_FIELDS = ["bannerUrl", "decoration", "effect", "nameColor", "bannerMotion", "hiddenBadges"] as const;
 export type PlusField = (typeof PLUS_FIELDS)[number];
+
+/**
+ * The fields anyone may set to one of the four greys, and only Plus to any
+ * other colour (bannerNeedsPlus, themeNeedsPlus).
+ */
+export const PLUS_UNLESS_GREY = ["bannerColor", "themePrimary", "themeAccent"] as const;
 
 /** Saved cosmetics, as the editor and the public profile carry them. */
 export type Cosmetics = {
@@ -235,26 +295,30 @@ export type Cosmetics = {
 
 /**
  * What the world sees of a reader's cosmetics: everything they saved while a
- * subscription runs, only a free banner colour when it does not (a gold one,
- * saved while it was free or while Plus ran, waits for Plus with the rest).
- * An id the catalog no longer carries is dropped rather than drawn as nothing.
+ * subscription runs. Without one, the free profile (way 2): the banner and the
+ * theme in the grey nearest each saved colour, so a colour chosen while Plus
+ * ran, or while the Church's colours were free, is kept and shows grey until
+ * Plus returns, and nothing else. An id the catalog no longer carries is
+ * dropped rather than drawn as nothing.
  */
 export function visibleCosmetics(saved: Cosmetics, subscribed: boolean): Cosmetics {
   const bannerColor = normalizeHex(saved.bannerColor);
+  const themePrimary = readableThemeColor(saved.themePrimary);
+  const themeAccent = readableThemeColor(saved.themeAccent);
   if (!subscribed) {
+    // A theme is a pair: half of one is not drawn, grey or not.
+    const theme = themePrimary && themeAccent ? nearestGrey(saved.themePrimary) : null;
     return {
-      bannerColor: bannerNeedsPlus(bannerColor) ? null : bannerColor,
+      bannerColor: nearestGrey(bannerColor)?.primary ?? null,
       bannerUrl: null,
-      themePrimary: null,
-      themeAccent: null,
+      themePrimary: theme ? readableThemeColor(theme.primary) : null,
+      themeAccent: theme ? theme.accent : null,
       decoration: null,
       effect: null,
       nameColor: null,
       bannerMotion: null,
     };
   }
-  const themePrimary = readableThemeColor(saved.themePrimary);
-  const themeAccent = readableThemeColor(saved.themeAccent);
   return {
     bannerColor,
     bannerUrl: saved.bannerUrl ?? null,
