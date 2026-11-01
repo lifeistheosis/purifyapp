@@ -21,7 +21,9 @@
 //     this phone only, lib/search/recent.ts), all standing from the top of
 //     the screen, so only the field moves when the keyboard comes and goes
 //     (build 87, the owner's note 83: they stood on the field, and jumped up
-//     the keyboard's height a moment after the screen opened);
+//     the keyboard's height a moment after the screen opened); and under
+//     them the place's own day, today's readings, saints or Hour (his pick
+//     B of r3-31, lib/search/day.ts), in a room held from the first frame;
 //   - while typing, the doors count what each found, the top result is drawn
 //     as a band over its picture, and the words that finish the one being
 //     typed sit nearest the thumb;
@@ -50,6 +52,7 @@ import { useTranslate } from "@/components/i18n/MessagesProvider";
 import { ChevronDown } from "@/components/ui/icons/ChevronDown";
 import { cn } from "@/lib/cn";
 import { useAndroidBack } from "@/lib/platform/useAndroidBack";
+import { DAY_EYEBROW, DAY_SLOTS } from "@/lib/search/day";
 import {
   behind,
   completions as finishing,
@@ -94,6 +97,7 @@ import { useIsPhoneWidth, useKeyboardUp, useVisibleFrame } from "@/lib/ui/viewpo
 
 import { SearchField } from "./SearchField";
 import {
+  DayBlock,
   Doors,
   EmptyLine,
   Eyebrow,
@@ -157,6 +161,22 @@ function loadReferences(): Promise<References | null> {
 }
 
 /**
+ * The day under the doors (components/search/SearchDay.tsx; r3-31 B, the
+ * owner's pick), fetched on first open as the reference parser is: it reads
+ * the calendar, which carries the year's saints and readings. Until it is
+ * here the screen holds its room (DayBlock), so nothing moves as it comes.
+ */
+type DayView = typeof import("./SearchDay");
+let dayModule: DayView | null = null;
+function loadDay(): Promise<DayView | null> {
+  if (dayModule) return Promise.resolve(dayModule);
+  return import("./SearchDay")
+    .then((m) => (dayModule = m))
+    // Without it the room stays empty, as before the pick.
+    .catch(() => null);
+}
+
+/**
  * The dictionary's definitions, fetched only when its words are looked
  * through (opened from the dictionary, or its tab chosen): its own field
  * found a word by its definition too, and still does.
@@ -200,6 +220,7 @@ export function CommandPalette() {
   const [corpus, setCorpus] = useState<SearchItem[] | null>(null);
   const [theology, setTheology] = useState<TheologyEntry[]>([]);
   const [refs, setRefs] = useState<References | null>(referencesModule);
+  const [day, setDay] = useState<DayView | null>(dayModule);
   const [definitions, setDefinitions] = useState<Definition[] | null>(definitionsCache);
   const inputRef = useRef<HTMLInputElement | null>(null);
   const listRef = useRef<HTMLDivElement | null>(null);
@@ -263,6 +284,16 @@ export function CommandPalette() {
       alive = false;
     };
   }, [open, refs]);
+
+  // The day, the first time it opens.
+  useEffect(() => {
+    if (!open || day) return;
+    let alive = true;
+    void loadDay().then((m) => alive && m && setDay(m));
+    return () => {
+      alive = false;
+    };
+  }, [open, day]);
 
   const wantsDefinitions = turn.door === "theology" && turn.kind === "dictionary";
   useEffect(() => {
@@ -357,6 +388,12 @@ export function CommandPalette() {
     if (q) setRecent(rememberWords(q));
     setOpen(false);
     router.push(row.href);
+  };
+
+  // A row of the day: no words to keep, only the place to open.
+  const goTo = (href: string) => {
+    setOpen(false);
+    router.push(href);
   };
 
   const searchFor = (words: string) => {
@@ -524,6 +561,14 @@ export function CommandPalette() {
     // and goes; the field alone rides it.
     const hint = DOOR_HINT[turn.door];
     const whole = turn.kind ? behind(rows, turn.door, turn.kind) : [];
+    // The place's own day, under the recent words (r3-31 B): its room is
+    // held at its full height until the calendar is here.
+    const daySlots = DAY_SLOTS[turn.door] ?? 0;
+    const dayEyebrow = DAY_EYEBROW[turn.door];
+    const dayBlock =
+      daySlots && dayEyebrow ? (
+        day ? <day.SearchDay door={turn.door} onGo={goTo} /> : <DayBlock eyebrow={t(dayEyebrow)} slots={daySlots} />
+      ) : null;
     body = (
       <>
         <h2 className="px-5 font-serif text-[30px] font-bold leading-tight tracking-[-0.01em] text-paper">{t("search.open")}</h2>
@@ -562,6 +607,7 @@ export function CommandPalette() {
                 </div>
               </div>
             ) : null}
+            {dayBlock}
           </>
         )}
       </>

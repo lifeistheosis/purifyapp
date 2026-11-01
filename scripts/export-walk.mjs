@@ -5550,9 +5550,18 @@ await section(43, async () => {
 // page's controls do (section 34). Each is opened from a place and must open
 // on it: Saints from its own field (the first opening, the lists not yet
 // in), then the Bible from the ••• sheet over John 2, whose chapters open on
-// the one being read at a book's start, middle and end.
-// lib/search/__tests__/oneField.test.ts and lib/bible/__tests__/
-// readerScreen.test.ts hold the source.
+// the one being read at a book's start, middle and end, then Everything from
+// Today's bar.
+//
+// Under the doors each place shows its own day, his pick B of r3-31: the
+// Bible today's readings, Saints who is commemorated today, Everything the
+// readings, the leading commemoration and the Hour in brief. The day comes
+// with the calendar on the first opening, a moment after the screen, so its
+// room is held from the first frame: the block must stand where the first
+// frame put it, and its rows must hold still once they are in. A reading
+// opens in the day's walk, as Today's do.
+// lib/search/__tests__/oneField.test.ts, lib/search/__tests__/day.test.ts
+// and lib/bible/__tests__/readerScreen.test.ts hold the source.
 await section(44, async () => {
   console.log("\n44. The one search opens still");
   const en = JSON.parse(fs.readFileSync(path.resolve("lib/i18n/messages/en.json"), "utf8"));
@@ -5615,12 +5624,19 @@ await section(44, async () => {
         const body = screen?.querySelector("[data-search-body]");
         if (body) {
           const title = body.querySelector("h2");
+          const day = body.querySelector("[data-search-day]");
+          const dayRows = [...(day?.querySelectorAll("[data-search-day-row]") ?? [])];
           frames.push({
             t: Math.round(performance.now()),
             title: box(title),
             look: box(title?.nextElementSibling),
             doors: box(body.querySelector("[data-search-doors]")),
             recent: box(body.querySelector("[data-search-recent]")),
+            day: box(day),
+            dayLine: day?.querySelector("span")?.textContent ?? null,
+            dayRows: dayRows.map(box).join(" | "),
+            dayCount: dayRows.length,
+            dayText: dayRows.map((r) => (r.textContent ?? "").replace(/\s+/g, " ").trim()).join(" | "),
             lit: body.querySelector("[data-search-doors] [aria-pressed=true]")?.getAttribute("data-door") ?? null,
             kinds: body.querySelectorAll("[data-search-kinds] [role=tab]").length,
             dock: box(screen.querySelector("[data-search-dock]")),
@@ -5638,7 +5654,7 @@ await section(44, async () => {
     await page.waitForTimeout(1200);
     return page.evaluate(() => window.__searchFrames ?? []);
   };
-  const PARTS = ["title", "look", "doors", "recent"];
+  const PARTS = ["title", "look", "doors", "recent", "day"];
   const still = (label, frames, door) => {
     const first = frames[0];
     const up = frames.filter((f) => f.visible <= TALL - KEYBOARD);
@@ -5646,13 +5662,23 @@ await section(44, async () => {
       const [, top, , height] = (f?.dock ?? "").split(",").map(Number);
       return top + height;
     };
-    must(frames.length > 20 && PARTS.every((k) => Boolean(first?.[k])), `${label}: the search draws its title, Look in, the doors and the recent searches in its first frame (${frames.length} frames${first ? `; missing: ${PARTS.filter((k) => !first[k]).join(", ") || "none"}` : ""})`);
+    must(frames.length > 20 && PARTS.every((k) => Boolean(first?.[k])), `${label}: the search draws its title, Look in, the doors, the recent searches and the day's room in its first frame (${frames.length} frames${first ? `; missing: ${PARTS.filter((k) => !first[k]).join(", ") || "none"}` : ""})`);
     must(frames.length > 0 && frames.every((f) => f.lit === door), `${label}: opened from a place, it opens on that place (${[...new Set(frames.map((f) => f.lit))].join(", ") || "nothing"} lit)`);
     const top = Number((first?.title ?? "").split(",")[1]);
     must(Number.isFinite(top) && top <= 80, `${label}: "Search" stands at the top of the screen, not over the field (${Number.isFinite(top) ? `${top}px down` : "no title"})`);
     must(up.length > 0 && Math.abs(foot(up.at(-1)) - up.at(-1).visible) <= 1 && frames.at(-1)?.visible === TALL, `${label}: the keyboard came up after the screen did, the field on it, and went (${up.length ? `field ends at ${foot(up.at(-1))} on a keyboard from ${up.at(-1).visible}` : "never came"}; ${frames.at(-1)?.visible ?? "?"} at the end)`);
     const moved = frames.flatMap((f) => PARTS.filter((k) => f[k] !== first[k]).map((k) => `${k} ${first[k]} to ${f[k]} at +${f.t - first.t}ms`));
     must(moved.length === 0, `${label}: and nothing on it moves from its first frame while the keyboard comes and goes (${moved.slice(0, 3).join("; ") || `${frames.length} frames, every box held`})`);
+  };
+  // The place's own day (r3-31 B): under its own line, with rows that hold
+  // still once they are in the room kept for them.
+  const dayCame = (label, frames, key, least) => {
+    const start = frames.findIndex((f) => f.dayCount > 0);
+    const last = frames.at(-1);
+    const when = start < 0 ? "never" : start === 0 ? "in the first frame" : `at +${frames[start].t - frames[0].t}ms, into the room held for it`;
+    must(start >= 0 && last.dayCount >= least && last.dayLine === en[key], `${label}: the day came under "${en[key]}", ${when} (${last ? `${last.dayCount} rows: ${last.dayText || "none"}` : "no frames"})`);
+    const moved = start < 0 ? [] : frames.slice(start).filter((f) => f.dayRows !== frames[start].dayRows).map((f) => `+${f.t - frames[0].t}ms`);
+    must(start >= 0 && moved.length === 0, `${label}: and its rows hold still once they are in (${moved.slice(0, 3).join(", ") || `${frames.length - Math.max(start, 0)} frames held`})`);
   };
   const closeSearch = async () => {
     await tap(page.locator(`[data-search-dock] button[aria-label="${en["common.close"]}"]`));
@@ -5669,6 +5695,7 @@ await section(44, async () => {
   const saints = await comeAndGo();
   still("Saints", saints, "saints");
   must((saints.at(-1)?.kinds ?? 0) > 0, `Saints: its kinds came with the lists, under the doors (${saints.at(-1)?.kinds ?? 0} tabs)`);
+  dayCame("Saints", saints, "prayers.today.commemoratedToday", 1);
   await page.screenshot({ path: path.join(SHOTS, "search-saints-412.png") });
   await closeSearch();
 
@@ -5719,7 +5746,34 @@ await section(44, async () => {
   await tap(page.locator("[role=dialog] [data-bible-search-open] [data-search-door]").first());
   const bible = await comeAndGo();
   still("The Bible's ••• sheet", bible, "bible");
+  dayCame("The Bible's ••• sheet", bible, "calendar.todaysReadings", 1);
   await page.screenshot({ path: path.join(SHOTS, "search-bible-412.png") });
+  // A reading of the day opens at its verse, in the day's walk, as Today's do.
+  const from = await page.evaluate(() => location.pathname + location.hash);
+  await tap(page.locator("[data-search-day] [data-search-day-row]").first());
+  await page.waitForFunction((was) => location.pathname + location.hash !== was && location.hash.startsWith("#v"), from, { timeout: 15000 }).catch(() => {});
+  await page.waitForTimeout(800);
+  const walked = await page.evaluate(() => {
+    let flow = null;
+    try {
+      flow = JSON.parse(sessionStorage.getItem("purify:readings.flow") ?? "null");
+    } catch {
+      /* none */
+    }
+    return { at: location.pathname + location.hash, items: flow?.items?.length ?? 0, step: flow?.at ?? null, open: !!document.querySelector("[data-search-screen]") };
+  });
+  must(/^\/bible\/[^/]+\/\d+\/?#v\d+$/.test(walked.at) && walked.items > 0 && walked.step === 0 && !walked.open, `a reading of the day opens at its verse, the first step of the day's walk, and the search leaves (${walked.at}, ${walked.items} in the walk, at ${walked.step})`);
+
+  // Everything, from Today's bar: the day in brief, the readings, the leading commemoration and the Hour.
+  if (await page.evaluate(() => !!document.querySelector("[data-search-screen]"))) await closeSearch();
+  await go(page, "/");
+  await page.waitForTimeout(1500);
+  await watch();
+  await tap(page.locator(`button[aria-label="${en["search.open"]}"]:visible`).first());
+  const everything = await comeAndGo();
+  still("Everything", everything, "all");
+  dayCame("Everything", everything, "prayers.today.eyebrow", 3);
+  await page.screenshot({ path: path.join(SHOTS, "search-everything-412.png") });
   await closeSearch();
   must(errors.length === 0, `no page errors${errors.length ? ": " + errors.slice(0, 2).join(" | ") : ""}`);
   await ctx.close();
