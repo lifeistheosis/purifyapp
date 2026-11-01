@@ -3218,6 +3218,8 @@
   "prayers.diptychs.livingIntro": "Они за које се молиш сваког дана. Додај имендане да се дан појави у одељку „Данас“.",
   "prayers.diptychs.reposedHeading": "За упокојене",
   "prayers.diptychs.reposedIntro": "Они који су уснули у Господу. Годишњица упокојења појављује се у одељку „Данас“.",
+  "prayers.diptychs.wallHeading": "Са молитвеног зида",
+  "prayers.diptychs.wallUntil": "До {date}",
   "prayers.diptychs.empty": "Још нема уноса.",
   "prayers.diptychs.removeConfirm": "Уклонити {name} са овог диптиха?",
   "signin.byContinuingYouAgreeToOur": "Настављањем прихваташ наше",

@@ -3190,6 +3190,8 @@
   "prayers.diptychs.livingIntro": "Aqueles por quem você reza todos os dias. Adicione os dias onomásticos para que a data apareça em Hoje.",
   "prayers.diptychs.reposedHeading": "Pelos falecidos",
   "prayers.diptychs.reposedIntro": "Aqueles que adormeceram no Senhor. O aniversário do repouso aparece em Hoje.",
+  "prayers.diptychs.wallHeading": "Do mural de oração",
+  "prayers.diptychs.wallUntil": "Até {date}",
   "prayers.diptychs.empty": "Nenhum registro ainda.",
   "prayers.diptychs.removeConfirm": "Remover {name} deste díptico?",
   "signin.byContinuingYouAgreeToOur": "Ao continuar, você concorda com os nossos",

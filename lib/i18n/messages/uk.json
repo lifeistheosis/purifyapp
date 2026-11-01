@@ -3247,6 +3247,8 @@
   "prayers.diptychs.livingIntro": "Ті, за кого ви молитеся щодня. Додайте іменини, щоб цей день з’явився в розділі «Сьогодні».",
   "prayers.diptychs.reposedHeading": "За спочилих",
   "prayers.diptychs.reposedIntro": "Ті, хто спочив у Господі. Річниця упокоєння з’являється в розділі «Сьогодні».",
+  "prayers.diptychs.wallHeading": "З молитовної стіни",
+  "prayers.diptychs.wallUntil": "До {date}",
   "prayers.diptychs.empty": "Записів ще немає.",
   "prayers.diptychs.removeConfirm": "Вилучити {name} з цього диптиха?",
   "signin.byContinuingYouAgreeToOur": "Продовжуючи, ви погоджуєтеся з нашими",

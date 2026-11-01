@@ -3185,6 +3185,8 @@
   "prayers.diptychs.livingIntro": "Her gün kendileri için dua ettiklerin. İsim günlerini ekle ki o gün Bugün ekranında görünsün.",
   "prayers.diptychs.reposedHeading": "Göçmüşler için",
   "prayers.diptychs.reposedIntro": "Rab'de uyuyanlar. Göçüş yıl dönümü Bugün ekranında görünür.",
+  "prayers.diptychs.wallHeading": "Dua duvarından",
+  "prayers.diptychs.wallUntil": "{date} tarihine kadar",
   "prayers.diptychs.empty": "Henüz kayıt yok.",
   "prayers.diptychs.removeConfirm": "{name} bu diptikten çıkarılsın mı?",
   "signin.byContinuingYouAgreeToOur": "Devam ederek şunları kabul etmiş olursunuz:",

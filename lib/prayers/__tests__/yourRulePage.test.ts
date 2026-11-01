@@ -16,6 +16,8 @@ import { deleteIntention, readIntentions, reposeDateText, restoreIntention, writ
  *  4. the note at the page's foot said "The names below sync", under the names;
  *  5. Start from Morning prayers brought in what the prayer book calls 8 min,
  *     and the page said about 12 (the count: lib/prayers/__tests__/myRule.test.ts);
+ *  6. the names brought from the prayer wall were never shown on the page
+ *     (lib/prayers/__tests__/wallNames.test.ts, "on the page of Your rule").
  *
  * Each fix is measured on the built page by scripts/export-walk.mjs too.
  */

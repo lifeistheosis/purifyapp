@@ -3185,6 +3185,8 @@
   "prayers.diptychs.livingIntro": "ისინი, ვისთვისაც ყოველდღე ლოცულობ. დაამატე სახელობის დღეები, რომ ეს დღე „დღეს“-ში გამოჩნდეს.",
   "prayers.diptychs.reposedHeading": "განსვენებულთათვის",
   "prayers.diptychs.reposedIntro": "ისინი, ვინც უფალში შესვენდნენ. განსვენების წლისთავი „დღეს“-ში გამოჩნდება.",
+  "prayers.diptychs.wallHeading": "ლოცვის კედლიდან",
+  "prayers.diptychs.wallUntil": "ბოლო დღე: {date}",
   "prayers.diptychs.empty": "ჩანაწერები ჯერ არ არის.",
   "prayers.diptychs.removeConfirm": "წაიშალოს {name} ამ დიპტიქიდან?",
   "signin.byContinuingYouAgreeToOur": "გაგრძელებით თანხმდები ჩვენს",

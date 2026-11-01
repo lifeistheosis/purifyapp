@@ -3186,6 +3186,8 @@
   "prayers.diptychs.livingIntro": "Those for whom you pray daily. Add namedays so the day surfaces on Today.",
   "prayers.diptychs.reposedHeading": "For the reposed",
   "prayers.diptychs.reposedIntro": "Those who have fallen asleep in the Lord. The anniversary of repose surfaces on Today.",
+  "prayers.diptychs.wallHeading": "From the prayer wall",
+  "prayers.diptychs.wallUntil": "Until {date}",
   "prayers.diptychs.empty": "No entries yet.",
   "prayers.diptychs.removeConfirm": "Remove {name} from this diptych?",
   "signin.byContinuingYouAgreeToOur": "By continuing, you agree to our",

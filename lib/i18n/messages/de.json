@@ -3185,6 +3185,8 @@
   "prayers.diptychs.livingIntro": "Alle, für die du täglich betest. Trage Namenstage ein, damit der Tag unter „Heute“ erscheint.",
   "prayers.diptychs.reposedHeading": "Für die Entschlafenen",
   "prayers.diptychs.reposedIntro": "Alle, die im Herrn entschlafen sind. Der Jahrestag der Entschlafung erscheint unter „Heute“.",
+  "prayers.diptychs.wallHeading": "Von der Gebetswand",
+  "prayers.diptychs.wallUntil": "Bis zum {date}",
   "prayers.diptychs.empty": "Noch keine Einträge.",
   "prayers.diptychs.removeConfirm": "{name} aus diesem Diptychon entfernen?",
   "signin.byContinuingYouAgreeToOur": "Mit dem Fortfahren akzeptierst du unsere",

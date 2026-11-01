@@ -3185,6 +3185,8 @@
   "prayers.diptychs.livingIntro": "Тези, за които се молиш всеки ден. Добави именните дни, за да излиза денят в „Днес“.",
   "prayers.diptychs.reposedHeading": "За починалите",
   "prayers.diptychs.reposedIntro": "Тези, които са починали в Господа. Годишнината от успението излиза в „Днес“.",
+  "prayers.diptychs.wallHeading": "От молитвената стена",
+  "prayers.diptychs.wallUntil": "До {date}",
   "prayers.diptychs.empty": "Още няма записи.",
   "prayers.diptychs.removeConfirm": "Да премахна ли {name} от този диптих?",
   "signin.byContinuingYouAgreeToOur": "Като продължиш, приемаш нашите",

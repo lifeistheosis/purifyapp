@@ -21,8 +21,10 @@ import {
   parseWallNames,
   setWallPlaces,
   unmarkWallPrayed,
+  waitingWallNames,
   wallFromRow,
   wallId,
+  wallLeavesText,
   wallNamesFor,
   wallToRow,
   type WallName,
@@ -148,6 +150,55 @@ describe("which prayers a name waits in", () => {
     // The mark taken back: waiting again.
     const undone = unmarkWallPrayed(prayed, [IOANN.id], at(0, 7));
     expect(wallNamesFor(undone, "evening", later, later).map((n) => n.name)).toEqual(["Ioann", "Anna"]);
+  });
+});
+
+describe("on the page of Your rule (the owner's note 73)", () => {
+  // Read in Those I pray for for a week, and never shown where the names are kept.
+  const list = addWallName(addWallName([], IOANN, ["morning"], T0), MARIA, ["evening", "mine"], at(2));
+
+  it("lists those still waiting, the first to leave first, and none prayed for, taken out or out of days", () => {
+    expect(waitingWallNames(list, at(3).getTime()).map((n) => n.name)).toEqual(["Ioann", "Maria"]);
+    // Taken out (Remove here, or Take out on the wall): gone from the list, kept on the device.
+    const out = markWallPrayed(list, [IOANN.id], at(3));
+    expect(waitingWallNames(out, at(3, 1).getTime()).map((n) => n.name)).toEqual(["Maria"]);
+    expect(out).toHaveLength(2);
+    // Undo: back, until its own days are out, which are unchanged.
+    const back = unmarkWallPrayed(out, [IOANN.id], at(3, 2));
+    expect(waitingWallNames(back, at(3, 3).getTime()).map((n) => n.name)).toEqual(["Ioann", "Maria"]);
+    expect(back.find((n) => n.id === IOANN.id)?.until).toBe(at(WALL_DAYS).toISOString());
+    // A week on, Ioann's days are out; Maria, added two days later, waits on.
+    expect(waitingWallNames(back, at(WALL_DAYS, 1).getTime()).map((n) => n.name)).toEqual(["Maria"]);
+  });
+
+  it("says the day each leaves as the reader's language writes a day", () => {
+    const until = at(WALL_DAYS).toISOString();
+    expect(until).toBe("2026-10-25T09:00:00.000Z");
+    expect(wallLeavesText(until, "en", "UTC")).toBe("Oct 25");
+    expect(wallLeavesText(until, "de", "UTC")).toBe("25. Okt.");
+    // On the reader's own clock: late on the 24th in Honolulu, the 25th in London.
+    expect(wallLeavesText("2026-10-25T05:00:00.000Z", "en", "Pacific/Honolulu")).toBe("Oct 24");
+    expect(wallLeavesText("2026-10-25T05:00:00.000Z", "en", "Europe/London")).toBe("Oct 25");
+    expect(wallLeavesText("not a date", "en")).toBe("");
+  });
+
+  it("are drawn on the page, with the day each leaves, and taken out with an Undo", () => {
+    const src = read("components", "prayers", "Diptychs.tsx");
+    expect(src).toContain("<WallSection />");
+    expect(src).toContain("waitingWallNames(useWallNames())");
+    expect(src).toContain('t("prayers.diptychs.wallUntil", { date: wallLeavesText(name.until, locale) })');
+    expect(src).toContain("updateWallNames((list) => markWallPrayed(list, [name.id]))");
+    expect(src).toContain("updateWallNames((list) => unmarkWallPrayed(list, [undo.id]))");
+  });
+
+  it("in words of every language", () => {
+    for (const { code } of LOCALES) {
+      const m = catalog(code);
+      expect(m["prayers.diptychs.wallHeading"], code).toBeTruthy();
+      expect(m["prayers.diptychs.wallUntil"], code).toContain("{date}");
+      expect(m["prayers.diptychs.wallHeading"] + m["prayers.diptychs.wallUntil"], code).not.toContain(EM_DASH);
+      if (code !== "en") expect(m["prayers.diptychs.wallHeading"], code).not.toBe(catalog("en")["prayers.diptychs.wallHeading"]);
+    }
   });
 });
 

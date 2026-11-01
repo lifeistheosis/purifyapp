@@ -16,7 +16,10 @@
 //
 // 1.8 (note 73): Remove takes a name out at once, with an Undo for a few
 // seconds, as the rule's own rows do; it asked in the browser's own confirm
-// box, the only one in the prayer pages.
+// box, the only one in the prayer pages. And the names the reader brought
+// from the prayer wall stand after the two lists, each with the day it
+// leaves: they were read in Those I pray for for a week, and this page,
+// where the names are kept, never showed them.
 
 import { useEffect, useRef, useState } from "react";
 import { useTranslate } from "@/components/i18n/MessagesProvider";
@@ -32,6 +35,8 @@ import {
   type Intention,
   type IntentionKind,
 } from "@/lib/prayers/storage";
+import { updateWallNames, useWallNames } from "@/lib/prayers/useWallNames";
+import { markWallPrayed, unmarkWallPrayed, waitingWallNames, wallLeavesText, type WallName } from "@/lib/prayers/wallNames";
 
 const FIELD =
   "min-h-11 w-full rounded-[10px] bg-paper/[0.06] px-3 py-2 font-sans text-ui text-paper placeholder:text-paper/45 focus:outline-none focus-visible:ring-2 focus-visible:ring-paper/40";
@@ -62,7 +67,86 @@ export function Diptychs() {
         heading={t("prayers.diptychs.reposedHeading")}
         intro={t("prayers.diptychs.reposedIntro")}
       />
+      <WallSection />
     </div>
+  );
+}
+
+/**
+ * The names from the prayer wall that wait in the reader's prayers (lib/
+ * prayers/wallNames.ts): each as the wall showed it, the words it asked
+ * with, and the day it leaves. Remove takes it out of the reader's prayers,
+ * as "Take out of my prayers" on the wall does, with an Undo. Nothing is
+ * drawn while there are none.
+ */
+function WallSection() {
+  const { t, locale } = useTranslate();
+  const names = waitingWallNames(useWallNames());
+  const [undo, setUndo] = useState<WallName | null>(null);
+  const undoTimer = useRef<number | undefined>(undefined);
+
+  useEffect(() => () => window.clearTimeout(undoTimer.current), []);
+
+  function remove(name: WallName) {
+    updateWallNames((list) => markWallPrayed(list, [name.id]));
+    window.clearTimeout(undoTimer.current);
+    setUndo(name);
+    undoTimer.current = window.setTimeout(() => setUndo(null), UNDO_MS);
+  }
+
+  function putBack() {
+    if (!undo) return;
+    updateWallNames((list) => unmarkWallPrayed(list, [undo.id]));
+    window.clearTimeout(undoTimer.current);
+    setUndo(null);
+  }
+
+  if (names.length === 0 && !undo) return null;
+
+  return (
+    <section aria-labelledby="diptych-wall">
+      <h3 id="diptych-wall" className="text-lede font-bold leading-tight text-paper">
+        {t("prayers.diptychs.wallHeading")}
+      </h3>
+      <p className="mt-1.5 font-sans text-detail leading-[1.6] text-paper/60">{t("community.wallAddNote")}</p>
+
+      <ul className="mt-3 divide-y divide-paper/10 border-y border-paper/10">
+        {names.length === 0 ? <li className="py-4 font-sans text-detail text-paper/50">{t("prayers.diptychs.empty")}</li> : null}
+        {names.map((name) => (
+          <li key={name.id} data-wall-name className="flex items-start justify-between gap-3 py-3">
+            <div className="min-w-0 flex-1">
+              <p className="break-words font-sans text-ui font-semibold leading-snug text-paper">{name.name}</p>
+              {name.intention ? (
+                <p className="mt-1 break-words font-serif text-ui italic leading-[1.5] text-paper/65">{name.intention}</p>
+              ) : null}
+              <p data-wall-leaves className="mt-1 font-sans text-caption text-paper/50">
+                {t("prayers.diptychs.wallUntil", { date: wallLeavesText(name.until, locale) })}
+              </p>
+            </div>
+            <button
+              type="button"
+              onClick={() => remove(name)}
+              className="tap-press inline-flex min-h-11 shrink-0 items-center px-2 font-sans text-caption text-paper/60 hover:text-paper"
+            >
+              {t("prayers.diptychs.remove")}
+            </button>
+          </li>
+        ))}
+      </ul>
+
+      {undo ? (
+        <p role="status" className="mt-3 flex min-h-11 items-center gap-3 font-sans text-detail text-paper/75">
+          <span className="min-w-0 truncate">{removedLine(t("prayers.mine.removed"), undo.name)}</span>
+          <button
+            type="button"
+            onClick={putBack}
+            className="tap-press inline-flex min-h-11 shrink-0 items-center px-2 font-semibold text-paper underline underline-offset-4"
+          >
+            {t("prayers.mine.undo")}
+          </button>
+        </p>
+      ) : null}
+    </section>
   );
 }
 

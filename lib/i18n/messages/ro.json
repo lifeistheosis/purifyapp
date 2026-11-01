@@ -3227,6 +3227,8 @@
   "prayers.diptychs.livingIntro": "Cei pentru care te rogi în fiecare zi. Adaugă zilele onomastice, ca ziua să apară în „Astăzi”.",
   "prayers.diptychs.reposedHeading": "Pentru cei adormiți",
   "prayers.diptychs.reposedIntro": "Cei care au adormit întru Domnul. Ziua adormirii apare în „Astăzi”.",
+  "prayers.diptychs.wallHeading": "De pe peretele de rugăciune",
+  "prayers.diptychs.wallUntil": "Până la {date}",
   "prayers.diptychs.empty": "Nicio înregistrare încă.",
   "prayers.diptychs.removeConfirm": "Ștergi numele {name} din acest diptic?",
   "signin.byContinuingYouAgreeToOur": "Continuând, ești de acord cu",

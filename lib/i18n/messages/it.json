@@ -3190,6 +3190,8 @@
   "prayers.diptychs.livingIntro": "Coloro per cui preghi ogni giorno. Aggiungi gli onomastici perché il giorno compaia in Oggi.",
   "prayers.diptychs.reposedHeading": "Per i defunti",
   "prayers.diptychs.reposedIntro": "Coloro che si sono addormentati nel Signore. L'anniversario della dormizione compare in Oggi.",
+  "prayers.diptychs.wallHeading": "Dalla bacheca di preghiera",
+  "prayers.diptychs.wallUntil": "Fino al {date}",
   "prayers.diptychs.empty": "Ancora nessuna voce.",
   "prayers.diptychs.removeConfirm": "Rimuovere {name} da questo dittico?",
   "signin.byContinuingYouAgreeToOur": "Continuando, accetti i nostri",

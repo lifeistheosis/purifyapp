@@ -3248,6 +3248,8 @@
   "prayers.diptychs.livingIntro": "Те, о ком вы молитесь каждый день. Добавьте именины, чтобы этот день показывался в разделе «Сегодня».",
   "prayers.diptychs.reposedHeading": "Об усопших",
   "prayers.diptychs.reposedIntro": "Те, кто почил о Господе. Годовщина кончины показывается в разделе «Сегодня».",
+  "prayers.diptychs.wallHeading": "С молитвенной стены",
+  "prayers.diptychs.wallUntil": "До {date}",
   "prayers.diptychs.empty": "Пока нет записей.",
   "prayers.diptychs.removeConfirm": "Убрать {name} из этого диптиха?",
   "signin.byContinuingYouAgreeToOur": "Продолжая, вы принимаете наши",

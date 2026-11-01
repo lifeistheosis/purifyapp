@@ -3185,6 +3185,8 @@
   "prayers.diptychs.livingIntro": "Ang mga ipinapanalangin mo araw-araw. Idagdag ang mga araw ng pangalan para lumitaw ang araw sa “Ngayon”.",
   "prayers.diptychs.reposedHeading": "Para sa mga yumao",
   "prayers.diptychs.reposedIntro": "Ang mga nakatulog na sa Panginoon. Lumilitaw sa “Ngayon” ang taunang paggunita ng kanilang pagpanaw.",
+  "prayers.diptychs.wallHeading": "Mula sa pader ng panalangin",
+  "prayers.diptychs.wallUntil": "Hanggang {date}",
   "prayers.diptychs.empty": "Wala pang nakatala.",
   "prayers.diptychs.removeConfirm": "Alisin si {name} sa diptych na ito?",
   "signin.byContinuingYouAgreeToOur": "Sa pagpapatuloy, sumasang-ayon ka sa aming",

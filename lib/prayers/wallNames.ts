@@ -27,6 +27,7 @@
 // This file is the model, pure and safe on the server. Reading and keeping it
 // on the device is lib/prayers/useWallNames.ts.
 
+import { dateLocale } from "@/lib/i18n/deviceDates";
 import { cleanPlaces, placeOf, type PrayPlace } from "@/lib/prayers/commemoration";
 
 export type WallName = {
@@ -221,6 +222,29 @@ export function unmarkWallPrayed(list: readonly WallName[], ids: readonly string
 export function activeWallName(list: readonly WallName[], id: string, now: number = Date.now()): WallName | null {
   const n = list.find((x) => x.id === id);
   return n && !n.doneAt && Date.parse(n.until) > now ? n : null;
+}
+
+/**
+ * The names waiting in the reader's prayers, as the page of Your rule lists
+ * them among the reader's own (the owner's note 73: they were read in Those
+ * I pray for for a week, and the page never showed them): those not yet
+ * prayed for or taken out, whose days are not out, the first to leave first.
+ */
+export function waitingWallNames(list: readonly WallName[], now: number = Date.now()): WallName[] {
+  return list
+    .filter((n) => !n.doneAt && Date.parse(n.until) > now)
+    .sort((a, b) => Date.parse(a.until) - Date.parse(b.until));
+}
+
+/**
+ * The day a name leaves the reader's prayers, as their language writes a
+ * day: "Nov 7". On the reader's own clock, since it leaves at a moment and
+ * the day is theirs; `timeZone` is for the tests.
+ */
+export function wallLeavesText(until: string, locale: string, timeZone?: string): string {
+  const at = Date.parse(until);
+  if (!Number.isFinite(at)) return "";
+  return new Intl.DateTimeFormat(dateLocale(locale), { month: "short", day: "numeric", ...(timeZone ? { timeZone } : {}) }).format(at);
 }
 
 /**

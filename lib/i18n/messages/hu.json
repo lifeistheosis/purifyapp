@@ -3185,6 +3185,8 @@
   "prayers.diptychs.livingIntro": "Akikért naponta imádkozol. Add meg a névnapokat, hogy a nap megjelenjen a „Ma” oldalon.",
   "prayers.diptychs.reposedHeading": "Az elhunytakért",
   "prayers.diptychs.reposedIntro": "Akik elszenderültek az Úrban. Az elhunyt évfordulója megjelenik a „Ma” oldalon.",
+  "prayers.diptychs.wallHeading": "Az imafalról",
+  "prayers.diptychs.wallUntil": "{date} napjáig",
   "prayers.diptychs.empty": "Még nincs bejegyzés.",
   "prayers.diptychs.removeConfirm": "Eltávolítod {name} nevét erről a diptichonról?",
   "signin.byContinuingYouAgreeToOur": "A folytatással elfogadod a",

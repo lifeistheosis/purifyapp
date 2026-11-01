@@ -3250,6 +3250,8 @@
   "prayers.diptychs.livingIntro": "Ci, za których modlisz się codziennie. Dodaj imieniny, aby ten dzień pojawił się w „Dzisiaj”.",
   "prayers.diptychs.reposedHeading": "Za zmarłych",
   "prayers.diptychs.reposedIntro": "Ci, którzy zasnęli w Panu. Rocznica zaśnięcia pojawia się w „Dzisiaj”.",
+  "prayers.diptychs.wallHeading": "Ze ściany modlitwy",
+  "prayers.diptychs.wallUntil": "Do {date}",
   "prayers.diptychs.empty": "Brak wpisów.",
   "prayers.diptychs.removeConfirm": "Usunąć {name} z tego dyptychu?",
   "signin.byContinuingYouAgreeToOur": "Kontynuując, akceptujesz nasze",

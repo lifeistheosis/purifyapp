@@ -3295,6 +3295,8 @@
   "prayers.diptychs.livingIntro": "الذين تصلي لأجلهم كل يوم. أضف أعياد الأسماء لتظهر في صفحة «اليوم» في يومها.",
   "prayers.diptychs.reposedHeading": "من أجل الراقدين",
   "prayers.diptychs.reposedIntro": "الذين رقدوا في الرب. تظهر ذكرى الرقاد في صفحة «اليوم».",
+  "prayers.diptychs.wallHeading": "من لوحة الصلاة",
+  "prayers.diptychs.wallUntil": "حتى {date}",
   "prayers.diptychs.empty": "لا توجد أسماء بعد.",
   "prayers.diptychs.removeConfirm": "هل تحذف {name} من هذه الذبتيخا؟",
   "signin.byContinuingYouAgreeToOur": "بالمتابعة، فإنك توافق على",

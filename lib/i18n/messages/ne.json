@@ -3185,6 +3185,8 @@
   "prayers.diptychs.livingIntro": "जसका लागि तपाईं दिनहुँ प्रार्थना गर्नुहुन्छ। नामदिन थप्नुहोस्, ताकि त्यो दिन “आज” मा देखियोस्।",
   "prayers.diptychs.reposedHeading": "निदाएकाहरूका लागि",
   "prayers.diptychs.reposedIntro": "जो प्रभुमा निदाएका छन्। निधनको वार्षिकी “आज” मा देखिन्छ।",
+  "prayers.diptychs.wallHeading": "प्रार्थना भित्ताबाट",
+  "prayers.diptychs.wallUntil": "{date} सम्म",
   "prayers.diptychs.empty": "अझै कुनै प्रविष्टि छैन।",
   "prayers.diptychs.removeConfirm": "{name} लाई यो डिप्टिकबाट हटाउने?",
   "signin.byContinuingYouAgreeToOur": "जारी राखेर, तपाईं हाम्रो",

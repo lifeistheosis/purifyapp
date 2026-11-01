@@ -3183,6 +3183,8 @@
   "prayers.diptychs.livingIntro": "Mereka yang Anda doakan setiap hari. Tambahkan hari nama agar harinya muncul di “Hari ini”.",
   "prayers.diptychs.reposedHeading": "Untuk yang telah tertidur",
   "prayers.diptychs.reposedIntro": "Mereka yang telah tertidur dalam Tuhan. Peringatan hari wafat muncul di “Hari ini”.",
+  "prayers.diptychs.wallHeading": "Dari dinding doa",
+  "prayers.diptychs.wallUntil": "Hingga {date}",
   "prayers.diptychs.empty": "Belum ada entri.",
   "prayers.diptychs.removeConfirm": "Hapus {name} dari diptika ini?",
   "signin.byContinuingYouAgreeToOur": "Dengan melanjutkan, Anda menyetujui",

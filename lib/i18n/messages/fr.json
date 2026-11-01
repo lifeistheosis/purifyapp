@@ -3191,6 +3191,8 @@
   "prayers.diptychs.livingIntro": "Ceux pour qui vous priez chaque jour. Ajoutez les fêtes patronales pour que le jour apparaisse dans Aujourd'hui.",
   "prayers.diptychs.reposedHeading": "Pour les défunts",
   "prayers.diptychs.reposedIntro": "Ceux qui se sont endormis dans le Seigneur. L'anniversaire de la dormition apparaît dans Aujourd'hui.",
+  "prayers.diptychs.wallHeading": "Du mur de prière",
+  "prayers.diptychs.wallUntil": "Jusqu'au {date}",
   "prayers.diptychs.empty": "Aucune entrée pour l'instant.",
   "prayers.diptychs.removeConfirm": "Retirer {name} de ce diptyque ?",
   "signin.byContinuingYouAgreeToOur": "En continuant, vous acceptez nos",
