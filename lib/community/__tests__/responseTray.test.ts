@@ -112,6 +112,21 @@ describe("the tray", () => {
     expect(own).toContain('const spot = placed(small, 9);');
   });
 
+  it("is read on the walk once nothing in it moves, never at a set time", () => {
+    // Build 87's walk read the words 450ms after a switch to Light and to True
+    // black while they were still easing (.tap-press, 200ms, held pending in
+    // the headless browser for some 400ms more), reported as oklab(), which
+    // the reader could not read, and scored the words 0 to 1.
+    const own = read("scripts/export-walk.mjs").slice(read("scripts/export-walk.mjs").indexOf("await section(49,"));
+    expect(own).toContain('tray.hasAttribute("data-placed") && tray.getAnimations({ subtree: true }).length === 0');
+    expect(own).toContain("const rested = await settled(page);");
+    // Every tap that opens the tray waits for it to stand still before it is read.
+    expect(own).not.toMatch(/await tap\(candle\(page(, "reply")?\)\);\s*await page\.waitForTimeout\(/);
+    // A colour in Oklab is read, and one that cannot be read is named, not scored 0.
+    expect(own).toContain("m = /^okl(ab|ch)\\(([^)]+)\\)$/.exec(s ?? \"\");");
+    expect(own).toMatch(/\.some\(\(v\) => !Number\.isFinite\(v\)\)\) return NaN;/);
+  });
+
   it("is one size smaller over a reply", () => {
     expect(buttons).toMatch(/compact \? "min-h-\[42px\] rounded-\[14px\] px-1 py-\[3px\]" : "min-h-\[50px\] rounded-\[17px\] px-\[5px\] py-1"/);
     expect(bodies('.community-tray[data-response-tray="reply"]')).toMatch(/--tray-caret:\s*11px;/);

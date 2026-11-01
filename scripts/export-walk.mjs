@@ -6539,6 +6539,20 @@ await section(49, async () => {
         inks: choices.map((b) => getComputedStyle(b).color),
       };
     });
+  // The tray is read once nothing in it moves, never at a set time. It rises
+  // in 180ms, and its words ease to a palette's colours over 200ms
+  // (.tap-press), but in this headless browser either can sit pending for
+  // some 400ms before it runs: on build 87's export the words were still
+  // easing 450ms after a switch to Light and to True black, and were read
+  // halfway. A colour easing to or from Parchment's passes through Oklab and
+  // is reported as oklab() meanwhile, which is no word's colour at rest.
+  const settled = (page) =>
+    page
+      .waitForFunction(() => {
+        const tray = document.querySelector("[data-response-tray]");
+        return !!tray && tray.hasAttribute("data-placed") && tray.getAnimations({ subtree: true }).length === 0;
+      }, null, { timeout: 4000 })
+      .then(() => true, () => false);
   // Where it stands: over the row by the gap (under it when `below`), its
   // caret on the candle's middle, whole on the screen.
   const placed = (tr, gap) => {
@@ -6566,13 +6580,34 @@ await section(49, async () => {
       const p = m[1].split(/[\s/]+/).filter(Boolean).map(Number);
       return { r: p[0] * 255, g: p[1] * 255, b: p[2] * 255, a: p[3] ?? 1 };
     }
+    // What the browser reports for a colour mixed or eased in Oklab (Tailwind's
+    // own text-paper/60 is one): back to sRGB, as it is drawn.
+    m = /^okl(ab|ch)\(([^)]+)\)$/.exec(s ?? "");
+    if (m) {
+      const p = m[2].split(/[\s/]+/).filter(Boolean).map(Number);
+      const [L, A, B] = m[1] === "ab" ? p : [p[0], p[1] * Math.cos((p[2] * Math.PI) / 180), p[1] * Math.sin((p[2] * Math.PI) / 180)];
+      const l = (L + 0.3963377774 * A + 0.2158037573 * B) ** 3;
+      const q = (L - 0.1055613458 * A - 0.0638541728 * B) ** 3;
+      const k = (L - 0.0894841775 * A - 1.291485548 * B) ** 3;
+      const enc = (v) => 255 * Math.min(1, Math.max(0, v <= 0.0031308 ? 12.92 * v : 1.055 * v ** (1 / 2.4) - 0.055));
+      return {
+        r: enc(4.0767416621 * l - 3.3077115913 * q + 0.2309699292 * k),
+        g: enc(-1.2684380046 * l + 2.6097574011 * q - 0.3413193965 * k),
+        b: enc(-0.0041960863 * l - 0.7034186147 * q + 1.707614701 * k),
+        a: p[3] ?? 1,
+      };
+    }
     return null;
   };
-  /** The contrast of a word's ink on the tray's ground, the ink laid over the ground as drawn. */
+  /**
+   * The contrast of a word's ink on the tray's ground, the ink laid over the
+   * ground as drawn. NaN, never 0, for a colour it cannot read: the check
+   * then names the colour instead of failing the words.
+   */
   const ratio = (ink, ground) => {
     const f = rgbOf(ink);
     const g = rgbOf(ground);
-    if (!f || !g) return 0;
+    if (!f || !g || [f.r, f.g, f.b, f.a, g.r, g.g, g.b].some((v) => !Number.isFinite(v))) return NaN;
     const flat = { r: f.r * f.a + g.r * (1 - f.a), g: f.g * f.a + g.g * (1 - f.a), b: f.b * f.a + g.b * (1 - f.a) };
     const lum = (c) => 0.2126 * channel(c.r) + 0.7152 * channel(c.g) + 0.0722 * channel(c.b);
     const [x, y] = [lum(flat), lum(g)].sort((p, q) => q - p);
@@ -6590,7 +6625,7 @@ await section(49, async () => {
     await page.screenshot({ path: path.join(SHOTS, "community-responses-390-closed.png") });
 
     await tap(candle(page));
-    await page.waitForTimeout(400);
+    await settled(page);
     const up = await trayNow(page);
     const during = await rowAndNext(page);
     must(!!up && up.portal && up.role === "group" && up.size === "post", "390: the candle opens a tray drawn at the top of the page, not inside the post");
@@ -6607,13 +6642,13 @@ await section(49, async () => {
     must(!(await trayNow(page)) && moved(before, await rowAndNext(page)) < 0.5, "390: Escape puts it down, and nothing has moved");
 
     await tap(candle(page));
-    await page.waitForTimeout(400);
+    await settled(page);
     await tap(page.locator("article h3").first());
     await page.waitForTimeout(300);
     must(!(await trayNow(page)), "390: a tap anywhere else puts it down");
 
     await tap(candle(page));
-    await page.waitForTimeout(400);
+    await settled(page);
     await page.evaluate(() => window.scrollBy(0, 24));
     await page.waitForTimeout(400);
     must(!(await trayNow(page)), "390: a scroll puts it down");
@@ -6623,7 +6658,7 @@ await section(49, async () => {
     // A choice: Amen. The tray goes, the candle lights, and still nothing moves.
     const choosing = await rowAndNext(page);
     await tap(candle(page));
-    await page.waitForTimeout(400);
+    await settled(page);
     await tap(page.locator("[data-response-tray] button").first());
     await page.waitForTimeout(900);
     const answered = await rowAndNext(page);
@@ -6634,16 +6669,21 @@ await section(49, async () => {
 
     // Open again: the reader's own is lit, the others not, on each of the five palettes.
     await tap(candle(page));
-    await page.waitForTimeout(400);
+    await settled(page);
     const again = await trayNow(page);
     must(again?.pressed.join(" ") === "true false false", `390: open again, Amen is the reader's own and the others are not (${again?.pressed.join(" ")})`);
     for (const [palette, mode] of [["Dark", null], ["Light", "parchment"], ["True black", "black"], ["Candlelight", "candlelight"], ["Monastery", "monastery"]]) {
       await page.evaluate((m) => (m ? document.documentElement.setAttribute("data-reading-mode", m) : document.documentElement.removeAttribute("data-reading-mode")), mode);
-      await page.waitForTimeout(450);
+      // The words at rest in this palette, once they have finished easing to it.
+      const rested = await settled(page);
       const tr = await trayNow(page);
       const held = ratio(tr?.inks[0], tr?.ground);
       const rest = Math.min(ratio(tr?.inks[1], tr?.ground), ratio(tr?.inks[2], tr?.ground));
-      must(!!tr && rest >= 4.5 && held > rest, `390, ${palette}: the words read on the tray, ${rest} to 1, and the reader's own stands out, ${held} to 1 (${tr?.ground})`);
+      const read = Number.isFinite(rest) && Number.isFinite(held);
+      must(
+        rested && !!tr && read && rest >= 4.5 && held > rest,
+        `390, ${palette}: ${read ? `the words read on the tray, ${rest} to 1, and the reader's own stands out, ${held} to 1` : `the words' colours could not be read (${tr?.inks.join(", ")})`} (${tr?.ground}${rested ? "" : "; still moving after 4s"})`,
+      );
       if (tr) await page.screenshot({ path: path.join(SHOTS, `community-responses-${mode ?? "dark"}.png`), clip: { x: 0, y: Math.max(0, Math.floor(tr.top) - 24), width: 390, height: 150 } });
     }
     await page.evaluate(() => document.documentElement.removeAttribute("data-reading-mode"));
@@ -6664,7 +6704,7 @@ await section(49, async () => {
     await page.evaluate((y) => window.scrollBy(0, y ?? 0), lift);
     await page.waitForTimeout(600);
     await tap(candle(page));
-    await page.waitForTimeout(400);
+    await settled(page);
     const under = await trayNow(page);
     const low = placed(under, 11);
     must(!!under?.below && low.ok, `390: with a bar over the room above the row, the tray stands ${low.says}`);
@@ -6684,7 +6724,7 @@ await section(49, async () => {
       await centre(page, "reply");
       const beforeReply = await rowAndNext(page, "reply");
       await tap(candle(page, "reply"));
-      await page.waitForTimeout(400);
+      await settled(page);
       const small = await trayNow(page);
       const duringReply = await rowAndNext(page, "reply");
       const spot = placed(small, 9);
@@ -6708,7 +6748,7 @@ await section(49, async () => {
     await centre(page);
     const before = await rowAndNext(page);
     await tap(candle(page));
-    await page.waitForTimeout(400);
+    await settled(page);
     const tr = await trayNow(page);
     const after = await rowAndNext(page);
     const spot = placed(tr, 11);
@@ -6727,7 +6767,7 @@ await section(49, async () => {
     must(ready, "motion off: the stood-in feed is drawn");
     await centre(page);
     await tap(candle(page));
-    await page.waitForTimeout(400);
+    await settled(page);
     const still = await trayNow(page);
     must(still?.motion === "reduce" && still?.animation === "none", `motion off: the tray does not rise, it is there (${still?.motion}, ${still?.animation})`);
     await ctx.close();
