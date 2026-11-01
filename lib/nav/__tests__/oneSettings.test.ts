@@ -227,11 +227,11 @@ describe("the account's screens on a phone", () => {
     // has another home on a phone is the desktop's only.
     const data = code(`${SIGNED}/data/page.tsx`);
     expect(data).toMatch(
-      /<div className="hidden md:contents native-md-hidden"[^>]*>\s*<ProfileSettings \/>\s*<PushOptIn \/>\s*<EmailPreferences \/>\s*<PatronSaintPicker \/>\s*<\/div>/,
+      /<div className="hidden md:contents native-md-hidden"[^>]*>\s*<ProfileSettings \/>\s*<PushOptIn \/>\s*<CommunityPushSwitch \/>\s*<EmailPreferences \/>\s*<PatronSaintPicker \/>\s*<\/div>/,
     );
-    // Reminders and email: the Notifications screen.
+    // Reminders, Community's switch beside them (1.8), and email: the Notifications screen.
     const notifications = code(`${SIGNED}/notifications/page.tsx`);
-    expect(notifications).toMatch(/<PushOptIn \/>\s*<EmailPreferences \/>/);
+    expect(notifications).toMatch(/<PushOptIn \/>\s*<CommunityPushSwitch \/>\s*<EmailPreferences \/>/);
     // The patron saint: the Profile screen, on a phone.
     expect(code("components/profile/ProfileTabClient.tsx")).toMatch(/<div className="mt-6 md:hidden native-md-block">\s*<PatronSaintPicker \/>/);
     // Where the account is signed in: under Security, on a phone.

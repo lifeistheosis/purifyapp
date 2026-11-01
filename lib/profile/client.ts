@@ -32,6 +32,16 @@ export async function fetchProfile(handle: string): Promise<{ ok: true; profile:
   }
 }
 
+/**
+ * Whether Community notifications are on for this reader: the one value
+ * (profiles.push_community) both switches show, the one in Settings,
+ * Notifications and the one in Edit profile. On unless they turned it off,
+ * as the server reads it (lib/community/push.ts).
+ */
+export function communityPushOn(profile: Pick<MyProfile, "settings"> | null | undefined): boolean {
+  return profile?.settings?.pushCommunity !== false;
+}
+
 /** The signed-in reader's own profile, with what the editor needs. */
 export async function fetchMyProfile(): Promise<{ ok: true; profile: MyProfile } | ProfileError> {
   try {
