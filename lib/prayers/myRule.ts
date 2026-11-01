@@ -157,30 +157,76 @@ export function withMinutes(rule: MyRule, minutes: Record<MyRulePart, number>): 
   return { ...rule, minutes };
 }
 
-/** A prayer's length, read at about 110 words a minute, a minute at the least. */
-export function minutesForText(text: string): number {
-  const words = text.trim().split(/\s+/).filter(Boolean).length;
-  return Math.max(1, Math.ceil(words / 110));
-}
+// ── How long it is ────────────────────────────────────────────────────────
+//
+// Seconds first, rounded once (the owner's note 73). Each prayer used to be
+// rounded up to a whole minute and the minutes added, so the ten prayers the
+// prayer book calls 8 min ("Morning prayers", lib/prayers/rules.ts) came to
+// 12 min on the page of Your rule once a reader took them in whole. A reading
+// pace alone does not give the book's figure either: those ten are 657 words,
+// six minutes at 110 a minute, and the book allows eight, for the bows, the
+// Cross and the quiet a rule is prayed with. So a prayer's seconds are its
+// share of the length the prayer book gives its own rule, by its words, and a
+// rule taken in whole comes to the book's own figure exactly.
 
-/** How long one prayer is to read: its own words, or its first wording's. */
-export function prayerMinutes(p: Prayer): number {
+/** The pace a prayer is read at when its rule gives no length of its own. */
+const WORDS_PER_MINUTE = 110;
+
+/** The minute "Those I pray for" is given in a rule. */
+const NAMES_SECONDS = 60;
+
+/** How many words a prayer is to read: its own words, or its first wording's. */
+function wordsOf(p: Prayer): number {
   const text = p.text ?? p.variants?.[0]?.text ?? p.instruction ?? "";
-  return minutesForText(text);
+  return text.trim().split(/\s+/).filter(Boolean).length;
 }
 
-/** How long a part is to pray: its prayers' lengths, and a minute for the names. */
-export function partMinutes(items: readonly MyRuleItem[], lookup: (ruleId: string) => Rule | null): number {
-  let minutes = 0;
+/** How long `words` of a rule's own words take, in seconds: their share of the rule's length in the prayer book. */
+function secondsOfWords(from: Rule | null | undefined, words: number): number {
+  const total = from && from.estimatedMinutes > 0 ? from.prayers.reduce((n, x) => n + wordsOf(x), 0) : 0;
+  return from && total > 0 ? (from.estimatedMinutes * 60 * words) / total : (words / WORDS_PER_MINUTE) * 60;
+}
+
+/** Seconds as the page says them: rounded once, a minute at the least, and nothing as nothing. */
+function asMinutes(seconds: number): number {
+  return seconds > 0 ? Math.max(1, Math.round(seconds / 60)) : 0;
+}
+
+/** How long one prayer is to read, in seconds, as part of the rule it is from. */
+export function prayerSeconds(p: Prayer, from: Rule | null | undefined): number {
+  return secondsOfWords(from, wordsOf(p));
+}
+
+/** How long one prayer is to read, in whole minutes, a minute at the least. */
+export function prayerMinutes(p: Prayer, from: Rule | null | undefined): number {
+  return Math.max(1, asMinutes(prayerSeconds(p, from)));
+}
+
+/**
+ * How long a part is to pray, in seconds: each rule's chosen words taken
+ * together, so a rule taken in whole is its own length to the second, and a
+ * minute for the names.
+ */
+export function partSeconds(items: readonly MyRuleItem[], lookup: (ruleId: string) => Rule | null): number {
+  let seconds = 0;
+  const chosen = new Map<string, { from: Rule; words: number }>();
   for (const item of items) {
     if (item.kind === "names") {
-      minutes += 1;
+      seconds += NAMES_SECONDS;
       continue;
     }
-    const p = lookup(item.rule)?.prayers.find((x) => x.id === item.prayer);
-    if (p) minutes += prayerMinutes(p);
+    const from = lookup(item.rule);
+    const p = from?.prayers.find((x) => x.id === item.prayer);
+    if (!from || !p) continue;
+    chosen.set(item.rule, { from, words: (chosen.get(item.rule)?.words ?? 0) + wordsOf(p) });
   }
-  return minutes;
+  for (const { from, words } of chosen.values()) seconds += secondsOfWords(from, words);
+  return seconds;
+}
+
+/** How long a part is to pray, in whole minutes: its seconds, rounded once; 0 for nothing. */
+export function partMinutes(items: readonly MyRuleItem[], lookup: (ruleId: string) => Rule | null): number {
+  return asMinutes(partSeconds(items, lookup));
 }
 
 /** The words a composed rule needs that the app supplies, in the reader's language. */
@@ -213,7 +259,6 @@ export function composeRule(
 ): { rule: Rule; missing: number } {
   const prayers: Prayer[] = [];
   let missing = 0;
-  let minutes = 0;
   for (const item of items) {
     if (item.kind === "names") {
       const living = names.living.map((n) => n.name.trim()).filter(Boolean);
@@ -228,7 +273,6 @@ export function composeRule(
         instruction: blocks.length ? words.namesInstruction : words.namesNone,
         ...(blocks.length ? { text: blocks.join("\n\n") } : {}),
       });
-      minutes += 1;
       continue;
     }
     const from = lookup(item.rule);
@@ -246,7 +290,6 @@ export function composeRule(
       source: p.source ?? from.source,
       origin: { ruleId: item.rule, prayerId: p.id },
     });
-    minutes += prayerMinutes(p);
   }
   return {
     rule: {
@@ -254,7 +297,8 @@ export function composeRule(
       kind: "custom",
       title: words.title,
       intro: "",
-      estimatedMinutes: Math.max(1, minutes),
+      // As the page of Your rule says it: seconds first, rounded once.
+      estimatedMinutes: Math.max(1, partMinutes(items, lookup)),
       source: "",
       prayers,
     },

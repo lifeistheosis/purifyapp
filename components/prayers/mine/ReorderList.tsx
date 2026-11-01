@@ -1,12 +1,19 @@
 "use client";
 
-import { useRef, type KeyboardEvent, type PointerEvent } from "react";
+import { useRef, type KeyboardEvent, type PointerEvent, type ReactNode } from "react";
 
 import { useTranslate } from "@/components/i18n/MessagesProvider";
 import { Grip } from "@/components/ui/icons/Grip";
-import { cn } from "@/lib/cn";
+import { Orans } from "@/components/ui/icons/Orans";
 
-export type ReorderRow = { key: string; title: string; meta?: string; lang?: string };
+export type ReorderRow = {
+  key: string;
+  title: string;
+  meta?: string;
+  lang?: string;
+  /** "Those I pray for": its node lit, with the praying figure in place of its number. */
+  lit?: boolean;
+};
 
 type Drag = {
   from: number;
@@ -30,15 +37,24 @@ type Drag = {
  * The handle also moves its row with the arrow keys, and every row opens a
  * sheet with Move up and Move down, so the order can be changed without a
  * drag at all.
+ *
+ * 1.8 (the owner's pick A of r3-27): the prayers are numbered steps on one
+ * thread, each node on it carrying its place in the rule, "Those I pray for"
+ * lit with the praying figure, and the handle at the row's end. `foot` is
+ * the thread's last stop, Add prayers. The thread and the nodes are
+ * globals.css, "Your rule: the icon above, the steps below".
  */
 export function ReorderList({
   rows,
   onMove,
   onOpen,
+  foot,
 }: {
   rows: ReorderRow[];
   onMove: (from: number, to: number) => void;
   onOpen: (index: number) => void;
+  /** The thread's last stop, after the steps. */
+  foot?: ReactNode;
 }) {
   const { t } = useTranslate();
   const list = useRef<HTMLOListElement>(null);
@@ -122,37 +138,44 @@ export function ReorderList({
   }
 
   return (
-    <ol ref={list} className="divide-y divide-paper/10 border-y border-paper/10">
-      {rows.map((row, i) => (
-        <li
-          key={row.key}
-          className="relative flex items-center gap-1 bg-night motion-safe:transition-transform motion-safe:duration-150 data-[dragging]:z-10 data-[dragging]:rounded-[12px] data-[dragging]:bg-night-soft data-[dragging]:shadow-[0_12px_30px_-10px_rgba(0,0,0,0.7)] data-[dragging]:transition-none"
-        >
-          <button
-            type="button"
-            aria-label={t("prayers.mine.moveRow", { title: row.title })}
-            onPointerDown={(e) => begin(e, i)}
-            onPointerMove={move}
-            onPointerUp={() => end(true)}
-            onPointerCancel={() => end(false)}
-            onKeyDown={(e) => keys(e, i)}
-            className="-ms-2 inline-flex min-h-12 min-w-11 shrink-0 cursor-grab touch-none items-center justify-center text-paper/45 hover:text-paper active:cursor-grabbing"
+    <div className="rule-thread">
+      <ol ref={list} className="rule-steps">
+        {rows.map((row, i) => (
+          <li
+            key={row.key}
+            className="rule-step relative flex items-center gap-3 motion-safe:transition-transform motion-safe:duration-150 data-[dragging]:z-10 data-[dragging]:rounded-[14px] data-[dragging]:bg-night-soft data-[dragging]:shadow-[0_12px_30px_-10px_rgba(0,0,0,0.7)] data-[dragging]:transition-none"
           >
-            <Grip size={20} />
-          </button>
-          <button
-            type="button"
-            onClick={() => onOpen(i)}
-            aria-haspopup="dialog"
-            className="tap-press flex min-h-14 min-w-0 flex-1 flex-col items-start justify-center py-3 pe-1 text-start"
-          >
-            <span lang={row.lang} className={cn("max-w-full truncate font-serif text-ui font-semibold leading-snug text-paper")}>
-              {row.title}
+            <span aria-hidden className="rule-node" data-lit={row.lit ? "" : undefined}>
+              {row.lit ? <Orans size={15} /> : i + 1}
             </span>
-            {row.meta ? <span className="mt-0.5 max-w-full truncate font-sans text-caption text-paper/55">{row.meta}</span> : null}
-          </button>
-        </li>
-      ))}
-    </ol>
+            <button
+              type="button"
+              data-step-open
+              onClick={() => onOpen(i)}
+              aria-haspopup="dialog"
+              className="tap-press flex min-h-14 min-w-0 flex-1 flex-col items-start justify-center py-2.5 text-start"
+            >
+              <span data-step-title lang={row.lang} className="max-w-full truncate font-serif text-[15.5px] font-semibold leading-snug text-paper">
+                {row.title}
+              </span>
+              {row.meta ? <span className="mt-0.5 max-w-full truncate font-sans text-caption text-paper/55">{row.meta}</span> : null}
+            </button>
+            <button
+              type="button"
+              aria-label={t("prayers.mine.moveRow", { title: row.title })}
+              onPointerDown={(e) => begin(e, i)}
+              onPointerMove={move}
+              onPointerUp={() => end(true)}
+              onPointerCancel={() => end(false)}
+              onKeyDown={(e) => keys(e, i)}
+              className="-me-2 inline-flex min-h-12 min-w-11 shrink-0 cursor-grab touch-none items-center justify-center text-paper/40 hover:text-paper active:cursor-grabbing"
+            >
+              <Grip size={20} />
+            </button>
+          </li>
+        ))}
+      </ol>
+      {foot}
+    </div>
   );
 }

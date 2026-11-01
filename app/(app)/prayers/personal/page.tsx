@@ -13,10 +13,15 @@ export const metadata = {
 // page prerenders as it stands for the website and the apps' static export.
 // The address stays /prayers/personal: You, Settings, search and the walk
 // all lead here.
+//
+// 1.8 (the owner's pick A of r3-27): the part's icon fills the top of the
+// screen, so the bar starts clear over it, its buttons on plates, and turns
+// solid with the name once the page's own has gone up under it, as on a
+// saint's page.
 export default function PersonalPrayersPage() {
   return (
     <>
-      <MobileTopBar titleKey="prayers.mine.title" back backFallback="/prayers" revealTitleOn="mine-title" />
+      <MobileTopBar titleKey="prayers.mine.title" back backFallback="/prayers" revealTitleOn="mine-title" overlay />
       <MyRuleBuilder />
     </>
   );

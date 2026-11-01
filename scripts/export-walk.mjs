@@ -4439,6 +4439,9 @@ await section(38, async () => {
 // the day as a timeline with the hour lit; Learn to pray marks the lessons
 // read and names the next; the Akathist is set stanza by stanza; and Your rule
 // is built, prayed through, kept for the day, and led with on Today.
+// Your rule since 1.8 is the owner's pick A of r3-27 (note 73 of build 86):
+// measured empty and with a rule, its names, and in every palette
+// (lib/prayers/__tests__/yourRulePage.test.ts reads its source).
 // lib/prayers/__tests__/prayerPages.test.ts reads the source; this walks the
 // built app with no network.
 await section(39, async () => {
@@ -4606,16 +4609,69 @@ await section(39, async () => {
     must(next === en["prayers.learning.next"].replace("{title}", "The Sign of the Cross"), `${size.width}px: and the way in names the next lesson (${next})`);
 
     // Your rule: built from the morning rule, reordered, prayed through, kept.
-    await go(page, "/prayers/personal/");
-    await page.waitForFunction(() => !!document.querySelector("h1#mine-title"), null, { timeout: 20000 }).catch(() => {});
-    await page.waitForTimeout(800);
+    // Since 1.8 the owner's pick A of r3-27 (note 73, "A with a rule"): the
+    // part's icon under the clear bar, a carved Morning and Evening switch,
+    // the prayers as numbered steps on a thread. Measured empty, then with a
+    // rule. #morning, so the part is the same whatever the walk's hour.
+    await go(page, "/prayers/personal/#morning");
+    await page.waitForFunction(() => !!document.querySelector("h1#mine-title") && !!document.querySelector("[data-rule-picture] img[data-on]"), null, { timeout: 20000 }).catch(() => {});
+    await page.waitForTimeout(1200);
     clean(`${size.width}px, Your rule`, await screen(page), await page.evaluate(sticksOut));
-    await tap(page.locator("#mine-panel-morning button", { hasText: en["prayers.mine.startFromMorning"] }));
+    const ruleHead = () =>
+      page.evaluate(() => {
+        const box = document.querySelector("[data-rule-picture]");
+        const lit = box?.querySelector("img[data-on]");
+        const h1 = document.querySelector("h1#mine-title");
+        const bar = document.querySelector("[data-mobile-topbar]");
+        return {
+          part: box?.getAttribute("data-rule-picture") ?? "",
+          src: lit?.getAttribute("src") ?? "",
+          loaded: Boolean(lit && lit.complete && lit.naturalWidth > 0),
+          top: box ? Math.round(box.getBoundingClientRect().top) : null,
+          edges: box ? Math.round(box.getBoundingClientRect().left) === 0 && Math.round(box.getBoundingClientRect().right) === document.documentElement.clientWidth : false,
+          nameOnIt: Boolean(box && h1 && h1.getBoundingClientRect().top < box.getBoundingClientRect().bottom && h1.getBoundingClientRect().top > 0),
+          clearBar: Boolean(bar && bar.hasAttribute("data-overlay") && !bar.hasAttribute("data-revealed")),
+          tabs: [...document.querySelectorAll('[role="tablist"] [role="tab"]')].map((tab) => `${tab.id}:${tab.getAttribute("aria-selected")}`),
+          pray: document.querySelector("[data-mine-pray]")?.getAttribute("href") ?? null,
+          meta: document.querySelector("[data-mine-pray-meta]")?.textContent?.trim() ?? "",
+          hash: location.hash,
+        };
+      });
+    const empty = await ruleHead();
+    must(
+      empty.part === "morning" && empty.src === "/icons/prayer/anastasis.jpg" && empty.loaded && empty.top !== null && empty.top <= 1 && empty.edges,
+      `${size.width}px: an empty Your rule opens on the morning's Anastasis, edge to edge from the screen's top, under the bar (${empty.src || "no picture"}, top ${empty.top})`,
+    );
+    must(empty.clearBar && empty.nameOnIt, `${size.width}px: the bar is clear over the icon, and the page's name stands on it`);
+    must(empty.tabs.join(" ") === "mine-tab-morning:true mine-tab-evening:false" && empty.pray === null, `${size.width}px: Morning and Evening on one switch, Morning chosen, and no Pray my rule for an empty part (${empty.tabs.join(" ")})`);
+    const ways = await page.evaluate(() => [...document.querySelectorAll("#mine-panel-morning [data-mine-ways] > button")].map((b) => (b.textContent ?? "").replace(/\s+/g, " ").trim()));
+    const startWhat = en["prayers.mine.startFromWhat"]
+      .replace("{prayers}", en["prayers.reader.prayerCount.other"].replace("{count}", "10"))
+      .replace("{minutes}", en["today.minRead"].replace("{count}", "8"));
+    must(
+      ways.length === 2 && ways[0].includes(en["prayers.mine.startFromMorning"]) && ways[0].includes(startWhat) && ways[1].includes(en["prayers.mine.addOneByOne"]),
+      `${size.width}px: the two ways in are one choice of two rows, each saying what it brings (${ways[0] ?? "none"})`,
+    );
+    await page.screenshot({ path: path.join(SHOTS, `prayers-mine-empty-${size.width}.png`), fullPage: true });
+
+    await tap(page.locator("#mine-panel-morning [data-mine-ways] > button", { hasText: en["prayers.mine.startFromMorning"] }));
     await page.waitForTimeout(700);
-    const rows = () => page.evaluate(() => [...document.querySelectorAll("#mine-panel-morning ol > li")].map((li) => li.querySelectorAll("button")[1]?.querySelector("span")?.textContent?.trim() ?? ""));
+    const rows = () => page.evaluate(() => [...document.querySelectorAll("#mine-panel-morning ol > li")].map((li) => li.querySelector("[data-step-title]")?.textContent?.trim() ?? ""));
     const built = await rows();
-    must(built.length === 10 && Boolean(await page.evaluate(() => document.querySelector("[data-mine-pray]")?.getAttribute("href"))), `${size.width}px: starting from Morning prayers sets its ten prayers in the rule, and Pray my rule appears (${built.length} rows)`);
-    await tap(page.locator("#mine-panel-morning ol > li").first().locator("button").nth(1));
+    const thread = await page.evaluate(() => ({
+      nodes: [...document.querySelectorAll("#mine-panel-morning ol > li .rule-node")].map((n) => (n.textContent ?? "").trim()),
+      add: !!document.querySelector("#mine-panel-morning .rule-thread > [data-mine-add]"),
+      handles: document.querySelectorAll("#mine-panel-morning ol > li > button:last-child svg").length,
+    }));
+    const withRule = await ruleHead();
+    must(built.length === 10 && withRule.pray !== null, `${size.width}px: starting from Morning prayers sets its ten prayers in the rule, and Pray my rule appears (${built.length} rows)`);
+    must(
+      thread.nodes.join(",") === "1,2,3,4,5,6,7,8,9,10" && thread.add && thread.handles === 10,
+      `${size.width}px: the prayers are numbered steps on one thread, a handle on each, Add prayers its last stop (${thread.nodes.join(",")})`,
+    );
+    const eightMin = en["prayers.mine.partMinutes"].replace("{part}", en["prayers.tabs.morning"]).replace("{min}", "8");
+    must(withRule.meta === eightMin, `${size.width}px: Pray my rule says the part and its length as the prayer book does, "${eightMin}" (${withRule.meta})`);
+    await tap(page.locator("#mine-panel-morning ol > li").first().locator("[data-step-open]"));
     await page.waitForTimeout(900);
     await tap(page.locator("[role=dialog] button", { hasText: en["prayers.mine.moveDown"] }));
     await page.waitForTimeout(500);
@@ -4624,6 +4680,16 @@ await section(39, async () => {
     const moved = await rows();
     must(moved[0] === built[1] && moved[1] === built[0], `${size.width}px: Move down puts the first prayer second (${moved.slice(0, 2).join(", ")})`);
     await page.screenshot({ path: path.join(SHOTS, `prayers-mine-${size.width}.png`), fullPage: true });
+    // The switch crosses to the evening's Pantocrator, keeps the part in the address, and comes back.
+    await tap(page.locator("#mine-tab-evening"));
+    await page.waitForTimeout(1000);
+    const evening = await ruleHead();
+    must(
+      evening.part === "evening" && evening.src === "/sections/prayers.v4.jpg" && evening.loaded && evening.hash === "#evening" && evening.pray === null,
+      `${size.width}px: Evening shows its own icon, the Pantocrator, and its empty part (${evening.src || "no picture"}, ${evening.hash})`,
+    );
+    await tap(page.locator("#mine-tab-morning"));
+    await page.waitForTimeout(700);
     await tap(page.locator("[data-mine-pray]"));
     await page.waitForFunction(() => location.pathname.startsWith("/prayers/personal/morning") && document.querySelectorAll("[data-prayer-reader] section[id]").length > 0, null, { timeout: 20000 }).catch(() => {});
     await page.waitForTimeout(800);
@@ -4665,6 +4731,126 @@ await section(39, async () => {
     must(/^\/prayers\/(morning|evening)\/?$/.test(first.tile), `${size.width}px: and the day's rule for the hour is the first tile under it (${first.tile || "none"})`);
     await page.screenshot({ path: path.join(SHOTS, `prayers-today-mine-${size.width}.png`) });
     must(errors.length === 0, `${size.width}px: no page errors${errors.length ? ": " + errors.slice(0, 2).join(" | ") : ""}`);
+    await ctx.close();
+  }
+
+  // Your rule's names (the owner's note 73, and r3-27 A): the living, the
+  // reposed and the prayer wall's names as rows of medallions; a repose
+  // written as a date; each wall name with the day it leaves; a name removed
+  // at once, with Undo and no browser box; In which prayers one row opening
+  // lines to tick; the lists' lines naming Today in words; the note at the
+  // foot naming the names.
+  {
+    const now = new Date().toISOString();
+    const until = new Date(Date.now() + 3 * 86_400_000).toISOString();
+    const { ctx, page, errors } = await open({
+      width: 390,
+      height: 844,
+      phone: true,
+      set: {
+        "purify.intentions.living": JSON.stringify([{ id: "a1111111-1111-4111-8111-111111111111", name: "Maria", relationship: "Mother", addedAt: now }]),
+        "purify.intentions.departed": JSON.stringify([{ id: "a2222222-2222-4222-8222-222222222222", name: "George", repose: "2019-03-04", addedAt: now }]),
+        "purify.prayers.wall": JSON.stringify([
+          { id: "a3333333-3333-4333-8333-333333333333", name: "Anna", intention: "For my mother, who is ill", places: ["morning", "evening", "mine"], addedAt: now, until, doneAt: null, changedAt: now },
+        ]),
+      },
+    });
+    let boxes = 0;
+    page.on("dialog", (d) => {
+      boxes++;
+      void d.dismiss().catch(() => {});
+    });
+    await go(page, "/prayers/personal/");
+    await page.waitForFunction(() => document.querySelectorAll("[data-medallion]").length >= 3, null, { timeout: 20000 }).catch(() => {});
+    await page.waitForTimeout(900);
+    const lists = await page.evaluate(() =>
+      Object.fromEntries(["living", "departed", "wall"].map((k) => [k, [...document.querySelectorAll(`[data-names="${k}"] [data-medallion]`)].map((b) => (b.textContent ?? "").replace(/\s+/g, " ").trim())])),
+    );
+    const leaves = await page.evaluate((u) => new Intl.DateTimeFormat("en", { month: "short", day: "numeric" }).format(new Date(u)), until);
+    must(lists.living.length === 1 && lists.living[0].includes("Maria") && lists.living[0].includes("Mother"), `the living as medallions, each name with what it is (${lists.living.join(" | ")})`);
+    must(lists.departed.length === 1 && lists.departed[0].includes(`${en["prayers.diptychs.reposedLabel"]} Mar 4, 2019`), `a repose is written as a date, not as typed (${lists.departed.join(" | ")})`);
+    must(
+      lists.wall.length === 1 && lists.wall[0].includes("Anna") && lists.wall[0].includes(en["prayers.diptychs.wallUntil"].replace("{date}", leaves)),
+      `the prayer wall's names stand among the names, each with the day it leaves (${lists.wall.join(" | ")})`,
+    );
+    const where = await page.evaluate(() => (document.querySelector("[data-remembered-in]")?.textContent ?? "").replace(/\s+/g, " ").trim());
+    must(where.includes(en["community.wallAddWhen"]) && where.includes(en["prayers.rule.morning.title"]), `In which prayers is one row that says the prayers chosen (${where})`);
+    await tap(page.locator("[data-remembered-in]"));
+    await page.waitForTimeout(900);
+    const ticks = await page.evaluate(() => ({
+      lines: document.querySelectorAll("[role=dialog] [data-place-ticks] > button").length,
+      on: document.querySelectorAll('[role=dialog] [data-place-ticks] > button[aria-pressed="true"]').length,
+      pills: document.querySelectorAll("[role=dialog] [data-place-ticks] .rounded-pill").length,
+    }));
+    must(ticks.lines === 6 && ticks.on === 3 && ticks.pills === 0, `and opens the six prayers as lines to tick, three ticked, no pills (${ticks.lines} lines, ${ticks.on} ticked)`);
+    await page.keyboard.press("Escape");
+    await page.waitForTimeout(800);
+    await tap(page.locator('[data-names="living"] [data-medallion-add]'));
+    await page.waitForTimeout(900);
+    const adding = await page.evaluate(() => document.querySelector("[role=dialog]")?.textContent ?? "");
+    must(adding.includes(en["prayers.diptychs.livingIntro"]) && !adding.includes("/prayers/"), `adding a name, the living's line names Today in words, with no address`);
+    await page.keyboard.press("Escape");
+    await page.waitForTimeout(800);
+    await tap(page.locator('[data-names="living"] [data-medallion]').first());
+    await page.waitForTimeout(900);
+    await tap(page.locator("[role=dialog] [data-name-remove]"));
+    await page.waitForTimeout(800);
+    const gone = await page.evaluate(() => ({
+      living: document.querySelectorAll('[data-names="living"] [data-medallion]').length,
+      status: (document.querySelector('section[aria-labelledby="mine-names"] [role="status"]')?.textContent ?? "").replace(/\s+/g, " ").trim(),
+    }));
+    must(
+      boxes === 0 && gone.living === 0 && gone.status.includes(en["prayers.mine.removed"].replace("{title}", "Maria")) && gone.status.includes(en["prayers.mine.undo"]),
+      `removing a name takes it out at once, with Undo, and no browser box (${boxes} boxes, "${gone.status}")`,
+    );
+    await tap(page.locator('section[aria-labelledby="mine-names"] [role="status"] button'));
+    await page.waitForTimeout(700);
+    must((await page.evaluate(() => document.querySelectorAll('[data-names="living"] [data-medallion]').length)) === 1, `and Undo puts it back`);
+    const note = await page.evaluate((want) => [...document.querySelectorAll("p")].some((p) => (p.textContent ?? "").trim() === want), en["prayers.mine.deviceNote"]);
+    must(note, `the note at the page's foot names the names it speaks of ("${en["prayers.mine.deviceNote"].slice(0, 60)}...")`);
+    await page.screenshot({ path: path.join(SHOTS, "prayers-mine-names-390.png"), fullPage: true });
+    must(errors.length === 0, `no page errors${errors.length ? ": " + errors.slice(0, 2).join(" | ") : ""}`);
+    await ctx.close();
+  }
+
+  // Your rule in every palette: drawn, and nothing in gold, yellow or amber
+  // (the owner's rule: black, white and grey; what stands out glows white).
+  for (const theme of ["default", "parchment", "black", "candlelight", "monastery"]) {
+    const { ctx, page, errors } = await open({
+      width: 390,
+      height: 844,
+      phone: true,
+      set: { "purify.reader.theme": theme, "purify.prayers.mine": JSON.stringify({ v: 1, morning: [{ kind: "prayer", rule: "morning", prayer: "trisagion" }, { kind: "names" }], evening: [], minutes: { morning: 0, evening: 0 }, updatedAt: "" }) },
+    });
+    await go(page, "/prayers/personal/#morning");
+    await page.waitForFunction(() => !!document.querySelector("[data-rule-picture] img[data-on]") && document.querySelectorAll("#mine-panel-morning ol > li").length === 2, null, { timeout: 20000 }).catch(() => {});
+    await page.waitForTimeout(1200);
+    const drawn = await page.evaluate(() => {
+      const warm = [];
+      for (const el of document.querySelectorAll('section[aria-labelledby="mine-title"] *')) {
+        if (el.closest("[data-rule-picture]") || el.tagName === "IMG") continue;
+        const cs = getComputedStyle(el);
+        for (const c of [cs.color, cs.backgroundColor, cs.borderTopColor]) {
+          const m = /rgba?\((\d+), (\d+), (\d+)(?:, ([\d.]+))?\)/.exec(c);
+          if (!m || (m[4] !== undefined && Number(m[4]) < 0.2)) continue;
+          const [r, g, b] = [Number(m[1]), Number(m[2]), Number(m[3])];
+          if (r > 150 && g > 110 && r - b > 70 && g - b > 40) warm.push(`${el.tagName.toLowerCase()}.${String(el.className).split(" ")[0]} ${c}`);
+        }
+      }
+      return {
+        mode: document.documentElement.dataset.readingMode ?? "",
+        steps: document.querySelectorAll("#mine-panel-morning ol > li .rule-node").length,
+        lit: !!document.querySelector('#mine-panel-morning .rule-node[data-lit]'),
+        track: !!document.querySelector('.rule-track [aria-selected="true"]'),
+        warm: [...new Set(warm)].slice(0, 4),
+      };
+    });
+    must(
+      drawn.steps === 2 && drawn.lit && drawn.track && drawn.warm.length === 0,
+      `Your rule in ${theme} (${drawn.mode || "default"}): the steps, the lit names step and the switch, nothing gold${drawn.warm.length ? ": " + drawn.warm.join(" | ") : ""}`,
+    );
+    await page.screenshot({ path: path.join(SHOTS, `prayers-mine-${theme}-390.png`) });
+    must(errors.length === 0, `${theme}: no page errors${errors.length ? ": " + errors.slice(0, 2).join(" | ") : ""}`);
     await ctx.close();
   }
 

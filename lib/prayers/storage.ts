@@ -21,6 +21,7 @@
 import { useSyncExternalStore } from "react";
 
 import { orthodoxPascha } from "@/lib/calendar/pascha";
+import { dateLocale } from "@/lib/i18n/deviceDates";
 
 export const PRAYER_EVENT = "purify:prayer-completed";
 export const INTENTIONS_EVENT = "purify:intentions";
@@ -269,6 +270,33 @@ export function upsertIntention(kind: IntentionKind, item: Intention) {
 export function deleteIntention(kind: IntentionKind, id: string) {
   const list = readIntentions(kind).filter((x) => x.id !== id);
   writeIntentions(kind, list);
+}
+
+/** Put a removed name back where it stood (Undo after Remove); nothing when it is there again. */
+export function restoreIntention(kind: IntentionKind, item: Intention, index: number) {
+  const list = readIntentions(kind);
+  if (list.some((x) => x.id === item.id)) return;
+  const at = Math.max(0, Math.min(index, list.length));
+  writeIntentions(kind, [...list.slice(0, at), item, ...list.slice(at)]);
+}
+
+/**
+ * A repose date (YYYY-MM-DD) as the reader's language writes a date: "Mar 4,
+ * 2019" in English, "4. März 2019" in German. It printed as typed,
+ * 2019-03-04, beside a nameday written out (the owner's note 73). A day of
+ * the calendar, not a moment, so it is written in UTC and no time zone moves
+ * it; a language the device cannot write is written in English
+ * (lib/i18n/deviceDates.ts). As kept when it is not such a day. Pure.
+ */
+export function reposeDateText(repose: string, locale: string): string {
+  const m = /^(\d{4})-(\d{2})-(\d{2})$/.exec(repose);
+  if (!m) return repose;
+  const [year, month, day] = [Number(m[1]), Number(m[2]), Number(m[3])];
+  // Built in a year of four digits, then moved, so a year under 100 is not read as 19xx.
+  const at = new Date(Date.UTC(2000, month - 1, day));
+  at.setUTCFullYear(year);
+  if (at.getUTCMonth() !== month - 1 || at.getUTCDate() !== day) return repose;
+  return new Intl.DateTimeFormat(dateLocale(locale), { year: "numeric", month: "short", day: "numeric", timeZone: "UTC" }).format(at);
 }
 
 /**
