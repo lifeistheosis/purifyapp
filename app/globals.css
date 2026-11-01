@@ -5949,10 +5949,12 @@ html[data-reading-mode="parchment"] .search-door:focus-visible {
  background: radial-gradient(70% 34% at 50% 0%, rgb(255 255 255 / 0.075), rgb(255 255 255 / 0) 70%), var(--color-night);
  background: radial-gradient(70% 34% at 50% 0%, color-mix(in srgb, var(--color-paper) 7.5%, transparent), transparent 70%), var(--color-night);
 }
-/* It arrives with one short rise; filled backwards, so it is handed back to
-   transform: none and holds nothing fixed inside it. */
+/* It arrives by fading in where it stands: no rise, so every box on it is in
+   its place from the first frame the screen draws (build 87, the owner's
+   note 83, "buggy" as it opened; the walk's section 44 records it). Filled
+   backwards, and opacity alone, so it holds nothing fixed inside it. */
 @keyframes search-in {
- from { opacity: 0; transform: translateY(8px); }
+ from { opacity: 0; }
 }
 .search-in {
  animation: search-in var(--duration-base) var(--ease-house) backwards;

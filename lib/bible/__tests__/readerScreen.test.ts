@@ -230,23 +230,36 @@ describe("the chapter opens like a book", () => {
 describe("the ••• sheet: the reader's settings, and what stood above the title and in the bar, one tap away", () => {
   const more = code(MORE);
 
-  it("holds the search for a verse, the book's chapters, the translation, the book, the Greek, the bookmark and the app's search", () => {
+  it("holds the one search, the book's chapters, the translation, the Greek and the bookmark, in that order", () => {
     expect(more).toContain("<BibleSearch layer onNavigate={onClose} />");
     expect(more).toContain("<MobileChapterStrip book={bibleBook} current={chapter} onPick={onClose} />");
-    expect(more).toMatch(/<SheetRow label=\{t\("bible\.translationLabel"\)\} value=\{current\.shortLabel\}/);
-    expect(more).toMatch(/<SheetRow label=\{t\("bible\.bookLabel"\)\} value=\{name\}/);
+    expect(more).toMatch(/<SheetRow label=\{t\("bible\.translationLabel"\)\} value=\{current\.shortLabel\} onClick=\{openTranslations\} \/>/);
     expect(more).toMatch(/\{showInterlinear \? \(\s*<ToggleRow on=\{greek\} touch label=\{t\("bible\.interlinearGreek"\)\} onClick=\{toggleGreek\} \/>/);
     expect(more).toMatch(/<ToggleRow on=\{saved\} touch label=\{t\("bible\.bookmarkThisChapter"\)\} onClick=\{toggleSaved\} \/>/);
-    // The app's search, on Everything: the field above it is the Bible's own door.
-    expect(more).toMatch(/label=\{t\("search\.ariaLabel"\)\}[\s\S]*?onClose\(\);\s*openSearch\("all"\);/);
+    const order = ["<BibleSearch layer", "<MobileChapterStrip", 't("bible.translationLabel")', 't("bible.interlinearGreek")', 't("bible.bookmarkThisChapter")'].map((part) => more.indexOf(part));
+    expect(order.every((at, i) => at > -1 && (i === 0 || at > order[i - 1])), order.join(", ")).toBe(true);
     // The bookmark is the same one the computer's Save writes.
     expect(more).toMatch(/kind: "bible-chapter",\s*book,\s*bookName,\s*chapter,/);
   });
 
-  it("goes first when it opens another sheet, so one sheet never opens over another", () => {
-    expect(more).toMatch(/const go = \(to: "translation" \| "book"\) => \{\s*onClose\(\);\s*setNext\(to\);/);
-    expect(more).toMatch(/<Sheet open=\{next === "translation"\}/);
-    expect(more).toMatch(/<MobileChapterSheet open=\{next === "book"\}/);
+  it("has one search, opened on the Bible, and no row doing the title's job (the owner's note 82 of build 86)", () => {
+    // "2 search bars here and they do the same thing": the field opens the
+    // one search on the Bible, and Everything is a door away on it, so the
+    // "Search Purify" row at the foot, the same screen on Everything, went.
+    expect(more.split("<BibleSearch").length - 1).toBe(1);
+    expect(more).not.toMatch(/openSearch\(|<SearchDoor\b|<SearchTrigger\b/);
+    expect(more).not.toContain('t("search.ariaLabel")');
+    expect(code("components/bible/BibleSearch.tsx")).toContain('place="bible"');
+    // The Book row did what the chapter's title does since r3-20 A: it opens
+    // the books sheet, which the pill holds for both.
+    expect(more).not.toContain('t("bible.bookLabel")');
+    expect(more).not.toContain("MobileChapterSheet");
+    expect(code(SCREEN)).toContain("function TitleOpensBooks");
+  });
+
+  it("goes first when it opens the translations, so one sheet never opens over another", () => {
+    expect(more).toMatch(/const openTranslations = \(\) => \{\s*onClose\(\);\s*setTranslations\(true\);/);
+    expect(more).toMatch(/<Sheet open=\{translations\} onClose=\{\(\) => setTranslations\(false\)\}/);
   });
 
   it("opens the translations in a movable sheet, from the same list as the computer's popover", () => {

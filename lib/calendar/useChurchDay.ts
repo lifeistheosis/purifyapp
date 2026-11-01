@@ -49,6 +49,12 @@ export type ChurchDay = {
   headline: Commemoration | undefined;
   /** The saint behind the headline, in brief, when the registry has a profile. */
   headlineSaint: SaintBrief | null;
+  /**
+   * Every commemoration of the day, feasts and saints, on the day the
+   * reader's calendar keeps: the one search's Saints (1.8, r3-31 B) lists
+   * them where Today leads with the headline.
+   */
+  commemorations: Commemoration[];
   fast: FastingStatus;
   readings: ReadingRef[];
   /**
@@ -88,6 +94,7 @@ export function useChurchDay(): ChurchDay | null {
       headline,
       // commemorationsOn has already resolved every slug that names a profile.
       headlineSaint: headline?.saint ?? null,
+      commemorations,
       // The civil day and the style: the rule moves only its fixed dates.
       fast: fastingStatus(today, style),
       readings: appointed.readings,

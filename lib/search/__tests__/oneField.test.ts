@@ -187,3 +187,38 @@ describe("one search, opened from each place on that place", () => {
     expect(fs.existsSync(path.join(ROOT, "components/search/SearchToday.tsx"))).toBe(false);
   });
 });
+
+describe("the screen holds still as it opens (build 87, the owner's note 83)", () => {
+  // Build 86 on his phone: "when you click search it leads you to this screen
+  // but buggy". Recorded frame by frame on its export, the screen drew
+  // "Search", Look in and the doors at its foot, held on the field by a
+  // spacer over the title, and when the keyboard came up a moment after the
+  // tap they all jumped up by its height, leaving the top third empty. The
+  // walk's section 44 records the built screen; this holds the source.
+  const screen = code(SCREEN);
+  const empty = screen.slice(screen.indexOf("if (!typing) {"), screen.indexOf("} else if (compose) {"));
+
+  it("stands from the top before anything is typed: the title first, no spacer over it", () => {
+    expect(empty.length).toBeGreaterThan(0);
+    const drawn = empty.slice(empty.indexOf("body = ("));
+    const first = drawn.split("\n").slice(1).map((line) => line.trim()).find((line) => line && line !== "<>") ?? "";
+    expect(first).toMatch(/^<h2 /);
+    expect(empty).not.toMatch(/flex-1/);
+    // The recent words under the doors, marked for the walk.
+    expect(empty).toContain('data-search-recent=""');
+    expect(empty.indexOf("<Doors ")).toBeLessThan(empty.indexOf("data-search-recent"));
+  });
+
+  it("keeps the strip's place while the lists arrive, at the strip's own height", () => {
+    expect(screen).toContain("const stripComing = corpus === null && (DOOR_KINDS[turn.door]?.length ?? 0) > 0;");
+    expect(empty).toContain('stripComing ? <div aria-hidden className="mt-3 h-[44px]" /> : null');
+    expect(code("components/search/SearchRows.tsx")).toContain('className="no-scrollbar flex h-[44px] shrink-0');
+  });
+
+  it("arrives by fading in where it stands, with no rise", () => {
+    const keyframes = /@keyframes search-in \{([^}]*\})\s*\}/.exec(css)?.[1] ?? "";
+    expect(keyframes).toMatch(/from \{ opacity: 0; \}/);
+    expect(keyframes).not.toContain("transform");
+    expect(screen).toContain('className="search-in flex min-h-0 flex-1 flex-col overflow-y-auto');
+  });
+});

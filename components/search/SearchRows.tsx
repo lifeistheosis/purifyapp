@@ -28,6 +28,7 @@ import { Shield } from "@/components/ui/icons/Shield";
 import { PurifyMark } from "@/components/ui/PurifyMark";
 import { cn } from "@/lib/cn";
 import { iconFace } from "@/lib/saints/iconFaces";
+import { DAY_ROW_PX } from "@/lib/search/day";
 import { hitParts, kindIn, pictureFor, type SearchRow } from "@/lib/search/engine";
 import { DOOR_KINDS, KIND_LABEL, doorOf, type DoorId, type KindId } from "@/lib/search/places";
 
@@ -290,6 +291,62 @@ export function WordRow({
       >
         <ArrowUpLeft size={16} className="rtl:-scale-x-100" />
       </button>
+    </div>
+  );
+}
+
+/**
+ * A row of the day (1.8, r3-31 B): what the place offers today, by its face
+ * or its glyph, its name and what it is, one line each, at one height
+ * (DAY_ROW_PX), so the room its place holds is the room it takes.
+ */
+export function DayLine({
+  glyph,
+  face,
+  title,
+  sub,
+  onOpen,
+}: {
+  glyph: Glyph;
+  /** A saint by the face in his icon, where his profile has one. */
+  face?: { src: string; name: string };
+  title: string;
+  sub?: string;
+  onOpen: () => void;
+}) {
+  return (
+    <button
+      type="button"
+      onClick={onOpen}
+      data-search-day-row=""
+      className="search-row flex w-full items-center gap-3 rounded-[14px] px-1.5 text-start"
+      style={{ height: DAY_ROW_PX }}
+    >
+      {face ? <Face src={face.src} name={face.name} size={30} /> : <Plate glyph={glyph} />}
+      <span className="min-w-0 flex-1">
+        <span className="block truncate font-serif text-[15px] font-semibold leading-[1.25] text-paper/92">{title}</span>
+        {sub ? <span className="mt-[3px] block truncate font-sans text-caption leading-[1.4] text-paper/52">{sub}</span> : null}
+      </span>
+      <ChevronRight size={13} className="shrink-0 text-paper/30 rtl:-scale-x-100" />
+    </button>
+  );
+}
+
+/**
+ * The day under a place's doors, in a room held at its full height from the
+ * first frame: on the search's first opening the calendar arrives a moment
+ * after the screen, and its rows fade into the room kept for them, so
+ * nothing on the screen moves (the owner's note 83). With nothing to show
+ * the room stays empty, its line unseen.
+ */
+export function DayBlock({ eyebrow, slots, children }: { eyebrow: string; slots: number; children?: ReactNode }) {
+  const shown = Boolean(children);
+  return (
+    <div data-search-day="" className="px-5 pt-[22px]">
+      <div className={shown ? "search-in" : "invisible"} aria-hidden={shown ? undefined : true}>
+        <Eyebrow label={eyebrow} className="mb-1" />
+        <div style={{ height: slots * DAY_ROW_PX }}>{children}</div>
+      </div>
     </div>
   );
 }
