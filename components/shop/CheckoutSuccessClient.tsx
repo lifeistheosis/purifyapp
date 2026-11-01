@@ -70,7 +70,7 @@ export function CheckoutSuccessClient() {
         >
           <path
             d="M10 21 L17 28 L30 13"
-            stroke="#c9a961"
+            stroke="var(--color-paper)"
             strokeWidth="3.5"
             strokeLinecap="round"
             strokeLinejoin="round"

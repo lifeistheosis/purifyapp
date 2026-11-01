@@ -65,14 +65,14 @@ export function PrayerIcon({
  return (
  <div
  className={cn(
- "shrink-0 relative rounded-md overflow-hidden border border-[#8a6c2a]/45 shadow-md bg-[#1a1219]",
+ "shrink-0 relative rounded-md overflow-hidden border border-paper/20 shadow-md bg-[#1a1219]",
  className,
  )}
  style={{ width: d.w, height: d.h }}
  role="img"
  aria-label={icon.alt}
  >
- {/* Inner gold frame, the Orthodox icon-panel cue. */}
+ {/* Inner silver frame, the Orthodox icon-panel cue (gold until 1.8). */}
  <div
  aria-hidden
  className="absolute inset-1 rounded-sm border border-gold/40 pointer-events-none z-10"

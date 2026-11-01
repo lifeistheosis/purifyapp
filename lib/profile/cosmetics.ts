@@ -1,17 +1,26 @@
 // What a profile can wear, and who may wear it.
 //
 // Free for every reader: a banner colour (the liturgical colours below, or
-// any colour), a status line, a bio, a favourite verse, a patron saint.
-// Plus and Pro, like Nitro: a banner picture, a two-colour theme, an avatar
-// frame, a profile effect, a name colour, an animated banner, and a choice of
-// which badges show (20261005000000_community_three.sql). Saved settings outlive a lapsed subscription
-// and simply stop showing until it returns; nothing is deleted.
+// any colour but gold), a status line, a bio, a favourite verse, a patron
+// saint. Plus and Pro, like Nitro: a banner picture, a two-colour theme, an
+// avatar frame, a profile effect, a name colour, an animated banner, a gold
+// banner colour, and a choice of which badges show
+// (20261005000000_community_three.sql). Saved settings outlive a lapsed
+// subscription and simply stop showing until it returns; nothing is deleted.
+//
+// Gold is Plus only, everywhere on a profile: the owner, 2026-10-31, "gold is
+// allowed for the community profiles by the way but only exclusive to plus
+// members". The frames, effects, name colours, themes and moving banners are
+// Plus already; the one gold a free reader could pick was the banner colour,
+// so bannerNeedsPlus below makes a gold banner Plus too, and the rest of the
+// app stays without gold (lib/ui/__tests__/noGold.test.ts).
 //
 // The frames and effects are drawn in the app (components/profile), so the
 // catalog is only ids. The database checks the shape of an id
 // (20261001000000_profiles_badges.sql), this file decides which ids exist.
 
 import { orthodoxPascha } from "@/lib/calendar/pascha";
+import { isGoldHex } from "@/lib/ui/goldTone";
 
 export const DECORATIONS = ["halo", "pearls", "laurel", "candle", "paschal", "stars"] as const;
 
@@ -109,7 +118,10 @@ export function nextSeasonStart(id: string | null | undefined, now: Date = new D
   return null;
 }
 
-/** The Church's own colours for the banner, darkened to sit under white text. */
+/**
+ * The Church's own colours for the banner, darkened to sit under white text.
+ * Gold is a Plus colour (bannerNeedsPlus); the others are free.
+ */
 export const BANNER_COLORS = [
   { id: "gold", hex: "#8f6f35" },
   { id: "paschal", hex: "#7d1d27" },
@@ -137,6 +149,16 @@ export function normalizeHex(v: unknown): string | null {
   if (typeof v !== "string") return null;
   const s = v.trim().toLowerCase();
   return HEX.test(s) ? s : null;
+}
+
+/**
+ * Whether a banner colour is a Plus cosmetic. Gold is, by the owner's word
+ * (see the top of this file); every other colour stays free. Judged by the
+ * same measure the app's no-gold guard uses (lib/ui/goldTone.ts), so a
+ * custom pick that reads as gold is Plus as well as the gold swatch.
+ */
+export function bannerNeedsPlus(v: unknown): boolean {
+  return isGoldHex(normalizeHex(v));
 }
 
 /** WCAG relative luminance of a #rrggbb colour. */
@@ -213,14 +235,15 @@ export type Cosmetics = {
 
 /**
  * What the world sees of a reader's cosmetics: everything they saved while a
- * subscription runs, only the free banner colour when it does not. An id the
- * catalog no longer carries is dropped rather than drawn as nothing.
+ * subscription runs, only a free banner colour when it does not (a gold one,
+ * saved while it was free or while Plus ran, waits for Plus with the rest).
+ * An id the catalog no longer carries is dropped rather than drawn as nothing.
  */
 export function visibleCosmetics(saved: Cosmetics, subscribed: boolean): Cosmetics {
   const bannerColor = normalizeHex(saved.bannerColor);
   if (!subscribed) {
     return {
-      bannerColor,
+      bannerColor: bannerNeedsPlus(bannerColor) ? null : bannerColor,
       bannerUrl: null,
       themePrimary: null,
       themeAccent: null,

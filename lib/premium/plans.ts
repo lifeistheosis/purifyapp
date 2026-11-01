@@ -38,11 +38,18 @@
 
 // Numeric plan prices in cents, the single source for any MATH (the
 // localized copy strings below cannot be parsed). Used by the admin
-// revenue/subscriptions estimate (lib/premium/mrr.ts). These MIRROR the
-// display strings; changing a real price is still a release stop-condition.
+// revenue/subscriptions estimate (lib/premium/mrr.ts) and the EIKON Box
+// budget (lib/premium/boxBudget.ts). These MIRROR the display strings
+// (plusPriceMonthly and the rest, below, and the Terms), and the test holds
+// them together; changing a real price is still a release stop-condition.
+// Plus read $4.99 and $38.99 here, its price from 2026-07-24, for two weeks
+// after the app and the Terms moved to $9.99 and $71.99 (2026-10-18), so the
+// estimate counted every Plus member at half; set right on the owner's word
+// of 2026-10-31 ("fix all of them"). A member still billed the old $4.99 is
+// counted at the list price now, as the estimate counts everyone.
 export const PLAN_PRICE_CENTS = {
-  plusMonthly: 499,
-  plusYearly: 3899,
+  plusMonthly: 999,
+  plusYearly: 7199,
   proMonthly: 1999,
   proYearly: 19900,
 } as const;

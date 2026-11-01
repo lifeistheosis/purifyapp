@@ -123,7 +123,9 @@ export function DiscordPreviewCard({
             className={cn(
               "h-2 w-2 shrink-0 rounded-full",
               badge.tone === "live" && "bg-emerald-400",
-              badge.tone === "wait" && "bg-amber-300",
+              // Waiting is a light grey, not amber (1.8, refinement 2: no
+              // gold, yellow or amber in the app), between live and idle.
+              badge.tone === "wait" && "bg-paper/70",
               badge.tone === "idle" && "bg-paper/35",
             )}
           />

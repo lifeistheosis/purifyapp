@@ -88,7 +88,7 @@ export function PrayerSlideshow({
   return (
     <div
       className={cn(
-        "shrink-0 relative rounded-md overflow-hidden border border-[#8a6c2a]/45 shadow-md bg-[#1a1219]",
+        "shrink-0 relative rounded-md overflow-hidden border border-paper/20 shadow-md bg-[#1a1219]",
         className,
       )}
       style={{ width, height }}

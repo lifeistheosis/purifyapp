@@ -6,9 +6,12 @@ import { cn } from "@/lib/cn";
 import { useArrivingImage } from "@/lib/ui/useArrivingImage";
 
 // Renders a saint's icon as a small framed panel reminiscent of an Orthodox
-// icon: dark wood ground, gold inner frame, halo, initials.
+// icon: a dark ground, a silver inner frame, halo, initials. The ground was a
+// brown to olive-gold wood and the frame gold until 1.8: the owner read that
+// gradient as yellow (2026-09-25) and wants no gold in the app (2026-10-28,
+// refinement 2), so the panel is in the house greys, as dark as it was.
 //
-// The gradient + gold-frame + halo + initials always render as an instant
+// The gradient + frame + halo + initials always render as an instant
 // CSS placeholder. When `iconUrl` is set, the real JPG layers on top, so
 // while the file is loading, the user sees a stylized frame in place of empty
 // space. The JPG waits unseen until it has loaded and decoded, then fades in
@@ -54,19 +57,19 @@ export function SaintIcon({
  return (
  <div
  className={cn(
- "shrink-0 relative rounded-md overflow-hidden border border-[#8a6c2a]/40 shadow-md",
+ "shrink-0 relative rounded-md overflow-hidden border border-paper/20 shadow-md",
  className,
  )}
  style={{
  width: d.w,
  height: d.h,
  background:
- "linear-gradient(180deg, #2a1f10 0%, #3b2a14 38%, #5a3f1c 100%)",
+ "linear-gradient(180deg, #212124 0%, #2d2d31 38%, #45454b 100%)",
  }}
  aria-label={`Icon of ${saint.name}`}
  role="img"
  >
- {/* Placeholder layer, always present underneath. Gold inner frame +
+ {/* Placeholder layer, always present underneath. Silver inner frame +
  halo + initials are pure CSS, so something stylized renders before
  the JPG arrives. */}
  <div

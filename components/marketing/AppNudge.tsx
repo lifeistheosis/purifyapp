@@ -253,7 +253,7 @@ function NudgeSheet({
             <span
               aria-hidden
               className="absolute -inset-6 rounded-full"
-              style={{ background: "radial-gradient(closest-side, rgba(201,162,90,0.28), transparent)" }}
+              style={{ background: "radial-gradient(closest-side, rgba(255,255,255,0.2), transparent)" }}
             />
             <Image
               src="/icon-192.png"
