@@ -125,17 +125,18 @@ export async function GET(req: NextRequest) {
 
   // Prayer reminders ride this heartbeat (lib/push/deliver.ts). Nothing had
   // run them since 2026-09-26, while onboarding went on asking readers to
-  // turn them on. The first heartbeat of each UTC hour takes that hour's
-  // claim and sends; the other five find it taken and send nothing, and if
-  // the first is lost to a restart the next one takes it instead. After the
-  // response, so a few hundred sends never hold the scheduler's request open.
+  // turn them on. Each heartbeat takes the claim on its own ten-minute step
+  // and sends the reminders of that step (a reader's 07:45 comes in the step
+  // from 07:40); a step a lost heartbeat left behind is taken by the next one
+  // in the same hour. After the response, so a few hundred sends never hold
+  // the scheduler's request open.
   after(async () => {
     try {
       const run = await deliverRemindersOnce(createAdminClient(), new Date());
       if (run.claimed) {
         console.log(
           "[cron/hourly-goals] reminders",
-          JSON.stringify({ web: run.web, native: run.native, campaigns: run.campaigns }),
+          JSON.stringify({ steps: run.steps, web: run.web, native: run.native, campaigns: run.campaigns }),
         );
       }
     } catch (e) {

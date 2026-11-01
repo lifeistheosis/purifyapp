@@ -6,10 +6,14 @@ import {
   campaignReminderPayload,
   dueCampaigns,
   dueKind,
-  hourIsDue,
   nowInTz,
   reminderPayload,
+  reminderStep,
+  stepDue,
+  stepIsDue,
+  stepStart,
   MAX_CAMPAIGN_REMINDERS_PER_RUN,
+  STEP_MINUTES,
   type CampaignReminderRow,
 } from "@/lib/push/schedule";
 
@@ -28,9 +32,23 @@ describe("dueKind", () => {
     expect(dueKind(row, noonUtc)).toBe("evening");
   });
 
-  it("matches on the hour regardless of the stored minutes", () => {
+  it("keeps the reader's minute to its ten-minute step", () => {
+    // It matched the hour alone until 2026-10-31, so 08:30 came at 08:00.
     const row = { morning_time: "08:30", evening_time: null, timezone: "America/New_York" };
-    expect(dueKind(row, noonUtc)).toBe("morning");
+    expect(dueKind(row, noonUtc)).toBeNull();
+    expect(dueKind(row, new Date("2026-06-15T12:30:20Z"))).toBe("morning");
+    // 08:35 is in the step that begins at 08:30, and comes with it.
+    expect(dueKind({ ...row, morning_time: "08:35" }, new Date("2026-06-15T12:30:20Z"))).toBe("morning");
+    expect(dueKind({ ...row, morning_time: "08:35" }, new Date("2026-06-15T12:40:20Z"))).toBeNull();
+  });
+
+  it("reads a time by its step, and a broken one as never", () => {
+    expect(reminderStep("07:45")).toBe(7 * 60 + 40);
+    expect(reminderStep("00:00")).toBe(0);
+    expect(reminderStep("23:59")).toBe(23 * 60 + 50);
+    expect(reminderStep("24:00")).toBeNull();
+    expect(reminderStep("7pm")).toBeNull();
+    expect(stepStart(new Date("2026-06-15T12:47:59Z")).toISOString()).toBe("2026-06-15T12:40:00.000Z");
   });
 
   it("returns null when neither rule matches the local hour", () => {
@@ -54,39 +72,39 @@ describe("dueKind", () => {
   });
 });
 
-// The two days a year the clocks change. The run keeps to UTC and the
-// reader's clock moves by an hour, so one local hour happens twice (the
-// reminder used to come twice) or not at all (it used to not come).
+// The two days a year the clocks change. The runs keep to UTC and the
+// reader's clock moves by an hour, so an hour of steps happens twice (a
+// reminder in it used to come twice) or not at all (it used to not come).
 describe("summer time", () => {
   const run = (iso: string) => new Date(iso);
 
   it("sends a reminder in the hour that happens twice only the first time (New York, clocks back)", () => {
-    // 2026-11-01: 01:00 EDT is 05:00 UTC, and an hour later it is 01:00 EST.
+    // 2026-11-01: 01:30 EDT is 05:30 UTC, and an hour later it is 01:30 EST.
     const row = { morning_time: "01:30", evening_time: null, timezone: "America/New_York" };
-    expect(dueKind(row, run("2026-11-01T05:00:20Z"))).toBe("morning");
-    expect(dueKind(row, run("2026-11-01T06:00:20Z"))).toBeNull();
-    // The hour after is an ordinary hour again.
+    expect(dueKind(row, run("2026-11-01T05:30:20Z"))).toBe("morning");
+    expect(dueKind(row, run("2026-11-01T06:30:20Z"))).toBeNull();
+    // The steps after it are ordinary again.
     expect(dueKind({ ...row, morning_time: "02:00" }, run("2026-11-01T07:00:20Z"))).toBe("morning");
   });
 
-  it("sends a reminder in the hour that never happens with the hour after (New York, clocks forward)", () => {
-    // 2027-03-14: 01:00 EST is 06:00 UTC, and an hour later it is 03:00 EDT.
+  it("sends a reminder in the hour that never happens with the first step after (New York, clocks forward)", () => {
+    // 2027-03-14: 01:50 EST is 06:50 UTC, and ten minutes later it is 03:00 EDT.
     const row = { morning_time: null, evening_time: "02:30", timezone: "America/New_York" };
-    expect(dueKind(row, run("2027-03-14T06:00:20Z"))).toBeNull();
+    expect(dueKind(row, run("2027-03-14T06:50:20Z"))).toBeNull();
     expect(dueKind(row, run("2027-03-14T07:00:20Z"))).toBe("evening");
-    // The 03:00 reminder keeps its own hour, and the next hour sends neither again.
-    expect(dueKind({ ...row, evening_time: "03:10" }, run("2027-03-14T07:00:20Z"))).toBe("evening");
-    expect(dueKind(row, run("2027-03-14T08:00:20Z"))).toBeNull();
+    // The 03:10 reminder keeps its own step, and the skipped one is not sent again.
+    expect(dueKind({ ...row, evening_time: "03:10" }, run("2027-03-14T07:10:20Z"))).toBe("evening");
+    expect(dueKind(row, run("2027-03-14T07:10:20Z"))).toBeNull();
   });
 
-  it("does the same where the clocks go back at three (Athens) and in the southern spring (Sydney)", () => {
+  it("does the same where the clocks go back at four (Athens) and in the southern spring (Sydney)", () => {
     // Athens, 2026-10-25: 03:00 EEST is 00:00 UTC, 03:00 EET is 01:00 UTC.
-    const athens = { morning_time: "03:15", evening_time: null, timezone: "Europe/Athens" };
+    const athens = { morning_time: "03:05", evening_time: null, timezone: "Europe/Athens" };
     expect(dueKind(athens, run("2026-10-25T00:00:20Z"))).toBe("morning");
     expect(dueKind(athens, run("2026-10-25T01:00:20Z"))).toBeNull();
-    // Sydney, 2026-10-04: 01:00 AEST is 15:00 UTC the day before, then 03:00 AEDT.
+    // Sydney, 2026-10-04: 01:50 AEST is 15:50 UTC the day before, then 03:00 AEDT.
     const sydney = { morning_time: "02:45", evening_time: null, timezone: "Australia/Sydney" };
-    expect(dueKind(sydney, run("2026-10-03T15:00:20Z"))).toBeNull();
+    expect(dueKind(sydney, run("2026-10-03T15:50:20Z"))).toBeNull();
     expect(dueKind(sydney, run("2026-10-03T16:00:20Z"))).toBe("morning");
   });
 
@@ -102,12 +120,12 @@ describe("summer time", () => {
     expect(dueCampaigns([{ ...row, remind_time: "02:05" }], run("2027-03-14T07:00:20Z"))).toHaveLength(1);
   });
 
-  // The property behind the cases above, everywhere it can bend: every hour
-  // of the reader's day is sent exactly once on every whole local day, on
-  // ordinary days and on both change days. Zones with half-hour and
-  // three-quarter offsets, a half-hour change (Lord Howe), changes at
-  // midnight (Santiago), and one with none (Kolkata) are in the list because
-  // each breaks a simpler rule a different way.
+  // The property behind the cases above, everywhere it can bend: every
+  // ten-minute step of the reader's day is sent exactly once on every whole
+  // local day, on ordinary days and on both change days. Zones with
+  // half-hour and three-quarter offsets, a half-hour change (Lord Howe),
+  // changes at midnight (Santiago), and ones with none (Kathmandu, Kolkata)
+  // are in the list because each breaks a simpler rule a different way.
   const ZONES: [string, string[]][] = [
     ["America/New_York", ["2026-11-01", "2027-03-14"]],
     ["America/St_Johns", ["2026-11-01", "2027-03-14"]],
@@ -117,30 +135,54 @@ describe("summer time", () => {
     ["Australia/Lord_Howe", ["2026-10-04", "2027-04-04"]],
     ["Pacific/Chatham", ["2026-09-27", "2027-04-04"]],
     ["America/Santiago", ["2026-09-06", "2027-04-04"]],
+    ["Asia/Kathmandu", ["2026-10-25"]],
     ["Asia/Kolkata", ["2026-10-25"]],
     ["UTC", ["2026-10-25"]],
   ];
 
-  const localDate = (d: Date, tz: string) =>
-    new Intl.DateTimeFormat("en-CA", { timeZone: tz, year: "numeric", month: "2-digit", day: "2-digit" }).format(d);
+  const STEP_MS = STEP_MINUTES * 60_000;
+  const STEPS_A_DAY = (24 * 60) / STEP_MINUTES;
+  const wall = (d: Date, tz: string) => {
+    const t = nowInTz(d, tz);
+    return {
+      date: t.toISOString().slice(0, 10),
+      step: t.getUTCHours() * 60 + Math.floor(t.getUTCMinutes() / STEP_MINUTES) * STEP_MINUTES,
+    };
+  };
+  const before = (steps: number[], i: number) => [1, 2, 3, 4, 5, 6].map((k) => steps[i - k]);
 
   for (const [tz, days] of ZONES) {
     for (const day of days) {
-      it(`sends each hour once a day around ${day} in ${tz}`, () => {
-        // Hourly runs, twenty seconds past each UTC hour, from two days before
-        // to two days after.
-        const start = Date.parse(`${day}T00:00:20Z`) - 2 * 24 * 3600_000;
-        const runs = Array.from({ length: 4 * 24 }, (_, i) => new Date(start + i * 3600_000));
-        const dates = runs.map((r) => localDate(r, tz));
+      it(`sends each step once a day around ${day} in ${tz}`, () => {
+        // One run in every ten-minute step, from two days before to two
+        // days after. The clock is read once a run, as the real run reads it.
+        const start = Date.parse(`${day}T00:00:00Z`) - 2 * 24 * 3600_000;
+        const runs = Array.from({ length: 4 * STEPS_A_DAY }, (_, i) => new Date(start + i * STEP_MS));
+        const clocks = runs.map((r) => wall(r, tz));
+        const steps = clocks.map((c) => c.step);
         // The first and last local days are only partly inside the span.
-        const whole = new Set(dates.filter((d) => d !== dates[0] && d !== dates[dates.length - 1]));
-        for (let hour = 0; hour < 24; hour++) {
-          const sends = new Map<string, number>();
-          runs.forEach((r, i) => {
-            if (whole.has(dates[i]) && hourIsDue(hour, r, tz)) sends.set(dates[i], (sends.get(dates[i]) ?? 0) + 1);
-          });
-          for (const d of whole) expect(sends.get(d) ?? 0, `${tz} ${d} hour ${hour}`).toBe(1);
+        const first = clocks[0].date;
+        const last = clocks[clocks.length - 1].date;
+        const whole = new Set(clocks.map((c) => c.date).filter((d) => d !== first && d !== last));
+        const sends = new Map<string, number>();
+        clocks.forEach((c, i) => {
+          if (i < 6 || !whole.has(c.date)) return;
+          const earlier = before(steps, i);
+          for (let target = 0; target < 24 * 60; target += STEP_MINUTES) {
+            if (!stepIsDue(target, c.step, earlier)) continue;
+            const key = `${c.date} ${target}`;
+            sends.set(key, (sends.get(key) ?? 0) + 1);
+          }
+        });
+        for (const d of whole) {
+          for (let target = 0; target < 24 * 60; target += STEP_MINUTES) {
+            expect(sends.get(`${d} ${target}`) ?? 0, `${tz} ${d} step ${target}`).toBe(1);
+          }
         }
+        expect(sends.size).toBe(whole.size * STEPS_A_DAY);
+        // And the clock a real run reads is the one the property ran over.
+        const i = runs.length / 2;
+        expect(stepDue(steps[i], runs[i], tz)).toBe(stepIsDue(steps[i], steps[i], before(steps, i)));
       });
     }
   }
@@ -188,9 +230,10 @@ describe("dueCampaigns", () => {
     expect(dueCampaigns([row({ timezone: "Europe/Athens" })], noonUtc)).toHaveLength(0);
   });
 
-  it("matches the hour, so any minute inside it counts", () => {
-    // The cron runs hourly; a reader's ":45" must still fire in that hour.
-    expect(dueCampaigns([row({ remind_time: "08:45" })], noonUtc)).toHaveLength(1);
+  it("keeps the minute to its ten-minute step", () => {
+    // The cron runs every ten minutes; a reader's ":45" comes in the step from ":40".
+    expect(dueCampaigns([row({ remind_time: "08:45" })], noonUtc)).toHaveLength(0);
+    expect(dueCampaigns([row({ remind_time: "08:45" })], new Date("2026-06-15T12:40:20Z"))).toHaveLength(1);
   });
 
   it("ignores a row that never asked", () => {

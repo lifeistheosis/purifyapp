@@ -6,10 +6,11 @@ export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
 /**
- * Hourly delivery of opt-in prayer reminders, for a scheduler that calls it
+ * Delivery of opt-in prayer reminders, for a scheduler that calls it
  * directly. The work is lib/push/deliver.ts; since 2026-10-04 the ten-minute
  * heartbeat (/api/cron/hourly-goals) runs the same function, and the two
- * share one claim per UTC hour, so calling this as well sends nothing twice.
+ * share one claim per ten-minute step, so calling this as well sends nothing
+ * twice.
  *
  * Auth: x-cron-secret header (same shape as /api/cron/bmc-snapshot).
  */
@@ -38,15 +39,15 @@ export async function GET(req: NextRequest) {
 
   const run = await deliverRemindersOnce(createAdminClient(), new Date());
   if (!run.claimed) {
-    return NextResponse.json({ ok: true, skipped: "this hour's reminders already went out" });
+    return NextResponse.json({ ok: true, skipped: "this step's reminders already went out" });
   }
 
   // A query failure means we do not know who was due, which is not the same
   // as "nobody was due". Answer 500 so the scheduler's run goes red instead
   // of logging a cheerful zero forever.
-  const { errors, web, native, campaigns } = run;
+  const { errors, steps, web, native, campaigns } = run;
   if (errors.length > 0) {
-    return NextResponse.json({ ok: false, errors, web, native, campaigns }, { status: 500 });
+    return NextResponse.json({ ok: false, errors, steps, web, native, campaigns }, { status: 500 });
   }
-  return NextResponse.json({ ok: true, web, native, campaigns });
+  return NextResponse.json({ ok: true, steps, web, native, campaigns });
 }

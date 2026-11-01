@@ -16,7 +16,7 @@ import {
   updateReminderTimes,
   type ReminderTimes,
 } from "@/lib/push/reminders";
-import { timeChange } from "@/lib/push/times";
+import { TIME_STEP_MINUTES, stepTime, timeChange } from "@/lib/push/times";
 import { useIsNative } from "@/lib/platform/native";
 import { useTranslate } from "@/components/i18n/MessagesProvider";
 
@@ -96,9 +96,16 @@ export function PushOptIn() {
   // the other one. Both used to go, the other as the screen showed it, which
   // after a reload was its default: moving the evening put the morning back
   // to 07:00 (lib/push/times.ts, timeChange).
-  async function saveTime(which: keyof ReminderTimes, value: string) {
+  //
+  // The field keeps the server's ten-minute step (lib/push/times.ts,
+  // stepTime): a time chosen inside a step is shown and saved as its start,
+  // which is when the reminder comes. A phone's picker offers every minute
+  // whatever the field asks, so the time is set back here when it is left.
+  async function saveTime(which: keyof ReminderTimes, input: HTMLInputElement) {
     if (state.kind !== "subscribed") return;
-    const change = timeChange(state.times, which, value);
+    const stepped = stepTime(input.value);
+    if (stepped && stepped !== input.value) input.value = stepped;
+    const change = timeChange(state.times, which, input.value);
     if (!change) return;
     setBusy(true);
     try {
@@ -161,8 +168,9 @@ export function PushOptIn() {
               </span>
               <input
                 type="time"
-                defaultValue={state.times.morning}
-                onBlur={(e) => saveTime("morning", e.target.value)}
+                step={TIME_STEP_MINUTES * 60}
+                defaultValue={stepTime(state.times.morning) ?? state.times.morning}
+                onBlur={(e) => saveTime("morning", e.currentTarget)}
                 className="rounded-md border border-paper/15 bg-night px-3 py-1.5 font-sans text-detail text-paper [color-scheme:dark] focus:outline-none focus:border-gold/45 transition-colors"
               />
             </label>
@@ -172,8 +180,9 @@ export function PushOptIn() {
               </span>
               <input
                 type="time"
-                defaultValue={state.times.evening}
-                onBlur={(e) => saveTime("evening", e.target.value)}
+                step={TIME_STEP_MINUTES * 60}
+                defaultValue={stepTime(state.times.evening) ?? state.times.evening}
+                onBlur={(e) => saveTime("evening", e.currentTarget)}
                 className="rounded-md border border-paper/15 bg-night px-3 py-1.5 font-sans text-detail text-paper [color-scheme:dark] focus:outline-none focus:border-gold/45 transition-colors"
               />
             </label>
