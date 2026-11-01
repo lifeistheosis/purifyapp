@@ -32,6 +32,7 @@ const TIMES_KEY = "purify:push.native-times"; // desired times for the next toke
 const PENDING_KEY = "purify:push.pending-native"; // captured signed-out, flush on login
 const USER_KEY = "purify:push.native-user"; // the account this phone was last given to
 const OPENED_KEY = "purify:push.opened"; // ids of the taps already opened, newest last
+const ZONE_KEY = "purify:push.native-zone"; // the time zone the server last took from this phone
 
 /** How many opened taps are remembered: far more than can wait in a shade. */
 const OPENED_KEPT = 20;
@@ -167,6 +168,7 @@ async function attachListeners(): Promise<void> {
         setItem(PENDING_KEY, JSON.stringify(payload));
       } else if (res.ok) {
         setItem(ON_KEY, "1");
+        setItem(ZONE_KEY, payload.timezone);
       }
     } catch {
       setItem(PENDING_KEY, JSON.stringify(payload));
@@ -223,6 +225,7 @@ export async function disableNative(): Promise<void> {
   removeItem(ON_KEY);
   removeItem(PENDING_KEY);
   removeItem(USER_KEY);
+  removeItem(ZONE_KEY);
   if (token) {
     try {
       await apiFetch(`/api/push/device?token=${encodeURIComponent(token)}`, {
@@ -268,6 +271,7 @@ export async function updateNativeTimes(change: ReminderChange): Promise<SaveRes
   const token = getItem(TOKEN_KEY);
   const plat = platform();
   if (!token || !plat) return "kept";
+  const zone = tz();
   try {
     const res = await apiFetch("/api/push/device", {
       method: "POST",
@@ -277,9 +281,10 @@ export async function updateNativeTimes(change: ReminderChange): Promise<SaveRes
         platform: plat,
         morningTime: times.morning,
         eveningTime: times.evening,
-        timezone: tz(),
+        timezone: zone,
       }),
     });
+    if (res.ok) setItem(ZONE_KEY, zone);
     return res.ok ? "saved" : "kept";
   } catch {
     return "kept";
@@ -319,6 +324,26 @@ export async function refreshNative(): Promise<void> {
   } catch {
     /* the next launch tries again */
   }
+}
+
+/**
+ * Send this phone's time zone again when it has moved since the server last
+ * took it. Called each time the app comes back to the front.
+ *
+ * The server matches each reminder against the hour on the reader's own
+ * clock, in the zone this phone last sent, and the phone sent it only at
+ * launch. A phone keeps an app in the background for days, so a reader who
+ * flew from New York to Athens and opened Purify where they had left it was
+ * still reminded on New York's hours (morning prayer at two in the
+ * afternoon) until the app was next closed and opened. Nothing is sent while
+ * the zone is the one the server has, and nothing for a phone that has not
+ * yet recorded one: its launch sends it anyway.
+ */
+export async function refreshNativeIfMoved(): Promise<void> {
+  if (!platform() || getItem(ON_KEY) !== "1") return;
+  const sent = getItem(ZONE_KEY);
+  if (sent === null || sent === tz()) return;
+  await refreshNative();
 }
 
 /**
@@ -365,20 +390,22 @@ export async function unlinkNative(): Promise<void> {
 }
 
 /**
- * A kept registration, with the times this phone holds now. It was kept with
- * the times of its moment, and the reader can have changed them since (signed
- * in and offline, say). Sent as it was, it put those older times, onboarding's
- * defaults as often as not, over the reader's new ones until the next launch.
+ * A kept registration, with the times this phone holds now and the zone it is
+ * in now. It was kept with the times and the zone of its moment, and the
+ * reader can have changed the times since (signed in and offline, say), or
+ * travelled. Sent as it was, it put those older times, onboarding's defaults
+ * as often as not, over the reader's new ones until the next launch, and the
+ * old zone with them.
  */
-function withKeptTimes(raw: string): string {
+function withKeptTimes(raw: string, zone: string): string {
   const kept = keptTimes();
-  if (!kept.morning && !kept.evening) return raw;
   try {
     const payload = JSON.parse(raw) as Record<string, unknown>;
     return JSON.stringify({
       ...payload,
       ...(kept.morning ? { morningTime: kept.morning } : {}),
       ...(kept.evening ? { eveningTime: kept.evening } : {}),
+      timezone: zone,
     });
   } catch {
     return raw;
@@ -389,15 +416,17 @@ function withKeptTimes(raw: string): string {
 export async function flushPendingNative(): Promise<void> {
   const raw = getItem(PENDING_KEY);
   if (!raw) return;
+  const zone = tz();
   try {
     const res = await apiFetch("/api/push/device", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: withKeptTimes(raw),
+      body: withKeptTimes(raw, zone),
     });
     if (res.ok) {
       removeItem(PENDING_KEY);
       setItem(ON_KEY, "1");
+      setItem(ZONE_KEY, zone);
     }
   } catch {
     /* leave stashed; next sign-in retries */
