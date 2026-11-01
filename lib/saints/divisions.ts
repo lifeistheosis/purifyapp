@@ -776,7 +776,9 @@ export const SCHEMES: Readonly<Record<string, Scheme>> = {
     edition: NPNF("II", 11),
   },
   "john-cassian/conferences": {
-    title: { re: /^Conference (\d+), Chapter (\d+)\./, levels: ["conference", "chapter"] },
+    // A chapter the edition prints with no title of its own (Conference 5,
+    // Chapter 18 opens straight on Serapion's words) is titled by its numbers alone.
+    title: { re: /^Conference (\d+), Chapter (\d+)(?:\.|$)/, levels: ["conference", "chapter"] },
     // Sections 493 to 603 are not the Conferences: they are Cassian's Seven
     // Books on the Incarnation of the Lord, against Nestorius, which follow
     // them in NPNF II 11 and which the ingest filed here titled "Conference
@@ -907,6 +909,13 @@ function derive(key: string, s: Scheme, work: WorkLike): WorkDivisions {
 
     for (let i = 0; i < sec.paragraphs.length; i++) {
       const p = sec.paragraphs[i];
+      // An empty slot (a note taken out, a title's rest joined back to its
+      // title) shows nothing, so it holds no place: a division begins at the
+      // first words, where a link to it can land.
+      if (!p.trim()) {
+        sectionPlaces.push(null);
+        continue;
+      }
       // A chapter the file runs on in this section, opened by its heading.
       const opens = s.order?.heading?.exec(p);
       if (opens && head) {
