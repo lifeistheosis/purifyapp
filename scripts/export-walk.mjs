@@ -5522,6 +5522,100 @@ await section(43, async () => {
     await ctx.close();
   }
 });
+
+// ---- 44. Discover's lines are whole, in every language (1.8).
+// The owner's build 86 note 76: "on the discovery page ensure screens the
+// sections bios isnt too long to the point where it gets cut off". Each door
+// of Discover is a band (components/ui/GalleryBand.tsx): its name, then its
+// line, which the band holds to two lines and cuts with "..." past them, and
+// a name that takes two lines squeezes the line under it to one. Build 86
+// had 166 of its 252 lines cut (twelve bands in 21 languages) at 360px or
+// 390px, eight of the twelve English ones among them. The lines are written
+// to fit now (components/mobile/DiscoverMobile.tsx and the catalogs). This
+// opens Discover on a phone set to each language and reads every band's line
+// at 360px and 390px: a NO for any line whose words run taller than the box
+// that shows them.
+//
+// Each width is read twice, as this Chromium draws the page and as Android
+// does. next/font stands a local Arial or Times New Roman in for each font
+// ("DM Sans Fallback"), which Windows and iOS have and Android does not. So
+// where a bundled font has no letters for a script (DM Sans has no Cyrillic,
+// Greek or Arabic), Android draws the bundled Noto face and this Chromium
+// draws Arial, a little narrower. The second reading takes the stand-ins out
+// of the bands' fonts. Later in 1.8 the catalogs are machine-translated
+// (note 74), so this runs on all 21: one cold start each, a few seconds.
+await section(44, async () => {
+  console.log("\n44. Discover's lines are whole, in every language");
+  // Every language the app carries, one catalog each, so a language added
+  // later is walked too: a phone set to it, named as a phone names it, with a
+  // country.
+  const PHONE = { en: "en-US", es: "es-ES", ro: "ro-RO", el: "el-GR", ru: "ru-RU", fr: "fr-FR", de: "de-DE", sr: "sr-RS", uk: "uk-UA", it: "it-IT", pt: "pt-BR", bg: "bg-BG", ar: "ar-SA", fil: "fil-PH", tr: "tr-TR", ka: "ka-GE", hu: "hu-HU", id: "id-ID", ne: "ne-NP", pl: "pl-PL", ur: "ur-PK" };
+  const named = new Intl.DisplayNames(["en"], { type: "language" });
+  const LANGS = fs
+    .readdirSync(path.resolve("lib/i18n/messages"))
+    .filter((f) => f.endsWith(".json"))
+    .map((f) => f.slice(0, -5))
+    .map((code) => [code, PHONE[code] ?? code, named.of(code) ?? code]);
+  const words = (code) => JSON.parse(fs.readFileSync(path.resolve(`lib/i18n/messages/${code}.json`), "utf8"));
+  const en = words("en");
+  // Every band's line, found by its clamp, so a renamed class cannot hide one.
+  const lines = (page) =>
+    page.evaluate(() =>
+      [...document.querySelectorAll("[data-route-content] li > a[href]")].map((a) => {
+        const line = [...a.querySelectorAll("span")].find((s) => !["none", ""].includes(getComputedStyle(s).webkitLineClamp));
+        return { href: a.getAttribute("href") ?? "", text: (line?.textContent ?? "").trim(), cut: !line || line.scrollHeight > line.clientHeight };
+      }),
+    );
+  // As Android draws the bands: every stand-in out of their fonts. It answers
+  // how many of their words still have one, which must be none.
+  const asAndroid = (page) =>
+    page.evaluate(() => {
+      const words = [...document.querySelectorAll("[data-route-content] li > a[href] :is(h2, h3, span)")];
+      for (const el of words) {
+        el.style.fontFamily = getComputedStyle(el).fontFamily.split(",").map((f) => f.trim()).filter((f) => !/Fallback"?$/.test(f)).join(", ");
+      }
+      return words.filter((el) => getComputedStyle(el).fontFamily.includes("Fallback")).length;
+    });
+  const errors = [];
+  for (const [code, locale, name] of LANGS) {
+    const { ctx, page, errors: own } = await open({ width: 360, height: 800, phone: true, locale });
+    await go(page, "/discover/");
+    // In its language: the root says so, and the Saints band wears its word.
+    const saints = { ...en, ...words(code) }["discover.tile.saints"];
+    const ready = await page
+      .waitForFunction(([c, w]) => document.documentElement.lang === c && document.querySelector('[data-route-content] li > a[href="/saints/"] :is(h2, h3)')?.textContent?.trim() === w, [code, saints], { timeout: 20000 })
+      .then(() => true, () => false);
+    // A script's faces are asked for once its words are drawn.
+    await page.evaluate(() => document.fonts.ready);
+    await page.waitForTimeout(300);
+    await page.evaluate(() => document.fonts.ready);
+    const cut = [];
+    let bands = 0;
+    let stuck = 0;
+    for (const android of [false, true]) {
+      if (android) {
+        stuck = await asAndroid(page);
+        await page.waitForTimeout(150);
+        await page.evaluate(() => document.fonts.ready);
+      }
+      for (const width of [360, 390]) {
+        await page.setViewportSize({ width, height: 800 });
+        await page.waitForTimeout(150);
+        const got = await lines(page);
+        bands = Math.max(bands, got.length);
+        for (const l of got) if (l.cut) cut.push(`${bare(l.href)} at ${width}px${android ? " as Android draws it" : ""} ("${l.text}")`);
+        if (!android && width === 360 && ["de", "ru", "ka"].includes(code)) await page.screenshot({ path: path.join(SHOTS, `discover-lines-${code}-360.png`), fullPage: true });
+      }
+    }
+    must(
+      ready && bands >= 11 && stuck === 0 && cut.length === 0,
+      `${name}: every band's line is whole at 360px and 390px, as drawn here and as Android draws it (${bands} bands)${ready ? "" : `; Discover never came up in ${name}`}${stuck ? `; ${stuck} kept a stand-in font` : ""}${cut.length ? `; cut: ${cut.join("; ")}` : ""}`,
+    );
+    errors.push(...own.map((e) => `${name}: ${e}`));
+    await ctx.close();
+  }
+  must(errors.length === 0, `no page errors${errors.length ? ": " + errors.slice(0, 2).join(" | ") : ""}`);
+});
 await browser.close();
 if (!everySection) console.log(`\nOnly the sections chosen were walked: ${walked.join(", ") || "none"}.`);
 console.log(failed ? `\n${failed} check(s) failed.` : "\nEvery check passed.");

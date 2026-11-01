@@ -15,7 +15,8 @@ type DiscoverEntry = {
    *  language in the apps, where a server's string is frozen in English. */
   label: ReactNode;
   href: string;
-  /** The app's own line on what is inside, from the place's own words. */
+  /** Discover's own line on what is inside, written to fit the band whole
+   *  (the owner's build 86 note 76; see the list below). */
   blurb: ReactNode;
   /** The band's picture, from public/discover/tiles. Each one's work, source
    *  and cut are in docs/licensing/SECTION_MEDIA.md ("Discover's pictures");
@@ -70,9 +71,17 @@ export function DiscoverMobile() {
   // The library. Order reads like a menologion table of contents: people
   // first (saints), then the reading room and the record of the Church (its
   // history, its councils, its theology), then what is sung and kept through
-  // the year, then the ways in from outside the library. Every line is the
-  // app's own sentence for the place, the one its tile, its hub or its menu
-  // already carried.
+  // the year, then the ways in from outside the library.
+  //
+  // Every line is Discover's own (a discover.tile key, or Chat's subtitle,
+  // which only this screen draws), written to fit its band whole on a 360px
+  // phone in every language: the band holds the line to two lines, and to
+  // one under a name that takes two, and cuts the rest with "...". Until the
+  // owner's build 86 note 76 ("ensure the sections bios isnt too long to the
+  // point where it gets cut off"), three bands borrowed a longer line from
+  // the place they open, and 166 of the 252 lines (twelve bands in 21
+  // languages) were cut at 360px or 390px. scripts/export-walk.mjs, section
+  // 44, measures every line in every language on the built app.
   const entries: DiscoverEntry[] = [
     {
       // People first, as the ordering note above says.
@@ -131,10 +140,12 @@ export function DiscoverMobile() {
       // Collection RCIN 403381, public domain): the angels' "Glory to God in
       // the highest" (Luke 2:14), the words the Church's Great Doxology
       // begins with. A placeholder pick until the owner chooses the tile's
-      // icon (St John of Damascus or St Romanos were proposed).
+      // icon (St John of Damascus or St Romanos were proposed). Until note 76
+      // its line was the Chants page's own lead, which ran to three lines in
+      // eight languages; that page keeps it.
       label: <T k="chants.title" />,
       href: "/chants",
-      blurb: <T k="chants.lead" />,
+      blurb: <T k="discover.tile.chantsBlurb" />,
       picture: "/discover/tiles/chants.webp",
     },
     {
@@ -149,11 +160,13 @@ export function DiscoverMobile() {
       // on a phone: a tile since 1.7, an addition the owner saw on the
       // picture he chose. The Anastasis, Christ taking Adam by the hand: the
       // owner asked for "a helping hand" (2026-10-15), as the Codex page it
-      // wore first was "literally just a manuscript". Its line is the
-      // walkthroughs' own opening sentence, held to two lines by the band.
+      // wore first was "literally just a manuscript". Its line was the
+      // walkthroughs' own opening sentence, five to eight lines long and cut
+      // by the band in every language, until note 76 gave Discover a short
+      // one from its first words; the hub keeps its sentence.
       label: <T k="nav.discoverMenu.walkthroughs" />,
       href: "/walkthroughs",
-      blurb: <T k="walk.hubIntro" />,
+      blurb: <T k="discover.tile.walkthroughsBlurb" />,
       picture: "/discover/tiles/walkthroughs.webp",
       focus: "50% 10%",
     },
@@ -165,8 +178,10 @@ export function DiscoverMobile() {
           {
             label: <T k="nav.shop" />,
             href: "/shop",
-            // The shop's own line, under its title on its front page.
-            blurb: <T k="shop.curatedOrthodoxIconsFaithfulTo" />,
+            // The shop's own line, under its title on its front page, made
+            // shorter for the band (note 76: it ran to three lines in English
+            // and fifteen other languages). The shop keeps its own.
+            blurb: <T k="discover.tile.shopBlurb" />,
             // St George, Novgorod, 15th century: an icon the shop carries.
             picture: "/discover/tiles/shop.v2.webp",
             focus: "50% 10%",

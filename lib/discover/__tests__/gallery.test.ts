@@ -101,6 +101,32 @@ describe("the Discover gallery", () => {
     }
   });
 
+  // The owner's build 86 note 76: "on the discovery page ensure screens the
+  // sections bios isnt too long to the point where it gets cut off". A band
+  // holds its line to two lines, one under a name that takes two, and cuts
+  // the rest with "...". Three doors borrowed the line of the place they
+  // open, written for a page with room (the walkthroughs' opening sentence
+  // took eight lines in Georgian), and build 86 cut 166 of the 252 lines.
+  // Each door has a line of its own now, written to fit a 360px phone in
+  // every language. Only a browser can say what a line's width comes to, so
+  // scripts/export-walk.mjs, section 44, measures every line in every
+  // language on the built app; this holds what the source can.
+  it("says each door's line in Discover's own words, and in every language", () => {
+    const messages = path.join(ROOT, "lib", "i18n", "messages");
+    const catalogs = fs.readdirSync(messages).filter((f) => f.endsWith(".json"));
+    expect(catalogs.length).toBeGreaterThanOrEqual(21);
+    for (const d of doors) {
+      // A discover.tile line, or Chat's subtitle, which only this screen draws.
+      expect(d.blurb.startsWith("discover.tile.") || d.blurb === "community.subtitle", `${d.href} borrows ${d.blurb}`).toBe(true);
+    }
+    for (const file of catalogs) {
+      const words = JSON.parse(fs.readFileSync(path.join(messages, file), "utf8")) as Record<string, string>;
+      // Each language its own line for every door: a missing one would show
+      // the English line in its place.
+      for (const d of doors) expect(words[d.blurb], `${file} ${d.blurb}`).toBeTruthy();
+    }
+  });
+
   it("carries Chat's unread dot on the Chat band", () => {
     const chat = doors.find((d) => d.href === "/community");
     expect(chat?.text).toContain("badge: <UnreadDot />");

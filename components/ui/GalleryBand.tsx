@@ -19,6 +19,12 @@ import { cn } from "@/lib/cn";
  *   short   96px, the words in the middle, the line held to two lines
  *          (Discover's doors)
  *
+ * The clamp is a guard, not room: a line it cuts ends in "...", and a name
+ * that takes two lines squeezes the line under it to one. So each line is
+ * written to fit whole on a 360px phone in every language (the owner's
+ * build 86 note 76), and scripts/export-walk.mjs, section 44, measures
+ * Discover's lines on the built app.
+ *
  * The shade is the page's own ground (`night`), never a literal black, and
  * the words are the page's ink (`paper`), so the band follows every palette:
  * on Parchment it is a wash of paper over the picture with the ink on it.
