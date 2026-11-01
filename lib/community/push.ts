@@ -10,8 +10,11 @@ import { rateLimited } from "@/lib/security/ratelimit";
 // Community notifications on the reader's own devices: a reply, a mention, a
 // follow, a name day greeting, a prayer, an answer from clergy. Sent after
 // the inbox row is written (lib/community/notify.ts), to every device the
-// reader has turned notifications on for, unless they switched community
-// notifications off (profiles.push_community, 20261005).
+// reader has turned notifications on for, and only to a reader who turned
+// community notifications on (profiles.push_community, 20261005). Asked for,
+// never on by default (CONTRIBUTING's reminders bar, clause 1): from
+// 20261101 a new profile starts off, and a reader whose setting cannot be
+// read is sent nothing.
 //
 // The words come from lib/push/copy.ts and nowhere else, like every other
 // push, in the reader's own language (profiles.preferred_language, the
@@ -35,13 +38,12 @@ export type PushRow = {
 type Prefs = { id: string; push_community?: boolean | null; preferred_language?: string | null };
 
 /**
- * Who switched community notifications off, and each reader's language.
+ * Who turned community notifications on, and each reader's language.
  *
  * Read with the language when the column is there (20260719), and without it
  * when it is not: asked for together on a database without it, the read
- * would fail, and a failed read counts everyone as on, the readers who
- * switched these off included. Before 20261005 push_community is absent too,
- * and nobody has switched anything off: everyone counts as on, in English.
+ * would fail, and a failed read sends nothing at all. Before 20261005
+ * push_community is absent too, and nobody has asked: nothing is sent.
  */
 async function readPrefs(admin: SupabaseClient, ids: string[]): Promise<Prefs[]> {
   const withLanguage = await admin.from("profiles").select("id, push_community, preferred_language").in("id", ids);
@@ -83,9 +85,10 @@ export async function sendCommunityPushes(admin: SupabaseClient, rows: PushRow[]
     const ids = [...new Set(rows.map((r) => r.user_id))];
     if (ids.length === 0) return;
     const prefs = await readPrefs(admin, ids);
-    const off = new Set(prefs.filter((p) => p.push_community === false).map((p) => p.id));
+    // On only where the reader turned them on: never a default, never a guess.
+    const on = new Set(prefs.filter((p) => p.push_community === true).map((p) => p.id));
     const language = new Map(prefs.map((p) => [p.id, p.preferred_language ?? null]));
-    const wanted = rows.filter((r) => !off.has(r.user_id));
+    const wanted = rows.filter((r) => on.has(r.user_id));
     if (wanted.length === 0) return;
     const devices = await devicesOf(admin, [...new Set(wanted.map((r) => r.user_id))]);
     for (const row of wanted) {

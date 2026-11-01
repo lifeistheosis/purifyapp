@@ -2,8 +2,9 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 
 /**
  * Community notifications on a reader's devices (lib/community/push.ts):
- * nobody named, in the reader's own language, and a reader who switched them
- * off left alone even on a database that does not know languages yet.
+ * nobody named, in the reader's own language, only to a reader who turned
+ * them on, and a reader who switched them off left alone even on a database
+ * that does not know languages yet.
  */
 
 const state = vi.hoisted(() => ({
@@ -69,9 +70,20 @@ describe("sendCommunityPushes", () => {
   });
 
   it("speaks English to a reader whose language is not known", async () => {
-    state.profiles = [{ id: "u1", push_community: null, preferred_language: null }];
+    state.profiles = [{ id: "u1", push_community: true, preferred_language: null }];
     await sendCommunityPushes(admin, [{ user_id: "u1", kind: "follow", actor_handle: "maria.p" }]);
     expect(state.sent[0]).toMatchObject({ title: "Someone followed you", url: "/community#@maria.p" });
+  });
+
+  it("sends nothing to a reader who never turned them on", async () => {
+    // Asked for, never on by default: not set is off, and so is a reader the
+    // read did not find.
+    state.profiles = [{ id: "unset", push_community: null, preferred_language: "el" }];
+    await sendCommunityPushes(admin, [
+      { user_id: "unset", kind: "reply", post_id: "p1" },
+      { user_id: "missing", kind: "reply", post_id: "p1" },
+    ]);
+    expect(state.sent).toEqual([]);
   });
 
   it("leaves alone a reader who switched them off, even where languages are not kept yet", async () => {

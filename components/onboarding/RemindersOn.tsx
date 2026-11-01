@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 
 import { useTranslate } from "@/components/i18n/MessagesProvider";
 import { ArtPlate } from "@/components/prayers/ArtPlate";
+import { CommunityPushSwitch } from "@/components/profile/CommunityPushSwitch";
 import { cn } from "@/lib/cn";
 import { dateLocale } from "@/lib/i18n/deviceDates";
 import { serviceArt } from "@/lib/prayers/serviceArt";
@@ -37,6 +38,13 @@ import { PrimaryButton } from "./PrimaryButton";
  * The motion is CSS (app/globals.css, "The moment reminders turn on") on the
  * sheet's own clock, below. With Purify's motion off the finished screen
  * stands at once: no glide, nothing fading, every card in place.
+ *
+ * Community notifications are offered here as a choice of their own, off
+ * until the reader turns them on (CONTRIBUTING's reminders bar, clause 1:
+ * "The reader asked for it. Default off, always."). They used to come with
+ * the reminders: every profile started with them on, so turning reminders on
+ * was all it took. The switch rises with Continue, and only where Community
+ * is open (components/profile/CommunityPushSwitch.tsx, its "row" look).
  */
 
 export type ReminderTimes = { morning: string; evening: string };
@@ -177,6 +185,7 @@ export function RemindersOn({
           ))}
         </ol>
         <div className="ob-rise mt-6" style={{ animationDelay: `${CONTINUE_AT}ms` }}>
+          <CommunityPushSwitch variant="row" className="mb-6" />
           <PrimaryButton onClick={onContinue}>{t("onboard.continue")}</PrimaryButton>
         </div>
       </div>

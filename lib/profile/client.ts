@@ -34,12 +34,13 @@ export async function fetchProfile(handle: string): Promise<{ ok: true; profile:
 
 /**
  * Whether Community notifications are on for this reader: the one value
- * (profiles.push_community) both switches show, the one in Settings,
- * Notifications and the one in Edit profile. On unless they turned it off,
- * as the server reads it (lib/community/push.ts).
+ * (profiles.push_community) every switch shows, in Settings, Notifications,
+ * in Edit profile and beside the reminders in the welcome questions. Off
+ * unless they turned it on, as the server reads it before it sends
+ * (lib/community/push.ts): asked for, never on by default.
  */
 export function communityPushOn(profile: Pick<MyProfile, "settings"> | null | undefined): boolean {
-  return profile?.settings?.pushCommunity !== false;
+  return profile?.settings?.pushCommunity === true;
 }
 
 /** The signed-in reader's own profile, with what the editor needs. */
