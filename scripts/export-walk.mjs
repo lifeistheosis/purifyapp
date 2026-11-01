@@ -2995,10 +2995,12 @@ await section(32, async () => {
 // and a short rule; the pill at the foot turns the chapter and ends in
 // Listen; the pill and the round buttons step away as the reader reads on
 // and come back on a scroll up. What stood above the title and in the 1.7
-// bar is in the ••• sheet (the search, the chapters, the translation, the
-// book, the Greek, the bookmark, the app's search) and the Aa sheet (the
-// settings). On a tablet one centred column with the Fathers in the sheet,
-// and focus mode's way out at the foot, out of the top right. This opens John
+// bar is in the ••• sheet (the one search, opened on the Bible, the chapters,
+// the translation, the Greek, the bookmark) and the Aa sheet (the settings).
+// Its second search, "Search Purify", and its Book row went in build 87 (the
+// owner's note 82): the same screen twice, and the title's own job. On a
+// tablet one centred column with the Fathers in the sheet, and focus mode's
+// way out at the foot, out of the top right. This opens John
 // 1 and Genesis 1 (the Greek offered) on the narrow Android width and on an
 // iPhone's with its status bar and home indicator stood in, then John 1 on
 // an iPad's two orientations, and walks focus mode on a phone and a tablet.
@@ -3156,15 +3158,23 @@ await section(33, async () => {
           const rows = [...d.querySelectorAll("button")].map((b) => (b.innerText ?? "").replace(/\s+/g, " ").trim());
           const current = d.querySelector('a[aria-current="page"]');
           const r = current?.getBoundingClientRect();
-          return { rows, search: !!d.querySelector("[data-bible-search-open]"), current: current ? { text: current.textContent.trim(), inView: r.left >= 0 && r.right <= innerWidth } : null };
+          return {
+            rows,
+            search: !!d.querySelector("[data-bible-search-open]"),
+            doors: [...d.querySelectorAll("[data-search-door]")].map((b) => b.getAttribute("data-search-door")),
+            current: current ? { text: current.textContent.trim(), inView: r.left >= 0 && r.right <= innerWidth } : null,
+          };
         });
         const has = (start, holds = "") => Boolean(more) && more.rows.some((t) => t.startsWith(start) && t.includes(holds));
-        must(Boolean(more) && more.search && Boolean(more.current) && more.current.text === "1" && more.current.inView, `${where}: ••• opens a sheet with the search for a verse and the chapters, the one being read in view (${more ? `search ${more.search}, current ${more.current ? more.current.text : "none"}` : "no sheet"})`);
+        must(Boolean(more) && more.search && Boolean(more.current) && more.current.text === "1" && more.current.inView, `${where}: ••• opens a sheet with the search and the chapters, the one being read in view (${more ? `search ${more.search}, current ${more.current ? more.current.text : "none"}` : "no sheet"})`);
         const firstRow = more ? more.rows.filter(Boolean)[0] ?? "" : "";
-        must(firstRow.endsWith(names.settings), `${where}: the reader's settings are its first row, over the search for a verse ("${firstRow}")`);
-        must(has(en["bible.translationLabel"], "KJV") && has(en["bible.bookLabel"], "John") && has(en["bible.interlinearGreek"]) && has(en["bible.bookmarkThisChapter"]) && has(en["search.ariaLabel"]), `${where}: and the translation, the book, the Greek, the bookmark and the app's search (${more ? more.rows.filter(Boolean).slice(0, 8).join(" | ") : "no sheet"})`);
+        must(firstRow.endsWith(names.settings), `${where}: the reader's settings are its first row, over the search ("${firstRow}")`);
+        must(has(en["bible.translationLabel"], "KJV") && has(en["bible.interlinearGreek"]) && has(en["bible.bookmarkThisChapter"]), `${where}: and the translation, the Greek and the bookmark (${more ? more.rows.filter(Boolean).slice(0, 8).join(" | ") : "no sheet"})`);
+        // Build 87, the owner's note 82: one search, the Bible's, and no row
+        // doing the title's job (the title opens the books).
+        must(Boolean(more) && more.doors.join(",") === "bible" && !has(en["search.ariaLabel"]) && !has(`${en["bible.bookLabel"]} `, "John"), `${where}: one search in it, opened on the Bible, and no Book row (${more ? `${more.doors.join(", ") || "no search"}; ${more.rows.filter(Boolean).join(" | ")}` : "no sheet"})`);
         await page.screenshot({ path: path.join(SHOTS, "reader-more-sheet-390.png") });
-        // The translation opens in a sheet of its own, as the book and the settings do.
+        // The translation opens in a sheet of its own, as the settings do.
         await tap(page.locator("[role=dialog] button", { hasText: en["bible.translationLabel"] }).first());
         await page.waitForFunction(() => [...document.querySelectorAll("[role=dialog]")].some((d) => /King James Version/.test(d.textContent ?? "")), null, { timeout: 8000 }).catch(() => {});
         await page.waitForTimeout(700);

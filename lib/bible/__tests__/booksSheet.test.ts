@@ -1,11 +1,11 @@
 // The books sheet (1.8, the owner's pick A of r3-20, "Straight into the
 // book"; Homebase/boards/purify-master/variants/r3-20-bible). The Bible tab
 // opens the chapter itself, so the books are chosen from the chapter: its
-// title (with a small chevron), the name on its pill and the ••• sheet's Book
-// row open one sheet. In it: the Bible's search, both Testaments as one list
-// with no switch, the book being read open at its chapters with the chapter
-// being read lit white, and at its foot today's readings, the plans and the
-// journal.
+// title (with a small chevron) and the name on its pill open one sheet (the
+// ••• sheet's Book row went in note 82). In it: the Bible's search, both
+// Testaments as one list with no switch, the book being read open at its
+// chapters with the chapter being read lit white, and at its foot today's
+// readings, the plans and the journal.
 //
 // What a reader would notice if this broke: the Old and New Testament switch
 // back in the sheet, a gold chapter, a sheet that opens on Genesis while they
@@ -186,8 +186,9 @@ describe("the ways to it", () => {
     expect(pill.split("<MobileChapterSheet").length - 1).toBe(1);
   });
 
-  it("is the ••• sheet's Book row, as now", () => {
-    expect(code(MORE)).toMatch(/<MobileChapterSheet open=\{next === "book"\}/);
+  it("is no longer the ••• sheet's Book row, which did what the title does (the owner's note 82)", () => {
+    expect(code(MORE)).not.toContain("<MobileChapterSheet");
+    expect(code(MORE)).not.toContain('t("bible.bookLabel")');
   });
 
   it("is asked for by one event on window", () => {

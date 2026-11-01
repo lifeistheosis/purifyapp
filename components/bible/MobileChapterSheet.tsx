@@ -25,7 +25,8 @@ import { BibleSearch } from "./BibleSearch";
  * The books sheet (1.8, the owner's pick A of r3-20, "Straight into the
  * book"; Homebase/boards/purify-master/variants/r3-20-bible). The Bible tab
  * opens the chapter itself now, so the books are chosen from the chapter:
- * its title, the name on its pill and the ••• sheet's Book row all open this.
+ * its title and the name on its pill open this (the ••• sheet's Book row
+ * went in note 82: it did what the title does).
  *
  *  - The Bible's search over the top, still while the list scrolls under it.
  *  - Both Testaments as one list, in the Church's order (lib/bible/books.ts:

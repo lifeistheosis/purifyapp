@@ -3,9 +3,7 @@
 import { useState } from "react";
 
 import { useTranslate } from "@/components/i18n/MessagesProvider";
-import { openSearch } from "@/lib/search/open";
 import { ChevronRight } from "@/components/ui/icons/ChevronRight";
-import { Search } from "@/components/ui/icons/Search";
 import { Sheet } from "@/components/ui/Sheet";
 import { getBook } from "@/lib/bible/books";
 import { useInterlinear } from "@/lib/bible/interlinear";
@@ -13,7 +11,6 @@ import { useBookmarks } from "@/lib/bookmarks";
 import { softTick } from "@/lib/ui/softTick";
 
 import { BibleSearch } from "./BibleSearch";
-import { MobileChapterSheet } from "./MobileChapterSheet";
 import { MobileChapterStrip } from "./MobileChapterStrip";
 import { ToggleRow } from "./ReaderSettingsMenu";
 import { TranslationList, useTranslationChoice } from "./TranslationList";
@@ -27,13 +24,18 @@ import { TranslationList, useTranslationChoice } from "./TranslationList";
  *  - first, the reader's settings (the owner's pick B of 2026-10-28, "Two
  *    (Aa inside •••)": they had a round Aa button of their own until then),
  *    opening the same sheet Aa opened, which this sheet makes way for,
- *  - the search for a verse (BibleSearch, which opens as a screen of its own),
+ *  - the search: the app's one search (BibleSearch), opened on the Bible,
+ *    where Everything is one door away for a reader who wants all of Purify,
  *  - the book's chapters, the slim strip with the one being read lit,
- *  - the translation and the book, each opening its own sheet as the pills
- *    did (this sheet goes first, so one sheet never opens over another),
+ *  - the translation, opening its own sheet as its pill did (this sheet goes
+ *    first, so one sheet never opens over another),
  *  - the Greek beside the English, where it is offered,
- *  - the chapter's bookmark,
- *  - and the search of the whole app, which every phone bar carried.
+ *  - and the chapter's bookmark.
+ *
+ * Until build 87 it also held "Search Purify" at its foot, the same screen
+ * opened on Everything, and a Book row, which the chapter's title has done
+ * since r3-20 A (it opens the books sheet). Two searches for one job and a
+ * row for the title's: the owner's note 82 of build 86.
  *
  * The way back is the round button opposite; the pill at the foot turns the
  * chapter and holds Listen. lib/bible/__tests__/readerScreen.test.ts holds
@@ -64,7 +66,7 @@ export function ReaderMoreSheet({
   configuredLicensed: readonly string[];
 }) {
   const { t } = useTranslate();
-  const [next, setNext] = useState<"translation" | "book" | null>(null);
+  const [translations, setTranslations] = useState(false);
   const { testament, list, current, choose } = useTranslationChoice(book, configuredLicensed);
   const { on: greek, toggle: toggleGreek } = useInterlinear();
   const bookmarks = useBookmarks();
@@ -72,10 +74,10 @@ export function ReaderMoreSheet({
   const bibleBook = getBook(book);
   const name = t(`bible.books.${book}`);
 
-  /** This sheet goes, then the next one opens. */
-  const go = (to: "translation" | "book") => {
+  /** This sheet goes, then the translations open. */
+  const openTranslations = () => {
     onClose();
-    setNext(to);
+    setTranslations(true);
   };
 
   function toggleSaved() {
@@ -96,6 +98,7 @@ export function ReaderMoreSheet({
         <div className="space-y-4 pt-1">
           {/* The sheet's first row: the reader's settings, Aa's own sheet. */}
           <SheetRow label={t("bible.readerSettings")} icon={<AaMark />} onClick={onSettings} />
+          {/* The one search, on the Bible first (note 82). */}
           <BibleSearch layer onNavigate={onClose} />
           {bibleBook ? (
             // The strip runs to the sheet's edges as it ran to the screen's:
@@ -106,38 +109,27 @@ export function ReaderMoreSheet({
             </div>
           ) : null}
           <div className="space-y-2.5">
-            <SheetRow label={t("bible.translationLabel")} value={current.shortLabel} onClick={() => go("translation")} />
-            <SheetRow label={t("bible.bookLabel")} value={name} onClick={() => go("book")} />
+            <SheetRow label={t("bible.translationLabel")} value={current.shortLabel} onClick={openTranslations} />
             {showInterlinear ? (
               <ToggleRow on={greek} touch label={t("bible.interlinearGreek")} onClick={toggleGreek} />
             ) : null}
             <ToggleRow on={saved} touch label={t("bible.bookmarkThisChapter")} onClick={toggleSaved} />
-            <SheetRow
-              label={t("search.ariaLabel")}
-              icon={<Search size={16} className="shrink-0" />}
-              onClick={() => {
-                onClose();
-                // All of Purify: the field above is the Bible's own door.
-                openSearch("all");
-              }}
-            />
           </div>
         </div>
       </Sheet>
 
-      <Sheet open={next === "translation"} onClose={() => setNext(null)} title={t("bible.translationLabel")}>
+      <Sheet open={translations} onClose={() => setTranslations(false)} title={t("bible.translationLabel")}>
         <TranslationList
           testament={testament}
           list={list}
           current={current}
           configured={configuredLicensed}
           onChoose={(tr) => {
-            setNext(null);
+            setTranslations(false);
             choose(tr);
           }}
         />
       </Sheet>
-      <MobileChapterSheet open={next === "book"} onClose={() => setNext(null)} currentSlug={book} currentChapter={chapter} />
     </>
   );
 }

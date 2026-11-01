@@ -20,9 +20,9 @@ import { BIBLE_START_SIZE } from "@/components/reader/ReaderPrefs";
  * are the first row of the ••• sheet now, and open the same sheet
  * (ReaderSettingsSheet: text size, font, spacing, the reading mode,
  * ambience, focus, paragraphs, keep scrolling and the Greek). After them the
- * sheet holds the search, the book's chapters, the translation, the book,
- * the Greek, the bookmark and the app's search (ReaderMoreSheet), which
- * stood above the chapter's title and in the top bar until 1.7.
+ * sheet holds the one search (opened on the Bible), the book's chapters, the
+ * translation, the Greek and the bookmark (ReaderMoreSheet), which stood
+ * above the chapter's title and in the top bar until 1.7.
  *
  * The settings open on the size this page reads at: Large for a reader who
  * has never chosen one (BIBLE_START_SIZE). Hidden on `md+` on the website,
