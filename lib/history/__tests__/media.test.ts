@@ -67,6 +67,24 @@ describe("an event's picture address", () => {
     for (const e of HISTORY_EVENTS) {
       if (e.depth !== "full" || !e.media) continue;
       expect(e.media.hero, e.slug).toMatch(/^\/history\/media\/[a-z0-9-]+\.v\d+\.jpg$/);
+      for (const g of e.media.gallery ?? []) expect(g.src, e.slug).toMatch(/^\/history\/media\/[a-z0-9-]+\.v\d+\.jpg$/);
+    }
+  });
+
+  // 1.8, the owner's note 84 of build 86: "add alot more photos to the fall
+  // of Constantinople section". The event had its one picture and no more.
+  // A plate prints work, artist and licence, not the date, so each work line
+  // of this gallery says when the work was made: Zonaro's painting of 1903
+  // must not pass for a picture of 1453.
+  it("gives the Fall of Constantinople about ten more pictures, each dated in its credit", () => {
+    const fall = HISTORY_EVENTS.find((e) => e.slug === "fall-of-constantinople")!;
+    const gallery = fall.media?.gallery ?? [];
+    expect(gallery.length).toBeGreaterThanOrEqual(10);
+    expect(new Set(gallery.map((g) => g.src)).size).toBe(gallery.length);
+    expect(gallery.map((g) => g.src)).not.toContain(fall.media!.hero);
+    for (const g of gallery) {
+      expect(g.src, g.src).toMatch(/^\/history\/media\/fall-of-constantinople-[a-z0-9-]+\.v\d+\.jpg$/);
+      expect(g.work, g.src).toMatch(/\b1\d{3}s?\b|\bcentury\b|\bundated\b/);
     }
   });
 });
