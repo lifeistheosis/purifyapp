@@ -133,18 +133,25 @@ export const SECTION_MEDIA: Partial<Record<SectionKey, SectionMedia>> = {
     evidenceUrl: "https://commons.wikimedia.org/wiki/File%3AOstromir_luke.jpg",
   },
   you: {
-    src: "/sections/you.jpg",
-    alt: "The Ladder of Divine Ascent: monks climbing a ladder toward Christ, with angels above.",
+    src: "/sections/you.v2.jpg",
+    alt: "The Ladder of Divine Ascent: monks climbing a ladder, a bishop in white among them, toward Christ, who reaches down from heaven at its top.",
     work: "The Ladder of Divine Ascent, St Catherine's Monastery, Sinai",
     // A flat scan since 1.7, the owner's word of 2026-10-15: the photograph
     // through the glass it replaced was "a super blurry photo". Cut from the
-    // 1920 px copy of a 9400 x 13200 file.
+    // 1920 px copy of a 9400 x 13200 file. Since 1.8 (note 71, r3-25 A) the
+    // picture runs at the top of the You tab, under the bar, the width of
+    // the phone (components/you/YouHero.tsx), where the 1280 by 720 band was
+    // stretched 1.6 times on a 3x phone. So it is the part of that band the
+    // tab shows, made square, from the 3840 px copy: you.v2.jpg, 1170 by
+    // 1170. docs/licensing/SECTION_MEDIA.md says how it was cut.
     artist: "Anonymous (image by Michel Bakni)",
     workDate: "12th century",
     source: "File:The Ladder of Divine Ascent-Sinai.jpg",
     license: "Public domain",
     evidenceUrl:
       "https://commons.wikimedia.org/wiki/File%3AThe_Ladder_of_Divine_Ascent-Sinai.jpg",
+    width: 1170,
+    height: 1170,
   },
 };
 

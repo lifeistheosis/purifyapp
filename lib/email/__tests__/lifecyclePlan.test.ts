@@ -74,6 +74,17 @@ describe("plus_ended and winback", () => {
   it("does not treat an active Pro member with an old Plus date as lapsed", () => {
     expect(kinds([member("a", { plus_until: at(-31), pro_until: at(20) })])).toEqual([]);
   });
+
+  // The ending and ended emails say the reader's own plan (1.8, note 71,
+  // refinement 3): Pro to a Pro member, where they said Plus to everyone.
+  it("knows whether the plan that ends, or ended, is Pro", () => {
+    expect(plan([member("a", { plus_until: at(2), auto_renew: false })])[0]).toMatchObject({ kind: "plus_ending", pro: false });
+    expect(plan([member("a", { plus_until: at(2), pro_until: at(2), auto_renew: false })])[0]).toMatchObject({ kind: "plus_ending", pro: true });
+    expect(plan([member("a", { plus_until: at(-1) })])[0]).toMatchObject({ kind: "plus_ended", pro: false });
+    expect(plan([member("a", { plus_until: at(-1), pro_until: at(-1) })])[0]).toMatchObject({ kind: "plus_ended", pro: true });
+    // A Pro that ran out before a Plus bought after it: the Plus is what ended.
+    expect(plan([member("a", { plus_until: at(-1), pro_until: at(-60) })])[0]).toMatchObject({ kind: "plus_ended", pro: false });
+  });
 });
 
 describe("welcome catch-up", () => {

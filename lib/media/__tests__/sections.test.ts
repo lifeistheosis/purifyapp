@@ -145,6 +145,31 @@ describe("section media registry", () => {
   });
 });
 
+describe("the You tab's Ladder", () => {
+  // The owner's pick A of r3-25 (2026-10-31, note 71, "A, the ladder, then
+  // the day"): the picture runs under the bar the width of the phone, so it is
+  // cut square for that box and sharp on a 3x phone.
+  const media = SECTION_MEDIA.you;
+
+  it("is the square cut, no wider than a 3x phone needs", () => {
+    expect(media?.src).toBe("/sections/you.v2.jpg");
+    expect(media?.source).toBe("File:The Ladder of Divine Ascent-Sinai.jpg");
+    expect({ width: media?.width, height: media?.height }).toEqual({ width: 1170, height: 1170 });
+    expect(media?.portrait).toBeUndefined();
+    // The 1.7 band left the disk with it.
+    expect(fs.existsSync(path.join(process.cwd(), "public/sections/you.jpg"))).toBe(false);
+  });
+
+  it("records how it was cut, and that nothing was enlarged", () => {
+    const at = RECORD.indexOf("`you.v2.jpg` replaced it");
+    expect(at).toBeGreaterThan(0);
+    const record = RECORD.slice(at, RECORD.indexOf("\n\n", at)).replace(/\s+/g, " ");
+    expect(record).toContain("2192 by 2192 from 1564px in and 32px down");
+    expect(record).toContain("nothing enlarged, to 1170 by 1170");
+    expect(record).toContain("`{{PD-Art|PD-old-100-expired}}`");
+  });
+});
+
 describe("the Prayers Pantocrator", () => {
   // The owner's pick of 2026-10-28 (B, Homebase/boards/purify-master/r18/
   // choose/2-pantocrator.png): v3's framing, cut from the larger photograph

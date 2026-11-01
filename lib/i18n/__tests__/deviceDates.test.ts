@@ -164,10 +164,12 @@ describe("every screen that writes a date the device's own way", () => {
     }
   });
 
-  it("in seventeen files", () => {
+  it("in sixteen files", () => {
     const using = sources.filter((path) => readFileSync(join(root, path), "utf8").includes("deviceDateLocale("));
-    // The seventeen screens, and the module itself.
-    expect(using.length).toBe(18);
+    // The sixteen screens, and the module itself. The You tab wrote "Member
+    // since" its way until note 71 (r3-25 A), whose name on the Ladder has
+    // the way to the reader's profile under it instead.
+    expect(using.length).toBe(17);
   });
 });
 

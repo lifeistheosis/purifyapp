@@ -123,12 +123,21 @@ const SECTIONS = [
   },
   {
     key: "you",
-    file: "you.jpg",
+    file: "you.v2.jpg",
     // The Ladder of Divine Ascent, which the app already nods to with its
-    // Klimax glyph: the personal page is about one's own ascent.
+    // Klimax glyph: the personal page is about one's own ascent. A flat scan
+    // since 1.7 (the photograph through the glass before it was "a super
+    // blurry photo", the owner, 2026-10-15). Since 1.8 (note 71) the You tab
+    // opens on it under its bar, full width, so it is cut square by hand from
+    // Commons' 3840 px copy of the file below (you.v2.jpg: extract 2192x2192
+    // at 1564,32, a light blur for the printed page's halftone, brought down
+    // to 1170x1170, its colour matched to the 1920 px copy;
+    // docs/licensing/SECTION_MEDIA.md). A run of this script does not cut it
+    // that way: cut it the same way, and run scripts/check-picture-edges.mjs
+    // on it.
     preferred: [
+      "File:The Ladder of Divine Ascent-Sinai.jpg",
       "File:The Ladder of Divine Ascent.jpg",
-      "File:Ladder of Divine Ascent Sinai 12th century.jpg",
     ],
     query: "Ladder of Divine Ascent icon Sinai",
   },

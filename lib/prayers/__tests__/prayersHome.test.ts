@@ -75,7 +75,11 @@ describe("the head of Prayers", () => {
   it("runs the picture under the one tab bar, which goes clear over it on a phone and solid once it has gone", () => {
     // The bar is the one every tab wears, with no prop of its own for this.
     expect(code(PAGE)).toContain('header={<MobileHeader titleKey="nav.prayers" />}');
-    const hero = code(HERO);
+    // The observer is shared with the Ladder at the top of You since note 71
+    // (components/mobile/barOverPicture.ts), and watches this picture.
+    expect(code(HERO)).toMatch(/const picture = useRef<HTMLDivElement>\(null\);\s*useBarOverPicture\(picture\);/);
+    expect(code(HERO)).toMatch(/<div\s+ref=\{picture\}\s+className="prayers-hero-picture /);
+    const hero = code("components/mobile/barOverPicture.ts");
     expect(hero).toContain("new IntersectionObserver(");
     expect(hero).toContain('BAR_SOLID = "data-bar-solid"');
     // Taken back when the page goes, so no other tab is left marked.

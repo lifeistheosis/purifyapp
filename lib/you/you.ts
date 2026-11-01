@@ -65,12 +65,25 @@ export function verseForDay<T extends { key: string }>(verses: readonly T[], day
 }
 
 /**
- * The first moment of "this week": the start of the day six days back, so
- * the week is today and the six days before it, the same seven days the
- * streak's row of flames shows above the line that counts them.
+ * The first moment of "this week": the start of this week's Monday, so the
+ * line that counts the week's verses counts the same seven days the prayer
+ * rope above it shows, Monday first (lib/streak/rope.ts, ropeWeek; the
+ * owner's pick A of r3-25, note 71). It was today and the six days before
+ * it, the days the red flame's row showed until the rope took its place.
  */
 export function weekStart(now: Date): number {
-  return new Date(now.getFullYear(), now.getMonth(), now.getDate() - 6).getTime();
+  const sinceMonday = (now.getDay() + 6) % 7;
+  return new Date(now.getFullYear(), now.getMonth(), now.getDate() - sinceMonday).getTime();
+}
+
+/**
+ * How far into a place a reader is, 0 to 1, for the bar under where they
+ * left off: verse 16 of 36, section 4 of 11, day 3 of 89. Null when the
+ * whole is not known, and then no bar is drawn.
+ */
+export function howFar(at: number, of: number | null | undefined): number | null {
+  if (!of || of <= 0 || !Number.isFinite(at) || !Number.isFinite(of)) return null;
+  return Math.min(1, Math.max(0, at / of));
 }
 
 /** How many moments fall on or after `from`. An unknown moment is not counted. */

@@ -28,34 +28,38 @@ const code = (path: string) =>
     .replace(/^\s*\/\/.*$/gm, "");
 
 const YOU = "components/mobile/YouMobile.tsx";
-/** The reader's own name at the top of the You tab (1.8), the one account screen it opens. */
+/** The Ladder at the top of the You tab (1.8, note 71), where the reader stands. */
+const YOU_HERO = "components/you/YouHero.tsx";
+/** The reader's own name on it (1.8), the one account screen it opens; signed out, Sign in. */
 const YOU_NAME = "components/you/YouIdentity.tsx";
 const SETTINGS = "components/settings/SettingsClient.tsx";
 const SIGNED = "app/(app)/account/(signed)";
 
 describe("the You tab's rows", () => {
   const you = code(YOU);
-  const list = you.slice(you.indexOf("const settings: SettingsItem[] = [];"), you.indexOf("if (!reader.known)"));
+  const list = you.slice(you.indexOf("const settings: YouRow[] = [];"), you.indexOf("const hero ="));
 
   it("are the reader's own things, and one door", () => {
     const hrefs = [...list.matchAll(/href: "([^"]+)"/g)].map((m) => m[1]);
-    expect(hrefs).toEqual([
-      "/signin?next=/account",
-      "/pricing",
-      "/account/eikon-box",
-      "/prayers/personal",
-      "/campaigns/mine",
-      "/settings",
-    ]);
+    // 1.8, note 71 (the owner's pick A of r3-25): Sign in left the list for
+    // the name's place on the Ladder, and the Purify Premium row went, the
+    // pill in the bar being the subscription's one door (refinement 3).
+    expect(hrefs).toEqual(["/account/eikon-box", "/prayers/personal", "/campaigns/mine", "/settings"]);
+  });
+
+  it("name the subscription nowhere: the pill in the bar is its one door", () => {
+    expect(you).not.toMatch(/"\/pricing"|"\/premium"|Purify Premium|plusAndProSyncCollections/);
   });
 
   it("are all the rows there are: the reader's name above them is the one other door", () => {
     // 1.8: the reader's own name and picture, at the top, open their Profile,
     // the one account screen that is about who they are. Profile keeps its
     // row in Settings too; nothing else of the account is named on You.
-    expect(you).toMatch(/<YouIdentity\b/);
+    // Signed out, Sign in stands in the name's place (note 71).
+    expect(you).toMatch(/<YouHero who=\{reader\}>/);
+    expect(code(YOU_HERO)).toMatch(/<YouIdentity who=\{who\} \/>/);
     const name = code(YOU_NAME);
-    expect([...name.matchAll(/href="([^"]+)"/g)].map((m) => m[1])).toEqual(["/account/profile"]);
+    expect([...name.matchAll(/href="([^"]+)"/g)].map((m) => m[1])).toEqual(["/signin?next=/account", "/account/profile"]);
   });
 
   it("name no account screen, nothing about Purify, and do not sign out", () => {

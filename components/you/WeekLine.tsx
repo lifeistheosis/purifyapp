@@ -1,10 +1,10 @@
 "use client";
 
 // This week, in one quiet line under the streak (1.8): the verses a reader
-// kept and the notes they wrote in the seven days the streak's flames show
-// above it. Only what was done is said, and nothing at all in a week with
-// nothing to say: no count of what was not done, the rule this screen has
-// always kept.
+// kept and the notes they wrote in the week the prayer rope's knots show
+// above it, Monday first (note 71, r3-25 A). Only what was done is said, and
+// nothing at all in a week with nothing to say: no count of what was not
+// done, the rule this screen has always kept.
 
 import { useMemo, useState } from "react";
 

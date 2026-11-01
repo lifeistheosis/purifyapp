@@ -21,7 +21,9 @@ const EVERY: [string, EmailContent][] = [
   ["payment failed, web", paymentFailedEmail("stripe")],
   ["membership active", plusActiveEmail()],
   ["plus ending", plusEndingEmail({ endsOn: new Date("2026-09-17T00:00:00Z"), store: "google" })],
+  ["pro ending", plusEndingEmail({ endsOn: new Date("2026-09-17T00:00:00Z"), store: "apple", pro: true })],
   ["plus ended", plusEndedEmail()],
+  ["pro ended", plusEndedEmail({ pro: true })],
   ["claim closing", claimClosingEmail({ dropTitle: "St Nicholas", closesAt: new Date("2026-12-04T00:00:00Z") })],
   ["welcome", welcomeEmail()],
   ["account deleted", accountDeletedEmail()],
@@ -63,5 +65,23 @@ describe("account email copy", () => {
 
   it("writes dates the same on every server", () => {
     expect(longDate(new Date("2026-08-14T00:00:00Z"))).toBe("August 14, 2026");
+  });
+
+  it("names the reader's own plan when it ends, Pro only for Pro", () => {
+    // 1.8, note 71, refinement 3: one name, Plus; Pro where the higher plan
+    // itself is meant. A Pro member was told their Plus had ended.
+    const ending = plusEndingEmail({ endsOn: new Date("2026-09-17T00:00:00Z"), store: "google" });
+    expect(ending.subject).toBe("Your Plus ends in three days");
+    expect(ending.text).toContain("Your Purify Plus membership is set not to renew");
+    const proEnding = plusEndingEmail({ endsOn: new Date("2026-09-17T00:00:00Z"), store: "google", pro: true });
+    expect(proEnding.subject).toBe("Your Pro ends in three days");
+    expect(proEnding.text).toContain("Your Purify Pro membership is set not to renew");
+    expect(proEnding.text).not.toContain("Plus");
+    expect(plusEndedEmail().subject).toBe("Your Plus has ended");
+    const proEnded = plusEndedEmail({ pro: true });
+    expect(proEnded.subject).toBe("Your Pro has ended");
+    expect(proEnded.text).toContain("If you ever want Pro again");
+    expect(proEnded.text).not.toContain("Plus");
+    for (const e of [ending, proEnding, plusEndedEmail(), proEnded]) expect(`${e.subject} ${e.text}`).not.toMatch(/premium/i);
   });
 });

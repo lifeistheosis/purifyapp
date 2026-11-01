@@ -74,9 +74,9 @@ const CONCURRENCY = 4;
 function contentFor(p: PlannedEmail): EmailContent {
   switch (p.kind) {
     case "plus_ending":
-      return plusEndingEmail({ endsOn: p.endsOn, store: p.store as BillingStore });
+      return plusEndingEmail({ endsOn: p.endsOn, store: p.store as BillingStore, pro: p.pro });
     case "plus_ended":
-      return plusEndedEmail();
+      return plusEndedEmail({ pro: p.pro });
     case "winback":
       // Never reached: winbacks are marketing and go through sendMarketingTo.
       throw new Error("winback is sent through lib/email/marketing.ts");

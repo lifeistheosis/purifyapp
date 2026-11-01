@@ -20,7 +20,7 @@ be public domain, so no attribution string is load-bearing, but
 | `prayers.v4.jpg` | prayers | Christ Pantocrator, St Catherine's Monastery, Sinai | Anonymous | 6th century | Public domain (PD-Art, PD-old-100-expired) | [Commons](https://commons.wikimedia.org/wiki/File%3ASpas_vsederzhitel_sinay.jpg) |
 | `discover.jpg` | discover | Menologion of Basil II, the Circumcision of Christ (f. 287) | Byzantine illuminators of the Menologion of Basil II | c. 985 | Public domain | [Commons](https://commons.wikimedia.org/wiki/File%3AMenologion_of_Basil_047.jpg) |
 | `reading.jpg` | reading | Ostromir Gospels, the Evangelist Luke | Anonymous | 1056 | Public domain | [Commons](https://commons.wikimedia.org/wiki/File%3AOstromir_luke.jpg) |
-| `you.jpg` | you | The Ladder of Divine Ascent, St Catherine's Monastery, Sinai | Anonymous (image by Michel Bakni) | 12th century | Public domain | [Commons](https://commons.wikimedia.org/wiki/File%3AThe_Ladder_of_Divine_Ascent-Sinai.jpg) |
+| `you.v2.jpg` | you | The Ladder of Divine Ascent, St Catherine's Monastery, Sinai | Anonymous (image by Michel Bakni) | 12th century | Public domain (PD-Art, PD-old-100-expired) | [Commons](https://commons.wikimedia.org/wiki/File%3AThe_Ladder_of_Divine_Ascent-Sinai.jpg) |
 
 `prayers.jpg` was replaced on 2026-10-05, for 1.5.2. It is the bust of the
 Sinai Pantocrator (629 by 660), cut with sharp from the copy of the same
@@ -94,6 +94,31 @@ photo"), cut from the 1920 px copy of a 9400 by 13200 file. Its row above
 still named the old photograph until 2026-10-28, when
 `lib/media/__tests__/sections.test.ts` began holding every row to the
 registry's own link.
+
+`you.v2.jpg` replaced it on 2026-11-01, for 1.8 (note 71, the owner's pick A
+of r3-25, "the Ladder, then the day"), when the You tab came to open on this
+picture under its bar, the width of the phone (`components/you/YouHero.tsx`).
+`you.jpg` was the 1920 px copy's band 1856 by 1044 from 22px in and 16px down
+(found by matching the two, a mean difference of 0.4 levels), brought down to
+1280 by 720; the tab shows its top right, 756 by 720 of it, which a 3x phone
+stretched 1.6 times. The new file is that part of the band made square, so it
+fills the hero's box, about as tall as it is wide: in Commons' 3840 px copy
+of the same file (3840 by 5392), 2192 by 2192 from 1564px in and 32px down,
+whose right edge is the old cut's own. The Commons file is a scan of a
+printed page and its halftone dots are still there at 3840 px, so it was
+blurred lightly (sigma 1.2) to take the dots out before it was brought down,
+nothing enlarged, to 1170 by 1170 (three times a 390 px phone), then
+sharpened lightly (sigma 0.8). The 3840 px copy comes out of Commons' scaler
+cooler than the 1920 px copy (mean 122, 100, 70 against 125, 97, 60), so each
+channel was matched to the 1920 px copy over the same box, one gain and one
+offset each, to keep the colour the owner has seen since 1.7. JPEG (mozjpeg)
+at quality 76, 176 KB, 44 KB lighter than `you.jpg`. The licence was read on
+the file page that day: `{{PD-Art|PD-old-100-expired}}`, LicenseShortName
+"Public domain", Copyrighted "False", a single upload of 2021-01-09. The
+picture was opened and looked at before and after it was cut, and laid beside
+`you.jpg` at a 3x phone's own pixels; it has no white at any edge
+(`node scripts/check-picture-edges.mjs sections`). The downloaded copies are
+not kept, and `you.jpg` left the disk with the change.
 
 ## Rejected, and why
 

@@ -72,7 +72,7 @@ export const RELEASE_EMAIL: ReleaseEmail = {
     {
       emoji: "🔥",
       name: "Your streak, in view",
-      text: "A flame and your count beside Premium on every tab, and a flame that grows the longer you keep it.",
+      text: "A flame and your count beside Plus on every tab, and a flame that grows the longer you keep it.",
     },
     {
       emoji: "📖",
