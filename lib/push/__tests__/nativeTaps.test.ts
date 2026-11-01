@@ -62,6 +62,7 @@ beforeEach(() => {
   state.added = [];
   state.listeners = new Map();
   vi.stubGlobal("window", {
+    open: vi.fn(),
     localStorage: {
       getItem: (k: string) => state.store.get(k) ?? null,
       setItem: (k: string, v: string) => void state.store.set(k, v),
@@ -135,6 +136,15 @@ describe("listenForTaps", () => {
     tap("id-2", "/prayers/morning", "dismiss");
     tap("id-3", "https://example.org/");
     expect(opened).toEqual([]);
+  });
+
+  it("opens the owner's alerts in the phone's browser, where the admin is, never as Today", async () => {
+    const { native, opened } = await fresh();
+    await native.listenForTaps();
+    tap("id-sale", "/admin#orders");
+    expect(opened).toEqual([]);
+    const { SITE_URL } = await import("@/lib/site");
+    expect(window.open).toHaveBeenCalledWith(new URL("/admin#orders", SITE_URL).toString(), "_blank");
   });
 
   it("remembers only the last few opened taps", async () => {

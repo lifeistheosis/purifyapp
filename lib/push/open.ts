@@ -39,6 +39,21 @@ export function isAppAddress(url: unknown): url is string {
   return typeof url === "string" && url.startsWith("/") && !url.startsWith("//") && !url.startsWith("/\\");
 }
 
+/**
+ * The screens that live on the website alone: the admin and the owner's
+ * pages, which the apps leave out of their bundle (scripts/native-build.mjs).
+ * The owner's own alerts point there (a sale, low stock, the hourly goals:
+ * lib/admin/ownerAlert.ts). Opened inside the apps they found no page and
+ * landed on Today, so the apps hand them to the phone's browser instead.
+ */
+const WEB_ONLY = ["/admin", "/owner"];
+
+/** True for an address on one of the website-only screens. */
+export function isWebOnlyAddress(url: unknown): url is string {
+  if (!isAppAddress(url)) return false;
+  return WEB_ONLY.some((root) => url === root || (url.startsWith(root) && "/?#".includes(url.charAt(root.length))));
+}
+
 /** The shell's own last resort. Kept apart so a test can watch it. */
 function hardLoad(url: string): void {
   if (typeof window !== "undefined") window.location.assign(url);

@@ -15,8 +15,9 @@
 
 import { apiFetch } from "@/lib/api/client";
 import { nativePlatform as platform } from "@/lib/platform/native";
+import { SITE_URL } from "@/lib/site";
 import { readLocalSessionUser } from "@/lib/supabase/localSession";
-import { openFromPush } from "./open";
+import { isWebOnlyAddress, openFromPush } from "./open";
 import {
   EVENING_DEFAULT,
   MORNING_DEFAULT,
@@ -162,11 +163,29 @@ export async function listenForTaps(): Promise<void> {
     await PushNotifications.addListener("pushNotificationActionPerformed", (action) => {
       if (action.actionId === "dismiss") return;
       if (!firstTap(action.notification?.id)) return;
-      openFromPush(action.notification?.data?.url);
+      const url: unknown = action.notification?.data?.url;
+      // The owner's alerts open the admin, which is on the website alone:
+      // in the phone's browser, signed in there, never as Today in the app.
+      if (isWebOnlyAddress(url)) openOnWebsite(url);
+      else openFromPush(url);
     });
   } catch {
     // The plugin could not be reached: the next launch tries again.
     tapsAttached = false;
+  }
+}
+
+/**
+ * Open a website-only address in the phone's own browser: window.open hands
+ * an address on another host to Safari on an iPhone and to the default
+ * browser on Android (the shells open nothing but their own pages inside),
+ * as the paywall's store link does (components/billing/PlusPaywall.tsx).
+ */
+function openOnWebsite(path: string): void {
+  try {
+    window.open(new URL(path, SITE_URL).toString(), "_blank");
+  } catch {
+    /* an address that cannot be made opens nothing */
   }
 }
 
