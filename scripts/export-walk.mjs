@@ -5522,6 +5522,352 @@ await section(43, async () => {
     await ctx.close();
   }
 });
+
+// ---- 49. Community's responses: the lit candle opens a tray over the row, and nothing moves.
+// The owner on build 86 (note 80): "it moves the whole UI when you click on
+// the guy with his hands up". The praying figure opened Amen, Praying and
+// Glory to God inside the row itself, so the row grew a line and every post
+// under it dropped (r3-30 measured 40px at 390). His pick, r3-30 A with mark
+// 1 of r3-30b: the lit candle opens a small tray over the row, fixed to the
+// screen and drawn at the top of the page, because a post is
+// content-visibility: auto and clips what spills out of it. No figures on
+// prayer: no count beside the candle and none in the tray. The like keeps its.
+//
+// The website is stood in for: a feed of six posts, the first with a reply,
+// and a reader signed in, whose answers it keeps. Measured on the built app:
+// the row and the next post before the tap, with the tray up, and after a
+// choice, 0px moved; where the tray stands (over the row, its caret on the
+// candle, whole on the screen, outside the post; under the row when a bar
+// covers the room over it); what puts it down (Escape, a tap elsewhere, a
+// scroll, a choice); a reply's, one size smaller; its words on the five
+// palettes; English and Filipino at 360 and Arabic right to left; and with
+// Purify's motion off, no animation.
+await section(49, async () => {
+  console.log("\n49. Community's responses open over the row, and nothing moves");
+  const words = (code) => JSON.parse(fs.readFileSync(path.resolve(`lib/i18n/messages/${code}.json`), "utf8"));
+  const three = (w) => ["amen", "praying", "glory"].map((k) => w[`community.respond.${k}`]);
+  const en = words("en");
+  const session = JSON.stringify({ access_token: "walk", token_type: "bearer", user: { id: "00000000-0000-4000-8000-000000000000", email: "reader@example.com", created_at: "2026-01-01T00:00:00Z", identities: [], user_metadata: {} } });
+  const at = new Date(Date.now() - 3 * 3600e3).toISOString();
+  const uuid = (n) => `00000000-0000-4000-8000-${String(n).padStart(12, "0")}`;
+  const FIRST = uuid(101);
+  const posts = Array.from({ length: 6 }, (_, i) => ({
+    id: uuid(101 + i),
+    kind: "discussion",
+    title: i === 0 ? "A post the walk writes" : `Another post, the ${["second", "third", "fourth", "fifth", "sixth"][i - 1]}`,
+    body: "Two short lines of words, so that the row under them stands where a real post's does, and the next post starts where it would.",
+    quote_text: null,
+    quote_source: null,
+    quote_href: null,
+    author_name: "Walk",
+    author_avatar: null,
+    author_handle: null,
+    reply_count: i === 0 ? 1 : 0,
+    like_count: i === 0 ? 12 : 0,
+    dislike_count: 0,
+    created_at: at,
+    pinned_at: null,
+    category: null,
+    amen_count: 0,
+    praying_count: 0,
+    glory_count: i === 0 ? 6 : 0,
+  }));
+  const reply = { id: uuid(201), post_id: FIRST, body: "A reply, to hold a reply's own row.", author_name: "Walk", author_avatar: null, author_handle: null, like_count: 0, dislike_count: 0, created_at: at, amen_count: 2, praying_count: 0, glory_count: 0 };
+
+  // The website, stood in for. Registered after the shell's own answer, so it
+  // is asked first; what it does not know passes on to the shell, which
+  // answers nothing from outside the bundle.
+  const standIn = async (ctx) => {
+    const said = [];
+    const held = { posts: {}, replies: {} };
+    await ctx.route(/\/api\/community\//, async (route) => {
+      const req = route.request();
+      const url = new URL(req.url());
+      if (url.origin === ORIGIN) return route.fallback();
+      const json = (body) => route.fulfill({ status: 200, contentType: "application/json", headers: { "Access-Control-Allow-Origin": ORIGIN, Vary: "Origin" }, body: JSON.stringify(body) });
+      if (url.pathname === "/api/community/posts" && req.method() === "GET" && !url.search) return json({ posts });
+      if (url.pathname === `/api/community/posts/${FIRST}/replies` && req.method() === "GET") return json({ replies: [reply] });
+      if (url.pathname === "/api/community/mine") return json({ postIds: [], replyIds: [], reactions: { posts: {}, replies: {} }, responses: held, moderator: false });
+      if (url.pathname === "/api/community/responses" && req.method() === "POST") {
+        const ask = JSON.parse(req.postData() ?? "{}");
+        said.push(ask);
+        const map = ask.replyId ? held.replies : held.posts;
+        const key = ask.replyId ?? ask.postId;
+        const mine = new Set(map[key] ?? []);
+        if (ask.on) mine.add(ask.kind);
+        else mine.delete(ask.kind);
+        map[key] = ["amen", "praying", "glory"].filter((k) => mine.has(k));
+        const counts = ask.replyId ? { amen: 2, praying: 0, glory: 0 } : { amen: 0, praying: 0, glory: 6 };
+        for (const k of map[key]) counts[k] += 1;
+        return json({ counts, mine: map[key] });
+      }
+      return route.fallback();
+    });
+    return said;
+  };
+  const community = async ({ width, height = 844, locale, set = {} }) => {
+    const opened = await open({ width, height, phone: true, locale, set: { "sb-walk-auth-token": session, "purify.motion": "on", ...set } });
+    const said = await standIn(opened.ctx);
+    await go(opened.page, "/community/");
+    const ready = await opened.page
+      .waitForFunction(() => document.querySelectorAll('article [data-response-candle="post"]:not([disabled])').length >= 2, null, { timeout: 20000 })
+      .then(() => true, () => false);
+    await opened.page.evaluate(() => document.fonts.ready);
+    await opened.page.waitForTimeout(800);
+    return { ...opened, said, ready };
+  };
+
+  // The first post's row (or its reply's), and the top of the post after it.
+  const rowAndNext = (page, size = "post") =>
+    page.evaluate((s) => {
+      const feed = [...document.querySelectorAll("article")].filter((a) => a.querySelector('[data-response-candle="post"]'));
+      const candle = feed[0]?.querySelector(`[data-response-candle="${s}"]`);
+      if (!candle || !feed[1]) return null;
+      const row = candle.parentElement.getBoundingClientRect();
+      return {
+        top: row.top,
+        bottom: row.bottom,
+        next: feed[1].getBoundingClientRect().top,
+        tall: document.documentElement.scrollHeight,
+        lit: candle.classList.contains("community-lit"),
+        figures: (candle.textContent ?? "").trim(),
+        like: (feed[0].querySelector("button[aria-pressed]")?.textContent ?? "").trim(),
+      };
+    }, size);
+  const moved = (a, b) => (a && b ? Math.max(Math.abs(a.top - b.top), Math.abs(a.bottom - b.bottom), Math.abs(a.next - b.next), Math.abs(a.tall - b.tall)) : NaN);
+  const px = (n) => (Number.isFinite(n) ? `${Math.round(n * 10) / 10}px` : "not measured");
+  // Brings a candle to the middle of the screen, so no tap has to scroll to it.
+  const centre = async (page, size = "post") => {
+    await page.evaluate((s) => document.querySelector(`article [data-response-candle="${s}"]`)?.scrollIntoView({ block: "center" }), size);
+    await page.waitForTimeout(400);
+  };
+  const candle = (page, size = "post") => page.locator(`article [data-response-candle="${size}"]`).first();
+  const trayNow = (page) =>
+    page.evaluate(() => {
+      const tray = document.querySelector("[data-response-tray]");
+      if (!tray) return null;
+      const opener = document.querySelector('[data-response-candle][aria-expanded="true"]');
+      const t = tray.getBoundingClientRect();
+      const c = opener?.getBoundingClientRect();
+      const after = getComputedStyle(tray, "::after");
+      const choices = [...tray.querySelectorAll("button")];
+      return {
+        size: tray.getAttribute("data-response-tray"),
+        portal: tray.parentElement === document.body && !tray.closest("article"),
+        role: tray.getAttribute("role"),
+        top: t.top,
+        bottom: t.bottom,
+        left: t.left,
+        right: t.right,
+        height: t.height,
+        vw: document.documentElement.clientWidth,
+        vh: window.innerHeight,
+        candle: c ? { top: c.top, bottom: c.bottom, middle: c.left + c.width / 2 } : null,
+        caret: t.left + parseFloat(getComputedStyle(tray).borderLeftWidth) + parseFloat(after.left) + parseFloat(after.width) / 2,
+        below: tray.hasAttribute("data-below"),
+        words: choices.map((b) => (b.textContent ?? "").trim()),
+        pressed: choices.map((b) => b.getAttribute("aria-pressed")),
+        text: tray.textContent ?? "",
+        animation: getComputedStyle(tray).animationName,
+        motion: document.documentElement.getAttribute("data-motion"),
+        ground: getComputedStyle(tray).backgroundColor,
+        inks: choices.map((b) => getComputedStyle(b).color),
+      };
+    });
+  // Where it stands: over the row by the gap (under it when `below`), its
+  // caret on the candle's middle, whole on the screen.
+  const placed = (tr, gap) => {
+    if (!tr?.candle) return { ok: false, says: "no tray, or no candle open" };
+    const gapNow = tr.below ? tr.top - tr.candle.bottom : tr.candle.top - tr.bottom;
+    const caretOff = tr.caret - tr.candle.middle;
+    const whole = tr.left >= 13.5 && tr.right <= tr.vw - 13.5 && tr.top >= 0 && tr.bottom <= tr.vh;
+    return {
+      ok: Math.abs(gapNow - gap) <= 1 && Math.abs(caretOff) <= 1.5 && whole,
+      says: `${tr.below ? "under" : "over"} the row by ${px(gapNow)}, the caret ${px(Math.abs(caretOff))} from the candle's middle, ${Math.round(tr.left)}..${Math.round(tr.right)} of ${tr.vw}${whole ? "" : ", NOT whole on the screen"}`,
+    };
+  };
+  const channel = (v) => {
+    const s = v / 255;
+    return s <= 0.03928 ? s / 12.92 : ((s + 0.055) / 1.055) ** 2.4;
+  };
+  const rgbOf = (s) => {
+    let m = /^rgba?\(([^)]+)\)$/.exec(s ?? "");
+    if (m) {
+      const p = m[1].split(/[\s,/]+/).filter(Boolean).map(Number);
+      return { r: p[0], g: p[1], b: p[2], a: p[3] ?? 1 };
+    }
+    m = /^color\(srgb ([^)]+)\)$/.exec(s ?? "");
+    if (m) {
+      const p = m[1].split(/[\s/]+/).filter(Boolean).map(Number);
+      return { r: p[0] * 255, g: p[1] * 255, b: p[2] * 255, a: p[3] ?? 1 };
+    }
+    return null;
+  };
+  /** The contrast of a word's ink on the tray's ground, the ink laid over the ground as drawn. */
+  const ratio = (ink, ground) => {
+    const f = rgbOf(ink);
+    const g = rgbOf(ground);
+    if (!f || !g) return 0;
+    const flat = { r: f.r * f.a + g.r * (1 - f.a), g: f.g * f.a + g.g * (1 - f.a), b: f.b * f.a + g.b * (1 - f.a) };
+    const lum = (c) => 0.2126 * channel(c.r) + 0.7152 * channel(c.g) + 0.0722 * channel(c.b);
+    const [x, y] = [lum(flat), lum(g)].sort((p, q) => q - p);
+    return Math.round(((x + 0.05) / (y + 0.05)) * 10) / 10;
+  };
+
+  // English on a phone 390 wide: the whole of it.
+  {
+    const { ctx, page, errors, said, ready } = await community({ width: 390 });
+    must(ready, "390: the stood-in feed is drawn, a reader signed in");
+    await centre(page);
+    const before = await rowAndNext(page);
+    must(!!before && before.bottom - before.top <= 40, `390: the row is one line, the like, the candle and the replies (${before ? px(before.bottom - before.top) : "no row"} tall)`);
+    must(!!before && before.figures === "" && before.like === "12", `390: no figure beside the candle, and the like keeps its count (${before?.like ?? "no like"})`);
+    await page.screenshot({ path: path.join(SHOTS, "community-responses-390-closed.png") });
+
+    await tap(candle(page));
+    await page.waitForTimeout(400);
+    const up = await trayNow(page);
+    const during = await rowAndNext(page);
+    must(!!up && up.portal && up.role === "group" && up.size === "post", "390: the candle opens a tray drawn at the top of the page, not inside the post");
+    must(moved(before, during) < 0.5, `390: with the tray up, the row and the next post have not moved (${px(moved(before, during))})`);
+    const where = placed(up, 11);
+    must(where.ok && !up?.below, `390: the tray stands ${where.says}`);
+    must(up?.words.join(" | ") === three(en).join(" | "), `390: it offers Amen, Praying and Glory to God (${up?.words.join(", ")})`);
+    must(!!up && !/\d/.test(up.text) && !/\d/.test(during?.figures ?? "0"), "390: no figure in the tray, none beside the candle");
+    must(up?.motion === "full" && up?.animation === "community-tray-in", `390: with motion on it rises out of the candle (${up?.animation})`);
+    await page.screenshot({ path: path.join(SHOTS, "community-responses-390-open.png") });
+
+    await page.keyboard.press("Escape");
+    await page.waitForTimeout(300);
+    must(!(await trayNow(page)) && moved(before, await rowAndNext(page)) < 0.5, "390: Escape puts it down, and nothing has moved");
+
+    await tap(candle(page));
+    await page.waitForTimeout(400);
+    await tap(page.locator("article h3").first());
+    await page.waitForTimeout(300);
+    must(!(await trayNow(page)), "390: a tap anywhere else puts it down");
+
+    await tap(candle(page));
+    await page.waitForTimeout(400);
+    await page.evaluate(() => window.scrollBy(0, 24));
+    await page.waitForTimeout(400);
+    must(!(await trayNow(page)), "390: a scroll puts it down");
+    await page.evaluate(() => window.scrollBy(0, -24));
+    await page.waitForTimeout(400);
+
+    // A choice: Amen. The tray goes, the candle lights, and still nothing moves.
+    const choosing = await rowAndNext(page);
+    await tap(candle(page));
+    await page.waitForTimeout(400);
+    await tap(page.locator("[data-response-tray] button").first());
+    await page.waitForTimeout(900);
+    const answered = await rowAndNext(page);
+    const asked = said.at(-1);
+    must(!(await trayNow(page)) && !!answered?.lit, `390: choosing Amen puts the tray down and lights the candle${answered?.lit ? "" : " (it is not lit)"}`);
+    must(said.length === 1 && asked?.postId === FIRST && asked?.kind === "amen" && asked?.on === true, `390: and asks the website for Amen on the post, once (${JSON.stringify(said)})`);
+    must(moved(choosing, answered) < 0.5 && answered?.figures === "" && answered?.like === "12", `390: nothing has moved, and no figure has appeared (${px(moved(choosing, answered))})`);
+
+    // Open again: the reader's own is lit, the others not, on each of the five palettes.
+    await tap(candle(page));
+    await page.waitForTimeout(400);
+    const again = await trayNow(page);
+    must(again?.pressed.join(" ") === "true false false", `390: open again, Amen is the reader's own and the others are not (${again?.pressed.join(" ")})`);
+    for (const [palette, mode] of [["Dark", null], ["Light", "parchment"], ["True black", "black"], ["Candlelight", "candlelight"], ["Monastery", "monastery"]]) {
+      await page.evaluate((m) => (m ? document.documentElement.setAttribute("data-reading-mode", m) : document.documentElement.removeAttribute("data-reading-mode")), mode);
+      await page.waitForTimeout(450);
+      const tr = await trayNow(page);
+      const held = ratio(tr?.inks[0], tr?.ground);
+      const rest = Math.min(ratio(tr?.inks[1], tr?.ground), ratio(tr?.inks[2], tr?.ground));
+      must(!!tr && rest >= 4.5 && held > rest, `390, ${palette}: the words read on the tray, ${rest} to 1, and the reader's own stands out, ${held} to 1 (${tr?.ground})`);
+      if (tr) await page.screenshot({ path: path.join(SHOTS, `community-responses-${mode ?? "dark"}.png`), clip: { x: 0, y: Math.max(0, Math.floor(tr.top) - 24), width: 390, height: 150 } });
+    }
+    await page.evaluate(() => document.documentElement.removeAttribute("data-reading-mode"));
+    await page.keyboard.press("Escape");
+    await page.waitForTimeout(300);
+
+    // With the row just under the bar there is no room over it: the tray stands under it.
+    const lift = await page.evaluate(() => {
+      const c = document.querySelector('article [data-response-candle="post"]');
+      if (!c) return null;
+      let edge = 0;
+      for (const el of document.querySelectorAll('[data-screen-edge="top"]')) {
+        const r = el.getBoundingClientRect();
+        if (r.height > 0 && r.top < innerHeight / 2 && getComputedStyle(el).visibility !== "hidden") edge = Math.max(edge, r.bottom);
+      }
+      return c.parentElement.getBoundingClientRect().top - (edge + 10);
+    });
+    await page.evaluate((y) => window.scrollBy(0, y ?? 0), lift);
+    await page.waitForTimeout(600);
+    await tap(candle(page));
+    await page.waitForTimeout(400);
+    const under = await trayNow(page);
+    const low = placed(under, 11);
+    must(!!under?.below && low.ok, `390: with a bar over the room above the row, the tray stands ${low.says}`);
+    await page.screenshot({ path: path.join(SHOTS, "community-responses-390-under.png") });
+    await page.keyboard.press("Escape");
+    await page.waitForTimeout(300);
+
+    // A reply's row: the same tray, one size smaller.
+    await page.evaluate(() => window.scrollTo(0, 0));
+    await centre(page);
+    await tap(page.locator('article [data-response-candle="post"] ~ button').first());
+    const thread = await page
+      .waitForFunction(() => !!document.querySelector('article [data-response-candle="reply"]:not([disabled])'), null, { timeout: 10000 })
+      .then(() => true, () => false);
+    must(thread, "390: the post's thread opens, and its reply has a candle of its own");
+    if (thread) {
+      await centre(page, "reply");
+      const beforeReply = await rowAndNext(page, "reply");
+      await tap(candle(page, "reply"));
+      await page.waitForTimeout(400);
+      const small = await trayNow(page);
+      const duringReply = await rowAndNext(page, "reply");
+      const spot = placed(small, 9);
+      must(small?.size === "reply" && spot.ok && small.height < (up?.height ?? 0), `390: a reply's tray is one size smaller, ${px(small?.height)} against ${px(up?.height)}, ${spot.says}`);
+      must(moved(beforeReply, duringReply) < 0.5, `390: with a reply's tray up, its row and the next post have not moved (${px(moved(beforeReply, duringReply))})`);
+      await page.screenshot({ path: path.join(SHOTS, "community-responses-390-reply.png") });
+      await page.keyboard.press("Escape");
+      await page.waitForTimeout(300);
+    }
+    must(errors.length === 0, `390: no page errors${errors.length ? ": " + errors.slice(0, 2).join(" | ") : ""}`);
+    await ctx.close();
+  }
+
+  // A narrow phone, in English, in Filipino (the longest words) and in Arabic,
+  // right to left: the tray stands whole over the row, and nothing moves.
+  for (const [code, locale] of [["en", undefined], ["fil", "tl-PH"], ["ar", "ar-EG"]]) {
+    const where = `${code} at 360`;
+    const w = words(code);
+    const { ctx, page, errors, ready } = await community({ width: 360, height: 740, locale });
+    must(ready, `${where}: the stood-in feed is drawn`);
+    await centre(page);
+    const before = await rowAndNext(page);
+    await tap(candle(page));
+    await page.waitForTimeout(400);
+    const tr = await trayNow(page);
+    const after = await rowAndNext(page);
+    const spot = placed(tr, 11);
+    must(spot.ok && !tr?.below, `${where}: the tray stands ${spot.says}`);
+    must(tr?.words.join(" | ") === three(w).join(" | "), `${where}: in the reader's words (${tr?.words.join(", ")})`);
+    must(moved(before, after) < 0.5, `${where}: the row and the next post have not moved (${px(moved(before, after))})`);
+    await page.screenshot({ path: path.join(SHOTS, `community-responses-360-${code}.png`) });
+    await page.keyboard.press("Escape");
+    must(errors.length === 0, `${where}: no page errors${errors.length ? ": " + errors.slice(0, 2).join(" | ") : ""}`);
+    await ctx.close();
+  }
+
+  // Purify's motion off: the tray is simply there.
+  {
+    const { ctx, page, ready } = await community({ width: 390, set: { "purify.motion": "off" } });
+    must(ready, "motion off: the stood-in feed is drawn");
+    await centre(page);
+    await tap(candle(page));
+    await page.waitForTimeout(400);
+    const still = await trayNow(page);
+    must(still?.motion === "reduce" && still?.animation === "none", `motion off: the tray does not rise, it is there (${still?.motion}, ${still?.animation})`);
+    await ctx.close();
+  }
+});
 await browser.close();
 if (!everySection) console.log(`\nOnly the sections chosen were walked: ${walked.join(", ") || "none"}.`);
 console.log(failed ? `\n${failed} check(s) failed.` : "\nEvery check passed.");

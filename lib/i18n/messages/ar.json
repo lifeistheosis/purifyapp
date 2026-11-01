@@ -2871,7 +2871,7 @@
   "community.respond.amen": "آمين",
   "community.respond.glory": "المجد لله",
   "community.respond.praying": "أصلّي",
-  "community.respondClose": "إغلاق",
+  "community.respondCandle": "آمين، أصلّي أو المجد لله",
   "community.respondFailed": "تعذّر حفظ ذلك.",
   "community.unmute": "إلغاء الكتم",
   "community.unmuteAria": "إلغاء كتم {name}",

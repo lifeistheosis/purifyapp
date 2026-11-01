@@ -2836,7 +2836,7 @@
   "community.respond.amen": "Amen",
   "community.respond.glory": "Chwała Bogu",
   "community.respond.praying": "Modlę się",
-  "community.respondClose": "Zamknij",
+  "community.respondCandle": "Amen, Modlę się lub Chwała Bogu",
   "community.respondFailed": "Nie udało się tego zapisać.",
   "community.unmute": "Wyłącz wyciszenie",
   "community.unmuteAria": "Wyłącz wyciszenie: {name}",

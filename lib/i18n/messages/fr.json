@@ -2787,7 +2787,7 @@
   "community.respond.amen": "Amen",
   "community.respond.glory": "Gloire à Dieu",
   "community.respond.praying": "Je prie",
-  "community.respondClose": "Fermer",
+  "community.respondCandle": "Amen, Je prie ou Gloire à Dieu",
   "community.respondFailed": "Impossible d’enregistrer.",
   "community.unmute": "Retirer la sourdine",
   "community.unmuteAria": "Retirer la sourdine pour {name}",

@@ -2786,7 +2786,7 @@
   "community.respond.amen": "Amén",
   "community.respond.glory": "Gloria a Dios",
   "community.respond.praying": "Orando",
-  "community.respondClose": "Cerrar",
+  "community.respondCandle": "Amén, Orando o Gloria a Dios",
   "community.respondFailed": "No se pudo guardar.",
   "community.unmute": "Dejar de silenciar",
   "community.unmuteAria": "Dejar de silenciar a {name}",

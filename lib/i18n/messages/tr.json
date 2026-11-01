@@ -2784,7 +2784,7 @@
   "community.respond.amen": "Amin",
   "community.respond.glory": "Tanrı'ya şükür",
   "community.respond.praying": "Dua ediyorum",
-  "community.respondClose": "Kapat",
+  "community.respondCandle": "Amin, Dua ediyorum veya Tanrı'ya şükür",
   "community.respondFailed": "Bu kaydedilemedi.",
   "community.unmute": "Sessizden çıkar",
   "community.unmuteAria": "{name} adlı kişiyi sessizden çıkar",

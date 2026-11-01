@@ -2834,7 +2834,7 @@
   "community.respond.amen": "Аминь",
   "community.respond.glory": "Слава Богу",
   "community.respond.praying": "Молюсь",
-  "community.respondClose": "Закрыть",
+  "community.respondCandle": "Аминь, Молюсь или Слава Богу",
   "community.respondFailed": "Не удалось сохранить.",
   "community.unmute": "Вернуть в ленту",
   "community.unmuteAria": "Вернуть в ленту: {name}",

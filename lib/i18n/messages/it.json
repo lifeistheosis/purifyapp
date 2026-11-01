@@ -2786,7 +2786,7 @@
   "community.respond.amen": "Amen",
   "community.respond.glory": "Gloria a Dio",
   "community.respond.praying": "In preghiera",
-  "community.respondClose": "Chiudi",
+  "community.respondCandle": "Amen, In preghiera o Gloria a Dio",
   "community.respondFailed": "Non è stato possibile salvare.",
   "community.unmute": "Non silenziare più",
   "community.unmuteAria": "Non silenziare più {name}",

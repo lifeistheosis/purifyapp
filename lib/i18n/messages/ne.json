@@ -2784,7 +2784,7 @@
   "community.respond.amen": "आमेन",
   "community.respond.glory": "परमेश्वरलाई महिमा",
   "community.respond.praying": "प्रार्थना गर्दैछु",
-  "community.respondClose": "बन्द गर्नुहोस्",
+  "community.respondCandle": "आमेन, प्रार्थना गर्दैछु वा परमेश्वरलाई महिमा",
   "community.respondFailed": "त्यो सुरक्षित गर्न सकिएन।",
   "community.unmute": "अनम्युट",
   "community.unmuteAria": "{name} लाई अनम्युट गर्नुहोस्",
