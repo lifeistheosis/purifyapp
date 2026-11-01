@@ -100,6 +100,7 @@ describe("the labels in the contract", () => {
     expect(labels.coming).toBe("Coming");
     expect(labels.days).toBe("days");
     expect(labels.nextUpdate).toBe("Next update");
+    expect(labels.mySaint).toBe("My saint");
     expect(labels.chooseLook).toBe("Choose a look");
     expect(labels.done).toBe("Done");
     expect(labels["variant.countdown.update"]).toBe("Next Purify update");
@@ -256,6 +257,18 @@ describe("the catalogs' widget words", () => {
     for (const key of Object.keys(en).filter((k) => k.startsWith("widget."))) {
       expect(own[key], `${code} ${key}`).toBeTruthy();
     }
+  });
+
+  it.each(CODES)("%s: says the mock's short \"My saint\" over the saint, in its own words (note 85)", (code) => {
+    const own = JSON.parse(readFileSync(`lib/i18n/messages/${code}.json`, "utf8")) as Record<string, string>;
+    const word = own["widget.mySaint"];
+    expect(word, code).toBeTruthy();
+    if (code !== "en") expect(word, code).not.toBe("My saint");
+    // Shorter than the Discord status's "My patron saint" it replaced, which
+    // the two-cell widget cut short in small capitals.
+    expect(word.length, code).toBeLessThan(own["desktop.presence.patronHover"].length);
+    expect(word.length, code).toBeLessThanOrEqual(16);
+    expect(labelsIn(code).mySaint, code).toBe(word);
   });
 
   it.each(CODES)("%s: no exclamation mark but the Church's two greetings", (code) => {
