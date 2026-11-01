@@ -6,6 +6,7 @@ import {
   campaignReminderPayload,
   dueCampaigns,
   dueKind,
+  hourIsDue,
   nowInTz,
   reminderPayload,
   MAX_CAMPAIGN_REMINDERS_PER_RUN,
@@ -51,6 +52,98 @@ describe("dueKind", () => {
     const row = { morning_time: "12:00", evening_time: "12:00", timezone: "UTC" };
     expect(dueKind(row, noonUtc)).toBe("morning");
   });
+});
+
+// The two days a year the clocks change. The run keeps to UTC and the
+// reader's clock moves by an hour, so one local hour happens twice (the
+// reminder used to come twice) or not at all (it used to not come).
+describe("summer time", () => {
+  const run = (iso: string) => new Date(iso);
+
+  it("sends a reminder in the hour that happens twice only the first time (New York, clocks back)", () => {
+    // 2026-11-01: 01:00 EDT is 05:00 UTC, and an hour later it is 01:00 EST.
+    const row = { morning_time: "01:30", evening_time: null, timezone: "America/New_York" };
+    expect(dueKind(row, run("2026-11-01T05:00:20Z"))).toBe("morning");
+    expect(dueKind(row, run("2026-11-01T06:00:20Z"))).toBeNull();
+    // The hour after is an ordinary hour again.
+    expect(dueKind({ ...row, morning_time: "02:00" }, run("2026-11-01T07:00:20Z"))).toBe("morning");
+  });
+
+  it("sends a reminder in the hour that never happens with the hour after (New York, clocks forward)", () => {
+    // 2027-03-14: 01:00 EST is 06:00 UTC, and an hour later it is 03:00 EDT.
+    const row = { morning_time: null, evening_time: "02:30", timezone: "America/New_York" };
+    expect(dueKind(row, run("2027-03-14T06:00:20Z"))).toBeNull();
+    expect(dueKind(row, run("2027-03-14T07:00:20Z"))).toBe("evening");
+    // The 03:00 reminder keeps its own hour, and the next hour sends neither again.
+    expect(dueKind({ ...row, evening_time: "03:10" }, run("2027-03-14T07:00:20Z"))).toBe("evening");
+    expect(dueKind(row, run("2027-03-14T08:00:20Z"))).toBeNull();
+  });
+
+  it("does the same where the clocks go back at three (Athens) and in the southern spring (Sydney)", () => {
+    // Athens, 2026-10-25: 03:00 EEST is 00:00 UTC, 03:00 EET is 01:00 UTC.
+    const athens = { morning_time: "03:15", evening_time: null, timezone: "Europe/Athens" };
+    expect(dueKind(athens, run("2026-10-25T00:00:20Z"))).toBe("morning");
+    expect(dueKind(athens, run("2026-10-25T01:00:20Z"))).toBeNull();
+    // Sydney, 2026-10-04: 01:00 AEST is 15:00 UTC the day before, then 03:00 AEDT.
+    const sydney = { morning_time: "02:45", evening_time: null, timezone: "Australia/Sydney" };
+    expect(dueKind(sydney, run("2026-10-03T15:00:20Z"))).toBeNull();
+    expect(dueKind(sydney, run("2026-10-03T16:00:20Z"))).toBe("morning");
+  });
+
+  it("holds campaign reminders to the same clock", () => {
+    const row: CampaignReminderRow = {
+      campaign_id: "c1",
+      remind_enabled: true,
+      remind_time: "01:05",
+      timezone: "America/New_York",
+    };
+    expect(dueCampaigns([row], run("2026-11-01T05:00:20Z"))).toHaveLength(1);
+    expect(dueCampaigns([row], run("2026-11-01T06:00:20Z"))).toHaveLength(0);
+    expect(dueCampaigns([{ ...row, remind_time: "02:05" }], run("2027-03-14T07:00:20Z"))).toHaveLength(1);
+  });
+
+  // The property behind the cases above, everywhere it can bend: every hour
+  // of the reader's day is sent exactly once on every whole local day, on
+  // ordinary days and on both change days. Zones with half-hour and
+  // three-quarter offsets, a half-hour change (Lord Howe), changes at
+  // midnight (Santiago), and one with none (Kolkata) are in the list because
+  // each breaks a simpler rule a different way.
+  const ZONES: [string, string[]][] = [
+    ["America/New_York", ["2026-11-01", "2027-03-14"]],
+    ["America/St_Johns", ["2026-11-01", "2027-03-14"]],
+    ["Europe/Athens", ["2026-10-25", "2027-03-28"]],
+    ["Europe/Paris", ["2026-10-25", "2027-03-28"]],
+    ["Australia/Sydney", ["2026-10-04", "2027-04-04"]],
+    ["Australia/Lord_Howe", ["2026-10-04", "2027-04-04"]],
+    ["Pacific/Chatham", ["2026-09-27", "2027-04-04"]],
+    ["America/Santiago", ["2026-09-06", "2027-04-04"]],
+    ["Asia/Kolkata", ["2026-10-25"]],
+    ["UTC", ["2026-10-25"]],
+  ];
+
+  const localDate = (d: Date, tz: string) =>
+    new Intl.DateTimeFormat("en-CA", { timeZone: tz, year: "numeric", month: "2-digit", day: "2-digit" }).format(d);
+
+  for (const [tz, days] of ZONES) {
+    for (const day of days) {
+      it(`sends each hour once a day around ${day} in ${tz}`, () => {
+        // Hourly runs, twenty seconds past each UTC hour, from two days before
+        // to two days after.
+        const start = Date.parse(`${day}T00:00:20Z`) - 2 * 24 * 3600_000;
+        const runs = Array.from({ length: 4 * 24 }, (_, i) => new Date(start + i * 3600_000));
+        const dates = runs.map((r) => localDate(r, tz));
+        // The first and last local days are only partly inside the span.
+        const whole = new Set(dates.filter((d) => d !== dates[0] && d !== dates[dates.length - 1]));
+        for (let hour = 0; hour < 24; hour++) {
+          const sends = new Map<string, number>();
+          runs.forEach((r, i) => {
+            if (whole.has(dates[i]) && hourIsDue(hour, r, tz)) sends.set(dates[i], (sends.get(dates[i]) ?? 0) + 1);
+          });
+          for (const d of whole) expect(sends.get(d) ?? 0, `${tz} ${d} hour ${hour}`).toBe(1);
+        }
+      });
+    }
+  }
 });
 
 describe("reminderPayload", () => {

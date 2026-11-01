@@ -57,13 +57,66 @@ export function dueCampaigns(
   const due: CampaignReminderRow[] = [];
   for (const row of rows) {
     if (!row.remind_enabled || !row.remind_time) continue;
-    const tz = row.timezone || "UTC";
-    const hh = String(nowInTz(now, tz).getUTCHours()).padStart(2, "0");
-    if (row.remind_time.slice(0, 2) !== hh) continue;
+    if (!timeIsDue(row.remind_time, now, row.timezone || "UTC")) continue;
     due.push(row);
     if (due.length >= MAX_CAMPAIGN_REMINDERS_PER_RUN) break;
   }
   return due;
+}
+
+const HOUR_MS = 60 * 60 * 1000;
+
+/** The wall-clock hour in `tz` at `date`, 0 to 23. */
+function localHour(date: Date, tz: string): number {
+  // nowInTz encodes the target zone's wall clock into the Date's UTC fields,
+  // so read it with getUTCHours(): correct whatever the server's own zone
+  // (production runs UTC, but this stays right anywhere).
+  return nowInTz(date, tz).getUTCHours();
+}
+
+/**
+ * Whether a reminder set for the local hour `hour` (0 to 23) is due in this
+ * run, in the zone `tz`.
+ *
+ * The run comes once an hour and matches the reader's own hour, so a ":15"
+ * fires within that hour. On an ordinary day that is all there is to it. On
+ * the two days a year the clocks change it was not enough, because the local
+ * clock moves by an hour while the run keeps to UTC:
+ *
+ *   - When the clocks go back, one local hour happens twice: 01:00 to 01:59
+ *     in New York on the first Sunday of November, 03:00 to 03:59 in Athens
+ *     on the last Sunday of October. A reminder set inside it came twice. It
+ *     now comes the first time only.
+ *   - When the clocks go forward, one local hour never happens: 02:00 to
+ *     02:59 in New York on the second Sunday of March. A reminder set inside
+ *     it did not come that day at all. It now comes with the hour after.
+ *
+ * Both are told by asking the clock as it read an hour ago: the same hour
+ * then means this is its second time, and a jump of two or three means the
+ * hours between were skipped. Any other jump (a country moving its clock
+ * back by more than an hour, which happens about once a decade somewhere)
+ * is treated as an ordinary hour, never as a reason to send a day's
+ * reminders at once.
+ */
+export function hourIsDue(hour: number, now: Date, tz: string): boolean {
+  const cur = localHour(now, tz);
+  const prev = localHour(new Date(now.getTime() - HOUR_MS), tz);
+  const gap = (cur - prev + 24) % 24;
+  // The hour's second time: it was due, and sent, the first time.
+  if (gap === 0) return false;
+  if (hour === cur) return true;
+  if (gap < 2 || gap > 3) return false;
+  // The hours the clock jumped over since the last run.
+  for (let h = (prev + 1) % 24; h !== cur; h = (h + 1) % 24) {
+    if (h === hour) return true;
+  }
+  return false;
+}
+
+/** hourIsDue for an "HH:MM" time as stored. A time that cannot be read is never due. */
+function timeIsDue(time: string, now: Date, tz: string): boolean {
+  const hour = Number(time.slice(0, 2));
+  return Number.isInteger(hour) && hour >= 0 && hour <= 23 && hourIsDue(hour, now, tz);
 }
 
 /**
@@ -81,17 +134,14 @@ export function campaignReminderPayload(campaignId: string): {
 
 /**
  * Whether the row is due right now, and for which rule. The cron runs hourly,
- * so we match on the local HOUR (a user's ":15" fires within that hour).
- * Returns null when neither time matches the user's current local hour.
+ * so we match on the local HOUR (a user's ":15" fires within that hour), with
+ * the change to and from summer time handled by hourIsDue.
+ * Returns null when neither time is due in this run.
  */
 export function dueKind(row: ScheduleRow, now: Date): ReminderKind | null {
   const tz = row.timezone || "UTC";
-  // nowInTz encodes the target zone's wall clock into the Date's UTC fields,
-  // so read it with getUTCHours() — correct regardless of the server's own
-  // timezone (production runs UTC, but this stays right anywhere).
-  const hh = String(nowInTz(now, tz).getUTCHours()).padStart(2, "0");
-  if (row.morning_time && row.morning_time.slice(0, 2) === hh) return "morning";
-  if (row.evening_time && row.evening_time.slice(0, 2) === hh) return "evening";
+  if (row.morning_time && timeIsDue(row.morning_time, now, tz)) return "morning";
+  if (row.evening_time && timeIsDue(row.evening_time, now, tz)) return "evening";
   return null;
 }
 
