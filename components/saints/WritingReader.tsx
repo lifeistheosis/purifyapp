@@ -17,6 +17,8 @@ import {
   type WorkDivisions,
 } from "@/lib/saints/divisions";
 import { moveLegacyAnnotations } from "@/lib/saints/layoutMoves";
+import { carryMovedPlaces } from "@/lib/saints/carryMoves";
+import { movesInto, movesOutOf } from "@/lib/saints/workMoves";
 import { placeOf } from "@/lib/citations/cite";
 import { ParagraphRow } from "./ParagraphRow";
 import { VoiceBand } from "./VoiceBand";
@@ -82,6 +84,9 @@ export function WritingReader({
  // paragraphs to where they stand now (lib/saints/layoutMoves.ts).
  useEffect(() => {
  moveLegacyAnnotations(saint.slug, content.slug);
+ // And what was kept under the address of a part that has left this work,
+ // or come into it, follows it there (lib/saints/workMoves.ts).
+ if (movesOutOf(saint.slug, content.slug).length || movesInto(saint.slug, content.slug).length) carryMovedPlaces();
  }, [saint.slug, content.slug]);
 
  // Open the place the URL hash names, on load and on change, and scroll it

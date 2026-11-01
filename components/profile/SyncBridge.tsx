@@ -14,6 +14,7 @@ import { syncFlorilegia, pushAllLocalFlorilegia } from "@/lib/sync/florilegium";
 import { pushHighlightNames, syncHighlightNames } from "@/lib/sync/highlightNames";
 import { pushJournal, syncJournal } from "@/lib/sync/journal";
 import { NAMES_EVENT } from "@/lib/bible/highlightColors";
+import { carryMovedPlaces } from "@/lib/saints/carryMoves";
 
 /**
  * Background sync glue. Mounts once in the (app) layout so every page under
@@ -59,12 +60,18 @@ export function SyncBridge() {
     // caller server-side anyway, so a stale or forged local cookie buys an
     // attacker a request that answers 401. The local read is synchronous,
     // lock-free, and cannot hang.
+    // What a reader kept under an address a work has left (St John Cassian's
+    // books On the Incarnation, out of the Conferences in 1.8) is carried to
+    // its new one first, signed in or not, so the push takes the new address
+    // and the old one's tombstone; and again once the pull has landed, for a
+    // copy another device still keeps under the old (lib/saints/workMoves.ts).
+    carryMovedPlaces();
     const user = readLocalSessionUser();
     signedInRef.current = !!user;
     if (user) {
       // Initial two-way sync on first mount of any (app) page.
-      syncBookmarks().catch(() => {});
-      syncAnnotations().catch(() => {});
+      syncBookmarks().then(carryMovedPlaces).catch(() => {});
+      syncAnnotations().then(carryMovedPlaces).catch(() => {});
       syncFlorilegia().catch(() => {});
       syncJournal().catch(() => {});
       syncHighlightNames().catch(() => {});

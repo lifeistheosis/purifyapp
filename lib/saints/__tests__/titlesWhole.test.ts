@@ -96,11 +96,12 @@ describe("every chapter title in the library", () => {
 
 describe("the editions mended (NPNF II 11, NPNF I 6, NPNF I 11)", () => {
   it("St John Cassian: every heading is the edition's, whole, and the slot of its rest stays empty", () => {
-    for (const key of ["john-cassian/conferences", "john-cassian/institutes"]) {
+    for (const key of ["john-cassian/conferences", "john-cassian/institutes", "john-cassian/on-the-incarnation"]) {
       for (const s of WORKS.find((w) => w.key === key)!.work.sections) {
         // The edition's headings close on a full stop, a question or a quotation;
-        // a chapter it prints with no heading is titled by its numbers alone.
-        const bare = /^(?:Conference|Book) \d+, Chapter \d+$/.test(s.title);
+        // a chapter it prints with no heading is titled by its numbers alone,
+        // and the books On the Incarnation open with their Preface.
+        const bare = /^(?:Conference|Book) \d+, Chapter \d+$/.test(s.title) || s.title === "Preface";
         expect(bare || CLOSED.test(s.title), `${key} ${s.n}: ${s.title.slice(-60)}`).toBe(true);
       }
     }

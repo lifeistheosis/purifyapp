@@ -16,6 +16,8 @@ import { KeepDay } from "@/components/streak/KeepDay";
 import { BookHeader } from "@/components/reading/BookHeader";
 import { MoreLikeThis } from "@/components/reading/MoreLikeThis";
 import { bookPage } from "@/lib/reading/cards";
+import { MovedPlace } from "@/components/saints/MovedPlace";
+import { movesOutOf } from "@/lib/saints/workMoves";
 
 type Params = Promise<{ slug: string; work: string }>;
 
@@ -72,6 +74,10 @@ export default async function WritingPage({ params }: { params: Params }) {
         saintSlug={found.saint.slug}
         topics={found.work.topics}
       />
+      {/* An old link to a part that has left this work lands where it is now
+          (St John Cassian's books On the Incarnation, filed in the Conferences
+          until 1.8: lib/saints/workMoves.ts). */}
+      {movesOutOf(found.saint.slug, found.work.slug).length ? <MovedPlace /> : null}
       {/* Reading the Fathers keeps the day for the streak. */}
       <KeepDay strand="day:study" />
       {/* Mobile-only chrome: a 48px top bar with back + work title, and

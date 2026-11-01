@@ -33,7 +33,7 @@ const STORAGE_KEY = "purify:reading-progress";
 const EVENT = "purify:reading-progress";
 const CAP = 60;
 
-type Store = Record<string, Progress>;
+export type Store = Record<string, Progress>;
 const EMPTY: Store = {};
 
 function parse(raw: string | null): Store {
@@ -55,6 +55,57 @@ export function withProgress(store: Store, key: string, at: { n: number; i: numb
   const next: Progress = { n: at.n, i: Math.min(at.i, at.of - 1), of: at.of, at: now, ...(done || prev?.done ? { done: true as const } : {}) };
   const entries = Object.entries({ ...store, [key]: next }).sort((a, b) => b[1].at - a[1].at);
   return Object.fromEntries(entries.slice(0, CAP));
+}
+
+/**
+ * The store after part of a work became a work of its own (1.8,
+ * lib/saints/workMoves.ts): a reading in the part that left is the new
+ * work's now (the work it left was read through to its end to get there, so
+ * that one is finished); a reading in what stayed counts against the
+ * shorter work. Pure, for its test; `moveSection` answers a section's new
+ * number, or null for one that stayed. Sections run 1, 2, 3 ... in both, so
+ * a section's place among them is its number less one.
+ */
+export function withMovedWork(
+  store: Store,
+  from: { key: string; of: number },
+  to: { key: string; of: number },
+  moveSection: (n: number) => number | null,
+): Store {
+  const prev = store[from.key];
+  if (!prev) return store;
+  const moved = moveSection(prev.n);
+  const next: Store = { ...store };
+  if (moved !== null) {
+    const done = moved >= to.of || prev.done;
+    if (!next[to.key] || next[to.key].at < prev.at) {
+      next[to.key] = { n: moved, i: Math.min(moved - 1, to.of - 1), of: to.of, at: prev.at, ...(done ? { done: true as const } : {}) };
+    }
+    next[from.key] = { n: from.of, i: from.of - 1, of: from.of, at: prev.at, done: true };
+    return next;
+  }
+  if (prev.of === from.of) return store;
+  next[from.key] = { ...prev, i: Math.min(prev.i, from.of - 1), of: from.of, ...(prev.i >= from.of - 1 ? { done: true as const } : {}) };
+  return next;
+}
+
+/** withMovedWork on this device's store; true when it changed. */
+export function moveProgress(
+  from: { key: string; of: number },
+  to: { key: string; of: number },
+  moveSection: (n: number) => number | null,
+): boolean {
+  if (typeof window === "undefined") return false;
+  try {
+    const before = parse(window.localStorage.getItem(STORAGE_KEY));
+    const after = withMovedWork(before, from, to, moveSection);
+    if (after === before) return false;
+    window.localStorage.setItem(STORAGE_KEY, JSON.stringify(after));
+    window.dispatchEvent(new CustomEvent(EVENT));
+    return true;
+  } catch {
+    return false;
+  }
 }
 
 export function recordProgress(key: string, at: { n: number; i: number; of: number }) {

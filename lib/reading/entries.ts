@@ -961,6 +961,8 @@ export const ENTRIES: Readonly<Record<WorkKey, ReadingEntry>> = {
     featured: {},
     review: R,
   },
+  // The seven books against Nestorius, filed after the Conferences until 1.8.
+  "john-cassian/on-the-incarnation": { by: "john-cassian", form: "treatise", scope: "complete", themes: [], review: R },
   "gregory-the-dialogist/morals-on-the-book-of-job": {
     by: "gregory-the-dialogist",
     form: "homilies",

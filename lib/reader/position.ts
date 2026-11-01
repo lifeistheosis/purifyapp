@@ -78,6 +78,35 @@ export function savePosition(
 }
 
 /**
+ * Carry a saved place to where its section stands now, in another work (1.8:
+ * a part of a work that became a work of its own, lib/saints/workMoves.ts).
+ * `moveSection` answers the section's new number, or null for one that
+ * stayed. A place already kept in the new work, and newer, wins. True when
+ * it moved.
+ */
+export function movePosition(
+  from: { saintSlug: string; workSlug: string },
+  to: { saintSlug: string; workSlug: string },
+  moveSection: (n: number) => number | null,
+): boolean {
+  if (!hasWindow()) return false;
+  try {
+    const raw = localStorage.getItem(keyFor(from.saintSlug, from.workSlug));
+    if (!raw) return false;
+    const v = JSON.parse(raw) as Record<string, unknown>;
+    const n = typeof v.sectionN === "number" ? moveSection(v.sectionN) : null;
+    if (n === null) return false;
+    const there = localStorage.getItem(keyFor(to.saintSlug, to.workSlug));
+    const thereAt = there ? Number((JSON.parse(there) as { savedAt?: unknown }).savedAt) : -Infinity;
+    if (!(thereAt >= Number(v.savedAt))) localStorage.setItem(keyFor(to.saintSlug, to.workSlug), JSON.stringify({ ...v, sectionN: n }));
+    localStorage.removeItem(keyFor(from.saintSlug, from.workSlug));
+    return true;
+  } catch {
+    return false;
+  }
+}
+
+/**
  * Drop any saved position. Called when the reader reaches the work's
  * last section, so completing a work doesn't leave a stale resume
  * point that would land you at the end again next time.

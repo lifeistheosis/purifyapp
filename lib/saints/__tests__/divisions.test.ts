@@ -262,13 +262,27 @@ describe("the edition's own numbers, as each work is cited", () => {
     expect(new Set(chapters).size).toBe(142);
   });
 
-  it("leave unnumbered what the file holds that is not the work: Cassian's treatise filed in the Conferences", () => {
-    const key = "john-cassian/conferences";
+  it("number Cassian's books On the Incarnation as a work of their own, the Conferences their 22 conferences only", () => {
+    const conferences = read("john-cassian/conferences");
+    const dc = divisionsOf("john-cassian/conferences", conferences)!;
+    // Conference 24, Chapter 26 is the last; 12 and 22 are not in this edition.
+    expect(sectionLabel(dc, conferences, conferences.sections.at(-1)!.n)).toBe("24.26");
+    const parts = new Set(conferences.sections.map((s) => sectionLabel(dc, conferences, s.n)?.split(".")[0]));
+    expect([...parts].map(Number).sort((a, b) => a - b)).toEqual([1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 13, 14, 15, 16, 17, 18, 19, 20, 21, 23, 24]);
+    // Conference 5, Chapter 18, which the edition prints with no title, is numbered all the same.
+    expect(sectionLabel(dc, conferences, 110)).toBe("5.18");
+
+    const key = "john-cassian/on-the-incarnation";
     const w = read(key);
     const d = divisionsOf(key, w)!;
-    w.sections.forEach((s, k) => {
-      if (s.n >= 493) expect(d.places[k].every((p) => p === null), `section ${s.n}`).toBe(true);
-    });
+    // The Preface, then seven books: 6, 7, 16, 13, 15, 23 and 31 chapters.
+    expect(w.sections[0].title).toBe("Preface");
+    expect(d.places[0].every((p) => p === null)).toBe(true);
+    const chapters = [0, 0, 0, 0, 0, 0, 0];
+    for (const s of w.sections.slice(1)) chapters[Number(sectionLabel(d, w, s.n)!.split(".")[0]) - 1] += 1;
+    expect(chapters).toEqual([6, 7, 16, 13, 15, 23, 31]);
+    expect(sectionLabel(d, w, 2)).toBe("1.1");
+    expect(sectionLabel(d, w, 112)).toBe("7.31");
   });
 
   it("set St. Leo's translator's headings apart, and cite his Nativity sermons by sermon and chapter", () => {

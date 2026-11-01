@@ -779,13 +779,14 @@ export const SCHEMES: Readonly<Record<string, Scheme>> = {
     // A chapter the edition prints with no title of its own (Conference 5,
     // Chapter 18 opens straight on Serapion's words) is titled by its numbers alone.
     title: { re: /^Conference (\d+), Chapter (\d+)(?:\.|$)/, levels: ["conference", "chapter"] },
-    // Sections 493 to 603 are not the Conferences: they are Cassian's Seven
-    // Books on the Incarnation of the Lord, against Nestorius, which follow
-    // them in NPNF II 11 and which the ingest filed here titled "Conference
-    // 24, Chapter n" (each book's chapters counted from 1 again at 493, 499,
-    // 506, 522, 535, 550 and 573). They are not numbered as Conferences until
-    // that is put right (docs/editorial-standards.md, Editorial review 3).
-    exclude: (n) => n >= 493,
+    edition: NPNF("II", 11),
+  },
+  // His Seven Books on the Incarnation of the Lord, against Nestorius, which
+  // follow the Conferences in NPNF II 11 and were filed in their file as
+  // "Conference 24" until 1.8 (round 6): a work of their own, the Preface
+  // (unnumbered) and then each book's chapters, cited 6.13.
+  "john-cassian/on-the-incarnation": {
+    title: { re: /^Book (\d+), Chapter (\d+)\./, levels: ["book", "chapter"] },
     edition: NPNF("II", 11),
   },
   "augustine-of-hippo/harmony-of-the-gospels": {
