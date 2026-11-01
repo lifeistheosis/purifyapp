@@ -86,7 +86,7 @@ describe("the owner's own subscription", () => {
   it("is NOT counted as paying", async () => {
     const s = await subscriptionStats(fakeAdmin(PRODUCTION));
     expect(s.developerPlus).toBe(1);
-    expect(s.paidPlus).toBe(2); // Dranem on Plus, henrymyslicki9 on Pro
+    expect(s.paidPlus).toBe(2); // one reader on Plus, one on Pro
     expect(s.paidCounts).toEqual({ plusOnly: 1, pro: 1 });
   });
 

@@ -6,7 +6,7 @@ import { buildLadder, currentGoal, ladderProgress } from "../goals";
  * Pinned to the real books on 2026-08-28, AFTER the correction that one of the
  * three Google Play subscriptions is the owner's own test account.
  *
- *   paying customers   2, not 3: Dranem on Plus ($4.99) and henrymyslicki9 on
+ *   paying customers   2, not 3: one reader on Plus ($4.99) and one on
  *                      Pro ($19.99). The third is lifeistheosis, the owner.
  *   subs at list       $24.98
  *   subs net of 15%    $21.23
