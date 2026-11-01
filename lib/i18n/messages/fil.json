@@ -1099,6 +1099,7 @@
   "onboard.reminders.eveningTitle": "Panalangin sa gabi",
   "onboard.reminders.eveningBody": "Buksan ang tuntunin sa gabi paghiga mo.",
   "onboard.reminders.blocked": "Naka-block ang mga notification sa mga setting ng iyong browser. Payagan ang mga ito roon, at mabubuksan mo ang mga paalala mamaya.",
+  "onboard.reminders.blockedPhone": "Naka-block ang mga notification sa mga setting ng iyong telepono. Payagan ang mga ito roon, at mabubuksan mo ang mga paalala mamaya.",
   "onboard.reminders.unsupported": "Hindi sinusuportahan ng device na ito ang mga paalala, ngunit gumagana ang lahat ng iba pa.",
   "onboard.account.eyebrow": "Ingatan ang iyong paglalakbay",
   "onboard.account.title": "Dalhin ang iyong mga panalangin sa bawat device.",

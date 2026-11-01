@@ -1099,6 +1099,7 @@
   "onboard.reminders.eveningTitle": "Abendgebet",
   "onboard.reminders.eveningBody": "Öffne die Abendregel, wenn du dich niederlegst.",
   "onboard.reminders.blocked": "Benachrichtigungen sind in deinen Browsereinstellungen blockiert. Erlaube sie dort, dann kannst du Erinnerungen später einschalten.",
+  "onboard.reminders.blockedPhone": "Benachrichtigungen sind in den Einstellungen deines Handys blockiert. Erlaube sie dort, dann kannst du Erinnerungen später einschalten.",
   "onboard.reminders.unsupported": "Dieses Gerät unterstützt keine Erinnerungen, alles andere funktioniert aber.",
   "onboard.account.eyebrow": "Bewahre deinen Weg",
   "onboard.account.title": "Nimm deine Gebete auf jedes Gerät mit.",

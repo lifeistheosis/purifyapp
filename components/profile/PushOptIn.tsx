@@ -17,6 +17,7 @@ import {
   type ReminderTimes,
 } from "@/lib/push/reminders";
 import { timeChange } from "@/lib/push/times";
+import { useIsNative } from "@/lib/platform/native";
 import { useTranslate } from "@/components/i18n/MessagesProvider";
 
 type State =
@@ -31,6 +32,11 @@ type State =
 
 export function PushOptIn() {
   const { t } = useTranslate();
+  // In the apps the two notes below speak of the phone, not of a browser: a
+  // reader told to open "site settings and refresh" on a phone has nowhere
+  // to go, and an iPhone, which never asks twice, can only be answered in
+  // its own Settings.
+  const native = useIsNative();
   const [state, setState] = useState<State>({ kind: "loading" });
   const [busy, setBusy] = useState(false);
   // Said when turning reminders on did not work. It used to fail in silence:
@@ -121,12 +127,12 @@ export function PushOptIn() {
       )}
       {state.kind === "unsupported" && (
         <p className="font-sans text-detail text-paper/55">
-          {t("ui.yourBrowserDoesNotSupport")}
+          {native ? t("onboard.reminders.unsupported") : t("ui.yourBrowserDoesNotSupport")}
         </p>
       )}
       {state.kind === "denied" && (
         <p className="font-sans text-detail text-paper/55">
-          {t("ui.notificationsAreBlockedAtThe")}
+          {native ? t("onboard.reminders.blockedPhone") : t("ui.notificationsAreBlockedAtThe")}
         </p>
       )}
       {state.kind === "not-subscribed" && (

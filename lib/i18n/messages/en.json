@@ -1099,6 +1099,7 @@
   "onboard.reminders.eveningTitle": "Evening prayer",
   "onboard.reminders.eveningBody": "Open the evening rule when you lie down.",
   "onboard.reminders.blocked": "Notifications are blocked in your browser settings. Allow them there, and you can turn reminders on later.",
+  "onboard.reminders.blockedPhone": "Notifications are blocked in your phone's settings. Allow them there, and you can turn reminders on later.",
   "onboard.reminders.unsupported": "This device doesn't support reminders, but everything else works.",
   "onboard.account.eyebrow": "Keep your journey",
   "onboard.account.title": "Carry your prayers on every device.",

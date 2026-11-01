@@ -1101,6 +1101,7 @@
   "onboard.reminders.eveningTitle": "Oración de la noche",
   "onboard.reminders.eveningBody": "Abre la regla vespertina al acostarte.",
   "onboard.reminders.blocked": "Las notificaciones están bloqueadas en los ajustes de tu navegador. Permítelas allí y podrás activar los recordatorios más tarde.",
+  "onboard.reminders.blockedPhone": "Las notificaciones están bloqueadas en los ajustes de tu teléfono. Permítelas allí y podrás activar los recordatorios más tarde.",
   "onboard.reminders.unsupported": "Este dispositivo no admite recordatorios, pero todo lo demás funciona.",
   "onboard.account.eyebrow": "Conserva tu camino",
   "onboard.account.title": "Lleva tus oraciones a todos tus dispositivos.",

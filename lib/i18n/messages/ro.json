@@ -1120,6 +1120,7 @@
   "onboard.reminders.eveningTitle": "Rugăciunea de seară",
   "onboard.reminders.eveningBody": "Deschide pravila de seară când te culci.",
   "onboard.reminders.blocked": "Notificările sunt blocate în setările browserului. Permite-le acolo și vei putea porni mementourile mai târziu.",
+  "onboard.reminders.blockedPhone": "Notificările sunt blocate în setările telefonului. Permite-le acolo și vei putea porni mementourile mai târziu.",
   "onboard.reminders.unsupported": "Acest dispozitiv nu acceptă amintiri, dar restul funcționează.",
   "onboard.account.eyebrow": "Păstrează-ți drumul",
   "onboard.account.title": "Poartă-ți rugăciunile pe orice dispozitiv.",

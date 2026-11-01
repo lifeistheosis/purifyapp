@@ -56,6 +56,7 @@ import { saveSpaceToAccount } from "@/lib/onboarding/accountSync";
 import { beginCountRun, countFinished, countOnboarding, countPicks } from "@/lib/onboarding/count";
 import { routeFor, type CountQuestion } from "@/lib/onboarding/counting";
 import { EVENING_DEFAULT, MORNING_DEFAULT, enableReminders as enablePush, remindersStatus } from "@/lib/push/reminders";
+import { isNativeClient } from "@/lib/platform/native";
 import { PurifyMark } from "@/components/ui/PurifyMark";
 import { OAuthButtons } from "@/components/auth/OAuthButtons";
 import { recordAcceptance } from "@/lib/legal/recordAcceptance";
@@ -479,7 +480,10 @@ export function OnboardingFlow({
       const result = await enablePush(times.morning, times.evening);
       if (!result.ok) {
         countAnswer("reminders", result.reason === "denied" ? "blocked" : result.reason === "unsupported" ? "unsupported" : "failed");
-        if (result.reason === "denied") setReminderNote(t("onboard.reminders.blocked"));
+        // Where to allow them again: on a phone it is the phone's settings
+        // (an iPhone never asks twice), not a browser's.
+        if (result.reason === "denied")
+          setReminderNote(isNativeClient() ? t("onboard.reminders.blockedPhone") : t("onboard.reminders.blocked"));
         else if (result.reason === "unsupported") setReminderNote(t("onboard.reminders.unsupported"));
         // Anything else is ours to say, not to swallow: the reader allowed
         // notifications and still has none.
