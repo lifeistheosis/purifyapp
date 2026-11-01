@@ -20,6 +20,7 @@ import { SearchField } from "@/components/search/SearchField";
 import { Plus } from "@/components/ui/icons/Plus";
 import {
   deleteIntention,
+  reposeDateText,
   upsertIntention,
   useIntentions,
   uuid,
@@ -157,10 +158,11 @@ function IntentionRow({
   onEdit: () => void;
   onDelete: () => void;
 }) {
-  const { t } = useTranslate();
+  const { t, locale } = useTranslate();
   const facts = [
     kind === "living" && entry.nameday ? `${t("prayers.diptychs.namedayLabel")} ${formatMmDd(entry.nameday, t)}` : null,
-    kind === "departed" && entry.repose ? `${t("prayers.diptychs.reposedLabel")} ${entry.repose}` : null,
+    // Written as the reader's language writes a date, not as typed (note 73).
+    kind === "departed" && entry.repose ? `${t("prayers.diptychs.reposedLabel")} ${reposeDateText(entry.repose, locale)}` : null,
     entry.tags && entry.tags.length > 0 ? entry.tags.map((tag) => `#${tag}`).join(" ") : null,
   ].filter(Boolean);
   return (
