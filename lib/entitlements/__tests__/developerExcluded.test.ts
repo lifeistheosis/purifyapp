@@ -10,9 +10,10 @@ import { cappedApi } from "@/lib/supabase/__tests__/cappedApi";
  * $29.97 of MRR. One of the three was the owner, on Plus, testing the purchase
  * flow with his own card. So a third of the "paying" base and a sixth of the
  * MRR was the owner paying himself, and it is worse than a comp: a comp is
- * money that never moved, while this is $4.99 leaving a card, the store keeping
- * 15%, and $4.24 coming back. Booking it as revenue records a 75 cent LOSS as a
- * gain.
+ * money that never moved, while this is $4.99 leaving a card (Plus's price
+ * then), the store keeping 15%, and $4.24 coming back. Booking it as revenue
+ * records a 75 cent LOSS as a gain. The figures below are at today's list
+ * prices (PLAN_PRICE_CENTS), which is how the estimate counts everyone.
  *
  * The lookup is mocked here rather than hit, because the real one reads
  * auth.users through the service role and a unit test has no business doing
@@ -31,6 +32,10 @@ vi.mock("@/lib/dev/developer", () => ({
 
 const { subscriptionStats } = await import("@/lib/entitlements/adminStats");
 const { estimatedMrrCents } = await import("@/lib/premium/mrr");
+const { PLAN_PRICE_CENTS } = await import("@/lib/premium/plans");
+
+/** The two customers, one on Plus and one on Pro, at list. */
+const TWO_CUSTOMERS = PLAN_PRICE_CENTS.plusMonthly + PLAN_PRICE_CENTS.proMonthly;
 
 const FUTURE = new Date(Date.now() + 30 * 86_400_000).toISOString();
 
@@ -85,10 +90,12 @@ describe("the owner's own subscription", () => {
     expect(s.paidCounts).toEqual({ plusOnly: 1, pro: 1 });
   });
 
-  it("takes $4.99 back out of MRR", async () => {
+  it("takes the owner's Plus back out of MRR", async () => {
     const s = await subscriptionStats(fakeAdmin(PRODUCTION));
-    // $24.98, not the $29.97 the panel was reporting.
-    expect(estimatedMrrCents(s.paidCounts)).toBe(2498);
+    // Two customers, not three: $29.98 at today's list (it was $24.98, not
+    // the $29.97 the panel reported, at August's $4.99).
+    expect(estimatedMrrCents(s.paidCounts)).toBe(TWO_CUSTOMERS);
+    expect(TWO_CUSTOMERS).toBe(2998);
   });
 
   it("keeps the four buckets summing to activePlus", async () => {
@@ -117,6 +124,6 @@ describe("the owner's own subscription", () => {
     );
     expect(s.developerPlus).toBe(0);
     expect(s.paidPlus).toBe(2);
-    expect(estimatedMrrCents(s.paidCounts)).toBe(2498);
+    expect(estimatedMrrCents(s.paidCounts)).toBe(TWO_CUSTOMERS);
   });
 });
