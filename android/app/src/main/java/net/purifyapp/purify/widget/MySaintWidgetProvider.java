@@ -139,8 +139,16 @@ public class MySaintWidgetProvider extends PurifyWidgetProvider {
             views.setViewVisibility(R.id.saint_chip, View.GONE);
             return;
         }
-        WidgetFaces.line(views, R.id.saint_date, WidgetPieces.dateInWords(context, nameDay));
         boolean today = days == 0;
+        if (today) {
+            // On the day the chip says so, and its words stay whole: the date,
+            // which is today's, gives up its room instead (note 85). Invisible
+            // rather than gone, so the chip keeps its place at the row's end.
+            views.setTextViewText(R.id.saint_date, "");
+            views.setViewVisibility(R.id.saint_date, View.INVISIBLE);
+        } else {
+            WidgetFaces.line(views, R.id.saint_date, WidgetPieces.dateInWords(context, nameDay));
+        }
         views.setTextViewText(R.id.saint_chip, today
                 ? WidgetData.label(context, "nameDayToday", "Name day today")
                 : days + " " + WidgetPieces.daysWord(context, days));

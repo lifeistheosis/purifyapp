@@ -74,12 +74,15 @@
                 android:layout_weight="1"
                 android:textStyle="bold"
                 android:textColor="@color/widget_soft" />
+            <!-- Ends in an ellipsis when even the whole row is too short for
+                 it, rather than losing its last word unseen (note 85). -->
             <TextView
                 android:id="@+id/saint_chip"
                 style="@style/WidgetChip"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="8dp" />
+                android:layout_marginStart="8dp"
+                android:ellipsize="end" />
         </LinearLayout>
     </LinearLayout>
 </LinearLayout>

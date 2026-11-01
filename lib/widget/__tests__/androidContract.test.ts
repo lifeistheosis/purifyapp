@@ -122,6 +122,36 @@ describe("android widgets: the contract", () => {
     expect(Number(info.match(/android:minResizeWidth="(\d+)dp"/)?.[1])).toBeLessThan(from);
   });
 
+  it("ends every line of My saint in an ellipsis, never a word lost unseen, and gives the name day's words the date's room (note 85)", () => {
+    const looks = read(path.join(MAIN, "res/values/widget_looks.xml"));
+    const style = (name: string) => {
+      const block = looks.match(new RegExp(`<style name="${name}"[^>]*>([\\s\\S]*?)</style>`))?.[1] ?? "";
+      const item = (attr: string) => block.match(new RegExp(`<item name="android:${attr}">([^<]+)</item>`))?.[1];
+      return { maxLines: item("maxLines"), ellipsize: item("ellipsize") };
+    };
+    const files = fs.readdirSync(LAYOUTS).filter((f) => /^widget_mysaint(_small|_small_text)?\.xml$/.test(f)).sort();
+    expect(files).toEqual(["widget_mysaint.xml", "widget_mysaint_small.xml", "widget_mysaint_small_text.xml"]);
+    let seen = 0;
+    for (const file of files) {
+      const xml = read(path.join(LAYOUTS, file)).replace(/<!--[\s\S]*?-->/g, "");
+      for (const m of xml.matchAll(/<TextView([\s\S]*?)\/>/g)) {
+        seen++;
+        const attrs = m[1];
+        const own = (attr: string) => attrs.match(new RegExp(`android:${attr}="([^"]+)"`))?.[1];
+        const styled = style(attrs.match(/style="@style\/(\w+)"/)?.[1] ?? "");
+        const id = attrs.match(/android:id="@\+id\/(\w+)"/)?.[1];
+        // A line count, and an ellipsis at its end: with maxLines alone a
+        // word that does not fit wraps onto a line that is never drawn.
+        expect(own("maxLines") ?? styled.maxLines, `${file} ${id}`).toBeTruthy();
+        expect(own("ellipsize") ?? styled.ellipsize, `${file} ${id}`).toBe("end");
+      }
+    }
+    expect(seen).toBe(9);
+    // On the name day the chip says so, and the date gives up its room.
+    const saint = read(path.join(JAVA_DIR, "widget/MySaintWidgetProvider.java"));
+    expect(saint).toMatch(/if \(today\) \{[\s\S]*?setViewVisibility\(R\.id\.saint_date, View\.INVISIBLE\);/);
+  });
+
   it("stores exactly the six keys the app may hand over", () => {
     const plugin = read(path.join(JAVA_DIR, "widget/WidgetBridgePlugin.java"));
     const listed = plugin.match(/Arrays\.asList\(([\s\S]*?)\)\)/)?.[1] ?? "";

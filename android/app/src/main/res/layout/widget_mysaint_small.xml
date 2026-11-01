@@ -31,10 +31,13 @@
         android:textSize="14sp"
         android:maxLines="1" />
 
+    <!-- Two lines at most, so "Name day today" stays whole in a language
+         where it is long (note 85). -->
     <TextView
         android:id="@+id/saint_meta"
         style="@style/WidgetMeta"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="1dp" />
+        android:layout_marginTop="1dp"
+        android:maxLines="2" />
 </LinearLayout>
