@@ -51,7 +51,8 @@ import { addTombstone, dropTombstone } from "@/lib/sync/tombstones";
  * lib/saints/__tests__/layoutMoves.test.ts fails until that is done.
  */
 
-type Move = (n: number, i: number) => { n: number; i: number } | null;
+/** Where an old paragraph stands now; null for one that has not moved. */
+export type Move = (n: number, i: number) => { n: number; i: number } | null;
 
 /** The old paragraphs that were the translator's notes, by the old section's number (1.8). */
 export const ANTONY_NOTES: readonly number[] = [3, 4, 7, 8, 11, 12, 15, 16, 18, 55, 56, 57, 65, 66, 76, 78, 86, 89, 92, 101, 102, 103, 105, 108, 109, 114, 115, 116, 122, 123];
@@ -129,8 +130,26 @@ function newer(a: string, b: string): boolean {
 /** Move this work's highlights and notes from its old layout. Returns how many moved. */
 export function moveLegacyAnnotations(saintSlug: string, workSlug: string): number {
   const entry = LAYOUT_MOVES[`${saintSlug}/${workSlug}`];
-  if (!entry || typeof window === "undefined") return 0;
+  if (!entry) return 0;
+  return moveAnnotations({ saintSlug, workSlug }, { saintSlug, workSlug }, entry.move);
+}
+
+/**
+ * Move the highlights and notes kept in one work to where `move` says the
+ * same paragraph stands now, in that work or in another (a part that became
+ * a work of its own: lib/saints/workMoves.ts). The rules above: a newer value
+ * already there wins, the old key goes, its server copy is tombstoned, and
+ * the new place is announced so the sync pushes it. Returns how many moved.
+ */
+export function moveAnnotations(
+  from: { saintSlug: string; workSlug: string },
+  to: { saintSlug: string; workSlug: string },
+  move: Move,
+): number {
+  if (typeof window === "undefined") return 0;
+  const { saintSlug, workSlug } = from;
   const head = `${PREFIX}${saintSlug}:${workSlug}:`;
+  const toHead = `${PREFIX}${to.saintSlug}:${to.workSlug}:`;
   let moved = 0;
   try {
     const store = window.localStorage;
@@ -143,15 +162,15 @@ export function moveLegacyAnnotations(saintSlug: string, workSlug: string): numb
       const [nPart, iPart] = key.slice(head.length).split(":");
       const n = Number(nPart);
       const i = Number(iPart);
-      const to = entry.move(n, i);
-      if (!to) continue;
-      const toKey = `${head}${to.n}:${to.i}`;
+      const place = move(n, i);
+      if (!place) continue;
+      const toKey = `${toHead}${place.n}:${place.i}`;
       const value = store.getItem(key);
       const there = store.getItem(toKey);
       if (value && (!there || newer(value, there))) store.setItem(toKey, value);
       store.removeItem(key);
       addTombstone("annotations", "saint-paragraph", { saintSlug, workSlug, sectionN: n, paragraphIdx: i });
-      dropTombstone("annotations", "saint-paragraph", { saintSlug, workSlug, sectionN: to.n, paragraphIdx: to.i });
+      dropTombstone("annotations", "saint-paragraph", { saintSlug: to.saintSlug, workSlug: to.workSlug, sectionN: place.n, paragraphIdx: place.i });
       let data: unknown = {};
       try {
         data = JSON.parse(store.getItem(toKey) ?? "{}");
@@ -160,7 +179,7 @@ export function moveLegacyAnnotations(saintSlug: string, workSlug: string): numb
       }
       window.dispatchEvent(
         new CustomEvent("purify:annotation", {
-          detail: { kind: "saint-paragraph", saintSlug, workSlug, sectionN: to.n, paragraphIdx: to.i, data },
+          detail: { kind: "saint-paragraph", saintSlug: to.saintSlug, workSlug: to.workSlug, sectionN: place.n, paragraphIdx: place.i, data },
         }),
       );
       moved += 1;

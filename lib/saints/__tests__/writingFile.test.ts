@@ -54,9 +54,10 @@ describe("the writing page", () => {
 
   it("hands the apps' reader the work's name and not the work", () => {
     // And who wrote it, a name, for the citations a copy carries (1.8).
-    expect(page).toContain("<LazyWritingReader saint={found.saint} work={work} author={authorOfBook(book)} />");
+    // And the book's page for About this book (r3-29 A), props the page already had.
+    expect(page).toContain("<LazyWritingReader saint={found.saint} work={work} author={authorOfBook(book)} about={about} />");
     // The website keeps the text in the page, for search engines.
-    expect(page).toContain("<WritingReader saint={found.saint} content={content} author={authorOfBook(book)} />");
+    expect(page).toContain("<WritingReader saint={found.saint} content={content} author={authorOfBook(book)} about={about} />");
     expect(page).toContain("IS_STATIC_EXPORT ? (");
   });
 });

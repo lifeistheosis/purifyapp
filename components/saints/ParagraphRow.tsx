@@ -57,6 +57,7 @@ export function ParagraphRow({
  cite,
  at,
  mark,
+ workEnd,
 }: {
  saintSlug: string;
  saintName: string;
@@ -77,6 +78,8 @@ export function ParagraphRow({
  at?: string;
  /** The number shown quietly before the words, where the text prints none of its own. */
  mark?: string;
+ /** The work's last paragraph: read past its foot, and the reader's place is let go (lib/saints/paragraphInView.ts). */
+ workEnd?: boolean;
 }) {
   const { t } = useTranslate();
  const ann = useParagraphAnnotation(
@@ -260,6 +263,9 @@ export function ParagraphRow({
  <div
  id={`p-${sectionN}-${paragraphIdx}`}
  data-paragraph-idx={paragraphIdx}
+ // The reader's place (lib/saints/paragraphInView.ts).
+ data-place={`${sectionN}:${paragraphIdx}`}
+ data-work-end={workEnd ? "" : undefined}
  data-hl={ann.highlighted ? "true" : undefined}
  // The highlight's colour in both themes (lib/bible/highlightPalette.ts).
  data-hl-color={hl.id}

@@ -10,7 +10,6 @@ import { MobileTopBar } from "@/components/nav/MobileTopBar";
 import { MobileWorkProgressBar } from "@/components/saints/MobileWorkProgressBar";
 import { MobileWorkActions } from "@/components/saints/MobileWorkActions";
 import { ReaderPrefsProvider, ReadingModeController } from "@/components/reader/ReaderPrefs";
-import { CouncilBookHeader } from "@/components/councils/CouncilBookHeader";
 import { CouncilReader } from "@/components/councils/CouncilReader";
 import { ChevronRight } from "@/components/ui/icons/ChevronRight";
 import { documentMinutes } from "@/lib/councils/books";
@@ -46,15 +45,16 @@ export async function generateMetadata({
  * reader, with its chapters, Start reading and Continue"). Until 1.8 the
  * thirty-eight documents the app carries opened on plain pages.
  *
- * The book's page above (components/councils/CouncilBookHeader.tsx): its
- * cover, a window onto the council's icon; the council and its year as the
- * author line, to the council's page; Start reading, or Continue. The text
- * below in the room's reader (components/councils/CouncilReader.tsx), in the
- * reader's own typeface and size, with its chapters, the section pill and
- * the progress bar, and its place kept. The top bar is a work's: the way
- * back, the book's name once its title has gone up, and the reader's
- * settings. The text is written into the page, each section at its own
- * address, which the quotations elsewhere in the app open.
+ * Since 1.8's round 6 it reads as the Bible reads (the owner's pick A of
+ * r3-29): one section at a time as its own page, in the room's reader
+ * (components/councils/CouncilReader.tsx), in the reader's own typeface and
+ * size, with the Bible's pill and its books sheet as the contents, and its
+ * place kept to the paragraph. The book's page (components/councils/
+ * CouncilBookHeader.tsx: its cover, a window onto the council's icon; the
+ * council and its year, to the council's page; Start reading, or Continue)
+ * is About this book, a sheet from the contents and from •••. No bar: the
+ * way back and ••• on round plates. The text is written into the page, each
+ * section at its own address, which the quotations elsewhere in the app open.
  */
 export default async function CouncilDocumentPage({
  params,
@@ -75,62 +75,50 @@ export default async function CouncilDocumentPage({
  const sections = content.sections.map((s) => ({ n: s.n, title: s.title }));
  const positionKey = `councils/${c.slug}`;
 
+ const about = {
+  title: content.title,
+  subtitle: content.subtitle ?? docRef.subtitle,
+  blurb: docRef.blurb,
+  author: authorLine(c),
+  council: { href: `/councils/${c.slug}`, name: c.byname },
+  cover: picture ? { src: picture.src, focusY: 30, crop: cropOf(c.slug, docRef.slug) } : undefined,
+  minutes: documentMinutes(c.slug, docRef.slug),
+  era: eraOfYear(c.year),
+  edition: editionOf(content.source),
+  positionKey,
+  docSlug: docRef.slug,
+  first: content.sections[0]?.n ?? 1,
+  total: content.sections.length,
+ };
+ const last = content.sections[content.sections.length - 1];
+
  return (
  <ReaderPrefsProvider>
- <MobileTopBar
-  title={content.title}
-  back
-  backFallback={`/reading/councils/${c.slug}`}
-  trailing={<MobileWorkActions />}
-  revealTitleOn="work-title"
- />
+ {/* The Bible's page (1.8, the owner's pick A of r3-29): the way back and
+     ••• on round plates over the page, the reading line along its top. */}
+ <MobileTopBar plates back backFallback={`/reading/councils/${c.slug}`} trailing={<MobileWorkActions />} />
  <MobileWorkProgressBar />
  <ReadingModeController />
 
- <section className="bg-night px-5 md:px-8">
+ <section className="bg-night px-5 md:px-8 under-plates md:pt-16">
  <div className="mx-auto max-w-[1100px] w-full">
- <CouncilBookHeader
-  title={content.title}
-  subtitle={content.subtitle ?? docRef.subtitle}
-  blurb={docRef.blurb}
-  author={authorLine(c)}
-  council={{ href: `/councils/${c.slug}`, name: c.byname }}
-  cover={picture ? { src: picture.src, focusY: 30, crop: cropOf(c.slug, docRef.slug) } : undefined}
-  minutes={documentMinutes(c.slug, docRef.slug)}
-  era={eraOfYear(c.year)}
-  edition={editionOf(content.source)}
-  positionKey={positionKey}
-  docSlug={docRef.slug}
-  first={content.sections[0]?.n ?? 1}
-  total={content.sections.length}
- />
  {!isLocalized && locale !== "en" && (
  <ContentNotYetTranslated locale={locale} kind="work" />
  )}
 
- <CouncilReader positionKey={positionKey} docSlug={docRef.slug} sections={sections}>
- <div className="py-10 space-y-16">
+ {/* The document's own page (its cover, what it is, Start reading or
+     Continue) is About this book, a sheet over the section (r3-29 A). */}
+ <CouncilReader positionKey={positionKey} docSlug={docRef.slug} title={content.title} sections={sections} about={about}>
  {content.sections.map((s) => (
  // A section can be opened by its number (#s3, 1.8): a quotation
- // elsewhere in the app links to the canon or decree it quotes.
+ // elsewhere in the app links to the canon or decree it quotes. Its
+ // title is the page's head (components/saints/WorkHead.tsx).
  <section
   key={s.n}
   id={`s${s.n}`}
-  aria-labelledby={`s-${s.n}`}
-  className="scroll-mt-24 grid grid-cols-1 lg:grid-cols-[minmax(0,680px)_minmax(0,1fr)] gap-x-12 gap-y-8"
+  data-council-part={s.n}
+  className="mx-auto max-w-[680px] scroll-mt-24"
  >
- <div className="min-w-0">
- <div className="mb-6 flex items-baseline gap-4">
- <span className="font-sans text-caption font-semibold text-paper/40 tabular-nums">
- {String(s.n).padStart(2, "0")}
- </span>
- <h2
-  id={`s-${s.n}`}
-  className="font-sans text-title-sm md:text-title font-semibold text-paper tracking-[-0.01em] flex-1 min-w-0"
- >
- {s.title}
- </h2>
- </div>
  {s.framing && (
  <div className="mb-8">
  <p className="font-sans text-caption font-semibold text-paper/45 mb-2">
@@ -153,12 +141,14 @@ export default async function CouncilDocumentPage({
  )}
  <div className="space-y-5 text-paper/90">
  {s.paragraphs.map((p, i) => (
- <p key={i}><SaintNames text={p} /></p>
+ // Each paragraph a place the reader's place is kept by (lib/saints/paragraphInView.ts).
+ <p key={i} id={`p-${s.n}-${i}`} data-place={`${s.n}:${i}`} data-work-end={s === last && i === s.paragraphs.length - 1 ? "" : undefined}>
+ <SaintNames text={p} />
+ </p>
  ))}
  </div>
- </div>
  {s.notes && s.notes.length > 0 && (
- <aside className="lg:pt-1 lg:border-l lg:border-paper/10 lg:pl-8">
+ <aside className="mt-10 border-t border-paper/10 pt-6">
  <p className="font-sans text-caption font-semibold text-paper/45 mb-4">
  <T k="saints.notes" />
  </p>
@@ -173,9 +163,9 @@ export default async function CouncilDocumentPage({
  )}
  </section>
  ))}
- </div>
+ </CouncilReader>
 
- <footer id="source" className="max-w-[680px] scroll-mt-24 pt-8 border-t border-paper/8">
+ <footer id="source" className="mx-auto max-w-[680px] scroll-mt-24 pt-8 border-t border-paper/8">
  <p className="font-sans text-caption text-paper/40">
  <T k="prayers.reader.sourceLabel" /> {content.source}
  </p>
@@ -189,7 +179,6 @@ export default async function CouncilDocumentPage({
  </Link>
  </p>
  </footer>
- </CouncilReader>
  </div>
  </section>
  </ReaderPrefsProvider>

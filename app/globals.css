@@ -9858,6 +9858,23 @@ html[data-verse-focus] [data-verse]:not([data-focus]) {
 :where([data-motion="reduce"]) [data-verse] {
  transition: none;
 }
+/* Back at the place a reader kept in a Father's work (1.8, the owner's pick
+   A of r3-29, components/saints/WritingReader.tsx): the paragraph they
+   stopped at keeps its strength and the rest of the chapter steps back for
+   two seconds, then comes back, as a verse lands. Opacity only, with the
+   house ease; with motion off it is simply there and simply gone. */
+[data-work-reader] [data-place] {
+ transition:
+  opacity 520ms var(--ease-house),
+  background-color 500ms ease-out,
+  box-shadow 500ms ease-out;
+}
+html[data-place-focus] [data-work-reader] [data-place]:not([data-focus]) {
+ opacity: 0.4;
+}
+:where([data-motion="reduce"]) [data-work-reader] [data-place] {
+ transition: none;
+}
 
 /* While you pray (1.8): the owner's pick B, Immersive, of 2026-10-27, "the
    line being prayed lit, the rest dim, the icon's light behind, chant

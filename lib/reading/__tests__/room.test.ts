@@ -36,11 +36,15 @@ const FILES = [
   "components/reading/FeaturedWork.tsx",
   "components/reading/CoverRow.tsx",
   "components/reading/BookHeader.tsx",
-  "components/reading/ChaptersList.tsx",
   "components/reading/MoreLikeThis.tsx",
   "components/covers/WorkCover.tsx",
   "components/saints/WritingReader.tsx",
   "components/saints/MobileWorkPill.tsx",
+  // 1.8, round 6: the work read as the Bible reads (r3-29 A).
+  "components/saints/WorkHead.tsx",
+  "components/saints/WorkContents.tsx",
+  "components/saints/KeepReading.tsx",
+  "components/saints/MobileWorkActions.tsx",
   // 1.8: the row by feeling and the Purify collections.
   "components/reading/FeelingsRow.tsx",
   "components/reading/CollectionView.tsx",
@@ -184,29 +188,39 @@ describe("the room's pictures (1.8, the owner's note 13 of build 80)", () => {
 });
 
 describe("a book's page", () => {
-  it("is the work's own page, with the book's header above its text and more like it below", () => {
+  // 1.8, round 6, the owner's pick A of r3-29, "As the Bible reads": each
+  // chapter as the Bible's page, and the book's page is About this book.
+  it("is the work's own page, read as the Bible reads, with the book's page behind About this book", () => {
     const page = code(WORK);
     expect(page).toContain("bookPage(found.saint, found.work.slug, IS_STATIC_EXPORT)");
-    expect(page).toContain("<BookHeader {...book.header} />");
-    expect(page).toContain("<MoreLikeThis workKey={book.key} cards={book.like} />");
-    // The slim bar names the book once the header has scrolled away.
-    expect(page).toContain('revealTitleOn="work-title"');
+    expect(page).toContain("const about = book ? { header: book.header, key: book.key, like: book.like } : null;");
+    // No bar: the way back and ••• on round plates over the page.
+    expect(page).toMatch(/<MobileTopBar plates back backFallback=\{`\/saints\/\$\{found\.saint\.slug\}#writings`\} trailing=\{<MobileWorkActions \/>\} \/>/);
+    expect(page).toContain("under-plates");
+    const reader = code("components/saints/WritingReader.tsx");
+    expect(reader).toContain('<BookHeader {...about.header} heading="h2" />');
+    expect(reader).toContain("<MoreLikeThis workKey={about.key} cards={about.like} />");
+    expect(reader).toContain("useScrollAway();");
   });
 
-  it("has the title as its one heading, in the header, and the chapters on every screen", () => {
-    expect(code("components/reading/BookHeader.tsx")).toContain('<h1 id="work-title"');
+  it("has the chapter's head as its one heading, no box round the words, and the next chapter under the last line", () => {
+    const head = code("components/saints/WorkHead.tsx");
+    expect(head).toContain('<h1 className="font-heading text-paper">');
+    expect(head).toContain("onClick={openWorkContents}");
     const reader = code("components/saints/WritingReader.tsx");
     expect(reader).not.toMatch(/<h1\b/);
-    expect(reader).toContain("<ChaptersList");
+    expect(reader).toContain("<WorkHead head={head} />");
+    expect(reader).toContain("<KeepReading next={next} onGo={go} />");
     expect(reader).not.toContain("<details");
-    // Every chapter title of a long work stays in the page (the walk's section 5).
-    expect(reader).toMatch(/\{sec\.title\}/);
+    // One chapter drawn at a time: no accordion, no box with a border round each.
+    expect(reader).not.toMatch(/rounded-md border border-paper\/10 bg-paper\/\[0\.02\]/);
+    expect(code("components/reading/BookHeader.tsx")).toContain('id={heading === "h1" ? "work-title" : undefined}');
   });
 
-  it("records how far the reader is, beside the resume place", () => {
-    const reader = code("components/saints/WritingReader.tsx");
-    expect(reader).toContain("recordProgress(");
-    expect(reader).toContain("savePosition(saint.slug, content.slug, bestN)");
+  it("records how far the reader is, beside the place it keeps", () => {
+    const keeper = code("components/saints/useWorkPlace.ts");
+    expect(keeper).toContain("recordProgress(progressKey, { n: p.sectionN, i, of, pill: pillOf?.(p.sectionN) })");
+    expect(keeper).toContain("savePosition(owner, slug, p.sectionN, p.paragraph)");
   });
 });
 

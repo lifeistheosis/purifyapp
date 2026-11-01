@@ -147,23 +147,24 @@ describe("a council's books in the reading room", () => {
     expect(code(SHELVES)).toContain("<CouncilShelves shelves={allShelves(IS_STATIC_EXPORT, councilFocus)} />");
   });
 
-  it("opens each document in the room's reader: the book's page above, the chapters, the reader's own type, Start reading and Continue", () => {
+  it("opens each document in the room's reader, read as the Bible reads (r3-29 A): its own page behind About this book, the reader's own type, Start reading and Continue", () => {
     const page = code(DOCUMENT);
     expect(page).toContain("<ReaderPrefsProvider>");
-    expect(page).toMatch(/<MobileTopBar\s+title=\{content\.title\}\s+back\s+backFallback=\{`\/reading\/councils\/\$\{c\.slug\}`\}\s+trailing=\{<MobileWorkActions \/>\}\s+revealTitleOn="work-title"/);
+    expect(page).toMatch(/<MobileTopBar plates back backFallback=\{`\/reading\/councils\/\$\{c\.slug\}`\} trailing=\{<MobileWorkActions \/>\} \/>/);
     expect(page).toContain("<MobileWorkProgressBar />");
-    expect(page).toContain("<CouncilBookHeader");
-    expect(page).toContain("<CouncilReader positionKey={positionKey}");
-    // Each section at its own address, which a quotation elsewhere opens.
+    expect(page).toContain("<CouncilReader positionKey={positionKey} docSlug={docRef.slug} title={content.title} sections={sections} about={about}>");
+    // Each section at its own address, which a quotation elsewhere opens, and its paragraphs places a return lands on.
     expect(page).toContain("id={`s${s.n}`}");
+    expect(page).toContain("data-place={`${s.n}:${i}`}");
     const header = code("components/councils/CouncilBookHeader.tsx");
-    expect(header).toContain('<h1 id="work-title"');
+    expect(header).toContain('id={heading === "h1" ? "work-title" : undefined}');
     expect(header).toContain("<StartReading saintSlug={positionKey} workSlug={docSlug} first={first} total={total} />");
     const reader = code("components/councils/CouncilReader.tsx");
-    expect(reader).toContain("<ChaptersList sections={sections} accordion={false} />");
-    expect(reader).toContain("<MobileWorkPill sections={sections} />");
+    expect(reader).toContain('<CouncilBookHeader {...about} heading="h2" />');
+    expect(reader).toContain("<WorkHead head={head} />");
+    expect(reader).toContain("<MobileWorkPill head={head} prev={prev} next={next} onGo={go} words={words} />");
     expect(reader).toContain("FONT_CLASSES[font]} ${SIZE_CLASSES[size]}");
-    expect(reader).toContain("savePosition(positionKey, docSlug, best)");
+    expect(reader).toContain("useKeepPlace(positionKey, docSlug, sections, null)");
     // Start reading reads the place the reader keeps (components/reading/BookHeader.tsx).
     expect(code("components/reading/BookHeader.tsx")).toContain("export function StartReading(");
   });

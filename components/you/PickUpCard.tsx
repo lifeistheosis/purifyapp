@@ -24,6 +24,7 @@ import { useLayoutEffect, useMemo, useState } from "react";
 
 import { useTranslate } from "@/components/i18n/MessagesProvider";
 import { CoverArt } from "@/components/player/CoverArt";
+import { usePartWords } from "@/components/saints/partWords";
 import { localBookNames } from "@/lib/bible/books";
 import { readLastRead, type LastRead } from "@/lib/bible/lastRead";
 import { cn } from "@/lib/cn";
@@ -58,6 +59,7 @@ const dayAt = (day: string) => Date.parse(`${day}T12:00:00`);
 
 export function PickUpCard({ className }: { className?: string }) {
   const { t } = useTranslate();
+  const { sayPill } = usePartWords();
   const history = useReadingHistory();
   const progress = useReadingProgress();
   const prayers = useRecentPrayers();
@@ -106,7 +108,8 @@ export function PickUpCard({ className }: { className?: string }) {
         href: e.href,
         title: e.label,
         detail: e.saintSlug ? saintNameOf(e.saintSlug) : undefined,
-        note: p && p.of > 1 ? t("saints.sectionOf", { n: p.i + 1, total: p.of }) : t("reading.continue"),
+        // The chapter by the work's own name (r3-29 A); a reading kept before it by its place.
+        note: p?.pill ? sayPill(p.pill) : p && p.of > 1 ? t("saints.sectionOf", { n: p.i + 1, total: p.of }) : t("reading.continue"),
         far: p && p.of > 1 ? howFar(p.i + 1, p.of) : null,
         cover: e.saintSlug ? { kind: "saint", slug: e.saintSlug } : null,
       });
@@ -139,7 +142,7 @@ export function PickUpCard({ className }: { className?: string }) {
     }
 
     return latestFirst(out, 3);
-  }, [last, history, progress, prayers, plans, t]);
+  }, [last, history, progress, prayers, plans, t, sayPill]);
 
   if (rows.length === 0) return null;
   const [first, ...rest] = rows;

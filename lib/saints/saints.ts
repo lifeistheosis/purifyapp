@@ -4264,6 +4264,18 @@ export const SAINTS: Saint[] = [
           "Cassian sets down what the old men of Scete answered when he asked them. On the goal of the monastic life, on discretion, on unceasing prayer, on the protection of God. St. Benedict told his monks to read it aloud before Compline.",
         topics: ["Asceticism", "Monasticism", "Prayer", "Discernment", "Desert Fathers"],
       },
+      // Filed after the Conferences as "Conference 24" until 1.8 (round 6,
+      // the owner's note 79): its own work now, as NPNF II 11 prints it. Old
+      // places in the Conferences are carried here (lib/saints/workMoves.ts).
+      {
+        slug: "on-the-incarnation",
+        title: "On the Incarnation of the Lord",
+        subtitle: "Seven books against Nestorius",
+        year: "c. 430",
+        blurb:
+          "Cassian's last work, written at the request of Leo, then archdeacon of Rome, shortly before the Council of Ephesus: seven books against Nestorius, answering him from the Scriptures, from the creed of Antioch in which he was baptized, and from the Fathers of East and West.",
+        topics: ["Incarnation", "Christology", "Theotokos", "Heresy"],
+      },
     ],
   },
   // The Fathers the commentary rail quotes most heavily and who had no profile

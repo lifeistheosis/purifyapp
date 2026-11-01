@@ -319,17 +319,22 @@ await section(5, async () => {
   const payload = payloadBytes(OUT, work);
   must(payload > 0 && payload < 300_000, `the page is light (${Math.round(payload / 1024)} KB of payload; before 1.5.1 it was 4.2 MB)`);
   must(asked.includes("/saints-data/gregory-the-dialogist/morals-on-the-book-of-job.json"), "the work is read from its file");
+  // Since 1.8's round 6 (r3-29 A) a work reads as the Bible does: one book
+  // on the page at a time, "Book 1" where the Bible's book stands and the
+  // work under it, its text there to read; the contents (the pill's name)
+  // hold all 35, and a book chosen turns the page.
   const text = await page.evaluate(() => document.body.innerText);
-  must(/Morals on the Book of Job/i.test(text) && /Book 35/.test(text), `the reader is drawn, all 35 books listed (${text.length} characters on the page)`);
-  // Open the first book: its text is there to read.
-  await page.evaluate(() => {
-    const shown = [...document.querySelectorAll("button, summary, [role=button]")].filter((e) => e.offsetParent !== null && /Book 1, on Job 1/.test(e.textContent || ""));
-    shown[0]?.scrollIntoView({ block: "center" });
-    shown[0]?.click();
-  });
+  const head = () => page.evaluate(() => document.querySelector("[data-work-head] h1")?.textContent?.replace(/\s+/g, " ").trim() ?? "");
+  const first = await head();
+  must(/^Book 1\b/.test(first) && /Morals on the Book of Job/i.test(first) && text.length > 20000, `the reader is drawn, Book 1 on its own page ("${first}", ${text.length} characters on the page)`);
+  await tap(page.locator("[data-work-pill] [data-pill-name]"));
+  await page.waitForTimeout(900);
+  const cells = await page.locator("[data-work-contents] button[aria-label]").count();
+  must(cells === 35, `the contents hold all 35 books (${cells})`);
+  await tap(page.locator("[data-work-contents] button", { hasText: /^35$/ }).first());
   await page.waitForTimeout(1500);
-  const opened = await page.evaluate(() => document.body.innerText.length);
-  must(opened > text.length + 5000, `opening a book shows its text (${opened} characters)`);
+  const last = await head();
+  must(/^Book 35\b/.test(last), `a book chosen turns the page ("${last}")`);
   must(errors.length === 0, `no page errors${errors.length ? ": " + errors.slice(0, 2).join(" | ") : ""}`);
   await page.screenshot({ path: path.join(SHOTS, "morals-phone.png") });
   await ctx.close();
@@ -3011,15 +3016,16 @@ await section(31, async () => {
     await page.waitForTimeout(1500);
     const fonts = asked.slice(before).filter((p) => /\.woff2?$/.test(p));
     must(fonts.length === 0, `opening a work fetches no font file (${fonts.length ? fonts.join(", ") : "none"})`);
-    // Since 1.7 a work's page has its title as its one heading, and the slim
-    // bar takes the name once it has scrolled away (MobileTopBar's
-    // revealTitleOn): one 200ms fade of the bar's name, with motion on, as the
-    // title goes. That fade is the one transition a work's scroll may start,
-    // and only once. The reading bar starts none, as before, and nothing else
-    // starts one at all.
+    // Since 1.8's round 6 (r3-29 A) a work reads as the Bible does: no bar,
+    // the reading line along the top of the screen, and over the pill a
+    // running line that opens once the chapter's head has gone up (one
+    // opening, its rows and its opacity). That is the one transition a
+    // work's scroll may start, and only once. The reading line starts none,
+    // as before, and nothing else starts one at all: a scroll the page makes
+    // itself does not step the plates, the pill or the tab bar away.
     const bar = await page.evaluate(async () => {
-      const fill = document.querySelector(".below-topbar [class*='origin-left']");
-      const reading = fill?.closest(".below-topbar") ?? null;
+      const fill = document.querySelector("[data-work-progress] [class*='origin-left']");
+      const reading = fill?.closest("[data-work-progress]") ?? null;
       const runs = [];
       document.addEventListener("transitionrun", (e) => runs.push({ el: e.target, prop: e.propertyName }), true);
       for (let y = 600; y <= 4800; y += 600) {
@@ -3028,7 +3034,7 @@ await section(31, async () => {
       }
       const scale = fill ? Number((getComputedStyle(fill).transform.match(/matrix\(([^,]+)/) || [])[1]) : NaN;
       const want = window.scrollY / (document.documentElement.scrollHeight - innerHeight);
-      const isName = (el) => el instanceof Element && el.matches("[data-mobile-topbar] [data-topbar-title][data-reveal]");
+      const isName = (el) => el instanceof Element && el.matches("[data-running-line]");
       const named = (r) => `${r.el.tagName?.toLowerCase() ?? "?"}.${String(r.el.className ?? "").split(" ")[0]} ${r.prop}`;
       return {
         found: Boolean(reading),
@@ -3041,7 +3047,7 @@ await section(31, async () => {
     });
     must(bar.found && bar.inBar === 0, `the reading bar starts no transition as the work scrolls (${bar.found ? bar.inBar : "no reading bar"})`);
     must(Math.abs(bar.scale - bar.want) < 0.01, `and its fill is where the reader is (${bar.scale.toFixed(3)} for ${bar.want.toFixed(3)})`);
-    must(bar.others.length === 0 && bar.name <= 1, `nothing else on the page starts one but the top bar's name, fading in once as the work's title goes (${bar.name} for the name${bar.others.length ? "; also " + [...new Set(bar.others)].slice(0, 3).join(", ") + `, ${bar.others.length} in all` : ""})`);
+    must(bar.others.length === 0 && bar.name <= 2, `nothing else on the page starts one but the running line over the pill, opening once as the chapter's head goes (${bar.name} for the line${bar.others.length ? "; also " + [...new Set(bar.others)].slice(0, 3).join(", ") + `, ${bar.others.length} in all` : ""})`);
     await ctx.close();
   }
   const HOMILIES = "/saints/john-chrysostom/homilies-on-1-corinthians/";
@@ -3060,19 +3066,18 @@ await section(31, async () => {
       await cdp.send("Input.dispatchTouchEvent", { type: "touchStart", touchPoints: [{ x: 195, y: 600 }] });
       await cdp.send("Input.dispatchTouchEvent", { type: "touchEnd", touchPoints: [] });
     }
-    await opened.page.waitForFunction(() => document.getElementById("s6"), null, { timeout: 20000 }).catch(() => {});
+    await opened.page.waitForFunction(() => document.querySelector("[data-chapter]"), null, { timeout: 20000 }).catch(() => {});
     await opened.page.waitForTimeout(1500);
-    const at = await opened.page.evaluate(() => ({ y: Math.round(window.scrollY), s6: Math.round(document.getElementById("s6")?.getBoundingClientRect().top ?? -1) }));
+    const at = await opened.page.evaluate(() => ({ y: Math.round(window.scrollY), chapter: document.querySelector("[data-chapter]")?.getAttribute("data-chapter") ?? null }));
     await opened.ctx.close();
     return at;
   };
   const resumed = await visit(false);
-  // The section stops under the bars, not at the very top: the page keeps
-  // 72px clear (scroll-padding-top) and a section keeps six rem more
-  // (scroll-mt-24), about 174px on a phone.
-  must(resumed.y > 200 && resumed.s6 >= 0 && resumed.s6 < 240, `a reader who has not touched the work is taken to their saved section (y ${resumed.y}, section 6 at ${resumed.s6})`);
+  // Since 1.8's round 6 (r3-29 A) each homily is a page of its own: a place
+  // saved before then has no paragraph, so the saved homily opens at its top.
+  must(resumed.chapter === "6" && resumed.y < 100, `a reader who has not touched the work is taken to their saved homily, at its head (chapter ${resumed.chapter}, y ${resumed.y})`);
   const left = await visit(true);
-  must(left.y < 100, `a reader who touched the page before the text arrived is left where they are (y ${left.y})`);
+  must(left.chapter === "6" && left.y < 100, `a reader who touched the page before the text arrived opens the same homily and is not moved (chapter ${left.chapter}, y ${left.y})`);
   const css = fs.readdirSync(path.join(OUT, "_next/static/chunks")).filter((f) => f.endsWith(".css")).map((f) => fs.readFileSync(path.join(OUT, "_next/static/chunks", f), "utf8")).join("\n");
   must(!css.includes(".shop-rise"), "the shop's grid carries no scroll-driven rise");
 });
@@ -5601,8 +5606,9 @@ await section(41, async () => {
       must(filtered.theme === "anger" && filtered.hrefs.map(bare).includes("/saints/john-cassian/institutes#s157"), `a theme narrows it again, each work opening at its part (${filtered.hrefs.join(", ")})`);
       await tap(page.locator(`[data-reading-search] ${linkTo("/saints/john-cassian/institutes#s157")}`).first());
       await page.waitForTimeout(2500);
-      const landed = await page.evaluate(() => ({ path: location.pathname, hash: location.hash, title: document.querySelector("h1#work-title")?.textContent?.trim() ?? null }));
-      must(landed.path === "/saints/john-cassian/institutes/" && landed.hash === "#s157" && landed.title === "The Institutes", `the result opens Cassian's Institutes at Book 8 (${landed.path}${landed.hash}, "${landed.title}")`);
+      const landed = await page.evaluate(() => ({ path: location.pathname, hash: location.hash, title: document.querySelector("[data-work-head] h1")?.textContent?.replace(/\s+/g, " ").trim() ?? null }));
+      const book8 = en["reading.part.book"].replace("{n}", "8");
+      must(landed.path === "/saints/john-cassian/institutes/" && landed.hash === "#s157" && String(landed.title).startsWith(book8), `the result opens Cassian's Institutes at Book 8, on its own page (${landed.path}${landed.hash}, "${landed.title}")`);
       await page.goBack();
       await page.waitForTimeout(1800);
       const back = await page.evaluate(() => ({ search: !!document.querySelector("[data-reading-search]"), theme: new URL(location.href).searchParams.get("theme") }));
@@ -5612,18 +5618,24 @@ await section(41, async () => {
     await ctx.close();
   }
 
-  // A book's page: the cover and its facts above the text, the theme chips to
-  // the room, and more like it at the foot.
+  // A book's page: since 1.8's round 6 (r3-29 A) the work opens on its words,
+  // as the Bible does, and the book's page is About this book, from •••: the
+  // cover and its facts, the theme chips to the room, and more like it.
   {
     const { ctx, page, errors } = await open({ width: 390, height: 844, phone: true });
     await go(page, "/saints/athanasius-the-great/on-the-incarnation/");
-    await page.waitForFunction(() => !!document.querySelector("h1#work-title"), null, { timeout: 20000 }).catch(() => {});
-    await page.waitForTimeout(2500);
+    await page.waitForFunction(() => !!document.querySelector("[data-work-head] h1"), null, { timeout: 20000 }).catch(() => {});
+    await page.waitForTimeout(1500);
+    await tap(page.locator(`[data-plates] button[aria-label="${en["bible.moreActions"]}"]`));
+    await page.waitForTimeout(700);
+    await tap(page.locator("[role=dialog] button", { hasText: en["bible.aboutThisBook"] }).first());
+    await page.waitForFunction(() => !!document.querySelector("[data-about-sheet] [data-book-header]"), null, { timeout: 10000 }).catch(() => {});
+    await page.waitForTimeout(1800);
     const book = await page.evaluate(() => {
-      const head = document.querySelector("[data-book-header]");
+      const head = document.querySelector("[data-about-sheet] [data-book-header]");
       return {
         h1s: document.querySelectorAll("h1").length,
-        title: document.querySelector("h1#work-title")?.textContent?.trim() ?? null,
+        title: head?.querySelector("h2")?.textContent?.trim() ?? null,
         byline: head?.querySelector("[data-byline]")?.textContent?.trim() ?? null,
         chips: head ? [...head.querySelectorAll("a:is([href^='/reading?theme='], [href^='/reading/?theme='])")].map((a) => a.getAttribute("href")) : [],
         start: head ? [...head.querySelectorAll("a")].map((a) => a.textContent?.trim()) : [],
@@ -5632,10 +5644,10 @@ await section(41, async () => {
         text: document.body.innerText.length,
       };
     });
-    must(book.h1s === 1 && book.title === "On the Incarnation" && book.cover, `the book's header: its cover and its title, the page's one heading (${book.h1s} h1, "${book.title}")`);
+    must(book.h1s === 1 && book.title === "On the Incarnation" && book.cover, `About this book: its cover and its title, under the page's one heading (${book.h1s} h1, "${book.title}")`);
     must(book.byline === "By St. Athanasius the Great", `it is by St Athanasius, as the text is his ("${book.byline}")`);
     must(book.chips.map(bare).includes("/reading?theme=pascha") && book.start.includes(en["reading.work.start"]), `its themes lead to the room, and Start reading is there (${book.chips.join(", ")})`);
-    must(book.like >= 4 && book.text > 1500, `More like this follows the text (${book.like} works; ${book.text} characters on the page)`);
+    must(book.like >= 4 && book.text > 1500, `More like this follows (${book.like} works; ${book.text} characters on the page)`);
     await page.screenshot({ path: path.join(SHOTS, "book-page-390.png") });
     await tap(page.locator(`[data-book-header] ${linkTo("/reading?theme=pascha")}`));
     await page.waitForTimeout(2500);
@@ -7609,6 +7621,148 @@ await section(50, async () => {
       await page.screenshot({ path: path.join(SHOTS, "profile-plus-parchment.png") });
     }
     must(errors.length === 0, `${theme}: no page errors${errors.length ? ": " + errors.slice(0, 2).join(" | ") : ""}`);
+    await ctx.close();
+  }
+});
+// ---- 51. A Father's work read as the Bible reads (1.8, round 6).
+// The owner's note 79, "refine the books readers", and his pick A of r3-29,
+// "As the Bible reads" (Homebase/boards/purify-master/variants/
+// r3-29-works-reader.html), with the data it needed: every chapter title
+// whole, St John Cassian's books On the Incarnation a work of their own, and
+// the place kept to the paragraph with no expiry. On St John Cassian's
+// Conferences, as the sheet draws them:
+//  - Opening: one chapter as its own page, "Conference 1" large where the
+//    Bible's book stands, "Chapter 1" under it, the chapter's own title in
+//    italic, one heading, no box round the words; the Bible's pill,
+//    "Conference 1 · 1", on its fade; the round buttons over the page.
+//  - Back where the reader stopped: a place kept in Conference 24, Chapter 26,
+//    at its third paragraph, opens that chapter and stands the paragraph at
+//    the reading place, the rest of the chapter stepping back for a moment.
+//  - The contents: the pill's name opens the conferences as the Bible's books
+//    sheet, the one being read opened at its chapters, the chapter lit, its
+//    title under the grid, 12 and 22 "Not in this edition"; a chapter chosen
+//    turns the page.
+//  - An old link into "Conference 24" lands on the same chapter of On the
+//    Incarnation.
+// lib/saints/__tests__/parts.test.ts, workMoves.test.ts, titlesWhole.test.ts
+// and lib/reader/__tests__/position.test.ts hold the source.
+await section(51, async () => {
+  console.log("\n51. A Father's work read as the Bible reads");
+  const en = JSON.parse(fs.readFileSync(path.resolve("lib/i18n/messages/en.json"), "utf8"));
+  const CONF = "/saints/john-cassian/conferences/";
+  const name = (key, n) => en[`reading.part.${key}`].replace("{n}", String(n));
+  const head = (page) =>
+    page.evaluate(() => {
+      const h = document.querySelector("[data-work-head]");
+      return {
+        h1s: document.querySelectorAll("h1").length,
+        name: h?.querySelector("h1 > span")?.textContent?.trim() ?? null,
+        sub: h?.querySelector("h1 > span + span")?.textContent?.trim() ?? null,
+        caption: h?.querySelector("[data-work-caption]")?.textContent?.trim() ?? null,
+        chapter: document.querySelector("[data-chapter]")?.getAttribute("data-chapter") ?? null,
+        pill: document.querySelector("[data-work-pill] [data-pill-name]")?.textContent?.trim() ?? null,
+        boxes: [...document.querySelectorAll("[data-work-reader] section")].filter((x) => getComputedStyle(x).borderTopWidth !== "0px").length,
+        plates: document.querySelectorAll("[data-plates] button, [data-plates] a").length,
+        paragraphs: document.querySelectorAll("[data-work-reader] [data-place]").length,
+      };
+    });
+
+  // Opening, with nothing kept.
+  {
+    const { ctx, page, errors } = await open({ width: 390, height: 844, phone: true });
+    await go(page, CONF);
+    await page.waitForFunction(() => !!document.querySelector("[data-work-head]"), null, { timeout: 20000 }).catch(() => {});
+    await page.waitForTimeout(1500);
+    const h = await head(page);
+    must(h.h1s === 1 && h.name === name("conference", 1) && h.sub === name("chapter", 1), `the chapter opens as the Bible's: "${h.name}" large, "${h.sub}" under it, one heading (${h.h1s} h1)`);
+    must(h.caption === "Of our stay in Scete, and that which we proposed to Abbot Moses.", `the chapter's own title in italic ("${h.caption}")`);
+    must(h.chapter === "1" && h.boxes === 0 && h.paragraphs >= 1, `one chapter on the page, no box round the words (chapter ${h.chapter}, ${h.boxes} boxed, ${h.paragraphs} paragraphs)`);
+    must(h.pill === `${name("conference", 1)} · 1` && h.plates >= 2, `the Bible's pill names it "${h.pill}", the way back and ••• on plates (${h.plates})`);
+    await page.screenshot({ path: path.join(SHOTS, "works-a-open-390.png") });
+
+    // The contents, from the pill's name: the conferences as books, the one
+    // being read open at its chapters, 12 and 22 not in this edition.
+    await tap(page.locator("[data-work-pill] [data-pill-name]"));
+    await page.waitForFunction(() => !!document.querySelector("[data-work-contents]"), null, { timeout: 10000 }).catch(() => {});
+    await page.waitForTimeout(900);
+    const sheet = await page.evaluate(() => {
+      const list = document.querySelector("[data-work-contents]");
+      const rows = list ? [...list.querySelectorAll("[data-part]")] : [];
+      return {
+        title: list?.closest("[role=dialog]")?.getAttribute("aria-label") ?? null,
+        rows: rows.length,
+        open: list?.querySelector("[data-open-part]")?.getAttribute("data-part") ?? null,
+        lit: list?.querySelector("[aria-current=page]")?.textContent?.trim() ?? null,
+        caption: list?.querySelector("[data-contents-caption]")?.textContent?.trim() ?? null,
+        omitted: list ? [...list.querySelectorAll("[data-omitted]")].map((li) => li.textContent?.trim()) : [],
+        about: !!document.querySelector("[data-about-book]"),
+      };
+    });
+    must(sheet.title === "The Conferences" && sheet.rows === 22 && sheet.open === "conference:1", `the contents: "${sheet.title}", ${sheet.rows} conferences, the one being read opened (${sheet.open})`);
+    must(sheet.lit === "1" && String(sheet.caption).includes("Of our stay in Scete"), `its chapter lit (${sheet.lit}), its title under the grid ("${sheet.caption}")`);
+    const not = en["reading.part.notInEdition"];
+    must(
+      sheet.omitted.length === 2 && sheet.omitted[0] === `${name("conference", 12)}${not}` && sheet.omitted[1] === `${name("conference", 22)}${not}`,
+      `12 and 22 stand where they would, not in this edition (${sheet.omitted.join(" | ")})`,
+    );
+    must(sheet.about, "About this book at its top");
+    await page.screenshot({ path: path.join(SHOTS, "works-a-contents-390.png") });
+    // A chapter chosen turns the page: Conference 1, Chapter 2.
+    await tap(page.locator("[data-work-contents] [aria-controls] + div button", { hasText: /^2$/ }).first());
+    await page.waitForTimeout(1500);
+    const two = await head(page);
+    must(two.chapter === "2" && two.sub === name("chapter", 2) && String(two.caption).endsWith("the end of the monk."), `a chapter chosen turns the page (chapter ${two.chapter}, "${two.caption}")`);
+    must(errors.length === 0, `no page errors${errors.length ? ": " + errors.slice(0, 2).join(" | ") : ""}`);
+    await ctx.close();
+  }
+
+  // Back where the reader stopped: Conference 24, Chapter 26, its third paragraph.
+  {
+    const kept = { "purify.reader.position.john-cassian/conferences": JSON.stringify({ sectionN: 492, paragraph: 2, savedAt: Date.now() - 90 * 86_400_000 }) };
+    const { ctx, page, errors } = await open({ width: 390, height: 844, phone: true, set: kept });
+    await go(page, CONF);
+    await page.waitForFunction(() => document.querySelector("[data-chapter]")?.getAttribute("data-chapter") === "492", null, { timeout: 20000 }).catch(() => {});
+    await page.waitForTimeout(350);
+    const landing = await page.evaluate(() => {
+      const p = document.getElementById("p-492-2");
+      const r = p?.getBoundingClientRect();
+      const other = document.getElementById("p-492-1");
+      return {
+        dim: document.documentElement.hasAttribute("data-place-focus"),
+        focus: p?.getAttribute("data-focus") ?? null,
+        otherOpacity: other ? Number(getComputedStyle(other).opacity) : null,
+        top: r ? Math.round(r.top) : null,
+        bottom: r ? Math.round(r.bottom) : null,
+        middle: Math.round(innerHeight / 2),
+      };
+    });
+    const h = await head(page);
+    must(h.chapter === "492" && h.name === name("conference", 24) && h.sub === name("chapter", 26), `a place kept three months ago opens its chapter (${h.name}, ${h.sub})`);
+    must(landing.dim && landing.focus === "true", `the paragraph kept is lit and the rest steps back for a moment (${landing.dim ? "dimmed" : "not dimmed"}, ${landing.focus})`);
+    await page.waitForTimeout(1600);
+    const stood = await page.evaluate(() => {
+      const r = document.getElementById("p-492-2")?.getBoundingClientRect();
+      return r ? { top: Math.round(r.top), bottom: Math.round(r.bottom), middle: Math.round(innerHeight / 2) } : null;
+    });
+    must(Boolean(stood) && stood.top <= stood.middle && stood.bottom >= stood.middle * 0.5, `it stands at the reading place (${stood ? `${stood.top} to ${stood.bottom}, the middle at ${stood.middle}` : "not found"})`);
+    await page.screenshot({ path: path.join(SHOTS, "works-a-return-390.png") });
+    await page.waitForTimeout(1200);
+    const after = await page.evaluate(() => document.documentElement.hasAttribute("data-place-focus"));
+    must(!after, "and the chapter comes back after two seconds");
+    must(errors.length === 0, `no page errors${errors.length ? ": " + errors.slice(0, 2).join(" | ") : ""}`);
+    await ctx.close();
+  }
+
+  // An old link into "Conference 24": the same chapter of On the Incarnation.
+  {
+    const { ctx, page, errors } = await open({ width: 390, height: 844, phone: true });
+    await go(page, `${CONF}#s503`);
+    await page.waitForFunction(() => location.pathname.includes("on-the-incarnation") && !!document.querySelector("[data-work-head]"), null, { timeout: 20000 }).catch(() => {});
+    await page.waitForTimeout(1200);
+    const moved = await page.evaluate(() => ({ path: location.pathname, hash: location.hash }));
+    const h = await head(page);
+    must(moved.path === "/saints/john-cassian/on-the-incarnation/" && moved.hash === "#s12" && h.name === name("book", 2) && h.sub === name("chapter", 5), `an old link to Conference 24, Chapter 5 lands on On the Incarnation, Book 2, Chapter 5 (${moved.path}${moved.hash}, ${h.name}, ${h.sub})`);
+    must(errors.length === 0, `no page errors${errors.length ? ": " + errors.slice(0, 2).join(" | ") : ""}`);
     await ctx.close();
   }
 });

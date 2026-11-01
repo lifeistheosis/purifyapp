@@ -13,9 +13,9 @@ import { getServerLocale } from "@/lib/i18n/server";
 import { ContentNotYetTranslated } from "@/components/i18n/ContentNotYetTranslated";
 import { RecordRead } from "@/components/reading/RecordRead";
 import { KeepDay } from "@/components/streak/KeepDay";
-import { BookHeader } from "@/components/reading/BookHeader";
-import { MoreLikeThis } from "@/components/reading/MoreLikeThis";
 import { bookPage } from "@/lib/reading/cards";
+import { MovedPlace } from "@/components/saints/MovedPlace";
+import { movesOutOf } from "@/lib/saints/workMoves";
 
 type Params = Promise<{ slug: string; work: string }>;
 
@@ -54,10 +54,11 @@ export default async function WritingPage({ params }: { params: Params }) {
   // saint wrote. See lib/seo/jsonld.ts.
   const jsonLd = writingJsonLd(found.saint, content);
 
-  // The book's page (1.7, the reading room): its cover and facts above the
-  // text, and more like it at the foot. Built here from the room's own cards,
-  // so the apps draw it before the text has been read from its file.
+  // The book's page (1.7, the reading room): its cover and facts, and more
+  // like it. Built here from the room's own cards, and since 1.8's round 6
+  // (r3-29 A) shown as About this book over the chapter.
   const book = bookPage(found.saint, found.work.slug, IS_STATIC_EXPORT);
+  const about = book ? { header: book.header, key: book.key, like: book.like } : null;
 
   return (
     <ReaderPrefsProvider>
@@ -72,33 +73,31 @@ export default async function WritingPage({ params }: { params: Params }) {
         saintSlug={found.saint.slug}
         topics={found.work.topics}
       />
+      {/* An old link to a part that has left this work lands where it is now
+          (St John Cassian's books On the Incarnation, filed in the Conferences
+          until 1.8: lib/saints/workMoves.ts). */}
+      {movesOutOf(found.saint.slug, found.work.slug).length ? <MovedPlace /> : null}
       {/* Reading the Fathers keeps the day for the streak. */}
       <KeepDay strand="day:study" />
-      {/* Mobile-only chrome: a 48px top bar with back + work title, and
-          a 2px gold progress bar pinned beneath it. The trailing slot is
-          one gear, opening the reader settings the Bible reader opens
-          (typeface, size, spacing, reading mode, focus), so a reader's
-          choice carries between surfaces and the bar fits the screen. */}
-      {/* Back the way the reader came (1.8, F-47): a fixed address here sent
-          a reader who opened the book from the reading room round a loop,
-          book, saint, book. The saint's Writings is the floor, for a book
-          opened from outside the app. */}
-      <MobileTopBar
-        title={content.title}
-        back
-        backFallback={`/saints/${found.saint.slug}#writings`}
-        trailing={<MobileWorkActions />}
-        revealTitleOn="work-title"
-      />
+      {/* The Bible's page (1.8, the owner's pick A of r3-29, "As the Bible
+          reads"): no bar, only the way back and ••• on round plates over the
+          page (MobileTopBar `plates`), which step away while the reader
+          reads on; ••• holds the reader's settings, the bookmark, About this
+          book and the search (MobileWorkActions). The reading line runs along
+          the top of the screen. Back the way the reader came (1.8, F-47): a
+          fixed address here sent a reader who opened the book from the
+          reading room round a loop, book, saint, book. The saint's Writings
+          is the floor, for a book opened from outside the app. */}
+      <MobileTopBar plates back backFallback={`/saints/${found.saint.slug}#writings`} trailing={<MobileWorkActions />} />
       <MobileWorkProgressBar />
       {/* Reflects the persisted reading palette onto <html> while this
-          reader is mounted (and strips it on the way out) — the same
+          reader is mounted (and strips it on the way out), the same
           controller the Bible chapter route mounts. */}
       <ReadingModeController />
 
-      <section className="bg-night px-5 md:px-8">
+      {/* The page starts under the plates (globals.css, .under-plates). */}
+      <section className="bg-night px-5 md:px-8 under-plates md:pt-16">
         <div className="mx-auto max-w-[1100px] w-full">
-          {book ? <BookHeader {...book.header} /> : null}
           {locale !== "en" && !content.isLocalized ? (
             <ContentNotYetTranslated locale={locale} kind="work" />
           ) : null}
@@ -110,12 +109,14 @@ export default async function WritingPage({ params }: { params: Params }) {
               author, who is not always the saint whose page it is on, and
               names none for a work no one signed (the Martyrdom of
               Polycarp is the Church of Smyrna's letter about him). */}
+          {/* The book's page (its cover, what it is, Start reading or
+              Continue, More like this) is About this book now, a sheet over
+              the chapter, opened from the contents and from ••• (r3-29 A). */}
           {IS_STATIC_EXPORT ? (
-            <LazyWritingReader saint={found.saint} work={work} author={authorOfBook(book)} />
+            <LazyWritingReader saint={found.saint} work={work} author={authorOfBook(book)} about={about} />
           ) : (
-            <WritingReader saint={found.saint} content={content} author={authorOfBook(book)} />
+            <WritingReader saint={found.saint} content={content} author={authorOfBook(book)} about={about} />
           )}
-          {book ? <MoreLikeThis workKey={book.key} cards={book.like} /> : null}
         </div>
       </section>
     </ReaderPrefsProvider>

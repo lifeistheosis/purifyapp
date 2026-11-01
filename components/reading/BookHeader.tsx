@@ -9,7 +9,9 @@ import { ChevronRight } from "@/components/ui/icons/ChevronRight";
 import { eraKey, themeKey, traditionKey, type ThemeId } from "@/lib/reading/catalog";
 import type { Provenance } from "@/lib/reading/provenance";
 import type { HeaderCard } from "@/lib/reading/select";
-import { loadPosition } from "@/lib/reader/position";
+import { loadPosition, placeHash, type WorkPlace } from "@/lib/reader/position";
+import { useReadingProgress } from "@/lib/reading/progress";
+import { usePartWords } from "@/components/saints/partWords";
 
 import { readingTime } from "./CoverRow";
 import { RoundIcon } from "./FeaturedWork";
@@ -36,6 +38,7 @@ export function BookHeader({
   provenance,
   first,
   total,
+  heading = "h1",
 }: {
   card: HeaderCard;
   blurb: string;
@@ -50,8 +53,14 @@ export function BookHeader({
   /** The first section's number, and how many there are. */
   first: number;
   total: number;
+  /**
+   * The page's own heading on a computer; inside About this book on a phone
+   * (1.8, r3-29 A) the chapter's head is the page's, and this one is under it.
+   */
+  heading?: "h1" | "h2";
 }) {
   const { t } = useTranslate();
+  const Heading = heading;
   const name = card.author ?? t("reading.work.anonymous");
   const byline =
     card.byline === "by" ? t("reading.work.by", { name }) : card.byline === "about" ? t("reading.work.about", { name }) : name;
@@ -87,9 +96,9 @@ export function BookHeader({
           className="shadow-[0_24px_60px_-24px_rgba(0,0,0,0.75)]"
         />
         <div className="mt-6 flex min-w-0 max-w-[620px] flex-col items-center md:mt-1 md:items-start">
-          <h1 id="work-title" lang="en" className="text-title font-semibold leading-[1.12] tracking-[-0.01em] text-paper text-balance md:text-heading">
+          <Heading id={heading === "h1" ? "work-title" : undefined} lang="en" className="text-title font-semibold leading-[1.12] tracking-[-0.01em] text-paper text-balance md:text-heading">
             {card.title}
-          </h1>
+          </Heading>
           {card.subtitle ? (
             <p lang="en" className="mt-2 font-sans text-ui leading-[1.5] text-paper/60">
               {card.subtitle}
@@ -149,30 +158,36 @@ export function BookHeader({
 
 /**
  * Start reading, at the first section; or, where this device has a place
- * saved in the work (lib/reader/position.ts), Continue reading there, with
- * which section it is. Decided after the page wakes: the server cannot know.
+ * saved in the work (lib/reader/position.ts), Continue reading there, at the
+ * paragraph the reader stopped at (1.8, note 79), with which section it is.
+ * Decided after the page wakes: the server cannot know.
  * A council's document keeps its place the same way, under "councils/<its
  * council>" (components/councils/CouncilBookHeader.tsx).
  */
 export function StartReading({ saintSlug, workSlug, first, total }: { saintSlug: string; workSlug: string; first: number; total: number }) {
   const { t } = useTranslate();
-  const [saved, setSaved] = useState<number | null>(null);
+  const { sayPill } = usePartWords();
+  // The chapter by the work's own name, as the reader keeps it (r3-29 A).
+  const kept = useReadingProgress()[`${saintSlug}/${workSlug}`];
+  const [saved, setSaved] = useState<WorkPlace | null>(null);
   useEffect(() => {
     const pos = loadPosition(saintSlug, workSlug);
     // Read once the page has woken: the server has no saved place to draw.
     // eslint-disable-next-line react-hooks/set-state-in-effect
-    if (pos && pos.sectionN > first) setSaved(pos.sectionN);
+    if (pos && (pos.sectionN > first || pos.paragraph > 0)) setSaved({ sectionN: pos.sectionN, paragraph: pos.paragraph });
   }, [saintSlug, workSlug, first]);
   return (
     <div className="mt-6 flex flex-col items-center gap-1.5 md:items-start">
       <a
-        href={`#s${saved ?? first}`}
+        href={saved ? placeHash(saved) : `#s${first}`}
         className="tap-press inline-flex h-12 items-center rounded-pill bg-paper px-7 font-sans text-ui font-semibold text-night hover:bg-paper/90"
       >
         {saved !== null ? t("reading.continue") : t("reading.work.start")}
       </a>
       {saved !== null ? (
-        <span className="font-sans text-caption text-paper/50">{t("saints.sectionOf", { n: saved - first + 1, total })}</span>
+        <span className="font-sans text-caption text-paper/50">
+          {kept?.pill && kept.n === saved.sectionN ? sayPill(kept.pill) : t("saints.sectionOf", { n: saved.sectionN - first + 1, total })}
+        </span>
       ) : null}
     </div>
   );

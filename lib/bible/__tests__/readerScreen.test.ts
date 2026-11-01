@@ -426,12 +426,14 @@ describe("the tab bar steps away on the reading screens, and on no other", () =>
     expect(away).toMatch(/return \(\) => \{\s*stop\(\);\s*body\.removeAttribute\(AWAY_ATTR\);\s*body\.removeAttribute\(SCREEN_ATTR\);/);
     // The hook is mounted by the reading screens and nowhere else: the
     // chapter's, and since round 3 r3-13 a theology study read part by part,
-    // where "the tab bar steps away, as in the Bible".
+    // where "the tab bar steps away, as in the Bible"; and since round 6
+    // (r3-29 A, "As the Bible reads") a Father's work and a council's
+    // document, each chapter as the Bible's page.
     const mounts = execFileSync("git", ["grep", "-l", "useScrollAway();", "--", "app", "components", "lib"], { cwd: root, encoding: "utf8" })
       .split("\n")
       .filter(Boolean)
       .filter((f) => !f.includes("__tests__"));
-    expect(mounts.sort()).toEqual([SCREEN, "components/theology/StudyReader.tsx"].sort());
+    expect(mounts.sort()).toEqual([SCREEN, "components/theology/StudyReader.tsx", "components/saints/WritingReader.tsx", "components/councils/CouncilReader.tsx"].sort());
   });
 
   it("brings what stands on it to the foot while it is away, in the apps alone, as focus mode does", () => {
@@ -467,7 +469,8 @@ describe("the reader's pill and what rises over it", () => {
     // appeared at once. It comes with the work's text, which the apps read
     // from the bundle after the page has opened, so it landed after the
     // page's own fade with none of its own.
-    expect(code("components/saints/MobileWorkPill.tsx")).toMatch(/"reader-pill-in inline-flex items-center gap-1 rounded-pill/);
+    // Since r3-29 A the Bible's own face (1.8, round 6).
+    expect(code("components/saints/MobileWorkPill.tsx")).toMatch(/"reader-pill-in flex h-14 min-w-0 max-w-full items-center gap-0.5 rounded-pill/);
     const css = rules();
     expect(css).toMatch(/@keyframes reader-pill-in \{\s*from \{ opacity: 0; \}\s*\}/);
     expect(css).toMatch(/\.reader-pill-in \{\s*animation: reader-pill-in var\(--duration-slow\) var\(--ease-house\) backwards;\s*\}/);

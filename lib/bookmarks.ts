@@ -338,6 +338,43 @@ function newId(): string {
  : `${Date.now()}-${Math.random().toString(36).slice(2, 10)}`;
 }
 
+/**
+ * Carry the bookmarks kept on a work's sections to where those sections
+ * stand now (1.8: a part of a work that became a work of its own,
+ * lib/saints/workMoves.ts). `carry` answers a bookmark's new place and names,
+ * or null for one that stays. The old place is tombstoned and the new one
+ * pushed, as a removal and a saving are; a bookmark already kept at the new
+ * place wins over the one carried there. Returns how many moved.
+ */
+export function moveWritingSectionBookmarks(
+  saintSlug: string,
+  workSlug: string,
+  carry: (b: Extract<Bookmark, { kind: "writing-section" }>) => Extract<Bookmark, { kind: "writing-section" }> | null,
+): number {
+ if (typeof window === "undefined") return 0;
+ const current = readAll();
+ let moved = 0;
+ const next: Bookmark[] = [];
+ for (const b of current) {
+ if (b.kind !== "writing-section" || b.saintSlug !== saintSlug || b.workSlug !== workSlug) {
+ next.push(b);
+ continue;
+ }
+ const to = carry(b);
+ if (!to) {
+ next.push(b);
+ continue;
+ }
+ moved += 1;
+ bury([b]);
+ if (current.some((x) => bookmarkKey(x) === bookmarkKey(to))) continue;
+ unbury(to);
+ next.push(to);
+ }
+ if (moved) writeAll(dedupe(next));
+ return moved;
+}
+
 /** Take a bookmark away by id, outside a component (the Saved feed). Returns
  *  what was taken, for Undo. */
 export function removeBookmark(id: string): Bookmark | null {
