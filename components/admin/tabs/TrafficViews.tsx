@@ -24,8 +24,11 @@
 
 import { useEffect, useMemo, useState } from "react";
 
+import { type LatestDay } from "@/lib/admin/dayWindow";
 import { adminJson } from "@/lib/admin/fetchJson";
+import { setLatestDay, useLatestDay } from "@/lib/admin/latestDayPreference";
 import { type Place, tallyCountries, tallyRegions, type Visit } from "@/lib/admin/map/tally";
+import { CHART_FETCH, CHART_RANGES, median, windowOf } from "@/lib/admin/trafficChart";
 import {
   appsLine,
   liveFigures,
@@ -97,6 +100,8 @@ function open(tab: string) {
 }
 
 const n = (v: number) => v.toLocaleString("en-US");
+const day = (iso: string | undefined) =>
+  iso ? new Date(`${iso}T00:00:00Z`).toLocaleDateString("en-US", { month: "short", day: "numeric", timeZone: "UTC" }) : "";
 
 /** The period's sources, read when the period changes. Now has none: it is counted from the live sessions. */
 function useSources(period: Period): { data: Sources | null; loading: boolean } {
@@ -301,6 +306,71 @@ function MapCard({
   );
 }
 
+// ── Visitors by day ───────────────────────────────────────────────────────
+
+const RANGE_OPTIONS = CHART_RANGES.map((d) => [String(d), `${d}d`] as const);
+const LATEST_OPTIONS = [
+  ["now", "Now"],
+  ["complete", "Last night"],
+] as const satisfies readonly (readonly [LatestDay, string])[];
+
+/**
+ * Visitors each day over 7 to 120 days, counted to now (today still running)
+ * or to last night (every day finished), with the median day as a dotted line
+ * (lib/admin/trafficChart.ts). One read of 120 days serves every range; the
+ * Now / Last night choice is remembered per browser (latestDayPreference).
+ */
+function VisitorsChart() {
+  const [range, setRange] = useState("30");
+  const latest = useLatestDay();
+  const read = useLiveData<{ points?: Point[] }>(`/api/admin/traffic?range=${CHART_FETCH}d&latest=${latest}`, 300_000);
+  const shown = windowOf(read.data?.points ?? [], Number(range));
+  const values = shown.map((p) => p.visitors);
+  const mid = median(values);
+  const midText = mid === null ? "" : Number.isInteger(mid) ? n(mid) : mid.toFixed(1);
+  const total = values.reduce((s, v) => s + v, 0);
+  const to = latest === "now" ? "today" : "last night";
+
+  return (
+    <Panel title={`Visitors each day, the last ${range} days`} pad="px-4 pt-3.5 pb-3">
+      <div className="mb-3 flex flex-wrap items-center gap-2">
+        <Segmented label="Days" options={RANGE_OPTIONS} value={range} onChange={setRange} scroll />
+        <Segmented<LatestDay> label="Counted to" options={LATEST_OPTIONS} value={latest} onChange={setLatestDay} />
+      </div>
+      {shown.length < 2 ? (
+        <Quiet className="py-6">{read.loading ? "Reading the days." : "The days could not be read just now."}</Quiet>
+      ) : (
+        <>
+          <TrendLine
+            label={`Visitors each day for the last ${range} days, to ${to}, median ${midText} a day: ${shown.map((p) => `${p.date} ${p.visitors}`).join(", ")}`}
+            values={values}
+            median={mid === null ? null : { value: mid, text: `median ${midText}` }}
+            marks={[day(shown[0]?.date), day(shown[Math.floor(shown.length / 2)]?.date), latest === "now" ? "today" : day(shown[shown.length - 1]?.date)]}
+          />
+          <p className="mt-2 font-sans text-[12px]" style={{ color: "var(--adm-ink-3)" }}>
+            {n(total)} visitors in {shown.length} days to {to}, a median day of {midText}.
+          </p>
+        </>
+      )}
+      <div className="mt-3">
+        <Disclosure title="Every day, as a table">
+          <DataTable
+            rows={shown.slice().reverse()}
+            rowKey={(r) => r.date}
+            csvFilename={`traffic-${range}d.csv`}
+            columns={[
+              { key: "date", label: "Day", render: (r) => r.date, csv: (r) => r.date },
+              { key: "visitors", label: "Visitors", align: "right", render: (r) => n(r.visitors), csv: (r) => r.visitors },
+              { key: "views", label: "Page views", align: "right", render: (r) => n(r.views), csv: (r) => r.views },
+              { key: "signups", label: "Signups", align: "right", render: (r) => n(r.signups), csv: (r) => r.signups },
+            ]}
+          />
+        </Disclosure>
+      </div>
+    </Panel>
+  );
+}
+
 // ── Overview ──────────────────────────────────────────────────────────────
 
 export function TrafficOverviewTab() {
@@ -353,12 +423,6 @@ export function TrafficOverviewTab() {
   const known = period === "now" ? Boolean(stats.data) : Boolean(src);
   const unknownWord = period === "now" ? (stats.loading ? "…" : "Not measured") : sources.loading ? "…" : "Not measured";
 
-  // ── The time series: the last 30 days, the 30 before dashed ──────────
-  const last30 = points.slice(-30);
-  const before30 = points.length >= 60 ? points.slice(-60, -30) : undefined;
-  const mid = last30[Math.floor(last30.length / 2)];
-  const day = (iso: string | undefined) =>
-    iso ? new Date(`${iso}T00:00:00Z`).toLocaleDateString("en-US", { month: "short", day: "numeric", timeZone: "UTC" }) : "";
 
   return (
     <div className="space-y-3.5">
@@ -446,33 +510,7 @@ export function TrafficOverviewTab() {
       </div>
 
       {/* Time-series, folded in from the panel it was (one level of views). */}
-      <Panel title="Visitors, the last 30 days (the 30 before, dashed)" pad="px-4 pt-3.5 pb-3">
-        {points.length < 2 ? (
-          <Quiet className="py-6">{traffic.loading ? "Reading the days." : "The days could not be read just now."}</Quiet>
-        ) : (
-          <TrendLine
-            label={`Visitors each day for the last 30 days: ${last30.map((p) => `${p.date} ${p.visitors}`).join(", ")}`}
-            values={last30.map((p) => p.visitors)}
-            before={before30?.map((p) => p.visitors)}
-            marks={[day(last30[0]?.date), day(mid?.date), "today"]}
-          />
-        )}
-        <div className="mt-3">
-          <Disclosure title="Every day, as a table">
-            <DataTable
-              rows={points.slice().reverse()}
-              rowKey={(r) => r.date}
-              csvFilename="traffic-90d.csv"
-              columns={[
-                { key: "date", label: "Day", render: (r) => r.date, csv: (r) => r.date },
-                { key: "visitors", label: "Visitors", align: "right", render: (r) => n(r.visitors), csv: (r) => r.visitors },
-                { key: "views", label: "Page views", align: "right", render: (r) => n(r.views), csv: (r) => r.views },
-                { key: "signups", label: "Signups", align: "right", render: (r) => n(r.signups), csv: (r) => r.signups },
-              ]}
-            />
-          </Disclosure>
-        </div>
-      </Panel>
+      <VisitorsChart />
 
       {/* The lifetime counts from At a glance: they only ever grow. */}
       {totals.data ? (

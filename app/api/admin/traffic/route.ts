@@ -1,6 +1,7 @@
 import { NextResponse, type NextRequest } from "next/server";
 import { getAdminUser } from "@/lib/admin/access";
 import { dayKey, daysSince, parseLatestDay, windowEnd, windowStart } from "@/lib/admin/dayWindow";
+import { rangeDays } from "@/lib/admin/trafficChart";
 import { createAdminClient } from "@/lib/supabase/admin";
 
 export const runtime = "nodejs";
@@ -8,7 +9,7 @@ export const dynamic = "force-dynamic";
 
 // Daily counts of visitors, pageviews, and signups over a window. Used by
 // the Traffic tab's line chart and the Overview hero sparklines.
-// Range: 7d | 30d | 90d | all (default 30d).
+// Range: 7d | 14d | 21d | 30d | 60d | 90d | 120d | all (default 30d).
 // Latest: now | complete (default now). "now" ends on today, still running;
 // "complete" ends on yesterday, so every bucket is a finished day. See
 // windowEnd in lib/admin/dayWindow.ts.
@@ -47,7 +48,7 @@ export async function GET(req: NextRequest) {
       .maybeSingle();
     days = daysSince(oldest?.first_seen as string | undefined, end);
   } else {
-    days = range === "7d" ? 7 : range === "90d" ? 90 : 30;
+    days = rangeDays(range);
   }
   // ENDS ON TODAY, and the fix is here rather than in the SQL.
   //

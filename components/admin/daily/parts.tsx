@@ -343,18 +343,21 @@ export function Spark({
 /**
  * A period as a line over a soft area, the period before it dashed, the last
  * point lit, and three marks under it (its first day, its middle, today).
- * The line stretches with its card; the marks and the point are HTML so they
- * keep their size.
+ * With `median`, a dotted line runs across at that value with its figure on
+ * it. The line stretches with its card; the marks, the point and the figure
+ * are HTML so they keep their size.
  */
 export function TrendLine({
   values,
   before,
+  median,
   marks,
   height = 150,
   label,
 }: {
   values: readonly number[];
   before?: readonly number[];
+  median?: { value: number; text: string } | null;
   marks: [string, string, string];
   height?: number;
   label: string;
@@ -387,7 +390,19 @@ export function TrendLine({
           ) : null}
           <path d={`${path(values)}L${x(last, values.length)},${height}L0,${height}Z`} fill={`url(#${gid})`} />
           <path d={path(values)} fill="none" stroke="var(--adm-ink)" strokeWidth={1.8} strokeLinejoin="round" vectorEffect="non-scaling-stroke" />
+          {median ? (
+            <line x1={0} x2={W} y1={y(median.value)} y2={y(median.value)} stroke="var(--adm-ink-2)" strokeWidth={1.2} strokeDasharray="2 4" vectorEffect="non-scaling-stroke" />
+          ) : null}
         </svg>
+        {median ? (
+          <span
+            aria-hidden
+            className="absolute left-0 -translate-y-full rounded-[4px] px-1 pb-0.5 font-mono text-[10.5px]"
+            style={{ top: y(median.value), color: "var(--adm-ink-2)", background: "var(--adm-panel)" }}
+          >
+            {median.text}
+          </span>
+        ) : null}
         <span
           aria-hidden
           className="absolute h-[7px] w-[7px] -translate-x-1/2 -translate-y-1/2 rounded-full"
