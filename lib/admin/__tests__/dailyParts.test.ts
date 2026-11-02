@@ -123,4 +123,20 @@ describe("the parts", () => {
     expect(trend).toContain('stroke-dasharray="4 4"');
     expect(trend).toContain("today");
   });
+
+  it("let every day on a trend be picked when it is given the days", () => {
+    const plain = renderToStaticMarkup(createElement(TrendLine, { values: [1, 4, 2], marks: ["Oct 1", "Oct 2", "today"], label: "Visitors" }));
+    expect(plain).not.toContain('role="slider"');
+    const days = ["Oct 1", "Oct 2", "Oct 3, so far"];
+    const picks = renderToStaticMarkup(
+      createElement(TrendLine, { values: [1, 4, 2], days, valueText: (v: number) => `${v} visitors`, marks: ["Oct 1", "Oct 2", "today"], label: "Visitors" }),
+    );
+    expect(picks).toContain('role="slider"');
+    expect(picks).toContain('tabindex="0"');
+    expect(picks).toContain('aria-valuemax="2"');
+    // At rest a screen reader is told the newest day, as the lit point shows it.
+    expect(picks).toContain('aria-valuetext="Oct 3, so far, 2 visitors"');
+    // A phone can still scroll the page over it; only a sideways drag picks.
+    expect(picks).toContain("touch-action:pan-y");
+  });
 });

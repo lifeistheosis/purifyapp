@@ -347,6 +347,8 @@ function VisitorsChart() {
             label={`Visitors each day for the last ${range} days, to ${to}, median ${midText} a day: ${shown.map((p) => `${p.date} ${p.visitors}`).join(", ")}`}
             values={values}
             median={mid === null ? null : { value: mid, text: `median ${midText}` }}
+            days={shown.map((p, i) => (latest === "now" && i === shown.length - 1 ? `${day(p.date)}, so far` : day(p.date)))}
+            valueText={(v) => `${n(v)} ${v === 1 ? "visitor" : "visitors"}`}
             marks={[day(shown[0]?.date), day(shown[Math.floor(shown.length / 2)]?.date), latest === "now" ? "today" : day(shown[shown.length - 1]?.date)]}
           />
           <p className="mt-2 font-sans text-[12px]" style={{ color: "var(--adm-ink-3)" }}>

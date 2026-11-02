@@ -11,7 +11,7 @@
  * numbers down.
  */
 
-import { useId, type CSSProperties, type ReactNode } from "react";
+import { useId, useState, type CSSProperties, type KeyboardEvent, type PointerEvent, type ReactNode } from "react";
 
 import { SENSITIVE } from "@/lib/admin/streamer";
 
@@ -344,13 +344,19 @@ export function Spark({
  * A period as a line over a soft area, the period before it dashed, the last
  * point lit, and three marks under it (its first day, its middle, today).
  * With `median`, a dotted line runs across at that value with its figure on
- * it. The line stretches with its card; the marks, the point and the figure
- * are HTML so they keep their size.
+ * it. With `days`, one label per point, any day can be picked (the owner,
+ * 2026-11-02: "ensure you can highlight each single day on the chart"): a
+ * mouse over it, a tap or a drag on a phone, or the arrow keys, and a line,
+ * the point and a label with its day and figure come up. A mouse leaving
+ * lets it go; a tap stays until the next. The line stretches with its card;
+ * the marks, the points and the labels are HTML so they keep their size.
  */
 export function TrendLine({
   values,
   before,
   median,
+  days,
+  valueText = (v) => v.toLocaleString("en-US"),
   marks,
   height = 150,
   label,
@@ -358,6 +364,9 @@ export function TrendLine({
   values: readonly number[];
   before?: readonly number[];
   median?: { value: number; text: string } | null;
+  days?: readonly string[];
+  /** A value as the picked day's label says it. */
+  valueText?: (v: number) => string;
   marks: [string, string, string];
   height?: number;
   label: string;
@@ -365,15 +374,54 @@ export function TrendLine({
   const W = 600;
   // Letters and digits only: the id goes into url(#...), where React's own marks are awkward.
   const gid = `adm-trend-${useId().replace(/[^a-zA-Z0-9]/g, "")}`;
+  // The pick remembers how many points it was made on, so a new range lets it go.
+  const [pick, setPick] = useState<{ i: number; of: number } | null>(null);
   if (values.length < 2) return <Quiet className="py-6">Not enough days to draw yet.</Quiet>;
   const max = Math.max(1, ...values, ...(before ?? [])) * 1.12;
   const x = (i: number, n: number) => (i * W) / Math.max(1, n - 1);
   const y = (v: number) => height - (v / max) * height;
   const path = (a: readonly number[]) => a.map((v, i) => `${i ? "L" : "M"}${x(i, a.length).toFixed(1)},${y(v).toFixed(1)}`).join("");
   const last = values.length - 1;
+  const canPick = Boolean(days && days.length === values.length);
+  const picked = canPick && pick && pick.of === values.length ? pick.i : null;
+  const pickAt = (e: PointerEvent<HTMLDivElement>) => {
+    const r = e.currentTarget.getBoundingClientRect();
+    const f = Math.min(1, Math.max(0, (e.clientX - r.left) / Math.max(1, r.width)));
+    setPick({ i: Math.round(f * last), of: values.length });
+  };
+  const onKey = (e: KeyboardEvent<HTMLDivElement>) => {
+    if (e.key === "Escape") return setPick(null);
+    const from = picked ?? last;
+    const to = e.key === "ArrowLeft" ? from - 1 : e.key === "ArrowRight" ? from + 1 : e.key === "Home" ? 0 : e.key === "End" ? last : null;
+    if (to === null) return;
+    e.preventDefault();
+    setPick({ i: Math.min(last, Math.max(0, to)), of: values.length });
+  };
+  const said = (i: number) => `${days?.[i] ?? ""}, ${valueText(values[i])}`;
+  const at = picked === null ? 0 : (picked / last) * 100;
   return (
     <div>
-      <div className="relative" style={{ height }}>
+      <div
+        className="relative"
+        style={{ height, touchAction: canPick ? "pan-y" : undefined, cursor: canPick ? "crosshair" : undefined }}
+        {...(canPick
+          ? {
+              role: "slider",
+              tabIndex: 0,
+              "aria-label": "Pick a day",
+              "aria-valuemin": 0,
+              "aria-valuemax": last,
+              "aria-valuenow": picked ?? last,
+              "aria-valuetext": said(picked ?? last),
+              onPointerDown: pickAt,
+              onPointerMove: pickAt,
+              onPointerLeave: (e: PointerEvent<HTMLDivElement>) => {
+                if (e.pointerType === "mouse") setPick(null);
+              },
+              onKeyDown: onKey,
+            }
+          : {})}
+      >
         <svg role="img" aria-label={label} width="100%" height={height} viewBox={`0 0 ${W} ${height}`} preserveAspectRatio="none" className="block overflow-visible">
           <defs>
             <linearGradient id={gid} x1="0" x2="0" y1="0" y2="1">
@@ -408,6 +456,33 @@ export function TrendLine({
           className="absolute h-[7px] w-[7px] -translate-x-1/2 -translate-y-1/2 rounded-full"
           style={{ left: "100%", top: y(values[last]), background: "var(--adm-ink)", boxShadow: "var(--adm-lit-soft)" }}
         />
+        {picked !== null ? (
+          <>
+            <span aria-hidden className="pointer-events-none absolute top-0 w-px" style={{ left: `${at}%`, height, background: "var(--chart-hover)" }} />
+            <span
+              aria-hidden
+              className="pointer-events-none absolute h-[9px] w-[9px] -translate-x-1/2 -translate-y-1/2 rounded-full border-2"
+              style={{ left: `${at}%`, top: y(values[picked]), background: "var(--adm-ink)", borderColor: "var(--adm-panel)" }}
+            />
+            <span
+              aria-hidden
+              className="pointer-events-none absolute top-1 whitespace-nowrap rounded-[var(--adm-radius-sm)] border px-1.5 py-0.5 font-sans text-eyebrow tabular-nums"
+              style={{
+                left: `${at}%`,
+                // The label stays inside the card at either end.
+                transform: `translateX(${at < 15 ? "0" : at > 85 ? "-100%" : "-50%"})`,
+                background: "var(--adm-panel)",
+                borderColor: "var(--adm-line-strong)",
+                color: "var(--adm-ink)",
+                boxShadow: "var(--adm-shadow-pop)",
+              }}
+            >
+              {days?.[picked]}
+              <span style={{ color: "var(--adm-ink-3)" }}> · </span>
+              {valueText(values[picked])}
+            </span>
+          </>
+        ) : null}
       </div>
       <div aria-hidden className="mt-1.5 flex justify-between font-mono text-[10.5px]" style={{ color: "var(--adm-ink-3)" }}>
         {marks.map((m, i) => (
