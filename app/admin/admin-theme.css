@@ -1639,6 +1639,14 @@
 .adm-seg-scroll::-webkit-scrollbar {
   display: none;
 }
+/* A switch that only overflows on a phone: from 768px it fits, so its last
+   segment is not faded as if there were more (Traffic's days, 7d to 120d). */
+@media (min-width: 768px) {
+  .adm-seg-scroll.adm-seg-fits {
+    -webkit-mask-image: none;
+    mask-image: none;
+  }
+}
 
 /* A figure: the mono face, tight. Lit when it is the one that needs him. */
 .adm-fig {

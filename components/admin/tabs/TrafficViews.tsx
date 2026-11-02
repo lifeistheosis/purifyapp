@@ -334,7 +334,9 @@ function VisitorsChart() {
   return (
     <Panel title={`Visitors each day, the last ${range} days`} pad="px-4 pt-3.5 pb-3">
       <div className="mb-3 flex flex-wrap items-center gap-2">
-        <Segmented label="Days" options={RANGE_OPTIONS} value={range} onChange={setRange} scroll />
+        <div className="adm-seg-scroll adm-seg-fits -mx-1 px-1">
+          <Segmented label="Days" options={RANGE_OPTIONS} value={range} onChange={setRange} />
+        </div>
         <Segmented<LatestDay> label="Counted to" options={LATEST_OPTIONS} value={latest} onChange={setLatestDay} />
       </div>
       {shown.length < 2 ? (
