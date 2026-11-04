@@ -108,6 +108,15 @@ export const ADMIN_PAGE_GROUPS: AdminPageGroup[] = [
             title: "Map",
             sentence: "Where readers are, by country and by region.",
           },
+          // Who is on the site now, back from the old Traffic hub that the
+          // revamp dropped (his pick A on sheet r3-38, 2026-11-04: "show the
+          // map, but obviously optimized. And A").
+          {
+            tab: "traffic-live",
+            label: "Live",
+            title: "Live",
+            sentence: "Who is on the site now: where, on what, how they found Purify, and the pages they opened.",
+          },
           { tab: "sources", label: "Sources", title: "Sources", sentence: "Where each visit came from, and what it was read on." },
           { tab: "onboarding", label: "Onboarding" },
           { tab: "screens", label: "Screens" },

@@ -190,9 +190,31 @@ export type HeatMapProps = {
   /** The country or region whose card is open, from a tap or from a row of the list. */
   chosen: string | null;
   onChoose: (key: string | null) => void;
+  /** A tap on a reader's point opens that reader (Traffic's Live view); without it the points are only drawn. */
+  onLive?: (id: string) => void;
 };
 
-export function HeatMap({ countries, total, live, periodWord, zoom, onZoom, regions, zoomTotal, chosen, onChoose }: HeatMapProps) {
+/**
+ * Where the most readers are close together, in the map's own units: the
+ * point with the most others within `reach`. The first press of Zoom in goes
+ * there rather than to the middle of the world, which is the Atlantic.
+ */
+export function busiestSpot(points: readonly { x: number; y: number }[], reach: number): [number, number] | null {
+  let best: { x: number; y: number; n: number } | null = null;
+  for (const p of points) {
+    const near = points.filter((q) => Math.hypot(q.x - p.x, q.y - p.y) <= reach);
+    if (!best || near.length > best.n) {
+      best = { x: near.reduce((a, q) => a + q.x, 0) / near.length, y: near.reduce((a, q) => a + q.y, 0) / near.length, n: near.length };
+    }
+  }
+  return best ? [best.x, best.y] : null;
+}
+
+/** The deepest the map zooms: a twelfth of the world across. */
+const MAX_ZOOM = 12;
+type ViewBox = [number, number, number, number];
+
+export function HeatMap({ countries, total, live, periodWord, zoom, onZoom, regions, zoomTotal, chosen, onChoose, onLive }: HeatMapProps) {
   const world = useWorld();
   const regionShapes = useRegions(zoom);
   const [hover, setHover] = useState<(Box & { key: string }) | null>(null);
@@ -211,6 +233,117 @@ export function HeatMap({ countries, total, live, periodWord, zoom, onZoom, regi
   const drawn = zoomed && regionShapes !== null;
   const view = drawn ? US_VIEW : WORLD_VIEW;
   const shapes: Shape[] | null = drawn ? regionShapes : world;
+
+  // ZOOM AND PAN (the owner, 2026-11-04: "allow me to zoom in the map ... the
+  // dots are massive because it's so zoomed out"). The map's own view is the
+  // whole world (or the opened country); this is the part of it on screen.
+  // Buttons, a double tap, two fingers, Ctrl or Cmd with the wheel, and a drag
+  // once zoomed in. The points keep one small size at every zoom, so the
+  // closer he goes the cleaner they read. Kept per view: opening a country or
+  // going back to the world starts that view whole.
+  const viewKey = drawn ? `r:${zoom}` : "world";
+  const [zb, setZb] = useState<{ key: string; box: ViewBox } | null>(null);
+  const vb: ViewBox = zb && zb.key === viewKey ? zb.box : [0, 0, view[0], view[1]];
+  const scale = view[0] / vb[2];
+  const clampBox = (b: ViewBox): ViewBox => {
+    const w = Math.min(view[0], Math.max(view[0] / MAX_ZOOM, b[2]));
+    const h = (w * view[1]) / view[0];
+    return [Math.min(view[0] - w, Math.max(0, b[0])), Math.min(view[1] - h, Math.max(0, b[1])), w, h];
+  };
+  const zoomAt = (factor: number, cx: number, cy: number) => {
+    setZb({ key: viewKey, box: clampBox([cx - (cx - vb[0]) / factor, cy - (cy - vb[1]) / factor, vb[2] / factor, vb[3] / factor]) });
+  };
+  // A button press puts its point in the middle of the frame; a wheel, a
+  // pinch or a double tap keeps the point under the finger where it is.
+  const centerOn = (factor: number, cx: number, cy: number) => {
+    const w = vb[2] / factor;
+    const h = vb[3] / factor;
+    setZb({ key: viewKey, box: clampBox([cx - w / 2, cy - h / 2, w, h]) });
+  };
+  const frame = useRef<HTMLDivElement | null>(null);
+  const toView = (clientX: number, clientY: number): [number, number] => {
+    const r = frame.current?.getBoundingClientRect();
+    if (!r || r.width === 0) return [vb[0] + vb[2] / 2, vb[1] + vb[3] / 2];
+    return [vb[0] + ((clientX - r.left) / r.width) * vb[2], vb[1] + ((clientY - r.top) / r.height) * vb[3]];
+  };
+  const fingers = useRef(new Map<number, { x: number; y: number }>());
+  const moved = useRef(0);
+  const dragged = useRef(false);
+  const lastTap = useRef(0);
+  // Ctrl or Cmd with the wheel zooms, as a map does; the wheel alone still
+  // scrolls the page. A native listener, because React's wheel is passive.
+  useEffect(() => {
+    const el = frame.current;
+    if (!el) return;
+    const onWheel = (e: WheelEvent) => {
+      if (!e.ctrlKey && !e.metaKey) return;
+      e.preventDefault();
+      const [cx, cy] = toView(e.clientX, e.clientY);
+      zoomAt(e.deltaY < 0 ? 1.25 : 0.8, cx, cy);
+    };
+    el.addEventListener("wheel", onWheel, { passive: false });
+    return () => el.removeEventListener("wheel", onWheel);
+  });
+  const onFramePointerDown = (e: React.PointerEvent<HTMLDivElement>) => {
+    fingers.current.set(e.pointerId, { x: e.clientX, y: e.clientY });
+    moved.current = 0;
+    dragged.current = false;
+    if (e.pointerType !== "mouse") {
+      const now = Date.now();
+      if (now - lastTap.current < 300 && fingers.current.size === 1) {
+        const [cx, cy] = toView(e.clientX, e.clientY);
+        zoomAt(2, cx, cy);
+        dragged.current = true;
+        lastTap.current = 0;
+      } else lastTap.current = now;
+    }
+  };
+  const onFramePointerMove = (e: React.PointerEvent<HTMLDivElement>) => {
+    const prev = fingers.current.get(e.pointerId);
+    if (!prev) return;
+    const r = frame.current?.getBoundingClientRect();
+    if (!r || r.width === 0) return;
+    if (fingers.current.size >= 2) {
+      const pts = [...fingers.current.values()];
+      const other = pts.find((p) => p !== prev) ?? prev;
+      const before = Math.hypot(prev.x - other.x, prev.y - other.y);
+      const after = Math.hypot(e.clientX - other.x, e.clientY - other.y);
+      fingers.current.set(e.pointerId, { x: e.clientX, y: e.clientY });
+      if (before > 10) {
+        const [cx, cy] = toView((e.clientX + other.x) / 2, (e.clientY + other.y) / 2);
+        zoomAt(after / before, cx, cy);
+      }
+      dragged.current = true;
+      return;
+    }
+    if (e.pointerType === "mouse" && e.buttons === 0) return;
+    const dx = e.clientX - prev.x;
+    const dy = e.clientY - prev.y;
+    fingers.current.set(e.pointerId, { x: e.clientX, y: e.clientY });
+    moved.current += Math.abs(dx) + Math.abs(dy);
+    if (scale > 1.001 && moved.current > 4) {
+      dragged.current = true;
+      setZb({ key: viewKey, box: clampBox([vb[0] - (dx / r.width) * vb[2], vb[1] - (dy / r.height) * vb[3], vb[2], vb[3]]) });
+    }
+  };
+  const onFramePointerEnd = (e: React.PointerEvent<HTMLDivElement>) => {
+    fingers.current.delete(e.pointerId);
+  };
+  const zoomButton = (word: string, onClick: () => void, path: string) => (
+    <button
+      type="button"
+      onClick={onClick}
+      aria-label={word}
+      title={word}
+      className="hit-44 grid h-8 w-8 place-items-center rounded-[8px] border"
+      style={{ background: "var(--adm-panel)", borderColor: "var(--adm-line-strong)", color: "var(--adm-ink)", boxShadow: "var(--adm-shadow-pop)" }}
+    >
+      <svg width="14" height="14" viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" aria-hidden>
+        <path d={path} />
+      </svg>
+    </button>
+  );
+  const at = (x: number, y: number) => ({ left: ((x - vb[0]) / vb[2]) * 100, top: ((y - vb[1]) / vb[3]) * 100 });
 
   const regionOf = (shapeName: string): Place | null => (regions ?? []).find((r) => sameRegion(r.key, shapeName)) ?? null;
   const values: number[] = drawn ? (regions ?? []).map((r) => r.visits) : (countries ?? []).map((c) => c.visits);
@@ -255,6 +388,10 @@ export function HeatMap({ countries, total, live, periodWord, zoom, onZoom, regi
   };
 
   function press(key: string) {
+    if (dragged.current) {
+      dragged.current = false;
+      return;
+    }
     const touch = lastPointer.current === "touch" || lastPointer.current === "pen";
     if (!touch && zoomableKey(key)) {
       setHover(null);
@@ -270,7 +407,7 @@ export function HeatMap({ countries, total, live, periodWord, zoom, onZoom, regi
   const pinnedAt = (() => {
     if (!chosen || !shapes) return null;
     const s = shapes.find((x) => x.key === chosen);
-    return s ? { left: (s.c[0] / view[0]) * 100, top: (s.c[1] / view[1]) * 100 } : null;
+    return s ? at(s.c[0], s.c[1]) : null;
   })();
 
   const cardTitle = (key: string) => (
@@ -353,12 +490,24 @@ export function HeatMap({ countries, total, live, periodWord, zoom, onZoom, regi
       ) : !shapes ? (
         <div className="adm-skeleton w-full rounded-[6px]" style={{ aspectRatio: `${view[0]} / ${view[1]}` }} aria-hidden />
       ) : (
-        <div className="relative" style={{ aspectRatio: `${view[0]} / ${view[1]}` }}>
+        <div
+          ref={frame}
+          className="relative select-none"
+          style={{ aspectRatio: `${view[0]} / ${view[1]}`, touchAction: scale > 1.001 ? "none" : "pan-y" }}
+          onPointerDown={onFramePointerDown}
+          onPointerMove={onFramePointerMove}
+          onPointerUp={onFramePointerEnd}
+          onPointerCancel={onFramePointerEnd}
+          onDoubleClick={(e) => {
+            const [cx, cy] = toView(e.clientX, e.clientY);
+            zoomAt(2, cx, cy);
+          }}
+        >
           <svg
             role="img"
             aria-label={label}
-            viewBox={`0 0 ${view[0]} ${view[1]}`}
-            className="adm-map block h-full w-full overflow-visible"
+            viewBox={vb.map((v) => v.toFixed(2)).join(" ")}
+            className={`adm-map block h-full w-full ${scale > 1.001 ? "overflow-hidden" : "overflow-visible"}`}
             onPointerDown={(e) => {
               lastPointer.current = e.pointerType;
             }}
@@ -387,14 +536,39 @@ export function HeatMap({ countries, total, live, periodWord, zoom, onZoom, regi
           </svg>
           {/* The readers on the site now, as lit points: drawn over the map in
               HTML so each stays a round point of one size at any width. */}
-          {points.map((p) => (
-            <span
-              key={p.id}
-              aria-hidden
-              className="adm-live-dot pointer-events-none absolute -translate-x-1/2 -translate-y-1/2"
-              style={{ left: `${((p.x / view[0]) * 100).toFixed(2)}%`, top: `${((p.y / view[1]) * 100).toFixed(2)}%`, width: 5, height: 5 }}
-            />
-          ))}
+          {points.map((p) => {
+            const pos = at(p.x, p.y);
+            if (pos.left < 0 || pos.left > 100 || pos.top < 0 || pos.top > 100) return null;
+            const style = { left: `${pos.left.toFixed(2)}%`, top: `${pos.top.toFixed(2)}%` };
+            return onLive ? (
+              <button
+                key={p.id}
+                type="button"
+                aria-label="A reader on the site now"
+                onClick={() => onLive(p.id)}
+                className="hit-44 absolute grid h-4 w-4 -translate-x-1/2 -translate-y-1/2 place-items-center"
+                style={style}
+              >
+                <span className="adm-live-dot" style={{ width: 6, height: 6 }} />
+              </button>
+            ) : (
+              <span key={p.id} aria-hidden className="adm-live-dot pointer-events-none absolute -translate-x-1/2 -translate-y-1/2" style={{ ...style, width: 6, height: 6 }} />
+            );
+          })}
+
+          {/* Zoom: in, out, and the whole view again. */}
+          <div className="absolute right-1.5 top-1.5 z-[5] flex flex-col gap-1.5">
+            {zoomButton(
+              "Zoom in",
+              () => {
+                const spot = scale <= 1.001 ? busiestSpot(points, view[0] / 12) : null;
+                centerOn(1.8, spot?.[0] ?? vb[0] + vb[2] / 2, spot?.[1] ?? vb[1] + vb[3] / 2);
+              },
+              "M10 4.5v11M4.5 10h11",
+            )}
+            {scale > 1.001 ? zoomButton("Zoom out", () => zoomAt(1 / 1.8, vb[0] + vb[2] / 2, vb[1] + vb[3] / 2), "M4.5 10h11") : null}
+            {scale > 1.001 ? zoomButton("The whole map", () => setZb(null), "M4 8V4h4M16 8V4h-4M4 12v4h4M16 12v4h-4") : null}
+          </div>
 
           {/* The card at the pointer, with a mouse. */}
           {hover && hover.key !== chosen ? (

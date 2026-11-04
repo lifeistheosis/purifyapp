@@ -3,7 +3,8 @@
 import { useEffect, useRef, useState, type ReactNode } from "react";
 
 import type { AttentionItem } from "@/lib/admin/attention";
-import { figure, LOADING, moneyWeek, NOT_MEASURED } from "@/lib/admin/home";
+import { figure, LOADING, moneyWeek, NOT_MEASURED, weekday } from "@/lib/admin/home";
+import { useLayout } from "@/lib/admin/layoutPreference";
 import {
   agoWords,
   clockOf,
@@ -20,10 +21,10 @@ import { TIMELINE_FLOOR } from "@/lib/admin/timeline";
 import { loadOlder, moveLine, useTimeline } from "@/lib/admin/timelineStore";
 import { useAttention } from "@/lib/admin/useAttention";
 import { trafficUrl } from "@/lib/admin/trafficChart";
-import { useLiveData } from "@/lib/admin/useLiveData";
+import { agoLabel, useLiveData } from "@/lib/admin/useLiveData";
 import { formatPrice } from "@/lib/shop/format";
 
-import { FigureCard, Figure, GoLabel, LiveDot, Panel, PanelLink, Quiet, Spark } from "../daily/parts";
+import { Chevron, FigureCard, Figure, GoLabel, LiveDot, Panel, PanelLink, Quiet, Spark } from "../daily/parts";
 import { StatusDot } from "../primitives";
 
 /**
@@ -128,44 +129,56 @@ function useLoadOlderAtFoot(enabled: boolean) {
 /** The day the log goes back to, in words: "May 1". */
 const FLOOR_WORDS = new Date(TIMELINE_FLOOR).toLocaleDateString("en-US", { month: "long", day: "numeric", timeZone: "UTC" });
 
-/** A mark of the admin's own: solid for done, a ring for waiting on him, a plain dot for news. */
-function FeedDot({ mark }: { mark: SinceEvent["mark"] }) {
-  return <StatusDot tone={mark === "good" ? "good" : mark === "wait" ? "wait" : "idle"} />;
-}
-
 function GoalRow({ goal, minutes }: { goal: Goal; minutes: number }) {
   const money = goal.metric === "revenue_cents";
   const value = goal.progress.value;
   const target = goal.target;
   const shown = (n: number) => (money ? formatPrice(Math.round(n), "usd") : count(Math.round(n)));
   const pct = target ? Math.min(100, (value / target) * 100) : 0;
-  const pace = target ? Math.min(100, (Math.min(60, minutes) / 60) * 100) : null;
+  // Pace bars, his pick B on sheet r3-34: the mark is where the hour should
+  // be by now; the fill lights when it is there or past it.
+  const share = Math.min(60, minutes) / 60;
+  const pace = target ? share * 100 : null;
+  const expected = target ? target * share : null;
+  const met = Boolean(target) && value >= (target ?? Infinity);
+  const ahead = expected !== null && value >= expected;
+  const early = minutes < 12;
   const word = paceWord(value, target, minutes);
+  const status = met ? "Met" : !target || early ? word : ahead ? "Ahead of pace" : "Behind pace";
   return (
-    <div className="min-w-0 py-2">
+    <div className="min-w-0 py-2.5">
       <div className="flex items-baseline gap-2 font-sans text-[13px]">
         <span style={{ color: "var(--adm-ink)" }}>{GOAL_LABEL[goal.metric]}</span>
         <span className={"ml-auto font-mono text-[12.5px] " + (money ? SENSITIVE : "")} style={{ color: "var(--adm-ink)" }}>
           {shown(value)}
         </span>
         {target ? (
-          <span className={"text-[11.5px] " + (money ? SENSITIVE : "")} style={{ color: "var(--adm-ink-3)" }}>
+          <span className={"font-mono text-[11.5px] " + (money ? SENSITIVE : "")} style={{ color: "var(--adm-ink-3)" }}>
             of {shown(target)}
           </span>
         ) : null}
       </div>
-      <div className="relative mt-[7px] h-[6px] rounded-[3px]" style={{ background: "var(--adm-panel-2)" }} aria-hidden>
+      <div className="relative mt-2 h-[7px] rounded-[4px]" style={{ background: "var(--adm-panel-2)" }} aria-hidden>
         <i
-          className="absolute inset-y-0 left-0 rounded-[3px]"
-          style={{ width: `${pct.toFixed(1)}%`, background: "var(--adm-ink)", boxShadow: word === "reached" ? "var(--adm-lit-soft)" : undefined }}
+          className="absolute inset-y-0 left-0 rounded-[4px] transition-[width] duration-500"
+          style={{
+            width: `${pct.toFixed(1)}%`,
+            background: met || (ahead && !early) ? "var(--adm-ink)" : "var(--adm-ink-3)",
+            boxShadow: met || (ahead && !early) ? "var(--adm-lit-soft)" : undefined,
+          }}
         />
-        {pace !== null ? (
-          // Where the hour usually is by now: the grey tick.
-          <i className="absolute -top-[3px] h-[12px] w-[1.5px]" style={{ left: `${pace.toFixed(1)}%`, background: "var(--adm-ink-3)" }} />
+        {pace !== null && !met ? (
+          // Where the hour should be by now.
+          <i className="absolute -top-1 h-[15px] w-[2px] rounded-[1px]" style={{ left: `${pace.toFixed(1)}%`, background: "var(--adm-ink)" }} />
         ) : null}
       </div>
-      <p className="mt-[5px] font-sans text-[11px]" style={{ color: "var(--adm-ink-3)" }}>
-        {word}
+      <p className="mt-1.5 flex gap-2 font-sans text-[11px]" style={{ color: "var(--adm-ink-3)" }}>
+        <span>{status}</span>
+        {expected !== null && !met && !early ? (
+          <span className={"ml-auto " + (money ? SENSITIVE : "")} style={{ color: "var(--adm-ink-2)" }}>
+            should be {shown(expected)} by now
+          </span>
+        ) : null}
       </p>
       {goal.explanation ? (
         <p className="mt-0.5 font-sans text-[10.5px] leading-snug" style={{ color: "var(--adm-ink-3)", opacity: 0.85 }}>
@@ -183,11 +196,110 @@ function LookedLine({ words }: { words: string }) {
       role="separator"
       aria-label={`You last looked ${words}`}
       className="relative z-[1] my-1.5 flex items-center gap-2 font-sans text-[11.5px]"
-      style={{ color: "var(--adm-ink)", paddingLeft: 66 }}
+      style={{ color: "var(--adm-ink)", background: "var(--adm-panel)" }}
     >
-      <span className="h-px flex-1" style={{ background: "var(--adm-ink)", boxShadow: "var(--adm-lit-soft)" }} />
+      <span className="h-px w-3.5 shrink-0" style={{ background: "var(--adm-ink)", boxShadow: "var(--adm-lit-soft)" }} />
       <span className="shrink-0">You last looked {words}</span>
-      <span className="h-px w-6" style={{ background: "var(--adm-ink)", boxShadow: "var(--adm-lit-soft)" }} />
+      <span className="h-px flex-1" style={{ background: "var(--adm-ink)", boxShadow: "var(--adm-lit-soft)" }} />
+    </div>
+  );
+}
+
+/** The week of money as seven columns, today lit (Home B, money leads). */
+function WeekColumns({ days }: { days: { day: string; cents: number }[] }) {
+  const top = Math.max(1, ...days.map((d) => d.cents));
+  return (
+    <div className={"mt-3 flex h-[62px] items-end gap-1.5 " + SENSITIVE} aria-hidden>
+      {days.map((d, i) => {
+        const today = i === days.length - 1;
+        return (
+          <div key={d.day} className="flex flex-1 flex-col items-center gap-1">
+            <div
+              className="w-full rounded-[4px]"
+              style={{
+                height: Math.max(3, Math.round((d.cents / top) * 44)),
+                background: today ? "var(--adm-ink)" : "var(--adm-line-strong)",
+                boxShadow: today ? "var(--adm-lit-soft)" : undefined,
+              }}
+            />
+            <span className="font-mono text-[9.5px]" style={{ color: "var(--adm-ink-3)" }}>
+              {weekday(d.day).slice(0, 1)}
+            </span>
+          </div>
+        );
+      })}
+    </div>
+  );
+}
+
+/**
+ * Home B, money leads (sheet r3-32): what came in today, large, with its
+ * week as columns, then the site's live count as one row that opens Traffic.
+ * His log is why: he opened the admin on Money 42 times in 50.
+ */
+function MoneyLead({
+  revenue,
+  week,
+  paid,
+  live,
+  visitorsToday,
+}: {
+  revenue: string;
+  week: { days: { day: string; cents: number }[]; totalCents: number } | null;
+  paid: ReactNode;
+  live: ReactNode;
+  visitorsToday: ReactNode;
+}) {
+  const unread = revenue === NOT_MEASURED || revenue === LOADING;
+  return (
+    <div className="space-y-2.5">
+      <Panel pad="px-4 pt-3.5 pb-3">
+        <p className="font-sans text-[12px]" style={{ color: "var(--adm-ink-3)" }}>
+          Came in today
+        </p>
+        <div className="mt-1 flex items-end gap-3">
+          {unread ? (
+            <Quiet className="py-2">{revenue}</Quiet>
+          ) : (
+            <Figure size={42} lit sensitive>
+              {revenue}
+            </Figure>
+          )}
+          {week ? (
+            <span className={"ml-auto pb-1 text-right font-sans text-[12px] " + SENSITIVE} style={{ color: "var(--adm-ink-3)" }}>
+              {formatPrice(week.totalCents, "usd")} this week
+            </span>
+          ) : null}
+        </div>
+        {week ? <WeekColumns days={week.days} /> : null}
+        <div className="mt-2.5 flex items-center gap-2 font-sans text-[12px]" style={{ color: "var(--adm-ink-2)" }}>
+          <span>
+            Plus <b className="font-mono font-medium" style={{ color: "var(--adm-ink)" }}>{paid}</b> paying
+          </span>
+          <span className="ml-auto">
+            <PanelLink onClick={() => open("overview")}>Open Money</PanelLink>
+          </span>
+        </div>
+      </Panel>
+      <button
+        type="button"
+        onClick={() => open("traffic")}
+        className="adm-control flex min-h-[50px] w-full items-center gap-3 rounded-[8px] border px-4 text-left"
+        style={
+          { borderColor: "var(--adm-line)", background: "var(--adm-panel)", "--_bg-hover": "var(--adm-hover)" } as React.CSSProperties
+        }
+      >
+        <LiveDot />
+        <span className="font-sans text-[13.5px]" style={{ color: "var(--adm-ink)" }}>
+          <b className="font-mono font-medium">{live}</b> on the site now
+        </span>
+        <span className="font-sans text-[12px]" style={{ color: "var(--adm-ink-3)" }}>
+          {visitorsToday} today
+        </span>
+        <span className="ml-auto" style={{ color: "var(--adm-ink-3)" }}>
+          <Chevron />
+        </span>
+      </button>
     </div>
   );
 }
@@ -223,6 +335,8 @@ export function HomeTab() {
   // owner, 2026-11-04: "self-updating in terms of its goals"). One shared
   // timer for the whole panel (lib/admin/liveStore.ts), paused when hidden.
   const goals = useLiveData<GoalsPayload>("/api/admin/hourly-goals", GOALS_POLL_MS);
+  // His own A and B for the top of Home, picked in Settings.
+  const layout = useLayout("home");
   // The clock, moved on each minute in a timer callback rather than read
   // during render, so the log's day headings stay true on a page left open.
   const [now, setNow] = useState(() => new Date());
@@ -346,10 +460,21 @@ export function HomeTab() {
 
   return (
     <div className="space-y-3.5">
+      {/* His own A and B (sheet r3-32), picked in Settings: B, money leads,
+          or A, the numbers first. */}
+      {layout === "b" ? (
+        <MoneyLead
+          revenue={revenue}
+          week={week}
+          paid={typeof paid === "number" ? count(paid) : paid}
+          live={typeof live === "number" ? count(live) : live}
+          visitorsToday={typeof visitorsToday === "number" ? count(visitorsToday) : visitorsToday}
+        />
+      ) : null}
       {/* A's numbers. On a phone they are rows in one box, as the sheet drew
           them; from md they are the five cards. Both render and the
           breakpoint picks one. */}
-      <div className="hidden gap-3 md:grid md:grid-cols-3 xl:grid-cols-5">
+      <div className={layout === "a" ? "hidden gap-3 md:grid md:grid-cols-3 xl:grid-cols-5" : "hidden"}>
         {numbers.map((n) => (
           <FigureCard
             key={n.key}
@@ -365,7 +490,7 @@ export function HomeTab() {
         ))}
       </div>
       <ul
-        className="divide-y rounded-[12px] border px-3.5 md:hidden"
+        className={layout === "a" ? "divide-y rounded-[12px] border px-3.5 md:hidden" : "hidden"}
         style={{ borderColor: "var(--adm-line)", background: "var(--adm-panel)" }}
       >
         {numbers.map((n) => (
@@ -406,11 +531,16 @@ export function HomeTab() {
         ) : watched.length === 0 ? (
           <Quiet className="pb-2">No goal is watched for the hour. Open Goals to watch one.</Quiet>
         ) : (
-          <div className="grid gap-x-6 sm:grid-cols-2 xl:grid-cols-4">
-            {watched.map((g) => (
-              <GoalRow key={g.id} goal={g} minutes={minutes} />
-            ))}
-          </div>
+          <>
+            <div className="grid gap-x-6 sm:grid-cols-2 xl:grid-cols-4">
+              {watched.map((g) => (
+                <GoalRow key={g.id} goal={g} minutes={minutes} />
+              ))}
+            </div>
+            <p className="pb-1.5 pt-0.5 font-sans text-[11px]" style={{ color: "var(--adm-ink-3)" }}>
+              Targets set themselves each hour from that hour in past weeks. Updated {agoLabel(goals.lastSynced, now.getTime())}, by itself.
+            </p>
+          </>
         )}
       </Panel>
 
@@ -466,14 +596,17 @@ export function HomeTab() {
                 <span
                   aria-hidden
                   className="absolute bottom-6 top-8 w-px"
-                  style={{ left: "calc(54px + 12px + 7px)", background: "var(--adm-line-strong)" }}
+                  style={{ left: 11, background: "var(--adm-line-strong)" }}
                 />
                 {groups.map((g) => (
                   <div key={g.label}>
                     {/* At the start of a part of the day, the line goes above
                         its heading, so the heading sits with the rows under it. */}
                     {g.rows[0] === firstSeen && showLine ? <LookedLine words={lineText} /> : null}
-                    <p className="mb-0.5 mt-3 font-sans text-[11.5px]" style={{ color: "var(--adm-ink-3)", paddingLeft: 80 }}>
+                    <p
+                      className="relative z-[1] mb-0.5 mt-3 py-0.5 font-sans text-[11px] font-semibold uppercase tracking-[0.1em]"
+                      style={{ color: "var(--adm-ink-2)", background: "var(--adm-panel)" }}
+                    >
                       {g.label}
                     </p>
                     <ul>
@@ -483,19 +616,27 @@ export function HomeTab() {
                           <button
                             type="button"
                             onClick={() => open(e.tab)}
-                            className="adm-control relative flex min-h-[46px] w-full items-center gap-3 rounded-[6px] pr-1 text-left"
+                            className="adm-control relative flex min-h-[46px] w-full items-start gap-3 rounded-[6px] py-1.5 pl-1 pr-1 text-left"
                             style={{ "--_bg": "transparent", "--_bg-hover": "var(--adm-hover)" } as React.CSSProperties}
                           >
-                            <span className="w-[54px] shrink-0 text-right font-mono text-[11.5px]" style={{ color: "var(--adm-ink-3)" }}>
-                              {clockOf(new Date(e.at))}
+                            {/* On the rail: lit while it is new to him, an open
+                                ring once he has seen it. */}
+                            <span className="relative z-[1] mt-[19px] grid w-[14px] shrink-0 place-items-center">
+                              <span
+                                className="block h-[8px] w-[8px] rounded-full"
+                                style={
+                                  isNew(e.at)
+                                    ? { background: "var(--adm-ink)", boxShadow: "var(--adm-lit-soft)" }
+                                    : { background: "var(--adm-panel)", border: "1.5px solid var(--adm-ink-3)" }
+                                }
+                              />
                             </span>
-                            <span className="relative z-[1] grid w-[14px] shrink-0 place-items-center">
-                              <span className="rounded-full" style={{ boxShadow: "0 0 0 4px var(--adm-panel)" }}>
-                                <FeedDot mark={e.mark} />
+                            <span className="min-w-0 flex-1">
+                              <span className="block font-mono text-[11px]" style={{ color: "var(--adm-ink-3)" }}>
+                                {clockOf(new Date(e.at))}
+                                {e.mark === "wait" ? " · waits on you" : ""}
                               </span>
-                            </span>
-                            <span className="min-w-0 flex-1 py-1.5">
-                              <span className={"block font-sans text-[13.5px] " + (e.money ? SENSITIVE : "")} style={{ color: "var(--adm-ink)" }}>
+                              <span className={"mt-0.5 block font-sans text-[14px] font-medium " + (e.money ? SENSITIVE : "")} style={{ color: "var(--adm-ink)" }}>
                                 {e.title}
                               </span>
                               <span
@@ -505,7 +646,7 @@ export function HomeTab() {
                                 {e.detail}
                               </span>
                             </span>
-                            <span className="hidden sm:flex">
+                            <span className="hidden self-center sm:flex">
                               <GoLabel>{e.go}</GoLabel>
                             </span>
                           </button>

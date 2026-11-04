@@ -237,12 +237,16 @@
   --adm-heat-4: #a2a2a2;
   --adm-heat-5: #f2f2f2;
   --adm-heat-hot: drop-shadow(0 0 5px rgb(255 255 255 / 0.55));
-  /* A reader on the site now: a lit point with a faint ring. */
-  --adm-live: #ffffff;
-  --adm-live-ring: rgb(255 255 255 / 0.14);
-  --adm-live-glow: 0 0 0 3px rgb(255 255 255 / 0.14), 0 0 10px 1px rgb(255 255 255 / 0.75);
+  /* A reader on the site now: a green point with a dark edge (his pick C on
+     sheet r3-37, 2026-11-04). It was white, and so are the busiest countries,
+     so a reader in the United States or Greece disappeared into the fill. No
+     gold or yellow (his rule); green is the usual sign for "on now" and far
+     from how errors are flagged. */
+  --adm-live: #30d158;
+  --adm-live-ring: rgb(48 209 88 / 0.2);
+  --adm-live-glow: 0 0 0 1.5px #0a0a0a, 0 0 0 4px rgb(48 209 88 / 0.22), 0 0 9px 1px rgb(48 209 88 / 0.65);
   /* The edge a lit point keeps on the map, so it reads over the brightest fill. */
-  --adm-live-edge: transparent;
+  --adm-live-edge: #0a0a0a;
 
   /* ── Structure. Identical in both themes. ─────────────────────────────
      Reach for these, never for a named Tailwind radius: app/globals.css
@@ -791,9 +795,9 @@
   --adm-heat-4: #484848;
   --adm-heat-5: #0a0a0a;
   --adm-heat-hot: none;
-  --adm-live: #0a0a0a;
-  --adm-live-ring: rgb(0 0 0 / 0.12);
-  --adm-live-glow: 0 0 0 3px rgb(0 0 0 / 0.1);
+  --adm-live: #1fa24a;
+  --adm-live-ring: rgb(31 162 74 / 0.16);
+  --adm-live-glow: 0 0 0 1.5px #ffffff, 0 0 0 4px rgb(31 162 74 / 0.18);
   --adm-live-edge: #ffffff;
 
   color-scheme: light;

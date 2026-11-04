@@ -116,7 +116,9 @@ describe("admin pages", () => {
   });
 
   it("has one level of views: Traffic's panels are its views now", () => {
-    expect(pageOf("traffic")?.views.map((v) => v.label)).toEqual(["Overview", "Map", "Sources", "Onboarding", "Screens"]);
+    expect(pageOf("traffic")?.views.map((v) => v.label)).toEqual(["Overview", "Map", "Live", "Sources", "Onboarding", "Screens"]);
+    // Live came back on 2026-11-04 (his pick A on sheet r3-38).
+    expect(pageOf("traffic-live")?.id).toBe("traffic");
     expect(pageOf("traffic-map")?.id).toBe("traffic");
     expect(pageOf("sources")?.id).toBe("traffic");
   });

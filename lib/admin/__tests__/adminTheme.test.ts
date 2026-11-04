@@ -155,11 +155,21 @@ describe("admin theme contrast", () => {
   // would pass every contrast check in this file. This is the check that
   // says no. To bring a hue back on purpose, change the stylesheet and this
   // test in the same commit, with the owner's words for it.
-  it("has no hue in either palette", () => {
+  // One hue, by his choice: a reader on the site now is green (his pick C on
+  // sheet r3-37, 2026-11-04), because white points vanished into the busiest
+  // countries. Held to green, so it can never drift to the yellow or gold he
+  // ruled out.
+  const LIVE_HUE = new Set(["--adm-live", "--adm-live-ring"]);
+
+  it("has no hue in either palette but the live green", () => {
     for (const [theme, tokens] of THEMES) {
       for (const [name, raw] of Object.entries(tokens)) {
         const c = parseColor(raw);
         if (!c) continue;
+        if (LIVE_HUE.has(name)) {
+          expect(c.g > c.r * 1.5 && c.g > c.b * 1.5, `${theme}: ${name} is ${raw}, which is not the live green`).toBe(true);
+          continue;
+        }
         expect(
           c.r === c.g && c.g === c.b,
           `${theme}: ${name} is ${raw}, which is not a grey`,

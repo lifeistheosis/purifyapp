@@ -92,15 +92,24 @@ export async function GET() {
     { count: todayViews, error: viewErr },
     { count: signupsToday, error: signErr },
     { count: totalUsers, error: usersErr },
+    { count: yesterdayByNow, error: byNowErr },
   ] =
     await Promise.all([
       supa.from("analytics_sessions").select("*", { count: "exact", head: true }).gte("first_seen", todayIso),
       supa.from("analytics_pageviews").select("*", { count: "exact", head: true }).gte("ts", todayIso),
       supa.from("profiles").select("*", { count: "exact", head: true }).gte("joined_at", todayIso),
       supa.from("profiles").select("*", { count: "exact", head: true }),
+      // Yesterday up to this time of day, for Traffic's "yesterday by now"
+      // beside today so far (his picks A and B on sheet r3-36). The same
+      // count as today's visitors, a day earlier.
+      supa
+        .from("analytics_sessions")
+        .select("*", { count: "exact", head: true })
+        .gte("first_seen", new Date(dayStart.getTime() - 86_400_000).toISOString())
+        .lt("first_seen", new Date(now - 86_400_000).toISOString()),
     ]);
 
-  const countErr = visErr ?? viewErr ?? signErr ?? usersErr;
+  const countErr = visErr ?? viewErr ?? signErr ?? usersErr ?? byNowErr;
   if (countErr) console.warn("[admin/stats] a count read failed", countErr.message);
 
   // TOP PAGES / COUNTRIES / REGIONS / LANGUAGES WERE COMPUTED HERE, and are
@@ -160,6 +169,7 @@ export async function GET() {
         visitors: todayVisitors ?? null,
         views: todayViews ?? null,
         signups: signupsToday ?? null,
+        visitorsYesterdayByNow: byNowErr ? null : (yesterdayByNow ?? null),
       },
       totalUsers: totalUsers ?? null,
       topBumps,

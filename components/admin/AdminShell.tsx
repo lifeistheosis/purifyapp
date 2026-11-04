@@ -61,7 +61,7 @@ import { DropTab } from "./tabs/DropTab";
 import { ShopHubTab } from "./tabs/ShopHubTab";
 import { EikonBoxTab } from "./tabs/EikonBoxTab";
 import { CommunityTab } from "./tabs/CommunityTab";
-import { ScreensView, TrafficMapTab, TrafficOverviewTab } from "./tabs/TrafficViews";
+import { ScreensView, TrafficLiveTab, TrafficMapTab, TrafficOverviewTab } from "./tabs/TrafficViews";
 import { SourcesTab } from "./tabs/SourcesTab";
 import { ContentTab } from "./tabs/ContentTab";
 import { PatchNotesTab } from "./tabs/PatchNotesTab";
@@ -93,6 +93,7 @@ import { AdminThemeToggle } from "./AdminThemeToggle";
 import { AdminSoundToggle } from "./AdminSoundToggle";
 import { AdminMotionToggle } from "./AdminMotionToggle";
 import { AdminStreamerToggle } from "./AdminStreamerToggle";
+import { AdminLayoutSwitch } from "./AdminLayoutSwitch";
 import { ActivityFeed } from "./ActivityFeed";
 import { SENSITIVE, useStreamerOn } from "@/lib/admin/streamer";
 import { AdminMobileNav, type MobileNavGroup } from "./AdminMobileNav";
@@ -138,6 +139,7 @@ type OpsTabId =
   | "community"
   | "traffic"
   | "traffic-map"
+  | "traffic-live"
   | "sources"
   | "onboarding"
   | "screens"
@@ -191,6 +193,7 @@ const COMPONENTS: Partial<Record<TabId, ComponentType>> = {
   email: EmailTab,
   traffic: TrafficOverviewTab,
   "traffic-map": TrafficMapTab,
+  "traffic-live": TrafficLiveTab,
   sources: SourcesTab,
   onboarding: OnboardingTab,
   screens: ScreensView,
@@ -720,6 +723,8 @@ export function AdminShell({
           <AdminSoundToggle />
           <AdminMotionToggle />
         </div>
+        {/* His own A and B: which Home, and how the chart shows today. */}
+        <AdminLayoutSwitch />
         <a
           href="/signout"
           className="adm-control flex min-h-11 w-full items-center justify-center gap-1.5 rounded-[var(--adm-radius-sm)] font-sans text-[11.5px]"

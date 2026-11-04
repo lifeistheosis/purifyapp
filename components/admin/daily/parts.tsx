@@ -373,6 +373,8 @@ export function TrendLine({
   height = 150,
   label,
   drawKey = "",
+  overlays = [],
+  soFar = false,
 }: {
   values: readonly number[];
   before?: readonly number[];
@@ -385,6 +387,15 @@ export function TrendLine({
   label: string;
   /** What the chart shows; a change replays the draw. The same chart refreshed keeps its key. */
   drawKey?: string;
+  /**
+   * More lines on the same days (his pick A on sheet r3-35, switches on one
+   * chart: Page views and Signups beside Visitors). Each is drawn to its own
+   * height, so a count of ten a day and one of seven thousand both have a
+   * shape; the picked day says every figure in words.
+   */
+  overlays?: readonly { values: readonly number[]; valueText: (v: number) => string; dash: string }[];
+  /** The last point is the day still running (his pick A on r3-36): its stretch dashed, its point open. */
+  soFar?: boolean;
 }) {
   const reduced = useReducedMotion();
   const W = 600;
@@ -413,7 +424,15 @@ export function TrendLine({
     e.preventDefault();
     setPick({ i: Math.min(last, Math.max(0, to)), of: values.length });
   };
-  const said = (i: number) => `${days?.[i] ?? ""}, ${valueText(values[i])}`;
+  const said = (i: number) =>
+    [days?.[i] ?? "", valueText(values[i]), ...overlays.map((o) => (o.values[i] === undefined ? "" : o.valueText(o.values[i])))]
+      .filter(Boolean)
+      .join(", ");
+  // An overlay to its own height, on the same days.
+  const pathOwn = (a: readonly number[]) => {
+    const top = Math.max(1, ...a) * 1.12;
+    return a.map((v, i) => `${i ? "L" : "M"}${x(i, a.length).toFixed(1)},${(height - (v / top) * height).toFixed(1)}`).join("");
+  };
   const at = picked === null ? 0 : (picked / last) * 100;
   return (
     <div>
@@ -462,7 +481,33 @@ export function TrendLine({
             <path d={path(before)} fill="none" stroke="var(--adm-ink-3)" strokeWidth={1.3} strokeDasharray="4 4" vectorEffect="non-scaling-stroke" />
           ) : null}
           <path d={`${path(values)}L${x(last, values.length)},${height}L0,${height}Z`} fill={`url(#${gid})`} />
-          <path d={path(values)} fill="none" stroke="var(--adm-ink)" strokeWidth={1.8} strokeLinejoin="round" vectorEffect="non-scaling-stroke" />
+          {overlays.map((o, k) => (
+            <path
+              key={k}
+              d={pathOwn(o.values)}
+              fill="none"
+              stroke="var(--adm-ink-2)"
+              strokeWidth={1.4}
+              strokeDasharray={o.dash}
+              strokeLinejoin="round"
+              vectorEffect="non-scaling-stroke"
+            />
+          ))}
+          {soFar ? (
+            <>
+              <path d={path(values.slice(0, last))} fill="none" stroke="var(--adm-ink)" strokeWidth={1.8} strokeLinejoin="round" vectorEffect="non-scaling-stroke" />
+              <path
+                d={`M${x(last - 1, values.length).toFixed(1)},${y(values[last - 1]).toFixed(1)}L${x(last, values.length).toFixed(1)},${y(values[last]).toFixed(1)}`}
+                fill="none"
+                stroke="var(--adm-ink)"
+                strokeWidth={1.8}
+                strokeDasharray="3 4"
+                vectorEffect="non-scaling-stroke"
+              />
+            </>
+          ) : (
+            <path d={path(values)} fill="none" stroke="var(--adm-ink)" strokeWidth={1.8} strokeLinejoin="round" vectorEffect="non-scaling-stroke" />
+          )}
           {median ? (
             <line x1={0} x2={W} y1={y(median.value)} y2={y(median.value)} stroke="var(--adm-ink-2)" strokeWidth={1.2} strokeDasharray="2 4" vectorEffect="non-scaling-stroke" />
           ) : null}
@@ -484,8 +529,12 @@ export function TrendLine({
           style={{ left: "100%", top: y(values[last]) }}
         >
           <span
-            className={`block h-[7px] w-[7px] rounded-full${reduced ? "" : " adm-trend-arrive"}`}
-            style={{ background: "var(--adm-ink)", boxShadow: "var(--adm-lit-soft)" }}
+            className={`block h-[8px] w-[8px] rounded-full${reduced ? "" : " adm-trend-arrive"}`}
+            style={
+              soFar
+                ? { background: "var(--adm-panel)", border: "1.6px solid var(--adm-ink)" }
+                : { background: "var(--adm-ink)", boxShadow: "var(--adm-lit-soft)" }
+            }
           />
         </span>
         {picked !== null ? (
@@ -512,6 +561,14 @@ export function TrendLine({
               {days?.[picked]}
               <span style={{ color: "var(--adm-ink-3)" }}> · </span>
               {valueText(values[picked])}
+              {overlays.map((o, k) =>
+                o.values[picked] === undefined ? null : (
+                  <span key={k}>
+                    <span style={{ color: "var(--adm-ink-3)" }}> · </span>
+                    {o.valueText(o.values[picked])}
+                  </span>
+                ),
+              )}
             </span>
           </>
         ) : null}

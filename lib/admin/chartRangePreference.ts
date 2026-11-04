@@ -61,3 +61,45 @@ function subscribe(onChange: () => void): () => void {
 export function useChartRange(): ChartRange {
   return useSyncExternalStore(subscribe, read, () => DEFAULT_CHART_RANGE);
 }
+
+// ── Which lines the chart draws ──────────────────────────────────────────
+// His pick A on sheet r3-35: Visitors, Page views and Signups as switches on
+// one chart, as the old Traffic tab had them. Remembered the same way as the
+// range, so the chart opens as he left it.
+
+export type ChartSeries = "visitors" | "views" | "signups";
+export const SERIES_ORDER: readonly ChartSeries[] = ["visitors", "views", "signups"];
+const SERIES_KEY = "purify:admin:traffic-chart-series";
+let seriesMemory = "visitors";
+
+/** A stored list as the lines to draw, in the chart's order; Visitors when it names none. */
+export function parseChartSeries(raw: string | null | undefined): ChartSeries[] {
+  const asked = new Set((raw ?? "").split(","));
+  const on = SERIES_ORDER.filter((s) => asked.has(s));
+  return on.length ? on : ["visitors"];
+}
+
+function readSeries(): string {
+  try {
+    const stored = window.localStorage.getItem(SERIES_KEY);
+    if (stored !== null) return parseChartSeries(stored).join(",");
+  } catch {
+    // fall through to the in-memory copy
+  }
+  return seriesMemory;
+}
+
+export function setChartSeries(next: readonly ChartSeries[]): void {
+  seriesMemory = parseChartSeries(next.join(",")).join(",");
+  try {
+    window.localStorage.setItem(SERIES_KEY, seriesMemory);
+  } catch {
+    // remembered for this session only
+  }
+  window.dispatchEvent(new Event(EVENT));
+}
+
+/** The lines he left on, as a stable string (useSyncExternalStore compares snapshots by value). */
+export function useChartSeriesKey(): string {
+  return useSyncExternalStore(subscribe, readSeries, () => "visitors");
+}

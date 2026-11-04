@@ -24,10 +24,18 @@
 
 import { useEffect, useMemo, useState } from "react";
 
-import { parseChartRange, setChartRange, useChartRange } from "@/lib/admin/chartRangePreference";
-import { type LatestDay } from "@/lib/admin/dayWindow";
+import {
+  parseChartRange,
+  parseChartSeries,
+  SERIES_ORDER,
+  setChartRange,
+  setChartSeries,
+  useChartRange,
+  useChartSeriesKey,
+  type ChartSeries,
+} from "@/lib/admin/chartRangePreference";
 import { adminJson } from "@/lib/admin/fetchJson";
-import { setLatestDay, useLatestDay } from "@/lib/admin/latestDayPreference";
+import { useLayout } from "@/lib/admin/layoutPreference";
 import { type Place, tallyCountries, tallyRegions, type Visit } from "@/lib/admin/map/tally";
 import { CHART_RANGES, median, trafficUrl, windowOf } from "@/lib/admin/trafficChart";
 import {
@@ -45,7 +53,7 @@ import {
 import { useLiveData } from "@/lib/admin/useLiveData";
 
 import { BarChart, Donut, SERIES_COLORS } from "../charts";
-import { Bars, FigureCard, Panel, PanelLink, Quiet, Segmented, TrendLine } from "../daily/parts";
+import { Bars, FigureCard, LiveDot, Panel, PanelLink, Quiet, Segmented, TrendLine } from "../daily/parts";
 import { HeatMap, opensRegions, type LivePoint } from "../map/HeatMap";
 import { DataTable, Disclosure } from "../primitives";
 import { EngagementTab } from "./EngagementTab";
@@ -61,6 +69,9 @@ type Session = {
   lng: number | null;
   path: string | null;
   lastSeen: string;
+  firstSeen?: string;
+  /** The pages opened in the last hours, oldest first (lib/admin/liveTrail.ts). */
+  trail?: { path: string; at: string }[];
   from?: string;
   fromKind?: string;
   on?: string;
@@ -69,7 +80,7 @@ type Session = {
 type Stats = {
   liveCount: number | null;
   sessions: Session[];
-  today: { visitors: number | null; views: number | null; signups: number | null };
+  today: { visitors: number | null; views: number | null; signups: number | null; visitorsYesterdayByNow?: number | null };
 };
 type Point = { date: string; visitors: number; views: number; signups: number };
 type Sources = {
@@ -310,53 +321,165 @@ function MapCard({
 // ── Visitors by day ───────────────────────────────────────────────────────
 
 const RANGE_OPTIONS = CHART_RANGES.map((d) => [String(d), `${d}d`] as const);
-const LATEST_OPTIONS = [
-  ["now", "Now"],
-  ["complete", "Last night"],
-] as const satisfies readonly (readonly [LatestDay, string])[];
+/** The three lines, as the old Traffic tab named them (his pick A on sheet r3-35). */
+const SERIES: Record<ChartSeries, { label: string; one: string; many: string; dash: string }> = {
+  visitors: { label: "Visitors", one: "visitor", many: "visitors", dash: "" },
+  views: { label: "Page views", one: "page view", many: "page views", dash: "5 4" },
+  signups: { label: "Signups", one: "signup", many: "signups", dash: "1.5 3.5" },
+};
+const said = (k: ChartSeries) => (v: number) => `${n(v)} ${v === 1 ? SERIES[k].one : SERIES[k].many}`;
+
+/** A switch for one line: a box that ticks, and the line's own stroke beside its name. */
+function SeriesSwitch({ k, on, onToggle }: { k: ChartSeries; on: boolean; onToggle: () => void }) {
+  return (
+    <button
+      type="button"
+      role="checkbox"
+      aria-checked={on}
+      onClick={onToggle}
+      className="hit-44 inline-flex min-h-9 items-center gap-2 font-sans text-[12.5px]"
+      style={{ color: on ? "var(--adm-ink)" : "var(--adm-ink-3)" }}
+    >
+      <span
+        aria-hidden
+        className="grid h-[15px] w-[15px] place-items-center rounded-[4px] border"
+        style={{ borderColor: on ? "var(--adm-ink)" : "var(--adm-line-strong)", background: on ? "var(--adm-ink)" : "transparent" }}
+      >
+        {on ? (
+          <svg width="10" height="10" viewBox="0 0 20 20" fill="none" stroke="var(--adm-panel)" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
+            <path d="M4.5 10.4 8.2 14l7.3-8" />
+          </svg>
+        ) : null}
+      </span>
+      <svg aria-hidden width="18" height="4" viewBox="0 0 18 4">
+        <path d="M0 2H18" stroke={k === "visitors" ? "var(--adm-ink)" : "var(--adm-ink-2)"} strokeWidth="2" strokeDasharray={SERIES[k].dash || undefined} />
+      </svg>
+      {SERIES[k].label}
+    </button>
+  );
+}
 
 /**
- * Visitors each day over 7 to 120 days, counted to now (today still running)
- * or to last night (every day finished), with the median day as a dotted line
- * (lib/admin/trafficChart.ts). One read of 120 days serves every range; the
- * Now / Last night choice is remembered per browser (latestDayPreference).
+ * Today beside the finished days, his picks A and B on sheet r3-36, chosen in
+ * Settings: B shows the chart to last night and today here, apart, as one bar
+ * against the same scale, with yesterday at this time as a tick.
+ */
+function TodayApart({ value, byNow, max, height, text }: { value: number | null; byNow: number | null; max: number; height: number; text: string }) {
+  const top = Math.max(1, max) * 1.12;
+  const h = (v: number) => Math.max(2, Math.round((v / top) * height));
+  return (
+    <div className="flex w-[62px] shrink-0 flex-col border-l border-dashed pl-2.5" style={{ borderColor: "var(--adm-line-strong)" }}>
+      <span className="font-sans text-[10.5px]" style={{ color: "var(--adm-ink-3)" }}>
+        Today
+      </span>
+      <div className="relative mt-auto" style={{ height }}>
+        {value !== null ? (
+          <span className="absolute bottom-0 left-1 w-[24px] rounded-[4px]" style={{ height: h(value), background: "var(--adm-ink)", boxShadow: "var(--adm-lit-soft)" }} />
+        ) : null}
+        {byNow !== null ? (
+          <span className="absolute left-0 w-[34px]" style={{ bottom: h(byNow), borderTop: "1.5px solid var(--adm-ink-3)" }} title="Yesterday by now" />
+        ) : null}
+      </div>
+      <span className="mt-1.5 font-mono text-[12px]" style={{ color: "var(--adm-ink)" }}>
+        {text}
+      </span>
+    </div>
+  );
+}
+
+/**
+ * Each day over 7 to 120 days, with the median day as a dotted line
+ * (lib/admin/trafficChart.ts). One read of 120 days serves every range.
+ *
+ * His picks of 2026-11-04: the range is remembered (he picked it again on most
+ * visits while it reset); Visitors, Page views and Signups are switches on one
+ * chart, each line to its own height (r3-35 A); and the day still running is
+ * shown beside the finished ones the way he picks in Settings (r3-36): A runs
+ * the line to today with its last stretch dashed, B ends it last night and
+ * stands today apart. Both say yesterday at this time, so the Now and Last
+ * night switch he flipped twenty times in one visit is gone.
  */
 function VisitorsChart() {
-  // Remembered per browser: he picked it again on most visits while it reset.
   const range = String(useChartRange());
   const setRange = (v: string) => setChartRange(parseChartRange(v));
-  const latest = useLatestDay();
+  const seriesKey = useChartSeriesKey();
+  const on = parseChartSeries(seriesKey);
+  const toggle = (k: ChartSeries) => setChartSeries(on.includes(k) ? (on.length > 1 ? on.filter((x) => x !== k) : on) : [...on, k]);
+  const today = useLayout("today");
+  const latest = today === "a" ? "now" : "complete";
   const read = useLiveData<{ points?: Point[] }>(trafficUrl(latest), 300_000);
+  const stats = useLiveData<Stats>("/api/admin/stats", 20_000);
   const shown = windowOf(read.data?.points ?? [], Number(range));
-  const values = shown.map((p) => p.visitors);
+  const [lead, ...rest] = on;
+  const values = shown.map((p) => p[lead]);
   const mid = median(values);
   const midText = mid === null ? "" : Number.isInteger(mid) ? n(mid) : mid.toFixed(1);
   const total = values.reduce((s, v) => s + v, 0);
   const to = latest === "now" ? "today" : "last night";
+  const t = stats.data?.today;
+  const todayValue = (lead === "visitors" ? t?.visitors : lead === "views" ? t?.views : t?.signups) ?? null;
+  const byNow = lead === "visitors" ? (t?.visitorsYesterdayByNow ?? null) : null;
+  const height = 150;
+  const title = on.length === 1 ? `${SERIES[lead].label} each day, the last ${range} days` : `Each day, the last ${range} days`;
+
+  const chart = (
+    <TrendLine
+      drawKey={`${range}:${latest}:${seriesKey}`}
+      label={`${SERIES[lead].label} each day for the last ${range} days, to ${to}, median ${midText} a day: ${shown.map((p) => `${p.date} ${p[lead]}`).join(", ")}`}
+      values={values}
+      height={height}
+      soFar={latest === "now"}
+      overlays={rest.map((k) => ({ values: shown.map((p) => p[k]), valueText: said(k), dash: SERIES[k].dash }))}
+      median={mid === null ? null : { value: mid, text: `median ${midText}` }}
+      days={shown.map((p, i) => (latest === "now" && i === shown.length - 1 ? `${day(p.date)}, so far` : day(p.date)))}
+      valueText={said(lead)}
+      marks={[day(shown[0]?.date), day(shown[Math.floor(shown.length / 2)]?.date), latest === "now" ? "today" : day(shown[shown.length - 1]?.date)]}
+    />
+  );
 
   return (
-    <Panel title={`Visitors each day, the last ${range} days`} pad="px-4 pt-3.5 pb-3">
-      <div className="mb-3 flex flex-wrap items-center gap-2">
+    <Panel title={title} pad="px-4 pt-3.5 pb-3">
+      <div className="mb-2 flex flex-wrap items-center gap-2">
         <div className="adm-seg-scroll adm-seg-fits -mx-1 px-1">
           <Segmented label="Days" options={RANGE_OPTIONS} value={range} onChange={setRange} />
         </div>
-        <Segmented<LatestDay> label="Counted to" options={LATEST_OPTIONS} value={latest} onChange={setLatestDay} />
+      </div>
+      <div className="mb-2.5 flex flex-wrap gap-x-4 gap-y-1" role="group" aria-label="Lines on the chart">
+        {SERIES_ORDER.map((k) => (
+          <SeriesSwitch key={k} k={k} on={on.includes(k)} onToggle={() => toggle(k)} />
+        ))}
       </div>
       {shown.length < 2 ? (
         <Quiet className="py-6">{read.loading ? "Reading the days." : "The days could not be read just now."}</Quiet>
       ) : (
         <>
-          <TrendLine
-            drawKey={`${range}:${latest}`}
-            label={`Visitors each day for the last ${range} days, to ${to}, median ${midText} a day: ${shown.map((p) => `${p.date} ${p.visitors}`).join(", ")}`}
-            values={values}
-            median={mid === null ? null : { value: mid, text: `median ${midText}` }}
-            days={shown.map((p, i) => (latest === "now" && i === shown.length - 1 ? `${day(p.date)}, so far` : day(p.date)))}
-            valueText={(v) => `${n(v)} ${v === 1 ? "visitor" : "visitors"}`}
-            marks={[day(shown[0]?.date), day(shown[Math.floor(shown.length / 2)]?.date), latest === "now" ? "today" : day(shown[shown.length - 1]?.date)]}
-          />
-          <p className="mt-2 font-sans text-[12px]" style={{ color: "var(--adm-ink-3)" }}>
-            {n(total)} visitors in {shown.length} days to {to}, a median day of {midText}.
+          {latest === "complete" ? (
+            <div className="flex items-end gap-2.5">
+              <div className="min-w-0 flex-1">{chart}</div>
+              <TodayApart value={todayValue} byNow={byNow} max={Math.max(...values)} height={height} text={todayValue === null ? "?" : n(todayValue)} />
+            </div>
+          ) : (
+            chart
+          )}
+          {todayValue !== null ? (
+            <p className="mt-2.5 flex flex-wrap items-baseline gap-x-2 font-sans text-[12px]" style={{ color: "var(--adm-ink-3)" }}>
+              <span className="font-mono text-[15px] font-medium" style={{ color: "var(--adm-ink)" }}>
+                {n(todayValue)}
+              </span>
+              <span>{SERIES[lead].many} today so far</span>
+              {byNow !== null ? (
+                <span className="ml-auto">
+                  yesterday by now{" "}
+                  <b className="font-mono font-medium" style={{ color: "var(--adm-ink)" }}>
+                    {n(byNow)}
+                  </b>
+                </span>
+              ) : null}
+            </p>
+          ) : null}
+          <p className="mt-1.5 font-sans text-[12px]" style={{ color: "var(--adm-ink-3)" }}>
+            {n(total)} {SERIES[lead].many} in {shown.length} days to {to}, a median day of {midText}.
+            {rest.length > 0 ? " Each line is drawn to its own height; the day you pick says the figures." : ""}
           </p>
         </>
       )}
@@ -767,6 +890,233 @@ export function ScreensView() {
         </h2>
         <EngagementTab />
       </section>
+    </div>
+  );
+}
+
+// ── Live: who is on the site now ──────────────────────────────────────────
+
+/** A page's address in words: "/saints/nicholas" reads "Saints / nicholas". */
+function pageWords(path: string | null | undefined): string {
+  if (!path || path === "/") return "The front page";
+  const parts = path
+    .split("?")[0]
+    .split("/")
+    .filter(Boolean)
+    .map((p) => {
+      try {
+        return decodeURIComponent(p).replace(/-/g, " ");
+      } catch {
+        return p;
+      }
+    });
+  if (!parts.length) return "The front page";
+  parts[0] = parts[0].charAt(0).toUpperCase() + parts[0].slice(1);
+  return parts.join(" / ");
+}
+
+/** How long a reader has been here: "just now", "6 min", "1 h 12 min". */
+function stayWords(iso: string | undefined, now: number): string {
+  if (!iso) return "";
+  const m = Math.max(0, Math.round((now - Date.parse(iso)) / 60_000));
+  if (!Number.isFinite(m)) return "";
+  if (m < 1) return "just now";
+  return m < 60 ? `${m} min` : `${Math.floor(m / 60)} h ${m % 60} min`;
+}
+
+/** "from Instagram", or "opened the app" when the app was simply opened. */
+const fromWords = (from?: string) => (!from ? "" : from === "Opened the app" ? "opened the app" : `from ${from}`);
+
+const placeOf = (s: Session) =>
+  [s.city, s.region && s.region !== s.city ? s.region : null, s.country].filter(Boolean).join(", ") || "Somewhere not told";
+
+const clock = (iso: string) => new Date(iso).toLocaleTimeString("en-US", { hour: "numeric", minute: "2-digit" });
+
+/** The reader's card: a sheet over a phone's bar, a card in the middle of a desktop (his pick A on sheet r3-38). */
+function ReaderCard({ s, now, onClose }: { s: Session; now: number; onClose: () => void }) {
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") onClose();
+    };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [onClose]);
+  const trail = s.trail ?? [];
+  const facts: [string, string][] = [
+    ["Reading on", s.on ?? "Not told"],
+    ["Came from", s.from ?? "Not told"],
+    ["On Purify for", stayWords(s.firstSeen, now) || "Not told"],
+    ["Pages this visit", trail.length ? String(trail.length) : "1"],
+  ];
+  return (
+    <>
+      <button type="button" aria-label="Close the reader" onClick={onClose} className="fixed inset-0 z-[69] cursor-default" style={{ background: "var(--adm-scrim)" }} />
+      <div
+        role="dialog"
+        aria-label={`A reader in ${placeOf(s)}`}
+        className="fixed inset-x-0 bottom-0 z-[70] max-h-[85vh] overflow-y-auto rounded-t-[18px] border px-4 pb-[calc(20px+env(safe-area-inset-bottom))] pt-2.5 lg:inset-x-auto lg:bottom-auto lg:left-1/2 lg:top-1/2 lg:w-[440px] lg:-translate-x-1/2 lg:-translate-y-1/2 lg:rounded-[14px] lg:pb-4"
+        style={{ background: "var(--adm-panel)", borderColor: "var(--adm-line-strong)", boxShadow: "var(--adm-shadow-pop)" }}
+      >
+        <div aria-hidden className="mx-auto mb-2.5 h-1 w-10 rounded-full lg:hidden" style={{ background: "var(--adm-line-strong)" }} />
+        <div className="flex items-center gap-2.5">
+          <span className="grid h-[22px] min-w-[30px] place-items-center rounded-[5px] border px-1 font-mono text-[10.5px] font-semibold" style={{ borderColor: "var(--adm-line-strong)", color: "var(--adm-ink-2)" }}>
+            {s.countryCode ?? "?"}
+          </span>
+          <p className="min-w-0 flex-1 font-sans text-[15px] font-semibold" style={{ color: "var(--adm-ink)" }}>
+            A reader in {placeOf(s)}
+          </p>
+          <button type="button" onClick={onClose} aria-label="Close" className="grid min-h-11 min-w-11 place-items-center rounded-full" style={{ color: "var(--adm-ink-2)" }}>
+            <svg width="14" height="14" viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" aria-hidden>
+              <path d="M5.5 5.5l9 9M14.5 5.5l-9 9" />
+            </svg>
+          </button>
+        </div>
+        <dl className="mt-2 grid grid-cols-2 gap-x-3 gap-y-2.5">
+          {facts.map(([k, v]) => (
+            <div key={k}>
+              <dt className="font-sans text-[11px]" style={{ color: "var(--adm-ink-3)" }}>
+                {k}
+              </dt>
+              <dd className="mt-0.5 font-sans text-[13.5px] font-medium" style={{ color: "var(--adm-ink)" }}>
+                {v}
+              </dd>
+            </div>
+          ))}
+        </dl>
+        <p className="mb-1.5 mt-4 font-sans text-[11px] font-semibold uppercase tracking-[0.1em]" style={{ color: "var(--adm-ink-3)" }}>
+          The pages, in order
+        </p>
+        {trail.length === 0 ? (
+          <Quiet>On {pageWords(s.path)}. The pages before it were not read.</Quiet>
+        ) : (
+          <ol className="relative pl-5">
+            <span aria-hidden className="absolute bottom-2 left-[5px] top-2 w-px" style={{ background: "var(--adm-line-strong)" }} />
+            {trail.map((t, i) => {
+              const current = i === trail.length - 1;
+              return (
+                <li key={`${t.at}-${i}`} className="relative flex gap-2.5 py-1.5 font-sans text-[13px]" style={{ color: current ? "var(--adm-ink)" : "var(--adm-ink-2)" }}>
+                  <span
+                    aria-hidden
+                    className="absolute -left-[18px] top-[11px] h-[7px] w-[7px] rounded-full"
+                    style={current ? { background: "var(--adm-live)", boxShadow: "var(--adm-live-glow)" } : { background: "var(--adm-panel)", border: "1.5px solid var(--adm-ink-3)" }}
+                  />
+                  <span className="w-[62px] shrink-0 font-mono text-[11px]" style={{ color: "var(--adm-ink-3)" }}>
+                    {clock(t.at)}
+                  </span>
+                  <span className={current ? "font-medium" : ""}>
+                    {pageWords(t.path)}
+                    {current ? ", now" : ""}
+                  </span>
+                </li>
+              );
+            })}
+          </ol>
+        )}
+        <p className="mt-3 font-sans text-[11px]" style={{ color: "var(--adm-ink-3)" }}>
+          Pages opened are recorded; button presses are not. A visit here is a browser tab or the app, never a name.
+        </p>
+      </div>
+    </>
+  );
+}
+
+/**
+ * Live, who is on the site now (his pick A on sheet r3-38, with the map shown
+ * above the list, 2026-11-04). The old Traffic hub had this list; the revamp
+ * dropped it. The map is the zoomable heat map with the readers as green
+ * points (r3-37), and a tap on a point opens the same card as a row: where
+ * they are, what they read on, how they found Purify, how long they have
+ * been here, and the pages they opened this visit, in order.
+ */
+export function TrafficLiveTab() {
+  const stats = useLiveData<Stats>("/api/admin/stats", NOW_POLL);
+  const sessions = stats.data?.sessions ?? null;
+  const [zoom, setZoom] = useState<string | null>(null);
+  const [chosen, setChosen] = useState<string | null>(null);
+  const [reader, setReader] = useState<string | null>(null);
+  const data = useMapData("now", zoom, sessions);
+  const [now, setNow] = useState(() => Date.now());
+  useEffect(() => {
+    const id = window.setInterval(() => setNow(Date.now()), 30_000);
+    return () => window.clearInterval(id);
+  }, []);
+  const list = (sessions ?? []).slice().sort((a, b) => Date.parse(b.lastSeen) - Date.parse(a.lastSeen));
+  const open = list.find((s) => s.id === reader) ?? null;
+  const count = stats.data?.liveCount;
+
+  return (
+    <div className="space-y-3.5">
+      <Panel pad="px-3 pt-3 pb-3 md:px-4">
+        <div className="mb-2.5 flex flex-wrap items-center gap-2">
+          <LiveDot />
+          <span className="font-sans text-[13.5px]" style={{ color: "var(--adm-ink)" }}>
+            <b className="font-mono font-medium">{typeof count === "number" ? n(count) : stats.loading ? "…" : "?"}</b> on the site now
+          </span>
+          <span className="ml-auto font-sans text-[11.5px]" style={{ color: "var(--adm-ink-3)" }}>
+            Zoom with + or two fingers
+          </span>
+        </div>
+        <HeatMap
+          countries={data.countries}
+          total={data.total}
+          live={livePoints(sessions)}
+          periodWord="now"
+          zoom={zoom}
+          onZoom={(z) => {
+            setChosen(null);
+            setZoom(z);
+          }}
+          regions={data.regions}
+          zoomTotal={data.zoomTotal}
+          chosen={chosen}
+          onChoose={setChosen}
+          onLive={setReader}
+        />
+      </Panel>
+
+      <Panel title="Who is on the site now" pad="px-3 pt-3.5 pb-1.5 md:px-4">
+        {!sessions ? (
+          <Quiet className="pb-2.5">{stats.loading ? "Reading who is here." : "Who is here could not be read just now."}</Quiet>
+        ) : list.length === 0 ? (
+          <Quiet className="pb-2.5">No one is on the site right now.</Quiet>
+        ) : (
+          <ul className="divide-y" style={{ borderColor: "var(--adm-line)" }}>
+            {list.map((s) => (
+              <li key={s.id} className="border-[color:var(--adm-line)]">
+                <button
+                  type="button"
+                  onClick={() => setReader(s.id)}
+                  className="adm-control -mx-2 flex w-[calc(100%+1rem)] items-start gap-3 rounded-[6px] px-2 py-2.5 text-left"
+                  style={{ "--_bg": "transparent", "--_bg-hover": "var(--adm-hover)" } as React.CSSProperties}
+                >
+                  <span
+                    className="mt-0.5 grid h-[20px] min-w-[28px] place-items-center rounded-[5px] border px-1 font-mono text-[10px] font-semibold"
+                    style={{ borderColor: "var(--adm-line-strong)", color: "var(--adm-ink-2)" }}
+                  >
+                    {s.countryCode ?? "?"}
+                  </span>
+                  <span className="min-w-0 flex-1">
+                    <span className="block font-sans text-[13.5px] font-medium" style={{ color: "var(--adm-ink)" }}>
+                      {placeOf(s)}
+                    </span>
+                    <span className="mt-0.5 block truncate font-sans text-[12px]" style={{ color: "var(--adm-ink-3)" }}>
+                      {[s.on, fromWords(s.from)].filter(Boolean).join(" · ")}
+                    </span>
+                    <span className="mt-0.5 block truncate font-sans text-[12px]" style={{ color: "var(--adm-ink-2)" }}>
+                      On: {pageWords(s.path)}
+                    </span>
+                  </span>
+                  <span className="shrink-0 font-mono text-[11px]" style={{ color: "var(--adm-ink-3)" }}>
+                    {stayWords(s.firstSeen, now)}
+                  </span>
+                </button>
+              </li>
+            ))}
+          </ul>
+        )}
+      </Panel>
+
+      {open ? <ReaderCard s={open} now={now} onClose={() => setReader(null)} /> : null}
     </div>
   );
 }

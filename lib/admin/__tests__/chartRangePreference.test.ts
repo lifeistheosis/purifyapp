@@ -12,3 +12,13 @@ describe("parseChartRange", () => {
     for (const raw of [null, undefined, "", "45", "abc", "-7", "7.5"]) expect(parseChartRange(raw)).toBe(30);
   });
 });
+
+describe("parseChartSeries", () => {
+  it("keeps the lines he left on, in the chart's order, and Visitors when none", async () => {
+    const { parseChartSeries } = await import("../chartRangePreference");
+    expect(parseChartSeries("signups,visitors")).toEqual(["visitors", "signups"]);
+    expect(parseChartSeries("views")).toEqual(["views"]);
+    expect(parseChartSeries("")).toEqual(["visitors"]);
+    expect(parseChartSeries("nonsense,views,views")).toEqual(["views"]);
+  });
+});
