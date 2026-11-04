@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useRef, useState, useSyncExternalStore } from "react";
+import { useEffect, useRef, useState, useSyncExternalStore } from "react";
 
 import { arrivalLine } from "@/lib/admin/arrivals";
 import { trafficUrl } from "@/lib/admin/trafficChart";
@@ -15,15 +15,17 @@ import {
 import {
   agoLabel,
   clockLabel,
-  clearActivity,
   getActivity,
   getServerActivity,
-  markAllSeen,
   pushActivity,
   subscribeActivity,
-  unseenCount,
   type ActivityRecord,
 } from "@/lib/admin/activityStore";
+import { setBellSeenAt, useBellSeenAt } from "@/lib/admin/bellSeen";
+import { readerRows, type SinceEvent } from "@/lib/admin/since";
+import { SENSITIVE } from "@/lib/admin/streamer";
+import { newerThan } from "@/lib/admin/timeline";
+import { loadOlder, useTimeline } from "@/lib/admin/timelineStore";
 
 /**
  * The activity bar, and the bell that keeps what it dropped.
@@ -314,7 +316,7 @@ export function ActivityFeed({ strip: showStrip = true }: { strip?: boolean } = 
         </div>
       </div>
       ) : null}
-      <ActivityBell records={records} reduced={reduced} />
+      <ActivityBell reduced={reduced} />
 
       {/* ── The phone ────────────────────────────────────────────────────
           The strip above is md and up, because a 232px pill cannot sit in a
@@ -503,13 +505,30 @@ function ActivityPill({
   );
 }
 
+/** A card opens its page the way every link in the panel does: by the #tab= hash. */
+function openTab(tab: string) {
+  window.location.hash = `tab=${tab}`;
+}
+
 /**
- * The bell, and the history behind it.
+ * The bell, and the log behind it.
  *
- * It is back, and it is not the bell that was removed. That one carried a
- * pending-order count and, on click, navigated to Orders: a number that asked
- * the operator to go and look something up. This one opens the thing itself,
- * which is the only record of events that have already scrolled off the strip.
+ * It reads the admin's timeline (lib/admin/timelineStore.ts, the same log as
+ * Home's), not the strip's own history. The owner, 2026-11-04, of the
+ * notifications: "I want it to be accurate. I don't want it to jump from 11
+ * hours to right now ... I want it to just continue." The strip's history
+ * only knew what happened while the admin was open, stamped with when the
+ * panel noticed it, kept 40 at most for a day, and could be cleared; so a
+ * visit after a night showed last evening and then now, with the night
+ * missing. The timeline is read from the tables, so every order, reader,
+ * member, ticket and request is there at the time it happened, whether the
+ * admin was open or not, and older weeks are one press away. Nothing in it
+ * can be cleared. The strip's toasts stay as they were: they are the live
+ * arrivals, which the log does not keep one by one.
+ *
+ * The badge counts what is newer than the last time the bell was opened in
+ * this browser (lib/admin/bellSeen.ts); before the first time, newer than
+ * where he last looked at the admin.
  *
  * The panel scrolls HORIZONTALLY. Vertically it would be a notifications list,
  * which invites being read as a queue with an obligation attached; laid along
@@ -517,21 +536,16 @@ function ActivityPill({
  * it is. It is also the shape that fits under a top bar without covering the
  * screen the operator is working on.
  */
-function ActivityBell({
-  records,
-  reduced,
-}: {
-  records: ActivityRecord[];
-  reduced: boolean;
-}) {
+function ActivityBell({ reduced }: { reduced: boolean }) {
   const [open, setOpen] = useState(false);
-  const unseen = unseenCount(records);
+  const tl = useTimeline();
+  const seenAt = useBellSeenAt();
+  // What was new when the panel opened, kept lit while it stays open: the
+  // mark moves to now as it opens, and the cards should not go out under him.
+  const [openedFrom, setOpenedFrom] = useState<string | null>(null);
 
-  // Its own clock, and a slow one. The strip's clock stops as soon as the last
-  // toast ages out, so reusing it would freeze "4m ago" at whatever it read
-  // when the strip went quiet. A minute is the finest thing agoLabel prints,
-  // so 30s is enough to keep every row honest and cheap enough to leave on
-  // only while the panel is actually open.
+  // Its own clock, and a slow one: a minute is the finest thing agoLabel
+  // prints, so 30s keeps every card honest, and it runs only while open.
   const [now, setNow] = useState(() => Date.now());
   useEffect(() => {
     if (!open) return;
@@ -539,16 +553,25 @@ function ActivityBell({
     return () => window.clearInterval(id);
   }, [open]);
 
-  const toggle = useCallback(() => {
-    setOpen((o) => {
-      if (!o) markAllSeen();
-      return !o;
-    });
+  const ready = tl.status === "ready";
+  const items: SinceEvent[] = ready
+    ? [...tl.events, ...readerRows(tl.readerTimes, new Date(now))].sort((a, b) => Date.parse(b.at) - Date.parse(a.at))
+    : [];
+  const countFrom = seenAt ?? tl.line?.at ?? null;
+  const unseen = newerThan(items, countFrom);
+  const litFrom = open ? openedFrom : countFrom;
+
+  const toggle = () => {
+    if (!open) {
+      setOpenedFrom(countFrom);
+      setBellSeenAt(new Date().toISOString());
+    }
+    setOpen(!open);
     // Stamped here rather than in the effect that starts the interval: this is
     // an event handler, where setState is allowed, and it means the ages are
     // right on the frame the panel opens instead of up to 30 seconds stale.
     setNow(Date.now());
-  }, []);
+  };
 
   // Escape closes it, matching every other transient surface in the panel.
   useEffect(() => {
@@ -560,15 +583,18 @@ function ActivityBell({
     return () => window.removeEventListener("keydown", onKey);
   }, [open]);
 
+  const go = (tab: string) => {
+    setOpen(false);
+    openTab(tab);
+  };
+
   return (
     <div className="relative shrink-0">
       <button
         type="button"
         onClick={toggle}
         aria-expanded={open}
-        aria-label={
-          unseen > 0 ? `Activity, ${unseen} new` : "Activity"
-        }
+        aria-label={unseen > 0 ? `Activity, ${unseen} new` : "Activity"}
         title="Activity"
         // 44px square, matching the search field's h-11 beside it. It was 36,
         // which sat visibly short against the field and is under the touch
@@ -591,12 +617,7 @@ function ActivityBell({
             strokeWidth="1.5"
             strokeLinejoin="round"
           />
-          <path
-            d="M8.3 15.4a1.8 1.8 0 0 0 3.4 0"
-            stroke="currentColor"
-            strokeWidth="1.5"
-            strokeLinecap="round"
-          />
+          <path d="M8.3 15.4a1.8 1.8 0 0 0 3.4 0" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
         </svg>
         {unseen > 0 && (
           <span
@@ -631,113 +652,115 @@ function ActivityBell({
             /* FIXED ON A PHONE, ANCHORED ON A DESKTOP.
              *
              * `absolute right-0` positions against the bell's own 44px
-             * wrapper. On a desktop the bell sits near the right of the bar so
-             * that lands correctly. Below lg, TabSearch is flex-1 and absorbs
-             * every spare pixel, which pins the bell to the bar's LEFT edge:
-             * a 560px panel hung from a 44px box at x=16 put roughly 285px of
-             * itself off the left of a 375px screen. The header, the Clear
-             * button and every card but a sliver were unreachable, and the
-             * bell read as a button that does nothing.
-             *
-             * Below lg it is a fixed sheet inset from both edges instead, so
-             * it cannot depend on where the bell ended up. From lg the
-             * original anchored behaviour returns unchanged.
-             *
-             * THE BREAKPOINT IS lg BECAUSE TabSearch's IS. This first shipped
-             * switching at md, which left the described bug live across the
-             * whole 768 to 1023 band: TabSearch is `flex-1 lg:flex-none`
-             * (TabSearch.tsx:80), so at 800px wide it still eats the bar, the
-             * bell still sits far from the right edge, and a 560px panel hung
-             * off its right edge still ran off the left of the screen. Any
-             * change here has to move with that class, not with an eyeballed
-             * guess at where a bar stops being crowded. */
+             * wrapper. Below lg, TabSearch is flex-1 and absorbs every spare
+             * pixel, which pins the bell to the bar's LEFT edge, so a panel
+             * hung from it ran off the left of a 375px screen. Below lg it is
+             * a fixed sheet inset from both edges instead. THE BREAKPOINT IS
+             * lg BECAUSE TabSearch's IS (TabSearch.tsx: flex-1 lg:flex-none):
+             * any change here has to move with that class. */
             className="fixed inset-x-3 top-[calc(var(--adm-topbar-h,69px)+8px)] z-[46] w-auto rounded-[var(--adm-radius)] border p-3 lg:absolute lg:inset-x-auto lg:right-0 lg:top-[calc(100%+8px)] lg:w-[min(92vw,560px)]"
             style={{
               background: "var(--adm-panel)",
               borderColor: "var(--adm-line)",
               boxShadow: "var(--adm-shadow-card)",
-              animation: reduced
-                ? undefined
-                : "adm-activity-in 260ms cubic-bezier(0.16,1,0.3,1)",
+              animation: reduced ? undefined : "adm-activity-in 260ms cubic-bezier(0.16,1,0.3,1)",
             }}
           >
-            <div className="mb-2 flex items-center justify-between px-1">
-              <p
-                className="font-sans text-[12px] font-semibold"
-                style={{ color: "var(--adm-ink)" }}
-              >
+            <div className="mb-2 flex items-baseline justify-between gap-3 px-1">
+              <p className="font-sans text-[12px] font-semibold" style={{ color: "var(--adm-ink)" }}>
                 Activity
               </p>
-              {records.length > 0 && (
-                <button
-                  type="button"
-                  onClick={clearActivity}
-                  className="font-sans text-[11.5px]"
-                  style={{ color: "var(--adm-ink-3)" }}
-                >
-                  Clear
-                </button>
-              )}
+              <p className="truncate font-sans text-[11.5px]" style={{ color: "var(--adm-ink-3)" }}>
+                {unseen > 0 ? `${unseen} new since you last opened this` : "Everything, newest first"}
+              </p>
             </div>
 
-            {records.length === 0 ? (
-              <p
-                className="px-1 py-6 text-center font-sans text-[12.5px]"
-                style={{ color: "var(--adm-ink-3)" }}
-              >
-                Nothing yet. Visits, signups, sales and goals show up here as
-                they happen.
+            {!ready ? (
+              <p className="px-1 py-6 text-center font-sans text-[12.5px]" style={{ color: "var(--adm-ink-3)" }}>
+                {tl.status === "failed" ? "The activity could not be read just now." : "Reading the activity."}
               </p>
             ) : (
               // Horizontal, snapped, and scrollable by drag, wheel or keyboard.
               // adm-scroll-x is a scoped scrollbar; overflow-y-hidden stops a
               // stray vertical scroller appearing on a one-row strip.
               <div className="adm-scroll-x flex snap-x snap-mandatory gap-2 overflow-x-auto overflow-y-hidden pb-2">
-                {records.map((r) => {
-                  const look = LOOK[r.kind];
+                {items.length === 0 ? (
+                  <p className="px-1 py-6 font-sans text-[12.5px]" style={{ color: "var(--adm-ink-3)" }}>
+                    Nothing has happened this week yet.
+                  </p>
+                ) : null}
+                {items.map((e, i) => {
+                  const at = Date.parse(e.at);
+                  const isNew = litFrom !== null && at > Date.parse(litFrom);
                   return (
-                    <div
-                      key={r.id}
-                      className="flex shrink-0 snap-start flex-col gap-2 rounded-[var(--adm-radius-sm)] border p-3"
-                      style={{
-                        width: 200,
-                        borderColor: look.ring,
-                        background: `color-mix(in oklab, ${look.ring}, transparent 94%)`,
-                      }}
+                    <button
+                      key={`${e.kind}-${e.at}-${i}`}
+                      type="button"
+                      onClick={() => go(e.tab)}
+                      className="adm-control flex shrink-0 snap-start flex-col gap-2 rounded-[var(--adm-radius-sm)] border p-3 text-left"
+                      style={
+                        {
+                          width: 200,
+                          borderColor: isNew ? "var(--adm-ink)" : "var(--adm-line)",
+                          boxShadow: isNew ? "var(--adm-lit-soft)" : undefined,
+                          "--_bg": "transparent",
+                          "--_bg-hover": "var(--adm-hover)",
+                        } as React.CSSProperties
+                      }
                     >
                       <span
-                        aria-hidden
-                        className="grid h-7 w-fit min-w-7 place-items-center rounded-[var(--adm-radius-pill)] px-1.5 font-sans text-[13px] font-semibold tabular-nums"
-                        style={{
-                          background: `color-mix(in oklab, ${look.ring}, transparent 82%)`,
-                          color: look.tint,
-                        }}
-                      >
-                        {r.badge}
-                      </span>
-                      <span
-                        className="font-sans text-[12.5px] font-medium leading-snug"
+                        className={"font-sans text-[12.5px] font-medium leading-snug " + (e.money ? SENSITIVE : "")}
                         style={{ color: "var(--adm-ink)" }}
                       >
-                        {r.text}
+                        {e.title}
                       </span>
-                      {r.detail && (
-                        <span className="-mt-1 font-sans text-[11.5px] leading-snug" style={{ color: "var(--adm-ink-2)" }}>
-                          {r.detail}
-                        </span>
-                      )}
-                      {/* The time it arrived, both ways. The relative one is
+                      <span
+                        className={"-mt-1 font-sans text-[11.5px] leading-snug " + (e.sensitive ? SENSITIVE : "")}
+                        style={{ color: "var(--adm-ink-2)" }}
+                      >
+                        {e.detail}
+                      </span>
+                      {/* The time it happened, both ways. The relative one is
                           what an operator reads; the clock is what they need
                           when they are reconciling against another system. */}
-                      <span
-                        className="mt-auto font-sans text-[11px] tabular-nums"
-                        style={{ color: "var(--adm-ink-3)" }}
-                      >
-                        {agoLabel(r.receivedAt, now)} · {clockLabel(r.receivedAt)}
+                      <span className="mt-auto font-sans text-[11px] tabular-nums" style={{ color: "var(--adm-ink-3)" }}>
+                        {agoLabel(at, now)} · {clockLabel(at)}
                       </span>
-                    </div>
+                    </button>
                   );
                 })}
+                {/* The end of what is read: the week before, or the end. */}
+                <div
+                  className="flex w-[150px] shrink-0 snap-start flex-col justify-center gap-2 rounded-[var(--adm-radius-sm)] border border-dashed p-3"
+                  style={{ borderColor: "var(--adm-line-strong)" }}
+                >
+                  <span className="font-sans text-[11.5px] leading-snug" style={{ color: "var(--adm-ink-3)" }}>
+                    {tl.loadingMore
+                      ? "Reading the week before."
+                      : tl.moreFailed
+                        ? "The week before could not be read."
+                        : tl.more && tl.oldest
+                          ? `Back to ${new Date(tl.oldest).toLocaleDateString("en-US", { month: "short", day: "numeric" })}.`
+                          : "That is everything."}
+                  </span>
+                  {tl.more && !tl.loadingMore ? (
+                    <button
+                      type="button"
+                      onClick={loadOlder}
+                      className="adm-control min-h-11 rounded-[6px] border px-2.5 font-sans text-[12px]"
+                      style={
+                        {
+                          borderColor: "var(--adm-line-strong)",
+                          color: "var(--adm-ink-2)",
+                          "--_bg": "transparent",
+                          "--_bg-hover": "var(--adm-panel-2)",
+                        } as React.CSSProperties
+                      }
+                    >
+                      {tl.moreFailed ? "Try again" : "Show older"}
+                    </button>
+                  ) : null}
+                </div>
               </div>
             )}
           </div>

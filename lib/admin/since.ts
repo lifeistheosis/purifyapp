@@ -118,6 +118,8 @@ export type SinceEvent = {
   sensitive?: boolean;
   /** Money in the title: blurred under streamer mode. */
   money?: boolean;
+  /** An order's total, in cents, when it is still paid (a refunded one counts 0). */
+  cents?: number;
 };
 
 const DAY_MS = 86_400_000;

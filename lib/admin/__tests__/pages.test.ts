@@ -215,7 +215,11 @@ describe("the Tools pages and Strategy as he picked them (r3-17, 2026-10-30)", (
   it("keeps Strategy one page that opens on the plan, with its three doors", () => {
     const owner = ADMIN_PAGE_GROUPS.filter((g) => g.mode === "owner").flatMap((g) => g.pages);
     expect(owner.map((p) => p.label)).toEqual(["Strategy"]);
-    expect(tabs("owner-investors")).toEqual(["owner-investors", "owner-today", "owner-model", "owner-markets"]);
+    // The model and Markets are folded into the plan (2026-11-04): its doors
+    // open them, the tab row does not list them, and their links still land.
+    expect(tabs("owner-investors")).toEqual(["owner-investors", "owner-today"]);
     expect(owner[0].views.map((v) => v.label)).toEqual(["The plan", "Counted", "The model", "Markets"]);
+    expect(pageOf("owner-model")?.id).toBe("owner-investors");
+    expect(pageOf("owner-markets")?.id).toBe("owner-investors");
   });
 });

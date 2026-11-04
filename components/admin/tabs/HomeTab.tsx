@@ -3,7 +3,6 @@
 import { useEffect, useRef, useState, type ReactNode } from "react";
 
 import type { AttentionItem } from "@/lib/admin/attention";
-import { adminJson } from "@/lib/admin/fetchJson";
 import { figure, LOADING, moneyWeek, NOT_MEASURED } from "@/lib/admin/home";
 import {
   agoWords,
@@ -14,16 +13,16 @@ import {
   paceWord,
   readerRows,
   sinceTotals,
-  type Line,
   type SinceEvent,
 } from "@/lib/admin/since";
 import { SENSITIVE } from "@/lib/admin/streamer";
+import { TIMELINE_FLOOR } from "@/lib/admin/timeline";
+import { loadOlder, moveLine, useTimeline } from "@/lib/admin/timelineStore";
 import { useAttention } from "@/lib/admin/useAttention";
 import { trafficUrl } from "@/lib/admin/trafficChart";
 import { useLiveData } from "@/lib/admin/useLiveData";
 import { formatPrice } from "@/lib/shop/format";
 
-import { useAdminFetch } from "../adminFetch";
 import { FigureCard, Figure, GoLabel, LiveDot, Panel, PanelLink, Quiet, Spark } from "../daily/parts";
 import { StatusDot } from "../primitives";
 
@@ -38,14 +37,19 @@ import { StatusDot } from "../primitives";
  * ticket and tick of the board, each row a door to the page behind it. What
  * still waits on him stands beside the feed until it is done.
  *
- * His log is why: Home is a five second look on the way to Money, and what
- * changed since he last looked is what a five second look is for.
+ * THE TIMELINE NEVER RESETS (the owner, 2026-11-04: "I don't want it to just
+ * keep resetting and deleting ... I want a visual log that just doesn't go
+ * away"). It used to start at the end of his last visit, so every visit
+ * emptied it. Now it is the log itself (lib/admin/timelineStore.ts, the same
+ * one the bell reads): this week first, the week before as he scrolls or
+ * presses Show more, every row at the time it happened, and what is new on
+ * top every minute. Where he last looked is a line drawn in the log; the
+ * totals count what is above it. "Mark all as seen" moves the line to now and
+ * the usage log keeps the press, so the next visit starts from there.
  *
- * WHERE THE LINE COMES FROM: his own use log, read by /api/admin/since
- * (lib/admin/since.ts says how). The page keeps that line for the whole visit
- * and asks for it again by time, so the feed does not shift under him; "Mark
- * all as seen" moves it to now, and the usage log keeps the press, so the
- * next visit starts from there. Nothing is deleted.
+ * The goals read themselves every half minute, so the bars move while he
+ * watches and the next hour's targets arrive at the top of the hour, and each
+ * says how its target was set.
  *
  * A figure that could not be read says so in words, never a zero.
  */
@@ -72,18 +76,13 @@ type Goal = {
   target: number | null;
   paused?: boolean;
   progress: { value: number; target: number; minutesElapsed: number };
+  /** How the target was set, in a sentence (lib/admin/hourlyBaseline.ts). */
+  explanation?: string;
 };
 type GoalsPayload = { goals: Goal[]; minutesIntoHour: number };
 
-type SincePayload = {
-  line: string;
-  basis: Line["basis"];
-  now: string;
-  events: SinceEvent[];
-  orderCents: number;
-  readers: { count: number | null; times: string[] };
-  unread: string[];
-};
+/** The goals read again this often, so the hour's bars move while he watches. */
+const GOALS_POLL_MS = 30_000;
 
 const GOAL_LABEL: Record<Goal["metric"], string> = {
   visitors: "Visitors",
@@ -108,49 +107,26 @@ function mostIn(sessions: { country: string | null }[] | undefined): string | nu
 }
 
 /**
- * The feed's own read: the line from his log on the first ask, then the same
- * line by time on every refresh, so the rows do not shift under him; a new
- * time when he marks all as seen.
+ * Asks for the week before when the foot of the log comes into view, so
+ * scrolling down keeps the log going; Show more beside it does the same by
+ * hand.
  */
-function useSince(askedAt: string | null) {
-  const [got, setGot] = useState<{
-    data: SincePayload | null;
-    failed: boolean;
-    /** Where the first line came from: his visit, his last mark, or the last day. */
-    firstBasis: Line["basis"] | null;
-  } | null>(null);
-  const [tick, setTick] = useState(0);
-  // The line the first answer gave, kept for every refresh after it. Read and
-  // written only in the effect and its callback, never during render.
-  const pin = useRef<string | null>(null);
-
+function useLoadOlderAtFoot(enabled: boolean) {
+  const foot = useRef<HTMLDivElement | null>(null);
   useEffect(() => {
-    const at = askedAt ?? pin.current;
-    let alive = true;
-    void adminJson<SincePayload>(at ? `/api/admin/since?at=${encodeURIComponent(at)}` : "/api/admin/since").then((d) => {
-      if (!alive) return;
-      if (d && !pin.current) pin.current = d.line;
-      setGot((prev) =>
-        d
-          ? { data: d, failed: false, firstBasis: prev?.firstBasis ?? d.basis }
-          : { data: prev?.data ?? null, failed: true, firstBasis: prev?.firstBasis ?? null },
-      );
-    });
-    return () => {
-      alive = false;
-    };
-  }, [askedAt, tick]);
-
-  // A fresh look every two minutes while the page is on screen.
-  useEffect(() => {
-    const id = window.setInterval(() => {
-      if (document.visibilityState === "visible") setTick((n) => n + 1);
-    }, 120_000);
-    return () => window.clearInterval(id);
-  }, []);
-
-  return { data: got?.data ?? null, failed: got?.failed ?? false, loading: got === null, firstBasis: got?.firstBasis ?? null };
+    const el = foot.current;
+    if (!enabled || !el || typeof IntersectionObserver === "undefined") return;
+    const io = new IntersectionObserver((entries) => {
+      if (entries.some((e) => e.isIntersecting)) loadOlder();
+    }, { rootMargin: "240px 0px" });
+    io.observe(el);
+    return () => io.disconnect();
+  }, [enabled]);
+  return foot;
 }
+
+/** The day the log goes back to, in words: "May 1". */
+const FLOOR_WORDS = new Date(TIMELINE_FLOOR).toLocaleDateString("en-US", { month: "long", day: "numeric", timeZone: "UTC" });
 
 /** A mark of the admin's own: solid for done, a ring for waiting on him, a plain dot for news. */
 function FeedDot({ mark }: { mark: SinceEvent["mark"] }) {
@@ -191,6 +167,11 @@ function GoalRow({ goal, minutes }: { goal: Goal; minutes: number }) {
       <p className="mt-[5px] font-sans text-[11px]" style={{ color: "var(--adm-ink-3)" }}>
         {word}
       </p>
+      {goal.explanation ? (
+        <p className="mt-0.5 font-sans text-[10.5px] leading-snug" style={{ color: "var(--adm-ink-3)", opacity: 0.85 }}>
+          {goal.explanation}
+        </p>
+      ) : null}
     </div>
   );
 }
@@ -221,13 +202,20 @@ export function HomeTab() {
   const overview = useLiveData<Overview>("/api/admin/overview", 60_000);
   const stats = useLiveData<Stats>("/api/admin/stats", 20_000);
   const traffic = useLiveData<Traffic>(trafficUrl(), 300_000);
-  // Read once as the Home opens: the hour's goals cost four counts a metric,
-  // and a slow hour is not a fault worth polling for.
-  const goals = useAdminFetch<GoalsPayload>("/api/admin/hourly-goals");
-  // The clock, read once: a render that reads the clock is not pure.
-  const [now] = useState(() => new Date());
-  const [askedAt, setAskedAt] = useState<string | null>(null);
-  const since = useSince(askedAt);
+  // The goals keep themselves: read every half minute, so the bars move while
+  // he watches and the next hour's targets arrive at the top of the hour (the
+  // owner, 2026-11-04: "self-updating in terms of its goals"). One shared
+  // timer for the whole panel (lib/admin/liveStore.ts), paused when hidden.
+  const goals = useLiveData<GoalsPayload>("/api/admin/hourly-goals", GOALS_POLL_MS);
+  // The clock, moved on each minute in a timer callback rather than read
+  // during render, so the log's day headings stay true on a page left open.
+  const [now, setNow] = useState(() => new Date());
+  useEffect(() => {
+    const id = window.setInterval(() => setNow(new Date()), 60_000);
+    return () => window.clearInterval(id);
+  }, []);
+  const tl = useTimeline();
+  const foot = useLoadOlderAtFoot(tl.status === "ready" && tl.more && !tl.loadingMore && !tl.moreFailed);
 
   // ── A's numbers ────────────────────────────────────────────────────────
   const money = overview.data && !overview.data.ordersDegraded ? overview.data : null;
@@ -299,11 +287,19 @@ export function HomeTab() {
   const watched = (goals.data?.goals ?? []).filter((g) => !g.paused);
   const minutes = goals.data?.minutesIntoHour ?? now.getUTCMinutes();
 
-  // ── Since you last looked ──────────────────────────────────────────────
-  const s = since.data;
-  const events: SinceEvent[] = s ? [...s.events, ...readerRows(s.readers.times, now)] : [];
+  // ── The timeline ───────────────────────────────────────────────────────
+  const ready = tl.status === "ready";
+  const lineAt = tl.line?.at ?? null;
+  const lineMs = lineAt ? Date.parse(lineAt) : NaN;
+  const isNew = (at: string) => Number.isFinite(lineMs) && Date.parse(at) > lineMs;
+  const events: SinceEvent[] = ready ? [...tl.events, ...readerRows(tl.readerTimes, now)] : [];
   const groups = groupFeed(events, now);
-  const totals = s ? sinceTotals(s.events, s.readers.count, s.orderCents) : null;
+  // The line falls before the first row he has seen: at or before it.
+  const firstSeen = groups.flatMap((g) => g.rows).find((e) => !isNew(e.at)) ?? null;
+  const fresh = tl.events.filter((e) => isNew(e.at));
+  const freshReaders = tl.readerTimes.filter(isNew);
+  const freshCents = fresh.reduce((a, e) => a + (e.kind === "order" ? (e.cents ?? 0) : 0), 0);
+  const totals = ready && lineAt ? sinceTotals(fresh, freshReaders.length, freshCents) : null;
   const totalItems = totals
     ? [
         { value: formatPrice(totals.orderCents, "usd"), label: totals.orders === 1 ? "1 order" : `${count(totals.orders)} orders`, sensitive: true },
@@ -313,16 +309,17 @@ export function HomeTab() {
         { value: count(totals.tickets), label: totals.tickets === 1 ? "support ticket" : "support tickets" },
       ]
     : [];
-  const basis = askedAt ? "mark" : (since.firstBasis ?? s?.basis ?? null);
-  const lineNote = !s
-    ? since.failed
-      ? "The feed could not be read just now."
-      : "Reading your use log."
-    : basis === "day"
-      ? "Your use log gave no earlier visit, so this is the last 24 hours."
-      : askedAt
-        ? `Marked as seen at ${clockOf(new Date(askedAt))}.`
-        : `${lineWords(s.line, now)}, ${basis === "mark" ? "when you last marked all as seen" : "from your use log"}: ${agoWords(s.line, now.getTime())}.`;
+  const basis = tl.line?.basis ?? null;
+  const newCount = fresh.length + (freshReaders.length > 0 ? 1 : 0);
+  const lineNote = !ready
+    ? tl.status === "failed"
+      ? "The timeline could not be read just now."
+      : "Reading the timeline."
+    : !lineAt || basis === "day"
+      ? "Everything, newest first. Your use log gave no earlier visit to draw a line at."
+      : `${newCount === 0 ? "Nothing new" : "New above the line"} since you last looked, ${lineWords(lineAt, now)}${
+          basis === "mark" ? ", when you marked all as seen" : ""
+        }: ${agoWords(lineAt, now.getTime())}.`;
 
   // ── Still waiting on you ───────────────────────────────────────────────
   const todo: AttentionItem[] = [...summary.faults, ...summary.queues];
@@ -384,7 +381,7 @@ export function HomeTab() {
         action={<PanelLink onClick={() => open("goals")}>Open Goals</PanelLink>}
         pad="px-4 pt-3.5 pb-1.5"
       >
-        {goals.error ? (
+        {goals.failing && !goals.data ? (
           <Quiet className="pb-2">The hour&apos;s goals could not be read just now.</Quiet>
         ) : !goals.data ? (
           <Quiet className="pb-2">Reading the hour.</Quiet>
@@ -399,21 +396,22 @@ export function HomeTab() {
         )}
       </Panel>
 
-      {/* B: what changed since he last looked. */}
+      {/* The timeline: everything that happened, newest first, with the
+          line where he last looked drawn in it. */}
       <section aria-labelledby="adm-since-head" className="pt-2">
         <div className="flex flex-wrap items-end gap-3">
           <div className="min-w-0 flex-1">
             <h2 id="adm-since-head" className="font-sans text-[19px] font-semibold tracking-[-0.01em]" style={{ color: "var(--adm-ink)" }}>
-              Since you last looked
+              Timeline
             </h2>
             <p className="mt-0.5 font-sans text-[12.5px]" style={{ color: "var(--adm-ink-3)" }}>
               {lineNote}
             </p>
           </div>
-          {s ? (
+          {ready && newCount > 0 ? (
             <button
               type="button"
-              onClick={() => setAskedAt(new Date().toISOString())}
+              onClick={() => moveLine(new Date().toISOString())}
               className="adm-control inline-flex min-h-11 items-center gap-1.5 rounded-[6px] border px-3 font-sans text-[12.5px] md:min-h-[36px]"
               style={
                 {
@@ -432,7 +430,7 @@ export function HomeTab() {
           ) : null}
         </div>
 
-        {totals ? (
+        {totals && newCount > 0 ? (
           <Panel className="mt-3" pad="px-4 py-3.5 lg:px-0">
             <Totals items={totalItems} />
           </Panel>
@@ -440,10 +438,10 @@ export function HomeTab() {
 
         <div className="mt-3.5 grid items-start gap-3.5 lg:grid-cols-[minmax(0,1fr)_300px]">
           <Panel pad="px-3 pt-1 pb-2.5 md:px-4">
-            {!s ? (
-              <Quiet className="py-3">{since.failed ? "The feed could not be read just now." : "Reading what changed."}</Quiet>
+            {!ready ? (
+              <Quiet className="py-3">{tl.status === "failed" ? "The timeline could not be read just now." : "Reading the timeline."}</Quiet>
             ) : groups.length === 0 ? (
-              <Quiet className="py-3">Nothing new since then.</Quiet>
+              <Quiet className="py-3">Nothing has happened in this week yet.</Quiet>
             ) : (
               <div className="relative">
                 {/* The thread the marks hang on. */}
@@ -460,6 +458,20 @@ export function HomeTab() {
                     <ul>
                       {g.rows.map((e, i) => (
                         <li key={`${e.kind}-${e.at}-${i}`}>
+                          {e === firstSeen && lineAt && basis !== "day" ? (
+                            // Where he last looked: a line in the log, never
+                            // the start of it.
+                            <div
+                              role="separator"
+                              aria-label={`You last looked ${lineWords(lineAt, now)}`}
+                              className="relative z-[1] my-1.5 flex items-center gap-2 font-sans text-[11.5px]"
+                              style={{ color: "var(--adm-ink)", paddingLeft: 66 }}
+                            >
+                              <span className="h-px flex-1" style={{ background: "var(--adm-ink)", boxShadow: "var(--adm-lit-soft)" }} />
+                              <span className="shrink-0">You last looked {lineWords(lineAt, now)}</span>
+                              <span className="h-px w-6" style={{ background: "var(--adm-ink)", boxShadow: "var(--adm-lit-soft)" }} />
+                            </div>
+                          ) : null}
                           <button
                             type="button"
                             onClick={() => open(e.tab)}
@@ -496,10 +508,43 @@ export function HomeTab() {
                 ))}
               </div>
             )}
-            {s && s.unread.length > 0 ? (
+            {/* The foot of the log: the week before loads as it comes into
+                view, or by hand. */}
+            {ready ? (
+              <div ref={foot} className="mt-2 flex flex-wrap items-center gap-3 border-t pt-2.5" style={{ borderColor: "var(--adm-line)" }}>
+                <p className="min-w-0 flex-1 font-sans text-[12px]" style={{ color: "var(--adm-ink-3)" }}>
+                  {tl.loadingMore
+                    ? "Reading the week before."
+                    : tl.moreFailed
+                      ? "The week before could not be read just now."
+                      : tl.more && tl.oldest
+                        ? `Back to ${lineWords(tl.oldest, now)}. Older weeks load as you scroll.`
+                        : `That is everything, back to ${FLOOR_WORDS}.`}
+                  {tl.full.length > 0 ? ` A busy week shows the newest 200 of ${tl.full.join(", ")}.` : ""}
+                </p>
+                {tl.more && !tl.loadingMore ? (
+                  <button
+                    type="button"
+                    onClick={loadOlder}
+                    className="adm-control inline-flex min-h-11 items-center rounded-[6px] border px-3 font-sans text-[12.5px] md:min-h-[36px]"
+                    style={
+                      {
+                        borderColor: "var(--adm-line-strong)",
+                        color: "var(--adm-ink-2)",
+                        "--_bg": "transparent",
+                        "--_bg-hover": "var(--adm-panel-2)",
+                      } as React.CSSProperties
+                    }
+                  >
+                    {tl.moreFailed ? "Try again" : "Show more"}
+                  </button>
+                ) : null}
+              </div>
+            ) : null}
+            {ready && tl.unread.length > 0 ? (
               <p className="mt-2 flex items-center gap-2 border-t pt-2 font-sans text-[12px]" style={{ borderColor: "var(--adm-line)", color: "var(--adm-ink-3)" }}>
                 <StatusDot tone="idle" />
-                {`Not read just now: ${s.unread.join(", ")}. The feed may be missing rows from them.`}
+                {`Not read just now: ${tl.unread.join(", ")}. The timeline may be missing rows from them.`}
               </p>
             ) : null}
           </Panel>

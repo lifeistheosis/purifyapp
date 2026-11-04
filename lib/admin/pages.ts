@@ -255,6 +255,9 @@ export const ADMIN_PAGE_GROUPS: AdminPageGroup[] = [
   // Strategy, B, the plan against what happened (r3-17): one page that
   // opens on the plan, with Counted, The model and Markets as its doors.
   // Each keeps its own #tab= id, so /owner's redirect to owner-today lands.
+  // The model and Markets are folded into the plan (his yes of 2026-11-04 to
+  // idea 6: neither was opened in the six days after the revamp): reached by
+  // the plan's own doors (components/owner/InvestorPanel.tsx), no longer tabs.
   {
     group: "Strategy",
     mode: "owner",
@@ -266,8 +269,8 @@ export const ADMIN_PAGE_GROUPS: AdminPageGroup[] = [
         views: [
           { tab: "owner-investors", label: "The plan" },
           { tab: "owner-today", label: "Counted" },
-          { tab: "owner-model", label: "The model" },
-          { tab: "owner-markets", label: "Markets" },
+          { tab: "owner-model", label: "The model", folded: true },
+          { tab: "owner-markets", label: "Markets", folded: true },
         ],
       },
     ],

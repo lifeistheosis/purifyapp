@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { getAdminUser } from "@/lib/admin/access";
 import { arrivalOf } from "@/lib/admin/arrivals";
+import { trailsOf, type TrailStep } from "@/lib/admin/liveTrail";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { getSaint } from "@/lib/saints/saints";
 
@@ -48,6 +49,9 @@ export async function GET() {
   const live = liveRows ?? [];
   const ids = live.map((r) => r.session_id);
   const latestPath = new Map<string, string>();
+  // The pages each reader opened in the last hours, in order, from the same
+  // read (lib/admin/liveTrail.ts): the Live list's reader card.
+  let trails = new Map<string, TrailStep[]>();
   if (ids.length) {
     // 1,000 and not more, because that is what one request gives whatever is
     // asked. Kept as one request on purpose: this route is polled every five
@@ -64,6 +68,7 @@ export async function GET() {
     for (const row of pv ?? []) {
       if (!latestPath.has(row.session_id)) latestPath.set(row.session_id, row.path);
     }
+    trails = trailsOf(pv ?? [], now);
   }
 
   const sessions = live.map((r) => ({
@@ -77,6 +82,7 @@ export async function GET() {
     path: latestPath.get(r.session_id) ?? null,
     lastSeen: r.last_seen,
     firstSeen: r.first_seen,
+    trail: trails.get(r.session_id) ?? [],
     ...arrivalOf(r.referrer, r.user_agent),
   }));
 

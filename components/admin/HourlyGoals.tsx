@@ -3,7 +3,7 @@
 import { useCallback, useState } from "react";
 
 import { Card, Pill, ToolbarButton } from "./primitives";
-import { useAdminFetch } from "./adminFetch";
+import { useLiveData } from "@/lib/admin/useLiveData";
 import {
   HOURLY_METRIC_LABEL,
   formatMetric,
@@ -47,7 +47,13 @@ type Payload = {
 };
 
 export function HourlyGoals() {
-  const { data, error, reload } = useAdminFetch<Payload>("/api/admin/hourly-goals");
+  // Read every half minute, like Home's goals (the same shared timer): the
+  // bars move while he watches and the next hour arrives by itself (the owner,
+  // 2026-11-04: "self-updating in terms of its goals").
+  const live = useLiveData<Payload>("/api/admin/hourly-goals", 30_000);
+  const data = live.data;
+  const error = live.failing && !live.data ? "The hourly goals could not be read just now." : null;
+  const reload = live.refresh;
   const [busy, setBusy] = useState<string | null>(null);
   const [note, setNote] = useState<string | null>(null);
 
