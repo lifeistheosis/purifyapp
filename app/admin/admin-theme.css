@@ -1070,6 +1070,42 @@
   }
 }
 
+/* Traffic's day charts draw themselves (TrendLine in
+ * components/admin/daily/parts.tsx; the owner, 2026-11-04: the revamp had
+ * removed the chart's animations). The line and its area sweep in from the
+ * left; the last point and the median's figure arrive as the sweep ends. The
+ * sweep is `from` only, so one that never runs leaves the chart whole. The
+ * late two hold back with `backwards`, which acts only before they start.
+ *
+ * No prefers-reduced-motion block, for the reason recorded above: TrendLine
+ * reads useReducedMotion, which sees the panel's Motion switch, and leaves
+ * these classes off itself. */
+@keyframes adm-trend-draw {
+  from {
+    clip-path: inset(0 100% 0 0);
+  }
+}
+.adm-trend-draw {
+  animation: adm-trend-draw 820ms var(--adm-ease);
+}
+@keyframes adm-trend-late {
+  from {
+    opacity: 0;
+  }
+}
+.adm-trend-late {
+  animation: adm-trend-late 320ms 560ms var(--adm-ease) backwards;
+}
+@keyframes adm-trend-arrive {
+  from {
+    opacity: 0;
+    transform: scale(0.5);
+  }
+}
+.adm-trend-arrive {
+  animation: adm-trend-arrive 380ms 620ms var(--adm-ease) backwards;
+}
+
 /* The tick numbers change VALUE across a zoom, so they cross-fade rather than
  * swapping mid-flight. Outside the scaled group: stretching text vertically
  * would distort the glyphs. */

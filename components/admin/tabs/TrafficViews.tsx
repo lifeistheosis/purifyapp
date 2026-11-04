@@ -24,11 +24,12 @@
 
 import { useEffect, useMemo, useState } from "react";
 
+import { parseChartRange, setChartRange, useChartRange } from "@/lib/admin/chartRangePreference";
 import { type LatestDay } from "@/lib/admin/dayWindow";
 import { adminJson } from "@/lib/admin/fetchJson";
 import { setLatestDay, useLatestDay } from "@/lib/admin/latestDayPreference";
 import { type Place, tallyCountries, tallyRegions, type Visit } from "@/lib/admin/map/tally";
-import { CHART_FETCH, CHART_RANGES, median, windowOf } from "@/lib/admin/trafficChart";
+import { CHART_RANGES, median, trafficUrl, windowOf } from "@/lib/admin/trafficChart";
 import {
   appsLine,
   liveFigures,
@@ -321,9 +322,11 @@ const LATEST_OPTIONS = [
  * Now / Last night choice is remembered per browser (latestDayPreference).
  */
 function VisitorsChart() {
-  const [range, setRange] = useState("30");
+  // Remembered per browser: he picked it again on most visits while it reset.
+  const range = String(useChartRange());
+  const setRange = (v: string) => setChartRange(parseChartRange(v));
   const latest = useLatestDay();
-  const read = useLiveData<{ points?: Point[] }>(`/api/admin/traffic?range=${CHART_FETCH}d&latest=${latest}`, 300_000);
+  const read = useLiveData<{ points?: Point[] }>(trafficUrl(latest), 300_000);
   const shown = windowOf(read.data?.points ?? [], Number(range));
   const values = shown.map((p) => p.visitors);
   const mid = median(values);
@@ -344,6 +347,7 @@ function VisitorsChart() {
       ) : (
         <>
           <TrendLine
+            drawKey={`${range}:${latest}`}
             label={`Visitors each day for the last ${range} days, to ${to}, median ${midText} a day: ${shown.map((p) => `${p.date} ${p.visitors}`).join(", ")}`}
             values={values}
             median={mid === null ? null : { value: mid, text: `median ${midText}` }}
@@ -380,7 +384,7 @@ function VisitorsChart() {
 export function TrafficOverviewTab() {
   const [period, setPeriod] = useState<Period>("1d");
   const stats = useLiveData<Stats>("/api/admin/stats", period === "now" ? NOW_POLL : 20_000);
-  const traffic = useLiveData<{ points?: Point[] }>("/api/admin/traffic?range=90d", 300_000);
+  const traffic = useLiveData<{ points?: Point[] }>(trafficUrl(), 300_000);
   const totals = useLiveData<{
     lifetimeVisitors: number | null;
     lifetimePageviews: number | null;

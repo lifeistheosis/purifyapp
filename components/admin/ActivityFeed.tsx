@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useRef, useState, useSyncExternalStore } from "react";
 
 import { arrivalLine } from "@/lib/admin/arrivals";
+import { trafficUrl } from "@/lib/admin/trafficChart";
 import { useLiveData } from "@/lib/admin/useLiveData";
 import { useReducedMotion } from "@/lib/ui/motion";
 import {
@@ -175,7 +176,7 @@ export function ActivityFeed({ strip: showStrip = true }: { strip?: boolean } = 
   const reduced = useReducedMotion();
   const stats = useLiveData<Stats>("/api/admin/stats", 20_000);
   const overview = useLiveData<Overview>("/api/admin/overview", 30_000);
-  const traffic = useLiveData<Traffic>("/api/admin/traffic?range=90d", 300_000);
+  const traffic = useLiveData<Traffic>(trafficUrl(), 300_000);
 
   const records = useSyncExternalStore(
     subscribeActivity,

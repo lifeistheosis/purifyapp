@@ -5,7 +5,8 @@
  *
  * Everything here is cut from payloads the panel already polls: the revenue
  * series from /api/admin/overview, the daily visitors from
- * /api/admin/traffic?range=90d. Nothing is read for the Home alone. All the
+ * the traffic route's one address (trafficUrl in lib/admin/trafficChart.ts,
+ * 120 days since 2026-11-04). Nothing is read for the Home alone. All the
  * days are UTC days, the bucket every admin route counts in.
  *
  * Pure: no fetch and no clock read. The clock comes in as an argument.

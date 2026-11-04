@@ -14,6 +14,7 @@
 import { useId, useState, type CSSProperties, type KeyboardEvent, type PointerEvent, type ReactNode } from "react";
 
 import { SENSITIVE } from "@/lib/admin/streamer";
+import { useReducedMotion } from "@/lib/ui/motion";
 
 /**
  * The switch: a well, the chosen segment solid and lit. For a period (Now,
@@ -350,6 +351,16 @@ export function Spark({
  * the point and a label with its day and figure come up. A mouse leaving
  * lets it go; a tap stays until the next. The line stretches with its card;
  * the marks, the points and the labels are HTML so they keep their size.
+ *
+ * IT DRAWS ITSELF (the owner, 2026-11-04: "can you add animations to the
+ * chart? Because when we revamped the design, they removed it"). The line
+ * and its area sweep in from the left when the chart opens and again each
+ * time `drawKey` changes (the range, what it counts), and the last point and
+ * the median's figure arrive as the sweep ends. A live refresh of the same
+ * chart does not replay it. A clip, not a dash: the line keeps its width
+ * when the card stretches (non-scaling stroke), which a dash length measured
+ * on the path would not match. Off with the panel's Motion switch, read
+ * through useReducedMotion, never a media query (admin-theme.css says why).
  */
 export function TrendLine({
   values,
@@ -360,6 +371,7 @@ export function TrendLine({
   marks,
   height = 150,
   label,
+  drawKey = "",
 }: {
   values: readonly number[];
   before?: readonly number[];
@@ -370,7 +382,10 @@ export function TrendLine({
   marks: [string, string, string];
   height?: number;
   label: string;
+  /** What the chart shows; a change replays the draw. The same chart refreshed keeps its key. */
+  drawKey?: string;
 }) {
+  const reduced = useReducedMotion();
   const W = 600;
   // Letters and digits only: the id goes into url(#...), where React's own marks are awkward.
   const gid = `adm-trend-${useId().replace(/[^a-zA-Z0-9]/g, "")}`;
@@ -422,7 +437,16 @@ export function TrendLine({
             }
           : {})}
       >
-        <svg role="img" aria-label={label} width="100%" height={height} viewBox={`0 0 ${W} ${height}`} preserveAspectRatio="none" className="block overflow-visible">
+        <svg
+          key={`draw:${drawKey}`}
+          role="img"
+          aria-label={label}
+          width="100%"
+          height={height}
+          viewBox={`0 0 ${W} ${height}`}
+          preserveAspectRatio="none"
+          className={`block overflow-visible${reduced ? "" : " adm-trend-draw"}`}
+        >
           <defs>
             <linearGradient id={gid} x1="0" x2="0" y1="0" y2="1">
               <stop offset="0" stopColor="var(--adm-ink)" stopOpacity={0.17} />
@@ -444,18 +468,25 @@ export function TrendLine({
         </svg>
         {median ? (
           <span
+            key={`median:${drawKey}`}
             aria-hidden
-            className="absolute left-0 -translate-y-full rounded-[4px] px-1 pb-0.5 font-mono text-[10.5px]"
+            className={`absolute left-0 -translate-y-full rounded-[4px] px-1 pb-0.5 font-mono text-[10.5px]${reduced ? "" : " adm-trend-late"}`}
             style={{ top: y(median.value), color: "var(--adm-ink-2)", background: "var(--adm-panel)" }}
           >
             {median.text}
           </span>
         ) : null}
         <span
+          key={`last:${drawKey}`}
           aria-hidden
-          className="absolute h-[7px] w-[7px] -translate-x-1/2 -translate-y-1/2 rounded-full"
-          style={{ left: "100%", top: y(values[last]), background: "var(--adm-ink)", boxShadow: "var(--adm-lit-soft)" }}
-        />
+          className="absolute -translate-x-1/2 -translate-y-1/2"
+          style={{ left: "100%", top: y(values[last]) }}
+        >
+          <span
+            className={`block h-[7px] w-[7px] rounded-full${reduced ? "" : " adm-trend-arrive"}`}
+            style={{ background: "var(--adm-ink)", boxShadow: "var(--adm-lit-soft)" }}
+          />
+        </span>
         {picked !== null ? (
           <>
             <span aria-hidden className="pointer-events-none absolute top-0 w-px" style={{ left: `${at}%`, height, background: "var(--chart-hover)" }} />

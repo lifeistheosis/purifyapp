@@ -10,8 +10,8 @@
 //
 // ONE TIMER PER URL, NOT PER CALLER. Three components ask for
 // /api/admin/overview (the rail at 60s, the activity feed at 30s, the commerce
-// tab at 30s), two ask for /api/admin/stats and two for
-// /api/admin/traffic?range=90d. Each used to open its own interval, so the
+// tab at 30s), two ask for /api/admin/stats and four for the traffic days
+// (trafficUrl in lib/admin/trafficChart.ts). Each used to open its own interval, so the
 // overview endpoint (which runs service-role counts) was hit three times on
 // three unsynchronised schedules for one screen, and two callers could render
 // different numbers for the same fact at the same moment. Subscribers now share
@@ -21,6 +21,7 @@
 // fresher than they asked for, which is never the wrong direction.
 
 import { adminJson } from "./fetchJson";
+import { larpOn } from "./larp";
 
 /** The immutable half of an entry. Replaced, never mutated, so React can diff it. */
 export type Snapshot = {
@@ -73,11 +74,58 @@ type Entry = {
 
 const entries = new Map<string, Entry>();
 
+// ── Remembered answers ────────────────────────────────────────────────────
+// The owner, 2026-11-04: "the chart numbers load pretty slow on first open".
+// For the addresses below, the last good answer is kept in this browser, and
+// a first open draws it at once (its lastSynced is when it was read, so every
+// "synced" line stays true) while the fresh read is on the wire. Only the
+// days of traffic: finished days do not change, so yesterday's answer is
+// right in all but its last point, which the fresh read replaces a moment
+// later. A live count, money or an order is never drawn from an old answer.
+const REMEMBERED = [/^\/api\/admin\/traffic\?/];
+const REMEMBER_KEY = "purify:admin:live:";
+const seeds = new Map<string, Snapshot>();
+
+function remembers(url: string): boolean {
+  return REMEMBERED.some((r) => r.test(url));
+}
+
+/** The kept answer as a snapshot, read from the browser once per address. */
+function seedOf(url: string): Snapshot {
+  if (!remembers(url) || typeof window === "undefined" || larpOn()) return EMPTY_SNAPSHOT;
+  let s = seeds.get(url);
+  if (!s) {
+    s = EMPTY_SNAPSHOT;
+    try {
+      const raw = typeof localStorage === "undefined" ? null : localStorage.getItem(REMEMBER_KEY + url);
+      const kept = raw ? (JSON.parse(raw) as { at?: unknown; data?: unknown }) : null;
+      if (kept && typeof kept.at === "number" && kept.data && typeof kept.data === "object") {
+        s = { data: kept.data, lastSynced: new Date(kept.at), loading: false, failing: false, misses: 0 };
+      }
+    } catch {
+      // Storage refused or the kept answer unreadable: start as before.
+    }
+    seeds.set(url, s);
+  }
+  return s;
+}
+
+function remember(url: string, data: unknown, at: Date): void {
+  // Larp mode inflates what adminJson returns; an inflated answer kept here
+  // would be drawn later as the real one.
+  if (!remembers(url) || larpOn()) return;
+  try {
+    localStorage.setItem(REMEMBER_KEY + url, JSON.stringify({ at: at.getTime(), data }));
+  } catch {
+    // Not kept: the next first open reads as before.
+  }
+}
+
 function entryFor(url: string): Entry {
   let e = entries.get(url);
   if (!e) {
     e = {
-      snapshot: EMPTY_SNAPSHOT,
+      snapshot: seedOf(url),
       listeners: new Set(),
       intervals: new Map(),
       timer: null,
@@ -96,7 +144,7 @@ function entryFor(url: string): Entry {
  * map entry there would be a render-phase mutation of module state.
  */
 export function liveSnapshot(url: string): Snapshot {
-  return entries.get(url)?.snapshot ?? EMPTY_SNAPSHOT;
+  return entries.get(url)?.snapshot ?? seedOf(url);
 }
 
 function publish(e: Entry, patch: Partial<Snapshot>): void {
@@ -118,7 +166,9 @@ export function readLive(url: string): Promise<void> {
       // a note saying so.
       publish(e, { failing: true, loading: false, misses: e.snapshot.misses + 1 });
     } else {
-      publish(e, { data: d, lastSynced: new Date(), failing: false, loading: false, misses: 0 });
+      const now = new Date();
+      publish(e, { data: d, lastSynced: now, failing: false, loading: false, misses: 0 });
+      remember(url, d, now);
     }
   })().finally(() => {
     e.inFlight = null;

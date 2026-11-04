@@ -19,6 +19,7 @@ import {
 } from "@/lib/admin/since";
 import { SENSITIVE } from "@/lib/admin/streamer";
 import { useAttention } from "@/lib/admin/useAttention";
+import { trafficUrl } from "@/lib/admin/trafficChart";
 import { useLiveData } from "@/lib/admin/useLiveData";
 import { formatPrice } from "@/lib/shop/format";
 
@@ -219,7 +220,7 @@ export function HomeTab() {
   const { summary, refresh } = useAttention();
   const overview = useLiveData<Overview>("/api/admin/overview", 60_000);
   const stats = useLiveData<Stats>("/api/admin/stats", 20_000);
-  const traffic = useLiveData<Traffic>("/api/admin/traffic?range=90d", 300_000);
+  const traffic = useLiveData<Traffic>(trafficUrl(), 300_000);
   // Read once as the Home opens: the hour's goals cost four counts a metric,
   // and a slow hour is not a fault worth polling for.
   const goals = useAdminFetch<GoalsPayload>("/api/admin/hourly-goals");

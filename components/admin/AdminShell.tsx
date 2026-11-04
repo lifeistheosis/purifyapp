@@ -493,6 +493,13 @@ export function AdminShell({
   // from the first during render keeps a non-owner off an owner tab without
   // an effect that calls setState.
   const [requested, setActive] = useState<TabId>("today");
+  // False until the #tab= link has been read. The server cannot see the link,
+  // so its first paint used to be Home whatever the address said: a saved
+  // link to Money drew Home for a moment, ran Home's reads, and wrote a Home
+  // visit of under a second to the usage log every time (56 of his 136 Home
+  // rows by 2026-11-04, which made Home read as a doorway it was not). No
+  // view is drawn, and nothing is logged, until the link has been read.
+  const [booted, setBooted] = useState(false);
   // Only for the rail's title attribute, which CSS cannot blur. Everything
   // else that hides on stream does it with .adm-sensitive.
   const streaming = useStreamerOn();
@@ -570,6 +577,10 @@ export function AdminShell({
     }
     readHash();
     bootstrapped.current = true;
+    /* eslint-disable-next-line react-hooks/set-state-in-effect -- the link can
+       only be read here, on the client, after the server's paint; this flag
+       is what keeps that paint from drawing Home in the meantime. */
+    setBooted(true);
     window.addEventListener("hashchange", readHash);
     return () => window.removeEventListener("hashchange", readHash);
   }, []);
@@ -643,7 +654,9 @@ export function AdminShell({
   const figureOf = (f: AdminFigure | undefined): RailFigure | null => (f ? railFigure(f, readings) : null);
 
   // How the admin is used, for admin accounts only (lib/admin/useUsageLog.ts).
-  useUsageLog(active);
+  // Nothing until the link has been read, so the first view logged is the one
+  // he opened.
+  useUsageLog(booted ? active : null);
 
   const nav = (
     <nav aria-label="Admin sections">
@@ -911,7 +924,7 @@ export function AdminShell({
             {/* "Is anything wrong", on every page but Home, whose list of what
                 needs him is this same summary in full. Only while there is
                 something to say. */}
-            {active === "today" ? null : (
+            {!booted || active === "today" ? null : (
               <AttentionStrip
                 summary={attention.summary}
                 isOverview={mode === "ops" && active === "overview"}
@@ -922,7 +935,12 @@ export function AdminShell({
             {/* Every page opens the same way: its name and one sentence of
                 what it is for. On the desktop its views are in the rail; on a
                 phone they are the switch under the name. */}
-            <header className="mb-5">
+            {booted ? null : (
+              // The link is read on the next frame; until then the canvas
+              // holds the place of a page's heading and draws no view.
+              <div className="mb-5 min-h-[54px]" aria-hidden />
+            )}
+            <header className={booted ? "mb-5" : "hidden"}>
               <h1
                 className="font-sans text-[24px] font-semibold leading-tight tracking-[-0.02em] md:text-[27px]"
                 style={{ color: "var(--adm-ink)" }}
@@ -952,15 +970,17 @@ export function AdminShell({
                 entrance replays: one 180ms move, not a cascade. The boundary
                 sits here, inside the shell and around the open view only, so
                 a view that throws cannot take the rail down with it. */}
-            <div key={active} className="adm-panel-enter">
-              <TabBoundary label={current.label} onRetry={() => setReloadKey((n) => n + 1)}>
-                {Current ? (
-                  <Current key={reloadKey} />
-                ) : (
-                  <OwnerSection key={reloadKey} ownerEmail={adminEmail} panel={ownerPanelOf(active)} />
-                )}
-              </TabBoundary>
-            </div>
+            {booted ? (
+              <div key={active} className="adm-panel-enter">
+                <TabBoundary label={current.label} onRetry={() => setReloadKey((n) => n + 1)}>
+                  {Current ? (
+                    <Current key={reloadKey} />
+                  ) : (
+                    <OwnerSection key={reloadKey} ownerEmail={adminEmail} panel={ownerPanelOf(active)} />
+                  )}
+                </TabBoundary>
+              </div>
+            ) : null}
           </div>
         </div>
       </div>

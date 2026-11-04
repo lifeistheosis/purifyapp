@@ -55,6 +55,8 @@ export function scrubLabel(raw: string | null | undefined): string | null {
 }
 
 export type UsageRow = {
+  /** The table's identity column: the order rows were written in. */
+  id?: number;
   kind: "view" | "action";
   tab: string;
   ms: number | null;
@@ -62,6 +64,50 @@ export type UsageRow = {
   label: string | null;
   at: string;
 };
+
+/** Under this, a Home view that opened the page and handed it on was never seen. */
+const PHANTOM_MS = 1000;
+
+/**
+ * The log without the Home views nobody saw.
+ *
+ * Until 2026-11-04 the shell drew Home before it had read the address's
+ * #tab= link (the server cannot see a link), so every visit opened from a
+ * saved link to another page wrote a Home view first: opened with nothing
+ * before it, gone in under a second, and handed on to the page the link
+ * named. His log of 21 October to 4 November held 56 of them in 136 Home
+ * rows, almost all handing on to Money. The shell no longer writes them
+ * (AdminShell's `booted`); this keeps the month already written from
+ * counting them as visits to Home and as moves from Home.
+ *
+ * A row is dropped when it is a Home view with no view before it, under a
+ * second long, and the next view in the order written came from Home. That
+ * next view was opened by the link, so it is kept with no view before it,
+ * and does not count as a move from Home. A person who opens Home and leaves
+ * it inside a second reads the same and is dropped with them: under a second
+ * is not a look at a page. Rows come back in the order they were given.
+ */
+export function withoutPhantomHome<T extends UsageRow>(rows: readonly T[]): T[] {
+  const order = rows.map((r, i) => ({ r, i }));
+  order.sort((a, b) => (a.r.id ?? 0) - (b.r.id ?? 0) || a.r.at.localeCompare(b.r.at) || a.i - b.i);
+  const drop = new Set<number>();
+  const handedOn = new Set<number>();
+  for (let k = 0; k < order.length; k++) {
+    const r = order[k].r;
+    if (r.kind !== "view" || r.tab !== "today" || r.from_tab !== null || (r.ms ?? 0) >= PHANTOM_MS) continue;
+    const next = order.slice(k + 1).find((o) => o.r.kind === "view");
+    if (next && next.r.from_tab === "today") {
+      drop.add(order[k].i);
+      handedOn.add(next.i);
+    }
+  }
+  const out: T[] = [];
+  rows.forEach((r, i) => {
+    if (drop.has(i)) return;
+    out.push(handedOn.has(i) ? { ...r, from_tab: null } : r);
+  });
+  return out;
+}
 
 export type UsageSummary = {
   events: number;
@@ -72,11 +118,12 @@ export type UsageSummary = {
   actions: { tab: string; label: string; count: number }[];
 };
 
-export function summarizeUsage(rows: UsageRow[], knownTabs: string[]): UsageSummary {
+export function summarizeUsage(all: UsageRow[], knownTabs: string[]): UsageSummary {
   const views = new Map<string, { opens: number; totalMs: number; quickExits: number }>();
   const paths = new Map<string, number>();
   const actions = new Map<string, number>();
   let since: string | null = null;
+  const rows = withoutPhantomHome(all);
 
   for (const r of rows) {
     if (since === null || r.at < since) since = r.at;

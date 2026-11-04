@@ -19,6 +19,18 @@ export type ChartRange = (typeof CHART_RANGES)[number];
 /** The longest range: the one read the chart makes. */
 export const CHART_FETCH: ChartRange = 120;
 
+/**
+ * The one address the admin reads its days from. Home, Traffic's Overview,
+ * the activity bell and the chart each used to ask for their own window (90
+ * days three times, 120 once), and each window was counted on its own; one
+ * address means the panel's live store asks once and all of them draw from
+ * it (2026-11-04, with lib/admin/trafficSeries.ts). Every reader cuts the
+ * last N days it wants from it.
+ */
+export function trafficUrl(latest: "now" | "complete" = "now"): string {
+  return `/api/admin/traffic?range=${CHART_FETCH}d&latest=${latest}`;
+}
+
 /** The days the traffic route reads for a range ("14d"). Anything it does not know is 30. */
 export function rangeDays(range: string | null | undefined): number {
   const m = /^(\d+)d$/.exec(range ?? "");

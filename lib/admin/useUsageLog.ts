@@ -19,7 +19,12 @@ import { MAX_VIEW_MS, scrubLabel, type UsageEvent } from "./usage";
 const FLUSH_EVERY_MS = 30_000;
 const URL = "/api/admin/usage";
 
-export function useUsageLog(active: string): void {
+/**
+ * `active` is null while the shell has not yet read the address's #tab= link:
+ * no view is open then, so the view the page was opened on is the first one
+ * logged, never the Home the server drew before the link was read.
+ */
+export function useUsageLog(active: string | null): void {
   const queue = useRef<UsageEvent[]>([]);
   const view = useRef<{ tab: string; from: string | null; ms: number; since: number | null } | null>(null);
   const activeRef = useRef(active);
@@ -30,6 +35,7 @@ export function useUsageLog(active: string): void {
 
   // One view closes and the next opens whenever the open tab changes.
   useEffect(() => {
+    if (active === null) return;
     const now = performance.now();
     const prev = view.current;
     if (prev) {
@@ -87,7 +93,8 @@ export function useUsageLog(active: string): void {
       const el = (e.target as HTMLElement | null)?.closest<HTMLElement>("button, a, [role='button']");
       if (!el || !el.closest(".adm") || el.closest(".adm-sensitive")) return;
       const label = scrubLabel(el.getAttribute("aria-label") || el.textContent);
-      if (label) queue.current.push({ kind: "action", tab: activeRef.current, label });
+      const tab = activeRef.current;
+      if (label && tab !== null) queue.current.push({ kind: "action", tab, label });
     }
 
     const id = window.setInterval(() => send(false), FLUSH_EVERY_MS);
