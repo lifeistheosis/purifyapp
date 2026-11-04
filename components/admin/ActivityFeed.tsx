@@ -560,6 +560,8 @@ function ActivityBell({ reduced }: { reduced: boolean }) {
   const countFrom = seenAt ?? tl.line?.at ?? null;
   const unseen = newerThan(items, countFrom);
   const litFrom = open ? openedFrom : countFrom;
+  // While open, what was new as it opened; the badge itself has gone to 0.
+  const newHere = newerThan(items, litFrom);
 
   const toggle = () => {
     if (!open) {
@@ -671,7 +673,7 @@ function ActivityBell({ reduced }: { reduced: boolean }) {
                 Activity
               </p>
               <p className="truncate font-sans text-[11.5px]" style={{ color: "var(--adm-ink-3)" }}>
-                {unseen > 0 ? `${unseen} new since you last opened this` : "Everything, newest first"}
+                {newHere > 0 ? `${newHere} new since you last opened this` : "Everything, newest first"}
               </p>
             </div>
 

@@ -11,7 +11,7 @@
 // now, and its old bookmark (#tab=sourcing) lands here and opens it
 // (lib/admin/pages.ts RETIRED_VIEWS, lib/admin/handoff.ts).
 
-import { useState } from "react";
+import { Fragment, useState } from "react";
 
 import { takeInitialTab } from "@/lib/admin/handoff";
 
@@ -53,12 +53,18 @@ function AlsoHere({ part, onPick }: { part: Part; onPick: (p: Part) => void }) {
     <p className="font-sans text-[12.5px] leading-[1.9]" style={ink3}>
       Also here:{" "}
       {ALSO.map(([id, label], i) => (
-        <span key={id} className="whitespace-nowrap">
-          <button type="button" onClick={() => onPick(id)} className="underline underline-offset-[3px] hover:text-[color:var(--adm-ink)]">
-            {label}
-          </button>
-          {i < ALSO.length - 1 ? ", " : ""}
-        </span>
+        // The comma stays with its link and the space after it is outside,
+        // so the line wraps between links on a phone instead of running off
+        // the screen (it pushed the Catalogue 146px wide at 375, 2026-11-04).
+        <Fragment key={id}>
+          <span className="whitespace-nowrap">
+            <button type="button" onClick={() => onPick(id)} className="hit-44 underline underline-offset-[3px] hover:text-[color:var(--adm-ink)]">
+              {label}
+            </button>
+            {i < ALSO.length - 1 ? "," : ""}
+          </span>
+          {i < ALSO.length - 1 ? " " : ""}
+        </Fragment>
       ))}
     </p>
   );

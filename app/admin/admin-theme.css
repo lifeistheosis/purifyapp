@@ -1664,6 +1664,16 @@
   font-weight: 600;
   box-shadow: var(--adm-lit-soft);
 }
+/* A thumb, not a cursor (the owner, 2026-11-04: "optimize the screens overall
+   so it shows up better on mobile"). On a phone every switch option measured
+   27px tall: the days, Now and Last night, the views under a page's name.
+   On a touch screen it is 38, and 44 with the well around it. Keyed on the
+   pointer, like the toolbar's buttons. */
+@media (pointer: coarse) {
+  .adm .adm-seg-btn {
+    min-height: 38px;
+  }
+}
 /* On a phone the switch is a row the thumb slides along, faded at its end
    when there is more to it. */
 .adm-seg-scroll {

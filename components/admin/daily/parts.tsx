@@ -107,7 +107,8 @@ export function PanelLink({ onClick, children }: { onClick: () => void; children
     <button
       type="button"
       onClick={onClick}
-      className="shrink-0 rounded-[4px] font-sans text-[12px] underline decoration-[var(--adm-line-strong)] underline-offset-[3px] hover:decoration-[var(--adm-ink-2)]"
+      // hit-44: the link paints 19px tall; a thumb gets 44 (app/globals.css).
+      className="hit-44 shrink-0 rounded-[4px] font-sans text-[12px] underline decoration-[var(--adm-line-strong)] underline-offset-[3px] hover:decoration-[var(--adm-ink-2)]"
       style={{ color: "var(--adm-ink-2)" }}
     >
       {children}

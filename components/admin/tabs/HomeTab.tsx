@@ -176,6 +176,22 @@ function GoalRow({ goal, minutes }: { goal: Goal; minutes: number }) {
   );
 }
 
+/** Where he last looked: a line drawn in the log, never the start of it. */
+function LookedLine({ words }: { words: string }) {
+  return (
+    <div
+      role="separator"
+      aria-label={`You last looked ${words}`}
+      className="relative z-[1] my-1.5 flex items-center gap-2 font-sans text-[11.5px]"
+      style={{ color: "var(--adm-ink)", paddingLeft: 66 }}
+    >
+      <span className="h-px flex-1" style={{ background: "var(--adm-ink)", boxShadow: "var(--adm-lit-soft)" }} />
+      <span className="shrink-0">You last looked {words}</span>
+      <span className="h-px w-6" style={{ background: "var(--adm-ink)", boxShadow: "var(--adm-lit-soft)" }} />
+    </div>
+  );
+}
+
 function Totals({ items }: { items: { value: ReactNode; label: string; sensitive?: boolean }[] }) {
   return (
     <div className="grid grid-cols-2 gap-x-3 gap-y-3 sm:grid-cols-3 lg:grid-cols-5 lg:gap-0">
@@ -310,6 +326,8 @@ export function HomeTab() {
       ]
     : [];
   const basis = tl.line?.basis ?? null;
+  const showLine = Boolean(lineAt) && basis !== "day";
+  const lineText = lineAt ? lineWords(lineAt, now) : "";
   const newCount = fresh.length + (freshReaders.length > 0 ? 1 : 0);
   const lineNote = !ready
     ? tl.status === "failed"
@@ -452,26 +470,16 @@ export function HomeTab() {
                 />
                 {groups.map((g) => (
                   <div key={g.label}>
+                    {/* At the start of a part of the day, the line goes above
+                        its heading, so the heading sits with the rows under it. */}
+                    {g.rows[0] === firstSeen && showLine ? <LookedLine words={lineText} /> : null}
                     <p className="mb-0.5 mt-3 font-sans text-[11.5px]" style={{ color: "var(--adm-ink-3)", paddingLeft: 80 }}>
                       {g.label}
                     </p>
                     <ul>
                       {g.rows.map((e, i) => (
                         <li key={`${e.kind}-${e.at}-${i}`}>
-                          {e === firstSeen && lineAt && basis !== "day" ? (
-                            // Where he last looked: a line in the log, never
-                            // the start of it.
-                            <div
-                              role="separator"
-                              aria-label={`You last looked ${lineWords(lineAt, now)}`}
-                              className="relative z-[1] my-1.5 flex items-center gap-2 font-sans text-[11.5px]"
-                              style={{ color: "var(--adm-ink)", paddingLeft: 66 }}
-                            >
-                              <span className="h-px flex-1" style={{ background: "var(--adm-ink)", boxShadow: "var(--adm-lit-soft)" }} />
-                              <span className="shrink-0">You last looked {lineWords(lineAt, now)}</span>
-                              <span className="h-px w-6" style={{ background: "var(--adm-ink)", boxShadow: "var(--adm-lit-soft)" }} />
-                            </div>
-                          ) : null}
+                          {e === firstSeen && showLine && i > 0 ? <LookedLine words={lineText} /> : null}
                           <button
                             type="button"
                             onClick={() => open(e.tab)}
