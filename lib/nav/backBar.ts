@@ -108,6 +108,10 @@ export const OWN_HEADER_PATTERNS: RegExp[] = [
   // page's heading has scrolled away. Saved leads back to You, the journal and
   // the plans to the Bible, a plan to the plans.
   /^\/saved$/,
+  // The order gift (1.8, r3-39 C): purifyapp.net/gift, where the EIKON card's
+  // QR lands. Its own bar starts clear over the card in the light and takes
+  // the page's name once the ticket's heading has scrolled away.
+  /^\/gift$/,
   /^\/journal$/,
   /^\/plans$/,
   /^\/plans\/[^/]+$/,

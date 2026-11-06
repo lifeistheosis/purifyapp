@@ -13783,4 +13783,154 @@ a.set-lab.set-link {
  :where(h1, h2, h3):where(:lang(de), :lang(ka)) {
   hyphens: auto;
  }
+
+/* ── The order gift: the card in your hand (1.8, r3-39 C) ─────────────────
+   purifyapp.net/gift, where the QR on the EIKON thank-you card lands. The
+   owner's pick C of Homebase/boards/purify-master/variants/r3-39-order-gift
+   (2026-11-06), after his note on the first build: "what you're showing right
+   now is the old Purify design ... the text ... in that card". The card they
+   just scanned, front and back, lies in a soft light at the top of the screen
+   (the real print files, public/eikon/), so the screen carries on from the
+   parcel; the gift is a ticket on Settings' raised panel (.set-panel) with a
+   torn line; then the lit pill (.rule-pray), and what Plus opens as Settings'
+   own rows. components/gifts/OrderGiftClient.tsx.
+   On Parchment nothing glows: the light is a shade of ink. The cards settle
+   once as the page opens, never under data-motion="reduce". */
+.gift-stage {
+ position: relative;
+ height: 372px;
+ overflow: hidden;
+}
+.gift-light {
+ position: absolute;
+ left: 50%;
+ top: 44px;
+ width: 440px;
+ height: 380px;
+ margin-left: -220px;
+ background: radial-gradient(closest-side, rgb(255 255 255 / 0.13), rgb(255 255 255 / 0));
+ pointer-events: none;
+}
+html[data-reading-mode="parchment"] .gift-light {
+ background: radial-gradient(closest-side, rgb(0 0 0 / 0.06), rgb(0 0 0 / 0));
+}
+.gift-card {
+ position: absolute;
+ left: 50%;
+ width: 262px;
+ height: 157px;
+ border-radius: 7px;
+ box-shadow:
+  0 1px 1px rgb(0 0 0 / 0.4),
+  0 26px 40px -14px rgb(0 0 0 / 0.95);
+}
+html[data-reading-mode="parchment"] .gift-card {
+ box-shadow:
+  0 1px 2px rgb(60 40 20 / 0.25),
+  0 22px 34px -16px rgb(60 40 20 / 0.45);
+}
+.gift-card-back {
+ top: 118px;
+ margin-left: -111px;
+ transform: rotate(-7deg);
+}
+.gift-card-front {
+ top: 166px;
+ margin-left: -145px;
+ transform: rotate(4deg);
+}
+@keyframes gift-card-in {
+ from {
+  opacity: 0;
+  translate: 0 14px;
+ }
+ to {
+  opacity: 1;
+  translate: 0 0;
+ }
+}
+:where([data-motion="full"]) .gift-card {
+ animation: gift-card-in 700ms var(--ease-house) backwards;
+}
+:where([data-motion="full"]) .gift-card-front {
+ animation-delay: 120ms;
+}
+.gift-caption {
+ margin-top: -26px;
+ text-align: center;
+ font-family: var(--font-serif);
+ font-size: 14px;
+ font-style: italic;
+ color: color-mix(in srgb, var(--color-paper) 62%, transparent);
+}
+.gift-eyebrow {
+ font-size: 11px;
+ font-weight: 700;
+ letter-spacing: 0.18em;
+ text-transform: uppercase;
+ color: color-mix(in srgb, var(--color-paper) 62%, transparent);
+}
+/* The torn line across the ticket, with its two bites out of the edge. */
+.gift-perf {
+ position: relative;
+ margin-inline: 18px;
+ border-top: 1.5px dashed color-mix(in srgb, var(--color-paper) 18%, transparent);
+}
+.gift-perf::before,
+.gift-perf::after {
+ content: "";
+ position: absolute;
+ top: -11px;
+ width: 20px;
+ height: 20px;
+ border-radius: 50%;
+ background: var(--color-night);
+}
+.gift-perf::before {
+ inset-inline-start: -29px;
+}
+.gift-perf::after {
+ inset-inline-end: -29px;
+}
+.gift-check {
+ display: grid;
+ flex: none;
+ place-items: center;
+ width: 38px;
+ height: 38px;
+ border-radius: 50%;
+ background: var(--color-paper);
+ color: var(--color-night);
+ box-shadow:
+  0 0 16px rgb(255 255 255 / 0.6),
+  0 2px 4px rgb(0 0 0 / 0.5);
+}
+html[data-reading-mode="parchment"] .gift-check {
+ box-shadow: 0 2px 4px rgb(0 0 0 / 0.2);
+}
+/* The label's two answers, carved in as Settings carves its choices. */
+.gift-field {
+ display: block;
+ width: 100%;
+ height: 48px;
+ margin-top: 6px;
+ padding-inline: 14px;
+ border: 0;
+ border-radius: 13px;
+ font-size: 16px;
+ color: var(--color-paper);
+ background: var(--color-night-deep);
+ box-shadow:
+  inset 0 2px 5px rgb(0 0 0 / 0.75),
+  inset 0 0 0 1px rgb(0 0 0 / 0.5),
+  0 1px 0 color-mix(in srgb, var(--color-paper) 7%, transparent);
+ outline: none;
+}
+.gift-field::placeholder {
+ color: color-mix(in srgb, var(--color-paper) 30%, transparent);
+}
+.gift-field:focus-visible {
+ box-shadow:
+  inset 0 2px 5px rgb(0 0 0 / 0.75),
+  0 0 0 2px color-mix(in srgb, var(--color-paper) 45%, transparent);
 }
