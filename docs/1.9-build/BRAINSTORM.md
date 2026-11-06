@@ -443,3 +443,65 @@ Plus-locked features through the paywall's own Try it screens.
 9. Banner pictures need moderation: check uploads can be reported and
    reviewed.
 10. A favourite line from your florilegium on your profile.
+
+### His decision on sections 2 to 7 (2026-11-06)
+
+All of them: "So far, I like all of these. Let's do all of these". He named
+the history ("expand history, make the artwork a little lighter") and every
+part of keeping, practice and listening, and asked for refinement "as much
+as we can" across the sections and identity.
+
+### Who asked for what: `ideas.json`
+
+His words: "there's updates that I request specifically ... these are
+attributed to you ... so we can learn from what type of requests I give and
+what types of requests you give ... history is so we can learn from our
+mistakes and our actions."
+
+`docs/1.9-build/ideas.json` holds every 1.9 item with `from` (edgar, claude
+or both), its status and whether it needs a design. After the release each
+gets its `outcome`: shipped or not, and what readers did with it. On
+2026-11-06: 89 items, 6 from him, 83 from Claude.
+
+### Three versions per section (2026-11-06)
+
+One design question per section, three versions each, drawn on the local app
+with its own fonts, icons and artwork (mockups, nothing built):
+
+- 2 Reading, Candlelight's look: A Glow (a soft white glow, dark edges), B The
+  lamp follows (the lines being read lit, the rest dimmed), C Vellum (a fine
+  grain and a drop capital).
+- 3 Listening, one bar while playing: A The bar is the player, B One card in
+  two rows (player above, chapter, speed and timer below), C A small pill (the
+  chapter moves to the top bar).
+- 4 Practice, the plans page: A The season first (the Nativity Fast on top),
+  B Continue first (today's reading, then picture tiles), C The week (seven
+  days, progress bars, Catch up).
+- 5 Keeping, the Florilegium's first page: A Begin with a collection
+  (starter tiles), B One line (a single verse, two buttons), C The shelf
+  (collections, sync status, starters below).
+- 6 Beauty, full dress on the timeline: A A switch on top (Plain or Full
+  dress), B Art in each row, C Era bands (full-width artwork per era).
+- 7 Identity, the profile: A Patron as picture, B Patron banner (and the name
+  day), C Mark and frames (the mark explained on a post, earned frames).
+
+His picks: (waiting)
+
+### The artwork's weight, found 2026-11-06
+
+`public/history/media` is 21 MB: every picture twice, JPG (13.6 MB) and AVIF
+(7.5 MB), and the apps carry the folder. Keeping one format per platform could
+take about 13 MB off the apps, once the oldest Android WebView and iOS version
+the apps support are checked for AVIF. Three files (0.7 MB) are named nowhere
+in the history code or data: `council-of-jerusalem.v1.jpg`,
+`mission-of-cyril-and-methodius.v1.jpg`, `philokalia-published.v1.jpg`; to
+confirm before removing.
+
+### The order of work, when he says start
+
+1. The seven bugs and the copy (each line in all twenty-one languages).
+2. The designs he picks, and the verse system of section 1.
+3. Expanding: plans, history events, sounds, starter collections (verbatim and
+   cited, through the editorial queue), the Old Testament cross-references,
+   the English word tap.
+4. Last: the megabytes and the animations.
