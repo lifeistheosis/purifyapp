@@ -108,3 +108,48 @@ To be weighed against the other account's notes once they are here.
    Homebase.
 2. The SSM board: what changed, and does any of it touch 1.9?
 3. What leads 1.9?
+
+## Plus, feature by feature (from 2026-11-06)
+
+His words: "let's talk about the plus subscription. list ever single feature
+of it and we will individually brainstorm each feature and how we can improve
+it".
+
+**The price** (`lib/premium/plans.ts`): $9.99 a month or $71.99 a year; the
+year saves 40% and begins with 7 days free on a first subscription. Pro, at
+$19.99 or $199, is everything in Plus with the EIKON Box, the members'
+benefits, and Studio Audio (coming soon). Prices and terms are his decision.
+
+**Where it is sold:** the website and Google Play lock Plus. iOS cannot sell
+it yet (the App Store products were at MISSING_METADATA,
+`docs/app-store-review-notes.md`), and the rule in
+`lib/entitlements/entitlements.ts` never locks what cannot be bought, so an
+iOS reader has all of Plus free.
+
+**What nobody can see:** which lock a reader taps, and which lock leads to a
+purchase. The server takes onboarding and screen events only
+(`lib/security/schemas.ts`, `trackEventSchema`), so which feature sells Plus is
+not known.
+
+The fourteen, as the paywall lists them (`lib/premium/plusRows.ts`), each with
+what stays free and where its lock is. All twelve locks checked in the code on
+2026-11-06.
+
+| # | Feature | What it does | Free beside it | Lock |
+|---|---|---|---|---|
+| 1 | Word study | Every place a Greek word stands, Septuagint and New Testament, the verse beside each | The Greek beside the text, every word's dictionary entry | `components/bible/ChapterReader.tsx` |
+| 2 | Candlelight and Monastery | Two reading palettes for long hours | Dark, Light, True black | `components/reader/ReadingModeChips.tsx`, `components/settings/ReadingModePages.tsx` |
+| 3 | Cross-references | The passages a verse echoes across the New Testament, one tap to open | Every verse, the Greek, the Fathers' commentary | `components/bible/ChapterReader.tsx` |
+| 4 | Your journal | Every note, dated and gathered, with this day in past months brought back | The notes on the verses themselves | `components/journal/JournalClient.tsx`, `components/you/KeptShelf.tsx` |
+| 5 | Listen offline | Save a book's readings on the phone (the apps) | Listening online to every chapter | `components/player/SaveOffline.tsx` |
+| 6 | Ambience | Rain, birds, a bell, cathedral bells, the sea, wind, under the words | The chant under prayers | `components/player/AmbienceSheet.tsx`, `components/player/PrayWith.tsx` |
+| 7 | Reading plans | The Psalter by kathisma, the Gospels a chapter a day, Proverbs in a month; place and streak kept | The whole Bible and the daily readings | `components/plans/PlanClient.tsx` (Begin, and marking a day) |
+| 8 | Remember the verse | Saved verses come back, one card a day, until known by heart | Saving verses | `components/today/RememberCard.tsx`, `components/you/PractiseSheet.tsx` |
+| 9 | Your Florilegium | Collections of verses and the Fathers, with notes | What is already gathered stays on the device | `components/bible/VerseRow.tsx`, `components/florilegium/AddToFlorilegium.tsx`, `components/saved/FlorilegiumRow.tsx` |
+| 10 | Sync | Notes, highlights, bookmarks and collections on every device | Reading and saving on the device; pre-launch supporters keep sync for life | `components/profile/ProfileSyncStatus.tsx` |
+| 11 | History in full dress | Period artwork behind every event, the motion through the timeline, a council's picture moving | Every event, source and citation | `components/history/EventPictures.tsx`, `components/councils/CouncilHero.tsx` |
+| 12 | Profile extras | Avatar frame, profile effect, banner picture, two-color theme in Community | Profile, handle, badges, banner color | `components/community/profile/ProfileEditor.tsx`, `components/community/CommunitySide.tsx` |
+| 13 | The Plus mark | A small cross beside the name in Community, which he can turn off | | Settings |
+| 14 | Discord status | In the Windows app, the Discord portrait framed in the season's color | The other Discord modes | `components/desktop/DiscordModes.tsx` |
+
+Each feature's ideas go under its number below as we reach it.
