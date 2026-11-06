@@ -26,7 +26,7 @@ export type AmbienceTrack = {
    */
   where: "bundle" | "web";
   /** Its drawing on the sheet's tile (components/ui/icons). */
-  icon: "rain" | "bird" | "bell" | "sea" | "wind";
+  icon: "rain" | "bird" | "bell" | "bells" | "sea" | "wind";
 };
 
 export const AMBIENCE_TRACKS: readonly AmbienceTrack[] = [
@@ -40,7 +40,7 @@ export const AMBIENCE_TRACKS: readonly AmbienceTrack[] = [
   // loop made by Homebase/tools/tts-bakeoff/ambience18.py; rights in
   // docs/licensing/audio-provenance.md.
   // "St. Nicholas Cossack Cathedral church bells chiming", Omsk, Zabuhailo, CC0.
-  { id: "peal", labelKey: "ambience.peal", src: "/audio/ambience/peal.mp3", where: "bundle", icon: "bell" },
+  { id: "peal", labelKey: "ambience.peal", src: "/audio/ambience/peal.mp3", where: "bundle", icon: "bells" },
   // "On a pebble beach", earthcalling, public domain (PDSounds).
   { id: "sea", labelKey: "ambience.sea", src: "/audio/ambience/sea.mp3", where: "bundle", icon: "sea" },
   // "Killiney Hill Storm Floris", Karlunun, CC0.

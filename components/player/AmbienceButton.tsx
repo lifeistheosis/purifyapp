@@ -3,6 +3,7 @@
 import { useTranslate } from "@/components/i18n/MessagesProvider";
 import { ReaderPill } from "@/components/bible/ReaderPill";
 import { Bell } from "@/components/ui/icons/Bell";
+import { Bells } from "@/components/ui/icons/Bells";
 import { Bird } from "@/components/ui/icons/Bird";
 import { Rain } from "@/components/ui/icons/Rain";
 import { Sound } from "@/components/ui/icons/Sound";
@@ -21,6 +22,7 @@ export function AmbienceIcon({ icon, size }: { icon: AmbienceTrack["icon"]; size
   if (icon === "bird") return <Bird size={size} className="shrink-0" />;
   if (icon === "sea") return <Waves size={size} className="shrink-0" />;
   if (icon === "wind") return <Wind size={size} className="shrink-0" />;
+  if (icon === "bells") return <Bells size={size} className="shrink-0" />;
   return <Bell size={size} className="shrink-0" />;
 }
 
