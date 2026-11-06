@@ -1272,6 +1272,19 @@
    "needsDesign": false,
    "version": null,
    "outcome": null
+  },
+  {
+   "id": "e-map-places",
+   "section": "Beauty",
+   "kind": "bug",
+   "title": "The history map shows each event where it happened (Alaska in Alaska; the 2018 schism in Minsk with the Phanar)",
+   "from": "edgar",
+   "asked": "2026-11-06",
+   "status": "built",
+   "decided": "2026-11-06",
+   "needsDesign": false,
+   "version": null,
+   "outcome": null
   }
  ]
 }
