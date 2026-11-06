@@ -204,6 +204,7 @@ describe("the Tools pages and Strategy as he picked them (r3-17, 2026-10-30)", (
     expect(pageOf("ratings")?.id).toBe("content");
     // Build 86 note 78: the chants' cleared words, one line on the desk.
     expect(pageOf("chant-words")?.id).toBe("content");
+    expect(pageOf("review")?.id).toBe("content");
     expect(pageOf("ambassadors")?.id).toBe("community");
     expect(pageOf("content-health")?.id).toBe("health");
   });

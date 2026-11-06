@@ -211,12 +211,14 @@ export const ADMIN_PAGE_GROUPS: AdminPageGroup[] = [
       {
         id: "content",
         label: "Content",
-        sentence: "What readers open, the daily catechism, the store ratings, and the chants' cleared words.",
+        sentence: "What readers open, the daily catechism, the store ratings, the chants' cleared words, and what waits for a priest's review.",
         views: [
           { tab: "content", label: "Content" },
           { tab: "catechism", label: "Catechism", folded: true },
           { tab: "ratings", label: "Ratings", folded: true },
           { tab: "chant-words", label: "Chant words", folded: true },
+          // 1.9: the clergy review list, ours only (editorial standards 27).
+          { tab: "review", label: "Clergy review", folded: true },
         ],
       },
       // Community, A, one queue: its parts (Waiting, Announcements, Filter

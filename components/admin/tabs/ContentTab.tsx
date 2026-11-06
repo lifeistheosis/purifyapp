@@ -36,6 +36,7 @@ import { ratingText } from "@/lib/marketing/storeRatings";
 import { BarChart } from "../charts";
 import { CatechismDetail } from "../content/catechism";
 import { ChantWordsDetail } from "../content/chantWords";
+import { ReviewDetail } from "../content/review";
 import { PlayCard, ReviewsCard, sourceLine } from "../content/ratings";
 import { Disclosure, Modal, StatusDot, SubTabs, ToolbarButton } from "../primitives";
 import { BOX, BOX_STYLE, LIT, ink, ink2, ink3, line } from "../tools/look";
@@ -85,7 +86,7 @@ export function ContentTab() {
   return <ContentDesk />;
 }
 
-export function ContentDesk({ focus }: { focus?: "ratings" | "catechism" | "chant-words" }) {
+export function ContentDesk({ focus }: { focus?: "ratings" | "catechism" | "chant-words" | "review" }) {
   const [data, setData] = useState<Payload | null>(null);
   const [failed, setFailed] = useState(false);
   const [ratings, setRatings] = useState<RatingsPayload | null>(null);
@@ -99,9 +100,11 @@ export function ContentDesk({ focus }: { focus?: "ratings" | "catechism" | "chan
   const [sheet, setSheet] = useState<"play" | "reviews" | null>(null);
   const [catechismOpen, setCatechismOpen] = useState(focus === "catechism");
   const [chantWordsOpen, setChantWordsOpen] = useState(focus === "chant-words");
+  const [reviewOpen, setReviewOpen] = useState(focus === "review");
   const ratingsRef = useRef<HTMLElement | null>(null);
   const catechismRef = useRef<HTMLElement | null>(null);
   const chantWordsRef = useRef<HTMLElement | null>(null);
+  const reviewRef = useRef<HTMLElement | null>(null);
 
   useEffect(() => {
     let alive = true;
@@ -137,7 +140,9 @@ export function ContentDesk({ focus }: { focus?: "ratings" | "catechism" | "chan
           ? catechismRef.current
           : focus === "chant-words"
             ? chantWordsRef.current
-            : null;
+            : focus === "review"
+              ? reviewRef.current
+              : null;
     el?.scrollIntoView({ block: "start", behavior: "smooth" });
   }, [focus]);
 
@@ -483,6 +488,32 @@ export function ContentDesk({ focus }: { focus?: "ratings" | "catechism" | "chan
               {chantWordsOpen ? (
                 <div className="mt-2 border-t pt-3" style={line}>
                   <ChantWordsDetail />
+                </div>
+              ) : null}
+            </div>
+          </section>
+
+          {/* ── Clergy review, one line (1.9, editorial standards 27) ──── */}
+          <section ref={reviewRef} className={`${BOX} scroll-mt-24 px-4 py-3.5`} style={BOX_STYLE}>
+            <h2 className="font-sans text-[13.5px] font-semibold" style={ink}>
+              Clergy review
+            </h2>
+            <p className="mt-1 font-sans text-[12px] leading-[1.5]" style={ink3}>
+              Texts the editorials wrote, waiting for a priest to read them. Ours only: readers never see a review mark.
+            </p>
+            <div className="mt-2">
+              <button
+                type="button"
+                onClick={() => setReviewOpen((v) => !v)}
+                className="min-h-11 font-sans text-[12.5px] underline underline-offset-[3px]"
+                style={ink2}
+                aria-expanded={reviewOpen}
+              >
+                {reviewOpen ? "Close" : "The texts waiting, by area"}
+              </button>
+              {reviewOpen ? (
+                <div className="mt-2 border-t pt-3" style={line}>
+                  <ReviewDetail />
                 </div>
               ) : null}
             </div>
