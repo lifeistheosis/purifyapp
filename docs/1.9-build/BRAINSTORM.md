@@ -485,7 +485,38 @@ with its own fonts, icons and artwork (mockups, nothing built):
 - 7 Identity, the profile: A Patron as picture, B Patron banner (and the name
   day), C Mark and frames (the mark explained on a post, earned frames).
 
-His picks: (waiting)
+His picks (2026-11-06, from voice, numbered by the pictures he was sent):
+
+- Reading: a mix of A and B. Drawn: the lines being read lit and the rest
+  dimmed (B), with A's glow behind them and dark edges.
+- Listening: B, and "when you scroll, it turns into C": the card at rest, the
+  small pill while scrolling, the chapter moving to the top bar.
+- Practice: a mix of A and B. Drawn: Continue first, the season's plan below
+  it, then the other plans as picture tiles.
+- Keeping: "honestly, a whole entire revamp", and for that a mix of A and C.
+  Drawn: your collections and the sync line on top, the ready collections
+  below as tiles.
+- Beauty: a mix of A and B: "the prominent historical events, we're gonna make
+  it big like A, but for smaller ones, do B". No switch between plain and full
+  dress: "always full dress all the time". And the pictures are for everyone:
+  "images should be for everyone ... When I meant like an immersive
+  historical design timeline for premium users, I kind of meant it in another
+  way, not just images ... we'll extrapolate more on that after."
+- Identity: "unsure ... I don't like many of them." Checked after: the 1.8
+  profile he picked (r3-28 A) already has the patron and their name day, a
+  favourite verse, the badges and the Plus cosmetics, and the three versions
+  ignored it. What is new for Identity is only: the Plus mark's name (bug 7),
+  the mark explained on a tap, Discord shown only on Windows, frames earned
+  from the badges, seasonal frames, the patron's icon as a picture. Claude's
+  view: keep Identity to the small fixes in 1.9; the profile was redesigned
+  in 1.8 and has not been measured yet.
+
+**What "pictures for everyone" changes:** the history artwork leaves Plus. The
+Plus row "See the timeline in full dress" (`lib/premium/plusRows.ts`,
+`plus.history.*`) and the free/Plus split in `components/history/EventPictures.tsx`
+and `components/councils/CouncilHero.tsx` change with it, and the paywall may
+not promise artwork once it is free. Plus keeps a history row only when the
+new immersive layer exists; what that is, he will say.
 
 ### The artwork's weight, found 2026-11-06
 

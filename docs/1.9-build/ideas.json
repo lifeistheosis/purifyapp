@@ -392,10 +392,10 @@
    "title": "Give Candlelight its own look again without gold",
    "from": "claude",
    "asked": "2026-11-06",
-   "status": "approved",
+   "status": "picked",
    "decided": "2026-11-06",
    "needsDesign": true,
-   "version": null,
+   "version": "A+B",
    "outcome": null
   },
   {
@@ -574,10 +574,10 @@
    "title": "One bar at the bottom while playing (bug 5)",
    "from": "claude",
    "asked": "2026-11-06",
-   "status": "approved",
+   "status": "picked",
    "decided": "2026-11-06",
    "needsDesign": true,
-   "version": null,
+   "version": "B, C when scrolling",
    "outcome": null
   },
   {
@@ -691,10 +691,10 @@
    "title": "The plans list shows your progress and a picture; today it is text rows",
    "from": "claude",
    "asked": "2026-11-06",
-   "status": "approved",
+   "status": "picked",
    "decided": "2026-11-06",
    "needsDesign": true,
-   "version": null,
+   "version": "A+B",
    "outcome": null
   },
   {
@@ -808,10 +808,10 @@
    "title": "Replace the dashed card and the typed arrow (flag 2)",
    "from": "claude",
    "asked": "2026-11-06",
-   "status": "approved",
+   "status": "picked",
    "decided": "2026-11-06",
    "needsDesign": true,
-   "version": null,
+   "version": "A+C, as a whole revamp",
    "outcome": null
   },
   {
@@ -925,10 +925,10 @@
    "title": "Make full dress visible",
    "from": "claude",
    "asked": "2026-11-06",
-   "status": "approved",
+   "status": "picked",
    "decided": "2026-11-06",
    "needsDesign": true,
-   "version": null,
+   "version": "A+B, no switch, always full dress",
    "outcome": null
   },
   {
@@ -1085,7 +1085,8 @@
    "decided": "2026-11-06",
    "needsDesign": true,
    "version": null,
-   "outcome": null
+   "outcome": null,
+   "note": "Identity versions not liked; the 1.8 profile already has patron, name day, favourite verse, badges"
   },
   {
    "id": "s7-05",
@@ -1162,6 +1163,59 @@
    "status": "approved",
    "decided": "2026-11-06",
    "needsDesign": false,
+   "version": null,
+   "outcome": null
+  },
+  {
+   "id": "e-history-free",
+   "section": "Beauty",
+   "kind": "idea",
+   "title": "History pictures for everyone, not Plus",
+   "from": "edgar",
+   "asked": "2026-11-06",
+   "status": "approved",
+   "decided": "2026-11-06",
+   "needsDesign": true,
+   "version": null,
+   "outcome": null,
+   "note": "Plus history to become something else, to be defined by him"
+  },
+  {
+   "id": "e-full-dress-always",
+   "section": "Beauty",
+   "kind": "idea",
+   "title": "No plain or full dress switch: always full dress",
+   "from": "edgar",
+   "asked": "2026-11-06",
+   "status": "approved",
+   "decided": "2026-11-06",
+   "needsDesign": true,
+   "version": null,
+   "outcome": null
+  },
+  {
+   "id": "e-keeping-revamp",
+   "section": "Keeping",
+   "kind": "idea",
+   "title": "A whole revamp of the Florilegium and keeping",
+   "from": "edgar",
+   "asked": "2026-11-06",
+   "status": "approved",
+   "decided": "2026-11-06",
+   "needsDesign": true,
+   "version": null,
+   "outcome": null
+  },
+  {
+   "id": "e-listen-collapse",
+   "section": "Listening",
+   "kind": "idea",
+   "title": "The player card turns into the small pill when scrolling",
+   "from": "edgar",
+   "asked": "2026-11-06",
+   "status": "approved",
+   "decided": "2026-11-06",
+   "needsDesign": true,
    "version": null,
    "outcome": null
   }
