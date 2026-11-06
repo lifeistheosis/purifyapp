@@ -55,7 +55,7 @@ import { reconcilePosts, sameEntries, sameMembers } from "@/lib/community/reconc
 import { ReactionButtons } from "@/components/community/ReactionButtons";
 import { ResponseButtons } from "@/components/community/ResponseButtons";
 import { ClergySeal } from "@/components/community/ClergySeal";
-import { SupporterMark } from "@/components/community/SupporterMark";
+import { SupporterMarkButton } from "@/components/community/SupporterMarkButton";
 import type { ReactionState } from "@/lib/community/reactions";
 import { countsOf, type ResponseKind } from "@/lib/community/responses";
 import { validChapterRef } from "@/lib/community/chapterRef";
@@ -1593,9 +1593,11 @@ function PostCardInner({
                 </span>
                 <ClergySeal mark={post.author_clergy} />
                 {post.author_verified ? <VerifiedBadge /> : null}
-                {/* After the tick when both: standing first, support second. */}
-                <SupporterMark tier={post.author_mark} />
               </AuthorButton>
+              {/* After the tick when both: standing first, support second.
+                  Outside the name's button (1.9): a tap on the cross says what
+                  it means, and a tap on the name still opens the profile. */}
+              <SupporterMarkButton tier={post.author_mark} />
               <span className="font-sans text-[12.5px] text-paper/50">
                 · {timeAgo(post.created_at)} · {t(POST_KIND_KEYS[post.kind])}
               </span>
@@ -1848,7 +1850,7 @@ function PostCardInner({
                             )}
                             <ClergySeal mark={r.author_clergy} size={14} />
                             {r.author_verified ? <VerifiedBadge size={14} /> : null}
-                            <SupporterMark tier={r.author_mark} size={14} />
+                            <SupporterMarkButton tier={r.author_mark} size={14} />
                             <span>· {timeAgo(r.created_at)}</span>
                           </p>
                           <p className="mt-0.5 whitespace-pre-wrap break-words font-sans text-[13.5px] leading-[1.48] text-paper/85">
