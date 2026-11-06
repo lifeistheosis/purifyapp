@@ -573,17 +573,17 @@ his Identity 2 (the mark tapped) and 3 (no Discord row on a phone's paywall).
 ### Review stays on our side (2026-11-06, his rule)
 
 Readers never see that a text awaits review; the team's own writing is
-credited to the editorial team, never to Purify. Recorded as item 27 of
+credited to the editorials (his word), never to Purify. Recorded as item 27 of
 `docs/editorial-standards.md`. Six reader-facing lines break it today, each to
 be rewritten in all twenty-one languages:
 
 | Key | Today | 1.9 |
 |---|---|---|
-| `study.councils.framingAwaitingReview` | Our introduction. Awaiting review by a priest. | An introduction summarized by the editorial team. |
-| `study.heresies.oursAwaitingReview` | Our account, written from the councils and the Fathers. Awaiting review by a priest. | Summarized by the editorial team from the councils and the Fathers. |
+| `study.councils.framingAwaitingReview` | Our introduction. Awaiting review by a priest. | An introduction summarized by the editorials. |
+| `study.heresies.oursAwaitingReview` | Our account, written from the councils and the Fathers. Awaiting review by a priest. | Summarized by the editorials from the councils and the Fathers. |
 | `saints.voice.editorialLabel` | Summary by Purify | Editorial summary |
-| `saints.voice.editorialBody` | Written by Purify, not {name}'s words. | Summarized by the editorial team, not {name}'s words. |
-| `reading.work.ours` | Written by Purify: our retelling, not the saint's own words. | Summarized by the editorial team: not the saint's own words. |
+| `saints.voice.editorialBody` | Written by Purify, not {name}'s words. | Summarized by the editorials, not {name}'s words. |
+| `reading.work.ours` | Written by Purify: our retelling, not the saint's own words. | Summarized by the editorials: not the saint's own words. |
 | `translationDisclaimer.body` | ... still in English while editorial review for theological precision completes. | The body of this page is in English for now. |
 
 Our side: a Review list in the admin panel gathering every file marked
