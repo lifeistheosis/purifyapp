@@ -231,7 +231,7 @@
    "title": "Saved says \"Tap the star on a verse to keep it here\" (`saved.emptyLine`)",
    "from": "claude",
    "asked": "2026-11-06",
-   "status": "approved",
+   "status": "built",
    "decided": "2026-11-06",
    "needsDesign": false,
    "version": null,
@@ -296,7 +296,7 @@
    "title": "Copy",
    "from": "claude",
    "asked": "2026-11-06",
-   "status": "approved",
+   "status": "built",
    "decided": "2026-11-06",
    "needsDesign": false,
    "version": null,
@@ -1245,7 +1245,33 @@
    "needsDesign": false,
    "version": null,
    "outcome": null,
-   "note": "Six reader-facing lines to rewrite; admin Review list for the 66 marked files"
+   "note": "Six lines rewritten in 21 languages (built 2026-11-06); the admin Review list still to build"
+  },
+  {
+   "id": "e-bibles-languages",
+   "section": "Expand",
+   "kind": "idea",
+   "title": "Public-domain Bibles in every app language; picking one offers to switch the app's language too, with Never show again",
+   "from": "edgar",
+   "asked": "2026-11-06",
+   "status": "approved",
+   "decided": "2026-11-06",
+   "needsDesign": true,
+   "version": null,
+   "outcome": null
+  },
+  {
+   "id": "c-test-clock",
+   "section": "Release",
+   "kind": "bug",
+   "title": "A sync test failing on its own since 4 November (a fixed date against a 30-day window)",
+   "from": "claude",
+   "asked": "2026-11-06",
+   "status": "built",
+   "decided": "2026-11-06",
+   "needsDesign": false,
+   "version": null,
+   "outcome": null
   }
  ]
 }
