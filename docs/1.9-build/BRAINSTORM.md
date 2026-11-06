@@ -153,3 +153,86 @@ what stays free and where its lock is. All twelve locks checked in the code on
 | 14 | Discord status | In the Windows app, the Discord portrait framed in the season's color | The other Discord modes | `components/desktop/DiscordModes.tsx` |
 
 Each feature's ideas go under its number below as we reach it.
+
+### How we go through it (his call, 2026-11-06)
+
+Section by section, in chat, with real screenshots of each feature as it is
+today: not designs, a picture of what it is. No showcase page (his words:
+"more token usage"). The shots come from a local run of the app, where Plus is
+open, because this cloud session cannot reach purifyapp.net. His picks are
+recorded here under each feature.
+
+The order:
+
+1. Study: word study, cross-references
+2. Reading: Candlelight and Monastery, ambience
+3. Listening: listen offline
+4. Practice: reading plans, remember the verse, journal
+5. Keeping: Florilegium, sync
+6. Beauty: history in full dress
+7. Identity: profile extras, the Plus mark, Discord status
+8. The bundle: the price, the trial, the paywall, iOS, and counting what sells
+
+### Section 1: Study (2026-11-06)
+
+**1. Word study.** With the Greek on, a tapped Greek word gives its meaning
+free (Strong's, with its parsing); "Every place it appears" is Plus: every
+verse holding the word, the New Testament (λόγος: 331) and the Septuagint
+(1,101), the English (KJV, Brenton) above the Greek with the word lit.
+
+What is weak:
+
+- Hidden: it is reached only with the Greek turned on, which is off by
+  default and, on a phone, sits in a menu. Most readers never meet it, so they
+  never meet its lock either.
+- The meaning is Strong's (1890): short, in the English of its day, with
+  nothing of the Church in it.
+- The list is a wall: 331 verses in Bible order, from Matthew, with no sense
+  of how the word is translated.
+- Only the Greek is lit in each verse, not the English word that renders it.
+- The lock is in the app only: `/api/bible/word` answers anyone. Low risk
+  for public-domain text, but it is not a server-side gate.
+
+Ideas, best first:
+
+- A. Tap any English word to study its Greek. Every English word of the New
+  Testament is already tagged with its Greek number
+  (`/bible-data/interlinear/<book>/<chapter>.json`, `english`), so this needs
+  no new data, and it puts the feature in front of every reader.
+- B. "Translated as": how the KJV renders the word (word, saying, account),
+  with counts, each a filter. From the same tags.
+- C. Begin where the reader is: the verses of the open book first.
+- D. Say the count before the lock: "Every place it appears, 331 and 1,101".
+- E. Light the English word in each verse, beside the Greek.
+- F. A fuller dictionary beside Strong's, public domain only (for example
+  Abbott-Smith, 1922; the licence of the digital copy checked first).
+- G. Later: the Fathers on the verses that hold the word, from the commentary
+  the app already carries. Editorial care: exact passages only.
+
+**2. Cross-references.** On a phone: hold a verse, then Cross-references,
+thirteenth of fifteen items in the menu. Plus: the verses it echoes, with their
+words, one tap to open. Source: OpenBible.info (readers' votes, CC BY). New
+Testament to New Testament only: the KJV and the Septuagint number verses
+differently, and no map between them exists yet (`lib/bible/crossRefs.ts`).
+
+What is weak:
+
+- No Old Testament. For an Orthodox reader the Psalms and the prophets are
+  where the links matter most (John 1:1 to Genesis 1:1 and Proverbs 8).
+- Hidden on a phone: nothing on a verse says it has links.
+- The links are readers' votes, not the Church's reading.
+
+Ideas, best first:
+
+- A. The Old Testament in the Septuagint: build the numbering map between the
+  KJV and Brenton. The biggest gap.
+- B. The Fathers' own links: the verses the Fathers cite when they comment on
+  this verse, from the commentary the app already carries, each with its
+  source line (`lib/citations`). No other app can have this. Exact citations
+  only, never inferred.
+- C. Show it: a small mark on verses that have links, and the count on the
+  menu item.
+- D. Read around a linked verse (the verse before and after) without leaving
+  the sheet.
+
+His picks: (waiting)
