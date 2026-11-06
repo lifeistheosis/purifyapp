@@ -5,6 +5,21 @@ built until Edgar says to start.
 
 The repository is public: no figures, no readers' names, no money in this file.
 
+## The theme of 1.9: expand and refine (his words, 2026-11-06)
+
+"the aim for version 9 is to expand, right, and refine. I think if there was
+two words, it would be that, to expand and refine."
+
+- **Expand:** the content, Plus, the languages, the chants, the history.
+- **Refine:** the chants, the systems, Plus, the backend, the systems overall.
+- **Last of all, the app itself:** the megabytes, the animations, all of it,
+  once everything else is done.
+
+The goal he set for the Plus review: retention and experience, so a
+subscriber feels they get the most from Plus and Plus gives the most for the
+money. Bugs and anything that breaks his flags go in too ("I want version 9
+to be impeccable").
+
 ## Where the record lives
 
 The first part of the 1.9 brainstorm ran on a second Claude account (this one
@@ -282,3 +297,149 @@ may not be sold behind a paywall under their publishers' terms.
 - Shown as two groups: the Old Testament first (up to three), then the New
   (up to six as now), because by votes alone the Old Testament links would
   mostly fall below the cap of six.
+
+### Sections 2 to 7, ten each (2026-11-06)
+
+His call: "just run it down", ten refinements per section, with photos, plus
+bugs and anything vibe coded. Once he picks, three versions per section.
+Photos: real screenshots of the local app at phone size (26 shots), the
+Plus-locked features through the paywall's own Try it screens.
+
+**Bugs found**
+
+1. Saved says "Tap the star on a verse to keep it here" (`saved.emptyLine`).
+   On a phone there is no star: the star is the desktop toolbar's
+   (`components/bible/VerseRow.tsx`), and a phone keeps a verse through Bookmark
+   verse in the hold menu.
+2. The Sync preview (Try it) shows "Verses highlighted 0": a sales preview
+   showing a zero.
+3. The Try it header cuts a long name: "Candlelight and Monastery rea...".
+4. Two sounds share one icon: Bell and stillness, Cathedral bells.
+5. In the reader, while audio plays, two bars stack at the bottom: the chapter
+   bar and the mini player.
+6. Copy: "Remember a verse is part of Purify Plus" beside the name "Remember
+   the verse".
+7. Copy: the Plus mark is called "Supporter" (`community.supporterMark`,
+   "Show my supporter mark"), while supporters are the pre-launch readers
+   with lifetime sync, and Plus has one name.
+
+**Against his flags**
+
+1. Candlelight is almost the free palettes: ground `#0a0a0a`, text `#d4d4d8`
+   (`app/globals.css`), beside True black `#000000` and Dark. Its amber went on
+   2026-09-25, and nothing took its place.
+2. The Florilegium's dashed "Begin a new gathering" card with a typed arrow.
+3. Sync's custom drawing of devices (custom drawings were flagged in the 1.7
+   walkthroughs, note 24).
+4. The star for bookmarks (the Premium pill's star was flagged, 1.7 note 14).
+5. To check with him: the red commentary dots in the reader (he called the
+   timeline's red dot vibe coded, 1.7 note 20).
+
+**2. Reading** (Candlelight and Monastery, ambience)
+
+1. Give Candlelight its own look again without gold: a soft white glow at the
+   centre of the page, dimmer edges, gentler contrast.
+2. Candlelight at Vespers: on by itself at sunset, when the Church's day
+   begins, and off in the morning. One switch.
+3. Palettes that follow the Church year: Lent, Pascha, Pentecost, the
+   Theotokos' feasts, each in its season.
+4. Show the earned palettes: Councils and Cappadocian unlock by finishing a
+   study collection but stay hidden until then. Show them as goals.
+5. Night reading in one tap: Candlelight, Focus, larger text and a sound
+   together (the code already calls Candlelight with Focus the best pair).
+6. Layer two sounds (rain and a distant bell), each with its own volume.
+   Today one plays at a time.
+7. Orthodox sounds: the semantron at dawn, a monastery courtyard, the Paschal
+   bells in their season. Rain is in every app; these are ours. Recorded or
+   CC0, each licence checked.
+8. One icon per sound (bug 4).
+9. Ambience remembers the last sound and fades out at the end of the timer.
+10. Decide the red commentary dots (flag 5).
+
+**3. Listening** (listen offline)
+
+1. Keep the coming week's daily readings on the phone by themselves, on Wi-Fi,
+   for Plus: in church and on the road without thinking about it.
+2. Expand what can be kept: the Psalms first when the Old Testament is
+   recorded, then the saints' lives and the chants.
+3. A storage view: what is saved, its size, remove a book.
+4. Say the size and time before saving ("John: 21 chapters, about N MB").
+5. One bar at the bottom while playing (bug 5).
+6. The verse being read lights up and the page follows the voice, as the
+   chants' words do since 1.8.
+7. Saved books marked in the Bible's book list.
+8. Resume where you stopped, per book, from the lock screen too.
+9. Check: does saving pick up again after a lost signal, and can it wait for
+   Wi-Fi?
+10. Speed control for the voice, if missing.
+
+**4. Practice** (reading plans, remember the verse, journal)
+
+1. Seasonal plans that start with the season: the Nativity Fast (from 15 or 28
+   November), Great Lent, Holy Week, the Dormition Fast, by the reader's
+   calendar. The Nativity Fast is days away: 1.9 will likely miss this one.
+2. More plans: the New Testament in a year, John in 21 days, Acts in 28, the
+   Psalter in a week as monastics read it. Three plans today.
+3. Plans with the Fathers: each day's reading with one passage of the
+   commentary the app already carries, verbatim and cited.
+4. The plans list shows your progress and a picture; today it is text rows.
+5. A missed day offers catch up or shift the plan, never a broken streak.
+6. Remember the verse in three steps (missing words, first letters, from
+   memory), spaced over days.
+7. Remember the verse on the widget and the lock screen.
+8. Journal prompts from the day's feast or saint, through the editorial
+   queue (doctrinal wording is never shipped straight).
+9. Journal search and export to PDF: a reader's journal is theirs.
+10. One copy fix: Remember a verse or Remember the verse (bug 6).
+
+**5. Keeping** (Florilegium, sync)
+
+1. Fix "Tap the star on a verse" (bug 1).
+2. Fix the zero in the Sync preview (bug 2).
+3. Replace the dashed card and the typed arrow (flag 2).
+4. Gather from everywhere: prayers, councils, history, not only verses and
+   the Fathers.
+5. Share a florilegium as a page or a booklet, citations kept exact: readers
+   bring readers.
+6. Starter florilegia to begin from, verbatim and cited, for the empty first
+   day.
+7. A line from your own florilegium on Today.
+8. Show sync working: "Synced 2 minutes ago, 3 devices".
+9. Sync everything kept: plan progress, Remember progress, place, palette,
+   settings (check what syncs today).
+10. One word for keeping: Saved, Kept, Gather and Florilegium today.
+
+**6. Beauty** (history in full dress)
+
+1. Expand the history: 40 events across 11 eras today, for two thousand
+   years.
+2. Make full dress visible: a clear switch on the timeline, and a short
+   preview for a free reader.
+3. History on a map: `data/maps/church-history.json` is already in the repo.
+4. The saints at each event, one tap to their card.
+5. This day in Church history on Today, with its artwork.
+6. Listen to an era with the reading voice.
+7. The Creed line by line, showing which council gave which line.
+8. Megabytes: the artwork's weight, formats and sizes, the next picture
+   loaded ahead.
+9. F-22: 107 of 110 saint icons have no source on record. Fix it in 1.9.
+10. Check the timeline against his 1.7 notes (era colours, the dots).
+
+**7. Identity** (profile extras, the Plus mark, Discord)
+
+1. One name: the Plus mark, not "Supporter" (bug 7).
+2. Frames earned by practice (the Psalter finished, Lent kept), quiet, with
+   no confetti; Plus members earn more.
+3. Frames and banners of the season, back each year (no countdowns: his
+   paywall rule).
+4. A patron saint's icon as the profile picture, only icons with a source on
+   record (F-22).
+5. The patron and their feast on the profile; Community greets a name day.
+6. Preview extras where they appear: a post row and a reply, not only the
+   large avatar.
+7. Tap the mark on a name: "Purify Plus member", a quiet way in for free
+   readers.
+8. Show Discord status on the paywall only on Windows, where it works.
+9. Banner pictures need moderation: check uploads can be reported and
+   reviewed.
+10. A favourite line from your florilegium on your profile.
