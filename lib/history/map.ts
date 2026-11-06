@@ -23,14 +23,21 @@ import { EVENT_PLACES } from "./places";
  * timeline at the place where it happened, with the councils, on one year
  * slider. The cut is taller than the councils' own map, latitude 28 to 57,
  * so the Baptism of Rus' and Moscow are on it (data/maps/church-history.json).
- * Where each event happened is ./places.ts. Alaska and America are off this
- * map, so they are listed under it.
+ * Where each event happened is ./places.ts.
+ *
+ * 1.9: the map runs to Alaska and America (longitude -172 to 50, latitude 25
+ * to 64), so the Alaskan mission stands at Kodiak and the OCA at New York
+ * instead of under the map, and the atlas flies there. Their marks are `far`:
+ * the door's still keeps framing the Old World. An event's `with` places
+ * (./places.ts) are marks too, lit at its step, with a thread to its own.
  */
 export { EVENT_PLACES };
 
 const project = projectorFor(outline);
 /** Marks closer than this, in the map's own units, are drawn as one. */
 const NEAR = 14;
+/** West of this longitude a place is the New World's: the door's still leaves it out. */
+const FAR_WEST = -30;
 
 export type HistoryMap = { view: [number, number]; land: string; places: MapPlace[]; beyond: MapItem[]; steps: MapStep[] };
 
@@ -81,6 +88,9 @@ export function historyMap(): HistoryMap {
   }
   const beyond: MapItem[] = [];
   const beyondSources: StepSource[] = [];
+  /** The second places of events that happened in two (their `with`), drawn as marks with nothing listed. */
+  const also: { place: string; side?: Side; x: number; y: number; lon: number }[] = [];
+  const farIds = new Set<string>();
   for (const e of events) {
     const at = EVENT_PLACES[e.slug];
     const item = { href: `/history/${e.slug}`, name: e.shortTitle ?? e.title, year: e.yearStart };
@@ -90,13 +100,30 @@ export function historyMap(): HistoryMap {
       beyondSources.push(eventSource(e, null, undefined));
       continue;
     }
-    entries.push({ at: { ...at, ...project(at.lat, at.lon) }, item, source: eventSource(e, placeId(at.place), at.place) });
+    if (at.lon < FAR_WEST) farIds.add(placeId(at.place));
+    const source = eventSource(e, placeId(at.place), at.place);
+    if (at.with?.length) {
+      source.alsoAt = at.with.map((w) => placeId(w.place));
+      for (const w of at.with) {
+        also.push({ place: w.place, side: w.side, lon: w.lon, ...project(w.lat, w.lon) });
+        if (w.lon < FAR_WEST) farIds.add(placeId(w.place));
+      }
+    }
+    entries.push({ at: { ...at, ...project(at.lat, at.lon) }, item, source });
   }
   entries.sort((a, b) => a.item.year - b.item.year);
 
   // One mark per place, then places too near one another drawn as one.
   const marks = new Map<string, MapPlace>();
   for (const { at, item } of entries) addToMark(marks, at, item);
+  for (const w of also) {
+    const id = placeId(w.place);
+    if (!marks.has(id)) marks.set(id, { id, place: w.place, side: w.side ?? "right", x: w.x, y: w.y, items: [] });
+  }
+  for (const id of farIds) {
+    const m = marks.get(id);
+    if (m) m.far = true;
+  }
   const merged: MapPlace[] = [];
   /** The mark each place's own ended up in (its id changes as names join it). */
   const into = new Map<string, MapPlace>();
@@ -117,8 +144,13 @@ export function historyMap(): HistoryMap {
   }
   beyond.sort((a, b) => a.year - b.year);
 
+  const moved = (id: string) => into.get(id)?.id ?? id;
   const sources = [
-    ...entries.map(({ source }) => (source.mark ? { ...source, mark: into.get(source.mark)?.id ?? source.mark } : source)),
+    ...entries.map(({ source }) =>
+      source.mark
+        ? { ...source, mark: moved(source.mark), ...(source.alsoAt ? { alsoAt: source.alsoAt.map(moved) } : {}) }
+        : source,
+    ),
     ...beyondSources,
   ].sort((a, b) => a.year - b.year);
   return { view: outline.view as [number, number], land: outline.land, places: merged, beyond, steps: stepsFrom(sources, merged) };

@@ -2111,7 +2111,7 @@ export const HISTORY_EVENTS: HistoryEventMeta[] = [
     calendar: { month: 10, day: 15, basis: "gregorian" },
     era: "modern",
     categories: ["schisms", "patriarchates", "autocephaly", "modern"],
-    region: "Constantinople & Moscow",
+    region: "Constantinople & Minsk",
     importance: 2,
     preview:
       "Over Ukraine, Moscow breaks eucharistic communion with Constantinople, the widest rupture inside Orthodoxy since 1054.",

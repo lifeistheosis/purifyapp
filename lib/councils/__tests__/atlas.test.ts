@@ -51,6 +51,9 @@ const PHONE: Geo = {
   mapH: 648,
 };
 
+/** The same phone over History's map, at its own size (1.9: it runs to Alaska). */
+const HISTORY_PHONE: Geo = { ...PHONE, mapW: historyMap().view[0], mapH: historyMap().view[1] };
+
 describe("the view", () => {
   it("comes as close as drawn on the design's phone", () => {
     const z = zoomsFor(PHONE);
@@ -63,19 +66,19 @@ describe("the view", () => {
   it("frames every step's place, and where its threads begin, inside the clear between the year and the wheel", () => {
     const { places, steps } = historyMap();
     const at = new Map(places.map((p) => [p.id, p]));
-    const zooms = zoomsFor(PHONE);
+    const zooms = zoomsFor(HISTORY_PHONE);
     steps.forEach((s, i) => {
       if (!s.mark) return;
       const lit = places.filter((p) => steps.findIndex((x) => x.mark === p.id) <= i);
       const from = s.from.map((m) => at.get(m)!);
-      const cam = frameFor(PHONE, zooms, at.get(s.mark)!, from, lit);
-      const q = toScreen(PHONE, cam, at.get(s.mark)!);
+      const cam = frameFor(HISTORY_PHONE, zooms, at.get(s.mark)!, from, lit);
+      const q = toScreen(HISTORY_PHONE, cam, at.get(s.mark)!);
       expect(q.x, `${s.year} ${s.name}`).toBeGreaterThanOrEqual(PHONE.safe.x0);
       expect(q.x, `${s.year} ${s.name}`).toBeLessThanOrEqual(PHONE.safe.x1);
       expect(q.y, `${s.year} ${s.name}`).toBeGreaterThanOrEqual(PHONE.safe.y0);
       expect(q.y, `${s.year} ${s.name}`).toBeLessThanOrEqual(PHONE.safe.y1);
       for (const f of from) {
-        const r = toScreen(PHONE, cam, f);
+        const r = toScreen(HISTORY_PHONE, cam, f);
         expect(r.x, `${s.year} from ${f.place}`).toBeGreaterThanOrEqual(0);
         expect(r.x, `${s.year} from ${f.place}`).toBeLessThanOrEqual(PHONE.w);
       }
@@ -88,9 +91,9 @@ describe("the view", () => {
     const corner = toScreen(PHONE, c, { x: 0, y: 0 });
     expect(corner.x).toBeLessThanOrEqual(PHONE.w);
     expect(corner.x).toBeGreaterThanOrEqual(0);
-    const all = overview(PHONE, zooms, historyMap().places);
+    const all = overview(HISTORY_PHONE, zoomsFor(HISTORY_PHONE), historyMap().places);
     for (const p of historyMap().places) {
-      const q = toScreen(PHONE, all, p);
+      const q = toScreen(HISTORY_PHONE, all, p);
       expect(q.x, p.place).toBeGreaterThan(0);
       expect(q.x, p.place).toBeLessThan(PHONE.w);
     }

@@ -72,6 +72,12 @@ export type MapPlace = {
   y: number;
   side: Side;
   items: MapItem[];
+  /**
+   * Off the map's usual ground (1.9: Alaska and America on History's map).
+   * The door's still frames the places that are not far, so the Old World
+   * stays the picture; the atlas still flies there.
+   */
+  far?: true;
 };
 
 /**
@@ -133,7 +139,12 @@ export function councilAccount(c: Pick<Council, "slug" | "year">, events: Histor
 }
 
 /** A step before its threads are known: the events it stands for on the map, and what led to them. */
-export type StepSource = MapStep & { stands: string[]; ledBy: string[] };
+export type StepSource = MapStep & {
+  stands: string[];
+  ledBy: string[];
+  /** Other marks where the same thing happened (1.9, an event's `with`): threads from them, as from what led to it. */
+  alsoAt?: string[];
+};
 
 /** A council as a row of the wheel: its account's date and age where it has one, else its year's. */
 export function councilSource(c: Council, mark: string, account: HistoryEventMeta | undefined): StepSource {
@@ -182,7 +193,7 @@ export function stepsFrom(sources: StepSource[], places: MapPlace[]): MapStep[] 
     .sort((a, b) => a.s.year - b.s.year || a.d - b.d || a.i - b.i)
     .map((o) => o.s);
   return ordered.map((s) => {
-    const from = [...new Set(s.ledBy.map((slug) => standsFor.get(slug)?.mark ?? null))].filter(
+    const from = [...new Set([...s.ledBy.map((slug) => standsFor.get(slug)?.mark ?? null), ...(s.alsoAt ?? [])])].filter(
       (m): m is string => m !== null && m !== s.mark,
     );
     const own = s.mark ? named.get(s.mark) : undefined;

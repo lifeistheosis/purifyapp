@@ -183,7 +183,10 @@ export function frameFor(geo: Geo, zooms: Zooms, place: Pt, from: Pt[], lit: Pt[
     const y0 = Math.min(...ys);
     const y1 = Math.max(...ys);
     z = Math.min((sw - 2 * pad) / Math.max(1, x1 - x0), (sh - 2 * pad) / Math.max(1, y1 - y0));
-    z = clamp(z, zooms.zMin, zooms.zClose);
+    // Down to the whole map when a thread crosses an ocean (1.9: Valaam to
+    // Kodiak, Moscow to New York); a thread within the Old World never asked
+    // for less than zMin, so nothing there moves.
+    z = clamp(z, Math.min(zooms.zMin, zooms.zFloor), zooms.zClose);
     cx = (x0 + x1) / 2;
     cy = (y0 + y1) / 2;
     const hx = Math.max(0, sw / 2 - 46) / z;

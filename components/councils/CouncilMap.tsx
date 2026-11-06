@@ -63,7 +63,12 @@ export function CouncilMap({
   const left = useRef<number | null>(null);
   const [atlas, setAtlas] = useState<{ start: number; play: boolean } | null>(null);
   const [closing, setClosing] = useState(false);
-  const still = useMemo(() => stillView(places, view, DOOR_ASPECT), [places, view]);
+  // The door frames the Old World (1.9): History's far marks, Kodiak and New
+  // York, are flown to in the atlas but would shrink the still to a world.
+  const still = useMemo(() => {
+    const near = places.filter((p) => !p.far);
+    return stillView(near.length ? near : places, view, DOOR_ASPECT);
+  }, [places, view]);
   const n = steps.length;
 
   // Back from a step's page opened in the atlas: the atlas again, at that step.
@@ -180,7 +185,9 @@ export function CouncilMap({
       ) : null}
 
       <ul className="mt-5 grid grid-cols-1 gap-x-8 gap-y-3 sm:grid-cols-2">
-        {places.map((p) => (
+        {/* A second place of an event (Venice for the Philokalia) is a mark with
+            nothing of its own to list (1.9). */}
+        {places.filter((p) => p.items.length > 0).map((p) => (
           <li key={p.id} id={`place-${p.id}`} className="scroll-mt-24">
             <p className="font-sans text-caption font-semibold text-paper/70">{p.place}</p>
             <PlaceItems items={p.items} />

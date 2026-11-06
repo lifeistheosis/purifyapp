@@ -206,6 +206,10 @@ export class AtlasEngine {
       if (!s.mark) return;
       if (!this.first.has(s.mark)) this.first.set(s.mark, i);
       this.count.set(s.mark, (this.count.get(s.mark) ?? 0) + 1);
+      // A thread's far end lights with it (1.9): an event's second place
+      // (History's `with`, Venice for the Philokalia) has no step of its own,
+      // and a thread from a dark point would come from nowhere.
+      for (const f of s.from) if (!this.first.has(f)) this.first.set(f, i);
     });
     this.runs = eraRuns(options.steps.map((s) => s.era));
     this.runOf = [];

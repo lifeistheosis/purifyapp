@@ -6,9 +6,9 @@ import { councilAccount } from "@/lib/councils/map";
 import { publishedEvents } from "../events";
 import { EVENT_PLACES, historyMap } from "../map";
 
-// History on the map (1.8): every published event placed, on the map or
-// listed beyond it, each named once, and a council's own account not listed
-// beside the council.
+// History on the map (1.8): every published event placed, each named once,
+// and a council's own account not listed beside the council. Since 1.9 the
+// map runs to Alaska and America, so nothing is listed beyond it.
 
 describe("history on the map", () => {
   it("places every published event, and only events the timeline has", () => {
@@ -82,10 +82,11 @@ describe("history on the map", () => {
       if (s.mark) expect(marks.has(s.mark), s.name).toBe(true);
       else expect(beyond.map((b) => b.href), s.name).toContain(s.href);
     }
-    expect(steps.filter((s) => !s.mark).map((s) => s.year)).toEqual([1794, 1970]);
+    // 1.9: the map runs to Alaska and America, so nothing walks off it.
+    expect(steps.filter((s) => !s.mark).map((s) => s.year)).toEqual([]);
   });
 
-  it("draws threads only from the app's own What led here", () => {
+  it("draws threads only from the app's own What led here, and an event's own second place", () => {
     const { places, steps } = historyMap();
     const byHref = new Map(publishedEvents().map((e) => [`/history/${e.slug}`, e]));
     const threads = steps.flatMap((s) => s.from.map((f) => `${f}>${s.mark}`));
@@ -98,7 +99,11 @@ describe("history on the map", () => {
       "alexandria>nicomedia-and-nicaea",
       "great-moravia>kyiv",
       "constantinople-and-chalcedon>moscow",
-      "kyiv>moscow",
+      // 1.9, the second places (EVENT_PLACES `with`): the Phanar's decisions
+      // and the Synod in Minsk; Valaam, which chose the monks, and Kodiak.
+      "constantinople-and-chalcedon>minsk",
+      "valaam>kodiak",
+      "moscow>new-york",
     ]) {
       expect(threads, t).toContain(t);
     }
@@ -124,10 +129,13 @@ describe("history on the map", () => {
       const account = s.href.startsWith("/history/")
         ? byHref.get(s.href)
         : councilAccount(COUNCILS.find((c) => `/councils/${c.slug}` === s.href)!);
+      const slug = s.href.startsWith("/history/") ? s.href.slice(9) : null;
+      const at = slug ? EVENT_PLACES[slug] : undefined;
+      const own = at && at !== "beyond" ? (at.with ?? []).map((w) => w.place.toLowerCase().replace(/[^a-z0-9]+/g, "-")) : [];
       const led = new Set(
-        (account?.rel?.precededBy ?? [])
-          .map((slug) => markOf.get(standsFor.get(slug) ?? "") ?? null)
-          .filter((m): m is string => m !== null && m !== s.mark),
+        [...(account?.rel?.precededBy ?? []).map((slug) => markOf.get(standsFor.get(slug) ?? "") ?? null), ...own].filter(
+          (m): m is string => m !== null && m !== s.mark,
+        ),
       );
       expect(new Set(s.from), s.name).toEqual(led);
     }
@@ -148,13 +156,28 @@ describe("history on the map", () => {
     expect(steps.find((s) => s.href === "/councils/first-nicaea")).toMatchObject({ date: "Summer 325", where: "Nicaea in Bithynia", era: "imperial-conciliar" });
   });
 
-  it("lists Alaska and America under the map, and has Rus' on it", () => {
+  it("puts Alaska in Alaska and America in America, and has Rus' on it", () => {
+    // The owner, 2026-11-06: "Alaska, that should be in Alaska."
     const { places, beyond } = historyMap();
-    expect(beyond.map((i) => i.href)).toEqual(["/history/alaska-mission", "/history/oca-autocephaly"]);
+    expect(beyond).toEqual([]);
+    const kodiak = places.find((p) => p.place === "Kodiak");
+    const newYork = places.find((p) => p.place === "New York");
+    expect(kodiak?.items.map((i) => i.href)).toEqual(["/history/alaska-mission"]);
+    expect(newYork?.items.map((i) => i.href)).toEqual(["/history/oca-autocephaly"]);
+    // West is left, and both are far: the door's still frames the Old World.
+    const rome = places.find((p) => p.place === "Rome")!;
+    expect(kodiak!.x).toBeLessThan(newYork!.x);
+    expect(newYork!.x).toBeLessThan(rome.x);
+    expect(kodiak?.far && newYork?.far).toBe(true);
+    expect(places.filter((p) => p.far).map((p) => p.place).sort()).toEqual(["Kodiak", "New York"]);
     const kyiv = places.find((p) => p.place === "Kyiv");
     const moscow = places.find((p) => p.place === "Moscow");
     expect(kyiv?.items.map((i) => i.year)).toEqual([988, 2018]);
-    expect(moscow?.items.map((i) => i.year)).toEqual([1589, 1917, 2018]);
+    // 1.9: the 2018 schism was declared in Minsk, as its own account says.
+    expect(moscow?.items.map((i) => i.year)).toEqual([1589, 1917]);
+    expect(places.find((p) => p.place === "Minsk")?.items.map((i) => i.href)).toEqual(["/history/moscow-constantinople-schism-2018"]);
+    // A second place is a mark with nothing listed (Venice, for the Philokalia).
+    expect(places.find((p) => p.place === "Venice")?.items).toEqual([]);
     // North is up: Moscow above Kyiv above Constantinople.
     const city = places.find((p) => p.place.startsWith("Constantinople"));
     expect(moscow!.y).toBeLessThan(kyiv!.y);
