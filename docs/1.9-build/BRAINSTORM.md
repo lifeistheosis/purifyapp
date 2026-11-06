@@ -589,3 +589,12 @@ be rewritten in all twenty-one languages:
 Our side: a Review list in the admin panel gathering every file marked
 `awaiting-clergy-review` (66 on 2026-11-06: history 36, councils 25, chants 4,
 Today 1), so a reviewer's work is tracked there and nowhere else.
+
+### The verse bar: his pick B (2026-11-06)
+
+Three looks were drawn on the reader (A the tray from the bottom, B the strip
+under the verse, C two tabs Keep and Study). His answer: "B". A tap on a verse
+selects it and a slim strip opens just under it: Highlight, Copy, Share,
+Image, Note, and Study (the Greek, Compare, Cross-references, the
+commentary). A word tapped in the selected verse opens its Greek. Double tap
+still highlights; hold and drag still marks some words.

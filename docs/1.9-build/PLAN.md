@@ -47,7 +47,7 @@ On the 1.9 branch:
 
 | # | Item | Status |
 |---|---|---|
-| 14 | The verse system: tap a verse for one bar (colours, copy, share, image, note, Greek, compare, cross-references), tap a word for its Greek, double tap to highlight; the bookmark star goes (flag 4) | needs you: three looks of the bar |
+| 14 | The verse system: tap a verse for one bar (colours, copy, share, image, note, Greek, compare, cross-references), tap a word for its Greek, double tap to highlight; the bookmark star goes (flag 4) | now: his pick B, the strip under the verse (2026-11-06) |
 | 15 | Candlelight: the lines being read lit, a soft glow, dark edges; on at Vespers; palettes of the season; the earned palettes shown as goals (flag 1) | ready |
 | 16 | Listening: the card at rest, the small pill while scrolling (bug 5) | ready |
 | 17 | Plans page: Continue, the season's plan, picture tiles | ready |

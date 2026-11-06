@@ -22,10 +22,10 @@
    "title": "One clean system to highlight, copy, share, make an image, see the Greek and compare",
    "from": "edgar",
    "asked": "2026-11-06",
-   "status": "approved",
+   "status": "picked",
    "decided": "2026-11-06",
    "needsDesign": true,
-   "version": null,
+   "version": "B, the strip under the verse",
    "outcome": null,
    "note": "His need; the gesture rules and the bar are Claude's design"
   },
@@ -88,10 +88,10 @@
    "title": "Tap any English word to study its Greek",
    "from": "claude",
    "asked": "2026-11-06",
-   "status": "approved",
+   "status": "picked",
    "decided": "2026-11-06",
    "needsDesign": true,
-   "version": null,
+   "version": "B, the strip under the verse",
    "outcome": null
   },
   {
