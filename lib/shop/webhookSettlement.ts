@@ -35,6 +35,12 @@ export type SessionLike = {
   customer_details?: { email?: string | null } | null;
   collected_information?: { shipping_details?: unknown } | null;
   payment_intent?: string | { id: string } | null;
+  /**
+   * Stripe's word on the money (F-37): "paid", "unpaid" or
+   * "no_payment_required". A completed checkout is the buyer finishing the
+   * form; for a payment that clears later (a bank debit) it arrives "unpaid".
+   */
+  payment_status?: string | null;
 };
 
 export type OrderTotals = { total_cents: number; currency: string };
@@ -48,7 +54,20 @@ export type SettleResult =
   | "amount-mismatch"
   | "order-missing"
   | "ignored-status"
+  | "awaiting-payment"
   | "update-failed";
+
+/**
+ * Has the money arrived? (F-37, repaired 2026-11-06 with the owner's word.)
+ * Only Stripe's "paid" is money, and "no_payment_required" is a session with
+ * nothing to pay. Anything else, an "unpaid" debit still clearing or a
+ * session that says nothing, settles nothing: the order stays pending, and
+ * checkout.session.async_payment_succeeded, the reconcile or the abandoned
+ * sweep settles it once Stripe says paid.
+ */
+export function moneyArrived(session: SessionLike): boolean {
+  return session.payment_status === "paid" || session.payment_status === "no_payment_required";
+}
 
 // The narrow slice of the Supabase admin client the settlement uses. The
 // real client satisfies this structurally; tests inject a fake.
@@ -280,6 +299,16 @@ export async function settleCheckoutSession(
 ): Promise<SettleResult> {
   const orderId = orderIdOf(session);
   if (!orderId) return "order-missing";
+
+  // F-37: never paid, stock taken or a confirmation sent on a form finished
+  // with the money still on its way. The route answers 200, so Stripe does
+  // not retry; the order waits, pending, for the event that says paid.
+  if (!moneyArrived(session)) {
+    console.warn(
+      `[shop] webhook: session for order ${orderId} has payment_status '${session.payment_status ?? "none"}'; left pending until Stripe says paid`,
+    );
+    return "awaiting-payment";
+  }
 
   const { data: order } = await db
     .from("shop_orders")

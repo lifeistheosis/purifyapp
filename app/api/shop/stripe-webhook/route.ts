@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import type Stripe from "stripe";
 
 import { sendOrderConfirmationEmail } from "@/lib/shop/orderEmails";
 import { applyAccountCapabilities } from "@/lib/shop/payouts";
@@ -20,12 +21,20 @@ import { giftOf, isGiftSession, settleGiftSession, type GiftDb, type GiftSession
  * the secret unset (checkout dark) the endpoint answers 503 and does nothing,
  * so it can be deployed ahead of the Stripe account without risk.
  *
- * Two events:
+ * The events:
  *
  *   checkout.session.completed  settles an order. The money rules (amount
- *     verification, payment-wins-over-cancellation, one-time paid effects)
- *     live in lib/shop/webhookSettlement.ts, where they are unit-tested with
- *     an injected database (audit F-01/F-03).
+ *     verification, payment-wins-over-cancellation, one-time paid effects,
+ *     and since 1.9 the money itself having arrived, F-37) live in
+ *     lib/shop/webhookSettlement.ts, where they are unit-tested with an
+ *     injected database (audit F-01/F-03/F-37). A session completed with
+ *     payment_status "unpaid" (a payment that clears later) leaves the order
+ *     pending and answers 200.
+ *
+ *   checkout.session.async_payment_succeeded  settles that order once the
+ *     money clears, the same way, at that event's time. ENABLE IT IN THE
+ *     STRIPE DASHBOARD for it to arrive; until then the reconcile and the
+ *     abandoned sweep settle such an order once Stripe says paid.
  *
  *   account.updated  mirrors a connected account's capabilities. THIS IS THE
  *     ONLY ACCEPTABLE SOURCE for charges_enabled: "we created the account" is
@@ -40,6 +49,18 @@ import { giftOf, isGiftSession, settleGiftSession, type GiftDb, type GiftSession
  * not subscribe to anything. Until it is enabled, capability changes are never
  * heard and a newly onboarded store stays stuck at charges_enabled=false.
  */
+/**
+ * The two events that settle a checkout (F-37): the buyer finishing the form,
+ * which carries the money only when its payment_status says paid, and the
+ * money clearing later. The settlement itself refuses a session that is not
+ * paid, so the first can never take stock or send a confirmation early.
+ */
+function settlesCheckout(
+  e: Stripe.Event,
+): e is Stripe.CheckoutSessionCompletedEvent | Stripe.CheckoutSessionAsyncPaymentSucceededEvent {
+  return e.type === "checkout.session.completed" || e.type === "checkout.session.async_payment_succeeded";
+}
+
 export async function POST(req: Request) {
   const secret = process.env.STRIPE_WEBHOOK_SECRET;
   const key = process.env.STRIPE_SECRET_KEY;
@@ -110,7 +131,7 @@ export async function POST(req: Request) {
   // Plus bought as a gift (app/api/gifts/checkout/route.ts). Told apart by the
   // metadata that route writes, and settled BEFORE the shop's path, which
   // would otherwise look for an order this session never had.
-  if (event.type === "checkout.session.completed" && isGiftSession(event.data.object as unknown as GiftSession)) {
+  if (settlesCheckout(event) && isGiftSession(event.data.object as unknown as GiftSession)) {
     const session = event.data.object as unknown as GiftSession;
     const result = await settleGiftSession(createAdminClient() as unknown as GiftDb, session);
     if (result === "failed") {
@@ -137,7 +158,7 @@ export async function POST(req: Request) {
     return NextResponse.json({ received: true, result });
   }
 
-  if (event.type === "checkout.session.completed") {
+  if (settlesCheckout(event)) {
     // The admin client satisfies the settlement's narrow structural type.
     const db = createAdminClient() as unknown as SettlementDb;
     const result = await settleCheckoutSession(

@@ -41,6 +41,7 @@ function session(over: Partial<SessionLike> = {}): SessionLike {
     currency: "usd",
     customer_details: { email: "buyer@example.com" },
     payment_intent: "pi_123",
+    payment_status: "paid",
     ...over,
   };
 }
@@ -162,6 +163,38 @@ describe("settleCheckoutSession", () => {
     expect(state.order?.payment_status).toBe("paid");
     expect(state.rpcCalls).toBe(1);
     expect(email).toHaveBeenCalledTimes(1);
+  });
+
+  // F-37 (repaired 2026-11-06 with the owner's word): a completed checkout is
+  // the buyer finishing the form. Only Stripe's "paid" (or a session with
+  // nothing to pay) is money.
+  it("(F-37) leaves an order pending when Stripe says the checkout is unpaid: no stock, no email", async () => {
+    const { db, state } = fakeDb(pendingOrder());
+    const result = await settleCheckoutSession(db, email, session({ payment_status: "unpaid" }), PAID);
+    expect(result).toBe("awaiting-payment");
+    expect(state.order?.payment_status).toBe("pending");
+    expect(state.rpcCalls).toBe(0);
+    expect(email).not.toHaveBeenCalled();
+  });
+
+  it("(F-37) a session that says nothing of the money settles nothing", async () => {
+    const { db, state } = fakeDb(pendingOrder());
+    expect(await settleCheckoutSession(db, email, session({ payment_status: undefined }), PAID)).toBe("awaiting-payment");
+    expect(await settleCheckoutSession(db, email, session({ payment_status: null }), PAID)).toBe("awaiting-payment");
+    expect(state.order?.payment_status).toBe("pending");
+  });
+
+  it("(F-37) settles once the money clears, as the later event brings it", async () => {
+    const { db, state } = fakeDb(pendingOrder());
+    expect(await settleCheckoutSession(db, email, session({ payment_status: "unpaid" }), PAID)).toBe("awaiting-payment");
+    expect(await settleCheckoutSession(db, email, session({ payment_status: "paid" }), LATER)).toBe("paid");
+    expect(state.order?.payment_status).toBe("paid");
+    expect(email).toHaveBeenCalledTimes(1);
+  });
+
+  it("(F-37) a session with nothing to pay still settles", async () => {
+    const { db } = fakeDb(pendingOrder());
+    expect(await settleCheckoutSession(db, email, session({ payment_status: "no_payment_required" }), PAID)).toBe("paid");
   });
 
   it("(b) is a no-op on webhook retry (already paid): no effects", async () => {
