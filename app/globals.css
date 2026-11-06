@@ -6197,14 +6197,10 @@ html[data-reading-mode="parchment"] .paywall-title:not(.dark-island *) {
 .plus-try-tile-lit {
  box-shadow: 0 0 22px -4px rgb(255 255 255 / 0.65), 0 0 0 1px rgb(255 255 255 / 0.9);
 }
-.plus-try-mark {
- filter: drop-shadow(0 0 4px rgb(255 255 255 / 0.5));
-}
 html[data-reading-mode="parchment"] .plus-try-window:not(.dark-island *) {
  box-shadow: inset 0 0 0 1px rgb(43 35 23 / 0.14), 0 14px 30px -24px rgb(43 35 23 / 0.6);
 }
-html[data-reading-mode="parchment"] .plus-try-glow:not(.dark-island *),
-html[data-reading-mode="parchment"] .plus-try-mark:not(.dark-island *) {
+html[data-reading-mode="parchment"] .plus-try-glow:not(.dark-island *) {
  background: none;
  filter: none;
 }
@@ -6228,16 +6224,6 @@ html[data-reading-mode="parchment"] .plus-try-tile-lit:not(.dark-island *) {
  animation: none;
  transform: scaleX(1);
 }
-@keyframes plus-try-carry {
- 0% { transform: translate(-29px, 25px); opacity: 0; }
- 15% { opacity: 1; }
- 50% { transform: translate(0, 0); }
- 85% { opacity: 1; }
- 100% { transform: translate(29px, 13px); opacity: 0; }
-}
-.plus-try-carry {
- animation: plus-try-carry 2.6s var(--ease-house) infinite;
-}
 /* The lock's own words, coming into the window once a sound's minute is up. */
 .plus-try-rest {
  animation: paywall-glow-in 700ms ease-out both;
@@ -6245,10 +6231,6 @@ html[data-reading-mode="parchment"] .plus-try-tile-lit:not(.dark-island *) {
 :where([data-motion="reduce"]) .plus-try-minute-fill,
 :where([data-motion="reduce"]) .plus-try-rest {
  animation: none;
-}
-:where([data-motion="reduce"]) .plus-try-carry {
- animation: none;
- opacity: 1;
 }
 /* The word study's words switching (the owner's note 43 of build 80): the
    word chosen comes in over the one it replaces once its verses are here,

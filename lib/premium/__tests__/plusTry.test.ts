@@ -383,7 +383,7 @@ describe("the look", () => {
 
   it("stands still with motion turned down", () => {
     const css = code("app/globals.css");
-    for (const cls of ["plus-try-minute-fill", "plus-try-carry", "plus-try-rest", "plus-try-word-in", "plus-try-word-out"]) {
+    for (const cls of ["plus-try-minute-fill", "plus-try-rest", "plus-try-word-in", "plus-try-word-out"]) {
       expect(css, cls).toMatch(new RegExp(`\\.${cls} \\{[^}]*animation:`));
       expect(css, cls).toMatch(new RegExp(`:where\\(\\[data-motion="reduce"\\]\\) \\.${cls}[,\\s]`));
     }

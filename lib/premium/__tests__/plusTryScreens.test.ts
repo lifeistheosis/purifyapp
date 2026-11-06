@@ -196,6 +196,9 @@ describe("each feature's own screen", () => {
     expect(out).toContain(">What syncs</p>");
     for (const key of ["ui.versesHighlighted", "ui.notesWritten", "ui.bookmarksSaved"]) expect(out, key).toContain(html(say("en", key)));
     expect(out).not.toContain(html(say("en", "ui.lastSynced")));
+    // 1.9: nothing kept yet, so no column of zeros and no drawing of devices.
+    expect(out).not.toMatch(/tabular-nums[^>]*>0</);
+    expect(out).not.toContain("<svg viewBox=\"0 0 300 150\"");
   });
 
   it("the timeline in full dress: Florence's period art, moving, and its further pictures", () => {
