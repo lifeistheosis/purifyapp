@@ -188,6 +188,7 @@ export function ChapterReader({
               chapter={chapter}
               verse={v}
               hasCommentary={has.has(v.n)}
+              greekAvailable={hasInterlinear}
               onOpenCommentary={
                 has.has(v.n) ? () => openCommentary(v.n) : undefined
               }

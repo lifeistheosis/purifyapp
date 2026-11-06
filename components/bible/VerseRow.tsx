@@ -24,10 +24,7 @@ import {
  VerseContextMenu,
  type ContextMenuGroup,
 } from "./VerseContextMenu";
-import {
- MobileVerseToolbar,
- type MobileVerseAction,
-} from "./MobileVerseToolbar";
+import { VerseStrip, type StudyRow } from "./VerseStrip";
 import { FlorilegiumPickerSheet } from "@/components/florilegium/FlorilegiumPickerSheet";
 import { HighlightPicker } from "./HighlightPicker";
 import { HighlightNamesSheet } from "./HighlightNamesSheet";
@@ -80,6 +77,7 @@ export function VerseRow({
  verse,
  dropCap = false,
  hasCommentary = false,
+ greekAvailable = false,
  onOpenCommentary,
  originalText,
  originalTokens,
@@ -105,6 +103,8 @@ export function VerseRow({
   *  gold drop cap. Only takes effect outside interlinear mode. */
  dropCap?: boolean;
  hasCommentary?: boolean;
+ /** The chapter has its Greek to show beside the English (the verse strip's Study, 1.9). */
+ greekAvailable?: boolean;
  /** Mobile callback: when set, the verse-number badge opens a bottom-sheet
  * with this verse's commentary on tap instead of routing to `#rail-vN`
  * (which doesn't exist on mobile any more). Only wired when
@@ -238,7 +238,7 @@ export function VerseRow({
  else setGatherOpen(true);
  });
  };
- const { on: showInterlinear } = useInterlinear();
+ const { on: showInterlinear, toggle: toggleInterlinear } = useInterlinear();
  const hasInterlinear =
  showInterlinear && (!!originalText || (originalTokens?.length ?? 0) > 0);
  const hasTokens = (originalTokens?.length ?? 0) > 0;
@@ -476,8 +476,9 @@ export function VerseRow({
  function onWordsTouchEnd(e?: React.TouchEvent<HTMLParagraphElement>) {
  // A tap: the finger came up before the hold fired and without a scroll.
  const tapped = pressOriginRef.current !== null && pressTimerRef.current !== null;
- // A single tap is still a no-op, so nothing waits to see whether a second
- // comes. The popup is opened by the long-press timer itself, not here.
+ // 1.9, the owner's pick B: a single tap selects the verse and opens its
+ // strip at once (components/bible/VerseStrip.tsx), so nothing waits to see
+ // whether a second comes; a second tap in time is still the highlight.
  cancelPress();
  const p = e?.changedTouches[0];
  // A tap on the verse's own buttons (the commentary mark) is theirs.
@@ -496,6 +497,7 @@ export function VerseRow({
  return;
  }
  lastTapRef.current = { t: now, x: p.clientX, y: p.clientY };
+ if (!showTools) setShowTools(true);
  }
 
  // A computer's double click does the same. Its two clicks each mark and
@@ -580,6 +582,45 @@ export function VerseRow({
  }
  prevS = s;
  }
+ }
+
+ // The strip's Study (1.9): what studies the verse, then what the old hold
+ // menu held besides. A Plus row wears its mark and opens the upgrade sheet.
+ function studyRows(): StudyRow[] {
+ const rows: StudyRow[] = [];
+ if (greekAvailable && !showInterlinear) {
+ rows.push({ key: "greek", label: t("bible.strip.greek"), onSelect: toggleInterlinear });
+ }
+ if (onOpenCrossRefs) {
+ rows.push({ key: "crossrefs", label: t("bible.crossRefs"), onSelect: onOpenCrossRefs, locked: plusAllowed === false });
+ }
+ if (hasCommentary) {
+ rows.push({
+ key: "commentary",
+ label: t("bible.openCommentary"),
+ onSelect: () => {
+ if (onOpenCommentary) onOpenCommentary();
+ else window.location.hash = `rail-v${verse.n}`;
+ },
+ });
+ }
+ rows.push({
+ key: "bookmark",
+ label: isVerseBookmarked ? t("study.saved.removeBookmark") : t("bible.bookmarkVerse"),
+ onSelect: toggleVerseBookmark,
+ });
+ rows.push({
+ key: "gather",
+ label: t("bible.gatherToFlorilegium"),
+ onSelect: () => {
+ setShowTools(false);
+ gather();
+ },
+ locked: plusAllowed === false,
+ });
+ rows.push({ key: "quote", label: t("bible.copyAsQuote"), onSelect: () => void copyAsQuote() });
+ rows.push({ key: "link", label: t("today.verse.copyLink"), onSelect: () => void copyVerseLink() });
+ return rows;
  }
 
  return (
@@ -1313,43 +1354,24 @@ export function VerseRow({
  )}
 
  {showTools && (
- <MobileVerseToolbar
+ <VerseStrip
  reference={reference()}
+ verseText={verse.text}
+ edition={getBook(book)?.source === "brenton-lxx-pd" ? "Brenton" : "KJV"}
+ link={shareLink(`/bible/${book}/${chapter}#v${verse.n}`)}
  highlight={{
  color: marked ? hl.id : null,
  onPick: applyColor,
  onRemove: removeHighlight,
  }}
- state={{
- bookmarked: isVerseBookmarked,
- hasNote: !!ann.note,
- copied,
- hasCrossRefs: !!onOpenCrossRefs,
- }}
- onAction={(a: MobileVerseAction) => {
- switch (a) {
- case "bookmark":
- toggleVerseBookmark();
- break;
- case "copyText":
- copyVerseForPaste();
- break;
- case "copyLink":
- copyVerseLink();
- break;
- case "note":
+ copied={copied}
+ onCopy={() => void copyVerseForPaste()}
+ onNote={() => {
  setDraft(ann.note ?? "");
  setEditing(true);
- break;
- case "gather":
  setShowTools(false);
- setGatherOpen(true);
- break;
- case "crossRefs":
- onOpenCrossRefs?.();
- break;
- }
  }}
+ study={studyRows()}
  onClose={() => setShowTools(false)}
  />
  )}
