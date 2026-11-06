@@ -139,8 +139,11 @@ does not move the chapter count, which is the number to stop optimising.
 ### Rights / legal (pre-existing, owner-owned)
 - Real product photos to replace representative supplier-derived listings; LLC + product insurance; sales-tax registration; lawyer pass on ToS. No new items found 2026-07-11.
 
+27. **Owner's standing note, 2026-11-06: review is ours, never the reader's; our own words are the editorial's, never Purify's.** His words: "don't add needs to be reviewed by [clergy] ... We could add that sentence was summarized by editorials ... Don't ever say summarized by purify. Say summarized by editorial ... if it needs to be reviewed by [clergy], that's going to be on our side. Don't allow that on their side." So: a reader never sees that a text awaits review, by a priest or by anyone; the `review.status` marks stay in the data files, where the team finds them, and the queue of them belongs in the admin panel. Text written by the team is credited to the editorial team ("Editorial summary", "Summarized by the editorial team, not {name}'s words"), never to Purify. Six reader-facing lines broke this on the day (`study.heresies.oursAwaitingReview`, `study.councils.framingAwaitingReview`, `saints.voice.editorialLabel`, `saints.voice.editorialBody`, `reading.work.ours`, `translationDisclaimer.body`), to be rewritten in all twenty-one languages in 1.9. The line between the Fathers' words and the editorial's stays as visible as before: only who wrote it, and the review, change.
+
 ## Rules for AI agents writing in this repo
 
 - Never fabricate or "restore" patristic text from model memory; ingest from a named public-domain source or do not add it.
 - Never resolve a disputed theological question by editorial fiat; queue it here.
+- Never show a reader that a text awaits review, and never credit the team's own writing to Purify: it is the editorial team's (item 27).
 - Patch notes and marketing may not claim a feature that is dark in production (see F-07: reviews require the prod migration before being described as live).

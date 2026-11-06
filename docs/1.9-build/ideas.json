@@ -1232,6 +1232,20 @@
    "needsDesign": true,
    "version": null,
    "outcome": null
+  },
+  {
+   "id": "e-review-ours",
+   "section": "Release",
+   "kind": "idea",
+   "title": "Readers never see review status; our own writing is credited to the editorial team, never Purify",
+   "from": "edgar",
+   "asked": "2026-11-06",
+   "status": "approved",
+   "decided": "2026-11-06",
+   "needsDesign": false,
+   "version": null,
+   "outcome": null,
+   "note": "Six reader-facing lines to rewrite; admin Review list for the 66 marked files"
   }
  ]
 }
