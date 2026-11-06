@@ -156,6 +156,9 @@ type WordPopoverProps = {
  /** Opens every place this word stands (the Plus word study). Set only for
   *  a word with a Strong's number; the reader decides Plus. */
  onWordStudy?: () => void;
+ /** The English word the card was opened from (1.9, a word tapped in the
+  *  verse strip's selected verse), said over the Greek on a phone. */
+ english?: string;
 };
 
 const GREEK = { fontFamily: "var(--font-greek), serif" } as const;
@@ -328,7 +331,7 @@ function WordDetails({
 
 /** The phone's word card: a bottom sheet. It slides away first and only then
  *  hands the close back to the verse, which unmounts it. */
-function WordSheet({ token, entry, onClose, onWordStudy }: WordPopoverProps) {
+function WordSheet({ token, entry, onClose, onWordStudy, english }: WordPopoverProps) {
   const { t } = useTranslate();
   const reduced = useReducedMotion();
   const [open, setOpen] = useState(true);
@@ -391,9 +394,12 @@ function WordSheet({ token, entry, onClose, onWordStudy }: WordPopoverProps) {
             <span aria-hidden className="block h-1.5 w-11 rounded-full bg-paper/25" />
           </div>
           <div className="flex items-start justify-between gap-3 px-5 pb-1">
-            <p lang="grc" style={GREEK} className="pt-1 text-title-sm font-semibold leading-tight text-paper">
-              {token.w}
-            </p>
+            <div className="min-w-0 pt-1">
+              {english ? <p className="font-sans text-caption text-paper/55">{english}</p> : null}
+              <p lang="grc" style={GREEK} className="text-title-sm font-semibold leading-tight text-paper">
+                {token.w}
+              </p>
+            </div>
             <button
               type="button"
               onClick={dismiss}

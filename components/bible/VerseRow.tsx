@@ -4,6 +4,8 @@ import { Fragment, useEffect, useRef, useState } from "react";
 import { getBook } from "@/lib/bible/books";
 import type { Verse, Token } from "@/lib/bible/load";
 import type { StrongsEntry } from "@/lib/bible/strongs";
+import { loadInterlinear, loadStrongs } from "@/lib/bible/chapterData";
+import { greekFor, taggedIndex } from "@/lib/bible/wordAlign";
 import { readVerseAnnotation, useVerseAnnotation, writeVerseAnnotation } from "@/lib/bible/annotations";
 import type { UndoEntry } from "@/lib/ui/useUndo";
 import {
@@ -252,6 +254,16 @@ export function VerseRow({
  // the anchor rect so the popover knows where to render.
  const [popoverIdx, setPopoverIdx] = useState<number | null>(null);
  const [anchorRect, setAnchorRect] = useState<DOMRect | null>(null);
+ // The Greek read for a word tapped in the English (1.9), when the chapter's
+ // Greek is not already here for the interlinear: read once, on that tap.
+ const [lazyGreek, setLazyGreek] = useState<{
+ tokens: Token[];
+ strongs: Record<string, StrongsEntry>;
+ } | null>(null);
+ /** The English word the card was opened from, for its line over the Greek. */
+ const [askedWord, setAskedWord] = useState<string | null>(null);
+ const greekTokens = originalTokens ?? lazyGreek?.tokens;
+ const strongsMap = strongs ?? lazyGreek?.strongs;
  function openPopover(idx: number, el: HTMLElement) {
  setPopoverIdx(idx);
  setAnchorRect(el.getBoundingClientRect());
@@ -259,6 +271,30 @@ export function VerseRow({
  function closePopover() {
  setPopoverIdx(null);
  setAnchorRect(null);
+ setAskedWord(null);
+ }
+
+ // A word tapped in a selected verse (1.9, the owner's "tap the English
+ // word"): its Greek, in the same card a Greek word opens, and from there
+ // every place it stands (Plus). Where the chapter has no Greek beside its
+ // English, or the word renders none, nothing opens.
+ async function openEnglishWord(idx: number, el: HTMLElement) {
+ if (!greekAvailable) return;
+ const words = tokenize(verse.text);
+ let tags = englishTokens;
+ let tokens = originalTokens;
+ if (!tags || !tokens) {
+ const [lines, all] = await Promise.all([loadInterlinear(book, chapter), loadStrongs()]);
+ tags = lines?.english[verse.n];
+ tokens = lines?.tokens[verse.n];
+ if (!tags || !tokens) return;
+ setLazyGreek({ tokens, strongs: all ?? {} });
+ }
+ const k = taggedIndex(words, tags, idx);
+ const g = k === null ? null : greekFor(tags, tokens, k);
+ if (g === null) return;
+ setAskedWord(words[idx].replace(/[^\p{L}\p{N}'’-]/gu, ""));
+ openPopover(g, el);
  }
 
  // Greek-hover -> highlight the matching English word.
@@ -497,7 +533,14 @@ export function VerseRow({
  return;
  }
  lastTapRef.current = { t: now, x: p.clientX, y: p.clientY };
- if (!showTools) setShowTools(true);
+ if (!showTools) {
+ setShowTools(true);
+ return;
+ }
+ // The verse is selected already: a tap on one of its words is that word.
+ const target = e?.target as HTMLElement | null;
+ const idx = target ? wordIndexFromElement(target) : null;
+ if (idx !== null && target) void openEnglishWord(idx, target);
  }
 
  // A computer's double click does the same. Its two clicks each mark and
@@ -980,22 +1023,23 @@ export function VerseRow({
  </p>
  )}
 
- {popoverIdx !== null && anchorRect && originalTokens && (
+ {popoverIdx !== null && anchorRect && greekTokens && (
  <WordPopover
- token={originalTokens[popoverIdx]}
+ token={greekTokens[popoverIdx]}
  entry={
  (() => {
- const s = originalTokens[popoverIdx].s;
- return s ? (strongs?.[s] ?? null) : null;
+ const s = greekTokens[popoverIdx].s;
+ return s ? (strongsMap?.[s] ?? null) : null;
  })()
  }
  anchorRect={anchorRect}
+ english={askedWord ?? undefined}
  onClose={closePopover}
  onWordStudy={
- onWordStudy && originalTokens[popoverIdx].s
+ onWordStudy && greekTokens[popoverIdx].s
  ? () => {
- const s = originalTokens[popoverIdx].s!;
- const lemma = strongs?.[s]?.l;
+ const s = greekTokens[popoverIdx].s!;
+ const lemma = strongsMap?.[s]?.l;
  closePopover();
  onWordStudy(s, lemma);
  }
