@@ -210,7 +210,7 @@ Ideas, best first:
   the app already carries. Editorial care: exact passages only.
 
 **2. Cross-references.** On a phone: hold a verse, then Cross-references,
-thirteenth of fifteen items in the menu. Plus: the verses it echoes, with their
+seventeenth of eighteen rows in that menu (counting the seven colours). Plus: the verses it echoes, with their
 words, one tap to open. Source: OpenBible.info (readers' votes, CC BY). New
 Testament to New Testament only: the KJV and the Septuagint number verses
 differently, and no map between them exists yet (`lib/bible/crossRefs.ts`).
