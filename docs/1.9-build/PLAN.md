@@ -1,75 +1,117 @@
-# 1.9: the full list
+# 1.9: the game plan
 
-Expand and refine. Started 2026-11-06 on his word: "give a full list on what
-we need to do. And, well, you could start doing it ... if you need my input,
-you know what to do. Show the images, ask me questions."
+**Expand and refine.** Expand the content, Plus, the languages, the chants,
+the history; refine the systems, Plus and the backend; the app itself last
+(megabytes, animations). His words and every decision are in `BRAINSTORM.md`;
+who asked for each item is in `ideas.json`. Rewritten 2026-11-06 at his "show
+the full game plan ... everything else that is already implemented or needed
+to do for version 1.9".
 
-Who asked for each item is in `ideas.json`; the reasoning is in
-`BRAINSTORM.md`. Status: **now** (in progress), **build** (decided, waiting
-its turn), **his input** (needs a picture or an answer first), **done**,
-**parked**.
+Status: **done** (built and checked), **now** (next up), **ready** (decided,
+waiting its turn), **needs you** (a picture or an answer first),
+**blocked**, **parked**. Work is on the branch `ccr-07896cf2-bo0afd`; nothing
+in 1.9 is live until the release push.
 
-## 1. Rules and copy (no design needed)
+## Done
 
-| # | Item | Status |
-|---|---|---|
-| 1 | Readers never see review status; our words are the editorials' (six lines, 21 languages; editorial standards 27) | done |
-| 2 | Saved: "Bookmark a verse to keep it here" in place of a star a phone does not have (bug 1) | done |
-| 3 | "Remember the verse" named the same on the paywall as in the app (bug 6) | done |
-| 4 | The Sync preview shows an example, not a zero (bug 2) | build |
-| 5 | The Try it header no longer cuts a long name (bug 3) | done |
-| 6 | One icon per sound in Ambience (bug 4) | done |
-| 7 | The Supporter mark explains itself on a tap (bug 7, Identity 2) | build |
-| 8 | No Discord row on a phone's paywall; Windows keeps it (Identity 3) | done |
-| 9 | An admin Review list of the 66 texts marked for clergy review | build |
+Live on main since 1.8 (admin only):
 
-## 2. The designs he picked
+- Traffic: visitors by day, 7 to 120 days, the median day, any single day picked (2026-11-02).
+- Admin, 2026-11-04: no Home flash; a timeline that never resets and the bell on the same log; goals as pace bars; Home A or B; one chart with three lines; today beside last night; a zoomable map; Traffic > Live; a phone pass.
+
+On the 1.9 branch:
 
 | # | Item | Status |
 |---|---|---|
-| 10 | The verse system: tap a verse for one bar (colours, copy, share, image, note, Greek, compare, cross-references), tap a word for its Greek, double tap to highlight | his input: three looks of the bar |
-| 11 | Candlelight: the lines being read lit, a soft glow, dark edges (A and B) | build |
-| 12 | Candlelight at Vespers, seasonal palettes, the earned palettes shown as goals | build |
-| 13 | Listening: the card at rest, the small pill when scrolling (fixes bug 5) | build |
-| 14 | Plans page: Continue, the season's plan, picture tiles (A and B) | build |
-| 15 | The Florilegium revamped: collections and sync on top, ready collections below (A and C) | build |
-| 16 | History: major events as large cards, the rest as rows with their pictures; no switch; pictures free for everyone | build |
-| 17 | Plus history: each event as a Thread, year by year, as a saint's Timeline | build; his input on the extras (map, listen, sources, a saint across events) |
+| 1 | Readers never see a review mark; our words are "Summarized by the editorials" (21 languages; editorial standards 27) | done |
+| 2 | Saved: "Bookmark a verse to keep it here" (bug 1) | done |
+| 3 | "Remember the verse" named alike everywhere (bug 6) | done |
+| 4 | Discord status listed only in the Windows app (Identity 3) | done |
+| 5 | Try it's names on two lines, not cut (bug 3) | done |
+| 6 | Cathedral bells with its own icon (bug 4) | done |
+| 7 | A sync test that broke by itself on 4 November (a fixed date) | done |
 
-## 3. Expand
-
-| # | Item | Status |
-|---|---|---|
-| 18 | Public-domain Bibles in every app language; picking one offers to switch the app's language too, with Never show again | now: the list of Bibles and their licences |
-| 19 | Cross-references into the Old Testament, by a verse-by-verse numbering map (shared with item 18) | build |
-| 20 | Tap an English word to study its Greek | build (with item 10) |
-| 21 | Plans: the fasts and seasons (Nativity, Great Lent, Holy Week, Dormition), more plans, a passage of the Fathers each day | build |
-| 22 | Remember the verse in three steps, spaced; on the widget | build |
-| 23 | Journal: prompts from the feast (editorial queue), search, PDF | build |
-| 24 | Florilegium: gather from everywhere, share as a page or booklet, ready collections (verbatim, cited), a line on Today | build |
-| 25 | Sync: shown working, and everything kept synced | build |
-| 26 | History: more events, the saints at each, a map, this day in Church history, listen to an era, the Creed by council | build |
-| 27 | Ambience: two sounds at once, Orthodox sounds (licences checked), the last sound remembered | build |
-| 28 | Listening: the week's readings kept offline, a storage view, sizes before saving, the verse following the voice, resume per book, speed | build |
-| 29 | Identity beyond the fixes: earned and seasonal frames, a patron's icon as the picture | parked (his call: keep Identity small) |
-| 30 | More languages for the app | his input: which |
-| 31 | Chants: more, and refined | his input: the recordings, and what to refine |
-
-## 4. Refine the systems and the backend
+## Phase 1: fixes and rules (no design needed)
 
 | # | Item | Status |
 |---|---|---|
-| 32 | F-37: the Stripe webhook never marks an unpaid checkout paid | build |
-| 33 | F-09: tests on the API routes and money paths | build |
-| 34 | F-21: native push | build |
-| 35 | F-49: reading-room attributions | build |
-| 36 | F-22: sources for the 107 saint icons without one | build |
-| 37 | Count which lock a reader taps and which leads to a purchase | build |
-| 38 | Plus on iOS (the App Store products) | his input |
+| 8 | The Sync preview shows an example, not "0" (bug 2), and loses its drawn devices (flag 3) | now |
+| 9 | The Supporter mark explains itself on a tap (Identity 2, 21 languages) | now |
+| 10 | Admin: a Review list of the 66 texts marked for clergy review, ours only | now |
+| 11 | F-37: the Stripe webhook never marks an unpaid checkout paid (money) | ready, first after these |
+| 12 | Count which lock a reader taps and which leads to a purchase | ready |
+| 13 | The red commentary dots in the reader (flag 5) | needs you: keep or quiet them |
 
-## 5. Last: the app itself
+## Phase 2: the designs he picked
 
 | # | Item | Status |
 |---|---|---|
-| 39 | Megabytes: the history pictures carried twice (about 13 MB), three unused files | build, last |
-| 40 | Animations | build, last |
+| 14 | The verse system: tap a verse for one bar (colours, copy, share, image, note, Greek, compare, cross-references), tap a word for its Greek, double tap to highlight; the bookmark star goes (flag 4) | needs you: three looks of the bar |
+| 15 | Candlelight: the lines being read lit, a soft glow, dark edges; on at Vespers; palettes of the season; the earned palettes shown as goals (flag 1) | ready |
+| 16 | Listening: the card at rest, the small pill while scrolling (bug 5) | ready |
+| 17 | Plans page: Continue, the season's plan, picture tiles | ready |
+| 18 | The Florilegium revamped: collections and sync on top, ready collections below (flag 2) | ready |
+| 19 | History: major events as large cards, the rest as rows with pictures, no switch, pictures free for everyone | ready |
+| 20 | Plus history: each event as a Thread, year by year, as a saint's Timeline | ready; needs you for the extras (a map that follows, listen, open a quote's source, one saint across events) |
+
+## Phase 3: expand
+
+| # | Item | Status |
+|---|---|---|
+| 21 | Public-domain Bibles: Romanian, Russian, Greek, Serbian, Arabic and Spanish first, then every app language; each licence proven; picking one offers the app in that language, with Never ask again | now: the translations and their licences |
+| 22 | One verse-number map, for the new Bibles and the Old Testament cross-references | ready |
+| 23 | Cross-references into the Old Testament, in the Septuagint (Genesis 1:1 back on John 1:1) | ready, after 22 |
+| 24 | Tap an English word to study its Greek | ready, with 14 |
+| 25 | Plans for the seasons (Nativity Fast, Great Lent, Holy Week, Dormition), more plans, a passage of the Fathers each day | ready; the Nativity Fast (15 November) comes before 1.9 can |
+| 26 | Remember the verse in three steps, spaced, and on the widget | ready |
+| 27 | Journal: prompts from the feast (by the editorials), search, a PDF | ready |
+| 28 | Florilegium: gather from everywhere, share as a page or booklet, a line on Today | ready |
+| 29 | Sync shown working, and everything kept synced | ready |
+| 30 | History: more events (40 today), the saints at each, a map, this day in Church history, listen to an era, the Creed by council | ready |
+| 31 | Ambience: two sounds at once, Orthodox sounds (licences checked), the last sound remembered and faded | ready |
+| 32 | Listening: the week's readings kept offline by themselves, a storage view, sizes before saving, the verse following the voice, resume per book, speed | ready |
+| 33 | More languages for the app | needs you: which |
+| 34 | Chants: more of them, and refined | needs you: the recordings, and what to refine |
+| 35 | Read aloud: the Old Testament, and a choice of voices (carried from 1.8) | parked until its audio exists |
+
+## Phase 4: refine the systems and the backend
+
+| # | Item | Status |
+|---|---|---|
+| 36 | F-09: tests on the API routes and money paths | ready |
+| 37 | F-21: native push | ready |
+| 38 | F-49: the reading room's attributions | ready |
+| 39 | F-22: sources for the 107 saint icons that have none | ready |
+| 40 | Plus on iOS (the App Store products) | needs you |
+| 41 | Who reviews the 66 marked texts | needs you |
+
+## Phase 5: carried from 1.8
+
+| # | Item | Status |
+|---|---|---|
+| 42 | Find a parish: live as links to the jurisdictions' own directories (`/parishes`); a directory inside Purify | blocked: no list we may reuse |
+| 43 | Purify Parish, the parish plan | needs you: price and terms, after 42 |
+| 44 | The screens locked on 2026-10-27 (Bible reader, praying, Premium pill, chant page, shop, theology, saint page, Discover, paywall, Prayers home, player) | needs you: which are still open (the list is in Homebase) |
+| 45 | Today | needs you: your mockup |
+
+## Phase 6: the app itself, last
+
+| # | Item | Status |
+|---|---|---|
+| 46 | Megabytes: the history pictures carried twice (about 13 MB), three unused files | ready, last |
+| 47 | Animations | ready, last |
+
+## Phase 7: ship 1.9 (`docs/RELEASE.md`)
+
+| # | Item | Status |
+|---|---|---|
+| 48 | The note in 21 languages, the six version numbers, the update hierarchy, the drop | at the end |
+| 49 | The gates: typecheck, unit, lint, the Android and iOS exports, the export walk, the web build, the release APK on a phone | at the end |
+| 50 | The push, the store builds, the reviews, the update prompt | needs you |
+| 51 | Check first: are 1.8's store builds live? (`lib/appUpdate/release.ts` still says 0 for both) | needs you |
+
+## Parked
+
+- Identity beyond the fixes: earned and seasonal frames, a patron's icon as the picture (his call: keep Identity small).
+- The Fathers' own cross-references (he was unsure).
+- Word study's other ideas (Translated as, the open book first, the count before the lock, a fuller dictionary, the Fathers on the word).
