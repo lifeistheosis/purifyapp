@@ -17,10 +17,10 @@ its turn), **his input** (needs a picture or an answer first), **done**,
 | 2 | Saved: "Bookmark a verse to keep it here" in place of a star a phone does not have (bug 1) | done |
 | 3 | "Remember the verse" named the same on the paywall as in the app (bug 6) | done |
 | 4 | The Sync preview shows an example, not a zero (bug 2) | build |
-| 5 | The Try it header no longer cuts a long name (bug 3) | build |
-| 6 | One icon per sound in Ambience (bug 4) | build |
+| 5 | The Try it header no longer cuts a long name (bug 3) | done |
+| 6 | One icon per sound in Ambience (bug 4) | done |
 | 7 | The Supporter mark explains itself on a tap (bug 7, Identity 2) | build |
-| 8 | No Discord row on a phone's paywall; Windows keeps it (Identity 3) | build |
+| 8 | No Discord row on a phone's paywall; Windows keeps it (Identity 3) | done |
 | 9 | An admin Review list of the 66 texts marked for clergy review | build |
 
 ## 2. The designs he picked
