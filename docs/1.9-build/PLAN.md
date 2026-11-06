@@ -35,8 +35,8 @@ On the 1.9 branch:
 
 | # | Item | Status |
 |---|---|---|
-| 8 | The Sync preview shows an example, not "0" (bug 2), and loses its drawn devices (flag 3) | now |
-| 9 | The Supporter mark explains itself on a tap (Identity 2, 21 languages) | now |
+| 8 | The Sync preview shows an example, not "0" (bug 2), and loses its drawn devices (flag 3) | done |
+| 9 | The Supporter mark explains itself on a tap (Identity 2, 21 languages) | done |
 | 10 | Admin: a Review list of the 66 texts marked for clergy review, ours only | now |
 | 11 | F-37: the Stripe webhook never marks an unpaid checkout paid (money) | ready, first after these |
 | 12 | Count which lock a reader taps and which leads to a purchase | ready |
@@ -108,7 +108,7 @@ On the 1.9 branch:
 | 48 | The note in 21 languages, the six version numbers, the update hierarchy, the drop | at the end |
 | 49 | The gates: typecheck, unit, lint, the Android and iOS exports, the export walk, the web build, the release APK on a phone | at the end |
 | 50 | The push, the store builds, the reviews, the update prompt | needs you |
-| 51 | Check first: are 1.8's store builds live? (`lib/appUpdate/release.ts` still says 0 for both) | needs you |
+| 51 | 1.8 is live in both stores (his word, 2026-11-06); set the build numbers in `lib/appUpdate/release.ts` so installed apps are told | needs you: the build numbers each store serves |
 
 ## Parked
 
