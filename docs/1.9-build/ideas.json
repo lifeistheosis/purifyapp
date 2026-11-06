@@ -1240,12 +1240,12 @@
    "title": "Readers never see review status; our own writing is credited to the editorial team, never Purify",
    "from": "edgar",
    "asked": "2026-11-06",
-   "status": "approved",
+   "status": "built",
    "decided": "2026-11-06",
    "needsDesign": false,
    "version": null,
    "outcome": null,
-   "note": "Six lines rewritten in 21 languages (built 2026-11-06); the admin Review list still to build"
+   "note": "Six lines rewritten (21 languages) and the admin Review list built, 2026-11-06"
   },
   {
    "id": "e-bibles-languages",

@@ -37,8 +37,8 @@ On the 1.9 branch:
 |---|---|---|
 | 8 | The Sync preview shows an example, not "0" (bug 2), and loses its drawn devices (flag 3) | done |
 | 9 | The Supporter mark explains itself on a tap (Identity 2, 21 languages) | done |
-| 10 | Admin: a Review list of the 66 texts marked for clergy review, ours only | now |
-| 11 | F-37: the Stripe webhook never marks an unpaid checkout paid (money) | ready, first after these |
+| 10 | Admin: a Review list of the 66 texts marked for clergy review, ours only | done |
+| 11 | F-37: the Stripe webhook never marks an unpaid checkout paid (money) | needs you: the audit marks it requires-owner (his look at Stripe's payment methods, and his OK to change the money path) |
 | 12 | Count which lock a reader taps and which leads to a purchase | ready |
 | 13 | The red commentary dots in the reader (flag 5) | needs you: keep or quiet them |
 
