@@ -7,7 +7,7 @@
 // sign-in and no sign that there were more. Nothing was lost on the server;
 // it simply never arrived. The stand-in here caps the way the real API does.
 
-import { beforeEach, describe, expect, it, vi } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import type { SupabaseClient } from "@supabase/supabase-js";
 
 import { cappedApi } from "@/lib/supabase/__tests__/cappedApi";
@@ -126,6 +126,18 @@ describe("signing in on a new device", () => {
 // verse swiped off Saved came back on the next page and an edited note went
 // back to its first words (the owner's note 21; docs/1.7-build/specs).
 describe("removals and edits stick", () => {
+  // The fixtures are dated October 2026, and a removal is kept 30 days
+  // (lib/sync/tombstones.ts, KEEP_MS). Read on the real clock, the removal
+  // buried on 5 October aged out on 4 November and the first case failed on
+  // its own, with no change to the code. The clock stands a few days after
+  // the fixtures instead; only Date is held, the timers stay real.
+  beforeEach(() => {
+    vi.useFakeTimers({ toFake: ["Date"] });
+    vi.setSystemTime(new Date("2026-10-10T00:00:00Z"));
+  });
+  afterEach(() => {
+    vi.useRealTimers();
+  });
   const john316 = { book: "john", chapter: 3, verse: 16 };
   const key = "purify:bible:john:3:16";
   const bury = (table: string, kind: string, locator: object, at: string) =>
