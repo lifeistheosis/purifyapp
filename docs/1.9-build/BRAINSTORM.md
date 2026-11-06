@@ -195,10 +195,11 @@ What is weak:
 
 Ideas, best first:
 
-- A. Tap any English word to study its Greek. Every English word of the New
-  Testament is already tagged with its Greek number
-  (`/bible-data/interlinear/<book>/<chapter>.json`, `english`), so this needs
-  no new data, and it puts the feature in front of every reader.
+- A. Tap any English word to study its Greek. The English is already tagged
+  word by word with its Greek number (`data/bible/english-tagged`: 25 of the
+  27 New Testament books, all but Philippians and Philemon, and 44 books of
+  the Old Testament), so this needs little new data, and it puts the feature
+  in front of every reader.
 - B. "Translated as": how the KJV renders the word (word, saying, account),
   with counts, each a filter. From the same tags.
 - C. Begin where the reader is: the verses of the open book first.
@@ -235,4 +236,49 @@ Ideas, best first:
 - D. Read around a linked verse (the verse before and after) without leaving
   the sheet.
 
-His picks: (waiting)
+### His picks, section 1 (2026-11-06)
+
+His words, from voice: "we kind of need like the UI system really clean so
+someone can easily highlight, easily copy, easily share, easily make an image
+... and easily look at the Greek and easily compare it ... with the premium",
+and "just do your pick for now and really explain what your pick is ... show
+photos". On the Fathers' links he is unsure: parked, not dropped.
+
+- **Word study: A, tap the English word**, inside one clean verse system
+  (below), because a tap or a hold on a word collides with what the reader
+  already does with a verse.
+- **Cross-references: A, the Old Testament in the Septuagint.**
+
+**The verse system, one rule per gesture** (mockups made 2026-11-06 on the
+local app, not built):
+
+| Gesture | Today (`components/bible/VerseRow.tsx`) | Proposed |
+|---|---|---|
+| Tap a verse | Nothing | Selects it; one bar comes up: the seven colours, Copy, Share, Image, Note, Greek, Compare (Plus), Cross-refs (Plus), More. Tap more verses to add them; tap outside to close |
+| Tap a word | Nothing (only Greek words, with the Greek on) | In a selected verse, its card: the Greek word, the meaning (free), every place it appears (Plus), with the count said before the lock |
+| Double tap | Highlights the verse | The same; the first tap selects, so nothing waits |
+| Hold | An eighteen-row menu | Hold and drag marks some words, as now; the menu's rows move into the bar and More |
+
+Nothing appears while a reader only reads: no popups until a tap. Compare,
+if Plus, needs one check first: licensed translations (NIV, NKJV, NLT) often
+may not be sold behind a paywall under their publishers' terms.
+
+**Cross-references, the numbers** (OpenBible.info's set,
+`scripts/cr/cross_references.txt`, counted 2026-11-06):
+
+- 344,799 links in the set; the app uses 84,369 of them (New Testament to New
+  Testament, 24%). Dropped: 30,226 from the New Testament into the Old, and
+  all 230,204 that start in the Old Testament.
+- The most-voted link for John 1:1 is Genesis 1:1 (333 votes), and it is
+  dropped today. So are Proverbs 8:22-31 (106) and Isaiah 9:6 (95).
+- 21,556 Old Testament verses, the Psalms among them, would have
+  cross-references for the first time.
+- The map is the work: the link data is numbered as the KJV is, Purify's Old
+  Testament as the Septuagint is. Psalm 33:9 in the data is Purify's 32:9;
+  opened unmapped it lands on "Fear the Lord, all ye his saints". Jeremiah
+  31:31 is 38:31. The Psalms are mapped by whole psalm already
+  (`lib/bible/psalmNumbers.ts`); cross-references need it verse by verse.
+  What cannot be placed exactly stays out, as now.
+- Shown as two groups: the Old Testament first (up to three), then the New
+  (up to six as now), because by votes alone the Old Testament links would
+  mostly fall below the cap of six.
