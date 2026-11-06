@@ -48,7 +48,8 @@ import { cn } from "@/lib/cn";
 import { dateLocale } from "@/lib/i18n/deviceDates";
 import type { LocaleCode } from "@/lib/i18n/locales";
 import { paywallReviews } from "@/lib/premium/paywallReviews";
-import { plusRowsLedBy } from "@/lib/premium/plusRows";
+import { plusRowsLedBy, rowsHere } from "@/lib/premium/plusRows";
+import { useDesktopApp } from "@/lib/desktop/useDesktopApp";
 
 /* ── The scribe, and why ─────────────────────────────────────────────────── */
 
@@ -252,7 +253,8 @@ export function PlusFeatureRows({
   className?: string;
 }) {
   const { t } = useTranslate();
-  const rows = plusRowsLedBy(lead);
+  const desktopApp = useDesktopApp();
+  const rows = rowsHere(plusRowsLedBy(lead), { desktopApp });
   const ledBy = lead ? rows[0]?.feature === lead : false;
   return (
     <div className={className}>

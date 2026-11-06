@@ -43,7 +43,8 @@ import { useAmbience } from "@/lib/ambience/player";
 import { cn } from "@/lib/cn";
 import { nextTryRow, trySoundOf } from "@/lib/premium/plusTry";
 import { beginTry, endTrySound, useTrySound } from "@/lib/premium/plusTrySound";
-import { plusRowsLedBy, type PlusRow } from "@/lib/premium/plusRows";
+import { plusRowsLedBy, rowsHere, type PlusRow } from "@/lib/premium/plusRows";
+import { useDesktopApp } from "@/lib/desktop/useDesktopApp";
 
 import { TryWindow } from "./plusTry/TryKit";
 
@@ -111,7 +112,8 @@ export function usePlusTry(lead: string | null | undefined, list: RefObject<HTML
 
 /** The row being tried and the one after it, in the order the list shows them. */
 export function useTryRows(lead: string | null | undefined, id: string | null, start: (id: string) => void, back: () => void): PlusTry {
-  const rows = useMemo(() => plusRowsLedBy(lead), [lead]);
+  const desktopApp = useDesktopApp();
+  const rows = useMemo(() => rowsHere(plusRowsLedBy(lead), { desktopApp }), [lead, desktopApp]);
   const row = id ? (rows.find((r) => r.id === id) ?? null) : null;
   const next = row ? nextTryRow(rows, row.id) : null;
   return { row, next, start, back };
@@ -133,6 +135,10 @@ export function bringRowBack(list: RefObject<HTMLElement | null>, id: string): v
  * The preview's title bar: the arrow back to the list, the feature's name,
  * "Preview", and in the sheet its close. In the sheet it stands in the
  * sheet's own title bar, under the handle that still drags it.
+ *
+ * The name takes two lines before it is cut (1.9): one line cut "Candlelight
+ * and Monastery reading" to "Candlelight and Monastery rea..." on a phone,
+ * and the longer languages cut more.
  */
 export function PlusTryHead({ name, onBack, onClose }: { name: string; onBack: () => void; onClose?: () => void }) {
   const { t } = useTranslate();
@@ -143,7 +149,7 @@ export function PlusTryHead({ name, onBack, onClose }: { name: string; onBack: (
           <ChevronLeft size={18} className="rtl:-scale-x-100" />
         </span>
       </button>
-      <p className="min-w-0 truncate font-sans text-ui font-semibold text-paper">{name}</p>
+      <p className="min-w-0 line-clamp-2 font-sans text-ui font-semibold leading-tight text-paper">{name}</p>
       <span className="shrink-0 font-sans text-[12.5px] font-medium text-paper/50">{t("profile.previewing")}</span>
       <span className="min-w-0 flex-1" />
       {onClose ? (

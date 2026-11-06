@@ -30,7 +30,7 @@ import TryWordStudy from "@/components/billing/plusTry/TryWordStudy";
 import { MessagesProvider } from "@/components/i18n/MessagesProvider";
 import { AMBIENCE_TRACKS } from "@/lib/ambience/ambience";
 import { getMessages } from "@/lib/i18n";
-import { PLUS_ROWS, plusRowsLedBy, type PlusRow } from "@/lib/premium/plusRows";
+import { PLUS_ROWS, plusRowsLedBy, rowsHere, type PlusRow } from "@/lib/premium/plusRows";
 
 type ProviderProps = Parameters<typeof MessagesProvider>[0];
 function render(node: ReactElement, lang = "en"): string {
@@ -48,8 +48,9 @@ describe("the rows", () => {
   it("each end in Try it, named by its feature, when the place can show a preview", () => {
     const out = render(createElement(PlusFeatureRows, { onTry: () => {} }));
     const opens = [...out.matchAll(/data-plus-try-open="([a-z-]+)"/g)].map((m) => m[1]);
-    expect(opens).toEqual(PLUS_ROWS.map((r) => r.id));
-    expect(out.match(/>Try it<svg/g)).toHaveLength(14);
+    // Off the Windows app, Discord status is not offered (1.9, rowsHere).
+    expect(opens).toEqual(rowsHere(PLUS_ROWS, { desktopApp: false }).map((r) => r.id));
+    expect(out.match(/>Try it<svg/g)).toHaveLength(13);
     // Each names the feature it tries.
     for (const m of out.matchAll(/aria-describedby="([^"]+)"/g)) expect(out).toContain(`id="${m[1]}"`);
   });

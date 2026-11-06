@@ -51,6 +51,8 @@ export type PlusRow = {
   body: string;
   /** Catalog key of what stays free beside it, said when a reader came for it. */
   keep: string | null;
+  /** Shown only where the feature works (1.9): "desktop-app" is the Windows app. */
+  only?: "desktop-app";
 };
 
 /**
@@ -72,8 +74,18 @@ export const PLUS_ROWS: readonly PlusRow[] = [
   { feature: "history", id: "immersive-history", title: "plus.history.title", name: "plus.history.title", body: "plus.history.body", keep: "plus.history.keep" },
   { feature: "profile", id: "profile", title: "plus.profile.title", name: "profile.plusNudgeTitle", body: "plus.profile.body", keep: "plus.profile.keep" },
   { feature: null, id: "supporter-mark", title: null, name: "plus.mark.name", body: "settings.showSupporterMarkHint", keep: null },
-  { feature: null, id: "discord-frames", title: null, name: "settings.discord", body: "settings.discordModeHint.plus", keep: null },
+  { feature: null, id: "discord-frames", title: null, name: "settings.discord", body: "settings.discordModeHint.plus", keep: null, only: "desktop-app" },
 ];
+
+/**
+ * The rows this device can use (1.9, the owner's Identity 3: "phones no longer
+ * show the Discord row on the paywall. Windows keeps it."). Discord status
+ * lives in the Windows app alone, so a phone, a tablet or a browser was sold
+ * a feature it cannot run. Every other row is everywhere.
+ */
+export function rowsHere(rows: readonly PlusRow[], here: { desktopApp: boolean }): readonly PlusRow[] {
+  return rows.filter((r) => r.only !== "desktop-app" || here.desktopApp);
+}
 
 /** The rows with the one a reader came for first. Any other lock, or none, keeps the order. */
 export function plusRowsLedBy(lead: string | null | undefined): readonly PlusRow[] {
