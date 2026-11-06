@@ -536,3 +536,36 @@ confirm before removing.
    cited, through the editorial queue), the Old Testament cross-references,
    the English word tap.
 4. Last: the megabytes and the animations.
+
+### Immersive history for Plus: the Thread (2026-11-06)
+
+His words: "Everyone else gets a standard read article, right? But for plus
+users ... they get the timeline, right? The same timeline that we have on
+like a saint's life, we want that for the history section ... not
+necessarily more in depth, but just more immersive."
+
+- **Everyone:** the article as it is, with its pictures.
+- **Plus:** the event as a Thread, drawn as a saint's Timeline is (the Web
+  door's second view, `components/saints/web/WebTimeline.tsx`, his 1.8 pick):
+  year by year, each moment one of the event's own sentences that carries a
+  year, the people in it as chips (a saint opens his page), the event itself
+  lit with its picture, what followed it on a dashed line, and "Also in this
+  council" at the foot.
+- **The data is there:** each event in `data/history/*.json` has its context,
+  narrative and consequences, its people with their saints' pages, and its
+  sources (Nicaea: 17). The mockup of Nicaea uses its sentences word for word.
+- **To weigh:** every history text is still marked `awaiting-clergy-review`.
+  More events, and a Thread made from them, lengthen that queue.
+- **More immersive, to brainstorm with him:** the map following the Thread,
+  the Thread read aloud, a quotation opening its source in place, a person
+  followed across events.
+
+### The Supporter mark (2026-11-06)
+
+Two things are called supporter today: the small cross beside a Plus or Pro
+member's name in Community ("Supporter", `community.supporterMark`), and the
+pre-launch supporters, who keep cross-device sync for life
+(`plus.promise.supporters`). His answer: "plus users are supporters." So the
+mark keeps its word, and bug 7 becomes: tapping the mark says what it means
+("Supporter: Herman keeps Purify going with Purify Plus"). Mockups made for
+his Identity 2 (the mark tapped) and 3 (no Discord row on a phone's paywall).
