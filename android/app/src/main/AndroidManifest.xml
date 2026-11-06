@@ -44,6 +44,21 @@
                  tablets and foldables. MainActivity holds a phone upright
                  itself and lets a large screen turn. -->
 
+            <!-- The EIKON thank-you card's QR, https://purifyapp.net/gift,
+                 opens the app's gift screen when the app is on the phone
+                 (2026-11-06). autoVerify makes it an Android App Link: it opens
+                 here without asking once
+                 https://purifyapp.net/.well-known/assetlinks.json names this
+                 app's Play signing certificate; until then Android opens the
+                 website, where the same claim works. Only this one path, and
+                 lib/native/appLinks.ts maps it to its screen and nothing more. -->
+            <intent-filter android:autoVerify="true">
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <data android:scheme="https" android:host="purifyapp.net" android:path="/gift" />
+            </intent-filter>
+
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />

@@ -131,6 +131,7 @@ export const SCREEN_NAMES: Record<ScreenKey, string> = {
   checkout: "Checkout",
   "shop-other": "Another shop page",
   seller: "Selling in the shop",
+  "order-gift": "The order gift (card QR)",
   other: "Another page",
 };
 

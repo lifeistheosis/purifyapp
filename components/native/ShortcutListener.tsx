@@ -29,6 +29,7 @@ import { useEffect } from "react";
 import { useRouter } from "next/navigation";
 
 import { readLastRead } from "@/lib/bible/lastRead";
+import { appLinkTarget } from "@/lib/native/appLinks";
 import { isNativeClient } from "@/lib/platform/native";
 import {
   LAUNCH_ASKED_KEY,
@@ -70,14 +71,18 @@ export function ShortcutListener() {
       // A widget's tap, when it is not a shortcut's: the screen it opens, or
       // null for every URL that is neither.
       const widget = id ? null : widgetTarget(url);
-      if (!id && widget === null) return;
+      // A website address the app answers for (the EIKON card's
+      // purifyapp.net/gift, lib/native/appLinks.ts), when it is neither.
+      const link = id || widget !== null ? null : appLinkTarget(url);
+      if (!id && widget === null && link === null) return;
       const now = Date.now();
       if (sameTap(last, url, now)) return;
       last = { url, at: now };
       if (!id) {
-        // A widget's tap. push, for the reason below: one that started the
-        // app leaves Today underneath it.
+        // A widget's tap or a website link. push, for the reason below: one
+        // that started the app leaves Today underneath it.
         if (widget !== null) router.push(widget);
+        else if (link !== null) router.push(link);
         return;
       }
       const target = shortcutTarget(id, readLastRead());
