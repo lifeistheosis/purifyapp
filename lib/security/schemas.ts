@@ -1,5 +1,6 @@
 import { z } from "zod";
 
+import { BOUGHT_PLANS, LOCKS } from "@/lib/analytics/lockCounting";
 import { OPEN_SPANS } from "@/lib/analytics/screenCounting";
 import { SCREENS } from "@/lib/analytics/screens";
 import { cleanTag } from "@/lib/analytics/tag";
@@ -691,6 +692,17 @@ export const trackEventSchema = z.discriminatedUnion("name", [
     name: z.literal("came_back"),
     // CAME_BACK_DAYS, written out; the screens' counting test holds the two equal.
     props: z.object({ day: z.union([z.literal(1), z.literal(7), z.literal(30)]), platform: z.enum(COUNT_PLATFORMS) }).strict(),
+  }),
+  // Which lock a reader taps, and which leads to a purchase (1.9,
+  // lib/analytics/lockCounting.ts): the feature's name, never the page, the
+  // plan bought, and the kind of device.
+  z.object({
+    name: z.literal("lock_tapped"),
+    props: z.object({ lock: z.enum(LOCKS), platform: z.enum(COUNT_PLATFORMS) }).strict(),
+  }),
+  z.object({
+    name: z.literal("plus_bought"),
+    props: z.object({ lock: z.enum(LOCKS), plan: z.enum(BOUGHT_PLANS), platform: z.enum(COUNT_PLATFORMS) }).strict(),
   }),
   z.object({
     name: z.literal("catechism_started"),

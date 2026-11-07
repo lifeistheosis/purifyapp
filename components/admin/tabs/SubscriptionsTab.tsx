@@ -9,6 +9,7 @@ import { adminJson } from "@/lib/admin/fetchJson";
 import { Card, StatCard, ChartFrame, DataTable, Email, Pill, Select, SubTabs } from "../primitives";
 import { Donut, SERIES_COLORS } from "../charts";
 import { formatPrice } from "@/lib/shop/format";
+import { LocksPanel } from "./LocksPanel";
 
 type Subs = {
   activePlus: number;
@@ -572,10 +573,12 @@ function MembersPanel() {
 
 /* ── Tab shell ─────────────────────────────────────────────────────────── */
 
-type Panel = "members" | "summary";
+type Panel = "members" | "summary" | "locks";
 const TABS = [
   ["members", "Members"],
   ["summary", "Summary"],
+  // 1.9: which lock a reader meets, and which leads to a purchase.
+  ["locks", "Locks"],
 ] as const;
 
 export function SubscriptionsTab() {
@@ -583,7 +586,7 @@ export function SubscriptionsTab() {
   return (
     <div className="space-y-6">
       <SubTabs tabs={TABS} active={panel} onChange={setPanel} />
-      {panel === "members" ? <MembersPanel /> : <SummaryPanel />}
+      {panel === "members" ? <MembersPanel /> : panel === "locks" ? <LocksPanel /> : <SummaryPanel />}
     </div>
   );
 }

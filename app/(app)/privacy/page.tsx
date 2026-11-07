@@ -309,6 +309,21 @@ export default async function PrivacyPage() {
  more on a total, never you. The day you first opened Purify stays
  on your device.
 </p>
+ {/* 1.9 (lib/analytics/lockCounting.ts). Drafted for the owner's word
+ before the release, and listed in the 1.9 letter, as "Changes to this
+ page" below promises. */}
+<p className="mt-3 font-serif text-body text-paper/85 leading-[1.7]">
+ What Purify Plus is wanted for is counted in the same table. When
+ you tap something that needs Plus, one row says which feature it
+ was (&ldquo;Reading plans&rdquo;, &ldquo;Ambience&rdquo;), never
+ the page. If you then subscribe in the sheet that opened, one row
+ says which feature the sheet was opened on and whether you chose a
+ month or a year. A row holds only that, with the kind of device
+ (iPhone, Android, Windows, website) and the day, not the time. No
+ session id, no account, no device id: &ldquo;someone who met the
+ reading plans subscribed for a year&rdquo; is one more on a total,
+ never you.
+</p>
 
  {/* Retention. Until 2026-10-29 this said a scheduled job deleted
  these rows at 90 days. That job (docs/operations/analytics-retention.md)

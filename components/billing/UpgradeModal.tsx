@@ -16,6 +16,7 @@ import { DockNote, KeptHero, PlansDock, PlusFeatureRows, PlusReviews, ScribePict
 import { PlusTryHead, PlusTryPage, bringRowBack, useTryRows } from "@/components/billing/PlusTry";
 import { PREMIUM_CTA } from "@/components/premium/PremiumUI";
 import { beginTry, endTrySound } from "@/lib/premium/plusTrySound";
+import { countBought, countLock } from "@/lib/analytics/lockCount";
 import { Sheet } from "@/components/ui/Sheet";
 import { cn } from "@/lib/cn";
 import { useTranslate } from "@/components/i18n/MessagesProvider";
@@ -207,6 +208,9 @@ export function UpgradeModalProvider({
 
   const open = useCallback((next: UpgradeFeature, opts?: OpenOptions) => {
     const seq = ++openSeq.current;
+    // Which lock was met, kept to the day with no reader in it (1.9,
+    // lib/analytics/lockCounting.ts).
+    countLock(next);
     setFeature(next);
     setOverPlayer(Boolean(opts?.overPlayer));
     setPhase("pitch");
@@ -298,7 +302,11 @@ export function UpgradeModalProvider({
         const outcome = await purchase(pkg, "plus");
         // Every consumer resolved its entitlement once, on mount, and would
         // otherwise still be showing a lock behind this sheet.
-        if (outcome === "active") emitEntitlementsChanged();
+        if (outcome === "active") {
+          emitEntitlementsChanged();
+          // The lock this sheet opened on led to a purchase (lib/analytics/lockCounting.ts).
+          countBought(feature ?? "general", plan);
+        }
         // "cancelled" is the reader changing their mind, not an error. Putting
         // them back on the pitch is the honest response to it.
         setPhase(
@@ -317,7 +325,10 @@ export function UpgradeModalProvider({
         return;
       }
       const outcome = await purchaseWebPlus(user.id, pkg);
-      if (outcome === "active") emitEntitlementsChanged();
+      if (outcome === "active") {
+        emitEntitlementsChanged();
+        countBought(feature ?? "general", plan);
+      }
       setPhase(
         outcome === "active"
           ? "active"
@@ -329,7 +340,7 @@ export function UpgradeModalProvider({
       console.error("[UpgradeModal] purchase failed", e);
       setPhase("failed");
     }
-  }, [plan]);
+  }, [plan, feature]);
 
   // Restore purchases (the apps): a subscription bought before, on another
   // phone or before a reinstall, found by the store and lit here. What it
