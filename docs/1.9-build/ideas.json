@@ -1002,7 +1002,8 @@
    "decided": "2026-11-06",
    "needsDesign": false,
    "version": null,
-   "outcome": null
+   "outcome": null,
+   "note": "Found built on 2026-11-07, since 1.7: an event's page lists its people, one line each, and a saint the app has opens his page, his icon at the head of the row (components/history/EventPeople.tsx). Measured that day: 36 of the 40 events list their people, and every saint an event names is among them but two, both rightly (St John at Polycarp's martyrdom is his teacher, not one of its people; St Mark of Ephesus at Florence, which lists nobody). The four with no people are the Council of Florence and three of the twentieth and twenty-first centuries (the OCA's autocephaly, Ukraine's, the 2018 break between Moscow and Constantinople). Their lines would be our words on the most disputed events in the history section, so they go through the editorial queue for clergy review, as the rest of the history's framing does; not written here."
   },
   {
    "id": "s6-05",
