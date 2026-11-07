@@ -4832,6 +4832,7 @@
   "ambience.failed": "Could not play",
   "ambience.stop": "Stop the sound",
   "ambience.playingAria": "Ambience, {sound} playing",
+  "ambience.last": "Last played",
   "readAloud.listen": "Listen",
   "readAloud.pause": "Pause",
   "readAloud.by": "Read aloud",

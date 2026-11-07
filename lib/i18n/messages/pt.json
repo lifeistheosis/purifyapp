@@ -4817,6 +4817,7 @@
   "ambience.failed": "Não foi possível tocar",
   "ambience.stop": "Parar o som",
   "ambience.playingAria": "Ambiente, tocando {sound}",
+  "ambience.last": "Da última vez",
   "readAloud.listen": "Ouvir",
   "readAloud.pause": "Pausar",
   "readAloud.by": "Leitura em voz alta",

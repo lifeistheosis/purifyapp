@@ -4812,6 +4812,7 @@
   "ambience.failed": "बजाउन सकिएन",
   "ambience.stop": "ध्वनि रोक्नुहोस्",
   "ambience.playingAria": "पृष्ठभूमि ध्वनि, {sound} बज्दैछ",
+  "ambience.last": "पछिल्लो पटक बजेको",
   "readAloud.listen": "सुन्नुहोस्",
   "readAloud.pause": "रोक्नुहोस्",
   "readAloud.by": "ठूलो स्वरमा पढाइ",

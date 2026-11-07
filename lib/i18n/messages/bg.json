@@ -4812,6 +4812,7 @@
   "ambience.failed": "Не може да се пусне",
   "ambience.stop": "Спри звука",
   "ambience.playingAria": "Звуков фон, звучи: {sound}",
+  "ambience.last": "Последно пускан",
   "readAloud.listen": "Слушай",
   "readAloud.pause": "Пауза",
   "readAloud.by": "Четене на глас",

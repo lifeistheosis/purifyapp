@@ -4812,6 +4812,7 @@
   "ambience.failed": "Çalınamadı",
   "ambience.stop": "Sesi durdur",
   "ambience.playingAria": "Ortam sesi, {sound} çalıyor",
+  "ambience.last": "Son çalınan",
   "readAloud.listen": "Dinle",
   "readAloud.pause": "Duraklat",
   "readAloud.by": "Sesli okuma",

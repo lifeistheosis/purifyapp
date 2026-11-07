@@ -4899,6 +4899,7 @@
   "ambience.failed": "Nu s-a putut reda",
   "ambience.stop": "Oprește sunetul",
   "ambience.playingAria": "Ambianță, se aude {sound}",
+  "ambience.last": "Ultima dată",
   "readAloud.listen": "Ascultă",
   "readAloud.pause": "Pauză",
   "readAloud.by": "Citit cu voce tare",

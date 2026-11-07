@@ -4967,6 +4967,7 @@
   "ambience.failed": "Nie udało się odtworzyć",
   "ambience.stop": "Zatrzymaj dźwięk",
   "ambience.playingAria": "Tło dźwiękowe, gra: {sound}",
+  "ambience.last": "Ostatnio słuchane",
   "readAloud.listen": "Słuchaj",
   "readAloud.pause": "Pauza",
   "readAloud.by": "Czytane na głos",

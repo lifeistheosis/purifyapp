@@ -4965,6 +4965,7 @@
   "ambience.failed": "Не удалось воспроизвести",
   "ambience.stop": "Остановить звук",
   "ambience.playingAria": "Фоновый звук, играет: {sound}",
+  "ambience.last": "В прошлый раз",
   "readAloud.listen": "Слушать",
   "readAloud.pause": "Пауза",
   "readAloud.by": "Чтение вслух",

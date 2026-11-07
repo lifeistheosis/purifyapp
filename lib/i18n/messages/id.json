@@ -4810,6 +4810,7 @@
   "ambience.failed": "Tidak dapat diputar",
   "ambience.stop": "Hentikan suara",
   "ambience.playingAria": "Suasana, {sound} diputar",
+  "ambience.last": "Terakhir diputar",
   "readAloud.listen": "Dengarkan",
   "readAloud.pause": "Jeda",
   "readAloud.by": "Dibacakan",

@@ -4840,6 +4840,7 @@
   "ambience.failed": "Lecture impossible",
   "ambience.stop": "Arrêter le son",
   "ambience.playingAria": "Ambiance, {sound} en cours",
+  "ambience.last": "La dernière fois",
   "readAloud.listen": "Écouter",
   "readAloud.pause": "Pause",
   "readAloud.by": "Lu à voix haute",

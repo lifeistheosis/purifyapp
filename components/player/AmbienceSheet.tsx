@@ -26,7 +26,8 @@ const LABEL = "font-sans text-caption font-semibold text-paper/55";
 /**
  * The ambience sheet (1.7, the owner's note 25 of 2026-10-16 and his "Yeah,
  * these are good"): the sounds as large tiles (tap to play, tap another to
- * switch, tap the one playing to stop), and once one plays, its volume, its
+ * switch, tap the one playing to stop; while none plays, the last one the
+ * reader chose is marked, 1.9), and once one plays, its volume, its
  * balance against the reading voice while one plays, and the sleep timer
  * shared with everything that plays (lib/player/sleep.ts).
  *
@@ -104,10 +105,13 @@ function AmbienceSheetContent({ overPlayer }: { overPlayer: boolean }) {
       upgrade.open("ambience", { overPlayer });
       return;
     }
-    // The sound playing, or the one still loading, stops; any other plays.
+    // The sound playing, or the one still loading, stops; any other plays,
+    // and is the one offered next time.
     const on = ambience.playing === track.id || ambience.loading === track.id;
-    void playAmbience(on ? null : track.id);
+    void playAmbience(on ? null : track.id, { remember: true });
   };
+  // While nothing plays, the reader's last sound is marked, to find it again.
+  const quiet = !ambience.playing && !ambience.loading;
 
   return (
     <>
@@ -116,13 +120,16 @@ function AmbienceSheetContent({ overPlayer }: { overPlayer: boolean }) {
           const lit = ambience.playing === track.id;
           const loading = ambience.loading === track.id;
           const failed = ambience.failed === track.id;
+          const last = quiet && !locked && !failed && ambience.last === track.id;
           const state = lit
             ? t("ambience.playing")
             : loading
               ? t("ambience.loading")
               : failed
                 ? t(track.where === "web" ? "ambience.needsConnection" : "ambience.failed")
-                : null;
+                : last
+                  ? t("ambience.last")
+                  : null;
           return (
             <button
               key={track.id}
@@ -135,7 +142,7 @@ function AmbienceSheetContent({ overPlayer }: { overPlayer: boolean }) {
                 "motion-safe:transition-colors motion-safe:duration-200",
                 lit || loading
                   ? "bg-paper text-night"
-                  : "bg-paper/[0.04] text-paper ring-1 ring-inset ring-paper/10 hover:bg-paper/[0.08]",
+                  : cn("bg-paper/[0.04] text-paper ring-1 ring-inset hover:bg-paper/[0.08]", last ? "ring-paper/35" : "ring-paper/10"),
               )}
             >
               <span className="flex items-start justify-between gap-2">

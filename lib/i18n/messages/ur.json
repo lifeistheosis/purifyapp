@@ -4812,6 +4812,7 @@
   "ambience.failed": "چلائی نہ جا سکی",
   "ambience.stop": "آواز روکیں",
   "ambience.playingAria": "پس منظر کی آواز، {sound} چل رہی ہے",
+  "ambience.last": "پچھلی بار",
   "readAloud.listen": "سنیں",
   "readAloud.pause": "روکیں",
   "readAloud.by": "بلند آواز میں",

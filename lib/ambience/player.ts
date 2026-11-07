@@ -30,6 +30,8 @@ const FOLLOW = 0.12;
  *  lib/onboarding/state.ts already reads as a reader who has used Purify. */
 const VOLUME_KEY = "purify.ambience.volume";
 const BALANCE_KEY = "purify.ambience.balance";
+/** The last sound the reader chose and heard (1.9, s2-09 of docs/1.9-build/ideas.json). */
+const LAST_KEY = "purify.ambience.last";
 
 let ctx: AudioContext | null = null;
 let master: GainNode | null = null;
@@ -41,6 +43,8 @@ let loading: AmbienceId | null = null;
 let failed: AmbienceId | null = null;
 let volume = DEFAULT_VOLUME;
 let balance = DEFAULT_BALANCE;
+/** The last sound the reader chose and heard, kept when it stops: the one to offer again. */
+let last: AmbienceId | null = null;
 let primed = false;
 
 /** Whether the app's player has a voice (or a chant) sounding now. */
@@ -56,11 +60,13 @@ type Snap = {
   failed: AmbienceId | null;
   volume: number;
   balance: number;
+  /** The last sound the reader chose and heard, playing or not; null before the first. */
+  last: AmbienceId | null;
 };
-let snap: Snap = { playing: null, loading: null, failed: null, volume, balance };
+let snap: Snap = { playing: null, loading: null, failed: null, volume, balance, last };
 
 function emit() {
-  snap = { playing: current, loading, failed, volume, balance };
+  snap = { playing: current, loading, failed, volume, balance, last };
   for (const l of listeners) l();
 }
 
@@ -71,10 +77,22 @@ function prime() {
   try {
     volume = readLevel(window.localStorage.getItem(VOLUME_KEY), DEFAULT_VOLUME);
     balance = readLevel(window.localStorage.getItem(BALANCE_KEY), DEFAULT_BALANCE);
+    // A sound taken out of the list since is no sound: nothing is offered.
+    last = getAmbienceTrack(window.localStorage.getItem(LAST_KEY))?.id ?? null;
   } catch {
     /* private mode: the defaults */
   }
-  snap = { ...snap, volume, balance };
+  snap = { ...snap, volume, balance, last };
+}
+
+/** Keep the sound the reader chose, now that it plays. */
+function remember(id: AmbienceId) {
+  last = id;
+  try {
+    window.localStorage.setItem(LAST_KEY, id);
+  } catch {
+    /* private mode: it lasts the session */
+  }
 }
 
 function context(): AudioContext {
@@ -153,8 +171,13 @@ function release(seconds: number) {
   voice = null;
 }
 
-/** Play a sound, or stop with null. Call from a tap: phones start audio only from one. */
-export async function playAmbience(id: AmbienceId | null): Promise<void> {
+/**
+ * Play a sound, or stop with null. Call from a tap: phones start audio only
+ * from one. `remember`: the reader chose it (the ambience sheet), so once it
+ * plays it is the sound offered next time. A Plus preview's minute of a
+ * sound, and the sound it gives back after, are not the reader's choice.
+ */
+export async function playAmbience(id: AmbienceId | null, opts: { remember?: boolean } = {}): Promise<void> {
   prime();
   if (id !== null && id === current) return;
   release(FADE_OUT);
@@ -187,6 +210,7 @@ export async function playAmbience(id: AmbienceId | null): Promise<void> {
     node.start(now);
     voice = { node, fade };
     current = track.id;
+    if (opts.remember) remember(track.id);
     watchVoice();
   } catch {
     current = null;
@@ -205,6 +229,12 @@ export function stopAmbience(): void {
 /** The sound playing now, read once (the Plus preview gives it back when its minute ends). */
 export function getAmbiencePlaying(): AmbienceId | null {
   return current;
+}
+
+/** The last sound the reader chose and heard, read once; null before the first. */
+export function getLastAmbience(): AmbienceId | null {
+  prime();
+  return last;
 }
 
 /** Go quiet slowly: the sleep timer running out (lib/player/sleep.ts). */
@@ -243,7 +273,7 @@ export function setAmbienceBalance(b: number): void {
   emit();
 }
 
-const SERVER: Snap = { playing: null, loading: null, failed: null, volume: DEFAULT_VOLUME, balance: DEFAULT_BALANCE };
+const SERVER: Snap = { playing: null, loading: null, failed: null, volume: DEFAULT_VOLUME, balance: DEFAULT_BALANCE, last: null };
 
 function subscribe(l: () => void) {
   prime();

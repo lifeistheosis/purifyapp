@@ -4822,6 +4822,7 @@
   "ambience.failed": "No se pudo reproducir",
   "ambience.stop": "Detener el sonido",
   "ambience.playingAria": "Ambiente, suena: {sound}",
+  "ambience.last": "La última vez",
   "readAloud.listen": "Escuchar",
   "readAloud.pause": "Pausa",
   "readAloud.by": "Lectura en voz alta",

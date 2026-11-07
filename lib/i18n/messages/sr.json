@@ -4890,6 +4890,7 @@
   "ambience.failed": "Није могло да се пусти",
   "ambience.stop": "Заустави звук",
   "ambience.playingAria": "Звучна позадина, свира: {sound}",
+  "ambience.last": "Прошли пут",
   "readAloud.listen": "Слушај",
   "readAloud.pause": "Пауза",
   "readAloud.by": "Читање наглас",

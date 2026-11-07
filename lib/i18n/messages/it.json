@@ -4817,6 +4817,7 @@
   "ambience.failed": "Impossibile riprodurre",
   "ambience.stop": "Ferma il suono",
   "ambience.playingAria": "Atmosfera, {sound} in riproduzione",
+  "ambience.last": "L'ultima volta",
   "readAloud.listen": "Ascolta",
   "readAloud.pause": "Pausa",
   "readAloud.by": "Letto ad alta voce",

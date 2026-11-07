@@ -514,11 +514,12 @@
    "title": "Ambience remembers the last sound and fades out at the end of the timer",
    "from": "claude",
    "asked": "2026-11-06",
-   "status": "approved",
+   "status": "built",
    "decided": "2026-11-06",
    "needsDesign": false,
    "version": null,
-   "outcome": null
+   "outcome": null,
+   "note": "Built 2026-11-07. The fade was already there: the sleep timer running out lets the ambience go over eight seconds (lib/player/sleep.ts SLEEP_FADE_SECONDS, held by lib/player/__tests__/sleep.test.ts since 1.7). New: the player keeps the last sound the reader chose in the ambience sheet and heard (purify.ambience.last), and the sheet marks its tile Last played while nothing plays. A Plus preview's sound, a sound that failed to load, and a name no longer in the list are not kept (lib/ambience/__tests__/lastSound.test.ts). The memory is what Night reading in one tap (s2-05) will play. Not built, for his word: the sound coming back by itself when Listen is tapped, as Hallow does with its background sounds"
   },
   {
    "id": "s2-10",

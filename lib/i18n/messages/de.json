@@ -4814,6 +4814,7 @@
   "ambience.failed": "Konnte nicht abgespielt werden",
   "ambience.stop": "Klang beenden",
   "ambience.playingAria": "Klangkulisse, {sound} läuft",
+  "ambience.last": "Zuletzt gehört",
   "readAloud.listen": "Anhören",
   "readAloud.pause": "Pause",
   "readAloud.by": "Vorgelesen",

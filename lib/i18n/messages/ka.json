@@ -4812,6 +4812,7 @@
   "ambience.failed": "ვერ დაიკრა",
   "ambience.stop": "ხმის გაჩერება",
   "ambience.playingAria": "ფონური ხმა, ჟღერს: {sound}",
+  "ambience.last": "ბოლოს ჟღერდა",
   "readAloud.listen": "მოსმენა",
   "readAloud.pause": "პაუზა",
   "readAloud.by": "ხმამაღლა კითხვა",

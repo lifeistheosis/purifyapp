@@ -70,8 +70,8 @@ On the 1.9 branch:
 | 28 | Florilegium: gather from everywhere, share as a page or booklet, a line on Today | ready |
 | 29 | Sync shown working, and everything kept synced | ready |
 | 30 | History: more events (40 today), the saints at each, a map, this day in Church history, listen to an era, the Creed by council | ready |
-| 31 | Ambience: two sounds at once, Orthodox sounds (licences checked), the last sound remembered and faded | ready |
-| 32 | Listening: the week's readings kept offline by themselves, a storage view, sizes before saving, the verse following the voice, resume per book, speed | ready |
+| 31 | Ambience: two sounds at once, Orthodox sounds (licences checked), the last sound remembered and faded | the last sound remembered, 2026-11-07 (the sheet marks it Last played; the fade at the timer's end was there since 1.7). Two sounds and the Orthodox sounds ready |
+| 32 | Listening: the week's readings kept offline by themselves, a storage view, sizes before saving, the verse following the voice, resume per book, speed | built 2026-11-07: the storage view (Settings, On this device), resume per book, saved books marked in the book list; speed was there since 1.8. Sizes before saving waits on a design call (ideas.json s3-04); the week's readings offline and the verse following the voice ready |
 | 33 | More languages for the app | needs you: which |
 | 34 | Chants: more of them, and refined | needs you: the recordings, and what to refine |
 | 35 | Read aloud: the Old Testament, and a choice of voices (carried from 1.8) | parked until its audio exists |

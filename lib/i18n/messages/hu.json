@@ -4812,6 +4812,7 @@
   "ambience.failed": "Nem sikerült lejátszani",
   "ambience.stop": "Hang leállítása",
   "ambience.playingAria": "Hangulat, szól: {sound}",
+  "ambience.last": "Legutóbb ez szólt",
   "readAloud.listen": "Meghallgatás",
   "readAloud.pause": "Szünet",
   "readAloud.by": "Felolvasás",

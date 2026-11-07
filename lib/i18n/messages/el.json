@@ -4812,6 +4812,7 @@
   "ambience.failed": "Δεν ήταν δυνατή η αναπαραγωγή",
   "ambience.stop": "Διακοπή ήχου",
   "ambience.playingAria": "Ατμόσφαιρα, παίζει: {sound}",
+  "ambience.last": "Τελευταία φορά",
   "readAloud.listen": "Ακρόαση",
   "readAloud.pause": "Παύση",
   "readAloud.by": "Ανάγνωση φωναχτά",
