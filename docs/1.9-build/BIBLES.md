@@ -16,8 +16,8 @@ Nothing downloaded yet. "US PD" means published before 1931.
 
 | Language | Text | Tradition | Old Testament | Source | Status |
 |---|---|---|---|---|---|
-| Russian | Synodal 1876 (Holy Synod; the Russian Church's standard) | Orthodox | Masoretic with bracketed Septuagint words; Psalms numbered as the Septuagint; full editions carry the deuterocanon | eBible `russyn` (PD); CrossWire `RusSynodal` (PD) | ready: confirm the 1876 text with its deuterocanon, not a 1994 revision of the same name |
-| Greek | Patriarchal New Testament 1904 (Antoniades; the Patriarchate's text) and the Septuagint as Brenton printed it (1851) | Orthodox | Septuagint, with the deuterocanon | eBible `grcbyz` and `grcbrent` (PD) | ready: the Septuagint matches the app's English Brenton |
+| Russian | Synodal 1876 (Holy Synod; the Russian Church's standard) | Orthodox | Masoretic with bracketed Septuagint words; Psalms numbered as the Septuagint; full editions carry the deuterocanon | CrossWire `RusSynodal` 1.9.1 (Public Domain; 78 books with the deuterocanon; text from the Russian Bible Society or patriarchia.ru) | chosen 2026-11-07, the owner's pick "find the full edition": eBible's `russyn` has the 66 books only |
+| Greek | Patriarchal New Testament 1904 (Antoniades; the Patriarchate's text) and the Septuagint as Brenton printed it (1851) | Orthodox | Septuagint, with the deuterocanon | eBible `grcbyz` (1904, 20 corrections from later editions) and `grcbrent` (52 books), both Public Domain | checked 2026-11-07 against the files: complete |
 | Arabic | Smith and Van Dyck 1865 | Protestant mission; used and sold by the Antiochian Orthodox | Masoretic, no deuterocanon | eBible `arb-vd` (PD) | ready, once its label is decided |
 | Serbian | Karadžić New Testament 1847, Daničić Old Testament 1867 (the 1868 Bible) | Bible Society | Masoretic, no deuterocanon | eBible `srp1868` (PD) | check: that file was modernized by an unnamed editor; the Church's own 1984 New Testament is under copyright |
 | Spanish | Reina-Valera 1909 | Protestant | Masoretic, no deuterocanon | eBible `spaRV1909` (PD) | ready, once its label is decided; no Orthodox Spanish text is public domain. Torres Amat (1825, Catholic, with the deuterocanon) needs digitizing first |
@@ -37,6 +37,14 @@ Nothing downloaded yet. "US PD" means published before 1931.
    older Latin file (`srp1865`) may be the safer base.
 5. Smaller: the Reina-Valera 1909 revisers' dates (low risk); Antoniades' dates
    rest on one catalogue record.
+
+## How readers get them
+
+The owner, 2026-11-07: "make it so that the user picks to download the selected Bible
+... instead of the app including all of them downloaded already". Each Bible is a
+file on the website, downloaded to the phone when a reader picks it, read in its
+own numbering (Psalm 50:3 in the Synodal is "Have mercy upon me", verse 1 in the
+app's English), and removable to free the space.
 
 ## How it fits the app
 
