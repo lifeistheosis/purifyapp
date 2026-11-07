@@ -53,7 +53,7 @@ On the 1.9 branch:
 | 17 | Plans page: Continue, the season's plan, picture tiles | done: Continue, the season's card (the Nativity Fast, from two weeks before it to the feast), the picture tiles |
 | 18 | The Florilegium revamped: collections and sync on top, ready collections below (flag 2) | done: the sync line (only after a confirmed exchange, no device count), the gatherings as cards, four whole passages of Scripture to begin with |
 | 19 | History: major events as large cards, the rest as rows with pictures, no switch, pictures free for everyone | done: the list (24 era-defining events large, 15 as rows with a picture), and on the event and council pages the moving picture and the more pictures for every reader; there never was a switch in the code |
-| 20 | Plus history: each event as a Thread, year by year, as a saint's Timeline | built on the 17 events that have steps, with the map that follows (67 of 183 steps name their place); the Plus row and its Try it are the Thread; the pan and the more pictures are every reader's; next: the quotes' sources, and steps for the other 23 events |
+| 20 | Plus history: each event as a Thread, year by year, as a saint's Timeline | built on the 17 events that have steps, with the map that follows (67 of 183 steps name their place); the Plus row and its Try it are the Thread; the pan and the more pictures are every reader's; 27 more quotes open their source (45 quote texts the app does not carry); next: steps for the other 23 events |
 
 ## Phase 3: expand
 

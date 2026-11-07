@@ -18,7 +18,14 @@
     {
       "kind": "blockquote",
       "text": "From Syria even unto Rome I fight with beasts, both by land and sea, both by night and day, being bound to ten leopards, I mean a band of soldiers, who, even when they receive benefits, show themselves all the worse.",
-      "source": "St Ignatius, To the Romans 5, tr. Roberts and Donaldson (ANF vol. 1, 1885)"
+      "source": "St Ignatius, To the Romans 5, tr. Roberts and Donaldson (ANF vol. 1, 1885)",
+      "cite": {
+        "kind": "work",
+        "saint": "ignatius-of-antioch",
+        "work": "epistle-to-the-romans",
+        "section": 6,
+        "paragraph": 0
+      }
     },
     {
       "kind": "para",
@@ -31,7 +38,14 @@
     {
       "kind": "blockquote",
       "text": "I am the wheat of God, and let me be ground by the teeth of the wild beasts, that I may be found the pure bread of Christ.",
-      "source": "St Ignatius, To the Romans 4, tr. Roberts and Donaldson (ANF vol. 1, 1885)"
+      "source": "St Ignatius, To the Romans 4, tr. Roberts and Donaldson (ANF vol. 1, 1885)",
+      "cite": {
+        "kind": "work",
+        "saint": "ignatius-of-antioch",
+        "work": "epistle-to-the-romans",
+        "section": 5,
+        "paragraph": 0
+      }
     },
     {
       "kind": "para",
@@ -40,7 +54,14 @@
     {
       "kind": "blockquote",
       "text": "Wherever the bishop shall appear, there let the multitude [of the people] also be; even as, wherever Jesus Christ is, there is the Catholic Church.",
-      "source": "St Ignatius, To the Smyrnaeans 8, tr. Roberts and Donaldson (ANF vol. 1, 1885)"
+      "source": "St Ignatius, To the Smyrnaeans 8, tr. Roberts and Donaldson (ANF vol. 1, 1885)",
+      "cite": {
+        "kind": "work",
+        "saint": "ignatius-of-antioch",
+        "work": "epistle-to-the-smyrnaeans",
+        "section": 9,
+        "paragraph": 0
+      }
     },
     {
       "kind": "para",

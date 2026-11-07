@@ -16,7 +16,13 @@
     {
       "kind": "blockquote",
       "text": "O my Father, if it be possible, let this cup pass from me: nevertheless not as I will, but as thou wilt.",
-      "source": "Matthew 26:39 (King James Version)"
+      "source": "Matthew 26:39 (King James Version)",
+      "cite": {
+        "kind": "scripture",
+        "book": "matthew",
+        "chapter": 26,
+        "from": 39
+      }
     }
   ],
   "narrative": [
@@ -44,7 +50,13 @@
     {
       "kind": "blockquote",
       "text": "And these two natural wills are not contrary the one to the other (God forbid!) as the impious heretics assert, but his human will follows and that not as resisting and reluctant, but rather as subject to his divine and omnipotent will.",
-      "source": "The Definition of Faith of the Sixth Council, tr. H. R. Percival (NPNF2 vol. 14, 1900)"
+      "source": "The Definition of Faith of the Sixth Council, tr. H. R. Percival (NPNF2 vol. 14, 1900)",
+      "cite": {
+        "kind": "council",
+        "council": "third-constantinople",
+        "document": "the-definition-of-faith",
+        "section": 2
+      }
     },
     {
       "kind": "para",

@@ -42,7 +42,13 @@
     {
       "kind": "blockquote",
       "text": "The Bishop of Constantinople, however, shall have the prerogative of honour after the Bishop of Rome; because Constantinople is New Rome.",
-      "source": "Canon III of the Second Ecumenical Council, tr. H. R. Percival (NPNF2 vol. 14, 1900)"
+      "source": "Canon III of the Second Ecumenical Council, tr. H. R. Percival (NPNF2 vol. 14, 1900)",
+      "cite": {
+        "kind": "council",
+        "council": "first-constantinople",
+        "document": "the-seven-canons",
+        "section": 4
+      }
     },
     {
       "kind": "para",

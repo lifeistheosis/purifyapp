@@ -44,7 +44,13 @@
     {
       "kind": "blockquote",
       "text": "If anyone does not confess that our Lord Jesus Christ who was crucified in the flesh is true God and the Lord of Glory and one of the Holy Trinity: let him be anathema.",
-      "source": "The Capitula of the Fifth Council, X, tr. H. R. Percival (NPNF2 vol. 14, 1900)"
+      "source": "The Capitula of the Fifth Council, X, tr. H. R. Percival (NPNF2 vol. 14, 1900)",
+      "cite": {
+        "kind": "council",
+        "council": "second-constantinople",
+        "document": "the-capitula",
+        "section": 11
+      }
     },
     {
       "kind": "para",

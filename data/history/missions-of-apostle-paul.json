@@ -8,7 +8,13 @@
     {
       "kind": "blockquote",
       "text": "But the Lord said unto him, Go thy way: for he is a chosen vessel unto me, to bear my name before the Gentiles, and kings, and the children of Israel:",
-      "source": "Acts 9:15 (King James Version)"
+      "source": "Acts 9:15 (King James Version)",
+      "cite": {
+        "kind": "scripture",
+        "book": "acts",
+        "chapter": 9,
+        "from": 15
+      }
     },
     {
       "kind": "para",
@@ -19,7 +25,13 @@
     {
       "kind": "blockquote",
       "text": "As they ministered to the Lord, and fasted, the Holy Ghost said, Separate me Barnabas and Saul for the work whereunto I have called them.",
-      "source": "Acts 13:2 (King James Version)"
+      "source": "Acts 13:2 (King James Version)",
+      "cite": {
+        "kind": "scripture",
+        "book": "acts",
+        "chapter": 13,
+        "from": 2
+      }
     },
     {
       "kind": "para",
@@ -32,7 +44,13 @@
     {
       "kind": "blockquote",
       "text": "And a vision appeared to Paul in the night; There stood a man of Macedonia, and prayed him, saying, Come over into Macedonia, and help us.",
-      "source": "Acts 16:9 (King James Version)"
+      "source": "Acts 16:9 (King James Version)",
+      "cite": {
+        "kind": "scripture",
+        "book": "acts",
+        "chapter": 16,
+        "from": 9
+      }
     },
     {
       "kind": "para",
@@ -45,7 +63,13 @@
     {
       "kind": "blockquote",
       "text": "Thrice was I beaten with rods, once was I stoned, thrice I suffered shipwreck, a night and a day I have been in the deep;",
-      "source": "2 Corinthians 11:25 (King James Version)"
+      "source": "2 Corinthians 11:25 (King James Version)",
+      "cite": {
+        "kind": "scripture",
+        "book": "2-corinthians",
+        "chapter": 11,
+        "from": 25
+      }
     },
     {
       "kind": "para",
@@ -54,7 +78,14 @@
     {
       "kind": "blockquote",
       "text": "And Paul dwelt two whole years in his own hired house, and received all that came in unto him, Preaching the kingdom of God, and teaching those things which concern the Lord Jesus Christ, with all confidence, no man forbidding him.",
-      "source": "Acts 28:30-31 (King James Version)"
+      "source": "Acts 28:30-31 (King James Version)",
+      "cite": {
+        "kind": "scripture",
+        "book": "acts",
+        "chapter": 28,
+        "from": 30,
+        "to": 31
+      }
     }
   ],
   "significance": [

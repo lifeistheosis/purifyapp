@@ -27,7 +27,14 @@
     {
       "kind": "blockquote",
       "text": "Wouldest thou do honor to Christ's body? Neglect Him not when naked; do not while here thou honorest Him with silken garments, neglect Him perishing without of cold and nakedness.",
-      "source": "St John Chrysostom, Homily 50 on Matthew, (NPNF1 vol. 10, 1888)"
+      "source": "St John Chrysostom, Homily 50 on Matthew, (NPNF1 vol. 10, 1888)",
+      "cite": {
+        "kind": "work",
+        "saint": "john-chrysostom",
+        "work": "homilies-on-matthew",
+        "section": 50,
+        "paragraph": 43
+      }
     },
     {
       "kind": "para",

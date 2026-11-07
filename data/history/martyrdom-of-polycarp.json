@@ -22,7 +22,14 @@
     {
       "kind": "blockquote",
       "text": "Eighty and six years have I served Him, and He never did me any injury: how then can I blaspheme my King and my Saviour?",
-      "source": "The Martyrdom of Polycarp 9, tr. Roberts and Donaldson (ANF vol. 1, 1885)"
+      "source": "The Martyrdom of Polycarp 9, tr. Roberts and Donaldson (ANF vol. 1, 1885)",
+      "cite": {
+        "kind": "work",
+        "saint": "polycarp-of-smyrna",
+        "work": "the-martyrdom-of-polycarp",
+        "section": 10,
+        "paragraph": 0
+      }
     },
     {
       "kind": "para",
@@ -31,7 +38,14 @@
     {
       "kind": "blockquote",
       "text": "I give Thee thanks that Thou hast counted me, worthy of this day and this hour, that I should have a part in the number of Thy martyrs, in the cup of thy Christ, to the resurrection of eternal life",
-      "source": "The Martyrdom of Polycarp 14, tr. Roberts and Donaldson (ANF vol. 1, 1885)"
+      "source": "The Martyrdom of Polycarp 14, tr. Roberts and Donaldson (ANF vol. 1, 1885)",
+      "cite": {
+        "kind": "work",
+        "saint": "polycarp-of-smyrna",
+        "work": "the-martyrdom-of-polycarp",
+        "section": 15,
+        "paragraph": 0
+      }
     },
     {
       "kind": "para",
@@ -40,7 +54,14 @@
     {
       "kind": "blockquote",
       "text": "we afterwards took up his bones, as being more precious than the most exquisite jewels, and more purified than gold, and deposited them in a fitting place, whither, being gathered together, as opportunity is allowed us, with joy and rejoicing, the Lord shall grant us to celebrate the anniversary of his martyrdom",
-      "source": "The Martyrdom of Polycarp 18, tr. Roberts and Donaldson (ANF vol. 1, 1885)"
+      "source": "The Martyrdom of Polycarp 18, tr. Roberts and Donaldson (ANF vol. 1, 1885)",
+      "cite": {
+        "kind": "work",
+        "saint": "polycarp-of-smyrna",
+        "work": "the-martyrdom-of-polycarp",
+        "section": 19,
+        "paragraph": 0
+      }
     }
   ],
   "significance": [

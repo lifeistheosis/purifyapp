@@ -60,7 +60,13 @@
     {
       "kind": "blockquote",
       "text": "For although the grace of the Holy Spirit abounded in each one of the Apostles, so that no one of them needed the counsel of another in the execution of his work, yet they were not willing to define on the question then raised touching the circumcision of the Gentiles, until being gathered together they had confirmed their own several sayings by the testimony of the divine Scriptures.",
-      "source": "The Sentence of the Second Council of Constantinople (553), tr. H. R. Percival (NPNF2 vol. 14, 1900)"
+      "source": "The Sentence of the Second Council of Constantinople (553), tr. H. R. Percival (NPNF2 vol. 14, 1900)",
+      "cite": {
+        "kind": "council",
+        "council": "second-constantinople",
+        "document": "the-sentence-of-the-synod",
+        "section": 1
+      }
     },
     {
       "kind": "para",

@@ -18,7 +18,13 @@
     {
       "kind": "blockquote",
       "text": "And we believe in the Holy Ghost, the Lord and Giver-of-Life, who proceedeth from the Father, who with the Father and the Son together is worshipped and glorified, who spake by the prophets.",
-      "source": "The Creed of the Second Ecumenical Council (381), tr. H. R. Percival (NPNF2 vol. 14, 1900)"
+      "source": "The Creed of the Second Ecumenical Council (381), tr. H. R. Percival (NPNF2 vol. 14, 1900)",
+      "cite": {
+        "kind": "council",
+        "council": "first-constantinople",
+        "document": "the-niceno-constantinopolitan-creed",
+        "section": 2
+      }
     },
     {
       "kind": "para",
@@ -34,8 +40,14 @@
     },
     {
       "kind": "blockquote",
-      "text": "the holy Synod decreed that it is unlawful for any man to bring forward, or to write, or to compose a different (ἑτέραν) Faith as a rival to that established by the holy Fathers assembled with the Holy Ghost in Nicaea.",
-      "source": "Canon VII of the Third Ecumenical Council (431), tr. H. R. Percival (NPNF2 vol. 14, 1900)"
+      "text": "the holy Synod decreed that it is unlawful for any man to bring forward, or to write, or to compose a different (ἑτέραν) Faith as a rival to that established by the holy Fathers assembled with the Holy Ghost in Nicæa.",
+      "source": "Canon VII of the Third Ecumenical Council (431), tr. H. R. Percival (NPNF2 vol. 14, 1900)",
+      "cite": {
+        "kind": "council",
+        "council": "ephesus",
+        "document": "the-eight-canons",
+        "section": 8
+      }
     },
     {
       "kind": "para",

@@ -18,7 +18,13 @@
     {
       "kind": "blockquote",
       "text": "This was the sentiment of the holy Fathers; therefore they ventured to call the holy Virgin, the Mother of God, not as if the nature of the Word or his divinity had its beginning from the holy Virgin, but because of her was born that holy body with a rational soul, to which the Word being personally united is said to be born according to the flesh.",
-      "source": "St Cyril of Alexandria, Second Letter to Nestorius, tr. H. R. Percival (Nicene and Post-Nicene Fathers, Second Series, vol. 14, 1900)"
+      "source": "St Cyril of Alexandria, Second Letter to Nestorius, tr. H. R. Percival (Nicene and Post-Nicene Fathers, Second Series, vol. 14, 1900)",
+      "cite": {
+        "kind": "council",
+        "council": "ephesus",
+        "document": "the-second-letter-of-cyril",
+        "section": 1
+      }
     },
     {
       "kind": "para",
@@ -51,7 +57,13 @@
     {
       "kind": "blockquote",
       "text": "Wherefore we confess one Christ, one Son, one Lord. According to this understanding of this unmixed union, we confess the holy Virgin to be Mother of God; because God the Word was incarnate and became Man, and from this conception he united the temple taken from her with himself.",
-      "source": "The confession of John of Antioch in St Cyril's Letter to John of Antioch (433), tr. H. R. Percival (Nicene and Post-Nicene Fathers, Second Series, vol. 14, 1900)"
+      "source": "The confession of John of Antioch in St Cyril's Letter to John of Antioch (433), tr. H. R. Percival (Nicene and Post-Nicene Fathers, Second Series, vol. 14, 1900)",
+      "cite": {
+        "kind": "council",
+        "council": "ephesus",
+        "document": "the-formula-of-reunion",
+        "section": 2
+      }
     }
   ],
   "chronology": [

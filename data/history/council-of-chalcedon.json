@@ -42,7 +42,13 @@
     {
       "kind": "blockquote",
       "text": "This one and the same Jesus Christ, the only-begotten Son [of God] must be confessed to be in two natures, unconfusedly, immutably, indivisibly, inseparably [united], and that without the distinction of natures being taken away by such union, but rather the peculiar property of each nature being preserved and being united in one Person and subsistence, not separated or divided into two persons, but one and the same Son and only-begotten, God the Word, our Lord Jesus Christ, as the Prophets of old time have spoken concerning him, and as the Lord Jesus Christ hath taught us, and as the Creed of the Fathers hath delivered to us.",
-      "source": "The Definition of Faith of the Council of Chalcedon, tr. H. R. Percival (Nicene and Post-Nicene Fathers, Second Series, vol. 14, 1900)"
+      "source": "The Definition of Faith of the Council of Chalcedon, tr. H. R. Percival (Nicene and Post-Nicene Fathers, Second Series, vol. 14, 1900)",
+      "cite": {
+        "kind": "council",
+        "council": "chalcedon",
+        "document": "the-definition-of-faith",
+        "section": 1
+      }
     },
     {
       "kind": "para",
