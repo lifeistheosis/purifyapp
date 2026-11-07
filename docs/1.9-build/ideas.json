@@ -864,7 +864,8 @@
    "decided": "2026-11-06",
    "needsDesign": false,
    "version": null,
-   "outcome": null
+   "outcome": null,
+   "note": "Looked at 2026-11-07, not built, for his word on where it goes. Lines are gathered today from a verse (its toolbar) and from a theology study's quotations (a Gather button). Prayers, a council's own words and history have no gather yet, and each page would need its place for one: a council's \"In their own words\" card has room for a third action beside Share as a picture and Read where it's from; a prayer would want a line chosen, as a verse is. Also found: the server keeps a gathered line only as a verse or a Father's (florilegium_items.kind is checked to those two), so a prayer or a council's line would be kept as a Father's, with its own name and source, unless a migration widens it"
   },
   {
    "id": "s5-05",
@@ -1011,7 +1012,8 @@
    "decided": "2026-11-06",
    "needsDesign": false,
    "version": null,
-   "outcome": null
+   "outcome": null,
+   "note": "Looked at 2026-11-07, not built. It exists in part: \"On this day in Orthodox history\" (components/history/OnThisDayHistory.tsx) shows on the Prayers page's today, not on Today, and only when an event carries an exact calendar date; 7 events do, so it shows about 7 days a year. Moving it to Today with its artwork is small; what would make it worth the place is more events dated exactly, from their sources (the registry never invents a date), which is research for the history pass (s6-01)"
   },
   {
    "id": "s6-06",
