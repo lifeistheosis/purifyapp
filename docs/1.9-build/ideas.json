@@ -1631,6 +1631,20 @@
    "version": null,
    "outcome": null,
    "note": "Claude proposed it after build 88 note 3's first drawings broke eight rules; his word: \"incorporate this fix into your memory\". The rule is in CLAUDE.md; the check is scripts/mock-check.mjs (contrast on all five palettes, 44px targets, glyph icons, palette tokens, gold, side stripes, Arabic mirroring, em dashes, and a by-eye list for the rest), with --self-test. Its first run on the journal sheet as it is found what was measured by hand (Light's captions, the 35% placeholder) and one more: the Open link 40px wide."
+  },
+  {
+   "id": "c-small-buttons",
+   "section": "Reading",
+   "kind": "bug",
+   "title": "The top bar's buttons and every sheet's close are 42.5px, under the 44px floor",
+   "from": "claude",
+   "asked": "2026-11-07",
+   "status": "proposed",
+   "decided": null,
+   "needsDesign": false,
+   "version": null,
+   "outcome": null,
+   "note": "Build 88 note 5, found by scripts/mock-check.mjs taking the photos for notes 1 to 4: MobileTopBar and Sheet use h-10 w-10, 42.5px on the 17px root. Fix planned: h-11 w-11, or hit-44 where tight."
   }
  ]
 }

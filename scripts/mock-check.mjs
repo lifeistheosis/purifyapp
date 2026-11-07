@@ -141,6 +141,9 @@ function look(selector) {
     if (r.width < 1 || r.height < 1 || getComputedStyle(el).visibility === "hidden") continue;
     const cs = getComputedStyle(el);
     const fg = rgba(cs.color);
+    // Words faded right out are not shown (a title waiting for its bar, an
+    // action behind a row until it is swiped): nothing to read, nothing to measure.
+    if (fg[3] * opacityOf(el) < 0.05) continue;
     words.push({
       text: text.slice(0, 48),
       fg,
@@ -439,22 +442,25 @@ export function printMockCheck(result, label = result.selector) {
 
 // ── From the command line ───────────────────────────────────────────────
 
-/** A phone on the native export, as the walk opens one (for a mockup's own script). */
-export async function openPhone() {
+/**
+ * A phone on the native export, as the walk opens one (for a mockup's own
+ * script). `scale` 2 for a picture a person will see (1 to check); `set`
+ * seeds localStorage before the app starts; `browser` reuses one already open.
+ */
+export async function openPhone({ scale = 1, set = {}, browser: given } = {}) {
   const { chromium } = await import("playwright");
   const { NATIVE_UA, serveLikeTheShell } = await import("./lib/shell-server.mjs");
   const OUT = path.resolve("out");
   if (!fs.existsSync(path.join(OUT, "index.html"))) throw new Error("no native export in out/: run npm run build:android first");
   // The cloud sessions carry their own Chromium (CLAUDE.md's environment); elsewhere Playwright's.
   const own = "/opt/pw-browsers/chromium";
-  const browser = await chromium.launch(fs.existsSync(own) ? { executablePath: own } : {});
-  const ctx = await browser.newContext({ viewport: { width: 390, height: 844 }, deviceScaleFactor: 1, colorScheme: "dark", isMobile: true, hasTouch: true, userAgent: NATIVE_UA });
-  await ctx.addInitScript(() => {
-    localStorage.setItem("purify:onboarded", "3");
-    localStorage.setItem("purify:whatsNewSeen", "99");
-  });
+  const browser = given ?? (await chromium.launch(fs.existsSync(own) ? { executablePath: own } : {}));
+  const ctx = await browser.newContext({ viewport: { width: 390, height: 844 }, deviceScaleFactor: scale, colorScheme: "dark", isMobile: true, hasTouch: true, userAgent: NATIVE_UA });
+  await ctx.addInitScript((values) => {
+    for (const [k, v] of Object.entries(values)) localStorage.setItem(k, v);
+  }, { "purify:onboarded": "3", "purify:whatsNewSeen": "99", ...set });
   await serveLikeTheShell(ctx, OUT, {});
-  return { browser, page: await ctx.newPage() };
+  return { browser, ctx, page: await ctx.newPage() };
 }
 
 // The first drawings' mistakes, each as it was drawn, and the same parts made

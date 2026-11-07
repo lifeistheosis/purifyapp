@@ -225,3 +225,18 @@ excepted, as WCAG excepts it. Held by a test that does the arithmetic on
 every palette, as `litPalette.test.ts` does for its surfaces, and by the walk
 measuring a caption on each palette. Note 3's pictures were drawn with its
 Light and Candlelight parts in.
+
+## 5. The top bar's buttons and every sheet's close are under 44px
+
+**Found by Claude, 2026-11-07,** by `scripts/mock-check.mjs`, on the Study
+sheet and on Saved, while taking the photos for notes 1 to 4.
+
+**What was found.** The phone's top bar (`components/nav/MobileTopBar.tsx`:
+back, search, the round buttons) and the shared sheet's close
+(`components/ui/Sheet.tsx`, whose own comment promises 44) are `h-10 w-10`:
+2.5rem, which is 42.5px on the app's 17px root, under the 44px floor. On
+every page with the top bar, and in every sheet that keeps its own title
+row.
+
+**Fix planned.** `h-11 w-11` (46.75px), or `hit-44` where the room is tight,
+as `components/nav/NativeBackBar.tsx` already does.
