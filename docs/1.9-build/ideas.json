@@ -611,11 +611,12 @@
    "title": "The verse being read lights up and the page follows the voice, as the chants' words do since 1.8",
    "from": "claude",
    "asked": "2026-11-06",
-   "status": "approved",
+   "status": "built",
    "decided": "2026-11-06",
    "needsDesign": false,
    "version": null,
-   "outcome": null
+   "outcome": null,
+   "note": "Found built on 2026-11-07, since 1.7: while a chapter is read aloud, the verse being read keeps its full strength, the rest steps back, and it is moved back to the reading place when it leaves it, unless the reader has just scrolled (components/bible/ReadAloud.tsx, ReadAloudFollow). Walked 2026-11-07 on John 1 at phone size, in verses and in paragraphs: verse 1, 2, then 3 lit in time with the recording's timings, each held near the same place on the screen. The brainstorm line was written without seeing it"
   },
   {
    "id": "s3-07",
