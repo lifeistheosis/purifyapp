@@ -1,0 +1,379 @@
+{
+  "_comment": "One place per step of each event's chronology (data/history/<slug>.json), where the step's own words name it; null where they name none, and the Thread's map then names no place (components/history/EventThread.tsx). Built by scripts/history/build-step-places.mjs, which keeps the words for each. For the Thread's map that follows (1.9, the owner's pick of 2026-11-07).",
+  "places": {
+    "alexandria": {
+      "name": "Alexandria",
+      "lat": 31.2,
+      "lon": 29.918
+    },
+    "athens": {
+      "name": "Athens",
+      "lat": 37.984,
+      "lon": 23.728
+    },
+    "berestovoye": {
+      "name": "Berestovoye",
+      "lat": 50.437,
+      "lon": 30.555
+    },
+    "blachernae": {
+      "name": "Blachernae",
+      "lat": 41.034,
+      "lon": 28.94
+    },
+    "chalcedon": {
+      "name": "Chalcedon",
+      "lat": 40.984,
+      "lon": 29.027
+    },
+    "constantinople": {
+      "name": "Constantinople",
+      "lat": 41.008,
+      "lon": 28.978
+    },
+    "corfu": {
+      "name": "Corfu",
+      "lat": 39.624,
+      "lon": 19.921
+    },
+    "ephesus": {
+      "name": "Ephesus",
+      "lat": 37.941,
+      "lon": 27.342
+    },
+    "ferrara": {
+      "name": "Ferrara",
+      "lat": 44.838,
+      "lon": 11.62
+    },
+    "florence": {
+      "name": "Florence",
+      "lat": 43.77,
+      "lon": 11.256
+    },
+    "golden-horn": {
+      "name": "Golden Horn",
+      "lat": 41.019,
+      "lon": 28.974
+    },
+    "hagia-sophia": {
+      "name": "Hagia Sophia",
+      "lat": 41.008,
+      "lon": 28.98
+    },
+    "hieria": {
+      "name": "Hieria",
+      "lat": 40.969,
+      "lon": 29.034
+    },
+    "inner-mountain": {
+      "name": "The inner mountain",
+      "lat": 28.924,
+      "lon": 32.348
+    },
+    "jerusalem": {
+      "name": "Jerusalem",
+      "lat": 31.778,
+      "lon": 35.235
+    },
+    "kodiak": {
+      "name": "Kodiak",
+      "lat": 57.79,
+      "lon": -152.407
+    },
+    "kyiv": {
+      "name": "Kyiv",
+      "lat": 50.45,
+      "lon": 30.523
+    },
+    "lyons": {
+      "name": "Lyons",
+      "lat": 45.764,
+      "lon": 4.836
+    },
+    "milvian-bridge": {
+      "name": "Milvian Bridge",
+      "lat": 41.936,
+      "lon": 12.467
+    },
+    "moscow": {
+      "name": "Moscow",
+      "lat": 55.756,
+      "lon": 37.617
+    },
+    "nicaea": {
+      "name": "Nicaea",
+      "lat": 40.429,
+      "lon": 29.721
+    },
+    "nicomedia": {
+      "name": "Nicomedia",
+      "lat": 40.767,
+      "lon": 29.917
+    },
+    "rome": {
+      "name": "Rome",
+      "lat": 41.902,
+      "lon": 12.496
+    },
+    "santa-maria-del-fiore": {
+      "name": "Santa Maria del Fiore",
+      "lat": 43.773,
+      "lon": 11.256
+    },
+    "spruce-island": {
+      "name": "Spruce Island",
+      "lat": 57.918,
+      "lon": -152.41
+    },
+    "studios": {
+      "name": "Studios",
+      "lat": 40.996,
+      "lon": 28.929
+    },
+    "thessalonica": {
+      "name": "Thessalonica",
+      "lat": 40.64,
+      "lon": 22.935
+    },
+    "unalaska": {
+      "name": "Unalaska",
+      "lat": 53.874,
+      "lon": -166.534
+    },
+    "varna": {
+      "name": "Varna",
+      "lat": 43.2,
+      "lon": 27.91
+    },
+    "venice": {
+      "name": "Venice",
+      "lat": 45.438,
+      "lon": 12.335
+    },
+    "zara": {
+      "name": "Zara",
+      "lat": 44.119,
+      "lon": 15.232
+    }
+  },
+  "steps": {
+    "alaska-mission": [
+      null,
+      null,
+      "kodiak",
+      null,
+      null,
+      null,
+      null,
+      "unalaska",
+      "spruce-island",
+      "kodiak"
+    ],
+    "anthony-and-the-desert": [
+      null,
+      null,
+      null,
+      null,
+      "alexandria",
+      "inner-mountain",
+      "alexandria",
+      "inner-mountain",
+      null,
+      null
+    ],
+    "bolshevik-persecution": [
+      "moscow",
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      "moscow",
+      null,
+      null,
+      null
+    ],
+    "conversion-of-kievan-rus": [
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      "kyiv",
+      "berestovoye"
+    ],
+    "council-of-chalcedon": [
+      "constantinople",
+      null,
+      "ephesus",
+      null,
+      "chalcedon",
+      null,
+      null,
+      null,
+      null,
+      null
+    ],
+    "council-of-ephesus": [
+      null,
+      null,
+      null,
+      "alexandria",
+      "ephesus",
+      null,
+      null,
+      null,
+      null
+    ],
+    "council-of-florence": [
+      "lyons",
+      "thessalonica",
+      null,
+      "constantinople",
+      "venice",
+      "ferrara",
+      null,
+      "ferrara",
+      "florence",
+      null,
+      null,
+      "florence",
+      null,
+      "santa-maria-del-fiore",
+      "constantinople",
+      "moscow",
+      "jerusalem",
+      null,
+      "varna",
+      null,
+      "hagia-sophia",
+      "constantinople",
+      null,
+      "constantinople"
+    ],
+    "fall-of-constantinople": [
+      null,
+      null,
+      "hagia-sophia",
+      "golden-horn",
+      null,
+      null,
+      null,
+      "golden-horn",
+      null,
+      null,
+      null
+    ],
+    "first-council-of-constantinople": [
+      "constantinople",
+      null,
+      "constantinople",
+      null,
+      null,
+      null,
+      null,
+      null,
+      null
+    ],
+    "great-persecution": [
+      "nicomedia",
+      null,
+      null,
+      null,
+      null,
+      null,
+      "nicomedia",
+      null,
+      "milvian-bridge",
+      "nicomedia"
+    ],
+    "great-schism-1054": [
+      null,
+      "rome",
+      null,
+      null,
+      "constantinople",
+      "studios",
+      "hagia-sophia",
+      null,
+      "constantinople",
+      null,
+      null
+    ],
+    "hesychast-councils": [
+      "hagia-sophia",
+      null,
+      null,
+      "constantinople",
+      "blachernae",
+      null
+    ],
+    "mission-of-cyril-and-methodius": [
+      "thessalonica",
+      null,
+      null,
+      null,
+      "rome",
+      "rome",
+      null,
+      null,
+      null,
+      null,
+      null
+    ],
+    "philokalia-published": [
+      "venice",
+      null,
+      "moscow",
+      null,
+      null,
+      null
+    ],
+    "sack-of-constantinople-1204": [
+      null,
+      null,
+      "zara",
+      "corfu",
+      null,
+      null,
+      null,
+      null,
+      null,
+      "hagia-sophia",
+      null,
+      "constantinople",
+      "athens",
+      null
+    ],
+    "second-council-of-nicaea": [
+      null,
+      null,
+      "hieria",
+      null,
+      null,
+      null,
+      "constantinople",
+      "nicaea",
+      null,
+      "constantinople",
+      null,
+      null
+    ],
+    "triumph-of-orthodoxy": [
+      "nicaea",
+      "hagia-sophia",
+      null,
+      null,
+      null,
+      null,
+      "hagia-sophia",
+      null
+    ]
+  }
+}

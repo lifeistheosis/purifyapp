@@ -130,8 +130,10 @@ const ACROSS = 520;
 
 /**
  * The small map pinned over the Thread: at the place of the step being read
- * when its words name one, else at the event's own place, named as the
- * event's and never as the step's.
+ * when its words name one, its name on the map. A step that names none
+ * leaves the map where the last named one put it (at first, the event's own
+ * place), its mark dimmed and no name shown: the map never says a step
+ * happened somewhere its words do not.
  */
 function ThreadMap({ steps, home, current }: { steps: ThreadStep[]; home: ThreadPlace | null; current: number }) {
   const { t } = useTranslate();
@@ -149,12 +151,15 @@ function ThreadMap({ steps, home, current }: { steps: ThreadStep[]; home: Thread
     };
   }, []);
 
-  const here = steps[current]?.place ?? home;
+  const own = steps[current]?.place ?? null;
+  let last: ThreadPlace | null = null;
+  for (let i = current; i >= 0 && !last; i -= 1) last = steps[i]?.place ?? null;
+  const here = own ?? last ?? home;
   if (!here) return null;
   const places = unique([home, ...steps.map((s) => s.place)]);
   const k = FRAME.w / ACROSS;
   const move = `translate(${FRAME.w / 2 - here.x * k}px, ${FRAME.h / 2 - here.y * k}px) scale(${k})`;
-  const label = `${t("history.thread.map")}: ${here.name}`;
+  const label = own ? `${t("history.thread.map")}: ${own.name}` : t("history.thread.map");
   return (
     <div className="sticky top-[calc(var(--history-sticky-top)+0.5rem)] z-10 overflow-hidden rounded-[16px] bg-night-soft ring-1 ring-inset ring-paper/10" data-thread-map="">
       <svg viewBox={`0 0 ${FRAME.w} ${FRAME.h}`} role="img" aria-label={label} className="block h-[150px] w-full">
@@ -163,12 +168,14 @@ function ThreadMap({ steps, home, current }: { steps: ThreadStep[]; home: Thread
           {places.map((p) => (
             <circle key={p.name} cx={p.x} cy={p.y} r={3 / k} className="fill-paper/40" />
           ))}
-          <circle cx={here.x} cy={here.y} r={6.5 / k} className="fill-paper" />
+          <circle cx={here.x} cy={here.y} r={6.5 / k} className={own ? "fill-paper" : "fill-paper/45"} />
         </g>
       </svg>
-      <p aria-hidden className="absolute bottom-2.5 start-3 rounded-full bg-night/70 px-2.5 py-1 font-sans text-caption font-semibold text-paper">
-        {here.name}
-      </p>
+      {own ? (
+        <p aria-hidden className="absolute bottom-2.5 start-3 rounded-full bg-night/70 px-2.5 py-1 font-sans text-caption font-semibold text-paper">
+          {own.name}
+        </p>
+      ) : null}
     </div>
   );
 }

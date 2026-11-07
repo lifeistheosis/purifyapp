@@ -1,3 +1,4 @@
+import STEP_PLACES from "@/data/maps/history-step-places.json";
 import outline from "@/data/maps/church-history.json";
 import { projectorFor } from "@/lib/councils/map";
 
@@ -13,11 +14,12 @@ import { EVENT_PLACES } from "./places";
  * An event's own steps (its chronology, data/history/<slug>.json), each with
  * its year and the place where it happened, placed on the history map's own
  * outline (data/maps/church-history.json) so the Thread's small map can move
- * to it. A step's place is the one its own words name, from a list being
- * drawn up step by step (STEP_PLACES below, empty until it is checked); a
- * step that names none happened at the event's own place
- * (lib/history/places.ts). The steps themselves stay free as the article's
- * plain list; the Thread is how Plus follows them.
+ * to it. A step's place is the one its own words name
+ * (data/maps/history-step-places.json: 67 of the 183 steps; a region, a title or
+ * a place off the map's edge names none). A step that names none has none;
+ * the map then stays where it was, unnamed (components/history/EventThread.tsx).
+ * The steps themselves stay free as the article's plain list; the Thread is
+ * how Plus follows them.
  */
 
 export type ThreadPlace = { name: string; x: number; y: number };
@@ -36,8 +38,8 @@ type StepPlaces = {
   steps: Record<string, (string | null)[]>;
 };
 
-/** Each step's own place where its words name one. Empty: every step stands at its event's place. */
-const PLACES: StepPlaces = { places: {}, steps: {} };
+/** Each step's own place, where its words name one. */
+const PLACES = STEP_PLACES as StepPlaces;
 const project = projectorFor(outline);
 
 /** The first year a step's date line names: "6 July 1439" is 1439, "March–July 1794" is 1794. */
