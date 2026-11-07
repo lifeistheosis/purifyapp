@@ -744,6 +744,8 @@
   "bible.chapterSwitcher": "Επιλογή κεφαλαίου",
   "bible.closeCommentary": "Κλείσιμο σχολίων",
   "bible.readerSettings": "Ρυθμίσεις ανάγνωσης",
+  "bible.night.title": "Νυχτερινή ανάγνωση",
+  "bible.night.hint": "Candlelight, εστιασμένη ανάγνωση, μεγαλύτερα γράμματα και {sound}",
   "bible.moreActions": "Περισσότερες ενέργειες",
   "bible.reader": "Ανάγνωση",
   "bible.clearWordHighlights": "Καθαρισμός επισημάνσεων λέξεων",

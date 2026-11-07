@@ -744,6 +744,8 @@
   "bible.chapterSwitcher": "Избор на глава",
   "bible.closeCommentary": "Затвори тълкуванието",
   "bible.readerSettings": "Настройки на четеца",
+  "bible.night.title": "Нощно четене",
+  "bible.night.hint": "При свещ, съсредоточено четене, по-голям текст и {sound}",
   "bible.moreActions": "Още действия",
   "bible.reader": "Четец",
   "bible.clearWordHighlights": "Изчисти маркираните думи",

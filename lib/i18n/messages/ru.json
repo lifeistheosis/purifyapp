@@ -759,6 +759,8 @@
   "bible.chapterSwitcher": "Выбор главы",
   "bible.closeCommentary": "Закрыть толкование",
   "bible.readerSettings": "Настройки чтения",
+  "bible.night.title": "Чтение ночью",
+  "bible.night.hint": "При свече, сосредоточенное чтение, крупный текст и {sound}",
   "bible.moreActions": "Ещё действия",
   "bible.reader": "Чтение",
   "bible.clearWordHighlights": "Убрать выделение слов",

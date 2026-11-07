@@ -744,6 +744,8 @@
   "bible.chapterSwitcher": "Kapitelauswahl",
   "bible.closeCommentary": "Kommentar schließen",
   "bible.readerSettings": "Leseeinstellungen",
+  "bible.night.title": "Nachtlesen",
+  "bible.night.hint": "Candlelight, Lesefokus, größere Schrift und {sound}",
   "bible.moreActions": "Weitere Aktionen",
   "bible.reader": "Leseansicht",
   "bible.clearWordHighlights": "Wortmarkierungen löschen",

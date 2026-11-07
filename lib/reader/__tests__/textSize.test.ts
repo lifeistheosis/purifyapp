@@ -73,8 +73,14 @@ describe("where the start is asked for", () => {
     const prefs = read("components/reader/ReaderPrefs.tsx");
     expect(prefs).toContain("const { size, chosen: sizeChosen } = storedSize(rawS);");
     expect(prefs).toContain("const size = sizeShown(snap, startSize);");
-    // The size key is written by a choice alone.
-    expect(prefs.match(/write\(SIZE_KEY,/g)?.length).toBe(2);
+    // The size key is written by a choice alone: a size chosen (setSize,
+    // cycleSize), or one the reader had chosen, put back as it was when
+    // night reading ends (1.9, restoreReaderSize). A reader who had chosen
+    // none is given none again: the key is removed, not written.
+    expect(prefs.match(/write\(SIZE_KEY,/g)?.length).toBe(3);
+    const restore = prefs.slice(prefs.indexOf("export function restoreReaderSize("), prefs.indexOf("type Ctx = {"));
+    expect(restore).toContain("if (size) {\n    write(SIZE_KEY, size);");
+    expect(restore).toContain("window.localStorage.removeItem(SIZE_KEY);");
   });
 });
 

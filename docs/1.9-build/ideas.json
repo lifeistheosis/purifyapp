@@ -453,7 +453,8 @@
    "decided": "2026-11-06",
    "needsDesign": false,
    "version": null,
-   "outcome": null
+   "outcome": null,
+   "note": "Blocked, found 2026-11-07: both palettes are earned by finishing a study collection, and there is none to finish. data/catechism/collections.json and the question bank, data/catechism/questions.json, are both empty, so no reader can earn Councils or Cappadocian, and showing them as goals would show a goal with no way to it. The questions are doctrinal content, for him and the clergy queue, never drafted by Claude (docs/editorial-standards.md). Two ways on, for his word: fill the bank and name the two collections; or let each palette be earned by something the app already has, such as reading every council's page for Councils and the three Cappadocian Fathers' works for Cappadocian"
   },
   {
    "id": "s2-05",
@@ -462,11 +463,12 @@
    "title": "Night reading in one tap",
    "from": "claude",
    "asked": "2026-11-06",
-   "status": "approved",
+   "status": "built",
    "decided": "2026-11-06",
    "needsDesign": false,
    "version": null,
-   "outcome": null
+   "outcome": null,
+   "note": "Built 2026-11-07: the first row of the reader's settings, Night reading, with the candle mark and the words of what it does (\"Candlelight, Focus, larger text and Rain\", the sound named being the one it will play). One tap: Candlelight, Focus, the text a size larger (Large to X-Large in the Bible), and the reader's last sound (s2-09), or rain before they have one, unless a sound already plays. What it put down is kept on the device (purify.reader.night), and the same row gives it all back: the palette, Focus, the size (unchosen again if it was) and silence if there was silence. Plus, as Candlelight is: a reader without it sees the Plus mark and the upgrade sheet for the palettes. Rules in lib/reader/night.ts with lib/reader/__tests__/night.test.ts; the row is components/reader/NightReadingRow.tsx. Walked in a browser at phone size: on, the page in Candlelight with Focus and X-Large and Rain playing; off, everything as before and the sound stopped"
   },
   {
    "id": "s2-06",

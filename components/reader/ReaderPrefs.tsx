@@ -170,6 +170,31 @@ function write(keyName: string, value: string) {
   }
 }
 
+/** The size as stored: null when the reader has never chosen one (1.9: night reading gives it back so). */
+export function storedReaderSize(): ReaderSize | null {
+  try {
+    const { size, chosen } = storedSize(window.localStorage.getItem(SIZE_KEY));
+    return chosen ? size : null;
+  } catch {
+    return null;
+  }
+}
+
+/** Put the size back as it was: the one chosen, or none chosen (night reading turned off). */
+export function restoreReaderSize(size: ReaderSize | null): void {
+  if (size) {
+    write(SIZE_KEY, size);
+    return;
+  }
+  try {
+    window.localStorage.removeItem(SIZE_KEY);
+    prefsCache = null;
+    window.dispatchEvent(new CustomEvent(PREFS_EVENT));
+  } catch {
+    /* storage may be unavailable */
+  }
+}
+
 type Ctx = {
   /** The size to draw: the reader's choice, or the start the caller asked with. */
   size: ReaderSize;

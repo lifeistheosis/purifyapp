@@ -760,6 +760,8 @@
   "bible.chapterSwitcher": "Wybór rozdziału",
   "bible.closeCommentary": "Zamknij komentarz",
   "bible.readerSettings": "Ustawienia czytnika",
+  "bible.night.title": "Czytanie nocą",
+  "bible.night.hint": "Candlelight, czytanie w skupieniu, większy tekst i {sound}",
   "bible.moreActions": "Więcej działań",
   "bible.reader": "Czytnik",
   "bible.clearWordHighlights": "Usuń zaznaczenia słów",

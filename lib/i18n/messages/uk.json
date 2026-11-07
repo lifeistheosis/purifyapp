@@ -759,6 +759,8 @@
   "bible.chapterSwitcher": "Перемикач розділів",
   "bible.closeCommentary": "Закрити коментар",
   "bible.readerSettings": "Налаштування читання",
+  "bible.night.title": "Читання вночі",
+  "bible.night.hint": "При свічці, зосереджене читання, більший текст і {sound}",
   "bible.moreActions": "Більше дій",
   "bible.reader": "Читання",
   "bible.clearWordHighlights": "Очистити виділення слів",

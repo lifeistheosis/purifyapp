@@ -773,6 +773,8 @@
   "bible.chapterSwitcher": "مبدّل الأصحاحات",
   "bible.closeCommentary": "إغلاق الشرح",
   "bible.readerSettings": "إعدادات القارئ",
+  "bible.night.title": "قراءة ليلية",
+  "bible.night.hint": "Candlelight، قراءة مركّزة، نص أكبر و{sound}",
   "bible.moreActions": "المزيد من الإجراءات",
   "bible.reader": "القارئ",
   "bible.clearWordHighlights": "مسح تظليل الكلمات",

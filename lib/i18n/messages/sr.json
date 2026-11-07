@@ -751,6 +751,8 @@
   "bible.chapterSwitcher": "Избор главе",
   "bible.closeCommentary": "Затвори коментар",
   "bible.readerSettings": "Подешавања читача",
+  "bible.night.title": "Ноћно читање",
+  "bible.night.hint": "Candlelight, читање без ометања, већи текст и {sound}",
   "bible.moreActions": "Још радњи",
   "bible.reader": "Читач",
   "bible.clearWordHighlights": "Обриши означене речи",

@@ -48,7 +48,7 @@ On the 1.9 branch:
 | # | Item | Status |
 |---|---|---|
 | 14 | The verse system: tap a verse for one bar (colours, copy, share, image, note, Greek, compare, cross-references), tap a word for its Greek, double tap to highlight; the bookmark star goes (flag 4) | done: his pick B, the strip under the verse; Compare is its own item (21b) |
-| 15 | Candlelight: the lines being read lit, a soft glow, dark edges; on at Vespers; palettes of the season; the earned palettes shown as goals (flag 1) | his A+B done (the lit line, the glow, the dark edges); next: on at Vespers, the season's palettes, the earned palettes as goals |
+| 15 | Candlelight: the lines being read lit, a soft glow, dark edges; on at Vespers; palettes of the season; the earned palettes shown as goals (flag 1) | his A+B done (the lit line, the glow, the dark edges); Night reading in one tap built 2026-11-07 (Candlelight, Focus, a size larger and the reader's sound, all given back by the same row); the earned palettes as goals blocked: no study collection exists to earn them (ideas.json s2-04); next: on at Vespers, the season's palettes |
 | 16 | Listening: the card at rest, the small pill while scrolling (bug 5) | done: the reader's dock, one card at rest, the pill and the chapter at the top while reading on |
 | 17 | Plans page: Continue, the season's plan, picture tiles | done: Continue, the season's card (the Nativity Fast, from two weeks before it to the feast), the picture tiles |
 | 18 | The Florilegium revamped: collections and sync on top, ready collections below (flag 2) | done: the sync line (only after a confirmed exchange, no device count), the gatherings as cards, four whole passages of Scripture to begin with |

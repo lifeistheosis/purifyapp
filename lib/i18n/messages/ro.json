@@ -754,6 +754,8 @@
   "bible.chapterSwitcher": "Comutator de capitole",
   "bible.closeCommentary": "Închide comentariul",
   "bible.readerSettings": "Setări de lectură",
+  "bible.night.title": "Citire de noapte",
+  "bible.night.hint": "Candlelight, lectură concentrată, text mai mare și {sound}",
   "bible.moreActions": "Mai multe acțiuni",
   "bible.reader": "Cititor",
   "bible.clearWordHighlights": "Șterge evidențierile de cuvinte",

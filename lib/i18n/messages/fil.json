@@ -744,6 +744,8 @@
   "bible.chapterSwitcher": "Panlipat ng kabanata",
   "bible.closeCommentary": "Isara ang komentaryo",
   "bible.readerSettings": "Mga setting ng pagbabasa",
+  "bible.night.title": "Pagbasa sa gabi",
+  "bible.night.hint": "Candlelight, nakapokus na pagbasa, mas malaking teksto at {sound}",
   "bible.moreActions": "Higit pang aksyon",
   "bible.reader": "Babasahan",
   "bible.clearWordHighlights": "Alisin ang mga highlight sa salita",

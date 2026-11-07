@@ -744,6 +744,8 @@
   "bible.chapterSwitcher": "თავების გადამრთველი",
   "bible.closeCommentary": "განმარტების დახურვა",
   "bible.readerSettings": "მკითხველის პარამეტრები",
+  "bible.night.title": "ღამის კითხვა",
+  "bible.night.hint": "Candlelight, ფოკუსირებული კითხვა, უფრო დიდი ტექსტი და {sound}",
   "bible.moreActions": "მეტი მოქმედება",
   "bible.reader": "მკითხველი",
   "bible.clearWordHighlights": "სიტყვების მონიშვნების გასუფთავება",

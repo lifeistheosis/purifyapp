@@ -746,6 +746,8 @@
   "bible.chapterSwitcher": "Sélecteur de chapitre",
   "bible.closeCommentary": "Fermer le commentaire",
   "bible.readerSettings": "Réglages du lecteur",
+  "bible.night.title": "Lecture de nuit",
+  "bible.night.hint": "Candlelight, lecture concentrée, texte plus grand et {sound}",
   "bible.moreActions": "Plus d'actions",
   "bible.reader": "Lecteur",
   "bible.clearWordHighlights": "Effacer les surlignages de mots",

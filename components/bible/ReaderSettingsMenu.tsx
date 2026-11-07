@@ -10,6 +10,7 @@ import type {
   ReaderFont,
   ReaderLeading,
 } from "@/components/reader/ReaderPrefs";
+import { NightReadingRow } from "@/components/reader/NightReadingRow";
 import { ReadingModeChips } from "@/components/reader/ReadingModeChips";
 import { useTranslate } from "@/components/i18n/MessagesProvider";
 import { cn } from "@/lib/cn";
@@ -207,6 +208,11 @@ function ReaderSettingsControls({
 
   return (
     <div className={touch ? "space-y-5" : "space-y-4"}>
+      {/* 1.9: Candlelight, Focus, a size larger and a sound, in one tap, and
+          everything as it was with the next. Focus hides the chrome, so what
+          holds these closes as it turns on. */}
+      <NightReadingRow touch={touch} startSize={startSize} onFocused={onFocusToggled ?? onLeave} />
+
       <div>
         <p className={EYEBROW}>{t("bible.textSize")}</p>
         <div className="grid grid-cols-4 gap-1.5">

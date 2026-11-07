@@ -744,6 +744,8 @@
   "bible.chapterSwitcher": "अध्याय बदल्ने",
   "bible.closeCommentary": "व्याख्या बन्द गर्नुहोस्",
   "bible.readerSettings": "पाठक सेटिङ",
+  "bible.night.title": "रातको पठन",
+  "bible.night.hint": "Candlelight, एकाग्र पठन, ठूलो अक्षर र {sound}",
   "bible.moreActions": "थप कार्यहरू",
   "bible.reader": "पाठक",
   "bible.clearWordHighlights": "शब्द हाइलाइट हटाउनुहोस्",

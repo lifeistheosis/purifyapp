@@ -744,6 +744,8 @@
   "bible.chapterSwitcher": "Fejezetváltó",
   "bible.closeCommentary": "Magyarázat bezárása",
   "bible.readerSettings": "Olvasó beállításai",
+  "bible.night.title": "Esti olvasás",
+  "bible.night.hint": "Gyertyafény, fókuszált olvasás, nagyobb betű és {sound}",
   "bible.moreActions": "További műveletek",
   "bible.reader": "Olvasó",
   "bible.clearWordHighlights": "Szókiemelések törlése",
