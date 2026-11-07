@@ -90,8 +90,16 @@ describe("the sayings of the Fathers", () => {
     for (let i = 0; i < s.length; i++) n += v[s[i]] < (v[s[i + 1]] ?? 0) ? -v[s[i]] : v[s[i]];
     return n;
   };
+  // How the editions cite each book a saying may be cut for (1.9: the
+  // Nativity Fast's prophecies joined Proverbs).
+  const CITED: Record<string, string> = {
+    proverbs: "Prov(?:erbs|\\.)",
+    deuteronomy: "Deut(?:eronomy|\\.)",
+    micah: "Mic(?:ah|\\.)",
+    isaiah: "(?:Isa(?:iah|\\.)|Is\\.)",
+  };
   const citesChapter = (paragraph: string, book: string, chapter: number) => {
-    const name = book === "proverbs" ? "Prov(?:erbs|\\.)" : null;
+    const name = CITED[book] ?? null;
     if (!name) return false;
     const re = new RegExp(`${name}\\s*([ivxlc]+|\\d+)[\\s.,:]+\\d+`, "gi");
     for (const m of paragraph.matchAll(re)) if ((/^\d+$/.test(m[1]) ? Number(m[1]) : roman(m[1])) === chapter) return true;

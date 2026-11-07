@@ -33,6 +33,8 @@ export const COMMENTARY_WORKS: Readonly<Record<string, { title: string; edition:
   "augustine-of-hippo/harmony-of-the-gospels": { title: "The Harmony of the Gospels", edition: "NPNF I 6" },
   "augustine-of-hippo/sermons-on-selected-lessons": { title: "Sermons on Selected Lessons of the New Testament", edition: "NPNF I 6" },
   "augustine-of-hippo/sermon-on-the-mount": { title: "Our Lord's Sermon on the Mount", edition: "NPNF I 6" },
+  // 1.9: a reading plan's saying of the Fathers is cut from it (the Nativity Fast, Genesis 1).
+  "basil-the-great/hexaemeron": { title: "The Hexaemeron", edition: "NPNF II 8" },
 };
 
 /** Where a commentary note begins in its library work (scripts/place-commentary.mjs). */

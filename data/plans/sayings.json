@@ -1919,5 +1919,238 @@
       },
       "from": "data/saints/gregory-the-dialogist/morals-on-the-book-of-job.json"
     }
+  },
+  "nativity": {
+    "1": {
+      "text": "And he calleth him \"old,\" on purpose to show his deformity, and hideousness, and imbecility; and \"new,\" as if to say, Do not expect that it will be with this one even as with the other, but the reverse: for ever as he farther advances, he hasteneth not on to old age, but to a youthfulness greater than the preceding.",
+      "author": "St. John Chrysostom",
+      "work": "Homilies on the Epistle to the Colossians, Homily 8",
+      "citation": "NPNF1-13",
+      "at": {
+        "work": "john-chrysostom/homilies-on-colossians",
+        "section": 8,
+        "paragraph": 16,
+        "place": "Homily 8, Colossians 3:5-7"
+      },
+      "from": "data/bible/commentary/colossians/3.json"
+    },
+    "2": {
+      "text": "For so have we heard, that \"a certain Man made a great supper.\" Who is this Man, but \"the Mediator between God and men, the Man Christ Jesus\"?",
+      "author": "St. Augustine",
+      "work": "Sermons on Selected Lessons, Sermon 62",
+      "citation": "NPNF1-06",
+      "at": {
+        "work": "augustine-of-hippo/sermons-on-selected-lessons",
+        "section": 62,
+        "paragraph": 0,
+        "place": "Sermon 62",
+        "mark": "§1"
+      },
+      "from": "data/bible/commentary/luke/14.json"
+    },
+    "3": {
+      "text": "And he says not \"revealed,\" but, \"preached the Gospel,\" to signify that the patriarch was in joy at this method of justification, and in great desire for its accomplishment.",
+      "author": "St. John Chrysostom",
+      "work": "Commentary on Galatians",
+      "citation": "NPNF1-13",
+      "at": {
+        "work": "john-chrysostom/commentary-on-galatians",
+        "section": 3,
+        "paragraph": 20,
+        "place": "Chapter III, Galatians 3"
+      },
+      "from": "data/bible/commentary/galatians/3.json"
+    },
+    "4": {
+      "text": "For what good was there in wishing to learn, whether there be many or few that be saved? What benefit resulted from it to the hearers? On the contrary it was a necessary and valuable thing to know in what way a man may attain to salvation.",
+      "author": "St. Cyril of Alexandria",
+      "work": "Commentary on Luke, Sermon 99",
+      "citation": "Commentary on Luke (Oxford, Payne Smith, 1859)",
+      "at": {
+        "work": "cyril-of-alexandria/commentary-on-luke",
+        "section": 99,
+        "paragraph": 2,
+        "place": "Sermon 99"
+      },
+      "from": "data/bible/commentary/luke/13.json"
+    },
+    "7": {
+      "text": "I mean for instance, a man has been circumcised upon the eighth day; this is circumcision of the flesh: a man has done all the Law bids him; this is circumcision of the mind which St. Paul requires above all, yea rather the Law also.",
+      "author": "St. John Chrysostom",
+      "work": "Homilies on the Epistle to the Romans",
+      "citation": "NPNF1-11",
+      "at": {
+        "work": "john-chrysostom/homilies-on-romans",
+        "section": 6,
+        "paragraph": 15,
+        "place": "Homily 6, Romans 2:17, 18"
+      },
+      "from": "data/saints/john-chrysostom/homilies-on-romans.json"
+    },
+    "8": {
+      "text": "He enjoined things that were in contradiction to the promises, and yet not even so did the righteous man stagger, nor say he had been deceived.",
+      "author": "St. John Chrysostom",
+      "work": "Homilies on the Epistle to the Hebrews, Homily 25",
+      "citation": "NPNF1-14",
+      "at": {
+        "work": "john-chrysostom/homilies-on-hebrews",
+        "section": 25,
+        "paragraph": 2,
+        "place": "Homily 25, Hebrews 11:17-19"
+      },
+      "from": "data/bible/commentary/hebrews/11.json"
+    },
+    "9": {
+      "text": "For the Lord did not seek among men nobility of race, but suitably chose to be born of captives and of sinners, as He came to preach remission of sin to the captives.",
+      "author": "St. Ambrose",
+      "work": "Catena Aurea on Matthew (in Luc., cap. 2)",
+      "citation": "Catena Aurea (Oxford, Rivington, 1842)",
+      "from": "data/bible/commentary/matthew/1.json"
+    },
+    "10": {
+      "text": "Because Nathanael had considered the writings of the Prophets more than Philip. For he had heard from the Scriptures, that Christ must come from Bethlehem, and from the village in which David was.",
+      "author": "St. John Chrysostom",
+      "work": "Homilies on the Gospel of John",
+      "citation": "NPNF1-14",
+      "at": {
+        "work": "john-chrysostom/homilies-on-john",
+        "section": 20,
+        "paragraph": 5,
+        "place": "Homily 20, John 1:43, 44"
+      },
+      "from": "data/saints/john-chrysostom/homilies-on-john.json"
+    },
+    "11": {
+      "text": "For as in royal palaces, prisoners and those who have offended the king, stand without, and he who desires to reconcile them, does not bring them in, but himself going out discourses with them, until having made them meet for the king's presence, he may bring them in, so also Christ hath done.",
+      "author": "St. John Chrysostom",
+      "work": "Homilies on the Epistle to the Hebrews, Homily 3",
+      "citation": "NPNF1-14",
+      "at": {
+        "work": "john-chrysostom/homilies-on-hebrews",
+        "section": 3,
+        "paragraph": 2,
+        "place": "Homily 3, Hebrews 1:6-8"
+      },
+      "from": "data/bible/commentary/hebrews/1.json"
+    },
+    "13": {
+      "text": "He that was a Greek, or Jew, or bond-man yesterday, carries about with him the form, not of an Angel or Archangel, but of the Lord of all, yea displays in his own person the Christ.",
+      "author": "St. John Chrysostom",
+      "work": "Commentary on Galatians",
+      "citation": "NPNF1-13",
+      "at": {
+        "work": "john-chrysostom/commentary-on-galatians",
+        "section": 3,
+        "paragraph": 64,
+        "place": "Chapter III, Galatians 3"
+      },
+      "from": "data/bible/commentary/galatians/3.json"
+    },
+    "14": {
+      "text": "For though He is the Only-begotten as regards His divinity, yet as having become our brother, He has also the name of Firstborn; that, being made the first-fruits as it were of the adoption of men, He might make us also the sons of God.",
+      "author": "St. Cyril of Alexandria",
+      "work": "Commentary on Luke, Sermon 1",
+      "citation": "Commentary on Luke (Oxford, Payne Smith, 1859)",
+      "at": {
+        "work": "cyril-of-alexandria/commentary-on-luke",
+        "section": 1,
+        "paragraph": 10,
+        "place": "Sermon 1, Luke 2:1-7"
+      },
+      "from": "data/bible/commentary/luke/2.json"
+    },
+    "16": {
+      "text": "See how he lifts up their minds, and shows the great honor which God has for us, since He has assigned to Angels who are above us this ministration on our behalf.",
+      "author": "St. John Chrysostom",
+      "work": "Homilies on the Epistle to the Hebrews, Homily 3",
+      "citation": "NPNF1-14",
+      "at": {
+        "work": "john-chrysostom/homilies-on-hebrews",
+        "section": 3,
+        "paragraph": 14,
+        "place": "Homily 3, Hebrews 1:6-8"
+      },
+      "from": "data/bible/commentary/hebrews/1.json"
+    },
+    "17": {
+      "text": "One and the same Christ is preached, when of perfect age, by Apostles; when an infant, and not yet able to speak, is announced by a star to the Gentiles; for so the order of reason required; speaking preachers proclaimed a speaking Lord, mute signs proclaimed a mute infant.",
+      "author": "St. Gregory the Great",
+      "work": "Catena Aurea on Matthew (Hom. in Ev. Lib. i. Hom. 10)",
+      "citation": "Catena Aurea (Oxford, Rivington, 1842)",
+      "from": "data/bible/commentary/matthew/2.json"
+    },
+    "18": {
+      "text": "Listen to the Prophet too, calling him “The Messenger of great counsel.” (Isa. ix. 6.) “The Messenger of great counsel,” is He not great Himself? “The mighty God,” is He small and not great?",
+      "author": "St. John Chrysostom",
+      "work": "Homilies on the Epistle to the Philippians",
+      "citation": "NPNF1-13",
+      "at": {
+        "work": "john-chrysostom/homilies-on-philippians",
+        "section": 6,
+        "paragraph": 8,
+        "place": "Homily 6, Philippians 2:5-8"
+      },
+      "from": "data/saints/john-chrysostom/homilies-on-philippians.json"
+    },
+    "19": {
+      "text": "He knows what tribulation is; He knows what temptation is, not less than we who have suffered, for He Himself also has suffered.",
+      "author": "St. John Chrysostom",
+      "work": "Homilies on the Epistle to the Hebrews, Homily 5",
+      "citation": "NPNF1-14",
+      "at": {
+        "work": "john-chrysostom/homilies-on-hebrews",
+        "section": 5,
+        "paragraph": 7,
+        "place": "Homily 5, Hebrews 2:16-17"
+      },
+      "from": "data/bible/commentary/hebrews/2.json"
+    },
+    "20": {
+      "text": "See how immediately on His birth the tyrant is furious against Him, and the mother with her Child is driven into foreign lands. So should you in the beginning of your spiritual career seem to have tribulation, you need not to be discouraged, but bear all things manfully, having this example.",
+      "author": "St. John Chrysostom",
+      "work": "Catena Aurea on Matthew",
+      "citation": "Catena Aurea (Oxford, Rivington, 1842)",
+      "from": "data/bible/commentary/matthew/2.json"
+    },
+    "21": {
+      "text": "What ear is worthy to hear such a tale? How earnestly the soul should prepare itself to receive such high lessons! How pure it should be from carnal affections, how unclouded by worldly disquietudes, how active and ardent in its researches, how eager to find in its surroundings an idea of God which may be worthy of Him!",
+      "author": "St. Basil the Great",
+      "work": "Hexaemeron, Homily 1",
+      "citation": "NPNF2-08",
+      "at": {
+        "work": "basil-the-great/hexaemeron",
+        "section": 1,
+        "paragraph": 1,
+        "place": "The Fitting Beginning"
+      },
+      "from": "data/bible/commentary/genesis/1.json"
+    },
+    "23": {
+      "text": "But no man ever possessed all the operations of the Holy Spirit at once, except the sole Mediator between God and man, [1 Tim. 2, 5] Whose is the same Spirit, Who proceedeth from the Father before all ages.",
+      "author": "St. Gregory the Dialogist",
+      "work": "Morals on the Book of Job",
+      "citation": "Oxford, 1844 to 1850",
+      "at": {
+        "work": "gregory-the-dialogist/morals-on-the-book-of-job",
+        "section": 29,
+        "paragraph": 118,
+        "place": "Book 29, on Job 38",
+        "mark": "§74"
+      },
+      "from": "data/saints/gregory-the-dialogist/morals-on-the-book-of-job.json"
+    },
+    "25": {
+      "text": "Had not we been first made sons, we could not have called Him Father.",
+      "author": "St. John Chrysostom",
+      "work": "Commentary on Galatians",
+      "citation": "NPNF1-13",
+      "at": {
+        "work": "john-chrysostom/commentary-on-galatians",
+        "section": 4,
+        "paragraph": 5,
+        "place": "Chapter IV, Galatians 4"
+      },
+      "from": "data/bible/commentary/galatians/4.json"
+    }
   }
 }

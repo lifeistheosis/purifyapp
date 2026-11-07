@@ -145,9 +145,18 @@ export function placeNote(note, chapter) {
 const SAYING_WORKS = [
   [/^St\. Gregory the (?:Great|Dialogist)$/, /^Morals on the Book of Job/, "gregory-the-dialogist/morals-on-the-book-of-job"],
   [/^St\. John Chrysostom$/, /^Homilies on the Gospel of St\. Matthew/, "john-chrysostom/homilies-on-matthew"],
-  [/^St\. John Chrysostom$/, /^Homilies on the Gospel of St\. John/, "john-chrysostom/homilies-on-john"],
+  // The library's own title, without "St.", as a saying cut from the library names it (1.9).
+  [/^St\. John Chrysostom$/, /^Homilies on the Gospel of (?:St\. )?John/, "john-chrysostom/homilies-on-john"],
   [/^St\. John Chrysostom$/, /^Homilies on the First Epistle to the Thessalonians/, "john-chrysostom/homilies-on-1-thessalonians"],
   [/^St\. John Chrysostom$/, /^Homilies on the First Epistle to the Corinthians/, "john-chrysostom/homilies-on-1-corinthians"],
+  // 1.9: the Nativity Fast's sayings.
+  [/^St\. John Chrysostom$/, /^Homilies on the Epistle to the Romans/, "john-chrysostom/homilies-on-romans"],
+  [/^St\. John Chrysostom$/, /^Commentary on (?:the Epistle to the )?Galatians/, "john-chrysostom/commentary-on-galatians"],
+  [/^St\. John Chrysostom$/, /^Homilies on the Epistle to the Philippians/, "john-chrysostom/homilies-on-philippians"],
+  [/^St\. John Chrysostom$/, /^Homilies on the Epistle to the Colossians/, "john-chrysostom/homilies-on-colossians"],
+  [/^St\. John Chrysostom$/, /^Homilies on the Epistle to the Hebrews/, "john-chrysostom/homilies-on-hebrews"],
+  [/^St\. Augustine$/, /^Sermons on Selected Lessons/, "augustine-of-hippo/sermons-on-selected-lessons"],
+  [/^St\. Basil the Great$/, /^Hexaemeron/, "basil-the-great/hexaemeron"],
   [/^St\. Cyril of Alexandria$/, /^Commentary on Luke/, "cyril-of-alexandria/commentary-on-luke"],
   [/^St\. Cyril of Alexandria$/, /^Commentary on John/, "cyril-of-alexandria/commentary-on-john"],
 ];

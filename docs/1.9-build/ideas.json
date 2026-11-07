@@ -710,12 +710,12 @@
    "title": "Plans with the Fathers",
    "from": "claude",
    "asked": "2026-11-06",
-   "status": "approved",
+   "status": "built",
    "decided": "2026-11-06",
    "needsDesign": false,
    "version": null,
    "outcome": null,
-   "note": "Under way 2026-11-07. Found: the plans already carry a passage of the Fathers on most days, word for word from the app's own library and commentary (data/plans/sayings.json; the Psalter 20 of 20, the Gospels 87 of 89, Proverbs 28 of 31), and none on the Nativity Fast's 25. Filled the same day: Luke 13 (St Cyril on the narrow door), John 7 (St John Chrysostom on thirst for the word, in both Gospel plans), Proverbs 7 and 9 (St Gregory's Morals), each placed in the library by scripts/place-commentary.mjs. Proverbs 29 has no Father's words in the library on it, so it stays without; nothing is written in their place. Next: the Nativity days"
+   "note": "Built 2026-11-07. Found: the plans already carried a passage of the Fathers on most days, word for word from the app's own library and commentary (data/plans/sayings.json; the Psalter 20 of 20, the Gospels 87 of 89, Proverbs 28 of 31), and none on the Nativity Fast's 25. Filled: Luke 13 and John 7 (both Gospel plans), Proverbs 7 and 9, and 19 of the Nativity's 25 days (St John Chrysostom, St Cyril of Alexandria, St Augustine, St Ambrose, St Gregory, St Basil), shown under \"From the Fathers\" when a day is read. Every line is copied from the file it names and held there by lib/plans/__tests__/guide.test.ts, which now reads Deuteronomy, Micah and Isaiah's citations as well as Proverbs'; placed in the library by scripts/place-commentary.mjs. Left without, because the library has no Father's words on them: Proverbs 29, and the Nativity's Genesis 14, Deuteronomy 1, Baruch 3, Isaiah 7, Numbers 24 and Daniel 2. Nothing is written in their place. Walked: the Nativity's first day, read, shows St John Chrysostom on the old man and the new"
   },
   {
    "id": "s4-04",
