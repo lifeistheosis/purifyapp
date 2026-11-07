@@ -197,7 +197,8 @@ describe("the chapter opens like a book", () => {
     expect(css).toContain("var(--line, 0) * var(--stagger-step-tight)");
     expect(css).toMatch(/\.page-open-words > :nth-child\(8\) \{ --line: 7; \}/);
     const reader = code("components/bible/ChapterReader.tsx");
-    expect(reader).toContain('cn("page-open-words", flowing ? "reading-paragraphs" : "space-y-2")');
+    // 1.9: Candlelight adds its own class to the same container.
+    expect(reader).toContain('cn("page-open-words", flowing ? "reading-paragraphs" : "space-y-2", candle && "candle-reading")');
     // The first verse wears its number as every verse does: no drop cap.
     expect(reader).not.toContain("dropCap");
   });

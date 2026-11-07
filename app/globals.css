@@ -4340,6 +4340,35 @@ html[data-reading-mode="candlelight"] {
  --color-festal: #e4e4e7;
 }
 
+/* Candlelight, as the owner picked it (1.9, A and B of 2026-11-06): a
+   candle's room, not a colour. The ground is darker, a soft white light
+   rests where the eye does (lib/reader/useReadingLine.ts, READING_LINE) and
+   the screen's edges fall away into the dark; the verse under the reading
+   line is lit and the others step back to 58%, which keeps them past 4.5:1
+   on this ground. A verse with its strip open is always lit. Still with
+   reduced motion. No gold: the light is white. */
+html[data-reading-mode="candlelight"] {
+ --color-night: #050505;
+}
+.candle-veil {
+ position: fixed;
+ inset: 0;
+ z-index: 30;
+ pointer-events: none;
+ background:
+  radial-gradient(ellipse 90% 34% at 50% 40%, rgb(255 255 255 / 0.05), rgb(255 255 255 / 0) 72%),
+  radial-gradient(130% 105% at 50% 42%, rgb(0 0 0 / 0) 56%, rgb(0 0 0 / 0.55) 100%);
+}
+.candle-reading [data-verse] {
+ transition: opacity 420ms var(--ease-house);
+}
+.candle-reading [data-verse]:not([data-lit]):not(:has([data-verse-strip])) {
+ opacity: 0.58;
+}
+:where([data-motion="reduce"]) .candle-reading [data-verse] {
+ transition: none;
+}
+
 /* Monastery — cool stone and quiet indigo. */
 html[data-reading-mode="monastery"] {
  --color-night: #0d1119;

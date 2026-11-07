@@ -26,6 +26,7 @@ import {
   SIZE_CLASSES,
   useReaderPrefs,
 } from "@/components/reader/ReaderPrefs";
+import { useReadingLine } from "@/lib/reader/useReadingLine";
 import { cn } from "@/lib/cn";
 import { reportNowReading } from "@/lib/profile/client";
 import { useUndo } from "@/lib/ui/useUndo";
@@ -75,7 +76,11 @@ export function ChapterReader({
   paragraphStarts?: number[];
 }) {
   // Large for a reader who has never chosen a size (1.8): BIBLE_START_SIZE.
-  const { size, font, leadingValue } = useReaderPrefs(BIBLE_START_SIZE);
+  const { size, font, leadingValue, theme } = useReaderPrefs(BIBLE_START_SIZE);
+  // Candlelight (1.9, the owner's pick A and B): the verse being read lit,
+  // the rest a little dimmed, a soft glow where the eye rests, dark edges.
+  const candle = theme === "candlelight";
+  useReadingLine(candle);
   // Paragraph view: where the chapter has paragraphs, and not while the
   // Greek stands beside each verse.
   const { paragraphs } = useReadingFlow();
@@ -178,7 +183,8 @@ export function ChapterReader({
             Fathers comment, as every verse does: the title over it is the
             page's opening now, and the drop cap it had until 1.7 is not in
             the owner's pick (round 2, B). */}
-        <div className={cn("page-open-words", flowing ? "reading-paragraphs" : "space-y-2")}>
+        {candle ? <div aria-hidden className="candle-veil" /> : null}
+        <div className={cn("page-open-words", flowing ? "reading-paragraphs" : "space-y-2", candle && "candle-reading")}>
           {verses.map((v) => (
             <VerseRow
               key={v.n}
