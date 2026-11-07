@@ -979,6 +979,35 @@ html.reader-focus.has-reader-dock {
  animation: none;
 }
 
+/* Loading placeholders, written short (1.9, the full optimize: the owner's
+   "do everything you can that's safe"). Every bar of a loading screen is
+   written into each page the apps carry, some 2,000 of them, and a bar's own
+   list of utilities and attributes was most of its bytes. The same look as
+   those utilities, by @apply, under one short class
+   (components/ui/Skeleton.tsx); in the components layer, so a size or a
+   radius a caller passes still wins. `.sk` is also how the guided tour sees
+   a page still arriving (lib/whatsNew/tourDom.ts). */
+@layer components {
+ .sk {
+  @apply rounded animate-pulse;
+ }
+ .sk-strong {
+  @apply bg-paper/10;
+ }
+ .sk-mid {
+  @apply bg-paper/8;
+ }
+ .sk-faint {
+  @apply bg-paper/6;
+ }
+ .sk-line {
+  @apply h-4 w-full;
+ }
+ .sk-line-end {
+  @apply h-4 w-[62%];
+ }
+}
+
 /* The fade the pill floats on, as drawn: the words go quiet under it, down
    to the tab bar. The page's own ground, so every palette has it. */
 .pill-fade {

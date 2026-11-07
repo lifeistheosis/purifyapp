@@ -334,7 +334,8 @@ export function bandFor(el: Element): Span {
 export function pageArriving(): boolean {
   if (typeof document === "undefined") return false;
   if (isRouteExiting()) return true;
-  const shapes = document.querySelectorAll("[data-skeleton]");
+  // A skeleton bar is `.sk` since 1.9 (components/ui/Skeleton.tsx); the old mark is kept for any drawn with it.
+  const shapes = document.querySelectorAll(".sk, [data-skeleton]");
   for (let i = 0; i < shapes.length && i < 6; i++) if (drawn(shapes[i])) return true;
   return false;
 }

@@ -23,10 +23,15 @@ import { cn } from "@/lib/cn";
 
 type Weight = "strong" | "mid" | "faint";
 
+/**
+ * The weights as short classes (app/globals.css, "Loading placeholders,
+ * written short"): bg-paper/10, /8 and /6, the same greys. A bar is written
+ * into every page the apps carry, so its bytes are counted (1.9).
+ */
 const WEIGHT: Record<Weight, string> = {
-  strong: "bg-paper/10",
-  mid: "bg-paper/8",
-  faint: "bg-paper/6",
+  strong: "sk-strong",
+  mid: "sk-mid",
+  faint: "sk-faint",
 };
 
 export function Skeleton({
@@ -43,16 +48,10 @@ export function Skeleton({
   /** For a size that is a number rather than a class. */
   style?: React.CSSProperties;
 }) {
-  return (
-    <div
-      aria-hidden
-      // A page still arriving: the update tour waits while one is drawn
-      // (lib/whatsNew/tourDom.ts, pageArriving).
-      data-skeleton=""
-      style={style}
-      className={cn(WEIGHT[weight], rounded, "animate-pulse", className)}
-    />
-  );
+  // `.sk` is the radius and the pulse, and the mark the update tour waits on
+  // while one is drawn (lib/whatsNew/tourDom.ts, pageArriving). An empty bar
+  // says nothing to a screen reader, so it needs no aria-hidden of its own.
+  return <div style={style} className={cn("sk", WEIGHT[weight], rounded !== "rounded" && rounded, className)} />;
 }
 
 /**
@@ -74,7 +73,7 @@ export function SkeletonText({
         <Skeleton
           key={i}
           weight={weight}
-          className={cn("h-4", i === lines - 1 ? "w-[62%]" : "w-full")}
+          className={i === lines - 1 ? "sk-line-end" : "sk-line"}
         />
       ))}
     </div>
