@@ -791,11 +791,12 @@
    "title": "Journal search and export to PDF",
    "from": "claude",
    "asked": "2026-11-06",
-   "status": "approved",
+   "status": "built",
    "decided": "2026-11-06",
    "needsDesign": false,
    "version": null,
-   "outcome": null
+   "outcome": null,
+   "note": "Built 2026-11-07. Search was already there (the journal's list filters itself in the app's one field, with the kinds as chips, since 1.8). Found: the journal's own entries were in no export at all, so a reader could not take them away. Now: Export your library (Settings, Data) counts them and carries them, in the Markdown copy under Journal (the day, what it is, what it was about, the question it answered, the words) and in the JSON backup; removed entries stay out (lib/library/exportLibrary.ts, tested). In the apps that export goes through the phone's share sheet, the path pictures already take (lib/share/shareImage.ts, shareFile), since the apps' WebView saves no downloads; not walked on a phone. On the website the journal has Print or save as PDF: the browser's own print, whose dialog saves a PDF, printing the entries alone, ink on white, with the real date beside Today (globals.css, \"The journal printed\"); walked by printing to PDF in the browser. Two new words in 21 languages"
   },
   {
    "id": "s4-10",

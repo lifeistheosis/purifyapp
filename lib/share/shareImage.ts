@@ -54,6 +54,15 @@ function download(blob: Blob, fileName: string): boolean {
 }
 
 export async function shareImage(blob: Blob, fileName: string, text: string): Promise<ShareOutcome> {
+  return shareFile(blob, fileName, text, "image/png");
+}
+
+/**
+ * Any file, the same three ways (1.9: Export your library, whose downloads
+ * the apps' WebView does not save; a file handed to the share sheet can be
+ * kept in Files, sent, or saved to a drive).
+ */
+export async function shareFile(blob: Blob, fileName: string, text: string, type: string): Promise<ShareOutcome> {
   if (isNativeClient()) {
     try {
       const [{ Filesystem, Directory }, { Share }] = await Promise.all([
@@ -74,7 +83,7 @@ export async function shareImage(blob: Blob, fileName: string, text: string): Pr
   }
 
   try {
-    const file = new File([blob], fileName, { type: "image/png" });
+    const file = new File([blob], fileName, { type });
     if (typeof navigator.canShare === "function" && navigator.canShare({ files: [file] })) {
       await navigator.share({ files: [file], text });
       return "shared";

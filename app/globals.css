@@ -10644,3 +10644,46 @@ html[data-reading-mode="parchment"] .chant-version-dot {
 :where([data-motion="full"]) [data-prayer-reader][data-following] [data-line][data-lit] {
  opacity: 1;
 }
+
+/* The journal printed, or saved as a PDF from the print dialog (1.9, s4-09:
+   "a reader's journal is theirs"). components/journal/JournalClient.tsx sets
+   the class for the print alone: the entries, ink on white, nothing of the
+   app around them, no search or filters, every entry whole. */
+@media print {
+  html.journal-print,
+  html.journal-print body {
+    background: #fff !important;
+  }
+  html.journal-print body * {
+    visibility: hidden !important;
+  }
+  html.journal-print [data-journal-print],
+  html.journal-print [data-journal-print] * {
+    visibility: visible !important;
+    color: #111 !important;
+    background: transparent !important;
+    box-shadow: none !important;
+    text-shadow: none !important;
+    border-color: #ccc !important;
+  }
+  html.journal-print [data-journal-print] {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100%;
+    padding: 6mm 10mm;
+  }
+  html.journal-print [data-journal-print] [data-print-hide] {
+    display: none !important;
+  }
+  html.journal-print [data-journal-print] [data-journal-entry] * {
+    -webkit-line-clamp: unset !important;
+    line-clamp: unset !important;
+    overflow: visible !important;
+    white-space: pre-line;
+  }
+  html.journal-print [data-journal-print] li {
+    break-inside: avoid;
+  }
+}
+

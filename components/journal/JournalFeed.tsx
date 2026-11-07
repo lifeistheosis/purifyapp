@@ -64,9 +64,9 @@ export function JournalFeed({
   const today = localDayKey(now.toISOString());
   const yesterday = localDayKey(new Date(now.getFullYear(), now.getMonth(), now.getDate() - 1, 12).toISOString());
 
-  const dayName = (day: string) => {
+  const dayName = (day: string, relative = true) => {
     if (day === "undated") return t("journal.undated");
-    if (day === today || day === yesterday) {
+    if (relative && (day === today || day === yesterday)) {
       try {
         const word = new Intl.RelativeTimeFormat(dateLocale(locale), { numeric: "auto" }).format(day === today ? 0 : -1, "day");
         return word.charAt(0).toLocaleUpperCase(locale) + word.slice(1);
@@ -92,20 +92,28 @@ export function JournalFeed({
   };
 
   return (
-    <div>
+    // data-journal-print: what Print or save as PDF prints (1.9, globals.css "The journal printed").
+    <div data-journal-print="">
+      <p role="heading" aria-level={1} className="hidden font-heading text-title font-bold print:block">
+        {t("journal.title")}
+      </p>
       {chips.length > 1 ? (
-        <ChipScroller label={t("journal.filtersLabel")} className="mt-6" gap="gap-2">
-          {chips.map((c) => (
-            <FilterChip key={c} active={filter === c} onClick={() => setChosen(c)}>
-              {t(FILTER_KEY[c])}
-            </FilterChip>
-          ))}
-        </ChipScroller>
+        <div data-print-hide="">
+          <ChipScroller label={t("journal.filtersLabel")} className="mt-6" gap="gap-2">
+            {chips.map((c) => (
+              <FilterChip key={c} active={filter === c} onClick={() => setChosen(c)}>
+                {t(FILTER_KEY[c])}
+              </FilterChip>
+            ))}
+          </ChipScroller>
+        </div>
       ) : null}
 
       {items.length > SEARCH_ABOVE ? (
         // The journal filters itself in place, in the app's one field (1.8, r3-12).
-        <SearchField value={query} onChange={setQuery} placeholder={t("journal.search")} className="mt-5" />
+        <div data-print-hide="">
+          <SearchField value={query} onChange={setQuery} placeholder={t("journal.search")} className="mt-5" />
+        </div>
       ) : null}
 
       {groups.map((g) => (
@@ -113,6 +121,8 @@ export function JournalFeed({
           {/* A heading by role: every h1 to h6 is set in Lora (globals.css). */}
           <p id={`journal-day-${g.day}`} role="heading" aria-level={2} className="font-sans text-caption font-semibold text-paper/55">
             {dayName(g.day)}
+            {/* On paper "Today" means nothing a week later: the date beside it (1.9). */}
+            {g.day === today || g.day === yesterday ? <span className="hidden print:inline">{`, ${dayName(g.day, false)}`}</span> : null}
           </p>
           <ul className="mt-1 divide-y divide-paper/8 border-b border-paper/8">
             {g.items.map((item) => (

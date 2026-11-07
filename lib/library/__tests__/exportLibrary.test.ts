@@ -46,6 +46,17 @@ const DATA: LibraryData = {
     departed: [{ id: "d1", name: "Georgios", repose: "2020-01-02", addedAt: "y" }],
   },
   annotations: [{ ref: "John 3:16", note: "the whole gospel" }],
+  journal: [
+    {
+      id: "j1",
+      kind: "question",
+      body: "To keep silent before I answer.",
+      prompt: { key: "gospels.d1.q", text: "Where is God asking for your quiet obedience?" },
+      source: { type: "plan-day", planId: "gospels", day: 0, label: "Matthew 1" },
+      createdAt: "2026-11-07T08:30:00.000Z",
+      updatedAt: "2026-11-07T08:30:00.000Z",
+    },
+  ],
 };
 
 describe("export library", () => {
@@ -66,6 +77,17 @@ describe("export library", () => {
     expect(s.bookmarks).toBe(1);
     expect(s.names).toBe(2);
     expect(s.notes).toBe(1);
+    expect(s.journal).toBe(1);
+  });
+
+  it("carries the journal's own entries, with what each answered and what it was about (1.9)", () => {
+    const md = toMarkdown(DATA);
+    expect(md).toContain("## Journal");
+    expect(md).toContain("### 2026-11-07, Answer, Matthew 1");
+    expect(md).toContain("_Where is God asking for your quiet obedience?_");
+    expect(md).toContain("To keep silent before I answer.");
+    expect(JSON.parse(toJson(DATA)).journal[0].body).toBe("To keep silent before I answer.");
+    expect(toMarkdown({ ...DATA, journal: [] })).not.toContain("## Journal");
   });
 
   it("renders readable markdown with every section", () => {

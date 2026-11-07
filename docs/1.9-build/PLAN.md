@@ -66,7 +66,7 @@ On the 1.9 branch:
 | 24 | Tap an English word to study its Greek | done |
 | 25 | Plans for the seasons (Nativity Fast, Great Lent, Holy Week, Dormition), more plans, a passage of the Fathers each day | the Nativity Fast's plan built (his pick: the Church's own Nativity readings, 25 days); it reaches readers only with 1.9, after 15 November; John in 21 days built 2026-11-07 from the Gospels plan's own words; a passage of the Fathers on nearly every plan day, the Nativity's included (s4-03); Acts, the New Testament in a year and the Psalter in a week wait for new framing or a source (ideas.json s4-02); the other seasons ready |
 | 26 | Remember the verse in three steps, spaced, and on the widget | the three steps built 2026-11-07 (missing words, first letters, from memory, following the spaced boxes; ideas.json s4-06); on the widget ready |
-| 27 | Journal: prompts from the feast (by the editorials), search, a PDF | ready |
+| 27 | Journal: prompts from the feast (by the editorials), search, a PDF | search was there since 1.8; the journal now in Export your library (through the share sheet in the apps) and Print or save as PDF on the website, 2026-11-07 (s4-09); prompts from the feast ready (editorial queue) |
 | 28 | Florilegium: gather from everywhere, share as a page or booklet, a line on Today | ready |
 | 29 | Sync shown working, and everything kept synced | ready |
 | 30 | History: more events (40 today), the saints at each, a map, this day in Church history, listen to an era, the Creed by council | ready |

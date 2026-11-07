@@ -20,6 +20,21 @@ import {
   type LibraryData,
 } from "@/lib/library/exportLibrary";
 import { useTranslate } from "@/components/i18n/MessagesProvider";
+import { isNativeClient } from "@/lib/platform/native";
+import { shareFile } from "@/lib/share/shareImage";
+
+/**
+ * Take the file away: in the apps, through the phone's share sheet (1.9),
+ * where it can be kept in Files, sent or saved to a drive, since the apps'
+ * WebView saves no downloads; in a browser, a download, as before.
+ */
+function takeAway(filename: string, text: string, type: string) {
+  if (isNativeClient()) {
+    void shareFile(new Blob([text], { type }), filename, filename, type);
+    return;
+  }
+  download(filename, text, type);
+}
 
 function download(filename: string, text: string, type: string) {
   const blob = new Blob([text], { type });
@@ -50,7 +65,8 @@ export function ExportLibrary() {
     summary.florilegia === 0 &&
     summary.bookmarks === 0 &&
     summary.names === 0 &&
-    summary.notes === 0;
+    summary.notes === 0 &&
+    summary.journal === 0;
 
   const counts: [label: string, value: number][] = summary
     ? [
@@ -59,6 +75,7 @@ export function ExportLibrary() {
         [t("ui.florilegia"), summary.florilegia],
         [t("ui.gatheredLines"), summary.gatheredLines],
         [t("ui.names"), summary.names],
+        [t("ui.journalEntries"), summary.journal],
       ]
     : [];
 
@@ -97,7 +114,7 @@ export function ExportLibrary() {
             disabled={!data || empty}
             onClick={() =>
               data &&
-              download(`purify-library-${stamp}.md`, toMarkdown(data), "text/markdown")
+              takeAway(`purify-library-${stamp}.md`, toMarkdown(data), "text/markdown")
             }
             className="tap-press inline-flex h-12 flex-1 items-center justify-center rounded-pill bg-paper px-6 font-sans text-ui font-semibold text-night motion-safe:transition-colors hover:bg-paper/90 disabled:opacity-40"
           >
@@ -108,7 +125,7 @@ export function ExportLibrary() {
             disabled={!data || empty}
             onClick={() =>
               data &&
-              download(`purify-library-${stamp}.json`, toJson(data), "application/json")
+              takeAway(`purify-library-${stamp}.json`, toJson(data), "application/json")
             }
             className="tap-press inline-flex h-12 flex-1 items-center justify-center rounded-pill border border-paper/25 px-6 font-sans text-ui font-semibold text-paper/85 motion-safe:transition-colors hover:border-paper/45 disabled:opacity-40"
           >

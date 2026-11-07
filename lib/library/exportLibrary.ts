@@ -1,12 +1,14 @@
 "use client";
 
 // Export everything a reader has gathered on this device: florilegia, notes and
-// highlights, bookmarks, and the diptychs. Pure local data, no account needed.
+// highlights, bookmarks, the diptychs, and (1.9, s4-09: "a reader's journal is
+// theirs") the journal's own entries. Pure local data, no account needed.
 // gatherLibrary() reads localStorage; toJson / toMarkdown / librarySummary are
 // pure over the gathered shape so they can be unit-tested.
 
 import type { Florilegium, FlorilegiumItem } from "@/lib/florilegium/florilegium";
 import { listFlorilegia } from "@/lib/florilegium/florilegium";
+import type { JournalKind, JournalRecord } from "@/lib/journal/entries";
 import { readIntentions, type Intention } from "@/lib/prayers/storage";
 
 export type ExportedAnnotation = {
@@ -22,6 +24,8 @@ export type LibraryData = {
   bookmarks: { label?: string }[];
   diptychs: { living: Intention[]; departed: Intention[] };
   annotations: ExportedAnnotation[];
+  /** The journal's own entries (lib/journal/entries.ts), newest first; its notes on verses are among the annotations. */
+  journal: JournalRecord[];
 };
 
 function readLocal<T>(key: string, fallback: T): T {
@@ -90,12 +94,19 @@ export function gatherLibrary(): LibraryData {
   }
   annotations.sort((a, b) => a.ref.localeCompare(b.ref));
 
+  // The entries a reader removed are kept on the device only so the removal
+  // syncs and Undo works: they are not part of what is taken away.
+  const journal = readLocal<JournalRecord[]>("purify:journal", [])
+    .filter((r) => r && typeof r.body === "string" && !r.deletedAt)
+    .sort((a, b) => b.createdAt.localeCompare(a.createdAt));
+
   return {
     exportedAt: new Date().toISOString(),
     florilegia,
     bookmarks,
     diptychs,
     annotations,
+    journal,
   };
 }
 
@@ -105,6 +116,7 @@ export function librarySummary(data: LibraryData): {
   bookmarks: number;
   names: number;
   notes: number;
+  journal: number;
 } {
   return {
     florilegia: data.florilegia.length,
@@ -112,6 +124,7 @@ export function librarySummary(data: LibraryData): {
     bookmarks: data.bookmarks.length,
     names: data.diptychs.living.length + data.diptychs.departed.length,
     notes: data.annotations.length,
+    journal: data.journal.length,
   };
 }
 
@@ -166,6 +179,17 @@ export function toMarkdown(data: LibraryData): string {
     out.push("");
   }
 
+  if (data.journal.length) {
+    out.push("\n## Journal\n");
+    for (const r of data.journal) {
+      // The day it was written, what it is, and what it was written about.
+      out.push(`### ${[r.createdAt.slice(0, 10), JOURNAL_KIND[r.kind] ?? r.kind, r.source?.label].filter(Boolean).join(", ")}`);
+      if (r.prompt?.text) out.push(`_${r.prompt.text.trim()}_\n`);
+      out.push(r.body.trim());
+      out.push("");
+    }
+  }
+
   if (data.bookmarks.length) {
     out.push("\n## Bookmarks\n");
     for (const b of data.bookmarks) if (b.label) out.push(`- ${b.label}`);
@@ -174,6 +198,9 @@ export function toMarkdown(data: LibraryData): string {
 
   return out.join("\n");
 }
+
+/** The journal's kinds as the Markdown copy names them; an answer is to a reading plan's question. */
+const JOURNAL_KIND: Record<JournalKind, string> = { reflection: "Reflection", prayer: "Prayer", question: "Answer" };
 
 function nameLine(p: Intention, departed = false): string {
   const bits = [p.name];
