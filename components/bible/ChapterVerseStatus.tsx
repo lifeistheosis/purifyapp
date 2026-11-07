@@ -72,11 +72,12 @@ export function ChapterVerseStatus({
     const verses = Array.from(document.querySelectorAll<HTMLElement>(VERSE_ROWS));
     if (verses.length === 0) return;
     // The words from each verse to the end, read from the English of each
-    // row (the Greek beside it is not counted).
+    // row (the Greek beside it is not counted), or from a downloaded Bible's
+    // (1.9, components/bible/DownloadedChapter.tsx).
     const wordsFrom = new Map<number, number>();
     let sum = 0;
     for (let i = verses.length - 1; i >= 0; i -= 1) {
-      const text = verses[i].querySelector("p[data-own-press]")?.textContent ?? "";
+      const text = verses[i].querySelector("p[data-own-press], p[data-verse-words]")?.textContent ?? "";
       sum += text.split(/\s+/).filter(Boolean).length;
       wordsFrom.set(Number(verses[i].id.slice(1)), sum);
     }

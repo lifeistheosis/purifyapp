@@ -322,8 +322,10 @@ describe("components/bible/ChapterScreen.tsx", () => {
     const at = (text: string) => screen.indexOf(text);
     expect(at("{topBar}")).toBeGreaterThan(at("<ReaderFocusController />"));
     expect(at("{topBar}")).toBeLessThan(at("<ChapterKeyNav"));
-    expect(at("{reader}")).toBeGreaterThan(at('id="chapter-title"'));
-    expect(at("{reader}")).toBeLessThan(at("<ChapterPager"));
+    // The page's reader, or a Bible the reader downloaded in its place (1.9).
+    expect(at(" : reader}")).toBeGreaterThan(at('id="chapter-title"'));
+    expect(at(" : reader}")).toBeLessThan(at("<ChapterPager"));
+    expect(screen).toContain("{downloaded ? <DownloadedChapter bible={downloaded.bible} text={downloaded.text} book={slug} chapter={chapter} /> : reader}");
     expect(at("{rail}")).toBeGreaterThan(at("<ChapterDiscussions"));
   });
 

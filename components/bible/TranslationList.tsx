@@ -5,6 +5,10 @@ import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useTranslate } from "@/components/i18n/MessagesProvider";
 import { Check } from "@/components/ui/icons/Check";
 import { getBook } from "@/lib/bible/books";
+import { DOWNLOADABLE_BIBLES, type DownloadableBible } from "@/lib/bible/downloads/catalog";
+import { writeBibleChoice } from "@/lib/bible/downloads/choice";
+import { offerLanguageFor } from "@/lib/bible/downloads/languageOffer";
+import { useShownBible } from "@/lib/bible/downloads/useShownBible";
 import {
   byLanguage,
   currentTranslation,
@@ -16,6 +20,8 @@ import {
 import { writeTranslationPref } from "@/lib/bible/translationPref";
 import { cn } from "@/lib/cn";
 
+import { BibleRow } from "./BibleRow";
+
 /**
  * Which translations this chapter offers, the one it is read in, and the way
  * to choose another: the address's ?v= for a licensed one, cleared for a
@@ -24,25 +30,50 @@ import { cn } from "@/lib/cn";
  * ReaderMoreSheet) and the computer's popover (TranslationSwitcher) both read
  * it, so the two
  * offer the same rows. The list itself is lib/bible/translations.ts.
+ *
+ * From 1.9 the Bibles a reader downloads are chosen here too
+ * (lib/bible/downloads/): a choice kept on the device, not in the address,
+ * which choosing the English or a licensed translation clears. `shown` is
+ * the downloaded Bible the chapter is shown in, when it is; `label` names
+ * what the chapter is read in, for the pills.
  */
 export function useTranslationChoice(currentSlug: string, configured: readonly string[]) {
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
+  const { locale } = useTranslate();
   const book = getBook(currentSlug);
   const scope = { testament: book?.testament ?? "OT", source: book?.source, configured } as const;
   const list = translationsFor(scope);
   const current = currentTranslation({ ...scope, activeV: searchParams.get("v") });
+  const { shown } = useShownBible(currentSlug);
 
   /** Opens the chapter in `t`. The one being read, or one that cannot be picked, changes nothing. */
   function choose(t: Translation): void {
-    if (!isSelectable(t, configured) || t.id === current.id) return;
+    if (!isSelectable(t, configured)) return;
+    // From a downloaded Bible back to the English the chapter already names.
+    if (shown) writeBibleChoice(null);
+    if (t.id === current.id) return;
     writeTranslationPref(t.licensed ? t.id : null);
     const qs = queryFor(t, searchParams.toString());
     router.push(qs ? `${pathname}?${qs}` : pathname);
   }
 
-  return { testament: scope.testament, list, current, choose };
+  /** Reads on in a downloaded Bible (on the phone, in the apps), and offers the app in its language. */
+  function chooseBible(bible: DownloadableBible): void {
+    if (shown?.id === bible.id) return;
+    writeBibleChoice(bible.id);
+    writeTranslationPref(null);
+    if (searchParams.get("v")) {
+      const params = new URLSearchParams(searchParams.toString());
+      params.delete("v");
+      const qs = params.toString();
+      router.replace(qs ? `${pathname}?${qs}` : pathname);
+    }
+    offerLanguageFor(bible, locale);
+  }
+
+  return { testament: scope.testament, list, current, choose, shown, chooseBible, label: shown?.shortLabel ?? current.shortLabel };
 }
 
 /**
@@ -52,22 +83,30 @@ export function useTranslationChoice(currentSlug: string, configured: readonly s
  * translation not in the app yet is shown and cannot be picked. No badges:
  * the line under the title already says what a badge said.
  *
- * Grouped by the language of the text once there is more than one (the
- * Greek, Romanian and Filipino Bibles of 1.7); until then the group is named
- * by its testament, as the book sheet is.
+ * Grouped by the language of the text: the English first, then each Bible a
+ * reader downloads (1.9), under its language's name, its row saying what it
+ * is and, in the apps, downloading it, showing how far it has come, and
+ * taking it off the phone again (BibleRow).
  */
 export function TranslationList({
-  testament,
   list,
   current,
   configured,
   onChoose,
+  book,
+  shown = null,
+  onChooseBible,
 }: {
-  testament: "OT" | "NT";
+  testament?: "OT" | "NT";
   list: Translation[];
   current: Translation;
   configured: readonly string[];
   onChoose: (t: Translation) => void;
+  /** The chapter's book, for a Bible that does not have it. */
+  book: string;
+  /** The downloaded Bible the chapter is shown in, when it is. */
+  shown?: DownloadableBible | null;
+  onChooseBible: (bible: DownloadableBible) => void;
 }) {
   const { t, locale } = useTranslate();
   const groups = byLanguage(list);
@@ -78,20 +117,20 @@ export function TranslationList({
       return code;
     }
   };
+  const bibleGroups: { language: string; bibles: DownloadableBible[] }[] = [];
+  for (const b of DOWNLOADABLE_BIBLES) {
+    const group = bibleGroups.find((g) => g.language === b.language);
+    if (group) group.bibles.push(b);
+    else bibleGroups.push({ language: b.language, bibles: [b] });
+  }
   return (
     <div className="space-y-4">
       {groups.map((group) => (
-        <section key={group.language} aria-label={groups.length > 1 ? languageName(group.language) : undefined}>
-          <p className="mb-2 font-sans text-caption font-semibold text-paper/55">
-            {groups.length > 1
-              ? languageName(group.language)
-              : testament === "OT"
-                ? t("bible.oldTestamentShort")
-                : t("bible.newTestamentShort")}
-          </p>
+        <section key={group.language} aria-label={languageName(group.language)}>
+          <p className="mb-2 font-sans text-caption font-semibold text-paper/55">{languageName(group.language)}</p>
           <ul className="space-y-1">
             {group.rows.map((tr) => {
-              const isCurrent = tr.id === current.id;
+              const isCurrent = !shown && tr.id === current.id;
               const selectable = isSelectable(tr, configured);
               return (
                 <li key={tr.id}>
@@ -121,6 +160,16 @@ export function TranslationList({
                 </li>
               );
             })}
+          </ul>
+        </section>
+      ))}
+      {bibleGroups.map((group) => (
+        <section key={group.language} aria-label={languageName(group.language)}>
+          <p className="mb-2 font-sans text-caption font-semibold text-paper/55">{languageName(group.language)}</p>
+          <ul className="space-y-1">
+            {group.bibles.map((b) => (
+              <BibleRow key={b.id} bible={b} book={book} current={shown?.id === b.id} onChoose={() => onChooseBible(b)} />
+            ))}
           </ul>
         </section>
       ))}

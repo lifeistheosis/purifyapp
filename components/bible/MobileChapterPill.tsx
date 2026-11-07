@@ -124,10 +124,16 @@ export function MobileChapterPill({
   slug,
   chapter,
   totalVerses,
+  listen = true,
+  textKey,
 }: {
   slug: string;
   chapter: number;
   totalVerses: number;
+  /** Listen reads the English aloud: a chapter shown in a downloaded Bible has none (1.9). */
+  listen?: boolean;
+  /** What the chapter is shown in, when not the English: the running line looks at the verses again when it changes. */
+  textKey?: string;
 }) {
   const { t } = useTranslate();
   const book = getBook(slug);
@@ -137,7 +143,7 @@ export function MobileChapterPill({
   const [sheetOpen, setSheetOpen] = useState(false);
   const covered = useOverlayOpen();
   // Only a chapter that has a reading carries Listen.
-  const reads = useHasReadAloud(slug, chapter);
+  const reads = useHasReadAloud(slug, chapter) && listen;
   // The dock: the player and the chapter in one card while anything is loaded.
   const dockShows = useDockShows();
   useOwnPlayer(dockShows ? HOSTS_EVERYTHING : NOTHING);
@@ -212,7 +218,7 @@ export function MobileChapterPill({
               the pill once the title has gone up, as a printed page carries
               its place at its foot. Over the pill and not inside it, so the
               pill keeps its width and the name its room. */}
-          <ChapterVerseStatus chapterKey={`${slug}/${chapter}`} totalVerses={totalVerses} />
+          <ChapterVerseStatus chapterKey={textKey ? `${slug}/${chapter}/${textKey}` : `${slug}/${chapter}`} totalVerses={totalVerses} />
           <div
             className={cn(
               "flex h-14 min-w-0 max-w-full items-center gap-0.5 rounded-pill border border-paper/10 bg-night-soft px-1.5 shadow-[0_14px_34px_rgba(0,0,0,0.55)]",

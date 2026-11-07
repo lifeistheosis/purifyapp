@@ -224,7 +224,8 @@ describe("the chapter opens like a book", () => {
       expect(intro, part).toContain(part);
     }
     expect(screen.indexOf("{intro && introFacts ? (")).toBeGreaterThan(screen.indexOf("</header>"));
-    expect(screen.indexOf("{reader}")).toBeGreaterThan(screen.indexOf("{intro && introFacts ? ("));
+    // The verses: the page's reader, or a Bible the reader downloaded in its place (1.9).
+    expect(screen.indexOf(" : reader}")).toBeGreaterThan(screen.indexOf("{intro && introFacts ? ("));
   });
 });
 
@@ -234,7 +235,8 @@ describe("the ••• sheet: the reader's settings, and what stood above the t
   it("holds the one search, the book's chapters, the translation, the Greek and the bookmark, in that order", () => {
     expect(more).toContain("<BibleSearch layer onNavigate={onClose} />");
     expect(more).toContain("<MobileChapterStrip book={bibleBook} current={chapter} onPick={onClose} />");
-    expect(more).toMatch(/<SheetRow label=\{t\("bible\.translationLabel"\)\} value=\{current\.shortLabel\} onClick=\{openTranslations\} \/>/);
+    // What the chapter is read in: the English's name, or a downloaded Bible's (1.9).
+    expect(more).toMatch(/<SheetRow label=\{t\("bible\.translationLabel"\)\} value=\{label\} onClick=\{openTranslations\} \/>/);
     expect(more).toMatch(/\{showInterlinear \? \(\s*<ToggleRow on=\{greek\} touch label=\{t\("bible\.interlinearGreek"\)\} onClick=\{toggleGreek\} \/>/);
     expect(more).toMatch(/<ToggleRow on=\{saved\} touch label=\{t\("bible\.bookmarkThisChapter"\)\} onClick=\{toggleSaved\} \/>/);
     const order = ["<BibleSearch layer", "<MobileChapterStrip", 't("bible.translationLabel")', 't("bible.interlinearGreek")', 't("bible.bookmarkThisChapter")'].map((part) => more.indexOf(part));
@@ -324,16 +326,18 @@ describe("the floating pill, with Listen", () => {
     expect(pill).toContain('const pickLabel = t("bible.pickChapterCurrentAria", {');
     expect(pill).toContain("aria-label={pickLabel}");
     // Over the pill, not in it, so the pill keeps its width as the line opens.
-    expect(pill).toMatch(/<ChapterVerseStatus chapterKey=\{`\$\{slug\}\/\$\{chapter\}`\} totalVerses=\{totalVerses\} \/>\s*<div\s+className=\{cn\(\s*"flex h-14 /);
+    // Bound again when the chapter is shown in a downloaded Bible (1.9), whose verses are its own.
+    expect(pill).toMatch(/<ChapterVerseStatus chapterKey=\{textKey \? `\$\{slug\}\/\$\{chapter\}\/\$\{textKey\}` : `\$\{slug\}\/\$\{chapter\}`\} totalVerses=\{totalVerses\} \/>\s*<div\s+className=\{cn\(\s*"flex h-14 /);
     expect(pill).toContain("flex flex-col items-center gap-1.5 px-4");
     // The name gives way before the number does, and the pill never runs past the screen.
     expect(pill).toMatch(/<span className="truncate">\{bookName\}<\/span>\s*<span className="ms-1 shrink-0 tabular-nums">\{chapter\}<\/span>/);
     expect(pill).toContain("min-w-0 max-w-full");
-    expect(code(SCREEN)).toContain("<MobileChapterPill slug={slug} chapter={chapter} totalVerses={totalVerses} />");
+    expect(code(SCREEN)).toMatch(/<MobileChapterPill\s+slug=\{slug\}\s+chapter=\{chapter\}\s+totalVerses=\{verses\}\s+listen=\{!downloaded\}/);
   });
 
   it("ends in Listen, after the sound button, only where the chapter has a reading", () => {
-    expect(pill).toContain("const reads = useHasReadAloud(slug, chapter);");
+    // Listen reads the English aloud: a chapter shown in a downloaded Bible has none (1.9).
+    expect(pill).toContain("const reads = useHasReadAloud(slug, chapter) && listen;");
     expect(pill).toMatch(/<AmbienceButton variant="pill" \/>\s*\{reads \? <ReadAloudPillButton book=\{slug\} chapter=\{chapter\} title=\{`\$\{bookName\} \$\{chapter\}`\} \/> : null\}\s*<\/div>/);
     const read = code("components/bible/ReadAloud.tsx");
     const button = read.slice(read.indexOf("export function ReadAloudPillButton"), read.indexOf("export function ReadAloudFollow"));
@@ -352,7 +356,8 @@ describe("the floating pill, with Listen", () => {
     expect(code(SCREEN)).toContain("<ReadAloudFollow book={slug} chapter={chapter} />");
     // On the computer Listen joins the toolbar, as the reader's own pill.
     const toolbar = code(SCREEN).slice(code(SCREEN).indexOf('cn("hidden md:block native-md-hidden"'), code(SCREEN).indexOf("<RestoreTranslation"));
-    expect(toolbar).toMatch(/\{!usingLicensed \? <ListenButton book=\{slug\} chapter=\{chapter\} bookName=\{book\.name\} \/> : null\}\s*<AmbienceButton variant="toolbar" \/>/);
+    // Not over a chapter shown in a downloaded Bible, which has no reading (1.9).
+    expect(toolbar).toMatch(/\{!usingLicensed && !downloaded \? <ListenButton book=\{slug\} chapter=\{chapter\} bookName=\{book\.name\} \/> : null\}\s*<AmbienceButton variant="toolbar" \/>/);
     expect(read).toMatch(/<ReaderPill onClick=\{start\}/);
   });
 

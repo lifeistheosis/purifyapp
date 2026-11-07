@@ -2,6 +2,7 @@
 
 import type { ReactNode } from "react";
 
+import { BibleLanguageOffer } from "@/components/bible/BibleLanguageOffer";
 import { BibleSearch } from "@/components/bible/BibleSearch";
 import { BookChapterSidebar } from "@/components/bible/BookChapterSidebar";
 import { BookSwitcher } from "@/components/bible/BookSwitcher";
@@ -9,6 +10,7 @@ import { ChapterBookmarkButton } from "@/components/bible/ChapterBookmarkButton"
 import { ChapterDiscussions } from "@/components/bible/ChapterDiscussions";
 import { ChapterKeyNav } from "@/components/bible/ChapterKeyNav";
 import { ChapterPager } from "@/components/bible/ChapterPager";
+import { DownloadedChapter } from "@/components/bible/DownloadedChapter";
 import { KeepScrolling } from "@/components/bible/KeepScrolling";
 import { ReadingsFlowBar } from "@/components/bible/ReadingsFlowBar";
 import { PlanFlowBar } from "@/components/plans/PlanFlowBar";
@@ -29,6 +31,7 @@ import { BIBLE_START_SIZE, ReaderFocusButton, ReaderFocusController, ReaderPrefs
 import { KeepDay } from "@/components/streak/KeepDay";
 import type { BibleBook, NamedPassageId } from "@/lib/bible/books";
 import { openBooks } from "@/lib/bible/booksSheet";
+import { useBibleText, useShownBible } from "@/lib/bible/downloads/useShownBible";
 import { hebrewLine } from "@/lib/bible/psalmNumbers";
 import { ChevronDown } from "@/components/ui/icons/ChevronDown";
 import { cn } from "@/lib/cn";
@@ -134,6 +137,16 @@ export function ChapterScreen({
 }) {
   const slug = book.slug;
   const psalmLine = slug === "psalms" ? hebrewLine(chapter) : null;
+  // A Bible the reader downloaded (1.9, lib/bible/downloads/): the chapter in
+  // its words, when the reader reads in it and it has the book. Until its
+  // book is read the page holds its place; a book that cannot be had shows
+  // the English, and says so, as does a book the Bible does not have.
+  const { t } = useTranslate();
+  const { shown, lacking } = useShownBible(slug);
+  const text = useBibleText(shown, slug, chapter, book.chapters);
+  const downloaded = shown && text && text.state !== "failed" ? { bible: shown, text } : null;
+  const unopened = shown && text?.state === "failed" ? shown : null;
+  const verses = downloaded?.text.state === "ready" && downloaded.text.page.last ? downloaded.text.page.last : totalVerses;
   // The round buttons over the page, the pill at its foot and the app's tab
   // bar step away while the reader reads on, and come back on a scroll up.
   useScrollAway();
@@ -151,8 +164,16 @@ export function ChapterScreen({
         <PlanFlowBar book={slug} chapter={chapter} />
         {/* The verse being read aloud, lit and kept in view (1.7). */}
         <ReadAloudFollow book={slug} chapter={chapter} />
-        <ReadingProgressBar slug={slug} bookName={book.name} chapter={chapter} totalVerses={totalVerses} />
-        <MobileChapterPill slug={slug} chapter={chapter} totalVerses={totalVerses} />
+        <ReadingProgressBar slug={slug} bookName={book.name} chapter={chapter} totalVerses={verses} />
+        <MobileChapterPill
+          slug={slug}
+          chapter={chapter}
+          totalVerses={verses}
+          listen={!downloaded}
+          textKey={downloaded ? `${downloaded.bible.id}:${downloaded.text.state}` : undefined}
+        />
+        {/* "Use Purify in Русский?", once, as a Bible in another language is picked (1.9). */}
+        <BibleLanguageOffer />
         {/* Twenty seconds of a chapter keeps the day for the streak. */}
         <KeepDay strand="day:reading" />
         <div data-reader-chrome className="contents">
@@ -180,7 +201,7 @@ export function ChapterScreen({
                   {/* Read aloud, where the chapter has a reading (1.7). It
                       stood at the end of the title's line until the title
                       became the page's opening (1.8). */}
-                  {!usingLicensed ? <ListenButton book={slug} chapter={chapter} bookName={book.name} /> : null}
+                  {!usingLicensed && !downloaded ? <ListenButton book={slug} chapter={chapter} bookName={book.name} /> : null}
                   {/* Ambience, lit while a sound plays (1.7, the owner's
                       note 25): the computer's place for the phone's sound
                       button on the chapter's pill. */}
@@ -275,7 +296,7 @@ export function ChapterScreen({
                   ) : null}
                   <span aria-hidden className="page-open-rule mx-auto mt-5 block h-px w-7 bg-paper/25" />
                 </header>
-                {greekNumberedApart ? <GreekNumberingNote /> : null}
+                {greekNumberedApart && !downloaded ? <GreekNumberingNote /> : null}
 
                 {/* Before you read (1.7, the owner's "Do all of these" of
                     2026-10-15): at the start of every book, what it is, who
@@ -347,7 +368,7 @@ export function ChapterScreen({
                     (community, #purify-suggestions: "How am I able to read his
                     commentary?"). This names the affordance, as one plain line: it was a
                     red-tinted box until 1.7. */}
-                {hasChapterCommentary && !usingLicensed && (
+                {hasChapterCommentary && !usingLicensed && !downloaded && (
                   <p className="page-open-after mb-6 lg:hidden native-md-block font-sans text-detail leading-[1.55] text-paper/70">
                     <span className="font-semibold text-paper"><T k="bible.readWithFathers" /></span>{" "}
                     <T k="bible.commentaryHint1" />{" "}
@@ -356,7 +377,15 @@ export function ChapterScreen({
                   </p>
                 )}
 
-                {reader}
+                {/* The chosen Bible has no such book (the Greek has no 2 Esdras),
+                    or its book could not be read: the English, saying why. */}
+                {lacking || unopened ? (
+                  <p className="page-open-after mb-6 font-sans text-detail leading-[1.55] text-paper/70" data-bible-note="">
+                    {lacking ? t("bible.downloads.notInBible", { book: t(`bible.books.${slug}`) }) : t("bible.downloads.couldNotOpen")}
+                  </p>
+                ) : null}
+
+                {downloaded ? <DownloadedChapter bible={downloaded.bible} text={downloaded.text} book={slug} chapter={chapter} /> : reader}
 
                 <ChapterPager slug={slug} chapter={chapter} v={licensedId ?? undefined} />
 
@@ -373,7 +402,7 @@ export function ChapterScreen({
 
                 {!usingLicensed && (
                   <p className="mt-6 md:mt-3 font-sans text-eyebrow text-paper/55 leading-[1.6]">
-                    <T k="bible.chapterSources" />
+                    <T k={downloaded ? `bible.downloads.source.${downloaded.bible.id}` : "bible.chapterSources"} />
                   </p>
                 )}
 

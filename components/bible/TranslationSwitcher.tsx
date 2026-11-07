@@ -24,7 +24,7 @@ export function TranslationSwitcher({
   configuredLicensed?: string[];
 }) {
   const { t } = useTranslate();
-  const { testament, list, current, choose } = useTranslationChoice(currentSlug, configuredLicensed);
+  const { testament, list, current, choose, shown, chooseBible, label } = useTranslationChoice(currentSlug, configuredLicensed);
   const [open, setOpen] = useState(false);
   const rootRef = useRef<HTMLDivElement>(null);
 
@@ -52,9 +52,9 @@ export function TranslationSwitcher({
         onClick={() => setOpen((v) => !v)}
         aria-haspopup="dialog"
         aria-expanded={open}
-        aria-label={t("bible.switchTranslationCurrentAria", { name: current.shortLabel })}
+        aria-label={t("bible.switchTranslationCurrentAria", { name: label })}
       >
-        {current.shortLabel}
+        {label}
       </ReaderPill>
 
       {open && (
@@ -72,6 +72,12 @@ export function TranslationSwitcher({
               onChoose={(tr) => {
                 setOpen(false);
                 choose(tr);
+              }}
+              book={currentSlug}
+              shown={shown}
+              onChooseBible={(bible) => {
+                setOpen(false);
+                chooseBible(bible);
               }}
             />
           </div>

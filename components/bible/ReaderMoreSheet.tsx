@@ -67,7 +67,7 @@ export function ReaderMoreSheet({
 }) {
   const { t } = useTranslate();
   const [translations, setTranslations] = useState(false);
-  const { testament, list, current, choose } = useTranslationChoice(book, configuredLicensed);
+  const { testament, list, current, choose, shown, chooseBible, label } = useTranslationChoice(book, configuredLicensed);
   const { on: greek, toggle: toggleGreek } = useInterlinear();
   const bookmarks = useBookmarks();
   const saved = bookmarks.isBookmarked({ kind: "bible-chapter", book, chapter });
@@ -109,7 +109,7 @@ export function ReaderMoreSheet({
             </div>
           ) : null}
           <div className="space-y-2.5">
-            <SheetRow label={t("bible.translationLabel")} value={current.shortLabel} onClick={openTranslations} />
+            <SheetRow label={t("bible.translationLabel")} value={label} onClick={openTranslations} />
             {showInterlinear ? (
               <ToggleRow on={greek} touch label={t("bible.interlinearGreek")} onClick={toggleGreek} />
             ) : null}
@@ -127,6 +127,12 @@ export function ReaderMoreSheet({
           onChoose={(tr) => {
             setTranslations(false);
             choose(tr);
+          }}
+          book={book}
+          shown={shown}
+          onChooseBible={(bible) => {
+            setTranslations(false);
+            chooseBible(bible);
           }}
         />
       </Sheet>
