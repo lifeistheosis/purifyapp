@@ -33,6 +33,9 @@ import {
   savedSoFar,
   startWordSwitch,
   stepWordSwitch,
+  TRY_EVENT,
+  TRY_THREAD,
+  TRY_THREAD_FROM,
   trySoundOf,
   type WordSwitch,
 } from "@/lib/premium/plusTry";
@@ -215,6 +218,18 @@ describe("the reader's own things, shown as examples", () => {
       expect(bare(`${TRY_DIR}/${f}.tsx`), f).toMatch(/<ExampleTag\b/);
     }
     expect(bare(`${TRY_DIR}/TryKit.tsx`)).toContain('t("plus.try.example")');
+  });
+});
+
+describe("the Thread the history preview follows", () => {
+  it("is the Council of Florence's own, step for step, as lib/history/thread.ts gives it", async () => {
+    const { loadEventBody } = await import("@/lib/history/load");
+    const { eventThread } = await import("@/lib/history/thread");
+    const body = await loadEventBody(TRY_EVENT);
+    const real = eventThread(TRY_EVENT, body?.chronology ?? []);
+    expect(TRY_THREAD.home).toEqual(real.home);
+    expect(TRY_THREAD.steps).toEqual(real.steps.slice(TRY_THREAD_FROM, TRY_THREAD_FROM + TRY_THREAD.steps.length));
+    expect(TRY_THREAD.steps.length).toBe(6);
   });
 });
 

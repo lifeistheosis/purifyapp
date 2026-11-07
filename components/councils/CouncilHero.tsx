@@ -3,7 +3,6 @@
 import { useEffect, useRef, useState } from "react";
 
 import { cn } from "@/lib/cn";
-import { usePlusFeatures } from "@/lib/entitlements/usePlusFeatures";
 import type { EventPicture } from "@/lib/history/media";
 
 /**
@@ -22,12 +21,11 @@ import type { EventPicture } from "@/lib/history/media";
  * with the preview, or the ground, under the name. The credit is the
  * picture's title, and the page prints it at its foot.
  *
- * With Purify Plus the picture moves, slowly, inside its frame, as it did on
- * the council's page before (Immersive History, `.history-pan`, only with
- * the app's motion on).
+ * The picture moves, slowly, inside its frame (`.history-pan`, only with the
+ * app's motion on), for every reader since 1.9 (the owner's "I want images
+ * on for everyone"); it was Plus's Immersive History before.
  */
 export function CouncilHero({ picture, focus }: { picture: EventPicture; focus: string }) {
-  const plus = usePlusFeatures();
   const ref = useRef<HTMLImageElement>(null);
   const [arrived, setArrived] = useState(false);
   const [failed, setFailed] = useState(false);
@@ -86,7 +84,7 @@ export function CouncilHero({ picture, focus }: { picture: EventPicture; focus: 
             className={cn(
               "absolute inset-0 h-full w-full object-cover motion-safe:transition-opacity motion-safe:duration-500 motion-safe:ease-out",
               arrived ? "opacity-100" : "opacity-0",
-              plus === true && "history-pan",
+              "history-pan",
             )}
             style={{ objectPosition: focus }}
           />

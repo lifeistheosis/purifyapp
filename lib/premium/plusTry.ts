@@ -20,6 +20,7 @@
 
 import type { AmbienceId } from "@/lib/ambience/ambience";
 import type { PlusRow } from "@/lib/premium/plusRows";
+import type { EventThreadData } from "@/lib/history/thread";
 
 /** How long a sound plays in a preview before it stops: a minute, as drawn. A page has no clock. */
 export const TRY_MINUTE_MS = 60_000;
@@ -182,6 +183,83 @@ export const TRY_REMEMBER_VERSE = 5;
  * and gallery are the fullest dress the timeline has (lib/history/events.ts).
  */
 export const TRY_EVENT = "council-of-florence";
+
+/**
+ * The Thread the history preview follows (1.9, Plus's history: the owner's
+ * pick of 2026-11-06): six steps of the Council of Florence, from the Greeks
+ * sailing from Constantinople to the council's move to Florence, as
+ * lib/history/thread.ts gives them. Written out here so the preview carries
+ * neither the map's outline nor the event's account in the app's code;
+ * lib/premium/__tests__/plusTry.test.ts holds them to the real Thread.
+ */
+export const TRY_THREAD: EventThreadData = {
+  "home": {
+    "name": "Florence",
+    "x": 3272.2,
+    "y": 452.3
+  },
+  "steps": [
+    {
+      "date": "27 November 1437",
+      "text": "About seven hundred Greeks sail from Constantinople on papal galleys, at papal expense.",
+      "year": "1437",
+      "place": {
+        "name": "Constantinople",
+        "x": 3588.6,
+        "y": 514.1
+      }
+    },
+    {
+      "date": "8 February 1438",
+      "text": "The delegation lands at Venice.",
+      "year": "1438",
+      "place": {
+        "name": "Venice",
+        "x": 3291.5,
+        "y": 415
+      }
+    },
+    {
+      "date": "9 April 1438",
+      "text": "The first session at Ferrara with the Greeks present.",
+      "pivotal": true,
+      "year": "1438",
+      "place": {
+        "name": "Ferrara",
+        "x": 3278.7,
+        "y": 428.4
+      }
+    },
+    {
+      "date": "Summer 1438",
+      "text": "Committees take up purgatory and reach no agreement.",
+      "year": "1438",
+      "place": null
+    },
+    {
+      "date": "8 October to 13 December 1438",
+      "text": "Public sessions at Ferrara on whether the addition to the Creed was lawful. Mark of Ephesus speaks for the Greeks.",
+      "year": "1438",
+      "place": {
+        "name": "Ferrara",
+        "x": 3278.7,
+        "y": 428.4
+      }
+    },
+    {
+      "date": "January 1439",
+      "text": "Plague and Florentine money move the council to Florence.",
+      "year": "1439",
+      "place": {
+        "name": "Florence",
+        "x": 3272.2,
+        "y": 452.3
+      }
+    }
+  ]
+};
+/** Where TRY_THREAD's steps start in the event's own: its fourth step. */
+export const TRY_THREAD_FROM = 3;
 
 /**
  * The Discord preview's example, as Settings draws its own: St John's Gospel,

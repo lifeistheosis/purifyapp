@@ -162,7 +162,7 @@ export const PREMIUM_PLAN_EN: PremiumPlanCopy = {
     {
       id: "immersive-history",
       title: "Immersive History",
-      sub: "The story of the Church in full cinematic dress",
+      sub: "The great events told year by year, with a map that follows them",
     },
     {
       id: "supporter-mark",
@@ -282,7 +282,7 @@ export const PREMIUM_PLAN_DE: PremiumPlanCopy = {
     {
       id: "immersive-history",
       title: "Immersive Kirchengeschichte",
-      sub: "Die Geschichte der Kirche in vollem filmischem Gewand",
+      sub: "Die großen Ereignisse Jahr für Jahr, mit einer Karte, die ihnen folgt",
     },
     {
       id: "supporter-mark",

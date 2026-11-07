@@ -257,13 +257,17 @@ describe("an event's page", () => {
     expect(css).toMatch(/html\.is-native \.topbar-safe \{\n padding-top: var\(--inset-top\);\n height: calc\(3rem \+ var\(--inset-top\)\);/);
   });
 
-  it("shows its picture to every reader, and Immersive History with the Plus mark", () => {
+  it("shows its pictures to every reader, moving and all, and keeps Plus for the Thread (1.9)", () => {
+    // The owner, 2026-11-06: "I want images on for everyone", always in full
+    // dress. The pan and the more pictures were Immersive History until 1.9;
+    // Plus's history is now the Thread (components/history/EventThread.tsx).
     const page = code("app/(app)/history/[slug]/page.tsx");
     expect(page).toContain("<EventPictures");
     const pictures = code("components/history/EventPictures.tsx");
-    expect(pictures).toContain("<PlusMark");
-    expect(pictures).toContain('upgrade.open("history")');
-    expect(pictures).toContain("usePlusFeatures()");
+    expect(pictures).toContain("<EventPlate picture={picture} pan priority />");
+    expect(pictures).not.toMatch(/PlusMark|upgrade\.open|usePlusFeatures/);
+    expect(code("components/councils/CouncilHero.tsx")).not.toContain("usePlusFeatures");
+    expect(code("components/history/EventThread.tsx")).toContain('upgrade.open("history")');
     expect(existsSync(join(root, "components", "history", "ImmersivePreviewCard.tsx"))).toBe(false);
     expect(existsSync(join(root, "components", "history", "EventHero.tsx"))).toBe(false);
   });

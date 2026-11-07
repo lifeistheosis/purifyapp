@@ -66,8 +66,8 @@ function PlainSteps({ steps }: { steps: ThreadStep[] }) {
   );
 }
 
-/** The steps as a Thread: the line, the years, and the map that follows. */
-function Thread({ steps, home }: { steps: ThreadStep[]; home: ThreadPlace | null }) {
+/** The steps as a Thread: the line, the years, and the map that follows. The paywall's preview shows it too. */
+export function Thread({ steps, home }: { steps: ThreadStep[]; home: ThreadPlace | null }) {
   const [current, setCurrent] = useState(0);
   const rows = useRef<(HTMLLIElement | null)[]>([]);
 

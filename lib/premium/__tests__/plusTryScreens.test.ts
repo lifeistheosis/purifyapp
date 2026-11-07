@@ -202,11 +202,15 @@ describe("each feature's own screen", () => {
     expect(out).not.toContain("<svg viewBox=\"0 0 300 150\"");
   });
 
-  it("the timeline in full dress: Florence's period art, moving, and its further pictures", () => {
+  it("history as a Thread: Florence's steps year by year, under the map that follows them (1.9)", () => {
     const out = preview(TryHistory, "immersive-history");
     expect(out).toContain("The Council of Ferrara–Florence");
-    expect(out).toContain("history-pan");
-    expect(out).toContain(">More pictures</p>");
+    expect(out).toContain("data-event-thread");
+    expect(out).toContain("data-thread-map");
+    expect(out).toContain("The delegation lands at Venice.");
+    expect(out).toContain("8 February 1438 · Venice");
+    // The pictures are every reader's now: the preview no longer sells them.
+    expect(out).not.toContain(">More pictures</p>");
   });
 
   it("profile extras: the card in a frame and a theme, and the frames to try", () => {

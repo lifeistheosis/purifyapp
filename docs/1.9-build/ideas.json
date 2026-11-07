@@ -1179,7 +1179,7 @@
    "title": "History pictures for everyone, not Plus",
    "from": "edgar",
    "asked": "2026-11-06",
-   "status": "approved",
+   "status": "built",
    "decided": "2026-11-06",
    "needsDesign": true,
    "version": null,
@@ -1193,7 +1193,7 @@
    "title": "No plain or full dress switch: always full dress",
    "from": "edgar",
    "asked": "2026-11-06",
-   "status": "approved",
+   "status": "built",
    "decided": "2026-11-06",
    "needsDesign": true,
    "version": null,
@@ -1235,11 +1235,12 @@
    "title": "Plus history is the Thread: each event year by year, like a saint's Timeline",
    "from": "edgar",
    "asked": "2026-11-06",
-   "status": "approved",
+   "status": "built",
    "decided": "2026-11-06",
    "needsDesign": true,
    "version": null,
-   "outcome": null
+   "outcome": null,
+   "note": "Built 2026-11-07 on the 17 events with steps; the paywall row and its Try it are the Thread"
   },
   {
    "id": "e-review-ours",
