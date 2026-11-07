@@ -36,3 +36,39 @@ never make the phone's long-press gesture or its `contextmenu`.
 3. One gap to decide: the long menu had **Copy reference**; the strip's Study
    has the quote and the link but not the reference alone. Add it to Study, or
    leave it to the computer's menu.
+
+## 2. The end of a scroll selects a verse; selecting and highlighting collide
+
+**What he saw.** "The select verse/highlight verse system is colliding and not
+smooth. When scrolling to another verse and letting go my finger on the next
+verse, my finger lands on it, clicks it."
+
+**Cause.** A verse decides for itself what a tap is, on the finger's lift
+(`onWordsTouchEnd` in `components/bible/VerseRow.tsx`): up within 400 ms of
+going down (`LONG_PRESS_MS`) and moved less than 8 px (`SCROLL_SLOP_PX`) is a
+tap, and a tap selects the verse and opens its strip at once (his pick B). Two
+things a phone never calls a tap pass that rule:
+
+- **The touch that stops a glide.** After a swipe the page glides on; a finger
+  put down to stop it and lifted again has not moved, so it is a "tap" on the
+  verse under it. The phone itself knows that touch stopped a scroll and sends
+  no click; the verse does not ask.
+- **A finger held still while the page moves under it.** The rule measures the
+  finger on the screen, not the page, so a page that slid under a resting
+  finger still reads as a tap.
+
+And they collide: such a false tap is remembered as the first of a double tap,
+so a real tap on a verse within 320 ms and 28 px of it is read as the second,
+and the verse is **highlighted** instead of selected.
+
+**Fix planned.** Let the phone say what a tap is, as every native app does:
+the strip opens on the verse's `click`, which the phone does not send after a
+scroll, a glide or a glide's stop, with its own thresholds for the screen.
+Touch keeps only what is the verse's own: the hold, the drag across words, and
+the double tap, which becomes two clicks in time. Failing that, two guards on
+the present rule: a touch that begins while the page is still moving (a scroll
+in the last 100 ms) is the scroll's, and a touch during which the page itself
+moved is too; neither counts towards a double tap. Held by a test of the
+gestures (a glide stopped, a still finger over a moving page, a slow drag, a
+tap, a double tap after a glide's stop) and by the walk, which glides the page
+and lifts a finger on it.
