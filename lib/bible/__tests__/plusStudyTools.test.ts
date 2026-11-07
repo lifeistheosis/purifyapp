@@ -9,20 +9,21 @@ import { crossRefHref, crossRefNumbers, parseCrossRef, previewText } from "@/lib
 import { byMonth, entryFrom, fromThisDay, sortJournal, type JournalEntry } from "@/lib/bible/journal";
 import { wroteWhen } from "@/lib/bible/noteAge";
 
-const NT_NAMES = new Map(BOOKS.filter((b) => b.testament === "NT").map((b) => [b.name, b.slug]));
+const NAMES = new Map(BOOKS.map((b) => [b.name, b.slug]));
 
 describe("cross-references", () => {
   it("reads a reference, a range and a range across chapters", () => {
-    expect(parseCrossRef("John 17:5", NT_NAMES)).toEqual({ book: "john", chapter: 17, verse: 5 });
-    expect(parseCrossRef("1 John 1:1-2", NT_NAMES)).toEqual({ book: "1-john", chapter: 1, verse: 1, endVerse: 2 });
-    expect(parseCrossRef("Romans 8:38–9:2", NT_NAMES)).toEqual({ book: "romans", chapter: 8, verse: 38, endChapter: 9, endVerse: 2 });
+    expect(parseCrossRef("John 17:5", NAMES)).toEqual({ book: "john", chapter: 17, verse: 5 });
+    expect(parseCrossRef("1 John 1:1-2", NAMES)).toEqual({ book: "1-john", chapter: 1, verse: 1, endVerse: 2 });
+    expect(parseCrossRef("Romans 8:38–9:2", NAMES)).toEqual({ book: "romans", chapter: 8, verse: 38, endChapter: 9, endVerse: 2 });
   });
 
-  it("will not place a reference into the Old Testament, whose numbering is the Septuagint's", () => {
-    expect(parseCrossRef("Genesis 1:1", NT_NAMES)).toBeNull();
-    expect(parseCrossRef("Jeremiah 31:31", NT_NAMES)).toBeNull();
-    expect(isCrossRefBook("genesis")).toBe(false);
+  it("places a reference into the Old Testament from 1.9, the data written in the Septuagint's numbering", () => {
+    expect(parseCrossRef("Genesis 1:1", NAMES)).toEqual({ book: "genesis", chapter: 1, verse: 1 });
+    expect(parseCrossRef("Psalms 22:1", NAMES)).toEqual({ book: "psalms", chapter: 22, verse: 1 });
+    expect(isCrossRefBook("genesis")).toBe(true);
     expect(isCrossRefBook("john")).toBe(true);
+    expect(isCrossRefBook("nowhere")).toBe(false);
   });
 
   it("writes the numbers and the link as the reader sees them", () => {
@@ -40,7 +41,7 @@ describe("cross-references", () => {
     expect(previewText("Jesus wept.")).toBe("Jesus wept.");
   });
 
-  it("gives John 1 its references, New Testament only, six at most, each with its words", async () => {
+  it("gives John 1 its references, six at most, each with its words, Genesis 1:1 among them", async () => {
     const refs = await chapterCrossRefs("john", 1);
     const first = refs[1];
     expect(first.length).toBeGreaterThan(0);
@@ -53,10 +54,21 @@ describe("cross-references", () => {
     }
     // John 1:1 is echoed by John 17:5 in the data, and it lands on that verse.
     expect(first.some((r) => r.book === "john" && r.chapter === 17 && r.verse === 5)).toBe(true);
+    // And by Genesis 1:1, which the Old Testament's numbering kept out until 1.9 (the owner's pick A).
+    expect(first.some((r) => r.book === "genesis" && r.chapter === 1 && r.verse === 1)).toBe(true);
   });
 
-  it("offers nothing on an Old Testament chapter", async () => {
-    expect(await chapterCrossRefs("genesis", 1)).toEqual({});
+  it("gives the Old Testament its references where the Septuagint has the verse", async () => {
+    // The KJV's Jeremiah 31:31, the new covenant, is the app's 38:31; Hebrews 10:16 echoes it.
+    const jeremiah = await chapterCrossRefs("jeremiah", 38);
+    expect(jeremiah[31].some((r) => r.book === "hebrews" && r.chapter === 10 && r.verse === 16)).toBe(true);
+    // And a New Testament verse points to it there: Hebrews 8:8 to Jeremiah 38:31.
+    const hebrews = await chapterCrossRefs("hebrews", 8);
+    expect(hebrews[8].some((r) => r.book === "jeremiah" && r.chapter === 38 && r.verse === 31)).toBe(true);
+    // Its words are the app's own verse, not the KJV's.
+    expect(hebrews[8].find((r) => r.book === "jeremiah")?.text).toMatch(/^Behold, the days come, saith the Lord/);
+    // Nothing on a book OpenBible has nothing for.
+    expect(await chapterCrossRefs("tobit", 1)).toEqual({});
   });
 });
 

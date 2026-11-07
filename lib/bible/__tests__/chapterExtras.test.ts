@@ -72,7 +72,7 @@ describe("the Greek beside a chapter", () => {
 });
 
 describe("cross-references", () => {
-  it("are a file for a New Testament chapter, and the page is told only which verses have them", async () => {
+  it("are a file for a chapter, and the page is told only which verses have them", async () => {
     const refs = await chapterCrossRefFile("john", 1);
     expect(refs).not.toBeNull();
     const verses = await crossRefVerses("john", 1);
@@ -83,10 +83,15 @@ describe("cross-references", () => {
     expect(bytes(verses)).toBeLessThan(bytes(refs) / 20);
   });
 
-  it("are not offered for the Old Testament, which is numbered differently", async () => {
-    expect(await chapterCrossRefFile("genesis", 1)).toBeNull();
-    expect(await crossRefVerses("genesis", 1)).toEqual([]);
-    expect((await crossRefFiles()).every((f) => f.book !== "genesis")).toBe(true);
+  it("are offered in the Old Testament from 1.9, in the Septuagint's numbering, and on no book OpenBible has nothing for", async () => {
+    // Psalm 22 is the KJV's 23: "The Lord tends me as a shepherd" is echoed by John 10:11.
+    const psalm = await chapterCrossRefFile("psalms", 22);
+    expect(psalm?.[1].some((r) => r.book === "john" && r.chapter === 10 && r.verse === 11)).toBe(true);
+    expect(await crossRefVerses("genesis", 1)).toContain(1);
+    const files = await crossRefFiles();
+    expect(files.some((f) => f.book === "genesis")).toBe(true);
+    expect(files.some((f) => f.book === "psalms")).toBe(true);
+    expect(files.some((f) => f.book === "tobit")).toBe(false);
   }, 120_000);
 });
 

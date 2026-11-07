@@ -10,15 +10,17 @@ export type { CrossRefItem } from "./crossRefShape";
  * Cross-references for one chapter, for the Plus reader (2026-09-30).
  *
  * The data is OpenBible.info's (CC BY, scripts/cr/cross_references.txt, built
- * into data/bible/cross-refs), ranked by readers' votes. It is numbered as
- * the King James Version is. Purify's New Testament is the King James text
- * and numbered the same, so a reference in it lands on the right verse.
- * Purify's Old Testament is the Septuagint in Brenton's English, numbered as
- * the Septuagint is: the KJV's Jeremiah 31:31 is Purify's Jeremiah 38:31, the
- * commandments run in another order in Exodus 20, Daniel 3 carries the Song
- * of the Three. A KJV-numbered reference into it would open the wrong verse,
- * so until a numbering map exists this is the New Testament to the New
- * Testament only, and a reference that cannot be placed exactly is left out.
+ * into data/bible/cross-refs by scripts/ingest-cross-refs.mjs), ranked by
+ * readers' votes. OpenBible numbers every book as the King James Version
+ * does; the app's Old Testament is the Septuagint in Brenton's English,
+ * numbered as the Septuagint is (the KJV's Jeremiah 31:31 is the app's
+ * 38:31, its Psalm 23 the app's 22, Daniel 3 carries the Song of the Three).
+ * From 1.9 (item 22 of docs/1.9-build/PLAN.md, the owner's pick "the Old
+ * Testament in the Septuagint") the data is written in the app's numbering:
+ * each Old Testament verse, the one a reference is on and the one it points
+ * to, placed through the verse map (data/bible/kjv-to-lxx.json). A verse the
+ * map cannot place surely is left out, so a reference never opens a
+ * neighbour. Until 1.9 this was the New Testament to the New Testament only.
  *
  * At most SIX per verse, the most-voted first, each with the words of the
  * verse it points to so the reader can see the echo without leaving.
@@ -26,13 +28,12 @@ export type { CrossRefItem } from "./crossRefShape";
 
 const PER_VERSE = 6;
 
-const NT = new Set(BOOKS.filter((b) => b.testament === "NT").map((b) => b.slug));
+/** Book display name ("1 John", "Psalms") to slug. */
+const SLUG_BY_NAME = new Map(BOOKS.map((b) => [b.name, b.slug]));
 
-/** Book display name ("1 John") to slug, for the New Testament. */
-const SLUG_BY_NAME = new Map(BOOKS.filter((b) => NT.has(b.slug)).map((b) => [b.name, b.slug]));
-
+/** Any of the app's books: a book OpenBible has nothing on (the deuterocanon) simply has no file. */
 export function isCrossRefBook(slug: string): boolean {
-  return NT.has(slug);
+  return Boolean(getBook(slug));
 }
 
 export async function chapterCrossRefs(

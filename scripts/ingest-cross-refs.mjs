@@ -4,10 +4,21 @@
 //   shape: { "<verseN>": [{ display: "John 1:1-3", votes: 57 }, ...] }
 // Top 8 refs per verse, sorted by vote count desc.
 //
-// Limitations: Psalms refs skipped (TSK uses Hebrew/MT numbering; our Brenton uses
-// LXX numbering - chapters differ by one in the middle range). Deuterocanon not in TSK.
+// Numbered as the app numbers its Bible (1.9). OpenBible numbers every book as
+// the King James Version does; the app's Old Testament is the Septuagint in
+// Brenton's English, numbered otherwise (the KJV's Jeremiah 31:31 is the
+// app's 38:31, its Psalm 23 the app's 22). Each Old Testament reference, the
+// verse it is on and the verse it points to, is placed through the verse map
+// (data/bible/kjv-to-lxx.json, scripts/bibles/verse-map.mjs); one the app's
+// Septuagint does not have is left out, never placed on a neighbour. The
+// Psalms are in now: until 1.9 they were left out for their numbering. Two KJV
+// verses Brenton holds in one give that verse both lists, each reference once
+// at its higher count. The New Testament is numbered alike in both.
+//
+// No deuterocanon: OpenBible's list has none.
 
 import fs from "node:fs/promises";
+import { readFileSync } from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 
@@ -17,6 +28,22 @@ const TSV = path.join(__dirname, "cr", "cross_references.txt");
 const OUT_DIR = path.join(ROOT, "data", "bible", "cross-refs");
 
 const TOP_N = 8;
+
+/** The KJV's Old Testament numbering to the app's (scripts/bibles/verse-map.mjs). */
+const VERSE_MAP = JSON.parse(readFileSync(path.join(ROOT, "data", "bible", "kjv-to-lxx.json"), "utf8")).books;
+const MISSING = Object.fromEntries(Object.entries(VERSE_MAP).map(([slug, m]) => [slug, new Set(m.missing)]));
+
+/** Where a KJV-numbered verse is in the app: its own number in the New Testament; null when the app has none. */
+function place(slug, chapter, verse) {
+  const map = VERSE_MAP[slug];
+  if (!map) return { chapter, verse };
+  const key = `${chapter}:${verse}`;
+  if (MISSING[slug].has(key)) return null;
+  const to = map.moved[key];
+  if (!to) return { chapter, verse };
+  const [c, v] = to.split(":").map(Number);
+  return { chapter: c, verse: v };
+}
 
 // OSIS abbreviation -> [slug, displayName]
 const MAP = {
@@ -38,7 +65,7 @@ const MAP = {
   Neh: ["nehemiah", "Nehemiah"],
   Esth: ["esther", "Esther"],
   Job: ["job", "Job"],
-  // Ps intentionally omitted - numbering mismatch with Brenton LXX
+  Ps: ["psalms", "Psalms"],
   Prov: ["proverbs", "Proverbs"],
   Eccl: ["ecclesiastes", "Ecclesiastes"],
   Song: ["song-of-solomon", "Song of Solomon"],
@@ -96,27 +123,22 @@ function parseRef(s) {
 }
 
 function formatToVerse(toStr) {
-  // Single "Book.C.V" or range "Book.C.V-Book.C.V"
+  // Single "Book.C.V" or range "Book.C.V-Book.C.V", placed in the app's numbering.
   const parts = toStr.split("-");
   const a = parseRef(parts[0]);
   if (!a || !MAP[a.book]) return null;
-  const [, displayBookA] = MAP[a.book];
-
-  if (parts.length === 1) {
-    return `${displayBookA} ${a.chapter}:${a.verse}`;
-  }
+  const [slugA, displayBookA] = MAP[a.book];
+  const start = place(slugA, a.chapter, a.verse);
+  if (!start) return null;
+  const one = `${displayBookA} ${start.chapter}:${start.verse}`;
+  if (parts.length === 1) return one;
   const b = parseRef(parts[1]);
-  if (!b) return null;
-  if (a.book === b.book) {
-    if (a.chapter === b.chapter) {
-      if (a.verse === b.verse) return `${displayBookA} ${a.chapter}:${a.verse}`;
-      return `${displayBookA} ${a.chapter}:${a.verse}-${b.verse}`;
-    }
-    return `${displayBookA} ${a.chapter}:${a.verse}–${b.chapter}:${b.verse}`;
-  }
-  const mb = MAP[b.book];
-  if (!mb) return `${displayBookA} ${a.chapter}:${a.verse}+`;
-  return `${displayBookA} ${a.chapter}:${a.verse} – ${mb[1]} ${b.chapter}:${b.verse}`;
+  if (!b || b.book !== a.book) return one;
+  const end = place(slugA, b.chapter, b.verse);
+  // A range the app's Septuagint ends otherwise, or orders otherwise, is its first verse.
+  if (!end || end.chapter < start.chapter || (end.chapter === start.chapter && end.verse <= start.verse)) return one;
+  if (end.chapter === start.chapter) return `${one}-${end.verse}`;
+  return `${one}–${end.chapter}:${end.verse}`;
 }
 
 async function main() {
@@ -138,18 +160,25 @@ async function main() {
     if (!display) { skipped++; continue; }
     const votes = Number(votesStr) || 0;
     const [slug] = m;
+    const at = place(slug, fromRef.chapter, fromRef.verse);
+    if (!at) { skipped++; continue; }
+    // A reference that begins at the verse it is on says nothing the reader is not reading.
+    if (display.startsWith(`${m[1]} ${at.chapter}:${at.verse}`) && !/^\d/.test(display.slice(`${m[1]} ${at.chapter}:${at.verse}`.length))) { skipped++; continue; }
     let bySlug = bucket.get(slug);
     if (!bySlug) { bySlug = new Map(); bucket.set(slug, bySlug); }
-    let byCh = bySlug.get(fromRef.chapter);
-    if (!byCh) { byCh = new Map(); bySlug.set(fromRef.chapter, byCh); }
-    let arr = byCh.get(fromRef.verse);
-    if (!arr) { arr = []; byCh.set(fromRef.verse, arr); }
-    arr.push({ display, votes });
+    let byCh = bySlug.get(at.chapter);
+    if (!byCh) { byCh = new Map(); bySlug.set(at.chapter, byCh); }
+    let arr = byCh.get(at.verse);
+    if (!arr) { arr = []; byCh.set(at.verse, arr); }
+    const same = arr.find((x) => x.display === display);
+    if (same) same.votes = Math.max(same.votes, votes);
+    else arr.push({ display, votes });
     parsed++;
   }
 
-  console.log(`Parsed ${parsed} refs, skipped ${skipped} (psalms + non-canonical sources)`);
+  console.log(`Parsed ${parsed} refs, skipped ${skipped} (verses the app's Septuagint does not have, and non-canonical sources)`);
 
+  await fs.rm(OUT_DIR, { recursive: true, force: true });
   let files = 0;
   for (const [slug, bySlug] of bucket) {
     const dir = path.join(OUT_DIR, slug);

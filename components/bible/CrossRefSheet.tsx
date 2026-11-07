@@ -58,7 +58,7 @@ export function CrossRefList({ items, onLeave }: { items: CrossRefItem[]; onLeav
               <p className="font-sans text-detail font-semibold text-premium-ink group-hover:text-premium-bright">
                 {t(`bible.books.${ref.book}`)} {crossRefNumbers(ref)}
               </p>
-              <p className="mt-1 font-serif text-body leading-[1.6] text-paper/80">{ref.text}</p>
+              {ref.text ? <p className="mt-1 font-serif text-body leading-[1.6] text-paper/80">{ref.text}</p> : null}
             </Link>
           </li>
         ))}

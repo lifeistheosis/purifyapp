@@ -2,6 +2,7 @@ import type { ChapterInterlinear } from "./chapterExtras";
 import type { CrossRefItem } from "./crossRefShape";
 import type { ChapterCommentary } from "./load";
 import type { StrongsEntry } from "./strongs";
+import { booksPointedTo, unpackCrossRefs, type CrossRefWords, type PackedCrossRefs } from "./crossRefPack";
 import { unpackInterlinear, type PackedInterlinear } from "./interlinearPack";
 
 /**
@@ -63,9 +64,19 @@ export function loadStrongs(): Promise<Record<string, StrongsEntry> | null> {
   return read<Record<string, StrongsEntry>>(STRONGS, true);
 }
 
-/** A chapter's cross-references by verse, or null. */
-export function loadChapterCrossRefs(book: string, chapter: number): Promise<Record<number, CrossRefItem[]> | null> {
-  return read<Record<number, CrossRefItem[]>>(`/bible-data/crossrefs/${book}/${chapter}.json`);
+/**
+ * A chapter's cross-references by verse, each with the words of the verse it
+ * points to, or null. From 1.9 the chapter's file holds the references only
+ * and each book's verses' words are a file of their own (lib/bible/crossRefPack.ts):
+ * the words of the books pointed into are read beside it. A reference whose
+ * book's words could not be read keeps its place, without its words.
+ */
+export async function loadChapterCrossRefs(book: string, chapter: number): Promise<Record<number, CrossRefItem[]> | null> {
+  const packed = await read<PackedCrossRefs>(`/bible-data/crossrefs/${book}/${chapter}.json`);
+  if (!packed) return null;
+  const books = booksPointedTo(packed);
+  const words = new Map(await Promise.all(books.map(async (b) => [b, await read<CrossRefWords>(`/bible-data/crossref-words/${b}.json`)] as const)));
+  return unpackCrossRefs(packed, (b) => words.get(b) ?? null);
 }
 
 /** The Fathers on a chapter by verse, or null. */

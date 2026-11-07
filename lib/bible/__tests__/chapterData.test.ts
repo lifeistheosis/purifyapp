@@ -46,6 +46,21 @@ describe("a chapter's files", () => {
     ]);
   });
 
+  it("read a chapter's cross-references with the words of the books they point into, each book once (1.9)", async () => {
+    answer = (url) =>
+      url.startsWith("/bible-data/crossrefs/")
+        ? { ok: true, body: { 1: [["genesis", 1, 1], ["john", 17, 5]], 3: [["genesis", 1, 1, 3]] } }
+        : url === "/bible-data/crossref-words/genesis.json"
+          ? { ok: true, body: { "1:1": "In the beginning God made the heaven and the earth." } }
+          : "offline";
+    const refs = await loadChapterCrossRefs("john", 1);
+    expect(asked).toEqual(["/bible-data/crossrefs/john/1.json", "/bible-data/crossref-words/genesis.json", "/bible-data/crossref-words/john.json"]);
+    expect(refs?.[1][0]).toEqual({ book: "genesis", chapter: 1, verse: 1, text: "In the beginning God made the heaven and the earth." });
+    expect(refs?.[3][0]).toMatchObject({ book: "genesis", chapter: 1, verse: 1, endVerse: 3 });
+    // A book whose words could not be had keeps its references, without words.
+    expect(refs?.[1][1]).toEqual({ book: "john", chapter: 17, verse: 5, text: "" });
+  });
+
   it("are fetched once, however many verses ask", async () => {
     const [a, b] = await Promise.all([loadInterlinear("john", 1), loadInterlinear("john", 1)]);
     await loadInterlinear("john", 1);

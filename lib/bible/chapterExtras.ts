@@ -2,6 +2,7 @@ import "server-only";
 
 import { allChapterParams, getBook } from "./books";
 import { chapterCrossRefs, isCrossRefBook } from "./crossRefs";
+import type { CrossRefWords } from "./crossRefPack";
 import type { CrossRefItem } from "./crossRefShape";
 import { greekAlignment, numberedAsEnglish } from "./greekText";
 import { interlinearAvailable } from "./interlinearBooks";
@@ -74,7 +75,7 @@ export async function chapterInterlinear(book: string, chapter: number): Promise
 // they point to. Asked once, answered from here after.
 const crossRefsAsked = new Map<string, Promise<Record<number, CrossRefItem[]> | null>>();
 
-/** Cross-references for a chapter (New Testament only), or null when it has none. */
+/** Cross-references for a chapter (from 1.9 the Old Testament too, in the Septuagint's numbering), or null when it has none. */
 export function chapterCrossRefFile(book: string, chapter: number): Promise<Record<number, CrossRefItem[]> | null> {
   if (!isCrossRefBook(book)) return Promise.resolve(null);
   const key = `${book}/${chapter}`;
@@ -84,6 +85,42 @@ export function chapterCrossRefFile(book: string, chapter: number): Promise<Reco
     crossRefsAsked.set(key, asked);
   }
   return asked;
+}
+
+let wordsAsked: Promise<Map<string, CrossRefWords>> | null = null;
+
+/**
+ * The words of every verse a cross-reference points to, by book: each verse
+ * kept once in its book's file, however many chapters point to it
+ * (lib/bible/crossRefPack.ts says why). Read from the chapters' references,
+ * once for a build.
+ */
+function allCrossRefWords(): Promise<Map<string, CrossRefWords>> {
+  wordsAsked ??= (async () => {
+    const byBook = new Map<string, CrossRefWords>();
+    for (const { book, chapter } of allChapterParams()) {
+      const refs = await chapterCrossRefFile(book, Number(chapter));
+      if (!refs) continue;
+      for (const list of Object.values(refs)) {
+        for (const r of list) {
+          const words = byBook.get(r.book) ?? byBook.set(r.book, {}).get(r.book)!;
+          words[`${r.chapter}:${r.verse}`] = r.text;
+        }
+      }
+    }
+    return byBook;
+  })();
+  return wordsAsked;
+}
+
+/** The words of a book's verses that cross-references point to, or null when none points into it. */
+export async function crossRefWordsFile(book: string): Promise<CrossRefWords | null> {
+  return (await allCrossRefWords()).get(book) ?? null;
+}
+
+/** Every book a cross-reference points into: one file of words each. */
+export async function crossRefWordsFiles(): Promise<{ file: string }[]> {
+  return [...(await allCrossRefWords()).keys()].map((book) => ({ file: `${book}.json` }));
 }
 
 /** The verses of a chapter that have cross-references: what the page needs to draw the mark. */
