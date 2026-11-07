@@ -20,6 +20,7 @@ import { hrefOf, rangesOf, startReadingsFlow, type FlowItem } from "@/lib/readin
 import { scrollBehavior } from "@/lib/ui/motion";
 
 import { BibleSearch } from "./BibleSearch";
+import { SavedBookMark } from "./SavedBookMark";
 
 /**
  * The books sheet (1.8, the owner's pick A of r3-20, "Straight into the
@@ -193,8 +194,10 @@ function BookRow({
       >
         {/* min-w-0 so a long name wraps inside the row and does not push the
             note off its end. */}
-        <span className="min-w-0 font-heading text-[16px] font-semibold leading-tight text-paper">
-          {t(`bible.books.${book.slug}`)}
+        <span className="inline-flex min-w-0 items-center gap-2 font-heading text-[16px] font-semibold leading-tight text-paper">
+          <span className="min-w-0">{t(`bible.books.${book.slug}`)}</span>
+          {/* Saved to listen offline (1.9). */}
+          <SavedBookMark book={book.slug} />
         </span>
         <span className={cn("inline-flex shrink-0 items-center gap-1.5 font-sans text-detail tabular-nums", open ? "text-paper/70" : "text-paper/45")}>
           {book.chapters} {t("bible.chAbbrev")}

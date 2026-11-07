@@ -619,11 +619,12 @@
    "title": "Saved books marked in the Bible's book list",
    "from": "claude",
    "asked": "2026-11-06",
-   "status": "approved",
+   "status": "built",
    "decided": "2026-11-06",
    "needsDesign": false,
    "version": null,
-   "outcome": null
+   "outcome": null,
+   "note": "Built 2026-11-07: a book with any chapter saved to listen offline wears the player's saved mark, small (a check in a ring), in the books sheet and on the Bible tab, in the apps only (components/bible/SavedBookMark.tsx); its label says the book is saved to listen offline"
   },
   {
    "id": "s3-08",

@@ -98,3 +98,15 @@ describe("taking it off again", () => {
     expect(Object.keys(savedChapters())).toEqual(["mark/8"]);
   });
 });
+
+describe("the books with a reading saved (1.9, marked in the books list)", () => {
+  it("are every book with at least one chapter on the phone, and the same set until that changes", async () => {
+    const { savedBooks } = await import("@/lib/readAloud/offline");
+    store.set("purify:readAloud.saved", JSON.stringify({ "john/1": { mp3: "a", json: "b", bytes: 1 }, "john/2": { mp3: "a", json: "b", bytes: 1 }, "mark/4": { mp3: "a", json: "b", bytes: 1 } }));
+    const first = savedBooks();
+    expect([...first].sort()).toEqual(["john", "mark"]);
+    expect(savedBooks()).toBe(first);
+    store.set("purify:readAloud.saved", JSON.stringify({}));
+    expect(savedBooks().size).toBe(0);
+  });
+});

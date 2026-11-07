@@ -5,6 +5,8 @@ import { NAMED_PASSAGES, type BookCategory } from "@/lib/bible/books";
 import { useTranslate } from "@/components/i18n/MessagesProvider";
 import { hasCommentary } from "@/lib/bible/commentary-index";
 
+import { SavedBookMark } from "./SavedBookMark";
+
 /**
  * One testament's books, grouped by category, in the house library
  * language: book names in Lora Bold, the front page's heading face (the
@@ -59,6 +61,8 @@ export function CategorizedBookList({
                         className="inline-block h-1.5 w-1.5 shrink-0 rounded-full bg-gold"
                       />
                     )}
+                    {/* Saved to listen offline (1.9). */}
+                    <SavedBookMark book={b.slug} className="ms-auto" />
                   </span>
                   <span className="mt-1 block font-sans text-eyebrow text-paper/55 transition-colors group-hover:text-paper/70">
                     {tn("bible.chapterCount", b.chapters)}

@@ -16,6 +16,8 @@
  * Nothing here decides who may save: the screens ask Plus first.
  */
 
+import { useSyncExternalStore } from "react";
+
 const KEY = "purify:readAloud.saved";
 const EVENT = "purify:readAloud.saved";
 
@@ -52,6 +54,26 @@ export function savedChapters(): Record<string, Saved> {
 export function onSavedChange(changed: () => void): () => void {
   window.addEventListener(EVENT, changed);
   return () => window.removeEventListener(EVENT, changed);
+}
+
+const NO_BOOKS: ReadonlySet<string> = new Set();
+let booksKey: string | null = null;
+let booksSet: ReadonlySet<string> = NO_BOOKS;
+
+/** The books with a reading saved on the phone, at least one chapter of them (1.9: marked in the books list). */
+export function savedBooks(): ReadonlySet<string> {
+  if (typeof window === "undefined") return NO_BOOKS;
+  const keys = Object.keys(read()).sort().join(",");
+  if (keys !== booksKey) {
+    booksKey = keys;
+    booksSet = new Set(keys ? keys.split(",").map((k) => k.split("/")[0]) : []);
+  }
+  return booksSet;
+}
+
+/** The saved books, kept in step with the phone: empty on the website, where nothing is saved. */
+export function useSavedBooks(): ReadonlySet<string> {
+  return useSyncExternalStore(onSavedChange, savedBooks, () => NO_BOOKS);
 }
 
 /** How much the saved recordings take, in bytes. */
