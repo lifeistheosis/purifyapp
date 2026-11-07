@@ -1285,6 +1285,19 @@
    "needsDesign": false,
    "version": null,
    "outcome": null
+  },
+  {
+   "id": "e-ghost-highlight",
+   "section": "Study",
+   "kind": "idea",
+   "title": "The selected verse as a ghost highlight, not a box",
+   "from": "edgar",
+   "asked": "2026-11-07",
+   "status": "built",
+   "decided": "2026-11-07",
+   "needsDesign": true,
+   "version": "his: that's clean",
+   "outcome": null
   }
  ]
 }
