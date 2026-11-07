@@ -1,7 +1,9 @@
 # 1.9 brainstorm
 
 Brainstorm mode is on since 2026-11-06: notes and plans only. Nothing here is
-built until Edgar says to start.
+built until Edgar says to start. He said start on 2026-11-07 and the build day
+followed (`PLAN.md`); on the evening of 2026-11-07, with test build 88 on his
+phone, he turned brainstorm mode on again: notes and plans only once more.
 
 The repository is public: no figures, no readers' names, no money in this file.
 
