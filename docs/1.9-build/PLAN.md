@@ -48,7 +48,7 @@ On the 1.9 branch:
 | # | Item | Status |
 |---|---|---|
 | 14 | The verse system: tap a verse for one bar (colours, copy, share, image, note, Greek, compare, cross-references), tap a word for its Greek, double tap to highlight; the bookmark star goes (flag 4) | done: his pick B, the strip under the verse; Compare is its own item (21b) |
-| 15 | Candlelight: the lines being read lit, a soft glow, dark edges; on at Vespers; palettes of the season; the earned palettes shown as goals (flag 1) | ready |
+| 15 | Candlelight: the lines being read lit, a soft glow, dark edges; on at Vespers; palettes of the season; the earned palettes shown as goals (flag 1) | his A+B done (the lit line, the glow, the dark edges); next: on at Vespers, the season's palettes, the earned palettes as goals |
 | 16 | Listening: the card at rest, the small pill while scrolling (bug 5) | ready |
 | 17 | Plans page: Continue, the season's plan, picture tiles | ready |
 | 18 | The Florilegium revamped: collections and sync on top, ready collections below (flag 2) | ready |

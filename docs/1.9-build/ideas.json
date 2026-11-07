@@ -323,12 +323,12 @@
    "title": "Candlelight is almost the free palettes",
    "from": "claude",
    "asked": "2026-11-06",
-   "status": "approved",
+   "status": "built",
    "decided": "2026-11-06",
    "needsDesign": false,
    "version": null,
    "outcome": null,
-   "note": "Judged against his rules"
+   "note": "Judged against his rules. Answered by s2-01 (his A+B)"
   },
   {
    "id": "flag-2",
@@ -393,11 +393,12 @@
    "title": "Give Candlelight its own look again without gold",
    "from": "claude",
    "asked": "2026-11-06",
-   "status": "picked",
+   "status": "built",
    "decided": "2026-11-06",
    "needsDesign": true,
    "version": "A+B",
-   "outcome": null
+   "outcome": null,
+   "note": "Built 2026-11-07: the verse at the reading line lit, the others at 0.58, a soft light where the eye rests, a darker ground (#050505). A slip on the way: one commit said the suite was green while one test failed; the next commit fixed it, and a test now holds the chip swatches to the palettes"
   },
   {
    "id": "s2-02",
