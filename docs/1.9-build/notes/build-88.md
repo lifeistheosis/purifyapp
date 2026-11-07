@@ -72,3 +72,57 @@ moved is too; neither counts towards a double tap. Held by a test of the
 gestures (a glide stopped, a still finger over a moving page, a slow drag, a
 tap, a double tap after a glide's stop) and by the walk, which glides the page
 and lifts a finger on it.
+
+## 3. The note: refine its design and the way it works
+
+**What he saw.** Note, from the verse strip on John 1:47, opens a box under
+the verse: a field with a light square frame inside a rounded box, a resize
+grip in its corner, "Esc to close" under it, then Cancel and Save, with the
+keyboard over the lower half of the screen. He asked for the note's design
+and experience to be refined.
+
+**What is wrong with it** (`components/bible/VerseRow.tsx`, the note editor
+and the saved note):
+- The computer's keyboard hints on a phone: "Esc to close", and once there are
+  words "⌘+Enter to save · Esc to cancel" (`bible.escToClose`,
+  `bible.noteSaveHint`). A phone has neither key.
+- Two frames: the field's focus ring is drawn square inside the box's round
+  corners, and the field keeps a desktop resize grip.
+- It does not say which verse it is for, and the verse loses its selection as
+  the box opens, so the box floats under a verse with no mark.
+- It is written in the interface's sans, not the page's serif, though it is
+  writing about the words above it.
+- Closing it drops what was typed; a Delete hides among Cancel and Save.
+- A saved note stands under its verse as a grey box headed "Your note", in
+  sans, unlike anything else on the page.
+- Seen in the same pictures: the strip itself lies over the first lines of the
+  next verse (verse 48's opening is under it), so a reader cannot see what it
+  covers while it is up.
+
+**Three ways** (drawn over the real app's John 1, at a phone's size):
+- **A, a note sheet (Claude's pick).** Note opens a sheet over the page, on the
+  keyboard: John 1:47 with a close at the left and Save at the right, the
+  verse quoted under it in the page's serif, a hairline, then the note written
+  in the serif with no frame at all, and one quiet line, "Kept with the verse,
+  and in your journal". The same sheet as Study, so the strip's two sheets
+  agree; the keyboard never covers Save; nothing on the page moves; what was
+  typed is kept if it is closed, and opening it again finds it.
+- **B, in place, refined.** It stays under the verse, as now, but as one soft
+  card joined to it with a rule down its edge, "Your note" and Done, the note
+  in the serif, saved as it is written (no Save or Cancel); the page keeps the
+  card above the keyboard.
+- **C, a page of its own,** as Community's new post: "Note on John 1:47" at the
+  head, the verse, then the note across the whole page, Save at the thumb on
+  the keyboard. The most room, for long reflections; the heaviest for a quick
+  line.
+
+**The saved note, for any of the three:** under its verse as a margin note, a
+thin rule at its edge, the note in the serif's italic, "Your note · 2 hours
+ago" under it; a tap opens it to edit (and to delete, in the sheet).
+
+**Either way:** no keyboard hints on a phone or tablet (the computer keeps
+them), no resize grip, the draft kept, the verse kept selected while its note
+is open. And for the strip over the next verse: open it in the page's flow,
+the verses below sliding down as it opens and back as it closes, so it covers
+nothing; or keep it over the page and let a scroll put it away, as now. His
+word on that too.
