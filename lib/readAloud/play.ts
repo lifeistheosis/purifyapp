@@ -1,10 +1,11 @@
 "use client";
 
-import { play, setLoopMode, setTrack } from "@/lib/prayers/persistentAudioStore";
+import { play, seek, setLoopMode, setTrack } from "@/lib/prayers/persistentAudioStore";
 import { readSpeed } from "@/lib/player/speed";
 
 import { readAloudManifest, readAloudSrc, verseCaptions } from "./chapters";
 import { readAloudCover } from "./covers";
+import { startOf, watchPlaces } from "./resume";
 
 /**
  * Load a chapter's reading into the app's one player and play it (1.7):
@@ -15,6 +16,10 @@ import { readAloudCover } from "./covers";
  *
  * Its cover is an icon of the book's saint or prophet, and the line under
  * the title names them (lib/readAloud/covers.ts).
+ *
+ * From 1.9 it begins where the reader stopped in that chapter, kept for each
+ * book however the reading was stopped, the lock screen too
+ * (lib/readAloud/resume.ts).
  */
 export async function startReading(book: string, chapter: number, title: string, t: (key: string) => string): Promise<void> {
   const cover = readAloudCover(book);
@@ -37,6 +42,10 @@ export async function startReading(book: string, chapter: number, title: string,
     captions: manifest ? verseCaptions(manifest) : undefined,
     rate: readSpeed(),
   });
+  watchPlaces();
+  // Set before it has loaded, this is where the recording begins once it has.
+  const at = startOf(book, chapter);
+  if (at > 0) seek(at);
   setLoopMode("off");
   play();
 }

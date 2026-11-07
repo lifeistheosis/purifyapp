@@ -632,11 +632,12 @@
    "title": "Resume where you stopped, per book, from the lock screen too",
    "from": "claude",
    "asked": "2026-11-06",
-   "status": "approved",
+   "status": "built",
    "decided": "2026-11-06",
    "needsDesign": false,
    "version": null,
-   "outcome": null
+   "outcome": null,
+   "note": "Built 2026-11-07: lib/readAloud/resume.ts watches the one player, whoever pauses it (the lock screen, a headset, the sleep timer), and keeps one place for each book; Listen on that chapter begins there. Not kept in the first 10 seconds, let go in the last 15, forgotten after two months. Walked: John 1 with a place at 0:12 began at 0:12"
   },
   {
    "id": "s3-09",
@@ -658,11 +659,12 @@
    "title": "Speed control for the voice, if missing",
    "from": "claude",
    "asked": "2026-11-06",
-   "status": "approved",
+   "status": "built",
    "decided": "2026-11-06",
    "needsDesign": false,
    "version": null,
-   "outcome": null
+   "outcome": null,
+   "note": "Found built on 2026-11-07: Speed is in Now Playing for a reading since 1.8 (lib/player/speed.ts), 0.5 to 2, kept on the device"
   },
   {
    "id": "s4-01",
@@ -788,11 +790,12 @@
    "title": "One copy fix",
    "from": "claude",
    "asked": "2026-11-06",
-   "status": "approved",
+   "status": "built",
    "decided": "2026-11-06",
    "needsDesign": false,
    "version": null,
-   "outcome": null
+   "outcome": null,
+   "note": "Found built on 2026-11-07: plus.remember.title names \"Remember the verse\" in all 21 languages since 2875ae2f"
   },
   {
    "id": "s5-01",
@@ -801,11 +804,12 @@
    "title": "Fix \"Tap the star on a verse\" (bug 1)",
    "from": "claude",
    "asked": "2026-11-06",
-   "status": "approved",
+   "status": "built",
    "decided": "2026-11-06",
    "needsDesign": false,
    "version": null,
-   "outcome": null
+   "outcome": null,
+   "note": "Found built on 2026-11-07: saved.emptyLine reads \"Bookmark a verse to keep it here.\" in all 21 languages since 2875ae2f; nothing says star"
   },
   {
    "id": "s5-02",
