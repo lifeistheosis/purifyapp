@@ -60,7 +60,7 @@ On the 1.9 branch:
 | # | Item | Status |
 |---|---|---|
 | 21b | Compare, in the verse strip's Study: the verse in each Bible the app may show, and its Greek (Plus; licensed translations only where their terms allow) | ready |
-| 21 | Public-domain Bibles: Romanian, Russian, Greek, Serbian, Arabic and Spanish first, then every app language; each licence proven; picking one offers the app in that language, with Never ask again | now: the translations and their licences |
+| 21 | Public-domain Bibles: Romanian, Russian, Greek, Serbian, Arabic and Spanish first, then every app language; each licence proven; picking one offers the app in that language, with Never ask again. His word of 2026-11-07: each Bible is downloaded when the reader picks it, as other Bible apps do; none is carried in the app | now: the download system; the texts need the eBible host allowed here |
 | 22 | One verse-number map, for the new Bibles and the Old Testament cross-references | ready |
 | 23 | Cross-references into the Old Testament, in the Septuagint (Genesis 1:1 back on John 1:1) | ready, after 22 |
 | 24 | Tap an English word to study its Greek | done |

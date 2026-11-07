@@ -1377,6 +1377,20 @@
    "version": "his pick: a map that follows, and open a quote's source (not one saint across events, not listen)",
    "outcome": null,
    "note": "2026-11-07: the map that follows built; 27 more of the history quotes open their source (now 45 of 91), every link proven word for word; the other 45 quote texts the app does not carry (historians, chronicles) or carries in another translation"
+  },
+  {
+   "id": "e-bible-downloads",
+   "section": "Reading",
+   "kind": "idea",
+   "title": "Each Bible is downloaded when the reader picks it, as other Bible apps do; the app carries none of the new ones",
+   "from": "edgar",
+   "asked": "2026-11-07",
+   "status": "approved",
+   "decided": "2026-11-07",
+   "needsDesign": true,
+   "version": null,
+   "outcome": null,
+   "note": "His words: \"make it so that the user picks to download the selected Bible they pick. (other Bible apps do this we need this) instead of the app including all of them downloaded already\". Settles the size question for the new Bibles (217.7 of 240 MB after the full optimize)"
   }
  ]
 }
