@@ -11,6 +11,8 @@ import { Share } from "@/components/ui/icons/Share";
 import { Sheet } from "@/components/ui/Sheet";
 import { colorById } from "@/lib/bible/highlightPalette";
 import { createLiftGuard } from "@/lib/ui/liftGuard";
+import { shareText } from "@/lib/share/shareImage";
+import { copyText } from "@/lib/ui/copyText";
 import { setOverlayOpen } from "@/lib/ui/overlay";
 
 import { HighlightNamesSheet } from "./HighlightNamesSheet";
@@ -134,22 +136,16 @@ export function VerseStrip({
     fn();
   };
 
+  // The phone's own share sheet in the apps (the Share plugin: their WebView
+  // has no Web Share API, so asking navigator.share there found nothing, and
+  // Share fell to a silent copy on Android and to nothing on an iPhone), the
+  // Web Share API in a browser, and with neither the words and the link
+  // copied, as copyText copies on every platform (lib/ui/copyText.ts).
   async function share() {
     const text = `“${verseText}” ${reference}`;
-    try {
-      if (typeof navigator !== "undefined" && typeof navigator.share === "function") {
-        await navigator.share({ title: reference, text, url: link });
-        onClose();
-        return;
-      }
-    } catch (e) {
-      if (e instanceof Error && e.name === "AbortError") return;
-    }
-    try {
-      await navigator.clipboard.writeText(`${text}\n${link}`);
-    } catch {
-      /* nothing to do: the strip stays for another try */
-    }
+    const outcome = await shareText(reference, text, link);
+    if (outcome === "dismissed") return;
+    if (outcome === "failed") await copyText(`${text}\n${link}`);
     onClose();
   }
 

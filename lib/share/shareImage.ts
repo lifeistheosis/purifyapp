@@ -95,23 +95,24 @@ export async function saveImage(blob: Blob, fileName: string, text: string): Pro
 }
 
 /**
- * Words, to the share sheet (1.9: a florilegium handed on as text, s5-05).
- * In the apps the Share plugin; in a browser that can share, the Web Share
- * API. Says whether it reached one, so a page can offer something else.
+ * Words, to the share sheet (1.9: a florilegium handed on as text, s5-05; a
+ * verse from its strip, with its address). In the apps the Share plugin; in
+ * a browser that can share, the Web Share API. Says whether it reached one,
+ * so a page can offer something else.
  */
-export async function shareText(title: string, text: string): Promise<ShareOutcome> {
+export async function shareText(title: string, text: string, url?: string): Promise<ShareOutcome> {
   if (isNativeClient()) {
     try {
       const { Share } = await import("@capacitor/share");
-      await Share.share({ title, text, dialogTitle: title });
+      await Share.share({ title, text, ...(url ? { url } : {}), dialogTitle: title });
       return "shared";
     } catch (e) {
       if (wasDismissed(e)) return "dismissed";
     }
   }
   try {
-    if (typeof navigator.share === "function") {
-      await navigator.share({ title, text });
+    if (typeof navigator !== "undefined" && typeof navigator.share === "function") {
+      await navigator.share({ title, text, ...(url ? { url } : {}) });
       return "shared";
     }
   } catch (e) {

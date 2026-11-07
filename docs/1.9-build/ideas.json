@@ -27,7 +27,7 @@
    "needsDesign": true,
    "version": "B, the strip under the verse",
    "outcome": null,
-   "note": "His need; the gesture rules and the bar are Claude's design"
+   "note": "His need; the gesture rules and the bar are Claude's design Read over 2026-11-07, and one fault mended: the strip's Share asked the browser's own share (navigator.share), which the apps' WebView does not have, so in the apps Share copied the verse without a word on Android and did nothing at all on an iPhone (not a secure context, so no clipboard either). It now goes to the phone's share sheet through the Share plugin, the verse's address with it, as Image already did, and copies only where there is no sheet anywhere (lib/share/shareImage.ts shareText; held by lib/share/__tests__/shareText.test.ts). Not walked on a phone: the plugin answers only there."
   },
   {
    "id": "e-compare",
