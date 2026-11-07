@@ -4815,6 +4815,7 @@
   "remember.title": "Remember the verse",
   "remember.line": "A verse you saved. Say it from memory, then check.",
   "remember.lineBlanks": "Say the missing words, then check.",
+  "remember.lineFirst": "Say each word from its first letter, then check.",
   "remember.nextWord": "Next word",
   "remember.show": "Show the words",
   "remember.hide": "Hide",

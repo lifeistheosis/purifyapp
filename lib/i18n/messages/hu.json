@@ -4795,6 +4795,7 @@
   "remember.title": "Jegyezd meg a verset",
   "remember.line": "Egy elmentett vers. Mondd el fejből, aztán ellenőrizd.",
   "remember.lineBlanks": "Mondd el a hiányzó szavakat, aztán ellenőrizd.",
+  "remember.lineFirst": "Mondd el minden szót a kezdőbetűjéből, aztán ellenőrizd.",
   "remember.nextWord": "Következő szó",
   "remember.show": "Mutasd a szavakat",
   "remember.hide": "Rejtsd el",

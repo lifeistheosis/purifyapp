@@ -4805,6 +4805,7 @@
   "remember.title": "Recuerda el versículo",
   "remember.line": "Un versículo que guardaste. Dilo de memoria y luego comprueba.",
   "remember.lineBlanks": "Di las palabras que faltan y luego comprueba.",
+  "remember.lineFirst": "Di cada palabra por su primera letra y luego comprueba.",
   "remember.nextWord": "Siguiente palabra",
   "remember.show": "Mostrar las palabras",
   "remember.hide": "Ocultar",

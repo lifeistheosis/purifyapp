@@ -4793,6 +4793,7 @@
   "remember.title": "Hafalkan ayat ini",
   "remember.line": "Ayat yang Anda simpan. Ucapkan dari ingatan, lalu periksa.",
   "remember.lineBlanks": "Ucapkan kata-kata yang hilang, lalu periksa.",
+  "remember.lineFirst": "Ucapkan setiap kata dari huruf pertamanya, lalu periksa.",
   "remember.nextWord": "Kata berikutnya",
   "remember.show": "Tampilkan kata-katanya",
   "remember.hide": "Sembunyikan",

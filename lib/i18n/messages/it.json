@@ -4800,6 +4800,7 @@
   "remember.title": "Ricorda il versetto",
   "remember.line": "Un versetto che hai salvato. Dillo a memoria, poi controlla.",
   "remember.lineBlanks": "Di' le parole mancanti, poi controlla.",
+  "remember.lineFirst": "Di' ogni parola dalla sua prima lettera, poi controlla.",
   "remember.nextWord": "Parola successiva",
   "remember.show": "Mostra le parole",
   "remember.hide": "Nascondi",

@@ -4873,6 +4873,7 @@
   "remember.title": "Запамти стих",
   "remember.line": "Сачуван стих. Изговори га напамет, па провери.",
   "remember.lineBlanks": "Изговори речи које недостају, па провери.",
+  "remember.lineFirst": "Изговори сваку реч по њеном првом слову, па провери.",
   "remember.nextWord": "Следећа реч",
   "remember.show": "Прикажи речи",
   "remember.hide": "Сакриј",

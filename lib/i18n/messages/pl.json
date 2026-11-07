@@ -4950,6 +4950,7 @@
   "remember.title": "Zapamiętaj werset",
   "remember.line": "Zapisany werset. Powiedz go z pamięci, potem sprawdź.",
   "remember.lineBlanks": "Powiedz brakujące słowa, potem sprawdź.",
+  "remember.lineFirst": "Powiedz każde słowo po jego pierwszej literze, potem sprawdź.",
   "remember.nextWord": "Następne słowo",
   "remember.show": "Pokaż słowa",
   "remember.hide": "Ukryj",

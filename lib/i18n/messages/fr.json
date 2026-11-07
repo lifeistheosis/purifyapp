@@ -4823,6 +4823,7 @@
   "remember.title": "Retenez le verset",
   "remember.line": "Un verset que vous avez enregistré. Dites-le de mémoire, puis vérifiez.",
   "remember.lineBlanks": "Dites les mots manquants, puis vérifiez.",
+  "remember.lineFirst": "Dites chaque mot d'après sa première lettre, puis vérifiez.",
   "remember.nextWord": "Mot suivant",
   "remember.show": "Montrer les mots",
   "remember.hide": "Masquer",

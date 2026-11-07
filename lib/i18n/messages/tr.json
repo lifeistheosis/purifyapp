@@ -4795,6 +4795,7 @@
   "remember.title": "Ayeti ezberle",
   "remember.line": "Kaydettiğin bir ayet. Ezbere söyle, sonra kontrol et.",
   "remember.lineBlanks": "Eksik sözleri söyle, sonra kontrol et.",
+  "remember.lineFirst": "Her sözü ilk harfinden söyle, sonra kontrol et.",
   "remember.nextWord": "Sonraki kelime",
   "remember.show": "Sözleri göster",
   "remember.hide": "Gizle",

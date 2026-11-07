@@ -35,17 +35,20 @@ import { localBookNames, referenceIn } from "@/lib/bible/books";
 import { useBookmarks } from "@/lib/bookmarks";
 import { cn } from "@/lib/cn";
 import { usePlusFeatures } from "@/lib/entitlements/usePlusFeatures";
-import { blankedWords, type BlankedWord } from "@/lib/remember/blanks";
+import { stepWords, type BlankedWord } from "@/lib/remember/blanks";
 import {
   INTERVALS,
   addDays,
   answer,
+  boxOf,
   dayOf,
   dueVerse,
   keepText,
+  stepOf,
   textOf,
   verseKey,
   type Entry,
+  type RememberStep,
   type SavedVerse,
 } from "@/lib/remember/schedule";
 
@@ -84,6 +87,8 @@ export function RememberCard({ className }: { className?: string }) {
   );
   const due = useMemo(() => (client && !answered ? dueVerse(saved, today) : null), [client, answered, saved, today]);
   const kept = due ? textOf(due.key) : null;
+  // 1.9: missing words, first letters, then from memory, as the verse moves up its boxes.
+  const step = useMemo(() => (due ? stepOf(boxOf(due.key)) : 1), [due]);
   const text = kept ?? (fetched && due && fetched.key === due.key ? fetched.text : null);
   const shown = Boolean(due && shownFor === due.key);
 
@@ -115,6 +120,7 @@ export function RememberCard({ className }: { className?: string }) {
       reference={due ? referenceIn(due.label, due.book, books) : ""}
       href={due ? `/bible/${due.book}/${due.chapter}#v${due.verse}` : undefined}
       text={text}
+      step={step}
       failed={Boolean(fetched) && !text}
       shown={shown}
       back={answered ? backWords(t, answered.entry, today) : null}
@@ -148,6 +154,7 @@ export function RememberCardView({
   reference,
   href,
   text,
+  step = 1,
   failed,
   shown,
   back,
@@ -165,6 +172,8 @@ export function RememberCardView({
   href?: string;
   /** The verse's words, or null while they come (or when they could not). */
   text: string | null;
+  /** Which of the three steps (1.9): missing words, first letters, from memory. The first, unless said. */
+  step?: RememberStep;
   /** The words could not be read (no signal the first time). */
   failed: boolean;
   /** The blanked words are shown. */
@@ -183,7 +192,7 @@ export function RememberCardView({
   className?: string;
 }) {
   const { t } = useTranslate();
-  const words = useMemo(() => (text ? blankedWords(text) : []), [text]);
+  const words = useMemo(() => (text ? stepWords(text, step) : []), [text, step]);
   // Keyboard focus stays in the card when the buttons under it change.
   const rowRef = useRef<HTMLDivElement>(null);
   const statusRef = useRef<HTMLParagraphElement>(null);
@@ -243,9 +252,11 @@ export function RememberCardView({
             {text ? (
               <>
                 <p className="mt-2.5 font-serif text-[18px] leading-[1.62] text-paper/90" dir="auto">
-                  <BlankedVerse words={words} shown={shown} blank={t("remember.blank")} />
+                  <BlankedVerse words={words} shown={shown} blank={t("remember.blank")} firsts={step === 2} />
                 </p>
-                <p className="mt-2 font-sans text-caption text-paper/50">{t("remember.lineBlanks")}</p>
+                <p className="mt-2 font-sans text-caption text-paper/50">
+                  {t(step === 3 ? "remember.line" : step === 2 ? "remember.lineFirst" : "remember.lineBlanks")}
+                </p>
               </>
             ) : failed ? (
               <p className="mt-2 font-sans text-detail italic text-paper/50">{t("remember.offline")}</p>
@@ -299,18 +310,32 @@ export function RememberCardView({
   );
 }
 
-/** The verse with its blanks: each blanked word unseen over its line, lit white once shown. */
-function BlankedVerse({ words, shown, blank }: { words: BlankedWord[]; shown: boolean; blank: string }) {
+/**
+ * The verse with its blanks: each blanked word unseen over its line, lit
+ * white once shown. With `firsts` (1.9, the second step), each blank keeps
+ * its first letter in sight.
+ */
+function BlankedVerse({ words, shown, blank, firsts = false }: { words: BlankedWord[]; shown: boolean; blank: string; firsts?: boolean }) {
   return words.map((w, i) => (
     <Fragment key={i}>
       {i ? " " : null}
       {w.blank ? (
         <span className="whitespace-nowrap">
           {w.lead}
-          <span className={cn(BLANK, shown ? "remember-lit text-paper" : "select-none text-transparent")}>
-            <span aria-hidden={shown ? undefined : true}>{w.word}</span>
-            {shown ? null : <span className="sr-only">{blank}</span>}
-          </span>
+          {firsts && !shown ? (
+            <span className={BLANK}>
+              {w.first}
+              <span aria-hidden className="select-none text-transparent">
+                {w.word.slice(w.first.length)}
+              </span>
+              <span className="sr-only">{blank}</span>
+            </span>
+          ) : (
+            <span className={cn(BLANK, shown ? "remember-lit text-paper" : "select-none text-transparent")}>
+              <span aria-hidden={shown ? undefined : true}>{w.word}</span>
+              {shown ? null : <span className="sr-only">{blank}</span>}
+            </span>
+          )}
           {w.tail}
         </span>
       ) : (

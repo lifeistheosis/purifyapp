@@ -1,4 +1,4 @@
-import { hintWords, type HintWord } from "./schedule";
+import { hintWords, type HintWord, type RememberStep } from "./schedule";
 
 /**
  * Which of a verse's words Remember the verse leaves blank (1.8, the owner's
@@ -65,3 +65,14 @@ export function blankedWords(text: string): BlankedWord[] {
   const blanks = new Set(blanksIn(words));
   return words.map((w, i) => ({ ...w, blank: blanks.has(i) }));
 }
+
+/**
+ * The verse as its words for a step (1.9): in the first, its longer words
+ * blank (blankedWords); in the second and the third, every word blank, the
+ * card giving each one's first letter in the second.
+ */
+export function stepWords(text: string, step: RememberStep): BlankedWord[] {
+  if (step === 1) return blankedWords(text);
+  return hintWords(text).map((w) => ({ ...w, blank: Boolean(w.word) }));
+}
+

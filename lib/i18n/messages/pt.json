@@ -4800,6 +4800,7 @@
   "remember.title": "Memorize o versículo",
   "remember.line": "Um versículo que você salvou. Diga-o de memória e depois confira.",
   "remember.lineBlanks": "Diga as palavras que faltam e depois confira.",
+  "remember.lineFirst": "Diga cada palavra pela primeira letra e depois confira.",
   "remember.nextWord": "Próxima palavra",
   "remember.show": "Mostrar as palavras",
   "remember.hide": "Ocultar",

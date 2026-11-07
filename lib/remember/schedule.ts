@@ -80,6 +80,25 @@ export function answer(key: string, knew: boolean, today: string): Entry {
   return entry;
 }
 
+/**
+ * Remember the verse in three steps (1.9, s4-06 of docs/1.9-build/ideas.json:
+ * "missing words, first letters, from memory, spaced over days"). The boxes
+ * already space a verse over the days; the step follows its box. New, or
+ * not known last time: its longer words are left blank. Known twice: every
+ * word, with only its first letter. Known four times: every word blank, said
+ * from memory.
+ */
+export type RememberStep = 1 | 2 | 3;
+
+export function stepOf(box: number): RememberStep {
+  return box >= 4 ? 3 : box >= 2 ? 2 : 1;
+}
+
+/** The box a verse is in now: 0 before it was first answered. */
+export function boxOf(key: string): number {
+  return load().entries[key]?.box ?? 0;
+}
+
 export function textOf(key: string): string | null {
   return load().texts[key] ?? null;
 }

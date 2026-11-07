@@ -5082,6 +5082,7 @@
   "remember.title": "احفظ الآية",
   "remember.line": "آية من محفوظاتك. قلها من الذاكرة، ثم تحقّق.",
   "remember.lineBlanks": "قل الكلمات الناقصة، ثم تحقّق.",
+  "remember.lineFirst": "قل كل كلمة من حرفها الأول، ثم تحقّق.",
   "remember.nextWord": "الكلمة التالية",
   "remember.show": "أظهر الكلمات",
   "remember.hide": "إخفاء",

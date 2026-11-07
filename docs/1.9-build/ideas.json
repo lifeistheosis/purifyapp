@@ -751,11 +751,12 @@
    "title": "Remember the verse in three steps (missing words, first letters, from memory), spaced over days",
    "from": "claude",
    "asked": "2026-11-06",
-   "status": "approved",
+   "status": "built",
    "decided": "2026-11-06",
    "needsDesign": false,
    "version": null,
-   "outcome": null
+   "outcome": null,
+   "note": "Built 2026-11-07 in the Remember card on Today, which already spaced a verse over the days (boxes of 1, 2, 4, 8 and 16 days). The step now follows the box: new, or not known last time, the longer words are blank (as before); known twice, every word is a blank with its first letter given; known four times, every word is a blank, said from memory. Not yet takes it back to the first step. Show the words lights them all, as before. lib/remember/schedule.ts (stepOf), lib/remember/blanks.ts (stepWords), tests in lib/remember/__tests__/steps.test.ts; one new line in 21 languages (remember.lineFirst), the third step using the card's own \"Say it from memory\". The Plus page's preview stays on the first step. Walked in the browser at each step"
   },
   {
    "id": "s4-07",

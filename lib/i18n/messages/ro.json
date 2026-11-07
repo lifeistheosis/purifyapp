@@ -4882,6 +4882,7 @@
   "remember.title": "Ține minte versetul",
   "remember.line": "Un verset salvat de tine. Spune-l din memorie, apoi verifică.",
   "remember.lineBlanks": "Spune cuvintele care lipsesc, apoi verifică.",
+  "remember.lineFirst": "Spune fiecare cuvânt după prima lui literă, apoi verifică.",
   "remember.nextWord": "Cuvântul următor",
   "remember.show": "Arată cuvintele",
   "remember.hide": "Ascunde",
