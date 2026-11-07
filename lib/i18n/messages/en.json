@@ -4955,6 +4955,7 @@
   "journal.prompt.6": "Whom among the departed would you remember today?",
   "plans.begin": "Begin",
   "plans.continue": "Continue",
+  "plans.more": "More plans",
   "plans.today": "Today",
   "plans.englishForNow": "This day's notes are in English for now.",
   "plans.minutesADay": "About {min} min a day",

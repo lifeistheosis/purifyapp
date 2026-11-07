@@ -5230,6 +5230,7 @@
   "journal.prompt.6": "من الراقدين تودّ أن تذكر اليوم؟",
   "plans.begin": "ابدأ",
   "plans.continue": "تابع",
+  "plans.more": "خطط أخرى",
   "plans.today": "اليوم",
   "plans.englishForNow": "ملاحظات هذا اليوم بالإنجليزية حاليًا.",
   "plans.minutesADay": "نحو {min} دقيقة في اليوم",

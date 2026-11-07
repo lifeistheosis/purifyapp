@@ -4935,6 +4935,7 @@
   "journal.prompt.6": "Кого от починалите бихте искали да споменете днес?",
   "plans.begin": "Започнете",
   "plans.continue": "Продължете",
+  "plans.more": "Още планове",
   "plans.today": "Днес",
   "plans.englishForNow": "Бележките за този ден засега са на английски.",
   "plans.minutesADay": "Около {min} мин на ден",

@@ -670,6 +670,16 @@ html.is-native .below-topbar {
   mask-image: linear-gradient(to bottom, #000 42%, rgb(0 0 0 / 0.2) 74%, transparent 100%);
  }
 }
+/* A plan's tile (1.9, components/plans/PlansClient.tsx): the icon melts into
+   the tile's own ground toward its foot, where the plan's name stands, by a
+   mask on the picture, never a shade over it, so its round corners show no
+   bright hairline (lib/ui/__tests__/pictureCorners.test.ts). The name sits on
+   the ground at a fifth of the picture, as .picture-melt has it. */
+.plan-tile-picture {
+ object-fit: cover;
+ -webkit-mask-image: linear-gradient(to bottom, #000 34%, rgb(0 0 0 / 0.55) 58%, rgb(0 0 0 / 0.16) 80%, transparent 100%);
+ mask-image: linear-gradient(to bottom, #000 34%, rgb(0 0 0 / 0.55) 58%, rgb(0 0 0 / 0.16) 80%, transparent 100%);
+}
 /* The slim bar's name, held back until the page's own has gone. */
 [data-mobile-topbar] [data-topbar-title][data-reveal] {
  opacity: 0;

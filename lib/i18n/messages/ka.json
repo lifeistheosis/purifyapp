@@ -4935,6 +4935,7 @@
   "journal.prompt.6": "გარდაცვლილთაგან ვისი მოხსენიება გსურთ დღეს?",
   "plans.begin": "დაწყება",
   "plans.continue": "გაგრძელება",
+  "plans.more": "სხვა გეგმები",
   "plans.today": "დღეს",
   "plans.englishForNow": "ამ დღის შენიშვნები ჯერჯერობით ინგლისურადაა.",
   "plans.minutesADay": "დაახლოებით {min} წთ დღეში",

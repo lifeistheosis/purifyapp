@@ -4963,6 +4963,7 @@
   "journal.prompt.6": "De quels défunts voulez-vous faire mémoire aujourd’hui ?",
   "plans.begin": "Commencer",
   "plans.continue": "Continuer",
+  "plans.more": "Autres plans",
   "plans.today": "Aujourd’hui",
   "plans.englishForNow": "Les notes de ce jour sont en anglais pour l’instant.",
   "plans.minutesADay": "Environ {min} min par jour",
