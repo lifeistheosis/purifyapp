@@ -56,6 +56,14 @@ const ROUTES = adminRoutes();
  */
 const ALLOWED = new Set([403, 404, 405]);
 
+/**
+ * The one admin route that answers anyone, by design: /api/admin/whoami
+ * tells a caller whether they are an admin (1.8, Settings asks it to show
+ * Testers mode), and an anonymous caller is told no and nothing else. It is
+ * held to exactly that below rather than excused.
+ */
+const ANSWERS_ANYONE = new Set(["/api/admin/whoami"]);
+
 // Above the suite default of 60s. A cold target compiles or cold-starts each
 // route on its first request, and this file is the one that touches all of them.
 test.describe.configure({ timeout: 180_000 });
@@ -68,12 +76,20 @@ test("every admin API route refuses an anonymous GET", async ({ request }) => {
   // first, which ran past the suite's 60s budget and failed as a timeout rather
   // than as anything about the gate.
   const results = await Promise.all(
-    ROUTES.map(async (url) => ({ url, status: (await request.get(url)).status() })),
+    ROUTES.filter((url) => !ANSWERS_ANYONE.has(url)).map(async (url) => ({ url, status: (await request.get(url)).status() })),
   );
   const leaked = results
     .filter((r) => !ALLOWED.has(r.status))
     .map((r) => `${r.url} -> ${r.status}`);
   expect(leaked, `${ROUTES.length} routes checked`).toEqual([]);
+});
+
+test("the one route that answers anyone tells an anonymous caller no, and nothing else", async ({ request }) => {
+  for (const url of ANSWERS_ANYONE) {
+    const res = await request.get(url);
+    expect(res.status(), url).toBe(200);
+    expect(await res.json(), url).toEqual({ admin: false });
+  }
 });
 
 test("the refusal carries no payload with it", async ({ request }) => {

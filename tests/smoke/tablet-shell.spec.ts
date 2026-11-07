@@ -1,3 +1,6 @@
+import { readFileSync } from "node:fs";
+import { join } from "node:path";
+
 import { test, expect, devices } from "@playwright/test";
 import { NATIVE_UA_TOKEN } from "@/lib/platform/token";
 
@@ -13,16 +16,25 @@ import { NATIVE_UA_TOKEN } from "@/lib/platform/token";
  * place.
  *
  * Same established-user setup as mobile-shell.spec.ts, for the same reason:
- * the first-run overlay must not intercept the taps.
+ * the first-run overlay must not intercept the taps (the welcome's current
+ * version finished, the release notes seen).
  */
+const ONBOARDED =
+  /export const ONBOARDING_VERSION = (\d+);/.exec(
+    readFileSync(join(process.cwd(), "lib", "onboarding", "state.ts"), "utf8"),
+  )?.[1] ?? "";
+
 test.beforeEach(async ({ page }) => {
-  await page.addInitScript(() => {
+  expect(ONBOARDED, "the welcome's version, read from lib/onboarding/state.ts").toMatch(/^\d+$/);
+  await page.addInitScript((onboarded) => {
     try {
       window.localStorage.setItem("purify:calendar.style", "new");
+      window.localStorage.setItem("purify:onboarded", onboarded);
+      window.localStorage.setItem("purify:whatsNewSeen", "99");
     } catch {
       /* ignore */
     }
-  });
+  }, ONBOARDED);
 });
 
 test.describe("native app shell on a tablet (Capacitor UA, 1024x768)", () => {
@@ -49,11 +61,12 @@ test.describe("native app shell on a tablet (Capacitor UA, 1024x768)", () => {
 
   test("Bible chapter keeps the phone's round buttons and the chapter pill", async ({ page }) => {
     await page.goto("/bible/john/1");
-    // The way back and Aa, on round plates over the page (1.8, "The page").
+    // The way back and •••, on round plates over the page (1.8, "The page"),
+    // with the reader's settings inside ••• as on a phone (his pick B of
+    // 2026-10-28; scripts/export-walk.mjs, section 33, walks the iPad too).
     await expect(page.getByLabel("Back").filter({ visible: true }).first()).toBeVisible();
-    await expect(
-      page.getByLabel("Reader settings").filter({ visible: true }).first(),
-    ).toBeVisible();
+    await expect(page.getByLabel("More actions").filter({ visible: true }).first()).toBeVisible();
+    await expect(page.getByLabel("Reader settings").filter({ visible: true })).toHaveCount(0);
     // The desktop chapter sidebar is native-md-hidden in the shell.
     await expect(page.locator("aside.hidden.md\\:block.md\\:native\\:hidden")).toBeHidden();
   });

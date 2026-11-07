@@ -690,7 +690,8 @@
    "decided": "2026-11-06",
    "needsDesign": false,
    "version": null,
-   "outcome": null
+   "outcome": null,
+   "note": "The Nativity Fast's plan is built (his pick: the Church's own Nativity readings). Looked at 2026-11-07 for the next seasons, not built, for his pick of each one's shape, as he picked the Nativity's. Holy Week can be built from data the app already has and that was checked day by day against the OCA's daily readings (data/calendar/movable-readings.json): Lazarus Saturday, Palm Sunday, and each day of Holy Week, the Gospel of its Liturgy (Holy Thursday's and Holy Friday's are the composite Gospels of their services, five passages each), nine days from Lazarus Saturday to Pascha; its card would stand from two weeks before, by Pascha's date. Great Lent's own readings (Isaiah at the Sixth Hour, Genesis and Proverbs at Vespers, each weekday) are not in the app's data yet and would have to be sourced and checked first. His word: the shape of each (Holy Week as above, or the Bridegroom Matins' Gospels, or the Twelve Passion Gospels), and the picture for each card (the Nativity's is the Theotokos)."
   },
   {
    "id": "s4-02",
@@ -1517,6 +1518,20 @@
    "version": null,
    "outcome": null,
    "note": "From the Plus brainstorm of 2026-11-06 (BRAINSTORM.md, \"What nobody can see\"), item 12 of PLAN.md. Built 2026-11-07: the upgrade sheet (components/billing/UpgradeModal.tsx) counts lock_tapped with the feature it opens on, and plus_bought when a purchase in it goes through, with the feature and the plan; each with the kind of device, kept to the day, no session, account, device id or page (lib/analytics/lockCounting.ts and lockCount.ts; the server's closed list in lib/security/schemas.ts). No migration: analytics_events takes any name. The admin reads it at Money, Subscriptions, Locks (7, 30 or 90 days: met, bought, the rate, a year or a month, by feature). Not counted: purchases on the pricing page, and restores. On the iPhone nothing is locked until the App Store sells Plus, so iPhone readers meet no lock. For his word before the release: the privacy page's paragraph saying so (drafted in app/(app)/privacy/page.tsx), and the 1.9 letter must list the change, as the page's own \"Changes to this page\" promises. Held by lib/analytics/__tests__/lockCounting.test.ts; the admin panel is drawn there, not walked (the admin needs a signed-in admin)."
+  },
+  {
+   "id": "c-smoke-suite",
+   "section": "Release",
+   "kind": "process",
+   "title": "The website's smoke suite, which CI runs on every pull request, caught up with 1.8 and 1.9; two things left for his word",
+   "from": "claude",
+   "asked": "2026-11-07",
+   "status": "built",
+   "decided": "2026-11-07",
+   "needsDesign": false,
+   "version": null,
+   "outcome": null,
+   "note": "Run 2026-11-07 against the website's own build (next build exit 0, 5,251 pages, the new /api/admin/locks among them): 57 passed, 15 failed, 3 skipped. CI's last two runs, on 9 and 19 October, were red too; CI runs only on pull requests, so nobody had seen it since. Twelve were the suite, not the website, and are mended in tests/smoke: the welcome now shows to anyone who has not finished its current version, so it covered every tab tap (the device now finishes it, the version read from lib/onboarding/state.ts, as the export walk does); /api/admin/whoami answers anyone {admin:false} by design since 1.8 (excused from the 403 rule and held to exactly that answer); his pick B of 28 October put Aa inside ••• on phones and iPads; the chapter is picked from two places since 1.9; a work's section pill names its section; the signed-out You page's line is 'Private on this device · no account needed'. Those three files: 38 of 38. Left for his word: /prayers/today fails the accessibility check because the hours not current are dimmed to 70%, which takes their small captions (2 min, and the like) to 3.6:1 against the 4.5:1 the suite holds every page to (components/prayers/DayTimeline.tsx, since 29 October); keep the dimming, or lift those captions. And the shop's three, which CI skips (its build has no shop) and which no longer match the shop's pages: the shop's own track."
   }
  ]
 }

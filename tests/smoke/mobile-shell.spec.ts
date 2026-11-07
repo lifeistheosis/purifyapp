@@ -1,3 +1,6 @@
+import { readFileSync } from "node:fs";
+import { join } from "node:path";
+
 import { test, expect, devices } from "@playwright/test";
 import { NATIVE_UA_TOKEN } from "@/lib/platform/token";
 
@@ -30,17 +33,29 @@ import { NATIVE_UA_TOKEN } from "@/lib/platform/token";
 
 // These are layout/navigation tests, not onboarding tests. Run them as an
 // established user so the first-run welcome overlay (FirstRunGate, shown on
-// "/" to new visitors on web AND native) doesn't intercept tab taps. A saved
-// calendar preference satisfies the prior-use heuristic in
-// lib/onboarding/state.ts.
+// "/" on web AND native) doesn't intercept tab taps. A saved calendar
+// preference no longer does that: the welcome now shows to anyone who has
+// not finished its current version, a returning reader included
+// (lib/onboarding/state.ts, shouldShowOnboarding), and from 1.8 it covered
+// every tab tap here. So the device has finished this version, read from the
+// source so it never falls behind, and has seen the release notes, as
+// scripts/export-walk.mjs sets up every device it walks.
+const ONBOARDED =
+  /export const ONBOARDING_VERSION = (\d+);/.exec(
+    readFileSync(join(process.cwd(), "lib", "onboarding", "state.ts"), "utf8"),
+  )?.[1] ?? "";
+
 test.beforeEach(async ({ page }) => {
-  await page.addInitScript(() => {
+  expect(ONBOARDED, "the welcome's version, read from lib/onboarding/state.ts").toMatch(/^\d+$/);
+  await page.addInitScript((onboarded) => {
     try {
       window.localStorage.setItem("purify:calendar.style", "new");
+      window.localStorage.setItem("purify:onboarded", onboarded);
+      window.localStorage.setItem("purify:whatsNewSeen", "99");
     } catch {
       /* ignore */
     }
-  });
+  }, ONBOARDED);
 });
 
 // You is deliberately absent: the tab was retired and the account moved into
@@ -105,33 +120,30 @@ test("manifest is served and parses as JSON", async ({ request }) => {
   expect(Array.isArray(body.icons)).toBeTruthy();
 });
 
-test("Bible chapter shows its round buttons: back, Aa and more", async ({
+test("Bible chapter shows its round buttons: back and more, with Aa inside more", async ({
   page,
 }) => {
   await page.goto("/bible/john/1");
   // No bar since 1.8 (the owner's pick B of round 2, "The page"): the way
-  // back and the reader's two buttons stand on round plates over the page.
-  // The desktop AppNav also carries a (hidden) "Back" button, so filter
-  // to the visible one: the plate's.
+  // back and ••• stand on round plates over the page, and since his pick B
+  // of 2026-10-28 ("Aa inside •••") the reader's settings are the first row
+  // of •••'s sheet, not a plate of their own (scripts/export-walk.mjs,
+  // section 33, walks the same). The desktop AppNav also carries a (hidden)
+  // "Back" button, so filter to the visible one: the plate's.
   await expect(
     page.getByLabel("Back").filter({ visible: true }).first(),
-  ).toBeVisible();
-  // Aa (the settings) exists twice (the plate + the desktop toolbar's Reader
-  // pill), so assert on the visible instance. The bookmark is in the •••
-  // sheet now, with the search, the chapters and the translation.
-  await expect(
-    page.getByLabel("Reader settings").filter({ visible: true }).first(),
   ).toBeVisible();
   await expect(
     page.getByLabel("More actions").filter({ visible: true }).first(),
   ).toBeVisible();
+  await expect(page.getByLabel("Reader settings").filter({ visible: true })).toHaveCount(0);
   await expect(async () => {
     await page.getByLabel("More actions").filter({ visible: true }).first().click();
     await expect(page.getByRole("dialog", { name: "John 1" })).toBeVisible({ timeout: 1_500 });
   }).toPass({ timeout: 20_000 });
-  await expect(
-    page.getByRole("dialog", { name: "John 1" }).getByRole("button", { name: /Bookmark this chapter/ }),
-  ).toBeVisible();
+  const sheet = page.getByRole("dialog", { name: "John 1" });
+  await expect(sheet.getByRole("button", { name: /Reader settings/ })).toBeVisible();
+  await expect(sheet.getByRole("button", { name: /Bookmark this chapter/ })).toBeVisible();
 });
 
 test("chapter pill opens the book/chapter picker sheet", async ({ page }) => {
@@ -140,8 +152,10 @@ test("chapter pill opens the book/chapter picker sheet", async ({ page }) => {
   // that lands before hydration is swallowed, so assert the OUTCOME (the
   // sheet is open) and re-tap until it holds — same flake class as the
   // history expand cards.
+  // Two controls carry the name since 1.9: the pill at the foot and the
+  // chapter under the book's name. Either opens the sheet; the visible first.
   await expect(async () => {
-    await page.getByLabel(/Pick a chapter/).click();
+    await page.getByLabel(/Pick a chapter/).filter({ visible: true }).first().click();
     // Sheet renders as a dialog with the book name as its title.
     await expect(page.getByRole("dialog", { name: /John/ })).toBeVisible({
       timeout: 1_500,
@@ -158,8 +172,10 @@ test("saint-work reader renders MobileTopBar + section pill", async ({
   await expect(
     page.getByLabel("Back").filter({ visible: true }).first(),
   ).toBeVisible();
-  // Floating section switcher: the label reads "Section N of M".
-  await expect(page.getByText(/Section \d+ of \d+/)).toBeVisible();
+  // The floating section pill names the section the reader is in (it read
+  // "Section N of M" until 1.8): its name, between the way to the section
+  // before and the one after.
+  await expect(page.locator("[data-work-pill] [data-pill-name]")).toHaveText(/\S/);
 });
 
 /**
@@ -266,9 +282,10 @@ test("/account (signed out) renders the local-profile hero + sign-in path", asyn
   await page.goto("/account");
   // Signed out, the You surface leads with the local-profile hero and
   // offers sign-in as the path to sync (the old Local profile / Public
-  // account two-card chooser was retired).
+  // account two-card chooser was retired). Its line since 1.8: private on
+  // this device, no account needed (ui.privateOnThisDeviceNo).
   await expect(
-    page.getByText("Your reading life, on this device."),
+    page.getByText("Private on this device · no account needed"),
   ).toBeVisible();
   await expect(
     page.locator('a[href*="/signin"]').filter({ visible: true }).first(),
