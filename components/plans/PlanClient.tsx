@@ -13,7 +13,7 @@ import { useExpectedPlusFeatures, usePlusFeatures } from "@/lib/entitlements/use
 import { dayGuide, type PlanWords } from "@/lib/plans/guide";
 import { usePlanGuide } from "@/lib/plans/guideContent";
 import { dayLabel, getPlan } from "@/lib/plans/plans";
-import { completeDay, nextDay, planStreak, resetPlan, startPlan, uncompleteDay, usePlans } from "@/lib/plans/progress";
+import { catchUp, completeDay, nextDay, planStreak, resetPlan, startPlan, uncompleteDay, usePlans } from "@/lib/plans/progress";
 import { clearJustFinished, hrefOfReading, startPlanSession, useJustFinished } from "@/lib/plans/session";
 import { useMounted } from "@/lib/useMounted";
 
@@ -63,6 +63,7 @@ export function PlanClient({ id, minutes, words }: { id: string; minutes: number
   const progress = mounted ? state[id] : undefined;
   const next = nextDay(plan, progress);
   const streak = mounted ? planStreak(state) : 0;
+  const catching = mounted ? catchUp(state) : null;
 
   const begin = (day: number) => {
     if (locked) {
@@ -116,7 +117,12 @@ export function PlanClient({ id, minutes, words }: { id: string; minutes: number
         </section>
       )}
 
-      {streak > 0 && !finished ? <p className="mt-5 font-sans text-detail font-semibold text-paper/80">{tn("plans.streak", streak)}</p> : null}
+      {/* 1.9 (s4-05): yesterday missed is offered back, never a broken streak. */}
+      {catching !== null && !finished ? (
+        <p className="mt-5 font-sans text-detail font-semibold text-paper/80">{t("plans.catchUp", { streak: tn("plans.streak", catching) })}</p>
+      ) : streak > 0 && !finished ? (
+        <p className="mt-5 font-sans text-detail font-semibold text-paper/80">{tn("plans.streak", streak)}</p>
+      ) : null}
 
       <PlanPath plan={plan} progress={progress} today={next} justRead={finished?.day ?? null} bookName={bookName} onToggle={toggle} />
 

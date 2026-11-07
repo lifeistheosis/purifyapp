@@ -736,11 +736,12 @@
    "title": "A missed day offers catch up or shift the plan, never a broken streak",
    "from": "claude",
    "asked": "2026-11-06",
-   "status": "approved",
+   "status": "built",
    "decided": "2026-11-06",
    "needsDesign": false,
    "version": null,
-   "outcome": null
+   "outcome": null,
+   "note": "Built 2026-11-07, as catch up. The plans wait for the reader (a plan's days are not tied to dates), so a missed day only ever broke the plans' own days in a row, which had no saves. Now each plan day read beyond the first on a day covers one missed day before it, between days of reading (lib/plans/progress.ts, planStreak), so reading yesterday's day with today's keeps the row; and the day after a missed one, the plans page and the plan's page say so: \"Yesterday's reading is still here. Read it with today's and it will be 4 days in a row.\" Shift the plan is not built: with nothing tied to dates there is nothing to shift. The app's one streak (the flame) keeps its own hidden saves as before. Tests in lib/plans/__tests__/plans.test.ts; walked in a browser"
   },
   {
    "id": "s4-06",

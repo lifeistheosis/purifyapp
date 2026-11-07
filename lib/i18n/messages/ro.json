@@ -4190,6 +4190,7 @@
   "plans.streak.one": "{count} zi la rând",
   "plans.streak.few": "{count} zile la rând",
   "plans.streak.other": "{count} de zile la rând",
+  "plans.catchUp": "Citirea de ieri încă te așteaptă. Citește-o împreună cu cea de azi și vor fi {streak}.",
   "desktop.presence.app": "În Purify",
   "desktop.presence.scripture": "Citește Scriptura",
   "desktop.presence.prayer": "La rugăciune",

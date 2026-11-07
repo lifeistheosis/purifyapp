@@ -16,7 +16,7 @@ import { usePlusFeatures } from "@/lib/entitlements/usePlusFeatures";
 import { dateLocale } from "@/lib/i18n/deviceDates";
 import { READING_PLANS, dayLabel, getPlan, type ReadingPlan } from "@/lib/plans/plans";
 import { SEASON_PICTURE, seasonNow } from "@/lib/plans/season";
-import { nextDay, planStreak, startPlan, usePlans, type PlanProgress } from "@/lib/plans/progress";
+import { catchUp, nextDay, planStreak, startPlan, usePlans, type PlanProgress } from "@/lib/plans/progress";
 import { hrefOfReading, startPlanSession } from "@/lib/plans/session";
 import { readAloudCover } from "@/lib/readAloud/covers";
 import { useMounted } from "@/lib/useMounted";
@@ -53,6 +53,7 @@ export function PlansClient({ minutes }: { minutes: Record<string, number> }) {
   const bookName = useCallback((slug: string) => books[slug] ?? t(`bible.books.${slug}`), [books, t]);
   const progressOf = (id: string) => (mounted ? state[id] : undefined);
   const streak = mounted ? planStreak(state) : 0;
+  const catching = mounted ? catchUp(state) : null;
 
   // The plan to continue: begun and not finished, the one read most lately.
   const current =
@@ -79,7 +80,12 @@ export function PlansClient({ minutes }: { minutes: Record<string, number> }) {
 
   return (
     <div className="mt-6 pb-16">
-      {streak > 0 ? <p className="mb-3 font-sans text-detail font-semibold text-paper/80">{tn("plans.streak", streak)}</p> : null}
+      {/* 1.9 (s4-05): yesterday missed is offered back, never a broken streak. */}
+      {catching !== null ? (
+        <p className="mb-3 font-sans text-detail font-semibold text-paper/80">{t("plans.catchUp", { streak: tn("plans.streak", catching) })}</p>
+      ) : streak > 0 ? (
+        <p className="mb-3 font-sans text-detail font-semibold text-paper/80">{tn("plans.streak", streak)}</p>
+      ) : null}
 
       {current ? (
         <ContinueCard

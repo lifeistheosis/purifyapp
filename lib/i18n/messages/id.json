@@ -4114,6 +4114,7 @@
   "plans.days.other": "{count} hari",
   "plans.streak.one": "{count} hari berturut-turut",
   "plans.streak.other": "{count} hari berturut-turut",
+  "plans.catchUp": "Bacaan kemarin masih ada. Bacalah bersama bacaan hari ini, dan menjadi {streak}.",
   "desktop.presence.app": "Di Purify",
   "desktop.presence.scripture": "Membaca Kitab Suci",
   "desktop.presence.prayer": "Sedang berdoa",

@@ -4116,6 +4116,7 @@
   "plans.days.other": "{count} nap",
   "plans.streak.one": "{count} nap egymás után",
   "plans.streak.other": "{count} nap egymás után",
+  "plans.catchUp": "A tegnapi olvasmány még vár. Olvassa el a maival együtt, és {streak} lesz.",
   "desktop.presence.app": "A Purify-ban",
   "desktop.presence.scripture": "A Szentírást olvassa",
   "desktop.presence.prayer": "Imádkozik",

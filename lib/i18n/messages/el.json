@@ -4116,6 +4116,7 @@
   "plans.days.other": "{count} ημέρες",
   "plans.streak.one": "{count} ημέρα στη σειρά",
   "plans.streak.other": "{count} ημέρες στη σειρά",
+  "plans.catchUp": "Το χθεσινό ανάγνωσμα είναι ακόμη εδώ. Διαβάστε το μαζί με το σημερινό και θα γίνουν {streak}.",
   "desktop.presence.app": "Στο Purify",
   "desktop.presence.scripture": "Διαβάζει τη Γραφή",
   "desktop.presence.prayer": "Σε προσευχή",

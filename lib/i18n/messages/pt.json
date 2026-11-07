@@ -4121,6 +4121,7 @@
   "plans.days.other": "{count} dias",
   "plans.streak.one": "{count} dia seguido",
   "plans.streak.other": "{count} dias seguidos",
+  "plans.catchUp": "A leitura de ontem ainda está aqui. Leia-a com a de hoje e serão {streak}.",
   "desktop.presence.app": "No Purify",
   "desktop.presence.scripture": "Lendo as Escrituras",
   "desktop.presence.prayer": "Em oração",

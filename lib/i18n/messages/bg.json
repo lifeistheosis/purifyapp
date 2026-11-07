@@ -4116,6 +4116,7 @@
   "plans.days.other": "{count} дни",
   "plans.streak.one": "{count} ден поред",
   "plans.streak.other": "{count} дни поред",
+  "plans.catchUp": "Четивото от вчера още е тук. Прочетете го заедно с днешното и ще станат {streak}.",
   "desktop.presence.app": "В Purify",
   "desktop.presence.scripture": "Чете Писанието",
   "desktop.presence.prayer": "На молитва",

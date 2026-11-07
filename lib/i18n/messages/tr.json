@@ -4116,6 +4116,7 @@
   "plans.days.other": "{count} gün",
   "plans.streak.one": "Art arda {count} gün",
   "plans.streak.other": "Art arda {count} gün",
+  "plans.catchUp": "Dünkü okuma hâlâ burada. Bugünküyle birlikte okuyun, {streak} olsun.",
   "desktop.presence.app": "Purify'da",
   "desktop.presence.scripture": "Kutsal Kitap okuyor",
   "desktop.presence.prayer": "Duada",

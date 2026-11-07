@@ -4245,6 +4245,7 @@
   "plans.streak.few": "{count} dni z rzędu",
   "plans.streak.many": "{count} dni z rzędu",
   "plans.streak.other": "{count} dnia z rzędu",
+  "plans.catchUp": "Wczorajsze czytanie wciąż czeka. Przeczytaj je z dzisiejszym, a będzie {streak}.",
   "desktop.presence.app": "W Purify",
   "desktop.presence.scripture": "Czyta Pismo Święte",
   "desktop.presence.prayer": "Na modlitwie",

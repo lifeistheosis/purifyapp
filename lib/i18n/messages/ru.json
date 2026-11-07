@@ -4243,6 +4243,7 @@
   "plans.streak.few": "{count} дня подряд",
   "plans.streak.many": "{count} дней подряд",
   "plans.streak.other": "{count} дня подряд",
+  "plans.catchUp": "Вчерашнее чтение ещё ждёт. Прочтите его вместе с сегодняшним, и будет {streak}.",
   "desktop.presence.app": "В Purify",
   "desktop.presence.scripture": "Читает Писание",
   "desktop.presence.prayer": "На молитве",

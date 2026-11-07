@@ -4,7 +4,7 @@ import path from "node:path";
 import { describe, expect, it } from "vitest";
 
 import { KATHISMATA, READING_PLANS, dayLabel, getPlan } from "../plans";
-import { nextDay, planStreak, type PlansState } from "../progress";
+import { catchUp, nextDay, planStreak, type PlansState } from "../progress";
 
 describe("the reading plans", () => {
   it("divide the Psalter into its twenty kathismata, 1 to 150, with nothing missed or doubled", () => {
@@ -80,5 +80,47 @@ describe("John in 21 days (1.9)", () => {
       expect(cites.john?.[String(day)], `cites, day ${day}`).toEqual(cites.gospels[String(FIRST + day - 1)]);
       expect(sayings.john?.[String(day)], `saying, day ${day}`).toEqual(sayings.gospels[String(FIRST + day - 1)]);
     }
+  });
+});
+
+describe("a missed day (1.9, s4-05)", () => {
+  const read = (...days: string[]): PlansState => ({
+    gospels: { startedOn: days[0], done: Object.fromEntries(days.map((d, i) => [String(i), d])) },
+  });
+
+  it("is caught up by reading an extra day after it, and the days in a row go on", () => {
+    // Mon read, Tue missed, Wed two days read.
+    expect(planStreak(read("2026-11-02", "2026-11-04", "2026-11-04"), "2026-11-04")).toBe(3);
+    // Two missed, three read the day after.
+    expect(planStreak(read("2026-11-02", "2026-11-05", "2026-11-05", "2026-11-05"), "2026-11-05")).toBe(4);
+  });
+
+  it("breaks as before when it is not caught up", () => {
+    expect(planStreak(read("2026-11-02", "2026-11-04"), "2026-11-04")).toBe(1);
+    // Two missed, only two read after: one short.
+    expect(planStreak(read("2026-11-02", "2026-11-05", "2026-11-05"), "2026-11-05")).toBe(1);
+  });
+
+  it("never counts days before the reader began", () => {
+    expect(planStreak(read("2026-11-04", "2026-11-04", "2026-11-04"), "2026-11-04")).toBe(1);
+  });
+
+  it("is offered to catch up the day after, with the days in a row it keeps", () => {
+    const state = read("2026-11-02", "2026-11-03");
+    // Wednesday missed; on Thursday, nothing read yet.
+    expect(planStreak(state, "2026-11-05")).toBe(0);
+    expect(catchUp(state, "2026-11-05")).toBe(4);
+    // One read on Thursday: still offered.
+    expect(catchUp(read("2026-11-02", "2026-11-03", "2026-11-05"), "2026-11-05")).toBe(4);
+    // Caught up: no offer, and the days in a row are there.
+    const caught = read("2026-11-02", "2026-11-03", "2026-11-05", "2026-11-05");
+    expect(catchUp(caught, "2026-11-05")).toBeNull();
+    expect(planStreak(caught, "2026-11-05")).toBe(4);
+  });
+
+  it("offers nothing when yesterday was read, or nothing was read before it", () => {
+    expect(catchUp(read("2026-11-04"), "2026-11-05")).toBeNull();
+    expect(catchUp(read("2026-11-01"), "2026-11-05")).toBeNull();
+    expect(catchUp({}, "2026-11-05")).toBeNull();
   });
 });

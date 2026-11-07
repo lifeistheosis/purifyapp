@@ -4116,6 +4116,7 @@
   "plans.days.other": "{count} دن",
   "plans.streak.one": "مسلسل {count} دن",
   "plans.streak.other": "مسلسل {count} دن",
+  "plans.catchUp": "کل کی قراءت ابھی یہیں ہے۔ اسے آج کی قراءت کے ساتھ پڑھیں تو {streak} ہو جائیں گے۔",
   "desktop.presence.app": "Purify میں",
   "desktop.presence.scripture": "کلام پڑھ رہے ہیں",
   "desktop.presence.prayer": "دعا میں",

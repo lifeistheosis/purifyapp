@@ -4143,6 +4143,7 @@
   "plans.streak.one": "{count} jour d’affilée",
   "plans.streak.many": "{count} jours d’affilée",
   "plans.streak.other": "{count} jours d’affilée",
+  "plans.catchUp": "La lecture d'hier est encore là. Lisez-la avec celle d'aujourd'hui et ce seront {streak}.",
   "desktop.presence.app": "Dans Purify",
   "desktop.presence.scripture": "Lit l’Écriture",
   "desktop.presence.prayer": "En prière",

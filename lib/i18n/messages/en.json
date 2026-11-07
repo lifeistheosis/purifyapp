@@ -4117,6 +4117,7 @@
   "plans.days.other": "{count} days",
   "plans.streak.one": "{count} day in a row",
   "plans.streak.other": "{count} days in a row",
+  "plans.catchUp": "Yesterday's reading is still here. Read it with today's and it will be {streak}.",
   "desktop.presence.app": "In Purify",
   "desktop.presence.scripture": "Reading Scripture",
   "desktop.presence.prayer": "At prayer",

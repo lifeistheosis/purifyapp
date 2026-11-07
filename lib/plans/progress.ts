@@ -89,26 +89,77 @@ export function nextDay(plan: ReadingPlan, progress: PlanProgress | undefined): 
   return null;
 }
 
+/** A civil day `by` days from `key`. */
+function step(key: DayKey, by: number): DayKey {
+  const d = new Date(`${key}T12:00:00Z`);
+  d.setUTCDate(d.getUTCDate() + by);
+  return d.toISOString().slice(0, 10);
+}
+
+/** How many plan days were read on each civil day, across every plan. */
+function readsByDay(state: PlansState): Map<DayKey, number> {
+  const count = new Map<DayKey, number>();
+  for (const p of Object.values(state)) for (const d of Object.values(p.done)) count.set(d, (count.get(d) ?? 0) + 1);
+  return count;
+}
+
+/** The days in a row ending at `anchor`, with every missed day caught up as below. */
+function rowFrom(count: Map<DayKey, number>, anchor: DayKey): number {
+  let cursor = anchor;
+  let n = 0;
+  let credit = 0;
+  for (;;) {
+    const read = count.get(cursor) ?? 0;
+    if (read > 0) {
+      n += 1;
+      credit += read - 1;
+      cursor = step(cursor, -1);
+      continue;
+    }
+    // A run of missed days: caught up if the days read beyond one a day
+    // after it cover all of it, and reading stands before it.
+    let gap = 0;
+    let before = cursor;
+    while (gap <= credit && (count.get(before) ?? 0) === 0) {
+      gap += 1;
+      before = step(before, -1);
+    }
+    if (n === 0 || gap > credit || (count.get(before) ?? 0) === 0) return n;
+    credit -= gap;
+    n += gap;
+    cursor = before;
+  }
+}
+
 /**
  * Days in a row, ending today or yesterday, on which the reader read at least
  * one day of any plan. Yesterday counts, so a streak does not break at dawn
  * before today's reading. Civil days, like every mark (lib/rhythm/dayKey.ts).
+ *
+ * A missed day is not a broken streak once it is caught up (1.9, s4-05 of
+ * docs/1.9-build/ideas.json: "a missed day offers catch up ... never a broken
+ * streak"): each plan day read beyond the first on a day covers one missed
+ * day before it, between days of reading. Mon read, Tue missed, Wed two read:
+ * three days in a row.
  */
 export function planStreak(state: PlansState, today: DayKey = todayKey()): number {
-  const days = new Set<DayKey>();
-  for (const p of Object.values(state)) for (const d of Object.values(p.done)) days.add(d);
-  const step = (key: DayKey, by: number): DayKey => {
-    const d = new Date(`${key}T12:00:00Z`);
-    d.setUTCDate(d.getUTCDate() + by);
-    return d.toISOString().slice(0, 10);
-  };
-  let cursor = days.has(today) ? today : step(today, -1);
-  let n = 0;
-  while (days.has(cursor)) {
-    n += 1;
-    cursor = step(cursor, -1);
-  }
-  return n;
+  const count = readsByDay(state);
+  return rowFrom(count, count.has(today) ? today : step(today, -1));
+}
+
+/**
+ * Yesterday missed, with reading before it: how many days in a row there
+ * will be once yesterday's reading is read with today's (the plans' offer
+ * to catch up). Null when there is nothing to catch up.
+ */
+export function catchUp(state: PlansState, today: DayKey = todayKey()): number | null {
+  const count = readsByDay(state);
+  const yesterday = step(today, -1);
+  if ((count.get(yesterday) ?? 0) > 0 || (count.get(today) ?? 0) >= 2) return null;
+  if ((count.get(step(today, -2)) ?? 0) === 0) return null;
+  const caught = new Map(count);
+  caught.set(today, 2);
+  return rowFrom(caught, today);
 }
 
 export function isPlanId(id: string): boolean {

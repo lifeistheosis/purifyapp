@@ -4116,6 +4116,7 @@
   "plans.days.other": "{count} დღე",
   "plans.streak.one": "{count} დღე ზედიზედ",
   "plans.streak.other": "{count} დღე ზედიზედ",
+  "plans.catchUp": "გუშინდელი საკითხავი ისევ აქ არის. წაიკითხეთ დღევანდელთან ერთად და იქნება {streak}.",
   "desktop.presence.app": "Purify-ში",
   "desktop.presence.scripture": "კითხულობს წერილს",
   "desktop.presence.prayer": "ლოცულობს",

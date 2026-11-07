@@ -4181,6 +4181,7 @@
   "plans.streak.one": "{count} дан заредом",
   "plans.streak.few": "{count} дана заредом",
   "plans.streak.other": "{count} дана заредом",
+  "plans.catchUp": "Јучерашње читање још чека. Прочитај га са данашњим и биће {streak}.",
   "desktop.presence.app": "У Purify-ју",
   "desktop.presence.scripture": "Чита Свето Писмо",
   "desktop.presence.prayer": "На молитви",

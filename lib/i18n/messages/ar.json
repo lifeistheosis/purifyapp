@@ -4354,6 +4354,7 @@
   "plans.streak.few": "{count} أيام على التوالي",
   "plans.streak.many": "{count} يومًا على التوالي",
   "plans.streak.other": "{count} يوم على التوالي",
+  "plans.catchUp": "قراءة الأمس ما زالت هنا. اقرأها مع قراءة اليوم فتصير {streak}.",
   "desktop.presence.app": "في Purify",
   "desktop.presence.scripture": "يقرأ الكتاب المقدس",
   "desktop.presence.prayer": "في الصلاة",

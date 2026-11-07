@@ -4242,6 +4242,7 @@
   "plans.streak.few": "{count} дні поспіль",
   "plans.streak.many": "{count} днів поспіль",
   "plans.streak.other": "{count} дня поспіль",
+  "plans.catchUp": "Учорашнє читання ще чекає. Прочитайте його разом із сьогоднішнім, і буде {streak}.",
   "desktop.presence.app": "У Purify",
   "desktop.presence.scripture": "Читає Писання",
   "desktop.presence.prayer": "На молитві",
