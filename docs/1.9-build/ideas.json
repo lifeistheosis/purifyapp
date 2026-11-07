@@ -1321,7 +1321,7 @@
    "id": "c-size-ceiling",
    "section": "Release",
    "kind": "flag",
-   "title": "The Android export is 239.2 MB against its 240 MB ceiling, which stops the build: the megabyte cleanup must come before the new Bibles",
+   "title": "The Android export is 239.2 MB against its 240 MB ceiling, which stops the build: new Bibles cannot be carried in the apps unless they stream from the website or the ceiling rises",
    "from": "claude",
    "asked": "2026-11-07",
    "status": "proposed",
@@ -1329,7 +1329,7 @@
    "needsDesign": false,
    "version": null,
    "outcome": null,
-   "note": "Measured by npm run build:android on the 1.9 branch, 2026-11-07 (75.0 MB packed of 85)"
+   "note": "Measured by npm run build:android on the 1.9 branch, 2026-11-07 (75.0 MB packed of 85). Of it, the Bible's pages are 73 MB, its study data 79 MB, the saints' pages and works 64 MB, the code 21 MB. Corrected the same day: Claude first told the owner the history pictures' cleanup would make room, but they have streamed from the website since 1.7 and are not in the apps at all"
   }
  ]
 }

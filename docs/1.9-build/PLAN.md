@@ -100,7 +100,7 @@ On the 1.9 branch:
 
 | # | Item | Status |
 |---|---|---|
-| 46 | Megabytes: the history pictures carried twice (about 13 MB), three unused files | ready, last |
+| 46 | Megabytes: the app is 239.2 of its 240 MB ceiling (Bible pages 73, Bible data 79, saints 64); new Bibles must stream or the ceiling rise (his call). On the website alone: each history picture kept as AVIF and JPEG (20 MB, not in the apps), three unused files | ready; the ceiling is needed before item 21 |
 | 47 | Animations | ready, last |
 
 ## Phase 7: ship 1.9 (`docs/RELEASE.md`)
