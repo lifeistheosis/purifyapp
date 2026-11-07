@@ -1302,6 +1302,34 @@
    "needsDesign": true,
    "version": "his: that's clean",
    "outcome": null
+  },
+  {
+   "id": "c-fast-plan",
+   "section": "Practice",
+   "kind": "idea",
+   "title": "The Nativity Fast plan from the Church's own Nativity readings: the Forefathers' Sunday, the Saturday and Sunday before, the Royal Hours, the Vespers prophecies and the feast",
+   "from": "claude",
+   "asked": "2026-11-07",
+   "status": "approved",
+   "decided": "2026-11-07",
+   "needsDesign": false,
+   "version": "his pick: the Church's Nativity readings (of three: those, each day's appointed readings, or no season card yet)",
+   "outcome": null,
+   "note": "25 distinct passages in data/calendar/official-readings.json (OCA, 2026), so 25 days, not 40"
+  },
+  {
+   "id": "c-size-ceiling",
+   "section": "Release",
+   "kind": "flag",
+   "title": "The Android export is 239.2 MB against its 240 MB ceiling, which stops the build: the megabyte cleanup must come before the new Bibles",
+   "from": "claude",
+   "asked": "2026-11-07",
+   "status": "proposed",
+   "decided": null,
+   "needsDesign": false,
+   "version": null,
+   "outcome": null,
+   "note": "Measured by npm run build:android on the 1.9 branch, 2026-11-07 (75.0 MB packed of 85)"
   }
  ]
 }
