@@ -1561,6 +1561,62 @@
    "version": null,
    "outcome": null,
    "note": "Found 2026-11-07 by the repository's own scan (npm run i18n:check): 20 keys added on 29 October were in English alone, so a reader in any other language met English there; the catalogs' test allows a missing key (English stands in), which is why nothing failed. Eighteen are seen by readers: the widget tip on Today and its row in Settings (the steps for Android and for the iPhone), and the labels over a feast day's ordinary readings and over the readings for the day's saints and feasts. Written in all twenty languages, each in its catalog's own form of address and its own words for the saint of the day and the fast; the saints-and-feasts line is each catalog's own sentence from calendar.readingsSourceFixed, word for word; the steps name each phone's own buttons where Claude knew them, and the tip already says the words differ from phone to phone. The five longest 'Show me how' labels made shorter, as the button keeps its width and squeezes the row. The two keys no code uses (study.councils.sectionNumber, backToCouncil) taken out of English and German. Every catalog now 100% (Indonesian's two are plural forms it never uses). Not seen on a phone: the tip shows only in the apps, and a browser here could not pose as one; for his or a native speaker's read, as any translation pass is."
+  },
+  {
+   "id": "e-b88-hold-menu",
+   "section": "Study",
+   "kind": "bug",
+   "title": "Holding a verse on the phone opens the computer's long menu as well as the strip",
+   "from": "edgar",
+   "needsDesign": false,
+   "asked": "2026-11-07",
+   "status": "proposed",
+   "decided": null,
+   "version": null,
+   "outcome": null,
+   "note": "Build 88, his phone walk, note 1 (docs/1.9-build/notes/build-88.md): Android sends a contextmenu on a long press, and the verse's right-click menu answers it. Fix planned: the right-click menu answers a mouse only. Open: Copy reference in Study."
+  },
+  {
+   "id": "e-b88-scroll-tap",
+   "section": "Study",
+   "kind": "bug",
+   "title": "Lifting a finger after a scroll selects the verse under it, and selecting and highlighting collide",
+   "from": "edgar",
+   "needsDesign": false,
+   "asked": "2026-11-07",
+   "status": "proposed",
+   "decided": null,
+   "version": null,
+   "outcome": null,
+   "note": "Build 88 note 2: the verse decides for itself what a tap is, so the touch that stops a glide, or a still finger over a moving page, reads as a tap, and as the first half of a double tap. Fix planned: select on the phone's own click."
+  },
+  {
+   "id": "e-b88-note-design",
+   "section": "Study",
+   "kind": "design",
+   "title": "Refine the note's design and the way it works",
+   "from": "edgar",
+   "needsDesign": true,
+   "asked": "2026-11-07",
+   "status": "proposed",
+   "decided": null,
+   "version": null,
+   "outcome": null,
+   "note": "Build 88 note 3. The first drawings (2026-11-07) broke the guardrails and were withdrawn, his word: \"I'm disappointed you forgot our guardrails and our design style\": a typed close glyph, a target under 44px, grey under 4.5:1, fixed colours, a side stripe, AI-drafted words about the verse as the sample, the journal promised to every reader, a sheet drawn by hand. Redrawn from the app itself: Note opens the journal's writing sheet in its note form (his 1.7 note 23), the saved note keeps the reader's aside box. Lesson: draw from the app's own components and measure before sending, never by hand."
+  },
+  {
+   "id": "c-light-captions",
+   "section": "Reading",
+   "kind": "bug",
+   "title": "On Light, the app's grey lines are under the contrast floor everywhere (45 to 60% ink is 2.6 to 3.9:1)",
+   "from": "claude",
+   "needsDesign": false,
+   "asked": "2026-11-07",
+   "status": "proposed",
+   "decided": null,
+   "version": null,
+   "outcome": null,
+   "note": "Build 88 note 4, found measuring note 3. About 1,555 uses of text-paper/45 to /60, plus /40 under the floor on every palette. Fix planned: a Light, Candlelight and Monastery rule in globals.css the way Black has one for 45%, and a test doing the arithmetic on every palette."
   }
  ]
 }

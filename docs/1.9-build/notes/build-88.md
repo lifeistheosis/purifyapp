@@ -90,39 +90,127 @@ and the saved note):
   corners, and the field keeps a desktop resize grip.
 - It does not say which verse it is for, and the verse loses its selection as
   the box opens, so the box floats under a verse with no mark.
-- It is written in the interface's sans, not the page's serif, though it is
-  writing about the words above it.
+- The words are in the interface's sans, where the app's own sheet for
+  writing (the journal's) writes a reader's words in Lora, as large as the
+  reader's text.
 - Closing it drops what was typed; a Delete hides among Cancel and Save.
-- A saved note stands under its verse as a grey box headed "Your note", in
-  sans, unlike anything else on the page.
+- The saved note's two grey lines, "Your note" and "You wrote this today",
+  measure 4.49:1 on Dark inside its box, just under the 4.5:1 floor, and
+  less on Light (note 4).
 - Seen in the same pictures: the strip itself lies over the first lines of the
   next verse (verse 48's opening is under it), so a reader cannot see what it
   covers while it is up.
 
-**Three ways** (drawn over the real app's John 1, at a phone's size):
-- **A, a note sheet (Claude's pick).** Note opens a sheet over the page, on the
-  keyboard: John 1:47 with a close at the left and Save at the right, the
-  verse quoted under it in the page's serif, a hairline, then the note written
-  in the serif with no frame at all, and one quiet line, "Kept with the verse,
-  and in your journal". The same sheet as Study, so the strip's two sheets
-  agree; the keyboard never covers Save; nothing on the page moves; what was
-  typed is kept if it is closed, and opening it again finds it.
-- **B, in place, refined.** It stays under the verse, as now, but as one soft
-  card joined to it with a rule down its edge, "Your note" and Done, the note
-  in the serif, saved as it is written (no Save or Cancel); the page keeps the
-  card above the keyboard.
-- **C, a page of its own,** as Community's new post: "Note on John 1:47" at the
-  head, the verse, then the note across the whole page, Save at the thumb on
-  the keyboard. The most room, for long reflections; the heaviest for a quick
-  line.
+**The first drawings are withdrawn (2026-11-07).** His word on them: "I'm
+disappointed you forgot our guardrails and our design style. I'm seeing
+designs that contradict our guardrails." He was right. They broke, each one
+a rule written down in this repository:
+- A "×" typed as the close button; the icon system has the `Close` icon, and
+  the writing sheet a Close word (`docs/design/icon-system.md`).
+- That close button about 34px across, under the 44px floor
+  (`lib/ui/__tests__/touchTargets.test.ts`).
+- Grey lines at 42% white, 4.1:1 on Dark, under 4.5:1.
+- Colours typed in as fixed values, not the palette's tokens, so nothing in
+  them would follow Light (`lib/ui/__tests__/lightSurfaces.test.ts`).
+- A rule down the note's left edge: a side stripe, which Saved gave up in 1.7
+  (note 21, "no side stripe, no box", held by the walk), and the kind of line
+  he called vibe coded in 1.7 note 24 ("the custom drawings, the line"); and
+  set on the left, not the start side, so wrong in Arabic.
+- A reading of the verse as the sample note: AI-drafted words about Scripture
+  in a picture of the app (`docs/brand/voice.md`, non-negotiable 3).
+- "Kept with the verse, and in your journal", said to every reader, though
+  the journal is Plus (non-negotiable 4: never claim what a reader does not
+  have).
+- A sheet, a card and a page drawn by hand, where the app already has the
+  sheet for writing about a verse, the journal's, which he chose in 1.7
+  (note 23: "writing full screen with the verse or reading it came from
+  attached on top"). And the first note here called the saved note's grey box
+  "unlike anything else on the page": wrong, it is the reader's own aside box
+  (below).
 
-**The saved note, for any of the three:** under its verse as a margin note, a
-thin rule at its edge, the note in the serif's italic, "Your note · 2 hours
-ago" under it; a tap opens it to edit (and to delete, in the sheet).
+**The design now: the app's own writing sheet.** Drawn from the app itself:
+the real journal sheet (`components/journal/JournalComposer.tsx`), opened on
+the native export's `/journal` for a note on John 1:47 and set over John 1.
+Nothing in the pictures is drawn by hand but the phone's keyboard.
+1. **Note, in the strip, opens the journal's writing sheet in its note form.**
+   As tall as the keyboard leaves (`Sheet` `fill`); Close at the start, which
+   keeps what was typed for that verse; Done at the end, which keeps the note,
+   or takes it off if the words were cleared; the date between them. Under
+   them the verse in its words with its reference, then the note in Lora with
+   no frame. It is the sheet the journal already uses to edit a verse's note
+   ("A note written on a verse is edited here too, and stays the verse's
+   note"), so a note is written one way everywhere. The note stays free and
+   the verse's (`lib/bible/annotations.ts`); nothing on the sheet speaks of
+   the journal. On a tablet and a computer it is the journal's centred panel.
+2. **Two changes to its note form:** the verse's own placeholder, "Add a note
+   for this verse…" (`bible.notePlaceholder`, in all 21 languages already), in
+   place of the journal's "Write what is on your heart…"; and no Open link
+   when it is opened from the verse itself, where it would open the page
+   already open.
+3. **Its placeholder at the house's caption share, 55%:** 6.2:1 on Dark, where
+   its 35% is 3.2:1. The journal's Write gains it too.
+4. **The saved note keeps the reader's aside box**, the box of the Greek
+   numbering note and the glosses (`GreekNumberingNote`, `GlossedText`), with
+   one grey line under it, not two: "You wrote this today"
+   (`bible.noteWrittenWhen`; "Your note" only where the time is not known), at
+   55%, 6.0:1 on Dark. A tap on it opens the sheet.
+5. **The inline editor goes**, and its computer hints with it (Escape still
+   closes the sheet on a computer, as it closes every sheet).
 
-**Either way:** no keyboard hints on a phone or tablet (the computer keeps
-them), no resize grip, the draft kept, the verse kept selected while its note
-is open. And for the strip over the next verse: open it in the page's flow,
-the verses below sliding down as it opens and back as it closes, so it covers
-nothing; or keep it over the page and let a scroll put it away, as now. His
-word on that too.
+**Measured on what was drawn**, on all five palettes with note 4's rule in:
+every word 4.5:1 or more against its ground (the lowest, John 1:47 on
+Candlelight at 55%, 4.51:1); Close 62 by 47px and Done 78 by 47px; no
+character used as an icon; no em dash; no new words, every line an existing
+key. Pictures, sent in chat 2026-11-07: 1 the sheet on Dark, empty; 2 on
+Light, a note written; 3 the saved note under its verse on Dark. The sample
+note is a plain reminder, "Read this again on Sunday.", so that no reading
+of Scripture is put in a reader's mouth.
+
+**Fix planned** (when he says start, and his word on the design first):
+- `VerseRow.tsx`: Note opens the composer in its note form, with the verse's
+  words from the page; the inline editor and its two hints go; the saved note
+  keeps its box, one line at 55%, and opens the sheet on a tap.
+- `JournalComposer.tsx`: the note form's placeholder, no Open from the verse,
+  the placeholder at 55%.
+- What was typed and closed is kept for that verse, not in the journal's one
+  draft, which the next Write would replace.
+- Held by a test of the source (the strip's Note opens the composer; no Esc
+  or ⌘ hint on the page) and by the walk: Note opens the sheet with the
+  verse's words, Close keeps them, Done puts the note under its verse, each
+  word measured against the floor.
+
+**One question left with it, his word:** the strip over the next verse. Open
+it in the page's flow, the verses below sliding down as it opens and back as
+it closes, so it covers nothing; or keep it over the page and let a scroll
+put it away, as now.
+
+## 4. Light's grey lines are under the contrast floor, all over the app
+
+**Found by Claude, 2026-11-07,** measuring note 3's sheet on every palette.
+
+**What was found.** The app's grey lines (captions, dates, counts, fine print)
+are the palette's ink at 40 to 60%. On Light, the free palette for readers
+who get dizzy on dark ones, every one of them is under WCAG AA's 4.5:1:
+
+| Ink share, on the page | Dark | Light | Black | Candlelight | Monastery | Uses |
+|---|---|---|---|---|---|---|
+| 45% | 4.56 | 2.62 | 4.43 (4.75 by its rule) | 3.35 | 3.98 | 264 |
+| 50% | 5.36 | 2.96 | 5.32 | 3.95 | 4.64 | 245 |
+| 55% | 6.19 | 3.39 | 6.25 | 4.56 | 5.37 | 645 |
+| 60% | 7.19 | 3.90 | 7.37 | 5.25 | 6.19 | 401 |
+
+Light needs 66% to reach 4.5:1. The 40% share (135 uses) is under the floor
+on every palette, which the Black rule's own comment already says. Black has
+a rule for its 45% (`app/globals.css`, "text-paper/45 is on about 300
+eyebrows"); Light, Candlelight and Monastery have none. Placeholders at 35 to
+40% (46 fields) are 2.0 to 3.8:1. Nothing caught it: the axe suite runs on
+Dark only, and `litPalette.test.ts` holds the liturgical surfaces, not these.
+
+**Fix planned.** The Black rule's way, in `app/globals.css` (in the
+utilities layer, under `:where()`, so a hover still wins): on Light the 45 to
+60% shares drawn at 70% (5.0 to 5.2:1); on Candlelight the 45 and 50% at 60%
+(5.25:1); on Monastery the 45% at 50% (4.64:1). Decorative and disabled text
+excepted, as WCAG excepts it. Held by a test that does the arithmetic on
+every palette, as `litPalette.test.ts` does for its surfaces, and by the walk
+measuring a caption on each palette. Note 3's pictures were drawn with its
+Light and Candlelight parts in.
