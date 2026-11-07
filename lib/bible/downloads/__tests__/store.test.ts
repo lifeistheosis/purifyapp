@@ -31,11 +31,13 @@ const RU = "ru-synodal" as const;
 
 /** The phone's data folder. */
 const files = new Map<string, string>();
+const dirs: string[] = [];
 const plugin = {
-  Directory: { Data: "DATA" },
+  Directory: { Data: "DATA", LibraryNoCloud: "LIBRARY_NO_CLOUD" },
   Encoding: { UTF8: "utf8" },
   Filesystem: {
-    writeFile: async ({ path: p, data }: { path: string; data: string }) => {
+    writeFile: async ({ path: p, data, directory }: { path: string; data: string; directory: string }) => {
+      dirs.push(directory);
       files.set(p, data);
       return { uri: `file:///data/${p}` };
     },
@@ -69,6 +71,7 @@ function website(change?: (url: string, body: string) => string | null) {
 beforeEach(() => {
   store.clear();
   files.clear();
+  dirs.length = 0;
   asked.length = 0;
   resetBibleStoreForTests();
 });
@@ -85,6 +88,8 @@ describe("downloading a Bible", () => {
     expect(savedBibles()[RU]).toMatchObject({ version: manifest.version, bytes: manifest.bytes });
     expect(savedBibles()[RU].books).toHaveLength(78);
     expect(bibleDownload(RU)).toBeNull();
+    // Kept out of an iPhone's iCloud backup, as Apple asks of what can be downloaded again.
+    expect(new Set(dirs)).toEqual(new Set(["LIBRARY_NO_CLOUD"]));
   });
 
   it("keeps nothing it cannot check, and asks the website itself before giving up on a book", async () => {

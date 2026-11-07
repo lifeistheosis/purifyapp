@@ -5,8 +5,11 @@
 //
 // In the apps a Bible is downloaded when the reader asks for it: its list
 // (public/bibles/<bible>/index.json), then each book's file, written to the
-// app's own data folder (bibles/<bible>/<book>.json) with the Filesystem
-// plugin, as offline listening keeps its recordings (lib/readAloud/offline.ts).
+// app's own folder (bibles/<bible>/<book>.json) with the Filesystem plugin.
+// The folder is the plugin's LibraryNoCloud: on an iPhone the Library kept
+// out of iCloud backups, as Apple's storage rules ask of what can be
+// downloaded again (the plugin's Data is Documents there, which is backed
+// up); on Android the app's own files, as Data is.
 // Each book is checked against the list (its hash) before it is kept. A
 // download that stops (no signal, the app closed) keeps the books it has, and
 // the next one begins where it stopped. The Bible counts as on the phone once
@@ -64,9 +67,14 @@ const SAVED_KEY = "purify:bibles.saved";
 const PARTIAL_KEY = "purify:bibles.partial";
 const EVENT = "purify:bibles";
 
-/** The folder in the app's data where a Bible's books are kept. */
+/** The folder in the app's own files where a Bible's books are kept. */
 export function bibleFolder(id: BibleId): string {
   return `bibles/${id}`;
+}
+
+/** Where on the phone: kept, never backed up, never cleared for space (see above). */
+function home(fs: Plugin) {
+  return fs.Directory.LibraryNoCloud;
 }
 
 /** Where a book of a Bible is on the website: the page's own in a browser, the website's in the apps. */
@@ -238,7 +246,7 @@ export async function downloadBible(
           await fs.Filesystem.writeFile({
             path: `${bibleFolder(id)}/${entry.book}.json`,
             data: text,
-            directory: fs.Directory.Data,
+            directory: home(fs),
             encoding: fs.Encoding.UTF8,
             recursive: true,
           });
@@ -295,7 +303,7 @@ export async function removeBible(id: BibleId, plugin?: Plugin): Promise<void> {
   cancelBibleDownload(id);
   const fs = plugin ?? (await import("@capacitor/filesystem"));
   try {
-    await fs.Filesystem.rmdir({ path: bibleFolder(id), directory: fs.Directory.Data, recursive: true });
+    await fs.Filesystem.rmdir({ path: bibleFolder(id), directory: home(fs), recursive: true });
   } catch {
     /* already gone */
   }
@@ -339,7 +347,7 @@ export function readBibleBook(
       if (native) {
         if (!savedBibles()[id]?.books.includes(book)) return null;
         const fs = plugin ?? (await import("@capacitor/filesystem"));
-        const got = await fs.Filesystem.readFile({ path: `${bibleFolder(id)}/${book}.json`, directory: fs.Directory.Data, encoding: fs.Encoding.UTF8 });
+        const got = await fs.Filesystem.readFile({ path: `${bibleFolder(id)}/${book}.json`, directory: home(fs), encoding: fs.Encoding.UTF8 });
         text = typeof got.data === "string" ? got.data : await got.data.text();
       } else {
         const res = await fetcher(bookUrl(id, book, false));

@@ -1385,12 +1385,40 @@
    "title": "Each Bible is downloaded when the reader picks it, as other Bible apps do; the app carries none of the new ones",
    "from": "edgar",
    "asked": "2026-11-07",
-   "status": "approved",
+   "status": "built",
    "decided": "2026-11-07",
    "needsDesign": true,
+   "version": "the Russian Synodal (1876, CrossWire, 78 books) and the Greek (Brenton's Septuagint 1851 and the Patriarchal New Testament 1904, eBible, 77 books): each a file a book on the website, downloaded to the phone from the translations list, read in its own numbering",
+   "outcome": null,
+   "note": "His words: \"make it so that the user picks to download the selected Bible they pick. (other Bible apps do this we need this) instead of the app including all of them downloaded already\". Settles the size question for the new Bibles (217.7 of 240 MB after the full optimize). Built 2026-11-07: 7.5 and 8.8 MB on the phone (1.8 and 2.0 MB to download, compressed); a ring while it downloads, a tap to stop, resumed where it stopped; Remove from its ••• line. On the website each book is read from the website. Walked in a browser told it is the app (79 files, the Bible opening when in, other books from the phone with no request, Remove back to the English); the real phone walk is item 49"
+  },
+  {
+   "id": "e-language-popup",
+   "section": "Reading",
+   "kind": "design",
+   "title": "The offer of the app in a Bible's language is a pop-up in the middle of the screen, not a sheet",
+   "from": "edgar",
+   "asked": "2026-11-07",
+   "status": "built",
+   "decided": "2026-11-07",
+   "needsDesign": false,
+   "version": "a card over the dimmed page: Switch to Русский, Not now, Never ask again; a tap off it, Escape and Android's back are Not now",
+   "outcome": null,
+   "note": "His words, on the first draw (a sheet rising from the foot): \"make this a pop up rather than a pull up bar\". components/bible/BibleLanguageOffer.tsx"
+  },
+  {
+   "id": "c-ios-offline-backup",
+   "section": "Listening",
+   "kind": "flag",
+   "title": "On an iPhone, offline listening keeps its recordings in the iCloud-backed Documents folder, which Apple's storage rules keep for what cannot be downloaded again",
+   "from": "claude",
+   "asked": "2026-11-07",
+   "status": "proposed",
+   "decided": null,
+   "needsDesign": false,
    "version": null,
    "outcome": null,
-   "note": "His words: \"make it so that the user picks to download the selected Bible they pick. (other Bible apps do this we need this) instead of the app including all of them downloaded already\". Settles the size question for the new Bibles (217.7 of 240 MB after the full optimize)"
+   "note": "Found while choosing where the downloaded Bibles go: the Filesystem plugin's Data is Documents on iOS. The Bibles use LibraryNoCloud (kept, not backed up; Android's own files, as before). lib/readAloud/offline.ts saves recordings with Data, a review risk and up to hours of audio in the reader's iCloud. Moving them needs a move of what readers already saved, so it waits for his word"
   }
  ]
 }

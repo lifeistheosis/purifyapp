@@ -60,7 +60,7 @@ On the 1.9 branch:
 | # | Item | Status |
 |---|---|---|
 | 21b | Compare, in the verse strip's Study: the verse in each Bible the app may show, and its Greek (Plus; licensed translations only where their terms allow) | ready |
-| 21 | Public-domain Bibles: Romanian, Russian, Greek, Serbian, Arabic and Spanish first, then every app language; each licence proven; picking one offers the app in that language, with Never ask again. His word of 2026-11-07: each Bible is downloaded when the reader picks it, as other Bible apps do; none is carried in the app | now: the download system; the texts need the eBible host allowed here |
+| 21 | Public-domain Bibles: Romanian, Russian, Greek, Serbian, Arabic and Spanish first, then every app language; each licence proven; picking one offers the app in that language, with Never ask again. His word of 2026-11-07: each Bible is downloaded when the reader picks it, as other Bible apps do; none is carried in the app | Russian and Greek built 2026-11-07 (docs/1.9-build/BIBLES.md, "What shipped"): downloaded from the translations list, read in their own numbering, the language offer a pop-up (his word). Next: Arabic, Serbian, Spanish and Romanian wait on his labels and proofing; the verse-number map (22) to carry notes and highlights across |
 | 22 | One verse-number map, for the new Bibles and the Old Testament cross-references | ready |
 | 23 | Cross-references into the Old Testament, in the Septuagint (Genesis 1:1 back on John 1:1) | ready, after 22 |
 | 24 | Tap an English word to study its Greek | done |
@@ -108,7 +108,7 @@ On the 1.9 branch:
 | # | Item | Status |
 |---|---|---|
 | 48 | The note in 21 languages, the six version numbers, the update hierarchy, the drop | at the end |
-| 49 | The gates: typecheck, unit, lint, the Android and iOS exports, the export walk, the web build, the release APK on a phone, the shop's photos among it (they stream from 1.9) | at the end |
+| 49 | The gates: typecheck, unit, lint, the Android and iOS exports, the export walk, the web build, the release APK on a phone, the shop's photos among it (they stream from 1.9), and a Bible downloaded on the phone (after the website carries public/bibles: download the Russian, read with the phone offline, Remove) | at the end |
 | 50 | The push, the store builds, the reviews, the update prompt | needs you |
 | 51 | 1.8 is live in both stores (his word, 2026-11-06); set the build numbers in `lib/appUpdate/release.ts` so installed apps are told | needs you: the build numbers each store serves |
 

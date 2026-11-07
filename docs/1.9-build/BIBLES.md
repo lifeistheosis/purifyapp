@@ -46,6 +46,55 @@ file on the website, downloaded to the phone when a reader picks it, read in its
 own numbering (Psalm 50:3 in the Synodal is "Have mercy upon me", verse 1 in the
 app's English), and removable to free the space.
 
+## What shipped (2026-11-07)
+
+Two Bibles, each a file a book on the website (`public/bibles/<bible>/`, made by
+`scripts/bibles/build.mjs`, the Russian read from CrossWire's module by
+`scripts/bibles/sword-extract.py`), listed in the translations under their
+languages, downloaded to the phone from there, and read straight from the
+website on the website. The apps carry only the list (`data/bibles/catalog.json`).
+
+| Bible | Books | On the phone | To download |
+|---|---|---|---|
+| Синодальный перевод (1876) | 78, with the deuterocanon | 7.5 MB | 1.8 MB |
+| Οι Εβδομήκοντα και το Πατριαρχικό κείμενο (1904) | 77 (no 2 Esdras, which survives in Latin) | 8.8 MB | 2.0 MB |
+
+**Each keeps its own numbering, chapters and verses.** The app's page for a
+chapter shows the Bible's chapter of that number. Where an edition divides a
+book otherwise than the app's English, nothing is renumbered: the Greek's
+Joel is in four chapters, as Greek Bibles print it, and its fourth follows its
+third on the app's last page of Joel; its Malachi is in three, so the page for
+Malachi 4 says the verses are in chapter 3 (3:19-24) and leads there; its
+Proverbs 30 stands in its chapter 24, as the Septuagint orders it, and that
+page says so. The Synodal's Jeremiah is in the Hebrew order. A chapter that
+begins past verse 1 in the Greek (1 Samuel 13, Jeremiah 2) is the Septuagint
+lacking those verses, not a fault.
+
+**Mended, and named in the build script and its tests:** in the Synodal
+module, a translator's note held as text in Job 2:9 and 9:9 (left out, as
+every footnote is) and Psalm 144's title stranded at the end of 143:15 (set
+back at the head of 144:1, where the Synodal prints it); in the Greek, the
+Septuagint's Esdras B set as Ezra and Nehemiah, Susanna and Bel as Daniel 13
+and 14, and Sirach's prologue, which the file numbers 1 and 1a to 1g with the
+book's first verse as 1h, set before verse 1 unnumbered. The Greek New
+Testament's footnotes (the 1904 printing's readings where later editions
+corrected it) are left out. 4 Maccabees is in the Greek file and not among the
+app's books. One verse of the module is empty: Psalm 114:9, whose words the
+module holds at the end of 114:8; left as the module has it.
+
+**What the downloaded text does not have yet:** the Fathers, highlights,
+notes, cross-references and the Greek beside the verse are keyed to the
+English verses, and these are numbered apart; they wait on the verse-number
+map (item 22). Listen reads the English, so a chapter in a downloaded Bible
+has no Listen. On the website a hard load of a chapter shows the English for
+a moment before the chosen Bible (the choice is on the device, which the
+server cannot see); a move between chapters does not.
+
+**For the owner and the clergy to read:** the one line under each Bible's
+name in 21 languages calls the deuterocanon "deuterocanonical" in English and,
+as each Church says it, "неканонические" in Russian and "αναγινωσκόμενα" in
+Greek. Those lines are the only words about the Bibles that are ours.
+
 ## How it fits the app
 
 - Every Bible needs the verse-number map (item 22): texts numbered as the
