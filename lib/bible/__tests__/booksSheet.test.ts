@@ -181,7 +181,9 @@ describe("the ways to it", () => {
 
   it("is the pill's name, as it always was, and the pill holds the one sheet for both", () => {
     const pill = code(PILL);
-    expect(pill).toMatch(/aria-haspopup="dialog"\s*onClick=\{\(\) => setSheetOpen\(true\)\}\s*aria-label=\{t\("bible\.pickChapterCurrentAria"/);
+    // One label for the pill's name and the dock's (1.9), "Pick a chapter, currently John 1".
+    expect(pill).toMatch(/aria-haspopup="dialog"\s*onClick=\{\(\) => setSheetOpen\(true\)\}\s*aria-label=\{pickLabel\}/);
+    expect(pill).toMatch(/const pickLabel = t\("bible\.pickChapterCurrentAria"/);
     expect(pill).toMatch(/window\.addEventListener\(BOOKS_OPEN_EVENT, open\);\s*return \(\) => window\.removeEventListener\(BOOKS_OPEN_EVENT, open\);/);
     expect(pill.split("<MobileChapterSheet").length - 1).toBe(1);
   });

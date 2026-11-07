@@ -395,7 +395,7 @@ html.is-native .safe-pb {
  padding-bottom: calc(var(--inset-bottom) + var(--tab-bar-h) + var(--now-playing-h) + var(--readings-flow-h));
 }
 html.is-native .safe-pb-reader {
- padding-bottom: calc(var(--inset-bottom) + var(--tab-bar-h) + var(--now-playing-h) + var(--readings-flow-h) + 68px);
+ padding-bottom: calc(var(--inset-bottom) + var(--tab-bar-h) + var(--now-playing-h) + var(--readings-flow-h) + var(--reader-dock-room, 0px) + 68px);
 }
 /* A full-screen layer that covers the tab bar (the welcome questions) makes
    room for the screen's own edge only. It had .safe-pb, which kept the tab
@@ -813,6 +813,140 @@ body[data-reader-screen][data-reader-away] [data-tab-bar]:has(:focus-visible) {
 :where([data-motion="reduce"]) body[data-reader-away] [data-mobile-topbar][data-plates] [data-plates-row],
 :where([data-motion="reduce"]) body[data-reader-away] [data-reader-pill],
 :where([data-motion="reduce"]) body[data-reader-screen][data-reader-away] [data-tab-bar] {
+ transition: none;
+}
+
+/* The reader's dock (1.9, the owner's pick for Listening, "one bar while
+   playing": B at rest, "when you scroll, it turns into C";
+   components/bible/ReaderDock.tsx). While anything is loaded in the player,
+   the chapter's pill and the player are one card at the reader's foot, two
+   rows, 112px. While the reader reads on, and in focus mode, it draws in to
+   a pill of 52px, the cover, Play and the time, as the mini player draws in
+   (.mini-player above): the surface narrows to the pill's measured width,
+   lowers and rounds to its ends, while the card's face fades out and the
+   pill's fades in. In the apps it comes down to the foot with the tab bar.
+   The chapter goes to the top, between the plates, which stay while it
+   plays. A control the keyboard is on keeps the card. */
+.reader-dock {
+ width: 100%;
+ height: 112px;
+ border-radius: 24px;
+ background-image: linear-gradient(to bottom, rgb(var(--panel-sheen) / 0.035), transparent 72%);
+ transition:
+  width var(--duration-base) var(--ease-house),
+  height var(--duration-base) var(--ease-house),
+  border-radius var(--duration-base) var(--ease-house);
+}
+body[data-reader-away] .reader-dock,
+html.reader-focus .reader-dock {
+ width: var(--reader-dock-pill-w, 10rem);
+ height: 52px;
+ border-radius: 26px;
+}
+.reader-dock-card,
+body[data-reader-away] .reader-dock-pill,
+html.reader-focus .reader-dock-pill {
+ opacity: 1;
+ visibility: visible;
+ pointer-events: auto;
+ transition:
+  opacity var(--duration-fast) var(--ease-house) 120ms,
+  visibility 0s;
+}
+.reader-dock-pill,
+body[data-reader-away] .reader-dock-card,
+html.reader-focus .reader-dock-card {
+ opacity: 0;
+ visibility: hidden;
+ pointer-events: none;
+ transition:
+  opacity var(--duration-fast) var(--ease-house),
+  visibility 0s linear var(--duration-fast);
+}
+body[data-reader-away] .reader-dock:has(.reader-dock-card :focus-visible) {
+ width: 100%;
+ height: 112px;
+ border-radius: 24px;
+}
+body[data-reader-away] .reader-dock:has(.reader-dock-card :focus-visible) .reader-dock-card {
+ opacity: 1;
+ visibility: visible;
+ pointer-events: auto;
+}
+body[data-reader-away] .reader-dock:has(.reader-dock-card :focus-visible) .reader-dock-pill {
+ opacity: 0;
+ visibility: hidden;
+ pointer-events: none;
+}
+/* The fade the card floats on goes with the card: the pill floats on the
+   page alone, as the mini player's does. */
+.reader-dock-fade {
+ transition: opacity var(--duration-fast) var(--ease-house);
+}
+body[data-reader-away] .reader-dock-fade,
+html.reader-focus .reader-dock-fade {
+ opacity: 0;
+}
+[data-reader-dock] {
+ transition: translate var(--duration-fast) var(--ease-house);
+}
+html.is-native:not(.reader-focus) body[data-reader-away] [data-reader-dock] {
+ translate: 0 var(--tab-bar-h);
+}
+/* The plates stay while it plays, and the chapter stands between them. */
+html.has-reader-dock body[data-reader-away] [data-mobile-topbar][data-plates] [data-plates-row] {
+ opacity: 1;
+ visibility: visible;
+ transform: none;
+}
+[data-dock-title] {
+ opacity: 0;
+ visibility: hidden;
+ transform: translateY(-8px);
+ transition:
+  opacity var(--duration-fast) var(--ease-house),
+  transform var(--duration-fast) var(--ease-house),
+  visibility 0s linear var(--duration-fast);
+}
+body[data-reader-away] [data-dock-title] {
+ opacity: 1;
+ visibility: visible;
+ transform: none;
+ transition:
+  opacity var(--duration-fast) var(--ease-house),
+  transform var(--duration-fast) var(--ease-house),
+  visibility 0s;
+}
+/* The chapter's plate is a plate: the page's ground lifted by a breath of
+   its ink, inside a hairline of it, as [data-plates] draws them above. */
+.reader-dock-title {
+ border: 1px solid rgb(255 255 255 / 0.1);
+ border-color: color-mix(in srgb, var(--color-paper) 10%, transparent);
+ background-color: rgb(30 30 33);
+ background-color: color-mix(in srgb, var(--color-paper) 6%, var(--color-night));
+ color: var(--color-paper);
+}
+/* The room the card takes over the pill's (112px against 56px), kept at the
+   reader's foot for as long as it stands there, so the page never moves
+   under the reader as it draws in and comes back. In focus mode it is the
+   pill alone, at the foot, and what floats over the foot (the way out of
+   focus, Copy) stands clear of it as it would of the mini player. */
+html.has-reader-dock {
+ --reader-dock-room: 56px;
+}
+html.reader-focus.has-reader-dock {
+ --reader-dock-room: 0px;
+ --now-playing-h: 64px;
+}
+:where([data-motion="reduce"]) .reader-dock,
+:where([data-motion="reduce"]) .reader-dock-card,
+:where([data-motion="reduce"]) .reader-dock-pill,
+:where([data-motion="reduce"]) .reader-dock-fade,
+:where([data-motion="reduce"]) [data-reader-dock],
+:where([data-motion="reduce"]) [data-dock-title],
+:where([data-motion="reduce"]) body[data-reader-away] .reader-dock-card,
+:where([data-motion="reduce"]) body[data-reader-away] .reader-dock-pill,
+:where([data-motion="reduce"]) body[data-reader-away] [data-dock-title] {
  transition: none;
 }
 

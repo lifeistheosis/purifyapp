@@ -34,10 +34,26 @@ function subscribe(listener: () => void): () => void {
   };
 }
 
+/**
+ * A page that is the player for everything (1.9, the owner's pick for
+ * Listening, "one bar while playing": docs/1.9-build/BRAINSTORM.md). On a
+ * phone and a tablet the Bible reader's chapter pill and the mini player
+ * stood one over the other while anything played; now the reader's dock
+ * (components/bible/ReaderDock.tsx) is the player there, for every track,
+ * and the pill's own sound button stands for a sound playing alone, so the
+ * mini player steps aside for both.
+ */
+export const EVERYTHING = "*";
+
 /** Whether the player's recording is one a page on the screen plays with its own controls. */
 export function playsOnPage(src: string | null | undefined, paths: readonly string[]): boolean {
   if (!src) return false;
-  return paths.some((p) => p.length > 0 && (src === p || src.endsWith(p)));
+  return paths.some((p) => p === EVERYTHING || (p.length > 0 && (src === p || src.endsWith(p))));
+}
+
+/** Whether the page on the screen is the player for everything, a sound playing alone included. */
+export function hostsEverything(paths: readonly string[]): boolean {
+  return paths.includes(EVERYTHING);
 }
 
 /** The recordings the page on the screen plays itself, for the mini player. */

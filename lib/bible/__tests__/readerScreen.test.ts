@@ -320,7 +320,9 @@ describe("the floating pill, with Listen", () => {
   it("turns the chapter, names it, and says the verse and the minutes left in a line over it", () => {
     expect(pill).toMatch(/<Arrow\s+target=\{prev\}/);
     expect(pill).toMatch(/<Arrow\s+target=\{next\}/);
-    expect(pill).toContain('aria-label={t("bible.pickChapterCurrentAria", {');
+    // One label for the pill's name and the reader's dock's (1.9).
+    expect(pill).toContain('const pickLabel = t("bible.pickChapterCurrentAria", {');
+    expect(pill).toContain("aria-label={pickLabel}");
     // Over the pill, not in it, so the pill keeps its width as the line opens.
     expect(pill).toMatch(/<ChapterVerseStatus chapterKey=\{`\$\{slug\}\/\$\{chapter\}`\} totalVerses=\{totalVerses\} \/>\s*<div\s+className=\{cn\(\s*"flex h-14 /);
     expect(pill).toContain("flex flex-col items-center gap-1.5 px-4");

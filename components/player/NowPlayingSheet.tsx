@@ -7,9 +7,7 @@ import { Reference } from "@/components/bible/Reference";
 import { useTranslate } from "@/components/i18n/MessagesProvider";
 import { BarSwitch } from "@/components/ui/BarSwitch";
 import { CrossPlate } from "@/components/ui/CrossPlate";
-import { Sheet } from "@/components/ui/Sheet";
 import { Book } from "@/components/ui/icons/Book";
-import { Check } from "@/components/ui/icons/Check";
 import { More } from "@/components/ui/icons/More";
 import { Timer } from "@/components/ui/icons/Timer";
 import { useAmbienceSheet } from "@/lib/ambience/sheet";
@@ -17,7 +15,7 @@ import { cn } from "@/lib/cn";
 import { verseOf } from "@/lib/player/captions";
 import { useSungLines } from "@/lib/player/clock";
 import { closeNowPlaying, setPlayerView, useNowPlayingSheet, type PlayerView } from "@/lib/player/sheet";
-import { isChosen, minutesLeft, setSleepTimer, useSleepTimer, type SleepChoice } from "@/lib/player/sleep";
+import { useSleepTimer } from "@/lib/player/sleep";
 import { nextSpeed, saveSpeed, speedText } from "@/lib/player/speed";
 import { playingOf, readHref, shareHref } from "@/lib/player/steps";
 import { seek, setLoopMode, setRate, usePersistentAudio, type LoopMode } from "@/lib/prayers/persistentAudioStore";
@@ -28,6 +26,7 @@ import { CoverArt } from "./CoverArt";
 import { LiveCaptions } from "./LiveCaptions";
 import { PlayerMoreSheet } from "./PlayerMore";
 import { PlayerTransport } from "./PlayerSteps";
+import { SleepTimerSheet } from "./SleepTimerSheet";
 import { SaveOffline, SaveOfflineNote } from "./SaveOffline";
 import { OptionWord, PositionBar, optionClass } from "./Transport";
 
@@ -84,7 +83,6 @@ import { OptionWord, PositionBar, optionClass } from "./Transport";
  * that plays (lib/player/sleep.ts).
  */
 const LOOPS: LoopMode[] = ["off", "inf", 3, 7, 12];
-const SLEEPS = [5, 10, 15, 30, 60];
 
 export function NowPlayingSheet() {
   const { t, locale } = useTranslate();
@@ -155,11 +153,6 @@ export function NowPlayingSheet() {
   const loopLabel =
     audio.loopMode === "off" ? t("common.off") : audio.loopMode === "inf" ? t("prayers.audio.loop") : `${audio.loopMode}×`;
   const sleeping = sleep.kind !== "off";
-  const sleepChoices: { key: string; label: string; choice: SleepChoice }[] = [
-    { key: "off", label: t("common.off"), choice: { kind: "off" } },
-    ...SLEEPS.map((m) => ({ key: String(m), label: t("today.minRead", { count: m }), choice: { kind: "minutes", minutes: m } as SleepChoice })),
-    { key: "end", label: t("player.sleepEnd"), choice: { kind: "end" } },
-  ];
   // "Verse 4 of 51" over a reading's words; who sings it over a chant's.
   const verse = words ? verseOf(sung.lines, sung.current) : null;
   // What is playing, for Speed, Read and Share (lib/player/steps.ts). Read
@@ -436,37 +429,9 @@ export function NowPlayingSheet() {
           />
 
           {/* The sleep timer, as a sheet over the player: the one timer for
-              the voice, a chant and the ambience (lib/player/sleep.ts). */}
-          <Sheet open={sleepMenu} onClose={() => setSleepMenu(false)} title={t("player.sleep")} desktop layer="over-player">
-            <div role="group" aria-label={t("player.sleep")} className="divide-y divide-paper/10">
-              {sleepChoices.map((o) => {
-                const on = isChosen(sleep, o.choice);
-                return (
-                  <button
-                    key={o.key}
-                    type="button"
-                    aria-pressed={on}
-                    onClick={() => {
-                      setSleepTimer(o.choice);
-                      setSleepMenu(false);
-                    }}
-                    className={cn(
-                      "flex min-h-12 w-full items-center justify-between gap-3 text-start font-sans text-ui hover:text-paper",
-                      on ? "font-semibold text-paper" : "text-paper/75",
-                    )}
-                  >
-                    {o.label}
-                    {on ? <Check size={18} className="shrink-0" /> : null}
-                  </button>
-                );
-              })}
-            </div>
-            {sleep.kind === "minutes" ? (
-              <p role="status" className="mt-3 font-sans text-caption text-paper/60">
-                {t("player.sleepIn", { count: minutesLeft(sleep) })}
-              </p>
-            ) : null}
-          </Sheet>
+              the voice, a chant and the ambience (lib/player/sleep.ts). The
+              reader's dock opens the same sheet (components/player/SleepTimerSheet.tsx). */}
+          <SleepTimerSheet open={sleepMenu} onClose={() => setSleepMenu(false)} layer="over-player" />
         </div>
       </div>
     </div>

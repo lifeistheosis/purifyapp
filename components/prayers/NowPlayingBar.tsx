@@ -70,7 +70,7 @@ import { getAmbienceTrack } from "@/lib/ambience/ambience";
 import { stopAmbience, useAmbience } from "@/lib/ambience/player";
 import { openAmbience } from "@/lib/ambience/sheet";
 import { connectLockScreen } from "@/lib/player/lockScreen";
-import { playsOnPage, usePagePlayer } from "@/lib/player/pagePlayer";
+import { hostsEverything, playsOnPage, usePagePlayer } from "@/lib/player/pagePlayer";
 import { openNowPlaying, useNowPlayingSheet } from "@/lib/player/sheet";
 import { pause, play, unload, usePersistentAudio } from "@/lib/prayers/persistentAudioStore";
 import { noteFootMoved, watchScrollAway } from "@/lib/ui/scrollAway";
@@ -84,9 +84,11 @@ export function NowPlayingBar() {
   const ownPlayer = usePagePlayer();
 
   // Whether the bar paints: a track loaded, with neither Now Playing nor the
-  // page's own player showing it, or a sound playing on its own.
+  // page's own player showing it, or a sound playing on its own, unless the
+  // page is the player for everything (the Bible reader's dock on a phone,
+  // 1.9), whose pill carries the sound's own button.
   const soundOnly = !src && Boolean(sound);
-  const visible = (Boolean(src) && !open && !playsOnPage(src, ownPlayer)) || soundOnly;
+  const visible = (Boolean(src) && !open && !playsOnPage(src, ownPlayer)) || (soundOnly && !hostsEverything(ownPlayer));
 
   // The lock screen and the notification's controls (1.8), in the apps only.
   // Here because this bar is mounted once for the whole app (RootFrame).

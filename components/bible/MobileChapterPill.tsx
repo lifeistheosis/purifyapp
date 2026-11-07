@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useSyncExternalStore } from "react";
 import Link from "next/link";
 import { BOOKS_OPEN_EVENT } from "@/lib/bible/booksSheet";
 import { nextChapter, prevChapter, getBook } from "@/lib/bible/books";
@@ -13,6 +13,32 @@ import { AmbienceButton } from "@/components/player/AmbienceButton";
 import { cn } from "@/lib/cn";
 import { useHasReadAloud } from "@/lib/readAloud/chapters";
 import { useOverlayOpen } from "@/lib/ui/overlay";
+import { EVERYTHING, useOwnPlayer } from "@/lib/player/pagePlayer";
+import { usePersistentAudio } from "@/lib/prayers/persistentAudioStore";
+import { useIsNative } from "@/lib/platform/native";
+import { ReaderDock } from "./ReaderDock";
+
+/** Where the pill stands: a phone's width on the web (md:hidden), and every width in the apps (native-md-flex). */
+const PHONE = "(max-width: 767.98px)";
+const HOSTS_EVERYTHING: readonly string[] = [EVERYTHING];
+const NOTHING: readonly string[] = [];
+
+function subscribePhone(onChange: () => void): () => void {
+  const query = window.matchMedia(PHONE);
+  query.addEventListener("change", onChange);
+  return () => query.removeEventListener("change", onChange);
+}
+
+/**
+ * Whether the pill, and so the dock, is on the screen: in the apps always,
+ * on the web at a phone's width. The computer's reader keeps its toolbar and
+ * the mini player.
+ */
+function useDockShows(): boolean {
+  const native = useIsNative();
+  const phone = useSyncExternalStore(subscribePhone, () => window.matchMedia(PHONE).matches, () => false);
+  return native || phone;
+}
 
 /**
  * Hoisted out of the pill body so React (and the new
@@ -85,6 +111,14 @@ function Arrow({
  *
  * It never runs past the screen: the name gives way first, down to a few
  * letters and the chapter's number, which never goes.
+ *
+ * While anything is loaded in the app's one player it is the reader's dock
+ * instead (1.9, the owner's pick for Listening: components/bible/ReaderDock.tsx),
+ * one card for the player and the chapter, where the pill and the mini
+ * player used to stand one over the other. The reader is then the player
+ * for everything on this screen, so the mini player steps aside
+ * (lib/player/pagePlayer.ts), for a sound playing alone too: the pill's own
+ * sound button, lit, stands for it.
  */
 export function MobileChapterPill({
   slug,
@@ -104,6 +138,11 @@ export function MobileChapterPill({
   const covered = useOverlayOpen();
   // Only a chapter that has a reading carries Listen.
   const reads = useHasReadAloud(slug, chapter);
+  // The dock: the player and the chapter in one card while anything is loaded.
+  const dockShows = useDockShows();
+  useOwnPlayer(dockShows ? HOSTS_EVERYTHING : NOTHING);
+  const { src } = usePersistentAudio();
+  const docked = dockShows && Boolean(src);
   // The chapter's title asks for the same sheet (ChapterScreen).
   useEffect(() => {
     const open = () => setSheetOpen(true);
@@ -112,86 +151,93 @@ export function MobileChapterPill({
   }, []);
   if (!book) return null;
 
+  const prevLabel = prev
+    ? t("bible.previousTargetAria", {
+        book: t(`bible.books.${prev.slug}`),
+        chapter: prev.chapter,
+      })
+    : t("bible.noPreviousChapter");
+  const nextLabel = next
+    ? t("bible.nextTargetAria", {
+        book: t(`bible.books.${next.slug}`),
+        chapter: next.chapter,
+      })
+    : t("bible.noNextChapter");
+  const pickLabel = t("bible.pickChapterCurrentAria", {
+    book: bookName,
+    chapter,
+  });
+
   return (
     <>
-      <div
-        aria-label={t("bible.chapterSwitcher")}
-        data-reader-chrome
-        data-reader-pill
-        // What stands at the foot of the screen, the running line over the
-        // pill with it (lib/ui/readingPlace.ts): the verse being read aloud,
-        // or landed on, stands clear of it.
-        data-screen-edge="bottom"
-        // Out of reach and out of hearing while something stands over it.
-        aria-hidden={covered || undefined}
-        className={cn(
-          "md:hidden native-md-flex fixed inset-x-0 z-40 flex flex-col items-center gap-1.5 px-4 pointer-events-none motion-safe:transition-opacity motion-safe:duration-200",
-          covered && "opacity-0",
-        )}
-        // Sit clear of the tab bar, the now-playing bar when one is up, AND the
-        // iOS home indicator, plus a 12px gap. Both vars are 0 when the thing
-        // they measure is not on screen, so this is one formula for every case.
-        style={{
-          bottom:
-            "calc(var(--tab-bar-h) + var(--now-playing-h) + var(--readings-flow-h, 0px) + env(safe-area-inset-bottom, 0px) + 12px)",
-        }}
-      >
-        {/* The fade the pill floats on, down to the tab bar, behind it. */}
-        <span aria-hidden className="pill-fade pointer-events-none absolute inset-x-0 -bottom-3 -z-10 h-44" />
-        {/* The verse being read and the minutes left, a running line over
-            the pill once the title has gone up, as a printed page carries
-            its place at its foot. Over the pill and not inside it, so the
-            pill keeps its width and the name its room. */}
-        <ChapterVerseStatus chapterKey={`${slug}/${chapter}`} totalVerses={totalVerses} />
+      {docked ? (
+        <ReaderDock
+          slug={slug}
+          chapter={chapter}
+          bookName={bookName}
+          prev={prev}
+          next={next}
+          prevLabel={prevLabel}
+          nextLabel={nextLabel}
+          pickLabel={pickLabel}
+          covered={covered}
+          onPick={() => setSheetOpen(true)}
+        />
+      ) : (
         <div
+          aria-label={t("bible.chapterSwitcher")}
+          data-reader-chrome
+          data-reader-pill
+          // What stands at the foot of the screen, the running line over the
+          // pill with it (lib/ui/readingPlace.ts): the verse being read aloud,
+          // or landed on, stands clear of it.
+          data-screen-edge="bottom"
+          // Out of reach and out of hearing while something stands over it.
+          aria-hidden={covered || undefined}
           className={cn(
-            "flex h-14 min-w-0 max-w-full items-center gap-0.5 rounded-pill border border-paper/10 bg-night-soft px-1.5 shadow-[0_14px_34px_rgba(0,0,0,0.55)]",
-            covered ? "pointer-events-none" : "pointer-events-auto",
+            "md:hidden native-md-flex fixed inset-x-0 z-40 flex flex-col items-center gap-1.5 px-4 pointer-events-none motion-safe:transition-opacity motion-safe:duration-200",
+            covered && "opacity-0",
           )}
+          // Sit clear of the tab bar, the now-playing bar when one is up, AND the
+          // iOS home indicator, plus a 12px gap. Both vars are 0 when the thing
+          // they measure is not on screen, so this is one formula for every case.
+          style={{
+            bottom:
+              "calc(var(--tab-bar-h) + var(--now-playing-h) + var(--readings-flow-h, 0px) + env(safe-area-inset-bottom, 0px) + 12px)",
+          }}
         >
-          <Arrow
-            target={prev}
-            label={
-              prev
-                ? t("bible.previousTargetAria", {
-                    book: t(`bible.books.${prev.slug}`),
-                    chapter: prev.chapter,
-                  })
-                : t("bible.noPreviousChapter")
-            }
-            dir="‹"
-          />
-          <button
-            type="button"
-            aria-haspopup="dialog"
-            onClick={() => setSheetOpen(true)}
-            aria-label={t("bible.pickChapterCurrentAria", {
-              book: bookName,
-              chapter,
-            })}
-            className="flex h-11 min-w-0 items-center px-2 font-sans text-[15px] font-semibold leading-tight text-paper"
+          {/* The fade the pill floats on, down to the tab bar, behind it. */}
+          <span aria-hidden className="pill-fade pointer-events-none absolute inset-x-0 -bottom-3 -z-10 h-44" />
+          {/* The verse being read and the minutes left, a running line over
+              the pill once the title has gone up, as a printed page carries
+              its place at its foot. Over the pill and not inside it, so the
+              pill keeps its width and the name its room. */}
+          <ChapterVerseStatus chapterKey={`${slug}/${chapter}`} totalVerses={totalVerses} />
+          <div
+            className={cn(
+              "flex h-14 min-w-0 max-w-full items-center gap-0.5 rounded-pill border border-paper/10 bg-night-soft px-1.5 shadow-[0_14px_34px_rgba(0,0,0,0.55)]",
+              covered ? "pointer-events-none" : "pointer-events-auto",
+            )}
           >
-            {/* A long name gives way before the chapter's number does. */}
-            <span className="truncate">{bookName}</span>
-            <span className="ms-1 shrink-0 tabular-nums">{chapter}</span>
-          </button>
-          <Arrow
-            target={next}
-            label={
-              next
-                ? t("bible.nextTargetAria", {
-                    book: t(`bible.books.${next.slug}`),
-                    chapter: next.chapter,
-                  })
-                : t("bible.noNextChapter")
-            }
-            dir="›"
-          />
-          <span aria-hidden className="mx-1.5 h-6 w-px shrink-0 bg-paper/15" />
-          <AmbienceButton variant="pill" />
-          {reads ? <ReadAloudPillButton book={slug} chapter={chapter} title={`${bookName} ${chapter}`} /> : null}
+            <Arrow target={prev} label={prevLabel} dir="‹" />
+            <button
+              type="button"
+              aria-haspopup="dialog"
+              onClick={() => setSheetOpen(true)}
+              aria-label={pickLabel}
+              className="flex h-11 min-w-0 items-center px-2 font-sans text-[15px] font-semibold leading-tight text-paper"
+            >
+              {/* A long name gives way before the chapter's number does. */}
+              <span className="truncate">{bookName}</span>
+              <span className="ms-1 shrink-0 tabular-nums">{chapter}</span>
+            </button>
+            <Arrow target={next} label={nextLabel} dir="›" />
+            <span aria-hidden className="mx-1.5 h-6 w-px shrink-0 bg-paper/15" />
+            <AmbienceButton variant="pill" />
+            {reads ? <ReadAloudPillButton book={slug} chapter={chapter} title={`${bookName} ${chapter}`} /> : null}
+          </div>
         </div>
-      </div>
+      )}
 
       <MobileChapterSheet
         open={sheetOpen}

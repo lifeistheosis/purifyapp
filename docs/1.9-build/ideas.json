@@ -283,11 +283,12 @@
    "title": "In the reader, while audio plays, two bars stack at the bottom",
    "from": "claude",
    "asked": "2026-11-06",
-   "status": "approved",
+   "status": "built",
    "decided": "2026-11-06",
    "needsDesign": false,
    "version": null,
-   "outcome": null
+   "outcome": null,
+   "note": "Built 2026-11-07 with s3-05"
   },
   {
    "id": "bug-6",
@@ -396,7 +397,7 @@
    "status": "built",
    "decided": "2026-11-06",
    "needsDesign": true,
-   "version": "A+B",
+   "version": "A+B; his on the built picture, 2026-11-07: that's clean",
    "outcome": null,
    "note": "Built 2026-11-07: the verse at the reading line lit, the others at 0.58, a soft light where the eye rests, a darker ground (#050505). A slip on the way: one commit said the suite was green while one test failed; the next commit fixed it, and a test now holds the chip swatches to the palettes"
   },
@@ -576,11 +577,12 @@
    "title": "One bar at the bottom while playing (bug 5)",
    "from": "claude",
    "asked": "2026-11-06",
-   "status": "picked",
+   "status": "built",
    "decided": "2026-11-06",
    "needsDesign": true,
    "version": "B, C when scrolling",
-   "outcome": null
+   "outcome": null,
+   "note": "Built 2026-11-07 as the reader's dock (components/bible/ReaderDock.tsx): one card at rest, the small pill and the chapter at the top while reading on and in focus mode; the mini player steps aside on the reader on a phone, a sound alone shows on the pill's lit button"
   },
   {
    "id": "s3-06",
@@ -1215,11 +1217,12 @@
    "title": "The player card turns into the small pill when scrolling",
    "from": "edgar",
    "asked": "2026-11-06",
-   "status": "approved",
+   "status": "built",
    "decided": "2026-11-06",
    "needsDesign": true,
    "version": null,
-   "outcome": null
+   "outcome": null,
+   "note": "Built 2026-11-07 with s3-05"
   },
   {
    "id": "e-history-thread",
