@@ -4831,6 +4831,7 @@
   "ambience.stop": "Ferma il suono",
   "ambience.playingAria": "Atmosfera, {sound} in riproduzione",
   "ambience.last": "L'ultima volta",
+  "ambience.layerHint": "Tocca un secondo suono per sentirli insieme.",
   "readAloud.listen": "Ascolta",
   "readAloud.pause": "Pausa",
   "readAloud.by": "Letto ad alta voce",

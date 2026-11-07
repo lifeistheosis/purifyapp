@@ -8,8 +8,8 @@ import { UpgradeModalProvider, useUpgradeModal } from "@/components/billing/Upgr
 import { useTranslate } from "@/components/i18n/MessagesProvider";
 import { Sheet } from "@/components/ui/Sheet";
 import { Slider } from "@/components/ui/Slider";
-import { AMBIENCE_TRACKS, type AmbienceTrack } from "@/lib/ambience/ambience";
-import { playAmbience, setAmbienceBalance, setAmbienceVolume, useAmbience } from "@/lib/ambience/player";
+import { AMBIENCE_TRACKS, getAmbienceTrack, type AmbienceTrack } from "@/lib/ambience/ambience";
+import { DEFAULT_LEVEL, layerAmbience, setAmbienceBalance, setAmbienceLevel, setAmbienceVolume, useAmbience } from "@/lib/ambience/player";
 import { closeAmbience, useAmbienceSheet } from "@/lib/ambience/sheet";
 import { cn } from "@/lib/cn";
 import { usePlusFeatures } from "@/lib/entitlements/usePlusFeatures";
@@ -25,9 +25,11 @@ const LABEL = "font-sans text-caption font-semibold text-paper/55";
 
 /**
  * The ambience sheet (1.7, the owner's note 25 of 2026-10-16 and his "Yeah,
- * these are good"): the sounds as large tiles (tap to play, tap another to
- * switch, tap the one playing to stop; while none plays, the last one the
- * reader chose is marked, 1.9), and once one plays, its volume, its
+ * these are good"): the sounds as large tiles (tap to play, tap the one
+ * playing to stop; while none plays, the last one the reader chose is
+ * marked, 1.9; from 1.9 a second tile plays beside the first, a third taking
+ * the place of the one that began first, and two playing each have a volume
+ * of their own), and once one plays, its volume, its
  * balance against the reading voice while one plays, and the sleep timer
  * shared with everything that plays (lib/player/sleep.ts).
  *
@@ -105,19 +107,18 @@ function AmbienceSheetContent({ overPlayer }: { overPlayer: boolean }) {
       upgrade.open("ambience", { overPlayer });
       return;
     }
-    // The sound playing, or the one still loading, stops; any other plays,
-    // and is the one offered next time.
-    const on = ambience.playing === track.id || ambience.loading === track.id;
-    void playAmbience(on ? null : track.id, { remember: true });
+    // A sound playing, or still loading, stops; any other joins it (1.9), and
+    // is the one offered next time.
+    void layerAmbience(track.id, { remember: true });
   };
   // While nothing plays, the reader's last sound is marked, to find it again.
-  const quiet = !ambience.playing && !ambience.loading;
+  const quiet = ambience.layers.length === 0 && !ambience.loading;
 
   return (
     <>
       <div className="grid grid-cols-3 gap-2.5">
         {AMBIENCE_TRACKS.map((track) => {
-          const lit = ambience.playing === track.id;
+          const lit = ambience.layers.includes(track.id);
           const loading = ambience.loading === track.id;
           const failed = ambience.failed === track.id;
           const last = quiet && !locked && !failed && ambience.last === track.id;
@@ -162,7 +163,12 @@ function AmbienceSheetContent({ overPlayer }: { overPlayer: boolean }) {
         })}
       </div>
 
-      {ambience.playing ? (
+      {/* One playing: a second tile plays beside it (1.9). */}
+      {ambience.layers.length === 1 && !locked ? (
+        <p className="mt-3 font-sans text-caption text-paper/50">{t("ambience.layerHint")}</p>
+      ) : null}
+
+      {ambience.layers.length > 0 ? (
         <div className="mt-5 space-y-4 border-t border-paper/10 pt-4">
           <div>
             <p className={LABEL}>{t("ambience.volume")}</p>
@@ -175,6 +181,28 @@ function AmbienceSheetContent({ overPlayer }: { overPlayer: boolean }) {
               valueText={pct.format(ambience.volume)}
             />
           </div>
+
+          {/* Two playing (1.9): each its own volume, under the one for both. */}
+          {ambience.layers.length > 1
+            ? ambience.layers.map((id) => {
+                const track = getAmbienceTrack(id);
+                if (!track) return null;
+                const level = ambience.levels[id] ?? DEFAULT_LEVEL;
+                return (
+                  <div key={id}>
+                    <p className={LABEL}>{t(track.labelKey)}</p>
+                    <Slider
+                      value={level}
+                      max={1}
+                      step={0.05}
+                      onChange={(v) => setAmbienceLevel(id, v)}
+                      label={t(track.labelKey)}
+                      valueText={pct.format(level)}
+                    />
+                  </div>
+                );
+              })
+            : null}
 
           {/* The balance, while the app's player holds a reading or a chant:
               how far the sound steps back while the voice speaks. */}

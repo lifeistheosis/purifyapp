@@ -4824,6 +4824,7 @@
   "ambience.stop": "Hentikan suara",
   "ambience.playingAria": "Suasana, {sound} diputar",
   "ambience.last": "Terakhir diputar",
+  "ambience.layerHint": "Ketuk suara kedua untuk memutar keduanya bersama.",
   "readAloud.listen": "Dengarkan",
   "readAloud.pause": "Jeda",
   "readAloud.by": "Dibacakan",

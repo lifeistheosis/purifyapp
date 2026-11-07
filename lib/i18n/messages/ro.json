@@ -4913,6 +4913,7 @@
   "ambience.stop": "Oprește sunetul",
   "ambience.playingAria": "Ambianță, se aude {sound}",
   "ambience.last": "Ultima dată",
+  "ambience.layerHint": "Atinge un al doilea sunet ca să se audă amândouă împreună.",
   "readAloud.listen": "Ascultă",
   "readAloud.pause": "Pauză",
   "readAloud.by": "Citit cu voce tare",

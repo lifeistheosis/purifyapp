@@ -5113,6 +5113,7 @@
   "ambience.stop": "إيقاف الصوت",
   "ambience.playingAria": "أجواء، {sound} قيد التشغيل",
   "ambience.last": "شُغِّل آخر مرة",
+  "ambience.layerHint": "المس صوتًا آخر ليعزف الاثنان معًا.",
   "readAloud.listen": "استمع",
   "readAloud.pause": "إيقاف مؤقت",
   "readAloud.by": "قراءة بصوت عالٍ",

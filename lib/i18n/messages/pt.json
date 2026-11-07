@@ -4831,6 +4831,7 @@
   "ambience.stop": "Parar o som",
   "ambience.playingAria": "Ambiente, tocando {sound}",
   "ambience.last": "Da última vez",
+  "ambience.layerHint": "Toque num segundo som para ouvir os dois juntos.",
   "readAloud.listen": "Ouvir",
   "readAloud.pause": "Pausar",
   "readAloud.by": "Leitura em voz alta",

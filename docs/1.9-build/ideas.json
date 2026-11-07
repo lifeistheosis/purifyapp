@@ -478,11 +478,12 @@
    "title": "Layer two sounds (rain and a distant bell), each with its own volume",
    "from": "claude",
    "asked": "2026-11-06",
-   "status": "approved",
+   "status": "built",
    "decided": "2026-11-06",
    "needsDesign": false,
    "version": null,
-   "outcome": null
+   "outcome": null,
+   "note": "Built 2026-11-07. In the ambience sheet a tile now adds its sound beside the one playing (a hint says so while one plays), a third takes the place of the one that began first, and a playing tile's tap takes it away. With two playing, each has its own volume under the one for both, kept on the device (purify.ambience.levels). The previews and night reading still play one sound alone, and the sleep timer lets both go. lib/ambience/player.ts (layerAmbience, setAmbienceLevel; each sound a gain of its own between its fade and the master), tests in lib/ambience/__tests__/layers.test.ts; one new line in 21 languages. Walked in the browser: rain, then the bell beside it with a slider each, then the sea in place of the rain, then the sea away"
   },
   {
    "id": "s2-07",

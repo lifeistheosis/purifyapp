@@ -4826,6 +4826,7 @@
   "ambience.stop": "Спри звука",
   "ambience.playingAria": "Звуков фон, звучи: {sound}",
   "ambience.last": "Последно пускан",
+  "ambience.layerHint": "Докоснете още един звук, за да звучат заедно.",
   "readAloud.listen": "Слушай",
   "readAloud.pause": "Пауза",
   "readAloud.by": "Четене на глас",

@@ -4826,6 +4826,7 @@
   "ambience.stop": "Sesi durdur",
   "ambience.playingAria": "Ortam sesi, {sound} çalıyor",
   "ambience.last": "Son çalınan",
+  "ambience.layerHint": "İkisini birlikte çalmak için ikinci bir sese dokun.",
   "readAloud.listen": "Dinle",
   "readAloud.pause": "Duraklat",
   "readAloud.by": "Sesli okuma",

@@ -4981,6 +4981,7 @@
   "ambience.stop": "Zatrzymaj dźwięk",
   "ambience.playingAria": "Tło dźwiękowe, gra: {sound}",
   "ambience.last": "Ostatnio słuchane",
+  "ambience.layerHint": "Dotknij drugiego dźwięku, by grały oba razem.",
   "readAloud.listen": "Słuchaj",
   "readAloud.pause": "Pauza",
   "readAloud.by": "Czytane na głos",

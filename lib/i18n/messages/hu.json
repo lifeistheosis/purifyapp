@@ -4826,6 +4826,7 @@
   "ambience.stop": "Hang leállítása",
   "ambience.playingAria": "Hangulat, szól: {sound}",
   "ambience.last": "Legutóbb ez szólt",
+  "ambience.layerHint": "Koppints egy második hangra, és a kettő együtt szól.",
   "readAloud.listen": "Meghallgatás",
   "readAloud.pause": "Szünet",
   "readAloud.by": "Felolvasás",

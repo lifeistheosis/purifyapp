@@ -4904,6 +4904,7 @@
   "ambience.stop": "Заустави звук",
   "ambience.playingAria": "Звучна позадина, свира: {sound}",
   "ambience.last": "Прошли пут",
+  "ambience.layerHint": "Додирни други звук да свирају заједно.",
   "readAloud.listen": "Слушај",
   "readAloud.pause": "Пауза",
   "readAloud.by": "Читање наглас",

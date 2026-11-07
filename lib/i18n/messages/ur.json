@@ -4826,6 +4826,7 @@
   "ambience.stop": "آواز روکیں",
   "ambience.playingAria": "پس منظر کی آواز، {sound} چل رہی ہے",
   "ambience.last": "پچھلی بار",
+  "ambience.layerHint": "دونوں کو ایک ساتھ چلانے کے لیے دوسری آواز پر ٹیپ کریں۔",
   "readAloud.listen": "سنیں",
   "readAloud.pause": "روکیں",
   "readAloud.by": "بلند آواز میں",

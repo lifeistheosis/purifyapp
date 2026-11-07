@@ -4828,6 +4828,7 @@
   "ambience.stop": "Klang beenden",
   "ambience.playingAria": "Klangkulisse, {sound} läuft",
   "ambience.last": "Zuletzt gehört",
+  "ambience.layerHint": "Tippen Sie auf einen zweiten Klang, um beide zusammen zu hören.",
   "readAloud.listen": "Anhören",
   "readAloud.pause": "Pause",
   "readAloud.by": "Vorgelesen",

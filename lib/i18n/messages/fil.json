@@ -4826,6 +4826,7 @@
   "ambience.stop": "Ihinto ang tunog",
   "ambience.playingAria": "Paligid na tunog, tumutugtog ang {sound}",
   "ambience.last": "Huling pinatugtog",
+  "ambience.layerHint": "Pindutin ang ikalawang tunog para sabay silang tumugtog.",
   "readAloud.listen": "Makinig",
   "readAloud.pause": "I-pause",
   "readAloud.by": "Binabasa nang malakas",

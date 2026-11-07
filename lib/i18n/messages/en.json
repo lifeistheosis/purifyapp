@@ -4846,6 +4846,7 @@
   "ambience.stop": "Stop the sound",
   "ambience.playingAria": "Ambience, {sound} playing",
   "ambience.last": "Last played",
+  "ambience.layerHint": "Tap a second sound to play the two together.",
   "readAloud.listen": "Listen",
   "readAloud.pause": "Pause",
   "readAloud.by": "Read aloud",

@@ -4826,6 +4826,7 @@
   "ambience.stop": "ხმის გაჩერება",
   "ambience.playingAria": "ფონური ხმა, ჟღერს: {sound}",
   "ambience.last": "ბოლოს ჟღერდა",
+  "ambience.layerHint": "შეეხეთ მეორე ხმას, რომ ორივე ერთად ჟღერდეს.",
   "readAloud.listen": "მოსმენა",
   "readAloud.pause": "პაუზა",
   "readAloud.by": "ხმამაღლა კითხვა",

@@ -4826,6 +4826,7 @@
   "ambience.stop": "Διακοπή ήχου",
   "ambience.playingAria": "Ατμόσφαιρα, παίζει: {sound}",
   "ambience.last": "Τελευταία φορά",
+  "ambience.layerHint": "Πατήστε έναν δεύτερο ήχο για να παίζουν μαζί.",
   "readAloud.listen": "Ακρόαση",
   "readAloud.pause": "Παύση",
   "readAloud.by": "Ανάγνωση φωναχτά",
