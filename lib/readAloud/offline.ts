@@ -105,7 +105,10 @@ async function toBase64(blob: Blob): Promise<string> {
 /**
  * Save the given chapters of a book, one after another, telling `progress`
  * after each. A chapter that cannot be had (no signal, the website refused)
- * is left to stream and counted as failed; the rest are kept.
+ * is left to stream and counted as failed; the rest are kept. `stop`, asked
+ * before each chapter, ends the saving there (1.9: the signal went, or the
+ * phone moved to mobile data while the saving waits for Wi-Fi); the chapters
+ * not reached are neither saved nor failed.
  */
 export async function saveChapters(
   book: string,
@@ -113,11 +116,13 @@ export async function saveChapters(
   urls: (chapter: number) => { mp3: string; json: string },
   progress: (done: number, total: number) => void = () => {},
   plugin?: Plugin,
-): Promise<{ saved: number; failed: number }> {
+  stop: () => boolean = () => false,
+): Promise<{ saved: number; failed: number; stopped: boolean }> {
   const { Filesystem, Directory, Encoding } = plugin ?? (await import("@capacitor/filesystem"));
   let saved = 0;
   let failed = 0;
   for (const [i, chapter] of chapters.entries()) {
+    if (stop()) return { saved, failed, stopped: true };
     const key = `${book}/${chapter}`;
     try {
       const { mp3, json } = urls(chapter);
@@ -134,7 +139,7 @@ export async function saveChapters(
     }
     progress(i + 1, chapters.length);
   }
-  return { saved, failed };
+  return { saved, failed, stopped: false };
 }
 
 /** Take a book's saved chapters off the phone. */

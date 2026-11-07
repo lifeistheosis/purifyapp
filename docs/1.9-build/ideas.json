@@ -650,11 +650,12 @@
    "title": "Check",
    "from": "claude",
    "asked": "2026-11-06",
-   "status": "approved",
+   "status": "built",
    "decided": "2026-11-06",
    "needsDesign": false,
    "version": null,
-   "outcome": null
+   "outcome": null,
+   "note": "Checked 2026-11-07, and the answer to both was no: the saving lived in the screen's memory, so a signal lost half way failed every chapter after it, closing the app ended it, Save again fetched the whole book again, and it saved over mobile data without asking. Built the same day: the book being saved is kept on the device until every chapter is (lib/readAloud/saving.ts); chapters already saved are skipped, so it goes on from where it stopped; on mobile data it waits for Wi-Fi, with Use mobile data and Cancel on the line over the player's controls; with no signal it waits for one; it goes on by itself when the connection allows, the next time the app opens included (components/native/SavingBridge.tsx); a move from Wi-Fi to mobile data stops it after the chapter in hand. Through @capacitor/network, already in both apps' builds and now used for the first time. Tests: lib/readAloud/__tests__/saving.test.ts. Walked in a browser as the app: waiting for Wi-Fi, Cancel, waiting for a signal, then all 21 chapters of John saved by themselves when Wi-Fi came. Not walked on a phone: the plugin's native answers (wifi, cellular) are its own. Waiting for Wi-Fi is the default on mobile data, as the big listening apps do; his word can make it save at once instead"
   },
   {
    "id": "s3-10",

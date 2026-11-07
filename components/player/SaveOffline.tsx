@@ -20,6 +20,12 @@
 // sheet (SaveOfflineRow; the owner's round 8 A drew the ••• and his "add
 // everything we left out" of 2026-10-28 filled it), the same saving with its
 // words on it.
+//
+// From 1.9 the saving is a job the app keeps (lib/readAloud/saving.ts): it
+// waits for Wi-Fi on mobile data (Use mobile data, or Cancel, on the line
+// over the controls), waits for a signal when there is none, goes on by
+// itself when either comes, and skips the chapters already saved, so a book
+// left half saved goes on from where it stopped.
 
 import { useEffect, useSyncExternalStore } from "react";
 
@@ -28,30 +34,21 @@ import { useTranslate } from "@/components/i18n/MessagesProvider";
 import { getBook, localBookNames } from "@/lib/bible/books";
 import { cn } from "@/lib/cn";
 import { plusFeaturesNow } from "@/lib/entitlements/usePlusFeatures";
-import { streamedUrl } from "@/lib/media/streamed";
 import { isNativeClient } from "@/lib/platform/native";
-import { bookOfSrc, hasReadAloud, readAloudRecording } from "@/lib/readAloud/chapters";
-import { checkSaved, onSavedChange, removeBook, saveChapters, savedChapters } from "@/lib/readAloud/offline";
+import { bookOfSrc, hasReadAloud } from "@/lib/readAloud/chapters";
+import { checkSaved, onSavedChange, removeBook, savedChapters } from "@/lib/readAloud/offline";
+import { cancelSaving, saveOverMobileData, startSaving, useSaving, type SavingJob } from "@/lib/readAloud/saving";
 
-type State = {
-  /** The book being saved, and how far it has come. */
-  job: { book: string; done: number; total: number } | null;
-  /** The last book whose saving missed some chapters. */
-  failed: string | null;
-  /** The book whose saved line (with Remove) is open. */
-  open: string | null;
-};
-
-const EMPTY: State = { job: null, failed: null, open: null };
-let state: State = EMPTY;
+/** The book whose saved line (with Remove) is open; the saving itself is lib/readAloud/saving.ts. */
+let open: string | null = null;
 const listeners = new Set<() => void>();
 
-function set(patch: Partial<State>): void {
-  state = { ...state, ...patch };
+function setOpen(book: string | null): void {
+  open = book;
   for (const l of listeners) l();
 }
 
-function useSaving(): State {
+function useOpen(): string | null {
   return useSyncExternalStore(
     (l) => {
       listeners.add(l);
@@ -59,9 +56,17 @@ function useSaving(): State {
         listeners.delete(l);
       };
     },
-    () => state,
-    () => EMPTY,
+    () => open,
+    () => null,
   );
+}
+
+/** What the saving says: how far it has come, or what it waits for. */
+function jobText(t: (key: string, vars?: Record<string, string | number>) => string, job: SavingJob): string {
+  const vars = { done: job.done, total: job.total };
+  if (job.waiting === "wifi") return t("player.offline.waitingWifi", vars);
+  if (job.waiting === "signal") return t("player.offline.waitingSignal", vars);
+  return t("player.offline.saving", vars);
 }
 
 function useSavedKeys(): string {
@@ -94,54 +99,49 @@ function useOfflineBook(src: string | null) {
 function useSaveBook(src: string | null) {
   const upgrade = useUpgradeModal();
   const saving = useSaving();
+  const opened = useOpen();
   const offline = useOfflineBook(src);
   const job = offline && saving.job?.book === offline.book ? saving.job : null;
 
   async function save() {
-    if (!offline || state.job) return;
+    if (!offline) return;
     const { book, chapters } = offline;
     if ((await plusFeaturesNow()) === false) {
       upgrade.open("offline", { overPlayer: true });
       return;
     }
-    set({ job: { book, done: 0, total: chapters.length }, failed: null, open: null });
-    const { failed: missed } = await saveChapters(
-      book,
-      chapters,
-      (c) => ({ mp3: readAloudRecording(book, c), json: streamedUrl(`/audio/read/${book}/${c}.json`, true) }),
-      (done, total) => set({ job: { book, done, total } }),
-    );
-    set({ job: null, failed: missed > 0 ? book : null });
+    setOpen(null);
+    await startSaving(book, chapters);
   }
 
-  return { offline, job, saving, save };
+  return { offline, job, opened, save };
 }
 
 /** The download mark, at the end of the title's line. */
 export function SaveOffline({ src, className }: { src: string | null; className?: string }) {
   const { t } = useTranslate();
-  const { offline, job, saving, save } = useSaveBook(src);
+  const { offline, job, opened, save } = useSaveBook(src);
   if (!offline) return null;
   const { book, name, saved } = offline;
 
   if (job) {
     return (
       <SaveOfflineMark
-        look="saving"
+        look={job.waiting ? "waiting" : "saving"}
         share={job.total > 0 ? job.done / job.total : 0}
-        label={t("player.offline.saving", { done: job.done, total: job.total })}
+        label={jobText(t, job)}
         className={className}
       />
     );
   }
 
   if (saved) {
-    const open = saving.open === book;
+    const isOpen = opened === book;
     return (
       <SaveOfflineMark
         look="saved"
-        expanded={open}
-        onClick={() => set({ open: open ? null : book })}
+        expanded={isOpen}
+        onClick={() => setOpen(isOpen ? null : book)}
         label={t("player.offline.saved", { book: name })}
         className={className}
       />
@@ -152,9 +152,10 @@ export function SaveOffline({ src, className }: { src: string | null; className?
 }
 
 /**
- * The mark's three looks: a book to save, its chapters saving (a ring that
- * fills), and saved (a check with a soft light). Drawn from what it is given,
- * so the player and the Plus page's preview of Listen offline
+ * The mark's looks: a book to save, its chapters saving (a ring that fills),
+ * waiting for Wi-Fi or a signal (1.9: the ring, dimmed, where it stopped),
+ * and saved (a check with a soft light). Drawn from what it is given, so the
+ * player and the Plus page's preview of Listen offline
  * (components/billing/plusTry/TryOffline.tsx) are the one mark.
  */
 export function SaveOfflineMark({
@@ -165,8 +166,8 @@ export function SaveOfflineMark({
   expanded,
   className,
 }: {
-  look: "save" | "saving" | "saved";
-  /** While saving: how far it has come, 0 to 1. */
+  look: "save" | "saving" | "waiting" | "saved";
+  /** While saving or waiting: how far it has come, 0 to 1. */
   share?: number;
   /** What the mark says to a screen reader. */
   label: string;
@@ -180,9 +181,9 @@ export function SaveOfflineMark({
     className,
   );
 
-  if (look === "saving") {
+  if (look === "saving" || look === "waiting") {
     return (
-      <span role="img" aria-label={label} className={cn(box, "text-paper")}>
+      <span role="img" aria-label={label} className={cn(box, look === "waiting" ? "text-paper/50" : "text-paper")}>
         <svg width={24} height={24} viewBox="0 0 24 24" aria-hidden>
           <circle cx="12" cy="12" r="9" fill="none" stroke="currentColor" strokeOpacity={0.2} strokeWidth={2} />
           <circle
@@ -261,10 +262,15 @@ export function SaveOfflineRow({ src, onLeave, className }: { src: string | null
 
   if (job) {
     return (
-      <p role="status" className={row}>
+      <div role="status" className={row}>
         {mark}
-        <span className="min-w-0 truncate">{t("player.offline.saving", { done: job.done, total: job.total })}</span>
-      </p>
+        <span className="min-w-0 flex-1 truncate">{jobText(t, job)}</span>
+        {job.waiting === "wifi" ? (
+          <button type="button" onClick={() => void saveOverMobileData()} className="tap-press hit-44 shrink-0 font-semibold text-paper hover:underline">
+            {t("player.offline.useData")}
+          </button>
+        ) : null}
+      </div>
     );
   }
 
@@ -276,7 +282,7 @@ export function SaveOfflineRow({ src, onLeave, className }: { src: string | null
         <button
           type="button"
           onClick={() => {
-            set({ open: null });
+            setOpen(null);
             void removeBook(book);
           }}
           className="tap-press hit-44 shrink-0 font-semibold text-paper hover:underline"
@@ -304,12 +310,15 @@ export function SaveOfflineRow({ src, onLeave, className }: { src: string | null
 
 /**
  * The one line about saving, over the player's controls: how far the saving
- * has come, that some chapters could not be saved, or (once the check is
- * tapped) the saved book with Remove. Nothing when there is nothing to say.
+ * has come, what it waits for (Wi-Fi, with Use mobile data and Cancel; a
+ * signal, with Cancel), that some chapters could not be saved, or (once the
+ * check is tapped) the saved book with Remove. Nothing when there is nothing
+ * to say.
  */
 export function SaveOfflineNote({ src, className }: { src: string | null; className?: string }) {
   const { t } = useTranslate();
   const saving = useSaving();
+  const opened = useOpen();
   const offline = useOfflineBook(src);
   // Once a session, forget saved chapters whose files the phone no longer
   // has. Here, drawn once under both views, rather than on each mark.
@@ -320,23 +329,35 @@ export function SaveOfflineNote({ src, className }: { src: string | null; classN
   const { book, name, saved } = offline;
   const job = saving.job?.book === book ? saving.job : null;
   const line = job
-    ? { text: t("player.offline.saving", { done: job.done, total: job.total }), remove: false }
+    ? { text: jobText(t, job), remove: false }
     : saving.failed === book
       ? { text: t("player.offline.failed"), remove: false }
-      : saved && saving.open === book
+      : saved && opened === book
         ? { text: t("player.offline.saved", { book: name }), remove: true }
         : null;
+  const action = "tap-press hit-44 px-1 font-semibold text-paper/85 underline-offset-4 hover:underline";
   return (
     <p role="status" className={cn("flex min-h-0 flex-wrap items-center justify-center gap-x-2 text-center font-sans text-caption text-paper/60", className)}>
-      {line ? <span>{line.text}</span> : null}
+      {/* While it waits, the words on their own line and its choices together under them. */}
+      {line ? <span className={job?.waiting ? "basis-full" : undefined}>{line.text}</span> : null}
+      {job?.waiting === "wifi" ? (
+        <button type="button" onClick={() => void saveOverMobileData()} className={action}>
+          {t("player.offline.useData")}
+        </button>
+      ) : null}
+      {job?.waiting ? (
+        <button type="button" onClick={cancelSaving} className={action}>
+          {t("common.cancel")}
+        </button>
+      ) : null}
       {line?.remove ? (
         <button
           type="button"
           onClick={() => {
-            set({ open: null });
+            setOpen(null);
             void removeBook(book);
           }}
-          className="tap-press hit-44 px-1 font-semibold text-paper/85 underline-offset-4 hover:underline"
+          className={action}
         >
           {t("player.offline.remove")}
         </button>

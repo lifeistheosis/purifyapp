@@ -60,7 +60,7 @@ describe("saving a book", () => {
   it("keeps both files of each chapter and plays the saved copy from then on", async () => {
     const seen: string[] = [];
     const result = await saveChapters("jude", [1], urls("jude"), (d, t) => seen.push(`${d}/${t}`), plugin);
-    expect(result).toEqual({ saved: 1, failed: 0 });
+    expect(result).toEqual({ saved: 1, failed: 0, stopped: false });
     expect(seen).toEqual(["1/1"]);
     expect([...files.keys()].sort()).toEqual(["audio/read/jude/1.json", "audio/read/jude/1.mp3"]);
     expect(savedSrc("jude", 1)).toBe("https://localhost/_capacitor_file_/data/app/files/audio/read/jude/1.mp3");
@@ -71,9 +71,16 @@ describe("saving a book", () => {
 
   it("leaves a chapter it cannot get to stream, and keeps the rest", async () => {
     const result = await saveChapters("mark", [8, 9, 10], urls("mark"), undefined, plugin);
-    expect(result).toEqual({ saved: 2, failed: 1 });
+    expect(result).toEqual({ saved: 2, failed: 1, stopped: false });
     expect(Object.keys(savedChapters()).sort()).toEqual(["mark/10", "mark/8"]);
     expect(savedSrc("mark", 9)).toBeNull();
+  });
+
+  it("stops before the next chapter when asked (1.9: the signal went, or the phone left Wi-Fi), the rest neither saved nor failed", async () => {
+    let asked = 0;
+    const result = await saveChapters("mark", [8, 10, 11], urls("mark"), undefined, plugin, () => ++asked > 1);
+    expect(result).toEqual({ saved: 1, failed: 0, stopped: true });
+    expect(Object.keys(savedChapters())).toEqual(["mark/8"]);
   });
 
   it("still streams on the website, saved or not", async () => {

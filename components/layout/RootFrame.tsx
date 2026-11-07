@@ -30,6 +30,7 @@ import { AppNudge } from "@/components/marketing/AppNudge";
 import { NativeBridge } from "@/components/native/NativeBridge";
 import { PackBridge } from "@/components/native/PackBridge";
 import { PressToCopy } from "@/components/native/PressToCopy";
+import { SavingBridge } from "@/components/native/SavingBridge";
 import { ShortcutListener } from "@/components/native/ShortcutListener";
 import { WidgetBridgeSync } from "@/components/native/WidgetBridgeSync";
 import { RouteExitBridge } from "@/components/nav/RouteExitBridge";
@@ -172,6 +173,10 @@ export function RootFrame({
           opens on Today, outside the (app) group. Renders nothing, and does
           nothing in a browser. */}
       <PackBridge />
+      {/* A book's saving to listen offline, left unfinished, picked up again
+          (lib/readAloud/saving.ts). Renders nothing, and does nothing in a
+          browser. */}
+      <SavingBridge />
     </>
   );
 }
