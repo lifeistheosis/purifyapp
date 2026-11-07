@@ -13794,25 +13794,100 @@ a.set-lab.set-link {
    parcel; the gift is a ticket on Settings' raised panel (.set-panel) with a
    torn line; then the lit pill (.rule-pray), and what Plus opens as Settings'
    own rows. components/gifts/OrderGiftClient.tsx.
-   On Parchment nothing glows: the light is a shade of ink. The cards settle
-   once as the page opens, never under data-motion="reduce". */
+
+   The claim (his "add a claim animation", the same day; his pick A of r3-40,
+   "light pours from behind the card", over the stub tearing off and a band of
+   light crossing the ticket). The section carries data-gift: "opening" while
+   the claim is answered (the front card held up to the light, the glow
+   rising), "reveal" for the one pass of the moment, then "lit", the look it
+   rests in and the look a reader who comes back finds. In the reveal the card
+   rises into a burst of light with slow rays turning in it and settles, the
+   gift box's own language (.gift-flood and .gift-rays above), an icon's
+   glory, not a strobe; then the check draws itself (check-draw, no overshoot:
+   the app confirms), the title takes the light, the date rises onto the
+   stub, the way on follows, and each row of what Plus opens gains its arrow.
+   From the reveal, in ms: 0 the light, 600 the check, 760 the date, 820 its
+   stroke, 1000 the phone's soft tick (CHECK_LANDS_MS), 1050 the way on, 1200
+   the rows, all still by 2400 (REVEAL_MS).
+   Transform and opacity only, as the gift box, and no backdrop-filter. Under
+   data-motion="reduce" nothing travels: the lit look arrives as a plain
+   cross-fade. On Parchment nothing glows: the light is a shade of ink, and
+   the rays and the burst are not drawn. */
 .gift-stage {
  position: relative;
  height: 372px;
  overflow: hidden;
 }
-.gift-light {
+/* All the stage's light, faded out before its lower edge: the lit glow and
+   the rays reach past it, and the stage's clip drew a hard line there. */
+.gift-lights {
+ position: absolute;
+ inset: 0;
+ pointer-events: none;
+ -webkit-mask-image: linear-gradient(to bottom, #000 calc(100% - 120px), transparent);
+ mask-image: linear-gradient(to bottom, #000 calc(100% - 120px), transparent);
+}
+.gift-light,
+.gift-glow,
+.gift-burst,
+.gift-glory {
  position: absolute;
  left: 50%;
+ pointer-events: none;
+}
+.gift-light {
  top: 44px;
  width: 440px;
  height: 380px;
  margin-left: -220px;
  background: radial-gradient(closest-side, rgb(255 255 255 / 0.13), rgb(255 255 255 / 0));
- pointer-events: none;
+}
+/* The light that stays on once the gift is theirs. */
+.gift-glow {
+ top: 30px;
+ width: 520px;
+ height: 440px;
+ margin-left: -260px;
+ background: radial-gradient(closest-side, rgb(255 255 255 / 0.16), rgb(255 255 255 / 0));
+ opacity: 0;
+}
+[data-gift="opening"] .gift-glow {
+ opacity: 0.6;
+}
+[data-gift="reveal"] .gift-glow,
+[data-gift="lit"] .gift-glow {
+ opacity: 1;
 }
 html[data-reading-mode="parchment"] .gift-light {
  background: radial-gradient(closest-side, rgb(0 0 0 / 0.06), rgb(0 0 0 / 0));
+}
+html[data-reading-mode="parchment"] .gift-glow {
+ background: radial-gradient(closest-side, rgb(0 0 0 / 0.045), rgb(0 0 0 / 0));
+}
+/* The light from behind the card, centred on the front card. */
+.gift-burst,
+.gift-glory {
+ top: 244px;
+ border-radius: 50%;
+ opacity: 0;
+}
+.gift-burst {
+ width: 320px;
+ height: 320px;
+ margin: -160px 0 0 -174px;
+ background: radial-gradient(closest-side, rgb(255 255 255 / 0.5), rgb(255 255 255 / 0.16) 48%, rgb(255 255 255 / 0));
+}
+.gift-glory {
+ width: 460px;
+ height: 460px;
+ margin: -230px 0 0 -244px;
+ background: repeating-conic-gradient(from 4deg, rgb(255 255 255 / 0.2) 0deg 2deg, rgb(255 255 255 / 0) 2deg 15deg);
+ -webkit-mask-image: radial-gradient(closest-side, #000 12%, rgb(0 0 0 / 0.5) 45%, transparent 80%);
+ mask-image: radial-gradient(closest-side, #000 12%, rgb(0 0 0 / 0.5) 45%, transparent 80%);
+}
+html[data-reading-mode="parchment"] .gift-burst,
+html[data-reading-mode="parchment"] .gift-glory {
+ display: none;
 }
 .gift-card {
  position: absolute;
@@ -13829,24 +13904,27 @@ html[data-reading-mode="parchment"] .gift-card {
   0 1px 2px rgb(60 40 20 / 0.25),
   0 22px 34px -16px rgb(60 40 20 / 0.45);
 }
+/* How each lies on the table is the individual rotate, so the hold and the
+   reveal can move a card (translate, rotate, scale) while its arrival with
+   the page runs on transform underneath. */
 .gift-card-back {
  top: 118px;
  margin-left: -111px;
- transform: rotate(-7deg);
+ rotate: -7deg;
 }
 .gift-card-front {
  top: 166px;
  margin-left: -145px;
- transform: rotate(4deg);
+ rotate: 4deg;
 }
 @keyframes gift-card-in {
  from {
   opacity: 0;
-  translate: 0 14px;
+  transform: translateY(14px);
  }
  to {
   opacity: 1;
-  translate: 0 0;
+  transform: none;
  }
 }
 :where([data-motion="full"]) .gift-card {
@@ -13854,6 +13932,19 @@ html[data-reading-mode="parchment"] .gift-card {
 }
 :where([data-motion="full"]) .gift-card-front {
  animation-delay: 120ms;
+ transition:
+  translate 600ms var(--ease-house),
+  rotate 600ms var(--ease-house),
+  scale 600ms var(--ease-house);
+}
+:where([data-motion="full"]) .gift-glow {
+ transition: opacity 700ms var(--ease-house);
+}
+/* Held up to the light while the claim is answered. */
+:where([data-motion="full"]) [data-gift="opening"] .gift-card-front {
+ translate: 0 -14px;
+ rotate: 1.5deg;
+ scale: 1.03;
 }
 .gift-caption {
  margin-top: -26px;
@@ -13869,6 +13960,10 @@ html[data-reading-mode="parchment"] .gift-card {
  letter-spacing: 0.18em;
  text-transform: uppercase;
  color: color-mix(in srgb, var(--color-paper) 62%, transparent);
+}
+:where(html:not([data-reading-mode="parchment"])) [data-gift="reveal"] .gift-title,
+:where(html:not([data-reading-mode="parchment"])) [data-gift="lit"] .gift-title {
+ text-shadow: 0 0 22px rgb(255 255 255 / 0.32);
 }
 /* The torn line across the ticket, with its two bites out of the edge. */
 .gift-perf {
@@ -13908,6 +14003,111 @@ html[data-reading-mode="parchment"] .gift-card {
 html[data-reading-mode="parchment"] .gift-check {
  box-shadow: 0 2px 4px rgb(0 0 0 / 0.2);
 }
+/* The stub's one line is as tall as "Yours until" and its date, so the
+   page below does not shift by a few pixels when the words change. */
+.gift-foot-now {
+ min-height: 1.5rem;
+}
+/* What the stub said while the gift was opened, leaving as the reveal
+   starts; only ever drawn while it moves. */
+.gift-foot-was {
+ display: none;
+ position: absolute;
+ inset-inline: 18px;
+ top: 0.875rem;
+ pointer-events: none;
+}
+.gift-hint {
+ margin-top: 10px;
+ padding-inline: 12px;
+ text-align: center;
+ font-size: 12.5px;
+ line-height: 1.45;
+ color: color-mix(in srgb, var(--color-paper) 55%, transparent);
+}
+
+@keyframes gift-burst-out {
+ 0% { opacity: 0; scale: 0.3; }
+ 36% { opacity: 1; scale: 1.05; }
+ 100% { opacity: 0; scale: 1.65; }
+}
+@keyframes gift-glory-turn {
+ 0% { opacity: 0; scale: 0.45; rotate: 0deg; }
+ 35% { opacity: 1; }
+ 100% { opacity: 0; scale: 1.35; rotate: 22deg; }
+}
+@keyframes gift-card-rise {
+ 0% { translate: 0 -14px; rotate: 1.5deg; scale: 1.03; }
+ 34% { translate: 0 -24px; rotate: 0deg; scale: 1.06; }
+ 100% { translate: 0 0; rotate: 4deg; scale: 1; }
+}
+@keyframes gift-check-in {
+ from { opacity: 0; scale: 0.6; }
+ to { opacity: 1; scale: 1; }
+}
+@keyframes gift-title-lit {
+ from { text-shadow: 0 0 0 rgb(255 255 255 / 0); }
+ to { text-shadow: 0 0 22px rgb(255 255 255 / 0.32); }
+}
+@keyframes gift-rise-on {
+ from { opacity: 0; translate: 0 8px; }
+ to { opacity: 1; translate: 0 0; }
+}
+@keyframes gift-leave {
+ from { opacity: 1; translate: 0 0; }
+ to { opacity: 0; translate: 0 -6px; }
+}
+@keyframes gift-chev-in {
+ from { opacity: 0; translate: -6px 0; }
+ to { opacity: 1; translate: 0 0; }
+}
+@keyframes gift-fade-in {
+ from { opacity: 0; }
+ to { opacity: 1; }
+}
+
+/* The reveal. */
+:where([data-motion="full"]) [data-gift="reveal"] .gift-burst {
+ animation: gift-burst-out 1200ms var(--ease-house) 120ms both;
+}
+:where([data-motion="full"]) [data-gift="reveal"] .gift-glory {
+ animation: gift-glory-turn 1450ms var(--ease-house) 120ms both;
+}
+:where([data-motion="full"]) [data-gift="reveal"] .gift-card-front {
+ animation: gift-card-rise 1150ms var(--ease-house) both;
+}
+:where([data-motion="full"]) [data-gift="reveal"] .gift-check {
+ animation: gift-check-in 460ms var(--ease-house) 600ms both;
+}
+:where([data-motion="full"]) [data-gift="reveal"] .gift-check-mark path {
+ animation: check-draw 460ms var(--ease-house) 820ms backwards;
+}
+:where(html[data-motion="full"]:not([data-reading-mode="parchment"])) [data-gift="reveal"] .gift-title {
+ animation: gift-title-lit 900ms var(--ease-house) 520ms backwards;
+}
+:where([data-motion="full"]) [data-gift="reveal"] .gift-foot-was {
+ display: block;
+ animation: gift-leave 320ms ease both;
+}
+:where([data-motion="full"]) [data-gift="reveal"] .gift-foot-now {
+ animation: gift-rise-on 560ms var(--ease-house) 760ms both;
+}
+:where([data-motion="full"]) [data-gift="reveal"] .gift-after {
+ animation: gift-rise-on 560ms var(--ease-house) 1050ms both;
+}
+:where([data-motion="full"]) [data-gift="reveal"] .gift-feats .set-h {
+ animation: gift-rise-on 520ms var(--ease-house) 1200ms both;
+}
+:where([data-motion="full"]) [data-gift="reveal"] .gift-feats .set-chev {
+ animation: gift-chev-in 420ms var(--ease-house) calc(1250ms + var(--i, 0) * 70ms) both;
+}
+/* Motion off: nothing travels, the lit look simply arrives. */
+:where([data-motion="reduce"]) [data-gift="reveal"] .gift-check,
+:where([data-motion="reduce"]) [data-gift="reveal"] .gift-foot-now,
+:where([data-motion="reduce"]) [data-gift="reveal"] .gift-after {
+ animation: gift-fade-in 220ms ease both;
+}
+
 /* The label's two answers, carved in as Settings carves its choices. */
 .gift-field {
  display: block;

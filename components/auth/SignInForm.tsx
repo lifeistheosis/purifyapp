@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { useState, useSyncExternalStore } from "react";
 import { useRouter } from "next/navigation";
-import { nextPath } from "@/lib/auth/nextPath";
+import { nextPath, withNext } from "@/lib/auth/nextPath";
 import { createClient } from "@/lib/supabase/client";
 import { useTranslate } from "@/components/i18n/MessagesProvider";
 import { PasswordInput } from "./PasswordInput";
@@ -103,7 +103,9 @@ export function SignInForm({ next }: { next?: string }) {
           {t("signin.forgotPassword")}
         </Link>
         <Link
-          href="/signup"
+          // Carries the way on: no account yet is the usual case for someone
+          // the gift page sent here (lib/auth/nextPath.ts, withNext).
+          href={withNext("/signup", target)}
           className="inline-flex min-h-11 items-center gap-1 text-end text-paper/65 hover:text-paper"
         >
           {t("signin.newHerePrefix")}{" "}

@@ -39,3 +39,29 @@ export function nextPath(given: string | null | undefined, search: string | null
   }
   return SIGNED_IN_HOME;
 }
+
+/**
+ * A link to `path` that carries the reader's way on. The sign-in and sign-up
+ * screens point at each other, and the link between them used to drop
+ * `next`: someone sent to sign in from the gift page (/gift, the QR on the
+ * EIKON card) who chose "Create an account" ended up on Profile, and the gift
+ * was lost until they scanned the card again. The default asks for nothing,
+ * so it is left off.
+ */
+export function withNext(path: string, target: string): string {
+  return isSitePath(target) && target !== SIGNED_IN_HOME
+    ? `${path}?next=${encodeURIComponent(target)}`
+    : path;
+}
+
+/**
+ * Whether the address names somewhere to be once the account exists, other
+ * than home and Profile: the gift page, Settings. On the mobile website the
+ * welcome questions open over sign-up (components/onboarding/FirstRunGate.tsx);
+ * a reader on their way somewhere gets there first, and the questions wait
+ * for home, as they already do for anyone who arrives on a deep link.
+ */
+export function headedSomewhere(search: string | null | undefined): boolean {
+  const to = nextPath(undefined, search);
+  return to !== SIGNED_IN_HOME && to !== "/";
+}

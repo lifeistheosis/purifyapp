@@ -11,23 +11,45 @@
 // What it does. Every EIKON order comes with Purify Plus, one address for every
 // card since the cards are printed in batches. A signed-in buyer whose order is
 // marked delivered is given the gift as the page opens, no button to find; an
-// order still on its way says so. Someone holding a parcel that was sent to
-// them claims with the order number and ZIP from its label. A reader whose Plus
-// or Pro is running is told the gift waits for when their plan ends: nothing is
-// written for them (claim_order_gift, the owner's "so it doesn't conflict or
-// like it doesn't add on"). Inside the app the same address opens this screen
+// order still on its way says so, and the page looks again whenever it comes
+// back into view. Someone holding a parcel that was sent to them claims with
+// the order number and ZIP from its label. A reader whose Plus or Pro is
+// running is told the gift waits for when their plan ends: nothing is written
+// for them (claim_order_gift, the owner's "so it doesn't conflict or like it
+// doesn't add on"). Inside the app the same address opens this screen
 // (lib/native/appLinks.ts).
+//
+// The claim is a moment (the owner, 2026-11-06: "add a claim animation. make
+// this whole thing a nice experience from beginning to end"). While the claim
+// is answered the card is held up to the light (data-gift="opening", never
+// shorter than OPENING_MS); when it is given the page plays its reveal once
+// (data-gift="reveal"): light pours from behind the card, his pick A of the
+// three drawn (Homebase/boards/purify-master/variants/r3-40-*). The phone
+// gives its one soft tick as the check lands, and then the page rests in its
+// lit look (data-gift="lit"), which is also how a reader who comes back finds
+// it. All CSS keyed off that attribute (globals.css, "The order gift"); under
+// data-motion="reduce" a plain cross-fade.
+//
+// After it: the way into the app for a phone's browser (the gift is on the
+// account, so the app has it once they sign in there), Today inside the app,
+// and every row of what Plus opens becomes a way straight to it.
 //
 // Ships into the native bundle: everything is fetched at runtime through
 // apiFetch, which carries the Bearer token inside the app.
 
-import { useCallback, useEffect, useRef, useState, type FormEvent, type ReactNode } from "react";
+import { useCallback, useEffect, useRef, useState, type CSSProperties, type FormEvent, type ReactNode } from "react";
 import Link from "next/link";
 import { apiFetch } from "@/lib/api/client";
-import { CURRENT_RELEASE } from "@/lib/appUpdate/release";
+import { emitEntitlementsChanged } from "@/lib/entitlements/refresh";
+import { STORE_LINKS } from "@/lib/marketing/storeRatings";
+import { useMobileStore } from "@/lib/platform/mobileWeb";
 import { isNativeClient } from "@/lib/platform/native";
+import { createClient } from "@/lib/supabase/client";
+import { prefersReducedMotion, scrollBehavior } from "@/lib/ui/motion";
+import { softTick } from "@/lib/ui/softTick";
 import { useTranslate } from "@/components/i18n/MessagesProvider";
 import { Check } from "@/components/ui/icons/Check";
+import { ChevronRight } from "@/components/ui/icons/ChevronRight";
 import { Codex } from "@/components/ui/icons/Codex";
 import { CrossRefs } from "@/components/ui/icons/CrossRefs";
 import { Headphones } from "@/components/ui/icons/Headphones";
@@ -49,23 +71,38 @@ import { cn } from "@/lib/cn";
 const PILL =
   "rule-pray tap-press flex min-h-12 w-full items-center justify-center gap-1.5 rounded-pill bg-paper px-6 font-sans text-ui font-semibold text-night disabled:opacity-60";
 
-/** What Plus opens: the /plan page's own features, five of them. */
+/**
+ * What Plus opens: the /plan page's own features, five of them. Once the gift
+ * is theirs each row is a way straight to it, as the Plus sheet's "What is
+ * yours now" (components/billing/UpgradeModal.tsx, the same addresses).
+ */
 const FEATURES = [
-  { Icon: CrossRefs, title: "orderGift.feat.crossrefs", desc: "orderGift.feat.crossrefsDesc" },
-  { Icon: Codex, title: "orderGift.feat.wordstudy", desc: "orderGift.feat.wordstudyDesc" },
-  { Icon: Rain, title: "orderGift.feat.ambience", desc: "orderGift.feat.ambienceDesc" },
-  { Icon: Headphones, title: "orderGift.feat.offline", desc: "orderGift.feat.offlineDesc" },
-  { Icon: Note, title: "orderGift.feat.sync", desc: "orderGift.feat.syncDesc" },
+  { Icon: CrossRefs, title: "orderGift.feat.crossrefs", desc: "orderGift.feat.crossrefsDesc", href: "/bible/john/1" },
+  { Icon: Codex, title: "orderGift.feat.wordstudy", desc: "orderGift.feat.wordstudyDesc", href: "/bible/genesis/1" },
+  { Icon: Rain, title: "orderGift.feat.ambience", desc: "orderGift.feat.ambienceDesc", href: "/bible/john/1" },
+  { Icon: Headphones, title: "orderGift.feat.offline", desc: "orderGift.feat.offlineDesc", href: "/bible/john/1" },
+  { Icon: Note, title: "orderGift.feat.sync", desc: "orderGift.feat.syncDesc", href: "/saved" },
 ] as const;
+
+/** The card held up to the light while the claim is answered: never shorter,
+ *  so the moment has its beat even on a fast connection. */
+const OPENING_MS = 650;
+/** From the reveal to the check landing (.gift-check in globals.css), when the
+ *  phone gives its one soft tick. */
+const CHECK_LANDS_MS = 1000;
+/** The whole reveal. After it nothing animates and the page rests lit. */
+const REVEAL_MS = 2400;
 
 type Claimed = { orderId: string | null; until: string | null };
 
 export function OrderGiftClient() {
   const { t, locale } = useTranslate();
+  const store = useMobileStore();
   const [state, setState] = useState<OrderGiftState | null>(null);
   const [loadError, setLoadError] = useState(false);
   const [busy, setBusy] = useState<string | null>(null);
   const [claimed, setClaimed] = useState<Claimed | null>(null);
+  const [revealing, setRevealing] = useState(false);
   const [message, setMessage] = useState<string | null>(null);
   const [number, setNumber] = useState("");
   const [zip, setZip] = useState("");
@@ -111,6 +148,24 @@ export function OrderGiftClient() {
     void load();
   }, [load]);
 
+  // Signed in or out while the page is open (the app's own sign-in, another
+  // tab, the welcome questions' account step): read the gift again, and a
+  // reader who has just signed in is given it. Only a timer in the callback:
+  // an auth call made from inside it never returns (lib/profile/myPicture.ts),
+  // and load() asks for the session.
+  useEffect(() => {
+    let timer = 0;
+    const { data } = createClient().auth.onAuthStateChange((event) => {
+      if (event !== "SIGNED_IN" && event !== "SIGNED_OUT") return;
+      window.clearTimeout(timer);
+      timer = window.setTimeout(() => void load(), 0);
+    });
+    return () => {
+      window.clearTimeout(timer);
+      data.subscription.unsubscribe();
+    };
+  }, [load]);
+
   const words = useCallback(
     (result: OrderGiftResult | "too_many" | "error"): string => {
       switch (result) {
@@ -137,6 +192,7 @@ export function OrderGiftClient() {
     async (body: Record<string, string>, key: string) => {
       setBusy(key);
       setMessage(null);
+      const started = Date.now();
       try {
         const res = await apiFetch("/api/gifts/order/claim", {
           method: "POST",
@@ -151,7 +207,14 @@ export function OrderGiftClient() {
         };
         if (!res.ok || !data.result) return setMessage(words("error"));
         if (data.result === "ok") {
+          // The card stays up to the light for its beat before the reveal.
+          const held = prefersReducedMotion() ? 0 : OPENING_MS - (Date.now() - started);
+          if (held > 0) await new Promise((done) => window.setTimeout(done, held));
           setClaimed({ orderId: body.orderId ?? null, until: data.plusUntil ?? null });
+          setRevealing(true);
+          // Every screen that holds an answer about Plus asks again, so the
+          // first row tapped below opens the feature, not the paywall.
+          emitEntitlementsChanged();
           return;
         }
         if (data.result === "has_plus") {
@@ -171,6 +234,18 @@ export function OrderGiftClient() {
     [load, words],
   );
 
+  // The reveal plays once: the soft tick as the check lands, then the page
+  // rests in its lit look, which is where every reveal ends anyway.
+  useEffect(() => {
+    if (!revealing) return;
+    const tick = window.setTimeout(softTick, prefersReducedMotion() ? 0 : CHECK_LANDS_MS);
+    const rest = window.setTimeout(() => setRevealing(false), REVEAL_MS);
+    return () => {
+      window.clearTimeout(tick);
+      window.clearTimeout(rest);
+    };
+  }, [revealing]);
+
   // Signed in and arrived through the gift: the gift is given, no button to
   // find (the owner's "if they have the account signed in, then it gives them
   // the gift", 2026-11-06). Once per page load; a refusal shows its words.
@@ -188,10 +263,13 @@ export function OrderGiftClient() {
   function claimByNumber(e: FormEvent) {
     e.preventDefault();
     if (!number.trim() || !zip.trim()) return;
+    // The form sits below the ticket; the moment happens up top.
+    window.scrollTo({ top: 0, behavior: scrollBehavior() });
     void claim({ orderNumber: number.trim(), zip: zip.trim() }, "number");
   }
 
   const nowMonths = orderGiftMonths(new Date());
+  const native = isNativeClient();
 
   // ── What the ticket says ────────────────────────────────────────────
   const orders = state && state.signedIn ? state.orders : [];
@@ -207,42 +285,68 @@ export function OrderGiftClient() {
       null);
   const others = byDate.filter((o) => o.id !== focus?.id);
 
+  // Back after claiming: Plus is running because of this gift, and the page
+  // shows it as theirs rather than telling them a gift waits. Only when no
+  // other gift is outstanding, which is when the claimed order is the focus.
+  const keptMine =
+    !claimed && !!plus && plus.running && !plus.pro && !!focus && focus.claimed && focus.mine;
+  const lit = !!claimed || keptMine;
+  const until = claimed ? claimed.until : keptMine ? (plus?.until ?? null) : null;
+  // Being opened: a claim on its way, or one about to start on arrival (the
+  // render before the effect fires), so the Claim button never flashes up.
+  const opening = busy !== null || (!!autoId && !claimed && !message);
+
+  // Still on its way: look again whenever the page comes back into view, so a
+  // reader who leaves it open finds the gift ready once it shows delivered.
+  const waiting = !!focus && !focus.delivered && !focus.claimed && !plus?.running;
+  useEffect(() => {
+    if (!waiting) return;
+    const onShow = () => {
+      if (document.visibilityState === "visible") void load();
+    };
+    document.addEventListener("visibilitychange", onShow);
+    return () => document.removeEventListener("visibilitychange", onShow);
+  }, [waiting, load]);
+
+  const homeLink = (
+    <Link href="/" className={PILL}>
+      {native ? t("orderGift.toToday") : t("orderGift.open")}
+    </Link>
+  );
+  // The way on once the gift is theirs. A phone's browser: Plus lives best in
+  // the app, and it is on the account, so the app has it the moment they sign
+  // in there. Inside the app: Today. Rendered only once the state is read,
+  // never in the static shell, so reading the device is safe here.
+  const wayOn = (
+    <>
+      {store ? (
+        <a href={STORE_LINKS[store]} target="_blank" rel="noopener noreferrer" className={PILL}>
+          {store === "appStore" ? t("orderGift.getAppApple") : t("orderGift.getApp")}
+        </a>
+      ) : (
+        homeLink
+      )}
+      {native ? null : <p className="gift-hint">{t("orderGift.appHint")}</p>}
+    </>
+  );
+
   let meta: string;
   let foot: ReactNode;
-  let lit = false;
   let action: ReactNode = null;
 
-  if (claimed) {
-    lit = true;
+  if (lit) {
     meta = focus
       ? t("orderGift.metaOrder", { duration: months(focus.months), number: focus.number })
       : t("orderGift.metaYours");
-    foot = claimed.until ? (
+    foot = until ? (
       <div className="flex items-baseline justify-between gap-3 font-sans text-detail text-paper/70">
         <span>{t("orderGift.yoursUntil")}</span>
-        <b className="font-serif text-[17px] font-semibold text-paper">{day(claimed.until)}</b>
+        <b className="font-serif text-[17px] font-semibold text-paper">{day(until)}</b>
       </div>
     ) : (
       <p className="font-sans text-detail text-paper/70">{t("orderGift.successBodyNoDate")}</p>
     );
-    action = (
-      <>
-        <Link href="/" className={PILL}>
-          {t("orderGift.open")}
-        </Link>
-        {/* Claimed in a phone's browser: Plus lives in the app, so offer it.
-            Play only: the iPhone listing is not live yet. Rendered after a
-            claim, never in the static shell, so reading the agent is safe. */}
-        {!isNativeClient() && /Android/i.test(navigator.userAgent) ? (
-          <a
-            href={CURRENT_RELEASE.androidStoreUrl}
-            className="mt-3 block text-center font-sans text-detail font-semibold text-paper/70 underline underline-offset-4"
-          >
-            {t("orderGift.getApp")}
-          </a>
-        ) : null}
-      </>
-    );
+    action = wayOn;
   } else if (!state || !state.signedIn) {
     meta = t("orderGift.metaEvery", { duration: months(nowMonths || 1) });
     foot = <p className="font-sans text-detail leading-[1.5] text-paper/70">{t("orderGift.signedOutBody")}</p>;
@@ -252,6 +356,10 @@ export function OrderGiftClient() {
           {t("orderGift.signIn")}
         </Link>
       );
+    } else if (!state && !loadError) {
+      // Still reading: most answers bring a pill, so its place is held and
+      // the page does not shift under the reader when the answer lands.
+      action = <div className="invisible min-h-12" aria-hidden />;
     }
   } else if (plus?.running) {
     meta = focus
@@ -266,11 +374,7 @@ export function OrderGiftClient() {
             : t("orderGift.hasPlusBodyNoDate")}
       </p>
     );
-    action = (
-      <Link href="/" className={PILL}>
-        {t("orderGift.open")}
-      </Link>
-    );
+    action = homeLink;
   } else if (focus) {
     meta = t("orderGift.metaOrder", { duration: months(focus.months), number: focus.number });
     if (focus.claimed) {
@@ -284,32 +388,46 @@ export function OrderGiftClient() {
     } else {
       foot = (
         <p className="font-sans text-detail leading-[1.5] text-paper/70">
-          {busy === focus.id ? t("orderGift.claiming") : t("orderGift.readyBody")}
+          {opening ? t("orderGift.opening") : t("orderGift.readyBody")}
         </p>
       );
-      action = (
-        <button
-          type="button"
-          className={PILL}
-          disabled={busy !== null}
-          onClick={() => void claim({ orderId: focus.id }, focus.id)}
-        >
-          {busy === focus.id ? t("orderGift.claiming") : t("orderGift.claim")}
+      // Given on arrival, so the button is only for a claim that did not go
+      // through. While one is being answered the ticket says so, and the way
+      // on holds its place unseen, so nothing below moves when it arrives.
+      action = opening ? (
+        <div className="invisible" aria-hidden>
+          {wayOn}
+        </div>
+      ) : (
+        <button type="button" className={PILL} onClick={() => void claim({ orderId: focus.id }, focus.id)}>
+          {t("orderGift.claim")}
         </button>
       );
     }
   } else {
     meta = t("orderGift.metaEvery", { duration: months(nowMonths || 1) });
-    foot = <p className="font-sans text-detail leading-[1.5] text-paper/70">{t("orderGift.noneBody")}</p>;
+    foot = (
+      <p className="font-sans text-detail leading-[1.5] text-paper/70">
+        {busy === "number" ? t("orderGift.opening") : t("orderGift.noneBody")}
+      </p>
+    );
   }
 
-  const showForm = state?.signedIn === true && !plus?.running && !claimed && !focus;
+  const showForm = state?.signedIn === true && !plus?.running && !lit && !focus;
+  const look = revealing ? "reveal" : lit ? "lit" : opening ? "opening" : undefined;
 
   return (
-    <section className="min-h-[calc(100dvh-72px)] bg-night pb-32">
-      {/* The card from the parcel, in the light. The real print files. */}
+    <section data-gift={look} className="gift-page min-h-[calc(100dvh-72px)] bg-night pb-32">
+      {/* The card from the parcel, in the light. The real print files. The
+          glow stays on once the gift is theirs; the rays (glory) and the
+          burst are the reveal's light from behind the card. */}
       <div className="gift-stage under-topbar" aria-hidden>
-        <div className="gift-light" />
+        <div className="gift-lights">
+          <div className="gift-light" />
+          <div className="gift-glow" />
+          <div className="gift-glory" />
+          <div className="gift-burst" />
+        </div>
         {/* eslint-disable-next-line @next/next/no-img-element -- a static export: next/image has no loader there */}
         <img className="gift-card gift-card-back" src="/eikon/gift-card-back.v1.webp" alt="" width={262} height={157} decoding="async" />
         {/* eslint-disable-next-line @next/next/no-img-element -- as above */}
@@ -319,13 +437,13 @@ export function OrderGiftClient() {
       <div className="relative mx-auto w-full max-w-md px-[18px]">
         <p className="gift-caption">{t("orderGift.caption")}</p>
 
-        {/* The ticket. */}
+        {/* The ticket: the gift above its torn line, the stub below. */}
         <div className="set-panel mt-4">
           <div>
             <div className="flex items-center gap-4 px-[18px] pb-4 pt-[18px]">
               <div className="min-w-0 flex-1">
                 <p className="gift-eyebrow">{t("orderGift.eyebrow")}</p>
-                <h1 id="gift-title" className="mt-[7px] font-serif text-[30px] font-bold leading-[1.05] text-paper">
+                <h1 id="gift-title" className="gift-title mt-[7px] font-serif text-[30px] font-bold leading-[1.05] text-paper">
                   {t("orderGift.title")}
                 </h1>
                 {state || loadError ? (
@@ -336,36 +454,46 @@ export function OrderGiftClient() {
               </div>
               {lit ? (
                 <span className="gift-check" role="img" aria-label={t("orderGift.successTitle")}>
-                  <Check size={19} strokeWidth={2.6} aria-hidden />
+                  {/* Draws itself as the reveal lands (check-draw's keyframes). */}
+                  <Check size={19} strokeWidth={2.6} className="gift-check-mark" />
                 </span>
               ) : null}
             </div>
             <div className="gift-perf" aria-hidden />
-            <div className="px-[18px] pb-4 pt-3.5" role={claimed ? "status" : undefined}>
-              {loadError && !state ? (
-                <div className="flex items-center justify-between gap-3">
-                  <p className="font-sans text-detail text-paper/70">{t("orderGift.loadError")}</p>
-                  <button
-                    type="button"
-                    onClick={() => {
-                      setLoadError(false);
-                      void load();
-                    }}
-                    className="set-btn shrink-0"
-                  >
-                    {t("orderGift.retry")}
-                  </button>
-                </div>
-              ) : state ? (
-                foot
-              ) : (
-                <Skeleton className="h-4 w-56" />
-              )}
+            <div className="relative px-[18px] pb-4 pt-3.5" role="status">
+              {/* What the stub said while the gift was being opened, leaving
+                  as the reveal begins. */}
+              {revealing ? (
+                <p className="gift-foot-was font-sans text-detail leading-[1.5] text-paper/70" aria-hidden>
+                  {t("orderGift.opening")}
+                </p>
+              ) : null}
+              <div className="gift-foot-now">
+                {loadError && !state ? (
+                  <div className="flex items-center justify-between gap-3">
+                    <p className="font-sans text-detail text-paper/70">{t("orderGift.loadError")}</p>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setLoadError(false);
+                        void load();
+                      }}
+                      className="set-btn shrink-0"
+                    >
+                      {t("orderGift.retry")}
+                    </button>
+                  </div>
+                ) : state ? (
+                  foot
+                ) : (
+                  <Skeleton className="h-4 w-56" />
+                )}
+              </div>
             </div>
           </div>
         </div>
 
-        {action ? <div className="mt-4">{action}</div> : null}
+        {action ? <div className="gift-after mt-4">{action}</div> : null}
 
         {message ? (
           <p role="alert" className="mt-4 text-center font-sans text-ui text-paper/80">
@@ -447,12 +575,13 @@ export function OrderGiftClient() {
           </form>
         ) : null}
 
-        {/* What Plus opens, as Settings draws its rows. */}
-        <div className="mt-7">
-          <p className="set-h">{t("orderGift.featuresTitle")}</p>
+        {/* What Plus opens, as Settings draws its rows; once it is theirs,
+            what is theirs now, each row a way straight to it. */}
+        <div className="gift-feats mt-7">
+          <p className="set-h">{lit ? t("plus.active.unlocked") : t("orderGift.featuresTitle")}</p>
           <div className="set-panel mt-2.5">
-            {FEATURES.map(({ Icon, title, desc }) => (
-              <div key={title} className="set-row">
+            {FEATURES.map(({ Icon, title, desc, href }, i) => {
+              const inner = (
                 <div className="set-lab">
                   <span className="set-plate">
                     <Icon size={17} />
@@ -461,9 +590,19 @@ export function OrderGiftClient() {
                     <span className="set-label">{t(title)}</span>
                     <span className="set-desc">{t(desc)}</span>
                   </span>
+                  {lit ? <ChevronRight size={15} className="set-chev rtl:-scale-x-100" /> : null}
                 </div>
-              </div>
-            ))}
+              );
+              return lit ? (
+                <Link key={title} href={href} className="set-row set-link" style={{ "--i": i } as CSSProperties}>
+                  {inner}
+                </Link>
+              ) : (
+                <div key={title} className="set-row">
+                  {inner}
+                </div>
+              );
+            })}
           </div>
         </div>
       </div>

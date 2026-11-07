@@ -2,7 +2,8 @@
 
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useState, useSyncExternalStore } from "react";
+import { nextPath, withNext } from "@/lib/auth/nextPath";
 import { createClient } from "@/lib/supabase/client";
 import { recordAcceptance } from "@/lib/legal/recordAcceptance";
 import { authOrigin } from "@/lib/site";
@@ -22,9 +23,19 @@ import { connectionAware } from "@/lib/auth/friendlyError";
  * already on `auth.users`, the flag is set by the SetPasswordForm /
  * first successful sign-in path.
  */
+/** The address's query never changes while this form is up. */
+const noChanges = () => () => {};
+
 export function SignUpForm() {
   const router = useRouter();
   const { t } = useTranslate();
+  // Where the new account goes once it exists: the `?next=` sign-in carried
+  // here (withNext), read on the device as SignInForm reads it, or Profile as
+  // before. The gift page (/gift) is the reason: a reader with no account
+  // signs up from it and must land back on their gift, by any of the three
+  // ways in (no confirmation, the confirmation email, Google or Apple).
+  const search = useSyncExternalStore(noChanges, () => window.location.search, () => "");
+  const target = nextPath(undefined, search);
   const [displayName, setDisplayName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -75,7 +86,9 @@ export function SignUpForm() {
           data: {
             display_name: displayName.trim() || undefined,
           },
-          emailRedirectTo: `${origin}/api/auth/callback?next=/account/profile`,
+          // Encoded, as OAuthButtons sends it: the allow list's `next=*`
+          // (docs/auth-setup.md) is matched the same way for both.
+          emailRedirectTo: `${origin}/api/auth/callback?next=${encodeURIComponent(target)}`,
         },
       });
       if (err) throw err;
@@ -91,7 +104,7 @@ export function SignUpForm() {
         // serves basePath + "/index.html" for any extensionless path, so a
         // hard navigation to /account/profile handed back the Today page,
         // and the reload took the session with it. See OAuthButtons.
-        router.push("/account/profile");
+        router.push(target);
         router.refresh();
         return;
       }
@@ -211,7 +224,7 @@ export function SignUpForm() {
       <p className="text-center font-sans text-caption text-paper/55">
         {t("signup.alreadyHaveOnePrefix")}{" "}
         <Link
-          href="/signin"
+          href={withNext("/signin", target)}
           className="text-paper hover:underline underline-offset-2"
         >
           {t("ui.signInArrow")}
@@ -229,6 +242,7 @@ export function SignUpForm() {
       </div>
 
       <OAuthButtons
+        redirectTo={target}
         // The checkbox above already governs this button, so the inline
         // notice would ask for the same agreement twice on one screen.
         showTermsNotice={false}

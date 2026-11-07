@@ -37,7 +37,8 @@ import { StoreButton, StoreRating } from "./storeBits";
  * pop-up had never been there.
  *
  * It never interrupts a task already under way: signing in or up, an account,
- * checkout and orders, email preferences, a purchase. Nor links that open
+ * checkout and orders, email preferences, a purchase, the gift an EIKON card
+ * opens. Nor links that open
  * elsewhere (another site, a new tab, a download), nor a jump within the same
  * page. The store apps, the Windows app and desktop browsers never see it:
  * useMobileStore() is null there.
@@ -71,6 +72,10 @@ const TASK_PATHS = [
   "/shop/messages",
   "/shop/seller",
   "/shop/sell",
+  // The EIKON card's QR lands here, and its one link goes to sign in: a
+  // pop-up in front of that would stand between a reader and their gift. Once
+  // it is claimed, the page itself offers the store.
+  "/gift",
   "/admin",
   "/owner",
 ];

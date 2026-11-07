@@ -20,6 +20,7 @@ import { roadsBuilt, roadsEnabled } from "@/lib/onboarding/flags";
 import { readRoad } from "@/lib/onboarding/useWeek";
 import { localDay, stepTaken } from "@/lib/onboarding/week";
 import { countReturns } from "@/lib/onboarding/count";
+import { headedSomewhere } from "@/lib/auth/nextPath";
 import { isTesting } from "@/lib/onboarding/testing";
 import { isDesktopApp } from "@/lib/desktop/bridge";
 import { DESKTOP_HOME } from "@/lib/desktop/homeRedirect";
@@ -65,7 +66,11 @@ const NEW_ACCOUNT_WINDOW_MS = 30 * 60 * 1000;
  * then when they try to make an account THEN you start the onboarding". So
  * there way 4 never fires; instead the flow opens on /signup, at the account
  * step, for a visitor who is not signed in and has not been through it. Ways
- * 1 to 3 still apply, since each follows an account.
+ * 1 to 3 still apply, since each follows an account. Except a sign-up that is
+ * on its way somewhere (`?next=`, lib/auth/nextPath.ts headedSomewhere): the
+ * EIKON card's QR sends a new reader to sign up from /gift, and the flow would
+ * have taken them to its own end, not back to their gift. They get there
+ * first; the questions come at home.
  *
  * Testers mode's "First open" (lib/onboarding/testers.ts, 1.8) is way 4 on
  * any home, the mobile website's included: the whole flow from the welcome,
@@ -103,7 +108,10 @@ export function FirstRunGate({
   useEffect(() => {
     const mobileWeb = mobileStore() !== null;
     const home = pathname === "/" || (pathname === DESKTOP_HOME && isDesktopApp());
-    const signup = mobileWeb && pathname === "/signup";
+    // Not over a sign-up that is on its way somewhere (the gift page sends
+    // readers here as /signup?next=/gift): the plain form brings them back,
+    // and the questions wait for home, where way 3 asks them.
+    const signup = mobileWeb && pathname === "/signup" && !headedSomewhere(window.location.search);
     if (!home && !signup) return;
     let alive = true;
     void (async () => {
