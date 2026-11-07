@@ -1617,6 +1617,20 @@
    "version": null,
    "outcome": null,
    "note": "Build 88 note 4, found measuring note 3. About 1,555 uses of text-paper/45 to /60, plus /40 under the floor on every palette. Fix planned: a Light, Candlelight and Monastery rule in globals.css the way Black has one for 45%, and a test doing the arithmetic on every palette."
+  },
+  {
+   "id": "b-mock-guardrails",
+   "section": "Release",
+   "kind": "process",
+   "title": "Mockups held to the app's guardrails: drawn from the real components, and checked before they are sent",
+   "from": "both",
+   "asked": "2026-11-07",
+   "status": "built",
+   "decided": "2026-11-07",
+   "needsDesign": false,
+   "version": null,
+   "outcome": null,
+   "note": "Claude proposed it after build 88 note 3's first drawings broke eight rules; his word: \"incorporate this fix into your memory\". The rule is in CLAUDE.md; the check is scripts/mock-check.mjs (contrast on all five palettes, 44px targets, glyph icons, palette tokens, gold, side stripes, Arabic mirroring, em dashes, and a by-eye list for the rest), with --self-test. Its first run on the journal sheet as it is found what was measured by hand (Light's captions, the 35% placeholder) and one more: the Open link 40px wide."
   }
  ]
 }

@@ -128,6 +128,16 @@ a rule written down in this repository:
   "unlike anything else on the page": wrong, it is the reader's own aside box
   (below).
 
+So that it does not happen again (his word: "incorporate this fix into your
+memory"): `CLAUDE.md` now holds the rule, mockups are drawn from the app's
+own components and checked before they are sent, and `scripts/mock-check.mjs`
+is the check. It measures five of the eight (the glyph, the target, the grey,
+the fixed colours, the stripe) and gold, em dashes and Arabic mirroring as
+well; its `--self-test` draws the first drawings' mistakes and fails each
+one, and passes the same parts made from the house's classes. The other three
+(the sample words, the Plus promise, a sheet made by hand) are its by-eye
+list, printed with every report.
+
 **The design now: the app's own writing sheet.** Drawn from the app itself:
 the real journal sheet (`components/journal/JournalComposer.tsx`), opened on
 the native export's `/journal` for a note on John 1:47 and set over John 1.
@@ -171,7 +181,8 @@ of Scripture is put in a reader's mouth.
   words from the page; the inline editor and its two hints go; the saved note
   keeps its box, one line at 55%, and opens the sheet on a tap.
 - `JournalComposer.tsx`: the note form's placeholder, no Open from the verse,
-  the placeholder at 55%.
+  the placeholder at 55%, and the journal's Open link 44px wide, not 40 (found
+  by `scripts/mock-check.mjs` on the sheet as it is).
 - What was typed and closed is kept for that verse, not in the journal's one
   draft, which the next Write would replace.
 - Held by a test of the source (the strip's Note opens the composer; no Esc
