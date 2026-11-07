@@ -653,6 +653,19 @@
       },
       "from": "data/bible/commentary/luke/12.json"
     },
+    "57": {
+      "text": "For what good was there in wishing to learn, whether there be many or few that be saved? What benefit resulted from it to the hearers? On the contrary it was a necessary and valuable thing to know in what way a man may attain to salvation.",
+      "author": "St. Cyril of Alexandria",
+      "work": "Commentary on Luke, Sermon 99",
+      "citation": "Commentary on Luke (Oxford, Payne Smith, 1859)",
+      "at": {
+        "work": "cyril-of-alexandria/commentary-on-luke",
+        "section": 99,
+        "paragraph": 2,
+        "place": "Sermon 99"
+      },
+      "from": "data/bible/commentary/luke/13.json"
+    },
     "58": {
       "text": "The lesson therefore which He teaches us is love unto the poor, which is a thing precious in the sight of God.",
       "author": "St. Cyril of Alexandria",
@@ -873,6 +886,19 @@
         "place": "Homily 42, John 6:1, 4"
       },
       "from": "data/bible/commentary/john/6.json"
+    },
+    "75": {
+      "text": "For as thirsty men, when they have taken a bowl, eagerly drain it and then desist, so too they who hear the divine oracles if they receive them thirsting, will never be weary until they have drunk them up.",
+      "author": "St. John Chrysostom",
+      "work": "Homilies on the Gospel of St. John, Homily 51",
+      "citation": "NPNF1-14",
+      "at": {
+        "work": "john-chrysostom/homilies-on-john",
+        "section": 51,
+        "paragraph": 1,
+        "place": "Homily 51, John 7:37, 38"
+      },
+      "from": "data/bible/commentary/john/7.json"
     },
     "76": {
       "text": "The freedom then of man from bondage after the flesh the authority of the rulers will effect, but that which sets free from sin, is meet to be spoken of God Alone and will belong to none other save He.",
@@ -1135,6 +1161,19 @@
         "place": "Homily 42, John 6:1, 4"
       },
       "from": "data/bible/commentary/john/6.json"
+    },
+    "7": {
+      "text": "For as thirsty men, when they have taken a bowl, eagerly drain it and then desist, so too they who hear the divine oracles if they receive them thirsting, will never be weary until they have drunk them up.",
+      "author": "St. John Chrysostom",
+      "work": "Homilies on the Gospel of St. John, Homily 51",
+      "citation": "NPNF1-14",
+      "at": {
+        "work": "john-chrysostom/homilies-on-john",
+        "section": 51,
+        "paragraph": 1,
+        "place": "Homily 51, John 7:37, 38"
+      },
+      "from": "data/bible/commentary/john/7.json"
     },
     "8": {
       "text": "The freedom then of man from bondage after the flesh the authority of the rulers will effect, but that which sets free from sin, is meet to be spoken of God Alone and will belong to none other save He.",
@@ -1545,6 +1584,20 @@
       },
       "from": "data/saints/gregory-the-dialogist/morals-on-the-book-of-job.json"
     },
+    "7": {
+      "text": "For because the stupidity of the fool is represented by the title of an ox, Solomon says rightly, he goeth after her straightway, as an ox goeth to the slaughter.",
+      "author": "St. Gregory the Dialogist",
+      "work": "Morals on the Book of Job",
+      "citation": "Oxford, 1844 to 1850",
+      "at": {
+        "work": "gregory-the-dialogist/morals-on-the-book-of-job",
+        "section": 1,
+        "paragraph": 32,
+        "place": "Book 1, on Job 1",
+        "mark": "§23"
+      },
+      "from": "data/saints/gregory-the-dialogist/morals-on-the-book-of-job.json"
+    },
     "8": {
       "text": "For not to know is only ignorance, to refuse to learn is pride.",
       "author": "St. Gregory the Dialogist",
@@ -1556,6 +1609,20 @@
         "paragraph": 43,
         "place": "Book 25, on Job 34",
         "mark": "§29"
+      },
+      "from": "data/saints/gregory-the-dialogist/morals-on-the-book-of-job.json"
+    },
+    "9": {
+      "text": "And ‘He set forth His table,’ i.e. Holy Writ, which with the bread of the word refreshes us when we are wearied, and come to Him away from the burthens of the world, and by its effect of refreshing strengthens us against our adversaries.",
+      "author": "St. Gregory the Dialogist",
+      "work": "Morals on the Book of Job",
+      "citation": "Oxford, 1844 to 1850",
+      "at": {
+        "work": "gregory-the-dialogist/morals-on-the-book-of-job",
+        "section": 17,
+        "paragraph": 79,
+        "place": "Book 17, on Job 24 to 26",
+        "mark": "§43"
       },
       "from": "data/saints/gregory-the-dialogist/morals-on-the-book-of-job.json"
     },

@@ -714,7 +714,8 @@
    "decided": "2026-11-06",
    "needsDesign": false,
    "version": null,
-   "outcome": null
+   "outcome": null,
+   "note": "Under way 2026-11-07. Found: the plans already carry a passage of the Fathers on most days, word for word from the app's own library and commentary (data/plans/sayings.json; the Psalter 20 of 20, the Gospels 87 of 89, Proverbs 28 of 31), and none on the Nativity Fast's 25. Filled the same day: Luke 13 (St Cyril on the narrow door), John 7 (St John Chrysostom on thirst for the word, in both Gospel plans), Proverbs 7 and 9 (St Gregory's Morals), each placed in the library by scripts/place-commentary.mjs. Proverbs 29 has no Father's words in the library on it, so it stays without; nothing is written in their place. Next: the Nativity days"
   },
   {
    "id": "s4-04",
