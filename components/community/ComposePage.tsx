@@ -40,7 +40,8 @@ import {
 import { useFlorilegia, type FlorilegiumItem } from "@/lib/florilegium/florilegium";
 import { useAndroidBack } from "@/lib/platform/useAndroidBack";
 import { focusablesIn, nextIndex } from "@/lib/ui/focusTrap";
-import { scrollBehavior } from "@/lib/ui/motion";
+import { glideScroll } from "@/lib/ui/glideScroll";
+import { prefersReducedMotion } from "@/lib/ui/motion";
 import { lockBodyScroll, setOverlayOpen, unlockBodyScroll } from "@/lib/ui/overlay";
 import { useKeyboardUp, useVisibleFrame } from "@/lib/ui/viewport";
 
@@ -244,9 +245,12 @@ export function ComposePage({
 
   // The first words fold the head, so they have the room above the keyboard
   // (the sheet's second phone): the page goes up until the doors are under
-  // the row, smoothly with Purify's motion on.
+  // the row, smoothly with Purify's motion on. A frame at a time
+  // (lib/ui/glideScroll.ts): a smooth scrollBy was ended by the caret of the
+  // very letter typed, and the head never folded.
   const writing = (kind === "share" ? body : title + body).trim().length > 0;
   const wasWriting = useRef(writing);
+  const glide = useRef<(() => void) | null>(null);
   useEffect(() => {
     const was = wasWriting.current;
     wasWriting.current = writing;
@@ -256,8 +260,16 @@ export function ComposePage({
     const strip = stripRef.current;
     if (!open || !writing || was || folded || !root || !doors || !bar || !strip) return;
     const by = doors.getBoundingClientRect().bottom - (root.getBoundingClientRect().top + bar.offsetHeight + strip.offsetHeight) + 2;
-    if (by > 0) root.scrollBy({ top: by, behavior: scrollBehavior() });
+    // Not stopped when the head folds on the way: the fold is the glide arriving.
+    if (by > 0) glide.current = glideScroll(root, by, { smooth: !prefersReducedMotion() });
   }, [open, writing, folded]);
+  // Closed or gone, the glide stops where it stands.
+  useEffect(() => {
+    if (open) return;
+    glide.current?.();
+    glide.current = null;
+  }, [open]);
+  useEffect(() => () => glide.current?.(), []);
 
   /** The spam filter's refusals, in the reader's language (lib/community/guard.ts). */
   function refusal(res: CommunityResult): string | null {

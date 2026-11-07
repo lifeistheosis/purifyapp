@@ -224,7 +224,10 @@ describe("the page", () => {
     expect(css).toMatch(/\.compose-page \{\s*animation: compose-in var\(--duration-base\) var\(--ease-house\) backwards;/);
     expect(css).toMatch(/:where\(\[data-motion="reduce"\]\) \.compose-page \{\s*animation: none;/);
     expect(css).toMatch(/:where\(\[data-motion="reduce"\]\) \.compose-fold,\s*:where\(\[data-motion="reduce"\]\) \[data-folded\] \.compose-fold \{\s*transition: none;/);
-    expect(page).toContain("behavior: scrollBehavior()");
+    // The fold's scroll, on the same switch. From 1.9 it goes a frame at a
+    // time (lib/ui/glideScroll.ts): a smooth scrollBy was ended by the caret
+    // of the letter typed, and the head never folded.
+    expect(page).toContain("glideScroll(root, by, { smooth: !prefersReducedMotion() })");
     // Beside Community's own CSS, not at the end of the file.
     const raw = read("app/globals.css");
     const at = raw.indexOf("/* ── Making a post: a page of its own (1.8)");
