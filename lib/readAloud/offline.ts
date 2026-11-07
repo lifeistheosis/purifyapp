@@ -18,6 +18,8 @@
 
 import { useSyncExternalStore } from "react";
 
+import { forgetReaderBook } from "./weekKept";
+
 const KEY = "purify:readAloud.saved";
 const EVENT = "purify:readAloud.saved";
 
@@ -157,8 +159,9 @@ export async function removeChapter(book: string, chapter: number, plugin?: Plug
   write(all);
 }
 
-/** Take a book's saved chapters off the phone. */
+/** Take a book's saved chapters off the phone. It is the reader's no longer (./weekKept.ts). */
 export async function removeBook(book: string, plugin?: Plugin): Promise<void> {
+  forgetReaderBook(book);
   const { Filesystem, Directory } = plugin ?? (await import("@capacitor/filesystem"));
   try {
     await Filesystem.rmdir({ path: `audio/read/${book}`, directory: Directory.Data, recursive: true });

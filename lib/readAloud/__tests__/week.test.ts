@@ -27,6 +27,8 @@ let plus: boolean | null = true;
 let ios = false;
 let wifi: { connected: boolean; type: "wifi" | "cellular" | "none" | "unknown" } = { connected: true, type: "wifi" };
 let userJob: { book: string; waiting: null | "wifi" } | null = null;
+/** Called as a chapter is fetched, before it is on the phone: what a reader does meanwhile. */
+let meanwhile: ((key: string) => void) | null = null;
 
 vi.mock("@/lib/entitlements/usePlusFeatures", () => ({ plusFeaturesNow: async () => plus }));
 vi.mock("@/lib/platform/native", () => ({ isNativeClient: () => true, isIOSClient: () => ios }));
@@ -41,6 +43,7 @@ vi.mock("../offline", () => ({
   saveChapters: async (book: string, chapters: readonly number[]) => {
     for (const c of chapters) {
       fetched.push(`${book}/${c}`);
+      meanwhile?.(`${book}/${c}`);
       saved[`${book}/${c}`] = { mp3: "m", json: "j", bytes: 3_000_000 };
     }
     return { saved: chapters.length, failed: 0, stopped: false };
@@ -66,6 +69,7 @@ beforeEach(() => {
   ios = false;
   wifi = { connected: true, type: "wifi" };
   userJob = null;
+  meanwhile = null;
   W.resetWeekForTests();
 });
 
@@ -153,6 +157,36 @@ describe("keeping the week", () => {
     K.releaseWeekBook(book);
     await W.keepWeek(new Date("2026-11-20T09:00:00"));
     expect(removed.some((k) => k.startsWith(`${book}/`))).toBe(false);
+  });
+
+  it("never marks as its own a chapter of a book the reader began saving while the week fetched it", async () => {
+    // The reader taps Save on the book of the chapter being fetched (startSaving releases it).
+    let claimed = "";
+    meanwhile = (key) => {
+      if (claimed) return;
+      claimed = key;
+      K.releaseWeekBook(key.split("/")[0]);
+    };
+    await W.keepWeek(new Date("2026-11-07T09:00:00"));
+    expect(claimed).not.toBe("");
+    const book = claimed.split("/")[0];
+    expect(Object.keys(K.weekKept()).some((k) => k.startsWith(`${book}/`))).toBe(false);
+    expect(K.readerBooks().has(book)).toBe(true);
+    // Weeks later, its chapters are still on the phone.
+    meanwhile = null;
+    await W.keepWeek(new Date("2026-11-20T09:00:00"));
+    expect(removed.some((k) => k.startsWith(`${book}/`))).toBe(false);
+    expect(saved[claimed]).toBeDefined();
+  });
+
+  it("keeps a chapter for the week again once the reader has taken their book off the phone", () => {
+    K.releaseWeekBook("luke");
+    K.keepForWeek("luke/6", "2026-11-09");
+    expect(K.weekKept()["luke/6"]).toBeUndefined();
+    K.forgetReaderBook("luke");
+    expect(K.readerBooks().has("luke")).toBe(false);
+    K.keepForWeek("luke/6", "2026-11-09");
+    expect(K.weekKept()["luke/6"]).toBe("2026-11-09");
   });
 
   it("turned off, takes away everything it kept, and says what it keeps while on", async () => {

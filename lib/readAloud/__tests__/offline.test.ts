@@ -98,6 +98,15 @@ describe("taking it off again", () => {
     expect([...files.keys()].some((k) => k.includes("jude"))).toBe(false);
   });
 
+  it("and a book taken off the phone is the reader's no longer, so the week may keep its chapters again", async () => {
+    const { readerBooks, releaseWeekBook } = await import("../weekKept");
+    releaseWeekBook("jude");
+    releaseWeekBook("mark");
+    await saveChapters("jude", [1], urls("jude"), undefined, plugin);
+    await removeBook("jude", plugin);
+    expect([...readerBooks()]).toEqual(["mark"]);
+  });
+
   it("drops a chapter from the list when its recording is gone from the phone", async () => {
     await saveChapters("mark", [8, 10], urls("mark"), undefined, plugin);
     files.delete("audio/read/mark/10.mp3");
