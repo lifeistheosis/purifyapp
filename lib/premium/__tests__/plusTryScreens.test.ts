@@ -31,6 +31,7 @@ import { MessagesProvider } from "@/components/i18n/MessagesProvider";
 import { AMBIENCE_TRACKS } from "@/lib/ambience/ambience";
 import { getMessages } from "@/lib/i18n";
 import { PLUS_ROWS, plusRowsLedBy, rowsHere, type PlusRow } from "@/lib/premium/plusRows";
+import { TRY_PALETTES } from "@/lib/premium/plusTry";
 
 type ProviderProps = Parameters<typeof MessagesProvider>[0];
 function render(node: ReactElement, lang = "en"): string {
@@ -70,7 +71,7 @@ describe("the rows", () => {
     const modes = out.slice(out.indexOf('data-plus-feature="reading-modes"'), out.indexOf('data-plus-feature="cross-refs"'));
     expect(modes).toContain(">Aa<");
     expect(modes).toContain("bg-paper/[0.08]");
-    expect(out).not.toContain("#0a0a0a");
+    expect(out).not.toContain(TRY_PALETTES.candlelight.night);
   });
 
   it("draw the Listen offline row whole, with no entrance of its own to wait on", () => {
@@ -130,7 +131,7 @@ describe("each feature's own screen", () => {
 
   it("Candlelight and Monastery: John 1 in Candlelight, with Dark and Monastery beside it", () => {
     const out = preview(TryReadingModes, "reading-modes");
-    expect(out).toContain("--color-night:#0a0a0a");
+    expect(out).toContain(`--color-night:${TRY_PALETTES.candlelight.night}`);
     expect(out).toMatch(/aria-checked="true"[^>]*><span class="block truncate">Candlelight<\/span>/);
     expect(out.match(/aria-checked="true"/g)).toHaveLength(1);
     expect(out).toContain(">Dark</span>");

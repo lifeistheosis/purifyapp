@@ -21,6 +21,7 @@ import { describe, expect, it } from "vitest";
 
 import { AMBIENCE_TRACKS } from "@/lib/ambience/ambience";
 import { PLUS_ROWS, isPlusLock, plusRowsLedBy } from "@/lib/premium/plusRows";
+import { TRY_PALETTES } from "@/lib/premium/plusTry";
 
 const ROOT = path.resolve(__dirname, "..", "..", "..");
 const code = (p: string) => fs.readFileSync(path.join(ROOT, p), "utf8");
@@ -161,7 +162,7 @@ describe("the features, in depth", () => {
     // The owner's note 39 of build 80: "the A is black and everything else
     // is gray". Candlelight's page is shown in its preview now, not its tile.
     const kept = bare("components/billing/KeptPaywall.tsx");
-    expect(kept).not.toMatch(/#0a0a0a|#d4d4d8/);
+    for (const hex of [TRY_PALETTES.candlelight.night, TRY_PALETTES.candlelight.paper]) expect(kept).not.toContain(hex);
     expect(kept).toContain('const box = "grid h-[66px] w-[66px] shrink-0 place-items-center overflow-hidden rounded-[14px] bg-paper/[0.08] text-paper";');
   });
 });

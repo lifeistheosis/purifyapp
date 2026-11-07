@@ -56,7 +56,7 @@ export const TRY_VERSES = 14;
  */
 export const TRY_PALETTES = {
   default: { night: "#101013", nightSoft: "#1d1d20", nightDeep: "#0b0b0e", paper: "#ffffff" },
-  candlelight: { night: "#0a0a0a", nightSoft: "#18181b", nightDeep: "#050505", paper: "#d4d4d8" },
+  candlelight: { night: "#050505", nightSoft: "#18181b", nightDeep: "#000000", paper: "#d4d4d8" },
   monastery: { night: "#0d1119", nightSoft: "#171e2b", nightDeep: "#080b11", paper: "#e6ebf4" },
 } as const;
 

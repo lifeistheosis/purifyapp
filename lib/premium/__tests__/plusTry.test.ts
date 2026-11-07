@@ -244,9 +244,9 @@ describe("the palettes the Candlelight preview switches between", () => {
 
   it("are set on the window alone, as variables, never on the page", () => {
     expect(paletteVars("candlelight")).toEqual({
-      "--color-night": "#0a0a0a",
+      "--color-night": "#050505",
       "--color-night-soft": "#18181b",
-      "--color-night-deep": "#050505",
+      "--color-night-deep": "#000000",
       "--color-paper": "#d4d4d8",
     });
     expect(TRY_PALETTE_ORDER.map((p) => p.id)).toEqual(["default", "candlelight", "monastery"]);
