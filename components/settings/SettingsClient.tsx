@@ -59,9 +59,11 @@ import { useEffect, useLayoutEffect, useState, useSyncExternalStore } from "reac
 
 import { cn } from "@/lib/cn";
 
+import { PlusMark } from "@/components/billing/PlusMark";
 import { LanguagePicker } from "@/components/i18n/LanguagePicker";
 import { useTranslate } from "@/components/i18n/MessagesProvider";
 import { FONT_CLASSES, ReaderPrefsProvider, useReaderPrefs, type ReaderFont } from "@/components/reader/ReaderPrefs";
+import { useVespers } from "@/components/reader/VespersSwitch";
 import { Bell } from "@/components/ui/icons/Bell";
 import { Bolt } from "@/components/ui/icons/Bolt";
 import { Book } from "@/components/ui/icons/Book";
@@ -221,6 +223,29 @@ function SupporterMarkRow() {
           label={t("settings.showSupporterMark")}
         />
       }
+    />
+  );
+}
+
+/**
+ * Candlelight at Vespers (1.9): Candlelight from sunset, when the Church's
+ * day begins, to the morning, by itself. The same switch as under the
+ * palettes in the reader's settings (components/reader/VespersSwitch.tsx).
+ */
+function VespersRow() {
+  const { t } = useTranslate();
+  const { on, set, locked } = useVespers();
+  return (
+    <Row
+      icon={<Lampada size={18} />}
+      label={
+        <span className="inline-flex items-center gap-2">
+          {t("bible.vespers.title")}
+          {locked ? <PlusMark /> : null}
+        </span>
+      }
+      description={t("bible.vespers.hint")}
+      control={<Switch on={on} onChange={set} label={t("bible.vespers.title")} />}
     />
   );
 }
@@ -512,6 +537,7 @@ function Body() {
         <Row icon={<Book size={18} />} label={t("ui.readingMode")}>
           <ReadingModePages />
         </Row>
+        <VespersRow />
         <Row icon={<FacesGlyph />} label={t("ui.readerFont")} description={t("settings.fontHint")}>
           <Track
             faces

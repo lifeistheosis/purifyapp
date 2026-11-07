@@ -746,6 +746,8 @@
   "bible.readerSettings": "მკითხველის პარამეტრები",
   "bible.night.title": "ღამის კითხვა",
   "bible.night.hint": "Candlelight, ფოკუსირებული კითხვა, უფრო დიდი ტექსტი და {sound}",
+  "bible.vespers.title": "Candlelight მწუხრზე",
+  "bible.vespers.hint": "თავისით ირთვება მზის ჩასვლისას, როცა ეკლესიის დღე იწყება, და დილით ითიშება",
   "bible.moreActions": "მეტი მოქმედება",
   "bible.reader": "მკითხველი",
   "bible.clearWordHighlights": "სიტყვების მონიშვნების გასუფთავება",

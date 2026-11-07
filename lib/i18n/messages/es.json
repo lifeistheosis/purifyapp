@@ -748,6 +748,8 @@
   "bible.readerSettings": "Ajustes del lector",
   "bible.night.title": "Lectura nocturna",
   "bible.night.hint": "Candlelight, lectura concentrada, texto más grande y {sound}",
+  "bible.vespers.title": "Candlelight en Vísperas",
+  "bible.vespers.hint": "Se enciende solo al ponerse el sol, cuando empieza el día de la Iglesia, y se apaga por la mañana",
   "bible.moreActions": "Más acciones",
   "bible.reader": "Lector",
   "bible.clearWordHighlights": "Borrar los resaltados de palabras",

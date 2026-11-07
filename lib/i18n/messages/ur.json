@@ -746,6 +746,8 @@
   "bible.readerSettings": "ریڈر کی ترتیبات",
   "bible.night.title": "رات کا مطالعہ",
   "bible.night.hint": "Candlelight، یکسو مطالعہ، بڑا متن اور {sound}",
+  "bible.vespers.title": "نمازِ شام پر Candlelight",
+  "bible.vespers.hint": "غروبِ آفتاب پر، جب کلیسیا کا دن شروع ہوتا ہے، خود آن ہوتا ہے اور صبح بند ہو جاتا ہے",
   "bible.moreActions": "مزید اقدامات",
   "bible.reader": "ریڈر",
   "bible.clearWordHighlights": "الفاظ کی نمایاں کاری صاف کریں",

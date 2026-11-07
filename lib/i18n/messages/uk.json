@@ -761,6 +761,8 @@
   "bible.readerSettings": "Налаштування читання",
   "bible.night.title": "Читання вночі",
   "bible.night.hint": "При свічці, зосереджене читання, більший текст і {sound}",
+  "bible.vespers.title": "При свічці на вечірню",
+  "bible.vespers.hint": "Вмикається сам на заході сонця, коли починається церковний день, і вимикається вранці",
   "bible.moreActions": "Більше дій",
   "bible.reader": "Читання",
   "bible.clearWordHighlights": "Очистити виділення слів",

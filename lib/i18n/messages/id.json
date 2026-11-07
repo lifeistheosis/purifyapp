@@ -744,6 +744,8 @@
   "bible.readerSettings": "Pengaturan pembaca",
   "bible.night.title": "Membaca malam",
   "bible.night.hint": "Candlelight, baca fokus, teks lebih besar, dan {sound}",
+  "bible.vespers.title": "Candlelight saat Ibadat Senja",
+  "bible.vespers.hint": "Menyala sendiri saat matahari terbenam, ketika hari Gereja dimulai, dan mati pada pagi hari",
   "bible.moreActions": "Tindakan lainnya",
   "bible.reader": "Pembaca",
   "bible.clearWordHighlights": "Hapus sorotan kata",

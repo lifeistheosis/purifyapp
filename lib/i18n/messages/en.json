@@ -746,6 +746,8 @@
   "bible.readerSettings": "Reader settings",
   "bible.night.title": "Night reading",
   "bible.night.hint": "Candlelight, Focus, larger text and {sound}",
+  "bible.vespers.title": "Candlelight at Vespers",
+  "bible.vespers.hint": "On by itself at sunset, when the Church's day begins, and off in the morning",
   "bible.moreActions": "More actions",
   "bible.reader": "Reader",
   "bible.clearWordHighlights": "Clear word highlights",

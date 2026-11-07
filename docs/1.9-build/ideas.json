@@ -423,11 +423,12 @@
    "title": "Candlelight at Vespers",
    "from": "claude",
    "asked": "2026-11-06",
-   "status": "approved",
+   "status": "built",
    "decided": "2026-11-06",
    "needsDesign": false,
    "version": null,
-   "outcome": null
+   "outcome": null,
+   "note": "Built 2026-11-07. One switch, Candlelight at Vespers, under the palettes in the reader's settings and in Settings, Reading: while it is on, the app reads in Candlelight from sunset to sunrise and in the reader's own palette by day. Sunset is reckoned for the city of the phone's time zone (data/calendar/zone-coords.json, 542 zones from the tz database, public domain, made by scripts/zone-coords.mjs), never from its location: no permission, nothing about where a reader is leaves the phone. The sums are the almanac's (lib/calendar/sun.ts), held within a few minutes of the known times for London, Los Angeles, Sydney and Bucharest; where the sun does not set, six to six. The night is kept on the device so the app opens after dark already in Candlelight (lib/reader/prepaint.ts), and the theme controller turns it at sunset and sunrise and on waking. Plus, as Candlelight is. Walked in a browser in Bucharest's zone on 7 November: on at 20:00, Candlelight from the first paint at 21:30, the reader's Light at noon the next day. The chips still light the reader's own palette at night, which is theirs"
   },
   {
    "id": "s2-03",

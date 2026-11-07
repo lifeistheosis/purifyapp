@@ -746,6 +746,8 @@
   "bible.readerSettings": "Настройки на четеца",
   "bible.night.title": "Нощно четене",
   "bible.night.hint": "При свещ, съсредоточено четене, по-голям текст и {sound}",
+  "bible.vespers.title": "При свещ на вечерня",
+  "bible.vespers.hint": "Включва се само при залез, когато започва църковният ден, и спира сутрин",
   "bible.moreActions": "Още действия",
   "bible.reader": "Четец",
   "bible.clearWordHighlights": "Изчисти маркираните думи",

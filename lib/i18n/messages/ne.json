@@ -746,6 +746,8 @@
   "bible.readerSettings": "पाठक सेटिङ",
   "bible.night.title": "रातको पठन",
   "bible.night.hint": "Candlelight, एकाग्र पठन, ठूलो अक्षर र {sound}",
+  "bible.vespers.title": "साँझको आराधनामा Candlelight",
+  "bible.vespers.hint": "सूर्यास्तमा, जब मण्डलीको दिन सुरु हुन्छ, आफैँ खुल्छ र बिहान बन्द हुन्छ",
   "bible.moreActions": "थप कार्यहरू",
   "bible.reader": "पाठक",
   "bible.clearWordHighlights": "शब्द हाइलाइट हटाउनुहोस्",

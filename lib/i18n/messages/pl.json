@@ -762,6 +762,8 @@
   "bible.readerSettings": "Ustawienia czytnika",
   "bible.night.title": "Czytanie nocą",
   "bible.night.hint": "Candlelight, czytanie w skupieniu, większy tekst i {sound}",
+  "bible.vespers.title": "Candlelight na nieszpory",
+  "bible.vespers.hint": "Włącza się sam o zachodzie słońca, gdy zaczyna się dzień Kościoła, i wyłącza rano",
   "bible.moreActions": "Więcej działań",
   "bible.reader": "Czytnik",
   "bible.clearWordHighlights": "Usuń zaznaczenia słów",

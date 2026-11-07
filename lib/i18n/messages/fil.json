@@ -746,6 +746,8 @@
   "bible.readerSettings": "Mga setting ng pagbabasa",
   "bible.night.title": "Pagbasa sa gabi",
   "bible.night.hint": "Candlelight, nakapokus na pagbasa, mas malaking teksto at {sound}",
+  "bible.vespers.title": "Candlelight sa Bisperas",
+  "bible.vespers.hint": "Kusang bumubukas sa paglubog ng araw, kapag nagsisimula ang araw ng Simbahan, at namamatay sa umaga",
   "bible.moreActions": "Higit pang aksyon",
   "bible.reader": "Babasahan",
   "bible.clearWordHighlights": "Alisin ang mga highlight sa salita",

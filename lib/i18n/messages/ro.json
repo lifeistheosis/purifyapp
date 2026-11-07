@@ -756,6 +756,8 @@
   "bible.readerSettings": "Setări de lectură",
   "bible.night.title": "Citire de noapte",
   "bible.night.hint": "Candlelight, lectură concentrată, text mai mare și {sound}",
+  "bible.vespers.title": "Candlelight la Vecernie",
+  "bible.vespers.hint": "Pornește singur la apus, când începe ziua Bisericii, și se oprește dimineața",
   "bible.moreActions": "Mai multe acțiuni",
   "bible.reader": "Cititor",
   "bible.clearWordHighlights": "Șterge evidențierile de cuvinte",

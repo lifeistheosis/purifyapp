@@ -746,6 +746,8 @@
   "bible.readerSettings": "Ρυθμίσεις ανάγνωσης",
   "bible.night.title": "Νυχτερινή ανάγνωση",
   "bible.night.hint": "Candlelight, εστιασμένη ανάγνωση, μεγαλύτερα γράμματα και {sound}",
+  "bible.vespers.title": "Candlelight στον Εσπερινό",
+  "bible.vespers.hint": "Ανάβει μόνο του τη δύση, όταν αρχίζει η ημέρα της Εκκλησίας, και σβήνει το πρωί",
   "bible.moreActions": "Περισσότερες ενέργειες",
   "bible.reader": "Ανάγνωση",
   "bible.clearWordHighlights": "Καθαρισμός επισημάνσεων λέξεων",

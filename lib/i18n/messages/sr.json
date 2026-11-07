@@ -753,6 +753,8 @@
   "bible.readerSettings": "Подешавања читача",
   "bible.night.title": "Ноћно читање",
   "bible.night.hint": "Candlelight, читање без ометања, већи текст и {sound}",
+  "bible.vespers.title": "Candlelight на вечерњи",
+  "bible.vespers.hint": "Сам се укључује у сутон, кад почиње дан Цркве, и искључује се ујутру",
   "bible.moreActions": "Још радњи",
   "bible.reader": "Читач",
   "bible.clearWordHighlights": "Обриши означене речи",

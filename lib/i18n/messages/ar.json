@@ -775,6 +775,8 @@
   "bible.readerSettings": "إعدادات القارئ",
   "bible.night.title": "قراءة ليلية",
   "bible.night.hint": "Candlelight، قراءة مركّزة، نص أكبر و{sound}",
+  "bible.vespers.title": "Candlelight عند صلاة الغروب",
+  "bible.vespers.hint": "يعمل وحده عند الغروب، حين يبدأ يوم الكنيسة، ويتوقف في الصباح",
   "bible.moreActions": "المزيد من الإجراءات",
   "bible.reader": "القارئ",
   "bible.clearWordHighlights": "مسح تظليل الكلمات",

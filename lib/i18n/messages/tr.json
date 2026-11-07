@@ -746,6 +746,8 @@
   "bible.readerSettings": "Okuyucu ayarları",
   "bible.night.title": "Gece okuması",
   "bible.night.hint": "Candlelight, odaklı okuma, daha büyük yazı ve {sound}",
+  "bible.vespers.title": "Akşam Ayininde Candlelight",
+  "bible.vespers.hint": "Gün batımında, Kilise'nin günü başladığında kendiliğinden açılır ve sabah kapanır",
   "bible.moreActions": "Diğer işlemler",
   "bible.reader": "Okuyucu",
   "bible.clearWordHighlights": "Kelime vurgularını temizle",

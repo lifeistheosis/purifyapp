@@ -25,10 +25,18 @@ export const PREPAINT_THEME_IDS: readonly string[] = [
 
 /** The storage key, mirrored from lib/reader/readingModes.ts as a literal. */
 const KEY = "purify.reader.theme";
+/** Candlelight at Vespers (1.9), mirrored from lib/reader/vespers.ts: the switch, and the night's two moments. */
+const VESPERS = "purify.reader.vespers";
+const VESPERS_WINDOW = "purify.reader.vespers.window";
 
 export const THEME_PREPAINT = [
   "(function(){try{",
   `var t=localStorage.getItem('${KEY}');`,
+  // Through the night kept by AppThemeController, while the switch is on:
+  // Candlelight, so the app opens after dark already in it.
+  `if(localStorage.getItem('${VESPERS}')==='1'){`,
+  `var w=(localStorage.getItem('${VESPERS_WINDOW}')||'').split(','),n=Date.now();`,
+  "if(w.length===2&&n>=+w[0]&&n<+w[1])t='candlelight';}",
   `if(t&&${JSON.stringify(PREPAINT_THEME_IDS)}.indexOf(t)>-1){`,
   "document.documentElement.setAttribute('data-reading-mode',t);}",
   "}catch(e){}})();",

@@ -12,6 +12,7 @@ import type {
 } from "@/components/reader/ReaderPrefs";
 import { NightReadingRow } from "@/components/reader/NightReadingRow";
 import { ReadingModeChips } from "@/components/reader/ReadingModeChips";
+import { VespersToggle } from "@/components/reader/VespersSwitch";
 import { useTranslate } from "@/components/i18n/MessagesProvider";
 import { cn } from "@/lib/cn";
 import { setKeepScrolling, setParagraphs, useReadingFlow } from "@/lib/reader/readingFlow";
@@ -259,6 +260,8 @@ function ReaderSettingsControls({
           chrome half, is its own toggle; the two compose. */}
       <div className="pt-3 border-t border-paper/10">
         <ReadingModeChips touch={touch} />
+        {/* 1.9: Candlelight from sunset to the morning, by itself. */}
+        <VespersToggle touch={touch} />
       </div>
 
       <div className="pt-3 border-t border-paper/10">
