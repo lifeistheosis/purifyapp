@@ -137,17 +137,22 @@ findings:
       settlement result to its answer, update-failed answered 500, gifts
       apart, account.updated) and RevenueCat (shared secret fails closed,
       whitespace forgiven, store to source, supporter and Pro carried forward,
-      500 on a failed grant, lifecycle written only after it). Remaining:
-      createCheckout's own Stripe session and order writes have no unit test,
-      and no test exercises live Stripe or RevenueCat delivery.
+      500 on a failed grant, lifecycle written only after it). Then
+      createCheckout itself, with an injected database and Stripe: every price
+      from the database, nothing written for a cart it cannot sell, the order
+      written before Stripe and its id on the session, Pro shipping free, an
+      order whose lines failed cancelled and never sent to Stripe, a Stripe
+      refusal answered not thrown, and a connected seller's destination charge
+      with the fee recorded only after the session. Remaining: no test
+      exercises live Stripe or RevenueCat delivery, and e2e is still to revive.
     evidence: >-
       lib/shop/__tests__/checkoutRoute.test.ts (6),
       lib/shop/__tests__/checkoutCancelRoute.test.ts (6),
       lib/shop/__tests__/stripeWebhookRoute.test.ts (8),
-      lib/billing/__tests__/revenuecatRoute.test.ts (8), all passing
+      lib/billing/__tests__/revenuecatRoute.test.ts (8),
+      lib/shop/__tests__/createCheckout.test.ts (7), all passing
     action: >-
-      done for the routes; createCheckout with an injected Stripe and
-      database next; revive e2e via green CI
+      done for the routes and createCheckout; revive e2e via green CI
     safe_to_automate: true
     review: none
 
