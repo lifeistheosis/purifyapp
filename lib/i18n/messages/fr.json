@@ -5009,5 +5009,6 @@
   "bible.languageOffer.body": "Votre Bible est en {language}. Les menus et les pages de Purify peuvent aussi être en {language}.",
   "bible.languageOffer.switch": "Utiliser {native}",
   "bible.languageOffer.notNow": "Pas maintenant",
-  "bible.languageOffer.never": "Ne plus demander"
+  "bible.languageOffer.never": "Ne plus demander",
+  "bible.downloads.failedSave": "Impossible de l'enregistrer sur cet appareil. Réessayez."
 }

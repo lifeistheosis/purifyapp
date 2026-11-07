@@ -5140,5 +5140,6 @@
   "bible.languageOffer.body": "Język Twojej Biblii: {language}. Menu i strony Purify też mogą być w tym języku.",
   "bible.languageOffer.switch": "Przełącz na: {native}",
   "bible.languageOffer.notNow": "Nie teraz",
-  "bible.languageOffer.never": "Nie pytaj więcej"
+  "bible.languageOffer.never": "Nie pytaj więcej",
+  "bible.downloads.failedSave": "Nie udało się zapisać na tym urządzeniu. Spróbuj ponownie."
 }

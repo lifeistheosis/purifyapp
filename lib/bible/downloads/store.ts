@@ -55,10 +55,10 @@ export type BibleManifest = {
 /** A Bible on the phone. */
 export type SavedBible = { version: string; bytes: number; books: string[]; at: string };
 
-/** A download under way, or one that stopped. */
+/** A download under way, or one that stopped: no signal (or the website refused), a full phone, or a save that failed. */
 export type BibleDownload =
   | { state: "downloading"; done: number; total: number }
-  | { state: "failed"; reason: "offline" | "space" };
+  | { state: "failed"; reason: "offline" | "space" | "save" };
 
 type Plugin = typeof import("@capacitor/filesystem");
 type Fetch = (input: string, init?: RequestInit) => Promise<Response>;
@@ -179,9 +179,14 @@ export function useBibles(): BiblesState {
 // ---- Downloading ------------------------------------------------------------
 
 class Stopped extends Error {
-  constructor(readonly reason: "offline" | "space" | "cancelled") {
+  constructor(readonly reason: "offline" | "space" | "save" | "cancelled") {
     super(reason);
   }
+}
+
+/** A failed save, by what the phone said: a full phone says so in words like these. */
+function whySaveFailed(e: unknown): "space" | "save" {
+  return /space|quota|ENOSPC|full/i.test(String((e as Error)?.message ?? e)) ? "space" : "save";
 }
 
 /** A book's file read and checked: it is the book the list names, at the list's hash. */
@@ -234,6 +239,23 @@ export async function downloadBible(
     let bytes = manifest.books.filter((b) => done.has(b.book)).reduce((n, b) => n + b.bytes, 0);
     setProgress(id, { state: "downloading", done: bytes, total: manifest.bytes }, controller);
 
+    // The Bible's folder, made once before three books are saved at a time:
+    // made by each save, two saves can race to make it, and the second fails
+    // (the plugin's own code in a browser does exactly that).
+    try {
+      await fs.Filesystem.mkdir({ path: bibleFolder(id), directory: home(fs), recursive: true });
+    } catch {
+      /* already there */
+    }
+    const save = (book: string, text: string) =>
+      fs.Filesystem.writeFile({
+        path: `${bibleFolder(id)}/${book}.json`,
+        data: text,
+        directory: home(fs),
+        encoding: fs.Encoding.UTF8,
+        recursive: true,
+      });
+
     const queue = manifest.books.filter((b) => !done.has(b.book));
     const worker = async () => {
       for (let entry = queue.shift(); entry; entry = queue.shift()) {
@@ -243,15 +265,14 @@ export async function downloadBible(
         if (!checkBook(text, id, entry)) text = await fetchText(url, fetcher, signal, "reload");
         if (!checkBook(text, id, entry)) throw new Stopped("offline");
         try {
-          await fs.Filesystem.writeFile({
-            path: `${bibleFolder(id)}/${entry.book}.json`,
-            data: text,
-            directory: home(fs),
-            encoding: fs.Encoding.UTF8,
-            recursive: true,
-          });
+          await save(entry.book, text);
         } catch {
-          throw new Stopped("space");
+          // Once more, in case it was a moment's trouble; then say what the phone said.
+          try {
+            await save(entry.book, text);
+          } catch (e) {
+            throw new Stopped(whySaveFailed(e));
+          }
         }
         if (signal.aborted) throw new Stopped("cancelled");
         mine.done.push(entry.book);

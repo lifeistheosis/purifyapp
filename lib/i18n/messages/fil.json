@@ -4981,5 +4981,6 @@
   "bible.languageOffer.body": "Ang wika ng iyong Bibliya: {language}. Maaari ring nasa wikang ito ang mga menu at pahina ng Purify.",
   "bible.languageOffer.switch": "Lumipat sa {native}",
   "bible.languageOffer.notNow": "Hindi ngayon",
-  "bible.languageOffer.never": "Huwag nang itanong muli"
+  "bible.languageOffer.never": "Huwag nang itanong muli",
+  "bible.downloads.failedSave": "Hindi ito ma-save sa device na ito. Subukang muli."
 }

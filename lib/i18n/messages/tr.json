@@ -4981,5 +4981,6 @@
   "bible.languageOffer.body": "Kutsal Kitabınızın dili: {language}. Purify'ın menüleri ve sayfaları da bu dilde olabilir.",
   "bible.languageOffer.switch": "{native} diline geç",
   "bible.languageOffer.notNow": "Şimdi değil",
-  "bible.languageOffer.never": "Bir daha sorma"
+  "bible.languageOffer.never": "Bir daha sorma",
+  "bible.downloads.failedSave": "Bu cihaza kaydedilemedi. Yeniden deneyin."
 }

@@ -5061,5 +5061,6 @@
   "bible.languageOffer.body": "Језик ваше Библије: {language}. Менији и странице Purify-ја такође могу бити на том језику.",
   "bible.languageOffer.switch": "Пређи на {native}",
   "bible.languageOffer.notNow": "Не сада",
-  "bible.languageOffer.never": "Не питај више"
+  "bible.languageOffer.never": "Не питај више",
+  "bible.downloads.failedSave": "Није могло да се сачува на овом уређају. Покушајте поново."
 }

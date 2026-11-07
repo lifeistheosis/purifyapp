@@ -5070,5 +5070,6 @@
   "bible.languageOffer.body": "Biblia ta este în {language}. Meniurile și paginile Purify pot fi și ele în {language}.",
   "bible.languageOffer.switch": "Treci la {native}",
   "bible.languageOffer.notNow": "Nu acum",
-  "bible.languageOffer.never": "Nu mai întreba"
+  "bible.languageOffer.never": "Nu mai întreba",
+  "bible.downloads.failedSave": "Nu a putut fi salvată pe acest dispozitiv. Încearcă din nou."
 }

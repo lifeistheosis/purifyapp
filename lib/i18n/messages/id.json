@@ -4979,5 +4979,6 @@
   "bible.languageOffer.body": "Bahasa Alkitab Anda: {language}. Menu dan halaman Purify juga bisa dalam bahasa ini.",
   "bible.languageOffer.switch": "Ganti ke {native}",
   "bible.languageOffer.notNow": "Nanti saja",
-  "bible.languageOffer.never": "Jangan tanya lagi"
+  "bible.languageOffer.never": "Jangan tanya lagi",
+  "bible.downloads.failedSave": "Tidak dapat disimpan di perangkat ini. Coba lagi."
 }

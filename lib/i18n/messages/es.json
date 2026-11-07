@@ -4991,5 +4991,6 @@
   "bible.languageOffer.body": "Tu Biblia está en {language}. Los menús y las páginas de Purify también pueden estar en {language}.",
   "bible.languageOffer.switch": "Cambiar a {native}",
   "bible.languageOffer.notNow": "Ahora no",
-  "bible.languageOffer.never": "No volver a preguntar"
+  "bible.languageOffer.never": "No volver a preguntar",
+  "bible.downloads.failedSave": "No se pudo guardar en este dispositivo. Inténtalo de nuevo."
 }

@@ -4981,5 +4981,6 @@
   "bible.languageOffer.body": "तपाईंको बाइबलको भाषा: {language}। Purify का मेनु र पृष्ठहरू पनि यही भाषामा हुन सक्छन्।",
   "bible.languageOffer.switch": "{native} मा बदल्नुहोस्",
   "bible.languageOffer.notNow": "अहिले होइन",
-  "bible.languageOffer.never": "फेरि नसोध्नुहोस्"
+  "bible.languageOffer.never": "फेरि नसोध्नुहोस्",
+  "bible.downloads.failedSave": "यो उपकरणमा सुरक्षित गर्न सकिएन। फेरि प्रयास गर्नुहोस्।"
 }

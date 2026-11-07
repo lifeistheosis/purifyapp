@@ -75,7 +75,7 @@ export function BibleRow({
     : downloading
       ? t("bible.downloads.downloading", { percent: Math.floor((progress.done / Math.max(progress.total, 1)) * 100) })
       : progress?.state === "failed"
-        ? t(progress.reason === "space" ? "bible.downloads.failedSpace" : "bible.downloads.failedOffline")
+        ? t(progress.reason === "space" ? "bible.downloads.failedSpace" : progress.reason === "save" ? "bible.downloads.failedSave" : "bible.downloads.failedOffline")
         : ready
           ? t(`bible.translationNote.${bible.id}`)
           : `${t(`bible.translationNote.${bible.id}`)} · ${size}`;

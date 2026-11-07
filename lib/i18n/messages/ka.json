@@ -4981,5 +4981,6 @@
   "bible.languageOffer.body": "თქვენი ბიბლიის ენა: {language}. Purify-ის მენიუები და გვერდებიც შეიძლება ამ ენაზე იყოს.",
   "bible.languageOffer.switch": "გადართვა: {native}",
   "bible.languageOffer.notNow": "ახლა არა",
-  "bible.languageOffer.never": "აღარ მკითხოთ"
+  "bible.languageOffer.never": "აღარ მკითხოთ",
+  "bible.downloads.failedSave": "ამ მოწყობილობაზე შენახვა ვერ მოხერხდა. სცადეთ ხელახლა."
 }

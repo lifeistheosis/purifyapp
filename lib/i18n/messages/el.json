@@ -4981,5 +4981,6 @@
   "bible.languageOffer.body": "Η γλώσσα της Βίβλου σας: {language}. Τα μενού και οι σελίδες του Purify μπορούν να είναι κι αυτά σε αυτή τη γλώσσα.",
   "bible.languageOffer.switch": "Αλλαγή σε {native}",
   "bible.languageOffer.notNow": "Όχι τώρα",
-  "bible.languageOffer.never": "Να μην ξαναρωτηθώ"
+  "bible.languageOffer.never": "Να μην ξαναρωτηθώ",
+  "bible.downloads.failedSave": "Δεν ήταν δυνατή η αποθήκευση σε αυτή τη συσκευή. Δοκιμάστε ξανά."
 }

@@ -32,12 +32,26 @@ const RU = "ru-synodal" as const;
 /** The phone's data folder. */
 const files = new Map<string, string>();
 const dirs: string[] = [];
+/** Folders on the "phone": a save into a missing folder makes it, as the plugin's own code in a browser does, and two at once race. */
+const folders = new Set<string>();
+const tick = () => new Promise((r) => setTimeout(r, 0));
+async function mkdir({ path: p }: { path: string }) {
+  await tick();
+  if (folders.has(p)) throw new Error("Current directory does already exist.");
+  folders.add(p);
+}
 const plugin = {
   Directory: { Data: "DATA", LibraryNoCloud: "LIBRARY_NO_CLOUD" },
   Encoding: { UTF8: "utf8" },
   Filesystem: {
-    writeFile: async ({ path: p, data, directory }: { path: string; data: string; directory: string }) => {
+    mkdir,
+    writeFile: async ({ path: p, data, directory, recursive }: { path: string; data: string; directory: string; recursive?: boolean }) => {
       dirs.push(directory);
+      const folder = p.slice(0, p.lastIndexOf("/"));
+      if (!folders.has(folder)) {
+        if (!recursive) throw new Error("Parent directory must exist");
+        await mkdir({ path: folder });
+      }
       files.set(p, data);
       return { uri: `file:///data/${p}` };
     },
@@ -72,6 +86,7 @@ beforeEach(() => {
   store.clear();
   files.clear();
   dirs.length = 0;
+  folders.clear();
   asked.length = 0;
   resetBibleStoreForTests();
 });
@@ -115,6 +130,31 @@ describe("downloading a Bible", () => {
     const books = asked.filter((a) => !a.url.endsWith("index.json"));
     expect(books.length).toBe(78 - kept);
     expect(files.size).toBe(78);
+  });
+
+  it("makes the Bible's folder once, so three books saved at a time never race to make it", async () => {
+    // Without it the second save into a new folder fails, as the plugin's code in a browser fails.
+    expect(await downloadBible(RU, { fetcher: website(), plugin, native: true })).toBe("saved");
+    expect(files.size).toBe(78);
+  });
+
+  it("tries a failed save once more, and says a save that failed is a save, not a full phone", async () => {
+    let failures = 1;
+    const once = { ...plugin, Filesystem: { ...plugin.Filesystem, writeFile: async (o: Parameters<typeof plugin.Filesystem.writeFile>[0]) => {
+      if (o.path.endsWith("/john.json") && failures-- > 0) throw new Error("I/O error");
+      return plugin.Filesystem.writeFile(o);
+    } } } as typeof plugin;
+    expect(await downloadBible(RU, { fetcher: website(), plugin: once, native: true })).toBe("saved");
+    resetBibleStoreForTests();
+    store.clear();
+    files.clear();
+    folders.clear();
+    const never = { ...plugin, Filesystem: { ...plugin.Filesystem, writeFile: async (o: Parameters<typeof plugin.Filesystem.writeFile>[0]) => {
+      if (o.path.endsWith("/john.json")) throw new Error("I/O error");
+      return plugin.Filesystem.writeFile(o);
+    } } } as typeof plugin;
+    expect(await downloadBible(RU, { fetcher: website(), plugin: never, native: true })).toBe("failed");
+    expect(bibleDownload(RU)).toEqual({ state: "failed", reason: "save" });
   });
 
   it("says a full phone is a full phone", async () => {

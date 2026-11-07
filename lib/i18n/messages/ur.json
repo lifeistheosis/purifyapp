@@ -4981,5 +4981,6 @@
   "bible.languageOffer.body": "آپ کی بائبل کی زبان: {language}۔ Purify کے مینو اور صفحات بھی اسی زبان میں ہو سکتے ہیں۔",
   "bible.languageOffer.switch": "{native} پر جائیں",
   "bible.languageOffer.notNow": "ابھی نہیں",
-  "bible.languageOffer.never": "دوبارہ نہ پوچھیں"
+  "bible.languageOffer.never": "دوبارہ نہ پوچھیں",
+  "bible.downloads.failedSave": "اس ڈیوائس پر محفوظ نہیں ہو سکا۔ دوبارہ کوشش کریں۔"
 }
