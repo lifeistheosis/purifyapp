@@ -897,11 +897,12 @@
    "title": "A line from your own florilegium on Today",
    "from": "claude",
    "asked": "2026-11-06",
-   "status": "approved",
+   "status": "built",
    "decided": "2026-11-06",
    "needsDesign": false,
    "version": null,
-   "outcome": null
+   "outcome": null,
+   "note": "Built 2026-11-07: a quiet card on Today, under the verse to say from memory, in the name day card's look: Your Florilegium, the gathering's name (opens it), one gathered line, where it comes from (opens the verse or the Father's page), and the reader's note under it. A different line each day and the same all day, every line in turn in the order gathered (lib/florilegium/todayLine.ts, with tests). Nothing while nothing is gathered. Shown whatever the reader's Plus: it is their own text. No new words: the heading is the catalog's Your Florilegium. Walked in the browser as the app"
   },
   {
    "id": "s5-08",

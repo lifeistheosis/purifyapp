@@ -4,6 +4,7 @@ import { VerseOfDayCard } from "./VerseOfDayCard";
 import { PrayRail } from "./PrayNowCard";
 import { ChurchTodayRail } from "./ChurchTodayRail";
 import { RememberCard } from "./RememberCard";
+import { FlorilegiumLineCard } from "./FlorilegiumLineCard";
 import { TodayGreeting } from "./TodayGreeting";
 import { StreakRow } from "./StreakRow";
 import { NativityFastCard } from "./NativityFastCard";
@@ -132,6 +133,10 @@ export function TodayMobileV3() {
 
           {/* A saved verse to say from memory, once a day (1.7, Plus). */}
           <RememberCard className="mt-6" />
+
+          {/* A line from the reader's own florilegium, one a day in turn
+              (1.9). Nothing while they have gathered nothing. */}
+          <FlorilegiumLineCard className="mt-4" />
 
           {/* The widget tip: once, in a shell that has a widget, after a
               reader's second day. Under the Church's day because that is what
