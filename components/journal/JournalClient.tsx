@@ -14,7 +14,6 @@ import { readVerseAnnotation, writeVerseAnnotation } from "@/lib/bible/annotatio
 import { localBookNames } from "@/lib/bible/books";
 import { fromThisDay, useJournal } from "@/lib/bible/journal";
 import { usePlusFeatures } from "@/lib/entitlements/usePlusFeatures";
-import { useIsNative } from "@/lib/platform/native";
 import { dateLocale } from "@/lib/i18n/deviceDates";
 import {
   addRecord,
@@ -35,6 +34,8 @@ import { dayGuide } from "@/lib/plans/guide";
 import { usePlanGuide } from "@/lib/plans/guideContent";
 import { dayLabel, getPlan } from "@/lib/plans/plans";
 import { usePlans } from "@/lib/plans/progress";
+import { useIsNative } from "@/lib/platform/native";
+import { printPart } from "@/lib/ui/printPart";
 import { softTick } from "@/lib/ui/softTick";
 import { useUndo } from "@/lib/ui/useUndo";
 import { useMounted } from "@/lib/useMounted";
@@ -57,15 +58,6 @@ const BLANK: JournalDraft = { kind: "reflection", body: "" };
  * opens the upgrade sheet named for the journal. Their notes stay on every
  * verse they wrote them on, free.
  */
-/** Print the journal's entries alone (1.9): the class the print rules wait for, held for the print. */
-function printJournal() {
-  const root = document.documentElement;
-  root.classList.add("journal-print");
-  const done = () => root.classList.remove("journal-print");
-  window.addEventListener("afterprint", done, { once: true });
-  window.print();
-}
-
 export function JournalClient() {
   const { t, locale } = useTranslate();
   const native = useIsNative();
@@ -276,13 +268,13 @@ export function JournalClient() {
               <JournalFeed items={items} onOpen={openItem} onRemove={remove} sourceLabel={sourceLabel} />
               {/* 1.9 (s4-09, "a reader's journal is theirs"): on the website, the
                   browser's own print, whose dialog saves a PDF; the page prints
-                  its entries alone (globals.css, "The journal printed"). The
+                  its entries alone (lib/ui/printPart.ts). The
                   apps' WebView cannot print: there the journal leaves with
                   Export your library, through the share sheet. */}
               {!native ? (
                 <button
                   type="button"
-                  onClick={printJournal}
+                  onClick={printPart}
                   className="tap-press mt-8 font-sans text-detail font-semibold text-paper/70 underline-offset-4 hover:text-paper hover:underline"
                 >
                   {t("journal.print")}

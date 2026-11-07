@@ -872,11 +872,12 @@
    "title": "Share a florilegium as a page or a booklet, citations kept exact",
    "from": "claude",
    "asked": "2026-11-06",
-   "status": "approved",
+   "status": "built",
    "decided": "2026-11-06",
    "needsDesign": false,
    "version": null,
-   "outcome": null
+   "outcome": null,
+   "note": "Built 2026-11-07 as the booklet and as words: on the website a gathering's page has Print or save as PDF, printing it alone as a booklet (its name, its line, every gathered line with its source and the reader's note; lib/ui/printPart.ts, the same print the journal now uses); in the apps, Share hands the gathering's words to the phone's share sheet, each line as it was kept with its source under it and purifyapp.net at the foot (lib/florilegium/asText.ts, tested; no em dash of its own). No new words. Not built: a gathering as a page of its own on the website, a link anyone can open, which needs the gathering kept on the server behind a public address: a new table, so a migration, for his word. Walked: printed to PDF in the browser; Share not walked on a phone"
   },
   {
    "id": "s5-06",

@@ -11,18 +11,15 @@ import { Check } from "@/components/ui/icons/Check";
 import { Plus } from "@/components/ui/icons/Plus";
 import { localBookNames } from "@/lib/bible/books";
 import { cn } from "@/lib/cn";
-import { useFlorilegia, type Florilegium, type FlorilegiumItem } from "@/lib/florilegium/florilegium";
+import { itemSource } from "@/lib/florilegium/asText";
+import { useFlorilegia, type Florilegium } from "@/lib/florilegium/florilegium";
 import { STARTERS, starterItems, starterPicture, starterReference, type Starter } from "@/lib/florilegium/starters";
 import { useFlorilegiaSyncedAt, useMinute } from "@/lib/florilegium/syncedAt";
 import { dateLocale } from "@/lib/i18n/deviceDates";
 import { useMounted } from "@/lib/useMounted";
 
-/** Where a gathered line came from, as its card prints it. */
-export function itemSource(item: FlorilegiumItem): string {
-  return item.kind === "scripture"
-    ? item.reference
-    : [item.author, item.work].filter(Boolean).join(", ");
-}
+/** Where a gathered line came from, as its card prints it (lib/florilegium/asText.ts); named here too, for the pages that ask this file. */
+export { itemSource };
 
 /**
  * The Florilegium's first page (1.9, the owner's pick for Keeping of

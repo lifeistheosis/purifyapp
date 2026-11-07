@@ -92,8 +92,8 @@ export function JournalFeed({
   };
 
   return (
-    // data-journal-print: what Print or save as PDF prints (1.9, globals.css "The journal printed").
-    <div data-journal-print="">
+    // data-print-part: what Print or save as PDF prints (1.9, lib/ui/printPart.ts).
+    <div data-print-part="">
       <p role="heading" aria-level={1} className="hidden font-heading text-title font-bold print:block">
         {t("journal.title")}
       </p>

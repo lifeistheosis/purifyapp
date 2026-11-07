@@ -4,17 +4,20 @@ import { useMemo, useState } from "react";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 
-import { itemSource } from "@/components/florilegium/FlorilegiaHub";
 import { useTranslate } from "@/components/i18n/MessagesProvider";
 import { ConfirmDialog } from "@/components/ui/ConfirmDialog";
 import { CARD, CARD_BG, Eyebrow, ICON_TILE_SM, PILL } from "@/components/ui/Graphite";
 import { Book } from "@/components/ui/icons/Book";
 import { Quill } from "@/components/ui/icons/Quill";
 import { cn } from "@/lib/cn";
+import { florilegiumAsText, itemSource } from "@/lib/florilegium/asText";
 import {
   useFlorilegia,
   type FlorilegiumItem,
 } from "@/lib/florilegium/florilegium";
+import { useIsNative } from "@/lib/platform/native";
+import { shareText } from "@/lib/share/shareImage";
+import { printPart } from "@/lib/ui/printPart";
 
 const SMALL_PILL =
   "inline-flex min-h-11 items-center rounded-pill px-3.5 font-sans text-caption font-medium text-paper/65 transition-colors hover:bg-paper/10 hover:text-paper";
@@ -30,9 +33,16 @@ const SMALL_PILL =
  * with its source's mark (the Scriptures or a Father), the quotation set
  * large, and the reader's note in a panel of its own beneath it, where they
  * were a rule, a quote and two grey words.
+ *
+ * Handed on (1.9, s5-05: "share a florilegium as a page or a booklet,
+ * citations kept exact"): on the website, Print or save as PDF prints the
+ * gathering alone as a booklet (lib/ui/printPart.ts); in the apps, Share
+ * hands its words to the phone's share sheet, each line as it was kept with
+ * its source (lib/florilegium/asText.ts).
  */
 export function FlorilegiumDetail({ id }: { id: string }) {
   const { t, tn } = useTranslate();
+  const native = useIsNative();
   const { florilegia, remove, removeItem, setItemNote } = useFlorilegia();
   const f = useMemo(
     () => florilegia.find((x) => x.id === id),
@@ -67,38 +77,59 @@ export function FlorilegiumDetail({ id }: { id: string }) {
         {t("study.florilegium.backToYours")}
       </Link>
 
-      <Eyebrow className="mt-10">{t("study.florilegium.title")}</Eyebrow>
-      <h1 className="mt-4 text-heading font-bold leading-[1.05] tracking-[-0.025em] text-paper md:text-display-sm">
-        {f.title}
-      </h1>
-      {f.description ? (
-        <p className="mt-4 font-serif text-lede italic leading-[1.55] text-paper/70">{f.description}</p>
-      ) : null}
-      <p className="mt-5">
-        <span className="inline-flex items-center rounded-pill border border-paper/15 bg-paper/[0.04] px-3 py-1 font-sans text-caption tabular-nums text-paper/65">
-          {tn("study.florilegium.lineCount", f.items.length)}
-        </span>
-      </p>
+      {/* What the booklet prints: the name, its line, and the lines (1.9). */}
+      <div data-print-part="">
+        <Eyebrow className="mt-10">{t("study.florilegium.title")}</Eyebrow>
+        <h1 className="mt-4 text-heading font-bold leading-[1.05] tracking-[-0.025em] text-paper md:text-display-sm">
+          {f.title}
+        </h1>
+        {f.description ? (
+          <p className="mt-4 font-serif text-lede italic leading-[1.55] text-paper/70">{f.description}</p>
+        ) : null}
+        <p className="mt-5">
+          <span className="inline-flex items-center rounded-pill border border-paper/15 bg-paper/[0.04] px-3 py-1 font-sans text-caption tabular-nums text-paper/65">
+            {tn("study.florilegium.lineCount", f.items.length)}
+          </span>
+        </p>
 
-      {f.items.length === 0 ? (
-        <div className={cn(CARD, "mt-10 hover:translate-y-0")} style={CARD_BG}>
-          <p className="max-w-[52ch] font-serif text-body italic leading-[1.6] text-paper/65">
-            {t("study.nothingGatheredYetAsYou")}
-          </p>
+        {f.items.length === 0 ? (
+          <div className={cn(CARD, "mt-10 hover:translate-y-0")} style={CARD_BG}>
+            <p className="max-w-[52ch] font-serif text-body italic leading-[1.6] text-paper/65">
+              {t("study.nothingGatheredYetAsYou")}
+            </p>
+          </div>
+        ) : (
+          <ul className="mt-10 space-y-5">
+            {f.items.map((item) => (
+              <li key={item.id}>
+                <ItemCard
+                  item={item}
+                  onRemove={() => removeItem(f.id, item.id)}
+                  onNote={(note) => setItemNote(f.id, item.id, note)}
+                />
+              </li>
+            ))}
+          </ul>
+        )}
+      </div>
+
+      {f.items.length > 0 ? (
+        <div className="mt-8">
+          {native ? (
+            <button
+              type="button"
+              onClick={() => void shareText(f.title, florilegiumAsText(f))}
+              className={cn(PILL, "px-4 py-1.5 text-detail")}
+            >
+              {t("common.share")}
+            </button>
+          ) : (
+            <button type="button" onClick={printPart} className={cn(PILL, "px-4 py-1.5 text-detail")}>
+              {t("journal.print")}
+            </button>
+          )}
         </div>
-      ) : (
-        <ul className="mt-10 space-y-5">
-          {f.items.map((item) => (
-            <li key={item.id}>
-              <ItemCard
-                item={item}
-                onRemove={() => removeItem(f.id, item.id)}
-                onNote={(note) => setItemNote(f.id, item.id, note)}
-              />
-            </li>
-          ))}
-        </ul>
-      )}
+      ) : null}
 
       <div className="mt-16 border-t border-paper/10 pt-6">
         <button
@@ -178,7 +209,7 @@ export function ItemCard({
       </div>
 
       {editing ? (
-        <div className="mt-6">
+        <div className="mt-6" data-print-hide="">
           <textarea
             value={draft}
             onChange={(e) => setDraft(e.target.value)}
@@ -222,7 +253,7 @@ export function ItemCard({
       ) : null}
 
       {!editing && (
-        <div className="mt-5 flex flex-wrap gap-1.5">
+        <div className="mt-5 flex flex-wrap gap-1.5" data-print-hide="">
           <button type="button" onClick={() => setEditing(true)} className={SMALL_PILL}>
             {item.note ? t("bible.editNote") : t("bible.addNote")}
           </button>

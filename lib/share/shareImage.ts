@@ -106,3 +106,29 @@ export async function saveImage(blob: Blob, fileName: string, text: string): Pro
   if (isNativeClient()) return shareImage(blob, fileName, text);
   return download(blob, fileName) ? "saved" : "failed";
 }
+
+/**
+ * Words, to the share sheet (1.9: a florilegium handed on as text, s5-05).
+ * In the apps the Share plugin; in a browser that can share, the Web Share
+ * API. Says whether it reached one, so a page can offer something else.
+ */
+export async function shareText(title: string, text: string): Promise<ShareOutcome> {
+  if (isNativeClient()) {
+    try {
+      const { Share } = await import("@capacitor/share");
+      await Share.share({ title, text, dialogTitle: title });
+      return "shared";
+    } catch (e) {
+      if (wasDismissed(e)) return "dismissed";
+    }
+  }
+  try {
+    if (typeof navigator.share === "function") {
+      await navigator.share({ title, text });
+      return "shared";
+    }
+  } catch (e) {
+    if (wasDismissed(e)) return "dismissed";
+  }
+  return "failed";
+}
