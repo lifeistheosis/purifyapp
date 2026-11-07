@@ -4993,6 +4993,8 @@
   "settings.storageHint": "Bağlantı olmadan okumak ve dinlemek için burada tutulanlar.",
   "settings.storageTotal": "Bağlantı olmadan okumak ve dinlemek için burada {size} tutuluyor.",
   "settings.storageEmpty": "Burada henüz bir şey yok. Okuyucudaki çevirilerden bir Kutsal Kitap indirin ya da oynatıcıdan bir kitabı çevrimdışı dinlemek için kaydedin.",
+  "settings.storageWeek": "Bu haftanın okumaları",
+  "settings.storageWeekHint": "Gelecek haftanınkiler, Wi-Fi'da kendiliğinden kaydedilir ve günü geçince kaldırılır",
   "settings.storageBible": "Kutsal Kitap",
   "settings.storageListening": "Çevrimdışı dinlemek için",
   "settings.storageRemoveBook": "{book} kitabını bu cihazdan kaldır",

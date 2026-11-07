@@ -4995,6 +4995,8 @@
   "settings.storageHint": "Was hier liegt, um ohne Verbindung zu lesen und zu hören.",
   "settings.storageTotal": "{size} liegen hier, um ohne Verbindung zu lesen und zu hören.",
   "settings.storageEmpty": "Hier liegt noch nichts. Lade eine Bibel über die Übersetzungen im Leser herunter oder speichere ein Buch im Player zum Offline-Hören.",
+  "settings.storageWeek": "Die Lesungen der Woche",
+  "settings.storageWeekHint": "Die der kommenden Woche, von selbst über WLAN gespeichert und entfernt, wenn ihr Tag vorbei ist",
   "settings.storageBible": "Bibel",
   "settings.storageListening": "Zum Offline-Hören",
   "settings.storageRemoveBook": "{book} von diesem Gerät entfernen",

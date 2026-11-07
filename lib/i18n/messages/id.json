@@ -4991,6 +4991,8 @@
   "settings.storageHint": "Yang disimpan di sini untuk dibaca dan didengarkan tanpa sinyal.",
   "settings.storageTotal": "{size} disimpan di sini, untuk dibaca dan didengarkan tanpa sinyal.",
   "settings.storageEmpty": "Belum ada yang disimpan di sini. Unduh Alkitab dari terjemahan di pembaca, atau simpan sebuah kitab untuk didengarkan offline dari pemutar.",
+  "settings.storageWeek": "Bacaan minggu ini",
+  "settings.storageWeekHint": "Untuk minggu mendatang, disimpan sendiri lewat Wi-Fi dan dihapus setelah harinya lewat",
   "settings.storageBible": "Alkitab",
   "settings.storageListening": "Untuk didengarkan offline",
   "settings.storageRemoveBook": "Hapus {book} dari perangkat ini",

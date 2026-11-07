@@ -4993,6 +4993,8 @@
   "settings.storageHint": "რა ინახება აქ, რომ კავშირის გარეშე წაიკითხოთ და მოუსმინოთ.",
   "settings.storageTotal": "აქ ინახება {size}, რომ კავშირის გარეშე წაიკითხოთ და მოუსმინოთ.",
   "settings.storageEmpty": "აქ ჯერ არაფერი ინახება. ჩამოტვირთეთ ბიბლია მკითხველის თარგმანებიდან ან შეინახეთ წიგნი ხაზგარეშე მოსასმენად დამკვრელიდან.",
+  "settings.storageWeek": "ამ კვირის საკითხავები",
+  "settings.storageWeekHint": "მომავალი კვირისა, თავისით ინახება Wi-Fi-ით და იშლება, როცა მათი დღე გავა",
   "settings.storageBible": "ბიბლია",
   "settings.storageListening": "ხაზგარეშე მოსასმენად",
   "settings.storageRemoveBook": "{book}: ამ მოწყობილობიდან წაშლა",

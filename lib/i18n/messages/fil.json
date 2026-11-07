@@ -4993,6 +4993,8 @@
   "settings.storageHint": "Ang nakatago rito para mabasa at mapakinggan nang walang signal.",
   "settings.storageTotal": "{size} ang nakatago rito, para mabasa at mapakinggan nang walang signal.",
   "settings.storageEmpty": "Wala pang nakatago rito. Mag-download ng Bibliya mula sa mga salin sa reader, o mag-save ng aklat para mapakinggan nang offline mula sa player.",
+  "settings.storageWeek": "Mga pagbasa ngayong linggo",
+  "settings.storageWeekHint": "Ang sa darating na linggo, kusang sine-save sa Wi-Fi at inaalis kapag lumipas na ang araw nila",
   "settings.storageBible": "Bibliya",
   "settings.storageListening": "Para mapakinggan nang offline",
   "settings.storageRemoveBook": "Alisin ang {book} sa device na ito",

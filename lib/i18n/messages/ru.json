@@ -5150,6 +5150,8 @@
   "settings.storageHint": "Что хранится здесь, чтобы читать и слушать без сети.",
   "settings.storageTotal": "Здесь хранится {size}, чтобы читать и слушать без сети.",
   "settings.storageEmpty": "Здесь пока ничего не хранится. Скачайте Библию из списка переводов в режиме чтения или сохраните книгу для прослушивания без сети в плеере.",
+  "settings.storageWeek": "Чтения на неделю",
+  "settings.storageWeekHint": "На ближайшую неделю, сохраняются сами по Wi-Fi и удаляются, когда их день прошёл",
   "settings.storageBible": "Библия",
   "settings.storageListening": "Для прослушивания без сети",
   "settings.storageRemoveBook": "Удалить «{book}» с этого устройства",

@@ -33,6 +33,7 @@ import { streamedUrl } from "@/lib/media/streamed";
 
 import { readAloudRecording } from "./chapters";
 import { saveChapters, savedChapters } from "./offline";
+import { releaseWeekBook } from "./weekKept";
 
 const KEY = "purify:readAloud.saving";
 
@@ -229,6 +230,8 @@ async function run(): Promise<void> {
  */
 export async function startSaving(book: string, chapters: readonly number[]): Promise<void> {
   if (running) return;
+  // The book is the reader's now: chapters the week's readings kept of it stay.
+  releaseWeekBook(book);
   const waiting = readPending();
   if (waiting?.book !== book) writePending({ book, chapters: [...chapters], mobileData: false });
   set({ failed: null });
@@ -259,6 +262,11 @@ export async function resumeSaving(): Promise<void> {
 
 export function getSaving(): SavingState {
   return state;
+}
+
+/** The connection as this module reads it (the week's readings ask it too, lib/readAloud/week.ts). */
+export function connection(): Net {
+  return net;
 }
 
 export function useSaving(): SavingState {

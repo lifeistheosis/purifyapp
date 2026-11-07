@@ -5152,6 +5152,8 @@
   "settings.storageHint": "To, co jest tu przechowywane, by czytać i słuchać bez sieci.",
   "settings.storageTotal": "Przechowywane tu: {size}, by czytać i słuchać bez sieci.",
   "settings.storageEmpty": "Nic tu jeszcze nie ma. Pobierz Biblię z przekładów w czytniku albo zapisz księgę do słuchania offline w odtwarzaczu.",
+  "settings.storageWeek": "Czytania na ten tydzień",
+  "settings.storageWeekHint": "Na nadchodzący tydzień, zapisywane same przez Wi-Fi i usuwane, gdy minie ich dzień",
   "settings.storageBible": "Biblia",
   "settings.storageListening": "Do słuchania offline",
   "settings.storageRemoveBook": "Usuń {book} z tego urządzenia",

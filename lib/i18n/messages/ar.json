@@ -5288,6 +5288,8 @@
   "settings.storageHint": "ما يُحفظ هنا للقراءة والاستماع دون اتصال.",
   "settings.storageTotal": "{size} محفوظة هنا للقراءة والاستماع دون اتصال.",
   "settings.storageEmpty": "لا شيء محفوظ هنا بعد. نزّل كتابًا مقدسًا من ترجمات القارئ، أو احفظ سفرًا للاستماع دون اتصال من المشغّل.",
+  "settings.storageWeek": "قراءات هذا الأسبوع",
+  "settings.storageWeekHint": "قراءات الأسبوع القادم، تُحفظ وحدها عبر Wi-Fi وتُحذف بعد انقضاء يومها",
   "settings.storageBible": "الكتاب المقدس",
   "settings.storageListening": "للاستماع دون اتصال",
   "settings.storageRemoveBook": "أزل {book} من هذا الجهاز",

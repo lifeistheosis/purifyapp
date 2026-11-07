@@ -5073,6 +5073,8 @@
   "settings.storageHint": "Шта се чува овде да бисте читали и слушали ван мреже.",
   "settings.storageTotal": "Овде се чува {size}, да бисте читали и слушали ван мреже.",
   "settings.storageEmpty": "Овде још ништа није сачувано. Преузмите Библију из превода у читачу или сачувајте књигу за слушање ван мреже у плејеру.",
+  "settings.storageWeek": "Читања за ову седмицу",
+  "settings.storageWeekHint": "За наредну седмицу, чувају се сама преко Wi-Fi-ја и бришу кад им прође дан",
   "settings.storageBible": "Библија",
   "settings.storageListening": "За слушање ван мреже",
   "settings.storageRemoveBook": "Уклони {book} са овог уређаја",

@@ -4998,6 +4998,8 @@
   "settings.storageHint": "O que fica guardado aqui para ler e ouvir sem ligação.",
   "settings.storageTotal": "{size} guardados aqui, para ler e ouvir sem ligação.",
   "settings.storageEmpty": "Ainda não há nada guardado aqui. Descarregue uma Bíblia nas traduções do leitor, ou guarde um livro para ouvir offline a partir do leitor de áudio.",
+  "settings.storageWeek": "As leituras da semana",
+  "settings.storageWeekHint": "As da próxima semana, guardadas sozinhas por Wi-Fi e retiradas quando passa o seu dia",
   "settings.storageBible": "Bíblia",
   "settings.storageListening": "Para ouvir offline",
   "settings.storageRemoveBook": "Remover {book} deste dispositivo",

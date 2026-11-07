@@ -5082,6 +5082,8 @@
   "settings.storageHint": "Ce se păstrează aici pentru citit și ascultat fără semnal.",
   "settings.storageTotal": "{size} păstrați aici, pentru citit și ascultat fără semnal.",
   "settings.storageEmpty": "Încă nu e nimic păstrat aici. Descarcă o Biblie din traducerile cititorului sau salvează o carte pentru ascultare offline din player.",
+  "settings.storageWeek": "Citirile săptămânii",
+  "settings.storageWeekHint": "Cele din săptămâna care vine, salvate singure pe Wi-Fi și șterse după ce le trece ziua",
   "settings.storageBible": "Biblie",
   "settings.storageListening": "Pentru ascultare offline",
   "settings.storageRemoveBook": "Șterge {book} de pe acest dispozitiv",

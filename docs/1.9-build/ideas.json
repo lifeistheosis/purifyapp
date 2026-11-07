@@ -543,11 +543,12 @@
    "title": "Keep the coming week's daily readings on the phone by themselves, on Wi-Fi, for Plus",
    "from": "claude",
    "asked": "2026-11-06",
-   "status": "approved",
+   "status": "built",
    "decided": "2026-11-06",
    "needsDesign": false,
    "version": null,
-   "outcome": null
+   "outcome": null,
+   "note": "Built 2026-11-07, on Android (lib/readAloud/week.ts). When the app opens and comes back to the front, for a reader with a sure yes to Plus, on Wi-Fi only (never mobile data, never a connection the phone cannot name): every chapter read aloud that the Church reads in the next seven days by the reader's calendar is saved as a saved book is, and noted as the week's; once its last day has passed the week takes it away, unless the reader saved its book themselves. The reader's own saving goes first. On by default for Plus, as \"by themselves\" asks; Settings, On this device, has the switch and what it keeps (off takes it all away). A week on the new calendar is 15 to 17 chapters (counted for four weeks from 7 November 2026 to Holy Week 2027); the old calendar's days carry fewer readings in the app, so fewer. Not on iPhone yet: the recordings are kept in the folder iCloud backs up, and a week's worth every week on its own would make that worse (c-ios-offline-backup, waiting for his word). Tests: lib/readAloud/__tests__/week.test.ts. Walked in a browser as the app: the switch and its count; not walked on a phone"
   },
   {
    "id": "s3-02",

@@ -4993,6 +4993,8 @@
   "settings.storageHint": "جو کچھ یہاں رکھا ہے تاکہ بغیر کنکشن کے پڑھ اور سن سکیں۔",
   "settings.storageTotal": "یہاں {size} رکھا ہے، بغیر کنکشن کے پڑھنے اور سننے کے لیے۔",
   "settings.storageEmpty": "یہاں ابھی کچھ نہیں رکھا گیا۔ قاری کے تراجم سے بائبل ڈاؤن لوڈ کریں، یا پلیئر سے کوئی کتاب آف لائن سننے کے لیے محفوظ کریں۔",
+  "settings.storageWeek": "اس ہفتے کی قراءتیں",
+  "settings.storageWeekHint": "آنے والے ہفتے کی، Wi-Fi پر خود محفوظ ہوتی ہیں اور دن گزرنے پر ہٹا دی جاتی ہیں",
   "settings.storageBible": "بائبل",
   "settings.storageListening": "آف لائن سننے کے لیے",
   "settings.storageRemoveBook": "{book} کو اس ڈیوائس سے ہٹائیں",

@@ -5013,6 +5013,8 @@
   "settings.storageHint": "What is kept here to read and listen to without a signal.",
   "settings.storageTotal": "{size} kept here, to read and listen to without a signal.",
   "settings.storageEmpty": "Nothing is kept here yet. Download a Bible from the reader's translations, or save a book to listen offline from the player.",
+  "settings.storageWeek": "This week's readings",
+  "settings.storageWeekHint": "The coming week's, kept by themselves on Wi-Fi and removed when their day has passed",
   "settings.storageBible": "Bible",
   "settings.storageListening": "To listen offline",
   "settings.storageRemoveBook": "Remove {book} from this device",

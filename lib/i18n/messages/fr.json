@@ -5021,6 +5021,8 @@
   "settings.storageHint": "Ce qui est gardé ici pour lire et écouter sans connexion.",
   "settings.storageTotal": "{size} gardés ici, pour lire et écouter sans connexion.",
   "settings.storageEmpty": "Rien n'est encore gardé ici. Téléchargez une Bible depuis les traductions du lecteur, ou enregistrez un livre pour l'écouter hors ligne depuis le lecteur audio.",
+  "settings.storageWeek": "Les lectures de la semaine",
+  "settings.storageWeekHint": "Celles de la semaine à venir, enregistrées d'elles-mêmes en Wi-Fi et retirées une fois leur jour passé",
   "settings.storageBible": "Bible",
   "settings.storageListening": "Pour écouter hors ligne",
   "settings.storageRemoveBook": "Retirer {book} de cet appareil",

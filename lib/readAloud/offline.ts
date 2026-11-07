@@ -142,6 +142,21 @@ export async function saveChapters(
   return { saved, failed, stopped: false };
 }
 
+/** Take one saved chapter off the phone (1.9: the week's readings, once their day has passed). */
+export async function removeChapter(book: string, chapter: number, plugin?: Plugin): Promise<void> {
+  const { Filesystem, Directory } = plugin ?? (await import("@capacitor/filesystem"));
+  for (const ext of ["mp3", "json"]) {
+    try {
+      await Filesystem.deleteFile({ path: `audio/read/${book}/${chapter}.${ext}`, directory: Directory.Data });
+    } catch {
+      /* already gone */
+    }
+  }
+  const all = read();
+  delete all[`${book}/${chapter}`];
+  write(all);
+}
+
 /** Take a book's saved chapters off the phone. */
 export async function removeBook(book: string, plugin?: Plugin): Promise<void> {
   const { Filesystem, Directory } = plugin ?? (await import("@capacitor/filesystem"));
