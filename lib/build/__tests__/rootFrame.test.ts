@@ -95,7 +95,7 @@ describe("the head an app's page carries", () => {
       [...m[1].matchAll(/"([^"]+)"/g)].map((part) => part[1]).join("/"),
     );
     expect(entries.slice(0, 3)).toEqual(["app/api", "app/(app)/campaigns/[id]", "app/(app)/florilegium/[id]"]);
-    expect(entries.slice(-11, -6)).toEqual([
+    expect(entries.slice(-12, -7)).toEqual([
       "app/opengraph-image.png",
       "app/opengraph-image.alt.txt",
       "app/sitemap.ts",
@@ -106,16 +106,17 @@ describe("the head an app's page carries", () => {
     // website instead of carrying: the Kitchen's photos, every chant's
     // recordings with the list that can pull one, the read-aloud covers, and
     // History's pictures; in 1.8 the Bible read aloud; and in 1.9 the shop's
-    // product photos (the full optimize).
-    expect(entries.slice(-6)).toEqual([
+    // product photos (the full optimize) and the Bibles a reader downloads.
+    expect(entries.slice(-7)).toEqual([
       "public/kitchen-photos",
       "public/audio/chants",
       "public/covers",
       "public/history/media",
       "public/audio/read",
       "public/shop/media",
+      "public/bibles",
     ]);
-    for (const entry of entries.slice(-11)) {
+    for (const entry of entries.slice(-12)) {
       expect(fs.existsSync(path.join(ROOT, entry)), `${entry} is set aside by the build and is not there`).toBe(true);
     }
   });

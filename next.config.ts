@@ -93,6 +93,13 @@ const READ_ALOUD_SOURCE = "/audio/read/:path*";
 // (about 5 MB of the export, scripts/native-build.mjs).
 const SHOP_MEDIA_SOURCE = "/shop/media/:path*";
 const READ_ALOUD_LIST = "/audio/read/index.json";
+// The Bibles a reader downloads (1.9, lib/bible/downloads/): each book of each
+// Bible a file, on the website alone, read by the website's reader and
+// downloaded by the apps. A book file names its version (a hash of its words),
+// so a day's cache is safe; a Bible's list is kept a short time, so a
+// corrected Bible reaches a download within minutes.
+const BIBLES_SOURCE = "/bibles/:path*";
+const BIBLES_LIST = "/bibles/:bible/index.json";
 
 // Native local-first build target. `BUILD_TARGET=android|ios next build` produces
 // a fully static export (out/) that Capacitor bundles into the app, so it renders
@@ -186,6 +193,8 @@ const nextConfig: NextConfig = isNative
           { source: READ_ALOUD_SOURCE, headers: streamedMediaHeaders },
           { source: SHOP_MEDIA_SOURCE, headers: streamedMediaHeaders },
           { source: READ_ALOUD_LIST, headers: [{ key: "Cache-Control", value: "public, max-age=300" }] },
+          { source: BIBLES_SOURCE, headers: streamedMediaHeaders },
+          { source: BIBLES_LIST, headers: [{ key: "Cache-Control", value: "public, max-age=300" }] },
         ];
       },
       // Supplier product photos for dropshipped shop listings live on Temu's

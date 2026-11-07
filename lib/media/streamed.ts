@@ -12,7 +12,8 @@ import { SITE_URL } from "@/lib/site";
  * the covers' folder, /covers/saints/, so they need nothing more. History's
  * pictures, one for each event (lib/history/media.ts), are a folder of their
  * own, and so is the Bible read aloud, every chapter's recording and its list
- * (lib/readAloud/chapters.ts).
+ * (lib/readAloud/chapters.ts). From 1.9 the shop's photos stream too, and
+ * the Bibles a reader downloads (lib/bible/downloads/), each book a file.
  * It has three parts, and each is useless without the other two:
  *
  *  1. The native build sets the folder aside (scripts/native-build.mjs,
@@ -33,7 +34,7 @@ import { SITE_URL } from "@/lib/site";
  * fails to load would leave a dead Play button; a cover that fails to load
  * shows the bundled plate instead (components/player/CoverArt.tsx).
  */
-export const STREAMED_ROOTS = ["/audio/chants/", "/covers/", "/history/media/", "/audio/read/", "/shop/media/"] as const;
+export const STREAMED_ROOTS = ["/audio/chants/", "/covers/", "/history/media/", "/audio/read/", "/shop/media/", "/bibles/"] as const;
 
 /** A file the apps do not carry, asked of the website. */
 export function isStreamedMedia(path: string): boolean {

@@ -178,6 +178,14 @@ const STASH_PATHS = [
   // photo and the cart make the address the website's). Appended, for the
   // slot-index reason above.
   ["public", "shop", "media"],
+  // The Bibles a reader downloads (1.9, the owner's word of 2026-11-07:
+  // "make it so that the user picks to download the selected Bible they pick
+  // ... instead of the app including all of them downloaded already"): one
+  // file for each book of each Bible, about 8 MB a Bible, on the website
+  // alone. The apps download a Bible's books when the reader asks for it
+  // (lib/bible/downloads/), and carry only the list of what can be downloaded
+  // (data/bibles/catalog.json). Appended, for the slot-index reason above.
+  ["public", "bibles"],
 ];
 
 function slot(i) {
