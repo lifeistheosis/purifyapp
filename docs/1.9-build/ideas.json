@@ -851,11 +851,12 @@
    "title": "Starter florilegia to begin from, verbatim and cited, for the empty first day",
    "from": "claude",
    "asked": "2026-11-06",
-   "status": "approved",
+   "status": "built",
    "decided": "2026-11-06",
    "needsDesign": false,
    "version": null,
-   "outcome": null
+   "outcome": null,
+   "note": "Built 2026-11-07: the Florilegium's first page; starters are the Prologue of John, the Beatitudes, the Song of the Theotokos and Psalm 50, verbatim from the app's Bible"
   },
   {
    "id": "s5-07",
@@ -881,7 +882,8 @@
    "decided": "2026-11-06",
    "needsDesign": false,
    "version": null,
-   "outcome": null
+   "outcome": null,
+   "note": "Part built 2026-11-07: \"Last synced\" on the Florilegium, stamped only when the server confirms; no device count exists to show"
   },
   {
    "id": "s5-09",
@@ -1204,11 +1206,12 @@
    "title": "A whole revamp of the Florilegium and keeping",
    "from": "edgar",
    "asked": "2026-11-06",
-   "status": "approved",
+   "status": "built",
    "decided": "2026-11-06",
    "needsDesign": true,
    "version": null,
-   "outcome": null
+   "outcome": null,
+   "note": "Built 2026-11-07: the Florilegium's first page; starters are the Prologue of John, the Beatitudes, the Song of the Theotokos and Psalm 50, verbatim from the app's Bible"
   },
   {
    "id": "e-listen-collapse",
@@ -1330,6 +1333,34 @@
    "version": null,
    "outcome": null,
    "note": "Measured by npm run build:android on the 1.9 branch, 2026-11-07 (75.0 MB packed of 85). Of it, the Bible's pages are 73 MB, its study data 79 MB, the saints' pages and works 64 MB, the code 21 MB. Corrected the same day: Claude first told the owner the history pictures' cleanup would make room, but they have streamed from the website since 1.7 and are not in the apps at all"
+  },
+  {
+   "id": "c-flor-gate-flash",
+   "section": "Keeping",
+   "kind": "bug",
+   "title": "The Florilegium's gate opens before it knows: a reader without Plus sees the hub for a moment, then the pitch, and a lapsed reader's own gatherings are hidden behind it",
+   "from": "claude",
+   "asked": "2026-11-07",
+   "status": "proposed",
+   "decided": null,
+   "needsDesign": false,
+   "version": null,
+   "outcome": null,
+   "note": "components/florilegium/FlorilegiumGate.tsx starts entitled = true; found while mapping the page for the revamp"
+  },
+  {
+   "id": "c-flor-push-errors",
+   "section": "Keeping",
+   "kind": "bug",
+   "title": "The Florilegium's push never read the server's answer, so a refused upsert went unnoticed",
+   "from": "claude",
+   "asked": "2026-11-07",
+   "status": "built",
+   "decided": "2026-11-07",
+   "needsDesign": false,
+   "version": null,
+   "outcome": null,
+   "note": "lib/sync/florilegium.ts now reads both upserts' errors; deletes still do not reach other devices (a union by id), item 29"
   }
  ]
 }

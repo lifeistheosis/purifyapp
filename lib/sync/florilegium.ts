@@ -7,6 +7,7 @@ import type {
   Florilegium,
   FlorilegiumItem,
 } from "@/lib/florilegium/florilegium";
+import { stampFlorilegiaSynced } from "@/lib/florilegium/syncedAt";
 
 /**
  * Two-way, eventually-consistent sync of the reader's florilegia between
@@ -85,7 +86,9 @@ export async function pushAllLocalFlorilegia() {
       created_at: new Date(f.createdAt).toISOString(),
       updated_at: new Date(f.updatedAt).toISOString(),
     }));
-    await supabase.from("florilegia").upsert(parentRows);
+    // The client does not throw on a refusal; it answers with an error.
+    const { error: parentErr } = await supabase.from("florilegia").upsert(parentRows);
+    if (parentErr) return;
 
     const itemRows = local.flatMap((f) =>
       f.items.map((it) => ({
@@ -99,8 +102,11 @@ export async function pushAllLocalFlorilegia() {
       })),
     );
     if (itemRows.length > 0) {
-      await supabase.from("florilegium_items").upsert(itemRows);
+      const { error: itemErr } = await supabase.from("florilegium_items").upsert(itemRows);
+      if (itemErr) return;
     }
+    // The server holds them: the first page's sync line may say so (1.9).
+    stampFlorilegiaSynced();
   } catch {
     /* swallow */
   }
@@ -188,6 +194,7 @@ export async function pullServerFlorilegia() {
     }
 
     writeLocal(merged);
+    stampFlorilegiaSynced();
   } catch {
     /* swallow */
   }

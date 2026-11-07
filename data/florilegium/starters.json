@@ -1,0 +1,269 @@
+{
+  "_comment": "Starter collections for the Florilegium's first page (1.9, the owner's pick for Keeping, A and C; s5-06 in docs/1.9-build/ideas.json, 'verbatim and cited'). Each is a whole passage of Scripture as the app's own Bible carries it (data/bible), copied word for word: lib/florilegium/__tests__/starters.test.ts holds every line to its file. Nothing here is ours but the choice of four passages the Church sings or reads whole: the Prologue of John, the Beatitudes, the Song of the Theotokos and Psalm 50.",
+  "starters": [
+    {
+      "id": "prologue",
+      "nameKey": "study.florilegium.starter.prologue",
+      "book": "john",
+      "chapter": 1,
+      "picture": "john",
+      "lines": [
+        {
+          "verse": 1,
+          "text": "In the beginning was the Word, and the Word was with God, and the Word was God."
+        },
+        {
+          "verse": 2,
+          "text": "The same was in the beginning with God."
+        },
+        {
+          "verse": 3,
+          "text": "All things were made by him; and without him was not any thing made that was made."
+        },
+        {
+          "verse": 4,
+          "text": "In him was life; and the life was the light of men."
+        },
+        {
+          "verse": 5,
+          "text": "And the light shineth in darkness; and the darkness comprehended it not."
+        },
+        {
+          "verse": 6,
+          "text": "There was a man sent from God, whose name was John."
+        },
+        {
+          "verse": 7,
+          "text": "The same came for a witness, to bear witness of the Light, that all men through him might believe."
+        },
+        {
+          "verse": 8,
+          "text": "He was not that Light, but was sent to bear witness of that Light."
+        },
+        {
+          "verse": 9,
+          "text": "That was the true Light, which lighteth every man that cometh into the world."
+        },
+        {
+          "verse": 10,
+          "text": "He was in the world, and the world was made by him, and the world knew him not."
+        },
+        {
+          "verse": 11,
+          "text": "He came unto his own, and his own received him not."
+        },
+        {
+          "verse": 12,
+          "text": "But as many as received him, to them gave he power to become the sons of God, even to them that believe on his name:"
+        },
+        {
+          "verse": 13,
+          "text": "Which were born, not of blood, nor of the will of the flesh, nor of the will of man, but of God."
+        },
+        {
+          "verse": 14,
+          "text": "And the Word was made flesh, and dwelt among us, (and we beheld his glory, the glory as of the only begotten of the Father,) full of grace and truth."
+        },
+        {
+          "verse": 15,
+          "text": "John bare witness of him, and cried, saying, This was he of whom I spake, He that cometh after me is preferred before me: for he was before me."
+        },
+        {
+          "verse": 16,
+          "text": "And of his fulness have all we received, and grace for grace."
+        },
+        {
+          "verse": 17,
+          "text": "For the law was given by Moses, but grace and truth came by Jesus Christ."
+        },
+        {
+          "verse": 18,
+          "text": "No man hath seen God at any time; the only begotten Son, which is in the bosom of the Father, he hath declared him."
+        }
+      ]
+    },
+    {
+      "id": "beatitudes",
+      "nameKey": "study.florilegium.starter.beatitudes",
+      "book": "matthew",
+      "chapter": 5,
+      "picture": "matthew",
+      "lines": [
+        {
+          "verse": 3,
+          "text": "Blessed are the poor in spirit: for theirs is the kingdom of heaven."
+        },
+        {
+          "verse": 4,
+          "text": "Blessed are they that mourn: for they shall be comforted."
+        },
+        {
+          "verse": 5,
+          "text": "Blessed are the meek: for they shall inherit the earth."
+        },
+        {
+          "verse": 6,
+          "text": "Blessed are they which do hunger and thirst after righteousness: for they shall be filled."
+        },
+        {
+          "verse": 7,
+          "text": "Blessed are the merciful: for they shall obtain mercy."
+        },
+        {
+          "verse": 8,
+          "text": "Blessed are the pure in heart: for they shall see God."
+        },
+        {
+          "verse": 9,
+          "text": "Blessed are the peacemakers: for they shall be called the children of God."
+        },
+        {
+          "verse": 10,
+          "text": "Blessed are they which are persecuted for righteousness' sake: for theirs is the kingdom of heaven."
+        },
+        {
+          "verse": 11,
+          "text": "Blessed are ye, when men shall revile you, and persecute you, and shall say all manner of evil against you falsely, for my sake."
+        },
+        {
+          "verse": 12,
+          "text": "Rejoice, and be exceeding glad: for great is your reward in heaven: for so persecuted they the prophets which were before you."
+        }
+      ]
+    },
+    {
+      "id": "magnificat",
+      "nameKey": "study.florilegium.starter.magnificat",
+      "book": "luke",
+      "chapter": 1,
+      "picture": "theotokos",
+      "lines": [
+        {
+          "verse": 46,
+          "text": "And Mary said, My soul doth magnify the Lord,"
+        },
+        {
+          "verse": 47,
+          "text": "And my spirit hath rejoiced in God my Saviour."
+        },
+        {
+          "verse": 48,
+          "text": "For he hath regarded the low estate of his handmaiden: for, behold, from henceforth all generations shall call me blessed."
+        },
+        {
+          "verse": 49,
+          "text": "For he that is mighty hath done to me great things; and holy is his name."
+        },
+        {
+          "verse": 50,
+          "text": "And his mercy is on them that fear him from generation to generation."
+        },
+        {
+          "verse": 51,
+          "text": "He hath shewed strength with his arm; he hath scattered the proud in the imagination of their hearts."
+        },
+        {
+          "verse": 52,
+          "text": "He hath put down the mighty from their seats, and exalted them of low degree."
+        },
+        {
+          "verse": 53,
+          "text": "He hath filled the hungry with good things; and the rich he hath sent empty away."
+        },
+        {
+          "verse": 54,
+          "text": "He hath holpen his servant Israel, in remembrance of his mercy;"
+        },
+        {
+          "verse": 55,
+          "text": "As he spake to our fathers, to Abraham, and to his seed for ever."
+        }
+      ]
+    },
+    {
+      "id": "psalm-50",
+      "nameKey": "prayers.rule.repentance.title",
+      "book": "psalms",
+      "chapter": 50,
+      "picture": "psalms",
+      "lines": [
+        {
+          "verse": 1,
+          "text": "Have mercy upon me, O God, according to thy great mercy; and according to the multitude of thy compassions blot out my transgression."
+        },
+        {
+          "verse": 2,
+          "text": "Wash me thoroughly from mine iniquity, and cleanse me from my sin."
+        },
+        {
+          "verse": 3,
+          "text": "For I am conscious of mine iniquity; and my sin is continually before me."
+        },
+        {
+          "verse": 4,
+          "text": "Against thee only have I sinned, and done evil before thee: that thou mightest be justified in thy sayings, and mightest overcome when thou art judged."
+        },
+        {
+          "verse": 5,
+          "text": "For, behold, I was conceived in iniquities, and in sins did my mother conceive me."
+        },
+        {
+          "verse": 6,
+          "text": "For, behold, thou lovest truth: thou hast manifested to me the secret and hidden things of thy wisdom."
+        },
+        {
+          "verse": 7,
+          "text": "Thou shalt sprinkle me with hyssop, and I shall be purified: thou shalt wash me, and I shall be made whiter than snow."
+        },
+        {
+          "verse": 8,
+          "text": "Thou shalt cause me to hear gladness and joy: the afflicted bones shall rejoice."
+        },
+        {
+          "verse": 9,
+          "text": "Turn away thy face from my sins, and blot out all mine iniquities."
+        },
+        {
+          "verse": 10,
+          "text": "Create in me a clean heart, O God; and renew a right spirit in my inward parts."
+        },
+        {
+          "verse": 11,
+          "text": "Cast me not away from thy presence; and remove not thy holy Spirit from me."
+        },
+        {
+          "verse": 12,
+          "text": "Restore to me the joy of thy salvation: establish me with thy directing Spirit."
+        },
+        {
+          "verse": 13,
+          "text": "Then will I teach transgressors thy ways; and ungodly men shall turn to thee."
+        },
+        {
+          "verse": 14,
+          "text": "Deliver me from blood-guiltiness, O God, the God of my salvation: and my tongue shall joyfully declare thy righteousness."
+        },
+        {
+          "verse": 15,
+          "text": "O Lord, thou shalt open my lips; and my mouth shall declare thy praise."
+        },
+        {
+          "verse": 16,
+          "text": "For if thou desiredst sacrifice, I would have given it: thou wilt not take pleasure in whole-burnt-offerings."
+        },
+        {
+          "verse": 17,
+          "text": "Sacrifice to God is a broken spirit: a broken and humbled heart God will not despise."
+        },
+        {
+          "verse": 18,
+          "text": "Do good, O Lord, to Sion in thy good pleasure; and let the walls of Jerusalem be built."
+        },
+        {
+          "verse": 19,
+          "text": "Then shalt thou be pleased with a sacrifice of righteousness, offering, and whole-burnt-sacrifices: then shall they offer calves upon thine altar."
+        }
+      ]
+    }
+  ]
+}

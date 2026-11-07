@@ -51,7 +51,7 @@ On the 1.9 branch:
 | 15 | Candlelight: the lines being read lit, a soft glow, dark edges; on at Vespers; palettes of the season; the earned palettes shown as goals (flag 1) | his A+B done (the lit line, the glow, the dark edges); next: on at Vespers, the season's palettes, the earned palettes as goals |
 | 16 | Listening: the card at rest, the small pill while scrolling (bug 5) | done: the reader's dock, one card at rest, the pill and the chapter at the top while reading on |
 | 17 | Plans page: Continue, the season's plan, picture tiles | done: Continue, the season's card (the Nativity Fast, from two weeks before it to the feast), the picture tiles |
-| 18 | The Florilegium revamped: collections and sync on top, ready collections below (flag 2) | ready |
+| 18 | The Florilegium revamped: collections and sync on top, ready collections below (flag 2) | done: the sync line (only after a confirmed exchange, no device count), the gatherings as cards, four whole passages of Scripture to begin with |
 | 19 | History: major events as large cards, the rest as rows with pictures, no switch, pictures free for everyone | ready |
 | 20 | Plus history: each event as a Thread, year by year, as a saint's Timeline | ready; needs you for the extras (a map that follows, listen, open a quote's source, one saint across events) |
 
