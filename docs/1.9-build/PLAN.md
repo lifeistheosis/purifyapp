@@ -12,6 +12,32 @@ waiting its turn), **needs you** (a picture or an answer first),
 **blocked**, **parked**. Work is on the branch `ccr-07896cf2-bo0afd`; nothing
 in 1.9 is live until the release push.
 
+## Waiting on you (gathered 2026-11-07)
+
+Every 1.9 answer that only he can give, in one place, each with Claude's
+recommendation. The detail of each is in `ideas.json` under its id.
+
+**Quick yes or no**
+
+1. The privacy page's new paragraph for the lock counts (`c-lock-counts`, row 12). Drafted in `/privacy`; the 1.9 letter must list it. Recommend: yes as written.
+2. Today's prayer list fails the contrast check: the hours not current are dimmed, their small captions at 3.6:1 against 4.5:1 (`c-smoke-suite`). Recommend: keep the dimming and lift those captions to paper/70, which passes.
+3. Chants offline (`s3-02`). Recommend: kept only while the live list names them, the app taking a saved chant off the phone when the list drops it, so his right to take a recording down holds.
+4. The Florilegium's gate for a reader whose Plus lapsed (`c-flor-gate-flash`, the other half): show their own gatherings behind the card, or not.
+5. Psalms 113 to 115 divided as the Hebrew divides them (`c-psalter-113`). Recommend: divide them as Brenton does, accepting that a few readers' notes on those three psalms move.
+
+**A source or a licence**
+
+6. Compare (`e-compare`, row 21b): the verse-number maps for the downloaded Bibles. Recommend: the Copenhagen Alliance's mappings (CC BY-SA 4.0; credited, the map file shared alike, nothing else in the app affected). The legal call is his.
+7. iPhone offline listening is kept in the folder iCloud backs up (`c-ios-offline-backup`). Recommend: move it to the folder that is not backed up, as the Bibles are, moving what readers already saved.
+
+**A pick, as he picked the Nativity's**
+
+8. The next season's plan (`s4-01`). Recommend: Holy Week, Lazarus Saturday to Pascha, each day's Gospel, from data already checked against the OCA's readings.
+9. Earned palettes (`s2-04`): no collection exists to earn them. Recommend: earn Councils by reading every council's page and Cappadocian by the three Cappadocians' works.
+10. Size before saving (`s3-04`), Gather from everywhere (`s5-04`, with a migration), a gathering as a public page (`s5-05`, a migration), more plans' framing (`s4-02`), the red commentary dots (row 13).
+
+**Already on the list below:** more languages (33), chants' recordings (34), Plus on iOS (40), who reviews the 66 texts (41), the parish plan (43), the locked screens (44), Today's mockup (45), the release itself (50, 51).
+
 ## Done
 
 Live on main since 1.8 (admin only):
