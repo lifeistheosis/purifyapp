@@ -2,6 +2,8 @@
 // Quoting rules: wrap any cell containing comma, quote, or newline in
 // double-quotes and double-up internal quotes. Header row required.
 
+import { downloadFile } from "@/lib/ui/downloadFile";
+
 export function toCsv(headers: string[], rows: (string | number | null | undefined)[][]): string {
   const esc = (v: string | number | null | undefined) => {
     if (v === null || v === undefined) return "";
@@ -16,13 +18,5 @@ export function toCsv(headers: string[], rows: (string | number | null | undefin
 
 // Triggers a browser download of the CSV. Safe to call from a button onClick.
 export function downloadCsv(filename: string, csv: string): void {
-  const blob = new Blob([csv], { type: "text/csv;charset=utf-8" });
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement("a");
-  a.href = url;
-  a.download = filename;
-  document.body.appendChild(a);
-  a.click();
-  document.body.removeChild(a);
-  URL.revokeObjectURL(url);
+  downloadFile(new Blob([csv], { type: "text/csv;charset=utf-8" }), filename);
 }

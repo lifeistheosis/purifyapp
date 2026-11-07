@@ -15,6 +15,7 @@
 // nothing.
 
 import { isNativeClient } from "@/lib/platform/native";
+import { downloadFile } from "@/lib/ui/downloadFile";
 
 export type ShareOutcome = "shared" | "saved" | "dismissed" | "failed";
 
@@ -37,21 +38,7 @@ function toBase64(blob: Blob): Promise<string> {
   });
 }
 
-function download(blob: Blob, fileName: string): boolean {
-  try {
-    const url = URL.createObjectURL(blob);
-    const link = document.createElement("a");
-    link.href = url;
-    link.download = fileName;
-    document.body.appendChild(link);
-    link.click();
-    link.remove();
-    setTimeout(() => URL.revokeObjectURL(url), 60_000);
-    return true;
-  } catch {
-    return false;
-  }
-}
+const download = downloadFile;
 
 export async function shareImage(blob: Blob, fileName: string, text: string): Promise<ShareOutcome> {
   return shareFile(blob, fileName, text, "image/png");

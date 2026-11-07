@@ -2,6 +2,7 @@
 
 import { useRef, useState } from "react";
 import { useTranslate } from "@/components/i18n/MessagesProvider";
+import { downloadFile } from "@/lib/ui/downloadFile";
 
 /**
  * Export, import, and force-sync of the user's local-and-server data.
@@ -61,15 +62,8 @@ export function ProfileData({
       const blob = new Blob([JSON.stringify(data, null, 2)], {
         type: "application/json",
       });
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement("a");
-      a.href = url;
       const date = new Date().toISOString().slice(0, 10);
-      a.download = `purify-export-${date}.json`;
-      document.body.appendChild(a);
-      a.click();
-      a.remove();
-      URL.revokeObjectURL(url);
+      downloadFile(blob, `purify-export-${date}.json`);
       setMsg(tn("ui.exportedEntries", Object.keys(data.entries).length));
     } catch (err) {
       setMsg(err instanceof Error ? err.message : t("ui.exportFailed"));

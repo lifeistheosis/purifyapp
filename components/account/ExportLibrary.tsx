@@ -22,6 +22,7 @@ import {
 import { useTranslate } from "@/components/i18n/MessagesProvider";
 import { isNativeClient } from "@/lib/platform/native";
 import { shareFile } from "@/lib/share/shareImage";
+import { downloadFile } from "@/lib/ui/downloadFile";
 
 /**
  * Take the file away: in the apps, through the phone's share sheet (1.9),
@@ -37,15 +38,7 @@ function takeAway(filename: string, text: string, type: string) {
 }
 
 function download(filename: string, text: string, type: string) {
-  const blob = new Blob([text], { type });
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement("a");
-  a.href = url;
-  a.download = filename;
-  document.body.appendChild(a);
-  a.click();
-  a.remove();
-  URL.revokeObjectURL(url);
+  downloadFile(new Blob([text], { type }), filename);
 }
 
 export function ExportLibrary() {
