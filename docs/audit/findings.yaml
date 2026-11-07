@@ -116,7 +116,7 @@ findings:
     area: testing
     severity: P2
     confidence: confirmed
-    status: confirmed
+    status: partially-corrected
     status_notes: >-
       C-02 added order-partition tests; routes still uncovered.
       2026-10-01 (feat/shop-offers): checkout's line pricing (cart deal, the
@@ -125,10 +125,29 @@ findings:
       covered by lib/shop/__tests__/promotions.test.ts and cartOffers.test.ts.
       createCheckout now checks the shop_order_items insert and cancels the
       order instead of opening Stripe when it fails (it was unchecked, so a
-      failed insert could be paid for with no lines). The route and
-      createCheckout itself remain without tests.
-    evidence: all 25 unit files target lib/**; none import app/api handlers
-    action: mocked-Stripe webhook tests alongside F-01 fix; revive e2e via green CI
+      failed insert could be paid for with no lines).
+      2026-11-07 (1.9 branch): the four money routes have route-level tests,
+      each importing the app/api handler with its dependencies mocked:
+      checkout (closed shop, rate limit, the clickwrap literal, a price the
+      client sends never reaching createCheckout, the cart shape, guests,
+      503/409), checkout cancel (Stripe's session expired before the order is
+      cancelled, a completed session never cancelled, only pending moves, a
+      Stripe outage still cancelling pending-only), the Stripe webhook (signed
+      with Stripe's own library: unsigned and wrongly signed refused, each
+      settlement result to its answer, update-failed answered 500, gifts
+      apart, account.updated) and RevenueCat (shared secret fails closed,
+      whitespace forgiven, store to source, supporter and Pro carried forward,
+      500 on a failed grant, lifecycle written only after it). Remaining:
+      createCheckout's own Stripe session and order writes have no unit test,
+      and no test exercises live Stripe or RevenueCat delivery.
+    evidence: >-
+      lib/shop/__tests__/checkoutRoute.test.ts (6),
+      lib/shop/__tests__/checkoutCancelRoute.test.ts (6),
+      lib/shop/__tests__/stripeWebhookRoute.test.ts (8),
+      lib/billing/__tests__/revenuecatRoute.test.ts (8), all passing
+    action: >-
+      done for the routes; createCheckout with an injected Stripe and
+      database next; revive e2e via green CI
     safe_to_automate: true
     review: none
 
