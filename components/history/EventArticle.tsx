@@ -21,16 +21,18 @@ import Link from "next/link";
 import { T } from "@/components/i18n/T";
 import type { HistoryEventMeta } from "@/lib/history/events";
 import { certaintyKey, eraKey } from "@/lib/history/labels";
-import type { ChronologyEntry, EventPerson, HistoryEventBody, SourceCitation } from "@/lib/history/load";
+import type { EventPerson, HistoryEventBody, SourceCitation } from "@/lib/history/load";
 import { scriptureHref } from "@/lib/history/scripture";
 import type { EssayBlock } from "@/lib/theology/load";
 import { SourceLine } from "@/components/citations/SourceLine";
 import { shownCite } from "@/lib/citations/shown";
-import { cn } from "@/lib/cn";
+
+import { eventThread } from "@/lib/history/thread";
 
 import { BookmarkEventButton } from "./BookmarkEventButton";
 import { EventPartsNav, type EventPart } from "./EventPartsNav";
 import { EventPeople } from "./EventPeople";
+import { EventThread } from "./EventThread";
 import { InEnglishNote } from "./InEnglishNote";
 import { ShareButton } from "@/components/ui/ShareButton";
 import { SaintNames } from "@/components/saints/SaintNames";
@@ -115,33 +117,6 @@ function Subhead({ k }: { k: string }) {
     <h3 className="mt-10 text-lede leading-snug text-paper">
       <T k={k} />
     </h3>
-  );
-}
-
-/** The steps of an event that ran for months or years: a plain dated list. */
-function Chronology({ entries }: { entries?: ChronologyEntry[] }) {
-  if (!entries?.length) return null;
-  return (
-    <>
-      <Subhead k="study.history.stepByStep" />
-      <ol className="mt-4 space-y-4">
-        {entries.map((e, i) => (
-          <li key={i} className="md:grid md:grid-cols-[9.5rem_minmax(0,1fr)] md:gap-4">
-            <p className={cn("font-sans text-caption font-semibold tabular-nums", e.pivotal ? "text-paper/85" : "text-paper/55")}>
-              {e.date}
-            </p>
-            <p
-              className={cn(
-                "mt-0.5 font-sans text-ui leading-[1.65] md:mt-0",
-                e.pivotal ? "font-medium text-paper/95" : "text-paper/75",
-              )}
-            >
-              {e.text}
-            </p>
-          </li>
-        ))}
-      </ol>
-    </>
   );
 }
 
@@ -284,7 +259,13 @@ export function EventArticle({
           <Blocks blocks={body.context} />
           <Blocks blocks={body.narrative} />
         </div>
-        <Chronology entries={body.chronology} />
+        {body.chronology?.length ? (
+          <>
+            <Subhead k="study.history.stepByStep" />
+            {/* The plain list for every reader, the Thread with its map for Plus (1.9). */}
+            <EventThread thread={eventThread(meta.slug, body.chronology)} />
+          </>
+        ) : null}
       </Part>
 
       {body.significance?.length || body.consequences?.length ? (

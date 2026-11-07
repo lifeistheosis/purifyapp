@@ -8157,6 +8157,24 @@ html.is-native .history-line {
   --history-sticky-top: 72px;
  }
 }
+/* The Thread's map on an event's page (1.9, components/history/EventThread.tsx)
+   pins where an era's name pins on the timeline, by the same numbers. */
+.event-thread {
+ --history-sticky-top: 3rem;
+}
+html.is-native .event-thread {
+ --history-sticky-top: calc(3rem + var(--inset-top));
+}
+@media (max-width: 767.98px) {
+ html:not(.is-native) .event-thread {
+  --history-sticky-top: calc(3rem + env(safe-area-inset-top, 0px));
+ }
+}
+@media (min-width: 768px) {
+ html:not(.is-native) .event-thread {
+  --history-sticky-top: 72px;
+ }
+}
 
 /* An era's name, pinned. Solid night with a hairline, never a blur: a
    blurred layer over moving text is repainted every frame on Android
