@@ -136,6 +136,41 @@
       { "intro": "By the sea of Tiberias the risen Christ makes breakfast for His disciples. Three times He asks Peter, 'lovest thou me?', and three times gives him His sheep to feed. Then: 'Follow me.'", "q": "Christ asked Peter, 'lovest thou me?' How would you answer Him, and what would He ask you to do?" }
     ]
   },
+  "john": {
+    "pool": [
+      "Which word of Christ from today would you like to remember tomorrow?",
+      "Where do you see yourself in today's chapter?",
+      "What does today's chapter show you about who Christ is?",
+      "Whom could you pray for after reading today's chapter?",
+      "What did today's chapter ask you to change?",
+      "Which person in today's chapter would you like to be more like?",
+      "What would you like to ask Christ about today's chapter?",
+      "How could you live one line of today's chapter before the day ends?"
+    ],
+    "days": [
+      { "intro": "'In the beginning was the Word, and the Word was with God, and the Word was God.' John's prologue is read at the Paschal Liturgy. Then John the Baptist points to Christ: 'Behold the Lamb of God.'", "q": "Philip told Nathanael, 'Come and see.' Whom could you invite to come and see?" },
+      { "intro": "At a marriage in Cana, at His Mother's word, Christ turns water into wine, the beginning of His signs. Her words to the servants are for us too: 'Whatsoever he saith unto you, do it.'", "q": "The Mother of God said, 'Whatsoever he saith unto you, do it.' What has He been saying to you?" },
+      { "intro": "Nicodemus comes to Christ by night and hears of being born 'of water and of the Spirit', and of the Father's love: 'For God so loved the world, that he gave his only begotten Son.'", "q": "John the Baptist said, 'He must increase, but I must decrease.' Where could you step aside so that Christ is seen?" },
+      { "intro": "At Jacob's well Christ asks a woman of Samaria for a drink and offers her living water. She leaves her waterpot and tells her whole city. The Church remembers her as St Photini.", "q": "The woman left her waterpot to tell others. What would you leave behind to share what Christ has done for you?" },
+      { "intro": "At the pool of Bethesda a man has waited thirty-eight years. Christ asks, 'Wilt thou be made whole?' The man answers, 'I have no man', and Christ heals him with a word.", "q": "Christ asked, 'Wilt thou be made whole?' Is there anything in you that does not yet want to be healed?" },
+      { "intro": "After feeding the five thousand Christ says, 'I am the bread of life.' Many go back at His words about His Flesh and Blood, and Peter answers, 'Lord, to whom shall we go? thou hast the words of eternal life.'", "q": "How do you prepare to receive the Bread of Life in Holy Communion?" },
+      { "intro": "At the feast of tabernacles Christ stands and cries, 'If any man thirst, let him come unto me, and drink', speaking of the Holy Spirit, a Gospel read at Pentecost.", "q": "What are you thirsty for, beneath your other wants?" },
+      { "intro": "Christ does not condemn a woman brought to Him in sin, and tells her to sin no more. He says, 'I am the light of the world', and 'Before Abraham was, I am.'", "q": "Christ said, 'Neither do I condemn thee: go, and sin no more.' What would you like to leave behind?" },
+      { "intro": "Christ heals a man blind from his birth with clay and the pool of Siloam. Questioned again and again, the man holds to what he knows: 'whereas I was blind, now I see.'", "q": "'Whereas I was blind, now I see.' What has Christ helped you see that you could not see before?" },
+      { "intro": "Christ is the door of the sheep and the good shepherd who gives His life for the sheep. 'My sheep hear my voice, and I know them, and they follow me.'", "q": "How do you recognise the Shepherd's voice among the many voices around you?" },
+      { "intro": "Lazarus has lain in the grave four days. Jesus weeps, then calls him out: 'Lazarus, come forth.' The Church keeps this on Lazarus Saturday, the day before Palm Sunday.", "q": "Christ said to Martha, 'I am the resurrection, and the life. Believest thou this?' How would you answer?" },
+      { "intro": "Mary anoints Christ's feet, and the next day He enters Jerusalem. When Greeks ask to see Him, He speaks of the corn of wheat that must fall into the ground and die to bring forth much fruit.", "q": "The corn of wheat must die to bear fruit. What in you might need to die so that something better can grow?" },
+      { "intro": "At the Supper Christ washes His disciples' feet and says, 'I have given you an example.' Then the new commandment: 'That ye love one another; as I have loved you.'", "q": "Christ washed His disciples' feet. Whose feet could you wash this week, in a practical way?" },
+      { "intro": "'Let not your heart be troubled.' Christ says He is the way, the truth, and the life, and promises the Comforter, the Holy Ghost, and a peace the world cannot give.", "q": "Christ said, 'my peace I give unto you.' What is troubling your heart that you would give to Him?" },
+      { "intro": "'I am the vine, ye are the branches.' Christ calls His disciples friends and speaks of the Spirit of truth, 'which proceedeth from the Father'.", "q": "'Without me ye can do nothing.' Where have you been trying to do things without Him?" },
+      { "intro": "Christ tells His disciples that their sorrow shall be turned into joy, and ends, 'In the world ye shall have tribulation: but be of good cheer; I have overcome the world.'", "q": "Which sorrow of yours would you ask Christ to turn into joy?" },
+      { "intro": "Christ prays to the Father for His disciples and for all who will believe through their word: 'That they all may be one.' Read it as His prayer for you.", "q": "Christ prayed that His followers may be one. Where could you help to heal a division?" },
+      { "intro": "In the garden Christ gives Himself up: 'I am he.' Before Pilate He says, 'My kingdom is not of this world', and Pilate asks, 'What is truth?'", "q": "Pilate asked 'What is truth?' with Truth Himself before him. Where do you look for truth?" },
+      { "intro": "From the Cross Christ gives His Mother to the disciple: 'Behold thy mother!' He says, 'It is finished', and gives up the ghost. Blood and water come out of His side.", "q": "Christ gave His Mother to the disciple. What place does the Mother of God have in your prayer?" },
+      { "intro": "Mary Magdalene weeps at the sepulchre until the risen Lord calls her by name. Eight days later Thomas confesses, 'My Lord and my God', the Gospel of Thomas Sunday.", "q": "Christ said, 'blessed are they that have not seen, and yet have believed.' What helps your faith when you cannot see?" },
+      { "intro": "By the sea of Tiberias the risen Christ makes breakfast for His disciples. Three times He asks Peter, 'lovest thou me?', and three times gives him His sheep to feed. Then: 'Follow me.'", "q": "Christ asked Peter, 'lovest thou me?' How would you answer Him, and what would He ask you to do?" }
+    ]
+  },
   "proverbs": {
     "pool": [
       "Which proverb from today would you like to remember this week?",

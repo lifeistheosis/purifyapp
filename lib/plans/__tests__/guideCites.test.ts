@@ -57,7 +57,8 @@ describe("a line of Scripture in a reading plan's guide", () => {
       // The pool's questions are asked on any day, and quote nothing.
       for (const q of guide[plan.id]?.pool ?? []) expect([...q.matchAll(QUOTED)], q).toEqual([]);
     }
-    expect(n).toBe(206);
+    // 206, and from 1.9 the 42 of the Gospels plan's John days again in John in 21 days.
+    expect(n).toBe(206 + 42);
   });
 
   it("names verses that say it, word for word, or says it is not word for word, and how", () => {
@@ -78,8 +79,9 @@ describe("a line of Scripture in a reading plan's guide", () => {
         }
       }
     }
-    // Mark 3:14 shortened, the thief's words as the prayers before Communion say them, John 11:25-26 joined.
-    expect(close).toBe(3);
+    // Mark 3:14 shortened, the thief's words as the prayers before Communion say them, John 11:25-26 joined,
+    // and John 11:25-26 again in John in 21 days (1.9).
+    expect(close).toBe(4);
   });
 
   it("is numbered where it stands, with its verse and its Bible, where the words are the English ones", () => {

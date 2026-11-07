@@ -2,7 +2,7 @@
  * Reading plans (2026-09-30, a Purify Plus tool, with the streak the owner
  * asked to go all in on).
  *
- * Three, each a list of days, each day a list of chapters. Their names and
+ * Each a list of days, each day a list of chapters. Their names and
  * descriptions are catalogue keys (`plans.<id>.name`, `plans.<id>.body`).
  *
  *   psalter   the Psalter by kathisma: the twenty sections the Church divides
@@ -11,6 +11,10 @@
  *             its own). Psalm 151 stands outside the kathismata and outside
  *             the plan.
  *   gospels   Matthew, Mark, Luke and John, a chapter a day.
+ *   john      John in 21 days (1.9, s4-02 of docs/1.9-build/ideas.json): the
+ *             Gospel of John, a chapter a day. What it says around each day
+ *             is the Gospels plan's own John days, word for word (data/plans:
+ *             the guide, its citations and the sayings, renumbered 1 to 21).
  *   proverbs  a chapter of Proverbs a day for a month.
  *   nativity  the Nativity Fast's (1.9, the owner's pick of 2026-11-07): the
  *             prophecies and Gospels the Church herself reads at the
@@ -112,6 +116,7 @@ export const READING_PLANS: readonly ReadingPlan[] = [
     strand: "gospel",
     days: [...chapters("matthew", 28), ...chapters("mark", 16), ...chapters("luke", 24), ...chapters("john", 21)].map((c) => [c]),
   },
+  { id: "john", strand: "gospel", days: chapters("john", 21).map((c) => [c]) },
   { id: "proverbs", strand: "reading", days: chapters("proverbs", 31).map((c) => [c]) },
   { id: "nativity", strand: "reading", season: "nativity", days: NATIVITY_DAYS.map((d) => passage(d.book, d.ref)) },
 ];

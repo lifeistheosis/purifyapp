@@ -700,7 +700,8 @@
    "decided": "2026-11-06",
    "needsDesign": false,
    "version": null,
-   "outcome": null
+   "outcome": null,
+   "note": "Part built 2026-11-07: John in 21 days, a chapter a day, saying around each day exactly what the Gospels plan says on that chapter (its intros, questions, pool, verse citations and the Fathers' sayings, copied word for word and renumbered; lib/plans/__tests__/plans.test.ts holds them equal), so nothing new needed review. On the way: the Nativity Fast's plan was missing from the You tab's pick-up card (components/you/PickUpCard.tsx), so a reader in it was never offered it there; fixed. Not built, for his word: Acts in 28 days and the New Testament in a year need an intro and a question for each of their days that no plan has yet (28 and 260), which is editorial framing and goes to the review queue before it ships; and the Psalter in a week as monastics read it needs the Typikon's weekly order from a public-domain source before the plan can say so"
   },
   {
    "id": "s4-03",

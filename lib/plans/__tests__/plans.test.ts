@@ -21,6 +21,8 @@ describe("the reading plans", () => {
 
   it("read the four Gospels a chapter a day and Proverbs in a month", () => {
     expect(getPlan("gospels")?.days).toHaveLength(28 + 16 + 24 + 21);
+    // John in 21 days (1.9): the Gospel of John, a chapter a day.
+    expect(getPlan("john")?.days).toEqual(Array.from({ length: 21 }, (_, i) => [{ book: "john", chapter: i + 1 }]));
     expect(getPlan("proverbs")?.days).toHaveLength(31);
     expect(getPlan("psalter")?.days).toHaveLength(20);
   });
@@ -62,5 +64,21 @@ describe("progress and the streak", () => {
     expect(planStreak(state, "2026-09-30")).toBe(3);
     expect(planStreak(state, "2026-10-01")).toBe(0);
     expect(planStreak({}, "2026-09-30")).toBe(0);
+  });
+});
+
+describe("John in 21 days (1.9)", () => {
+  it("says around each day exactly what the Gospels plan says on that chapter of John", async () => {
+    const guide = (await import("@/data/plans/guide/en.json")).default as Record<string, { pool: string[]; days: unknown[] }>;
+    const cites = (await import("@/data/plans/guide/cites.json")).default as Record<string, Record<string, unknown>>;
+    const sayings = (await import("@/data/plans/sayings.json")).default as Record<string, Record<string, unknown>>;
+    const FIRST = 69; // John 1 in the Gospels plan: Matthew 28, Mark 16 and Luke 24 days before it
+    expect(getPlan("gospels")?.days[FIRST - 1]).toEqual([{ book: "john", chapter: 1 }]);
+    expect(guide.john.pool).toEqual(guide.gospels.pool);
+    expect(guide.john.days).toEqual(guide.gospels.days.slice(FIRST - 1, FIRST - 1 + 21));
+    for (let day = 1; day <= 21; day++) {
+      expect(cites.john?.[String(day)], `cites, day ${day}`).toEqual(cites.gospels[String(FIRST + day - 1)]);
+      expect(sayings.john?.[String(day)], `saying, day ${day}`).toEqual(sayings.gospels[String(FIRST + day - 1)]);
+    }
   });
 });
