@@ -48,6 +48,8 @@ describe("read-aloud", () => {
   it("knows the chapter too, for the player's previous, next and Read (1.8)", () => {
     expect(readingOfSrc("https://audio.purifyapp.net/read/1-john/2.mp3")).toEqual({ book: "1-john", chapter: 2 });
     expect(readingOfSrc("/audio/read/revelation/22.mp3?x=1")).toEqual({ book: "revelation", chapter: 22 });
+    // A copy saved on the phone reads the same chapter as the stream it was saved from (the reader's dock asks).
+    expect(readingOfSrc("https://localhost/_capacitor_file_/data/app/files/audio/read/jude/1.mp3")).toEqual({ book: "jude", chapter: 1 });
     expect(readingOfSrc("/audio/chants/anthem/en.mp3")).toBeNull();
     expect(readingOfSrc(null)).toBeNull();
   });

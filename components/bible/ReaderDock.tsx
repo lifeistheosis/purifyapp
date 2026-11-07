@@ -51,7 +51,7 @@ import { minutesLeft, useSleepTimer } from "@/lib/player/sleep";
 import { nextSpeed, saveSpeed, speedText } from "@/lib/player/speed";
 import { playingOf } from "@/lib/player/steps";
 import { pause, play, setRate, usePersistentAudio } from "@/lib/prayers/persistentAudioStore";
-import { readAloudSrc, useHasReadAloud } from "@/lib/readAloud/chapters";
+import { readingOfSrc, useHasReadAloud } from "@/lib/readAloud/chapters";
 import { startReading } from "@/lib/readAloud/play";
 import { noteFootMoved } from "@/lib/ui/scrollAway";
 
@@ -130,8 +130,13 @@ export function ReaderDock({
   const openLabel = `${t("prayers.nowPlaying")}: ${audio.title ?? ""}`;
   const toggle = () => (audio.playing ? pause() : play());
   const toggleLabel = audio.playing ? t("prayers.pause") : t("prayers.play");
-  // This chapter's reading, where it has one that is not the one loaded.
-  const hereLoaded = Boolean(audio.src && audio.src.endsWith(readAloudSrc(slug, chapter)));
+  // This chapter's reading, where it has one that is not the one loaded. By
+  // the chapter the loaded recording reads, not by its address: the address
+  // changes when the chapter is saved to the phone while it plays (the
+  // week's readings can save today's on opening, lib/readAloud/week.ts), and
+  // the dock then offered Listen for the chapter already playing.
+  const loaded = readingOfSrc(audio.src);
+  const hereLoaded = loaded?.book === slug && loaded.chapter === chapter;
   const listenHere = reads && !hereLoaded;
   // Speed is a chapter read aloud's alone, as in Now Playing (lib/player/speed.ts).
   const speedShown = playingOf(audio.src)?.kind === "chapter";

@@ -607,7 +607,7 @@
    "needsDesign": true,
    "version": "B, C when scrolling",
    "outcome": null,
-   "note": "Built 2026-11-07 as the reader's dock (components/bible/ReaderDock.tsx): one card at rest, the small pill and the chapter at the top while reading on and in focus mode; the mini player steps aside on the reader on a phone, a sound alone shows on the pill's lit button"
+   "note": "Built 2026-11-07 as the reader's dock (components/bible/ReaderDock.tsx): one card at rest, the small pill and the chapter at the top while reading on and in focus mode; the mini player steps aside on the reader on a phone, a sound alone shows on the pill's lit button Read over 2026-11-07 beside the week's readings, and one glitch mended: the dock knew the chapter playing by its recording's address, and the address changes when the chapter is saved to the phone while it plays, which the week's readings can do on opening; the dock then offered Listen for the chapter already playing. It now knows it by the chapter the recording reads (readingOfSrc), whatever its address (lib/bible/__tests__/readerDock.test.ts)."
   },
   {
    "id": "s3-06",

@@ -84,6 +84,10 @@ describe("the dock", () => {
 
   it("offers Listen in Speed's place where this chapter has a reading that is not the one loaded", () => {
     expect(DOCK).toContain("const listenHere = reads && !hereLoaded;");
+    // Known by the chapter the loaded recording reads, whichever address it
+    // has: streamed, or saved to the phone while it played.
+    expect(DOCK).toContain("const loaded = readingOfSrc(audio.src);");
+    expect(DOCK).toContain("const hereLoaded = loaded?.book === slug && loaded.chapter === chapter;");
     expect(DOCK).toContain("await startReading(slug, chapter, `${bookName} ${chapter}`, t);");
   });
 
