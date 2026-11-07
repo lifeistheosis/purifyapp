@@ -32,6 +32,12 @@ this file is the record: any account on any machine can read it on GitHub.
 Whatever is decided elsewhere is copied in here, and a new session reads this
 file first.
 
+**One branch (his word, 2026-11-07).** The work and this record are on the
+branch `ccr-07896cf2-bo0afd` until 1.9 merges into main, and main has neither:
+main is the website, and a push to it deploys. A new session, on any account
+or machine, checks that branch out first and pushes nowhere else. On GitHub,
+read this file on that branch.
+
 Not here yet:
 
 - The other account's 1.9 notes.
