@@ -50,7 +50,7 @@ On the 1.9 branch:
 | 14 | The verse system: tap a verse for one bar (colours, copy, share, image, note, Greek, compare, cross-references), tap a word for its Greek, double tap to highlight; the bookmark star goes (flag 4) | done: his pick B, the strip under the verse; Compare is its own item (21b) |
 | 15 | Candlelight: the lines being read lit, a soft glow, dark edges; on at Vespers; palettes of the season; the earned palettes shown as goals (flag 1) | his A+B done (the lit line, the glow, the dark edges); next: on at Vespers, the season's palettes, the earned palettes as goals |
 | 16 | Listening: the card at rest, the small pill while scrolling (bug 5) | done: the reader's dock, one card at rest, the pill and the chapter at the top while reading on |
-| 17 | Plans page: Continue, the season's plan, picture tiles | Continue and the picture tiles done; the season's card comes with the Nativity plan (his pick: the Church's own Nativity readings, 25 days) |
+| 17 | Plans page: Continue, the season's plan, picture tiles | done: Continue, the season's card (the Nativity Fast, from two weeks before it to the feast), the picture tiles |
 | 18 | The Florilegium revamped: collections and sync on top, ready collections below (flag 2) | ready |
 | 19 | History: major events as large cards, the rest as rows with pictures, no switch, pictures free for everyone | ready |
 | 20 | Plus history: each event as a Thread, year by year, as a saint's Timeline | ready; needs you for the extras (a map that follows, listen, open a quote's source, one saint across events) |
@@ -64,7 +64,7 @@ On the 1.9 branch:
 | 22 | One verse-number map, for the new Bibles and the Old Testament cross-references | ready |
 | 23 | Cross-references into the Old Testament, in the Septuagint (Genesis 1:1 back on John 1:1) | ready, after 22 |
 | 24 | Tap an English word to study its Greek | done |
-| 25 | Plans for the seasons (Nativity Fast, Great Lent, Holy Week, Dormition), more plans, a passage of the Fathers each day | ready; the Nativity Fast (15 November) comes before 1.9 can |
+| 25 | Plans for the seasons (Nativity Fast, Great Lent, Holy Week, Dormition), more plans, a passage of the Fathers each day | the Nativity Fast's plan built (his pick: the Church's own Nativity readings, 25 days); it reaches readers only with 1.9, after 15 November; the other seasons and more plans ready |
 | 26 | Remember the verse in three steps, spaced, and on the widget | ready |
 | 27 | Journal: prompts from the feast (by the editorials), search, a PDF | ready |
 | 28 | Florilegium: gather from everywhere, share as a page or booklet, a line on Today | ready |

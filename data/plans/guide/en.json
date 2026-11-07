@@ -180,5 +180,44 @@
       { "intro": "The words of a man who calls himself 'the most simple of all men'. His prayer asks for neither poverty nor riches: 'appoint me what is needful and sufficient.'", "q": "What would 'needful and sufficient' look like in your life right now?" },
       { "intro": "A king's mother teaches him to open his mouth for the poor and weak, and the book ends with the virtuous woman: 'Who shall find a virtuous woman? for such a one is more valuable than precious stones.'", "q": "Whose quiet strength and wisdom have shaped you? How could you thank them?" }
     ]
+  },
+  "nativity": {
+    "pool": [
+      "What line from today will you carry into the evening?",
+      "Where did today's reading meet your own life?",
+      "What would you ask God after reading this?",
+      "Who could you share today's passage with?",
+      "What in this passage do you not yet understand?",
+      "How does today's reading prepare you for the feast?",
+      "What is one small thing you could do today because of this reading?",
+      "What did today's passage show you about God's patience?"
+    ],
+    "days": [
+      { "intro": "The Church reads this on the Sunday of the Holy Forefathers, as its Epistle.", "q": "Paul asks us to put off the old man. What old habit would you lay down before the feast?" },
+      { "intro": "The Church reads this on the Sunday of the Holy Forefathers, as its Gospel.", "q": "Those invited began to make excuse. What excuse keeps you from the supper you are called to?" },
+      { "intro": "The Church reads this on the Saturday before the Nativity, as its Epistle.", "q": "Abraham believed the promise long before he saw it. What promise of God are you waiting on?" },
+      { "intro": "The Church reads this on the Saturday before the Nativity, as its Gospel.", "q": "Where have you seen something small in your life grow like the mustard seed?" },
+      { "intro": "The Church reads this at Vespers of the Sunday before the Nativity, the first reading.", "q": "Abraham gave a tenth of all to Melchizedek. What could you set apart for God in this fast?" },
+      { "intro": "The Church reads this at Vespers of the Sunday before the Nativity, the second reading.", "q": "Moses asks the judges to hear the small as well as the great. Whom do you find it hardest to hear?" },
+      { "intro": "The Church reads this at Vespers of the Sunday before the Nativity, the third reading.", "q": "God loves the stranger, the fatherless and the widow. Who near you is waiting to be noticed?" },
+      { "intro": "The Church reads this on the Sunday before the Nativity, as its Epistle.", "q": "Which of these witnesses of faith speaks most to you, and why?" },
+      { "intro": "The Church reads this on the Sunday before the Nativity, as its Gospel; verses 18 to 25 again at the First Royal Hour and at Matins of the feast.", "q": "Joseph did as the angel bade him. What is God asking of you this week?" },
+      { "intro": "The Church reads this at the First Royal Hour (5:2-4), and at Vespers of the Nativity, the third reading.", "q": "Bethlehem was little among the thousands of Judah. Where do you overlook what seems small?" },
+      { "intro": "The Church reads this at the First Royal Hour, as its Epistle, and at the Liturgy on the eve of the Nativity.", "q": "God spoke in many ways, and at last by His Son. How do you listen for Him today?" },
+      { "intro": "The Church reads this at the Third Royal Hour, and at Vespers of the Nativity, the fifth reading, under the name of Jeremiah.", "q": "The prophet says God was seen upon earth and lived among men. Where do you look for Him?" },
+      { "intro": "The Church reads this at the Third Royal Hour, as its Epistle.", "q": "Paul says that you have put on Christ. What would it change in your day to remember it?" },
+      { "intro": "The Church reads this at the Third Royal Hour, as its Gospel, and at the Liturgy on the eve of the Nativity.", "q": "The shepherds came with haste. What would it mean for you to hasten toward Christ this week?" },
+      { "intro": "The Church reads this at the Sixth Royal Hour, and at Vespers of the Nativity, the eighth reading.", "q": "Ahaz would not ask the Lord for a sign. Where are you slow to ask God for help?" },
+      { "intro": "The Church reads this at the Sixth Royal Hour, as its Epistle.", "q": "\"Lest at any time we should let them slip.\" What helps you hold fast to what you have heard?" },
+      { "intro": "The Church reads this at the Sixth Royal Hour, as its Gospel, and at the Liturgy of the Nativity.", "q": "The wise men brought gifts. What gift will you bring to the feast?" },
+      { "intro": "The Church reads this at the Ninth Royal Hour, and at Vespers of the Nativity, the seventh reading.", "q": "Which of the names in this prophecy do you most need to pray this week?" },
+      { "intro": "The Church reads this at the Ninth Royal Hour, as its Epistle, and on the Synaxis of the Theotokos.", "q": "He is not ashamed to call us brethren. How does that change the way you see those around you?" },
+      { "intro": "The Church reads this at the Ninth Royal Hour, as its Gospel, and on the Synaxis of the Theotokos.", "q": "Joseph arose by night and went. Where is God asking you to rise and go?" },
+      { "intro": "The Church reads this at Vespers of the Nativity, the first reading.", "q": "The Church reads of the first days of creation on the eve of the feast. What is God making new in you?" },
+      { "intro": "The Church reads this at Vespers of the Nativity, the second reading.", "q": "A star shall rise out of Jacob. Where do you need light in a dark place?" },
+      { "intro": "The Church reads this at Vespers of the Nativity, the fourth reading.", "q": "The wolf shall lie down with the lamb. Where do you long for peace?" },
+      { "intro": "The Church reads this at Vespers of the Nativity, the sixth reading.", "q": "A stone cut without hands fills the earth. What in your life is beyond your own making?" },
+      { "intro": "The Church reads this at the Liturgy of the Nativity, as its Epistle.", "q": "\"Thou art no more a servant, but a son.\" How will you keep the feast as a child of God?" }
+    ]
   }
 }

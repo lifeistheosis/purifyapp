@@ -1,0 +1,35 @@
+{
+  "title": "The Nativity Fast: the Church's own readings of the Nativity",
+  "review": {
+    "status": "awaiting-clergy-review",
+    "drafted": "2026-11-07",
+    "basis": "The owner's pick of 2026-11-07: the prophecies and Gospels the Church herself reads at the Nativity, each day saying which service it is from. Every reference is as data/calendar/official-readings.json gives it (the Orthodox Church in America's daily readings, 2026-12-13, 12-19, 12-20, 12-24, 12-25 and 12-26), and so is every service, except that the data gives the Epistle and Gospel of 2026-12-13 without naming the Sunday of the Holy Forefathers; in the order of the services, each passage once, at its first reading. The day notes say only where it is read; the questions (data/plans/guide/en.json, nativity) are the editorials' and await review."
+  },
+  "days": [
+    { "book": "colossians", "ref": "3:4-11", "service": "on the Sunday of the Holy Forefathers, as its Epistle" },
+    { "book": "luke", "ref": "14:16-24", "service": "on the Sunday of the Holy Forefathers, as its Gospel" },
+    { "book": "galatians", "ref": "3:8-12", "service": "on the Saturday before the Nativity, as its Epistle" },
+    { "book": "luke", "ref": "13:18-29", "service": "on the Saturday before the Nativity, as its Gospel" },
+    { "book": "genesis", "ref": "14:14-20", "service": "at Vespers of the Sunday before the Nativity, the first reading" },
+    { "book": "deuteronomy", "ref": "1:8-11, 15-17", "service": "at Vespers of the Sunday before the Nativity, the second reading" },
+    { "book": "deuteronomy", "ref": "10:14-21", "service": "at Vespers of the Sunday before the Nativity, the third reading" },
+    { "book": "hebrews", "ref": "11:9-10, 17-23, 32-40", "service": "on the Sunday before the Nativity, as its Epistle" },
+    { "book": "matthew", "ref": "1:1-25", "service": "on the Sunday before the Nativity, as its Gospel; verses 18 to 25 again at the First Royal Hour and at Matins of the feast" },
+    { "book": "micah", "ref": "4:6-7; 5:2-4", "service": "at the First Royal Hour (5:2-4), and at Vespers of the Nativity, the third reading" },
+    { "book": "hebrews", "ref": "1:1-12", "service": "at the First Royal Hour, as its Epistle, and at the Liturgy on the eve of the Nativity" },
+    { "book": "baruch", "ref": "3:35-4:4", "service": "at the Third Royal Hour, and at Vespers of the Nativity, the fifth reading, under the name of Jeremiah" },
+    { "book": "galatians", "ref": "3:23-29", "service": "at the Third Royal Hour, as its Epistle" },
+    { "book": "luke", "ref": "2:1-20", "service": "at the Third Royal Hour, as its Gospel, and at the Liturgy on the eve of the Nativity" },
+    { "book": "isaiah", "ref": "7:10-16; 8:1-4, 9-10", "service": "at the Sixth Royal Hour, and at Vespers of the Nativity, the eighth reading" },
+    { "book": "hebrews", "ref": "1:10-2:3", "service": "at the Sixth Royal Hour, as its Epistle" },
+    { "book": "matthew", "ref": "2:1-12", "service": "at the Sixth Royal Hour, as its Gospel, and at the Liturgy of the Nativity" },
+    { "book": "isaiah", "ref": "9:6-7", "service": "at the Ninth Royal Hour, and at Vespers of the Nativity, the seventh reading" },
+    { "book": "hebrews", "ref": "2:11-18", "service": "at the Ninth Royal Hour, as its Epistle, and on the Synaxis of the Theotokos" },
+    { "book": "matthew", "ref": "2:13-23", "service": "at the Ninth Royal Hour, as its Gospel, and on the Synaxis of the Theotokos" },
+    { "book": "genesis", "ref": "1:1-13", "service": "at Vespers of the Nativity, the first reading" },
+    { "book": "numbers", "ref": "24:2-3, 5-9, 17-18", "service": "at Vespers of the Nativity, the second reading" },
+    { "book": "isaiah", "ref": "11:1-10", "service": "at Vespers of the Nativity, the fourth reading" },
+    { "book": "daniel", "ref": "2:31-36, 44-45", "service": "at Vespers of the Nativity, the sixth reading" },
+    { "book": "galatians", "ref": "4:4-7", "service": "at the Liturgy of the Nativity, as its Epistle" }
+  ]
+}

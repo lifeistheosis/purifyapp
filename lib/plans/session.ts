@@ -43,7 +43,8 @@ let cache: { raw: string | null; val: PlanSession | null } | null = null;
 let finishedCache: { raw: string | null; val: JustFinished | null } | null = null;
 
 export function hrefOfReading(r: PlanReading): string {
-  return `/bible/${r.book}/${r.chapter}`;
+  // A passage's chapter opens at its first verse (VerseFocusFlash lands there).
+  return `/bible/${r.book}/${r.chapter}${r.verse && r.verse > 1 ? `#v${r.verse}` : ""}`;
 }
 
 function readRaw(key: string): string | null {

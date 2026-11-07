@@ -1310,12 +1310,12 @@
    "title": "The Nativity Fast plan from the Church's own Nativity readings: the Forefathers' Sunday, the Saturday and Sunday before, the Royal Hours, the Vespers prophecies and the feast",
    "from": "claude",
    "asked": "2026-11-07",
-   "status": "approved",
+   "status": "built",
    "decided": "2026-11-07",
    "needsDesign": false,
    "version": "his pick: the Church's Nativity readings (of three: those, each day's appointed readings, or no season card yet)",
    "outcome": null,
-   "note": "25 distinct passages in data/calendar/official-readings.json (OCA, 2026), so 25 days, not 40"
+   "note": "25 distinct passages in data/calendar/official-readings.json (OCA, 2026), so 25 days, not 40. Built 2026-11-07: data/plans/nativity.json (marked for our review), the questions in data/plans/guide/en.json"
   },
   {
    "id": "c-size-ceiling",
