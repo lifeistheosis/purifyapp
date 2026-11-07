@@ -4326,10 +4326,12 @@ html[data-reading-mode] body {
 /* Candlelight: black and light grey, late-hour reading. Warm amber until
    2026-09-25, changed at the owner's direction. It stays the dimmest of the
    dark modes: Default's white text is 1.48x the contrast of this grey on
-   this black, which is the point of a late-hour palette. Body text 13.4:1 on
-   the page and 12.0:1 on a card (AAA); text-paper/55 section labels 4.56:1. */
+   this black, which is the point of a late-hour palette. Body text 13.8:1 on
+   the page and 12.0:1 on a card (AAA); text-paper/55 section labels 4.54:1.
+   1.9: the ground went from #0a0a0a to #050505 with the candle's room
+   (.candle-veil below), and the settings' page of it with it. */
 html[data-reading-mode="candlelight"] {
- --color-night: #0a0a0a;
+ --color-night: #050505;
  --color-night-soft: #18181b;
  --color-paper: #d4d4d8;
  --color-gold: #e4e4e7;
@@ -4345,11 +4347,9 @@ html[data-reading-mode="candlelight"] {
    rests where the eye does (lib/reader/useReadingLine.ts, READING_LINE) and
    the screen's edges fall away into the dark; the verse under the reading
    line is lit and the others step back to 58%, which keeps them past 4.5:1
-   on this ground. A verse with its strip open is always lit. Still with
-   reduced motion. No gold: the light is white. */
-html[data-reading-mode="candlelight"] {
- --color-night: #050505;
-}
+   on this ground (#050505, in the palette's own block above). A verse with
+   its strip open is always lit. Still with reduced motion. No gold: the
+   light is white. */
 .candle-veil {
  position: fixed;
  inset: 0;
@@ -5712,7 +5712,7 @@ html[data-reading-mode="parchment"] .testers-dot { box-shadow: none; }
  --mp-accent: #eaeaec;
 }
 .set-mode-page[data-palette="candlelight"] {
- --mp-ground: #0a0a0a;
+ --mp-ground: #050505;
  --mp-ink: #d4d4d8;
  --mp-accent: #e4e4e7;
 }
