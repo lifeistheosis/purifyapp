@@ -92,6 +92,23 @@ async function section(n, run) {
   }
 }
 
+// The releases build the apps with the shop and Community on
+// (.github/workflows/android-apk.yml and ios-release.yml). An export built
+// without NEXT_PUBLIC_SHOP_ENABLED still carries the shop's pages, each one
+// Next's 404, so the shop's checks fail one by one in sections with nothing
+// wrong in them (2026-11-07: nine NOs from the one missing flag, section 10
+// included, whose own test for a shop left out looks for the pages, and they
+// are there). Said once, first, with what to set.
+const builtAsNotFound = (page) => {
+  const file = path.join(OUT, page, "index.txt");
+  return fs.existsSync(file) && fs.readFileSync(file, "utf8").includes("NEXT_HTTP_ERROR_FALLBACK;404");
+};
+const shopOff = builtAsNotFound("/shop/");
+must(
+  !shopOff,
+  `the export was built as the releases build it, with the shop on${shopOff ? ": it was built without NEXT_PUBLIC_SHOP_ENABLED=1, so every page of the shop is a 404 and the shop's checks below fail with it; build it again with NEXT_PUBLIC_SHOP_ENABLED=1 NEXT_PUBLIC_COMMUNITY_ENABLED=1" : ""}`,
+);
+
 /**
  * A tap that cannot end the walk. A locator's own tap waits for its target and
  * then throws; this one says NO, naming what it could not tap, and the walk
@@ -542,10 +559,13 @@ await section(10, async () => {
 // The owner, of holding the screen in the app and moving: "the screen turns
 // blue. I want you to remove that feature so there's a native system built
 // into the app. Where when you copy anything, it uses our system." So in the
-// shells the system's selection is off (app/globals.css), a verse's own pill
-// carries Copy, and a hold on any other text offers Copy for the block under
+// shells the system's selection is off (app/globals.css), a verse's own tools
+// carry Copy, and a hold on any other text offers Copy for the block under
 // the finger (components/native/PressToCopy.tsx). Numbered 12 and run before
-// 11, which counts every document the walk opened and so comes last.
+// 11, which counts every document the walk opened and so comes last. From 1.9
+// (the owner's pick B of 2026-11-06) a verse's tools are its strip, in the
+// page under the verse (components/bible/VerseStrip.tsx), and no longer the
+// pill over the tab bar.
 await section(12, async () => {
   console.log("\n12. The apps select nothing by themselves, and a hold copies");
   const { ctx, page, errors } = await open({ width: 390, height: 844, phone: true });
@@ -651,31 +671,30 @@ await section(12, async () => {
     const at = await page.evaluate(() => { const r = document.querySelector("[data-own-press]").getBoundingClientRect(); return { x: Math.round(r.left + Math.min(140, r.width / 2)), y: Math.round(r.top + r.height / 2) }; });
     await hold(at.x, at.y, 800);
     await page.waitForTimeout(600);
+    // The verse's strip: named for the verse, its buttons in their words.
     const tools = await page.evaluate(() => {
-      const d = [...document.querySelectorAll("[role=dialog]")].find((x) => /John 1:/.test(x.getAttribute("aria-label") || ""));
-      return d ? [...d.querySelectorAll("button")].map((b) => b.getAttribute("aria-label") || "").filter(Boolean) : null;
+      const d = document.querySelector("[data-verse-strip]");
+      if (!d || !/John 1:/.test(d.getAttribute("aria-label") || "")) return null;
+      const rs = [...d.querySelectorAll("button")].map((b) => ({ text: (b.innerText || "").replace(/\s+/g, " ").trim(), r: b.getBoundingClientRect() }));
+      return {
+        buttons: rs.map((b) => b.text),
+        left: Math.round(Math.min(...rs.map((b) => b.r.left))),
+        right: Math.round(Math.max(...rs.map((b) => b.r.right))),
+        rows: [...new Set(rs.map((b) => Math.round(b.r.top)))].length,
+        vw: innerWidth,
+      };
     });
-    must(Boolean(tools) && tools.includes("Copy verse"), `holding a verse raises the verse's pill, with Copy in it (${tools ? tools.length + " buttons" : "no pill"})`);
+    must(Boolean(tools) && tools.buttons.includes("Copy"), `holding a verse raises the verse's strip, with Copy in it (${tools ? tools.buttons.join(", ") : "no strip"})`);
     must((await pill()) === null, "and not the general one as well");
     must((await selected()) === "", "the system selected nothing there either");
-    const fits = await page.evaluate(() => { const d = [...document.querySelectorAll("[role=dialog]")].find((x) => /John 1:/.test(x.getAttribute("aria-label") || "")); if (!d) return null; const rs = [...d.querySelectorAll("button[aria-label]")].filter((b) => b.getBoundingClientRect().width < 100).map((b) => b.getBoundingClientRect()); return { left: Math.round(Math.min(...rs.map((r) => r.left))), right: Math.round(Math.max(...rs.map((r) => r.right))), vw: innerWidth }; });
-    must(Boolean(fits) && fits.left >= 0 && fits.right <= fits.vw, `every button of the pill is on the screen (${fits ? fits.left + ".." + fits.right + " of " + fits.vw : "no pill"})`);
-    // And they sit in even rows. Seven buttons were first set in a width
-    // counted in pixels for a 16px root; the app's is 17px, and they came
-    // out three, three and one.
-    const rows = await page.evaluate(() => {
-      const d = [...document.querySelectorAll("[role=dialog]")].find((x) => /John 1:/.test(x.getAttribute("aria-label") || ""));
-      if (!d) return null;
-      const all = [...d.querySelectorAll("button[aria-label]")].filter((b) => b.getBoundingClientRect().width < 100 && b.getBoundingClientRect().height > 30);
-      const tray = all[all.length - 1].parentElement;
-      const inTray = all.filter((b) => b.parentElement === tray);
-      const tops = [...new Set(inTray.map((b) => Math.round(b.getBoundingClientRect().top)))];
-      return tops.map((y) => inTray.filter((b) => Math.round(b.getBoundingClientRect().top) === y).length);
-    });
-    must(Boolean(rows) && (rows.length === 1 || (rows.length === 2 && rows[0] <= 4 && rows[0] - rows[1] <= 1)), `the pill's buttons sit in even rows (${rows ? rows.join(" and ") : "no pill"})`);
+    must(Boolean(tools) && tools.left >= 0 && tools.right <= tools.vw, `every button of the strip is on the screen (${tools ? tools.left + ".." + tools.right + " of " + tools.vw : "no strip"})`);
+    // One row: six buttons the width of the page. The pill before it was set
+    // in a width counted for a 16px root; the app's is 17px, and its seven
+    // came out three, three and one.
+    must(Boolean(tools) && tools.rows === 1, `the strip's buttons sit in one row (${tools ? tools.rows + (tools.rows === 1 ? " row" : " rows") : "no strip"})`);
     await page.screenshot({ path: path.join(SHOTS, "hold-verse-phone.png") });
-    if (tools && tools.includes("Copy verse")) {
-      await tap(page.locator('[role=dialog] button[aria-label="Copy verse"]'));
+    if (tools && tools.buttons.includes("Copy")) {
+      await tap(page.locator("[data-verse-strip] button", { hasText: /^Copy$/ }));
       await page.waitForTimeout(400);
       const clip = await page.evaluate(() => navigator.clipboard.readText()).catch((e) => "could not read: " + e);
       must(/\nJohn 1:\d+$/.test(clip) && clip.length > 30, `Copy puts the verse and where it is from on the clipboard ("${clip.replace(/\n/g, " / ").slice(0, 90)}")`);
@@ -2588,7 +2607,9 @@ await section(28, async () => {
     await page.waitForTimeout(900);
     const set = await groups(page);
     const ids = set.groups.map((g) => g.id).filter(Boolean);
-    must(ids[0] === "account" && ids.slice(-2).join(" ") === "data about" && ["space", "reading", "calendar", "language"].every((id) => ids.includes(id)), `Settings is the account, then the device's settings, then data and Purify (${ids.join(", ")})`);
+    // 1.9: in the apps, what is kept on this device sits between data and
+    // Purify (components/settings/StorageSection.tsx; lib/nav/__tests__/oneSettings.test.ts).
+    must(ids[0] === "account" && ids.slice(-3).join(" ") === "data storage about" && ["space", "reading", "calendar", "language"].every((id) => ids.includes(id)), `Settings is the account, then the device's settings, then data, what this device keeps, and Purify (${ids.join(", ")})`);
     const account = set.groups.find((g) => g.id === "account");
     must(!!account && account.heading === en["settings.account"] && account.rows.length === 1 && bare(account.rows[0].href) === "/signin?next=/settings" && account.rows[0].label === en["common.signIn"], "signed out, the account is one row: Sign in");
     const data = set.groups.find((g) => g.id === "data");
@@ -5196,7 +5217,7 @@ await section(40, async () => {
   const sayings = JSON.parse(fs.readFileSync(path.resolve("data/plans/sayings.json"), "utf8"));
   const fill = (s, vars) => Object.entries(vars).reduce((out, [k, v]) => out.replaceAll(`{${k}}`, String(v)), s);
   const flat = (s) => s.replace(/\s+/g, " ").trim();
-  for (const p of ["/saved/", "/journal/", "/plans/", "/plans/psalter/", "/plans/gospels/", "/plans/proverbs/"]) must(inBundle(OUT, p), `${p} is in the bundle`);
+  for (const p of ["/saved/", "/journal/", "/plans/", "/plans/psalter/", "/plans/gospels/", "/plans/john/", "/plans/proverbs/", "/plans/nativity/"]) must(inBundle(OUT, p), `${p} is in the bundle`);
 
   const KEYBOARD = 300;
   const standInKeyboard = (kb) => {
@@ -5400,13 +5421,27 @@ await section(40, async () => {
     must(new URL(page.url()).pathname.startsWith("/bible/john/3"), `${w}px: a tap opens the verse in its chapter (${new URL(page.url()).pathname}${new URL(page.url()).hash})`);
 
     // Reading plans: the list, a plan's day, Begin, the bar, Done, the finish.
+    // From 1.9 (the owner's pick for Practice, A and B) the list is Continue,
+    // which a reader with none begun does not have, then every plan as a
+    // picture tile; the season's plan stands apart as its own card from two
+    // weeks before its season to the feast (lib/plans/season.ts), so the
+    // walk's date decides whether the Nativity is a card or a tile.
     await go(page, "/plans/");
-    await page.waitForFunction(() => document.querySelectorAll("[data-plans-rest] li").length > 0, null, { timeout: 20000 }).catch(() => {});
+    await page.waitForFunction(() => document.querySelectorAll("[data-plans-tiles] [data-plan-tile]").length > 0, null, { timeout: 20000 }).catch(() => {});
     await page.waitForTimeout(600);
     await clean(`${w}px, Reading plans`, page);
-    const listed = await page.evaluate(() => [...document.querySelectorAll("[data-plans-rest] a")].map((a) => (a.getAttribute("href") ?? "").replace(/\/$/, "")));
-    must(JSON.stringify(listed) === JSON.stringify(["/plans/psalter", "/plans/gospels", "/plans/proverbs"]), `${w}px: the three plans, none begun (${listed.join(", ")})`);
-    await tap(page.locator('[data-plans-rest] a[href^="/plans/gospels"]'));
+    const listed = await page.evaluate(() => ({
+      tiles: [...document.querySelectorAll("[data-plans-tiles] [data-plan-tile]")].map((a) => `${a.getAttribute("data-plan-tile")} ${(a.getAttribute("href") ?? "").replace(/\/$/, "")}`),
+      season: (document.querySelector("[data-plans-season] a")?.getAttribute("href") ?? "").replace(/\/$/, "") || null,
+      continuing: Boolean(document.querySelector("[data-plans-continue]")),
+    }));
+    const PLANS = ["psalter", "gospels", "john", "proverbs", "nativity"];
+    const tilesWanted = PLANS.filter((id) => `/plans/${id}` !== listed.season).map((id) => `${id} /plans/${id}`);
+    must(
+      !listed.continuing && (listed.season === null || listed.season === "/plans/nativity") && JSON.stringify(listed.tiles) === JSON.stringify(tilesWanted),
+      `${w}px: every plan, none begun: ${listed.season ? `the season's card (${listed.season}), then ` : ""}the tiles (${listed.tiles.map((x) => x.split(" ")[0]).join(", ")})`,
+    );
+    await tap(page.locator('[data-plans-tiles] [data-plan-tile="gospels"]'));
     await page.waitForFunction(() => !!document.querySelector("[data-plan-today]"), null, { timeout: 20000 }).catch(() => {});
     await page.waitForTimeout(800);
     await clean(`${w}px, the Gospels plan`, page);
