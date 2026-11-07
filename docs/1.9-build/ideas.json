@@ -1329,12 +1329,12 @@
    "title": "The Android export is 239.2 MB against its 240 MB ceiling, which stops the build: new Bibles cannot be carried in the apps unless they stream from the website or the ceiling rises",
    "from": "claude",
    "asked": "2026-11-07",
-   "status": "proposed",
+   "status": "built",
    "decided": null,
    "needsDesign": false,
    "version": null,
    "outcome": null,
-   "note": "Measured by npm run build:android on the 1.9 branch, 2026-11-07 (75.0 MB packed of 85). Of it, the Bible's pages are 73 MB, its study data 79 MB, the saints' pages and works 64 MB, the code 21 MB. Corrected the same day: Claude first told the owner the history pictures' cleanup would make room, but they have streamed from the website since 1.7 and are not in the apps at all. Measured again on 3630ea0b (after the dock, the plans page, the Nativity plan, the Florilegium starters, the timeline pictures and the Thread): 239.3 MB on disk, 75.1 MB packed; 0.7 MB of room left"
+   "note": "Measured by npm run build:android on the 1.9 branch, 2026-11-07 (75.0 MB packed of 85). Of it, the Bible's pages are 73 MB, its study data 79 MB, the saints' pages and works 64 MB, the code 21 MB. Corrected the same day: Claude first told the owner the history pictures' cleanup would make room, but they have streamed from the website since 1.7 and are not in the apps at all. Measured again on 3630ea0b (after the dock, the plans page, the Nativity plan, the Florilegium starters, the timeline pictures and the Thread): 239.3 MB on disk, 75.1 MB packed; 0.7 MB of room left. The full optimize, his \"do everything you can that's safe\" of 2026-11-07: the loading placeholders written short, the Greek packed, the shop's photos streamed. Measured on d2c711b2: 217.7 MB on disk, 69.5 MB packed (from 239.3 and 75.1): 22.3 MB of room on disk, 15.5 MB packed. Not done, and why: Next's own payload overhead (37 MB, its format), the commentary repeating the works (0.4 MB), fonts, ambience and icons (needed offline). The shop's photos inside the real native shell are for the release's phone walk"
   },
   {
    "id": "c-flor-gate-flash",

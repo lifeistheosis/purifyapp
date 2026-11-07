@@ -100,7 +100,7 @@ On the 1.9 branch:
 
 | # | Item | Status |
 |---|---|---|
-| 46 | Megabytes: the app is 239.2 of its 240 MB ceiling (Bible pages 73, Bible data 79, saints 64); new Bibles must stream or the ceiling rise (his call). On the website alone: each history picture kept as AVIF and JPEG (20 MB, not in the apps), three unused files | ready; the ceiling is needed before item 21 |
+| 46 | Megabytes | done (his "full optimize", 2026-11-07): 239.3 to 217.7 MB on disk, 75.1 to 69.5 MB packed (the loading placeholders short, the Greek packed, the shop's photos streamed); 22 MB of room. New Bibles still best streamed (each is several MB). On the website alone: each history picture kept as AVIF and JPEG |
 | 47 | Animations | ready, last |
 
 ## Phase 7: ship 1.9 (`docs/RELEASE.md`)
@@ -108,7 +108,7 @@ On the 1.9 branch:
 | # | Item | Status |
 |---|---|---|
 | 48 | The note in 21 languages, the six version numbers, the update hierarchy, the drop | at the end |
-| 49 | The gates: typecheck, unit, lint, the Android and iOS exports, the export walk, the web build, the release APK on a phone | at the end |
+| 49 | The gates: typecheck, unit, lint, the Android and iOS exports, the export walk, the web build, the release APK on a phone, the shop's photos among it (they stream from 1.9) | at the end |
 | 50 | The push, the store builds, the reviews, the update prompt | needs you |
 | 51 | 1.8 is live in both stores (his word, 2026-11-06); set the build numbers in `lib/appUpdate/release.ts` so installed apps are told | needs you: the build numbers each store serves |
 
