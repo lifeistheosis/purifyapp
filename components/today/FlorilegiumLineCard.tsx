@@ -18,6 +18,7 @@ import { useTranslate } from "@/components/i18n/MessagesProvider";
 import { useToday } from "@/lib/calendar/useToday";
 import { cn } from "@/lib/cn";
 import { useFlorilegia } from "@/lib/florilegium/florilegium";
+import { gatheringHref } from "@/lib/florilegium/href";
 import { lineForDay } from "@/lib/florilegium/todayLine";
 import { todayKey } from "@/lib/rhythm/dayKey";
 
@@ -37,7 +38,7 @@ export function FlorilegiumLineCard({ className }: { className?: string }) {
     <article data-florilegium-line="" className={cn("rounded-2xl border border-paper/10 bg-paper/[0.03] p-3.5", className)}>
       <h2 className="font-heading text-ui font-semibold leading-tight text-paper">{t("community.yourFlorilegium")}</h2>
       <Link
-        href={`/florilegium/${florilegium.id}`}
+        href={gatheringHref(florilegium.id)}
         className="mt-0.5 block font-sans text-caption text-paper/60 underline-offset-4 hover:underline"
       >
         {florilegium.title}

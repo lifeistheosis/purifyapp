@@ -1458,6 +1458,20 @@
    "version": null,
    "outcome": null,
    "note": "Found while choosing where the downloaded Bibles go: the Filesystem plugin's Data is Documents on iOS. The Bibles use LibraryNoCloud (kept, not backed up; Android's own files, as before). lib/readAloud/offline.ts saves recordings with Data, a review risk and up to hours of audio in the reader's iCloud. Moving them needs a move of what readers already saved, so it waits for his word"
+  },
+  {
+   "id": "c-flor-open-in-apps",
+   "section": "Keeping",
+   "kind": "bug",
+   "title": "In the apps a tapped gathering opened Today: the Florilegium's gathering page is not in the app bundle",
+   "from": "claude",
+   "asked": "2026-11-07",
+   "status": "built",
+   "decided": "2026-11-07",
+   "needsDesign": false,
+   "version": null,
+   "outcome": null,
+   "note": "Found 2026-11-07 walking the export as the phones serve it (scripts/lib/shell-server.mjs): scripts/native-build.mjs keeps florilegium/[id] out of the bundle (a reader's ids are unknown to any build), so the hub's gathering cards, which linked to /florilegium/<id>, ended on Today. Fixed the same day: in the apps a gathering opens on the Florilegium's own page, which the bundle carries, named in the query (/florilegium?g=<id>; lib/florilegium/href.ts gatheringHref, asked of the runtime; components/florilegium/FlorilegiumByQuery.tsx); the website keeps /florilegium/<id>. Every link to a gathering goes through it (the hub, Today's line from the florilegium), held by lib/florilegium/__tests__/href.test.ts. Walked in the rebuilt export"
   }
  ]
 }

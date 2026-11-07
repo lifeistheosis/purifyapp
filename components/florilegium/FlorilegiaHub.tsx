@@ -13,6 +13,7 @@ import { localBookNames } from "@/lib/bible/books";
 import { cn } from "@/lib/cn";
 import { itemSource } from "@/lib/florilegium/asText";
 import { useFlorilegia, type Florilegium } from "@/lib/florilegium/florilegium";
+import { gatheringHref } from "@/lib/florilegium/href";
 import { STARTERS, starterItems, starterPicture, starterReference, type Starter } from "@/lib/florilegium/starters";
 import { useFlorilegiaSyncedAt, useMinute } from "@/lib/florilegium/syncedAt";
 import { dateLocale } from "@/lib/i18n/deviceDates";
@@ -75,7 +76,7 @@ export function FlorilegiaHub() {
     const id = create(t(s.nameKey), starterReference(s, bookName(s.book)));
     for (const item of starterItems(s, bookName(s.book))) addItem(id, item);
     setPreview(null);
-    router.push(`/florilegium/${id}`);
+    router.push(gatheringHref(id));
   }
 
   const empty = mounted && florilegia.length === 0;
@@ -159,7 +160,7 @@ export function FlorilegiaHub() {
                   type="button"
                   data-starter={s.id}
                   aria-haspopup={kept ? undefined : "dialog"}
-                  onClick={() => (kept ? router.push(`/florilegium/${kept.id}`) : setPreview(s))}
+                  onClick={() => (kept ? router.push(gatheringHref(kept.id)) : setPreview(s))}
                   className="tap-press relative flex aspect-[4/5] w-full flex-col justify-end overflow-hidden rounded-[18px] bg-night-soft p-3 text-start ring-1 ring-inset ring-paper/10"
                 >
                   <CoverArt src={picture.src} fallback={picture.fallback} size={240} className="plan-tile-picture absolute inset-0 h-full w-full" />
@@ -247,7 +248,7 @@ function GatheringCard({ f }: { f: Florilegium }) {
   const newest = f.items[0];
   return (
     <Link
-      href={`/florilegium/${f.id}`}
+      href={gatheringHref(f.id)}
       className="tap-press flex h-full min-h-[156px] flex-col rounded-[20px] bg-night-soft p-4 ring-1 ring-inset ring-paper/10 transition-colors hover:ring-paper/20"
     >
       <p className="line-clamp-2 font-sans text-ui font-semibold leading-snug text-paper">{f.title}</p>
