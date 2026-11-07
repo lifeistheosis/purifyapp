@@ -572,7 +572,7 @@
    "needsDesign": false,
    "version": null,
    "outcome": null,
-   "note": "Built 2026-11-07: Settings, On this device (the apps only): the Bibles downloaded and the books saved to listen offline, each with its size and Remove, the whole in one line at the top (components/settings/StorageSection.tsx). Words in 21 languages. Not in the search, since the website has no such section"
+   "note": "Built 2026-11-07: Settings, On this device (the apps only): the Bibles downloaded and the books saved to listen offline, each with its size and Remove, the whole in one line at the top (components/settings/StorageSection.tsx). Words in 21 languages. Not in the search, since the website has no such section. A slip: its commit (27701c53) was pushed with one test red, lib/nav/__tests__/oneSettings.test.ts, which holds the order of Settings' groups and did not name the new one; the full suite was not run before that push. Fixed in the next commit, and the full suite is run before every push since"
   },
   {
    "id": "s3-04",

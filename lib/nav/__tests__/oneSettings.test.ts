@@ -126,6 +126,7 @@ describe("the one Settings", () => {
       "DiscordSection",
       "WidgetSection",
       "DataSection",
+      "StorageSection", // 1.9, the apps alone: what is kept on this device (lib/settings/__tests__/storageView.test.ts)
       "AboutSection",
       "SignOutSection",
     ]);
