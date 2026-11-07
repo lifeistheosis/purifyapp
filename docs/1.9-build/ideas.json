@@ -1361,6 +1361,19 @@
    "version": null,
    "outcome": null,
    "note": "lib/sync/florilegium.ts now reads both upserts' errors; deletes still do not reach other devices (a union by id), item 29"
+  },
+  {
+   "id": "c-thread-extras",
+   "section": "Beauty",
+   "kind": "idea",
+   "title": "The Thread's extras for 1.9: a map that follows the event's places down the years, and each quote opening its source",
+   "from": "claude",
+   "asked": "2026-11-07",
+   "status": "approved",
+   "decided": "2026-11-07",
+   "needsDesign": false,
+   "version": "his pick: a map that follows, and open a quote's source (not one saint across events, not listen)",
+   "outcome": null
   }
  ]
 }
