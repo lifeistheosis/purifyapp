@@ -40,8 +40,9 @@ On the 1.9 branch:
 | 9 | The Supporter mark explains itself on a tap (Identity 2, 21 languages) | done |
 | 10 | Admin: a Review list of the 66 texts marked for clergy review, ours only | done |
 | 11 | F-37: the Stripe webhook never marks an unpaid checkout paid (money) | done (his OK of 2026-11-06); left to him: enable checkout.session.async_payment_succeeded in Stripe |
-| 12 | Count which lock a reader taps and which leads to a purchase | ready |
+| 12 | Count which lock a reader taps and which leads to a purchase | built 2026-11-07: the upgrade sheet counts the feature it opens on and a purchase that goes through in it (the plan, a year or a month), with the kind of device and the day, no reader (lib/analytics/lockCounting.ts); no migration (analytics_events takes the names). Read in the admin at Subscriptions, Locks. Needs his word before the release: the privacy page's new paragraph (drafted), and the 1.9 letter must list it, as that page promises |
 | 13 | The red commentary dots in the reader (flag 5) | needs you: keep or quiet them |
+| 13b | Community's page for a new post: the first words fold its head again (found by the export walk, 2026-11-07: the smooth scroll that folds it was ended by the caret of the letter typed, in Chrome 153, the Android WebView's engine; it now goes a frame at a time, lib/ui/glideScroll.ts) | done |
 
 ## Phase 2: the designs he picked
 
@@ -59,7 +60,7 @@ On the 1.9 branch:
 
 | # | Item | Status |
 |---|---|---|
-| 21b | Compare, in the verse strip's Study: the verse in each Bible the app may show, and its Greek (Plus; licensed translations only where their terms allow) | ready |
+| 21b | Compare, in the verse strip's Study: the verse in each Bible the app may show, and its Greek (Plus; licensed translations only where their terms allow) | needs you: each downloaded Bible's verses must first be placed against the app's; the cleanest source for that is CC BY-SA 4.0 (credit, shared alike), or the maps are made from the texts as item 22's was (ideas.json e-compare) |
 | 21 | Public-domain Bibles: Romanian, Russian, Greek, Serbian, Arabic and Spanish first, then every app language; each licence proven; picking one offers the app in that language, with Never ask again. His word of 2026-11-07: each Bible is downloaded when the reader picks it, as other Bible apps do; none is carried in the app | Russian and Greek built 2026-11-07 (docs/1.9-build/BIBLES.md, "What shipped"): downloaded from the translations list, read in their own numbering, the language offer a pop-up (his word). Next: Arabic, Serbian, Spanish and Romanian wait on his labels and proofing; the verse-number map (22) to carry notes and highlights across |
 | 22 | One verse-number map, for the new Bibles and the Old Testament cross-references | done 2026-11-07 for the KJV to the app's Septuagint (data/bible/kjv-to-lxx.json, made from the two texts' words; 95.7% placed, the rest left out, never guessed). The downloaded Bibles' own numbering (to carry notes and highlights across) is the next use of it |
 | 23 | Cross-references into the Old Testament, in the Septuagint (Genesis 1:1 back on John 1:1) | done 2026-11-07: both Testaments, the Psalms in, in the app's numbering; lighter in the app than the New Testament's were (6.5 MB against 7.2); the Android export with them, 2026-11-07: 217.5 MB on disk (from 217.8) and 69.7 MB packed (from 69.5). Found on the way: the app's Psalms 113 to 115 are divided the Hebrew way (ideas.json c-psalter-113), waiting for his word |
@@ -67,7 +68,7 @@ On the 1.9 branch:
 | 25 | Plans for the seasons (Nativity Fast, Great Lent, Holy Week, Dormition), more plans, a passage of the Fathers each day | the Nativity Fast's plan built (his pick: the Church's own Nativity readings, 25 days); it reaches readers only with 1.9, after 15 November; John in 21 days built 2026-11-07 from the Gospels plan's own words; a passage of the Fathers on nearly every plan day, the Nativity's included (s4-03); Acts, the New Testament in a year and the Psalter in a week wait for new framing or a source (ideas.json s4-02); the other seasons ready |
 | 26 | Remember the verse in three steps, spaced, and on the widget | the three steps built 2026-11-07 (missing words, first letters, from memory, following the spaced boxes; ideas.json s4-06); on the widget ready |
 | 27 | Journal: prompts from the feast (by the editorials), search, a PDF | search was there since 1.8; the journal now in Export your library (through the share sheet in the apps) and Print or save as PDF on the website, 2026-11-07 (s4-09); prompts from the feast ready (editorial queue) |
-| 28 | Florilegium: gather from everywhere, share as a page or booklet, a line on Today | ready |
+| 28 | Florilegium: gather from everywhere, share as a page or booklet, a line on Today | a line on Today built 2026-11-07 (s5-07); a gathering handed on as a booklet on the website (Print or save as PDF) and as words through the share sheet in the apps (s5-05); found and fixed on the way: in the apps a tapped gathering opened Today (c-flor-open-in-apps). Gather from everywhere waits on his word on where (s5-04); a gathering as a page of its own, a link anyone opens, needs a new table, so a migration, for his word (s5-05) |
 | 29 | Sync shown working, and everything kept synced | ready |
 | 30 | History: more events (40 today), the saints at each, a map, this day in Church history, listen to an era, the Creed by council | ready |
 | 31 | Ambience: two sounds at once, Orthodox sounds (licences checked), the last sound remembered and faded | the last sound remembered, 2026-11-07 (the sheet marks it Last played; the fade at the timer's end was there since 1.7); two sounds at once, each with its own volume, 2026-11-07 (s2-06); the Orthodox sounds ready (licences) |
@@ -80,7 +81,7 @@ On the 1.9 branch:
 
 | # | Item | Status |
 |---|---|---|
-| 36 | F-09: tests on the API routes and money paths | ready |
+| 36 | F-09: tests on the API routes and money paths | done 2026-11-07 for the money routes: checkout, its cancel, the Stripe webhook and RevenueCat, each at the route, and createCheckout with an injected database and Stripe (findings.yaml F-09); still open there: live Stripe and RevenueCat delivery, and e2e |
 | 37 | F-21: native push | ready |
 | 38 | F-49: the reading room's attributions | ready |
 | 39 | F-22: sources for the 107 saint icons that have none | ready |

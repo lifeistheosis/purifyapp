@@ -40,7 +40,8 @@
    "decided": "2026-11-06",
    "needsDesign": true,
    "version": null,
-   "outcome": null
+   "outcome": null,
+   "note": "Looked at 2026-11-07, not built, for his word on one thing. Compare shows a verse in each Bible the app may show, and the downloaded ones keep their own numbering (BIBLES.md): the Synodal counts a psalm's title as its first verses (its Psalm 50:3 is the app's 50:1) and follows the Hebrew order in Jeremiah, the Greek divides Joel in four chapters. So each downloaded Bible needs its verses placed against the app's first, which is also what notes, highlights and the Fathers need in those Bibles. The cleanest source for that is the Copenhagen Alliance's versification mappings (the United Bible Societies, SIL, Tyndale House and YouVersion; github.com/Copenhagen-Alliance/versification-specification), licensed CC BY-SA 4.0: a map made from it would have to be credited and shared under the same licence. His word: use it, or have the maps made from the texts themselves, as the KJV to Septuagint map was (slower, and what cannot be placed stays out)."
   },
   {
    "id": "e-ten-each",
@@ -550,7 +551,7 @@
    "needsDesign": false,
    "version": null,
    "outcome": null,
-   "note": "Built 2026-11-07, on Android (lib/readAloud/week.ts). When the app opens and comes back to the front, for a reader with a sure yes to Plus, on Wi-Fi only (never mobile data, never a connection the phone cannot name): every chapter read aloud that the Church reads in the next seven days by the reader's calendar is saved as a saved book is, and noted as the week's; once its last day has passed the week takes it away, unless the reader saved its book themselves. The reader's own saving goes first. On by default for Plus, as \"by themselves\" asks; Settings, On this device, has the switch and what it keeps (off takes it all away). A week on the new calendar is 15 to 17 chapters (counted for four weeks from 7 November 2026 to Holy Week 2027); the old calendar's days carry fewer readings in the app, so fewer. Not on iPhone yet: the recordings are kept in the folder iCloud backs up, and a week's worth every week on its own would make that worse (c-ios-offline-backup, waiting for his word). Tests: lib/readAloud/__tests__/week.test.ts. Walked in a browser as the app: the switch and its count; not walked on a phone"
+   "note": "Built 2026-11-07, on Android (lib/readAloud/week.ts). When the app opens and comes back to the front, for a reader with a sure yes to Plus, on Wi-Fi only (never mobile data, never a connection the phone cannot name): every chapter read aloud that the Church reads in the next seven days by the reader's calendar is saved as a saved book is, and noted as the week's; once its last day has passed the week takes it away, unless the reader saved its book themselves. The reader's own saving goes first. On by default for Plus, as \"by themselves\" asks; Settings, On this device, has the switch and what it keeps (off takes it all away). A week on the new calendar is 15 to 17 chapters (counted for four weeks from 7 November 2026 to Holy Week 2027); the old calendar's days carry fewer readings in the app, so fewer. Not on iPhone yet: the recordings are kept in the folder iCloud backs up, and a week's worth every week on its own would make that worse (c-ios-offline-backup, waiting for his word). Tests: lib/readAloud/__tests__/week.test.ts. Walked in a browser as the app: the switch and its count; not walked on a phone Read over the same evening, and one race mended: a reader who tapped Save on a book while the week was fetching a chapter of it would have had that chapter marked the week's, and taken out of their saved book once its day had passed. A book the reader saves is now recorded as theirs until they take it off the phone, and the week marks none of its chapters (lib/readAloud/weekKept.ts; the race held by lib/readAloud/__tests__/week.test.ts, which fails without the guard)."
   },
   {
    "id": "s3-02",
@@ -563,7 +564,8 @@
    "decided": "2026-11-06",
    "needsDesign": false,
    "version": null,
-   "outcome": null
+   "outcome": null,
+   "note": "Looked at 2026-11-07, not built. The Psalms wait for the Old Testament to be recorded, and the saints' lives have no recordings at all. The chants have, and could be kept as a book is, but they are his recordings, taken down with one edit to the live list on the website (lib/chants/media.ts, live.json), and a copy kept on a phone would outlive that edit. So keeping a chant offline is his word: kept only while the live list names it (the app taking a saved chant off the phone once the list no longer does), or not at all."
   },
   {
    "id": "s3-03",
@@ -1472,6 +1474,48 @@
    "version": null,
    "outcome": null,
    "note": "Found 2026-11-07 walking the export as the phones serve it (scripts/lib/shell-server.mjs): scripts/native-build.mjs keeps florilegium/[id] out of the bundle (a reader's ids are unknown to any build), so the hub's gathering cards, which linked to /florilegium/<id>, ended on Today. Fixed the same day: in the apps a gathering opens on the Florilegium's own page, which the bundle carries, named in the query (/florilegium?g=<id>; lib/florilegium/href.ts gatheringHref, asked of the runtime; components/florilegium/FlorilegiumByQuery.tsx); the website keeps /florilegium/<id>. Every link to a gathering goes through it (the hub, Today's line from the florilegium), held by lib/florilegium/__tests__/href.test.ts. Walked in the rebuilt export"
+  },
+  {
+   "id": "c-compose-fold",
+   "section": "Identity",
+   "kind": "bug",
+   "title": "Community's page for a new post: the first words no longer folded its head",
+   "from": "claude",
+   "asked": "2026-11-07",
+   "status": "built",
+   "decided": "2026-11-07",
+   "needsDesign": false,
+   "version": null,
+   "outcome": null,
+   "note": "Found 2026-11-07 by the export walk (section 47, at 390 and 360 wide). The page folds its head on the first words by scrolling until the doors are under the bar (components/community/ComposePage.tsx, from 1.8 build 87); the scroll was asked for, and ended the same moment by the caret of the letter typed: Chrome 153, the engine of the Android WebView, ends a smooth scroll when a field inside it reveals its caret, and a field does so on every letter. Older than 1.9; nothing in the page changed since 1 November. Fixed the same day: the scroll goes a frame at a time (lib/ui/glideScroll.ts, at once when the reader asked for less motion, stopped by a finger), which a caret cannot end; held by lib/ui/__tests__/glideScroll.test.ts and walked in the rebuilt export. A phone was not walked."
+  },
+  {
+   "id": "c-walk-designs",
+   "section": "Release",
+   "kind": "process",
+   "title": "The export walk caught up with 1.9's designs, and says once when an export was built with the shop off",
+   "from": "claude",
+   "asked": "2026-11-07",
+   "status": "built",
+   "decided": "2026-11-07",
+   "needsDesign": false,
+   "version": null,
+   "outcome": null,
+   "note": "The first whole walk of the 1.9 export (2026-11-07): 1391 checks passed, 28 did not, and only two of the 28 were the app: Community's new post did not fold its head (c-compose-fold, older than 1.9). Seventeen were checks still looking for screens his 1.9 picks replaced: the verse's pill (now the verse strip, his pick B; 3 checks), the plans as a list (now Continue, the season's card and picture tiles, his pick for Practice; 1 check, and 12 more in section 40 that followed from its first tap) and Settings ending in data and Purify (now data, what this device keeps, and Purify; 1). Nine were one missing flag: the export had been built without NEXT_PUBLIC_SHOP_ENABLED, which both release workflows set, so every page of the shop was a 404 while still in the bundle, and section 10's own test for a shop left out passed it by. scripts/export-walk.mjs now reads the strip, the tiles and the storage group, and says first, once, when the shop was built off, with the flags to set. On an export built as the releases build it, the nine sections that had failed walk 244 of 244. Then the whole walk on that export (the code of 0ec04070, before the lock counts and the week's race fix): 1488 of 1488, more than before because sections 40 and 47 now run to their end."
+  },
+  {
+   "id": "c-lock-counts",
+   "section": "Plus",
+   "kind": "idea",
+   "title": "Count which lock a reader taps, and which leads to a purchase",
+   "from": "claude",
+   "asked": "2026-11-06",
+   "status": "built",
+   "decided": "2026-11-07",
+   "needsDesign": false,
+   "version": null,
+   "outcome": null,
+   "note": "From the Plus brainstorm of 2026-11-06 (BRAINSTORM.md, \"What nobody can see\"), item 12 of PLAN.md. Built 2026-11-07: the upgrade sheet (components/billing/UpgradeModal.tsx) counts lock_tapped with the feature it opens on, and plus_bought when a purchase in it goes through, with the feature and the plan; each with the kind of device, kept to the day, no session, account, device id or page (lib/analytics/lockCounting.ts and lockCount.ts; the server's closed list in lib/security/schemas.ts). No migration: analytics_events takes any name. The admin reads it at Money, Subscriptions, Locks (7, 30 or 90 days: met, bought, the rate, a year or a month, by feature). Not counted: purchases on the pricing page, and restores. On the iPhone nothing is locked until the App Store sells Plus, so iPhone readers meet no lock. For his word before the release: the privacy page's paragraph saying so (drafted in app/(app)/privacy/page.tsx), and the 1.9 letter must list the change, as the page's own \"Changes to this page\" promises. Held by lib/analytics/__tests__/lockCounting.test.ts; the admin panel is drawn there, not walked (the admin needs a signed-in admin)."
   }
  ]
 }
