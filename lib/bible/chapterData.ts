@@ -2,6 +2,7 @@ import type { ChapterInterlinear } from "./chapterExtras";
 import type { CrossRefItem } from "./crossRefShape";
 import type { ChapterCommentary } from "./load";
 import type { StrongsEntry } from "./strongs";
+import { unpackInterlinear, type PackedInterlinear } from "./interlinearPack";
 
 /**
  * The reader's side of a chapter's files (app/bible-data/): the Greek, the
@@ -22,7 +23,7 @@ const KEEP = 8;
 const STRONGS = "/bible-data/strongs.json";
 const kept = new Map<string, Promise<unknown>>();
 
-function read<T>(path: string, forever = false): Promise<T | null> {
+function read<T>(path: string, forever = false, decode?: (raw: unknown) => T): Promise<T | null> {
   const hit = kept.get(path);
   if (hit) {
     // Asked for again, so it is the newest once more.
@@ -33,7 +34,9 @@ function read<T>(path: string, forever = false): Promise<T | null> {
     return hit as Promise<T | null>;
   }
   const asked = fetch(path)
-    .then((r) => (r.ok ? (r.json() as Promise<T>) : null))
+    .then((r) => (r.ok ? (r.json() as Promise<unknown>) : null))
+    // Decoded once, inside the kept promise, so every ask gets the same object.
+    .then((raw) => (raw === null ? null : decode ? decode(raw) : (raw as T)))
     .catch(() => null);
   kept.set(path, asked);
   // A miss is not kept: a phone that had no signal for one ask may have it for the next.
@@ -49,7 +52,10 @@ function read<T>(path: string, forever = false): Promise<T | null> {
 
 /** The Greek beside a chapter, or null when it has none or could not be read. */
 export function loadInterlinear(book: string, chapter: number): Promise<ChapterInterlinear | null> {
-  return read<ChapterInterlinear>(`/bible-data/interlinear/${book}/${chapter}.json`);
+  // The file packs each word as a short array (1.9, lib/bible/interlinearPack.ts).
+  return read<ChapterInterlinear>(`/bible-data/interlinear/${book}/${chapter}.json`, false, (raw) =>
+    unpackInterlinear(raw as PackedInterlinear),
+  );
 }
 
 /** Strong's lexicon, keyed by the bare number a token carries. One file for every chapter. */

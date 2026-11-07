@@ -1,7 +1,11 @@
 import { chapterInterlinear, chapterOfFile, interlinearFiles } from "@/lib/bible/chapterExtras";
+import { packInterlinear } from "@/lib/bible/interlinearPack";
 
 /**
  * The Greek beside one chapter, as a file: /bible-data/interlinear/john/1.json.
+ *
+ * Its words are packed (1.9, lib/bible/interlinearPack.ts) and unpacked as
+ * they are read, so the reader sees the objects it always did.
  *
  * `force-static` and generateStaticParams make each one a FILE, written at
  * build time, so it ships inside the apps and is read with no network, the
@@ -24,5 +28,6 @@ export async function GET(_req: Request, { params }: { params: Promise<{ book: s
   const chapter = chapterOfFile(file);
   const data = chapter === null ? null : await chapterInterlinear(book, chapter);
   if (!data) return new Response("Not found", { status: 404 });
-  return Response.json(data, { headers: { "Cache-Control": "public, max-age=3600, stale-while-revalidate=86400" } });
+  // Packed: each word a short array, not an object (lib/bible/interlinearPack.ts).
+  return Response.json(packInterlinear(data), { headers: { "Cache-Control": "public, max-age=3600, stale-while-revalidate=86400" } });
 }
