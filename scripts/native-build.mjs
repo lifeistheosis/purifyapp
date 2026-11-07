@@ -170,6 +170,14 @@ const STASH_PATHS = [
   // chapters that have one. John 1, the only chapter before, was about 2.5 MB of
   // the bundle. Appended, for the slot-index reason above.
   ["public", "audio", "read"],
+  // The shop's product photos (1.9, the full optimize: the owner's "do
+  // everything you can that's safe"), 26 of them, about 5 MB that the
+  // download carried too, since a photo does not compress. They are shown
+  // only with the shop's catalog, which comes from the website, and the apps
+  // ask the website for them (lib/media/streamed.ts; the catalog, a piece's
+  // photo and the cart make the address the website's). Appended, for the
+  // slot-index reason above.
+  ["public", "shop", "media"],
 ];
 
 function slot(i) {

@@ -8,6 +8,7 @@ import { cn } from "@/lib/cn";
 import type { BuyerOrderItem } from "@/lib/shop/buyerReads";
 import { piecePhoto } from "@/lib/shop/orderStory";
 import { useArrivingImage } from "@/lib/ui/useArrivingImage";
+import { streamedUrl } from "@/lib/media/streamed";
 
 /**
  * A piece's photograph in the shop's own lit vitrine, small, for an order's
@@ -50,7 +51,8 @@ function PiecePicture({ src, sizes }: { src: string; sizes: string }) {
   return (
     <Image
       ref={ref}
-      src={src}
+      // An order's photo, from the order itself: it streams from the website in the apps (lib/media/streamed.ts).
+      src={streamedUrl(src)}
       alt=""
       fill
       sizes={sizes}

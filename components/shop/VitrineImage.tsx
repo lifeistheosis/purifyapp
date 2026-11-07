@@ -4,6 +4,7 @@ import Image, { type ImageProps } from "next/image";
 import { useEffect, useState } from "react";
 
 import { cn } from "@/lib/cn";
+import { streamedUrl } from "@/lib/media/streamed";
 
 /**
  * A piece's photograph, brought in when it has arrived.
@@ -22,7 +23,7 @@ import { cn } from "@/lib/cn";
  * transition: the cards already put a slower transition on the same element
  * for their hover, and one element has one transition duration.
  */
-export function VitrineImage({ className, onLoad, onError, alt, ...props }: ImageProps) {
+export function VitrineImage({ className, onLoad, onError, alt, src, ...props }: ImageProps) {
   const [shown, setShown] = useState(false);
 
   useEffect(() => {
@@ -33,6 +34,8 @@ export function VitrineImage({ className, onLoad, onError, alt, ...props }: Imag
   return (
     <Image
       {...props}
+      // A shop photo streams from the website in the apps (lib/media/streamed.ts), wherever its address came from.
+      src={typeof src === "string" ? streamedUrl(src) : src}
       alt={alt}
       onLoad={(e) => {
         setShown(true);

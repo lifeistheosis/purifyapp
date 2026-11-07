@@ -32,6 +32,7 @@ import { useTranslate } from "@/components/i18n/MessagesProvider";
 import { SecureCheckoutNote } from "./SecureCheckoutNote";
 import { OrderBump } from "./OrderBump";
 import { SetFinish } from "./SetFinish";
+import { streamedUrl } from "@/lib/media/streamed";
 
 /**
  * The cart. Local until the moment of checkout: items live on the device,
@@ -238,7 +239,7 @@ export function CartClient() {
                   >
                     {item.imageUrl ? (
                       <Image
-                        src={item.imageUrl}
+                        src={streamedUrl(item.imageUrl)}
                         alt={item.imageAlt ?? item.title}
                         fill
                         sizes="96px"

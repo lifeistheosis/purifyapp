@@ -87,6 +87,11 @@ const HISTORY_MEDIA_SOURCE = "/history/media/:path*";
 // and timings, on the website alone and asked for by the apps. Its list of
 // chapters grows as chapters are read, so the list is kept a short time.
 const READ_ALOUD_SOURCE = "/audio/read/:path*";
+// The shop's product photos (1.9, the full optimize): shown only with the
+// catalog, which the apps fetch from the website anyway, so the apps ask the
+// website for them too, under a cover's headers, and no longer carry them
+// (about 5 MB of the export, scripts/native-build.mjs).
+const SHOP_MEDIA_SOURCE = "/shop/media/:path*";
 const READ_ALOUD_LIST = "/audio/read/index.json";
 
 // Native local-first build target. `BUILD_TARGET=android|ios next build` produces
@@ -179,6 +184,7 @@ const nextConfig: NextConfig = isNative
           { source: READ_COVERS_SOURCE, headers: streamedMediaHeaders },
           { source: HISTORY_MEDIA_SOURCE, headers: streamedMediaHeaders },
           { source: READ_ALOUD_SOURCE, headers: streamedMediaHeaders },
+          { source: SHOP_MEDIA_SOURCE, headers: streamedMediaHeaders },
           { source: READ_ALOUD_LIST, headers: [{ key: "Cache-Control", value: "public, max-age=300" }] },
         ];
       },

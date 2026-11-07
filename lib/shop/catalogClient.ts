@@ -22,6 +22,7 @@ import {
   isVerifiedBuyer,
   type PurchasedOrder,
 } from "@/lib/shop/reviews";
+import { streamedDeep } from "@/lib/media/streamed";
 import { createClient } from "@/lib/supabase/client";
 
 export type FetchProductsParams = {
@@ -66,7 +67,8 @@ async function getJson<T>(path: string): Promise<T> {
     err.status = res.status;
     throw err;
   }
-  const data = (await res.json()) as T;
+  // The catalog's photos stream in the apps (1.9): their addresses made the website's.
+  const data = streamedDeep((await res.json()) as T);
   readCache.set(path, { at: Date.now(), data });
   return data;
 }

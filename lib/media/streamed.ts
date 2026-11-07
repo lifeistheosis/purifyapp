@@ -33,7 +33,7 @@ import { SITE_URL } from "@/lib/site";
  * fails to load would leave a dead Play button; a cover that fails to load
  * shows the bundled plate instead (components/player/CoverArt.tsx).
  */
-export const STREAMED_ROOTS = ["/audio/chants/", "/covers/", "/history/media/", "/audio/read/"] as const;
+export const STREAMED_ROOTS = ["/audio/chants/", "/covers/", "/history/media/", "/audio/read/", "/shop/media/"] as const;
 
 /** A file the apps do not carry, asked of the website. */
 export function isStreamedMedia(path: string): boolean {
@@ -57,4 +57,25 @@ export function avifFor(src: string | null | undefined): string | null {
 /** The address to load: the website's in the apps, the page's own on the web. */
 export function streamedUrl(path: string, native: boolean = isNativeClient()): string {
   return native && isStreamedMedia(path) ? `${SITE_URL}${path}` : path;
+}
+
+/**
+ * A whole answer with every streamed address in it made the website's, for a
+ * reply whose addresses are scattered through it: the shop's catalog, whose
+ * pictures stream since 1.9 (lib/shop/catalogClient.ts). The value as it is
+ * on the website; a new copy only where something changed in the apps.
+ */
+export function streamedDeep<T>(value: T, native: boolean = isNativeClient()): T {
+  if (!native) return value;
+  const walk = (v: unknown): unknown => {
+    if (typeof v === "string") return isStreamedMedia(v) ? `${SITE_URL}${v}` : v;
+    if (Array.isArray(v)) return v.map(walk);
+    if (v && typeof v === "object") {
+      const out: Record<string, unknown> = {};
+      for (const [k, x] of Object.entries(v)) out[k] = walk(x);
+      return out;
+    }
+    return v;
+  };
+  return walk(value) as T;
 }

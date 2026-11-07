@@ -38,6 +38,7 @@ import { useAsyncData } from "@/lib/shop/useAsyncData";
 import { useCartInsights, useServerClock } from "@/lib/shop/useCartInsights";
 import { productHref } from "@/lib/shop/productHref";
 import { useTranslate } from "@/components/i18n/MessagesProvider";
+import { streamedUrl } from "@/lib/media/streamed";
 
 export function CartDrawer() {
   const { t } = useTranslate();
@@ -181,7 +182,7 @@ export function CartDrawer() {
                       >
                         {item.imageUrl ? (
                           <Image
-                            src={item.imageUrl}
+                            src={streamedUrl(item.imageUrl)}
                             alt={item.imageAlt ?? item.title}
                             fill
                             sizes="64px"
