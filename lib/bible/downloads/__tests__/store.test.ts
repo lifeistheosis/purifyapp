@@ -173,6 +173,36 @@ describe("taking a Bible off the phone", () => {
     expect(savedBibles()[RU]).toBeUndefined();
     expect(readBibleChoice()).toBeNull();
   });
+
+  it("tapped while it downloads, stops it and waits for it, so no book is saved after the folder has gone", async () => {
+    // A phone that takes a moment to write each book: Remove is tapped while
+    // three are being written, and they land after it unless it waits.
+    let writing = 0;
+    const slowPhone = {
+      ...plugin,
+      Filesystem: {
+        ...plugin.Filesystem,
+        writeFile: async (o: Parameters<typeof plugin.Filesystem.writeFile>[0]) => {
+          writing += 1;
+          await new Promise((r) => setTimeout(r, 20));
+          writing -= 1;
+          return plugin.Filesystem.writeFile(o);
+        },
+      },
+    } as typeof plugin;
+    const going = downloadBible(RU, { fetcher: website(), plugin: slowPhone, native: true });
+    // Into the download, with books written and three being written now.
+    for (let i = 0; i < 200 && (files.size === 0 || writing === 0); i++) await new Promise((r) => setTimeout(r, 2));
+    expect(files.size).toBeGreaterThan(0);
+    expect(writing).toBeGreaterThan(0);
+    await removeBible(RU, slowPhone);
+    expect(await going).toBe("cancelled");
+    // Nothing comes after: wait as long as a few more books would take.
+    await new Promise((r) => setTimeout(r, 60));
+    expect(files.size).toBe(0);
+    expect(savedBibles()[RU]).toBeUndefined();
+    expect(bibleDownload(RU)).toBeNull();
+  });
 });
 
 describe("reading a book for a page", () => {

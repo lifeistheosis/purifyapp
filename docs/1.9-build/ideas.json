@@ -1308,7 +1308,8 @@
    "decided": "2026-11-06",
    "needsDesign": true,
    "version": null,
-   "outcome": null
+   "outcome": null,
+   "note": "Read over 2026-11-07 and one fault mended in the downloads (lib/bible/downloads/store.ts): Remove tapped while a Bible downloaded left up to three books on the phone that no list named, written after their folder had gone. A download is now over only once its three workers have all stopped, a book written whole is kept for the next download even when the download was stopped meanwhile, and Remove waits for the download it stops. Held by lib/bible/downloads/__tests__/store.test.ts, on a phone that takes a moment to write (fails three times in three without the wait)."
   },
   {
    "id": "c-test-clock",

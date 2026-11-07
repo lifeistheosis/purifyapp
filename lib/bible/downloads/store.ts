@@ -124,6 +124,8 @@ export function isSaved(id: BibleId): boolean {
 // ---- Downloads under way ----------------------------------------------------
 
 const downloads = new Map<BibleId, { progress: BibleDownload; controller: AbortController | null }>();
+/** Each download's run, until it has settled: a removal waits for it (removeBible). */
+const runs = new Map<BibleId, Promise<unknown>>();
 const listeners = new Set<() => void>();
 
 function changed(): void {
@@ -219,9 +221,22 @@ async function fetchText(url: string, fetcher: Fetch, signal: AbortSignal, cache
  */
 export async function downloadBible(
   id: BibleId,
-  { fetcher = (u, i) => fetch(u, i), plugin, native = isNativeClient() }: { fetcher?: Fetch; plugin?: Plugin; native?: boolean } = {},
+  options: { fetcher?: Fetch; plugin?: Plugin; native?: boolean } = {},
 ): Promise<"saved" | "failed" | "cancelled" | "running"> {
   if (downloads.get(id)?.progress.state === "downloading") return "running";
+  const run = download(id, options);
+  runs.set(id, run);
+  try {
+    return await run;
+  } finally {
+    if (runs.get(id) === run) runs.delete(id);
+  }
+}
+
+async function download(
+  id: BibleId,
+  { fetcher = (u, i) => fetch(u, i), plugin, native = isNativeClient() }: { fetcher?: Fetch; plugin?: Plugin; native?: boolean },
+): Promise<"saved" | "failed" | "cancelled"> {
   const controller = new AbortController();
   const signal = controller.signal;
   setProgress(id, { state: "downloading", done: 0, total: downloadableBible(id)?.bytes ?? 0 }, controller);
@@ -274,15 +289,28 @@ export async function downloadBible(
             throw new Stopped(whySaveFailed(e));
           }
         }
-        if (signal.aborted) throw new Stopped("cancelled");
+        // Written whole and checked: it is on the phone, and kept for the next
+        // download, even if this one was stopped while it was being written.
         mine.done.push(entry.book);
         writeJson(PARTIAL_KEY, { ...(readJson<Record<string, unknown>>(PARTIAL_KEY) ?? {}), [id]: mine });
         bytes += entry.bytes;
+        if (signal.aborted) throw new Stopped("cancelled");
         setProgress(id, { state: "downloading", done: bytes, total: manifest.bytes }, controller);
       }
     };
     // Three books at a time: quick on a good signal, gentle on a poor one.
-    await Promise.all([worker(), worker(), worker()]);
+    // The first to stop stops the others, and the download is over only once
+    // all three have: a book still being written when it was stopped lands
+    // after, and a removal waiting on the download (removeBible) must come
+    // after it, or the book is left on the phone where no list names it.
+    let first: unknown = null;
+    const settled = (w: Promise<void>) =>
+      w.catch((e: unknown) => {
+        first ??= e;
+        controller.abort();
+      });
+    await Promise.all([worker(), worker(), worker()].map(settled));
+    if (first) throw first;
 
     const all = saved();
     all[id] = { version: manifest.version, bytes: manifest.bytes, books: manifest.books.map((b) => b.book), at: new Date().toISOString() };
@@ -319,9 +347,15 @@ export function dismissBibleDownload(id: BibleId): void {
   if (downloads.get(id)?.progress.state === "failed") setProgress(id, null);
 }
 
-/** Take a Bible off the phone. The reader who reads in it goes back to the English. */
+/**
+ * Take a Bible off the phone. The reader who reads in it goes back to the
+ * English. A download under way is stopped first and waited for: a book it
+ * was saving as Remove was tapped would otherwise be written after the folder
+ * had gone, making it again, a book on the phone that no list names.
+ */
 export async function removeBible(id: BibleId, plugin?: Plugin): Promise<void> {
   cancelBibleDownload(id);
+  await runs.get(id)?.catch(() => {});
   const fs = plugin ?? (await import("@capacitor/filesystem"));
   try {
     await fs.Filesystem.rmdir({ path: bibleFolder(id), directory: home(fs), recursive: true });
@@ -394,6 +428,7 @@ export function readBibleBook(
 export function resetBibleStoreForTests(): void {
   books.clear();
   downloads.clear();
+  runs.clear();
   snapshot = null;
   savedRaw = null;
 }
