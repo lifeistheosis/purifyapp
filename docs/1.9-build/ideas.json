@@ -1184,7 +1184,7 @@
    "needsDesign": true,
    "version": null,
    "outcome": null,
-   "note": "Plus history to become something else, to be defined by him"
+   "note": "Plus history to become something else, to be defined by him. 2026-11-07: the timeline's list shows every picture to everyone; no plain/full-dress switch exists in the code (it was a mockup option); the event page's pan and extra pictures, Plus today, go free with the Thread (item 20)"
   },
   {
    "id": "e-full-dress-always",
@@ -1197,7 +1197,8 @@
    "decided": "2026-11-06",
    "needsDesign": true,
    "version": null,
-   "outcome": null
+   "outcome": null,
+   "note": "2026-11-07: the timeline's list shows every picture to everyone; no plain/full-dress switch exists in the code (it was a mockup option); the event page's pan and extra pictures, Plus today, go free with the Thread (item 20)"
   },
   {
    "id": "e-keeping-revamp",

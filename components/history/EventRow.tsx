@@ -13,10 +13,18 @@
 // event's peek sheet (its picture, its summary and the way to the full
 // account), on a computer it chooses the event for the rail beside the line.
 // A modified click (a new tab) is left to the browser.
+//
+// With its picture (1.9, the owner's pick for the timeline, "a mix of A and
+// B": "the prominent historical events, we're gonna make it big like A, but
+// for smaller ones, do B", and pictures for everyone). An era-defining event
+// (importance 1, as the registry ranks them) carries its picture large over
+// its words; a major or notable one, small beside them (EventThumb). Still a
+// row on the line, the whole of it the tap target; no picture, no frame.
 
 import Link from "next/link";
 import type { MouseEvent } from "react";
 
+import { EventThumb } from "@/components/history/EventThumb";
 import { TimelineNode } from "@/components/ui/icons/TimelineNode";
 import { cn } from "@/lib/cn";
 import type { HistoryEventMeta } from "@/lib/history/events";
@@ -60,12 +68,20 @@ export function EventRow({
           "hover:bg-paper/[0.03] motion-safe:transition-colors",
         )}
       >
-        <p className="font-sans text-caption font-semibold text-paper/60 tabular-nums">
-          {event.displayDate}
-          {event.region ? <span className="font-normal text-paper/50"> · {event.region}</span> : null}
-        </p>
-        <h3 className="mt-1 text-lede leading-snug text-paper md:text-title-sm">{event.title}</h3>
-        <p className="mt-1 line-clamp-2 font-sans text-detail leading-[1.55] text-paper/65">{event.preview}</p>
+        {major ? (
+          <EventThumb event={event} frame="wide" frameClassName="mb-3 aspect-[16/10] w-full rounded-[14px]" sizes="(min-width: 768px) 560px, 92vw" />
+        ) : null}
+        <div className="flex items-start gap-3">
+          <div className="min-w-0 flex-1">
+            <p className="font-sans text-caption font-semibold text-paper/60 tabular-nums">
+              {event.displayDate}
+              {event.region ? <span className="font-normal text-paper/50"> · {event.region}</span> : null}
+            </p>
+            <h3 className="mt-1 text-lede leading-snug text-paper md:text-title-sm">{event.title}</h3>
+            <p className="mt-1 line-clamp-2 font-sans text-detail leading-[1.55] text-paper/65">{event.preview}</p>
+          </div>
+          {major ? null : <EventThumb event={event} frame="square" frameClassName="mt-1 size-16 shrink-0 rounded-[12px]" sizes="64px" />}
+        </div>
       </Link>
     </li>
   );
