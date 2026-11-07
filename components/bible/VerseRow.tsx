@@ -704,8 +704,8 @@ export function VerseRow({
  showDropCap &&
  "overflow-hidden first-letter:float-left first-letter:mr-2.5 first-letter:mt-[0.06em] first-letter:font-serif first-letter:font-normal first-letter:not-italic first-letter:text-[2.6em] first-letter:leading-[0.78]",
  dragging && "select-none",
- showTools &&
- "bg-gold/[0.05] rounded-sm shadow-[inset_0_0_0_1px_rgba(183,176,163,0.35)]",
+ // 1.9: no box round the selected verse; its words wear the ghost
+ // highlight below (.verse-ghost, app/globals.css).
  )}
  // The app-wide hold-to-copy stands aside here: a verse has its own pill.
  data-own-press=""
@@ -773,10 +773,18 @@ export function VerseRow({
    look like ink on the text, not a callout border. Word-level
    highlights (the colour's `mark`, a step stronger) still read
    inside the wash. A change of colour fades across. */}
+ {/* Selected (1.9, the verse strip): a ghost of a highlight, the same
+   stroke line by line in a faint white, so the verse reads chosen, not
+   yet marked; a verse already highlighted keeps its colour with the
+   ghost's edge. Where its words open their Greek, they wear a faint
+   dotted line (.verse-ghost-words). */}
  <span
  className={cn(
- ann.highlighted &&
- "box-decoration-clone rounded-[4px] px-[3px] -mx-[3px] py-[0.1em] bg-[var(--hl-verse)] motion-safe:transition-[background-color] motion-safe:duration-200",
+ (ann.highlighted || showTools) &&
+ "box-decoration-clone rounded-[4px] px-[3px] -mx-[3px] py-[0.1em] motion-safe:transition-[background-color,box-shadow] motion-safe:duration-200",
+ ann.highlighted && "bg-[var(--hl-verse)]",
+ showTools && (ann.highlighted ? "verse-ghost-edge" : "verse-ghost"),
+ showTools && greekAvailable && "verse-ghost-words",
  )}
  >
  {hasEnglishTokens

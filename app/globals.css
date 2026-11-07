@@ -2804,6 +2804,37 @@ html[data-reading-mode="parchment"] [data-hl-color]:not(.dark-island *) {
  --hl-swatch: var(--hl-swatch-l);
 }
 
+/* The selected verse (1.9, the verse strip, the owner's "ghost
+   highlights"): a ghost of a highlight. The words wear a faint white wash,
+   line by line with a highlight's own rounded stroke, and a breath of light
+   at its edge; no box round the verse. A verse already highlighted keeps its
+   colour and takes only the ghost's edge. Where a tapped word opens its
+   Greek, the words wear a faint dotted line. Parchment's are its ink. */
+.verse-ghost {
+ background-color: rgb(255 255 255 / 0.085);
+ box-shadow: 0 0 0 1px rgb(255 255 255 / 0.05), 0 0 22px rgb(255 255 255 / 0.06);
+}
+.verse-ghost-edge {
+ box-shadow: 0 0 0 1px rgb(255 255 255 / 0.3), 0 0 22px rgb(255 255 255 / 0.06);
+}
+.verse-ghost-words [data-word-idx] {
+ text-decoration-line: underline;
+ text-decoration-style: dotted;
+ text-decoration-color: rgb(255 255 255 / 0.24);
+ text-decoration-thickness: 1.5px;
+ text-underline-offset: 5px;
+}
+html[data-reading-mode="parchment"] .verse-ghost:not(.dark-island *) {
+ background-color: rgb(43 35 23 / 0.07);
+ box-shadow: 0 0 0 1px rgb(43 35 23 / 0.05);
+}
+html[data-reading-mode="parchment"] .verse-ghost-edge:not(.dark-island *) {
+ box-shadow: 0 0 0 1px rgb(43 35 23 / 0.3);
+}
+html[data-reading-mode="parchment"] .verse-ghost-words [data-word-idx]:not(.dark-island *) {
+ text-decoration-color: rgb(43 35 23 / 0.3);
+}
+
 /* Pulse the study-rail section when its hash is the URL target. */
 .rail-section:target {
  animation: rail-pulse 1.4s ease-out;
