@@ -1383,7 +1383,7 @@
    "needsDesign": false,
    "version": null,
    "outcome": null,
-   "note": "components/florilegium/FlorilegiumGate.tsx starts entitled = true; found while mapping the page for the revamp"
+   "note": "components/florilegium/FlorilegiumGate.tsx starts entitled = true; found while mapping the page for the revamp; the flash fixed 2026-11-07: the gate now opens with what this device last knew (useExpectedPlusFeatures), so a reader the device last knew without Plus meets the card at once, while a subscriber or a device that never asked still opens on the hub until the live answer. Not walked: Plus can only be enforced inside the real app shell, which dev cannot be. The other half, a lapsed reader's own gatherings behind the card, is for his word"
   },
   {
    "id": "c-flor-push-errors",

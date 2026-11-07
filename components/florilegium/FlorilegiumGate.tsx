@@ -7,6 +7,7 @@ import { FlorilegiumDetail } from "@/components/florilegium/FlorilegiumDetail";
 import { PlusGate } from "@/components/florilegium/PlusGate";
 import { getClientEntitlements } from "@/lib/entitlements/client";
 import { onEntitlementsChanged } from "@/lib/entitlements/refresh";
+import { useExpectedPlusFeatures } from "@/lib/entitlements/usePlusFeatures";
 
 /**
  * Resolves the Florilegium's entitlement AT RUNTIME, not at render time on the
@@ -30,15 +31,22 @@ import { onEntitlementsChanged } from "@/lib/entitlements/refresh";
  * non-subscriber with a second of something they will lose; erring closed
  * flashes a paywall at a paying subscriber every time they open the page, which
  * is the worse of the two and the one readers report.
+ *
+ * From 1.9 (ideas.json c-flor-gate-flash) it errs with what this device last
+ * knew (useExpectedPlusFeatures): a reader the device last knew without Plus
+ * meets the card at once, not the hub for a second first; a subscriber, or a
+ * device that never asked, still opens on the hub. The live answer decides.
  */
 export function FlorilegiumGate({ detailId }: { detailId?: string }) {
-  const [entitled, setEntitled] = useState(true);
+  const expected = useExpectedPlusFeatures();
+  const [answer, setAnswer] = useState<boolean | null>(null);
+  const entitled = answer ?? expected ?? true;
 
   useEffect(() => {
     let alive = true;
     const resolve = () =>
       getClientEntitlements().then((e) => {
-        if (alive) setEntitled(e.plusFeatures);
+        if (alive) setAnswer(e.plusFeatures);
       });
     void resolve();
     // Re-ask after a purchase, so the hub the reader just paid for is not still
