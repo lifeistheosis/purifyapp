@@ -4982,5 +4982,13 @@
   "bible.languageOffer.switch": "Lumipat sa {native}",
   "bible.languageOffer.notNow": "Hindi ngayon",
   "bible.languageOffer.never": "Huwag nang itanong muli",
-  "bible.downloads.failedSave": "Hindi ito ma-save sa device na ito. Subukang muli."
+  "bible.downloads.failedSave": "Hindi ito ma-save sa device na ito. Subukang muli.",
+  "settings.storage": "Sa device na ito",
+  "settings.storageHint": "Ang nakatago rito para mabasa at mapakinggan nang walang signal.",
+  "settings.storageTotal": "{size} ang nakatago rito, para mabasa at mapakinggan nang walang signal.",
+  "settings.storageEmpty": "Wala pang nakatago rito. Mag-download ng Bibliya mula sa mga salin sa reader, o mag-save ng aklat para mapakinggan nang offline mula sa player.",
+  "settings.storageBible": "Bibliya",
+  "settings.storageListening": "Para mapakinggan nang offline",
+  "settings.storageRemoveBook": "Alisin ang {book} sa device na ito",
+  "bible.downloads.removeAria": "Alisin ang {name} sa device na ito"
 }

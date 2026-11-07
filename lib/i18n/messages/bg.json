@@ -4982,5 +4982,13 @@
   "bible.languageOffer.switch": "Превключване на {native}",
   "bible.languageOffer.notNow": "Не сега",
   "bible.languageOffer.never": "Да не се пита повече",
-  "bible.downloads.failedSave": "Не можа да се запази на това устройство. Опитайте отново."
+  "bible.downloads.failedSave": "Не можа да се запази на това устройство. Опитайте отново.",
+  "settings.storage": "На това устройство",
+  "settings.storageHint": "Какво се пази тук, за да четете и слушате без мрежа.",
+  "settings.storageTotal": "Тук се пазят {size}, за да четете и слушате без мрежа.",
+  "settings.storageEmpty": "Тук още нищо не се пази. Изтеглете Библия от преводите в четеца или запазете книга за слушане без мрежа от плейъра.",
+  "settings.storageBible": "Библия",
+  "settings.storageListening": "За слушане без мрежа",
+  "settings.storageRemoveBook": "Премахване на {book} от това устройство",
+  "bible.downloads.removeAria": "Премахване на {name} от това устройство"
 }

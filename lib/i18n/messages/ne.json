@@ -4982,5 +4982,13 @@
   "bible.languageOffer.switch": "{native} मा बदल्नुहोस्",
   "bible.languageOffer.notNow": "अहिले होइन",
   "bible.languageOffer.never": "फेरि नसोध्नुहोस्",
-  "bible.downloads.failedSave": "यो उपकरणमा सुरक्षित गर्न सकिएन। फेरि प्रयास गर्नुहोस्।"
+  "bible.downloads.failedSave": "यो उपकरणमा सुरक्षित गर्न सकिएन। फेरि प्रयास गर्नुहोस्।",
+  "settings.storage": "यो उपकरणमा",
+  "settings.storageHint": "जडानबिना पढ्न र सुन्न यहाँ राखिएका कुराहरू।",
+  "settings.storageTotal": "जडानबिना पढ्न र सुन्न यहाँ {size} राखिएको छ।",
+  "settings.storageEmpty": "यहाँ अहिलेसम्म केही राखिएको छैन। पाठकका अनुवादहरूबाट बाइबल डाउनलोड गर्नुहोस्, वा प्लेयरबाट कुनै पुस्तक अफलाइन सुन्न सुरक्षित गर्नुहोस्।",
+  "settings.storageBible": "बाइबल",
+  "settings.storageListening": "अफलाइन सुन्न",
+  "settings.storageRemoveBook": "{book} यो उपकरणबाट हटाउनुहोस्",
+  "bible.downloads.removeAria": "{name} यो उपकरणबाट हटाउनुहोस्"
 }

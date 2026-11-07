@@ -5002,5 +5002,13 @@
   "bible.languageOffer.switch": "Switch to {native}",
   "bible.languageOffer.notNow": "Not now",
   "bible.languageOffer.never": "Never ask again",
-  "bible.downloads.failedSave": "Could not save it on this device. Try again."
+  "bible.downloads.failedSave": "Could not save it on this device. Try again.",
+  "settings.storage": "On this device",
+  "settings.storageHint": "What is kept here to read and listen to without a signal.",
+  "settings.storageTotal": "{size} kept here, to read and listen to without a signal.",
+  "settings.storageEmpty": "Nothing is kept here yet. Download a Bible from the reader's translations, or save a book to listen offline from the player.",
+  "settings.storageBible": "Bible",
+  "settings.storageListening": "To listen offline",
+  "settings.storageRemoveBook": "Remove {book} from this device",
+  "bible.downloads.removeAria": "Remove {name} from this device"
 }

@@ -5071,5 +5071,13 @@
   "bible.languageOffer.switch": "Treci la {native}",
   "bible.languageOffer.notNow": "Nu acum",
   "bible.languageOffer.never": "Nu mai întreba",
-  "bible.downloads.failedSave": "Nu a putut fi salvată pe acest dispozitiv. Încearcă din nou."
+  "bible.downloads.failedSave": "Nu a putut fi salvată pe acest dispozitiv. Încearcă din nou.",
+  "settings.storage": "Pe acest dispozitiv",
+  "settings.storageHint": "Ce se păstrează aici pentru citit și ascultat fără semnal.",
+  "settings.storageTotal": "{size} păstrați aici, pentru citit și ascultat fără semnal.",
+  "settings.storageEmpty": "Încă nu e nimic păstrat aici. Descarcă o Biblie din traducerile cititorului sau salvează o carte pentru ascultare offline din player.",
+  "settings.storageBible": "Biblie",
+  "settings.storageListening": "Pentru ascultare offline",
+  "settings.storageRemoveBook": "Șterge {book} de pe acest dispozitiv",
+  "bible.downloads.removeAria": "Șterge {name} de pe acest dispozitiv"
 }

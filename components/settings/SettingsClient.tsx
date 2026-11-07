@@ -116,6 +116,7 @@ import { resolveUser } from "@/lib/supabase/resolveUser";
 
 import { FirstFocus, useOnboardedAgain } from "./FirstFocus";
 import { ButtonRow, LinkRow, Plate, Row, Section, Switch, Track } from "./LitPanel";
+import { StorageSection } from "./StorageSection";
 import { ReaderSizeRow } from "./ReaderSize";
 import { ReadingModePages } from "./ReadingModePages";
 import { AlphaGlyph, FacesGlyph, GlobeGlyph } from "./glyphs";
@@ -585,6 +586,8 @@ function Body() {
       <WidgetSection />
 
       <DataSection signedIn={signedIn} />
+      {/* What is kept on this phone, its size and Remove (1.9): the apps only. */}
+      <StorageSection />
       <AboutSection developer={reader.known && isDeveloperEmail(reader.email ?? "")} />
       {signedIn ? <SignOutSection /> : null}
     </>

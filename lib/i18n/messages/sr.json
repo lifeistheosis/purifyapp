@@ -5062,5 +5062,13 @@
   "bible.languageOffer.switch": "Пређи на {native}",
   "bible.languageOffer.notNow": "Не сада",
   "bible.languageOffer.never": "Не питај више",
-  "bible.downloads.failedSave": "Није могло да се сачува на овом уређају. Покушајте поново."
+  "bible.downloads.failedSave": "Није могло да се сачува на овом уређају. Покушајте поново.",
+  "settings.storage": "На овом уређају",
+  "settings.storageHint": "Шта се чува овде да бисте читали и слушали ван мреже.",
+  "settings.storageTotal": "Овде се чува {size}, да бисте читали и слушали ван мреже.",
+  "settings.storageEmpty": "Овде још ништа није сачувано. Преузмите Библију из превода у читачу или сачувајте књигу за слушање ван мреже у плејеру.",
+  "settings.storageBible": "Библија",
+  "settings.storageListening": "За слушање ван мреже",
+  "settings.storageRemoveBook": "Уклони {book} са овог уређаја",
+  "bible.downloads.removeAria": "Уклони {name} са овог уређаја"
 }

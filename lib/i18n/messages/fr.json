@@ -5010,5 +5010,13 @@
   "bible.languageOffer.switch": "Utiliser {native}",
   "bible.languageOffer.notNow": "Pas maintenant",
   "bible.languageOffer.never": "Ne plus demander",
-  "bible.downloads.failedSave": "Impossible de l'enregistrer sur cet appareil. Réessayez."
+  "bible.downloads.failedSave": "Impossible de l'enregistrer sur cet appareil. Réessayez.",
+  "settings.storage": "Sur cet appareil",
+  "settings.storageHint": "Ce qui est gardé ici pour lire et écouter sans connexion.",
+  "settings.storageTotal": "{size} gardés ici, pour lire et écouter sans connexion.",
+  "settings.storageEmpty": "Rien n'est encore gardé ici. Téléchargez une Bible depuis les traductions du lecteur, ou enregistrez un livre pour l'écouter hors ligne depuis le lecteur audio.",
+  "settings.storageBible": "Bible",
+  "settings.storageListening": "Pour écouter hors ligne",
+  "settings.storageRemoveBook": "Retirer {book} de cet appareil",
+  "bible.downloads.removeAria": "Retirer {name} de cet appareil"
 }

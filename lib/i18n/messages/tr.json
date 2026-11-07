@@ -4982,5 +4982,13 @@
   "bible.languageOffer.switch": "{native} diline geç",
   "bible.languageOffer.notNow": "Şimdi değil",
   "bible.languageOffer.never": "Bir daha sorma",
-  "bible.downloads.failedSave": "Bu cihaza kaydedilemedi. Yeniden deneyin."
+  "bible.downloads.failedSave": "Bu cihaza kaydedilemedi. Yeniden deneyin.",
+  "settings.storage": "Bu cihazda",
+  "settings.storageHint": "Bağlantı olmadan okumak ve dinlemek için burada tutulanlar.",
+  "settings.storageTotal": "Bağlantı olmadan okumak ve dinlemek için burada {size} tutuluyor.",
+  "settings.storageEmpty": "Burada henüz bir şey yok. Okuyucudaki çevirilerden bir Kutsal Kitap indirin ya da oynatıcıdan bir kitabı çevrimdışı dinlemek için kaydedin.",
+  "settings.storageBible": "Kutsal Kitap",
+  "settings.storageListening": "Çevrimdışı dinlemek için",
+  "settings.storageRemoveBook": "{book} kitabını bu cihazdan kaldır",
+  "bible.downloads.removeAria": "{name} öğesini bu cihazdan kaldır"
 }

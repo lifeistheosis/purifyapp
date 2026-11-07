@@ -4982,5 +4982,13 @@
   "bible.languageOffer.switch": "Αλλαγή σε {native}",
   "bible.languageOffer.notNow": "Όχι τώρα",
   "bible.languageOffer.never": "Να μην ξαναρωτηθώ",
-  "bible.downloads.failedSave": "Δεν ήταν δυνατή η αποθήκευση σε αυτή τη συσκευή. Δοκιμάστε ξανά."
+  "bible.downloads.failedSave": "Δεν ήταν δυνατή η αποθήκευση σε αυτή τη συσκευή. Δοκιμάστε ξανά.",
+  "settings.storage": "Σε αυτή τη συσκευή",
+  "settings.storageHint": "Τι φυλάσσεται εδώ για ανάγνωση και ακρόαση χωρίς σύνδεση.",
+  "settings.storageTotal": "{size} φυλάσσονται εδώ, για ανάγνωση και ακρόαση χωρίς σύνδεση.",
+  "settings.storageEmpty": "Τίποτα δεν φυλάσσεται ακόμη εδώ. Κατεβάστε μια Βίβλο από τις μεταφράσεις του αναγνώστη ή αποθηκεύστε ένα βιβλίο για ακρόαση εκτός σύνδεσης από το πρόγραμμα αναπαραγωγής.",
+  "settings.storageBible": "Βίβλος",
+  "settings.storageListening": "Για ακρόαση εκτός σύνδεσης",
+  "settings.storageRemoveBook": "Αφαίρεση του {book} από αυτή τη συσκευή",
+  "bible.downloads.removeAria": "Αφαίρεση του {name} από αυτή τη συσκευή"
 }

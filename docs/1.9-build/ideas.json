@@ -566,11 +566,12 @@
    "title": "A storage view",
    "from": "claude",
    "asked": "2026-11-06",
-   "status": "approved",
+   "status": "built",
    "decided": "2026-11-06",
    "needsDesign": false,
    "version": null,
-   "outcome": null
+   "outcome": null,
+   "note": "Built 2026-11-07: Settings, On this device (the apps only): the Bibles downloaded and the books saved to listen offline, each with its size and Remove, the whole in one line at the top (components/settings/StorageSection.tsx). Words in 21 languages. Not in the search, since the website has no such section"
   },
   {
    "id": "s3-04",
@@ -583,7 +584,8 @@
    "decided": "2026-11-06",
    "needsDesign": false,
    "version": null,
-   "outcome": null
+   "outcome": null,
+   "note": "Waits on a design call, 2026-11-07: a recording's size is known only once saved (the read-aloud list carries each chapter's length in seconds, not its bytes), so saying it before saving means either a guess from a bitrate or asking the website for each file first; and the one-tap save mark is his pick of 2026-10-27, so a step before it changes that design"
   },
   {
    "id": "s3-05",

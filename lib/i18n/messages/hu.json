@@ -4982,5 +4982,13 @@
   "bible.languageOffer.switch": "Váltás erre: {native}",
   "bible.languageOffer.notNow": "Most nem",
   "bible.languageOffer.never": "Ne kérdezze többé",
-  "bible.downloads.failedSave": "Nem sikerült menteni ezen az eszközön. Próbáld újra."
+  "bible.downloads.failedSave": "Nem sikerült menteni ezen az eszközön. Próbáld újra.",
+  "settings.storage": "Ezen az eszközön",
+  "settings.storageHint": "Ami itt van, hogy jel nélkül is olvashass és hallgathass.",
+  "settings.storageTotal": "{size} van itt, hogy jel nélkül is olvashass és hallgathass.",
+  "settings.storageEmpty": "Itt még nincs semmi. Tölts le egy Bibliát az olvasó fordításai közül, vagy ments el egy könyvet offline hallgatásra a lejátszóban.",
+  "settings.storageBible": "Biblia",
+  "settings.storageListening": "Offline hallgatásra",
+  "settings.storageRemoveBook": "{book} eltávolítása erről az eszközről",
+  "bible.downloads.removeAria": "{name} eltávolítása erről az eszközről"
 }

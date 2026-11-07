@@ -4980,5 +4980,13 @@
   "bible.languageOffer.switch": "Ganti ke {native}",
   "bible.languageOffer.notNow": "Nanti saja",
   "bible.languageOffer.never": "Jangan tanya lagi",
-  "bible.downloads.failedSave": "Tidak dapat disimpan di perangkat ini. Coba lagi."
+  "bible.downloads.failedSave": "Tidak dapat disimpan di perangkat ini. Coba lagi.",
+  "settings.storage": "Di perangkat ini",
+  "settings.storageHint": "Yang disimpan di sini untuk dibaca dan didengarkan tanpa sinyal.",
+  "settings.storageTotal": "{size} disimpan di sini, untuk dibaca dan didengarkan tanpa sinyal.",
+  "settings.storageEmpty": "Belum ada yang disimpan di sini. Unduh Alkitab dari terjemahan di pembaca, atau simpan sebuah kitab untuk didengarkan offline dari pemutar.",
+  "settings.storageBible": "Alkitab",
+  "settings.storageListening": "Untuk didengarkan offline",
+  "settings.storageRemoveBook": "Hapus {book} dari perangkat ini",
+  "bible.downloads.removeAria": "Hapus {name} dari perangkat ini"
 }

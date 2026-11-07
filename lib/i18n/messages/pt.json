@@ -4987,5 +4987,13 @@
   "bible.languageOffer.switch": "Mudar para {native}",
   "bible.languageOffer.notNow": "Agora não",
   "bible.languageOffer.never": "Não voltar a perguntar",
-  "bible.downloads.failedSave": "Não foi possível guardar neste dispositivo. Tente novamente."
+  "bible.downloads.failedSave": "Não foi possível guardar neste dispositivo. Tente novamente.",
+  "settings.storage": "Neste dispositivo",
+  "settings.storageHint": "O que fica guardado aqui para ler e ouvir sem ligação.",
+  "settings.storageTotal": "{size} guardados aqui, para ler e ouvir sem ligação.",
+  "settings.storageEmpty": "Ainda não há nada guardado aqui. Descarregue uma Bíblia nas traduções do leitor, ou guarde um livro para ouvir offline a partir do leitor de áudio.",
+  "settings.storageBible": "Bíblia",
+  "settings.storageListening": "Para ouvir offline",
+  "settings.storageRemoveBook": "Remover {book} deste dispositivo",
+  "bible.downloads.removeAria": "Remover {name} deste dispositivo"
 }
