@@ -621,7 +621,7 @@
    "needsDesign": false,
    "version": null,
    "outcome": null,
-   "note": "Found built on 2026-11-07, since 1.7: while a chapter is read aloud, the verse being read keeps its full strength, the rest steps back, and it is moved back to the reading place when it leaves it, unless the reader has just scrolled (components/bible/ReadAloud.tsx, ReadAloudFollow). Walked 2026-11-07 on John 1 at phone size, in verses and in paragraphs: verse 1, 2, then 3 lit in time with the recording's timings, each held near the same place on the screen. The brainstorm line was written without seeing it"
+   "note": "Found built on 2026-11-07, since 1.7: while a chapter is read aloud, the verse being read keeps its full strength, the rest steps back, and it is moved back to the reading place when it leaves it, unless the reader has just scrolled (components/bible/ReadAloud.tsx, ReadAloudFollow). Walked 2026-11-07 on John 1 at phone size, in verses and in paragraphs: verse 1, 2, then 3 lit in time with the recording's timings, each held near the same place on the screen. The brainstorm line was written without seeing it Read over 2026-11-07 beside the week's readings, and mended: the page knew the chapter playing by its recording's address, which changes when the chapter is saved to the phone while it plays (the week's readings can save today's on opening), and then lost it: the verse stopped following the voice, Listen was offered again, and the reading did not roll on into the next chapter. It now knows the chapter by what the recording reads (components/bible/ReadAloud.tsx, useThisChapter; lib/readAloud/__tests__/savedWhilePlaying.test.ts), as the reader's dock does."
   },
   {
    "id": "s3-07",

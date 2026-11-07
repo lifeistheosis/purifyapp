@@ -21,7 +21,7 @@ import { Headphones } from "@/components/ui/icons/Headphones";
 import { Pause } from "@/components/ui/icons/Pause";
 import { Play } from "@/components/ui/icons/Play";
 import { nextChapter } from "@/lib/bible/books";
-import { hasReadAloud, readAloudManifest, readAloudSrc, useHasReadAloud, verseAt, type ReadAloudManifest } from "@/lib/readAloud/chapters";
+import { hasReadAloud, readAloudManifest, readAloudSrc, readingOfSrc, useHasReadAloud, verseAt, type ReadAloudManifest } from "@/lib/readAloud/chapters";
 import { startReading } from "@/lib/readAloud/play";
 import { currentTimeNow, pause, play, usePersistentAudio } from "@/lib/prayers/persistentAudioStore";
 import { cn } from "@/lib/cn";
@@ -37,7 +37,13 @@ const NEXT_KEY = "purify:readAloud.next";
 function useThisChapter(book: string, chapter: number) {
   const audio = usePersistentAudio();
   const src = readAloudSrc(book, chapter);
-  const loaded = Boolean(audio.src && audio.src.endsWith(src));
+  // By the chapter the loaded recording reads, not by its address (1.9): the
+  // address changes when the chapter is saved to the phone while it plays
+  // (the week's readings can save today's on opening, lib/readAloud/week.ts),
+  // and by address the page then lost it, Listen offered again, the verse
+  // no longer following the voice, and no rolling on into the next chapter.
+  const reading = readingOfSrc(audio.src);
+  const loaded = reading?.book === book && reading.chapter === chapter;
   return { audio, src, loaded, playing: loaded && audio.playing };
 }
 
