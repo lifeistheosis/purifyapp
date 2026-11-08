@@ -156,3 +156,57 @@ describe("a quote from Purify's library", () => {
     expect(parsePage(serializePage({ title: "", blocks: [tricky] })).blocks[0]).toEqual(tricky);
   });
 });
+
+describe("Plus's blocks, kept as text an older build reads", () => {
+  const plus: Page = {
+    title: "Lent, week one",
+    blocks: [
+      { type: "heading", text: "This week" },
+      { type: "check", items: [{ text: "Read the Canon of St Andrew", done: true }, { text: "Confession on Saturday", done: false }] },
+      { type: "divider", style: "line" },
+      { type: "callout", icon: "candle", text: "Words set apart.\nOn two lines." },
+      { type: "divider", style: "dots" },
+      { type: "text", text: "And the words after." },
+      { type: "divider", style: "space" },
+    ],
+  };
+
+  it("writes each as plain text and reads it back as it was", () => {
+    const body = serializePage(plus);
+    expect(body).toBe(
+      [
+        "# Lent, week one",
+        "## This week",
+        "- [x] Read the Canon of St Andrew\n- [ ] Confession on Saturday",
+        "---",
+        "[[callout candle]]\n> Words set apart.\n> On two lines.",
+        "* * *",
+        "And the words after.",
+        "[[divider space]]",
+      ].join("\n\n"),
+    );
+    expect(parsePage(body)).toEqual(plus);
+  });
+
+  it("keeps words that look like Plus's marks as words", () => {
+    const words: Page = { title: "", blocks: [{ type: "text", text: "## not a heading\n\n- [ ] not a checklist\n\n---\n\n* * *" }] };
+    expect(parsePage(serializePage(words))).toEqual(words);
+  });
+
+  it("knows only the house's callout icons and dividers", () => {
+    expect(parsePage("[[callout skull]]\n> Words").blocks[0].type).not.toBe("callout");
+    expect(parsePage("[[divider ornament]]").blocks[0].type).toBe("text");
+  });
+
+  it("a checklist's empty lines and a page of only dividers keep nothing", () => {
+    expect(serializePage({ title: "", blocks: [{ type: "check", items: [{ text: " ", done: false }] }] })).toBe("");
+    expect(pageIsEmpty({ title: "", blocks: [{ type: "divider", style: "line" }] })).toBe(true);
+    expect(pageIsEmpty({ title: "", blocks: [{ type: "check", items: [{ text: "One", done: false }] }] })).toBe(false);
+  });
+
+  it("names a checklist's lines and a callout's words in the list", () => {
+    const text = pageText(plus, () => "");
+    expect(text).toContain("Confession on Saturday");
+    expect(text).toContain("Words set apart.");
+  });
+});

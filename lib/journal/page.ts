@@ -34,6 +34,21 @@
 // edited here as the source's words. A library quote leads only inside the
 // app (an address that starts with one "/"): never to another site.
 //
+// Plus's blocks (step 2, JOURNAL.md "Step 2, how it is kept") are kept the
+// same way, and read the same in any build:
+//
+//   ## A heading                      a heading inside the page
+//   - [ ] Something to do             a checklist: done, and not yet
+//   - [x] Something done
+//   ---                               a divider: a plain line,
+//   * * *                             three dots,
+//   [[divider space]]                 or a space
+//   [[callout candle]]                a callout: a soft box with an icon from
+//   > Words set apart.                the house's set, and its words
+//
+// A page with Plus's blocks stays readable, and editable, without Plus: the
+// writer's words are never locked away. Only adding one is Plus's.
+//
 // Pure: no React, no storage. lib/journal/__tests__/page.test.ts holds the
 // round trip.
 
@@ -47,7 +62,24 @@ export type PageBlock =
   /** A quote of one's own: the words, and who said them, as the writer gives it. */
   | { type: "quote"; text: string; by: string }
   /** A quote from Purify's library: the words as the page has them, the page's name, and the way back to it. */
-  | { type: "library"; text: string; cite: string; href: string };
+  | { type: "library"; text: string; cite: string; href: string }
+  /** Plus: a heading inside the page. */
+  | { type: "heading"; text: string }
+  /** Plus: a checklist, each line done or not yet. */
+  | { type: "check"; items: CheckItem[] }
+  /** Plus: a divider, from the house's three, never an ornament drawn by hand. */
+  | { type: "divider"; style: DividerStyle }
+  /** Plus: words set apart in a soft box, with an icon from the house's set. */
+  | { type: "callout"; icon: CalloutIcon; text: string };
+
+export type CheckItem = { text: string; done: boolean };
+export const DIVIDER_STYLES = ["line", "dots", "space"] as const;
+export type DividerStyle = (typeof DIVIDER_STYLES)[number];
+/** The callout's icons, each one of components/ui/icons. */
+export const CALLOUT_ICONS = ["candle", "cross", "info", "heart", "star"] as const;
+export type CalloutIcon = (typeof CALLOUT_ICONS)[number];
+/** The blocks only Plus adds. */
+export const PLUS_BLOCKS: readonly PageBlock["type"][] = ["heading", "check", "divider", "callout"];
 
 export type Page = { title: string; blocks: PageBlock[] };
 
@@ -63,8 +95,13 @@ const LIBRARY_TOKEN = /^\[\[library (\S{1,300})\]\]$/;
 /** The longest name a library quote's page is given. */
 export const CITE_MAX = 160;
 const COLOR_PREFIX = /^==([a-z]{1,16})== /;
+const CALLOUT_TOKEN = /^\[\[callout ([a-z]{1,16})\]\]$/;
+const CHECK_LINE = /^- \[( |x)\] ?(.*)$/;
+/** The longest heading, and the longest line of a checklist. */
+export const HEADING_MAX = 120;
+export const ITEM_MAX = 300;
 /** A paragraph that would be read as something else unless it is marked as words. */
-const NEEDS_ESCAPE = /^(#\s|>|==|\[\[|\\)/;
+const NEEDS_ESCAPE = /^(#{1,2}\s|>|==|\[\[|\\|- \[[ x]\]|---$|\* \* \*$)/;
 
 const oneLine = (s: string, max: number) => Array.from(s.replace(/\s+/g, " ").trim()).slice(0, max).join("");
 
@@ -116,6 +153,14 @@ export function parsePage(body: string): Page {
       if (rest.length && rest.join("\n").trim()) pushText(rest.join("\n"));
       return;
     }
+    if (p.startsWith("## ") && !p.includes("\n")) {
+      blocks.push({ type: "heading", text: oneLine(p.slice(3), HEADING_MAX) });
+      return;
+    }
+    if (p === "---" || p === "* * *" || p === "[[divider space]]") {
+      blocks.push({ type: "divider", style: p === "---" ? "line" : p === "* * *" ? "dots" : "space" });
+      return;
+    }
     const verse = VERSE_TOKEN.exec(p);
     if (verse) {
       const block = verseBlock(verse[1], Number(verse[2]), Number(verse[3]), verse[4] ? Number(verse[4]) : Number(verse[3]));
@@ -125,6 +170,21 @@ export function parsePage(body: string): Page {
       }
     }
     const lines = p.split("\n");
+    if (lines.every((l) => CHECK_LINE.test(l))) {
+      blocks.push({
+        type: "check",
+        items: lines.map((l) => {
+          const m = CHECK_LINE.exec(l)!;
+          return { text: oneLine(m[2], ITEM_MAX), done: m[1] === "x" };
+        }),
+      });
+      return;
+    }
+    const callout = CALLOUT_TOKEN.exec(lines[0]);
+    if (callout && (CALLOUT_ICONS as readonly string[]).includes(callout[1]) && lines.length > 1 && lines.slice(1).every((l) => l.startsWith(">"))) {
+      blocks.push({ type: "callout", icon: callout[1] as CalloutIcon, text: lines.slice(1).map((l) => l.replace(/^> ?/, "")).join("\n") });
+      return;
+    }
     const library = LIBRARY_TOKEN.exec(lines[0]);
     if (library && lines.length > 1 && lines.slice(1).every((l) => l.startsWith(">"))) {
       const inner = lines.slice(1).map((l) => l.replace(/^> ?/, ""));
@@ -182,6 +242,19 @@ export function serializePage(page: Page): string {
     } else if (b.type === "verse") {
       const v = verseBlock(b.book, b.chapter, b.from, b.to);
       if (v && v.type === "verse") out.push(`[[verse ${v.book} ${v.chapter}:${v.from}${v.to > v.from ? `-${v.to}` : ""}]]`);
+    } else if (b.type === "heading") {
+      const text = oneLine(b.text, HEADING_MAX);
+      if (text) out.push(`## ${text}`);
+    } else if (b.type === "check") {
+      const items = b.items.map((i) => ({ text: oneLine(i.text, ITEM_MAX), done: i.done })).filter((i) => i.text);
+      if (items.length) out.push(items.map((i) => `- [${i.done ? "x" : " "}] ${i.text}`).join("\n"));
+    } else if (b.type === "divider") {
+      out.push(b.style === "dots" ? "* * *" : b.style === "space" ? "[[divider space]]" : "---");
+    } else if (b.type === "callout") {
+      const lines = b.text.replace(/\r\n?/g, "\n").replace(/^\n+|\n+$/g, "").split("\n");
+      if (!lines.join("").trim()) continue;
+      const icon = (CALLOUT_ICONS as readonly string[]).includes(b.icon) ? b.icon : "info";
+      out.push([`[[callout ${icon}]]`, ...lines.map((l) => (l ? `> ${l}` : ">"))].join("\n"));
     } else if (b.type === "library") {
       const lib = libraryBlock(b.text, b.cite, b.href);
       if (!lib || lib.type !== "library") continue;
@@ -205,8 +278,10 @@ export function serializePage(page: Page): string {
 export function pageText(page: Page, verseLabel: (b: Extract<PageBlock, { type: "verse" }>) => string): string {
   return page.blocks
     .map((b) => {
-      if (b.type === "text") return b.text;
+      if (b.type === "text" || b.type === "heading" || b.type === "callout") return b.text;
       if (b.type === "verse") return verseLabel(b);
+      if (b.type === "check") return b.items.map((i) => i.text).join("\n");
+      if (b.type === "divider") return "";
       const by = b.type === "quote" ? b.by : b.cite;
       return by ? `“${b.text}” ${by}` : `“${b.text}”`;
     })
@@ -216,7 +291,16 @@ export function pageText(page: Page, verseLabel: (b: Extract<PageBlock, { type: 
 
 /** Does the page hold anything worth keeping? */
 export function pageIsEmpty(page: Page): boolean {
-  return !page.title.trim() && page.blocks.every((b) => (b.type === "text" || b.type === "quote" ? !b.text.trim() : false));
+  return (
+    !page.title.trim() &&
+    page.blocks.every((b) =>
+      b.type === "text" || b.type === "quote" || b.type === "heading" || b.type === "callout"
+        ? !b.text.trim()
+        : b.type === "check"
+          ? b.items.every((i) => !i.text.trim())
+          : b.type === "divider",
+    )
+  );
 }
 
 /**

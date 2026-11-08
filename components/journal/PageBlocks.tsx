@@ -16,19 +16,43 @@
 import Link from "next/link";
 import { useLayoutEffect, useMemo, useRef, useState, type ReactNode } from "react";
 
+import { PlusMark } from "@/components/billing/PlusMark";
+import { useUpgradeModal } from "@/components/billing/UpgradeModal";
 import { HighlightNamesSheet } from "@/components/bible/HighlightNamesSheet";
 import { HighlightPicker } from "@/components/bible/HighlightPicker";
 import { useTranslate } from "@/components/i18n/MessagesProvider";
 import { SearchField } from "@/components/search/SearchField";
 import { Book } from "@/components/ui/icons/Book";
+import { Candle } from "@/components/ui/icons/Candle";
 import { ChatBubble } from "@/components/ui/icons/ChatBubble";
+import { Check } from "@/components/ui/icons/Check";
 import { Close } from "@/components/ui/icons/Close";
+import { Cross } from "@/components/ui/icons/Cross";
+import { Heart } from "@/components/ui/icons/Heart";
+import { Info } from "@/components/ui/icons/Info";
+import { Minus } from "@/components/ui/icons/Minus";
+import { Note } from "@/components/ui/icons/Note";
+import { Plus } from "@/components/ui/icons/Plus";
 import { Sparkle } from "@/components/ui/icons/Sparkle";
+import { Star } from "@/components/ui/icons/Star";
 import { highlightVars } from "@/lib/bible/highlightPalette";
 import { localBookNames, searchBible } from "@/lib/bible/books";
 import { cn } from "@/lib/cn";
+import { usePlusFeatures } from "@/lib/entitlements/usePlusFeatures";
 import { verseSpan } from "@/lib/journal/churchDay";
-import { BY_MAX, TITLE_MAX, VERSE_CARD_MAX, verseBlock, type PageBlock } from "@/lib/journal/page";
+import {
+  BY_MAX,
+  CALLOUT_ICONS,
+  DIVIDER_STYLES,
+  HEADING_MAX,
+  ITEM_MAX,
+  TITLE_MAX,
+  VERSE_CARD_MAX,
+  verseBlock,
+  type CalloutIcon,
+  type CheckItem,
+  type PageBlock,
+} from "@/lib/journal/page";
 import { useVerseRangeWords } from "@/lib/saved/verseWords";
 
 import type { PageEditor } from "./usePage";
@@ -87,6 +111,11 @@ export function PageBlocks({ editor, placeholder }: { editor: PageEditor; placeh
           }
           if (b.type === "verse") return <VerseCard key={`${i}-verse`} index={i} block={b} label={label(b)} onRemove={() => editor.remove(i)} />;
           if (b.type === "library") return <LibraryCard key={`${i}-library`} index={i} block={b} onRemove={() => editor.remove(i)} />;
+          if (b.type === "heading") return <HeadingBlock key={`${i}-heading`} index={i} text={b.text} onText={(text) => editor.setBlock(i, { text })} onRemove={() => editor.remove(i)} />;
+          if (b.type === "check") return <CheckBlock key={`${i}-check`} index={i} items={b.items} onItems={(items) => (items.length ? editor.setBlock(i, { items }) : editor.remove(i))} />;
+          if (b.type === "divider") return <DividerBlock key={`${i}-divider`} index={i} style={b.style} onStyle={(style) => editor.setBlock(i, { style })} onRemove={() => editor.remove(i)} />;
+          if (b.type === "callout")
+            return <CalloutBlock key={`${i}-callout`} index={i} icon={b.icon} text={b.text} onIcon={(icon) => editor.setBlock(i, { icon })} onText={(text) => editor.setBlock(i, { text })} onRemove={() => editor.remove(i)} />;
           return (
             <QuoteCard
               key={`${i}-quote`}
@@ -288,6 +317,176 @@ function QuoteCard({
   );
 }
 
+// ── Plus's blocks (step 2) ───────────────────────────────────────────────
+
+/** A heading inside the page, in Lora. */
+function HeadingBlock({ index, text, onText, onRemove }: { index: number; text: string; onText: (text: string) => void; onRemove: () => void }) {
+  const { t } = useTranslate();
+  return (
+    <div data-page-block={index} data-page-heading-block="" className="relative pe-12">
+      <label className="block">
+        <span className="sr-only">{t("journal.page.heading")}</span>
+        <input
+          type="text"
+          value={text}
+          maxLength={HEADING_MAX}
+          data-page-heading=""
+          onChange={(e) => onText(e.target.value)}
+          placeholder={t("journal.page.headingPlaceholder")}
+          className="block min-h-11 w-full bg-transparent font-serif text-[20px] font-semibold leading-[1.3] text-paper placeholder:text-paper/55 focus:outline-none"
+        />
+      </label>
+      <RemoveButton onClick={onRemove} label={t("common.remove")} />
+    </div>
+  );
+}
+
+/**
+ * A checklist: each line with its box, 44px to tap. Enter makes a new line
+ * under it; Backspace on an empty line takes it away, and the list goes with
+ * its last line.
+ */
+function CheckBlock({ index, items, onItems }: { index: number; items: CheckItem[]; onItems: (items: CheckItem[]) => void }) {
+  const { t } = useTranslate();
+  const root = useRef<HTMLUListElement | null>(null);
+  const focusLine = (at: number) =>
+    window.requestAnimationFrame(() => {
+      const el = root.current?.querySelectorAll<HTMLInputElement>("input")[at];
+      el?.focus({ preventScroll: true });
+      el?.setSelectionRange(el.value.length, el.value.length);
+    });
+  return (
+    <ul data-page-block={index} data-page-check="" ref={root} className="space-y-0.5">
+      {items.map((item, k) => (
+        <li key={k} className="flex items-center gap-1">
+          <button
+            type="button"
+            role="checkbox"
+            aria-checked={item.done}
+            aria-label={item.text || t("journal.page.itemPlaceholder")}
+            onClick={() => onItems(items.map((x, j) => (j === k ? { ...x, done: !x.done } : x)))}
+            className="tap-press -ms-2.5 grid h-11 w-11 shrink-0 place-items-center"
+          >
+            <span
+              aria-hidden
+              className={cn(
+                "grid h-[22px] w-[22px] place-items-center rounded-md border motion-safe:transition-colors",
+                item.done ? "border-paper bg-paper text-night" : "border-paper/45 text-transparent",
+              )}
+            >
+              <Check size={15} strokeWidth={2.6} />
+            </span>
+          </button>
+          <label className="min-w-0 flex-1">
+            <span className="sr-only">{t("journal.page.itemPlaceholder")}</span>
+            <input
+              type="text"
+              value={item.text}
+              maxLength={ITEM_MAX}
+              enterKeyHint="next"
+              onChange={(e) => onItems(items.map((x, j) => (j === k ? { ...x, text: e.target.value } : x)))}
+              onKeyDown={(e) => {
+                if (e.key === "Enter") {
+                  e.preventDefault();
+                  onItems([...items.slice(0, k + 1), { text: "", done: false }, ...items.slice(k + 1)]);
+                  focusLine(k + 1);
+                } else if (e.key === "Backspace" && !item.text) {
+                  e.preventDefault();
+                  onItems(items.filter((_, j) => j !== k));
+                  if (k > 0) focusLine(k - 1);
+                }
+              }}
+              placeholder={t("journal.page.itemPlaceholder")}
+              className={cn(
+                "block h-11 w-full bg-transparent font-serif text-body leading-[1.5] placeholder:text-paper/55 focus:outline-none",
+                item.done ? "text-paper/70 line-through decoration-paper/45" : "text-paper",
+              )}
+            />
+          </label>
+        </li>
+      ))}
+    </ul>
+  );
+}
+
+/** A divider from the house's three: a plain line, three dots, or a space. A tap gives the next. */
+function DividerBlock({ index, style, onStyle, onRemove }: { index: number; style: (typeof DIVIDER_STYLES)[number]; onStyle: (style: (typeof DIVIDER_STYLES)[number]) => void; onRemove: () => void }) {
+  const { t } = useTranslate();
+  const next = DIVIDER_STYLES[(DIVIDER_STYLES.indexOf(style) + 1) % DIVIDER_STYLES.length];
+  return (
+    <div data-page-block={index} data-page-divider={style} className="relative flex items-center pe-12">
+      <button type="button" onClick={() => onStyle(next)} aria-label={t("journal.page.dividerChange")} className="tap-press grid h-11 min-w-0 flex-1 place-items-center">
+        {style === "line" ? (
+          <span aria-hidden className="block h-px w-full bg-paper/25" />
+        ) : style === "dots" ? (
+          <span aria-hidden className="flex gap-3">
+            {[0, 1, 2].map((d) => (
+              <span key={d} className="block size-1 rounded-full bg-paper/60" />
+            ))}
+          </span>
+        ) : (
+          <span aria-hidden className="block h-px w-full" />
+        )}
+      </button>
+      <RemoveButton onClick={onRemove} label={t("common.remove")} />
+    </div>
+  );
+}
+
+const CALLOUT_ICON: Record<CalloutIcon, (p: { size?: number }) => ReactNode> = {
+  candle: (p) => <Candle {...p} />,
+  cross: (p) => <Cross {...p} />,
+  info: (p) => <Info {...p} />,
+  heart: (p) => <Heart {...p} />,
+  star: (p) => <Star {...p} />,
+};
+
+/** Words set apart: a soft box, never a side stripe, with an icon from the house's set; a tap on the icon gives the next. */
+function CalloutBlock({
+  index,
+  icon,
+  text,
+  onIcon,
+  onText,
+  onRemove,
+}: {
+  index: number;
+  icon: CalloutIcon;
+  text: string;
+  onIcon: (icon: CalloutIcon) => void;
+  onText: (text: string) => void;
+  onRemove: () => void;
+}) {
+  const { t } = useTranslate();
+  const area = useRef<HTMLTextAreaElement | null>(null);
+  useLayoutEffect(() => {
+    const el = area.current;
+    if (!el) return;
+    el.style.height = "auto";
+    el.style.height = `${el.scrollHeight}px`;
+  }, [text]);
+  const next = CALLOUT_ICONS[(CALLOUT_ICONS.indexOf(icon) + 1) % CALLOUT_ICONS.length];
+  return (
+    <div data-page-block={index} data-page-callout={icon} className="relative flex items-start gap-1 rounded-2xl bg-paper/[0.07] py-1.5 pe-12 ps-1.5">
+      <button type="button" onClick={() => onIcon(next)} aria-label={t("journal.page.calloutIcon")} className="tap-press grid h-11 w-11 shrink-0 place-items-center text-paper/85">
+        {CALLOUT_ICON[icon]({ size: 20 })}
+      </button>
+      <label className="min-w-0 flex-1 py-1.5">
+        <span className="sr-only">{t("journal.page.callout")}</span>
+        <textarea
+          ref={area}
+          value={text}
+          rows={1}
+          onChange={(e) => onText(e.target.value)}
+          placeholder={t("journal.page.calloutPlaceholder")}
+          className="block min-h-11 w-full resize-none overflow-hidden bg-transparent font-serif text-body leading-[1.65] text-paper placeholder:text-paper/55 focus:outline-none"
+        />
+      </label>
+      <RemoveButton onClick={onRemove} label={t("common.remove")} />
+    </div>
+  );
+}
+
 function RemoveButton({ onClick, label }: { onClick: () => void; label: string }) {
   return (
     <button
@@ -303,7 +502,7 @@ function RemoveButton({ onClick, label }: { onClick: () => void; label: string }
 
 // ── The tools, at the sheet's foot ───────────────────────────────────────
 
-type Panel = "verse" | "color" | null;
+type Panel = "verse" | "color" | "more" | null;
 
 /**
  * The row under the page, above the keyboard: Verse finds a verse and lays
@@ -316,6 +515,15 @@ export function PageToolbar({ editor }: { editor: PageEditor }) {
   const [panel, setPanel] = useState<Panel>(null);
   const [naming, setNaming] = useState<string | null | undefined>(undefined);
   const target = panel === "color" ? editor.colorTarget() : null;
+  // Plus's blocks are shown, never hidden: without Plus each wears the mark
+  // and opens the upgrade sheet named for the journal.
+  const locked = usePlusFeatures() === false;
+  const upgrade = useUpgradeModal();
+  const addPlus = (block: PageBlock) => {
+    setPanel(null);
+    if (locked) upgrade.open("journal");
+    else editor.insert(block);
+  };
   const targetBlock = target !== null ? editor.page.blocks[target] : null;
   const active = targetBlock?.type === "text" ? (targetBlock.color ?? null) : null;
 
@@ -345,7 +553,17 @@ export function PageToolbar({ editor }: { editor: PageEditor }) {
           onNames={(id) => setNaming(id)}
         />
       ) : null}
-      <div role="toolbar" aria-label={t("journal.page.tools")} className="flex items-center gap-2 overflow-x-auto px-3 py-2 scrollbar-thin">
+      {panel === "more" ? (
+        <div data-page-more="" className="grid grid-cols-2 gap-2 px-3 pt-2">
+          <MoreChoice icon={<Note size={18} />} label={t("journal.page.heading")} locked={locked} onClick={() => addPlus({ type: "heading", text: "" })} />
+          <MoreChoice icon={<Check size={18} />} label={t("journal.page.checklist")} locked={locked} onClick={() => addPlus({ type: "check", items: [{ text: "", done: false }] })} />
+          <MoreChoice icon={<Minus size={18} />} label={t("journal.page.divider")} locked={locked} onClick={() => addPlus({ type: "divider", style: "line" })} />
+          <MoreChoice icon={<Candle size={18} />} label={t("journal.page.callout")} locked={locked} onClick={() => addPlus({ type: "callout", icon: "candle", text: "" })} />
+        </div>
+      ) : null}
+      {/* Four tiles, each a quarter of the row, the icon over its name: the row
+          fits a 360px phone in every language, and never scrolls sideways. */}
+      <div role="toolbar" aria-label={t("journal.page.tools")} className="grid grid-cols-4 gap-1 px-2 py-1.5">
         <Tool icon={<Book size={18} />} label={t("journal.page.addVerse")} pressed={panel === "verse"} onClick={() => setPanel(panel === "verse" ? null : "verse")} />
         <Tool
           icon={<ChatBubble size={18} />}
@@ -362,9 +580,26 @@ export function PageToolbar({ editor }: { editor: PageEditor }) {
           disabled={editor.colorTarget() === null}
           onClick={() => setPanel(panel === "color" ? null : "color")}
         />
+        <Tool icon={<Plus size={18} />} label={t("journal.page.more")} pressed={panel === "more"} onClick={() => setPanel(panel === "more" ? null : "more")} />
       </div>
       <HighlightNamesSheet open={naming !== undefined} focusId={naming ?? null} onClose={() => setNaming(undefined)} />
     </div>
+  );
+}
+
+/** One of Plus's blocks in the More panel: its icon, its name, and the Plus mark without Plus. */
+function MoreChoice({ icon, label, locked, onClick }: { icon: ReactNode; label: string; locked: boolean; onClick: () => void }) {
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      onPointerDown={(e) => e.preventDefault()}
+      className="tap-press flex min-h-12 min-w-0 items-center gap-2.5 rounded-2xl border border-paper/12 px-3 text-start font-sans text-detail font-semibold text-paper/90 hover:border-paper/30"
+    >
+      <span className="shrink-0 text-paper/80">{icon}</span>
+      <span className="min-w-0 flex-1 truncate">{label}</span>
+      {locked ? <PlusMark className="shrink-0" /> : null}
+    </button>
   );
 }
 
@@ -378,12 +613,12 @@ function Tool({ icon, label, pressed, disabled, onClick }: { icon: ReactNode; la
       // The keyboard stays up: a tool takes no focus from the words.
       onPointerDown={(e) => e.preventDefault()}
       className={cn(
-        "tap-press inline-flex h-11 shrink-0 items-center gap-2 rounded-pill border px-4 font-sans text-detail font-semibold motion-safe:transition-colors disabled:opacity-40",
-        pressed ? "border-paper bg-paper text-night" : "border-paper/15 text-paper/85 hover:border-paper/35 hover:text-paper",
+        "tap-press flex h-14 min-w-0 flex-col items-center justify-center gap-1 rounded-xl px-1 font-sans text-[12px] font-semibold leading-none motion-safe:transition-colors disabled:opacity-40",
+        pressed ? "bg-paper text-night" : "text-paper/85 hover:bg-paper/[0.06] hover:text-paper",
       )}
     >
       {icon}
-      {label}
+      <span className="max-w-full truncate">{label}</span>
     </button>
   );
 }

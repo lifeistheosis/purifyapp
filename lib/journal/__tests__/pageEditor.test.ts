@@ -67,7 +67,9 @@ describe("the page's parts, from the house's own", () => {
   });
 
   it("every control 44px or more, icons from the house's set, nothing physical", () => {
-    expect(blocks).toMatch(/inline-flex h-11 shrink-0 items-center gap-2 rounded-pill border/);
+    // The tools: four tiles of a quarter row each, 56px tall, never a row that scrolls sideways.
+    expect(blocks).toContain('className="grid grid-cols-4 gap-1 px-2 py-1.5"');
+    expect(blocks).toMatch(/tap-press flex h-14 min-w-0 flex-col items-center/);
     expect(blocks).toMatch(/absolute end-0\.5 top-0\.5 inline-flex h-11 w-11/);
     expect(blocks).toContain('tall ? "min-h-[30vh]" : "min-h-11"');
     for (const icon of ["Book", "ChatBubble", "Close", "Sparkle"]) expect(blocks).toContain(`from "@/components/ui/icons/${icon}"`);
@@ -77,5 +79,30 @@ describe("the page's parts, from the house's own", () => {
   it("the title keeps its size on a phone, and the page's fields draw no square frame", () => {
     expect(css).toContain('[data-journal-composer] input[data-journal-title]:not([type="checkbox"]):not([type="radio"]) {\n font-size: 24px;');
     expect(css).toContain("[data-journal-composer] :is(textarea, input):focus-visible {\n outline: none;");
+  });
+});
+
+describe("Plus's blocks in the editor (step 2)", () => {
+  it("are in the More panel, shown with the Plus mark without Plus, and the sheet named for the journal", () => {
+    expect(blocks).toMatch(/const locked = usePlusFeatures\(\) === false;/);
+    expect(blocks).toMatch(/if \(locked\) upgrade\.open\("journal"\);\s*else editor\.insert\(block\);/);
+    const choice = blocks.slice(blocks.indexOf("function MoreChoice"), blocks.indexOf("function Tool("));
+    expect(choice).toContain("{locked ? <PlusMark");
+    expect(choice).toContain("min-h-12");
+    for (const k of ["journal.page.heading", "journal.page.checklist", "journal.page.divider", "journal.page.callout"]) expect(blocks).toContain(`t("${k}")`);
+  });
+
+  it("a checklist's boxes are checkboxes 44px across; a callout is a soft box, never a side stripe", () => {
+    const check = blocks.slice(blocks.indexOf("function CheckBlock"), blocks.indexOf("function DividerBlock"));
+    expect(check).toContain('role="checkbox"');
+    expect(check).toContain("aria-checked={item.done}");
+    expect(check).toMatch(/grid h-11 w-11 shrink-0 place-items-center/);
+    const callout = blocks.slice(blocks.indexOf("function CalloutBlock"), blocks.indexOf("function RemoveButton"));
+    expect(callout).toContain("rounded-2xl bg-paper/[0.07]");
+    expect(callout).not.toMatch(/border-s-|border-l-|border-r-|border-e-/);
+  });
+
+  it("a heading keeps its size on a phone", () => {
+    expect(css).toContain('[data-journal-composer] input[data-page-heading]:not([type="checkbox"]):not([type="radio"]) {\n font-size: 20px;');
   });
 });

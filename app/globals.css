@@ -2972,6 +2972,9 @@ html[data-input="pointer"] *:focus-visible:not(input, textarea, select, [content
 [data-journal-composer] input[data-journal-title]:not([type="checkbox"]):not([type="radio"]) {
  font-size: 24px;
 }
+[data-journal-composer] input[data-page-heading]:not([type="checkbox"]):not([type="radio"]) {
+ font-size: 20px;
+}
 
 /* Highlight colours (1.7.1, lib/bible/highlightPalette.ts). An element that
    wears one sets data-hl-color and carries both themes' values inline

@@ -7,7 +7,8 @@ import { insertAt, parsePage, removeAt, serializePage, tidyBlocks, type Page, ty
 
 /** Where the cursor is: a text block's index and the selection in it. */
 export type Cursor = { index: number; start: number; end: number };
-type FocusAsk = { index: number; at: "start" | "end"; field?: "by" };
+/** Which field of a block takes the cursor: its words (a textarea), or its line (an input: a heading, a checklist's line). */
+type FocusAsk = { index: number; at: "start" | "end"; field?: "input" };
 
 function fresh(body: string): Page {
   const page = parsePage(body);
@@ -64,7 +65,7 @@ export function usePage(open: boolean, body: string, onBody: (body: string) => v
     if (!ask) return;
     focusAsk.current = null;
     const root = document.querySelector(`[data-journal-composer] [data-page-block="${ask.index}"]`);
-    const field = root?.querySelector<HTMLTextAreaElement | HTMLInputElement>(ask.field === "by" ? "input" : "textarea");
+    const field = root?.querySelector<HTMLTextAreaElement | HTMLInputElement>(ask.field === "input" ? "input" : "textarea");
     if (!field) return;
     field.focus({ preventScroll: true });
     const at = ask.at === "start" ? 0 : field.value.length;
@@ -82,8 +83,12 @@ export function usePage(open: boolean, body: string, onBody: (body: string) => v
   /** Put a card where the cursor is; the cursor goes on after it, or into a new quote. */
   const insert = (block: PageBlock) => {
     const { blocks, inserted } = insertAt(page.blocks, cursor, block);
-    const focus: FocusAsk = block.type === "quote" ? { index: inserted, at: "end" } : { index: inserted + 1, at: "start" };
-    if (commit({ ...page, blocks }, focus)) setCursor(block.type === "quote" ? null : { index: inserted + 1, start: 0, end: 0 });
+    // A block with words of its own takes the cursor; a card, a divider, gives it to the words after.
+    const own = block.type === "quote" || block.type === "callout" || block.type === "heading" || block.type === "check";
+    const focus: FocusAsk = own
+      ? { index: inserted, at: "end", field: block.type === "heading" || block.type === "check" ? "input" : undefined }
+      : { index: inserted + 1, at: "start" };
+    if (commit({ ...page, blocks }, focus)) setCursor(own ? null : { index: inserted + 1, start: 0, end: 0 });
   };
 
   const remove = (index: number) => {
