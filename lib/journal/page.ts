@@ -47,7 +47,8 @@
 //   > Words set apart.                the house's set, and its words
 //
 //   [[notebook Lent 2027]]            the page's notebook and its tags, in
-//   [[tags fasting, prayer]]          one paragraph under the title
+//   [[tags fasting, prayer]]          one paragraph under the title, with its
+//   [[style font=sans align=center]]  style when it is not the house's own
 //
 // A page with Plus's blocks stays readable, and editable, without Plus: the
 // writer's words are never locked away. Only adding one is Plus's.
@@ -91,13 +92,27 @@ export type Page = {
   notebook?: string;
   /** Plus: the page's tags. */
   tags?: string[];
+  /** Plus: the page's style, from the house's own: Lora or DM Sans, the start or the centre. */
+  style?: PageStyle;
 };
+
+export type PageStyle = { font?: "serif" | "sans"; align?: "start" | "center" };
+export const PAGE_FONTS = ["serif", "sans"] as const;
+export const PAGE_ALIGNS = ["start", "center"] as const;
+
+/** A style kept only where it differs from the house's own (Lora, at the start). */
+export function cleanStyle(style: PageStyle | undefined): PageStyle | undefined {
+  const out: PageStyle = {};
+  if (style?.font === "sans") out.font = "sans";
+  if (style?.align === "center") out.align = "center";
+  return out.font || out.align ? out : undefined;
+}
 
 /** The longest notebook name and tag, and the most tags a page carries. */
 export const NOTEBOOK_MAX = 60;
 export const TAG_MAX = 32;
 export const TAGS_MAX = 8;
-const PROPERTY_LINE = /^\[\[(notebook|tags) (.+)\]\]$/;
+const PROPERTY_LINE = /^\[\[(notebook|tags|style) (.+)\]\]$/;
 
 /** A page's tags, kept sane: trimmed, one line each, none twice (by their letters), at most TAGS_MAX. */
 export function cleanTags(tags: readonly string[]): string[] {
@@ -184,13 +199,18 @@ export function parsePage(body: string): Page {
 
   let notebook = "";
   let tags: string[] = [];
+  let style: PageStyle | undefined;
   paras.forEach((p, i) => {
     const props = p.split("\n");
     if (props.every((l) => PROPERTY_LINE.test(l))) {
       for (const l of props) {
         const m = PROPERTY_LINE.exec(l)!;
         if (m[1] === "notebook") notebook = cleanNotebook(m[2]);
-        else tags = cleanTags(m[2].split(","));
+        else if (m[1] === "tags") tags = cleanTags(m[2].split(","));
+        else {
+          const pairs = Object.fromEntries(m[2].split(/\s+/).map((kv) => kv.split("=") as [string, string]));
+          style = cleanStyle({ font: pairs.font as PageStyle["font"], align: pairs.align as PageStyle["align"] });
+        }
       }
       return;
     }
@@ -269,6 +289,7 @@ export function parsePage(body: string): Page {
   const page: Page = { title, blocks };
   if (notebook) page.notebook = notebook;
   if (tags.length) page.tags = tags;
+  if (style) page.style = style;
   return page;
 }
 
@@ -287,7 +308,9 @@ export function serializePage(page: Page): string {
   if (title) out.push(`# ${title}`);
   const notebook = cleanNotebook(page.notebook);
   const tags = cleanTags(page.tags ?? []);
-  const props = [notebook ? `[[notebook ${notebook}]]` : "", tags.length ? `[[tags ${tags.join(", ")}]]` : ""].filter(Boolean);
+  const style = cleanStyle(page.style);
+  const styleLine = style ? `[[style ${[style.font ? `font=${style.font}` : "", style.align ? `align=${style.align}` : ""].filter(Boolean).join(" ")}]]` : "";
+  const props = [notebook ? `[[notebook ${notebook}]]` : "", tags.length ? `[[tags ${tags.join(", ")}]]` : "", styleLine].filter(Boolean);
   if (props.length) out.push(props.join("\n"));
   for (const b of page.blocks) {
     if (b.type === "text") {

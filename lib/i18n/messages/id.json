@@ -4954,6 +4954,7 @@
   "journal.page.versePlaceholder": "Sebuah ayat, seperti Yohanes 3:16",
   "journal.page.quotePlaceholder": "Kata-kata yang Anda kutip",
   "journal.page.quoteBy": "Siapa yang mengatakannya",
+  "journal.page.alignStart": "Awal",
   "journal.page.notebook": "Buku catatan",
   "journal.page.addToNotebook": "Tambahkan ke buku catatan",
   "journal.page.noNotebook": "Tanpa buku catatan",

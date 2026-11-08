@@ -5113,6 +5113,7 @@
   "journal.page.versePlaceholder": "Стих, например От Иоанна 3:16",
   "journal.page.quotePlaceholder": "Слова, которые вы цитируете",
   "journal.page.quoteBy": "Кто это сказал",
+  "journal.page.alignStart": "Начало",
   "journal.page.notebook": "Тетрадь",
   "journal.page.addToNotebook": "Добавить в тетрадь",
   "journal.page.noNotebook": "Без тетради",

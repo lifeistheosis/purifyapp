@@ -79,6 +79,11 @@ export function PageBlocks({ editor, placeholder }: { editor: PageEditor; placeh
   const onlyWords = !page.title && page.blocks.length === 1;
   const locked = usePlusFeatures() === false;
   const upgrade = useUpgradeModal();
+  // Plus: the page's style, from the house's own (lib/journal/page.ts): the
+  // writer's words in Lora or DM Sans, at the start or the centre. Scripture
+  // and the library keep the house's Lora: they are not the writer's words.
+  const font = page.style?.font === "sans" ? "font-sans" : "font-serif";
+  const align = page.style?.align === "center" ? "text-center" : "text-start";
 
   return (
     <div className="mt-5">
@@ -97,7 +102,7 @@ export function PageBlocks({ editor, placeholder }: { editor: PageEditor; placeh
             document.querySelector<HTMLTextAreaElement>('[data-journal-composer] [data-page-text] textarea')?.focus();
           }}
           placeholder={t("journal.page.title")}
-          className="block h-12 w-full bg-transparent font-serif text-[24px] font-semibold leading-[1.25] text-paper placeholder:text-paper/55 focus:outline-none"
+          className={cn("block h-12 w-full bg-transparent text-[24px] font-semibold leading-[1.25] text-paper placeholder:text-paper/55 focus:outline-none", font, align)}
         />
       </label>
 
@@ -130,6 +135,7 @@ export function PageBlocks({ editor, placeholder }: { editor: PageEditor; placeh
                 key={`${i}-text`}
                 index={i}
                 block={b}
+                look={cn(font, align)}
                 tall={last}
                 placeholder={onlyWords ? placeholder : undefined}
                 onText={(text) => editor.setBlock(i, { text })}
@@ -139,7 +145,8 @@ export function PageBlocks({ editor, placeholder }: { editor: PageEditor; placeh
           }
           if (b.type === "verse") return <VerseCard key={`${i}-verse`} index={i} block={b} label={label(b)} onRemove={() => editor.remove(i)} />;
           if (b.type === "library") return <LibraryCard key={`${i}-library`} index={i} block={b} onRemove={() => editor.remove(i)} />;
-          if (b.type === "heading") return <HeadingBlock key={`${i}-heading`} index={i} text={b.text} onText={(text) => editor.setBlock(i, { text })} onRemove={() => editor.remove(i)} />;
+          if (b.type === "heading")
+            return <HeadingBlock key={`${i}-heading`} index={i} text={b.text} look={cn(font, align)} onText={(text) => editor.setBlock(i, { text })} onRemove={() => editor.remove(i)} />;
           if (b.type === "check") return <CheckBlock key={`${i}-check`} index={i} items={b.items} onItems={(items) => (items.length ? editor.setBlock(i, { items }) : editor.remove(i))} />;
           if (b.type === "divider") return <DividerBlock key={`${i}-divider`} index={i} style={b.style} onStyle={(style) => editor.setBlock(i, { style })} onRemove={() => editor.remove(i)} />;
           if (b.type === "callout")
@@ -165,6 +172,7 @@ export function PageBlocks({ editor, placeholder }: { editor: PageEditor; placeh
 function TextBlock({
   index,
   block,
+  look,
   tall,
   placeholder,
   onText,
@@ -172,6 +180,8 @@ function TextBlock({
 }: {
   index: number;
   block: Extract<PageBlock, { type: "text" }>;
+  /** The page's style: its font and where its words stand. */
+  look: string;
   tall: boolean;
   placeholder?: string;
   onText: (text: string) => void;
@@ -187,7 +197,7 @@ function TextBlock({
     // A field that was the last, and tall, is no longer once a card goes after it.
   }, [block.text, tall]);
   const note = (e: { currentTarget: HTMLTextAreaElement }) => onCursor(e.currentTarget.selectionStart, e.currentTarget.selectionEnd);
-  const words = "block w-full whitespace-pre-wrap break-words font-serif text-body leading-[1.7]";
+  const words = cn("block w-full whitespace-pre-wrap break-words text-body leading-[1.7]", look);
 
   return (
     <div data-page-block={index} data-page-text="" className="relative">
@@ -348,7 +358,7 @@ function QuoteCard({
 // ── Plus's blocks (step 2) ───────────────────────────────────────────────
 
 /** A heading inside the page, in Lora. */
-function HeadingBlock({ index, text, onText, onRemove }: { index: number; text: string; onText: (text: string) => void; onRemove: () => void }) {
+function HeadingBlock({ index, text, look, onText, onRemove }: { index: number; text: string; look: string; onText: (text: string) => void; onRemove: () => void }) {
   const { t } = useTranslate();
   return (
     <div data-page-block={index} data-page-heading-block="" className="relative pe-12">
@@ -361,7 +371,7 @@ function HeadingBlock({ index, text, onText, onRemove }: { index: number; text: 
           data-page-heading=""
           onChange={(e) => onText(e.target.value)}
           placeholder={t("journal.page.headingPlaceholder")}
-          className="block min-h-11 w-full bg-transparent font-serif text-[20px] font-semibold leading-[1.3] text-paper placeholder:text-paper/55 focus:outline-none"
+          className={cn("block min-h-11 w-full bg-transparent text-[20px] font-semibold leading-[1.3] text-paper placeholder:text-paper/55 focus:outline-none", look)}
         />
       </label>
       <RemoveButton onClick={onRemove} label={t("common.remove")} />
@@ -681,7 +691,7 @@ function PropsPanel({ editor, notebooks, onDone }: { editor: PageEditor; noteboo
         </div>
       ) : null}
       {tags.length < TAGS_MAX ? (
-        <label className="mt-2 block pb-2">
+        <label className="mt-2 block">
           <span className="sr-only">{t("journal.page.addTag")}</span>
           <input
             type="text"
@@ -701,6 +711,41 @@ function PropsPanel({ editor, notebooks, onDone }: { editor: PageEditor; noteboo
           />
         </label>
       ) : null}
+      <StyleRows editor={editor} />
+    </div>
+  );
+}
+
+/** Plus: the page's font and where its words stand, two choices each, from the house's own. */
+function StyleRows({ editor }: { editor: PageEditor }) {
+  const { t } = useTranslate();
+  const font = editor.page.style?.font ?? "serif";
+  const align = editor.page.style?.align ?? "start";
+  const seg = (on: boolean) =>
+    cn(
+      "tap-press inline-flex h-11 min-w-0 flex-1 items-center justify-center rounded-pill px-3 font-sans text-detail font-semibold motion-safe:transition-colors",
+      on ? "bg-paper text-night" : "text-paper/85 hover:text-paper",
+    );
+  return (
+    <div data-page-style="" className="mt-4 grid grid-cols-2 gap-x-3 gap-y-1 pb-2">
+      <p className="font-sans text-caption font-semibold text-paper/70">{t("bible.fontLabel")}</p>
+      <p className="font-sans text-caption font-semibold text-paper/70">{t("picture.align")}</p>
+      <div role="radiogroup" aria-label={t("bible.fontLabel")} className="flex rounded-pill border border-paper/15 p-0.5">
+        <button type="button" role="radio" aria-checked={font === "serif"} onClick={() => editor.setStyle({ font: "serif" })} className={cn(seg(font === "serif"), "font-serif")}>
+          {t("bible.fontSerif")}
+        </button>
+        <button type="button" role="radio" aria-checked={font === "sans"} onClick={() => editor.setStyle({ font: "sans" })} className={seg(font === "sans")}>
+          {t("settings.fontSans")}
+        </button>
+      </div>
+      <div role="radiogroup" aria-label={t("picture.align")} className="flex rounded-pill border border-paper/15 p-0.5">
+        <button type="button" role="radio" aria-checked={align === "start"} onClick={() => editor.setStyle({ align: "start" })} className={seg(align === "start")}>
+          {t("journal.page.alignStart")}
+        </button>
+        <button type="button" role="radio" aria-checked={align === "center"} onClick={() => editor.setStyle({ align: "center" })} className={seg(align === "center")}>
+          {t("picture.centre")}
+        </button>
+      </div>
     </div>
   );
 }

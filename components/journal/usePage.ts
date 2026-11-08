@@ -3,7 +3,7 @@
 import { useCallback, useLayoutEffect, useRef, useState } from "react";
 
 import { MAX_BODY } from "@/lib/journal/entries";
-import { insertAt, parsePage, removeAt, serializePage, tidyBlocks, type Page, type PageBlock } from "@/lib/journal/page";
+import { cleanStyle, insertAt, parsePage, removeAt, serializePage, tidyBlocks, type Page, type PageBlock, type PageStyle } from "@/lib/journal/page";
 
 /** Where the cursor is: a text block's index and the selection in it. */
 export type Cursor = { index: number; start: number; end: number };
@@ -82,6 +82,8 @@ export function usePage(open: boolean, body: string, onBody: (body: string) => v
   /** Plus: the page's notebook (empty takes it out of one) and its tags. */
   const setNotebook = (notebook: string) => commit({ ...page, notebook: notebook || undefined });
   const setTags = (tags: string[]) => commit({ ...page, tags: tags.length ? tags : undefined });
+  /** Plus: the page's style, from the house's own. */
+  const setStyle = (patch: PageStyle) => commit({ ...page, style: cleanStyle({ ...page.style, ...patch }) });
 
   const setBlock = (index: number, patch: Partial<PageBlock>) => {
     const blocks = page.blocks.map((b, i) => (i === index ? ({ ...b, ...patch } as PageBlock) : b));
@@ -127,7 +129,7 @@ export function usePage(open: boolean, body: string, onBody: (body: string) => v
     commit({ ...page, blocks });
   };
 
-  return { page, setCursor, setTitle, setNotebook, setTags, setBlock, insert, remove, colorTarget, setColor, panel, setPanel };
+  return { page, setCursor, setTitle, setNotebook, setTags, setStyle, setBlock, insert, remove, colorTarget, setColor, panel, setPanel };
 }
 
 export type PageEditor = ReturnType<typeof usePage>;

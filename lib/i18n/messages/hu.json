@@ -4956,6 +4956,7 @@
   "journal.page.versePlaceholder": "Egy vers, például János 3:16",
   "journal.page.quotePlaceholder": "Az idézett szavak",
   "journal.page.quoteBy": "Ki mondta",
+  "journal.page.alignStart": "Eleje",
   "journal.page.notebook": "Jegyzetfüzet",
   "journal.page.addToNotebook": "Hozzáadás egy füzethez",
   "journal.page.noNotebook": "Nincs füzet",

@@ -4956,6 +4956,7 @@
   "journal.page.versePlaceholder": "Ein Vers, etwa Johannes 3:16",
   "journal.page.quotePlaceholder": "Die Worte, die du zitierst",
   "journal.page.quoteBy": "Wer hat es gesagt",
+  "journal.page.alignStart": "Anfang",
   "journal.page.notebook": "Notizbuch",
   "journal.page.addToNotebook": "Zu einem Notizbuch hinzufügen",
   "journal.page.noNotebook": "Kein Notizbuch",

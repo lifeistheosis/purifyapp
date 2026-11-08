@@ -130,3 +130,20 @@ describe("notebooks and tags (Plus, step 2b)", () => {
     expect(panel).toContain('t("journal.page.removeTag", { tag: x })');
   });
 });
+
+describe("a page's style (Plus, step 2c)", () => {
+  it("only the house's own: Lora or DM Sans, the start or the centre, never left or right, no colour of its own", () => {
+    expect(blocks).toContain('const font = page.style?.font === "sans" ? "font-sans" : "font-serif";');
+    expect(blocks).toContain('const align = page.style?.align === "center" ? "text-center" : "text-start";');
+    const rows = blocks.slice(blocks.indexOf("function StyleRows"), blocks.indexOf("function MoreChoice"));
+    expect(rows).not.toMatch(/text-(?:left|right)\b|\[#|rgb\(|text-(?:red|blue|green|yellow|amber|gold)/);
+    // The words the app already has first: Font, Serif, Sans, Alignment, Centre.
+    for (const k of ["bible.fontLabel", "bible.fontSerif", "settings.fontSans", "picture.align", "picture.centre"]) expect(rows).toContain(`t("${k}")`);
+    expect(rows).toMatch(/role="radiogroup"/);
+  });
+
+  it("the writer's words take the style; the wash behind them follows it, line for line", () => {
+    expect(blocks).toContain("look={cn(font, align)}");
+    expect(blocks).toContain('const words = cn("block w-full whitespace-pre-wrap break-words text-body leading-[1.7]", look);');
+  });
+});

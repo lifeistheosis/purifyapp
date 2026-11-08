@@ -81,7 +81,7 @@ export function JournalFeed({
   // The list shows the writer's own words; a verse card is named in the small
   // line under them, so a reference never reads as the writer's words.
   const pages = useMemo(() => {
-    const out = new Map<string, { title: string; text: string; cards: string[]; all: string; notebook?: string }>();
+    const out = new Map<string, { title: string; text: string; cards: string[]; all: string; notebook?: string; sans?: boolean }>();
     for (const i of items) {
       if (!i.record) {
         out.set(i.key, { title: "", text: i.body, cards: [], all: i.body });
@@ -91,7 +91,7 @@ export function JournalFeed({
       const words = pageText({ ...page, blocks: page.blocks.filter((b) => b.type !== "verse") }, verseLabel);
       const cards = page.blocks.flatMap((b) => (b.type === "verse" ? [verseLabel(b)] : []));
       const all = [pageText(page, verseLabel), page.notebook, ...(page.tags ?? [])].filter(Boolean).join("\n");
-      out.set(i.key, { title: page.title, text: words, cards, all, notebook: page.notebook });
+      out.set(i.key, { title: page.title, text: words, cards, all, notebook: page.notebook, sans: page.style?.font === "sans" });
     }
     return out;
     // verseLabel is remade each render; the book names behind it follow t.
@@ -249,13 +249,16 @@ export function JournalFeed({
                 <button type="button" onClick={() => onOpen(item)} data-journal-entry="" className="block w-full py-4 pe-1 text-start active:opacity-80">
                   {item.prompt ? <span className="block font-sans text-caption text-paper/55">{item.prompt.text}</span> : null}
                   {pages.get(item.key)?.title ? (
-                    <span data-journal-entry-title="" className={`block font-serif text-[19px] font-semibold leading-[1.3] text-paper${item.prompt ? " mt-1" : ""}`}>
+                    <span
+                      data-journal-entry-title=""
+                      className={`block ${pages.get(item.key)?.sans ? "font-sans" : "font-serif"} text-[19px] font-semibold leading-[1.3] text-paper${item.prompt ? " mt-1" : ""}`}
+                    >
                       {pages.get(item.key)?.title}
                     </span>
                   ) : null}
                   {pages.get(item.key)?.text ? (
                     <span
-                      className={`block whitespace-pre-line line-clamp-4 font-serif text-body leading-[1.6] text-paper/90 print:line-clamp-none${item.prompt || pages.get(item.key)?.title ? " mt-1" : ""}`}
+                      className={`block whitespace-pre-line line-clamp-4 ${pages.get(item.key)?.sans ? "font-sans" : "font-serif"} text-body leading-[1.6] text-paper/90 print:line-clamp-none${item.prompt || pages.get(item.key)?.title ? " mt-1" : ""}`}
                     >
                       {pages.get(item.key)?.text}
                     </span>

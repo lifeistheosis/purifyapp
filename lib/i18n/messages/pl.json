@@ -5115,6 +5115,7 @@
   "journal.page.versePlaceholder": "Werset, na przykład Ewangelia Jana 3:16",
   "journal.page.quotePlaceholder": "Słowa, które cytujesz",
   "journal.page.quoteBy": "Kto to powiedział",
+  "journal.page.alignStart": "Początek",
   "journal.page.notebook": "Notatnik",
   "journal.page.addToNotebook": "Dodaj do notatnika",
   "journal.page.noNotebook": "Bez notatnika",

@@ -5251,6 +5251,7 @@
   "journal.page.versePlaceholder": "آية، مثل يوحنا 3:16",
   "journal.page.quotePlaceholder": "الكلمات التي تقتبسها",
   "journal.page.quoteBy": "مَن قالها",
+  "journal.page.alignStart": "البداية",
   "journal.page.notebook": "دفتر",
   "journal.page.addToNotebook": "أضف إلى دفتر",
   "journal.page.noNotebook": "بلا دفتر",

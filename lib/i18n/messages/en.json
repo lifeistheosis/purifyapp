@@ -4974,6 +4974,7 @@
   "journal.page.versePlaceholder": "A verse, as John 3:16",
   "journal.page.quotePlaceholder": "The words you are quoting",
   "journal.page.quoteBy": "Who said it",
+  "journal.page.alignStart": "Start",
   "journal.page.notebook": "Notebook",
   "journal.page.addToNotebook": "Add to a notebook",
   "journal.page.noNotebook": "No notebook",

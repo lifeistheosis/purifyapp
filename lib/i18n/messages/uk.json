@@ -5112,6 +5112,7 @@
   "journal.page.versePlaceholder": "Вірш, наприклад Від Іоана 3:16",
   "journal.page.quotePlaceholder": "Слова, які ви цитуєте",
   "journal.page.quoteBy": "Хто це сказав",
+  "journal.page.alignStart": "Початок",
   "journal.page.notebook": "Зошит",
   "journal.page.addToNotebook": "Додати до зошита",
   "journal.page.noNotebook": "Без зошита",

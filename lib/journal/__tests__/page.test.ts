@@ -5,7 +5,7 @@
 import { describe, expect, it } from "vitest";
 
 import { MAX_BODY } from "../entries";
-import { cleanNotebook, cleanTags, insertAt, isAppHref, libraryBlock, pageIsEmpty, pageText, parsePage, removeAt, serializePage, tidyBlocks, verseBlock, VERSE_CARD_MAX, type Page } from "../page";
+import { cleanNotebook, cleanStyle, cleanTags, insertAt, isAppHref, libraryBlock, pageIsEmpty, pageText, parsePage, removeAt, serializePage, tidyBlocks, verseBlock, VERSE_CARD_MAX, type Page } from "../page";
 
 const page: Page = {
   title: "On the Samaritan woman",
@@ -228,5 +228,20 @@ describe("a page's notebook and tags (Plus)", () => {
     expect(cleanTags(["Prayer", "prayer", " fasting ", "a,b", "[x]", ""])).toEqual(["Prayer", "fasting", "a b", "x"]);
     expect(cleanTags(Array.from({ length: 12 }, (_, i) => `t${i}`))).toHaveLength(8);
     expect(cleanNotebook("  Lent [2027]  ")).toBe("Lent 2027");
+  });
+});
+
+describe("a page's style (Plus)", () => {
+  it("is kept only where it differs from the house's own, and read back", () => {
+    const p: Page = { title: "T", blocks: [{ type: "text", text: "W" }], style: { font: "sans", align: "center" } };
+    const body = serializePage(p);
+    expect(body).toBe("# T\n\n[[style font=sans align=center]]\n\nW");
+    expect(parsePage(body)).toEqual(p);
+    expect(serializePage({ title: "", blocks: [{ type: "text", text: "W" }], style: { font: "serif", align: "start" } })).toBe("W");
+  });
+
+  it("knows only the house's two fonts and two places", () => {
+    expect(parsePage("[[style font=comic align=left]]\n\nW").style).toBeUndefined();
+    expect(cleanStyle({ font: "sans" })).toEqual({ font: "sans" });
   });
 });
