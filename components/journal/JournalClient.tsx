@@ -31,6 +31,7 @@ import {
   type JournalSource,
 } from "@/lib/journal/entries";
 import { READING_KIND_KEY, verseSpan } from "@/lib/journal/churchDay";
+import { parsePage } from "@/lib/journal/page";
 import { takeJournalOpen } from "@/lib/journal/quoteInJournal";
 import { emptyPromptKey, journalFeed, noteKey, planPrompts, type JournalItem, type PlanQuestion } from "@/lib/journal/feed";
 import { dayGuide } from "@/lib/plans/guide";
@@ -77,6 +78,17 @@ export function JournalClient() {
   const { entry, offer, undo } = useUndo();
 
   const items = useMemo(() => journalFeed(notes, records), [notes, records]);
+  // Plus: the notebooks the pages name (lib/journal/page.ts). A notebook is
+  // the pages that name it, so there is no list of them to keep in step.
+  const notebooks = useMemo(() => {
+    const names = new Set<string>();
+    for (const r of records) {
+      if (r.deletedAt) continue;
+      const name = parsePage(r.body).notebook;
+      if (name) names.add(name);
+    }
+    return [...names].sort((a, b) => a.localeCompare(b));
+  }, [records]);
   const books = useMemo(() => localBookNames(t), [t]);
   const bookName = useCallback((slug: string) => books[slug] ?? t(`bible.books.${slug}`), [books, t]);
   const sourceLabel = useCallback(
@@ -297,6 +309,7 @@ export function JournalClient() {
                 onRemove={remove}
                 sourceLabel={sourceLabel}
                 onSearchLocked={locked ? () => upgrade.open("journal") : undefined}
+                notebooks={notebooks}
               />
               {/* 1.9 (s4-09, "a reader's journal is theirs"): on the website, the
                   browser's own print, whose dialog saves a PDF; the page prints
@@ -318,7 +331,7 @@ export function JournalClient() {
       )}
 
       {mounted && !entry ? <WriteButton placement="foot" onClick={write} draft={waitingDraft} /> : null}
-      <JournalComposer open={open} draft={draft} onChange={change} onClose={close} onDone={done} sourceLabel={sourceLabel} />
+      <JournalComposer open={open} draft={draft} onChange={change} onClose={close} onDone={done} sourceLabel={sourceLabel} notebooks={notebooks} />
       <UndoBar entry={entry} onUndo={undo} />
     </>
   );

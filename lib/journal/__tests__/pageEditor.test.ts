@@ -20,7 +20,7 @@ describe("an entry is written as a page; a verse's note as words", () => {
     expect(composer).toContain("usePage(open, draft.body,");
     expect(composer).toMatch(/\{isNote \? \([\s\S]*?<textarea[\s\S]*?\) : \([\s\S]*?<PageBlocks editor=\{editor\}/);
     // The tools stand still at the sheet's foot, under the part that scrolls.
-    expect(composer).toContain("foot={isNote ? undefined : <PageToolbar editor={editor} />}");
+    expect(composer).toContain("foot={isNote ? undefined : <PageToolbar editor={editor} notebooks={notebooks} />}");
     // Done is for a page with something in it: a title alone, or a card alone, counts.
     expect(composer).toContain("pageIsEmpty(editor.page)");
   });
@@ -78,7 +78,7 @@ describe("the page's parts, from the house's own", () => {
 
   it("the title keeps its size on a phone, and the page's fields draw no square frame", () => {
     expect(css).toContain('[data-journal-composer] input[data-journal-title]:not([type="checkbox"]):not([type="radio"]) {\n font-size: 24px;');
-    expect(css).toContain("[data-journal-composer] :is(textarea, input):focus-visible {\n outline: none;");
+    expect(css).toContain("[data-journal-composer] :is(textarea, input):focus-visible,\n[data-page-props-panel] input:focus-visible {\n outline: none;");
   });
 });
 
@@ -104,5 +104,29 @@ describe("Plus's blocks in the editor (step 2)", () => {
 
   it("a heading keeps its size on a phone", () => {
     expect(css).toContain('[data-journal-composer] input[data-page-heading]:not([type="checkbox"]):not([type="radio"]) {\n font-size: 20px;');
+  });
+});
+
+describe("notebooks and tags (Plus, step 2b)", () => {
+  const client = read("components/journal/JournalClient.tsx");
+  const feed = read("components/journal/JournalFeed.tsx");
+
+  it("one line under the title, the Plus mark and the upgrade sheet without Plus", () => {
+    const line = blocks.slice(blocks.indexOf("data-page-props"), blocks.indexOf("data-page-props") + 900);
+    expect(line).toMatch(/if \(locked\) upgrade\.open\("journal"\);\s*else editor\.setPanel/);
+    expect(line).toContain('t("journal.page.addToNotebook")');
+    expect(line).toContain("{locked ? <PlusMark");
+    expect(line).toContain("min-h-11");
+  });
+
+  it("a notebook is the pages that name it: gathered from the pages, offered again, and a chip in the list", () => {
+    expect(client).toMatch(/const name = parsePage\(r\.body\)\.notebook;/);
+    expect(client).toContain("notebooks={notebooks}");
+    expect(feed).toContain("notebooks.map((n) => (");
+    expect(feed).toContain("pages.get(i.key)?.notebook === notebook");
+    const panel = blocks.slice(blocks.indexOf("function PropsPanel"), blocks.indexOf("function MoreChoice"));
+    expect(panel).toContain("editor.setNotebook(n)");
+    expect(panel).toContain("cleanTags([...tags, tag])");
+    expect(panel).toContain('t("journal.page.removeTag", { tag: x })');
   });
 });

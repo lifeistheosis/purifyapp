@@ -5,7 +5,7 @@
 import { describe, expect, it } from "vitest";
 
 import { MAX_BODY } from "../entries";
-import { insertAt, isAppHref, libraryBlock, pageIsEmpty, pageText, parsePage, removeAt, serializePage, tidyBlocks, verseBlock, VERSE_CARD_MAX, type Page } from "../page";
+import { cleanNotebook, cleanTags, insertAt, isAppHref, libraryBlock, pageIsEmpty, pageText, parsePage, removeAt, serializePage, tidyBlocks, verseBlock, VERSE_CARD_MAX, type Page } from "../page";
 
 const page: Page = {
   title: "On the Samaritan woman",
@@ -208,5 +208,25 @@ describe("Plus's blocks, kept as text an older build reads", () => {
     const text = pageText(plus, () => "");
     expect(text).toContain("Confession on Saturday");
     expect(text).toContain("Words set apart.");
+  });
+});
+
+describe("a page's notebook and tags (Plus)", () => {
+  it("are kept under the title, and read back", () => {
+    const p: Page = { title: "Week one", blocks: [{ type: "text", text: "Words." }], notebook: "Lent 2027", tags: ["fasting", "prayer"] };
+    const body = serializePage(p);
+    expect(body).toBe("# Week one\n\n[[notebook Lent 2027]]\n[[tags fasting, prayer]]\n\nWords.");
+    expect(parsePage(body)).toEqual(p);
+  });
+
+  it("a page without them carries no empty marks", () => {
+    expect(serializePage({ title: "", blocks: [{ type: "text", text: "Words." }], notebook: " ", tags: [] })).toBe("Words.");
+    expect(parsePage("Words.")).not.toHaveProperty("notebook");
+  });
+
+  it("tags are cleaned: no commas or brackets inside one, none twice, eight at most", () => {
+    expect(cleanTags(["Prayer", "prayer", " fasting ", "a,b", "[x]", ""])).toEqual(["Prayer", "fasting", "a b", "x"]);
+    expect(cleanTags(Array.from({ length: 12 }, (_, i) => `t${i}`))).toHaveLength(8);
+    expect(cleanNotebook("  Lent [2027]  ")).toBe("Lent 2027");
   });
 });

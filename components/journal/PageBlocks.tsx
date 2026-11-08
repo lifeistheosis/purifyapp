@@ -26,6 +26,7 @@ import { Book } from "@/components/ui/icons/Book";
 import { Candle } from "@/components/ui/icons/Candle";
 import { ChatBubble } from "@/components/ui/icons/ChatBubble";
 import { Check } from "@/components/ui/icons/Check";
+import { ClosedBook } from "@/components/ui/icons/ClosedBook";
 import { Close } from "@/components/ui/icons/Close";
 import { Cross } from "@/components/ui/icons/Cross";
 import { Heart } from "@/components/ui/icons/Heart";
@@ -43,6 +44,11 @@ import { verseSpan } from "@/lib/journal/churchDay";
 import {
   BY_MAX,
   CALLOUT_ICONS,
+  cleanNotebook,
+  cleanTags,
+  NOTEBOOK_MAX,
+  TAG_MAX,
+  TAGS_MAX,
   DIVIDER_STYLES,
   HEADING_MAX,
   ITEM_MAX,
@@ -71,6 +77,8 @@ export function PageBlocks({ editor, placeholder }: { editor: PageEditor; placeh
   const label = useVerseCardLabel();
   const { page } = editor;
   const onlyWords = !page.title && page.blocks.length === 1;
+  const locked = usePlusFeatures() === false;
+  const upgrade = useUpgradeModal();
 
   return (
     <div className="mt-5">
@@ -92,6 +100,26 @@ export function PageBlocks({ editor, placeholder }: { editor: PageEditor; placeh
           className="block h-12 w-full bg-transparent font-serif text-[24px] font-semibold leading-[1.25] text-paper placeholder:text-paper/55 focus:outline-none"
         />
       </label>
+
+      {/* Plus: the page's notebook and tags, one line under the title; a tap
+          opens them at the sheet's foot. Without Plus the line wears the Plus
+          mark and opens the upgrade sheet named for the journal. */}
+      <button
+        type="button"
+        data-page-props=""
+        onPointerDown={(e) => e.preventDefault()}
+        onClick={() => {
+          if (locked) upgrade.open("journal");
+          else editor.setPanel(editor.panel === "props" ? null : "props");
+        }}
+        className="tap-press flex min-h-11 w-full min-w-0 items-center gap-2 text-start font-sans text-caption text-paper/70 hover:text-paper"
+      >
+        <ClosedBook size={16} className="shrink-0" />
+        <span className="min-w-0 truncate">
+          {[page.notebook || t("journal.page.addToNotebook"), ...(page.tags ?? []).map((tag) => `#${tag}`)].join(" · ")}
+        </span>
+        {locked ? <PlusMark className="ms-auto shrink-0" /> : null}
+      </button>
 
       <div className="mt-2 space-y-4">
         {page.blocks.map((b, i) => {
@@ -502,7 +530,6 @@ function RemoveButton({ onClick, label }: { onClick: () => void; label: string }
 
 // ── The tools, at the sheet's foot ───────────────────────────────────────
 
-type Panel = "verse" | "color" | "more" | null;
 
 /**
  * The row under the page, above the keyboard: Verse finds a verse and lays
@@ -510,9 +537,9 @@ type Panel = "verse" | "color" | "more" | null;
  * Highlight colours the paragraph the cursor is in. Verse and Highlight open
  * their panel over the row and close it again.
  */
-export function PageToolbar({ editor }: { editor: PageEditor }) {
+export function PageToolbar({ editor, notebooks = [] }: { editor: PageEditor; notebooks?: readonly string[] }) {
   const { t } = useTranslate();
-  const [panel, setPanel] = useState<Panel>(null);
+  const { panel, setPanel } = editor;
   const [naming, setNaming] = useState<string | null | undefined>(undefined);
   const target = panel === "color" ? editor.colorTarget() : null;
   // Plus's blocks are shown, never hidden: without Plus each wears the mark
@@ -553,6 +580,7 @@ export function PageToolbar({ editor }: { editor: PageEditor }) {
           onNames={(id) => setNaming(id)}
         />
       ) : null}
+      {panel === "props" ? <PropsPanel editor={editor} notebooks={notebooks} onDone={() => setPanel(null)} /> : null}
       {panel === "more" ? (
         <div data-page-more="" className="grid grid-cols-2 gap-2 px-3 pt-2">
           <MoreChoice icon={<Note size={18} />} label={t("journal.page.heading")} locked={locked} onClick={() => addPlus({ type: "heading", text: "" })} />
@@ -583,6 +611,96 @@ export function PageToolbar({ editor }: { editor: PageEditor }) {
         <Tool icon={<Plus size={18} />} label={t("journal.page.more")} pressed={panel === "more"} onClick={() => setPanel(panel === "more" ? null : "more")} />
       </div>
       <HighlightNamesSheet open={naming !== undefined} focusId={naming ?? null} onClose={() => setNaming(undefined)} />
+    </div>
+  );
+}
+
+/**
+ * Plus: the page's notebook and tags. A notebook is the pages that name it,
+ * so the ones already named are offered to pick again; a tag goes on with
+ * Enter and comes off with a tap.
+ */
+function PropsPanel({ editor, notebooks, onDone }: { editor: PageEditor; notebooks: readonly string[]; onDone: () => void }) {
+  const { t } = useTranslate();
+  const [tag, setTag] = useState("");
+  const tags = editor.page.tags ?? [];
+  const current = editor.page.notebook ?? "";
+  const addTag = () => {
+    const next = cleanTags([...tags, tag]);
+    if (next.length !== tags.length) editor.setTags(next);
+    setTag("");
+  };
+  const chip = "tap-press inline-flex h-11 max-w-full items-center gap-1.5 rounded-pill border px-3.5 font-sans text-detail font-semibold";
+  return (
+    <div data-page-props-panel="" className="max-h-[45vh] overflow-y-auto px-3 pt-2">
+      <div className="flex items-center justify-between gap-3">
+        <p className="font-sans text-caption font-semibold text-paper/70">{t("journal.page.notebook")}</p>
+        <button type="button" onClick={onDone} className="tap-press inline-flex h-11 shrink-0 items-center rounded-pill px-3 font-sans text-detail font-semibold text-paper/85">
+          {t("common.done")}
+        </button>
+      </div>
+      <label className="block">
+        <span className="sr-only">{t("journal.page.notebook")}</span>
+        <input
+          type="text"
+          value={current}
+          maxLength={NOTEBOOK_MAX}
+          onChange={(e) => editor.setNotebook(cleanNotebook(e.target.value) ? e.target.value : "")}
+          placeholder={t("journal.page.notebookPlaceholder")}
+          className="block h-11 w-full rounded-xl border border-paper/15 bg-transparent px-3 font-sans text-[16px] text-paper placeholder:text-paper/55 focus:border-paper/40 focus:outline-none"
+        />
+      </label>
+      {notebooks.length > 0 || current ? (
+        <div className="mt-2 flex flex-wrap gap-2">
+          {notebooks
+            .filter((n) => n !== current)
+            .slice(0, 6)
+            .map((n) => (
+              <button key={n} type="button" onClick={() => editor.setNotebook(n)} className={cn(chip, "border-paper/15 text-paper/85")}>
+                <ClosedBook size={14} className="shrink-0" />
+                <span className="min-w-0 truncate">{n}</span>
+              </button>
+            ))}
+          {current ? (
+            <button type="button" onClick={() => editor.setNotebook("")} className={cn(chip, "border-paper/15 text-paper/70")}>
+              {t("journal.page.noNotebook")}
+            </button>
+          ) : null}
+        </div>
+      ) : null}
+
+      <p className="mt-4 font-sans text-caption font-semibold text-paper/70">{t("journal.page.tags")}</p>
+      {tags.length > 0 ? (
+        <div className="mt-1 flex flex-wrap gap-2">
+          {tags.map((x) => (
+            <button key={x} type="button" onClick={() => editor.setTags(tags.filter((y) => y !== x))} aria-label={t("journal.page.removeTag", { tag: x })} className={cn(chip, "border-paper/25 text-paper")}>
+              <span className="min-w-0 truncate">{`#${x}`}</span>
+              <Close size={12} className="shrink-0" />
+            </button>
+          ))}
+        </div>
+      ) : null}
+      {tags.length < TAGS_MAX ? (
+        <label className="mt-2 block pb-2">
+          <span className="sr-only">{t("journal.page.addTag")}</span>
+          <input
+            type="text"
+            value={tag}
+            maxLength={TAG_MAX}
+            enterKeyHint="done"
+            onChange={(e) => setTag(e.target.value)}
+            onKeyDown={(e) => {
+              if (e.key === "Enter" || e.key === ",") {
+                e.preventDefault();
+                addTag();
+              }
+            }}
+            onBlur={() => (tag.trim() ? addTag() : undefined)}
+            placeholder={t("journal.page.addTag")}
+            className="block h-11 w-full rounded-xl border border-paper/15 bg-transparent px-3 font-sans text-[16px] text-paper placeholder:text-paper/55 focus:border-paper/40 focus:outline-none"
+          />
+        </label>
+      ) : null}
     </div>
   );
 }

@@ -24,6 +24,7 @@ import { useVerseCardLabel } from "@/components/journal/PageBlocks";
 import { SearchField } from "@/components/search/SearchField";
 import { ChipScroller } from "@/components/ui/ChipScroller";
 import { FilterChip } from "@/components/ui/FilterChip";
+import { ClosedBook } from "@/components/ui/icons/ClosedBook";
 import { Search } from "@/components/ui/icons/Search";
 import { SwipeRow } from "@/components/ui/SwipeRow";
 import { useCalendarStyleDefault } from "@/lib/calendar/useCalendarStyleDefault";
@@ -51,6 +52,7 @@ export function JournalFeed({
   onRemove,
   sourceLabel,
   onSearchLocked,
+  notebooks = [],
 }: {
   items: JournalItem[];
   onOpen: (item: JournalItem) => void;
@@ -62,9 +64,12 @@ export function JournalFeed({
    * sheet named for the journal: shown, never hidden.
    */
   onSearchLocked?: () => void;
+  /** Plus: the notebooks the pages name, each a chip that shows its pages. */
+  notebooks?: readonly string[];
 }) {
   const { t, locale } = useTranslate();
   const [chosen, setChosen] = useState<JournalFilter>("all");
+  const [book, setBook] = useState<string | null>(null);
   const [query, setQuery] = useState("");
   const chips = useMemo(() => journalChips(items), [items]);
   const filter = chips.includes(chosen) ? chosen : "all";
@@ -76,7 +81,7 @@ export function JournalFeed({
   // The list shows the writer's own words; a verse card is named in the small
   // line under them, so a reference never reads as the writer's words.
   const pages = useMemo(() => {
-    const out = new Map<string, { title: string; text: string; cards: string[]; all: string }>();
+    const out = new Map<string, { title: string; text: string; cards: string[]; all: string; notebook?: string }>();
     for (const i of items) {
       if (!i.record) {
         out.set(i.key, { title: "", text: i.body, cards: [], all: i.body });
@@ -85,21 +90,23 @@ export function JournalFeed({
       const page = parsePage(i.body);
       const words = pageText({ ...page, blocks: page.blocks.filter((b) => b.type !== "verse") }, verseLabel);
       const cards = page.blocks.flatMap((b) => (b.type === "verse" ? [verseLabel(b)] : []));
-      out.set(i.key, { title: page.title, text: words, cards, all: pageText(page, verseLabel) });
+      const all = [pageText(page, verseLabel), page.notebook, ...(page.tags ?? [])].filter(Boolean).join("\n");
+      out.set(i.key, { title: page.title, text: words, cards, all, notebook: page.notebook });
     }
     return out;
     // verseLabel is remade each render; the book names behind it follow t.
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [items, t]);
 
+  const notebook = book && notebooks.includes(book) ? book : null;
   const shown = useMemo(() => {
-    const kind = filterKind(items, filter);
+    const kind = filterKind(items, filter).filter((i) => !notebook || pages.get(i.key)?.notebook === notebook);
     if (!query.trim()) return kind;
     return kind.filter((i) => {
       const p = pages.get(i.key);
       return matchesQuery([p?.title, p?.all ?? i.body, i.prompt?.text, i.source ? sourceLabel(i.source) : null].filter(Boolean).join(" "), query);
     });
-  }, [items, filter, query, sourceLabel, pages]);
+  }, [items, filter, query, sourceLabel, pages, notebook]);
 
   const groups = useMemo(() => byDay(shown), [shown]);
   // Today and yesterday by the reader's own calendar, read once: noon of the
@@ -175,12 +182,28 @@ export function JournalFeed({
       <p role="heading" aria-level={1} className="hidden font-heading text-title font-bold print:block">
         {t("journal.title")}
       </p>
-      {chips.length > 1 ? (
+      {chips.length > 1 || notebooks.length > 0 ? (
         <div data-print-hide="">
           <ChipScroller label={t("journal.filtersLabel")} className="mt-6" gap="gap-2">
             {chips.map((c) => (
-              <FilterChip key={c} active={filter === c} onClick={() => setChosen(c)}>
+              <FilterChip
+                key={c}
+                active={filter === c && (c !== "all" || !notebook)}
+                onClick={() => {
+                  setChosen(c);
+                  if (c === "all") setBook(null);
+                }}
+              >
                 {t(FILTER_KEY[c])}
+              </FilterChip>
+            ))}
+            {/* Plus: a notebook is a chip that shows its pages. */}
+            {notebooks.map((n) => (
+              <FilterChip key={`nb-${n}`} active={notebook === n} onClick={() => setBook(notebook === n ? null : n)}>
+                <span className="inline-flex items-center gap-1.5">
+                  <ClosedBook size={14} />
+                  {n}
+                </span>
               </FilterChip>
             ))}
           </ChipScroller>
@@ -238,7 +261,7 @@ export function JournalFeed({
                     </span>
                   ) : null}
                   <span className="mt-1.5 block truncate font-sans text-caption text-paper/50">
-                    {[t(KIND_KEY[item.kind]), item.source ? sourceLabel(item.source) : null, ...(pages.get(item.key)?.cards.slice(0, 2) ?? []), timeOf(item.at)]
+                    {[t(KIND_KEY[item.kind]), pages.get(item.key)?.notebook ?? null, item.source ? sourceLabel(item.source) : null, ...(pages.get(item.key)?.cards.slice(0, 2) ?? []), timeOf(item.at)]
                       .filter(Boolean)
                       .join(" · ")}
                   </span>

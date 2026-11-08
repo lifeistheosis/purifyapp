@@ -46,6 +46,9 @@
 //   [[callout candle]]                a callout: a soft box with an icon from
 //   > Words set apart.                the house's set, and its words
 //
+//   [[notebook Lent 2027]]            the page's notebook and its tags, in
+//   [[tags fasting, prayer]]          one paragraph under the title
+//
 // A page with Plus's blocks stays readable, and editable, without Plus: the
 // writer's words are never locked away. Only adding one is Plus's.
 //
@@ -81,7 +84,40 @@ export type CalloutIcon = (typeof CALLOUT_ICONS)[number];
 /** The blocks only Plus adds. */
 export const PLUS_BLOCKS: readonly PageBlock["type"][] = ["heading", "check", "divider", "callout"];
 
-export type Page = { title: string; blocks: PageBlock[] };
+export type Page = {
+  title: string;
+  blocks: PageBlock[];
+  /** Plus: the notebook the page is in, by name. A notebook is the pages that name it. */
+  notebook?: string;
+  /** Plus: the page's tags. */
+  tags?: string[];
+};
+
+/** The longest notebook name and tag, and the most tags a page carries. */
+export const NOTEBOOK_MAX = 60;
+export const TAG_MAX = 32;
+export const TAGS_MAX = 8;
+const PROPERTY_LINE = /^\[\[(notebook|tags) (.+)\]\]$/;
+
+/** A page's tags, kept sane: trimmed, one line each, none twice (by their letters), at most TAGS_MAX. */
+export function cleanTags(tags: readonly string[]): string[] {
+  const seen = new Set<string>();
+  const out: string[] = [];
+  for (const raw of tags) {
+    const tag = oneLine(raw.replace(/[,\]\[]/g, " "), TAG_MAX);
+    const key = tag.toLocaleLowerCase();
+    if (!tag || seen.has(key)) continue;
+    seen.add(key);
+    out.push(tag);
+    if (out.length === TAGS_MAX) break;
+  }
+  return out;
+}
+
+/** A notebook's name, kept sane. */
+export function cleanNotebook(name: string | undefined): string {
+  return oneLine((name ?? "").replace(/[\]\[]/g, " "), NOTEBOOK_MAX);
+}
 
 /** The most verses one card holds: a card is a passage to dwell on, not a chapter. */
 export const VERSE_CARD_MAX = 10;
@@ -146,7 +182,18 @@ export function parsePage(body: string): Page {
     else blocks.push(color ? { type: "text", text, color } : { type: "text", text });
   };
 
+  let notebook = "";
+  let tags: string[] = [];
   paras.forEach((p, i) => {
+    const props = p.split("\n");
+    if (props.every((l) => PROPERTY_LINE.test(l))) {
+      for (const l of props) {
+        const m = PROPERTY_LINE.exec(l)!;
+        if (m[1] === "notebook") notebook = cleanNotebook(m[2]);
+        else tags = cleanTags(m[2].split(","));
+      }
+      return;
+    }
     if (i === 0 && p.startsWith("# ")) {
       const [first, ...rest] = p.split("\n");
       title = oneLine(first.slice(2), TITLE_MAX);
@@ -219,7 +266,10 @@ export function parsePage(body: string): Page {
     }
     pushText(unescape(p));
   });
-  return { title, blocks };
+  const page: Page = { title, blocks };
+  if (notebook) page.notebook = notebook;
+  if (tags.length) page.tags = tags;
+  return page;
 }
 
 function unescape(p: string): string {
@@ -235,6 +285,10 @@ export function serializePage(page: Page): string {
   const out: string[] = [];
   const title = oneLine(page.title ?? "", TITLE_MAX);
   if (title) out.push(`# ${title}`);
+  const notebook = cleanNotebook(page.notebook);
+  const tags = cleanTags(page.tags ?? []);
+  const props = [notebook ? `[[notebook ${notebook}]]` : "", tags.length ? `[[tags ${tags.join(", ")}]]` : ""].filter(Boolean);
+  if (props.length) out.push(props.join("\n"));
   for (const b of page.blocks) {
     if (b.type === "text") {
       const color = b.color && isHighlightColor(b.color) ? b.color : undefined;

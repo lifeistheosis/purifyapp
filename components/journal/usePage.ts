@@ -12,8 +12,11 @@ type FocusAsk = { index: number; at: "start" | "end"; field?: "input" };
 
 function fresh(body: string): Page {
   const page = parsePage(body);
-  return { title: page.title, blocks: tidyBlocks(page.blocks) };
+  return { ...page, blocks: tidyBlocks(page.blocks) };
 }
+
+/** The panel open over the tools at the sheet's foot, if any. */
+export type PagePanel = "verse" | "color" | "more" | "props" | null;
 
 /**
  * The page being written (lib/journal/page.ts), held as blocks while the sheet
@@ -29,9 +32,11 @@ export function usePage(open: boolean, body: string, onBody: (body: string) => v
   // Read the body again each time the sheet opens, during the render that
   // opens it (React's way to follow a prop), not in an effect after it.
   const [wasOpen, setWasOpen] = useState(open);
+  const [panel, setPanel] = useState<PagePanel>(null);
   if (open !== wasOpen) {
     setWasOpen(open);
     if (open) setPage(fresh(body));
+    setPanel(null);
   }
 
   // Where the cursor is, as state: the tools read it to know which paragraph
@@ -74,6 +79,9 @@ export function usePage(open: boolean, body: string, onBody: (body: string) => v
   }, [focusTick]);
 
   const setTitle = (title: string) => commit({ ...page, title });
+  /** Plus: the page's notebook (empty takes it out of one) and its tags. */
+  const setNotebook = (notebook: string) => commit({ ...page, notebook: notebook || undefined });
+  const setTags = (tags: string[]) => commit({ ...page, tags: tags.length ? tags : undefined });
 
   const setBlock = (index: number, patch: Partial<PageBlock>) => {
     const blocks = page.blocks.map((b, i) => (i === index ? ({ ...b, ...patch } as PageBlock) : b));
@@ -119,7 +127,7 @@ export function usePage(open: boolean, body: string, onBody: (body: string) => v
     commit({ ...page, blocks });
   };
 
-  return { page, setCursor, setTitle, setBlock, insert, remove, colorTarget, setColor };
+  return { page, setCursor, setTitle, setNotebook, setTags, setBlock, insert, remove, colorTarget, setColor, panel, setPanel };
 }
 
 export type PageEditor = ReturnType<typeof usePage>;

@@ -2963,7 +2963,8 @@ html[data-input="pointer"] *:focus-visible:not(input, textarea, select, [content
    build 88 note 3): the sheet is the field, with no border of its own, so the
    ring above drew a square frame inside the round sheet, the frame he saw on
    his phone. Its caret marks where typing goes. */
-[data-journal-composer] :is(textarea, input):focus-visible {
+[data-journal-composer] :is(textarea, input):focus-visible,
+[data-page-props-panel] input:focus-visible {
  outline: none;
 }
 /* A page's title (1.9, components/journal/PageBlocks.tsx) stays at its

@@ -49,6 +49,7 @@ export function JournalComposer({
   onDone,
   sourceLabel,
   openLink = true,
+  notebooks,
 }: {
   open: boolean;
   draft: JournalDraft;
@@ -61,6 +62,8 @@ export function JournalComposer({
   sourceLabel: (source: JournalSource) => string;
   /** The source's Open link; left out where the sheet was opened from the source itself (a verse's note, 1.9). */
   openLink?: boolean;
+  /** Plus: the notebooks the journal's pages already name, to pick again. */
+  notebooks?: readonly string[];
 }) {
   const { t, locale } = useTranslate();
   const area = useRef<HTMLTextAreaElement | null>(null);
@@ -159,7 +162,7 @@ export function JournalComposer({
       // A centred panel on a computer and a tablet, the whole screen on a phone.
       desktop
       header={header}
-      foot={isNote ? undefined : <PageToolbar editor={editor} />}
+      foot={isNote ? undefined : <PageToolbar editor={editor} notebooks={notebooks} />}
       panelClassName="md:max-w-[720px]"
       bodyClassName="pb-10"
     >
