@@ -173,8 +173,9 @@ standards in readers' pages; shares and their count made through API routes
   (Serif or Sans, the start or the centre, in the words the app already had);
   a cover from the 14 icons whose rights are verified, credited under it. All
   kept in the page's text. The paywall's journal row names them. Free readers
-  see each with the Plus mark. Left for later: the computer's own layout
-  (the composer is already a centred 720px panel there).
+  see each with the Plus mark. On a computer, with notebooks, they stand at
+  the side and the page has its column (the writing sheet is the centred
+  720px panel it was); a tablet in the apps keeps the phone's one column.
 
 - **Step 3, 2026-11-08, waiting on his SQL:** sharing a page. Share, in the
   writing sheet of a saved page, makes a copy at an unlisted link

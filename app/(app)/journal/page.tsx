@@ -4,7 +4,7 @@ import { MobileTopBar } from "@/components/nav/MobileTopBar";
 export const metadata = {
   title: "Your journal",
   description:
-    "Every note you have written in the Scriptures, dated and gathered in one place, with the ones from this day in past months brought back. A Purify Plus tool.",
+    "Your own journal, by the Church's day: pages with Scripture, your own quotes and highlights, and the notes you write on verses.",
 };
 
 /*
@@ -19,7 +19,10 @@ export default function JournalPage() {
     <>
       <MobileTopBar titleKey="journal.title" back backFallback="/bible" revealTitleOn="journal-title" />
       <section className="min-h-screen bg-night px-5 pb-16 pt-8 md:px-8 md:pt-14" aria-labelledby="journal-title">
-        <div className="mx-auto w-full max-w-[760px]">
+        {/* Wide enough on a computer for the notebooks at the side and the
+            page in its column of 720px (1.9, JOURNAL.md); the journal keeps
+            to one column of 760px when there are no notebooks. */}
+        <div className="mx-auto w-full max-w-[1000px]">
           <JournalClient />
         </div>
       </section>

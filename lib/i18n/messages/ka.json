@@ -4956,6 +4956,7 @@
   "journal.page.versePlaceholder": "მუხლი, მაგალითად იოანე 3:16",
   "journal.page.quotePlaceholder": "სიტყვები, რომლებსაც იმოწმებთ",
   "journal.page.quoteBy": "ვინ თქვა",
+  "journal.notebooks": "რვეულები",
   "journal.share.action": "ამ გვერდის გაზიარება",
   "journal.share.left": "დარჩენილია ამ თვეში: {count}",
   "journal.share.made": "მკითხველის გვერდი, შექმნილი Purify-ით",

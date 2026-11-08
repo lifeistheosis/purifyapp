@@ -53,6 +53,9 @@ export function JournalFeed({
   sourceLabel,
   onSearchLocked,
   notebooks = [],
+  notebook: chosenBook,
+  onNotebook,
+  railShown = false,
 }: {
   items: JournalItem[];
   onOpen: (item: JournalItem) => void;
@@ -66,10 +69,17 @@ export function JournalFeed({
   onSearchLocked?: () => void;
   /** Plus: the notebooks the pages name, each a chip that shows its pages. */
   notebooks?: readonly string[];
+  /** The notebook shown, when the journal holds it (a computer's side column chooses it too). */
+  notebook?: string | null;
+  onNotebook?: (notebook: string | null) => void;
+  /** On a computer the notebooks are at the side: the chips leave them to it. */
+  railShown?: boolean;
 }) {
   const { t, locale } = useTranslate();
   const [chosen, setChosen] = useState<JournalFilter>("all");
-  const [book, setBook] = useState<string | null>(null);
+  const [ownBook, setOwnBook] = useState<string | null>(null);
+  const book = onNotebook ? (chosenBook ?? null) : ownBook;
+  const setBook = onNotebook ?? setOwnBook;
   const [query, setQuery] = useState("");
   const chips = useMemo(() => journalChips(items), [items]);
   const filter = chips.includes(chosen) ? chosen : "all";
@@ -197,15 +207,18 @@ export function JournalFeed({
                 {t(FILTER_KEY[c])}
               </FilterChip>
             ))}
-            {/* Plus: a notebook is a chip that shows its pages. */}
-            {notebooks.map((n) => (
-              <FilterChip key={`nb-${n}`} active={notebook === n} onClick={() => setBook(notebook === n ? null : n)}>
-                <span className="inline-flex items-center gap-1.5">
-                  <ClosedBook size={14} />
-                  {n}
-                </span>
-              </FilterChip>
-            ))}
+            {/* Plus: a notebook is a chip that shows its pages; on a computer
+                they are at the side instead (JournalClient's NotebookRail). */}
+            <span className={railShown ? "contents md:hidden native-md-contents" : "contents"}>
+              {notebooks.map((n) => (
+                <FilterChip key={`nb-${n}`} active={notebook === n} onClick={() => setBook(notebook === n ? null : n)}>
+                  <span className="inline-flex items-center gap-1.5">
+                    <ClosedBook size={14} />
+                    {n}
+                  </span>
+                </FilterChip>
+              ))}
+            </span>
           </ChipScroller>
         </div>
       ) : null}

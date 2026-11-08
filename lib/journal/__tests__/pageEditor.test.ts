@@ -162,3 +162,23 @@ describe("each Plus block's icon says what it is", () => {
     expect(blocks).not.toContain("icons/Note");
   });
 });
+
+describe("the journal on a computer (step 2e)", () => {
+  const client = read("components/journal/JournalClient.tsx");
+  const feed = read("components/journal/JournalFeed.tsx");
+
+  it("with notebooks: the notebooks at the side and the page in its column; a tablet in the apps keeps one column", () => {
+    expect(client).toContain('md:grid md:max-w-[968px] md:grid-cols-[200px_minmax(0,1fr)] md:gap-12 native-md-block');
+    const rail = client.slice(client.indexOf("function NotebookRail"));
+    expect(rail).toContain('className="hidden md:block native-md-hidden"');
+    expect(rail).toContain("aria-pressed={chosen === n}");
+    expect(rail).toMatch(/min-h-11 w-full/);
+  });
+
+  it("one choice of notebook for the side and the chips, the chips stepping aside where the side shows", () => {
+    expect(client).toContain("notebook={book}");
+    expect(client).toContain("onNotebook={setBook}");
+    expect(feed).toContain('railShown ? "contents md:hidden native-md-contents" : "contents"');
+    expect(css).toContain("html.is-native .native-md-contents { display: contents; }");
+  });
+});

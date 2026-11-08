@@ -4,6 +4,8 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 
 import { useUpgradeModal } from "@/components/billing/UpgradeModal";
 import { PlusMark } from "@/components/billing/PlusMark";
+import { ClosedBook } from "@/components/ui/icons/ClosedBook";
+import { cn } from "@/lib/cn";
 import { useTranslate } from "@/components/i18n/MessagesProvider";
 import { JournalComposer } from "@/components/journal/JournalComposer";
 import { JournalFeed } from "@/components/journal/JournalFeed";
@@ -108,6 +110,9 @@ export function JournalClient() {
     [guide, plans, records, dismissed],
   );
   const [now] = useState(() => new Date());
+  // The notebook the list shows: chosen by its chip, or at the side on a computer.
+  const [book, setBook] = useState<string | null>(null);
+  const rail = notebooks.length > 0;
   const remembered = useMemo(() => fromThisDay(notes, now).slice(0, 2), [notes, now]);
 
   // ── Writing ──────────────────────────────────────────────────────────
@@ -226,113 +231,161 @@ export function JournalClient() {
 
   return (
     <>
-      <header className="flex items-end justify-between gap-6">
+      {/* On a computer, with notebooks, the notebooks stand at the side and
+          the page in its column of 720px (1.9, JOURNAL.md); in the apps, a
+          tablet keeps the phone's one column. */}
+      <div className={cn(rail ? "md:mx-auto md:grid md:max-w-[968px] md:grid-cols-[200px_minmax(0,1fr)] md:gap-12 native-md-block" : "mx-auto max-w-[760px]")}>
+        {rail ? <NotebookRail notebooks={notebooks} chosen={book} onChoose={setBook} /> : null}
         <div className="min-w-0">
-          <h1 id="journal-title" className="text-title font-bold leading-[1.12] tracking-[-0.01em] text-paper md:text-heading">
-            {t("journal.title")}
-          </h1>
-          <p className="mt-2 max-w-[60ch] font-sans text-detail leading-[1.6] text-paper/55">{t("journal.lede")}</p>
-        </div>
-        {mounted ? (
-          <div className="hidden shrink-0 md:block native-md-hidden">
-            <WriteButton placement="inline" onClick={write} draft={waitingDraft} />
-          </div>
-        ) : null}
-      </header>
+          <header className="flex items-end justify-between gap-6">
+            <div className="min-w-0">
+              <h1 id="journal-title" className="text-title font-bold leading-[1.12] tracking-[-0.01em] text-paper md:text-heading">
+                {t("journal.title")}
+              </h1>
+              <p className="mt-2 max-w-[60ch] font-sans text-detail leading-[1.6] text-paper/55">{t("journal.lede")}</p>
+            </div>
+            {mounted ? (
+              <div className="hidden shrink-0 md:block native-md-hidden">
+                <WriteButton placement="inline" onClick={write} draft={waitingDraft} />
+              </div>
+            ) : null}
+          </header>
 
-      {!mounted ? (
-        <div className="min-h-[50vh]" />
-      ) : (
-        <div className="pb-28">
-          <TodayPage onWriteFrom={(source) => begin({ kind: "reflection", body: "", source: { ...source, label: sourceLabel(source) } })} />
-          {waiting && plan ? (
-            <JournalPrompts
-              waiting={waiting}
-              dayLabel={t("plans.continueDay", { day: waiting.day + 1, reading: dayLabel(plan.days[waiting.day], bookName) })}
-              onAnswer={answer}
-              onNotNow={() => dismissPlanDay(waiting.planId, waiting.day)}
-            />
-          ) : remembered.length > 0 && locked ? (
-            // Plus shown, never hidden: a note from this day is waiting, and
-            // bringing it back is Plus's (lib/bible/journal.ts, fromThisDay).
-            <section aria-labelledby="journal-remembered" data-journal-remembered="locked" className="mt-6 border-y border-paper/10 py-4">
-              <p id="journal-remembered" role="heading" aria-level={2} className="flex flex-wrap items-center gap-2 font-sans text-caption font-semibold text-paper/60">
-                {t("journal.fromThisDay")}
-                <PlusMark />
-              </p>
-              <button
-                type="button"
-                onClick={() => upgrade.open("journal")}
-                className="tap-press mt-1 block min-h-11 w-full py-1 text-start font-serif text-body leading-[1.6] text-paper/85"
-              >
-                {t("journal.fromThisDayPlus")}
-              </button>
-            </section>
-          ) : remembered.length > 0 ? (
-            <section aria-labelledby="journal-remembered" className="mt-6 border-y border-paper/10 py-4">
-              <p id="journal-remembered" role="heading" aria-level={2} className="font-sans text-caption font-semibold text-paper/60">
-                {t("journal.fromThisDay")}
-              </p>
-              <ul className="mt-2 space-y-3">
-                {remembered.map((n) => (
-                  <li key={noteKey(n.book, n.chapter, n.verse)}>
-                    <p className="line-clamp-3 whitespace-pre-line font-serif text-body leading-[1.6] text-paper/90">{n.note}</p>
-                    <p className="mt-1 font-sans text-caption text-paper/50">
-                      {`${bookName(n.book)} ${n.chapter}:${n.verse}`}
-                      {n.at ? ` · ${dayOf(n.at)}` : ""}
-                    </p>
-                  </li>
-                ))}
-              </ul>
-            </section>
-          ) : null}
-
-          {items.length === 0 ? (
-            <section aria-labelledby="journal-empty" data-journal-empty="" className="mt-8 border-y border-paper/10 py-6">
-              <p id="journal-empty" role="heading" aria-level={2} className="font-sans text-caption font-semibold text-paper/60">
-                {t("journal.emptyTitle")}
-              </p>
-              <button
-                type="button"
-                onClick={() => begin({ kind: "reflection", body: "", prompt: { text: t(emptyPromptKey(now)) } })}
-                className="tap-press mt-2 block text-start font-serif text-lede leading-[1.5] text-paper"
-              >
-                {t(emptyPromptKey(now))}
-              </button>
-              <p className="mt-4 font-sans text-detail leading-[1.6] text-paper/55">{t("journal.emptyLine")}</p>
-            </section>
+          {!mounted ? (
+            <div className="min-h-[50vh]" />
           ) : (
-            <>
-              <JournalFeed
-                items={items}
-                onOpen={openItem}
-                onRemove={remove}
-                sourceLabel={sourceLabel}
-                onSearchLocked={locked ? () => upgrade.open("journal") : undefined}
-                notebooks={notebooks}
-              />
-              {/* 1.9 (s4-09, "a reader's journal is theirs"): on the website, the
-                  browser's own print, whose dialog saves a PDF; the page prints
-                  its entries alone (lib/ui/printPart.ts). The
-                  apps' WebView cannot print: there the journal leaves with
-                  Export your library, through the share sheet. */}
-              {!native ? (
-                <button
-                  type="button"
-                  onClick={printPart}
-                  className="tap-press mt-6 inline-flex min-h-11 items-center font-sans text-detail font-semibold text-paper/70 underline-offset-4 hover:text-paper hover:underline"
-                >
-                  {t("journal.print")}
-                </button>
+            <div className="pb-28">
+              <TodayPage onWriteFrom={(source) => begin({ kind: "reflection", body: "", source: { ...source, label: sourceLabel(source) } })} />
+              {waiting && plan ? (
+                <JournalPrompts
+                  waiting={waiting}
+                  dayLabel={t("plans.continueDay", { day: waiting.day + 1, reading: dayLabel(plan.days[waiting.day], bookName) })}
+                  onAnswer={answer}
+                  onNotNow={() => dismissPlanDay(waiting.planId, waiting.day)}
+                />
+              ) : remembered.length > 0 && locked ? (
+                // Plus shown, never hidden: a note from this day is waiting, and
+                // bringing it back is Plus's (lib/bible/journal.ts, fromThisDay).
+                <section aria-labelledby="journal-remembered" data-journal-remembered="locked" className="mt-6 border-y border-paper/10 py-4">
+                  <p id="journal-remembered" role="heading" aria-level={2} className="flex flex-wrap items-center gap-2 font-sans text-caption font-semibold text-paper/60">
+                    {t("journal.fromThisDay")}
+                    <PlusMark />
+                  </p>
+                  <button
+                    type="button"
+                    onClick={() => upgrade.open("journal")}
+                    className="tap-press mt-1 block min-h-11 w-full py-1 text-start font-serif text-body leading-[1.6] text-paper/85"
+                  >
+                    {t("journal.fromThisDayPlus")}
+                  </button>
+                </section>
+              ) : remembered.length > 0 ? (
+                <section aria-labelledby="journal-remembered" className="mt-6 border-y border-paper/10 py-4">
+                  <p id="journal-remembered" role="heading" aria-level={2} className="font-sans text-caption font-semibold text-paper/60">
+                    {t("journal.fromThisDay")}
+                  </p>
+                  <ul className="mt-2 space-y-3">
+                    {remembered.map((n) => (
+                      <li key={noteKey(n.book, n.chapter, n.verse)}>
+                        <p className="line-clamp-3 whitespace-pre-line font-serif text-body leading-[1.6] text-paper/90">{n.note}</p>
+                        <p className="mt-1 font-sans text-caption text-paper/50">
+                          {`${bookName(n.book)} ${n.chapter}:${n.verse}`}
+                          {n.at ? ` · ${dayOf(n.at)}` : ""}
+                        </p>
+                      </li>
+                    ))}
+                  </ul>
+                </section>
               ) : null}
-            </>
+
+              {items.length === 0 ? (
+                <section aria-labelledby="journal-empty" data-journal-empty="" className="mt-8 border-y border-paper/10 py-6">
+                  <p id="journal-empty" role="heading" aria-level={2} className="font-sans text-caption font-semibold text-paper/60">
+                    {t("journal.emptyTitle")}
+                  </p>
+                  <button
+                    type="button"
+                    onClick={() => begin({ kind: "reflection", body: "", prompt: { text: t(emptyPromptKey(now)) } })}
+                    className="tap-press mt-2 block text-start font-serif text-lede leading-[1.5] text-paper"
+                  >
+                    {t(emptyPromptKey(now))}
+                  </button>
+                  <p className="mt-4 font-sans text-detail leading-[1.6] text-paper/55">{t("journal.emptyLine")}</p>
+                </section>
+              ) : (
+                <>
+                  <JournalFeed
+                    items={items}
+                    onOpen={openItem}
+                    onRemove={remove}
+                    sourceLabel={sourceLabel}
+                    onSearchLocked={locked ? () => upgrade.open("journal") : undefined}
+                    notebooks={notebooks}
+                    notebook={book}
+                    onNotebook={setBook}
+                    railShown={rail}
+                  />
+                  {/* 1.9 (s4-09, "a reader's journal is theirs"): on the website, the
+                      browser's own print, whose dialog saves a PDF; the page prints
+                      its entries alone (lib/ui/printPart.ts). The
+                      apps' WebView cannot print: there the journal leaves with
+                      Export your library, through the share sheet. */}
+                  {!native ? (
+                    <button
+                      type="button"
+                      onClick={printPart}
+                      className="tap-press mt-6 inline-flex min-h-11 items-center font-sans text-detail font-semibold text-paper/70 underline-offset-4 hover:text-paper hover:underline"
+                    >
+                      {t("journal.print")}
+                    </button>
+                  ) : null}
+                </>
+              )}
+            </div>
           )}
+
         </div>
-      )}
+      </div>
 
       {mounted && !entry ? <WriteButton placement="foot" onClick={write} draft={waitingDraft} /> : null}
       <JournalComposer open={open} draft={draft} onChange={change} onClose={close} onDone={done} sourceLabel={sourceLabel} notebooks={notebooks} />
       <UndoBar entry={entry} onUndo={undo} />
     </>
+  );
+}
+
+/**
+ * Plus: the notebooks at the side of the journal, on a computer (1.9,
+ * JOURNAL.md, "notebooks at the side, the page in a column of 720px"). All,
+ * then each notebook the pages name; the one shown stays lit.
+ */
+function NotebookRail({ notebooks, chosen, onChoose }: { notebooks: readonly string[]; chosen: string | null; onChoose: (notebook: string | null) => void }) {
+  const { t } = useTranslate();
+  const item = (on: boolean) =>
+    cn(
+      "tap-press flex min-h-11 w-full min-w-0 items-center gap-2.5 rounded-xl px-3 text-start font-sans text-detail font-semibold motion-safe:transition-colors",
+      on ? "bg-paper/[0.1] text-paper" : "text-paper/75 hover:bg-paper/[0.05] hover:text-paper",
+    );
+  return (
+    <nav aria-label={t("journal.notebooks")} data-journal-rail="" className="hidden md:block native-md-hidden">
+      <div className="sticky top-24 pt-2">
+        <p className="px-3 font-sans text-caption font-semibold text-paper/70">{t("journal.notebooks")}</p>
+        <ul className="mt-2 space-y-0.5">
+          <li>
+            <button type="button" aria-pressed={!chosen} onClick={() => onChoose(null)} className={item(!chosen)}>
+              {t("common.all")}
+            </button>
+          </li>
+          {notebooks.map((n) => (
+            <li key={n}>
+              <button type="button" aria-pressed={chosen === n} onClick={() => onChoose(chosen === n ? null : n)} className={item(chosen === n)}>
+                <ClosedBook size={16} className="shrink-0" />
+                <span className="min-w-0 truncate">{n}</span>
+              </button>
+            </li>
+          ))}
+        </ul>
+      </div>
+    </nav>
   );
 }

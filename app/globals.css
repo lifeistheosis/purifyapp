@@ -53,6 +53,7 @@
   html.is-native .native-md-grid { display: grid; }
   html.is-native .native-md-inline-flex { display: inline-flex; }
   html.is-native .native-md-hidden { display: none; }
+  html.is-native .native-md-contents { display: contents; }
 }
 
 @theme {
