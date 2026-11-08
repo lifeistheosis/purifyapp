@@ -70,6 +70,7 @@ export function JournalComposer({
   const area = useRef<HTMLTextAreaElement | null>(null);
   const isNote = draft.editing?.startsWith("note:") ?? false;
   const editor = usePage(open, draft.body, (body) => onChange({ ...draft, body }));
+  const { setCursor } = editor;
   const empty = isNote ? draft.body.trim().length === 0 : pageIsEmpty(editor.page);
 
   // The words grow the field, so the sheet scrolls as one page.
@@ -120,9 +121,16 @@ export function JournalComposer({
       if (!el) return;
       el.focus({ preventScroll: true });
       el.setSelectionRange(el.value.length, el.value.length);
+      // The editor hears where the caret was put, so a card laid next goes
+      // there, after the words, and not at the top (a caret moved by code
+      // tells no one; found by the walk, reopening a kept page).
+      if (!isNote) {
+        const block = el.closest<HTMLElement>("[data-page-block]")?.dataset.pageBlock;
+        if (block !== undefined) setCursor({ index: Number(block), start: el.value.length, end: el.value.length });
+      }
     }, 320);
     return () => window.clearTimeout(id);
-  }, [open, isNote]);
+  }, [open, isNote, setCursor]);
 
   const today = (() => {
     try {

@@ -182,3 +182,9 @@ describe("the journal on a computer (step 2e)", () => {
     expect(css).toContain("html.is-native .native-md-contents { display: contents; }");
   });
 });
+
+describe("a reopened page knows where its caret is", () => {
+  it("the caret put at the end on opening is told to the editor, so a card goes after the words", () => {
+    expect(composer).toContain("if (block !== undefined) setCursor({ index: Number(block), start: el.value.length, end: el.value.length });");
+  });
+});

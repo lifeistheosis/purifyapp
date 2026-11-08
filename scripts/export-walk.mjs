@@ -5724,6 +5724,51 @@ await section(40, async () => {
       Boolean(pastDay) && pastDay.head === new Intl.DateTimeFormat("en", { weekday: "long" }).format(past) && /Lora/.test(pastDay.font) && pastDay.line.startsWith(new Intl.DateTimeFormat("en", { month: "long", day: "numeric" }).format(past)) && pastDay.line.includes(" · "),
       `${w}px: a past day is headed by its weekday in Lora, then its date and its Church's day ("${pastDay?.head}", "${pastDay?.line.slice(0, 90)}")`,
     );
+    // A page (1.9, docs/1.9-build/JOURNAL.md): a title, a verse card found
+    // with Verse, Plus's checklist from More, kept as text and opened again as
+    // it was. The walk's shell locks no Plus, so More adds its blocks here.
+    await tap(page.locator("[data-journal-write]:visible").first());
+    await page.waitForFunction(() => !!document.querySelector("[data-journal-composer] [data-journal-title]"), null, { timeout: 8000 }).catch(() => {});
+    await page.waitForTimeout(700);
+    await page.locator("[data-journal-title]").fill("A page of the walk");
+    await tap(page.locator("[data-page-toolbar] button", { hasText: en["journal.page.addVerse"] }));
+    await page.waitForTimeout(400);
+    await page.keyboard.type("John 3:16");
+    await page.waitForTimeout(500);
+    await tap(page.locator("[data-page-verse-finder] li button").first());
+    await page.waitForTimeout(500);
+    await tap(page.locator("[data-page-toolbar] button", { hasText: en["journal.page.more"] }));
+    await tap(page.locator("[data-page-more] button", { hasText: en["journal.page.checklist"] }));
+    await page.waitForTimeout(300);
+    await page.keyboard.type("First line");
+    await page.keyboard.press("Enter");
+    await page.keyboard.type("Second line");
+    await page.waitForTimeout(300);
+    const written = await page.evaluate(() => JSON.parse(localStorage.getItem("purify:journal.draft") ?? "{}").body ?? "");
+    must(
+      // The kept draft's words first ("Half a thought", from Close above), then
+      // the card where the caret was, after them.
+      written.startsWith("# A page of the walk") && /Half a thought[\s\S]*\[\[verse john 3:16\]\]/.test(written) && written.includes("- [ ] First line\n- [ ] Second line"),
+      `${w}px: a page is kept as text, its title, its verse card and its checklist, every letter on its line ("${written.replace(/\n/g, " | ").slice(0, 110)}")`,
+    );
+    await tap(page.locator("[data-journal-done]"));
+    await page.waitForTimeout(900);
+    const titled = await page.evaluate(() => [...document.querySelectorAll("[data-journal-entry-title]")].map((e) => e.textContent ?? ""));
+    must(titled.includes("A page of the walk"), `${w}px: the list shows the page by its title (${titled.join(", ")})`);
+    await tap(page.locator("[data-journal-entry]", { hasText: "A page of the walk" }).first());
+    await page.waitForTimeout(900);
+    const reopened = await page.evaluate(() => ({
+      title: document.querySelector("[data-journal-title]")?.value ?? "",
+      card: document.querySelector("[data-page-verse] figcaption")?.textContent ?? "",
+      lines: [...document.querySelectorAll("[data-page-check] input")].map((i) => i.value),
+    }));
+    must(
+      reopened.title === "A page of the walk" && reopened.card === "John 3:16" && reopened.lines.join("|") === "First line|Second line",
+      `${w}px: the page opens again as it was (${reopened.title}, ${reopened.card}, ${reopened.lines.join("|")})`,
+    );
+    await tap(page.locator("[role=dialog] button", { hasText: en["common.close"] }).first());
+    await page.waitForTimeout(600);
+
     await page.screenshot({ path: path.join(SHOTS, `journal-${w}.png`), fullPage: true });
     must(errors.length === 0, `${w}px: no page errors${errors.length ? ": " + errors.slice(0, 2).join(" | ") : ""}`);
     await ctx.close();
