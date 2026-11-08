@@ -26,6 +26,7 @@ import { useCallback, useEffect, useLayoutEffect, useRef } from "react";
 
 import { useTranslate } from "@/components/i18n/MessagesProvider";
 import { PageBlocks, PageToolbar } from "@/components/journal/PageBlocks";
+import { SharePageButton } from "@/components/journal/SharePageButton";
 import { usePage } from "@/components/journal/usePage";
 import { Sheet } from "@/components/ui/Sheet";
 import { cn } from "@/lib/cn";
@@ -141,6 +142,8 @@ export function JournalComposer({
         {t("common.close")}
       </button>
       <p className="min-w-0 flex-1 truncate text-center font-sans text-caption text-paper/50">{today}</p>
+      {/* A saved page may be shared (step 3); a verse's note and a page not yet kept may not. */}
+      {open && draft.editing && !isNote && !empty ? <SharePageButton recordId={draft.editing} body={draft.body} title={editor.page.title} /> : null}
       <button
         type="button"
         onClick={onDone}

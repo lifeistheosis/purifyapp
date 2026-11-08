@@ -42,6 +42,8 @@ recommendation. The detail of each is in `ideas.json` under its id.
 12. Step 2 is built (covers, Plus's blocks, notebooks, tags, styles), so the free journal and Plus's can ship together in 1.9 as planned. Covers use only the 14 icons whose rights are verified, credited "Public domain · Wikimedia Commons"; the 44 icons used with an iconographer's permission are not offered, since that permission was given for the app's own pages. Recommend: keep it so, and ask the iconographers before offering theirs.
 13. Printing and the export stay free (a change from the finalized spec, Claude's call): a reader's own words are theirs to keep, and the right to take one's data (GDPR) points the same way. Recommend: keep it so. (No store text names the journal: checked the 1.8 drop, so nothing there changes.)
 
+14. Sharing a page needs one table: `docs/1.9-build/sql/shared-pages.sql` (shared_pages and their reports, RLS on, no write policy, written to run twice). It is in docs, not migrations, so no merge runs it. Recommend: read it, then run it by hand or let Claude move it into `supabase/migrations/` for the merge. Until then the Share button stays hidden.
+
 **Already on the list below:** more languages (33), chants' recordings (34), Plus on iOS (40), who reviews the 66 texts (41), the parish plan (43), the locked screens (44), Today's mockup (45), the release itself (50, 51).
 
 ## Done

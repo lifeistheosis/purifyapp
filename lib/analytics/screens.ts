@@ -215,6 +215,8 @@ const RULES: readonly (readonly [string, ScreenKey])[] = [
   ["/journal", "journal"],
   ["/settings", "settings"],
   ["/u/*", "profile"],
+  // A shared journal page (1.9, step 3): a page of the journal, read by its visitor.
+  ["/p/*", "journal"],
   ["/community", "community"],
   ["/community/**", "community"],
   ["/parishes", "parishes"],

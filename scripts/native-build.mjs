@@ -186,6 +186,11 @@ const STASH_PATHS = [
   // (lib/bible/downloads/), and carry only the list of what can be downloaded
   // (data/bibles/catalog.json). Appended, for the slot-index reason above.
   ["public", "bibles"],
+  // A shared journal page, /p/<id> (1.9, docs/1.9-build/JOURNAL.md, step 3):
+  // read on the server at request time so a pasted link carries its preview,
+  // as /u is. The apps open the link on the website. Appended, for the
+  // slot-index reason above.
+  ["app", "(app)", "p"],
 ];
 
 function slot(i) {

@@ -176,6 +176,22 @@ standards in readers' pages; shares and their count made through API routes
   see each with the Plus mark. Left for later: the computer's own layout
   (the composer is already a centred 720px panel there).
 
+- **Step 3, 2026-11-08, waiting on his SQL:** sharing a page. Share, in the
+  writing sheet of a saved page, makes a copy at an unlisted link
+  (`/p/<id>`) through the phone's share sheet; three a month without Plus,
+  counted on the server (`app/api/journal/share`, zod, a rate limit, the
+  service role), and with none left the upgrade sheet named for the journal.
+  The copy keeps the title, words, cards, quotes, Plus's blocks, style and
+  cover, never the notebook or the tags, and a library quote goes without the
+  library's mark (`lib/journal/share.ts`). The page is kept out of search
+  engines until reviewed, says it is a reader's page made with Purify, has
+  Report, and is gone when withdrawn or hidden; its preview card is the
+  title and the Church's day over the darkened cover. Website only; the apps
+  open the link. **It needs the table:** `docs/1.9-build/sql/shared-pages.sql`,
+  written to run twice, waits for his sign-off; until it runs, Share stays
+  out of sight. Left for later: Post to Community, and checking a library
+  quote's words so a public page may wear the mark.
+
 ## Step 2, how it is kept (Claude's design, 2026-11-08)
 
 Everything a Plus page adds is kept in the page's text, as step 1's blocks

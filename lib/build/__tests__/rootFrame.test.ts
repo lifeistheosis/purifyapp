@@ -95,7 +95,7 @@ describe("the head an app's page carries", () => {
       [...m[1].matchAll(/"([^"]+)"/g)].map((part) => part[1]).join("/"),
     );
     expect(entries.slice(0, 3)).toEqual(["app/api", "app/(app)/campaigns/[id]", "app/(app)/florilegium/[id]"]);
-    expect(entries.slice(-12, -7)).toEqual([
+    expect(entries.slice(-13, -8)).toEqual([
       "app/opengraph-image.png",
       "app/opengraph-image.alt.txt",
       "app/sitemap.ts",
@@ -107,7 +107,7 @@ describe("the head an app's page carries", () => {
     // recordings with the list that can pull one, the read-aloud covers, and
     // History's pictures; in 1.8 the Bible read aloud; and in 1.9 the shop's
     // product photos (the full optimize) and the Bibles a reader downloads.
-    expect(entries.slice(-7)).toEqual([
+    expect(entries.slice(-8, -1)).toEqual([
       "public/kitchen-photos",
       "public/audio/chants",
       "public/covers",
@@ -116,7 +116,10 @@ describe("the head an app's page carries", () => {
       "public/shop/media",
       "public/bibles",
     ]);
-    for (const entry of entries.slice(-12)) {
+    // And in 1.9, a shared journal page (/p/<id>), read on the server: the
+    // apps open the link on the website (docs/1.9-build/JOURNAL.md, step 3).
+    expect(entries.slice(-1)).toEqual(["app/(app)/p"]);
+    for (const entry of entries.slice(-13)) {
       expect(fs.existsSync(path.join(ROOT, entry)), `${entry} is set aside by the build and is not there`).toBe(true);
     }
   });
