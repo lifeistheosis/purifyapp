@@ -756,3 +756,37 @@ of English keeps its own order there). It now compares the boxes the layout
 places, skips what the flow of a sentence places, and flags text set left or
 right instead of start or end. Its self-test still catches every mistake of
 the first drawings.
+
+**His next thought (2026-11-08):** "let them quote saints ... let them quote
+any text, so allow easy implementation for that", and custom things
+(dividers, fonts) with freedom, "make sure it's not ... against our
+guardrails". "So far it looks pretty good, like the system you set up."
+
+Claude's proposal, for his word:
+
+- **Quote anything, from anywhere.** Purify's own hold pill (lib/ui/pressCopy.ts,
+  held on any paragraph of a prayer, a saint's life, a Father's work, a chant)
+  and the verse's focus gain "Quote in journal": the words land on today's
+  page, or a notebook's, as a quote card with where they are from filled in
+  and a way back to them. In the editor, a Quote block searches the same
+  library (Scripture, the Fathers, the saints' lives, the prayers, the
+  chants). Library quotes are verbatim and cited, and carry "Quoted from
+  Purify's library".
+- **And a quote of one's own.** Any other words can go in a plain quote block
+  with the writer's own attribution. It never carries the library's mark,
+  so hand-typed words are never dressed as a Father's.
+- **Freedom inside a designed set.** Every choice is made of the house's own
+  tokens, so whatever a writer picks still passes the guardrails: two fonts,
+  Book (Lora) and Clean (DM Sans), which with their Noto fallbacks already
+  cover all 21 languages, where a third face would have to as well; colours
+  from the seven highlight colours and the palette's inks, so every pick is
+  legible on all five palettes; dividers as a plain line, a space or three
+  dots, and no ornaments drawn by hand (1.7 note 24); callouts as a soft box
+  with an icon from the house set; text set at the start or the centre, never
+  left or right, so a page holds in Arabic; sizes from the house scale. Gold
+  stays where his rule of 2026-10-31 puts it unless he says otherwise. A
+  test would hold every style against every palette, as litPalette.test.ts
+  does for its surfaces.
+- **Free and Plus:** Scripture and quotes of one's own for everyone; the
+  whole library (saints, Fathers, prayers, chants) and the styles in Plus,
+  shown with the Plus mark.

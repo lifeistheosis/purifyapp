@@ -1701,6 +1701,34 @@
    "version": null,
    "outcome": null,
    "note": "His decisions of 2026-11-08 (BRAINSTORM.md, Editorials). Claude's proposal for the limit, for his word: one page at a time, three a month, counted on the server; Plus without limit and whole notebooks; covers Plus. Screens drawn: a Plus page, add a block, sharing, a computer, the link previews; new words listed for his word."
+  },
+  {
+   "id": "e-quote-anything",
+   "section": "Practice",
+   "kind": "idea",
+   "title": "Quote saints and any text into the journal, easily: Quote in journal from the hold pill anywhere, a Quote block searching the library, and a quote of one's own",
+   "from": "edgar",
+   "asked": "2026-11-08",
+   "status": "proposed",
+   "decided": null,
+   "needsDesign": true,
+   "version": null,
+   "outcome": null,
+   "note": "His word of 2026-11-08. Library quotes verbatim and cited with Purify's mark; one's own quotes never carry it. BRAINSTORM.md, Editorials."
+  },
+  {
+   "id": "e-page-styles",
+   "section": "Practice",
+   "kind": "idea",
+   "title": "Freedom to style a page (fonts, dividers, colours) inside the guardrails",
+   "from": "edgar",
+   "asked": "2026-11-08",
+   "status": "proposed",
+   "decided": null,
+   "needsDesign": true,
+   "version": null,
+   "outcome": null,
+   "note": "His word of 2026-11-08. Proposed: a designed set of house tokens only (Book and Clean fonts, the highlight colours and inks, plain dividers, start or centre), held by a test against every palette. BRAINSTORM.md, Editorials."
   }
  ]
 }
