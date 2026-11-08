@@ -167,6 +167,26 @@ standards in readers' pages; shares and their count made through API routes
   quote against its page before it wears the mark in public, since a page's
   text can be edited by hand in an older build.
 
+## Step 2, how it is kept (Claude's design, 2026-11-08)
+
+Everything a Plus page adds is kept in the page's text, as step 1's blocks
+are (`lib/journal/page.ts`), so it syncs, exports and survives an older build
+with no migration:
+
+- **Blocks:** a heading (`## `), a checklist (`- [ ] ` and `- [x] `), a
+  divider (a line, a space or three dots), a callout (a soft box with an
+  icon from the house's set), a saint or feast (a card from the app's own
+  calendar and saints), a reading (a card like today's readings), an image
+  (only the artwork whose source is verified).
+- **Properties** under the title: the notebook a page is in and its tags,
+  by name. A notebook is the pages that name it, so it needs no list of its
+  own to keep in step.
+- **Style:** the page's font (Book or Clean) and alignment (the start or the
+  centre), from the house's set only, held against every palette by a test.
+- **A free reader** sees the Plus blocks and styles in the menu with the Plus
+  mark, and a page made on Plus stays readable without it: the words are
+  never locked away.
+
 ## The order, when he says start
 
 1. The journal by the Church's day; the page's core (title, words, verse

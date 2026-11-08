@@ -1653,12 +1653,12 @@
    "title": "The verse system, premium: a mix of YouVersion, Apple Books and Hallow",
    "from": "edgar",
    "asked": "2026-11-08",
-   "status": "picked",
+   "status": "built",
    "decided": "2026-11-08",
    "needsDesign": true,
-   "version": null,
+   "version": "C, the focus",
    "outcome": null,
-   "note": "His word on the build 88 photos: \"I don't like any of it\"; plain, not premium, and the wrong idea. Drawn again in three versions of a tap on a verse (A pop-up, B tray, C focus) and three shared screens (Study as cards, writing a note, a saved note's mark and card), all from the house's parts, all passing scripts/mock-check.mjs. Waiting on his pick. His pick, 2026-11-08: C, the focus, \"and ensure it's smooth with animations\"; its motion in the house's tokens, no blur, shown as a 60fps film (build-88.md note 3)."
+   "note": "His word on the build 88 photos: \"I don't like any of it\"; plain, not premium, and the wrong idea. Drawn again in three versions of a tap on a verse (A pop-up, B tray, C focus) and three shared screens (Study as cards, writing a note, a saved note's mark and card), all from the house's parts, all passing scripts/mock-check.mjs. Waiting on his pick. His pick, 2026-11-08: C, the focus, \"and ensure it's smooth with animations\"; its motion in the house's tokens, no blur, shown as a 60fps film (build-88.md note 3). Built 2026-11-08 (291de2aa, ad5c3386): the verse lifted into a card with the colours above and the tools below, its motion in the house's tokens, Study as cards, the note mark."
   },
   {
    "id": "e-journal-feel",
@@ -1667,12 +1667,12 @@
    "title": "The journal should feel like a journal, not a notepad (like Notion)",
    "from": "edgar",
    "asked": "2026-11-08",
-   "status": "approved",
+   "status": "built",
    "decided": "2026-11-08",
    "needsDesign": true,
-   "version": null,
+   "version": "the journal by the Church's day",
    "outcome": null,
-   "note": "His word on picture 2 of the premium round. Drawn: the journal by the Church's day (today's page with its feast, readings and highlight to write from; From this day; past days headed by their saints), writing today's page headed by the day, a page you wrote. All from the house's parts and existing words, passing scripts/mock-check.mjs; the feast icon left out until its source is verified (iconRights.ts). build-88.md note 3. Finalized in JOURNAL.md on his word of 2026-11-08 (\"finalize the journal\")."
+   "note": "His word on picture 2 of the premium round. Drawn: the journal by the Church's day (today's page with its feast, readings and highlight to write from; From this day; past days headed by their saints), writing today's page headed by the day, a page you wrote. All from the house's parts and existing words, passing scripts/mock-check.mjs; the feast icon left out until its source is verified (iconRights.ts). build-88.md note 3. Finalized in JOURNAL.md on his word of 2026-11-08 (\"finalize the journal\"). Built 2026-11-08 (b2527e16, 29934780): today's page with the feast, readings and today's highlights, past days headed by their saints, and pages with titles, verse cards, quotes of one's own and highlights."
   },
   {
    "id": "e-editorials",
@@ -1709,12 +1709,12 @@
    "title": "Quote saints and any text into the journal, easily: Quote in journal from the hold pill anywhere, a Quote block searching the library, and a quote of one's own",
    "from": "edgar",
    "asked": "2026-11-08",
-   "status": "approved",
+   "status": "built",
    "decided": "2026-11-08",
    "needsDesign": true,
-   "version": null,
+   "version": "Quote in journal (Study and the hold pill); the Quote block searching the library waits for step 2",
    "outcome": null,
-   "note": "His word of 2026-11-08. Library quotes verbatim and cited with Purify's mark; one's own quotes never carry it. BRAINSTORM.md, Editorials. Finalized in JOURNAL.md on his word of 2026-11-08 (\"finalize the journal\")."
+   "note": "His word of 2026-11-08. Library quotes verbatim and cited with Purify's mark; one's own quotes never carry it. BRAINSTORM.md, Editorials. Finalized in JOURNAL.md on his word of 2026-11-08 (\"finalize the journal\"). Built in part 2026-11-08 (cde001ed): Quote in journal from a verse's Study (free) and from the hold pill on the library's pages (Plus, shown with the padlock); a quote of one's own in the page. The Quote block that searches the whole library is Plus step 2."
   },
   {
    "id": "e-page-styles",
