@@ -4,6 +4,14 @@ Still frames and two-second clips for Purify's ads, 9:16 (1080x1920), made
 from the app itself. Built for the 1.8 promo (2026-11-08) and kept so the next
 release's promo starts from here, not from nothing.
 
+**These seven looks are PR promo, kept for later** (the owner's word,
+2026-11-08: "save these for general promo ... more PR, like company promo").
+They are clean and calm: right for the company's own promo, not for the
+fast-cut edits that get the most views. Edits go all in on visuals instead:
+the main subject in the middle of the screen, no phone, words on the screen
+as if zoomed in, and what catches the eye is the icons, the photography, the
+map and the animations (the saint web, the music player, history on the map).
+
 Everything it makes goes in `.promo/` (out of git; `PROMO_DIR` moves it):
 the screens, the house fonts, the art, the pages each look is drawn in, the
 stills, the clips and the reels.
