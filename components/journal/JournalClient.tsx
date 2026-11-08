@@ -3,7 +3,7 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 
 import { useUpgradeModal } from "@/components/billing/UpgradeModal";
-import { PlusGate } from "@/components/florilegium/PlusGate";
+import { PlusMark } from "@/components/billing/PlusMark";
 import { useTranslate } from "@/components/i18n/MessagesProvider";
 import { JournalComposer } from "@/components/journal/JournalComposer";
 import { JournalFeed } from "@/components/journal/JournalFeed";
@@ -55,10 +55,12 @@ const BLANK: JournalDraft = { kind: "reflection", body: "" };
  * plan's questions wait at the top until answered or put aside; an empty
  * journal offers one gentle prompt rather than a blank page.
  *
- * A Purify Plus tool, as before: without Plus the reader meets the Plus card
- * where the entries would be, and the Write button carries the Plus mark and
- * opens the upgrade sheet named for the journal. Their notes stay on every
- * verse they wrote them on, free.
+ * Everyone's, from 1.9 (his word of 2026-11-08: "let's make the free version
+ * just a journal, right, for you"; docs/1.9-build/JOURNAL.md). Writing, the
+ * days, today's page and every entry are free. What Plus adds is shown, never
+ * hidden: From this day and the journal's search carry the Plus mark and open
+ * the upgrade sheet named for the journal. Printing stays free, as the
+ * library's export does: what a reader wrote is theirs to keep.
  */
 export function JournalClient() {
   const { t, locale } = useTranslate();
@@ -106,18 +108,11 @@ export function JournalClient() {
     setWaitingDraft(!!kept && kept.body.trim().length > 0);
   }, []);
 
-  const begin = useCallback(
-    (next: JournalDraft) => {
-      if (locked) {
-        upgrade.open("journal");
-        return;
-      }
-      setDraft(next);
-      writeDraft(next);
-      setOpen(true);
-    },
-    [locked, upgrade],
-  );
+  const begin = useCallback((next: JournalDraft) => {
+    setDraft(next);
+    writeDraft(next);
+    setOpen(true);
+  }, []);
 
   const write = () => {
     const kept = readDraft();
@@ -215,15 +210,13 @@ export function JournalClient() {
         </div>
         {mounted ? (
           <div className="hidden shrink-0 md:block native-md-hidden">
-            <WriteButton placement="inline" onClick={write} locked={locked} draft={waitingDraft} />
+            <WriteButton placement="inline" onClick={write} draft={waitingDraft} />
           </div>
         ) : null}
       </header>
 
       {!mounted ? (
         <div className="min-h-[50vh]" />
-      ) : locked ? (
-        <PlusGate titleKey="plus.journal.title" blurbKey="plus.journal.body" modalFeature="journal" />
       ) : (
         <div className="pb-28">
           <TodayPage onWrite={write} onWriteFrom={(source) => begin({ kind: "reflection", body: "", source: { ...source, label: sourceLabel(source) } })} />
@@ -234,6 +227,22 @@ export function JournalClient() {
               onAnswer={answer}
               onNotNow={() => dismissPlanDay(waiting.planId, waiting.day)}
             />
+          ) : remembered.length > 0 && locked ? (
+            // Plus shown, never hidden: a note from this day is waiting, and
+            // bringing it back is Plus's (lib/bible/journal.ts, fromThisDay).
+            <section aria-labelledby="journal-remembered" data-journal-remembered="locked" className="mt-6 border-y border-paper/10 py-4">
+              <p id="journal-remembered" role="heading" aria-level={2} className="flex flex-wrap items-center gap-2 font-sans text-caption font-semibold text-paper/60">
+                {t("journal.fromThisDay")}
+                <PlusMark />
+              </p>
+              <button
+                type="button"
+                onClick={() => upgrade.open("journal")}
+                className="tap-press mt-1 block min-h-11 w-full py-1 text-start font-serif text-body leading-[1.6] text-paper/85"
+              >
+                {t("journal.fromThisDayPlus")}
+              </button>
+            </section>
           ) : remembered.length > 0 ? (
             <section aria-labelledby="journal-remembered" className="mt-6 border-y border-paper/10 py-4">
               <p id="journal-remembered" role="heading" aria-level={2} className="font-sans text-caption font-semibold text-paper/60">
@@ -269,7 +278,13 @@ export function JournalClient() {
             </section>
           ) : (
             <>
-              <JournalFeed items={items} onOpen={openItem} onRemove={remove} sourceLabel={sourceLabel} />
+              <JournalFeed
+                items={items}
+                onOpen={openItem}
+                onRemove={remove}
+                sourceLabel={sourceLabel}
+                onSearchLocked={locked ? () => upgrade.open("journal") : undefined}
+              />
               {/* 1.9 (s4-09, "a reader's journal is theirs"): on the website, the
                   browser's own print, whose dialog saves a PDF; the page prints
                   its entries alone (lib/ui/printPart.ts). The
@@ -289,7 +304,7 @@ export function JournalClient() {
         </div>
       )}
 
-      {mounted && !entry ? <WriteButton placement="foot" onClick={write} locked={locked} draft={waitingDraft} /> : null}
+      {mounted && !entry ? <WriteButton placement="foot" onClick={write} draft={waitingDraft} /> : null}
       <JournalComposer open={open} draft={draft} onChange={change} onClose={close} onDone={done} sourceLabel={sourceLabel} />
       <UndoBar entry={entry} onUndo={undo} />
     </>

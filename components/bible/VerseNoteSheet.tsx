@@ -30,8 +30,8 @@ function readDraft(key: string): string | null {
  *
  * Close keeps what was typed, for that verse, until it is opened again; Done
  * keeps the note, or takes it off when the words were cleared. The note
- * stays the verse's (lib/bible/annotations.ts): nothing here speaks of the
- * journal, which is Plus, and the note is free.
+ * stays the verse's (lib/bible/annotations.ts), and shows in the journal on
+ * the day it was written: both free, from 1.9.
  */
 export function VerseNoteSheet({
   open,

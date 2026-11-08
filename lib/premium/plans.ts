@@ -107,6 +107,7 @@ export const PREMIUM_PLAN_EN: PremiumPlanCopy = {
     "Orthodox History, from Pentecost onward",
     "The daily prayers, the hours, and the akathists",
     "The whole Church calendar, its fasts, and the fasting tracker",
+    "Your journal, by the Church’s day, and your notes on verses",
     "Prayer Campaigns, prayed together",
   ],
   freeFoot: "No ads. No tracking. No surprise locks. For anyone who needs it.",
@@ -131,8 +132,8 @@ export const PREMIUM_PLAN_EN: PremiumPlanCopy = {
     },
     {
       id: "journal",
-      title: "Your journal",
-      sub: "Every note you write in the Scriptures, dated and gathered in one place, and the ones from this day in past months brought back to you",
+      title: "The full journal",
+      sub: "Search everything you have written, and have the pages from this day in past months brought back to you",
     },
     {
       id: "plans",
@@ -226,6 +227,7 @@ export const PREMIUM_PLAN_DE: PremiumPlanCopy = {
     "Orthodoxe Geschichte, von Pfingsten an",
     "Die täglichen Gebete, die Horen und die Akathiste",
     "Der ganze Kirchenkalender, seine Fasten und der Fastentracker",
+    "Dein Tagebuch, nach dem Tag der Kirche, und deine Notizen zu den Versen",
     "Gebetskampagnen, gemeinsam gebetet",
   ],
   freeFoot:
@@ -251,8 +253,8 @@ export const PREMIUM_PLAN_DE: PremiumPlanCopy = {
     },
     {
       id: "journal",
-      title: "Dein Tagebuch",
-      sub: "Jede Notiz, die du in den Schriften schreibst, datiert und an einem Ort gesammelt, und die von diesem Tag in früheren Monaten wieder vor Augen",
+      title: "Das ganze Tagebuch",
+      sub: "Durchsuche alles, was du geschrieben hast, und hab die Seiten von diesem Tag in früheren Monaten wieder vor Augen",
     },
     {
       id: "plans",

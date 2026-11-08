@@ -17,11 +17,13 @@
 
 import { useMemo, useState } from "react";
 
+import { PlusMark } from "@/components/billing/PlusMark";
 import { useTranslate } from "@/components/i18n/MessagesProvider";
 import { KIND_KEY } from "@/components/journal/JournalComposer";
 import { SearchField } from "@/components/search/SearchField";
 import { ChipScroller } from "@/components/ui/ChipScroller";
 import { FilterChip } from "@/components/ui/FilterChip";
+import { Search } from "@/components/ui/icons/Search";
 import { SwipeRow } from "@/components/ui/SwipeRow";
 import { useCalendarStyleDefault } from "@/lib/calendar/useCalendarStyleDefault";
 import { dateLocale } from "@/lib/i18n/deviceDates";
@@ -46,11 +48,18 @@ export function JournalFeed({
   onOpen,
   onRemove,
   sourceLabel,
+  onSearchLocked,
 }: {
   items: JournalItem[];
   onOpen: (item: JournalItem) => void;
   onRemove: (item: JournalItem) => void;
   sourceLabel: (source: JournalSource) => string;
+  /**
+   * Searching the journal is Plus's (1.9, docs/1.9-build/JOURNAL.md). Given,
+   * the field stands at rest with the Plus mark and this opens the upgrade
+   * sheet named for the journal: shown, never hidden.
+   */
+  onSearchLocked?: () => void;
 }) {
   const { t, locale } = useTranslate();
   const [chosen, setChosen] = useState<JournalFilter>("all");
@@ -153,7 +162,20 @@ export function JournalFeed({
       {items.length > SEARCH_ABOVE ? (
         // The journal filters itself in place, in the app's one field (1.8, r3-12).
         <div data-print-hide="">
-          <SearchField value={query} onChange={setQuery} placeholder={t("journal.search")} className="mt-5" />
+          {onSearchLocked ? (
+            <button
+              type="button"
+              onClick={onSearchLocked}
+              data-journal-search="locked"
+              className="search-field search-door tap-press mt-5 flex h-[48px] w-full min-w-0 items-center gap-2.5 rounded-pill ps-[15px] pe-3 text-start"
+            >
+              <Search size={19} className="search-glass shrink-0" />
+              <span className="min-w-0 flex-1 truncate font-sans text-[16px] text-paper/45">{t("journal.search")}</span>
+              <PlusMark className="shrink-0" />
+            </button>
+          ) : (
+            <SearchField value={query} onChange={setQuery} placeholder={t("journal.search")} className="mt-5" />
+          )}
         </div>
       ) : null}
 

@@ -6,22 +6,19 @@
 // way the flow bars stand (components/flow/FlowBarShell.tsx). On a computer
 // it sits at the end of the title row instead (`placement="inline"`).
 //
-// Plus is shown, never hidden: without it the pill carries the Plus mark and
-// opens the upgrade sheet named for the journal.
+// Everyone writes, from 1.9 (docs/1.9-build/JOURNAL.md): the pill no longer
+// carries the Plus mark.
 
 import { useTranslate } from "@/components/i18n/MessagesProvider";
-import { PREMIUM_CHIP } from "@/components/premium/PremiumUI";
 import { Pen } from "@/components/ui/icons/Pen";
 import { cn } from "@/lib/cn";
 
 export function WriteButton({
   onClick,
-  locked,
   draft,
   placement,
 }: {
   onClick: () => void;
-  locked: boolean;
   /** A draft is waiting: the pill says it will go on with it. */
   draft: boolean;
   placement: "foot" | "inline";
@@ -38,8 +35,7 @@ export function WriteButton({
       )}
     >
       <Pen size={18} className="shrink-0" />
-      {draft && !locked ? t("journal.continueWriting") : t("journal.write")}
-      {locked ? <span className={cn(PREMIUM_CHIP, "ms-1")}>{t("study.purifyPlus")}</span> : null}
+      {draft ? t("journal.continueWriting") : t("journal.write")}
     </button>
   );
   if (placement === "inline") return button;

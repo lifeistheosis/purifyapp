@@ -36,6 +36,12 @@ recommendation. The detail of each is in `ideas.json` under its id.
 9. Earned palettes (`s2-04`): no collection exists to earn them. Recommend: earn Councils by reading every council's page and Cappadocian by the three Cappadocians' works.
 10. Size before saving (`s3-04`), Gather from everywhere (`s5-04`, with a migration), a gathering as a public page (`s5-05`, a migration), more plans' framing (`s4-02`), the red commentary dots (row 13).
 
+**The journal, as built from his word of 2026-11-08** (`docs/1.9-build/JOURNAL.md`)
+
+11. The paywall's journal row, now that writing is free: "The full journal is part of Purify Plus. Search everything you have written, and have the pages from this day in past months brought back to you." What stays free: "Writing in your journal, and your notes on verses, stay free, whether or not you subscribe." In all 21 languages, drafted by Claude. Recommend: yes, and the row grows as step 2 (notebooks, covers, styles) lands.
+12. 1.9 should not ship the free journal without step 2. Until it lands, Plus's journal is search and From this day alone, and a Plus member who bought it for the journal would see that row thin. Recommend: ship them together.
+13. Printing and the export stay free (a change from the finalized spec, Claude's call): a reader's own words are theirs to keep, and the right to take one's data (GDPR) points the same way. Recommend: keep it so. (No store text names the journal: checked the 1.8 drop, so nothing there changes.)
+
 **Already on the list below:** more languages (33), chants' recordings (34), Plus on iOS (40), who reviews the 66 texts (41), the parish plan (43), the locked screens (44), Today's mockup (45), the release itself (50, 51).
 
 ## Done

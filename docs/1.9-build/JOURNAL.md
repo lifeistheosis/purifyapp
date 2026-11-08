@@ -57,8 +57,13 @@ that").
   never left or right; sizes from the house scale. No gold (his rule of
   2026-10-31 keeps it for Plus profiles). A test holds every style against
   every palette, as `litPalette.test.ts` does for its surfaces.
-- **Order:** notebooks, tags, search, From this day, sync on every device,
-  export and print (both there since 1.9, s4-09).
+- **Order:** notebooks, tags, search, From this day, sync on every device.
+  Export and print stay free (changed while building, 2026-11-08, Claude's
+  call, his to reverse): what a reader wrote is theirs to keep, the library's
+  export is free and carries the journal, and keeping a reader's own words
+  behind a subscription is the wrong side of the trust this app sells, and of
+  the right to take one's data (GDPR, Article 20). Print is the website's way
+  of keeping them; the apps have the export.
 - **Sharing without limit,** whole notebooks too, the cover as the preview.
 - **On a computer:** notebooks at the side, the page in a column of 720px;
   the same page on a phone, a tablet and a computer.
@@ -126,6 +131,20 @@ standards in readers' pages; shares and their count made through API routes
   Image, Saint or feast, Callout, Divider, Share this page, the shares left
   this month, Post to Community, the Plus line, Quoted from Purify's library,
   Quote in journal, Book, Clean) are written in all 21 languages when built.
+
+## Built
+
+- **Step 1a, 2026-11-08** (`b2527e16`): today's page (the weekday in Lora, the
+  date, the feast or saints, the fast, Write, today's readings and
+  highlights, each with a pen) and each past day headed by its weekday and
+  its Church's day (`lib/journal/churchDay.ts`).
+- **Step 1b, 2026-11-08:** writing is free. The Plus card is gone from the
+  journal and the Write button carries no mark; From this day and the
+  journal's search are Plus, shown with the Plus mark and opening the sheet
+  named for the journal. The paywall's journal row is now "The full journal"
+  (search and From this day, until step 2 adds the rest), and the pricing
+  pages list the journal among what is free. New words in all 21 languages,
+  drafted by Claude: they wait for his eye with the rest of 1.9's.
 
 ## The order, when he says start
 
