@@ -224,7 +224,7 @@ export function Sheet({
                   type="button"
                   aria-label={t("common.close")}
                   onClick={onClose}
-                  className="inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-pill text-paper/65 hover:text-paper"
+                  className="inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-pill text-paper/65 hover:text-paper"
                 >
                   <Close size={16} />
                 </button>

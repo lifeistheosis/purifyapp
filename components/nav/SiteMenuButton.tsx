@@ -35,7 +35,7 @@ export function SiteMenuButton() {
         aria-haspopup="dialog"
         aria-expanded={open}
         onClick={() => setOpen(true)}
-        className="h-10 w-10 inline-flex items-center justify-center rounded-pill text-paper/70 transition-colors hover:text-paper focus-visible:outline-2 focus-visible:outline-paper focus-visible:outline-offset-2"
+        className="h-11 w-11 inline-flex items-center justify-center rounded-pill text-paper/70 transition-colors hover:text-paper focus-visible:outline-2 focus-visible:outline-paper focus-visible:outline-offset-2"
       >
         <Menu size={20} />
       </button>

@@ -137,7 +137,7 @@ export function MobileTopBar({
   }, [revealTitleOn, pathname]);
 
   const backClass =
-    "h-10 w-10 inline-flex shrink-0 items-center justify-center rounded-pill text-paper/80 transition-colors hover:text-paper focus-visible:outline-2 focus-visible:outline-paper focus-visible:outline-offset-2";
+    "h-11 w-11 inline-flex shrink-0 items-center justify-center rounded-pill text-paper/80 transition-colors hover:text-paper focus-visible:outline-2 focus-visible:outline-paper focus-visible:outline-offset-2";
 
   const backControl = back ? (
     back === true ? (

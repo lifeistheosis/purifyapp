@@ -194,6 +194,16 @@ describe("search and the bell", () => {
     expect(bell).toContain("<Bell size={24} filled={lit} />");
   });
 
+  // Build 88 note 5 (2026-11-08): the back button and the web's menu button
+  // beside them were h-10 w-10, 42.5px on the 17px root, and so was every
+  // sheet's close. All of them are 44px now.
+  it("as are the back button, the menu button and a sheet's close", () => {
+    expect(code("components/nav/MobileTopBar.tsx")).toMatch(/const backClass =\s*"h-11 w-11 /);
+    expect(code("components/nav/SiteMenuButton.tsx")).toContain('className="h-11 w-11 ');
+    expect(code("components/ui/Sheet.tsx")).toContain('className="inline-flex h-11 w-11 shrink-0');
+    for (const f of ["components/nav/MobileTopBar.tsx", "components/nav/SiteMenuButton.tsx", "components/ui/Sheet.tsx"]) expect(code(f), f).not.toMatch(/\bh-10 w-10\b/);
+  });
+
   // The owner's build 80 note 5 (Homebase/boards/purify-master/r18/
   // BUILD-80-NOTES.md, 2026-10-29): "the notifications button and search
   // touch a little; the Premium pill does not touch search". The pill's

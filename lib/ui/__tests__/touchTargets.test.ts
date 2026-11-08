@@ -108,7 +108,13 @@ function countSmallTargets(): { total: number; byFile: Record<string, number> } 
 // bar for two round buttons with 44px touch boxes, and the chapter's name on
 // the pill is h-11, over 44px. The tree stood at 34 before it, one under the
 // line.
-const MAX_SMALL_TARGETS = 33;
+// 33 -> 29 on 2026-11-08 (1.9, build 88 note 5, found by
+// scripts/mock-check.mjs): the shared sheet's close and the phone top bar's
+// menu button were h-10 w-10, 42.5px on the app's 17px root, and are h-11
+// w-11. The top bar's back button had the same size in a class constant this
+// count cannot see, and went to h-11 w-11 with them. The tree stood at 31
+// before it.
+const MAX_SMALL_TARGETS = 29;
 
 describe("touch targets", () => {
   const { total, byFile } = countSmallTargets();

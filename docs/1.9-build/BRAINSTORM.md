@@ -1,5 +1,7 @@
 # 1.9 brainstorm
 
+**Brainstorm mode ended 2026-11-08 on his word:** "Just keep working on the apps. You have a list of things that you still need to do. Just do all of it ... Leave directive decisions for me ... don't stop until I come back." From here the work is built; decisions only he can make go to `PLAN.md`, Waiting on you.
+
 Brainstorm mode is on since 2026-11-06: notes and plans only. Nothing here is
 built until Edgar says to start. He said start on 2026-11-07 and the build day
 followed (`PLAN.md`); on the evening of 2026-11-07, with test build 88 on his
