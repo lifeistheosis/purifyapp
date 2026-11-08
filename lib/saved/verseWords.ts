@@ -48,7 +48,31 @@ function kept(): Readonly<Record<string, string>> {
 
 function notify() {
   states.clear();
+  ranges.clear();
   listeners.forEach((l) => l());
+}
+
+// A run of verses, one answer per verse, cached so a store reading it sees
+// the same answer until something changes (useSyncExternalStore asks for that).
+const ranges = new Map<string, WordsState[]>();
+const loadingRanges = new Map<number, WordsState[]>();
+
+function rangeOf(book: string, chapter: number, from: number, to: number): WordsState[] {
+  const key = `${book}/${chapter}/${from}-${to}`;
+  const cached = ranges.get(key);
+  if (cached) return cached;
+  const out: WordsState[] = [];
+  for (let v = from; v <= to; v++) out.push(stateOf(verseKey(book, chapter, v)));
+  ranges.set(key, out);
+  return out;
+}
+
+function loadingRange(length: number): WordsState[] {
+  const cached = loadingRanges.get(length);
+  if (cached) return cached;
+  const out = Array.from({ length }, () => LOADING);
+  loadingRanges.set(length, out);
+  return out;
 }
 
 function stateOf(key: string): WordsState {
@@ -143,6 +167,27 @@ export function useVerseWords(book: string, chapter: number, verse: number, visi
     }
   }, [visible, state.status, key, book, chapter, verse]);
   return state;
+}
+
+/**
+ * A run of verses' words, one answer each, in order (a journal page's verse
+ * card, 1.9): one hook for the whole card, asked for as one chapter's request.
+ */
+export function useVerseRangeWords(book: string, chapter: number, from: number, to: number, visible: boolean): WordsState[] {
+  const length = Math.max(0, to - from + 1);
+  const states = useSyncExternalStore(
+    subscribe,
+    () => rangeOf(book, chapter, from, to),
+    () => loadingRange(length),
+  );
+  useEffect(() => {
+    if (!visible) return;
+    states.forEach((state, i) => {
+      const key = verseKey(book, chapter, from + i);
+      if (state.status === "loading" && !asking.has(key) && !fetched.has(key)) want(book, chapter, from + i);
+    });
+  }, [visible, states, book, chapter, from]);
+  return states;
 }
 
 /** The words kept for a verse, now, without asking the network. */

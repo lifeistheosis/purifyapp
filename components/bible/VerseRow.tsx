@@ -694,6 +694,8 @@ export function VerseRow({
  onSelect: () => {
  setShowTools(false);
  const card = verseBlock(book, chapter, verse.n);
+ // Its words kept on the device, so the card reads offline as Saved's do.
+ keepText(verseKey(book, chapter, verse.n), verse.text);
  if (card && quoteInJournal(card)) router.push("/journal/");
  },
  });

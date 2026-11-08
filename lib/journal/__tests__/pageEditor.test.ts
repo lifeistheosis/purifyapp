@@ -33,10 +33,19 @@ describe("an entry is written as a page; a verse's note as words", () => {
 });
 
 describe("the page's parts, from the house's own", () => {
-  it("a verse card shows the app's own words and keeps none", () => {
-    expect(blocks).toContain("useVerseWords(book, chapter, verse, true)");
-    const card = blocks.slice(blocks.indexOf("function VerseCard"), blocks.indexOf("function VerseWords"));
+  it("a verse card shows the app's own words and keeps none; with no signal and none kept, it opens the passage", () => {
+    expect(blocks).toContain("useVerseRangeWords(block.book, block.chapter, block.from, block.to, true)");
+    const card = blocks.slice(blocks.indexOf("function VerseCard"), blocks.indexOf("function LibraryCard"));
     expect(card).not.toMatch(/<textarea|<input/);
+    // Never a row of bare verse numbers: the saved verse's way, "Open to read".
+    expect(card).toMatch(/states\.every\(\(s\) => s\.words\.status === "missing"\)[\s\S]*?t\("saved\.openToRead"\)/);
+    expect(card).toContain("words.text ? (");
+  });
+
+  it("a verse quoted from the Bible keeps its words on the device first", () => {
+    const row = read("components/bible/VerseRow.tsx");
+    const study = row.slice(row.indexOf('key: "journal"'), row.indexOf('key: "journal"') + 500);
+    expect(study).toContain("keepText(verseKey(book, chapter, verse.n), verse.text);");
   });
 
   it("a quote of one's own has the writer's own name for its giver, and never the library's mark", () => {

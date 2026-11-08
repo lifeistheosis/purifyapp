@@ -29,7 +29,7 @@ import { localBookNames, searchBible } from "@/lib/bible/books";
 import { cn } from "@/lib/cn";
 import { verseSpan } from "@/lib/journal/churchDay";
 import { BY_MAX, TITLE_MAX, VERSE_CARD_MAX, verseBlock, type PageBlock } from "@/lib/journal/page";
-import { useVerseWords } from "@/lib/saved/verseWords";
+import { useVerseRangeWords } from "@/lib/saved/verseWords";
 
 import type { PageEditor } from "./usePage";
 
@@ -171,24 +171,43 @@ function VerseCard({ index, block, label, onRemove }: { index: number; block: Ve
   const verses = Array.from({ length: block.to - block.from + 1 }, (_, k) => block.from + k);
   return (
     <figure data-page-block={index} data-page-verse="" className="relative rounded-2xl border border-paper/10 bg-paper/[0.04] py-3 pe-12 ps-4">
-      <blockquote className="font-serif text-body leading-[1.65] text-paper/90">
-        {verses.map((v) => (
-          <VerseWords key={v} book={block.book} chapter={block.chapter} verse={v} numbered={verses.length > 1} />
-        ))}
-      </blockquote>
+      <VerseCardWords block={block} verses={verses} />
       <figcaption className="mt-1.5 font-sans text-caption text-paper/70">{label}</figcaption>
       <RemoveButton onClick={onRemove} label={t("common.remove")} />
     </figure>
   );
 }
 
-function VerseWords({ book, chapter, verse, numbered }: { book: string; chapter: number; verse: number; numbered: boolean }) {
-  const words = useVerseWords(book, chapter, verse, true);
+/**
+ * The card's words, from the app's own Bible: kept on the device, or asked
+ * for once and kept (lib/saved/verseWords.ts). With no signal and nothing
+ * kept, the card says so and opens the passage, which the apps carry, as a
+ * saved verse does: never a row of bare verse numbers.
+ */
+function VerseCardWords({ block, verses }: { block: VerseCardBlock; verses: number[] }) {
+  const { t } = useTranslate();
+  const words = useVerseRangeWords(block.book, block.chapter, block.from, block.to, true);
+  const states = verses.map((v, i) => ({ v, words: words[i] ?? { text: null, status: "loading" as const } }));
+  if (states.every((s) => s.words.status === "missing")) {
+    return (
+      <Link href={`/bible/${block.book}/${block.chapter}#v${block.from}`} className="inline-flex min-h-11 items-center font-sans text-detail text-paper/70 underline underline-offset-4 hover:text-paper">
+        {t("saved.openToRead")}
+      </Link>
+    );
+  }
   return (
-    <span>
-      {numbered ? <sup className="me-1 font-sans text-[11px] font-semibold text-paper/70">{verse}</sup> : null}
-      {words.text ? `${words.text} ` : words.status === "loading" ? <span aria-hidden className="me-1 inline-block h-3.5 w-40 rounded bg-paper/10 align-middle" /> : null}
-    </span>
+    <blockquote className="font-serif text-body leading-[1.65] text-paper/90">
+      {states.map(({ v, words }) =>
+        words.text ? (
+          <span key={v}>
+            {verses.length > 1 ? <sup className="me-1 font-sans text-[11px] font-semibold text-paper/70">{v}</sup> : null}
+            {`${words.text} `}
+          </span>
+        ) : words.status === "loading" ? (
+          <span key={v} aria-hidden className="me-1 inline-block h-3.5 w-40 rounded bg-paper/10 align-middle" />
+        ) : null,
+      )}
+    </blockquote>
   );
 }
 
