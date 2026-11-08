@@ -711,3 +711,48 @@ page; every shared page carries Report.
 
 Still his: this split (a change to what the journal's Plus row holds), the
 contributor clause in the Terms, and whether a clergy reviewer is sought.
+
+**His decisions (2026-11-08):** free is "just a journal, for you", and a free
+reader shares parts of it, not the whole, with a limit, "so they know that
+there is incentive with the premium"; Plus is the full Notion-style
+journal, agreed; the contributor system (submitting, review, the badge) is
+on hold, "I still need to talk to you about that".
+
+Claude's proposal for the free limit, for his word: a free reader shares one
+page at a time, three a month (a link or a Community post); Plus shares
+without limit, and shares whole notebooks. The count is kept on the server,
+where a share is made, never trusted from the app. Free pages share with
+Purify's own preview (the title and the Church's day); a Plus page's preview
+is its cover. Free pages have no covers; covers are Plus.
+
+**Drawn for him (2026-11-08)**, from the house's parts over the native
+export, every screen passing `scripts/mock-check.mjs`:
+
+- **A Plus page on a phone:** a cover (the translation of St Ignatius's
+  relics from the Menologion of Basil II, public domain, its source recorded
+  in `lib/history/events.ts`, credited under it), the title, the cover text,
+  the Church's day, the writer's words with a highlight, a heading, John 1:47
+  as a verse card, St John Chrysostom quoted word for word from the app's own
+  commentary (`data/bible/commentary/john/1.json`, Homily 20) with its
+  citation and "Quoted from Purify's library", and a prayer checklist.
+- **Add a block, as a free reader sees it:** Text and Verse free; Words of
+  the Fathers, Checklist, Image, Saint or feast, Callout and Divider shown
+  with the Plus mark.
+- **Share a page, free:** the preview, "2 of 3 shares left this month",
+  Copy link, Post to Community, Share, and what Plus adds.
+- **The page on a computer:** notebooks at the side, the page in a column.
+- **The link previews** (1200 by 630), drawn the way the profile's preview is
+  (`app/(app)/u/[handle]/opengraph-image.tsx`): a Plus page's cover under its
+  title; a free page's title and Church's day on Purify's night.
+
+New words in them, for his word: Add a block, Text, Verse, Words of the
+Fathers, Checklist, Image, Saint or feast, Callout, Divider, Share this page,
+"2 of 3 shares left this month", Post to Community, "Unlimited sharing, whole
+notebooks, and your cover in the preview", "Quoted from Purify's library".
+
+`scripts/mock-check.mjs` learned one thing on the computer screen: it had read
+English words inside an Arabic line as misplaced, which they are not (a run
+of English keeps its own order there). It now compares the boxes the layout
+places, skips what the flow of a sentence places, and flags text set left or
+right instead of start or end. Its self-test still catches every mistake of
+the first drawings.

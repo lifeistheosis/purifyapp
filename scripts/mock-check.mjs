@@ -251,22 +251,29 @@ function boxes(selector) {
     return -1;
   };
   const els = [...root.querySelectorAll("*")].filter((e) => !(e.closest("svg") && e.tagName.toLowerCase() !== "svg"));
+  // What text flow places (a highlight inside a sentence, a link in a line)
+  // is not layout: English inside an Arabic line keeps its own order, which
+  // is right. Boxes are compared; words are not.
+  const flowed = (e) => {
+    const d = getComputedStyle(e).display;
+    const parent = e.parentElement ? getComputedStyle(e.parentElement).display : "block";
+    return d.startsWith("inline") && !/flex|grid/.test(parent);
+  };
   for (const e of els) {
     const r = e.getBoundingClientRect();
-    if (r.width < 1 || r.height < 1 || pinned(e)) continue;
+    if (r.width < 1 || r.height < 1 || pinned(e) || flowed(e)) continue;
     const words = (e.getAttribute("aria-label") || e.innerText || "").replace(/\s+/g, " ").trim();
     index.set(e, out.length);
-    out.push({ name: `${e.tagName.toLowerCase()}${words ? ` "${words.slice(0, 32)}"` : ""}`, x: across(r), parent: parentOf(e), allow: allowed(e) });
-  }
-  const walker = document.createTreeWalker(root, NodeFilter.SHOW_TEXT);
-  for (let t = walker.nextNode(); t; t = walker.nextNode()) {
-    const text = t.textContent.replace(/\s+/g, " ").trim();
-    if (!text || !t.parentElement || t.parentElement.closest("svg") || pinned(t.parentElement)) continue;
-    const range = document.createRange();
-    range.selectNodeContents(t);
-    const r = range.getBoundingClientRect();
-    if (r.width < 1 || r.height < 1) continue;
-    out.push({ name: `the words "${text.slice(0, 32)}"`, x: across(r), parent: index.get(t.parentElement) ?? parentOf(t.parentElement), allow: allowed(t.parentElement) });
+    // Text set left or right, not start or end, stays put in Arabic.
+    const hasText = [...e.childNodes].some((n) => n.nodeType === 3 && n.textContent.trim());
+    const align = getComputedStyle(e).textAlign;
+    out.push({
+      name: `${e.tagName.toLowerCase()}${words ? ` "${words.slice(0, 32)}"` : ""}`,
+      x: across(r),
+      parent: parentOf(e),
+      allow: allowed(e),
+      physicalAlign: hasText && (align === "left" || align === "right") ? align : null,
+    });
   }
   return { width: Math.round(R.width * 10) / 10, out };
 }
@@ -396,6 +403,10 @@ export async function checkMock(page, selector, { allowGold = false } = {}) {
       const wrong = new Set();
       ltr.out.forEach((a, i) => {
         const b = rtl.out[i];
+        if (a.physicalAlign) {
+          if (a.allow) allow("mirror", a.name, a.allow);
+          else fail("mirror", null, a.name, `its text is set ${a.physicalAlign}, not start or end, so it stays ${a.physicalAlign} in Arabic`);
+        }
         const mirrored = Math.abs(b.x[0] - (rtl.width - a.x[1])) <= 1.5 && Math.abs(b.x[1] - (rtl.width - a.x[0])) <= 1.5;
         if (mirrored) return;
         wrong.add(i);

@@ -1681,12 +1681,26 @@
    "title": "Readers write their own editorials: a Notion-like page (cover, title, cover text, blocks, highlights), shared to Community and as a clean link preview, submitted for review and clergy review to become an official Editorial with a badge",
    "from": "edgar",
    "asked": "2026-11-08",
-   "status": "proposed",
+   "status": "parked",
    "decided": null,
    "needsDesign": true,
    "version": null,
    "outcome": null,
-   "note": "BRAINSTORM.md, Editorials. Open with him: free or Plus; covers from Purify's artwork first or uploads; a contributor clause in the Terms; no clergy reviewer yet; in three steps (editor, sharing, submitting). His follow-up: quote Fathers and Scripture; the journal is Purify's, kept apart from Church teaching; Plus a full Notion-like journal, everyone a personal one; asked how to keep exposure. Claude's recommendation (BRAINSTORM.md): write and share free, depth is Plus; the Fathers quoted from the library only; shared pages marked as a reader's, unlisted and kept from search engines until reviewed."
+   "note": "BRAINSTORM.md, Editorials. Open with him: free or Plus; covers from Purify's artwork first or uploads; a contributor clause in the Terms; no clergy reviewer yet; in three steps (editor, sharing, submitting). His follow-up: quote Fathers and Scripture; the journal is Purify's, kept apart from Church teaching; Plus a full Notion-like journal, everyone a personal one; asked how to keep exposure. Claude's recommendation (BRAINSTORM.md): write and share free, depth is Plus; the Fathers quoted from the library only; shared pages marked as a reader's, unlisted and kept from search engines until reviewed. 2026-11-08: the contributor system (submitting, review, the badge) on hold, his word: \"I still need to talk to you about that\"."
+  },
+  {
+   "id": "e-journal-plus",
+   "section": "Practice",
+   "kind": "idea",
+   "title": "The journal in two: free, a personal journal that shares a page at a time with a limit; Plus, the full Notion-style journal",
+   "from": "both",
+   "asked": "2026-11-08",
+   "status": "approved",
+   "decided": "2026-11-08",
+   "needsDesign": true,
+   "version": null,
+   "outcome": null,
+   "note": "His decisions of 2026-11-08 (BRAINSTORM.md, Editorials). Claude's proposal for the limit, for his word: one page at a time, three a month, counted on the server; Plus without limit and whole notebooks; covers Plus. Screens drawn: a Plus page, add a block, sharing, a computer, the link previews; new words listed for his word."
   }
  ]
 }
