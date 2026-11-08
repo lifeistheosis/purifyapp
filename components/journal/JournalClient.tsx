@@ -31,6 +31,7 @@ import {
   type JournalSource,
 } from "@/lib/journal/entries";
 import { READING_KIND_KEY, verseSpan } from "@/lib/journal/churchDay";
+import { takeJournalOpen } from "@/lib/journal/quoteInJournal";
 import { emptyPromptKey, journalFeed, noteKey, planPrompts, type JournalItem, type PlanQuestion } from "@/lib/journal/feed";
 import { dayGuide } from "@/lib/plans/guide";
 import { usePlanGuide } from "@/lib/plans/guideContent";
@@ -118,6 +119,18 @@ export function JournalClient() {
     const kept = readDraft();
     begin(kept && (kept.body.trim() || kept.prompt || kept.editing) ? kept : BLANK);
   };
+
+  // A quote just laid on the page being written (Quote in journal, from a
+  // held paragraph or a verse's Study; lib/journal/quoteInJournal.ts): the
+  // journal opens on that page.
+  useEffect(() => {
+    if (!mounted || !takeJournalOpen()) return;
+    const kept = readDraft();
+    if (!kept) return;
+    /* eslint-disable-next-line react-hooks/set-state-in-effect -- the ask
+       is on the device, read once after the first paint. */
+    begin(kept);
+  }, [mounted, begin]);
 
   const answer = (q: PlanQuestion) => {
     if (!waiting) return;

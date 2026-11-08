@@ -4956,6 +4956,8 @@
   "journal.page.versePlaceholder": "Isang talata, gaya ng Juan 3:16",
   "journal.page.quotePlaceholder": "Ang mga salitang sinisipi mo",
   "journal.page.quoteBy": "Sino ang nagsabi",
+  "journal.page.fromLibrary": "Sinipi mula sa aklatan ng Purify",
+  "journal.quote.inJournal": "Isipi sa journal",
   "journal.prompts.title": "Mula sa iyong plano sa pagbasa",
   "journal.prompts.notNow": "Hindi muna",
   "journal.deleted": "Inalis",

@@ -20,11 +20,19 @@
 //   > Words of one's own quote.       a quote of one's own
 //   > ~ Who said it                   and its attribution, the writer's own
 //
+//   [[library /saints/john/works/]]   a quote from Purify's library: where it
+//   > The words, as the page has them. is in the app, the words verbatim, and
+//   > ~ The page they are from        the page they are from
+//
 // A verse card keeps no words, only where they are: the card shows them from
 // the app's own Bible (lib/saved/verseWords.ts), verbatim, so a card can never
 // carry words the Scripture does not (docs/editorial-standards.md). A quote of
 // one's own is the writer's, with the writer's attribution, and never wears
-// the library's mark: hand-typed words are never dressed as a Father's.
+// the library's mark: hand-typed words are never dressed as a Father's. A
+// library quote is taken whole from the page it is held on (Quote in journal,
+// lib/journal/quoteInJournal.ts), with that page as its way back, and is not
+// edited here as the source's words. A library quote leads only inside the
+// app (an address that starts with one "/"): never to another site.
 //
 // Pure: no React, no storage. lib/journal/__tests__/page.test.ts holds the
 // round trip.
@@ -37,7 +45,9 @@ export type PageBlock =
   /** Scripture as a card: a verse or a few, the words from the app's Bible. */
   | { type: "verse"; book: string; chapter: number; from: number; to: number }
   /** A quote of one's own: the words, and who said them, as the writer gives it. */
-  | { type: "quote"; text: string; by: string };
+  | { type: "quote"; text: string; by: string }
+  /** A quote from Purify's library: the words as the page has them, the page's name, and the way back to it. */
+  | { type: "library"; text: string; cite: string; href: string };
 
 export type Page = { title: string; blocks: PageBlock[] };
 
@@ -49,6 +59,9 @@ export const TITLE_MAX = 120;
 export const BY_MAX = 120;
 
 const VERSE_TOKEN = /^\[\[verse ([a-z0-9][a-z0-9-]{0,31}) (\d{1,3}):(\d{1,3})(?:-(\d{1,3}))?\]\]$/;
+const LIBRARY_TOKEN = /^\[\[library (\S{1,300})\]\]$/;
+/** The longest name a library quote's page is given. */
+export const CITE_MAX = 160;
 const COLOR_PREFIX = /^==([a-z]{1,16})== /;
 /** A paragraph that would be read as something else unless it is marked as words. */
 const NEEDS_ESCAPE = /^(#\s|>|==|\[\[|\\)/;
@@ -62,6 +75,18 @@ export function verseBlock(book: string, chapter: number, from: number, to = fro
   const end = Math.max(from, to);
   if (end - from + 1 > VERSE_CARD_MAX) return null;
   return { type: "verse", book, chapter, from, to: end };
+}
+
+/** A way back into the app, and only into it: one "/", then a path with nothing that could leave it. */
+export function isAppHref(href: string): boolean {
+  return /^\/(?!\/)[A-Za-z0-9\-._~/%#?=&]*$/.test(href) && href.length <= 300 && !/^\/\\/.test(href);
+}
+
+/** A library quote, kept sane: words, a page's name, and a way back inside the app. */
+export function libraryBlock(text: string, cite: string, href: string): PageBlock | null {
+  const words = (text ?? "").replace(/\r\n?/g, "\n").replace(/[ \t]+\n/g, "\n").replace(/\n{3,}/g, "\n\n").trim();
+  if (!words || !isAppHref(href)) return null;
+  return { type: "library", text: words, cite: oneLine(cite ?? "", CITE_MAX), href };
 }
 
 /** Paragraphs as the text holds them, parted by blank lines. */
@@ -100,6 +125,21 @@ export function parsePage(body: string): Page {
       }
     }
     const lines = p.split("\n");
+    const library = LIBRARY_TOKEN.exec(lines[0]);
+    if (library && lines.length > 1 && lines.slice(1).every((l) => l.startsWith(">"))) {
+      const inner = lines.slice(1).map((l) => l.replace(/^> ?/, ""));
+      let cite = "";
+      if (inner.length > 1 && inner[inner.length - 1].startsWith("~ ")) cite = inner.pop()!.slice(2);
+      const block = libraryBlock(
+        inner.map((l) => (l.startsWith("\\~") ? l.slice(1) : l)).join("\n"),
+        cite,
+        library[1],
+      );
+      if (block) {
+        blocks.push(block);
+        return;
+      }
+    }
     if (lines.every((l) => l.startsWith(">"))) {
       const inner = lines.map((l) => l.replace(/^> ?/, ""));
       let by = "";
@@ -142,6 +182,13 @@ export function serializePage(page: Page): string {
     } else if (b.type === "verse") {
       const v = verseBlock(b.book, b.chapter, b.from, b.to);
       if (v && v.type === "verse") out.push(`[[verse ${v.book} ${v.chapter}:${v.from}${v.to > v.from ? `-${v.to}` : ""}]]`);
+    } else if (b.type === "library") {
+      const lib = libraryBlock(b.text, b.cite, b.href);
+      if (!lib || lib.type !== "library") continue;
+      // A blank line inside the words would part the block: it is kept as an empty ">" line.
+      const quoted = lib.text.split("\n").map((l) => (l.startsWith("~") ? `\\${l}` : l)).map((l) => (l ? `> ${l}` : ">"));
+      if (lib.cite) quoted.push(`> ~ ${lib.cite}`);
+      out.push([`[[library ${lib.href}]]`, ...quoted].join("\n"));
     } else {
       const lines = b.text.replace(/\r\n?/g, "\n").replace(/^\n+|\n+$/g, "").split("\n");
       if (!lines.join("").trim()) continue;
@@ -157,14 +204,19 @@ export function serializePage(page: Page): string {
 /** The page as words alone, for the list's preview and its search: verse cards by their reference. */
 export function pageText(page: Page, verseLabel: (b: Extract<PageBlock, { type: "verse" }>) => string): string {
   return page.blocks
-    .map((b) => (b.type === "text" ? b.text : b.type === "verse" ? verseLabel(b) : b.by ? `“${b.text}” ${b.by}` : `“${b.text}”`))
+    .map((b) => {
+      if (b.type === "text") return b.text;
+      if (b.type === "verse") return verseLabel(b);
+      const by = b.type === "quote" ? b.by : b.cite;
+      return by ? `“${b.text}” ${by}` : `“${b.text}”`;
+    })
     .filter((s) => s.trim())
     .join("\n");
 }
 
 /** Does the page hold anything worth keeping? */
 export function pageIsEmpty(page: Page): boolean {
-  return !page.title.trim() && page.blocks.every((b) => (b.type === "text" ? !b.text.trim() : b.type === "quote" ? !b.text.trim() : false));
+  return !page.title.trim() && page.blocks.every((b) => (b.type === "text" || b.type === "quote" ? !b.text.trim() : false));
 }
 
 /**

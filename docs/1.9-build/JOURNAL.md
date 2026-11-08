@@ -155,6 +155,17 @@ standards in readers' pages; shares and their count made through API routes
   Checked in a phone-sized browser: written, kept, reopened as it was, and
   `checkMock` passing on the sheet, its tools and the list on all five
   palettes and in Arabic.
+- **Step 1d, 2026-11-08:** Quote in journal. A verse's Study has it (free);
+  the hold pill has it on the library's pages only (prayers, saints, chants,
+  councils, the catechism, history, topics, plans, the Bible's commentary;
+  `lib/journal/libraryPlaces.ts`), Plus's, with the Plus mark's padlock
+  without it. The quote goes at the end of the page being written, or begins
+  one, and the journal opens on it. A library quote is the block's words
+  verbatim, cited by its page, marked "Quoted from Purify's library", never
+  edited in the sheet, with Open back to its page, and it may only lead
+  inside the app. **For step 3:** a shared page must check each library
+  quote against its page before it wears the mark in public, since a page's
+  text can be edited by hand in an older build.
 
 ## The order, when he says start
 

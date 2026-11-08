@@ -4966,6 +4966,8 @@
   "journal.page.versePlaceholder": "Un versículo, como Juan 3:16",
   "journal.page.quotePlaceholder": "Las palabras que citas",
   "journal.page.quoteBy": "Quién lo dijo",
+  "journal.page.fromLibrary": "Citado de la biblioteca de Purify",
+  "journal.quote.inJournal": "Citar al diario",
   "journal.prompts.title": "De tu plan de lectura",
   "journal.prompts.notNow": "Ahora no",
   "journal.deleted": "Quitado",

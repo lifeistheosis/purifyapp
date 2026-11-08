@@ -5112,6 +5112,8 @@
   "journal.page.versePlaceholder": "Вірш, наприклад Від Іоана 3:16",
   "journal.page.quotePlaceholder": "Слова, які ви цитуєте",
   "journal.page.quoteBy": "Хто це сказав",
+  "journal.page.fromLibrary": "Цитата з бібліотеки Purify",
+  "journal.quote.inJournal": "У щоденник",
   "journal.prompts.title": "З вашого плану читання",
   "journal.prompts.notNow": "Не зараз",
   "journal.deleted": "Прибрано",

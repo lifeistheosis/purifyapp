@@ -5036,6 +5036,8 @@
   "journal.page.versePlaceholder": "Стих, на пример Јован 3:16",
   "journal.page.quotePlaceholder": "Речи које цитирате",
   "journal.page.quoteBy": "Ко је то рекао",
+  "journal.page.fromLibrary": "Цитирано из библиотеке Purify",
+  "journal.quote.inJournal": "У дневник",
   "journal.prompts.title": "Из вашег плана читања",
   "journal.prompts.notNow": "Не сада",
   "journal.deleted": "Уклоњено",

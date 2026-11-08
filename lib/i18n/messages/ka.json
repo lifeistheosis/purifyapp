@@ -4956,6 +4956,8 @@
   "journal.page.versePlaceholder": "მუხლი, მაგალითად იოანე 3:16",
   "journal.page.quotePlaceholder": "სიტყვები, რომლებსაც იმოწმებთ",
   "journal.page.quoteBy": "ვინ თქვა",
+  "journal.page.fromLibrary": "ციტატა Purify-ის ბიბლიოთეკიდან",
+  "journal.quote.inJournal": "დღიურში",
   "journal.prompts.title": "თქვენი კითხვის გეგმიდან",
   "journal.prompts.notNow": "ახლა არა",
   "journal.deleted": "ამოღებულია",

@@ -4954,6 +4954,8 @@
   "journal.page.versePlaceholder": "Sebuah ayat, seperti Yohanes 3:16",
   "journal.page.quotePlaceholder": "Kata-kata yang Anda kutip",
   "journal.page.quoteBy": "Siapa yang mengatakannya",
+  "journal.page.fromLibrary": "Dikutip dari perpustakaan Purify",
+  "journal.quote.inJournal": "Kutip ke jurnal",
   "journal.prompts.title": "Dari rencana bacaan Anda",
   "journal.prompts.notNow": "Nanti saja",
   "journal.deleted": "Dihapus",

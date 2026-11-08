@@ -5,7 +5,7 @@
 import { describe, expect, it } from "vitest";
 
 import { MAX_BODY } from "../entries";
-import { insertAt, pageIsEmpty, pageText, parsePage, removeAt, serializePage, tidyBlocks, verseBlock, VERSE_CARD_MAX, type Page } from "../page";
+import { insertAt, isAppHref, libraryBlock, pageIsEmpty, pageText, parsePage, removeAt, serializePage, tidyBlocks, verseBlock, VERSE_CARD_MAX, type Page } from "../page";
 
 const page: Page = {
   title: "On the Samaritan woman",
@@ -120,5 +120,39 @@ describe("the editor's blocks", () => {
     expect(pageIsEmpty({ title: "", blocks: [{ type: "text", text: "  " }] })).toBe(true);
     expect(pageIsEmpty({ title: "A title", blocks: [] })).toBe(false);
     expect(pageIsEmpty({ title: "", blocks: [verseBlock("john", 1, 1)!] })).toBe(false);
+  });
+});
+
+describe("a quote from Purify's library", () => {
+  const lib = libraryBlock("Let us run with patience.\n\nAnd again: let us run.", "On the Incarnation", "/saints/athanasius-the-great/on-the-incarnation/#p12")!;
+
+  it("keeps the words as the page has them, the page's name, and its way back", () => {
+    const body = serializePage({ title: "", blocks: [lib] });
+    expect(body).toBe(
+      "[[library /saints/athanasius-the-great/on-the-incarnation/#p12]]\n> Let us run with patience.\n>\n> And again: let us run.\n> ~ On the Incarnation",
+    );
+    expect(parsePage(body)).toEqual({ title: "", blocks: [lib] });
+  });
+
+  it("leads only inside the app, never to another site", () => {
+    expect(isAppHref("/prayers/morning/")).toBe(true);
+    expect(isAppHref("//evil.example/")).toBe(false);
+    expect(isAppHref("https://evil.example/")).toBe(false);
+    expect(isAppHref("javascript:alert(1)")).toBe(false);
+    expect(isAppHref("/\\evil.example")).toBe(false);
+    expect(libraryBlock("Words", "A page", "https://evil.example/")).toBeNull();
+    // Written by hand with a way out, it is read as the words it is, never as the library's.
+    const forged = "[[library https://evil.example/]]\n> Words\n> ~ St. Basil";
+    expect(parsePage(forged).blocks.every((b) => b.type !== "library")).toBe(true);
+  });
+
+  it("is named with its page in the list, and a page holding one is not empty", () => {
+    expect(pageText({ title: "", blocks: [lib] }, () => "")).toContain("” On the Incarnation");
+    expect(pageIsEmpty({ title: "", blocks: [lib] })).toBe(false);
+  });
+
+  it("a line of its words that looks like its page's name stays its words", () => {
+    const tricky = libraryBlock("First line\n~ not the name", "", "/prayers/")!;
+    expect(parsePage(serializePage({ title: "", blocks: [tricky] })).blocks[0]).toEqual(tricky);
   });
 });

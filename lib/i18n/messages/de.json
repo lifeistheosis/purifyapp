@@ -4956,6 +4956,8 @@
   "journal.page.versePlaceholder": "Ein Vers, etwa Johannes 3:16",
   "journal.page.quotePlaceholder": "Die Worte, die du zitierst",
   "journal.page.quoteBy": "Wer hat es gesagt",
+  "journal.page.fromLibrary": "Zitiert aus der Bibliothek von Purify",
+  "journal.quote.inJournal": "Ins Tagebuch",
   "journal.prompts.title": "Aus deinem Leseplan",
   "journal.prompts.notNow": "Nicht jetzt",
   "journal.deleted": "Entfernt",

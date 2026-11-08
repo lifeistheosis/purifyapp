@@ -5251,6 +5251,8 @@
   "journal.page.versePlaceholder": "آية، مثل يوحنا 3:16",
   "journal.page.quotePlaceholder": "الكلمات التي تقتبسها",
   "journal.page.quoteBy": "مَن قالها",
+  "journal.page.fromLibrary": "مقتبس من مكتبة Purify",
+  "journal.quote.inJournal": "اقتبس في الدفتر",
   "journal.prompts.title": "من خطة قراءتك",
   "journal.prompts.notNow": "ليس الآن",
   "journal.deleted": "تمت الإزالة",

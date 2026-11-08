@@ -4956,6 +4956,8 @@
   "journal.page.versePlaceholder": "Ένας στίχος, όπως Κατά Ιωάννην 3:16",
   "journal.page.quotePlaceholder": "Τα λόγια που παραθέτετε",
   "journal.page.quoteBy": "Ποιος το είπε",
+  "journal.page.fromLibrary": "Παράθεμα από τη βιβλιοθήκη του Purify",
+  "journal.quote.inJournal": "Στο ημερολόγιο",
   "journal.prompts.title": "Από το πρόγραμμα ανάγνωσής σας",
   "journal.prompts.notNow": "Όχι τώρα",
   "journal.deleted": "Αφαιρέθηκε",

@@ -4961,6 +4961,8 @@
   "journal.page.versePlaceholder": "Un versetto, come Giovanni 3:16",
   "journal.page.quotePlaceholder": "Le parole che citi",
   "journal.page.quoteBy": "Chi l'ha detto",
+  "journal.page.fromLibrary": "Citato dalla biblioteca di Purify",
+  "journal.quote.inJournal": "Cita nel diario",
   "journal.prompts.title": "Dal tuo piano di lettura",
   "journal.prompts.notNow": "Non ora",
   "journal.deleted": "Rimosso",

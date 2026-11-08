@@ -5045,6 +5045,8 @@
   "journal.page.versePlaceholder": "Un verset, de pildă Ioan 3:16",
   "journal.page.quotePlaceholder": "Cuvintele pe care le citezi",
   "journal.page.quoteBy": "Cine a spus-o",
+  "journal.page.fromLibrary": "Citat din biblioteca Purify",
+  "journal.quote.inJournal": "În jurnal",
   "journal.prompts.title": "Din planul tău de citire",
   "journal.prompts.notNow": "Nu acum",
   "journal.deleted": "Scos",

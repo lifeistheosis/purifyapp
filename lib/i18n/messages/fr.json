@@ -4984,6 +4984,8 @@
   "journal.page.versePlaceholder": "Un verset, comme Jean 3:16",
   "journal.page.quotePlaceholder": "Les mots que vous citez",
   "journal.page.quoteBy": "Qui l'a dit",
+  "journal.page.fromLibrary": "Cité de la bibliothèque de Purify",
+  "journal.quote.inJournal": "Citer au journal",
   "journal.prompts.title": "De votre plan de lecture",
   "journal.prompts.notNow": "Pas maintenant",
   "journal.deleted": "Retiré",

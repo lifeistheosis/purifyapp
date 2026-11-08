@@ -311,6 +311,8 @@ function studyIcon(key: string) {
       return <Copy size={20} />;
     case "link":
       return <LinkChain size={20} />;
+    case "journal":
+      return <Pen size={20} />;
     default:
       return <Book size={20} />;
   }

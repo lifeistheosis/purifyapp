@@ -4956,6 +4956,8 @@
   "journal.page.versePlaceholder": "Стих, например Йоан 3:16",
   "journal.page.quotePlaceholder": "Думите, които цитирате",
   "journal.page.quoteBy": "Кой го е казал",
+  "journal.page.fromLibrary": "Цитирано от библиотеката на Purify",
+  "journal.quote.inJournal": "В дневника",
   "journal.prompts.title": "От вашия план за четене",
   "journal.prompts.notNow": "Не сега",
   "journal.deleted": "Премахнато",

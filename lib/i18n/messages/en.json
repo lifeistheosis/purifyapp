@@ -4974,6 +4974,8 @@
   "journal.page.versePlaceholder": "A verse, as John 3:16",
   "journal.page.quotePlaceholder": "The words you are quoting",
   "journal.page.quoteBy": "Who said it",
+  "journal.page.fromLibrary": "Quoted from Purify's library",
+  "journal.quote.inJournal": "Quote in journal",
   "journal.prompts.title": "From your reading plan",
   "journal.prompts.notNow": "Not now",
   "journal.deleted": "Removed",

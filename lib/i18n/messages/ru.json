@@ -5113,6 +5113,8 @@
   "journal.page.versePlaceholder": "Стих, например От Иоанна 3:16",
   "journal.page.quotePlaceholder": "Слова, которые вы цитируете",
   "journal.page.quoteBy": "Кто это сказал",
+  "journal.page.fromLibrary": "Цитата из библиотеки Purify",
+  "journal.quote.inJournal": "В дневник",
   "journal.prompts.title": "Из вашего плана чтения",
   "journal.prompts.notNow": "Не сейчас",
   "journal.deleted": "Убрано",

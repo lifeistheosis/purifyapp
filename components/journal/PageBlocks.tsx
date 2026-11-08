@@ -13,6 +13,7 @@
 // components/ui/icons; every control 44px or more; nothing physical, so the
 // page reads from the start in Arabic and Urdu.
 
+import Link from "next/link";
 import { useLayoutEffect, useMemo, useRef, useState, type ReactNode } from "react";
 
 import { HighlightNamesSheet } from "@/components/bible/HighlightNamesSheet";
@@ -85,6 +86,7 @@ export function PageBlocks({ editor, placeholder }: { editor: PageEditor; placeh
             );
           }
           if (b.type === "verse") return <VerseCard key={`${i}-verse`} index={i} block={b} label={label(b)} onRemove={() => editor.remove(i)} />;
+          if (b.type === "library") return <LibraryCard key={`${i}-library`} index={i} block={b} onRemove={() => editor.remove(i)} />;
           return (
             <QuoteCard
               key={`${i}-quote`}
@@ -187,6 +189,30 @@ function VerseWords({ book, chapter, verse, numbered }: { book: string; chapter:
       {numbered ? <sup className="me-1 font-sans text-[11px] font-semibold text-paper/70">{verse}</sup> : null}
       {words.text ? `${words.text} ` : words.status === "loading" ? <span aria-hidden className="me-1 inline-block h-3.5 w-40 rounded bg-paper/10 align-middle" /> : null}
     </span>
+  );
+}
+
+/**
+ * A quote from Purify's library (Quote in journal): the words as the page has
+ * them, never edited here as the source's; the page they are from; the
+ * library's mark, which only these wear; and the way back to the page.
+ */
+function LibraryCard({ index, block, onRemove }: { index: number; block: Extract<PageBlock, { type: "library" }>; onRemove: () => void }) {
+  const { t } = useTranslate();
+  return (
+    <figure data-page-block={index} data-page-library="" className="relative rounded-2xl border border-paper/10 bg-paper/[0.04] py-3 pe-12 ps-4">
+      <blockquote className="whitespace-pre-line font-serif text-body leading-[1.65] text-paper/90">{block.text}</blockquote>
+      <figcaption className="mt-1.5 flex min-w-0 items-center gap-3 font-sans text-caption text-paper/70">
+        <span className="min-w-0 flex-1">
+          {block.cite ? <span className="block">{block.cite}</span> : null}
+          <span className="block">{t("journal.page.fromLibrary")}</span>
+        </span>
+        <Link href={block.href} className="inline-flex min-h-11 shrink-0 items-center px-3 font-semibold text-paper/75 underline underline-offset-4 hover:text-paper">
+          {t("journal.composer.open")}
+        </Link>
+      </figcaption>
+      <RemoveButton onClick={onRemove} label={t("common.remove")} />
+    </figure>
   );
 }
 

@@ -20,12 +20,29 @@
 // The listeners are passive and never prevent anything. A hold that turns
 // into a scroll is simply dropped, so scrolling is untouched; a tap is too
 // short to count. Nothing is written or changed by a hold: it only offers.
+//
+// On a page of Purify's library (a prayer, a saint's life, a Father's work, a
+// chant; lib/journal/libraryPlaces.ts) the pill also offers Quote in journal
+// (1.9, docs/1.9-build/JOURNAL.md): the block's words, verbatim, land on the
+// page the reader is writing, with the page they came from as their name and
+// their way back (lib/journal/quoteInJournal.ts). The library's words are
+// Plus's to quote: without Plus it wears the Plus mark's padlock and opens
+// the upgrade sheet named for the journal.
 
+import { usePathname, useRouter } from "next/navigation";
 import { useCallback, useEffect, useRef, useState } from "react";
 
+import { PlusLock } from "@/components/billing/PlusMark";
+import { useUpgradeModal } from "@/components/billing/UpgradeModal";
 import { useTranslate } from "@/components/i18n/MessagesProvider";
 import { Check } from "@/components/ui/icons/Check";
 import { Copy } from "@/components/ui/icons/Copy";
+import { Pen } from "@/components/ui/icons/Pen";
+import { countLock } from "@/lib/analytics/lockCount";
+import { usePlusFeatures } from "@/lib/entitlements/usePlusFeatures";
+import { heldCite, heldHref, isLibraryPlace } from "@/lib/journal/libraryPlaces";
+import { libraryBlock } from "@/lib/journal/page";
+import { quoteInJournal } from "@/lib/journal/quoteInJournal";
 import { isNativeClient } from "@/lib/platform/native";
 import { copyText } from "@/lib/ui/copyText";
 import { createLiftGuard } from "@/lib/ui/liftGuard";
@@ -44,6 +61,10 @@ const OPENING_MS = 350;
 
 export function PressToCopy() {
   const { t } = useTranslate();
+  const pathname = usePathname();
+  const router = useRouter();
+  const upgrade = useUpgradeModal();
+  const locked = usePlusFeatures() === false;
   const [text, setText] = useState<string | null>(null);
   const [copied, setCopied] = useState(false);
   const held = useRef<HTMLElement | null>(null);
@@ -163,6 +184,24 @@ export function PressToCopy() {
     closing.current = setTimeout(close, COPIED_MS);
   };
 
+  const library = isLibraryPlace(pathname);
+  const onQuote = () => {
+    if (lift.isLift()) return;
+    if (locked) {
+      close();
+      // Outside the app's frame the sheet is the pricing page; the lock is counted all the same (item 12).
+      if (!upgrade.available) countLock("journal");
+      upgrade.open("journal");
+      return;
+    }
+    const block = libraryBlock(text, heldCite(held.current, document), heldHref(pathname ?? "/", held.current));
+    close();
+    if (block && quoteInJournal(block)) {
+      haptic("light");
+      router.push("/journal/");
+    }
+  };
+
   return (
     <div className="fixed inset-0 z-[140]" role="dialog" aria-modal="false" aria-label={t("press.textActions")}>
       {/* Anywhere else puts it down. */}
@@ -183,22 +222,32 @@ export function PressToCopy() {
             "calc(var(--tab-bar-h) + var(--now-playing-h) + var(--readings-flow-h, 0px) + env(safe-area-inset-bottom, 0px) + 12px)",
         }}
       >
-        {/* One surface: the button is the pill. The verse's pill is a tray
-            because it holds seven things; this holds one. */}
-        <button
-          type="button"
-          onClick={onCopy}
-          disabled={copied}
+        {/* One surface: the buttons are the pill. The verse's pill is a tray
+            because it holds seven things; this holds Copy, and on the
+            library's pages Quote in journal beside it. */}
+        <div
+          data-press-pill=""
           className={
-            "press-pill-in tap-press pointer-events-auto inline-flex h-12 items-center gap-2.5 rounded-full border px-6 font-sans text-detail font-semibold shadow-[0_12px_32px_rgba(0,0,0,0.55)] transition-colors duration-150 " +
-            (copied
-              ? "border-emerald-500/60 bg-night text-emerald-300"
-              : "border-paper/20 bg-night text-paper active:bg-night-soft")
+            "press-pill-in pointer-events-auto inline-flex h-12 max-w-full items-stretch overflow-hidden rounded-full border bg-night font-sans text-detail font-semibold shadow-[0_12px_32px_rgba(0,0,0,0.55)] transition-colors duration-150 " +
+            (copied ? "border-emerald-500/60 text-emerald-300" : "border-paper/20 text-paper")
           }
         >
-          {copied ? <Check size={18} /> : <Copy size={18} />}
-          <span aria-live="polite">{copied ? t("common.copied") : t("common.copy")}</span>
-        </button>
+          <button type="button" onClick={onCopy} disabled={copied} className="tap-press inline-flex items-center gap-2.5 px-6 active:bg-night-soft">
+            {copied ? <Check size={18} /> : <Copy size={18} />}
+            <span aria-live="polite">{copied ? t("common.copied") : t("common.copy")}</span>
+          </button>
+          {library && !copied ? (
+            <button
+              type="button"
+              onClick={onQuote}
+              data-press-quote={locked ? "locked" : ""}
+              className="tap-press inline-flex min-w-0 items-center gap-2 border-s border-paper/15 pe-6 ps-5 active:bg-night-soft"
+            >
+              {locked ? <PlusLock size={14} /> : <Pen size={18} className="shrink-0" />}
+              <span className="min-w-0 truncate">{t("journal.quote.inJournal")}</span>
+            </button>
+          ) : null}
+        </div>
       </div>
     </div>
   );

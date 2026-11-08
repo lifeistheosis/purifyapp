@@ -4956,6 +4956,8 @@
   "journal.page.versePlaceholder": "Egy vers, például János 3:16",
   "journal.page.quotePlaceholder": "Az idézett szavak",
   "journal.page.quoteBy": "Ki mondta",
+  "journal.page.fromLibrary": "Idézet a Purify könyvtárából",
+  "journal.quote.inJournal": "A naplóba",
   "journal.prompts.title": "Az olvasási tervedből",
   "journal.prompts.notNow": "Most nem",
   "journal.deleted": "Eltávolítva",

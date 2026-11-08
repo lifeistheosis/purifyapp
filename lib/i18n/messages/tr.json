@@ -4956,6 +4956,8 @@
   "journal.page.versePlaceholder": "Bir ayet, örneğin Yuhanna 3:16",
   "journal.page.quotePlaceholder": "Alıntıladığınız sözler",
   "journal.page.quoteBy": "Kim söyledi",
+  "journal.page.fromLibrary": "Purify kitaplığından alıntı",
+  "journal.quote.inJournal": "Günlüğe alıntıla",
   "journal.prompts.title": "Okuma planınızdan",
   "journal.prompts.notNow": "Şimdi değil",
   "journal.deleted": "Kaldırıldı",

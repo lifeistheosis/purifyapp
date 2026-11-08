@@ -5115,6 +5115,8 @@
   "journal.page.versePlaceholder": "Werset, na przykład Ewangelia Jana 3:16",
   "journal.page.quotePlaceholder": "Słowa, które cytujesz",
   "journal.page.quoteBy": "Kto to powiedział",
+  "journal.page.fromLibrary": "Cytat z biblioteki Purify",
+  "journal.quote.inJournal": "Do dziennika",
   "journal.prompts.title": "Z twojego planu czytania",
   "journal.prompts.notNow": "Nie teraz",
   "journal.deleted": "Usunięto",

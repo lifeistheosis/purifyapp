@@ -4956,6 +4956,8 @@
   "journal.page.versePlaceholder": "एउटा पद, जस्तै यूहन्ना 3:16",
   "journal.page.quotePlaceholder": "तपाईंले उद्धृत गर्ने शब्दहरू",
   "journal.page.quoteBy": "कसले भने",
+  "journal.page.fromLibrary": "Purify को पुस्तकालयबाट उद्धृत",
+  "journal.quote.inJournal": "दैनिकीमा",
   "journal.prompts.title": "तपाईंको पढाइ योजनाबाट",
   "journal.prompts.notNow": "अहिले होइन",
   "journal.deleted": "हटाइयो",

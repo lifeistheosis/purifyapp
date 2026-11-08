@@ -1,7 +1,10 @@
 "use client";
 
+import { useRouter } from "next/navigation";
 import { Fragment, useEffect, useRef, useState } from "react";
 import { getBook } from "@/lib/bible/books";
+import { verseBlock } from "@/lib/journal/page";
+import { quoteInJournal } from "@/lib/journal/quoteInJournal";
 import type { Verse, Token } from "@/lib/bible/load";
 import type { StrongsEntry } from "@/lib/bible/strongs";
 import { loadInterlinear, loadStrongs } from "@/lib/bible/chapterData";
@@ -140,6 +143,7 @@ export function VerseRow({
  onWordStudy?: (strongs: string, lemma?: string) => void;
 }) {
   const { t } = useTranslate();
+  const router = useRouter();
  const ann = useVerseAnnotation(book, chapter, verse.n);
  // Anything on the verse highlighted: the whole of it, or some of its words.
  const marked = !!ann.highlighted || (ann.highlightedWords?.length ?? 0) > 0;
@@ -682,6 +686,17 @@ export function VerseRow({
  locked: plusAllowed === false,
  });
  rows.push({ key: "quote", label: t("bible.copyAsQuote"), onSelect: () => void copyAsQuote() });
+ // Quote in journal (1.9, docs/1.9-build/JOURNAL.md): the verse as a card on
+ // the page being written, free, as Scripture is in the journal.
+ rows.push({
+ key: "journal",
+ label: t("journal.quote.inJournal"),
+ onSelect: () => {
+ setShowTools(false);
+ const card = verseBlock(book, chapter, verse.n);
+ if (card && quoteInJournal(card)) router.push("/journal/");
+ },
+ });
  rows.push({ key: "link", label: t("today.verse.copyLink"), onSelect: () => void copyVerseLink() });
  return rows;
  }
