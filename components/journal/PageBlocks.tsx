@@ -39,6 +39,7 @@ import { Star } from "@/components/ui/icons/Star";
 import { highlightVars } from "@/lib/bible/highlightPalette";
 import { localBookNames, searchBible } from "@/lib/bible/books";
 import { cn } from "@/lib/cn";
+import { COVERS, coverById } from "@/lib/journal/covers";
 import { usePlusFeatures } from "@/lib/entitlements/usePlusFeatures";
 import { verseSpan } from "@/lib/journal/churchDay";
 import {
@@ -85,8 +86,17 @@ export function PageBlocks({ editor, placeholder }: { editor: PageEditor; placeh
   const font = page.style?.font === "sans" ? "font-sans" : "font-serif";
   const align = page.style?.align === "center" ? "text-center" : "text-start";
 
+  const cover = coverById(page.cover);
   return (
     <div className="mt-5">
+      {/* Plus: the page's cover, edge to edge, credited under it (lib/journal/covers.ts). */}
+      {cover ? (
+        <figure data-page-cover="" className="-mx-4 mb-3">
+          {/* eslint-disable-next-line @next/next/no-img-element -- a file the apps carry; the export has no image server */}
+          <img src={cover.src} alt={cover.alt} className="block h-40 w-full object-cover" />
+          <figcaption className="mt-1 px-4 font-sans text-[12px] text-paper/70">{cover.credit}</figcaption>
+        </figure>
+      ) : null}
       <label className="block">
         <span className="sr-only">{t("journal.page.title")}</span>
         <input
@@ -712,6 +722,41 @@ function PropsPanel({ editor, notebooks, onDone }: { editor: PageEditor; noteboo
         </label>
       ) : null}
       <StyleRows editor={editor} />
+      <CoverRow editor={editor} />
+    </div>
+  );
+}
+
+/** Plus: a cover from the verified artwork the apps carry, or none. */
+function CoverRow({ editor }: { editor: PageEditor }) {
+  const { t } = useTranslate();
+  const current = editor.page.cover;
+  return (
+    <div data-page-cover-choices="" className="mt-4 pb-2">
+      <div className="flex items-center justify-between gap-3">
+        <p className="font-sans text-caption font-semibold text-paper/70">{t("journal.page.cover")}</p>
+        {current ? (
+          <button type="button" onClick={() => editor.setCover(undefined)} className="tap-press inline-flex h-11 shrink-0 items-center rounded-pill px-3 font-sans text-detail font-semibold text-paper/85">
+            {t("journal.page.noCover")}
+          </button>
+        ) : null}
+      </div>
+      <div role="radiogroup" aria-label={t("journal.page.cover")} className="mt-1 grid grid-cols-5 gap-2">
+        {COVERS.map((c) => (
+          <button
+            key={c.id}
+            type="button"
+            role="radio"
+            aria-checked={current === c.id}
+            aria-label={c.alt}
+            onClick={() => editor.setCover(c.id)}
+            className={cn("tap-press aspect-square min-h-11 overflow-hidden rounded-xl border-2", current === c.id ? "border-paper" : "border-transparent")}
+          >
+            {/* eslint-disable-next-line @next/next/no-img-element -- a file the apps carry */}
+            <img src={c.src} alt="" loading="lazy" className="h-full w-full object-cover" />
+          </button>
+        ))}
+      </div>
     </div>
   );
 }

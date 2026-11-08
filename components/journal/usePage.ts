@@ -84,6 +84,8 @@ export function usePage(open: boolean, body: string, onBody: (body: string) => v
   const setTags = (tags: string[]) => commit({ ...page, tags: tags.length ? tags : undefined });
   /** Plus: the page's style, from the house's own. */
   const setStyle = (patch: PageStyle) => commit({ ...page, style: cleanStyle({ ...page.style, ...patch }) });
+  /** Plus: the page's cover, by the file's name; none takes it away. */
+  const setCover = (cover: string | undefined) => commit({ ...page, cover });
 
   const setBlock = (index: number, patch: Partial<PageBlock>) => {
     const blocks = page.blocks.map((b, i) => (i === index ? ({ ...b, ...patch } as PageBlock) : b));
@@ -129,7 +131,7 @@ export function usePage(open: boolean, body: string, onBody: (body: string) => v
     commit({ ...page, blocks });
   };
 
-  return { page, setCursor, setTitle, setNotebook, setTags, setStyle, setBlock, insert, remove, colorTarget, setColor, panel, setPanel };
+  return { page, setCursor, setTitle, setNotebook, setTags, setStyle, setCover, setBlock, insert, remove, colorTarget, setColor, panel, setPanel };
 }
 
 export type PageEditor = ReturnType<typeof usePage>;

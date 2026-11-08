@@ -167,6 +167,15 @@ standards in readers' pages; shares and their count made through API routes
   quote against its page before it wears the mark in public, since a page's
   text can be edited by hand in an older build.
 
+- **Step 2, 2026-11-08:** Plus's blocks (a heading, a checklist, a divider,
+  a callout) in More; notebooks and tags under the title, a notebook being
+  the pages that name it, with a chip for each in the list; a page's style
+  (Serif or Sans, the start or the centre, in the words the app already had);
+  a cover from the 14 icons whose rights are verified, credited under it. All
+  kept in the page's text. The paywall's journal row names them. Free readers
+  see each with the Plus mark. Left for later: the computer's own layout
+  (the composer is already a centred 720px panel there).
+
 ## Step 2, how it is kept (Claude's design, 2026-11-08)
 
 Everything a Plus page adds is kept in the page's text, as step 1's blocks

@@ -133,7 +133,7 @@ export const PREMIUM_PLAN_EN: PremiumPlanCopy = {
     {
       id: "journal",
       title: "The full journal",
-      sub: "Search everything you have written, and have the pages from this day in past months brought back to you",
+      sub: "Covers from the icons, notebooks and tags, headings, checklists and callouts, a font of your own, search, and the pages from this day in past months brought back to you",
     },
     {
       id: "plans",
@@ -254,7 +254,7 @@ export const PREMIUM_PLAN_DE: PremiumPlanCopy = {
     {
       id: "journal",
       title: "Das ganze Tagebuch",
-      sub: "Durchsuche alles, was du geschrieben hast, und hab die Seiten von diesem Tag in früheren Monaten wieder vor Augen",
+      sub: "Titelbilder aus den Ikonen, Notizbücher und Schlagwörter, Überschriften, Checklisten und Hervorhebungen, eine Schrift nach deiner Wahl, die Suche und die Seiten von diesem Tag in früheren Monaten wieder vor Augen",
     },
     {
       id: "plans",

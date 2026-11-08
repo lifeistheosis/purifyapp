@@ -64,7 +64,8 @@ describe("the paywall says what Plus adds, and never that the journal is Plus", 
     const row = PLUS_ROWS.find((r) => r.feature === "journal")!;
     expect(words[row.title!]).toBe("The full journal is part of Purify Plus");
     expect(words[row.name]).toBe("The full journal");
-    expect(words[row.body]).toMatch(/^Search everything you have written/);
+    // It names what Plus adds now, and only that (step 2, 2026-11-08).
+    expect(words[row.body]).toMatch(/^Covers from the icons, notebooks and tags, headings, checklists and callouts, a font of your own, search,/);
     expect(words[row.keep!]).toMatch(/^Writing in your journal/);
     expect(words[row.keep!]).toContain("stay free");
   });
