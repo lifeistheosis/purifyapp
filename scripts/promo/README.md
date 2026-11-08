@@ -28,6 +28,10 @@ stills, the clips and the reels.
 - **Scripture and the Fathers word for word**, as the app gives them, cited.
   The art is the app's own verified public-domain art, its credit beside it
   in both versions (`lib/saints/iconRights.ts` has the record).
+- **Light is a soft pool, never rays.** A burst of separate beams behind a
+  subject (a repeating conic gradient, a sunburst) is vibe-coded AI slop, the
+  owner's word of 2026-11-08 on the first edit frames. The promo test fails
+  any script that draws one.
 - **The house's voice and type**: Lora and DM Sans out of the export, the
   house colours, no em dashes. `lib/marketing/__tests__/promoLooks.test.ts`
   holds the words.

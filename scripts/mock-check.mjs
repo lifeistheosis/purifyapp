@@ -26,6 +26,9 @@
 //   mirror       everything mirrors in Arabic; what stays put was placed
 //                with left or right, not start or end
 //   emdash       no em dash in a word, a label or a placeholder
+//   rays         no burst of separate light rays (a repeating conic gradient,
+//                on a thing or its ::before or ::after): vibe-coded AI slop,
+//                the owner's word of 2026-11-08; light is a soft pool
 // What no measure can see is printed after it, to be answered by eye.
 //
 // A piece meant to break one of these says so on itself, with its reason,
@@ -55,7 +58,7 @@ export const PALETTES = [
   ["Monastery", "monastery"],
 ];
 
-export const CHECKS = ["contrast", "placeholder", "target", "glyph", "palette", "gold", "stripe", "mirror", "emdash"];
+export const CHECKS = ["contrast", "placeholder", "target", "glyph", "palette", "gold", "stripe", "mirror", "emdash", "rays"];
 
 /** What a measure cannot see. */
 export const BY_EYE = [
@@ -222,9 +225,21 @@ function look(selector) {
     }
   }
 
+  // A burst of separate rays: a repeating conic gradient, drawn on a thing or
+  // on its ::before or ::after (where the app's own two are drawn).
+  const rays = [];
+  for (const e of all) {
+    if (!shown(e)) continue;
+    for (const pseudo of [null, "::before", "::after"]) {
+      if (/repeating-conic-gradient/.test(getComputedStyle(e, pseudo).backgroundImage || "")) {
+        rays.push({ name: `${nameOf(e)}${pseudo ?? ""}`, allow: allowance(e, "rays") });
+      }
+    }
+  }
+
   const said = [root.innerText, ...[root, ...root.querySelectorAll("[aria-label], [placeholder], [title], [alt]")].flatMap((e) => ["aria-label", "placeholder", "title", "alt"].map((a) => e.getAttribute(a) || ""))].join("\n");
 
-  return { words, placeholders, controls, paints, stripes, emDash: said.includes("\u2014") };
+  return { words, placeholders, controls, paints, stripes, rays, emDash: said.includes("\u2014") };
 }
 
 /** Where each thing is across the part of the page, start to end, to compare in Arabic. */
@@ -387,6 +402,10 @@ export async function checkMock(page, selector, { allowGold = false } = {}) {
       if (s.allow) allow("stripe", s.name, s.allow);
       else fail("stripe", null, s.name, s.how);
     }
+    for (const r of dark.rays) {
+      if (r.allow) allow("rays", r.name, r.allow);
+      else fail("rays", null, r.name, "a burst of separate light rays (a repeating conic gradient): vibe-coded, the owner's word of 2026-11-08; light is a soft pool");
+    }
     if (dark.emDash) fail("emdash", null, "the words", "an em dash; use a comma, a colon or a full stop");
 
     // Arabic: everything is where it was, measured from the other side.
@@ -487,6 +506,7 @@ const FIXTURES = `
   </div>
   <p style="margin:12px 0 0;border-left:2px solid rgba(255,255,255,0.35);padding-left:14px;color:#e8e8ea;font-size:16px">A sample note</p>
   <p style="margin:8px 0 0;color:#d4af37;font-size:13px">Plus</p>
+  <div style="margin-top:8px;width:120px;height:120px;background:repeating-conic-gradient(from 3deg, rgba(255,240,214,.4) 0deg 3.5deg, rgba(255,240,214,0) 3.5deg 13deg)"></div>
 </div>
 <div data-mock-fixture="good" class="bg-night px-4 pb-4" style="position:fixed;left:0;right:0;top:0;z-index:301">
   <div class="flex items-center gap-2">
@@ -516,7 +536,7 @@ async function selfTest() {
     const good = await checkMock(page, "[data-mock-fixture=good]");
     printMockCheck(good, "the same parts from the house's classes");
     const caught = new Set(bad.failures.map((f) => f.check));
-    const missed = ["contrast", "target", "glyph", "palette", "gold", "stripe", "mirror", "emdash"].filter((c) => !caught.has(c));
+    const missed = ["contrast", "target", "glyph", "palette", "gold", "stripe", "mirror", "emdash", "rays"].filter((c) => !caught.has(c));
     const ok = missed.length === 0 && good.failures.length === 0;
     console.log(
       ok

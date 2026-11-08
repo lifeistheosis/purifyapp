@@ -2,7 +2,7 @@
 // app is, in the house's voice. The looks are drawn from real screens; these
 // are the parts a test can read.
 
-import { readFileSync } from "node:fs";
+import { readdirSync, readFileSync } from "node:fs";
 import { join } from "node:path";
 
 import { describe, expect, it } from "vitest";
@@ -44,6 +44,14 @@ describe("the promo looks", () => {
     const line = looks.split("\n").find((l) => l.includes(credit)) ?? "";
     expect(line).toMatch(/data-m="caption"/);
     expect(line).not.toMatch(/\$\{words \?/);
+  });
+});
+
+describe("the promo light", () => {
+  it("is a soft pool, never a burst of separate rays (the owner's word of 2026-11-08: vibe-coded AI slop)", () => {
+    for (const file of readdirSync(join(process.cwd(), "scripts/promo")).filter((f) => f.endsWith(".mjs"))) {
+      expect(read(`scripts/promo/${file}`), file).not.toMatch(/conic-gradient/);
+    }
   });
 });
 
