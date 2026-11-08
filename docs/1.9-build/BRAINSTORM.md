@@ -668,3 +668,46 @@ What it touches, before any design is final:
 
 Next: the screens drawn (the editor on a phone and on a computer, the link
 preview, Community and Submit), and his answers to the questions above.
+
+**His follow-up (2026-11-08):** readers should quote the Fathers and
+Scripture in their pages; the journal is Purify's own system, "not
+Orthodoxy's", so it is kept apart from what the Church teaches; Plus gets
+"a way better journal system ... pretty much a one-to-one revamped Notion",
+and everyone else a general, personal one. Then his question: "we want as
+much exposure, so we want users to be able to share it with their friends,
+but at the same time, how would we deal with plus users?"
+
+**Claude's recommendation: write and share free, depth is Plus.** Every
+shared page reaches someone without Purify, with the writer's cover and
+title in the preview, so a paywall on sharing would cut the growth it is
+for. What heavy writers need (and they are the readers most likely to pay)
+is power and order, so that is what Plus holds:
+
+- **Everyone:** journal pages with a title, text, Scripture as verse cards,
+  the seven highlight colours and the Church's day on each page; covers
+  from a small set of Purify's artwork; sharing as a link with the clean
+  preview and into Community; notes on verses (free already); submitting
+  to Purify (the review is the filter).
+- **Plus:** the whole editor (headings, callouts, checklists for prayer
+  lists, dividers, images, columns on a computer), the Fathers quoted from
+  Purify's own library, saint, feast and reading cards, every cover,
+  templates, notebooks and tags, search, From this day, sync on every
+  device, export. Each shown in the editor's block menu with the Plus mark,
+  never hidden, and counted by the lock counting of item 12, so what sells
+  is measured, not guessed.
+
+**The Fathers, quoted from the library only.** A Father's words go into a
+page as a card taken from Purify's own sourced texts, verbatim, with the
+citation filled in, and are not editable as the Father's; the writer's own
+words go around them. Words typed by hand are never dressed as a Father's
+quote. That keeps the editorial standards true in readers' pages too, and no
+other app can do it.
+
+**The journal is the reader's, never the Church's.** A shared page says it
+is a reader's page, made with Purify. Only a reviewed piece is an
+Editorial. Shared links are unlisted and kept out of search engines until a
+piece is reviewed, so the website's name is never lent to an unreviewed
+page; every shared page carries Report.
+
+Still his: this split (a change to what the journal's Plus row holds), the
+contributor clause in the Terms, and whether a clergy reviewer is sought.
