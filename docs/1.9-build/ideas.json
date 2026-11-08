@@ -1695,12 +1695,12 @@
    "title": "The journal in two: free, a personal journal that shares a page at a time with a limit; Plus, the full Notion-style journal",
    "from": "both",
    "asked": "2026-11-08",
-   "status": "approved",
+   "status": "built",
    "decided": "2026-11-08",
    "needsDesign": true,
-   "version": null,
+   "version": "step 2: covers, Plus's blocks, notebooks and tags, styles, the computer's layout",
    "outcome": null,
-   "note": "His decisions of 2026-11-08 (BRAINSTORM.md, Editorials). Claude's proposal for the limit, for his word: one page at a time, three a month, counted on the server; Plus without limit and whole notebooks; covers Plus. Screens drawn: a Plus page, add a block, sharing, a computer, the link previews; new words listed for his word. Finalized in JOURNAL.md on his word of 2026-11-08 (\"finalize the journal\")."
+   "note": "His decisions of 2026-11-08 (BRAINSTORM.md, Editorials). Claude's proposal for the limit, for his word: one page at a time, three a month, counted on the server; Plus without limit and whole notebooks; covers Plus. Screens drawn: a Plus page, add a block, sharing, a computer, the link previews; new words listed for his word. Finalized in JOURNAL.md on his word of 2026-11-08 (\"finalize the journal\"). Built 2026-11-08 (2fa8e295, b53820d5, 375dbce1, 617bdc81, c2a20212): a cover from the 14 verified icons, a heading, checklist, divider and callout, notebooks and tags (a notebook is the pages that name it), Serif or Sans at the start or the centre, and on a computer the notebooks at the side. All kept in the page's text, no server change. Sharing (step 3) is built and waits on his SQL (docs/1.9-build/sql/shared-pages.sql)."
   },
   {
    "id": "e-quote-anything",
@@ -1723,12 +1723,12 @@
    "title": "Freedom to style a page (fonts, dividers, colours) inside the guardrails",
    "from": "edgar",
    "asked": "2026-11-08",
-   "status": "approved",
+   "status": "built",
    "decided": "2026-11-08",
    "needsDesign": true,
-   "version": null,
+   "version": "two fonts, two places, from the house's own",
    "outcome": null,
-   "note": "His word of 2026-11-08. Proposed: a designed set of house tokens only (Book and Clean fonts, the highlight colours and inks, plain dividers, start or centre), held by a test against every palette. BRAINSTORM.md, Editorials. Finalized in JOURNAL.md on his word of 2026-11-08 (\"finalize the journal\")."
+   "note": "His word of 2026-11-08. Proposed: a designed set of house tokens only (Book and Clean fonts, the highlight colours and inks, plain dividers, start or centre), held by a test against every palette. BRAINSTORM.md, Editorials. Finalized in JOURNAL.md on his word of 2026-11-08 (\"finalize the journal\"). Built 2026-11-08 (375dbce1): Serif (Lora) or Sans (DM Sans), at the start or the centre, never left or right, no colour of its own; chosen with the words the app already had."
   }
  ]
 }
