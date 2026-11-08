@@ -137,7 +137,7 @@ describe("the chapter page", () => {
     // In the apps it is a file. On the website it stays in the page, where a
     // search engine reads the Fathers beside the chapter.
     expect(page).toContain("commentary={IS_STATIC_EXPORT ? undefined : commentary}");
-    expect(page).toContain("<LazyStudyRail book={book} chapter={chapterNum} empty={!hasChapterCommentary} />");
+    expect(page).toContain('<LazyStudyRail key="rail" book={book} chapter={chapterNum} empty={!hasChapterCommentary} />');
   });
 
   it("is a tenth of what it was for the heaviest chapter", async () => {

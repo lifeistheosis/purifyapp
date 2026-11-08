@@ -46,11 +46,22 @@ const ACTIONS = "components/bible/MobileReaderActions.tsx";
 const MORE = "components/bible/ReaderMoreSheet.tsx";
 const PILL = "components/bible/MobileChapterPill.tsx";
 
+describe("the parts the chapter page hands its screen", () => {
+  it("each carry a key, so one that reaches the browser late is never warned of as an unkeyed list", () => {
+    const page = code(PAGE);
+    expect(page).toMatch(/<MobileTopBar\s+key="top-bar"/);
+    expect(page).toMatch(/<LicensedChapterReader\s+key="reader"/);
+    expect(page).toMatch(/<ChapterReader\s+key="reader"/);
+    expect(page).toContain('<LazyStudyRail key="rail"');
+    expect(page).toContain('<StudyRail key="rail"');
+  });
+});
+
 describe("no bar: round buttons over the page", () => {
   it("mounts the page's top as plates, the way back to the Bible on one side and ••• on the other", () => {
     const page = code(PAGE);
     const bar = /<MobileTopBar\b[\s\S]*?\/>\s*\}/.exec(page)?.[0] ?? "";
-    expect(bar).toMatch(/<MobileTopBar\s+plates\b/);
+    expect(bar).toMatch(/<MobileTopBar\s+key="top-bar"\s+plates\b/);
     expect(bar).toContain('back="/bible"');
     expect(bar).toMatch(/trailing=\{\s*<MobileReaderActions\b[\s\S]*configuredLicensed=\{configuredLicensed\}/);
     // The page names itself: no title in the bar, no verse line under it.

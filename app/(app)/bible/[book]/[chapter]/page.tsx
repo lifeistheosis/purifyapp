@@ -158,6 +158,11 @@ export default async function BibleChapterPage({
     id: p.id,
     verse: p.verse!,
    }))}
+   // The three parts handed over below each carry a key. The screen sets
+   // each beside parts of its own, and an element that reaches the browser
+   // a moment after the screen does (the page arrives in pieces) is checked
+   // as one of a list: without a key, development logged a warning on every
+   // chapter (2026-11-08).
    // The phone's and the tablet's top, here on the web too: no bar at all
    // (1.8, the owner's pick B of round 2, "The page"), only round plates
    // over the page, the way back to /bible on one side and Aa and ••• on the
@@ -169,6 +174,7 @@ export default async function BibleChapterPage({
    // and these plates are this page's bar for it.
    topBar={
     <MobileTopBar
+     key="top-bar"
      plates
      back="/bible"
      trailing={
@@ -185,12 +191,14 @@ export default async function BibleChapterPage({
    reader={
     usingLicensed ? (
      <LicensedChapterReader
+      key="reader"
       chapter={licensed!}
       transId={licensedId!}
       translationLabel={LICENSED_LABEL[licensedId!] ?? licensedId!}
      />
     ) : (
      <ChapterReader
+      key="reader"
       book={book}
       bookName={b!.name}
       chapter={chapterNum}
@@ -209,9 +217,9 @@ export default async function BibleChapterPage({
    }
    rail={
     !bookHasCommentary ? null : IS_STATIC_EXPORT ? (
-     <LazyStudyRail book={book} chapter={chapterNum} empty={!hasChapterCommentary} />
+     <LazyStudyRail key="rail" book={book} chapter={chapterNum} empty={!hasChapterCommentary} />
     ) : (
-     <StudyRail commentary={commentary} />
+     <StudyRail key="rail" commentary={commentary} />
     )
    }
   />
