@@ -44,6 +44,16 @@ import { cn } from "@/lib/cn";
 import { plusFeaturesNow, usePlusFeatures } from "@/lib/entitlements/usePlusFeatures";
 import { wroteWhen } from "@/lib/bible/noteAge";
 import { keepText, verseKey } from "@/lib/remember/schedule";
+import {
+ LONG_PRESS_MS,
+ SCROLL_SLOP_PX,
+ TOUCH_ECHO_MS,
+ isSecondTap,
+ isTap,
+ isTouchContextMenu,
+ type TapAt,
+} from "@/lib/bible/verseGesture";
+import { lastPageScrollAt, watchPageScroll } from "@/lib/ui/pageScroll";
 
 /**
  * The mobile commentary marker is a superscript verse number plus a 5px dot,
@@ -357,6 +367,15 @@ export function VerseRow({
  null,
  );
  function openContextMenu(e: React.MouseEvent) {
+ // A hold on a phone sends a contextmenu too (Android's WebView, as Chrome
+ // on a phone): that is the hold's, and the hold opens the verse's own
+ // tools, so the computer's menu stays shut and so does the system's (build
+ // 88 note 1, lib/bible/verseGesture.ts). The right-click menu is a mouse's.
+ const pointerType = (e.nativeEvent as Partial<PointerEvent>).pointerType;
+ if (isTouchContextMenu(typeof pointerType === "string" && pointerType ? pointerType : undefined, gestureTime() - touchAtRef.current)) {
+ e.preventDefault();
+ return;
+ }
  // Don't suppress the native menu when the user has selected text, let
  // the browser handle "Copy" for the active selection. Custom menu fires
  // only when the right-click is a plain click (no selection).
@@ -384,8 +403,6 @@ export function VerseRow({
  const [showTools, setShowTools] = useState(false);
  const pressTimerRef = useRef<number | null>(null);
  const pressOriginRef = useRef<{ x: number; y: number } | null>(null);
- const LONG_PRESS_MS = 400;
- const SCROLL_SLOP_PX = 8;
 
  function clearPressTimer() {
  if (pressTimerRef.current !== null) {
@@ -458,7 +475,12 @@ export function VerseRow({
  // live site on 2026-10-19, there since the drag came in May). A mousedown
  // this soon after a touch is the tap's, not a mouse's.
  const touchAtRef = useRef(-Infinity);
- const TAP_MOUSE_MS = 1500;
+ const TAP_MOUSE_MS = TOUCH_ECHO_MS;
+ // Where the page stood when the touch began, and when it last scrolled
+ // before it: a touch that stops a glide, or one the page moved under, is
+ // the scroll's (build 88 note 2).
+ const touchStartRef = useRef<{ at: number; scrollY: number; lastScrollAt: number } | null>(null);
+ useEffect(() => watchPageScroll(), []);
 
  function onWordsMouseDown(e: React.MouseEvent<HTMLParagraphElement>) {
  if (e.button !== 0) return;
@@ -471,6 +493,7 @@ export function VerseRow({
 
  function onWordsTouchStart(e: React.TouchEvent<HTMLParagraphElement>) {
  touchAtRef.current = gestureTime();
+ touchStartRef.current = { at: touchAtRef.current, scrollY: window.scrollY, lastScrollAt: lastPageScrollAt() };
  const t = e.touches[0];
  if (!t) return;
  // Stash the origin and arm a long-press timer. Do NOT open the popup
@@ -505,26 +528,40 @@ export function VerseRow({
 
  // A double tap is two taps on the same verse within DOUBLE_TAP_MS, the
  // second within DOUBLE_TAP_SLOP_PX of the first.
- const lastTapRef = useRef<{ t: number; x: number; y: number } | null>(null);
- const DOUBLE_TAP_MS = 320;
- const DOUBLE_TAP_SLOP_PX = 28;
+ const lastTapRef = useRef<TapAt | null>(null);
 
  function onWordsTouchEnd(e?: React.TouchEvent<HTMLParagraphElement>) {
- // A tap: the finger came up before the hold fired and without a scroll.
- const tapped = pressOriginRef.current !== null && pressTimerRef.current !== null;
+ // A tap: the finger came up before the hold fired and without a scroll,
+ // the page still under it, and not the touch that stopped a glide
+ // (lib/bible/verseGesture.ts, isTap).
+ const quick = pressOriginRef.current !== null && pressTimerRef.current !== null;
+ const start = touchStartRef.current;
+ touchStartRef.current = null;
  // 1.9, the owner's pick B: a single tap selects the verse and opens its
  // strip at once (components/bible/VerseStrip.tsx), so nothing waits to see
  // whether a second comes; a second tap in time is still the highlight.
  cancelPress();
  const p = e?.changedTouches[0];
+ const tapped =
+ !!p &&
+ !!start &&
+ isTap({
+ quick,
+ startedAt: start.at,
+ lastScrollAt: start.lastScrollAt,
+ startScrollY: start.scrollY,
+ endScrollY: window.scrollY,
  // A tap on the verse's own buttons (the commentary mark) is theirs.
- if (!tapped || !p || (e?.target as Element | null)?.closest("button, a")) {
+ onControl: !!(e?.target as Element | null)?.closest("button, a"),
+ });
+ // Nothing that is not a tap counts towards a double tap either.
+ if (!tapped || !p) {
  lastTapRef.current = null;
  return;
  }
  const now = gestureTime();
- const last = lastTapRef.current;
- if (last && now - last.t < DOUBLE_TAP_MS && Math.hypot(p.clientX - last.x, p.clientY - last.y) < DOUBLE_TAP_SLOP_PX) {
+ const here: TapAt = { t: now, x: p.clientX, y: p.clientY };
+ if (isSecondTap(lastTapRef.current, here)) {
  lastTapRef.current = null;
  // No click and no mouse events after the second tap: it was the
  // highlight, and nothing else.
@@ -532,7 +569,7 @@ export function VerseRow({
  quickHighlight();
  return;
  }
- lastTapRef.current = { t: now, x: p.clientX, y: p.clientY };
+ lastTapRef.current = here;
  if (!showTools) {
  setShowTools(true);
  return;

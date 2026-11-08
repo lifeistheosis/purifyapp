@@ -700,6 +700,51 @@ await section(12, async () => {
       must(/\nJohn 1:\d+$/.test(clip) && clip.length > 30, `Copy puts the verse and where it is from on the clipboard ("${clip.replace(/\n/g, " / ").slice(0, 90)}")`);
     }
   }
+
+  // Build 88 note 1: a hold on a phone also sends the page a contextmenu
+  // (Android's WebView), which opened the computer's right-click menu over
+  // the verse's own tools. The headless hold makes no contextmenu of its own,
+  // so one is sent after it, as a phone's would be.
+  const verseMenu = () => page.evaluate(() => !!document.querySelector('[role="menu"][aria-label="Verse actions"]'));
+  await page.keyboard.press("Escape").catch(() => {});
+  await page.waitForTimeout(400);
+  const words = await page.evaluate(() => {
+    const el = document.querySelector("[data-own-press]");
+    el.scrollIntoView({ block: "center" });
+    const r = el.getBoundingClientRect();
+    return { x: Math.round(r.left + Math.min(140, r.width / 2)), y: Math.round(r.top + r.height / 2) };
+  });
+  await page.waitForTimeout(500);
+  await hold(words.x, words.y, 800);
+  await page.evaluate(({ x, y }) => document.elementFromPoint(x, y)?.dispatchEvent(new MouseEvent("contextmenu", { bubbles: true, cancelable: true, clientX: x, clientY: y })), words);
+  await page.waitForTimeout(500);
+  const afterHold = { strip: await page.evaluate(() => !!document.querySelector("[data-verse-strip]")), menu: await verseMenu() };
+  must(afterHold.strip && !afterHold.menu, `a hold and the contextmenu a phone sends with it open the verse's tools and not the computer's menu (tools ${afterHold.strip ? "up" : "not up"}, menu ${afterHold.menu ? "up" : "shut"})`);
+  await page.keyboard.press("Escape").catch(() => {});
+  await page.waitForTimeout(500);
+
+  // Build 88 note 2: a touch on a page still moving is the scroll's. The page
+  // is kept scrolling a step every 30ms while a finger taps a verse: no tools.
+  // Then a tap on a page at rest: the tools.
+  const tapAt = async ({ x, y }) => {
+    await cdp.send("Input.dispatchTouchEvent", { type: "touchStart", touchPoints: [{ x, y }] });
+    await page.waitForTimeout(60);
+    await cdp.send("Input.dispatchTouchEvent", { type: "touchEnd", touchPoints: [] });
+  };
+  await page.evaluate(() => { window.__glide = setInterval(() => window.scrollBy(0, 2), 30); });
+  await page.waitForTimeout(200);
+  const moving = await page.evaluate(() => { const r = document.querySelector("[data-own-press]").getBoundingClientRect(); return { x: Math.round(r.left + Math.min(140, r.width / 2)), y: Math.round(r.top + Math.min(20, r.height / 2)) }; });
+  await tapAt(moving);
+  await page.evaluate(() => clearInterval(window.__glide));
+  await page.waitForTimeout(500);
+  const onGlide = await page.evaluate(() => !!document.querySelector("[data-verse-strip]"));
+  must(!onGlide, `a finger put down on a page still gliding selects nothing (${onGlide ? "the tools opened" : "nothing opened"})`);
+  await page.waitForTimeout(400);
+  const still = await page.evaluate(() => { const r = document.querySelector("[data-own-press]").getBoundingClientRect(); return { x: Math.round(r.left + Math.min(140, r.width / 2)), y: Math.round(r.top + Math.min(20, r.height / 2)) }; });
+  await tapAt(still);
+  await page.waitForTimeout(600);
+  const atRest = await page.evaluate(() => !!document.querySelector("[data-verse-strip]"));
+  must(atRest, `and a tap on a page at rest selects the verse (${atRest ? "the tools opened" : "nothing opened"})`);
   must(errors.length === 0, `no page errors${errors.length ? ": " + errors.slice(0, 2).join(" | ") : ""}`);
   await ctx.close();
 
