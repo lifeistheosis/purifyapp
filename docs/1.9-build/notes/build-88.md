@@ -257,6 +257,36 @@ a phone is for the device walk once it is built. Study as cards, writing a
 note and the saved note's mark and card (the three shared screens) go with
 C unless he says otherwise. Notes 1 and 2's fixes stand.
 
+**The journal, his word (2026-11-08):** of picture 2, "it could be better
+honestly. The whole journaling system should feel like a journaling system,
+not just a notepad system (like Notion)." The difference taken from that: a
+notepad is text; a journal is a dated page of a life, here a life with the
+Church's year. Drawn from the house's parts over the real `/journal`, and
+passing `scripts/mock-check.mjs` (which caught a left and right padding on the
+Gospel card, made start and end before anything was sent):
+
+- **Your journal, by the Church's day.** At the top, today's page: the
+  weekday large in Lora, the date and the day's feast or saints under it
+  (from `lib/calendar/orthodox.ts`, `commemorationsOn`), Write, and the day
+  itself to write from: today's readings (`dayReadings`: the Gospel and the
+  Epistle) and the verse highlighted today, each with a pen. Then From this
+  day (a year ago today), then the past days as pages, each headed by its
+  weekday and its Church's day (the 33 Martyrs of Melitene; St. Paul the
+  Confessor and the Friday fast).
+- **Writing today's page.** The page is headed by the day, not by a title
+  field: the weekday, the date, the feast; what it is about as a card (the
+  Gospel, with Open); Reflection, Prayer or Question; then the words.
+- **A page you wrote.** The same heading, the kind and the time, the verse it
+  was written on as a card, the words at reading size, and Edit.
+
+Every word is an existing key (`journal.*`, `calendar.todaysReadings`,
+`bible.kindGospelLong`, `saved.kind.highlight`), every date the app's own
+format, every name of a day the app's own calendar. The feast's icon was
+left out on purpose: the Archangel's icon is in the app, but
+`lib/saints/iconRights.ts` records no source or licence for it yet, so a
+picture of the day joins the page only where its source is verified. The
+journal stays Plus, as now.
+
 ## 4. Light's grey lines are under the contrast floor, all over the app
 
 **Found by Claude, 2026-11-07,** measuring note 3's sheet on every palette.

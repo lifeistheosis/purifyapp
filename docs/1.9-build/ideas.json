@@ -1659,6 +1659,20 @@
    "version": null,
    "outcome": null,
    "note": "His word on the build 88 photos: \"I don't like any of it\"; plain, not premium, and the wrong idea. Drawn again in three versions of a tap on a verse (A pop-up, B tray, C focus) and three shared screens (Study as cards, writing a note, a saved note's mark and card), all from the house's parts, all passing scripts/mock-check.mjs. Waiting on his pick. His pick, 2026-11-08: C, the focus, \"and ensure it's smooth with animations\"; its motion in the house's tokens, no blur, shown as a 60fps film (build-88.md note 3)."
+  },
+  {
+   "id": "e-journal-feel",
+   "section": "Practice",
+   "kind": "design",
+   "title": "The journal should feel like a journal, not a notepad (like Notion)",
+   "from": "edgar",
+   "asked": "2026-11-08",
+   "status": "proposed",
+   "decided": null,
+   "needsDesign": true,
+   "version": null,
+   "outcome": null,
+   "note": "His word on picture 2 of the premium round. Drawn: the journal by the Church's day (today's page with its feast, readings and highlight to write from; From this day; past days headed by their saints), writing today's page headed by the day, a page you wrote. All from the house's parts and existing words, passing scripts/mock-check.mjs; the feast icon left out until its source is verified (iconRights.ts). build-88.md note 3."
   }
  ]
 }
