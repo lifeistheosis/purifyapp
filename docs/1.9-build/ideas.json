@@ -1673,6 +1673,20 @@
    "version": null,
    "outcome": null,
    "note": "His word on picture 2 of the premium round. Drawn: the journal by the Church's day (today's page with its feast, readings and highlight to write from; From this day; past days headed by their saints), writing today's page headed by the day, a page you wrote. All from the house's parts and existing words, passing scripts/mock-check.mjs; the feast icon left out until its source is verified (iconRights.ts). build-88.md note 3."
+  },
+  {
+   "id": "e-editorials",
+   "section": "Practice",
+   "kind": "idea",
+   "title": "Readers write their own editorials: a Notion-like page (cover, title, cover text, blocks, highlights), shared to Community and as a clean link preview, submitted for review and clergy review to become an official Editorial with a badge",
+   "from": "edgar",
+   "asked": "2026-11-08",
+   "status": "proposed",
+   "decided": null,
+   "needsDesign": true,
+   "version": null,
+   "outcome": null,
+   "note": "BRAINSTORM.md, Editorials. Open with him: free or Plus; covers from Purify's artwork first or uploads; a contributor clause in the Terms; no clergy reviewer yet; in three steps (editor, sharing, submitting)."
   }
  ]
 }

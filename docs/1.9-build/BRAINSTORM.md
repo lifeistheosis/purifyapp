@@ -614,3 +614,57 @@ three new versions: the focus, the page stepping back and the verse lifting
 into a card, the colours above it and the tools below, "smooth with
 animations". The versions, the pick and its motion are in
 `docs/1.9-build/notes/build-88.md`, note 3.
+
+### Editorials: readers' own pieces (his word, 2026-11-08)
+
+His words, from voice, after the journal round: "I want people to be able to
+make their own editorials ... super clean ... desktop adaptable ... super
+similar to how Notion has their system, where you can add an image as the
+banner, where you add a title, a cover text ... a highlighting system ... go
+all in on that so people can make their own editorial forums, and also make
+it so that they're able to share it in the community section, and if they
+really want, they can also submit it to Purify so that we can review it, and
+if we think it's good enough and it's clergy reviewed, then we can actually
+implement it into Purify officially. And they're gonna be tagged as an
+editorial with the editorial badge, or whatever badge that's closest ...
+super optimized and super mobile friendly, and make it clean for the
+shareables ... the embed photo is the photo they use, and like it's super
+clean with the title." (The message ended at "Oh,".)
+
+The system, as Claude reads it:
+
+1. **A page in the journal, built like Notion's:** a cover image, a title, a
+   cover text under it, then blocks: text, headings, a quote, a verse card
+   from the app's own Bible, an image, and highlights in the seven colours.
+   Private by default. The same page on a phone and a computer.
+2. **Shared when the writer wants:** into Community as a post, or as a link
+   whose preview (Discord, Instagram, messages) is the cover image and the
+   title, the way a profile's link preview is drawn now
+   (`app/(app)/u/[handle]/opengraph-image.tsx`).
+3. **Submitted to Purify when the writer wants:** into the admin's review list
+   (the one built for the 66 texts awaiting clergy review, PLAN row 10). If
+   accepted and reviewed, it is published in Purify as an Editorial, with
+   its writer's name, and the writer gets a badge: Contributor exists
+   already and is the closest (`profile.badge.contributor`).
+
+What it touches, before any design is final:
+
+- **Editorial standards bind it** (`docs/editorial-standards.md`): a reader's
+  piece is the reader's words, never shown as the Church's teaching. In
+  Community it is marked as a reader's; only a reviewed piece is an
+  Editorial. No priest reviews Purify yet (his standing note of 2026-10-16),
+  so submissions can wait in the queue until one does.
+- **Images from readers** bring copyright and unsuitable pictures. Claude's
+  recommendation: covers from Purify's own artwork first (only pictures whose
+  source `lib/saints/iconRights.ts` verifies), uploads later with review.
+  Community already has Block and report, which the stores ask of anything
+  readers publish.
+- **Submitting needs a contributor clause in the Terms** (permission to
+  publish and edit, credit kept): legal, his word or a lawyer's.
+- **Free or Plus** is his call (the journal is Plus today).
+- **Size:** an editor, pictures, public links, a review flow. Proposed in
+  three steps: the page editor in the journal; sharing with the link preview;
+  submitting, review and the badge.
+
+Next: the screens drawn (the editor on a phone and on a computer, the link
+preview, Community and Submit), and his answers to the questions above.
