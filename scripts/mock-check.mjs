@@ -88,6 +88,7 @@ function look(selector) {
       const list = n.getAttribute("data-mock-allow");
       if (list && list.split(/[\s,]+/).includes(check)) return n.getAttribute("data-mock-why") || "(no reason given)";
       if (check === "palette" && n.classList.contains("dark-island")) return "a dark island, dark on every palette (app/globals.css)";
+      if (check === "gold" && n.matches('[data-hl-color="yellow"]')) return "the yellow highlighter, his own exception (noGold.test.ts, lib/bible/highlightPalette.ts)";
     }
     return null;
   };

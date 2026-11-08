@@ -127,6 +127,11 @@ describe("the note's sheet", () => {
     expect(NOTE).toContain("window.localStorage.setItem(draftKey, body)");
   });
 
+  it("draws no square frame round its field: the sheet is the field, and its caret shows where typing goes", () => {
+    expect(CSS).toMatch(/\[data-journal-composer\] textarea:focus-visible \{\s*outline: none;\s*\}/);
+    expect(read("components/journal/JournalComposer.tsx")).toContain('<div data-journal-composer="">');
+  });
+
   it("asks for a note in a note's form, its placeholder legible, its Open 44px wide", () => {
     expect(COMPOSER).toContain('placeholder={isNote ? t("bible.notePlaceholder") : t("journal.composer.placeholder")}');
     expect(COMPOSER).toContain("placeholder:text-paper/55");

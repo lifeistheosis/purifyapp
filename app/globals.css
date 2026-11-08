@@ -2959,6 +2959,14 @@ html[data-input="pointer"] *:focus-visible:not(input, textarea, select, [content
  outline: none;
 }
 
+/* The journal's writing sheet, where a verse's note is written too (1.9,
+   build 88 note 3): the sheet is the field, with no border of its own, so the
+   ring above drew a square frame inside the round sheet, the frame he saw on
+   his phone. Its caret marks where typing goes. */
+[data-journal-composer] textarea:focus-visible {
+ outline: none;
+}
+
 /* Highlight colours (1.7.1, lib/bible/highlightPalette.ts). An element that
    wears one sets data-hl-color and carries both themes' values inline
    (highlightVars); this picks the reading mode's: Parchment is the one light
