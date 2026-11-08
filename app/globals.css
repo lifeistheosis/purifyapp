@@ -4936,6 +4936,40 @@ html[data-reading-mode="black"] .tile-sheen {
  }
 }
 
+/* Faint text on every palette (1.9, build 88 note 4, found 2026-11-07 while
+   measuring a note's sheet). The grey lines (captions, dates, counts, fine
+   print) are the palette's ink at 45 to 60 percent, about 1,550 uses. On
+   Light, the free palette for readers who get dizzy on dark ones, every one
+   of them was under WCAG AA's 4.5:1: 2.6:1 at 45 percent, 3.9:1 at 60. On
+   Candlelight 55 percent was 4.5:1 on the page and 4.47:1 on a card; on
+   Monastery, Councils and Cappadocian 50 percent was 4.4:1 to 4.5:1; on Dark
+   45 percent was 4.42:1 on a card. Nothing caught it: the axe suite runs on
+   Dark only.
+
+   So each palette draws the shares that fall short at the share it needs,
+   measured on the page, on a card (night-soft) and in a 4 percent box: Light
+   70 percent, Candlelight 60, Monastery, Councils and Cappadocian 55, Dark
+   50 for its 45. Black keeps its own rule above. In the utilities layer and
+   under :where(), as Black's, so a hover:text-paper on the same element
+   still wins. lib/ui/__tests__/faintText.test.ts does the arithmetic on every
+   palette, so the next palette or the next nudge cannot fall under again.
+   Not here: the 40 percent share (under AA on every palette, kept for marks
+   that are decorative or disabled, which WCAG leaves out) and placeholders. */
+@layer utilities {
+ :where(html:not([data-reading-mode])) .text-paper\/45 {
+ color: color-mix(in oklab, var(--color-paper) 50%, transparent);
+ }
+ :where(html[data-reading-mode="parchment"]) :is(.text-paper\/45, .text-paper\/50, .text-paper\/55, .text-paper\/60) {
+ color: color-mix(in oklab, var(--color-paper) 70%, transparent);
+ }
+ :where(html[data-reading-mode="candlelight"]) :is(.text-paper\/45, .text-paper\/50, .text-paper\/55) {
+ color: color-mix(in oklab, var(--color-paper) 60%, transparent);
+ }
+ :where(html[data-reading-mode="monastery"], html[data-reading-mode="councils"], html[data-reading-mode="cappadocian"]) :is(.text-paper\/45, .text-paper\/50) {
+ color: color-mix(in oklab, var(--color-paper) 55%, transparent);
+ }
+}
+
 /* ── Liturgical surfaces ──────────────────────────────────────────────
    The Domestic Church Matrix and the Catechumen Corner, both rooted in a
    `.lit-surface` element that carries `data-mode` from resolveMode()
