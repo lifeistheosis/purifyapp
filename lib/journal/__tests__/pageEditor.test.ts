@@ -155,3 +155,10 @@ describe("a checklist keeps up with a fast typist", () => {
     expect(check).not.toContain("requestAnimationFrame");
   });
 });
+
+describe("each Plus block's icon says what it is", () => {
+  it("Heading wears the house's heading glyph, never the musical note", () => {
+    expect(blocks).toContain('<MoreChoice icon={<Heading size={18} />} label={t("journal.page.heading")}');
+    expect(blocks).not.toContain("icons/Note");
+  });
+});

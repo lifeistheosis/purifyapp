@@ -33,7 +33,7 @@ import { Cross } from "@/components/ui/icons/Cross";
 import { Heart } from "@/components/ui/icons/Heart";
 import { Info } from "@/components/ui/icons/Info";
 import { Minus } from "@/components/ui/icons/Minus";
-import { Note } from "@/components/ui/icons/Note";
+import { Heading } from "@/components/ui/icons/Heading";
 import { Plus } from "@/components/ui/icons/Plus";
 import { Sparkle } from "@/components/ui/icons/Sparkle";
 import { Star } from "@/components/ui/icons/Star";
@@ -610,7 +610,7 @@ export function PageToolbar({ editor, notebooks = [] }: { editor: PageEditor; no
       {panel === "props" ? <PropsPanel editor={editor} notebooks={notebooks} onDone={() => setPanel(null)} /> : null}
       {panel === "more" ? (
         <div data-page-more="" className="grid grid-cols-2 gap-2 px-3 pt-2">
-          <MoreChoice icon={<Note size={18} />} label={t("journal.page.heading")} locked={locked} onClick={() => addPlus({ type: "heading", text: "" })} />
+          <MoreChoice icon={<Heading size={18} />} label={t("journal.page.heading")} locked={locked} onClick={() => addPlus({ type: "heading", text: "" })} />
           <MoreChoice icon={<Check size={18} />} label={t("journal.page.checklist")} locked={locked} onClick={() => addPlus({ type: "check", items: [{ text: "", done: false }] })} />
           <MoreChoice icon={<Minus size={18} />} label={t("journal.page.divider")} locked={locked} onClick={() => addPlus({ type: "divider", style: "line" })} />
           <MoreChoice icon={<Candle size={18} />} label={t("journal.page.callout")} locked={locked} onClick={() => addPlus({ type: "callout", icon: "candle", text: "" })} />
