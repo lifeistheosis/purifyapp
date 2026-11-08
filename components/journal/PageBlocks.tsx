@@ -15,6 +15,7 @@
 
 import Link from "next/link";
 import { useLayoutEffect, useMemo, useRef, useState, type ReactNode } from "react";
+import { flushSync } from "react-dom";
 
 import { PlusMark } from "@/components/billing/PlusMark";
 import { useUpgradeModal } from "@/components/billing/UpgradeModal";
@@ -397,12 +398,17 @@ function HeadingBlock({ index, text, look, onText, onRemove }: { index: number; 
 function CheckBlock({ index, items, onItems }: { index: number; items: CheckItem[]; onItems: (items: CheckItem[]) => void }) {
   const { t } = useTranslate();
   const root = useRef<HTMLUListElement | null>(null);
-  const focusLine = (at: number) =>
-    window.requestAnimationFrame(() => {
-      const el = root.current?.querySelectorAll<HTMLInputElement>("input")[at];
-      el?.focus({ preventScroll: true });
-      el?.setSelectionRange(el.value.length, el.value.length);
-    });
+  // The new line is drawn at once and takes the cursor in the same keystroke,
+  // so the next letter typed goes to it, however fast the writer types (found
+  // on the built app: with the cursor moved a frame later, the first letter
+  // landed on the line above).
+  const change = (next: CheckItem[], focusAt: number | null) => {
+    flushSync(() => onItems(next));
+    if (focusAt === null) return;
+    const el = root.current?.querySelectorAll<HTMLInputElement>("input")[focusAt];
+    el?.focus({ preventScroll: true });
+    el?.setSelectionRange(el.value.length, el.value.length);
+  };
   return (
     <ul data-page-block={index} data-page-check="" ref={root} className="space-y-0.5">
       {items.map((item, k) => (
@@ -436,12 +442,13 @@ function CheckBlock({ index, items, onItems }: { index: number; items: CheckItem
               onKeyDown={(e) => {
                 if (e.key === "Enter") {
                   e.preventDefault();
-                  onItems([...items.slice(0, k + 1), { text: "", done: false }, ...items.slice(k + 1)]);
-                  focusLine(k + 1);
+                  change([...items.slice(0, k + 1), { text: "", done: false }, ...items.slice(k + 1)], k + 1);
                 } else if (e.key === "Backspace" && !item.text) {
                   e.preventDefault();
-                  onItems(items.filter((_, j) => j !== k));
-                  if (k > 0) focusLine(k - 1);
+                  change(
+                    items.filter((_, j) => j !== k),
+                    k > 0 ? k - 1 : null,
+                  );
                 }
               }}
               placeholder={t("journal.page.itemPlaceholder")}

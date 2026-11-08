@@ -147,3 +147,11 @@ describe("a page's style (Plus, step 2c)", () => {
     expect(blocks).toContain('const words = cn("block w-full whitespace-pre-wrap break-words text-body leading-[1.7]", look);');
   });
 });
+
+describe("a checklist keeps up with a fast typist", () => {
+  it("a new line is drawn and takes the cursor in the same keystroke", () => {
+    const check = blocks.slice(blocks.indexOf("function CheckBlock"), blocks.indexOf("function DividerBlock"));
+    expect(check).toContain("flushSync(() => onItems(next));");
+    expect(check).not.toContain("requestAnimationFrame");
+  });
+});
