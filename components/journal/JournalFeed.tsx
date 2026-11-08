@@ -20,6 +20,7 @@ import { useMemo, useState } from "react";
 import { PlusMark } from "@/components/billing/PlusMark";
 import { useTranslate } from "@/components/i18n/MessagesProvider";
 import { KIND_KEY } from "@/components/journal/JournalComposer";
+import { useVerseCardLabel } from "@/components/journal/PageBlocks";
 import { SearchField } from "@/components/search/SearchField";
 import { ChipScroller } from "@/components/ui/ChipScroller";
 import { FilterChip } from "@/components/ui/FilterChip";
@@ -28,6 +29,7 @@ import { SwipeRow } from "@/components/ui/SwipeRow";
 import { useCalendarStyleDefault } from "@/lib/calendar/useCalendarStyleDefault";
 import { dateLocale } from "@/lib/i18n/deviceDates";
 import { churchDayLine, dayFromKey } from "@/lib/journal/churchDay";
+import { pageText, parsePage } from "@/lib/journal/page";
 import type { JournalSource } from "@/lib/journal/entries";
 import { byDay, filterKind, journalChips, localDayKey, type JournalFilter, type JournalItem } from "@/lib/journal/feed";
 import { matchesQuery } from "@/lib/saved/feed";
@@ -67,11 +69,37 @@ export function JournalFeed({
   const chips = useMemo(() => journalChips(items), [items]);
   const filter = chips.includes(chosen) ? chosen : "all";
 
+  // Each entry as a page (lib/journal/page.ts): its title, and its words with
+  // its verse cards named, for the list and its search. A verse's note is its
+  // words alone.
+  const verseLabel = useVerseCardLabel();
+  // The list shows the writer's own words; a verse card is named in the small
+  // line under them, so a reference never reads as the writer's words.
+  const pages = useMemo(() => {
+    const out = new Map<string, { title: string; text: string; cards: string[]; all: string }>();
+    for (const i of items) {
+      if (!i.record) {
+        out.set(i.key, { title: "", text: i.body, cards: [], all: i.body });
+        continue;
+      }
+      const page = parsePage(i.body);
+      const words = pageText({ ...page, blocks: page.blocks.filter((b) => b.type !== "verse") }, verseLabel);
+      const cards = page.blocks.flatMap((b) => (b.type === "verse" ? [verseLabel(b)] : []));
+      out.set(i.key, { title: page.title, text: words, cards, all: pageText(page, verseLabel) });
+    }
+    return out;
+    // verseLabel is remade each render; the book names behind it follow t.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [items, t]);
+
   const shown = useMemo(() => {
     const kind = filterKind(items, filter);
     if (!query.trim()) return kind;
-    return kind.filter((i) => matchesQuery([i.body, i.prompt?.text, i.source ? sourceLabel(i.source) : null].filter(Boolean).join(" "), query));
-  }, [items, filter, query, sourceLabel]);
+    return kind.filter((i) => {
+      const p = pages.get(i.key);
+      return matchesQuery([p?.title, p?.all ?? i.body, i.prompt?.text, i.source ? sourceLabel(i.source) : null].filter(Boolean).join(" "), query);
+    });
+  }, [items, filter, query, sourceLabel, pages]);
 
   const groups = useMemo(() => byDay(shown), [shown]);
   // Today and yesterday by the reader's own calendar, read once: noon of the
@@ -197,11 +225,22 @@ export function JournalFeed({
               <SwipeRow key={item.key} onRemove={() => onRemove(item)} removeLabel={t("common.remove")}>
                 <button type="button" onClick={() => onOpen(item)} data-journal-entry="" className="block w-full py-4 pe-1 text-start active:opacity-80">
                   {item.prompt ? <span className="block font-sans text-caption text-paper/55">{item.prompt.text}</span> : null}
-                  <span className={`block whitespace-pre-line line-clamp-4 font-serif text-body leading-[1.6] text-paper/90${item.prompt ? " mt-1" : ""}`}>
-                    {item.body}
-                  </span>
+                  {pages.get(item.key)?.title ? (
+                    <span data-journal-entry-title="" className={`block font-serif text-[19px] font-semibold leading-[1.3] text-paper${item.prompt ? " mt-1" : ""}`}>
+                      {pages.get(item.key)?.title}
+                    </span>
+                  ) : null}
+                  {pages.get(item.key)?.text ? (
+                    <span
+                      className={`block whitespace-pre-line line-clamp-4 font-serif text-body leading-[1.6] text-paper/90 print:line-clamp-none${item.prompt || pages.get(item.key)?.title ? " mt-1" : ""}`}
+                    >
+                      {pages.get(item.key)?.text}
+                    </span>
+                  ) : null}
                   <span className="mt-1.5 block truncate font-sans text-caption text-paper/50">
-                    {[t(KIND_KEY[item.kind]), item.source ? sourceLabel(item.source) : null, timeOf(item.at)].filter(Boolean).join(" · ")}
+                    {[t(KIND_KEY[item.kind]), item.source ? sourceLabel(item.source) : null, ...(pages.get(item.key)?.cards.slice(0, 2) ?? []), timeOf(item.at)]
+                      .filter(Boolean)
+                      .join(" · ")}
                   </span>
                 </button>
               </SwipeRow>

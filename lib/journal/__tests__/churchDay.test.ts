@@ -86,10 +86,11 @@ describe("the journal is headed by the Church's day", () => {
   const client = read("components/journal/JournalClient.tsx");
   const composer = read("components/journal/JournalComposer.tsx");
 
-  it("today's page: the weekday in Lora, the day's line, Write, the readings and today's highlights", () => {
+  it("today's page: the weekday in Lora, the day's line, the readings and today's highlights", () => {
     expect(today).toContain("useChurchDay()");
     expect(today).toMatch(/font-serif text-\[32px\][^"]*text-paper"/);
-    expect(today).toContain('t("journal.write")');
+    // Write is the journal's one button, always in reach: not drawn here twice.
+    expect(today).not.toContain('t("journal.write")');
     expect(today).toContain("day.readings.map");
     expect(today).toContain('type: "reading"');
     expect(today).toContain("highlightedToday(");
@@ -99,7 +100,7 @@ describe("the journal is headed by the Church's day", () => {
     expect(today).toMatch(/from "@\/components\/ui\/icons\/Pen"/);
     // Nothing physical: the row reads from the start in Arabic and Urdu.
     expect(today).not.toMatch(/\btext-left\b|\bml-|\bmr-|\bpl-|\bpr-/);
-    expect(client).toContain("<TodayPage onWrite={write}");
+    expect(client).toContain("<TodayPage onWriteFrom=");
   });
 
   it("each past day: its weekday in Lora, then its date, feast and fast", () => {

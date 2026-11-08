@@ -190,7 +190,9 @@ function look(selector) {
     const cs = getComputedStyle(e);
     const p = { name: nameOf(e), allowPalette: allowance(e, "palette"), allowGold: allowance(e, "gold") };
     const hasText = [...e.childNodes].some((n) => n.nodeType === 3 && n.textContent.trim());
-    if (hasText || e.tagName.toLowerCase() === "svg") p.color = rgba(cs.color);
+    // Letters drawn clear (a wash's backdrop, which only lays out the colour
+    // behind a field's words) carry no colour to follow a palette with.
+    if ((hasText || e.tagName.toLowerCase() === "svg") && rgba(cs.color)[3] >= 0.05) p.color = rgba(cs.color);
     const bg = rgba(cs.backgroundColor);
     if (bg[3] >= 0.25) p.bg = bg;
     const border = ["Top", "Right", "Bottom", "Left"]

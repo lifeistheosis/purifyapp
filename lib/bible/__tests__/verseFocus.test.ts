@@ -128,12 +128,15 @@ describe("the note's sheet", () => {
   });
 
   it("draws no square frame round its field: the sheet is the field, and its caret shows where typing goes", () => {
-    expect(CSS).toMatch(/\[data-journal-composer\] textarea:focus-visible \{\s*outline: none;\s*\}/);
+    // The page's title and a quote's giver are fields too (1.9, a page): none draws the frame.
+    expect(CSS).toMatch(/\[data-journal-composer\] :is\(textarea, input\):focus-visible \{\s*outline: none;\s*\}/);
     expect(read("components/journal/JournalComposer.tsx")).toContain('<div data-journal-composer="">');
   });
 
   it("asks for a note in a note's form, its placeholder legible, its Open 44px wide", () => {
-    expect(COMPOSER).toContain('placeholder={isNote ? t("bible.notePlaceholder") : t("journal.composer.placeholder")}');
+    // A note's field asks for a note; an entry is a page, whose words ask for what is on the heart.
+    expect(COMPOSER).toContain('placeholder={t("bible.notePlaceholder")}');
+    expect(COMPOSER).toContain('<PageBlocks editor={editor} placeholder={t("journal.composer.placeholder")} />');
     expect(COMPOSER).toContain("placeholder:text-paper/55");
     expect(COMPOSER).not.toContain("placeholder:text-paper/35");
     expect(COMPOSER).toMatch(/\{href && openLink \? \(\s*<Link href=\{href\} className="ms-auto inline-flex min-h-11 shrink-0 items-center px-3 /);

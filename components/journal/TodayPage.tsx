@@ -38,14 +38,16 @@ function highlightedToday(today: Date): Highlighted[] {
  * Today's page (1.9, docs/1.9-build/JOURNAL.md): the top of the journal is
  * the day itself, a diary's page for the Church's day. The weekday large in
  * Lora, the date and the day's feast or saints under it, and its fast when it
- * keeps one (lib/calendar/useChurchDay.ts, as Today names them); Write; and
- * the day to write from: today's readings and the verses highlighted today,
- * each with a pen that begins a page about it.
+ * keeps one (lib/calendar/useChurchDay.ts, as Today names them); and the day
+ * to write from: today's readings and the verses highlighted today, each with
+ * a pen that begins a page about it. Write itself is the journal's one button,
+ * always in reach (components/journal/WriteButton.tsx), so it is not drawn
+ * here a second time.
  *
  * The owner's word of 2026-11-08: "the whole journaling system should feel
  * like a journaling system, not just a notepad system".
  */
-export function TodayPage({ onWrite, onWriteFrom }: { onWrite: () => void; onWriteFrom: (source: JournalSource) => void }) {
+export function TodayPage({ onWriteFrom }: { onWriteFrom: (source: JournalSource) => void }) {
   const { t, locale } = useTranslate();
   const day = useChurchDay();
   const books = useMemo(() => localBookNames(t), [t]);
@@ -81,14 +83,6 @@ export function TodayPage({ onWrite, onWriteFrom }: { onWrite: () => void; onWri
         {weekday}
       </p>
       <p className="mt-1.5 font-sans text-caption leading-[1.45] text-paper/70">{line}</p>
-      <button
-        type="button"
-        onClick={onWrite}
-        className="tap-press mt-4 inline-flex h-11 items-center gap-2 rounded-pill bg-paper px-5 font-sans text-ui font-semibold text-night"
-      >
-        <Pen size={18} />
-        {t("journal.write")}
-      </button>
 
       {day.readings.length > 0 ? (
         <>

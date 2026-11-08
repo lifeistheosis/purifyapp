@@ -5605,8 +5605,8 @@ await section(40, async () => {
     const first = await page.evaluate(() => (document.querySelector("[data-journal-entry]")?.innerText ?? "").replace(/\s+/g, " "));
     must(first.includes(answer) && first.includes(flat(guide.gospels.days[0].q).slice(0, 30)) && first.includes(en["journal.kind.question"]), `${w}px: the answer is in the journal under its question ("${first.slice(0, 70)}")`);
     // Today's page (1.9, docs/1.9-build/JOURNAL.md): the weekday in Lora, the
-    // date and the Church's day under it, Write, and the day's readings to
-    // write from, each a row to tap.
+    // date and the Church's day under it, and the day's readings to write
+    // from, each a row to tap. Write is the journal's one button, below.
     const todayPage = await page.evaluate(() => {
       const s = document.querySelector("[data-journal-today]");
       const head = s?.querySelector("[role=heading]");
@@ -5622,8 +5622,8 @@ await section(40, async () => {
     must(Boolean(todayPage) && todayPage.head === new Intl.DateTimeFormat("en", { weekday: "long" }).format(onDay) && /Lora/.test(todayPage.font), `${w}px: today's page is headed by the weekday in Lora ("${todayPage?.head}")`);
     must(Boolean(todayPage) && todayPage.line.startsWith(new Intl.DateTimeFormat("en", { month: "long", day: "numeric" }).format(onDay)) && todayPage.line.includes(" · "), `${w}px: under it the date and the Church's day ("${todayPage?.line.slice(0, 90)}")`);
     must(
-      Boolean(todayPage) && todayPage.rows.length >= 2 && todayPage.rows[0].text === en["journal.write"] && todayPage.rows.every((r) => r.h >= 44),
-      `${w}px: Write, then the day's readings, every row 44px or more (${todayPage?.rows.map((r) => `${r.text.slice(0, 28)} ${r.h}`).join(", ")})`,
+      Boolean(todayPage) && todayPage.rows.length >= 1 && todayPage.rows.every((r) => r.h >= 44 && r.text !== en["journal.write"]),
+      `${w}px: the day's readings, every row 44px or more, and no second Write (${todayPage?.rows.map((r) => `${r.text.slice(0, 28)} ${r.h}`).join(", ")})`,
     );
     // A reading's pen begins a page about it, named and with the way back to it.
     await tap(page.locator("[data-journal-today] li button").first());

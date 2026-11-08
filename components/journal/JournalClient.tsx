@@ -219,7 +219,7 @@ export function JournalClient() {
         <div className="min-h-[50vh]" />
       ) : (
         <div className="pb-28">
-          <TodayPage onWrite={write} onWriteFrom={(source) => begin({ kind: "reflection", body: "", source: { ...source, label: sourceLabel(source) } })} />
+          <TodayPage onWriteFrom={(source) => begin({ kind: "reflection", body: "", source: { ...source, label: sourceLabel(source) } })} />
           {waiting && plan ? (
             <JournalPrompts
               waiting={waiting}
@@ -294,7 +294,7 @@ export function JournalClient() {
                 <button
                   type="button"
                   onClick={printPart}
-                  className="tap-press mt-8 font-sans text-detail font-semibold text-paper/70 underline-offset-4 hover:text-paper hover:underline"
+                  className="tap-press mt-6 inline-flex min-h-11 items-center font-sans text-detail font-semibold text-paper/70 underline-offset-4 hover:text-paper hover:underline"
                 >
                   {t("journal.print")}
                 </button>

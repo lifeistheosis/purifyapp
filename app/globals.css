@@ -2963,8 +2963,14 @@ html[data-input="pointer"] *:focus-visible:not(input, textarea, select, [content
    build 88 note 3): the sheet is the field, with no border of its own, so the
    ring above drew a square frame inside the round sheet, the frame he saw on
    his phone. Its caret marks where typing goes. */
-[data-journal-composer] textarea:focus-visible {
+[data-journal-composer] :is(textarea, input):focus-visible {
  outline: none;
+}
+/* A page's title (1.9, components/journal/PageBlocks.tsx) stays at its
+   size on a phone, where the rule above pins every field to 16px so a
+   phone does not zoom; 24px is over that, so nothing zooms. */
+[data-journal-composer] input[data-journal-title]:not([type="checkbox"]):not([type="radio"]) {
+ font-size: 24px;
 }
 
 /* Highlight colours (1.7.1, lib/bible/highlightPalette.ts). An element that

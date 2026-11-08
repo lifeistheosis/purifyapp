@@ -145,6 +145,16 @@ standards in readers' pages; shares and their count made through API routes
   (search and From this day, until step 2 adds the rest), and the pricing
   pages list the journal among what is free. New words in all 21 languages,
   drafted by Claude: they wait for his eye with the rest of 1.9's.
+- **Step 1c, 2026-11-08:** the page. An entry is a title, the words, verse
+  cards, quotes of one's own and highlights, written in the journal's sheet
+  with Verse, Quote and Highlight at its foot. A page is kept in the entry's
+  body as plain text (`lib/journal/page.ts`), so the server, the sync, the
+  export and an older build carry it unchanged and need no migration; a verse
+  card keeps only its reference and shows the app's own words, so it can
+  never carry words the Scripture does not. A verse's note stays words alone.
+  Checked in a phone-sized browser: written, kept, reopened as it was, and
+  `checkMock` passing on the sheet, its tools and the list on all five
+  palettes and in Arabic.
 
 ## The order, when he says start
 
