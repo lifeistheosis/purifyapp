@@ -111,6 +111,7 @@ On the 1.9 branch:
 | 33 | More languages for the app | needs you: which |
 | 34 | Chants: more of them, and refined | needs you: the recordings, and what to refine |
 | 35 | Read aloud: the Old Testament, and a choice of voices (carried from 1.8) | parked until its audio exists |
+| 35b | All of St. Basil's works, in English, public domain (his word, 2026-11-08) | to build, not started (his word: not yet). First step when he says start: list which of his works have a public-domain English translation, and from which edition |
 
 ## Phase 4: refine the systems and the backend
 

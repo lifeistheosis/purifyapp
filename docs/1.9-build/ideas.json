@@ -1729,6 +1729,20 @@
    "version": "two fonts, two places, from the house's own",
    "outcome": null,
    "note": "His word of 2026-11-08. Proposed: a designed set of house tokens only (Book and Clean fonts, the highlight colours and inks, plain dividers, start or centre), held by a test against every palette. BRAINSTORM.md, Editorials. Finalized in JOURNAL.md on his word of 2026-11-08 (\"finalize the journal\"). Built 2026-11-08 (375dbce1): Serif (Lora) or Sans (DM Sans), at the start or the centre, never left or right, no colour of its own; chosen with the words the app already had."
+  },
+  {
+   "id": "e-basil-works",
+   "section": "Library",
+   "kind": "content",
+   "title": "All of St. Basil's works, in English, public domain",
+   "from": "edgar",
+   "asked": "2026-11-08",
+   "status": "approved",
+   "decided": "2026-11-08",
+   "needsDesign": false,
+   "version": null,
+   "outcome": null,
+   "note": "His word of 2026-11-08: \"I want to add all of St. Basil's works... Public domain. English.\" Then: \"Don't start working on that.\" On the still-to-build list (PLAN.md row 35b). First step when he says start: which works have a public-domain English translation, and from which edition (docs/editorial-standards.md: public domain, verbatim, cited)."
   }
  ]
 }
