@@ -195,6 +195,33 @@ it in the page's flow, the verses below sliding down as it opens and back as
 it closes, so it covers nothing; or keep it over the page and let a scroll
 put it away, as now.
 
+**His answer to the photos (2026-11-08): "I don't like any of it."** Asked
+why, he chose two: plain, not premium; and the wrong idea, so start fresh.
+The feel to aim for: a mix of YouVersion, Apple Books and Hallow. So the
+small proposals above (Copy reference in Study, the strip in the page's
+flow, the journal's writing sheet) are set aside, and the verse system is
+drawn again, premium, in three versions of what a tap on a verse does:
+
+- **A. A pop-up (Apple Books):** a glass pop-up just above the verse, the
+  seven colours on top and Note, Copy, Share, Image, Study under them.
+- **B. A tray (YouVersion):** a glass tray from the foot of the screen, the
+  reference in Lora, the colours, then eight tools as tiles (Copy, Share,
+  Image, Note, the Greek, Cross-references with the Plus lock, Bookmark,
+  Study).
+- **C. A focus (Hallow):** the page steps back, the verse lifts into a card
+  in Lora, the colours above it and the tools in a list below it.
+
+And three screens any of them would share: Study as cards (each Plus card
+with the Plus mark), writing a note (the verse as a card above the words),
+and a saved note as a small pen mark at the verse's end, which opens the
+note as a card with Edit note and Delete. Compare is left out: it is not
+built. Every screen was drawn from the house's parts over the native export
+(icons from `components/ui/icons`, the swatches from the real
+`HighlightPicker`, colours only as tokens, Lora and DM Sans) and passed
+`scripts/mock-check.mjs` on all five palettes, the yellow highlighter
+marked allowed as his own exception. Notes 1 and 2's fixes (the computer's
+menu on a hold, a scroll's end selecting a verse) stand whichever he picks.
+
 ## 4. Light's grey lines are under the contrast floor, all over the app
 
 **Found by Claude, 2026-11-07,** measuring note 3's sheet on every palette.

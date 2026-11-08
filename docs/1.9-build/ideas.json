@@ -1645,6 +1645,20 @@
    "version": null,
    "outcome": null,
    "note": "Build 88 note 5, found by scripts/mock-check.mjs taking the photos for notes 1 to 4: MobileTopBar and Sheet use h-10 w-10, 42.5px on the 17px root. Fix planned: h-11 w-11, or hit-44 where tight."
+  },
+  {
+   "id": "e-verse-premium",
+   "section": "Study",
+   "kind": "design",
+   "title": "The verse system, premium: a mix of YouVersion, Apple Books and Hallow",
+   "from": "edgar",
+   "asked": "2026-11-08",
+   "status": "proposed",
+   "decided": null,
+   "needsDesign": true,
+   "version": null,
+   "outcome": null,
+   "note": "His word on the build 88 photos: \"I don't like any of it\"; plain, not premium, and the wrong idea. Drawn again in three versions of a tap on a verse (A pop-up, B tray, C focus) and three shared screens (Study as cards, writing a note, a saved note's mark and card), all from the house's parts, all passing scripts/mock-check.mjs. Waiting on his pick."
   }
  ]
 }
