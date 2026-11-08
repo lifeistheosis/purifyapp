@@ -606,3 +606,11 @@ selects it and a slim strip opens just under it: Highlight, Copy, Share,
 Image, Note, and Study (the Greek, Compare, Cross-references, the
 commentary). A word tapped in the selected verse opens its Greek. Double tap
 still highlights; hold and drag still marks some words.
+
+
+**Then C (2026-11-08), in place of B.** On build 88 he found the strip
+plain ("I don't like any of it": not premium, the wrong idea) and chose C of
+three new versions: the focus, the page stepping back and the verse lifting
+into a card, the colours above it and the tools below, "smooth with
+animations". The versions, the pick and its motion are in
+`docs/1.9-build/notes/build-88.md`, note 3.

@@ -222,6 +222,41 @@ built. Every screen was drawn from the house's parts over the native export
 marked allowed as his own exception. Notes 1 and 2's fixes (the computer's
 menu on a hold, a scroll's end selecting a verse) stand whichever he picks.
 
+**His pick (2026-11-08): C, the focus, "and ensure it's smooth with
+animations".** Drawn again for the pick, with one correction: the first C
+blurred the page behind it, and the house does not blur (the Android
+WebView bleeds a picture through backdrop-filter and drops frames,
+`app/globals.css` and `docs/design/athon-motion-teardown.md`); the page now
+steps back under a plain dark layer. Its motion, in the house's tokens
+(`--ease-house`, the duration ladder, `--stagger-step-tight`):
+
+- **Opening, about 0.8s.** A soft tick on the tap. The page steps back (the
+  layer fades in, 320ms). The verse lifts: the card starts where the verse
+  is and rises to its place (480ms, its opacity in over the first half),
+  while the verse in the page fades out under it (240ms). Then the colours
+  and the tools arrive in reading order, opacity only, 320ms each, 38ms
+  apart, from 300ms: the motion follows the reading, never everything at
+  once.
+- **A colour.** The check draws into its swatch and the wash comes up
+  behind the card's words (200ms); the verse in the page wears it.
+- **Closing, about 0.3s, in two steps, never at once.** The tools (120ms)
+  and the card (140ms, a breath smaller) go over the page still stepped
+  back; then the page comes forward with the verse wearing its colour, and
+  the dock and the tab bar come back (180ms, from 120ms). An exit about a
+  third of the entrance: what leaves stops competing quickly.
+- **Reduced motion** (`data-motion="reduce"` on `<html>`, `lib/ui/motion.ts`):
+  no lift and no cascade, the whole layer fades in and out (200ms).
+- **The motion doctrine held** (`lib/ui/__tests__/motionDoctrine.test.ts`):
+  every transform ends at none, nothing on a route root, the layer portaled
+  to `<body>` as the house's sheets are.
+
+Shown to him as a film (2026-11-08): the real export, the focus at rest
+passing `scripts/mock-check.mjs`, each frame stepped at 60fps so the film is
+the motion as designed, not the headless browser's speed. Its smoothness on
+a phone is for the device walk once it is built. Study as cards, writing a
+note and the saved note's mark and card (the three shared screens) go with
+C unless he says otherwise. Notes 1 and 2's fixes stand.
+
 ## 4. Light's grey lines are under the contrast floor, all over the app
 
 **Found by Claude, 2026-11-07,** measuring note 3's sheet on every palette.
