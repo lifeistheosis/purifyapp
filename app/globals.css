@@ -4968,6 +4968,14 @@ html[data-reading-mode="black"] .tile-sheen {
  :where(html[data-reading-mode="monastery"], html[data-reading-mode="councils"], html[data-reading-mode="cappadocian"]) :is(.text-paper\/45, .text-paper\/50) {
  color: color-mix(in oklab, var(--color-paper) 55%, transparent);
  }
+ /* The writing sheet's placeholder (1.9): the 55 percent share, Light's and
+    Candlelight's own as above. */
+ :where(html[data-reading-mode="parchment"]) .placeholder\:text-paper\/55::placeholder {
+ color: color-mix(in oklab, var(--color-paper) 70%, transparent);
+ }
+ :where(html[data-reading-mode="candlelight"]) .placeholder\:text-paper\/55::placeholder {
+ color: color-mix(in oklab, var(--color-paper) 60%, transparent);
+ }
 }
 
 /* ── Liturgical surfaces ──────────────────────────────────────────────
@@ -9925,6 +9933,66 @@ html.is-native :is(input, textarea, select, [contenteditable]:not([contenteditab
 }
 :where([data-motion="reduce"]) .press-pill-in {
  animation: none;
+}
+
+/* The verse's focus (1.9, his pick C of 2026-11-08, on build 88: "C, and
+   ensure it's smooth with animations"; components/bible/VerseFocus.tsx).
+
+   Opening, about 0.8s: the page steps back (the scrim, --duration-base);
+   the verse lifts from its place on the page into the card (--duration-slow,
+   its opacity in over the first half; --lift is how far, measured before the
+   first frame is painted); then the colours and the tools arrive in reading
+   order, opacity only, a screen's step apart (--stagger-step-tight) from
+   300ms. Closing, about 0.3s, in two steps and never at once: the tools
+   (120ms) and the card (140ms, a breath smaller) go over a page still
+   stepped back, then the page comes forward (180ms, from 120ms).
+
+   The house's curve and durations, transform and opacity only, and no blur
+   (the Android WebView bleeds a picture through backdrop-filter and drops
+   frames). Nothing shows before data-ready, so the card never starts from
+   the wrong place. backwards on the way in, as the motion doctrine asks:
+   once arrived, every part is its own again and holds no transform. Under
+   reduced motion the layer fades in and out and nothing travels. */
+.verse-focus:not([data-ready]) :is(.verse-focus-card, .verse-focus-part) {
+ opacity: 0;
+}
+.verse-focus[data-ready] .verse-focus-scrim {
+ animation: verse-focus-in var(--duration-base) var(--ease-house) backwards;
+}
+.verse-focus[data-ready] .verse-focus-card {
+ animation: verse-focus-lift var(--duration-slow) var(--ease-house) backwards;
+}
+.verse-focus[data-ready] .verse-focus-part {
+ animation: verse-focus-in var(--duration-base) var(--ease-house) backwards;
+ animation-delay: calc(300ms + var(--i, 0) * var(--stagger-step-tight));
+}
+.verse-focus[data-closing] :is(.verse-focus-part) {
+ animation: verse-focus-out 120ms var(--ease-house) forwards;
+}
+.verse-focus[data-closing] .verse-focus-card {
+ animation: verse-focus-card-out 140ms var(--ease-house) forwards;
+}
+.verse-focus[data-closing] .verse-focus-scrim {
+ animation: verse-focus-out 180ms var(--ease-house) 120ms forwards;
+}
+@keyframes verse-focus-in {
+ from { opacity: 0; }
+}
+@keyframes verse-focus-lift {
+ from { opacity: 0; transform: translateY(var(--lift, 0px)) scale(0.97); }
+ 45% { opacity: 1; }
+}
+@keyframes verse-focus-out {
+ to { opacity: 0; }
+}
+@keyframes verse-focus-card-out {
+ to { opacity: 0; transform: scale(0.985); }
+}
+:where([data-motion="reduce"]) .verse-focus[data-ready] :is(.verse-focus-scrim, .verse-focus-card, .verse-focus-part) {
+ animation: verse-focus-in var(--duration-fast) linear backwards;
+}
+:where([data-motion="reduce"]) .verse-focus[data-closing] :is(.verse-focus-scrim, .verse-focus-card, .verse-focus-part) {
+ animation: verse-focus-out var(--duration-fast) linear forwards;
 }
 
 /* The cover the store apps paint before any of their code has run: since 1.8

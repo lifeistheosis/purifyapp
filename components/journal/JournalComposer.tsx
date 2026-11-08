@@ -40,6 +40,7 @@ export function JournalComposer({
   onClose,
   onDone,
   sourceLabel,
+  openLink = true,
 }: {
   open: boolean;
   draft: JournalDraft;
@@ -50,6 +51,8 @@ export function JournalComposer({
   onDone: () => void;
   /** What a source is called in the reader's language ("John 3:16"). */
   sourceLabel: (source: JournalSource) => string;
+  /** The source's Open link; left out where the sheet was opened from the source itself (a verse's note, 1.9). */
+  openLink?: boolean;
 }) {
   const { t, locale } = useTranslate();
   const area = useRef<HTMLTextAreaElement | null>(null);
@@ -146,7 +149,7 @@ export function JournalComposer({
       bodyClassName="pb-10"
     >
       <div data-journal-composer="">
-        {draft.source || draft.prompt ? <SourceCard source={draft.source} prompt={draft.prompt?.text} sourceLabel={sourceLabel} /> : null}
+        {draft.source || draft.prompt ? <SourceCard source={draft.source} prompt={draft.prompt?.text} sourceLabel={sourceLabel} openLink={openLink} /> : null}
 
         {isNote ? null : (
           <div role="radiogroup" aria-label={t("journal.kindLabel")} className="mt-4 flex flex-wrap gap-2">
@@ -176,8 +179,11 @@ export function JournalComposer({
             maxLength={MAX_BODY}
             rows={6}
             onChange={(e) => onChange({ ...draft, body: e.target.value })}
-            placeholder={t("journal.composer.placeholder")}
-            className="block min-h-[40vh] w-full resize-none bg-transparent font-serif text-body leading-[1.7] text-paper placeholder:text-paper/35 focus:outline-none"
+            // A verse's note asks for a note; an entry for what is on the heart (1.9).
+            placeholder={isNote ? t("bible.notePlaceholder") : t("journal.composer.placeholder")}
+            // The placeholder at the house's caption share, legible on every
+            // palette (55%; Light's own share in app/globals.css), not 35%.
+            className="block min-h-[40vh] w-full resize-none bg-transparent font-serif text-body leading-[1.7] text-paper placeholder:text-paper/55 focus:outline-none"
           />
         </label>
       </div>
@@ -190,10 +196,12 @@ function SourceCard({
   source,
   prompt,
   sourceLabel,
+  openLink,
 }: {
   source?: JournalSource;
   prompt?: string;
   sourceLabel: (source: JournalSource) => string;
+  openLink: boolean;
 }) {
   const { t } = useTranslate();
   const href =
@@ -211,8 +219,8 @@ function SourceCard({
       {source ? (
         <p className="mt-1.5 flex min-w-0 items-center gap-3 font-sans text-caption text-paper/55">
           <span className="min-w-0 truncate">{sourceLabel(source)}</span>
-          {href ? (
-            <Link href={href} className="ms-auto inline-flex min-h-11 shrink-0 items-center px-1 font-semibold text-paper/75 underline underline-offset-4 hover:text-paper">
+          {href && openLink ? (
+            <Link href={href} className="ms-auto inline-flex min-h-11 shrink-0 items-center px-3 font-semibold text-paper/75 underline underline-offset-4 hover:text-paper">
               {t("journal.composer.open")}
             </Link>
           ) : null}

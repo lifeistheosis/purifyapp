@@ -563,8 +563,9 @@ await section(10, async () => {
 // carry Copy, and a hold on any other text offers Copy for the block under
 // the finger (components/native/PressToCopy.tsx). Numbered 12 and run before
 // 11, which counts every document the walk opened and so comes last. From 1.9
-// (the owner's pick B of 2026-11-06) a verse's tools are its strip, in the
-// page under the verse (components/bible/VerseStrip.tsx), and no longer the
+// (the owner's pick B of 2026-11-06) a verse's tools were its strip under the
+// verse; from his pick C of 2026-11-08 they are its focus, the verse lifted
+// into a card over the page (components/bible/VerseFocus.tsx), and never the
 // pill over the tab bar.
 await section(12, async () => {
   console.log("\n12. The apps select nothing by themselves, and a hold copies");
@@ -671,30 +672,32 @@ await section(12, async () => {
     const at = await page.evaluate(() => { const r = document.querySelector("[data-own-press]").getBoundingClientRect(); return { x: Math.round(r.left + Math.min(140, r.width / 2)), y: Math.round(r.top + r.height / 2) }; });
     await hold(at.x, at.y, 800);
     await page.waitForTimeout(600);
-    // The verse's strip: named for the verse, its buttons in their words.
+    // The verse's focus (his pick C of 2026-11-08): named for the verse, the
+    // colours above the card, its tools below in their words.
+    await page.waitForTimeout(500);
     const tools = await page.evaluate(() => {
-      const d = document.querySelector("[data-verse-strip]");
+      const d = document.querySelector("[data-verse-focus]");
       if (!d || !/John 1:/.test(d.getAttribute("aria-label") || "")) return null;
-      const rs = [...d.querySelectorAll("button")].map((b) => ({ text: (b.innerText || "").replace(/\s+/g, " ").trim(), r: b.getBoundingClientRect() }));
+      const rs = [...d.querySelectorAll('[role="menu"] button')].map((b) => ({ text: (b.innerText || "").replace(/\s+/g, " ").trim(), r: b.getBoundingClientRect() }));
+      const card = d.querySelector(".verse-focus-card")?.getBoundingClientRect();
+      const colours = d.querySelector("[data-hl-swatch]")?.getBoundingClientRect();
       return {
         buttons: rs.map((b) => b.text),
         left: Math.round(Math.min(...rs.map((b) => b.r.left))),
         right: Math.round(Math.max(...rs.map((b) => b.r.right))),
-        rows: [...new Set(rs.map((b) => Math.round(b.r.top)))].length,
+        order: Boolean(card && colours && rs.length) && colours.bottom <= card.top + 1 && rs[0].r.top >= card.bottom - 1,
+        ready: d.hasAttribute("data-ready"),
         vw: innerWidth,
       };
     });
-    must(Boolean(tools) && tools.buttons.includes("Copy"), `holding a verse raises the verse's strip, with Copy in it (${tools ? tools.buttons.join(", ") : "no strip"})`);
+    must(Boolean(tools) && tools.buttons.includes("Copy"), `holding a verse raises the verse's focus, with Copy in it (${tools ? tools.buttons.join(", ") : "no focus"})`);
     must((await pill()) === null, "and not the general one as well");
     must((await selected()) === "", "the system selected nothing there either");
-    must(Boolean(tools) && tools.left >= 0 && tools.right <= tools.vw, `every button of the strip is on the screen (${tools ? tools.left + ".." + tools.right + " of " + tools.vw : "no strip"})`);
-    // One row: six buttons the width of the page. The pill before it was set
-    // in a width counted for a 16px root; the app's is 17px, and its seven
-    // came out three, three and one.
-    must(Boolean(tools) && tools.rows === 1, `the strip's buttons sit in one row (${tools ? tools.rows + (tools.rows === 1 ? " row" : " rows") : "no strip"})`);
+    must(Boolean(tools) && tools.left >= 0 && tools.right <= tools.vw, `every tool of the focus is on the screen (${tools ? tools.left + ".." + tools.right + " of " + tools.vw : "no focus"})`);
+    must(Boolean(tools) && tools.order && tools.ready, `the colours above the verse's card and the tools below it, its motion begun (${tools ? (tools.order ? "in order" : "out of order") + (tools.ready ? ", ready" : ", not ready") : "no focus"})`);
     await page.screenshot({ path: path.join(SHOTS, "hold-verse-phone.png") });
     if (tools && tools.buttons.includes("Copy")) {
-      await tap(page.locator("[data-verse-strip] button", { hasText: /^Copy$/ }));
+      await tap(page.locator("[data-verse-focus] button", { hasText: /^Copy$/ }));
       await page.waitForTimeout(400);
       const clip = await page.evaluate(() => navigator.clipboard.readText()).catch((e) => "could not read: " + e);
       must(/\nJohn 1:\d+$/.test(clip) && clip.length > 30, `Copy puts the verse and where it is from on the clipboard ("${clip.replace(/\n/g, " / ").slice(0, 90)}")`);
@@ -718,7 +721,7 @@ await section(12, async () => {
   await hold(words.x, words.y, 800);
   await page.evaluate(({ x, y }) => document.elementFromPoint(x, y)?.dispatchEvent(new MouseEvent("contextmenu", { bubbles: true, cancelable: true, clientX: x, clientY: y })), words);
   await page.waitForTimeout(500);
-  const afterHold = { strip: await page.evaluate(() => !!document.querySelector("[data-verse-strip]")), menu: await verseMenu() };
+  const afterHold = { strip: await page.evaluate(() => !!document.querySelector("[data-verse-focus]")), menu: await verseMenu() };
   must(afterHold.strip && !afterHold.menu, `a hold and the contextmenu a phone sends with it open the verse's tools and not the computer's menu (tools ${afterHold.strip ? "up" : "not up"}, menu ${afterHold.menu ? "up" : "shut"})`);
   await page.keyboard.press("Escape").catch(() => {});
   await page.waitForTimeout(500);
@@ -737,13 +740,13 @@ await section(12, async () => {
   await tapAt(moving);
   await page.evaluate(() => clearInterval(window.__glide));
   await page.waitForTimeout(500);
-  const onGlide = await page.evaluate(() => !!document.querySelector("[data-verse-strip]"));
+  const onGlide = await page.evaluate(() => !!document.querySelector("[data-verse-focus]"));
   must(!onGlide, `a finger put down on a page still gliding selects nothing (${onGlide ? "the tools opened" : "nothing opened"})`);
   await page.waitForTimeout(400);
   const still = await page.evaluate(() => { const r = document.querySelector("[data-own-press]").getBoundingClientRect(); return { x: Math.round(r.left + Math.min(140, r.width / 2)), y: Math.round(r.top + Math.min(20, r.height / 2)) }; });
   await tapAt(still);
   await page.waitForTimeout(600);
-  const atRest = await page.evaluate(() => !!document.querySelector("[data-verse-strip]"));
+  const atRest = await page.evaluate(() => !!document.querySelector("[data-verse-focus]"));
   must(atRest, `and a tap on a page at rest selects the verse (${atRest ? "the tools opened" : "nothing opened"})`);
   must(errors.length === 0, `no page errors${errors.length ? ": " + errors.slice(0, 2).join(" | ") : ""}`);
   await ctx.close();

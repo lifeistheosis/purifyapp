@@ -26,7 +26,8 @@ import {
  VerseContextMenu,
  type ContextMenuGroup,
 } from "./VerseContextMenu";
-import { VerseStrip, type StudyRow } from "./VerseStrip";
+import { VerseFocus, type StudyRow } from "./VerseFocus";
+import { VerseNoteSheet } from "./VerseNoteSheet";
 import { FlorilegiumPickerSheet } from "@/components/florilegium/FlorilegiumPickerSheet";
 import { HighlightPicker } from "./HighlightPicker";
 import { HighlightNamesSheet } from "./HighlightNamesSheet";
@@ -42,7 +43,6 @@ import { useTranslate } from "@/components/i18n/MessagesProvider";
 import { useUpgradeModal } from "@/components/billing/UpgradeModal";
 import { cn } from "@/lib/cn";
 import { plusFeaturesNow, usePlusFeatures } from "@/lib/entitlements/usePlusFeatures";
-import { wroteWhen } from "@/lib/bible/noteAge";
 import { keepText, verseKey } from "@/lib/remember/schedule";
 import {
  LONG_PRESS_MS,
@@ -139,7 +139,7 @@ export function VerseRow({
   * Plus). */
  onWordStudy?: (strongs: string, lemma?: string) => void;
 }) {
-  const { t, locale } = useTranslate();
+  const { t } = useTranslate();
  const ann = useVerseAnnotation(book, chapter, verse.n);
  // Anything on the verse highlighted: the whole of it, or some of its words.
  const marked = !!ann.highlighted || (ann.highlightedWords?.length ?? 0) > 0;
@@ -315,10 +315,11 @@ export function VerseRow({
  s: string;
  occ: number;
  } | null>(null);
- const [editing, setEditing] = useState(false);
- const [draft, setDraft] = useState(ann.note ?? "");
+ // The verse's note, written in the journal's sheet (VerseNoteSheet, 1.9).
+ const [noteOpen, setNoteOpen] = useState(false);
  const [copied, setCopied] = useState(false);
- const textareaRef = useRef<HTMLTextAreaElement>(null);
+ // The verse's words on the page: the focus's card rises from them.
+ const wordsRef = useRef<HTMLParagraphElement | null>(null);
 
  async function copyToClipboard(text: string) {
  try {
@@ -415,15 +416,6 @@ export function VerseRow({
  pressOriginRef.current = null;
  }
 
- // Autofocus when entering edit mode.
- useEffect(() => {
- if (!editing) return;
- const el = textareaRef.current;
- if (!el) return;
- el.focus();
- el.setSelectionRange(el.value.length, el.value.length);
- }, [editing]);
-
  // Global mouseup so we still commit even if the user releases outside the verse.
  useEffect(() => {
  if (dragStart === null) return;
@@ -452,16 +444,6 @@ export function VerseRow({
  window.removeEventListener("mousemove", onMove);
  };
  }, [dragStart, dragEnd, ann, book, chapter, verse.n, verse.text]);
-
- function saveNote() {
- ann.setNote(draft);
- setEditing(false);
- }
-
- function cancelEdit() {
- setDraft(ann.note ?? "");
- setEditing(false);
- }
 
  function startDrag(idx: number) {
  setDragStart(idx);
@@ -538,7 +520,8 @@ export function VerseRow({
  const start = touchStartRef.current;
  touchStartRef.current = null;
  // 1.9, the owner's pick B: a single tap selects the verse and opens its
- // strip at once (components/bible/VerseStrip.tsx), so nothing waits to see
+ // focus at once (components/bible/VerseFocus.tsx; it was a strip under the
+ // verse until his pick C of 2026-11-08), so nothing waits to see
  // whether a second comes; a second tap in time is still the highlight.
  cancelPress();
  const p = e?.changedTouches[0];
@@ -744,6 +727,7 @@ export function VerseRow({
  // 1.9: no box round the selected verse; its words wear the ghost
  // highlight below (.verse-ghost, app/globals.css).
  )}
+ ref={wordsRef}
  // The app-wide hold-to-copy stands aside here: a verse has its own pill.
  data-own-press=""
  style={{ touchAction: "pan-y" }}
@@ -987,6 +971,24 @@ export function VerseRow({
  </button>
  </span>
  ) : null}
+ {/* A note on the verse (1.9): a small pen at its end, which opens the
+   note in the journal's sheet. Its tap is its own (the verse's tap rule
+   leaves its buttons alone). */}
+ {ann.note ? (
+ <button
+ type="button"
+ data-verse-note-mark=""
+ aria-label={t("bible.yourNote")}
+ title={t("bible.yourNote")}
+ onClick={(e) => {
+ e.stopPropagation();
+ setNoteOpen(true);
+ }}
+ className="hit-44 relative ms-1.5 inline-grid h-[26px] w-[26px] place-items-center rounded-full bg-paper/[0.12] align-[-3px] text-paper/85"
+ >
+ <Pen size={14} />
+ </button>
+ ) : null}
  </p>
 
  {hasInterlinear && (
@@ -1118,10 +1120,7 @@ export function VerseRow({
  },
  {
  label: ann.note ? t("bible.editNote") : t("bible.addNote"),
- onClick: () => {
- setDraft(ann.note ?? "");
- setEditing(true);
- },
+ onClick: () => setNoteOpen(true),
  },
  ];
  // Each colour by what it means to the reader, its disc before it and
@@ -1221,7 +1220,7 @@ export function VerseRow({
  "hidden md:flex native-md-hidden items-center gap-1 shrink-0 -mt-1 transition-opacity duration-150 " +
  (ann.highlighted ||
  ann.note ||
- editing ||
+ noteOpen ||
  showSwatches ||
  isVerseBookmarked ||
  (ann.highlightedWords && ann.highlightedWords.length > 0)
@@ -1347,15 +1346,14 @@ export function VerseRow({
  </button>
  <button
  type="button"
- onClick={() => {
- setDraft(ann.note ?? "");
- setEditing((v) => !v);
- }}
+ onClick={() => setNoteOpen(true)}
  aria-label={ann.note ? t("bible.editNote") : t("bible.addNote")}
- aria-pressed={editing}
+ aria-pressed={noteOpen}
  title={ann.note ? t("bible.editNote") : t("bible.addNote")}
+ // A 44px touch box round the 28px pen (a tablet's browser touches this
+ // row too); the row's gap leaves the star beside it its own (1.9).
  className={
- "h-9 w-9 md:h-7 md:w-7 rounded-full border flex items-center justify-center text-ui md:text-caption transition-colors duration-150 " +
+ "hit-44 ms-1 h-9 w-9 md:h-7 md:w-7 rounded-full border flex items-center justify-center text-ui md:text-caption transition-colors duration-150 " +
  (ann.note
  ? "bg-paper/15 border-paper/30 text-paper"
  : "border-paper/15 text-paper/55 hover:bg-paper/10 hover:text-paper")
@@ -1366,88 +1364,26 @@ export function VerseRow({
  </div>
  </div>
 
- {/* User note (saved) */}
- {ann.note && !editing && (
- <div className="mt-2 rounded-md border border-paper/15 bg-paper/[0.04] px-3 py-2">
- <p className="font-sans text-caption text-paper/45 mb-1">
- {t("bible.yourNote")}
- </p>
- <p className="font-sans text-detail text-paper/85 leading-[1.55] whitespace-pre-wrap">
- {ann.note}
- </p>
- {/* When it was written, in the reader's own words for time: the
-     journal's reminder, on the verse itself (lib/bible/noteAge.ts). */}
- {ann.noteAt ? (
- <p className="mt-1.5 font-sans text-caption text-paper/45">
- {t("bible.noteWrittenWhen", { when: wroteWhen(ann.noteAt, locale) })}
- </p>
- ) : null}
- </div>
- )}
-
- {/* User note (editor) */}
- {editing && (
- <div className="mt-2 rounded-md border border-paper/25 bg-paper/[0.05] p-3">
- <textarea
- ref={textareaRef}
- value={draft}
- onChange={(e) => setDraft(e.target.value)}
- onKeyDown={(e) => {
- if (e.key === "Enter" && (e.metaKey || e.ctrlKey)) {
- e.preventDefault();
- saveNote();
- } else if (e.key === "Escape") {
- e.preventDefault();
- cancelEdit();
- }
- }}
- placeholder={t("bible.notePlaceholder")}
- rows={3}
- className="w-full bg-transparent border-0 outline-none resize-y font-sans text-ui text-paper placeholder:text-paper/40 leading-[1.55]"
+ {/* The verse's note, in the journal's sheet (1.9, build 88 note 3): on a
+   phone as tall as the keyboard leaves, on a computer the centred panel. */}
+ <VerseNoteSheet
+ open={noteOpen}
+ book={book}
+ chapter={chapter}
+ verse={verse.n}
+ label={reference()}
+ note={ann.note}
+ onSave={(body) => ann.setNote(body)}
+ onClose={() => setNoteOpen(false)}
  />
- <div className="mt-2 flex items-center justify-between gap-2">
- <span className="font-sans text-eyebrow text-paper/40">
- {draft.length > 0 ? t("bible.noteSaveHint") : t("bible.escToClose")}
- </span>
- <div className="flex items-center gap-2">
- {ann.note && (
- <button
- type="button"
- onClick={() => {
- ann.setNote("");
- setDraft("");
- setEditing(false);
- }}
- className="font-sans text-caption text-paper/55 hover:text-paper transition-colors px-2 py-1"
- >
- {t("common.delete")}
- </button>
- )}
- <button
- type="button"
- onClick={cancelEdit}
- className="font-sans text-caption text-paper/55 hover:text-paper transition-colors px-2 py-1"
- >
- {t("common.cancel")}
- </button>
- <button
- type="button"
- onClick={saveNote}
- className="font-sans text-caption font-medium bg-paper text-night rounded-pill px-3 py-1 hover:bg-paper/90 transition-colors"
- >
- {t("common.save")}
- </button>
- </div>
- </div>
- </div>
- )}
 
  {showTools && (
- <VerseStrip
+ <VerseFocus
  reference={reference()}
  verseText={verse.text}
  edition={getBook(book)?.source === "brenton-lxx-pd" ? "Brenton" : "KJV"}
  link={shareLink(`/bible/${book}/${chapter}#v${verse.n}`)}
+ anchor={wordsRef}
  highlight={{
  color: marked ? hl.id : null,
  onPick: applyColor,
@@ -1456,10 +1392,10 @@ export function VerseRow({
  copied={copied}
  onCopy={() => void copyVerseForPaste()}
  onNote={() => {
- setDraft(ann.note ?? "");
- setEditing(true);
  setShowTools(false);
+ setNoteOpen(true);
  }}
+ onWord={greekAvailable ? (idx, el) => void openEnglishWord(idx, el) : undefined}
  study={studyRows()}
  onClose={() => setShowTools(false)}
  />

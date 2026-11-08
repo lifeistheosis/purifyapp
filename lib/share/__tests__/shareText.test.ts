@@ -3,7 +3,7 @@
 // the Web Share API; and a closed sheet is not a failure. The verse strip's
 // Share goes through it (1.9): it asked navigator.share itself, which the
 // apps do not have, so in the apps Share copied without a word on Android and
-// did nothing on an iPhone.
+// did nothing on an iPhone. The focus that replaced the strip shares the same way.
 
 import fs from "node:fs";
 import path from "node:path";
@@ -70,9 +70,9 @@ describe("words to the share sheet", () => {
   });
 });
 
-describe("the verse strip's Share", () => {
-  const src = fs.readFileSync(path.resolve(__dirname, "../../../components/bible/VerseStrip.tsx"), "utf8");
-  const share = src.slice(src.indexOf("async function share()"), src.indexOf("const tool ="));
+describe("the verse's Share (the focus, 1.9; the strip before it)", () => {
+  const src = fs.readFileSync(path.resolve(__dirname, "../../../components/bible/VerseFocus.tsx"), "utf8");
+  const share = src.slice(src.indexOf("async function share()"), src.indexOf("const color = highlight.color"));
 
   it("goes to the share sheet the apps have, and copies the words and the link only when there is none", () => {
     expect(share).toContain("await shareText(reference, text, link)");
