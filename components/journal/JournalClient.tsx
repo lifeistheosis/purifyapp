@@ -8,6 +8,7 @@ import { useTranslate } from "@/components/i18n/MessagesProvider";
 import { JournalComposer } from "@/components/journal/JournalComposer";
 import { JournalFeed } from "@/components/journal/JournalFeed";
 import { JournalPrompts } from "@/components/journal/JournalPrompts";
+import { TodayPage } from "@/components/journal/TodayPage";
 import { WriteButton } from "@/components/journal/WriteButton";
 import { UndoBar } from "@/components/ui/UndoBar";
 import { readVerseAnnotation, writeVerseAnnotation } from "@/lib/bible/annotations";
@@ -29,6 +30,7 @@ import {
   type JournalDraft,
   type JournalSource,
 } from "@/lib/journal/entries";
+import { READING_KIND_KEY, verseSpan } from "@/lib/journal/churchDay";
 import { emptyPromptKey, journalFeed, noteKey, planPrompts, type JournalItem, type PlanQuestion } from "@/lib/journal/feed";
 import { dayGuide } from "@/lib/plans/guide";
 import { usePlanGuide } from "@/lib/plans/guideContent";
@@ -78,6 +80,7 @@ export function JournalClient() {
     (s: JournalSource) => {
       if (s.type === "verse") return `${bookName(s.book)} ${s.chapter}:${s.verse}`;
       if (s.type === "chapter") return `${bookName(s.book)} ${s.chapter}`;
+      if (s.type === "reading") return `${t(READING_KIND_KEY[s.kind])} · ${bookName(s.book)} ${s.chapter}:${verseSpan(s.from, s.to)}`;
       const plan = getPlan(s.planId);
       const day = plan?.days[s.day];
       return day ? t("plans.continueDay", { day: s.day + 1, reading: dayLabel(day, bookName) }) : s.label;
@@ -223,6 +226,7 @@ export function JournalClient() {
         <PlusGate titleKey="plus.journal.title" blurbKey="plus.journal.body" modalFeature="journal" />
       ) : (
         <div className="pb-28">
+          <TodayPage onWrite={write} onWriteFrom={(source) => begin({ kind: "reflection", body: "", source: { ...source, label: sourceLabel(source) } })} />
           {waiting && plan ? (
             <JournalPrompts
               waiting={waiting}

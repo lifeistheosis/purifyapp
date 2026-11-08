@@ -5604,6 +5604,41 @@ await section(40, async () => {
     await clean(`${w}px, the journal`, page);
     const first = await page.evaluate(() => (document.querySelector("[data-journal-entry]")?.innerText ?? "").replace(/\s+/g, " "));
     must(first.includes(answer) && first.includes(flat(guide.gospels.days[0].q).slice(0, 30)) && first.includes(en["journal.kind.question"]), `${w}px: the answer is in the journal under its question ("${first.slice(0, 70)}")`);
+    // Today's page (1.9, docs/1.9-build/JOURNAL.md): the weekday in Lora, the
+    // date and the Church's day under it, Write, and the day's readings to
+    // write from, each a row to tap.
+    const todayPage = await page.evaluate(() => {
+      const s = document.querySelector("[data-journal-today]");
+      const head = s?.querySelector("[role=heading]");
+      if (!s || !head) return null;
+      return {
+        head: head.textContent ?? "",
+        font: getComputedStyle(head).fontFamily,
+        line: head.nextElementSibling?.textContent ?? "",
+        rows: [...s.querySelectorAll("button")].map((b) => ({ text: (b.innerText ?? "").replace(/\s+/g, " ").trim(), h: Math.round(b.getBoundingClientRect().height) })),
+      };
+    });
+    const onDay = new Date();
+    must(Boolean(todayPage) && todayPage.head === new Intl.DateTimeFormat("en", { weekday: "long" }).format(onDay) && /Lora/.test(todayPage.font), `${w}px: today's page is headed by the weekday in Lora ("${todayPage?.head}")`);
+    must(Boolean(todayPage) && todayPage.line.startsWith(new Intl.DateTimeFormat("en", { month: "long", day: "numeric" }).format(onDay)) && todayPage.line.includes(" · "), `${w}px: under it the date and the Church's day ("${todayPage?.line.slice(0, 90)}")`);
+    must(
+      Boolean(todayPage) && todayPage.rows.length >= 2 && todayPage.rows[0].text === en["journal.write"] && todayPage.rows.every((r) => r.h >= 44),
+      `${w}px: Write, then the day's readings, every row 44px or more (${todayPage?.rows.map((r) => `${r.text.slice(0, 28)} ${r.h}`).join(", ")})`,
+    );
+    // A reading's pen begins a page about it, named and with the way back to it.
+    await tap(page.locator("[data-journal-today] li button").first());
+    await page.waitForFunction(() => !!document.querySelector("[data-journal-composer]"), null, { timeout: 8000 }).catch(() => {});
+    await page.waitForTimeout(900);
+    const fromReading = await page.evaluate(() => {
+      const c = document.querySelector("[data-journal-composer]");
+      return c ? { text: (c.innerText ?? "").replace(/\s+/g, " "), href: c.querySelector("a[href*='/bible/']")?.getAttribute("href") ?? "" } : null;
+    });
+    must(
+      Boolean(fromReading) && [en["bible.kindGospelLong"], en["bible.kindEpistleLong"], en["bible.kindOtLong"]].some((k) => fromReading.text.includes(`${k} · `)) && /\/bible\/[a-z0-9-]+\/\d+\/?#v\d+$/.test(fromReading.href),
+      `${w}px: a reading's pen opens a page named for the reading, with the way back to it ("${fromReading?.text.slice(0, 60)}", ${fromReading?.href})`,
+    );
+    await tap(page.locator("[role=dialog] button", { hasText: en["common.close"] }).first());
+    await page.waitForTimeout(700);
     const pill = await footOf(page, "[data-journal-write]");
     must(Boolean(pill) && pill.height >= 44 && (pill.tabs === null || pill.bottom <= pill.tabs + 1) && pill.text === en["journal.write"], `${w}px: one Write button in reach at the foot, over the tab bar (${pill ? `"${pill.text}", ends at ${pill.bottom}` : "none"})`);
     must(await page.evaluate(() => window.__standInKeyboard === true && window.visualViewport.height === innerHeight), `${w}px: the stand-in keyboard is in place, and down`);
@@ -5667,6 +5702,28 @@ await section(40, async () => {
     await tap(page.locator("[data-undo-bar] button"));
     await page.waitForTimeout(700);
     must((await page.evaluate(() => document.querySelectorAll("[data-journal-entry]").length)) === before, `${w}px: Undo brings the entry back`);
+
+    // A past day is headed as a diary's page is: its weekday in Lora, then its
+    // date, its feast or saints, and its fast when it keeps one.
+    const past = new Date(onDay.getFullYear(), onDay.getMonth(), onDay.getDate() - 2, 10);
+    await page.evaluate((iso) => {
+      const all = JSON.parse(localStorage.getItem("purify:journal") ?? "[]");
+      all.push({ id: "00000000-0000-4000-8000-000000000040", kind: "reflection", body: "Written two days before.", createdAt: iso, updatedAt: iso });
+      localStorage.setItem("purify:journal", JSON.stringify(all));
+    }, past.toISOString());
+    await page.reload();
+    await page.waitForFunction(() => document.querySelectorAll("[data-journal-day]").length >= 2, null, { timeout: 15000 }).catch(() => {});
+    await page.waitForTimeout(500);
+    const pastDay = await page.evaluate(() => {
+      const heads = [...document.querySelectorAll("[data-journal-day]")];
+      const last = heads[heads.length - 1];
+      const next = last?.nextElementSibling;
+      return last ? { head: last.textContent ?? "", font: getComputedStyle(last).fontFamily, line: next?.matches("[data-journal-day-line]") ? (next.textContent ?? "") : "" } : null;
+    });
+    must(
+      Boolean(pastDay) && pastDay.head === new Intl.DateTimeFormat("en", { weekday: "long" }).format(past) && /Lora/.test(pastDay.font) && pastDay.line.startsWith(new Intl.DateTimeFormat("en", { month: "long", day: "numeric" }).format(past)) && pastDay.line.includes(" · "),
+      `${w}px: a past day is headed by its weekday in Lora, then its date and its Church's day ("${pastDay?.head}", "${pastDay?.line.slice(0, 90)}")`,
+    );
     await page.screenshot({ path: path.join(SHOTS, `journal-${w}.png`), fullPage: true });
     must(errors.length === 0, `${w}px: no page errors${errors.length ? ": " + errors.slice(0, 2).join(" | ") : ""}`);
     await ctx.close();

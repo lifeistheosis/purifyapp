@@ -209,9 +209,11 @@ function SourceCard({
       ? `/bible/${source.book}/${source.chapter}#v${source.verse}`
       : source?.type === "chapter"
         ? `/bible/${source.book}/${source.chapter}`
-        : source?.type === "plan-day"
-          ? `/plans/${source.planId}`
-          : null;
+        : source?.type === "reading"
+          ? `/bible/${source.book}/${source.chapter}#v${source.from}`
+          : source?.type === "plan-day"
+            ? `/plans/${source.planId}`
+            : null;
   return (
     <div className="border-b border-paper/10 pb-4">
       {source?.type === "verse" ? <VerseQuote book={source.book} chapter={source.chapter} verse={source.verse} /> : null}

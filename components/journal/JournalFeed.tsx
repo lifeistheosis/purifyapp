@@ -3,7 +3,12 @@
 // The journal's list (1.7, the owner's note 23: "entries by day in one calm
 // list (the words first, the date small)").
 //
-// The day's groups under Today, Yesterday or the weekday and date; in each,
+// The day's groups under Today, Yesterday or the weekday, each past day
+// headed as a diary's page is (1.9, docs/1.9-build/JOURNAL.md): the weekday in
+// Lora, then its date, its feast or saints and its fast, by the reader's
+// calendar (lib/journal/churchDay.ts). Today's own line is on today's page
+// above the list (components/journal/TodayPage.tsx), so here today is the
+// word alone. In each,
 // every entry's words first in Lora, then one small line: what kind it is,
 // what it is about, the time. A tap opens it in the writing sheet; a swipe
 // takes it away, with Undo. Above the list the kinds to filter by and, once
@@ -18,7 +23,9 @@ import { SearchField } from "@/components/search/SearchField";
 import { ChipScroller } from "@/components/ui/ChipScroller";
 import { FilterChip } from "@/components/ui/FilterChip";
 import { SwipeRow } from "@/components/ui/SwipeRow";
+import { useCalendarStyleDefault } from "@/lib/calendar/useCalendarStyleDefault";
 import { dateLocale } from "@/lib/i18n/deviceDates";
+import { churchDayLine, dayFromKey } from "@/lib/journal/churchDay";
 import type { JournalSource } from "@/lib/journal/entries";
 import { byDay, filterKind, journalChips, localDayKey, type JournalFilter, type JournalItem } from "@/lib/journal/feed";
 import { matchesQuery } from "@/lib/saved/feed";
@@ -63,6 +70,40 @@ export function JournalFeed({
   const [now] = useState(() => new Date());
   const today = localDayKey(now.toISOString());
   const yesterday = localDayKey(new Date(now.getFullYear(), now.getMonth(), now.getDate() - 1, 12).toISOString());
+
+  const [style] = useCalendarStyleDefault();
+  // Each past day's line: its date, then what the Church keeps on it.
+  const lines = useMemo(() => {
+    const out = new Map<string, string>();
+    for (const g of groups) {
+      const date = g.day === today ? null : dayFromKey(g.day);
+      if (!date) continue;
+      let when = "";
+      try {
+        when = new Intl.DateTimeFormat(dateLocale(locale), {
+          month: "long",
+          day: "numeric",
+          ...(date.getFullYear() === now.getFullYear() ? {} : { year: "numeric" }),
+        }).format(date);
+      } catch {
+        when = g.day;
+      }
+      const church = churchDayLine(date, style);
+      const fast = church.fast ? t(`calendar.fast.${church.fast.ruleId}.label`) : null;
+      out.set(g.day, [when, church.headline, fast].filter(Boolean).join(" · "));
+    }
+    return out;
+  }, [groups, today, locale, now, style, t]);
+
+  const weekdayOf = (day: string) => {
+    const date = dayFromKey(day);
+    if (!date) return day;
+    try {
+      return new Intl.DateTimeFormat(dateLocale(locale), { weekday: "long" }).format(date);
+    } catch {
+      return day;
+    }
+  };
 
   const dayName = (day: string, relative = true) => {
     if (day === "undated") return t("journal.undated");
@@ -118,12 +159,17 @@ export function JournalFeed({
 
       {groups.map((g) => (
         <section key={g.day} aria-labelledby={`journal-day-${g.day}`} className="mt-8">
-          {/* A heading by role: every h1 to h6 is set in Lora (globals.css). */}
-          <p id={`journal-day-${g.day}`} role="heading" aria-level={2} className="font-sans text-caption font-semibold text-paper/55">
-            {dayName(g.day)}
+          {/* A heading by role, the day's name in Lora (every h1 to h6 is, globals.css). */}
+          <p id={`journal-day-${g.day}`} role="heading" aria-level={2} data-journal-day="" className="font-serif text-[20px] font-semibold leading-[1.25] text-paper">
+            {g.day === "undated" ? dayName(g.day) : g.day === today || g.day === yesterday ? dayName(g.day) : weekdayOf(g.day)}
             {/* On paper "Today" means nothing a week later: the date beside it (1.9). */}
-            {g.day === today || g.day === yesterday ? <span className="hidden print:inline">{`, ${dayName(g.day, false)}`}</span> : null}
+            {g.day === today ? <span className="hidden print:inline">{`, ${dayName(g.day, false)}`}</span> : null}
           </p>
+          {lines.get(g.day) ? (
+            <p data-journal-day-line="" className="mt-1 font-sans text-caption leading-[1.45] text-paper/70">
+              {lines.get(g.day)}
+            </p>
+          ) : null}
           <ul className="mt-1 divide-y divide-paper/8 border-b border-paper/8">
             {g.items.map((item) => (
               <SwipeRow key={item.key} onRemove={() => onRemove(item)} removeLabel={t("common.remove")}>

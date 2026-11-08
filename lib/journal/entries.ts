@@ -27,7 +27,9 @@ export const JOURNAL_KINDS: readonly JournalKind[] = ["reflection", "prayer", "q
 export type JournalSource =
   | { type: "verse"; book: string; chapter: number; verse: number; label: string }
   | { type: "chapter"; book: string; chapter: number; label: string }
-  | { type: "plan-day"; planId: string; day: number; label: string };
+  | { type: "plan-day"; planId: string; day: number; label: string }
+  /** A reading of the day (1.9, today's page): the Gospel, the Epistle, or the Old Testament's, with its verses. */
+  | { type: "reading"; kind: "gospel" | "epistle" | "ot"; book: string; chapter: number; from: number; to: number; label: string };
 
 export type JournalPrompt = {
   /** The plan question's key in the guide (lib/plans/guide.ts), when it is one. */
