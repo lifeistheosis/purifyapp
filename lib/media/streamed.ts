@@ -30,7 +30,7 @@ import { SITE_URL } from "@/lib/site";
  *
  * A file in one of these folders is taken down by taking it off the website:
  * the apps ask for it each time they show it. Chant recordings also have a
- * takedown list (public/audio/chants/live.json), because a recording that
+ * takedown list (/audio/chants/live.json, served by app/audio/chants/live.json/route.ts), because a recording that
  * fails to load would leave a dead Play button; a cover that fails to load
  * shows the bundled plate instead (components/player/CoverArt.tsx).
  */

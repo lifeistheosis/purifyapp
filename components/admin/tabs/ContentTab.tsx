@@ -38,6 +38,7 @@ import { CatechismDetail } from "../content/catechism";
 import { ChantWordsDetail } from "../content/chantWords";
 import { ReviewDetail } from "../content/review";
 import { SearchMissesDetail } from "../content/searchMisses";
+import { ChantPullsDetail } from "../content/chantPulls";
 import { PlayCard, ReviewsCard, sourceLine } from "../content/ratings";
 import { Disclosure, Modal, StatusDot, SubTabs, ToolbarButton } from "../primitives";
 import { BOX, BOX_STYLE, LIT, ink, ink2, ink3, line } from "../tools/look";
@@ -103,6 +104,7 @@ export function ContentDesk({ focus }: { focus?: "ratings" | "catechism" | "chan
   const [chantWordsOpen, setChantWordsOpen] = useState(focus === "chant-words");
   const [reviewOpen, setReviewOpen] = useState(focus === "review");
   const [missesOpen, setMissesOpen] = useState(false);
+  const [pullsOpen, setPullsOpen] = useState(false);
   const ratingsRef = useRef<HTMLElement | null>(null);
   const catechismRef = useRef<HTMLElement | null>(null);
   const chantWordsRef = useRef<HTMLElement | null>(null);
@@ -490,6 +492,32 @@ export function ContentDesk({ focus }: { focus?: "ratings" | "catechism" | "chan
               {chantWordsOpen ? (
                 <div className="mt-2 border-t pt-3" style={line}>
                   <ChantWordsDetail />
+                </div>
+              ) : null}
+            </div>
+          </section>
+
+          {/* ── Chant recordings, one line (1.9, admin A7) ──────────────── */}
+          <section className={`${BOX} scroll-mt-24 px-4 py-3.5`} style={BOX_STYLE}>
+            <h2 className="font-sans text-[13.5px] font-semibold" style={ink}>
+              Chant recordings
+            </h2>
+            <p className="mt-1 font-sans text-[12px] leading-[1.5]" style={ink3}>
+              Every recording the apps may play. Take one down in a tap if a rights holder asks, or a recording is at fault.
+            </p>
+            <div className="mt-2">
+              <button
+                type="button"
+                onClick={() => setPullsOpen((v) => !v)}
+                className="min-h-11 font-sans text-[12.5px] underline underline-offset-[3px]"
+                style={ink2}
+                aria-expanded={pullsOpen}
+              >
+                {pullsOpen ? "Close" : "The recordings, and their switches"}
+              </button>
+              {pullsOpen ? (
+                <div className="mt-2 border-t pt-3" style={line}>
+                  <ChantPullsDetail />
                 </div>
               ) : null}
             </div>

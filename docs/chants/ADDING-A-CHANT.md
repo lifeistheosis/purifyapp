@@ -45,7 +45,7 @@ For a chant with the slug `christ-is-risen` and a version `el-byzantine`:
 | `data/chants/christ-is-risen.json` | The chant: the shape is `lib/chants/types.ts`, checked by `lib/chants/schema.ts`. Its name must be its slug. |
 | `https://audio.purifyapp.net/chants/christ-is-risen/el-byzantine.mp3` | The recording, in the bucket: made by `scripts/chants/prepare-audio.mjs` into a staging folder outside the repository, then uploaded. Its data file's `audio.src` is this address. |
 | `data/chants/timing/christ-is-risen/el-byzantine.json` | Its timed words, made by `scripts/chants/timing-from-transcript.mjs`. Rides in the app as `/chant-timing/christ-is-risen/el-byzantine.json`, the data file's `timing`. Optional: a version with none has its words without Sing along. |
-| `public/audio/chants/live.json` | Add `"christ-is-risen/el-byzantine"` to `live`. A recording plays only while it is listed there. |
+| `data/chants-live.json` | Add `"christ-is-risen/el-byzantine"` to `live`. A recording plays only while it is listed there (the website serves this list at `/audio/chants/live.json`). |
 | `docs/licensing/audio-provenance.md` | One row in the Chants section, named by the recording's bucket address: where it came from (the upload's link, its uploader and date), the performer or "not known", licence **none**, the day it came, his decision, and its takedown line. |
 | `public/audio/art/<icon>.v1.jpg` | Its cover (1.8, the owner's note 57: every chant has one): a public-domain icon matched to its words, a square of 640 by 640 in the bundle, with its row under "The chants' covers" in `docs/licensing/audio-provenance.md`. A cover another chant already has is used again (King David for a psalm). |
 | `lib/i18n/messages/*.json` | Two lines in all 21 languages: `chants.item.<key>.title` (English exactly the data file's `title`) and `chants.item.<key>.line`, one sentence for the cover. |
@@ -139,10 +139,14 @@ it and `live.json` lists it.
 
 ## Taking a recording down
 
-Move its `<slug>/<id>` from `live` to `pulled` in
-`public/audio/chants/live.json` and push the website. Every installed app
-stops offering it within minutes (`lib/chants/live.ts` reads the list; the
-website keeps it fresh for five minutes, `next.config.ts`). Nothing else has
-to change, and no store release is needed. A bucket recording can also be
+In the admin: Content, Chant recordings, then Take down, with a few words of
+why (1.9, once `docs/1.9-build/sql/chant-pulls.sql` has been run). Every
+installed app stops offering it within minutes, and takes a saved copy off
+the phone: the website serves `/audio/chants/live.json` as the committed
+list less every recording switched off there (`lib/chants/pulls.ts`), and
+keeps it fresh for five minutes. Nothing to push, and no store release.
+
+By hand, or before the table exists: move its `<slug>/<id>` from `live` to
+`pulled` in `data/chants-live.json` and push the website. A bucket recording can also be
 deleted from the bucket afterwards; the list does not need it. To take a
 whole chant away from the next release, set its `status` to `"hidden"`.

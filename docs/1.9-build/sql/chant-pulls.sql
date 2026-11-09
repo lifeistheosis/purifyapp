@@ -12,9 +12,9 @@
 -- its own "drop ... if exists".
 --
 -- WHY. Every installed app asks the website which chant recordings may play
--- (public/audio/chants/live.json, lib/chants/live.ts), and fails closed: a
+-- (/audio/chants/live.json, lib/chants/live.ts), and fails closed: a
 -- recording the list does not name does not play, and a saved copy is taken
--- off the phone. Today the list is a file, so taking a recording down means a
+-- off the phone. Before 1.9 the list was a file, so taking a recording down meant a
 -- change to the code and a push of the website, which is the owner's to make
 -- and can wait hours. With this table the admin's switch takes it down in
 -- minutes: the website serves the file's list less every recording switched

@@ -141,10 +141,16 @@ describe("the website, for the apps", () => {
     expect(config).not.toMatch(/source: "\/trapeza/);
   });
 
-  it("serves the chant folder the apps' export leaves out", () => {
+  it("serves the chant folder the apps' export leaves out, and the list from its route", () => {
     const build = fs.readFileSync("scripts/native-build.mjs", "utf8");
     expect(build).toContain('["public", "audio", "chants"],');
-    expect(fs.existsSync("public/audio/chants/live.json")).toBe(true);
+    // The list is a route since 1.9 (admin A7): the committed list less the
+    // admin's takedowns, at the address every app already asks. Never both a
+    // file and a route at one address.
+    expect(build).toContain('["app", "audio"],');
+    expect(fs.existsSync("app/audio/chants/live.json/route.ts")).toBe(true);
+    expect(fs.existsSync("data/chants-live.json")).toBe(true);
+    expect(fs.existsSync("public/audio/chants/live.json")).toBe(false);
   });
 });
 
@@ -188,7 +194,7 @@ describe("which recordings may play", () => {
   });
 
   it("reads live.json, and nothing that is not it", () => {
-    const file = JSON.parse(fs.readFileSync("public/audio/chants/live.json", "utf8"));
+    const file = JSON.parse(fs.readFileSync("data/chants-live.json", "utf8"));
     expect(readLiveList(file)).not.toBeNull();
     expect(readLiveList({ v: 2, live: [], pulled: [] })).toBeNull();
     expect(readLiveList({ v: 1, live: "x", pulled: [] })).toBeNull();

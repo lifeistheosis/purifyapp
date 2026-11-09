@@ -63,8 +63,9 @@ Every chant recording, one row each: the Anthem's three under
 `public/audio/chants/`, on the website, and every one since in Purify's bucket
 on Cloudflare R2 (1.8, the owner's word of 2026-10-30), named by its address
 there. None is in the apps' bundle, and none since the Anthem's is in the
-repository. **Takedown:** move the recording's `<slug>/<id>` from `live` to
-`pulled` in `public/audio/chants/live.json` and push the website; every app
+repository. **Takedown:** in the admin, Content, Chant recordings, Take down
+(1.9); or by hand, move the recording's `<slug>/<id>` from `live` to
+`pulled` in `data/chants-live.json` and push the website; either way every app
 stops offering it within minutes (`lib/chants/live.ts`), with no store
 release, and the website stops with it. A bucket recording can also be
 deleted from the bucket, which the list does not need. The data test

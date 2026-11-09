@@ -419,7 +419,9 @@ describe("each version of a chant", () => {
 
 describe("the rights and the takedown list", () => {
   const doc = fs.readFileSync(path.join(ROOT, "docs", "licensing", "audio-provenance.md"), "utf8");
-  const live = JSON.parse(fs.readFileSync(path.join(ROOT, "public", "audio", "chants", "live.json"), "utf8")) as {
+  // The committed list (since 1.9 the website serves it less the admin's
+  // takedowns, lib/chants/pulls.ts; the file it replaced was in public/).
+  const live = JSON.parse(fs.readFileSync(path.join(ROOT, "data", "chants-live.json"), "utf8")) as {
     live: string[];
     pulled: string[];
   };

@@ -86,6 +86,10 @@ const STASH_PATHS = [
   // apps have no server, and the hook needs the service role, which a
   // bundle must never carry.
   ["instrumentation.ts"],
+  // The chant takedown list's route (admin A7): the website serves it, with
+  // the admin's switches applied; the apps ask the website for it, as they
+  // asked for the file it replaced.
+  ["app", "audio"],
   // The owner dashboard. As of v4 its content lives inside the admin shell as
   // three tabs behind an Operations | Owner switch, and this tree holds a
   // redirect to it plus the standalone preview.

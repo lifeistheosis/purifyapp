@@ -7,12 +7,14 @@ import { chantMediaUrl, isStreamed, LIVE_LIST_PATH, variantRef } from "./media";
 /**
  * Which recordings may play now (1.7).
  *
- * public/audio/chants/live.json, on the website, lists every streamed
+ * /audio/chants/live.json, on the website, lists every streamed
  * recording that may play ("live") and every recording taken down
  * ("pulled", the bundled ones too). It is the takedown path the owner's
  * decision of 2026-10-16 asked for: moving one "<slug>/<id>" from live to
  * pulled and pushing the website stops that recording in every installed
- * app at once, with no store release.
+ * app at once, with no store release. From 1.9 the list is the committed
+ * one (data/chants-live.json) less every recording switched off in the
+ * admin (lib/chants/pulls.ts), so a takedown needs no push at all.
  *
  * It fails closed. A streamed recording plays only once the list has been
  * read and names it, so a reader with no signal sees "Plays with a

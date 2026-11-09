@@ -22,7 +22,7 @@
 // FFMPEG=Homebase/projects/purify-ads/node_modules/@remotion/compositor-win32-x64-msvc/ffmpeg.exe).
 //
 // The recording still needs its row in docs/licensing/audio-provenance.md and
-// its line in public/audio/chants/live.json before it plays anywhere
+// its line in data/chants-live.json before it plays anywhere
 // (docs/chants/ADDING-A-CHANT.md).
 import { execFileSync, spawnSync } from "node:child_process";
 import fs from "node:fs";
