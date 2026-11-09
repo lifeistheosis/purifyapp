@@ -23,7 +23,13 @@ export function savedVersesOf(bookmarks: readonly Bookmark[]): SavedVerse[] {
   );
 }
 
-export type Entry = { box: number; due: string };
+/**
+ * A verse's place in the boxes, and when it comes back. `at` (1.9) is when it
+ * was last answered, Date.now(), so the newer answer wins when the schedule
+ * comes from another device (lib/sync/kept.ts); an answer from before 1.9
+ * has none, and is older than one that has.
+ */
+export type Entry = { box: number; due: string; at?: number };
 /**
  * What is kept on the device. `answeredKey` (1.9) is the verse answered on
  * `answeredOn`, so the home screen widget can say when that verse comes back
@@ -73,7 +79,7 @@ function load(): Store {
   }
 }
 
-function save(store: Store): void {
+function save(store: Store, source?: "sync"): void {
   try {
     window.localStorage.setItem(KEY, JSON.stringify(store));
   } catch {
@@ -81,10 +87,20 @@ function save(store: Store): void {
     return;
   }
   try {
-    window.dispatchEvent?.(new Event(REMEMBER_EVENT));
+    window.dispatchEvent?.(new CustomEvent(REMEMBER_EVENT, source ? { detail: { source } } : undefined));
   } catch {
     /* nobody listening is no loss: the widget is handed it at the next open */
   }
+}
+
+/**
+ * Put in place the schedule the sync merged (lib/sync/kept.ts): the answers,
+ * and the day's answer, with the words kept on this device left as they are.
+ * Marked as the sync's, so it is not sent back.
+ */
+export function writeScheduleFromSync(next: Pick<RememberStore, "entries" | "answeredOn" | "answeredKey">): void {
+  const store = load();
+  save({ ...store, entries: next.entries, answeredOn: next.answeredOn, answeredKey: next.answeredKey }, "sync");
 }
 
 /** Everything kept, in one read: for the home screen widget (lib/widget/remember.ts). */
@@ -124,7 +140,7 @@ export function answer(key: string, knew: boolean, today: string): Entry {
   const box = store.entries[key]?.box ?? 0;
   const next = knew ? Math.min(box + 1, INTERVALS.length + 1) : 1;
   const wait = next > INTERVALS.length ? KNOWN_EVERY : INTERVALS[next - 1];
-  const entry = { box: next, due: addDays(today, wait) };
+  const entry = { box: next, due: addDays(today, wait), at: Date.now() };
   store.entries[key] = entry;
   store.answeredOn = today;
   store.answeredKey = key;

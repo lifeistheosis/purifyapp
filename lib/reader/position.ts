@@ -19,6 +19,12 @@
 // top, as it was. savedAt is a Date.now() epoch, for whichever copy is newer.
 
 const STORAGE_PREFIX = "purify.reader.position.";
+/**
+ * When each work's place was let go here, its last paragraph read (1.9), so
+ * a device that still keeps the place does not hand it back
+ * (lib/sync/kept.ts). Not under STORAGE_PREFIX: it is no work's place.
+ */
+const CLEARED_KEY = "purify.reader.positions.cleared";
 
 export type ReaderPosition = {
   sectionN: number;
@@ -162,6 +168,72 @@ export function clearPosition(saintSlug: string, workSlug: string): void {
   if (!hasWindow()) return;
   try {
     localStorage.removeItem(keyFor(saintSlug, workSlug));
+    writeCleared({ ...readClearedPositions(), [`${saintSlug}/${workSlug}`]: Date.now() });
+  } catch {
+    /* ignore */
+  }
+}
+
+/** When each work's place was let go here, by "<saint>/<work>". */
+export function readClearedPositions(): Record<string, number> {
+  if (!hasWindow()) return {};
+  try {
+    const parsed = JSON.parse(localStorage.getItem(CLEARED_KEY) ?? "{}") as unknown;
+    if (!parsed || typeof parsed !== "object") return {};
+    const out: Record<string, number> = {};
+    for (const [key, at] of Object.entries(parsed)) if (typeof at === "number" && Number.isFinite(at)) out[key] = at;
+    return out;
+  } catch {
+    return {};
+  }
+}
+
+function writeCleared(cleared: Record<string, number>): void {
+  try {
+    localStorage.setItem(CLEARED_KEY, JSON.stringify(cleared));
+  } catch {
+    /* ignore */
+  }
+}
+
+/** Every work's place kept here, by "<saint>/<work>" (lib/sync/kept.ts). */
+export function readAllPositions(): Record<string, ReaderPosition> {
+  if (!hasWindow()) return {};
+  const out: Record<string, ReaderPosition> = {};
+  try {
+    for (let i = 0; i < localStorage.length; i += 1) {
+      const key = localStorage.key(i);
+      if (!key?.startsWith(STORAGE_PREFIX)) continue;
+      const work = key.slice(STORAGE_PREFIX.length);
+      const [saintSlug, workSlug, ...rest] = work.split("/");
+      if (!saintSlug || !workSlug || rest.length) continue;
+      const place = loadPosition(saintSlug, workSlug);
+      if (place) out[work] = place;
+    }
+  } catch {
+    /* what was read so far */
+  }
+  return out;
+}
+
+/**
+ * Put in place what another device kept (lib/sync/kept.ts): a place newer
+ * than this device's is taken, and a place let go there after this device
+ * last kept it is let go here.
+ */
+export function writePositionsFromSync(works: Record<string, ReaderPosition>, cleared: Record<string, number>): void {
+  if (!hasWindow()) return;
+  const here = readAllPositions();
+  try {
+    for (const [work, place] of Object.entries(works)) {
+      if (!(place.savedAt > (here[work]?.savedAt ?? -1))) continue;
+      localStorage.setItem(`${STORAGE_PREFIX}${work}`, JSON.stringify(place));
+    }
+    for (const [work, at] of Object.entries(cleared)) {
+      const kept = works[work] && works[work].savedAt > (here[work]?.savedAt ?? -1) ? works[work] : here[work];
+      if (kept && at >= kept.savedAt) localStorage.removeItem(`${STORAGE_PREFIX}${work}`);
+    }
+    writeCleared({ ...readClearedPositions(), ...cleared });
   } catch {
     /* ignore */
   }

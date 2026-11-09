@@ -13,7 +13,11 @@ import {
 import { syncFlorilegia, pushAllLocalFlorilegia } from "@/lib/sync/florilegium";
 import { pushHighlightNames, syncHighlightNames } from "@/lib/sync/highlightNames";
 import { pushJournal, syncJournal } from "@/lib/sync/journal";
+import { READER_PREFS_EVENT, stampReadingChange, syncKept, type KeptSlice } from "@/lib/sync/kept";
 import { NAMES_EVENT } from "@/lib/bible/highlightColors";
+import { subscribeLastRead } from "@/lib/bible/lastRead";
+import { PLANS_EVENT } from "@/lib/plans/progress";
+import { REMEMBER_EVENT } from "@/lib/remember/schedule";
 import { carryMovedPlaces } from "@/lib/saints/carryMoves";
 
 /**
@@ -31,6 +35,12 @@ import { carryMovedPlaces } from "@/lib/saints/carryMoves";
  * What each highlight colour means travels too (1.7.1,
  * lib/sync/highlightNames.ts): the newer copy wins on the first load, and a
  * name given or changed here is sent after a pause.
+ *
+ * And from 1.9 the rest of what a reader keeps (lib/sync/kept.ts): plan
+ * progress, Remember the verse, the reading places, the palette and the
+ * reader's settings. Each is exchanged after its own change; the places,
+ * which move with every scroll, a minute after the last move and whenever
+ * the app goes to the background.
  */
 export function SyncBridge() {
   const signedInRef = useRef<boolean | null>(null);
@@ -39,6 +49,9 @@ export function SyncBridge() {
   const florilegiumTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const journalTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const namesTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const keptTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const placesTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const keptSlices = useRef<Set<KeptSlice>>(new Set());
   const pendingKeys = useRef<Set<string>>(new Set());
   const sweep = useRef(false);
 
@@ -75,6 +88,7 @@ export function SyncBridge() {
       syncFlorilegia().catch(() => {});
       syncJournal().catch(() => {});
       syncHighlightNames().catch(() => {});
+      syncKept().catch(() => {});
     }
 
     function onBookmark() {
@@ -128,11 +142,52 @@ export function SyncBridge() {
       }, 1500);
     }
 
+    // What lib/sync/kept.ts carries. A change the sync itself put here says
+    // so (detail.source "sync") and is not sent back.
+    const fromSync = (e: Event) => ((e as CustomEvent).detail as { source?: string } | undefined)?.source === "sync";
+    function sendKept(slice: KeptSlice) {
+      if (!signedInRef.current) return;
+      keptSlices.current.add(slice);
+      if (keptTimer.current) clearTimeout(keptTimer.current);
+      keptTimer.current = setTimeout(() => {
+        const slices = [...keptSlices.current];
+        keptSlices.current.clear();
+        syncKept(slices).catch(() => {});
+      }, 1500);
+    }
+    function onPlans(e: Event) {
+      if (!fromSync(e)) sendKept("plans");
+    }
+    function onRemember(e: Event) {
+      if (!fromSync(e)) sendKept("remember");
+    }
+    function onReaderPrefs(e: Event) {
+      if (fromSync(e)) return;
+      stampReadingChange();
+      sendKept("reading");
+    }
+    function onPlace() {
+      if (!signedInRef.current) return;
+      if (placesTimer.current) clearTimeout(placesTimer.current);
+      placesTimer.current = setTimeout(() => sendKept("places"), 60_000);
+    }
+    function onHidden() {
+      if (document.visibilityState !== "hidden" || !signedInRef.current) return;
+      if (placesTimer.current) clearTimeout(placesTimer.current);
+      placesTimer.current = null;
+      syncKept(["places"]).catch(() => {});
+    }
+    const stopPlaces = subscribeLastRead(onPlace);
+
     window.addEventListener("purify:bookmark", onBookmark);
     window.addEventListener("purify:annotation", onAnnotation);
     window.addEventListener("purify:florilegium", onFlorilegium);
     window.addEventListener("purify:journal", onJournal);
     window.addEventListener(NAMES_EVENT, onNames);
+    window.addEventListener(PLANS_EVENT, onPlans);
+    window.addEventListener(REMEMBER_EVENT, onRemember);
+    window.addEventListener(READER_PREFS_EVENT, onReaderPrefs);
+    document.addEventListener("visibilitychange", onHidden);
 
     return () => {
       // No `cancelled` flag any more: the session read is synchronous, so
@@ -142,11 +197,18 @@ export function SyncBridge() {
       window.removeEventListener("purify:florilegium", onFlorilegium);
       window.removeEventListener("purify:journal", onJournal);
       window.removeEventListener(NAMES_EVENT, onNames);
+      window.removeEventListener(PLANS_EVENT, onPlans);
+      window.removeEventListener(REMEMBER_EVENT, onRemember);
+      window.removeEventListener(READER_PREFS_EVENT, onReaderPrefs);
+      document.removeEventListener("visibilitychange", onHidden);
+      stopPlaces();
       if (bookmarkTimer.current) clearTimeout(bookmarkTimer.current);
       if (annotationTimer.current) clearTimeout(annotationTimer.current);
       if (florilegiumTimer.current) clearTimeout(florilegiumTimer.current);
       if (journalTimer.current) clearTimeout(journalTimer.current);
       if (namesTimer.current) clearTimeout(namesTimer.current);
+      if (keptTimer.current) clearTimeout(keptTimer.current);
+      if (placesTimer.current) clearTimeout(placesTimer.current);
     };
   }, []);
 

@@ -4,6 +4,7 @@ import { useEffect, useState, useSyncExternalStore } from "react";
 import { syncBookmarks } from "@/lib/sync/bookmarks";
 import { syncAnnotations } from "@/lib/sync/annotations";
 import { syncJournal } from "@/lib/sync/journal";
+import { syncKept } from "@/lib/sync/kept";
 import { useTranslate } from "@/components/i18n/MessagesProvider";
 import { useUpgradeModal } from "@/components/billing/UpgradeModal";
 import { getClientEntitlements } from "@/lib/entitlements/client";
@@ -141,7 +142,7 @@ export function ProfileSyncStatus() {
     try {
       // Each pushes its removals and changes, pulls, and pushes what is newer
       // here (lib/sync/*), the journal's entries among them.
-      await Promise.all([syncBookmarks(), syncAnnotations(), syncJournal()]);
+      await Promise.all([syncBookmarks(), syncAnnotations(), syncJournal(), syncKept()]);
       const stamp = new Date().toISOString();
       window.localStorage.setItem(LAST_KEY, stamp);
       window.localStorage.removeItem(ERR_KEY);

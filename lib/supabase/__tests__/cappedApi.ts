@@ -12,7 +12,7 @@
 // and delete() change the rows they are given, so a test can see what was
 // written; a write is not capped, as it is not on the real API. upsert() is
 // accepted and forgotten unless `upserts` is set, when it writes by its
-// conflict column (`id` by default), and with ignoreDuplicates adds only rows
+// conflict columns (`id` by default, or several, "user_id,slice"), and with ignoreDuplicates adds only rows
 // whose `locator` and `kind` are new (the sync tables' unique index).
 
 import type { SupabaseClient } from "@supabase/supabase-js";
@@ -147,8 +147,9 @@ export function cappedApi(
             if (!same) source.push({ id: `${table}-${++made}`, ...r });
             continue;
           }
-          const col = upsertOpts?.onConflict ?? "id";
-          const at = source.findIndex((x) => x[col] === r[col]);
+          // One column, or several ("user_id,slice"), as the API takes them.
+          const cols = (upsertOpts?.onConflict ?? "id").split(",").map((c) => c.trim());
+          const at = source.findIndex((x) => cols.every((col) => x[col] === r[col]));
           if (at >= 0) source[at] = { ...source[at], ...r };
           else source.push({ ...r });
         }

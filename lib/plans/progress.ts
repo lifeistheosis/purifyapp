@@ -20,11 +20,27 @@ export type PlanProgress = {
   startedOn: DayKey;
   /** Day index (0-based) to the civil day it was read on. */
   done: Record<string, DayKey>;
+  /**
+   * When the plan last changed on this device, Date.now() (1.9), so the
+   * newer copy wins when progress comes from another device
+   * (lib/sync/kept.ts). Progress kept before 1.9 has none, and is older than
+   * anything that has.
+   */
+  at?: number;
 };
 export type PlansState = Record<string, PlanProgress>;
 
 const KEY = "purify:plans";
 const EVENT = "purify:plans";
+/**
+ * When each plan was last started over on this device (1.9), so a plan
+ * started over here is not handed back by another device that still has the
+ * old progress.
+ */
+const RESET_KEY = "purify:plans.reset";
+
+/** The window event a change to the plans sends; `detail.source` is "sync" for what another device sent. */
+export const PLANS_EVENT = EVENT;
 
 function read(): PlansState {
   try {
@@ -36,24 +52,57 @@ function read(): PlansState {
   }
 }
 
-function write(state: PlansState): void {
+function write(state: PlansState, source?: "sync"): void {
   try {
     window.localStorage.setItem(KEY, JSON.stringify(state));
-    window.dispatchEvent(new CustomEvent(EVENT));
+    window.dispatchEvent(new CustomEvent(EVENT, source ? { detail: { source } } : undefined));
   } catch {
     /* storage blocked: the plan simply does not remember */
   }
 }
 
+/** When each plan was last started over here. */
+export function readPlanResets(): Record<string, number> {
+  try {
+    const parsed = JSON.parse(window.localStorage.getItem(RESET_KEY) ?? "{}") as unknown;
+    if (!parsed || typeof parsed !== "object") return {};
+    const out: Record<string, number> = {};
+    for (const [id, at] of Object.entries(parsed)) if (typeof at === "number" && Number.isFinite(at)) out[id] = at;
+    return out;
+  } catch {
+    return {};
+  }
+}
+
+function writeResets(resets: Record<string, number>): void {
+  try {
+    window.localStorage.setItem(RESET_KEY, JSON.stringify(resets));
+  } catch {
+    /* kept for as long as the page is */
+  }
+}
+
 export function startPlan(id: string, today: DayKey = todayKey()): void {
   const state = read();
-  if (!state[id]) write({ ...state, [id]: { startedOn: today, done: {} } });
+  if (!state[id]) write({ ...state, [id]: { startedOn: today, done: {}, at: Date.now() } });
 }
 
 export function resetPlan(id: string): void {
   const state = read();
   delete state[id];
+  writeResets({ ...readPlanResets(), [id]: Date.now() });
   write(state);
+}
+
+/** Everything a plan keeps, for another device: the progress and the plans started over (lib/sync/kept.ts). */
+export function readPlansForSync(): { plans: PlansState; resets: Record<string, number> } {
+  return { plans: read(), resets: readPlanResets() };
+}
+
+/** Put in place what the sync merged; marked as the sync's, so it is not sent back. */
+export function writePlansFromSync(plans: PlansState, resets: Record<string, number>): void {
+  writeResets(resets);
+  write(plans, "sync");
 }
 
 /** Mark a day read (today), and keep today under the plan's strand. */
@@ -61,7 +110,7 @@ export function completeDay(plan: ReadingPlan, index: number, today: DayKey = to
   const state = read();
   const current = state[plan.id] ?? { startedOn: today, done: {} };
   const done = { ...current.done, [String(index)]: today };
-  write({ ...state, [plan.id]: { ...current, done } });
+  write({ ...state, [plan.id]: { ...current, done, at: Date.now() } });
   markKept(strandKey(plan.strand), today);
   // The whole plan read: kept once more under `plan:<id>`, which syncs with
   // the rest of the day marks into prayer_completions, and is what the
@@ -80,7 +129,7 @@ export function uncompleteDay(planId: string, index: number): void {
   if (!current) return;
   const done = { ...current.done };
   delete done[String(index)];
-  write({ ...state, [planId]: { ...current, done } });
+  write({ ...state, [planId]: { ...current, done, at: Date.now() } });
 }
 
 /** The first day not yet read, or null when the plan is finished. */

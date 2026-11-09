@@ -71,7 +71,7 @@ describe("Remember a verse", () => {
     }
     expect(waits).toEqual([...INTERVALS, KNOWN_EVERY]);
     const again = answer(john.key, false, day);
-    expect(again).toEqual({ box: 1, due: addDays(day, 1) });
+    expect(again).toEqual({ box: 1, due: addDays(day, 1), at: expect.any(Number) });
   });
 
   it("keeps a verse's words for the card", () => {

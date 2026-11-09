@@ -442,7 +442,8 @@
    "decided": "2026-11-06",
    "needsDesign": false,
    "version": null,
-   "outcome": null
+   "outcome": null,
+   "note": "2026-11-09: his answer asked for the shape (recommended: Candlelight's soft light takes the season's colour, the page unchanged; or a full palette per season). Not drawn until he picks a direction."
   },
   {
    "id": "s2-04",
@@ -773,7 +774,8 @@
    "decided": "2026-11-06",
    "needsDesign": false,
    "version": null,
-   "outcome": null
+   "outcome": null,
+   "note": "2026-11-09, the data built (eb93a66): the app hands both phones' widgets the next seven days' verse to remember at its step, the reference in the app's language and the card's own line (lib/widget/remember.ts, the `remember` key on both plugins). The faces wait on his answer: its own widget (recommended) or a look of the Verse one, and a line for a reader with no verse saved."
   },
   {
    "id": "s4-08",
@@ -924,7 +926,7 @@
    "needsDesign": false,
    "version": null,
    "outcome": null,
-   "note": "Part built 2026-11-07: \"Last synced\" on the Florilegium, stamped only when the server confirms; no device count exists to show"
+   "note": "Part built 2026-11-07: \"Last synced\" on the Florilegium, stamped only when the server confirms; no device count exists to show. 2026-11-09: the account's sync line (components/profile/ProfileSyncStatus.tsx) says when the device last synced, and its Sync now carries the new slices too (row 29). A device count is still kept nowhere; it would need the devices recorded on the server, so a privacy line and his word."
   },
   {
    "id": "s5-09",
@@ -937,7 +939,8 @@
    "decided": "2026-11-06",
    "needsDesign": false,
    "version": null,
-   "outcome": null
+   "outcome": null,
+   "note": "Built 2026-11-09, dark until his SQL (docs/1.9-build/sql/user-kept.sql) and the privacy page's line: plan progress, Remember the verse, the reading places (the Bible's and every long work's), the palette and the reader's settings travel between a Plus reader's devices, item by item, the newer of each winning (lib/sync/kept.ts, lib/sync/keptMerge.ts, lib/sync/__tests__/kept.test.ts). A plan started over and a work finished leave their time, so an older copy elsewhere does not bring them back. The verses' words stay on the device."
   },
   {
    "id": "s5-10",
@@ -1017,7 +1020,7 @@
    "needsDesign": false,
    "version": null,
    "outcome": null,
-   "note": "Looked at 2026-11-07, not built. It exists in part: \"On this day in Orthodox history\" (components/history/OnThisDayHistory.tsx) shows on the Prayers page's today, not on Today, and only when an event carries an exact calendar date; 7 events do, so it shows about 7 days a year. Moving it to Today with its artwork is small; what would make it worth the place is more events dated exactly, from their sources (the registry never invents a date), which is research for the history pass (s6-01)"
+   "note": "Looked at 2026-11-07, not built. It exists in part: \"On this day in Orthodox history\" (components/history/OnThisDayHistory.tsx) shows on the Prayers page's today, not on Today, and only when an event carries an exact calendar date; 7 events do, so it shows about 7 days a year. Moving it to Today with its artwork is small; what would make it worth the place is more events dated exactly, from their sources (the registry never invents a date), which is research for the history pass (s6-01) 2026-11-09: his answer asked for its place on Today (recommended: one card under the day's saints, with the event's picture, on the days an event falls on exactly)."
   },
   {
    "id": "s6-06",
@@ -1043,7 +1046,8 @@
    "decided": "2026-11-06",
    "needsDesign": false,
    "version": null,
-   "outcome": null
+   "outcome": null,
+   "note": "2026-11-09, the data built (99c97b6): lib/councils/creed.ts, the Creed of 381 in the twelve articles the catechisms number, each piece marked with the council whose Symbol first has it, held by lib/councils/__tests__/creed.test.ts word for word to the app's copies of both Symbols. Where it shows waits on his answer (recommended: a card at the head of Theology, opening the twelve articles, the words added at Constantinople lit)."
   },
   {
    "id": "s6-08",
