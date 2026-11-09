@@ -10,6 +10,11 @@ import type { StreakView } from "@/lib/streak/useStreak";
 
 import type { WidgetEntries } from "./bridge";
 import type { WidgetLabels } from "./labels";
+import { rememberEntry, type RememberEntry } from "./remember";
+
+// Remember the verse's faces, worked out where the rest of the widget state
+// is, so the sync loads one chunk at its first push.
+export { rememberFaces } from "./remember";
 
 /**
  * What the app hands the home screen widgets, worked out from what the app
@@ -226,6 +231,8 @@ export type WidgetState = {
   patron: PatronFacts | null | undefined;
   /** The packs' word on the next update, once they carry one. */
   update?: unknown;
+  /** Remember the verse's faces (lib/widget/remember.ts, rememberFaces): undefined leaves the phone's as it is. */
+  remember?: RememberEntry;
 };
 
 /** Every entry the plugin takes, from the app's state. */
@@ -237,5 +244,6 @@ export function widgetEntries(state: WidgetState): WidgetEntries {
     prayed: realDay(state.today) ? prayedEntry(state.prayed.morning, state.prayed.evening, state.today) : undefined,
     patron: patronEntry(state.patron),
     update: updateEntry(state.update ?? nextUpdate),
+    remember: rememberEntry(state.remember),
   };
 }

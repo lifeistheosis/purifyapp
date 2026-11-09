@@ -5,7 +5,7 @@ import { isNativeClient } from "@/lib/platform/native";
  * the app knows (docs/WIDGETS.md, section 2).
  *
  * Both phones carry a native plugin named "WidgetBridge" with the method
- * update({ entries }). It keeps the six keys below, drops anything else, and
+ * update({ entries }). It keeps the seven keys below, drops anything else, and
  * asks every placed widget to draw again. Android keeps them in its
  * SharedPreferences `PurifyWidget`, the iPhone in the App Group's
  * UserDefaults. On Android the same plugin also answers whether the phone
@@ -30,8 +30,12 @@ import { isNativeClient } from "@/lib/platform/native";
  * an older value can never land after a newer one.
  */
 
-/** The six keys the plugin keeps. Anything else is dropped on the phone. */
-export const WIDGET_KEYS = ["calendarStyle", "labels", "streak", "prayed", "patron", "update"] as const;
+/**
+ * The seven keys the plugin keeps. Anything else is dropped on the phone.
+ * `remember` came in 1.9: a phone with a build from before it drops it, and
+ * its widgets go on as they were.
+ */
+export const WIDGET_KEYS = ["calendarStyle", "labels", "streak", "prayed", "patron", "update", "remember"] as const;
 
 export type WidgetKey = (typeof WIDGET_KEYS)[number];
 

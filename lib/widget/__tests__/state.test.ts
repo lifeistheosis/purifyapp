@@ -243,7 +243,7 @@ describe("the next update", () => {
 describe("every entry at once", () => {
   const facts = patronFacts({ kind: "saint", slug: "nicholas-the-wonderworker" }, TODAY, "old");
 
-  it("is the six keys of the contract, each a string the plugin keeps", () => {
+  it("is the seven keys of the contract, each a string the plugin keeps", () => {
     const entries = widgetEntries({
       today: TODAY,
       calendarStyle: "old",
@@ -251,6 +251,7 @@ describe("every entry at once", () => {
       streak: VIEW,
       prayed: { morning: [TODAY], evening: [] },
       patron: facts,
+      remember: { none: true },
     });
     expect(Object.keys(entries).sort()).toEqual([...WIDGET_KEYS].sort());
     for (const value of Object.values(entries)) expect(typeof value).toBe("string");
@@ -259,6 +260,7 @@ describe("every entry at once", () => {
     expect(JSON.parse(entries.prayed!)).toEqual({ morning: TODAY, evening: null });
     expect(JSON.parse(entries.patron!).nameDay).toBe("2026-12-19");
     expect(JSON.parse(entries.update!)).toEqual({ name: null, version: null, date: null });
+    expect(JSON.parse(entries.remember!)).toEqual({ none: true });
   });
 
   it("leaves what it does not know as the phone has it, and forgets a patron no longer there", () => {
@@ -273,6 +275,7 @@ describe("every entry at once", () => {
     expect(entries.labels).toBeUndefined();
     expect(entries.streak).toBeUndefined();
     expect(entries.patron).toBeUndefined();
+    expect(entries.remember).toBeUndefined();
     expect(widgetEntries({ today: TODAY, calendarStyle: "new", labels: null, streak: null, prayed: { morning: [], evening: [] }, patron: null }).patron).toBeNull();
   });
 });

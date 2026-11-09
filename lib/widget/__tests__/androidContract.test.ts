@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest";
 import fs from "node:fs";
 import path from "node:path";
 
+import { WIDGET_KEYS } from "../bridge";
 import { buildDayTable } from "../dayTable";
 import { patronEntry, patronFacts } from "../state";
 
@@ -180,11 +181,16 @@ describe("android widgets: the contract", () => {
     expect(num("NARROWEST_DP")).toBe(Number(info.match(/android:minResizeWidth="(\d+)dp"/)?.[1]));
   });
 
-  it("stores exactly the six keys the app may hand over", () => {
+  it("stores exactly the keys the app may hand over, the same on both phones", () => {
     const plugin = read(path.join(JAVA_DIR, "widget/WidgetBridgePlugin.java"));
     const listed = plugin.match(/Arrays\.asList\(([\s\S]*?)\)\)/)?.[1] ?? "";
     const keys = [...listed.matchAll(/"([a-zA-Z]+)"/g)].map((m) => m[1]).sort();
-    expect(keys).toEqual(["calendarStyle", "labels", "patron", "prayed", "streak", "update"]);
+    expect(keys).toEqual(["calendarStyle", "labels", "patron", "prayed", "remember", "streak", "update"]);
+    expect(keys).toEqual([...WIDGET_KEYS].sort());
+    // The iPhone's plugin keeps the same seven (ios/App/App/WidgetBridgePlugin.swift).
+    const swift = read(path.join(ROOT, "ios/App/App/WidgetBridgePlugin.swift"));
+    const swiftListed = swift.match(/static let keys: Set<String> = \[([^\]]*)\]/)?.[1] ?? "";
+    expect([...swiftListed.matchAll(/"([a-zA-Z]+)"/g)].map((m) => m[1]).sort()).toEqual(keys);
     expect(plugin).toContain('@CapacitorPlugin(name = "WidgetBridge")');
     expect(read(path.join(JAVA_DIR, "MainActivity.java"))).toContain("registerPlugin(WidgetBridgePlugin.class)");
   });

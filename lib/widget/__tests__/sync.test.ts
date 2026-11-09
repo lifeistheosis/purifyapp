@@ -102,6 +102,16 @@ describe("when the sync pushes", () => {
     expect(sync).toMatch(/document\.removeEventListener\("visibilitychange", /);
   });
 
+  it("pushes again when Remember the verse is answered, or a verse is saved (1.9)", () => {
+    expect(sync).toMatch(/window\.addEventListener\(REMEMBER_EVENT, onChange\)/);
+    expect(sync).toMatch(/window\.removeEventListener\(REMEMBER_EVENT, onChange\)/);
+    expect(sync).toMatch(/const \{ bookmarks \} = useBookmarks\(\);/);
+    expect(sync).toMatch(/saved\.current = bookmarks;\s*changed\.current\?\.\(\);\s*\}, \[bookmarks\]\);/);
+    // The faces are worked out in the widget code, loaded at the first push.
+    expect(sync).toContain("state.rememberFaces({");
+    expect(eager("lib/remember/schedule.ts")).toEqual([]);
+  });
+
   it("pushes again when the streak or the language changes", () => {
     expect(sync).toMatch(/const \{ locale, t, tn \} = useTranslate\(\);/);
     expect(sync).toMatch(/const streak = useStreak\(\);/);

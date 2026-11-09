@@ -15,9 +15,9 @@ import { useState } from "react";
 
 import type { TryProps } from "@/components/billing/PlusTry";
 import { useTranslate } from "@/components/i18n/MessagesProvider";
-import { RememberCardView, backWords } from "@/components/today/RememberCard";
+import { RememberCardView } from "@/components/today/RememberCard";
 import { TRY_CHAPTER, TRY_REMEMBER_VERSE } from "@/lib/premium/plusTry";
-import { INTERVALS, addDays, dayOf, type Entry } from "@/lib/remember/schedule";
+import { INTERVALS, addDays, backWords, dayOf, type Entry } from "@/lib/remember/schedule";
 
 import { johnVerse, useJohnReference } from "./TryBible";
 import { ExampleTag, TryWindow } from "./TryKit";

@@ -37,16 +37,15 @@ import { cn } from "@/lib/cn";
 import { usePlusFeatures } from "@/lib/entitlements/usePlusFeatures";
 import { stepWords, type BlankedWord } from "@/lib/remember/blanks";
 import {
-  INTERVALS,
-  addDays,
   answer,
+  backWords,
   boxOf,
   dayOf,
   dueVerse,
   keepText,
+  savedVersesOf,
   stepOf,
   textOf,
-  verseKey,
   type Entry,
   type RememberStep,
   type SavedVerse,
@@ -76,15 +75,7 @@ export function RememberCard({ className }: { className?: string }) {
   const [answered, setAnswered] = useState<{ entry: Entry; knew: boolean } | null>(null);
   const [fetched, setFetched] = useState<{ key: string; text: string | null } | null>(null);
 
-  const saved = useMemo<SavedVerse[]>(
-    () =>
-      bookmarks.flatMap((b) =>
-        b.kind === "bible-verse"
-          ? [{ key: verseKey(b.book, b.chapter, b.verse), book: b.book, chapter: b.chapter, verse: b.verse, label: b.label, addedAt: b.addedAt }]
-          : [],
-      ),
-    [bookmarks],
-  );
+  const saved = useMemo<SavedVerse[]>(() => savedVersesOf(bookmarks), [bookmarks]);
   const due = useMemo(() => (client && !answered ? dueVerse(saved, today) : null), [client, answered, saved, today]);
   const kept = due ? textOf(due.key) : null;
   // 1.9: missing words, first letters, then from memory, as the verse moves up its boxes.
@@ -135,13 +126,6 @@ export function RememberCard({ className }: { className?: string }) {
       onLocked={() => upgrade.open("remember")}
     />
   );
-}
-
-/** When an answered verse comes back, in the reader's language: tomorrow, in some days, or once a month once known. */
-export function backWords(t: (key: string, values?: Record<string, string | number>) => string, entry: Entry, today: string): string {
-  if (entry.box > INTERVALS.length) return t("remember.known");
-  if (entry.due === addDays(today, 1)) return t("remember.backTomorrow");
-  return t("remember.backIn", { count: Math.round((Date.parse(entry.due) - Date.parse(today)) / 86_400_000) });
 }
 
 /**

@@ -6,8 +6,9 @@
 //
 // A widget is drawn by the phone and knows only what the app hands it: the
 // reader's calendar, their streak, the prayers they kept, their patron saint,
-// the next update, and every word in their language. This hands those over,
-// through lib/widget/bridge.ts, which sends only what changed.
+// the next update, the verse to remember (1.9), and every word in their
+// language. This hands those over, through lib/widget/bridge.ts, which sends
+// only what changed.
 //
 // When:
 //   - a few seconds after the app opens, once its language is on the screen.
@@ -15,7 +16,9 @@
 //     and nothing here is something a reader is waiting for (PackBridge
 //     waits for the same reason);
 //   - when the streak store changes, a prayer is finished, the calendar
-//     setting or the language changes;
+//     setting or the language changes, a verse is saved or taken off the
+//     bookmarks, or Remember the verse is answered (lib/remember/schedule.ts,
+//     REMEMBER_EVENT);
 //   - when the reader saves a patron saint in the app, in You or on the
 //     Community profile (lib/profile/patronEvent.ts), with the saint saved;
 //   - when the app comes back to the front, which is also when the day may
@@ -36,12 +39,14 @@ import { useEffect, useRef } from "react";
 
 import { useTranslate } from "@/components/i18n/MessagesProvider";
 import { apiFetch } from "@/lib/api/client";
+import { useBookmarks, type Bookmark } from "@/lib/bookmarks";
 import { CALENDAR_STYLE_EVENT, readCalendarStyleDefault } from "@/lib/calendar/styleDefault";
 import { whenLanguageSettled } from "@/lib/i18n/launchLanguage";
 import { savedPacks, subscribePacks } from "@/lib/packs/store";
 import { useIsNative } from "@/lib/platform/native";
 import { PRAYER_EVENT, readPrayedDates } from "@/lib/prayers/storage";
 import { PATRON_EVENT, type PatronChange } from "@/lib/profile/patronEvent";
+import { REMEMBER_EVENT, rememberStore, savedVersesOf } from "@/lib/remember/schedule";
 import { todayKey } from "@/lib/rhythm/dayKey";
 import { useStreak, type StreakView } from "@/lib/streak/useStreak";
 import type { PatronAnswer } from "@/lib/widget/state";
@@ -69,7 +74,9 @@ export function WidgetBridgeSync() {
 function WidgetSync() {
   const { locale, t, tn } = useTranslate();
   const streak = useStreak();
+  const { bookmarks } = useBookmarks();
   const latest = useRef<{ words: Words; streak: StreakView } | null>(null);
+  const saved = useRef<readonly Bookmark[]>(bookmarks);
   const changed = useRef<(() => void) | null>(null);
 
   // What the screens know, kept for the next push. The words change with the
@@ -78,6 +85,12 @@ function WidgetSync() {
     latest.current = { words: { locale, t, tn }, streak };
     changed.current?.();
   }, [locale, t, tn, streak]);
+
+  // The saved verses, which Remember the verse brings back (1.9).
+  useEffect(() => {
+    saved.current = bookmarks;
+    changed.current?.();
+  }, [bookmarks]);
 
   useEffect(() => {
     let alive = true;
@@ -140,6 +153,12 @@ function WidgetSync() {
         if (!alive) return;
         const today = todayKey();
         const style = readCalendarStyleDefault();
+        const remember = state.rememberFaces({
+          saved: savedVersesOf(saved.current),
+          store: rememberStore(),
+          today,
+          t: words.t,
+        });
         const facts = state.patronFacts(patron?.answer ?? { kind: "unknown" }, today, style);
         const labels = widgetLabels({
           ...words,
@@ -161,6 +180,7 @@ function WidgetSync() {
             // date set or moved on the website reaches the widgets without a
             // store build; the committed file otherwise.
             update: savedPacks()?.packs.release?.next,
+            remember,
           }),
         );
       } catch {
@@ -204,6 +224,7 @@ function WidgetSync() {
     }, SETTLE_MS);
     window.addEventListener(PRAYER_EVENT, onChange);
     window.addEventListener(CALENDAR_STYLE_EVENT, onChange);
+    window.addEventListener(REMEMBER_EVENT, onChange);
     window.addEventListener(PATRON_EVENT, onPatron);
     const stopPacks = subscribePacks(onChange);
     document.addEventListener("visibilitychange", onVisible);
@@ -215,6 +236,7 @@ function WidgetSync() {
       window.clearTimeout(timer);
       window.removeEventListener(PRAYER_EVENT, onChange);
       window.removeEventListener(CALENDAR_STYLE_EVENT, onChange);
+      window.removeEventListener(REMEMBER_EVENT, onChange);
       window.removeEventListener(PATRON_EVENT, onPatron);
       stopPacks();
       document.removeEventListener("visibilitychange", onVisible);

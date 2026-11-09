@@ -1,13 +1,34 @@
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
 
-import { INTERVALS, KNOWN_EVERY, addDays, answer, dueVerse, firstLetters, hintWords, keepText, textOf, verseKey, type SavedVerse } from "@/lib/remember/schedule";
+import {
+  INTERVALS,
+  KNOWN_EVERY,
+  REMEMBER_EVENT,
+  addDays,
+  answer,
+  dueOn,
+  dueVerse,
+  firstLetters,
+  hintWords,
+  keepText,
+  rememberStore,
+  savedVersesOf,
+  textOf,
+  verseKey,
+  type SavedVerse,
+} from "@/lib/remember/schedule";
 
 const store = new Map<string, string>();
+const events: string[] = [];
 beforeEach(() => {
   store.clear();
+  events.length = 0;
   Object.defineProperty(globalThis, "window", {
     configurable: true,
-    value: { localStorage: { getItem: (k: string) => store.get(k) ?? null, setItem: (k: string, v: string) => void store.set(k, v) } },
+    value: {
+      localStorage: { getItem: (k: string) => store.get(k) ?? null, setItem: (k: string, v: string) => void store.set(k, v) },
+      dispatchEvent: (e: Event) => void events.push(e.type),
+    },
   });
 });
 afterEach(() => {
@@ -88,5 +109,39 @@ describe("Remember a verse", () => {
 
   it("counts days across a month's end", () => {
     expect(addDays("2026-10-30", 2)).toBe("2026-11-01");
+  });
+
+  it("remembers which verse was answered today, for the home screen widget (1.9)", () => {
+    answer(john.key, true, "2026-10-16");
+    expect(rememberStore()).toMatchObject({ answeredOn: "2026-10-16", answeredKey: john.key, entries: { [john.key]: { box: 1, due: "2026-10-17" } } });
+  });
+
+  it("tells the widget each time the schedule or a verse's words change", () => {
+    answer(john.key, false, "2026-10-16");
+    keepText(john.key, "For God so loved the world");
+    expect(events).toEqual([REMEMBER_EVENT, REMEMBER_EVENT]);
+    // Words it already had change nothing, so nothing is said.
+    keepText(john.key, "For God so loved the world");
+    expect(events).toHaveLength(2);
+  });
+
+  it("says which verse a day brings, answered that day or not", () => {
+    answer(john.key, true, "2026-10-16");
+    const { entries } = rememberStore();
+    // dueVerse keeps today for the card's one answer; dueOn looks at the schedule alone.
+    expect(dueVerse([psalm, john], "2026-10-16")).toBeNull();
+    expect(dueOn([psalm, john], entries, "2026-10-16")?.key).toBe(psalm.key);
+    expect(dueOn([psalm, john], entries, "2026-10-17")?.key).toBe(john.key);
+  });
+});
+
+describe("the verses a reader saved", () => {
+  it("are the verses among their bookmarks, nothing else", () => {
+    const base = { id: "a", label: "John 3:16", href: "/bible/john/3#v16", addedAt: 5 };
+    const saved = savedVersesOf([
+      { ...base, kind: "bible-verse", book: "john", bookName: "John", chapter: 3, verse: 16 },
+      { ...base, id: "b", kind: "bible-chapter", book: "john", bookName: "John", chapter: 3, label: "John 3" },
+    ] as Parameters<typeof savedVersesOf>[0]);
+    expect(saved).toEqual([{ key: "john/3/16", book: "john", chapter: 3, verse: 16, label: "John 3:16", addedAt: 5 }]);
   });
 });

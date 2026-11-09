@@ -103,7 +103,7 @@ iPhone: the App Group's UserDefaults, same keys, through the same plugin name.
 
 The plugin has one method on both phones, `update({ entries })`, where
 `entries` maps some of the keys below to string values (JSON already
-stringified). It stores only these six keys, ignores any other, and then
+stringified). It stores only these seven keys, ignores any other, and then
 redraws every placed widget. The app's side is `lib/widget/bridge.ts`; it
 never calls the plugin on the website and never sends a value that has not
 changed since the last call.
@@ -116,6 +116,7 @@ changed since the last call.
 | `prayed` | JSON `{ morning: "YYYY-MM-DD" or null, evening: "YYYY-MM-DD" or null }` | a morning or evening rule is finished |
 | `patron` | JSON `{ slug, name, nameDay: "YYYY-MM-DD", nameDayAfter: "YYYY-MM-DD", icon: "public/..." or null }` or absent | the reader's patron saint is saved in the app, and on every open |
 | `update` | JSON `{ name, version, date: "YYYY-MM-DD" or null }` | on every open (from the packs when they carry one) |
+| `remember` | JSON `{ none: true }`, or `{ days: { "YYYY-MM-DD": { ref, step, words, line } or { ref, words, line, done: true } } }` | a verse is saved or taken off the bookmarks, Remember the verse is answered, and on every open (from 1.9) |
 
 A value a widget cannot read is treated as absent, and every widget has an
 honest absent state ("Open Purify to see your streak", "Choose your saint in
@@ -132,6 +133,20 @@ and hands over a patron saved in the app the moment it is saved
 leaves the widget's saint as it is, because only a sign-out the app has seen
 means there is no saint to show.
 
+`remember` (1.9) is Remember the verse, worked out by the app for the next
+seven civil days (lib/widget/remember.ts), since a widget cannot run the
+schedule: each day's verse at its step, as the card on Today asks it. `ref`
+is the reference with its book in the app's language; `step` is 1 (its longer
+words blank), 2 (each word as its first letter) or 3 (said from memory);
+`words` is the verse as the widget writes it, blanks as runs of "_", or null
+at the third step or when the verse's words were never fetched; `line` is the
+card's own line for the step. On the day a verse is answered the face is that
+verse whole, `done`, with `line` saying when it comes back. A day with nothing
+due has no face, and neither has a day past the seven: the widget then says to
+open Purify. `{ none: true }` means no verse is saved. The words are checked
+on the card, so a tap opens Today. A phone with a build from before 1.9 drops
+the key.
+
 `labels` keys, all optional, English when missing. Every value is a plain
 string the widget sets as it is, already in the app's language and already
 filled in, so a widget never formats a sentence:
@@ -144,7 +159,8 @@ filled in, so a widget never formats a sentence:
   it."), `keptToday`, `coming`, `days`, `day` (after the number one only), `today0` (what a countdown says on the
   day itself), `nextUpdate`, `soon`, `mySaint`, `nameDayToday`,
   `nameDayIn` (with `{n}` for the number of days, the one placeholder a
-  widget fills), `chooseSaint`, `openToRefresh`, `openForStreak`.
+  widget fills), `chooseSaint`, `openToRefresh`, `openForStreak`,
+  `rememberTitle` (1.9, the card's name, "Remember the verse").
 - Dates: `weekdaysShort`, `monthsLong` and `monthsShort`, each one string
   joined with `|`, Sunday first and January first.
 - The app's language: `language`, its code (for example "tr"), the one entry

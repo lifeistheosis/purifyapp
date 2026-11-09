@@ -10,14 +10,39 @@
  * of each verse are kept beside the schedule when the reader saves it (or
  * the first time the card fetches them), so the card works offline.
  */
+import type { Bookmark } from "@/lib/bookmarks";
+
 export type SavedVerse = { key: string; book: string; chapter: number; verse: number; label: string; addedAt: number };
 
+/** The verses a reader saved, from their bookmarks: what the card on Today and the widget remember. */
+export function savedVersesOf(bookmarks: readonly Bookmark[]): SavedVerse[] {
+  return bookmarks.flatMap((b) =>
+    b.kind === "bible-verse"
+      ? [{ key: verseKey(b.book, b.chapter, b.verse), book: b.book, chapter: b.chapter, verse: b.verse, label: b.label, addedAt: b.addedAt }]
+      : [],
+  );
+}
+
 export type Entry = { box: number; due: string };
-type Store = { entries: Record<string, Entry>; answeredOn?: string; texts: Record<string, string> };
+/**
+ * What is kept on the device. `answeredKey` (1.9) is the verse answered on
+ * `answeredOn`, so the home screen widget can say when that verse comes back
+ * after the app is closed; a store from before 1.9 has none, and the widget
+ * then says only that today's verse was answered.
+ */
+export type RememberStore = { entries: Record<string, Entry>; answeredOn?: string; answeredKey?: string; texts: Record<string, string> };
+type Store = RememberStore;
 
 const KEY = "purify:remember";
 export const INTERVALS = [1, 2, 4, 8, 16];
 export const KNOWN_EVERY = 30;
+
+/**
+ * Sent on the window when the schedule or a verse's words change (1.9), so
+ * the home screen widget (components/native/WidgetBridgeSync.tsx) is handed
+ * today's verse without waiting for the app's next return to the front.
+ */
+export const REMEMBER_EVENT = "purify:remember";
 
 export function verseKey(book: string, chapter: number, verse: number): string {
   return `${book}/${chapter}/${verse}`;
@@ -37,7 +62,12 @@ function load(): Store {
   try {
     const raw = window.localStorage.getItem(KEY);
     const parsed = raw ? (JSON.parse(raw) as Partial<Store>) : {};
-    return { entries: parsed.entries ?? {}, answeredOn: parsed.answeredOn, texts: parsed.texts ?? {} };
+    return {
+      entries: parsed.entries ?? {},
+      answeredOn: parsed.answeredOn,
+      answeredKey: typeof parsed.answeredKey === "string" ? parsed.answeredKey : undefined,
+      texts: parsed.texts ?? {},
+    };
   } catch {
     return { entries: {}, texts: {} };
   }
@@ -48,7 +78,34 @@ function save(store: Store): void {
     window.localStorage.setItem(KEY, JSON.stringify(store));
   } catch {
     /* a private window keeps nothing: the card asks again tomorrow */
+    return;
   }
+  try {
+    window.dispatchEvent?.(new Event(REMEMBER_EVENT));
+  } catch {
+    /* nobody listening is no loss: the widget is handed it at the next open */
+  }
+}
+
+/** Everything kept, in one read: for the home screen widget (lib/widget/remember.ts). */
+export function rememberStore(): RememberStore {
+  return load();
+}
+
+/**
+ * The verse that is new or due on `day`, the longest-saved first, by the
+ * schedule as it stands, whether or not one was answered that day. For a
+ * day ahead it is the verse that day brings if nothing is answered before
+ * it, which is what the widget shows on the days the app is not opened.
+ */
+export function dueOn(saved: readonly SavedVerse[], entries: Readonly<Record<string, Entry>>, day: string): SavedVerse | null {
+  const due = saved
+    .filter((v) => {
+      const e = entries[v.key];
+      return !e || e.due <= day;
+    })
+    .sort((a, b) => a.addedAt - b.addedAt);
+  return due[0] ?? null;
 }
 
 /**
@@ -58,13 +115,7 @@ function save(store: Store): void {
 export function dueVerse(saved: SavedVerse[], today: string): SavedVerse | null {
   const store = load();
   if (store.answeredOn === today) return null;
-  const due = saved
-    .filter((v) => {
-      const e = store.entries[v.key];
-      return !e || e.due <= today;
-    })
-    .sort((a, b) => a.addedAt - b.addedAt);
-  return due[0] ?? null;
+  return dueOn(saved, store.entries, today);
 }
 
 /** The reader's answer: knew it, or not yet. Returns when it comes back. */
@@ -76,8 +127,16 @@ export function answer(key: string, knew: boolean, today: string): Entry {
   const entry = { box: next, due: addDays(today, wait) };
   store.entries[key] = entry;
   store.answeredOn = today;
+  store.answeredKey = key;
   save(store);
   return entry;
+}
+
+/** When an answered verse comes back, in the reader's language: tomorrow, in some days, or once a month once known. */
+export function backWords(t: (key: string, values?: Record<string, string | number>) => string, entry: Entry, today: string): string {
+  if (entry.box > INTERVALS.length) return t("remember.known");
+  if (entry.due === addDays(today, 1)) return t("remember.backTomorrow");
+  return t("remember.backIn", { count: Math.round((Date.parse(entry.due) - Date.parse(today)) / 86_400_000) });
 }
 
 /**

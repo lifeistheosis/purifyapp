@@ -4,10 +4,11 @@ import WidgetKit
 
 /// How the app hands the home screen widgets what only it knows: the reader's
 /// calendar, their streak, the prayers they kept, their patron saint, the next
-/// update, and every word in their language (docs/WIDGETS.md, section 2).
+/// update, the verse to remember (1.9), and every word in their language
+/// (docs/WIDGETS.md, section 2).
 ///
 /// One method, update({ entries }), the same name and shape as on Android
-/// (android/.../widget/WidgetBridgePlugin.java). It keeps only the six keys of
+/// (android/.../widget/WidgetBridgePlugin.java). It keeps only the seven keys of
 /// the contract and drops anything else, so nothing the page sends can grow
 /// into a store of its own here. The values go to the App Group the widget
 /// extension (ios/App/PurifyWidgets) reads, then every placed widget is asked
@@ -27,7 +28,7 @@ public class WidgetBridgePlugin: CAPPlugin, CAPBridgedPlugin {
     /// Shared with the widget extension; both targets' entitlements carry it.
     static let appGroup = "group.net.purifyapp.purify"
 
-    static let keys: Set<String> = ["calendarStyle", "labels", "streak", "prayed", "patron", "update"]
+    static let keys: Set<String> = ["calendarStyle", "labels", "streak", "prayed", "patron", "update", "remember"]
 
     @objc func update(_ call: CAPPluginCall) {
         guard let shared = UserDefaults(suiteName: WidgetBridgePlugin.appGroup) else {

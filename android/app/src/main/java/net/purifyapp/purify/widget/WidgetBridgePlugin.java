@@ -26,9 +26,10 @@ import net.purifyapp.purify.MainActivity;
 /**
  * How the app hands the widgets what only it knows: the reader's calendar,
  * their streak, the prayers they kept, their patron saint, the next update,
- * and every word in their language (docs/WIDGETS.md, section 2).
+ * the verse to remember (1.9), and every word in their language
+ * (docs/WIDGETS.md, section 2).
  *
- * <p>update({ entries }), the same name on the iPhone. It keeps only the six
+ * <p>update({ entries }), the same name on the iPhone. It keeps only the seven
  * keys of the contract and drops anything else, so nothing the page sends can
  * grow into a store of its own here, then asks every placed widget to draw
  * again. The app's side is lib/widget/bridge.ts, which sends a key only when
@@ -43,7 +44,7 @@ import net.purifyapp.purify.MainActivity;
 public class WidgetBridgePlugin extends Plugin {
 
     static final Set<String> KEYS = new HashSet<>(Arrays.asList(
-            "calendarStyle", "labels", "streak", "prayed", "patron", "update"));
+            "calendarStyle", "labels", "streak", "prayed", "patron", "update", "remember"));
 
     @PluginMethod
     public void update(PluginCall call) {
