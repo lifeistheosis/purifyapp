@@ -194,12 +194,12 @@
    "title": "The app's Psalms 113, 114 and 115 are divided as the Hebrew divides them, not as the Septuagint the Church prays: an Orthodox reader's Psalm 115 (\"I believed, wherefore I have spoken\") is the app's 115:10",
    "from": "claude",
    "asked": "2026-11-07",
-   "status": "proposed",
-   "decided": null,
+   "status": "built",
+   "decided": "2026-11-09",
    "needsDesign": false,
    "version": null,
    "outcome": null,
-   "note": "Found by the verse map. The app's data has 113 at 8 verses, 114 at 18, 115 at 19 (the Hebrew 114, 115 and 116 whole); Brenton's edition and the Septuagint have 113 at 26 (Hebrew 114 and 115), 114 at 9 and 115 at 10 (Hebrew 116 in two). The line under each title, from lib/bible/psalmNumbers.ts, describes the Septuagint's division, so on these three pages it names the wrong Hebrew psalm, and a search for Psalm 116 opens the app's 114. The fix is to divide the three as Brenton does; it moves any note or highlight a reader put on them, so it waits for his word. The cross-references are right either way: the map follows the words"
+   "note": "Found by the verse map. The app's data has 113 at 8 verses, 114 at 18, 115 at 19 (the Hebrew 114, 115 and 116 whole); Brenton's edition and the Septuagint have 113 at 26 (Hebrew 114 and 115), 114 at 9 and 115 at 10 (Hebrew 116 in two). The line under each title, from lib/bible/psalmNumbers.ts, describes the Septuagint's division, so on these three pages it names the wrong Hebrew psalm, and a search for Psalm 116 opens the app's 114. The fix is to divide the three as Brenton does; it moves any note or highlight a reader put on them, so it waits for his word. The cross-references are right either way: the map follows the words Built 2026-11-09 (84a7bb9) on his yes to the sheet's 6: scripts/bibles/psalms-113-115.mjs moves each verse (113:1-8 stays, 114:1-18 is 113:9-26, 115:1-9 is 114:1-9, 115:10-19 is 115:1-10), no word changed, and with them the Fathers' commentary, the cross-references from these verses and 298 to them across the Bible (three ranges across the new line became two each), the KJV verse map, the paragraph breaks and a plan's cite (115:12 is 115:3). The English and the Greek now stand verse for verse; lib/bible/__tests__/psalms113to115.test.ts holds it. Readers' notes and highlights on these three psalms stay on the numbers they had, as he accepted."
   },
   {
    "id": "s1-xr-B",

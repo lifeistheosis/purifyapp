@@ -23,7 +23,7 @@ recommendation. The detail of each is in `ideas.json` under its id.
 2. **Drawn for him 2026-11-09 (the photo page, 9): Now beside Lifted.** Today's prayer list fails the contrast check: the hours not current are dimmed, their small captions at 3.6:1 against 4.5:1 (`c-smoke-suite`). Recommend: keep the dimming and lift those captions to paper/70, which passes.
 3. Chants offline (`s3-02`). Recommend: kept only while the live list names them, the app taking a saved chant off the phone when the list drops it, so his right to take a recording down holds.
 4. The Florilegium's gate for a reader whose Plus lapsed (`c-flor-gate-flash`, the other half): show their own gatherings behind the card, or not.
-5. **Decided 2026-11-09 (BRAINSTORM.md): yes.** Psalms 113 to 115 divided as the Hebrew divides them (`c-psalter-113`). Recommend: divide them as Brenton does, accepting that a few readers' notes on those three psalms move.
+5. **Decided 2026-11-09 (BRAINSTORM.md): yes. Built the same day (84a7bb9, c-psalter-113).** Psalms 113 to 115 divided as the Hebrew divides them (`c-psalter-113`). Recommend: divide them as Brenton does, accepting that a few readers' notes on those three psalms move.
 
 **A source or a licence**
 
