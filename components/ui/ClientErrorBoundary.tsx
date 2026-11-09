@@ -2,6 +2,8 @@
 
 import { Component, type ReactNode } from "react";
 
+import { reportError } from "@/lib/errors/report";
+
 /**
  * Minimal client error boundary. Catches render-time throws in a subtree
  * (e.g. a native billing plugin misbehaving) and shows a calm fallback
@@ -20,6 +22,8 @@ export class ClientErrorBoundary extends Component<
 
   componentDidCatch(error: unknown) {
     console.error("[ClientErrorBoundary] caught:", error);
+    // The errors list (admin A10): the part of the screen that failed, once.
+    reportError({ source: "screen", message: error });
   }
 
   render() {

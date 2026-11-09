@@ -24,6 +24,7 @@ import type { ReactNode } from "react";
 import { AnalyticsTracker } from "@/components/analytics/AnalyticsTracker";
 import { DesktopPresenceBridge } from "@/components/desktop/DesktopPresenceBridge";
 import { DiscordFirstRun } from "@/components/desktop/DiscordFirstRun";
+import { ErrorReportBridge } from "@/components/errors/ErrorReportBridge";
 import { LocaleBootstrap } from "@/components/i18n/LocaleBootstrap";
 import { MessagesProvider } from "@/components/i18n/MessagesProvider";
 import { AppNudge } from "@/components/marketing/AppNudge";
@@ -152,6 +153,9 @@ export function RootFrame({
         {/* What the home screen widgets show (lib/widget). Inside the
             provider, as they speak the reader's language; renders nothing. */}
         <WidgetBridgeSync />
+        {/* The errors list (admin A10): a script or a promise that fails on any
+            screen, reported once (lib/errors/report.ts); renders nothing. */}
+        <ErrorReportBridge />
         {/* Purify's own hold-to-copy. In the phone apps the system's text
             selection is off (globals.css, "The apps select nothing by
             themselves"), and a hold on any text without tools of its own

@@ -11,6 +11,7 @@
 // (lib/supabase/server → createClientFromRequest). On the web the path stays
 // relative and same-origin, so the existing cookie session is used unchanged.
 
+import { reportError } from "@/lib/errors/report";
 import { isNativeClient } from "@/lib/platform/native";
 import { SITE_URL } from "@/lib/site";
 import { createClient } from "@/lib/supabase/client";
@@ -43,5 +44,9 @@ export async function apiFetch(
     }
   }
 
-  return fetch(url, { ...init, headers });
+  const res = await fetch(url, { ...init, headers });
+  // The errors list (admin A10): a call that came back failed on the server's
+  // side. What failed is the route, never its query, which can carry words.
+  if (res.status >= 500) reportError({ source: "request", status: res.status, message: path.split("?")[0] });
+  return res;
 }

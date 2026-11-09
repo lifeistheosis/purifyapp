@@ -3,6 +3,7 @@
 import { useEffect } from "react";
 import Link from "next/link";
 import { useTranslate } from "@/components/i18n/MessagesProvider";
+import { reportError } from "@/lib/errors/report";
 
 export default function GlobalError({
   error,
@@ -17,6 +18,8 @@ export default function GlobalError({
   const { t } = useTranslate();
 
   useEffect(() => {
+    // The errors list (admin A10): the screen that failed, once.
+    reportError({ source: "screen", message: error });
     if (process.env.NODE_ENV === "development") {
       // Surface in dev so the developer can see what blew up without
       // shipping logs to production.

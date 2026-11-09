@@ -91,6 +91,7 @@ import {
   type Turn,
 } from "@/lib/search/places";
 import { clearWords, readWords, rememberWords } from "@/lib/search/recent";
+import { reportSearchMiss } from "@/lib/search/reportMiss";
 import type { SearchItem } from "@/lib/search/types";
 import { lockBodyScroll, setOverlayOpen, unlockBodyScroll } from "@/lib/ui/overlay";
 import { useIsPhoneWidth, useKeyboardUp, useVisibleFrame } from "@/lib/ui/viewport";
@@ -208,7 +209,7 @@ const FACE_KINDS: ReadonlySet<KindId> = new Set(["saints", "fathers"]);
 
 export function CommandPalette() {
   const router = useRouter();
-  const { t, tn } = useTranslate();
+  const { t, tn, locale } = useTranslate();
   const [open, setOpen] = useState(false);
   const [turn, setTurn] = useState<Turn>(EVERYTHING);
   const [query, setQuery] = useState("");
@@ -343,6 +344,21 @@ export function CommandPalette() {
   const boost = useMemo(() => (refs && q ? refs.bookSlugsIn(q, t).map((slug) => `book-${slug}`) : []), [refs, q, t]);
   const found = useMemo(() => (q ? results(prepared, q, { lead, boost }) : []), [prepared, q, lead, boost]);
   const counts = useMemo(() => doorCounts(found), [found]);
+
+  // The searches that found nothing (admin A11, lib/search/reportMiss.ts): the
+  // words alone, once they have settled (on the Search key, or a moment after
+  // the typing stops), and only once the lists have arrived, since before
+  // that every search finds nothing.
+  const lists = corpus !== null;
+  useEffect(() => {
+    if (!open || !q || !lists || found.length > 0) return;
+    if (submitted) {
+      reportSearchMiss(q, locale);
+      return;
+    }
+    const settle = window.setTimeout(() => reportSearchMiss(q, locale), 1500);
+    return () => window.clearTimeout(settle);
+  }, [open, q, lists, found.length, submitted, locale]);
   const here = useMemo(() => found.filter((r) => inDoor(r, turn.door)), [found, turn.door]);
   const narrowed = useMemo(
     () => (turn.kind ? here.filter((r) => kindIn(r, turn.door) === turn.kind) : here),
