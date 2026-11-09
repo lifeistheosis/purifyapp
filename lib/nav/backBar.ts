@@ -67,8 +67,9 @@ export const OWN_HEADER_PATTERNS: RegExp[] = [
   // A doctrine's own page (1.8, round 3 r3-04): the bar starts clear over
   // the subject's icon and turns solid with the study's name, as a saint's
   // does, its way back leading to Theology. Not the doctrine index
-  // (/theology/doctrine), which keeps the back bar.
-  /^\/theology\/(?!doctrine$)[^/]+$/,
+  // (/theology/doctrine) nor the Creed by council (/theology/creed, 1.9),
+  // which keep the back bar.
+  /^\/theology\/(?!(?:doctrine|creed)$)[^/]+$/,
   // Theology's hub, a step of its path and a study read part by part (1.8,
   // round 3 r3-13): phone pages with their own bar, whose search opens
   // turned to Theology. The hub leads back to Discover, a step to the hub

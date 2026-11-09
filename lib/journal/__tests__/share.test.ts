@@ -130,11 +130,17 @@ describe("the shared page", () => {
   });
 });
 
-describe("the SQL waits for the owner", () => {
+describe("the SQL, signed off by the owner", () => {
   const sql = read("docs/1.9-build/sql/shared-pages.sql");
+  const migration = read("supabase/migrations/20261109180246_shared_pages.sql");
+  const statements = (text: string) => text.slice(text.indexOf("-- What it holds, and why:"));
 
-  it("lives in docs, not in the migrations a merge runs", () => {
-    expect(sql).toContain("NOT APPLIED. NOT A MIGRATION YET.");
+  // Until 2026-11-09 it lived in docs alone, so no merge could run it. On his
+  // yes (BRAINSTORM.md, the sheet's 4) it went into the migrations, and the
+  // docs copy stays as the SQL to paste: the two must say the same.
+  it("is in the migrations, word for word as the copy he signed off", () => {
+    expect(migration).toContain("Signed off by the owner on 2026-11-09");
+    expect(statements(migration)).toBe(statements(sql));
   });
 
   it("runs twice, keeps RLS on, and lets nobody write from the app", () => {
