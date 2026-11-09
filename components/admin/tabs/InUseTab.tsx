@@ -32,6 +32,7 @@ export const PLAN_NAMES: Record<string, string> = {
   john: "John in 21 days",
   proverbs: "Proverbs in a month",
   nativity: "The Nativity Fast",
+  holyweek: "Holy Week",
 };
 
 function Quiet({ children }: { children: ReactNode }) {

@@ -4055,6 +4055,8 @@
   "plans.proverbs.body": "Naponta egy fejezet a Példabeszédekből harmincegy napon át.",
   "plans.nativity.name": "Karácsonyi böjt",
   "plans.nativity.body": "A próféciák és evangéliumok, amelyeket az Egyház Krisztus születésének ünnepén olvas, napi egy, istentiszteleteinek rendjében.",
+  "plans.holyweek.name": "Nagyhét",
+  "plans.holyweek.body": "Az evangéliumok, amelyeket az Egyház Lázár szombatjától Pászkáig olvas, napi egy, istentiszteleteinek rendjében.",
   "plans.continueDay": "{day}. nap: {reading}",
   "plans.finishedShort": "Befejezve",
   "plans.finished": "Befejezted ezt a tervet.",

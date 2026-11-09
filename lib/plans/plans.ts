@@ -23,10 +23,19 @@
  *             readings. A day is a passage, not whole chapters: its first
  *             reading carries the reference ("4:6-7; 5:2-4") and each chapter
  *             opens at the verse it starts on.
+ *   holyweek  Holy Week's (1.9, his yes of 2026-11-09 to the sheet's 12): the
+ *             Gospel the Church reads at each day's Liturgy from Lazarus
+ *             Saturday to Pascha, nine days, as data/calendar/movable-readings.json
+ *             gives them (checked day by day against the OCA's readings for
+ *             2026). Holy Thursday's and Holy Friday's are the composite Gospels
+ *             of their services, five passages each across three Gospels: a
+ *             day may read from more than one book, each passage carrying its
+ *             own reference. No word of ours is added to them.
  *
  * Pure: the chapters are named here and read by the reader's own Bible pages.
  */
 
+import MOVABLE from "@/data/calendar/movable-readings.json";
 import NATIVITY from "@/data/plans/nativity.json";
 
 export type PlanReading = {
@@ -34,7 +43,11 @@ export type PlanReading = {
   chapter: number;
   /** The verse the chapter opens at, for a day that reads a passage. */
   verse?: number;
-  /** On a day's first reading, the passage's reference after the book's name: "4:6-7; 5:2-4". */
+  /**
+   * On a passage's first reading, its reference after the book's name: "4:6-7;
+   * 5:2-4". A day of more than one passage (Holy Thursday's Gospel) has one on
+   * the first reading of each.
+   */
   ref?: string;
 };
 export type ReadingPlan = {
@@ -43,8 +56,11 @@ export type ReadingPlan = {
   /** The daily-rhythm strand a finished day is kept under (lib/rhythm/marks.ts). */
   strand: "reading" | "gospel";
   /** The season of the Church's year it belongs to, for the season's card (lib/plans/season.ts). */
-  season?: "nativity";
+  season?: Season;
 };
+
+/** The seasons of the Church's year a plan can belong to. */
+export type Season = "nativity" | "holyweek";
 
 /** The twenty kathismata, first and last psalm, Septuagint numbering. */
 export const KATHISMATA: readonly [number, number][] = [
@@ -109,6 +125,36 @@ export function passageVerses(ref: string): Map<number, [number, number][]> {
 /** The Nativity Fast's days, as data/plans/nativity.json gives them, with where the Church reads each. */
 export const NATIVITY_DAYS: readonly { book: string; ref: string; service: string }[] = NATIVITY.days;
 
+/** The Gospels' names as the calendar writes them, to the app's books. */
+const GOSPEL_BOOKS: Record<string, string> = { Matthew: "matthew", Mark: "mark", Luke: "luke", John: "john" };
+
+/**
+ * A Gospel as the calendar names it, one passage or several: "John 11:1-45",
+ * or Holy Thursday's "Matthew 26:2-20; John 13:3-17; ...". Each passage
+ * starts with its book's name; each becomes its chapters (passage, above).
+ */
+export function gospelPassages(label: string): PlanReading[] {
+  const out: PlanReading[] = [];
+  for (const part of label.split(";")) {
+    const m = /^\s*(Matthew|Mark|Luke|John)\s+(\d.*?)\s*$/.exec(part);
+    if (!m) throw new Error(`not a Gospel passage: "${part.trim()}" in "${label}"`);
+    out.push(...passage(GOSPEL_BOOKS[m[1]], m[2]));
+  }
+  return out;
+}
+
+type Movable = { offsets: Record<string, { label: string; readings: { kind: string; label: string }[] }> };
+
+/** Holy Week's days, Lazarus Saturday (Pascha less 8) to Pascha, each with its service and its Gospel's reference. */
+export const HOLY_WEEK_DAYS: readonly { offset: number; service: string; gospel: string }[] = [-8, -7, -6, -5, -4, -3, -2, -1, 0].map(
+  (offset) => {
+    const day = (MOVABLE as unknown as Movable).offsets[String(offset)];
+    const gospel = day?.readings.find((r) => r.kind === "gospel");
+    if (!day || !gospel) throw new Error(`no Gospel in the calendar for Pascha ${offset}`);
+    return { offset, service: day.label, gospel: gospel.label };
+  },
+);
+
 export const READING_PLANS: readonly ReadingPlan[] = [
   { id: "psalter", strand: "reading", days: KATHISMATA.map(([from, to]) => span("psalms", from, to)) },
   {
@@ -119,6 +165,7 @@ export const READING_PLANS: readonly ReadingPlan[] = [
   { id: "john", strand: "gospel", days: chapters("john", 21).map((c) => [c]) },
   { id: "proverbs", strand: "reading", days: chapters("proverbs", 31).map((c) => [c]) },
   { id: "nativity", strand: "reading", season: "nativity", days: NATIVITY_DAYS.map((d) => passage(d.book, d.ref)) },
+  { id: "holyweek", strand: "gospel", season: "holyweek", days: HOLY_WEEK_DAYS.map((d) => gospelPassages(d.gospel)) },
 ];
 
 export function getPlan(id: string): ReadingPlan | undefined {
@@ -131,8 +178,9 @@ export function getPlan(id: string): ReadingPlan | undefined {
  * for any numeric range.
  */
 export function dayLabel(day: readonly PlanReading[], bookName: (slug: string) => string): string {
-  // A passage is named as the calendar names it: "Micah 4:6-7; 5:2-4".
-  if (day[0]?.ref) return `${bookName(day[0].book)} ${day[0].ref}`;
+  // A passage is named as the calendar names it: "Micah 4:6-7; 5:2-4", and a
+  // day of several passages, each with its book (Holy Thursday's Gospel).
+  if (day[0]?.ref) return day.filter((r) => r.ref).map((r) => `${bookName(r.book)} ${r.ref}`).join("; ");
   const parts: string[] = [];
   let i = 0;
   while (i < day.length) {

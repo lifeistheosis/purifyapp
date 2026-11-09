@@ -4055,6 +4055,8 @@
   "plans.proverbs.body": "Otuz bir gün boyunca günde bir Özdeyişler bölümü.",
   "plans.nativity.name": "Noel Orucu",
   "plans.nativity.body": "Kilisenin Mesih'in Doğuşu'nda okuduğu peygamberlikler ve İnciller, günde bir tane, ayinlerinin sırasıyla.",
+  "plans.holyweek.name": "Kutsal Hafta",
+  "plans.holyweek.body": "Kilisenin Lazarus Cumartesisi'nden Paskalya'ya kadar okuduğu İnciller, günde bir tane, ayinlerinin sırasıyla.",
   "plans.continueDay": "Gün {day}: {reading}",
   "plans.finishedShort": "Bitti",
   "plans.finished": "Bu planı bitirdiniz.",

@@ -4055,6 +4055,8 @@
   "plans.proverbs.body": "Ein Kapitel der Sprichwörter pro Tag, einunddreißig Tage lang.",
   "plans.nativity.name": "Weihnachtsfasten",
   "plans.nativity.body": "Die Prophetien und Evangelien, die die Kirche zur Geburt Christi liest, eine am Tag, in der Ordnung ihrer Gottesdienste.",
+  "plans.holyweek.name": "Karwoche",
+  "plans.holyweek.body": "Die Evangelien, die die Kirche vom Lazarus-Samstag bis Pascha liest, eines am Tag, in der Ordnung ihrer Gottesdienste.",
   "plans.continueDay": "Tag {day}: {reading}",
   "plans.finishedShort": "Abgeschlossen",
   "plans.finished": "Du hast diesen Plan abgeschlossen.",

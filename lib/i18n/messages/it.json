@@ -4060,6 +4060,8 @@
   "plans.proverbs.body": "Un capitolo dei Proverbi al giorno per trentuno giorni.",
   "plans.nativity.name": "Digiuno della Natività",
   "plans.nativity.body": "Le profezie e i Vangeli che la Chiesa legge alla Natività, uno al giorno, nell'ordine dei suoi uffici.",
+  "plans.holyweek.name": "Settimana Santa",
+  "plans.holyweek.body": "I Vangeli che la Chiesa legge dal Sabato di Lazzaro a Pasqua, uno al giorno, nell'ordine dei suoi uffici.",
   "plans.continueDay": "Giorno {day}: {reading}",
   "plans.finishedShort": "Concluso",
   "plans.finished": "Hai concluso questo piano.",

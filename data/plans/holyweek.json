@@ -1,0 +1,46 @@
+{
+  "title": "Holy Week: the Gospel the Church reads each day, Lazarus Saturday to Pascha",
+  "review": {
+    "status": "awaiting-clergy-review",
+    "drafted": "2026-11-09",
+    "basis": "The owner's yes of 2026-11-09 to the sheet's 12: Holy Week, Lazarus Saturday to Pascha, each day's Gospel, from data the app already has. Every reference is the Gospel data/calendar/movable-readings.json gives for that day (offsets -8 to 0 from Pascha), which was checked day by day against the Orthodox Church in America's daily readings for the 2026 Paschal cycle; lib/plans/plans.ts reads them from there, so the two cannot part. Holy Thursday's and Holy Friday's are the composite Gospels of their services, five passages each. The day notes say only on which day the Church reads it, in the calendar's own words; the questions (data/plans/guide/en.json, holyweek) are the editorials' and await review."
+  },
+  "days": [
+    {
+      "offset": -8,
+      "service": "Lazarus Saturday"
+    },
+    {
+      "offset": -7,
+      "service": "Palm Sunday, the Entry of the Lord into Jerusalem"
+    },
+    {
+      "offset": -6,
+      "service": "Great and Holy Monday"
+    },
+    {
+      "offset": -5,
+      "service": "Great and Holy Tuesday"
+    },
+    {
+      "offset": -4,
+      "service": "Great and Holy Wednesday"
+    },
+    {
+      "offset": -3,
+      "service": "Great and Holy Thursday"
+    },
+    {
+      "offset": -2,
+      "service": "Great and Holy Friday"
+    },
+    {
+      "offset": -1,
+      "service": "Great and Holy Saturday"
+    },
+    {
+      "offset": 0,
+      "service": "Pascha, the Feast of Feasts"
+    }
+  ]
+}

@@ -4053,6 +4053,8 @@
   "plans.proverbs.body": "Satu pasal Amsal sehari selama tiga puluh satu hari.",
   "plans.nativity.name": "Puasa Natal",
   "plans.nativity.body": "Nubuat dan Injil yang dibacakan Gereja pada Kelahiran Kristus, satu setiap hari, menurut urutan ibadahnya.",
+  "plans.holyweek.name": "Pekan Suci",
+  "plans.holyweek.body": "Injil-injil yang dibacakan Gereja dari Sabtu Lazarus sampai Paskah, satu setiap hari, menurut urutan ibadahnya.",
   "plans.continueDay": "Hari {day}: {reading}",
   "plans.finishedShort": "Selesai",
   "plans.finished": "Anda telah menyelesaikan rencana ini.",

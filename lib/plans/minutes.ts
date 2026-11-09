@@ -33,8 +33,15 @@ export function dayMinutes(plan: ReadingPlan): number[] {
   const known = cache.get(plan.id);
   if (known) return known;
   const minutes = plan.days.map((day) => {
-    const verses = day[0]?.ref ? passageVerses(day[0].ref) : null;
-    return readingMinutes(day.map((r) => chapterText(r.book, r.chapter, verses?.get(r.chapter))).join(" "));
+    // Each passage's verses, from the reference on its first reading, for the
+    // chapters that follow it until the next passage (Holy Thursday's Gospel
+    // reads Matthew 26 three times, a different part each time).
+    let verses: Map<number, [number, number][]> | null = null;
+    const texts = day.map((r) => {
+      if (r.ref) verses = passageVerses(r.ref);
+      return chapterText(r.book, r.chapter, verses?.get(r.chapter));
+    });
+    return readingMinutes(texts.join(" "));
   });
   cache.set(plan.id, minutes);
   return minutes;

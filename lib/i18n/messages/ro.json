@@ -4126,6 +4126,8 @@
   "plans.proverbs.body": "Un capitol din Pilde pe zi, timp de treizeci și una de zile.",
   "plans.nativity.name": "Postul Crăciunului",
   "plans.nativity.body": "Proorociile și Evangheliile pe care Biserica le citește la Nașterea Domnului, câte una pe zi, în rânduiala slujbelor ei.",
+  "plans.holyweek.name": "Săptămâna Mare",
+  "plans.holyweek.body": "Evangheliile pe care Biserica le citește de la Sâmbăta lui Lazăr până la Paști, câte una pe zi, în rânduiala slujbelor ei.",
   "plans.continueDay": "Ziua {day}: {reading}",
   "plans.finishedShort": "Încheiat",
   "plans.finished": "Ai încheiat acest plan.",

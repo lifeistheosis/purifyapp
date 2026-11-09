@@ -4055,6 +4055,8 @@
   "plans.proverbs.body": "Isang kabanata ng Mga Kawikaan bawat araw sa loob ng tatlumpu't isang araw.",
   "plans.nativity.name": "Ayuno ng Kapanganakan",
   "plans.nativity.body": "Ang mga propesiya at Ebanghelyong binabasa ng Simbahan sa Kapanganakan ni Kristo, isa bawat araw, ayon sa pagkakasunod ng kanyang mga paglilingkod.",
+  "plans.holyweek.name": "Semana Santa",
+  "plans.holyweek.body": "Ang mga Ebanghelyong binabasa ng Simbahan mula sa Sabado ni Lazaro hanggang Pascha, isa bawat araw, ayon sa pagkakasunod ng kanyang mga paglilingkod.",
   "plans.continueDay": "Araw {day}: {reading}",
   "plans.finishedShort": "Tapos na",
   "plans.finished": "Natapos mo ang planong ito.",

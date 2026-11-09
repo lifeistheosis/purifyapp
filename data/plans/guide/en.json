@@ -254,5 +254,28 @@
       { "intro": "The Church reads this at Vespers of the Nativity, the sixth reading.", "q": "A stone cut without hands fills the earth. What in your life is beyond your own making?" },
       { "intro": "The Church reads this at the Liturgy of the Nativity, as its Epistle.", "q": "\"Thou art no more a servant, but a son.\" How will you keep the feast as a child of God?" }
     ]
+  },
+  "holyweek": {
+    "pool": [
+      "What line from today will you carry into the evening?",
+      "Where did today's reading meet your own life?",
+      "What would you ask God after reading this?",
+      "Who could you share today's passage with?",
+      "What in this passage do you not yet understand?",
+      "How does today's reading prepare you for Pascha?",
+      "What is one small thing you could do today because of this reading?",
+      "Where in today's Gospel do you see the Lord's love for you?"
+    ],
+    "days": [
+      { "intro": "The Church reads this on Lazarus Saturday.", "q": "\"Jesus wept.\" Whom do you grieve for, and will you bring that grief to Him?" },
+      { "intro": "The Church reads this on Palm Sunday, the Entry of the Lord into Jerusalem.", "q": "Mary anointed His feet with ointment very costly. What costly thing could you give Him this week?" },
+      { "intro": "The Church reads this on Great and Holy Monday.", "q": "\"Heaven and earth shall pass away, but my words shall not pass away.\" Which of His words will you hold to this week?" },
+      { "intro": "The Church reads this on Great and Holy Tuesday.", "q": "\"The wise took oil in their vessels with their lamps.\" What keeps your lamp burning while you wait for Him?" },
+      { "intro": "The Church reads this on Great and Holy Wednesday.", "q": "One poured out ointment for Him; another sold Him for thirty pieces of silver. Where is your heart tempted to bargain?" },
+      { "intro": "The Church reads this on Great and Holy Thursday.", "q": "He began to wash the disciples' feet. Whose feet could you serve today?" },
+      { "intro": "The Church reads this on Great and Holy Friday.", "q": "\"Lord, remember me when thou comest into thy kingdom.\" What would you ask of Him today?" },
+      { "intro": "The Church reads this on Great and Holy Saturday.", "q": "\"Fear not ye.\" What fear would you leave at the empty tomb?" },
+      { "intro": "The Church reads this on Pascha, the Feast of Feasts.", "q": "\"The light shineth in darkness.\" Where does His light need to reach in you this Pascha?" }
+    ]
   }
 }

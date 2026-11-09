@@ -4281,6 +4281,8 @@
   "plans.proverbs.body": "إصحاح من سفر الأمثال كل يوم مدة واحد وثلاثين يومًا.",
   "plans.nativity.name": "صوم الميلاد",
   "plans.nativity.body": "النبوءات والأناجيل التي تقرؤها الكنيسة في الميلاد، قراءة كل يوم، بترتيب صلواتها.",
+  "plans.holyweek.name": "أسبوع الآلام",
+  "plans.holyweek.body": "الأناجيل التي تقرؤها الكنيسة من سبت لعازر إلى الفصح، قراءة كل يوم، بترتيب صلواتها.",
   "plans.continueDay": "اليوم {day}: {reading}",
   "plans.finishedShort": "اكتملت",
   "plans.finished": "أكملت هذه الخطة.",

@@ -4079,6 +4079,8 @@
   "plans.proverbs.body": "Un chapitre des Proverbes par jour pendant trente et un jours.",
   "plans.nativity.name": "Carême de la Nativité",
   "plans.nativity.body": "Les prophéties et les Évangiles que l'Église lit à la Nativité, un par jour, dans l'ordre de ses offices.",
+  "plans.holyweek.name": "Semaine sainte",
+  "plans.holyweek.body": "Les Évangiles que l'Église lit du samedi de Lazare à Pâques, un par jour, dans l'ordre de ses offices.",
   "plans.continueDay": "Jour {day} : {reading}",
   "plans.finishedShort": "Terminé",
   "plans.finished": "Vous avez terminé ce plan.",

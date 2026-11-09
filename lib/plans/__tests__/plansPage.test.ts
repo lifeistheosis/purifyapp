@@ -28,7 +28,9 @@ describe("the plan to continue", () => {
 
 describe("a plan's tile", () => {
   it("wears its first book's cover, streamed and never carried in the apps, or its season's picture", () => {
-    expect(PAGE).toContain("const cover = plan.season ? { src: SEASON_PICTURE, fallback: SEASON_PICTURE } : readAloudCover(plan.days[0][0].book);");
+    expect(PAGE).toContain(
+      "const cover = plan.season ? { src: SEASON_PICTURES[plan.season], fallback: SEASON_PICTURES[plan.season] } : readAloudCover(plan.days[0][0].book);",
+    );
     expect(PAGE).toContain("<CoverArt");
   });
 

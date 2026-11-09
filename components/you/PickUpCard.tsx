@@ -45,6 +45,7 @@ const PLAN_NAME: Record<string, string> = {
   proverbs: "plans.proverbs.name",
   // Missing from 1.9's first Nativity build: a reader in the fast's plan was never offered it here.
   nativity: "plans.nativity.name",
+  holyweek: "plans.holyweek.name",
 };
 
 type Row = Place & {

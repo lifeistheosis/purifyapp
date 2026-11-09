@@ -4056,6 +4056,8 @@
   "plans.proverbs.body": "A chapter of Proverbs a day for thirty-one days.",
   "plans.nativity.name": "The Nativity Fast",
   "plans.nativity.body": "The prophecies and Gospels the Church reads at the Nativity, one a day, in the order of her services.",
+  "plans.holyweek.name": "Holy Week",
+  "plans.holyweek.body": "The Gospels the Church reads from Lazarus Saturday to Pascha, one a day, in the order of her services.",
   "plans.continueDay": "Day {day}: {reading}",
   "plans.finishedShort": "Finished",
   "plans.finished": "You have finished this plan.",

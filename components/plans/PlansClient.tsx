@@ -15,7 +15,7 @@ import { useToday } from "@/lib/calendar/useToday";
 import { usePlusFeatures } from "@/lib/entitlements/usePlusFeatures";
 import { dateLocale } from "@/lib/i18n/deviceDates";
 import { READING_PLANS, dayLabel, getPlan, type ReadingPlan } from "@/lib/plans/plans";
-import { SEASON_PICTURE, seasonNow } from "@/lib/plans/season";
+import { SEASON_PICTURES, seasonNow } from "@/lib/plans/season";
 import { catchUp, nextDay, planStreak, startPlan, usePlans, type PlanProgress } from "@/lib/plans/progress";
 import { hrefOfReading, startPlanSession } from "@/lib/plans/session";
 import { readAloudCover } from "@/lib/readAloud/covers";
@@ -118,7 +118,7 @@ export function PlansClient({ minutes }: { minutes: Record<string, number> }) {
                   ? t("plans.finishedShort")
                   : t("plans.dayOf", { day: next + 1, total: plan.days.length });
               // A season's plan wears the season's picture; the rest, their first book's figure.
-              const cover = plan.season ? { src: SEASON_PICTURE, fallback: SEASON_PICTURE } : readAloudCover(plan.days[0][0].book);
+              const cover = plan.season ? { src: SEASON_PICTURES[plan.season], fallback: SEASON_PICTURES[plan.season] } : readAloudCover(plan.days[0][0].book);
               return (
                 <li key={plan.id}>
                   <Link
@@ -200,8 +200,9 @@ function ContinueCard({
 }
 
 /**
- * The season's plan, as a large picture card: the Theotokos over the plan's
- * name, what it is, and how long; before the season, the day it begins. The
+ * The season's plan, as a large picture card: the season's picture (the
+ * Theotokos, or for Holy Week Christ Pantocrator) over the plan's name, what
+ * it is, and how long; before the season, the day it begins. The
  * picture stands at the card's head with nothing laid over it.
  */
 function SeasonCard({
@@ -224,7 +225,12 @@ function SeasonCard({
   return (
     <section aria-labelledby="plans-season" data-plans-season="" className={cn("overflow-hidden rounded-[22px] bg-night-soft ring-1 ring-inset ring-paper/10", !first && "mt-4")}>
       <Link href={`/plans/${plan.id}`} className="tap-press block">
-        <CoverArt src={SEASON_PICTURE} fallback={SEASON_PICTURE} size={420} className="block h-36 w-full object-cover object-[50%_30%]" />
+        <CoverArt
+          src={plan.season ? SEASON_PICTURES[plan.season] : SEASON_PICTURES.nativity}
+          fallback={plan.season ? SEASON_PICTURES[plan.season] : SEASON_PICTURES.nativity}
+          size={420}
+          className="block h-36 w-full object-cover object-[50%_30%]"
+        />
         <div className="p-5">
           {date ? (
             <p className="font-sans text-caption font-semibold uppercase tracking-[0.06em] text-paper/55">{t("plans.season.begins", { date })}</p>

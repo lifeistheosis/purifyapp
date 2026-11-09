@@ -4060,6 +4060,8 @@
   "plans.proverbs.body": "Um capítulo de Provérbios por dia durante trinta e um dias.",
   "plans.nativity.name": "Jejum da Natividade",
   "plans.nativity.body": "As profecias e os Evangelhos que a Igreja lê na Natividade, um por dia, na ordem dos seus ofícios.",
+  "plans.holyweek.name": "Semana Santa",
+  "plans.holyweek.body": "Os Evangelhos que a Igreja lê do Sábado de Lázaro até a Páscoa, um por dia, na ordem dos seus ofícios.",
   "plans.continueDay": "Dia {day}: {reading}",
   "plans.finishedShort": "Concluído",
   "plans.finished": "Você concluiu este plano.",

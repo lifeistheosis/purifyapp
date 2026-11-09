@@ -4178,6 +4178,8 @@
   "plans.proverbs.body": "Jeden rozdział Przysłów dziennie przez trzydzieści jeden dni.",
   "plans.nativity.name": "Post filipowy",
   "plans.nativity.body": "Proroctwa i Ewangelie, które Kościół czyta w Boże Narodzenie, jedno dziennie, w porządku jego nabożeństw.",
+  "plans.holyweek.name": "Wielki Tydzień",
+  "plans.holyweek.body": "Ewangelie, które Kościół czyta od Łazarzowej Soboty do Paschy, jedna dziennie, w porządku jego nabożeństw.",
   "plans.continueDay": "Dzień {day}: {reading}",
   "plans.finishedShort": "Ukończony",
   "plans.finished": "Ukończyłeś ten plan.",
