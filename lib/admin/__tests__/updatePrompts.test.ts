@@ -40,8 +40,17 @@ describe("promptLine", () => {
     const over = promptLine("android", 95, "render", "1.9", SERVED, true);
     expect(over.verdict).toBe("ahead");
     expect(over.line).toMatch(/Readers are sent to a build the store does not have\. Set ANDROID_VERSION_CODE=91/);
-    const unmarked = promptLine("android", 91, "render", "1.9", { build: 91, served: null }, true);
-    expect(unmarked.verdict).toBe("ahead");
+    const beyond = promptLine("android", 95, "render", "1.9", { build: 91, served: null }, true);
+    expect(beyond.verdict).toBe("ahead");
+    expect(beyond.line).toMatch(/the drop carries build 91\. If Google Play does not serve 95, readers are sent to a build that is not there/);
+  });
+
+  it("asks for the store to be marked live when the numbers agree and only that mark is missing", () => {
+    const unmarked = promptLine("android", 78, "render", "1.8", { build: 78, served: null }, true);
+    expect(unmarked.verdict).toBe("check");
+    expect(unmarked.line).toBe(
+      "Apps are told build 78 (set on Render), the build the drop carries. Mark Google Play live in the drop once it serves it, and this line can say it matches.",
+    );
   });
 
   it("compares nothing for a past release", () => {

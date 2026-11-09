@@ -92,13 +92,24 @@ export function promptLine(
       line: `Apps are told build ${told}${source}, and ${STORE_IN[store]} serves ${served.build}. Readers are sent to a build the store does not have. ${set(served.build)}`,
     };
   }
-  if (current && drop && drop.build > 0 && told >= drop.build) {
+  if (current && drop && drop.build > 0 && told === drop.build) {
+    // The numbers agree; only the drop's mark that the store serves it is
+    // missing, so this is a thing to check, not a fault.
+    return {
+      store,
+      told,
+      from,
+      verdict: "check",
+      line: `Apps are told build ${told}${source}, the build the drop carries. Mark ${STORE_IN[store]} live in the drop once it serves it, and this line can say it matches.`,
+    };
+  }
+  if (current && drop && drop.build > 0 && told > drop.build) {
     return {
       store,
       told,
       from,
       verdict: "ahead",
-      line: `Apps are told build ${told}${source}, and the drop has not marked ${STORE_IN[store]} serving build ${drop.build}. If it does not serve it yet, readers are sent to a build that is not there.`,
+      line: `Apps are told build ${told}${source}, and the drop carries build ${drop.build}. If ${STORE_IN[store]} does not serve ${told}, readers are sent to a build that is not there.`,
     };
   }
   return { store, told, from, verdict: "told", line: `Apps on an older build are told build ${told} is out${source}.` };
