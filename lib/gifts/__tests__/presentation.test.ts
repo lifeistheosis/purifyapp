@@ -105,12 +105,16 @@ describe("giftPresentation — each level looks and moves differently", () => {
     expect(new Set(durations).size).toBe(5);
   });
 
-  it("only the plainest casket skips the strain, and only the grandest gets two ray layers", () => {
+  it("only the plainest casket skips the strain, and the light carries further with the level", () => {
     expect(giftPresentation("plus", 30).motion.strain).toBe(false);
     expect(giftPresentation("plus", 90).motion.strain).toBe(true);
-    expect(giftPresentation("pro", 365).light.rays).toBe(2);
-    expect(giftPresentation("pro", 90).light.rays).toBe(1);
-    expect(giftPresentation("plus", 30).light.rays).toBe(0);
+    const flood = ASCENDING.map((p) => p.light.floodScale);
+    expect(flood).toEqual([...flood].sort((a, b) => a - b));
+    expect(new Set(flood).size).toBe(5);
+  });
+
+  it("opens in a soft light, never a burst of rays (the owner's word of 2026-11-08)", () => {
+    for (const p of ASCENDING) expect(p.light).not.toHaveProperty("rays");
   });
 
   it("the seal only cracks from level 3 up", () => {

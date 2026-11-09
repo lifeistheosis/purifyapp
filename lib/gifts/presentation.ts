@@ -58,8 +58,6 @@ export type GiftPresentation = {
     openTotalMs: number;
   };
   light: {
-    /** Layers of turning rays: none, one, or two counter-turning. */
-    rays: 0 | 1 | 2;
     embers: number;
     floodScale: number;
     mandorla: boolean;
@@ -98,7 +96,7 @@ const LEVELS: Record<GiftLevel, Omit<GiftPresentation, "level">> = {
     },
     // Humble: no struggle, the lid simply lifts.
     motion: { strain: false, strainMs: 0, sealBreak: false, beatMs: 0, lidMs: 620, openTotalMs: 900 },
-    light: { rays: 0, embers: 5, floodScale: 1.4, mandorla: false, mandorlaScale: 0 },
+    light: { embers: 5, floodScale: 1.4, mandorla: false, mandorlaScale: 0 },
   },
   2: {
     name: "Banded casket",
@@ -107,7 +105,7 @@ const LEVELS: Record<GiftLevel, Omit<GiftPresentation, "level">> = {
       filigree: false, finials: false, gilt: 0.55, metal: 0.16,
     },
     motion: { strain: true, strainMs: 300, sealBreak: false, beatMs: 60, lidMs: 700, openTotalMs: 1120 },
-    light: { rays: 0, embers: 7, floodScale: 1.6, mandorla: false, mandorlaScale: 0 },
+    light: { embers: 7, floodScale: 1.6, mandorla: false, mandorlaScale: 0 },
   },
   3: {
     name: "Sealed reliquary",
@@ -117,7 +115,7 @@ const LEVELS: Record<GiftLevel, Omit<GiftPresentation, "level">> = {
     },
     // The seal starts mattering here: it visibly cracks.
     motion: { strain: true, strainMs: 420, sealBreak: true, beatMs: 90, lidMs: 780, openTotalMs: 1320 },
-    light: { rays: 1, embers: 9, floodScale: 1.75, mandorla: true, mandorlaScale: 0.8 },
+    light: { embers: 9, floodScale: 1.75, mandorla: true, mandorlaScale: 0.8 },
   },
   4: {
     name: "Jewelled reliquary",
@@ -126,7 +124,7 @@ const LEVELS: Record<GiftLevel, Omit<GiftPresentation, "level">> = {
       filigree: true, finials: false, gilt: 0.82, metal: 0.5,
     },
     motion: { strain: true, strainMs: 520, sealBreak: true, beatMs: 130, lidMs: 840, openTotalMs: 1520 },
-    light: { rays: 1, embers: 12, floodScale: 1.9, mandorla: true, mandorlaScale: 1 },
+    light: { embers: 12, floodScale: 1.9, mandorla: true, mandorlaScale: 1 },
   },
   5: {
     name: "Great reliquary",
@@ -134,9 +132,9 @@ const LEVELS: Record<GiftLevel, Omit<GiftPresentation, "level">> = {
       lid: "gable", bands: true, mounts: true, feet: true, bosses: true,
       filigree: true, finials: true, gilt: 0.95, metal: 0.72,
     },
-    // The longest hold, and the only one with two turning ray layers.
+    // The longest hold, and the light carried furthest.
     motion: { strain: true, strainMs: 640, sealBreak: true, beatMs: 190, lidMs: 900, openTotalMs: 1820 },
-    light: { rays: 2, embers: 16, floodScale: 2.1, mandorla: true, mandorlaScale: 1.18 },
+    light: { embers: 16, floodScale: 2.1, mandorla: true, mandorlaScale: 1.18 },
   },
 };
 

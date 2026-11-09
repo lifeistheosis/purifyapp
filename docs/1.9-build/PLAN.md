@@ -64,6 +64,7 @@ On the 1.9 branch:
 | 5 | Try it's names on two lines, not cut (bug 3) | done |
 | 6 | Cathedral bells with its own icon (bug 4) | done |
 | 7 | A sync test that broke by itself on 4 November (a fixed date) | done |
+| 7b | No light rays anywhere (his word, 2026-11-08: "vibe coded ai slop"): the Dome light banner is a soft light from above that breathes, and the gift box opens in its flood of light and embers. Guarded by `lib/ui/__tests__/noRays.test.ts`, `checkMock` and the promo test. For the 1.9 note: both look softer | done |
 
 ## Phase 1: fixes and rules (no design needed)
 

@@ -188,36 +188,6 @@ export function GiftBox({
 
             {/* Stage. Fixed size so the reveal swap cannot shift layout. */}
             <div className="relative mx-auto mt-8 h-[212px] w-[212px]">
-              {/* Rays of glory, turning as they swell. The grandest casket
-                  gets a second layer turning the other way. */}
-              {opening && light.rays > 0
-                ? Array.from({ length: light.rays }, (_, i) => (
-                    <div
-                      key={i}
-                      aria-hidden
-                      className="gift-rays absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2"
-                      style={{
-                        height: i === 0 ? 300 : 240,
-                        width: i === 0 ? 300 : 240,
-                        animationDelay: `${burstAt + 20}ms`,
-                        // The counter layer is finer and turns the other way.
-                        background: `repeating-conic-gradient(from ${
-                          i === 0 ? 0 : 7
-                        }deg at 50% 50%, rgba(244,244,245,${
-                          i === 0 ? 0.5 : 0.32
-                        }) 0deg ${i === 0 ? 3 : 1.6}deg, transparent ${
-                          i === 0 ? 3 : 1.6
-                        }deg ${i === 0 ? 15 : 9}deg)`,
-                        maskImage:
-                          "radial-gradient(circle, rgba(0,0,0,0.95) 12%, transparent 66%)",
-                        WebkitMaskImage:
-                          "radial-gradient(circle, rgba(0,0,0,0.95) 12%, transparent 66%)",
-                        ...(i === 1 ? { animationDirection: "reverse" } : {}),
-                      }}
-                    />
-                  ))
-                : null}
-
               {/* Light flooding out of the opened casket. */}
               {opening ? (
                 <div
