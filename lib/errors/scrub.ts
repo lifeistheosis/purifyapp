@@ -45,8 +45,8 @@ function scrubText(text: string): string {
       .replace(/\bBearer\s+[\w.-]+/gi, "Bearer <token>")
       .replace(/[\w.+-]+@[\w-]+(\.[\w-]+)+/g, "<email>")
       .replace(/\b[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}\b/gi, "<id>")
-      // Six or more digits in a row, spaces and dashes allowed between them.
-      .replace(/\+?\d(?:[\s-]?\d){5,}/g, "<number>")
+      // Six or more digits, with up to two of " ().-" between any two of them.
+      .replace(/\+?\(?\d(?:[\s().-]{0,2}\d){5,}/g, "<number>")
   );
 }
 

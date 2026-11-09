@@ -37,6 +37,7 @@ import { BarChart } from "../charts";
 import { CatechismDetail } from "../content/catechism";
 import { ChantWordsDetail } from "../content/chantWords";
 import { ReviewDetail } from "../content/review";
+import { SearchMissesDetail } from "../content/searchMisses";
 import { PlayCard, ReviewsCard, sourceLine } from "../content/ratings";
 import { Disclosure, Modal, StatusDot, SubTabs, ToolbarButton } from "../primitives";
 import { BOX, BOX_STYLE, LIT, ink, ink2, ink3, line } from "../tools/look";
@@ -101,6 +102,7 @@ export function ContentDesk({ focus }: { focus?: "ratings" | "catechism" | "chan
   const [catechismOpen, setCatechismOpen] = useState(focus === "catechism");
   const [chantWordsOpen, setChantWordsOpen] = useState(focus === "chant-words");
   const [reviewOpen, setReviewOpen] = useState(focus === "review");
+  const [missesOpen, setMissesOpen] = useState(false);
   const ratingsRef = useRef<HTMLElement | null>(null);
   const catechismRef = useRef<HTMLElement | null>(null);
   const chantWordsRef = useRef<HTMLElement | null>(null);
@@ -514,6 +516,32 @@ export function ContentDesk({ focus }: { focus?: "ratings" | "catechism" | "chan
               {reviewOpen ? (
                 <div className="mt-2 border-t pt-3" style={line}>
                   <ReviewDetail />
+                </div>
+              ) : null}
+            </div>
+          </section>
+
+          {/* ── Searched, not found, one line (1.9, admin A11) ─────────── */}
+          <section className={`${BOX} scroll-mt-24 px-4 py-3.5`} style={BOX_STYLE}>
+            <h2 className="font-sans text-[13.5px] font-semibold" style={ink}>
+              Searched, not found
+            </h2>
+            <p className="mt-1 font-sans text-[12px] leading-[1.5]" style={ink3}>
+              What readers looked for that the library does not have yet. The words only, never who.
+            </p>
+            <div className="mt-2">
+              <button
+                type="button"
+                onClick={() => setMissesOpen((v) => !v)}
+                className="min-h-11 font-sans text-[12.5px] underline underline-offset-[3px]"
+                style={ink2}
+                aria-expanded={missesOpen}
+              >
+                {missesOpen ? "Close" : "The searches, most asked first"}
+              </button>
+              {missesOpen ? (
+                <div className="mt-2 border-t pt-3" style={line}>
+                  <SearchMissesDetail />
                 </div>
               ) : null}
             </div>
