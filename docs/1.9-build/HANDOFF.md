@@ -204,4 +204,15 @@ very short and plain, emojis welcome, never an em dash.
 - Every question still open, in plain words with photos only for design picks, is one page for him: https://claude.ai/artifact/7JTm8bbtF96SmpCCcJ5S2D (late 2026-11-09). Four photo picks (52, 9, 11, 77), the yes or no list, the steps only he can do, and what waits for after 1.9. He answers with "all recs" or by number.
 - Sent to Updates late 2026-11-09, his word, no decision needed: every book or
   plan cover is the saint it is attributed to, and the reader's bars leave
-  later and slower (both in `BRAINSTORM.md`).
+  later and slower (both in `BRAINSTORM.md`). Updates found that production
+  already serves the saint covers (david, john, luke, paul, solomon return
+  200): the manuscript he saw was the offline fallback in a sandbox screenshot.
+  The one real change is the four Gospels, from St Matthew to St John (the
+  library has no icon of the four together). 18 books have no verified saint
+  icon and show the manuscript (1-2 Chronicles, 1 Esdras, Ezra, Nehemiah,
+  Tobit, Judith, Esther, 1-3 Maccabees, Sirach, Obadiah, Zechariah, Baruch,
+  Prayer of Manasseh, 2 Esdras, Jude): asked of him as 86 on his page.
+- 15, the Serbian, Arabic and Spanish Bibles: built before the order to wait
+  arrived, parked as `docs/1.9-build/drafts/bibles-15.patch` (5f6edd9), about
+  30 minutes from riding in 1.9. Asked of him on his page. Romanian is not
+  built (legal footing and OCR proofing, his word).
