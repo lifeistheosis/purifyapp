@@ -3027,6 +3027,23 @@ html[data-reading-mode="parchment"] .verse-ghost-words [data-word-idx]:not(.dark
  text-decoration-color: rgb(43 35 23 / 0.3);
 }
 
+/* The Creed by council (1.9, s6-07, app/(app)/theology/creed): the words the
+   Council of Constantinople added in 381, lit with the selected verse's own
+   faint wash (.verse-ghost above), line by line, in the paper's full ink; the
+   words of Nicaea beside them stand plain. A <mark>, so it reads as marked. */
+mark.creed-added {
+ color: var(--color-paper);
+ background-color: rgb(255 255 255 / 0.085);
+ border-radius: 4px;
+ padding: 0.06em 0.2em;
+ margin: 0 -0.08em;
+ -webkit-box-decoration-break: clone;
+ box-decoration-break: clone;
+}
+html[data-reading-mode="parchment"] mark.creed-added:not(.dark-island *) {
+ background-color: rgb(43 35 23 / 0.07);
+}
+
 /* Pulse the study-rail section when its hash is the URL target. */
 .rail-section:target {
  animation: rail-pulse 1.4s ease-out;

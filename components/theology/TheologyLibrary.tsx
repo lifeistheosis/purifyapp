@@ -5,6 +5,7 @@ import { T } from "@/components/i18n/T";
 import { ArrivingImage } from "@/components/ui/ArrivingImage";
 import { Book } from "@/components/ui/icons/Book";
 import { ChevronRight } from "@/components/ui/icons/ChevronRight";
+import { Codex } from "@/components/ui/icons/Codex";
 import { Cross } from "@/components/ui/icons/Cross";
 import { Scroll } from "@/components/ui/icons/Scroll";
 import { Shield } from "@/components/ui/icons/Shield";
@@ -78,6 +79,42 @@ export function WaysTiles({ counts }: { counts: WayCounts }) {
           </Link>
         </li>
       ))}
+    </ul>
+  );
+}
+
+/**
+ * The Creed by council (1.9, s6-07; his yes of 2026-11-09 to "a card at the
+ * head of Theology, opening the twelve articles"): one row in the ways' own
+ * tray, its two councils under its name. The hub sets it under its head; the
+ * pages of the two councils that gave it set it under their books, the
+ * second's saying what it added (`added`).
+ */
+export function CreedRow({ added = false }: { added?: boolean }) {
+  return (
+    <ul data-theology-creed="" className="theology-tray overflow-hidden rounded-[20px] px-1.5 py-1">
+      <li>
+        <Link href="/theology/creed" className="theology-row flex min-h-[54px] items-center gap-3 rounded-[14px] px-2 py-2">
+          <span className="theology-plate grid size-8 shrink-0 place-items-center rounded-[10px] text-paper/85">
+            <Codex size={17} />
+          </span>
+          <span className="min-w-0 flex-1">
+            <span className="block truncate font-serif text-[15.5px] font-semibold leading-tight text-paper/92">
+              <T k="creed.title" />
+            </span>
+            <span className="mt-0.5 block truncate font-sans text-caption text-paper/52">
+              {added ? (
+                <T k="creed.added" />
+              ) : (
+                <>
+                  <T k="creed.nicaea" /> · <T k="creed.constantinople" />
+                </>
+              )}
+            </span>
+          </span>
+          <ChevronRight size={14} className="shrink-0 text-paper/32 rtl:-scale-x-100" />
+        </Link>
+      </li>
     </ul>
   );
 }

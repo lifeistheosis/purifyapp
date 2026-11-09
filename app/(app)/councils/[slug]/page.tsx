@@ -16,6 +16,7 @@ import { CouncilHero } from "@/components/councils/CouncilHero";
 import { CouncilFathers } from "@/components/councils/CouncilFathers";
 import { CouncilWords } from "@/components/councils/CouncilWords";
 import { DocumentsDoor } from "@/components/councils/DocumentsDoor";
+import { CreedRow } from "@/components/theology/TheologyLibrary";
 import { councilBooks, shelfSize } from "@/lib/councils/books";
 import { fatherFaces } from "@/lib/councils/fathers";
 import { councilQuote, lineOfCouncil } from "@/lib/councils/lines";
@@ -201,6 +202,13 @@ export default async function CouncilProfilePage({
   minutes={shelf.minutes}
   fan={books.slice(0, 3).map((b) => ({ src: b.cover?.src, focusY: b.cover?.focusY, crop: b.cover?.crop }))}
  />
+ ) : null}
+
+ {/* The two councils that gave the Creed: it line by line, marked by council (1.9, s6-07). */}
+ {c.slug === "first-nicaea" || c.slug === "first-constantinople" ? (
+ <div className="mt-4">
+  <CreedRow added={c.slug === "first-constantinople"} />
+ </div>
  ) : null}
 
  {c.pendingDocuments && c.pendingDocuments.length > 0 && (

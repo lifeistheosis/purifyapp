@@ -65,6 +65,8 @@ export function TheologyHub({
     recent: ReactNode;
     /** The Fathers the studies quote, and Church History. */
     more: ReactNode;
+    /** The Creed by council (1.9), under the head. */
+    creed: ReactNode;
   };
 }) {
   const { t } = useTranslate();
@@ -88,6 +90,7 @@ export function TheologyHub({
             <Search size={18} aria-hidden />
             <span className="truncate">{t("study.theology.searchLibrary")}</span>
           </button>
+          <div className="mt-4">{slots.creed}</div>
           {slots.recent}
           <div className="mt-4">{slots.waysTiles}</div>
           {slots.councils}
@@ -109,6 +112,8 @@ export function TheologyHub({
           <WhereYouLeftOff steps={steps} states={states} progress={progress} />
         )}
       </div>
+
+      <div className="mt-4">{slots.creed}</div>
 
       <section aria-labelledby="theology-path" className="mt-7">
         <div className="flex items-baseline justify-between gap-3">

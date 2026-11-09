@@ -16,7 +16,7 @@ import { T } from "@/components/i18n/T";
 import { FathersShelf } from "@/components/theology/FathersShelf";
 import { RecentStudies, type RecentStudy } from "@/components/theology/RecentStudies";
 import { TheologyHub } from "@/components/theology/TheologyHub";
-import { CouncilFilm, WaysRows, WaysTiles, type FilmCouncil, type WayCounts } from "@/components/theology/TheologyLibrary";
+import { CouncilFilm, CreedRow, WaysRows, WaysTiles, type FilmCouncil, type WayCounts } from "@/components/theology/TheologyLibrary";
 
 export const metadata = {
   title: "Theology",
@@ -142,6 +142,7 @@ export default async function TheologyHubPage() {
               waysTiles: <WaysTiles counts={counts} />,
               councils: <CouncilFilm councils={seven} />,
               recent: <RecentStudies studies={recent} />,
+              creed: <CreedRow />,
               more: (
                 <>
                   <FathersShelf fathers={fathers} />
