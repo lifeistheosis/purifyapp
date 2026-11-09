@@ -105,6 +105,18 @@ Drafted now, sent later. The owner sends every one. How a drop works is in
       <version>. The note shows only once the owner has accepted it.
 - [ ] The Supabase check on the commit is green, if the push carried a
       migration.
+- [ ] The deletes the privacy page promises run (error reports after 14
+      days, searches that found nothing after 90; `lib/ops/prune.ts`). They
+      ride Render's cron call to `/api/cron/hourly-goals` with `CRON_SECRET`.
+      Once the `app_errors` and `search_misses` tables exist, read one run's
+      answer in Render (the cron job `purifyapp`, Logs). Its
+      `maintenance.pruneReports`, or that entry's `last` on a run that
+      skipped them, says `"ok":true` and a number for each table (rows
+      deleted; 0 is fine). `"absent"`: that table's SQL has not run.
+      `"last":null`: not run since the server started; read the next run.
+      A 503 or a 403 (curl says error 22), or no run at all: the cron is not
+      calling with the secret, so nothing is deleted and no prayer reminder
+      is sent either.
 
 ## 7. The stores (the owner)
 

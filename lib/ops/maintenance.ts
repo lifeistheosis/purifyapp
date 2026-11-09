@@ -44,9 +44,20 @@ export const CART_NOTES_UTC_HOURS: readonly [number, number] = [14, 23];
  * is caught and reported in the response instead.
  */
 
-type JobResult = { ran: boolean; ok?: boolean; detail?: unknown; error?: string };
+type JobResult = { ran: boolean; ok?: boolean; detail?: unknown; error?: string; last?: LastRun | null };
+
+/** A job's last run on this server, for the calls that skip it. */
+type LastRun = { at: string; ok?: boolean; detail?: unknown; error?: string };
 
 const lastRun = new Map<string, number>();
+
+/**
+ * The deletes' last run on this server. Its own call to the heartbeat says
+ * how the deletes went even on a call that skips them (the release check in
+ * docs/release/TEMPLATE.md reads it): null until they have run since the
+ * server started.
+ */
+let lastPrune: LastRun | null = null;
 
 async function every(
   name: string,
@@ -115,7 +126,9 @@ export async function runMaintenance(admin: SupabaseClient, now: number = Date.n
   // The anonymous reports are kept only as long as their privacy lines say:
   // errors 14 days, searches that found nothing 90 (lib/ops/prune.ts). Once a
   // day; a table not there yet is said, not failed.
-  report.pruneReports = await every("pruneReports", 20 * 3_600_000, now, () => pruneReports(admin, new Date(now)));
+  const prune = await every("pruneReports", 20 * 3_600_000, now, () => pruneReports(admin, new Date(now)));
+  if (prune.ran) lastPrune = { at: new Date(now).toISOString(), ok: prune.ok, detail: prune.detail, error: prune.error };
+  report.pruneReports = prune.ran ? prune : { ran: false, last: lastPrune };
   // The Monday email (lib/admin/weekly.ts): last week in numbers, to the
   // owner, from the same morning hour. The email log keys it by week, so it
   // goes once whatever the heartbeat or a restart does.

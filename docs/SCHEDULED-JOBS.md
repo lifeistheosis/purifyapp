@@ -25,11 +25,12 @@ re-enabling it cannot restart an hourly bill. It keeps its manual button.
 
 ## What runs, and when
 
-All routes need the `x-cron-secret` header matching `CRON_SECRET` on Render.
+Every route needs `CRON_SECRET` from Render: hourly-goals as
+`Authorization: Bearer <secret>`, the others as the `x-cron-secret` header.
 
 | Route | When | What |
 |---|---|---|
-| `/api/cron/hourly-goals` | every 10 minutes | the hourly goals, housekeeping, and the hour's prayer reminders: the first call of each UTC hour takes that hour's claim and sends, the rest find it taken |
+| `/api/cron/hourly-goals` | every 10 minutes | the hourly goals, housekeeping (among it, once a day, the deletes the privacy page promises: error reports after 14 days, searches that found nothing after 90, `lib/ops/prune.ts`), and the hour's prayer reminders: the first call of each UTC hour takes that hour's claim and sends, the rest find it taken |
 | `/api/cron/lifecycle` | 11:00 to 11:19 UTC (twice, the second a no-op) | the email funnel's daily run |
 | `/api/cron/push-deliver` | not called; kept for a scheduler that wants to call it | the same reminder run as the heartbeat's, behind the same hourly claim, so calling it as well sends nothing twice |
 | `/api/cron/bmc-snapshot` | OFF (would be: once a day, 03:10 to 03:19 UTC) | the Buy Me a Coffee totals |
