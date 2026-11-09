@@ -49,6 +49,8 @@ screenshots of the Discord to the arbiter, which makes the D list from them.
 He deleted the two Discord chats and a one-check test chat, and then the
 discord.com network secret (gone from the environment, checked).
 
+**Simplified 2.0 (the evening of 2026-11-09, his word, for these sessions):** he is unwell and asked for replies even shorter than simplified mode, "as if, like, you know, I was dyslexic": a few short lines, simple words, one idea per line, emojis as signposts, and "all recs" as the one answer he needs to give.
+
 ## Fable 5.2 in the workflow (2026-11-09, his word)
 
 His word: "Go Fable, set up the chat, and let's get it implemented into our workflow." Fable 5.2 (`claude-fable-5-2`) costs twice what Opus 5.5 costs per token ($8 and $40 per million against $4 and $20) and takes longer turns, so it takes only work where it clearly beats Opus 5.5. He set the limits: at most half of the plan's weekly limit, with two Fable resets and one full weekly reset this week.
