@@ -51,6 +51,16 @@ discord.com network secret (gone from the environment, checked).
 
 **Simplified 2.0 (the evening of 2026-11-09, his word, for these sessions):** he is unwell and asked for replies even shorter than simplified mode, "as if, like, you know, I was dyslexic": a few short lines, simple words, one idea per line, emojis as signposts, and "all recs" as the one answer he needs to give.
 
+## The way to the 1.9 release (his word, the evening of 2026-11-09)
+
+1. Finish every update we have built or he has mentioned.
+2. He gives the creative directions (his picks on the open design questions).
+3. Formalize the update: `node scripts/release.mjs new 1.9`, the note in 21 languages, the six version numbers, the checklist, the drop (Fable's release check 1, B1).
+4. Send him the GitHub link to the Android test build; he tests it on his phone.
+5. Every release, once each store serves the build: set ANDROID_VERSION_CODE and IOS_BUILD_NUMBER on Render (his word: "every single update we have to update renders ENV, like Android build something").
+
+Also his word: "Fable 5.2 is insanely good at agentic coding. So any like of the hard coding issues you need, maybe even for design, allow Fable 5.2 to do a lot of the hard, heavy end work for that." So hard coding, and design work that is heavy, go to a Fable 5.2 chat, within the weekly cap. First of these: the live report that the chant player does not load for some readers, Plus readers most (his words: "people are saying that the chant player actually doesn't load, especially some of the premium users"), with his suspicion that the live site moved ahead of the store builds still in readers' hands. Chat `session_01VuYTwaDfEiENazeVTQSYDx`, started 2026-11-09.
+
 ## Fable 5.2 in the workflow (2026-11-09, his word)
 
 His word: "Go Fable, set up the chat, and let's get it implemented into our workflow." Fable 5.2 (`claude-fable-5-2`) costs twice what Opus 5.5 costs per token ($8 and $40 per million against $4 and $20) and takes longer turns, so it takes only work where it clearly beats Opus 5.5. He set the limits: at most half of the plan's weekly limit, with two Fable resets and one full weekly reset this week.
