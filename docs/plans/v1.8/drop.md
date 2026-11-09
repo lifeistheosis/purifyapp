@@ -35,7 +35,6 @@ Also:
 - "whole Bible": only the New Testament is read aloud
 - "narrat": the reading is a synthetic voice, not a narrator
 - "voices": one reading voice; a choice of voices is not built
-- "new chants": no chant is new in 1.8; more chants wait on recordings, for 1.9
 - "Find a parish": the parish directory is planned for 1.9, not built
 - "Purify Parish": the parish plan is planned for 1.9, not built
 
