@@ -86,6 +86,12 @@ export type AudioSnapshot = {
   /** Playback speed: 1 is as recorded. */
   rate: number;
   sleep: SleepTimer;
+  /**
+   * The reader asked for the track and it could not be loaded, after the
+   * player's own tries (below, "A recording that would not load"). Play is
+   * still theirs to tap: it loads the recording again.
+   */
+  failed: boolean;
 };
 
 let audioEl: HTMLAudioElement | null = null;
@@ -105,6 +111,7 @@ let snapshot: AudioSnapshot = {
   rtl: false,
   rate: 1,
   sleep: { kind: "off" },
+  failed: false,
 };
 // Remaining replays for finite loop counts. Module-level so the
 // `ended` listener reads the latest value without being re-bound.
@@ -126,13 +133,110 @@ function update(patch: Partial<AudioSnapshot>) {
 }
 
 /**
+ * A recording that would not load (1.9, the owner's report of 2026-11-09:
+ * "the chant player actually doesn't load").
+ *
+ * An audio element whose recording fails once (a request dropped as the phone
+ * changes network, an app come back from a long sleep, a moment with no
+ * signal) is left in an error state, and in that state it refuses every
+ * play() from then on: it never asks the network again by itself. Until 1.9
+ * nothing here listened for that, and loading the same address again was a
+ * no-op (setTrack), so one failed request left that recording's Play dead
+ * until the app was closed, on its page, in the mini player and in Now
+ * Playing, with no word on the screen. Every recording streams, so every
+ * reader of the apps could meet it, and those who listen most met it most.
+ *
+ * Now: a recording the reader asked for that fails is loaded again where it
+ * had got to, twice, a moment apart. If it still cannot be had, the snapshot
+ * says so (`failed`), and the next tap on Play loads it afresh, so a
+ * connection that has come back is always found.
+ */
+export const RETRY_AFTER_MS = [1000, 4000] as const;
+/** The reader has asked for sound and has not stopped it. */
+let wanted = false;
+/** How many times this recording has been loaded again since it last played. */
+let retries = 0;
+let retryTimer: ReturnType<typeof setTimeout> | null = null;
+/** Counts every ask to play, so an answer to an earlier ask is not taken for the latest. */
+let asks = 0;
+
+function clearRetry(): void {
+  if (retryTimer) clearTimeout(retryTimer);
+  retryTimer = null;
+}
+
+/** Whether the element is stuck on a recording it could not load. */
+function broken(a: HTMLAudioElement): boolean {
+  return Boolean(a.error) || snapshot.failed;
+}
+
+/** Load the recording again from its address, to go on from where it was. */
+function loadAgain(a: HTMLAudioElement): void {
+  const src = snapshot.src;
+  if (!src) return;
+  const at = snapshot.currentTime;
+  // The same recording, so its own speed: loading sets the speed back to the
+  // default one, so the default is set first and the speed again after.
+  a.defaultPlaybackRate = snapshot.rate;
+  a.src = src;
+  a.load();
+  applyRate(a, snapshot.rate);
+  if (at > 0) {
+    try {
+      // Before the recording's length is known this is where it will start.
+      a.currentTime = at;
+    } catch {
+      /* it starts from the beginning */
+    }
+  }
+}
+
+/**
  * Play, and say so when it cannot. With no signal, or no source the device
  * can play, the browser refuses the promise play() returns: left uncaught,
  * that is an error on the page (the export walk counts it, 2026-10-26), and
- * the bar would go on saying it plays.
+ * the bar would go on saying it plays. A recording that failed before is
+ * loaded afresh first: play() alone would be refused for ever.
  */
-function tryPlay(a: HTMLAudioElement): void {
-  a.play().catch(() => update({ playing: false }));
+function tryPlay(a: HTMLAudioElement, byReader: boolean = true): void {
+  wanted = true;
+  if (byReader) {
+    clearRetry();
+    retries = 0;
+  }
+  if (broken(a)) {
+    loadAgain(a);
+    if (snapshot.failed) update({ failed: false });
+  }
+  const ask = ++asks;
+  a.play().catch(() => {
+    // Asked again since, or another recording chosen: that ask speaks for itself.
+    if (ask !== asks) return;
+    // A recording that failed to load brings the element's error event too,
+    // which loads it again (onError). A try of the player's own that is
+    // refused with no error (a phone that wants a touch first) is the end
+    // of its tries: the reader's next tap on Play loads it afresh.
+    update({ playing: false, ...(!byReader && wanted && !a.error ? { failed: true } : {}) });
+  });
+}
+
+/** The recording failed while the reader wanted it: load it again, or say it cannot be had. */
+function onError(a: HTMLAudioElement): void {
+  // Put away (unload) or never asked for: nothing to say and nothing to try.
+  if (!snapshot.src || !wanted) return;
+  clearRetry();
+  if (retries >= RETRY_AFTER_MS.length) {
+    update({ playing: false, failed: true });
+    return;
+  }
+  const src = snapshot.src;
+  retryTimer = setTimeout(() => {
+    retryTimer = null;
+    if (snapshot.src !== src || !wanted) return;
+    tryPlay(a, false);
+  }, RETRY_AFTER_MS[retries]);
+  retries += 1;
+  update({ playing: false });
 }
 
 function ensureElement(): HTMLAudioElement {
@@ -158,11 +262,19 @@ function ensureElement(): HTMLAudioElement {
   a.addEventListener("pause", () => {
     update({ playing: false });
   });
+  // Sound is coming: whatever failed before is over.
+  a.addEventListener("playing", () => {
+    retries = 0;
+    clearRetry();
+    if (snapshot.failed) update({ failed: false });
+  });
+  a.addEventListener("error", () => onError(a));
   a.addEventListener("ended", () => {
     // A sleep timer set to the end of the track wins over any loop.
     if (snapshot.sleep.kind === "end") {
       a.loop = false;
       repeatsLeft = 0;
+      wanted = false;
       update({ playing: false, currentTime: 0, sleep: { kind: "off" } });
       return;
     }
@@ -172,6 +284,7 @@ function ensureElement(): HTMLAudioElement {
       tryPlay(a);
       return;
     }
+    wanted = false;
     update({ playing: false, currentTime: 0 });
   });
 
@@ -184,9 +297,11 @@ function ensureElement(): HTMLAudioElement {
         tryPlay(a);
       });
       navigator.mediaSession.setActionHandler("pause", () => {
-        a.pause();
+        pause();
       });
       navigator.mediaSession.setActionHandler("stop", () => {
+        wanted = false;
+        clearRetry();
         a.pause();
         a.currentTime = 0;
         update({ playing: false, currentTime: 0 });
@@ -237,10 +352,16 @@ export function setTrack(
     // Loading a source sets the speed back to the default one, so the default
     // is set first, and the speed again after.
     a.defaultPlaybackRate = rate;
+    // Another recording: what the last one could not do is not its affair.
+    wanted = false;
+    retries = 0;
+    asks += 1;
+    clearRetry();
     a.src = src;
     a.load();
     a.playbackRate = rate;
     update({
+      failed: false,
       src,
       title: opts.title ?? null,
       artist: opts.artist ?? null,
@@ -343,13 +464,15 @@ export function play(): void {
 }
 
 export function pause(): void {
+  wanted = false;
+  clearRetry();
   if (audioEl) audioEl.pause();
 }
 
 export function toggle(): void {
   const a = ensureElement();
   if (a.paused) tryPlay(a);
-  else a.pause();
+  else pause();
 }
 
 export function seek(t: number): void {
@@ -373,6 +496,8 @@ export function setLoopMode(mode: LoopMode): void {
 }
 
 export function stop(): void {
+  wanted = false;
+  clearRetry();
   if (audioEl) {
     audioEl.pause();
     audioEl.currentTime = 0;
@@ -390,6 +515,9 @@ export function stop(): void {
  * bar simply sits there rewound and will not go away.
  */
 export function unload(): void {
+  wanted = false;
+  retries = 0;
+  clearRetry();
   if (audioEl) {
     audioEl.pause();
     audioEl.removeAttribute("src");
@@ -407,6 +535,7 @@ export function unload(): void {
     currentTime: 0,
     duration: 0,
     sleep: { kind: "off" },
+    failed: false,
   });
 }
 
@@ -442,6 +571,7 @@ const SERVER_SNAPSHOT: AudioSnapshot = {
   rtl: false,
   rate: 1,
   sleep: { kind: "off" },
+  failed: false,
 };
 function getServerSnapshot(): AudioSnapshot {
   return SERVER_SNAPSHOT;

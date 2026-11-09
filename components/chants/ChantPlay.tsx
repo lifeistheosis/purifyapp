@@ -147,7 +147,8 @@ export function PlayPill({
  * 61): before the version plays the line is still and shows its length, the
  * skips are dim, and Play waits dim while the list of recordings is read,
  * then lights where it is. A version that cannot play says why in the
- * line's middle, between the two times, so nothing moves when it does.
+ * line's middle, between the two times, so nothing moves when it does; so
+ * does a recording that was started and would not load (1.9).
  */
 export function ChantDock({
   variant,
@@ -168,7 +169,11 @@ export function ChantDock({
   const duration = loaded && audio.duration > 0 ? audio.duration : variant.audio.durationSec;
   // How far it has to go, as Now Playing's line says it.
   const left = `-${clock(Math.max(0, duration - current))}`;
-  const why = availabilityKey(chant.availability);
+  // A recording that would not load, after the player's own tries
+  // (lib/prayers/persistentAudioStore.ts): said in the same place, and Play
+  // stays lit, since a tap on it loads the recording afresh.
+  const stuck = loaded && audio.failed ? (typeof navigator !== "undefined" && navigator.onLine === false ? "chants.needsConnection" : "error.tryAgain") : null;
+  const why = availabilityKey(chant.availability) ?? stuck;
   return (
     <div
       role="region"
