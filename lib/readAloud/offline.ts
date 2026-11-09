@@ -198,11 +198,28 @@ export async function removeBook(book: string, plugin?: Plugin): Promise<void> {
  * Move what a reader saved before 1.9 from Data to the folder recordings are
  * kept in now (home, above), once, and the list's addresses with it. Where the
  * two are one folder (Android), nothing moves. A chapter that does not move
- * this time stays where it is and keeps playing from the list's address; the
- * move is tried again next time, and marked done only once every saved
- * chapter is in its new place. Never throws.
+ * this time stays where it is and keeps playing from where it is; the move is
+ * tried again next time, and marked done once every saved chapter is settled:
+ * its recording in the new place, or on the phone no more. Never throws.
+ *
+ * Fable's release check 1, M5: one move at a time (a second call while one
+ * runs waits for it); each chapter's addresses written as it moves, so an app
+ * closed half way through leaves no chapter pointing at where it was; and a
+ * chapter whose timings file is missing no longer holds the move open for
+ * ever, since its recording is what decides.
  */
-export async function moveSavedHome(plugin?: Plugin): Promise<void> {
+let moving: Promise<void> | null = null;
+
+export function moveSavedHome(plugin?: Plugin): Promise<void> {
+  if (!moving) {
+    moving = moveOnce(plugin).finally(() => {
+      moving = null;
+    });
+  }
+  return moving;
+}
+
+async function moveOnce(plugin?: Plugin): Promise<void> {
   if (typeof window === "undefined") return;
   const mark = () => {
     try {
@@ -216,8 +233,7 @@ export async function moveSavedHome(plugin?: Plugin): Promise<void> {
   } catch {
     return;
   }
-  const before = read();
-  const keys = Object.keys(before);
+  const keys = Object.keys(read());
   if (!keys.length) {
     mark();
     return;
@@ -236,7 +252,15 @@ export async function moveSavedHome(plugin?: Plugin): Promise<void> {
   } catch {
     return;
   }
-  const moved: Record<string, { mp3: string; json: string }> = {};
+  const isThere = async (path: string, directory: Plugin["Directory"][keyof Plugin["Directory"]]) => {
+    try {
+      await Filesystem.stat({ path, directory });
+      return true;
+    } catch {
+      return false;
+    }
+  };
+  let settled = 0;
   for (const key of keys) {
     const book = key.split("/")[0];
     try {
@@ -244,7 +268,6 @@ export async function moveSavedHome(plugin?: Plugin): Promise<void> {
     } catch {
       /* already there */
     }
-    const uris: Partial<Record<"mp3" | "json", string>> = {};
     for (const ext of ["mp3", "json"] as const) {
       const path = `audio/read/${key}.${ext}`;
       try {
@@ -252,20 +275,33 @@ export async function moveSavedHome(plugin?: Plugin): Promise<void> {
       } catch {
         /* moved by an earlier try, or never there: the new place is asked next */
       }
-      try {
-        await Filesystem.stat({ path, directory: home(fs) });
-        uris[ext] = (await Filesystem.getUri({ path, directory: home(fs) })).uri;
-      } catch {
-        /* still in the old place: it plays from there, and is tried again */
-      }
     }
-    if (uris.mp3 && uris.json) moved[key] = { mp3: uris.mp3, json: uris.json };
+    const mp3 = `audio/read/${key}.mp3`;
+    if (await isThere(mp3, home(fs))) {
+      // In its new place: its addresses now, before the next chapter, so a
+      // move cut short leaves this one playing. A timings file that never was
+      // is asked for where it would be, and does not hold the move open.
+      try {
+        const [a, j] = await Promise.all([
+          Filesystem.getUri({ path: mp3, directory: home(fs) }),
+          Filesystem.getUri({ path: `audio/read/${key}.json`, directory: home(fs) }),
+        ]);
+        const now = read();
+        if (now[key]) {
+          now[key] = { ...now[key], mp3: a.uri, json: j.uri };
+          write(now);
+        }
+        settled += 1;
+      } catch {
+        /* its addresses next time */
+      }
+    } else if (!(await isThere(mp3, Directory.Data))) {
+      // On the phone no more: nothing to move (checkSaved takes it off the list).
+      settled += 1;
+    }
+    // Else still in the old place: it plays from there, and is tried again.
   }
-  // The list as it is now, as a chapter may have been saved meanwhile.
-  const now = read();
-  for (const [key, uris] of Object.entries(moved)) if (now[key]) now[key] = { ...now[key], ...uris };
-  write(now);
-  if (Object.keys(moved).length === keys.length) {
+  if (settled === keys.length) {
     mark();
     try {
       await Filesystem.rmdir({ path: "audio/read", directory: Directory.Data, recursive: true });
@@ -276,30 +312,76 @@ export async function moveSavedHome(plugin?: Plugin): Promise<void> {
 }
 
 /**
- * Drop from the list any saved chapter whose recording is no longer on the
- * phone, after moving what was saved before 1.9 (moveSavedHome). A chapter not
- * yet moved is looked for where it was, so it is never dropped for that.
+ * At each launch, and whenever the saving screen opens: what was saved before
+ * 1.9 moved (moveSavedHome), any saved chapter whose recording is no longer on
+ * the phone taken off the list, and every other chapter's addresses made
+ * again from where its files are now. An app update moves an iPhone app's
+ * folder, and an address kept from before points nowhere (Fable's release
+ * check 1, M5): a chapter saved before an update plays after it. A chapter not
+ * yet moved is looked for where it was, so it is never dropped for that. One
+ * check at a time. Never throws.
  */
-export async function checkSaved(plugin?: Plugin): Promise<void> {
+let checking: Promise<void> | null = null;
+
+export function checkSaved(plugin?: Plugin): Promise<void> {
+  if (!checking) {
+    checking = checkOnce(plugin)
+      .catch(() => {
+        /* the list stays as it was; the next launch checks again */
+      })
+      .finally(() => {
+        checking = null;
+      });
+  }
+  return checking;
+}
+
+async function checkOnce(plugin?: Plugin): Promise<void> {
   await moveSavedHome(plugin);
-  const all = read();
-  const keys = Object.keys(all);
+  const keys = Object.keys(read());
   if (!keys.length) return;
   const { Filesystem, Directory } = plugin ?? (await import("@capacitor/filesystem"));
-  let changed = false;
+  const gone: string[] = [];
+  const now: Record<string, { mp3: string; json: string }> = {};
   for (const key of keys) {
     let there = false;
+    let found = Directory.LibraryNoCloud;
     for (const directory of [Directory.LibraryNoCloud, Directory.Data]) {
       try {
         await Filesystem.stat({ path: `audio/read/${key}.mp3`, directory });
         there = true;
+        found = directory;
         break;
       } catch {
         /* not in this one */
       }
     }
     if (!there) {
+      gone.push(key);
+      continue;
+    }
+    try {
+      const [a, j] = await Promise.all([
+        Filesystem.getUri({ path: `audio/read/${key}.mp3`, directory: found }),
+        Filesystem.getUri({ path: `audio/read/${key}.json`, directory: found }),
+      ]);
+      now[key] = { mp3: a.uri, json: j.uri };
+    } catch {
+      /* kept as it is listed */
+    }
+  }
+  // Written over the list as it is now, as a chapter may have been saved meanwhile.
+  const all = read();
+  let changed = false;
+  for (const key of gone) {
+    if (all[key]) {
       delete all[key];
+      changed = true;
+    }
+  }
+  for (const [key, uris] of Object.entries(now)) {
+    if (all[key] && (all[key].mp3 !== uris.mp3 || all[key].json !== uris.json)) {
+      all[key] = { ...all[key], ...uris };
       changed = true;
     }
   }

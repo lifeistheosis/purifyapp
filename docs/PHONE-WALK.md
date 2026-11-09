@@ -102,6 +102,7 @@ To put it on the phone, either:
 | 18 | Tap a notification | It opens its screen |
 | 19 | Signed in, with notifications on in Settings: wait for your next reminder, or ask for a test to your devices | It arrives on this phone as a banner, with the cross in the status bar |
 | 20 | Sign out, then sign in (another account, if you have one) | Notifications stop while signed out, and come to the account now signed in |
+| 21 | Before updating, with Plus, save a book to listen offline on the build you have. Update to this build, open it, turn on airplane mode, and play a saved chapter | It plays with no signal: a chapter saved before the update still plays after it. On the iPhone an update moves the app's folder, and the app finds each saved recording again at launch (`lib/readAloud/offline.ts`, checkSaved) |
 
 ## After
 

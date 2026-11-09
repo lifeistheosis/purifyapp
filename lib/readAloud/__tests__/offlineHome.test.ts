@@ -123,3 +123,58 @@ describe("on Android, where the two folders are one", () => {
     expect(store.get("purify:readAloud.home")).toBe("1");
   });
 });
+
+// Fable's release check 1, M5.
+describe("saved recordings, across an update and a move cut short", () => {
+  it("a chapter saved before an update still plays after it: its address is made again at launch", async () => {
+    // An iPhone app's folder moves with an update; the list kept the old one.
+    const p = phone(IPHONE);
+    for (const ext of ["mp3", "json"]) p.files.add(p.where("LIBRARY_NO_CLOUD", `audio/read/jude/1.${ext}`));
+    store.set("purify:readAloud.home", "1");
+    store.set(
+      "purify:readAloud.saved",
+      JSON.stringify({ "jude/1": { mp3: "file:///old-app/Library/NoCloud/audio/read/jude/1.mp3", json: "file:///old-app/Library/NoCloud/audio/read/jude/1.json", bytes: 1500 } }),
+    );
+    await checkSaved(p.plugin);
+    expect(saved()["jude/1"]).toEqual({ mp3: "file:///app/Library/NoCloud/audio/read/jude/1.mp3", json: "file:///app/Library/NoCloud/audio/read/jude/1.json", bytes: 1500 });
+  });
+
+  it("moves once when asked twice at the same moment", async () => {
+    const p = phone(IPHONE);
+    savedBefore(p);
+    await Promise.all([moveSavedHome(p.plugin), moveSavedHome(p.plugin), checkSaved(p.plugin)]);
+    expect(p.renames).toHaveLength(4);
+    expect(store.get("purify:readAloud.home")).toBe("1");
+  });
+
+  it("writes each chapter's addresses as it moves, so a move cut short leaves none pointing at where it was", async () => {
+    const p = phone(IPHONE);
+    savedBefore(p);
+    let seen: Record<string, { mp3: string }> | null = null;
+    const rename = p.plugin.Filesystem.rename;
+    (p.plugin.Filesystem as { rename: typeof rename }).rename = async (o) => {
+      if (o.from === "audio/read/mark/8.mp3") seen = saved();
+      return rename(o);
+    };
+    await moveSavedHome(p.plugin);
+    expect(seen!["jude/1"].mp3).toBe("file:///app/Library/NoCloud/audio/read/jude/1.mp3");
+  });
+
+  it("is not held open for ever by a missing timings file, or by a chapter gone from the phone", async () => {
+    const p = phone(IPHONE);
+    savedBefore(p);
+    p.files.delete(p.where("DATA", "audio/read/jude/1.json"));
+    for (const ext of ["mp3", "json"]) p.files.delete(p.where("DATA", `audio/read/mark/8.${ext}`));
+    await moveSavedHome(p.plugin);
+    expect(store.get("purify:readAloud.home")).toBe("1");
+    expect(saved()["jude/1"].mp3).toBe("file:///app/Library/NoCloud/audio/read/jude/1.mp3");
+    await checkSaved(p.plugin);
+    expect(Object.keys(saved())).toEqual(["jude/1"]);
+  });
+
+  it("is settled at every launch, before anything else the saving does", async () => {
+    const { readFileSync } = await import("node:fs");
+    const bridge = readFileSync("components/native/SavingBridge.tsx", "utf8");
+    expect(bridge).toContain("const run = () => void checkSaved().then(() => resumeSaving()).then(() => keepWeek());");
+  });
+});

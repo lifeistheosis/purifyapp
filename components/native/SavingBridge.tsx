@@ -3,7 +3,7 @@
 import { useEffect } from "react";
 
 import { isNativeClient } from "@/lib/platform/native";
-import { moveSavedHome } from "@/lib/readAloud/offline";
+import { checkSaved } from "@/lib/readAloud/offline";
 import { resumeSaving } from "@/lib/readAloud/saving";
 import { keepWeek } from "@/lib/readAloud/week";
 
@@ -24,9 +24,11 @@ const SETTLE_MS = 5000;
 export function SavingBridge() {
   useEffect(() => {
     if (!isNativeClient()) return;
-    // First, once, the recordings saved before 1.9 out of the iPhone's
-    // iCloud-backed folder (lib/readAloud/offline.ts, moveSavedHome).
-    const run = () => void moveSavedHome().then(() => resumeSaving()).then(() => keepWeek());
+    // First, the saved recordings settled (lib/readAloud/offline.ts,
+    // checkSaved): once, those saved before 1.9 out of the iPhone's
+    // iCloud-backed folder; each time, every saved chapter's address made
+    // again from where it is now, since an update moves an iPhone app's folder.
+    const run = () => void checkSaved().then(() => resumeSaving()).then(() => keepWeek());
     const timer = window.setTimeout(run, SETTLE_MS);
     const onVisible = () => {
       if (document.visibilityState === "visible") run();
