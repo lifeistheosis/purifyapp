@@ -352,7 +352,7 @@ export function NowPlayingSheet() {
               word, lit white while it is on, each an even share of the row:
               Loop, Speed (the Bible read aloud alone), Ambience, the sleep
               timer and Read. */}
-          <div className="mt-5 grid grid-flow-col auto-cols-[minmax(0,1fr)] items-start gap-1">
+          <div className="mt-5 grid grid-flow-col auto-cols-[minmax(0,1fr)] items-start gap-0.5">
             <button
               type="button"
               onClick={() => setLoopMode(LOOPS[(loopIndex + 1) % LOOPS.length])}

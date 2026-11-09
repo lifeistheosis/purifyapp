@@ -197,11 +197,14 @@ export function StepGlyph({ back = false }: { back?: boolean }) {
  * with a soft white glow (the owner, 2026-10-28: a glowing white, never
  * yellow). Loop, Speed, Ambience, the sleep timer and Read wear it, each a
  * share of one row (1.8), so five fit a 360px phone in every language: the
- * word under a mark may take a second line (OptionWord).
+ * word under a mark may take a second line (OptionWord). No side padding,
+ * and half the gap between them (1.9): with 4px a side and 4px between,
+ * "Ambience" (56.5px) had 54.9px at 390 and broke as "Ambienc / e". The
+ * share is the word's whole room now, 58.4px at 360 and 64.4px at 390.
  */
 export function optionClass(on: boolean): string {
   return cn(
-    "tap-press flex min-h-11 min-w-0 flex-col items-center justify-start gap-1.5 rounded-xl px-1 py-1 font-sans text-[11.5px] font-semibold leading-none motion-safe:transition-colors hover:bg-paper/[0.05]",
+    "tap-press flex min-h-11 min-w-0 flex-col items-center justify-start gap-1.5 rounded-xl px-0 py-1 font-sans text-[11.5px] font-semibold leading-none motion-safe:transition-colors hover:bg-paper/[0.05]",
     on
       ? "text-paper [text-shadow:0_0_10px_rgba(255,255,255,0.45)] [&_svg]:[filter:drop-shadow(0_0_6px_rgba(255,255,255,0.5))]"
       : "text-paper/60 hover:text-paper",
@@ -212,9 +215,11 @@ export function optionClass(on: boolean): string {
  * The word under a choice's mark. It keeps to its share of the row: a long
  * word ("Klangkulisse", "Χρονοδιακόπτης ύπνου") breaks onto a second line,
  * hyphenated where the language allows, and never runs into its neighbour.
+ * Not balanced (1.9): balancing the lines broke words that fit, as
+ * "Elalv / ási időzítő" for "Elalvási / időzítő" and "Фонов / ый звук".
  */
 export function OptionWord({ children }: { children: React.ReactNode }) {
-  return <span className="max-w-full text-center leading-[1.15] text-balance [overflow-wrap:anywhere] hyphens-auto">{children}</span>;
+  return <span className="max-w-full text-center leading-[1.15] [overflow-wrap:anywhere] hyphens-auto">{children}</span>;
 }
 
 export function SkipGlyph({ back = false }: { back?: boolean }) {

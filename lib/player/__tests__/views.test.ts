@@ -56,8 +56,14 @@ describe("Now Playing: the cover and the words, never merged", () => {
     expect(order.every((at) => at > -1), String(order)).toBe(true);
     expect([...order].sort((a, b) => a - b)).toEqual(order);
     // Each an even share of one row, so five fit a 360px phone in any language.
-    expect(row).toContain('className="mt-5 grid grid-flow-col auto-cols-[minmax(0,1fr)] items-start gap-1"');
-    expect(read("components/player/Transport.tsx")).toContain("[overflow-wrap:anywhere] hyphens-auto");
+    expect(row).toContain('className="mt-5 grid grid-flow-col auto-cols-[minmax(0,1fr)] items-start gap-0.5"');
+    const transport = read("components/player/Transport.tsx");
+    expect(transport).toContain("[overflow-wrap:anywhere] hyphens-auto");
+    // The share is the word's whole room (1.9): no side padding on a choice,
+    // and its word wraps at spaces, never balanced into a word that fits.
+    const option = transport.slice(transport.indexOf("export function optionClass"), transport.indexOf("export function SkipGlyph"));
+    expect(option).toContain(" px-0 ");
+    expect(option).not.toMatch(/\bpx-[1-9]|\bp-[1-9]|text-balance/);
   });
 
   it("puts ••• at the right of the top bar, opening a sheet over the player", () => {
