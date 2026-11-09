@@ -1,11 +1,30 @@
-# Build 88 on his phone (notes, not yet fixed)
+# Build 88 on his phone (notes, all five fixed)
 
 Android build 88, from `503929f3` on `ccr-07896cf2-bo0afd`, installed from the
-`android-release` page on 2026-11-07. Brainstorm mode is on: each note says
-what he saw, the cause found in the code, and the fix planned. Nothing here is
-built until he says start.
+`android-release` page on 2026-11-07. Brainstorm mode was on when these were
+written: each note says what he saw, the cause found in the code, and the fix
+planned.
 
-## 1. Holding a verse opens the computer's long menu as well as the strip
+**Where each note stands (recorded 2026-11-09).** All five were built on
+2026-11-08, after his word that day ("just do all of it"), on this branch.
+None is walked on a phone yet: build 88 predates them all.
+
+- Note 1, the hold's menu: `9ae0442`. Copy reference in Study was set aside
+  with the strip; it stays on the computer's menu.
+- Note 2, a scroll's end selecting a verse: `9ae0442`, by the plan's second
+  way (a touch that begins within 100ms of the page's last scroll, or during
+  which the page moved, is the scroll's), not by the phone's own click.
+- Note 3, the note: `291de2a`, with his pick C. Note opens the journal's own
+  sheet, and a saved note is a small pen at the verse's end that opens it.
+  The drawing's card for a saved note (Edit note, Delete) was not built: the
+  pen opens the sheet. The question of the strip over the next verse went
+  with the strip.
+- Note 4, faint text: `77e61af`, with the shares as measured, not as
+  planned: Light 70%, Candlelight 60, Monastery, Councils and Cappadocian 55,
+  Dark 50 for its 45.
+- Note 5, the 44px buttons: `985c020`.
+
+## 1. Holding a verse opens the computer's long menu as well as the strip (fixed, `9ae0442`)
 
 **What he saw.** Holding John 1:15 opened the verse strip under the verse
 (Highlight, Copy, Share, Image, Note, Study) and, over it, a long list down the
@@ -37,7 +56,7 @@ never make the phone's long-press gesture or its `contextmenu`.
    has the quote and the link but not the reference alone. Add it to Study, or
    leave it to the computer's menu.
 
-## 2. The end of a scroll selects a verse; selecting and highlighting collide
+## 2. The end of a scroll selects a verse; selecting and highlighting collide (fixed, `9ae0442`)
 
 **What he saw.** "The select verse/highlight verse system is colliding and not
 smooth. When scrolling to another verse and letting go my finger on the next
@@ -73,7 +92,7 @@ gestures (a glide stopped, a still finger over a moving page, a slow drag, a
 tap, a double tap after a glide's stop) and by the walk, which glides the page
 and lifts a finger on it.
 
-## 3. The note: refine its design and the way it works
+## 3. The note: refine its design and the way it works (built with his pick C, `291de2a`)
 
 **What he saw.** Note, from the verse strip on John 1:47, opens a box under
 the verse: a field with a light square frame inside a rounded box, a resize
@@ -287,7 +306,7 @@ left out on purpose: the Archangel's icon is in the app, but
 picture of the day joins the page only where its source is verified. The
 journal stays Plus, as now.
 
-## 4. Light's grey lines are under the contrast floor, all over the app
+## 4. Light's grey lines are under the contrast floor, all over the app (fixed, `77e61af`)
 
 **Found by Claude, 2026-11-07,** measuring note 3's sheet on every palette.
 
@@ -318,7 +337,7 @@ every palette, as `litPalette.test.ts` does for its surfaces, and by the walk
 measuring a caption on each palette. Note 3's pictures were drawn with its
 Light and Candlelight parts in.
 
-## 5. The top bar's buttons and every sheet's close are under 44px
+## 5. The top bar's buttons and every sheet's close are under 44px (fixed, `985c020`)
 
 **Found by Claude, 2026-11-07,** by `scripts/mock-check.mjs`, on the Study
 sheet and on Saved, while taking the photos for notes 1 to 4.

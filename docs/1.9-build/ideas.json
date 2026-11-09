@@ -1570,11 +1570,11 @@
    "from": "edgar",
    "needsDesign": false,
    "asked": "2026-11-07",
-   "status": "proposed",
-   "decided": null,
+   "status": "built",
+   "decided": "2026-11-08",
    "version": null,
    "outcome": null,
-   "note": "Build 88, his phone walk, note 1 (docs/1.9-build/notes/build-88.md): Android sends a contextmenu on a long press, and the verse's right-click menu answers it. Fix planned: the right-click menu answers a mouse only. Open: Copy reference in Study."
+   "note": "Build 88, his phone walk, note 1 (docs/1.9-build/notes/build-88.md): Android sends a contextmenu on a long press, and the verse's right-click menu answers it. Fix planned: the right-click menu answers a mouse only. Open: Copy reference in Study. Fixed 2026-11-08 in 9ae0442: a contextmenu that comes from a finger (its pointer type, or a touch within the echo time) is the hold's, stopped and opening nothing; a mouse's right click keeps its menu. Held by lib/bible/__tests__/verseGesture.test.ts and the walk's section 12, which sends a phone's contextmenu after its hold. Copy reference in Study was set aside with the strip on 2026-11-08 (his \"I don't like any of it\"); it stays on the computer's menu. Not yet walked on a phone: build 88 predates the fix."
   },
   {
    "id": "e-b88-scroll-tap",
@@ -1584,11 +1584,11 @@
    "from": "edgar",
    "needsDesign": false,
    "asked": "2026-11-07",
-   "status": "proposed",
-   "decided": null,
+   "status": "built",
+   "decided": "2026-11-08",
    "version": null,
    "outcome": null,
-   "note": "Build 88 note 2: the verse decides for itself what a tap is, so the touch that stops a glide, or a still finger over a moving page, reads as a tap, and as the first half of a double tap. Fix planned: select on the phone's own click."
+   "note": "Build 88 note 2: the verse decides for itself what a tap is, so the touch that stops a glide, or a still finger over a moving page, reads as a tap, and as the first half of a double tap. Fix planned: select on the phone's own click. Fixed 2026-11-08 in 9ae0442, by the plan's second way (two guards on the present rule), not the phone's own click: a touch that begins within 100ms of the page's last scroll, or during which the page moved, is the scroll's, and neither counts towards a double tap (lib/bible/verseGesture.ts, lib/ui/pageScroll.ts). Held by lib/bible/__tests__/verseGesture.test.ts and the walk's section 12, which taps a verse on a page kept moving and on a page at rest. Not yet walked on a phone: build 88 predates the fix."
   },
   {
    "id": "e-b88-note-design",
@@ -1598,11 +1598,11 @@
    "from": "edgar",
    "needsDesign": true,
    "asked": "2026-11-07",
-   "status": "proposed",
-   "decided": null,
+   "status": "built",
+   "decided": "2026-11-08",
    "version": null,
    "outcome": null,
-   "note": "Build 88 note 3. The first drawings (2026-11-07) broke the guardrails and were withdrawn, his word: \"I'm disappointed you forgot our guardrails and our design style\": a typed close glyph, a target under 44px, grey under 4.5:1, fixed colours, a side stripe, AI-drafted words about the verse as the sample, the journal promised to every reader, a sheet drawn by hand. Redrawn from the app itself: Note opens the journal's writing sheet in its note form (his 1.7 note 23), the saved note keeps the reader's aside box. Lesson: draw from the app's own components and measure before sending, never by hand."
+   "note": "Build 88 note 3. The first drawings (2026-11-07) broke the guardrails and were withdrawn, his word: \"I'm disappointed you forgot our guardrails and our design style\": a typed close glyph, a target under 44px, grey under 4.5:1, fixed colours, a side stripe, AI-drafted words about the verse as the sample, the journal promised to every reader, a sheet drawn by hand. Redrawn from the app itself: Note opens the journal's writing sheet in its note form (his 1.7 note 23), the saved note keeps the reader's aside box. Lesson: draw from the app's own components and measure before sending, never by hand. Built 2026-11-08 in 291de2a with his pick C (the verse's focus): Note opens the journal's own sheet (components/bible/VerseNoteSheet.tsx), as tall as the keyboard leaves, the verse on top, the note in Lora, what was typed kept for that verse when closed, Done keeping it or taking it off; no box under the verse and no computer keyboard hints on a phone; a saved note is a small pen at the verse's end, which opens the sheet. The drawing's card for a saved note (Edit note, Delete) was not built: the pen opens the sheet. Held by lib/bible/__tests__/verseFocus.test.ts and the walk's section 12. Not yet walked on a phone: build 88 predates the fix."
   },
   {
    "id": "c-light-captions",
@@ -1612,11 +1612,11 @@
    "from": "claude",
    "needsDesign": false,
    "asked": "2026-11-07",
-   "status": "proposed",
-   "decided": null,
+   "status": "built",
+   "decided": "2026-11-08",
    "version": null,
    "outcome": null,
-   "note": "Build 88 note 4, found measuring note 3. About 1,555 uses of text-paper/45 to /60, plus /40 under the floor on every palette. Fix planned: a Light, Candlelight and Monastery rule in globals.css the way Black has one for 45%, and a test doing the arithmetic on every palette."
+   "note": "Build 88 note 4, found measuring note 3. About 1,555 uses of text-paper/45 to /60, plus /40 under the floor on every palette. Fix planned: a Light, Candlelight and Monastery rule in globals.css the way Black has one for 45%, and a test doing the arithmetic on every palette. Fixed 2026-11-08 in 77e61af, with the shares measured on the page, a card and a 4% box rather than the planned ones: Light 70%, Candlelight 60, Monastery, Councils and Cappadocian 55, Dark 50 for its 45; Black keeps its own rule (app/globals.css, in the utilities layer under :where()). The 40% share (decorative and disabled marks) and placeholders were left as they are. Held by lib/ui/__tests__/faintText.test.ts on all seven palettes. Not yet walked on a phone: build 88 predates the fix."
   },
   {
    "id": "b-mock-guardrails",
@@ -1639,12 +1639,12 @@
    "title": "The top bar's buttons and every sheet's close are 42.5px, under the 44px floor",
    "from": "claude",
    "asked": "2026-11-07",
-   "status": "proposed",
-   "decided": null,
+   "status": "built",
+   "decided": "2026-11-08",
    "needsDesign": false,
    "version": null,
    "outcome": null,
-   "note": "Build 88 note 5, found by scripts/mock-check.mjs taking the photos for notes 1 to 4: MobileTopBar and Sheet use h-10 w-10, 42.5px on the 17px root. Fix planned: h-11 w-11, or hit-44 where tight."
+   "note": "Build 88 note 5, found by scripts/mock-check.mjs taking the photos for notes 1 to 4: MobileTopBar and Sheet use h-10 w-10, 42.5px on the 17px root. Fix planned: h-11 w-11, or hit-44 where tight. Fixed 2026-11-08 in 985c020: the phone top bar's back button, the web's menu button beside it and the shared sheet's close are h-11 w-11 (46.75px); the touch-target guard's count and ceiling fell from 31 to 29. Held by lib/nav/__tests__/oneTopBar.test.ts and lib/ui/__tests__/touchTargets.test.ts. Not yet walked on a phone: build 88 predates the fix."
   },
   {
    "id": "e-verse-premium",
