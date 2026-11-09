@@ -29,6 +29,7 @@ import { SOURCE_URL } from "@/lib/admin/attention";
 import { libraryLine, servicesPage, type ProbeIn } from "@/lib/admin/services";
 
 import { StatusDot, ToolbarButton } from "../primitives";
+import { ErrorsCard } from "../services/ErrorsCard";
 import { LibraryList, type LibraryPayload } from "../services/LibraryList";
 import { BOX, BOX_STYLE, FAIL_BOX, WARN_BOX, ink, ink2, ink3, line } from "../tools/look";
 
@@ -179,6 +180,9 @@ export function ServicesPage({ libraryOpen = false }: { libraryOpen?: boolean })
           {anyFailedRead ? "Neither read answered. Re-probe asks again." : "Asking each service."}
         </p>
       ) : null}
+
+      {/* What failed for readers (A10): one line until opened, like the library. */}
+      <ErrorsCard />
 
       <section className={`${BOX} px-4 py-3`} style={BOX_STYLE}>
         <div className="flex flex-wrap items-center gap-3">

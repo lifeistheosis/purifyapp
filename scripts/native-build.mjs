@@ -82,6 +82,10 @@ const STASH_PATHS = [
   // now ships. Do not re-stash it.
   ["app", "(app)", "language-editor"],
   ["app", "admin"],
+  // The website's server-error hook (admin A10, lib/errors/store.ts). The
+  // apps have no server, and the hook needs the service role, which a
+  // bundle must never carry.
+  ["instrumentation.ts"],
   // The owner dashboard. As of v4 its content lives inside the admin shell as
   // three tabs behind an Operations | Owner switch, and this tree holds a
   // redirect to it plus the standalone preview.

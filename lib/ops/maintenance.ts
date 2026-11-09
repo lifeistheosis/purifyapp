@@ -4,6 +4,7 @@ import type { SupabaseClient } from "@supabase/supabase-js";
 
 import { sendPlannerDigest } from "@/lib/admin/plannerDigest";
 import { sendWeeklyLetter } from "@/lib/admin/weeklyLetter";
+import { pruneReports } from "@/lib/ops/prune";
 import { clearMatured, runAmbassadorPayouts } from "@/lib/ambassadors/payouts";
 import { runEmailJobs } from "@/lib/email/jobs";
 import { sweepAbandonedCheckouts, type SweepReport } from "@/lib/shop/abandonedSweep";
@@ -111,6 +112,10 @@ export async function runMaintenance(admin: SupabaseClient, now: number = Date.n
       sendPlannerDigest(admin, new Date(now)),
     );
   }
+  // The anonymous reports are kept only as long as their privacy lines say:
+  // errors 14 days, searches that found nothing 90 (lib/ops/prune.ts). Once a
+  // day; a table not there yet is said, not failed.
+  report.pruneReports = await every("pruneReports", 20 * 3_600_000, now, () => pruneReports(admin, new Date(now)));
   // The Monday email (lib/admin/weekly.ts): last week in numbers, to the
   // owner, from the same morning hour. The email log keys it by week, so it
   // goes once whatever the heartbeat or a restart does.
