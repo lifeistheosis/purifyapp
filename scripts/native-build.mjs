@@ -82,14 +82,6 @@ const STASH_PATHS = [
   // now ships. Do not re-stash it.
   ["app", "(app)", "language-editor"],
   ["app", "admin"],
-  // The website's server-error hook (admin A10, lib/errors/store.ts). The
-  // apps have no server, and the hook needs the service role, which a
-  // bundle must never carry.
-  ["instrumentation.ts"],
-  // The chant takedown list's route (admin A7): the website serves it, with
-  // the admin's switches applied; the apps ask the website for it, as they
-  // asked for the file it replaced.
-  ["app", "audio"],
   // The owner dashboard. As of v4 its content lives inside the admin shell as
   // three tabs behind an Operations | Owner switch, and this tree holds a
   // redirect to it plus the standalone preview.
@@ -199,6 +191,15 @@ const STASH_PATHS = [
   // as /u is. The apps open the link on the website. Appended, for the
   // slot-index reason above.
   ["app", "(app)", "p"],
+  // The website's server-error hook (admin A10, lib/errors/store.ts). The
+  // apps have no server, and the hook needs the service role, which a
+  // bundle must never carry. Appended, for the slot-index reason above (it
+  // and the next stood mid-list until Fable's release check 1, L1).
+  ["instrumentation.ts"],
+  // The chant takedown list's route (admin A7): the website serves it, with
+  // the admin's switches applied; the apps ask the website for it, as they
+  // asked for the file it replaced. Appended, for the slot-index reason above.
+  ["app", "audio"],
 ];
 
 function slot(i) {
