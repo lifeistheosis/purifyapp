@@ -34,7 +34,7 @@ export function ProductMediaManager({
   const fileRef = useRef<HTMLInputElement>(null);
 
   const field =
-    "w-full rounded-[var(--adm-radius-sm)] border border-paper/15 bg-night px-3 py-2 font-sans text-detail text-paper placeholder:text-paper/30 focus:outline-none focus:border-paper/40";
+    "w-full rounded-[var(--adm-radius-sm)] border border-paper/15 bg-night px-3 py-2 font-sans text-detail text-paper placeholder:text-paper/56 focus:outline-none focus:border-paper/40";
   const smallBtn =
     "rounded-pill border border-paper/20 px-3 py-1 font-sans text-eyebrow font-semibold text-paper/70 hover:text-paper disabled:opacity-50";
 

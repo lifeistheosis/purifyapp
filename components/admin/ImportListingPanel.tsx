@@ -99,7 +99,7 @@ function parseScan(raw: string): StoredScan | null {
 }
 
 const field =
-  "w-full rounded-[var(--adm-radius-sm)] border border-paper/15 bg-night px-3 py-2 font-sans text-detail text-paper placeholder:text-paper/30 focus:outline-none focus:border-paper/40";
+  "w-full rounded-[var(--adm-radius-sm)] border border-paper/15 bg-night px-3 py-2 font-sans text-detail text-paper placeholder:text-paper/56 focus:outline-none focus:border-paper/40";
 const label = "font-sans text-caption text-paper/55";
 
 function money(cents: number | null | undefined): string {

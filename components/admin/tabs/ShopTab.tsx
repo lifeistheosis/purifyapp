@@ -166,7 +166,7 @@ type AppNote = {
 };
 
 const field =
-  "w-full rounded-[var(--adm-radius-sm)] border border-paper/15 bg-night px-3 py-2 font-sans text-detail text-paper placeholder:text-paper/30 focus:outline-none focus:border-paper/40";
+  "w-full rounded-[var(--adm-radius-sm)] border border-paper/15 bg-night px-3 py-2 font-sans text-detail text-paper placeholder:text-paper/56 focus:outline-none focus:border-paper/40";
 const labelCls = "font-sans text-caption text-paper/55";
 
 const REQUEST_STATUSES = ["new", "reviewing", "sourced", "contacted", "closed"];
