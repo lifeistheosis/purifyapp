@@ -143,7 +143,8 @@ describe("what the device sends is what the server takes", () => {
 });
 
 describe("the admin's In use view", () => {
-  it("names every reading plan the app has", () => {
-    for (const p of READING_PLANS) expect(PLAN_NAMES[p.id], p.id).toBeTruthy();
+  it("names every reading plan the app has, by the name the app gives it", () => {
+    const en = JSON.parse(fs.readFileSync("lib/i18n/messages/en.json", "utf8")) as Record<string, string>;
+    for (const p of READING_PLANS) expect(PLAN_NAMES[p.id], p.id).toBe(en[`plans.${p.id}.name`]);
   });
 });
