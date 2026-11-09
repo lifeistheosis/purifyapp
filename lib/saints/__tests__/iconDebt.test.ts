@@ -16,10 +16,12 @@ describe("iconList, on the real registries", () => {
     expect(files.length).toBe(new Set([...Object.keys(ICON_RIGHTS), ...Object.keys(UNVERIFIED_ICONS)]).size);
   });
 
-  it("counts the debt as the rights file holds it, and puts it first", () => {
-    expect(list.toClear).toBe(Object.keys(UNVERIFIED_ICONS).length);
-    expect(list.rows.slice(0, list.toClear).every((r) => r.state === "to-clear")).toBe(true);
-    expect(list.toClear + list.unnamed + list.settled).toBe(list.rows.length);
+  it("counts the debt as the rights file holds it, the questions first and then the rest of the debt", () => {
+    const debtAsked = list.rows.filter((r) => r.state === "needs-you" && r.file in UNVERIFIED_ICONS).length;
+    expect(list.toClear + debtAsked).toBe(Object.keys(UNVERIFIED_ICONS).length);
+    expect(list.rows.slice(0, list.needsYou).every((r) => r.state === "needs-you")).toBe(true);
+    expect(list.rows.slice(list.needsYou, list.needsYou + list.toClear).every((r) => r.state === "to-clear")).toBe(true);
+    expect(list.needsYou + list.toClear + list.unnamed + list.settled).toBe(list.rows.length);
   });
 
   it("names the saints that show an icon", () => {
@@ -55,8 +57,9 @@ describe("iconList, on a small set", () => {
         source: "Supplied by the owner",
       },
     },
-    unverified: { "z.jpg": "No source. 321x420 JPG, 22 KB. Not yet opened.", "a.jpg": "No source." },
+    unverified: { "z.jpg": "No source. 321x420 JPG, 22 KB. Not yet opened.", "a.jpg": "No source.", "q.jpg": "No source." },
     unnamed: ["c.jpg"],
+    questions: { "q.jpg": { question: "A living iconographer's work: ask for permission, or find another?", candidateUrl: "https://example.org/q" } },
     saints: [
       { name: "St A", iconUrl: "/saints/icons/a.jpg" },
       { name: "St A2", iconUrl: "/saints/icons/a.jpg" },
@@ -66,21 +69,23 @@ describe("iconList, on a small set", () => {
     authors: { "St. B": "/saints/icons/b.jpg" },
   });
 
-  it("orders the debt A to Z, then the unnamed permissions, then the settled", () => {
+  it("puts the owner's questions first, then the debt A to Z, then the unnamed permissions, then the settled", () => {
     expect(list.rows.map((r) => [r.file, r.state])).toEqual([
+      ["q.jpg", "needs-you"],
       ["a.jpg", "to-clear"],
       ["z.jpg", "to-clear"],
       ["c.jpg", "unnamed"],
       ["b.jpg", "verified"],
     ]);
-    expect(list).toMatchObject({ toClear: 2, unnamed: 1, settled: 1 });
+    expect(list).toMatchObject({ needsYou: 1, toClear: 2, unnamed: 1, settled: 1 });
+    expect(list.rows[0].question?.candidateUrl).toBe("https://example.org/q");
   });
 
   it("carries who shows it, the notes, the size the record states, and the picture's address", () => {
-    const a = list.rows[0];
-    expect(a).toMatchObject({ saints: ["St A", "St A2"], inNotes: false, size: null, url: "/saints/icons/a.jpg", inspectedOn: null });
-    expect(list.rows[1].size).toBe("321x420 JPG, 22 KB");
-    const b = list.rows[3];
+    const a = list.rows[1];
+    expect(a).toMatchObject({ saints: ["St A", "St A2"], inNotes: false, size: null, url: "/saints/icons/a.jpg", inspectedOn: null, question: null });
+    expect(list.rows[2].size).toBe("321x420 JPG, 22 KB");
+    const b = list.rows[4];
     expect(b).toMatchObject({ saints: ["St B"], inNotes: true, inspectedOn: "2026-11-01" });
     expect(b.note).toBe("Wikimedia Commons; Public domain");
   });

@@ -799,6 +799,26 @@ export const ICON_RIGHTS: Record<string, IconRights> = {
 export const MISSING_ATTRIBUTION: readonly string[] = ["john-the-baptist.jpg"];
 
 /**
+ * An icon whose source was found but which needs the owner's decision before
+ * its row can be written: a living iconographer's work, a watermark, a picture
+ * that may not be the saint. The admin's list of icons to clear shows these
+ * first, as "Needs you" (lib/saints/iconDebt.ts). His answer comes back through
+ * the arbiter, and the row is then written by a person who looked
+ * (scripts/fetch-saint-icons.mjs, promote), never from here.
+ *
+ * Keyed on the bare filename, as the maps above are. A file stays in its
+ * current map (usually UNVERIFIED_ICONS) while its question is open.
+ */
+export type IconQuestion = {
+  /** The decision, in a sentence he can answer. */
+  question: string;
+  /** Where the candidate source is, when one was found. */
+  candidateUrl?: string;
+};
+
+export const ICON_QUESTIONS: Record<string, IconQuestion> = {};
+
+/**
  * The debt.
  *
  * Each value states only what the bytes and the registries prove: which

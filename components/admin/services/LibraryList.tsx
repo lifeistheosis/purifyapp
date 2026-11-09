@@ -157,9 +157,10 @@ export function LibraryList({ data }: { data: LibraryPayload }) {
 
 /* ── The saint icons to clear (admin A9) ─────────────────────────────────── */
 
-type IconFilter = "to-clear" | "unnamed" | "settled" | "all";
+type IconFilter = "needs-you" | "to-clear" | "unnamed" | "settled" | "all";
 
 const STATE_PILL: Record<IconState, { tone: "rose" | "gold" | "emerald"; word: string }> = {
+  "needs-you": { tone: "gold", word: "Needs you" },
   "to-clear": { tone: "rose", word: "No source yet" },
   unnamed: { tone: "gold", word: "No iconographer named" },
   verified: { tone: "emerald", word: "Public domain" },
@@ -173,7 +174,8 @@ const STATE_PILL: Record<IconState, { tone: "rose" | "gold" | "emerald"; word: s
  * list with the next deploy. Fixed in the repository, never here.
  */
 function IconsToClear({ icons }: { icons: IconList }) {
-  const [filter, setFilter] = useState<IconFilter>("to-clear");
+  // The questions waiting on him first, when there are any.
+  const [filter, setFilter] = useState<IconFilter>(icons.needsYou > 0 ? "needs-you" : "to-clear");
   const rows = icons.rows.filter((r) =>
     filter === "all"
       ? true
@@ -184,12 +186,14 @@ function IconsToClear({ icons }: { icons: IconList }) {
   return (
     <section className="space-y-3 pt-2">
       <p className="font-sans text-[12.5px] leading-[1.55]" style={ink3}>
-        Saint icons: {icons.toClear} with no source, licence or credit yet, {icons.unnamed} used with permission but naming
-        no iconographer, {icons.settled} settled. Each is cleared in lib/saints/iconRights.ts, by moving its row out of the
-        debt with its source and the day someone looked at it.
+        Saint icons: {icons.needsYou > 0 ? `${icons.needsYou} waiting on your decision, ` : ""}
+        {icons.toClear} with no source, licence or credit yet, {icons.unnamed} used with permission but naming no
+        iconographer, {icons.settled} settled. Each is cleared in lib/saints/iconRights.ts, by moving its row out of the
+        debt with its source and the day someone looked at it. Answer a question through the arbiter.
       </p>
       <SubTabs<IconFilter>
         tabs={[
+          ["needs-you", `Needs you ${icons.needsYou}`],
           ["to-clear", `To clear ${icons.toClear}`],
           ["unnamed", `No iconographer ${icons.unnamed}`],
           ["settled", `Settled ${icons.settled}`],
@@ -258,12 +262,28 @@ function IconsToClear({ icons }: { icons: IconList }) {
             // The debt's note is the same sentence on every row (what the bytes
             // prove), so the row says only what differs; the whole note is in
             // the tooltip and the CSV.
-            render: (r) => (
-              <span className="line-clamp-2 text-[12px]" style={ink3} title={r.note}>
-                {r.state === "to-clear" ? "Nobody has looked at it yet." : `Looked at ${r.inspectedOn}. ${r.note}`}
-              </span>
-            ),
-            csv: (r) => r.note,
+            render: (r) =>
+              r.question ? (
+                <span className="flex flex-col gap-0.5 text-[12px]">
+                  <span style={{ color: "var(--adm-ink)" }}>{r.question.question}</span>
+                  {r.question.candidateUrl ? (
+                    <a
+                      href={r.question.candidateUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="inline-flex min-h-11 items-center underline"
+                      style={{ color: "var(--adm-ink-2)" }}
+                    >
+                      The candidate source
+                    </a>
+                  ) : null}
+                </span>
+              ) : (
+                <span className="line-clamp-2 text-[12px]" style={ink3} title={r.note}>
+                  {r.state === "to-clear" ? "Nobody has looked at it yet." : `Looked at ${r.inspectedOn}. ${r.note}`}
+                </span>
+              ),
+            csv: (r) => (r.question ? `${r.question.question}${r.question.candidateUrl ? ` (${r.question.candidateUrl})` : ""}` : r.note),
           },
         ]}
       />
