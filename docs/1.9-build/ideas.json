@@ -589,12 +589,12 @@
    "title": "Say the size and time before saving (\"John",
    "from": "claude",
    "asked": "2026-11-06",
-   "status": "approved",
+   "status": "built",
    "decided": "2026-11-06",
    "needsDesign": false,
    "version": null,
    "outcome": null,
-   "note": "Waits on a design call, 2026-11-07: a recording's size is known only once saved (the read-aloud list carries each chapter's length in seconds, not its bytes), so saying it before saving means either a guess from a bitrate or asking the website for each file first; and the one-tap save mark is his pick of 2026-10-27, so a step before it changes that design"
+   "note": "Waits on a design call, 2026-11-07: a recording's size is known only once saved (the read-aloud list carries each chapter's length in seconds, not its bytes), so saying it before saving means either a guess from a bitrate or asking the website for each file first; and the one-tap save mark is his pick of 2026-10-27, so a step before it changes that design. Built 2026-11-09 (6a0ae0e) on his yes to the sheet's 16, the rough size beside the save mark with no extra tap: \"31 MB\" inside the mark's one button on the player's title line and at the end of its ••• row, reckoned from each chapter's length at the recordings' measured rate (lib/readAloud/size.ts)."
   },
   {
    "id": "s3-05",

@@ -34,7 +34,7 @@ recommendation. The detail of each is in `ideas.json` under its id.
 
 8. **Decided 2026-11-09 (BRAINSTORM.md): yes. Built the same day (645b0f6, s4-01).** The next season's plan (`s4-01`). Recommend: Holy Week, Lazarus Saturday to Pascha, each day's Gospel, from data already checked against the OCA's readings.
 9. **Decided 2026-11-09 (BRAINSTORM.md): yes.** Earned palettes (`s2-04`): no collection exists to earn them. Recommend: earn Councils by reading every council's page and Cappadocian by the three Cappadocians' works.
-10. **Decided 2026-11-09 (BRAINSTORM.md): size before saving yes; gather from everywhere yes, its SQL to him first (sent 2026-11-09: `docs/1.9-build/sql/florilegium-kinds.sql`, the kinds widened to council and prayer); the public page later; more plans yes, with no new framing; the red dots drawn for him (the photo page, 11).** Size before saving (`s3-04`), Gather from everywhere (`s5-04`, with a migration), a gathering as a public page (`s5-05`, a migration), more plans' framing (`s4-02`), the red commentary dots (row 13).
+10. **Decided 2026-11-09 (BRAINSTORM.md): size before saving yes, built the same day (6a0ae0e); gather from everywhere yes, its SQL to him first (sent 2026-11-09: `docs/1.9-build/sql/florilegium-kinds.sql`, the kinds widened to council and prayer); the public page later; more plans yes, with no new framing; the red dots drawn for him (the photo page, 11).** Size before saving (`s3-04`), Gather from everywhere (`s5-04`, with a migration), a gathering as a public page (`s5-05`, a migration), more plans' framing (`s4-02`), the red commentary dots (row 13).
 
 **The journal, as built from his word of 2026-11-08** (`docs/1.9-build/JOURNAL.md`)
 
