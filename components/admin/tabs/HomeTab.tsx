@@ -58,6 +58,8 @@ import { StatusDot } from "../primitives";
 type Overview = {
   revenueTodayCents: number | null;
   revenueSeries?: number[];
+  /** "stripe": the shop and website Plus, after Stripe's fees; "shop": paid orders alone. */
+  revenueSource?: "stripe" | "shop";
   ordersDegraded: boolean;
   /** Paying for Plus, Pro included. */
   paidPlus: number;
@@ -371,7 +373,13 @@ export function HomeTab() {
       key: "revenue",
       label: "Revenue today",
       value: revenue,
-      sub: week ? `${formatPrice(week.totalCents, "usd")} over 7 days` : "net, UTC day",
+      // Which books today comes from, said under it: Stripe holds the shop and
+      // Plus bought on the website, never Plus bought through Google Play.
+      sub: week
+        ? `${formatPrice(week.totalCents, "usd")} over 7 days${money?.revenueSource === "stripe" ? ", through Stripe" : ", the shop"}`
+        : money?.revenueSource === "stripe"
+          ? "through Stripe, UTC day"
+          : "the shop, UTC day",
       spark: money ? <Spark label="Revenue, the last 14 days" values={(money.revenueSeries ?? []).slice(-14)} /> : null,
       sensitive: true,
     },

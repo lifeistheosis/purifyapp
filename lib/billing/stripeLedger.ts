@@ -199,6 +199,30 @@ export function summarise(rows: LedgerRow[]): LedgerSummary {
 }
 
 /**
+ * What customers paid through Stripe for anything but a shop order, minus its
+ * refunds, before Stripe's fee: Plus bought on the website (RevenueCat's web
+ * billing charges through this Stripe account) and whatever else Stripe took.
+ *
+ * The Revenue tab's realized figure when RevenueCat cannot answer. It used to
+ * be what Stripe had paid out to the bank, which lags the sales by days and,
+ * being a transfer, is not a sale at all. A charge with an invoice and a
+ * charge the books cannot place are both counted: web billing's charges may
+ * carry no Stripe invoice, and an unplaced charge is still money in. A refund
+ * comes off unless it names a shop order (an `in_` invoice, or nothing).
+ */
+export function notShopCents(rows: LedgerRow[]): number {
+  let cents = 0;
+  for (const r of rows) {
+    if (r.type === "charge" || r.type === "payment") {
+      if (r.match !== "shop-order") cents += r.amount;
+    } else if (r.match === "refund") {
+      if (!r.ref || r.ref.startsWith("in_")) cents -= Math.abs(r.amount);
+    }
+  }
+  return cents;
+}
+
+/**
  * Net money by calendar month: charges and payments net of Stripe's fee,
  * minus refunds, in the order the months occurred. Payouts, fees on their
  * own rows, adjustments and transfers are movements of money already

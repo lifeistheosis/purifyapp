@@ -2,12 +2,15 @@ import { NextRequest } from "next/server";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
 import {
+  afterStoreCut,
   goodsAtCost,
   moneyFigures,
   moneyWindow,
   plusAfterCut,
+  plusMonths,
   shopBuckets,
   shopNet,
+  storeShareOf,
   STORE_CUT,
   type MoneyOrder,
 } from "../money";
@@ -50,7 +53,25 @@ describe("the parts", () => {
       netCents: 4200,
       paid: 1,
       refunded: 1,
+      partlyRefunded: 0,
+      partlyRefundedCents: 0,
     });
+  });
+
+  it("takes a partial refund off its order, which stays paid (found 2026-11-09)", () => {
+    const partly = { ...order(4200, "paid", "2026-10-30T09:38:00Z"), id: "o1" };
+    const whole = { ...order(900, "paid", "2026-10-30T10:00:00Z"), id: "o2" };
+    const refunds = new Map([["o1", 1500]]);
+    expect(shopNet([partly, whole], refunds)).toEqual({
+      netCents: 2700 + 900,
+      paid: 2,
+      refunded: 0,
+      partlyRefunded: 1,
+      partlyRefundedCents: 1500,
+    });
+    const now = new Date("2026-10-30T12:00:00Z");
+    const b = shopBuckets([partly, whole], moneyWindow("month", now), now, refunds);
+    expect(b.current[29]).toBe(2700 + 900);
   });
 
   it("costs the goods from Catalogue, and never prices an unknown one at zero", () => {
@@ -76,6 +97,38 @@ describe("the parts", () => {
     expect(plusAfterCut(10_000, 1, 1)).toBe(8_500);
     expect(plusAfterCut(10_000, 1, 0)).toBe(10_000);
     expect(plusAfterCut(10_000, 3, 0.5)).toBe(27_750);
+  });
+});
+
+describe("Plus over a period", () => {
+  it("counts only the part of this month gone so far, as the shop does", () => {
+    // 30 October 09:41 UTC: 29 days and 9h41m of October's 31.
+    const now = new Date("2026-10-30T09:41:00Z");
+    const expected = (Date.parse("2026-10-30T09:41:00Z") - Date.parse("2026-10-01T00:00:00Z")) / (31 * 86_400_000);
+    expect(plusMonths("month", now)).toBeCloseTo(expected, 9);
+    expect(plusMonths("30d", now)).toBe(1);
+    expect(plusMonths("90d", now)).toBe(3);
+    expect(plusMonths("12m", now)).toBe(12);
+  });
+
+  it("never reaches back before launch, when nobody could pay", () => {
+    const now = new Date("2026-10-30T00:00:00Z");
+    // Launched 19 May: a little over five months by the 30th of October.
+    const m = plusMonths("12m", now, "2026-05-19");
+    expect(m).toBeGreaterThan(5.3);
+    expect(m).toBeLessThan(5.5);
+    expect(plusMonths("90d", now, "2026-05-19")).toBe(3);
+    // A month that began before launch counts from launch.
+    expect(plusMonths("month", new Date("2026-05-31T00:00:00Z"), "2026-05-19")).toBeCloseTo(12 / 31, 9);
+  });
+
+  it("takes the stores' cut only on the part bought through a store", () => {
+    expect(afterStoreCut(10_000, 1)).toBe(8_500);
+    expect(afterStoreCut(10_000, 0)).toBe(10_000);
+    expect(afterStoreCut(10_000, 0.5)).toBe(9_250);
+    expect(storeShareOf({ google: 3, apple: 1, stripe: 4, comp: 9 })).toBe(0.5);
+    // Nobody to tell apart: the larger cut, so the figure is never flattered.
+    expect(storeShareOf({ comp: 2 })).toBe(1);
   });
 });
 
@@ -153,6 +206,8 @@ const state = vi.hoisted(() => ({
   stats: null as null | Record<string, unknown>,
   ledger: { configured: false, error: null, rows: [] as unknown[] } as Record<string, unknown>,
   reads: 0,
+  rc: null as null | { value: number; currency: string; startDate: string; endDate: string },
+  rcAsked: null as null | [string, string],
 }));
 
 vi.mock("@/lib/admin/access", () => ({ getAdminUser: async () => state.admin }));
@@ -160,6 +215,12 @@ vi.mock("@/lib/entitlements/adminStats", () => ({
   subscriptionStats: async () => {
     if (!state.stats) throw new Error("no entitlements");
     return state.stats;
+  },
+}));
+vi.mock("@/lib/billing/revenuecatMetrics", () => ({
+  getRevenueBetween: async (start: string, end: string) => {
+    state.rcAsked = [start, end];
+    return state.rc;
   },
 }));
 vi.mock("@/lib/billing/stripeLedger", async (orig) => ({
@@ -199,6 +260,8 @@ describe("/api/admin/money", () => {
       legacyPlus: 0,
     };
     state.ledger = { configured: false, error: null, rows: [] };
+    state.rc = null;
+    state.rcAsked = null;
     vi.useFakeTimers();
     vi.setSystemTime(new Date("2026-10-30T09:41:00Z"));
     state.tables = {
@@ -242,8 +305,48 @@ describe("/api/admin/money", () => {
     // Donations apart, and in no total.
     expect(body.donations).toMatchObject({ cents: 41_200, goalCents: 60_000 });
     expect((body.cameIn.cents as number) - 4200).toBe(body.cameIn.plusCents);
-    expect(body.lines.revenue).toEqual({ paidOrders: 1, averageCents: 4200, refunds: 1, openCheckouts: 1 });
+    expect(body.lines.revenue).toEqual({ paidOrders: 1, averageCents: 4200, refunds: 1, partlyRefunded: 0, openCheckouts: 1 });
     expect(body.lines.subscriptions).toEqual({ paying: 3, pro: 1, comped: 2, gifted: 0, grandfathered: 0 });
+  });
+
+  it("takes Plus from RevenueCat for the period's own days when it answers, less the stores' cut", async () => {
+    state.rc = { value: 120.5, currency: "USD", startDate: "2026-10-01", endDate: "2026-10-30" };
+    const res = await GET(new NextRequest("http://x/api/admin/money?period=month"));
+    const body = (await res.json()) as Record<string, Record<string, unknown>>;
+    expect(state.rcAsked).toEqual(["2026-10-01", "2026-10-30"]);
+    expect(body.cameIn.plusSource).toBe("revenuecat");
+    expect(body.cameIn.plusGrossCents).toBe(12_050);
+    // Everyone paying here pays through a store (google 3), so the cut is whole.
+    expect(body.cameIn.plusCents).toBe(Math.round(12_050 * (1 - STORE_CUT)));
+    // Real revenue with only the cut estimated: not marked est.
+    expect(body.cameIn.estimated).toBe(false);
+  });
+
+  it("prices the estimate over the part of the month gone, not the whole month, when RevenueCat cannot answer", async () => {
+    const res = await GET(new NextRequest("http://x/api/admin/money?period=month"));
+    const body = (await res.json()) as Record<string, Record<string, unknown>>;
+    expect(body.cameIn.plusSource).toBe("estimate");
+    const fullMonth = plusAfterCut(2 * 999 + 1999, 1, 1);
+    expect(body.cameIn.plusCents as number).toBeLessThan(fullMonth);
+    expect(body.cameIn.plusCents as number).toBeGreaterThan(Math.round(fullMonth * 0.9));
+  });
+
+  it("takes a partial refund off the shop", async () => {
+    const tables = state.tables;
+    (tables.shop_orders.data as Record<string, unknown>[])[0].id = "o1";
+    tables.shop_refund_requests = { data: [{ order_id: "o1", amount_cents: 1200 }], error: null };
+    const res = await GET(new NextRequest("http://x/api/admin/money?period=month"));
+    const body = (await res.json()) as Record<string, Record<string, unknown>>;
+    expect(body.cameIn.shopCents).toBe(4200 - 1200);
+    expect((body.lines.revenue as Record<string, unknown>).partlyRefunded).toBe(1);
+  });
+
+  it("says when the partial refunds could not be read, rather than taking none", async () => {
+    (state.tables.shop_orders.data as Record<string, unknown>[])[0].id = "o1";
+    state.tables.shop_refund_requests = { data: null, error: { message: "boom" } };
+    const res = await GET(new NextRequest("http://x/api/admin/money?period=month"));
+    const body = (await res.json()) as Record<string, unknown>;
+    expect(body.unread).toContain("the partial refunds");
   });
 
   it("names who pays for Plus as unread when entitlements do not answer, and still counts the rest", async () => {

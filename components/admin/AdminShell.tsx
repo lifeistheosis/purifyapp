@@ -655,6 +655,7 @@ export function AdminShell({
     live: stats.data?.liveCount ?? null,
     revenueTodayCents:
       overview.data && !overview.data.ordersDegraded ? (overview.data.revenueTodayCents ?? null) : null,
+    revenueSource: overview.data?.revenueSource,
     signupsToday: stats.data?.today?.signups ?? null,
   };
   const figureOf = (f: AdminFigure | undefined): RailFigure | null => (f ? railFigure(f, readings) : null);

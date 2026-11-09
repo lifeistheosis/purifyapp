@@ -1,4 +1,5 @@
 import type { ShopSellerOrder } from "./types";
+import { partlyRefundedCents, type RefundsByOrder } from "./partialRefunds";
 
 /**
  * Earnings math for the seller console. Pure and synchronous: the caller
@@ -112,9 +113,17 @@ function itemsTotal(o: EarningsOrder): number {
   return o.items.reduce((sum, i) => sum + i.unit_price_cents * i.quantity, 0);
 }
 
+/**
+ * `partialRefunds` (lib/shop/partialRefunds.ts): the part of a paid order that
+ * went back. A whole refund flips the order to refunded and is counted from
+ * its status; a partial one leaves it paid, and without this map it was
+ * counted as kept (found 2026-11-09). It joins refundedCents and comes off
+ * netCents; the order still counts as kept, since part of it was.
+ */
 export function earningsSummary(
   orders: EarningsOrder[],
   fees?: FeeLookup,
+  partialRefunds?: RefundsByOrder | null,
 ): EarningsSummary {
   let gross = 0;
   let items = 0;
@@ -138,6 +147,7 @@ export function earningsSummary(
       // passes refund_application_fee), so it contributes nothing either way.
       continue;
     }
+    refunded += partlyRefundedCents(o, partialRefunds);
     const fee = fees?.get(o.id);
     if (fee) commission += fee.application_fee_cents;
     else missingFee += 1;
@@ -165,8 +175,8 @@ export function earningsSummary(
   };
 }
 
-/** Newest month first. Months with no counted orders don't appear. */
-export function monthlyEarnings(orders: EarningsOrder[]): MonthlyEarnings[] {
+/** Newest month first. Months with no counted orders don't appear. A partial refund comes off its order's month. */
+export function monthlyEarnings(orders: EarningsOrder[], partialRefunds?: RefundsByOrder | null): MonthlyEarnings[] {
   const byMonth = new Map<string, MonthlyEarnings>();
   for (const o of orders) {
     if (!isCounted(o)) continue;
@@ -179,6 +189,7 @@ export function monthlyEarnings(orders: EarningsOrder[]): MonthlyEarnings[] {
     row.grossCents += o.total_cents;
     row.orderCount += 1;
     if (o.payment_status === "refunded") row.refundedCents += o.total_cents;
+    else row.refundedCents += partlyRefundedCents(o, partialRefunds);
     row.netCents = row.grossCents - row.refundedCents;
   }
   return [...byMonth.values()].sort((a, b) => (a.month < b.month ? 1 : -1));

@@ -3,17 +3,23 @@ import { NextResponse, type NextRequest } from "next/server";
 import { SUPPORT, type ExpenseLine } from "@/data/support/support";
 import { getAdminUser } from "@/lib/admin/access";
 import {
+  afterStoreCut,
   goodsAtCost,
   landedAt,
   moneyFigures,
   moneyWindow,
   plusAfterCut,
+  plusMonths,
   shopBuckets,
   shopNet,
+  storeShareOf,
   type MoneyOrder,
   type MoneyPeriod,
 } from "@/lib/admin/money";
+import { getRevenueBetween } from "@/lib/billing/revenuecatMetrics";
 import { cachedLedger, summarise } from "@/lib/billing/stripeLedger";
+import { INVESTOR_PLAN } from "@/lib/invest/plan";
+import { paidTotals, refundsByOrder } from "@/lib/shop/partialRefunds";
 import { subscriptionStats } from "@/lib/entitlements/adminStats";
 import { estimatedMrrCents } from "@/lib/premium/mrr";
 import { createAdminClient } from "@/lib/supabase/admin";
@@ -31,7 +37,9 @@ export const dynamic = "force-dynamic";
  * what they sold (Catalogue's sourcing), who pays for Plus, the cost lines,
  * the donations typed in by hand, and Stripe's fees from its own ledger. A
  * part that does not answer is null and named in `unread`; nothing is
- * written. Read when the view opens or the period changes, never on a timer,
+ * written. Plus is RevenueCat's revenue for the period when RevenueCat
+ * answers (`plusSource` says which), and a partial refund comes off its
+ * order. Read when the view opens or the period changes, never on a timer,
  * because Stripe's ledger is a call to Stripe.
  *
  * Admin only: 403 to anyone else.
@@ -59,7 +67,7 @@ export async function GET(req: NextRequest) {
     pageAllSettled((from, to) =>
       admin
         .from("shop_orders")
-        .select("email, total_cents, payment_status, created_at, paid_at, items:shop_order_items(product_id, quantity)")
+        .select("id, email, total_cents, payment_status, created_at, paid_at, items:shop_order_items(product_id, quantity)")
         .in("payment_status", ["paid", "refunded"])
         .or(`paid_at.gte."${w.beforeSince}",and(paid_at.is.null,created_at.gte."${w.beforeSince}")`)
         .order("created_at", { ascending: false })
@@ -85,7 +93,11 @@ export async function GET(req: NextRequest) {
   const all = ordersRes.error ? null : (ordersRes.data as Order[]);
   if (ordersRes.error) unread.push("the orders");
   const inWindow = (all ?? []).filter((o) => landedAt(o) >= w.since);
-  const shop = all ? shopNet(inWindow) : null;
+  // Partial refunds leave an order paid; what went back is on the refund
+  // requests. Unreadable is said, never read as "none".
+  const refunds = all ? await refundsByOrder(admin, paidTotals(all)) : null;
+  if (all && !refunds) unread.push("the partial refunds");
+  const shop = all ? shopNet(inWindow, refunds) : null;
 
   // ── The goods, at their cost in Catalogue ────────────────────────────
   let goods: { cents: number; units: number; unknownUnits: number } | null = null;
@@ -108,12 +120,25 @@ export async function GET(req: NextRequest) {
     else unread.push("the goods' costs");
   }
 
-  // ── Plus, after the stores' cut (an estimate) ───────────────────────
+  // ── Plus, after the stores' cut ─────────────────────────────────────
+  //
+  // RevenueCat's revenue for the period's own days when it answers: what
+  // members actually paid, after refunds, less the stores' cut for the part
+  // bought through a store. Otherwise the list-price estimate, over the part
+  // of the period Plus could have been paid for (plusMonths). The share that
+  // pays through a store comes from who has Plus now, by source.
   let plusCents: number | null = null;
-  if (subs) {
-    const store = (subs.bySource.apple ?? 0) + (subs.bySource.google ?? 0);
-    const web = subs.bySource.stripe ?? 0;
-    plusCents = plusAfterCut(estimatedMrrCents(subs.paidCounts), w.months, store + web > 0 ? store / (store + web) : 1);
+  let plusGrossCents: number | null = null;
+  let plusSource: "revenuecat" | "estimate" | null = null;
+  const share = subs ? storeShareOf(subs.bySource) : 1;
+  const real = await getRevenueBetween(w.since.slice(0, 10), now.toISOString().slice(0, 10));
+  if (real) {
+    plusGrossCents = Math.round(real.value * 100);
+    plusCents = afterStoreCut(plusGrossCents, share);
+    plusSource = "revenuecat";
+  } else if (subs) {
+    plusCents = plusAfterCut(estimatedMrrCents(subs.paidCounts), plusMonths(period, now, INVESTOR_PLAN.launch), share);
+    plusSource = "estimate";
   } else unread.push("who pays for Plus");
 
   // ── The cost lines, a month of them per month in the period ─────────
@@ -151,6 +176,7 @@ export async function GET(req: NextRequest) {
   const figures = moneyFigures({
     shopCents: shop?.netCents ?? null,
     plusCents,
+    plusEstimated: plusSource !== "revenuecat",
     costLinesCents: monthlyCostCents === null ? null : monthlyCostCents * w.months,
     goodsCents: goods?.cents ?? null,
     goodsUnknownUnits: goods?.unknownUnits ?? 0,
@@ -171,7 +197,15 @@ export async function GET(req: NextRequest) {
       since: w.since,
       months: w.months,
       buckets: w.buckets,
-      cameIn: { ...figures.cameIn, shopCents: shop?.netCents ?? null, plusCents },
+      cameIn: {
+        ...figures.cameIn,
+        shopCents: shop?.netCents ?? null,
+        plusCents,
+        /** "revenuecat": real revenue less the stores' cut; "estimate": members at list price. */
+        plusSource,
+        /** RevenueCat's own figure before the cut, when it is the source. */
+        plusGrossCents,
+      },
       wentOut: {
         ...figures.wentOut,
         costLinesCents: monthlyCostCents === null ? null : monthlyCostCents * w.months,
@@ -189,13 +223,14 @@ export async function GET(req: NextRequest) {
         thisMonthCents: monthRow?.total_cents ?? null,
         goalCents: typeof monthRow?.goal_cents === "number" ? monthRow.goal_cents : SUPPORT.monthlyGoalUsd * 100,
       },
-      chart: all ? shopBuckets(all, w, now) : null,
+      chart: all ? shopBuckets(all, w, now, refunds) : null,
       recent,
       lines: {
         revenue: {
           paidOrders: shop?.paid ?? null,
           averageCents: shop && shop.paid > 0 ? Math.round(shop.netCents / shop.paid) : null,
           refunds: shop?.refunded ?? null,
+          partlyRefunded: shop?.partlyRefunded ?? null,
           openCheckouts: openRes.error ? null : (openRes.count ?? 0),
         },
         subscriptions: subs

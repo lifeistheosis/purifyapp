@@ -83,6 +83,32 @@ describe("the RevenueCat webhook", () => {
     expect(state.rpc[2][1].p_plus_source).toBe("stripe");
   });
 
+  it("records the website's Web Billing as the website, never as Google Play", async () => {
+    // RC_BILLING is how the website sells Plus. It fell to the default and was
+    // recorded as "google" until 2026-11-09, so a website member was told to
+    // fix a failed renewal in Google Play and the console sent refunds there.
+    await deliver({ type: "INITIAL_PURCHASE", app_user_id: USER, store: "RC_BILLING", expiration_at_ms: EXPIRES });
+    expect(state.rpc[0][1].p_plus_source).toBe("stripe");
+  });
+
+  it("grants a promotional entitlement as a comp, and test money as a test, never as a paying member", async () => {
+    await deliver({ type: "INITIAL_PURCHASE", app_user_id: USER, store: "PROMOTIONAL", expiration_at_ms: EXPIRES });
+    expect(state.rpc[0][1].p_plus_source).toBe("comp");
+    await deliver({ type: "INITIAL_PURCHASE", app_user_id: USER, store: "PLAY_STORE", environment: "SANDBOX", expiration_at_ms: EXPIRES });
+    expect(state.rpc[1][1].p_plus_source).toBe("test");
+    await deliver({ type: "INITIAL_PURCHASE", app_user_id: USER, store: "TEST_STORE", expiration_at_ms: EXPIRES });
+    expect(state.rpc[2][1].p_plus_source).toBe("test");
+    // Access is still granted: testing must work.
+    expect(state.rpc[2][1].p_plus_until).toBe(new Date(EXPIRES).toISOString());
+    await deliver({ type: "INITIAL_PURCHASE", app_user_id: USER, store: "PLAY_STORE", environment: "PRODUCTION", expiration_at_ms: EXPIRES });
+    expect(state.rpc[3][1].p_plus_source).toBe("google");
+  });
+
+  it("says unknown for a store it cannot name, rather than guessing Google Play", async () => {
+    await deliver({ type: "INITIAL_PURCHASE", app_user_id: USER, store: "PADDLE", expiration_at_ms: EXPIRES });
+    expect(state.rpc[0][1].p_plus_source).toBe("unknown");
+  });
+
   it("keeps what an event does not speak for: a supporter stays one, and Pro ends only on Pro's own event", async () => {
     state.existing = { is_supporter: true, pro_until: "2027-06-01T00:00:00.000Z" };
     await deliver({ type: "RENEWAL", app_user_id: USER, store: "PLAY_STORE", expiration_at_ms: EXPIRES });

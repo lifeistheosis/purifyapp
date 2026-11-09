@@ -28,6 +28,7 @@ const SOURCE_LABEL: Record<string, string> = {
   stripe: "Web billing",
   comp: "Complimentary",
   gift: "Gift",
+  test: "Test purchase",
   unknown: "Not recorded",
 };
 

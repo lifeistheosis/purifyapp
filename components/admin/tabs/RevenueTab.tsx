@@ -54,7 +54,9 @@ type Revenue = {
     live: {
       activeSubscriptions: number;
       activeTrials: number;
-      totalRevenue: number;
+      /** What members paid in the last 28 days, after refunds, before the stores' cut, in dollars. */
+      revenue28d: number | null;
+      newCustomers28d: number | null;
       currency: string;
       lastUpdatedAt: string | null;
       annualArpu: number | null;
@@ -64,9 +66,13 @@ type Revenue = {
   realized: {
     totalCents: number;
     complete: boolean;
+    /** What the total could not hold, in words. */
+    missing?: string[];
     shopCents: number;
     donationsCents: number;
     subscriptionsCents: number | null;
+    /** The website's Plus through Stripe, when Stripe stands in for RevenueCat. */
+    webPlusCents?: number | null;
     stripePaidOutCents: number | null;
     stripeMonthly: { month: string; netCents: number; grossCents: number }[] | null;
     source: "revenuecat" | "stripe" | "partial";
@@ -139,7 +145,7 @@ function OrdersAndCheckouts({ split, abandonment }: { split?: AovSplit; abandonm
 function RevenuePanel() {
   // 60s, matching the server-side cache in lib/billing/revenuecatMetrics.ts.
   // Polling faster would only re-serve the same bytes while spending against
-  // RevenueCat's 25-requests-a-minute budget, and the hook pauses entirely
+  // RevenueCat's 15-requests-a-minute budget, and the hook pauses entirely
   // while the tab is hidden so an open window overnight costs nothing.
   const { data, lastSynced, failing, refresh } = useLiveData<Revenue>(
     "/api/admin/revenue",
@@ -175,11 +181,13 @@ function RevenuePanel() {
           accent
           hint={
             data
-              ? data.realized.source === "stripe"
-                ? "paid out by Stripe, all time"
-                : data.realized.complete
-                  ? "shop + subscriptions"
-                  : "shop only; Stripe and RevenueCat not connected"
+              ? data.realized.source === "revenuecat"
+                ? data.realized.complete
+                  ? "shop + Plus, all time, before fees"
+                  : "shop + Plus; partial refunds not read"
+                : data.realized.source === "stripe"
+                  ? "shop + website Plus; Google Play not in it"
+                  : "shop only; RevenueCat and Stripe not connected"
               : undefined
           }
         />
@@ -219,7 +227,9 @@ function RevenuePanel() {
           value={data ? money(data.subscriptions.mrrCents) : "—"}
           hint={
             data
-              ? `${data.subscriptions.activePlus} Plus · ${data.subscriptions.activePro} Pro`
+              ? data.subscriptions.live
+                ? `${data.subscriptions.live.activeSubscriptions} paying · ${data.subscriptions.live.activeTrials} in trial`
+                : `${data.subscriptions.activePlus} Plus · ${data.subscriptions.activePro} Pro`
               : undefined
           }
         />
@@ -237,30 +247,38 @@ function RevenuePanel() {
           quietly resolved. */}
       {data && !data.subscriptions.estimated ? (
         <p className="font-sans text-eyebrow text-paper/40">
-          Subscription revenue is real, from RevenueCat
+          Plus figures are real, from RevenueCat
           {data.subscriptions.live?.lastUpdatedAt
             ? `, as of ${new Date(data.subscriptions.live.lastUpdatedAt).toLocaleString()}`
             : ""}
-          . List price alone would have implied{" "}
-          {/* Money inside a sentence never reaches the Odometer, so it cannot
-              mask itself by its currency mark the way every card figure does.
-              Wrapped by hand, or streamer mode shows both amounts in plain
-              text under a panel that says it is hiding money. */}
+          {data.subscriptions.live?.revenue28d != null ? (
+            <>
+              . Members paid{" "}
+              {/* Money inside a sentence never reaches the Odometer, so it cannot
+                  mask itself by its currency mark the way every card figure does.
+                  Wrapped by hand, or streamer mode shows the amounts in plain
+                  text under a panel that says it is hiding money. */}
+              <Sensitive value={money(Math.round(data.subscriptions.live.revenue28d * 100))} /> in the last 28
+              days, after refunds and before the stores&apos; cut
+            </>
+          ) : null}
+          . List price alone would have implied an MRR of{" "}
           <Sensitive value={money(data.subscriptions.estimatedMrrCents)} />; the difference is
-          discounts, regional pricing, annual plans and store commission.
+          annual plans, trials, regional prices and discounts.
           {data.subscriptions.live?.annualArpu != null ? (
             <>
-              {" "}Real revenue per subscriber:{" "}
+              {" "}Real revenue per paying member:{" "}
               <Sensitive value={money(Math.round(data.subscriptions.live.annualArpu * 100))} /> a year.
             </>
           ) : null}
         </p>
       ) : (
         <p className="font-sans text-eyebrow text-paper/40">
-          Subscription revenue is estimated (active subscribers × list monthly
-          price); no billed amount is stored. Set REVENUECAT_V2_API_KEY and
-          REVENUECAT_PROJECT_ID to replace this with billed figures. Shop and
-          donation figures are realized.
+          Plus is estimated here (paying members × the monthly list price), so it
+          counts a member in a free trial as paying and an annual member at the
+          monthly price. Set REVENUECAT_V2_API_KEY (a v2 secret key with
+          charts_metrics:overview:read) and REVENUECAT_PROJECT_ID to replace it
+          with what members actually paid. Shop figures are realized.
         </p>
       )}
 
@@ -296,8 +314,10 @@ function RevenuePanel() {
           // of a forecast.
           subtitle={
             data && data.realized.subscriptionsCents == null
-              ? "Money actually received. Subscriptions are excluded: RevenueCat is not connected, so what they earned cannot be read."
-              : "Money actually received. The subscription run-rate estimate is not in here; it is in the card below."
+              ? data.realized.webPlusCents != null
+                ? "What customers paid, after refunds. Plus bought through Google Play and the App Store is not in here: RevenueCat is not connected."
+                : "What customers paid, after refunds. Plus is not in here: RevenueCat is not connected, so what it earned cannot be read."
+              : "What customers paid, after refunds, before fees and the stores' cut. The run rate is in the card below."
           }
           isEmpty={donutSegments.length === 0}
           empty="Nothing realized yet."
@@ -328,7 +348,7 @@ function RevenuePanel() {
         <div className="grid grid-cols-2 gap-4 font-sans">
           <div>
             <p className="text-caption font-medium text-[color:var(--adm-ink-3)]">
-              MRR (est.)
+              {data && !data.subscriptions.estimated ? "MRR (RevenueCat)" : "MRR (est.)"}
             </p>
             <p className="mt-1 text-title font-bold tabular-nums text-paper">
               {data ? money(data.subscriptions.mrrCents) : "—"}
@@ -336,7 +356,7 @@ function RevenuePanel() {
           </div>
           <div>
             <p className="text-caption font-medium text-[color:var(--adm-ink-3)]">
-              ARR (est.)
+              {data && !data.subscriptions.estimated ? "ARR (MRR × 12)" : "ARR (est.)"}
             </p>
             <p className="mt-1 text-title font-bold tabular-nums text-paper">
               {data ? money(data.subscriptions.arrCents) : "—"}

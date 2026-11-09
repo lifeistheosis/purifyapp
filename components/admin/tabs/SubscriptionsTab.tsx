@@ -27,6 +27,8 @@ type Subs = {
   mrrCents: number;
   arrCents: number;
   estimated: boolean;
+  /** RevenueCat's counts when it answers. */
+  live?: { activeSubscriptions: number; activeTrials: number } | null;
 };
 
 const SOURCE_LABELS: Record<string, string> = {
@@ -159,11 +161,11 @@ function SummaryPanel() {
         </ChartFrame>
       </div>
 
-      <Card title="Estimated recurring revenue">
+      <Card title={data && !data.estimated ? "Recurring revenue" : "Estimated recurring revenue"}>
         <div className="grid grid-cols-2 gap-4 font-sans">
           <div>
             <p className="text-caption font-medium text-[color:var(--adm-ink-3)]">
-              MRR (est.)
+              {data && !data.estimated ? "MRR (RevenueCat)" : "MRR (est.)"}
             </p>
             <p className="mt-1 text-title font-bold tabular-nums text-paper">
               {data ? money(data.mrrCents) : "—"}
@@ -171,7 +173,7 @@ function SummaryPanel() {
           </div>
           <div>
             <p className="text-caption font-medium text-[color:var(--adm-ink-3)]">
-              ARR (est.)
+              {data && !data.estimated ? "ARR (MRR × 12)" : "ARR (est.)"}
             </p>
             <p className="mt-1 text-title font-bold tabular-nums text-paper">
               {data ? money(data.arrCents) : "—"}
@@ -179,10 +181,9 @@ function SummaryPanel() {
           </div>
         </div>
         <p className="mt-3 font-sans text-eyebrow text-paper/40 leading-relaxed">
-          Estimated: active subscribers × list monthly price, comped accounts
-          excluded. The entitlements table stores no billed amount, and the
-          RevenueCat webhook keeps no event history, so new/churned counts and
-          exact billed revenue are not available here.
+          {data && !data.estimated && data.live
+            ? `From RevenueCat: ${data.live.activeSubscriptions} paying, ${data.live.activeTrials} in a free trial. The counts above are who has Plus on Purify, trials and test purchases among them, so they can run higher.`
+            : "Estimated: active subscribers × list monthly price, comped accounts excluded, so a free trial counts as paying and an annual plan at the monthly price. The entitlements table stores no billed amount, and the RevenueCat webhook keeps no event history, so new and churned counts are not available here."}
         </p>
       </Card>
     </div>

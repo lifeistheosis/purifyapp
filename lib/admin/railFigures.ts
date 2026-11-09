@@ -30,6 +30,12 @@ export type RailReadings = {
   live: number | null;
   /** Today's net takings in cents, or null when the books could not be read. */
   revenueTodayCents: number | null;
+  /**
+   * Which books stand behind it (the overview route's revenueSource): Stripe,
+   * which holds the shop and Plus bought on the website but never Plus bought
+   * through Google Play or the App Store, or the shop's own orders.
+   */
+  revenueSource?: "stripe" | "shop";
   /** Accounts made today. */
   signupsToday: number | null;
 };
@@ -43,6 +49,17 @@ export function railMoney(cents: number): string {
   return `${sign}$${Math.abs(dollars).toLocaleString("en-US")}`;
 }
 
+/**
+ * What "today" holds, said on the figure itself. It used to say "Came in
+ * today, net" whichever books it came from, so a day of Plus bought on Google
+ * Play read as a day with nothing in it (found 2026-11-09).
+ */
+export function revenueTitle(source: RailReadings["revenueSource"]): string {
+  return source === "stripe"
+    ? "Came in today through Stripe (the shop and Plus on the website), after Stripe's fees and refunds, UTC day. Plus bought through Google Play or the App Store is not in it."
+    : "Came in today: the shop's paid orders, less refunds, UTC day. Plus is not in it.";
+}
+
 export function railFigure(kind: AdminFigure, r: RailReadings): RailFigure | null {
   switch (kind) {
     case "waiting":
@@ -54,7 +71,7 @@ export function railFigure(kind: AdminFigure, r: RailReadings): RailFigure | nul
       return ok(r.live) ? { text: `${r.live.toLocaleString("en-US")} now`, title: "On the site in the last 90 seconds" } : null;
     case "revenue":
       return ok(r.revenueTodayCents)
-        ? { text: railMoney(r.revenueTodayCents), title: "Came in today, net, UTC day", sensitive: true }
+        ? { text: railMoney(r.revenueTodayCents), title: revenueTitle(r.revenueSource), sensitive: true }
         : null;
     case "signups":
       return ok(r.signupsToday)

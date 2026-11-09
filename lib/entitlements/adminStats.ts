@@ -36,7 +36,7 @@ export type SubscriptionStats = {
    * times larger than the one paying. The breakdown existed only inside
    * `bySource`, several cards further down, behind a chart.
    *
-   * These five always sum to `activePlus`.
+   * These six always sum to `activePlus`.
    */
   /** Someone is being billed for these. */
   paidPlus: number;
@@ -68,6 +68,16 @@ export type SubscriptionStats = {
    * headline nor the MRR estimate.
    */
   developerPlus: number;
+
+  /**
+   * Plus bought with test money (plus_source = 'test', from 2026-11-09): a
+   * sandbox or license-tester purchase, or RevenueCat's Test Store. It grants
+   * access so testing works, and it is never income, so it is kept out of
+   * `paidPlus` and `paidCounts` like a comp. Before that date the webhook
+   * recorded these as Google Play members, so older ones still read as paying
+   * until their next event rewrites the row.
+   */
+  testPlus: number;
 };
 
 /**
@@ -133,6 +143,7 @@ export async function subscriptionStats(
   let giftedPlus = 0;
   let legacyPlus = 0;
   let developerPlus = 0;
+  let testPlus = 0;
   const bySource: Record<string, number> = {};
 
   for (const r of rows as {
@@ -156,13 +167,17 @@ export async function subscriptionStats(
     // counted as a paying subscriber and priced at list in estimatedMrrCents.
     // That inflates the one number used to judge whether Purify earns.
     const isDeveloper = developerIds.has(r.user_id);
-    // plus_source vocabulary: 'apple' | 'google' | 'stripe' pay; 'comp' is an
-    // admin grant, 'gift' a redeemed gift, 'legacy' a grandfathered account
-    // from the paywall launch. Only the first three are income.
-    const unpaid = source === "comp" || source === "gift" || source === "legacy" || isDeveloper;
+    // plus_source vocabulary (lib/billing/plusSource.ts): 'apple' | 'google'
+    // | 'stripe' pay; 'comp' is a grant (the admin's, or RevenueCat's
+    // promotional), 'gift' a redeemed gift, 'legacy' a grandfathered account
+    // from the paywall launch, 'test' a purchase made with test money. Only
+    // the first three are income ('unknown', a store the webhook could not
+    // name, is counted as paying: someone was billed somewhere).
+    const unpaid = source === "comp" || source === "gift" || source === "legacy" || source === "test" || isDeveloper;
     if (source === "comp") compedPlus += 1;
     else if (source === "gift") giftedPlus += 1;
     else if (source === "legacy") legacyPlus += 1;
+    else if (source === "test") testPlus += 1;
     else if (isDeveloper) developerPlus += 1;
 
     if (pro) {
@@ -186,5 +201,6 @@ export async function subscriptionStats(
     giftedPlus,
     legacyPlus,
     developerPlus,
+    testPlus,
   };
 }

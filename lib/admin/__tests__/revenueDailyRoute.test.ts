@@ -17,6 +17,8 @@ type Row = Record<string, unknown>;
 const state = vi.hoisted(() => ({
   admin: { email: "owner@example.com" } as { email: string } | null,
   rows: [] as Record<string, unknown>[],
+  /** shop_refund_requests: the partial refunds the route reads beside the orders. */
+  refunds: [] as Record<string, unknown>[],
   fail: null as string | null,
   reads: 0,
 }));
@@ -25,12 +27,15 @@ vi.mock("@/lib/admin/access", () => ({ getAdminUser: async () => state.admin }))
 vi.mock("@/lib/supabase/admin", () => ({
   createAdminClient: () => ({
     from(table: string) {
-      const tests: ((row: Row) => boolean)[] = [(/* only one table is read */) => table === "shop_orders"];
+      // Two tables: the orders, and the refund requests beside them.
+      const source = () => (table === "shop_refund_requests" ? state.refunds : table === "shop_orders" ? state.rows : []);
+      const tests: ((row: Row) => boolean)[] = [];
       const sort: string[] = [];
       let window: [number, number] = [0, Infinity];
       const time = (v: unknown) => Date.parse(String(v));
       const query = {
         select: () => query,
+        eq: (column: string, value: unknown) => (tests.push((r) => r[column] === value), query),
         in: (column: string, values: readonly unknown[]) => (tests.push((r) => values.includes(r[column])), query),
         is: (column: string, value: null) => (tests.push((r) => (r[column] ?? null) === value), query),
         gte: (column: string, value: string) => (tests.push((r) => r[column] != null && time(r[column]) >= time(value)), query),
@@ -40,7 +45,7 @@ vi.mock("@/lib/supabase/admin", () => ({
         then: <T>(resolve: (result: { data: Row[] | null; error: { message: string } | null }) => T) => {
           state.reads++;
           if (state.fail) return Promise.resolve({ data: null, error: { message: state.fail } }).then(resolve);
-          const hit = state.rows
+          const hit = source()
             .filter((r) => tests.every((test) => test(r)))
             .sort((a, b) => {
               for (const c of sort) {
@@ -89,6 +94,7 @@ beforeEach(() => {
   state.rows = [];
   state.fail = null;
   state.reads = 0;
+  state.refunds = [];
   nextId = 0;
 });
 
@@ -154,6 +160,18 @@ describe("GET /api/admin/revenue/daily", () => {
     expect(on("2026-09-18").orderCount).toBe(1500);
     expect(on("2026-09-18").netCents).toBe(1500 * 1998);
     expect(body.truncated).toBe(false);
+  });
+
+  it("takes a partial refund off its order's day, and says the refunds were read", async () => {
+    state.rows = [order({ id: "o-part", total_cents: 4000 }), order({ id: "o-whole", total_cents: 1000 })];
+    state.refunds = [
+      { order_id: "o-part", amount_cents: 1500, status: "processed" },
+      // Asked for and not yet sent: not money back.
+      { order_id: "o-whole", amount_cents: 1000, status: "requested" },
+    ];
+    const { body, on } = await daily("2026-09-18", "2026-09-18");
+    expect(on("2026-09-18").netCents).toBe(4000 - 1500 + 1000);
+    expect(body.refundsRead).toBe(true);
   });
 
   it("answers 500 when the orders cannot be read, not a calendar of zeros", async () => {

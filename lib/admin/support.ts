@@ -162,6 +162,8 @@ export function storeName(source: string | null | undefined): string | null {
       return "granted by you";
     case "legacy":
       return "from the launch";
+    case "test":
+      return "a test purchase";
     default:
       return null;
   }
@@ -217,6 +219,7 @@ export function storeRefundRule(source: string | null | undefined): StoreRule {
     case "gift":
     case "comp":
     case "legacy":
+    case "test":
       return {
         who: "nobody",
         title: "Nobody paid for this Plus",
@@ -224,8 +227,10 @@ export function storeRefundRule(source: string | null | undefined): StoreRule {
           source === "gift"
             ? "Their Plus is a gift they opened, so there is no charge to return."
             : source === "comp"
-              ? "Their Plus was granted from the admin, so there is no charge to return."
-              : "Their Plus came with the launch, so there is no charge to return.",
+              ? "Their Plus was granted, from the admin or RevenueCat, so there is no charge to return."
+              : source === "test"
+                ? "Their Plus was bought with test money, so there is no charge to return."
+                : "Their Plus came with the launch, so there is no charge to return.",
         page: null,
         replyLine: null,
       };

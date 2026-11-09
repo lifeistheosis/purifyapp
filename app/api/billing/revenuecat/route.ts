@@ -3,6 +3,7 @@ import { createAdminClient } from "@/lib/supabase/admin";
 import { resolveWebhookGrant } from "@/lib/billing/webhookGrant";
 import { effectsFor } from "@/lib/billing/lifecycleEvents";
 import { sendLifecycleEmail, writeLifecycleState } from "@/lib/billing/applyLifecycle";
+import { sourceForStore } from "@/lib/billing/plusSource";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -40,26 +41,14 @@ export const dynamic = "force-dynamic";
  * STRIPE), which is why the shop's Stripe webhook needs no dunning of its own.
  */
 
-// RevenueCat store → our plus_source vocabulary (entitlements.plus_source).
-function sourceForStore(store: string | undefined): string {
-  switch (store) {
-    case "APP_STORE":
-    case "MAC_APP_STORE":
-      return "apple";
-    case "STRIPE":
-      return "stripe";
-    case "PLAY_STORE":
-    case "AMAZON":
-    case "PROMOTIONAL":
-    default:
-      return "google";
-  }
-}
+// The store an event names to our plus_source word: lib/billing/plusSource.ts.
 
 type RcEvent = {
   type?: string;
   app_user_id?: string;
   store?: string;
+  /** "SANDBOX" for test money (a license tester, a sandbox account), "PRODUCTION" otherwise. */
+  environment?: string;
   expiration_at_ms?: number | null;
   event_timestamp_ms?: number | null;
   purchased_at_ms?: number | null;
@@ -126,7 +115,7 @@ export async function POST(req: NextRequest) {
   // for EXPIRATION that timestamp is already in the past, so derive() makes
   // the account free automatically. One timestamp, every case.
   const plusUntil = new Date(event.expiration_at_ms).toISOString();
-  const source = sourceForStore(event.store);
+  const source = sourceForStore(event.store, event.environment);
 
   // The `pro` RevenueCat entitlement is the members' tier (purify_pro on Play,
   // Pro on Web Billing). When the event carries it, record pro_until as well,

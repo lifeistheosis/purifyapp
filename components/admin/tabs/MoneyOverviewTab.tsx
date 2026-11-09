@@ -35,7 +35,15 @@ type Payload = {
   since: string;
   months: number;
   buckets: "day" | "month";
-  cameIn: { cents: number | null; estimated: boolean; missing: string[]; shopCents: number | null; plusCents: number | null };
+  cameIn: {
+    cents: number | null;
+    estimated: boolean;
+    missing: string[];
+    shopCents: number | null;
+    plusCents: number | null;
+    /** "revenuecat": what members paid, less the stores' cut; "estimate": members at list price. */
+    plusSource?: "revenuecat" | "estimate" | null;
+  };
   wentOut: {
     cents: number | null;
     missing: string[];
@@ -51,7 +59,14 @@ type Payload = {
   chart: { current: number[]; before: number[] } | null;
   recent: { email: string | null; totalCents: number; at: string }[];
   lines: {
-    revenue: { paidOrders: number | null; averageCents: number | null; refunds: number | null; openCheckouts: number | null };
+    revenue: {
+      paidOrders: number | null;
+      averageCents: number | null;
+      refunds: number | null;
+      /** Paid orders that gave part of their total back. */
+      partlyRefunded?: number | null;
+      openCheckouts: number | null;
+    };
     subscriptions: { paying: number; pro: number; comped: number; gifted: number; grandfathered: number } | null;
     costs: { monthlyCents: number | null; lines: number };
   };
@@ -178,6 +193,7 @@ export function MoneyOverviewTab() {
                   }`,
                   rev.openCheckouts !== null ? `${plural(rev.openCheckouts, "checkout", "checkouts")} still open` : null,
                   rev.refunds ? plural(rev.refunds, "refund", "refunds") : null,
+                  rev.partlyRefunded ? plural(rev.partlyRefunded, "partial refund", "partial refunds") : null,
                 ]
                   .filter(Boolean)
                   .join("; ")
@@ -231,7 +247,11 @@ export function MoneyOverviewTab() {
       <div className="hidden gap-3.5 md:grid md:grid-cols-3">
         <BigCard label={`Came in, ${p?.label ?? "…"}`} figure={p ? <Money cents={p.cameIn.cents} est={p.cameIn.estimated} /> : <Quiet>Reading.</Quiet>}>
           <Row label="The shop, paid less refunds" cents={p?.cameIn.shopCents ?? null} />
-          <Row label="Plus, after the stores' cut" cents={p?.cameIn.plusCents ?? null} est />
+          <Row
+            label={p?.cameIn.plusSource === "revenuecat" ? "Plus, paid (RevenueCat), after the stores' cut" : "Plus, after the stores' cut"}
+            cents={p?.cameIn.plusCents ?? null}
+            est={p?.cameIn.plusSource !== "revenuecat"}
+          />
         </BigCard>
         <BigCard label="Went out" figure={p ? <Money cents={p.wentOut.cents} /> : <Quiet>Reading.</Quiet>}>
           <Row label="The cost lines (Costs)" cents={p?.wentOut.costLinesCents ?? null} />
@@ -260,7 +280,13 @@ export function MoneyOverviewTab() {
           {
             k: "in",
             name: "Came in",
-            sub: p ? `shop ${p.cameIn.shopCents !== null ? usd(p.cameIn.shopCents) : "not read"}, Plus ${p.cameIn.plusCents !== null ? `${usd(p.cameIn.plusCents)} est.` : "not read"}` : "Reading.",
+            sub: p
+              ? `shop ${p.cameIn.shopCents !== null ? usd(p.cameIn.shopCents) : "not read"}, Plus ${
+                  p.cameIn.plusCents !== null
+                    ? `${usd(p.cameIn.plusCents)}${p.cameIn.plusSource === "revenuecat" ? "" : " est."}`
+                    : "not read"
+                }`
+              : "Reading.",
             fig: p ? <Money cents={p.cameIn.cents} est={p.cameIn.estimated} size={25} /> : null,
           },
           { k: "out", name: "Went out", sub: "costs, goods, Stripe's fees", fig: p ? <Money cents={p.wentOut.cents} size={25} /> : null },

@@ -4,6 +4,7 @@ import { getAdminUser } from "@/lib/admin/access";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { subscriptionStats } from "@/lib/entitlements/adminStats";
 import { estimatedMrrCents, estimatedArrCents } from "@/lib/premium/mrr";
+import { getProjectMetrics } from "@/lib/billing/revenuecatMetrics";
 
 export const dynamic = "force-dynamic";
 
@@ -20,6 +21,10 @@ export async function GET() {
 
   const admin = createAdminClient();
   const subs = await subscriptionStats(admin);
+  // RevenueCat's real MRR when it answers, as the Revenue tab reads it, so the
+  // two tabs never show two different run rates for one business.
+  const live = await getProjectMetrics();
+  const mrrCents = live ? Math.round(live.mrr * 100) : estimatedMrrCents(subs.paidCounts);
 
   return NextResponse.json(
     {
@@ -41,9 +46,11 @@ export async function GET() {
       legacyPlus: subs.legacyPlus,
       supporters: subs.supporters,
       bySource: subs.bySource,
-      mrrCents: estimatedMrrCents(subs.paidCounts),
-      arrCents: estimatedArrCents(subs.paidCounts),
-      estimated: true,
+      mrrCents,
+      arrCents: live ? mrrCents * 12 : estimatedArrCents(subs.paidCounts),
+      estimated: !live,
+      /** RevenueCat's own counts, when it answers: paying subscriptions and trials. */
+      live: live ? { activeSubscriptions: live.activeSubscriptions, activeTrials: live.activeTrials } : null,
     },
     { headers: { "Cache-Control": "no-store" } },
   );

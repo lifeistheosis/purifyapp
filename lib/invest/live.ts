@@ -20,6 +20,8 @@ import type { SupabaseClient } from "@supabase/supabase-js";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { subscriptionStats } from "@/lib/entitlements/adminStats";
 import { estimatedMrrCents } from "@/lib/premium/mrr";
+import { getProjectMetrics } from "@/lib/billing/revenuecatMetrics";
+import { keptCents, refundsByOrder } from "@/lib/shop/partialRefunds";
 import { pageAll } from "@/lib/supabase/pageAll";
 import { INVESTOR_PLAN } from "./plan";
 
@@ -53,7 +55,14 @@ export type InvestorLive = {
     /** Median of (price minus supplier cost) over price, published pieces. */
     medianMargin: number | null;
   };
-  subscriptions: { paying: number; mrrCents: number };
+  /**
+   * Paying members and the monthly rate. From RevenueCat when it answers
+   * (`source` "revenuecat": paid subscriptions, trials not among them, and
+   * what they are billed); otherwise members at list price ("estimate"),
+   * which counts a free trial as paying and an annual plan at the monthly
+   * price.
+   */
+  subscriptions: { paying: number; mrrCents: number; source: "revenuecat" | "estimate" };
   /** Revenue a year Purify is running at today, in dollars. */
   runRate: { subscriptions: number; shop: number; total: number };
 };
@@ -104,8 +113,8 @@ export async function getInvestorLive(admin: SupabaseClient = createAdminClient(
     pageAll<{ cart_token: string; item_count: number; subtotal_cents: number }>((a, b) =>
       admin.from("shop_carts").select("cart_token, item_count, subtotal_cents").gt("item_count", 0).order("cart_token").range(a, b),
     ),
-    pageAll<{ id: string; total_cents: number; created_at: string }>((a, b) =>
-      admin.from("shop_orders").select("id, total_cents, created_at").eq("payment_status", "paid").order("id").range(a, b),
+    pageAll<{ id: string; total_cents: number; created_at: string; paid_at: string | null }>((a, b) =>
+      admin.from("shop_orders").select("id, total_cents, created_at, paid_at").eq("payment_status", "paid").order("id").range(a, b),
     ),
     subscriptionStats(admin),
     pageAll<{ id: string; price_cents: number }>((a, b) =>
@@ -147,12 +156,17 @@ export async function getInvestorLive(admin: SupabaseClient = createAdminClient(
     sessionsAll.map((s) => (s.country_code ?? "").toUpperCase()).filter((c) => c && c !== "XX"),
   ).size;
 
-  // The shop.
+  // The shop: paid orders less any partial refund (lib/shop/partialRefunds.ts;
+  // a partly refunded order was counted whole until 2026-11-09), each on the
+  // day its money landed. If the refunds cannot be read the totals stand as
+  // they were, rather than the page failing.
   const since30 = since(30);
-  const paidCents = paidOrders.reduce((n, o) => n + (o.total_cents ?? 0), 0);
+  const refunds = await refundsByOrder(admin, new Map(paidOrders.map((o) => [o.id, o.total_cents ?? 0])));
+  const kept = (o: { id: string; total_cents: number }) => keptCents({ ...o, payment_status: "paid" }, refunds);
+  const paidCents = paidOrders.reduce((n, o) => n + kept(o), 0);
   const paid30Cents = paidOrders
-    .filter((o) => o.created_at >= since30)
-    .reduce((n, o) => n + (o.total_cents ?? 0), 0);
+    .filter((o) => (o.paid_at ?? o.created_at) >= since30)
+    .reduce((n, o) => n + kept(o), 0);
   const costById = new Map(sourcing.map((s) => [s.product_id, s.supplier_cost_cents]));
   const margins = products
     .map((p) => {
@@ -161,8 +175,12 @@ export async function getInvestorLive(admin: SupabaseClient = createAdminClient(
     })
     .filter((m): m is number => m !== null);
 
-  const paying = subs.paidCounts.plusOnly + subs.paidCounts.pro;
-  const mrrCents = estimatedMrrCents(subs.paidCounts);
+  // RevenueCat's real figures when it answers, the list-price estimate when
+  // it does not. Until 2026-11-09 this page always showed the estimate, which
+  // counts members in a free trial as paying.
+  const real = await getProjectMetrics();
+  const paying = real ? real.activeSubscriptions : subs.paidCounts.plusOnly + subs.paidCounts.pro;
+  const mrrCents = real ? Math.round(real.mrr * 100) : estimatedMrrCents(subs.paidCounts);
   const subsYear = (mrrCents * 12) / 100;
   const shopYear = (paid30Cents * 12) / 100;
 
@@ -183,7 +201,7 @@ export async function getInvestorLive(admin: SupabaseClient = createAdminClient(
       paid30Cents,
       medianMargin: median(margins),
     },
-    subscriptions: { paying, mrrCents },
+    subscriptions: { paying, mrrCents, source: real ? "revenuecat" : "estimate" },
     runRate: { subscriptions: subsYear, shop: shopYear, total: subsYear + shopYear },
   };
 }

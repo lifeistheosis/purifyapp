@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
 import type Stripe from "stripe";
 
-import { dailyNet, monthlyNet, rangeFrom, summarise, toRow } from "@/lib/billing/stripeLedger";
+import { dailyNet, monthlyNet, notShopCents, rangeFrom, summarise, toRow } from "@/lib/billing/stripeLedger";
 
 // Loosely typed on purpose: the SDK's Charge type follows the newest API
 // version, where `invoice` is no longer on the charge, and the mapper has
@@ -87,6 +87,21 @@ describe("summarise", () => {
     expect(s.unmatchedCount).toBe(1);
     expect(s.netCents).toBe(454 + 1135 + 261 - 499 - 1000);
     expect(s.byType.charge.count).toBe(3);
+  });
+});
+
+describe("notShopCents", () => {
+  it("counts what was paid for anything but a shop order, less its refunds, before fees, and leaves payouts out", () => {
+    const rows = [
+      toRow(bt({ id: "1", source: { object: "charge", invoice: "in_1" } }), orders), // invoiced 499
+      toRow(bt({ id: "2", amount: 1200, fee: 65, net: 1135, source: { object: "charge", payment_intent: "pi_shop" } }), orders), // shop
+      toRow(bt({ id: "3", amount: 300, fee: 39, net: 261, source: { object: "charge", payment_intent: "pi_web" } }), orders), // web billing, no invoice
+      toRow(bt({ id: "4", type: "refund", amount: -499, fee: 0, net: -499, source: { object: "refund", charge: { id: "ch", invoice: "in_1" } } }), orders),
+      toRow(bt({ id: "5", type: "refund", amount: -200, fee: 0, net: -200, source: { object: "refund", charge: { id: "ch2", payment_intent: "pi_shop" } } }), orders),
+      toRow(bt({ id: "6", type: "payout", amount: -1000, fee: 0, net: -1000 }), orders),
+    ];
+    // 499 + 300 - 499; the shop's charge and the shop's refund are the shop's.
+    expect(notShopCents(rows)).toBe(300);
   });
 });
 

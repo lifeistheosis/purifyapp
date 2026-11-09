@@ -39,6 +39,12 @@ describe("the rail's figures", () => {
     expect(railFigure("waiting", READ)?.sensitive).toBeUndefined();
   });
 
+  it("says which books today's money comes from, and what is not in them", () => {
+    expect(railFigure("revenue", { ...READ, revenueSource: "stripe" })?.title).toMatch(/through Stripe.*Google Play or the App Store is not in it/);
+    expect(railFigure("revenue", { ...READ, revenueSource: "shop" })?.title).toMatch(/the shop's paid orders.*Plus is not in it/);
+    expect(railFigure("revenue", READ)?.title).toMatch(/Plus is not in it/);
+  });
+
   it("rounds money to whole dollars with thousands marked", () => {
     expect(railMoney(9_649)).toBe("$96");
     expect(railMoney(9_650)).toBe("$97");

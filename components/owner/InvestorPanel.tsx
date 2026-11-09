@@ -218,9 +218,9 @@ export function InvestorPanel({ doors }: { doors?: PlanDoors }) {
           {today && live ? (
             <p className="font-sans text-[12.5px]" style={ink2}>
               Subscriptions {usd(live.runRate.subscriptions)} a year counted, against {usd(today.subscriptions)} planned. Shop{" "}
-              {usd(live.runRate.shop)} a year counted, against {usd(today.shop)} planned. Revenue a year is subscriptions at list
-              price (monthly revenue times twelve) plus the shop&apos;s paid orders in the last 30 days times twelve, before store
-              fees.
+              {usd(live.runRate.shop)} a year counted, against {usd(today.shop)} planned. Revenue a year is subscriptions{" "}
+              {live.subscriptions.source === "revenuecat" ? "as RevenueCat bills them" : "at list price"} (monthly revenue times
+              twelve) plus the shop&apos;s paid orders in the last 30 days, less refunds, times twelve, before store fees.
             </p>
           ) : null}
 

@@ -10,19 +10,33 @@ import {
 } from "@/lib/shop/earnings";
 import { subscriptionStats } from "@/lib/entitlements/adminStats";
 import { estimatedMrrCents, estimatedArrCents } from "@/lib/premium/mrr";
-import { getProjectMetrics, realArpuAnnual } from "@/lib/billing/revenuecatMetrics";
-import { cachedLedger, monthlyNet } from "@/lib/billing/stripeLedger";
+import { getProjectMetrics, getRevenueBetween, realArpuAnnual } from "@/lib/billing/revenuecatMetrics";
+import { cachedLedger, monthlyNet, notShopCents } from "@/lib/billing/stripeLedger";
+import { INVESTOR_PLAN } from "@/lib/invest/plan";
+import { paidTotals, refundsByOrder } from "@/lib/shop/partialRefunds";
+import { realizedRevenue } from "@/lib/admin/realized";
 import { abandonmentStats, aovSplit, type MetricsOrder } from "@/lib/shop/commerceMetrics";
 import { eikonStoreIds } from "@/lib/shop/lowStockServer";
 
 export const dynamic = "force-dynamic";
 
 /**
- * Unified revenue for the owner: shop order revenue (net of refunds),
- * donations (Buy Me a Coffee snapshots), and ESTIMATED subscription MRR.
- * Shop math reuses the pure aggregators in lib/shop/earnings.ts; the
- * subscription figure is an estimate (see lib/premium/mrr.ts) because no
- * billed amount is stored anywhere.
+ * Unified revenue for the owner: shop order revenue (net of refunds, partial
+ * ones included), donations (typed in by hand, shown apart), and Plus.
+ *
+ * Plus is RevenueCat's when it answers: its MRR, paying subscriptions and
+ * trials from the overview, and what members paid since launch from its
+ * revenue endpoint (lib/billing/revenuecatMetrics.ts). When it does not, MRR
+ * is the list-price estimate (lib/premium/mrr.ts), labelled so, and the
+ * realized total carries the website's Plus from Stripe and says that Plus
+ * bought through Google Play and the App Store is not in it.
+ *
+ * Until 2026-11-09 the RevenueCat half never worked: its parser read a shape
+ * RevenueCat does not send, so every answer was dropped and the estimate
+ * stood in, with the key set. The realized total then fell back to what
+ * Stripe had paid out to the bank, which lags sales by days, is a transfer
+ * rather than a sale, and holds no Plus bought on Google Play; it still said
+ * "complete".
  */
 export async function GET() {
   const adminUser = await getAdminUser();
@@ -73,12 +87,17 @@ export async function GET() {
     }[];
   }[];
 
+  // Partial refunds leave an order paid; the part that went back is on its
+  // refund requests. A failed read is said (partialRefundsRead), never taken
+  // as "none".
+  const partialRefunds = await refundsByOrder(admin, paidTotals(orders));
+
   // No fee map on purpose. This is the OWNER's revenue view across every
   // store, where Purify's commission is income rather than a deduction;
   // subtracting it here would understate what the business made. summary
   // reports commissionCents as null, which is correct: unasked, not zero.
-  const summary = earningsSummary(orders);
-  const monthly = monthlyEarnings(orders);
+  const summary = earningsSummary(orders, undefined, partialRefunds);
+  const monthly = monthlyEarnings(orders, partialRefunds);
   const top = topProducts(orders, 8);
   // The average order for EIKON and for the marketplace, and how many
   // checkouts are walked away from and won back (asked for 2026-09-30).
@@ -104,78 +123,56 @@ export async function GET() {
     ? donations[donations.length - 1]
     : null;
 
-  const mrrCents = estimatedMrrCents(subs.paidCounts);
-  // Real subscription revenue, when a v2 key with charts_metrics access is
-  // set. Null otherwise, and the estimate below carries the panel as before.
+  const estimatedMrr = estimatedMrrCents(subs.paidCounts);
+  // Real subscription figures, when a v2 key with charts_metrics access is
+  // set. Null otherwise, and the estimate carries the panel as before.
   const live = await getProjectMetrics();
-  const arrCents = estimatedArrCents(subs.paidCounts);
+  const today = new Date().toISOString().slice(0, 10);
+  // What members paid since launch: RevenueCat's revenue (after refunds,
+  // before the stores' cut) from the first day Purify could take money.
+  const sinceLaunch = await getRevenueBetween(INVESTOR_PLAN.launch, today);
+  const mrrCents = live ? Math.round(live.mrr * 100) : estimatedMrr;
+  // ARR is not a RevenueCat figure. It is the monthly rate times twelve, a
+  // run rate, whichever MRR stands behind it.
+  const arrCents = live ? mrrCents * 12 : estimatedArrCents(subs.paidCounts);
 
   // ── Revenue by source ───────────────────────────────────────────────────
   //
-  // THIS DONUT USED TO COMPARE MONEY RECEIVED WITH MONEY NOT YET EARNED. Its
-  // three slices were shop net (realized, all-time), donations (realized,
-  // all-time) and "Subscriptions (est. ARR)", which is a twelve-month FORWARD
-  // PROJECTION computed from today's subscriber count times a list price.
+  // REALIZED ONLY. This donut once put a twelve-month forward projection (the
+  // estimated ARR) beside cash, and on a shop with no sales it drew one full
+  // ring of a forecast. A source with nothing realized contributes nothing;
+  // the run rate keeps its own card, labelled as one.
   //
-  // Those are not the same kind of number and they cannot share a pie. On
-  // production the effect was severe rather than academic: the shop has never
-  // taken a payment and donations have never been recorded, so both realized
-  // slices are zero, and the chart rendered as a single full circle of a
-  // projection. It read as "subscriptions are 100% of our revenue" when what
-  // it actually showed was "we have no revenue and here is a forecast".
-  //
-  // Realized only now. A source with nothing realized contributes nothing,
-  // and the estimate keeps its own place in the run-rate card lower down,
-  // where it is labelled as a run rate and not summed against cash.
-  const subsRealizedCents = live ? Math.round(live.totalRevenue * 100) : null;
-  const bySource = [
-    { name: "Shop (net)", value: summary.netCents },
-    // DONATIONS ARE NOT A SOURCE HERE ANY MORE. The figure in
-    // donations_monthly is typed in by the owner, not measured: the BMC cron
-    // that would fill it needs CRON_SECRET and a Buy Me a Coffee key, neither
-    // of which is set, and the owner has said the number currently stored is
-    // a placeholder standing in for an amount they could not remember.
-    //
-    // A recalled number in a chart of realized revenue is the same category
-    // error the ARR projection was, one step subtler: it looks measured. It is
-    // reported on its own, labelled, and never summed with anything.
-    // Omitted, not zeroed, when RevenueCat is not configured: a zero slice
-    // would claim subscriptions earned nothing, and the truth is that nothing
-    // here can see what they earned. The UI says which case it is in.
-    ...(subsRealizedCents != null
-      ? [{ name: "Subscriptions", value: subsRealizedCents }]
-      : []),
-  ];
+  // DONATIONS ARE NOT A SOURCE HERE. donations_monthly is typed in by the
+  // owner, not measured, and a recalled number in a chart of realized revenue
+  // looks measured when it is not. Reported on its own, never summed.
+  const subsRealizedCents = sinceLaunch ? Math.round(sinceLaunch.value * 100) : null;
 
-  // What the business has actually taken, across every source that can answer.
-  // Deliberately NOT a sum that silently treats an unmeasured source as zero:
-  // `complete` is false whenever a source could not report, and the UI is
-  // required to qualify the figure when it is.
-  // Donations excluded, per above. `complete` no longer waits on a donations
-  // snapshot either: a self-reported figure arriving would not make this total
-  // any more complete, because it is not in it.
-  //
-  // STRIPE WHEN REVENUECAT IS NOT CONNECTED. Without the RevenueCat key the
-  // headline read $0 while Stripe had paid out $56.72 (owner, 2026-09-06).
-  // Stripe's ledger is what the business was actually paid, so when
-  // RevenueCat cannot answer, the realized figure is what Stripe paid out:
-  // charges net of refunds and fees, landed in the bank. Shop orders are
-  // Stripe charges too, so the payout figure already contains them and
-  // shop net is NOT added on top. Totals only, no order matching here.
-  const stripe = live ? null : await cachedLedger("all", new Map());
-  const stripePaidOutCents =
-    stripe && stripe.configured && !stripe.error ? stripe.summary.payoutsCents : null;
+  // WHEN RevenueCat CANNOT ANSWER: the website's Plus from Stripe. Web
+  // billing charges this Stripe account, so Stripe can say what members paid
+  // on the website; it cannot see Google Play or the App Store, and the
+  // total says so (complete: false, missing names them).
+  const stripe = subsRealizedCents == null ? await cachedLedger("all", new Map()) : null;
+  const stripeReadable = !!stripe && stripe.configured && !stripe.error;
+  const webPlusCents = stripeReadable && stripe ? notShopCents(stripe.rows) : null;
+  // Kept for the Stripe card's line, as what it is: a transfer to the bank.
+  const stripePaidOutCents = stripeReadable && stripe ? stripe.summary.payoutsCents : null;
   // The monthly chart from the same ledger, so the trend and the headline
   // come from one source. Null when Stripe is not the source.
-  const stripeMonthly = stripePaidOutCents != null && stripe ? monthlyNet(stripe.rows) : null;
-  const realizedTotalCents =
-    stripePaidOutCents != null
-      ? stripePaidOutCents
-      : summary.netCents + (subsRealizedCents ?? 0);
-  const realizedComplete = subsRealizedCents != null || stripePaidOutCents != null;
-  if (stripePaidOutCents != null) {
-    bySource.push({ name: "Stripe, paid out", value: stripePaidOutCents });
-  }
+  const stripeMonthly = webPlusCents != null && stripe ? monthlyNet(stripe.rows) : null;
+
+  const bySource: { name: string; value: number }[] = [{ name: "Shop (net)", value: summary.netCents }];
+  if (subsRealizedCents != null) bySource.push({ name: "Plus (RevenueCat)", value: subsRealizedCents });
+  else if (webPlusCents != null) bySource.push({ name: "Website, through Stripe", value: webPlusCents });
+
+  // What customers paid, all time: the rule and its words are in
+  // lib/admin/realized.ts, with tests.
+  const realized = realizedRevenue({
+    shopNetCents: summary.netCents,
+    plusCents: subsRealizedCents,
+    webPlusCents,
+    refundsRead: partialRefunds != null,
+  });
 
   return NextResponse.json(
     {
@@ -195,6 +192,8 @@ export async function GET() {
         pendingOrderCount,
         cancelledOrderCount,
         unitsSold: summary.unitsSold,
+        /** False when the partial refunds could not be read, so net may hold some of them. */
+        partialRefundsRead: partialRefunds != null,
         monthly,
         topProducts: top,
         split,
@@ -223,25 +222,24 @@ export async function GET() {
       },
       subscriptions: {
         // Real figures where RevenueCat answers, the list-price estimate
-        // where it does not. `estimated` stops being a constant: it is now
-        // the truth about which of the two this payload is carrying, and the
-        // UI is required to say so either way.
-        mrrCents: live ? Math.round(live.mrr * 100) : mrrCents,
-        arrCents: live ? Math.round(live.arr * 100) : arrCents,
+        // where it does not. `estimated` is the truth about which of the two
+        // this payload carries, and the UI says so either way.
+        mrrCents,
+        arrCents,
         activePlus: subs.activePlus,
         activePro: subs.activePro,
         estimated: !live,
-        // Kept alongside the real number rather than replaced, so a gap
-        // between what RevenueCat bills and what list price implies is
-        // visible instead of silently resolved. That gap is discounts,
-        // regional pricing, annual plans and store commission, which is
-        // exactly what the estimate could never see.
-        estimatedMrrCents: mrrCents,
+        // Kept beside the real number rather than replaced, so a gap between
+        // what RevenueCat bills and what list price implies stays visible:
+        // annual plans, trials, regional prices and discounts.
+        estimatedMrrCents: estimatedMrr,
         live: live
           ? {
               activeSubscriptions: live.activeSubscriptions,
               activeTrials: live.activeTrials,
-              totalRevenue: live.totalRevenue,
+              /** What members paid in the last 28 days, after refunds, before the stores' cut (dollars). */
+              revenue28d: live.revenue28d,
+              newCustomers28d: live.newCustomers28d,
               currency: live.currency,
               lastUpdatedAt: live.lastUpdatedAt,
               annualArpu: realArpuAnnual(live),
@@ -251,18 +249,21 @@ export async function GET() {
       },
       bySource,
       realized: {
-        totalCents: realizedTotalCents,
-        /** False when a source could not report and is missing from the sum. */
-        complete: realizedComplete,
+        totalCents: realized.totalCents,
+        /** False when a part could not be read; `missing` names it. */
+        complete: realized.complete,
+        missing: realized.missing,
         shopCents: summary.netCents,
         donationsCents: donationsTotal,
-        /** Null when RevenueCat is not configured: unmeasured, not zero. */
+        /** What members paid for Plus since launch, from RevenueCat. Null when it cannot answer: unmeasured, not zero. */
         subscriptionsCents: subsRealizedCents,
-        /** What Stripe has paid out, all time. Null when Stripe is not configured or RevenueCat answered instead. */
+        /** What the website took through Stripe for anything but the shop, after refunds. Null unless Stripe stands in for RevenueCat. */
+        webPlusCents,
+        /** What Stripe has paid out to the bank, all time: a transfer, not a sale. Null when Stripe was not read. */
         stripePaidOutCents,
-        /** Net by month from Stripe's ledger, oldest first. Null unless Stripe is the source. */
+        /** Net by month from Stripe's ledger, oldest first. Null unless Stripe stands in for RevenueCat. */
         stripeMonthly,
-        source: subsRealizedCents != null ? "revenuecat" : stripePaidOutCents != null ? "stripe" : "partial",
+        source: realized.source,
       },
     },
     { headers: { "Cache-Control": "no-store" } },

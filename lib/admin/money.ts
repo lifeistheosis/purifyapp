@@ -20,9 +20,20 @@
  * zero. A figure that could not be read is null and the page says so; a total
  * missing one of its parts says which.
  *
+ * WHERE PLUS COMES FROM (2026-11-09). When RevenueCat answers, Plus is what
+ * its customers actually paid in the period (its revenue for those days,
+ * after refunds), less the stores' cut for the part bought through a store:
+ * real money, with only the cut estimated. When it does not, Plus is the
+ * estimate above, and "This month" counts only the part of the month gone so
+ * far (it used to count the whole month on its first day, beside a shop that
+ * counted only the days so far). A partial refund is taken off its order
+ * (lib/shop/partialRefunds.ts); it used to be counted as kept.
+ *
  * Pure: the rows and the clock come in. The reads are in
  * app/api/admin/money/route.ts.
  */
+
+import { keptCents, partlyRefundedCents, type RefundsByOrder } from "@/lib/shop/partialRefunds";
 
 export type MoneyPeriod = "month" | "30d" | "90d" | "12m";
 
@@ -98,6 +109,8 @@ export function moneyWindow(period: MoneyPeriod, now: Date): MoneyWindow {
 }
 
 export type MoneyOrder = {
+  /** Read so a partial refund can be matched to its order. */
+  id?: string | null;
   total_cents: number;
   payment_status: string;
   created_at: string;
@@ -108,18 +121,32 @@ export type MoneyOrder = {
 /** When an order's money landed: its payment time, or its checkout's start when none was recorded. */
 export const landedAt = (o: MoneyOrder) => o.paid_at ?? o.created_at;
 
-/** The shop in a window: paid orders count their total, refunded ones nothing. */
-export function shopNet(orders: readonly MoneyOrder[]): { netCents: number; paid: number; refunded: number } {
+/**
+ * The shop in a window: a paid order counts its total less any partial refund
+ * (`refunds`, lib/shop/partialRefunds.ts), a refunded one nothing.
+ * `partlyRefunded` counts the paid orders that gave some of it back.
+ */
+export function shopNet(
+  orders: readonly MoneyOrder[],
+  refunds?: RefundsByOrder | null,
+): { netCents: number; paid: number; refunded: number; partlyRefunded: number; partlyRefundedCents: number } {
   let netCents = 0;
   let paid = 0;
   let refunded = 0;
+  let partlyRefunded = 0;
+  let partCents = 0;
   for (const o of orders) {
     if (o.payment_status === "paid") {
-      netCents += o.total_cents;
+      netCents += keptCents(o, refunds);
       paid += 1;
+      const back = partlyRefundedCents(o, refunds);
+      if (back > 0) {
+        partlyRefunded += 1;
+        partCents += back;
+      }
     } else if (o.payment_status === "refunded") refunded += 1;
   }
-  return { netCents, paid, refunded };
+  return { netCents, paid, refunded, partlyRefunded, partlyRefundedCents: partCents };
 }
 
 /**
@@ -156,13 +183,63 @@ export const STORE_CUT = 0.15;
  * rest pay on the website, whose fees are Stripe's and counted there.
  */
 export function plusAfterCut(mrrCents: number, months: number, storeShare: number): number {
+  return afterStoreCut(mrrCents * months, storeShare);
+}
+
+/**
+ * What is left of Plus revenue after the stores' cut, when `storeShare` of it
+ * was bought through a store. RevenueCat's revenue still holds the cut (and
+ * any tax the store collected), so this is how a real figure from it becomes
+ * what Purify keeps; the cut itself is the part that is estimated.
+ */
+export function afterStoreCut(grossCents: number, storeShare: number): number {
   const share = Math.min(1, Math.max(0, Number.isFinite(storeShare) ? storeShare : 1));
-  return Math.round(mrrCents * months * (1 - STORE_CUT * share));
+  return Math.round(grossCents * (1 - STORE_CUT * share));
+}
+
+/**
+ * The part of the paying members who pay through a store, from the active
+ * members by source (lib/entitlements/adminStats.ts bySource): Google Play
+ * and the App Store against web billing. All of them when none can be told
+ * apart, the larger cut, so an unknown mix never flatters the figure.
+ */
+export function storeShareOf(bySource: Readonly<Record<string, number>>): number {
+  const store = (bySource.apple ?? 0) + (bySource.google ?? 0);
+  const web = bySource.stripe ?? 0;
+  return store + web > 0 ? store / (store + web) : 1;
+}
+
+/**
+ * How many months of the Plus ESTIMATE a period carries. The estimate is a
+ * monthly rate, so a period is the months it spans, with two corrections the
+ * costs do not need: "This month" counts only the part of the month gone so
+ * far, as the shop beside it does, and no period reaches back before
+ * `launch`, when nobody could pay for Plus at all.
+ */
+export function plusMonths(period: MoneyPeriod, now: Date, launch: string | null = null): number {
+  const t = now.getTime();
+  const y = now.getUTCFullYear();
+  const m = now.getUTCMonth();
+  const launched = launch ? Date.parse(`${launch}T00:00:00Z`) : Number.NaN;
+  const sinceLaunch = Number.isFinite(launched) ? Math.max(0, (t - launched) / (30.4375 * DAY_MS)) : Infinity;
+  if (period === "month") {
+    const start = Date.UTC(y, m, 1);
+    const end = Date.UTC(y, m + 1, 1);
+    const from = Number.isFinite(launched) ? Math.max(start, launched) : start;
+    return Math.max(0, Math.min(1, (t - from) / (end - start)));
+  }
+  const span = period === "30d" ? 1 : period === "90d" ? 3 : 12;
+  return Math.min(span, sinceLaunch);
 }
 
 export type MoneyParts = {
   shopCents: number | null;
   plusCents: number | null;
+  /**
+   * False when Plus is RevenueCat's real revenue (only the stores' cut on it
+   * estimated); true, the default, when it is the list-price estimate.
+   */
+  plusEstimated?: boolean;
   costLinesCents: number | null;
   goodsCents: number | null;
   /** Units sold whose cost is not in Catalogue. */
@@ -195,7 +272,7 @@ export function moneyFigures(p: MoneyParts): MoneyFigures {
   const parts = [p.costLinesCents, p.goodsCents, p.feesCents].filter((v): v is number => v !== null);
   const wentOut = parts.length === 0 ? null : parts.reduce((a, b) => a + b, 0);
 
-  const estimated = (p.plusCents ?? 0) > 0 || inMissing.length > 0;
+  const estimated = ((p.plusCents ?? 0) > 0 && p.plusEstimated !== false) || inMissing.length > 0;
   const kept = cameIn === null || wentOut === null ? null : cameIn - wentOut;
   return {
     cameIn: { cents: cameIn, estimated, missing: inMissing },
@@ -213,10 +290,15 @@ export function moneyFigures(p: MoneyParts): MoneyFigures {
  * and the period before's, oldest first. A bucket with nothing in it is a
  * real zero: the orders were read.
  */
-export function shopBuckets(orders: readonly MoneyOrder[], w: MoneyWindow, now: Date): { current: number[]; before: number[] } {
+export function shopBuckets(
+  orders: readonly MoneyOrder[],
+  w: MoneyWindow,
+  now: Date,
+  refunds?: RefundsByOrder | null,
+): { current: number[]; before: number[] } {
   const since = Date.parse(w.since);
   const beforeSince = Date.parse(w.beforeSince);
-  const net = (o: MoneyOrder) => (o.payment_status === "paid" ? o.total_cents : 0);
+  const net = (o: MoneyOrder) => keptCents(o, refunds);
   if (w.buckets === "month") {
     const key = (t: number) => {
       const d = new Date(t);

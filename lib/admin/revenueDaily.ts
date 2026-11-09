@@ -21,10 +21,14 @@
  * app/api/admin/revenue/daily/route.ts.
  */
 
+import { keptCents, type RefundsByOrder } from "@/lib/shop/partialRefunds";
+
 /** Paid counts; refunded is kept so the order is visible and contributes zero. */
 export const REVENUE_STATUSES = ["paid", "refunded"] as const;
 
 export type RevenueOrder = {
+  /** Read so a partial refund can be matched to its order (lib/shop/partialRefunds.ts). */
+  id?: string | null;
   total_cents: number;
   payment_status: string;
   created_at: string;
@@ -40,7 +44,7 @@ export type RevenueDay = {
 };
 
 const isRevenue = (status: string) => (REVENUE_STATUSES as readonly string[]).includes(status);
-const netOf = (o: RevenueOrder) => (o.payment_status === "refunded" ? 0 : o.total_cents);
+const netOf = (o: RevenueOrder, refunds?: RefundsByOrder | null) => keptCents(o, refunds);
 
 /**
  * The UTC calendar day of a timestamp, whatever offset it was written with.
@@ -83,11 +87,14 @@ export function dayBasisNote(money: boolean, byCheckoutStart: number | null): st
 
 /**
  * One row per day in `dayKeys`, in that order, including the days with nothing
- * on them. An order whose day is not among them is not counted.
+ * on them. An order whose day is not among them is not counted. `refunds` takes
+ * a partial refund off its order (lib/shop/partialRefunds.ts); without it a
+ * partly refunded order counts whole, as it did until 2026-11-09.
  */
 export function foldDailyRevenue(
   orders: readonly RevenueOrder[],
   dayKeys: readonly string[],
+  refunds?: RefundsByOrder | null,
 ): RevenueDay[] {
   const buckets = new Map<string, RevenueDay>(
     dayKeys.map((date) => [date, { date, netCents: 0, orderCount: 0, byCheckoutStart: 0 }]),
@@ -97,7 +104,7 @@ export function foldDailyRevenue(
     const day = utcDayOf(o.paid_at ?? o.created_at);
     const bucket = day ? buckets.get(day) : undefined;
     if (!bucket) continue;
-    bucket.netCents += netOf(o);
+    bucket.netCents += netOf(o, refunds);
     bucket.orderCount += 1;
     if (!o.paid_at) bucket.byCheckoutStart += 1;
   }

@@ -5,6 +5,7 @@ import { staleCounts } from "@/lib/admin/attentionOrders";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { subscriptionStats } from "@/lib/entitlements/adminStats";
 import { cachedLedger, chargedIntents, dailyNet } from "@/lib/billing/stripeLedger";
+import { keptCents, paidTotals, refundsByOrder, type RefundsByOrder } from "@/lib/shop/partialRefunds";
 
 export const dynamic = "force-dynamic";
 
@@ -25,6 +26,8 @@ type OrderRow = {
   payment_status: string;
   email: string | null;
   created_at: string;
+  /** Stripe's time for the payment; the day the money landed. */
+  paid_at?: string | null;
   stripe_payment_intent?: string | null;
 };
 
@@ -51,7 +54,7 @@ async function pageOrders(
   for (let page = 0; page < MAX_PAGES; page++) {
     const { data, error } = await admin
       .from("shop_orders")
-      .select("id, total_cents, payment_status, email, created_at, stripe_payment_intent")
+      .select("id, total_cents, payment_status, email, created_at, paid_at, stripe_payment_intent")
       .gte("created_at", since)
       .order("created_at", { ascending: true })
       .range(page * PAGE, page * PAGE + PAGE - 1);
@@ -191,9 +194,18 @@ export async function GET() {
       ? null
       : staleCounts(orders30, pendingCount.count ?? 0, now.getTime(), lastReconcileAt);
 
-  const isRevenue = (s: string) => s === "paid" || s === "refunded";
-  const net = (o: { total_cents: number; payment_status: string }) =>
-    o.payment_status === "refunded" ? 0 : o.total_cents;
+  // THE SHOP'S OWN BOOKS, when Stripe cannot be read. Each order on the UTC
+  // day its money landed (paid_at, Stripe's time; the checkout's start where
+  // none was recorded), as Money and the calendar place it, and a partial
+  // refund taken off its order (lib/shop/partialRefunds.ts). Until 2026-11-09
+  // this placed orders on the day checkout opened and counted a partly
+  // refunded order whole.
+  const ledger = await cachedLedger("30d", new Map());
+  const stripeReadable = ledger.configured && !ledger.error;
+  let refunds: RefundsByOrder | null = null;
+  if (!stripeReadable && !recentOrdersRes.failed) refunds = await refundsByOrder(admin, paidTotals(orders30));
+  const landed = (o: OrderRow) => o.paid_at ?? o.created_at;
+  const net = (o: OrderRow) => keptCents(o, refunds);
 
   // 30-point daily net series (oldest → newest) for the KPI sparkline.
   const series: number[] = [];
@@ -201,16 +213,14 @@ export async function GET() {
     const dayStart = new Date(now.getTime() - i * dayMs);
     const key = dayStart.toISOString().slice(0, 10);
     const dayNet = orders30
-      .filter((o) => isRevenue(o.payment_status) && o.created_at.slice(0, 10) === key)
+      .filter((o) => landed(o).slice(0, 10) === key)
       .reduce((a, o) => a + net(o), 0);
     series.push(dayNet);
   }
 
-  let revenue30Cents = orders30
-    .filter((o) => isRevenue(o.payment_status))
-    .reduce((a, o) => a + net(o), 0);
+  let revenue30Cents = orders30.reduce((a, o) => a + net(o), 0);
   let revenueTodayCents = orders30
-    .filter((o) => isRevenue(o.payment_status) && o.created_at >= startOfTodayUtc)
+    .filter((o) => landed(o) >= startOfTodayUtc)
     .reduce((a, o) => a + net(o), 0);
 
   // STRIPE WHEN IT ANSWERS. The hero read shop orders only, so it showed
@@ -229,8 +239,7 @@ export async function GET() {
   // Null when Stripe is not configured, so the rule falls back to the
   // webhook heuristic rather than reading "nothing charged".
   let pendingStripeCharged: number | null = null;
-  const ledger = await cachedLedger("30d", new Map());
-  if (ledger.configured && !ledger.error) {
+  if (stripeReadable) {
     const charged = chargedIntents(ledger.rows);
     const staleCutoff = now.getTime() - 86_400_000;
     pendingStripeCharged = orders30.filter(
@@ -271,8 +280,15 @@ export async function GET() {
       revenueTodayCents: recentOrdersRes.failed ? null : revenueTodayCents,
       revenue30Cents: recentOrdersRes.failed ? null : revenue30Cents,
       revenueSeries: recentOrdersRes.failed ? [] : series,
-      /** Which ledger the three revenue fields came from. */
+      /**
+       * Which ledger the three revenue fields came from. "stripe": what
+       * Stripe took (the shop and Plus bought on the website), after its fees
+       * and refunds; Plus bought through Google Play or the App Store is not
+       * in it. "shop": the shop's paid orders, less refunds, alone.
+       */
       revenueSource,
+      /** False when the shop's books stood in and their partial refunds could not be read. */
+      refundsRead: stripeReadable || refunds != null || recentOrdersRes.failed,
       /** True when the order read failed and the money fields are unmeasured. */
       ordersDegraded: recentOrdersRes.failed,
       // null, not 0, when a HEAD count errored. PostgREST answers an error
