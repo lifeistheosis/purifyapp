@@ -4,6 +4,7 @@ import { resolveWebhookGrant } from "@/lib/billing/webhookGrant";
 import { effectsFor } from "@/lib/billing/lifecycleEvents";
 import { sendLifecycleEmail, writeLifecycleState } from "@/lib/billing/applyLifecycle";
 import { sourceForStore } from "@/lib/billing/plusSource";
+import { keepPlusEvent, type RcWebhookEvent } from "@/lib/billing/plusEvents";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -43,7 +44,7 @@ export const dynamic = "force-dynamic";
 
 // The store an event names to our plus_source word: lib/billing/plusSource.ts.
 
-type RcEvent = {
+type RcEvent = RcWebhookEvent & {
   type?: string;
   app_user_id?: string;
   store?: string;
@@ -91,6 +92,18 @@ export async function POST(req: NextRequest) {
   // no real user — acknowledge it so the dashboard shows green.
   if (type === "TEST") {
     return NextResponse.json({ ok: true, test: true });
+  }
+
+  // Every event is kept for the admin's Plus over time (admin item A2,
+  // lib/billing/plusEvents.ts), whoever it is for: after the answer, best
+  // effort, once however often it is delivered. Nothing about keeping it can
+  // change what RevenueCat is told below.
+  const keep = () => keepPlusEvent(createAdminClient, event).then(() => undefined);
+  try {
+    after(keep);
+  } catch {
+    // Outside a request scope (a script, a test): keep it inline.
+    await keep();
   }
 
   const appUserId = event.app_user_id ?? "";

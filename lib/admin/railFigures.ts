@@ -36,6 +36,11 @@ export type RailReadings = {
    * through Google Play or the App Store, or the shop's own orders.
    */
   revenueSource?: "stripe" | "shop";
+  /**
+   * True when Plus bought through Google Play and the App Store is in the
+   * figure too (from the kept RevenueCat events, admin item A2).
+   */
+  storePlus?: boolean;
   /** Accounts made today. */
   signupsToday: number | null;
 };
@@ -54,7 +59,12 @@ export function railMoney(cents: number): string {
  * today, net" whichever books it came from, so a day of Plus bought on Google
  * Play read as a day with nothing in it (found 2026-11-09).
  */
-export function revenueTitle(source: RailReadings["revenueSource"]): string {
+export function revenueTitle(source: RailReadings["revenueSource"], storePlus = false): string {
+  if (storePlus) {
+    return source === "stripe"
+      ? "Came in today: through Stripe (the shop and Plus on the website) after Stripe's fees and refunds, and Plus bought through Google Play and the App Store after the store's share. UTC day."
+      : "Came in today: the shop's paid orders less refunds, and Plus bought through Google Play and the App Store after the store's share. UTC day. Plus on the website is not in it.";
+  }
   return source === "stripe"
     ? "Came in today through Stripe (the shop and Plus on the website), after Stripe's fees and refunds, UTC day. Plus bought through Google Play or the App Store is not in it."
     : "Came in today: the shop's paid orders, less refunds, UTC day. Plus is not in it.";
@@ -71,7 +81,7 @@ export function railFigure(kind: AdminFigure, r: RailReadings): RailFigure | nul
       return ok(r.live) ? { text: `${r.live.toLocaleString("en-US")} now`, title: "On the site in the last 90 seconds" } : null;
     case "revenue":
       return ok(r.revenueTodayCents)
-        ? { text: railMoney(r.revenueTodayCents), title: revenueTitle(r.revenueSource), sensitive: true }
+        ? { text: railMoney(r.revenueTodayCents), title: revenueTitle(r.revenueSource, r.storePlus), sensitive: true }
         : null;
     case "signups":
       return ok(r.signupsToday)

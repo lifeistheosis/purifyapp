@@ -12,8 +12,10 @@ export const dynamic = "force-dynamic";
  * The current subscription picture from the entitlements table: active
  * Plus (includes Pro), active Pro, Plus-only, supporters, a breakdown by
  * source, and an ESTIMATED MRR/ARR (no billed amount is stored — see
- * lib/premium/mrr.ts). New/churned cohorts are NOT available: entitlements
- * is a single mutable row and the RevenueCat webhook discards its events.
+ * lib/premium/mrr.ts). Who joined and who left, week by week, is
+ * /api/admin/plus-history, from the RevenueCat events the webhook keeps from
+ * 1.9 (admin item A2); a member in a free trial is counted apart once those
+ * events can say who is in one.
  */
 export async function GET() {
   const adminUser = await getAdminUser();
@@ -44,6 +46,9 @@ export async function GET() {
       compedPlus: subs.compedPlus,
       giftedPlus: subs.giftedPlus,
       legacyPlus: subs.legacyPlus,
+      /** In a free trial now, from the kept RevenueCat events (admin item A2); not in paidPlus. */
+      trialPlus: subs.trialPlus,
+      trialsKnown: subs.trialsKnown,
       supporters: subs.supporters,
       bySource: subs.bySource,
       mrrCents,

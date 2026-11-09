@@ -43,6 +43,10 @@ describe("the rail's figures", () => {
     expect(railFigure("revenue", { ...READ, revenueSource: "stripe" })?.title).toMatch(/through Stripe.*Google Play or the App Store is not in it/);
     expect(railFigure("revenue", { ...READ, revenueSource: "shop" })?.title).toMatch(/the shop's paid orders.*Plus is not in it/);
     expect(railFigure("revenue", READ)?.title).toMatch(/Plus is not in it/);
+    // From the kept RevenueCat events (admin A2), the stores' Plus is in it, and the title says so.
+    expect(railFigure("revenue", { ...READ, revenueSource: "stripe", storePlus: true })?.title).toMatch(/through Stripe.*Google Play and the App Store after the store's share/);
+    expect(railFigure("revenue", { ...READ, revenueSource: "stripe", storePlus: true })?.title).not.toMatch(/not in it/);
+    expect(railFigure("revenue", { ...READ, revenueSource: "shop", storePlus: true })?.title).toMatch(/Plus on the website is not in it/);
   });
 
   it("rounds money to whole dollars with thousands marked", () => {

@@ -220,3 +220,79 @@ describe("the paid / comped / gifted split the panel leads with", () => {
     );
   });
 });
+
+// 1.9, admin item A2: the kept RevenueCat events say who is in a free trial.
+// A trial has Plus through a store and has paid nothing, and it counted as a
+// paying member, at list price, until the events were kept.
+describe("subscriptionStats: a member in a free trial", () => {
+  const SOON = new Date(Date.now() + 5 * 86_400_000).toISOString();
+  const AGO = (days: number) => new Date(Date.now() - days * 86_400_000).toISOString();
+  const event = (over: Record<string, unknown>) => ({
+    id: `e-${Math.random()}`,
+    type: "INITIAL_PURCHASE",
+    user_id: "trialist",
+    store: "PLAY_STORE",
+    environment: "PRODUCTION",
+    period_type: "TRIAL",
+    price_usd: 0,
+    takehome: null,
+    trial_conversion: null,
+    reason: null,
+    event_at: AGO(2),
+    expires_at: SOON,
+    ...over,
+  });
+
+  it("is Plus, and not paying, once the events can say so", async () => {
+    const s = await subscriptionStats(
+      cappedApi({
+        entitlements: [row({ user_id: "trialist" }), row({ user_id: "payer" })],
+        plus_events: [event({}), event({ user_id: "payer", period_type: "NORMAL", price_usd: 4.99, event_at: AGO(20) })],
+      }).client,
+    );
+    expect(s.trialsKnown).toBe(true);
+    expect(s.activePlus).toBe(2);
+    expect(s.trialPlus).toBe(1);
+    expect(s.paidPlus).toBe(1);
+    expect(s.paidCounts).toEqual({ plusOnly: 1, pro: 0 });
+    expect(s.paidPlus + s.compedPlus + s.giftedPlus + s.legacyPlus + s.developerPlus + s.testPlus + s.trialPlus).toBe(s.activePlus);
+  });
+
+  it("pays from the trial's first charge on, and a trial turned off is a trial until it ends", async () => {
+    const converted = await subscriptionStats(
+      cappedApi({
+        entitlements: [row({ user_id: "trialist" })],
+        plus_events: [event({}), event({ type: "RENEWAL", period_type: "NORMAL", price_usd: 4.99, trial_conversion: true, event_at: AGO(1) })],
+      }).client,
+    );
+    expect(converted.trialPlus).toBe(0);
+    expect(converted.paidPlus).toBe(1);
+    const turnedOff = await subscriptionStats(
+      cappedApi({
+        entitlements: [row({ user_id: "trialist" })],
+        plus_events: [event({}), event({ type: "CANCELLATION", reason: "UNSUBSCRIBE", event_at: AGO(1) })],
+      }).client,
+    );
+    expect(turnedOff.trialPlus).toBe(1);
+    expect(turnedOff.paidPlus).toBe(0);
+  });
+
+  it("counts everyone as before while the events are not there, and says it cannot tell", async () => {
+    const s = await subscriptionStats(fakeAdmin([row({ user_id: "trialist" })]));
+    expect(s.trialsKnown).toBe(false);
+    expect(s.trialPlus).toBe(0);
+    expect(s.paidPlus).toBe(1);
+  });
+
+  it("never lets a failed read of the events take the counts down", async () => {
+    const s = await subscriptionStats(
+      cappedApi(
+        { entitlements: [row({ user_id: "trialist" })], plus_events: [event({})] },
+        {},
+        { fail: ({ table }) => (table === "plus_events" ? { message: "connection reset" } : null) },
+      ).client,
+    );
+    expect(s.trialsKnown).toBe(false);
+    expect(s.paidPlus).toBe(1);
+  });
+});

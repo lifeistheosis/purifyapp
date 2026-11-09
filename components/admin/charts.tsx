@@ -781,7 +781,12 @@ export function BarChart({
   accent = chartColors.primary,
   orientation = "horizontal",
 }: {
-  rows: { label: string; value: number }[];
+  /**
+   * `tick`, vertical bars only: what is printed under the bar, when it should
+   * be shorter than `label` (which the bar's tooltip always carries), so that
+   * thirty days can be told apart on a phone. "" prints nothing.
+   */
+  rows: { label: string; value: number; tick?: string }[];
   height?: number;
   accent?: string;
   orientation?: "horizontal" | "vertical";
@@ -868,7 +873,7 @@ function VerticalBars({
   accent,
   max,
 }: {
-  rows: { label: string; value: number }[];
+  rows: { label: string; value: number; tick?: string }[];
   height: number;
   accent: string;
   max: number;
@@ -927,7 +932,7 @@ function VerticalBars({
                 textAnchor="middle"
                 fontFamily="var(--font-sans)"
               >
-                {r.label}
+                {r.tick ?? r.label}
               </text>
             </g>
           );

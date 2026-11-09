@@ -233,7 +233,7 @@ vi.mock("@/lib/supabase/admin", () => ({
       state.reads++;
       let window: [number, number] = [0, Infinity];
       const query: Record<string, unknown> = {};
-      for (const m of ["select", "eq", "in", "or", "gte", "order"]) query[m] = () => query;
+      for (const m of ["select", "eq", "in", "or", "gte", "order", "limit"]) query[m] = () => query;
       query.range = (from: number, to: number) => ((window = [from, to]), query);
       query.then = <T>(resolve: (a: Answer) => T) => {
         const a = state.tables[table] ?? { data: [], error: null, count: 0 };
@@ -320,6 +320,52 @@ describe("/api/admin/money", () => {
     expect(body.cameIn.plusCents).toBe(Math.round(12_050 * (1 - STORE_CUT)));
     // Real revenue with only the cut estimated: not marked est.
     expect(body.cameIn.estimated).toBe(false);
+  });
+
+  it("takes Plus from the kept RevenueCat events when RevenueCat cannot answer and they cover the period (admin A2)", async () => {
+    const event = (over: Record<string, unknown>) => ({
+      type: "RENEWAL",
+      user_id: "u1",
+      store: "PLAY_STORE",
+      environment: "PRODUCTION",
+      period_type: "NORMAL",
+      price_usd: 4.99,
+      takehome: 0.7,
+      trial_conversion: null,
+      reason: null,
+      event_at: "2026-10-10T10:00:00+00:00",
+      expires_at: null,
+      ...over,
+    });
+    state.tables.plus_events = {
+      data: [
+        // Kept since September, so October is covered. (This fake ignores the
+        // date filter, so the September event is one that moves no money.)
+        event({ type: "CANCELLATION", reason: "UNSUBSCRIBE", event_at: "2026-09-20T08:00:00+00:00" }),
+        event({}),
+        event({ user_id: "u2", store: "RC_BILLING", price_usd: 9.99, takehome: 0.95 }),
+        event({ type: "CANCELLATION", reason: "CUSTOMER_SUPPORT", price_usd: -4.99, event_at: "2026-10-20T10:00:00+00:00" }),
+        event({ environment: "SANDBOX", price_usd: 99 }),
+      ],
+      error: null,
+    };
+    const res = await GET(new NextRequest("http://x/api/admin/money?period=month"));
+    const body = (await res.json()) as Record<string, Record<string, unknown>>;
+    expect(body.cameIn.plusSource).toBe("events");
+    // Paid 4.99 on Play and 9.99 on the website, the Play one refunded; test money never counts.
+    expect(body.cameIn.plusGrossCents).toBe(999);
+    // Play after its take-home share, the website whole (Stripe's fees come off apart).
+    expect(body.cameIn.plusCents).toBe(349 + 999 - 349);
+    expect(body.cameIn.estimated).toBe(false);
+  });
+
+  it("keeps the estimate while the kept events start inside the period", async () => {
+    state.tables.plus_events = {
+      data: [{ type: "RENEWAL", user_id: "u1", store: "PLAY_STORE", environment: "PRODUCTION", period_type: "NORMAL", price_usd: 4.99, takehome: 0.7, trial_conversion: null, reason: null, event_at: "2026-10-10T10:00:00+00:00", expires_at: null }],
+      error: null,
+    };
+    const body = (await (await GET(new NextRequest("http://x/api/admin/money?period=month"))).json()) as Record<string, Record<string, unknown>>;
+    expect(body.cameIn.plusSource).toBe("estimate");
   });
 
   it("prices the estimate over the part of the month gone, not the whole month, when RevenueCat cannot answer", async () => {

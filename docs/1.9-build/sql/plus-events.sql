@@ -24,8 +24,19 @@
 -- PRIVACY. A row names its member only by user id, and the id is cleared,
 -- not the row deleted, when the account is deleted: the money moved either
 -- way, and the books should still add up, but the record stops pointing at
--- anyone. No card, no email, no country. The privacy page gains a line (the
--- decision sheet has the wording), and the 1.9 letter lists it.
+-- anyone. No card, no email, no country, and not the store's order number
+-- (the store could trace that back to the buyer after the account is gone).
+-- The privacy page carries the line Edgar approved on 2026-11-09 ("When you
+-- buy or renew a membership, we keep a record of it: which store, the price
+-- and the dates. Once you delete your account, it is no longer linked to
+-- you."), and the 1.9 letter lists it.
+--
+-- WHAT READS IT (lib/billing/plusEvents.ts writes; lib/admin/plusHistory.ts
+-- reads): Money > Subscriptions > Over time (joined, left, trials that paid,
+-- what came in each day), Home's "came in today" (Plus bought through Google
+-- Play and the App Store, which Stripe never sees), Money's Plus when
+-- RevenueCat's key is not set, and the paying count, which stops counting a
+-- member in a free trial.
 --
 -- Who can do what: nobody through the API keys. RLS is on with no policy, so
 -- only the service role reads or writes: the webhook writes, the admin reads.
@@ -60,11 +71,23 @@ create table if not exists public.plus_events (
   -- commission and tax, 0 to 1.
   takehome numeric(6, 5) check (takehome is null or (takehome >= 0 and takehome <= 1)),
   renewal_number integer,
+  -- RENEWAL only: true on the first charge after a free trial (a trial that paid).
+  trial_conversion boolean,
+  -- CANCELLATION and EXPIRATION only, RevenueCat's word for why: UNSUBSCRIBE
+  -- (turned off by the member), BILLING_ERROR (a card failed),
+  -- CUSTOMER_SUPPORT (a refund), and so on.
+  reason text check (reason is null or char_length(reason) <= 64),
   event_at timestamptz not null,
   purchased_at timestamptz,
   expires_at timestamptz,
   created_at timestamptz not null default now()
 );
+
+-- The first draft of this file (commit 08619c9d) had neither column. If that
+-- draft was run, these add them; on a table made by the statement above they
+-- do nothing.
+alter table public.plus_events add column if not exists trial_conversion boolean;
+alter table public.plus_events add column if not exists reason text check (reason is null or char_length(reason) <= 64);
 
 create index if not exists plus_events_event_at_idx
   on public.plus_events (event_at desc);

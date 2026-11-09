@@ -324,6 +324,19 @@ export default async function PrivacyPage() {
  reading plans subscribed for a year&rdquo; is one more on a total,
  never you.
 </p>
+ {/* 1.9, admin items A10 and A11 (lib/errors/, lib/search/missWords.ts):
+ the owner's lines of 2026-11-09, word for word, listed in the 1.9 letter.
+ A test holds them (lib/admin/__tests__/privacyLines.test.ts). */}
+<p className="mt-3 font-serif text-body text-paper/85 leading-[1.7]">
+ When something fails, the app reports the page, the app version and
+ the kind of device, never who you are.
+</p>
+<p className="mt-3 font-serif text-body text-paper/85 leading-[1.7]">
+ When a search finds nothing, we keep the words you searched, never
+ who you are, for 90 days, so we can add what readers are looking
+ for. Anything that looks like an email address or a phone number is
+ removed before it is kept.
+</p>
 
  {/* Retention. Until 2026-10-29 this said a scheduled job deleted
  these rows at 90 days. That job (docs/operations/analytics-retention.md)
@@ -446,7 +459,10 @@ export default async function PrivacyPage() {
  <strong>RevenueCat and the app stores</strong>, if you buy an
  optional subscription, the purchase is processed by RevenueCat and by
  Apple or Google under their own policies; we receive whether your
- subscription is active, not your payment details.
+ subscription is active, not your payment details. When you buy or
+ renew a membership, we keep a record of it: which store, the price
+ and the dates. Once you delete your account, it is no longer linked
+ to you.
  </li>
  <li>
  <strong>Apple / Google push (native apps only)</strong>, the iOS and
@@ -856,6 +872,27 @@ function PrivacyDe() {
  Nichts davon wird mit der anonymen Sitzung oben verknüpft; die
  beiden liegen in getrennten Tabellen und werden nicht in Beziehung
  gesetzt.
+ </p>
+ {/* 1.9, admin items A2, A10 and A11: the owner's lines of 2026-11-09,
+ approved in English and put here in German as the English page has
+ them (Plus records under RevenueCat, errors and searches under "Where
+ it lives"). A test holds them (lib/admin/__tests__/privacyLines.test.ts). */}
+ <p className="mt-4 font-serif text-body text-paper/85 leading-[1.7]">
+ Wenn du eine Mitgliedschaft abschließt oder verlängerst, bewahren
+ wir eine Aufzeichnung davon auf: welcher Store, der Preis und die
+ Datumsangaben. Sobald du dein Konto löschst, ist sie nicht mehr mit
+ dir verbunden.
+ </p>
+ <p className="mt-4 font-serif text-body text-paper/85 leading-[1.7]">
+ Wenn etwas fehlschlägt, meldet die App die Seite, die App-Version
+ und die Art des Geräts, niemals, wer du bist.
+ </p>
+ <p className="mt-4 font-serif text-body text-paper/85 leading-[1.7]">
+ Wenn eine Suche nichts findet, behalten wir 90 Tage lang die Wörter,
+ nach denen du gesucht hast, niemals aber, wer du bist, damit wir
+ ergänzen können, wonach Leser suchen. Alles, was wie eine
+ E-Mail-Adresse oder eine Telefonnummer aussieht, wird entfernt,
+ bevor es behalten wird.
  </p>
 
  <p className="mt-10 font-sans text-caption font-semibold text-paper/45">

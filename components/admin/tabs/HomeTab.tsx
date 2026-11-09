@@ -60,11 +60,19 @@ type Overview = {
   revenueSeries?: number[];
   /** "stripe": the shop and website Plus, after Stripe's fees; "shop": paid orders alone. */
   revenueSource?: "stripe" | "shop";
+  /** Plus from Google Play and the App Store, already in the figures; null while the events cannot say. */
+  storePlus?: { since: string } | null;
   ordersDegraded: boolean;
   /** Paying for Plus, Pro included. */
   paidPlus: number;
   paidPro: number;
 };
+
+/** Which books Home's revenue holds, said under it. */
+function revenueBooks(m: Pick<Overview, "revenueSource" | "storePlus"> | null): string {
+  const books = m?.revenueSource === "stripe" ? "through Stripe" : "the shop";
+  return m?.storePlus ? `${books} and the app stores` : books;
+}
 type Stats = {
   /** null means the read failed, never that nobody is here. */
   liveCount: number | null;
@@ -374,12 +382,11 @@ export function HomeTab() {
       label: "Revenue today",
       value: revenue,
       // Which books today comes from, said under it: Stripe holds the shop and
-      // Plus bought on the website, never Plus bought through Google Play.
+      // Plus bought on the website; Plus bought through Google Play and the
+      // App Store is in it only from the kept RevenueCat events (admin A2).
       sub: week
-        ? `${formatPrice(week.totalCents, "usd")} over 7 days${money?.revenueSource === "stripe" ? ", through Stripe" : ", the shop"}`
-        : money?.revenueSource === "stripe"
-          ? "through Stripe, UTC day"
-          : "the shop, UTC day",
+        ? `${formatPrice(week.totalCents, "usd")} over 7 days, ${revenueBooks(money)}`
+        : `${revenueBooks(money)}, UTC day`,
       spark: money ? <Spark label="Revenue, the last 14 days" values={(money.revenueSeries ?? []).slice(-14)} /> : null,
       sensitive: true,
     },

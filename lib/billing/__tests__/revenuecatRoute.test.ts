@@ -14,11 +14,21 @@ const state = vi.hoisted(() => ({
   rpc: [] as [string, Record<string, unknown>][],
   lifecycle: [] as unknown[],
   emails: [] as unknown[],
+  kept: [] as [Record<string, unknown>, Record<string, unknown> | undefined][],
+  keepError: null as null | { code?: string; message: string },
 }));
 
 vi.mock("@/lib/supabase/admin", () => ({
   createAdminClient: () => ({
-    from: () => ({ select: () => ({ eq: () => ({ maybeSingle: async () => ({ data: state.existing }) }) }) }),
+    from: (table: string) =>
+      table === "plus_events"
+        ? {
+            upsert: async (row: Record<string, unknown>, opts?: Record<string, unknown>) => {
+              if (!state.keepError) state.kept.push([row, opts]);
+              return { error: state.keepError };
+            },
+          }
+        : { select: () => ({ eq: () => ({ maybeSingle: async () => ({ data: state.existing }) }) }) },
     rpc: async (name: string, args: Record<string, unknown>) => {
       state.rpc.push([name, args]);
       return { error: state.rpcError };
@@ -36,6 +46,7 @@ vi.mock("next/server", async (importOriginal) => {
 });
 
 const { POST } = await import("@/app/api/billing/revenuecat/route");
+const { __resetPlusEvents } = await import("@/lib/billing/plusEvents");
 
 const EXPIRES = Date.UTC(2027, 0, 1);
 function deliver(event: Record<string, unknown>, auth: string | null = SECRET) {
@@ -51,6 +62,9 @@ beforeEach(() => {
   state.rpc.length = 0;
   state.lifecycle.length = 0;
   state.emails.length = 0;
+  state.kept.length = 0;
+  state.keepError = null;
+  __resetPlusEvents();
 });
 
 describe("the RevenueCat webhook", () => {
@@ -145,3 +159,90 @@ describe("the RevenueCat webhook", () => {
     expect(res.status).toBe(400);
   });
 });
+
+// 1.9, admin item A2: every event is kept for the admin's Plus over time, and
+// keeping it can never change what RevenueCat is told.
+describe("the RevenueCat webhook keeps each event", () => {
+  const PURCHASE = {
+    id: "evt-1",
+    type: "INITIAL_PURCHASE",
+    app_user_id: USER,
+    store: "PLAY_STORE",
+    environment: "PRODUCTION",
+    period_type: "NORMAL",
+    product_id: "plus_monthly",
+    price: 4.99,
+    currency: "EUR",
+    price_in_purchased_currency: 4.59,
+    takehome_percentage: 0.7275,
+    country_code: "DE",
+    transaction_id: "GPA.1234-5678",
+    event_timestamp_ms: Date.UTC(2026, 10, 9, 12),
+    purchased_at_ms: Date.UTC(2026, 10, 9, 12),
+    expiration_at_ms: EXPIRES,
+  };
+
+  it("with its store, price and dates, linked to the account, once however often it is delivered", async () => {
+    expect((await deliver(PURCHASE)).status).toBe(200);
+    expect(state.kept).toHaveLength(1);
+    const [row, opts] = state.kept[0];
+    expect(row).toMatchObject({
+      event_id: "evt-1",
+      user_id: USER,
+      type: "INITIAL_PURCHASE",
+      store: "PLAY_STORE",
+      environment: "PRODUCTION",
+      period_type: "NORMAL",
+      product_id: "plus_monthly",
+      price_usd: 4.99,
+      currency: "EUR",
+      price_in_currency: 4.59,
+      takehome: 0.7275,
+      event_at: "2026-11-09T12:00:00.000Z",
+      expires_at: new Date(EXPIRES).toISOString(),
+    });
+    expect(opts).toEqual({ onConflict: "event_id", ignoreDuplicates: true });
+    // No country, and not the store's order number, which could trace the
+    // buyer once the account is gone.
+    expect(JSON.stringify(row)).not.toContain("DE");
+    expect(JSON.stringify(row)).not.toContain("GPA.");
+    expect(state.rpc).toHaveLength(1);
+  });
+
+  it("for a purchase made before sign-in too, linked to no one, while access is written for nobody", async () => {
+    const res = await deliver({ ...PURCHASE, id: "evt-anon", app_user_id: "$RCAnonymousID:abc" });
+    expect(await res.json()).toMatchObject({ skipped: "non-account user" });
+    expect(state.kept[0][0]).toMatchObject({ event_id: "evt-anon", user_id: null });
+    expect(state.rpc).toHaveLength(0);
+  });
+
+  it("but not the dashboard's test button, nor an event with no id", async () => {
+    await deliver({ type: "TEST", id: "evt-test" });
+    await deliver({ ...PURCHASE, id: undefined });
+    expect(state.kept).toHaveLength(0);
+  });
+
+  it("answers RevenueCat exactly the same while the table is not there, and stops asking for a while", async () => {
+    state.keepError = { code: "PGRST205", message: "Could not find the table 'public.plus_events' in the schema cache" };
+    const res = await deliver(PURCHASE);
+    expect(res.status).toBe(200);
+    expect(await res.json()).toEqual({ ok: true, user: USER, plus_until: new Date(EXPIRES).toISOString() });
+    expect(state.rpc).toHaveLength(1);
+    state.keepError = null;
+    await deliver({ ...PURCHASE, id: "evt-2" });
+    expect(state.kept).toHaveLength(0);
+  });
+
+  it("and the same when keeping it fails outright", async () => {
+    state.keepError = { message: "connection reset" };
+    expect((await deliver(PURCHASE)).status).toBe(200);
+    expect(state.rpc).toHaveLength(1);
+  });
+
+  it("while a failed access write is still a 500, so RevenueCat sends it again, and the retry is kept once", async () => {
+    state.rpcError = { message: "db down" };
+    expect((await deliver(PURCHASE)).status).toBe(500);
+    expect(state.kept).toHaveLength(1);
+  });
+});
+

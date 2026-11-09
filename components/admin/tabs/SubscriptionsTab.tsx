@@ -10,6 +10,7 @@ import { Card, StatCard, ChartFrame, DataTable, Email, Pill, Select, SubTabs } f
 import { Donut, SERIES_COLORS } from "../charts";
 import { formatPrice } from "@/lib/shop/format";
 import { LocksPanel } from "./LocksPanel";
+import { PlusOverTime } from "../subscriptions/PlusOverTime";
 
 type Subs = {
   activePlus: number;
@@ -24,6 +25,10 @@ type Subs = {
   legacyPlus: number;
   /** Redeemed gifts. Also access, not revenue. */
   giftedPlus: number;
+  /** In a free trial now, from the kept RevenueCat events (admin item A2). */
+  trialPlus?: number;
+  /** False until the kept events can say who is in a trial. */
+  trialsKnown?: boolean;
   mrrCents: number;
   arrCents: number;
   estimated: boolean;
@@ -36,6 +41,9 @@ const SOURCE_LABELS: Record<string, string> = {
   apple: "App Store",
   stripe: "Web (Stripe)",
   comp: "Comped",
+  gift: "Gifted",
+  legacy: "Grandfathered",
+  test: "Test purchases",
   unknown: "Unknown",
 };
 
@@ -97,7 +105,8 @@ function SummaryPanel() {
           reading the first card saw a subscriber base five times the real
           one. The comp figure existed, in a bySource chart several cards
           further down, which is not where anyone looks first.
-          Paying + Comped + Gifted + Grandfathered always equals Active Plus;
+          Paying + Comped + Gifted + Grandfathered, with the owner's own,
+          test purchases and free trials, always equals Active Plus;
           a test in lib/entitlements/__tests__/adminStats.test.ts holds that. */}
       <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
         <StatCard
@@ -124,10 +133,13 @@ function SummaryPanel() {
         <StatCard
           label="Active Plus"
           value={data?.activePlus ?? "—"}
-          hint="all four together"
+          hint="everyone with Plus"
         />
       </div>
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+        {data?.trialsKnown ? (
+          <StatCard label="In a free trial" value={data.trialPlus ?? 0} hint="Plus, nothing paid yet" />
+        ) : null}
         <StatCard label="Active Pro" value={data?.activePro ?? "—"} hint="members" />
         <StatCard label="Plus only" value={data?.plusOnly ?? "—"} />
         <StatCard
@@ -183,7 +195,9 @@ function SummaryPanel() {
         <p className="mt-3 font-sans text-eyebrow text-paper/40 leading-relaxed">
           {data && !data.estimated && data.live
             ? `From RevenueCat: ${data.live.activeSubscriptions} paying, ${data.live.activeTrials} in a free trial. The counts above are who has Plus on Purify, trials and test purchases among them, so they can run higher.`
-            : "Estimated: active subscribers × list monthly price, comped accounts excluded, so a free trial counts as paying and an annual plan at the monthly price. The entitlements table stores no billed amount, and the RevenueCat webhook keeps no event history, so new and churned counts are not available here."}
+            : data?.trialsKnown
+              ? "Estimated: paying members × list monthly price, so an annual plan counts at the monthly price. Comps, gifts, test purchases and free trials are left out. Who joined and who left is under Over time."
+              : "Estimated: active subscribers × list monthly price, comped accounts excluded, so a free trial counts as paying and an annual plan at the monthly price. Who joined and who left, and who is in a free trial, come with the Plus events table (Over time)."}
         </p>
       </Card>
     </div>
@@ -574,10 +588,12 @@ function MembersPanel() {
 
 /* ── Tab shell ─────────────────────────────────────────────────────────── */
 
-type Panel = "members" | "summary" | "locks";
+type Panel = "members" | "summary" | "time" | "locks";
 const TABS = [
   ["members", "Members"],
   ["summary", "Summary"],
+  // 1.9, admin item A2: joined, left and trials that paid, week by week.
+  ["time", "Over time"],
   // 1.9: which lock a reader meets, and which leads to a purchase.
   ["locks", "Locks"],
 ] as const;
@@ -587,7 +603,15 @@ export function SubscriptionsTab() {
   return (
     <div className="space-y-6">
       <SubTabs tabs={TABS} active={panel} onChange={setPanel} />
-      {panel === "members" ? <MembersPanel /> : panel === "locks" ? <LocksPanel /> : <SummaryPanel />}
+      {panel === "members" ? (
+        <MembersPanel />
+      ) : panel === "locks" ? (
+        <LocksPanel />
+      ) : panel === "time" ? (
+        <PlusOverTime />
+      ) : (
+        <SummaryPanel />
+      )}
     </div>
   );
 }

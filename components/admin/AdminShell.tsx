@@ -465,6 +465,8 @@ type OverviewPayload = {
   revenueSeries: number[];
   /** Which ledger the revenue fields came from. Absent on older payloads. */
   revenueSource?: "stripe" | "shop";
+  /** Plus from Google Play and the App Store, already in the fields above; null while unknown. */
+  storePlus?: { since: string } | null;
   /** True when the money fields above are unmeasured rather than zero. */
   ordersDegraded: boolean;
   paidPlus: number;
@@ -664,6 +666,7 @@ export function AdminShell({
     revenueTodayCents:
       overview.data && !overview.data.ordersDegraded ? (overview.data.revenueTodayCents ?? null) : null,
     revenueSource: overview.data?.revenueSource,
+    storePlus: overview.data?.storePlus != null,
     signupsToday: stats.data?.today?.signups ?? null,
   };
   const figureOf = (f: AdminFigure | undefined): RailFigure | null => (f ? railFigure(f, readings) : null);

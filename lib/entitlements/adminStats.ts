@@ -4,15 +4,17 @@ import "server-only";
 // entitlements table (the only place Plus/Pro state lives). Reused by the
 // Revenue and Subscriptions routes so both agree on the numbers.
 //
-// There is NO subscription history or event log (the RevenueCat webhook
-// overwrites a single mutable row and discards the event), so new/churned
-// cohorts are not derivable here — only the current active picture.
+// This is the current picture only. Who joined and who left over time comes
+// from the RevenueCat events the webhook keeps from 1.9 (admin item A2,
+// lib/admin/plusHistory.ts); here those events say only who is in a free
+// trial now, so a trial stops counting as a paying member.
 
 import type { SupabaseClient } from "@supabase/supabase-js";
 import type { SubscriberCounts } from "@/lib/premium/mrr";
 import { DEVELOPER_EMAILS } from "@/lib/dev/developer";
 import { userIdByEmail } from "@/lib/admin/accountEmails";
 import { pageAllSettled } from "@/lib/supabase/pageAll";
+import { trialMembers } from "@/lib/admin/plusEvents.server";
 
 export type SubscriptionStats = {
   /** plus_until in the future (includes Pro, which is a Plus superset). */
@@ -36,7 +38,8 @@ export type SubscriptionStats = {
    * times larger than the one paying. The breakdown existed only inside
    * `bySource`, several cards further down, behind a chart.
    *
-   * These six always sum to `activePlus`.
+   * These seven always sum to `activePlus`: paid, comped, gifted, legacy,
+   * developer, test and trial.
    */
   /** Someone is being billed for these. */
   paidPlus: number;
@@ -78,6 +81,21 @@ export type SubscriptionStats = {
    * until their next event rewrites the row.
    */
   testPlus: number;
+
+  /**
+   * In a free trial now (from 1.9, admin item A2): Plus through a store with
+   * nothing paid yet, read from the kept RevenueCat events
+   * (lib/admin/plusEvents.server.ts). Until those events existed a trial
+   * counted as a paying member, priced at list in the MRR estimate. Kept out
+   * of `paidPlus` and `paidCounts`.
+   */
+  trialPlus: number;
+  /**
+   * False while the events cannot say who is in a trial (the table is not
+   * there yet, or could not be read): every trial then counts as paying, as
+   * it always did, and the admin says so.
+   */
+  trialsKnown: boolean;
 };
 
 /**
@@ -129,6 +147,10 @@ export async function subscriptionStats(
     ).filter((id): id is string => !!id),
   );
 
+  // Who is in a free trial, when the kept events can say. Never fatal: a
+  // missing table or a failed read leaves everyone counted as before.
+  const trials = await trialMembers(admin).catch(() => null);
+
   const rows = data;
   const now = Date.now();
   const future = (ts: string | null) => !!ts && new Date(ts).getTime() > now;
@@ -144,6 +166,7 @@ export async function subscriptionStats(
   let legacyPlus = 0;
   let developerPlus = 0;
   let testPlus = 0;
+  let trialPlus = 0;
   const bySource: Record<string, number> = {};
 
   for (const r of rows as {
@@ -173,12 +196,15 @@ export async function subscriptionStats(
     // from the paywall launch, 'test' a purchase made with test money. Only
     // the first three are income ('unknown', a store the webhook could not
     // name, is counted as paying: someone was billed somewhere).
-    const unpaid = source === "comp" || source === "gift" || source === "legacy" || source === "test" || isDeveloper;
+    // A member in a free trial has Plus and has paid nothing yet.
+    const inTrial = trials?.has(r.user_id) ?? false;
+    const unpaid = source === "comp" || source === "gift" || source === "legacy" || source === "test" || isDeveloper || inTrial;
     if (source === "comp") compedPlus += 1;
     else if (source === "gift") giftedPlus += 1;
     else if (source === "legacy") legacyPlus += 1;
     else if (source === "test") testPlus += 1;
     else if (isDeveloper) developerPlus += 1;
+    else if (inTrial) trialPlus += 1;
 
     if (pro) {
       activePro += 1;
@@ -202,5 +228,7 @@ export async function subscriptionStats(
     legacyPlus,
     developerPlus,
     testPlus,
+    trialPlus,
+    trialsKnown: trials !== null,
   };
 }

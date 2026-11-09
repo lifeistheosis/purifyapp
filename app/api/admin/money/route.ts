@@ -17,6 +17,8 @@ import {
   type MoneyPeriod,
 } from "@/lib/admin/money";
 import { getRevenueBetween } from "@/lib/billing/revenuecatMetrics";
+import { covers, readPlusFacts } from "@/lib/admin/plusEvents.server";
+import { tally } from "@/lib/admin/plusHistory";
 import { cachedLedger, summarise } from "@/lib/billing/stripeLedger";
 import { INVESTOR_PLAN } from "@/lib/invest/plan";
 import { paidTotals, refundsByOrder } from "@/lib/shop/partialRefunds";
@@ -124,18 +126,27 @@ export async function GET(req: NextRequest) {
   //
   // RevenueCat's revenue for the period's own days when it answers: what
   // members actually paid, after refunds, less the stores' cut for the part
-  // bought through a store. Otherwise the list-price estimate, over the part
-  // of the period Plus could have been paid for (plusMonths). The share that
-  // pays through a store comes from who has Plus now, by source.
+  // bought through a store. Next, from 1.9 (admin item A2), the RevenueCat
+  // events the webhook keeps, when they cover the whole period: the same
+  // money, each purchase after its own store's share. Otherwise the
+  // list-price estimate, over the part of the period Plus could have been
+  // paid for (plusMonths). The share that pays through a store comes from who
+  // has Plus now, by source.
   let plusCents: number | null = null;
   let plusGrossCents: number | null = null;
-  let plusSource: "revenuecat" | "estimate" | null = null;
+  let plusSource: "revenuecat" | "events" | "estimate" | null = null;
   const share = subs ? storeShareOf(subs.bySource) : 1;
   const real = await getRevenueBetween(w.since.slice(0, 10), now.toISOString().slice(0, 10));
+  const kept = real ? null : await readPlusFacts(admin, w.since);
   if (real) {
     plusGrossCents = Math.round(real.value * 100);
     plusCents = afterStoreCut(plusGrossCents, share);
     plusSource = "revenuecat";
+  } else if (kept && covers(kept, w.since)) {
+    const t = tally(kept.facts);
+    plusGrossCents = t.grossCents;
+    plusCents = t.afterStoreCents;
+    plusSource = "events";
   } else if (subs) {
     plusCents = plusAfterCut(estimatedMrrCents(subs.paidCounts), plusMonths(period, now, INVESTOR_PLAN.launch), share);
     plusSource = "estimate";
@@ -176,7 +187,7 @@ export async function GET(req: NextRequest) {
   const figures = moneyFigures({
     shopCents: shop?.netCents ?? null,
     plusCents,
-    plusEstimated: plusSource !== "revenuecat",
+    plusEstimated: plusSource === "estimate",
     costLinesCents: monthlyCostCents === null ? null : monthlyCostCents * w.months,
     goodsCents: goods?.cents ?? null,
     goodsUnknownUnits: goods?.unknownUnits ?? 0,
@@ -201,9 +212,13 @@ export async function GET(req: NextRequest) {
         ...figures.cameIn,
         shopCents: shop?.netCents ?? null,
         plusCents,
-        /** "revenuecat": real revenue less the stores' cut; "estimate": members at list price. */
+        /**
+         * "revenuecat": RevenueCat's revenue less the stores' cut; "events": the
+         * kept RevenueCat events, each after its store's share (admin item A2);
+         * "estimate": members at list price.
+         */
         plusSource,
-        /** RevenueCat's own figure before the cut, when it is the source. */
+        /** What members paid before the cut, when RevenueCat or the events are the source. */
         plusGrossCents,
       },
       wentOut: {

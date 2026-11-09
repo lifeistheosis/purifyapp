@@ -6,6 +6,8 @@ import { createAdminClient } from "@/lib/supabase/admin";
 import { subscriptionStats } from "@/lib/entitlements/adminStats";
 import { cachedLedger, chargedIntents, dailyNet } from "@/lib/billing/stripeLedger";
 import { keptCents, paidTotals, refundsByOrder, type RefundsByOrder } from "@/lib/shop/partialRefunds";
+import { readPlusFacts } from "@/lib/admin/plusEvents.server";
+import { withStorePlus } from "@/lib/admin/plusHistory";
 
 export const dynamic = "force-dynamic";
 
@@ -256,6 +258,25 @@ export async function GET() {
     revenueSource = "stripe";
   }
 
+  // PLUS FROM THE APP STORES (1.9, admin item A2). Neither Stripe's ledger nor
+  // the shop's books ever held Plus bought through Google Play or the App
+  // Store, so a day of it read as a day with nothing in it. From the kept
+  // RevenueCat events it is added, after the store's share, for the days the
+  // events cover (a day before the first kept event was not kept, which is not
+  // the same as no Plus). Website Plus is left out here: Stripe's ledger has
+  // it already. Null while the events cannot say (no table yet).
+  let storePlus: { since: string; todayCents: number; days30Cents: number } | null = null;
+  if (!recentOrdersRes.failed) {
+    const read = await readPlusFacts(admin, new Date(now.getTime() - 30 * dayMs).toISOString());
+    if (read.state === "ok" && read.since) {
+      const added = withStorePlus(series, read.facts, read.since, now);
+      series.splice(0, series.length, ...added.series);
+      revenueTodayCents += added.todayCents;
+      revenue30Cents += added.addedCents;
+      storePlus = { since: read.since, todayCents: added.todayCents, days30Cents: added.addedCents };
+    }
+  }
+
   const recent = orders30
     .filter((o) => o.payment_status === "paid")
     .slice(0, 8)
@@ -287,6 +308,13 @@ export async function GET() {
        * in it. "shop": the shop's paid orders, less refunds, alone.
        */
       revenueSource,
+      /**
+       * Plus bought through Google Play and the App Store, after the store's
+       * share, from the kept RevenueCat events: already added into the three
+       * revenue fields, for the days since `since`. Null while the events
+       * cannot say, when that Plus is in none of them.
+       */
+      storePlus,
       /** False when the shop's books stood in and their partial refunds could not be read. */
       refundsRead: stripeReadable || refunds != null || recentOrdersRes.failed,
       /** True when the order read failed and the money fields are unmeasured. */

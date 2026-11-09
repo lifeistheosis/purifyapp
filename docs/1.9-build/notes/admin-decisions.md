@@ -117,3 +117,24 @@ each taken as drawn until he says:
 4. No Help screen in the apps. **Recommend: keep for 1.9.**
 5. Live carts and abandoned checkouts sit under Users. **Recommend: move them
    to Orders,** where buying is handled.
+
+## For the 1.9 letter: the privacy page
+
+The privacy page promises that a change to what is recorded is listed in the
+next letter. These are the Admin chat's lines, Edgar's "yes to all 4" of
+2026-11-09, each on /privacy word for word in English and in German, going
+live with its feature (lib/admin/__tests__/privacyLines.test.ts holds them):
+
+1. Plus records (A2), under RevenueCat and the app stores: "When you buy or
+   renew a membership, we keep a record of it: which store, the price and the
+   dates. Once you delete your account, it is no longer linked to you."
+2. Errors (A10): "When something fails, the app reports the page, the app
+   version and the kind of device, never who you are."
+3. Searches that found nothing (A11): "When a search finds nothing, we keep
+   the words you searched, never who you are, for 90 days, so we can add what
+   readers are looking for. Anything that looks like an email address or a
+   phone number is removed before it is kept."
+4. The 1.9 counts (A5), added with the counts: "We count, without your name,
+   which Bible translations are downloaded, which reading plans are begun and
+   finished, how many journal pages are written and shared, and which version
+   of the app is in use."

@@ -42,7 +42,7 @@ type Payload = {
     shopCents: number | null;
     plusCents: number | null;
     /** "revenuecat": what members paid, less the stores' cut; "estimate": members at list price. */
-    plusSource?: "revenuecat" | "estimate" | null;
+    plusSource?: "revenuecat" | "events" | "estimate" | null;
   };
   wentOut: {
     cents: number | null;
@@ -122,7 +122,8 @@ function BigCard({ label, figure, children }: { label: string; figure: ReactNode
       <p className="font-sans text-[12px]" style={{ color: "var(--adm-ink-3)" }}>
         {label}
       </p>
-      <p className="my-3 flex min-h-[42px] items-center">{figure}</p>
+      {/* A div: the figure is a paragraph of its own while it is read ("Reading."). */}
+      <div className="my-3 flex min-h-[42px] items-center">{figure}</div>
       {children}
     </section>
   );
@@ -248,9 +249,15 @@ export function MoneyOverviewTab() {
         <BigCard label={`Came in, ${p?.label ?? "…"}`} figure={p ? <Money cents={p.cameIn.cents} est={p.cameIn.estimated} /> : <Quiet>Reading.</Quiet>}>
           <Row label="The shop, paid less refunds" cents={p?.cameIn.shopCents ?? null} />
           <Row
-            label={p?.cameIn.plusSource === "revenuecat" ? "Plus, paid (RevenueCat), after the stores' cut" : "Plus, after the stores' cut"}
+            label={
+              p?.cameIn.plusSource === "revenuecat"
+                ? "Plus, paid (RevenueCat), after the stores' cut"
+                : p?.cameIn.plusSource === "events"
+                  ? "Plus, paid (kept events), after the stores' cut"
+                  : "Plus, after the stores' cut"
+            }
             cents={p?.cameIn.plusCents ?? null}
-            est={p?.cameIn.plusSource !== "revenuecat"}
+            est={p?.cameIn.plusSource === "estimate"}
           />
         </BigCard>
         <BigCard label="Went out" figure={p ? <Money cents={p.wentOut.cents} /> : <Quiet>Reading.</Quiet>}>
@@ -283,7 +290,7 @@ export function MoneyOverviewTab() {
             sub: p
               ? `shop ${p.cameIn.shopCents !== null ? usd(p.cameIn.shopCents) : "not read"}, Plus ${
                   p.cameIn.plusCents !== null
-                    ? `${usd(p.cameIn.plusCents)}${p.cameIn.plusSource === "revenuecat" ? "" : " est."}`
+                    ? `${usd(p.cameIn.plusCents)}${p.cameIn.plusSource === "estimate" ? " est." : ""}`
                     : "not read"
                 }`
               : "Reading.",
