@@ -131,6 +131,10 @@ const n = plan.filter((c) => !c.last).length + 1;
 const OUT = dir("cards", release);
 const HTML = dir("cards", release, "html");
 const SEND = dir("cards", release, "send");
+// A whole run starts clean, so a card the set no longer has is not left behind.
+if (!only) {
+  for (const d of [OUT, SEND]) for (const f of fs.readdirSync(d)) if (/^\d+-[\w-]+\.(png|jpg)$/.test(f)) fs.rmSync(path.join(d, f));
+}
 const browser = await launch();
 const tab = await (await browser.newContext({ viewport: { width: 1080, height: 1920 }, deviceScaleFactor: 2 })).newPage();
 const made = [];
