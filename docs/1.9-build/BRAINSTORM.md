@@ -2,7 +2,9 @@
 
 **From 2026-11-09 the main chat is the arbiter** (his word): it sends requests out to the Updates, Admin panel and SSM board chats and reports back to him. Its handoff is `HANDOFF.md` in this folder: read that first.
 
-**Brainstorm mode is on again since 2026-11-09, on his word:** "brainstorm mode on im back". Notes and plans only: nothing is built until he says start. Paused where it stood: the promo's edit clips (the frames and the count-up for the years are in `scripts/promo/`; the clips are not made).
+**Brainstorm mode ended again the afternoon of 2026-11-09, on his word:** "And let's continue working on version 1.9 ... And all you need to do is report back to me with creative decisions. That the chat needs answers on, and send out all the messages." The chats build what is ready and needs no answer from him; every decision goes to him through the arbiter. The same day the arbiter sent him every open decision as one sheet of 44, in four photos, each with its recommendation ("all recs" takes them all); his answers are recorded here as they come.
+
+**Brainstorm mode was on again earlier on 2026-11-09, on his word:** "brainstorm mode on im back". Notes and plans only: nothing is built until he says start. Paused where it stood: the promo's edit clips (the frames and the count-up for the years are in `scripts/promo/`; the clips are not made).
 
 **Brainstorm mode ended 2026-11-08 on his word:** "Just keep working on the apps. You have a list of things that you still need to do. Just do all of it ... Leave directive decisions for me ... don't stop until I come back." From here the work is built; decisions only he can make go to `PLAN.md`, Waiting on you.
 

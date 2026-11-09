@@ -62,8 +62,10 @@ All three work on the one branch, `ccr-07896cf2-bo0afd`. Each pulls
 
 ## Where things stand
 
-**Brainstorm mode is on** (since 2026-11-09, his word): notes and plans only;
-nothing is built until he says start. He also uses simplified mode: replies
+**Brainstorm mode is off again** (the afternoon of 2026-11-09, his word: "let's
+continue working on version 1.9 ... all you need to do is report back to me
+with creative decisions"): the chats build what is ready, and decisions go to
+him through the arbiter. (It was on from the morning of 2026-11-09.) He also uses simplified mode: replies
 very short and plain, emojis welcome, never an em dash.
 
 **The branch** is clean and pushed. The last two days, on it:
