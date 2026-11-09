@@ -10,11 +10,16 @@ file is what it needs to take over. Read it first, then `BRAINSTORM.md` and
 
 | Chat | Session | What it is for |
 |---|---|---|
-| The arbiter (the new main chat) | its own id, from `get_session` | 1.9 brainstorming, and the requests to the other chats |
+| The arbiter (the new main chat) | `session_01VuYTwdsjYL2mmq2C2JSt2A` | 1.9 brainstorming, and the requests to the other chats |
 | Admin panel | `session_01VuYTwbteJqs1UmDUwqRvzC` | the admin panel (app/admin and its API) |
 | SSM board | `session_01VuYTwcSQmKLThRirvSeWa5` | social media: each release's cards, videos and posts |
+| Updates | `session_01VuYTwcNqTWyT6Yab696Eri` | builds the 1.9 updates in the app itself: everything in `PLAN.md` outside the admin panel and social media |
 
-A fourth chat only if it is really needed, and only on his word.
+The Updates chat was set up by the arbiter on his word of 2026-11-09: "I
+want you to set up a chat for the updates also for version 1.9. So one is
+going to actualize the updates, one is going to be the SSM board, and one is
+the admin panel." He talks to the arbiter; the arbiter sends the requests out
+and reports back. A fifth chat only on his word.
 
 To send a request: `send_message` with the chat's session id. To see where it
 stands: `get_session` (its `status_bucket`) and `list_events` with

@@ -1,6 +1,6 @@
 # 1.9 brainstorm
 
-**From 2026-11-09 the main chat is the arbiter** (his word): it sends requests out to the Admin panel and SSM board chats. Its handoff is `HANDOFF.md` in this folder: read that first.
+**From 2026-11-09 the main chat is the arbiter** (his word): it sends requests out to the Updates, Admin panel and SSM board chats and reports back to him. Its handoff is `HANDOFF.md` in this folder: read that first.
 
 **Brainstorm mode is on again since 2026-11-09, on his word:** "brainstorm mode on im back". Notes and plans only: nothing is built until he says start. Paused where it stood: the promo's edit clips (the frames and the count-up for the years are in `scripts/promo/`; the clips are not made).
 
