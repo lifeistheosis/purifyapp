@@ -356,6 +356,28 @@
   color: var(--adm-bg);
 }
 
+/* A field's placeholder, when the field gives it no colour of its own: the
+   board's third grey, which each theme already makes legible on every ground
+   the fields sit on (--adm-control, --adm-bg, --adm-panel and, tightest,
+   --adm-panel-2: 5.72:1 dark, 4.80:1 light). Before it, such a field took
+   Tailwind's default, its ink at 50%, which is 3.74:1 on the light theme's
+   white, under the 4.5:1 every grey is held to (CLAUDE.md, "Mockups").
+
+   In @layer base, beside Tailwind's own default, and NOT unlayered like the
+   rest of this file: an unlayered rule beats every utility outright (see "The
+   bottom of every scrollable tab", further down), so it would take the colour
+   from the fields that set one, placeholder:text-paper/56 among them. Inside
+   the layer, `.adm ::placeholder` outranks Tailwind's bare `::placeholder`.
+   The order line names the layers as Tailwind does, so that if this sheet is
+   ever read before app/globals.css, base still comes before the utilities;
+   after it, the line changes nothing. */
+@layer theme, base, components, utilities;
+@layer base {
+  .adm ::placeholder {
+    color: var(--adm-ink-3);
+  }
+}
+
 /* ── THE STATUS MARK ────────────────────────────────────────────────────
  * The whole status vocabulary of the panel, and it is the board's: a dot and
  * a word. With one ink a state cannot be a colour, so it is a shape.
