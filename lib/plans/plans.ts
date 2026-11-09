@@ -70,7 +70,13 @@ export type ReadingPlan = {
   strand: "reading" | "gospel";
   /** The season of the Church's year it belongs to, for the season's card (lib/plans/season.ts). */
   season?: Season;
-  /** The book whose figure its tile wears, where its first book's is another plan's (components/plans/PlansClient.tsx). */
+  /**
+   * The book whose saint its tile wears, where that is not its first book's
+   * (components/plans/PlansClient.tsx). His rule (2026-11-09): a plan's cover
+   * is the saint its books are attributed to. The four Gospels wear St John,
+   * as the library has no icon of the four Evangelists together (his word);
+   * the New Testament St Paul.
+   */
   cover?: string;
 };
 
@@ -175,6 +181,7 @@ export const READING_PLANS: readonly ReadingPlan[] = [
   {
     id: "gospels",
     strand: "gospel",
+    cover: "john",
     days: [...chapters("matthew", 28), ...chapters("mark", 16), ...chapters("luke", 24), ...chapters("john", 21)].map((c) => [c]),
   },
   { id: "john", strand: "gospel", days: chapters("john", 21).map((c) => [c]) },

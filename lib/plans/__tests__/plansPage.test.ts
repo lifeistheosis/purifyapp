@@ -36,10 +36,20 @@ describe("a plan's tile", () => {
     expect(PAGE).toContain("<CoverArt");
   });
 
-  it("never wears the same figure as another plan's tile (1.9: the New Testament wears St Paul)", () => {
-    const worn = READING_PLANS.filter((p) => !p.season).map((p) => readAloudCover(p.cover ?? p.days[0][0].book).src);
-    expect(new Set(worn).size).toBe(worn.length);
-    expect(readAloudCover(getPlan("newtestament")!.cover!).nameKey).toBe("readAloud.cover.paul");
+  it("wears the saint its books are attributed to, never the manuscript (his rule, 2026-11-09)", () => {
+    const saint = (id: string) => {
+      const plan = getPlan(id)!;
+      return readAloudCover(plan.cover ?? plan.days[0][0].book).nameKey;
+    };
+    expect(saint("psalter")).toBe("readAloud.cover.david");
+    expect(saint("proverbs")).toBe("readAloud.cover.solomon");
+    expect(saint("john")).toBe("readAloud.cover.john");
+    expect(saint("acts")).toBe("readAloud.cover.luke");
+    expect(saint("newtestament")).toBe("readAloud.cover.paul");
+    // The library has no icon of the four Evangelists together: St John, his word.
+    expect(saint("gospels")).toBe("readAloud.cover.john");
+    // Every plan that is not a season's has a saint; a season's keeps its feast's picture.
+    for (const plan of READING_PLANS.filter((p) => !p.season)) expect(saint(plan.id), plan.id).not.toBeNull();
   });
 
   it("melts its picture into the tile's ground by a mask, with nothing laid over it", () => {

@@ -27,9 +27,11 @@ import { useMounted } from "@/lib/useMounted";
  * most lately, its day, today's reading and how long it takes, how far it has
  * come, and Continue, which opens the day's reading with the plan's bar at
  * its foot, as Begin on the plan's own page does. Then the other plans as
- * picture tiles, each the icon of its first book's prophet or apostle, the
- * cover a reading aloud wears (lib/readAloud/covers.ts), streamed from the
- * website and never carried in the apps, with the plate when it cannot load.
+ * picture tiles, each the icon of the saint its books are attributed to (his
+ * rule of 2026-11-09: David for the Psalter, St John for the four Gospels),
+ * the cover a reading aloud wears (lib/readAloud/covers.ts), streamed from
+ * the website and never carried in the apps, with the plate when it cannot
+ * load.
  *
  * Between them, from two weeks before a season of the Church's year to its
  * feast, that season's plan as a large picture card (lib/plans/season.ts):
@@ -117,8 +119,8 @@ export function PlansClient({ minutes }: { minutes: Record<string, number> }) {
                 : next === null
                   ? t("plans.finishedShort")
                   : t("plans.dayOf", { day: next + 1, total: plan.days.length });
-              // A season's plan wears the season's picture; the rest, their first book's figure,
-              // or the one a plan names where its first book's is another plan's (lib/plans/plans.ts).
+              // A season's plan wears the season's picture; the rest, the saint their books are
+              // attributed to: their first book's, or the one a plan names (lib/plans/plans.ts).
               const cover = plan.season ? { src: SEASON_PICTURES[plan.season], fallback: SEASON_PICTURES[plan.season] } : readAloudCover(plan.cover ?? plan.days[0][0].book);
               return (
                 <li key={plan.id}>
