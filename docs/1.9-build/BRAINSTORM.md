@@ -1,5 +1,7 @@
 # 1.9 brainstorm
 
+**Brainstorm mode is on again since 2026-11-09, on his word:** "brainstorm mode on im back". Notes and plans only: nothing is built until he says start. Paused where it stood: the promo's edit clips (the frames and the count-up for the years are in `scripts/promo/`; the clips are not made).
+
 **Brainstorm mode ended 2026-11-08 on his word:** "Just keep working on the apps. You have a list of things that you still need to do. Just do all of it ... Leave directive decisions for me ... don't stop until I come back." From here the work is built; decisions only he can make go to `PLAN.md`, Waiting on you.
 
 Brainstorm mode is on since 2026-11-06: notes and plans only. Nothing here is
