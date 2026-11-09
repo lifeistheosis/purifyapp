@@ -64,6 +64,38 @@
       "text": "It made no ruling on the books of Scripture: nothing in its creed, canons or letter concerns them. The earliest surviving list of exactly the twenty-seven books of the New Testament comes more than forty years later, in the thirty-ninth Festal Letter of St Athanasius, by then bishop of Alexandria, written for Pascha in 367."
     }
   ],
+  "chronology": [
+    {
+      "date": "Before 325",
+      "text": "At Alexandria the presbyter Arius teaches that the Son of God is a creature with a beginning, and his bishop Alexander puts him out of communion."
+    },
+    {
+      "date": "Before the council",
+      "text": "Constantine sends Hosius of Cordova to Alexandria with a letter asking Alexander and Arius to make peace, and it does not settle the matter."
+    },
+    {
+      "date": "20 May 325",
+      "text": "The council opens at Nicaea: more than two hundred and fifty bishops, Alexander with his deacon Athanasius, and Hosius among the few from the West.",
+      "pivotal": true
+    },
+    {
+      "date": "Summer 325",
+      "text": "Arius is heard, and the bishops confess in the creed that the Son is \"one in essence\" with the Father.",
+      "pivotal": true
+    },
+    {
+      "date": "Summer 325",
+      "text": "All but two bishops sign the creed, and the emperor sends Arius into exile."
+    },
+    {
+      "date": "Summer 325",
+      "text": "The council issues twenty canons, settles the schism of Meletius in Egypt, and fixes a common date for Pascha."
+    },
+    {
+      "date": "After the council",
+      "text": "Eusebius of Nicomedia and Theognis of Nicaea are exiled, and restored once they declare their assent."
+    }
+  ],
   "significance": [
     {
       "kind": "para",
@@ -247,6 +279,6 @@
   "review": {
     "status": "awaiting-clergy-review",
     "drafted": "2026-10-16",
-    "basis": "Rests on the council's own texts in Percival's NPNF2 vol. 14 and on Eusebius, Socrates, Sozomen, Theodoret, Philostorgius, Athanasius and Jerome in their NPNF and Bohn translations; quotations are verbatim from those, and the rest is our paraphrase. Figures for attendance and the refusers follow the ancient reports and are set out where they differ."
+    "basis": "Rests on the council's own texts in Percival's NPNF2 vol. 14 and on Eusebius, Socrates, Sozomen, Theodoret, Philostorgius, Athanasius and Jerome in their NPNF and Bohn translations; quotations are verbatim from those, and the rest is our paraphrase. Figures for attendance and the refusers follow the ancient reports and are set out where they differ. Its steps (the chronology) were drafted on 2026-11-09 from this account's own words, each held to them in docs/1.9-build/thread-steps.json."
   }
 }

@@ -52,6 +52,30 @@
       "source": "St Irenaeus, Against Heresies IV.20.7, tr. A. Roberts and W. H. Rambaut (ANF vol. 1, 1885)"
     }
   ],
+  "chronology": [
+    {
+      "date": "First half of the second century",
+      "text": "Irenaeus is born in Asia Minor, probably at Smyrna, and as a boy hears the aged bishop Polycarp, who had known the Apostle John."
+    },
+    {
+      "date": "Before 177",
+      "text": "He goes west to Gaul and becomes a presbyter at Lyons."
+    },
+    {
+      "date": "177",
+      "text": "The churches of Lyons and Vienne suffer a fierce persecution; the aged bishop Pothinus dies in prison, and the confessors send Irenaeus to Rome with a letter.",
+      "pivotal": true
+    },
+    {
+      "date": "After the persecution",
+      "text": "He is made bishop at Lyons in Pothinus's place, while followers of Valentinus are at work in the Rhone valley."
+    },
+    {
+      "date": "About 180",
+      "text": "He writes the five books Against Heresies, setting the public tradition of the apostles' churches and the rule of faith against the Gnostics' secret knowledge.",
+      "pivotal": true
+    }
+  ],
   "significance": [
     {
       "kind": "para",
@@ -114,6 +138,6 @@
   "review": {
     "status": "awaiting-clergy-review",
     "drafted": "2026-10-22",
-    "basis": "Rests on Against Heresies (ANF vol. 1) and Eusebius's Church History V (NPNF2 vol. 1). Each quotation was checked word for word against the page its source names; the rest is our paraphrase."
+    "basis": "Rests on Against Heresies (ANF vol. 1) and Eusebius's Church History V (NPNF2 vol. 1). Each quotation was checked word for word against the page its source names; the rest is our paraphrase. Its steps (the chronology) were drafted on 2026-11-09 from this account's own words, each held to them in docs/1.9-build/thread-steps.json."
   }
 }

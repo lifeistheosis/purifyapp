@@ -45,6 +45,43 @@
       "text": "Within months a silver statue of the empress was set up beside the church of Holy Wisdom, and the noise of the games held at its dedication disturbed the services. John spoke against it, the court turned against him again, and in 404 he was deposed a second time. Soldiers broke into the church on Holy Saturday as the catechumens were being baptized. In June 404 he left the city for exile at Cucusus in Armenia, from where he wrote letters of comfort to his friends, above all to the deaconess Olympias. In 407 the order came to move him further, to Pityus on the Black Sea. Driven on foot in heat and rain, he did not reach it. He died on the road at Comana in Pontus on 14 September 407, and his last words, as his friend Palladius records, were Glory to God for all things."
     }
   ],
+  "chronology": [
+    {
+      "date": "About 349",
+      "text": "John is born at Antioch, studies rhetoric under Libanius, and gives up the law to be baptized and live as a monk in the mountains near the city."
+    },
+    {
+      "date": "386",
+      "text": "Ordained presbyter at Antioch, he preaches there for twelve years, through whole books of Scripture, verse by verse."
+    },
+    {
+      "date": "September 397",
+      "text": "At Constantinople the archbishop Nectarius dies, and the parties of the capital cannot agree on a successor."
+    },
+    {
+      "date": "February 398",
+      "text": "By order of the emperor Arcadius, John is brought quietly from Antioch to Constantinople and consecrated archbishop by Theophilus of Alexandria.",
+      "pivotal": true
+    },
+    {
+      "date": "403",
+      "text": "A synod of Theophilus's supporters at the Oak near Chalcedon deposes John; the people rise in his defence, and within days he returns in triumph.",
+      "pivotal": true
+    },
+    {
+      "date": "404",
+      "text": "John speaks against the games at the dedication of the empress's silver statue beside Hagia Sophia, the church of Holy Wisdom, and is deposed a second time; soldiers break into the church on Holy Saturday."
+    },
+    {
+      "date": "June 404",
+      "text": "He leaves the city for exile at Cucusus in Armenia, and writes from there to his friends, above all to the deaconess Olympias."
+    },
+    {
+      "date": "14 September 407",
+      "text": "Ordered further away to Pityus and driven on foot, John dies on the road at Comana in Pontus; his last words are Glory to God for all things.",
+      "pivotal": true
+    }
+  ],
   "significance": [
     {
       "kind": "para",
@@ -121,6 +158,6 @@
   "review": {
     "status": "awaiting-clergy-review",
     "drafted": "2026-10-22",
-    "basis": "Rests on Socrates VI and Sozomen VIII (NPNF2 vol. 2), his own Homilies on Matthew (NPNF1 vol. 10, the app's library copy) and Palladius's Dialogue. Each quotation was checked word for word against its source; the rest is our paraphrase."
+    "basis": "Rests on Socrates VI and Sozomen VIII (NPNF2 vol. 2), his own Homilies on Matthew (NPNF1 vol. 10, the app's library copy) and Palladius's Dialogue. Each quotation was checked word for word against its source; the rest is our paraphrase. Its steps (the chronology) were drafted on 2026-11-09 from this account's own words, each held to them in docs/1.9-build/thread-steps.json."
   }
 }

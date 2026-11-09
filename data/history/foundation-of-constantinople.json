@@ -34,6 +34,30 @@
       "text": "Eusebius adds that no pagan sacrifices were to be offered in the new city, and that its fountains bore images of the Good Shepherd and of Daniel among the lions. On 11 May 330 the city was dedicated with great ceremony, and that day was kept each year afterwards as its birthday. Settlers were drawn by grants of land and of bread; a senate was established on the model of Rome's; within a century the city had outgrown Constantine's walls, and Theodosius II built new ones further out, the walls that would stand for a thousand years."
     }
   ],
+  "chronology": [
+    {
+      "date": "324",
+      "text": "Constantine defeats Licinius at Chrysopolis, within sight of Byzantium, and resolves to build there a new capital bearing his name.",
+      "pivotal": true
+    },
+    {
+      "date": "324–330",
+      "text": "At Byzantium new walls are traced far beyond the old ones, and in six years the town becomes a city of palaces, forums and baths, with the Hippodrome beside the palace."
+    },
+    {
+      "date": "324–330",
+      "text": "Constantine builds churches in the city, among them the Holy Apostles and Holy Peace, and no pagan sacrifice is to be offered there."
+    },
+    {
+      "date": "11 May 330",
+      "text": "The city is dedicated with great ceremony as Constantinople, New Rome, and the day is kept each year afterwards as its birthday.",
+      "pivotal": true
+    },
+    {
+      "date": "Within a century",
+      "text": "The city outgrows Constantine's walls, and Theodosius II builds new ones further out, the walls that will stand for a thousand years."
+    }
+  ],
   "significance": [
     {
       "kind": "para",
@@ -112,6 +136,6 @@
   "review": {
     "status": "awaiting-clergy-review",
     "drafted": "2026-10-22",
-    "basis": "Rests on Socrates I.16 (NPNF2 vol. 2), Eusebius's Life of Constantine III.48-49 (NPNF2 vol. 1) and Canon III of 381 (NPNF2 vol. 14, the app's council text), with the Chronicon Paschale for the date. Each quotation was checked word for word against its source; the rest is our paraphrase."
+    "basis": "Rests on Socrates I.16 (NPNF2 vol. 2), Eusebius's Life of Constantine III.48-49 (NPNF2 vol. 1) and Canon III of 381 (NPNF2 vol. 14, the app's council text), with the Chronicon Paschale for the date. Each quotation was checked word for word against its source; the rest is our paraphrase. Its steps (the chronology) were drafted on 2026-11-09 from this account's own words, each held to them in docs/1.9-build/thread-steps.json."
   }
 }

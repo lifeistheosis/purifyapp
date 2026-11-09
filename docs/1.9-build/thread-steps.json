@@ -1,0 +1,1218 @@
+{
+  "about": "The Thread's steps for eighteen more history events (1.9, PLAN row 20), drafted on 2026-11-09. Each step's facts and dates are its event's own: the words it rests on are copied here verbatim from that event's account (data/history/<slug>.json, its context and narrative) or from its entry in lib/history/events.ts, and lib/history/__tests__/threadSteps.test.ts holds every step to them and the chronology in each event's file to this record. The steps are our wording and wait, with the rest of each account, for a priest's review (review.status awaiting-clergy-review). Left without steps: Pentecost and the Council of Jerusalem, single moments whose accounts give no dates to lay out (lib/history/load.ts: a point event has nothing to lay out); and the Moscow-Constantinople break of 2018, the OCA's autocephaly and Ukraine's, whose accounts have not been written to this standard and which are the most disputed events in the history, for the owner's word.",
+  "events": {
+    "apologies-of-justin-martyr": [
+      {
+        "date": "In the reign of Hadrian",
+        "text": "Quadratus and Aristides each present a defence of the faith to the emperor, the first of the Apologists.",
+        "place": null,
+        "basis": [
+          "Eusebius records that Quadratus and Aristides each presented a defence of the faith to Hadrian. These are the Apologists"
+        ]
+      },
+      {
+        "date": "Before 150",
+        "text": "Justin, born of a pagan family at Flavia Neapolis, goes from school to school looking for God, until an old man by the sea shows him the prophets.",
+        "place": "flavia-neapolis",
+        "basis": [
+          "Justin was born of a pagan family at Flavia Neapolis in Samaria",
+          "he went from school to school, a Stoic, a Peripatetic, a Pythagorean, and at last a Platonist, looking for the knowledge of God. Walking alone in a field near the sea, he met an old man who showed him that the philosophers could not give what the prophets had given",
+          "In the reign of Antoninus Pius, about 150"
+        ]
+      },
+      {
+        "date": "About 150",
+        "text": "Teaching the faith at Rome, he addresses his First Apology to Antoninus Pius: Christians are to be judged by what they do, and the Word has been at work in every race of men.",
+        "pivotal": true,
+        "place": "rome",
+        "basis": [
+          "He kept the philosopher's cloak and taught the faith as a philosophy at Rome. In the reign of Antoninus Pius, about 150, he addressed his First Apology to the emperor, his adopted sons and the Senate. He asks that Christians be judged by what they do, not condemned for a name",
+          "the Word of God, who became man in Christ, had been at work in every race of men before Him"
+        ]
+      },
+      {
+        "date": "About 150",
+        "text": "In it he describes the Christians' baptism and their Sunday gathering, the earliest full account of the Divine Liturgy outside the New Testament.",
+        "place": null,
+        "basis": [
+          "In the reign of Antoninus Pius, about 150",
+          "he describes their baptism and their Sunday gathering, the earliest full description of the Divine Liturgy outside the New Testament"
+        ]
+      },
+      {
+        "date": "Later",
+        "text": "After the prefect Urbicus puts Christians to death at Rome for their confession alone, Justin writes a shorter Second Apology.",
+        "place": "rome",
+        "basis": [
+          "After the prefect Urbicus put Christians to death at Rome for their confession alone, Justin wrote a shorter Second Apology."
+        ]
+      },
+      {
+        "date": "c. 165",
+        "text": "Under Marcus Aurelius he is brought with six companions before Rusticus, prefect of Rome; they will not sacrifice, and are scourged and beheaded.",
+        "pivotal": true,
+        "place": null,
+        "basis": [
+          "c. 150–165",
+          "Some years later, under Marcus Aurelius, he was brought with six companions before Rusticus, prefect of Rome.",
+          "They would not sacrifice, and they were scourged and beheaded."
+        ]
+      }
+    ],
+    "arian-controversy-begins": [
+      {
+        "date": "c. 318",
+        "text": "At Alexandria the presbyter Arius teaches openly that there was a time when the Son was not, and finds followers among the clergy and the people.",
+        "place": "alexandria",
+        "basis": [
+          "c. 318",
+          "Arius taught this openly and found followers among the clergy, the virgins and the people of Alexandria",
+          "there was a time when the Son was not"
+        ]
+      },
+      {
+        "date": "Before 324",
+        "text": "Bishop Alexander gathers a council of the bishops of Egypt and Libya, which excommunicates Arius and those who hold with him.",
+        "place": null,
+        "basis": [
+          "Alexander first tried to reason with him, then gathered a council of the bishops of Egypt and Libya, which excommunicated Arius and those who held with him.",
+          "When Constantine became master of the East in 324"
+        ]
+      },
+      {
+        "date": "Before 324",
+        "text": "Arius leaves Egypt and finds his most powerful friend in Eusebius, bishop of Nicomedia.",
+        "place": null,
+        "basis": [
+          "Arius left Egypt and looked for friends abroad. He found the most powerful in Eusebius, bishop of Nicomedia, the eastern capital",
+          "When Constantine became master of the East in 324"
+        ]
+      },
+      {
+        "date": "324",
+        "text": "Constantine, now master of the East, sends Hosius of Cordova to Alexandria with a letter urging Alexander and Arius to make peace, and the letter fails.",
+        "pivotal": true,
+        "place": "alexandria",
+        "basis": [
+          "When Constantine became master of the East in 324 he was grieved to find the Church divided, and sent Hosius of Cordova to Alexandria with a letter to Alexander and Arius, urging them to make peace over what he took to be a question of words. It was not, and the letter failed."
+        ]
+      },
+      {
+        "date": "325",
+        "text": "The emperor calls a council of the whole Church to meet at Nicaea.",
+        "pivotal": true,
+        "place": "nicaea",
+        "basis": [
+          "The emperor then called a council of the whole Church, to meet at Nicaea in 325."
+        ]
+      }
+    ],
+    "chrysostom-at-constantinople": [
+      {
+        "date": "About 349",
+        "text": "John is born at Antioch, studies rhetoric under Libanius, and gives up the law to be baptized and live as a monk in the mountains near the city.",
+        "place": "antioch",
+        "basis": [
+          "John was born at Antioch about 349, studied rhetoric under the famous Libanius, and gave up a career at law to be baptized and to live as a monk in the mountains near the city"
+        ]
+      },
+      {
+        "date": "386",
+        "text": "Ordained presbyter at Antioch, he preaches there for twelve years, through whole books of Scripture, verse by verse.",
+        "place": "antioch",
+        "basis": [
+          "Ordained presbyter at Antioch in 386, he preached there for twelve years, through whole books of Scripture, verse by verse"
+        ]
+      },
+      {
+        "date": "September 397",
+        "text": "At Constantinople the archbishop Nectarius dies, and the parties of the capital cannot agree on a successor.",
+        "place": "constantinople",
+        "basis": [
+          "In September 397 Nectarius, archbishop of Constantinople, died, and the parties of the capital could not agree on a successor.",
+          "In September 397 Nectarius, archbishop of Constantinople, died"
+        ]
+      },
+      {
+        "date": "February 398",
+        "text": "By order of the emperor Arcadius, John is brought quietly from Antioch to Constantinople and consecrated archbishop by Theophilus of Alexandria.",
+        "pivotal": true,
+        "place": "constantinople",
+        "basis": [
+          "he was brought away quietly, by the order of the emperor Arcadius, and consecrated in February 398 by Theophilus of Alexandria",
+          "it was determined to send for John, a presbyter of the church at Antioch",
+          "In September 397 Nectarius, archbishop of Constantinople, died"
+        ]
+      },
+      {
+        "date": "403",
+        "text": "A synod of Theophilus's supporters at the Oak near Chalcedon deposes John; the people rise in his defence, and within days he returns in triumph.",
+        "pivotal": true,
+        "place": "chalcedon",
+        "basis": [
+          "in 403 a synod of his supporters, meeting at an estate called the Oak near Chalcedon, deposed John",
+          "the people of the city rose in his defence, and within days the empress, alarmed, begged him to return. He came back in triumph."
+        ]
+      },
+      {
+        "date": "404",
+        "text": "John speaks against the games at the dedication of the empress's silver statue beside Hagia Sophia, the church of Holy Wisdom, and is deposed a second time; soldiers break into the church on Holy Saturday.",
+        "place": "hagia-sophia",
+        "basis": [
+          "Within months a silver statue of the empress was set up beside the church of Holy Wisdom",
+          "John spoke against it, the court turned against him again, and in 404 he was deposed a second time. Soldiers broke into the church on Holy Saturday as the catechumens were being baptized."
+        ]
+      },
+      {
+        "date": "June 404",
+        "text": "He leaves the city for exile at Cucusus in Armenia, and writes from there to his friends, above all to the deaconess Olympias.",
+        "place": "cucusus",
+        "basis": [
+          "In June 404 he left the city for exile at Cucusus in Armenia, from where he wrote letters of comfort to his friends, above all to the deaconess Olympias."
+        ]
+      },
+      {
+        "date": "14 September 407",
+        "text": "Ordered further away to Pityus and driven on foot, John dies on the road at Comana in Pontus; his last words are Glory to God for all things.",
+        "pivotal": true,
+        "place": "comana",
+        "basis": [
+          "In 407 the order came to move him further, to Pityus on the Black Sea.",
+          "He died on the road at Comana in Pontus on 14 September 407, and his last words, as his friend Palladius records, were Glory to God for all things."
+        ]
+      }
+    ],
+    "edict-of-milan": [
+      {
+        "date": "303",
+        "text": "Diocletian and his colleagues set out to destroy the Church: churches are pulled down, the Scriptures burned and the clergy imprisoned.",
+        "place": null,
+        "basis": [
+          "From 303 Diocletian and his colleagues had tried to destroy the Church: churches were pulled down, the Scriptures burned and the clergy imprisoned"
+        ]
+      },
+      {
+        "date": "April 311",
+        "text": "The dying Galerius gives way: his edict, issued at Nicomedia, allows the Christians to be Christians again and to build their places of assembly.",
+        "place": "nicomedia",
+        "basis": [
+          "In April 311 the dying Galerius gave way. His edict, issued at Nicomedia, allowed the Christians \"again to be Christians, and to establish the places of their religious assemblies\""
+        ]
+      },
+      {
+        "date": "October 312",
+        "text": "The army of Maxentius is routed at the Milvian Bridge, and Maxentius is driven into the Tiber and drowned.",
+        "pivotal": true,
+        "place": "milvian-bridge",
+        "basis": [
+          "In October 312 the army of Maxentius was routed at the Milvian Bridge, and Maxentius was driven into the Tiber and drowned."
+        ]
+      },
+      {
+        "date": "Winter 312–313",
+        "text": "At Milan Licinius marries Constantine's sister Constantia, and the two emperors agree on a common policy toward religion.",
+        "pivotal": true,
+        "place": "milan",
+        "basis": [
+          "In October 312 the army of Maxentius was routed",
+          "That winter Constantine went to Milan, and his colleague Licinius came there to marry Constantine's sister Constantia. The two emperors agreed on a common policy toward religion.",
+          "in June 313"
+        ]
+      },
+      {
+        "date": "June 313",
+        "text": "Licinius, having routed Maximin, posts their decision at Nicomedia: freedom for the Christians and for all others, and the Church's property restored.",
+        "pivotal": true,
+        "place": "nicomedia",
+        "basis": [
+          "Licinius then marched against Maximin, routed him in Thrace and entered Nicomedia, the city where the persecution had begun. There, in June 313, he had their decision posted in a letter addressed to the governor of a province.",
+          "Their places of assembly, and the other property the Christian community held as a body, were to be restored"
+        ]
+      }
+    ],
+    "first-council-of-nicaea": [
+      {
+        "date": "Before 325",
+        "text": "At Alexandria the presbyter Arius teaches that the Son of God is a creature with a beginning, and his bishop Alexander puts him out of communion.",
+        "place": "alexandria",
+        "basis": [
+          "Some years before 325, Arius, a presbyter of Alexandria, began to teach that the Son of God was a creature with a beginning",
+          "His bishop, Alexander, rejected the teaching and put Arius and his followers out of communion."
+        ]
+      },
+      {
+        "date": "Before the council",
+        "text": "Constantine sends Hosius of Cordova to Alexandria with a letter asking Alexander and Arius to make peace, and it does not settle the matter.",
+        "place": "alexandria",
+        "basis": [
+          "Constantine, master of the East since his victory over Licinius, sent Hosius, bishop of Cordova, to Alexandria with a letter to Alexander and Arius.",
+          "The letter did not settle the matter"
+        ]
+      },
+      {
+        "date": "20 May 325",
+        "text": "The council opens at Nicaea: more than two hundred and fifty bishops, Alexander with his deacon Athanasius, and Hosius among the few from the West.",
+        "pivotal": true,
+        "place": "nicaea",
+        "basis": [
+          "The council met in the summer of 325; Socrates found its opening dated 20 May in the council's own record. Eusebius of Caesarea, who was present, counted more than two hundred and fifty bishops",
+          "Alexander came with his deacon Athanasius, and Hosius was among the few bishops from the West."
+        ]
+      },
+      {
+        "date": "Summer 325",
+        "text": "Arius is heard, and the bishops confess in the creed that the Son is \"one in essence\" with the Father.",
+        "pivotal": true,
+        "place": null,
+        "basis": [
+          "The council met in the summer of 325",
+          "Arius was heard",
+          "So the council wrote that the Son is from the essence of the Father and \"one in essence\" with Him."
+        ]
+      },
+      {
+        "date": "Summer 325",
+        "text": "All but two bishops sign the creed, and the emperor sends Arius into exile.",
+        "place": null,
+        "basis": [
+          "The council met in the summer of 325",
+          "only two refused to sign, Secundus of Ptolemais and Theonas of Marmarica",
+          "The emperor sent Arius into exile."
+        ]
+      },
+      {
+        "date": "Summer 325",
+        "text": "The council issues twenty canons, settles the schism of Meletius in Egypt, and fixes a common date for Pascha.",
+        "place": null,
+        "basis": [
+          "The council met in the summer of 325",
+          "The council also issued twenty canons on the order of the Church, settled the schism of Meletius in Egypt, and fixed a common date for Pascha."
+        ]
+      },
+      {
+        "date": "After the council",
+        "text": "Eusebius of Nicomedia and Theognis of Nicaea are exiled, and restored once they declare their assent.",
+        "place": null,
+        "basis": [
+          "Eusebius and Theognis were exiled soon after, and were restored when they had declared their assent."
+        ]
+      }
+    ],
+    "first-iconoclasm": [
+      {
+        "date": "717–718",
+        "text": "The Arabs besiege Constantinople, and the emperor Leo III breaks the siege.",
+        "place": "constantinople",
+        "basis": [
+          "in 717 and 718 they laid siege to Constantinople itself.",
+          "The emperor who broke that siege, Leo III"
+        ]
+      },
+      {
+        "date": "About 726",
+        "text": "Leo III moves against the icons, and the image of Christ over the Chalke Gate of the palace is taken down.",
+        "pivotal": true,
+        "place": null,
+        "basis": [
+          "From about 726, the chroniclers say, he moved against the icons. The image of Christ over the bronze Chalke Gate of the palace was taken down"
+        ]
+      },
+      {
+        "date": "730",
+        "text": "The patriarch Germanus, who will not sign the emperor's decree, is made to resign.",
+        "place": null,
+        "basis": [
+          "in 730 the patriarch Germanus, who would not sign the emperor's decree, was made to resign."
+        ]
+      },
+      {
+        "date": "Meanwhile",
+        "text": "In Damascus, beyond the emperor's reach, the monk John writes three treatises in defence of the images: God has become man, and what has been seen can be shown.",
+        "place": "damascus",
+        "basis": [
+          "In Damascus, under the caliphs and beyond the emperor's reach, a monk and former official of the caliph's court, John, wrote three treatises in defence of the images.",
+          "but God has become man, and has been seen, and what has been seen can be shown."
+        ]
+      },
+      {
+        "date": "741–775",
+        "text": "Leo's son Constantine V reigns and makes the cause his own, writing on it himself.",
+        "place": null,
+        "basis": [
+          "Leo's son Constantine V, who reigned from 741 to 775, made the cause his own and wrote on it himself."
+        ]
+      },
+      {
+        "date": "754",
+        "text": "A synod of 338 bishops meets at Hieria, with no patriarch present, and anathematizes the defenders of the icons, John of Damascus among them.",
+        "pivotal": true,
+        "place": "hieria",
+        "basis": [
+          "In 754 he gathered a synod of 338 bishops, which met at the palace of Hieria across the Bosporus and finished its work in the church of the Mother of God at Blachernae. No patriarch was present",
+          "The synod anathematized the defenders of the icons, John of Damascus by name among them."
+        ]
+      },
+      {
+        "date": "765",
+        "text": "St Stephen the Younger, a hermit of Mount Auxentius, is dragged through the streets of the capital and killed, as the persecution falls hardest on the monks.",
+        "place": null,
+        "basis": [
+          "The fiercest resistance came from the monks, and on them the persecution fell hardest. St Stephen the Younger, a hermit of Mount Auxentius, was dragged through the streets of the capital and killed in 765."
+        ]
+      },
+      {
+        "date": "780",
+        "text": "Leo IV dies, and his widow Irene, regent for their young son, sets about restoring the icons.",
+        "place": null,
+        "basis": [
+          "When he died in 780 his widow Irene became regent for their young son, and she set about restoring the icons."
+        ]
+      },
+      {
+        "date": "787",
+        "text": "With the patriarch Tarasius she calls a council, which meets at last at Nicaea.",
+        "pivotal": true,
+        "place": "nicaea",
+        "basis": [
+          "With the patriarch Tarasius she called a council, which met at last at Nicaea in 787."
+        ]
+      }
+    ],
+    "foundation-of-constantinople": [
+      {
+        "date": "324",
+        "text": "Constantine defeats Licinius at Chrysopolis, within sight of Byzantium, and resolves to build there a new capital bearing his name.",
+        "pivotal": true,
+        "place": "chrysopolis",
+        "basis": [
+          "In 324 Constantine defeated his last rival, Licinius, at Chrysopolis, within sight of its walls, and became sole master of the Roman world. He resolved to build there a new capital that would bear his name."
+        ]
+      },
+      {
+        "date": "324–330",
+        "text": "At Byzantium new walls are traced far beyond the old ones, and in six years the town becomes a city of palaces, forums and baths, with the Hippodrome beside the palace.",
+        "place": "byzantium",
+        "basis": [
+          "In 324 Constantine defeated",
+          "Work began at once. New walls were traced far beyond the old ones, and in six years the town became a city of palaces, colonnades, forums and baths, with a great Hippodrome beside the imperial palace.",
+          "On 11 May 330",
+          "Byzantium was an old Greek city on a promontory where Europe faces Asia across the Bosporus"
+        ]
+      },
+      {
+        "date": "324–330",
+        "text": "Constantine builds churches in the city, among them the Holy Apostles and Holy Peace, and no pagan sacrifice is to be offered there.",
+        "place": null,
+        "basis": [
+          "In 324 Constantine defeated",
+          "Constantine built churches in the city, among them the church of the Holy Apostles, where he would be buried among memorials of the apostles, and the church of Holy Peace, Hagia Irene.",
+          "Eusebius adds that no pagan sacrifices were to be offered in the new city",
+          "On 11 May 330"
+        ]
+      },
+      {
+        "date": "11 May 330",
+        "text": "The city is dedicated with great ceremony as Constantinople, New Rome, and the day is kept each year afterwards as its birthday.",
+        "pivotal": true,
+        "place": "constantinople",
+        "basis": [
+          "On 11 May 330 the city was dedicated with great ceremony, and that day was kept each year afterwards as its birthday.",
+          "he named it Constantinople, establishing by law that it should be designated New Rome."
+        ]
+      },
+      {
+        "date": "Within a century",
+        "text": "The city outgrows Constantine's walls, and Theodosius II builds new ones further out, the walls that will stand for a thousand years.",
+        "place": null,
+        "basis": [
+          "within a century the city had outgrown Constantine's walls, and Theodosius II built new ones further out, the walls that would stand for a thousand years."
+        ]
+      }
+    ],
+    "irenaeus-against-heresies": [
+      {
+        "date": "First half of the second century",
+        "text": "Irenaeus is born in Asia Minor, probably at Smyrna, and as a boy hears the aged bishop Polycarp, who had known the Apostle John.",
+        "place": "smyrna",
+        "basis": [
+          "Irenaeus was born in Asia Minor, probably at Smyrna, in the first half of the second century. As a boy he heard the aged bishop St Polycarp, who had known the Apostle John"
+        ]
+      },
+      {
+        "date": "Before 177",
+        "text": "He goes west to Gaul and becomes a presbyter at Lyons.",
+        "place": "lyons",
+        "basis": [
+          "He went west to Gaul, where Greek-speaking Christians from Asia had settled along the Rhone, and became a presbyter of the church of Lyons.",
+          "In 177 the churches of Lyons and Vienne"
+        ]
+      },
+      {
+        "date": "177",
+        "text": "The churches of Lyons and Vienne suffer a fierce persecution; the aged bishop Pothinus dies in prison, and the confessors send Irenaeus to Rome with a letter.",
+        "pivotal": true,
+        "place": "lyons",
+        "basis": [
+          "In 177 the churches of Lyons and Vienne suffered a fierce persecution; their aged bishop Pothinus, more than ninety years old, died of his treatment in prison, and many others in the arena. The confessors in prison sent Irenaeus to Rome with a letter to its bishop"
+        ]
+      },
+      {
+        "date": "After the persecution",
+        "text": "He is made bishop at Lyons in Pothinus's place, while followers of Valentinus are at work in the Rhone valley.",
+        "place": "lyons",
+        "basis": [
+          "after the persecution he was made bishop in Pothinus's place.",
+          "Followers of Valentinus were at work in the Rhone valley itself."
+        ]
+      },
+      {
+        "date": "About 180",
+        "text": "He writes the five books Against Heresies, setting the public tradition of the apostles' churches and the rule of faith against the Gnostics' secret knowledge.",
+        "pivotal": true,
+        "place": null,
+        "basis": [
+          "About the year 180 Irenaeus wrote five books against them",
+          "Against a secret tradition he set a public one.",
+          "And he set out the rule of faith"
+        ]
+      }
+    ],
+    "martyrdom-of-ignatius": [
+      {
+        "date": "In the reign of Trajan",
+        "text": "Ignatius, long bishop of Antioch, is arrested for the faith and condemned to die in Rome.",
+        "place": null,
+        "basis": [
+          "He had led the Church of Antioch for many years when, in the reign of the emperor Trajan, he was arrested for the faith and condemned to die in Rome."
+        ]
+      },
+      {
+        "date": "On the road",
+        "text": "Halted at Smyrna, he is received by its bishop Polycarp, greeted by the bishops of Ephesus, Magnesia and Tralles, and writes to those three churches and to the Church at Rome.",
+        "place": "smyrna",
+        "basis": [
+          "At Smyrna the guard halted, and Ignatius was received by its bishop, Polycarp.",
+          "Onesimus came from Ephesus, Damas from Magnesia and Polybius from Tralles. From Smyrna he wrote to those three churches, and to the Church at Rome"
+        ]
+      },
+      {
+        "date": "On the road",
+        "text": "At Troas he writes three more letters, to the Philadelphians, to the Smyrnaeans and to Polycarp.",
+        "place": "troas",
+        "basis": [
+          "Further north, at Troas, he wrote three more: to the Philadelphians and the Smyrnaeans, whose churches he had passed through, and to Polycarp himself"
+        ]
+      },
+      {
+        "date": "About 107",
+        "text": "He reaches Rome and dies in the arena, given to the beasts as he had expected.",
+        "pivotal": true,
+        "place": "rome",
+        "basis": [
+          "his Chronicle sets the martyrdom in the tenth year of Trajan, that is, about 107.",
+          "He reached Rome and died there in the arena, given to the beasts as he had expected."
+        ]
+      },
+      {
+        "date": "End of the fourth century",
+        "text": "His relics rest again in Antioch, and St John Chrysostom preaches there on his feast.",
+        "place": "antioch",
+        "basis": [
+          "By the end of the fourth century his relics rested again in Antioch, and St John Chrysostom preached on his feast there."
+        ]
+      }
+    ],
+    "martyrdom-of-polycarp": [
+      {
+        "date": "In old age",
+        "text": "Polycarp travels to Rome to speak with its bishop Anicetus about the keeping of Pascha; they cannot agree, yet they commune together and part in peace.",
+        "place": "rome",
+        "basis": [
+          "In old age Polycarp travelled to Rome to speak with its bishop Anicetus about the keeping of Pascha. They could not agree",
+          "yet they communed together, Anicetus let him celebrate the Eucharist in his own church, and they parted in peace."
+        ]
+      },
+      {
+        "date": "c. 155–156",
+        "text": "A persecution breaks out at Smyrna; after the young Germanicus meets the beasts bravely, the crowd cries out for Polycarp to be sought.",
+        "place": "smyrna",
+        "basis": [
+          "c. 155–156",
+          "In the middle of the second century a persecution broke out at Smyrna.",
+          "let Polycarp be sought out!"
+        ]
+      },
+      {
+        "date": "Three days before his arrest",
+        "text": "At a farm near the city, praying for all men and for the churches, he sees in a vision his pillow on fire, and says he must be burnt alive.",
+        "place": null,
+        "basis": [
+          "His people persuaded the old bishop to leave the city for a farm nearby, where he spent the days and nights praying for all men and for the churches throughout the world. Three days before his arrest he saw in a vision his pillow on fire, and told those with him that he must be burnt alive."
+        ]
+      },
+      {
+        "date": "The evening of the preparation",
+        "text": "Found in an upper room, he says \"The will of God be done\", has food set before his pursuers, and prays for two hours.",
+        "place": null,
+        "basis": [
+          "They found him in an upper room on the evening of the preparation. He could have fled, but said, \"The will of God be done,\" came down to them, had food and drink set before them, and asked for an hour to pray. He prayed for two hours"
+        ]
+      },
+      {
+        "date": "The great Sabbath",
+        "text": "Brought into the stadium and pressed to revile Christ, he answers: \"Eighty and six years have I served Him.\"",
+        "pivotal": true,
+        "place": null,
+        "basis": [
+          "On the great Sabbath he was brought into the stadium.",
+          "Pressed again to revile Christ, he answered:",
+          "Eighty and six years have I served Him"
+        ]
+      },
+      {
+        "date": "The great Sabbath",
+        "text": "Bound at the stake, he gives thanks to God; the fire arches around him like a sail, and he is pierced with a dagger.",
+        "pivotal": true,
+        "place": null,
+        "basis": [
+          "On the great Sabbath he was brought into the stadium.",
+          "When they came to nail him to the stake he asked to be left as he was, and was only bound.",
+          "The fire, those who saw it write, formed an arch around him like the sail of a ship filled with wind, and did not consume him, and an executioner was ordered to pierce him with a dagger."
+        ]
+      },
+      {
+        "date": "Afterwards",
+        "text": "The Church of Smyrna gathers his bones and keeps the anniversary of his martyrdom.",
+        "place": null,
+        "basis": [
+          "we afterwards took up his bones",
+          "to celebrate the anniversary of his martyrdom"
+        ]
+      }
+    ],
+    "missions-of-apostle-paul": [
+      {
+        "date": "About 46–48",
+        "text": "On the first journey Paul and Barnabas sail to Cyprus and cross into southern Asia Minor, preaching at Antioch of Pisidia, Iconium, Lystra and Derbe and appointing presbyters in every church.",
+        "place": null,
+        "basis": [
+          "On the first journey, about 46 to 48, Paul and Barnabas sailed to Cyprus and then crossed into southern Asia Minor, preaching first in the synagogues and then to the Gentiles, at Antioch of Pisidia, Iconium, Lystra and Derbe, and appointing presbyters in every church."
+        ]
+      },
+      {
+        "date": "After the first journey",
+        "text": "When teachers from Judea demand that Gentile converts be circumcised, the apostles and elders at Jerusalem decide that the Gentiles should not be burdened with the Law.",
+        "place": "jerusalem",
+        "basis": [
+          "When teachers from Judea demanded that Gentile converts be circumcised, the question was taken to the apostles and elders at Jerusalem, who decided that the Gentiles should not be burdened with the Law."
+        ]
+      },
+      {
+        "date": "About 49–52",
+        "text": "On the second journey, with Silas and the young Timothy, Paul sees at Troas a man of Macedonia calling him, and the Gospel crosses into Europe.",
+        "pivotal": true,
+        "place": "troas",
+        "basis": [
+          "On the second journey, about 49 to 52, Paul went with Silas, and took the young Timothy with them at Lystra. At Troas he saw a vision:",
+          "So the Gospel crossed into Europe."
+        ]
+      },
+      {
+        "date": "About 49–52",
+        "text": "At Philippi Lydia is baptized with her household and Paul and Silas are beaten and imprisoned; then come Thessalonica and Berea.",
+        "place": "thessalonica",
+        "basis": [
+          "On the second journey, about 49 to 52",
+          "At Philippi Lydia was baptized with her household, and Paul and Silas were beaten and imprisoned; then came Thessalonica and Berea"
+        ]
+      },
+      {
+        "date": "About 49–52",
+        "text": "At Athens Paul speaks on the Areopagus of the unknown God.",
+        "place": "athens",
+        "basis": [
+          "On the second journey, about 49 to 52",
+          "Athens, where Paul spoke on the Areopagus of the unknown God"
+        ]
+      },
+      {
+        "date": "About 49–52",
+        "text": "At Corinth he stays a year and a half, stands before the proconsul Gallio, and writes his first letters, to the Thessalonians.",
+        "place": "corinth",
+        "basis": [
+          "On the second journey, about 49 to 52",
+          "Corinth, where he stayed a year and a half and stood before the proconsul Gallio. From Corinth he wrote his first letters, to the Thessalonians."
+        ]
+      },
+      {
+        "date": "About 53–57",
+        "text": "On the third journey he spends nearly three years at Ephesus, until the silversmiths of Artemis raise the city against him, and writes to the Galatians, the Corinthians and the Romans.",
+        "place": "ephesus",
+        "basis": [
+          "On the third journey, about 53 to 57, he spent nearly three years at Ephesus, until the silversmiths of Artemis raised the city against him",
+          "In these years he wrote to the Galatians, the Corinthians and the Romans."
+        ]
+      },
+      {
+        "date": "After the third journey",
+        "text": "Seized in the Temple at Jerusalem, he is held two years at Caesarea, and as a citizen appeals to Caesar.",
+        "place": "jerusalem",
+        "basis": [
+          "At Jerusalem he was seized in the Temple and held two years at Caesarea. As a citizen he appealed to Caesar"
+        ]
+      },
+      {
+        "date": "About 62",
+        "text": "Sent to Rome by sea through a storm and a shipwreck on Malta, he lives two years in his own hired house, preaching the kingdom of God.",
+        "pivotal": true,
+        "place": "rome",
+        "basis": [
+          "was sent to Rome by sea, through a storm and a shipwreck on Malta. Acts leaves him there, about 62:",
+          "And Paul dwelt two whole years in his own hired house"
+        ]
+      }
+    ],
+    "moscow-patriarchate-established": [
+      {
+        "date": "1320s",
+        "text": "The seat of the metropolitan of the Rus moves north, under St Peter, to Moscow.",
+        "place": "moscow",
+        "basis": [
+          "The seat of the metropolitan moved north with the centre of Russian life, to Vladimir and then, under St Peter in the 1320s, to Moscow."
+        ]
+      },
+      {
+        "date": "1441",
+        "text": "The metropolitan Isidore returns to Moscow to proclaim the union with Rome he signed in 1439, and Grand Prince Vasily II has him arrested.",
+        "place": "moscow",
+        "basis": [
+          "The break came over Florence. The metropolitan Isidore, a Greek, signed the union with Rome in 1439 and returned to Moscow in 1441 to proclaim it. Grand Prince Vasily II had him arrested"
+        ]
+      },
+      {
+        "date": "1448",
+        "text": "The Russian bishops, without waiting for Constantinople, elect one of their own, St Jonah, as metropolitan.",
+        "pivotal": true,
+        "place": null,
+        "basis": [
+          "in 1448 the Russian bishops, without waiting for Constantinople, elected one of their own, St Jonah, as metropolitan. From then on the Russian Church chose its own primates."
+        ]
+      },
+      {
+        "date": "1520s",
+        "text": "The monk Philotheus of Pskov writes to the grand prince that two Romes have fallen, that Moscow is the third, and that there will be no fourth.",
+        "place": null,
+        "basis": [
+          "In the 1520s the monk Philotheus of Pskov wrote to the grand prince that two Romes had fallen, that Moscow was the third, and that there would be no fourth."
+        ]
+      },
+      {
+        "date": "1547",
+        "text": "Ivan IV is crowned tsar.",
+        "place": null,
+        "basis": [
+          "In 1547 Ivan IV was crowned tsar."
+        ]
+      },
+      {
+        "date": "Summer 1588",
+        "text": "Jeremias II of Constantinople arrives in Moscow, the first patriarch ever to visit Russia, collecting alms to build a new patriarchal church.",
+        "place": "moscow",
+        "basis": [
+          "In the summer of 1588 Jeremias II, Patriarch of Constantinople, arrived in Moscow. He was the first patriarch ever to visit Russia, and he came to beg: the Sultan had taken his patriarchal church and turned it into a mosque, and he was collecting alms across the Orthodox lands to build another."
+        ]
+      },
+      {
+        "date": "26 January 1589",
+        "text": "In the Cathedral of the Dormition in the Moscow Kremlin, Jeremias enthrones Job, Metropolitan of Moscow, as Patriarch of Moscow and all Russia.",
+        "pivotal": true,
+        "place": "moscow",
+        "basis": [
+          "On 26 January 1589, in the Cathedral of the Dormition in the Kremlin, Jeremias enthroned Job, Metropolitan of Moscow, as Patriarch of Moscow and all Russia.",
+          "Jeremias enthroned Job, Metropolitan of Moscow"
+        ]
+      },
+      {
+        "date": "May 1589",
+        "text": "A charter sets out the new order of the Russian Church, with metropolitans, archbishops and bishops beneath its patriarch.",
+        "place": null,
+        "basis": [
+          "On 26 January 1589",
+          "In May a charter was signed setting out the new order of the Russian Church, with metropolitans, archbishops and bishops beneath its patriarch."
+        ]
+      },
+      {
+        "date": "1590",
+        "text": "A council at Constantinople, with the patriarchs of Antioch and Jerusalem, confirms what Jeremias has done.",
+        "place": "constantinople",
+        "basis": [
+          "A council at Constantinople in 1590, with the patriarchs of Antioch and Jerusalem, confirmed what he had done"
+        ]
+      },
+      {
+        "date": "1593",
+        "text": "A second council, joined by Meletius Pegas of Alexandria, confirms it again and gives Moscow the fifth place among the patriarchates.",
+        "place": null,
+        "basis": [
+          "a second council in 1593, joined by Meletius Pegas of Alexandria, confirmed it again. That council gave Moscow the fifth place in the order of the patriarchates"
+        ]
+      },
+      {
+        "date": "1598",
+        "text": "Patriarch Job crowns Boris Godunov tsar.",
+        "place": null,
+        "basis": [
+          "Job, a monk from Staritsa and a close ally of Godunov",
+          "He crowned Boris tsar in 1598."
+        ]
+      },
+      {
+        "date": "1605",
+        "text": "When the False Dmitry takes Moscow, Job refuses to recognize him, is dragged from the cathedral and sent back to his monastery, where he dies, nearly blind, in 1607.",
+        "place": "moscow",
+        "basis": [
+          "When the pretender called the False Dmitry took Moscow in 1605, Job refused to recognize him, was dragged from the cathedral and sent back to his monastery, nearly blind, and died there in 1607.",
+          "When the pretender called the False Dmitry took Moscow in 1605"
+        ]
+      }
+    ],
+    "neronian-persecution": [
+      {
+        "date": "July 64",
+        "text": "A fire breaks out by the Circus Maximus, burns for five days and destroys whole districts of Rome, and a rumour spreads that Nero ordered it.",
+        "pivotal": true,
+        "place": "rome",
+        "basis": [
+          "In July of 64 a fire broke out in the shops along the Circus Maximus and spread through the city. It burned for five days",
+          "Whole districts were destroyed.",
+          "a rumour spread that he had ordered the fire himself"
+        ]
+      },
+      {
+        "date": "64",
+        "text": "Nero fastens the guilt on the Christians: a great multitude is arrested, and their deaths are made a spectacle in his gardens across the Tiber.",
+        "pivotal": true,
+        "place": null,
+        "basis": [
+          "In July of 64",
+          "Nero fastened the guilt",
+          "A first group was arrested, and on their information a great multitude more",
+          "Nero gave his own gardens across the Tiber for the show."
+        ]
+      },
+      {
+        "date": "Under Nero",
+        "text": "St Peter is crucified at Rome, head downward at his own request.",
+        "pivotal": true,
+        "place": "rome",
+        "basis": [
+          "Peter likewise was crucified under Nero.",
+          "Peter, as Origen records, was crucified head downward at his own request."
+        ]
+      },
+      {
+        "date": "Under Nero",
+        "text": "St Paul, a Roman citizen, is beheaded in Rome.",
+        "place": "rome",
+        "basis": [
+          "Paul was beheaded in Rome itself",
+          "Paul, a Roman citizen, was beheaded."
+        ]
+      },
+      {
+        "date": "About thirty years later",
+        "text": "St Clement, bishop of Rome, sets Peter and Paul before the Church of Corinth as the noblest examples of his generation.",
+        "place": null,
+        "basis": [
+          "About thirty years later St Clement, bishop of Rome, writing to the Church of Corinth, set them before his readers as the noblest examples of his own generation"
+        ]
+      },
+      {
+        "date": "About 200",
+        "text": "The Roman presbyter Gaius points to the apostles' tombs, their trophies, on the Vatican hill and on the road to Ostia.",
+        "place": null,
+        "basis": [
+          "About the year 200 the Roman presbyter Gaius could already point to their tombs, which he called the trophies of the apostles, on the Vatican hill and on the road to Ostia."
+        ]
+      }
+    ],
+    "non-chalcedonian-estrangement": [
+      {
+        "date": "451",
+        "text": "At Chalcedon the council confesses Christ in two natures, in words drawn from St Cyril and the Tome of Pope Leo, and deposes Dioscorus of Alexandria.",
+        "pivotal": true,
+        "place": "chalcedon",
+        "basis": [
+          "The Council of Chalcedon in 451 confessed Christ in words drawn from St Cyril of Alexandria and from the Tome of Pope Leo",
+          "The same council deposed Dioscorus, archbishop of Alexandria"
+        ]
+      },
+      {
+        "date": "At once",
+        "text": "Resistance comes at once: in Palestine monks drive out the bishop Juvenal of Jerusalem for a time.",
+        "place": null,
+        "basis": [
+          "Resistance came at once. In Palestine, monks drove out the bishop Juvenal of Jerusalem for a time."
+        ]
+      },
+      {
+        "date": "457",
+        "text": "In Alexandria the patriarch Proterius is killed by a crowd, and for most of the next century the city has rival patriarchs.",
+        "place": "alexandria",
+        "basis": [
+          "In Alexandria the patriarch set up after Dioscorus, Proterius, was killed by a crowd in 457, and for most of the next century the city had rival patriarchs."
+        ]
+      },
+      {
+        "date": "482",
+        "text": "The emperor Zeno sends the churches of Egypt the Henotikon, which sets Chalcedon aside without condemning its teaching, and satisfies neither side.",
+        "place": null,
+        "basis": [
+          "In 482 the emperor Zeno, advised by Acacius of Constantinople, sent to the churches of Egypt an instrument of union, the Henotikon. It confessed Christ as one and not two, and set Chalcedon aside without condemning its teaching outright",
+          "It satisfied neither side."
+        ]
+      },
+      {
+        "date": "484–519",
+        "text": "Rome breaks communion with Constantinople over the Henotikon.",
+        "place": null,
+        "basis": [
+          "Rome broke communion with Constantinople over it from 484 to 519"
+        ]
+      },
+      {
+        "date": "512–518",
+        "text": "Severus, the greatest theologian of the opponents of Chalcedon, is patriarch of Antioch until Justin I deposes him and restores Chalcedon as the law of the empire.",
+        "pivotal": true,
+        "place": null,
+        "basis": [
+          "Their greatest theologian, Severus, was patriarch of Antioch from 512 until the emperor Justin I deposed him in 518, when Chalcedon was restored as the law of the empire."
+        ]
+      },
+      {
+        "date": "From the 540s",
+        "text": "Protected by the empress Theodora, Jacob Baradaeus travels in disguise ordaining bishops and priests, and a separate hierarchy takes shape.",
+        "pivotal": true,
+        "place": null,
+        "basis": [
+          "The empress Theodora, wife of Justinian, protected them. From the 540s a monk named Jacob Baradaeus travelled in disguise through Syria and Asia Minor ordaining bishops and priests, and a separate hierarchy took shape, which became the Syriac Orthodox Church."
+        ]
+      },
+      {
+        "date": "553",
+        "text": "Justinian's Fifth Council reads Chalcedon in the light of St Cyril.",
+        "place": null,
+        "basis": [
+          "Justinian's Fifth Council of 553 read Chalcedon in the light of Cyril"
+        ]
+      },
+      {
+        "date": "630s–640s",
+        "text": "When the Arabs conquer Syria and Egypt, the empire can no longer bring the two sides together, and the separation is set.",
+        "pivotal": true,
+        "place": null,
+        "basis": [
+          "When the Arabs conquered Syria and Egypt in the 630s and 640s, the empire could no longer bring the two sides together, and the separation was set."
+        ]
+      }
+    ],
+    "photian-council": [
+      {
+        "date": "858",
+        "text": "The patriarch Ignatius is forced to resign, and the layman Photius, the most learned man of his age, is ordained through every degree in six days and enthroned at Christmas.",
+        "place": null,
+        "basis": [
+          "In 858 the patriarch Ignatius of Constantinople",
+          "was forced to resign. In his place the court chose Photius, the most learned man of his age, a layman and head of the imperial chancery. He was ordained through every degree in six days and enthroned at Christmas."
+        ]
+      },
+      {
+        "date": "861",
+        "text": "Legates of Pope Nicholas I join a council at Constantinople that confirms Photius.",
+        "place": "constantinople",
+        "basis": [
+          "Pope Nicholas I, a forceful defender of his see's authority, sent legates, who in 861 joined a council at Constantinople that confirmed Photius."
+        ]
+      },
+      {
+        "date": "863",
+        "text": "Nicholas disowns his legates, and a Roman synod declares Photius deposed; Constantinople ignores the sentence.",
+        "place": null,
+        "basis": [
+          "Nicholas disowned his legates, and in 863 a Roman synod declared Photius deposed and Ignatius patriarch. Constantinople ignored the sentence."
+        ]
+      },
+      {
+        "date": "About 864",
+        "text": "Boris of Bulgaria is baptized by clergy from Constantinople, then turns to Rome, and Latin clergy teach the Creed with \"and the Son\" added.",
+        "place": null,
+        "basis": [
+          "The Bulgarian ruler Boris was baptized by clergy from Constantinople in about 864, but, wanting a church of his own, soon turned to Rome, and Latin clergy took over his country. They taught the Creed with the words and the Son added to its article on the Holy Spirit"
+        ]
+      },
+      {
+        "date": "867",
+        "text": "Photius's encyclical condemns the Latin practices and the addition to the Creed, a council in Constantinople declares Pope Nicholas deposed, and the two sees are out of communion.",
+        "pivotal": true,
+        "place": "constantinople",
+        "basis": [
+          "In 867 Photius wrote an encyclical letter to the other patriarchs of the East, condemning the Latin practices in Bulgaria and above all the addition to the Creed, and a council in Constantinople declared Pope Nicholas deposed. The two sees were out of communion."
+        ]
+      },
+      {
+        "date": "867",
+        "text": "The same year Basil the Macedonian murders Michael III, seizes the throne, removes Photius and restores Ignatius.",
+        "place": null,
+        "basis": [
+          "In 867 Photius wrote",
+          "The same year everything changed. Basil the Macedonian murdered Michael III and seized the throne, removed Photius and restored Ignatius."
+        ]
+      },
+      {
+        "date": "869–870",
+        "text": "A thinly attended council with Roman legates condemns Photius; the East has never received it.",
+        "place": null,
+        "basis": [
+          "A council of 869 and 870, with Roman legates, condemned Photius; it was thinly attended, and the East has never received it."
+        ]
+      },
+      {
+        "date": "877",
+        "text": "Reconciled with Photius, Ignatius dies, and Photius returns to the patriarchal throne.",
+        "place": null,
+        "basis": [
+          "Yet the two patriarchs were reconciled before Ignatius died in 877, and Photius returned to the patriarchal throne."
+        ]
+      },
+      {
+        "date": "November 879",
+        "text": "More than three hundred and eighty bishops meet in Hagia Sophia with legates of Pope John VIII, receive Photius, annul the council of 869 and 870, and forbid any addition to the Creed.",
+        "pivotal": true,
+        "place": "hagia-sophia",
+        "basis": [
+          "In November 879 a great council of more than three hundred and eighty bishops met in Hagia Sophia, with legates of Pope John VIII. It received Photius as lawful patriarch, annulled the council of 869 and 870, and restored communion between the two Romes. It also read out the Creed of 381 and forbade anyone to add to it or take from it"
+        ]
+      },
+      {
+        "date": "March 880",
+        "text": "The papal legates agree, and the council closes in peace.",
+        "place": null,
+        "basis": [
+          "The papal legates agreed, and the council closed in March 880 in peace."
+        ]
+      }
+    ],
+    "second-council-of-constantinople": [
+      {
+        "date": "543 or 544",
+        "text": "Justinian condemns the Three Chapters by edict and requires the patriarchs to sign it.",
+        "place": null,
+        "basis": [
+          "These came to be called the Three Chapters. In 543 or 544 he condemned them by edict, and required the patriarchs to sign it."
+        ]
+      },
+      {
+        "date": "547",
+        "text": "Pope Vigilius is brought to Constantinople, condemns the Three Chapters, withdraws under protest from the West, and is kept in the city for years.",
+        "place": "constantinople",
+        "basis": [
+          "Pope Vigilius was brought to Constantinople in 547, condemned the Three Chapters, withdrew his condemnation under protest from the West, and was kept in the city for years in a long struggle with the emperor."
+        ]
+      },
+      {
+        "date": "552",
+        "text": "On the death of the patriarch Menas, Justinian raises the young priest Eutychius to the see of Constantinople.",
+        "place": null,
+        "basis": [
+          "on the death of the patriarch Menas in 552 raised him to the see of Constantinople."
+        ]
+      },
+      {
+        "date": "5 May 553",
+        "text": "The council opens in the great church of Constantinople under Eutychius, about a hundred and sixty bishops, nearly all from the East; Vigilius declines to attend.",
+        "pivotal": true,
+        "place": "constantinople",
+        "basis": [
+          "The council opened on 5 May 553 in the great church of Constantinople under Eutychius, with about a hundred and sixty bishops, nearly all from the East.",
+          "Vigilius gave his assent in writing to the assembling of the synod but declined attendance."
+        ]
+      },
+      {
+        "date": "May–June 553",
+        "text": "It condemns Theodore of Mopsuestia and the writings of Theodoret and Ibas, not the two men, and sets out its faith in fourteen anathemas that read Chalcedon in the light of St Cyril.",
+        "pivotal": true,
+        "place": null,
+        "basis": [
+          "May–June 553",
+          "we condemn and anathematise Theodore, styled bishop of Mopsuestia, and his impious writings",
+          "Theodoret and Ibas themselves were not condemned, for Chalcedon had received them; only the writings were. The council then set out its faith in fourteen anathemas. They read Chalcedon in the light of St Cyril"
+        ]
+      },
+      {
+        "date": "December 553",
+        "text": "Vigilius, after long resistance, accepts the council's decrees, confirms them again in February 554, and dies on his way home to Rome.",
+        "place": null,
+        "basis": [
+          "In December 553 Vigilius, after long resistance, accepted the council's decrees, and in February 554 confirmed them in a second document. He died on his way home to Rome."
+        ]
+      }
+    ],
+    "second-iconoclasm": [
+      {
+        "date": "811",
+        "text": "The emperor Nikephoros I is killed by the Bulgarians under Krum.",
+        "place": null,
+        "basis": [
+          "In 811 the emperor Nikephoros I was killed by the Bulgarians under Krum"
+        ]
+      },
+      {
+        "date": "813",
+        "text": "Michael I is routed at Versinikia, and soldiers say openly that the icons have brought God's anger.",
+        "place": null,
+        "basis": [
+          "in 813 his successor Michael I was routed at Versinikia. Soldiers said openly that the icons had brought God's anger"
+        ]
+      },
+      {
+        "date": "815",
+        "text": "Leo V, emperor since 813, has a synod in Hagia Sophia set aside the Council of Nicaea and restore the Definition of 754; the patriarch Nicephorus is deposed and exiled.",
+        "pivotal": true,
+        "place": "hagia-sophia",
+        "basis": [
+          "The general who took the throne in 813, Leo V",
+          "in 815 a synod met in Hagia Sophia, set aside the Council of Nicaea and restored the Definition of 754. The patriarch Nicephorus, a learned man who refused to accept it, was deposed and sent into exile"
+        ]
+      },
+      {
+        "date": "Palm Sunday 815",
+        "text": "At the monastery of Studios, Theodore leads his monks in procession carrying their icons aloft; exiled and flogged, he goes on writing.",
+        "pivotal": true,
+        "place": "studios",
+        "basis": [
+          "The resistance was led by Theodore, abbot of the great monastery of Studios in Constantinople.",
+          "On Palm Sunday of 815 he led his monks in procession around the monastery carrying their icons aloft. He was exiled to the frontier, moved from prison to prison and flogged more than once, but went on writing"
+        ]
+      },
+      {
+        "date": "Christmas Day 820",
+        "text": "Leo V is murdered; his successor Michael II releases the confessors but will not restore the icons.",
+        "place": null,
+        "basis": [
+          "Leo V was murdered on Christmas Day 820. His successor, Michael II, released the confessors from prison but would not restore the icons"
+        ]
+      },
+      {
+        "date": "826",
+        "text": "Theodore the Studite dies without seeing the icons' return.",
+        "place": null,
+        "basis": [
+          "Theodore died in 826 without seeing their return."
+        ]
+      },
+      {
+        "date": "837",
+        "text": "Theophilus makes the iconoclast John the Grammarian patriarch and renews the persecution; the brothers Theodore and Theophanes have verses cut into their faces.",
+        "place": null,
+        "basis": [
+          "made him patriarch in 837, and renewed the persecution. Two monks from Palestine, the brothers Theodore and Theophanes, had verses insulting them cut into their faces"
+        ]
+      },
+      {
+        "date": "January 842",
+        "text": "Theophilus dies, leaving the regency to his widow Theodora, who had kept icons in her own rooms; within a year the icons are restored.",
+        "pivotal": true,
+        "place": null,
+        "basis": [
+          "Theophilus died in January 842, leaving his son Michael III, two years old, under the regency of his widow Theodora, who had kept icons in her own rooms through his reign. Within a year the icons were restored."
+        ]
+      }
+    ],
+    "third-council-of-constantinople": [
+      {
+        "date": "633",
+        "text": "Cyrus of Alexandria makes a union with many of the non-Chalcedonians of Egypt on the formula of a single operation in Christ.",
+        "place": null,
+        "basis": [
+          "Christ has two natures, but a single operation, or energy. In 633 Cyrus of Alexandria made a union on these terms with many of the non-Chalcedonians of Egypt."
+        ]
+      },
+      {
+        "date": "638",
+        "text": "The emperor Heraclius makes the one will law in the Ekthesis.",
+        "place": null,
+        "basis": [
+          "Sergius began to speak instead of one will in Christ",
+          "In 638 the emperor Heraclius made it law in an edict called the Ekthesis"
+        ]
+      },
+      {
+        "date": "648",
+        "text": "Constans II, finding the quarrel only worse, forbids anyone to speak of either one will or two.",
+        "place": null,
+        "basis": [
+          "in 648 his grandson Constans II, finding the quarrel only worse, forbade anyone to speak of either one will or two."
+        ]
+      },
+      {
+        "date": "649",
+        "text": "At the Lateran in Rome, Pope Martin's synod, with St Maximus present, condemns the one will and the emperor's edicts.",
+        "pivotal": true,
+        "place": "rome",
+        "basis": [
+          "In 649 Pope Martin held a synod at the Lateran in Rome, with Maximus present, which condemned the one will and the emperor's edicts."
+        ]
+      },
+      {
+        "date": "653–655",
+        "text": "Martin is arrested, tried in Constantinople as a traitor, and dies in exile at Cherson in the Crimea.",
+        "place": "constantinople",
+        "basis": [
+          "Martin was arrested in 653, tried in Constantinople as a traitor, and died in exile at Cherson in the Crimea in 655.",
+          "Martin was arrested in 653, tried in Constantinople as a traitor"
+        ]
+      },
+      {
+        "date": "662",
+        "text": "Maximus, refusing to the end the communion of those who confess one will, has his tongue and right hand cut off and dies in exile in the Caucasus.",
+        "pivotal": true,
+        "place": null,
+        "basis": [
+          "in 662, refusing to the end to enter communion with those who confessed one will, he had his tongue and his right hand cut off, and died in exile in the Caucasus that summer."
+        ]
+      },
+      {
+        "date": "November 680",
+        "text": "At the request of Constantine IV the council meets at Constantinople, in the domed hall of the palace called the Trullus, with Pope Agatho's legates and his letter on the two wills.",
+        "pivotal": true,
+        "place": "constantinople",
+        "basis": [
+          "the emperor Constantine IV, wanting peace with Rome, asked for a council. Pope Agatho sent legates with a long letter setting out the faith of two wills, and the council met from November 680 to September 681 in the domed hall of the palace called the Trullus."
+        ]
+      },
+      {
+        "date": "680–681",
+        "text": "Macarius of Antioch, whose texts are found cut short or altered, is deposed, and the leaders of the one-will party are condemned by name, Honorius among them.",
+        "place": null,
+        "basis": [
+          "the council met from November 680 to September 681",
+          "Macarius, patriarch of Antioch, would not",
+          "Patristic texts brought in to support him were found to have been cut short or altered, and he was deposed.",
+          "condemned the leaders of the one-will party by name, Honorius among them."
+        ]
+      },
+      {
+        "date": "September 681",
+        "text": "The Definition confesses two natural wills in Christ, the human following the divine, and the bishops give thanks that Peter spoke through Agatho.",
+        "pivotal": true,
+        "place": null,
+        "basis": [
+          "the council met from November 680 to September 681",
+          "In the last session the bishops set out their Definition of Faith. It repeats Chalcedon and then adds that in Christ there are two natural wills and two natural operations",
+          "but rather as subject to his divine and omnipotent will",
+          "Peter spoke through Agatho."
+        ]
+      }
+    ]
+  }
+}

@@ -28,6 +28,58 @@
       "text": "Job, a monk from Staritsa and a close ally of Godunov, governed the Russian Church for sixteen years. He crowned Boris tsar in 1598. When the pretender called the False Dmitry took Moscow in 1605, Job refused to recognize him, was dragged from the cathedral and sent back to his monastery, nearly blind, and died there in 1607."
     }
   ],
+  "chronology": [
+    {
+      "date": "1320s",
+      "text": "The seat of the metropolitan of the Rus moves north, under St Peter, to Moscow."
+    },
+    {
+      "date": "1441",
+      "text": "The metropolitan Isidore returns to Moscow to proclaim the union with Rome he signed in 1439, and Grand Prince Vasily II has him arrested."
+    },
+    {
+      "date": "1448",
+      "text": "The Russian bishops, without waiting for Constantinople, elect one of their own, St Jonah, as metropolitan.",
+      "pivotal": true
+    },
+    {
+      "date": "1520s",
+      "text": "The monk Philotheus of Pskov writes to the grand prince that two Romes have fallen, that Moscow is the third, and that there will be no fourth."
+    },
+    {
+      "date": "1547",
+      "text": "Ivan IV is crowned tsar."
+    },
+    {
+      "date": "Summer 1588",
+      "text": "Jeremias II of Constantinople arrives in Moscow, the first patriarch ever to visit Russia, collecting alms to build a new patriarchal church."
+    },
+    {
+      "date": "26 January 1589",
+      "text": "In the Cathedral of the Dormition in the Moscow Kremlin, Jeremias enthrones Job, Metropolitan of Moscow, as Patriarch of Moscow and all Russia.",
+      "pivotal": true
+    },
+    {
+      "date": "May 1589",
+      "text": "A charter sets out the new order of the Russian Church, with metropolitans, archbishops and bishops beneath its patriarch."
+    },
+    {
+      "date": "1590",
+      "text": "A council at Constantinople, with the patriarchs of Antioch and Jerusalem, confirms what Jeremias has done."
+    },
+    {
+      "date": "1593",
+      "text": "A second council, joined by Meletius Pegas of Alexandria, confirms it again and gives Moscow the fifth place among the patriarchates."
+    },
+    {
+      "date": "1598",
+      "text": "Patriarch Job crowns Boris Godunov tsar."
+    },
+    {
+      "date": "1605",
+      "text": "When the False Dmitry takes Moscow, Job refuses to recognize him, is dragged from the cathedral and sent back to his monastery, where he dies, nearly blind, in 1607."
+    }
+  ],
   "significance": [
     {
       "kind": "para",
@@ -97,6 +149,6 @@
   "review": {
     "status": "awaiting-clergy-review",
     "drafted": "2026-10-22",
-    "basis": "Rests on the founding acts of 1589 to 1593, the accounts of Arsenius of Elasson and Giles Fletcher, and Runciman's history. There are no quotations; all of it is our paraphrase."
+    "basis": "Rests on the founding acts of 1589 to 1593, the accounts of Arsenius of Elasson and Giles Fletcher, and Runciman's history. There are no quotations; all of it is our paraphrase. Its steps (the chronology) were drafted on 2026-11-09 from this account's own words, each held to them in docs/1.9-build/thread-steps.json."
   }
 }

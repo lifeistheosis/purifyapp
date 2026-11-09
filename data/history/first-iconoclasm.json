@@ -38,6 +38,47 @@
       "text": "Constantine's son Leo IV was milder. When he died in 780 his widow Irene became regent for their young son, and she set about restoring the icons. With the patriarch Tarasius she called a council, which met at last at Nicaea in 787."
     }
   ],
+  "chronology": [
+    {
+      "date": "717–718",
+      "text": "The Arabs besiege Constantinople, and the emperor Leo III breaks the siege."
+    },
+    {
+      "date": "About 726",
+      "text": "Leo III moves against the icons, and the image of Christ over the Chalke Gate of the palace is taken down.",
+      "pivotal": true
+    },
+    {
+      "date": "730",
+      "text": "The patriarch Germanus, who will not sign the emperor's decree, is made to resign."
+    },
+    {
+      "date": "Meanwhile",
+      "text": "In Damascus, beyond the emperor's reach, the monk John writes three treatises in defence of the images: God has become man, and what has been seen can be shown."
+    },
+    {
+      "date": "741–775",
+      "text": "Leo's son Constantine V reigns and makes the cause his own, writing on it himself."
+    },
+    {
+      "date": "754",
+      "text": "A synod of 338 bishops meets at Hieria, with no patriarch present, and anathematizes the defenders of the icons, John of Damascus among them.",
+      "pivotal": true
+    },
+    {
+      "date": "765",
+      "text": "St Stephen the Younger, a hermit of Mount Auxentius, is dragged through the streets of the capital and killed, as the persecution falls hardest on the monks."
+    },
+    {
+      "date": "780",
+      "text": "Leo IV dies, and his widow Irene, regent for their young son, sets about restoring the icons."
+    },
+    {
+      "date": "787",
+      "text": "With the patriarch Tarasius she calls a council, which meets at last at Nicaea.",
+      "pivotal": true
+    }
+  ],
   "significance": [
     {
       "kind": "para",
@@ -120,6 +161,6 @@
   "review": {
     "status": "awaiting-clergy-review",
     "drafted": "2026-10-22",
-    "basis": "Rests on St John of Damascus's Apologies (Allies, 1898) and the Definition of 754 as preserved in the Acts of the Seventh Council (NPNF2 vol. 14), with Theophanes for the course of events. Each quotation was checked word for word against its source; the rest is our paraphrase."
+    "basis": "Rests on St John of Damascus's Apologies (Allies, 1898) and the Definition of 754 as preserved in the Acts of the Seventh Council (NPNF2 vol. 14), with Theophanes for the course of events. Each quotation was checked word for word against its source; the rest is our paraphrase. Its steps (the chronology) were drafted on 2026-11-09 from this account's own words, each held to them in docs/1.9-build/thread-steps.json."
   }
 }

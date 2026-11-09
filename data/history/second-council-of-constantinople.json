@@ -57,6 +57,34 @@
       "text": "Evagrius also records that monks presented petitions against Origen and his followers, and that the bishops, at the emperor's request, joined in condemning the Origenist teachings. In December 553 Vigilius, after long resistance, accepted the council's decrees, and in February 554 confirmed them in a second document. He died on his way home to Rome."
     }
   ],
+  "chronology": [
+    {
+      "date": "543 or 544",
+      "text": "Justinian condemns the Three Chapters by edict and requires the patriarchs to sign it."
+    },
+    {
+      "date": "547",
+      "text": "Pope Vigilius is brought to Constantinople, condemns the Three Chapters, withdraws under protest from the West, and is kept in the city for years."
+    },
+    {
+      "date": "552",
+      "text": "On the death of the patriarch Menas, Justinian raises the young priest Eutychius to the see of Constantinople."
+    },
+    {
+      "date": "5 May 553",
+      "text": "The council opens in the great church of Constantinople under Eutychius, about a hundred and sixty bishops, nearly all from the East; Vigilius declines to attend.",
+      "pivotal": true
+    },
+    {
+      "date": "May–June 553",
+      "text": "It condemns Theodore of Mopsuestia and the writings of Theodoret and Ibas, not the two men, and sets out its faith in fourteen anathemas that read Chalcedon in the light of St Cyril.",
+      "pivotal": true
+    },
+    {
+      "date": "December 553",
+      "text": "Vigilius, after long resistance, accepts the council's decrees, confirms them again in February 554, and dies on his way home to Rome."
+    }
+  ],
   "significance": [
     {
       "kind": "para",
@@ -122,6 +150,6 @@
   "review": {
     "status": "awaiting-clergy-review",
     "drafted": "2026-10-22",
-    "basis": "Rests on Evagrius's Ecclesiastical History IV.38 (Walford, 1846) and the council's own capitula (NPNF2 vol. 14, the app's council text). Each quotation was checked word for word against its source; the rest is our paraphrase."
+    "basis": "Rests on Evagrius's Ecclesiastical History IV.38 (Walford, 1846) and the council's own capitula (NPNF2 vol. 14, the app's council text). Each quotation was checked word for word against its source; the rest is our paraphrase. Its steps (the chronology) were drafted on 2026-11-09 from this account's own words, each held to them in docs/1.9-build/thread-steps.json."
   }
 }

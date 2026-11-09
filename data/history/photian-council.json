@@ -54,6 +54,50 @@
       "text": "The papal legates agreed, and the council closed in March 880 in peace."
     }
   ],
+  "chronology": [
+    {
+      "date": "858",
+      "text": "The patriarch Ignatius is forced to resign, and the layman Photius, the most learned man of his age, is ordained through every degree in six days and enthroned at Christmas."
+    },
+    {
+      "date": "861",
+      "text": "Legates of Pope Nicholas I join a council at Constantinople that confirms Photius."
+    },
+    {
+      "date": "863",
+      "text": "Nicholas disowns his legates, and a Roman synod declares Photius deposed; Constantinople ignores the sentence."
+    },
+    {
+      "date": "About 864",
+      "text": "Boris of Bulgaria is baptized by clergy from Constantinople, then turns to Rome, and Latin clergy teach the Creed with \"and the Son\" added."
+    },
+    {
+      "date": "867",
+      "text": "Photius's encyclical condemns the Latin practices and the addition to the Creed, a council in Constantinople declares Pope Nicholas deposed, and the two sees are out of communion.",
+      "pivotal": true
+    },
+    {
+      "date": "867",
+      "text": "The same year Basil the Macedonian murders Michael III, seizes the throne, removes Photius and restores Ignatius."
+    },
+    {
+      "date": "869–870",
+      "text": "A thinly attended council with Roman legates condemns Photius; the East has never received it."
+    },
+    {
+      "date": "877",
+      "text": "Reconciled with Photius, Ignatius dies, and Photius returns to the patriarchal throne."
+    },
+    {
+      "date": "November 879",
+      "text": "More than three hundred and eighty bishops meet in Hagia Sophia with legates of Pope John VIII, receive Photius, annul the council of 869 and 870, and forbid any addition to the Creed.",
+      "pivotal": true
+    },
+    {
+      "date": "March 880",
+      "text": "The papal legates agree, and the council closes in peace."
+    }
+  ],
   "significance": [
     {
       "kind": "para",
@@ -129,6 +173,6 @@
   "review": {
     "status": "awaiting-clergy-review",
     "drafted": "2026-10-22",
-    "basis": "Rests on the Creed of 381 and the canons of Ephesus (NPNF2 vol. 14, the app's council texts) and Photius's own writings, with Dvornik for the sequence of events. Each quotation was checked word for word against its source; the rest is our paraphrase."
+    "basis": "Rests on the Creed of 381 and the canons of Ephesus (NPNF2 vol. 14, the app's council texts) and Photius's own writings, with Dvornik for the sequence of events. Each quotation was checked word for word against its source; the rest is our paraphrase. Its steps (the chronology) were drafted on 2026-11-09 from this account's own words, each held to them in docs/1.9-build/thread-steps.json."
   }
 }

@@ -68,6 +68,29 @@
       "text": "He reached Rome and died there in the arena, given to the beasts as he had expected. Antioch did not forget its bishop. By the end of the fourth century his relics rested again in Antioch, and St John Chrysostom preached on his feast there. The Church keeps his memory on 20 December, and the bringing back of his relics on 29 January."
     }
   ],
+  "chronology": [
+    {
+      "date": "In the reign of Trajan",
+      "text": "Ignatius, long bishop of Antioch, is arrested for the faith and condemned to die in Rome."
+    },
+    {
+      "date": "On the road",
+      "text": "Halted at Smyrna, he is received by its bishop Polycarp, greeted by the bishops of Ephesus, Magnesia and Tralles, and writes to those three churches and to the Church at Rome."
+    },
+    {
+      "date": "On the road",
+      "text": "At Troas he writes three more letters, to the Philadelphians, to the Smyrnaeans and to Polycarp."
+    },
+    {
+      "date": "About 107",
+      "text": "He reaches Rome and dies in the arena, given to the beasts as he had expected.",
+      "pivotal": true
+    },
+    {
+      "date": "End of the fourth century",
+      "text": "His relics rest again in Antioch, and St John Chrysostom preaches there on his feast."
+    }
+  ],
   "significance": [
     {
       "kind": "para",
@@ -136,6 +159,6 @@
   "review": {
     "status": "awaiting-clergy-review",
     "drafted": "2026-10-22",
-    "basis": "Rests on St Ignatius's own letters (ANF vol. 1, the app's library copy), St Polycarp's letter to the Philippians, and Eusebius's Church History III.22 and III.36 with McGiffert's notes. The three quotations are verbatim from the library's ANF text; the rest is our paraphrase."
+    "basis": "Rests on St Ignatius's own letters (ANF vol. 1, the app's library copy), St Polycarp's letter to the Philippians, and Eusebius's Church History III.22 and III.36 with McGiffert's notes. The three quotations are verbatim from the library's ANF text; the rest is our paraphrase. Its steps (the chronology) were drafted on 2026-11-09 from this account's own words, each held to them in docs/1.9-build/thread-steps.json."
   }
 }

@@ -44,6 +44,48 @@
       "text": "These Churches, the Coptic, Syriac, Armenian and Ethiopian among them, are known today as the Oriental Orthodox. They too condemn Eutyches, who said Christ's humanity was swallowed up in His divinity."
     }
   ],
+  "chronology": [
+    {
+      "date": "451",
+      "text": "At Chalcedon the council confesses Christ in two natures, in words drawn from St Cyril and the Tome of Pope Leo, and deposes Dioscorus of Alexandria.",
+      "pivotal": true
+    },
+    {
+      "date": "At once",
+      "text": "Resistance comes at once: in Palestine monks drive out the bishop Juvenal of Jerusalem for a time."
+    },
+    {
+      "date": "457",
+      "text": "In Alexandria the patriarch Proterius is killed by a crowd, and for most of the next century the city has rival patriarchs."
+    },
+    {
+      "date": "482",
+      "text": "The emperor Zeno sends the churches of Egypt the Henotikon, which sets Chalcedon aside without condemning its teaching, and satisfies neither side."
+    },
+    {
+      "date": "484–519",
+      "text": "Rome breaks communion with Constantinople over the Henotikon."
+    },
+    {
+      "date": "512–518",
+      "text": "Severus, the greatest theologian of the opponents of Chalcedon, is patriarch of Antioch until Justin I deposes him and restores Chalcedon as the law of the empire.",
+      "pivotal": true
+    },
+    {
+      "date": "From the 540s",
+      "text": "Protected by the empress Theodora, Jacob Baradaeus travels in disguise ordaining bishops and priests, and a separate hierarchy takes shape.",
+      "pivotal": true
+    },
+    {
+      "date": "553",
+      "text": "Justinian's Fifth Council reads Chalcedon in the light of St Cyril."
+    },
+    {
+      "date": "630s–640s",
+      "text": "When the Arabs conquer Syria and Egypt, the empire can no longer bring the two sides together, and the separation is set.",
+      "pivotal": true
+    }
+  ],
   "significance": [
     {
       "kind": "para",
@@ -120,6 +162,6 @@
   "review": {
     "status": "awaiting-clergy-review",
     "drafted": "2026-10-22",
-    "basis": "Rests on Evagrius II to IV (Walford, 1846) and the Definition of Chalcedon (NPNF2 vol. 14), with Frend and Meyendorff for the course of the separation. Each quotation was checked word for word against the page its source names; the rest is our paraphrase. The doctrinal framing especially wants a priest's eye."
+    "basis": "Rests on Evagrius II to IV (Walford, 1846) and the Definition of Chalcedon (NPNF2 vol. 14), with Frend and Meyendorff for the course of the separation. Each quotation was checked word for word against the page its source names; the rest is our paraphrase. The doctrinal framing especially wants a priest's eye. Its steps (the chronology) were drafted on 2026-11-09 from this account's own words, each held to them in docs/1.9-build/thread-steps.json."
   }
 }

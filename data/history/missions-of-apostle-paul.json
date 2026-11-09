@@ -88,6 +88,46 @@
       }
     }
   ],
+  "chronology": [
+    {
+      "date": "About 46–48",
+      "text": "On the first journey Paul and Barnabas sail to Cyprus and cross into southern Asia Minor, preaching at Antioch of Pisidia, Iconium, Lystra and Derbe and appointing presbyters in every church."
+    },
+    {
+      "date": "After the first journey",
+      "text": "When teachers from Judea demand that Gentile converts be circumcised, the apostles and elders at Jerusalem decide that the Gentiles should not be burdened with the Law."
+    },
+    {
+      "date": "About 49–52",
+      "text": "On the second journey, with Silas and the young Timothy, Paul sees at Troas a man of Macedonia calling him, and the Gospel crosses into Europe.",
+      "pivotal": true
+    },
+    {
+      "date": "About 49–52",
+      "text": "At Philippi Lydia is baptized with her household and Paul and Silas are beaten and imprisoned; then come Thessalonica and Berea."
+    },
+    {
+      "date": "About 49–52",
+      "text": "At Athens Paul speaks on the Areopagus of the unknown God."
+    },
+    {
+      "date": "About 49–52",
+      "text": "At Corinth he stays a year and a half, stands before the proconsul Gallio, and writes his first letters, to the Thessalonians."
+    },
+    {
+      "date": "About 53–57",
+      "text": "On the third journey he spends nearly three years at Ephesus, until the silversmiths of Artemis raise the city against him, and writes to the Galatians, the Corinthians and the Romans."
+    },
+    {
+      "date": "After the third journey",
+      "text": "Seized in the Temple at Jerusalem, he is held two years at Caesarea, and as a citizen appeals to Caesar."
+    },
+    {
+      "date": "About 62",
+      "text": "Sent to Rome by sea through a storm and a shipwreck on Malta, he lives two years in his own hired house, preaching the kingdom of God.",
+      "pivotal": true
+    }
+  ],
   "significance": [
     {
       "kind": "para",
@@ -159,6 +199,6 @@
   "review": {
     "status": "awaiting-clergy-review",
     "drafted": "2026-10-22",
-    "basis": "Rests on the Acts of the Apostles and the Letters of St Paul (King James Version, the app's own Bible), with Eusebius II.22 and II.25 for the later tradition. Scripture is quoted verse for verse from the app's Bible; the rest is our paraphrase."
+    "basis": "Rests on the Acts of the Apostles and the Letters of St Paul (King James Version, the app's own Bible), with Eusebius II.22 and II.25 for the later tradition. Scripture is quoted verse for verse from the app's Bible; the rest is our paraphrase. Its steps (the chronology) were drafted on 2026-11-09 from this account's own words, each held to them in docs/1.9-build/thread-steps.json."
   }
 }

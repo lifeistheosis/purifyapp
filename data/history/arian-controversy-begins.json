@@ -48,6 +48,30 @@
       "text": "Letters flew between the churches; councils met on each side; the dispute was argued in the streets and mocked in the theatres. When Constantine became master of the East in 324 he was grieved to find the Church divided, and sent Hosius of Cordova to Alexandria with a letter to Alexander and Arius, urging them to make peace over what he took to be a question of words. It was not, and the letter failed. The emperor then called a council of the whole Church, to meet at Nicaea in 325."
     }
   ],
+  "chronology": [
+    {
+      "date": "c. 318",
+      "text": "At Alexandria the presbyter Arius teaches openly that there was a time when the Son was not, and finds followers among the clergy and the people."
+    },
+    {
+      "date": "Before 324",
+      "text": "Bishop Alexander gathers a council of the bishops of Egypt and Libya, which excommunicates Arius and those who hold with him."
+    },
+    {
+      "date": "Before 324",
+      "text": "Arius leaves Egypt and finds his most powerful friend in Eusebius, bishop of Nicomedia."
+    },
+    {
+      "date": "324",
+      "text": "Constantine, now master of the East, sends Hosius of Cordova to Alexandria with a letter urging Alexander and Arius to make peace, and the letter fails.",
+      "pivotal": true
+    },
+    {
+      "date": "325",
+      "text": "The emperor calls a council of the whole Church to meet at Nicaea.",
+      "pivotal": true
+    }
+  ],
   "significance": [
     {
       "kind": "para",
@@ -116,6 +140,6 @@
   "review": {
     "status": "awaiting-clergy-review",
     "drafted": "2026-10-22",
-    "basis": "Rests on Socrates I.5-8 (NPNF2 vol. 2), with St Alexander's encyclical, and Theodoret I.2-6 (NPNF2 vol. 3), with Arius's letter to Eusebius of Nicomedia. Each quotation was checked word for word against the page its source names; the rest is our paraphrase."
+    "basis": "Rests on Socrates I.5-8 (NPNF2 vol. 2), with St Alexander's encyclical, and Theodoret I.2-6 (NPNF2 vol. 3), with Arius's letter to Eusebius of Nicomedia. Each quotation was checked word for word against the page its source names; the rest is our paraphrase. Its steps (the chronology) were drafted on 2026-11-09 from this account's own words, each held to them in docs/1.9-build/thread-steps.json."
   }
 }

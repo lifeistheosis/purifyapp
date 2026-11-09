@@ -64,6 +64,38 @@
       }
     }
   ],
+  "chronology": [
+    {
+      "date": "In old age",
+      "text": "Polycarp travels to Rome to speak with its bishop Anicetus about the keeping of Pascha; they cannot agree, yet they commune together and part in peace."
+    },
+    {
+      "date": "c. 155–156",
+      "text": "A persecution breaks out at Smyrna; after the young Germanicus meets the beasts bravely, the crowd cries out for Polycarp to be sought."
+    },
+    {
+      "date": "Three days before his arrest",
+      "text": "At a farm near the city, praying for all men and for the churches, he sees in a vision his pillow on fire, and says he must be burnt alive."
+    },
+    {
+      "date": "The evening of the preparation",
+      "text": "Found in an upper room, he says \"The will of God be done\", has food set before his pursuers, and prays for two hours."
+    },
+    {
+      "date": "The great Sabbath",
+      "text": "Brought into the stadium and pressed to revile Christ, he answers: \"Eighty and six years have I served Him.\"",
+      "pivotal": true
+    },
+    {
+      "date": "The great Sabbath",
+      "text": "Bound at the stake, he gives thanks to God; the fire arches around him like a sail, and he is pierced with a dagger.",
+      "pivotal": true
+    },
+    {
+      "date": "Afterwards",
+      "text": "The Church of Smyrna gathers his bones and keeps the anniversary of his martyrdom."
+    }
+  ],
   "significance": [
     {
       "kind": "para",
@@ -132,6 +164,6 @@
   "review": {
     "status": "awaiting-clergy-review",
     "drafted": "2026-10-22",
-    "basis": "Rests on the Martyrdom of Polycarp (ANF vol. 1, the app's library copy), Irenaeus's Against Heresies III.3.4, and Eusebius's Church History IV.15 and V.24. The quotations are verbatim from the library's ANF text; the rest is our paraphrase."
+    "basis": "Rests on the Martyrdom of Polycarp (ANF vol. 1, the app's library copy), Irenaeus's Against Heresies III.3.4, and Eusebius's Church History IV.15 and V.24. The quotations are verbatim from the library's ANF text; the rest is our paraphrase. Its steps (the chronology) were drafted on 2026-11-09 from this account's own words, each held to them in docs/1.9-build/thread-steps.json."
   }
 }

@@ -63,6 +63,48 @@
       "text": "In their address to the emperor the bishops gave thanks for the pope's letter in words that have been remembered since: Peter spoke through Agatho."
     }
   ],
+  "chronology": [
+    {
+      "date": "633",
+      "text": "Cyrus of Alexandria makes a union with many of the non-Chalcedonians of Egypt on the formula of a single operation in Christ."
+    },
+    {
+      "date": "638",
+      "text": "The emperor Heraclius makes the one will law in the Ekthesis."
+    },
+    {
+      "date": "648",
+      "text": "Constans II, finding the quarrel only worse, forbids anyone to speak of either one will or two."
+    },
+    {
+      "date": "649",
+      "text": "At the Lateran in Rome, Pope Martin's synod, with St Maximus present, condemns the one will and the emperor's edicts.",
+      "pivotal": true
+    },
+    {
+      "date": "653–655",
+      "text": "Martin is arrested, tried in Constantinople as a traitor, and dies in exile at Cherson in the Crimea."
+    },
+    {
+      "date": "662",
+      "text": "Maximus, refusing to the end the communion of those who confess one will, has his tongue and right hand cut off and dies in exile in the Caucasus.",
+      "pivotal": true
+    },
+    {
+      "date": "November 680",
+      "text": "At the request of Constantine IV the council meets at Constantinople, in the domed hall of the palace called the Trullus, with Pope Agatho's legates and his letter on the two wills.",
+      "pivotal": true
+    },
+    {
+      "date": "680–681",
+      "text": "Macarius of Antioch, whose texts are found cut short or altered, is deposed, and the leaders of the one-will party are condemned by name, Honorius among them."
+    },
+    {
+      "date": "September 681",
+      "text": "The Definition confesses two natural wills in Christ, the human following the divine, and the bishops give thanks that Peter spoke through Agatho.",
+      "pivotal": true
+    }
+  ],
   "significance": [
     {
       "kind": "para",
@@ -148,6 +190,6 @@
   "review": {
     "status": "awaiting-clergy-review",
     "drafted": "2026-10-22",
-    "basis": "Rests on the council's acts and Definition in Percival's translation (NPNF2 vol. 14), with Matthew 26:39 from the app's King James text. Each quotation was checked word for word against its source; the rest is our paraphrase."
+    "basis": "Rests on the council's acts and Definition in Percival's translation (NPNF2 vol. 14), with Matthew 26:39 from the app's King James text. Each quotation was checked word for word against its source; the rest is our paraphrase. Its steps (the chronology) were drafted on 2026-11-09 from this account's own words, each held to them in docs/1.9-build/thread-steps.json."
   }
 }

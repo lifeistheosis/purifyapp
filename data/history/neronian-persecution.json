@@ -52,6 +52,35 @@
       "text": "Peter, as Origen records, was crucified head downward at his own request. Paul, a Roman citizen, was beheaded. About the year 200 the Roman presbyter Gaius could already point to their tombs, which he called the trophies of the apostles, on the Vatican hill and on the road to Ostia."
     }
   ],
+  "chronology": [
+    {
+      "date": "July 64",
+      "text": "A fire breaks out by the Circus Maximus, burns for five days and destroys whole districts of Rome, and a rumour spreads that Nero ordered it.",
+      "pivotal": true
+    },
+    {
+      "date": "64",
+      "text": "Nero fastens the guilt on the Christians: a great multitude is arrested, and their deaths are made a spectacle in his gardens across the Tiber.",
+      "pivotal": true
+    },
+    {
+      "date": "Under Nero",
+      "text": "St Peter is crucified at Rome, head downward at his own request.",
+      "pivotal": true
+    },
+    {
+      "date": "Under Nero",
+      "text": "St Paul, a Roman citizen, is beheaded in Rome."
+    },
+    {
+      "date": "About thirty years later",
+      "text": "St Clement, bishop of Rome, sets Peter and Paul before the Church of Corinth as the noblest examples of his generation."
+    },
+    {
+      "date": "About 200",
+      "text": "The Roman presbyter Gaius points to the apostles' tombs, their trophies, on the Vatican hill and on the road to Ostia."
+    }
+  ],
   "significance": [
     {
       "kind": "para",
@@ -115,6 +144,6 @@
   "review": {
     "status": "awaiting-clergy-review",
     "drafted": "2026-10-22",
-    "basis": "Rests on Tacitus's Annals XV (Church and Brodribb), St Clement's letter to the Corinthians (ANF vol. 1) and Eusebius's Church History II.25 and III.1. Each quotation was checked word for word against the page its source names; the rest is our paraphrase."
+    "basis": "Rests on Tacitus's Annals XV (Church and Brodribb), St Clement's letter to the Corinthians (ANF vol. 1) and Eusebius's Church History II.25 and III.1. Each quotation was checked word for word against the page its source names; the rest is our paraphrase. Its steps (the chronology) were drafted on 2026-11-09 from this account's own words, each held to them in docs/1.9-build/thread-steps.json."
   }
 }

@@ -33,6 +33,31 @@
       "text": "Lactantius closes his book with a reckoning: \"from the overthrow of the Church until its restoration, there was a space of ten years and about four months.\" Maximin, beaten, gave the Christians full freedom in his own lands and ordered their property returned before he died at Tarsus, pursued by Licinius."
     }
   ],
+  "chronology": [
+    {
+      "date": "303",
+      "text": "Diocletian and his colleagues set out to destroy the Church: churches are pulled down, the Scriptures burned and the clergy imprisoned."
+    },
+    {
+      "date": "April 311",
+      "text": "The dying Galerius gives way: his edict, issued at Nicomedia, allows the Christians to be Christians again and to build their places of assembly."
+    },
+    {
+      "date": "October 312",
+      "text": "The army of Maxentius is routed at the Milvian Bridge, and Maxentius is driven into the Tiber and drowned.",
+      "pivotal": true
+    },
+    {
+      "date": "Winter 312–313",
+      "text": "At Milan Licinius marries Constantine's sister Constantia, and the two emperors agree on a common policy toward religion.",
+      "pivotal": true
+    },
+    {
+      "date": "June 313",
+      "text": "Licinius, having routed Maximin, posts their decision at Nicomedia: freedom for the Christians and for all others, and the Church's property restored.",
+      "pivotal": true
+    }
+  ],
   "significance": [
     {
       "kind": "para",
@@ -139,6 +164,6 @@
   "review": {
     "status": "awaiting-clergy-review",
     "drafted": "2026-10-16",
-    "basis": "Rests on Lactantius's On the Deaths of the Persecutors (ANF vol. 7) and Eusebius's Church History and Life of Constantine (NPNF2 vol. 1), with Socrates for Licinius's later turn. Quotations are verbatim from those translations; the rest is our paraphrase."
+    "basis": "Rests on Lactantius's On the Deaths of the Persecutors (ANF vol. 7) and Eusebius's Church History and Life of Constantine (NPNF2 vol. 1), with Socrates for Licinius's later turn. Quotations are verbatim from those translations; the rest is our paraphrase. Its steps (the chronology) were drafted on 2026-11-09 from this account's own words, each held to them in docs/1.9-build/thread-steps.json."
   }
 }

@@ -60,6 +60,34 @@
       "text": "After the prefect Urbicus put Christians to death at Rome for their confession alone, Justin wrote a shorter Second Apology. In it he says he expects to be plotted against himself, perhaps by Crescens, a Cynic philosopher he had refuted in public. Some years later, under Marcus Aurelius, he was brought with six companions before Rusticus, prefect of Rome. The record of their trial survives. Ordered to sacrifice, Justin answered that he had tried to learn every doctrine and had come to rest in the true one, that of the Christians. They would not sacrifice, and they were scourged and beheaded."
     }
   ],
+  "chronology": [
+    {
+      "date": "In the reign of Hadrian",
+      "text": "Quadratus and Aristides each present a defence of the faith to the emperor, the first of the Apologists."
+    },
+    {
+      "date": "Before 150",
+      "text": "Justin, born of a pagan family at Flavia Neapolis, goes from school to school looking for God, until an old man by the sea shows him the prophets."
+    },
+    {
+      "date": "About 150",
+      "text": "Teaching the faith at Rome, he addresses his First Apology to Antoninus Pius: Christians are to be judged by what they do, and the Word has been at work in every race of men.",
+      "pivotal": true
+    },
+    {
+      "date": "About 150",
+      "text": "In it he describes the Christians' baptism and their Sunday gathering, the earliest full account of the Divine Liturgy outside the New Testament."
+    },
+    {
+      "date": "Later",
+      "text": "After the prefect Urbicus puts Christians to death at Rome for their confession alone, Justin writes a shorter Second Apology."
+    },
+    {
+      "date": "c. 165",
+      "text": "Under Marcus Aurelius he is brought with six companions before Rusticus, prefect of Rome; they will not sacrifice, and are scourged and beheaded.",
+      "pivotal": true
+    }
+  ],
   "significance": [
     {
       "kind": "para",
@@ -128,6 +156,6 @@
   "review": {
     "status": "awaiting-clergy-review",
     "drafted": "2026-10-22",
-    "basis": "Rests on St Justin's own Apologies and Dialogue (ANF vol. 1, the app's library copy), the Acts of his martyrdom (ANF vol. 1) and Eusebius's Church History IV. The quotations are verbatim from the library's ANF text; the rest is our paraphrase."
+    "basis": "Rests on St Justin's own Apologies and Dialogue (ANF vol. 1, the app's library copy), the Acts of his martyrdom (ANF vol. 1) and Eusebius's Church History IV. The quotations are verbatim from the library's ANF text; the rest is our paraphrase. Its steps (the chronology) were drafted on 2026-11-09 from this account's own words, each held to them in docs/1.9-build/thread-steps.json."
   }
 }

@@ -43,6 +43,43 @@
       "text": "Theophilus died in January 842, leaving his son Michael III, two years old, under the regency of his widow Theodora, who had kept icons in her own rooms through his reign. Within a year the icons were restored."
     }
   ],
+  "chronology": [
+    {
+      "date": "811",
+      "text": "The emperor Nikephoros I is killed by the Bulgarians under Krum."
+    },
+    {
+      "date": "813",
+      "text": "Michael I is routed at Versinikia, and soldiers say openly that the icons have brought God's anger."
+    },
+    {
+      "date": "815",
+      "text": "Leo V, emperor since 813, has a synod in Hagia Sophia set aside the Council of Nicaea and restore the Definition of 754; the patriarch Nicephorus is deposed and exiled.",
+      "pivotal": true
+    },
+    {
+      "date": "Palm Sunday 815",
+      "text": "At the monastery of Studios, Theodore leads his monks in procession carrying their icons aloft; exiled and flogged, he goes on writing.",
+      "pivotal": true
+    },
+    {
+      "date": "Christmas Day 820",
+      "text": "Leo V is murdered; his successor Michael II releases the confessors but will not restore the icons."
+    },
+    {
+      "date": "826",
+      "text": "Theodore the Studite dies without seeing the icons' return."
+    },
+    {
+      "date": "837",
+      "text": "Theophilus makes the iconoclast John the Grammarian patriarch and renews the persecution; the brothers Theodore and Theophanes have verses cut into their faces."
+    },
+    {
+      "date": "January 842",
+      "text": "Theophilus dies, leaving the regency to his widow Theodora, who had kept icons in her own rooms; within a year the icons are restored.",
+      "pivotal": true
+    }
+  ],
   "significance": [
     {
       "kind": "para",
@@ -112,6 +149,6 @@
   "review": {
     "status": "awaiting-clergy-review",
     "drafted": "2026-10-22",
-    "basis": "Rests on the decree of the Seventh Council (NPNF2 vol. 14, the app's council text), with the writings of St Theodore and St Nicephorus and the Byzantine chronicles for the course of events. The quotation was checked word for word against its source; the rest is our paraphrase."
+    "basis": "Rests on the decree of the Seventh Council (NPNF2 vol. 14, the app's council text), with the writings of St Theodore and St Nicephorus and the Byzantine chronicles for the course of events. The quotation was checked word for word against its source; the rest is our paraphrase. Its steps (the chronology) were drafted on 2026-11-09 from this account's own words, each held to them in docs/1.9-build/thread-steps.json."
   }
 }

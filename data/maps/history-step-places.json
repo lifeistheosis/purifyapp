@@ -6,6 +6,11 @@
       "lat": 31.2,
       "lon": 29.918
     },
+    "antioch": {
+      "name": "Antioch",
+      "lat": 36.2,
+      "lon": 36.15
+    },
     "athens": {
       "name": "Athens",
       "lat": 37.984,
@@ -21,10 +26,25 @@
       "lat": 41.034,
       "lon": 28.94
     },
+    "byzantium": {
+      "name": "Byzantium",
+      "lat": 41.013,
+      "lon": 28.98
+    },
     "chalcedon": {
       "name": "Chalcedon",
       "lat": 40.984,
       "lon": 29.027
+    },
+    "chrysopolis": {
+      "name": "Chrysopolis",
+      "lat": 41.017,
+      "lon": 29.017
+    },
+    "comana": {
+      "name": "Comana",
+      "lat": 40.357,
+      "lon": 36.639
     },
     "constantinople": {
       "name": "Constantinople",
@@ -36,6 +56,21 @@
       "lat": 39.624,
       "lon": 19.921
     },
+    "corinth": {
+      "name": "Corinth",
+      "lat": 37.906,
+      "lon": 22.879
+    },
+    "cucusus": {
+      "name": "Cucusus",
+      "lat": 38.017,
+      "lon": 36.5
+    },
+    "damascus": {
+      "name": "Damascus",
+      "lat": 33.513,
+      "lon": 36.292
+    },
     "ephesus": {
       "name": "Ephesus",
       "lat": 37.941,
@@ -45,6 +80,11 @@
       "name": "Ferrara",
       "lat": 44.838,
       "lon": 11.62
+    },
+    "flavia-neapolis": {
+      "name": "Flavia Neapolis",
+      "lat": 32.218,
+      "lon": 35.269
     },
     "florence": {
       "name": "Florence",
@@ -91,6 +131,11 @@
       "lat": 45.764,
       "lon": 4.836
     },
+    "milan": {
+      "name": "Milan",
+      "lat": 45.467,
+      "lon": 9.19
+    },
     "milvian-bridge": {
       "name": "Milvian Bridge",
       "lat": 41.936,
@@ -121,6 +166,11 @@
       "lat": 43.773,
       "lon": 11.256
     },
+    "smyrna": {
+      "name": "Smyrna",
+      "lat": 38.413,
+      "lon": 27.138
+    },
     "spruce-island": {
       "name": "Spruce Island",
       "lat": 57.918,
@@ -135,6 +185,11 @@
       "name": "Thessalonica",
       "lat": 40.64,
       "lon": 22.935
+    },
+    "troas": {
+      "name": "Troas",
+      "lat": 39.761,
+      "lon": 26.153
     },
     "unalaska": {
       "name": "Unalaska",
@@ -182,6 +237,21 @@
       null,
       null
     ],
+    "apologies-of-justin-martyr": [
+      null,
+      "flavia-neapolis",
+      "rome",
+      null,
+      "rome",
+      null
+    ],
+    "arian-controversy-begins": [
+      "alexandria",
+      null,
+      null,
+      "alexandria",
+      "nicaea"
+    ],
     "bolshevik-persecution": [
       "moscow",
       null,
@@ -195,6 +265,16 @@
       null,
       null,
       null
+    ],
+    "chrysostom-at-constantinople": [
+      "antioch",
+      "antioch",
+      "constantinople",
+      "constantinople",
+      "chalcedon",
+      "hagia-sophia",
+      "cucusus",
+      "comana"
     ],
     "conversion-of-kievan-rus": [
       null,
@@ -257,6 +337,13 @@
       null,
       "constantinople"
     ],
+    "edict-of-milan": [
+      null,
+      "nicomedia",
+      "milvian-bridge",
+      "milan",
+      "nicomedia"
+    ],
     "fall-of-constantinople": [
       null,
       null,
@@ -279,6 +366,33 @@
       null,
       null,
       null,
+      null
+    ],
+    "first-council-of-nicaea": [
+      "alexandria",
+      "alexandria",
+      "nicaea",
+      null,
+      null,
+      null,
+      null
+    ],
+    "first-iconoclasm": [
+      "constantinople",
+      null,
+      null,
+      "damascus",
+      null,
+      "hieria",
+      null,
+      null,
+      "nicaea"
+    ],
+    "foundation-of-constantinople": [
+      "chrysopolis",
+      "byzantium",
+      null,
+      "constantinople",
       null
     ],
     "great-persecution": [
@@ -314,6 +428,29 @@
       "blachernae",
       null
     ],
+    "irenaeus-against-heresies": [
+      "smyrna",
+      "lyons",
+      "lyons",
+      "lyons",
+      null
+    ],
+    "martyrdom-of-ignatius": [
+      null,
+      "smyrna",
+      "troas",
+      "rome",
+      "antioch"
+    ],
+    "martyrdom-of-polycarp": [
+      "rome",
+      "smyrna",
+      null,
+      null,
+      null,
+      null,
+      null
+    ],
     "mission-of-cyril-and-methodius": [
       "thessalonica",
       null,
@@ -327,12 +464,68 @@
       null,
       null
     ],
+    "missions-of-apostle-paul": [
+      null,
+      "jerusalem",
+      "troas",
+      "thessalonica",
+      "athens",
+      "corinth",
+      "ephesus",
+      "jerusalem",
+      "rome"
+    ],
+    "moscow-patriarchate-established": [
+      "moscow",
+      "moscow",
+      null,
+      null,
+      null,
+      "moscow",
+      "moscow",
+      null,
+      "constantinople",
+      null,
+      null,
+      "moscow"
+    ],
+    "neronian-persecution": [
+      "rome",
+      null,
+      "rome",
+      "rome",
+      null,
+      null
+    ],
+    "non-chalcedonian-estrangement": [
+      "chalcedon",
+      null,
+      "alexandria",
+      null,
+      null,
+      null,
+      null,
+      null,
+      null
+    ],
     "philokalia-published": [
       "venice",
       null,
       "moscow",
       null,
       null,
+      null
+    ],
+    "photian-council": [
+      null,
+      "constantinople",
+      null,
+      null,
+      "constantinople",
+      null,
+      null,
+      null,
+      "hagia-sophia",
       null
     ],
     "sack-of-constantinople-1204": [
@@ -351,6 +544,14 @@
       "athens",
       null
     ],
+    "second-council-of-constantinople": [
+      null,
+      "constantinople",
+      null,
+      "constantinople",
+      null,
+      null
+    ],
     "second-council-of-nicaea": [
       null,
       null,
@@ -360,6 +561,27 @@
       null,
       "constantinople",
       "nicaea",
+      null,
+      "constantinople",
+      null,
+      null
+    ],
+    "second-iconoclasm": [
+      null,
+      null,
+      "hagia-sophia",
+      "studios",
+      null,
+      null,
+      null,
+      null
+    ],
+    "third-council-of-constantinople": [
+      null,
+      null,
+      null,
+      "rome",
+      "constantinople",
       null,
       "constantinople",
       null,
