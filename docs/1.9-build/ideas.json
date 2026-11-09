@@ -1461,12 +1461,12 @@
    "title": "On an iPhone, offline listening keeps its recordings in the iCloud-backed Documents folder, which Apple's storage rules keep for what cannot be downloaded again",
    "from": "claude",
    "asked": "2026-11-07",
-   "status": "proposed",
-   "decided": null,
+   "status": "built",
+   "decided": "2026-11-09",
    "needsDesign": false,
    "version": null,
    "outcome": null,
-   "note": "Found while choosing where the downloaded Bibles go: the Filesystem plugin's Data is Documents on iOS. The Bibles use LibraryNoCloud (kept, not backed up; Android's own files, as before). lib/readAloud/offline.ts saves recordings with Data, a review risk and up to hours of audio in the reader's iCloud. Moving them needs a move of what readers already saved, so it waits for his word"
+   "note": "Found while choosing where the downloaded Bibles go: the Filesystem plugin's Data is Documents on iOS. The Bibles use LibraryNoCloud (kept, not backed up; Android's own files, as before). lib/readAloud/offline.ts saves recordings with Data, a review risk and up to hours of audio in the reader's iCloud. Moving them needs a move of what readers already saved, so it waits for his word Built 2026-11-09 (7ba767e) on his yes to the sheet's 7, the safer route: saved in LibraryNoCloud from now on, and what was saved before moved there once at the app's start, the list's addresses with it, a chapter that does not move kept playable where it was and tried again (lib/readAloud/offline.ts, moveSavedHome; lib/readAloud/__tests__/offlineHome.test.ts). To check on a real iPhone in the phone walk: a chapter saved before the update plays offline after it."
   },
   {
    "id": "c-flor-open-in-apps",

@@ -28,7 +28,7 @@ recommendation. The detail of each is in `ideas.json` under its id.
 **A source or a licence**
 
 6. **Decided 2026-11-09 (BRAINSTORM.md): yes, the Copenhagen maps, credited, the map file shared alike.** Compare (`e-compare`, row 21b): the verse-number maps for the downloaded Bibles. Recommend: the Copenhagen Alliance's mappings (CC BY-SA 4.0; credited, the map file shared alike, nothing else in the app affected). The legal call is his.
-7. **Decided 2026-11-09 (BRAINSTORM.md): yes.** iPhone offline listening is kept in the folder iCloud backs up (`c-ios-offline-backup`). Recommend: move it to the folder that is not backed up, as the Bibles are, moving what readers already saved.
+7. **Decided 2026-11-09 (BRAINSTORM.md): yes. Built the same day (7ba767e, c-ios-offline-backup).** iPhone offline listening is kept in the folder iCloud backs up (`c-ios-offline-backup`). Recommend: move it to the folder that is not backed up, as the Bibles are, moving what readers already saved.
 
 **A pick, as he picked the Nativity's**
 
