@@ -33,4 +33,6 @@
     <string name="widget_mysaint_description">Your patron saint and the days to your name day</string>
     <string name="widget_mosaic_label">Mosaic</string>
     <string name="widget_mosaic_description">The season\'s art, the cross, or the lampada</string>
+    <string name="widget_remember_label">Remember the verse</string>
+    <string name="widget_remember_description">A verse you saved, to say from memory</string>
 </resources>

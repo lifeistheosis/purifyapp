@@ -197,6 +197,23 @@
                 android:resource="@xml/mosaic_widget_info" />
         </receiver>
 
+        <!-- Remember the verse (1.9): one of the reader's saved verses a day,
+             at its step. -->
+        <receiver
+            android:name=".widget.RememberWidgetProvider"
+            android:label="@string/widget_remember_label"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+                <action android:name="android.intent.action.TIME_SET" />
+                <action android:name="android.intent.action.TIMEZONE_CHANGED" />
+                <action android:name="android.intent.action.DATE_CHANGED" />
+            </intent-filter>
+            <meta-data
+                android:name="android.appwidget.provider"
+                android:resource="@xml/remember_widget_info" />
+        </receiver>
+
         <!-- The screen that asks which look a widget wears. The launcher
              opens it, so it is exported, and it answers only the configure
              action. -->

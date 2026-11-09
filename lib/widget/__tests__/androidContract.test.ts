@@ -4,6 +4,7 @@ import path from "node:path";
 
 import { WIDGET_KEYS } from "../bridge";
 import { buildDayTable } from "../dayTable";
+import { rememberEntry, rememberFaces } from "../remember";
 import { patronEntry, patronFacts } from "../state";
 
 /**
@@ -78,6 +79,19 @@ describe("android widgets: the contract", () => {
     expect(patronKeys).toEqual(["slug", "name", "nameDay", "nameDayAfter", "icon"]);
     for (const k of patronKeys) known.add(k);
     for (const k of ["count", "keptToday", "week", "on", "morning", "evening", "version", "date"]) known.add(k);
+    // Remember the verse (1.9): its faces as lib/widget/remember.ts writes them.
+    const verse = { key: "john/3/16", book: "john", chapter: 3, verse: 16, label: "John 3:16", addedAt: 1 };
+    const t = (k: string) => k;
+    const due = rememberFaces({ saved: [verse], store: { entries: {}, texts: { "john/3/16": "For God so loved the world" } }, today: "2026-11-09", t });
+    const done = rememberFaces({
+      saved: [verse],
+      store: { entries: { "john/3/16": { box: 1, due: "2026-11-10", at: 1 } }, answeredOn: "2026-11-09", answeredKey: "john/3/16", texts: {} },
+      today: "2026-11-09",
+      t,
+    });
+    walk(JSON.parse(rememberEntry(due)!));
+    walk(JSON.parse(rememberEntry(done)!));
+    walk(JSON.parse(rememberEntry({ none: true })!));
 
     const java = allJava();
     const asked = new Set<string>();

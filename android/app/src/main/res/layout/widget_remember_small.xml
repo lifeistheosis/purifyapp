@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Remember the verse, two cells: REMEMBER THE VERSE, the reference, and the
+     card's line. A verse's words do not fit two cells at a size anyone could
+     read, so they wait in the app, a tap away. -->
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/widget_root"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:background="@drawable/widget_card"
+    android:padding="15dp">
+
+    <TextView
+        android:id="@+id/remember_eyebrow"
+        style="@style/WidgetEyebrow"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
+
+    <TextView
+        android:id="@+id/remember_ref"
+        style="@style/WidgetSerif"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:layout_marginTop="6dp"
+        android:gravity="center_vertical"
+        android:textSize="19sp"
+        android:maxLines="2" />
+
+    <TextView
+        android:id="@+id/remember_line"
+        style="@style/WidgetMeta"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textColor="@color/widget_soft"
+        android:maxLines="3" />
+</LinearLayout>

@@ -27,6 +27,7 @@ public final class WidgetRefresh {
         CountdownWidgetProvider.class,
         MySaintWidgetProvider.class,
         MosaicWidgetProvider.class,
+        RememberWidgetProvider.class,
     };
 
     private WidgetRefresh() {}

@@ -16,6 +16,7 @@ struct PurifyWidgetBundle: WidgetBundle {
         CountdownWidget()
         MySaintWidget()
         MosaicWidget()
+        RememberWidget()
     }
 }
 
@@ -214,5 +215,34 @@ struct MosaicWidget: Widget {
         .configurationDisplayName("Mosaic")
         .description("The season's mosaic, the cross or the lampada.")
         .supportedFamilies([.systemSmall, .systemMedium])
+    }
+}
+
+/// Remember the verse (1.9): one of the reader's saved verses a day, at its
+/// step, as the card on Today asks it. One look, so a static configuration on
+/// every iOS, as Pray now and My saint have.
+struct RememberWidget: Widget {
+    var body: some WidgetConfiguration {
+        if #available(iOS 17.0, *) {
+            return StaticConfiguration(
+                kind: PurifyFamily.remember.kind,
+                provider: LookProvider(family: .remember, look: PurifyFamily.remember.firstLook)
+            ) { entry in
+                PurifyWidgetView(entry: entry)
+            }
+            .configurationDisplayName("Remember the verse")
+            .description("A verse you saved, to say from memory.")
+            .supportedFamilies([.systemSmall, .systemMedium, .accessoryRectangular])
+            .contentMarginsDisabled()
+        }
+        return StaticConfiguration(
+            kind: PurifyFamily.remember.kind,
+            provider: LookProvider(family: .remember, look: PurifyFamily.remember.firstLook)
+        ) { entry in
+            PurifyWidgetView(entry: entry)
+        }
+        .configurationDisplayName("Remember the verse")
+        .description("A verse you saved, to say from memory.")
+        .supportedFamilies([.systemSmall, .systemMedium, .accessoryRectangular])
     }
 }

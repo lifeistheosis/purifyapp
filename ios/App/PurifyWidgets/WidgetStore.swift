@@ -1,7 +1,7 @@
 import Foundation
 
 // What every Purify widget reads (docs/WIDGETS.md is the contract): the day
-// table the build bakes, and the six values the app hands over through the
+// table the build bakes, and the seven values the app hands over through the
 // App Group. Nothing here works out anything about the Church's calendar. The
 // build did that for every civil day, in both reckonings, with the app's own
 // code; a widget looks up today's key and picks a side.
@@ -165,7 +165,26 @@ struct HandedUpdate: Decodable {
     let date: String?
 }
 
-/// The six keys, as the WidgetBridge plugin stored them. A value that cannot
+/// Remember the verse (1.9): the next seven civil days' faces, worked out by
+/// the app (lib/widget/remember.ts), since a widget cannot run the schedule;
+/// or `none` when the reader has saved no verse.
+struct HandedRemember: Decodable {
+    let none: Bool?
+    let days: [String: HandedRememberDay]?
+}
+
+/// One day's face: the reference, the verse at its step as the widget writes
+/// it (or nil when it shows no words), the line under it, and `done` on the
+/// day the verse was answered. Every word already in the app's language.
+struct HandedRememberDay: Decodable {
+    let ref: String?
+    let step: Int?
+    let words: String?
+    let line: String?
+    let done: Bool?
+}
+
+/// The seven keys, as the WidgetBridge plugin stored them. A value that cannot
 /// be read is treated as absent, and every widget has a plain line for that.
 struct Handed {
     let calendarStyle: String
@@ -174,6 +193,7 @@ struct Handed {
     let prayed: HandedPrayed?
     let patron: HandedPatron?
     let update: HandedUpdate?
+    let remember: HandedRemember?
 
     static func read() -> Handed {
         let shared = UserDefaults(suiteName: purifyAppGroup)
@@ -185,7 +205,8 @@ struct Handed {
             streak: decode(HandedStreak.self, shared?.string(forKey: "streak")),
             prayed: decode(HandedPrayed.self, shared?.string(forKey: "prayed")),
             patron: decode(HandedPatron.self, shared?.string(forKey: "patron")),
-            update: decode(HandedUpdate.self, shared?.string(forKey: "update"))
+            update: decode(HandedUpdate.self, shared?.string(forKey: "update")),
+            remember: decode(HandedRemember.self, shared?.string(forKey: "remember"))
         )
     }
 

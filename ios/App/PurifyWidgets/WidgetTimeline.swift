@@ -2,11 +2,11 @@ import CoreGraphics
 import Foundation
 import WidgetKit
 
-/// The seven families of docs/WIDGETS.md. Each is one entry in the widget
-/// gallery; its looks are chosen in Edit Widget on iOS 17 and newer, and iOS
-/// 16 shows each family's first look.
+/// The families of docs/WIDGETS.md: the seven of 1.6, and Remember the verse
+/// from 1.9. Each is one entry in the widget gallery; its looks are chosen in
+/// Edit Widget on iOS 17 and newer, and iOS 16 shows each family's first look.
 enum PurifyFamily: String {
-    case verse, today, pray, streak, countdown, saint, mosaic
+    case verse, today, pray, streak, countdown, saint, mosaic, remember
 
     var kind: String { "net.purifyapp.purify.widget." + rawValue }
 
@@ -19,7 +19,7 @@ enum PurifyFamily: String {
         case .streak: return "number"
         case .countdown: return "fast"
         case .mosaic: return "season"
-        case .pray, .saint: return "default"
+        case .pray, .saint, .remember: return "default"
         }
     }
 }
@@ -50,6 +50,11 @@ struct Moment {
     let prayed: HandedPrayed?
     let patron: HandedPatron?
     let update: HandedUpdate?
+    /// Remember the verse's face for this civil day (1.9), when the app
+    /// handed one over for it.
+    let remember: HandedRememberDay?
+    /// The reader has saved no verse to remember.
+    let rememberNone: Bool
 
     static func at(_ date: Date) -> Moment {
         let table = DayTableFile.read()
@@ -79,7 +84,9 @@ struct Moment {
             streak: handed.streak,
             prayed: handed.prayed,
             patron: handed.patron,
-            update: handed.update
+            update: handed.update,
+            remember: handed.remember?.days?[key],
+            rememberNone: handed.remember?.none == true
         )
     }
 }

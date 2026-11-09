@@ -46,6 +46,9 @@ extension PurifyEntry {
             return WidgetTap.saint(moment.patron?.slug)
         case .mosaic:
             return "today"
+        case .remember:
+            // The words are checked on the card on Today.
+            return "today"
         }
     }
 }
@@ -70,6 +73,93 @@ struct HomeFace: View {
             SaintFace(entry: entry, size: size)
         case .mosaic:
             MosaicFace(entry: entry, size: size)
+        case .remember:
+            RememberHome(entry: entry, size: size)
+        }
+    }
+}
+
+// MARK: - Remember the verse (1.9)
+
+/// One of the reader's saved verses a day, at its step, as the card on Today
+/// asks it (docs/WIDGETS.md, the `remember` entry). Small shows the reference
+/// and the line, where a verse's words could not be read; medium and large
+/// show the verse too. At the last step there are no words, and the reference
+/// stands large in their place.
+struct RememberHome: View {
+    let entry: PurifyEntry
+    let size: WidgetFamily
+
+    var moment: Moment {
+        entry.moment
+    }
+
+    var body: some View {
+        if moment.rememberNone {
+            MessageFace(text: moment.words.text("rememberNone", "Save a verse to remember it here."), size: size)
+        } else if let face = moment.remember, let ref = face.ref, !ref.isEmpty {
+            RememberCard(face: face, ref: ref, title: moment.words.text("rememberTitle", "Remember the verse"), size: size)
+        } else {
+            MessageFace(text: moment.openToRefresh, size: size)
+        }
+    }
+}
+
+struct RememberCard: View {
+    let face: HandedRememberDay
+    let ref: String
+    let title: String
+    let size: WidgetFamily
+
+    /// The verse's words, where the widget is big enough to read them.
+    var words: String? {
+        guard size != .systemSmall, let words = face.words, !words.isEmpty else { return nil }
+        return words
+    }
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 0) {
+            Eyebrow(text: title)
+            if let words = words {
+                Text(ref)
+                    .font(Look.serif(18, .semibold))
+                    .foregroundStyle(Look.paper)
+                    .lineLimit(1)
+                    .padding(.top, 4)
+                Text(words)
+                    .font(Look.serif(size == .systemLarge ? 17 : 13, .regular))
+                    .lineSpacing(1.5)
+                    .foregroundStyle(Look.paper)
+                    .lineLimit(size == .systemLarge ? 9 : 4)
+                    .minimumScaleFactor(0.8)
+                    .padding(.top, 4)
+                Spacer(minLength: 4)
+            } else {
+                Spacer(minLength: 4)
+                Text(ref)
+                    .font(Look.serif(size == .systemSmall ? 19 : 24, .semibold))
+                    .foregroundStyle(Look.paper)
+                    .lineLimit(2)
+                    .minimumScaleFactor(0.8)
+                    .padding(.bottom, 6)
+            }
+            HStack(alignment: .center, spacing: 6) {
+                if face.done == true {
+                    Image(systemName: "checkmark")
+                        .font(.system(size: 11, weight: .semibold))
+                        .foregroundStyle(Look.paper2)
+                }
+                Text(face.line ?? "")
+                    .font(Look.sans(12, .medium))
+                    .foregroundStyle(Look.paper2)
+                    .lineLimit(size == .systemSmall ? 3 : 2)
+            }
+            if words == nil {
+                Spacer(minLength: 0)
+            }
+        }
+        .card(EdgeInsets(top: 15, leading: 16, bottom: 15, trailing: 16)) {
+            Look.card
         }
     }
 }

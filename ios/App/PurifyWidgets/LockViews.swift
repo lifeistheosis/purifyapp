@@ -22,6 +22,8 @@ struct LockFace: View {
         case .accessoryRectangular:
             if entry.family == .verse {
                 LockVerse(moment: entry.moment)
+            } else if entry.family == .remember {
+                LockRemember(moment: entry.moment)
             } else {
                 LockSaint(moment: entry.moment)
             }
@@ -167,6 +169,43 @@ struct LockVerse: View {
                     .lineLimit(1)
                     .opacity(0.7)
             }
+        }
+        .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .leading)
+        .padding(.horizontal, 10)
+        .padding(.vertical, 6)
+    }
+}
+
+/// Remember the verse (1.9): the reference, and the verse at its step, or
+/// the card's line where there are no words to show.
+struct LockRemember: View {
+    let moment: Moment
+
+    var text: String {
+        if moment.rememberNone {
+            return moment.words.text("rememberNone", "Save a verse to remember it here.")
+        }
+        guard let face = moment.remember else { return moment.openToRefresh }
+        if face.done != true, let words = face.words, !words.isEmpty {
+            return words
+        }
+        return face.line ?? ""
+    }
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 2) {
+            HStack(spacing: 4) {
+                Cross(size: 10, weight: 2.6)
+                Text(moment.remember?.ref ?? moment.words.text("rememberTitle", "Remember the verse"))
+                    .font(.system(size: 11, weight: .bold))
+                    .textCase(.uppercase)
+                    .lineLimit(1)
+            }
+            .opacity(0.85)
+            Text(text)
+                .font(.system(size: 13, weight: .medium))
+                .lineLimit(3)
+                .minimumScaleFactor(0.8)
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .leading)
         .padding(.horizontal, 10)

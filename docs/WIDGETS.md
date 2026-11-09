@@ -8,7 +8,9 @@ picked. This file is the contract between the three parts that build them:
 the data the build bakes, what the app hands the widgets, and the widgets on
 each phone.
 
-## The seven families
+## The families
+
+Seven from 1.6, and Remember the verse from 1.9.
 
 A family is one entry in the phone's widget picker. Its variants are chosen
 when it is placed (Android: a small configure screen; iPhone: Edit Widget).
@@ -22,6 +24,7 @@ when it is placed (Android: a small configure screen; iPhone: Edit Widget).
 | Countdown | Next fast (default), Next feast, Next Purify update | The Calendar (the update: What's New) |
 | My saint | one: the reader's patron saint | That saint's page |
 | Mosaic | The season (default), The cross, The lampada | Today |
+| Remember the verse (1.9) | one: the day's saved verse at its step | Today, where the card checks the words |
 
 Rules that hold for every one:
 
@@ -160,7 +163,9 @@ filled in, so a widget never formats a sentence:
   day itself), `nextUpdate`, `soon`, `mySaint`, `nameDayToday`,
   `nameDayIn` (with `{n}` for the number of days, the one placeholder a
   widget fills), `chooseSaint`, `openToRefresh`, `openForStreak`,
-  `rememberTitle` (1.9, the card's name, "Remember the verse").
+  `rememberTitle` (1.9, the card's name, "Remember the verse"),
+  `rememberNone` (1.9, "Save a verse to remember it here.", for a reader
+  with no verse saved).
 - Dates: `weekdaysShort`, `monthsLong` and `monthsShort`, each one string
   joined with `|`, Sunday first and January first.
 - The app's language: `language`, its code (for example "tr"), the one entry
@@ -227,3 +232,25 @@ verse, the days to the next fast, and the saint. It cannot be built on the
 Windows PC: it is proven by a CI build the owner starts and a walk on his
 phone. Apple's side (App ID, App Group, profile) is set up by the owner; the
 steps are in `docs/IOS_BUILD_SETUP.md`.
+
+## 6. Remember the verse (1.9)
+
+His word of 2026-11-09 ("make sure the design is good and optimized for the
+user's platform"): its own widget in each phone's gallery, named Remember the
+verse, drawn in the Night look like the others. It shows today's face from the
+`remember` entry and nothing it has to work out.
+
+- Android (`RememberWidgetProvider`): four cells show REMEMBER THE VERSE, the
+  reference in the serif, the verse at its step (set a step smaller before it
+  is cut, as the Verse of the Day is) and the card's line; at the last step
+  the reference stands large in the words' place (`widget_remember_memory`);
+  answered, the whole verse with the check and when it comes back. Two cells
+  show the eyebrow, the reference and the line, since a verse's words could
+  not be read there. Its gallery picture is the drawing he was shown.
+- iPhone (`RememberWidget`): small and medium the same way, and the lock
+  screen's rectangle: the reference over the verse at its step, or the line.
+- A reader without Plus sees the same widget: the card on Today shows every
+  reader the verse at its step, and the lock on checking the words is in the
+  app. The widget never mentions Plus.
+- No verse saved: `rememberNone`. A day with no face: `openToRefresh`.
+

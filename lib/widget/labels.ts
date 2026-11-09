@@ -230,6 +230,7 @@ export function widgetLabels(input: LabelsInput): WidgetLabels {
     // Remember the verse (1.9): the card's own name over the verse. The line
     // under each verse arrives with it, in the `remember` entry.
     rememberTitle: t("remember.title"),
+    rememberNone: t("widget.rememberNone"),
 
     // The app's language, the one entry that is not a word to show: a widget
     // reads it to pick the day's verse in that language from the day table,

@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- The widget picker's preview of Remember the verse on Android 12 and newer:
+     the drawing of it the owner was shown (res/drawable-nodpi/
+     widget_preview_remember), scaled to the size the picker gives it. Older
+     phones show the same picture through previewImage. -->
+<ImageView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:src="@drawable/widget_preview_remember"
+    android:scaleType="fitCenter"
+    android:importantForAccessibility="no" />
