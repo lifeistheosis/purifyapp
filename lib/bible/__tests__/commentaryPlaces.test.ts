@@ -146,8 +146,10 @@ describe("a reading plan's saying of the Fathers", () => {
       expect(words(paragraph!).includes(words(s.text)), where).toBe(true);
       expect(COMMENTARY_WORKS[s.at!.work], where).toBeDefined();
     }
-    // The rest are from works the library does not hold: St Augustine on the Psalms, the Catena Aurea.
-    for (const { where, s } of all.filter(({ s }) => !s.at)) expect(s.work, where).toMatch(/^(?:Expositions on the Book of Psalms|Catena Aurea)/);
+    // The rest are from works the library does not hold: St Augustine on the Psalms and on
+    // 1 John, St Victorinus on the Apocalypse (1.9, the New Testament's plan), the Catena Aurea.
+    for (const { where, s } of all.filter(({ s }) => !s.at))
+      expect(s.work, where).toMatch(/^(?:Expositions on the Book of Psalms|Homilies on the First Epistle of John|Commentary on the Apocalypse|Catena Aurea)/);
   });
 
   it("is shown with the line every quotation in the app has", () => {

@@ -1364,6 +1364,12 @@
       "author": "St. John Chrysostom",
       "work": "Homilies on the Acts of the Apostles, Homily 1",
       "citation": "NPNF1-11",
+      "at": {
+        "work": "john-chrysostom/homilies-on-acts",
+        "section": 1,
+        "paragraph": 21,
+        "place": "Homily 1, Acts 1:1, 2"
+      },
       "from": "data/bible/commentary/acts/1.json"
     },
     "2": {
@@ -1371,6 +1377,12 @@
       "author": "St. John Chrysostom",
       "work": "Homilies on the Acts of the Apostles, Homily 4",
       "citation": "NPNF1-11",
+      "at": {
+        "work": "john-chrysostom/homilies-on-acts",
+        "section": 4,
+        "paragraph": 1,
+        "place": "Homily 4, Acts 2:1, 2"
+      },
       "from": "data/bible/commentary/acts/2.json"
     },
     "3": {
@@ -1378,6 +1390,12 @@
       "author": "St. John Chrysostom",
       "work": "Homilies on the Acts of the Apostles, Homily 8",
       "citation": "NPNF1-11",
+      "at": {
+        "work": "john-chrysostom/homilies-on-acts",
+        "section": 8,
+        "paragraph": 1,
+        "place": "Homily 8, Acts 3:1"
+      },
       "from": "data/bible/commentary/acts/3.json"
     },
     "4": {
@@ -1385,6 +1403,12 @@
       "author": "St. John Chrysostom",
       "work": "Homilies on the Acts of the Apostles, Homily 11",
       "citation": "NPNF1-11",
+      "at": {
+        "work": "john-chrysostom/homilies-on-acts",
+        "section": 11,
+        "paragraph": 2,
+        "place": "Homily 11, Acts 4:23"
+      },
       "from": "data/bible/commentary/acts/4.json"
     },
     "5": {
@@ -1392,6 +1416,12 @@
       "author": "St. John Chrysostom",
       "work": "Homilies on the Acts of the Apostles, Homily 13",
       "citation": "NPNF1-11",
+      "at": {
+        "work": "john-chrysostom/homilies-on-acts",
+        "section": 13,
+        "paragraph": 1,
+        "place": "Homily 13, Acts 5:17, 18"
+      },
       "from": "data/bible/commentary/acts/5.json"
     },
     "6": {
@@ -1399,6 +1429,12 @@
       "author": "St. John Chrysostom",
       "work": "Homilies on the Acts of the Apostles, Homily 15",
       "citation": "NPNF1-11",
+      "at": {
+        "work": "john-chrysostom/homilies-on-acts",
+        "section": 15,
+        "paragraph": 1,
+        "place": "Homily 15, Acts 6:8"
+      },
       "from": "data/bible/commentary/acts/6.json"
     },
     "7": {
@@ -1406,6 +1442,12 @@
       "author": "St. John Chrysostom",
       "work": "Homilies on the Acts of the Apostles, Homily 16",
       "citation": "NPNF1-11",
+      "at": {
+        "work": "john-chrysostom/homilies-on-acts",
+        "section": 16,
+        "paragraph": 5,
+        "place": "Homily 16, Acts 7:6, 7"
+      },
       "from": "data/bible/commentary/acts/7.json"
     },
     "8": {
@@ -1413,6 +1455,12 @@
       "author": "St. John Chrysostom",
       "work": "Homilies on the Acts of the Apostles, Homily 19",
       "citation": "NPNF1-11",
+      "at": {
+        "work": "john-chrysostom/homilies-on-acts",
+        "section": 19,
+        "paragraph": 5,
+        "place": "Homily 19, Acts 8:26, 27"
+      },
       "from": "data/bible/commentary/acts/8.json"
     },
     "9": {
@@ -1420,6 +1468,12 @@
       "author": "St. John Chrysostom",
       "work": "Homilies on the Acts of the Apostles, Homily 21",
       "citation": "NPNF1-11",
+      "at": {
+        "work": "john-chrysostom/homilies-on-acts",
+        "section": 21,
+        "paragraph": 3,
+        "place": "Homily 21, Acts 9:26, 27"
+      },
       "from": "data/bible/commentary/acts/9.json"
     },
     "10": {
@@ -1427,6 +1481,12 @@
       "author": "St. John Chrysostom",
       "work": "Homilies on the Acts of the Apostles, Homily 22",
       "citation": "NPNF1-11",
+      "at": {
+        "work": "john-chrysostom/homilies-on-acts",
+        "section": 22,
+        "paragraph": 3,
+        "place": "Homily 22, Acts 10:1-4"
+      },
       "from": "data/bible/commentary/acts/10.json"
     },
     "11": {
@@ -1434,6 +1494,12 @@
       "author": "St. John Chrysostom",
       "work": "Homilies on the Acts of the Apostles, Homily 25",
       "citation": "NPNF1-11",
+      "at": {
+        "work": "john-chrysostom/homilies-on-acts",
+        "section": 25,
+        "paragraph": 1,
+        "place": "Homily 25, Acts 11:19"
+      },
       "from": "data/bible/commentary/acts/11.json"
     },
     "12": {
@@ -1441,6 +1507,12 @@
       "author": "St. John Chrysostom",
       "work": "Homilies on the Acts of the Apostles, Homily 26",
       "citation": "NPNF1-11",
+      "at": {
+        "work": "john-chrysostom/homilies-on-acts",
+        "section": 26,
+        "paragraph": 4,
+        "place": "Homily 26, Acts 12:1, 2"
+      },
       "from": "data/bible/commentary/acts/12.json"
     },
     "13": {
@@ -1448,6 +1520,12 @@
       "author": "St. John Chrysostom",
       "work": "Homilies on the Acts of the Apostles, Homily 28",
       "citation": "NPNF1-11",
+      "at": {
+        "work": "john-chrysostom/homilies-on-acts",
+        "section": 28,
+        "paragraph": 1,
+        "place": "Homily 28, Acts 13:4, 5"
+      },
       "from": "data/bible/commentary/acts/13.json"
     },
     "14": {
@@ -1455,6 +1533,12 @@
       "author": "St. John Chrysostom",
       "work": "Homilies on the Acts of the Apostles, Homily 31",
       "citation": "NPNF1-11",
+      "at": {
+        "work": "john-chrysostom/homilies-on-acts",
+        "section": 31,
+        "paragraph": 3,
+        "place": "Homily 31, Acts 14:14, 15"
+      },
       "from": "data/bible/commentary/acts/14.json"
     },
     "15": {
@@ -1462,6 +1546,12 @@
       "author": "St. John Chrysostom",
       "work": "Homilies on the Acts of the Apostles, Homily 33",
       "citation": "NPNF1-11",
+      "at": {
+        "work": "john-chrysostom/homilies-on-acts",
+        "section": 33,
+        "paragraph": 2,
+        "place": "Homily 33, Acts 15:13, 15"
+      },
       "from": "data/bible/commentary/acts/15.json"
     },
     "16": {
@@ -1469,6 +1559,12 @@
       "author": "St. John Chrysostom",
       "work": "Homilies on the Acts of the Apostles, Homily 36",
       "citation": "NPNF1-11",
+      "at": {
+        "work": "john-chrysostom/homilies-on-acts",
+        "section": 36,
+        "paragraph": 4,
+        "place": "Homily 36, Acts 16:25, 26"
+      },
       "from": "data/bible/commentary/acts/16.json"
     },
     "17": {
@@ -1476,6 +1572,12 @@
       "author": "St. John Chrysostom",
       "work": "Homilies on the Acts of the Apostles, Homily 38",
       "citation": "NPNF1-11",
+      "at": {
+        "work": "john-chrysostom/homilies-on-acts",
+        "section": 38,
+        "paragraph": 4,
+        "place": "Homily 38, Acts 17:16, 17"
+      },
       "from": "data/bible/commentary/acts/17.json"
     },
     "18": {
@@ -1483,6 +1585,12 @@
       "author": "St. John Chrysostom",
       "work": "Homilies on the Acts of the Apostles, Homily 40",
       "citation": "NPNF1-11",
+      "at": {
+        "work": "john-chrysostom/homilies-on-acts",
+        "section": 40,
+        "paragraph": 3,
+        "place": "Homily 40, Acts 18:18"
+      },
       "from": "data/bible/commentary/acts/18.json"
     },
     "19": {
@@ -1490,6 +1598,12 @@
       "author": "St. John Chrysostom",
       "work": "Homilies on the Acts of the Apostles, Homily 41",
       "citation": "NPNF1-11",
+      "at": {
+        "work": "john-chrysostom/homilies-on-acts",
+        "section": 41,
+        "paragraph": 2,
+        "place": "Homily 41, Acts 19:8, 9"
+      },
       "from": "data/bible/commentary/acts/19.json"
     },
     "20": {
@@ -1497,6 +1611,12 @@
       "author": "St. John Chrysostom",
       "work": "Homilies on the Acts of the Apostles, Homily 44",
       "citation": "NPNF1-11",
+      "at": {
+        "work": "john-chrysostom/homilies-on-acts",
+        "section": 44,
+        "paragraph": 1,
+        "place": "Homily 44, Acts 20:17-21"
+      },
       "from": "data/bible/commentary/acts/20.json"
     },
     "21": {
@@ -1504,6 +1624,12 @@
       "author": "St. John Chrysostom",
       "work": "Homilies on the Acts of the Apostles, Homily 46",
       "citation": "NPNF1-11",
+      "at": {
+        "work": "john-chrysostom/homilies-on-acts",
+        "section": 46,
+        "paragraph": 2,
+        "place": "Homily 46, Acts 21:18, 19"
+      },
       "from": "data/bible/commentary/acts/21.json"
     },
     "22": {
@@ -1511,6 +1637,12 @@
       "author": "St. John Chrysostom",
       "work": "Homilies on the Acts of the Apostles, Homily 48",
       "citation": "NPNF1-11",
+      "at": {
+        "work": "john-chrysostom/homilies-on-acts",
+        "section": 48,
+        "paragraph": 3,
+        "place": "Homily 48, Acts 22:17-20"
+      },
       "from": "data/bible/commentary/acts/22.json"
     },
     "23": {
@@ -1518,6 +1650,12 @@
       "author": "St. John Chrysostom",
       "work": "Homilies on the Acts of the Apostles, Homily 50",
       "citation": "NPNF1-11",
+      "at": {
+        "work": "john-chrysostom/homilies-on-acts",
+        "section": 50,
+        "paragraph": 3,
+        "place": "Homily 50, Acts 23:31, 32, 33"
+      },
       "from": "data/bible/commentary/acts/23.json"
     },
     "24": {
@@ -1525,6 +1663,12 @@
       "author": "St. John Chrysostom",
       "work": "Homilies on the Acts of the Apostles, Homily 51",
       "citation": "NPNF1-11",
+      "at": {
+        "work": "john-chrysostom/homilies-on-acts",
+        "section": 51,
+        "paragraph": 2,
+        "place": "Homily 51, Acts 24:22, 23"
+      },
       "from": "data/bible/commentary/acts/24.json"
     },
     "25": {
@@ -1532,6 +1676,12 @@
       "author": "St. John Chrysostom",
       "work": "Homilies on the Acts of the Apostles, Homily 52",
       "citation": "NPNF1-11",
+      "at": {
+        "work": "john-chrysostom/homilies-on-acts",
+        "section": 52,
+        "paragraph": 1,
+        "place": "Homily 52, Acts 25:23"
+      },
       "from": "data/bible/commentary/acts/25.json"
     },
     "26": {
@@ -1539,6 +1689,12 @@
       "author": "St. John Chrysostom",
       "work": "Homilies on the Acts of the Apostles, Homily 53",
       "citation": "NPNF1-11",
+      "at": {
+        "work": "john-chrysostom/homilies-on-acts",
+        "section": 53,
+        "paragraph": 2,
+        "place": "Homily 53, Acts 26:30-32"
+      },
       "from": "data/bible/commentary/acts/26.json"
     },
     "28": {
@@ -1546,6 +1702,12 @@
       "author": "St. John Chrysostom",
       "work": "Homilies on the Acts of the Apostles, Homily 54",
       "citation": "NPNF1-11",
+      "at": {
+        "work": "john-chrysostom/homilies-on-acts",
+        "section": 54,
+        "paragraph": 3,
+        "place": "Homily 54, Acts 28:1"
+      },
       "from": "data/bible/commentary/acts/28.json"
     }
   },
@@ -2637,6 +2799,12 @@
       "author": "St. John Chrysostom",
       "work": "Homilies on the Acts of the Apostles, Homily 1",
       "citation": "NPNF1-11",
+      "at": {
+        "work": "john-chrysostom/homilies-on-acts",
+        "section": 1,
+        "paragraph": 21,
+        "place": "Homily 1, Acts 1:1, 2"
+      },
       "from": "data/bible/commentary/acts/1.json"
     },
     "91": {
@@ -2644,6 +2812,12 @@
       "author": "St. John Chrysostom",
       "work": "Homilies on the Acts of the Apostles, Homily 4",
       "citation": "NPNF1-11",
+      "at": {
+        "work": "john-chrysostom/homilies-on-acts",
+        "section": 4,
+        "paragraph": 1,
+        "place": "Homily 4, Acts 2:1, 2"
+      },
       "from": "data/bible/commentary/acts/2.json"
     },
     "92": {
@@ -2651,6 +2825,12 @@
       "author": "St. John Chrysostom",
       "work": "Homilies on the Acts of the Apostles, Homily 8",
       "citation": "NPNF1-11",
+      "at": {
+        "work": "john-chrysostom/homilies-on-acts",
+        "section": 8,
+        "paragraph": 1,
+        "place": "Homily 8, Acts 3:1"
+      },
       "from": "data/bible/commentary/acts/3.json"
     },
     "93": {
@@ -2658,6 +2838,12 @@
       "author": "St. John Chrysostom",
       "work": "Homilies on the Acts of the Apostles, Homily 11",
       "citation": "NPNF1-11",
+      "at": {
+        "work": "john-chrysostom/homilies-on-acts",
+        "section": 11,
+        "paragraph": 2,
+        "place": "Homily 11, Acts 4:23"
+      },
       "from": "data/bible/commentary/acts/4.json"
     },
     "94": {
@@ -2665,6 +2851,12 @@
       "author": "St. John Chrysostom",
       "work": "Homilies on the Acts of the Apostles, Homily 13",
       "citation": "NPNF1-11",
+      "at": {
+        "work": "john-chrysostom/homilies-on-acts",
+        "section": 13,
+        "paragraph": 1,
+        "place": "Homily 13, Acts 5:17, 18"
+      },
       "from": "data/bible/commentary/acts/5.json"
     },
     "95": {
@@ -2672,6 +2864,12 @@
       "author": "St. John Chrysostom",
       "work": "Homilies on the Acts of the Apostles, Homily 15",
       "citation": "NPNF1-11",
+      "at": {
+        "work": "john-chrysostom/homilies-on-acts",
+        "section": 15,
+        "paragraph": 1,
+        "place": "Homily 15, Acts 6:8"
+      },
       "from": "data/bible/commentary/acts/6.json"
     },
     "96": {
@@ -2679,6 +2877,12 @@
       "author": "St. John Chrysostom",
       "work": "Homilies on the Acts of the Apostles, Homily 16",
       "citation": "NPNF1-11",
+      "at": {
+        "work": "john-chrysostom/homilies-on-acts",
+        "section": 16,
+        "paragraph": 5,
+        "place": "Homily 16, Acts 7:6, 7"
+      },
       "from": "data/bible/commentary/acts/7.json"
     },
     "97": {
@@ -2686,6 +2890,12 @@
       "author": "St. John Chrysostom",
       "work": "Homilies on the Acts of the Apostles, Homily 19",
       "citation": "NPNF1-11",
+      "at": {
+        "work": "john-chrysostom/homilies-on-acts",
+        "section": 19,
+        "paragraph": 5,
+        "place": "Homily 19, Acts 8:26, 27"
+      },
       "from": "data/bible/commentary/acts/8.json"
     },
     "98": {
@@ -2693,6 +2903,12 @@
       "author": "St. John Chrysostom",
       "work": "Homilies on the Acts of the Apostles, Homily 21",
       "citation": "NPNF1-11",
+      "at": {
+        "work": "john-chrysostom/homilies-on-acts",
+        "section": 21,
+        "paragraph": 3,
+        "place": "Homily 21, Acts 9:26, 27"
+      },
       "from": "data/bible/commentary/acts/9.json"
     },
     "99": {
@@ -2700,6 +2916,12 @@
       "author": "St. John Chrysostom",
       "work": "Homilies on the Acts of the Apostles, Homily 22",
       "citation": "NPNF1-11",
+      "at": {
+        "work": "john-chrysostom/homilies-on-acts",
+        "section": 22,
+        "paragraph": 3,
+        "place": "Homily 22, Acts 10:1-4"
+      },
       "from": "data/bible/commentary/acts/10.json"
     },
     "100": {
@@ -2707,6 +2929,12 @@
       "author": "St. John Chrysostom",
       "work": "Homilies on the Acts of the Apostles, Homily 25",
       "citation": "NPNF1-11",
+      "at": {
+        "work": "john-chrysostom/homilies-on-acts",
+        "section": 25,
+        "paragraph": 1,
+        "place": "Homily 25, Acts 11:19"
+      },
       "from": "data/bible/commentary/acts/11.json"
     },
     "101": {
@@ -2714,6 +2942,12 @@
       "author": "St. John Chrysostom",
       "work": "Homilies on the Acts of the Apostles, Homily 26",
       "citation": "NPNF1-11",
+      "at": {
+        "work": "john-chrysostom/homilies-on-acts",
+        "section": 26,
+        "paragraph": 4,
+        "place": "Homily 26, Acts 12:1, 2"
+      },
       "from": "data/bible/commentary/acts/12.json"
     },
     "102": {
@@ -2721,6 +2955,12 @@
       "author": "St. John Chrysostom",
       "work": "Homilies on the Acts of the Apostles, Homily 28",
       "citation": "NPNF1-11",
+      "at": {
+        "work": "john-chrysostom/homilies-on-acts",
+        "section": 28,
+        "paragraph": 1,
+        "place": "Homily 28, Acts 13:4, 5"
+      },
       "from": "data/bible/commentary/acts/13.json"
     },
     "103": {
@@ -2728,6 +2968,12 @@
       "author": "St. John Chrysostom",
       "work": "Homilies on the Acts of the Apostles, Homily 31",
       "citation": "NPNF1-11",
+      "at": {
+        "work": "john-chrysostom/homilies-on-acts",
+        "section": 31,
+        "paragraph": 3,
+        "place": "Homily 31, Acts 14:14, 15"
+      },
       "from": "data/bible/commentary/acts/14.json"
     },
     "104": {
@@ -2735,6 +2981,12 @@
       "author": "St. John Chrysostom",
       "work": "Homilies on the Acts of the Apostles, Homily 33",
       "citation": "NPNF1-11",
+      "at": {
+        "work": "john-chrysostom/homilies-on-acts",
+        "section": 33,
+        "paragraph": 2,
+        "place": "Homily 33, Acts 15:13, 15"
+      },
       "from": "data/bible/commentary/acts/15.json"
     },
     "105": {
@@ -2742,6 +2994,12 @@
       "author": "St. John Chrysostom",
       "work": "Homilies on the Acts of the Apostles, Homily 36",
       "citation": "NPNF1-11",
+      "at": {
+        "work": "john-chrysostom/homilies-on-acts",
+        "section": 36,
+        "paragraph": 4,
+        "place": "Homily 36, Acts 16:25, 26"
+      },
       "from": "data/bible/commentary/acts/16.json"
     },
     "106": {
@@ -2749,6 +3007,12 @@
       "author": "St. John Chrysostom",
       "work": "Homilies on the Acts of the Apostles, Homily 38",
       "citation": "NPNF1-11",
+      "at": {
+        "work": "john-chrysostom/homilies-on-acts",
+        "section": 38,
+        "paragraph": 4,
+        "place": "Homily 38, Acts 17:16, 17"
+      },
       "from": "data/bible/commentary/acts/17.json"
     },
     "107": {
@@ -2756,6 +3020,12 @@
       "author": "St. John Chrysostom",
       "work": "Homilies on the Acts of the Apostles, Homily 40",
       "citation": "NPNF1-11",
+      "at": {
+        "work": "john-chrysostom/homilies-on-acts",
+        "section": 40,
+        "paragraph": 3,
+        "place": "Homily 40, Acts 18:18"
+      },
       "from": "data/bible/commentary/acts/18.json"
     },
     "108": {
@@ -2763,6 +3033,12 @@
       "author": "St. John Chrysostom",
       "work": "Homilies on the Acts of the Apostles, Homily 41",
       "citation": "NPNF1-11",
+      "at": {
+        "work": "john-chrysostom/homilies-on-acts",
+        "section": 41,
+        "paragraph": 2,
+        "place": "Homily 41, Acts 19:8, 9"
+      },
       "from": "data/bible/commentary/acts/19.json"
     },
     "109": {
@@ -2770,6 +3046,12 @@
       "author": "St. John Chrysostom",
       "work": "Homilies on the Acts of the Apostles, Homily 44",
       "citation": "NPNF1-11",
+      "at": {
+        "work": "john-chrysostom/homilies-on-acts",
+        "section": 44,
+        "paragraph": 1,
+        "place": "Homily 44, Acts 20:17-21"
+      },
       "from": "data/bible/commentary/acts/20.json"
     },
     "110": {
@@ -2777,6 +3059,12 @@
       "author": "St. John Chrysostom",
       "work": "Homilies on the Acts of the Apostles, Homily 46",
       "citation": "NPNF1-11",
+      "at": {
+        "work": "john-chrysostom/homilies-on-acts",
+        "section": 46,
+        "paragraph": 2,
+        "place": "Homily 46, Acts 21:18, 19"
+      },
       "from": "data/bible/commentary/acts/21.json"
     },
     "111": {
@@ -2784,6 +3072,12 @@
       "author": "St. John Chrysostom",
       "work": "Homilies on the Acts of the Apostles, Homily 48",
       "citation": "NPNF1-11",
+      "at": {
+        "work": "john-chrysostom/homilies-on-acts",
+        "section": 48,
+        "paragraph": 3,
+        "place": "Homily 48, Acts 22:17-20"
+      },
       "from": "data/bible/commentary/acts/22.json"
     },
     "112": {
@@ -2791,6 +3085,12 @@
       "author": "St. John Chrysostom",
       "work": "Homilies on the Acts of the Apostles, Homily 50",
       "citation": "NPNF1-11",
+      "at": {
+        "work": "john-chrysostom/homilies-on-acts",
+        "section": 50,
+        "paragraph": 3,
+        "place": "Homily 50, Acts 23:31, 32, 33"
+      },
       "from": "data/bible/commentary/acts/23.json"
     },
     "113": {
@@ -2798,6 +3098,12 @@
       "author": "St. John Chrysostom",
       "work": "Homilies on the Acts of the Apostles, Homily 51",
       "citation": "NPNF1-11",
+      "at": {
+        "work": "john-chrysostom/homilies-on-acts",
+        "section": 51,
+        "paragraph": 2,
+        "place": "Homily 51, Acts 24:22, 23"
+      },
       "from": "data/bible/commentary/acts/24.json"
     },
     "114": {
@@ -2805,6 +3111,12 @@
       "author": "St. John Chrysostom",
       "work": "Homilies on the Acts of the Apostles, Homily 52",
       "citation": "NPNF1-11",
+      "at": {
+        "work": "john-chrysostom/homilies-on-acts",
+        "section": 52,
+        "paragraph": 1,
+        "place": "Homily 52, Acts 25:23"
+      },
       "from": "data/bible/commentary/acts/25.json"
     },
     "115": {
@@ -2812,6 +3124,12 @@
       "author": "St. John Chrysostom",
       "work": "Homilies on the Acts of the Apostles, Homily 53",
       "citation": "NPNF1-11",
+      "at": {
+        "work": "john-chrysostom/homilies-on-acts",
+        "section": 53,
+        "paragraph": 2,
+        "place": "Homily 53, Acts 26:30-32"
+      },
       "from": "data/bible/commentary/acts/26.json"
     },
     "117": {
@@ -2819,6 +3137,12 @@
       "author": "St. John Chrysostom",
       "work": "Homilies on the Acts of the Apostles, Homily 54",
       "citation": "NPNF1-11",
+      "at": {
+        "work": "john-chrysostom/homilies-on-acts",
+        "section": 54,
+        "paragraph": 3,
+        "place": "Homily 54, Acts 28:1"
+      },
       "from": "data/bible/commentary/acts/28.json"
     },
     "118": {
@@ -3242,6 +3566,12 @@
       "author": "St. John Chrysostom",
       "work": "Homilies on the Second Epistle to the Corinthians, Homily 2",
       "citation": "NPNF1-12",
+      "at": {
+        "work": "john-chrysostom/homilies-on-2-corinthians",
+        "section": 2,
+        "paragraph": 5,
+        "place": "Homily 2, 2 Corinthians 1:6, 7"
+      },
       "from": "data/bible/commentary/2-corinthians/1.json"
     },
     "151": {
@@ -3249,6 +3579,12 @@
       "author": "St. John Chrysostom",
       "work": "Homilies on the Second Epistle to the Corinthians, Homily 5",
       "citation": "NPNF1-12",
+      "at": {
+        "work": "john-chrysostom/homilies-on-2-corinthians",
+        "section": 5,
+        "paragraph": 22,
+        "place": "Homily 5, 2 Corinthians 2:12, 13"
+      },
       "from": "data/bible/commentary/2-corinthians/2.json"
     },
     "152": {
@@ -3256,6 +3592,12 @@
       "author": "St. John Chrysostom",
       "work": "Homilies on the Second Epistle to the Corinthians, Homily 6",
       "citation": "NPNF1-12",
+      "at": {
+        "work": "john-chrysostom/homilies-on-2-corinthians",
+        "section": 6,
+        "paragraph": 6,
+        "place": "Homily 6, 2 Corinthians 3:1"
+      },
       "from": "data/bible/commentary/2-corinthians/3.json"
     },
     "153": {
@@ -3263,6 +3605,12 @@
       "author": "St. John Chrysostom",
       "work": "Homilies on the Second Epistle to the Corinthians, Homily 8",
       "citation": "NPNF1-12",
+      "at": {
+        "work": "john-chrysostom/homilies-on-2-corinthians",
+        "section": 8,
+        "paragraph": 19,
+        "place": "Homily 8, 2 Corinthians 4:1, 2"
+      },
       "from": "data/bible/commentary/2-corinthians/4.json"
     },
     "154": {
@@ -3270,6 +3618,12 @@
       "author": "St. John Chrysostom",
       "work": "Homilies on the Second Epistle to the Corinthians, Homily 11",
       "citation": "NPNF1-12",
+      "at": {
+        "work": "john-chrysostom/homilies-on-2-corinthians",
+        "section": 11,
+        "paragraph": 20,
+        "place": "Homily 11, 2 Corinthians 5:11"
+      },
       "from": "data/bible/commentary/2-corinthians/5.json"
     },
     "155": {
@@ -3277,6 +3631,12 @@
       "author": "St. John Chrysostom",
       "work": "Homilies on the Second Epistle to the Corinthians, Homily 13",
       "citation": "NPNF1-12",
+      "at": {
+        "work": "john-chrysostom/homilies-on-2-corinthians",
+        "section": 13,
+        "paragraph": 18,
+        "place": "Homily 13, 2 Corinthians 6:11, 12"
+      },
       "from": "data/bible/commentary/2-corinthians/6.json"
     },
     "156": {
@@ -3284,6 +3644,12 @@
       "author": "St. John Chrysostom",
       "work": "Homilies on the Second Epistle to the Corinthians, Homily 14",
       "citation": "NPNF1-12",
+      "at": {
+        "work": "john-chrysostom/homilies-on-2-corinthians",
+        "section": 14,
+        "paragraph": 15,
+        "place": "Homily 14, 2 Corinthians 7:2, 3"
+      },
       "from": "data/bible/commentary/2-corinthians/7.json"
     },
     "157": {
@@ -3291,6 +3657,12 @@
       "author": "St. John Chrysostom",
       "work": "Homilies on the Second Epistle to the Corinthians, Homily 17",
       "citation": "NPNF1-12",
+      "at": {
+        "work": "john-chrysostom/homilies-on-2-corinthians",
+        "section": 17,
+        "paragraph": 9,
+        "place": "Homily 17, 2 Corinthians 8:7"
+      },
       "from": "data/bible/commentary/2-corinthians/8.json"
     },
     "158": {
@@ -3298,6 +3670,12 @@
       "author": "St. John Chrysostom",
       "work": "Homilies on the Second Epistle to the Corinthians, Homily 19",
       "citation": "NPNF1-12",
+      "at": {
+        "work": "john-chrysostom/homilies-on-2-corinthians",
+        "section": 19,
+        "paragraph": 25,
+        "place": "Homily 19, 2 Corinthians 9:1"
+      },
       "from": "data/bible/commentary/2-corinthians/9.json"
     },
     "159": {
@@ -3305,6 +3683,12 @@
       "author": "St. John Chrysostom",
       "work": "Homilies on the Second Epistle to the Corinthians, Homily 22",
       "citation": "NPNF1-12",
+      "at": {
+        "work": "john-chrysostom/homilies-on-2-corinthians",
+        "section": 22,
+        "paragraph": 20,
+        "place": "Homily 22, 2 Corinthians 10:7"
+      },
       "from": "data/bible/commentary/2-corinthians/10.json"
     },
     "160": {
@@ -3312,6 +3696,12 @@
       "author": "St. John Chrysostom",
       "work": "Homilies on the Second Epistle to the Corinthians, Homily 23",
       "citation": "NPNF1-12",
+      "at": {
+        "work": "john-chrysostom/homilies-on-2-corinthians",
+        "section": 23,
+        "paragraph": 33,
+        "place": "Homily 23, 2 Corinthians 11:1"
+      },
       "from": "data/bible/commentary/2-corinthians/11.json"
     },
     "161": {
@@ -3319,6 +3709,12 @@
       "author": "St. John Chrysostom",
       "work": "Homilies on the Second Epistle to the Corinthians, Homily 27",
       "citation": "NPNF1-12",
+      "at": {
+        "work": "john-chrysostom/homilies-on-2-corinthians",
+        "section": 27,
+        "paragraph": 15,
+        "place": "Homily 27, 2 Corinthians 12:11"
+      },
       "from": "data/bible/commentary/2-corinthians/12.json"
     },
     "162": {
@@ -3326,6 +3722,12 @@
       "author": "St. John Chrysostom",
       "work": "Homilies on the Second Epistle to the Corinthians, Homily 30",
       "citation": "NPNF1-12",
+      "at": {
+        "work": "john-chrysostom/homilies-on-2-corinthians",
+        "section": 30,
+        "paragraph": 14,
+        "place": "Homily 30, 2 Corinthians 13:10"
+      },
       "from": "data/bible/commentary/2-corinthians/13.json"
     },
     "163": {
@@ -3411,6 +3813,12 @@
       "author": "St. John Chrysostom",
       "work": "Homilies on the Epistle to the Ephesians, Homily 1",
       "citation": "NPNF1-13",
+      "at": {
+        "work": "john-chrysostom/homilies-on-ephesians",
+        "section": 1,
+        "paragraph": 23,
+        "place": "Homily 1, Ephesians 1:1-2"
+      },
       "from": "data/bible/commentary/ephesians/1.json"
     },
     "170": {
@@ -3418,6 +3826,12 @@
       "author": "St. John Chrysostom",
       "work": "Homilies on the Epistle to the Ephesians, Homily 5",
       "citation": "NPNF1-13",
+      "at": {
+        "work": "john-chrysostom/homilies-on-ephesians",
+        "section": 5,
+        "paragraph": 29,
+        "place": "Homily 5, Ephesians 2:11, 12"
+      },
       "from": "data/bible/commentary/ephesians/2.json"
     },
     "171": {
@@ -3425,6 +3839,12 @@
       "author": "St. John Chrysostom",
       "work": "Homilies on the Epistle to the Ephesians, Homily 7",
       "citation": "NPNF1-13",
+      "at": {
+        "work": "john-chrysostom/homilies-on-ephesians",
+        "section": 7,
+        "paragraph": 34,
+        "place": "Homily 7, Ephesians 3:8-11"
+      },
       "from": "data/bible/commentary/ephesians/3.json"
     },
     "172": {
@@ -3432,6 +3852,12 @@
       "author": "St. John Chrysostom",
       "work": "Homilies on the Epistle to the Ephesians, Homily 12",
       "citation": "NPNF1-13",
+      "at": {
+        "work": "john-chrysostom/homilies-on-ephesians",
+        "section": 12,
+        "paragraph": 9,
+        "place": "Homily 12, Ephesians 4:17"
+      },
       "from": "data/bible/commentary/ephesians/4.json"
     },
     "173": {
@@ -3439,6 +3865,12 @@
       "author": "St. John Chrysostom",
       "work": "Homilies on the Epistle to the Ephesians, Homily 19",
       "citation": "NPNF1-13",
+      "at": {
+        "work": "john-chrysostom/homilies-on-ephesians",
+        "section": 19,
+        "paragraph": 17,
+        "place": "Homily 19, Ephesians 5:15, 16, 17"
+      },
       "from": "data/bible/commentary/ephesians/5.json"
     },
     "174": {
@@ -3446,6 +3878,12 @@
       "author": "St. John Chrysostom",
       "work": "Homilies on the Epistle to the Ephesians, Homily 21",
       "citation": "NPNF1-13",
+      "at": {
+        "work": "john-chrysostom/homilies-on-ephesians",
+        "section": 21,
+        "paragraph": 6,
+        "place": "Homily 21, Ephesians 6:1-3"
+      },
       "from": "data/bible/commentary/ephesians/6.json"
     },
     "175": {
@@ -3622,6 +4060,12 @@
       "author": "St. John Chrysostom",
       "work": "Homilies on the Second Epistle to the Thessalonians, Homily 3",
       "citation": "NPNF1-13",
+      "at": {
+        "work": "john-chrysostom/homilies-on-2-thessalonians",
+        "section": 3,
+        "paragraph": 9,
+        "place": "Homily 3, 2 Thessalonians 1:9, 10"
+      },
       "from": "data/bible/commentary/2-thessalonians/1.json"
     },
     "189": {
@@ -3629,6 +4073,12 @@
       "author": "St. John Chrysostom",
       "work": "Homilies on the Second Epistle to the Thessalonians, Homily 4",
       "citation": "NPNF1-13",
+      "at": {
+        "work": "john-chrysostom/homilies-on-2-thessalonians",
+        "section": 4,
+        "paragraph": 14,
+        "place": "Homily 4, 2 Thessalonians 2:6-9"
+      },
       "from": "data/bible/commentary/2-thessalonians/2.json"
     },
     "190": {
@@ -3636,6 +4086,12 @@
       "author": "St. John Chrysostom",
       "work": "Homilies on the Second Epistle to the Thessalonians, Homily 5",
       "citation": "NPNF1-13",
+      "at": {
+        "work": "john-chrysostom/homilies-on-2-thessalonians",
+        "section": 5,
+        "paragraph": 25,
+        "place": "Homily 5, 2 Thessalonians 3:3-5"
+      },
       "from": "data/bible/commentary/2-thessalonians/3.json"
     },
     "191": {
@@ -3643,6 +4099,12 @@
       "author": "St. John Chrysostom",
       "work": "Homilies on the First Epistle to Timothy, Homily 1",
       "citation": "NPNF1-13",
+      "at": {
+        "work": "john-chrysostom/homilies-on-1-timothy",
+        "section": 1,
+        "paragraph": 1,
+        "place": "Homily 1, 1 Timothy 1:1, 2"
+      },
       "from": "data/bible/commentary/1-timothy/1.json"
     },
     "192": {
@@ -3650,6 +4112,12 @@
       "author": "St. John Chrysostom",
       "work": "Homilies on the First Epistle to Timothy, Homily 7",
       "citation": "NPNF1-13",
+      "at": {
+        "work": "john-chrysostom/homilies-on-1-timothy",
+        "section": 7,
+        "paragraph": 6,
+        "place": "Homily 7, 1 Timothy 2:2-4"
+      },
       "from": "data/bible/commentary/1-timothy/2.json"
     },
     "193": {
@@ -3657,6 +4125,12 @@
       "author": "St. John Chrysostom",
       "work": "Homilies on the First Epistle to Timothy, Homily 11",
       "citation": "NPNF1-13",
+      "at": {
+        "work": "john-chrysostom/homilies-on-1-timothy",
+        "section": 11,
+        "paragraph": 17,
+        "place": "Homily 11, 1 Timothy 3:8-10"
+      },
       "from": "data/bible/commentary/1-timothy/3.json"
     },
     "194": {
@@ -3664,6 +4138,12 @@
       "author": "St. John Chrysostom",
       "work": "Homilies on the First Epistle to Timothy, Homily 12",
       "citation": "NPNF1-13",
+      "at": {
+        "work": "john-chrysostom/homilies-on-1-timothy",
+        "section": 12,
+        "paragraph": 12,
+        "place": "Homily 12, 1 Timothy 4:1-3"
+      },
       "from": "data/bible/commentary/1-timothy/4.json"
     },
     "195": {
@@ -3671,6 +4151,12 @@
       "author": "St. John Chrysostom",
       "work": "Homilies on the First Epistle to Timothy, Homily 16",
       "citation": "NPNF1-13",
+      "at": {
+        "work": "john-chrysostom/homilies-on-1-timothy",
+        "section": 16,
+        "paragraph": 16,
+        "place": "Homily 16, 1 Timothy 5:21-23"
+      },
       "from": "data/bible/commentary/1-timothy/5.json"
     },
     "196": {
@@ -3678,6 +4164,12 @@
       "author": "St. John Chrysostom",
       "work": "Homilies on the First Epistle to Timothy, Homily 17",
       "citation": "NPNF1-13",
+      "at": {
+        "work": "john-chrysostom/homilies-on-1-timothy",
+        "section": 17,
+        "paragraph": 31,
+        "place": "Homily 17, 1 Timothy 6:2-7"
+      },
       "from": "data/bible/commentary/1-timothy/6.json"
     },
     "197": {
@@ -3685,6 +4177,12 @@
       "author": "St. John Chrysostom",
       "work": "Homilies on the Second Epistle to Timothy, Homily 1",
       "citation": "NPNF1-13",
+      "at": {
+        "work": "john-chrysostom/homilies-on-2-timothy",
+        "section": 1,
+        "paragraph": 15,
+        "place": "Homily 1, 2 Timothy 1:1, 2"
+      },
       "from": "data/bible/commentary/2-timothy/1.json"
     },
     "198": {
@@ -3692,6 +4190,12 @@
       "author": "St. John Chrysostom",
       "work": "Homilies on the Second Epistle to Timothy, Homily 5",
       "citation": "NPNF1-13",
+      "at": {
+        "work": "john-chrysostom/homilies-on-2-timothy",
+        "section": 5,
+        "paragraph": 1,
+        "place": "Homily 5, 2 Timothy 2:11-14"
+      },
       "from": "data/bible/commentary/2-timothy/2.json"
     },
     "199": {
@@ -3699,6 +4203,12 @@
       "author": "St. John Chrysostom",
       "work": "Homilies on the Second Epistle to Timothy, Homily 8",
       "citation": "NPNF1-13",
+      "at": {
+        "work": "john-chrysostom/homilies-on-2-timothy",
+        "section": 8,
+        "paragraph": 30,
+        "place": "Homily 8, 2 Timothy 3:1-4"
+      },
       "from": "data/bible/commentary/2-timothy/3.json"
     },
     "200": {
@@ -3706,6 +4216,12 @@
       "author": "St. John Chrysostom",
       "work": "Homilies on the Second Epistle to Timothy, Homily 10",
       "citation": "NPNF1-13",
+      "at": {
+        "work": "john-chrysostom/homilies-on-2-timothy",
+        "section": 10,
+        "paragraph": 42,
+        "place": "Homily 10, 2 Timothy 4:9-13"
+      },
       "from": "data/bible/commentary/2-timothy/4.json"
     },
     "201": {
@@ -3713,6 +4229,12 @@
       "author": "St. John Chrysostom",
       "work": "Homilies on the Epistle to Titus, Homily 1",
       "citation": "NPNF1-13",
+      "at": {
+        "work": "john-chrysostom/homilies-on-titus",
+        "section": 1,
+        "paragraph": 24,
+        "place": "Homily 1, Titus 1:1-4"
+      },
       "from": "data/bible/commentary/titus/1.json"
     },
     "202": {
@@ -3720,6 +4242,12 @@
       "author": "St. John Chrysostom",
       "work": "Homilies on the Epistle to Titus, Homily 5",
       "citation": "NPNF1-13",
+      "at": {
+        "work": "john-chrysostom/homilies-on-titus",
+        "section": 5,
+        "paragraph": 46,
+        "place": "Homily 5, Titus 2:11-14"
+      },
       "from": "data/bible/commentary/titus/2.json"
     },
     "203": {
@@ -3727,6 +4255,12 @@
       "author": "St. John Chrysostom",
       "work": "Homilies on the Epistle to Titus, Homily 6",
       "citation": "NPNF1-13",
+      "at": {
+        "work": "john-chrysostom/homilies-on-titus",
+        "section": 6,
+        "paragraph": 17,
+        "place": "Homily 6, Titus 3:8-11"
+      },
       "from": "data/bible/commentary/titus/3.json"
     },
     "204": {
@@ -3734,6 +4268,12 @@
       "author": "St. John Chrysostom",
       "work": "Homilies on the Epistle to Philemon, Homily 2",
       "citation": "NPNF1-13",
+      "at": {
+        "work": "john-chrysostom/homilies-on-philemon",
+        "section": 2,
+        "paragraph": 39,
+        "place": "Homily 2, Philemon 1:4-6"
+      },
       "from": "data/bible/commentary/philemon/1.json"
     },
     "205": {
