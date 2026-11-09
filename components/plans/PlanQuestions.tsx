@@ -82,7 +82,7 @@ export function PlanQuestions({
               value={answers[q.key] ?? ""}
               onChange={(e) => setAnswers((a) => ({ ...a, [q.key]: e.target.value }))}
               placeholder={t("plans.finish.placeholder")}
-              className="mt-2 h-12 w-full rounded-pill border border-paper/12 bg-paper/[0.04] px-4 font-sans text-ui text-paper placeholder:text-paper/40 focus:border-paper/30 focus:outline-none"
+              className="mt-2 h-12 w-full rounded-pill border border-paper/12 bg-paper/[0.04] px-4 font-sans text-ui text-paper placeholder:text-paper/70 focus:border-paper/30 focus:outline-none"
             />
           </li>
         ))}

@@ -123,3 +123,19 @@ describe("the line under our own summary of a Father", () => {
     for (const code of ["de", "ru", "ar"]) expect(seen(render({ kind: "summary", author: "A", work: "B" }, code))).toContain(getMessages(code)["cite.summary"]);
   });
 });
+
+// 1.9, the arbiter's go of 2026-11-09: the link is a line or two of small
+// type (19 to 57px tall), so its touchable area reaches 44px through hit-44,
+// moving no ink. Checked in the export on twelve screens and two flows at 390
+// and 360 wide: on none does it take a touch from another control.
+describe("the line's link, to the touch", () => {
+  it("reaches 44px, whichever kind of place it opens", () => {
+    for (const cite of [
+      { kind: "scripture", book: "john", reference: "3:16", translation: "kjv", href: "/bible/john/3#v16" },
+      { kind: "inexact", of: { kind: "scripture", book: "john", reference: "3:16", translation: "kjv", href: "/bible/john/3#v16" } },
+    ] as ShownCite[]) {
+      const html = render(cite);
+      expect(html).toMatch(/<a[^>]*class="[^"]*\bhit-44\b/);
+    }
+  });
+});

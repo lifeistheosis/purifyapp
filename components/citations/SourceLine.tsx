@@ -24,6 +24,10 @@ type T = (key: string, replacements?: Record<string, string | number>) => string
  * public-domain text we can find carries say so, quietly, in place of a
  * source (lib/citations/cite.ts, `untraced`).
  *
+ * The link is a line or two of small type, under 44px tall, so it wears
+ * hit-44 (app/globals.css): its touchable area reaches 44px without moving a
+ * pixel of the line (1.9, the arbiter's go of 2026-11-09).
+ *
  * The book of the Bible and the translation are in the reader's language
  * (bible.books.*); the Fathers' works keep their English names, as the
  * library has them.
@@ -67,7 +71,7 @@ export function SourceLine({ cite, className }: { cite: ShownCite; className?: s
         <Link
           href={cite.of.href}
           prefetch={false}
-          className="tap-press mt-0.5 inline-flex max-w-full items-start gap-1.5 text-paper/60 hover:text-paper"
+          className="tap-press hit-44 mt-0.5 inline-flex max-w-full items-start gap-1.5 text-paper/60 hover:text-paper"
         >
           <span className="min-w-0">
             <Words cite={cite.of} t={t} />
@@ -82,7 +86,7 @@ export function SourceLine({ cite, className }: { cite: ShownCite; className?: s
       href={cite.href}
       prefetch={false}
       data-cite={cite.kind}
-      className={cn("tap-press inline-flex max-w-full items-start gap-1.5 text-paper/60 hover:text-paper", words, className)}
+      className={cn("tap-press hit-44 inline-flex max-w-full items-start gap-1.5 text-paper/60 hover:text-paper", words, className)}
     >
       <span className="min-w-0">
         <Words cite={cite} t={t} />
