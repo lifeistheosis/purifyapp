@@ -8,7 +8,12 @@ import { cleanEnvValue, readVapidPrivateKey, readVapidPublicKey, readVapidSubjec
 function pair() {
   const ecdh = createECDH("prime256v1");
   ecdh.generateKeys();
-  return { pub: ecdh.getPublicKey().toString("base64url"), priv: ecdh.getPrivateKey().toString("base64url") };
+  // Node hands back a private key whose first byte is 0 as 31 bytes. A real
+  // key is always 32 (web-push pads it), so pad it here too: unpadded, about
+  // one run in 256 drew a "pair" whose private half the reader rightly
+  // refused for its length, and a test of something else failed.
+  const priv = ecdh.getPrivateKey();
+  return { pub: ecdh.getPublicKey().toString("base64url"), priv: Buffer.concat([Buffer.alloc(32 - priv.length), priv]).toString("base64url") };
 }
 
 const A = pair();
