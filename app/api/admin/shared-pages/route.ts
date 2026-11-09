@@ -29,8 +29,8 @@ export const dynamic = "force-dynamic";
  * review (it may stand, and search engines may show it), unreview (out of
  * search engines again). Each is logged with who did it.
  *
- * Until the sharing table exists (docs/1.9-build/sql/shared-pages.sql, which
- * moves into the migrations at the 1.9 merge) GET answers { absent: true }
+ * Until the sharing table exists (supabase/migrations/20261109180246_shared_pages.sql,
+ * applied at the 1.9 merge) GET answers { absent: true }
  * and POST 409. Admin only: 403 to anyone else.
  */
 
@@ -120,7 +120,7 @@ export async function POST(req: NextRequest) {
   const before = await db.from("shared_pages").select("hidden_at, reviewed_at").eq("id", id).maybeSingle();
   if (isTableAbsent(before.error)) {
     return NextResponse.json(
-      { error: "Shared pages are not there yet: the table comes with docs/1.9-build/sql/shared-pages.sql." },
+      { error: "Shared pages are not there yet: their table comes with the 1.9 merge (supabase/migrations/20261109180246_shared_pages.sql)." },
       { status: 409 },
     );
   }

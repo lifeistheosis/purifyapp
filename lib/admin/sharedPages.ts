@@ -1,7 +1,7 @@
 /**
  * Shared journal pages, moderated (1.9, admin item A1). A reader can share a
- * page at /p/<id> (docs/1.9-build/sql/shared-pages.sql, lib/journal/share.ts);
- * other readers can report one; and a page is kept out of search engines
+ * page at /p/<id> (supabase/migrations/20261109180246_shared_pages.sql,
+ * lib/journal/share.ts); other readers can report one; and a page is kept out of search engines
  * until it has been reviewed (app/(app)/p/[id]/page.tsx reads `reviewed`).
  * Nothing in the admin read the reports or set a page reviewed until this.
  *

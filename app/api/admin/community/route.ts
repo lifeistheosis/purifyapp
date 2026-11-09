@@ -285,7 +285,8 @@ export async function GET(req: Request) {
 /**
  * Shared journal pages with at least one report, still up (1.9, admin A1;
  * lib/admin/sharedPages.ts). Nothing, not an error, before the sharing table
- * exists (docs/1.9-build/sql/shared-pages.sql); any other failure is an
+ * exists (supabase/migrations/20261109180246_shared_pages.sql, applied at the
+ * 1.9 merge); any other failure is an
  * error, because an unread queue must never read as empty.
  */
 async function readReportedShares(

@@ -135,9 +135,9 @@ export function SharedPagesPart() {
   if (data.absent) {
     return (
       <p className={note} style={ink2}>
-        Sharing a journal page waits for its table (docs/1.9-build/sql/shared-pages.sql), which goes into the migrations at
-        the 1.9 merge. From then, every shared page is listed here, kept out of search engines until you review it, and a
-        reported one waits in Waiting.
+        Sharing a journal page waits for its table, which the 1.9 merge creates (supabase/migrations/20261109180246_shared_pages.sql).
+        From then, every shared page is listed here, kept out of search engines until you review it, and a reported one
+        waits in Waiting.
       </p>
     );
   }
