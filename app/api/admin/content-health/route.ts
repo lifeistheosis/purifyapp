@@ -4,6 +4,7 @@ import path from "node:path";
 import { getAdminUser } from "@/lib/admin/access";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { SAINTS } from "@/lib/saints/saints";
+import { iconList } from "@/lib/saints/iconDebt";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -123,6 +124,9 @@ export async function GET() {
       bible: {
         books: bibleBooks,
       },
+      // The saint icons still to clear (admin A9, lib/saints/iconDebt.ts):
+      // read from the icon rights file, so it shrinks as each one is cleared.
+      icons: iconList(),
       generatedAt: new Date().toISOString(),
     },
     { headers: { "Cache-Control": "no-store" } },
