@@ -1850,9 +1850,22 @@ findings:
       (two -eth verbs, four "yours" before a noun, canst, wilt, art, didst,
       one "thee"). Left as his wording: "a greater than Jonah", "Judaea",
       "your Father's knowledge", "and be like unto men"; the two misprints
-      the 1859 page and his share are kept and noted. STILL OPEN: St Ignatius's
-      letters paragraph by paragraph against the shorter recension; Sermons
-      29 and 96 of St Cyril on Luke, as above; the large works that name no CCEL volume
+      the 1859 page and his share are kept and noted. 2026-11-09 (1.9, U12):
+      St Ignatius's seven letters paragraph by paragraph against the shorter
+      recension. ANF vol. 1 prints the shorter and the longer side by side,
+      so a measure against the volume could not tell them apart; each of
+      the 98 paragraphs was measured against CCEL's two columns, and the
+      doubtful ones read on two 1885 scans (archive.org
+      antenicenefather0001reva and apostolicfathers0000acle). All follow
+      the shorter text but one: Ephesians 20 was the longer recension's
+      chapter ("being under the guidance of the Comforter", "a cleansing
+      remedy driving away evil") under its title, and is now the shorter's
+      "Promise of another letter", word for word, in the same place, so no
+      reader's mark moves; the reading room's lengths follow, and
+      lib/saints/__tests__/ignatiusRecension.test.ts holds it. Found on the
+      way: CCEL's "possible ... impossible" in Ephesians 7 is its own slip
+      for the printed "passible ... impassible", which the app has. STILL
+      OPEN: Sermons 29 and 96 of St Cyril on Luke, as above; the large works that name no CCEL volume
       (Cyril on John, the Way of a Pilgrim, Isaac, the Sayings of Arsenius,
       Photius) against their own editions; the quotation marks still to settle (18
       paragraphs where CCEL itself differs, the 28 paragraph-opening marks of
@@ -1863,7 +1876,7 @@ findings:
       2 Timothy and the Harmony); and a test that holds each quoted section
       to its volume.
     evidence: data/saints/*/*.json (sections and their voice); data/bible/commentary; lib/reading/entries.ts; lib/saints/saints.ts; CCEL transcriptions of ANF 1, 5, 6 and NPNF I 6 to 14, II 1 to 14; Schaff, Creeds of Christendom II; Hapgood, Service Book (1906)
-    action: "Done with the owner's yes of 2026-10-23 for what is listed above. Left (the apolytikia and the Palamas texts settled 2026-10-26, queue item 23): Ignatius's recensions, the large non-CCEL works against their own editions, and a test that holds each quoted section to its volume."
+    action: "Done with the owner's yes of 2026-10-23 for what is listed above. Left (the apolytikia and the Palamas texts settled 2026-10-26, queue item 23; Ignatius's recensions settled 2026-11-09): the large non-CCEL works against their own editions, and a test that holds each quoted section to its volume."
     safe_to_automate: false
     review: owner
 
