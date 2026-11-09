@@ -4,6 +4,14 @@ Still frames and two-second clips for Purify's ads, 9:16 (1080x1920), made
 from the app itself. Built for the 1.8 promo (2026-11-08) and kept so the next
 release's promo starts from here, not from nothing.
 
+**Snapshots first, one of each, and nothing he did not ask for** (the owner's
+word, 2026-11-09: "I just needed snapshots. So like you made like 5 different
+variants of like the same thing pretty much. You used a lot of credits on
+that. So like try not to do that next time."). When promo is asked for, make
+stills of the app, one version of each: no alternatives, no second look, no
+extra set. Video clips, reels, card sets and variants cost real compute, so
+each waits for his yes, asked first, never offered by making it.
+
 **These seven looks are PR promo, kept for later** (the owner's word,
 2026-11-08: "save these for general promo ... more PR, like company promo").
 They are clean and calm: right for the company's own promo, not for the
