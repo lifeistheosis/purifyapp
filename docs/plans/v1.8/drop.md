@@ -3,7 +3,7 @@
 Written out by `node scripts/drop.mjs kit` from `drop.json`. Do not edit this
 file: change `drop.json` and write it out again. The rules are in `docs/DROP.md`.
 
-Hear the New Testament, and walk to the Nativity with the Church. Covers 1.8, carried by the 1.8 builds (Android 0, iOS 0).
+Hear the New Testament, and walk to the Nativity with the Church. Covers 1.8, carried by the 1.8 builds (Android 78, iOS 31).
 
 ## The day
 
