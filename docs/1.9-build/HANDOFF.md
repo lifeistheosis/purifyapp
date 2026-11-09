@@ -14,7 +14,7 @@ file is what it needs to take over. Read it first, then `BRAINSTORM.md` and
 | Admin panel | `session_01VuYTwbteJqs1UmDUwqRvzC` | the admin panel (app/admin and its API) |
 | SSM board | `session_01VuYTwcSQmKLThRirvSeWa5` | social media: each release's cards, videos and posts |
 | Updates | `session_01VuYTwcNqTWyT6Yab696Eri` | builds the 1.9 updates in the app itself: everything in `PLAN.md` outside the admin panel and social media |
-| Discord requests | `session_01VuYTwa7ccHk91ufBdtnExY` | reads every section of the Purify Discord (read only) and lists what members asked for, with no member named |
+| Discord requests | `session_01VuYTwa9F5ZBKXx8cqDTxg9` | reads every section of the Purify Discord and lists what members asked for, with no member named; replies and moderates on his word (below). It replaced `session_01VuYTwa7ccHk91ufBdtnExY`, which started before the bot's token was saved: a running chat does not pick up a network secret added in the settings, a new one does |
 
 The Updates chat was set up by the arbiter on his word of 2026-11-09: "I
 want you to set up a chat for the updates also for version 1.9. So one is
