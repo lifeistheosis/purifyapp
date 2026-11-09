@@ -68,27 +68,48 @@ export function cleanPlansSlice(v: unknown): PlansSlice {
   return { plans, resets };
 }
 
-export function mergePlans(local: PlansSlice, remote: PlansSlice): PlansSlice {
+/**
+ * Two copies of the reader's plans, one plan at a time (Fable's release check
+ * 1, M2). `met` is the plans this device has already merged with the server.
+ *
+ * The first time a plan meets the server from a device, the two copies are
+ * joined: every day read on either is kept, since each device has days the
+ * other never saw (a phone with 200 days and a tablet with 5 must not lose the
+ * 200 because the tablet was touched last). After that, both started from the
+ * same joined copy, so the copy changed last wins, and a day taken back stays
+ * taken back. A copy from before the plan was last started over belongs to the
+ * run given up and is never joined. Without `met`, every plan is taken as met.
+ */
+export function mergePlans(local: PlansSlice, remote: PlansSlice, met?: ReadonlySet<string>): PlansSlice {
   const resets: Record<string, number> = { ...local.resets };
   for (const [id, at] of Object.entries(remote.resets)) resets[id] = Math.max(resets[id] ?? 0, at);
   const plans: PlansState = {};
   for (const id of new Set([...Object.keys(local.plans), ...Object.keys(remote.plans)])) {
-    const a = local.plans[id];
-    const b = remote.plans[id];
-    let pick: PlanProgress;
-    if (a && b && !a.at && !b.at) {
-      // Both from before 1.9: neither can say which is newer, so no day read is lost.
-      pick = { startedOn: a.startedOn <= b.startedOn ? a.startedOn : b.startedOn, done: { ...b.done, ...a.done } };
+    const reset = resets[id];
+    // Started over after this copy last changed: that copy is gone.
+    const live = (p: PlanProgress | undefined) => (p && !(reset !== undefined && reset >= (p.at ?? 0)) ? p : undefined);
+    const a = live(local.plans[id]);
+    const b = live(remote.plans[id]);
+    if (!a && !b) continue;
+    if (a && b && ((!a.at && !b.at) || (met !== undefined && !met.has(id)))) {
+      // Both from before 1.9, when neither can say which is newer, or this
+      // device's first exchange for the plan: no day read on either is lost.
+      plans[id] = joined(a, b);
     } else if (a && b) {
-      pick = (b.at ?? 0) > (a.at ?? 0) ? b : a;
+      plans[id] = (b.at ?? 0) > (a.at ?? 0) ? b : a;
     } else {
-      pick = (a ?? b)!;
+      plans[id] = (a ?? b)!;
     }
-    // Started over after this copy last changed: gone.
-    if ((resets[id] ?? 0) >= (pick.at ?? 0) && resets[id] !== undefined) continue;
-    plans[id] = pick;
   }
   return { plans, resets };
+}
+
+/** Both copies' days, the earlier start, and the later change. On a day both kept, this device's date stands. */
+function joined(a: PlanProgress, b: PlanProgress): PlanProgress {
+  const plan: PlanProgress = { startedOn: a.startedOn <= b.startedOn ? a.startedOn : b.startedOn, done: { ...b.done, ...a.done } };
+  const at = Math.max(a.at ?? 0, b.at ?? 0);
+  if (at) plan.at = at;
+  return plan;
 }
 
 // ── Remember the verse ──────────────────────────────────────────────────

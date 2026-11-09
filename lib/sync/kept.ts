@@ -51,6 +51,12 @@ export type KeptSlice = (typeof KEPT_SLICES)[number];
 const TABLE = "user_kept";
 const TABLE_KEY = "purify:sync:keptTable";
 const REPROBE_MS = 12 * 3_600_000;
+/**
+ * The plans this device has merged with the server, and for which account
+ * (mergePlans' `met`): a plan's first exchange joins both copies' days, later
+ * ones keep the newer copy. Written only once the server holds the merged copy.
+ */
+const PLANS_MET_KEY = "purify:kept.plansMet";
 /** When the reading settings last changed on this device: they carry no time of their own. */
 const READING_AT_KEY = "purify:kept.readingAt";
 /** The reader's settings change event (components/reader/ReaderPrefs.tsx), which repaints the palette too. */
@@ -146,11 +152,14 @@ function writeReading(next: ReadingSlice): void {
 
 // ── The slices ──────────────────────────────────────────────────────────
 
+/** What an exchange knows beyond the two copies. */
+type MergeContext = { plansMet: ReadonlySet<string> };
+
 type Adapter = {
   /** This device's copy, read as a server copy is read. */
   local(): unknown;
   clean(v: unknown): unknown;
-  merge(local: never, remote: never): unknown;
+  merge(local: never, remote: never, context: MergeContext): unknown;
   /** Put a merged copy in place on this device. */
   apply(merged: never): void;
   /** Nothing to keep: no row is made for it. */
@@ -161,7 +170,8 @@ const SLICES: Record<KeptSlice, Adapter> = {
   plans: {
     local: () => cleanPlansSlice(readPlansForSync()),
     clean: cleanPlansSlice,
-    merge: mergePlans,
+    merge: (local: ReturnType<typeof cleanPlansSlice>, remote: ReturnType<typeof cleanPlansSlice>, context: MergeContext) =>
+      mergePlans(local, remote, context.plansMet),
     apply: (m: ReturnType<typeof cleanPlansSlice>) => writePlansFromSync(m.plans, m.resets),
     empty: (v: ReturnType<typeof cleanPlansSlice>) => !Object.keys(v.plans).length && !Object.keys(v.resets).length,
   },
@@ -193,6 +203,24 @@ const SLICES: Record<KeptSlice, Adapter> = {
   },
 };
 
+function readPlansMet(userId: string): Set<string> {
+  try {
+    const v = JSON.parse(localStorage.getItem(PLANS_MET_KEY) ?? "null") as { user?: unknown; ids?: unknown } | null;
+    if (v && v.user === userId && Array.isArray(v.ids)) return new Set(v.ids.filter((id): id is string => typeof id === "string"));
+  } catch {
+    /* unreadable: every plan meets the server afresh, which loses nothing */
+  }
+  return new Set();
+}
+
+function writePlansMet(userId: string, ids: Iterable<string>): void {
+  try {
+    localStorage.setItem(PLANS_MET_KEY, JSON.stringify({ user: userId, ids: [...new Set(ids)].sort() }));
+  } catch {
+    /* no storage: the next exchange joins again, which loses nothing */
+  }
+}
+
 async function session(): Promise<{ supabase: SupabaseClient; userId: string } | null> {
   if (!(await canSync())) return null;
   const supabase = createClient();
@@ -217,16 +245,24 @@ export async function syncKept(only: readonly KeptSlice[] = KEPT_SLICES): Promis
     if (error) return;
     const remote = new Map<string, unknown>((data ?? []).map((r: { slice: string; value: unknown }) => [r.slice, r.value]));
     const rows: { user_id: string; slice: KeptSlice; value: unknown; updated_at: string }[] = [];
+    const context: MergeContext = { plansMet: readPlansMet(s.userId) };
+    let plansNow: string[] | null = null;
     for (const id of only) {
       const slice = SLICES[id];
       const local = slice.local();
       const theirs = remote.has(id) ? slice.clean(remote.get(id)) : null;
-      const merged = theirs ? slice.merge(local as never, theirs as never) : local;
+      const merged = theirs ? slice.merge(local as never, theirs as never, context) : local;
       if (theirs && !sameValue(merged, local)) slice.apply(merged as never);
       const changed = theirs ? !sameValue(merged, theirs) : !slice.empty(merged as never);
       if (changed) rows.push({ user_id: s.userId, slice: id, value: merged, updated_at: new Date().toISOString() });
+      if (id === "plans") plansNow = Object.keys((merged as ReturnType<typeof cleanPlansSlice>).plans);
     }
-    if (rows.length) await s.supabase.from(TABLE).upsert(rows, { onConflict: "user_id,slice" });
+    if (rows.length) {
+      const { error: written } = await s.supabase.from(TABLE).upsert(rows, { onConflict: "user_id,slice" });
+      if (written) return;
+    }
+    // The server holds the merged plans now: from here on they are met.
+    if (plansNow) writePlansMet(s.userId, [...context.plansMet, ...plansNow]);
   } catch {
     /* kept on the device; the next exchange tries again */
   }

@@ -167,6 +167,31 @@ describe("the palette and the reader's settings, as one", () => {
   });
 });
 
+// Fable's release check 1, M2: newer-wins on a plan's first exchange lost a
+// phone's 200 days to a tablet's 5 when the tablet was touched last.
+describe("plans, the first time they meet the server", () => {
+  const days = (n: number) => Object.fromEntries(Array.from({ length: n }, (_, i) => [String(i), "2026-11-01"]));
+  const phone = { plans: { psalter: { startedOn: "2026-05-01", done: days(200), at: 1_000 } }, resets: {} };
+  const tablet = { plans: { psalter: { startedOn: "2026-10-30", done: { ...days(3), "300": "2026-11-08", "301": "2026-11-09" }, at: 5_000 } }, resets: {} };
+
+  it("join both copies' days on a plan's first exchange, whichever was touched last", () => {
+    const merged = mergePlans(phone, tablet, new Set());
+    expect(Object.keys(merged.plans.psalter.done)).toHaveLength(202);
+    expect(merged.plans.psalter).toMatchObject({ startedOn: "2026-05-01", at: 5_000 });
+    // And from the tablet's side the same days.
+    expect(Object.keys(mergePlans(tablet, phone, new Set()).plans.psalter.done)).toHaveLength(202);
+  });
+
+  it("keep the copy changed last once the plan has met the server", () => {
+    expect(Object.keys(mergePlans(phone, tablet, new Set(["psalter"])).plans.psalter.done)).toHaveLength(5);
+  });
+
+  it("never join a copy from before the plan was started over", () => {
+    const begunAgain = { plans: { psalter: { startedOn: "2026-11-05", done: { "0": "2026-11-05" }, at: 9_000 } }, resets: { psalter: 8_000 } };
+    expect(mergePlans(phone, begunAgain, new Set()).plans.psalter).toEqual(begunAgain.plans.psalter);
+  });
+});
+
 describe("the exchange with the server", () => {
   it("does nothing, and asks once, while the owner's table is not there", async () => {
     stored.set("purify:plans", JSON.stringify({ john21: { startedOn: "2026-11-01", done: { "0": "2026-11-01" }, at: 1 } }));
@@ -238,5 +263,38 @@ describe("the exchange with the server", () => {
     expect(stored.get("purify.reader.theme")).toBe("candlelight");
     expect(stored.has("purify.reader.size")).toBe(false);
     expect(events).toContainEqual({ type: "purify:reader-prefs", source: "sync" });
+  });
+  it("remembers which plans met the server, for whom, and only once the server holds them", async () => {
+    const days = (n: number) => Object.fromEntries(Array.from({ length: n }, (_, i) => [String(i), "2026-11-01"]));
+    const rows: Record<string, unknown>[] = [
+      { user_id: "reader", slice: "plans", value: { plans: { psalter: { startedOn: "2026-11-01", done: days(5), at: 5 * DAY } }, resets: {} } },
+    ];
+    // The write fails: nothing is marked, so the next exchange joins again.
+    const { client: c } = cappedApi({ user_kept: rows }, {}, { user: reader, upserts: true });
+    const from = c.from.bind(c);
+    client = Object.assign(Object.create(c), {
+      from: (table: string) => {
+        const q = from(table);
+        return Object.assign(Object.create(q), { select: q.select.bind(q), upsert: async () => ({ data: null, error: { code: "500", message: "down" } }) });
+      },
+      auth: c.auth,
+    }) as SupabaseClient;
+    stored.set("purify:plans", JSON.stringify({ psalter: { startedOn: "2026-11-01", done: days(200), at: DAY } }));
+    await syncKept(["plans"]);
+    expect(stored.has("purify:kept.plansMet")).toBe(false);
+    // The phone's 200 days stayed on the phone, joined with the tablet's.
+    expect(Object.keys(JSON.parse(stored.get("purify:plans")!).psalter.done)).toHaveLength(200);
+
+    // The write goes through: the server holds every day, and the plan is met.
+    client = cappedApi({ user_kept: rows }, {}, { user: reader, upserts: true }).client;
+    await syncKept(["plans"]);
+    expect(Object.keys((rows[0].value as { plans: { psalter: { done: object } } }).plans.psalter.done)).toHaveLength(200);
+    expect(JSON.parse(stored.get("purify:kept.plansMet")!)).toEqual({ user: "reader", ids: ["psalter"] });
+
+    // Another account on this device has met nothing.
+    client = cappedApi({ user_kept: [] }, {}, { user: { id: "someone-else" }, upserts: true }).client;
+    stored.set("purify:plans", JSON.stringify({ john21: { startedOn: "2026-11-01", done: { "0": "2026-11-01" }, at: DAY } }));
+    await syncKept(["plans"]);
+    expect(JSON.parse(stored.get("purify:kept.plansMet")!)).toEqual({ user: "someone-else", ids: ["john21"] });
   });
 });
