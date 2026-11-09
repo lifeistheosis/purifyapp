@@ -106,6 +106,32 @@ describe("/api/admin/community", () => {
     expect(body.recipes).toBe(1);
   });
 
+  it("counts a reported shared journal page as one row, until it is kept or hidden (admin A1)", async () => {
+    const page = (over: Record<string, unknown>) => ({
+      id: "p1",
+      title: "",
+      body: "",
+      created_at: "2026-11-01T10:00:00Z",
+      withdrawn_at: null,
+      hidden_at: null,
+      reviewed_at: null,
+      reports: [
+        { reason: "Not kind", created_at: "2026-11-02T10:00:00Z" },
+        { reason: "Not kind", created_at: "2026-11-03T10:00:00Z" },
+      ],
+      ...over,
+    });
+    state.tables.shared_pages = [
+      page({}),
+      page({ id: "p2", reviewed_at: "2026-11-04T10:00:00Z" }),
+      page({ id: "p3", hidden_at: "2026-11-04T10:00:00Z" }),
+      page({ id: "p4", reviewed_at: "2026-11-02T12:00:00Z" }),
+    ];
+    const body = (await (await summary()).json()) as Record<string, number>;
+    // p1 never kept; p4 reported again after it was kept. p2 kept since, p3 hidden.
+    expect(body.waiting).toBe(6);
+  });
+
   it("writes a dismissed campaign report to the moderation log, with its words, before deleting it", async () => {
     const res = await act({ action: "dismiss_campaign_report", id: REPORT_ID });
     expect(res.status).toBe(200);

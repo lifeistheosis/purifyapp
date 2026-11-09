@@ -33,9 +33,11 @@ import {
   type ReportIn,
 } from "@/lib/admin/communityQueue";
 import { MAX_PINNED } from "@/lib/community/pinning";
+import type { SharedPageIn } from "@/lib/admin/sharedPages";
 
 import { AmbassadorsPart } from "../community/Ambassadors";
 import { QueueList } from "../community/Queue";
+import { SharedPagesPart } from "../community/SharedPages";
 import { runCalls, usePendingRemovals } from "../community/usePendingRemovals";
 import { Select, SubTabs, ToolbarButton } from "../primitives";
 import { CommunityFilterPanel, type FilterData } from "./CommunityFilterPanel";
@@ -64,9 +66,11 @@ type CommunityData = {
   recentPosts: RecentPost[];
   maxPinned: number;
   kitchen?: KitchenBlock;
+  /** Reported shared journal pages (1.9, admin A1); absent before the sharing table. */
+  sharedPages?: SharedPageIn[];
 };
 
-export type CommunityPart = "waiting" | "announcements" | "filter" | "kitchen" | "ambassadors";
+export type CommunityPart = "waiting" | "announcements" | "shared" | "filter" | "kitchen" | "ambassadors";
 
 const COMMUNITY = "/api/admin/community";
 
@@ -184,6 +188,7 @@ export function CommunityPage({ part: first = "waiting" }: { part?: CommunityPar
         campaignReports: community.campaignReports,
         recipeReports: community.recipeReports,
         reviewReports: community.kitchen?.reviewReports ?? [],
+        sharedPages: community.sharedPages ?? [],
       })
     : [];
   const waitingNow = rows.filter((r) => !decided[r.key] && !removals.pending[r.key]).length;
@@ -193,6 +198,7 @@ export function CommunityPage({ part: first = "waiting" }: { part?: CommunityPar
   const parts: [CommunityPart, string][] = [
     ["waiting", community ? `Waiting ${waitingNow}` : "Waiting"],
     ["announcements", "Announcements"],
+    ["shared", "Shared pages"],
     ["filter", "Filter and log"],
     ["kitchen", "Kitchen photos"],
     ["ambassadors", "Ambassadors"],
@@ -266,6 +272,8 @@ export function CommunityPage({ part: first = "waiting" }: { part?: CommunityPar
           </p>
         )
       ) : null}
+
+      {part === "shared" ? <SharedPagesPart /> : null}
 
       {part === "filter" ? (
         filter ? (

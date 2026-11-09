@@ -23,6 +23,8 @@
  * first, lib/admin/undoDelay.ts).
  */
 
+import { openReports, sharedKey, sharedWords, waitsForDecision, type SharedPageIn } from "./sharedPages";
+
 /** How long a removal waits, with Undo, before it is written. */
 export const UNDO_MS = 10_000;
 
@@ -97,6 +99,8 @@ export type QueueSources = {
   campaignReports: CampaignReportIn[];
   recipeReports: RecipeReportIn[];
   reviewReports: ReviewReportIn[];
+  /** Shared journal pages with their reports (1.9, admin A1; lib/admin/sharedPages.ts). Absent before the sharing table. */
+  sharedPages?: SharedPageIn[];
 };
 
 // ── The keys: one per thing ──────────────────────────────────────────────
@@ -159,6 +163,7 @@ export type QueueRow = {
 
 const COMMUNITY = "/api/admin/community";
 const FILTER = "/api/admin/community/filter";
+const SHARED = "/api/admin/shared-pages";
 
 const KIND_WORDS: Record<string, string> = {
   discussion: "a post in Discussion",
@@ -436,6 +441,45 @@ export function buildQueue(src: QueueSources): QueueRow[] {
       actions: [
         ...(!c || gone ? [] : [{ id: "remove", label: "Remove campaign", tone: "danger" as const, removal: true, calls: [{ url: COMMUNITY, body: { action: "remove_campaign", id: c.id } }], done: "Removed." }]),
         { id: "dismiss", label: "Dismiss", tone: "default", removal: false, calls: dismissAll("dismiss_campaign_report", reps.map((r) => r.id)), done: "Dismissed. A record is kept in the moderation log." },
+      ],
+    });
+  }
+
+  // Shared journal pages (1.9, admin A1): one row a page, the reports filed
+  // since it was last kept. Its writer is not shown: the public page names
+  // nobody (lib/admin/sharedPages.ts).
+  for (const p of src.sharedPages ?? []) {
+    if (!waitsForDecision(p)) continue;
+    const open = openReports(p);
+    const reasons = open.map((r) => r.reason);
+    rows.push({
+      key: sharedKey(p.id),
+      what: `Reported · ${plural(open.length, "report", "reports")} · a shared journal page${p.reviewed_at ? " · kept before" : ""}`,
+      at: oldest(open.map((r) => r.created_at)),
+      who: null,
+      text: sharedWords(p),
+      written: null,
+      reasons: tallyReasons(reasons),
+      note: `Shared ${p.created_at.slice(0, 10)}. ${p.reviewed_at ? "Search engines may show it." : "Kept out of search engines until reviewed."}`,
+      more: null,
+      picture: null,
+      actions: [
+        {
+          id: "hide",
+          label: "Hide the page",
+          tone: "danger",
+          removal: true,
+          calls: [{ url: SHARED, body: { action: "hide", id: p.id, reason: topReason(reasons) } }],
+          done: "Hidden. Its link shows nothing now.",
+        },
+        {
+          id: "keep",
+          label: "Keep it",
+          tone: "default",
+          removal: false,
+          calls: [{ url: SHARED, body: { action: "keep", id: p.id } }],
+          done: "Kept, and marked reviewed.",
+        },
       ],
     });
   }

@@ -15,6 +15,7 @@ import {
   reportKey,
   reviewKey,
 } from "@/lib/admin/communityQueue";
+import { SHARED_PAGE_COLUMNS, sharedKey, waitsForDecision, type SharedPageIn } from "@/lib/admin/sharedPages";
 import { MAX_PINNED } from "@/lib/community/pinning";
 import { logMod, moderatorFor, readOpenReports, runModAction, type ModAction } from "@/lib/community/moderation";
 import { forgetUploads, removeOwnedUpload } from "@/lib/security/uploadOwners";
@@ -131,12 +132,15 @@ export async function GET(req: Request) {
   // reads of ids only; any failed read is a 500, because this route's own
   // comment below says why an unread queue must never read as empty.
   if (new URL(req.url).searchParams.get("summary") === "1") {
-    const [recipes, campaignReports, recipeReportsFirst, reportsFirst, holdsRead] = await Promise.all([
+    const [recipes, campaignReports, recipeReportsFirst, reportsFirst, holdsRead, sharedFirst] = await Promise.all([
       admin.from("trapeza_recipes").select("id").eq("status", "pending").limit(1000),
       admin.from("prayer_campaign_reports").select("id, campaign_id").limit(1000),
       admin.from("trapeza_recipe_reports").select("id, recipe_id, review_id").limit(1000),
       admin.from("community_reports").select("id, post_id, reply_id, profile_id").eq("status", "open").limit(1000),
       admin.from("community_text_holds").select("id, post_id, reply_id").eq("status", "pending").limit(1000),
+      // Shared journal pages that wait (1.9, admin A1): the same pages the
+      // queue shows, from their reports and their state.
+      readReportedShares(admin, true),
     ]);
     // Older shapes: no review_id before the Kitchen migration, no profile_id
     // before profile reports, no holds table before the filter.
@@ -147,7 +151,7 @@ export async function GET(req: Request) {
       ? await admin.from("community_reports").select("id, post_id, reply_id").eq("status", "open").limit(1000)
       : reportsFirst;
     const holds = isTableAbsent(holdsRead.error) ? { data: [], error: null } : holdsRead;
-    const err = recipes.error ?? campaignReports.error ?? recipeReports.error ?? reports.error ?? holds.error;
+    const err = recipes.error ?? campaignReports.error ?? recipeReports.error ?? reports.error ?? holds.error ?? sharedFirst.error;
     if (err) {
       console.error("[admin/community] moderation count failed", err.message);
       return NextResponse.json({ error: "The moderation queue could not be counted." }, { status: 500 });
@@ -163,6 +167,7 @@ export async function GET(req: Request) {
       ...((recipes.data ?? []) as Id[]).map((r) => recipeNewKey(r.id)),
       ...recipeRows.map((r) => (r.review_id ? reviewKey(r.review_id, r.id) : recipeKey(r.recipe_id, r.id))),
       ...campaignRows.map((r) => campaignKey(r.campaign_id, r.id)),
+      ...sharedFirst.data.filter(waitsForDecision).map((p) => sharedKey(p.id)),
     ];
     return NextResponse.json(
       {
@@ -194,7 +199,7 @@ export async function GET(req: Request) {
       .limit(200);
   const PENDING = "id, title, fast_level, season, tradition, summary, ingredients, steps, created_at";
 
-  const [pendingFirst, campaignReports, recipeReports, recentPosts, kitchen] = await Promise.all([
+  const [pendingFirst, campaignReports, recipeReports, recentPosts, kitchen, sharedPages] = await Promise.all([
     pendingQuery(`${PENDING}, photo_url`),
     admin
       .from("prayer_campaign_reports")
@@ -221,6 +226,7 @@ export async function GET(req: Request) {
       .order("created_at", { ascending: false })
       .limit(30),
     loadKitchen(admin),
+    readReportedShares(admin),
   ]);
   // The submission's photo arrives with 20260928000000_kitchen.sql; before it, ask
   // again without the column.
@@ -241,7 +247,8 @@ export async function GET(req: Request) {
     recipeReports.error ??
     recentPosts.error ??
     conversationReports.error ??
-    kitchen.error;
+    kitchen.error ??
+    sharedPages.error;
   if (readError) {
     console.error("[admin/community] moderation read failed", readError.message);
     return NextResponse.json(
@@ -269,9 +276,48 @@ export async function GET(req: Request) {
         recentReviews: kitchen.recentReviews,
         reviewReports: kitchen.reviewReports,
       },
+      sharedPages: sharedPages.data,
     },
     { headers: { "Cache-Control": "no-store" } },
   );
+}
+
+/**
+ * Shared journal pages with at least one report, still up (1.9, admin A1;
+ * lib/admin/sharedPages.ts). Nothing, not an error, before the sharing table
+ * exists (docs/1.9-build/sql/shared-pages.sql); any other failure is an
+ * error, because an unread queue must never read as empty.
+ */
+async function readReportedShares(
+  admin: AdminClient,
+  /** For the count: the states and the reports' times, never the pages' words. */
+  thin = false,
+): Promise<{ data: SharedPageIn[]; error: { message: string } | null }> {
+  const columns = thin
+    ? "id, created_at, withdrawn_at, hidden_at, reviewed_at, reports:shared_page_reports!inner(created_at)"
+    : `${SHARED_PAGE_COLUMNS}, reports:shared_page_reports!inner(reason, created_at)`;
+  const { data, error } = await admin
+    .from("shared_pages")
+    .select(columns)
+    .is("hidden_at", null)
+    .is("withdrawn_at", null)
+    .order("created_at", { ascending: false })
+    .limit(500);
+  if (error) return isTableAbsent(error) ? { data: [], error: null } : { data: [], error };
+  const rows = (data ?? []) as unknown as (Partial<SharedPageIn> & Pick<SharedPageIn, "id" | "created_at">)[];
+  return {
+    data: rows.map((p) => ({
+      id: p.id,
+      title: p.title ?? "",
+      body: p.body ?? "",
+      created_at: p.created_at,
+      withdrawn_at: p.withdrawn_at ?? null,
+      hidden_at: p.hidden_at ?? null,
+      reviewed_at: p.reviewed_at ?? null,
+      reports: (p.reports ?? []).map((r) => ({ reason: r.reason ?? null, created_at: r.created_at })),
+    })),
+    error: null,
+  };
 }
 
 const actionSchema = z.object({
