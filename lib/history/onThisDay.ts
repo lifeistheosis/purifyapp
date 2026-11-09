@@ -42,10 +42,22 @@ export function historyEventsOnDay(civil: Date, style: CalStyle): HistoryEventMe
 }
 
 /**
+ * Held off Today until the owner's word: the three most disputed events in the
+ * history, the same three the Thread leaves for him (docs/1.9-build/
+ * thread-steps.json). They stay in History, and on the Prayers page's day, as
+ * they were.
+ */
+export const TODAY_FOR_HIS_WORD: ReadonlySet<string> = new Set([
+  "moscow-constantinople-schism-2018",
+  "oca-autocephaly",
+  "ukrainian-autocephaly",
+]);
+
+/**
  * The one Today shows under the day's saints: the first that has its picture,
  * since the card is the event with its artwork. An event with no picture is
  * still on the Prayers page's day and in History.
  */
 export function todaysHistoryEvent(civil: Date, style: CalStyle): HistoryEventMeta | null {
-  return historyEventsOnDay(civil, style).find((e) => e.media) ?? null;
+  return historyEventsOnDay(civil, style).find((e) => e.media && !TODAY_FOR_HIS_WORD.has(e.slug)) ?? null;
 }

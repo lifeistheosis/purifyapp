@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
 
 import { publishedEvents } from "@/lib/history/events";
-import { historyEventsOnDay, todaysHistoryEvent } from "@/lib/history/onThisDay";
+import { TODAY_FOR_HIS_WORD, historyEventsOnDay, todaysHistoryEvent } from "@/lib/history/onThisDay";
 
 /** The reader's day in the UTC-noon frame useToday hands over. */
 const day = (y: number, m: number, d: number) => new Date(Date.UTC(y, m - 1, d, 12));
@@ -40,5 +40,15 @@ describe("this day in Church history (U9)", () => {
     // OCA autocephaly has no picture on record: Today shows nothing that day.
     expect(todaysHistoryEvent(day(2027, 4, 10), "new")).toBeNull();
     expect(todaysHistoryEvent(day(2027, 1, 2), "new")).toBeNull();
+  });
+
+  it("holds the three most disputed events off Today until his word", () => {
+    // The 2018 break has its picture, and falls on October 15.
+    expect(slugs(historyEventsOnDay(day(2027, 10, 15), "new"))).toContain("moscow-constantinople-schism-2018");
+    expect(todaysHistoryEvent(day(2027, 10, 15), "new")).toBeNull();
+    // Every other dated event with its picture still shows on its day.
+    for (const e of publishedEvents().filter((x) => x.calendar && x.media && !TODAY_FOR_HIS_WORD.has(x.slug))) {
+      expect(todaysHistoryEvent(day(2027, e.calendar!.month, e.calendar!.day), "new")?.slug).toBe(e.slug);
+    }
   });
 });
