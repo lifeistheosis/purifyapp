@@ -1,0 +1,1754 @@
+Item 15: the Serbian, Arabic and Spanish Bibles to download. DRAFT, parked.
+
+Built and walked on 2026-11-09 on the arbiter's order of 21:23 ("15, the four
+Bibles, his 'do your best' stands"), before the order of 23:07 reached this
+chat ("size 15, but don't build it until I pass on Edgar's word"). So it is
+kept here, off the branch's code, until his word on whether it rides in 1.9.
+Romanian is not in it: its legal footing and the OCR's proofing need his word.
+
+To put it in (on his word):
+
+  git apply --3way docs/1.9-build/drafts/bibles-15.patch
+  # the three eBible files, each unzipped into its own new folder, their
+  # sha256 as scripts/bibles/build.mjs names them:
+  #   https://ebible.org/Scriptures/srp1868_usfm.zip
+  #   https://ebible.org/Scriptures/arb-vd_usfm.zip
+  #   https://ebible.org/Scriptures/spaRV1909_usfm.zip
+  node scripts/bibles/build.mjs --sr <srp1868 folder> --ar <arb-vd folder> --es <spaRV1909 folder>
+  node scripts/bibles/compare-map.mjs
+  # then typecheck, test:unit, eslint, build:android and the walk, and the
+  # records (PLAN.md rows 21 and 21b, ideas.json e-bibles-languages and
+  # e-compare) with the commit's hash.
+
+What it does, in docs/1.9-build/BIBLES.md as this patch writes it ("What
+shipped (2026-11-09)"): three Bibles of the Hebrew canon, each labelled for
+what it is in 21 languages, psalm titles as their opening lines, the Arabic
+right to left, Psalm 151 and Daniel 13 and 14 in English with a line saying
+why, the "Psalm 52 in most Bibles" line only where a Bible numbers the
+Psalms as the Septuagint, and in Compare (95.0%, 96.2% and 95.0% of verses
+placed). The Russian and the Greek are untouched: the build keeps a Bible as
+built when its source is not given.
+
+Checked on 2026-11-09, with it applied and the data built: typecheck 0;
+npm run test:unit 803 files, 9772 tests passed (before the psalm-line fix;
+after it, the Bible tests 54 of 54 and the reader's screen 41 of 41); eslint
+on the changed files clean; npm run build:android ready (with the shop's
+store and product lists stubbed locally, since this sandbox reaches no
+database); the walk in the export PASS (the list, the Arabic right to left
+with its title, Psalm 151 in English with its line, Compare at the Arabic's
+51:1, the Spanish psalm title and Romans ending at "Amén.", the Serbian John
+1:1, the mockup checks on all five palettes).
+
+diff --git a/components/bible/BibleRow.tsx b/components/bible/BibleRow.tsx
+index 0720a92..244471b 100644
+--- a/components/bible/BibleRow.tsx
++++ b/components/bible/BibleRow.tsx
+@@ -91,8 +91,11 @@ export function BibleRow({
+           className={cn("flex min-w-0 flex-1 items-center gap-3 rounded-md px-3 py-3 text-start", !current && "hover:bg-paper/[0.04]")}
+         >
+           <span className="min-w-0 flex-1">
+-            <span lang={bible.textLang} className="block font-sans text-ui font-semibold text-paper">
+-              {bible.title}
++            <span className="block font-sans text-ui font-semibold text-paper">
++              {/* Its own direction inside, the row's alignment outside: the Arabic name reads right to left and starts where the others do. */}
++              <span lang={bible.textLang} dir={bible.dir}>
++                {bible.title}
++              </span>
+             </span>
+             <span lang={locale} aria-live={downloading ? "polite" : undefined} className="mt-0.5 block font-sans text-caption text-paper/50">
+               {note}
+diff --git a/components/bible/ChapterScreen.tsx b/components/bible/ChapterScreen.tsx
+index e7371c1..ca150ae 100644
+--- a/components/bible/ChapterScreen.tsx
++++ b/components/bible/ChapterScreen.tsx
+@@ -136,15 +136,23 @@ export function ChapterScreen({
+   rail: ReactNode;
+ }) {
+   const slug = book.slug;
+-  const psalmLine = slug === "psalms" ? hebrewLine(chapter) : null;
+   // A Bible the reader downloaded (1.9, lib/bible/downloads/): the chapter in
+   // its words, when the reader reads in it and it has the book. Until its
+   // book is read the page holds its place; a book that cannot be had shows
+-  // the English, and says so, as does a book the Bible does not have.
++  // the English, and says so, as does a book the Bible does not have, and a
++  // chapter it does not have: the Bibles of the Hebrew canon end the Psalms at
++  // 150 and Daniel at 12, so Psalm 151 and Susanna and Bel are in English.
+   const { t } = useTranslate();
+   const { shown, lacking } = useShownBible(slug);
+   const text = useBibleText(shown, slug, chapter, book.chapters);
+-  const downloaded = shown && text && text.state !== "failed" ? { bible: shown, text } : null;
++  const read = shown && text && text.state !== "failed" ? { bible: shown, text } : null;
++  const missing = read?.text.state === "ready" && read.text.page.sections.length === 0 && !read.text.page.elsewhere ? read.bible : null;
++  const downloaded = missing ? null : read;
++  // Under a psalm's number, where most Bibles have it: for the app's
++  // Septuagint numbering, and a Bible that keeps it (the Synodal, the Greek).
++  // A Bible numbered as the Hebrew (the Van Dyck, the Reina-Valera, the
++  // Serbian) is where most Bibles are already, so its page says nothing.
++  const psalmLine = slug === "psalms" && downloaded?.bible.psalms !== "hebrew" ? hebrewLine(chapter) : null;
+   const unopened = shown && text?.state === "failed" ? shown : null;
+   const verses = downloaded?.text.state === "ready" && downloaded.text.page.last ? downloaded.text.page.last : totalVerses;
+   // The round buttons over the page, the pill at its foot and the app's tab
+@@ -377,11 +385,16 @@ export function ChapterScreen({
+                   </p>
+                 )}
+ 
+-                {/* The chosen Bible has no such book (the Greek has no 2 Esdras),
+-                    or its book could not be read: the English, saying why. */}
+-                {lacking || unopened ? (
++                {/* The chosen Bible has no such book (the Greek has no 2 Esdras)
++                    or chapter (Psalm 151 in a Bible of the Hebrew canon), or its
++                    book could not be read: the English, saying why. */}
++                {lacking || missing || unopened ? (
+                   <p className="page-open-after mb-6 font-sans text-detail leading-[1.55] text-paper/70" data-bible-note="">
+-                    {lacking ? t("bible.downloads.notInBible", { book: t(`bible.books.${slug}`) }) : t("bible.downloads.couldNotOpen")}
++                    {lacking
++                      ? t("bible.downloads.notInBible", { book: t(`bible.books.${slug}`) })
++                      : missing
++                        ? t("bible.downloads.chapterNotInBible")
++                        : t("bible.downloads.couldNotOpen")}
+                   </p>
+                 ) : null}
+ 
+diff --git a/components/bible/CompareSheet.tsx b/components/bible/CompareSheet.tsx
+index 7eb5735..c6c8d14 100644
+--- a/components/bible/CompareSheet.tsx
++++ b/components/bible/CompareSheet.tsx
+@@ -132,13 +132,15 @@ function BibleRow({ bible, row }: { bible: DownloadableBible; row: Row }) {
+   return (
+     <li className="py-3.5" data-compare-row={bible.id}>
+       <p className="font-sans text-detail font-semibold text-premium-ink">
+-        <span lang={bible.textLang}>{bible.title}</span>
++        <span lang={bible.textLang} dir={bible.dir}>
++          {bible.title}
++        </span>
+         {row.state === "words" && row.at ? <span className="font-normal tabular-nums text-paper/60"> · {row.at}</span> : null}
+       </p>
+       {row.state === "loading" ? (
+         <SkeletonText lines={2} className="mt-2" />
+       ) : row.state === "words" ? (
+-        <p lang={bible.textLang} className={greek ? "mt-1 text-body leading-[1.6] text-paper/80" : "mt-1 font-serif text-body leading-[1.6] text-paper/80"} style={greek ? GREEK : undefined}>
++        <p lang={bible.textLang} dir={bible.dir} className={greek ? "mt-1 text-body leading-[1.6] text-paper/80" : "mt-1 font-serif text-body leading-[1.6] text-paper/80"} style={greek ? GREEK : undefined}>
+           {row.words}
+         </p>
+       ) : (
+diff --git a/components/bible/DownloadedChapter.tsx b/components/bible/DownloadedChapter.tsx
+index 93c0697..f69906c 100644
+--- a/components/bible/DownloadedChapter.tsx
++++ b/components/bible/DownloadedChapter.tsx
+@@ -20,7 +20,9 @@
+ //
+ // Polytonic Greek is set in Cardo (--font-greek), the one font the app
+ // carries that has every accent of it (the Greek beside the English uses it
+-// too); the reader's font choice is for the scripts it covers.
++// too); the reader's font choice is for the scripts it covers. The Arabic
++// runs right to left whatever the app's language (its verse numbers stand at
++// the start of each line, on the right), in the Naskh the serif stack carries.
+ 
+ import Link from "next/link";
+ import { Fragment } from "react";
+@@ -78,6 +80,7 @@ export function DownloadedChapter({
+   return (
+     <article
+       lang={bible.textLang}
++      dir={bible.dir}
+       data-bible={bible.id}
+       className={cn("text-paper/90", FONT_CLASSES[font], SIZE_CLASSES[size])}
+       style={{ ...(leadingValue ? { lineHeight: leadingValue } : {}), ...(greek ? { fontFamily: "var(--font-greek), serif" } : {}) }}
+diff --git a/components/settings/StorageSection.tsx b/components/settings/StorageSection.tsx
+index abe9b39..89d28cd 100644
+--- a/components/settings/StorageSection.tsx
++++ b/components/settings/StorageSection.tsx
+@@ -95,7 +95,11 @@ export function StorageSection() {
+       {downloaded.map((b) => (
+         <Row
+           key={b.id}
+-          label={<span lang={b.textLang}>{b.title}</span>}
++          label={
++            <span lang={b.textLang} dir={b.dir}>
++              {b.title}
++            </span>
++          }
+           description={`${t("settings.storageBible")} · ${megabytes(bibles[b.id].bytes, locale)}`}
+           control={remove(() => void removeBible(b.id), t("bible.downloads.removeAria", { name: b.title }))}
+         />
+diff --git a/data/bibles/catalog.json b/data/bibles/catalog.json
+index 80175b6..b6208f4 100644
+--- a/data/bibles/catalog.json
++++ b/data/bibles/catalog.json
+@@ -165,5 +165,221 @@
+    "jude",
+    "revelation"
+   ]
++ },
++ "sr-danicic-karadzic": {
++  "version": "bb478de373b3",
++  "bytes": 5848629,
++  "books": [
++   "genesis",
++   "exodus",
++   "leviticus",
++   "numbers",
++   "deuteronomy",
++   "joshua",
++   "judges",
++   "ruth",
++   "1-samuel",
++   "2-samuel",
++   "1-kings",
++   "2-kings",
++   "1-chronicles",
++   "2-chronicles",
++   "ezra",
++   "nehemiah",
++   "esther",
++   "job",
++   "psalms",
++   "proverbs",
++   "ecclesiastes",
++   "song-of-solomon",
++   "hosea",
++   "amos",
++   "micah",
++   "joel",
++   "obadiah",
++   "jonah",
++   "nahum",
++   "habakkuk",
++   "zephaniah",
++   "haggai",
++   "zechariah",
++   "malachi",
++   "isaiah",
++   "jeremiah",
++   "lamentations",
++   "ezekiel",
++   "daniel",
++   "matthew",
++   "mark",
++   "luke",
++   "john",
++   "acts",
++   "romans",
++   "1-corinthians",
++   "2-corinthians",
++   "galatians",
++   "ephesians",
++   "philippians",
++   "colossians",
++   "1-thessalonians",
++   "2-thessalonians",
++   "1-timothy",
++   "2-timothy",
++   "titus",
++   "philemon",
++   "hebrews",
++   "james",
++   "1-peter",
++   "2-peter",
++   "1-john",
++   "2-john",
++   "3-john",
++   "jude",
++   "revelation"
++  ]
++ },
++ "ar-van-dyck": {
++  "version": "aebfbaffe561",
++  "bytes": 7666389,
++  "books": [
++   "genesis",
++   "exodus",
++   "leviticus",
++   "numbers",
++   "deuteronomy",
++   "joshua",
++   "judges",
++   "ruth",
++   "1-samuel",
++   "2-samuel",
++   "1-kings",
++   "2-kings",
++   "1-chronicles",
++   "2-chronicles",
++   "ezra",
++   "nehemiah",
++   "esther",
++   "job",
++   "psalms",
++   "proverbs",
++   "ecclesiastes",
++   "song-of-solomon",
++   "hosea",
++   "amos",
++   "micah",
++   "joel",
++   "obadiah",
++   "jonah",
++   "nahum",
++   "habakkuk",
++   "zephaniah",
++   "haggai",
++   "zechariah",
++   "malachi",
++   "isaiah",
++   "jeremiah",
++   "lamentations",
++   "ezekiel",
++   "daniel",
++   "matthew",
++   "mark",
++   "luke",
++   "john",
++   "acts",
++   "romans",
++   "1-corinthians",
++   "2-corinthians",
++   "galatians",
++   "ephesians",
++   "philippians",
++   "colossians",
++   "1-thessalonians",
++   "2-thessalonians",
++   "1-timothy",
++   "2-timothy",
++   "titus",
++   "philemon",
++   "hebrews",
++   "james",
++   "1-peter",
++   "2-peter",
++   "1-john",
++   "2-john",
++   "3-john",
++   "jude",
++   "revelation"
++  ]
++ },
++ "es-reina-valera-1909": {
++  "version": "964d4609dced",
++  "bytes": 4153742,
++  "books": [
++   "genesis",
++   "exodus",
++   "leviticus",
++   "numbers",
++   "deuteronomy",
++   "joshua",
++   "judges",
++   "ruth",
++   "1-samuel",
++   "2-samuel",
++   "1-kings",
++   "2-kings",
++   "1-chronicles",
++   "2-chronicles",
++   "ezra",
++   "nehemiah",
++   "esther",
++   "job",
++   "psalms",
++   "proverbs",
++   "ecclesiastes",
++   "song-of-solomon",
++   "hosea",
++   "amos",
++   "micah",
++   "joel",
++   "obadiah",
++   "jonah",
++   "nahum",
++   "habakkuk",
++   "zephaniah",
++   "haggai",
++   "zechariah",
++   "malachi",
++   "isaiah",
++   "jeremiah",
++   "lamentations",
++   "ezekiel",
++   "daniel",
++   "matthew",
++   "mark",
++   "luke",
++   "john",
++   "acts",
++   "romans",
++   "1-corinthians",
++   "2-corinthians",
++   "galatians",
++   "ephesians",
++   "philippians",
++   "colossians",
++   "1-thessalonians",
++   "2-thessalonians",
++   "1-timothy",
++   "2-timothy",
++   "titus",
++   "philemon",
++   "hebrews",
++   "james",
++   "1-peter",
++   "2-peter",
++   "1-john",
++   "2-john",
++   "3-john",
++   "jude",
++   "revelation"
++  ]
+  }
+ }
+diff --git a/docs/1.9-build/BIBLES.md b/docs/1.9-build/BIBLES.md
+index d9c897a..48b5015 100644
+--- a/docs/1.9-build/BIBLES.md
++++ b/docs/1.9-build/BIBLES.md
+@@ -95,6 +95,77 @@ name in 21 languages calls the deuterocanon "deuterocanonical" in English and,
+ as each Church says it, "неканонические" in Russian and "αναγινωσκόμενα" in
+ Greek. Those lines are the only words about the Bibles that are ours.
+ 
++## What shipped (2026-11-09): the Serbian, Arabic and Spanish
++
++His answer on the sheet's 15, the labels and the clergy: "we can't really get
++it checked by priests right now, so just, I guess, do your best". So the
++three Bibles of the Hebrew canon are built, each labelled for what it is, and
++the label lines wait for the clergy whenever they can read them.
++
++| Bible | Books | On the phone | To download (gzip) |
++|---|---|---|---|
++| Превод Вука Караџића и Ђуре Даничића (1868) | 66 | 5.8 MB | about 1.4 MB |
++| ترجمة فاندايك (1865) | 66 | 7.7 MB | about 1.6 MB |
++| Reina-Valera (1909) | 66 | 4.2 MB | about 1.4 MB |
++
++Sources, checked against the files on 2026-11-09 (sha256 in
++`scripts/bibles/build.mjs`): eBible `srp1868` (Cyrillic), `arb-vd` and
++`spaRV1909`, all Public Domain. Each is numbered as the English Bibles are
++(Joel in three chapters, Malachi in four, the Psalms as the Hebrew numbers
++them), with its own turns where its edition has them.
++
++**The lines under each name (ours, for the clergy to read):** in English,
++"A Protestant translation. Its Old Testament is from the Hebrew, without the
++deuterocanonical books. Public domain." for the Arabic and the Spanish, and
++"Its Old Testament is from the Hebrew, without the deuterocanonical books.
++Public domain." for the Serbian, whose translators were Orthodox. Each of the
++21 languages says the deuterocanon as it already does for the Synodal. The
++source line under a chapter names the translators and the year, and for the
++Serbian, "in the Ekavian form of later editions".
++
++**Mended, and named in the build script and its tests:**
++
++- A psalm's title is the opening line of its psalm, unnumbered, as the
++  editions print it (the Arabic and Serbian files mark it; the Spanish file
++  runs it into verse 1, and it is set apart again at the psalm's first word
++  in capitals, the edition's own mark: 124 psalms). The app's English has no
++  titles, so verse 1 is verse 1 in Compare too.
++- The Spanish file keeps 18 verse numbers with no words, where the edition
++  sets the words in the verse before or after (its Numbers 13:1 is the
++  English's 12:16, its Acts 19:40 ends with 19:41): left out, so the page
++  numbers as the edition does. The notes after Paul's fourteen letters
++  ("Fué escrita de Corinto á los Romanos..."), which the file runs on after
++  the last "Amén.", are the edition's apparatus and are left out, as the
++  app's English leaves the King James Bible's out. Psalm 119's Hebrew
++  letters over its stanzas are headings, left out as the Arabic's are.
++- The Arabic begins Nehemiah 8 and Jeremiah 39 with words printed before
++  verse 1 (the end of a sentence that runs on into it): kept there, as the
++  opening line. "(to verse 73)" over Nehemiah 7 is a reader's pointer, not
++  words of the book: left out. Its vowel marks are stored in Unicode's
++  composed order (NFC), as every other Bible's already were; the text is the
++  same mark for mark.
++- Psalm 151 and Daniel 13 and 14 (Susanna, Bel) are not in these Bibles:
++  their pages show the English and say "This chapter is not in this Bible,
++  so it is shown in English."
++- The Arabic reads right to left whatever the app's language.
++
++**Compare** places 95.0% of the app's verses in the Serbian, 96.2% in the
++Arabic and 95.0% in the Spanish (the Synodal 91.3%, the Greek 94.9%). Not
++placed: Esther (the app's is the Septuagint's, with its additions), Daniel 13
++and 14, Psalm 151, and the chapters where an edition turns otherwise than the
++English standard says and the texts cannot settle where (the Spanish's
++Numbers 13 and Jonah 2): left out rather than shown wrong.
++
++**Still open:**
++
++- **Romanian 1914:** not built. It needs his word on the legal footing above
++  (item 2) and proofing of the OCR against the scan before import.
++- **Serbian:** the file is the Ekavian form of later editions, and eBible's
++  Latin `srp1865` is the same text letter for letter once transliterated
++  (checked 2026-11-09), so it is no safer base. Whether the change from the
++  1868 Ijekavian adds protectable work (item 4 above) is still a question for
++  him; eBible marks the file Public Domain.
++
+ ## How it fits the app
+ 
+ - Every Bible needs the verse-number map (item 22): texts numbered as the
+diff --git a/lib/bible/__tests__/compareMap.test.ts b/lib/bible/__tests__/compareMap.test.ts
+index d1ba233..b216ee3 100644
+--- a/lib/bible/__tests__/compareMap.test.ts
++++ b/lib/bible/__tests__/compareMap.test.ts
+@@ -106,7 +106,37 @@ describe("the verse maps for Compare", () => {
+     expect(place(grc, "3-john", 1, 14)).toBe("1:14-15");
+   });
+ 
+-  it("place nearly all of the New Testament, numbered alike in all three", () => {
++  it("place the well-known verses in the Bibles of the Hebrew canon, numbered as the English Bibles are", () => {
++    const [sr, ar, es] = ["sr-danicic-karadzic", "ar-van-dyck", "es-reina-valera-1909"].map(read);
++    for (const map of [sr, ar, es]) {
++      // The psalms one ahead of the app's, their titles apart from verse 1.
++      expect(place(map, "psalms", 50, 1), map.bible).toBe("51:1");
++      expect(place(map, "psalms", 22, 1), map.bible).toBe("23:1");
++      // The Septuagint's Psalm 113:9, "Not unto us", is their 115:1.
++      expect(place(map, "psalms", 113, 9), map.bible).toBe("115:1");
++      // The Septuagint's Jeremiah in the Hebrew's order, and Malachi's last verses in theirs.
++      expect(place(map, "jeremiah", 39, 1), map.bible).toBe("32:1");
++      expect(place(map, "malachi", 4, 5), map.bible).toBe("4:6");
++      expect(place(map, "malachi", 4, 6), map.bible).toBe("4:4");
++      expect(place(map, "romans", 16, 25), map.bible).toBe("16:25");
++      // The app's Esther is the Septuagint's, with its additions: not theirs.
++      expect(map.books.esther, map.bible).toBeUndefined();
++    }
++    // Each where its own edition turns: the app's Numbers 13:1 and Jonah 2:1
++    // are the English Bibles' 12:16 and 1:17, as the Van Dyck numbers them,
++    // and the Serbian sets Jonah's as the Hebrew does.
++    expect(place(ar, "numbers", 13, 1)).toBe("12:16");
++    expect(place(ar, "jonah", 2, 1)).toBe("1:17");
++    expect(place(sr, "jonah", 2, 1)).toBe("2:1");
++    expect(place(sr, "3-john", 1, 14)).toBe("1:14-15");
++    expect(place(ar, "3-john", 1, 14)).toBe("1:14-15");
++    expect(place(es, "3-john", 1, 14)).toBe("1:14");
++    // The Reina-Valera's Numbers 13 begins a verse early, as the Hebrew does,
++    // and not as the English standard says: left out rather than shown wrong.
++    expect(es.books.numbers?.["13"]).toBeUndefined();
++  });
++
++  it("place nearly all of the New Testament, numbered alike in every Bible", () => {
+     for (const { id } of BIBLES as { id: string }[]) {
+       const map = read(id);
+       for (const book of ["matthew", "mark", "luke", "john", "acts", "romans", "hebrews", "revelation"]) {
+diff --git a/lib/bible/__tests__/readerScreen.test.ts b/lib/bible/__tests__/readerScreen.test.ts
+index 834bba9..db4a41f 100644
+--- a/lib/bible/__tests__/readerScreen.test.ts
++++ b/lib/bible/__tests__/readerScreen.test.ts
+@@ -237,6 +237,9 @@ describe("the chapter opens like a book", () => {
+     expect(screen.indexOf("{intro && introFacts ? (")).toBeGreaterThan(screen.indexOf("</header>"));
+     // The verses: the page's reader, or a Bible the reader downloaded in its place (1.9).
+     expect(screen.indexOf(" : reader}")).toBeGreaterThan(screen.indexOf("{intro && introFacts ? ("));
++    // "Psalm 52 in most Bibles" is the Septuagint numbering's line: a Bible
++    // numbered as the Hebrew (the Van Dyck's Psalm 51 is Psalm 51) has none.
++    expect(screen).toContain('const psalmLine = slug === "psalms" && downloaded?.bible.psalms !== "hebrew" ? hebrewLine(chapter) : null;');
+   });
+ });
+ 
+diff --git a/lib/bible/compare.ts b/lib/bible/compare.ts
+index c3ea111..9afdc68 100644
+--- a/lib/bible/compare.ts
++++ b/lib/bible/compare.ts
+@@ -66,6 +66,9 @@ export function wordsAt(file: BibleBookFile, place: ComparePlace): string | null
+ const MAPS: Record<BibleId, () => Promise<{ default: unknown }>> = {
+   "ru-synodal": () => import("@/data/bibles/maps/ru-synodal.json"),
+   "grc-lxx-patriarchal": () => import("@/data/bibles/maps/grc-lxx-patriarchal.json"),
++  "sr-danicic-karadzic": () => import("@/data/bibles/maps/sr-danicic-karadzic.json"),
++  "ar-van-dyck": () => import("@/data/bibles/maps/ar-van-dyck.json"),
++  "es-reina-valera-1909": () => import("@/data/bibles/maps/es-reina-valera-1909.json"),
+ };
+ 
+ const loaded = new Map<BibleId, Promise<CompareMap | null>>();
+diff --git a/lib/bible/downloads/__tests__/files.test.ts b/lib/bible/downloads/__tests__/files.test.ts
+index a945ad9..0aaa434 100644
+--- a/lib/bible/downloads/__tests__/files.test.ts
++++ b/lib/bible/downloads/__tests__/files.test.ts
+@@ -23,6 +23,10 @@ const verse = (bible: string, slug: string, chapter: number, label: number | str
+ const APP = new Map((BOOKS as { slug: string; chapters: number }[]).map((b) => [b.slug, b.chapters]));
+ const RU = "ru-synodal";
+ const GRC = "grc-lxx-patriarchal";
++const SR = "sr-danicic-karadzic";
++const AR = "ar-van-dyck";
++const ES = "es-reina-valera-1909";
++const HEBREW_CANON = [SR, AR, ES];
+ 
+ describe("the list the apps carry", () => {
+   it("is the website's own list of each Bible, version, size and books", () => {
+@@ -44,6 +48,28 @@ describe("the list the apps carry", () => {
+     expect(hasBook(ru, "2-esdras")).toBe(true);
+   });
+ 
++  it("knows the Bibles of the Hebrew canon for what they are: 66 books, none of the deuterocanonical", () => {
++    for (const id of HEBREW_CANON) {
++      const b = DOWNLOADABLE_BIBLES.find((x) => x.id === id)!;
++      expect(b.books, id).toHaveLength(66);
++      for (const slug of ["tobit", "judith", "wisdom", "sirach", "baruch", "1-maccabees"]) expect(hasBook(b, slug), `${id} ${slug}`).toBe(false);
++      for (const slug of ["genesis", "psalms", "daniel", "malachi", "matthew", "revelation"]) expect(hasBook(b, slug), `${id} ${slug}`).toBe(true);
++    }
++  });
++
++  it("runs the Arabic right to left, and every other left to right", () => {
++    for (const b of DOWNLOADABLE_BIBLES) expect(b.dir, b.id).toBe(b.id === AR ? "rtl" : "ltr");
++  });
++
++  it("says how each numbers the Psalms, as its file does: the Synodal and the Greek as the Septuagint, the rest as the Hebrew", () => {
++    for (const b of DOWNLOADABLE_BIBLES) {
++      expect(b.psalms, b.id).toBe(HEBREW_CANON.includes(b.id) ? "hebrew" : "septuagint");
++      // "Have mercy upon me, O God" is the Septuagint's Psalm 50 and the Hebrew's 51, verse 1 or past the title.
++      const fifty = book(b.id, "psalms").chapters[b.psalms === "hebrew" ? 50 : 49].map(([, t]) => t).join(" ");
++      expect(fifty, b.id).toMatch(/Помилуй меня, Боже|Ἐλέησον με|Смилуј се на ме|اِرْحَمْنِي يَا ٱللهُ|TEN piedad de mí/);
++    }
++  });
++
+   it("downloads in under 10 MB a Bible", () => {
+     for (const b of DOWNLOADABLE_BIBLES) expect(b.bytes, b.id).toBeLessThan(10_000_000);
+   });
+@@ -160,3 +186,66 @@ describe("the Greek: Brenton's Septuagint (1851) and the Patriarchal New Testame
+     }
+   });
+ });
++
++describe("the Bibles of the Hebrew canon: the Serbian (1868), the Arabic (1865) and the Spanish (1909), from eBible.org", () => {
++  it("are their words, in their own numbering", () => {
++    expect(verse(SR, "genesis", 1, 1)).toBe("У почетку створи Бог небо и земљу.");
++    expect(verse(SR, "john", 1, 1)).toBe("У почетку беше Реч, и Реч беше у Бога, и Бог беше Реч.");
++    expect(verse(AR, "genesis", 1, 1)).toBe("فِي ٱلْبَدْءِ خَلَقَ ٱللهُ ٱلسَّمَاوَاتِ وَٱلْأَرْضَ.");
++    expect(verse(AR, "john", 1, 1)).toBe("فِي ٱلْبَدْءِ كَانَ ٱلْكَلِمَةُ، وَٱلْكَلِمَةُ كَانَ عِنْدَ ٱللهِ، وَكَانَ ٱلْكَلِمَةُ ٱللهَ.");
++    expect(verse(ES, "genesis", 1, 1)).toBe("EN el principio crió Dios los cielos y la tierra.");
++    expect(verse(ES, "john", 1, 1)).toBe("EN el principio era el Verbo, y el Verbo era con Dios, y el Verbo era Dios.");
++    // The psalms numbered as the Hebrew numbers them: Psalm 51 is the Septuagint's 50.
++    expect(verse(SR, "psalms", 51, 1)).toMatch(/^Смилуј се на ме, Боже/);
++    expect(verse(AR, "psalms", 51, 1)).toMatch(/^اِرْحَمْنِي يَا ٱللهُ/);
++    expect(verse(ES, "psalms", 51, 1)).toMatch(/^TEN piedad de mí, oh Dios/);
++  });
++
++  it("print a psalm's title before its verse 1, unnumbered, as the editions do", () => {
++    for (const id of HEBREW_CANON) {
++      const psalm = book(id, "psalms").chapters[50];
++      expect(psalm[0][0], id).toBe("");
++      expect(psalm[1][0], id).toBe(1);
++    }
++    expect(book(ES, "psalms").chapters[50][0][1]).toBe("Al Músico principal: Salmo de David, cuando después que entró á Bathsebah, vino á él Nathán el profeta.");
++    // "A TI, oh Jehová": the one-letter first word stays with its psalm.
++    expect(book(ES, "psalms").chapters[24].slice(0, 2)).toEqual([["", "Salmo de David."], [1, "A TI, oh Jehová, levantaré mi alma."]]);
++    // An untitled psalm has none.
++    expect(book(ES, "psalms").chapters[0][0][0]).toBe(1);
++    // Psalm 119's Hebrew letters are headings over its stanzas, left out as headings are.
++    expect(verse(ES, "psalms", 119, 1)).toMatch(/^BIENAVENTURADOS los perfectos/);
++    expect(verse(ES, "psalms", 119, 9)).toMatch(/^¿Con qué limpiará el joven/);
++  });
++
++  it("end the Psalms at 150 and Daniel at 12, and every other book where the app does", () => {
++    for (const id of HEBREW_CANON) {
++      for (const entry of manifest(id).books) {
++        const expected = entry.book === "psalms" ? 150 : entry.book === "daniel" ? 12 : APP.get(entry.book);
++        expect(entry.chapters, `${id} ${entry.book}`).toBe(expected);
++        const file = book(id, entry.book);
++        expect(file.elsewhere, `${id} ${entry.book}`).toBeUndefined();
++        expect(file.chapters.every((c) => c.length > 0), `${id} ${entry.book}`).toBe(true);
++      }
++    }
++  });
++
++  it("keep the Arabic's opening words where it prints them, before verse 1, and leave out an editor's pointer", () => {
++    expect(book(AR, "nehemiah").chapters[7][0]).toEqual(["", "وَلَمَّا ٱسْتُهِلَّ ٱلشَّهْرُ ٱلسَّابِعُ وَبَنُو إِسْرَائِيلَ فِي مُدُنِهِمِ،"]);
++    expect(book(AR, "jeremiah").chapters[38][0]).toEqual(["", "وَلَمَّا أُخِذَتْ أُورُشَلِيمُ،"]);
++    // "(to verse 73)" over Nehemiah 7 is a reader's pointer, not words of the book.
++    expect(book(AR, "nehemiah").chapters[6][0][0]).toBe(1);
++    expect(JSON.stringify(book(AR, "nehemiah").chapters)).not.toContain("عدد73");
++  });
++
++  it("leave out the Spanish file's empty verse numbers and the notes after Paul's letters", () => {
++    // Numbers 12:16 is the Reina-Valera's 13:1, which the file kept empty at 12:16 as well.
++    expect(book(ES, "numbers").chapters[11].at(-1)?.[0]).toBe(15);
++    expect(verse(ES, "numbers", 13, 1)).toMatch(/^Y DESPUÉS movió el pueblo de Haseroth/);
++    expect(verse(ES, "romans", 16, 27)).toBe("Al solo Dios sabio, sea gloria por Jesucristo para siempre. Amén.");
++    expect(verse(ES, "hebrews", 13, 25)).toBe("La gracia sea con todos vosotros. Amén.");
++    expect(verse(ES, "2-corinthians", 13, 13)).toMatch(/sea con vosotros todos\. Amén\.$/);
++    for (const slug of ["romans", "galatians", "1-timothy", "titus", "philemon", "hebrews"]) {
++      expect(JSON.stringify(book(ES, slug).chapters.at(-1)), slug).not.toMatch(/fué escrita|Escrita de|fué enviada|Enviada de/);
++    }
++  });
++});
+diff --git a/lib/bible/downloads/__tests__/page.test.ts b/lib/bible/downloads/__tests__/page.test.ts
+index b942bd7..ab96039 100644
+--- a/lib/bible/downloads/__tests__/page.test.ts
++++ b/lib/bible/downloads/__tests__/page.test.ts
+@@ -37,6 +37,15 @@ describe("a page of a downloaded Bible", () => {
+     expect(biblePage(book("grc-lxx-patriarchal", "proverbs"), 30, 31)).toEqual({ sections: [], elsewhere: 24, last: 0 });
+   });
+ 
++  it("is empty, and says nothing of elsewhere, for a chapter the Bible does not have: the screen shows the English then", () => {
++    // The Bibles of the Hebrew canon end the Psalms at 150 and Daniel at 12.
++    for (const id of ["sr-danicic-karadzic", "ar-van-dyck", "es-reina-valera-1909"]) {
++      expect(biblePage(book(id, "psalms"), 151, 151), id).toEqual({ sections: [], elsewhere: null, last: 0 });
++      expect(biblePage(book(id, "daniel"), 13, 14), id).toEqual({ sections: [], elsewhere: null, last: 0 });
++      expect(biblePage(book(id, "daniel"), 12, 14).sections.map((s) => s.chapter), id).toEqual([12]);
++    }
++  });
++
+   it("anchors a verse of its own chapter as the English does, and one past the app's last apart", () => {
+     expect(verseAnchor(50, 50, 3)).toBe("v3");
+     expect(verseAnchor(4, 3, 1)).toBe("c4v1");
+diff --git a/lib/bible/downloads/catalog.ts b/lib/bible/downloads/catalog.ts
+index 6f25bb9..84502ca 100644
+--- a/lib/bible/downloads/catalog.ts
++++ b/lib/bible/downloads/catalog.ts
+@@ -18,7 +18,7 @@
+ import STATS from "@/data/bibles/catalog.json";
+ import type { LocaleCode } from "@/lib/i18n/locales";
+ 
+-export type BibleId = "ru-synodal" | "grc-lxx-patriarchal";
++export type BibleId = "ru-synodal" | "grc-lxx-patriarchal" | "sr-danicic-karadzic" | "ar-van-dyck" | "es-reina-valera-1909";
+ 
+ export type DownloadableBible = {
+   id: BibleId;
+@@ -26,6 +26,10 @@ export type DownloadableBible = {
+   language: LocaleCode;
+   /** The language of its words, for the page: Koine Greek is "grc", not the app's Modern Greek. */
+   textLang: string;
++  /** The direction its words run: the Arabic right to left, whatever the app's language. */
++  dir: "ltr" | "rtl";
++  /** How it numbers the Psalms: as the Septuagint, as the app does (Psalm 50 is "Have mercy"), or as the Hebrew and most Bibles (Psalm 51). */
++  psalms: "septuagint" | "hebrew";
+   /** Its name as its readers know it, kept as written: a proper name, not copy. */
+   title: string;
+   /** The computer's toolbar pill. */
+@@ -41,12 +45,20 @@ export type DownloadableBible = {
+ type Stats = Record<BibleId, { version: string; bytes: number; books: string[] }>;
+ const stats = STATS as Stats;
+ 
+-/** In the order the list shows them: the owner's order of 2026-11-06 for the first six (Russian, then Greek, of the two ready). */
++/**
++ * In the order the list shows them: the owner's order of 2026-11-06 for the
++ * first six (Romanian, Russian, Greek, Serbian, Arabic, Spanish), of the five
++ * ready. The Serbian, Arabic and Spanish are Bibles of the Hebrew canon, as
++ * their publishers made them, and the line under each name says so
++ * (bible.translationNote.<id>).
++ */
+ export const DOWNLOADABLE_BIBLES: readonly DownloadableBible[] = [
+   {
+     id: "ru-synodal",
+     language: "ru",
+     textLang: "ru",
++    dir: "ltr",
++    psalms: "septuagint",
+     title: "Синодальный перевод (1876)",
+     shortLabel: "Синодальный",
+     ...stats["ru-synodal"],
+@@ -55,17 +67,49 @@ export const DOWNLOADABLE_BIBLES: readonly DownloadableBible[] = [
+     id: "grc-lxx-patriarchal",
+     language: "el",
+     textLang: "grc",
++    dir: "ltr",
++    psalms: "septuagint",
+     title: "Οι Εβδομήκοντα και το Πατριαρχικό κείμενο (1904)",
+     shortLabel: "Ελληνικά",
+     ...stats["grc-lxx-patriarchal"],
+   },
++  {
++    id: "sr-danicic-karadzic",
++    language: "sr",
++    textLang: "sr",
++    dir: "ltr",
++    psalms: "hebrew",
++    title: "Превод Вука Караџића и Ђуре Даничића (1868)",
++    shortLabel: "Вук и Даничић",
++    ...stats["sr-danicic-karadzic"],
++  },
++  {
++    id: "ar-van-dyck",
++    language: "ar",
++    textLang: "ar",
++    dir: "rtl",
++    psalms: "hebrew",
++    title: "ترجمة فاندايك (1865)",
++    shortLabel: "فاندايك",
++    ...stats["ar-van-dyck"],
++  },
++  {
++    id: "es-reina-valera-1909",
++    language: "es",
++    textLang: "es",
++    dir: "ltr",
++    psalms: "hebrew",
++    title: "Reina-Valera (1909)",
++    shortLabel: "Reina-Valera",
++    ...stats["es-reina-valera-1909"],
++  },
+ ];
+ 
+ export function downloadableBible(id: string | null | undefined): DownloadableBible | null {
+   return DOWNLOADABLE_BIBLES.find((b) => b.id === id) ?? null;
+ }
+ 
+-/** Whether the Bible has the book: the Greek has no 2 Esdras, which survives in Latin. */
++/** Whether the Bible has the book: the Greek has no 2 Esdras, which survives in Latin, and the Bibles of the Hebrew canon none of the deuterocanonical books. */
+ export function hasBook(bible: DownloadableBible, book: string): boolean {
+   return bible.books.includes(book);
+ }
+diff --git a/lib/i18n/messages/ar.json b/lib/i18n/messages/ar.json
+index 6f9c4c3..1d613b1 100644
+--- a/lib/i18n/messages/ar.json
++++ b/lib/i18n/messages/ar.json
+@@ -5326,6 +5326,9 @@
+   "content.notYetTranslated.saying": "أقوال الآباء مقتبسة بالإنجليزية حاليًا.",
+   "bible.translationNote.ru-synodal": "كتاب الكنيسة الروسية المقدس، مع الأسفار القانونية الثانية. ملك عام.",
+   "bible.translationNote.grc-lxx-patriarchal": "الترجمة السبعينية والعهد الجديد البطريركي، باليونانية. ملك عام.",
++  "bible.translationNote.sr-danicic-karadzic": "عهدها القديم مترجم عن العبرية، دون الأسفار القانونية الثانية. ملك عام.",
++  "bible.translationNote.ar-van-dyck": "ترجمة بروتستانتية. عهدها القديم مترجم عن العبرية، دون الأسفار القانونية الثانية. ملك عام.",
++  "bible.translationNote.es-reina-valera-1909": "ترجمة بروتستانتية. عهدها القديم مترجم عن العبرية، دون الأسفار القانونية الثانية. ملك عام.",
+   "bible.downloads.downloadAria": "نزّل {name}، {size}",
+   "bible.downloads.downloading": "جارٍ التنزيل: {percent}%",
+   "bible.downloads.stop": "أوقف التنزيل",
+@@ -5335,11 +5338,15 @@
+   "bible.downloads.onPhone": "على هذا الجهاز: {size}",
+   "bible.downloads.notThisBook": "سفر {book} غير موجود في هذا الكتاب المقدس.",
+   "bible.downloads.notInBible": "سفر {book} غير موجود في هذا الكتاب المقدس، لذا يظهر بالإنجليزية.",
++  "bible.downloads.chapterNotInBible": "هذا الإصحاح غير موجود في هذا الكتاب المقدس، لذا يظهر بالإنجليزية.",
+   "bible.downloads.couldNotOpen": "تعذّر فتح هذا الكتاب المقدس الآن، لذا يظهر الإصحاح بالإنجليزية.",
+   "bible.downloads.elsewhere": "في هذا الكتاب المقدس، هذه الآيات في الإصحاح {chapter}.",
+   "bible.downloads.goToChapter": "انتقل إلى الإصحاح {chapter}",
+   "bible.downloads.source.ru-synodal": "الترجمة السينودسية (1876). ملك عام. النص من CrossWire Bible Society.",
+   "bible.downloads.source.grc-lxx-patriarchal": "العهد القديم: السبعينية كما طبعها برينتون (1851). العهد الجديد: النص البطريركي (1904). ملك عام. النص من eBible.org.",
++  "bible.downloads.source.sr-danicic-karadzic": "ترجمة فوك كاراجيتش (العهد الجديد، 1847) وجورو دانيتشيتش (العهد القديم، 1867)، بالصيغة الإيكافية للطبعات اللاحقة. ملك عام. النص من eBible.org.",
++  "bible.downloads.source.ar-van-dyck": "ترجمة سميث وفاندايك (1865). ملك عام. النص من eBible.org.",
++  "bible.downloads.source.es-reina-valera-1909": "مراجعة رينا-فاليرا لعام 1909. ملك عام. النص من eBible.org.",
+   "bible.languageOffer.title": "هل تريد تغيير لغة التطبيق؟",
+   "bible.languageOffer.body": "لغة كتابك المقدس: {language}. يمكن أن تكون قوائم Purify وصفحاته بهذه اللغة أيضًا.",
+   "bible.languageOffer.switch": "التبديل إلى {native}",
+diff --git a/lib/i18n/messages/bg.json b/lib/i18n/messages/bg.json
+index 24757e1..bd71b6e 100644
+--- a/lib/i18n/messages/bg.json
++++ b/lib/i18n/messages/bg.json
+@@ -5031,6 +5031,9 @@
+   "content.notYetTranslated.saying": "Отците засега са цитирани на английски.",
+   "bible.translationNote.ru-synodal": "Библията на Руската църква, с неканоничните книги. Обществено достояние.",
+   "bible.translationNote.grc-lxx-patriarchal": "Септуагинта и Патриаршеският Нов Завет, на гръцки. Обществено достояние.",
++  "bible.translationNote.sr-danicic-karadzic": "Старият завет е преведен от еврейски, без неканоничните книги. Обществено достояние.",
++  "bible.translationNote.ar-van-dyck": "Протестантски превод. Старият завет е преведен от еврейски, без неканоничните книги. Обществено достояние.",
++  "bible.translationNote.es-reina-valera-1909": "Протестантски превод. Старият завет е преведен от еврейски, без неканоничните книги. Обществено достояние.",
+   "bible.downloads.downloadAria": "Изтегляне на {name}, {size}",
+   "bible.downloads.downloading": "Изтегляне: {percent}%",
+   "bible.downloads.stop": "Спиране на изтеглянето",
+@@ -5040,11 +5043,15 @@
+   "bible.downloads.onPhone": "На това устройство: {size}",
+   "bible.downloads.notThisBook": "{book} не е в тази Библия.",
+   "bible.downloads.notInBible": "{book} не е в тази Библия, затова се показва на английски.",
++  "bible.downloads.chapterNotInBible": "Тази глава не е в тази Библия, затова се показва на английски.",
+   "bible.downloads.couldNotOpen": "Тази Библия не можа да се отвори сега, затова главата се показва на английски.",
+   "bible.downloads.elsewhere": "В тази Библия тези стихове са в глава {chapter}.",
+   "bible.downloads.goToChapter": "Към глава {chapter}",
+   "bible.downloads.source.ru-synodal": "Синодалният превод (1876). Обществено достояние. Текст: CrossWire Bible Society.",
+   "bible.downloads.source.grc-lxx-patriarchal": "Стар Завет: Септуагинта, както я отпечатва Брентън (1851). Нов Завет: Патриаршеският текст (1904). Обществено достояние. Текст: eBible.org.",
++  "bible.downloads.source.sr-danicic-karadzic": "Преводът на Вук Караджич (Нов Завет, 1847) и Джуро Даничич (Стар Завет, 1867), в екавската форма на по-късните издания. Обществено достояние. Текст: eBible.org.",
++  "bible.downloads.source.ar-van-dyck": "Преводът на Смит и Ван Дайк (1865). Обществено достояние. Текст: eBible.org.",
++  "bible.downloads.source.es-reina-valera-1909": "Редакцията Рейна-Валера от 1909 г. Обществено достояние. Текст: eBible.org.",
+   "bible.languageOffer.title": "Да се смени ли езикът на приложението?",
+   "bible.languageOffer.body": "Езикът на вашата Библия: {language}. Менютата и страниците на Purify също могат да са на този език.",
+   "bible.languageOffer.switch": "Превключване на {native}",
+diff --git a/lib/i18n/messages/de.json b/lib/i18n/messages/de.json
+index f0e1320..8cc86b4 100644
+--- a/lib/i18n/messages/de.json
++++ b/lib/i18n/messages/de.json
+@@ -5031,6 +5031,9 @@
+   "content.notYetTranslated.saying": "Die Väter werden vorerst auf Englisch zitiert.",
+   "bible.translationNote.ru-synodal": "Die Bibel der Russischen Kirche, mit den deuterokanonischen Büchern. Gemeinfrei.",
+   "bible.translationNote.grc-lxx-patriarchal": "Die Septuaginta und das Neue Testament des Patriarchats, auf Griechisch. Gemeinfrei.",
++  "bible.translationNote.sr-danicic-karadzic": "Das Alte Testament ist aus dem Hebräischen übersetzt, ohne die deuterokanonischen Bücher. Gemeinfrei.",
++  "bible.translationNote.ar-van-dyck": "Eine protestantische Übersetzung. Das Alte Testament ist aus dem Hebräischen übersetzt, ohne die deuterokanonischen Bücher. Gemeinfrei.",
++  "bible.translationNote.es-reina-valera-1909": "Eine protestantische Übersetzung. Das Alte Testament ist aus dem Hebräischen übersetzt, ohne die deuterokanonischen Bücher. Gemeinfrei.",
+   "bible.downloads.downloadAria": "{name} herunterladen, {size}",
+   "bible.downloads.downloading": "Wird heruntergeladen, {percent} %",
+   "bible.downloads.stop": "Herunterladen stoppen",
+@@ -5040,11 +5043,15 @@
+   "bible.downloads.onPhone": "Auf diesem Gerät, {size}",
+   "bible.downloads.notThisBook": "{book} ist nicht in dieser Bibel.",
+   "bible.downloads.notInBible": "{book} ist nicht in dieser Bibel und wird darum auf Englisch gezeigt.",
++  "bible.downloads.chapterNotInBible": "Dieses Kapitel ist nicht in dieser Bibel und wird darum auf Englisch gezeigt.",
+   "bible.downloads.couldNotOpen": "Diese Bibel ließ sich gerade nicht öffnen, darum wird das Kapitel auf Englisch gezeigt.",
+   "bible.downloads.elsewhere": "In dieser Bibel stehen diese Verse in Kapitel {chapter}.",
+   "bible.downloads.goToChapter": "Zu Kapitel {chapter}",
+   "bible.downloads.source.ru-synodal": "Die Synodalübersetzung (1876). Gemeinfrei. Text von der CrossWire Bible Society.",
+   "bible.downloads.source.grc-lxx-patriarchal": "Altes Testament: die Septuaginta, wie Brenton sie druckte (1851). Neues Testament: der Text des Patriarchats (1904). Gemeinfrei. Text von eBible.org.",
++  "bible.downloads.source.sr-danicic-karadzic": "Die Übersetzung von Vuk Karadžić (Neues Testament, 1847) und Đuro Daničić (Altes Testament, 1867), in der ekavischen Form späterer Ausgaben. Gemeinfrei. Text von eBible.org.",
++  "bible.downloads.source.ar-van-dyck": "Die Übersetzung von Smith und Van Dyck (1865). Gemeinfrei. Text von eBible.org.",
++  "bible.downloads.source.es-reina-valera-1909": "Die Reina-Valera-Revision von 1909. Gemeinfrei. Text von eBible.org.",
+   "bible.languageOffer.title": "Sprache der App ändern?",
+   "bible.languageOffer.body": "Deine Bibel ist auf {language}. Menüs und Seiten von Purify können auch auf {language} sein.",
+   "bible.languageOffer.switch": "Zu {native} wechseln",
+diff --git a/lib/i18n/messages/el.json b/lib/i18n/messages/el.json
+index 032f6de..b345511 100644
+--- a/lib/i18n/messages/el.json
++++ b/lib/i18n/messages/el.json
+@@ -5031,6 +5031,9 @@
+   "content.notYetTranslated.saying": "Οι Πατέρες παρατίθενται προς το παρόν στα αγγλικά.",
+   "bible.translationNote.ru-synodal": "Η Βίβλος της Ρωσικής Εκκλησίας, με τα αναγινωσκόμενα βιβλία. Κοινό κτήμα.",
+   "bible.translationNote.grc-lxx-patriarchal": "Η μετάφραση των Εβδομήκοντα και το Πατριαρχικό κείμενο της Καινής Διαθήκης. Κοινό κτήμα.",
++  "bible.translationNote.sr-danicic-karadzic": "Η Παλαιά Διαθήκη της είναι μεταφρασμένη από τα εβραϊκά, χωρίς τα αναγινωσκόμενα βιβλία. Κοινό κτήμα.",
++  "bible.translationNote.ar-van-dyck": "Προτεσταντική μετάφραση. Η Παλαιά Διαθήκη της είναι μεταφρασμένη από τα εβραϊκά, χωρίς τα αναγινωσκόμενα βιβλία. Κοινό κτήμα.",
++  "bible.translationNote.es-reina-valera-1909": "Προτεσταντική μετάφραση. Η Παλαιά Διαθήκη της είναι μεταφρασμένη από τα εβραϊκά, χωρίς τα αναγινωσκόμενα βιβλία. Κοινό κτήμα.",
+   "bible.downloads.downloadAria": "Λήψη: {name}, {size}",
+   "bible.downloads.downloading": "Λήψη: {percent}%",
+   "bible.downloads.stop": "Διακοπή λήψης",
+@@ -5040,11 +5043,15 @@
+   "bible.downloads.onPhone": "Σε αυτή τη συσκευή: {size}",
+   "bible.downloads.notThisBook": "Το βιβλίο {book} δεν υπάρχει σε αυτή τη Βίβλο.",
+   "bible.downloads.notInBible": "Το βιβλίο {book} δεν υπάρχει σε αυτή τη Βίβλο, γι' αυτό εμφανίζεται στα αγγλικά.",
++  "bible.downloads.chapterNotInBible": "Αυτό το κεφάλαιο δεν υπάρχει σε αυτή τη Βίβλο, γι' αυτό εμφανίζεται στα αγγλικά.",
+   "bible.downloads.couldNotOpen": "Αυτή η Βίβλος δεν άνοιξε αυτή τη στιγμή, γι' αυτό το κεφάλαιο εμφανίζεται στα αγγλικά.",
+   "bible.downloads.elsewhere": "Σε αυτή τη Βίβλο, οι στίχοι αυτοί βρίσκονται στο κεφάλαιο {chapter}.",
+   "bible.downloads.goToChapter": "Μετάβαση στο κεφάλαιο {chapter}",
+   "bible.downloads.source.ru-synodal": "Η Συνοδική μετάφραση (1876). Κοινό κτήμα. Κείμενο: CrossWire Bible Society.",
+   "bible.downloads.source.grc-lxx-patriarchal": "Παλαιά Διαθήκη: οι Εβδομήκοντα όπως τους τύπωσε ο Brenton (1851). Καινή Διαθήκη: το Πατριαρχικό κείμενο (1904). Κοινό κτήμα. Κείμενο: eBible.org.",
++  "bible.downloads.source.sr-danicic-karadzic": "Η μετάφραση του Βουκ Κάρατζιτς (Καινή Διαθήκη, 1847) και του Τζούρο Ντάνιτσιτς (Παλαιά Διαθήκη, 1867), στην εκαβική μορφή μεταγενέστερων εκδόσεων. Κοινό κτήμα. Κείμενο: eBible.org.",
++  "bible.downloads.source.ar-van-dyck": "Η μετάφραση των Smith και Van Dyck (1865). Κοινό κτήμα. Κείμενο: eBible.org.",
++  "bible.downloads.source.es-reina-valera-1909": "Η αναθεώρηση Reina-Valera του 1909. Κοινό κτήμα. Κείμενο: eBible.org.",
+   "bible.languageOffer.title": "Αλλαγή γλώσσας της εφαρμογής;",
+   "bible.languageOffer.body": "Η γλώσσα της Βίβλου σας: {language}. Τα μενού και οι σελίδες του Purify μπορούν να είναι κι αυτά σε αυτή τη γλώσσα.",
+   "bible.languageOffer.switch": "Αλλαγή σε {native}",
+diff --git a/lib/i18n/messages/en.json b/lib/i18n/messages/en.json
+index 27b80bf..25a97f7 100644
+--- a/lib/i18n/messages/en.json
++++ b/lib/i18n/messages/en.json
+@@ -5049,6 +5049,9 @@
+   "content.notYetTranslated.saying": "The Fathers are quoted in English for now.",
+   "bible.translationNote.ru-synodal": "The Russian Church's Bible, with the deuterocanonical books. Public domain.",
+   "bible.translationNote.grc-lxx-patriarchal": "The Septuagint and the Patriarchal New Testament, in Greek. Public domain.",
++  "bible.translationNote.sr-danicic-karadzic": "Its Old Testament is from the Hebrew, without the deuterocanonical books. Public domain.",
++  "bible.translationNote.ar-van-dyck": "A Protestant translation. Its Old Testament is from the Hebrew, without the deuterocanonical books. Public domain.",
++  "bible.translationNote.es-reina-valera-1909": "A Protestant translation. Its Old Testament is from the Hebrew, without the deuterocanonical books. Public domain.",
+   "bible.downloads.downloadAria": "Download {name}, {size}",
+   "bible.downloads.downloading": "Downloading, {percent}%",
+   "bible.downloads.stop": "Stop downloading",
+@@ -5058,11 +5061,15 @@
+   "bible.downloads.onPhone": "On this device, {size}",
+   "bible.downloads.notThisBook": "{book} is not in this Bible.",
+   "bible.downloads.notInBible": "{book} is not in this Bible, so it is shown in English.",
++  "bible.downloads.chapterNotInBible": "This chapter is not in this Bible, so it is shown in English.",
+   "bible.downloads.couldNotOpen": "This Bible could not be opened just now, so the chapter is shown in English.",
+   "bible.downloads.elsewhere": "In this Bible, these verses are in chapter {chapter}.",
+   "bible.downloads.goToChapter": "Go to chapter {chapter}",
+   "bible.downloads.source.ru-synodal": "The Synodal translation (1876). Public domain. Text from the CrossWire Bible Society.",
+   "bible.downloads.source.grc-lxx-patriarchal": "Old Testament: the Septuagint as Brenton printed it (1851). New Testament: the Patriarchal text (1904). Public domain. Text from eBible.org.",
++  "bible.downloads.source.sr-danicic-karadzic": "The translation of Vuk Karadžić (New Testament, 1847) and Đuro Daničić (Old Testament, 1867), in the Ekavian form of later editions. Public domain. Text from eBible.org.",
++  "bible.downloads.source.ar-van-dyck": "The Smith and Van Dyck translation (1865). Public domain. Text from eBible.org.",
++  "bible.downloads.source.es-reina-valera-1909": "The Reina-Valera revision of 1909. Public domain. Text from eBible.org.",
+   "bible.languageOffer.title": "Change the app's language?",
+   "bible.languageOffer.body": "Your Bible is in {language}. Purify's menus and pages can be in {language} too.",
+   "bible.languageOffer.switch": "Switch to {native}",
+diff --git a/lib/i18n/messages/es.json b/lib/i18n/messages/es.json
+index 4b23cc2..ab34143 100644
+--- a/lib/i18n/messages/es.json
++++ b/lib/i18n/messages/es.json
+@@ -5041,6 +5041,9 @@
+   "content.notYetTranslated.saying": "Por ahora, los Padres se citan en inglés.",
+   "bible.translationNote.ru-synodal": "La Biblia de la Iglesia rusa, con los libros deuterocanónicos. Dominio público.",
+   "bible.translationNote.grc-lxx-patriarchal": "La Septuaginta y el Nuevo Testamento patriarcal, en griego. Dominio público.",
++  "bible.translationNote.sr-danicic-karadzic": "Su Antiguo Testamento está traducido del hebreo, sin los libros deuterocanónicos. Dominio público.",
++  "bible.translationNote.ar-van-dyck": "Una traducción protestante. Su Antiguo Testamento está traducido del hebreo, sin los libros deuterocanónicos. Dominio público.",
++  "bible.translationNote.es-reina-valera-1909": "Una traducción protestante. Su Antiguo Testamento está traducido del hebreo, sin los libros deuterocanónicos. Dominio público.",
+   "bible.downloads.downloadAria": "Descargar {name}, {size}",
+   "bible.downloads.downloading": "Descargando, {percent} %",
+   "bible.downloads.stop": "Detener la descarga",
+@@ -5050,11 +5053,15 @@
+   "bible.downloads.onPhone": "En este dispositivo, {size}",
+   "bible.downloads.notThisBook": "{book} no está en esta Biblia.",
+   "bible.downloads.notInBible": "{book} no está en esta Biblia, así que se muestra en inglés.",
++  "bible.downloads.chapterNotInBible": "Este capítulo no está en esta Biblia, así que se muestra en inglés.",
+   "bible.downloads.couldNotOpen": "Esta Biblia no se pudo abrir ahora, así que el capítulo se muestra en inglés.",
+   "bible.downloads.elsewhere": "En esta Biblia, estos versículos están en el capítulo {chapter}.",
+   "bible.downloads.goToChapter": "Ir al capítulo {chapter}",
+   "bible.downloads.source.ru-synodal": "La traducción sinodal (1876). Dominio público. Texto de la CrossWire Bible Society.",
+   "bible.downloads.source.grc-lxx-patriarchal": "Antiguo Testamento: la Septuaginta tal como la imprimió Brenton (1851). Nuevo Testamento: el texto patriarcal (1904). Dominio público. Texto de eBible.org.",
++  "bible.downloads.source.sr-danicic-karadzic": "La traducción de Vuk Karadžić (Nuevo Testamento, 1847) y Đuro Daničić (Antiguo Testamento, 1867), en la forma ekaviana de ediciones posteriores. Dominio público. Texto de eBible.org.",
++  "bible.downloads.source.ar-van-dyck": "La traducción de Smith y Van Dyck (1865). Dominio público. Texto de eBible.org.",
++  "bible.downloads.source.es-reina-valera-1909": "La revisión Reina-Valera de 1909. Dominio público. Texto de eBible.org.",
+   "bible.languageOffer.title": "¿Cambiar el idioma de la aplicación?",
+   "bible.languageOffer.body": "Tu Biblia está en {language}. Los menús y las páginas de Purify también pueden estar en {language}.",
+   "bible.languageOffer.switch": "Cambiar a {native}",
+diff --git a/lib/i18n/messages/fil.json b/lib/i18n/messages/fil.json
+index 7ae4610..6c6e756 100644
+--- a/lib/i18n/messages/fil.json
++++ b/lib/i18n/messages/fil.json
+@@ -5031,6 +5031,9 @@
+   "content.notYetTranslated.saying": "Sinisipi muna sa Ingles ang mga Ama.",
+   "bible.translationNote.ru-synodal": "Ang Bibliya ng Simbahang Ruso, kasama ang mga aklat na deuterokanoniko. Pampublikong domain.",
+   "bible.translationNote.grc-lxx-patriarchal": "Ang Septuagint at ang Bagong Tipan ng Patriarkado, sa Griyego. Pampublikong domain.",
++  "bible.translationNote.sr-danicic-karadzic": "Isinalin mula sa Hebreo ang Lumang Tipan nito, nang walang mga aklat na deuterokanoniko. Pampublikong domain.",
++  "bible.translationNote.ar-van-dyck": "Isang saling Protestante. Isinalin mula sa Hebreo ang Lumang Tipan nito, nang walang mga aklat na deuterokanoniko. Pampublikong domain.",
++  "bible.translationNote.es-reina-valera-1909": "Isang saling Protestante. Isinalin mula sa Hebreo ang Lumang Tipan nito, nang walang mga aklat na deuterokanoniko. Pampublikong domain.",
+   "bible.downloads.downloadAria": "I-download ang {name}, {size}",
+   "bible.downloads.downloading": "Dina-download: {percent}%",
+   "bible.downloads.stop": "Ihinto ang pag-download",
+@@ -5040,11 +5043,15 @@
+   "bible.downloads.onPhone": "Sa device na ito: {size}",
+   "bible.downloads.notThisBook": "Wala ang {book} sa Bibliyang ito.",
+   "bible.downloads.notInBible": "Wala ang {book} sa Bibliyang ito, kaya ipinapakita ito sa Ingles.",
++  "bible.downloads.chapterNotInBible": "Wala ang kabanatang ito sa Bibliyang ito, kaya ipinapakita ito sa Ingles.",
+   "bible.downloads.couldNotOpen": "Hindi mabuksan ngayon ang Bibliyang ito, kaya ipinapakita sa Ingles ang kabanata.",
+   "bible.downloads.elsewhere": "Sa Bibliyang ito, nasa kabanata {chapter} ang mga talatang ito.",
+   "bible.downloads.goToChapter": "Pumunta sa kabanata {chapter}",
+   "bible.downloads.source.ru-synodal": "Ang salin ng Sinodo (1876). Pampublikong domain. Teksto mula sa CrossWire Bible Society.",
+   "bible.downloads.source.grc-lxx-patriarchal": "Lumang Tipan: ang Septuagint gaya ng inilimbag ni Brenton (1851). Bagong Tipan: ang tekstong Patriarkal (1904). Pampublikong domain. Teksto mula sa eBible.org.",
++  "bible.downloads.source.sr-danicic-karadzic": "Ang salin nina Vuk Karadžić (Bagong Tipan, 1847) at Đuro Daničić (Lumang Tipan, 1867), sa anyong Ekavian ng mga huling edisyon. Pampublikong domain. Teksto mula sa eBible.org.",
++  "bible.downloads.source.ar-van-dyck": "Ang salin nina Smith at Van Dyck (1865). Pampublikong domain. Teksto mula sa eBible.org.",
++  "bible.downloads.source.es-reina-valera-1909": "Ang rebisyong Reina-Valera ng 1909. Pampublikong domain. Teksto mula sa eBible.org.",
+   "bible.languageOffer.title": "Palitan ang wika ng app?",
+   "bible.languageOffer.body": "Ang wika ng iyong Bibliya: {language}. Maaari ring nasa wikang ito ang mga menu at pahina ng Purify.",
+   "bible.languageOffer.switch": "Lumipat sa {native}",
+diff --git a/lib/i18n/messages/fr.json b/lib/i18n/messages/fr.json
+index 3bc1e71..c539016 100644
+--- a/lib/i18n/messages/fr.json
++++ b/lib/i18n/messages/fr.json
+@@ -5059,6 +5059,9 @@
+   "content.notYetTranslated.saying": "Les Pères sont cités en anglais pour l’instant.",
+   "bible.translationNote.ru-synodal": "La Bible de l'Église russe, avec les livres deutérocanoniques. Domaine public.",
+   "bible.translationNote.grc-lxx-patriarchal": "La Septante et le Nouveau Testament patriarcal, en grec. Domaine public.",
++  "bible.translationNote.sr-danicic-karadzic": "Son Ancien Testament est traduit de l'hébreu, sans les livres deutérocanoniques. Domaine public.",
++  "bible.translationNote.ar-van-dyck": "Une traduction protestante. Son Ancien Testament est traduit de l'hébreu, sans les livres deutérocanoniques. Domaine public.",
++  "bible.translationNote.es-reina-valera-1909": "Une traduction protestante. Son Ancien Testament est traduit de l'hébreu, sans les livres deutérocanoniques. Domaine public.",
+   "bible.downloads.downloadAria": "Télécharger {name}, {size}",
+   "bible.downloads.downloading": "Téléchargement, {percent} %",
+   "bible.downloads.stop": "Arrêter le téléchargement",
+@@ -5068,11 +5071,15 @@
+   "bible.downloads.onPhone": "Sur cet appareil, {size}",
+   "bible.downloads.notThisBook": "{book} n'est pas dans cette Bible.",
+   "bible.downloads.notInBible": "{book} n'est pas dans cette Bible, il est donc affiché en anglais.",
++  "bible.downloads.chapterNotInBible": "Ce chapitre n'est pas dans cette Bible, il est donc affiché en anglais.",
+   "bible.downloads.couldNotOpen": "Cette Bible n'a pas pu être ouverte pour l'instant, le chapitre est donc affiché en anglais.",
+   "bible.downloads.elsewhere": "Dans cette Bible, ces versets sont au chapitre {chapter}.",
+   "bible.downloads.goToChapter": "Aller au chapitre {chapter}",
+   "bible.downloads.source.ru-synodal": "La traduction synodale (1876). Domaine public. Texte de la CrossWire Bible Society.",
+   "bible.downloads.source.grc-lxx-patriarchal": "Ancien Testament : la Septante telle que Brenton l'a imprimée (1851). Nouveau Testament : le texte patriarcal (1904). Domaine public. Texte d'eBible.org.",
++  "bible.downloads.source.sr-danicic-karadzic": "La traduction de Vuk Karadžić (Nouveau Testament, 1847) et de Đuro Daničić (Ancien Testament, 1867), dans la forme ékavienne des éditions ultérieures. Domaine public. Texte d'eBible.org.",
++  "bible.downloads.source.ar-van-dyck": "La traduction de Smith et Van Dyck (1865). Domaine public. Texte d'eBible.org.",
++  "bible.downloads.source.es-reina-valera-1909": "La révision Reina-Valera de 1909. Domaine public. Texte d'eBible.org.",
+   "bible.languageOffer.title": "Changer la langue de l'application ?",
+   "bible.languageOffer.body": "Votre Bible est en {language}. Les menus et les pages de Purify peuvent aussi être en {language}.",
+   "bible.languageOffer.switch": "Utiliser {native}",
+diff --git a/lib/i18n/messages/hu.json b/lib/i18n/messages/hu.json
+index 1f7d6b3..0d54250 100644
+--- a/lib/i18n/messages/hu.json
++++ b/lib/i18n/messages/hu.json
+@@ -5031,6 +5031,9 @@
+   "content.notYetTranslated.saying": "Az atyákat egyelőre angolul idézzük.",
+   "bible.translationNote.ru-synodal": "Az orosz egyház Bibliája, a deuterokanonikus könyvekkel. Közkincs.",
+   "bible.translationNote.grc-lxx-patriarchal": "A Septuaginta és a pátriárkai Újszövetség, görögül. Közkincs.",
++  "bible.translationNote.sr-danicic-karadzic": "Ószövetsége héberből fordított, a deuterokanonikus könyvek nélkül. Közkincs.",
++  "bible.translationNote.ar-van-dyck": "Protestáns fordítás. Ószövetsége héberből fordított, a deuterokanonikus könyvek nélkül. Közkincs.",
++  "bible.translationNote.es-reina-valera-1909": "Protestáns fordítás. Ószövetsége héberből fordított, a deuterokanonikus könyvek nélkül. Közkincs.",
+   "bible.downloads.downloadAria": "{name} letöltése, {size}",
+   "bible.downloads.downloading": "Letöltés: {percent}%",
+   "bible.downloads.stop": "Letöltés leállítása",
+@@ -5040,11 +5043,15 @@
+   "bible.downloads.onPhone": "Ezen az eszközön: {size}",
+   "bible.downloads.notThisBook": "{book} nincs benne ebben a Bibliában.",
+   "bible.downloads.notInBible": "{book} nincs benne ebben a Bibliában, ezért angolul látható.",
++  "bible.downloads.chapterNotInBible": "Ez a fejezet nincs benne ebben a Bibliában, ezért angolul látható.",
+   "bible.downloads.couldNotOpen": "Ezt a Bibliát most nem sikerült megnyitni, ezért a fejezet angolul látható.",
+   "bible.downloads.elsewhere": "Ebben a Bibliában ezek a versek a(z) {chapter}. fejezetben vannak.",
+   "bible.downloads.goToChapter": "Ugrás a(z) {chapter}. fejezetre",
+   "bible.downloads.source.ru-synodal": "A zsinati fordítás (1876). Közkincs. Szöveg: CrossWire Bible Society.",
+   "bible.downloads.source.grc-lxx-patriarchal": "Ószövetség: a Septuaginta, ahogy Brenton kiadta (1851). Újszövetség: a pátriárkai szöveg (1904). Közkincs. Szöveg: eBible.org.",
++  "bible.downloads.source.sr-danicic-karadzic": "Vuk Karadžić (Újszövetség, 1847) és Đuro Daničić (Ószövetség, 1867) fordítása, a későbbi kiadások ekavi alakjában. Közkincs. Szöveg: eBible.org.",
++  "bible.downloads.source.ar-van-dyck": "Smith és Van Dyck fordítása (1865). Közkincs. Szöveg: eBible.org.",
++  "bible.downloads.source.es-reina-valera-1909": "A Reina-Valera 1909-es revíziója. Közkincs. Szöveg: eBible.org.",
+   "bible.languageOffer.title": "Megváltoztatod az alkalmazás nyelvét?",
+   "bible.languageOffer.body": "A Bibliád nyelve: {language}. A Purify menüi és oldalai is lehetnek ezen a nyelven.",
+   "bible.languageOffer.switch": "Váltás erre: {native}",
+diff --git a/lib/i18n/messages/id.json b/lib/i18n/messages/id.json
+index bdbf95f..0c00359 100644
+--- a/lib/i18n/messages/id.json
++++ b/lib/i18n/messages/id.json
+@@ -5029,6 +5029,9 @@
+   "content.notYetTranslated.saying": "Untuk saat ini para Bapa dikutip dalam bahasa Inggris.",
+   "bible.translationNote.ru-synodal": "Alkitab Gereja Rusia, dengan kitab-kitab deuterokanonika. Domain publik.",
+   "bible.translationNote.grc-lxx-patriarchal": "Septuaginta dan Perjanjian Baru teks Patriarkat, dalam bahasa Yunani. Domain publik.",
++  "bible.translationNote.sr-danicic-karadzic": "Perjanjian Lamanya diterjemahkan dari bahasa Ibrani, tanpa kitab-kitab deuterokanonika. Domain publik.",
++  "bible.translationNote.ar-van-dyck": "Terjemahan Protestan. Perjanjian Lamanya diterjemahkan dari bahasa Ibrani, tanpa kitab-kitab deuterokanonika. Domain publik.",
++  "bible.translationNote.es-reina-valera-1909": "Terjemahan Protestan. Perjanjian Lamanya diterjemahkan dari bahasa Ibrani, tanpa kitab-kitab deuterokanonika. Domain publik.",
+   "bible.downloads.downloadAria": "Unduh {name}, {size}",
+   "bible.downloads.downloading": "Mengunduh: {percent}%",
+   "bible.downloads.stop": "Hentikan unduhan",
+@@ -5038,11 +5041,15 @@
+   "bible.downloads.onPhone": "Di perangkat ini: {size}",
+   "bible.downloads.notThisBook": "{book} tidak ada dalam Alkitab ini.",
+   "bible.downloads.notInBible": "{book} tidak ada dalam Alkitab ini, jadi ditampilkan dalam bahasa Inggris.",
++  "bible.downloads.chapterNotInBible": "Pasal ini tidak ada dalam Alkitab ini, jadi ditampilkan dalam bahasa Inggris.",
+   "bible.downloads.couldNotOpen": "Alkitab ini tidak dapat dibuka sekarang, jadi pasal ini ditampilkan dalam bahasa Inggris.",
+   "bible.downloads.elsewhere": "Dalam Alkitab ini, ayat-ayat ini ada di pasal {chapter}.",
+   "bible.downloads.goToChapter": "Buka pasal {chapter}",
+   "bible.downloads.source.ru-synodal": "Terjemahan Sinodal (1876). Domain publik. Teks dari CrossWire Bible Society.",
+   "bible.downloads.source.grc-lxx-patriarchal": "Perjanjian Lama: Septuaginta seperti yang dicetak Brenton (1851). Perjanjian Baru: teks Patriarkat (1904). Domain publik. Teks dari eBible.org.",
++  "bible.downloads.source.sr-danicic-karadzic": "Terjemahan Vuk Karadžić (Perjanjian Baru, 1847) dan Đuro Daničić (Perjanjian Lama, 1867), dalam bentuk Ekavia edisi-edisi kemudian. Domain publik. Teks dari eBible.org.",
++  "bible.downloads.source.ar-van-dyck": "Terjemahan Smith dan Van Dyck (1865). Domain publik. Teks dari eBible.org.",
++  "bible.downloads.source.es-reina-valera-1909": "Revisi Reina-Valera tahun 1909. Domain publik. Teks dari eBible.org.",
+   "bible.languageOffer.title": "Ganti bahasa aplikasi?",
+   "bible.languageOffer.body": "Bahasa Alkitab Anda: {language}. Menu dan halaman Purify juga bisa dalam bahasa ini.",
+   "bible.languageOffer.switch": "Ganti ke {native}",
+diff --git a/lib/i18n/messages/it.json b/lib/i18n/messages/it.json
+index bc051bb..08050d9 100644
+--- a/lib/i18n/messages/it.json
++++ b/lib/i18n/messages/it.json
+@@ -5036,6 +5036,9 @@
+   "content.notYetTranslated.saying": "Per ora i Padri sono citati in inglese.",
+   "bible.translationNote.ru-synodal": "La Bibbia della Chiesa russa, con i libri deuterocanonici. Di pubblico dominio.",
+   "bible.translationNote.grc-lxx-patriarchal": "La Settanta e il Nuovo Testamento patriarcale, in greco. Di pubblico dominio.",
++  "bible.translationNote.sr-danicic-karadzic": "Il suo Antico Testamento è tradotto dall'ebraico, senza i libri deuterocanonici. Di pubblico dominio.",
++  "bible.translationNote.ar-van-dyck": "Una traduzione protestante. Il suo Antico Testamento è tradotto dall'ebraico, senza i libri deuterocanonici. Di pubblico dominio.",
++  "bible.translationNote.es-reina-valera-1909": "Una traduzione protestante. Il suo Antico Testamento è tradotto dall'ebraico, senza i libri deuterocanonici. Di pubblico dominio.",
+   "bible.downloads.downloadAria": "Scarica {name}, {size}",
+   "bible.downloads.downloading": "Download in corso, {percent}%",
+   "bible.downloads.stop": "Interrompi il download",
+@@ -5045,11 +5048,15 @@
+   "bible.downloads.onPhone": "Su questo dispositivo, {size}",
+   "bible.downloads.notThisBook": "{book} non è in questa Bibbia.",
+   "bible.downloads.notInBible": "{book} non è in questa Bibbia, quindi è mostrato in inglese.",
++  "bible.downloads.chapterNotInBible": "Questo capitolo non è in questa Bibbia, quindi è mostrato in inglese.",
+   "bible.downloads.couldNotOpen": "Questa Bibbia non si è potuta aprire ora, quindi il capitolo è mostrato in inglese.",
+   "bible.downloads.elsewhere": "In questa Bibbia, questi versetti sono nel capitolo {chapter}.",
+   "bible.downloads.goToChapter": "Vai al capitolo {chapter}",
+   "bible.downloads.source.ru-synodal": "La traduzione sinodale (1876). Di pubblico dominio. Testo della CrossWire Bible Society.",
+   "bible.downloads.source.grc-lxx-patriarchal": "Antico Testamento: la Settanta come la stampò Brenton (1851). Nuovo Testamento: il testo patriarcale (1904). Di pubblico dominio. Testo di eBible.org.",
++  "bible.downloads.source.sr-danicic-karadzic": "La traduzione di Vuk Karadžić (Nuovo Testamento, 1847) e Đuro Daničić (Antico Testamento, 1867), nella forma ekava delle edizioni successive. Di pubblico dominio. Testo di eBible.org.",
++  "bible.downloads.source.ar-van-dyck": "La traduzione di Smith e Van Dyck (1865). Di pubblico dominio. Testo di eBible.org.",
++  "bible.downloads.source.es-reina-valera-1909": "La revisione Reina-Valera del 1909. Di pubblico dominio. Testo di eBible.org.",
+   "bible.languageOffer.title": "Cambiare la lingua dell'app?",
+   "bible.languageOffer.body": "La tua Bibbia è in {language}. Anche i menu e le pagine di Purify possono essere in {language}.",
+   "bible.languageOffer.switch": "Passa a {native}",
+diff --git a/lib/i18n/messages/ka.json b/lib/i18n/messages/ka.json
+index 4c9c71f..bf07ee3 100644
+--- a/lib/i18n/messages/ka.json
++++ b/lib/i18n/messages/ka.json
+@@ -5031,6 +5031,9 @@
+   "content.notYetTranslated.saying": "მამები ჯერჯერობით ინგლისურად არიან ციტირებული.",
+   "bible.translationNote.ru-synodal": "რუსული ეკლესიის ბიბლია, არაკანონიკური წიგნებით. საჯარო დომენი.",
+   "bible.translationNote.grc-lxx-patriarchal": "სეპტუაგინტა და საპატრიარქო ახალი აღთქმა, ბერძნულად. საჯარო დომენი.",
++  "bible.translationNote.sr-danicic-karadzic": "მისი ძველი აღთქმა ნათარგმნია ებრაულიდან, არაკანონიკური წიგნების გარეშე. საჯარო დომენი.",
++  "bible.translationNote.ar-van-dyck": "პროტესტანტული თარგმანი. მისი ძველი აღთქმა ნათარგმნია ებრაულიდან, არაკანონიკური წიგნების გარეშე. საჯარო დომენი.",
++  "bible.translationNote.es-reina-valera-1909": "პროტესტანტული თარგმანი. მისი ძველი აღთქმა ნათარგმნია ებრაულიდან, არაკანონიკური წიგნების გარეშე. საჯარო დომენი.",
+   "bible.downloads.downloadAria": "ჩამოტვირთეთ {name}, {size}",
+   "bible.downloads.downloading": "იტვირთება: {percent}%",
+   "bible.downloads.stop": "ჩამოტვირთვის შეჩერება",
+@@ -5040,11 +5043,15 @@
+   "bible.downloads.onPhone": "ამ მოწყობილობაზე: {size}",
+   "bible.downloads.notThisBook": "{book} ამ ბიბლიაში არ არის.",
+   "bible.downloads.notInBible": "{book} ამ ბიბლიაში არ არის, ამიტომ ნაჩვენებია ინგლისურად.",
++  "bible.downloads.chapterNotInBible": "ეს თავი ამ ბიბლიაში არ არის, ამიტომ ნაჩვენებია ინგლისურად.",
+   "bible.downloads.couldNotOpen": "ამ ბიბლიის გახსნა ახლა ვერ მოხერხდა, ამიტომ თავი ნაჩვენებია ინგლისურად.",
+   "bible.downloads.elsewhere": "ამ ბიბლიაში ეს მუხლები {chapter}-ე თავშია.",
+   "bible.downloads.goToChapter": "{chapter}-ე თავზე გადასვლა",
+   "bible.downloads.source.ru-synodal": "სინოდალური თარგმანი (1876). საჯარო დომენი. ტექსტი: CrossWire Bible Society.",
+   "bible.downloads.source.grc-lxx-patriarchal": "ძველი აღთქმა: სეპტუაგინტა, როგორც ბრენტონმა დაბეჭდა (1851). ახალი აღთქმა: საპატრიარქო ტექსტი (1904). საჯარო დომენი. ტექსტი: eBible.org.",
++  "bible.downloads.source.sr-danicic-karadzic": "ვუკ კარაჯიჩისა (ახალი აღთქმა, 1847) და ჯურო დანიჩიჩის (ძველი აღთქმა, 1867) თარგმანი, შემდგომი გამოცემების ეკავური ფორმით. საჯარო დომენი. ტექსტი: eBible.org.",
++  "bible.downloads.source.ar-van-dyck": "სმითისა და ვან დაიკის თარგმანი (1865). საჯარო დომენი. ტექსტი: eBible.org.",
++  "bible.downloads.source.es-reina-valera-1909": "რეინა-ვალერას 1909 წლის რედაქცია. საჯარო დომენი. ტექსტი: eBible.org.",
+   "bible.languageOffer.title": "შევცვალოთ აპის ენა?",
+   "bible.languageOffer.body": "თქვენი ბიბლიის ენა: {language}. Purify-ის მენიუები და გვერდებიც შეიძლება ამ ენაზე იყოს.",
+   "bible.languageOffer.switch": "გადართვა: {native}",
+diff --git a/lib/i18n/messages/ne.json b/lib/i18n/messages/ne.json
+index 7e78e52..0606084 100644
+--- a/lib/i18n/messages/ne.json
++++ b/lib/i18n/messages/ne.json
+@@ -5031,6 +5031,9 @@
+   "content.notYetTranslated.saying": "पिताहरूका भनाइ अहिलेलाई अङ्ग्रेजीमा उद्धृत छन्।",
+   "bible.translationNote.ru-synodal": "रूसी चर्चको बाइबल, ड्युटेरोक्यानोनिकल पुस्तकहरूसहित। सार्वजनिक अधिकार क्षेत्र।",
+   "bible.translationNote.grc-lxx-patriarchal": "सेप्टुआजिन्ट र प्याट्रियार्कल नयाँ नियम, ग्रीकमा। सार्वजनिक अधिकार क्षेत्र।",
++  "bible.translationNote.sr-danicic-karadzic": "यसको पुरानो नियम हिब्रूबाट अनुवाद गरिएको हो, ड्युटेरोक्यानोनिकल पुस्तकहरूबिना। सार्वजनिक अधिकार क्षेत्र।",
++  "bible.translationNote.ar-van-dyck": "प्रोटेस्टेन्ट अनुवाद। यसको पुरानो नियम हिब्रूबाट अनुवाद गरिएको हो, ड्युटेरोक्यानोनिकल पुस्तकहरूबिना। सार्वजनिक अधिकार क्षेत्र।",
++  "bible.translationNote.es-reina-valera-1909": "प्रोटेस्टेन्ट अनुवाद। यसको पुरानो नियम हिब्रूबाट अनुवाद गरिएको हो, ड्युटेरोक्यानोनिकल पुस्तकहरूबिना। सार्वजनिक अधिकार क्षेत्र।",
+   "bible.downloads.downloadAria": "{name} डाउनलोड गर्नुहोस्, {size}",
+   "bible.downloads.downloading": "डाउनलोड हुँदैछ: {percent}%",
+   "bible.downloads.stop": "डाउनलोड रोक्नुहोस्",
+@@ -5040,11 +5043,15 @@
+   "bible.downloads.onPhone": "यो उपकरणमा: {size}",
+   "bible.downloads.notThisBook": "{book} यो बाइबलमा छैन।",
+   "bible.downloads.notInBible": "{book} यो बाइबलमा छैन, त्यसैले अङ्ग्रेजीमा देखाइएको छ।",
++  "bible.downloads.chapterNotInBible": "यो अध्याय यो बाइबलमा छैन, त्यसैले अङ्ग्रेजीमा देखाइएको छ।",
+   "bible.downloads.couldNotOpen": "यो बाइबल अहिले खोल्न सकिएन, त्यसैले अध्याय अङ्ग्रेजीमा देखाइएको छ।",
+   "bible.downloads.elsewhere": "यो बाइबलमा यी पदहरू अध्याय {chapter} मा छन्।",
+   "bible.downloads.goToChapter": "अध्याय {chapter} मा जानुहोस्",
+   "bible.downloads.source.ru-synodal": "सिनोडल अनुवाद (1876)। सार्वजनिक अधिकार क्षेत्र। पाठ: CrossWire Bible Society।",
+   "bible.downloads.source.grc-lxx-patriarchal": "पुरानो नियम: ब्रेन्टनले छापेअनुसार सेप्टुआजिन्ट (1851)। नयाँ नियम: प्याट्रियार्कल पाठ (1904)। सार्वजनिक अधिकार क्षेत्र। पाठ: eBible.org।",
++  "bible.downloads.source.sr-danicic-karadzic": "भुक काराजिच (नयाँ नियम, 1847) र ज्युरो दानिचिच (पुरानो नियम, 1867) को अनुवाद, पछिल्ला संस्करणहरूको एकाभियन रूपमा। सार्वजनिक अधिकार क्षेत्र। पाठ: eBible.org।",
++  "bible.downloads.source.ar-van-dyck": "स्मिथ र भ्यान डाइकको अनुवाद (1865)। सार्वजनिक अधिकार क्षेत्र। पाठ: eBible.org।",
++  "bible.downloads.source.es-reina-valera-1909": "रेइना-भलेराको 1909 को संशोधन। सार्वजनिक अधिकार क्षेत्र। पाठ: eBible.org।",
+   "bible.languageOffer.title": "एपको भाषा बदल्ने?",
+   "bible.languageOffer.body": "तपाईंको बाइबलको भाषा: {language}। Purify का मेनु र पृष्ठहरू पनि यही भाषामा हुन सक्छन्।",
+   "bible.languageOffer.switch": "{native} मा बदल्नुहोस्",
+diff --git a/lib/i18n/messages/pl.json b/lib/i18n/messages/pl.json
+index e99a89e..6a69361 100644
+--- a/lib/i18n/messages/pl.json
++++ b/lib/i18n/messages/pl.json
+@@ -5190,6 +5190,9 @@
+   "content.notYetTranslated.saying": "Ojcowie są na razie cytowani po angielsku.",
+   "bible.translationNote.ru-synodal": "Biblia Kościoła rosyjskiego, z księgami deuterokanonicznymi. Domena publiczna.",
+   "bible.translationNote.grc-lxx-patriarchal": "Septuaginta i patriarszy Nowy Testament, po grecku. Domena publiczna.",
++  "bible.translationNote.sr-danicic-karadzic": "Stary Testament przełożony z hebrajskiego, bez ksiąg deuterokanonicznych. Domena publiczna.",
++  "bible.translationNote.ar-van-dyck": "Przekład protestancki. Stary Testament przełożony z hebrajskiego, bez ksiąg deuterokanonicznych. Domena publiczna.",
++  "bible.translationNote.es-reina-valera-1909": "Przekład protestancki. Stary Testament przełożony z hebrajskiego, bez ksiąg deuterokanonicznych. Domena publiczna.",
+   "bible.downloads.downloadAria": "Pobierz {name}, {size}",
+   "bible.downloads.downloading": "Pobieranie: {percent}%",
+   "bible.downloads.stop": "Zatrzymaj pobieranie",
+@@ -5199,11 +5202,15 @@
+   "bible.downloads.onPhone": "Na tym urządzeniu: {size}",
+   "bible.downloads.notThisBook": "{book}: tej księgi nie ma w tej Biblii.",
+   "bible.downloads.notInBible": "{book}: tej księgi nie ma w tej Biblii, więc jest pokazana po angielsku.",
++  "bible.downloads.chapterNotInBible": "Tego rozdziału nie ma w tej Biblii, więc jest pokazany po angielsku.",
+   "bible.downloads.couldNotOpen": "Nie udało się teraz otworzyć tej Biblii, więc rozdział jest pokazany po angielsku.",
+   "bible.downloads.elsewhere": "W tej Biblii te wersety są w rozdziale {chapter}.",
+   "bible.downloads.goToChapter": "Przejdź do rozdziału {chapter}",
+   "bible.downloads.source.ru-synodal": "Przekład synodalny (1876). Domena publiczna. Tekst: CrossWire Bible Society.",
+   "bible.downloads.source.grc-lxx-patriarchal": "Stary Testament: Septuaginta w wydaniu Brentona (1851). Nowy Testament: tekst patriarszy (1904). Domena publiczna. Tekst: eBible.org.",
++  "bible.downloads.source.sr-danicic-karadzic": "Przekład Vuka Karadžicia (Nowy Testament, 1847) i Đury Daničicia (Stary Testament, 1867), w ekawskiej postaci późniejszych wydań. Domena publiczna. Tekst: eBible.org.",
++  "bible.downloads.source.ar-van-dyck": "Przekład Smitha i Van Dycka (1865). Domena publiczna. Tekst: eBible.org.",
++  "bible.downloads.source.es-reina-valera-1909": "Rewizja Reina-Valera z 1909 roku. Domena publiczna. Tekst: eBible.org.",
+   "bible.languageOffer.title": "Zmienić język aplikacji?",
+   "bible.languageOffer.body": "Język Twojej Biblii: {language}. Menu i strony Purify też mogą być w tym języku.",
+   "bible.languageOffer.switch": "Przełącz na: {native}",
+diff --git a/lib/i18n/messages/pt.json b/lib/i18n/messages/pt.json
+index e08282b..0d9a066 100644
+--- a/lib/i18n/messages/pt.json
++++ b/lib/i18n/messages/pt.json
+@@ -5036,6 +5036,9 @@
+   "content.notYetTranslated.saying": "Por enquanto, os Padres são citados em inglês.",
+   "bible.translationNote.ru-synodal": "A Bíblia da Igreja Russa, com os livros deuterocanónicos. Domínio público.",
+   "bible.translationNote.grc-lxx-patriarchal": "A Septuaginta e o Novo Testamento patriarcal, em grego. Domínio público.",
++  "bible.translationNote.sr-danicic-karadzic": "O seu Antigo Testamento é traduzido do hebraico, sem os livros deuterocanónicos. Domínio público.",
++  "bible.translationNote.ar-van-dyck": "Uma tradução protestante. O seu Antigo Testamento é traduzido do hebraico, sem os livros deuterocanónicos. Domínio público.",
++  "bible.translationNote.es-reina-valera-1909": "Uma tradução protestante. O seu Antigo Testamento é traduzido do hebraico, sem os livros deuterocanónicos. Domínio público.",
+   "bible.downloads.downloadAria": "Descarregar {name}, {size}",
+   "bible.downloads.downloading": "A descarregar, {percent}%",
+   "bible.downloads.stop": "Parar a transferência",
+@@ -5045,11 +5048,15 @@
+   "bible.downloads.onPhone": "Neste dispositivo, {size}",
+   "bible.downloads.notThisBook": "{book} não está nesta Bíblia.",
+   "bible.downloads.notInBible": "{book} não está nesta Bíblia, por isso é mostrado em inglês.",
++  "bible.downloads.chapterNotInBible": "Este capítulo não está nesta Bíblia, por isso é mostrado em inglês.",
+   "bible.downloads.couldNotOpen": "Não foi possível abrir esta Bíblia agora, por isso o capítulo é mostrado em inglês.",
+   "bible.downloads.elsewhere": "Nesta Bíblia, estes versículos estão no capítulo {chapter}.",
+   "bible.downloads.goToChapter": "Ir para o capítulo {chapter}",
+   "bible.downloads.source.ru-synodal": "A tradução sinodal (1876). Domínio público. Texto da CrossWire Bible Society.",
+   "bible.downloads.source.grc-lxx-patriarchal": "Antigo Testamento: a Septuaginta tal como Brenton a imprimiu (1851). Novo Testamento: o texto patriarcal (1904). Domínio público. Texto de eBible.org.",
++  "bible.downloads.source.sr-danicic-karadzic": "A tradução de Vuk Karadžić (Novo Testamento, 1847) e Đuro Daničić (Antigo Testamento, 1867), na forma ekaviana de edições posteriores. Domínio público. Texto de eBible.org.",
++  "bible.downloads.source.ar-van-dyck": "A tradução de Smith e Van Dyck (1865). Domínio público. Texto de eBible.org.",
++  "bible.downloads.source.es-reina-valera-1909": "A revisão Reina-Valera de 1909. Domínio público. Texto de eBible.org.",
+   "bible.languageOffer.title": "Mudar o idioma da aplicação?",
+   "bible.languageOffer.body": "A sua Bíblia está em {language}. Os menus e as páginas do Purify também podem estar em {language}.",
+   "bible.languageOffer.switch": "Mudar para {native}",
+diff --git a/lib/i18n/messages/ro.json b/lib/i18n/messages/ro.json
+index 9630303..01516ae 100644
+--- a/lib/i18n/messages/ro.json
++++ b/lib/i18n/messages/ro.json
+@@ -5120,6 +5120,9 @@
+   "content.notYetTranslated.saying": "Părinții sunt citați deocamdată în engleză.",
+   "bible.translationNote.ru-synodal": "Biblia Bisericii Ruse, cu cărțile deuterocanonice. Domeniu public.",
+   "bible.translationNote.grc-lxx-patriarchal": "Septuaginta și Noul Testament patriarhal, în greacă. Domeniu public.",
++  "bible.translationNote.sr-danicic-karadzic": "Vechiul ei Testament este tradus din ebraică, fără cărțile deuterocanonice. Domeniu public.",
++  "bible.translationNote.ar-van-dyck": "O traducere protestantă. Vechiul ei Testament este tradus din ebraică, fără cărțile deuterocanonice. Domeniu public.",
++  "bible.translationNote.es-reina-valera-1909": "O traducere protestantă. Vechiul ei Testament este tradus din ebraică, fără cărțile deuterocanonice. Domeniu public.",
+   "bible.downloads.downloadAria": "Descarcă {name}, {size}",
+   "bible.downloads.downloading": "Se descarcă, {percent}%",
+   "bible.downloads.stop": "Oprește descărcarea",
+@@ -5129,11 +5132,15 @@
+   "bible.downloads.onPhone": "Pe acest dispozitiv, {size}",
+   "bible.downloads.notThisBook": "{book} nu este în această Biblie.",
+   "bible.downloads.notInBible": "{book} nu este în această Biblie, așa că apare în engleză.",
++  "bible.downloads.chapterNotInBible": "Acest capitol nu este în această Biblie, așa că apare în engleză.",
+   "bible.downloads.couldNotOpen": "Această Biblie nu a putut fi deschisă acum, așa că acest capitol apare în engleză.",
+   "bible.downloads.elsewhere": "În această Biblie, aceste versete sunt în capitolul {chapter}.",
+   "bible.downloads.goToChapter": "Mergi la capitolul {chapter}",
+   "bible.downloads.source.ru-synodal": "Traducerea sinodală (1876). Domeniu public. Text de la CrossWire Bible Society.",
+   "bible.downloads.source.grc-lxx-patriarchal": "Vechiul Testament: Septuaginta așa cum a tipărit-o Brenton (1851). Noul Testament: textul patriarhal (1904). Domeniu public. Text de la eBible.org.",
++  "bible.downloads.source.sr-danicic-karadzic": "Traducerea lui Vuk Karadžić (Noul Testament, 1847) și a lui Đuro Daničić (Vechiul Testament, 1867), în forma ekaviană a edițiilor ulterioare. Domeniu public. Text de la eBible.org.",
++  "bible.downloads.source.ar-van-dyck": "Traducerea lui Smith și Van Dyck (1865). Domeniu public. Text de la eBible.org.",
++  "bible.downloads.source.es-reina-valera-1909": "Revizuirea Reina-Valera din 1909. Domeniu public. Text de la eBible.org.",
+   "bible.languageOffer.title": "Schimbi limba aplicației?",
+   "bible.languageOffer.body": "Biblia ta este în {language}. Meniurile și paginile Purify pot fi și ele în {language}.",
+   "bible.languageOffer.switch": "Treci la {native}",
+diff --git a/lib/i18n/messages/ru.json b/lib/i18n/messages/ru.json
+index b1b8060..7a9b3ab 100644
+--- a/lib/i18n/messages/ru.json
++++ b/lib/i18n/messages/ru.json
+@@ -5188,6 +5188,9 @@
+   "content.notYetTranslated.saying": "Святые отцы пока приводятся на английском.",
+   "bible.translationNote.ru-synodal": "Библия Русской Церкви, с неканоническими книгами. Общественное достояние.",
+   "bible.translationNote.grc-lxx-patriarchal": "Септуагинта и Патриарший Новый Завет, на греческом языке. Общественное достояние.",
++  "bible.translationNote.sr-danicic-karadzic": "Ветхий Завет переведён с еврейского, без неканонических книг. Общественное достояние.",
++  "bible.translationNote.ar-van-dyck": "Протестантский перевод. Ветхий Завет переведён с еврейского, без неканонических книг. Общественное достояние.",
++  "bible.translationNote.es-reina-valera-1909": "Протестантский перевод. Ветхий Завет переведён с еврейского, без неканонических книг. Общественное достояние.",
+   "bible.downloads.downloadAria": "Скачать {name}, {size}",
+   "bible.downloads.downloading": "Скачивание: {percent}%",
+   "bible.downloads.stop": "Остановить скачивание",
+@@ -5197,11 +5200,15 @@
+   "bible.downloads.onPhone": "На этом устройстве: {size}",
+   "bible.downloads.notThisBook": "Книги «{book}» нет в этой Библии.",
+   "bible.downloads.notInBible": "Книги «{book}» нет в этой Библии, поэтому она показана на английском.",
++  "bible.downloads.chapterNotInBible": "Этой главы нет в этой Библии, поэтому она показана на английском.",
+   "bible.downloads.couldNotOpen": "Эту Библию сейчас не удалось открыть, поэтому глава показана на английском.",
+   "bible.downloads.elsewhere": "В этой Библии эти стихи находятся в главе {chapter}.",
+   "bible.downloads.goToChapter": "Перейти к главе {chapter}",
+   "bible.downloads.source.ru-synodal": "Синодальный перевод (1876). Общественное достояние. Текст: CrossWire Bible Society.",
+   "bible.downloads.source.grc-lxx-patriarchal": "Ветхий Завет: Септуагинта в издании Брентона (1851). Новый Завет: Патриарший текст (1904). Общественное достояние. Текст: eBible.org.",
++  "bible.downloads.source.sr-danicic-karadzic": "Перевод Вука Караджича (Новый Завет, 1847) и Джуро Даничича (Ветхий Завет, 1867), в экавской форме поздних изданий. Общественное достояние. Текст: eBible.org.",
++  "bible.downloads.source.ar-van-dyck": "Перевод Смита и Ван Дейка (1865). Общественное достояние. Текст: eBible.org.",
++  "bible.downloads.source.es-reina-valera-1909": "Редакция Рейна-Валера 1909 года. Общественное достояние. Текст: eBible.org.",
+   "bible.languageOffer.title": "Сменить язык приложения?",
+   "bible.languageOffer.body": "Язык вашей Библии: {language}. Меню и страницы Purify тоже могут быть на этом языке.",
+   "bible.languageOffer.switch": "Переключить на {native}",
+diff --git a/lib/i18n/messages/sr.json b/lib/i18n/messages/sr.json
+index 0322acc..e32e72c 100644
+--- a/lib/i18n/messages/sr.json
++++ b/lib/i18n/messages/sr.json
+@@ -5111,6 +5111,9 @@
+   "content.notYetTranslated.saying": "Оци се засад наводе на енглеском.",
+   "bible.translationNote.ru-synodal": "Библија Руске Цркве, са неканонским књигама. Јавно власништво.",
+   "bible.translationNote.grc-lxx-patriarchal": "Септуагинта и Патријаршијски Нови завет, на грчком. Јавно власништво.",
++  "bible.translationNote.sr-danicic-karadzic": "Стари завет је преведен с хебрејског, без неканонских књига. Јавно власништво.",
++  "bible.translationNote.ar-van-dyck": "Протестантски превод. Стари завет је преведен с хебрејског, без неканонских књига. Јавно власништво.",
++  "bible.translationNote.es-reina-valera-1909": "Протестантски превод. Стари завет је преведен с хебрејског, без неканонских књига. Јавно власништво.",
+   "bible.downloads.downloadAria": "Преузми {name}, {size}",
+   "bible.downloads.downloading": "Преузимање: {percent}%",
+   "bible.downloads.stop": "Заустави преузимање",
+@@ -5120,11 +5123,15 @@
+   "bible.downloads.onPhone": "На овом уређају: {size}",
+   "bible.downloads.notThisBook": "{book} није у овој Библији.",
+   "bible.downloads.notInBible": "{book} није у овој Библији, па се приказује на енглеском.",
++  "bible.downloads.chapterNotInBible": "Ова глава није у овој Библији, па се приказује на енглеском.",
+   "bible.downloads.couldNotOpen": "Ова Библија тренутно није могла да се отвори, па се поглавље приказује на енглеском.",
+   "bible.downloads.elsewhere": "У овој Библији ови стихови су у поглављу {chapter}.",
+   "bible.downloads.goToChapter": "Иди на поглавље {chapter}",
+   "bible.downloads.source.ru-synodal": "Синодални превод (1876). Јавно власништво. Текст: CrossWire Bible Society.",
+   "bible.downloads.source.grc-lxx-patriarchal": "Стари завет: Септуагинта како ју је штампао Брентон (1851). Нови завет: Патријаршијски текст (1904). Јавно власништво. Текст: eBible.org.",
++  "bible.downloads.source.sr-danicic-karadzic": "Превод Вука Караџића (Нови завет, 1847) и Ђуре Даничића (Стари завет, 1867), у екавском облику каснијих издања. Јавно власништво. Текст: eBible.org.",
++  "bible.downloads.source.ar-van-dyck": "Превод Смита и Ван Дајка (1865). Јавно власништво. Текст: eBible.org.",
++  "bible.downloads.source.es-reina-valera-1909": "Ревизија Реина-Валера из 1909. године. Јавно власништво. Текст: eBible.org.",
+   "bible.languageOffer.title": "Променити језик апликације?",
+   "bible.languageOffer.body": "Језик ваше Библије: {language}. Менији и странице Purify-ја такође могу бити на том језику.",
+   "bible.languageOffer.switch": "Пређи на {native}",
+diff --git a/lib/i18n/messages/tr.json b/lib/i18n/messages/tr.json
+index 908262e..e81713a 100644
+--- a/lib/i18n/messages/tr.json
++++ b/lib/i18n/messages/tr.json
+@@ -5031,6 +5031,9 @@
+   "content.notYetTranslated.saying": "Babalar şimdilik İngilizce aktarılıyor.",
+   "bible.translationNote.ru-synodal": "Rus Kilisesi'nin Kutsal Kitabı, deuterokanonik kitaplarla birlikte. Kamu malı.",
+   "bible.translationNote.grc-lxx-patriarchal": "Septuaginta ve Patrikhane'nin Yeni Ahit metni, Yunanca. Kamu malı.",
++  "bible.translationNote.sr-danicic-karadzic": "Eski Ahit'i İbraniceden çevrilmiştir, deuterokanonik kitaplar olmadan. Kamu malı.",
++  "bible.translationNote.ar-van-dyck": "Protestan bir çeviri. Eski Ahit'i İbraniceden çevrilmiştir, deuterokanonik kitaplar olmadan. Kamu malı.",
++  "bible.translationNote.es-reina-valera-1909": "Protestan bir çeviri. Eski Ahit'i İbraniceden çevrilmiştir, deuterokanonik kitaplar olmadan. Kamu malı.",
+   "bible.downloads.downloadAria": "{name} indir, {size}",
+   "bible.downloads.downloading": "İndiriliyor: %{percent}",
+   "bible.downloads.stop": "İndirmeyi durdur",
+@@ -5040,11 +5043,15 @@
+   "bible.downloads.onPhone": "Bu cihazda: {size}",
+   "bible.downloads.notThisBook": "{book} bu Kutsal Kitap'ta yok.",
+   "bible.downloads.notInBible": "{book} bu Kutsal Kitap'ta yok, bu yüzden İngilizce gösteriliyor.",
++  "bible.downloads.chapterNotInBible": "Bu bölüm bu Kutsal Kitap'ta yok, bu yüzden İngilizce gösteriliyor.",
+   "bible.downloads.couldNotOpen": "Bu Kutsal Kitap şu anda açılamadı, bu yüzden bölüm İngilizce gösteriliyor.",
+   "bible.downloads.elsewhere": "Bu Kutsal Kitap'ta bu ayetler {chapter}. bölümde.",
+   "bible.downloads.goToChapter": "{chapter}. bölüme git",
+   "bible.downloads.source.ru-synodal": "Sinodal çeviri (1876). Kamu malı. Metin: CrossWire Bible Society.",
+   "bible.downloads.source.grc-lxx-patriarchal": "Eski Ahit: Brenton'ın bastığı haliyle Septuaginta (1851). Yeni Ahit: Patrikhane metni (1904). Kamu malı. Metin: eBible.org.",
++  "bible.downloads.source.sr-danicic-karadzic": "Vuk Karadžić (Yeni Ahit, 1847) ve Đuro Daničić (Eski Ahit, 1867) çevirisi, sonraki baskıların ekav biçiminde. Kamu malı. Metin: eBible.org.",
++  "bible.downloads.source.ar-van-dyck": "Smith ve Van Dyck çevirisi (1865). Kamu malı. Metin: eBible.org.",
++  "bible.downloads.source.es-reina-valera-1909": "Reina-Valera'nın 1909 revizyonu. Kamu malı. Metin: eBible.org.",
+   "bible.languageOffer.title": "Uygulamanın dili değiştirilsin mi?",
+   "bible.languageOffer.body": "Kutsal Kitabınızın dili: {language}. Purify'ın menüleri ve sayfaları da bu dilde olabilir.",
+   "bible.languageOffer.switch": "{native} diline geç",
+diff --git a/lib/i18n/messages/uk.json b/lib/i18n/messages/uk.json
+index 2e78100..f0f6154 100644
+--- a/lib/i18n/messages/uk.json
++++ b/lib/i18n/messages/uk.json
+@@ -5187,6 +5187,9 @@
+   "content.notYetTranslated.saying": "Святих отців поки що наведено англійською.",
+   "bible.translationNote.ru-synodal": "Біблія Російської Церкви, з неканонічними книгами. Суспільне надбання.",
+   "bible.translationNote.grc-lxx-patriarchal": "Септуагінта і Патріарший Новий Заповіт, грецькою мовою. Суспільне надбання.",
++  "bible.translationNote.sr-danicic-karadzic": "Старий Заповіт перекладено з єврейської, без неканонічних книг. Суспільне надбання.",
++  "bible.translationNote.ar-van-dyck": "Протестантський переклад. Старий Заповіт перекладено з єврейської, без неканонічних книг. Суспільне надбання.",
++  "bible.translationNote.es-reina-valera-1909": "Протестантський переклад. Старий Заповіт перекладено з єврейської, без неканонічних книг. Суспільне надбання.",
+   "bible.downloads.downloadAria": "Завантажити {name}, {size}",
+   "bible.downloads.downloading": "Завантаження: {percent}%",
+   "bible.downloads.stop": "Зупинити завантаження",
+@@ -5196,11 +5199,15 @@
+   "bible.downloads.onPhone": "На цьому пристрої: {size}",
+   "bible.downloads.notThisBook": "Книги «{book}» немає в цій Біблії.",
+   "bible.downloads.notInBible": "Книги «{book}» немає в цій Біблії, тому її показано англійською.",
++  "bible.downloads.chapterNotInBible": "Цього розділу немає в цій Біблії, тому його показано англійською.",
+   "bible.downloads.couldNotOpen": "Цю Біблію зараз не вдалося відкрити, тому розділ показано англійською.",
+   "bible.downloads.elsewhere": "У цій Біблії ці вірші містяться в розділі {chapter}.",
+   "bible.downloads.goToChapter": "Перейти до розділу {chapter}",
+   "bible.downloads.source.ru-synodal": "Синодальний переклад (1876). Суспільне надбання. Текст: CrossWire Bible Society.",
+   "bible.downloads.source.grc-lxx-patriarchal": "Старий Заповіт: Септуагінта у виданні Брентона (1851). Новий Заповіт: Патріарший текст (1904). Суспільне надбання. Текст: eBible.org.",
++  "bible.downloads.source.sr-danicic-karadzic": "Переклад Вука Караджича (Новий Заповіт, 1847) і Джуро Даничича (Старий Заповіт, 1867), в екавській формі пізніших видань. Суспільне надбання. Текст: eBible.org.",
++  "bible.downloads.source.ar-van-dyck": "Переклад Сміта і Ван Дейка (1865). Суспільне надбання. Текст: eBible.org.",
++  "bible.downloads.source.es-reina-valera-1909": "Редакція Рейна-Валера 1909 року. Суспільне надбання. Текст: eBible.org.",
+   "bible.languageOffer.title": "Змінити мову застосунку?",
+   "bible.languageOffer.body": "Мова вашої Біблії: {language}. Меню і сторінки Purify теж можуть бути цією мовою.",
+   "bible.languageOffer.switch": "Перейти на {native}",
+diff --git a/lib/i18n/messages/ur.json b/lib/i18n/messages/ur.json
+index 8deb532..988e104 100644
+--- a/lib/i18n/messages/ur.json
++++ b/lib/i18n/messages/ur.json
+@@ -5031,6 +5031,9 @@
+   "content.notYetTranslated.saying": "آبا کے اقوال فی الحال انگریزی میں نقل ہیں۔",
+   "bible.translationNote.ru-synodal": "روسی کلیسیا کی بائبل، ثانوی قانونی کتابوں کے ساتھ۔ پبلک ڈومین۔",
+   "bible.translationNote.grc-lxx-patriarchal": "سپتواجنتا اور پیٹریارکل نیا عہد نامہ، یونانی میں۔ پبلک ڈومین۔",
++  "bible.translationNote.sr-danicic-karadzic": "اس کا پرانا عہد نامہ عبرانی سے ترجمہ کیا گیا ہے، ثانوی قانونی کتابوں کے بغیر۔ پبلک ڈومین۔",
++  "bible.translationNote.ar-van-dyck": "ایک پروٹسٹنٹ ترجمہ۔ اس کا پرانا عہد نامہ عبرانی سے ترجمہ کیا گیا ہے، ثانوی قانونی کتابوں کے بغیر۔ پبلک ڈومین۔",
++  "bible.translationNote.es-reina-valera-1909": "ایک پروٹسٹنٹ ترجمہ۔ اس کا پرانا عہد نامہ عبرانی سے ترجمہ کیا گیا ہے، ثانوی قانونی کتابوں کے بغیر۔ پبلک ڈومین۔",
+   "bible.downloads.downloadAria": "{name} ڈاؤن لوڈ کریں، {size}",
+   "bible.downloads.downloading": "ڈاؤن لوڈ ہو رہا ہے: {percent}%",
+   "bible.downloads.stop": "ڈاؤن لوڈ روکیں",
+@@ -5040,11 +5043,15 @@
+   "bible.downloads.onPhone": "اس ڈیوائس پر: {size}",
+   "bible.downloads.notThisBook": "{book} اس بائبل میں نہیں ہے۔",
+   "bible.downloads.notInBible": "{book} اس بائبل میں نہیں ہے، اس لیے انگریزی میں دکھائی گئی ہے۔",
++  "bible.downloads.chapterNotInBible": "یہ باب اس بائبل میں نہیں ہے، اس لیے انگریزی میں دکھایا گیا ہے۔",
+   "bible.downloads.couldNotOpen": "یہ بائبل ابھی نہیں کھل سکی، اس لیے باب انگریزی میں دکھایا گیا ہے۔",
+   "bible.downloads.elsewhere": "اس بائبل میں یہ آیات باب {chapter} میں ہیں۔",
+   "bible.downloads.goToChapter": "باب {chapter} پر جائیں",
+   "bible.downloads.source.ru-synodal": "سینوڈل ترجمہ (1876)۔ پبلک ڈومین۔ متن: CrossWire Bible Society۔",
+   "bible.downloads.source.grc-lxx-patriarchal": "پرانا عہد نامہ: سپتواجنتا جیسے برینٹن نے چھاپا (1851)۔ نیا عہد نامہ: پیٹریارکل متن (1904)۔ پبلک ڈومین۔ متن: eBible.org۔",
++  "bible.downloads.source.sr-danicic-karadzic": "ووک کاراجچ (نیا عہد نامہ، 1847) اور جورو دانیچچ (پرانا عہد نامہ، 1867) کا ترجمہ، بعد کی اشاعتوں کی ایکاوی شکل میں۔ پبلک ڈومین۔ متن: eBible.org۔",
++  "bible.downloads.source.ar-van-dyck": "سمتھ اور وین ڈائیک کا ترجمہ (1865)۔ پبلک ڈومین۔ متن: eBible.org۔",
++  "bible.downloads.source.es-reina-valera-1909": "رینا-والیرا کی 1909 کی نظرثانی۔ پبلک ڈومین۔ متن: eBible.org۔",
+   "bible.languageOffer.title": "ایپ کی زبان بدلیں؟",
+   "bible.languageOffer.body": "آپ کی بائبل کی زبان: {language}۔ Purify کے مینو اور صفحات بھی اسی زبان میں ہو سکتے ہیں۔",
+   "bible.languageOffer.switch": "{native} پر جائیں",
+diff --git a/scripts/bibles/build.mjs b/scripts/bibles/build.mjs
+index cb2d940..bd65c65 100644
+--- a/scripts/bibles/build.mjs
++++ b/scripts/bibles/build.mjs
+@@ -3,7 +3,12 @@
+ // selected Bible they pick ... instead of the app including all of them").
+ //
+ //   node scripts/bibles/build.mjs \
+-//     --ru <russynodal.json> --grc-ot <grcbrent usfm folder> --grc-nt <grcbyz usfm folder>
++//     --ru <russynodal.json> --grc-ot <grcbrent usfm folder> --grc-nt <grcbyz usfm folder> \
++//     --sr <srp1868 usfm folder> --ar <arb-vd usfm folder> --es <spaRV1909 usfm folder>
++//
++// Each Bible is built from its source when it is given, and kept as it was
++// built when it is not (its files and its entry in the catalog untouched), so
++// one Bible can be added without fetching every other again.
+ //
+ // Writes, for each Bible, one file per book and a list of them:
+ //
+@@ -43,6 +48,20 @@
+ //    from later editions), eBible's grcbyz, https://ebible.org/Scriptures/grcbyz_usfm.zip
+ //    (sha256 d349039838cf1d62f9302a7cefdabe51f9f0d5d504f1294f9a4c14843f14cc5b).
+ //    Both Public Domain.
++//  - Serbian: the Daničić-Karadžić Bible (New Testament 1847, Old Testament
++//    1867, together 1868), in the Ekavian spelling of later printings, as
++//    eBible's srp1868 has it (Cyrillic; letter for letter its Latin srp1865,
++//    checked 2026-11-09), https://ebible.org/Scriptures/srp1868_usfm.zip
++//    (sha256 ff301782373925feea78fdd77768a9adf1e4eb18dc7b886f88e97844f308f187).
++//  - Arabic: the Smith and Van Dyck translation (1865) of the Syrian Mission,
++//    eBible's arb-vd, https://ebible.org/Scriptures/arb-vd_usfm.zip
++//    (sha256 fd420ac7b224d42be23997fef298c2193d12788d95d2db7103904184cdda766a).
++//  - Spanish: the Reina-Valera revision of 1909, eBible's spaRV1909,
++//    https://ebible.org/Scriptures/spaRV1909_usfm.zip
++//    (sha256 56937c2be9ad278aed91370d6a15a98fe976f275d0cbaa6e26910291d949c7a5).
++//    All three Public Domain. They are Bibles of the Hebrew canon, as their
++//    publishers made them: no deuterocanonical books, no Psalm 151, Daniel in
++//    twelve chapters, each line under its title saying so.
+ //
+ // Where the Greek file is arranged otherwise than the app's books, it is set
+ // in the app's books, each change named here and held by
+@@ -73,8 +92,10 @@ const args = Object.fromEntries(
+     .slice(2)
+     .reduce((pairs, a, i, all) => (a.startsWith("--") ? [...pairs, [a.slice(2), all[i + 1]]] : pairs), []),
+ );
+-if (!args.ru || !args["grc-ot"] || !args["grc-nt"]) {
+-  console.error("usage: node scripts/bibles/build.mjs --ru <russynodal.json> --grc-ot <grcbrent usfm> --grc-nt <grcbyz usfm>");
++if (!args.ru && !(args["grc-ot"] && args["grc-nt"]) && !args.sr && !args.ar && !args.es) {
++  console.error(
++    "usage: node scripts/bibles/build.mjs [--ru <russynodal.json>] [--grc-ot <grcbrent usfm> --grc-nt <grcbyz usfm>] [--sr <srp1868 usfm>] [--ar <arb-vd usfm>] [--es <spaRV1909 usfm>]",
++  );
+   process.exit(1);
+ }
+ 
+@@ -143,17 +164,24 @@ const LEFT_OUT = new Set(["4MA", "FRT", "INT", "XXA", "XXB", "XXC"]);
+ /** Character styles whose words stay and whose marks go. */
+ const STYLES = "bdit|bd|it|em|sc|sup|add|nd|wj|qs|tl|no|bk|pn|ord|sls";
+ /** Paragraph marks: the text after one goes on with the verse before it. */
+-const PARAGRAPH = /^(p|m|nb|pi\d?|pm|pmo|pmc|pmr|mi|q\d?|qr|qc|qm\d?|li\d?|b|cls)$/;
+-/** Headings and the book's own front matter: left out. */
+-const HEADING = /^(id|ide|h|toc\d|toca\d|mt\d?|mte\d?|s\d?|ms\d?|mr|r|sr|sp|cl|cp|is\d?|imt\d?|im|ib|ili\d?|rem|sts|usfm)$/;
++const PARAGRAPH = /^(p|m|nb|pi\d?|pm|pmo|pmc|pmr|mi|q\d?|qr|qc|qm\d?|li\d?|b|cls|pc)$/;
++/** Headings and the book's own front matter: left out. \qa is an acrostic's letter over its stanza (Psalm 119), a heading. */
++const HEADING = /^(id|ide|h|toc\d|toca\d|mt\d?|mte\d?|s\d?|ms\d?|mr|r|sr|sp|cl|cp|is\d?|imt\d?|im|ib|ili\d?|rem|sts|usfm|qa)$/;
+ 
+ /**
+  * One USFM book: its chapters, each a list of [label, text]. Footnotes and
+  * cross-references go, word tags give back their words, styles their words;
+  * \ip before the first chapter is text before its first verse (Lamentations'
+  * preface in the Septuagint).
++ *
++ * With `opening`, words a chapter prints before its verse 1 are its opening
++ * line, unnumbered, as the edition prints them: a psalm's title (\d), or the
++ * end of a sentence that runs on into verse 1 (the Van Dyck Bible begins
++ * Nehemiah 8 and Jeremiah 39 so). Without it they are a mistake in the file.
++ * `drop` lists editors' notes printed as text, each left out where it stands
++ * and each required to be found, so a list that no longer fits fails.
+  */
+-function parseUsfm(text, where) {
++function parseUsfm(text, where, { opening = false, drop = null } = {}) {
+   const clean = text
+     .replace(/^﻿/, "")
+     .replace(/\\(f|fe|x)\s[\s\S]*?\\\1\*/g, "")
+@@ -166,6 +194,11 @@ function parseUsfm(text, where) {
+   let preface = [];
+   const add = (t) => {
+     if (!t) return;
++    if (!verse && opening && chapter && chapter.every(([n]) => n === "")) {
++      if (chapter.length === 0) chapter.push(["", t]);
++      else chapter[0][1] += ` ${t}`;
++      return;
++    }
+     if (!verse) throw new Error(`${where}: text outside a verse: ${t.slice(0, 60)}`);
+     verse[1] += ` ${t}`;
+   };
+@@ -178,6 +211,10 @@ function parseUsfm(text, where) {
+       continue;
+     }
+     const [, mark, rest] = m;
++    if (drop?.has(rest)) {
++      drop.get(rest).found += 1;
++      continue;
++    }
+     if (mark === "c") {
+       const n = Number(rest.split(/\s/)[0]);
+       if (!Number.isInteger(n) || n !== chapters.length + 1) throw new Error(`${where}: chapter ${rest} out of order`);
+@@ -204,7 +241,11 @@ function parseUsfm(text, where) {
+       continue;
+     }
+     if (mark === "d") {
+-      if (rest) throw new Error(`${where}: a psalm title outside a verse`);
++      // A psalm's title. Where the edition prints it apart from verse 1, as
++      // the Bibles of the Hebrew canon do, it is the opening line (above);
++      // anywhere else it is a mistake in the file.
++      if (rest && opening && chapter && verse === null) add(rest);
++      else if (rest) throw new Error(`${where}: a psalm title outside a verse`);
+       continue;
+     }
+     if (HEADING.test(mark)) continue;
+@@ -215,13 +256,13 @@ function parseUsfm(text, where) {
+   return chapters;
+ }
+ 
+-function readUsfm(folder) {
++function readUsfm(folder, options = {}) {
+   const books = new Map();
+   for (const name of fs.readdirSync(folder).filter((f) => f.endsWith(".usfm")).sort()) {
+     const code = /^\d+-([0-9A-Z]{3})/.exec(name)?.[1];
+     if (!code) throw new Error(`not a book: ${name}`);
+     if (LEFT_OUT.has(code)) continue;
+-    books.set(code, parseUsfm(fs.readFileSync(path.join(folder, name), "utf8"), code));
++    books.set(code, parseUsfm(fs.readFileSync(path.join(folder, name), "utf8"), code, options));
+   }
+   return books;
+ }
+@@ -259,10 +300,120 @@ function greek(otFolder, ntFolder) {
+   return books;
+ }
+ 
++// ---- The Bibles of the Hebrew canon -----------------------------------------
++
++/** Their files name Esther, Daniel, Ezra and Nehemiah as the Hebrew canon has them. */
++const HEBREW_CANON = { ...USFM, EST: "esther", DAN: "daniel", EZR: "ezra", NEH: "nehemiah" };
++
++/**
++ * Editors' notes printed as text, left out, with how many times each stands.
++ * The Van Dyck file heads Nehemiah 7 with "(to verse 73)", a reader's pointer
++ * to where the chapter's list of the returned ends, not words of the book.
++ */
++const NOTES = {
++  "ar-van-dyck": { "(إلى عدد73)": 1 },
++};
++
++/**
++ * Verse numbers the file keeps for the English count with no words under them,
++ * the words standing in the verse before or after as the edition numbers them
++ * (Spanish Numbers 12:16 is its 13:1, Jonah 1:17 its 2:1, Job 38:39-41 its
++ * 39:1-3, and Acts 19:41 is the end of its 19:40). Left out, so the page
++ * numbers as the edition does; how many, so a new source that differs fails.
++ */
++const EMPTY_NUMBERS = { "es-reina-valera-1909": 18 };
++
++/**
++ * The note printed after each of Paul's letters in the Reina-Valera of 1909,
++ * where and by whom it was sent ("Fué escrita de Corinto á los Romanos..."):
++ * the file runs it on after the last verse's "Amén." It is the edition's
++ * apparatus, not words of the letter (the app's English leaves the King
++ * James Bible's out too), so it goes, from all fourteen and only there.
++ */
++/**
++ * The Reina-Valera of 1909 prints a psalm's title above it and begins the
++ * psalm with its first word in capitals ("TEN piedad de mí, oh Dios"); the
++ * file runs the title into verse 1. Set apart again, as the opening line,
++ * where it stands in the edition, and as the Arabic and Serbian files hold
++ * theirs: the words before that first word in capitals ("A TI, oh Jehová"
++ * keeps its one-letter first word). 124 psalms have one.
++ */
++const SPANISH_TITLES = 124;
++/** The Hebrew letters over Psalm 119's stanzas, which the file runs into each stanza's first verse: headings, left out as the Arabic's are. */
++const STANZAS = ["ALEPH", "BETH", "GIMEL", "DALETH", "HE", "VAU", "ZAIN", "CHETH", "TETH", "JOD", "CAPH", "LAMED", "MEM", "NUN", "SAMECH", "AIN", "PE", "TZADDI", "COPH", "RESH", "SIN", "TAU"];
++
++function spanishPsalms(psalms) {
++  let titles = 0;
++  for (const chapter of psalms) {
++    const first = chapter.find(([n]) => n === 1);
++    const m = /^(.*?)\s*((?:[¡¿(]\s*)?\p{Lu}{2,}(?![\p{Ll}]).*)$/u.exec(first[1]);
++    if (!m || !m[1]) continue;
++    let [, title, rest] = m;
++    const one = /^(.*\S)\s+(\p{Lu})$/u.exec(title);
++    if (one) [title, rest] = [one[1], `${one[2]} ${rest}`];
++    if (!/[.:?!]$/.test(title)) throw new Error(`es-reina-valera-1909: a psalm title that does not end as a title: ${title}`);
++    chapter.unshift(["", title]);
++    first[1] = rest;
++    titles += 1;
++  }
++  if (titles !== SPANISH_TITLES) throw new Error(`es-reina-valera-1909: ${titles} psalm titles, not ${SPANISH_TITLES}`);
++  const long = psalms[118];
++  STANZAS.forEach((letter, i) => {
++    const verse = long.find(([n]) => n === 1 + 8 * i);
++    const m = new RegExp(`^${letter}\\.?\\s+(\\S.*)$`, "u").exec(verse[1]);
++    if (!m) throw new Error(`es-reina-valera-1909: Psalm 119:${1 + 8 * i} does not begin with ${letter}`);
++    verse[1] = m[1];
++  });
++}
++
++const PAUL = ["romans", "1-corinthians", "2-corinthians", "galatians", "ephesians", "philippians", "colossians", "1-thessalonians", "2-thessalonians", "1-timothy", "2-timothy", "titus", "philemon", "hebrews"];
++const SUBSCRIBED = new Set(["es-reina-valera-1909"]);
++
++function hebrewCanon(folder, bible) {
++  const books = new Map();
++  const drop = new Map(Object.entries(NOTES[bible] ?? {}).map(([note, times]) => [note, { times, found: 0 }]));
++  const read = readUsfm(folder, { opening: true, drop });
++  for (const [note, { times, found }] of drop) {
++    if (found !== times) throw new Error(`${bible}: the note ${note} stands ${found} times, not ${times}`);
++  }
++  let empty = 0;
++  for (const [code, chapters] of read) {
++    const slug = HEBREW_CANON[code];
++    if (!slug) throw new Error(`${bible}: no app book for ${code}`);
++    books.set(
++      slug,
++      chapters.map((ch) =>
++        ch.filter(([n, t]) => {
++          if (n === "" || t) return true;
++          empty += 1;
++          return false;
++        }),
++      ),
++    );
++  }
++  if (books.size !== 66) throw new Error(`${bible}: ${books.size} books, not the 66 of the Hebrew canon and the New Testament`);
++  if (empty !== (EMPTY_NUMBERS[bible] ?? 0)) throw new Error(`${bible}: ${empty} verse numbers with no words, not ${EMPTY_NUMBERS[bible] ?? 0}`);
++  if (bible === "es-reina-valera-1909") spanishPsalms(books.get("psalms"));
++  if (SUBSCRIBED.has(bible)) {
++    for (const slug of PAUL) {
++      const last = books.get(slug).at(-1).at(-1);
++      const m = /^(.*\bAmén\.) (\S.*)$/u.exec(last[1]);
++      if (!m) throw new Error(`${bible} ${slug}: no note after the last Amén`);
++      last[1] = m[1];
++    }
++  }
++  return books;
++}
++
+ // ---- Writing ---------------------------------------------------------------
+ 
++/**
++ * Spacing made even, and the letters in Unicode's composed order (NFC): the
++ * same text, mark for mark, in the order every other Bible's file already
++ * has it. The Van Dyck file sets a shadda before the vowel it carries.
++ */
+ function even(text) {
+-  return text.replace(/\s+/g, " ").trim();
++  return text.replace(/\s+/g, " ").trim().normalize("NFC");
+ }
+ 
+ const hash = (s) => crypto.createHash("sha256").update(s).digest("hex").slice(0, 12);
+@@ -280,6 +431,18 @@ const ELSEWHERE = {
+ const MORE = {
+   "grc-lxx-patriarchal": { joel: 4 },
+ };
++/**
++ * Books a Bible ends before the app's last chapter, the rest not being in it:
++ * the Bibles of the Hebrew canon have no Psalm 151, and no Susanna or Bel
++ * (the app's Daniel 13 and 14). The page for such a chapter shows the English
++ * and says why.
++ */
++const HEBREW_ENDS = { psalms: 150, daniel: 12 };
++const FEWER = {
++  "sr-danicic-karadzic": HEBREW_ENDS,
++  "ar-van-dyck": HEBREW_ENDS,
++  "es-reina-valera-1909": HEBREW_ENDS,
++};
+ 
+ /** Checks a Bible against the app's books, and writes its files. */
+ function write(bible, books) {
+@@ -293,14 +456,17 @@ function write(bible, books) {
+     if (!chapters) continue;
+     const elsewhere = ELSEWHERE[bible]?.[appBook.slug] ?? {};
+     const more = MORE[bible]?.[appBook.slug];
+-    // Chapters past the app's last are allowed where they are listed, and
+-    // chapters the edition lacks where they are said to stand elsewhere.
+-    const expected = more ?? appBook.chapters;
++    const fewer = FEWER[bible]?.[appBook.slug];
++    // Chapters past the app's last are allowed where they are listed, chapters
++    // the edition lacks where they are said to stand elsewhere, and a book
++    // that ends sooner where it is listed.
++    const expected = more ?? fewer ?? appBook.chapters;
+     const missing = Object.keys(elsewhere).map(Number).filter((n) => n > chapters.length);
+     if (chapters.length + missing.length !== expected) throw new Error(`${bible} ${appBook.slug}: ${chapters.length} chapters, the app has ${appBook.chapters}`);
+     for (let n = 1; n <= Math.max(chapters.length, appBook.chapters); n += 1) {
+       const ch = chapters[n - 1];
+       const empty = !ch || ch.length === 0;
++      if (empty && fewer !== undefined && n > fewer) continue;
+       if (empty !== Boolean(elsewhere[n])) throw new Error(`${bible} ${appBook.slug} ${n}: ${empty ? "has no verses and is not said to stand elsewhere" : "has verses and is said to stand elsewhere"}`);
+       if (elsewhere[n] && !chapters[elsewhere[n] - 1]?.length) throw new Error(`${bible} ${appBook.slug} ${n}: said to stand in ${elsewhere[n]}, which is empty`);
+       if (empty) continue;
+@@ -326,9 +492,23 @@ function write(bible, books) {
+   return { version, bytes, books: listed.map((b) => b.book) };
+ }
+ 
+-const catalog = {
+-  "ru-synodal": write("ru-synodal", russian(args.ru)),
+-  "grc-lxx-patriarchal": write("grc-lxx-patriarchal", greek(args["grc-ot"], args["grc-nt"])),
++/** Each Bible's source, when given: the owner's order of 2026-11-06 (Romanian waits on his word). */
++const SOURCES = {
++  "ru-synodal": () => (args.ru ? russian(args.ru) : null),
++  "grc-lxx-patriarchal": () => (args["grc-ot"] && args["grc-nt"] ? greek(args["grc-ot"], args["grc-nt"]) : null),
++  "sr-danicic-karadzic": () => (args.sr ? hebrewCanon(args.sr, "sr-danicic-karadzic") : null),
++  "ar-van-dyck": () => (args.ar ? hebrewCanon(args.ar, "ar-van-dyck") : null),
++  "es-reina-valera-1909": () => (args.es ? hebrewCanon(args.es, "es-reina-valera-1909") : null),
+ };
++const built = fs.existsSync(CATALOG) ? JSON.parse(fs.readFileSync(CATALOG, "utf8")) : {};
++const catalog = {};
++for (const [bible, read] of Object.entries(SOURCES)) {
++  const books = read();
++  if (books) catalog[bible] = write(bible, books);
++  else if (built[bible]) {
++    catalog[bible] = built[bible];
++    console.log(`${bible}: kept as built (no source given)`);
++  }
++}
+ fs.mkdirSync(path.dirname(CATALOG), { recursive: true });
+ fs.writeFileSync(CATALOG, `${JSON.stringify(catalog, null, 1)}\n`);
+diff --git a/scripts/bibles/compare-map.mjs b/scripts/bibles/compare-map.mjs
+index fb175cc..b12dffd 100644
+--- a/scripts/bibles/compare-map.mjs
++++ b/scripts/bibles/compare-map.mjs
+@@ -448,10 +448,16 @@ const CREDIT =
+ 
+ // The Greek is Brenton's own Septuagint, numbered nearly as the standard
+ // Septuagint is (its Proverbs 30 in chapter 24, its Joel in four chapters),
+-// and the 1904 Patriarchal New Testament.
++// and the 1904 Patriarchal New Testament. The Serbian, Arabic and Spanish are
++// Bibles of the Hebrew canon in eBible's files, numbered as the English
++// Bibles are, with their own turns where the edition has them (the Spanish's
++// Numbers 13:1 is the English's 12:16): the English standard, then the texts.
+ const BIBLES = [
+   { id: "ru-synodal", target: "rso", sameEdition: false },
+   { id: "grc-lxx-patriarchal", target: "lxx", sameEdition: true },
++  { id: "sr-danicic-karadzic", target: "eng", sameEdition: false },
++  { id: "ar-van-dyck", target: "eng", sameEdition: false },
++  { id: "es-reina-valera-1909", target: "eng", sameEdition: false },
+ ];
+ 
+ export { expected, appBook, bibleBook, placeBible, BIBLES };
