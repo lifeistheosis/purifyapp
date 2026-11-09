@@ -38,9 +38,20 @@
 //       ICON_RIGHTS row to paste, with inspectedOn set to today. Refuses
 //       without --alt, because --alt is the proof you opened it.
 //
+//   node scripts/fetch-saint-icons.mjs --source <file> "File:<Commons title>"
+//       For an icon that already ships with no source recorded (a row in
+//       UNVERIFIED_ICONS): reads what Commons says of the named file, applies
+//       the same licence gate, and compares the two pictures by difference
+//       hash. Stages the provenance only when they are one picture, and keeps
+//       our file as it is. Then --promote <slug> as above, which moves nothing
+//       for it and prints the row the same way. (1.9, U12: most of the old
+//       icons are copies of Commons files whose source the old script threw
+//       away; this is how one is given back.)
+//
 // The staging directory is gitignored. A fetch that is never promoted leaves
 // the repo exactly as it found it.
 
+import { createHash } from "node:crypto";
 import fs from "node:fs/promises";
 import path from "node:path";
 import https from "node:https";
@@ -101,6 +112,67 @@ const plain = (v) =>
     .replace(/\s+/g, " ")
     .trim();
 
+const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
+
+/** Bits of 64 two copies of one picture may differ by. Different pictures differ by 20 and more. */
+const MATCH_BITS = 10;
+/** How far apart two shapes (width over height) may be and still be one picture, uncut. */
+const SHAPE_SLACK = 0.04;
+
+/**
+ * The 64-bit difference hash of a picture, and its shape: the picture as 9 by
+ * 8 grey cells, each bit whether a cell is brighter than the one beside it. A
+ * resize and a re-encode barely move it; a different picture moves it a lot.
+ */
+async function dhash(input) {
+  const image = sharp(input).flatten({ background: "#ffffff" });
+  const { width = 1, height = 1 } = await image.metadata();
+  const raw = await image.greyscale().resize(9, 8, { fit: "fill" }).raw().toBuffer();
+  let bits = 0n;
+  for (let y = 0; y < 8; y++) {
+    for (let x = 0; x < 8; x++) bits = (bits << 1n) | (raw[y * 9 + x] > raw[y * 9 + x + 1] ? 1n : 0n);
+  }
+  return { bits, shape: width / height };
+}
+
+function distance(a, b) {
+  let x = a ^ b;
+  let n = 0;
+  while (x) {
+    n += Number(x & 1n);
+    x >>= 1n;
+  }
+  return n;
+}
+
+/** A Commons file on upload.wikimedia.org, whole or as a thumbnail: its folder is the MD5 of its name. */
+function uploadUrl(name, width) {
+  const md5 = createHash("md5").update(name, "utf8").digest("hex");
+  const enc = encodeURIComponent(name);
+  const base = "https://upload.wikimedia.org/wikipedia/commons";
+  return width ? `${base}/thumb/${md5[0]}/${md5.slice(0, 2)}/${enc}/${width}px-${enc}` : `${base}/${md5[0]}/${md5.slice(0, 2)}/${enc}`;
+}
+
+/**
+ * A Commons picture to compare with ours: the 330px thumbnail Wikipedia's
+ * pages ask for (so usually made already), else 500px, else the original. A
+ * busy answer (429) is waited out twice before the next is tried.
+ */
+async function picture(name) {
+  for (const url of [uploadUrl(name, 330), uploadUrl(name, 500), uploadUrl(name)]) {
+    for (let attempt = 0; attempt < 3; attempt++) {
+      const r = await get(url);
+      if (r.status === 429) {
+        await sleep(12_000);
+        continue;
+      }
+      if (r.status === 200 && r.type?.startsWith("image/")) return r.body;
+      break;
+    }
+  }
+  return null;
+}
+
 async function search(query) {
   const r = await get(
     `https://commons.wikimedia.org/w/api.php?action=query&list=search` +
@@ -115,28 +187,67 @@ async function search(query) {
  * Everything Commons will tell us about a file. The old script asked for
  * exactly this and then kept only `url`, which is the whole reason 107 rows
  * say "no source recorded" about files we downloaded ourselves.
+ *
+ * Asked of the Commons API, and of the Wikidata Query Service when the API
+ * will not answer: the API answers a busy shared address with 429, the query
+ * service asks it on Wikimedia's side.
  */
 async function provenance(title) {
-  const r = await get(
-    `https://commons.wikimedia.org/w/api.php?action=query&titles=${encodeURIComponent(title)}` +
-      `&prop=imageinfo&iiprop=url|extmetadata&format=json`,
-  );
-  const info = Object.values(JSON.parse(r.body.toString()).query?.pages || {})[0]
-    ?.imageinfo?.[0];
-  if (!info?.url) return null;
-  const m = info.extmetadata || {};
-  const license = plain(m.LicenseShortName?.value) || plain(m.License?.value);
+  try {
+    const r = await get(
+      `https://commons.wikimedia.org/w/api.php?action=query&titles=${encodeURIComponent(title)}` +
+        `&prop=imageinfo&iiprop=url|extmetadata&format=json`,
+    );
+    if (r.status === 200) {
+      const info = Object.values(JSON.parse(r.body.toString()).query?.pages || {})[0]?.imageinfo?.[0];
+      if (info?.url) {
+        const m = info.extmetadata || {};
+        return described(title, info.url, info.descriptionurl, (k) => m[k]?.value);
+      }
+    }
+  } catch {
+    // The query service, below.
+  }
+  return provenanceViaQueryService(title);
+}
+
+/** The same, asked through the Wikidata Query Service: an exact lookup by name (allimages from it, one). */
+async function provenanceViaQueryService(title) {
+  const name = title.replace(/^File:/, "").replace(/ /g, "_");
+  const FIELDS = ["LicenseShortName", "License", "Artist", "Credit", "DateTimeOriginal", "DateTime", "ImageDescription", "UsageTerms"];
+  const sparql = `SELECT * WHERE {
+    SERVICE wikibase:mwapi {
+      bd:serviceParam wikibase:api "Generator"; wikibase:endpoint "commons.wikimedia.org"; wikibase:limit 1;
+        mwapi:generator "allimages"; mwapi:gaifrom ${JSON.stringify(name)}; mwapi:gailimit "1";
+        mwapi:prop "imageinfo"; mwapi:iiprop "extmetadata|url".
+      ?title wikibase:apiOutput mwapi:title.
+      ?url wikibase:apiOutput "imageinfo/ii/@url".
+      ?page wikibase:apiOutput "imageinfo/ii/@descriptionurl".
+      ${FIELDS.map((f) => `?${f} wikibase:apiOutput "imageinfo/ii/extmetadata/${f}/@value".`).join("\n      ")}
+    }
+  }`;
+  const r = await get(`https://query.wikidata.org/sparql?${new URLSearchParams({ query: sparql, format: "json" })}`);
+  if (r.status !== 200) return null;
+  // Commons metadata can carry raw control characters, which JSON does not allow in a string.
+  const rows = JSON.parse(r.body.toString().replace(/[\u0000-\u001f]/g, " ")).results?.bindings ?? [];
+  const b = rows.find((x) => x.title?.value.replace(/ /g, "_") === `File:${name}`);
+  if (!b?.url) return null;
+  return described(b.title.value, b.url.value, b.page?.value, (k) => b[k]?.value);
+}
+
+function described(title, fileUrl, page, ext) {
+  const license = plain(ext("LicenseShortName")) || plain(ext("License"));
   return {
     commonsTitle: title,
-    fileUrl: info.url,
-    descriptionPage: info.descriptionurl || `https://commons.wikimedia.org/wiki/${encodeURIComponent(title)}`,
+    fileUrl,
+    descriptionPage: page || `https://commons.wikimedia.org/wiki/${encodeURIComponent(title.replace(/ /g, "_"))}`,
     license,
     licenseAllowed: PD_PATTERN.test(license),
-    artist: plain(m.Artist?.value) || "Unrecorded",
-    credit: plain(m.Credit?.value),
-    workDate: plain(m.DateTimeOriginal?.value) || plain(m.DateTime?.value) || "Unrecorded",
-    description: plain(m.ImageDescription?.value),
-    usageTerms: plain(m.UsageTerms?.value),
+    artist: plain(ext("Artist")) || "Unrecorded",
+    credit: plain(ext("Credit")),
+    workDate: plain(ext("DateTimeOriginal")) || plain(ext("DateTime")) || "Unrecorded",
+    description: plain(ext("ImageDescription")),
+    usageTerms: plain(ext("UsageTerms")),
   };
 }
 
@@ -186,6 +297,66 @@ async function doFetch(slug, query) {
   console.log(`  nothing passed the licence gate for ${slug}.`);
 }
 
+async function doSource(file, title) {
+  let mine;
+  try {
+    mine = await fs.readFile(path.join(OUT, file));
+  } catch {
+    throw new Error(`no ${file} in public/saints/icons/.`);
+  }
+  const p = await provenance(title);
+  if (!p) {
+    console.log(`${file}: Commons has no file "${title}".`);
+    return;
+  }
+  if (!p.licenseAllowed) {
+    console.log(`${file}: licence "${p.license || "unknown"}" does not pass the gate. Nothing staged.`);
+    return;
+  }
+  const theirs = await picture(p.commonsTitle.replace(/^File:/, "").replace(/ /g, "_"));
+  if (!theirs) {
+    console.log(`${file}: the Commons picture could not be fetched to compare. Nothing staged; try again later.`);
+    return;
+  }
+  const a = await dhash(mine);
+  const b = await dhash(theirs);
+  const bits = distance(a.bits, b.bits);
+  const shapeOff = Math.abs(a.shape - b.shape) / a.shape;
+  if (bits > MATCH_BITS || shapeOff > SHAPE_SLACK) {
+    console.log(
+      `${file}: not the same picture as ${p.commonsTitle} (${bits} of 64 bits apart, shapes ${(shapeOff * 100).toFixed(1)}% apart). Nothing staged.`,
+    );
+    return;
+  }
+  const meta = await sharp(mine).metadata();
+  const slug = file.replace(/\.(jpe?g|png|webp)$/i, "");
+  await fs.mkdir(STAGE, { recursive: true });
+  await fs.writeFile(
+    path.join(STAGE, `${slug}.json`),
+    JSON.stringify(
+      {
+        slug,
+        file,
+        keep: true,
+        sameAs: { bits, shapeOff: Number(shapeOff.toFixed(3)) },
+        hash: a.bits.toString(16),
+        width: meta.width,
+        height: meta.height,
+        bytes: mine.length,
+        ...p,
+      },
+      null,
+      2,
+    ) + "\n",
+    "utf8",
+  );
+  console.log(`${file}: the same picture as ${p.commonsTitle} (${bits} of 64 bits apart), licence ${p.license}.`);
+  console.log(`  ${p.descriptionPage}`);
+  console.log(`\n  OPEN BOTH AND LOOK before promoting: public/saints/icons/${file} and the page above.`);
+  console.log(`  Is it the right saint? Any watermark? Read the licence on the page. Then:`);
+  console.log(`    node scripts/fetch-saint-icons.mjs --promote ${slug} --alt "what you actually see"`);
+}
+
 async function doList() {
   let entries;
   try {
@@ -194,7 +365,12 @@ async function doList() {
     console.log("Nothing staged.");
     return;
   }
-  const slugs = entries.filter((f) => f.endsWith(".json")).map((f) => f.replace(/\.json$/, ""));
+  const slugs = [];
+  for (const f of entries.filter((e) => e.endsWith(".json"))) {
+    // Only what --fetch or --source staged; other reports may sit beside them.
+    const p = JSON.parse(await fs.readFile(path.join(STAGE, f), "utf8"));
+    if (p && !Array.isArray(p) && p.slug && p.commonsTitle) slugs.push(f.replace(/\.json$/, ""));
+  }
   if (!slugs.length) {
     console.log("Nothing staged.");
     return;
@@ -202,7 +378,7 @@ async function doList() {
   console.log(`${slugs.length} staged, waiting to be looked at:\n`);
   for (const s of slugs) {
     const p = JSON.parse(await fs.readFile(path.join(STAGE, `${s}.json`), "utf8"));
-    console.log(`  ${s}.jpg  ${p.width}x${p.height}  ${p.license}`);
+    console.log(`  ${p.keep ? `${p.file} (ours, kept)` : `${s}.jpg`}  ${p.width}x${p.height}  ${p.license}`);
     console.log(`    ${p.descriptionPage}`);
   }
 }
@@ -223,14 +399,26 @@ async function doPromote(slug, alt) {
     );
   }
 
-  await fs.mkdir(OUT, { recursive: true });
-  await fs.rename(path.join(STAGE, `${slug}.jpg`), path.join(OUT, `${slug}.jpg`));
-  await fs.unlink(metaPath);
+  let key = `${slug}.jpg`;
+  if (p.keep) {
+    // Our file stays; it must still be the picture that was compared.
+    const now = await dhash(await fs.readFile(path.join(OUT, p.file)));
+    if (now.bits.toString(16) !== p.hash) {
+      throw new Error(`${p.file} has changed since it was compared. Run --source again.`);
+    }
+    key = p.file;
+    await fs.unlink(metaPath);
+    console.log(`\nKept public/saints/icons/${p.file}: it is ${p.commonsTitle}.\n`);
+  } else {
+    await fs.mkdir(OUT, { recursive: true });
+    await fs.rename(path.join(STAGE, `${slug}.jpg`), path.join(OUT, `${slug}.jpg`));
+    await fs.unlink(metaPath);
+    console.log(`\nMoved to public/saints/icons/${slug}.jpg\n`);
+  }
 
   const today = new Date().toISOString().slice(0, 10);
-  console.log(`\nMoved to public/saints/icons/${slug}.jpg\n`);
   console.log(`Paste into ICON_RIGHTS in lib/saints/iconRights.ts:\n`);
-  console.log(`  "${slug}.jpg": {`);
+  console.log(`  "${key}": {`);
   console.log(`    status: "verified",`);
   console.log(`    inspectedOn: "${today}",`);
   console.log(`    alt: ${JSON.stringify(alt.trim())},`);
@@ -248,6 +436,11 @@ async function doPromote(slug, alt) {
 const slug = flag("--fetch") || flag("--promote");
 if (args.includes("--list")) {
   await doList();
+} else if (args.includes("--source")) {
+  const file = flag("--source");
+  const title = args[args.indexOf("--source") + 2];
+  if (!file || !title) throw new Error(`usage: --source <file> "File:<Commons title>"`);
+  await doSource(file, title);
 } else if (args.includes("--fetch")) {
   const query = args[args.indexOf("--fetch") + 2];
   if (!slug || !query) throw new Error(`usage: --fetch <slug> "<search terms>"`);
@@ -260,4 +453,5 @@ if (args.includes("--list")) {
   console.log('  node scripts/fetch-saint-icons.mjs --fetch <slug> "<search terms>"');
   console.log("  node scripts/fetch-saint-icons.mjs --list");
   console.log('  node scripts/fetch-saint-icons.mjs --promote <slug> --alt "<what you see>"');
+  console.log('  node scripts/fetch-saint-icons.mjs --source <file> "File:<Commons title>"');
 }

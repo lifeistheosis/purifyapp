@@ -790,6 +790,33 @@ export const ICON_RIGHTS: Record<string, IconRights> = {
     confirmedOn: "2026-08-01",
     license: "Used with permission",
   },
+  // Given back their sources (1.9, U12): icons that shipped with none
+  // recorded, each found on Commons as the same picture by
+  // scripts/fetch-saint-icons.mjs --source (difference hash, same shape),
+  // its licence read there, and our file opened and looked at before the row
+  // was written by the promote step. The files are kept as they were.
+  "agatho-of-rome.jpg": {
+    status: "verified",
+    inspectedOn: "2026-11-09",
+    alt: "A gold-ground manuscript miniature of a grey-haired, grey-bearded bishop within a red-ringed halo, a white omophorion marked with black crosses over his brown phelonion, holding a gold Gospel book set with coloured stones against his chest.",
+    work: "Miniature of St Agatho, Pope of Rome, in the Menologion of Basil II (Vatican Library): the saint alone, as cut on Commons",
+    artist: "The illuminators of the Menologion of Basil II, Constantinople (its page names Pantoleon, Georgios, Michael the Younger, Michael of Blachernae, Symeon, Symeon of Blachernae, Menas and Nestor)",
+    workDate: "c. 985",
+    source: "Wikimedia Commons (from pravoslavie.ru)",
+    license: "Public domain",
+    evidenceUrl: "https://commons.wikimedia.org/wiki/File:Pope_Agatho_(Menologion_of_Basil_II)_-_cropped.jpg",
+  },
+  "anthony-the-great.jpg": {
+    status: "verified",
+    inspectedOn: "2026-11-09",
+    alt: "A full-length wall painting of an old monk with a long grey beard under a dark hood, in a dark red mantle over an olive tunic, his right hand raised and his left holding an unrolled scroll of Greek writing, his name in Greek beside a gold halo on a dark ground.",
+    work: "Athonite icon of St Anthony the Great, the whole figure with his scroll",
+    artist: "Unknown Athonite painter",
+    workDate: "14th to 15th century",
+    source: "Wikimedia Commons (from johnsanidopoulos.com)",
+    license: "Public domain",
+    evidenceUrl: "https://commons.wikimedia.org/wiki/File:Saint_Anthony_the_Great_Athonite_Icon_2.jpg",
+  },
 };
 
 /**
@@ -839,16 +866,12 @@ export const ICON_QUESTIONS: Record<string, IconQuestion> = {};
 export const UNVERIFIED_ICONS: Record<string, string> = {
   "adrian-of-rome.jpg":
     "No source, licence or attribution recorded. Fetched before scripts/fetch-missing-icons.mjs had a licence gate. Referenced by SAINTS.iconUrl for adrian-of-rome. 321x420 JPG, 22 KB. Not yet opened and inspected.",
-  "agatho-of-rome.jpg":
-    "No source, licence or attribution recorded. Fetched before scripts/fetch-missing-icons.mjs had a licence gate. Referenced by SAINTS.iconUrl for agatho-of-rome. 250x410 JPG, 37 KB. Not yet opened and inspected.",
   "alexander-of-alexandria.jpg":
     "No source, licence or attribution recorded. Fetched before scripts/fetch-missing-icons.mjs had a licence gate. Referenced by SAINTS.iconUrl for alexander-of-alexandria. 336x420 JPG, 32 KB. Not yet opened and inspected.",
   "anatolius-of-constantinople.jpg":
     "No source, licence or attribution recorded. Fetched before scripts/fetch-missing-icons.mjs had a licence gate. Referenced by SAINTS.iconUrl for anatolius-of-constantinople. 382x420 JPG, 42 KB. Not yet opened and inspected.",
   "anianus-of-alexandria.jpg":
     "No source, licence or attribution recorded. Fetched before scripts/fetch-missing-icons.mjs had a licence gate. Referenced by SAINTS.iconUrl for anianus-of-alexandria and AUTHOR_ICONS. 400x400 JPG, 32 KB. Not yet opened and inspected.",
-  "anthony-the-great.jpg":
-    "No source, licence or attribution recorded. Fetched before scripts/fetch-missing-icons.mjs had a licence gate. Referenced by SAINTS.iconUrl for anthony-the-great. 152x420 JPG, 20 KB. Not yet opened and inspected.",
   "apostle-andrew.jpg":
     "No source, licence or attribution recorded. Fetched before scripts/fetch-missing-icons.mjs had a licence gate. Referenced by SAINTS.iconUrl for apostle-andrew and AUTHOR_ICONS. 316x420 JPG, 33 KB. Not yet opened and inspected.",
   "apostle-bartholomew.jpg":
