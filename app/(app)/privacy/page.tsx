@@ -691,6 +691,13 @@ export default async function PrivacyPage() {
  );
 }
 
+// The German page (2026-11-09, brought level with the English on the arbiter's
+// word: "a faithful translation of the English already approved, nothing new
+// in substance"). Block for block the English page above, in its order and
+// with its markup, so lib/legal/__tests__/privacyLevel.test.ts can hold the
+// two to the same paragraphs; the approved lines of A2, A5, A10 and A11 stand
+// word for word (lib/admin/__tests__/privacyLines.test.ts). The names of
+// buttons and features are the German app's own (lib/i18n/messages/de.json).
 function PrivacyDe() {
  return (
  <>
@@ -722,11 +729,14 @@ function PrivacyDe() {
  schreib uns; wir bringen es in Ordnung.
  </p>
 
+ {/* Two account paths */}
  <h2 className="mt-12 font-sans text-title-sm md:text-title font-bold text-paper leading-[1.15]">
- Lokales Profil gegen öffentliches Konto
+ Auf diesem Gerät oder angemeldet
  </h2>
  <p className="mt-4 font-serif text-body text-paper/85 leading-[1.7]">
- Wenn du{" "}
+ Purify funktioniert privat auf diesem Gerät, ohne Konto; die
+ Anmeldung gibt es, damit dein Lesen auf allen deinen Geräten
+ abgeglichen bleibt. Wenn du{" "}
  <Link
  href="/account"
  className="text-paper underline underline-offset-2 decoration-paper/30 hover:decoration-paper"
@@ -739,59 +749,61 @@ function PrivacyDe() {
  <div className="mt-6 grid grid-cols-1 md:grid-cols-2 gap-4">
  <div className="rounded-md border border-paper/12 bg-paper/[0.02] p-5">
  <p className="font-sans text-caption font-semibold text-paper/55 mb-2">
- Lokales Profil
+ Auf diesem Gerät (ohne Konto)
  </p>
  <p className="font-serif text-body text-paper/85 leading-[1.65]">
  Markierungen, Notizen, Lesezeichen, deine Gebets-Strähne und die
  Lese-Einstellungen (Schrift, Größe) werden im{" "}
  <code className="font-mono text-ui text-paper/70">localStorage</code>{" "}
  deines Browsers gespeichert. Wir sehen oder empfangen nichts
- davon. Es gibt keine Zeile für dich in unserer Datenbank. Der
- Tausch: es lebt nur auf diesem Gerät und geht weg, wenn du
- Browserdaten löschst.
+ davon. Es gibt keine Zeile für dich in unserer Datenbank. Die
+ Kehrseite: es lebt nur auf diesem Gerät und geht verloren, wenn
+ du die Browserdaten löschst.
  </p>
  <p className="mt-3 font-sans text-caption text-paper/55 leading-[1.55]">
- Um ein lokales Profil aufzulösen, öffne /account und klicke auf
- &bdquo;Dieses lokale Profil aufgeben&ldquo;. Um alle lokalen
- Daten zu löschen, lösche die Seitendaten für diese Herkunft in
- deinen Browser-Einstellungen.
+ Um den Namen zu entfernen, den du auf diesem Gerät gewählt hast,
+ öffne /account und tippe auf &bdquo;Diesen Namen
+ entfernen&ldquo;. Um alle lokalen Daten zu löschen, lösche in
+ deinen Browser-Einstellungen die Seitendaten für diese Herkunft.
  </p>
  </div>
  <div className="rounded-md border border-gold/30 bg-gold/[0.04] p-5">
  <p className="font-sans text-caption font-semibold text-gold mb-2">
- Öffentliches Konto
+ Angemeldet (abgeglichen)
  </p>
  <p className="font-serif text-body text-paper/85 leading-[1.65]">
  Dieselben Posten gehen in unsere Supabase-Postgres-Datenbank,
  damit sie sich auf jedem Gerät abgleichen, auf dem du dich
  anmeldest. Wir speichern: deine E-Mail (um dich anzumelden und
- um Bestätigungen bei Paßwort- oder E-Mail-Änderungen zu
- senden), einen Argon2-Hash deines Paßworts (nie das Paßwort
+ um Bestätigungen bei Passwort- oder E-Mail-Änderungen zu
+ senden), einen Argon2-Hash deines Passworts (nie das Passwort
  selbst), einen Anzeigenamen und eine{" "}
- <code className="font-mono text-ui text-paper/70">profiles</code>{" "}
+ <code className="font-mono text-ui text-paper/70">profiles</code>
  -Zeile mit dem Erstellungsdatum deines Kontos sowie ein
- Boolesches Kennzeichen, ob du ein Paßwort gesetzt hast.
- Markierungen, Notizen, Lesezeichen und
- Gebetsregel-Abhakungen wandern als eigene Zeilen. Wenn du dich
- mit Google oder Apple anmeldest, speichern wir zusätzlich eine{" "}
- <code className="font-mono text-ui text-paper/70">identities</code>{" "}
+ boolesches Kennzeichen, ob du ein Passwort gesetzt hast.
+ Markierungen, Notizen, Lesezeichen und Abhakungen der
+ Gebetsregel wandern als eigene Zeilen. Wenn du dich mit Google
+ oder Apple anmeldest, speichern wir zusätzlich eine{" "}
+ <code className="font-mono text-ui text-paper/70">identities</code>
  -Zeile, die dein Konto mit jenem Anbieter verbindet; wir sehen
- nie dein Google- oder Apple-Paßwort, nur das OAuth-Token.
+ nie dein Google- oder Apple-Passwort, nur das OAuth-Token.
  </p>
  <p className="mt-3 font-sans text-caption text-paper/55 leading-[1.55]">
- Um das Konto und jede serverseitige Zeile, die es geschaffen
- hat, zu löschen, benutze die Schaltfläche &bdquo;Konto
- löschen&ldquo; auf /account. Die Löschung ist sofort und
- wirkt kaskadierend.
+ Um das Konto und jede serverseitige Zeile, die es angelegt hat,
+ zu löschen, benutze die Schaltfläche &bdquo;Konto löschen&ldquo;
+ auf /account. Die Löschung geschieht sofort und erfasst alles,
+ was daran hängt.
  </p>
  </div>
  </div>
  <p className="mt-5 font-serif text-body text-paper/80 leading-[1.7]">
- Wenn du von einem lokalen Profil zu einem öffentlichen Konto
- wechselst, werden deine bestehenden Markierungen, Notizen und
- Lesezeichen bei der ersten Anmeldung in dein Konto geschoben.
- Gebets-Strähnen, Lese-Einstellungen und Kalenderstil bleiben nur
- auf diesem Gerät; sie haben noch keine Servertabelle.
+ Wenn du auf diesem Gerät beginnst und dich später anmeldest,
+ werden deine bestehenden Markierungen, Notizen und Lesezeichen bei
+ der ersten Anmeldung in dein Konto übertragen; auf dem Gerät wird
+ nichts entfernt. Gebets-Strähnen, Lese-Einstellungen und
+ Kalenderstil bleiben nur auf diesem Gerät, sie haben noch keine
+ Servertabelle. Die Abmeldung löscht niemals, was auf dem Gerät
+ gespeichert ist.
  </p>
  <p className="mt-3 font-serif text-body text-paper/80 leading-[1.7]">
  Nichts auf beiden Wegen wird verkauft, geteilt oder zum Training
@@ -800,6 +812,7 @@ function PrivacyDe() {
  deine Konto-Identität, ob du angemeldet bist oder nicht.
  </p>
 
+ {/* What we record */}
  <p className="mt-10 font-sans text-caption font-semibold text-paper/45">
  Was wir aufzeichnen
  </p>
@@ -819,23 +832,24 @@ function PrivacyDe() {
  </li>
  <li>
  Der <em>Pfad</em> der besuchten Seite (z. B.{" "}
- <code>/bible/john/1</code>). Niemals Formulareingaben, und von den Suchparametern nichts außer der Verweis-Marke weiter unten.
+ <code>/bible/john/1</code>). Niemals Formulareingaben, und von den
+ Suchparametern nichts außer der Verweis-Marke weiter unten.
  </li>
  <li>
  Der <em>Verweiser</em>, falls dein Browser einen gesandt hat,
-                damit wir sehen können, wenn ein Verweis von anderswo jemanden
-                hereingebracht hat.
-              </li>
-              <li>
-                Eine <em>Verweis-Marke</em>, wenn der Verweis, dem du gefolgt
-                bist, eine trug. Verweise in unseren eigenen E-Mails und
-                Beiträgen können auf ein kurzes Wort enden, etwa{" "}
-                <code>?via=email-release-1.5</code>. Es ist für alle, die
-                diese E-Mail bekommen, dasselbe. Es nennt die E-Mail oder den
-                Beitrag und niemals dich, es wird anstelle des Verweisers
-                behalten, und die Seite nimmt es danach aus der Adresse in
-                deinem Browser.
-              </li>
+ damit wir sehen können, wenn ein Verweis von anderswo jemanden
+ hereingebracht hat.
+ </li>
+ <li>
+ Eine <em>Verweis-Marke</em>, wenn der Verweis, dem du gefolgt
+ bist, eine trug. Verweise in unseren eigenen E-Mails und
+ Beiträgen können auf ein kurzes Wort enden, etwa{" "}
+ <code>?via=email-release-1.5</code>. Es ist für alle, die
+ diese E-Mail bekommen, dasselbe. Es nennt die E-Mail oder den
+ Beitrag und niemals dich, es wird anstelle des Verweisers
+ behalten, und die Seite nimmt es danach aus der Adresse in
+ deinem Browser.
+ </li>
  </ul>
  <p className="mt-4 font-serif text-body text-paper/85 leading-[1.7]">
  Auf dem Server leiten wir zusätzlich, wenn eine Sitzung erstmals
@@ -844,11 +858,15 @@ function PrivacyDe() {
  <ul className="mt-3 space-y-2 font-serif text-lede text-paper/85 leading-[1.65] list-disc pl-6 marker:text-paper/35">
  <li>
  Deinen <em>User-Agent</em>-String (Browser + Betriebssystem),
- auf 300 Zeichen gekürzt. Wird benutzt, um Telefone von Computern und unsere Apps von der Website zu unterscheiden und um zu sehen, wann ein Besuch über den eingebauten Browser einer anderen App kam. Unsere Windows-App sagt außerdem, dass sie die Windows-App ist, und wir vermerken das daneben.
+ auf 300 Zeichen gekürzt. Wird benutzt, um Telefone von Computern
+ und unsere Apps von der Website zu unterscheiden und um zu sehen,
+ wann ein Besuch über den eingebauten Browser einer anderen App
+ kam. Unsere Windows-App sagt außerdem, dass sie die Windows-App
+ ist, und wir vermerken das daneben.
  </li>
  <li>
  Eine <em>grobe, städtische Verortung</em>, Land, Region,
- Stadt und die ungefähre geographische Lage der Stadt,,
+ Stadt und die ungefähre geographische Lage der Stadt,
  hergeleitet aus deiner Anfrage-IP über{" "}
  <a
  href="https://ipwho.is/"
@@ -864,64 +882,65 @@ function PrivacyDe() {
  <li>
  Das von deinem Browser erklärte{" "}
  <em>primäre Sprach-Etikett</em> (der erste Eintrag im{" "}
- <code>Accept-Language</code>-Header, jedes Regionsuntereintrag
- entfernt, z. B. &bdquo;es&ldquo; oder &bdquo;ru&ldquo;). Wird
- nur gebraucht, um zu entscheiden, welche UI-Übersetzungen
- vorzuziehen sind; nichts Feinkörnigeres als das Land, das wir
- bereits halten, wird behalten.
+ <code>Accept-Language</code>-Header, ohne Regionsangabe, z. B.
+ &bdquo;es&ldquo; oder &bdquo;ru&ldquo;). Wird nur gebraucht, um
+ zu entscheiden, welche UI-Übersetzungen vorzuziehen sind; nichts
+ Feinkörnigeres als das Land, das wir bereits halten, wird
+ behalten.
  </li>
  </ul>
+ {/* Ambassador links, as the English page has them since 2026-09-30. */}
+ <p className="mt-4 font-serif text-body text-paper/85 leading-[1.7]">
+ <em>Botschafter-Links.</em> Einige Leser sind eingeladen, den
+ Purify-Laden als Botschafter weiterzuempfehlen, mit einem Link, der
+ auf <code>?ref=</code> und ihren Code endet. Wenn du über einen
+ solchen kommst, behalten wir diesen Code 30 Tage lang in einem
+ Cookie unserer eigenen Seite, <code>purify_ref</code>, und wenn du
+ in dieser Zeit bei EIKON kaufst, erhält der Botschafter einen Anteil
+ am Verkauf. Das Cookie enthält nur seinen Code, nichts über dich.
+ Besuche über jeden Link werden als eine Zahl pro Tag gezählt, nie
+ mit dir, deinem Gerät oder deinem Konto verbunden. Deine Bestellung
+ hält fest, mit welchem Code sie kam, damit der Botschafter bezahlt
+ werden kann; er sieht eine Bestellnummer und einen Betrag, niemals
+ deinen Namen.
+ </p>
  <p className="mt-4 font-serif text-body text-paper/85 leading-[1.7]">
  Wenn du dich anmeldest, um deine Markierungen und Lesezeichen
  abzugleichen, speichert Supabase die E-Mail-Adresse, mit der du
  dich angemeldet hast, sowie die Zeilen, die du erstellst
- (Markierungen, Notizen, Gebetsregel-Abhakungen, Lesezeichen).
+ (Markierungen, Notizen, Abhakungen der Gebetsregel, Lesezeichen).
  Nichts davon wird mit der anonymen Sitzung oben verknüpft; die
  beiden liegen in getrennten Tabellen und werden nicht in Beziehung
  gesetzt.
  </p>
- {/* 1.9, admin items A2, A5, A10 and A11: the owner's lines of 2026-11-09,
- approved in English and put here in German as the English page has
- them (Plus records under RevenueCat, errors and searches under "Where
- it lives"). A test holds them (lib/admin/__tests__/privacyLines.test.ts). */}
- <p className="mt-4 font-serif text-body text-paper/85 leading-[1.7]">
- Wenn du eine Mitgliedschaft abschließt oder verlängerst, bewahren
- wir eine Aufzeichnung davon auf: welcher Store, der Preis und die
- Datumsangaben. Sobald du dein Konto löschst, ist sie nicht mehr mit
- dir verbunden.
- </p>
- <p className="mt-4 font-serif text-body text-paper/85 leading-[1.7]">
- Wir zählen, ohne deinen Namen, welche Bibelübersetzungen
- heruntergeladen werden, welche Lesepläne begonnen und beendet werden,
- wie viele Tagebuchseiten geschrieben und geteilt werden und welche
- Version der App benutzt wird.
- </p>
- <p className="mt-4 font-serif text-body text-paper/85 leading-[1.7]">
- Wenn etwas fehlschlägt, meldet die App die Seite, die App-Version
- und die Art des Geräts, niemals, wer du bist.
- </p>
- <p className="mt-4 font-serif text-body text-paper/85 leading-[1.7]">
- Wenn eine Suche nichts findet, behalten wir 90 Tage lang die Wörter,
- nach denen du gesucht hast, niemals aber, wer du bist, damit wir
- ergänzen können, wonach Leser suchen. Alles, was wie eine
- E-Mail-Adresse oder eine Telefonnummer aussieht, wird entfernt,
- bevor es behalten wird.
- </p>
 
+ {/* What we don't */}
  <p className="mt-10 font-sans text-caption font-semibold text-paper/45">
  Was wir nicht tun
  </p>
  <ul className="mt-3 space-y-3 font-serif text-lede text-paper/85 leading-[1.65] list-disc pl-6 marker:text-paper/35">
  <li>Keine Drittwerbung. Keine Werbe-SDKs, keine Werbe-Cookies.</li>
+ <li>Kein Verhaltensprofil, keine seitenübergreifende Verfolgung, kein Fingerabdruck.</li>
  <li>
- Kein Verhaltensprofil, keine seitenübergreifende Verfolgung,
- kein Fingerabdruck.
+ Niemals ein Verkauf deiner Daten. Wir geben sie nur an die unten
+ genannten Dienstleister weiter, die wir für den Betrieb der Seite
+ brauchen (Hosting, Zahlung, E-Mail, Push), und nur dafür, nie für
+ deren eigene Werbung.
  </li>
- <li>Kein Verkauf oder Teilen irgendwelcher Nutzerdaten mit Dritten.</li>
  <li>
- Kein E-Mail-Rundbrief, keine Push-Mitteilungen, keine
- &bdquo;Komm zurück&ldquo;-Kampagnen. Die Seite reicht nicht zu
- dir hinaus.
+ Keine Werbe-E-Mails, es sei denn, du bittest darum. Es gibt zwei
+ freiwillige Listen, Neues in der Bibliothek und Neues im Laden, und
+ beide bleiben aus, bis du sie in deinem Konto einschaltest. Einige
+ Male im Jahr, wenn eine neue Version von Purify erscheint, schreiben
+ wir jedem Konto, was sich geändert hat. Diese E-Mail kommt, solange
+ du sie nicht ausschaltest, und ein Tippen in der E-Mail genügt
+ dafür. Jede E-Mail, die wir senden, endet mit einer Schaltfläche
+ zum Abbestellen. Alles andere, was wir dir schreiben, betrifft
+ etwas, worum du gebeten hast oder was du bei uns hast: eine
+ Bestellung, deine Mitgliedschaft, dein Konto, eine Änderung unserer
+ Bedingungen oder eine Support-Nachricht, und diese kommen weiter,
+ weil sie zu einem Konto gehören. Push-Erinnerungen an das Gebet
+ gibt es nur, wenn du sie einschaltest.
  </li>
  <li>
  Keine Analytik, die mit deiner Konto-Identität verknüpft wird.
@@ -930,19 +949,24 @@ function PrivacyDe() {
  </li>
  <li>
  Keine Nutzung deines Lesens zum Trainieren eines Sprachmodells.
- Die lizenzierten Schrift-Lizenzen verbieten es, und unsere{" "}
+ Was du liest, markierst und speicherst, gehört dir; es wird
+ niemandem übergeben, weder zum Training noch für sonst etwas. Ein
+ Teil der veröffentlichten Bibliothek ist absichtlich für KI-Crawler
+ offen, und nichts von deiner Aktivität gehört dazu. Unsere{" "}
  <Link
  href="/robots.txt"
  className="text-paper underline underline-offset-2 decoration-paper/30 hover:decoration-paper"
  >
  Robots-Regel
  </Link>{" "}
- sperrt die genannten KI-Crawler von der ganzen Seite aus.
+ legt genau fest, welche Crawler welche Teile der Seite lesen
+ dürfen.
  </li>
  </ul>
 
+ {/* Where it lives */}
  <p className="mt-10 font-sans text-caption font-semibold text-paper/45">
- Wo es wohnt
+ Wo es liegt
  </p>
  <p className="mt-3 font-serif text-body text-paper/85 leading-[1.7]">
  Alle Sitzungs- und Seitenaufrufzeilen werden in eine
@@ -953,20 +977,103 @@ function PrivacyDe() {
  eine Sitzungs-Kennung mit einem Pfad verbindet). Schreibvorgänge
  geschehen serverseitig mit einem Service-Role-Schlüssel; nichts,
  was die Analytik betrifft, wird dem Browser ausgesetzt. Eine
- kleine Admin-Seite läßt uns die Live-Zahlen sehen; sie ist die
+ kleine Admin-Seite lässt uns die Live-Zahlen sehen; sie ist die
  einzige Leserin.
  </p>
+ <p className="mt-3 font-serif text-body text-paper/85 leading-[1.7]">
+ Die Katechese des Tages fügt zwei Summentabellen hinzu, und keine
+ von beiden enthält eine Person. <code>quiz_question_stats</code>{" "}
+ hält je Frage fest, wie oft sie gezeigt und wie oft sie richtig
+ beantwortet wurde, über alle hinweg, angemeldet oder nicht.{" "}
+ <code>analytics_events</code> hält eine Zeile je begonnener oder
+ abgeschlossener Katechese, mit der Punktzahl und der
+ Kalenderrechnung und sonst nichts: keine Sitzungs-Kennung, kein
+ Konto, kein Gerät. Wenn du angemeldet bist, werden deine eigenen
+ abgeschlossenen Tage in <code>quiz_attempts</code> unter deinem
+ Konto gehalten, nur für dich lesbar, und mit ihm gelöscht. Wenn
+ nicht, bleiben sie auf deinem Gerät, und nur die beiden Zähler
+ oben verlassen es.
+ </p>
+ <p className="mt-3 font-serif text-body text-paper/85 leading-[1.7]">
+ Die Willkommensfragen werden in derselben Tabelle gezählt, damit
+ wir sehen, woher neue Leser kommen und was ihnen hilft: jeder
+ erreichte Bildschirm, jede gegebene Antwort, ein Überspringen, ein
+ Abschluss und, von deinem eigenen Gerät, ein Vermerk an deinem
+ zweiten, siebten und dreißigsten Tag, dass du wiedergekommen bist.
+ Eine Zeile enthält die Antwort, die Art des Geräts (iPhone,
+ Android, Website), den Link, der dich gebracht hat, wenn er einer
+ von unseren war, und den Tag, nicht die Uhrzeit. Keine
+ Sitzungs-Kennung, kein Konto, keine Geräte-Kennung: &bdquo;ein
+ Leser, der katholisch geantwortet hat, ist fertig geworden&ldquo;
+ ist einer mehr in einer Summe, nie du. Deine Antworten selbst
+ bleiben auf deinem Gerät und in deinem eigenen Konto, damit Purify
+ zu deinem wird.
+ </p>
+ <p className="mt-3 font-serif text-body text-paper/85 leading-[1.7]">
+ Die Bildschirme werden in derselben Tabelle gezählt, damit wir
+ sehen, wo das Lesen aufhört und ob neue Leser wiederkommen. Wenn
+ du die App weglegst oder die Seite schließt, sagt eine Zeile,
+ welche Art von Bildschirm gezeigt wurde (&bdquo;ein
+ Bibelkapitel&ldquo;, &bdquo;ein Gebet&ldquo;, nie welches) und
+ ungefähr, wie lange er offen war: unter zehn Sekunden, unter einer
+ Minute, unter fünf Minuten oder länger. Und von deinem eigenen
+ Gerät ein Vermerk, wenn es Purify zum ersten Mal öffnet, und je
+ einmal, wenn du einen Tag, eine Woche und einen Monat danach
+ wiederkommst. Eine Zeile enthält nur das, mit der Art des Geräts
+ (iPhone, Android, Windows, Website) und dem Tag, nicht der Uhrzeit.
+ Keine Sitzungs-Kennung, kein Konto, keine Geräte-Kennung, keine
+ Seitenadresse: &bdquo;jemand hat die App nach ein, zwei Minuten auf
+ der Seite eines Heiligen weggelegt&ldquo; ist einer mehr in einer
+ Summe, nie du. Der Tag, an dem du Purify zum ersten Mal geöffnet
+ hast, bleibt auf deinem Gerät.
+ </p>
+ <p className="mt-3 font-serif text-body text-paper/85 leading-[1.7]">
+ Wofür Purify Plus gewünscht wird, zählen wir in derselben Tabelle.
+ Wenn du etwas antippst, das Plus braucht, sagt eine Zeile, welche
+ Funktion es war (&bdquo;Lesepläne&ldquo;,
+ &bdquo;Klangkulisse&ldquo;), nie die Seite. Wenn du dann in dem
+ Blatt, das sich geöffnet hat, ein Abonnement abschließt, sagt eine
+ Zeile, für welche Funktion das Blatt geöffnet wurde und ob du einen
+ Monat oder ein Jahr gewählt hast. Eine Zeile enthält nur das, mit
+ der Art des Geräts (iPhone, Android, Windows, Website) und dem Tag,
+ nicht der Uhrzeit. Keine Sitzungs-Kennung, kein Konto, keine
+ Geräte-Kennung: &bdquo;jemand, der den Leseplänen begegnet ist, hat
+ für ein Jahr abonniert&ldquo; ist einer mehr in einer Summe, nie
+ du.
+ </p>
+ {/* 1.9, admin item A5: the owner's line of 2026-11-09, word for word in German. */}
+ <p className="mt-3 font-serif text-body text-paper/85 leading-[1.7]">
+ Wir zählen, ohne deinen Namen, welche Bibelübersetzungen
+ heruntergeladen werden, welche Lesepläne begonnen und beendet werden,
+ wie viele Tagebuchseiten geschrieben und geteilt werden und welche
+ Version der App benutzt wird.
+ </p>
+ {/* 1.9, admin items A10 and A11: the owner's lines of 2026-11-09, word for
+ word in German. A test holds them (lib/admin/__tests__/privacyLines.test.ts). */}
+ <p className="mt-3 font-serif text-body text-paper/85 leading-[1.7]">
+ Wenn etwas fehlschlägt, meldet die App die Seite, die App-Version
+ und die Art des Geräts, niemals, wer du bist.
+ </p>
+ <p className="mt-3 font-serif text-body text-paper/85 leading-[1.7]">
+ Wenn eine Suche nichts findet, behalten wir 90 Tage lang die Wörter,
+ nach denen du gesucht hast, niemals aber, wer du bist, damit wir
+ ergänzen können, wonach Leser suchen. Alles, was wie eine
+ E-Mail-Adresse oder eine Telefonnummer aussieht, wird entfernt,
+ bevor es behalten wird.
+ </p>
 
+ {/* Retention */}
  <p className="mt-10 font-sans text-caption font-semibold text-paper/45">
  Wie lange wir es behalten
  </p>
  <p className="mt-3 font-serif text-body text-paper/85 leading-[1.7]">
- Die anonymen Sitzungs- und Seitenaufruf-Zeilen behalten wir, damit
- wir sehen können, wie Purify über die Zeit genutzt wird; kein
- geplanter Auftrag löscht sie. Abgleichsdaten,
- die an dein Konto gebunden sind (Markierungen, Lesezeichen usw.),
- werden so lange behalten, wie dein Konto besteht; die Löschung
- deines Kontos von{" "}
+ Die anonymen Besuchsdaten behalten wir: die Sitzungs- und
+ Seitenaufruf-Zeilen und die oben beschriebenen Zählungen zur
+ Katechese, zu den Willkommensfragen und zu den Bildschirmen. Nichts
+ löscht sie nach Plan; wir behalten sie, um zu sehen, wie Purify
+ über die Zeit genutzt wird. Abgleichsdaten, die an dein Konto
+ gebunden sind (Markierungen, Lesezeichen usw.), werden so lange
+ behalten, wie dein Konto besteht; die Löschung deines Kontos über{" "}
  <Link
  href="/account"
  className="text-paper underline underline-offset-2 decoration-paper/30 hover:decoration-paper"
@@ -976,6 +1083,7 @@ function PrivacyDe() {
  entfernt diese Zeilen.
  </p>
 
+ {/* Third parties */}
  <p className="mt-10 font-sans text-caption font-semibold text-paper/45">
  Dritte, die die Seite berührt
  </p>
@@ -990,11 +1098,11 @@ function PrivacyDe() {
  HTTP-Anfrageverkehr, den jeder Hoster sieht.
  </li>
  <li>
- <strong>API.Bible</strong> (American Bible Society),
- wenn du die NKJV, NIV oder NLT liest, holen wir dieses einzelne
- Kapitel zur Anfragezeit von API.Bible und senden das vom Verlag
- verlangte FUMS-Nutzungs-Token. Gemeinfreie Übersetzungen (KJV,
- Brenton-LXX) berühren das nie. Siehe{" "}
+ <strong>API.Bible</strong> (American Bible Society), wenn du die
+ NKJV, NIV oder NLT liest, holen wir dieses einzelne Kapitel zur
+ Anfragezeit von API.Bible und senden das vom Verlag verlangte
+ FUMS-Nutzungs-Token. Gemeinfreie Übersetzungen (KJV, Brenton-LXX)
+ berühren das nie. Siehe{" "}
  <Link
  href="/about"
  className="text-paper underline underline-offset-2 decoration-paper/30 hover:decoration-paper"
@@ -1020,25 +1128,155 @@ function PrivacyDe() {
  </Link>
  , wenn du dich zum Spenden entscheidest. Ihre Bezahlseite sammelt,
  was sie von einem Spender sammelt; die Seite empfängt einen
- Webhook, der die Gesamtsumme der Spende aufzeichnet, nicht
- deine Identität.
+ Webhook, der die Gesamtsumme der Spende aufzeichnet, nicht deine
+ Identität.
  </li>
  <li>
  <strong>Discord</strong>, ein externer Verweis, nicht
  eingebettet. Kein Discord-Code läuft auf Purify.
  </li>
  <li>
- <strong>Amazon-Partner-Programm</strong>, wenn ein
- Eintrag der lizenzierten Werke auf einem Heiligen-Profil oder
- anderswo auf ein Buch bei amazon.com verweist, trägt der
- Verweis unsere Partner-Kennung. Purify nimmt am
- Amazon-Partner-Programm teil und kann an qualifizierten Käufen
- eine Provision verdienen. Amazon empfängt von uns nichts über
- deine Identität; was sie aus deinem Klick erheben, regelt ihre
- eigene Richtlinie.
+ <strong>Amazon-Partner-Programm</strong>, wenn ein Eintrag der
+ lizenzierten Werke auf einem Heiligen-Profil oder anderswo auf ein
+ Buch bei amazon.com verweist, trägt der Verweis unsere
+ Partner-Kennung. Purify nimmt am Amazon-Partner-Programm teil und
+ kann an qualifizierten Käufen eine Provision verdienen. Amazon
+ empfängt von uns nichts über deine Identität; was sie aus deinem
+ Klick erheben, regelt ihre eigene Richtlinie.
  </li>
  </ul>
 
+ {/* The shop & payments */}
+ <p className="mt-10 font-sans text-caption font-semibold text-paper/45">
+ Der EIKON-Laden und Zahlungen
+ </p>
+ <p className="mt-3 font-serif text-body text-paper/85 leading-[1.7]">
+ Wenn du bei EIKON kaufst, erheben wir nur, was eine Bestellung
+ braucht, und geben es nur an die Anbieter weiter, die sie
+ ausführen. Wir verkaufen es nie.
+ </p>
+ <ul className="mt-3 space-y-3 font-serif text-lede text-paper/85 leading-[1.65] list-disc pl-6 marker:text-paper/35">
+ <li>
+ <strong>Bestell- und Versanddaten</strong>, die Artikel, die du
+ kaufst, Summen, Status sowie Name, E-Mail und Lieferadresse, die du
+ an der Kasse eingibst, gespeichert in unserer Supabase-Datenbank,
+ nur für dich und uns sichtbar, damit wir deine Bestellung
+ ausführen und betreuen können.
+ </li>
+ <li>
+ <strong>Stripe</strong>, unser Zahlungsdienstleister. Die
+ Kartenzahlung geschieht bei Stripe; wir empfangen oder speichern
+ nie deine vollständige Kartennummer. Stripe behandelt sie nach
+ seiner eigenen Datenschutzrichtlinie und den PCI-Standards und gibt
+ uns nur zurück, was wir brauchen, um die Bestellung festzuhalten,
+ eine Zahlungsreferenz und die Lieferadresse, die du dort angegeben
+ hast.
+ </li>
+ <li>
+ <strong>Resend</strong>, unser E-Mail-Anbieter, stellt die E-Mails
+ zu, die wir dir senden: Bestellbestätigungen und
+ Versandnachrichten, Hinweise zu Konto und Mitgliedschaft,
+ Support-Antworten und die freiwilligen Listen, wenn du sie
+ einschaltest. Es sieht die Empfängeradresse und die Nachricht, um
+ sie zu senden.
+ </li>
+ <li>
+ <strong>Support-Anfragen</strong>, wenn du den Support
+ kontaktierst, werden die E-Mail, der Name und die Nachrichten, die
+ du sendest, gespeichert, damit wir helfen und nachfassen können.
+ </li>
+ <li>
+ <strong>RevenueCat und die App-Stores</strong>, wenn du ein
+ freiwilliges Abonnement kaufst, wird der Kauf von RevenueCat und
+ von Apple oder Google nach deren eigenen Richtlinien abgewickelt;
+ wir erfahren, ob dein Abonnement aktiv ist, nicht deine
+ Zahlungsdaten. Wenn du eine Mitgliedschaft abschließt oder
+ verlängerst, bewahren wir eine Aufzeichnung davon auf: welcher
+ Store, der Preis und die Datumsangaben. Sobald du dein Konto
+ löschst, ist sie nicht mehr mit dir verbunden.
+ </li>
+ <li>
+ <strong>Apple- und Google-Push (nur in den Apps)</strong>, die
+ iOS- und die Android-App stellen Mitteilungen über die
+ Push-Dienste von Apple und Google (Firebase Cloud Messaging) zu,
+ die ein Geräte-Token brauchen, um dein Telefon zu erreichen. Die
+ Web-App nutzt direktes Web Push, wie unten beschrieben.
+ </li>
+ </ul>
+
+ {/* Prayer features */}
+ <p className="mt-10 font-sans text-caption font-semibold text-paper/45">
+ Die Gebetsfunktionen
+ </p>
+ <p className="mt-3 font-serif text-body text-paper/85 leading-[1.7]">
+ Die Morgen- und die Abendregel, die Lektionen zum Jesusgebet und
+ die Diptychen arbeiten zuerst lokal. Von Haus aus lebt jede
+ Zählung, jede Abhakung, jeder Name in deinen Diptychen im{" "}
+ <code>localStorage</code> deines Browsers auf diesem Gerät und
+ erreicht uns nie. Im Einzelnen:
+ </p>
+ <ul className="mt-3 space-y-2 font-serif text-lede text-paper/85 leading-[1.65] list-disc pl-6 marker:text-paper/35">
+ <li>
+ <em>Erledigte Gebetsregeln</em>: die Tage, an denen du die
+ Morgen- oder Abendregel beendet hast, gehalten unter{" "}
+ <code className="font-mono text-ui text-paper/70">
+ purify.prayers.&#123;ruleId&#125;.dates
+ </code>{" "}
+ (eine fortlaufende Liste über 30 Tage, keine Strähnen-Zahl).
+ </li>
+ <li>
+ <em>Gebetsschnur-Sitzungen</em>, aufgezeichnet, bevor die
+ Gebetsschnur in Version 1.6 entfernt wurde: die Knotenzahl jeder
+ Sitzung und die gewählte Gebetszeile, unter{" "}
+ <code className="font-mono text-ui text-paper/70">
+ purify.rope.sessions
+ </code>
+ . Neues wird nicht aufgezeichnet.
+ </li>
+ <li>
+ <em>Diptychen</em>: die Listen derer, für die du betest (Lebende
+ und Entschlafene), unter{" "}
+ <code className="font-mono text-ui text-paper/70">
+ purify.intentions.living
+ </code>{" "}
+ und{" "}
+ <code className="font-mono text-ui text-paper/70">
+ purify.intentions.departed
+ </code>
+ . Das ist schlichtes JSON in deinem Browser; wir tun nicht so, als
+ wäre es auf dem Gerät verschlüsselt.
+ </li>
+ <li>
+ <em>Push-Erinnerungen (nur wenn du sie einschaltest)</em>: Wenn
+ du in /account Gebetserinnerungen einschaltest, handelt die
+ eingebaute Web-Push-Schnittstelle des Browsers mit deinem
+ Push-Dienst einen Abonnement-Endpunkt aus (Google für Chrome /
+ Firefox / Edge; Mozilla für Firefox unter Linux; Apple für
+ Safari). Wir speichern diesen Endpunkt, die Schlüssel, die er
+ zurückgab, und die zwei Uhrzeiten, die du gewählt hast, in einer
+ Tabelle{" "}
+ <code className="font-mono text-ui text-paper/70">
+ push_subscriptions
+ </code>
+ . Wir senden keinen Mitteilungsinhalt über Dritte; die Nutzlast
+ wird direkt von unserem Server mit unserem VAPID-Schlüssel
+ signiert. Schalte es jederzeit auf derselben Seite aus.
+ </li>
+ </ul>
+ <p className="mt-4 font-serif text-body text-paper/85 leading-[1.7]">
+ Wenn du dich anmeldest, werden dieselben Formen in vier
+ Supabase-Tabellen gespiegelt:{" "}
+ <code className="font-mono text-ui text-paper/70">prayer_completions</code>,{" "}
+ <code className="font-mono text-ui text-paper/70">intentions_living</code>,{" "}
+ <code className="font-mono text-ui text-paper/70">intentions_departed</code>,{" "}
+ <code className="font-mono text-ui text-paper/70">rope_sessions</code>, damit
+ die Daten dir über Geräte hinweg folgen. Jede hat dieselbe
+ Zeilensperre wie Lesezeichen und Anmerkungen (deine Zeilen sind
+ nur für deine <code>auth.uid()</code> sichtbar). Sie werden nie
+ mit den anonymen Analytik-Tabellen verknüpft.
+ </p>
+
+ {/* AI bots */}
  <p className="mt-10 font-sans text-caption font-semibold text-paper/45">
  Die KI-Crawler-Regel
  </p>
@@ -1050,9 +1288,7 @@ function PrivacyDe() {
  <Link
  href="/robots.txt"
  className="text-paper underline underline-offset-2 decoration-paper/30 hover:decoration-paper"
- >
- Unsere Robots-Datei
- </Link>{" "}
+ >Unsere Robots-Datei</Link>{" "}
  teilt die KI-Agenten in drei Gruppen ein, und das ist die ganze
  Regel.
  </p>
@@ -1085,7 +1321,7 @@ function PrivacyDe() {
  Abrufern, die nur laufen, weil ein Mensch einen unserer Links
  in einen Assistenten eingefügt hat, ChatGPT-User, Claude-User,
  Perplexity-User und MistralAI-User. Diese bauen keine
- Trainings-Korpora. Sie zu sperren hieß nur, daß ein Leser, der
+ Trainings-Korpora. Sie zu sperren hieß nur, dass ein Leser, der
  einen Assistenten nach einer Purify-Seite fragte, statt der
  Seite einen Fehler bekam.
  </li>
@@ -1093,7 +1329,7 @@ function PrivacyDe() {
  <strong className="font-semibold text-paper">
  Die Schrift ist für alle gesperrt.
  </strong>{" "}
- Die Verleger der lizenzierten Schrift verlangen, daß ihr Text
+ Die Verleger der lizenzierten Schrift verlangen, dass ihr Text
  nicht in Sprachmodelle eingespeist wird. Darum ist jeder oben
  genannte Agent, aus beiden Gruppen, von <code>/bible</code>{" "}
  ausgeschlossen. Das ist eine Lizenzpflicht ohne Ausnahme und
@@ -1114,8 +1350,9 @@ function PrivacyDe() {
  weiterhin der jeweils passenden Gruppe zu.
  </p>
 
+ {/* Browser storage */}
  <p className="mt-10 font-sans text-caption font-semibold text-paper/45">
- Was in deinem Browser wohnt
+ Was in deinem Browser liegt
  </p>
  <p className="mt-3 font-serif text-body text-paper/85 leading-[1.7]">
  Wenn du nicht angemeldet bist, werden deine Lese-Einstellungen
@@ -1125,6 +1362,7 @@ function PrivacyDe() {
  Seitendaten, und sie setzen sich zurück; wir haben keine Kopie.
  </p>
 
+ {/* Changes */}
  <p className="mt-10 font-sans text-caption font-semibold text-paper/45">
  Änderungen an dieser Seite
  </p>
@@ -1138,9 +1376,10 @@ function PrivacyDe() {
  >
  /whats-new
  </Link>
- -Brief aufgeführt. Wir ändern die Haltung nicht im stillen.
+ -Brief aufgeführt. Wir ändern die Haltung nicht im Stillen.
  </p>
 
+ {/* Offline cache */}
  <h2 className="mt-16 font-sans text-title-sm md:text-title font-bold text-paper leading-[1.15]">
  Offline-Zwischenspeicher (der Service-Worker)
  </h2>
@@ -1170,6 +1409,7 @@ function PrivacyDe() {
  räumt.
  </p>
 
+ {/* Closing */}
  <div className="mt-16 pt-10 border-t border-paper/10">
  <p className="font-serif text-body text-paper/65 leading-[1.7]">
  Fragen, Korrekturen oder ein Datenschutz-Anliegen? Schreib an{" "}
