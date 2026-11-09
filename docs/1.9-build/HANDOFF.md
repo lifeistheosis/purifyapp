@@ -27,11 +27,18 @@ go through the Discord server to scan all of the sections, right? To see what
 updates people requested so we can add to our panel." It uses the repo's own
 read-only scanner (`scripts/discord-scan.mjs`). The bot whose token is in
 `.env.discord` on his PC has Administrator in the server
-(`scripts/discord-assign-role.mjs` says so), so the cloud gets a separate
-read-only bot instead (View Channels and Read Message History, as
-`scripts/discord-scan.SETUP.md` describes), its token saved as a network
-secret on the environment for discord.com and never written in a file or a
-chat. Another chat only on his word.
+(`scripts/discord-assign-role.mjs` says so). The arbiter proposed a separate
+read-only bot; his word was to use the Purify bot itself: "I want to be clear
+that you have admin privilege on the server because there's nothing really
+sensitive on the server ... you're also supposed to message back, and you're
+actually a moderator, so you can do moderator tasks. So use the purify bot."
+Its token is saved by him as a network secret on the environment for
+discord.com, never written in a file or a chat. The chat reports its list
+first, shows its first replies once (a `scripts/discord-act.mjs` plan run
+dry), then replies and moderates routinely; bans, kicks, timeouts, deleting
+channels or members' real messages, and changes to roles, permissions or
+settings go through the arbiter to him each time. Another chat only on his
+word.
 
 To send a request: `send_message` with the chat's session id. To see where it
 stands: `get_session` (its `status_bucket`) and `list_events` with
