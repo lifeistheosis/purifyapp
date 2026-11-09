@@ -160,7 +160,9 @@ export function ChapterReader({
         return;
       }
       if (!refs) {
-        const data = await loadChapterCrossRefs(book, chapter);
+        // A file that cannot be read opens nothing, rather than throwing
+        // past the tap (Fable's release check 1, B2).
+        const data = await loadChapterCrossRefs(book, chapter).catch(() => null);
         if (!data) return;
         setReadRefs({ key: `${book}/${chapter}`, data });
       }

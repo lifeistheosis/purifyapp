@@ -30,9 +30,11 @@ export default function TryCrossRefs({ row }: TryProps) {
 
   useEffect(() => {
     let live = true;
-    void loadChapterCrossRefs(TRY_CHAPTER.book, TRY_CHAPTER.chapter).then((data) => {
-      if (live) setRefs(data);
-    });
+    void loadChapterCrossRefs(TRY_CHAPTER.book, TRY_CHAPTER.chapter)
+      .catch(() => null)
+      .then((data) => {
+        if (live) setRefs(data);
+      });
     return () => {
       live = false;
     };

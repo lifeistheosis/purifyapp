@@ -37,29 +37,74 @@ export function packCrossRefs(refs: Record<number, CrossRefItem[]>): PackedCross
 }
 
 /**
- * A chapter's references with the words of each verse they point to, from the
- * books' word files. A verse whose words could not be had keeps its
- * reference, with no words.
+ * A reference as a chapter's file may hold it: packed, as 1.9 writes it, or
+ * written out with its words, as 1.8 wrote it. A browser that kept a 1.8
+ * copy of a file (the website's cache, a service worker) hands that copy to
+ * 1.9, so both are read (Fable's release check 1, B2), as interlinearPack.ts
+ * reads both shapes of a word.
  */
-export function unpackCrossRefs(packed: PackedCrossRefs, wordsOf: (book: string) => CrossRefWords | null): Record<number, CrossRefItem[]> {
-  const out: Record<number, CrossRefItem[]> = {};
-  for (const [verse, list] of Object.entries(packed)) {
-    if (!Array.isArray(list)) continue;
-    out[Number(verse)] = list.map(([book, chapter, v, endVerse, endChapter]) => ({
+export type StoredCrossRef = PackedCrossRef | CrossRefItem;
+
+/** A chapter's references by verse, in either shape. */
+export type StoredCrossRefs = Record<string, StoredCrossRef[]>;
+
+/** A 1.8 reference: the words came with it. */
+function isWritten(r: unknown): r is CrossRefItem {
+  return typeof r === "object" && r !== null && !Array.isArray(r) && typeof (r as CrossRefItem).book === "string";
+}
+
+function unpackRef(r: StoredCrossRef, wordsOf: (book: string) => CrossRefWords | null): CrossRefItem | null {
+  if (Array.isArray(r)) {
+    const [book, chapter, verse, endVerse, endChapter] = r;
+    if (typeof book !== "string") return null;
+    return {
       book,
       chapter,
-      verse: v,
+      verse,
       ...(endVerse !== undefined ? { endVerse } : {}),
       ...(endChapter !== undefined ? { endChapter } : {}),
-      text: wordsOf(book)?.[`${chapter}:${v}`] ?? "",
-    }));
+      text: wordsOf(book)?.[`${chapter}:${verse}`] ?? "",
+    };
+  }
+  if (!isWritten(r)) return null;
+  const { book, chapter, verse, endVerse, endChapter, text } = r;
+  return {
+    book,
+    chapter,
+    verse,
+    ...(endVerse !== undefined ? { endVerse } : {}),
+    ...(endChapter !== undefined ? { endChapter } : {}),
+    text: typeof text === "string" ? text : (wordsOf(book)?.[`${chapter}:${verse}`] ?? ""),
+  };
+}
+
+/**
+ * A chapter's references with the words of each verse they point to, from the
+ * books' word files (or, in a 1.8 file, from the reference itself). A verse
+ * whose words could not be had keeps its reference, with no words; anything
+ * in the file that is neither shape is left out rather than thrown on.
+ */
+export function unpackCrossRefs(packed: StoredCrossRefs, wordsOf: (book: string) => CrossRefWords | null): Record<number, CrossRefItem[]> {
+  const out: Record<number, CrossRefItem[]> = {};
+  if (typeof packed !== "object" || packed === null) return out;
+  for (const [verse, list] of Object.entries(packed)) {
+    if (!Array.isArray(list)) continue;
+    out[Number(verse)] = list.map((r) => unpackRef(r, wordsOf)).filter((r): r is CrossRefItem => r !== null);
   }
   return out;
 }
 
-/** The books a chapter's references point into. */
-export function booksPointedTo(packed: PackedCrossRefs): string[] {
+/** The books whose word files a chapter's references need: those packed without their words. */
+export function booksPointedTo(packed: StoredCrossRefs): string[] {
   const books = new Set<string>();
-  for (const list of Object.values(packed)) if (Array.isArray(list)) for (const [book] of list) books.add(book);
+  if (typeof packed !== "object" || packed === null) return [];
+  for (const list of Object.values(packed)) {
+    if (!Array.isArray(list)) continue;
+    for (const r of list) {
+      if (Array.isArray(r)) {
+        if (typeof r[0] === "string") books.add(r[0]);
+      } else if (isWritten(r) && typeof r.text !== "string") books.add(r.book);
+    }
+  }
   return [...books];
 }

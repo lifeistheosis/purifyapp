@@ -2,7 +2,7 @@ import type { ChapterInterlinear } from "./chapterExtras";
 import type { CrossRefItem } from "./crossRefShape";
 import type { ChapterCommentary } from "./load";
 import type { StrongsEntry } from "./strongs";
-import { booksPointedTo, unpackCrossRefs, type CrossRefWords, type PackedCrossRefs } from "./crossRefPack";
+import { booksPointedTo, unpackCrossRefs, type CrossRefWords, type StoredCrossRefs } from "./crossRefPack";
 import { unpackInterlinear, type PackedInterlinear } from "./interlinearPack";
 
 /**
@@ -72,7 +72,8 @@ export function loadStrongs(): Promise<Record<string, StrongsEntry> | null> {
  * book's words could not be read keeps its place, without its words.
  */
 export async function loadChapterCrossRefs(book: string, chapter: number): Promise<Record<number, CrossRefItem[]> | null> {
-  const packed = await read<PackedCrossRefs>(`/bible-data/crossrefs/${book}/${chapter}.json`);
+  // Packed as 1.9 writes it, or a 1.8 copy a browser kept: both are read (crossRefPack.ts).
+  const packed = await read<StoredCrossRefs>(`/bible-data/crossrefs/${book}/${chapter}.json`);
   if (!packed) return null;
   const books = booksPointedTo(packed);
   const words = new Map(await Promise.all(books.map(async (b) => [b, await read<CrossRefWords>(`/bible-data/crossref-words/${b}.json`)] as const)));
