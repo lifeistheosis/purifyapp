@@ -4555,10 +4555,14 @@ html[data-reading-mode="candlelight"] {
    candle's room, not a colour. The ground is darker, a soft white light
    rests where the eye does (lib/reader/useReadingLine.ts, READING_LINE) and
    the screen's edges fall away into the dark; the verse under the reading
-   line is lit and the others step back to 58%, which keeps them past 4.5:1
-   on this ground (#050505, in the palette's own block above). A verse with
-   its strip open is always lit. Still with reduced motion. No gold: the
-   light is white. */
+   line is lit and the others step back to 86%. A verse with its strip open
+   is always lit. Still with reduced motion. No gold: the light is white.
+   The step back was 58% until 2026-11-09, and checkMock measured what that
+   did on this ground (#050505, in the palette's own block above): the words
+   of a verse stepped back at 4.20:1, its number at 2.64:1, under the 4.5:1
+   every word is held to. The red commentary numbers decide the floor (84%
+   passes, 82% does not); 86% keeps a margin, and the plain verse numbers,
+   paper at 55% everywhere else, stand at 72% here so they pass with it. */
 .candle-veil {
  position: fixed;
  inset: 0;
@@ -4572,7 +4576,10 @@ html[data-reading-mode="candlelight"] {
  transition: opacity 420ms var(--ease-house);
 }
 .candle-reading [data-verse]:not([data-lit]):not(:has([data-verse-strip])) {
- opacity: 0.58;
+ opacity: 0.86;
+}
+.candle-reading [data-verse] sup.text-paper\/55 {
+ color: color-mix(in oklab, var(--color-paper) 72%, transparent);
 }
 :where([data-motion="reduce"]) .candle-reading [data-verse] {
  transition: none;
