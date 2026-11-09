@@ -72,11 +72,48 @@ export function availabilityOf(
   return list === "unavailable" ? "unavailable" : "offline";
 }
 
-// ---- the list, read once per session (again when the signal comes back)
+// ---- the list: read when a screen first needs it, and asked for again
+// until it is had (1.9)
+//
+// Until 1.9 a failed read was final for the screen that made it: the list was
+// asked for once as a chant's screen opened, and again only if the phone
+// itself announced it had come back online. A request that failed for a
+// moment (the phone waking, a change of network, the website restarting as a
+// new version of it goes out) left every Play on that screen dim under
+// "Plays with a connection" or "Not available now" on a phone with a good
+// connection, until the reader left the screen and came back. The owner's
+// report of 2026-11-09: "the chant player actually doesn't load".
+//
+// Now, while a screen is asking: a first failure that came quickly is tried
+// again at once, before any reason is shown; after that the list is asked
+// for again and again, further apart each time, and whenever the app comes
+// back to the front or the phone comes back online. The reason on the screen
+// stays as it is meanwhile, so nothing flickers. The phone's own word that it
+// is offline is not trusted to skip the request: a web view can say so
+// wrongly, and a request that fails costs nothing.
+//
+// A list that was read is read again once it is five minutes old (the time
+// the website lets it be kept), when a screen asks or the app comes back to
+// the front, so a recording taken down stops in an app that has been open
+// for days. If that read fails, the list in hand stands.
 
 const TIMEOUT_MS = 8000;
+/** A list this old is read again, quietly: as long as the website lets it be kept. */
+export const FRESH_MS = 5 * 60 * 1000;
+/** How long after each failure the list is asked for again; the last, from then on. */
+export const RETRY_AFTER_MS = [1000, 3000, 8000, 20000, 30000] as const;
+/** A first failure quicker than this is tried again before a reason is shown. */
+const QUICK_MS = 3000;
+
 let state: ListState = { status: "idle" };
 let inflight: Promise<void> | null = null;
+/** When the list in hand was read. */
+let readAt = 0;
+/** Failures since the list was last read. */
+let failures = 0;
+/** The screens asking now. */
+let askers = 0;
+let retryTimer: ReturnType<typeof setTimeout> | null = null;
 const listeners = new Set<() => void>();
 
 function set(next: ListState) {
@@ -84,15 +121,46 @@ function set(next: ListState) {
   for (const l of listeners) l();
 }
 
-/** Read live.json, unless it is read already or being read. */
+function clearRetry() {
+  if (retryTimer) clearTimeout(retryTimer);
+  retryTimer = null;
+}
+
+/** Ask again later, while a screen is still asking. */
+function retryLater() {
+  clearRetry();
+  if (askers <= 0) return;
+  const after = RETRY_AFTER_MS[Math.min(failures, RETRY_AFTER_MS.length) - 1] ?? RETRY_AFTER_MS[0];
+  retryTimer = setTimeout(() => {
+    retryTimer = null;
+    void loadLiveList();
+  }, after);
+}
+
+function failed(reason: ListFailure, startedAt: number) {
+  // The list in hand stands: a read that only meant to freshen it has failed.
+  if (state.status === "ready") return;
+  failures += 1;
+  const offline = typeof navigator !== "undefined" && navigator.onLine === false;
+  // The first failure, come quickly on a phone that says it is online, is
+  // tried again before the reader is told anything.
+  const quiet = failures === 1 && !offline && Date.now() - startedAt < QUICK_MS && askers > 0;
+  if (!quiet) set({ status: "failed", reason });
+  retryLater();
+}
+
+/**
+ * Read live.json, unless it is being read, or was read less than five
+ * minutes ago. A failure keeps what is on the screen and is tried again
+ * (above).
+ */
 export function loadLiveList(): Promise<void> {
-  if (state.status === "ready") return Promise.resolve();
   if (inflight) return inflight;
-  if (typeof navigator !== "undefined" && navigator.onLine === false) {
-    set({ status: "failed", reason: "offline" });
-    return Promise.resolve();
-  }
-  set({ status: "loading" });
+  if (state.status === "ready" && Date.now() - readAt < FRESH_MS) return Promise.resolve();
+  clearRetry();
+  // A reason already shown, or a list in hand, stays while it is asked for again.
+  if (state.status === "idle") set({ status: "loading" });
+  const startedAt = Date.now();
   const controller = new AbortController();
   const timer = setTimeout(() => controller.abort(), TIMEOUT_MS);
   inflight = fetch(chantMediaUrl(LIVE_LIST_PATH), { credentials: "omit", cache: "no-cache", signal: controller.signal })
@@ -100,15 +168,66 @@ export function loadLiveList(): Promise<void> {
     .then((json) => {
       const list = readLiveList(json);
       // An answer that is not the list came over a working connection.
-      set(list ? { status: "ready", live: new Set(list.live), pulled: new Set(list.pulled) } : { status: "failed", reason: "unavailable" });
+      if (!list) return failed("unavailable", startedAt);
+      failures = 0;
+      readAt = Date.now();
+      set({ status: "ready", live: new Set(list.live), pulled: new Set(list.pulled) });
     })
     // Nothing came back: no signal, a dropped request, or no answer in time.
-    .catch(() => set({ status: "failed", reason: "offline" }))
+    .catch(() => failed("offline", startedAt))
     .finally(() => {
       clearTimeout(timer);
       inflight = null;
     });
   return inflight;
+}
+
+/** The app is at the front again, or the phone online again: ask now. */
+function askNow() {
+  if (askers <= 0) return;
+  if (typeof document !== "undefined" && document.visibilityState === "hidden") return;
+  void loadLiveList();
+}
+
+/**
+ * A screen that needs the list: it is read now, and kept asked for while the
+ * screen is there. Returns the way to stop asking.
+ */
+export function askForLiveList(): () => void {
+  askers += 1;
+  if (askers === 1 && typeof window !== "undefined") {
+    window.addEventListener("online", askNow);
+    if (typeof document !== "undefined") document.addEventListener("visibilitychange", askNow);
+  }
+  // A failure waiting for its next try is tried now: a screen has just opened.
+  void loadLiveList();
+  let asking = true;
+  return () => {
+    if (!asking) return;
+    asking = false;
+    askers -= 1;
+    if (askers > 0) return;
+    clearRetry();
+    if (typeof window !== "undefined") {
+      window.removeEventListener("online", askNow);
+      if (typeof document !== "undefined") document.removeEventListener("visibilitychange", askNow);
+    }
+  };
+}
+
+/** What is known of the list now, outside React (and for the tests). */
+export function liveListNow(): LiveList | "unknown" | ListFailure {
+  return known(state);
+}
+
+/** Test seam: the list as if the app had just been opened. */
+export function forgetLiveList(): void {
+  clearRetry();
+  state = { status: "idle" };
+  inflight = null;
+  readAt = 0;
+  failures = 0;
+  askers = 0;
 }
 
 function subscribe(listener: () => void) {
@@ -127,24 +246,16 @@ function known(s: ListState): LiveList | "unknown" | ListFailure {
 
 /**
  * Whether each recording may play, kept current: the list is asked for when
- * the first screen that needs it appears, and asked again when the phone
- * comes back online after a failure. `ask` false (1.8, the player, which is
- * always mounted) reads what is known without asking: the player asks only
- * while a chant is playing.
+ * the first screen that needs it appears, and asked for again until it is
+ * had (askForLiveList). `ask` false (1.8, the player, which is always
+ * mounted) reads what is known without asking: the player asks only while a
+ * chant is playing.
  */
 export function useChantAvailability(ask: boolean = true): (slug: string, variant: { id: string; audio: { src: string } }) => Availability {
   const s = useSyncExternalStore(subscribe, () => state, () => IDLE);
   useEffect(() => {
     if (!ask) return;
-    void loadLiveList();
-    const retry = () => {
-      if (state.status === "failed") {
-        state = { status: "idle" };
-        void loadLiveList();
-      }
-    };
-    window.addEventListener("online", retry);
-    return () => window.removeEventListener("online", retry);
+    return askForLiveList();
   }, [ask]);
   const list = useMemo(() => known(s), [s]);
   return useCallback((slug, variant) => availabilityOf(list, slug, variant), [list]);
