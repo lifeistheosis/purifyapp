@@ -1,10 +1,10 @@
 import { NextResponse } from "next/server";
 
 import { corsPreflight, corsRoute } from "@/lib/api/cors";
+import { requestStanding } from "@/lib/community/adminStanding";
 import { communityEnabled } from "@/lib/community/flags";
 import { isResponseKind, type ResponseKind } from "@/lib/community/responses";
 import { STAFF_BADGES } from "@/lib/community/trustServer";
-import { isAdminEmail } from "@/lib/admin/access";
 import { ipKey, rateLimited } from "@/lib/security/ratelimit";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { createClientFromRequest } from "@/lib/supabase/server";
@@ -64,7 +64,7 @@ async function handleGET(req: Request) {
 
   try {
     const admin = createAdminClient();
-    const [{ data: posts }, { data: replies }, { data: reactions }, { data: responses }, { data: staff }] =
+    const [{ data: posts }, { data: replies }, { data: reactions }, { data: responses }, { data: staff }, standing] =
       await Promise.all([
         admin
           .from("community_posts")
@@ -106,6 +106,9 @@ async function handleGET(req: Request) {
           .limit(1000),
         // Whether this reader moderates, so Community can offer the queue.
         admin.from("user_badges").select("badge").eq("user_id", user.id).in("badge", [...STAFF_BADGES]).limit(1),
+        // An admin's account offers it only as the queue itself would answer
+        // (lib/community/adminStanding.ts): held, it moderates by nothing.
+        requestStanding(req, user),
       ]);
 
     const byPost: Record<string, number> = {};
@@ -132,7 +135,7 @@ async function handleGET(req: Request) {
         replyIds: (replies ?? []).map((r) => r.id as string),
         reactions: { posts: byPost, replies: byReply },
         responses: { posts: respondedPosts, replies: respondedReplies },
-        moderator: isAdminEmail(user.email) || (staff ?? []).length > 0,
+        moderator: standing === "admin" || (standing === "reader" && (staff ?? []).length > 0),
       },
       { headers: { "Cache-Control": "no-store" } },
     );

@@ -7,6 +7,7 @@ import { avatarSrc } from "@/lib/community/avatarSrc";
 import { isDecoration, isNameColor } from "@/lib/profile/cosmetics";
 import { isClergyMark } from "@/lib/profile/clergy";
 import { hiddenAuthors, personalisedCacheHeaders } from "@/lib/community/blocks";
+import { requestStanding } from "@/lib/community/adminStanding";
 import { guardWrite } from "@/lib/community/guard";
 import { communityEnabled } from "@/lib/community/flags";
 import { callerIsGroupMember } from "@/lib/community/groupAccess";
@@ -259,7 +260,7 @@ async function handlePOST(req: Request, id: string) {
     );
   }
   // The spam filter and the reader's posting limits, as on posts.
-  const guard = await guardWrite(admin, user, { kind: "reply", body: ownBody, postId: id });
+  const guard = await guardWrite(admin, { ...user, standing: await requestStanding(req, user) }, { kind: "reply", body: ownBody, postId: id });
   if (guard.kind === "refuse") {
     return NextResponse.json({ error: guard.error, code: guard.code, limit: guard.limit }, { status: guard.status });
   }

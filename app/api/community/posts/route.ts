@@ -8,6 +8,7 @@ import { isClergyMark } from "@/lib/profile/clergy";
 import { hiddenAuthors } from "@/lib/community/blocks";
 import { chapterRefOf, findChapterRef, validChapterRef } from "@/lib/community/chapterRef";
 import { ensureFeastThread } from "@/lib/community/feast";
+import { requestStanding } from "@/lib/community/adminStanding";
 import { guardWrite } from "@/lib/community/guard";
 import { notifyClergyOfQuestion, notifyMentions } from "@/lib/community/notify";
 import { censorName, censorPost } from "@/lib/moderation/server";
@@ -492,7 +493,7 @@ async function handlePOST(req: Request) {
   // The spam filter and the reader's posting limits (lib/community/guard.ts):
   // refused with a reason they can act on, or kept and held from everyone
   // until a moderator looks.
-  const guard = await guardWrite(admin, user, { kind: "post", title: ownTitle, body: ownBody });
+  const guard = await guardWrite(admin, { ...user, standing: await requestStanding(req, user) }, { kind: "post", title: ownTitle, body: ownBody });
   if (guard.kind === "refuse") {
     return NextResponse.json({ error: guard.error, code: guard.code, limit: guard.limit }, { status: guard.status });
   }

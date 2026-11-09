@@ -1,13 +1,13 @@
 import "server-only";
 
-import type { SupabaseClient, User } from "@supabase/supabase-js";
+import type { SupabaseClient } from "@supabase/supabase-js";
 
-import { isAdminEmail } from "@/lib/admin/access";
 import { isTableAbsent } from "@/lib/admin/tableAbsent";
 import { deleteBannerFiles } from "@/lib/profile/bannerFile";
 import { identity } from "@/lib/profile/server";
 import { isColumnAbsent } from "@/lib/supabase/columnAbsent";
 
+import { standingOf, type CommunityUser } from "./adminStanding";
 import { insertNotifications, notifyClergyOfQuestion, notifyMentions, notifyOfReply } from "./notify";
 import { STAFF_BADGES } from "./trustServer";
 
@@ -30,9 +30,16 @@ export type ModActor = {
 
 export const AUTO: ModActor = { id: null, name: "Auto-moderation", email: null, admin: false };
 
-/** The signed-in reader as a moderator, or null when they are not one. */
-export async function moderatorFor(admin: SupabaseClient, user: Pick<User, "id" | "email">): Promise<ModActor | null> {
-  const byEmail = isAdminEmail(user.email);
+/**
+ * The signed-in reader as a moderator, or null when they are not one. An
+ * admin's account whose session has not passed the panel's second step, once
+ * that is asked of Community (lib/community/adminStanding.ts), moderates
+ * neither as an admin nor by any badge it holds.
+ */
+export async function moderatorFor(admin: SupabaseClient, user: CommunityUser): Promise<ModActor | null> {
+  const standing = standingOf(user);
+  if (standing === "held") return null;
+  const byEmail = standing === "admin";
   if (!byEmail) {
     const { data, error } = await admin
       .from("user_badges")

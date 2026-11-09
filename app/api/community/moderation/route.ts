@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { z } from "zod";
 
 import { corsPreflight, corsRoute } from "@/lib/api/cors";
+import { requestStanding } from "@/lib/community/adminStanding";
 import { communityEnabled } from "@/lib/community/flags";
 import { MOD_ACTIONS, moderatorFor, readModLog, readOpenReports, readPendingHolds, runModAction } from "@/lib/community/moderation";
 import { signedInUser } from "@/lib/community/social";
@@ -31,7 +32,7 @@ async function moderator(req: Request) {
   const user = await signedInUser(req);
   if (!user) return { ok: false as const, response: NextResponse.json({ error: "Sign in first." }, { status: 401 }) };
   const admin = createAdminClient();
-  const actor = await moderatorFor(admin, user);
+  const actor = await moderatorFor(admin, { id: user.id, email: user.email, standing: await requestStanding(req, user) });
   if (!actor) return { ok: false as const, response: NextResponse.json({ error: "Not found." }, { status: 404 }) };
   return { ok: true as const, admin, actor, user };
 }

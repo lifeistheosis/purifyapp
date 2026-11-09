@@ -105,7 +105,7 @@ export async function PATCH(req: Request) {
   // read as granted.
   if (!data || data.length === 0) return NextResponse.json({ error: "Couldn't save that." }, { status: 500 });
 
-  const actor = await moderatorFor(admin, adminUser);
+  const actor = await moderatorFor(admin, { id: adminUser.id, email: adminUser.email, standing: "admin" });
   if (actor) {
     const prev = before as { status?: string; rank?: string | null } | null;
     await logMod(admin, actor, {

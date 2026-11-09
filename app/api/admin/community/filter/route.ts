@@ -117,7 +117,7 @@ export async function POST(req: Request) {
   if (!parsed.success) return NextResponse.json({ error: "Invalid action." }, { status: 400 });
   const a = parsed.data;
   const admin = createAdminClient();
-  const actor = await moderatorFor(admin, adminUser);
+  const actor = await moderatorFor(admin, { id: adminUser.id, email: adminUser.email, standing: "admin" });
   if (!actor) return NextResponse.json({ error: "Forbidden" }, { status: 403 });
   const by = adminUser.email ?? null;
 

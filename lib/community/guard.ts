@@ -5,6 +5,7 @@ import type { SupabaseClient, User } from "@supabase/supabase-js";
 import { getBlockedHosts } from "@/lib/moderation/server";
 import { rateLimited } from "@/lib/security/ratelimit";
 
+import type { CommunityUser } from "./adminStanding";
 import { duplicateKey, findLinks, judgeSpam } from "./spam";
 import { readTrust, type Trust } from "./trustServer";
 
@@ -29,7 +30,7 @@ type Write =
 
 export async function guardWrite(
   admin: SupabaseClient,
-  user: Pick<User, "id" | "email" | "created_at">,
+  user: CommunityUser & Pick<User, "created_at">,
   w: Write,
   now: number = Date.now(),
 ): Promise<Guard> {

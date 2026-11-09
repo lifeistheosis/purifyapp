@@ -390,7 +390,7 @@ export async function POST(req: Request) {
   };
   const sharedAction = shared[action];
   if (sharedAction) {
-    const actor = await moderatorFor(admin, adminUser);
+    const actor = await moderatorFor(admin, { id: adminUser.id, email: adminUser.email, standing: "admin" });
     if (!actor) return NextResponse.json({ error: "Forbidden" }, { status: 403 });
     const res = await runModAction(admin, actor, sharedAction, id, reason);
     if (!res.ok) {
@@ -541,7 +541,7 @@ export async function POST(req: Request) {
     console.warn("[admin/community] action failed", error.message);
     return NextResponse.json({ error: error.message }, { status: 500 });
   }
-  const actor = await moderatorFor(admin, adminUser);
+  const actor = await moderatorFor(admin, { id: adminUser.id, email: adminUser.email, standing: "admin" });
   if (actor) {
     await logMod(admin, actor, {
       action,

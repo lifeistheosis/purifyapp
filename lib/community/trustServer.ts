@@ -2,8 +2,7 @@ import "server-only";
 
 import type { SupabaseClient, User } from "@supabase/supabase-js";
 
-import { isAdminEmail } from "@/lib/admin/access";
-
+import { standingOf, type CommunityUser } from "./adminStanding";
 import { TRUST_LIMITS, trustLevel, type TrustFacts, type TrustLevel, type TrustLimits } from "./trust";
 
 // Reading what lib/community/trust.ts decides on. Service role: the counts
@@ -14,9 +13,15 @@ const DAY = 24 * 60 * 60 * 1000;
 /** The badges that make someone part of moderation. */
 export const STAFF_BADGES = ["team", "moderator"] as const;
 
-/** On the team, a moderator, or an admin by email. */
-export async function isStaff(admin: SupabaseClient, user: Pick<User, "id" | "email">): Promise<boolean> {
-  if (isAdminEmail(user.email)) return true;
+/**
+ * On the team, a moderator, or an admin by email. Once Community asks for the
+ * admin's sign-in code (lib/community/adminStanding.ts), an admin's account
+ * whose session has not passed it is no staff, whatever badge it holds.
+ */
+export async function isStaff(admin: SupabaseClient, user: CommunityUser): Promise<boolean> {
+  const standing = standingOf(user);
+  if (standing === "admin") return true;
+  if (standing === "held") return false;
   const { data, error } = await admin
     .from("user_badges")
     .select("badge")
@@ -48,7 +53,7 @@ async function headCount(query: PromiseLike<{ count: number | null; error: unkno
  */
 export async function readTrust(
   admin: SupabaseClient,
-  user: Pick<User, "id" | "email" | "created_at">,
+  user: CommunityUser & Pick<User, "created_at">,
   now: number = Date.now(),
 ): Promise<Trust> {
   const since90 = new Date(now - 90 * DAY).toISOString();
