@@ -98,6 +98,39 @@ node scripts/promo/cards.mjs 1.8                         # PROMO/cards/1.8/NN-na
 node scripts/drop.mjs cards <PROMO>/cards/1.8           # the small copies the Drop tab shows
 ```
 
+## For later: the trailer look
+
+The owner's direction of 2026-11-09, for a later promo, nothing to make now
+(his word the same day: "don't re-render new videos"): shots like a trailer
+or a car brand's ad, each a new scene and a new angle, "the globe is actually
+zoomed in, so you only see like a piece of the globe and it's spinning". So:
+every shot a close crop of the real app or its own public-domain art, a slow
+camera move, soft light only, no words on the shot (words as title cards from
+the edit frames).
+
+The app has no globe. Its map is the flat atlas (`components/councils/`), so
+the "globe" is that map filmed close and tilted, as an aerial, never drawn as
+a sphere. The art the app ships is about 1200 pixels across, so a close crop
+of it holds to about one and a half times; the screens, taken at 6x, hold far
+closer.
+
+The shot list, three seconds each:
+
+1. The world: History's atlas, every place lit, tilted like an aerial, sliding and slowly turning.
+2. The star: Today's Nativity star just over its horizon, the camera rising with it.
+3. Gold: St John Chrysostom's mosaic, close on the gold, a slow sideways drift.
+4. The Word: John 1:1 lit as it is read aloud, macro along the line, edges out of focus.
+5. Red numbers: the Bible's red verse numbers and their commentary dots, a rack focus.
+6. The thread: the saint web, gliding along a link from Chrysostom to the next saint.
+7. The chant: Psalm 135's words lighting as they are sung, sliding past.
+8. The ring: Now Playing's progress ring, close on the arc, David's icon soft behind.
+9. Nicaea: the councils atlas at 325, the camera settling onto Nicaea's ring.
+10. The Pantocrator: Sinai's Christ, a slow push in to the face.
+11. Constantinople: the dedication mosaic, a slow pan across its gold.
+12. The page: Codex Sinaiticus in low light, a sideways pan.
+13. The saints: the wall of icons in perspective, tracking across.
+14. 1917: the Moscow Council photograph, a slow push on the faces.
+
 ## The looks (`looks.mjs`)
 
 1. **Night sanctuary**: the Bible with the Fathers, a phone in a pool of warm light.
