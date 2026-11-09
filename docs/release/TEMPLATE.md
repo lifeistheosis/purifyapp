@@ -101,6 +101,11 @@ Drafted now, sent later. The owner sends every one. How a drop works is in
       purifyapp.net for the note, every picture, the main pages, a page that
       does not exist and the redirects. Every line ok.
 - [ ] The build id on purifyapp.net changed.
+- [ ] `node scripts/chants/probe-live.mjs`: every build already in readers'
+      hands can still read the chant list and reach each recording, asked as
+      each app's origin. Every line ok. A fail here is a chant that stopped
+      for readers who have not updated: put the website back
+      (`scripts/chants/store-builds.json` says what each build asks for).
 - [ ] `/whats-new` shows the note and the highlights; the footer shows
       <version>. The note shows only once the owner has accepted it.
 - [ ] The Supabase check on the commit is green, if the push carried a

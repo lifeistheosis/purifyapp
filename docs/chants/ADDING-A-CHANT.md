@@ -137,6 +137,19 @@ A new chant reaches the apps with the next app release (its page is in the
 bundle); its recording plays from the website as soon as the website carries
 it and `live.json` lists it.
 
+## The builds already in readers' hands
+
+An installed app cannot be changed, and it asks for a recording at the
+address it was built with. So a file in the bucket or under
+`public/audio/chants/` is never moved, renamed or replaced by another take: a
+new take is a new version id beside the old one. And the list at
+`/audio/chants/live.json` stays version 1, at that address, readable from
+another origin. `scripts/chants/store-builds.json` records what each store
+build asks for; `lib/chants/__tests__/storeBuilds.test.ts` holds the
+repository to it, and `node scripts/chants/probe-live.mjs` asks purifyapp.net
+and the bucket for all of it, as each app. Add a store build to the record
+when it ships.
+
 ## Taking a recording down
 
 In the admin: Content, Chant recordings, then Take down, with a few words of

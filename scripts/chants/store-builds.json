@@ -1,0 +1,47 @@
+{
+  "about": "What the builds already in readers' hands ask the website and the bucket for, to play a chant. An installed build cannot be changed: whatever main serves has to stay readable by every build listed here. lib/chants/__tests__/storeBuilds.test.ts holds the repository to it on every test run, and scripts/chants/probe-live.mjs asks purifyapp.net and the bucket for each address, as each app's origin. When a store build ships, add it here with what it asks for; take a build out only when no reader can still be running it. A recording may leave 'live' only by going to 'pulled' (a takedown), never by being dropped or renamed.",
+  "site": "https://purifyapp.net",
+  "appOrigins": ["https://localhost", "capacitor://localhost"],
+  "list": { "path": "/audio/chants/live.json", "version": 1, "keptAtMostSeconds": 300 },
+  "builds": [
+    {
+      "name": "1.7, 1.7.1 and 1.7.2",
+      "note": "The Anthem alone. Its recordings and their timing files are asked of the website.",
+      "recordings": [
+        { "ref": "prayer-rope-anthem/en", "audio": "/audio/chants/prayer-rope-anthem/en.mp3", "timing": "/audio/chants/prayer-rope-anthem/en.json" },
+        { "ref": "prayer-rope-anthem/fr", "audio": "/audio/chants/prayer-rope-anthem/fr.mp3", "timing": "/audio/chants/prayer-rope-anthem/fr.json" },
+        { "ref": "prayer-rope-anthem/ar", "audio": "/audio/chants/prayer-rope-anthem/ar.mp3", "timing": "/audio/chants/prayer-rope-anthem/ar.json" }
+      ]
+    },
+    {
+      "name": "test builds through 86",
+      "note": "Six chants in nine recordings, six of them in the bucket; every timing file asked of the website, in version 1.",
+      "recordings": [
+        { "ref": "prayer-rope-anthem/en", "audio": "/audio/chants/prayer-rope-anthem/en.mp3", "timing": "/audio/chants/prayer-rope-anthem/en.json" },
+        { "ref": "prayer-rope-anthem/fr", "audio": "/audio/chants/prayer-rope-anthem/fr.mp3", "timing": "/audio/chants/prayer-rope-anthem/fr.json" },
+        { "ref": "prayer-rope-anthem/ar", "audio": "/audio/chants/prayer-rope-anthem/ar.mp3", "timing": "/audio/chants/prayer-rope-anthem/ar.json" },
+        { "ref": "psalm-135/ar", "audio": "https://audio.purifyapp.net/chants/psalm-135/ar.mp3", "timing": "/audio/chants/psalm-135/ar.json" },
+        { "ref": "psalm-135/en", "audio": "https://audio.purifyapp.net/chants/psalm-135/en.mp3", "timing": "/audio/chants/psalm-135/en.json" },
+        { "ref": "psalm-135/el", "audio": "https://audio.purifyapp.net/chants/psalm-135/el.mp3", "timing": "/audio/chants/psalm-135/el.json" },
+        { "ref": "psalm-135/sr", "audio": "https://audio.purifyapp.net/chants/psalm-135/sr.mp3", "timing": "/audio/chants/psalm-135/sr.json" },
+        { "ref": "psalm-117/ar", "audio": "https://audio.purifyapp.net/chants/psalm-117/ar.mp3", "timing": "/audio/chants/psalm-117/ar.json" },
+        { "ref": "paschal-canon/en", "audio": "https://audio.purifyapp.net/chants/paschal-canon/en.mp3", "timing": "/audio/chants/paschal-canon/en.json" }
+      ]
+    },
+    {
+      "name": "1.8 (Android 78, iOS 31)",
+      "note": "The same nine recordings. Each timing file rides in the app, so nothing is asked of the website for it.",
+      "recordings": [
+        { "ref": "prayer-rope-anthem/en", "audio": "/audio/chants/prayer-rope-anthem/en.mp3" },
+        { "ref": "prayer-rope-anthem/fr", "audio": "/audio/chants/prayer-rope-anthem/fr.mp3" },
+        { "ref": "prayer-rope-anthem/ar", "audio": "/audio/chants/prayer-rope-anthem/ar.mp3" },
+        { "ref": "psalm-135/ar", "audio": "https://audio.purifyapp.net/chants/psalm-135/ar.mp3" },
+        { "ref": "psalm-135/en", "audio": "https://audio.purifyapp.net/chants/psalm-135/en.mp3" },
+        { "ref": "psalm-135/el", "audio": "https://audio.purifyapp.net/chants/psalm-135/el.mp3" },
+        { "ref": "psalm-135/sr", "audio": "https://audio.purifyapp.net/chants/psalm-135/sr.mp3" },
+        { "ref": "psalm-117/ar", "audio": "https://audio.purifyapp.net/chants/psalm-117/ar.mp3" },
+        { "ref": "paschal-canon/en", "audio": "https://audio.purifyapp.net/chants/paschal-canon/en.mp3" }
+      ]
+    }
+  ]
+}
