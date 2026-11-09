@@ -212,6 +212,7 @@ very short and plain, emojis welcome, never an em dash.
   icon and show the manuscript (1-2 Chronicles, 1 Esdras, Ezra, Nehemiah,
   Tobit, Judith, Esther, 1-3 Maccabees, Sirach, Obadiah, Zechariah, Baruch,
   Prayer of Manasseh, 2 Esdras, Jude): asked of him as 86 on his page.
+- Plan items nobody had started, put on his page late 2026-11-09 with a rec each: 87 Plus on iPhone (PLAN 40; set up before the 1.9 iPhone build, steps to him); 88 F-49, reading-room words shown as a saint's or historian's that the cited book does not hold (fix in 1.9); 89 F-21, native push (after 1.9: Firebase and a Fable job); 90 the Orthodox ambience sounds (after 1.9); 91 the feast prompts for the journal, in the editorial queue (he reads them with the Holy Week questions); 92 the animations pass, PLAN 47 (short, at the end, only if it does not delay the release).
 - 15, the Serbian, Arabic and Spanish Bibles: built before the order to wait
   arrived, parked as `docs/1.9-build/drafts/bibles-15.patch` (5f6edd9), about
   30 minutes from riding in 1.9. Asked of him on his page. Romanian is not
