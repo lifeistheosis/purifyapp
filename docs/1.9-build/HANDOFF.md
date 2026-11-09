@@ -14,7 +14,7 @@ file is what it needs to take over. Read it first, then `BRAINSTORM.md` and
 | Admin panel | `session_01VuYTwbteJqs1UmDUwqRvzC` | the admin panel (app/admin and its API) |
 | SSM board | `session_01VuYTwcSQmKLThRirvSeWa5` | social media: each release's cards, videos and posts |
 | Updates | `session_01VuYTwcNqTWyT6Yab696Eri` | builds the 1.9 updates in the app itself: everything in `PLAN.md` outside the admin panel and social media |
-| Discord requests | `session_01VuYTwa9F5ZBKXx8cqDTxg9` | reads every section of the Purify Discord and lists what members asked for, with no member named; replies and moderates on his word (below). It replaced `session_01VuYTwa7ccHk91ufBdtnExY`, which started before the bot's token was saved: a running chat does not pick up a network secret added in the settings, a new one does |
+| Discord requests (deleted the same day, see below) | `session_01VuYTwa9F5ZBKXx8cqDTxg9` | was to read every section of the Purify Discord and lists what members asked for, with no member named; replies and moderates on his word (below). It replaced `session_01VuYTwa7ccHk91ufBdtnExY`, which started before the bot's token was saved: a running chat does not pick up a network secret added in the settings, a new one does |
 
 The Updates chat was set up by the arbiter on his word of 2026-11-09: "I
 want you to set up a chat for the updates also for version 1.9. So one is
@@ -39,6 +39,15 @@ dry), then replies and moderates routinely; bans, kicks, timeouts, deleting
 channels or members' real messages, and changes to roles, permissions or
 settings go through the arbiter to him each time. Another chat only on his
 word.
+
+**Stopped the same afternoon, on his word:** "just stop ill screenshot what
+the discord says instead". The saved token answered 401 in every chat (his
+value read "Bot " and the token, he said), so no chat ever read the server;
+whether the token in `.env.discord` is stale was never settled. He sends
+screenshots of the Discord to the arbiter, which makes the D list from them.
+He deleted the two Discord chats and a one-check test chat. The discord.com
+network secret was still on the environment afterwards; the arbiter advised
+removing it, since an unused Administrator token is a standing risk.
 
 To send a request: `send_message` with the chat's session id. To see where it
 stands: `get_session` (its `status_bucket`) and `list_events` with
