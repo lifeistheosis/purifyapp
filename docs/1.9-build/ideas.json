@@ -770,12 +770,12 @@
    "title": "Remember the verse on the widget and the lock screen",
    "from": "claude",
    "asked": "2026-11-06",
-   "status": "approved",
+   "status": "built",
    "decided": "2026-11-06",
    "needsDesign": false,
    "version": null,
    "outcome": null,
-   "note": "2026-11-09, the data built (eb93a66): the app hands both phones' widgets the next seven days' verse to remember at its step, the reference in the app's language and the card's own line (lib/widget/remember.ts, the `remember` key on both plugins). The faces wait on his answer: its own widget (recommended) or a look of the Verse one, and a line for a reader with no verse saved."
+   "note": "2026-11-09, the data built (eb93a66): the app hands both phones' widgets the next seven days' verse to remember at its step, the reference in the app's language and the card's own line (lib/widget/remember.ts, the `remember` key on both plugins). 2026-11-09, the faces built (32caa19), on his yes to 45 to 48: its own widget, Remember the verse, on Android and the iPhone (home screen and lock screen), drawn to each phone's own widget conventions (his condition on 45), the same for every reader (48), and \"Save a verse to remember it here.\" when none is saved. A tap opens Today, where the card checks the words."
   },
   {
    "id": "s4-08",
@@ -1704,7 +1704,7 @@
    "needsDesign": true,
    "version": "step 2: covers, Plus's blocks, notebooks and tags, styles, the computer's layout",
    "outcome": null,
-   "note": "His decisions of 2026-11-08 (BRAINSTORM.md, Editorials). Claude's proposal for the limit, for his word: one page at a time, three a month, counted on the server; Plus without limit and whole notebooks; covers Plus. Screens drawn: a Plus page, add a block, sharing, a computer, the link previews; new words listed for his word. Finalized in JOURNAL.md on his word of 2026-11-08 (\"finalize the journal\"). Built 2026-11-08 (2fa8e295, b53820d5, 375dbce1, 617bdc81, c2a20212): a cover from the 14 verified icons, a heading, checklist, divider and callout, notebooks and tags (a notebook is the pages that name it), Serif or Sans at the start or the centre, and on a computer the notebooks at the side. All kept in the page's text, no server change. Sharing (step 3) is built and waits on his SQL (docs/1.9-build/sql/shared-pages.sql)."
+   "note": "His decisions of 2026-11-08 (BRAINSTORM.md, Editorials). Claude's proposal for the limit, for his word: one page at a time, three a month, counted on the server; Plus without limit and whole notebooks; covers Plus. Screens drawn: a Plus page, add a block, sharing, a computer, the link previews; new words listed for his word. Finalized in JOURNAL.md on his word of 2026-11-08 (\"finalize the journal\"). Built 2026-11-08 (2fa8e295, b53820d5, 375dbce1, 617bdc81, c2a20212): a cover from the 14 verified icons, a heading, checklist, divider and callout, notebooks and tags (a notebook is the pages that name it), Serif or Sans at the start or the centre, and on a computer the notebooks at the side. All kept in the page's text, no server change. Sharing (step 3) is built and waits on his SQL (docs/1.9-build/sql/shared-pages.sql). His answers of 2026-11-09 (the sheet's 1 to 3, BRAINSTORM.md): yes to the paywall's journal row as written, covers from the 14 icons whose rights are verified only, and printing and the export free."
   },
   {
    "id": "e-quote-anything",
