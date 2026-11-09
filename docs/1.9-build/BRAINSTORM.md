@@ -10,6 +10,8 @@
 
 **Covers are the saint the book is attributed to (his word, 2026-11-09, repeated):** "I wanted the cover photo to be the saint attributed to it. So if it's John, it's gonna be a cover of John." He had said it before; it was not in this record, so the plans page still showed one manuscript on the Psalter and the four Gospels. The Psalter shows David, John St John, Acts St Luke, and so on; feasts keep their own pictures.
 
+**The reader's bars leave later and slower (his word, 2026-11-09):** "Can you just make it so that you need to scroll just a little bit more, and then it will like pretty much move the bottom? ... I want it to be slower ... So it could be more immersive." They went after 24px (`lib/ui/scrollAway.ts`, AWAY_AFTER_PX) on a 200ms front-loaded curve, which reads as a snap. Asked of Updates: about 80px before they go, a leave of about 500 to 600ms on a gentler curve, the return a little quicker, reduced motion untouched, every reader that shares the hook alike.
+
 **The chant player (2026-11-09):** readers reported that it would not load, Plus readers most. A Fable 5.2 chat found the cause in the apps' own player (one failed request left a recording dead, or the chant list unread, until the app was closed) and fixed it on the branch (5ab77ecd, 331895fc, with a lasting guard in ba6b2a65). His word on a 1.8.1: "Nah, just add this to version 1.9. We're dropping version 1.9 really, really soon." So the fix ships with 1.9, with a line in its note.
 
 **The privacy lines (2026-11-09):** the Admin chat's four lines for the privacy page, for 27 (counts), 31 (searches), 26 (Plus records) and 30 (errors), each going live with its feature and listed in the 1.9 letter. His word: "yes to all 4".
