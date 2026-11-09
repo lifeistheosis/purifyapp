@@ -74,6 +74,30 @@ Toward the Nativity, is Today's card for the Nativity Fast, which shows only
 while the fast runs, so its screen is taken with the clock on the fast's
 first day (15 November): the card every reader sees that morning.
 
+## Cards (`cards.mjs`, `card-looks.mjs`)
+
+A release's card set for Instagram and TikTok, 9:16, made from its drop
+(`docs/plans/v<release>/drop.json`) and the app's own screens. The owner's
+word (2026-11-09): "for every release we will have like a generic card, but
+I want like a unique design for every single version". So `cards.mjs` is the
+generic card (the order of the set: cover, what is new, a card per chosen
+point, the closing for each store; the type, the safe box, the mark), and
+`card-looks.mjs` gives each release its own look: the ground, the colours,
+and the crown at the top of every card where the release's own motif lives.
+A release with no look of its own gets no cards: the script refuses.
+
+1.8's look is the night of the Nativity Fast, drawn as the app draws it on
+Today (`components/today/NativityStarCard.tsx`): the horizon's curve, and
+the star standing a little higher on each card of the set, as it does each
+day of the fast.
+
+```
+node scripts/promo/edit-capture.mjs --export <export>   # fonts, and the screens the edits share
+node scripts/promo/card-capture.mjs --export <export>   # the screens only the cards use
+node scripts/promo/cards.mjs 1.8                         # PROMO/cards/1.8/NN-name.png, send/, a sheet
+node scripts/drop.mjs cards <PROMO>/cards/1.8           # the small copies the Drop tab shows
+```
+
 ## The looks (`looks.mjs`)
 
 1. **Night sanctuary**: the Bible with the Fathers, a phone in a pool of warm light.
