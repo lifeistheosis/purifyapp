@@ -120,6 +120,13 @@ export const ADMIN_PAGE_GROUPS: AdminPageGroup[] = [
           { tab: "sources", label: "Sources", title: "Sources", sentence: "Where each visit came from, and what it was read on." },
           { tab: "onboarding", label: "Onboarding" },
           { tab: "screens", label: "Screens" },
+          // 1.9, admin item A5: what readers use of what 1.9 adds.
+          {
+            tab: "in-use",
+            label: "In use",
+            title: "In use",
+            sentence: "Which Bibles are downloaded, which plans are begun and finished, the journal, and the versions readers run.",
+          },
         ],
       },
       {

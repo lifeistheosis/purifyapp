@@ -1,5 +1,6 @@
 import { z } from "zod";
 
+import { APP_VERSION, BIBLE_ID, PLAN_ID } from "@/lib/analytics/featureCounting";
 import { BOUGHT_PLANS, LOCKS } from "@/lib/analytics/lockCounting";
 import { OPEN_SPANS } from "@/lib/analytics/screenCounting";
 import { SCREENS } from "@/lib/analytics/screens";
@@ -703,6 +704,33 @@ export const trackEventSchema = z.discriminatedUnion("name", [
   z.object({
     name: z.literal("plus_bought"),
     props: z.object({ lock: z.enum(LOCKS), plan: z.enum(BOUGHT_PLANS), platform: z.enum(COUNT_PLATFORMS) }).strict(),
+  }),
+  // The 1.9 counts (admin item A5, lib/analytics/featureCounting.ts): a Bible
+  // translation, a reading plan or the app's version, each held to the shape
+  // of an id so no name or words can ride in one, and the kind of device.
+  z.object({
+    name: z.literal("bible_downloaded"),
+    props: z.object({ translation: z.string().max(80).regex(BIBLE_ID), platform: z.enum(COUNT_PLATFORMS) }).strict(),
+  }),
+  z.object({
+    name: z.literal("plan_begun"),
+    props: z.object({ plan: z.string().max(80).regex(PLAN_ID), platform: z.enum(COUNT_PLATFORMS) }).strict(),
+  }),
+  z.object({
+    name: z.literal("plan_finished"),
+    props: z.object({ plan: z.string().max(80).regex(PLAN_ID), platform: z.enum(COUNT_PLATFORMS) }).strict(),
+  }),
+  z.object({
+    name: z.literal("journal_page_written"),
+    props: z.object({ platform: z.enum(COUNT_PLATFORMS) }).strict(),
+  }),
+  z.object({
+    name: z.literal("journal_page_shared"),
+    props: z.object({ platform: z.enum(COUNT_PLATFORMS) }).strict(),
+  }),
+  z.object({
+    name: z.literal("version_in_use"),
+    props: z.object({ version: z.string().max(12).regex(APP_VERSION), platform: z.enum(COUNT_PLATFORMS) }).strict(),
   }),
   z.object({
     name: z.literal("catechism_started"),

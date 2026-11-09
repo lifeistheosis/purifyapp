@@ -97,7 +97,7 @@ describe("the server takes only what is on the lists", () => {
 
   it("keeps them to the day, as the screens' and the onboarding's", () => {
     const route = read("app/api/track/event/route.ts");
-    expect(route).toMatch(/const toTheDay = name\.startsWith\("onboarding_"\) \|\| isScreenEvent\(name\) \|\| isLockEvent\(name\);/);
+    expect(route).toMatch(/const toTheDay = name\.startsWith\("onboarding_"\) \|\| isScreenEvent\(name\) \|\| isLockEvent\(name\)( \|\| isFeatureEvent\(name\))?;/);
   });
 });
 

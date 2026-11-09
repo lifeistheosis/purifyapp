@@ -134,7 +134,7 @@ live with its feature (lib/admin/__tests__/privacyLines.test.ts holds them):
    the words you searched, never who you are, for 90 days, so we can add what
    readers are looking for. Anything that looks like an email address or a
    phone number is removed before it is kept."
-4. The 1.9 counts (A5), added with the counts: "We count, without your name,
+4. The 1.9 counts (A5): "We count, without your name,
    which Bible translations are downloaded, which reading plans are begun and
    finished, how many journal pages are written and shared, and which version
    of the app is in use."

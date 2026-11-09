@@ -63,6 +63,7 @@ import { ShopHubTab } from "./tabs/ShopHubTab";
 import { EikonBoxTab } from "./tabs/EikonBoxTab";
 import { CommunityTab } from "./tabs/CommunityTab";
 import { ScreensView, TrafficLiveTab, TrafficMapTab, TrafficOverviewTab } from "./tabs/TrafficViews";
+import { InUseTab } from "./tabs/InUseTab";
 import { SourcesTab } from "./tabs/SourcesTab";
 import { ContentTab } from "./tabs/ContentTab";
 import { PatchNotesTab } from "./tabs/PatchNotesTab";
@@ -144,6 +145,7 @@ type OpsTabId =
   | "sources"
   | "onboarding"
   | "screens"
+  | "in-use"
   | "goals"
   | "calendar"
   | "content"
@@ -199,6 +201,7 @@ const COMPONENTS: Partial<Record<TabId, ComponentType>> = {
   sources: SourcesTab,
   onboarding: OnboardingTab,
   screens: ScreensView,
+  "in-use": InUseTab,
   goals: GoalsTab,
   calendar: CalendarTab,
   content: ContentTab,

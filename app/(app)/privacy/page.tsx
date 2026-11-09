@@ -324,6 +324,13 @@ export default async function PrivacyPage() {
  reading plans subscribed for a year&rdquo; is one more on a total,
  never you.
 </p>
+ {/* 1.9, admin item A5 (lib/analytics/featureCounting.ts): the owner's line
+ of 2026-11-09, word for word, listed in the 1.9 letter. */}
+<p className="mt-3 font-serif text-body text-paper/85 leading-[1.7]">
+ We count, without your name, which Bible translations are downloaded,
+ which reading plans are begun and finished, how many journal pages are
+ written and shared, and which version of the app is in use.
+</p>
  {/* 1.9, admin items A10 and A11 (lib/errors/, lib/search/missWords.ts):
  the owner's lines of 2026-11-09, word for word, listed in the 1.9 letter.
  A test holds them (lib/admin/__tests__/privacyLines.test.ts). */}
@@ -873,7 +880,7 @@ function PrivacyDe() {
  beiden liegen in getrennten Tabellen und werden nicht in Beziehung
  gesetzt.
  </p>
- {/* 1.9, admin items A2, A10 and A11: the owner's lines of 2026-11-09,
+ {/* 1.9, admin items A2, A5, A10 and A11: the owner's lines of 2026-11-09,
  approved in English and put here in German as the English page has
  them (Plus records under RevenueCat, errors and searches under "Where
  it lives"). A test holds them (lib/admin/__tests__/privacyLines.test.ts). */}
@@ -882,6 +889,12 @@ function PrivacyDe() {
  wir eine Aufzeichnung davon auf: welcher Store, der Preis und die
  Datumsangaben. Sobald du dein Konto löschst, ist sie nicht mehr mit
  dir verbunden.
+ </p>
+ <p className="mt-4 font-serif text-body text-paper/85 leading-[1.7]">
+ Wir zählen, ohne deinen Namen, welche Bibelübersetzungen
+ heruntergeladen werden, welche Lesepläne begonnen und beendet werden,
+ wie viele Tagebuchseiten geschrieben und geteilt werden und welche
+ Version der App benutzt wird.
  </p>
  <p className="mt-4 font-serif text-body text-paper/85 leading-[1.7]">
  Wenn etwas fehlschlägt, meldet die App die Seite, die App-Version

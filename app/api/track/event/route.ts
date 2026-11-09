@@ -3,6 +3,7 @@ import { NextResponse } from "next/server";
 import { corsPreflight, corsRoute, isAllowedNativeOrigin } from "@/lib/api/cors";
 import { isTableAbsent } from "@/lib/admin/tableAbsent";
 import { isAutomatedAgent } from "@/lib/analytics/bot";
+import { isFeatureEvent } from "@/lib/analytics/featureCounting";
 import { isLockEvent } from "@/lib/analytics/lockCounting";
 import { isScreenEvent } from "@/lib/analytics/screenCounting";
 import { ipKey, rateLimited } from "@/lib/security/ratelimit";
@@ -32,7 +33,9 @@ export const dynamic = "force-dynamic";
  * do the screens (lib/analytics/screenCount.ts): the kind of screen showing
  * when the app was put away, a device's first open, and its coming back. And
  * since 1.9 the locks (lib/analytics/lockCount.ts): which feature the upgrade
- * sheet opened on, and which a purchase in it followed.
+ * sheet opened on, and which a purchase in it followed; and the 1.9 counts
+ * (lib/analytics/featureCount.ts): Bibles downloaded, plans begun and
+ * finished, journal pages written and shared, and the version in use.
  */
 async function handlePOST(req: Request) {
   const sfs = req.headers.get("sec-fetch-site");
@@ -72,8 +75,10 @@ async function handlePOST(req: Request) {
     // the same way, for the same reason: a close stamped to the second would
     // sit beside the last page view of one session. So are the locks' (1.9,
     // lib/analytics/lockCounting.ts): a purchase stamped to the second would
-    // sit beside the store's own record of who bought.
-    const toTheDay = name.startsWith("onboarding_") || isScreenEvent(name) || isLockEvent(name);
+    // sit beside the store's own record of who bought. And the 1.9 counts
+    // (lib/analytics/featureCounting.ts): a share stamped to the second
+    // would sit beside the shared page itself.
+    const toTheDay = name.startsWith("onboarding_") || isScreenEvent(name) || isLockEvent(name) || isFeatureEvent(name);
     const { error } = await createAdminClient()
       .from("analytics_events")
       .insert({
