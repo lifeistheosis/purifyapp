@@ -1,12 +1,11 @@
 -- Shared journal pages (1.9, docs/1.9-build/JOURNAL.md, step 3: "sharing a
 -- page, one at a time, three a month").
 --
--- NOT APPLIED. NOT A MIGRATION YET. This file waits for the owner's sign-off
--- (AGENTS.md: a production schema change is his to approve before it runs).
--- It lives in docs/, not supabase/migrations/, so that no merge to main can
--- run it by itself. On his word it is either run by hand in the SQL editor,
--- or copied into supabase/migrations/<YYYYMMDDHHMMSS>_shared_pages.sql (a
--- version later than every file there) so the integration runs it.
+-- NOT APPLIED YET. Signed off by the owner on 2026-11-09 (BRAINSTORM.md, the
+-- sheet's 4) and copied, word for word from "What it holds" down, into
+-- supabase/migrations/20261109180246_shared_pages.sql, which the integration
+-- runs on the merge to main. This copy is the SQL to paste into the editor,
+-- should he run it by hand first or the integration's check be red.
 --
 -- Written to run twice: every statement is "if not exists" or is preceded by
 -- its own "drop ... if exists".

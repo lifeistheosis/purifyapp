@@ -189,8 +189,9 @@ standards in readers' pages; shares and their count made through API routes
   Report, and is gone when withdrawn or hidden; its preview card is the
   title and the Church's day over the darkened cover. Website only; the apps
   open the link. **It needs the table:** `docs/1.9-build/sql/shared-pages.sql`,
-  written to run twice, waits for his sign-off; until it runs, Share stays
-  out of sight. Left for later: Post to Community, and checking a library
+  written to run twice. Signed off 2026-11-09 (the sheet's 4) and moved into
+  `supabase/migrations/20261109180246_shared_pages.sql`, which runs on the
+  merge to main; until it runs, Share stays out of sight. Left for later: Post to Community, and checking a library
   quote's words so a public page may wear the mark.
 
 ## Step 2, how it is kept (Claude's design, 2026-11-08)
