@@ -15,6 +15,7 @@ file is what it needs to take over. Read it first, then `BRAINSTORM.md` and
 | SSM board | `session_01VuYTwcSQmKLThRirvSeWa5` | social media: each release's cards, videos and posts |
 | Updates | `session_01VuYTwcNqTWyT6Yab696Eri` | builds the 1.9 updates in the app itself: everything in `PLAN.md` outside the admin panel and social media |
 | Discord requests (deleted the same day, see below) | `session_01VuYTwa9F5ZBKXx8cqDTxg9` | was to read every section of the Purify Discord and lists what members asked for, with no member named; replies and moderates on his word (below). It replaced `session_01VuYTwa7ccHk91ufBdtnExY`, which started before the bot's token was saved: a running chat does not pick up a network secret added in the settings, a new one does |
+| Fable 5.2 (specialist) | `session_01VuYTwZWzkKEYDgBp6Gkg7e` | Claude Fable 5.2 (`claude-fable-5-2`), effort High: only the hardest work, one brief from the arbiter at a time, a new chat for each big task (below) |
 
 The Updates chat was set up by the arbiter on his word of 2026-11-09: "I
 want you to set up a chat for the updates also for version 1.9. So one is
@@ -47,6 +48,16 @@ whether the token in `.env.discord` is stale was never settled. He sends
 screenshots of the Discord to the arbiter, which makes the D list from them.
 He deleted the two Discord chats and a one-check test chat, and then the
 discord.com network secret (gone from the environment, checked).
+
+## Fable 5.2 in the workflow (2026-11-09, his word)
+
+His word: "Go Fable, set up the chat, and let's get it implemented into our workflow." Fable 5.2 (`claude-fable-5-2`) costs twice what Opus 5.5 costs per token ($8 and $40 per million against $4 and $20) and takes longer turns, so it takes only work where it clearly beats Opus 5.5. He set the limits: at most half of the plan's weekly limit, with two Fable resets and one full weekly reset this week.
+
+How it runs, following Anthropic's guide for 5.2: effort High (most of 5.2's gain arrives by High; he sets it in the app, as he set Max for the others); real tasks only, since at High it thinks before every reply; a new chat for each big task; a brief that names what needs no approval and what needs his word, since 5.2 follows cautions literally and piled-up cautions between agents make it ask for approvals it does not need; ownership set per task (a review reports and does not rewrite; for a fix it owns the code and an Opus chat reviews its diff); subagents only for real parallel work; plain self-contained reports to the arbiter, not simplified mode.
+
+The queue: (1) release check 1 on the branch, review only (started 2026-11-09); (2) native push, F-21, stuck half-fixed for months; then a Fable reset; (3) one verse-number engine for Compare, the four new Bibles and F-06; (4) a safety review of sync, if the budget allows. The second Fable reset is kept for the final release check on the exact merge commit; the full weekly reset is kept for anything that goes wrong after 1.9 is live.
+
+When a chat hands work up to Fable, always through the arbiter: before anything that cannot be undone (a migration, a money or Plus-access path, the release merge), where Fable reviews and the chat builds; a bug that survives two fixes, or two wrong claims in one area; a failure that shows only on another system (the live site, a phone, a store, CI); a change that moves readers' data (sync, verse maps, saved notes). Never for copy, design polish, research, or anything waiting on him.
 
 ## The evening of 2026-11-09: built, and waiting on him
 
