@@ -192,7 +192,7 @@ very short and plain, emojis welcome, never an em dash.
   green, eslint 0). M3 caps a shared page's verse cards per view (words for
   the first 20, the rest by reference) instead of refusing the share, since the
   app cannot tell a reader why a share was refused: the arbiter accepted it.
-  Two drafts wait on his word. 83: `docs/1.9-build/sql/psalms-113-115-move.sql`
+  Both drafts below got his yes late on 2026-11-09 (`BRAINSTORM.md`) and went to Updates to build; the release-day order for 83 is in the draft. 83: `docs/1.9-build/sql/psalms-113-115-move.sql`
   (ran twice on a scratch PostgreSQL 16, the second run doing nothing) must run
   with the 1.9 merge, never later, or an old place will be read as another
   verse's new one (`docs/1.9-build/drafts/psalms-113-115-move.md`). 82c: the app
