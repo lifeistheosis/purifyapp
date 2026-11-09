@@ -870,7 +870,7 @@
    "needsDesign": false,
    "version": null,
    "outcome": null,
-   "note": "Looked at 2026-11-07, not built, for his word on where it goes. Lines are gathered today from a verse (its toolbar) and from a theology study's quotations (a Gather button). Prayers, a council's own words and history have no gather yet, and each page would need its place for one: a council's \"In their own words\" card has room for a third action beside Share as a picture and Read where it's from; a prayer would want a line chosen, as a verse is. Also found: the server keeps a gathered line only as a verse or a Father's (florilegium_items.kind is checked to those two), so a prayer or a council's line would be kept as a Father's, with its own name and source, unless a migration widens it"
+   "note": "Looked at 2026-11-07, not built, for his word on where it goes. Lines are gathered today from a verse (its toolbar) and from a theology study's quotations (a Gather button). Prayers, a council's own words and history have no gather yet, and each page would need its place for one: a council's \"In their own words\" card has room for a third action beside Share as a picture and Read where it's from; a prayer would want a line chosen, as a verse is. Also found: the server keeps a gathered line only as a verse or a Father's (florilegium_items.kind is checked to those two), so a prayer or a council's line would be kept as a Father's, with its own name and source, unless a migration widens it 2026-11-09, his yes to the sheet's 17, councils first, with the SQL to him before it goes in: docs/1.9-build/sql/florilegium-kinds.sql widens florilegium_items.kind to council and prayer (written to run twice; a 1.8 app shows such a line as a Father's). Waiting on his sign-off."
   },
   {
    "id": "s5-05",
@@ -1015,12 +1015,12 @@
    "title": "This day in Church history on Today, with its artwork",
    "from": "claude",
    "asked": "2026-11-06",
-   "status": "approved",
+   "status": "built",
    "decided": "2026-11-06",
    "needsDesign": false,
    "version": null,
    "outcome": null,
-   "note": "Looked at 2026-11-07, not built. It exists in part: \"On this day in Orthodox history\" (components/history/OnThisDayHistory.tsx) shows on the Prayers page's today, not on Today, and only when an event carries an exact calendar date; 7 events do, so it shows about 7 days a year. Moving it to Today with its artwork is small; what would make it worth the place is more events dated exactly, from their sources (the registry never invents a date), which is research for the history pass (s6-01) 2026-11-09: his answer asked for its place on Today (recommended: one card under the day's saints, with the event's picture, on the days an event falls on exactly)."
+   "note": "Looked at 2026-11-07, not built. It exists in part: \"On this day in Orthodox history\" (components/history/OnThisDayHistory.tsx) shows on the Prayers page's today, not on Today, and only when an event carries an exact calendar date; 7 events do, so it shows about 7 days a year. Moving it to Today with its artwork is small; what would make it worth the place is more events dated exactly, from their sources (the registry never invents a date), which is research for the history pass (s6-01) 2026-11-09: his answer asked for its place on Today (recommended: one card under the day's saints, with the event's picture, on the days an event falls on exactly). Built 2026-11-09 on his yes to 50 (43bb0c5): a band under the day's saint on Today, in the saint's band's shape, with the event's picture and credit, on the days an event with its picture falls on exactly (five today: May 11, July 16, April 12, May 29, September 24). A day the Church keeps is now matched on the reader's own calendar (an Old Calendar reader sees May 29 on the civil June 11), on Today and on the Prayers page (lib/history/onThisDay.ts). More dated events wait on the history pass (s6-01)."
   },
   {
    "id": "s6-06",
@@ -1042,12 +1042,12 @@
    "title": "The Creed line by line, showing which council gave which line",
    "from": "claude",
    "asked": "2026-11-06",
-   "status": "approved",
+   "status": "built",
    "decided": "2026-11-06",
    "needsDesign": false,
    "version": null,
    "outcome": null,
-   "note": "2026-11-09, the data built (99c97b6): lib/councils/creed.ts, the Creed of 381 in the twelve articles the catechisms number, each piece marked with the council whose Symbol first has it, held by lib/councils/__tests__/creed.test.ts word for word to the app's copies of both Symbols. Where it shows waits on his answer (recommended: a card at the head of Theology, opening the twelve articles, the words added at Constantinople lit)."
+   "note": "2026-11-09, the data built (99c97b6): lib/councils/creed.ts, the Creed of 381 in the twelve articles the catechisms number, each piece marked with the council whose Symbol first has it, held by lib/councils/__tests__/creed.test.ts word for word to the app's copies of both Symbols. Built 2026-11-09 on his yes to 51 (7c789ae): /theology/creed, the twelve articles with the words Constantinople added lit and the words of Nicaea plain, a key under the title and the two Symbols at the foot; a row at the head of Theology, and under the books of the two councils, Constantinople's saying \"Added at Constantinople\". No word of framing added."
   },
   {
    "id": "s6-08",
