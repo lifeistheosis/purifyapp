@@ -51,7 +51,7 @@ export function JohnPage({ verses = TRY_VERSES }: { verses?: number }) {
       <div className={cn("mt-2.5 space-y-2 text-[17px] leading-[1.6] text-paper/90", FONT_CLASSES[font])}>
         {JOHN_1.verses.slice(0, verses).map((v) => (
           <p key={v.n}>
-            <sup className="mr-1.5 align-super font-sans text-eyebrow font-medium tracking-[0.05em] text-paper/55">{v.n}</sup>
+            <sup className="me-1.5 align-super font-sans text-eyebrow font-medium tracking-[0.05em] text-paper/55">{v.n}</sup>
             {v.text}
           </p>
         ))}

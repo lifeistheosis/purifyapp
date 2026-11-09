@@ -296,7 +296,7 @@ export function ParagraphRow({
    colour (box-decoration-break: clone rounds each wrapped line),
    matching the Bible reader, not a left margin bar. */}
  {mark ? (
- <sup className="font-sans text-eyebrow font-medium text-paper/55 tracking-[0.05em] mr-1.5 align-super select-none">
+ <sup className="font-sans text-eyebrow font-medium text-paper/55 tracking-[0.05em] me-1.5 align-super select-none">
  {mark}
  </sup>
  ) : null}

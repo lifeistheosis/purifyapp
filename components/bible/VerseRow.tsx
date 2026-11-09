@@ -762,7 +762,7 @@ export function VerseRow({
  // (native-md-*, 1.7): a button that opens the bottom sheet.
  // The marker red is brighter than the accent token on purpose: the
  // token at this size fails WCAG AA contrast on the night surface.
- <span className="inline-flex items-baseline mr-1.5 align-super">
+ <span className="inline-flex items-baseline me-1.5 align-super">
  <a
  href={`#rail-v${verse.n}`}
  className="hidden lg:inline-flex native-md-hidden group/cmt items-baseline text-comment hover:text-comment-hover transition-colors"
@@ -774,7 +774,7 @@ export function VerseRow({
  </sup>
  <span
  aria-hidden
- className="ml-[2px] inline-block h-[5px] w-[5px] rounded-full bg-accent/75 group-hover/cmt:bg-accent transition-colors"
+ className="ms-[2px] inline-block h-[5px] w-[5px] rounded-full bg-accent/75 group-hover/cmt:bg-accent transition-colors"
  />
  </a>
  <button
@@ -795,12 +795,12 @@ export function VerseRow({
  </sup>
  <span
  aria-hidden
- className="ml-[2px] inline-block h-[5px] w-[5px] rounded-full bg-accent/75"
+ className="ms-[2px] inline-block h-[5px] w-[5px] rounded-full bg-accent/75"
  />
  </button>
  </span>
  ) : (
- <sup className="font-sans text-eyebrow font-medium text-paper/55 tracking-[0.05em] mr-1.5 align-super">
+ <sup className="font-sans text-eyebrow font-medium text-paper/55 tracking-[0.05em] me-1.5 align-super">
  {verse.n}
  </sup>
  )}
@@ -1014,7 +1014,7 @@ export function VerseRow({
  style={{ fontFamily: "var(--font-greek), serif" }}
  className="indent-0 min-w-0 text-paper/85"
  >
- <sup className="font-sans text-eyebrow font-medium text-paper/55 tracking-[0.05em] mr-1.5 align-super">
+ <sup className="font-sans text-eyebrow font-medium text-paper/55 tracking-[0.05em] me-1.5 align-super">
  {verse.n}
  </sup>
  {hasTokens
