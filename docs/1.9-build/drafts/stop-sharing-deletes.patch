@@ -1,0 +1,31 @@
+diff --git a/app/api/journal/share/route.ts b/app/api/journal/share/route.ts
+index 81a3b97..063d141 100644
+--- a/app/api/journal/share/route.ts
++++ b/app/api/journal/share/route.ts
+@@ -154,8 +154,10 @@ async function handleDELETE(req: Request) {
+   if (!z.string().uuid().safeParse(id).success) return NextResponse.json({ error: "Invalid share." }, { status: 400 });
+   const who = await whoAndLimit(req);
+   if (!who) return NextResponse.json({ error: "Sign in to stop sharing." }, { status: 401 });
+-  // The reader's own share only: owner_id is matched here, with the service role.
+-  const { error } = await who.admin.from("shared_pages").update({ withdrawn_at: new Date().toISOString() }).eq("id", id).eq("owner_id", who.user.id);
++  // The reader's own share only: owner_id is matched here, with the service
++  // role. Stopping a share deletes the copy, and the reports on it with it
++  // (shared_page_reports cascades), as the privacy page says.
++  const { error } = await who.admin.from("shared_pages").delete().eq("id", id).eq("owner_id", who.user.id);
+   if (absent(error)) return NextResponse.json({ error: "Sharing is not ready yet." }, { status: 503 });
+   if (error) return NextResponse.json({ error: "Could not stop sharing." }, { status: 500 });
+   return NextResponse.json({ ok: true });
+diff --git a/lib/journal/__tests__/share.test.ts b/lib/journal/__tests__/share.test.ts
+index a632f29..9385097 100644
+--- a/lib/journal/__tests__/share.test.ts
++++ b/lib/journal/__tests__/share.test.ts
+@@ -86,7 +86,8 @@ describe("the server makes the copy, and the count", () => {
+   });
+ 
+   it("stops sharing only the reader's own, and says so plainly before the table exists", () => {
+-    expect(route).toMatch(/update\(\{ withdrawn_at: new Date\(\)\.toISOString\(\) \}\)\.eq\("id", id\)\.eq\("owner_id", who\.user\.id\)/);
++    expect(route).toMatch(/\.from\("shared_pages"\)\.delete\(\)\.eq\("id", id\)\.eq\("owner_id", who\.user\.id\)/);
++    expect(route).not.toContain("withdrawn_at: new Date()");
+     expect(route).toContain('return NextResponse.json({ ready: false });');
+     expect(route).toContain('{ error: "Sharing is not ready yet." }, { status: 503 }');
+   });
