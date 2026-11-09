@@ -117,8 +117,9 @@ export function PlansClient({ minutes }: { minutes: Record<string, number> }) {
                 : next === null
                   ? t("plans.finishedShort")
                   : t("plans.dayOf", { day: next + 1, total: plan.days.length });
-              // A season's plan wears the season's picture; the rest, their first book's figure.
-              const cover = plan.season ? { src: SEASON_PICTURES[plan.season], fallback: SEASON_PICTURES[plan.season] } : readAloudCover(plan.days[0][0].book);
+              // A season's plan wears the season's picture; the rest, their first book's figure,
+              // or the one a plan names where its first book's is another plan's (lib/plans/plans.ts).
+              const cover = plan.season ? { src: SEASON_PICTURES[plan.season], fallback: SEASON_PICTURES[plan.season] } : readAloudCover(plan.cover ?? plan.days[0][0].book);
               return (
                 <li key={plan.id}>
                   <Link

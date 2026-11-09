@@ -1358,6 +1358,2694 @@
       "from": "data/bible/commentary/john/21.json"
     }
   },
+  "acts": {
+    "1": {
+      "text": "He gave us Baptism, not that we should receive and depart, but that we should show the fruits of it in our after life.",
+      "author": "St. John Chrysostom",
+      "work": "Homilies on the Acts of the Apostles, Homily 1",
+      "citation": "NPNF1-11",
+      "from": "data/bible/commentary/acts/1.json"
+    },
+    "2": {
+      "text": "What is this Pentecost? The time when the sickle was to be put to the harvest, and the ingathering was made. See now the reality, when the time was come to put in the sickle of the word: for here, as the sickle, keen-edged, came the Spirit down.",
+      "author": "St. John Chrysostom",
+      "work": "Homilies on the Acts of the Apostles, Homily 4",
+      "citation": "NPNF1-11",
+      "from": "data/bible/commentary/acts/2.json"
+    },
+    "3": {
+      "text": "Often He healed by word, often by an act, often also He stretched forth the hand, where men were somewhat weak in faith, that the cure might not appear to be spontaneous.",
+      "author": "St. John Chrysostom",
+      "work": "Homilies on the Acts of the Apostles, Homily 8",
+      "citation": "NPNF1-11",
+      "from": "data/bible/commentary/acts/3.json"
+    },
+    "4": {
+      "text": "In my opinion, the love begat the poverty, and then the poverty drew tight the cords of love.",
+      "author": "St. John Chrysostom",
+      "work": "Homilies on the Acts of the Apostles, Homily 11",
+      "citation": "NPNF1-11",
+      "from": "data/bible/commentary/acts/4.json"
+    },
+    "5": {
+      "text": "Here are men, whom neither prison, nor bonds, nor closed doors, had been able to keep in; and yet they expect to overpower them: such is their childish folly!",
+      "author": "St. John Chrysostom",
+      "work": "Homilies on the Acts of the Apostles, Homily 13",
+      "citation": "NPNF1-11",
+      "from": "data/bible/commentary/acts/5.json"
+    },
+    "6": {
+      "text": "For there are, yes, there are faces full-fraught with spiritual grace, lovely to them that love, awful to haters and enemies.",
+      "author": "St. John Chrysostom",
+      "work": "Homilies on the Acts of the Apostles, Homily 15",
+      "citation": "NPNF1-11",
+      "from": "data/bible/commentary/acts/6.json"
+    },
+    "7": {
+      "text": "The Apostles were scourged, and they rejoiced: were bound, and they gave thanks: were stoned, and they preached. This is the joy I also would have: from nothing bodily has it its origin, but from spiritual things.",
+      "author": "St. John Chrysostom",
+      "work": "Homilies on the Acts of the Apostles, Homily 16",
+      "citation": "NPNF1-11",
+      "from": "data/bible/commentary/acts/7.json"
+    },
+    "8": {
+      "text": "Why, the mouth by which God speaks, is the mouth of God. Just as our mouth is the mouth of our soul, though the soul has no mouth, so the mouth of the Prophets is the mouth of God.",
+      "author": "St. John Chrysostom",
+      "work": "Homilies on the Acts of the Apostles, Homily 19",
+      "citation": "NPNF1-11",
+      "from": "data/bible/commentary/acts/8.json"
+    },
+    "9": {
+      "text": "Let us not busy ourselves about monuments, not about memorials. This is the greatest memorial: set widows to stand around him.",
+      "author": "St. John Chrysostom",
+      "work": "Homilies on the Acts of the Apostles, Homily 21",
+      "citation": "NPNF1-11",
+      "from": "data/bible/commentary/acts/9.json"
+    },
+    "10": {
+      "text": "How many centurions were there not besides, and tribunes, and kings, and none of them obtained what this man did! Hear, all ye that are in military commands, all ye that stand beside kings.",
+      "author": "St. John Chrysostom",
+      "work": "Homilies on the Acts of the Apostles, Homily 22",
+      "citation": "NPNF1-11",
+      "from": "data/bible/commentary/acts/10.json"
+    },
+    "11": {
+      "text": "Do you mark how on all occasions, Christ turns their ill dispositions to needful account and for the benefit of the Church? Of their hatred to the man, He availed Himself for the building up of the Church.",
+      "author": "St. John Chrysostom",
+      "work": "Homilies on the Acts of the Apostles, Homily 25",
+      "citation": "NPNF1-11",
+      "from": "data/bible/commentary/acts/11.json"
+    },
+    "12": {
+      "text": "Nothing ever was more splendid than that Church. Let us imitate these, let us emulate them. Not for this was the night made, that we should sleep all through it and be idle.",
+      "author": "St. John Chrysostom",
+      "work": "Homilies on the Acts of the Apostles, Homily 26",
+      "citation": "NPNF1-11",
+      "from": "data/bible/commentary/acts/12.json"
+    },
+    "13": {
+      "text": "However, you are not to make a question of the why and wherefore, when it is the Spirit that directs their movements: for they were not only ordained by the Spirit, but sent forth by Him likewise.",
+      "author": "St. John Chrysostom",
+      "work": "Homilies on the Acts of the Apostles, Homily 28",
+      "citation": "NPNF1-11",
+      "from": "data/bible/commentary/acts/13.json"
+    },
+    "14": {
+      "text": "What we want is earnestness, exceeding ardor, a soul ready to encounter death. Else is it not possible to attain unto the Kingdom, not being crucified.",
+      "author": "St. John Chrysostom",
+      "work": "Homilies on the Acts of the Apostles, Homily 31",
+      "citation": "NPNF1-11",
+      "from": "data/bible/commentary/acts/14.json"
+    },
+    "15": {
+      "text": "No word speaks John here, no word the other Apostles, but held their peace, for James was invested with the chief rule, and think it no hardship. So clean was their soul from love of glory.",
+      "author": "St. John Chrysostom",
+      "work": "Homilies on the Acts of the Apostles, Homily 33",
+      "citation": "NPNF1-11",
+      "from": "data/bible/commentary/acts/15.json"
+    },
+    "16": {
+      "text": "I have both before discoursed to you on this, and now repeat it: let us arouse ourselves during the night: though thou make not many prayers, make one with watchfulness, and it is enough, I ask no more: and if not at midnight, at any rate at the first dawn.",
+      "author": "St. John Chrysostom",
+      "work": "Homilies on the Acts of the Apostles, Homily 36",
+      "citation": "NPNF1-11",
+      "from": "data/bible/commentary/acts/16.json"
+    },
+    "17": {
+      "text": "Are none of these men to be punished? None of them that are willing to repent. He says it of these men, not of the departed, but of them whom He commands to repent.",
+      "author": "St. John Chrysostom",
+      "work": "Homilies on the Acts of the Apostles, Homily 38",
+      "citation": "NPNF1-11",
+      "from": "data/bible/commentary/acts/17.json"
+    },
+    "18": {
+      "text": "We have the sum and substance of the good things: through baptism we received remission of sins, sanctification, participation of the Spirit, adoption, eternal life.",
+      "author": "St. John Chrysostom",
+      "work": "Homilies on the Acts of the Apostles, Homily 40",
+      "citation": "NPNF1-11",
+      "from": "data/bible/commentary/acts/18.json"
+    },
+    "19": {
+      "text": "Look, in every case, how men are converted not so much in consequence of good things as of things fearful.",
+      "author": "St. John Chrysostom",
+      "work": "Homilies on the Acts of the Apostles, Homily 41",
+      "citation": "NPNF1-11",
+      "from": "data/bible/commentary/acts/19.json"
+    },
+    "20": {
+      "text": "This is the merit of a teacher, by his own achievements of virtue to form the character of his disciples.",
+      "author": "St. John Chrysostom",
+      "work": "Homilies on the Acts of the Apostles, Homily 44",
+      "citation": "NPNF1-11",
+      "from": "data/bible/commentary/acts/20.json"
+    },
+    "21": {
+      "text": "Let not us greatly care for the estimation of the many, nor mind it more than needs. To God we live, not to men: in heaven we have our conversation, not on earth: there lie the awards and the prizes of our labors, thence we look for our praises, thence for our crowns.",
+      "author": "St. John Chrysostom",
+      "work": "Homilies on the Acts of the Apostles, Homily 46",
+      "citation": "NPNF1-11",
+      "from": "data/bible/commentary/acts/21.json"
+    },
+    "22": {
+      "text": "The passions are the tyrant: if then we despise them, we shall be great: but if we rescue others also from them, we shall be far greater, as being sufficient not only for ourselves, but for others also.",
+      "author": "St. John Chrysostom",
+      "work": "Homilies on the Acts of the Apostles, Homily 48",
+      "citation": "NPNF1-11",
+      "from": "data/bible/commentary/acts/22.json"
+    },
+    "23": {
+      "text": "If he, with enemies, who went even to the length of murder and slaughter, said nothing offensive to them, what pardon shall we deserve, who in reviling and abuse become infuriated, calling our enemies villains, detestable wretches?",
+      "author": "St. John Chrysostom",
+      "work": "Homilies on the Acts of the Apostles, Homily 50",
+      "citation": "NPNF1-11",
+      "from": "data/bible/commentary/acts/23.json"
+    },
+    "24": {
+      "text": "How, O wretch, canst thou look for money from a man who preaches the contrary?",
+      "author": "St. John Chrysostom",
+      "work": "Homilies on the Acts of the Apostles, Homily 51",
+      "citation": "NPNF1-11",
+      "from": "data/bible/commentary/acts/24.json"
+    },
+    "25": {
+      "text": "O what an abundance of justifications! After all these repeated examinations, the governor finds not how he may condemn him.",
+      "author": "St. John Chrysostom",
+      "work": "Homilies on the Acts of the Apostles, Homily 52",
+      "citation": "NPNF1-11",
+      "from": "data/bible/commentary/acts/25.json"
+    },
+    "26": {
+      "text": "Though the holy man be in bonds, he does greater works than those who are free.",
+      "author": "St. John Chrysostom",
+      "work": "Homilies on the Acts of the Apostles, Homily 53",
+      "citation": "NPNF1-11",
+      "from": "data/bible/commentary/acts/26.json"
+    },
+    "28": {
+      "text": "Let us therefore return thanks to God for all these things: for He does not suffer them to happen at random, but for the benefit of our souls.",
+      "author": "St. John Chrysostom",
+      "work": "Homilies on the Acts of the Apostles, Homily 54",
+      "citation": "NPNF1-11",
+      "from": "data/bible/commentary/acts/28.json"
+    }
+  },
+  "newtestament": {
+    "1": {
+      "text": "Think not, therefore, it is of small things thou art hearing, when thou hearest of this birth, but rouse up thy mind, and straightway tremble, being told that God hath come upon earth.",
+      "author": "St. John Chrysostom",
+      "work": "Homilies on the Gospel of St. Matthew, Homily 2",
+      "citation": "NPNF1-10",
+      "at": {
+        "work": "john-chrysostom/homilies-on-matthew",
+        "section": 2,
+        "paragraph": 10,
+        "place": "Homily 2, Matthew 1:1",
+        "mark": "§2"
+      },
+      "from": "data/bible/commentary/matthew/1.json"
+    },
+    "2": {
+      "text": "Let us then also follow the magi, let us separate ourselves from our barbarian customs, and make our distance therefrom great, that we may see Christ, since they too, had they not been far from their own country, would have missed seeing Him.",
+      "author": "St. John Chrysostom",
+      "work": "Homilies on the Gospel of St. Matthew, Homily 7",
+      "citation": "NPNF1-10",
+      "at": {
+        "work": "john-chrysostom/homilies-on-matthew",
+        "section": 7,
+        "paragraph": 27,
+        "place": "Homily 7, Matthew 2:4, 5",
+        "mark": "§6"
+      },
+      "from": "data/bible/commentary/matthew/2.json"
+    },
+    "3": {
+      "text": "But by repentance I mean, not only to forsake our former evil deeds, but also to show forth good deeds greater than those.",
+      "author": "St. John Chrysostom",
+      "work": "Homilies on the Gospel of St. Matthew, Homily 10",
+      "citation": "NPNF1-10",
+      "at": {
+        "work": "john-chrysostom/homilies-on-matthew",
+        "section": 10,
+        "paragraph": 33,
+        "place": "Homily 10, Matthew 3:1, 2",
+        "mark": "§7"
+      },
+      "from": "data/bible/commentary/matthew/3.json"
+    },
+    "4": {
+      "text": "For, for this cause even He fasted, not as needing it Himself, but to instruct us.",
+      "author": "St. John Chrysostom",
+      "work": "Homilies on the Gospel of St. Matthew, Homily 13",
+      "citation": "NPNF1-10",
+      "at": {
+        "work": "john-chrysostom/homilies-on-matthew",
+        "section": 13,
+        "paragraph": 6,
+        "place": "Homily 13, Matthew 4:1",
+        "mark": "§2"
+      },
+      "from": "data/bible/commentary/matthew/4.json"
+    },
+    "5": {
+      "text": "instructing us to do nothing for display, and to separate ourselves from the tumults of ordinary life, and this most especially, when we are to study wisdom",
+      "author": "St. John Chrysostom",
+      "work": "Homilies on the Gospel of St. Matthew, Homily 15",
+      "citation": "NPNF1-10",
+      "at": {
+        "work": "john-chrysostom/homilies-on-matthew",
+        "section": 15,
+        "paragraph": 1,
+        "place": "Homily 15, Matthew 5:1, 2",
+        "mark": "§1"
+      },
+      "from": "data/bible/commentary/matthew/5.json"
+    },
+    "6": {
+      "text": "Let us not therefore be anxious, for we shall gain nothing by it, but tormenting ourselves.",
+      "author": "St. John Chrysostom",
+      "work": "Homilies on the Gospel of St. Matthew, Homily 22",
+      "citation": "NPNF1-10",
+      "at": {
+        "work": "john-chrysostom/homilies-on-matthew",
+        "section": 22,
+        "paragraph": 20,
+        "place": "Homily 22, Matthew 6:28, 29",
+        "mark": "§3"
+      },
+      "from": "data/bible/commentary/matthew/6.json"
+    },
+    "7": {
+      "text": "Therefore He both commanded us to ask, and pledged Himself to the giving.",
+      "author": "St. John Chrysostom",
+      "work": "Homilies on the Gospel of St. Matthew, Homily 23",
+      "citation": "NPNF1-10",
+      "at": {
+        "work": "john-chrysostom/homilies-on-matthew",
+        "section": 23,
+        "paragraph": 33,
+        "place": "Homily 23, Matthew 7:1",
+        "mark": "§4"
+      },
+      "from": "data/bible/commentary/matthew/7.json"
+    },
+    "8": {
+      "text": "For here, when not summoned to the house, of His own accord He saith, He will come, that thou mightest learn the centurion's faith and great humility",
+      "author": "St. John Chrysostom",
+      "work": "Homilies on the Gospel of St. Matthew, Homily 26",
+      "citation": "NPNF1-10",
+      "at": {
+        "work": "john-chrysostom/homilies-on-matthew",
+        "section": 26,
+        "paragraph": 4,
+        "place": "Homily 26, Matthew 8:5",
+        "mark": "§1"
+      },
+      "from": "data/bible/commentary/matthew/8.json"
+    },
+    "9": {
+      "text": "And not with him only doth He sit down to meat, but with many others also; although this very thing was accounted a charge against Him, that He chased not away the sinners.",
+      "author": "St. John Chrysostom",
+      "work": "Homilies on the Gospel of St. Matthew, Homily 30",
+      "citation": "NPNF1-10",
+      "at": {
+        "work": "john-chrysostom/homilies-on-matthew",
+        "section": 30,
+        "paragraph": 9,
+        "place": "Homily 30, Matthew 9:9",
+        "mark": "§2"
+      },
+      "from": "data/bible/commentary/matthew/9.json"
+    },
+    "10": {
+      "text": "And this He said, not that God numbers our hairs, but that He might indicate His perfect knowledge, and His great providence over them.",
+      "author": "St. John Chrysostom",
+      "work": "Homilies on the Gospel of St. Matthew, Homily 34",
+      "citation": "NPNF1-10",
+      "at": {
+        "work": "john-chrysostom/homilies-on-matthew",
+        "section": 34,
+        "paragraph": 17,
+        "place": "Homily 34, Matthew 10:23",
+        "mark": "§2"
+      },
+      "from": "data/bible/commentary/matthew/10.json"
+    },
+    "11": {
+      "text": "And if thou art still afraid and tremblest at hearing of the yoke and the burden, the fear comes not of the nature of the thing, but of thy remissness; since if thou art prepared, and in earnest, all will be easy to thee and light.",
+      "author": "St. John Chrysostom",
+      "work": "Homilies on the Gospel of St. Matthew, Homily 38",
+      "citation": "NPNF1-10",
+      "at": {
+        "work": "john-chrysostom/homilies-on-matthew",
+        "section": 38,
+        "paragraph": 21,
+        "place": "Homily 38, Matthew 11:25, 26",
+        "mark": "§3"
+      },
+      "from": "data/bible/commentary/matthew/11.json"
+    },
+    "12": {
+      "text": "Let us flee therefore from this sin, and neither in words nor deeds do our neighbors wrong.",
+      "author": "St. John Chrysostom",
+      "work": "Homilies on the Gospel of St. Matthew, Homily 42",
+      "citation": "NPNF1-10",
+      "at": {
+        "work": "john-chrysostom/homilies-on-matthew",
+        "section": 42,
+        "paragraph": 26,
+        "place": "Homily 42, Matthew 12:33",
+        "mark": "§2"
+      },
+      "from": "data/bible/commentary/matthew/12.json"
+    },
+    "13": {
+      "text": "Let us then hear, as many of us as neglect the reading of the Scriptures, to what harm we are subjecting ourselves, to what poverty.",
+      "author": "St. John Chrysostom",
+      "work": "Homilies on the Gospel of St. Matthew, Homily 47",
+      "citation": "NPNF1-10",
+      "at": {
+        "work": "john-chrysostom/homilies-on-matthew",
+        "section": 47,
+        "paragraph": 36,
+        "place": "Homily 47, Matthew 13:34, 35",
+        "mark": "§4"
+      },
+      "from": "data/bible/commentary/matthew/13.json"
+    },
+    "14": {
+      "text": "Let us now then draw near with faith, every one that hath an infirmity.",
+      "author": "St. John Chrysostom",
+      "work": "Homilies on the Gospel of St. Matthew, Homily 50",
+      "citation": "NPNF1-10",
+      "at": {
+        "work": "john-chrysostom/homilies-on-matthew",
+        "section": 50,
+        "paragraph": 32,
+        "place": "Homily 50, Matthew 14:23, 24",
+        "mark": "§3"
+      },
+      "from": "data/bible/commentary/matthew/14.json"
+    },
+    "15": {
+      "text": "Let us learn then what are the things that defile the man; let us learn, and let us flee them.",
+      "author": "St. John Chrysostom",
+      "work": "Homilies on the Gospel of St. Matthew, Homily 51",
+      "citation": "NPNF1-10",
+      "at": {
+        "work": "john-chrysostom/homilies-on-matthew",
+        "section": 51,
+        "paragraph": 46,
+        "place": "Homily 51, Matthew 15:1",
+        "mark": "§5"
+      },
+      "from": "data/bible/commentary/matthew/15.json"
+    },
+    "16": {
+      "text": "Let us learn first what it is to deny another, and then we shall know what it may be to deny one's self.",
+      "author": "St. John Chrysostom",
+      "work": "Homilies on the Gospel of St. Matthew, Homily 55",
+      "citation": "NPNF1-10",
+      "at": {
+        "work": "john-chrysostom/homilies-on-matthew",
+        "section": 55,
+        "paragraph": 10,
+        "place": "Homily 55, Matthew 16:24",
+        "mark": "§2"
+      },
+      "from": "data/bible/commentary/matthew/16.json"
+    },
+    "17": {
+      "text": "Again on the mountain, when He had shown them the marvellous vision, and the prophets had been discoursing of His glory, He reminded them of His passion.",
+      "author": "St. John Chrysostom",
+      "work": "Homilies on the Gospel of St. Matthew, Homily 57",
+      "citation": "NPNF1-10",
+      "at": {
+        "work": "john-chrysostom/homilies-on-matthew",
+        "section": 57,
+        "paragraph": 17,
+        "place": "Homily 57, Matthew 17:10",
+        "mark": "§2"
+      },
+      "from": "data/bible/commentary/matthew/17.json"
+    },
+    "18": {
+      "text": "Bearing in mind all these things, and considering the ten thousand talents, let us at least hence hasten to remit to our neighbors their few and trifling debts.",
+      "author": "St. John Chrysostom",
+      "work": "Homilies on the Gospel of St. Matthew, Homily 61",
+      "citation": "NPNF1-10",
+      "at": {
+        "work": "john-chrysostom/homilies-on-matthew",
+        "section": 61,
+        "paragraph": 31,
+        "place": "Homily 61, Matthew 18:21",
+        "mark": "§3"
+      },
+      "from": "data/bible/commentary/matthew/18.json"
+    },
+    "19": {
+      "text": "that by choice we should practise these things, which young children have by nature",
+      "author": "St. John Chrysostom",
+      "work": "Homilies on the Gospel of St. Matthew, Homily 62",
+      "citation": "NPNF1-10",
+      "at": {
+        "work": "john-chrysostom/homilies-on-matthew",
+        "section": 62,
+        "paragraph": 42,
+        "place": "Homily 62, Matthew 19:1",
+        "mark": "§4"
+      },
+      "from": "data/bible/commentary/matthew/19.json"
+    },
+    "20": {
+      "text": "Choose then the last place, and then thou wilt enjoy the first.",
+      "author": "St. John Chrysostom",
+      "work": "Homilies on the Gospel of St. Matthew, Homily 65",
+      "citation": "NPNF1-10",
+      "at": {
+        "work": "john-chrysostom/homilies-on-matthew",
+        "section": 65,
+        "paragraph": 47,
+        "place": "Homily 65, Matthew 20:17-19",
+        "mark": "§4"
+      },
+      "from": "data/bible/commentary/matthew/20.json"
+    },
+    "21": {
+      "text": "Let neither this last be confident, for often the harlot will pass him by; nor let the other despair, for it is possible for him to pass by even the first.",
+      "author": "St. John Chrysostom",
+      "work": "Homilies on the Gospel of St. Matthew, Homily 67",
+      "citation": "NPNF1-10",
+      "at": {
+        "work": "john-chrysostom/homilies-on-matthew",
+        "section": 67,
+        "paragraph": 42,
+        "place": "Homily 67, Matthew 21:12, 13",
+        "mark": "§4"
+      },
+      "from": "data/bible/commentary/matthew/21.json"
+    },
+    "22": {
+      "text": "Reverence the love of Him, who called you, and let no one continue to have filthy garments, but let each of you busy himself about the clothing of your soul.",
+      "author": "St. John Chrysostom",
+      "work": "Homilies on the Gospel of St. Matthew, Homily 69",
+      "citation": "NPNF1-10",
+      "at": {
+        "work": "john-chrysostom/homilies-on-matthew",
+        "section": 69,
+        "paragraph": 36,
+        "place": "Homily 69, Matthew 22:1-14",
+        "mark": "§2"
+      },
+      "from": "data/bible/commentary/matthew/22.json"
+    },
+    "23": {
+      "text": "Having warned them therefore against this grievous pest, and amended them, He instructs also how they may escape it; by humility.",
+      "author": "St. John Chrysostom",
+      "work": "Homilies on the Gospel of St. Matthew, Homily 72",
+      "citation": "NPNF1-10",
+      "at": {
+        "work": "john-chrysostom/homilies-on-matthew",
+        "section": 72,
+        "paragraph": 28,
+        "place": "Homily 72, Matthew 23:1-3",
+        "mark": "§3"
+      },
+      "from": "data/bible/commentary/matthew/23.json"
+    },
+    "24": {
+      "text": "For this is the point at which He labors, that we should be always on the watch",
+      "author": "St. John Chrysostom",
+      "work": "Homilies on the Gospel of St. Matthew, Homily 77",
+      "citation": "NPNF1-10",
+      "at": {
+        "work": "john-chrysostom/homilies-on-matthew",
+        "section": 77,
+        "paragraph": 33,
+        "place": "Homily 77, Matthew 24:33, 34",
+        "mark": "§4"
+      },
+      "from": "data/bible/commentary/matthew/24.json"
+    },
+    "25": {
+      "text": "As we have opportunity, let us help on our salvation, let us get oil for our lamps, let us labor to add to our talent.",
+      "author": "St. John Chrysostom",
+      "work": "Homilies on the Gospel of St. Matthew, Homily 78",
+      "citation": "NPNF1-10",
+      "at": {
+        "work": "john-chrysostom/homilies-on-matthew",
+        "section": 78,
+        "paragraph": 20,
+        "place": "Homily 78, Matthew 25:1-30.",
+        "mark": "§2"
+      },
+      "from": "data/bible/commentary/matthew/25.json"
+    },
+    "26": {
+      "text": "showing here, that He fully harmonizes with God's will, and that we must always follow this, and seek after it.",
+      "author": "St. John Chrysostom",
+      "work": "Homilies on the Gospel of St. Matthew, Homily 83",
+      "citation": "NPNF1-10",
+      "at": {
+        "work": "john-chrysostom/homilies-on-matthew",
+        "section": 83,
+        "paragraph": 6,
+        "place": "Homily 83, Matthew 26:36-38",
+        "mark": "§1"
+      },
+      "from": "data/bible/commentary/matthew/26.json"
+    },
+    "27": {
+      "text": "He, on the contrary, does not come down from the cross, because He is the Son of God; for He therefore came that He might be crucified for us.",
+      "author": "St. John Chrysostom",
+      "work": "Catena Aurea on Matthew (Hom. de Cruc. et Latr. ii)",
+      "citation": "Catena Aurea (Oxford, Rivington, 1842)",
+      "from": "data/bible/commentary/matthew/27.json"
+    },
+    "28": {
+      "text": "For tell me not, saith He, of the difficulty of the things: for “I am with you,” who make all things easy.",
+      "author": "St. John Chrysostom",
+      "work": "Homilies on the Gospel of St. Matthew, Homily 90",
+      "citation": "NPNF1-10",
+      "at": {
+        "work": "john-chrysostom/homilies-on-matthew",
+        "section": 90,
+        "paragraph": 12,
+        "place": "Homily 90, Matthew 28:11-14",
+        "mark": "§2"
+      },
+      "from": "data/bible/commentary/matthew/28.json"
+    },
+    "29": {
+      "text": "For he said not, If thou wilt, pray unto God, but, \"If Thou wilt,\" as thinking Him very God.",
+      "author": "Blessed Theophylact",
+      "work": "Catena Aurea on Mark",
+      "citation": "Catena Aurea (Oxford, Rivington, 1842)",
+      "from": "data/bible/commentary/mark/1.json"
+    },
+    "30": {
+      "text": "He saw the faith of the sick man himself, since he would not have allowed himself to be carried, unless he'd had faith to be healed.",
+      "author": "Blessed Theophylact",
+      "work": "Catena Aurea on Mark",
+      "citation": "Catena Aurea (Oxford, Rivington, 1842)",
+      "from": "data/bible/commentary/mark/2.json"
+    },
+    "31": {
+      "text": "for from the time that our hand is employed in forbidden deeds, from that time it is withered to the working of good.",
+      "author": "Blessed Theophylact",
+      "work": "Catena Aurea on Mark",
+      "citation": "Catena Aurea (Oxford, Rivington, 1842)",
+      "from": "data/bible/commentary/mark/3.json"
+    },
+    "32": {
+      "text": "Further, as a sower does not make a distinction in the ground which is beneath him, but simply and without distinction puts in the seed, so also He Himself addresses all.",
+      "author": "St. John Chrysostom",
+      "work": "Catena Aurea on Mark",
+      "citation": "Catena Aurea (Oxford, Rivington, 1842)",
+      "from": "data/bible/commentary/mark/4.json"
+    },
+    "33": {
+      "text": "It was not however the hem of the garment, but her frame of mind that made her whole.",
+      "author": "St. John Chrysostom",
+      "work": "Catena Aurea on Mark (see Chrys., Hom. in Matt., 31)",
+      "citation": "Catena Aurea (Oxford, Rivington, 1842)",
+      "from": "data/bible/commentary/mark/5.json"
+    },
+    "34": {
+      "text": "But when He had dismissed the crowd, He goes up to pray, for prayer requires rest and silence.",
+      "author": "Blessed Theophylact",
+      "work": "Catena Aurea on Mark",
+      "citation": "Catena Aurea (Oxford, Rivington, 1842)",
+      "from": "data/bible/commentary/mark/6.json"
+    },
+    "35": {
+      "text": "That He might shew that all the members of His sacred body are divine and holy, even the spittle which loosed the string of the tongue.",
+      "author": "Blessed Theophylact",
+      "work": "Catena Aurea on Mark",
+      "citation": "Catena Aurea (Oxford, Rivington, 1842)",
+      "from": "data/bible/commentary/mark/7.json"
+    },
+    "36": {
+      "text": "For that He was the Christ, the Son of the living God, he had learnt by revelation; but the mystery of His cross and resurrection had not yet been revealed to him.",
+      "author": "St. John Chrysostom",
+      "work": "Catena Aurea on Mark",
+      "citation": "Catena Aurea (Oxford, Rivington, 1842)",
+      "from": "data/bible/commentary/mark/8.json"
+    },
+    "37": {
+      "text": "And observe that God first helps us, then it is required of us that we do good; for which reason it is said that Jesus \"raised him;\" in which is shewn the aid of God, and that \"he arose,\" in which is declared the zeal of man.",
+      "author": "Blessed Theophylact",
+      "work": "Catena Aurea on Mark",
+      "citation": "Catena Aurea (Oxford, Rivington, 1842)",
+      "from": "data/bible/commentary/mark/9.json"
+    },
+    "38": {
+      "text": "The mind of the blind man is grateful, for when he was made whole, he did not leave Jesus, but followed Him.",
+      "author": "Blessed Theophylact",
+      "work": "Catena Aurea on Mark",
+      "citation": "Catena Aurea (Oxford, Rivington, 1842)",
+      "from": "data/bible/commentary/mark/10.json"
+    },
+    "39": {
+      "text": "Consider the Divine mercy, how it confers on us, if we approach Him in faith, the power of miracles, which He Himself possesses by nature, so that we should be able even to change mountains.",
+      "author": "Blessed Theophylact",
+      "work": "Catena Aurea on Mark",
+      "citation": "Catena Aurea (Oxford, Rivington, 1842)",
+      "from": "data/bible/commentary/mark/11.json"
+    },
+    "40": {
+      "text": "For he who loves God, loves also His creature; but the chief of His creatures is man, wherefore he who loves God ought to love all men.",
+      "author": "Blessed Theophylact",
+      "work": "Catena Aurea on Mark",
+      "citation": "Catena Aurea (Oxford, Rivington, 1842)",
+      "from": "data/bible/commentary/mark/12.json"
+    },
+    "41": {
+      "text": "Again, that which follows is no small comfort amidst persecution: \"But he that shall endure unto the end, the same shall be saved.",
+      "author": "Blessed Theophylact",
+      "work": "Catena Aurea on Mark",
+      "citation": "Catena Aurea (Oxford, Rivington, 1842)",
+      "from": "data/bible/commentary/mark/13.json"
+    },
+    "42": {
+      "text": "It was also His custom always to pray by Himself, in order to give us an example, to seek for silence and solitude in our prayers.",
+      "author": "Blessed Theophylact",
+      "work": "Catena Aurea on Mark",
+      "citation": "Catena Aurea (Oxford, Rivington, 1842)",
+      "from": "data/bible/commentary/mark/14.json"
+    },
+    "43": {
+      "text": "Now John says that He Himself bare His cross, for both took place; for He first bore the cross Himself, until some one passed, whom they compelled, and who then carried it.",
+      "author": "Blessed Theophylact",
+      "work": "Catena Aurea on Mark",
+      "citation": "Catena Aurea (Oxford, Rivington, 1842)",
+      "from": "data/bible/commentary/mark/15.json"
+    },
+    "44": {
+      "text": "For it is not enough to believe, for he who believeth and is not baptized, but is a catechumen, has not yet attained to perfect salvation.",
+      "author": "Blessed Theophylact",
+      "work": "Catena Aurea on Mark",
+      "citation": "Catena Aurea (Oxford, Rivington, 1842)",
+      "from": "data/bible/commentary/mark/16.json"
+    },
+    "45": {
+      "text": "For God's oath is His own word, fully persuading those that hear, and giving each one the conviction that what He has promised and said will certainly come to pass.",
+      "author": "St. Cyril of Alexandria",
+      "work": "Commentary on Luke, fragments on chapter 1",
+      "citation": "Commentary on Luke (Oxford, Payne Smith, 1859)",
+      "at": {
+        "work": "cyril-of-alexandria/commentary-on-luke",
+        "section": 0,
+        "paragraph": 14,
+        "place": "Miscellaneous fragments on Luke c. 1"
+      },
+      "from": "data/bible/commentary/luke/1.json"
+    },
+    "46": {
+      "text": "Look not therefore upon Him Who was laid in the manger as a babe merely, but in our poverty see Him Who as God is rich, and in the measure of our humanity Him Who excels the inhabitants of heaven, and Who therefore is glorified even by the holy angels.",
+      "author": "St. Cyril of Alexandria",
+      "work": "Commentary on Luke, Sermon 2",
+      "citation": "Commentary on Luke (Oxford, Payne Smith, 1859)",
+      "at": {
+        "work": "cyril-of-alexandria/commentary-on-luke",
+        "section": 2,
+        "paragraph": 9,
+        "place": "Sermon 2, Luke 2:8-18"
+      },
+      "from": "data/bible/commentary/luke/2.json"
+    },
+    "47": {
+      "text": "Moreover, the fruit of repentance is, in the highest degree, faith in Christ: and next to it, the evangelic mode of life, and in general terms the works of righteousness in contradistinction to sin, which the penitent must bring forth as fruits worthy of repentance.",
+      "author": "St. Cyril of Alexandria",
+      "work": "Commentary on Luke, Sermon 7",
+      "citation": "Commentary on Luke (Oxford, Payne Smith, 1859)",
+      "at": {
+        "work": "cyril-of-alexandria/commentary-on-luke",
+        "section": 7,
+        "paragraph": 3,
+        "place": "Sermon 7, Luke 3:7-9"
+      },
+      "from": "data/bible/commentary/luke/3.json"
+    },
+    "48": {
+      "text": "We have seen the guilty Satan overcome by Him in the wilderness, and broken by three falls: we have seen his might again shaken, and the power that was against us falling: we have seen ourselves rebuking the wicked spirits in Christ as our firstfruits.",
+      "author": "St. Cyril of Alexandria",
+      "work": "Commentary on Luke, Sermon 12",
+      "citation": "Commentary on Luke (Oxford, Payne Smith, 1859)",
+      "at": {
+        "work": "cyril-of-alexandria/commentary-on-luke",
+        "section": 12,
+        "paragraph": 47,
+        "place": "Sermon 12"
+      },
+      "from": "data/bible/commentary/luke/4.json"
+    },
+    "49": {
+      "text": "For still is the net drawn, while Christ fills it, and summons unto conversion those in the depths of the sea, according to the Scripture phrase; those, that is to say, who live in the surge and waves of worldly things.",
+      "author": "St. Cyril of Alexandria",
+      "work": "Commentary on Luke, Sermon 12",
+      "citation": "Commentary on Luke (Oxford, Payne Smith, 1859)",
+      "at": {
+        "work": "cyril-of-alexandria/commentary-on-luke",
+        "section": 12,
+        "paragraph": 59,
+        "place": "Sermon 12"
+      },
+      "from": "data/bible/commentary/luke/5.json"
+    },
+    "50": {
+      "text": "And this we must do not with fickleness, nor with a listless feebleness; but, on the contrary, with earnestness and zeal, and a patience worthy of admiration: for thou hast heard that Jesus did not merely pray, but that He also passed the night in this duty.",
+      "author": "St. Cyril of Alexandria",
+      "work": "Commentary on Luke, Sermon 23",
+      "citation": "Commentary on Luke (Oxford, Payne Smith, 1859)",
+      "at": {
+        "work": "cyril-of-alexandria/commentary-on-luke",
+        "section": 23,
+        "paragraph": 9,
+        "place": "Sermon 23"
+      },
+      "from": "data/bible/commentary/luke/6.json"
+    },
+    "51": {
+      "text": "Let us too stand before Him: let us shed the tears of repentance: let us anoint Him with ointment: for the tears of him that repenteth are a sweet savour to God.",
+      "author": "St. Cyril of Alexandria",
+      "work": "Commentary on Luke, Sermon 40",
+      "citation": "Commentary on Luke (Oxford, Payne Smith, 1859)",
+      "at": {
+        "work": "cyril-of-alexandria/commentary-on-luke",
+        "section": 40,
+        "paragraph": 5,
+        "place": "Sermon 40"
+      },
+      "from": "data/bible/commentary/luke/7.json"
+    },
+    "52": {
+      "text": "In order therefore that the divine seed may blossom well in us, let us first cast out of the mind worldly cares, and the unprofitable anxiety which makes us seek to be rich",
+      "author": "St. Cyril of Alexandria",
+      "work": "Commentary on Luke, Sermon 41",
+      "citation": "Commentary on Luke (Oxford, Payne Smith, 1859)",
+      "at": {
+        "work": "cyril-of-alexandria/commentary-on-luke",
+        "section": 41,
+        "paragraph": 9,
+        "place": "Sermon 41"
+      },
+      "from": "data/bible/commentary/luke/8.json"
+    },
+    "53": {
+      "text": "For not only does He grant all that they ask Him to bestow on those who followed Him, but also adds thereto of His own bountiful right hand; refreshing in every way those that love Him, and nurturing them unto spiritual courage.",
+      "author": "St. Cyril of Alexandria",
+      "work": "Commentary on Luke, Sermon 48",
+      "citation": "Commentary on Luke (Oxford, Payne Smith, 1859)",
+      "at": {
+        "work": "cyril-of-alexandria/commentary-on-luke",
+        "section": 48,
+        "paragraph": 4,
+        "place": "Sermon 48"
+      },
+      "from": "data/bible/commentary/luke/9.json"
+    },
+    "54": {
+      "text": "But one of another race, a Samaritan, fulfilled the law of love.",
+      "author": "St. Cyril of Alexandria",
+      "work": "Commentary on Luke, Sermon 68",
+      "citation": "Commentary on Luke (Oxford, Payne Smith, 1859)",
+      "at": {
+        "work": "cyril-of-alexandria/commentary-on-luke",
+        "section": 68,
+        "paragraph": 8,
+        "place": "Sermon 68"
+      },
+      "from": "data/bible/commentary/luke/10.json"
+    },
+    "55": {
+      "text": "Of Him, therefore, let us ask the explanation of His words: for whosoever would understand correctly and without error what He wishes to teach, are in need of divine light: but He is the Giver of all wisdom, and sheds His light upon the mind and heart of those that ask Him.",
+      "author": "St. Cyril of Alexandria",
+      "work": "Commentary on Luke, Sermon 74",
+      "citation": "Commentary on Luke (Oxford, Payne Smith, 1859)",
+      "at": {
+        "work": "cyril-of-alexandria/commentary-on-luke",
+        "section": 74,
+        "paragraph": 1,
+        "place": "Sermon 74"
+      },
+      "from": "data/bible/commentary/luke/11.json"
+    },
+    "56": {
+      "text": "It is he who gathers in the storehouses that are above, and lays up treasures in heaven.",
+      "author": "St. Cyril of Alexandria",
+      "work": "Commentary on Luke, Sermon 89",
+      "citation": "Commentary on Luke (Oxford, Payne Smith, 1859)",
+      "at": {
+        "work": "cyril-of-alexandria/commentary-on-luke",
+        "section": 89,
+        "paragraph": 6,
+        "place": "Sermon 89"
+      },
+      "from": "data/bible/commentary/luke/12.json"
+    },
+    "57": {
+      "text": "For what good was there in wishing to learn, whether there be many or few that be saved? What benefit resulted from it to the hearers? On the contrary it was a necessary and valuable thing to know in what way a man may attain to salvation.",
+      "author": "St. Cyril of Alexandria",
+      "work": "Commentary on Luke, Sermon 99",
+      "citation": "Commentary on Luke (Oxford, Payne Smith, 1859)",
+      "at": {
+        "work": "cyril-of-alexandria/commentary-on-luke",
+        "section": 99,
+        "paragraph": 2,
+        "place": "Sermon 99"
+      },
+      "from": "data/bible/commentary/luke/13.json"
+    },
+    "58": {
+      "text": "The lesson therefore which He teaches us is love unto the poor, which is a thing precious in the sight of God.",
+      "author": "St. Cyril of Alexandria",
+      "work": "Commentary on Luke, Sermon 103",
+      "citation": "Commentary on Luke (Oxford, Payne Smith, 1859)",
+      "at": {
+        "work": "cyril-of-alexandria/commentary-on-luke",
+        "section": 103,
+        "paragraph": 4,
+        "place": "Sermon 103"
+      },
+      "from": "data/bible/commentary/luke/14.json"
+    },
+    "59": {
+      "text": "The search therefore after that which was lost was no act of contempt towards those who had not erred, but one of grace and mercy and love to mankind fit for the supreme and transcendent nature to bestow on His fallen creatures.",
+      "author": "St. Cyril of Alexandria",
+      "work": "Commentary on Luke, Sermon 106",
+      "citation": "Commentary on Luke (Oxford, Payne Smith, 1859)",
+      "at": {
+        "work": "cyril-of-alexandria/commentary-on-luke",
+        "section": 106,
+        "paragraph": 5,
+        "place": "Sermon 106"
+      },
+      "from": "data/bible/commentary/luke/15.json"
+    },
+    "60": {
+      "text": "For it is impossible for love to the poor ever to remain unrewarded.",
+      "author": "St. Cyril of Alexandria",
+      "work": "Commentary on Luke, Sermon 108",
+      "citation": "Commentary on Luke (Oxford, Payne Smith, 1859)",
+      "at": {
+        "work": "cyril-of-alexandria/commentary-on-luke",
+        "section": 108,
+        "paragraph": 4,
+        "place": "Sermon 108"
+      },
+      "from": "data/bible/commentary/luke/16.json"
+    },
+    "61": {
+      "text": "For if the power of faith remove that which is fixed and rooted in the ground, one may say absolutely that there is nothing so immovable as that faith cannot shake it, if its removal be required.",
+      "author": "St. Cyril of Alexandria",
+      "work": "Commentary on Luke, Sermon 113",
+      "citation": "Commentary on Luke (Oxford, Payne Smith, 1859)",
+      "at": {
+        "work": "cyril-of-alexandria/commentary-on-luke",
+        "section": 113,
+        "paragraph": 9,
+        "place": "Sermon 113"
+      },
+      "from": "data/bible/commentary/luke/17.json"
+    },
+    "62": {
+      "text": "Let us ask then of God mercy; which if we do, Christ will justify us",
+      "author": "St. Cyril of Alexandria",
+      "work": "Commentary on Luke, Sermon 120",
+      "citation": "Commentary on Luke (Oxford, Payne Smith, 1859)",
+      "at": {
+        "work": "cyril-of-alexandria/commentary-on-luke",
+        "section": 120,
+        "paragraph": 8,
+        "place": "Sermon 120"
+      },
+      "from": "data/bible/commentary/luke/18.json"
+    },
+    "63": {
+      "text": "He desired to see Jesus, and climbed therefore into a sycamore tree, and so a seed of salvation sprang up within him.",
+      "author": "St. Cyril of Alexandria",
+      "work": "Commentary on Luke, Sermon 127",
+      "citation": "Commentary on Luke (Oxford, Payne Smith, 1859)",
+      "at": {
+        "work": "cyril-of-alexandria/commentary-on-luke",
+        "section": 127,
+        "paragraph": 2,
+        "place": "Sermon 127"
+      },
+      "from": "data/bible/commentary/luke/19.json"
+    },
+    "64": {
+      "text": "For it shall resound, and the dead in Christ shall rise incorruptible, and we shall be changed.",
+      "author": "St. Cyril of Alexandria",
+      "work": "Commentary on Luke, Sermon 136",
+      "citation": "Commentary on Luke (Oxford, Payne Smith, 1859)",
+      "at": {
+        "work": "cyril-of-alexandria/commentary-on-luke",
+        "section": 136,
+        "paragraph": 9,
+        "place": "Sermon 136"
+      },
+      "from": "data/bible/commentary/luke/20.json"
+    },
+    "65": {
+      "text": "The woman offered two farthings: but she possessed nothing more than what she offered: she had nothing left: with empty hand, but a hand bountiful of the little she possessed, she went away from the treasury.",
+      "author": "St. Cyril of Alexandria",
+      "work": "Commentary on Luke, Sermon 138",
+      "citation": "Commentary on Luke (Oxford, Payne Smith, 1859)",
+      "at": {
+        "work": "cyril-of-alexandria/commentary-on-luke",
+        "section": 138,
+        "paragraph": 4,
+        "place": "Sermon 138"
+      },
+      "from": "data/bible/commentary/luke/21.json"
+    },
+    "66": {
+      "text": "He did not then defer his repentance, nor was he careless about it: for as rapid as was his descent into sin, so quick were his tears because of it; nor did he merely weep, but wept bitterly; and as one that had fallen, so bravely did he spring up again.",
+      "author": "St. Cyril of Alexandria",
+      "work": "Commentary on Luke, Sermon 149",
+      "citation": "Commentary on Luke (Oxford, Payne Smith, 1859)",
+      "at": {
+        "work": "cyril-of-alexandria/commentary-on-luke",
+        "section": 149,
+        "paragraph": 3,
+        "place": "Sermon 149"
+      },
+      "from": "data/bible/commentary/luke/22.json"
+    },
+    "67": {
+      "text": "He became the confessor of the Saviour's glory, and the accuser of the pride of those who crucified Him.",
+      "author": "St. Cyril of Alexandria",
+      "work": "Commentary on Luke, Sermon 153",
+      "citation": "Commentary on Luke (Oxford, Payne Smith, 1859)",
+      "at": {
+        "work": "cyril-of-alexandria/commentary-on-luke",
+        "section": 153,
+        "paragraph": 3,
+        "place": "Sermon 153"
+      },
+      "from": "data/bible/commentary/luke/23.json"
+    },
+    "68": {
+      "text": "Having thus then stirred up their minds by the writings of the law and the prophets, He afterwards more plainly sets Himself before them, when, having consented to their request to go with them to the village, He took bread, and blessed it, and brake, and divided it among them.",
+      "author": "St. Cyril of Alexandria",
+      "work": "Commentary on Luke, Sermon 154",
+      "citation": "Commentary on Luke (Oxford, Payne Smith, 1859)",
+      "at": {
+        "work": "cyril-of-alexandria/commentary-on-luke",
+        "section": 154,
+        "paragraph": 16,
+        "place": "Sermon 154"
+      },
+      "from": "data/bible/commentary/luke/24.json"
+    },
+    "69": {
+      "text": "So that when you hear that “the Word became Flesh,” be not disturbed nor cast down.",
+      "author": "St. John Chrysostom",
+      "work": "Homilies on the Gospel of St. John, Homily 11",
+      "citation": "NPNF1-14",
+      "at": {
+        "work": "john-chrysostom/homilies-on-john",
+        "section": 11,
+        "paragraph": 5,
+        "place": "Homily 11, John 1:14"
+      },
+      "from": "data/bible/commentary/john/1.json"
+    },
+    "70": {
+      "text": "And in the next place, He did it to honor His mother, that He might not seem entirely to contradict and shame her that bare Him in the presence of so many",
+      "author": "St. John Chrysostom",
+      "work": "Homilies on the Gospel of St. John, Homily 22",
+      "citation": "NPNF1-14",
+      "at": {
+        "work": "john-chrysostom/homilies-on-john",
+        "section": 22,
+        "paragraph": 4,
+        "place": "Homily 22, John 2:4"
+      },
+      "from": "data/bible/commentary/john/2.json"
+    },
+    "71": {
+      "text": "If then things which take place daily, and which we handle, require faith, much more do those which are more mysterious and more spiritual than these.",
+      "author": "St. John Chrysostom",
+      "work": "Homilies on the Gospel of St. John, Homily 25",
+      "citation": "NPNF1-14",
+      "at": {
+        "work": "john-chrysostom/homilies-on-john",
+        "section": 25,
+        "paragraph": 4,
+        "place": "Homily 25, John 3:5"
+      },
+      "from": "data/bible/commentary/john/3.json"
+    },
+    "72": {
+      "text": "The woman straightway believed, showing herself much wiser than Nicodemus, and not only wiser, but more manly.",
+      "author": "St. John Chrysostom",
+      "work": "Homilies on the Gospel of St. John, Homily 32",
+      "citation": "NPNF1-14",
+      "at": {
+        "work": "john-chrysostom/homilies-on-john",
+        "section": 32,
+        "paragraph": 4,
+        "place": "Homily 32, John 4:13, 14"
+      },
+      "from": "data/bible/commentary/john/4.json"
+    },
+    "73": {
+      "text": "For the divine oracles are a treasury of all manner of medicines, so that whether it be needful to quench pride, to lull desire to sleep, to tread under foot the love of money, to despise pain, to inspire confidence, to gain patience, from them one may find abundant resource.",
+      "author": "St. John Chrysostom",
+      "work": "Homilies on the Gospel of St. John, Homily 37",
+      "citation": "NPNF1-14",
+      "at": {
+        "work": "john-chrysostom/homilies-on-john",
+        "section": 37,
+        "paragraph": 1,
+        "place": "Homily 37, John 5:6, 7"
+      },
+      "from": "data/bible/commentary/john/5.json"
+    },
+    "74": {
+      "text": "Yet not for this only did He go up into the mountain, but to teach us ever to rest at intervals from the tumults and confusion of common life.",
+      "author": "St. John Chrysostom",
+      "work": "Homilies on the Gospel of St. John, Homily 42",
+      "citation": "NPNF1-14",
+      "at": {
+        "work": "john-chrysostom/homilies-on-john",
+        "section": 42,
+        "paragraph": 3,
+        "place": "Homily 42, John 6:1, 4"
+      },
+      "from": "data/bible/commentary/john/6.json"
+    },
+    "75": {
+      "text": "For as thirsty men, when they have taken a bowl, eagerly drain it and then desist, so too they who hear the divine oracles if they receive them thirsting, will never be weary until they have drunk them up.",
+      "author": "St. John Chrysostom",
+      "work": "Homilies on the Gospel of St. John, Homily 51",
+      "citation": "NPNF1-14",
+      "at": {
+        "work": "john-chrysostom/homilies-on-john",
+        "section": 51,
+        "paragraph": 1,
+        "place": "Homily 51, John 7:37, 38"
+      },
+      "from": "data/bible/commentary/john/7.json"
+    },
+    "76": {
+      "text": "The freedom then of man from bondage after the flesh the authority of the rulers will effect, but that which sets free from sin, is meet to be spoken of God Alone and will belong to none other save He.",
+      "author": "St. Cyril of Alexandria",
+      "work": "Commentary on John, Book 5",
+      "citation": "LFC 43",
+      "at": {
+        "work": "cyril-of-alexandria/commentary-on-john",
+        "section": 558,
+        "paragraph": 4,
+        "place": "Book 5, on John 8:6"
+      },
+      "from": "data/bible/commentary/john/8.json"
+    },
+    "77": {
+      "text": "But I assert that he even received benefit from his blindness: since he recovered the sight of the eyes within.",
+      "author": "St. John Chrysostom",
+      "work": "Homilies on the Gospel of St. John, Homily 56",
+      "citation": "NPNF1-14",
+      "at": {
+        "work": "john-chrysostom/homilies-on-john",
+        "section": 56,
+        "paragraph": 5,
+        "place": "Homily 56, John 9:1, 2"
+      },
+      "from": "data/bible/commentary/john/9.json"
+    },
+    "78": {
+      "text": "For in this the shepherd differs from the hireling; the one always looks to his own safety, caring not for the sheep; the other always seeks that of the sheep, neglecting his own.",
+      "author": "St. John Chrysostom",
+      "work": "Homilies on the Gospel of St. John, Homily 60",
+      "citation": "NPNF1-14",
+      "at": {
+        "work": "john-chrysostom/homilies-on-john",
+        "section": 60,
+        "paragraph": 1,
+        "place": "Homily 60, John 10:14, 15"
+      },
+      "from": "data/bible/commentary/john/10.json"
+    },
+    "79": {
+      "text": "Wherefore we must admire Lazarus' sisters, that after hearing that the sickness was \"not unto death,\" and yet seeing him dead, they were not offended, although the event had been directly contrary.",
+      "author": "St. John Chrysostom",
+      "work": "Homilies on the Gospel of St. John, Homily 62",
+      "citation": "NPNF1-14",
+      "at": {
+        "work": "john-chrysostom/homilies-on-john",
+        "section": 62,
+        "paragraph": 8,
+        "place": "Homily 62, John 11:1, 2"
+      },
+      "from": "data/bible/commentary/john/11.json"
+    },
+    "80": {
+      "text": "first it is necessary that the seed die, and that then the generation take place.",
+      "author": "St. John Chrysostom",
+      "work": "Homilies on the Gospel of St. John, Homily 66",
+      "citation": "NPNF1-14",
+      "at": {
+        "work": "john-chrysostom/homilies-on-john",
+        "section": 66,
+        "paragraph": 21,
+        "place": "Homily 66, John 12:8"
+      },
+      "from": "data/bible/commentary/john/12.json"
+    },
+    "81": {
+      "text": "teaching them the mother of all good, even humblemindedness, which He said was both the beginning and the end of virtue.",
+      "author": "St. John Chrysostom",
+      "work": "Homilies on the Gospel of St. John, Homily 70",
+      "citation": "NPNF1-14",
+      "at": {
+        "work": "john-chrysostom/homilies-on-john",
+        "section": 70,
+        "paragraph": 6,
+        "place": "Homily 70, John 13:1"
+      },
+      "from": "data/bible/commentary/john/13.json"
+    },
+    "82": {
+      "text": "Because there are many at this time who say that they fear and love God, but in their works show the contrary; but God requireth that love which is shown by works.",
+      "author": "St. John Chrysostom",
+      "work": "Homilies on the Gospel of St. John, Homily 75",
+      "citation": "NPNF1-14",
+      "at": {
+        "work": "john-chrysostom/homilies-on-john",
+        "section": 75,
+        "paragraph": 1,
+        "place": "Homily 75, John 14:15-17"
+      },
+      "from": "data/bible/commentary/john/14.json"
+    },
+    "83": {
+      "text": "For if fear diverts a man from unseemly things, much more should the love of Christ.",
+      "author": "St. John Chrysostom",
+      "work": "Homilies on the Gospel of St. John, Homily 77",
+      "citation": "NPNF1-14",
+      "at": {
+        "work": "john-chrysostom/homilies-on-john",
+        "section": 77,
+        "paragraph": 38,
+        "place": "Homily 77, John 15:11, 12"
+      },
+      "from": "data/bible/commentary/john/15.json"
+    },
+    "84": {
+      "text": "Because He introduced this example for this purpose only, to show that sorrow is for a season, but joy lasting",
+      "author": "St. John Chrysostom",
+      "work": "Homilies on the Gospel of St. John, Homily 79",
+      "citation": "NPNF1-14",
+      "at": {
+        "work": "john-chrysostom/homilies-on-john",
+        "section": 79,
+        "paragraph": 6,
+        "place": "Homily 79, John 16:16, 17"
+      },
+      "from": "data/bible/commentary/john/16.json"
+    },
+    "85": {
+      "text": "On this account too, after this admonition, He betaketh Himself to prayer, teaching us in our temptations to leave all things, and flee to God.",
+      "author": "St. John Chrysostom",
+      "work": "Homilies on the Gospel of St. John, Homily 80",
+      "citation": "NPNF1-14",
+      "at": {
+        "work": "john-chrysostom/homilies-on-john",
+        "section": 80,
+        "paragraph": 1,
+        "place": "Homily 80, John 17:1"
+      },
+      "from": "data/bible/commentary/john/17.json"
+    },
+    "86": {
+      "text": "And such is the exceeding force of truth, that even enemies proclaimed these things beforehand.",
+      "author": "St. John Chrysostom",
+      "work": "Homilies on the Gospel of St. John, Homily 83",
+      "citation": "NPNF1-14",
+      "at": {
+        "work": "john-chrysostom/homilies-on-john",
+        "section": 83,
+        "paragraph": 25,
+        "place": "Homily 83, John 18:1"
+      },
+      "from": "data/bible/commentary/john/18.json"
+    },
+    "87": {
+      "text": "For as Christ, Who knew not death, when He gave up His own Body for our salvation, was able to loose the bonds of death for all mankind, for He, being One, died for all; so we must understand that Christ's suffering all these things for us sufficed also to release us all from scourging and dishonour.",
+      "author": "St. Cyril of Alexandria",
+      "work": "Commentary on John, Book 12",
+      "citation": "LFC 48",
+      "at": {
+        "work": "cyril-of-alexandria/commentary-on-john",
+        "section": 1026,
+        "paragraph": 1,
+        "place": "Book 12, on John 19:1"
+      },
+      "from": "data/bible/commentary/john/19.json"
+    },
+    "88": {
+      "text": "The chief cause was, that the woman beforehand had wrought great faith in them; besides, He showed His countenance to them clear and mild.",
+      "author": "St. John Chrysostom",
+      "work": "Homilies on the Gospel of St. John, Homily 86",
+      "citation": "NPNF1-14",
+      "at": {
+        "work": "john-chrysostom/homilies-on-john",
+        "section": 86,
+        "paragraph": 19,
+        "place": "Homily 86, John 20:10, 11"
+      },
+      "from": "data/bible/commentary/john/20.json"
+    },
+    "89": {
+      "text": "Not without cause or in a chance way, but to show us what boldness Peter had after the denial.",
+      "author": "St. John Chrysostom",
+      "work": "Homilies on the Gospel of St. John, Homily 88",
+      "citation": "NPNF1-14",
+      "at": {
+        "work": "john-chrysostom/homilies-on-john",
+        "section": 88,
+        "paragraph": 14,
+        "place": "Homily 88, John 21:15"
+      },
+      "from": "data/bible/commentary/john/21.json"
+    },
+    "90": {
+      "text": "He gave us Baptism, not that we should receive and depart, but that we should show the fruits of it in our after life.",
+      "author": "St. John Chrysostom",
+      "work": "Homilies on the Acts of the Apostles, Homily 1",
+      "citation": "NPNF1-11",
+      "from": "data/bible/commentary/acts/1.json"
+    },
+    "91": {
+      "text": "What is this Pentecost? The time when the sickle was to be put to the harvest, and the ingathering was made. See now the reality, when the time was come to put in the sickle of the word: for here, as the sickle, keen-edged, came the Spirit down.",
+      "author": "St. John Chrysostom",
+      "work": "Homilies on the Acts of the Apostles, Homily 4",
+      "citation": "NPNF1-11",
+      "from": "data/bible/commentary/acts/2.json"
+    },
+    "92": {
+      "text": "Often He healed by word, often by an act, often also He stretched forth the hand, where men were somewhat weak in faith, that the cure might not appear to be spontaneous.",
+      "author": "St. John Chrysostom",
+      "work": "Homilies on the Acts of the Apostles, Homily 8",
+      "citation": "NPNF1-11",
+      "from": "data/bible/commentary/acts/3.json"
+    },
+    "93": {
+      "text": "In my opinion, the love begat the poverty, and then the poverty drew tight the cords of love.",
+      "author": "St. John Chrysostom",
+      "work": "Homilies on the Acts of the Apostles, Homily 11",
+      "citation": "NPNF1-11",
+      "from": "data/bible/commentary/acts/4.json"
+    },
+    "94": {
+      "text": "Here are men, whom neither prison, nor bonds, nor closed doors, had been able to keep in; and yet they expect to overpower them: such is their childish folly!",
+      "author": "St. John Chrysostom",
+      "work": "Homilies on the Acts of the Apostles, Homily 13",
+      "citation": "NPNF1-11",
+      "from": "data/bible/commentary/acts/5.json"
+    },
+    "95": {
+      "text": "For there are, yes, there are faces full-fraught with spiritual grace, lovely to them that love, awful to haters and enemies.",
+      "author": "St. John Chrysostom",
+      "work": "Homilies on the Acts of the Apostles, Homily 15",
+      "citation": "NPNF1-11",
+      "from": "data/bible/commentary/acts/6.json"
+    },
+    "96": {
+      "text": "The Apostles were scourged, and they rejoiced: were bound, and they gave thanks: were stoned, and they preached. This is the joy I also would have: from nothing bodily has it its origin, but from spiritual things.",
+      "author": "St. John Chrysostom",
+      "work": "Homilies on the Acts of the Apostles, Homily 16",
+      "citation": "NPNF1-11",
+      "from": "data/bible/commentary/acts/7.json"
+    },
+    "97": {
+      "text": "Why, the mouth by which God speaks, is the mouth of God. Just as our mouth is the mouth of our soul, though the soul has no mouth, so the mouth of the Prophets is the mouth of God.",
+      "author": "St. John Chrysostom",
+      "work": "Homilies on the Acts of the Apostles, Homily 19",
+      "citation": "NPNF1-11",
+      "from": "data/bible/commentary/acts/8.json"
+    },
+    "98": {
+      "text": "Let us not busy ourselves about monuments, not about memorials. This is the greatest memorial: set widows to stand around him.",
+      "author": "St. John Chrysostom",
+      "work": "Homilies on the Acts of the Apostles, Homily 21",
+      "citation": "NPNF1-11",
+      "from": "data/bible/commentary/acts/9.json"
+    },
+    "99": {
+      "text": "How many centurions were there not besides, and tribunes, and kings, and none of them obtained what this man did! Hear, all ye that are in military commands, all ye that stand beside kings.",
+      "author": "St. John Chrysostom",
+      "work": "Homilies on the Acts of the Apostles, Homily 22",
+      "citation": "NPNF1-11",
+      "from": "data/bible/commentary/acts/10.json"
+    },
+    "100": {
+      "text": "Do you mark how on all occasions, Christ turns their ill dispositions to needful account and for the benefit of the Church? Of their hatred to the man, He availed Himself for the building up of the Church.",
+      "author": "St. John Chrysostom",
+      "work": "Homilies on the Acts of the Apostles, Homily 25",
+      "citation": "NPNF1-11",
+      "from": "data/bible/commentary/acts/11.json"
+    },
+    "101": {
+      "text": "Nothing ever was more splendid than that Church. Let us imitate these, let us emulate them. Not for this was the night made, that we should sleep all through it and be idle.",
+      "author": "St. John Chrysostom",
+      "work": "Homilies on the Acts of the Apostles, Homily 26",
+      "citation": "NPNF1-11",
+      "from": "data/bible/commentary/acts/12.json"
+    },
+    "102": {
+      "text": "However, you are not to make a question of the why and wherefore, when it is the Spirit that directs their movements: for they were not only ordained by the Spirit, but sent forth by Him likewise.",
+      "author": "St. John Chrysostom",
+      "work": "Homilies on the Acts of the Apostles, Homily 28",
+      "citation": "NPNF1-11",
+      "from": "data/bible/commentary/acts/13.json"
+    },
+    "103": {
+      "text": "What we want is earnestness, exceeding ardor, a soul ready to encounter death. Else is it not possible to attain unto the Kingdom, not being crucified.",
+      "author": "St. John Chrysostom",
+      "work": "Homilies on the Acts of the Apostles, Homily 31",
+      "citation": "NPNF1-11",
+      "from": "data/bible/commentary/acts/14.json"
+    },
+    "104": {
+      "text": "No word speaks John here, no word the other Apostles, but held their peace, for James was invested with the chief rule, and think it no hardship. So clean was their soul from love of glory.",
+      "author": "St. John Chrysostom",
+      "work": "Homilies on the Acts of the Apostles, Homily 33",
+      "citation": "NPNF1-11",
+      "from": "data/bible/commentary/acts/15.json"
+    },
+    "105": {
+      "text": "I have both before discoursed to you on this, and now repeat it: let us arouse ourselves during the night: though thou make not many prayers, make one with watchfulness, and it is enough, I ask no more: and if not at midnight, at any rate at the first dawn.",
+      "author": "St. John Chrysostom",
+      "work": "Homilies on the Acts of the Apostles, Homily 36",
+      "citation": "NPNF1-11",
+      "from": "data/bible/commentary/acts/16.json"
+    },
+    "106": {
+      "text": "Are none of these men to be punished? None of them that are willing to repent. He says it of these men, not of the departed, but of them whom He commands to repent.",
+      "author": "St. John Chrysostom",
+      "work": "Homilies on the Acts of the Apostles, Homily 38",
+      "citation": "NPNF1-11",
+      "from": "data/bible/commentary/acts/17.json"
+    },
+    "107": {
+      "text": "We have the sum and substance of the good things: through baptism we received remission of sins, sanctification, participation of the Spirit, adoption, eternal life.",
+      "author": "St. John Chrysostom",
+      "work": "Homilies on the Acts of the Apostles, Homily 40",
+      "citation": "NPNF1-11",
+      "from": "data/bible/commentary/acts/18.json"
+    },
+    "108": {
+      "text": "Look, in every case, how men are converted not so much in consequence of good things as of things fearful.",
+      "author": "St. John Chrysostom",
+      "work": "Homilies on the Acts of the Apostles, Homily 41",
+      "citation": "NPNF1-11",
+      "from": "data/bible/commentary/acts/19.json"
+    },
+    "109": {
+      "text": "This is the merit of a teacher, by his own achievements of virtue to form the character of his disciples.",
+      "author": "St. John Chrysostom",
+      "work": "Homilies on the Acts of the Apostles, Homily 44",
+      "citation": "NPNF1-11",
+      "from": "data/bible/commentary/acts/20.json"
+    },
+    "110": {
+      "text": "Let not us greatly care for the estimation of the many, nor mind it more than needs. To God we live, not to men: in heaven we have our conversation, not on earth: there lie the awards and the prizes of our labors, thence we look for our praises, thence for our crowns.",
+      "author": "St. John Chrysostom",
+      "work": "Homilies on the Acts of the Apostles, Homily 46",
+      "citation": "NPNF1-11",
+      "from": "data/bible/commentary/acts/21.json"
+    },
+    "111": {
+      "text": "The passions are the tyrant: if then we despise them, we shall be great: but if we rescue others also from them, we shall be far greater, as being sufficient not only for ourselves, but for others also.",
+      "author": "St. John Chrysostom",
+      "work": "Homilies on the Acts of the Apostles, Homily 48",
+      "citation": "NPNF1-11",
+      "from": "data/bible/commentary/acts/22.json"
+    },
+    "112": {
+      "text": "If he, with enemies, who went even to the length of murder and slaughter, said nothing offensive to them, what pardon shall we deserve, who in reviling and abuse become infuriated, calling our enemies villains, detestable wretches?",
+      "author": "St. John Chrysostom",
+      "work": "Homilies on the Acts of the Apostles, Homily 50",
+      "citation": "NPNF1-11",
+      "from": "data/bible/commentary/acts/23.json"
+    },
+    "113": {
+      "text": "How, O wretch, canst thou look for money from a man who preaches the contrary?",
+      "author": "St. John Chrysostom",
+      "work": "Homilies on the Acts of the Apostles, Homily 51",
+      "citation": "NPNF1-11",
+      "from": "data/bible/commentary/acts/24.json"
+    },
+    "114": {
+      "text": "O what an abundance of justifications! After all these repeated examinations, the governor finds not how he may condemn him.",
+      "author": "St. John Chrysostom",
+      "work": "Homilies on the Acts of the Apostles, Homily 52",
+      "citation": "NPNF1-11",
+      "from": "data/bible/commentary/acts/25.json"
+    },
+    "115": {
+      "text": "Though the holy man be in bonds, he does greater works than those who are free.",
+      "author": "St. John Chrysostom",
+      "work": "Homilies on the Acts of the Apostles, Homily 53",
+      "citation": "NPNF1-11",
+      "from": "data/bible/commentary/acts/26.json"
+    },
+    "117": {
+      "text": "Let us therefore return thanks to God for all these things: for He does not suffer them to happen at random, but for the benefit of our souls.",
+      "author": "St. John Chrysostom",
+      "work": "Homilies on the Acts of the Apostles, Homily 54",
+      "citation": "NPNF1-11",
+      "from": "data/bible/commentary/acts/28.json"
+    },
+    "118": {
+      "text": "The knowledge of Himself God placed in men from the beginning. But this knowledge they invested stocks and stones with, and so dealt unrighteously to the truth, as far at least as they might.",
+      "author": "St. John Chrysostom",
+      "work": "Homilies on the Epistle to the Romans, Homily 3",
+      "citation": "NPNF1-11",
+      "at": {
+        "work": "john-chrysostom/homilies-on-romans",
+        "section": 3,
+        "paragraph": 4,
+        "place": "Homily 3, Romans 1:18"
+      },
+      "from": "data/bible/commentary/romans/1.json"
+    },
+    "119": {
+      "text": "But when we are in words lovers of wisdom, but in deeds behave unseemly, with what looks shall we face them? with what lips shall we discourse concerning doctrines?",
+      "author": "St. John Chrysostom",
+      "work": "Homilies on the Epistle to the Romans, Homily 6",
+      "citation": "NPNF1-11",
+      "at": {
+        "work": "john-chrysostom/homilies-on-romans",
+        "section": 6,
+        "paragraph": 40,
+        "place": "Homily 6, Romans 2:17, 18"
+      },
+      "from": "data/bible/commentary/romans/2.json"
+    },
+    "120": {
+      "text": "Himself poured forth His Blood for His enemies: but we not even money for our benefactor. He did so with His Blood that was His own: we will not even with money that is not ours. He did it before us, we not even after His example.",
+      "author": "St. John Chrysostom",
+      "work": "Homilies on the Epistle to the Romans, Homily 7",
+      "citation": "NPNF1-11",
+      "at": {
+        "work": "john-chrysostom/homilies-on-romans",
+        "section": 7,
+        "paragraph": 29,
+        "place": "Homily 7, Romans 3:9-18"
+      },
+      "from": "data/bible/commentary/romans/3.json"
+    },
+    "121": {
+      "text": "From this we learn, that if God promise even countless impossibilities, and he that heareth doth not receive them, it is not the nature of things that is to blame, but the unreasonableness of him who receiveth them not.",
+      "author": "St. John Chrysostom",
+      "work": "Homilies on the Epistle to the Romans, Homily 8",
+      "citation": "NPNF1-11",
+      "at": {
+        "work": "john-chrysostom/homilies-on-romans",
+        "section": 8,
+        "paragraph": 31,
+        "place": "Homily 8, Romans 4:1, 2"
+      },
+      "from": "data/bible/commentary/romans/4.json"
+    },
+    "122": {
+      "text": "If sin had so extensive effects, and the sin of one man too; how can grace, and that the grace of God, not the Father only, but also the Son, do otherwise than be the more abundant of the two?",
+      "author": "St. John Chrysostom",
+      "work": "Homilies on the Epistle to the Romans, Homily 10",
+      "citation": "NPNF1-11",
+      "at": {
+        "work": "john-chrysostom/homilies-on-romans",
+        "section": 10,
+        "paragraph": 6,
+        "place": "Homily 10, Romans 5:12"
+      },
+      "from": "data/bible/commentary/romans/5.json"
+    },
+    "123": {
+      "text": "Ye ought therefore to marshal yourselves under Him with as much cheerful readiness, as men would who had been made alive from being dead.",
+      "author": "St. John Chrysostom",
+      "work": "Homilies on the Epistle to the Romans, Homily 11",
+      "citation": "NPNF1-11",
+      "at": {
+        "work": "john-chrysostom/homilies-on-romans",
+        "section": 11,
+        "paragraph": 20,
+        "place": "Homily 11, Romans 6:5"
+      },
+      "from": "data/bible/commentary/romans/6.json"
+    },
+    "124": {
+      "text": "Do you notice what a great thraldom that of vice is, in that it overcomes even a mind that delighted in the Law?",
+      "author": "St. John Chrysostom",
+      "work": "Homilies on the Epistle to the Romans, Homily 13",
+      "citation": "NPNF1-11",
+      "at": {
+        "work": "john-chrysostom/homilies-on-romans",
+        "section": 13,
+        "paragraph": 17,
+        "place": "Homily 13, Romans 7:14"
+      },
+      "from": "data/bible/commentary/romans/7.json"
+    },
+    "125": {
+      "text": "Who then is to condemn us, since God crowns us, and Christ was put to death for us, and not only was put to death, but also after this intercedeth for us?",
+      "author": "St. John Chrysostom",
+      "work": "Homilies on the Epistle to the Romans, Homily 15",
+      "citation": "NPNF1-11",
+      "at": {
+        "work": "john-chrysostom/homilies-on-romans",
+        "section": 15,
+        "paragraph": 15,
+        "place": "Homily 15, Romans 8:28"
+      },
+      "from": "data/bible/commentary/romans/8.json"
+    },
+    "126": {
+      "text": "God, however, being very good, shows the same kindness to both. For it was not those in a state of salvation only to whom He showed mercy, but also Pharaoh, as far as His part went.",
+      "author": "St. John Chrysostom",
+      "work": "Homilies on the Epistle to the Romans, Homily 16",
+      "citation": "NPNF1-11",
+      "at": {
+        "work": "john-chrysostom/homilies-on-romans",
+        "section": 16,
+        "paragraph": 39,
+        "place": "Homily 16, Romans 9:1"
+      },
+      "from": "data/bible/commentary/romans/9.json"
+    },
+    "127": {
+      "text": "If thou believest in Him, then thou hast fulfilled it also, and much more than it commanded. For thou hast received a much greater righteousness.",
+      "author": "St. John Chrysostom",
+      "work": "Homilies on the Epistle to the Romans, Homily 17",
+      "citation": "NPNF1-11",
+      "at": {
+        "work": "john-chrysostom/homilies-on-romans",
+        "section": 17,
+        "paragraph": 9,
+        "place": "Homily 17, Romans 10:1"
+      },
+      "from": "data/bible/commentary/romans/10.json"
+    },
+    "128": {
+      "text": "If in anger with them He gave other men so great gifts, when He is reconciled to them what will He not give?",
+      "author": "St. John Chrysostom",
+      "work": "Homilies on the Epistle to the Romans, Homily 19",
+      "citation": "NPNF1-11",
+      "at": {
+        "work": "john-chrysostom/homilies-on-romans",
+        "section": 19,
+        "paragraph": 19,
+        "place": "Homily 19, Romans 11:7"
+      },
+      "from": "data/bible/commentary/romans/11.json"
+    },
+    "129": {
+      "text": "Do not wait to be loved by another, but leap at it thyself, and be the first to begin it. For so wilt thou reap the wages of his love also.",
+      "author": "St. John Chrysostom",
+      "work": "Homilies on the Epistle to the Romans, Homily 21",
+      "citation": "NPNF1-11",
+      "at": {
+        "work": "john-chrysostom/homilies-on-romans",
+        "section": 21,
+        "paragraph": 12,
+        "place": "Homily 21, Romans 12:4, 5"
+      },
+      "from": "data/bible/commentary/romans/12.json"
+    },
+    "130": {
+      "text": "Love therefore thy brother. For if from his friendship thou gainest so much as to fulfil the whole Law, thou owest him love as being benefited by him.",
+      "author": "St. John Chrysostom",
+      "work": "Homilies on the Epistle to the Romans, Homily 23",
+      "citation": "NPNF1-11",
+      "at": {
+        "work": "john-chrysostom/homilies-on-romans",
+        "section": 23,
+        "paragraph": 18,
+        "place": "Homily 23, Romans 13:1"
+      },
+      "from": "data/bible/commentary/romans/13.json"
+    },
+    "131": {
+      "text": "Let us then yield him this, and in all respects bear his burdens, as it is not of our own sins only that we shall have to give an account, but for those also wherein we cause others to offend.",
+      "author": "St. John Chrysostom",
+      "work": "Homilies on the Epistle to the Romans, Homily 25",
+      "citation": "NPNF1-11",
+      "at": {
+        "work": "john-chrysostom/homilies-on-romans",
+        "section": 25,
+        "paragraph": 19,
+        "place": "Homily 25, Romans 14:1, 2"
+      },
+      "from": "data/bible/commentary/romans/14.json"
+    },
+    "132": {
+      "text": "And a glory it is to God that they be blended together, be united, praise with one mind, bear the weaker, neglect not the member that is broken off.",
+      "author": "St. John Chrysostom",
+      "work": "Homilies on the Epistle to the Romans, Homily 28",
+      "citation": "NPNF1-11",
+      "at": {
+        "work": "john-chrysostom/homilies-on-romans",
+        "section": 28,
+        "paragraph": 3,
+        "place": "Homily 28, Romans 15:8"
+      },
+      "from": "data/bible/commentary/romans/15.json"
+    },
+    "133": {
+      "text": "You see that they are no small gains that we earn from these addresses, and what treasures we should have passed hastily over, unless in this part of the Epistle also we had examined it with accuracy, such, I mean, as was in our power.",
+      "author": "St. John Chrysostom",
+      "work": "Homilies on the Epistle to the Romans, Homily 31",
+      "citation": "NPNF1-11",
+      "at": {
+        "work": "john-chrysostom/homilies-on-romans",
+        "section": 31,
+        "paragraph": 31,
+        "place": "Homily 31, Romans 16:5"
+      },
+      "from": "data/bible/commentary/romans/16.json"
+    },
+    "134": {
+      "text": "You see now, it is proof of great power and wisdom, to convince by means of the things which tell directly against us. Thus the Cross seems to be matter of offence; and yet far from offending, it even attracts.",
+      "author": "St. John Chrysostom",
+      "work": "Homilies on the First Epistle to the Corinthians, Homily 4",
+      "citation": "NPNF1-12",
+      "at": {
+        "work": "john-chrysostom/homilies-on-1-corinthians",
+        "section": 4,
+        "paragraph": 15,
+        "place": "Homily 4, 1 Corinthians 1:18-20"
+      },
+      "from": "data/bible/commentary/1-corinthians/1.json"
+    },
+    "135": {
+      "text": "What kind of things then are these? That by what is esteemed to be the foolishness of preaching He shall overcome the world, and the nations shall be brought in, and there shall be reconciliation of God with men, and so great blessings shall come upon us!",
+      "author": "St. John Chrysostom",
+      "work": "Homilies on the First Epistle to the Corinthians, Homily 7",
+      "citation": "NPNF1-12",
+      "at": {
+        "work": "john-chrysostom/homilies-on-1-corinthians",
+        "section": 7,
+        "paragraph": 24,
+        "place": "Homily 7, 1 Corinthians 2:6, 7"
+      },
+      "from": "data/bible/commentary/1-corinthians/2.json"
+    },
+    "136": {
+      "text": "Let us not then merely keep hold of Christ, but let us be cemented to Him, for if we stand apart, we perish.",
+      "author": "St. John Chrysostom",
+      "work": "Homilies on the First Epistle to the Corinthians, Homily 8",
+      "citation": "NPNF1-12",
+      "at": {
+        "work": "john-chrysostom/homilies-on-1-corinthians",
+        "section": 8,
+        "paragraph": 37,
+        "place": "Homily 8, 1 Corinthians 3:1-3"
+      },
+      "from": "data/bible/commentary/1-corinthians/3.json"
+    },
+    "137": {
+      "text": "One, because, though we be conscious to ourselves of nothing, still we need one to reprove our sins with strictness. Another, because the most part of the things which are done escape us and are concealed.",
+      "author": "St. John Chrysostom",
+      "work": "Homilies on the First Epistle to the Corinthians, Homily 11",
+      "citation": "NPNF1-12",
+      "at": {
+        "work": "john-chrysostom/homilies-on-1-corinthians",
+        "section": 11,
+        "paragraph": 13,
+        "place": "Homily 11, 1 Corinthians 4:3, 4"
+      },
+      "from": "data/bible/commentary/1-corinthians/4.json"
+    },
+    "138": {
+      "text": "For when the first transgressor escapes punishment, speedily will others also commit the same faults.",
+      "author": "St. John Chrysostom",
+      "work": "Homilies on the First Epistle to the Corinthians, Homily 15",
+      "citation": "NPNF1-12",
+      "at": {
+        "work": "john-chrysostom/homilies-on-1-corinthians",
+        "section": 15,
+        "paragraph": 26,
+        "place": "Homily 15, 1 Corinthians 5:1, 2"
+      },
+      "from": "data/bible/commentary/1-corinthians/5.json"
+    },
+    "139": {
+      "text": "For if our body be a member of Christ, and Christ be risen, the body also shall surely follow the Head.",
+      "author": "St. John Chrysostom",
+      "work": "Homilies on the First Epistle to the Corinthians, Homily 17",
+      "citation": "NPNF1-12",
+      "at": {
+        "work": "john-chrysostom/homilies-on-1-corinthians",
+        "section": 17,
+        "paragraph": 10,
+        "place": "Homily 17, 1 Corinthians 6:12"
+      },
+      "from": "data/bible/commentary/1-corinthians/6.json"
+    },
+    "140": {
+      "text": "It is possible then to live with a wife and yet give heed unto prayer. But by continence prayer is made more perfect.",
+      "author": "St. John Chrysostom",
+      "work": "Homilies on the First Epistle to the Corinthians, Homily 19",
+      "citation": "NPNF1-12",
+      "at": {
+        "work": "john-chrysostom/homilies-on-1-corinthians",
+        "section": 19,
+        "paragraph": 11,
+        "place": "Homily 19, 1 Corinthians 7:1, 2"
+      },
+      "from": "data/bible/commentary/1-corinthians/7.json"
+    },
+    "141": {
+      "text": "For although you may know something more than your neighbor, if you love him you will not set yourself up but lead him also to the same.",
+      "author": "St. John Chrysostom",
+      "work": "Homilies on the First Epistle to the Corinthians, Homily 20",
+      "citation": "NPNF1-12",
+      "at": {
+        "work": "john-chrysostom/homilies-on-1-corinthians",
+        "section": 20,
+        "paragraph": 8,
+        "place": "Homily 20, 1 Corinthians 8:1"
+      },
+      "from": "data/bible/commentary/1-corinthians/8.json"
+    },
+    "142": {
+      "text": "Knowest thou not that God enacted not almsgiving so much for the sake of the poor as for the sake of the persons themselves who bestow?",
+      "author": "St. John Chrysostom",
+      "work": "Homilies on the First Epistle to the Corinthians, Homily 21",
+      "citation": "NPNF1-12",
+      "at": {
+        "work": "john-chrysostom/homilies-on-1-corinthians",
+        "section": 21,
+        "paragraph": 58,
+        "place": "Homily 21, 1 Corinthians 9:1"
+      },
+      "from": "data/bible/commentary/1-corinthians/9.json"
+    },
+    "143": {
+      "text": "Jonah again, not seeking the profit of many, but his own, was in danger even of perishing: and while the city stood fast, he himself was tossed about and overwhelmed in the sea.",
+      "author": "St. John Chrysostom",
+      "work": "Homilies on the First Epistle to the Corinthians, Homily 25",
+      "citation": "NPNF1-12",
+      "at": {
+        "work": "john-chrysostom/homilies-on-1-corinthians",
+        "section": 25,
+        "paragraph": 25,
+        "place": "Homily 25, 1 Corinthians 10:25"
+      },
+      "from": "data/bible/commentary/1-corinthians/10.json"
+    },
+    "144": {
+      "text": "Much therefore as they who then pierced Him, pierced Him not that they might drink but that they might shed His blood: so likewise doth he that cometh for it unworthily and reaps no profit thereby.",
+      "author": "St. John Chrysostom",
+      "work": "Homilies on the First Epistle to the Corinthians, Homily 27",
+      "citation": "NPNF1-12",
+      "at": {
+        "work": "john-chrysostom/homilies-on-1-corinthians",
+        "section": 27,
+        "paragraph": 43,
+        "place": "Homily 27, 1 Corinthians 11:17"
+      },
+      "from": "data/bible/commentary/1-corinthians/11.json"
+    },
+    "145": {
+      "text": "The reason is that every one of our members hath both a working of its own and one which is common; and likewise there is in us a beauty which is peculiar and another which is common.",
+      "author": "St. John Chrysostom",
+      "work": "Homilies on the First Epistle to the Corinthians, Homily 30",
+      "citation": "NPNF1-12",
+      "at": {
+        "work": "john-chrysostom/homilies-on-1-corinthians",
+        "section": 30,
+        "paragraph": 29,
+        "place": "Homily 30, 1 Corinthians 12:12"
+      },
+      "from": "data/bible/commentary/1-corinthians/12.json"
+    },
+    "146": {
+      "text": "You may talk of armies, money, horses, walls, arms, or any thing else whatsoever; you will name nothing like long-suffering.",
+      "author": "St. John Chrysostom",
+      "work": "Homilies on the First Epistle to the Corinthians, Homily 33",
+      "citation": "NPNF1-12",
+      "at": {
+        "work": "john-chrysostom/homilies-on-1-corinthians",
+        "section": 33,
+        "paragraph": 2,
+        "place": "Homily 33, 1 Corinthians 13:4"
+      },
+      "from": "data/bible/commentary/1-corinthians/13.json"
+    },
+    "147": {
+      "text": "Ask accordingly not to have the gift of tongue only, but also of interpretation, that thou mayest become useful unto all, and not shut up thy gift in thyself alone.",
+      "author": "St. John Chrysostom",
+      "work": "Homilies on the First Epistle to the Corinthians, Homily 35",
+      "citation": "NPNF1-12",
+      "at": {
+        "work": "john-chrysostom/homilies-on-1-corinthians",
+        "section": 35,
+        "paragraph": 33,
+        "place": "Homily 35, 1 Corinthians 14:1"
+      },
+      "from": "data/bible/commentary/1-corinthians/14.json"
+    },
+    "148": {
+      "text": "Since in fact both are alike evils, both despair and slothfulness; the one quickly casting a man down from the very arch of the heavens; the other not suffering the fallen to rise again.",
+      "author": "St. John Chrysostom",
+      "work": "Homilies on the First Epistle to the Corinthians, Homily 38",
+      "citation": "NPNF1-12",
+      "at": {
+        "work": "john-chrysostom/homilies-on-1-corinthians",
+        "section": 38,
+        "paragraph": 49,
+        "place": "Homily 38, 1 Corinthians 15:1, 2"
+      },
+      "from": "data/bible/commentary/1-corinthians/15.json"
+    },
+    "149": {
+      "text": "Let us then, when we desire to effect any thing great and noble, not regard this, the greatness of the labor which it brings, but let us rather look to the gain.",
+      "author": "St. John Chrysostom",
+      "work": "Homilies on the First Epistle to the Corinthians, Homily 43",
+      "citation": "NPNF1-12",
+      "at": {
+        "work": "john-chrysostom/homilies-on-1-corinthians",
+        "section": 43,
+        "paragraph": 26,
+        "place": "Homily 43, 1 Corinthians 16:1"
+      },
+      "from": "data/bible/commentary/1-corinthians/16.json"
+    },
+    "150": {
+      "text": "If we be but a little refreshed, this availeth for encouragement to you; and if we be ourselves comforted, this becometh your comfort. For as ye consider our sufferings your own, so do ye also make our comfort your own.",
+      "author": "St. John Chrysostom",
+      "work": "Homilies on the Second Epistle to the Corinthians, Homily 2",
+      "citation": "NPNF1-12",
+      "from": "data/bible/commentary/2-corinthians/1.json"
+    },
+    "151": {
+      "text": "How long, when God lifteth us to heaven, take we pains to be trailed along the ground?",
+      "author": "St. John Chrysostom",
+      "work": "Homilies on the Second Epistle to the Corinthians, Homily 5",
+      "citation": "NPNF1-12",
+      "from": "data/bible/commentary/2-corinthians/2.json"
+    },
+    "152": {
+      "text": "What letters would have done to commend and gain respect for us, that ye do both as seen and heard of; for the virtue of the disciples is wont to adorn and to commend the teacher more than any letter.",
+      "author": "St. John Chrysostom",
+      "work": "Homilies on the Second Epistle to the Corinthians, Homily 6",
+      "citation": "NPNF1-12",
+      "from": "data/bible/commentary/2-corinthians/3.json"
+    },
+    "153": {
+      "text": "For both the greatness of the things given and the weakness of them that receive show His power; in that He not only gave great things, but also to those who are little.",
+      "author": "St. John Chrysostom",
+      "work": "Homilies on the Second Epistle to the Corinthians, Homily 8",
+      "citation": "NPNF1-12",
+      "from": "data/bible/commentary/2-corinthians/4.json"
+    },
+    "154": {
+      "text": "Nothing of ourselves. For remission of sins and adoption and unspeakable glory are given to us by Him.",
+      "author": "St. John Chrysostom",
+      "work": "Homilies on the Second Epistle to the Corinthians, Homily 11",
+      "citation": "NPNF1-12",
+      "from": "data/bible/commentary/2-corinthians/5.json"
+    },
+    "155": {
+      "text": "What promises? That we should be temples of God, sons and daughters, have Him indwelling, and walking in us, be His people, have Him for our God and Father.",
+      "author": "St. John Chrysostom",
+      "work": "Homilies on the Second Epistle to the Corinthians, Homily 13",
+      "citation": "NPNF1-12",
+      "from": "data/bible/commentary/2-corinthians/6.json"
+    },
+    "156": {
+      "text": "For it is the part of humanity, not to humor the sick in every thing nor to flatter their unseasonable desires.",
+      "author": "St. John Chrysostom",
+      "work": "Homilies on the Second Epistle to the Corinthians, Homily 14",
+      "citation": "NPNF1-12",
+      "from": "data/bible/commentary/2-corinthians/7.json"
+    },
+    "157": {
+      "text": "If thou believest not that poverty is productive of riches, have in mind thy Lord and thou wilt doubt no longer. For had He not become poor, thou wouldest not have become rich.",
+      "author": "St. John Chrysostom",
+      "work": "Homilies on the Second Epistle to the Corinthians, Homily 17",
+      "citation": "NPNF1-12",
+      "from": "data/bible/commentary/2-corinthians/8.json"
+    },
+    "158": {
+      "text": "Let us not therefore nicely calculate, but sow with a profuse hand.",
+      "author": "St. John Chrysostom",
+      "work": "Homilies on the Second Epistle to the Corinthians, Homily 19",
+      "citation": "NPNF1-12",
+      "from": "data/bible/commentary/2-corinthians/9.json"
+    },
+    "159": {
+      "text": "For even if we have offended in ten thousand things, it is possible to recover ourselves so long as we are here.",
+      "author": "St. John Chrysostom",
+      "work": "Homilies on the Second Epistle to the Corinthians, Homily 22",
+      "citation": "NPNF1-12",
+      "from": "data/bible/commentary/2-corinthians/10.json"
+    },
+    "160": {
+      "text": "For if we suffer evil at the hands of men, we cut off no small part of our debt by bearing what is done to us nobly.",
+      "author": "St. John Chrysostom",
+      "work": "Homilies on the Second Epistle to the Corinthians, Homily 23",
+      "citation": "NPNF1-12",
+      "from": "data/bible/commentary/2-corinthians/11.json"
+    },
+    "161": {
+      "text": "For it is a serious charge, the not loving even; but becomes more serious, when although one is loved he loveth not.",
+      "author": "St. John Chrysostom",
+      "work": "Homilies on the Second Epistle to the Corinthians, Homily 27",
+      "citation": "NPNF1-12",
+      "from": "data/bible/commentary/2-corinthians/12.json"
+    },
+    "162": {
+      "text": "For before indeed He loved us when hating Him, and reconciled us who were His enemies; but henceforth He wishes to love us as loving Him.",
+      "author": "St. John Chrysostom",
+      "work": "Homilies on the Second Epistle to the Corinthians, Homily 30",
+      "citation": "NPNF1-12",
+      "from": "data/bible/commentary/2-corinthians/13.json"
+    },
+    "163": {
+      "text": "My account is to God, and all my acts are with a view to that inquisition, nor am I so miserably abandoned as to pervert my doctrine, seeing that I am to justify what I preach before the Lord of all.",
+      "author": "St. John Chrysostom",
+      "work": "Commentary on Galatians",
+      "citation": "NPNF1-13",
+      "at": {
+        "work": "john-chrysostom/commentary-on-galatians",
+        "section": 1,
+        "paragraph": 43,
+        "place": "Chapter I, Galatians 1"
+      },
+      "from": "data/bible/commentary/galatians/1.json"
+    },
+    "164": {
+      "text": "He shows the wonder to be twofold; that by Christ both the dead was begotten into life, and that by means of death.",
+      "author": "St. John Chrysostom",
+      "work": "Commentary on Galatians",
+      "citation": "NPNF1-13",
+      "at": {
+        "work": "john-chrysostom/commentary-on-galatians",
+        "section": 2,
+        "paragraph": 57,
+        "place": "Chapter II, Galatians 2"
+      },
+      "from": "data/bible/commentary/galatians/2.json"
+    },
+    "165": {
+      "text": "If Christ be the Son of God, and thou hast put on Him, thou who hast the Son within thee, and art fashioned after His pattern, hast been brought into one kindred and nature with Him.",
+      "author": "St. John Chrysostom",
+      "work": "Commentary on Galatians",
+      "citation": "NPNF1-13",
+      "at": {
+        "work": "john-chrysostom/commentary-on-galatians",
+        "section": 3,
+        "paragraph": 62,
+        "place": "Chapter III, Galatians 3"
+      },
+      "from": "data/bible/commentary/galatians/3.json"
+    },
+    "166": {
+      "text": "Had not we been first made sons, we could not have called Him Father. If then grace hath made us freemen instead of slaves, men instead of children, heirs and sons instead of aliens, is it not utter absurdity and stupidity to desert this grace, and to turn away backwards?",
+      "author": "St. John Chrysostom",
+      "work": "Commentary on Galatians",
+      "citation": "NPNF1-13",
+      "at": {
+        "work": "john-chrysostom/commentary-on-galatians",
+        "section": 4,
+        "paragraph": 5,
+        "place": "Chapter IV, Galatians 4"
+      },
+      "from": "data/bible/commentary/galatians/4.json"
+    },
+    "167": {
+      "text": "Christ hath delivered us, he says, from the yoke of bondage, He hath left us free to act as we will, not that we may use our liberty for evil, but that we may have ground for receiving a higher reward, advancing to a higher philosophy.",
+      "author": "St. John Chrysostom",
+      "work": "Commentary on Galatians",
+      "citation": "NPNF1-13",
+      "at": {
+        "work": "john-chrysostom/commentary-on-galatians",
+        "section": 5,
+        "paragraph": 34,
+        "place": "Chapter V, Galatians 5"
+      },
+      "from": "data/bible/commentary/galatians/5.json"
+    },
+    "168": {
+      "text": "If servants who only receive praise from their masters, to whom they are akin by nature, are elated thereby, how must we not boast when the Master who is very God is not ashamed of the Cross which was endured for us.",
+      "author": "St. John Chrysostom",
+      "work": "Commentary on Galatians",
+      "citation": "NPNF1-13",
+      "at": {
+        "work": "john-chrysostom/commentary-on-galatians",
+        "section": 6,
+        "paragraph": 31,
+        "place": "Chapter VI, Galatians 6"
+      },
+      "from": "data/bible/commentary/galatians/6.json"
+    },
+    "169": {
+      "text": "The Divine nature knoweth no want. And wherefore then would He have us praise and glorify Him? It is that our love towards Him may be kindled more fervently within us.",
+      "author": "St. John Chrysostom",
+      "work": "Homilies on the Epistle to the Ephesians, Homily 1",
+      "citation": "NPNF1-13",
+      "from": "data/bible/commentary/ephesians/1.json"
+    },
+    "170": {
+      "text": "Think then, how vast an evil is it, when God hath employed so many methods to reconcile us, and hath effected it, that we should again fall back into enmity!",
+      "author": "St. John Chrysostom",
+      "work": "Homilies on the Epistle to the Ephesians, Homily 5",
+      "citation": "NPNF1-13",
+      "from": "data/bible/commentary/ephesians/2.json"
+    },
+    "171": {
+      "text": "Be it our care therefore, beloved, to understand the love of God. A great thing indeed is this; nothing is so beneficial to us, nothing so deeply touches us: more availing this to convince our souls than the fear of hell itself.",
+      "author": "St. John Chrysostom",
+      "work": "Homilies on the Epistle to the Ephesians, Homily 7",
+      "citation": "NPNF1-13",
+      "from": "data/bible/commentary/ephesians/3.json"
+    },
+    "172": {
+      "text": "Let us give thanks to God for all things. Let us beseech Him that He will not declare us unworthy of the gifts offered to us, and let us ourselves withal endeavor to contribute our own part, that we may teach not only by speaking, but by acting also.",
+      "author": "St. John Chrysostom",
+      "work": "Homilies on the Epistle to the Ephesians, Homily 12",
+      "citation": "NPNF1-13",
+      "from": "data/bible/commentary/ephesians/4.json"
+    },
+    "173": {
+      "text": "Let us therefore give thanks not only for blessings which we see, but also for those which we see not, and for those which we receive against our will. For many are the blessings He bestows upon us, without our desire, without our knowledge.",
+      "author": "St. John Chrysostom",
+      "work": "Homilies on the Epistle to the Ephesians, Homily 19",
+      "citation": "NPNF1-13",
+      "from": "data/bible/commentary/ephesians/5.json"
+    },
+    "174": {
+      "text": "Do not imagine that the monk alone stands in need of these lessons from Scripture. Of all others, the children just about to enter into the world specially need them.",
+      "author": "St. John Chrysostom",
+      "work": "Homilies on the Epistle to the Ephesians, Homily 21",
+      "citation": "NPNF1-13",
+      "from": "data/bible/commentary/ephesians/6.json"
+    },
+    "175": {
+      "text": "Be not then ashamed of the gift of grace, for it is more wonderful than the power of raising the dead, or working miracles; for there I am a debtor, but here I have Christ for my debtor.",
+      "author": "St. John Chrysostom",
+      "work": "Homilies on the Epistle to the Philippians, Homily 4",
+      "citation": "NPNF1-13",
+      "at": {
+        "work": "john-chrysostom/homilies-on-philippians",
+        "section": 4,
+        "paragraph": 15,
+        "place": "Homily 4, Philippians 1:22-26"
+      },
+      "from": "data/bible/commentary/philippians/1.json"
+    },
+    "176": {
+      "text": "If I can obtain comfort from you, if I can obtain any consolation from our love, if I can communicate with you in the Spirit, if I can have fellowship with you in the Lord, if I can find mercy and compassion at your hands, show by your love the return of all this.",
+      "author": "St. John Chrysostom",
+      "work": "Homilies on the Epistle to the Philippians, Homily 5",
+      "citation": "NPNF1-13",
+      "at": {
+        "work": "john-chrysostom/homilies-on-philippians",
+        "section": 5,
+        "paragraph": 2,
+        "place": "Homily 5, Philippians 2:1-4"
+      },
+      "from": "data/bible/commentary/philippians/2.json"
+    },
+    "177": {
+      "text": "Let us weep now, and not weep then, at our evil lot. This weeping is of virtue, that of unprofitable repentance; let us afflict ourselves now, that we may not then; for it is not the same thing to be afflicted here and there.",
+      "author": "St. John Chrysostom",
+      "work": "Homilies on the Epistle to the Philippians, Homily 13",
+      "citation": "NPNF1-13",
+      "at": {
+        "work": "john-chrysostom/homilies-on-philippians",
+        "section": 13,
+        "paragraph": 12,
+        "place": "Homily 13, Philippians 3:18-21"
+      },
+      "from": "data/bible/commentary/philippians/3.json"
+    },
+    "178": {
+      "text": "This joy is not contrary to that grief, but from that grief it too is born. For he who grieveth for his own faults, and confesseth them, rejoiceth. Moreover, it is possible to grieve for our own sins, and yet to rejoice in Christ.",
+      "author": "St. John Chrysostom",
+      "work": "Homilies on the Epistle to the Philippians, Homily 14",
+      "citation": "NPNF1-13",
+      "at": {
+        "work": "john-chrysostom/homilies-on-philippians",
+        "section": 14,
+        "paragraph": 1,
+        "place": "Homily 14, Philippians 4:4-7"
+      },
+      "from": "data/bible/commentary/philippians/4.json"
+    },
+    "179": {
+      "text": "Seeing we have come to enjoy so great a benefit, we ought to be ever mindful of it, and continually to turn in our minds the free gift of God, and to reflect upon what we have been delivered from, what we have obtained; and so we shall be thankful; so we shall heighten our love toward Him.",
+      "author": "St. John Chrysostom",
+      "work": "Homilies on the Epistle to the Colossians, Homily 2",
+      "citation": "NPNF1-13",
+      "at": {
+        "work": "john-chrysostom/homilies-on-colossians",
+        "section": 2,
+        "paragraph": 12,
+        "place": "Homily 2, Colossians 1:9, 10"
+      },
+      "from": "data/bible/commentary/colossians/1.json"
+    },
+    "180": {
+      "text": "All the Church, so long as she holds The Head, increaseth; because here is no more passion of pride and vainglory, nor invention of human fancy.",
+      "author": "St. John Chrysostom",
+      "work": "Homilies on the Epistle to the Colossians, Homily 7",
+      "citation": "NPNF1-13",
+      "at": {
+        "work": "john-chrysostom/homilies-on-colossians",
+        "section": 7,
+        "paragraph": 1,
+        "place": "Homily 7, Colossians 2:16-19"
+      },
+      "from": "data/bible/commentary/colossians/2.json"
+    },
+    "181": {
+      "text": "If on man's account indeed thou hast peace, it quickly comes to dissolution, but if on God's account, never.",
+      "author": "St. John Chrysostom",
+      "work": "Homilies on the Epistle to the Colossians, Homily 8",
+      "citation": "NPNF1-13",
+      "at": {
+        "work": "john-chrysostom/homilies-on-colossians",
+        "section": 8,
+        "paragraph": 27,
+        "place": "Homily 8, Colossians 3:5-7"
+      },
+      "from": "data/bible/commentary/colossians/3.json"
+    },
+    "182": {
+      "text": "Let us not think this a thing to be deprecated, but one to be even exceedingly prayed for; not that others may sin, but that, when they sin, we may be heart-broken for them. Remember we these tears, these bonds.",
+      "author": "St. John Chrysostom",
+      "work": "Homilies on the Epistle to the Colossians, Homily 12",
+      "citation": "NPNF1-13",
+      "at": {
+        "work": "john-chrysostom/homilies-on-colossians",
+        "section": 12,
+        "paragraph": 14,
+        "place": "Homily 12, Colossians 4:12, 13"
+      },
+      "from": "data/bible/commentary/colossians/4.json"
+    },
+    "183": {
+      "text": "Knowing these things, therefore, let us neither despise the prayers of the Saints, nor throw everything upon them: that we may not, on the one hand, be indolent and live carelessly; nor on the other deprive ourselves of a great advantage.",
+      "author": "St. John Chrysostom",
+      "work": "Homilies on the First Epistle to the Thessalonians, Homily 1",
+      "citation": "NPNF1-13",
+      "at": {
+        "work": "john-chrysostom/homilies-on-1-thessalonians",
+        "section": 1,
+        "paragraph": 25,
+        "place": "Homily 1, 1 Thessalonians 1:1-3"
+      },
+      "from": "data/bible/commentary/1-thessalonians/1.json"
+    },
+    "184": {
+      "text": "What can we show that we have suffered for Him? Nothing that we have suffered indeed, but infinite good things that we have received from Him.",
+      "author": "St. John Chrysostom",
+      "work": "Homilies on the First Epistle to the Thessalonians, Homily 3",
+      "citation": "NPNF1-13",
+      "at": {
+        "work": "john-chrysostom/homilies-on-1-thessalonians",
+        "section": 3,
+        "paragraph": 27,
+        "place": "Homily 3, 1 Thessalonians 2:9-12"
+      },
+      "from": "data/bible/commentary/1-thessalonians/2.json"
+    },
+    "185": {
+      "text": "Do you see how he wishes love to be extended, not only toward one another, but everywhere? For this truly is the nature of godly love, that it embraces all.",
+      "author": "St. John Chrysostom",
+      "work": "Homilies on the First Epistle to the Thessalonians, Homily 4",
+      "citation": "NPNF1-13",
+      "at": {
+        "work": "john-chrysostom/homilies-on-1-thessalonians",
+        "section": 4,
+        "paragraph": 19,
+        "place": "Homily 4, 1 Thessalonians 3:5-8"
+      },
+      "from": "data/bible/commentary/1-thessalonians/3.json"
+    },
+    "186": {
+      "text": "The discourse then of the Resurrection was sufficient to comfort him that was grieving. But that which is now said is sufficient also to make the Resurrection eminently worthy of credit.",
+      "author": "St. John Chrysostom",
+      "work": "Homilies on the First Epistle to the Thessalonians, Homily 6",
+      "citation": "NPNF1-13",
+      "at": {
+        "work": "john-chrysostom/homilies-on-1-thessalonians",
+        "section": 6,
+        "paragraph": 8,
+        "place": "Homily 6, 1 Thessalonians 4:9, 10"
+      },
+      "from": "data/bible/commentary/1-thessalonians/4.json"
+    },
+    "187": {
+      "text": "Let us hope therefore for kind and great things, for we have received the principal thing; let us believe, for we have seen an example; let us love, for it is the extreme of madness for one not to love who has been so treated.",
+      "author": "St. John Chrysostom",
+      "work": "Homilies on the First Epistle to the Thessalonians, Homily 9",
+      "citation": "NPNF1-13",
+      "at": {
+        "work": "john-chrysostom/homilies-on-1-thessalonians",
+        "section": 9,
+        "paragraph": 22,
+        "place": "Homily 9, 1 Thessalonians 5:1, 2"
+      },
+      "from": "data/bible/commentary/1-thessalonians/5.json"
+    },
+    "188": {
+      "text": "How are we glorified in Him? Because we have received power from Him, so that we do not at all yield to the evils that are brought upon us. For when temptation happens, at the same time God is glorified, and we too.",
+      "author": "St. John Chrysostom",
+      "work": "Homilies on the Second Epistle to the Thessalonians, Homily 3",
+      "citation": "NPNF1-13",
+      "from": "data/bible/commentary/2-thessalonians/1.json"
+    },
+    "189": {
+      "text": "Why did he not say faith first? Because even after sanctification we have yet need of much faith, that we may not be shaken.",
+      "author": "St. John Chrysostom",
+      "work": "Homilies on the Second Epistle to the Thessalonians, Homily 4",
+      "citation": "NPNF1-13",
+      "from": "data/bible/commentary/2-thessalonians/2.json"
+    },
+    "190": {
+      "text": "Let us bestow therefore with the disposition of a brother, let us admonish with the good will of a brother, not as if we grieved at giving, but as if we grieved for his transgressing the commandment.",
+      "author": "St. John Chrysostom",
+      "work": "Homilies on the Second Epistle to the Thessalonians, Homily 5",
+      "citation": "NPNF1-13",
+      "from": "data/bible/commentary/2-thessalonians/3.json"
+    },
+    "191": {
+      "text": "Our Saviour is not weak, for He is God, and whatever be our dangers they will not overcome us; nor is our hope made ashamed, for it is Christ.",
+      "author": "St. John Chrysostom",
+      "work": "Homilies on the First Epistle to Timothy, Homily 1",
+      "citation": "NPNF1-13",
+      "from": "data/bible/commentary/1-timothy/1.json"
+    },
+    "192": {
+      "text": "Imitate God! if He willeth that all men should be saved, there is reason why one should pray for all, if He hath willed that all should be saved, be thou willing also; and if thou wishest it, pray for it, for wishes lead to prayers.",
+      "author": "St. John Chrysostom",
+      "work": "Homilies on the First Epistle to Timothy, Homily 7",
+      "citation": "NPNF1-13",
+      "from": "data/bible/commentary/1-timothy/2.json"
+    },
+    "193": {
+      "text": "We account it a mark of favor, if a king intrusts a secret to us. But God has committed His mystery to us, yet are we ungrateful to our Benefactor, as if we had not received the greatest benefits.",
+      "author": "St. John Chrysostom",
+      "work": "Homilies on the First Epistle to Timothy, Homily 11",
+      "citation": "NPNF1-13",
+      "from": "data/bible/commentary/1-timothy/3.json"
+    },
+    "194": {
+      "text": "What we need, therefore, is the exercise of the soul. For the exercise of the body hath no profit, but may benefit the body a little, but the exercise of godliness yields fruit and advantage both here and hereafter.",
+      "author": "St. John Chrysostom",
+      "work": "Homilies on the First Epistle to Timothy, Homily 12",
+      "citation": "NPNF1-13",
+      "from": "data/bible/commentary/1-timothy/4.json"
+    },
+    "195": {
+      "text": "What master ever gave his own son for his servant?",
+      "author": "St. John Chrysostom",
+      "work": "Homilies on the First Epistle to Timothy, Homily 16",
+      "citation": "NPNF1-13",
+      "from": "data/bible/commentary/1-timothy/5.json"
+    },
+    "196": {
+      "text": "If we contemplate aright the true riches of eternal life, we shall be able to despise worldly wealth.",
+      "author": "St. John Chrysostom",
+      "work": "Homilies on the First Epistle to Timothy, Homily 17",
+      "citation": "NPNF1-13",
+      "from": "data/bible/commentary/1-timothy/6.json"
+    },
+    "197": {
+      "text": "Thou receivedst from thy forefathers the faith unfeigned. For the praises of our ancestors, when we share in them, redound also to us.",
+      "author": "St. John Chrysostom",
+      "work": "Homilies on the Second Epistle to Timothy, Homily 1",
+      "citation": "NPNF1-13",
+      "from": "data/bible/commentary/2-timothy/1.json"
+    },
+    "198": {
+      "text": "Many of the weaker sort of men give up the effort of faith, and do not endure the deferring of their hope. They seek things present, and form from these their judgment of the future.",
+      "author": "St. John Chrysostom",
+      "work": "Homilies on the Second Epistle to Timothy, Homily 5",
+      "citation": "NPNF1-13",
+      "from": "data/bible/commentary/2-timothy/2.json"
+    },
+    "199": {
+      "text": "In these thou wast nurtured, so that through them thy faith ought to be firm and unshaken. For the root was laid deep, and nourished by length of time, nor will anything subvert it.",
+      "author": "St. John Chrysostom",
+      "work": "Homilies on the Second Epistle to Timothy, Homily 8",
+      "citation": "NPNF1-13",
+      "from": "data/bible/commentary/2-timothy/3.json"
+    },
+    "200": {
+      "text": "There can be no better prayer than this. Grieve not for my departure. The Lord will be with thee.",
+      "author": "St. John Chrysostom",
+      "work": "Homilies on the Second Epistle to Timothy, Homily 10",
+      "citation": "NPNF1-13",
+      "from": "data/bible/commentary/2-timothy/4.json"
+    },
+    "201": {
+      "text": "If therefore any one be irreligious, he will become more so when raised to office; and he who appoints such a ruler will be answerable for all the offenses committed by him, and for the whole people.",
+      "author": "St. John Chrysostom",
+      "work": "Homilies on the Epistle to Titus, Homily 1",
+      "citation": "NPNF1-13",
+      "from": "data/bible/commentary/titus/1.json"
+    },
+    "202": {
+      "text": "Let us then hold fast that hope. Let us be careful of our salvation, let us in all things call upon God, that He may stretch forth His hand to us.",
+      "author": "St. John Chrysostom",
+      "work": "Homilies on the Epistle to Titus, Homily 5",
+      "citation": "NPNF1-13",
+      "from": "data/bible/commentary/titus/2.json"
+    },
+    "203": {
+      "text": "If we have hope in God, we shall be in security, and have ample room, and those who bring us into these straits shall perish.",
+      "author": "St. John Chrysostom",
+      "work": "Homilies on the Epistle to Titus, Homily 6",
+      "citation": "NPNF1-13",
+      "from": "data/bible/commentary/titus/3.json"
+    },
+    "204": {
+      "text": "Let us therefore be stricken with awe at this so great love of Christ. Let us be inflamed with this love-potion. Though a man be low and mean, yet if we hear that he loves us, we are above all things warmed with love towards him, and honor him exceedingly.",
+      "author": "St. John Chrysostom",
+      "work": "Homilies on the Epistle to Philemon, Homily 2",
+      "citation": "NPNF1-13",
+      "from": "data/bible/commentary/philemon/1.json"
+    },
+    "205": {
+      "text": "Herein we shall be like God if we love all men, even our enemies; not, if we work miracles. For we regard even God with admiration when He worketh wonders, yet much more, when He showeth love towards man, when He is long-suffering.",
+      "author": "St. John Chrysostom",
+      "work": "Homilies on the Epistle to the Hebrews, Homily 3",
+      "citation": "NPNF1-14",
+      "at": {
+        "work": "john-chrysostom/homilies-on-hebrews",
+        "section": 3,
+        "paragraph": 47,
+        "place": "Homily 3, Hebrews 1:6-8"
+      },
+      "from": "data/bible/commentary/hebrews/1.json"
+    },
+    "206": {
+      "text": "For the Son is a faithful High Priest, able to deliver from their sins those whose High Priest He is. In order then that He might offer a sacrifice able to purify us, for this cause He has become man.",
+      "author": "St. John Chrysostom",
+      "work": "Homilies on the Epistle to the Hebrews, Homily 5",
+      "citation": "NPNF1-14",
+      "at": {
+        "work": "john-chrysostom/homilies-on-hebrews",
+        "section": 5,
+        "paragraph": 5,
+        "place": "Homily 5, Hebrews 2:16-17"
+      },
+      "from": "data/bible/commentary/hebrews/2.json"
+    },
+    "207": {
+      "text": "What other rest then is there, except the kingdom of Heaven, of which the Sabbath was an image and type?",
+      "author": "St. John Chrysostom",
+      "work": "Homilies on the Epistle to the Hebrews, Homily 6",
+      "citation": "NPNF1-14",
+      "at": {
+        "work": "john-chrysostom/homilies-on-hebrews",
+        "section": 6,
+        "paragraph": 5,
+        "place": "Homily 6, Hebrews 3:7-11"
+      },
+      "from": "data/bible/commentary/hebrews/3.json"
+    },
+    "208": {
+      "text": "Our High Priest endured all things. Therefore He endured first and then ascended, that He might be able to sympathize with us.",
+      "author": "St. John Chrysostom",
+      "work": "Homilies on the Epistle to the Hebrews, Homily 7",
+      "citation": "NPNF1-14",
+      "at": {
+        "work": "john-chrysostom/homilies-on-hebrews",
+        "section": 7,
+        "paragraph": 17,
+        "place": "Homily 7, Hebrews 4:11-13"
+      },
+      "from": "data/bible/commentary/hebrews/4.json"
+    },
+    "209": {
+      "text": "Seest thou that he sets forth nothing else than His care and the exceeding greatness of His love?",
+      "author": "St. John Chrysostom",
+      "work": "Homilies on the Epistle to the Hebrews, Homily 8",
+      "citation": "NPNF1-14",
+      "at": {
+        "work": "john-chrysostom/homilies-on-hebrews",
+        "section": 8,
+        "paragraph": 12,
+        "place": "Homily 8, Hebrews 5:1-3"
+      },
+      "from": "data/bible/commentary/hebrews/5.json"
+    },
+    "210": {
+      "text": "Thou seest that oftentimes unbelief arises not from want of hope only, but also from faintheartedness, and want of patience, not from condemning him who made the promise.",
+      "author": "St. John Chrysostom",
+      "work": "Homilies on the Epistle to the Hebrews, Homily 10",
+      "citation": "NPNF1-14",
+      "at": {
+        "work": "john-chrysostom/homilies-on-hebrews",
+        "section": 10,
+        "paragraph": 28,
+        "place": "Homily 10, Hebrews 6:7, 8"
+      },
+      "from": "data/bible/commentary/hebrews/6.json"
+    },
+    "211": {
+      "text": "Let us then, as many as have been counted worthy of The Seal, as many as have enjoyed The Sacrifice, as many as have partaken of the immortal Table, continue to guard our noble birth and our dignity for falling away is not without danger.",
+      "author": "St. John Chrysostom",
+      "work": "Homilies on the Epistle to the Hebrews, Homily 13",
+      "citation": "NPNF1-14",
+      "at": {
+        "work": "john-chrysostom/homilies-on-hebrews",
+        "section": 13,
+        "paragraph": 30,
+        "place": "Homily 13, Hebrews 7:11-14"
+      },
+      "from": "data/bible/commentary/hebrews/7.json"
+    },
+    "212": {
+      "text": "Do not now, because thou hearest that He sitteth, suppose that His being called High Priest is mere idle talk. For the former, viz. His sitting, belongs to the dignity of the Godhead, but this to His great lovingkindness, and His tender care for us.",
+      "author": "St. John Chrysostom",
+      "work": "Homilies on the Epistle to the Hebrews, Homily 14",
+      "citation": "NPNF1-14",
+      "at": {
+        "work": "john-chrysostom/homilies-on-hebrews",
+        "section": 14,
+        "paragraph": 6,
+        "place": "Homily 14, Hebrews 8:1, 2"
+      },
+      "from": "data/bible/commentary/hebrews/8.json"
+    },
+    "213": {
+      "text": "It follows then that our things are in Heaven, and heavenly things are ours, even though they be accomplished on earth; since although angels are on earth, yet they are called Heavenly.",
+      "author": "St. John Chrysostom",
+      "work": "Homilies on the Epistle to the Hebrews, Homily 16",
+      "citation": "NPNF1-14",
+      "at": {
+        "work": "john-chrysostom/homilies-on-hebrews",
+        "section": 16,
+        "paragraph": 14,
+        "place": "Homily 16, Hebrews 9:15-23"
+      },
+      "from": "data/bible/commentary/hebrews/9.json"
+    },
+    "214": {
+      "text": "Do we not make allowances for ourselves most of all? If we were thus disposed towards our neighbors also, there will never be any remembrance of injuries.",
+      "author": "St. John Chrysostom",
+      "work": "Homilies on the Epistle to the Hebrews, Homily 19",
+      "citation": "NPNF1-14",
+      "at": {
+        "work": "john-chrysostom/homilies-on-hebrews",
+        "section": 19,
+        "paragraph": 18,
+        "place": "Homily 19, Hebrews 10:19-23"
+      },
+      "from": "data/bible/commentary/hebrews/10.json"
+    },
+    "215": {
+      "text": "If therefore we wish to obtain all good things, let us seek the things of God. For as they who seek the things of this world fail both of them and of the others, so they who prefer the things of God, obtain both.",
+      "author": "St. John Chrysostom",
+      "work": "Homilies on the Epistle to the Hebrews, Homily 26",
+      "citation": "NPNF1-14",
+      "at": {
+        "work": "john-chrysostom/homilies-on-hebrews",
+        "section": 26,
+        "paragraph": 46,
+        "place": "Homily 26, Hebrews 11:20-22"
+      },
+      "from": "data/bible/commentary/hebrews/11.json"
+    },
+    "216": {
+      "text": "Let us persuade ourselves that we have sinned. Let us say it not with the tongue only, but also with the mind. Let us not call ourselves sinners, but also count over our sins, going over them each specifically.",
+      "author": "St. John Chrysostom",
+      "work": "Homilies on the Epistle to the Hebrews, Homily 31",
+      "citation": "NPNF1-14",
+      "at": {
+        "work": "john-chrysostom/homilies-on-hebrews",
+        "section": 31,
+        "paragraph": 22,
+        "place": "Homily 31, Hebrews 12:14"
+      },
+      "from": "data/bible/commentary/hebrews/12.json"
+    },
+    "217": {
+      "text": "Let us then stretch our mind towards Heaven, let us be held fast by that desire, let us clothe ourselves with spiritual fire, let us gird ourselves with its flame.",
+      "author": "St. John Chrysostom",
+      "work": "Homilies on the Epistle to the Hebrews, Homily 34",
+      "citation": "NPNF1-14",
+      "at": {
+        "work": "john-chrysostom/homilies-on-hebrews",
+        "section": 34,
+        "paragraph": 38,
+        "place": "Homily 34, Hebrews 13:17"
+      },
+      "from": "data/bible/commentary/hebrews/13.json"
+    },
+    "231": {
+      "text": "Thy life hath not yet shone in perfect brightness, because there are sins in thee; but yet thou hast already begun to be enlightened, because there is in thee the confession of sins.",
+      "author": "St. Augustine",
+      "work": "Homilies on the First Epistle of John, Homily I",
+      "citation": "NPNF1-07",
+      "from": "data/bible/commentary/1-john/1.json"
+    },
+    "232": {
+      "text": "Be not thou a liar, to profess one thing and do another; keep thou the faith, and He keeps His promise. But if thou keep not the faith, thine own self, not He that promised, hath defrauded thee.",
+      "author": "St. Augustine",
+      "work": "Homilies on the First Epistle of John, Homily IV",
+      "citation": "NPNF1-07",
+      "from": "data/bible/commentary/1-john/2.json"
+    },
+    "233": {
+      "text": "Let him question his own heart. If he love his brother the Spirit of God dwelleth in him. Let him see, let him prove himself before the eyes of God, let him see whether there be in him the love of peace and unity, the love of the Church that is spread over the whole earth.",
+      "author": "St. Augustine",
+      "work": "Homilies on the First Epistle of John, Homily VI",
+      "citation": "NPNF1-07",
+      "from": "data/bible/commentary/1-john/3.json"
+    },
+    "234": {
+      "text": "Could we love Him, unless He first loved us? If we were slow to love, let us not be slow to love in return. He first loved us; not even so do we love.",
+      "author": "St. Augustine",
+      "work": "Homilies on the First Epistle of John, Homily VII",
+      "citation": "NPNF1-07",
+      "from": "data/bible/commentary/1-john/4.json"
+    },
+    "235": {
+      "text": "Do thou love, and that with a brotherly love: he is not yet a brother, but thou lovest to the end he may be a brother. Well then, all our love is a brotherly love, towards Christians, towards all His members.",
+      "author": "St. Augustine",
+      "work": "Homilies on the First Epistle of John, Homily X",
+      "citation": "NPNF1-07",
+      "from": "data/bible/commentary/1-john/5.json"
+    },
+    "239": {
+      "text": "Doubtless on account of its rising and setting, and rising again, that He was born and suffered and rose again, therefore the Scripture gave this similitude, likening His face to the glory of the sun.",
+      "author": "St. Victorinus of Pettau",
+      "work": "Commentary on the Apocalypse",
+      "citation": "ANF07",
+      "from": "data/bible/commentary/revelation/1.json"
+    },
+    "240": {
+      "text": "The hidden manna is immortality; the white gem is adoption to be the son of God; the new name written on the stone is \"Christian.\"",
+      "author": "St. Victorinus of Pettau",
+      "work": "Commentary on the Apocalypse",
+      "citation": "ANF07",
+      "from": "data/bible/commentary/revelation/2.json"
+    },
+    "241": {
+      "text": "The habit of saints is set forth; of those, to wit, who are lowly in the world, and unskilled in the Scriptures, and who hold the faith immoveably, and are not at all broken down by any chance, or withdrawn from the faith by any fear.",
+      "author": "St. Victorinus of Pettau",
+      "work": "Commentary on the Apocalypse",
+      "citation": "ANF07",
+      "from": "data/bible/commentary/revelation/3.json"
+    },
+    "242": {
+      "text": "The burning torches of fire signify the gift of the Holy Spirit, that it is given by the wood of the passion.",
+      "author": "St. Victorinus of Pettau",
+      "work": "Commentary on the Apocalypse",
+      "citation": "ANF07",
+      "from": "data/bible/commentary/revelation/4.json"
+    },
+    "243": {
+      "text": "For He is called a lion for the overcoming of death; but for the suffering for men He was led as a lamb to the slaughter.",
+      "author": "St. Victorinus of Pettau",
+      "work": "Commentary on the Apocalypse",
+      "citation": "ANF07",
+      "from": "data/bible/commentary/revelation/5.json"
+    },
+    "244": {
+      "text": "For after the Lord ascended into heaven and opened all things, He sent the Holy Spirit, whose words the preachers sent forth as arrows reaching to the human heart, that they might overcome unbelief.",
+      "author": "St. Victorinus of Pettau",
+      "work": "Commentary on the Apocalypse",
+      "citation": "ANF07",
+      "from": "data/bible/commentary/revelation/6.json"
+    },
+    "245": {
+      "text": "We must not regard the order of what is said, because frequently the Holy Spirit, when He has traversed even to the end of the last times, returns again to the same times, and fills up what He had before failed to say.",
+      "author": "St. Victorinus of Pettau",
+      "work": "Commentary on the Apocalypse",
+      "citation": "ANF07",
+      "from": "data/bible/commentary/revelation/7.json"
+    },
+    "246": {
+      "text": "If by any means, even in the last times, any one should be willing to be converted, any one might even still be saved.",
+      "author": "St. Victorinus of Pettau",
+      "work": "Commentary on the Apocalypse",
+      "citation": "ANF07",
+      "from": "data/bible/commentary/revelation/8.json"
+    },
+    "248": {
+      "text": "To be sweet in the mouth is the reward of the preaching of the speaker, and is most pleasant to the hearers; but it is most bitter both to those that announce it, and to those that persevere in its commandments through suffering.",
+      "author": "St. Victorinus of Pettau",
+      "work": "Commentary on the Apocalypse",
+      "citation": "ANF07",
+      "from": "data/bible/commentary/revelation/10.json"
+    },
+    "249": {
+      "text": "The temple opened is a manifestation of our Lord. For the temple of God is the Son, as He Himself says: \"Destroy this temple, and in three days I will raise it up.\"",
+      "author": "St. Victorinus of Pettau",
+      "work": "Commentary on the Apocalypse",
+      "citation": "ANF07",
+      "from": "data/bible/commentary/revelation/11.json"
+    },
+    "250": {
+      "text": "Moreover, being clothed with the sun intimates the hope of resurrection and the glory of the promise.",
+      "author": "St. Victorinus of Pettau",
+      "work": "Commentary on the Apocalypse",
+      "citation": "ANF07",
+      "from": "data/bible/commentary/revelation/12.json"
+    },
+    "253": {
+      "text": "That is, that they stood stedfastly in the faith upon their baptism, and having their confession in their mouth, that they shall exult in the kingdom before God.",
+      "author": "St. Victorinus of Pettau",
+      "work": "Commentary on the Apocalypse",
+      "citation": "ANF07",
+      "from": "data/bible/commentary/revelation/15.json"
+    },
+    "257": {
+      "text": "The horse, and He that sits upon him, sets forth our Lord coming to His kingdom with the heavenly army.",
+      "author": "St. Victorinus of Pettau",
+      "work": "Commentary on the Apocalypse",
+      "citation": "ANF07",
+      "from": "data/bible/commentary/revelation/19.json"
+    },
+    "258": {
+      "text": "the devil, excluded from the hearts of believers, began to take possession of the wicked, in whose hearts, blinded day by day, he is shut up as if in a profound abyss.",
+      "author": "St. Victorinus of Pettau",
+      "work": "Commentary on the Apocalypse",
+      "citation": "ANF07",
+      "from": "data/bible/commentary/revelation/20.json"
+    },
+    "259": {
+      "text": "I say, in respect of the square city, he shows forth the united multitude of the saints, in whom the faith could by no means waver.",
+      "author": "St. Victorinus of Pettau",
+      "work": "Commentary on the Apocalypse",
+      "citation": "ANF07",
+      "from": "data/bible/commentary/revelation/21.json"
+    }
+  },
   "psalter": {
     "1": {
       "text": "Whoso is in the law, acteth according to the law; whoso is under the law, is acted upon according to the law: the one therefore is free, the other a slave.",

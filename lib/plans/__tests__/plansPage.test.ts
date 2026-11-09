@@ -9,6 +9,8 @@ import path from "node:path";
 import { describe, expect, it } from "vitest";
 
 import { lastRead } from "@/components/plans/PlansClient";
+import { READING_PLANS, getPlan } from "@/lib/plans/plans";
+import { readAloudCover } from "@/lib/readAloud/covers";
 
 const read = (rel: string) => fs.readFileSync(path.resolve(__dirname, "../../..", rel), "utf8");
 const PAGE = read("components/plans/PlansClient.tsx");
@@ -29,9 +31,15 @@ describe("the plan to continue", () => {
 describe("a plan's tile", () => {
   it("wears its first book's cover, streamed and never carried in the apps, or its season's picture", () => {
     expect(PAGE).toContain(
-      "const cover = plan.season ? { src: SEASON_PICTURES[plan.season], fallback: SEASON_PICTURES[plan.season] } : readAloudCover(plan.days[0][0].book);",
+      "const cover = plan.season ? { src: SEASON_PICTURES[plan.season], fallback: SEASON_PICTURES[plan.season] } : readAloudCover(plan.cover ?? plan.days[0][0].book);",
     );
     expect(PAGE).toContain("<CoverArt");
+  });
+
+  it("never wears the same figure as another plan's tile (1.9: the New Testament wears St Paul)", () => {
+    const worn = READING_PLANS.filter((p) => !p.season).map((p) => readAloudCover(p.cover ?? p.days[0][0].book).src);
+    expect(new Set(worn).size).toBe(worn.length);
+    expect(readAloudCover(getPlan("newtestament")!.cover!).nameKey).toBe("readAloud.cover.paul");
   });
 
   it("melts its picture into the tile's ground by a mask, with nothing laid over it", () => {

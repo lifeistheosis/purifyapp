@@ -20,9 +20,15 @@ const guide = en as GuideContent;
 const said = sayings as SayingsContent;
 const squash = (s: string) => s.replace(/\s+/g, " ").trim();
 
+// Plans built with no words of ours (1.9, his yes of 2026-11-09 to the sheet's
+// 19, "built with no new framing to review"): each day is its chapter and a
+// passage of the Fathers, and nothing is written around it.
+const FATHERS_ONLY = new Set(["acts", "newtestament"]);
+
 describe("every day of every plan", () => {
   it("has an intro and its own question in English", () => {
     for (const plan of READING_PLANS) {
+      if (FATHERS_ONLY.has(plan.id)) continue;
       const days = guide[plan.id]?.days ?? [];
       expect(days, plan.id).toHaveLength(plan.days.length);
       days.forEach((d, i) => {
@@ -34,6 +40,7 @@ describe("every day of every plan", () => {
 
   it("has a pool of eight questions per plan, each a question", () => {
     for (const plan of READING_PLANS) {
+      if (FATHERS_ONLY.has(plan.id)) continue;
       const pool = guide[plan.id]?.pool ?? [];
       expect(pool, plan.id).toHaveLength(8);
       for (const q of pool) expect(q.trim().endsWith("?"), q).toBe(true);
@@ -54,6 +61,15 @@ describe("every day of every plan", () => {
     expect(dayGuide(greek, guide, "gospels", 0)).toMatchObject({ intro: "Ο Ματθαίος αρχίζει.", english: true });
     expect(dayGuide(greek, guide, "gospels", 1)?.intro).toBe(guide.gospels?.days?.[1]?.intro);
     expect(dayGuide(greek, guide, "gospels", 1)?.english).toBe(true);
+  });
+
+  it("is none at all for a plan built with no words of ours: no intro, no question, no pool", () => {
+    for (const id of FATHERS_ONLY) {
+      expect(READING_PLANS.some((p) => p.id === id), id).toBe(true);
+      expect(guide[id], id).toBeUndefined();
+      const day = dayGuide(guide, guide, id, 0);
+      expect(day).toEqual({ intro: null, introSources: [], questions: [], english: false });
+    }
   });
 
   it("is nothing for a day the plan does not have", () => {

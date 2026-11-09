@@ -30,6 +30,8 @@ export const PLAN_NAMES: Record<string, string> = {
   psalter: "The Psalter by kathisma",
   gospels: "The four Gospels",
   john: "John in 21 days",
+  acts: "Acts in 28 days",
+  newtestament: "The New Testament in a year",
   proverbs: "Proverbs in a month",
   nativity: "The Nativity Fast",
   holyweek: "Holy Week",

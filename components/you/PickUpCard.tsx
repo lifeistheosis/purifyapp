@@ -42,6 +42,8 @@ const PLAN_NAME: Record<string, string> = {
   psalter: "plans.psalter.name",
   gospels: "plans.gospels.name",
   john: "plans.john.name",
+  acts: "plans.acts.name",
+  newtestament: "plans.newtestament.name",
   proverbs: "plans.proverbs.name",
   // Missing from 1.9's first Nativity build: a reader in the fast's plan was never offered it here.
   nativity: "plans.nativity.name",

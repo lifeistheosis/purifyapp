@@ -3,6 +3,8 @@ import path from "node:path";
 
 import { describe, expect, it } from "vitest";
 
+import { getNewTestament } from "@/lib/bible/books";
+
 import { KATHISMATA, READING_PLANS, dayLabel, getPlan } from "../plans";
 import { catchUp, nextDay, planStreak, type PlansState } from "../progress";
 
@@ -80,6 +82,41 @@ describe("John in 21 days (1.9)", () => {
       expect(cites.john?.[String(day)], `cites, day ${day}`).toEqual(cites.gospels[String(FIRST + day - 1)]);
       expect(sayings.john?.[String(day)], `saying, day ${day}`).toEqual(sayings.gospels[String(FIRST + day - 1)]);
     }
+  });
+});
+
+describe("Acts in 28 days and the New Testament in a year (1.9)", () => {
+  const nt = getPlan("newtestament")!;
+  const acts = getPlan("acts")!;
+
+  it("read Acts a chapter a day, and the New Testament from Matthew to Revelation in the Bible's order", () => {
+    expect(acts.days).toEqual(Array.from({ length: 28 }, (_, i) => [{ book: "acts", chapter: i + 1 }]));
+    expect(nt.days.length).toBe(260);
+    expect(nt.days.every((d) => d.length === 1)).toBe(true);
+    const order = getNewTestament().flatMap((b) => Array.from({ length: b.chapters }, (_, i) => `${b.slug} ${i + 1}`));
+    expect(nt.days.map(([r]) => `${r.book} ${r.chapter}`)).toEqual(order);
+    // Its first 89 days are the four Gospels plan's, day for day.
+    expect(nt.days.slice(0, 89)).toEqual(getPlan("gospels")!.days);
+  });
+
+  it("carry a passage of the Fathers on every chapter the commentary has one fit for, the same passage wherever two plans read it", async () => {
+    const sayings = (await import("@/data/plans/sayings.json")).default as Record<string, Record<string, { from: string }>>;
+    nt.days.forEach(([r], i) => {
+      const day = String(i + 1);
+      if (i < 89) expect(sayings.newtestament[day], `${r.book} ${r.chapter}`).toEqual(sayings.gospels[day]);
+      else if (r.book === "acts") expect(sayings.newtestament[day], `acts ${r.chapter}`).toEqual(sayings.acts[String(r.chapter)]);
+      else if (sayings.newtestament[day]) expect(sayings.newtestament[day].from).toBe(`data/bible/commentary/${r.book}/${r.chapter}.json`);
+    });
+    // Every chapter of Acts and the Epistles with commentary has one; Revelation's
+    // only where St Victorinus's words stand without his reading of the beast,
+    // Babylon and the emperors (9, 13, 14 and 17 have none).
+    const without = nt.days
+      .map(([r], i) => ({ r, has: Boolean(sayings.newtestament[String(i + 1)]) }))
+      .filter(({ r, has }) => !has && existsSync(`data/bible/commentary/${r.book}/${r.chapter}.json`))
+      .map(({ r }) => `${r.book} ${r.chapter}`);
+    expect(without).toEqual(["revelation 9", "revelation 13", "revelation 14", "revelation 17"]);
+    expect(Object.keys(sayings.acts).length).toBe(27);
+    expect(Object.keys(sayings.newtestament).length).toBe(236);
   });
 });
 

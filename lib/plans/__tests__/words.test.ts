@@ -51,12 +51,19 @@ describe("a plan's own words, handed to its page at build", () => {
       expect(english!.own).toBe(english!.en);
       expect(english!.cites).toBe(words.cites);
       const day = dayGuide(english!.own, english!.en, plan.id, 0, english!.cites);
-      expect(day?.intro).toBeTruthy();
-      expect(day?.english).toBe(false);
-      // A language whose guide is not written yet reads the English, and says so, as it did once loaded.
       const greek = handedGuide("el", true, words);
       expect(greek?.own).toBeNull();
-      expect(dayGuide(greek!.own, greek!.en, plan.id, 0, greek!.cites)?.english).toBe(true);
+      if (!words.en[plan.id]) {
+        // A plan with no words of ours (1.9: Acts, the New Testament) has nothing to say
+        // around a day in any language, and never says it is showing the English.
+        expect(day).toEqual({ intro: null, introSources: [], questions: [], english: false });
+        expect(dayGuide(greek!.own, greek!.en, plan.id, 0, greek!.cites)?.english).toBe(false);
+      } else {
+        expect(day?.intro).toBeTruthy();
+        expect(day?.english).toBe(false);
+        // A language whose guide is not written yet reads the English, and says so, as it did once loaded.
+        expect(dayGuide(greek!.own, greek!.en, plan.id, 0, greek!.cites)?.english).toBe(true);
+      }
       // The finish's saying is there with it.
       const firstSaid = Object.keys(words.sayings[plan.id] ?? {})[0];
       if (firstSaid) expect(sayingFor(words.sayings, plan.id, Number(firstSaid) - 1)).not.toBeNull();

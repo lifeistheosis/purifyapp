@@ -15,6 +15,18 @@
  *             Gospel of John, a chapter a day. What it says around each day
  *             is the Gospels plan's own John days, word for word (data/plans:
  *             the guide, its citations and the sayings, renumbered 1 to 21).
+ *   acts      Acts in 28 days (1.9, his yes of 2026-11-09 to the sheet's 19,
+ *             "built with no new framing to review"): the Acts of the Apostles,
+ *             a chapter a day. No intro and no question of ours: each day is
+ *             its chapter and one passage of the Fathers on it, word for word
+ *             from the commentary the app carries (data/plans/sayings.json).
+ *   newtestament  the New Testament in a year (the same yes): Matthew to
+ *             Revelation in the app's order, a chapter a day, 260 days, a year
+ *             at five a week. Like Acts, the chapter and a passage of the
+ *             Fathers on it, nothing of ours: the Gospels' and Acts' days carry
+ *             the same passages as those plans, the rest their own. Its tile
+ *             wears St Paul, whose letters are most of it, where its first
+ *             book's figure is the four Gospels' already.
  *   proverbs  a chapter of Proverbs a day for a month.
  *   nativity  the Nativity Fast's (1.9, the owner's pick of 2026-11-07): the
  *             prophecies and Gospels the Church herself reads at the
@@ -36,6 +48,7 @@
  */
 
 import MOVABLE from "@/data/calendar/movable-readings.json";
+import { getNewTestament } from "@/lib/bible/books";
 import NATIVITY from "@/data/plans/nativity.json";
 
 export type PlanReading = {
@@ -57,6 +70,8 @@ export type ReadingPlan = {
   strand: "reading" | "gospel";
   /** The season of the Church's year it belongs to, for the season's card (lib/plans/season.ts). */
   season?: Season;
+  /** The book whose figure its tile wears, where its first book's is another plan's (components/plans/PlansClient.tsx). */
+  cover?: string;
 };
 
 /** The seasons of the Church's year a plan can belong to. */
@@ -163,6 +178,13 @@ export const READING_PLANS: readonly ReadingPlan[] = [
     days: [...chapters("matthew", 28), ...chapters("mark", 16), ...chapters("luke", 24), ...chapters("john", 21)].map((c) => [c]),
   },
   { id: "john", strand: "gospel", days: chapters("john", 21).map((c) => [c]) },
+  { id: "acts", strand: "reading", days: chapters("acts", 28).map((c) => [c]) },
+  {
+    id: "newtestament",
+    strand: "reading",
+    cover: "romans",
+    days: getNewTestament().flatMap((b) => chapters(b.slug, b.chapters)).map((c) => [c]),
+  },
   { id: "proverbs", strand: "reading", days: chapters("proverbs", 31).map((c) => [c]) },
   { id: "nativity", strand: "reading", season: "nativity", days: NATIVITY_DAYS.map((d) => passage(d.book, d.ref)) },
   { id: "holyweek", strand: "gospel", season: "holyweek", days: HOLY_WEEK_DAYS.map((d) => gospelPassages(d.gospel)) },
