@@ -356,6 +356,30 @@ export const EDITS = [
 </div>`;
     },
   },
+  {
+    // The Nativity Fast's card on Today, the star risen over the horizon, as
+    // the app draws it on the fast's first day (edit-capture.mjs). Only the
+    // star and its stretch of horizon show: the card's own words and edges
+    // fall outside the mask. The words are the 1.8 drop's own for this point.
+    id: "e14-toward-the-nativity",
+    name: "Toward the Nativity",
+    html: (w) => {
+      const fy = w ? 700 : 960, s = 5.5;
+      // The star's centre in the capture: 71.4% across the card, 158 px down its night (lib/reading/nativityStar.ts).
+      const [x, y] = [269.5, 510.5];
+      const cut = fy + (543 - y) * s;
+      const mask = `radial-gradient(380px 330px at 540px ${fy + 40}px, #000 55%, transparent 100%), linear-gradient(180deg, #000 ${cut - 46}px, transparent ${cut}px)`;
+      return `
+<div class="frame">
+  ${glow(540, fy, 640, 520, 0.08)}
+  ${screen("nativity-star.png", { x, y, fx: 540, fy, scale: s, mask, style: "-webkit-mask-composite:source-in;mask-composite:intersect;" })}
+  ${dust(151, 55, 540, fy, 560)}
+  <div class="vig"></div>
+  ${w ? `${shade(1040, 1600, 0.84)}${block(1320, { eyebrow: "Toward the Nativity", text: "Forty days<br>with the<br>Fathers.", size: 104, lines: 3 })}` : ""}
+  <div class="grain" data-m="grain"></div>
+</div>`;
+    },
+  },
 ];
 
 // Pictures drawn as backgrounds are loaded as images too, so the page waits for them.

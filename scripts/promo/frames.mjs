@@ -3,7 +3,7 @@
 // send, and a contact sheet of each version for choosing.
 //
 //   node scripts/promo/frames.mjs           the PR promo's seven looks
-//   node scripts/promo/frames.mjs edits     the thirteen edit frames
+//   node scripts/promo/frames.mjs edits     the fourteen edit frames
 import fs from "node:fs";
 import path from "node:path";
 import sharp from "sharp";

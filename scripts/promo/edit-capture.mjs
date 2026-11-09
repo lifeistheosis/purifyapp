@@ -63,8 +63,10 @@ if (process.argv[1] === new URL(import.meta.url).pathname) {
   const TYPES = { json: "application/json", jpg: "image/jpeg", avif: "image/avif", webp: "image/webp", png: "image/png" };
 
   const browser = await launch();
-  const open = async (route) => {
+  // `at` sets the day the app reads, for a screen that only shows on certain days.
+  const open = async (route, { at } = {}) => {
     const ctx = await browser.newContext({ viewport: { width: 390, height: 844 }, deviceScaleFactor: 6, colorScheme: "dark", isMobile: true, hasTouch: true, userAgent: NATIVE_UA });
+    if (at) await ctx.clock.setFixedTime(at);
     await ctx.addInitScript(() => {
       localStorage.setItem("purify:onboarded", "3");
       localStorage.setItem("purify:whatsNewSeen", "99");
@@ -141,6 +143,23 @@ if (process.argv[1] === new URL(import.meta.url).pathname) {
     await page.getByRole("button", { name: /^Now playing/i }).first().click();
     await page.waitForTimeout(1800);
     await shot(page, "nowplaying");
+    await ctx.close();
+  }
+
+  // Toward the Nativity (1.8): Today's card for the Nativity Fast, its star
+  // risen over the night (components/today/NativityStarCard.tsx). The card
+  // shows only while the fast runs, 15 November to 24 December
+  // (lib/reading/nativity.ts), so this screen is taken on the fast's first
+  // day, as every reader sees it that morning. Nothing on it is changed.
+  {
+    const { ctx, page } = await open("/", { at: new Date(new Date().getFullYear(), 10, 15, 10, 0) });
+    const card = page.locator("[data-nativity-star]").first();
+    await card.waitFor({ timeout: 20000 });
+    await card.evaluate((el) => el.scrollIntoView({ block: "center" }));
+    // The star rises on the day's first view; then its halo breathes.
+    await page.waitForTimeout(4500);
+    console.log("nativity card", JSON.stringify(await card.boundingBox()));
+    await shot(page, "nativity-star");
     await ctx.close();
   }
   await browser.close();

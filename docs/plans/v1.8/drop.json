@@ -456,6 +456,34 @@
       "text": "Three things to try in 1.8:\n\n1. The New Testament, read aloud. All 260 chapters, verse by verse, with the verse being read lit as you go, and the day's Epistle and Gospel in one tap on Today.\n2. Toward the Nativity. Forty days with the Fathers for the Nativity Fast, offered on Today from a week before it begins. Walk it alone, or with your parish, household or friends.\n3. Where every word comes from. Every book in the reading room says where its words come from, and Who said it? finds where a quote really stands.\n\nTell us what you find, and what breaks. We read everything."
     },
     {
+      "id": "edit",
+      "channel": "video",
+      "moment": "after",
+      "title": "The edit: fast cuts from the app's own screens",
+      "waits": "his picks from the reels of the edit frames (scripts/promo), then the cut, then its place in purify-ads"
+    },
+    {
+      "id": "tiktok-edit",
+      "channel": "tiktok",
+      "moment": "after",
+      "title": "The caption for the edit, on TikTok",
+      "text": "The saints, connected. The councils and history on maps. Chant with every word lit as it is sung. And for the Nativity Fast, forty days with the Fathers. Find Purify: Orthodox Hub. #orthodox #orthodoxchristian #bible #saints #prayer"
+    },
+    {
+      "id": "instagram-edit",
+      "channel": "instagram",
+      "moment": "after",
+      "title": "The caption for the edit, on Instagram",
+      "text": "The saints, connected. The councils and history on maps. Chant with every word lit as it is sung. And for the Nativity Fast, forty days with the Fathers. The Scriptures, the saints, the prayers and the calendar stay free. Find Purify: Orthodox Hub on the App Store and on Google Play. #orthodox #orthodoxchristian #bible #saints #prayer"
+    },
+    {
+      "id": "youtube-edit",
+      "channel": "youtube",
+      "moment": "after",
+      "title": "The edit on YouTube Shorts: the title, then the description",
+      "text": "Purify 1.8: the saints, the councils, and forty days toward the Nativity\nThe saints, connected. The councils and history on maps. Chant with every word lit as it is sung. And for the Nativity Fast, forty days with the Fathers. Find Purify: Orthodox Hub on the App Store and on Google Play. #orthodox #orthodoxchristian #bible #saints #prayer"
+    },
+    {
       "id": "numbers",
       "channel": "sql",
       "moment": "numbers",

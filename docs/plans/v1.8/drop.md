@@ -357,6 +357,37 @@ Three things to try in 1.8:
 Tell us what you find, and what breaks. We read everything.
 ~~~
 
+### The edit: fast cuts from the app's own screens
+
+`edit` · The video · TikTok, Reels or Shorts, from the file · Waits
+
+Waits on: his picks from the reels of the edit frames (scripts/promo), then the cut, then its place in purify-ads
+
+### The caption for the edit, on TikTok
+
+`tiktok-edit` · TikTok caption · TikTok, the caption · Ready · 232 of 2200 characters
+
+~~~text
+The saints, connected. The councils and history on maps. Chant with every word lit as it is sung. And for the Nativity Fast, forty days with the Fathers. Find Purify: Orthodox Hub. #orthodox #orthodoxchristian #bible #saints #prayer
+~~~
+
+### The caption for the edit, on Instagram
+
+`instagram-edit` · Instagram caption · Instagram, the caption · Ready · 336 of 2200 characters
+
+~~~text
+The saints, connected. The councils and history on maps. Chant with every word lit as it is sung. And for the Nativity Fast, forty days with the Fathers. The Scriptures, the saints, the prayers and the calendar stay free. Find Purify: Orthodox Hub on the App Store and on Google Play. #orthodox #orthodoxchristian #bible #saints #prayer
+~~~
+
+### The edit on YouTube Shorts: the title, then the description
+
+`youtube-edit` · YouTube title and hashtags · YouTube, the title, then the description · Ready · 341 of 2200 characters
+
+~~~text
+Purify 1.8: the saints, the councils, and forty days toward the Nativity
+The saints, connected. The councils and history on maps. Chant with every word lit as it is sung. And for the Nativity Fast, forty days with the Fathers. Find Purify: Orthodox Hub on the App Store and on Google Play. #orthodox #orthodoxchristian #bible #saints #prayer
+~~~
+
 ## A week later: the numbers
 
 *Once the release has had its first week.*

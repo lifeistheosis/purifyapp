@@ -55,6 +55,25 @@ To promote a release that is already live, build the export from `main` in
 a worktree and pass it: `node scripts/promo/capture.mjs --export ../purify-main/out`.
 The screens show the day they were taken, and look 5 names that day.
 
+A machine with no `.env.local` (a cloud session) needs two things for that
+build, both kept out of git (2026-11-09):
+
+- **Placeholder public settings**, or every screen opens on "This page
+  couldn't load", since the Supabase client refuses to start without them.
+  The screens never reach the network (`scripts/lib/shell-server.mjs`
+  answers from the bundle), so nothing real is needed:
+  `NEXT_PUBLIC_SUPABASE_URL=https://placeholder.supabase.co NEXT_PUBLIC_SUPABASE_ANON_KEY=placeholder-anon-key NEXT_PUBLIC_SITE_URL=https://purifyapp.net NEXT_PUBLIC_SHOP_ENABLED=1 npm run build:android`
+- **A stub for the shop's two catalog pages**, `shop/[store]` and
+  `shop/icons/[slug]`: with no catalog to read, their `generateStaticParams`
+  return nothing and the export refuses them. In the worktree only, let each
+  fall back to one `"placeholder"` entry when the list comes back empty.
+
+The edit frames (`edits.mjs`) take their screens with
+`node scripts/promo/edit-capture.mjs --export <export>`. The fourteenth,
+Toward the Nativity, is Today's card for the Nativity Fast, which shows only
+while the fast runs, so its screen is taken with the clock on the fast's
+first day (15 November): the card every reader sees that morning.
+
 ## The looks (`looks.mjs`)
 
 1. **Night sanctuary**: the Bible with the Fathers, a phone in a pool of warm light.
