@@ -53,6 +53,23 @@ export const LOCKS = [
 ] as const;
 export type Lock = (typeof LOCKS)[number];
 
+/** Each lock by the name the paywall gives its feature (lib/premium/plusRows.ts). */
+export const LOCK_LABELS: Record<Lock, string> = {
+  florilegium: "Your Florilegium",
+  palettes: "Candlelight and Monastery",
+  history: "History in full dress",
+  sync: "Sync",
+  crossrefs: "Cross-references",
+  wordstudy: "Word study",
+  journal: "Your journal",
+  plans: "Reading plans",
+  profile: "Profile extras",
+  remember: "Remember the verse",
+  ambience: "Ambience",
+  offline: "Listen offline",
+  general: "The Plus button (no lock)",
+};
+
 /** The plans a purchase in the sheet can be. */
 export const BOUGHT_PLANS = ["yearly", "monthly"] as const;
 export type BoughtPlan = (typeof BOUGHT_PLANS)[number];

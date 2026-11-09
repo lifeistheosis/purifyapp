@@ -3,7 +3,7 @@
 import { useState, type ReactNode } from "react";
 
 import type { LocksAdminPayload } from "@/app/api/admin/locks/route";
-import type { Lock, LockRow } from "@/lib/analytics/lockCounting";
+import { LOCK_LABELS, type LockRow } from "@/lib/analytics/lockCounting";
 
 import { useAdminFetch } from "../adminFetch";
 import { Card, DataTable, KpiCard, SubTabs } from "../primitives";
@@ -23,22 +23,9 @@ const PERIODS = [
   ["90", "90 days"],
 ] as const;
 
-/** Each lock by the name the paywall gives its feature (lib/premium/plusRows.ts). */
-export const LOCK_LABELS: Record<Lock, string> = {
-  florilegium: "Your Florilegium",
-  palettes: "Candlelight and Monastery",
-  history: "History in full dress",
-  sync: "Sync",
-  crossrefs: "Cross-references",
-  wordstudy: "Word study",
-  journal: "Your journal",
-  plans: "Reading plans",
-  profile: "Profile extras",
-  remember: "Remember the verse",
-  ambience: "Ambience",
-  offline: "Listen offline",
-  general: "The Plus button (no lock)",
-};
+// The locks' names live beside the counting, so the Monday email (a server
+// module) can name them too.
+export { LOCK_LABELS };
 
 function Quiet({ children }: { children: ReactNode }) {
   return (

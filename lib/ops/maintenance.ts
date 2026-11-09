@@ -3,6 +3,7 @@ import "server-only";
 import type { SupabaseClient } from "@supabase/supabase-js";
 
 import { sendPlannerDigest } from "@/lib/admin/plannerDigest";
+import { sendWeeklyLetter } from "@/lib/admin/weeklyLetter";
 import { clearMatured, runAmbassadorPayouts } from "@/lib/ambassadors/payouts";
 import { runEmailJobs } from "@/lib/email/jobs";
 import { sweepAbandonedCheckouts, type SweepReport } from "@/lib/shop/abandonedSweep";
@@ -108,6 +109,14 @@ export async function runMaintenance(admin: SupabaseClient, now: number = Date.n
   if (new Date(now).getUTCHours() >= DIGEST_FROM_UTC_HOUR) {
     report.plannerDigest = await every("plannerDigest", 20 * 3_600_000, now, () =>
       sendPlannerDigest(admin, new Date(now)),
+    );
+  }
+  // The Monday email (lib/admin/weekly.ts): last week in numbers, to the
+  // owner, from the same morning hour. The email log keys it by week, so it
+  // goes once whatever the heartbeat or a restart does.
+  if (new Date(now).getUTCDay() === 1 && new Date(now).getUTCHours() >= DIGEST_FROM_UTC_HOUR) {
+    report.weeklyLetter = await every("weeklyLetter", 20 * 3_600_000, now, () =>
+      sendWeeklyLetter(admin, new Date(now)),
     );
   }
   return report;
