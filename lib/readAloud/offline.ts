@@ -5,8 +5,8 @@
  * readings saved on the phone, so they play in church, on a flight, with no
  * signal. Only in the apps: a browser keeps what it keeps.
  *
- * Each chapter is two files in the app's own data folder, its recording and
- * its timings (audio/read/<book>/<chapter>.mp3 and .json), asked of the
+ * Each chapter is two files in the app's own folder (home, below), its
+ * recording and its timings (audio/read/<book>/<chapter>.mp3 and .json), asked of the
  * website as the player asks for them (lib/readAloud/chapters.ts) and written
  * with the Filesystem plugin. What is saved is listed on the device
  * (purify:readAloud.saved), so the player can choose the saved file at once,
@@ -27,6 +27,22 @@ const EVENT = "purify:readAloud.saved";
 export type Saved = { mp3: string; json: string; bytes: number };
 
 type Plugin = typeof import("@capacitor/filesystem");
+
+/**
+ * The folder the recordings are kept in (1.9, his yes to the sheet's 7, "just
+ * do the safer route"): the plugin's LibraryNoCloud, as the downloaded Bibles'
+ * (lib/bible/downloads/store.ts). On an iPhone that is the Library kept out
+ * of iCloud backups, as Apple's storage rules ask of what can be downloaded
+ * again. Until 1.9 it was Data, which is Documents there and is backed up, so
+ * hours of audio could go into a reader's iCloud. On Android both are the
+ * app's own files.
+ */
+function home(fs: Plugin) {
+  return fs.Directory.LibraryNoCloud;
+}
+
+/** Set once what was saved before 1.9 is all in the folder above. */
+const MOVED_KEY = "purify:readAloud.home";
 
 function read(): Record<string, Saved> {
   try {
@@ -132,8 +148,8 @@ export async function saveChapters(
       if (!audio.ok || !timings.ok) throw new Error("not on the website");
       const blob = await audio.blob();
       const base = `audio/read/${book}/${chapter}`;
-      const a = await Filesystem.writeFile({ path: `${base}.mp3`, data: await toBase64(blob), directory: Directory.Data, recursive: true });
-      const j = await Filesystem.writeFile({ path: `${base}.json`, data: await timings.text(), directory: Directory.Data, recursive: true, encoding: Encoding.UTF8 });
+      const a = await Filesystem.writeFile({ path: `${base}.mp3`, data: await toBase64(blob), directory: Directory.LibraryNoCloud, recursive: true });
+      const j = await Filesystem.writeFile({ path: `${base}.json`, data: await timings.text(), directory: Directory.LibraryNoCloud, recursive: true, encoding: Encoding.UTF8 });
       write({ ...read(), [key]: { mp3: a.uri, json: j.uri, bytes: blob.size } });
       saved += 1;
     } catch {
@@ -147,11 +163,14 @@ export async function saveChapters(
 /** Take one saved chapter off the phone (1.9: the week's readings, once their day has passed). */
 export async function removeChapter(book: string, chapter: number, plugin?: Plugin): Promise<void> {
   const { Filesystem, Directory } = plugin ?? (await import("@capacitor/filesystem"));
-  for (const ext of ["mp3", "json"]) {
-    try {
-      await Filesystem.deleteFile({ path: `audio/read/${book}/${chapter}.${ext}`, directory: Directory.Data });
-    } catch {
-      /* already gone */
+  // From the folder it is kept in, and from the one before 1.9, should it not have moved yet.
+  for (const directory of [Directory.LibraryNoCloud, Directory.Data]) {
+    for (const ext of ["mp3", "json"]) {
+      try {
+        await Filesystem.deleteFile({ path: `audio/read/${book}/${chapter}.${ext}`, directory });
+      } catch {
+        /* already gone */
+      }
     }
   }
   const all = read();
@@ -163,27 +182,123 @@ export async function removeChapter(book: string, chapter: number, plugin?: Plug
 export async function removeBook(book: string, plugin?: Plugin): Promise<void> {
   forgetReaderBook(book);
   const { Filesystem, Directory } = plugin ?? (await import("@capacitor/filesystem"));
-  try {
-    await Filesystem.rmdir({ path: `audio/read/${book}`, directory: Directory.Data, recursive: true });
-  } catch {
-    /* already gone */
+  for (const directory of [Directory.LibraryNoCloud, Directory.Data]) {
+    try {
+      await Filesystem.rmdir({ path: `audio/read/${book}`, directory, recursive: true });
+    } catch {
+      /* already gone */
+    }
   }
   const all = read();
   for (const key of Object.keys(all)) if (key.startsWith(`${book}/`)) delete all[key];
   write(all);
 }
 
-/** Drop from the list any saved chapter whose recording is no longer on the phone. */
+/**
+ * Move what a reader saved before 1.9 from Data to the folder recordings are
+ * kept in now (home, above), once, and the list's addresses with it. Where the
+ * two are one folder (Android), nothing moves. A chapter that does not move
+ * this time stays where it is and keeps playing from the list's address; the
+ * move is tried again next time, and marked done only once every saved
+ * chapter is in its new place. Never throws.
+ */
+export async function moveSavedHome(plugin?: Plugin): Promise<void> {
+  if (typeof window === "undefined") return;
+  const mark = () => {
+    try {
+      window.localStorage.setItem(MOVED_KEY, "1");
+    } catch {
+      /* asked again next time; nothing is moved twice */
+    }
+  };
+  try {
+    if (window.localStorage.getItem(MOVED_KEY) === "1") return;
+  } catch {
+    return;
+  }
+  const before = read();
+  const keys = Object.keys(before);
+  if (!keys.length) {
+    mark();
+    return;
+  }
+  const fs = plugin ?? (await import("@capacitor/filesystem"));
+  const { Filesystem, Directory } = fs;
+  try {
+    const [from, to] = await Promise.all([
+      Filesystem.getUri({ path: "audio/read", directory: Directory.Data }),
+      Filesystem.getUri({ path: "audio/read", directory: home(fs) }),
+    ]);
+    if (from.uri === to.uri) {
+      mark();
+      return;
+    }
+  } catch {
+    return;
+  }
+  const moved: Record<string, { mp3: string; json: string }> = {};
+  for (const key of keys) {
+    const book = key.split("/")[0];
+    try {
+      await Filesystem.mkdir({ path: `audio/read/${book}`, directory: home(fs), recursive: true });
+    } catch {
+      /* already there */
+    }
+    const uris: Partial<Record<"mp3" | "json", string>> = {};
+    for (const ext of ["mp3", "json"] as const) {
+      const path = `audio/read/${key}.${ext}`;
+      try {
+        await Filesystem.rename({ from: path, directory: Directory.Data, to: path, toDirectory: home(fs) });
+      } catch {
+        /* moved by an earlier try, or never there: the new place is asked next */
+      }
+      try {
+        await Filesystem.stat({ path, directory: home(fs) });
+        uris[ext] = (await Filesystem.getUri({ path, directory: home(fs) })).uri;
+      } catch {
+        /* still in the old place: it plays from there, and is tried again */
+      }
+    }
+    if (uris.mp3 && uris.json) moved[key] = { mp3: uris.mp3, json: uris.json };
+  }
+  // The list as it is now, as a chapter may have been saved meanwhile.
+  const now = read();
+  for (const [key, uris] of Object.entries(moved)) if (now[key]) now[key] = { ...now[key], ...uris };
+  write(now);
+  if (Object.keys(moved).length === keys.length) {
+    mark();
+    try {
+      await Filesystem.rmdir({ path: "audio/read", directory: Directory.Data, recursive: true });
+    } catch {
+      /* nothing left there */
+    }
+  }
+}
+
+/**
+ * Drop from the list any saved chapter whose recording is no longer on the
+ * phone, after moving what was saved before 1.9 (moveSavedHome). A chapter not
+ * yet moved is looked for where it was, so it is never dropped for that.
+ */
 export async function checkSaved(plugin?: Plugin): Promise<void> {
+  await moveSavedHome(plugin);
   const all = read();
   const keys = Object.keys(all);
   if (!keys.length) return;
   const { Filesystem, Directory } = plugin ?? (await import("@capacitor/filesystem"));
   let changed = false;
   for (const key of keys) {
-    try {
-      await Filesystem.stat({ path: `audio/read/${key}.mp3`, directory: Directory.Data });
-    } catch {
+    let there = false;
+    for (const directory of [Directory.LibraryNoCloud, Directory.Data]) {
+      try {
+        await Filesystem.stat({ path: `audio/read/${key}.mp3`, directory });
+        there = true;
+        break;
+      } catch {
+        /* not in this one */
+      }
+    }
+    if (!there) {
       delete all[key];
       changed = true;
     }
