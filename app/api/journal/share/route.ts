@@ -5,7 +5,7 @@ import { corsPreflight, corsRoute } from "@/lib/api/cors";
 import { deriveEntitlements, plusEnforcedFor, type EntitlementRow } from "@/lib/entitlements/entitlements";
 import { MAX_BODY } from "@/lib/journal/entries";
 import { parsePage } from "@/lib/journal/page";
-import { monthStart, publicBody, shareTitle, sharesLeft } from "@/lib/journal/share";
+import { monthStart, publicBody, SHARE_DAILY_CAP, SHARE_LIMIT_FREE, shareTitle, sharesLeft } from "@/lib/journal/share";
 import { isNativeRequest } from "@/lib/platform/nativeRequest";
 import { ipKey, rateLimited } from "@/lib/security/ratelimit";
 import { SITE_URL } from "@/lib/site";
@@ -69,6 +69,15 @@ async function usedThisMonth(admin: ReturnType<typeof createAdminClient>, userId
     .gte("created_at", monthStart(new Date()).toISOString());
 }
 
+/** This account's shares in the last day, for the daily guard. */
+async function usedToday(admin: ReturnType<typeof createAdminClient>, userId: string) {
+  return admin
+    .from("shared_pages")
+    .select("id", { count: "exact", head: true })
+    .eq("owner_id", userId)
+    .gte("created_at", new Date(Date.now() - 86_400_000).toISOString());
+}
+
 async function handleGET(req: Request) {
   const who = await whoAndLimit(req);
   if (!who) return NextResponse.json({ error: "Sign in to share a page." }, { status: 401 });
@@ -102,6 +111,12 @@ async function handlePOST(req: Request) {
   if (who.limited && sharesLeft(count ?? 0) === 0) {
     return NextResponse.json({ error: "No shares left this month.", left: 0 }, { status: 403 });
   }
+  // A guard against abuse, with Plus or without, far above a reader's use (SHARE_DAILY_CAP).
+  const { count: today, error: todayError } = await usedToday(who.admin, who.user.id);
+  if (todayError) return NextResponse.json({ error: "Could not share this page." }, { status: 500 });
+  if ((today ?? 0) >= SHARE_DAILY_CAP) {
+    return NextResponse.json({ error: "That is a lot of sharing for one day. Please try again tomorrow." }, { status: 429 });
+  }
 
   const { data, error } = await who.admin
     .from("shared_pages")
@@ -114,6 +129,23 @@ async function handlePOST(req: Request) {
     return NextResponse.json({ error: "Could not share this page." }, { status: 500 });
   }
   const id = (data as { id: string }).id;
+  if (who.limited) {
+    // Two shares sent at once both read the same count before either was
+    // made. Settled after the fact: the month's shares in the order they
+    // were made, and this one withdrawn again if it came after the limit.
+    const { data: month } = await who.admin
+      .from("shared_pages")
+      .select("id")
+      .eq("owner_id", who.user.id)
+      .gte("created_at", monthStart(new Date()).toISOString())
+      .order("created_at", { ascending: true })
+      .order("id", { ascending: true });
+    const place = ((month ?? []) as { id: string }[]).findIndex((r) => r.id === id);
+    if (place >= SHARE_LIMIT_FREE) {
+      await who.admin.from("shared_pages").delete().eq("id", id).eq("owner_id", who.user.id);
+      return NextResponse.json({ error: "No shares left this month.", left: 0 }, { status: 403 });
+    }
+  }
   return NextResponse.json({ id, url: `${SITE_URL}/p/${id}`, left: who.limited ? sharesLeft((count ?? 0) + 1) : null });
 }
 

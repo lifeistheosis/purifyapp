@@ -10,7 +10,7 @@ import { join } from "node:path";
 import { describe, expect, it } from "vitest";
 
 import { libraryBlock, serializePage, verseBlock } from "../page";
-import { monthStart, publicBody, publicPage, SHARE_LIMIT_FREE, shareTitle, sharesLeft } from "../share";
+import { monthStart, publicBody, publicPage, SHARE_DAILY_CAP, SHARE_LIMIT_FREE, SHARED_VERSE_CARDS, shareTitle, sharesLeft } from "../share";
 
 const read = (path: string) => readFileSync(join(process.cwd(), path), "utf8");
 
@@ -127,6 +127,38 @@ describe("the shared page", () => {
     expect(button).toMatch(/if \(res\.status === 403\) \{\s*setReady\(\{ left: 0 \}\);\s*upgrade\.open\("journal"\);/);
     expect(button).toContain("await shareText(");
     expect(read("components/journal/JournalComposer.tsx")).toContain("{open && draft.editing && !isNote && !empty ? <SharePageButton");
+  });
+});
+
+// Fable's release check 1, M3: what keeps sharing from being turned against
+// the server, without a limit any reader with Plus could meet.
+describe("sharing, guarded", () => {
+  const route = read("app/api/journal/share/route.ts");
+  const reader = read("lib/journal/sharedPage.ts");
+
+  it("a day's shares are capped for every account, far above a reader's use", () => {
+    expect(SHARE_DAILY_CAP).toBe(50);
+    expect(route).toContain('.gte("created_at", new Date(Date.now() - 86_400_000).toISOString())');
+    expect(route).toMatch(/if \(\(today \?\? 0\) >= SHARE_DAILY_CAP\) \{\s*return NextResponse\.json\(\{ error: "That is a lot of sharing for one day\. Please try again tomorrow\." \}, \{ status: 429 \}\);/);
+  });
+
+  it("two shares sent at once cannot pass the month's limit: one after it is taken back", () => {
+    expect(route).toContain('.order("created_at", { ascending: true })');
+    expect(route).toMatch(/if \(place >= SHARE_LIMIT_FREE\) \{\s*await who\.admin\.from\("shared_pages"\)\.delete\(\)\.eq\("id", id\)\.eq\("owner_id", who\.user\.id\);/);
+  });
+
+  it("a view reads the page once, and the words of its first 20 verse cards only; no card is cut", () => {
+    expect(SHARED_VERSE_CARDS).toBe(20);
+    expect(reader).toContain("export const getSharedPage = cache(readSharedPage);");
+    expect(reader).toContain("if (++cards > SHARED_VERSE_CARDS) break;");
+    // The copy kept is the page as shared: nothing here trims it.
+    expect(route).not.toMatch(/SHARED_VERSE_CARDS/);
+  });
+
+  it("a shared page is never served from the service worker's cache, so a withdrawn one is gone", () => {
+    const sw = read("public/sw.js");
+    const list = sw.slice(sw.indexOf("const NEVER_CACHE = ["), sw.indexOf("];", sw.indexOf("const NEVER_CACHE = [")));
+    expect(list).toContain('"/p/",');
   });
 });
 

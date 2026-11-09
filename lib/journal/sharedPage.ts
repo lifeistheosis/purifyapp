@@ -7,9 +7,11 @@
 
 import "server-only";
 
+import { cache } from "react";
+
 import { loadVerseRange } from "@/lib/bible/load";
 import type { Page } from "@/lib/journal/page";
-import { publicPage } from "@/lib/journal/share";
+import { publicPage, SHARED_VERSE_CARDS } from "@/lib/journal/share";
 import { createAdminClient } from "@/lib/supabase/admin";
 
 export type SharedPage = {
@@ -22,7 +24,13 @@ export type SharedPage = {
   verses: Record<string, string>;
 };
 
-export async function getSharedPage(id: string): Promise<SharedPage | null> {
+/**
+ * Asked once per request however many times it is called: the page, its
+ * metadata and its preview image each ask (Fable's release check 1, M3).
+ */
+export const getSharedPage = cache(readSharedPage);
+
+async function readSharedPage(id: string): Promise<SharedPage | null> {
   if (!/^[0-9a-f-]{36}$/i.test(id)) return null;
   type Row = { id: string; body: string; created_at: string; withdrawn_at: string | null; hidden_at: string | null; reviewed_at: string | null };
   let row: Row | null;
@@ -41,8 +49,11 @@ export async function getSharedPage(id: string): Promise<SharedPage | null> {
   const page = publicPage(row.body);
   if (!page) return null;
   const verses: Record<string, string> = {};
+  let cards = 0;
   for (const b of page.blocks) {
     if (b.type !== "verse") continue;
+    // The first SHARED_VERSE_CARDS cards bring their words; the rest show their reference.
+    if (++cards > SHARED_VERSE_CARDS) break;
     const found = await loadVerseRange(b.book, b.chapter, b.from, b.to).catch(() => null);
     for (const v of found?.verses ?? []) verses[`${b.book}/${b.chapter}/${v.n}`] = v.text;
   }

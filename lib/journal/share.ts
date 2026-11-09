@@ -25,6 +25,22 @@ import { pageIsEmpty, parsePage, serializePage, TITLE_MAX, type Page } from "./p
 /** Shares a reader without Plus makes in a calendar month (Claude's recommendation, standing; his to move on item 12's numbers). */
 export const SHARE_LIMIT_FREE = 3;
 
+/**
+ * Shares one account may make in a day, with Plus or without: a guard against
+ * abuse, far above what any reader shares (Plus promises sharing without a
+ * monthly limit, and keeps it). Fable's release check 1, M3.
+ */
+export const SHARE_DAILY_CAP = 50;
+
+/**
+ * The verse cards of a shared page whose words are fetched for a view: the
+ * first this many. A card after them shows its reference, linked to the
+ * verse, as a card whose words could not be had does. A page's text may
+ * hold some hundreds of cards, and each is a read on every view (Fable's
+ * release check 1, M3); none is ever cut from the page.
+ */
+export const SHARED_VERSE_CARDS = 20;
+
 /** The page as it may be shown in public, or null when there is nothing in it to show. */
 export function publicPage(body: string): Page | null {
   const page = parsePage(body);

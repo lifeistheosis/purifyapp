@@ -38,6 +38,9 @@ const NEVER_CACHE = [
   // for its whole life. Listed now so the redirect cannot be cached either,
   // and so removing the redirect later does not quietly reopen the hole.
   "/owner",
+  // A shared journal page (/p/<id>) can be withdrawn or hidden at any time:
+  // a cached copy would keep showing it (Fable's release check 1, M3).
+  "/p/",
   "/_next/data/",
   ".supabase.co",
   "api.scripture.api.bible",
