@@ -14,12 +14,24 @@ file is what it needs to take over. Read it first, then `BRAINSTORM.md` and
 | Admin panel | `session_01VuYTwbteJqs1UmDUwqRvzC` | the admin panel (app/admin and its API) |
 | SSM board | `session_01VuYTwcSQmKLThRirvSeWa5` | social media: each release's cards, videos and posts |
 | Updates | `session_01VuYTwcNqTWyT6Yab696Eri` | builds the 1.9 updates in the app itself: everything in `PLAN.md` outside the admin panel and social media |
+| Discord requests | `session_01VuYTwa7ccHk91ufBdtnExY` | reads every section of the Purify Discord (read only) and lists what members asked for, with no member named |
 
 The Updates chat was set up by the arbiter on his word of 2026-11-09: "I
 want you to set up a chat for the updates also for version 1.9. So one is
 going to actualize the updates, one is going to be the SSM board, and one is
 the admin panel." He talks to the arbiter; the arbiter sends the requests out
-and reports back. A fifth chat only on his word.
+and reports back.
+
+The Discord requests chat, the same day on his word: "Make one more chat to
+go through the Discord server to scan all of the sections, right? To see what
+updates people requested so we can add to our panel." It uses the repo's own
+read-only scanner (`scripts/discord-scan.mjs`). The bot whose token is in
+`.env.discord` on his PC has Administrator in the server
+(`scripts/discord-assign-role.mjs` says so), so the cloud gets a separate
+read-only bot instead (View Channels and Read Message History, as
+`scripts/discord-scan.SETUP.md` describes), its token saved as a network
+secret on the environment for discord.com and never written in a file or a
+chat. Another chat only on his word.
 
 To send a request: `send_message` with the chat's session id. To see where it
 stands: `get_session` (its `status_bucket`) and `list_events` with
