@@ -45,9 +45,43 @@ the discord says instead". The saved token answered 401 in every chat (his
 value read "Bot " and the token, he said), so no chat ever read the server;
 whether the token in `.env.discord` is stale was never settled. He sends
 screenshots of the Discord to the arbiter, which makes the D list from them.
-He deleted the two Discord chats and a one-check test chat. The discord.com
-network secret was still on the environment afterwards; the arbiter advised
-removing it, since an unused Administrator token is a standing risk.
+He deleted the two Discord chats and a one-check test chat, and then the
+discord.com network secret (gone from the environment, checked).
+
+## The evening of 2026-11-09: built, and waiting on him
+
+Built today on the branch (each chat checked typecheck, unit and eslint; the
+hashes are in `git log`): Updates: the build 88 record, the widget's data and
+then the Remember the verse widget on both phones (45 to 48), sync for the rest
+of what a reader keeps (dark until `sql/user-kept.sql`), the Creed by council as
+data, the Thread for 18 more events (its steps await review with their
+accounts). Admin: revenue set up right (six faults), the Monday email, the
+icons-to-clear list, the admin's sign-in code (his steps once 1.9 is live: the
+admin's Settings, "Add a sign-in code"), chant takedown, errors, searches not
+found and Plus over time, each dark until its table; the approved privacy
+lines on /privacy in English and German. SSM: the board brought up to date
+(same link), the fourteenth edit frame, the 1.8 drop's edit and captions, the
+card maker, the 1.8 cards, and all 14 reels on one page where he taps his picks.
+
+Pages for him: the SSM board https://claude.ai/artifact/JEDHhLDpXNKDbWHCURNDjd,
+the reels and cards https://claude.ai/artifact/TkJk6qK1Fqvv4UTF7arcrQ, the
+decision photos https://claude.ai/artifact/61hfcAEABF2Y62WXcNQLrr.
+
+Waiting on him, by the sheet's numbers (the arbiter's numbering of
+2026-11-09; his answers so far are in `BRAINSTORM.md`): 8 chants offline; 9
+the prayer hours lifted; 10 a lapsed reader's collection (recommended: read
+only); 11 the commentary dots, red or grey (the Updates chat recommends red);
+21 Today (recommended: three versions drawn); 22 which of the eleven locked
+screens are still open; 33 to 35 and 39 to 41 (promo, explained to him); 43
+the gift flow's photos (that chat runs on his PC); 44 Discord screenshots; 52
+the Nativity frame's words and his picks on the reels page; the 1.8 cards'
+look; 53 the RevenueCat v2 key on Render; 54 his test orders out of revenue;
+55 UTC days; 56 relabelling website members filed as Google Play; 57 and 65
+the four admin tables; 58 the sync table; 59 the sync privacy lines; 64 the
+sign-in code over Community moderation too; 66 the three disputed events
+left without steps; 67 one "iOS build (signed)" run, upload unchecked, to
+prove the widget compiles; 68 naming the plan and why a membership ended in
+the privacy line.
 
 To send a request: `send_message` with the chat's session id. To see where it
 stands: `get_session` (its `status_bucket`) and `list_events` with
