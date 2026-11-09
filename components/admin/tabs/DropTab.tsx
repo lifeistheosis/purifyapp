@@ -29,7 +29,9 @@
 import Image from "next/image";
 import { useEffect, useState } from "react";
 
+import type { AppReleasePayload } from "@/app/api/admin/app-release/route";
 import { adminJson } from "@/lib/admin/fetchJson";
+import { promptLine } from "@/lib/admin/updatePrompts";
 import { checkLine, openingStep, pathSteps, standing, stepRight, type Focus, type LiveState, type PathStep } from "@/lib/admin/releasePath";
 import type { Finding } from "@/lib/drop/check";
 import { CURRENT_DROP, DROPS, DROP_RELEASE } from "@/lib/drop/current";
@@ -39,6 +41,7 @@ import { STORES, STORE_NAME, liveDrop, type Plan } from "@/lib/drop/live";
 import { numbersSql } from "@/lib/drop/numbers";
 import { copyText } from "@/lib/ui/copyText";
 
+import { useAdminFetch } from "../adminFetch";
 import { DROP_CARDS } from "../drop/cards.generated";
 import { CampaignCard } from "../email/CampaignCard";
 import { Mark, Pill, Select, StatusDot, ToolbarButton } from "../primitives";
@@ -301,8 +304,9 @@ export function ReleasesPage({ focus = null }: { focus?: Focus | null }) {
             </ol>
           )}
         </div>
-        <aside>
+        <aside className="space-y-3">
           <Records record={record} figures={figures} onOpen={(id) => setRecord(record === id ? null : id)} here={here} current={current} failed={failed} />
+          <UpdatePrompts drop={drop} current={current} />
         </aside>
       </div>
     </div>
@@ -681,6 +685,48 @@ function CheckCard({ here, current, failed }: { here: Live | null; current: bool
         <p className="font-sans text-[12px]" style={ink3}>
           {current ? (failed ? "The check did not load." : "Reading the check.") : "The check runs on the current release."}
         </p>
+      )}
+    </section>
+  );
+}
+
+/**
+ * What installed apps are told about updates (admin item A3,
+ * lib/admin/updatePrompts.ts): a line a store, with what to change on Render
+ * when the number is behind or ahead of the build the store serves.
+ */
+function UpdatePrompts({ drop, current }: { drop: Ctx["drop"]; current: boolean }) {
+  const { data, error } = useAdminFetch<AppReleasePayload>("/api/admin/app-release");
+  return (
+    <section className="rounded-[var(--adm-radius)] border px-3.5 py-3" style={{ ...line, background: "var(--adm-panel)" }}>
+      <p className="font-sans text-[13px] font-semibold" style={ink}>
+        Update prompts
+      </p>
+      <p className="font-sans text-[12px]" style={ink3}>
+        What installed apps are told, read from this server now.
+      </p>
+      {error ? (
+        <p className="mt-2 font-sans text-[12px]" style={ink3}>
+          Not read: {error}
+        </p>
+      ) : !data ? (
+        <p className="mt-2 font-sans text-[12px]" style={ink3}>
+          Reading.
+        </p>
+      ) : (
+        <ul className="mt-2 space-y-2">
+          {STORES.map((store) => {
+            const p = promptLine(store, data[store].told, data[store].from, data.versionName, drop.builds[store] ?? null, current);
+            return (
+              <li key={store} className="flex gap-2 font-sans text-[12px] leading-[1.5]" style={ink2}>
+                <span className="mt-[5px]">
+                  <StatusDot tone={p.verdict === "behind" || p.verdict === "ahead" ? "bad" : p.verdict === "check" ? "wait" : "good"} />
+                </span>
+                <span>{p.line}</span>
+              </li>
+            );
+          })}
+        </ul>
       )}
     </section>
   );
