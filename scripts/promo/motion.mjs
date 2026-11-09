@@ -3,41 +3,53 @@
 // 2x and scaled down, 60 frames a second, H.264 for any editor. Needs ffmpeg.
 //
 //   node scripts/promo/motion.mjs <look | all> [words|clean|both] [variant,... | all]
+//   node scripts/promo/motion.mjs --set edits <look | all> [words|clean|both] [variant,... | all]
+//
+// A year among the edit frames (33, 325, 330, 1917) has one move more,
+// "count": its digits count up into place at the centre of the screen.
 //
 // PREVIEW=1 draws five moments of each clip side by side instead, small, for
 // checking a move before the long render.
 import fs from "node:fs";
 import path from "node:path";
 import { execFileSync } from "node:child_process";
-import { LOOKS, page } from "./looks.mjs";
-import { MOTION, VARIANTS } from "./moves.mjs";
-import { dir, launch, openLook } from "./lib.mjs";
+import { MOTION, VARIANTS, YEAR_VARIANTS } from "./moves.mjs";
+import { dir, launch, lookSet, openLook } from "./lib.mjs";
 
 const FPS = 60;
 const SECONDS = 2;
 const PREVIEW = process.env.PREVIEW === "1";
 
-const [lookArg = "all", wordsArg = "both", variantArg = "all"] = process.argv.slice(2);
+const argv = process.argv.slice(2);
+const setAt = argv.indexOf("--set");
+const setName = setAt >= 0 ? argv.splice(setAt, 2)[1] : "promo";
+const { looks: LOOKS, page, sub } = await lookSet(setName);
+const [lookArg = "all", wordsArg = "both", variantArg = "all"] = argv;
 const looks = lookArg === "all" ? LOOKS : LOOKS.filter((l) => l.id === lookArg || l.id.startsWith(`${lookArg}-`));
 if (!looks.length) throw new Error(`no look ${lookArg}`);
 const versions = wordsArg === "both" ? [true, false] : [wordsArg === "words"];
-const variants = variantArg === "all" ? VARIANTS : variantArg.split(",");
-for (const v of variants) if (!VARIANTS.includes(v)) throw new Error(`no variant ${v}: ${VARIANTS.join(", ")}`);
+/** The moves a look takes: a year has its count. */
+const movesOf = (look) => {
+  const own = look.year ? YEAR_VARIANTS : VARIANTS;
+  const want = variantArg === "all" ? own : variantArg.split(",");
+  for (const v of want) if (!own.includes(v)) throw new Error(`no variant ${v} for ${look.id}: ${own.join(", ")}`);
+  return want;
+};
 
 const browser = await launch();
 const tab = await (await browser.newContext({ viewport: { width: 1080, height: 1920 }, deviceScaleFactor: PREVIEW ? 0.25 : 2 })).newPage();
-const OUT = dir("clips");
+const OUT = sub ? dir(sub, "clips") : dir("clips");
 
 for (const look of looks) {
   for (const words of versions) {
-    for (const variant of variants) {
+    for (const variant of movesOf(look)) {
       const version = words ? "words" : "clean";
       const name = `${look.id}-${version}-${variant}`;
-      await openLook(tab, `${look.id}-${version}`, page(look.html(words)));
+      await openLook(tab, `${look.id}-${version}`, page(look.html(words)), sub);
       await tab.addScriptTag({ content: MOTION });
       await tab.evaluate((v) => window.__setup(v), variant);
       if (PREVIEW) {
-        const pdir = dir("qa", "preview", name);
+        const pdir = sub ? dir(sub, "qa", "preview", name) : dir("qa", "preview", name);
         for (const [k, s] of [0.05, 0.3, 0.6, 1.0, 1.98].entries()) {
           await tab.evaluate((ms) => window.__seek(ms), s * 1000);
           await tab.screenshot({ path: path.join(pdir, `${k}.png`) });

@@ -9,6 +9,14 @@
 
 export const VARIANTS = ["rise", "reveal", "focus", "push", "float"];
 
+/**
+ * A year's own move (the edit frames' 33, 325, 330, 1917): its digits count
+ * up into place, each spinning and landing in turn, the echoes opening out
+ * from the landed year, the label after. The owner's "number switching",
+ * always at the centre (edits.mjs).
+ */
+export const YEAR_VARIANTS = ["count", ...VARIANTS];
+
 export const MOTION = String.raw`
 (() => {
   const E = { out: "cubic-bezier(.16,1,.3,1)", inout: "cubic-bezier(.65,0,.35,1)", soft: "cubic-bezier(.33,1,.68,1)", linear: "linear" };
@@ -31,6 +39,67 @@ export const MOTION = String.raw`
     return $(".ln > span", el);
   };
 
+  // What a move rebuilt (a year's digits), put back when it settles.
+  const restores = [];
+
+  // A year's digits, each in a window of its own width, spinning down a strip
+  // of digits and landing on its own. Clipped above and below only, so the
+  // glow stays whole beside it. Returns when the last digit lands.
+  const roll = (el, start) => {
+    const cs = getComputedStyle(el);
+    const lh = parseFloat(cs.lineHeight);
+    const orig = el.innerHTML, origStyle = el.getAttribute("style");
+    restores.push(() => { el.innerHTML = orig; el.setAttribute("style", origStyle); });
+    const text = el.textContent.trim();
+    const probe = document.createElement("span");
+    probe.style.cssText = "position:absolute;visibility:hidden;white-space:pre";
+    el.appendChild(probe);
+    const widths = [...text].map((ch) => { probe.textContent = ch; return probe.getBoundingClientRect().width; });
+    probe.remove();
+    const pad = Math.round(lh * 0.45);
+    // The rows above and below fade out where their windows end: the year's
+    // box grows by the windows' reach (its place on the screen unchanged)
+    // and a soft mask runs to nothing at its edges.
+    el.style.top = parseFloat(cs.top) - pad + "px";
+    el.style.paddingTop = el.style.paddingBottom = pad + "px";
+    el.style.webkitMaskImage = el.style.maskImage = "linear-gradient(180deg, transparent 0, #000 " + Math.round(pad * 0.85) + "px, #000 calc(100% - " + Math.round(pad * 0.85) + "px), transparent 100%)";
+    el.innerHTML = [...text].map((ch, i) => {
+      if (!/\d/.test(ch)) return ch;
+      const d = Number(ch);
+      const seq = Array.from({ length: 10 + i * 5 }, (_, k) => (d + 1 + k) % 10).concat([d]);
+      // content-box: the window is a line tall inside its padding, whatever the page's box-sizing.
+      return '<span class="dg" style="display:inline-block;box-sizing:content-box;position:relative;vertical-align:top;width:' + widths[i] + 'px;height:' + lh + 'px;padding:' + pad + 'px 0;margin:-' + pad + 'px 0;overflow-x:visible;overflow-y:clip">' +
+        '<span class="strip" style="position:absolute;left:50%;top:' + pad + 'px;translate:-50% 0;white-space:pre">' +
+        seq.map((x) => '<span style="display:block;height:' + lh + 'px;line-height:' + lh + 'px;text-align:center">' + x + "</span>").join("") + "</span></span>";
+    }).join("");
+    let landed = start;
+    [...el.querySelectorAll(".strip")].forEach((strip, i) => {
+      const n = strip.children.length - 1, duration = 650 + i * 150;
+      add(strip, [
+        { transform: "translateY(0)", filter: "blur(0px)", opacity: 0 },
+        { opacity: 1, offset: 0.12 },
+        { filter: "blur(9px)", offset: 0.22 },
+        { filter: "blur(3px)", offset: 0.72 },
+        { transform: "translateY(" + -n * lh + "px)", filter: "blur(0px)" },
+      ], { duration, delay: start, easing: "cubic-bezier(.22,.8,.26,1)" });
+      landed = Math.max(landed, start + duration);
+    });
+    return landed;
+  };
+
+  // The edit frames' rings, dust, echoes and streak, in each move.
+  const ringsIn = (delay) => $("[data-m=ring]").forEach((el, i) => add(el, [{ opacity: 0, scale: 0.6 }, { opacity: 1, scale: 1 }], { duration: 1000, delay: delay + i * 110, easing: E.out }));
+  const dustIn = (delay) => $("[data-m=dust]").forEach((el, i) => add(el, [{ scale: 0, translate: "0 34px" }, { scale: 1, translate: "0 0" }], { duration: 900, delay: delay + ((i * 37) % 600), easing: E.out }));
+  const echoesIn = (delay, far = 120) => {
+    const main = document.querySelector(".num:not(.echo)");
+    const mid = main ? main.getBoundingClientRect().top : innerHeight / 2;
+    $("[data-m=echo]").forEach((el) => {
+      const up = el.getBoundingClientRect().top < mid;
+      add(el, [{ opacity: 0, translate: "0 " + (up ? far : -far) + "px" }, { opacity: 1, translate: "0 0" }], { duration: 850, delay, easing: E.out });
+    });
+  };
+  const flareIn = (delay) => $("[data-m=flare]").forEach((el) => add(el, [{ opacity: 0, scale: "0.2 1" }, { opacity: 1, scale: "1 1" }], { duration: 1100, delay, easing: E.out }));
+
   // Everything but the grain moves together under one camera.
   const frame = document.querySelector(".frame");
   const cam = document.createElement("div");
@@ -51,12 +120,12 @@ export const MOTION = String.raw`
     add(g, [{ translate: "-80% 0" }, { translate: "80% 0" }], { duration, delay: from, easing: E.inout });
   });
 
-  const words = $("[data-m=h1], [data-m=eyebrow], [data-m=sub], [data-m=caption], [data-m=rule], [data-m=lockup]");
+  const words = $("[data-m=h1], [data-m=echo], [data-m=eyebrow], [data-m=sub], [data-m=caption], [data-m=rule], [data-m=lockup]");
   for (const r of $("[data-m=rule]")) r.style.transformOrigin = "0 50%";
 
   let settles = false;
   window.__setup = (variant) => {
-    settles = variant === "rise" || variant === "reveal" || variant === "focus";
+    settles = variant === "rise" || variant === "reveal" || variant === "focus" || variant === "count";
     if (variant === "rise") {
       $("[data-m=bg]").forEach((el) => add(el, [{ opacity: 0 }, { opacity: 1 }], { duration: 700, easing: E.soft }));
       $("[data-m=numeral]").forEach((el) => add(el, [{ opacity: 0, translate: "0 90px" }, { opacity: 1, translate: "0 0" }], { duration: 1400, easing: E.out }));
@@ -70,6 +139,10 @@ export const MOTION = String.raw`
       $("[data-m=phone]").forEach((el) => add(el, [{ opacity: 0, translate: "0 170px" }, { opacity: 1, translate: "0 0" }], { duration: 1150, delay: 340, easing: E.out }));
       $("[data-m=side]").forEach((el, i) => add(el, [{ opacity: 0, translate: (i ? 130 : -130) + "px 70px" }, { opacity: 1, translate: "0 0" }], { duration: 1100, delay: 540, easing: E.out }));
       $("[data-m=lockup]").forEach((el) => add(el, [{ opacity: 0 }, { opacity: 1 }], { duration: 600, delay: 1100, easing: E.soft }));
+      ringsIn(260);
+      dustIn(80);
+      echoesIn(520);
+      flareIn(300);
     } else if (variant === "reveal") {
       $("[data-m=bg]").forEach((el) => add(el, [{ opacity: 0 }, { opacity: 1 }], { duration: 600, easing: E.soft }));
       $("[data-m=numeral]").forEach((el) => add(el, [{ opacity: 0, translate: "120px 0" }, { opacity: 1, translate: "0 0" }], { duration: 1400, easing: E.out }));
@@ -83,6 +156,10 @@ export const MOTION = String.raw`
       $("[data-m=phone]").forEach((el) => add(el, [{ opacity: 0, translate: "280px 0", rotate: "7deg" }, { opacity: 1, translate: "0 0", rotate: "0deg" }], { duration: 1250, delay: 260, easing: E.out }));
       $("[data-m=side]").forEach((el, i) => add(el, [{ opacity: 0, translate: (i ? 220 : -220) + "px 0" }, { opacity: 1, translate: "0 0" }], { duration: 1150, delay: 420, easing: E.out }));
       $("[data-m=lockup]").forEach((el) => add(el, [{ opacity: 0 }, { opacity: 1 }], { duration: 600, delay: 1200, easing: E.soft }));
+      ringsIn(420);
+      dustIn(200);
+      echoesIn(700, 60);
+      $("[data-m=flare]").forEach((el) => add(el, [{ opacity: 0, translate: "-45% 0" }, { opacity: 1, translate: "0 0" }], { duration: 1200, delay: 200, easing: E.inout }));
       glint(900, 750);
     } else if (variant === "focus") {
       add(cam, [{ filter: "blur(26px)", scale: 1.07, opacity: 0 }, { filter: "blur(10px)", scale: 1.035, opacity: 1, offset: 0.35 }, { filter: "blur(0px)", scale: 1, opacity: 1 }], { duration: 1500, easing: E.soft });
@@ -94,6 +171,10 @@ export const MOTION = String.raw`
       $("[data-m=phone], [data-m=screen], [data-m=art]").forEach((el) => add(el, [{ scale: 1, translate: "0 0" }, { scale: 1.045, translate: "0 -22px" }], { duration: 2000, easing: E.linear }));
       $("[data-m=side]").forEach((el, i) => add(el, [{ scale: 1, translate: "0 0" }, { scale: 1.03, translate: (i ? 14 : -14) + "px -12px" }], { duration: 2000, easing: E.linear }));
       $("[data-m=h1], [data-m=eyebrow], [data-m=sub], [data-m=caption], [data-m=rule]").forEach((el) => add(el, [{ translate: "0 0" }, { translate: "0 -9px" }], { duration: 2000, easing: E.linear }));
+      $("[data-m=ring]").forEach((el) => add(el, [{ scale: 1 }, { scale: 1.07 }], { duration: 2000, easing: E.linear }));
+      $("[data-m=dust]").forEach((el, i) => add(el, [{ translate: "0 0" }, { translate: (i % 2 ? 6 : -6) + "px -40px" }], { duration: 2000, easing: E.linear }));
+      $("[data-m=echo]").forEach((el) => add(el, [{ translate: "0 0" }, { translate: "0 -16px" }], { duration: 2000, easing: E.linear }));
+      $("[data-m=flare]").forEach((el) => add(el, [{ translate: "-30px 0" }, { translate: "30px 0" }], { duration: 2000, easing: E.linear }));
       glint(450, 1000);
     } else if (variant === "float") {
       const wave = (a, b) => [0, 0.25, 0.5, 0.75, 1].map((o, k) => ({ offset: o, ...(k % 2 ? b : a) }));
@@ -101,7 +182,22 @@ export const MOTION = String.raw`
       $("[data-m=side]").forEach((el, i) => add(el, wave({ translate: "0 -8px" }, { translate: "0 8px" }), { duration: 2000, delay: -250 * (i + 1), easing: E.inout }));
       $("[data-m=art]").forEach((el) => add(el, wave({ translate: "0 6px" }, { translate: "0 -6px" }), { duration: 2000, easing: E.inout }));
       $("[data-m=bg]").forEach((el) => add(el, [{ opacity: 0.85 }, { opacity: 1, offset: 0.5 }, { opacity: 0.85 }], { duration: 2000, easing: E.inout }));
+      $("[data-m=ring]").forEach((el, i) => add(el, wave({ scale: 1 }, { scale: 1.03 }), { duration: 2000, delay: -180 * i, easing: E.inout }));
+      $("[data-m=dust]").forEach((el, i) => add(el, wave({ translate: "0 0" }, { translate: (i % 2 ? 5 : -5) + "px -12px" }), { duration: 2000, delay: -((i * 53) % 900), easing: E.inout }));
       glint(300, 1300);
+    } else if (variant === "count") {
+      $("[data-m=bg], [data-m=screen], [data-m=art]").forEach((el) => add(el, [{ opacity: 0, scale: 1.05 }, { opacity: 1, scale: 1 }], { duration: 1200, easing: E.out }));
+      // Everything lands by 1.75s, so the last frames hold the still.
+      let landed = 700;
+      $(".num[data-m=h1]").forEach((el) => { landed = Math.max(landed, roll(el, 100)); });
+      $("[data-m=echo]").forEach((el) => {
+        const up = el.getBoundingClientRect().top < innerHeight / 2;
+        add(el, [{ opacity: 0, translate: "0 " + (up ? 140 : -140) + "px" }, { opacity: 1, translate: "0 0" }], { duration: 650, delay: landed - 200, easing: E.out });
+      });
+      $("[data-m=ring]").forEach((el, i) => add(el, [{ opacity: 0, scale: 0.6 }, { opacity: 1, scale: 1 }], { duration: 600, delay: landed - 250 + i * 80, easing: E.out }));
+      dustIn(0);
+      $("[data-m=eyebrow], [data-m=caption]").forEach((el) => add(el, [{ opacity: 0, translate: "0 16px" }, { opacity: 1, translate: "0 0" }], { duration: 520, delay: landed - 80, easing: E.out }));
+      $("[data-m=flare]").forEach((el) => add(el, [{ opacity: 0, scale: "0.2 1" }, { opacity: 1, scale: "1 1" }], { duration: 700, delay: landed - 250, easing: E.out }));
     }
   };
 
@@ -115,6 +211,7 @@ export const MOTION = String.raw`
       // Held end states are drawn on layers of their own, a hair apart from
       // the still: let them go, so the last frames are the still exactly.
       for (const a of anims) a.cancel();
+      for (const r of restores) r();
       settled = true;
     }
     if (!settled) for (const a of anims) a.currentTime = ms;

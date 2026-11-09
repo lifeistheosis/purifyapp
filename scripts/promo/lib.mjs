@@ -55,9 +55,19 @@ export function copyArt() {
   fs.copyFileSync(path.join(REPO, "public", "purify-cross-mark.png"), path.join(out, "purify-cross-mark.png"));
 }
 
-/** Opens a look's page (PROMO/html/<name>.html) with its fonts and pictures in. */
-export async function openLook(tab, name, html) {
-  const file = path.join(dir("html"), `${name}.html`);
+/** The two sets of looks: the PR promo (looks.mjs) and the edit frames (edits.mjs, in PROMO/edit). */
+export async function lookSet(name = "promo") {
+  if (name === "edits") {
+    const { EDITS, editPage } = await import("./edits.mjs");
+    return { looks: EDITS, page: editPage, sub: "edit" };
+  }
+  const { LOOKS, page } = await import("./looks.mjs");
+  return { looks: LOOKS, page, sub: "" };
+}
+
+/** Opens a look's page (PROMO/[sub/]html/<name>.html) with its fonts and pictures in. */
+export async function openLook(tab, name, html, sub = "") {
+  const file = path.join(sub ? dir(sub, "html") : dir("html"), `${name}.html`);
   fs.writeFileSync(file, html);
   await tab.goto(`file://${file}`);
   await tab.evaluate(() => document.fonts.ready);

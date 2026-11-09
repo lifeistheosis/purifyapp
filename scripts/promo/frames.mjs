@@ -2,14 +2,17 @@
 // clean, 1080x1920 drawn at 2x (2160x3840), a 1080x1920 JPEG of each to
 // send, and a contact sheet of each version for choosing.
 //
-//   node scripts/promo/frames.mjs
+//   node scripts/promo/frames.mjs           the PR promo's seven looks
+//   node scripts/promo/frames.mjs edits     the thirteen edit frames
+import fs from "node:fs";
 import path from "node:path";
 import sharp from "sharp";
-import { LOOKS, page } from "./looks.mjs";
-import { dir, launch, openLook } from "./lib.mjs";
+import { dir, launch, lookSet, openLook } from "./lib.mjs";
 
-const OUT = dir("stills");
-const SEND = dir("stills", "send");
+const { looks: LOOKS, page, sub } = await lookSet(process.argv[2]);
+const OUT = sub ? dir(sub, "stills") : dir("stills");
+const SEND = path.join(OUT, "send");
+fs.mkdirSync(SEND, { recursive: true });
 const browser = await launch();
 const tab = await (await browser.newContext({ viewport: { width: 1080, height: 1920 }, deviceScaleFactor: 2 })).newPage();
 const made = { words: [], clean: [] };
@@ -17,7 +20,7 @@ for (const look of LOOKS) {
   for (const words of [true, false]) {
     const version = words ? "words" : "clean";
     const name = `${look.id}-${version}`;
-    await openLook(tab, name, page(look.html(words)));
+    await openLook(tab, name, page(look.html(words)), sub);
     await tab.waitForTimeout(300);
     const png = path.join(OUT, `${name}.png`);
     await tab.screenshot({ path: png });
@@ -30,7 +33,7 @@ await browser.close();
 
 // A sheet of each version: four across, a little room between.
 for (const [version, files] of Object.entries(made)) {
-  const cols = 4;
+  const cols = files.length > 8 ? 7 : 4;
   const [w, h, gap] = [432, 768, 12];
   const rows = Math.ceil(files.length / cols);
   const tiles = await Promise.all(files.map((f) => sharp(f).resize(w, h, { kernel: "lanczos3" }).toBuffer()));

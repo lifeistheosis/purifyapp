@@ -2,19 +2,23 @@
 // back, each named in the corner, for choosing. Never for the ad itself: the
 // clips stay clean. Needs ffmpeg and the look's clips (motion.mjs).
 //
-//   node scripts/promo/reel.mjs <look> [words|clean]
+//   node scripts/promo/reel.mjs [--set edits] <look> [words|clean]
 import fs from "node:fs";
 import path from "node:path";
 import { execFileSync } from "node:child_process";
-import { LOOKS } from "./looks.mjs";
-import { VARIANTS } from "./moves.mjs";
-import { PROMO, dir, launch } from "./lib.mjs";
+import { VARIANTS, YEAR_VARIANTS } from "./moves.mjs";
+import { PROMO, dir, launch, lookSet } from "./lib.mjs";
 
-const NAMES = { rise: "Rise", reveal: "Reveal", focus: "Focus", push: "Push", float: "Float" };
-const [lookArg, version = "words"] = process.argv.slice(2);
+const NAMES = { count: "Count", rise: "Rise", reveal: "Reveal", focus: "Focus", push: "Push", float: "Float" };
+const argv = process.argv.slice(2);
+const setAt = argv.indexOf("--set");
+const { looks: LOOKS, sub } = await lookSet(setAt >= 0 ? argv.splice(setAt, 2)[1] : "promo");
+const [lookArg, version = "words"] = argv;
 const look = LOOKS.find((l) => l.id === lookArg || l.id.startsWith(`${lookArg}-`));
 if (!look) throw new Error(`no look ${lookArg}`);
-const clips = VARIANTS.map((v) => path.join(PROMO, "clips", `${look.id}-${version}-${v}.mp4`));
+const MOVES = look.year ? YEAR_VARIANTS : VARIANTS;
+const CLIPS = path.join(PROMO, ...(sub ? [sub] : []), "clips");
+const clips = MOVES.map((v) => path.join(CLIPS, `${look.id}-${version}-${v}.mp4`));
 for (const c of clips) if (!fs.existsSync(c)) throw new Error(`missing ${path.basename(c)}: run motion.mjs first`);
 
 // The labels, in the app's own sans.
@@ -22,7 +26,7 @@ const labels = dir("labels");
 const browser = await launch();
 const tab = await (await browser.newContext({ viewport: { width: 1080, height: 1920 }, deviceScaleFactor: 1 })).newPage();
 const files = [];
-for (const [k, v] of VARIANTS.entries()) {
+for (const [k, v] of MOVES.entries()) {
   const file = path.join(labels, `${k + 1}-${v}.png`);
   await tab.setContent(`<!doctype html><html><head><style>
     @font-face { font-family: "DM Sans"; src: url(file://${path.join(PROMO, "fonts", "dmsans.woff2")}) format("woff2"); font-weight: 100 1000; }
@@ -37,9 +41,9 @@ for (const [k, v] of VARIANTS.entries()) {
 }
 await browser.close();
 
-const mp4 = path.join(dir("reels"), `${look.id}-${version}-five-moves.mp4`);
-const n = VARIANTS.length;
-const graph = `${VARIANTS.map((_, k) => `[${k}:v][${k + n}:v]overlay=0:0[v${k}]`).join(";")};${VARIANTS.map((_, k) => `[v${k}]`).join("")}concat=n=${n}:v=1:a=0,format=yuv420p[out]`;
+const mp4 = path.join(sub ? dir(sub, "reels") : dir("reels"), `${look.id}-${version}-moves.mp4`);
+const n = MOVES.length;
+const graph = `${MOVES.map((_, k) => `[${k}:v][${k + n}:v]overlay=0:0[v${k}]`).join(";")};${MOVES.map((_, k) => `[v${k}]`).join("")}concat=n=${n}:v=1:a=0,format=yuv420p[out]`;
 execFileSync("ffmpeg", ["-y", "-loglevel", "error", ...clips.flatMap((c) => ["-i", c]), ...files.flatMap((f) => ["-i", f]),
   "-filter_complex", graph, "-map", "[out]", "-c:v", "libx264", "-preset", "slow", "-crf", "17", "-movflags", "+faststart", mp4]);
 console.log("reel", path.basename(mp4));
