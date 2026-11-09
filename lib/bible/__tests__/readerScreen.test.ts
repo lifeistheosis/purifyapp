@@ -394,9 +394,49 @@ describe("the plates, the pill and the tab bar step away as the reader reads on"
     expect(css).toMatch(/body\[data-reader-away\] \[data-mobile-topbar\]\[data-plates\] \[data-plates-row\] \{\s*transform: translateY\(-8px\);/);
     // The tab bar sinks with the pill.
     expect(css).toMatch(/body\[data-reader-away\] \[data-reader-pill\],\s*body\[data-reader-screen\]\[data-reader-away\] \[data-tab-bar\] \{\s*transform: translateY\(12px\);/);
-    // Visible at once on the way back, hidden only after the fade on the way out.
-    expect(css).toMatch(/\[data-mobile-topbar\]\[data-plates\] \[data-plates-row\],\s*\[data-reader-pill\],\s*body\[data-reader-screen\] \[data-tab-bar\] \{\s*transition:[^}]*visibility 0s;/);
-    expect(css).toMatch(/visibility 0s linear var\(--duration-fast\);/);
+    // Visible at once on the way back, and back in 320ms; hidden only once
+    // faded on the way out, over 560ms on an even curve (his word,
+    // 2026-11-09: "I want it to be slower ... so it could be more immersive").
+    expect(css).toMatch(
+      /\[data-mobile-topbar\]\[data-plates\] \[data-plates-row\],\s*\[data-reader-pill\],\s*body\[data-reader-screen\] \[data-tab-bar\] \{\s*transition:\s*opacity var\(--reader-back-duration\) var\(--ease-house\),\s*transform var\(--reader-back-duration\) var\(--ease-house\),\s*visibility 0s;/,
+    );
+    expect(css).toMatch(
+      /body\[data-reader-screen\]\[data-reader-away\] \[data-tab-bar\] \{\s*opacity: 0;\s*visibility: hidden;\s*transition:\s*opacity var\(--reader-away-duration\) var\(--reader-away-ease\),\s*transform var\(--reader-away-duration\) var\(--reader-away-ease\),\s*visibility 0s linear var\(--reader-away-duration\);/,
+    );
+    expect(css).toMatch(/:root \{\s*--reader-away-duration: 560ms;\s*--reader-back-duration: 320ms;\s*--reader-away-ease: cubic-bezier\(0\.37, 0, 0\.63, 1\);\s*\}/);
+  });
+
+  it("takes everything else that rides the attribute at the same pace: the dock, its faces and its fade, its fall to the foot, the chapter's title and the mini player's lift", () => {
+    const css = rules();
+    const away = (selector: string) => {
+      const at = css.indexOf(`${selector} {`);
+      expect(at, selector).toBeGreaterThan(-1);
+      return css.slice(at, css.indexOf("}", at));
+    };
+    for (const selector of [
+      "body[data-reader-away] .reader-dock",
+      "body[data-reader-away] .reader-dock-fade",
+      "body[data-reader-away] [data-reader-dock]",
+      "body[data-reader-away] [data-dock-title]",
+      "body[data-reader-screen][data-reader-away] .now-playing-lift",
+    ]) {
+      expect(away(selector), selector).toContain("var(--reader-away-duration) var(--reader-away-ease)");
+    }
+    // The card's face goes over the first part of the narrowing, the pill's comes over the rest, ending with it.
+    expect(away("body[data-reader-away] .reader-dock-card")).toMatch(/opacity calc\(var\(--reader-away-duration\) - 200ms\) var\(--reader-away-ease\),\s*visibility 0s linear calc\(var\(--reader-away-duration\) - 200ms\)/);
+    expect(away("body[data-reader-away] .reader-dock-pill")).toMatch(/opacity calc\(var\(--reader-away-duration\) - 200ms\) var\(--reader-away-ease\) 200ms,\s*visibility 0s/);
+    // And each with its escape for reduced motion, at its weight.
+    for (const selector of [
+      "body[data-reader-away] .reader-dock,",
+      "body[data-reader-away] .reader-dock-fade,",
+      "body[data-reader-away] [data-reader-dock],",
+      "body[data-reader-away] .reader-dock-card,",
+      "body[data-reader-away] .reader-dock-pill,",
+      "body[data-reader-away] [data-dock-title]",
+      "body[data-reader-screen][data-reader-away] .now-playing-lift,",
+    ]) {
+      expect(css, selector).toContain(`:where([data-motion="reduce"]) ${selector}`);
+    }
   });
 
   it("keeps a control the keyboard is on in sight, in a rule an old WebView may drop alone", () => {
@@ -414,6 +454,7 @@ describe("the plates, the pill and the tab bar step away as the reader reads on"
       "[data-reader-pill],",
       "body[data-reader-screen] [data-tab-bar],",
       "body[data-reader-screen] .now-playing-lift,",
+      "body[data-reader-screen][data-reader-away] .now-playing-lift,",
       "body[data-reader-away] [data-mobile-topbar][data-plates] [data-plates-row],",
       "body[data-reader-away] [data-reader-pill],",
       "body[data-reader-screen][data-reader-away] [data-tab-bar] {\n transition: none;",

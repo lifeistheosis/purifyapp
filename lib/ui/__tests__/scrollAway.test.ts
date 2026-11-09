@@ -29,7 +29,12 @@ function scroll(from: Away, places: number[], byHand = true): Away {
 }
 
 describe("reading on", () => {
-  it("puts the controls away after a run down, and not on a wobble", () => {
+  it("puts the controls away after a run of a few lines down, and not on a small scroll (his word, 2026-11-09)", () => {
+    // "Make it so that you need to scroll just a little bit more": 80px, a few
+    // lines (it was 24, about one); a scroll up still brings them straight back.
+    expect(AWAY_AFTER_PX).toBe(80);
+    expect(BACK_AFTER_PX).toBe(10);
+    expect(scroll(SHOWN, [1030, 1060, 1079]).away).toBe(false);
     expect(scroll(SHOWN, [1005, 1010]).away).toBe(false);
     expect(scroll(SHOWN, [1010, 1020, 1000 + AWAY_AFTER_PX]).away).toBe(true);
     // Up and down by a few pixels, as a thumb resting on the glass does.
@@ -159,11 +164,11 @@ describe("the page's foot moving", () => {
   it("is the page's own once it is said, so the card stays drawn in", () => {
     const seen: boolean[] = [];
     const stop = watchScrollAway((away) => seen.push(away));
-    byHand(1030);
+    byHand(1000 + AWAY_AFTER_PX + 6);
     expect(seen).toEqual([true]);
     noteFootMoved();
     clock += 30;
-    byItself(1014);
+    byItself(1000 + AWAY_AFTER_PX + 6 - 16);
     expect(seen).toEqual([true]);
     stop();
   });
@@ -171,12 +176,12 @@ describe("the page's foot moving", () => {
   it("and the reader's own scroll up after it still brings it back", () => {
     const seen: boolean[] = [];
     const stop = watchScrollAway((away) => seen.push(away));
-    byHand(1030);
+    byHand(1000 + AWAY_AFTER_PX + 6);
     noteFootMoved();
     clock += 30;
-    byItself(1014);
+    byItself(1000 + AWAY_AFTER_PX + 6 - 16);
     clock += FOOT_SETTLE_MS;
-    byHand(1014 - BACK_AFTER_PX);
+    byHand(1000 + AWAY_AFTER_PX + 6 - 16 - BACK_AFTER_PX);
     expect(seen).toEqual([true, false]);
     stop();
   });
@@ -184,7 +189,7 @@ describe("the page's foot moving", () => {
   it("never keeps it away at the top of the page", () => {
     const seen: boolean[] = [];
     const stop = watchScrollAway((away) => seen.push(away));
-    byHand(1030);
+    byHand(1000 + AWAY_AFTER_PX + 6);
     noteFootMoved();
     byItself(TOP_PX);
     expect(seen).toEqual([true, false]);

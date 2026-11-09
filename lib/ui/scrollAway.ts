@@ -45,8 +45,14 @@ import { useEffect } from "react";
  * together.
  */
 
-/** Down this far, one way, and the controls go. */
-export const AWAY_AFTER_PX = 24;
+/**
+ * Down this far, one way, and the controls go: a few lines, so a small
+ * scroll leaves them where they are (his word, 2026-11-09: "make it so that
+ * you need to scroll just a little bit more"; it was 24, about one line).
+ * Their pace, leaving and coming back, is app/globals.css's
+ * --reader-away-duration and --reader-back-duration.
+ */
+export const AWAY_AFTER_PX = 80;
 /** Up this far and they are back. */
 export const BACK_AFTER_PX = 10;
 /** The top of the page, where they always show. */

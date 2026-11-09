@@ -775,13 +775,26 @@ html.is-native .under-plates {
    screen it keeps its own fade for the sheets and nothing else. What stands
    on it, the mini player and today's readings' bar, comes down to the foot
    while it is away, as in focus mode, and goes back up with it; on the web,
-   which has no tab bar, nothing moves. */
+   which has no tab bar, nothing moves.
+
+   Their pace (his word, 2026-11-09: "I want it to be slower ... so it
+   could be more immersive"): they leave over --reader-away-duration on an
+   even curve, so the eye sees them travel, and are hidden only once faded;
+   they come back sooner, because a reader scrolling up wants them. Longer
+   than the house ladder's slowest on purpose: this is the page's own
+   breath, not a control's answer. lib/ui/scrollAway.ts says how far the
+   reader reads on before they go. */
+:root {
+ --reader-away-duration: 560ms;
+ --reader-back-duration: 320ms;
+ --reader-away-ease: cubic-bezier(0.37, 0, 0.63, 1);
+}
 [data-mobile-topbar][data-plates] [data-plates-row],
 [data-reader-pill],
 body[data-reader-screen] [data-tab-bar] {
  transition:
-  opacity var(--duration-fast) var(--ease-house),
-  transform var(--duration-fast) var(--ease-house),
+  opacity var(--reader-back-duration) var(--ease-house),
+  transform var(--reader-back-duration) var(--ease-house),
   visibility 0s;
 }
 body[data-reader-away] [data-mobile-topbar][data-plates] [data-plates-row],
@@ -790,9 +803,9 @@ body[data-reader-screen][data-reader-away] [data-tab-bar] {
  opacity: 0;
  visibility: hidden;
  transition:
-  opacity var(--duration-fast) var(--ease-house),
-  transform var(--duration-fast) var(--ease-house),
-  visibility 0s linear var(--duration-fast);
+  opacity var(--reader-away-duration) var(--reader-away-ease),
+  transform var(--reader-away-duration) var(--reader-away-ease),
+  visibility 0s linear var(--reader-away-duration);
 }
 body[data-reader-away] [data-mobile-topbar][data-plates] [data-plates-row] {
  transform: translateY(-8px);
@@ -802,7 +815,10 @@ body[data-reader-screen][data-reader-away] [data-tab-bar] {
  transform: translateY(12px);
 }
 body[data-reader-screen] .now-playing-lift {
- transition: translate var(--duration-fast) var(--ease-house);
+ transition: translate var(--reader-back-duration) var(--ease-house);
+}
+body[data-reader-screen][data-reader-away] .now-playing-lift {
+ transition: translate var(--reader-away-duration) var(--reader-away-ease);
 }
 html.is-native:not(.reader-focus) body[data-reader-screen][data-reader-away] .now-playing-lift {
  translate: 0 calc(var(--tab-bar-h) - 0.375rem);
@@ -821,6 +837,7 @@ body[data-reader-screen][data-reader-away] [data-tab-bar]:has(:focus-visible) {
 :where([data-motion="reduce"]) [data-reader-pill],
 :where([data-motion="reduce"]) body[data-reader-screen] [data-tab-bar],
 :where([data-motion="reduce"]) body[data-reader-screen] .now-playing-lift,
+:where([data-motion="reduce"]) body[data-reader-screen][data-reader-away] .now-playing-lift,
 :where([data-motion="reduce"]) body[data-reader-away] [data-mobile-topbar][data-plates] [data-plates-row],
 :where([data-motion="reduce"]) body[data-reader-away] [data-reader-pill],
 :where([data-motion="reduce"]) body[data-reader-screen][data-reader-away] [data-tab-bar] {
@@ -844,15 +861,22 @@ body[data-reader-screen][data-reader-away] [data-tab-bar]:has(:focus-visible) {
  border-radius: 24px;
  background-image: linear-gradient(to bottom, rgb(var(--panel-sheen) / 0.035), transparent 72%);
  transition:
-  width var(--duration-base) var(--ease-house),
-  height var(--duration-base) var(--ease-house),
-  border-radius var(--duration-base) var(--ease-house);
+  width var(--reader-back-duration) var(--ease-house),
+  height var(--reader-back-duration) var(--ease-house),
+  border-radius var(--reader-back-duration) var(--ease-house);
 }
 body[data-reader-away] .reader-dock,
 html.reader-focus .reader-dock {
  width: var(--reader-dock-pill-w, 10rem);
  height: 52px;
  border-radius: 26px;
+}
+/* Drawing in as the reader reads on, at the bars' pace. */
+body[data-reader-away] .reader-dock {
+ transition:
+  width var(--reader-away-duration) var(--reader-away-ease),
+  height var(--reader-away-duration) var(--reader-away-ease),
+  border-radius var(--reader-away-duration) var(--reader-away-ease);
 }
 .reader-dock-card,
 body[data-reader-away] .reader-dock-pill,
@@ -874,6 +898,18 @@ html.reader-focus .reader-dock-card {
   opacity var(--duration-fast) var(--ease-house),
   visibility 0s linear var(--duration-fast);
 }
+/* As the reader reads on, the card's face goes over the first part of the
+   narrowing and the pill's comes over the rest, ending with it. */
+body[data-reader-away] .reader-dock-card {
+ transition:
+  opacity calc(var(--reader-away-duration) - 200ms) var(--reader-away-ease),
+  visibility 0s linear calc(var(--reader-away-duration) - 200ms);
+}
+body[data-reader-away] .reader-dock-pill {
+ transition:
+  opacity calc(var(--reader-away-duration) - 200ms) var(--reader-away-ease) 200ms,
+  visibility 0s;
+}
 body[data-reader-away] .reader-dock:has(.reader-dock-card :focus-visible) {
  width: 100%;
  height: 112px;
@@ -892,14 +928,20 @@ body[data-reader-away] .reader-dock:has(.reader-dock-card :focus-visible) .reade
 /* The fade the card floats on goes with the card: the pill floats on the
    page alone, as the mini player's does. */
 .reader-dock-fade {
- transition: opacity var(--duration-fast) var(--ease-house);
+ transition: opacity var(--reader-back-duration) var(--ease-house);
 }
 body[data-reader-away] .reader-dock-fade,
 html.reader-focus .reader-dock-fade {
  opacity: 0;
 }
+body[data-reader-away] .reader-dock-fade {
+ transition: opacity var(--reader-away-duration) var(--reader-away-ease);
+}
 [data-reader-dock] {
- transition: translate var(--duration-fast) var(--ease-house);
+ transition: translate var(--reader-back-duration) var(--ease-house);
+}
+body[data-reader-away] [data-reader-dock] {
+ transition: translate var(--reader-away-duration) var(--reader-away-ease);
 }
 html.is-native:not(.reader-focus) body[data-reader-away] [data-reader-dock] {
  translate: 0 var(--tab-bar-h);
@@ -915,17 +957,17 @@ html.has-reader-dock body[data-reader-away] [data-mobile-topbar][data-plates] [d
  visibility: hidden;
  transform: translateY(-8px);
  transition:
-  opacity var(--duration-fast) var(--ease-house),
-  transform var(--duration-fast) var(--ease-house),
-  visibility 0s linear var(--duration-fast);
+  opacity var(--reader-back-duration) var(--ease-house),
+  transform var(--reader-back-duration) var(--ease-house),
+  visibility 0s linear var(--reader-back-duration);
 }
 body[data-reader-away] [data-dock-title] {
  opacity: 1;
  visibility: visible;
  transform: none;
  transition:
-  opacity var(--duration-fast) var(--ease-house),
-  transform var(--duration-fast) var(--ease-house),
+  opacity var(--reader-away-duration) var(--reader-away-ease),
+  transform var(--reader-away-duration) var(--reader-away-ease),
   visibility 0s;
 }
 /* The chapter's plate is a plate: the page's ground lifted by a breath of
@@ -955,6 +997,9 @@ html.reader-focus.has-reader-dock {
 :where([data-motion="reduce"]) .reader-dock-fade,
 :where([data-motion="reduce"]) [data-reader-dock],
 :where([data-motion="reduce"]) [data-dock-title],
+:where([data-motion="reduce"]) body[data-reader-away] .reader-dock,
+:where([data-motion="reduce"]) body[data-reader-away] .reader-dock-fade,
+:where([data-motion="reduce"]) body[data-reader-away] [data-reader-dock],
 :where([data-motion="reduce"]) body[data-reader-away] .reader-dock-card,
 :where([data-motion="reduce"]) body[data-reader-away] .reader-dock-pill,
 :where([data-motion="reduce"]) body[data-reader-away] [data-dock-title] {
