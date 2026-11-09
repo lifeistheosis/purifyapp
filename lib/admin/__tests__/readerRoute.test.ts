@@ -21,7 +21,15 @@ const state = vi.hoisted(() => ({
 }));
 
 vi.mock("@/lib/supabase/server", () => ({
-  createClient: async () => ({ auth: { getUser: async () => ({ data: { user: state.user } }) } }),
+  // The admin gate reads the session's token, then asks the auth server about
+  // it (lib/admin/access.ts, the second sign-in step). A reader here has no
+  // factor, so any token passes once they are an admin.
+  createClient: async () => ({
+    auth: {
+      getSession: async () => ({ data: { session: state.user ? { access_token: "test.token.sig" } : null } }),
+      getUser: async () => ({ data: { user: state.user } }),
+    },
+  }),
   createClientFromRequest: async () => ({ auth: { getUser: async () => ({ data: { user: state.user } }) } }),
 }));
 

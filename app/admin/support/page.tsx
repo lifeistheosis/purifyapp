@@ -1,8 +1,8 @@
-import { notFound } from "next/navigation";
+import { notFound, redirect } from "next/navigation";
 
 import { SectionHead } from "@/components/admin/hero";
 import { SupportConsole } from "@/components/admin/SupportConsole";
-import { getAdminUser } from "@/lib/admin/access";
+import { adminAccess } from "@/lib/admin/access";
 import { listTickets } from "@/lib/support/tickets";
 
 export const dynamic = "force-dynamic";
@@ -12,8 +12,11 @@ export const metadata = {
 };
 
 export default async function AdminSupportPage() {
-  const admin = await getAdminUser();
-  if (!admin) notFound();
+  const access = await adminAccess();
+  if (access.state === "none") notFound();
+  // The sign-in code first (A4): the panel's own page asks for it, then this
+  // page is one link away again.
+  if (access.state !== "ok") redirect("/admin");
 
   const tickets = await listTickets();
 

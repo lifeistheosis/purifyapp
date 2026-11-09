@@ -481,8 +481,16 @@ export function AdminShell({
   adminEmail,
   isOwner = false,
   savedRail = null,
+  signInCode,
 }: {
   adminEmail: string;
+  /**
+   * Whether this account has added the sign-in code app (A4,
+   * lib/admin/secondStep.ts). Settings offers the setup while it has not;
+   * undefined where the page does not know (the previews), and then says
+   * nothing.
+   */
+  signInCode?: boolean;
   /** Resolved server-side by getOwnerUser(). Controls whether the Owner
       segment renders. It is NOT the data gate: see OwnerSection.tsx. */
   isOwner?: boolean;
@@ -729,6 +737,27 @@ export function AdminShell({
         </div>
         {/* His own A and B: which Home, and how the chart shows today. */}
         <AdminLayoutSwitch />
+        {/* The second sign-in step (A4): offered until it is added, then said. */}
+        {signInCode === false ? (
+          <a
+            href="/admin?second-step=set-up"
+            className="adm-control flex min-h-11 w-full items-center justify-center rounded-[var(--adm-radius-sm)] border font-sans text-[11.5px]"
+            style={
+              {
+                color: "var(--adm-ink)",
+                borderColor: "var(--adm-line-strong)",
+                "--_bg": "transparent",
+                "--_bg-hover": "var(--adm-hover)",
+              } as React.CSSProperties
+            }
+          >
+            Add a sign-in code
+          </a>
+        ) : signInCode === true ? (
+          <p className="flex min-h-11 items-center justify-center font-sans text-[11.5px]" style={{ color: "var(--adm-ink-3)" }}>
+            Sign-in code: on
+          </p>
+        ) : null}
         <a
           href="/signout"
           className="adm-control flex min-h-11 w-full items-center justify-center gap-1.5 rounded-[var(--adm-radius-sm)] font-sans text-[11.5px]"
