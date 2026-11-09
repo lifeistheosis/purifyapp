@@ -201,6 +201,7 @@ very short and plain, emojis welcome, never an em dash.
   (`docs/1.9-build/drafts/stop-sharing-deletes.patch`) and version B of the
   privacy paragraph (`docs/1.9-build/drafts/privacy-sharing.md`, English and
   German).
+- Every question still open, in plain words with photos only for design picks, is one page for him: https://claude.ai/artifact/7JTm8bbtF96SmpCCcJ5S2D (late 2026-11-09). Four photo picks (52, 9, 11, 77), the yes or no list, the steps only he can do, and what waits for after 1.9. He answers with "all recs" or by number.
 - Sent to Updates late 2026-11-09, his word, no decision needed: every book or
   plan cover is the saint it is attributed to, and the reader's bars leave
   later and slower (both in `BRAINSTORM.md`).
