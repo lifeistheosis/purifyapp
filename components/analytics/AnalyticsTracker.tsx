@@ -4,6 +4,7 @@ import { useCallback, useEffect, useRef } from "react";
 import { usePathname } from "next/navigation";
 import { apiFetch } from "@/lib/api/client";
 import { isAutomatedAgent } from "@/lib/analytics/bot";
+import { countVersionInUse } from "@/lib/analytics/featureCount";
 import { countClose, countVisit } from "@/lib/analytics/screenCount";
 import { screenOf } from "@/lib/analytics/screens";
 import { tagFromSearch, withoutTag } from "@/lib/analytics/tag";
@@ -168,6 +169,8 @@ export function AnalyticsTracker() {
       humanRef.current = true;
       record();
       countVisit();
+      // The 1.9 counts (admin A5): the version in use, at most once a UTC day.
+      countVersionInUse();
     };
     if (tabHasHadInput()) {
       confirm();
@@ -222,7 +225,10 @@ export function AnalyticsTracker() {
         return;
       }
       if (shownAtRef.current === null) shownAtRef.current = Date.now();
-      if (humanRef.current) countVisit();
+      if (humanRef.current) {
+        countVisit();
+        countVersionInUse();
+      }
     };
     const onShow = (e: PageTransitionEvent) => {
       if (e.persisted && document.visibilityState === "visible") shownAtRef.current = Date.now();

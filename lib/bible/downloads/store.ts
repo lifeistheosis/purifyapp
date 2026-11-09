@@ -22,6 +22,7 @@
 // A book is read once and kept while it is read (the last few books), so
 // turning a chapter does not read the phone again.
 
+import { countBibleDownloaded } from "@/lib/analytics/featureCount";
 import { useSyncExternalStore } from "react";
 
 import { streamedUrl } from "@/lib/media/streamed";
@@ -319,6 +320,8 @@ async function download(
     delete left[id];
     writeJson(PARTIAL_KEY, left);
     setProgress(id, null);
+    // The 1.9 counts (admin A5): which Bibles are downloaded, no reader named.
+    countBibleDownloaded(id);
     return "saved";
   } catch (e) {
     controller.abort();

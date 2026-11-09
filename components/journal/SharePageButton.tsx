@@ -15,6 +15,7 @@ import { useEffect, useState } from "react";
 import { useUpgradeModal } from "@/components/billing/UpgradeModal";
 import { useTranslate } from "@/components/i18n/MessagesProvider";
 import { Share } from "@/components/ui/icons/Share";
+import { countJournalPageShared } from "@/lib/analytics/featureCount";
 import { apiFetch } from "@/lib/api/client";
 import { shareText } from "@/lib/share/shareImage";
 import { softTick } from "@/lib/ui/softTick";
@@ -64,6 +65,8 @@ export function SharePageButton({ recordId, body, title }: { recordId: string; b
         return;
       }
       if (!res.ok || !data.url) return;
+      // The 1.9 counts (admin A5): the server has made the link.
+      countJournalPageShared();
       setReady({ left: data.left ?? null });
       softTick();
       await shareText(title || t("journal.title"), title || t("journal.title"), data.url);

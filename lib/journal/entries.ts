@@ -1,5 +1,6 @@
 "use client";
 
+import { countJournalPageWritten } from "@/lib/analytics/featureCount";
 import { useSyncExternalStore } from "react";
 
 /**
@@ -130,6 +131,9 @@ export function addRecord(
     updatedAt: at,
   };
   writeRecords([record, ...readRecords()]);
+  // The 1.9 counts (admin A5): a new page, once, when it is first saved; an
+  // edit (updateRecord) is not one.
+  countJournalPageWritten();
   return record;
 }
 

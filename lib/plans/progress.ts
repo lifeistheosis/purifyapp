@@ -1,5 +1,6 @@
 "use client";
 
+import { countPlanBegun, countPlanFinished } from "@/lib/analytics/featureCount";
 import { useSyncExternalStore } from "react";
 
 import { markKept, strandKey } from "@/lib/rhythm/marks";
@@ -82,9 +83,30 @@ function writeResets(resets: Record<string, number>): void {
   }
 }
 
+/**
+ * The 1.9 counts (admin A5, lib/analytics/featureCount.ts): a plan begun and a
+ * plan finished, each once per plan on a device, so starting over does not
+ * count it twice. Only what the reader does here: the sync's writes go round.
+ */
+const COUNTED_KEY = "purify:count.plans";
+
+function countOnce(what: "begun" | "finished", planId: string, send: (planId: string) => void): void {
+  try {
+    const counted = JSON.parse(window.localStorage.getItem(COUNTED_KEY) ?? "{}") as Partial<Record<"begun" | "finished", string[]>>;
+    const list = Array.isArray(counted[what]) ? counted[what] : [];
+    if (list.includes(planId)) return;
+    window.localStorage.setItem(COUNTED_KEY, JSON.stringify({ ...counted, [what]: [...list, planId] }));
+  } catch {
+    return;
+  }
+  send(planId);
+}
+
 export function startPlan(id: string, today: DayKey = todayKey()): void {
   const state = read();
-  if (!state[id]) write({ ...state, [id]: { startedOn: today, done: {}, at: Date.now() } });
+  if (state[id]) return;
+  write({ ...state, [id]: { startedOn: today, done: {}, at: Date.now() } });
+  countOnce("begun", id, countPlanBegun);
 }
 
 export function resetPlan(id: string): void {
@@ -115,7 +137,10 @@ export function completeDay(plan: ReadingPlan, index: number, today: DayKey = to
   // The whole plan read: kept once more under `plan:<id>`, which syncs with
   // the rest of the day marks into prayer_completions, and is what the
   // Psalter and Four Gospels badges are read from (lib/profile/earned.ts).
-  if (plan.days.every((_, i) => done[String(i)])) markKept(planDoneKey(plan.id), today);
+  if (plan.days.every((_, i) => done[String(i)])) {
+    markKept(planDoneKey(plan.id), today);
+    countOnce("finished", plan.id, countPlanFinished);
+  }
 }
 
 /** The mark a finished plan leaves, e.g. `plan:psalter`. */
