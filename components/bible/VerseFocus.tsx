@@ -7,6 +7,7 @@ import { createPortal } from "react-dom";
 import { useTranslate } from "@/components/i18n/MessagesProvider";
 import { PlusMark } from "@/components/billing/PlusMark";
 import { Book } from "@/components/ui/icons/Book";
+import { Codex } from "@/components/ui/icons/Codex";
 import { Copy } from "@/components/ui/icons/Copy";
 import { CrossRefs } from "@/components/ui/icons/CrossRefs";
 import { Flower } from "@/components/ui/icons/Flower";
@@ -301,6 +302,10 @@ function studyIcon(key: string) {
       );
     case "crossrefs":
       return <CrossRefs size={20} />;
+    case "compare":
+      // The Gospel book the app wears for a Bible (a saved chapter, the Creed):
+      // Compare is the verse in each Bible. The Scroll read as a phone at 20px.
+      return <Codex size={20} />;
     case "commentary":
       return <Book size={20} />;
     case "bookmark":

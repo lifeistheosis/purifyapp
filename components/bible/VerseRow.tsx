@@ -44,6 +44,7 @@ import { Sparkle } from "@/components/ui/icons/Sparkle";
 import { Star } from "@/components/ui/icons/Star";
 import { useTranslate } from "@/components/i18n/MessagesProvider";
 import { useUpgradeModal } from "@/components/billing/UpgradeModal";
+import { CompareSheet } from "@/components/bible/CompareSheet";
 import { cn } from "@/lib/cn";
 import { plusFeaturesNow, usePlusFeatures } from "@/lib/entitlements/usePlusFeatures";
 import { keepText, verseKey } from "@/lib/remember/schedule";
@@ -406,6 +407,8 @@ export function VerseRow({
  // does). The v3.7 invariant survives for a single tap, which writes
  // nothing; a double tap is the one tap that does (1.8, quickHighlight).
  const [showTools, setShowTools] = useState(false);
+ // Compare's sheet (1.9), mounted only while open: no verse loads anything until asked.
+ const [compareOpen, setCompareOpen] = useState(false);
  const pressTimerRef = useRef<number | null>(null);
  const pressOriginRef = useRef<{ x: number; y: number } | null>(null);
 
@@ -661,6 +664,17 @@ export function VerseRow({
  if (onOpenCrossRefs) {
  rows.push({ key: "crossrefs", label: t("bible.crossRefs"), onSelect: onOpenCrossRefs, locked: plusAllowed === false });
  }
+ // Compare (1.9, the sheet's 14): the verse in each Bible the app may show, a Plus tool.
+ rows.push({
+ key: "compare",
+ label: t("bible.compare"),
+ onSelect: () => {
+ setShowTools(false);
+ if (plusAllowed === false) upgrade.open("general");
+ else setCompareOpen(true);
+ },
+ locked: plusAllowed === false,
+ });
  if (hasCommentary) {
  rows.push({
  key: "commentary",
@@ -1417,6 +1431,9 @@ export function VerseRow({
  onClose={() => setShowTools(false)}
  />
  )}
+ {compareOpen ? (
+ <CompareSheet open onClose={() => setCompareOpen(false)} book={book} chapter={chapter} verse={verse.n} reference={reference()} words={verse.text} />
+ ) : null}
  </div>
  );
 }

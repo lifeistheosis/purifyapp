@@ -29,7 +29,7 @@ function place(map: MapFile, book: string, chapter: number, verse: number): stri
 describe("the verse maps for Compare", () => {
   it("are what the script makes from the texts and the Copenhagen mappings, and nothing else", () => {
     for (const { id, target, sameEdition } of BIBLES as { id: string; target: string; sameEdition: boolean }[]) {
-      const { books } = placeBible(id, target, sameEdition) as { books: MapFile["books"] };
+      const { books } = placeBible(id, target, sameEdition) as unknown as { books: MapFile["books"] };
       expect(read(id).books, id).toEqual(books);
     }
   });
