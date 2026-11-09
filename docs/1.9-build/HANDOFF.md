@@ -174,3 +174,33 @@ very short and plain, emojis welcome, never an em dash.
   (DESKTOP-H33CQ43) lists Homebase for Remote Control but does not offer it to
   cloud sessions (the Claude app there may need an update). His call how to
   bring it in.
+- The rest of the sheet's numbers still open (late 2026-11-09): 42 Stripe's
+  async payment event; 64 the sign-in code over Community moderation (ready
+  behind COMMUNITY_ADMIN_NEEDS_CODE); 66 and 73 the disputed events kept off;
+  70 the patch-notes pull; 71 the 1.8 release email; 72 the florilegium kinds
+  SQL; 74 the "commemorated today" wording on Today; 75 the dates each store
+  served 1.8; 76 the German privacy fix to main (a push to main, so his word);
+  77 the Holy Week card's picture; 78 the nine Holy Week questions; 79 the
+  earned palettes' rules; 80 shorter player labels; 81 a source for the Psalter
+  in a week; 82 the privacy wording, a and b, and c (below); 83 the Psalms
+  notes move (below); 84 the heartbeat alert; 85 the Compare paywall line
+  (draft: "See a verse in the Greek and in every Bible you can download, each
+  at the place its own numbering puts it."). He can answer them all with "all
+  recs".
+- Fable's release check 1 is done on the branch by Updates: B2 `a023035`, M2
+  `c1fa64e`, M3 `0f14e2d`, M5 `92d1930`, L1 `e94f11e` (their run: tsc 0, unit
+  green, eslint 0). M3 caps a shared page's verse cards per view (words for
+  the first 20, the rest by reference) instead of refusing the share, since the
+  app cannot tell a reader why a share was refused: the arbiter accepted it.
+  Two drafts wait on his word. 83: `docs/1.9-build/sql/psalms-113-115-move.sql`
+  (ran twice on a scratch PostgreSQL 16, the second run doing nothing) must run
+  with the 1.9 merge, never later, or an old place will be read as another
+  verse's new one (`docs/1.9-build/drafts/psalms-113-115-move.md`). 82c: the app
+  can share a journal page but cannot stop sharing it, short of deleting the
+  account; the recommendation is a Stop sharing control in 1.9
+  (`docs/1.9-build/drafts/stop-sharing-deletes.patch`) and version B of the
+  privacy paragraph (`docs/1.9-build/drafts/privacy-sharing.md`, English and
+  German).
+- Sent to Updates late 2026-11-09, his word, no decision needed: every book or
+  plan cover is the saint it is attributed to, and the reader's bars leave
+  later and slower (both in `BRAINSTORM.md`).
