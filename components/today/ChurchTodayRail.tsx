@@ -12,6 +12,7 @@ import { listenParts, startListening } from "@/lib/readings/listen";
 import { NATIVITY_PATH } from "@/lib/reading/nativity";
 import { useNativityRow } from "@/lib/reading/useNativityRow";
 import { useCalendarStyleDefault } from "@/lib/calendar/useCalendarStyleDefault";
+import { todaysHistoryEvent } from "@/lib/history/onThisDay";
 import { sectionMedia } from "@/lib/media/sections";
 import { fastView } from "@/lib/onboarding/space";
 import { useSpace } from "@/lib/onboarding/useSpace";
@@ -30,6 +31,7 @@ import { ChevronRight } from "@/components/ui/icons/ChevronRight";
 import { Headphones } from "@/components/ui/icons/Headphones";
 import { Play } from "@/components/ui/icons/Play";
 import { Skeleton } from "@/components/ui/Skeleton";
+import { HistoryDayBand } from "./HistoryDayBand";
 import { SaintFace } from "./SaintFace";
 import { SpeakerBand } from "./SpeakerBand";
 import { TodaySayingCard } from "./TodaySayingCard";
@@ -211,12 +213,18 @@ export function ChurchTodayRail() {
   // Only when the saint of the day has no profile to open. On a day that does
   // resolve, the reader already has somewhere to go and the list stays short.
   const saying = headlineSaint ? null : sayingForDay(today);
+  // The day's event in Church history, on the reader's own calendar.
+  const history = todaysHistoryEvent(today, calendarStyle);
   const bible = sectionMedia("bible");
 
   return (
     <div data-church-today="">
       <div className="flex flex-col gap-2">
         {headlineSaint && words ? <SaintWordsBand saint={headlineSaint} words={words} /> : <SaintBand saint={saint} />}
+
+        {/* This day in Church history (1.9, U9): under the day's saints, on
+            the days an event with its picture falls on exactly. */}
+        {history ? <HistoryDayBand event={history} /> : null}
 
         {view && !path ? (
           <Link href="/fasting" data-today-band="fast" className="press-card block rounded-[18px] border border-paper/8 bg-night-deep px-4 py-3.5">

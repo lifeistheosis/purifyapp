@@ -7,7 +7,8 @@
 
 import Link from "next/link";
 
-import { historyEventsOn } from "@/lib/history/events";
+import type { CalStyle } from "@/lib/calendar/orthodox";
+import { historyEventsOnDay } from "@/lib/history/onThisDay";
 import { T } from "@/components/i18n/T";
 import { ChevronRight } from "@/components/ui/icons/ChevronRight";
 import { TodayHeading } from "@/components/prayers/TodayHeading";
@@ -15,16 +16,16 @@ import { cn } from "@/lib/cn";
 
 export function OnThisDayHistory({
   date,
+  style,
   className,
 }: {
   date: Date;
+  /** The reader's calendar: a day the Church keeps falls 13 days later on the Old (lib/history/onThisDay.ts). */
+  style: CalStyle;
   /** The caller owns the spacing; single-caller, so no default margin. */
   className?: string;
 }) {
-  const mmdd = `${String(date.getUTCMonth() + 1).padStart(2, "0")}-${String(
-    date.getUTCDate(),
-  ).padStart(2, "0")}`;
-  const events = historyEventsOn(mmdd).slice(0, 2);
+  const events = historyEventsOnDay(date, style).slice(0, 2);
   if (!events.length) return null;
 
   return (

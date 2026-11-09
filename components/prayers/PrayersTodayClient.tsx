@@ -5,6 +5,7 @@ import type { CSSProperties, ReactNode } from "react";
 
 import { TONE_RGB, toneFor, toneVars } from "@/lib/calendar/tone";
 import { useChurchDay } from "@/lib/calendar/useChurchDay";
+import { useCalendarStyleDefault } from "@/lib/calendar/useCalendarStyleDefault";
 import { useTranslate } from "@/components/i18n/MessagesProvider";
 import { StreakAtRisk } from "@/components/streak/StreakAtRisk";
 import { StreakCard } from "@/components/streak/StreakCard";
@@ -75,6 +76,7 @@ const QUIET_LINK =
 export function PrayersTodayClient({ verse }: { verse?: ReactNode }) {
   const { t } = useTranslate();
   const day = useChurchDay();
+  const [calendarStyle] = useCalendarStyleDefault();
 
   // The day's liturgical tone, as colour only, on one hairline. Nothing on
   // this page renders the tone's NAME: currentSeason(), movableLabelOn() and
@@ -171,7 +173,7 @@ export function PrayersTodayClient({ verse }: { verse?: ReactNode }) {
               <TodayPersonalRail />
 
               {/* Quiet on the ~358 days a year with no firmly dated event. */}
-              {day && <OnThisDayHistory date={day.today} />}
+              {day && <OnThisDayHistory date={day.today} style={calendarStyle} />}
             </div>
           </div>
         </div>
