@@ -10,6 +10,11 @@
 // so a chapter read after an app was built still gets Listen there.
 // lib/readAloud/__tests__/chapters.test.ts holds the two together.
 //
+// And beside them (1.9, his yes to the sheet's 16, "the rough size beside the
+// save mark"): data/readAloud/seconds.json, each chapter's length in whole
+// seconds from the same timings, so the save mark can say how much a book
+// takes before it is saved (lib/readAloud/size.ts).
+//
 //   node scripts/read-aloud-index.mjs
 import fs from "node:fs";
 import path from "node:path";
@@ -30,7 +35,14 @@ for (const book of books) {
     .sort((a, b) => a - b);
   for (const n of chapters) list.push(`${book}/${n}`);
 }
+const seconds = {};
+for (const key of list) {
+  const timings = JSON.parse(fs.readFileSync(path.join(ROOT, `${key}.json`), "utf8"));
+  if (typeof timings.seconds !== "number") throw new Error(`${key}: no length in its timings`);
+  seconds[key] = Math.round(timings.seconds);
+}
 const json = `${JSON.stringify(list)}\n`;
 fs.writeFileSync(path.join("data", "readAloud", "index.json"), json);
 fs.writeFileSync(path.join(ROOT, "index.json"), json);
+fs.writeFileSync(path.join("data", "readAloud", "seconds.json"), `${JSON.stringify(seconds)}\n`);
 console.log(`${list.length} chapters have a reading`);

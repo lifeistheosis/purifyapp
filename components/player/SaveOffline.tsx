@@ -32,12 +32,14 @@ import { useEffect, useSyncExternalStore } from "react";
 import { useUpgradeModal } from "@/components/billing/UpgradeModal";
 import { useTranslate } from "@/components/i18n/MessagesProvider";
 import { getBook, localBookNames } from "@/lib/bible/books";
+import { megabytes } from "@/lib/bible/downloads/catalog";
 import { cn } from "@/lib/cn";
 import { plusFeaturesNow } from "@/lib/entitlements/usePlusFeatures";
 import { isNativeClient } from "@/lib/platform/native";
 import { bookOfSrc, hasReadAloud } from "@/lib/readAloud/chapters";
 import { checkSaved, onSavedChange, removeBook, savedChapters } from "@/lib/readAloud/offline";
 import { cancelSaving, saveOverMobileData, startSaving, useSaving, type SavingJob } from "@/lib/readAloud/saving";
+import { unsavedBytes } from "@/lib/readAloud/size";
 
 /** The book whose saved line (with Remove) is open; the saving itself is lib/readAloud/saving.ts. */
 let open: string | null = null;
@@ -79,7 +81,7 @@ function useSavedKeys(): string {
 
 /** The playing chapter's book, if it can be saved here: its chapters that have a reading, and how many are saved. */
 function useOfflineBook(src: string | null) {
-  const { t } = useTranslate();
+  const { t, locale } = useTranslate();
   const saved = useSavedKeys();
   const book = bookOfSrc(src);
   if (!book || !isNativeClient()) return null;
@@ -87,8 +89,11 @@ function useOfflineBook(src: string | null) {
   if (!meta) return null;
   const chapters = Array.from({ length: meta.chapters }, (_, i) => i + 1).filter((c) => hasReadAloud(book, c));
   if (!chapters.length) return null;
-  const savedHere = saved.split(",").filter((k) => k.startsWith(`${book}/`)).length;
-  return { book, chapters, name: localBookNames(t)[book] ?? meta.name, saved: savedHere >= chapters.length };
+  const keys = new Set(saved.split(",").filter((k) => k.startsWith(`${book}/`)));
+  // What saving the rest would take, before it is saved (1.9, his yes to the
+  // sheet's 16): rough, from each chapter's length (lib/readAloud/size.ts).
+  const size = megabytes(unsavedBytes(book, chapters, keys), locale);
+  return { book, chapters, name: localBookNames(t)[book] ?? meta.name, saved: keys.size >= chapters.length, size };
 }
 
 /**
@@ -148,7 +153,15 @@ export function SaveOffline({ src, className }: { src: string | null; className?
     );
   }
 
-  return <SaveOfflineMark look="save" onClick={() => void save()} label={t("player.offline.save", { book: name })} className={className} />;
+  return (
+    <SaveOfflineMark
+      look="save"
+      size={offline.size}
+      onClick={() => void save()}
+      label={`${t("player.offline.save", { book: name })}, ${offline.size}`}
+      className={className}
+    />
+  );
 }
 
 /**
@@ -164,6 +177,7 @@ export function SaveOfflineMark({
   label,
   onClick,
   expanded,
+  size,
   className,
 }: {
   look: "save" | "saving" | "waiting" | "saved";
@@ -174,6 +188,8 @@ export function SaveOfflineMark({
   onClick?: () => void;
   /** Saved: whether the saved line under the player is open. */
   expanded?: boolean;
+  /** To save: what the book will take, said beside the mark, inside the one button (1.9). */
+  size?: string;
   className?: string;
 }) {
   const box = cn(
@@ -224,8 +240,18 @@ export function SaveOfflineMark({
       type="button"
       onClick={onClick}
       aria-label={label}
-      className={cn(box, "text-paper/80 hover:bg-paper/[0.06] hover:text-paper")}
+      className={cn(
+        size
+          ? cn("tap-press inline-flex h-11 shrink-0 items-center gap-1.5 rounded-full ps-3 pe-2.5 motion-safe:transition-colors", className)
+          : box,
+        "text-paper/80 hover:bg-paper/[0.06] hover:text-paper",
+      )}
     >
+      {size ? (
+        <span data-save-size="" className="font-sans text-caption tabular-nums text-paper/70">
+          {size}
+        </span>
+      ) : null}
       <svg width={22} height={22} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.8} strokeLinecap="round" strokeLinejoin="round" aria-hidden>
         <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
         <path d="M7 10l5 5 5-5" />
@@ -304,6 +330,9 @@ export function SaveOfflineRow({ src, onLeave, className }: { src: string | null
     >
       {mark}
       <span className="min-w-0 truncate">{t("player.offline.save", { book: name })}</span>
+      <span data-save-size="" className="ms-auto shrink-0 tabular-nums text-paper/60">
+        {offline.size}
+      </span>
     </button>
   );
 }
