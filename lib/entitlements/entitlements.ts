@@ -25,10 +25,11 @@
 //   2. An explicit "false" (or "0") turns a surface off. That is the
 //      emergency switch, set in Render or the GitHub secret, no deploy of code.
 //   3. Otherwise the surface's default applies. Web and Android default ON.
-//      iOS defaults OFF: its App Store products sit at MISSING_METADATA, and
-//      App Review was told iOS enforcement ships off
-//      (docs/app-store-review-notes.md). It needs its products live and an
-//      explicit NEXT_PUBLIC_PLUS_ENFORCED_IOS="true".
+//      iOS defaults OFF and is switched on by an explicit
+//      NEXT_PUBLIC_PLUS_ENFORCED_IOS="true". Its App Store products have
+//      been approved and on sale since 1.8, and the iPhone builds carry that
+//      "true" (read out of the 1.8 build on 2026-11-10; OWNER-STEPS 87). The
+//      default stays off so that a build made without the switch never locks.
 //
 // A purchase on any surface writes the same entitlement row, so the account is
 // correctly Plus everywhere; the surfaces differ only in what they require.

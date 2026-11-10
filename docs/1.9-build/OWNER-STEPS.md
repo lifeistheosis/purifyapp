@@ -1150,6 +1150,25 @@ Send back: "R4 internal, version code N".
 
 Send back: "R5 in TestFlight, build N".
 
+### R5a. A review account for Apple (10 minutes, at least a day before R5d)
+
+Apple's reviewers sign in to see Community and prayer campaigns, so they need
+an account of their own. Make it at least a day before you submit: Community
+holds a post from an account younger than a day for a moderator, and a
+reviewer should not meet that hold.
+
+1. Choose an email address you control that is not your personal one (a new
+   free mailbox is fine).
+2. In the app, sign up with that address and a new password. Keep both in
+   your password manager, and only there.
+3. Open the confirmation email and confirm.
+4. Sign in with it once on a phone. Give it a display name, and save a verse
+   or write a journal page, so the reviewer does not meet empty screens.
+5. Nowhere else: not a chat, not a file. In R5d it goes into App Store
+   Connect, and that is its only place.
+
+Send back: "R5a done" (never the address or the password).
+
 ### R5b. Walk 1.9 on your phones, before any reader has it
 
 On the internal Android build and the TestFlight build, as
@@ -1204,14 +1223,19 @@ App Store:
 3. **What's New in This Version**: purifyapp.net/admin, **Releases**, the
    piece **What's New in This Version, for the App Store**, **Copy**, and
    paste (it marks what is in Purify Plus, as the Play text does). On the
-   same
-   page: **Support URL** https://purifyapp.net/support, and **Copyright**
-   2026 Purify Orthodox LLC. Under **App Review Information**, the contact
-   email is one you read on review days (support@ lands in Admin,
-   **Messages**). In its **Notes** (your item 130), name what is in the build
-   and switched off: pictures on prayer campaigns, and "Prayed by many"; and
-   prayer campaigns themselves if R5c is still waiting.
-4. **Add for Review**, then **Submit for Review**. (The subscriptions are
+   same page: **Support URL** https://purifyapp.net/support, and
+   **Copyright** 2026 Purify Orthodox LLC.
+4. **App Review Information**, on the same page:
+   - **Sign-in required**: ticked. **User name** and **Password**: the
+     review account from R5a, from your password manager.
+   - **Contact Information**: an email you read on review days (support@
+     lands in Admin, **Messages**).
+   - **Notes**: the arbiter sends you the notes that morning, after checking
+     them against this build (they are part B of
+     `docs/app-store-review-notes.md`, and nothing else is sent to Apple).
+     Paste them, and fill the last line with the phone you walked in R5b
+     and its iOS version.
+5. **Add for Review**, then **Submit for Review**. (The subscriptions are
    approved already, so nothing is added under **In-App Purchases and
    Subscriptions**.)
 

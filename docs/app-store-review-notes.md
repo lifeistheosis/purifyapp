@@ -1,241 +1,136 @@
-# App Store review information: Purify
+# App Review notes: Purify 1.9
 
-Prepared for App Review's request for supplementary materials. Items 2 through 7
-are written out below and are ready to paste into App Review Information. Item 1,
-the screen recording, is supplied separately.
+The one source for what Apple is told when 1.9 is submitted (OWNER-STEPS,
+R5d draws on this file and on nothing else). Rewritten 2026-11-10 for 1.9 by
+the arbiter's word. The earlier text, written for a build that sold nothing on
+iPhone, is in this file's history only (before 2026-11-10); it is never pasted
+into App Store Connect again, because 1.8 and 1.9 sell Purify Plus and Pro on
+iPhone.
 
-Two fields need Edgar's own answer before this is sent, and are marked
-**[FILL IN]**. Do not send the document with those placeholders in place.
+The file has three parts:
 
----
-
-## 1. Screen recording: what it has to contain
-
-The recording is supplied separately. Apple's request is conditional, so this is
-what actually applies to Purify, checked against the shipped build.
-
-**Applies, and must be in the recording:**
-
-- **Account registration, sign in, and account deletion.** All three exist.
-  Registration and sign in are on the Account tab, by email and password or by
-  Sign in with Apple or Google. Deletion is under Account, Profile, at the foot
-  of the page. It is a real deletion, not a deactivation: it removes the auth
-  record and every row that cascades from it (profile, bookmarks, annotations,
-  saint bumps). Show it being completed.
-- **User-generated content, with reporting and blocking.** Purify carries two
-  user-content surfaces: Community posts and prayer Campaigns. (The recipe
-  board, the Kitchen, left the apps in 1.7.) Each has a report control, and
-  Community additionally supports blocking another user. Show reporting a post
-  and blocking a user.
-- **A prompt for a device capability.** The camera and photo library prompts
-  appear when attaching a photo to a campaign or a post. Show one of them.
-
-**Does not apply, and there is nothing to record:**
-
-- **There is no purchase or subscription flow in this build.** Purify Plus is
-  not purchasable on iOS. Its two App Store products are at MISSING_METADATA and
-  are not attached to this submission, and the build ships with iOS entitlement
-  enforcement switched off precisely so that no reader is gated behind something
-  they cannot buy. Every feature in the iOS app is free. If App Review is
-  looking for an in-app purchase, that is why they will not find one.
-- **No location, contacts, microphone, health, or App Tracking Transparency
-  prompt exists.** The app declares no such usage strings and requests no such
-  permission.
-
-**One thing worth showing even though Apple did not ask.** The previous
-submission was returned under 2.1(a) for a session that did not survive a
-restart. The fix is in this build. A short sequence proving it (sign in, force
-quit from the app switcher, reopen, still signed in) answers that rejection
-directly and is worth including.
+- **A. For the team, before anything is pasted** (never sent to Apple).
+- **B. The Notes for App Review**: the block pasted into App Store Connect,
+  **App Review Information**, **Notes**.
+- **C. If Apple asks for more**: what a screen recording must show, and the
+  plain facts behind the notes.
 
 ---
 
-## 2. Devices and operating systems tested
+## A. For the team, before anything is pasted
 
-**[FILL IN]** with the real hardware this build was exercised on. Apple checks
-this against the crash and device reports, so it must be accurate. The format
-they expect:
+The arbiter confirms each line below against the build being submitted, on
+the morning of R5d, and changes part B where a line is not yet true. Part B is
+written as 1.9 is planned to ship.
 
-```
-iPhone [model], iOS [version]   (physical device)
-iPad [model], iPadOS [version]  (physical device, if iPad is supported)
-```
-
-Name at least one physical device running the current public iOS release. If the
-build was also exercised in the Simulator, say so separately and label it as the
-Simulator rather than letting it read as a device.
-
----
-
-## 3. What the app does, and who it is for
-
-Purify is a free reference library and prayer companion for Eastern Orthodox
-Christians.
-
-**The problem it solves.** The primary sources of Orthodox Christian
-tradition, the Scriptures in the editions the Church actually reads, the
-commentaries of the Church Fathers, the lives of the saints, the acts of the
-Ecumenical Councils, and the daily cycle of prayer, are scattered across print
-volumes, academic archives, and parish handouts. Where they exist online they
-are usually split across sites, unsearchable, and frequently locked inside
-modern translations that cannot be freely redistributed. A layperson who wants
-to read what St John Chrysostom wrote on the passage they read this morning has
-no straightforward way to do it.
-
-**What Purify provides.** One library, free, that works offline. Scripture with
-per-verse patristic commentary attached, so the Fathers sit beside the text they
-are expounding. Saints' profiles with their own writings. The daily calendar
-with its readings, feasts, and fasting rule. The Hours and a prayer collection.
-The councils. All of it searchable, and all of it usable on a phone with no
-network, because the entire library is bundled inside the app rather than
-fetched.
-
-**Target audience.** Orthodox Christian laypeople, catechumens and inquirers,
-clergy and seminarians, and students of early Christian literature. It is a
-reference and devotional tool, not a social network and not a service that gives
-advice.
-
-**Editorial character.** Every patristic text is a verbatim public-domain
-translation, reproduced with its author, work, and citation attached. Nothing in
-the library is generated, paraphrased, or reconstructed. That is a written
-policy with automated enforcement, described under item 7.
+1. **Prayer wall gone.** His word, 2026-11-10: "I'd say remove the prayer
+   wall and just keep the prayer campaigns." Part B describes Pray together as
+   prayer campaigns only. The campaigns chat removes the wall; if the build
+   still shows it, part B must name it with its own moderation.
+2. **Prayer campaigns open to every reader** (R5c). If campaigns are still
+   for the team only when the build is submitted, part B says so in one line
+   ("Prayer campaigns are in this build and open to our team only").
+3. **The removal notice.** "The reader who posted it is told why" is true
+   once `docs/1.9-build/sql/removal-notices.sql` has run on the live database
+   (his yes, then the push) and the campaigns chat's campaign and picture
+   removals write the notice. Until then, say only that moderators remove
+   what breaks the rules.
+4. **Pictures on prayer campaigns** are switched off on the server
+   (`lib/campaigns/parts.ts`, `pictures: false`) until his three steps are
+   done. Part B says so. If they are switched on before R5d, change that line
+   to "every picture is checked before anyone else sees it".
+5. **The safety line** for a campaign whose writer may be in danger (his yes
+   to its words, 2026-11-10) is named in part B only once it is in the build.
+   The moderators' queue already reads such a campaign first.
+6. **Demo account**: his to make (OWNER-STEPS, R5a). Its email and password
+   go only into App Store Connect, **App Review Information**, **Sign-In
+   Information**: never in this file, a chat or the repository.
+7. **Devices tested**: he names in the **Notes** field's last line the
+   phone (and iPad, if he walked one) and its system version, from his own
+   walk in R5b.
+8. **The Terms tick on a new campaign** ("I agree to the Terms of Service")
+   is in the build: the campaigns chat's screen and its fourth SQL file
+   (signed). Until both are in, part B leaves that sentence out.
 
 ---
 
-## 4. Setting up and reaching the main features
+## B. The Notes for App Review (paste this block)
 
-**No account is needed for the library.** Install and open the app and the whole
-of Scripture, the commentary, the saints, the calendar, the Hours, the prayers,
-and the councils are available immediately, offline, with no sign in and no
-paywall. A reviewer can evaluate the app fully without any credentials at all.
-
-An account unlocks only personal and social features: bookmarks, annotations and
-reading history, Community posts, prayer Campaigns, and the EIKON shop.
-
-**Demo account for the account-only features:**
-
-```
-Email:    [FILL IN]
-Password: [FILL IN]
-```
-
-**[FILL IN]** must be a working account that already has a little content on it,
-so the reviewer sees a populated state rather than empty screens. Create it
-fresh, confirm it signs in on a device, and do not reuse a personal account.
-
-**Where to find each feature:**
-
-| Feature | Path in the app |
-|---|---|
-| Scripture with the Fathers | Bible tab, open any chapter, tap a verse |
-| Saints and their writings | Saints tab, or the calendar's daily saint |
-| Daily calendar, readings, fasting | Calendar tab |
-| The Hours and prayers | Prayers tab |
-| Registration and sign in | Account tab |
-| **Account deletion** | Account, Profile, at the foot of the page |
-| Data export | Account, Data |
-| Community posts, reporting, blocking | Community tab |
-| Prayer campaigns and reporting | Campaigns |
-| EIKON shop | Shop tab |
-
-**No sample files are required.** Nothing has to be imported or uploaded for the
-app to function. The photo attachment on a campaign or post is optional and any
-image from the device library will do.
-
-**Suggested route for a reviewer:** open the app cold and read a chapter of the
-Gospel with the commentary rail, since that is the core of the product and needs
-no account. Then register, post to Community, report and block, and finally
-delete the account.
+Copy everything between the two lines, then fill the last line.
 
 ---
 
-## 5. External services and platforms
+Purify is a free Eastern Orthodox library and prayer companion: Scripture with the Church Fathers' commentary, the lives of the saints, the Church's calendar and fasts, the prayers and the Hours, and the councils. The whole library works without an account and offline.
 
-| Service | What it does for the app | Notes |
-|---|---|---|
-| **Supabase** | Authentication and the user database (Postgres) | Holds accounts, bookmarks, annotations, community content. Row Level Security enforces that a reader only ever reads their own rows. |
-| **Sign in with Apple** | Third-party sign in | Offered alongside Google and email, as required. |
-| **Google Sign-In** | Third-party sign in | |
-| **Stripe** | Checkout for the EIKON shop | **Physical goods only** (printed icons and related items), which is why it is not In-App Purchase. The server re-prices every order; no price, subtotal, or entitlement is ever accepted from the client. |
-| **RevenueCat** | Subscription infrastructure | Integrated, and **not active on iOS**. The App Store products are at MISSING_METADATA, no purchase flow is reachable in this build, and iOS entitlement enforcement ships off. It is live on Google Play only. |
-| **Apple Push Notification service** | Push notifications on iOS | Opt in. Declined permission degrades nothing. |
-| **Firebase Cloud Messaging** | Push notifications on Android | Not used by the iOS build. |
-| **Resend** | Transactional email | Sign-in and account email only. No marketing send. |
-| **Render** | Hosting for purifyapp.net and its APIs | The app is offline-first and reaches the API only for account and social features. |
+PURIFY PLUS AND PURIFY PRO (in-app purchase)
+Two optional auto-renewable subscriptions, sold through the App Store: Purify Plus (monthly, or yearly with a free week on a first subscription) and Purify Pro (monthly or yearly). To find them: the Plus button at the top of Today, or You, then Purify Plus. A Plus feature, such as Compare on a verse, opens the same Purify Plus sheet. Restore purchases is on the Purify Plus page and in the sheet, beside the Terms of Service and the Privacy Policy. The library itself stays free.
 
-**No artificial intelligence service is used to deliver any part of this app.**
-There is no model provider in the dependency tree and no inference at runtime.
-None of the religious text in the library is machine generated. This is
-deliberate and is a written editorial rule, not an accident of the current
-build.
+SIGN-IN
+An account is needed only for Community, prayer campaigns, sync across devices and the shop. A demo account is in Sign-In Information. Readers sign in with Apple, Google or email; every sign-in screen says that continuing accepts the Terms of Service and the Privacy Policy.
 
-**One integration is present but dormant and delivers nothing today:** an
-API.Bible client exists in the codebase behind an unset key and returns null
-without it. It is named here for completeness rather than because it is in use.
+USER-GENERATED CONTENT (Guideline 1.2)
+Readers write in two places, both for signed-in readers only.
+- Community: public posts and replies. Before a post goes up, a filter holds it for a moderator when it comes from a new account, carries links or reads as spam, and a word filter masks objectionable words and sends the post to a moderator. Every post and reply has Report; enough reports hide it until a moderator looks. Any reader can block another and then sees nothing of theirs.
+- Prayer campaigns (Pray together): a reader asks others to pray for someone or something. Every new campaign waits for a moderator before anyone else sees it, and one that suggests the writer may be in danger is read first. Starting one requires ticking "I agree to the Terms of Service", and the campaign rules are shown beside it. Campaigns, their updates and their comments have Report.
+Moderators remove what breaks the rules, and the reader who posted it is told why, with the reason and an address to write to (support@purifyapp.net). Anything that sexualises or endangers a child is removed at once and reported to the authorities. Pictures on prayer campaigns are in this build and switched off on our server; when they are on, every picture is checked before anyone else sees it.
+Contact for anything a reader posts: support@purifyapp.net.
 
----
+ACCOUNT DELETION
+You, then Settings, then Delete account (under Data). It deletes the account and what is stored with it on our servers.
 
-## 6. Regional differences
+PERMISSIONS
+The camera is asked for only when a reader takes a profile photo, and saving to the photo library only when a reader saves an image they made to share. No location, contacts, microphone, health or tracking permission is asked for.
 
-The app's function is the same in every region. Three differences are worth
-stating plainly.
-
-1. **The EIKON shop ships to the United States only.** Stripe checkout is
-   configured with an allowed shipping country list of US alone. Readers
-   elsewhere can browse the shop but cannot complete an order. Everything else
-   in the app is unaffected.
-2. **The library is in English.** Scripture, patristic commentary, saints'
-   writings, and the councils are English public-domain texts and are not
-   translated. The interface is localised into twenty additional languages at
-   varying and mostly partial coverage, and any untranslated string falls back
-   to English. No feature is hidden or withheld by locale.
-3. **Purify Plus is not purchasable in any region on iOS**, per item 5. There is
-   no regional pricing question to answer because there is no iOS purchase.
-
-There is no geographic gating, no region-locked content, and no feature that
-behaves differently by country other than shop shipping eligibility.
+Tested on: [his phone and its iOS version, from R5b]
 
 ---
 
-## 7. Regulated industry and third-party material
+---
 
-**Purify does not operate in a regulated industry.** It is a religious reference
-and devotional library. It gives no medical, legal, or financial advice, handles
-no health data, and provides no regulated service. The shop sells ordinary
-physical goods.
+## C. If Apple asks for more
 
-**All third-party material in the library is in the public domain**, and that is
-enforced rather than asserted.
+### C1. A screen recording, if Apple asks for one
 
-*What the sources are.* The patristic commentary comes from named nineteenth
-century editions whose copyright has long expired: the Nicene and Post-Nicene
-Fathers and Ante-Nicene Fathers series edited by Philip Schaff (1885 to 1900),
-the Library of the Fathers (Oxford, 1838 to 1885), the Catena Aurea in the
-Oxford translation (Rivington, 1842), and R. Payne Smith's translation of St
-Cyril on Luke (Oxford University Press, 1859). Scripture is public-domain
-editions only, identified per chapter. Every individual note in the app carries
-its author, its work, and its citation, visible to the reader.
+From a fresh install, signed out, on a real phone:
 
-*How it is enforced.* `docs/editorial-standards.md` is the binding policy:
-public-domain sources only, quoted verbatim, cited per note, ingested by script
-from a named edition and never hand-entered or paraphrased. An automated test in
-continuous integration restricts the citation field to that whitelist of
-public-domain series and fails the build on anything else. Saints' icons carry a
-recorded provenance, checked by a separate audit script.
+1. Open the app and read a chapter of a Gospel with the Fathers' commentary
+   (no account, no paywall).
+2. Tap the Plus button at the top of Today: the Purify Plus page with its
+   prices, **Restore purchases**, the Terms of Service and the Privacy
+   Policy.
+   Buy Plus with a sandbox tester (it is free there), then show a Plus
+   feature open.
+3. Sign in with the demo account.
+4. Community: report a post, then block its writer.
+5. Pray together: start a prayer campaign up to the Terms tick (do not
+   submit, or it waits in our moderators' queue), and report a campaign.
+6. You, Settings, Delete account: delete an account (a spare one, never
+   the demo).
 
-*What has been refused.* Modern translations still in copyright are excluded
-even where they would improve the library, including the Palmer, Sherrard and
-Ware Philokalia, the Fathers of the Church series, and Ancient Christian
-Writers. Two commentary notes that rested on in-copyright translations were
-removed outright rather than re-sourced, because no public-domain English of
-those passages exists. A 1948 translation was excluded on the ground that its US
-copyright was restored under the URAA and does not expire until 2043.
+### C2. The facts behind the notes
 
-*Permission held.* One contemporary author's work appears in the library by
-written permission, granted 2026-07-27 and recorded in the editorial standards
-document. That permission covers his own writing only and does not extend to the
-modern translations some of his citations rest on, which are excluded.
-
-Documentation can be supplied on request: the editorial standards document, the
-automated licensing test, the per-note citation data, and the icon provenance
-records.
+- **What Purify is.** A reference library and prayer companion for Eastern
+  Orthodox Christians, catechumens and inquirers, clergy and students. Not a
+  service that gives medical, legal or financial advice.
+- **Languages.** The interface is in 21 languages. Scripture comes in
+  public-domain editions: English, with the Russian Synodal, the Greek
+  Septuagint, the Serbian of Karadžić and Daničić, and the Arabic Van Dyck
+  and Spanish Reina-Valera to download. Most of the Fathers' texts are in
+  English.
+- **What is machine-translated.** Nothing is translated while a reader uses
+  the app, and no AI service runs in the app or answers a reader. One thing
+  was machine-translated ahead of time, and is labelled as such where it
+  shows: the Verse of the Day, in an app language that has no public-domain
+  Bible. The original English is one tap away.
+- **Sources.** Every text of the Fathers is a public-domain translation,
+  quoted word for word with its author, work and citation
+  (`docs/editorial-standards.md`, held by a test that refuses any other
+  source).
+- **Services.** Supabase (accounts and the database), Sign in with Apple and
+  Google, RevenueCat with the App Store (the subscriptions), Stripe (the
+  EIKON shop's physical goods only, which is why they are not in-app
+  purchases), Apple Push Notification service (opt in), Resend (account
+  email), Render (the website and its services).
+- **The shop** ships to the United States only; elsewhere it can be browsed.
+- **Contact.** support@purifyapp.net for help and for what readers post;
+  legal@purifyapp.net for legal matters.
