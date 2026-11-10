@@ -11,6 +11,7 @@ import { findLinks } from "@/lib/community/spam";
 import { censorName, censorPost } from "@/lib/moderation/server";
 import { isClergyMark } from "@/lib/profile/clergy";
 import { ensureCleanHandle } from "@/lib/profile/server";
+import { signInPicture } from "@/lib/profile/signInPicture";
 
 import { campaignsInBuild } from "./flags";
 import { NOTE_MAX, UPDATES_A_DAY, isJulyRow, isOver, type CampaignNote, type CampaignThread, type NoteKind } from "./model";
@@ -279,7 +280,7 @@ export async function writeNote(
   if (!hold && asksForMoney(own)) hold = { reason: "spam", detail: "money asked under a prayer campaign" };
 
   await ensureCleanHandle(admin, user.id);
-  const meta = (user.user_metadata ?? {}) as { display_name?: string; avatar_url?: string };
+  const meta = (user.user_metadata ?? {}) as { display_name?: string };
   const written = (meta.display_name ?? "").trim() || (user.email ? user.email.split("@")[0] : "") || "Reader";
   const shownName = (await censorName(admin, written)).slice(0, 80);
   const shownBody = censored.body ?? own;
@@ -293,7 +294,9 @@ export async function writeNote(
       user_id: user.id,
       body: shownBody,
       author_name: shownName,
-      author_avatar: meta.avatar_url || null,
+      // The sign-in's picture, unless a moderator has taken theirs down; the
+      // replies' trigger puts their own upload in its place when they have one.
+      author_avatar: signInPicture(user),
       status: hold ? "held" : "visible",
       campaign_update: input.kind === "update",
     })

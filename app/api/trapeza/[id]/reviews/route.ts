@@ -11,6 +11,7 @@ import { trapezaReviewSchema } from "@/lib/security/schemas";
 import { forgetUploads, ownsUploads } from "@/lib/security/uploadOwners";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { createClientFromRequest } from "@/lib/supabase/server";
+import { signInPicture } from "@/lib/profile/signInPicture";
 
 /**
  * Reviews of one Kitchen recipe.
@@ -164,14 +165,15 @@ async function handlePOST(req: Request, id: string) {
   }
 
   // Name and picture copied at write time, as community posts do.
-  const meta = (user.user_metadata ?? {}) as { display_name?: string; avatar_url?: string };
+  const meta = (user.user_metadata ?? {}) as { display_name?: string };
   const authorName =
     ((meta.display_name ?? "").trim() ||
       (user.email ? user.email.split("@")[0] : "") ||
       "Reader").slice(0, 80);
-  const avatar = typeof meta.avatar_url === "string" && meta.avatar_url.length <= 600
-    ? meta.avatar_url
-    : null;
+  // The sign-in's picture, unless a moderator has taken theirs down
+  // (lib/profile/signInPicture.ts).
+  const picture = signInPicture(user);
+  const avatar = picture && picture.length <= 600 ? picture : null;
 
   const { error } = await admin.from("trapeza_recipe_reviews").upsert(
     {

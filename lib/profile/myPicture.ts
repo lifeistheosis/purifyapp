@@ -3,6 +3,7 @@
 import { useSyncExternalStore } from "react";
 
 import { avatarSrc } from "@/lib/community/avatarSrc";
+import { signInPicture } from "@/lib/profile/signInPicture";
 import { createClient } from "@/lib/supabase/client";
 
 /**
@@ -88,10 +89,10 @@ export function readerName(user: { email?: string | null; user_metadata?: unknow
   return (meta.display_name ?? "").trim() || (meta.full_name ?? "").trim() || user.email?.split("@")[0] || "Reader";
 }
 
-async function readOwnPicture(supabase: ReturnType<typeof createClient>, id: string, signInPicture: string | null) {
+async function readOwnPicture(supabase: ReturnType<typeof createClient>, id: string, fallback: string | null) {
   if (lastRead && lastRead.uid === id && Date.now() - lastRead.at < REREAD_MS) return;
   lastRead = { uid: id, at: Date.now() };
-  let picture = signInPicture;
+  let picture = fallback;
   try {
     const { data, error } = await supabase.from("profiles").select("avatar_url").eq("id", id).maybeSingle();
     // Before 20261003 the column is absent and the sign-in's picture stands.
@@ -120,7 +121,7 @@ function start() {
   }
 
   const supabase = createClient();
-  const apply = (user: { id: string; email?: string | null; user_metadata?: unknown } | null) => {
+  const apply = (user: { id: string; email?: string | null; user_metadata?: unknown; app_metadata?: unknown } | null) => {
     if (!user) {
       uid = null;
       lastRead = null;
@@ -129,8 +130,9 @@ function start() {
       return;
     }
     const name = readerName(user);
-    const meta = (user.user_metadata ?? {}) as { avatar_url?: string };
-    const signInPicture = avatarSrc(meta.avatar_url ?? null);
+    // Their sign-in's picture, unless a moderator has taken theirs down
+    // (lib/profile/signInPicture.ts): what everyone else sees of them too.
+    const fallback = avatarSrc(signInPicture(user));
     const same = uid === user.id && current.state === "in";
     uid = user.id;
     // The same reader keeps the picture already drawn until the profile row
@@ -138,7 +140,7 @@ function start() {
     // until then, rather than the Google photo their upload is about to
     // replace.
     emit({ state: "in", name, picture: same && current.state === "in" ? current.picture : null });
-    window.setTimeout(() => void readOwnPicture(supabase, user.id, signInPicture), 0);
+    window.setTimeout(() => void readOwnPicture(supabase, user.id, fallback), 0);
   };
 
   // The one read that may take the lock: nobody is holding it on mount.

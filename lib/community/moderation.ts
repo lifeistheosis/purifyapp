@@ -3,6 +3,7 @@ import "server-only";
 import type { SupabaseClient } from "@supabase/supabase-js";
 
 import { isTableAbsent } from "@/lib/admin/tableAbsent";
+import { takeDownPicture } from "@/lib/community/avatarFile";
 import { deleteBannerFiles } from "@/lib/profile/bannerFile";
 import { identity } from "@/lib/profile/server";
 import { isColumnAbsent } from "@/lib/supabase/columnAbsent";
@@ -593,20 +594,29 @@ async function profileAction(admin: SupabaseClient, actor: ModActor, action: "cl
   const { data: rep } = await admin.from("community_reports").select("profile_id").eq("id", reportId).maybeSingle<{ profile_id: string | null }>();
   const profileId = rep?.profile_id ?? null;
   if (!profileId) return { ok: false, status: 400, error: "That report is not about a profile." };
-  const { data: before } = await admin.from("profiles").select("handle, banner_url").eq("id", profileId).maybeSingle<{ handle: string | null; banner_url: string | null }>();
+  const { data: before } = await admin
+    .from("profiles")
+    .select("handle, banner_url, avatar_url")
+    .eq("id", profileId)
+    .maybeSingle<{ handle: string | null; banner_url: string | null; avatar_url: string | null }>();
   let error: { message: string; code?: string } | null = null;
   if (action === "clear_profile") {
-    ({ error } = await admin.from("profiles").update({ bio: null, status_text: null, banner_url: null, parish: null, social_links: [] }).eq("id", profileId));
+    // Their picture with the rest (1.9): it was left up, on the profile and
+    // on everything that had copied it.
+    ({ error } = await admin.from("profiles").update({ bio: null, status_text: null, banner_url: null, avatar_url: null, parish: null, social_links: [] }).eq("id", profileId));
     if (error && isColumnAbsent(error)) {
-      ({ error } = await admin.from("profiles").update({ bio: null, status_text: null, banner_url: null, parish: null }).eq("id", profileId));
+      ({ error } = await admin.from("profiles").update({ bio: null, status_text: null, banner_url: null, avatar_url: null, parish: null }).eq("id", profileId));
     }
     if (error && isColumnAbsent(error)) {
-      ({ error } = await admin.from("profiles").update({ bio: null, status_text: null, banner_url: null }).eq("id", profileId));
+      ({ error } = await admin.from("profiles").update({ bio: null, status_text: null, banner_url: null, avatar_url: null }).eq("id", profileId));
     }
     // The banner picture goes too. Which file that is comes from the server's
     // record of who uploaded what (lib/profile/bannerFile.ts). The address
     // their row held is not proof on its own: it could name another reader's.
     if (!error) await deleteBannerFiles(admin, profileId, before?.banner_url ?? null);
+    // And the profile picture's copies, its metadata and its own files, by the
+    // same proof (lib/community/avatarFile.ts).
+    if (!error) await takeDownPicture(admin, profileId, before?.avatar_url ?? null);
     // And a prayer request's own words (1.7.1), with any of them still
     // waiting for a moderator. The request itself stays up: asking is no fault.
     if (!error) {

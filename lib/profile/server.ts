@@ -13,6 +13,7 @@ import { subscriptionTier, visibleCosmetics, type Cosmetics } from "./cosmetics"
 import { earnedBadges } from "./earned";
 import { handleBase, handleSeed } from "./handle";
 import { nameDay } from "./nameDay";
+import { signInPicture } from "./signInPicture";
 import { shownLinks, storedLinks } from "./socialLinks";
 import { profileStreak } from "@/lib/streak/server";
 import {
@@ -188,16 +189,17 @@ export async function identity(
   row: Pick<ProfileRow, "id" | "display_name" | "avatar_url">,
 ): Promise<{ name: string; avatar: string | null }> {
   const { data } = await admin.auth.admin.getUserById(row.id);
-  const meta = (data?.user?.user_metadata ?? {}) as { display_name?: string; avatar_url?: string };
+  const meta = (data?.user?.user_metadata ?? {}) as { display_name?: string };
   const name =
     (meta.display_name ?? "").trim() ||
     (row.display_name ?? "").trim() ||
     (data?.user?.email ? data.user.email.split("@")[0] : "") ||
     "Reader";
   // The reader's own upload first: metadata's avatar_url is rewritten from
-  // Google at every Google sign-in, so it is only the fallback. A listed word
-  // in a name is masked wherever others see it (lib/moderation).
-  return { name: (await censorName(admin, name)).slice(0, 80), avatar: avatarSrc(row.avatar_url || meta.avatar_url || null) };
+  // Google at every Google sign-in, so it is only the fallback, and none once
+  // a moderator has taken their picture down (lib/profile/signInPicture.ts).
+  // A listed word in a name is masked wherever others see it (lib/moderation).
+  return { name: (await censorName(admin, name)).slice(0, 80), avatar: avatarSrc(row.avatar_url || signInPicture(data?.user) || null) };
 }
 
 async function recentPosts(admin: SupabaseClient, id: string): Promise<ProfilePost[]> {

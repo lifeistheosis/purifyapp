@@ -19,6 +19,7 @@ import { communityReplySchema } from "@/lib/security/schemas";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { isColumnAbsent } from "@/lib/supabase/columnAbsent";
 import { createClientFromRequest } from "@/lib/supabase/server";
+import { signInPicture } from "@/lib/profile/signInPicture";
 
 // `user_id` is deliberately not selected; see the note in ../../route.ts.
 //
@@ -248,7 +249,6 @@ async function handlePOST(req: Request, id: string) {
 
   const meta = (user.user_metadata ?? {}) as {
     display_name?: string;
-    avatar_url?: string;
   };
   const authorName =
     (meta.display_name ?? "").trim() ||
@@ -285,7 +285,10 @@ async function handlePOST(req: Request, id: string) {
     user_id: user.id,
     body: shownBody,
     author_name: shownName,
-    author_avatar: meta.avatar_url || null,
+    // The sign-in's picture, unless a moderator has taken theirs down
+    // (lib/profile/signInPicture.ts); the table's trigger puts their own
+    // upload in its place when they have one.
+    author_avatar: signInPicture(user),
   };
   // author_clergy is set by trigger from the writer's verification (20261005).
   let { data: createdRow, error } = await admin

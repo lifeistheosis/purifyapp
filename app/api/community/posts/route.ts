@@ -19,6 +19,7 @@ import { communityPostSchema } from "@/lib/security/schemas";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { isColumnAbsent } from "@/lib/supabase/columnAbsent";
 import { createClientFromRequest } from "@/lib/supabase/server";
+import { signInPicture } from "@/lib/profile/signInPicture";
 import {
   isRefusal,
   verifyFatherQuote,
@@ -420,7 +421,6 @@ async function handlePOST(req: Request) {
 
   const meta = (user.user_metadata ?? {}) as {
     display_name?: string;
-    avatar_url?: string;
   };
   const authorName =
     (meta.display_name ?? "").trim() ||
@@ -522,7 +522,10 @@ async function handlePOST(req: Request) {
     quote_source: quote?.quoteSource ?? null,
     quote_href: quote?.quoteHref ?? null,
     author_name: shownName,
-    author_avatar: meta.avatar_url || null,
+    // The sign-in's picture, unless a moderator has taken theirs down
+    // (lib/profile/signInPicture.ts); the table's trigger puts their own
+    // upload in its place when they have one.
+    author_avatar: signInPicture(user),
     group_id: groupId,
     // One day's conversation in a circle (Read together, 1.8): only with a
     // group whose membership was proved above.

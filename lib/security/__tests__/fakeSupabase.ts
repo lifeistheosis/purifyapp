@@ -253,6 +253,8 @@ export type World = {
   users: Set<string>;
   /** Each account's user_metadata, as auth.admin.updateUserById leaves it. */
   metadata: Map<string, Row>;
+  /** Each account's app_metadata: the service role's alone, which neither the reader nor a sign-in writes. */
+  appMetadata: Map<string, Row>;
   /** Each account's email, for auth.admin.getUserById. */
   emails: Map<string, string>;
   /**
@@ -295,6 +297,7 @@ export function world(): World {
     buckets: new Map(),
     users: new Set(),
     metadata: new Map(),
+    appMetadata: new Map(),
     emails: new Map(),
     avatarCheck: "shape",
     maxRows: Infinity,
@@ -698,20 +701,36 @@ export function client(w: World) {
     auth: {
       admin: {
         getUserById: async (id: string) => ({
-          data: { user: w.users.has(id) ? { id, email: w.emails.get(id) ?? null } : null },
+          data: {
+            user: w.users.has(id)
+              ? {
+                  id,
+                  email: w.emails.get(id) ?? null,
+                  user_metadata: structuredClone(w.metadata.get(id) ?? {}),
+                  app_metadata: structuredClone(w.appMetadata.get(id) ?? {}),
+                }
+              : null,
+          },
           error: null,
         }),
-        // GoTrue merges user_metadata key by key, and a null deletes its key.
-        updateUserById: async (id: string, attrs: { user_metadata?: Row }) => {
+        // GoTrue merges user_metadata and app_metadata key by key, and a null deletes its key.
+        updateUserById: async (id: string, attrs: { user_metadata?: Row; app_metadata?: Row }) => {
           if (w.fail.updateUser) return { data: { user: null }, error: { message: "Database error updating user" } };
           if (!w.users.has(id)) return { data: { user: null }, error: { message: "User not found", status: 404 } };
-          const metadata = w.metadata.get(id) ?? {};
-          for (const [key, value] of Object.entries(attrs.user_metadata ?? {})) {
-            if (value === null) delete metadata[key];
-            else metadata[key] = structuredClone(value);
-          }
+          const merge = (into: Row, updates: Row | undefined) => {
+            for (const [key, value] of Object.entries(updates ?? {})) {
+              if (value === null) delete into[key];
+              else into[key] = structuredClone(value);
+            }
+            return into;
+          };
+          const metadata = merge(w.metadata.get(id) ?? {}, attrs.user_metadata);
           w.metadata.set(id, metadata);
-          return { data: { user: { id, user_metadata: structuredClone(metadata) } }, error: null };
+          if (attrs.app_metadata) w.appMetadata.set(id, merge(w.appMetadata.get(id) ?? {}, attrs.app_metadata));
+          return {
+            data: { user: { id, user_metadata: structuredClone(metadata), app_metadata: structuredClone(w.appMetadata.get(id) ?? {}) } },
+            error: null,
+          };
         },
         // Deleting an account takes the rows that reference auth.users with
         // it, as each table's foreign key says.
