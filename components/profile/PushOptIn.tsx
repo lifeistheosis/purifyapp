@@ -15,11 +15,17 @@ import {
   reminderTimes,
   remindersStatus,
   updateReminderTimes,
+  type EnableWhy,
   type ReminderTimes,
 } from "@/lib/push/reminders";
+import { isTesting } from "@/lib/onboarding/testing";
 import { TIME_STEP_MINUTES, stepTime, timeChange } from "@/lib/push/times";
 import { useIsNative } from "@/lib/platform/native";
 import { useTranslate } from "@/components/i18n/MessagesProvider";
+
+/** The button that turns reminders on, and the same tap offered again. */
+const TURN_ON =
+  "inline-flex min-h-11 items-center rounded-pill border border-gold/40 bg-gold/[0.08] text-gold px-5 py-2 font-sans text-detail font-semibold hover:bg-gold/[0.14] transition-colors disabled:opacity-40";
 
 type State =
   | { kind: "loading" }
@@ -42,7 +48,8 @@ export function PushOptIn() {
   const [busy, setBusy] = useState(false);
   // Said when turning reminders on did not work. It used to fail in silence:
   // the button went back to "Turn on reminders" as if it had never been pressed.
-  const [failed, setFailed] = useState(false);
+  // With it, for a tester alone, which wait it was (build 90, note 2).
+  const [failed, setFailed] = useState<{ why: EnableWhy | null } | null>(null);
 
   useEffect(() => {
     let alive = true;
@@ -62,14 +69,14 @@ export function PushOptIn() {
 
   async function subscribe() {
     setBusy(true);
-    setFailed(false);
+    setFailed(null);
     try {
       const result = await enableReminders();
       if (!result.ok) {
         if (result.reason === "denied") setState({ kind: "denied" });
         else if (result.reason === "unsupported")
           setState({ kind: "unsupported" });
-        else setFailed(true);
+        else setFailed({ why: result.why ?? null });
         return;
       }
       countReminders("on", "settings");
@@ -78,7 +85,7 @@ export function PushOptIn() {
         times: { morning: MORNING_DEFAULT, evening: EVENING_DEFAULT },
       });
     } catch {
-      setFailed(true);
+      setFailed({ why: null });
     } finally {
       setBusy(false);
     }
@@ -141,23 +148,31 @@ export function PushOptIn() {
         </p>
       )}
       {state.kind === "denied" && (
-        <p className="font-sans text-detail text-paper/55">
-          {native ? t("onboard.reminders.blockedPhone") : t("ui.notificationsAreBlockedAtThe")}
-        </p>
+        <>
+          <p className="font-sans text-detail text-paper/55">
+            {native ? t("onboard.reminders.blockedPhone") : t("ui.notificationsAreBlockedAtThe")}
+          </p>
+          {/* Never a dead end: back from the settings, the same tap again
+              (build 90, note 2). */}
+          <button type="button" onClick={subscribe} disabled={busy} className={`mt-3 ${TURN_ON}`}>
+            {busy ? t("prayers.push.turningOn") : t("error.tryAgain")}
+          </button>
+        </>
       )}
       {state.kind === "not-subscribed" && (
         <>
-          <button
-            type="button"
-            onClick={subscribe}
-            disabled={busy}
-            className="rounded-pill border border-gold/40 bg-gold/[0.08] text-gold px-5 py-2 font-sans text-detail font-semibold hover:bg-gold/[0.14] transition-colors disabled:opacity-40"
-          >
-            {busy ? t("prayers.push.turningOn") : t("prayers.push.turnOn")}
+          <button type="button" onClick={subscribe} disabled={busy} className={TURN_ON}>
+            {busy ? t("prayers.push.turningOn") : failed ? t("error.tryAgain") : t("prayers.push.turnOn")}
           </button>
           {failed ? (
             <p role="alert" className="mt-3 font-sans text-detail text-crimson-soft">
               {t("prayers.push.failed")}
+            </p>
+          ) : null}
+          {/* For a tester alone: which wait it was, in plain words. */}
+          {failed?.why && isTesting() ? (
+            <p data-testers-line className="mt-2 font-sans text-caption text-paper/65">
+              {t(`testers.reminders.${failed.why}`)}
             </p>
           ) : null}
         </>

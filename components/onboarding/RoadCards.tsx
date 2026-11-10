@@ -40,11 +40,11 @@ import { reached } from "@/lib/ab/device";
 import { countReminders, countTodayCard, markAccountFrom } from "@/lib/analytics/moreCount";
 import { countAccountFromCard } from "@/lib/onboarding/count";
 import { mayPromiseReminders } from "@/lib/onboarding/reminderPromise";
-import { previewSignedOut } from "@/lib/onboarding/testing";
+import { isTesting, previewSignedOut } from "@/lib/onboarding/testing";
 import { useRoads } from "@/lib/onboarding/useRoads";
 import { localDay } from "@/lib/onboarding/week";
 import { isNativeClient, nativePlatform } from "@/lib/platform/native";
-import { EVENING_DEFAULT, MORNING_DEFAULT, enableReminders, remindersStatus } from "@/lib/push/reminders";
+import { EVENING_DEFAULT, MORNING_DEFAULT, enableReminders, remindersStatus, type EnableWhy } from "@/lib/push/reminders";
 import { readLocalSessionUser } from "@/lib/supabase/localSession";
 import { lockBodyScroll, unlockBodyScroll } from "@/lib/ui/overlay";
 
@@ -66,6 +66,7 @@ function TipCard({
   title,
   body,
   note,
+  fine,
   onClose,
   className,
   children,
@@ -76,6 +77,8 @@ function TipCard({
   body?: string;
   /** A second, quieter line. */
   note?: string | null;
+  /** A smaller line under it, for a tester alone. */
+  fine?: string | null;
   onClose: () => void;
   className?: string;
   children: React.ReactNode;
@@ -96,6 +99,11 @@ function TipCard({
           </p>
           {body ? <p className="mt-1.5 font-sans text-detail leading-[1.55] text-paper/65">{body}</p> : null}
           {note ? <p className="mt-1.5 font-sans text-detail leading-[1.55] text-paper/65">{note}</p> : null}
+          {fine ? (
+            <p data-testers-line className="mt-1.5 font-sans text-caption leading-[1.5] text-paper/65">
+              {fine}
+            </p>
+          ) : null}
         </div>
         <button
           type="button"
@@ -130,6 +138,10 @@ export function KeepCard({ className }: { className?: string }) {
   const [signedIn, setSignedIn] = useState<boolean | null>(null);
   const [busy, setBusy] = useState(false);
   const [note, setNote] = useState<string | null>(null);
+  // What the last try came to when it failed: whether the same tap is worth
+  // offering again, and, for a tester alone, which wait it was (build 90,
+  // note 2; the questions' own step does the same).
+  const [fail, setFail] = useState<{ again: boolean; why: EnableWhy | null } | null>(null);
   const [on, setOn] = useState(false);
 
   const [keep, behind] = snap.split("|") as [KeepState | "", string];
@@ -206,18 +218,23 @@ export function KeepCard({ className }: { className?: string }) {
   const turnOn = async () => {
     setBusy(true);
     setNote(null);
+    setFail(null);
     try {
       const result = await enableReminders(MORNING_DEFAULT, EVENING_DEFAULT);
       if (result.ok) {
         countReminders("on", "card");
         setOn(true);
+        return;
       }
-      else if (result.reason === "denied")
+      if (result.reason === "denied")
         setNote(isNativeClient() ? t("onboard.reminders.blockedPhone") : t("onboard.reminders.blocked"));
       else if (result.reason === "unsupported") setNote(t("onboard.reminders.unsupported"));
       else setNote(t("prayers.push.failed"));
+      // Never a dead end: the same tap again, except where the device cannot have reminders at all.
+      setFail({ again: result.reason !== "unsupported", why: result.why ?? null });
     } catch {
       setNote(t("prayers.push.failed"));
+      setFail({ again: true, why: null });
     } finally {
       setBusy(false);
     }
@@ -230,10 +247,16 @@ export function KeepCard({ className }: { className?: string }) {
       title={on ? t("onboard.reminders.done") : t("onboard.reminders.title")}
       body={on ? undefined : t("onboard.reminders.body")}
       note={note}
+      fine={fail?.why && isTesting() ? t(`testers.reminders.${fail.why}`) : null}
       onClose={() => writeKeep("done")}
       className={className}
     >
-      {on || note ? (
+      {note && fail?.again ? (
+        // The close in the card's corner is the way out; this is the way on.
+        <button type="button" onClick={() => void turnOn()} disabled={busy} className={WAY_ON}>
+          {t("error.tryAgain")}
+        </button>
+      ) : on || note ? (
         <button type="button" onClick={() => writeKeep("done")} className={WAY_ON}>
           {t("onboard.continue")}
         </button>

@@ -190,3 +190,24 @@ describe("the questions' reminders step", () => {
     }
   });
 });
+
+describe("the same handling on Today's account card and in Settings", () => {
+  const card = readFileSync("components/onboarding/RoadCards.tsx", "utf8").replace(/\s+/g, " ");
+  const settings = readFileSync("components/profile/PushOptIn.tsx", "utf8").replace(/\s+/g, " ");
+
+  it("offers the tap again on the card, and never where the device cannot have reminders", () => {
+    expect(card).toContain('setFail({ again: result.reason !== "unsupported", why: result.why ?? null });');
+    expect(card).toContain('{note && fail?.again ? (');
+    expect(card).toContain('<button type="button" onClick={() => void turnOn()} disabled={busy} className={WAY_ON}> {t("error.tryAgain")} </button>');
+    expect(card).toContain("fine={fail?.why && isTesting() ? t(`testers.reminders.${fail.why}`) : null}");
+  });
+
+  it("offers the tap again in Settings, after a failure and after notifications were blocked", () => {
+    expect(settings).toContain('{busy ? t("prayers.push.turningOn") : failed ? t("error.tryAgain") : t("prayers.push.turnOn")}');
+    expect(settings).toContain('{busy ? t("prayers.push.turningOn") : t("error.tryAgain")}');
+    expect(settings).toContain("{failed?.why && isTesting() ? (");
+    // And its button is a full 44px target.
+    expect(settings).toMatch(/const TURN_ON = "inline-flex min-h-11 /);
+  });
+});
+

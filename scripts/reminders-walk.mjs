@@ -13,6 +13,10 @@
 //   4. the new questions as a reader with no account (Testers mode's
 //      "Preview as signed out"): no reminders step at all.
 //
+//   5. Today's account card, back from a sign-in, and the reminders in
+//      Settings, on the same silent phone: each says it did not work and
+//      offers the tap again.
+//
 // The phone's own code is stood in for (a browser has none): its question is
 // answered yes, and its request for an address is left unanswered. A session
 // shaped like Supabase's is set for the picture only; nothing reaches a
@@ -185,6 +189,65 @@ for (const testers of [false, true]) {
     break;
   }
   say(seen.some((s) => s.includes("Setting up your space")) && !seen.some((s) => s.includes("A nudge to pray")), "the new questions, no account: they end with no reminders step");
+  await ctx.close();
+}
+
+// 5. The account card on Today, back from its sign-in, and Settings: the same handling.
+{
+  const d = new Date();
+  const p2 = (n) => String(n).padStart(2, "0");
+  const today = `${d.getFullYear()}-${p2(d.getMonth() + 1)}-${p2(d.getDate())}`;
+  const { ctx, page } = await phone({
+    "purify:onboarded": "3",
+    "purify:firststeps.eligible": "1",
+    "purify:background": "catholic",
+    "purify:level": "inquirer",
+    "purify:fasting-rule": "hidden",
+    "purify:week": JSON.stringify({ at: 1, day: today, passed: 0 }),
+    "purify:keep": "in",
+    ...SIGNED_IN,
+    ...TESTERS,
+  });
+  await go(page, "/");
+  const card = page.locator('[data-road-card="keep-card"]');
+  await card.waitFor({ timeout: 30000 });
+  await page
+    .waitForFunction(() => {
+      const f = document.querySelector("[data-launch-frame]");
+      return !f || getComputedStyle(f).display === "none" || Number(getComputedStyle(f).opacity) === 0;
+    }, null, { timeout: 30000 })
+    .catch(() => {});
+  await card.getByRole("button", { name: "Turn on reminders", exact: true }).click();
+  await card.getByRole("button", { name: "Try again", exact: true }).waitFor({ timeout: 25000 }).catch(() => {});
+  const now = (await card.innerText()).replace(/\s+/g, " ");
+  say(now.includes("Try again") && now.includes("Reminders could not be turned on just now."), "the account card: it says it did not work, and offers the tap again");
+  say(now.includes("Testers: Google or Apple gave this phone no address"), "the account card: a tester is told which wait it was");
+  if (STILLS) {
+    await page.waitForTimeout(600);
+    await card.screenshot({ path: path.join(STILLS, "5-card-failed-tester.png") });
+    say(printMockCheck(await checkMock(page, '[data-road-card="keep-card"]'), "5-card-failed-tester.png"), "the house's rules on 5-card-failed-tester.png");
+  }
+  await ctx.close();
+}
+{
+  const { ctx, page } = await phone({ "purify:onboarded": "3", ...SIGNED_IN });
+  await go(page, "/account/notifications");
+  const turnOn = page.getByRole("button", { name: "Turn on reminders", exact: true }).first();
+  const there = await turnOn.waitFor({ timeout: 30000 }).then(() => true, () => false);
+  say(there, "Settings: the reminders control is there for a signed-in reader");
+  if (there) {
+    const box = page.locator("section", { has: turnOn }).first();
+    await turnOn.click();
+    await box.getByRole("button", { name: "Try again", exact: true }).waitFor({ timeout: 25000 }).catch(() => {});
+    const now = (await box.innerText()).replace(/\s+/g, " ");
+    say(now.includes("Try again") && now.includes("Reminders could not be turned on just now."), "Settings: it says it did not work, and the button offers the tap again");
+    if (STILLS) {
+      await page.waitForTimeout(600);
+      await box.screenshot({ path: path.join(STILLS, "6-settings-failed.png") });
+      await box.evaluate((el) => el.setAttribute("data-walk", "reminders"));
+      say(printMockCheck(await checkMock(page, '[data-walk="reminders"]'), "6-settings-failed.png"), "the house's rules on 6-settings-failed.png");
+    }
+  }
   await ctx.close();
 }
 
