@@ -71,6 +71,15 @@ type TitleRule = {
   /** Captures one number per level, Arabic or Roman. */
   re: RegExp;
   levels: Level[];
+  /**
+   * The edition's heading for the next division of the innermost level that
+   * a file runs on inside the section before, kept there as a paragraph
+   * ("Chapter II. --Concerning the manner in which the Word was conceived
+   * ..." inside the section titled Book III, Chapter I): it opens that
+   * division, and it is set apart as a heading, never cited as the author's
+   * words. Captures the division's number.
+   */
+  heading?: RegExp;
 };
 
 type Scheme = {
@@ -102,6 +111,16 @@ type Scheme = {
     /** The chapters run on through the work, or start again with each titled division. */
     restart: "outer" | "never";
   };
+  /**
+   * The edition's summaries of what follows that number nothing themselves:
+   * told by their form (`re`: "§§1-5. The substantiality of the Word proved
+   * from Scripture ..." over a run of sections), or by their opening words
+   * where the form says nothing (`words`: a Part's contents strung on
+   * semicolons, a Part's title the file keeps inside the section before).
+   * Each stands where the text under it stands and is set apart as a
+   * heading, never cited or quoted as the author's words.
+   */
+  summary?: { re?: RegExp; words?: readonly string[] };
   table?: { levels: Level[]; starts: readonly (readonly [string, string])[] };
   /** Sections the edition does not number this way (a second treatise filed in the same work). */
   exclude?: (n: number) => boolean;
@@ -143,6 +162,20 @@ function markOfParagraph(p: string): number | null {
 }
 
 const NPNF = (series: "I" | "II", vol: number) => `NPNF ${series} ${vol}`;
+
+/**
+ * The NPNF's heading over a chapter of St Athanasius: "Chapter I." and then
+ * a dash, the chapter's title and its summary. The files print the edition's
+ * own dash (U+2014) since they were read again from it (2026-10-23, the
+ * reading room's works cleared of their editions' notes); a few keep the two
+ * hyphens it was first typed with, and both are one heading. This looked for
+ * the two hyphens alone until 1.9, so 34 of 37 headings in the Four
+ * Discourses and On the Nicene Definition were taken for St Athanasius's
+ * words: drawn as his paragraphs, and quoted as his on the Arianism page.
+ * lib/saints/__tests__/editionHeadings.test.ts holds every paragraph that
+ * reads as such a heading to being known as one.
+ */
+const CHAPTER_HEADING = /^Chapter ([IVXLC]+)\.(?:--|\u2014)/;
 
 const HOMILY: TitleRule = { re: /^Homily (\d+)\b/, levels: ["homily"] };
 const homilies = (vol: number, marked = false): Scheme => ({
@@ -701,20 +734,39 @@ export const SCHEMES: Readonly<Record<string, Scheme>> = {
     edition: NPNF("II", 4),
   },
   "athanasius-the-great/on-the-nicene-definition": {
-    synopsis: { re: /^Chapter ([IVXLC]+)\.--/, level: "chapter", cited: false, restart: "never" },
+    synopsis: { re: CHAPTER_HEADING, level: "chapter", cited: false, restart: "never" },
     marks: { level: "section", restart: "never" },
     edition: NPNF("II", 4),
   },
+  // Each Part opens on the edition's summary of it, a paragraph of contents
+  // with no number ("Arius's own sentiments; his Thalia and Letter to S.
+  // Alexander; ..."), and the file keeps Part III, its title and its summary,
+  // inside the section that holds Part II. They are told by their opening
+  // words, as the edition prints them: their form says nothing a rule could
+  // read. Until 1.9 the Arianism page quoted Part II's as St Athanasius's.
   "athanasius-the-great/on-the-councils": {
     title: { re: /^Part ([IVX]+)\./, levels: ["part"] },
     marks: { level: "section", restart: "never" },
+    summary: {
+      words: [
+        "Reason why two Councils were called.",
+        "Arius's own sentiments; his Thalia and Letter to S. Alexander;",
+        "Part III. On the Symbols",
+        "We must look at the sense not the wording.",
+      ],
+    },
     innermostOnly: true,
     edition: NPNF("II", 4),
   },
+  // Discourses I to III are the edition's thirty chapters, each under its
+  // heading. Discourse IV has none: the edition sums up each run of its
+  // sections instead ("§§1-5. The substantiality of the Word proved from
+  // Scripture ...", "§8. Arians date the Son's beginning ...").
   "athanasius-the-great/four-discourses-against-the-arians": {
     title: { re: /^Discourse ([IVX]+)$/, levels: ["discourse"] },
-    synopsis: { re: /^Chapter ([IVXLC]+)\.--/, level: "chapter", cited: false, restart: "never" },
+    synopsis: { re: CHAPTER_HEADING, level: "chapter", cited: false, restart: "never" },
     marks: { level: "section", restart: "section" },
+    summary: { re: /^§§?\d+(?:(?:-|, )\d+)*\. / },
     roman: [true, false],
     edition: NPNF("II", 4),
   },
@@ -766,8 +818,10 @@ export const SCHEMES: Readonly<Record<string, Scheme>> = {
     marks: { level: "section", restart: "never" },
     edition: NPNF("II", 8),
   },
+  // One chapter of its hundred has no section of its own: the file runs Book
+  // III's second on inside the first, under the edition's heading for it.
   "john-of-damascus/exact-exposition-of-the-orthodox-faith": {
-    title: { re: /^Book ([IVX]+), Chapter ([IVXLC]+)\./, levels: ["book", "chapter"] },
+    title: { re: /^Book ([IVX]+), Chapter ([IVXLC]+)\./, levels: ["book", "chapter"], heading: /^Chapter ([IVXLC]+)\. ?--/ },
     roman: [true, false],
     edition: NPNF("II", 9),
   },
@@ -860,6 +914,13 @@ export function divisionsOf(key: string, work: WorkLike): WorkDivisions | null {
   return out;
 }
 
+/** Whether a paragraph is one of the edition's summaries the scheme names (`summary`). */
+function isSummary(s: Scheme, p: string): boolean {
+  const rule = s.summary;
+  if (!rule) return false;
+  return Boolean(rule.re?.test(p)) || Boolean(rule.words?.some((w) => p.startsWith(w)));
+}
+
 /** A mark the count accepts: the next number, or one a little past it (a number the file lost). */
 function accepts(m: number | null, last: number): m is number {
   return m !== null && m > last && m <= last + 3;
@@ -917,32 +978,62 @@ function derive(key: string, s: Scheme, work: WorkLike): WorkDivisions {
         sectionPlaces.push(null);
         continue;
       }
-      // A chapter the file runs on in this section, opened by its heading.
-      const opens = s.order?.heading?.exec(p);
-      if (opens && head) {
-        head = [num(opens[1])];
+      // A chapter the file runs on in this section, opened by its heading:
+      // the next of the sections' own order, or of the innermost number
+      // their titles carry.
+      const opens = (s.order?.heading ?? s.title?.heading)?.exec(p);
+      if (opens && head && head.length > 0) {
+        head = s.order ? [num(opens[1])] : [...head.slice(0, -1), num(opens[1])];
         sectionPlaces.push({ path: [...head], begins: beginsFrom(prev, head), synopsis: true });
         prev = [...head];
         continue;
       }
       const rule = s.synopsis;
+      // The number of the text a heading stands over: the one that text
+      // begins, or, where the heading falls in the middle of a numbered
+      // section ("22 (continued). ..." under it, or words with no number at
+      // all), the section that carries on. Only a heading no number has yet
+      // come before looks further ahead, for the first number of what it
+      // opens. The text is the first words under it that are not a heading
+      // themselves (a Part's title over its summary).
+      const markUnder = (): number => {
+        let next = mark + 1;
+        if (!s.marks) return next;
+        const under = sec.paragraphs.findIndex((q, j) => j > i && q.trim() !== "" && !isSummary(s, q) && !rule?.re.test(q));
+        const first = under < 0 ? null : markOfParagraph(sec.paragraphs[under]);
+        if (!cited && open && mark > 0 && !accepts(first, mark)) return mark;
+        for (let j = i + 1; j < sec.paragraphs.length; j++) {
+          const m = markOfParagraph(sec.paragraphs[j]);
+          if (accepts(m, mark)) {
+            next = s.marks.implicitFirst && j > i + 1 ? 1 : m;
+            break;
+          }
+          if (rule?.re.test(sec.paragraphs[j])) break;
+        }
+        if (cited && s.marks.implicitFirst) next = Math.min(next, 1);
+        return next;
+      };
+      // The edition's summary of what follows, which numbers nothing itself:
+      // a heading where the text under it stands.
+      if (isSummary(s, p) && !(cited && chapter === 0)) {
+        const next = markUnder();
+        const path = [...head, ...(cited ? [chapter] : []), ...(s.marks ? [next] : [])];
+        if (path.length > 0) {
+          sectionPlaces.push({ path, begins: beginsFrom(prev, path), synopsis: true });
+          prev = path;
+          if (s.marks) {
+            mark = next;
+            open = true;
+          }
+          continue;
+        }
+      }
       const syn = rule ? rule.re.exec(p) : null;
       if (syn && accepts(num(syn[1]), chapter)) {
         chapter = num(syn[1]);
         if (cited && s.marks) mark = 0;
-        // The heading names the chapter, and the section the text under it begins.
-        let next = mark + 1;
-        if (s.marks) {
-          for (let j = i + 1; j < sec.paragraphs.length; j++) {
-            const m = markOfParagraph(sec.paragraphs[j]);
-            if (accepts(m, mark)) {
-              next = s.marks.implicitFirst && j > i + 1 ? 1 : m;
-              break;
-            }
-            if (rule?.re.test(sec.paragraphs[j])) break;
-          }
-          if (cited && s.marks.implicitFirst) next = Math.min(next, 1);
-        }
+        // The heading names the chapter, and stands where the text under it stands.
+        const next = markUnder();
         const path = [...head, ...(cited ? [chapter] : []), ...(s.marks ? [next] : [])];
         sectionPlaces.push({ path, begins: beginsFrom(prev, path), synopsis: true });
         prev = path;
@@ -1133,13 +1224,18 @@ export function placeWords(
 
 /** The chapter an edition's heading opens, by its own number ("§54." is 54, "Chapter XIV.--" is 14). */
 export function synopsisChapter(d: WorkDivisions, paragraph: string): number | null {
-  const m = d.scheme.synopsis?.re.exec(paragraph) ?? d.scheme.order?.heading?.exec(paragraph);
+  const m = d.scheme.synopsis?.re.exec(paragraph) ?? d.scheme.order?.heading?.exec(paragraph) ?? d.scheme.title?.heading?.exec(paragraph);
   return m ? num(m[1]) : null;
 }
 
-/** An edition's heading as the reader sets it: its words, its number shown apart. */
+/**
+ * A chapter's heading as the reader sets it: its words, its number shown
+ * apart. An edition's summary that opens no chapter (`summary`: "§§1-5. The
+ * substantiality of the Word ...") is shown whole, its own numbers with it:
+ * they say which sections it sums up.
+ */
 export function synopsisWords(paragraph: string): string {
-  return paragraph.replace(/^(?:§\d+\.|Chapter [IVXLC]+(?:\.--|—))\s*/, "");
+  return paragraph.replace(/^(?:§\d+\.|Chapter [IVXLC]+\.?\s?(?:--|\u2014))\s*/, "");
 }
 
 /** The section's number as the edition prints it, for the reader's heading: "8.21" rather than the file's 177. */

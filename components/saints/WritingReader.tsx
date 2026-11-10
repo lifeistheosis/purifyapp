@@ -356,7 +356,8 @@ function SectionParagraphs({
  {t("saints.division.chapter", { n: chapter })}
  </p>
  ) : null}
- <p lang="en" dir="ltr" className="font-sans text-ui text-paper/55 leading-[1.55]">{synopsisWords(p)}</p>
+ {/* A chapter's heading without its number, which stands over it; a summary that opens no chapter, whole. */}
+ <p lang="en" dir="ltr" className="font-sans text-ui text-paper/55 leading-[1.55]">{chapter !== null ? synopsisWords(p) : p}</p>
  </div>
  );
  }

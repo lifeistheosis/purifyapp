@@ -223,7 +223,10 @@ describe("the edition's own numbers, as each work is cited", () => {
     expect(count("justin-martyr/dialogue-with-trypho", true)).toBe(0);
     expect(count("ignatius-of-antioch/epistle-to-the-ephesians")).toBe(21);
     expect(count("polycarp-of-smyrna/the-martyrdom-of-polycarp")).toBe(22);
+    // A hundred chapters: 99 with a section of their own, and Book III's second, which the file
+    // runs on inside the first, under the edition's heading for it (below).
     expect(count("john-of-damascus/exact-exposition-of-the-orthodox-faith")).toBe(99);
+    expect(count("john-of-damascus/exact-exposition-of-the-orthodox-faith", true)).toBe(1);
     expect(count("john-cassian/institutes")).toBe(268);
   });
 
@@ -234,6 +237,108 @@ describe("the edition's own numbers, as each work is cited", () => {
     const first = d.places[0][0]!;
     expect(first.synopsis).toBe(true);
     expect(synopsisChapter(d, w.sections[0].paragraphs[0])).toBe(1);
+  });
+
+  // The edition's headings and summaries a file keeps as paragraphs, each a
+  // heading and never the author's words (1.9). Until then the rule for two
+  // of these works looked for "Chapter I.--" with two hyphens and the files
+  // print a dash, so no heading in either was known, and the Arianism page
+  // quoted three of them as St Athanasius's own.
+  const headings = (key: string) => {
+    const w = read(key);
+    const d = divisionsOf(key, w)!;
+    return d.places.flatMap((sec, s) => sec.flatMap((pl, i) => (pl?.synopsis ? [{ n: w.sections[s].n, i, words: w.sections[s].paragraphs[i], at: citeLabel(d, pl.path) }] : [])));
+  };
+
+  it("know every chapter heading of St Athanasius against the Arians, whichever dash the file prints", () => {
+    const four = headings("athanasius-the-great/four-discourses-against-the-arians");
+    const chapters = four.filter((h) => /^Chapter /.test(h.words));
+    // Thirty chapters across Discourses I to III, in order, both dashes among them.
+    expect(chapters.map((h) => synopsisChapter(divisionsOf("athanasius-the-great/four-discourses-against-the-arians", read("athanasius-the-great/four-discourses-against-the-arians"))!, h.words))).toEqual(
+      Array.from({ length: 30 }, (_, k) => k + 1),
+    );
+    expect(chapters.some((h) => /^Chapter [IVXLC]+\.--/.test(h.words))).toBe(true);
+    expect(chapters.some((h) => /^Chapter [IVXLC]+\.\u2014/.test(h.words))).toBe(true);
+    // Discourse IV has no chapters: the edition sums up each run of its sections instead.
+    const sums = four.filter((h) => /^§/.test(h.words));
+    expect(sums.map((h) => /^(§§?[\d, -]+)\./.exec(h.words)![1])).toEqual(["§§1-5", "§§6, 7", "§8", "§§9, 10", "§§11, 12", "§§13, 14", "§§15-24", "§25", "§§26-36"]);
+    expect(sums.every((h) => h.n === 4)).toBe(true);
+    expect(four).toHaveLength(39);
+
+    const nicene = headings("athanasius-the-great/on-the-nicene-definition");
+    expect(nicene.map((h) => /^Chapter ([IVXLC]+)/.exec(h.words)![1])).toEqual(["I", "II", "III", "IV", "V", "VI", "VII"]);
+  });
+
+  it("put a heading where the text under it stands, and leave a section that carries on under one where it was", () => {
+    const key = "athanasius-the-great/four-discourses-against-the-arians";
+    const w = read(key);
+    const d = divisionsOf(key, w)!;
+    const one = w.sections.find((x) => x.n === 1)!;
+    // Chapter II's heading stands over "5. Now the commencement of Arius's Thalia": it opens I.5.
+    const two = one.paragraphs.findIndex((p) => /^Chapter II\./.test(p));
+    expect(one.paragraphs[two + 1]).toMatch(/^5\. /);
+    expect(label(key, 1, two)).toBe("I.5");
+    expect(label(key, 1, two + 1)).toBe("I.5");
+    expect(placeAt(d, w, 1, two)?.synopsis).toBe(true);
+    expect(placeAt(d, w, 1, two + 1)?.synopsis).toBeUndefined();
+    // A chapter that opens in the middle of a section: "22 (continued). ..." under the heading is
+    // still I.22, and I.23 begins at its own number. (Read as the next number, the continued words
+    // of nine sections would have been cited one section on.)
+    const carried = one.paragraphs.findIndex((p) => /^22 \(continued\)\./.test(p));
+    expect(carried).toBeGreaterThan(0);
+    expect(placeAt(d, w, 1, carried - 1)?.synopsis).toBe(true);
+    expect(label(key, 1, carried - 1)).toBe("I.22");
+    expect(label(key, 1, carried)).toBe("I.22");
+    expect(one.paragraphs[carried + 1]).toMatch(/^23\. /);
+    expect(label(key, 1, carried + 1)).toBe("I.23");
+    expect(placeAt(d, w, 1, carried + 1)?.begins).toBe(1);
+    for (const sec of w.sections) {
+      sec.paragraphs.forEach((p, i) => {
+        const said = /^(\d+)\.? \(continued\)\./.exec(p);
+        if (said) expect(placeAt(d, w, sec.n, i)?.path.at(-1), `${sec.n}:${i} ${p.slice(0, 24)}`).toBe(Number(said[1]));
+      });
+    }
+    // The same in On the Nicene Definition, whose second chapter opens inside section 2.
+    const nd = "athanasius-the-great/on-the-nicene-definition";
+    const ndw = read(nd);
+    const at = ndw.sections[0].paragraphs.findIndex((p) => /^Chapter II\./.test(p));
+    expect(ndw.sections[0].paragraphs[at + 1]).not.toMatch(/^\d/);
+    expect(label(nd, 1, at)).toBe("2");
+    expect(label(nd, 1, at + 1)).toBe("2");
+  });
+
+  it("know each Part's summary in On the Councils, and Part III's title where the file keeps it", () => {
+    const got = headings("athanasius-the-great/on-the-councils");
+    expect(got.map((h) => `${h.n}:${h.words.slice(0, 24)}`)).toEqual([
+      "1:Reason why two Councils ",
+      "2:Arius's own sentiments; ",
+      "2:Part III. On the Symbols",
+      "2:We must look at the sens",
+    ]);
+    // Each stands at the number the text under it begins.
+    expect(got.map((h) => h.at)).toEqual(["1", "15", "33", "33"]);
+    // And the first words of St Athanasius's own in Part II are the next paragraph's.
+    const key = "athanasius-the-great/on-the-councils";
+    const w = read(key);
+    const d = divisionsOf(key, w)!;
+    expect(w.sections[1].paragraphs[1]).toMatch(/^15\. Arius and those with him/);
+    expect(placeAt(d, w, 2, 1)?.synopsis).toBeUndefined();
+  });
+
+  it("open Book III's second chapter of the Exact Exposition under its heading, inside the first's section", () => {
+    const key = "john-of-damascus/exact-exposition-of-the-orthodox-faith";
+    const got = headings(key);
+    expect(got).toHaveLength(1);
+    expect(got[0].words).toMatch(/^Chapter II\. --Concerning the manner in which the Word was conceived/);
+    expect(got[0].at).toBe("III.2");
+    const w = read(key);
+    const d = divisionsOf(key, w)!;
+    expect(synopsisChapter(d, got[0].words)).toBe(2);
+    // The first chapter's own words, then the second's under its heading.
+    expect(label(key, got[0].n, 0)).toBe("III.1");
+    expect(label(key, got[0].n, got[0].i + 1)).toBe("III.2");
+    // And a link to III.2 has somewhere to land.
+    expect(findAt(d, w, [3, 2])).toEqual({ n: got[0].n, i: got[0].i });
   });
 
   it("number St Justin's Dialogue by the edition's chapters where its file runs out of step", () => {

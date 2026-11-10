@@ -44,6 +44,7 @@ import { LESSONS, getLesson } from "@/lib/prayers/learning";
 import { ENTRIES, bylineOf, type WorkKey } from "@/lib/reading/entries";
 import { HIDDEN_LINES } from "@/lib/citations/hidden";
 import { HIDDEN_LIFE_QUOTES, LIFE_QUOTES } from "@/lib/saints/lifeQuotes";
+import { divisionsOf, type WorkLike } from "@/lib/saints/divisions";
 import { SAINTS } from "@/lib/saints/saints";
 import { allSayings } from "@/lib/today/saying";
 import type { TopicCitation } from "@/lib/topics/topics";
@@ -88,6 +89,28 @@ function paragraph(c: WorkCite): { text: string; voice?: string } | null {
   return { text: run.join(" ").replace(/(^|\s)\d{1,3}\.(?=\s)/g, " "), voice: s!.voice };
 }
 
+/**
+ * Whether any paragraph a cite names is the edition's own heading or summary
+ * (lib/saints/divisions.ts, `synopsis`): the editor's words, never the
+ * author's. Until 1.9 nothing asked this of a quotation, and the one test
+ * that asked it of a topic's or a heresy's citation looked for "Chapter I.--"
+ * with two hyphens, where two of St Athanasius's works print a dash: the
+ * Arianism page quoted three chapter summaries as his.
+ */
+function heading(c: WorkCite): boolean {
+  const key = `${c.saint}/${c.work}`;
+  const work = files.get(key) as WorkLike | undefined;
+  if (!work) return false;
+  const d = divisionsOf(key, work);
+  const at = work.sections.findIndex((x) => x.n === c.section);
+  if (!d || at < 0) return false;
+  for (let i = c.paragraph; i <= (c.through ?? c.paragraph); i++) if (d.places[at]?.[i]?.synopsis) return true;
+  return false;
+}
+
+/** How an edition's heading reads where no rule yet knows it: a chapter's number and a dash, a section sign and a number. */
+const READS_AS_HEADING = /^(?:Chapter [IVXLC]+\.\s?(?:--|\u2014)|§§?\d+(?:(?:-|, )\d+)*\.\s)/;
+
 function councilSection(c: CouncilCite): string | null {
   const file = path.join(ROOT, "data", "councils", c.council, `${c.document}.json`);
   if (!fs.existsSync(file)) return null;
@@ -109,6 +132,7 @@ function check(text: string, cite: Cite): string | null {
       if (p.voice === "editorial") return "a section in our own voice";
       const entry = ENTRIES[`${cite.saint}/${cite.work}` as WorkKey];
       if (entry?.form === "retelling") return "a work the reading room calls a retelling";
+      if (heading(cite)) return "the edition's own heading or summary, not the author's words";
       return words(p.text).includes(words(text)) ? null : `not in ${cite.saint}/${cite.work} s${cite.section} p${cite.paragraph}`;
     }
     case "council": {
@@ -627,9 +651,41 @@ describe("a Father on a topic's or a heresy's page", () => {
         expect(entry.form, where).not.toBe("retelling");
         expect(bylineOf(entry).kind, where).toBe("by");
       }
-      expect(r.paragraph, where).not.toMatch(/^(?:§\d+\.|Chapter [IVXLC]+\.--)/);
+      // Not as it reads, and not as the library knows it: the paragraph it
+      // quotes is no heading or summary of the edition's.
+      expect(r.paragraph, where).not.toMatch(READS_AS_HEADING);
       // It opens the paragraph it quotes.
       expect(r.href, where).toMatch(/#p-\d+-\d+$/);
+      const at = /#p-(\d+)-(\d+)$/.exec(r.href)!;
+      const quoted: WorkCite = { kind: "work", saint: c.saintSlug, work: c.workSlug, section: Number(at[1]), paragraph: Number(at[2]) };
+      expect(paragraph(quoted)?.text, where).toBeTruthy();
+      expect(heading(quoted), `${where}: quotes the edition's own heading or summary as his words`).toBe(false);
     }
+  });
+
+  /**
+   * A paragraph that is nothing but one quotation: the verse a homily opens
+   * on, or another writer quoted whole. On a card it stands beside the
+   * Father's face as his words. The 1.9 sweep found four cards of the
+   * heresies quoting the verse St John Chrysostom opens on (Homilies 2 and 3
+   * on Hebrews), where our line above each describes a paragraph of his own
+   * further down. Which words a Father is quoted as saying is the owner's
+   * choice, so the paragraphs are proposed to him
+   * (docs/1.9-build/notes/fathers-passages-proposed.md) and the cards wait
+   * here by name. No other may join them, and the list empties as he answers.
+   */
+  const ONE_QUOTATION = /^["“][^"“”]*["”]\.?(?:\s*\[\d+\.\])?(?:\s*\([^)]*\)\.?)?$/;
+  const VERSE_CARDS_WAITING = ["john-chrysostom/homilies-on-hebrews s2", "john-chrysostom/homilies-on-hebrews s3"];
+
+  it("quotes no paragraph that is another's words whole, but the homilies' verses that wait on the owner", async () => {
+    const found = new Set<string>();
+    for (const c of all) {
+      const r = await resolveCitation(c);
+      if (r?.paragraph && ONE_QUOTATION.test(r.paragraph.trim())) found.add(`${c.saintSlug}/${c.workSlug} s${c.sectionN}`);
+    }
+    expect([...found].sort()).toEqual(VERSE_CARDS_WAITING);
+    // The rule knows a verse with the edition's own mark after it, and leaves his own words alone.
+    expect(ONE_QUOTATION.test("“And again when He bringeth in the First-Begotten into the world.” [1.]")).toBe(true);
+    expect(ONE_QUOTATION.test("Behold how here also he goes on two paths, “by the one” leading us away from Sabellius.")).toBe(false);
   });
 });
