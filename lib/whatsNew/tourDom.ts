@@ -221,7 +221,7 @@ export type Looking = {
   sinceChange: number;
   /** Frames drawn since that change. */
   framesSinceChange: number;
-  /** Still arriving: the route's way out, or a skeleton on screen. */
+  /** Still arriving: the route's way out, a skeleton on screen, or the stop's element still fading in. */
   arriving: boolean;
 };
 
@@ -337,6 +337,26 @@ export function pageArriving(): boolean {
   // A skeleton bar is `.sk` since 1.9 (components/ui/Skeleton.tsx); the old mark is kept for any drawn with it.
   const shapes = document.querySelectorAll(".sk, [data-skeleton]");
   for (let i = 0; i < shapes.length && i < 6; i++) if (drawn(shapes[i])) return true;
+  return false;
+}
+
+/**
+ * The stop's element is on the page but still coming in: an animation or a
+ * transition runs on it, so it is not drawn yet (1.9: a chapter's first
+ * verses fade in half a second after the page, page-open-fade in
+ * app/globals.css, and the tour passed John 1:1 over while it was clear). A
+ * fade changes nothing a MutationObserver sees, so while this holds the layer
+ * looks for the element every frame and counts the page as still arriving;
+ * the page's own limit (PAGE_WAIT_MS) still holds.
+ */
+export function targetComing(target: string): boolean {
+  if (typeof document === "undefined") return false;
+  const all = document.querySelectorAll<HTMLElement>(`[${TOUR_ATTR}="${CSS.escape(target)}"]`);
+  for (const el of all) {
+    // Not in every WebView the apps can run in; without it, the rule before.
+    if (typeof el.getAnimations !== "function") continue;
+    if (el.getAnimations().some((a) => a.playState === "running")) return true;
+  }
   return false;
 }
 

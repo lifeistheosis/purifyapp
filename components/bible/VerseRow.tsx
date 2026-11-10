@@ -729,6 +729,8 @@ export function VerseRow({
  data-hl-color={dragColor ?? hl.id}
  data-para-start={paraStart ? "" : undefined}
  data-verse=""
+ // The 1.9 tour lights a chapter's first verse: tap a verse to open it.
+ data-tour={verse.n === 1 ? "verse" : undefined}
  style={highlightVars(dragColor ?? hl.id) as React.CSSProperties}
  >
  <div className="flex items-start gap-2">

@@ -82,6 +82,10 @@ export function TimelineCore({
     );
   }
 
+  // The first era-defining event, drawn large with its picture: the 1.9
+  // tour's History stop lights it (lib/whatsNew/tour.ts).
+  const firstGreat = flat.find((ev) => ev.importance === 1)?.slug;
+
   // A labelled, focusable group with a roving handler, not a listbox: each
   // row holds its own link, which the listbox pattern forbids.
   return (
@@ -100,7 +104,13 @@ export function TimelineCore({
           <EraHeader era={g.era} count={g.events.length} onOpenEras={onOpenEras} />
           <ol>
             {g.events.map((ev) => (
-              <EventRow key={ev.slug} event={ev} selected={selected === ev.slug} onOpen={onOpen} />
+              <EventRow
+                key={ev.slug}
+                event={ev}
+                selected={selected === ev.slug}
+                onOpen={onOpen}
+                tour={ev.slug === firstGreat ? "history-pictures" : undefined}
+              />
             ))}
           </ol>
         </section>

@@ -1,6 +1,8 @@
-// The release's guided tour (1.8, the owner's note 49 of build 80): the steps
-// as data, the order they are taken in, and how a missing step is passed
-// over. lib/whatsNew/tour.ts.
+// The release's guided tour (1.8, the owner's note 49 of build 80: a tour of
+// every release): the steps as data, the order they are taken in, and how a
+// missing step is passed over. lib/whatsNew/tour.ts. Held to this build's
+// release, 1.9; 1.8's tour stays in TOURS as the record of 1.8, never shown
+// in a 1.9 build, so its markers are no longer held here.
 
 import { execFileSync } from "node:child_process";
 import fs from "node:fs";
@@ -8,7 +10,6 @@ import path from "node:path";
 
 import { describe, expect, it } from "vitest";
 
-import { hasWeb } from "@/lib/saints/web";
 import {
   HIGHLIGHTS_MAX,
   HIGHLIGHTS_MIN,
@@ -36,7 +37,7 @@ const CATALOGS = Object.fromEntries(
 /** Written by its number, so the character itself is in no file. */
 const EM_DASH = String.fromCharCode(0x2014);
 
-const TOUR = tourFor("1.8")!;
+const TOUR = tourFor("1.9")!;
 const N = TOUR.steps.length;
 const ORIGIN = { route: "/", via: "offer" as const };
 /** The steps still awaiting their screens, passed over from the start. */
@@ -54,39 +55,32 @@ function missingOf(s: TourState): readonly number[] {
   return s.phase === "step" || s.phase === "end" ? s.missing : [];
 }
 
-const start: TourAction = { type: "start", version: "1.8", origin: ORIGIN };
+const start: TourAction = { type: "start", version: "1.9", origin: ORIGIN };
 
-describe("the 1.8 tour as data", () => {
-  it("belongs to 1.8 and its patches, and to nothing else", () => {
-    expect(TOUR.version).toBe("1.8");
-    expect(tourFor("1.8.1")).toBe(TOUR);
-    expect(tourFor(" 1.8 ")).toBe(TOUR);
+describe("the 1.9 tour as data", () => {
+  it("belongs to 1.9 and its patches, and to nothing else", () => {
+    expect(TOUR.version).toBe("1.9");
+    expect(tourFor("1.9.1")).toBe(TOUR);
+    expect(tourFor(" 1.9 ")).toBe(TOUR);
     expect(tourFor("1.7")).toBeNull();
-    expect(tourFor("1.9")).toBeNull();
-    // This build's release shows its own tour or none, never another's. 1.9
-    // has none yet (his note 49 of build 80 asks one of every release; it is
-    // owed, Updates' to build): when it lands, this is its own again.
+    expect(tourFor("1.10")).toBeNull();
+    // 1.8's is kept as the record of 1.8, and is not this one.
+    expect(tourFor("1.8")?.version).toBe("1.8");
+    expect(tourFor("1.8")).not.toBe(TOUR);
+    // This build's release shows its own tour or none, never another's (his
+    // note 49 of build 80 asks one of every release: when the next release
+    // has none yet, it is owed).
     const own = tourFor(CURRENT_VERSION);
     if (own) expect(own.version).toBe(featureRelease(CURRENT_VERSION));
-    else expect(featureRelease(CURRENT_VERSION)).not.toBe("1.8");
+    else expect(featureRelease(CURRENT_VERSION)).not.toBe("1.9");
   });
 
-  it("tells the eight stops of the story of 1.8, in the order the owner's pick draws them", () => {
-    // Sheet r3-14, direction B (his pick, 2026-10-31): Chants left out until
-    // their rights are settled, the player's pill told within the New
-    // Testament's page.
-    expect(TOUR.steps.map((s) => s.id)).toEqual([
-      "search",
-      "saint-web",
-      "community",
-      "listen",
-      "theology",
-      "atlas",
-      "quote-picture",
-      "settings",
-    ]);
-    // The title page names the first three, as the sheet's does.
-    expect(TOUR.highlights).toEqual(["search", "saint-web", "community"]);
+  it("tells the six stops of the story of 1.9, in the order of its note", () => {
+    // The release's line, "Keep a journal by the Church's day, and go deeper
+    // into every verse", then the rest of the note in its order.
+    expect(TOUR.steps.map((s) => s.id)).toEqual(["journal", "verse", "bibles", "plans", "creed", "history"]);
+    // The title page names the first three: the line, in three stops.
+    expect(TOUR.highlights).toEqual(["journal", "verse", "bibles"]);
   });
 
   it("gives every step a unique id and target, and every release a unique version", () => {
@@ -115,9 +109,11 @@ describe("the 1.8 tour as data", () => {
       const top = path.join(ROOT, "app/(app)", segments[0]);
       expect(fs.existsSync(top), `${s.id}: app/(app)/${segments[0]}`).toBe(true);
     }
-    // The saint web's step opens a saint whose page has the Web door.
-    const saint = TOUR.steps.find((s) => s.id === "saint-web")!.route!.split("/")[2];
-    expect(hasWeb(saint)).toBe(true);
+    // The verse and the Bibles open a chapter the app carries.
+    for (const id of ["verse", "bibles"]) {
+      const [, , book, chapter] = TOUR.steps.find((s) => s.id === id)!.route!.split("/");
+      expect(fs.existsSync(path.join(ROOT, "data/bible", book, `${chapter}.json`)), id).toBe(true);
+    }
   });
 
   it("names two or three highlights for the pop-up, each a step", () => {
@@ -145,7 +141,26 @@ describe("the 1.8 tour as data", () => {
   });
 
   it("asks for a try only where the element stays on its page when used", () => {
-    expect(TOUR.steps.filter((s) => s.tryIt).map((s) => s.id)).toEqual(["community"]);
+    // None in 1.9: a verse, the translations, a plan, the Creed and an event
+    // each open a sheet or a page of their own when tapped.
+    expect(TOUR.steps.filter((s) => s.tryIt).map((s) => s.id)).toEqual([]);
+  });
+
+  it("names Purify Plus on the stop that is Plus's, in every language, and on no other", () => {
+    // The new plans are Purify Plus's; the journal's day, the verse, the
+    // Bibles, the Creed and History's pictures are every reader's. A stop
+    // never promises Plus to every reader, and never hides that it is Plus.
+    const plus = ["plans"];
+    for (const s of TOUR.steps) {
+      for (const lang of LANGS) {
+        const line = CATALOGS[lang][s.body];
+        if (plus.includes(s.id)) expect(line, `${lang} ${s.body}`).toContain("Purify Plus");
+        else expect(line, `${lang} ${s.body}`).not.toMatch(/\bPlus\b/);
+        expect(CATALOGS[lang][s.title], `${lang} ${s.title}`).not.toMatch(/\bPlus\b/);
+      }
+    }
+    // The title page names only what every reader has.
+    for (const id of TOUR.highlights) expect(plus, id).not.toContain(id);
   });
 });
 
@@ -213,10 +228,12 @@ describe("the tour's words", () => {
 describe("where each step's element is marked", () => {
   // `data-tour="x"` on an element, or `tour="x"` on a component that draws
   // it on its own button (SearchTrigger, so Today's magnifier stays a
-  // direct child of its row and keeps its plate over Prayers' picture).
+  // direct child of its row and keeps its plate over Prayers' picture), or
+  // given to one element of many: `data-tour={v.n === 1 ? "x" : undefined}`
+  // (the verse), `tour={ev.slug === first ? "x" : undefined}` (History).
   const marked = (target: string): string[] => {
     try {
-      return execFileSync("git", ["grep", "-l", "-F", `tour="${target}"`, "--", "app", "components"], {
+      return execFileSync("git", ["grep", "-l", "-E", `tour=([{][^}]*)?"${target}"`, "--", "app", "components"], {
         cwd: ROOT,
         encoding: "utf8",
       })
@@ -235,8 +252,8 @@ describe("where each step's element is marked", () => {
   });
 
   it("is not placed yet for a step still awaiting its screen, so the flag cannot outlive it", () => {
-    // Round 3's search, quote pictures and Theology are built beside the
-    // tour; their anchors go on after the merge, and the step's `awaiting`
+    // A screen built beside the tour carries `awaiting` until its anchor is
+    // placed (1.8's search, quote pictures and Theology were), and the flag
     // comes off in the same commit.
     for (const s of TOUR.steps) {
       if (!s.awaiting) continue;
@@ -264,17 +281,17 @@ describe("moving through the steps", () => {
   });
 
   it("offers only from idle, and only a release that has a tour", () => {
-    expect(run({ type: "offer", version: "1.8" })).toEqual({ phase: "offer", version: "1.8" });
+    expect(run({ type: "offer", version: "1.9" })).toEqual({ phase: "offer", version: "1.9" });
     expect(run({ type: "offer", version: "1.7" })).toBe(IDLE);
     const stepping = run(start);
-    expect(reduceTour(stepping, { type: "offer", version: "1.8" })).toBe(stepping);
+    expect(reduceTour(stepping, { type: "offer", version: "1.9" })).toBe(stepping);
   });
 
   it("starts at the first step there is, from the pop-up or from Take the tour", () => {
     expect(READY.length).toBeGreaterThanOrEqual(4);
-    const fromOffer = run({ type: "offer", version: "1.8" }, start);
+    const fromOffer = run({ type: "offer", version: "1.9" }, start);
     expect(fromOffer).toMatchObject({ phase: "step", index: READY[0], dir: 1, found: false, shown: null, missing: AWAIT });
-    const replay = run({ type: "start", version: "1.8", origin: { route: "/whats-new", via: "replay" } });
+    const replay = run({ type: "start", version: "1.9", origin: { route: "/whats-new", via: "replay" } });
     expect(replay).toMatchObject({ phase: "step", index: READY[0], origin: { route: "/whats-new", via: "replay" } });
     expect(run({ type: "start", version: "1.6", origin: ORIGIN })).toBe(IDLE);
   });
@@ -318,7 +335,7 @@ describe("moving through the steps", () => {
       s = reduceTour(s, { type: "next" });
     }
     expect(seen).toEqual(READY);
-    expect(s).toMatchObject({ phase: "end", version: "1.8", missing: AWAIT });
+    expect(s).toMatchObject({ phase: "end", version: "1.9", missing: AWAIT });
   });
 
   it("goes to the end card when every step is missing", () => {
@@ -360,7 +377,7 @@ describe("moving through the steps", () => {
   });
 
   it("ends on Skip from anywhere, and the end card closes on Done", () => {
-    expect(reduceTour(run({ type: "offer", version: "1.8" }), { type: "skip" })).toBe(IDLE);
+    expect(reduceTour(run({ type: "offer", version: "1.9" }), { type: "skip" })).toBe(IDLE);
     expect(reduceTour(run(start, { type: "found", index: READY[0] }), { type: "skip" })).toBe(IDLE);
     let end = run(start);
     for (const i of READY) end = reduceTour(end, { type: "missing", index: i });

@@ -33,11 +33,14 @@ export function EventRow({
   event,
   selected = false,
   onOpen,
+  tour,
 }: {
   event: HistoryEventMeta;
   /** Chosen beside the rail on a computer: its mark is filled (aria-current). */
   selected?: boolean;
   onOpen?: (slug: string) => void;
+  /** The tour's mark (data-tour), on the one row a release's tour lights. */
+  tour?: string;
 }) {
   const major = event.importance === 1;
 
@@ -52,6 +55,7 @@ export function EventRow({
     <li
       id={`event-${event.slug}`}
       data-event-slug={event.slug}
+      data-tour={tour}
       aria-current={selected ? "true" : undefined}
       className="history-cv relative ps-7"
     >

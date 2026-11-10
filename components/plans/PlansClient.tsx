@@ -112,7 +112,7 @@ export function PlansClient({ minutes }: { minutes: Record<string, number> }) {
               {t("plans.more")}
             </h2>
           ) : null}
-          <ul className={cn("grid grid-cols-2 gap-3 md:grid-cols-3", (current || seasonPlan) && "mt-3")} data-plans-tiles="">
+          <ul className={cn("grid grid-cols-2 gap-3 md:grid-cols-3", (current || seasonPlan) && "mt-3")} data-plans-tiles="" data-tour="plans">
             {tiles.map((plan) => {
               const progress = progressOf(plan.id);
               const next = progress ? nextDay(plan, progress) : null;
@@ -228,7 +228,7 @@ function SeasonCard({
   // In a language the device can write (lib/i18n/deviceDates.ts), at noon UTC as the season gives it.
   const date = begins ? new Intl.DateTimeFormat(dateLocale(locale), { day: "numeric", month: "long", timeZone: "UTC" }).format(begins) : null;
   return (
-    <section aria-labelledby="plans-season" data-plans-season="" className={cn("overflow-hidden rounded-[22px] bg-night-soft ring-1 ring-inset ring-paper/10", !first && "mt-4")}>
+    <section aria-labelledby="plans-season" data-plans-season="" data-tour="plans" className={cn("overflow-hidden rounded-[22px] bg-night-soft ring-1 ring-inset ring-paper/10", !first && "mt-4")}>
       <Link href={`/plans/${plan.id}`} className="tap-press block">
         <CoverArt
           src={plan.season ? SEASON_PICTURES[plan.season] : SEASON_PICTURES.nativity}

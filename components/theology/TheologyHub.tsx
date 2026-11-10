@@ -90,7 +90,7 @@ export function TheologyHub({
             <Search size={18} aria-hidden />
             <span className="truncate">{t("study.theology.searchLibrary")}</span>
           </button>
-          <div className="mt-4">{slots.creed}</div>
+          <div className="mt-4" data-tour="creed">{slots.creed}</div>
           {slots.recent}
           <div className="mt-4">{slots.waysTiles}</div>
           {slots.councils}
@@ -113,7 +113,7 @@ export function TheologyHub({
         )}
       </div>
 
-      <div className="mt-4">{slots.creed}</div>
+      <div className="mt-4" data-tour="creed">{slots.creed}</div>
 
       <section aria-labelledby="theology-path" className="mt-7">
         <div className="flex items-baseline justify-between gap-3">

@@ -78,7 +78,7 @@ export function TodayPage({ onWriteFrom }: { onWriteFrom: (source: JournalSource
   const line = [date, day.headline?.name, fasting ? t(`calendar.fast.${day.fast.ruleId}.label`) : null].filter(Boolean).join(" · ");
 
   return (
-    <section aria-labelledby="journal-today" data-journal-today="" className="mt-6 rounded-[28px] border border-paper/10 bg-night-soft px-5 pb-3 pt-5">
+    <section aria-labelledby="journal-today" data-journal-today="" data-tour="journal-today" className="mt-6 rounded-[28px] border border-paper/10 bg-night-soft px-5 pb-3 pt-5">
       <p id="journal-today" role="heading" aria-level={2} className="font-serif text-[32px] font-semibold leading-[1.1] text-paper">
         {weekday}
       </p>

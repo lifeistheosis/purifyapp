@@ -50,6 +50,8 @@ export function TranslationSwitcher({
       <ReaderPill
         chevron
         onClick={() => setOpen((v) => !v)}
+        // The 1.9 tour's way to the five new Bibles, on a computer.
+        data-tour="bibles"
         aria-haspopup="dialog"
         aria-expanded={open}
         aria-label={t("bible.switchTranslationCurrentAria", { name: label })}

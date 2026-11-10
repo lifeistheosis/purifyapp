@@ -18,9 +18,11 @@
 //     tour leads to where the reader was.
 //   - It watches the page for the stop's element (a MutationObserver, checked
 //     at most once a frame and only after the page changed), so the move
-//     starts in the frame the element is drawn. It gives up on it only by the
-//     rule in tourDom.ts (lookVerdict): a page that has settled without it,
-//     or one that never settles.
+//     starts in the frame the element is drawn. An element on the page that
+//     is still fading in, which no observer sees, is looked at every frame
+//     until it is drawn (tourDom.ts, targetComing). It gives up on it only by
+//     the rule in tourDom.ts (lookVerdict): a page that has settled without
+//     it, or one that never settles.
 //   - It plans the stop before anything moves (tourDom.ts, planStop): where
 //     the words stand, where the page goes, and what is lit, held to the
 //     stage between the bars and clear of the words. Then the light and the
@@ -76,6 +78,7 @@ import {
   samePage,
   tapBlockers,
   takeIntro,
+  targetComing,
   type Box,
   type FootPlace,
   type Stage,
@@ -331,6 +334,8 @@ export function TourLayer() {
     let changedAt = began;
     let frames = 0;
     let dirty = true;
+    /** Its element is on the page but still fading in: looked at every frame. */
+    let coming = false;
     let alive = true;
     let raf = 0;
     let wentOut = false;
@@ -362,13 +367,14 @@ export function TourLayer() {
         frames = 0;
         dirty = true;
       }
-      if (onPage && dirty) {
+      if (onPage && (dirty || coming)) {
         dirty = false;
         if (findTarget(step.target)) {
           pageRef.current = pathnameRef.current;
           dispatchTour({ type: "found", index });
           return;
         }
+        coming = targetComing(step.target);
         // Its page has come and the element is not on it yet: the light goes
         // out where it stood, over a page it does not belong to.
         if (away && !wentOut && lightRef.current.open > 0) {
@@ -385,7 +391,7 @@ export function TourLayer() {
         arriving: false,
       };
       let verdict = lookVerdict(looking);
-      if (verdict === "missing" && onPage) verdict = lookVerdict({ ...looking, arriving: pageArriving() });
+      if (verdict === "missing" && onPage) verdict = lookVerdict({ ...looking, arriving: coming || pageArriving() });
       if (verdict === "missing") {
         dispatchTour({ type: "missing", index });
         return;

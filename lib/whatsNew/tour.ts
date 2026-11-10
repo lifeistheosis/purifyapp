@@ -143,8 +143,78 @@ const TOUR_1_8: Tour = {
   ],
 };
 
-/** Every release that has a tour, newest first. */
-export const TOURS: readonly Tour[] = [TOUR_1_8];
+/**
+ * 1.9, told the way 1.8 was (his note 49 of build 80 asks a tour of every
+ * release), after the release's own line: "Keep a journal by the Church's
+ * day, and go deeper into every verse." Six stops, in the order of the note:
+ * the journal's page for the day, a verse opened, the five Bibles to
+ * download, the new reading plans, the Creed by council, and History's great
+ * events in their pictures. Each is a line of the 1.9 note that is lit in
+ * the build, and each lights what every reader sees on its page.
+ *
+ * Purify Plus is named where it is meant, and only there: the new plans are
+ * Plus's, and their line says so in every language; the other stops are
+ * every reader's (lib/whatsNew/__tests__/tour.test.ts holds both). The title
+ * page names the first three, the release's line in three stops.
+ *
+ * The verse stop lights John 1:1, the first verse of the Gospel the 1.9
+ * plans begin with; the Bibles stop lights the way to the translations list
+ * on the same page (the reader's ••• on a phone, its translation pill on a
+ * computer), whichever is drawn. The plans stop lights the season's plan
+ * when it is up, and the plans otherwise; the History stop, the first great
+ * event, drawn large with its picture.
+ */
+const TOUR_1_9: Tour = {
+  version: "1.9",
+  name: "whatsnew.highlights.eyebrow",
+  line: "whatsnew.highlights.title",
+  highlights: ["journal", "verse", "bibles"],
+  steps: [
+    {
+      id: "journal",
+      route: "/journal",
+      target: "journal-today",
+      title: "tour.step.journal.title",
+      body: "tour.story.journal",
+    },
+    {
+      id: "verse",
+      route: "/bible/john/1",
+      target: "verse",
+      title: "tour.step.verse.title",
+      body: "tour.story.verse",
+    },
+    {
+      id: "bibles",
+      route: "/bible/john/1",
+      target: "bibles",
+      title: "tour.step.bibles.title",
+      body: "tour.story.bibles",
+    },
+    {
+      id: "plans",
+      route: "/plans",
+      target: "plans",
+      title: "tour.step.plans.title",
+      body: "tour.story.plans",
+    },
+    { id: "creed", route: "/theology", target: "creed", title: "creed.title", body: "tour.story.creed" },
+    {
+      id: "history",
+      route: "/history",
+      target: "history-pictures",
+      title: "tour.step.history.title",
+      body: "tour.story.history",
+    },
+  ],
+};
+
+/**
+ * Every release that has a tour, newest first. Only this build's own release
+ * is ever shown (TourHost and Take the tour ask for CURRENT_VERSION's), so
+ * 1.8's stays as the record of 1.8, and its markers are no longer held.
+ */
+export const TOURS: readonly Tour[] = [TOUR_1_9, TOUR_1_8];
 
 /** The tour of the release `version` belongs to, or null when it has none. */
 export function tourFor(version: string): Tour | null {
