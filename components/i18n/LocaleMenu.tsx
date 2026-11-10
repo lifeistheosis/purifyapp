@@ -1,7 +1,9 @@
 "use client";
 
 import Link from "next/link";
+import { coverageWords } from "@/lib/i18n/coverage";
 import { LOCALES, type LocaleCode } from "@/lib/i18n/locales";
+import { textDir } from "@/lib/i18n/textDir";
 import { useIsNative } from "@/lib/platform/native";
 import { useTranslate } from "./MessagesProvider";
 
@@ -65,19 +67,25 @@ export function LocaleMenu({
               type="button"
               onClick={() => onSelect(l.code)}
               dir={l.dir}
-              className={`flex h-11 w-full items-center gap-3 px-3 text-left font-sans text-caption transition-colors ${
+              className={`flex min-h-11 w-full items-center gap-3 px-3 py-1.5 text-left font-sans text-caption transition-colors ${
                 active ? "bg-paper/[0.04]" : "hover:bg-paper/[0.06]"
               }`}
             >
-              <span className="min-w-0 flex-1 truncate">
-                <span className={active ? "text-gold" : "text-paper/90"}>
-                  {l.nativeLabel}
-                </span>
-                {l.englishLabel !== l.nativeLabel && (
-                  <span className="ml-1.5 text-[11px] text-paper/35">
-                    ({l.englishLabel})
+              <span className="min-w-0 flex-1">
+                <span className="block truncate">
+                  <span lang={l.code} dir={textDir(l.code)} className={active ? "text-gold" : "text-paper/90"}>
+                    {l.nativeLabel}
                   </span>
-                )}
+                  {l.englishLabel !== l.nativeLabel && (
+                    <span lang="en" dir="ltr" className="ml-1.5 text-[11px] text-paper/35">
+                      ({l.englishLabel})
+                    </span>
+                  )}
+                </span>
+                {/* What the language covers, in its own words (lib/i18n/coverage.ts). */}
+                <span lang={l.code} dir={textDir(l.code)} data-language-covers={l.code} className="block truncate text-[11px] leading-snug text-paper/60">
+                  {coverageWords(l.code)}
+                </span>
               </span>
               {active ? (
                 <Check className="h-3.5 w-3.5 shrink-0 text-gold" />
@@ -104,19 +112,24 @@ export function LocaleMenu({
                   type="button"
                   onClick={() => onSelect(l.code)}
                   dir={l.dir}
-                  className={`flex h-11 w-full items-center gap-3 px-3 text-left font-sans text-caption transition-colors ${
+                  className={`flex min-h-11 w-full items-center gap-3 px-3 py-1.5 text-left font-sans text-caption transition-colors ${
                     active ? "bg-paper/[0.04]" : "hover:bg-paper/[0.06]"
                   }`}
                 >
-                  <span className="min-w-0 flex-1 truncate">
-                    <span className={active ? "text-gold" : "text-paper/90"}>
-                      {l.nativeLabel}
-                    </span>
-                    {l.englishLabel !== l.nativeLabel && (
-                      <span className="ml-1.5 text-[11px] text-paper/35">
-                        ({l.englishLabel})
+                  <span className="min-w-0 flex-1">
+                    <span className="block truncate">
+                      <span lang={l.code} dir={textDir(l.code)} className={active ? "text-gold" : "text-paper/90"}>
+                        {l.nativeLabel}
                       </span>
-                    )}
+                      {l.englishLabel !== l.nativeLabel && (
+                        <span lang="en" dir="ltr" className="ml-1.5 text-[11px] text-paper/35">
+                          ({l.englishLabel})
+                        </span>
+                      )}
+                    </span>
+                    <span lang={l.code} dir={textDir(l.code)} data-language-covers={l.code} className="block truncate text-[11px] leading-snug text-paper/60">
+                      {coverageWords(l.code)}
+                    </span>
                   </span>
                   {active ? (
                     <Check className="h-3.5 w-3.5 shrink-0 text-gold" />
