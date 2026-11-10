@@ -107,7 +107,8 @@ export function RelatedRail({
             <div key={g}>
               <p className="flex items-baseline justify-between px-1 font-sans text-[10.5px] font-bold uppercase tracking-[0.12em] text-paper/50">
                 <T k={GROUP_LABEL[g]} />
-                <span className="text-[11.5px] font-semibold normal-case tracking-normal tabular-nums text-paper/40">{links.length}</span>
+                {/* At the label's own share: /40 read 2.31:1 on Light and under 4.5:1 on all five palettes (checkMock, 2026-11-10). */}
+                <span className="text-[11.5px] font-semibold normal-case tracking-normal tabular-nums text-paper/50">{links.length}</span>
               </p>
               <ul className="theology-tray mt-2 overflow-hidden rounded-[18px] py-1">
                 {links.map((l) => (
