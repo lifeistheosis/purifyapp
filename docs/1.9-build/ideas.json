@@ -1971,6 +1971,20 @@
    "version": "1.9",
    "outcome": null,
    "note": "A lone tap had opened the window over the verse, so double taps never highlighted. Now tap nothing, double tap highlight (yellow before any colour), again takes it off, hold the window, a keyboard door per verse; the Fathers' paragraphs match; the texts say hold and double tap. e7aa51c7. PLAN 13m."
+  },
+  {
+   "id": "e-build90-note6-easy-scroll-verses",
+   "section": "Practice",
+   "kind": "idea",
+   "title": "Easy Scroll rests at every verse, the next prayer on a swipe of its own (build 90 note 6)",
+   "from": "edgar",
+   "asked": "2026-11-10",
+   "status": "built",
+   "decided": "2026-11-10",
+   "needsDesign": false,
+   "version": "1.9",
+   "outcome": null,
+   "note": "A prayer rested only at its start and end, so a swipe from its end carried its last verses off the screen. Now every verse rests, a fling never leaves the prayer, long verses rest in parts; the click once per prayer. 4639fa9e. PLAN 13n."
   }
  ]
 }
