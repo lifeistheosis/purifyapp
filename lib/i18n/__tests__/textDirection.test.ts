@@ -34,10 +34,8 @@ import { SAINTS_PAGES_AND_WALKS } from "./notYetDirected.saintsPagesAndWalks";
 
 const ROOT = process.cwd();
 
-/** The Updates 2 chat's families not yet marked (the Bible, the prayers, the chants, Theology and teaching, the councils, the reading room, Today, the citations, Plus, the start and the rest), with how many: all marked on 2026-11-10 but one. */
+/** The Updates 2 chat's families not yet marked (the Bible, the prayers, the chants, Theology and teaching, the councils, the reading room, Today, the citations, Plus, the start and the rest), with how many: all marked on 2026-11-10. */
 const NOT_YET_DIRECTED: Record<string, number> = {
-  // Its words' line waits on the prayer page's own work (build 90 note 8, the Themes chat's file).
-  "components/prayers/PrayerRuleReader.tsx": 1,
 };
 
 type Said = { file: string; line: number; tag: string; lang: string; dir: string | null; literal: boolean };

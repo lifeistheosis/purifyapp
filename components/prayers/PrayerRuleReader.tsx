@@ -83,6 +83,7 @@ import { markWallPrayed, unmarkWallPrayed, wallNamesFor } from "@/lib/prayers/wa
 const COMMEMORATION_ID = "commemoration";
 import { isKept } from "@/lib/rhythm/marks";
 import { softTick } from "@/lib/ui/softTick";
+import { textDir } from "@/lib/i18n/textDir";
 
 // Re-exported for back-compat: the rule pages import these as types.
 export type { Prayer, PrayerVariant, Rule } from "@/lib/prayers/types";
@@ -365,8 +366,12 @@ export function PrayerRuleReader({
         {/* A reader's own rule has no one source: each of its prayers names its own. */}
         {rule.source ? (
           <footer className="mt-12 border-t border-paper/10 pt-6 text-center">
-            <p lang={contentLocale} className="font-sans text-caption leading-[1.6] text-paper/50">
-              {t("prayers.reader.sourceLabel")} {rule.source}
+            {/* "Source:" is the reader's word; the source itself is the rule's own language (build 90 note 4). */}
+            <p className="font-sans text-caption leading-[1.6] text-paper/50">
+              {t("prayers.reader.sourceLabel")}{" "}
+              <span lang={contentLocale} dir={textDir(contentLocale)}>
+                {rule.source}
+              </span>
             </p>
           </footer>
         ) : null}
