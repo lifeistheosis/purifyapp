@@ -119,8 +119,16 @@ const BIBLES_LIST = "/bibles/:bible/index.json";
 const isNative =
   process.env.BUILD_TARGET === "android" || process.env.BUILD_TARGET === "ios";
 
+// From Next 16.3, `next dev` writes a managed block into AGENTS.md whenever it
+// detects an AI coding agent (agentRules, on by default). AGENTS.md here is
+// the project's own operating guide, and every chat on the branch runs
+// `next dev`, so each would leave an edit to it that nobody asked for. Off;
+// the guide already opens with the same direction to read Next's own docs.
+const AGENT_RULES = { agentRules: false } as const;
+
 const nextConfig: NextConfig = isNative
   ? {
+      ...AGENT_RULES,
       output: "export",
       // Capacitor serves files from disk: trailing slashes give every route its
       // own index.html, and the image optimizer needs a server so pass through.
@@ -135,14 +143,17 @@ const nextConfig: NextConfig = isNative
       // phone saved before this build was installed is older than what the
       // build carries, and is not put in front of it.
       env: { NEXT_PUBLIC_PURIFY_BUILT_AT: new Date().toISOString() },
-      experimental: { viewTransition: true },
+      // Route changes are pictured (components/nav/RouteTransition.tsx) with
+      // no flag: from Next 16.3 view transitions need no configuration, and
+      // 16.4 no longer accepts experimental.viewTransition (its upgrade guide).
     }
   : {
+      ...AGENT_RULES,
       // BUILD MEMORY, not build speed.
       //
       // Render killed the 1.3 deploy with "Ran out of memory (used over 8GB)".
       // Next spreads static generation across workers, and
-      // node_modules/next/dist/build/index.js:311-318 shows the count comes
+      // node_modules/next/dist/build/index.js:370-377 (Next 16.4.6) shows the count comes
       // straight from this option. The default put seven workers on the box,
       // and each carries its own Next runtime plus whatever the pages import:
       // 1,895 static pages over a 124MB data/ tree and 5.2MB of message
@@ -158,7 +169,7 @@ const nextConfig: NextConfig = isNative
       //
       // Two trades build minutes for a deploy that finishes. Raise it only
       // against a real Render build, never against a local one.
-      experimental: { cpus: 2, viewTransition: true },
+      experimental: { cpus: 2 },
       async redirects() {
         return [
           { source: "/prayer", destination: "/prayers", permanent: true },

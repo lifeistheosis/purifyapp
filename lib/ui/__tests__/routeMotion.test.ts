@@ -768,9 +768,14 @@ describe("a picture that leads to its own page", () => {
 describe("the wiring", () => {
   const bridge = read("components/nav/RouteTransition.tsx");
 
-  it("Next is told to picture route changes, in the website's build and in the apps'", () => {
-    const config = read("next.config.ts");
-    expect(config.match(/viewTransition: true/g) ?? []).toHaveLength(2);
+  it("Next pictures route changes with no flag, in the website's build and in the apps'", () => {
+    // Until 16.3 this was experimental.viewTransition, in both builds. From
+    // 16.3 view transitions need no configuration, and 16.4 refuses the flag
+    // (node_modules/next/dist/docs, the version 16 upgrade guide).
+    const config = read("next.config.ts").replace(/\/\/.*$/gm, "");
+    expect(config).not.toMatch(/viewTransition\s*:/);
+    const [major, minor] = (JSON.parse(read("node_modules/next/package.json")).version as string).split(".").map(Number);
+    expect(major > 16 || (major === 16 && minor >= 3), "a Next that pictures route changes without a flag").toBe(true);
   });
 
   it("one bridge at the root, after the two it depends on", () => {

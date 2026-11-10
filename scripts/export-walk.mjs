@@ -1370,7 +1370,11 @@ await section(21, async () => {
   const inPage = named(page);
   must(inPage.includes("AppFrame") && !inPage.includes("MobileTabBar") && !inPage.includes("PrayerSyncBridge"), "a chapter names the two frames and not the parts inside them");
   must(inPage.includes("NotFoundScreen") && !page.includes("min-h-screen bg-night flex items-center justify-center"), "and carries a reference to the not-found screen, not the screen");
-  const head = at("__next._head.txt");
+  // Next 16.4 writes no head file: the head's rows (its meta, then its title
+  // with the manifest and icon links) are in the page's own payload, and are
+  // read from there, whole, against the same three conditions.
+  const headFile = ["bible/john/1/__next._head.txt", "__next._head.txt"].some((f) => fs.existsSync(path.join(OUT, f))) || fs.existsSync(path.resolve(".release-logs/router-files", "__next._head.txt"));
+  const head = headFile ? at("__next._head.txt") : page.split("\n").filter((row) => /^[0-9a-f]+:\[\["\$","(title|meta)",/.test(row)).join("\n");
   // The manifest and icon links stay: Next writes those itself, from the files of those names.
   must(head.includes("John 1") && !/og:|twitter:|"keywords"|"canonical"|"description"|"author"/.test(head) && head.length < 2000, `its head is its title, with none of the website's link-preview tags (${(head.length / 1024).toFixed(1)} KB, it was 3.6 KB)`);
   const websiteOnly = ["opengraph-image.png", "sitemap.xml", "robots.txt", "llms.txt"].filter((f) => fs.existsSync(path.join(OUT, f)));
