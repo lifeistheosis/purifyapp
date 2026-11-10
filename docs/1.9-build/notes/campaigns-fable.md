@@ -2730,3 +2730,64 @@ and not applied. When a probe shows one applied, its header in
 closed, and pictures are switched off besides. File one also closes July's
 table to the public key, which nothing in the live app reads.
 
+## 16. Build 90, and July's reminder (2026-11-10)
+
+**The question.** The arbiter brought his words about Android test build 90
+(run 42782850621, from `53dbb696`): "why does my build have the campaign
+prayers". It was first read as campaigns showing where they should not. He
+meant the opposite, that they should be in his build to try, and the test web
+is the answer to that (CLAUDE.md, "The test web and the main web"). The first
+reading was checked all the same, and what it found is kept here.
+
+**Build 90 shows nothing of campaigns.** Checked on the commit itself:
+
+- The switch said "closed" there, and has never been committed any other way.
+- That commit's Android export was built again, with its own packages and the
+  switch as committed, and 35 screens were walked as four readers: signed
+  out, signed in, an admin with Testers mode on, and an admin against a
+  made-up website that says yes to everything on a phone that already
+  carries a campaign. In all four the app asked the website nothing about
+  campaigns, and the five campaign addresses were the page-not-found page.
+- Prayers, each prayer, Your rule and Those you pray for, Today, Discover,
+  both rooms of Community, You, Settings, the plan pages and the walkthroughs
+  held no line and no part of campaigns. Thirty-three English lines outside
+  the campaigns' own name them: each is drawn only by a campaign page, stands
+  behind the switch, or is a moderator's. The onboarding, the tour and the
+  search have none.
+- What's New names them only in July's own notes (Beta 2.0 to 2.9), folded
+  under July, as the live app does. The 1.9 note and the week's message do
+  not.
+- An admin's account changes nothing. One thing was seen only against the
+  made-up website: the moderators' page draws a campaign card if the
+  website's queue hands it one. The main web hands none.
+
+**Found on the way: July's daily reminder was still being sent.** The main
+web's reminder run carried July's "remind me each day" for a campaign
+(`lib/push/deliver.ts`, `deliverCampaigns`). Campaigns were withdrawn on
+2026-08-26 and the switch that turned it off went with their screens, but the
+sender was left running, and from 2026-10-04, when the heartbeat began to
+carry the reminders, it sent "Your prayer campaign" once a day to every
+reader who had turned it on in July: for a campaign long ended, to a page
+that is not found, with no way to stop it. The rework retired the reminder's
+route with July's others and missed its sender. That is this chat's miss.
+
+- **On the branch:** the sender follows July's routes, reads no opt-in and
+  sends nothing, and a reader's own morning and evening reminders go on.
+  `lib/push/__tests__/campaignRemindersRetired.test.ts` holds it, and fails
+  on the sender as it was.
+- **On the main web:** unchanged until a deploy carries this, or until he
+  switches July's opt-ins off by hand; that statement is drafted and with
+  Admin for the second read. How many readers it reaches is not known: only
+  he can count the rows.
+- **In the record:** `docs/audit/findings.yaml`, F-50, and a line in
+  `docs/SCHEDULED-JOBS.md`.
+- **When the reminder comes back** in the rework's own phase (1.9.1), it is
+  written to the rework's rules, and this pass is not it: it must know a
+  campaign's last day, and a reader must be able to turn it off.
+
+**What campaigns need on the test web** was sent to Admin the same hour: the
+switch is a constant, so the branch itself has to say "testers" for the test
+web and a test build to show campaigns (not changed; the arbiter's and his
+call); the usual Supabase values, the admin list and the test web's own
+address; every migration in name order on the empty project; no job they
+cannot do without; and nothing of theirs that emails or notifies anyone.

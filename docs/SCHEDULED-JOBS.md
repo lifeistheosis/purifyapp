@@ -56,6 +56,16 @@ The run's counts go to the service log as `[cron/hourly-goals] reminders`.
 that gets the claim, and with `skipped` when the hour is already taken, so it
 is no longer a way to send an hour twice by hand.
 
+**July's campaign reminder is retired (2026-11-10, on the 1.9 branch).** The
+same run also carried the daily reminder a reader could turn on for a prayer
+campaign in July. Campaigns were withdrawn on 2026-08-26, and the switch that
+turned it off went with their screens, but this sender was left running: it
+went on sending "Your prayer campaign" to July's opt-ins, to a page that is
+not found. It now follows July's routes and sends nothing
+(`lib/push/deliver.ts`, `deliverCampaigns`; `docs/audit/findings.yaml`, F-50).
+On the main web it stops with the deploy that carries this, or sooner if the
+owner switches July's opt-ins off by hand.
+
 ## Turning the snapshot on, on Render
 
 The existing cron job `purifyapp` (crn-dabehhad0e5s73e7ppog) runs every ten

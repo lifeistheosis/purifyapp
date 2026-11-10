@@ -1,5 +1,6 @@
 import "server-only";
 
+import { julyCampaignRoutes } from "@/lib/campaigns/flags";
 import { getMessages } from "@/lib/i18n";
 import { pageAllIn, pageAllSettled } from "@/lib/supabase/pageAll";
 import type { createAdminClient } from "@/lib/supabase/admin";
@@ -21,7 +22,8 @@ import { apnsConfigured, fcmConfigured, sendNativeOne, sendWebPushOne, webPushCo
 //   - Web Push (push_subscriptions)  to browsers, signed with the VAPID keys
 //   - iOS      (device_push_tokens)  through APNs
 //   - Android  (device_push_tokens)  through FCM
-// and the one-a-day campaign reminder a reader may have turned on.
+// and, written and now retired, the one-a-day campaign reminder a reader could
+// turn on in July (deliverCampaigns, below, says why it sends nothing).
 //
 // For each row `dueKind` says whether this ten-minute step is the reader's
 // own morning or evening time (by their stored IANA zone), and the same small
@@ -352,12 +354,33 @@ async function deliverNative(
  * MAX_CAMPAIGN_REMINDERS_PER_RUN, so it is called once per reader rather
  * than once over the whole table: a global call would let one reader's
  * twelve campaigns consume the entire run's allowance for everybody.
+ *
+ * RETIRED WITH JULY'S ROUTES (2026-11-10; docs/audit/findings.yaml, F-50).
+ * Campaigns were withdrawn on 2026-08-26, and everything a reader could do
+ * with one went that day, the switch that turns this reminder off among it
+ * (app/api/campaigns/[id]/remind answers 404). This sender was left running.
+ * From 2026-10-04, when the heartbeat began to carry the reminders, it sent
+ * "Your prayer campaign" once a day to every reader who had turned it on in
+ * July: for a campaign that had ended, to a page that is not found, with no
+ * way left to stop it. It asked nothing of the withdrawal, nor of the
+ * campaign's last day.
+ *
+ * So it follows July's routes (lib/campaigns/flags.ts, julyCampaignRoutes):
+ * while they are retired it reads no row and sends nothing. It is kept, not
+ * deleted, as they are. The reminder comes back in the rework's own form and
+ * its own phase, and has to be written to the rework's rules when it does (a
+ * campaign's last day, a way to turn it off that works); this pass is not
+ * that. lib/push/__tests__/campaignRemindersRetired.test.ts holds it.
  */
 async function deliverCampaigns(
   supa: Admin,
   now: Date,
 ) {
   const errors: string[] = [];
+
+  if (!julyCampaignRoutes()) {
+    return { mode: "inactive", reason: "July's campaign reminders are retired", errors };
+  }
 
   // In pages, like the two passes above: a request stops at 1,000 rows.
   const { data: optIns, error } = await pageAllSettled((from, to) =>

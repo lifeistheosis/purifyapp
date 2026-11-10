@@ -113,6 +113,10 @@ export function campaignsEnabled(): boolean {
  * picture come back in their own phases in a new form, and the groups are
  * Read together's circles now. They are kept, not deleted, and they answer
  * 404.
+ *
+ * The reminder's sender follows them (lib/push/deliver.ts, deliverCampaigns):
+ * a reminder nobody can turn off is not sent. It was missed when the routes
+ * were retired, and went on sending July's (docs/audit/findings.yaml, F-50).
  */
 export function julyCampaignRoutes(): boolean {
   return false;

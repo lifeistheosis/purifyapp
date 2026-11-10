@@ -1928,6 +1928,55 @@ findings:
     safe_to_automate: false
     review: owner
 
+  - id: F-50
+    title: July's daily campaign reminder went on being sent after campaigns were withdrawn, to a page that is not found, with no way to turn it off
+    area: push
+    severity: P2
+    confidence: high
+    status: partially-corrected
+    status_notes: >-
+      Found 2026-11-10 on ccr-07896cf2-bo0afd, while answering a question
+      about Android test build 90 (which shows nothing of campaigns: its
+      export was built again from 53dbb696 and walked). Read in the code the
+      main web runs (origin/main), not seen on a phone.
+      THE SENDER. lib/push/deliver.ts, deliverCampaigns, runs inside the
+      reminder run that /api/cron/hourly-goals carries every ten minutes
+      (F-41, on since 2026-10-04). It sends "Your prayer campaign / Open it
+      when you are ready." once a day, at the hour the reader chose, to every
+      phone and browser of every row of prayer_campaign_prayers with
+      remind_enabled. It asked nothing of the withdrawal of 2026-08-26
+      (lib/campaigns/flags.ts), nor of the campaign's own last day
+      (lib/push/schedule.ts, dueCampaigns).
+      THE TAP. The notification opens /campaigns/detail, a page not found in
+      every build and on the website since the withdrawal.
+      NO WAY TO TURN IT OFF. The switch was on the campaign's own page, and
+      its route, app/api/campaigns/[id]/remind, answers 404 since the
+      withdrawal. A reader who turned it on in July can only turn off every
+      notification from Purify in the phone's own settings.
+      HOW MANY. Not known. Production has the columns (probed 2026-11-10
+      15:24 UTC with the site's public key, which cannot see the rows) and
+      one campaign of July's, still marked active though its last day was
+      2026-07-20. Only the owner can count the rows that have the reminder
+      on; the service log's "[cron/hourly-goals] reminders" line carries the
+      campaigns' sent and candidates for each run.
+      CORRECTED ON THE BRANCH, NOT ON THE MAIN WEB. The sender now follows
+      July's routes (julyCampaignRoutes): while they are retired it reads no
+      opt-in and sends nothing, and readers' own morning and evening
+      reminders go on. Kept, not deleted. lib/push/__tests__/
+      campaignRemindersRetired.test.ts holds it and fails on the sender as it
+      was. The rework retired the reminder's switch with July's other routes
+      on 2026-11-10 and missed its sender. The correction reaches the main
+      web only with a deploy: the merge of 1.9, or sooner on his word.
+      STILL OPEN, HIS. To stop it on the main web before a deploy: July's
+      opt-ins switched off (remind_enabled false) by his hand in the SQL
+      editor, once a second chat has read the statement. Drafted, with Admin
+      for that read, not run. What becomes of July's rows at all is his
+      decision too (docs/1.9-build/OWNER-STEPS.md, R9).
+    evidence: origin/main lib/push/deliver.ts (deliverReminders, deliverCampaigns); lib/push/schedule.ts (dueCampaigns); lib/push/copy.ts (campaign); app/api/campaigns/[id]/remind/route.ts; docs/SCHEDULED-JOBS.md; lib/push/__tests__/campaignRemindersRetired.test.ts
+    action: "Branch: done, the sender follows julyCampaignRoutes. Main web: the owner's word for a deploy that carries it, or for the one UPDATE that switches July's opt-ins off, read by a second chat first. When the reminder comes back in the rework's own phase it is written to the rework's rules: a campaign's last day, and a way to turn it off that works."
+    safe_to_automate: false
+    review: requires-owner
+
 corrections:
   - id: C-01
     fixes: F-02
