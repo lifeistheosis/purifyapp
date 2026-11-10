@@ -27,6 +27,14 @@ import type { ShownCite } from "./cite";
 import { shownWork } from "./shown";
 
 export type ResolvedCitation = {
+  /** His page's slug, for his face beside the words (components/citations/CitationCard.tsx). */
+  saintSlug: string;
+  /**
+   * Whether the cited work is his own, by his name: not a retelling, and not
+   * a work no one signed that is kept on his page (the florilegium on St
+   * Gregory Palamas's). Only then is the passage his, and his face beside it.
+   */
+  ownWork: boolean;
   saintName: string;
   saintIcon?: string;
   workTitle: string;
@@ -67,6 +75,8 @@ export async function resolveCitation(
   const at = index ?? 0;
   const cite = shownWork({ saint: c.saintSlug, work: c.workSlug, section: c.sectionN, paragraph: at });
   return {
+    saintSlug: c.saintSlug,
+    ownWork: hisWords,
     saintName: saint.name,
     saintIcon: saint.iconUrl,
     workTitle: writing.title,

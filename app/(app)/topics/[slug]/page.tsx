@@ -1,17 +1,17 @@
 import { notFound } from "next/navigation";
-import {
-  loadAllTopics,
-  loadTopic,
-  partitionCitations,
-} from "@/lib/topics/topics";
-import { resolveCitations } from "@/lib/citations/resolve";
+
 import { CitationCard } from "@/components/citations/CitationCard";
-import { RecordRead } from "@/components/reading/RecordRead";
-import { TheologyArticleNav } from "@/components/theology/TheologyArticleNav";
-import { RelatedRail } from "@/components/theology/RelatedRail";
-import { TheologySearch } from "@/components/theology/TheologySearch";
-import { buildRelated } from "@/lib/theology/relations";
 import { T } from "@/components/i18n/T";
+import { MobileTopBar } from "@/components/nav/MobileTopBar";
+import { RecordRead } from "@/components/reading/RecordRead";
+import { LeafGlyph, LeafNote, LeafPage, LeafPart, LeafPicture } from "@/components/theology/LeafPage";
+import { RelatedRail } from "@/components/theology/RelatedRail";
+import { LEAF_LEAD, LEAF_TEXT, LEAF_TITLE } from "@/components/theology/wayStyle";
+import { Book } from "@/components/ui/icons/Book";
+import { resolveCitations } from "@/lib/citations/resolve";
+import { buildRelated } from "@/lib/theology/relations";
+import { THEOLOGY_SUBJECTS } from "@/lib/theology/subjects";
+import { loadAllTopics, loadTopic, partitionCitations } from "@/lib/topics/topics";
 
 type Params = Promise<{ slug: string }>;
 
@@ -32,6 +32,27 @@ export async function generateMetadata({ params }: { params: Params }) {
   };
 }
 
+/**
+ * A topic: a question, its answer, and the Fathers who confess it (1.9, in
+ * the house style with the list that opens it; components/theology/
+ * LeafPage.tsx has the frame and docs/1.9-build/notes/theology-fable.md the
+ * plan).
+ *
+ * The head is the list's card, grown: the question's subject by its icon,
+ * whole on its plate, which the card's own picture travels into; the name in
+ * Lora; and how many of the Fathers it cites, as the card and the path say
+ * it. A question no subject names yet wears the book, lit. Then the answer
+ * whole (the card gave its first sentence), the Fathers' own words under
+ * "Confessed by the Fathers" and, where there are any, "Refuted by the
+ * Fathers", each on a raised surface with his face and its line
+ * (components/citations/CitationCard.tsx), what the question leads to as
+ * rows, and who curated it.
+ *
+ * Until 1.9: a back bar with no name, the "Theology" label over four pills,
+ * "Topical index" over a giant headline, outlined boxes with gold lines, and
+ * the search pill floating over the words. No word of the page's own
+ * changed.
+ */
 export default async function TopicPage({ params }: { params: Params }) {
   const { slug } = await params;
   const topic = await loadTopic(slug);
@@ -47,79 +68,72 @@ export default async function TopicPage({ params }: { params: Params }) {
       .filter((s): s is string => Boolean(s)),
   });
 
+  // The subject the question belongs to, whose icon its card wears (app/(app)/topics/page.tsx).
+  const subject = THEOLOGY_SUBJECTS.find((s) => s.topics.includes(topic.slug));
+
   return (
-    <section className="bg-night px-5 md:px-8 py-10 md:py-16">
+    <>
+      <MobileTopBar title={topic.title} back backFallback="/topics" revealTitleOn={LEAF_TITLE} searchPlace="theology" />
       <RecordRead
         kind="topic"
         href={`/topics/${topic.slug}`}
         label={topic.title}
         topics={[topic.title, topic.title.replace(/^The\s+/i, "")]}
       />
-      <div className="mx-auto max-w-[760px] w-full mb-10">
-        <TheologyArticleNav />
-      </div>
-      <article className="mx-auto max-w-[760px] w-full">
-        <p className="font-sans text-detail font-semibold text-paper/55 mb-4">
-          <T k="topics.eyebrow" />
-        </p>
-        {/* The topic is written in English; its labels are the reader's (build 90 note 4). */}
-        <h1 lang="en" dir="ltr" className="font-sans text-display-sm md:text-display font-bold leading-[1.05] tracking-[-0.025em] text-paper">
-          {topic.title}
-        </h1>
-        <p lang="en" dir="ltr" className="mt-6 font-serif text-body text-paper/85 leading-[1.7]">
+      <LeafPage
+        kind="topic"
+        up={{ href: "/topics", label: "discover.tile.topics" }}
+        mark={subject ? <LeafPicture src={subject.picture.src} carry={`topic:${topic.slug}`} /> : <LeafGlyph icon={Book} />}
+        name={topic.title}
+        nameLang="en"
+        line={<T k="topics.citations" count={topic.citations.length} />}
+      >
+        <p lang="en" dir="ltr" data-leaf-lead="" className={`mt-6 ${LEAF_LEAD}`}>
           {topic.definition}
         </p>
         {topic.tradition ? (
-          <p lang="en" dir="ltr" className="mt-4 font-serif text-body text-paper/70 leading-[1.7]">
+          <p lang="en" dir="ltr" className={`mt-4 ${LEAF_TEXT}`}>
             {topic.tradition}
           </p>
         ) : null}
 
         {/* Confessed by the Fathers */}
         {resolvedAffirming.length > 0 ? (
-          <section className="mt-12">
-            <p className="font-sans text-caption font-semibold text-paper mb-5">
-              <T k="topics.confessed" />
-            </p>
-            <ul className="space-y-4">
+          <LeafPart id="topic-confessed" title={<T k="topics.confessed" />} count={resolvedAffirming.length} data-topic-part="confessed">
+            <ul className="mt-3 space-y-3">
               {resolvedAffirming.map((c, i) => (
                 <li key={`a-${i}`}>
                   <CitationCard c={c} />
                 </li>
               ))}
             </ul>
-          </section>
+          </LeafPart>
         ) : null}
 
-        {/* Refuted by the Fathers, only renders when non-empty.
-            Per the PRD, never show an empty rubric column. */}
+        {/* Refuted by the Fathers, only when there are any: never an empty part. */}
         {resolvedRefuting.length > 0 ? (
-          <section className="mt-12">
-            <p className="font-sans text-caption font-semibold mb-5"
-               style={{ color: "var(--ink-rubric, #c1272d)" }}>
-              <T k="topics.refuted" />
-            </p>
-            <ul className="space-y-4">
+          <LeafPart id="topic-refuted" title={<T k="topics.refuted" />} count={resolvedRefuting.length} data-topic-part="refuted">
+            <ul className="mt-3 space-y-3">
               {resolvedRefuting.map((c, i) => (
                 <li key={`r-${i}`}>
                   <CitationCard c={c} />
                 </li>
               ))}
             </ul>
-          </section>
+          </LeafPart>
         ) : null}
 
         <RelatedRail groups={related} />
 
         {topic.curatedBy ? (
-          <p className="mt-16 pt-8 border-t border-paper/10 font-sans text-caption text-paper/40">
-            <T k="study.curatedBy" /> {topic.curatedBy}
-            {topic.curatedOn ? ` · ${topic.curatedOn}` : ""}.
-          </p>
+          <LeafNote>
+            <p>
+              <T k="study.curatedBy" /> {topic.curatedBy}
+              {topic.curatedOn ? ` · ${topic.curatedOn}` : ""}.
+            </p>
+          </LeafNote>
         ) : null}
-      </article>
-      {/* Search the library, above the tab bar on every Theology screen (1.8, round 3 r3-04). */}
-      <TheologySearch />
-    </section>
+      </LeafPage>
+    </>
   );
 }

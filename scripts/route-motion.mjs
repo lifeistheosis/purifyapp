@@ -25,6 +25,9 @@
 //             the Florilegium, and back)
 //   a gathering, whose page in the apps is one page for all of them named in
 //             its query, is a page switch like any (lib/florilegium/href.ts)
+//   a question's card carries its subject's icon to the head of its own page
+//             and back; an error's row its scroll; the Creed's row its book
+//             (components/theology/LeafPage.tsx)
 //   a book    the cover tapped in the reading room travels to the head of the
 //             book's page and back into its tile (components/reading/
 //             OpeningCover.tsx); a book left in the middle opens on its cover
@@ -485,6 +488,38 @@ export async function checkRouteMotion({ film = null, scale = 1 } = {}) {
     if (film) await sheet(ctx, film, "gathering", r.stills);
     r = await walk(page, "gathering-back", () => page.locator(chevron).first().click());
     note("a gathering: back to the Florilegium", judge(r, { old: "route-sink", fresh: "route-arrive", to: "/florilegium" }), `${r.from} to ${r.to}`);
+
+    // Theology's leaf pages (1.9; components/theology/LeafPage.tsx). A
+    // question's card carries its subject's icon to the head of the
+    // question's own page, and back into the card; an error's row carries
+    // its scroll, and the Creed's row on the hub its book.
+    await go(page, "/topics/");
+    await sleep(page, 1200);
+    r = await walk(page, "topic", () => page.locator('a[data-topic-card="theosis"]').first().click(), { film });
+    const question = judge(r, { old: "route-leave", fresh: "route-settle", to: "/topics/theosis", carried: true });
+    if (!(await page.locator('[data-leaf-page="topic"] [data-leaf-mark="picture"]').count())) question.push("the question's page has no picture at its head");
+    note("a question: its card's icon travelling to the head of its page", question, `${r.from} to ${r.to}`);
+    if (film) await sheet(ctx, film, "topic", r.stills);
+    r = await walk(page, "topic-back", () => page.locator(chevron).first().click(), { film });
+    note("a question: back, the icon back in its card", judge(r, { old: "route-sink", fresh: "route-arrive", to: "/topics", carried: true }), `${r.from} to ${r.to}`);
+    if (film) await sheet(ctx, film, "topic-back", r.stills);
+
+    await go(page, "/heresies/");
+    await sleep(page, 1200);
+    r = await walk(page, "heresy", () => page.locator('a[href^="/heresies/arianism"]').first().click(), { film });
+    note(
+      "an error: its row's scroll travelling to the head of its page",
+      judge(r, { old: "route-leave", fresh: "route-settle", to: "/heresies/arianism", carried: true }),
+      `${r.from} to ${r.to}`,
+    );
+    if (film) await sheet(ctx, film, "heresy", r.stills);
+    r = await walk(page, "heresy-back", () => page.locator(chevron).first().click());
+    note("an error: back to the list, the scroll back in its row", judge(r, { old: "route-sink", fresh: "route-arrive", to: "/heresies", carried: true }), `${r.from} to ${r.to}`);
+
+    await go(page, "/theology/");
+    await sleep(page, 1200);
+    r = await walk(page, "creed", () => page.locator('[data-theology-creed] a[href^="/theology/creed"]').first().click());
+    note("the Creed: its row's book travelling to the head of its page", judge(r, { old: "route-leave", fresh: "route-settle", to: "/theology/creed", carried: true }), `${r.from} to ${r.to}`);
 
     // The browser's own Back: the page changes, and nothing is pictured.
     await go(page, "/prayers/");

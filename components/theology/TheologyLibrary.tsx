@@ -103,7 +103,8 @@ export function CreedRow({ added = false }: { added?: boolean }) {
     <ul data-theology-creed="" className="theology-tray overflow-hidden rounded-[20px] px-1.5 py-1">
       <li>
         <Link href="/theology/creed" className="theology-row flex min-h-[54px] items-center gap-3 rounded-[14px] px-2 py-2">
-          <span className="theology-plate grid size-8 shrink-0 place-items-center rounded-[10px] text-paper/85">
+          {/* The book travels to the head of the Creed's own page (lib/ui/routeMotion.ts, 1.9). */}
+          <span data-carry="creed:lines" className="theology-plate grid size-8 shrink-0 place-items-center rounded-[10px] text-paper/85">
             <Codex size={17} />
           </span>
           <span className="min-w-0 flex-1">

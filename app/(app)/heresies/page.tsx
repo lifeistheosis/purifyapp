@@ -29,7 +29,8 @@ export const revalidate = 3600;
  * wears it on the path (components/theology/PathRead.tsx), the error's name,
  * and the registry's own one line on it, which says what it claimed and, for
  * most, which council named it. Who taught it, its other names and the
- * council's own words are on its own page.
+ * council's own words are on its own page, whose head the row's scroll
+ * travels to (data-carry; components/theology/LeafPage.tsx).
  *
  * Until 1.9 each error was four lines of text under a hairline, with no
  * surface and no mark.
@@ -78,7 +79,7 @@ export default async function HeresiesIndexPage() {
               {errors.map((h) => (
                 <li key={h.slug} className="theology-rule">
                   <Link href={`/heresies/${h.slug}`} className="theology-row flex min-h-[56px] items-start gap-3 rounded-[14px] px-2 py-2.5">
-                    <span aria-hidden className="theology-plate mt-px grid size-8 shrink-0 place-items-center rounded-[10px] text-paper/85">
+                    <span aria-hidden data-carry={`heresy:${h.slug}`} className="theology-plate mt-px grid size-8 shrink-0 place-items-center rounded-[10px] text-paper/85">
                       <Scroll size={17} />
                     </span>
                     <span className="min-w-0 flex-1">

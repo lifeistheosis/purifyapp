@@ -66,21 +66,30 @@ export const OWN_HEADER_PATTERNS: RegExp[] = [
   /^\/walkthroughs\/[^/]+\/[^/]+$/,
   // A doctrine's own page (1.8, round 3 r3-04): the bar starts clear over
   // the subject's icon and turns solid with the study's name, as a saint's
-  // does, its way back leading to Theology. Not the Creed by council
-  // (/theology/creed, 1.9), which keeps the back bar; the doctrine index
-  // (/theology/doctrine) is one of the four ways' own pages, below.
+  // does, its way back leading to Theology. The doctrine index
+  // (/theology/doctrine) and the Creed line by line (/theology/creed) are
+  // pages of their own kinds, below.
   /^\/theology\/(?!(?:doctrine|creed)$)[^/]+$/,
   // The pages behind Theology's four buttons (1.9, build 89 note 2):
   // Doctrine, Topics, Heresies and Apologetics each wear their own bar,
   // whose title arrives once the page's heading has gone up under it, whose
   // way back leads to Theology and whose search opens turned to Theology
   // (components/theology/WayPage.tsx). Each wore this back bar, a chevron
-  // with no name, until then. Not the pages they list (a topic, a heresy, an
-  // answer), which keep the back bar.
+  // with no name, until then.
   /^\/theology\/doctrine$/,
   /^\/topics$/,
   /^\/heresies$/,
   /^\/apologetics$/,
+  // The pages those list, and the Creed line by line (1.9, his "everything
+  // in 1.9" of 2026-11-10): a topic, a heresy and an answer each wear their
+  // own bar too, the page's name once its heading has gone up under it, the
+  // way back to its list and the search turned to Theology
+  // (components/theology/LeafPage.tsx); the Creed's leads back to Theology.
+  // These were the last of Theology to wear the back bar with no name.
+  /^\/topics\/[^/]+$/,
+  /^\/heresies\/[^/]+$/,
+  /^\/apologetics\/[^/]+$/,
+  /^\/theology\/creed$/,
   // Theology's hub, a step of its path and a study read part by part (1.8,
   // round 3 r3-13): phone pages with their own bar, whose search opens
   // turned to Theology. The hub leads back to Discover, a step to the hub

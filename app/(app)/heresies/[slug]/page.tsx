@@ -1,22 +1,38 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { HERESIES, getHeresy } from "@/lib/heresies/heresies";
-import { getCouncil } from "@/lib/councils/councils";
-import { resolveCitations } from "@/lib/citations/resolve";
+import type { ReactNode } from "react";
+
 import { CitationCard } from "@/components/citations/CitationCard";
 import { SourceList, findWords, marked, type ListedSource } from "@/components/citations/Marked";
+import { VERBATIM } from "@/components/citations/verbatim";
+import { T } from "@/components/i18n/T";
+import { MobileTopBar } from "@/components/nav/MobileTopBar";
+import { named } from "@/components/saints/SaintNames";
+import { CouncilMark } from "@/components/theology/CouncilMark";
+import { LeafGlyph, LeafNote, LeafPage, LeafPart } from "@/components/theology/LeafPage";
+import { RelatedRail } from "@/components/theology/RelatedRail";
+import { LEAF_CARD, LEAF_TEXT, LEAF_TITLE, LEAF_WORDS, WAY_TRAY } from "@/components/theology/wayStyle";
+import { ChevronRight } from "@/components/ui/icons/ChevronRight";
+import { Scroll } from "@/components/ui/icons/Scroll";
+import { resolveCitations } from "@/lib/citations/resolve";
 import { shownCite } from "@/lib/citations/shown";
+import { getCouncil } from "@/lib/councils/councils";
 import { HERESY_QUOTES } from "@/lib/heresies/accountQuotes";
 import { CONCILIAR_HERESIES, CONDEMNATIONS, OTHER_COUNCILS } from "@/lib/heresies/conciliar";
+import { HERESIES, getHeresy } from "@/lib/heresies/heresies";
+import { buildRelated } from "@/lib/theology/relations";
 
 /** Where a mark in the claim or the response leads: its source, under them. */
 const HERESY_SOURCE = "heresy-source-";
-import { TheologyArticleNav } from "@/components/theology/TheologyArticleNav";
-import { RelatedRail } from "@/components/theology/RelatedRail";
-import { TheologySearch } from "@/components/theology/TheologySearch";
-import { buildRelated } from "@/lib/theology/relations";
-import { T } from "@/components/i18n/T";
-import { named } from "@/components/saints/SaintNames";
+
+/** A row of a tray: a council that condemned the error. */
+const ROW = "theology-row flex min-h-[54px] items-center gap-3 rounded-[14px] px-2 py-2";
+
+/** Where a council's words stand, as the line under every quotation is drawn (components/citations/SourceLine.tsx). */
+const PLACE = "tap-press hit-44 inline-flex max-w-full items-start gap-1.5 font-sans text-detail leading-[1.45] text-paper/60 hover:text-paper";
+
+/** A source's edition after its name, as the line under a quotation joins them. */
+const afterName = (source: string) => `, ${source}`;
 
 type Params = Promise<{ slug: string }>;
 
@@ -34,6 +50,29 @@ export async function generateMetadata({ params }: { params: Params }) {
   };
 }
 
+/**
+ * An error the Church named: its record (1.9, in the house style with the
+ * list that opens it; components/theology/LeafPage.tsx has the frame and
+ * docs/1.9-build/notes/theology-fable.md the plan).
+ *
+ * The head is the list's row, grown: the scroll, lit, which the row's own
+ * travels into; the error's name in Lora; and its century, as the list
+ * files it and the path says it. Then its record at a glance (who taught
+ * it, its other names, where it was condemned), on one raised surface as a
+ * council's facts are; the claim and the Orthodox response, each a part
+ * named in Lora and set at the size a study is read at, with the sources of
+ * the words they quote under them; the council's own words against it, each
+ * on a raised surface and opening where it stands; the councils that
+ * condemned it as rows, each with its picture; the Fathers who refuted it,
+ * each with his face (components/citations/CitationCard.tsx); what it leads
+ * to; and who curated it.
+ *
+ * Until 1.9: a back bar with no name, the "Theology" label over four pills,
+ * the century over a giant headline and said again in a list beneath it, the
+ * claim and the response in an outlined box of two cells, two labels in a
+ * red typed into the file, outlined cards, and the search pill floating over
+ * the words. No word of the page's own changed; the century is said once.
+ */
 export default async function HeresyProfilePage({
   params,
 }: {
@@ -71,191 +110,176 @@ export default async function HeresyProfilePage({
     heresies: h.relatedHeresies ?? [],
   });
 
+  // Its record at a glance. The century is the head's own line.
+  const condemnedAt = [
+    ...councils.map((c) => `${c.byname} (${c.year})`),
+    ...otherCouncils.map((c) => `${c.name} (${c.year})`),
+  ].join(" · ");
+  const facts: { key: string; value: string }[] = [
+    { key: "study.proponent", value: h.heresiarch },
+    ...(h.alsoCalled?.length ? [{ key: "study.heresies.alsoCalled", value: h.alsoCalled.join(", ") }] : []),
+    ...(condemnedAt ? [{ key: "study.heresies.condemnedAt", value: condemnedAt }] : []),
+  ];
+
   return (
-    <section className="bg-night px-5 md:px-8 py-10 md:py-16">
-      <article className="mx-auto max-w-[820px] w-full">
-        <TheologyArticleNav className="mb-8" />
-
-        {/* Hero */}
-        {/* The dossier's facts and texts are English; its labels are the reader's (build 90 note 4). */}
-        <p lang="en" dir="ltr" className="font-sans text-caption font-semibold text-paper/80">
-          {h.era}
-        </p>
-        <h1 lang="en" dir="ltr" className="mt-3 font-serif text-display-sm md:text-display-lg text-paper leading-[1.05] tracking-[-0.015em]">
-          {h.name}
-        </h1>
-
-        {/* Dossier metadata header, compact record at the top. */}
-        <dl className="mt-6 grid grid-cols-1 sm:grid-cols-[8rem_1fr] gap-x-5 gap-y-2 border-y border-paper/[0.08] py-4">
-          <dt className="font-sans text-caption text-paper/40">
-            <T k="study.period" />
-          </dt>
-          <dd lang="en" dir="ltr" className="font-sans text-ui text-paper/80">{h.era}</dd>
-          <dt className="font-sans text-caption text-paper/40">
-            <T k="study.proponent" />
-          </dt>
-          <dd lang="en" dir="ltr" className="font-sans text-ui text-paper/80">{h.heresiarch}</dd>
-          {h.alsoCalled?.length ? (
-            <>
-              <dt className="font-sans text-caption text-paper/40">
-                <T k="study.heresies.alsoCalled" />
+    <>
+      <MobileTopBar title={h.name} back backFallback="/heresies" revealTitleOn={LEAF_TITLE} searchPlace="theology" />
+      <LeafPage
+        kind="heresy"
+        up={{ href: "/heresies", label: "discover.tile.heresies" }}
+        mark={<LeafGlyph icon={Scroll} carry={`heresy:${h.slug}`} />}
+        name={h.name}
+        nameLang="en"
+        line={h.era}
+        lineLang="en"
+      >
+        {/* Its record at a glance, as a council's facts are set. */}
+        <dl data-heresy-facts="" className="theology-tray mt-6 grid grid-cols-1 divide-y divide-paper/8 rounded-[16px] font-sans">
+          {facts.map((f) => (
+            <div key={f.key} className="min-w-0 px-3.5 py-2.5">
+              <dt className="text-[11.5px] font-semibold text-paper/55">
+                <T k={f.key} />
               </dt>
-              <dd lang="en" dir="ltr" className="font-sans text-ui text-paper/80">
-                {h.alsoCalled.join(", ")}
+              <dd lang="en" dir="ltr" className="mt-0.5 text-[13.5px] font-semibold leading-snug text-paper">
+                {f.value}
               </dd>
-            </>
-          ) : null}
-          {councils.length || otherCouncils.length ? (
-            <>
-              <dt className="font-sans text-caption text-paper/40">
-                <T k="study.heresies.condemnedAt" />
-              </dt>
-              <dd lang="en" dir="ltr" className="font-sans text-ui text-paper/80">
-                {[
-                  ...councils.map((c) => `${c.byname} (${c.year})`),
-                  ...otherCouncils.map((c) => `${c.name} (${c.year})`),
-                ].join(" · ")}
-              </dd>
-            </>
-          ) : null}
+            </div>
+          ))}
         </dl>
 
-        {/* Claim / Orthodox Response, the dossier's comparison block, the
-            historical claim set clearly against the Church's answer. */}
-        <div className="mt-8 grid grid-cols-1 md:grid-cols-2 gap-px overflow-hidden rounded-lg border border-paper/[0.08] bg-paper/[0.06]">
-          <div className="bg-night p-5">
-            <p className="font-sans text-caption font-semibold text-paper/45">
-              <T k="study.heresies.theClaim" />
-            </p>
-            <p lang="en" dir="ltr" className="mt-3 font-serif text-ui text-paper/85 leading-[1.7]">
-              {named(marked(h.definition, sources, HERESY_SOURCE))}
-            </p>
-          </div>
-          <div className="bg-night p-5">
-            <p
-              className="font-sans text-caption font-semibold"
-              style={{ color: "var(--ink-rubric, #c1272d)" }}
-            >
-              <T k="study.heresies.orthodoxResponse" />
-            </p>
-            <p lang="en" dir="ltr" className="mt-3 font-serif text-ui text-paper/85 leading-[1.7]">
-              {named(marked(h.response, sources, HERESY_SOURCE))}
-            </p>
-          </div>
-        </div>
-        <SourceList id="heresy-sources" idPrefix={HERESY_SOURCE} sources={sources} lang="en" className="mt-6" />
+        {/* The claim, then the Church's answer to it. */}
+        <LeafPart id="heresy-claim" title={<T k="study.heresies.theClaim" />} data-heresy-part="claim">
+          <p lang="en" dir="ltr" className={`mt-2.5 ${LEAF_TEXT}`}>
+            {named(marked(h.definition, sources, HERESY_SOURCE))}
+          </p>
+        </LeafPart>
+        <LeafPart id="heresy-response" title={<T k="study.heresies.orthodoxResponse" />} data-heresy-part="response">
+          <p lang="en" dir="ltr" className={`mt-2.5 ${LEAF_TEXT}`}>
+            {named(marked(h.response, sources, HERESY_SOURCE))}
+          </p>
+        </LeafPart>
+        <SourceList id="heresy-sources" idPrefix={HERESY_SOURCE} sources={sources} lang="en" className="mt-7" />
         {ours ? (
-          <p className="mt-4 font-sans text-caption text-paper/45">
+          <p className="mt-4 font-sans text-caption leading-[1.5] text-paper/55">
             <T k="study.heresies.oursAwaitingReview" />
           </p>
         ) : null}
 
         {/* In the council's own words (1.8): the line of the canon, letter
             or tome that names the error, in its public-domain English, each
-            opening the document where it stands. */}
-        {condemnations.length > 0 && (
-          <section className="mt-12">
-            <h2 className="font-sans text-caption font-semibold text-paper/55 mb-4">
-              <T k="study.heresies.inTheirWords" />
-            </h2>
-            <ul className="space-y-5">
+            opening the document where it stands. On their own type, with no
+            rule beside them (CLAUDE.md, "No side stripes"). */}
+        {condemnations.length > 0 ? (
+          <LeafPart id="heresy-words" title={<T k="study.heresies.inTheirWords" />} count={condemnations.length} data-heresy-part="words">
+            <ul className="mt-3 space-y-3">
               {condemnations.map((c, i) => (
-                <li key={i}>
-                  <blockquote lang="en" dir="ltr" className="ps-4 font-serif text-ui italic text-paper/85 leading-[1.7]">
+                <li key={i} data-council-words="" className={LEAF_CARD}>
+                  <blockquote lang="en" dir="ltr" {...VERBATIM} className={LEAF_WORDS}>
                     {/* A line taken from inside a sentence says so. */}
                     {/^[a-z]/.test(c.words) ? "… " : ""}
                     {c.words}
                     {/[.;:!?]$/.test(c.words) ? "" : " …"}
                   </blockquote>
-                  <p lang="en" dir="ltr" className="mt-2 ps-4 font-sans text-caption text-paper/50">
+                  <p className="mt-2.5">
                     {c.kind === "council" ? (
-                      <Link href={`/councils/${c.council}/${c.document}#s${c.section}`} className="underline decoration-paper/25 underline-offset-4 hover:text-paper">
-                        {c.label}
-                      </Link>
+                      <Place href={`/councils/${c.council}/${c.document}#s${c.section}`}>
+                        <span className="font-medium text-paper/80">{c.label}</span>
+                      </Place>
                     ) : (
-                      <>
-                        <Link href={`/history/${c.event}`} className="underline decoration-paper/25 underline-offset-4 hover:text-paper">
-                          {c.label}
-                        </Link>
-                        {`, ${c.source}`}
-                      </>
+                      <Place href={`/history/${c.event}`}>
+                        <span className="font-medium text-paper/80">{c.label}</span>
+                        {afterName(c.source)}
+                      </Place>
                     )}
                   </p>
                 </li>
               ))}
             </ul>
-          </section>
-        )}
+          </LeafPart>
+        ) : null}
 
-        {/* Condemned by the Church */}
-        {(councils.length > 0 || otherCouncils.length > 0) && (
-          <section className="mt-12">
-            <h2 className="font-sans text-caption font-semibold text-paper/55 mb-4">
-              <T k="study.heresies.condemnedByChurch" />
-            </h2>
-            <ul className="space-y-3">
+        {/* Condemned by the Church: the councils, as rows. */}
+        {councils.length > 0 || otherCouncils.length > 0 ? (
+          <LeafPart
+            id="heresy-condemned"
+            title={<T k="study.heresies.condemnedByChurch" />}
+            count={councils.length + otherCouncils.length}
+            data-heresy-part="condemned"
+          >
+            <ul className={`${WAY_TRAY} mt-2.5`}>
               {councils.map((c) => (
-                <li key={c.slug}>
-                  <Link
-                    href={`/councils/${c.slug}`}
-                    className="group block rounded-md border border-paper/12 bg-paper/[0.03] hover:border-paper/45 hover:bg-paper/[0.04] transition-colors px-5 py-4"
-                  >
-                    <p lang="en" dir="ltr" className="font-serif text-lede text-paper">
-                      {c.byname}
-                    </p>
-                    <p lang="en" dir="ltr" className="mt-1 font-sans text-caption text-paper/55">
-                      {c.year} &middot; {c.location}
-                    </p>
+                <li key={c.slug} className="theology-rule">
+                  <Link href={`/councils/${c.slug}`} className={ROW}>
+                    <CouncilMark slug={c.slug} />
+                    <span className="min-w-0 flex-1">
+                      <span lang="en" dir="ltr" className="block font-serif text-[15.5px] font-semibold leading-[1.26] text-paper/92">
+                        {c.byname}
+                      </span>
+                      <span lang="en" dir="ltr" className="mt-0.5 block font-sans text-caption leading-[1.4] text-paper/55">
+                        {c.year} &middot; {c.location}
+                      </span>
+                    </span>
+                    <ChevronRight size={14} className="shrink-0 text-paper/45 rtl:-scale-x-100" />
                   </Link>
                 </li>
               ))}
               {otherCouncils.map((c) => (
-                <li key={c.history ?? c.href}>
-                  <Link
-                    href={c.href ?? `/history/${c.history}`}
-                    className="group block rounded-md border border-paper/12 bg-paper/[0.03] hover:border-paper/40 hover:bg-paper/[0.05] transition-colors px-5 py-4"
-                  >
-                    <p lang="en" dir="ltr" className="font-serif text-lede text-paper">
-                      {c.name}
-                    </p>
-                    <p className="mt-1 font-sans text-caption text-paper/55">{c.year}</p>
+                <li key={c.history ?? c.href} className="theology-rule">
+                  <Link href={c.href ?? `/history/${c.history}`} className={ROW}>
+                    <CouncilMark />
+                    <span className="min-w-0 flex-1">
+                      <span lang="en" dir="ltr" className="block font-serif text-[15.5px] font-semibold leading-[1.26] text-paper/92">
+                        {c.name}
+                      </span>
+                      <span lang="en" dir="ltr" className="mt-0.5 block font-sans text-caption leading-[1.4] text-paper/55">
+                        {c.year}
+                      </span>
+                    </span>
+                    <ChevronRight size={14} className="shrink-0 text-paper/45 rtl:-scale-x-100" />
                   </Link>
                 </li>
               ))}
             </ul>
-          </section>
-        )}
+          </LeafPart>
+        ) : null}
 
         {/* Refuted by the Fathers: only when the corpus holds a refutation. */}
-        {resolvedRefutations.length > 0 && (
-          <section className="mt-12">
-            <p
-              className="font-sans text-caption font-semibold mb-5"
-              style={{ color: "var(--ink-rubric, #c1272d)" }}
-            >
-              <T k="study.heresies.refutedByFathers" />
-            </p>
-            <ul className="space-y-4">
+        {resolvedRefutations.length > 0 ? (
+          <LeafPart id="heresy-refuted" title={<T k="study.heresies.refutedByFathers" />} count={resolvedRefutations.length} data-heresy-part="refuted">
+            <ul className="mt-3 space-y-3">
               {resolvedRefutations.map((c, i) => (
                 <li key={`r-${i}`}>
                   <CitationCard c={c} />
                 </li>
               ))}
             </ul>
-          </section>
-        )}
+          </LeafPart>
+        ) : null}
 
         <RelatedRail groups={groups} />
 
-        {h.curatedBy && (
-          <p className="mt-14 pt-8 border-t border-paper/10 font-sans text-caption text-paper/40">
-            <T k="study.curatedBy" /> {h.curatedBy}
-            {h.curatedOn ? ` · ${h.curatedOn}` : ""}.
-          </p>
-        )}
-      </article>
-      {/* Search the library, above the tab bar on every Theology screen (1.8, round 3 r3-04). */}
-      <TheologySearch />
-    </section>
+        {h.curatedBy ? (
+          <LeafNote>
+            <p>
+              <T k="study.curatedBy" /> {h.curatedBy}
+              {h.curatedOn ? ` · ${h.curatedOn}` : ""}.
+            </p>
+          </LeafNote>
+        ) : null}
+      </LeafPage>
+    </>
+  );
+}
+
+/** The place a council's words stand, which opens it: the line under them. */
+function Place({ href, children }: { href: string; children: ReactNode }) {
+  return (
+    <Link href={href} prefetch={false} className={PLACE}>
+      {/* The words say their language and their direction; the link and its chevron run with the page. */}
+      <span lang="en" dir="ltr" className="min-w-0">
+        {children}
+      </span>
+      <ChevronRight size={14} className="mt-[3px] shrink-0 rtl:-scale-x-100" />
+    </Link>
   );
 }

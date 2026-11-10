@@ -63,8 +63,8 @@ describe("each of the four ways' own pages", () => {
     // The bar takes the name once the page's own heading has gone up under it.
     expect(code(STYLE)).toContain('export const WAY_TITLE = "way-title";');
     expect(code(FRAME)).toContain("<h1 id={WAY_TITLE} ");
-    // What the four list keeps the back bar: a topic, a heresy, an answer.
-    for (const route of ["/topics/theosis", "/heresies/arianism", "/apologetics/atheism"]) expect(shouldShowBack(route), route).toBe(true);
+    // What the four list wears a bar of its own too (1.9, lib/theology/__tests__/leaf.test.ts).
+    for (const route of ["/topics/theosis", "/heresies/arianism", "/apologetics/atheism"]) expect(shouldShowBack(route), route).toBe(false);
   });
 
   it("left the old shell: no label over a row of pills, and no floating search pill", () => {

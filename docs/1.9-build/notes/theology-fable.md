@@ -205,21 +205,12 @@ again, on a fresh export.
 
 ## Left for a later pass (not built, as the brief says)
 
-The pages these four list still wear the old shell, the same slop he named:
+The pages these four list still wore the old shell, the same slop he named:
 the nameless back bar, the "Theology" label, the row of four pills, a small
-label over a giant headline, and the search pill floating over the words.
-
-- A topic (`app/(app)/topics/[slug]/page.tsx`).
-- A heresy (`app/(app)/heresies/[slug]/page.tsx`). Its side stripe, on the
-  council's own words, went the same day with note 1 (Updates 2, `2a14e57c`).
-- An answer (`app/(app)/apologetics/[slug]/page.tsx`,
-  `components/apologetics/ApologeticsReader.tsx`), whose headings are
-  written in English in the file.
-- The Creed, line by line (`app/(app)/theology/creed/page.tsx`), the one
-  page still inside `TheologyShell`. Once these four are done,
-  `TheologyShell.tsx`, `TheologyNav.tsx` and `TheologyArticleNav.tsx` (the
-  pill row) can go.
-- A doctrine's own page is already the revamped one (r3-13).
+label over a giant headline, and the search pill floating over the words: a
+topic, a heresy, an answer, and the Creed line by line. **They were done the
+same day**, on his "everything in 1.9": see "The pages the four lists open",
+below. A doctrine's own page was already the revamped one (r3-13).
 
 Two things found on the hub while measuring, in the file this round does not
 touch (`TheologyLibrary.tsx`). Both were fixed on the branch the same day by
@@ -253,3 +244,196 @@ of the website, as on a phone with signal; nothing else leaves the bundle.
 The build needs the website's public Supabase address and key to list the
 shop's stores (CI has them as secrets; this session read them from the live
 site's own script and kept them in an ignored `.env.local`).
+
+## The pages the four lists open (2026-11-10, on his "everything in 1.9")
+
+His word, about 15:50 UTC (`BRAINSTORM.md`, `1c69d137`): "Again, not off at
+release. I want everything in version 1.9." The arbiter's start, 15:51 UTC:
+this first, with the old shell deleted, then the smaller items. Thirty pages:
+5 topics, 21 heresies, 3 answers and the Creed line by line.
+
+### The plan
+
+The four kinds share one frame, `components/theology/LeafPage.tsx`, as the
+four lists share `WayPage.tsx`, drawn from the same parts.
+
+- **The bar**: the page's own name once its heading has gone up under it,
+  back to its list (the Creed's to Theology), the search turned to Theology.
+- **The head is the row that was tapped, grown**: the same mark, the name in
+  Lora at title size, and the one small line the row or the path gives it.
+  A topic wears its subject's icon whole on its plate and says how many of
+  the Fathers it cites; a heresy the scroll, lit, and its century; an answer
+  the shield and its length; the Creed the book. The row's mark travels into
+  the head as the page opens and back as it closes (note 4's standard).
+- **Words at reading size**: the page's own words set as a study is read
+  (`StudyPartText`), each part named in Lora with how many it holds.
+- **A quotation is words on their own type** on a raised surface, as a study
+  sets what the councils said: the Father's face in its round frame beside
+  our line on the passage, his words in italic, and the line that opens them
+  where they stand. No outline, no gold, no rule beside it. His face stands
+  only beside a work that is his own: a retelling in our voice, or a
+  gathering of several Fathers' words kept on one Father's page (the one on
+  St Gregory Palamas's), wears a book on a plate. My first draft put the
+  face on every passage, which on Theosis set St Gregory's beside a line
+  about St Cyril; it was caught on the first stills and never shipped.
+- **Places to go are rows in one tray**: the councils that condemned an
+  error, each with its picture; the Scriptures an answer cites; and what a
+  page leads to, each row with its mark (a way's glyph on its plate, a
+  council's picture, a Father's face) and its kind under its name.
+- **The foot**: who curated it, small, under a hairline, as the lists close.
+
+### What was built
+
+| File | What it is |
+|---|---|
+| `components/theology/LeafPage.tsx` | The frame, with its marks (`LeafPicture`, `LeafGlyph`), a part (`LeafPart`) and the closing note (`LeafNote`) |
+| `components/theology/wayStyle.ts` | The names the leaf pages share (`LEAF_TITLE`, `LEAF_TEXT`, `LEAF_LEAD`, `LEAF_WORDS`, `LEAF_CARD`) |
+| `components/citations/CitationCard.tsx` | A Father's words on a topic and a heresy, redrawn; `lib/citations/resolve.ts` carries his slug for his face, and whether the work is his own |
+| `components/citations/verbatim.ts`, `scripts/mock-check.mjs` | Words quoted as their edition prints them keep its dashes, by name: the checker lists them, with the reason, where it failed the screen. Its self-test proves both ways |
+| `components/theology/CouncilMark.tsx` | A council's picture at the start of a row, as the path draws it; the church on a plate where it has none |
+| `components/theology/RelatedRail.tsx` | What a page leads to: one tray of marked rows. A doctrine's own rows (`bare`) are as r3-13 approved them, not touched |
+| `app/(app)/topics/[slug]/page.tsx` | A topic |
+| `app/(app)/heresies/[slug]/page.tsx` | A heresy |
+| `components/apologetics/ApologeticsReader.tsx`, `app/(app)/apologetics/[slug]/page.tsx` | An answer |
+| `app/(app)/theology/creed/page.tsx` | The Creed line by line: its shell only. The Creed, its marks and their key are as they were approved |
+| `lib/nav/backBar.ts` | The four kinds wear their own bar, so the apps show one |
+| The three lists and `TheologyLibrary.tsx` | One attribute each (`data-carry`), so a row's mark travels |
+| Deleted | `TheologyShell.tsx`, `TheologyNav.tsx`, `TheologyArticleNav.tsx`: the old shell, which no page wears |
+| `lib/theology/__tests__/leaf.test.ts` | Holds all of it |
+| `scripts/mock-leaf-pages.mjs` | Opens the four kinds on the export, measures them, runs `checkMock` on five palettes, and takes the stills |
+| `scripts/route-motion.mjs` | Five walks more: a topic and back, a heresy and back, the Creed |
+
+### What changed for a reader, beyond the look
+
+No word of any page's own was written or changed: every line is the
+registry's or the catalog's, as it stood. These are the choices in it, each
+of which he can reverse:
+
+1. **The floating "Search the library" pill is gone from these pages too**,
+   as it went from the hub, a doctrine and the four lists: the bar's
+   magnifier opens the same search, turned to Theology. The pill itself is
+   kept (`components/theology/TheologySearch.tsx`), so one line still brings
+   it back on any page.
+2. **Labels that only decorated are gone**: "Topical index" over a topic's
+   name, the "Theology" label over the pill row, and "Apologetics" over an
+   answer's name. On a computer the list's own name stands there as the way
+   back up; on a phone the bar's chevron leads there.
+3. **A heresy's century is said once**, as the line under its name. The old
+   page said it over the name and again as "Period" in the list beneath.
+4. **"Refuted by the Fathers" and "Orthodox response" are in the ink.** They
+   were in a red typed into the file (`#c1272d`), the only red in Theology.
+5. **A quotation has no marks typed round it.** The card typed curly quotes
+   round the Father's words; no other quotation in Theology has them.
+6. **An answer lists what it leads to once.** The saints it quotes were a row
+   of pills ("Saints cited") and then rows again under "Go deeper"; the
+   answers beside it were pills that printed their addresses ("sola
+   scriptura"). Both are rows under "Go deeper" now, by their names. A
+   Father's name over his passage no longer opens his page from there: his
+   row under "Go deeper" does, and the line under his words opens the words.
+7. **An answer's headings are in the reader's language.** "From the
+   Fathers", "Scripture cross-references", "Curated by" and "Source" were
+   written in English in the file; they are the catalog's own lines now, in
+   all 21 languages. No line was added to a catalog.
+8. **What a page leads to is one list**, each row with its kind under its
+   name, where it was a tray for each kind under a small label in capitals.
+9. **A topic's and a heresy's page, and the Creed's, are 640px wide on a
+   computer**, the lists' own measure. They were 760 to 820.
+
+### Found, and left for his word or the editors'
+
+- **Two answers promise what is not there.** On deism and On sola scriptura
+  have no passages from the Fathers yet, and each says so in English, in
+  every language: "The verbatim patristic florilegium for this entry is
+  being assembled and will be added here." The sentence is typed in the
+  file, as it was; it is the study's own note, so it was kept word for word.
+  To translate it, reword it or drop it is the editors' word.
+- **An answer's foot shows a note written for editors**: "Opened in v9.9 as a
+  foundation entry. Florilegium assembled and verified 2026-07-27 (NPNF and
+  ANF, checked against source). Enriched with the transcendental and
+  intentionality arguments from the dogma-exegesis thread, permission on
+  record." It is in each answer's file (`origin`) and was shown before; a
+  doctrine's reading shows its own the same way (`StudyCurated`). Kept as it
+  stood.
+- **On Arianism, three of the four passages under "Refuted by the Fathers"
+  are the edition's chapter summaries, not St Athanasius's words** (Four
+  Discourses I, the heading of Chapter I: "Introduction. Reason for writing
+  ..."; On the Nicene Definition, the heading of Chapter I: "Introduction.
+  The complaint of the Arians ..."; On the Councils II: "Arius's own
+  sentiments; his Thalia ..."). Older
+  than this work, and not changed by it. A citation that names no paragraph
+  quotes the section's first paragraph of the author's own text, skipping a
+  heading the library knows; the rule for the first two works looks for
+  "Chapter I.--" with two hyphens and the files print a dash (27 of 30
+  headings in the Four Discourses and all 7 in On the Nicene Definition are
+  missed, in the reading room too), and the third work has no rule for its
+  part summaries. The rule is the reading room's (`lib/saints/divisions.ts`);
+  which paragraph of his to quote is the editors'. Sent to the arbiter,
+  2026-11-10.
+- **A topic's first quotation can be a whole long paragraph** (on Theosis,
+  some 400 words of St Athanasius): the page quotes the paragraph the
+  citation points at, whole, as it did. A shorter passage is a choice of
+  words, which is the editors'.
+- **Three catalog lines are read by nothing now**: `topics.eyebrow`
+  ("Topical index"), `study.period` ("Period") and, from before this,
+  `topics.curatedBy`. They go with the Florilegium's unused line (F7).
+- **`next dev` edits `AGENTS.md`.** With `agentRules: false`
+  (`next.config.ts`) it takes out the managed block the file still opens
+  with, so every chat that runs the dev server is left with an edit nobody
+  asked for (restored here, not committed). Taking the two marker comments
+  out of the file, and keeping its words, would end it.
+
+### Checked (commands, on this tree, after the last pull)
+
+The branch moved over a hundred commits under the work, and it was rebased
+three times. What touched it was taken in each time: the Creed's notice that its words are English is the new one
+said on the device (`StillInEnglish`), and its long-word fix for German went
+to the frame's heading, for every leaf page; and build 90 note 4's new rule,
+that English says its direction with its language, is kept by every element
+these pages draw (`lang="en" dir="ltr"`; a registry's name on the heading
+itself, `nameLang`), with the Creed's articles marked as the chat that holds
+that rule marked them. Everything below was run on a merged tree with the
+dependencies reinstalled (`npm ci`); the typecheck and the unit tests were
+run once more after the last rebase, which brought nothing into these files.
+
+- `npm run typecheck`: 0 errors.
+- `npm run test:unit`: 911 files, 11,281 tests, all passing (24 of them
+  new, `lib/theology/__tests__/leaf.test.ts`; one walks every citation on
+  every topic and heresy to hold a face to a Father's own work).
+- `npm run lint`: 0 errors.
+- `npm run build:android`: green, 63.0 MB packed of the 85 allowed (178.4 MB
+  on disk of 240), on the tree one rebase before the last. `npm run
+  build:ios` and `npm run build` (the website): green on the merged tree
+  before that (62.8 MB packed).
+- `node scripts/mock-leaf-pages.mjs`, on the Android export: the four kinds,
+  an error whose council is outside the seven and an answer with no Fathers
+  yet, each measured (one bar and one way back, the bar's name once
+  scrolled, the head's mark on the first screen, nothing wider than the
+  screen, the page's end over the tab bar) and held to `checkMock` on all
+  five palettes: contrast, placeholder, target, glyph, palette, gold,
+  stripe, mirror, em dash and rays all pass. Two allowances listed, both a
+  Father's page quoting its edition.
+- `node scripts/mock-check.mjs --self-test`: every mistake still caught, the
+  house's own parts pass, and the named em dash is listed.
+- `node scripts/route-motion.mjs`: 23 walks, the five new ones among them (a
+  topic and back, a heresy and back, the Creed); filmed, and the icon and the
+  scroll travel as one mark.
+- `node scripts/stripe-walk.mjs`: no side stripe on any screen.
+- `node scripts/rtl-walk.mjs --only` the six pages, in Arabic and Urdu:
+  every block of English reads left to right, and says it is English. (On
+  the tree before the last rebases it still named three shared parts, the
+  line under a quotation, a quoted source's words and the bar's copy of a
+  page's English name; the chat that holds the rule marked them the same
+  hour.)
+- By eye, on the stills: a topic, a heresy, two answers and the Creed at 390
+  wide, a heresy at 360, a topic and a heresy at a computer's width, and a
+  topic, a heresy and the Creed in Arabic.
+
+Not checked here: iOS's WebKit and a hand on a phone (`docs/PHONE-WALK.md`),
+and the looks beyond the five palettes (`checkMock --looks`); the rows and
+cards are the lists' own, which the looks already wear.
+
+One thing seen in Arabic and left for the chat that holds the direction
+work, since it is every row's in the app and not these pages' alone: a row's
+English name now stands at the far side of the row from its mark (it reads
+left to right, so it starts at the left). `rtl:text-right` on a row's name
+would hold it by its mark.

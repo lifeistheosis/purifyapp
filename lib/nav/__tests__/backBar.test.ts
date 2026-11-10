@@ -267,7 +267,8 @@ describe("shouldShowBack", () => {
 
   it("shows on an ordinary inner page, which is the whole point", () => {
     expect(shouldShowBack("/saints")).toBe(true);
-    expect(shouldShowBack("/heresies/arianism")).toBe(true);
+    // (A heresy's page stood here until 1.9, when it took a bar of its own:
+    // lib/theology/__tests__/leaf.test.ts.)
     expect(shouldShowBack("/bible/john/1/commentary")).toBe(true);
     expect(shouldShowBack("/shop/eikon")).toBe(true);
   });

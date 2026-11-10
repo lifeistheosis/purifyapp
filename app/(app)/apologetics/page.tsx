@@ -29,7 +29,8 @@ export const revalidate = 3600;
  * its line, and its summary whole, since there are few and a reader chooses
  * by what an answer says. Nothing is cut short with dots (his build 86 note
  * 76, of Discover's lines). What is planned and not yet written is not
- * listed, as it is not counted.
+ * listed, as it is not counted. A card's shield travels to the head of the
+ * answer's own page (data-carry; components/theology/LeafPage.tsx).
  *
  * Until 1.9 each answer was text under a hairline, its summary cut at three
  * lines.
@@ -59,7 +60,7 @@ export default async function ApologeticsIndexPage() {
                 <li key={answer.slug}>
                   <Link href={`/apologetics/${answer.slug}`} data-answer-card={answer.slug} className="theology-tray press-card block rounded-[20px] p-3.5">
                     <div className="flex items-center gap-3">
-                      <span aria-hidden className="theology-plate grid size-8 shrink-0 place-items-center rounded-[10px] text-paper/85">
+                      <span aria-hidden data-carry={`answer:${answer.slug}`} className="theology-plate grid size-8 shrink-0 place-items-center rounded-[10px] text-paper/85">
                         <Shield size={17} />
                       </span>
                       <h3 lang="en" dir="ltr" className="min-w-0 flex-1 font-serif text-[17px] font-bold leading-tight text-paper">

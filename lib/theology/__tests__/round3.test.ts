@@ -43,19 +43,35 @@ const SHELF = "components/theology/FathersShelf.tsx";
 const RAIL = "components/theology/RelatedRail.tsx";
 
 describe("the library's search on the pages the four ways list", () => {
-  it("floats as a pill on a topic, a heresy, an answer and the shell the Creed by council wears", () => {
-    for (const file of ["components/theology/TheologyShell.tsx", "app/(app)/topics/[slug]/page.tsx", "app/(app)/heresies/[slug]/page.tsx", "app/(app)/apologetics/[slug]/page.tsx"]) {
-      expect(code(file), file).toContain("<TheologySearch />");
-    }
-    expect(code("app/(app)/theology/creed/page.tsx")).toContain("<TheologyShell");
+  it("is the bar's own on every page of Theology, with nothing floating over the words", () => {
     // The four ways' own pages left the shell in 1.9 (build 89 note 2): each
     // asks the bar's search, turned to Theology, as the hub has since r3-13.
-    for (const file of ["app/(app)/theology/doctrine/page.tsx", "app/(app)/topics/page.tsx", "app/(app)/heresies/page.tsx", "app/(app)/apologetics/page.tsx"]) {
+    // The pages they list, and the Creed line by line, followed the same
+    // day on his "everything in 1.9" (lib/theology/__tests__/leaf.test.ts):
+    // the pill floated over each of them until then.
+    for (const file of [
+      "app/(app)/theology/doctrine/page.tsx",
+      "app/(app)/topics/page.tsx",
+      "app/(app)/heresies/page.tsx",
+      "app/(app)/apologetics/page.tsx",
+      "app/(app)/topics/[slug]/page.tsx",
+      "app/(app)/heresies/[slug]/page.tsx",
+      "app/(app)/apologetics/[slug]/page.tsx",
+      "app/(app)/theology/creed/page.tsx",
+    ]) {
       expect(code(file), file).toContain('searchPlace="theology"');
       expect(code(file), file).not.toContain("TheologyShell");
+      expect(code(file), file).not.toContain("<TheologySearch");
+    }
+    // The shell itself is gone with its last page: the "Theology" label over a row of four pills.
+    for (const gone of ["components/theology/TheologyShell.tsx", "components/theology/TheologyNav.tsx", "components/theology/TheologyArticleNav.tsx"]) {
+      expect(fs.existsSync(path.join(ROOT, gone)), gone).toBe(false);
     }
   });
 
+  // The pill is drawn on no page now. It is kept whole, one line from any
+  // page, as the record tells the owner (docs/1.9-build/notes/
+  // theology-fable.md: "One line brings it back"), so what it does is still held.
   it("floats the pill over the tab bar, the mini player and the readings bar, and keeps the page's foot clear of it", () => {
     const pill = /\.theology-search-pill\s*\{([^}]*)\}/.exec(css)?.[1] ?? "";
     for (const v of ["--tab-bar-h", "--now-playing-h", "--readings-flow-h", "safe-area-inset-bottom"]) expect(pill, v).toContain(v);

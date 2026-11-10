@@ -34,7 +34,9 @@ export const revalidate = 3600;
  * the question's own definition, as the path gives it on the hub and on a
  * step (lib/theology/path.ts, firstSentence): nothing is written for this
  * page. A question no subject names yet follows the others by its name,
- * with the book on a plate where its icon would stand.
+ * with the book on a plate where its icon would stand. A card's picture
+ * travels to the head of the question's own page (data-carry;
+ * lib/ui/routeMotion.ts, components/theology/LeafPage.tsx).
  *
  * Until 1.9 the page printed each definition whole under hairlines, in the
  * order of the alphabet, with its German written into this file; the words
@@ -72,7 +74,7 @@ export default async function TopicsIndexPage() {
               <li key={card.slug}>
                 <Link href={`/topics/${card.slug}`} data-topic-card={card.slug} className="theology-tray press-card flex items-start gap-3.5 rounded-[20px] p-3">
                   {card.picture ? (
-                    <span aria-hidden data-row-picture="" className="path-plate w-[78px] shrink-0">
+                    <span aria-hidden data-row-picture="" data-carry={`topic:${card.slug}`} className="path-plate w-[78px] shrink-0">
                       <WholeIcon src={card.picture} eager={at < 4} className="aspect-[4/5] w-full rounded-[3px]" />
                     </span>
                   ) : (

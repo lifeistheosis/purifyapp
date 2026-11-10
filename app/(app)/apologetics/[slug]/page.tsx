@@ -1,13 +1,11 @@
 import { notFound } from "next/navigation";
 
 import { ApologeticsReader } from "@/components/apologetics/ApologeticsReader";
-import { TheologyArticleNav } from "@/components/theology/TheologyArticleNav";
-import { RelatedRail } from "@/components/theology/RelatedRail";
-import { TheologySearch } from "@/components/theology/TheologySearch";
+import { MobileTopBar } from "@/components/nav/MobileTopBar";
+import { LEAF_TITLE } from "@/components/theology/wayStyle";
 import { getApologeticsMeta, apologeticsParams } from "@/lib/apologetics/topics";
 import { loadApologeticsBody } from "@/lib/apologetics/load";
 import { buildRelated } from "@/lib/theology/relations";
-import { T } from "@/components/i18n/T";
 
 export const dynamicParams = false;
 
@@ -29,6 +27,12 @@ export async function generateMetadata({
   };
 }
 
+/**
+ * An answer's page (1.9, in the house style): its own bar, the answer's name
+ * once its heading has gone up under it, back to Apologetics, the search
+ * turned to Theology; then the answer (components/apologetics/
+ * ApologeticsReader.tsx).
+ */
 export default async function ApologeticsTopicPage({
   params,
 }: {
@@ -40,7 +44,13 @@ export default async function ApologeticsTopicPage({
   const body = await loadApologeticsBody(slug);
   if (!body) notFound();
 
+  // What it leads to, in one list: the studies behind it, the answers beside
+  // it that are written, the councils it cites and the Fathers it quotes.
   const groups = buildRelated("apologetics", slug, {
+    apologetics: (body.related ?? []).filter((s) => {
+      const beside = getApologeticsMeta(s);
+      return Boolean(beside) && !beside?.planned;
+    }),
     councils: (body.councils ?? [])
       .map((c) => c.councilSlug)
       .filter((s): s is string => Boolean(s)),
@@ -50,16 +60,9 @@ export default async function ApologeticsTopicPage({
   });
 
   return (
-    <section className="bg-night px-5 md:px-8 py-10 md:py-16">
-      <div className="mx-auto max-w-[760px] w-full mb-10">
-        <TheologyArticleNav />
-      </div>
-      <ApologeticsReader body={body} />
-      <div className="mx-auto max-w-[760px] w-full">
-        <RelatedRail groups={groups} title={<T k="study.apologetics.goDeeper" />} />
-      </div>
-      {/* Search the library, above the tab bar on every Theology screen (1.8, round 3 r3-04). */}
-      <TheologySearch />
-    </section>
+    <>
+      <MobileTopBar title={meta.title} back backFallback="/apologetics" revealTitleOn={LEAF_TITLE} searchPlace="theology" />
+      <ApologeticsReader body={body} minutes={meta.estimatedMinutes} groups={groups} />
+    </>
   );
 }
