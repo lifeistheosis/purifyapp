@@ -14,6 +14,7 @@ import { haptic } from "@/lib/ui/motion";
 import { SiteMenuButton } from "@/components/nav/SiteMenuButton";
 import { WebOnly } from "@/components/platform/PlatformGate";
 import { useTranslate } from "@/components/i18n/MessagesProvider";
+import type { LocaleCode } from "@/lib/i18n/locales";
 
 /**
  * Compact 48px header for mobile-only surfaces (the Bible reader, a saint's
@@ -67,6 +68,7 @@ import { useTranslate } from "@/components/i18n/MessagesProvider";
  */
 export function MobileTopBar({
   title,
+  titles,
   titleKey,
   titleTail,
   subtitle,
@@ -81,6 +83,13 @@ export function MobileTopBar({
   searchPlace,
 }: {
   title?: string;
+  /**
+   * The title in the other languages the page has it in (a lesson's name in
+   * German), shown for a reader in that language; `title` for the rest. In
+   * the apps a page's title is written once, in English, so this is chosen on
+   * the device (1.9, the German lessons in the apps; components/i18n/useInReadersLanguage.ts).
+   */
+  titles?: Partial<Record<LocaleCode, string>>;
   /** Catalog key resolved client-side; wins over title. */
   titleKey?: string;
   titleTail?: string;
@@ -108,9 +117,9 @@ export function MobileTopBar({
   searchPlace?: string;
 }) {
   const router = useRouter();
-  const { t } = useTranslate();
+  const { t, locale } = useTranslate();
   const barRef = useRef<HTMLDivElement>(null);
-  const resolvedTitle = titleKey ? t(titleKey) : title;
+  const resolvedTitle = titleKey ? t(titleKey) : (titles?.[locale] ?? title);
   const fullTitle = titleTail ? `${resolvedTitle} ${titleTail}` : resolvedTitle;
   // The space travels with the tail, so the heading's text (and what a screen
   // reader says) is "Luke 10", not "Luke10".

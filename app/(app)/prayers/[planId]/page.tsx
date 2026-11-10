@@ -1,9 +1,9 @@
 import { notFound } from "next/navigation";
 import { MobileTopBar } from "@/components/nav/MobileTopBar";
-import { PrayerRuleReader, type Rule } from "@/components/prayers/PrayerRuleReader";
+import type { Rule } from "@/components/prayers/PrayerRuleReader";
+import { RuleInReadersLanguage } from "@/components/prayers/RuleInReadersLanguage";
 import { RecordPrayerOpened } from "@/components/prayers/RecordPrayerOpened";
 import { getRuleMeta, planIdParams } from "@/lib/prayers/rules";
-import { getServerLocale } from "@/lib/i18n/server";
 import { getLocalizedPrayerJson } from "@/lib/i18n/localizedContent";
 
 // Generic reader for every registry rule that carries a data file and is not
@@ -41,8 +41,10 @@ export default async function PrayerRulePage({
   const meta = getRuleMeta(planId);
   if (!meta || !meta.file || meta.planned) notFound();
 
-  const locale = await getServerLocale();
-  const loaded = await getLocalizedPrayerJson<Rule>(meta.file, locale);
+  // Its words in every language the rule is written in, the reader's chosen
+  // on the device (1.9, components/prayers/RuleInReadersLanguage.tsx): the Creed
+  // has German. Until 1.9 the apps showed every reader the English.
+  const loaded = await getLocalizedPrayerJson<Rule>(meta.file, "en");
   if (!loaded) notFound();
   // Every registry rule has its name in the catalogs
   // (lib/prayers/__tests__/suggest.test.ts holds that), so the page, its bar
@@ -54,12 +56,7 @@ export default async function PrayerRulePage({
       <MobileTopBar titleKey={titleKey} back backFallback="/prayers" revealTitleOn="prayer-title" />
       <section className="min-h-screen bg-night px-5 pb-16 pt-8 md:px-8 md:pt-14">
         <RecordPrayerOpened id={meta.id} titleKey={titleKey} href={meta.href} />
-        <PrayerRuleReader
-          rule={loaded.data}
-          ruleHref={meta.href}
-          titleKey={titleKey}
-          contentLocale={loaded.isLocalized ? locale : "en"}
-        />
+        <RuleInReadersLanguage rule={loaded.data} file={meta.file} ruleHref={meta.href} titleKey={titleKey} />
       </section>
     </>
   );

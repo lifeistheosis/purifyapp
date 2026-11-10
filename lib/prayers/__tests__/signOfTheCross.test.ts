@@ -127,7 +127,8 @@ describe("the drawing", () => {
   });
 
   it("stands in the lesson it belongs to", () => {
-    const page = read("app", "(app)", "prayers", "learning", "[lessonId]", "page.tsx");
+    // Drawn on the device in the reader's language since 1.9 (components/prayers/LessonView.tsx).
+    const page = read("components", "prayers", "LessonView.tsx");
     expect(page).toContain("<SignOfTheCrossFigure />");
     expect(page).toContain("CROSS_FIGURE_LESSON");
   });

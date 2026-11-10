@@ -393,7 +393,8 @@ describe("a lesson of Learn to pray", () => {
   }
 
   it("shows the marks where the words stand and lists where each comes from, in every language", () => {
-    const page = fs.readFileSync(path.join(ROOT, "app/(app)/prayers/learning/[lessonId]/page.tsx"), "utf8");
+    // The lesson is drawn on the device in the reader's language since 1.9 (components/prayers/LessonView.tsx).
+    const page = fs.readFileSync(path.join(ROOT, "components/prayers/LessonView.tsx"), "utf8");
     expect(page).toContain("marked(");
     expect(page).toContain("<SourceList ");
     const list = fs.readFileSync(path.join(ROOT, "components/citations/Marked.tsx"), "utf8");

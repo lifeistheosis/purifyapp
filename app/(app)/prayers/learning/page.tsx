@@ -1,9 +1,9 @@
 import { T } from "@/components/i18n/T";
 import { MobileTopBar } from "@/components/nav/MobileTopBar";
 import { ArtPlate } from "@/components/prayers/ArtPlate";
-import { LessonList, LessonWayIn } from "@/components/prayers/LessonList";
-import { getServerLocale } from "@/lib/i18n/server";
+import { LessonListHere, LessonWayInHere } from "@/components/prayers/LessonsInReadersLanguage";
 import { lessonsFor } from "@/lib/prayers/learning";
+import { rowsOf } from "@/lib/prayers/lessonText";
 
 export const metadata = {
   title: "Learn to pray",
@@ -15,20 +15,14 @@ export const metadata = {
 // one to read named in the way in, and each lesson read marked with a check.
 // The marks live on the device (lib/prayers/lessonProgress.ts), so the list
 // and the way in are client children; everything else is written here. The
-// lessons are English and German (data/prayers/learning); the apps' static
-// export carries the English.
+// lessons are English and German (data/prayers/learning): the page writes the
+// English rows and a German reader's are loaded on the device (1.9,
+// components/prayers/LessonsInReadersLanguage.tsx), where until 1.9 the apps
+// showed every reader the English.
 export default async function LearnToPrayPage() {
-  const locale = await getServerLocale();
-  const lessons = lessonsFor(locale);
-  const lang = locale === "de" ? "de" : "en";
+  const lessons = lessonsFor("en");
   const minutes = lessons.reduce((sum, l) => sum + l.estimatedMinutes, 0);
-  const rows = lessons.map(({ id, order, title, summary, estimatedMinutes }) => ({
-    id,
-    order,
-    title,
-    summary,
-    estimatedMinutes,
-  }));
+  const rows = rowsOf(lessons);
 
   return (
     <>
@@ -46,7 +40,7 @@ export default async function LearnToPrayPage() {
               <T k="prayers.reader.aboutMin" replacements={{ min: minutes }} />
             </p>
             <div className="mt-6 flex max-w-full justify-center">
-              <LessonWayIn lessons={rows} />
+              <LessonWayInHere lessons={rows} />
             </div>
           </header>
 
@@ -55,7 +49,7 @@ export default async function LearnToPrayPage() {
           </p>
 
           <div className="mt-6">
-            <LessonList lessons={rows} lang={lang} />
+            <LessonListHere lessons={rows} />
           </div>
 
           <p className="mt-10 font-sans text-caption leading-[1.7] text-paper/50">
