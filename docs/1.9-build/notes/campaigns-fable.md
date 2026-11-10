@@ -3334,8 +3334,11 @@ it, at Admin's ask.
   or comment. A test holds that the notice is written from the two removals
   and from nowhere else in campaigns.
 - **A removal never waits on its notice.** Before the notice's SQL has run
-  (`docs/1.9-build/sql/removal-notices.sql`, which waits for his yes), the
-  campaign is taken down all the same and no notice is written.
+  (it waited for his yes as `docs/1.9-build/sql/removal-notices.sql`; signed
+  the same day and moved by Admin to
+  `supabase/migrations/20261110204814_removal_notices.sql`, so the merge of
+  1.9 runs it), the campaign is taken down all the same and no notice is
+  written.
 - **A campaign's comment** removed by a moderator goes through Community's
   own removal of a reply, which already tells its writer, as "your reply".
   Saying "comment" there is Admin's to change; `isCampaignThread` is the

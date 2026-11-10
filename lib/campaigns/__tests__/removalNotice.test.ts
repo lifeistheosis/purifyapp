@@ -160,7 +160,7 @@ describe("a campaign a moderator takes down", () => {
   });
 
   it("is taken down all the same where the notice cannot be written: before its SQL has run, or with no inbox at all", async () => {
-    // docs/1.9-build/sql/removal-notices.sql waits for his yes: until it has run the inbox has no such columns.
+    // supabase/migrations/20261110204814_removal_notices.sql (signed; the merge of 1.9 runs it): until it has run the inbox has no such columns.
     w.missing.community_notifications = ["target_kind", "reason"];
     expect(await removeCampaign(db(), MOD, CAMPAIGN, null, NOW, "spam")).toEqual({ ok: true });
     expect(campaign().status).toBe("removed");
