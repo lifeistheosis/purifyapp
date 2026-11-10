@@ -76,6 +76,18 @@ import { lastPageScrollAt, watchPageScroll } from "@/lib/ui/pageScroll";
 const TAP_TARGET = "touch-manipulation hit-44 hit-44-lead";
 const TAP_TARGET_AFTER = "touch-manipulation hit-44 hit-44-trail";
 
+/**
+ * The commentary mark's dot is the same red on every palette, Light too: his
+ * pick, "keep red" (late 2026-11-09, docs/1.9-build/BRAINSTORM.md, the photo
+ * page's 11). The mock check (scripts/mock-check.mjs) reads a colour that
+ * does not change with the palette as one typed in, so it is told why here,
+ * by name.
+ */
+const KEEP_RED = {
+ "data-mock-allow": "palette",
+ "data-mock-why": "the commentary mark stays red on every palette: his pick, keep red (2026-11-09, the photo page's 11)",
+} as const;
+
 function tokenize(text: string): string[] {
  return text.trim().split(/\s+/);
 }
@@ -798,6 +810,7 @@ export function VerseRow({
  <span
  aria-hidden
  className="ms-[2px] inline-block h-[5px] w-[5px] rounded-full bg-accent/75 group-hover/cmt:bg-accent transition-colors"
+ {...KEEP_RED}
  />
  </a>
  <button
@@ -819,6 +832,7 @@ export function VerseRow({
  <span
  aria-hidden
  className="ms-[2px] inline-block h-[5px] w-[5px] rounded-full bg-accent/75"
+ {...KEEP_RED}
  />
  </button>
  </span>
@@ -989,6 +1003,7 @@ export function VerseRow({
  <span
  aria-hidden
  className="inline-block h-[5px] w-[5px] rounded-full bg-accent/75 hover:bg-accent transition-colors"
+ {...KEEP_RED}
  />
  </a>
  <button
@@ -1007,6 +1022,7 @@ export function VerseRow({
  <span
  aria-hidden
  className="inline-block h-[5px] w-[5px] rounded-full bg-accent/75"
+ {...KEEP_RED}
  />
  </button>
  </span>
