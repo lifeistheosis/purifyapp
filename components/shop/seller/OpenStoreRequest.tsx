@@ -64,7 +64,7 @@ export function OpenStoreRequest() {
         <span className="font-sans text-caption font-semibold text-paper/60">
           {t("shop.storeAskNote")}
         </span>
-        <textarea
+        <textarea dir="auto"
           value={note}
           onChange={(e) => setNote(e.target.value)}
           rows={2}

@@ -110,7 +110,7 @@ export function ShopSupportClient() {
           <span className="font-sans text-detail font-medium text-paper/80">
             {t("ui.howCanWeHelp")}
           </span>
-          <textarea
+          <textarea dir="auto"
             value={body}
             onChange={(e) => setBody(e.target.value)}
             rows={5}

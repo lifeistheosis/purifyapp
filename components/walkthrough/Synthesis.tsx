@@ -358,7 +358,7 @@ export function Synthesis({
             <p lang="en" dir="ltr" className="mt-1 font-serif text-body italic leading-[1.5] text-paper/85">
               {walk.prompt}
             </p>
-            <textarea
+            <textarea dir="auto"
               value={text}
               onChange={(e) => setText(e.target.value)}
               maxLength={600}

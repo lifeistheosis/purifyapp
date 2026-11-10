@@ -504,7 +504,7 @@ export function ParagraphRow({
  {/* Note editor */}
  {editing && (
  <div className="mt-2 rounded-md border border-paper/25 bg-paper/[0.05] p-3">
- <textarea
+ <textarea dir="auto"
  ref={textareaRef}
  value={draft}
  onChange={(e) => setDraft(e.target.value)}

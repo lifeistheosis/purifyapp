@@ -80,7 +80,7 @@ export function SellerOrderActions({
           <span className="font-sans text-caption font-semibold text-paper/60">
             {t("shop.trackingNumber")}
           </span>
-          <input
+          <input dir="auto"
             value={trackingInput}
             onChange={(e) => setTrackingInput(e.target.value)}
             maxLength={200}

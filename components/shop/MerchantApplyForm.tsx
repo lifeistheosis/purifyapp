@@ -103,7 +103,7 @@ export function MerchantApplyForm() {
       <div className="grid gap-5 sm:grid-cols-2">
         <label className="block space-y-1.5">
           <span className={labelCls}>{t("shop.proposedStoreName")}</span>
-          <input name="storeName" required minLength={2} maxLength={120} className={field} />
+          <input dir="auto" name="storeName" required minLength={2} maxLength={120} className={field} />
         </label>
         <label className="block space-y-1.5">
           <span className={labelCls}>{t("shop.sellerTypeX")}</span>
@@ -120,7 +120,7 @@ export function MerchantApplyForm() {
         </label>
         <label className="block space-y-1.5">
           <span className={labelCls}>{t("shop.legalOrPersonalName")}</span>
-          <input name="legalName" required minLength={2} maxLength={200} className={field} />
+          <input dir="auto" name="legalName" required minLength={2} maxLength={200} className={field} />
         </label>
         <label className="block space-y-1.5">
           <span className={labelCls}>{t("shop.email")}</span>
@@ -128,15 +128,15 @@ export function MerchantApplyForm() {
         </label>
         <label className="block space-y-1.5">
           <span className={labelCls}>{t("shop.phone")}</span>
-          <input name="phone" maxLength={40} className={field} />
+          <input dir="auto" name="phone" maxLength={40} className={field} />
         </label>
         <label className="block space-y-1.5">
           <span className={labelCls}>{t("shop.countryX")}</span>
-          <input name="country" required minLength={2} maxLength={100} className={field} />
+          <input dir="auto" name="country" required minLength={2} maxLength={100} className={field} />
         </label>
         <label className="block space-y-1.5">
           <span className={labelCls}>{t("shop.shippingOrigin")}</span>
-          <input
+          <input dir="auto"
             name="shippingOrigin"
             maxLength={200}
             placeholder={t("shop.cityRegionParcelsShipFrom")}
@@ -155,7 +155,7 @@ export function MerchantApplyForm() {
         </label>
         <label className="block space-y-1.5">
           <span className={labelCls}>{t("shop.typicalProcessingTime")}</span>
-          <input
+          <input dir="auto"
             name="processingTime"
             maxLength={200}
             placeholder={t("shop.eGReadyMadeShips")}
@@ -164,7 +164,7 @@ export function MerchantApplyForm() {
         </label>
         <label className="block space-y-1.5">
           <span className={labelCls}>{t("shop.countriesServed")}</span>
-          <input
+          <input dir="auto"
             name="countriesServed"
             maxLength={500}
             placeholder={t("shop.eGUnitedStatesAnd")}
@@ -205,12 +205,12 @@ export function MerchantApplyForm() {
 
       <label className="block space-y-1.5">
         <span className={labelCls}>{t("shop.yourReturnPolicy")}</span>
-        <textarea name="returnPolicy" rows={3} maxLength={2000} className={field} />
+        <textarea dir="auto" name="returnPolicy" rows={3} maxLength={2000} className={field} />
       </label>
 
       <label className="block space-y-1.5">
         <span className={labelCls}>{t("shop.aboutYouOrYourWorkshop")}</span>
-        <textarea
+        <textarea dir="auto"
           name="sellerDescription"
           rows={4}
           maxLength={3000}

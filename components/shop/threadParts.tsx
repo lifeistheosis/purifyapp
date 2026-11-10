@@ -109,7 +109,7 @@ export function Composer({
         <div className="shop-raise flex items-end gap-2 rounded-[26px] py-[7px] pe-[7px] ps-4">
           <label className="min-w-0 flex-1">
             <span className="sr-only">{t("shop.reply")}</span>
-            <textarea
+            <textarea dir="auto"
               ref={fieldRef}
               value={body}
               onChange={(e) => setBody(e.target.value)}

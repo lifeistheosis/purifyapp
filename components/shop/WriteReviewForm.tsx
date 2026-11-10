@@ -126,7 +126,7 @@ export function WriteReviewForm({
 
       <label className="mt-3 block">
         <span className="sr-only">{t("shop.yourReview")}</span>
-        <textarea
+        <textarea dir="auto"
           value={body}
           onChange={(e) => setBody(e.target.value)}
           rows={3}
@@ -138,7 +138,7 @@ export function WriteReviewForm({
 
       <label className="mt-3 block">
         <span className="sr-only">{t("shop.yourLocation")}</span>
-        <input
+        <input dir="auto"
           type="text"
           value={location}
           onChange={(e) => setLocation(e.target.value)}

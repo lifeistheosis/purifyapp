@@ -83,7 +83,7 @@ export function BuyerMessageButton({
     <form onSubmit={send} className="w-full space-y-3">
       <label className="block">
         <span className="sr-only">{t("shop.messageTo")} {storeName}</span>
-        <textarea
+        <textarea dir="auto"
           value={body}
           onChange={(e) => setBody(e.target.value)}
           rows={3}

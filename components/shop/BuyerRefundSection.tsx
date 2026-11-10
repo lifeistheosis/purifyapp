@@ -186,7 +186,7 @@ export function BuyerRefundSection({
             <span className="font-sans text-caption font-semibold text-paper/60">
               {t("shop.anythingThatHelps")}
             </span>
-            <textarea
+            <textarea dir="auto"
               name="details"
               rows={3}
               maxLength={2000}

@@ -146,7 +146,7 @@ export function StoreForm() {
 
         <label className="block space-y-1.5">
           <span className={labelCls}>{t("shop.storeTagline")}</span>
-          <input
+          <input dir="auto"
             name="tagline"
             defaultValue={store.tagline ?? ""}
             maxLength={200}
@@ -157,7 +157,7 @@ export function StoreForm() {
 
         <label className="block space-y-1.5">
           <span className={labelCls}>{t("shop.storeDescription")}</span>
-          <textarea
+          <textarea dir="auto"
             name="description"
             defaultValue={store.description ?? ""}
             rows={5}
@@ -200,7 +200,7 @@ export function StoreForm() {
         </label>
         <label className="block space-y-1.5">
           <span className={labelCls}>{t("shop.storeShipsFrom")}</span>
-          <input
+          <input dir="auto"
             name="shipping_origin"
             defaultValue={store.shipping_origin ?? ""}
             maxLength={200}
@@ -216,7 +216,7 @@ export function StoreForm() {
         </h2>
         <label className="block space-y-1.5">
           <span className={labelCls}>{t("shop.storeShippingPolicy")}</span>
-          <textarea
+          <textarea dir="auto"
             name="shipping_policy_md"
             defaultValue={store.shipping_policy_md ?? ""}
             rows={5}
@@ -227,7 +227,7 @@ export function StoreForm() {
         </label>
         <label className="block space-y-1.5">
           <span className={labelCls}>{t("shop.storeReturnPolicy")}</span>
-          <textarea
+          <textarea dir="auto"
             name="return_policy_md"
             defaultValue={store.return_policy_md ?? ""}
             rows={5}

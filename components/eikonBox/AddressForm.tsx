@@ -99,7 +99,7 @@ export function AddressForm({
   return (
     <div className="space-y-3.5">
       <Field id="eb-name" label="Full name" error={errors.name}>
-        <input
+        <input dir="auto"
           id="eb-name"
           className={INPUT}
           value={value.name}
@@ -111,7 +111,7 @@ export function AddressForm({
       </Field>
 
       <Field id="eb-line1" label="Street address" error={errors.line1}>
-        <input
+        <input dir="auto"
           id="eb-line1"
           className={INPUT}
           value={value.line1}
@@ -122,7 +122,7 @@ export function AddressForm({
       </Field>
 
       <Field id="eb-line2" label="Apartment, suite (optional)" error={errors.line2}>
-        <input
+        <input dir="auto"
           id="eb-line2"
           className={INPUT}
           value={value.line2}
@@ -134,7 +134,7 @@ export function AddressForm({
 
       <div className="grid grid-cols-2 gap-3">
         <Field id="eb-city" label="City" error={errors.city}>
-          <input
+          <input dir="auto"
             id="eb-city"
             className={INPUT}
             value={value.city}
@@ -163,7 +163,7 @@ export function AddressForm({
       </div>
 
       <Field id="eb-zip" label="ZIP code" error={errors.postalCode}>
-        <input
+        <input dir="auto"
           id="eb-zip"
           className={INPUT}
           value={value.postalCode}

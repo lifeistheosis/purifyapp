@@ -155,7 +155,7 @@ export function ListingForm({
             </div>
             <label className="block space-y-1.5">
               <span className={labelCls}>{t("shop.altText")}</span>
-              <input
+              <input dir="auto"
                 value={m.alt}
                 onChange={(e) =>
                   setMedia((rows) =>
@@ -190,7 +190,7 @@ export function ListingForm({
         <h2 className="font-display-serif text-title text-paper">{t("shop.theIcon")}</h2>
         <label className="block space-y-1.5">
           <span className={labelCls}>{t("shop.title")}</span>
-          <input
+          <input dir="auto"
             name="title"
             required
             minLength={2}
@@ -202,7 +202,7 @@ export function ListingForm({
         </label>
         <label className="block space-y-1.5">
           <span className={labelCls}>{t("shop.subtitle")}</span>
-          <input
+          <input dir="auto"
             name="subtitle"
             maxLength={300}
             defaultValue={product?.subtitle ?? ""}
@@ -212,7 +212,7 @@ export function ListingForm({
         </label>
         <label className="block space-y-1.5">
           <span className={labelCls}>{t("shop.description")}</span>
-          <textarea
+          <textarea dir="auto"
             name="description"
             rows={6}
             maxLength={8000}
@@ -252,7 +252,7 @@ export function ListingForm({
           </label>
           <label className="block space-y-1.5">
             <span className={labelCls}>{t("shop.materials")}</span>
-            <input
+            <input dir="auto"
               name="materials"
               maxLength={500}
               defaultValue={product?.materials ?? ""}
@@ -262,7 +262,7 @@ export function ListingForm({
           </label>
           <label className="block space-y-1.5">
             <span className={labelCls}>{t("shop.dimensions")}</span>
-            <input
+            <input dir="auto"
               name="dimensions"
               maxLength={300}
               defaultValue={product?.dimensions ?? ""}
@@ -272,7 +272,7 @@ export function ListingForm({
           </label>
           <label className="block space-y-1.5">
             <span className={labelCls}>{t("shop.productionMethod")}</span>
-            <input
+            <input dir="auto"
               name="productionMethod"
               maxLength={500}
               defaultValue={product?.production_method ?? ""}
@@ -282,7 +282,7 @@ export function ListingForm({
           </label>
           <label className="block space-y-1.5">
             <span className={labelCls}>{t("shop.makerPublicCredit")}</span>
-            <input
+            <input dir="auto"
               name="makerName"
               maxLength={200}
               defaultValue={product?.maker_name ?? ""}
@@ -291,7 +291,7 @@ export function ListingForm({
           </label>
           <label className="block space-y-1.5">
             <span className={labelCls}>{t("shop.countryOfOrigin")}</span>
-            <input
+            <input dir="auto"
               name="countryOfOrigin"
               maxLength={100}
               defaultValue={product?.country_of_origin ?? ""}

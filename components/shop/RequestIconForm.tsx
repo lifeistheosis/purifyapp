@@ -186,7 +186,7 @@ export function RequestIconForm({
           </label>
           <div className="shop-well flex items-center gap-2.5 rounded-[14px] px-3.5">
             <Search size={18} className="shrink-0 text-paper/50" />
-            <input
+            <input dir="auto"
               ref={inputRef}
               id={`${listId}-field`}
               role="combobox"
@@ -280,11 +280,11 @@ export function RequestIconForm({
         <div id={moreId} hidden={!more} className="space-y-4 border-t border-paper/[0.09] px-3.5 pb-4 pt-3.5">
           <label className="block space-y-1.5">
             <span className={labelCls}>{t("shop.preferredSize")}</span>
-            <input name="preferredSize" maxLength={100} placeholder='e.g. around 6&times;8"' className={field} />
+            <input dir="auto" name="preferredSize" maxLength={100} placeholder='e.g. around 6&times;8"' className={field} />
           </label>
           <label className="block space-y-1.5">
             <span className={labelCls}>{t("shop.preferredProductType")}</span>
-            <input name="productPreference" maxLength={200} placeholder={t("shop.woodenIconPrintLaminated")} className={field} />
+            <input dir="auto" name="productPreference" maxLength={200} placeholder={t("shop.woodenIconPrintLaminated")} className={field} />
           </label>
           <label className="block space-y-1.5">
             <span className={labelCls}>{t("shop.budget")}</span>
@@ -303,7 +303,7 @@ export function RequestIconForm({
           </label>
           <label className="block space-y-1.5">
             <span className={labelCls}>{t("saints.notes")}</span>
-            <textarea name="notes" rows={4} maxLength={2000} placeholder={t("shop.anythingThatHelpsTheOccasion")} className={field} />
+            <textarea dir="auto" name="notes" rows={4} maxLength={2000} placeholder={t("shop.anythingThatHelpsTheOccasion")} className={field} />
           </label>
         </div>
         <div className="flex items-center gap-3 border-t border-paper/[0.09] px-3.5 py-3">

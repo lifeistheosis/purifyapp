@@ -89,7 +89,7 @@ export function RefundDecisionCard({
           <span className="font-sans text-caption font-semibold text-paper/60">
             {t("shop.whyAreYouDecliningThe")}
           </span>
-          <textarea
+          <textarea dir="auto"
             value={note}
             onChange={(e) => setNote(e.target.value)}
             rows={3}

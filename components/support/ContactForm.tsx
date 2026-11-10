@@ -75,7 +75,7 @@ export function ContactForm({ defaultEmail = "" }: { defaultEmail?: string }) {
       <div className="grid gap-4 sm:grid-cols-2">
         <label className="block">
           <span className={label}>Your name</span>
-          <input
+          <input dir="auto"
             className={field}
             value={name}
             onChange={(e) => setName(e.target.value)}
@@ -98,7 +98,7 @@ export function ContactForm({ defaultEmail = "" }: { defaultEmail?: string }) {
       </div>
       <label className="block">
         <span className={label}>Subject</span>
-        <input
+        <input dir="auto"
           className={field}
           required
           value={subject}
@@ -109,7 +109,7 @@ export function ContactForm({ defaultEmail = "" }: { defaultEmail?: string }) {
       </label>
       <label className="block">
         <span className={label}>Message</span>
-        <textarea
+        <textarea dir="auto"
           className={field}
           required
           rows={6}
