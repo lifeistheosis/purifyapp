@@ -4,6 +4,7 @@ import { useEffect, useRef } from "react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { cn } from "@/lib/cn";
+import { TOP_ICON, TOP_PLATE } from "@/components/nav/topPlate";
 import { goBack } from "@/lib/nav/goBack";
 import { ChevronLeft } from "@/components/ui/icons/ChevronLeft";
 import { Search } from "@/components/ui/icons/Search";
@@ -136,8 +137,7 @@ export function MobileTopBar({
     return () => io.disconnect();
   }, [revealTitleOn, pathname]);
 
-  const backClass =
-    "h-11 w-11 inline-flex shrink-0 items-center justify-center rounded-pill text-paper/80 transition-colors hover:text-paper focus-visible:outline-2 focus-visible:outline-paper focus-visible:outline-offset-2";
+  const backClass = `${TOP_PLATE} text-paper/80 transition-colors hover:text-paper focus-visible:outline-2 focus-visible:outline-paper focus-visible:outline-offset-2`;
 
   const backControl = back ? (
     back === true ? (
@@ -147,11 +147,11 @@ export function MobileTopBar({
         onClick={() => goBack(router, backFallback ?? "/")}
         className={backClass}
       >
-        <ChevronLeft size={20} className="rtl:-scale-x-100" />
+        <ChevronLeft {...TOP_ICON} className="rtl:-scale-x-100" />
       </button>
     ) : (
       <Link href={back} aria-label={t("nav.back")} className={backClass}>
-        <ChevronLeft size={20} className="rtl:-scale-x-100" />
+        <ChevronLeft {...TOP_ICON} className="rtl:-scale-x-100" />
       </Link>
     )
   ) : null;
@@ -173,7 +173,10 @@ export function MobileTopBar({
         {/* The row, not the bar around it, stands at the top of the screen
             (lib/ui/readingPlace.ts): it steps away while the reader reads
             on, and the strip over the status bar stays. */}
-        <div data-plates-row data-screen-edge="top" className="flex h-[52px] items-center justify-between gap-2 px-3">
+        {/* Its height is --plates-row-h (globals.css): the reading line along
+            the status bar, then the plates with an even gap above and below,
+            on the page's own margin at both sides (build 89 note 15). */}
+        <div data-plates-row data-screen-edge="top" className="flex h-[var(--plates-row-h)] items-center justify-between gap-2 px-5 pt-[2px]">
           {backControl ?? <span aria-hidden />}
           <div className="flex items-center gap-2">
             {trailing}

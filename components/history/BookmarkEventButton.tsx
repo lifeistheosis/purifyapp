@@ -20,6 +20,7 @@ import { Bookmark } from "@/components/ui/icons/Bookmark";
 import { useBookmarks } from "@/lib/bookmarks";
 import { cn } from "@/lib/cn";
 import type { HistoryEventMeta } from "@/lib/history/events";
+import { TOP_ICON, TOP_PLATE } from "@/components/nav/topPlate";
 
 export function BookmarkEventButton({
   event,
@@ -45,11 +46,11 @@ export function BookmarkEventButton({
         })
       }
       className={cn(
-        "tap-press inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-pill motion-safe:transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-paper",
+        `tap-press ${TOP_PLATE} motion-safe:transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-paper`,
         saved ? "text-paper" : "text-paper/70 hover:text-paper",
       )}
     >
-      <Bookmark size={19} filled={saved} className={saved ? "history-saved-lit" : undefined} />
+      <Bookmark {...TOP_ICON} filled={saved} className={saved ? "history-saved-lit" : undefined} />
     </button>
   );
 }

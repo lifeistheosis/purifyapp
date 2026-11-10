@@ -202,7 +202,8 @@ describe("an event's page", () => {
     expect(bar).toMatch(/<ShareButton[^>]*\bround\b[\s\S]*<BookmarkEventButton/);
     expect(bar).toContain('className="border-0 bg-transparent text-paper/70 hover:text-paper"');
     const save = code("components/history/BookmarkEventButton.tsx");
-    expect(save).toContain("inline-flex h-11 w-11 shrink-0");
+    // The top bar's one plate, h-11 w-11 (components/nav/topPlate.ts, build 89 note 15).
+    expect(save).toContain("`tap-press ${TOP_PLATE} ");
     // It knows its state in the first frame: no gate that draws it unsaved first.
     expect(save).not.toMatch(/useEffect|useState|mounted/);
     // Saved, lit white with a soft white glow; on Parchment the plain ink.

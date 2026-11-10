@@ -14,6 +14,7 @@ import { Check } from "@/components/ui/icons/Check";
 import { cn } from "@/lib/cn";
 import { shareCurrentLink } from "@/lib/site";
 import { copyText as putOnClipboard } from "@/lib/ui/copyText";
+import { TOP_ICON, TOP_PLATE } from "@/components/nav/topPlate";
 
 export function ShareButton({
   title,
@@ -65,11 +66,11 @@ export function ShareButton({
         onClick={onShare}
         aria-label={copied ? t("common.linkCopied") : t("common.share")}
         className={cn(
-          "tap-press inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-pill border border-paper/10 bg-paper/[0.08] text-paper motion-safe:transition-colors hover:border-paper/30",
+          `tap-press ${TOP_PLATE} border border-paper/10 bg-paper/[0.08] text-paper motion-safe:transition-colors hover:border-paper/30`,
           className,
         )}
       >
-        {copied ? <Check size={16} /> : <ShareIcon size={18} />}
+        {copied ? <Check {...TOP_ICON} /> : <ShareIcon size={TOP_ICON.size} stroke={TOP_ICON.strokeWidth} />}
         <span aria-live="polite" className="sr-only">
           {copied ? t("common.linkCopied") : ""}
         </span>
@@ -93,7 +94,7 @@ export function ShareButton({
   );
 }
 
-function ShareIcon({ size = 14 }: { size?: number }) {
+function ShareIcon({ size = 14, stroke = 1.7 }: { size?: number; stroke?: number }) {
   return (
     <svg
       width={size}
@@ -101,7 +102,7 @@ function ShareIcon({ size = 14 }: { size?: number }) {
       viewBox="0 0 24 24"
       fill="none"
       stroke="currentColor"
-      strokeWidth={1.7}
+      strokeWidth={stroke}
       strokeLinecap="round"
       strokeLinejoin="round"
       aria-hidden

@@ -89,9 +89,10 @@ describe("no bar: round buttons over the page", () => {
     const buttons = [...actions.matchAll(/<button\b[\s\S]*?<\/button>/g)].map((m) => m[0]);
     expect(buttons).toHaveLength(1);
     expect(buttons[0]).toContain('aria-label={t("bible.moreActions")}');
-    expect(buttons[0]).toContain("<More size={20} />");
+    expect(buttons[0]).toContain("<More size={TOP_ICON.size} />");
     expect(buttons[0]).toContain('aria-haspopup="dialog"');
-    expect(buttons[0]).toMatch(/\bhit-44\b/);
+    // The way back's own size, painted, not a 40px box with a 44px reach (build 89 note 15).
+    expect(buttons[0]).toContain("className={`tap-press ${TOP_PLATE}`}");
     // No round Aa of its own any more.
     expect(actions).not.toContain('t("bible.readerSettings")');
     expect(actions).not.toMatch(/<span>A<\/span>\s*<span>a<\/span>/);
@@ -132,8 +133,9 @@ describe("the safe areas", () => {
     const css = rules();
     expect(css).toMatch(/\[data-mobile-topbar\]\[data-plates\] \{\s*background: linear-gradient\(var\(--color-night\), var\(--color-night\)\) top \/ 100% env\(safe-area-inset-top, 0px\) no-repeat;/);
     // On the web the page pads for a notch as the bar did; in the apps <main> does (.safe-pt).
-    expect(css).toMatch(/html:not\(\.is-native\) \.under-plates \{\s*padding-top: calc\(72px \+ env\(safe-area-inset-top, 0px\)\);/);
-    expect(css).toMatch(/html\.is-native \.under-plates \{\s*padding-top: 72px;/);
+    // The plates' row and the design's 20px, in step with the row (build 89 note 15).
+    expect(css).toMatch(/html:not\(\.is-native\) \.under-plates \{\s*padding-top: calc\(var\(--plates-row-h\) \+ 20px \+ env\(safe-area-inset-top, 0px\)\);/);
+    expect(css).toMatch(/html\.is-native \.under-plates \{\s*padding-top: calc\(var\(--plates-row-h\) \+ 20px\);/);
     expect(code(SCREEN)).toMatch(/<section className="[^"]*\bunder-plates md:pt-16\b[^"]*\bsafe-pb-reader\b/);
     expect(code("app/(app)/bible/[book]/[chapter]/loading.tsx")).toContain("under-plates md:pt-16");
     // The tablet's 16px under a sticky bar went with the bar.

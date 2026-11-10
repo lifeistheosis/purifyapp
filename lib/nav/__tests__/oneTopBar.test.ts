@@ -198,7 +198,10 @@ describe("search and the bell", () => {
   // beside them were h-10 w-10, 42.5px on the 17px root, and so was every
   // sheet's close. All of them are 44px now.
   it("as are the back button, the menu button and a sheet's close", () => {
-    expect(code("components/nav/MobileTopBar.tsx")).toMatch(/const backClass =\s*"h-11 w-11 /);
+    // From build 89 note 15 the way back is drawn from the plate everything
+    // opposite it shares (lib/ui/__tests__/topPlates.test.ts).
+    expect(code("components/nav/MobileTopBar.tsx")).toMatch(/const backClass = `\$\{TOP_PLATE\} /);
+    expect(code("components/nav/topPlate.ts")).toContain('"h-11 w-11 ');
     expect(code("components/nav/SiteMenuButton.tsx")).toContain('className="h-11 w-11 ');
     expect(code("components/ui/Sheet.tsx")).toContain('className="inline-flex h-11 w-11 shrink-0');
     for (const f of ["components/nav/MobileTopBar.tsx", "components/nav/SiteMenuButton.tsx", "components/ui/Sheet.tsx"]) expect(code(f), f).not.toMatch(/\bh-10 w-10\b/);

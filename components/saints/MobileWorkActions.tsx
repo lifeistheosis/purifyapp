@@ -13,6 +13,7 @@ import { useBookmarks } from "@/lib/bookmarks";
 import { openWorkAbout, useWorkNow } from "@/lib/saints/workNow";
 import { openSearch } from "@/lib/search/open";
 import { softTick } from "@/lib/ui/softTick";
+import { TOP_ICON, TOP_PLATE } from "@/components/nav/topPlate";
 
 /**
  * The round ••• over a work's page, opposite the way back (1.8, the owner's
@@ -59,9 +60,9 @@ export function MobileWorkActions() {
         aria-label={t("bible.moreActions")}
         aria-haspopup="dialog"
         onClick={() => setOpen("more")}
-        className="tap-press hit-44 inline-flex h-10 w-10 items-center justify-center"
+        className={`tap-press ${TOP_PLATE}`}
       >
-        <More size={20} />
+        <More size={TOP_ICON.size} />
       </button>
 
       <Sheet open={open === "more"} onClose={close} title={now?.label ?? now?.workTitle ?? t("bible.moreActions")}>

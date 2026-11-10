@@ -740,6 +740,14 @@ html.is-native .below-topbar {
    blur anywhere here: a blurred layer over moving text is redrawn on every
    frame on Android. The rgb values come first for a WebView without
    color-mix. */
+/* The plates' row (build 89 note 15: the plates stood 1 to 3px under the
+   line along the status bar, in a 52px row that did not hold them): the
+   reading line's 2px, then the plates (2.75rem, components/nav/topPlate.ts)
+   with an even 0.5rem above and below, in the plates' own unit so the row
+   keeps them if they change. */
+:root {
+ --plates-row-h: calc(3.75rem + 2px);
+}
 [data-mobile-topbar][data-plates] {
  background: linear-gradient(var(--color-night), var(--color-night)) top / 100% env(safe-area-inset-top, 0px) no-repeat;
 }
@@ -756,16 +764,17 @@ html.is-native .below-topbar {
  color: var(--color-paper);
 }
 
-/* The page starts under the plates: their row, and the design's 20px under
-   it before the book's name. On the web the row also pads for a notch, as
-   the bar did; in the apps <main> already does (.safe-pt). */
+/* The page starts under the plates: their row (--plates-row-h), and the
+   design's 20px under it before the book's name, which keeps its distance
+   from the plates whatever their size. On the web the row also pads for a
+   notch, as the bar did; in the apps <main> already does (.safe-pt). */
 @media (max-width: 767.98px) {
  html:not(.is-native) .under-plates {
-  padding-top: calc(72px + env(safe-area-inset-top, 0px));
+  padding-top: calc(var(--plates-row-h) + 20px + env(safe-area-inset-top, 0px));
  }
 }
 html.is-native .under-plates {
- padding-top: 72px;
+ padding-top: calc(var(--plates-row-h) + 20px);
 }
 
 /* The reading line runs along the top of the screen under the status bar,

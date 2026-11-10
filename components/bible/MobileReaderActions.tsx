@@ -6,6 +6,7 @@ import { ReaderMoreSheet } from "@/components/bible/ReaderMoreSheet";
 import { More } from "@/components/ui/icons/More";
 import { useTranslate } from "@/components/i18n/MessagesProvider";
 import { BIBLE_START_SIZE } from "@/components/reader/ReaderPrefs";
+import { TOP_ICON, TOP_PLATE } from "@/components/nav/topPlate";
 
 /**
  * The Bible reader's round button over the page, opposite the way back (1.8,
@@ -57,9 +58,9 @@ export function MobileReaderActions({
         onClick={() => setOpen("more")}
         // The 1.9 tour's way to the five new Bibles: the translations list is in this sheet.
         data-tour="bibles"
-        className="tap-press hit-44 inline-flex h-10 w-10 items-center justify-center"
+        className={`tap-press ${TOP_PLATE}`}
       >
-        <More size={20} />
+        <More size={TOP_ICON.size} />
       </button>
 
       <ReaderMoreSheet

@@ -53,7 +53,7 @@ export default async function ChantRoute({ params }: { params: Params }) {
           <ShareButton
             titleKey={chantTitleKey(chant.key)}
             round
-            className="h-10 w-10 border-0 bg-transparent text-paper/80 hover:text-paper"
+            className="border-0 bg-transparent text-paper/80 hover:text-paper"
           />
         }
       />

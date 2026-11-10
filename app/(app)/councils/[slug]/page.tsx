@@ -122,7 +122,7 @@ export default async function CouncilProfilePage({
   backFallback="/councils"
   revealTitleOn="council-name"
   overlay={Boolean(picture)}
-  trailing={<ShareButton title={c.byname} round className="h-10 w-10 border-0 bg-transparent text-paper/80 hover:text-paper" />}
+  trailing={<ShareButton title={c.byname} round className="border-0 bg-transparent text-paper/80 hover:text-paper" />}
  />
  <section className="bg-night px-5 pb-16 md:px-8 md:pb-24 md:pt-14">
  <article className="mx-auto max-w-[820px] w-full">

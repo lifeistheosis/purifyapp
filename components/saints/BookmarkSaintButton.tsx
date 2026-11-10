@@ -6,6 +6,7 @@ import { useTranslate } from "@/components/i18n/MessagesProvider";
 import { Bookmark } from "@/components/ui/icons/Bookmark";
 import { useBookmarks } from "@/lib/bookmarks";
 import { cn } from "@/lib/cn";
+import { TOP_ICON, TOP_PLATE } from "@/components/nav/topPlate";
 
 /**
  * Save a saint, so they are one tap away on /saved instead of a search.
@@ -57,7 +58,7 @@ export function BookmarkSaintButton({
       onClick={() => toggle({ kind: "saint", saintSlug: slug, label: name })}
       className={cn(
         variant === "bar"
-          ? "tap-press hit-44 inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-pill motion-safe:transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-paper"
+          ? `tap-press ${TOP_PLATE} motion-safe:transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-paper`
           : "tap-press inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-pill border motion-safe:transition-colors",
         variant === "bar"
           ? saved
@@ -69,7 +70,7 @@ export function BookmarkSaintButton({
         className,
       )}
     >
-      <Bookmark size={19} filled={saved} />
+      <Bookmark {...(variant === "bar" ? TOP_ICON : { size: 19 })} filled={saved} />
     </button>
   );
 }
