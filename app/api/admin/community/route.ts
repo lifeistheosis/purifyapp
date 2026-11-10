@@ -5,7 +5,10 @@ import { getAdminUser } from "@/lib/admin/access";
 import { isTableAbsent } from "@/lib/admin/tableAbsent";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { isColumnAbsent } from "@/lib/supabase/columnAbsent";
+import { campaignsInBuild } from "@/lib/campaigns/flags";
 import { CAMPAIGN_BUCKET, campaignImage } from "@/lib/campaigns/image";
+import { isCampaignModAction } from "@/lib/campaigns/model";
+import { readWaitingCampaigns, runCampaignModAction } from "@/lib/campaigns/moderation";
 import {
   campaignKey,
   countWaiting,
@@ -118,6 +121,30 @@ async function recipeReportsOnly(admin: AdminClient) {
   return isColumnAbsent(first.error) ? run(false) : first;
 }
 
+/**
+ * The reports readers filed on prayer campaigns that still wait. July's
+ * table kept no state (a report set aside was deleted), so while campaigns
+ * are closed every row is read, exactly as before. In a build that has the
+ * rework a report is kept with its state, and only the open ones wait; where
+ * its SQL has not run yet the column is absent, and the old read stands.
+ */
+async function openCampaignReports(admin: AdminClient, columns: string, limit: number) {
+  const all = () => admin.from("prayer_campaign_reports").select(columns).order("created_at", { ascending: false }).limit(limit);
+  if (!campaignsInBuild()) return all();
+  const open = await admin.from("prayer_campaign_reports").select(columns).eq("status", "open").order("created_at", { ascending: false }).limit(limit);
+  return isColumnAbsent(open.error) ? all() : open;
+}
+
+/** The campaigns waiting to be read (lib/campaigns/moderation.ts). None, and no read, while campaigns are closed. */
+async function campaignsWaiting(admin: AdminClient): Promise<{ rows: Awaited<ReturnType<typeof readWaitingCampaigns>>["rows"]; error: { message: string } | null }> {
+  if (!campaignsInBuild()) return { rows: [], error: null };
+  try {
+    return { rows: (await readWaitingCampaigns(admin)).rows, error: null };
+  } catch (e) {
+    return { rows: [], error: { message: e instanceof Error ? e.message : String(e) } };
+  }
+}
+
 export async function GET(req: Request) {
   const adminUser = await getAdminUser();
   if (!adminUser) return NextResponse.json({ error: "Forbidden" }, { status: 403 });
@@ -132,15 +159,17 @@ export async function GET(req: Request) {
   // reads of ids only; any failed read is a 500, because this route's own
   // comment below says why an unread queue must never read as empty.
   if (new URL(req.url).searchParams.get("summary") === "1") {
-    const [recipes, campaignReports, recipeReportsFirst, reportsFirst, holdsRead, sharedFirst] = await Promise.all([
+    const [recipes, campaignReports, recipeReportsFirst, reportsFirst, holdsRead, sharedFirst, waitingCampaigns] = await Promise.all([
       admin.from("trapeza_recipes").select("id").eq("status", "pending").limit(1000),
-      admin.from("prayer_campaign_reports").select("id, campaign_id").limit(1000),
+      openCampaignReports(admin, "id, campaign_id", 1000),
       admin.from("trapeza_recipe_reports").select("id, recipe_id, review_id").limit(1000),
       admin.from("community_reports").select("id, post_id, reply_id, profile_id").eq("status", "open").limit(1000),
       admin.from("community_text_holds").select("id, post_id, reply_id").eq("status", "pending").limit(1000),
       // Shared journal pages that wait (1.9, admin A1): the same pages the
       // queue shows, from their reports and their state.
       readReportedShares(admin, true),
+      // Prayer campaigns waiting to be read (1.9.1). Nothing is read while they are closed.
+      campaignsWaiting(admin),
     ]);
     // Older shapes: no review_id before the Kitchen migration, no profile_id
     // before profile reports, no holds table before the filter.
@@ -151,7 +180,7 @@ export async function GET(req: Request) {
       ? await admin.from("community_reports").select("id, post_id, reply_id").eq("status", "open").limit(1000)
       : reportsFirst;
     const holds = isTableAbsent(holdsRead.error) ? { data: [], error: null } : holdsRead;
-    const err = recipes.error ?? campaignReports.error ?? recipeReports.error ?? reports.error ?? holds.error ?? sharedFirst.error;
+    const err = recipes.error ?? campaignReports.error ?? recipeReports.error ?? reports.error ?? holds.error ?? sharedFirst.error ?? waitingCampaigns.error;
     if (err) {
       console.error("[admin/community] moderation count failed", err.message);
       return NextResponse.json({ error: "The moderation queue could not be counted." }, { status: 500 });
@@ -160,13 +189,16 @@ export async function GET(req: Request) {
     const holdRows = (holds.data ?? []) as (Id & { post_id: string | null; reply_id: string | null })[];
     const reportRows = (reports.data ?? []) as (Id & { post_id: string | null; reply_id: string | null; profile_id?: string | null })[];
     const recipeRows = (recipeReports.data ?? []) as (Id & { recipe_id: string | null; review_id?: string | null })[];
-    const campaignRows = (campaignReports.data ?? []) as (Id & { campaign_id: string | null })[];
+    // Read by a column list handed over as a string, so the client cannot name its rows' shape.
+    const campaignRows = (campaignReports.data ?? []) as unknown as (Id & { campaign_id: string | null })[];
     const keys = [
       ...holdRows.map(holdKey),
       ...reportRows.map((r) => reportKey(r, r.profile_id ?? null)),
       ...((recipes.data ?? []) as Id[]).map((r) => recipeNewKey(r.id)),
       ...recipeRows.map((r) => (r.review_id ? reviewKey(r.review_id, r.id) : recipeKey(r.recipe_id, r.id))),
       ...campaignRows.map((r) => campaignKey(r.campaign_id, r.id)),
+      // The same key as its reports: a waiting campaign and the reports on it are one row.
+      ...waitingCampaigns.rows.map((c) => campaignKey(c.id, c.id)),
       ...sharedFirst.data.filter(waitsForDecision).map((p) => sharedKey(p.id)),
     ];
     return NextResponse.json(
@@ -199,15 +231,9 @@ export async function GET(req: Request) {
       .limit(200);
   const PENDING = "id, title, fast_level, season, tradition, summary, ingredients, steps, created_at";
 
-  const [pendingFirst, campaignReports, recipeReports, recentPosts, kitchen, sharedPages] = await Promise.all([
+  const [pendingFirst, campaignReports, recipeReports, recentPosts, kitchen, sharedPages, waitingCampaigns] = await Promise.all([
     pendingQuery(`${PENDING}, photo_url`),
-    admin
-      .from("prayer_campaign_reports")
-      .select(
-        "id, reason, created_at, campaign:prayer_campaigns(id, title, status, intention, subject_name, image_url)",
-      )
-      .order("created_at", { ascending: false })
-      .limit(200),
+    openCampaignReports(admin, "id, reason, created_at, campaign:prayer_campaigns(id, title, status, intention, subject_name, image_url)", 200),
     recipeReportsOnly(admin),
     // Posts the owner might want to announce, and the ones already announced.
     //
@@ -227,6 +253,7 @@ export async function GET(req: Request) {
       .limit(30),
     loadKitchen(admin),
     readReportedShares(admin),
+    campaignsWaiting(admin),
   ]);
   // The submission's photo arrives with 20260928000000_kitchen.sql; before it, ask
   // again without the column.
@@ -248,7 +275,8 @@ export async function GET(req: Request) {
     recentPosts.error ??
     conversationReports.error ??
     kitchen.error ??
-    sharedPages.error;
+    sharedPages.error ??
+    waitingCampaigns.error;
   if (readError) {
     console.error("[admin/community] moderation read failed", readError.message);
     return NextResponse.json(
@@ -266,6 +294,8 @@ export async function GET(req: Request) {
     {
       pendingRecipes: pendingRecipes.data ?? [],
       campaignReports: campaignReports.data ?? [],
+      // Absent, not empty, while campaigns are closed.
+      ...(campaignsInBuild() ? { waitingCampaigns: waitingCampaigns.rows } : {}),
       recipeReports: recipeReports.data ?? [],
       conversationReports: reports,
       recentPosts: recentPosts.data ?? [],
@@ -327,6 +357,11 @@ const actionSchema = z.object({
     "remove_recipe",
     "remove_campaign",
     "dismiss_campaign_report",
+    // Prayer campaigns, reworked (1.9.1): every campaign is read before it
+    // is public, and one hidden by reports or removed can be put back. Not
+    // actions at all while campaigns are closed (the POST below).
+    "approve_campaign",
+    "restore_campaign",
     "dismiss_recipe_report",
     // The Kitchen's reviews. Removing keeps the row, as with conversations,
     // and deletes its photos from the public bucket, as with campaigns.
@@ -398,6 +433,28 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: res.error }, { status: res.status });
     }
     return NextResponse.json({ ok: true });
+  }
+
+  // Prayer campaigns, in a build that has the rework: the same four
+  // decisions the moderators' page takes (lib/campaigns/moderation.ts), so a
+  // report is kept with its state and not deleted, a removal keeps its
+  // reason, and each lands in the log. While campaigns are closed the two
+  // July actions below run exactly as they always have, and the two new ones
+  // are not actions.
+  if (isCampaignModAction(action)) {
+    if (campaignsInBuild()) {
+      const actor = await moderatorFor(admin, { id: adminUser.id, email: adminUser.email, standing: "admin" });
+      if (!actor) return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+      const res = await runCampaignModAction(admin, actor, action, id, reason);
+      if (!res.ok) {
+        console.warn("[admin/community] action failed", res.error);
+        return NextResponse.json({ error: res.error }, { status: res.status });
+      }
+      return NextResponse.json({ ok: true });
+    }
+    if (action === "approve_campaign" || action === "restore_campaign") {
+      return NextResponse.json({ error: "Invalid action." }, { status: 400 });
+    }
   }
 
   // What the decision was about, read before it is made: a dismissed report

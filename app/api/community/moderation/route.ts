@@ -2,6 +2,8 @@ import { NextResponse } from "next/server";
 import { z } from "zod";
 
 import { corsPreflight, corsRoute } from "@/lib/api/cors";
+import { CAMPAIGN_MOD_ACTIONS, isCampaignModAction, readOpenCampaignReports, readWaitingCampaigns, runCampaignModAction } from "@/lib/campaigns/moderation";
+import { campaignsCaller } from "@/lib/campaigns/opening";
 import { requestStanding } from "@/lib/community/adminStanding";
 import { communityEnabled } from "@/lib/community/flags";
 import { MOD_ACTIONS, moderatorFor, readModLog, readOpenReports, readPendingHolds, runModAction } from "@/lib/community/moderation";
@@ -26,6 +28,15 @@ export const dynamic = "force-dynamic";
  *
  * Words, web addresses, pins and badges stay with the team's console.
  * Nothing here carries a reader's auth id or email.
+ *
+ * Prayer campaigns (1.9.1) wait in the same queue: every campaign is read
+ * before it is public, and readers' reports can hide one again. They are in
+ * the queue, and their four actions are taken, only for a moderator campaigns
+ * are open for (lib/campaigns/opening.ts): nobody while the switch is closed,
+ * when not one campaign table is read, and the team alone while testers try
+ * them. Whoever acts is the same `moderator` below, so an admin's account
+ * moderates a campaign only as it moderates a post, the sign-in code and all
+ * (lib/community/adminStanding.ts).
  */
 
 async function moderator(req: Request) {
@@ -45,17 +56,34 @@ async function handleGET(req: Request) {
 
   if (new URL(req.url).searchParams.get("summary") === "1") {
     const head = (table: string) => admin.from(table).select("id", { count: "exact", head: true });
-    const [holds, reports] = await Promise.all([head("community_text_holds").eq("status", "pending"), head("community_reports").eq("status", "open")]);
+    const [holds, reports, campaigns] = await Promise.all([
+      head("community_text_holds").eq("status", "pending"),
+      head("community_reports").eq("status", "open"),
+      campaignsWaiting(req, admin),
+    ]);
     return NextResponse.json(
-      { waiting: (holds.error ? 0 : (holds.count ?? 0)) + (reports.error ? 0 : (reports.count ?? 0)) },
+      { waiting: (holds.error ? 0 : (holds.count ?? 0)) + (reports.error ? 0 : (reports.count ?? 0)) + campaigns },
       { headers: { "Cache-Control": "private, no-store" } },
     );
   }
 
   try {
-    const [holds, reports, log] = await Promise.all([readPendingHolds(admin), readOpenReports(admin), readModLog(admin, { limit: 60 })]);
+    const [holds, reports, log, campaigns] = await Promise.all([
+      readPendingHolds(admin),
+      readOpenReports(admin),
+      readModLog(admin, { limit: 60 }),
+      campaignQueue(req, admin),
+    ]);
     return NextResponse.json(
-      { holds: holds.rows, reports, log: log.rows, live: { holds: holds.live, log: log.live }, me: { name: who.actor.name, admin: who.actor.admin } },
+      {
+        holds: holds.rows,
+        reports,
+        log: log.rows,
+        live: { holds: holds.live, log: log.live },
+        me: { name: who.actor.name, admin: who.actor.admin },
+        // Absent, not empty, when campaigns are not open for this moderator.
+        ...(campaigns ? { campaigns } : {}),
+      },
       { headers: { "Cache-Control": "private, no-store" } },
     );
   } catch (e) {
@@ -66,8 +94,28 @@ async function handleGET(req: Request) {
   }
 }
 
+type Admin = ReturnType<typeof createAdminClient>;
+
+/** The campaigns waiting to be read and their open reports, or null when campaigns are not open for whoever asks. */
+async function campaignQueue(req: Request, admin: Admin) {
+  if (!(await campaignsCaller(req)).open) return null;
+  const [waiting, reports] = await Promise.all([readWaitingCampaigns(admin), readOpenCampaignReports(admin)]);
+  return { waiting: waiting.rows, reports: reports.rows, live: waiting.live && reports.live };
+}
+
+/** How many of them wait, for the button in Community: one for each campaign waiting, one for each open report. */
+async function campaignsWaiting(req: Request, admin: Admin): Promise<number> {
+  try {
+    const queue = await campaignQueue(req, admin);
+    return queue ? queue.waiting.length + queue.reports.length : 0;
+  } catch {
+    // The count is a hint on a button; the queue itself says when it could not be read.
+    return 0;
+  }
+}
+
 const schema = z.object({
-  action: z.enum(MOD_ACTIONS),
+  action: z.enum([...MOD_ACTIONS, ...CAMPAIGN_MOD_ACTIONS]),
   id: z.string().uuid(),
   reason: z.string().max(300).optional().nullable(),
 });
@@ -87,7 +135,15 @@ async function handlePOST(req: Request) {
   }
   const parsed = schema.safeParse(body);
   if (!parsed.success) return NextResponse.json({ error: "Invalid action." }, { status: 400 });
-  const res = await runModAction(who.admin, who.actor, parsed.data.action, parsed.data.id, parsed.data.reason);
+  const { action, id, reason } = parsed.data;
+  if (isCampaignModAction(action)) {
+    // Not an action at all where campaigns are closed for this moderator.
+    if (!(await campaignsCaller(req)).open) return NextResponse.json({ error: "Invalid action." }, { status: 400 });
+    const res = await runCampaignModAction(who.admin, who.actor, action, id, reason);
+    if (!res.ok) return NextResponse.json({ error: res.error }, { status: res.status });
+    return NextResponse.json({ ok: true });
+  }
+  const res = await runModAction(who.admin, who.actor, action, id, reason);
   if (!res.ok) return NextResponse.json({ error: res.error }, { status: res.status });
   return NextResponse.json({ ok: true });
 }

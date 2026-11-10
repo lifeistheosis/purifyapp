@@ -112,6 +112,8 @@ const COLUMNS: Record<string, string[]> = {
     "author_pro_until", "author_handle", "author_decoration", "author_clergy", "author_name_color",
     "amen_count", "praying_count", "glory_count", "mod_cleared_at",
   ],
+  // 20261001000000_profiles_badges.sql
+  user_badges: ["user_id", "badge", "granted_at", "granted_by", "note"],
   // 20261005000000_community_three.sql
   community_mod_log: [
     "id", "actor_id", "actor_name", "actor_email", "action", "target_kind", "target_id",
@@ -224,6 +226,7 @@ class Query {
   private sortBy = "id";
   private descending = false;
   private one: "maybe" | "single" | null = null;
+  private embeds: { alias: string; table: string; columns: string[] }[] = [];
 
   constructor(
     private w: World,
@@ -231,7 +234,30 @@ class Query {
   ) {}
 
   select(columns = "*") {
-    for (const c of columns.split(",").map((s) => s.trim())) if (c && c !== "*") this.named.add(c);
+    // Commas inside an embedded read's brackets belong to it: "a, b:t(c, d)" is two parts.
+    const parts: string[] = [];
+    let depth = 0;
+    let part = "";
+    for (const ch of columns) {
+      if (ch === "(") depth++;
+      if (ch === ")") depth--;
+      if (ch === "," && depth === 0) {
+        parts.push(part);
+        part = "";
+      } else part += ch;
+    }
+    parts.push(part);
+    for (const raw of parts) {
+      const c = raw.trim();
+      if (!c || c === "*") continue;
+      // PostgREST's embedded read, one level: `campaign:prayer_campaigns(id, title)`
+      // is the row of that table this row's `campaign_id` names, or null.
+      const embed = /^(\w+):(\w+)\(([^()]*)\)$/.exec(c);
+      if (embed) {
+        this.embeds.push({ alias: embed[1], table: embed[2], columns: embed[3].split(",").map((x) => x.trim()).filter(Boolean) });
+        this.named.add(`${embed[1]}_id`);
+      } else this.named.add(c);
+    }
     return this;
   }
   insert(values: Row) {
@@ -283,6 +309,10 @@ class Query {
   }
   gte(column: string, value: unknown) {
     return this.where(column, (v) => v != null && String(v) >= String(value));
+  }
+  /** Strictly before: a null is before nothing, as in SQL. */
+  lt(column: string, value: unknown) {
+    return this.where(column, (v) => v != null && String(v) < String(value));
   }
   /** PostgREST's not: `not("col", "in", "(a,b)")` and `not("col", "is", null)`. */
   not(column: string, operator: string, value: unknown) {
@@ -357,7 +387,17 @@ class Query {
     if (this.op === "select") {
       const sorted = hit().sort((a, b) => String(a[this.sortBy]).localeCompare(String(b[this.sortBy])) * (this.descending ? -1 : 1));
       const [from, to] = this.window;
-      return { data: copy(sorted.slice(from, to + 1).slice(0, this.w.maxRows)), error: null };
+      const found = copy(sorted.slice(from, to + 1).slice(0, this.w.maxRows));
+      for (const e of this.embeds) {
+        const known = COLUMNS[e.table]?.filter((c) => !(this.w.missing[e.table] ?? []).includes(c));
+        const unknown = e.columns.find((c) => !known?.includes(c));
+        if (!known || unknown) return { data: null, error: { code: "42703", message: `column ${e.table}.${unknown ?? "?"} does not exist` } };
+        for (const row of found) {
+          const other = (this.w.tables[e.table] ?? []).find((r) => r.id === row[`${e.alias}_id`]);
+          row[e.alias] = other ? Object.fromEntries(e.columns.map((c) => [c, structuredClone(other[c] ?? null)])) : null;
+        }
+      }
+      return { data: found, error: null };
     }
 
     this.w.calls.writes++;

@@ -23,6 +23,8 @@
  * first, lib/admin/undoDelay.ts).
  */
 
+import { heldWhy, type HeldWhy, type WaitingCampaign } from "@/lib/campaigns/model";
+
 import { openReports, sharedKey, sharedWords, waitsForDecision, type SharedPageIn } from "./sharedPages";
 
 /** How long a removal waits, with Undo, before it is written. */
@@ -101,6 +103,12 @@ export type QueueSources = {
   reviewReports: ReviewReportIn[];
   /** Shared journal pages with their reports (1.9, admin A1; lib/admin/sharedPages.ts). Absent before the sharing table. */
   sharedPages?: SharedPageIn[];
+  /**
+   * Prayer campaigns waiting to be read (1.9.1, the rework): every campaign
+   * once, before it is public, and again when readers' reports hide it
+   * (lib/campaigns/moderation.ts). Absent while campaigns are closed.
+   */
+  waitingCampaigns?: WaitingCampaign[];
 };
 
 // ── The keys: one per thing ──────────────────────────────────────────────
@@ -159,6 +167,8 @@ export type QueueRow = {
   /** A picture that came with it, to see what was flagged. */
   picture: string | null;
   actions: QueueAction[];
+  /** Read before the rest, whatever its age: a campaign whose words may mean its writer is in danger. */
+  first?: boolean;
 };
 
 const COMMUNITY = "/api/admin/community";
@@ -177,6 +187,15 @@ const HOLD_WORDS: Record<string, string> = {
   spam: "spam",
   links: "a short link",
   new_account: "a new account's link",
+  reports: "hidden by reports",
+};
+
+/** Why a campaign waits beyond being new, as the filters saw it (lib/campaigns/model.ts, heldWhy). */
+const CAMPAIGN_WHY: Record<HeldWhy, string> = {
+  crisis: "the writer may be in danger",
+  words: "masked words",
+  asks: "asks for money or contact",
+  address: "a street address",
   reports: "hidden by reports",
 };
 
@@ -424,8 +443,56 @@ export function buildQueue(src: QueueSources): QueueRow[] {
     });
   }
 
+  // Prayer campaigns waiting to be read (1.9.1): one row a campaign, the
+  // reports on it folded in, so one hidden by reports is not a second row.
+  const waiting = new Set((src.waitingCampaigns ?? []).map((c) => c.id));
+  for (const c of src.waitingCampaigns ?? []) {
+    const reps = src.campaignReports.filter((r) => r.campaign?.id === c.id);
+    const why = heldWhy(c.held_reason);
+    const hidden = why.includes("reports");
+    const urgent = why.includes("crisis");
+    rows.push({
+      key: campaignKey(c.id, c.id),
+      what: [
+        ...(urgent ? ["Read first: the writer may be in danger"] : []),
+        hidden ? `Hidden by reports · ${plural(reps.length, "report", "reports")}` : "Waiting to be read",
+        "a prayer campaign",
+        ...why.filter((w) => w !== "reports" && w !== "crisis").map((w) => CAMPAIGN_WHY[w]),
+      ].join(" · "),
+      at: oldest([c.created_at, ...reps.map((r) => r.created_at)]),
+      who: { name: c.creator_name, handle: c.creator_handle },
+      text: [c.title, flat(c.details)].filter(Boolean).join(": "),
+      written: null,
+      reasons: tallyReasons(reps.map((r) => r.reason)),
+      note:
+        [
+          c.subject_name ? `For ${c.subject_name}` : null,
+          c.for_whom === "departed" ? "for the reposed" : c.intention,
+          c.days ? `${plural(c.days, "day", "days")}${c.ends_on ? `, to ${c.ends_on}` : ""}` : null,
+        ]
+          .filter(Boolean)
+          .join(" · ") || null,
+      more: null,
+      picture: null,
+      first: urgent,
+      actions: [
+        {
+          id: "approve",
+          label: hidden ? "Show again" : "Approve",
+          tone: "primary",
+          removal: false,
+          calls: [{ url: COMMUNITY, body: { action: "approve_campaign", id: c.id } }],
+          done: hidden ? "Shown again. Reports no longer hide it." : "Approved. It is on the board.",
+        },
+        { id: "remove", label: "Remove campaign", tone: "danger", removal: true, calls: [{ url: COMMUNITY, body: { action: "remove_campaign", id: c.id } }], done: "Removed." },
+      ],
+    });
+  }
+
   for (const [key, reps] of grouped(src.campaignReports, (r) => campaignKey(r.campaign?.id, r.id))) {
     const c = reps[0].campaign;
+    // One that waits has its row above, with these reports in it.
+    if (c && waiting.has(c.id)) continue;
     const gone = !c || c.status === "removed";
     rows.push({
       key,
@@ -484,7 +551,8 @@ export function buildQueue(src: QueueSources): QueueRow[] {
     });
   }
 
-  return rows.sort((a, b) => (a.at < b.at ? -1 : a.at > b.at ? 1 : a.key.localeCompare(b.key)));
+  // Oldest first, but for what must be read before the rest.
+  return rows.sort((a, b) => Number(Boolean(b.first)) - Number(Boolean(a.first)) || (a.at < b.at ? -1 : a.at > b.at ? 1 : a.key.localeCompare(b.key)));
 }
 
 /** The keys the queue would make, for the count beside the page's name and on the rail. */

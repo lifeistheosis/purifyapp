@@ -6,8 +6,18 @@ import { isAdminEmail } from "@/lib/admin/access";
 import { AUTO, logMod, type ModActor, type ModResult } from "@/lib/community/moderation";
 import { AUTO_HIDE_WEIGHT, NEW_ACCOUNT_MS, reportWeight } from "@/lib/community/trust";
 import { staffAmong } from "@/lib/community/trustServer";
+import { removeOwnedUpload } from "@/lib/security/uploadOwners";
 
-import { isOver, type ReportReason } from "./model";
+import {
+  CAMPAIGN_MOD_ACTIONS,
+  isCampaignModAction,
+  isOver,
+  type CampaignModAction,
+  type OpenCampaignReport,
+  type ReportReason,
+  type WaitingCampaign,
+} from "./model";
+import { CAMPAIGN_BUCKET, campaignImage } from "./image";
 import { reworkAbsent } from "./opening";
 
 // Moderating prayer campaigns (the rework of 1.9.1), once, for everyone who
@@ -96,9 +106,28 @@ export async function removeCampaign(admin: SupabaseClient, actor: ModActor, id:
     .update({ status: "removed", removed_reason: reason?.trim().slice(0, 300) || null, removed_by_email: actor.email ?? actor.name, updated_at: at })
     .eq("id", id);
   if (error) return { ok: false, status: 500, error: error.message };
+  await removePicture(admin, id, c.creator_id);
   await closeReports(admin, actor, id, "actioned");
   await logMod(admin, actor, { action: "remove_campaign", target: "campaign", targetId: id, summary: summary(c) });
   return { ok: true };
+}
+
+/**
+ * A campaign of July's may carry a picture, and its file is in a public
+ * bucket: hiding the row leaves the picture at its address for good. So a
+ * removal deletes it, as the team's console always has, and only when it is
+ * provably the creator's own upload (lib/security/uploadOwners.ts). The
+ * removal has succeeded either way; a picture left behind is logged.
+ */
+async function removePicture(admin: SupabaseClient, id: string, creatorId: string): Promise<void> {
+  try {
+    const { data } = await admin.from("prayer_campaigns").select("image_url").eq("id", id).maybeSingle<{ image_url: string | null }>();
+    if (!data?.image_url) return;
+    const outcome = await removeOwnedUpload(admin, CAMPAIGN_BUCKET, campaignImage(data.image_url, process.env.NEXT_PUBLIC_SUPABASE_URL ?? ""), creatorId);
+    if (outcome !== "removed") console.warn("[campaigns] campaign picture not deleted", id, outcome);
+  } catch (e) {
+    console.warn("[campaigns] campaign picture not deleted", id, e instanceof Error ? e.message : String(e));
+  }
 }
 
 /** Put back a campaign that was taken down, cleared, unless its days are over. */
@@ -137,13 +166,10 @@ export async function dismissCampaignReport(admin: SupabaseClient, actor: ModAct
   return { ok: true };
 }
 
-/** The decisions a moderator takes on campaigns, by name, as the queue's buttons send them. */
-export const CAMPAIGN_MOD_ACTIONS = ["approve_campaign", "remove_campaign", "restore_campaign", "dismiss_campaign_report"] as const;
-export type CampaignModAction = (typeof CAMPAIGN_MOD_ACTIONS)[number];
-
-export function isCampaignModAction(v: unknown): v is CampaignModAction {
-  return typeof v === "string" && (CAMPAIGN_MOD_ACTIONS as readonly string[]).includes(v);
-}
+// The decisions a moderator takes on campaigns, by name, are the model's
+// (./model.ts, CAMPAIGN_MOD_ACTIONS), so the moderators' page can name them
+// without reaching into this file, which only the server may load.
+export { CAMPAIGN_MOD_ACTIONS, isCampaignModAction, type CampaignModAction, type OpenCampaignReport, type WaitingCampaign };
 
 /** Run one of them as `actor`. `id` is the campaign's, or the report's for a dismissal. */
 export async function runCampaignModAction(
@@ -270,22 +296,6 @@ export async function maybeHideCampaign(admin: SupabaseClient, campaignId: strin
 
 // ── The queue ───────────────────────────────────────────────────────────────
 
-/** A campaign waiting for a moderator, as the queue shows it: its words, and why it waits. */
-export type WaitingCampaign = {
-  id: string;
-  title: string;
-  intention: string;
-  for_whom: string;
-  subject_name: string | null;
-  details: string | null;
-  days: number | null;
-  ends_on: string | null;
-  creator_name: string | null;
-  creator_handle: string | null;
-  held_reason: string | null;
-  created_at: string;
-};
-
 const WAITING_COLS = "id, title, intention, for_whom, subject_name, details, days, ends_on, creator_name, creator_handle, held_reason, created_at";
 
 /**
@@ -304,20 +314,31 @@ export async function readWaitingCampaigns(admin: SupabaseClient): Promise<{ row
     if (reworkAbsent(error)) return { rows: [], live: false };
     throw new Error(error.message);
   }
-  const rows = (data ?? []) as unknown as WaitingCampaign[];
+  // Projected, not handed on as read: a row carries whatever a later select
+  // adds to it, and this one leaves the server.
+  const rows = ((data ?? []) as unknown as Record<string, unknown>[]).map(
+    (r): WaitingCampaign => ({
+      id: String(r.id),
+      title: String(r.title ?? ""),
+      intention: String(r.intention ?? ""),
+      for_whom: String(r.for_whom ?? ""),
+      subject_name: str(r.subject_name),
+      details: str(r.details),
+      days: typeof r.days === "number" ? r.days : null,
+      ends_on: str(r.ends_on),
+      creator_name: str(r.creator_name),
+      creator_handle: str(r.creator_handle),
+      held_reason: str(r.held_reason),
+      created_at: String(r.created_at ?? ""),
+    }),
+  );
   const urgent = (r: WaitingCampaign) => (r.held_reason ?? "").includes("crisis");
   return { rows: [...rows.filter(urgent), ...rows.filter((r) => !urgent(r))], live: true };
 }
 
-/** A campaign's open reports as the queue shows them: the reason ticked, the words, and the campaign. Never who reported. */
-export type OpenCampaignReport = {
-  id: string;
-  reason: string | null;
-  reason_code: string | null;
-  created_at: string;
-  campaign: { id: string; title: string; status: string; intention: string; subject_name: string | null; details?: string | null; creator_name?: string | null } | null;
-};
+const str = (v: unknown): string | null => (typeof v === "string" && v ? v : null);
 
+/** A campaign's open reports as the queue shows them: the reason ticked, the words, and the campaign. Never who reported. */
 export async function readOpenCampaignReports(admin: SupabaseClient): Promise<{ rows: OpenCampaignReport[]; live: boolean }> {
   const { data, error } = await admin
     .from("prayer_campaign_reports")
@@ -329,5 +350,27 @@ export async function readOpenCampaignReports(admin: SupabaseClient): Promise<{ 
     if (reworkAbsent(error)) return { rows: [], live: false };
     throw new Error(error.message);
   }
-  return { rows: (data ?? []) as unknown as OpenCampaignReport[], live: true };
+  // Projected, as above: never who reported, never whose campaign.
+  const rows = ((data ?? []) as unknown as Record<string, unknown>[]).map((r): OpenCampaignReport => {
+    const embedded = Array.isArray(r.campaign) ? r.campaign[0] : r.campaign;
+    const c = (embedded ?? null) as Record<string, unknown> | null;
+    return {
+      id: String(r.id),
+      reason: str(r.reason),
+      reason_code: str(r.reason_code),
+      created_at: String(r.created_at ?? ""),
+      campaign: c
+        ? {
+            id: String(c.id),
+            title: String(c.title ?? ""),
+            status: String(c.status ?? ""),
+            intention: String(c.intention ?? ""),
+            subject_name: str(c.subject_name),
+            details: str(c.details),
+            creator_name: str(c.creator_name),
+          }
+        : null,
+    };
+  });
+  return { rows, live: true };
 }

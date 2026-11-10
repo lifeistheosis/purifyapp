@@ -5,6 +5,7 @@
 // lib/campaigns/client.ts.
 
 import { apiFetch } from "@/lib/api/client";
+import type { CampaignQueue } from "@/lib/campaigns/model";
 import { parseReactionMap, type ReactionState } from "@/lib/community/reactions";
 import { parseResponseMap, type ResponseCounts, type ResponseKind } from "@/lib/community/responses";
 import type { CommunityPost, CommunityReply } from "./types";
@@ -555,7 +556,14 @@ export type ModLogLine = {
   created_at: string;
 };
 
-export type ModQueue = { holds: ModHold[]; reports: ModReport[]; log: ModLogLine[]; me: { name: string; admin: boolean } };
+export type ModQueue = {
+  holds: ModHold[];
+  reports: ModReport[];
+  log: ModLogLine[];
+  me: { name: string; admin: boolean };
+  /** Prayer campaigns waiting and reported (1.9.1). Absent unless campaigns are open for this moderator. */
+  campaigns?: CampaignQueue;
+};
 
 export async function fetchModQueue(): Promise<{ ok: true; queue: ModQueue } | { ok: false; status: number; error: string }> {
   try {
@@ -569,6 +577,7 @@ export async function fetchModQueue(): Promise<{ ok: true; queue: ModQueue } | {
         reports: Array.isArray(json.reports) ? json.reports : [],
         log: Array.isArray(json.log) ? json.log : [],
         me: json.me ?? { name: "", admin: false },
+        ...(json.campaigns ? { campaigns: json.campaigns } : {}),
       },
     };
   } catch {

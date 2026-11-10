@@ -34,6 +34,7 @@ import {
 } from "@/lib/admin/communityQueue";
 import { MAX_PINNED } from "@/lib/community/pinning";
 import type { SharedPageIn } from "@/lib/admin/sharedPages";
+import type { WaitingCampaign } from "@/lib/campaigns/model";
 
 import { AmbassadorsPart } from "../community/Ambassadors";
 import { QueueList } from "../community/Queue";
@@ -68,6 +69,8 @@ type CommunityData = {
   kitchen?: KitchenBlock;
   /** Reported shared journal pages (1.9, admin A1); absent before the sharing table. */
   sharedPages?: SharedPageIn[];
+  /** Prayer campaigns waiting to be read (1.9.1); absent while campaigns are closed. */
+  waitingCampaigns?: WaitingCampaign[];
 };
 
 export type CommunityPart = "waiting" | "announcements" | "shared" | "filter" | "kitchen" | "ambassadors";
@@ -189,6 +192,7 @@ export function CommunityPage({ part: first = "waiting" }: { part?: CommunityPar
         recipeReports: community.recipeReports,
         reviewReports: community.kitchen?.reviewReports ?? [],
         sharedPages: community.sharedPages ?? [],
+        waitingCampaigns: community.waitingCampaigns ?? [],
       })
     : [];
   const waitingNow = rows.filter((r) => !decided[r.key] && !removals.pending[r.key]).length;

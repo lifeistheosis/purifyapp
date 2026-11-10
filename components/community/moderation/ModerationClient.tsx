@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useCallback, useEffect, useState } from "react";
 
+import { CampaignModeration, campaignsWaitingCount } from "@/components/campaigns/CampaignModeration";
 import { useTranslate } from "@/components/i18n/MessagesProvider";
 import { ConfirmDialog } from "@/components/ui/ConfirmDialog";
 import { SkeletonList } from "@/components/ui/Skeleton";
@@ -130,7 +131,7 @@ export function ModerationClient() {
           <div role="tablist" aria-label={t("mod.title")} className="mt-6 inline-flex gap-1 rounded-pill border border-paper/12 bg-paper/[0.03] p-1">
             {(
               [
-                ["waiting", t("mod.tabWaiting", { count: queue.holds.length + queue.reports.length })],
+                ["waiting", t("mod.tabWaiting", { count: queue.holds.length + queue.reports.length + campaignsWaitingCount(queue.campaigns) })],
                 ["log", t("mod.tabLog")],
               ] as ["waiting" | "log", string][]
             ).map(([id, label]) => (
@@ -158,9 +159,13 @@ export function ModerationClient() {
 
           {tab === "waiting" ? (
             <div className="mt-5 space-y-3">
-              {queue.holds.length === 0 && queue.reports.length === 0 ? (
+              {queue.holds.length === 0 && queue.reports.length === 0 && campaignsWaitingCount(queue.campaigns) === 0 ? (
                 <p className="py-10 text-center font-sans text-ui text-paper/55">{t("mod.nothing")}</p>
               ) : null}
+              {/* Prayer campaigns waiting to be read, and those reported (1.9.1):
+                  first, since one may mean its writer is in danger. Nothing
+                  unless campaigns are open for this moderator. */}
+              <CampaignModeration queue={queue.campaigns} onDone={load} onNotice={setNotice} />
               {queue.holds.map((h) => (
                 <HoldCard key={h.id} hold={h} busy={busy} onAct={ask} />
               ))}
@@ -422,6 +427,10 @@ const LOGGED = [
   "clergy_verified",
   "clergy_declined",
   "clergy_requested",
+  "approve_campaign",
+  "remove_campaign",
+  "restore_campaign",
+  "dismiss_campaign_report",
 ] as const;
 
 function LogList({ rows }: { rows: ModLogLine[] }) {

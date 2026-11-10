@@ -6,6 +6,8 @@ import { sendPlannerDigest } from "@/lib/admin/plannerDigest";
 import { sendWeeklyLetter } from "@/lib/admin/weeklyLetter";
 import { pruneReports } from "@/lib/ops/prune";
 import { clearMatured, runAmbassadorPayouts } from "@/lib/ambassadors/payouts";
+import { campaignsInBuild } from "@/lib/campaigns/flags";
+import { runCampaignUpkeep } from "@/lib/campaigns/upkeep";
 import { runEmailJobs } from "@/lib/email/jobs";
 import { sweepAbandonedCheckouts, type SweepReport } from "@/lib/shop/abandonedSweep";
 import { sendCartReminders } from "@/lib/shop/cartReminderSweep";
@@ -129,6 +131,14 @@ export async function runMaintenance(admin: SupabaseClient, now: number = Date.n
   const prune = await every("pruneReports", 20 * 3_600_000, now, () => pruneReports(admin, new Date(now)));
   if (prune.ran) lastPrune = { at: new Date(now).toISOString(), ok: prune.ok, detail: prune.detail, error: prune.error };
   report.pruneReports = prune.ran ? prune : { ran: false, last: lastPrune };
+  // Prayer campaigns (lib/campaigns/upkeep.ts): a campaign past its last day
+  // is written down as ended, and what the privacy lines say is deleted is
+  // deleted (thirty days after it ended, or after it was removed). Hourly,
+  // and not at all while campaigns are closed, when not one of their rows is
+  // read or written.
+  if (campaignsInBuild()) {
+    report.campaignUpkeep = await every("campaignUpkeep", 55 * 60_000, now, () => runCampaignUpkeep(admin, now));
+  }
   // The Monday email (lib/admin/weekly.ts): last week in numbers, to the
   // owner, from the same morning hour. The email log keys it by week, so it
   // goes once whatever the heartbeat or a restart does.
