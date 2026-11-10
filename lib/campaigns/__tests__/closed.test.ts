@@ -3,13 +3,18 @@
 // switch closed and no new tables, the app behaves exactly as today. A test
 // holds that.").
 //
-// The rework is built behind a switch that stays committed closed until
-// release day, and it ships in 1.9 (his later word of the same day: "ok to
-// all ensure its all in v1.9"). What makes building it beside the rest of
-// 1.9 safe is one constant (lib/campaigns/flags.ts) and the handful of
-// places that ask it. This file holds each of them:
+// The rework is built behind a switch, and it ships in 1.9 (his later word
+// of the same day: "ok to all ensure its all in v1.9"). What makes building
+// it beside the rest of 1.9 safe is one constant (lib/campaigns/flags.ts)
+// and the handful of places that ask it. This file holds each of them.
 //
-//   the switch   committed closed
+// The constant was committed closed until 2026-11-10, when it moved to
+// "testers" on the branch at his word ("exactly I meant it should be in my
+// build"): release day's step 1 done early, for the test web and a test
+// build. Closed is still a position, and the one the main web is in until
+// the merge, so every case below sets it and holds what closed means.
+//
+//   the switch   committed at testers, never open; closed set case by case
 //   the server   every route answers 404 and reads nothing
 //                (routes.test.ts, "closed: every route answers 404 and the
 //                database is never asked", which this file does not repeat)
@@ -124,10 +129,23 @@ afterEach(() => {
 });
 
 describe("the switch", () => {
-  it("is committed closed", () => {
-    // The constant itself, not what a test set it to.
-    expect(CAMPAIGNS_OPENING).toBe("closed");
-    expect(code("lib/campaigns/flags.ts")).toContain('export const CAMPAIGNS_OPENING: CampaignsOpening = "closed" as CampaignsOpening;');
+  it("is committed at testers, release day's step 1 done early, and never open", () => {
+    // The constant itself, not what a test set it to. His word of 2026-11-10,
+    // "exactly I meant it should be in my build": a test build has the
+    // campaign pages, and the test web answers for its admins. Open, for
+    // every reader, is one line that waits for his word.
+    expect(CAMPAIGNS_OPENING).toBe("testers");
+    expect(CAMPAIGNS_OPENING).not.toBe("open");
+    expect(code("lib/campaigns/flags.ts")).toContain('export const CAMPAIGNS_OPENING: CampaignsOpening = "testers" as CampaignsOpening;');
+    // As committed: in the build, so its screens ask the website; and told
+    // to nobody, so no page that sells Purify names campaigns yet.
+    __setCampaignsOpening(CAMPAIGNS_OPENING);
+    expect(campaignsInBuild()).toBe(true);
+    expect(campaignsEnabled()).toBe(false);
+  });
+
+  it("closed is still a position: nothing in the build, and open for nobody", () => {
+    __setCampaignsOpening("closed");
     expect(campaignsInBuild()).toBe(false);
     expect(campaignsEnabled()).toBe(false);
   });

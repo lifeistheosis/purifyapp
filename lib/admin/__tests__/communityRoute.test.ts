@@ -1,4 +1,4 @@
-import { beforeEach, describe, expect, it, vi } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 /**
  * /api/admin/community, run for real with the session, the database and the
@@ -10,6 +10,18 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
  *     one per post however many reports name it;
  *   - Dismiss keeps a record: a campaign report the route deletes is
  *     written to the moderation log, with its words, first.
+ *
+ * Run with prayer campaigns closed, the position these cases were written
+ * for and the one the main web is in until 1.9 merges: July's report table
+ * keeps no state, so a report set aside is deleted, and the rail counts
+ * every row of it. The branch's switch has said "testers" since 2026-11-10
+ * (lib/campaigns/flags.ts), so the position is set here and not assumed.
+ *
+ * NOT HELD HERE, AND NOT YET ANYWHERE: this handler in a build that has the
+ * rework. There it hands a campaign decision to lib/campaigns/moderation.ts
+ * and reads the open reports alone; that library is held by
+ * lib/campaigns/__tests__/moderating.test.ts, but no test runs this handler
+ * in that position.
  */
 
 type Row = Record<string, unknown>;
@@ -60,6 +72,7 @@ vi.mock("@/lib/supabase/admin", () => ({
 }));
 
 import { GET, POST } from "@/app/api/admin/community/route";
+import { CAMPAIGNS_OPENING, __setCampaignsOpening } from "@/lib/campaigns/flags";
 
 const summary = () => GET(new Request("https://purifyapp.net/api/admin/community?summary=1"));
 const act = (body: unknown) =>
@@ -68,7 +81,12 @@ const act = (body: unknown) =>
 const POST_ID = "11111111-1111-4111-8111-111111111111";
 const REPORT_ID = "33333333-3333-4333-8333-333333333333";
 
+afterEach(() => {
+  __setCampaignsOpening(CAMPAIGNS_OPENING);
+});
+
 beforeEach(() => {
+  __setCampaignsOpening("closed");
   state.admin = { id: "u-owner", email: "owner@example.com" };
   state.deleted = [];
   state.logged = [];

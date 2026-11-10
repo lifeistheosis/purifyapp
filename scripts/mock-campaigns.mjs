@@ -6,11 +6,15 @@
 // browser, with made-up campaigns. Nothing leaves the machine: the shell
 // server aborts every other origin, and Playwright answers the preflights.
 //
-// THE SWITCH MUST BE OPEN IN THE EXPORT THIS READS. Campaigns are committed
-// closed (lib/campaigns/flags.ts), and a closed export has none of these
-// screens. So, in a scratch copy or with an edit that is never committed:
-// set CAMPAIGNS_OPENING to "open", run `npm run build:android`, put the
-// constant back, then:
+// THE EXPORT THIS READS IS THE COMMITTED ONE. The switch has said "testers"
+// on the branch since 2026-11-10 (lib/campaigns/flags.ts), so a plain
+// `npm run build:android` has the campaign pages, and they show for whoever
+// the website says yes to: here, this script's own answers. (While the
+// switch was committed closed, a scratch build with it set to "open" was
+// needed, and a closed export has none of these screens.) Two quiet places
+// read the constant itself and stay hidden in a testers build, the Discover
+// menu's row on a wide screen and the free plan's line; no still or flow
+// here draws them. Then:
 //
 //   node scripts/mock-campaigns.mjs [scale] [only] [folder]   the stills
 //   WALK=1 node scripts/mock-campaigns.mjs                    the walk

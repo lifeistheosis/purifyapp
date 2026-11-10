@@ -2791,3 +2791,41 @@ web and a test build to show campaigns (not changed; the arbiter's and his
 call); the usual Supabase values, the admin list and the test web's own
 address; every migration in name order on the empty project; no job they
 cannot do without; and nothing of theirs that emails or notifies anyone.
+
+## 17. The switch at testers on the branch (2026-11-10)
+
+**His word, through the arbiter:** "exactly I meant it should be in my
+build". He wants campaigns in his test build to try, and chose the test web
+for it. So `CAMPAIGNS_OPENING` says "testers" on the branch from this
+commit. **This is release day's step 1 done early** (10.2): the position the
+merge was always to carry.
+
+**What it changes, and what it does not:**
+
+- **The main web: nothing.** It runs main, where the switch says closed
+  until the merge. A build that talks to it asks once whether campaigns are
+  open, is told no, and shows nothing.
+- **A build cut from the branch has the campaign pages.** They show only for
+  a reader the website says yes to.
+- **The test web answers yes for the accounts it names as admins**
+  (`ADMIN_EMAILS` there), once the three SQL files have run on its own
+  database. For anyone else it is a page not found, as before.
+- **Open, for every reader, is still one line that waits for his word.** The
+  test holds the constant to "testers" and never "open"
+  (`lib/campaigns/__tests__/closed.test.ts`).
+- **Closed is still a position.** Every case that holds what closed means
+  sets it; none assumes it. One test outside campaigns leaned on closed as
+  the default, the admin panel's community route
+  (`lib/admin/__tests__/communityRoute.test.ts`); it now sets the position
+  it was written for. **A gap this showed:** no test runs that handler in a
+  build that has the rework. The library it hands to is held
+  (`moderating.test.ts`); the handler in that position is not.
+- **The stills and the walk** run on the committed export now
+  (`scripts/mock-campaigns.mjs`); no scratch build with the switch opened is
+  needed.
+
+**113 and 129 are answered (his word, the same day):** campaigns need no
+priest and no lawyer. The Terms say campaigns are readers' own, starting one
+carries the acceptance, and a plain safety line points a reader in danger to
+emergency help. Opening for every reader waits on his walk on the test web
+and his OK of those words, and on nothing else.

@@ -41,7 +41,13 @@
 // them only when the server answers (lib/campaigns/useCampaignsOpen.ts), so
 // an app follows the website with no new store build.
 //
-// RELEASE DAY, IN ORDER. It stays closed on the branch until then.
+// RELEASE DAY, IN ORDER. Step 1's position has been on the branch since
+// 2026-11-10, done early at his word ("exactly I meant it should be in my
+// build"): a test build then has the campaign pages, and the test web
+// answers for the accounts it names as admins (CLAUDE.md, "The test web and
+// the main web"). The main web is untouched by that. It runs main, where the
+// switch says closed until the merge, and a build that talks to it is told
+// no and shows nothing.
 //
 //   1. The merge to main carries it at testers: the website has the server
 //      side, for his account alone, and the SQL he signed runs.
@@ -64,15 +70,20 @@
 // should step 3 have to wait, the build's notes for review say plainly what
 // is in it and switched off.
 //
-// BEFORE IT LEAVES CLOSED: the SQL of the rework (docs/1.9-build/sql/
-// campaigns-1-rework.sql) must have run on production, which is the owner's
-// to sign. Until it has, the new columns are absent and the routes answer 404
-// whatever this says (lib/campaigns/opening.ts).
+// WHERE IT IS NOT CLOSED, THE REWORK'S SQL MUST HAVE RUN: the three files he
+// signed (supabase/migrations, the three campaign files of 2026-11-10). On
+// the test web's own database, before a test build is walked; on production,
+// at the merge, which runs them. Until they have, the new columns are absent
+// and the routes answer 404 whatever this says (lib/campaigns/opening.ts).
 
 export type CampaignsOpening = "closed" | "testers" | "open";
 
-/** The switch. Closed since 2026-08-26; the rework is built behind it. */
-export const CAMPAIGNS_OPENING: CampaignsOpening = "closed" as CampaignsOpening;
+/**
+ * The switch. Closed from 2026-08-26 to 2026-11-10; at testers on the branch
+ * since, which is what main takes at the merge. It never says open here
+ * without his word (lib/campaigns/__tests__/closed.test.ts holds that).
+ */
+export const CAMPAIGNS_OPENING: CampaignsOpening = "testers" as CampaignsOpening;
 
 let opening: CampaignsOpening = CAMPAIGNS_OPENING;
 
