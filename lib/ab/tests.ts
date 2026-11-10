@@ -125,7 +125,9 @@ export const ACCOUNT_PLACE: AbTest = {
  * only as the locks they come upon ("locks", as built), or also once, as one
  * calm card on Today that shows the one Plus feature fitting what they said
  * they came for and opens its Try it ("card"). Never a reader who is back,
- * never where Plus is not sold, never the newcomer's road.
+ * never a reader who has Plus (the app's own gate says, never the kind of
+ * phone: an iPhone reader without Plus is in this test like any other),
+ * never the newcomer's road.
  *
  * Judged by Plus bought; readers coming back must not get clearly worse. A
  * purchase is rare, so this needs many readers and may well end unsettled,

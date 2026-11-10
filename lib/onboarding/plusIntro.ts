@@ -10,9 +10,12 @@
 //
 //   - a week after the questions ended, never sooner, and never while a step
 //     of the first week is still up on Today;
-//   - only a reader who does not have Plus where Plus is sold. Where it is
-//     not sold (an iPhone today) the app answers "has Plus" for everyone, so
-//     no card is drawn there, and while the answer is not yet known, none;
+//   - only a reader who does not have Plus, as the app's own gate says
+//     (lib/entitlements, through usePlusFeatures), never by the kind of
+//     phone: Plus is locked and sold on Android, on iPhone and on the
+//     website, so a reader without it meets the card on any of them. A
+//     build that does not enforce Plus answers "has Plus" for everyone, so
+//     no card is drawn there; and while the answer is not yet known, none;
 //   - never a reader who is back and was asked the new questions: they have
 //     met the locks already, and the test asks about new readers;
 //   - never the newcomer's road, and never a reader with no road: they meet

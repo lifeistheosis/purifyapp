@@ -293,3 +293,12 @@ describe("while testing", () => {
     else expect(sent).toMatchObject({ background: "orthodox" });
   });
 });
+
+describe("the Testers mark and a sheet", () => {
+  it("steps aside while a sheet is open, so it never covers a sheet's own buttons", async () => {
+    const { readFileSync } = await import("node:fs");
+    const css = readFileSync("app/globals.css", "utf8");
+    expect(css).toContain('body[data-overlay-open="1"] .testers-mark { display: none; }');
+  });
+});
+

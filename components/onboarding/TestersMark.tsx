@@ -17,7 +17,8 @@ import { useTesting } from "@/lib/onboarding/useTesting";
  *
  * At the foot of the screen on the reading side, over the tab bar and the
  * player (app/globals.css, "Testers mode"), under the onboarding, which has
- * its own way out.
+ * its own way out. It steps aside while a sheet is open, so it never covers
+ * a sheet's own buttons.
  */
 export function TestersMark() {
   const { t } = useTranslate();

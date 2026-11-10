@@ -61,8 +61,8 @@ describe("the card's moment", () => {
     expect(plusIntroDue(reader({ weekUp: true }))).toBe(false);
   });
 
-  it("never comes to a reader who has Plus, where Plus is not sold, or before the answer is known", () => {
-    // Where Plus is not sold the app answers true for everyone (lib/entitlements/usePlusFeatures.ts).
+  it("never comes to a reader who has Plus, or before the answer is known", () => {
+    // A build that does not enforce Plus answers true for everyone (lib/entitlements/usePlusFeatures.ts).
     expect(plusIntroDue(reader({ plus: true }))).toBe(false);
     expect(plusIntroDue(reader({ plus: null }))).toBe(false);
   });
@@ -101,6 +101,14 @@ describe("the card as it is drawn", () => {
     expect(card).toContain("onClose={markPlusIntroDone}");
     expect(sheet).toContain('if (own && opts?.tryNow) {');
     expect(sheet).toContain('countPlusStep(next, "tried"); beginTry(own.id); setTrying(own.id);');
+  });
+
+  it("asks the app's own gate who has Plus, and never the kind of phone", () => {
+    // Plus is locked and sold on iPhone too (since 1.8): the card must not be kept from it.
+    expect(card).toContain("const plus = usePlusFeatures();");
+    for (const word of ["nativePlatform", "isIOSClient", "isNativeClient", "ios", "android"]) expect(card, word).not.toContain(word);
+    const rules = readFileSync("lib/onboarding/plusIntro.ts", "utf8");
+    expect(rules).not.toMatch(/from "@\/lib\/platform/);
   });
 
   it("puts no timer, no price and no count of other readers on it", () => {

@@ -75,13 +75,30 @@ for (const [road, answers] of ROADS) {
       const opened = await sheet.waitFor({ timeout: 20000 }).then(() => true, () => false);
       await page.waitForTimeout(1500);
       say(opened, "the tap opens the Plus sheet");
+      // Testers mode's own mark steps aside while a sheet is open, so it never covers the sheet's buttons.
+      say(!(await page.locator(".testers-mark").isVisible()), "the Testers mark steps aside while the sheet is open");
       say((await page.locator(CARD).count()) === 0, "tapped, the card is gone");
       if (STILLS && opened) await page.screenshot({ path: path.join(STILLS, "tried.png") });
       await go(page, "/");
       await page.waitForTimeout(2500);
       say((await page.locator(CARD).count()) === 0, "and it does not come back");
+      say(await page.locator(".testers-mark").isVisible(), "the Testers mark is back once the sheet is closed");
     }
   }
+  await ctx.close();
+}
+
+// On an iPhone: the same card. Plus is locked and sold there too, and the
+// card follows the app's own gate, never the kind of phone.
+{
+  const { ctx, page } = await phone({ "purify:background": "catholic", "purify:level": "inquirer", ...TESTING });
+  await ctx.addInitScript(() => {
+    window.webkit = { messageHandlers: { bridge: { postMessage() {} } } };
+    window.Capacitor = { getPlatform: () => "ios", isNativePlatform: () => true };
+  });
+  await go(page, "/");
+  const up = await page.locator(CARD).waitFor({ timeout: 30000 }).then(() => true, () => false);
+  say(up && (await page.evaluate(() => window.Capacitor?.getPlatform?.())) === "ios", "on an iPhone: the card is drawn there too");
   await ctx.close();
 }
 

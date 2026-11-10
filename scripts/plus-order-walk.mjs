@@ -12,9 +12,11 @@
 //
 // The second version is reached the way an admin reaches it: Testers mode,
 // with the version picked. The export has to hold Plus's locks, so it is
-// built as the store's is:
+// built as the store's is, with Plus enforced and a key to sell it by
+// (lib/entitlements/entitlements.ts: no key, no lock). The key here is a
+// stand-in; nothing is bought and no store is reached:
 //
-//   NEXT_PUBLIC_PLUS_ENFORCED_ANDROID=1 npm run build:android, then:
+//   NEXT_PUBLIC_PLUS_ENFORCED_ANDROID=1 NEXT_PUBLIC_REVENUECAT_ANDROID_KEY=walk npm run build:android
 //   node scripts/plus-order-walk.mjs [--stills dir]
 
 import fs from "node:fs";
@@ -53,8 +55,11 @@ async function openFromLock(page) {
   await go(page, "/plans/john");
   const begin = page.getByRole("button", { name: "Begin", exact: true }).first();
   if (!(await begin.waitFor({ timeout: 30000 }).then(() => true, () => false))) return false;
+  // The lock is drawn once the app knows this reader has no Plus.
+  await page.waitForTimeout(1500);
   await begin.click();
   const opened = await page.locator(SHEET).first().waitFor({ timeout: 20000 }).then(() => true, () => false);
+  if (!opened) console.log("  the sheet did not open: was the export built with Plus enforced and a key? (see the head of this file)");
   await page.waitForTimeout(1800);
   return opened;
 }

@@ -585,9 +585,11 @@ Keep all of that. Four additions:
 2. **One calm introduction after the first week**, a card on Today that shows
    the one Plus feature that fits what this reader said they wanted, opening its
    Try it screen (`components/billing/PlusTry.tsx`, which "shows and never
-   grants"). Shown once. Dismissed, it is gone. Never where Plus is not sold
-   (`lib/entitlements/entitlements.ts`: iOS has all of Plus free today, so an
-   iPhone sees no card).
+   grants"). Shown once. Dismissed, it is gone. Never to a reader who has
+   Plus, which the app's own gate says (`lib/entitlements`), never the kind of
+   phone. (Corrected 2026-11-10: this line said an iPhone has all of Plus free
+   and sees no card. Plus has been locked and sold on iPhone since 1.8, so an
+   iPhone reader without Plus sees the card like anyone else.)
 3. **The feature that fits the road:**
 
 | Road | Shown | Why |
@@ -723,7 +725,8 @@ baselines turn out to be:
   three point change in day 7 return takes months. So test bold changes (a
   different first screen, the account step moved), never a button's wording.
 - **Plus cannot be tested on purchases yet.** Thousands of exposed readers per
-  arm are needed and Plus is sold on Android and the website only. Judge Plus
+  arm are needed. (Corrected 2026-11-10: this said Plus is sold on Android
+  and the website only; it is sold on iPhone too, since 1.8.) Judge Plus
   tests on the step before the purchase (the sheet opened, the trial begun) and
   treat purchases as a tally to watch, not a verdict.
 - **Rules that keep a small test honest.** Decide the one outcome and the number
@@ -1589,8 +1592,18 @@ a real reader's months of data. His install over the app he has is that check.
 reader's questions, with the one Plus feature that fits their road, opening
 its Try it (`lib/onboarding/plusIntro.ts`, `RoadCards.tsx`, `PlusIntroCard`).
 The words are the feature's own, as the Plus sheet says them; none was
-written. Never a reader who is back, never where Plus is not sold, never the
+written. Never a reader who is back, never a reader who has Plus, never the
 newcomer's road, never while a step of the week is up. Once.
+
+Who "has Plus" is read from the app's own gate (`lib/entitlements`, through
+`usePlusFeatures`), never from the kind of phone. A correction of 2026-11-10,
+from Admin: sections 3.7 and 4.5 above say an iPhone has all of Plus free and
+would see no card. That was true once and is not: Plus has been locked and
+sold on iPhone since 1.8. So an iPhone reader without Plus meets the card
+like anyone else, and the code needed no change, only these words. Where a
+build does not enforce Plus at all, the gate answers "has Plus" for everyone
+and no card is drawn there. The test (`PLUS_INTRODUCED`) counts iPhone
+devices too: a device is in it wherever the card could be due.
 
 | Road | The feature |
 |---|---|
@@ -1635,3 +1648,18 @@ Sizes are working days of build, tests and stills, not his review rounds.
 Not code, still open: a reminder seen arriving on an Android phone (F-21,
 his 89); a native reader for the 20 translations and the German privacy
 sentences; his hour in Admin, Onboarding (114).
+
+**The Plus sheet's order.** Built the same way (`components/billing/
+UpgradeModal.tsx`; `lib/ab/tests.ts`, `PLUS_SHEET_ORDER`; shut behind
+`PLUS_ORDER_LIVE`). One thing changed from the plan he read, which said "the
+tapped feature first, or the plans first": the plans already stand at the
+foot of the sheet at all times, so "the plans first" was no difference at
+all. The real pair is the sheet as built, on its list with the tapped
+feature first ("list"), against the sheet opening straight on that feature
+working, its own Try it, with the list one tap back ("working"). The same
+price, the same words, the same close. Only for a lock with a feature
+behind it. Judged by the button to subscribe tapped (a new milestone,
+`plus_pay`); Plus bought and readers coming back guarded; about 1,060 a
+version to tell 5 in 100 from 8 in 100. Never on a day the Plus card's test
+runs. Held by `lib/ab/__tests__/tests.test.ts` and
+`node scripts/plus-order-walk.mjs`.

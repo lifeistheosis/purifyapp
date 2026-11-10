@@ -5908,6 +5908,11 @@ html[data-reading-mode="parchment"] .ob-on-mark {
 .testers-mark {
  bottom: calc(env(safe-area-inset-bottom, 0px) + var(--tab-bar-h) + var(--now-playing-h) + 12px);
 }
+/* It steps aside while a sheet is open, and comes back when the sheet closes:
+   it floated over the button at the foot of the Plus sheet, the one place an
+   admin most needs to see as a reader does. The sheet has its own close, so
+   the way out of Testers mode is one tap further and never lost. */
+body[data-overlay-open="1"] .testers-mark { display: none; }
 .testers-dot { box-shadow: 0 0 8px rgb(255 255 255 / 0.8); }
 html[data-reading-mode="parchment"] .testers-dot { box-shadow: none; }
 
