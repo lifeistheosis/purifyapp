@@ -1021,20 +1021,38 @@ questions is greeted "We updated our onboarding" and asked the new ones once.
 
 Send back: "roads on", or "roads off".
 
-On "roads on", the chat that pushes changes one thing in the release
-commit: the first test gets its days again in `lib/ab/tests.ts`,
-`ACCOUNT_PLACE`. Its first day becomes release day and its last day twelve
-weeks later (84 days); today they count from 10 November, when it was
-switched on for the test builds. A unit test refuses any other span.
+Two Plus tests ride with the roads, each on by your word: the one Plus card
+on Today after a new reader's first week ("yes Plus card"), and the order
+the Plus sheet opens in when a reader taps a lock, on its list or on that
+feature working ("yes to all suggested", call 9).
+
+On "roads on", the chat that pushes sets the days of all three tests again
+in the release commit, together, in `lib/ab/tests.ts`:
+
+- `ACCOUNT_PLACE` (where a new reader is offered an account): its first day
+  becomes release day, its last day twelve weeks later (84 days).
+- `PLUS_INTRODUCED` (the Plus card): the same two days.
+- `PLUS_SHEET_ORDER` (the sheet's order): from the day after the card's
+  last day, for 84 days. The two Plus tests never run on the same day.
+
+Today they count from 10 November, when they were switched on for the test
+builds. Unit tests refuse any other span and any day the two Plus tests
+share; nothing but this step makes the first day release day.
 
 On "roads off", one line changes in the release commit: `ROADS_LIVE` turns
 to `false` in `lib/onboarding/flags.ts`. 1.9 then ships with the welcome
-questions readers have today, nobody is asked again, and the first test does
-not run, since it runs only with the roads.
+questions readers have today, nobody is asked again, and neither the first
+test nor the Plus card runs, since both are for a reader with a road. The
+sheet's order is not part of the onboarding and stays on.
 
-Either way the website goes before the apps (R2, then R4 and R5): the first
-test's shares and its counts are kept by the website, so it must be serving
-1.9 before any phone asks it which version to show.
+Either Plus part can also be turned off alone, by your word: one line each
+in `lib/onboarding/flags.ts`, `PLUS_INTRO_LIVE` (the card) or
+`PLUS_ORDER_LIVE` (the sheet's order), turned to `false`. A test whose
+switch is off runs on no day.
+
+Either way the website goes before the apps (R2, then R4 and R5): the
+tests' shares and counts are kept by the website, so it must be serving 1.9
+before any phone asks it which version to show.
 
 ### R1. Two SQL pastes, just before the push
 

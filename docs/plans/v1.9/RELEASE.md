@@ -132,6 +132,14 @@ Drafted now, sent later. The owner sends every one. How a drop works is in
       refuses `true` while the server's switch is off. While it is `false`,
       the apps draw no picture and no picture control, whatever the server
       says, and the review notes' part B says so.
+- [ ] The tests' days (OWNER-STEPS R0c, by his "roads on" or "roads off"):
+      on "roads on", in `lib/ab/tests.ts`, `ACCOUNT_PLACE` and
+      `PLUS_INTRODUCED` begin on the release day and end 84 days later, and
+      `PLUS_SHEET_ORDER` begins the day after those end, for 84 days; on
+      "roads off", `ROADS_LIVE` is `false` in `lib/onboarding/flags.ts`
+      instead. The unit tests hold the spans and that the two Plus tests
+      never share a day; only this step makes the first day the release
+      day.
 - [ ] `git fetch origin`, rebase on `origin/main`, `node scripts/release.mjs back`
       again, and section 4's check again.
 - [ ] Push `main`. That is the deploy.
