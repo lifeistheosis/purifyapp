@@ -5,7 +5,7 @@ import { CAMPAIGN_BUCKET, campaignImage } from "@/lib/campaigns/image";
 import { isJulyRow } from "@/lib/campaigns/model";
 import { campaignsCaller } from "@/lib/campaigns/opening";
 import { deletePicturesOf } from "@/lib/campaigns/pictures";
-import { forReader, hiddenFor, mayRead, readCampaignRow } from "@/lib/campaigns/server";
+import { circleOf, forReader, hiddenFor, mayOpen, readCampaignRow } from "@/lib/campaigns/server";
 import { ipKey, rateLimited } from "@/lib/security/ratelimit";
 import { campaignStatusSchema } from "@/lib/security/schemas";
 import { removeOwnedUpload } from "@/lib/security/uploadOwners";
@@ -21,9 +21,11 @@ const PRIVATE = { "Cache-Control": "private, no-store", Vary: "Origin, Authoriza
 
 /**
  * One campaign, for its page. Who may read it is lib/campaigns/server.ts,
- * mayRead: a held one is its creator's alone, a removed one nobody's, and
- * one whose creator this reader has blocked is not there for them. What they
- * are handed is publicCampaign()'s projection, with whether they started it.
+ * mayRead: a held one is its creator's alone, a removed one nobody's, one
+ * kept to a circle its members' and its creator's, and one whose creator
+ * this reader has blocked is not there for them. What they are handed is
+ * publicCampaign()'s projection, with whether they started it and, for one
+ * kept to a circle, that circle's name.
  */
 async function handleGET(req: Request, id: string) {
   const who = await campaignsCaller(req);
@@ -33,9 +35,9 @@ async function handleGET(req: Request, id: string) {
   if (!found.ok) return found.why === "absent" ? NOT_FOUND() : NextResponse.json({ error: "The campaign could not be read." }, { status: 500 });
   const row = found.value;
   const userId = who.user?.id ?? null;
-  if (!row || !mayRead(row, userId)) return NOT_FOUND();
+  if (!row || !(await mayOpen(admin, row, userId))) return NOT_FOUND();
   if (userId && row.creator_id !== userId && (await hiddenFor(admin, userId)).includes(row.creator_id)) return NOT_FOUND();
-  return NextResponse.json({ campaign: forReader(row, userId) }, { headers: PRIVATE });
+  return NextResponse.json({ campaign: forReader(row, userId, await circleOf(admin, row)) }, { headers: PRIVATE });
 }
 
 /**

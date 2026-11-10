@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 
 import { corsPreflight, withCors } from "@/lib/api/cors";
+import { beforeCircleGoes } from "@/lib/campaigns/circleEnd";
 import { circlesEnabled } from "@/lib/circles/circles";
 import { circleUser } from "@/lib/circles/server";
 import { rateLimited } from "@/lib/security/ratelimit";
@@ -40,6 +41,10 @@ async function handleDELETE(req: Request, id: string) {
     .select("user_id", { count: "exact", head: true })
     .eq("group_id", id);
   if (!count) {
+    // A prayer campaign of 1.9 kept to this circle is deleted with it by the
+    // database (prayer_campaigns.circle_id). Its pictures' files are not
+    // rows, so they go first (lib/campaigns/circleEnd.ts).
+    await beforeCircleGoes(admin, id);
     // Only a circle that follows a path and no campaign is taken away here.
     await admin.from("prayer_campaign_groups").delete().eq("id", id).is("campaign_id", null);
   } else {

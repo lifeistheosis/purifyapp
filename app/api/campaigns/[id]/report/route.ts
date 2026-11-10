@@ -6,7 +6,7 @@ import { reportCampaign } from "@/lib/campaigns/moderation";
 import { campaignsCaller } from "@/lib/campaigns/opening";
 import { campaignPart } from "@/lib/campaigns/parts";
 import { reportPicture } from "@/lib/campaigns/pictures";
-import { mayRead, readCampaignRow } from "@/lib/campaigns/server";
+import { mayOpen, readCampaignRow } from "@/lib/campaigns/server";
 import { ipKey, rateLimited } from "@/lib/security/ratelimit";
 import { campaignReportSchema } from "@/lib/security/schemas";
 import { createAdminClient } from "@/lib/supabase/admin";
@@ -57,7 +57,7 @@ async function handleReport(req: Request, id: string) {
       : NextResponse.json({ error: "Could not send that report." }, { status: 500 });
   }
   const row = found.value;
-  if (!row || !mayRead(row, who.user.id)) return NextResponse.json({ error: "Not found." }, { status: 404 });
+  if (!row || !(await mayOpen(admin, row, who.user.id))) return NextResponse.json({ error: "Not found." }, { status: 404 });
   if (row.creator_id === who.user.id) return NextResponse.json({ error: "That is your own campaign." }, { status: 400 });
 
   if (picture) {

@@ -3622,3 +3622,51 @@ new list, the page's line.
 items 5, 7 and 8, which that figure did not count. Nothing here waits on SQL.
 It does not miss 1.9 on its own account: the build can go ahead in English
 and the five lines take their other languages after his OK.
+
+### 27.5 As built (2026-11-10, in English; the other languages follow his OK of call 22)
+
+- **The question, in one place:** `mayRead` (pure) now takes the circles a
+  reader is known to be in, and `mayOpen` finds them for a route
+  (`lib/campaigns/server.ts`; the circles themselves, `lib/campaigns/circles.ts`).
+  All seven places a route opens a campaign ask it; a test holds that none
+  asks the bare question, which knows no circle. To a reader outside the
+  circle every one answers exactly what it answers for an id that does not
+  exist.
+- **Its creator can always open their own**, also after leaving the circle.
+  A member who leaves cannot, and their device is told "gone" at its next
+  check, so the name leaves their prayers.
+- **The reader's circles:** `GET /api/campaigns/circles` takes no id, and
+  answers from the caller's own token: their reading circles (id, name,
+  kind, never the invite code) and the campaigns running in them.
+- **Starting one:** the start takes a circle's id only from a member of a
+  circle on a reading path. A circle that is not theirs, one of July's
+  groups and one that does not exist are refused with one answer, and
+  nothing is written.
+- **The screens:** the start screen's row "Who can see it" and its sheet,
+  drawn only for a reader who is in a circle, with the foot saying who will
+  see it; "In your circles" in Pray together; the page's line "Only
+  {circle} can see this." and no link to share; the moderators' card saying
+  the same.
+- **A circle that ends:** Read together's leave route calls
+  `beforeCircleGoes` (`lib/campaigns/circleEnd.ts`) before it deletes an
+  empty circle, so the pictures' files of the campaigns that go with it are
+  removed first. Told to the Updates chat, on the arbiter's word.
+- **Two rules are asked twice** (in the read, and of what came back): only a
+  circle on a reading path, and only the campaigns of the reader's own
+  circles. A test holds both halves of each.
+- **Seven lines, not five:** the five of 27.3, and two that are an existing
+  line with only who sees it changed: under the rules on the start screen
+  ("...before its circle can see it..."), and on a waiting campaign's own
+  page ("It will show to {circle} once a moderator has read it..."). Sent to
+  the arbiter for call 22.
+- **The fold-in** (the arbiter's yes): a reader's own words on a campaign,
+  its title, its words, an update and a comment, say `dir="auto"` wherever
+  they are drawn, as Community's posts do
+  (`lib/campaigns/__tests__/ownWords.test.ts`).
+
+**Held by** `lib/campaigns/__tests__/circles.test.ts`, 32 cases, and
+`ownWords.test.ts`, 4. Twelve ways of breaking the circle's rule were tried:
+nine failed a case at once, and the three that did not were the doubled
+rules, which now have a case of their own. The shared test stand-in learned
+an exact count, a database function call, and the circles' two tables.
+

@@ -17,7 +17,9 @@ export const dynamic = "force-dynamic";
  * the app asks the next time it is online, and lets go of any that are over
  * (lib/campaigns/carried.ts, settleCarried).
  *
- * No account is needed, because carrying a campaign needs none. It answers
+ * No account is needed, because carrying a campaign needs none (one kept to
+ * a circle is the exception: it answers "gone" to anyone but its creator and
+ * that circle's members, by the caller's own token). It answers
  * "running", "over" or "gone" and nothing more, so all an id can be made to
  * say is whether that campaign still runs. Never which campaigns a reader
  * carries: the ids are read, answered and forgotten.
@@ -37,7 +39,7 @@ async function handlePOST(req: Request) {
   const parsed = campaignStateSchema.safeParse(body);
   if (!parsed.success) return NextResponse.json({ error: "Invalid request." }, { status: 400 });
 
-  const states = await campaignStates(createAdminClient(), parsed.data.ids);
+  const states = await campaignStates(createAdminClient(), parsed.data.ids, Date.now(), who.user?.id ?? null);
   if (!states.ok) {
     return states.why === "absent"
       ? NextResponse.json({ error: "Not found." }, { status: 404 })

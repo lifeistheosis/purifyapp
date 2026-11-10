@@ -18,12 +18,13 @@ import { Clock } from "@/components/ui/icons/Clock";
 import { Close } from "@/components/ui/icons/Close";
 import { Globe } from "@/components/ui/icons/Globe";
 import { Lampada } from "@/components/ui/icons/Lampada";
+import { Lock } from "@/components/ui/icons/Lock";
 import { Minus } from "@/components/ui/icons/Minus";
 import { Orans } from "@/components/ui/icons/Orans";
 import { Plus } from "@/components/ui/icons/Plus";
 import { Scroll } from "@/components/ui/icons/Scroll";
 import { Sheet } from "@/components/ui/Sheet";
-import { startCampaign, type StartResult } from "@/lib/campaigns/client";
+import { fetchCircles, startCampaign, type CircleChoice, type StartResult } from "@/lib/campaigns/client";
 import {
   CAMPAIGN_PSALMS,
   CONSENT_LINE,
@@ -59,7 +60,9 @@ const HOME = "/community#pray";
 const INSET_TOP = "var(--inset-top, env(safe-area-inset-top, 0px))";
 
 type Writer = { name: string; avatar: string | null };
-type Opened = "kind" | "length" | "psalm" | null;
+type Opened = "kind" | "length" | "psalm" | "audience" | null;
+/** A circle's kind, in the words Read together already has. */
+const CIRCLE_KIND: Record<string, string> = { parish: "together.kind.parish", household: "together.kind.household", friends: "together.kind.friends" };
 /** A length ticked, or a last day of the creator's own choosing. */
 type LengthChoice = (typeof LENGTHS)[number] | "own";
 
@@ -73,7 +76,9 @@ type LengthChoice = (typeof LENGTHS)[number] | "own";
  *
  * What it asks: for the living or the reposed; a title; a first name; the
  * creator's own words; what for (the living); how long, one to forty days;
- * a psalm of the prayer book (the living), or the name alone. Then the
+ * a psalm of the prayer book (the living), or the name alone; and, for a
+ * reader who is in a circle of Read together, who can see it: everyone in
+ * Community, or that circle alone (1.9; the notes, section 27). Then the
  * blessing, worded for who it is for and kept with its day, and the rules.
  *
  * What it promises is what happens: a campaign is read by a moderator before
@@ -95,6 +100,9 @@ export function StartCampaign() {
   const [length, setLength] = useState<Record<ForWhom, LengthChoice>>({ living: DEFAULT_DAYS.living as LengthChoice, departed: DEFAULT_DAYS.departed as LengthChoice });
   const [ownDays, setOwnDays] = useState(14);
   const [psalm, setPsalm] = useState<PrayerRef | null>(null);
+  // The reader's own circles, and the one this campaign is kept to (none: everyone in Community).
+  const [circles, setCircles] = useState<CircleChoice[]>([]);
+  const [circleId, setCircleId] = useState<string | null>(null);
   const [consent, setConsent] = useState<Exclude<ConsentKind, "family"> | null>(null);
   const [family, setFamily] = useState(false);
   const [rules, setRules] = useState(false);
@@ -126,6 +134,10 @@ export function StartCampaign() {
       }
       const meta = (auth.user.user_metadata ?? {}) as { display_name?: string; avatar_url?: string };
       setWriter({ name: (meta.display_name ?? "").trim() || auth.user.email?.split("@")[0] || "Reader", avatar: meta.avatar_url || null });
+      // Their circles, for "Who can see it". A reader in none is offered no choice.
+      void fetchCircles().then((found) => {
+        if (live) setCircles(found.circles);
+      });
     });
     return () => {
       live = false;
@@ -153,6 +165,7 @@ export function StartCampaign() {
   const lengthLine = t("campaigns.lengthTo", { length: lengthText(days, t, tn), date: dayText(lastDay, locale) });
   const icon = getPrayerIcon(campaignIcon(whom));
   const blessed = whom === "departed" ? family : consent !== null;
+  const kept = circles.find((c) => c.id === circleId) ?? null;
   const ready =
     writer !== null &&
     writer !== "out" &&
@@ -177,6 +190,11 @@ export function StartCampaign() {
         return t("campaigns.err.running");
       case "campaigns_today":
         return t("campaigns.err.today");
+      case "bad_circle":
+        // The circle is no longer theirs to keep it to: back to everyone, and said.
+        setCircleId(null);
+        void fetchCircles().then((found) => setCircles(found.circles));
+        return t("campaigns.err.failed");
       default:
         return res.status === 401 ? t("shop.signInToStartA") : t("campaigns.err.failed");
     }
@@ -200,6 +218,7 @@ export function StartCampaign() {
       rules: true,
       termsAccepted: true,
       confirmFiltered,
+      circleId: kept ? kept.id : null,
     });
     setBusy(false);
     setAskFiltered(false);
@@ -386,6 +405,21 @@ export function StartCampaign() {
                       oneLine
                     />
                   ) : null}
+                  {/* Who can see it: only for a reader who is in a circle, so nobody is offered a choice they do not have. */}
+                  {circles.length > 0 ? (
+                    <WayRow
+                      lead={
+                        <WayPlate>
+                          <Lock size={18} />
+                        </WayPlate>
+                      }
+                      label={t("campaigns.new.audience")}
+                      desc={kept ? kept.name : t("campaigns.audience.everyone")}
+                      onClick={() => setOpened("audience")}
+                      opensSheet
+                      oneLine
+                    />
+                  ) : null}
                 </div>
 
                 {/* The blessing: one line to tick, worded for who it is for. */}
@@ -444,7 +478,7 @@ export function StartCampaign() {
                   </TickBox>
                 </div>
 
-                <p className="mt-6 font-sans text-caption leading-[1.5] text-paper/70">{t("campaigns.new.note")}</p>
+                <p className="mt-6 font-sans text-caption leading-[1.5] text-paper/70">{t(kept ? "campaigns.new.noteCircle" : "campaigns.new.note")}</p>
               </>
             )}
           </div>
@@ -459,9 +493,9 @@ export function StartCampaign() {
               </p>
             ) : null}
             <div className="mx-auto flex h-[62px] w-full max-w-[640px] items-center gap-3 pe-3.5 ps-5">
-              <p className="flex min-w-0 flex-1 items-center gap-1.5 font-sans text-[12.5px] text-paper/70">
-                <Globe className="shrink-0 text-paper/70" />
-                <span className="truncate">{t("community.postingPublicly")}</span>
+              <p data-campaign-audience-line={kept ? "circle" : "everyone"} className="flex min-w-0 flex-1 items-center gap-1.5 font-sans text-[12.5px] text-paper/70">
+                {kept ? <Lock size={14} className="shrink-0 text-paper/70" /> : <Globe className="shrink-0 text-paper/70" />}
+                <span className="truncate">{kept ? t("campaigns.onlyCircle", { circle: kept.name }) : t("community.postingPublicly")}</span>
               </p>
               <button
                 type="button"
@@ -568,6 +602,28 @@ export function StartCampaign() {
             labelledBy="campaign-psalm-label"
           />
           <p className="mt-4 font-sans text-caption leading-relaxed text-paper/70">{t("campaigns.new.psalmNote")}</p>
+        </div>
+      </Sheet>
+
+      {/* Who can see it: everyone in Community, or one of the reader's own circles. */}
+      <Sheet open={opened === "audience"} onClose={() => setOpened(null)} title={t("campaigns.new.audience")} desktop openFull layer="over-player">
+        <p id="campaign-audience-label" className="sr-only">
+          {t("campaigns.new.audience")}
+        </p>
+        <div className="pb-1 pt-1" data-campaign-audience="">
+          <TickLines
+            value={kept ? kept.id : "everyone"}
+            options={[
+              { id: "everyone", label: t("campaigns.audience.everyone") },
+              ...circles.map((c) => ({ id: c.id, label: c.name, desc: CIRCLE_KIND[c.kind] ? t(CIRCLE_KIND[c.kind]) : undefined })),
+            ]}
+            onChange={(id) => {
+              setCircleId(id === "everyone" ? null : id);
+              setOpened(null);
+            }}
+            labelledBy="campaign-audience-label"
+          />
+          <p className="mt-4 font-sans text-caption leading-relaxed text-paper/70">{t("campaigns.audience.note")}</p>
         </div>
       </Sheet>
 

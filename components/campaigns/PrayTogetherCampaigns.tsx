@@ -10,7 +10,8 @@ import { useTranslate } from "@/components/i18n/MessagesProvider";
 import { Plus } from "@/components/ui/icons/Plus";
 import { SkeletonList } from "@/components/ui/Skeleton";
 import { carriedNow, type CarriedCampaign, type CarryPick } from "@/lib/campaigns/carried";
-import { fetchBoard, type BoardResult } from "@/lib/campaigns/client";
+import { fetchBoard, fetchCircles, type BoardResult } from "@/lib/campaigns/client";
+import type { PublicCampaign } from "@/lib/campaigns/model";
 import { useCampaignsOpen } from "@/lib/campaigns/useCampaignsOpen";
 import { useCampaignUpkeep } from "@/lib/campaigns/useCampaignUpkeep";
 import { useCarried } from "@/lib/campaigns/useCarried";
@@ -24,11 +25,12 @@ import { todayKey } from "@/lib/rhythm/dayKey";
 const SHOWN = 4;
 
 /**
- * Prayer campaigns in Pray together (1.9), between its head and the prayer
- * wall: the campaign the reader carries as the card the owner picked for it
+ * Prayer campaigns in Pray together (1.9), under its head: the campaign the
+ * reader carries as the card the owner picked for it
  * (components/community/CampaignCard.tsx, r3-02), any others they carry as
- * rows, then "Newly asked" as rows with a small picture each, and the way to
- * start one.
+ * rows, those running in the reader's own circles ("In your circles", for a
+ * reader who has any), then "Newly asked" as rows with a small picture each,
+ * and the way to start one.
  *
  * Nothing at all is drawn, and nothing is asked of anyone, unless campaigns
  * are open for this reader (lib/campaigns/useCampaignsOpen.ts): in a closed
@@ -44,6 +46,8 @@ function Campaigns({ signedIn }: { signedIn: boolean }) {
   const today = todayKey();
   const carried = carriedNow(useCarried(), today);
   const [board, setBoard] = useState<BoardResult | null>(null);
+  // Campaigns kept to the reader's own circles: on no board, so this is where a member finds one.
+  const [inCircles, setInCircles] = useState<PublicCampaign[]>([]);
   const [version, setVersion] = useState(0);
   const [moving, setMoving] = useState<CarriedCampaign | null>(null);
   const [notice, setNotice] = useState<string | null>(null);
@@ -59,6 +63,17 @@ function Campaigns({ signedIn }: { signedIn: boolean }) {
     };
   }, [version]);
 
+  useEffect(() => {
+    if (!signedIn) return;
+    let live = true;
+    void fetchCircles().then((found) => {
+      if (live) setInCircles(found.campaigns);
+    });
+    return () => {
+      live = false;
+    };
+  }, [signedIn, version]);
+
   const [first, ...rest] = carried;
   const pick: CarryPick | null = moving
     ? { id: moving.id, name: moving.name, title: moving.title, forWhom: moving.forWhom, prayer: moving.prayer, lastDay: moving.lastDay }
@@ -66,6 +81,7 @@ function Campaigns({ signedIn }: { signedIn: boolean }) {
   // Those the reader carries already stand above: the board's rows are the others.
   const mine = new Set(carried.map((c) => c.id));
   const asked = board?.state === "ok" ? board.campaigns.filter((c) => !mine.has(c.id)) : [];
+  const circled = signedIn ? inCircles.filter((c) => !mine.has(c.id)) : [];
   const until = (c: CarriedCampaign) => t("prayers.diptychs.wallUntil", { date: dayText(c.until, locale) });
 
   function cardOf(c: CarriedCampaign): RunningCampaign {
@@ -119,6 +135,19 @@ function Campaigns({ signedIn }: { signedIn: boolean }) {
             <CampaignRow key={c.id} id={c.id} forWhom={c.forWhom} title={c.title} line={`${t("community.wallInMyPrayers")} · ${until(c)}`} />
           ))}
         </div>
+      ) : null}
+
+      {circled.length > 0 ? (
+        <>
+          <h3 id="campaigns-circles" className="mt-5 font-sans text-detail font-semibold text-paper/80">
+            {t("campaigns.inYourCircles")}
+          </h3>
+          <div className="set-panel mt-2" role="group" aria-labelledby="campaigns-circles" data-campaigns-circles="">
+            {circled.map((c) => (
+              <BoardRow key={c.id} campaign={c} />
+            ))}
+          </div>
+        </>
       ) : null}
 
       <h3 id="campaigns-asked" className="mt-5 font-sans text-detail font-semibold text-paper/80">

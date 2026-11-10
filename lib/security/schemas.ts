@@ -444,6 +444,9 @@ export const campaignCreateSchema = z
     // The writer has seen which of their words the filter will mask, and
     // sends it all the same (as a post does).
     confirmFiltered: z.boolean().optional(),
+    // Kept to one circle of the writer's own, or none: everyone in Community.
+    // The route takes it only from a member (lib/campaigns/circles.ts).
+    circleId: z.string().uuid().optional().nullable(),
   })
   .refine((c) => (c.forWhom === "departed") === (c.kind === "departed"), { message: "That kind does not fit." })
   .refine((c) => (c.forWhom === "departed") === (c.consent === "family"), { message: "That blessing does not fit." })

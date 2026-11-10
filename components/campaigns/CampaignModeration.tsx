@@ -5,6 +5,7 @@ import { useState, type ReactNode } from "react";
 import { useTranslate } from "@/components/i18n/MessagesProvider";
 import { ArrivingImage } from "@/components/ui/ArrivingImage";
 import { ConfirmDialog } from "@/components/ui/ConfirmDialog";
+import { Lock } from "@/components/ui/icons/Lock";
 import { moderateCampaign } from "@/lib/campaigns/client";
 import {
   KIND_LABEL,
@@ -208,15 +209,22 @@ function WaitingCard({
         {t(kind)}
         {length ? ` · ${length}` : ""}
       </p>
+      {/* Kept to one circle: who will see it once it is approved. Where its name could not be read, that it is kept to one is still said. */}
+      {c.circle != null ? (
+        <p data-mod-campaign-circle="" className="mt-1 flex items-center gap-1.5 font-sans text-caption text-paper/70">
+          <Lock size={13} className="shrink-0" />
+          <span className="min-w-0 break-words">{c.circle ? t("campaigns.onlyCircle", { circle: c.circle }) : t("campaigns.audience.note")}</span>
+        </p>
+      ) : null}
       <div className={BOX}>
-        <p className="break-words font-semibold">{c.title}</p>
+        <p dir="auto" className="break-words font-semibold">{c.title}</p>
         {c.subject_name ? (
           <p className="break-words">
             <span className="text-paper/75">{t("prayers.diptychs.name")}: </span>
             {c.subject_name}
           </p>
         ) : null}
-        {c.details ? <p className="whitespace-pre-wrap break-words">{c.details}</p> : null}
+        {c.details ? <p dir="auto" className="whitespace-pre-wrap break-words">{c.details}</p> : null}
       </div>
       <div className="mt-3 flex flex-wrap gap-2">
         <ActionButton primary label={t(why.includes("reports") ? "mod.restore" : "mod.approve")} busy={approving} onClick={onApprove} />
@@ -261,14 +269,14 @@ function ReportedCard({
       <div className={BOX}>
         {c ? (
           <>
-            <p className="break-words font-semibold">{c.title}</p>
+            <p dir="auto" className="break-words font-semibold">{c.title}</p>
             {c.subject_name ? (
               <p className="break-words">
                 <span className="text-paper/75">{t("prayers.diptychs.name")}: </span>
                 {c.subject_name}
               </p>
             ) : null}
-            {c.details ? <p className="line-clamp-6 whitespace-pre-wrap break-words">{c.details}</p> : null}
+            {c.details ? <p dir="auto" className="line-clamp-6 whitespace-pre-wrap break-words">{c.details}</p> : null}
           </>
         ) : (
           <p className="text-paper/75">{t("mod.noText")}</p>
@@ -322,7 +330,7 @@ function PictureCard({
         ) : null;
       })}
       <div className={BOX}>
-        <p className="break-words font-semibold">{p.campaign.title}</p>
+        <p dir="auto" className="break-words font-semibold">{p.campaign.title}</p>
         {p.alt ? <p className="break-words">{t("mod.pictureShows").replace("{alt}", () => p.alt ?? "")}</p> : null}
         {p.check_result ? <p className="break-words text-paper/75">{t("mod.pictureCheck").replace("{result}", () => p.check_result ?? "")}</p> : null}
       </div>

@@ -5,7 +5,7 @@ import { PICTURE_MAX_BYTES } from "@/lib/campaigns/model";
 import { campaignsCaller } from "@/lib/campaigns/opening";
 import { campaignPart } from "@/lib/campaigns/parts";
 import { addPicture, readPictures, removeOwnPicture } from "@/lib/campaigns/pictures";
-import { hiddenLists, mayRead, readCampaignRow } from "@/lib/campaigns/server";
+import { hiddenLists, mayOpen, readCampaignRow } from "@/lib/campaigns/server";
 import { ipKey, rateLimited } from "@/lib/security/ratelimit";
 import { createAdminClient } from "@/lib/supabase/admin";
 
@@ -39,7 +39,7 @@ async function handleGET(req: Request, id: string) {
   if (!found.ok) return found.why === "absent" ? NOT_FOUND() : NextResponse.json({ error: "The pictures could not be read." }, { status: 500 });
   const row = found.value;
   const userId = who.user?.id ?? null;
-  if (!row || !mayRead(row, userId)) return NOT_FOUND();
+  if (!row || !(await mayOpen(admin, row, userId))) return NOT_FOUND();
   if (userId && row.creator_id !== userId) {
     const hidden = await hiddenLists(admin, userId);
     if (hidden.blocked.includes(row.creator_id) || hidden.muted.includes(row.creator_id)) return NOT_FOUND();

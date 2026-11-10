@@ -6,6 +6,7 @@ import { AUTO, logMod, type ModActor, type ModResult } from "@/lib/community/mod
 import { writeRemovalNotice, type RemovalReason } from "@/lib/community/removal";
 import { removeOwnedUpload } from "@/lib/security/uploadOwners";
 
+import { circleNames } from "./circles";
 import {
   CAMPAIGN_MOD_ACTIONS,
   isCampaignModAction,
@@ -345,7 +346,7 @@ export async function maybeHideCampaign(admin: SupabaseClient, campaignId: strin
 
 // ── The queue ───────────────────────────────────────────────────────────────
 
-const WAITING_COLS = "id, title, intention, for_whom, subject_name, details, days, ends_on, creator_name, creator_handle, held_reason, created_at";
+const WAITING_COLS = "id, title, intention, for_whom, subject_name, details, days, ends_on, creator_name, creator_handle, held_reason, created_at, audience, circle_id";
 
 /**
  * Every campaign waiting to be read, oldest first, one that may mean its
@@ -363,9 +364,15 @@ export async function readWaitingCampaigns(admin: SupabaseClient): Promise<{ row
     if (reworkAbsent(error)) return { rows: [], live: false };
     throw new Error(error.message);
   }
+  const read = (data ?? []) as unknown as Record<string, unknown>[];
+  // One kept to a circle says which: the moderator reads it knowing who will see it.
+  const circles = await circleNames(
+    admin,
+    read.filter((r) => r.audience === "circle").map((r) => (typeof r.circle_id === "string" ? r.circle_id : null)),
+  );
   // Projected, not handed on as read: a row carries whatever a later select
   // adds to it, and this one leaves the server.
-  const rows = ((data ?? []) as unknown as Record<string, unknown>[]).map(
+  const rows = read.map(
     (r): WaitingCampaign => ({
       id: String(r.id),
       title: String(r.title ?? ""),
@@ -379,6 +386,7 @@ export async function readWaitingCampaigns(admin: SupabaseClient): Promise<{ row
       creator_handle: str(r.creator_handle),
       held_reason: str(r.held_reason),
       created_at: String(r.created_at ?? ""),
+      circle: r.audience === "circle" && typeof r.circle_id === "string" ? (circles.get(r.circle_id) ?? "") : null,
     }),
   );
   const urgent = (r: WaitingCampaign) => (r.held_reason ?? "").includes("crisis");

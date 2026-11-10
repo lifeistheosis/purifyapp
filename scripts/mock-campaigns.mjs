@@ -88,6 +88,10 @@ const PETER = "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaa3";
 const SOPHIA = "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaa4";
 const HELD = "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaa5";
 const ENDED = "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaa6";
+// A campaign kept to one circle (the notes, section 27), and the circles of the reader who looks.
+const THOMAS = "eeeeeeee-eeee-4eee-8eee-eeeeeeeeeee7";
+const PARISH = { id: "ffffffff-ffff-4fff-8fff-fffffffffff1", name: "St Nicholas parish", kind: "parish" };
+const HOUSEHOLD = { id: "ffffffff-ffff-4fff-8fff-fffffffffff2", name: "Our household", kind: "household" };
 
 function campaign(id, over) {
   const days = over.days ?? 7;
@@ -147,6 +151,17 @@ const CAMPAIGNS = {
     mine: true,
   }),
   [ENDED]: campaign(ENDED, { title: "For Irene's recovery", intention: "healing", subject_name: "Irene", details: null, days: 7, status: "answered", mine: true }),
+  // Kept to the parish: on no board, and handed on only to its circle's members, with the circle's name.
+  [THOMAS]: campaign(THOMAS, {
+    title: "For Thomas after his fall",
+    intention: "healing",
+    subject_name: "Thomas",
+    details: "He is home from hospital and resting. Please remember him with us these two weeks.",
+    days: 14,
+    creator_name: "Helen",
+    creator_handle: "helen",
+    circle: { name: PARISH.name },
+  }),
 };
 const BOARD = [MARIA, PETER, SOPHIA, NICHOLAS].map((id) => CAMPAIGNS[id]);
 
@@ -394,6 +409,8 @@ async function answer(ctx, opts = {}) {
       if (req.method() === "POST") return json({ ok: true, id: "dddddddd-dddd-4ddd-8ddd-ddddddddddd9" });
       return json({ ok: true });
     }
+    // A reader's circles and the campaigns running in them: none, unless a picture or a flow puts the reader in two.
+    if (p === "/api/campaigns/circles") return json(opts.circles ? { circles: [PARISH, HOUSEHOLD], campaigns: [CAMPAIGNS[THOMAS]] } : { circles: [], campaigns: [] });
     if (p === "/api/campaigns" && req.method() === "POST") return json({ ok: true, id: HELD, status: "held" });
     if (/^\/api\/campaigns\/[0-9a-f-]{36}\/(join|report)$/.test(p)) return json({ ok: true });
     const thread = /^\/api\/campaigns\/([0-9a-f-]{36})\/thread$/.exec(p);
@@ -412,6 +429,7 @@ async function answer(ctx, opts = {}) {
     const one = /^\/api\/campaigns\/([0-9a-f-]{36})$/.exec(p);
     if (one && req.method() === "GET") {
       const c = CAMPAIGNS[one[1]];
+      if (c?.circle && !opts.circles) return json({ error: "Not found." }, 404);
       return c ? json({ campaign: { ...c, ...(opts.mine?.includes(c.id) ? { mine: true, keep_after_end: false, listed: true } : {}) } }) : json({ error: "Not found." }, 404);
     }
     // Talk together's feed: nothing said yet, so the conversations draw as they are and not as "opening soon".
@@ -447,7 +465,7 @@ async function whole(page, min = 844) {
   await page.setViewportSize({ width: WIDTH, height: Math.max(min, h) });
 }
 
-async function shot(name, label, where, selector, { set = {}, prepare, signedIn = true, mine, board, parts, pictures, check = true, inbox } = {}) {
+async function shot(name, label, where, selector, { set = {}, prepare, signedIn = true, mine, board, parts, pictures, check = true, inbox, circles = false } = {}) {
   if (WALK) return;
   if (ONLY && !ONLY.has(name.slice(0, 2))) return;
   const seed = {
@@ -461,7 +479,7 @@ async function shot(name, label, where, selector, { set = {}, prepare, signedIn 
   page.on("pageerror", (e) => errors.push(e.message));
   try {
     if (WIDTH !== 390) await page.setViewportSize({ width: WIDTH, height: 844 });
-    await answer(ctx, { mine, board, signedIn, parts, pictures, inbox });
+    await answer(ctx, { mine, board, signedIn, parts, pictures, inbox, circles });
     await go(page, where);
     await settle(page);
     if (prepare) await prepare(page);
@@ -797,6 +815,43 @@ await shot("26-removal-notice", "the removal notice in a reader's inbox: a campa
   },
 });
 
+// 27 to 29 A campaign kept to one circle (the notes, section 27), for a reader who is in two circles.
+// 27 The choice, "Who can see it", with the parish chosen: the picture his call 22 was put to him with
+// (docs/1.9-build/notes/decisions/circles-choice.png).
+await shot("27-circle-choice", "starting one: who can see it, with a circle chosen", "/campaigns/new", "[role=dialog]:has([data-campaign-audience])", {
+  circles: true,
+  prepare: async (page) => {
+    await page.waitForSelector("#campaign-title-field", { timeout: 15000 });
+    const row = page.locator("[data-campaign-new] .set-panel button", { hasText: "Who can see it" });
+    await row.waitFor({ timeout: 15000 });
+    await row.click();
+    await page.locator("[data-campaign-audience] [role=radio]", { hasText: PARISH.name }).click();
+    await settle(page, 700);
+    // Opened again, so the picture shows the choice with the circle ticked.
+    await row.click();
+    await page.waitForSelector("[data-campaign-audience] [role=radio][aria-checked=true]", { timeout: 15000 });
+    await settle(page, 700);
+  },
+});
+
+// 28 Pray together for a reader with a campaign in one of their circles: "In your circles", above the newly asked.
+await shot("28-in-your-circles", "Pray together: a campaign in one of the reader's circles", "/community#pray", "[role=tabpanel]", {
+  circles: true,
+  prepare: async (page) => {
+    await page.waitForSelector("[data-campaigns-circles] [data-campaign-row]", { timeout: 15000 });
+    await whole(page);
+  },
+});
+
+// 29 Its page: who can see it, said under its creator, and no link to share.
+await shot("29-campaign-circle", "a campaign kept to a circle: its page says who can see it", `/campaigns/detail?id=${THOMAS}`, "[data-campaign-page]", {
+  circles: true,
+  prepare: async (page) => {
+    await page.waitForSelector("[data-campaign-circle]", { timeout: 15000 });
+    await whole(page);
+  },
+});
+
 // The two photos his decision on the prayer wall was made from
 // (docs/1.9-build/notes/decisions/wall-1-today.png and wall-2-after.png) were stills 30 and 31 of this
 // script as it stood at commit 35205d89c, drawn while the wall was still in the app. It is not any more,
@@ -808,7 +863,7 @@ async function pictureWalk(label, ...rest) {
   if (!FLOWS.length || FLOWS.some((f) => label.toLowerCase().includes(f))) console.log(`left  ${label}: needs an export cut with pictures (PICTURES_BUILD=1; see the header)`);
 }
 
-async function walk(label, where, run, { set = {}, signedIn = true, mine, closed = false, parts, pictures, holdOpen = false } = {}) {
+async function walk(label, where, run, { set = {}, signedIn = true, mine, closed = false, parts, pictures, holdOpen = false, circles = false } = {}) {
   if (FLOWS.length && !FLOWS.some((f) => label.toLowerCase().includes(f))) return;
   const seed = {
     "purify.prayers.campaigns": JSON.stringify(CARRIED),
@@ -826,7 +881,7 @@ async function walk(label, where, run, { set = {}, signedIn = true, mine, closed
     // With `holdOpen`, the website's answer to "are campaigns open for this reader" waits for the flow's own word.
     let letGo = () => {};
     const heldOpen = holdOpen ? { until: new Promise((done) => (letGo = done)) } : null;
-    await answer(ctx, { mine, closed, parts, pictures, heldOpen });
+    await answer(ctx, { mine, closed, parts, pictures, heldOpen, circles });
     await go(page, where);
     await settle(page, 1800);
     try {
@@ -962,6 +1017,78 @@ if (WALK) {
     expectThat(!/asking for your prayers|you asked for prayers|I prayed|you prayed|\d+ prayed/i.test(said), `the request's words are on the profile: ${said.slice(0, 200)}`);
     expectThat(calls.some((c) => c.path === "/api/community/profile"), "the profile was not asked for");
     expectThat(!calls.some((c) => c.path === "/api/community/pray" || c.path === "/api/community/prayer-wall"), "I prayed or the wall was asked for");
+  });
+
+  await walk("a circle: starting one kept to a circle sends that circle, and the page says who will see it", "/campaigns/new", async (page) => {
+    await page.waitForSelector("#campaign-title-field", { timeout: 15000 });
+    await page.fill("#campaign-title-field", "For Thomas after his fall");
+    await page.fill("#campaign-name-field", "Thomas");
+    await page.locator("[data-campaign-new] .set-panel button").nth(0).click();
+    await page.locator("[role=radio]", { hasText: "An illness" }).click();
+    await settle(page, 700);
+    // Everyone in Community until a circle is chosen, and said so at the foot.
+    const foot = page.locator("[data-campaign-audience-line]");
+    expectThat((await foot.getAttribute("data-campaign-audience-line")) === "everyone" && (await foot.innerText()).includes("Everyone in Community can read this"), "the foot does not say everyone can read it");
+    const row = page.locator("[data-campaign-new] .set-panel button", { hasText: "Who can see it" });
+    expectThat((await row.innerText()).includes("Everyone in Community"), "the row does not start at everyone");
+    await row.click();
+    const lines = page.locator("[data-campaign-audience] [role=radio]");
+    expectThat((await lines.allInnerTexts()).map((x) => x.split("\n")[0].trim()).join("|") === `Everyone in Community|${PARISH.name}|${HOUSEHOLD.name}`, `the choices are ${(await lines.allInnerTexts()).join(" | ")}`);
+    expectThat((await page.locator("[data-campaign-audience]").innerText()).includes("A campaign kept to a circle is seen by its members only, and is on no list."), "the sheet does not say what keeping it to a circle means");
+    await lines.filter({ hasText: PARISH.name }).click();
+    await settle(page, 700);
+    expectThat((await row.innerText()).includes(PARISH.name), "the row does not name the circle chosen");
+    expectThat((await foot.getAttribute("data-campaign-audience-line")) === "circle" && (await foot.innerText()).includes(`Only ${PARISH.name} can see this.`), `the foot says ${await foot.innerText()}`);
+    expectThat((await page.locator("[data-campaign-new]").innerText()).includes("before its circle can see it"), "the note still says everyone will see it");
+    await page.locator("[role=radio]", { hasText: "Someone else" }).click();
+    const boxes = page.locator("[data-campaign-new] [role=checkbox]");
+    await boxes.nth(0).click();
+    await boxes.nth(1).click();
+    await page.locator("[data-campaign-new] .compose-foot button").click();
+    await settle(page, 1500);
+    const [sent] = sentTo("POST", /^\/api\/campaigns$/);
+    expectThat(sent && sent.body.circleId === PARISH.id, `the start sent ${JSON.stringify(sent?.body?.circleId)} for its circle`);
+  }, { circles: true });
+
+  await walk("a circle: a reader in no circle is offered no choice, and theirs is for everyone", "/campaigns/new", async (page) => {
+    await page.waitForSelector("#campaign-title-field", { timeout: 15000 });
+    await settle(page, 900);
+    expectThat(calls.some((c) => c.path === "/api/campaigns/circles"), "the reader's circles were not asked for");
+    expectThat((await page.locator("[data-campaign-new] .set-panel button", { hasText: "Who can see it" }).count()) === 0, "a reader in no circle is offered the choice");
+    expectThat((await page.locator("[data-campaign-audience-line]").getAttribute("data-campaign-audience-line")) === "everyone", "the foot does not say everyone");
+    await page.fill("#campaign-title-field", "For Elias on his journey");
+    await page.fill("#campaign-name-field", "Elias");
+    await page.locator("[data-campaign-new] .set-panel button").nth(0).click();
+    await page.locator("[role=radio]", { hasText: "A journey" }).click();
+    await settle(page, 700);
+    await page.locator("[role=radio]", { hasText: "Someone else" }).click();
+    const boxes = page.locator("[data-campaign-new] [role=checkbox]");
+    await boxes.nth(0).click();
+    await boxes.nth(1).click();
+    await page.locator("[data-campaign-new] .compose-foot button").click();
+    await settle(page, 1500);
+    const [sent] = sentTo("POST", /^\/api\/campaigns$/);
+    expectThat(sent && sent.body.circleId === null, `the start sent ${JSON.stringify(sent?.body?.circleId)} for its circle`);
+  });
+
+  await walk("a circle: a member finds it in Pray together and opens it; the page says who can see it and offers no link", "/community#pray", async (page) => {
+    await page.waitForSelector("[data-campaigns-circles] [data-campaign-row]", { timeout: 15000 });
+    const list = page.locator("[data-campaigns-circles]");
+    expectThat((await page.locator("#campaigns-circles").innerText()).trim() === "In your circles", "the list is not named In your circles");
+    const said = await list.innerText();
+    expectThat(said.includes("For Thomas after his fall") && said.includes(PARISH.name), `the row is ${said.replace(/\n/g, " / ")}`);
+    // On no board: it is not among the newly asked.
+    expectThat(!(await page.locator("[aria-labelledby=campaigns-asked]").innerText()).includes("Thomas"), "it is among the newly asked");
+    await list.locator("[data-campaign-row]").first().click();
+    await page.waitForSelector("[data-campaign-circle]", { timeout: 15000 });
+    expectThat((await page.locator("[data-campaign-circle]").innerText()).trim() === `Only ${PARISH.name} can see this.`, "the page does not say who can see it");
+    expectThat((await page.locator("[data-campaign-page] header button[aria-label=Share], [data-campaign-page] header [data-share]").count()) === 0, "a link to share is offered");
+  }, { circles: true });
+
+  await walk("a circle: to a reader outside it, its page is the page of a campaign that is not there", `/campaigns/detail?id=${THOMAS}`, async (page) => {
+    await settle(page, 1500);
+    expectThat((await page.locator("[data-campaign-circle]").count()) === 0 && (await page.locator("#campaign-title").count()) === 0, "the campaign is drawn for a reader outside its circle");
+    expectThat(!(await page.locator("body").innerText()).includes("Thomas") && !(await page.locator("body").innerText()).includes(PARISH.name), "its words or its circle's name are on the page");
   });
 
   await walk("joining: the name goes into the device's list and the choice to the account; taking it out lets go", `/campaigns/detail?id=${PETER}`, async (page) => {

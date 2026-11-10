@@ -29,7 +29,7 @@ export function CampaignRow({ id, forWhom, title, line }: { id: string; forWhom:
     <Link href={campaignHref(id)} data-campaign-row="" className="set-link rule-way flex w-full items-center gap-3 text-start">
       {icon ? <WayPicture src={icon.src} focus="50% 22%" /> : null}
       <span className="min-w-0 flex-1">
-        <span className="set-label break-words">{title}</span>
+        <span dir="auto" className="set-label break-words">{title}</span>
         {line ? <span className="set-desc">{line}</span> : null}
       </span>
       <ChevronRight size={15} className="set-chev rtl:-scale-x-100" />
@@ -48,5 +48,7 @@ export function BoardRow({ campaign }: { campaign: PublicCampaign }) {
   const standing = campaign.status === "active" && !isRunning(campaign) ? "campaigns.ended" : standingLabel(campaign.status);
   const what = campaign.for_whom === "departed" ? t(forWhomLabel("departed")) : t(kindLabel(campaign));
   const when = standing ? t(standing) : lengthTo(campaign, locale, t, tn);
-  return <CampaignRow id={campaign.id} forWhom={campaign.for_whom} title={campaign.title} line={when ? `${what} · ${when}` : what} />;
+  const line = when ? `${what} · ${when}` : what;
+  // One kept to a circle says which circle first: a reader may be in several.
+  return <CampaignRow id={campaign.id} forWhom={campaign.for_whom} title={campaign.title} line={campaign.circle ? `${campaign.circle.name} · ${line}` : line} />;
 }

@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 
 import { corsPreflight, withCors } from "@/lib/api/cors";
 import { campaignsCaller } from "@/lib/campaigns/opening";
-import { hiddenLists, mayRead, readCampaignRow } from "@/lib/campaigns/server";
+import { hiddenLists, mayOpen, readCampaignRow } from "@/lib/campaigns/server";
 import { readThread, removeNote, writeNote } from "@/lib/campaigns/thread";
 import { requestStanding } from "@/lib/community/adminStanding";
 import { ipKey, rateLimited } from "@/lib/security/ratelimit";
@@ -33,7 +33,7 @@ async function handleGET(req: Request, id: string) {
   if (!found.ok) return found.why === "absent" ? NOT_FOUND() : NextResponse.json({ error: "The campaign could not be read." }, { status: 500 });
   const row = found.value;
   const userId = who.user?.id ?? null;
-  if (!row || !mayRead(row, userId)) return NOT_FOUND();
+  if (!row || !(await mayOpen(admin, row, userId))) return NOT_FOUND();
   const hidden = await hiddenLists(admin, userId);
   if (userId && row.creator_id !== userId && (hidden.blocked.includes(row.creator_id) || hidden.muted.includes(row.creator_id))) return NOT_FOUND();
   const thread = await readThread(admin, row, who.user, hidden);
@@ -66,7 +66,7 @@ async function handlePOST(req: Request, id: string) {
   const found = await readCampaignRow(admin, id);
   if (!found.ok) return found.why === "absent" ? NOT_FOUND() : NextResponse.json({ error: "Couldn't send that. Please try again." }, { status: 500 });
   const row = found.value;
-  if (!row || !mayRead(row, who.user.id)) return NOT_FOUND();
+  if (!row || !(await mayOpen(admin, row, who.user.id))) return NOT_FOUND();
 
   const wrote = await writeNote(admin, { ...who.user, standing: await requestStanding(req, who.user) }, row, parsed.data);
   if (!wrote.ok) {
@@ -96,7 +96,7 @@ async function handleDELETE(req: Request, id: string) {
   const row = found.value;
   // Its creator may still tend a campaign that waits or has ended; anyone
   // else needs to be able to open it.
-  if (!row || row.status === "removed" || (row.creator_id !== who.user.id && !mayRead(row, who.user.id))) return NOT_FOUND();
+  if (!row || row.status === "removed" || (row.creator_id !== who.user.id && !(await mayOpen(admin, row, who.user.id)))) return NOT_FOUND();
 
   const meta = (who.user.user_metadata ?? {}) as { display_name?: string };
   const name = (meta.display_name ?? "").trim() || (typeof row.creator_name === "string" ? row.creator_name : "") || "Reader";

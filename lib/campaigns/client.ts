@@ -61,6 +61,32 @@ export async function fetchBoard(): Promise<BoardResult> {
   }
 }
 
+/** One of the reader's circles, as the choice "Who can see it" shows it. */
+export type CircleChoice = { id: string; name: string; kind: string };
+
+const NO_CIRCLES: { circles: CircleChoice[]; campaigns: PublicCampaign[] } = { circles: [], campaigns: [] };
+
+/**
+ * The reader's circles, and the campaigns running in them
+ * (app/api/campaigns/circles). Nothing for a reader who is signed out, is in
+ * no circle, or when it cannot be read: the choice and the list are then
+ * simply not drawn, and a campaign is for everyone in Community as before.
+ */
+export async function fetchCircles(): Promise<{ circles: CircleChoice[]; campaigns: PublicCampaign[] }> {
+  if (!campaignsInBuild()) return NO_CIRCLES;
+  try {
+    const res = await apiFetch("/api/campaigns/circles", { cache: "no-store" });
+    if (!res.ok) return NO_CIRCLES;
+    const json = await body(res);
+    const circles = (Array.isArray(json.circles) ? json.circles : []).filter(
+      (c): c is CircleChoice => typeof (c as CircleChoice)?.id === "string" && typeof (c as CircleChoice)?.name === "string" && (c as CircleChoice).name.length > 0,
+    );
+    return { circles, campaigns: Array.isArray(json.campaigns) ? (json.campaigns as PublicCampaign[]) : [] };
+  } catch {
+    return NO_CIRCLES;
+  }
+}
+
 export type OneResult = { state: "ok"; campaign: PublicCampaign } | { state: "missing" } | { state: "error" };
 
 /** One campaign, for its page. A closed feature and a missing campaign read alike: there is nothing to open. */
@@ -93,6 +119,8 @@ export type StartInput = {
   /** "I agree to the Terms of Service", ticked. */
   termsAccepted: true;
   confirmFiltered?: boolean;
+  /** Kept to this circle of the reader's own, or null for everyone in Community. */
+  circleId?: string | null;
 };
 
 export type StartResult =

@@ -443,7 +443,7 @@ describe("the board", () => {
 });
 
 describe("one campaign", () => {
-  it("opens for anyone while it runs and once it has ended, and for nobody once removed or kept to a circle", async () => {
+  it("opens for anyone while it runs and once it has ended, and for nobody once removed; one kept to a circle is not there for a reader outside it (circles.test.ts)", async () => {
     signIn(null);
     for (const [over, status] of [
       [{}, 200],

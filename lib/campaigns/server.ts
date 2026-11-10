@@ -32,6 +32,7 @@ import {
   type PrayerRef,
   type PublicCampaign,
 } from "./model";
+import { circleNames, circlesHolding, mayKeepTo, readerCircles, type ReaderCircle } from "./circles";
 import { reworkAbsent } from "./opening";
 
 // Prayer campaigns on the server (the rework of 1.9): every read and every
@@ -51,11 +52,12 @@ export type CampaignRow = Record<string, unknown> & {
   creator_id: string;
   status: string;
   audience?: string | null;
+  circle_id?: string | null;
   ends_at?: string | null;
   mod_cleared_at?: string | null;
 };
 
-const SERVER_COLS = `${CAMPAIGN_COLS}, creator_id, audience, held_reason, mod_cleared_at, keep_after_end, comments_open, listed`;
+const SERVER_COLS = `${CAMPAIGN_COLS}, creator_id, audience, circle_id, held_reason, mod_cleared_at, keep_after_end, comments_open, listed`;
 
 const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 
@@ -81,16 +83,44 @@ export async function readCampaignRow(admin: SupabaseClient, id: string): Promis
  *                      was never read by a moderator and runs for nobody
  *                      (lib/campaigns/model.ts, isJulyRow).
  *   held               its creator, who is told it waits for a moderator.
- *   kept to a circle   nobody yet: circles as an audience come in a later
- *                      phase, and a row that says so is not shown as public
- *                      in the meantime.
+ *   kept to a circle   its creator, and the members of that circle
+ *                      (`inCircles`: the circles this reader is known to be
+ *                      in, which only a route can find out; with none
+ *                      given, its creator alone). Never anyone else: to a
+ *                      reader outside the circle it is as a campaign that
+ *                      does not exist.
  *   anything else      everyone campaigns are open for.
  */
-export function mayRead(row: CampaignRow, userId: string | null): boolean {
+export function mayRead(row: CampaignRow, userId: string | null, inCircles: ReadonlySet<string> = NO_CIRCLES): boolean {
   if (row.status === "removed") return false;
-  if (row.audience === "circle") return false;
-  if (row.status === "held" || isJulyRow(row)) return userId !== null && row.creator_id === userId;
+  const mine = userId !== null && row.creator_id === userId;
+  if (row.status === "held" || isJulyRow(row)) return mine;
+  if (row.audience === "circle") return mine || (userId !== null && typeof row.circle_id === "string" && inCircles.has(row.circle_id));
+  // A row that names a circle and does not say so (the table's check allows
+  // none) is still nobody's but its circle's.
+  if (row.circle_id) return mine;
   return true;
+}
+
+const NO_CIRCLES: ReadonlySet<string> = new Set();
+
+/**
+ * mayRead for a route, which finds out for itself whether the reader is in
+ * the circle a campaign is kept to (lib/campaigns/circles.ts): one read, and
+ * only for a campaign that is kept to one and is not the reader's own.
+ */
+export async function mayOpen(admin: SupabaseClient, row: CampaignRow, userId: string | null): Promise<boolean> {
+  if (row.audience !== "circle" || userId === null || row.creator_id === userId) return mayRead(row, userId);
+  return mayRead(row, userId, await circlesHolding(admin, userId, [row.circle_id]));
+}
+
+/**
+ * The name of the circle a campaign is kept to, for a reader who may open
+ * it, or null: for the line on its page that says who can see it.
+ */
+export async function circleOf(admin: SupabaseClient, row: CampaignRow): Promise<string | null> {
+  if (row.audience !== "circle" || !row.circle_id) return null;
+  return (await circleNames(admin, [row.circle_id])).get(row.circle_id) ?? null;
 }
 
 /**
@@ -127,11 +157,19 @@ export async function hiddenLists(admin: SupabaseClient, userId: string | null):
 }
 
 /** The row as its reader receives it, saying whether they started it. */
-export function forReader(row: CampaignRow, userId: string | null): PublicCampaign {
+export function forReader(row: CampaignRow, userId: string | null, circle: string | null = null): PublicCampaign {
   const mine = userId !== null && row.creator_id === userId;
   // Whether it is kept after its last day, and whether it may stand in
   // "Prayed by many", are its creator's own settings, and told to nobody else.
-  return { ...publicCampaign(row), mine, ...(mine ? { keep_after_end: row.keep_after_end === true, listed: row.listed !== false } : {}) };
+  return {
+    ...publicCampaign(row),
+    mine,
+    ...(mine ? { keep_after_end: row.keep_after_end === true, listed: row.listed !== false } : {}),
+    // Kept to a circle: its name, for the line that says who can see it.
+    // Only a caller that has already decided this reader may open it hands
+    // a name in.
+    ...(row.audience === "circle" && circle ? { circle: { name: circle } } : {}),
+  };
 }
 
 /**
@@ -277,7 +315,48 @@ export async function listStarted(admin: SupabaseClient, userId: string): Promis
     console.warn("[campaigns] started failed", error.message);
     return { ok: false, why: "failed" };
   }
-  return { ok: true, value: ((data ?? []) as unknown as CampaignRow[]).map((r) => forReader(r, userId)) };
+  const rows = (data ?? []) as unknown as CampaignRow[];
+  // Its creator is told which circle each of theirs is kept to.
+  const names = await circleNames(admin, rows.filter((r) => r.audience === "circle").map((r) => r.circle_id));
+  return { ok: true, value: rows.map((r) => forReader(r, userId, r.circle_id ? (names.get(r.circle_id) ?? null) : null)) };
+}
+
+/**
+ * A reader's circles, and the campaigns running in them: the choice on the
+ * start screen, and "In your circles" in Pray together. Their own circles
+ * and nobody else's, by their own id; a campaign by someone they have
+ * blocked or muted is left out, as on the board. Newest first.
+ */
+export async function listCircles(
+  admin: SupabaseClient,
+  opts: { userId: string; now?: number },
+): Promise<Read<{ circles: ReaderCircle[]; campaigns: PublicCampaign[] }>> {
+  const now = opts.now ?? Date.now();
+  const circles = await readerCircles(admin, opts.userId);
+  if (circles.length === 0) return { ok: true, value: { circles: [], campaigns: [] } };
+  const hidden = await hiddenFor(admin, opts.userId);
+  let query = admin
+    .from("prayer_campaigns")
+    .select(SERVER_COLS)
+    .eq("status", "active")
+    .eq("audience", "circle")
+    .in(
+      "circle_id",
+      circles.map((c) => c.id),
+    )
+    .order("created_at", { ascending: false })
+    .limit(30);
+  query = query.not("days", "is", null);
+  if (hidden.length > 0) query = query.not("creator_id", "in", `(${hidden.join(",")})`);
+  const { data, error } = await query;
+  if (error) {
+    if (reworkAbsent(error)) return { ok: false, why: "absent" };
+    console.warn("[campaigns] circles failed", error.message);
+    return { ok: false, why: "failed" };
+  }
+  const nameOf = new Map(circles.map((c) => [c.id, c.name]));
+  const rows = ((data ?? []) as unknown as CampaignRow[]).filter((r) => !isOver(r, now) && typeof r.circle_id === "string" && nameOf.has(r.circle_id));
+  return { ok: true, value: { circles, campaigns: rows.map((r) => forReader(r, opts.userId, nameOf.get(r.circle_id as string) ?? null)) } };
 }
 
 export type CarriedRow = { campaign: PublicCampaign; places: string[]; until_on: string | null };
@@ -312,7 +391,12 @@ export async function listCarried(admin: SupabaseClient, userId: string, now: nu
     if (reworkAbsent(readError)) return { ok: false, why: "absent" };
     return { ok: false, why: "failed" };
   }
-  const byId = new Map(((found ?? []) as unknown as CampaignRow[]).map((c) => [c.id, c]));
+  const campaigns = (found ?? []) as unknown as CampaignRow[];
+  const byId = new Map(campaigns.map((c) => [c.id, c]));
+  // One kept to a circle is carried only while its reader is still in that circle.
+  const kept = campaigns.filter((c) => c.audience === "circle").map((c) => c.circle_id);
+  const inCircles = kept.length > 0 ? await circlesHolding(admin, userId, kept) : NO_CIRCLES;
+  const names = kept.length > 0 ? await circleNames(admin, kept) : new Map<string, string>();
   const out: CarriedRow[] = [];
   for (const j of rows) {
     const c = byId.get(j.campaign_id);
@@ -320,8 +404,8 @@ export async function listCarried(admin: SupabaseClient, userId: string, now: nu
     // hears that from the state route and lets go by itself. A row of July's
     // "prayed" taps is no choice to carry anything: one of July's is never
     // carried.
-    if (!c || isJulyRow(c) || !mayRead(c, userId) || c.status === "held" || isOver(c, now)) continue;
-    out.push({ campaign: forReader(c, userId), places: j.places ?? [], until_on: j.until_on });
+    if (!c || isJulyRow(c) || !mayRead(c, userId, inCircles) || c.status === "held" || isOver(c, now)) continue;
+    out.push({ campaign: forReader(c, userId, c.circle_id ? (names.get(c.circle_id) ?? null) : null), places: j.places ?? [], until_on: j.until_on });
   }
   return { ok: true, value: out };
 }
@@ -339,6 +423,8 @@ export type CampaignInput = {
   prayer?: PrayerRef | null;
   consent: ConsentKind;
   confirmFiltered?: boolean;
+  /** Kept to this circle, one of the reader's own on a reading path; none for everyone in Community. */
+  circleId?: string | null;
 };
 
 export type Started =
@@ -398,6 +484,13 @@ export async function startCampaign(
   const texts = [input.title, input.name, input.words ?? null];
   if (findLinks(texts).length > 0) {
     return { ok: false, status: 400, error: "A prayer campaign can't carry a link.", code: "campaign_link" };
+  }
+  // Kept to a circle: only one the writer is in, on a reading path, asked
+  // with their own id. One answer for a circle that is not theirs, one of
+  // July's groups and one that does not exist.
+  const circleId = input.circleId ?? null;
+  if (circleId !== null && !(await mayKeepTo(admin, user.id, circleId))) {
+    return { ok: false, status: 400, error: "That circle was not found.", code: "bad_circle" };
   }
 
   const trust = await readTrust(admin, user, now);
@@ -470,7 +563,10 @@ export async function startCampaign(
       ends_at: endsAtOf(endsOn),
       prayer_rule: prayer?.rule ?? null,
       prayer_id: prayer?.id ?? null,
-      audience: "public",
+      // Everyone in Community, or one circle of the writer's own. The
+      // table holds the two columns to each other.
+      audience: circleId ? "circle" : "public",
+      ...(circleId ? { circle_id: circleId } : {}),
       creator_name: shownName.slice(0, 80),
       creator_handle: handle,
       consent_kind: input.consent,
@@ -503,25 +599,36 @@ export async function startCampaign(
  * one reads as running: it is hidden while a moderator looks, and those who
  * carry it keep praying until it is decided. Says nothing else of any of
  * them, so an id is all a caller can learn about: whether it still runs.
+ *
+ * One kept to a circle answers as gone to anyone but its creator and that
+ * circle's members (`userId`, from the caller's own token, or nobody): an
+ * id tells a reader outside the circle nothing, not even that it is real,
+ * and a member who leaves the circle is told to let its name go.
  */
 export async function campaignStates(
   admin: SupabaseClient,
   ids: readonly string[],
   now: number = Date.now(),
+  userId: string | null = null,
 ): Promise<Read<Record<string, "running" | "over" | "gone">>> {
   const wanted = [...new Set(ids.filter((id) => UUID.test(id)).map((id) => id.toLowerCase()))];
   const out: Record<string, "running" | "over" | "gone"> = {};
   if (wanted.length === 0) return { ok: true, value: out };
-  const { data, error } = await admin.from("prayer_campaigns").select("id, status, ends_at, days").in("id", wanted);
+  const { data, error } = await admin.from("prayer_campaigns").select("id, status, ends_at, days, creator_id, audience, circle_id").in("id", wanted);
   if (error) {
     if (reworkAbsent(error)) return { ok: false, why: "absent" };
     return { ok: false, why: "failed" };
   }
-  const byId = new Map(((data ?? []) as { id: string; status: string; ends_at: string | null; days: number | null }[]).map((r) => [r.id.toLowerCase(), r]));
+  const found = (data ?? []) as unknown as CampaignRow[];
+  const byId = new Map(found.map((r) => [r.id.toLowerCase(), r]));
+  const kept = found.filter((r) => r.audience === "circle").map((r) => r.circle_id);
+  const inCircles = kept.length > 0 ? await circlesHolding(admin, userId, kept) : NO_CIRCLES;
+  // Kept to a circle, and the caller is neither its creator nor in that circle.
+  const outside = (r: CampaignRow) => r.audience === "circle" && r.creator_id !== userId && !(typeof r.circle_id === "string" && inCircles.has(r.circle_id));
   for (const id of wanted) {
     const r = byId.get(id);
     // One of July's runs for nobody (isJulyRow): over, as its creator sees it.
-    out[id] = !r || r.status === "removed" ? "gone" : isJulyRow(r) || isOver(r, now) ? "over" : "running";
+    out[id] = !r || r.status === "removed" || outside(r) ? "gone" : isJulyRow(r) || isOver(r, now) ? "over" : "running";
   }
   return { ok: true, value: out };
 }

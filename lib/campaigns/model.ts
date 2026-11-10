@@ -272,6 +272,13 @@ export type PublicCampaign = {
   keep_after_end?: boolean;
   /** Only for its creator: whether it may stand in "Prayed by many". */
   listed?: boolean;
+  /**
+   * Kept to one circle: that circle's name, for the line that says who can
+   * see it. Only ever sent to a reader who may open the campaign (its
+   * circle's members and its creator); absent for a campaign everyone in
+   * Community can see.
+   */
+  circle?: { name: string };
 };
 
 /** Every column a read may name. No creator_id, no praying_count, no prayer_count. */
@@ -525,6 +532,8 @@ export type WaitingCampaign = {
   /** Why it waits, in the server's own few words: "new; crisis; words (2 masked); money, phone; address", or "reports (3)". */
   held_reason: string | null;
   created_at: string;
+  /** Kept to one circle: its name, so the moderator knows who will see it. Null for one everyone in Community will see. */
+  circle?: string | null;
 };
 
 /** A campaign's open report as the queue shows it: the reason ticked, the words, and the campaign. Never who reported. */

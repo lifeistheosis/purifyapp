@@ -26,6 +26,7 @@ import { Orans } from "@/components/ui/icons/Orans";
 import { Plus } from "@/components/ui/icons/Plus";
 import { Shield } from "@/components/ui/icons/Shield";
 import { ShareButton } from "@/components/ui/ShareButton";
+import { Lock } from "@/components/ui/icons/Lock";
 import { Sheet } from "@/components/ui/Sheet";
 import { carriedOne, type CarryPick } from "@/lib/campaigns/carried";
 import { closeCampaign, fetchCampaign, keepCampaign, setCommentsOpen, setListed, takeDownCampaign, type OneResult } from "@/lib/campaigns/client";
@@ -302,10 +303,14 @@ function Opened({ first, bar }: { first: PublicCampaign; bar: ReactNode }) {
   // doors, and the whole of the page under its head before then.
   const about = (
     <>
-      {campaign.status === "held" ? <p className="mb-6 font-sans text-detail leading-relaxed text-paper/75">{t("campaigns.waitingBody")}</p> : null}
+      {campaign.status === "held" ? (
+        <p className="mb-6 font-sans text-detail leading-relaxed text-paper/75">
+          {campaign.circle ? t("campaigns.waitingBodyCircle", { circle: campaign.circle.name }) : t("campaigns.waitingBody")}
+        </p>
+      ) : null}
       {standing && campaign.status !== "held" ? <p className="mb-6 font-sans text-detail leading-relaxed text-paper/75">{t("campaigns.endedBody")}</p> : null}
 
-      {campaign.details ? <p className="whitespace-pre-line break-words font-serif text-body leading-[1.7] text-paper/90">{campaign.details}</p> : null}
+      {campaign.details ? <p dir="auto" className="whitespace-pre-line break-words font-serif text-body leading-[1.7] text-paper/90">{campaign.details}</p> : null}
 
       {picturesOn ? <CampaignPictures campaignId={campaign.id} mine={mine} result={pictures} reload={reloadPictures} onNotice={said} /> : null}
 
@@ -371,7 +376,7 @@ function Opened({ first, bar }: { first: PublicCampaign; bar: ReactNode }) {
             </div>
             <div className="relative -mt-28 text-start">
               <div className="saint-head-in" style={{ "--i": 1 } as CSSProperties}>
-                <h1 id="campaign-title" className="break-words text-title leading-[1.1] text-balance text-paper">
+                <h1 id="campaign-title" dir="auto" className="break-words text-title leading-[1.1] text-balance text-paper">
                   {campaign.title}
                 </h1>
                 <p className="mt-2 font-sans text-ui leading-snug text-paper/70">
@@ -400,6 +405,13 @@ function Opened({ first, bar }: { first: PublicCampaign; bar: ReactNode }) {
                   </p>
                 </div>
               ) : null}
+              {/* Kept to one circle: said under its creator, to everyone who can open it. */}
+              {campaign.circle ? (
+                <p data-campaign-circle="" className="saint-head-in mt-3 flex items-center gap-2 font-sans text-detail leading-snug text-paper/75" style={{ "--i": 2 } as CSSProperties}>
+                  <Lock size={15} className="shrink-0" />
+                  <span className="min-w-0 break-words">{t("campaigns.onlyCircle", { circle: campaign.circle.name })}</span>
+                </p>
+              ) : null}
               {/* The three things a reader does with it, as its card under
                   Pray together has them (components/community/CampaignCard.tsx). */}
               <div className="saint-head-in mt-5 flex items-center gap-2" style={{ "--i": 3 } as CSSProperties}>
@@ -420,8 +432,9 @@ function Opened({ first, bar }: { first: PublicCampaign; bar: ReactNode }) {
                 ) : (
                   <span className="flex-1" />
                 )}
-                {/* Not while it waits for a moderator: its link opens for nobody else yet. */}
-                {campaign.status === "held" ? null : <ShareButton title={t("community.prayerCampaigns")} round />}
+                {/* Not while it waits for a moderator: its link opens for nobody else yet.
+                    And not from one kept to a circle, whose link opens only for its members. */}
+                {campaign.status === "held" || campaign.circle ? null : <ShareButton title={t("community.prayerCampaigns")} round />}
               </div>
               {notice || failed ? (
                 <p role={failed ? "alert" : "status"} className={cn("mt-3 font-sans text-detail", failed ? "text-crimson-soft" : "text-paper/75")}>

@@ -27,7 +27,7 @@ const STORAGE = `${PROJECT}/storage/v1`;
 
 export type Row = Record<string, unknown>;
 type Failure = { code?: string; message: string; statusCode?: string };
-type Result = { data: unknown; error: Failure | null };
+type Result = { data: unknown; error: Failure | null; count?: number | null };
 
 /** Every column of the tables these suites touch, from supabase/migrations. */
 const COLUMNS: Record<string, string[]> = {
@@ -138,6 +138,11 @@ const COLUMNS: Record<string, string[]> = {
     "id", "campaign_id", "creator_id", "name", "invite_code", "member_count", "prayer_count",
     "created_at", "updated_at", "kind", "path_id", "path_started_on",
   ],
+  // 20260811000000_campaign_groups_and_streaks.sql: who is in a group, which since
+  // docs/1.8-build/sql/read-together.sql is who is in a circle.
+  prayer_campaign_group_members: ["group_id", "user_id", "member_name", "joined_at"],
+  // docs/1.8-build/sql/read-together.sql: who in a circle has read which day of its path.
+  group_path_days: ["group_id", "user_id", "day", "read_at"],
   // 20261110001550_psalms_113_115_move.sql: the names of the moves made, and when.
   data_moves: ["name", "done_at"],
   // 20260801000000_community_notifications.sql, 20261002000000_community_social.sql (actor_handle),
@@ -222,7 +227,11 @@ const CASCADE: Record<string, [table: string, column: string][]> = {
   // one: prayer_campaigns.circle_id references prayer_campaign_groups on
   // delete cascade). So a delete can run on from a campaign to its group to
   // another campaign, as it does in the database.
-  prayer_campaign_groups: [["prayer_campaigns", "circle_id"]],
+  prayer_campaign_groups: [
+    ["prayer_campaigns", "circle_id"],
+    // And its members go with it (20260811000000: group_id on delete cascade).
+    ["prayer_campaign_group_members", "group_id"],
+  ],
 };
 
 /** Delete what hangs from these rows, and what hangs from that, as the tables' keys say. */
@@ -281,6 +290,8 @@ export type World = {
   /** Runs once, just before the next update is applied: for a write that races. */
   beforeUpdate: (() => void) | null;
   calls: { upload: number; copy: number; remove: number; writes: number };
+  /** Every database function called, in order, with what it was handed. */
+  rpcs: { name: string; args: Record<string, unknown> }[];
 };
 
 export function world(): World {
@@ -307,6 +318,7 @@ export function world(): World {
     },
     beforeUpdate: null,
     calls: { upload: 0, copy: 0, remove: 0, writes: 0 },
+    rpcs: [],
   };
 }
 
@@ -331,13 +343,19 @@ class Query {
   private descending = false;
   private one: "maybe" | "single" | null = null;
   private embeds: { alias: string; table: string; columns: string[] }[] = [];
+  /** PostgREST's `{ count: "exact" }`: how many rows the filters match, whatever the window. */
+  private counting = false;
+  /** And `{ head: true }`: the count alone, no rows. */
+  private headOnly = false;
 
   constructor(
     private w: World,
     private table: string,
   ) {}
 
-  select(columns = "*") {
+  select(columns = "*", opts: { count?: "exact"; head?: boolean } = {}) {
+    if (opts.count === "exact") this.counting = true;
+    if (opts.head) this.headOnly = true;
     // Commas inside an embedded read's brackets belong to it: "a, b:t(c, d)" is two parts.
     const parts: string[] = [];
     let depth = 0;
@@ -506,7 +524,7 @@ class Query {
           row[e.alias] = other ? Object.fromEntries(e.columns.map((c) => [c, structuredClone(other[c] ?? null)])) : null;
         }
       }
-      return { data: found, error: null };
+      return { data: this.headOnly ? null : found, error: null, ...(this.counting ? { count: sorted.length } : {}) };
     }
 
     this.w.calls.writes++;
@@ -619,6 +637,12 @@ export function client(w: World) {
   const buckets = new Set<string>();
   return {
     from: (table: string) => new Query(w, table),
+    // A database function: named and answered with nothing. A suite that
+    // needs what one does stands its own in.
+    rpc: async (name: string, args?: Record<string, unknown>) => {
+      w.rpcs.push({ name, args: args ?? {} });
+      return { data: null, error: null };
+    },
     storage: {
       createBucket: async (name: string, options?: { public?: boolean }) => {
         // The first making of a bucket decides it, as on the real service:

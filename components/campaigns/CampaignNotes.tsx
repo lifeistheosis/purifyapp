@@ -292,7 +292,7 @@ export function CampaignUpdates({ campaignId, result, reload, campaignMine }: Pa
                   <p className="min-w-0 flex-1 font-sans text-detail font-semibold text-paper/80">{dayText(note.created_at.slice(0, 10), locale)}</p>
                   {items.length > 0 ? <ActionMenu className="-me-1.5 -mt-2 shrink-0" label={t("profile.moreActions")} items={items} /> : null}
                 </div>
-                <p className="mt-1 whitespace-pre-line break-words font-serif text-body leading-[1.7] text-paper/90">{note.body}</p>
+                <p dir="auto" className="mt-1 whitespace-pre-line break-words font-serif text-body leading-[1.7] text-paper/90">{note.body}</p>
               </li>
             );
           })}
@@ -359,7 +359,7 @@ export function CampaignComments({ campaignId, result, reload, campaignMine, run
                       {timeAgo(note.created_at)}
                     </span>
                   </p>
-                  <p className="mt-0.5 whitespace-pre-wrap break-words font-sans text-[14.5px] leading-[1.5] text-paper/90">{note.body}</p>
+                  <p dir="auto" className="mt-0.5 whitespace-pre-wrap break-words font-sans text-[14.5px] leading-[1.5] text-paper/90">{note.body}</p>
                 </div>
                 {items.length > 0 ? <ActionMenu className="-me-1.5 -mt-1 shrink-0" label={t("profile.moreActions")} items={items} /> : null}
               </li>

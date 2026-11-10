@@ -80,6 +80,7 @@ async function handlePOST(req: Request) {
       prayer: p.prayer ?? null,
       consent: p.consent,
       confirmFiltered: p.confirmFiltered,
+      circleId: p.circleId ?? null,
     },
   );
   if (!started.ok) {
