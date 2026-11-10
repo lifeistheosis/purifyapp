@@ -3612,3 +3612,53 @@ Also waiting, from this chat's own notes: the tablet's last lines under the
 reader's dock (with Updates, who holds the tablet dock); and the preview's
 title bar in the longer languages (section 35, with Admin).
 
+## 37. The closing gates for 1.9 (2026-11-10, evening)
+
+His word, about 19:22 UTC: "finalize all the builds, and then send me the
+version 1.9 update." Everything of this chat's that is 1.9 is on the branch:
+Fire out (`aa0eac68`), match light (`3ff380d7`), the three contrast mends
+(`38b5f9c8`, `b23a4bb8`, `3702200b`) and their record (`e7eaf148`).
+
+**The three builds, on `e7eaf148`**, one after the other in one checkout:
+
+- `npm run build:android`: clean, 210 MB on disk in 6,945 files.
+- `npm run build:ios`: clean, the same export for the iPhone.
+- `npm run build` (the website; a build only, nothing deployed): clean,
+  6,239 pages.
+
+The tree was clean after them, and the local shop stubs the exports need
+were taken out again (none left in `app/`, `components/` or `lib/`).
+
+**The gates on that tree**: typecheck 0; the unit suite 921 files and
+11,450 tests; lint 0 errors.
+
+**One more export with the gate on**, as the release is cut, from the
+branch's head an hour later (`c24163bb`, with the other chats' work on it),
+for what only a reader without Plus meets:
+
+- The reading modes' page for that reader: each of the four families says
+  Purify Plus once by its name and no tile repeats it; the free three carry
+  no mark; a tap on a look opens the sheet and changes nothing; Light still
+  applies with one tap; no page error; `checkMock` passes on the page.
+- The sheet says "Nineteen reading modes are part of Purify Plus" and
+  "seventeen looks in four families", and says twenty, eighteen and Fire
+  nowhere. `checkMock` passes on it.
+- A device that stored Fire, for a reader without Plus: Fire is never on
+  the page. The first paint puts Candlelight on, as it does for any stored
+  Plus palette, and the gate then puts it down to Dark. That is what
+  happened to a stored Candlelight before today; nothing new.
+
+**His stills page** (private, the same link, version 10) is brought up to
+date: 17 themes, Fire's two stills gone, the picker's stills retaken without
+Fire (the locked one too), the plan's row and the preview's head retaken
+with "Nineteen", the sheet pictured for the first time, a section for
+Light's top of the screen with the two decision stills (their strip is
+drawn, and the page says so), and the roadmap in its own words.
+
+**Still open, and not this chat's to change**: the Plus preview's title bar
+in the longer languages (section 35), with Admin.
+
+**Still unproven**: everything a phone has to show. Match light above all:
+the rule is tested and the walk against the app's own screens is clean, but
+no phone has seen it.
+
