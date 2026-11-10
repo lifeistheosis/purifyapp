@@ -14,7 +14,9 @@ import { avifFor } from "@/lib/media/streamed";
  * width from its very top, under the clear top bar, four wide by five tall,
  * and melts into the page below the name. It is a picture on the website,
  * fetched by the apps; until it arrives, and if it cannot (no signal), the
- * icon the app carries stands in the middle of the same box at its own size.
+ * icon the app carries stands in the same box at its own size, between the
+ * bar and the name and clear of both (`.hero-stand-in`, app/globals.css),
+ * smaller only where the box is too short to hold it.
  * A short shade at the top keeps the clock and the bar's buttons readable.
  * On a tablet and a computer it is a rounded picture beside the name.
  *
@@ -99,7 +101,7 @@ export function SaintHeroPicture({
             aria-hidden={failed ? undefined : true}
             decoding="async"
             className={cn(
-              "absolute inset-0 m-auto h-[240px] max-h-[70%] w-auto rounded-[10px] ring-1 ring-paper/10",
+              "hero-stand-in absolute inset-0 m-auto h-[240px] max-h-[70%] w-auto rounded-[10px] ring-1 ring-paper/10",
               shown ? "opacity-0" : "opacity-100",
             )}
           />

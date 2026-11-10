@@ -697,6 +697,22 @@ html.is-native .below-topbar {
  html.is-native .under-topbar {
   margin-top: calc(-3rem - var(--inset-top));
  }
+ /* Until a saint's large picture comes, and with no signal, the icon the app
+    carries stands in for it (SaintHeroPicture): between the bar and his name,
+    which is set over the picture's last 7rem (SaintHero, -mt-28), a rem clear
+    of each, and smaller where the picture is too short to hold it whole.
+    Centred in the whole picture, its foot ran under the name (St Gregory the
+    Theologian's and the Apostle Peter's pages, 2026-11-10). These plain rules
+    outrank the element's inset-0 and max-h-[70%], which a tablet keeps. */
+ .hero-stand-in {
+  top: calc(4rem + env(safe-area-inset-top, 0px));
+  bottom: 8rem;
+  max-height: calc(100% - 12rem - env(safe-area-inset-top, 0px));
+ }
+ html.is-native .hero-stand-in {
+  top: calc(4rem + var(--inset-top));
+  max-height: calc(100% - 12rem - var(--inset-top));
+ }
  /* The picture melts into the page below the name: a mask on the picture,
     so no colour is laid over the page. Round 3b D (1.8) sets the name over
     the picture's last quarter, so the melt starts earlier, as the design's
