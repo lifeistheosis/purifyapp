@@ -83,7 +83,7 @@ export default async function TopicsIndexPage() {
                     </span>
                   )}
                   <div className="min-w-0 flex-1 py-0.5">
-                    <h2 lang="en" dir="ltr" className="font-serif text-[17px] font-bold leading-tight text-paper">
+                    <h2 lang="en" dir="ltr" className="font-serif text-[17px] font-bold leading-tight text-paper rtl:text-right">
                       {card.title}
                     </h2>
                     <p lang="en" dir="ltr" className="mt-[5px] font-serif text-[14px] italic leading-[1.48] text-paper/80">

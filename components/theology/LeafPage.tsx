@@ -99,12 +99,12 @@ export function LeafPage({
               data-leaf-name=""
               lang={nameLang}
               dir={textDir(nameLang)}
-              className="font-serif text-title font-bold leading-[1.1] tracking-[-0.01em] text-balance text-paper hyphens-auto break-words"
+              className="font-serif text-title font-bold leading-[1.1] tracking-[-0.01em] text-balance text-paper rtl:text-right hyphens-auto break-words"
             >
               {name}
             </h1>
             {line ? (
-              <p data-leaf-line="" lang={lineLang} dir={textDir(lineLang)} className="mt-1.5 font-sans text-detail leading-[1.4] text-paper/55">
+              <p data-leaf-line="" lang={lineLang} dir={textDir(lineLang)} className="mt-1.5 font-sans text-detail leading-[1.4] text-paper/55 rtl:text-right">
                 {line}
               </p>
             ) : null}

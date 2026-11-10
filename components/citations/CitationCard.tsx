@@ -41,11 +41,11 @@ export function CitationCard({ c }: { c: ResolvedCitation }) {
         )}
         {/* Our line on what the passage shows; where there is none, his name, or the work's where it is not his. */}
         {c.gloss ? (
-          <p lang="en" dir="ltr" className="min-w-0 flex-1 font-sans text-detail leading-[1.5] text-paper/70">
+          <p lang="en" dir="ltr" className="min-w-0 flex-1 font-sans text-detail leading-[1.5] text-paper/70 rtl:text-right">
             {c.gloss}
           </p>
         ) : (
-          <p lang="en" dir="ltr" className="min-w-0 flex-1 font-serif text-[15px] font-semibold leading-[1.25] text-paper/92">
+          <p lang="en" dir="ltr" className="min-w-0 flex-1 font-serif text-[15px] font-semibold leading-[1.25] text-paper/92 rtl:text-right">
             {c.ownWork ? c.saintName : c.workTitle}
           </p>
         )}

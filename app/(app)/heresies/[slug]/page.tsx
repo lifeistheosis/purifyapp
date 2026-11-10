@@ -212,10 +212,10 @@ export default async function HeresyProfilePage({
                   <Link href={`/councils/${c.slug}`} className={ROW}>
                     <CouncilMark slug={c.slug} />
                     <span className="min-w-0 flex-1">
-                      <span lang="en" dir="ltr" className="block font-serif text-[15.5px] font-semibold leading-[1.26] text-paper/92">
+                      <span lang="en" dir="ltr" className="block font-serif text-[15.5px] font-semibold leading-[1.26] text-paper/92 rtl:text-right">
                         {c.byname}
                       </span>
-                      <span lang="en" dir="ltr" className="mt-0.5 block font-sans text-caption leading-[1.4] text-paper/55">
+                      <span lang="en" dir="ltr" className="mt-0.5 block font-sans text-caption leading-[1.4] text-paper/55 rtl:text-right">
                         {c.year} &middot; {c.location}
                       </span>
                     </span>
@@ -228,10 +228,10 @@ export default async function HeresyProfilePage({
                   <Link href={c.href ?? `/history/${c.history}`} className={ROW}>
                     <CouncilMark />
                     <span className="min-w-0 flex-1">
-                      <span lang="en" dir="ltr" className="block font-serif text-[15.5px] font-semibold leading-[1.26] text-paper/92">
+                      <span lang="en" dir="ltr" className="block font-serif text-[15.5px] font-semibold leading-[1.26] text-paper/92 rtl:text-right">
                         {c.name}
                       </span>
-                      <span lang="en" dir="ltr" className="mt-0.5 block font-sans text-caption leading-[1.4] text-paper/55">
+                      <span lang="en" dir="ltr" className="mt-0.5 block font-sans text-caption leading-[1.4] text-paper/55 rtl:text-right">
                         {c.year}
                       </span>
                     </span>
@@ -276,7 +276,7 @@ function Place({ href, children }: { href: string; children: ReactNode }) {
   return (
     <Link href={href} prefetch={false} className={PLACE}>
       {/* The words say their language and their direction; the link and its chevron run with the page. */}
-      <span lang="en" dir="ltr" className="min-w-0">
+      <span lang="en" dir="ltr" className="min-w-0 rtl:text-right">
         {children}
       </span>
       <ChevronRight size={14} className="mt-[3px] shrink-0 rtl:-scale-x-100" />

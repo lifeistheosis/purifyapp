@@ -49,10 +49,10 @@ export default async function ApologeticsIndexPage() {
       <WayPage way="apologetics" counts={counts} lead="study.apologetics.lead" note={<p><T k="study.whereDoctrineAndTopicsArgue" /></p>}>
         {kinds.map(({ group, label, answers }, at) => (
           <section key={group} data-objection={group} aria-labelledby={`objection-${group}`} className={at === 0 ? "mt-7" : "mt-8"}>
-            <h2 id={`objection-${group}`} lang="en" dir="ltr" className={WAY_H2}>
+            <h2 id={`objection-${group}`} lang="en" dir="ltr" className={`${WAY_H2} rtl:text-right`}>
               {label.en}
             </h2>
-            <p lang="en" dir="ltr" className="mt-1 font-sans text-caption leading-[1.42] text-paper/55">
+            <p lang="en" dir="ltr" className="mt-1 font-sans text-caption leading-[1.42] text-paper/55 rtl:text-right">
               {label.subtitle}
             </p>
             <ul className="mt-3 space-y-3">
@@ -63,7 +63,7 @@ export default async function ApologeticsIndexPage() {
                       <span aria-hidden data-carry={`answer:${answer.slug}`} className="theology-plate grid size-8 shrink-0 place-items-center rounded-[10px] text-paper/85">
                         <Shield size={17} />
                       </span>
-                      <h3 lang="en" dir="ltr" className="min-w-0 flex-1 font-serif text-[17px] font-bold leading-tight text-paper">
+                      <h3 lang="en" dir="ltr" className="min-w-0 flex-1 font-serif text-[17px] font-bold leading-tight text-paper rtl:text-right">
                         {answer.title}
                       </h3>
                       {answer.estimatedMinutes ? (

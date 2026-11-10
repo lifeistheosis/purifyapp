@@ -83,10 +83,10 @@ export default async function HeresiesIndexPage() {
                       <Scroll size={17} />
                     </span>
                     <span className="min-w-0 flex-1">
-                      <span lang="en" dir="ltr" className="block font-serif text-[15.5px] font-semibold leading-[1.26] text-paper/92">
+                      <span lang="en" dir="ltr" className="block font-serif text-[15.5px] font-semibold leading-[1.26] text-paper/92 rtl:text-right">
                         {h.name}
                       </span>
-                      <span lang="en" dir="ltr" className="mt-[3px] block font-sans text-detail leading-[1.45] text-paper/60">
+                      <span lang="en" dir="ltr" className="mt-[3px] block font-sans text-detail leading-[1.45] text-paper/60 rtl:text-right">
                         {h.shortBio}
                       </span>
                     </span>

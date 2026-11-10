@@ -117,11 +117,11 @@ export function ApologeticsReader({
                   className="theology-row flex min-h-[54px] items-start gap-3 rounded-[14px] px-2.5 py-3"
                 >
                   <span className="min-w-0 flex-1">
-                    <span lang="en" dir="ltr" className="block font-sans text-ui font-semibold text-paper">
+                    <span lang="en" dir="ltr" className="block font-sans text-ui font-semibold text-paper rtl:text-right">
                       {s.ref}
                     </span>
                     {s.note ? (
-                      <span lang="en" dir="ltr" className="mt-1 block font-serif text-detail leading-[1.55] text-paper/70">
+                      <span lang="en" dir="ltr" className="mt-1 block font-serif text-detail leading-[1.55] text-paper/70 rtl:text-right">
                         {s.note}
                       </span>
                     ) : null}

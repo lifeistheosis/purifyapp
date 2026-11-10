@@ -262,7 +262,8 @@ describe("English on these pages", () => {
     expect(code(READER)).toMatch(/name=\{body\.title\}\s+nameLang="en"/);
     expect(code(CREED)).not.toContain("nameLang");
     // A line that opens its place: the words say it, and the link with its chevron runs with the page.
-    expect(code(HERESY)).toMatch(/<Link href=\{href\} prefetch=\{false\} className=\{PLACE\}>\s*<span lang="en" dir="ltr" className="min-w-0">/);
+    // Under Arabic and Urdu the words stand at the row's start, beside the chevron (the rows rule, build 90 note 4).
+    expect(code(HERESY)).toMatch(/<Link href=\{href\} prefetch=\{false\} className=\{PLACE\}>\s*<span lang="en" dir="ltr" className="min-w-0 rtl:text-right">/);
   });
 });
 
