@@ -180,7 +180,9 @@ describe("the True black palette", () => {
     // White at 45 percent is 4.53:1 on Dark's page and 4.41:1 on #000000:
     // the ground is darker, but it lends a translucent label less, and the
     // ink is already pure white. So this palette raises the label's share.
-    const sel = `:where(${BLACK}) .text-paper\\/45`;
+    // One rule for the shares under AA here: 45, and since the Themes chat's
+    // sweep the odd 42 the app also writes (app/globals.css).
+    const sel = `:where(${BLACK}) :is(.text-paper\\/42, .text-paper\\/45)`;
     const rule = BLACK_RULES.find(([s]) => s === sel);
     expect(rule, `no rule for ${sel}`).toBeDefined();
     const m = /color:\s*rgb\(255 255 255 \/ (0?\.\d+)\)/.exec(rule![1]);

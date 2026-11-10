@@ -5201,7 +5201,7 @@ html[data-reading-mode="black"] .tile-sheen {
    label at 47 percent through its hover. text-paper/40 is under AA on Dark
    as well and is left as it is. */
 @layer utilities {
- :where(html[data-reading-mode="black"]) .text-paper\/45 {
+ :where(html[data-reading-mode="black"]) :is(.text-paper\/42, .text-paper\/45) {
  color: rgb(255 255 255 / 0.47);
  }
 }
@@ -5224,18 +5224,27 @@ html[data-reading-mode="black"] .tile-sheen {
    still wins. lib/ui/__tests__/faintText.test.ts does the arithmetic on every
    palette, so the next palette or the next nudge cannot fall under again.
    Not here: the 40 percent share (under AA on every palette, kept for marks
-   that are decorative or disabled, which WCAG leaves out) and placeholders. */
+   that are decorative or disabled, which WCAG leaves out) and placeholders.
+
+   Every share the app writes is named, the odd ones too (1.9, the Themes
+   chat's sweep, section 25 of its notes): the app also writes 42, 48, 52,
+   56 and 58, about twenty places, which a palette drew as written (Theology's
+   "7 citations from the Fathers", at 52, was 2.93:1 on Light), and on Light's
+   cards 62, 65 and 66 fell short too. Each palette names the shares under its
+   own (Dark and True black 42; Candlelight 42, 48 and 52; Monastery, Councils
+   and Cappadocian 42 and 48; Light everything under 68). The test reads every
+   share written in app/ and components/, so the next odd one is held. */
 @layer utilities {
- :where(html:not([data-reading-mode])) .text-paper\/45 {
+ :where(html:not([data-reading-mode])) :is(.text-paper\/42, .text-paper\/45) {
  color: color-mix(in oklab, var(--color-paper) 50%, transparent);
  }
- :where(html[data-reading-mode="parchment"]) :is(.text-paper\/45, .text-paper\/50, .text-paper\/55, .text-paper\/60) {
+ :where(html[data-reading-mode="parchment"]) :is(.text-paper\/42, .text-paper\/45, .text-paper\/48, .text-paper\/50, .text-paper\/52, .text-paper\/55, .text-paper\/56, .text-paper\/58, .text-paper\/60, .text-paper\/62, .text-paper\/65, .text-paper\/66) {
  color: color-mix(in oklab, var(--color-paper) 70%, transparent);
  }
- :where(html[data-reading-mode="candlelight"]) :is(.text-paper\/45, .text-paper\/50, .text-paper\/55) {
+ :where(html[data-reading-mode="candlelight"]) :is(.text-paper\/42, .text-paper\/45, .text-paper\/48, .text-paper\/50, .text-paper\/52, .text-paper\/55) {
  color: color-mix(in oklab, var(--color-paper) 60%, transparent);
  }
- :where(html[data-reading-mode="monastery"], html[data-reading-mode="councils"], html[data-reading-mode="cappadocian"]) :is(.text-paper\/45, .text-paper\/50) {
+ :where(html[data-reading-mode="monastery"], html[data-reading-mode="councils"], html[data-reading-mode="cappadocian"]) :is(.text-paper\/42, .text-paper\/45, .text-paper\/48, .text-paper\/50) {
  color: color-mix(in oklab, var(--color-paper) 55%, transparent);
  }
  /* Every field's placeholder (1.9, the placeholder sweep; it began with the
@@ -11614,8 +11623,9 @@ html[data-look]:not([data-reading-mode]) :is(.set-hint, .set-desc, .set-sub, .se
    share its faint text is drawn at ("Faint text on every palette", above).
    Every share the app writes from 40 to 60 percent is named, the odd ones
    too (42, 48, 52, 56, 58), so none slips between two rules. A light look
-   draws every share under 70 percent at that one share (Light leaves 62 to
-   68 as written, which its darker ink can carry), and its ink is dark
+   draws every share under 70 percent at that one share (Light, since the
+   Themes chat's sweep, lifts everything under 68 too, its cards being darker
+   than its page), and its ink is dark
    enough that Light's own 70 percent holds 4.5:1 on its page, its cards and
    a 4 percent box, so Light's rules need no second copy. Mosaic, whose
    bands are the lightest of the dark looks, lifts 62 and 65 as well.

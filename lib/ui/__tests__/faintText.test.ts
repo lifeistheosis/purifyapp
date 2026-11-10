@@ -59,6 +59,23 @@ function colours(mode: Mode): { night: Rgb; soft: Rgb; paper: Rgb } {
 
 const SHARES = [45, 50, 55, 60] as const;
 
+/** Every text-paper share written in app/ and components/, read from the source so a share written tomorrow is held the day it is written. */
+function sharesWritten(): number[] {
+  const written = new Set<number>(SHARES);
+  const walk = (dir: string) => {
+    for (const e of readdirSync(join(process.cwd(), dir), { withFileTypes: true })) {
+      if (e.isDirectory()) {
+        if (e.name !== "__tests__" && e.name !== "node_modules") walk(join(dir, e.name));
+      } else if (e.name.endsWith(".tsx")) {
+        for (const m of readFileSync(join(process.cwd(), dir, e.name), "utf8").matchAll(/\btext-paper\/(\d+)\b/g)) written.add(Number(m[1]));
+      }
+    }
+  };
+  walk("app");
+  walk("components");
+  return [...written].sort((x, y) => x - y);
+}
+
 /**
  * The share each palette finally draws text-paper/<share> at, from the stylesheet's own rules.
  * A look (1.9) is worn over Dark or over Light, so the rules of the palette
@@ -111,6 +128,35 @@ describe("faint text on every palette", () => {
       const grounds: Record<string, Rgb> = { page: night, card: soft, box: mix(paper, night, 0.04) };
       const short: string[] = [];
       for (const share of SHARES) {
+        const at = drawn(mode, share) / 100;
+        for (const [where, ground] of Object.entries(grounds)) {
+          const r = ratio(mix(paper, ground, at), ground);
+          if (r < 4.5) short.push(`text-paper/${share} drawn at ${Math.round(at * 100)}% on the ${where}: ${r.toFixed(2)}:1`);
+        }
+      }
+      expect(short, short.join("\n")).toEqual([]);
+    });
+  }
+
+  // Every share the app writes above 40 and under 70 percent (1.9, the
+  // Themes chat's sweep, section 25 of its notes). The rules above named 45,
+  // 50, 55 and 60; the app also writes 42, 48, 52, 56 and 58 (about twenty
+  // places), which a palette drew as written: Theology's "7 citations from
+  // the Fathers", at 52, was 2.93:1 on Light, 4.10:1 on Candlelight and
+  // 4.43:1 on Monastery. 40 stays out, as above (decorative or disabled marks;
+  // words once there are held below).
+  const WRITTEN = sharesWritten().filter((share) => share > 40 && share < 70);
+
+  it("reads the shares the app writes above 40 and under 70 percent, the odd ones too", () => {
+    for (const share of [42, 45, 48, 50, 52, 55, 56, 58, 60, 65]) expect(WRITTEN).toContain(share);
+  });
+
+  for (const mode of MODES) {
+    it(`${mode}: every share the app writes above 40 and under 70 percent is 4.5:1 or more on the page, a card and a 4 percent box`, () => {
+      const { night, soft, paper } = colours(mode);
+      const grounds: Record<string, Rgb> = { page: night, card: soft, box: mix(paper, night, 0.04) };
+      const short: string[] = [];
+      for (const share of WRITTEN) {
         const at = drawn(mode, share) / 100;
         for (const [where, ground] of Object.entries(grounds)) {
           const r = ratio(mix(paper, ground, at), ground);
@@ -178,27 +224,14 @@ describe("faint text on every look", () => {
   // On a look every share the app writes from 40 up to 70 percent is held,
   // not only the four above: the odd ones (42, 48, 52, 56, 58, about twenty
   // uses) and the ones between 60 and 70 (62, 65, 66, 68, about 170). Light's
-  // darker ink carries 65 percent; a look's own ink, a shade lighter, was
+  // darker ink carries 68 percent (62 to 66 fell short on its cards and are
+  // lifted since the Themes chat's sweep); a look's own ink, a shade lighter, was
   // measured a hair under on the export (4.37:1 to 4.45:1 on eight light
   // looks, scripts/mock-check.mjs --looks). The list is read from the source,
   // so a share written tomorrow is held the day it is written: where a look
   // cannot carry it as written, the look's rule in app/globals.css ("The
   // looks (1.9)") has to name it.
-  const LOOK_SHARES = (() => {
-    const written = new Set<number>(SHARES);
-    const walk = (dir: string) => {
-      for (const e of readdirSync(join(process.cwd(), dir), { withFileTypes: true })) {
-        if (e.isDirectory()) {
-          if (e.name !== "__tests__" && e.name !== "node_modules") walk(join(dir, e.name));
-        } else if (e.name.endsWith(".tsx")) {
-          for (const m of readFileSync(join(process.cwd(), dir, e.name), "utf8").matchAll(/\btext-paper\/(\d+)\b/g)) written.add(Number(m[1]));
-        }
-      }
-    };
-    walk("app");
-    walk("components");
-    return [...written].filter((share) => share >= 40 && share < 70).sort((x, y) => x - y);
-  })();
+  const LOOK_SHARES = sharesWritten().filter((share) => share >= 40 && share < 70);
 
   it("reads the shares the app writes from 40 up to 70 percent", () => {
     for (const share of [40, 45, 50, 55, 60, 65]) expect(LOOK_SHARES).toContain(share);
