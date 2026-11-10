@@ -4,6 +4,7 @@ import { getServerLocale } from "@/lib/i18n/server";
 import { TranslationDisclaimer } from "@/components/i18n/TranslationDisclaimer";
 import { T } from "@/components/i18n/T";
 import { LEGAL_EMAIL, LEGAL_NAME } from "@/lib/legal/entity";
+import { websiteHref } from "@/lib/nav/websiteHref";
 
 export const metadata = {
  title: "Privacy",
@@ -284,7 +285,7 @@ export default async function PrivacyPage() {
  deliberately open to AI crawlers, and none of your activity is
  part of it. Our{" "}
  <Link
- href="/robots.txt"
+ href={websiteHref("/robots.txt")}
  className="text-paper underline underline-offset-2 decoration-paper/30 hover:decoration-paper"
  >
  robots policy
@@ -644,7 +645,7 @@ export default async function PrivacyPage() {
  Nothing in this section touches your account, your reading, your
  notes, or your bookmarks, which are never given to anyone.{" "}
  <Link
- href="/robots.txt"
+ href={websiteHref("/robots.txt")}
  className="text-paper underline underline-offset-2 decoration-paper/30 hover:decoration-paper"
  >Our robots file</Link>{" "}
  sorts AI agents into three groups, and it is the whole rule.
@@ -699,7 +700,7 @@ export default async function PrivacyPage() {
  passage that reads as though it came from a Father did. We keep a
  plain-language summary of all of this for machine readers at{" "}
  <Link
- href="/llms.txt"
+ href={websiteHref("/llms.txt")}
  className="text-paper underline underline-offset-2 decoration-paper/30 hover:decoration-paper"
  >/llms.txt</Link>, and we will keep adding newly discovered
  agents to whichever group fits them.
@@ -1077,7 +1078,7 @@ function PrivacyDe() {
  Teil der veröffentlichten Bibliothek ist absichtlich für KI-Crawler
  offen, und nichts von deiner Aktivität gehört dazu. Unsere{" "}
  <Link
- href="/robots.txt"
+ href={websiteHref("/robots.txt")}
  className="text-paper underline underline-offset-2 decoration-paper/30 hover:decoration-paper"
  >
  Robots-Regel
@@ -1453,7 +1454,7 @@ function PrivacyDe() {
  Lesen, deine Notizen oder deine Lesezeichen; die werden niemandem
  gegeben.{" "}
  <Link
- href="/robots.txt"
+ href={websiteHref("/robots.txt")}
  className="text-paper underline underline-offset-2 decoration-paper/30 hover:decoration-paper"
  >Unsere Robots-Datei</Link>{" "}
  teilt die KI-Agenten in drei Gruppen ein, und das ist die ganze
@@ -1511,7 +1512,7 @@ function PrivacyDe() {
  knappe Fassung dieser Regel für maschinelle Leser halten wir
  unter{" "}
  <Link
- href="/llms.txt"
+ href={websiteHref("/llms.txt")}
  className="text-paper underline underline-offset-2 decoration-paper/30 hover:decoration-paper"
  >/llms.txt</Link> bereit, und wir ordnen neu entdeckte Agenten
  weiterhin der jeweils passenden Gruppe zu.

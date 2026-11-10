@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { T } from "@/components/i18n/T";
 import { SUPPORT_EMAIL } from "@/lib/legal/entity";
+import { websiteHref } from "@/lib/nav/websiteHref";
 
 export const metadata = {
   title: "Shipping & Returns | EIKON",
@@ -51,7 +52,7 @@ export default function ShopPoliciesPage() {
         <h2 id="returns" className={`${H2} scroll-mt-28`}><T k="shop.returns" /></h2>
         <p className={P}>
           <T k="shop.standardStockedItemsMayBe" />{" "}
-          <Link href="/support/contact" className={A}>
+          <Link href={websiteHref("/support/contact")} className={A}>
             <T k="shop.support" />
           </Link>
           .
@@ -75,7 +76,7 @@ export default function ShopPoliciesPage() {
         <h2 className={H2}><T k="shop.questions" /></h2>
         <p className={P}>
           <T k="shop.reachUsAnyTimeThrough" />{" "}
-          <Link href="/support/contact" className={A}>
+          <Link href={websiteHref("/support/contact")} className={A}>
             <T k="shop.support" />
           </Link>{" "}
           <T k="shop.orAt" />{" "}
