@@ -640,17 +640,21 @@ reader sees and what could go wrong, after a second chat has reviewed the
 SQL (above).
 
 - Prayer campaigns, file one: signed 2026-11-10 ("R0b yes 1").
-- Prayer campaigns, file two (a campaign's updates and comments): reviewed by
-  a second chat, the Admin chat, on 2026-11-10. Waits for your yes.
-- Prayer campaigns, file three: as it lands.
+- Prayer campaigns, file two (a campaign's updates and comments) and file
+  three (a campaign's pictures): reviewed by a second chat, the Admin chat,
+  and signed 2026-11-10 by "All recommendations. Start.". In
+  `supabase/migrations/` as `20261110135543_campaign_threads.sql` and
+  `20261110135545_campaign_pictures.sql`. File three makes the pictures'
+  table only: pictures stay switched off on the server until the image check
+  and the lawyer.
 - The florilegium's two new kinds (a council's words, a prayer's line):
   signed 2026-11-10 ("yes florilegium"), and in `supabase/migrations/` as
   `20261110090516_florilegium_kinds.sql`.
 
 Do not run any of these by hand: the push runs them.
 
-Send back, for each that waits: "R0b yes 2" (then 3), or your question.
-Until all are signed, the push waits.
+Nothing waits: every 1.9 change to the database is signed. A change that
+comes later waits for your yes in the same way.
 
 ### R0c. The new onboarding: your word, after you try it again
 
@@ -760,8 +764,10 @@ Send back: "R2b sent", or what went wrong.
      - `20261110084116_campaigns_rework.sql` (prayer campaigns, file one,
        signed 2026-11-10)
      - `20261110090516_florilegium_kinds.sql` (signed 2026-11-10)
-     and the prayer campaigns' files two and three as each is signed and
-     moved in.
+     - `20261110135543_campaign_threads.sql` (prayer campaigns, file two,
+       signed 2026-11-10)
+     - `20261110135545_campaign_pictures.sql` (prayer campaigns, file three,
+       signed 2026-11-10)
 
 The order on the day (your word, 2026-11-10): the website first (R2), then
 both store builds to internal testing (R4, R5), then your walk on a phone
