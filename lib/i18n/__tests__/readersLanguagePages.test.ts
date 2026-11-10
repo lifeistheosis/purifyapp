@@ -114,6 +114,65 @@ describe("an English page says English only where it is", () => {
   });
 });
 
+describe("Support's own words on the website say their language", () => {
+  // The website's Support page (the month's goal, the ways to give, the costs)
+  // writes its own English, or German for the German reader, beside the
+  // catalog's words in the reader's language. The apps do not draw this part
+  // (Apple 3.1.1), so the export walk cannot read it; this holds each line of
+  // the page's own words to saying so, with its direction (build 90 note 4).
+  it("every line of the page's own words is marked", () => {
+    const src = read("components/support/SupportBody.tsx");
+    const web = src.slice(src.indexOf("if (!data) return null;"));
+    // As the code writes them (a string's quotes, a template's words), so a comment naming a section is not taken for its line.
+    const phrases = [
+      '"This month’s goal"',
+      "`Live · refreshed",
+      '"of"',
+      '"supporters"',
+      '"How to give"',
+      "{d.label}",
+      "{d.note}",
+      '"Open →"',
+      '"Where the money goes"',
+      "{expensesAsOf}",
+      "{e.label}",
+      "{e.note}",
+      '"/mo"',
+      '"Monthly total"',
+      '"These figures come from',
+      '"The core stays free"',
+      '"Whatever you give',
+    ];
+    for (const phrase of phrases) {
+      // The drawn one, not an attribute (key={d.label}).
+      let at = web.indexOf(phrase);
+      while (at > 0 && web[at - 1] === "=") at = web.indexOf(phrase, at + 1);
+      expect(at, phrase).toBeGreaterThan(0);
+      for (let from = at; ; ) {
+        // The element that holds it: the nearest <p or <span opened before it and not yet closed.
+        const open = Math.max(web.lastIndexOf("<p ", from), web.lastIndexOf("<span ", from));
+        const tag = web.slice(open, web.indexOf(">", open) + 1);
+        const closes = web.slice(open, at).match(/<\/(p|span)>/g)?.length ?? 0;
+        const opens = web.slice(open + 1, at).match(/<(p|span)\b/g)?.length ?? 0;
+        if (closes > opens) {
+          from = open - 1;
+          continue;
+        }
+        // The app's English by hand, or the page's own language (German or English) with its direction from it (lib/i18n/textDir.ts).
+        expect(tag, phrase).toMatch(/\blang="en" dir="ltr"|\blang=\{own\} dir=\{textDir\(own\)\}/);
+        break;
+      }
+    }
+  });
+
+  it("the German page's time and date are German", () => {
+    const src = read("components/support/SupportBody.tsx");
+    expect(src).toContain("ago(live.fetchedAt, true)");
+    expect(src).not.toContain("aktualisiert vor ${ago(");
+    expect(src).toContain("lastUpdatedIn(true)");
+  });
+});
+
 describe("a saint's life in the reader's language", () => {
   it("is a file of its own for each of the 55 lives in German, each loaded on the device by its own import()", () => {
     // Inside the bundle's _next, as the councils' and the lessons' are: the

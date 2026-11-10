@@ -3,6 +3,7 @@ import Link from "next/link";
 import { T } from "@/components/i18n/T";
 import { ProgressBar } from "@/components/ui/ProgressBar";
 import { SUPPORT } from "@/data/support/support";
+import { textDir } from "@/lib/i18n/textDir";
 import type { BmcTotal } from "@/lib/support/buymeacoffee";
 import type { ExpenseData } from "@/lib/support/expenses";
 
@@ -40,15 +41,23 @@ function formatUsd(n: number): string {
  });
 }
 
-function ago(iso: string): string {
+/** How long ago, in the page's words: English, or German on the German page (which read "vor 5 min ago"). */
+function ago(iso: string, isDe = false): string {
  const diffMs = Date.now() - new Date(iso).getTime();
- if (!Number.isFinite(diffMs)) return "just now";
+ if (!Number.isFinite(diffMs)) return isDe ? "gerade eben" : "just now";
  const m = Math.floor(diffMs / 60000);
- if (m < 1) return "just now";
- if (m < 60) return `${m} min ago`;
+ if (m < 1) return isDe ? "gerade eben" : "just now";
+ if (m < 60) return isDe ? `vor ${m} Min.` : `${m} min ago`;
  const h = Math.floor(m / 60);
- if (h < 24) return `${h}h ago`;
- return new Date(iso).toLocaleDateString();
+ if (h < 24) return isDe ? `vor ${h} Std.` : `${h}h ago`;
+ return new Date(iso).toLocaleDateString(isDe ? "de-DE" : "en-US");
+}
+
+/** The committed list's date as the page's language writes it ("May 22, 2026", "22. Mai 2026"). */
+function lastUpdatedIn(isDe: boolean): string {
+ if (!isDe) return SUPPORT.lastUpdated;
+ const d = new Date(SUPPORT.lastUpdated);
+ return Number.isNaN(d.getTime()) ? SUPPORT.lastUpdated : d.toLocaleDateString("de-DE", { year: "numeric", month: "long", day: "numeric" });
 }
 
 export function SupportBody({ native, data, isDe }: { native: boolean; data: SupportData | null; isDe: boolean }) {
@@ -149,11 +158,14 @@ export function SupportBody({ native, data, isDe }: { native: boolean; data: Sup
        month: "long",
        day: "numeric",
      })
-   : SUPPORT.lastUpdated;
+   : lastUpdatedIn(isDe);
  const pct = Math.min(
  1,
  Math.max(0, raised / monthlyGoalUsd),
  );
+ // The page's own words (build 90 note 4): English, or German for the German
+ // reader. Beside them the catalog's, in the reader's language, which say none.
+ const own = isDe ? "de" : "en";
 
  return (
  <section className={`${SECTION} bg-night`}>
@@ -181,23 +193,23 @@ export function SupportBody({ native, data, isDe }: { native: boolean; data: Sup
  {/* Live goal */}
  <section className="mt-12 rounded-lg border border-paper/12 bg-paper/[0.03] p-6 md:p-8">
  <div className="flex items-baseline justify-between gap-3 mb-3 flex-wrap">
- <p className="font-sans text-caption font-semibold text-paper/55">
+ <p lang={own} dir={textDir(own)} className="font-sans text-caption font-semibold text-paper/55">
  {isDe ? "Ziel dieses Monats" : "This month’s goal"}
  </p>
- <p className="font-sans text-eyebrow text-paper/55">
+ <p lang={own} dir={textDir(own)} className="font-sans text-eyebrow text-paper/55">
  {live
  ? isDe
- ? `Live · aktualisiert vor ${ago(live.fetchedAt)}`
+ ? `Live · aktualisiert ${ago(live.fetchedAt, true)}`
  : `Live · refreshed ${ago(live.fetchedAt)}`
  : isDe
- ? `Aktualisiert ${SUPPORT.lastUpdated}`
+ ? `Aktualisiert ${lastUpdatedIn(true)}`
  : `Updated ${SUPPORT.lastUpdated}`}
  </p>
  </div>
  <div className="flex items-baseline justify-between gap-3 mb-3">
  <p className="font-sans text-title md:text-heading font-bold text-paper tabular-nums">
  {formatUsd(raised)}
- <span className="text-paper/55 text-lede font-normal">
+ <span lang={own} dir={textDir(own)} className="text-paper/55 text-lede font-normal">
  {" "}{isDe ? "von" : "of"} {formatUsd(monthlyGoalUsd)}
  </span>
  </p>
@@ -223,7 +235,7 @@ export function SupportBody({ native, data, isDe }: { native: boolean; data: Sup
  <>
  {" "}
  {live.supporters}{" "}
- {live.supporters === 1 ? "Unterstützer" : "Unterstützer"}{" "}
+ <span lang={own} dir={textDir(own)}>{live.supporters === 1 ? "Unterstützer" : "Unterstützer"}</span>{" "}
  <T k="ui.inDiesemMonat" />
  </>
  ) : null}{" "}
@@ -236,7 +248,7 @@ export function SupportBody({ native, data, isDe }: { native: boolean; data: Sup
  <>
  {" "}
  {live.supporters}{" "}
- {live.supporters === 1 ? "supporter" : "supporters"} <T k="ui.thisMonth" />
+ <span lang={own} dir={textDir(own)}>{live.supporters === 1 ? "supporter" : "supporters"}</span> <T k="ui.thisMonth" />
  </>
  ) : null}{" "}
  <T k="ui.theGoalMovesWithThe" />
@@ -256,7 +268,7 @@ export function SupportBody({ native, data, isDe }: { native: boolean; data: Sup
 
  {/* How to give */}
  <section className="mt-10">
- <p className="font-sans text-caption font-semibold text-paper/55 mb-4">
+ <p lang={own} dir={textDir(own)} className="font-sans text-caption font-semibold text-paper/55 mb-4">
  {isDe ? "Wie du gibst" : "How to give"}
  </p>
  <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
@@ -270,13 +282,13 @@ export function SupportBody({ native, data, isDe }: { native: boolean; data: Sup
  }
  className="group rounded-md border border-paper/15 bg-paper/[0.03] hover:border-gold/55 hover:bg-gold/[0.06] transition-colors p-5"
  >
- <p className="font-sans text-body font-semibold text-paper leading-tight">
+ <p lang="en" dir="ltr" className="font-sans text-body font-semibold text-paper leading-tight">
  {d.label}
  </p>
- <p className="mt-2 font-sans text-caption text-paper/65 leading-[1.55]">
+ <p lang="en" dir="ltr" className="mt-2 font-sans text-caption text-paper/65 leading-[1.55]">
  {d.note}
  </p>
- <p className="mt-4 font-sans text-caption font-medium text-paper/65 group-hover:text-gold transition-colors">
+ <p lang={own} dir={textDir(own)} className="mt-4 font-sans text-caption font-medium text-paper/65 group-hover:text-gold transition-colors">
  {isDe ? "Öffnen →" : "Open →"}
  </p>
  </Link>
@@ -286,20 +298,20 @@ export function SupportBody({ native, data, isDe }: { native: boolean; data: Sup
 
  {/* Expense breakdown */}
  <section className="mt-14">
- <p className="font-sans text-caption font-semibold text-paper/55 mb-4">
+ <p lang={own} dir={textDir(own)} className="font-sans text-caption font-semibold text-paper/55 mb-4">
  {isDe ? "Wohin das Geld geht" : "Where the money goes"}
  </p>
  <p className="font-serif text-body text-paper/80 leading-[1.7] mb-6">
  {isDe ? (
  <>
  <T k="ui.jedeZeileIstEchtDie" />{" "}
- {expensesAsOf} <T k="ui.betragen" /> {formatUsd(totalMonthlyExpense)}<T k="ui.dasFRderzielObenIst" /> {formatUsd(monthlyGoalUsd)}{" "}
+ <span lang={own} dir={textDir(own)}>{expensesAsOf}</span> <T k="ui.betragen" /> {formatUsd(totalMonthlyExpense)}<T k="ui.dasFRderzielObenIst" /> {formatUsd(monthlyGoalUsd)}{" "}
  <T k="ui.gesetztUmSpielraumFR" />
  </>
  ) : (
  <>
  <T k="ui.everyLineIsRealTotal" />{" "}
- {expensesAsOf} <T k="ui.is" /> {formatUsd(totalMonthlyExpense)}<T k="ui.theFundingGoalAboveIs" /> {formatUsd(monthlyGoalUsd)}
+ <span lang={own} dir={textDir(own)}>{expensesAsOf}</span> <T k="ui.is" /> {formatUsd(totalMonthlyExpense)}<T k="ui.theFundingGoalAboveIs" /> {formatUsd(monthlyGoalUsd)}
  {" "}<T k="ui.toLeaveSomeMarginFor" />
  </>
  )}
@@ -311,31 +323,31 @@ export function SupportBody({ native, data, isDe }: { native: boolean; data: Sup
  className="px-5 py-4 flex items-baseline justify-between gap-4 bg-paper/[0.02]"
  >
  <div className="min-w-0">
- <p className="font-sans text-ui font-semibold text-paper leading-tight">
+ <p lang="en" dir="ltr" className="font-sans text-ui font-semibold text-paper leading-tight">
  {e.label}
  </p>
  {e.note && (
- <p className="mt-1 font-sans text-caption text-paper/55 leading-[1.55]">
+ <p lang="en" dir="ltr" className="mt-1 font-sans text-caption text-paper/55 leading-[1.55]">
  {e.note}
  </p>
  )}
  </div>
- <p className="shrink-0 font-sans text-ui font-semibold text-gold tabular-nums">
+ <p lang={own} dir={textDir(own)} className="shrink-0 font-sans text-ui font-semibold text-gold tabular-nums">
  {formatUsd(e.monthlyUsd)}{isDe ? "/Mon." : "/mo"}
  </p>
  </li>
  ))}
  <li className="px-5 py-4 flex items-baseline justify-between gap-4 bg-paper/[0.06]">
- <p className="font-sans text-ui font-bold text-paper">
+ <p lang={own} dir={textDir(own)} className="font-sans text-ui font-bold text-paper">
  {isDe ? "Monatlicher Gesamtbetrag" : "Monthly total"}
  </p>
- <p className="font-sans text-body font-bold text-paper tabular-nums">
+ <p lang={own} dir={textDir(own)} className="font-sans text-body font-bold text-paper tabular-nums">
  {formatUsd(totalMonthlyExpense)}{isDe ? "/Mon." : "/mo"}
  </p>
  </li>
  </ul>
  {expenseData.fromFallback && (
- <p className="mt-3 font-sans text-caption text-paper/55 leading-[1.55]">
+ <p lang={own} dir={textDir(own)} className="mt-3 font-sans text-caption text-paper/55 leading-[1.55]">
  {isDe
  ? "Diese Zahlen stammen aus der zuletzt veröffentlichten Aufstellung, nicht aus der Live-Datenbank. Sie können veraltet sein."
  : "These figures come from the last published list, not from the live database. They may be out of date."}
@@ -345,7 +357,7 @@ export function SupportBody({ native, data, isDe }: { native: boolean; data: Sup
 
  {/* Free-forever note */}
  <section className="mt-14 rounded-lg border border-paper/12 bg-paper/[0.02] p-6">
- <p className="font-sans text-caption font-semibold text-paper/55 mb-3">
+ <p lang={own} dir={textDir(own)} className="font-sans text-caption font-semibold text-paper/55 mb-3">
  {isDe ? "Der Kern bleibt frei" : "The core stays free"}
  </p>
  <p className="font-serif text-body text-paper/85 leading-[1.7]">
@@ -362,7 +374,7 @@ export function SupportBody({ native, data, isDe }: { native: boolean; data: Sup
  </section>
 
  {/* Closing */}
- <p className="mt-14 font-serif italic text-center text-lede text-paper/70">
+ <p lang={own} dir={textDir(own)} className="mt-14 font-serif italic text-center text-lede text-paper/70">
  {isDe
  ? "Was du auch gibst oder nicht gibst, wir sind froh, daß du da bist."
  : "Whatever you give, or do not give, we are glad you are here."}
