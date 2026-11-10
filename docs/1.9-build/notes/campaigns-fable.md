@@ -410,11 +410,17 @@ feels they must post a photo of a sick person.
   belief is not trusted.
 - **If Plus lapses,** pictures already up stay up; no more can be added past
   three. What was given is not taken back.
-- **On iPhone,** while Plus is not sold there, the app opens Plus to every
-  reader (`lib/entitlements/entitlements.ts`, whose first rule is never to
-  lock what cannot be bought), but the server decides by entitlement. So
-  until Plus is sold on iPhone the limit there is three and the Plus place is
-  not shown. Question 5.
+- **On iPhone: corrected, 2026-11-10.** This line said that Plus was not
+  sold on iPhone, so the limit there would be three and the Plus place not
+  shown. That was untrue when it was written: Plus has been sold on iPhone
+  since 1.8, and that build has its Plus switch on, as Android's has
+  (`docs/1.9-build/OWNER-STEPS.md`, 87, found the same day from the apps
+  themselves). I had read the default in `lib/entitlements/entitlements.ts`
+  and not what the build is given. So iPhone was never a case of its own
+  here. And the question it raised is gone with his word of that afternoon
+  ("rec yes to all", `BRAINSTORM.md`): the limit is the same for every
+  reader and is not a Plus perk, so there is no Plus place among the
+  pictures on any phone (section 20).
 - Each picture is made again by the server, checked, and held until a
   moderator has looked (3.5).
 - JPEG, PNG or WebP, 4 MB at most, as now. No moving pictures.
@@ -1719,7 +1725,10 @@ standing where a campaign's first picture would be.
 4. **A reader's own shorter stay** (until its last day, a week, today only).
    Recommend: yes, with "until its last day" ticked.
 5. **Pictures.** Recommend: 3 and 20 as he said; each held until looked at;
-   "I am 18 or older" to put one up; three on iPhone until Plus is sold there.
+   "I am 18 or older" to put one up. (Corrected 2026-11-10: this ended
+   "three on iPhone until Plus is sold there", which was untrue, since Plus
+   has been sold there since 1.8; see 2.5. And answered since by his word:
+   one limit for every reader, five, and no Plus place; section 20.)
 6. **Who can see it.** Recommend: everyone in Community, or one circle; the
    reader chooses when creating.
 7. **The prayers.** Recommend: ingest the three offices from Hapgood (study,
@@ -2930,15 +2939,33 @@ third line.
   statement, one new column, no right given to anyone, safe to run twice. Run
   twice on the scratch database: the first run adds the one column and
   nothing else, the second changes nothing, and the public key's role and a
-  signed-in reader's are both refused the column. **Not signed and not in
-  the folder a merge runs:** it waits for Admin's read and his yes, and
-  `closed.test.ts` holds it out.
+  signed-in reader's are both refused the column. When this was first
+  written it was not signed and `closed.test.ts` held it out of the folder a
+  merge runs.
+- **Signed, and written into the folder at 17:26 UTC the same day:**
+  `supabase/migrations/20261110172648_campaign_terms.sql`. His yes is "rec
+  yes to all" (about 16:45 UTC), which covered this file once a second
+  chat's read had passed; Admin's read passed at about 17:00 UTC with
+  nothing to change (run twice there on all 103 files of the folder, the
+  production baseline among them); and the file went in after both, not
+  before. The file itself, as committed, was then run twice here on a fresh
+  scratch database standing on the other 103: the first run adds the one
+  column and nothing else, the second changes nothing, its own check answers
+  1, false and 0, and both roles are refused. (One old file of the 103 does
+  not run on my stand-in, `20260526000000_profiles_has_password.sql`,
+  because the stand-in's sign-in table has no password column; it touches
+  nothing of campaigns.) Probed on production at 17:22 UTC with the public
+  key: not run, there is no such column yet. It runs at the merge. The
+  statements are the docs copy's word for word, and `closed.test.ts` now
+  holds that, the signature, the second read and its place after files one
+  to three. It is never edited again: a change is a new file.
 - **Until that file has run on a database, no campaign can be started
   there.** The route starts none where it cannot keep the acceptance, and
   answers as a closed door does. That is deliberate: a campaign with no
-  record of its acceptance is the one thing this must not make. It means
-  file four has to be signed and in the folder before he walks campaigns on
-  the test web.
+  record of its acceptance is the one thing this must not make. On the test
+  web the folder is run from the branch, so the file is there before he
+  walks campaigns; on the main web it runs at the merge, with the code that
+  needs it.
 
 **Found by its first walk, and mended before it was pushed:** with the
 Terms' sheet open, Escape closed the sheet and also left the start page, with
@@ -2984,3 +3011,20 @@ a creator can stay out.
 - **What it is, unchanged from 12.2:** a second list under "Newly asked", by
   Day, Week, Month or Year; an order and never a figure; five readers before
   a campaign is listed; kept for a minute; a creator's switch to stay out.
+
+## 20. Pictures: one limit for every reader (2026-11-10; his word, the code follows)
+
+**His word** ("rec yes to all", `BRAINSTORM.md`): the same picture limit for
+every reader, not a Plus perk; and pictures at launch once his three steps
+are done (an AWS account for the check, NCMEC's CyberTipline registration,
+the Copyright Office's agent), with PhotoDNA added when Microsoft approves.
+The limit I recommended is five; the arbiter's answer the same day: five for
+everyone, yes, and nine is one constant away if he asks.
+
+**Not built as this is written.** The code still holds three and twenty and
+the Plus place (`PICTURES_FREE`, `PICTURES_PLUS`, `showsPlusPlace`), and
+pictures are off on the server besides (`lib/campaigns/parts.ts`). The change
+comes in its turn, after July's rows and the notice of a removal, and this
+section is finished then: the one constant, the Plus place and its row on the
+Plus page gone, the check's adapter and what it lacks (his key), and his
+steps.

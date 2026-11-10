@@ -377,6 +377,15 @@ describe("closed: the data", () => {
   const THREADS_SIGNED = "supabase/migrations/20261110135543_campaign_threads.sql";
   const PICTURES_FOR_HIS_SIGNATURE = "docs/1.9-build/sql/campaigns-3-pictures.sql";
   const PICTURES_SIGNED = "supabase/migrations/20261110135545_campaign_pictures.sql";
+  /**
+   * File four: the moment a creator accepted the Terms of Service. With the
+   * migration it became on his signature: "rec yes to all", 2026-11-10 at
+   * about 16:45 UTC, which covered it once a second chat's read had passed,
+   * and the Admin chat's passed at about 17:00 UTC with nothing to change
+   * (docs/1.9-build/BRAINSTORM.md, docs/1.9-build/OWNER-STEPS.md).
+   */
+  const TERMS_FOR_HIS_SIGNATURE = "docs/1.9-build/sql/campaigns-4-terms.sql";
+  const TERMS_SIGNED = "supabase/migrations/20261110172648_campaign_terms.sql";
   /** A file's SQL from its first statement on, its header left out. */
   const statements = (sql: string) => sql.slice(sql.search(/^set lock_timeout/m));
 
@@ -429,25 +438,36 @@ describe("closed: the data", () => {
     expect([...order].sort()).toEqual(order);
   });
 
-  it("file four, the acceptance of the Terms, waits for his yes: in docs, unsigned, and in no file the folder runs", () => {
-    // A file in supabase/migrations runs on production at the merge, and on
-    // the test web's database the moment it reaches the branch, signed or
-    // not (docs/1.9-build/HANDOFF.md). So until he has said yes, on a plain
-    // summary and after a second chat's read, the column is made by nothing
-    // in that folder, and the route starts no campaign where it is absent
-    // (routes.test.ts).
-    const TERMS_FOR_HIS_SIGNATURE = "docs/1.9-build/sql/campaigns-4-terms.sql";
+  it("runs file four, the acceptance of the Terms, from that folder too: once, signed, read by a second chat, word for word, and last", () => {
+    // Until he had said yes, and until a second chat's read had passed, this
+    // test held it out of the folder: a file there runs on production at the
+    // merge, and on the test web's database once it reaches the branch,
+    // signed or not (docs/1.9-build/HANDOFF.md). Now it is in it exactly
+    // once, and is the copy that was read, statement for statement.
+    const folder = readdirSync(join(ROOT, "supabase/migrations"));
+    const hits = folder.filter((f) => /terms_accepted_at/.test(read(`supabase/migrations/${f}`)));
+    expect(hits.map((f) => `supabase/migrations/${f}`)).toEqual([TERMS_SIGNED]);
     expect(existsSync(join(ROOT, TERMS_FOR_HIS_SIGNATURE))).toBe(true);
-    const sql = read(TERMS_FOR_HIS_SIGNATURE);
-    expect(sql).toMatch(/^-- NOT SIGNED YET, AND NOT APPLIED\./m);
-    expect(sql).not.toMatch(/Signed off by the owner/);
+    expect(statements(read(TERMS_SIGNED))).toBe(statements(read(TERMS_FOR_HIS_SIGNATURE)));
+    for (const file of [TERMS_SIGNED, TERMS_FOR_HIS_SIGNATURE]) {
+      expect(read(file), file).toMatch(/Signed off by the owner on 2026-11-10/);
+      expect(read(file), file).toContain('"rec yes to all"');
+      // His yes covered it once the second read had passed, so the file says that it did.
+      expect(read(file), file).toMatch(/^-- Read by a second chat on 2026-11-10 \(Admin\): passes, with nothing to\n-- change\./m);
+      expect(read(file), file).not.toMatch(/NOT SIGNED YET/);
+    }
+    // Neither says it was applied: a probe of production that day found it
+    // had not run, and a header may only say what a probe has seen.
+    expect(read(TERMS_SIGNED)).toMatch(/^-- SIGNED, AND NOT APPLIED BY HAND\./m);
+    expect(read(TERMS_FOR_HIS_SIGNATURE)).toMatch(/^-- NOT APPLIED YET\./m);
     // One statement, which can run twice, and nothing that gives a right.
-    const body = statements(sql).replace(/^--.*$/gm, "");
+    const body = statements(read(TERMS_SIGNED)).replace(/^--.*$/gm, "");
     expect(body.match(/;/g)).toHaveLength(3);
     expect(body).toMatch(/alter table public\.prayer_campaigns\s+add column if not exists terms_accepted_at timestamptz;/);
     expect(body).not.toMatch(/\bgrant\b|\bdefault\b|\bdrop\b|\bdelete\b|\bupdate\b/i);
-    const folder = readdirSync(join(ROOT, "supabase/migrations"));
-    expect(folder.filter((f) => /terms_accepted_at/.test(read(`supabase/migrations/${f}`)))).toEqual([]);
+    // The folder is run by name: one, two, three, then this.
+    const order = [SIGNED, THREADS_SIGNED, PICTURES_SIGNED, TERMS_SIGNED].map((f) => f.slice(f.lastIndexOf("/") + 1));
+    expect([...order].sort()).toEqual(order);
   });
 
   it("file three gives the public key nothing, and takes no yes that was not asked for", () => {

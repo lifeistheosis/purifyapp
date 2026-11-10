@@ -2,23 +2,41 @@
 -- Terms of Service, kept with the campaign (1.9;
 -- docs/1.9-build/notes/campaigns-fable.md, section 18).
 --
--- NOT SIGNED YET, AND NOT APPLIED. It waits for a second chat's read (Admin)
--- and then for the owner's yes on its summary in plain words (he does not
--- read SQL: docs/1.9-build/HANDOFF.md). Until then it is not in
--- supabase/migrations, which a merge runs against production and which the
--- test web's database runs from the branch, each file once
--- (docs/1.9-build/HANDOFF.md); lib/campaigns/__tests__/closed.test.ts holds
--- it out of that folder.
+-- NOT APPLIED YET. Signed off by the owner on 2026-11-10 at about 16:45 UTC,
+-- his words: "rec yes to all". They answered every recommendation put to
+-- him since his start that day, and this file was one, recorded as "the
+-- fourth campaigns SQL file (the Terms acceptance) once Admin's second read
+-- passes" (he does not read SQL: docs/1.9-build/HANDOFF.md; his words are in
+-- docs/1.9-build/BRAINSTORM.md). That read passed the same day at about
+-- 17:00 UTC with nothing to change (below). Copied after it, word for word
+-- from "set lock_timeout" down, into
+-- supabase/migrations/20261110172648_campaign_terms.sql, which the
+-- integration runs on the merge to main, after files one to three. This
+-- copy is the SQL to paste into the editor, should he run it by hand first
+-- or the integration's check be red.
 --
--- His word, 2026-11-10 (docs/1.9-build/BRAINSTORM.md): "whenever they make a
--- prayer campaign, they accept to the terms of service so that it's like
--- their prayer campaigns are distinct from us."
+-- Probed on production on 2026-11-10 at 17:22 UTC, with the site's public
+-- key: not run. The campaigns table had no column of that name. Nothing
+-- here says applied until a probe does.
+--
+-- His word for the acceptance itself, 2026-11-10
+-- (docs/1.9-build/BRAINSTORM.md): "whenever they make a prayer campaign,
+-- they accept to the terms of service so that it's like their prayer
+-- campaigns are distinct from us."
 --
 -- Written to run twice: its one statement is "if not exists". Run twice on
 -- 2026-11-10 on a scratch PostgreSQL 16 standing on the migrations folder as
 -- it was that afternoon, files one to three among them: no error either
 -- time; the first run adds the one column to the schema and nothing else,
 -- and the schema after the second run is the schema after the first.
+--
+-- Read by a second chat on 2026-11-10 (Admin): passes, with nothing to
+-- change. Run twice by that chat as well, on a scratch PostgreSQL 16
+-- standing on the whole folder as it then was, 103 files, the production
+-- baseline among them: no error either time; the column is a timestamp with
+-- time zone that may be empty and has no default; the public key's role and
+-- a signed-in reader's can neither read nor write it; the baseline does not
+-- touch the campaigns table.
 --
 -- What it makes, in plain words:
 --   prayer_campaigns.terms_accepted_at   One new column on the campaigns
