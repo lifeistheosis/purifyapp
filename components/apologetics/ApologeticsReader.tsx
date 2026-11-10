@@ -13,8 +13,11 @@ import { SCHEMES } from "@/lib/saints/divisions";
 
 export function ApologeticsReader({ body }: { body: ApologeticsBody }) {
   const saints = saintsCitedIn(body);
+  // The article is English whole, its own headings too (they are written in English here), so it
+  // says so once and reads left to right under Arabic and Urdu (build 90 note 4). The source lines
+  // inside say the reader's language on their own.
   return (
-    <article className="mx-auto max-w-[760px] w-full">
+    <article lang="en" dir="ltr" className="mx-auto max-w-[760px] w-full">
       <p className="font-sans text-detail font-semibold text-paper/55 mb-4">
         <Link href="/apologetics" className="hover:text-paper">
           Apologetics

@@ -158,11 +158,21 @@ export function ReadingSearch({ room, query, filters, onFilter }: { room: Room; 
           {results.map((c, i) => {
             const author = c.author ?? t("reading.work.anonymous");
             const name = [c.title, author].join(", ");
+            const byTail = ["", author].join(", ");
             return (
               <li key={c.key} className="min-w-0">
                 <Link href={hrefFor(c, filters.theme)} prefetch={false} className="press-card group block rounded-[6px]">
-                  <span className="sr-only">{name}</span>
-                  <WorkCover title={c.title} author={author} iconUrl={c.cover?.src} focusY={c.cover?.focusY} size="grid" eager={i < FIRST_SCREEN} hold="self" />
+                  {c.author ? (
+                    <span className="sr-only" lang="en" dir="ltr">
+                      {name}
+                    </span>
+                  ) : (
+                    <span className="sr-only">
+                      <span lang="en" dir="ltr">{c.title}</span>
+                      {byTail}
+                    </span>
+                  )}
+                  <WorkCover title={c.title} author={author} authorLang={c.author ? "en" : null} iconUrl={c.cover?.src} focusY={c.cover?.focusY} size="grid" eager={i < FIRST_SCREEN} hold="self" />
                   <span className="mt-2 block truncate font-sans text-caption text-paper/55">{cardMeta(c, t)}</span>
                 </Link>
               </li>

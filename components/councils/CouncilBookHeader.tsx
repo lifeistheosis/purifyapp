@@ -71,11 +71,13 @@ export function CouncilBookHeader({
           {t("study.councils.theCouncils")}
         </Link>
         <ChevronRight size={13} className="shrink-0 text-paper/30 rtl:-scale-x-100" />
-        <Link href={council.href} className="truncate hover:text-paper">
+        <Link href={council.href} lang="en" dir="ltr" className="truncate hover:text-paper">
           {council.name}
         </Link>
         <ChevronRight size={13} className="shrink-0 text-paper/30 rtl:-scale-x-100" />
-        <span className="truncate text-paper">{title}</span>
+        <span lang="en" dir="ltr" className="truncate text-paper">
+          {title}
+        </span>
       </nav>
 
       <div className="flex flex-col items-center text-center md:flex-row md:items-start md:gap-10 md:text-start">

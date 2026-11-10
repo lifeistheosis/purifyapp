@@ -17,6 +17,7 @@ import type { PathView as View } from "@/lib/reading/pathView";
 import { readingTime } from "./CoverRow";
 import { DayThread } from "./DayThread";
 import { ReadTogether, useCircles } from "./ReadTogether";
+import { textDir } from "@/lib/i18n/textDir";
 
 export function PathView({ path }: { path: View }) {
   const { t } = useTranslate();
@@ -71,8 +72,20 @@ export function PathView({ path }: { path: View }) {
                         <span lang="en" dir="ltr" className="block font-serif text-title-sm font-semibold leading-tight text-paper group-hover:underline">
                           {r.title}
                         </span>
-                        <span className="mt-0.5 block font-sans text-caption text-paper/55">
-                          {[r.author, r.part ? t("paths.part", { n: r.part.n, total: r.part.of }) : null].filter(Boolean).join(" · ")}
+                        {/* The author and the place are English; a part's number is the reader's words. A line of
+                            English alone runs left to right from the left edge (build 90 note 4). */}
+                        <span
+                          lang={r.part ? undefined : "en"}
+                          dir={textDir(r.part ? undefined : "en")}
+                          className="mt-0.5 block font-sans text-caption text-paper/55"
+                        >
+                          {r.author ? (
+                            <span lang="en" dir="ltr">
+                              {r.author}
+                            </span>
+                          ) : null}
+                          {r.author && r.part ? " · " : null}
+                          {r.part ? t("paths.part", { n: r.part.n, total: r.part.of }) : null}
                           {r.place ? (
                             <>
                               {r.author || r.part ? " · " : null}

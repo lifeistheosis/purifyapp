@@ -82,17 +82,20 @@ export function BookHeader({
           {t("nav.saints")}
         </Link>
         <ChevronRight size={13} className="shrink-0 text-paper/30 rtl:-scale-x-100" />
-        <Link href={`/saints/${saint.slug}`} className="truncate hover:text-paper">
+        <Link href={`/saints/${saint.slug}`} lang="en" dir="ltr" className="truncate hover:text-paper">
           {saint.name}
         </Link>
         <ChevronRight size={13} className="shrink-0 text-paper/30 rtl:-scale-x-100" />
-        <span className="truncate text-paper">{card.title}</span>
+        <span lang="en" dir="ltr" className="truncate text-paper">
+          {card.title}
+        </span>
       </nav>
 
       <div className="flex flex-col items-center text-center md:flex-row md:items-start md:gap-10 md:text-start">
         <WorkCover
           title={card.title}
           author={name}
+          authorLang={card.author ? "en" : null}
           iconUrl={card.cover?.src}
           focusY={card.cover?.focusY}
           size="hero"

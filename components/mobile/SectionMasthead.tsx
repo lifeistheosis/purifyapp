@@ -68,7 +68,8 @@ export function SectionMasthead({
   if (!media) return null;
 
   const credit = (
-    <figcaption className="font-sans text-[10px] leading-snug text-paper/50">
+    // The picture's credit is written as its record has it, in English (build 90 note 4).
+    <figcaption lang="en" dir="ltr" className="font-sans text-[10px] leading-snug text-paper/50">
       {media.work} · {media.artist} · {media.license}
     </figcaption>
   );

@@ -62,14 +62,15 @@ export default async function TopicPage({ params }: { params: Params }) {
         <p className="font-sans text-detail font-semibold text-paper/55 mb-4">
           <T k="topics.eyebrow" />
         </p>
-        <h1 className="font-sans text-display-sm md:text-display font-bold leading-[1.05] tracking-[-0.025em] text-paper">
+        {/* The topic is written in English; its labels are the reader's (build 90 note 4). */}
+        <h1 lang="en" dir="ltr" className="font-sans text-display-sm md:text-display font-bold leading-[1.05] tracking-[-0.025em] text-paper">
           {topic.title}
         </h1>
-        <p className="mt-6 font-serif text-body text-paper/85 leading-[1.7]">
+        <p lang="en" dir="ltr" className="mt-6 font-serif text-body text-paper/85 leading-[1.7]">
           {topic.definition}
         </p>
         {topic.tradition ? (
-          <p className="mt-4 font-serif text-body text-paper/70 leading-[1.7]">
+          <p lang="en" dir="ltr" className="mt-4 font-serif text-body text-paper/70 leading-[1.7]">
             {topic.tradition}
           </p>
         ) : null}

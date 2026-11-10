@@ -49,8 +49,10 @@ export function UnsubscribeClient() {
     }
   }
 
+  // This page's words are written in English here, not yet in the catalog, so it says so whole and
+  // reads left to right under Arabic and Urdu (build 90 note 4).
   return (
-    <div className="mx-auto max-w-lg px-6 py-16">
+    <div lang="en" dir="ltr" className="mx-auto max-w-lg px-6 py-16">
       <p className="font-sans text-caption font-semibold text-gold/80">Email</p>
       {!token ? (
         <>

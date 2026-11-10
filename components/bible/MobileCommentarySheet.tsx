@@ -8,6 +8,7 @@ import { paragraphsOf, previewParagraphs, readingMinutes } from "@/lib/bible/rea
 import { SaintIcon } from "./SaintIcon";
 import { GlossedText } from "./GlossedText";
 import { SourceLine } from "@/components/citations/SourceLine";
+import { textDir } from "@/lib/i18n/textDir";
 import { noteCite } from "@/lib/bible/commentaryWorks";
 import { useTranslate } from "@/components/i18n/MessagesProvider";
 import { lockBodyScroll, setOverlayOpen, unlockBodyScroll } from "@/lib/ui/overlay";
@@ -135,7 +136,9 @@ function NoteCard({
       className="rounded-2xl bg-paper/[0.035] px-4 pb-1.5 pt-3.5 ring-1 ring-inset ring-paper/10"
     >
       <div className="mb-2 flex items-baseline justify-between gap-3">
-        <p className="min-w-0 truncate font-sans text-eyebrow italic text-paper/55">{label}</p>
+        <p lang="en" dir="ltr" className="min-w-0 truncate font-sans text-eyebrow italic text-paper/55">
+          {label}
+        </p>
         {/* Length before the tap, as on the desktop rail: a 40 minute homily
             on a phone deserves to be announced. */}
         <span className="shrink-0 font-sans text-eyebrow tabular-nums text-paper/45">
@@ -143,12 +146,15 @@ function NoteCard({
         </span>
       </div>
       {note.digest ? (
-        <p className="mb-3 font-sans text-caption leading-[1.6] text-paper/60">
+        <p lang="en" dir="ltr" className="mb-3 font-sans text-caption leading-[1.6] text-paper/60">
           {note.digest}
         </p>
       ) : null}
+      {/* The Father's words, in their English (build 90 note 4: left to right under Arabic and Urdu). */}
       <div
         ref={textRef}
+        lang="en"
+        dir="ltr"
         className="space-y-2.5 overflow-hidden"
         style={
           teaser
@@ -205,10 +211,10 @@ function FatherBlock({
       <div className="mb-2.5 flex items-center gap-2.5 px-0.5">
         <SaintIcon author={author} size="sm" />
         <div className="min-w-0 flex-1 leading-tight">
-          <p className="truncate font-sans text-caption font-semibold text-paper/75">
+          <p lang="en" dir="ltr" className="truncate font-sans text-caption font-semibold text-paper/75">
             {author}
           </p>
-          <p className="truncate font-sans text-eyebrow italic text-paper/55">
+          <p lang={shared ? "en" : undefined} dir={textDir(shared ? "en" : undefined)} className="truncate font-sans text-eyebrow italic text-paper/55">
             {shared ?? tn("bible.commentariesCount", items.length)}
           </p>
         </div>

@@ -63,8 +63,9 @@ export default function CouncilsPage() {
   <span className="font-sans text-caption font-semibold text-paper/50">{c.year}</span>
   </span>
   }
-  title={c.byname}
-  line={councilLine(c)}
+  // The council's name and line are English (build 90 note 4: left to right under Arabic and Urdu).
+  title={<span lang="en" dir="ltr">{c.byname}</span>}
+  line={<span lang="en" dir="ltr">{councilLine(c)}</span>}
   // The first three are on a phone's first screen.
   priority={i < 3}
  />
@@ -93,8 +94,8 @@ export default function CouncilsPage() {
  {isCirca(c) ? <T k="councils.circa" replacements={{ year: c.year }} /> : c.year}
  </span>
  <span className="min-w-0 flex-1">
- <span className="block truncate font-sans text-[15px] font-semibold text-paper">{shortName(c.byname)}</span>
- <span className="mt-px block truncate font-sans text-caption text-paper/50">{placeOf(c.location)}</span>
+ <span lang="en" dir="ltr" className="block truncate font-sans text-[15px] font-semibold text-paper">{shortName(c.byname)}</span>
+ <span lang="en" dir="ltr" className="mt-px block truncate font-sans text-caption text-paper/50">{placeOf(c.location)}</span>
  </span>
  <ChevronRight size={16} className="shrink-0 text-paper/40 rtl:-scale-x-100" />
  </Link>

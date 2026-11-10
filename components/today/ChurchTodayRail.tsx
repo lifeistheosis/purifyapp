@@ -35,6 +35,7 @@ import { HistoryDayBand } from "./HistoryDayBand";
 import { SaintFace } from "./SaintFace";
 import { SpeakerBand } from "./SpeakerBand";
 import { TodaySayingCard } from "./TodaySayingCard";
+import { textDir } from "@/lib/i18n/textDir";
 
 // Loaded on the tap, as the verse's is: Today carries no canvas for a reader who never shares.
 const PictureSheet = dynamic(() => import("@/components/share/PictureSheet").then((m) => m.PictureSheet), { ssr: false });
@@ -461,7 +462,10 @@ function SaintBand({ saint }: { saint: BandSaint }) {
       ) : null}
       <span className={cn("relative block px-4 py-3.5", saint.picture && "max-w-[64%]")}>
         <span className="block font-sans text-caption font-semibold text-paper/55">{t("today.saintEyebrow")}</span>
+        {/* The saint's name is English; the quiet line in its place ("No commemoration") is the reader's. */}
         <span
+          lang={saint.quiet ? undefined : "en"}
+          dir={textDir(saint.quiet ? undefined : "en")}
           className={
             saint.quiet
               ? "mt-1 block font-sans text-ui italic text-paper/55"

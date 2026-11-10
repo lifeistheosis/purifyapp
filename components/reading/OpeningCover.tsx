@@ -98,6 +98,7 @@ export function OpeningCover({
         <WorkCover
           title={card.title}
           author={card.author ?? t("reading.work.anonymous")}
+          authorLang={card.author ? "en" : null}
           iconUrl={card.cover?.src}
           focusY={card.cover?.focusY}
           crop={card.cover?.crop}

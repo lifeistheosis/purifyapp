@@ -50,7 +50,10 @@ export function PathPlates({
                 }`}
               >
                 <span className="me-[3px] text-[11.5px] tracking-[0.06em] text-paper/45">{stepNumeral(s.n)}</span>
-                {s.title}
+                {/* The subject's name is English (build 90 note 4); its numeral stays with the page. */}
+                <span lang="en" dir="ltr">
+                  {s.title}
+                </span>
               </span>
               {state === "walked" ? <span className="sr-only">{t("walk.walked")}</span> : null}
               {state === "current" ? <span className="sr-only">{t("prayers.today.whereYouLeftOff")}</span> : null}

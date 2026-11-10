@@ -36,7 +36,12 @@ export function CouncilShelf({ council, books, others }: { council: ShelfCouncil
           <p className="font-sans text-caption font-semibold text-paper/70">
             {t(council.ordinalKey)} · {council.year}
           </p>
-          <h1 id="shelf-title" className="mt-1.5 font-serif text-[26px] font-bold leading-[1.1] tracking-[-0.01em] text-balance text-paper md:text-display-sm">
+          <h1
+            id="shelf-title"
+            lang="en"
+            dir="ltr"
+            className="mt-1.5 font-serif text-[26px] font-bold leading-[1.1] tracking-[-0.01em] text-balance text-paper md:text-display-sm"
+          >
             {council.byname}
           </h1>
           <p className="mt-1.5 font-sans text-caption text-paper/55">
@@ -48,10 +53,19 @@ export function CouncilShelf({ council, books, others }: { council: ShelfCouncil
           {books.map((b, i) => (
             <li key={b.key} className="w-[104px] md:w-[148px]">
               <Link href={b.href} prefetch={false} className="press-card group block rounded-[6px]">
-                <span className="sr-only">{[b.title, b.author ?? t("reading.work.anonymous")].join(", ")}</span>
+                {b.author ? (
+                  <span className="sr-only" lang="en" dir="ltr">
+                    {[b.title, b.author].join(", ")}
+                  </span>
+                ) : (
+                  <span className="sr-only">
+                    <span lang="en" dir="ltr">{b.title}</span>{`, ${t("reading.work.anonymous")}`}
+                  </span>
+                )}
                 <WorkCover
                   title={b.title}
                   author={b.author ?? t("reading.work.anonymous")}
+                  authorLang={b.author ? "en" : null}
                   iconUrl={b.cover?.src}
                   focusY={b.cover?.focusY}
                   crop={b.cover?.crop}

@@ -144,7 +144,10 @@ export function MultiVerseClient() {
                 <p className="font-sans text-caption font-semibold text-paper/45 mb-1">
                   <T k="bible.multiCouldNotResolve" />
                 </p>
-                <p className="font-serif text-ui text-paper/70">{b.raw}</p>
+                {/* What the reader typed, in whatever language they typed it. */}
+                <p dir="auto" className="font-serif text-ui text-paper/70">
+                  {b.raw}
+                </p>
               </div>
             );
           }
@@ -174,7 +177,8 @@ export function MultiVerseClient() {
                   <T k="bible.openInChapter" /> →
                 </Link>
               </header>
-              <div className="font-serif text-body text-paper/85 leading-[1.75] space-y-3">
+              {/* The verses are the app's English, left to right under Arabic and Urdu (build 90 note 4). */}
+              <div lang="en" dir="ltr" className="font-serif text-body text-paper/85 leading-[1.75] space-y-3">
                 {b.body.verses.map((v) => (
                   <p key={v.n}>
                     <span className="font-sans text-caption font-semibold text-paper/45 mr-2 align-baseline">

@@ -15,6 +15,7 @@ import { SiteMenuButton } from "@/components/nav/SiteMenuButton";
 import { WebOnly } from "@/components/platform/PlatformGate";
 import { useTranslate } from "@/components/i18n/MessagesProvider";
 import type { LocaleCode } from "@/lib/i18n/locales";
+import { textDir } from "@/lib/i18n/textDir";
 
 /**
  * Compact 48px header for mobile-only surfaces (the Bible reader, a saint's
@@ -120,6 +121,9 @@ export function MobileTopBar({
   const { t, locale } = useTranslate();
   const barRef = useRef<HTMLDivElement>(null);
   const resolvedTitle = titleKey ? t(titleKey) : (titles?.[locale] ?? title);
+  // A title from the catalog, or in the reader's own language, is the reader's; one handed in as text
+  // is a work's, a saint's or a council's name, which is English (build 90 note 4).
+  const titleLang = titleKey || titles?.[locale] ? undefined : "en";
   const fullTitle = titleTail ? `${resolvedTitle} ${titleTail}` : resolvedTitle;
   // The space travels with the tail, so the heading's text (and what a screen
   // reader says) is "Luke 10", not "Luke10".
@@ -274,7 +278,9 @@ export function MobileTopBar({
             data-reveal
             className="flex min-w-0 items-baseline font-sans text-ui font-semibold leading-tight tracking-[-0.005em] text-paper"
           >
-            <span className="truncate">{resolvedTitle}</span>
+            <span lang={titleLang} dir={textDir(titleLang)} className="truncate">
+              {resolvedTitle}
+            </span>
             {tailText ? <span className="shrink-0 whitespace-pre">{tailText}</span> : null}
           </p>
         ) : (
@@ -282,7 +288,9 @@ export function MobileTopBar({
             className="flex min-w-0 items-baseline font-sans text-ui font-semibold leading-tight tracking-[-0.005em] text-paper"
             title={fullTitle}
           >
-            <span className="truncate">{resolvedTitle}</span>
+            <span lang={titleLang} dir={textDir(titleLang)} className="truncate">
+              {resolvedTitle}
+            </span>
             {tailText ? <span className="shrink-0 whitespace-pre">{tailText}</span> : null}
           </h1>
         )}

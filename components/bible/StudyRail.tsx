@@ -55,11 +55,11 @@ function CommentaryCard({
  >
  {iconAuthor && <SaintIcon author={iconAuthor} size="sm" />}
  <div className="min-w-0 flex-1 leading-tight">
- <p className="font-sans text-caption font-semibold text-paper/70 truncate">
+ <p lang="en" dir="ltr" className="font-sans text-caption font-semibold text-paper/70 truncate">
  {title}
  </p>
  {subtitle && (
- <p className="font-sans text-eyebrow italic text-paper/55 truncate">
+ <p lang="en" dir="ltr" className="font-sans text-eyebrow italic text-paper/55 truncate">
  {subtitle}
  </p>
  )}
@@ -86,11 +86,14 @@ function CommentaryCard({
      Absent on most notes, and absent renders nothing at all. */}
  {/* It stands on its own type, sans against the Father's serif, with
      no rule beside it (build 89 note 1: a side stripe is AI slop). */}
+ {/* The digest and the Father's words are English (build 90 note 4: left to right under
+     Arabic and Urdu); the source line below speaks the reader's words and keeps the page's. */}
  {digest && (
- <p className="font-sans text-caption leading-[1.6] text-paper/60">
+ <p lang="en" dir="ltr" className="font-sans text-caption leading-[1.6] text-paper/60">
  {digest}
  </p>
  )}
+ <div lang="en" dir="ltr" className="space-y-2.5">
  {paras.map((para, i) => (
  <GlossedText
  key={i}
@@ -98,6 +101,7 @@ function CommentaryCard({
  className="font-serif text-detail leading-[1.55] text-paper/80"
  />
  ))}
+ </div>
  {hidden > 0 && (
  <button
  type="button"
@@ -143,7 +147,7 @@ function FatherGroup({ author, items }: { author: string; items: Note[] }) {
  <div className="flex items-center gap-2 px-0.5 mb-1.5">
  <SaintIcon author={author} size="sm" />
  <div className="min-w-0 flex-1 leading-tight">
- <p className="font-sans text-caption font-semibold text-paper/70 truncate">
+ <p lang="en" dir="ltr" className="font-sans text-caption font-semibold text-paper/70 truncate">
  {author}
  </p>
  <p className="font-sans text-eyebrow italic text-paper/55 truncate">

@@ -113,6 +113,8 @@ export function PrayerStep({
         id={`${prayer.id}-title`}
         {...(settlesOn === "title" ? snap : {})}
         tabIndex={-1}
+        lang={contentLang}
+        dir={textDir(contentLang)}
         className="font-serif text-title-sm font-semibold leading-snug text-paper/90 text-balance focus:outline-none"
       >
         {title}

@@ -77,10 +77,11 @@ export default async function HeresyProfilePage({
         <TheologyArticleNav className="mb-8" />
 
         {/* Hero */}
-        <p className="font-sans text-caption font-semibold text-paper/80">
+        {/* The dossier's facts and texts are English; its labels are the reader's (build 90 note 4). */}
+        <p lang="en" dir="ltr" className="font-sans text-caption font-semibold text-paper/80">
           {h.era}
         </p>
-        <h1 className="mt-3 font-serif text-display-sm md:text-display-lg text-paper leading-[1.05] tracking-[-0.015em]">
+        <h1 lang="en" dir="ltr" className="mt-3 font-serif text-display-sm md:text-display-lg text-paper leading-[1.05] tracking-[-0.015em]">
           {h.name}
         </h1>
 
@@ -89,17 +90,17 @@ export default async function HeresyProfilePage({
           <dt className="font-sans text-caption text-paper/40">
             <T k="study.period" />
           </dt>
-          <dd className="font-sans text-ui text-paper/80">{h.era}</dd>
+          <dd lang="en" dir="ltr" className="font-sans text-ui text-paper/80">{h.era}</dd>
           <dt className="font-sans text-caption text-paper/40">
             <T k="study.proponent" />
           </dt>
-          <dd className="font-sans text-ui text-paper/80">{h.heresiarch}</dd>
+          <dd lang="en" dir="ltr" className="font-sans text-ui text-paper/80">{h.heresiarch}</dd>
           {h.alsoCalled?.length ? (
             <>
               <dt className="font-sans text-caption text-paper/40">
                 <T k="study.heresies.alsoCalled" />
               </dt>
-              <dd className="font-sans text-ui text-paper/80">
+              <dd lang="en" dir="ltr" className="font-sans text-ui text-paper/80">
                 {h.alsoCalled.join(", ")}
               </dd>
             </>
@@ -109,7 +110,7 @@ export default async function HeresyProfilePage({
               <dt className="font-sans text-caption text-paper/40">
                 <T k="study.heresies.condemnedAt" />
               </dt>
-              <dd className="font-sans text-ui text-paper/80">
+              <dd lang="en" dir="ltr" className="font-sans text-ui text-paper/80">
                 {[
                   ...councils.map((c) => `${c.byname} (${c.year})`),
                   ...otherCouncils.map((c) => `${c.name} (${c.year})`),
@@ -126,7 +127,7 @@ export default async function HeresyProfilePage({
             <p className="font-sans text-caption font-semibold text-paper/45">
               <T k="study.heresies.theClaim" />
             </p>
-            <p className="mt-3 font-serif text-ui text-paper/85 leading-[1.7]">
+            <p lang="en" dir="ltr" className="mt-3 font-serif text-ui text-paper/85 leading-[1.7]">
               {named(marked(h.definition, sources, HERESY_SOURCE))}
             </p>
           </div>
@@ -137,7 +138,7 @@ export default async function HeresyProfilePage({
             >
               <T k="study.heresies.orthodoxResponse" />
             </p>
-            <p className="mt-3 font-serif text-ui text-paper/85 leading-[1.7]">
+            <p lang="en" dir="ltr" className="mt-3 font-serif text-ui text-paper/85 leading-[1.7]">
               {named(marked(h.response, sources, HERESY_SOURCE))}
             </p>
           </div>
@@ -160,13 +161,13 @@ export default async function HeresyProfilePage({
             <ul className="space-y-5">
               {condemnations.map((c, i) => (
                 <li key={i}>
-                  <blockquote className="ps-4 font-serif text-ui italic text-paper/85 leading-[1.7]">
+                  <blockquote lang="en" dir="ltr" className="ps-4 font-serif text-ui italic text-paper/85 leading-[1.7]">
                     {/* A line taken from inside a sentence says so. */}
                     {/^[a-z]/.test(c.words) ? "… " : ""}
                     {c.words}
                     {/[.;:!?]$/.test(c.words) ? "" : " …"}
                   </blockquote>
-                  <p className="mt-2 ps-4 font-sans text-caption text-paper/50">
+                  <p lang="en" dir="ltr" className="mt-2 ps-4 font-sans text-caption text-paper/50">
                     {c.kind === "council" ? (
                       <Link href={`/councils/${c.council}/${c.document}#s${c.section}`} className="underline decoration-paper/25 underline-offset-4 hover:text-paper">
                         {c.label}
@@ -199,10 +200,10 @@ export default async function HeresyProfilePage({
                     href={`/councils/${c.slug}`}
                     className="group block rounded-md border border-paper/12 bg-paper/[0.03] hover:border-paper/45 hover:bg-paper/[0.04] transition-colors px-5 py-4"
                   >
-                    <p className="font-serif text-lede text-paper">
+                    <p lang="en" dir="ltr" className="font-serif text-lede text-paper">
                       {c.byname}
                     </p>
-                    <p className="mt-1 font-sans text-caption text-paper/55">
+                    <p lang="en" dir="ltr" className="mt-1 font-sans text-caption text-paper/55">
                       {c.year} &middot; {c.location}
                     </p>
                   </Link>
@@ -214,7 +215,9 @@ export default async function HeresyProfilePage({
                     href={c.href ?? `/history/${c.history}`}
                     className="group block rounded-md border border-paper/12 bg-paper/[0.03] hover:border-paper/40 hover:bg-paper/[0.05] transition-colors px-5 py-4"
                   >
-                    <p className="font-serif text-lede text-paper">{c.name}</p>
+                    <p lang="en" dir="ltr" className="font-serif text-lede text-paper">
+                      {c.name}
+                    </p>
                     <p className="mt-1 font-sans text-caption text-paper/55">{c.year}</p>
                   </Link>
                 </li>

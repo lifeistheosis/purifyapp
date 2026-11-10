@@ -12,10 +12,12 @@ import { usePathname } from "next/navigation";
 import { useTranslate } from "@/components/i18n/MessagesProvider";
 
 const MODES = [
-  { key: "doctrine", label: "Doctrine", href: "/theology/doctrine" },
-  { key: "topics", label: "Topics", href: "/topics" },
-  { key: "heresies", label: "Heresies", href: "/heresies" },
-  { key: "apologetics", label: "Apologetics", href: "/apologetics" },
+  // The catalog's own words for each, in all 21 languages (until 1.9 the
+  // labels were typed in English here, and an Arabic reader read them so).
+  { key: "doctrine", labelKey: "study.doctrine", href: "/theology/doctrine" },
+  { key: "topics", labelKey: "nav.topics", href: "/topics" },
+  { key: "heresies", labelKey: "discover.tile.heresies", href: "/heresies" },
+  { key: "apologetics", labelKey: "study.apologetics.title", href: "/apologetics" },
 ] as const;
 
 function activeKey(pathname: string): string | null {
@@ -51,7 +53,7 @@ export function TheologyNav() {
                 : "border border-paper/12 text-paper/60 hover:text-paper hover:border-paper/30")
             }
           >
-            {m.label}
+            {t(m.labelKey)}
           </Link>
         );
       })}

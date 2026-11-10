@@ -79,7 +79,8 @@ export default async function CreedPage() {
               >
                 {a.n}
               </span>
-              <p className="min-w-0 font-serif text-lede leading-[1.7] text-paper/80">
+              {/* The Creed's words are its English; they read left to right under Arabic and Urdu (build 90 note 4). */}
+              <p lang="en" dir="ltr" className="min-w-0 font-serif text-lede leading-[1.7] text-paper/80">
                 {a.pieces.map((p, i) =>
                   p.from === "first-constantinople" ? (
                     <mark key={i} className="creed-added">

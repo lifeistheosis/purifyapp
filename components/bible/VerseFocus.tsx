@@ -348,7 +348,9 @@ function StudySheet({
 }) {
   return (
     <Sheet open={open} onClose={onClose} title={`${reference} · ${edition}`}>
-      <p className="font-serif text-body leading-[1.6] text-paper/85">{verseText}</p>
+      <p lang="en" dir="ltr" className="font-serif text-body leading-[1.6] text-paper/85">
+        {verseText}
+      </p>
       <ul className="mt-4 grid grid-cols-2 gap-2.5 pb-2">
         {study.map((s) => (
           <li key={s.key}>

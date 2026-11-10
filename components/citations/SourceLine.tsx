@@ -3,6 +3,7 @@
 import Link from "next/link";
 
 import { useTranslate } from "@/components/i18n/MessagesProvider";
+import { textDir } from "@/lib/i18n/textDir";
 import { ChevronRight } from "@/components/ui/icons/ChevronRight";
 import type { ShownCite } from "@/lib/citations/cite";
 import { cn } from "@/lib/cn";
@@ -33,18 +34,20 @@ type T = (key: string, replacements?: Record<string, string | number>) => string
  * library has them.
  */
 export function SourceLine({ cite, className }: { cite: ShownCite; className?: string }) {
-  const { t } = useTranslate();
+  const { t, locale } = useTranslate();
   const words = "font-sans text-detail leading-[1.45]";
+  // The line's frame and its own words are the reader's, said so on each, so the line reads rightly
+  // inside an English page too (build 90 note 4); the Fathers' English names inside it say theirs.
   if (cite.kind === "untraced") {
     return (
-      <p data-cite="untraced" className={cn(words, "text-paper/45", className)}>
+      <p data-cite="untraced" lang={locale} dir={textDir(locale)} className={cn(words, "text-paper/45", className)}>
         {t("cite.untraced")}
       </p>
     );
   }
   if (cite.kind === "text") {
     return (
-      <p data-cite="text" className={cn(words, "text-paper/60", className)}>
+      <p data-cite="text" lang={locale} dir={textDir(locale)} className={cn(words, "text-paper/60", className)}>
         <Words cite={cite} t={t} />
       </p>
     );
@@ -53,7 +56,7 @@ export function SourceLine({ cite, className }: { cite: ShownCite; className?: s
     // Our words about his teaching, set where his would be: said plainly,
     // then the Father and the work they speak of, with no link (1.8).
     return (
-      <div data-cite="summary" className={cn(words, className)}>
+      <div data-cite="summary" lang={locale} dir={textDir(locale)} className={cn(words, className)}>
         <p className="text-paper/45">{t("cite.summary")}</p>
         <p lang="en" dir="ltr" className="mt-0.5 text-paper/60">
           <span className="font-medium text-paper/80">{cite.author}</span>
@@ -66,7 +69,7 @@ export function SourceLine({ cite, className }: { cite: ShownCite; className?: s
     // Close to a passage the app carries, not as its edition prints it: said
     // plainly, then the passage, to read and compare.
     return (
-      <div data-cite="inexact" className={cn(words, className)}>
+      <div data-cite="inexact" lang={locale} dir={textDir(locale)} className={cn(words, className)}>
         <p className="text-paper/45">{t("cite.inexact")}</p>
         <Link
           href={cite.of.href}
@@ -86,6 +89,8 @@ export function SourceLine({ cite, className }: { cite: ShownCite; className?: s
       href={cite.href}
       prefetch={false}
       data-cite={cite.kind}
+      lang={locale}
+      dir={textDir(locale)}
       className={cn("tap-press hit-44 inline-flex max-w-full items-start gap-1.5 text-paper/60 hover:text-paper", words, className)}
     >
       <span className="min-w-0">

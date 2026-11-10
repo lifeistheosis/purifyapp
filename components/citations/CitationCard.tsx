@@ -16,7 +16,7 @@ export function CitationCard({ c }: { c: ResolvedCitation }) {
   return (
     <figure className="block rounded-lg border border-paper/12 bg-paper/[0.03] p-5">
       {c.gloss ? (
-        <p className="font-sans text-caption text-gold/85 mb-3">
+        <p lang="en" dir="ltr" className="font-sans text-caption text-gold/85 mb-3">
           {c.gloss}
         </p>
       ) : null}

@@ -130,6 +130,7 @@ export function FeaturedWork({
                 <WorkCover
                   title={card.title}
                   author={author}
+                  authorLang={card.author ? "en" : null}
                   iconUrl={card.cover?.src}
                   focusY={card.cover?.focusY}
                   size="hero"
@@ -143,6 +144,8 @@ export function FeaturedWork({
             <div data-stage-part="words" className={cn(styles.heroWords, "mt-5 flex min-w-0 max-w-[520px] flex-col items-center md:mt-0 md:items-start")}>
               <h2
                 id="featured-title"
+                lang="en"
+                dir="ltr"
                 className="sr-only text-title font-semibold leading-[1.1] tracking-[-0.015em] text-paper text-balance md:not-sr-only"
               >
                 <Link href={cardHref(card)} prefetch={false} className="hover:underline hover:underline-offset-4">

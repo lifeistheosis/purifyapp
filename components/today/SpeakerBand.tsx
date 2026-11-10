@@ -112,7 +112,7 @@ export function SpeakerBand({ eyebrow, name, words, who, cite, face, onShare, sh
           </span>
         )}
         {name ? (
-          <Link href={name.href} className="today-band-link mt-0.5 block font-heading text-lede font-bold leading-tight text-paper">
+          <Link href={name.href} lang="en" dir="ltr" className="today-band-link mt-0.5 block font-heading text-lede font-bold leading-tight text-paper">
             {name.text}
           </Link>
         ) : null}

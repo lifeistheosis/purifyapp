@@ -43,6 +43,7 @@ import { Pen } from "@/components/ui/icons/Pen";
 import { Sparkle } from "@/components/ui/icons/Sparkle";
 import { Star } from "@/components/ui/icons/Star";
 import { useTranslate } from "@/components/i18n/MessagesProvider";
+import { textDir } from "@/lib/i18n/textDir";
 import { useUpgradeModal } from "@/components/billing/UpgradeModal";
 import { CompareSheet } from "@/components/bible/CompareSheet";
 import { cn } from "@/lib/cn";
@@ -161,7 +162,7 @@ export function VerseRow({
   * Plus). */
  onWordStudy?: (strongs: string, lemma?: string) => void;
 }) {
-  const { t } = useTranslate();
+  const { t, locale } = useTranslate();
   const router = useRouter();
  const ann = useVerseAnnotation(book, chapter, verse.n);
  // Anything on the verse highlighted: the whole of it, or some of its words.
@@ -771,8 +772,11 @@ export function VerseRow({
   * gesture handlers on this paragraph do not introduce a
   * keyboard-only-user gap.
   */}
+ {/* The verse is the app's English, left to right under Arabic and Urdu (build 90 note 4); its commentary mark is named in the reader's words. */}
  {/* eslint-disable-next-line jsx-a11y/no-noninteractive-element-interactions */}
  <p
+ lang="en"
+ dir="ltr"
  className={cn(
  "indent-0 min-w-0 transition-colors duration-150",
  showDropCap &&
@@ -803,9 +807,13 @@ export function VerseRow({
  <a
  href={`#rail-v${verse.n}`}
  className="hidden lg:inline-flex native-md-hidden group/cmt items-baseline text-comment hover:text-comment-hover transition-colors"
+ lang={locale}
+ dir={textDir(locale)}
  aria-label={t("bible.openCommentaryOnVerse", { verse: verse.n })}
  title={t("bible.openCommentary")}
  >
+ {/* The mark itself keeps the verse's order: its number, then its dot. */}
+ <span dir="ltr" className="inline-flex items-baseline">
  <sup className="font-sans text-eyebrow font-semibold tracking-[0.05em] group-hover/cmt:underline underline-offset-2">
  {verse.n}
  </sup>
@@ -814,6 +822,7 @@ export function VerseRow({
  className="ms-[2px] inline-block h-[5px] w-[5px] rounded-full bg-accent/75 group-hover/cmt:bg-accent transition-colors"
  {...KEEP_RED}
  />
+ </span>
  </a>
  <button
  type="button"
@@ -826,8 +835,11 @@ export function VerseRow({
  "lg:hidden native-md-inline-flex group/cmt inline-flex items-baseline text-comment active:text-comment-hover transition-colors",
  TAP_TARGET,
  )}
+ lang={locale}
+ dir={textDir(locale)}
  aria-label={t("bible.openCommentaryOnVerse", { verse: verse.n })}
  >
+ <span dir="ltr" className="inline-flex items-baseline">
  <sup className="font-sans text-eyebrow font-semibold tracking-[0.05em]">
  {verse.n}
  </sup>
@@ -836,6 +848,7 @@ export function VerseRow({
  className="ms-[2px] inline-block h-[5px] w-[5px] rounded-full bg-accent/75"
  {...KEEP_RED}
  />
+ </span>
  </button>
  </span>
  ) : (

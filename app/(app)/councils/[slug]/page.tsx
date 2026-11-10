@@ -140,10 +140,11 @@ export default async function CouncilProfilePage({
  <p id="council-ordinal" className="font-sans text-caption font-semibold text-paper/80">
  <T k={ordinalKey(c)} />
  </p>
- <h1 id="council-name" className="mt-1.5 font-serif text-[26px] font-bold leading-[1.1] tracking-[-0.01em] text-balance text-paper md:text-display-sm">
+ {/* The council's name, facts and accounts are English; its labels the reader's (build 90 note 4). */}
+ <h1 id="council-name" lang="en" dir="ltr" className="mt-1.5 font-serif text-[26px] font-bold leading-[1.1] tracking-[-0.01em] text-balance text-paper md:text-display-sm">
  {c.byname}
  </h1>
- <p className="mt-1.5 font-sans text-detail text-paper/70">
+ <p lang="en" dir="ltr" className="mt-1.5 font-sans text-detail text-paper/70">
  {c.year} &middot; {placeOf(c.location)}
  </p>
  </header>
@@ -162,7 +163,7 @@ export default async function CouncilProfilePage({
  <dt className="text-[11px] font-semibold text-paper/50">
  <T k={f.key} />
  </dt>
- <dd className="mt-0.5 text-[13.5px] font-semibold leading-snug text-paper">{f.value}</dd>
+ <dd lang="en" dir="ltr" className="mt-0.5 text-[13.5px] font-semibold leading-snug text-paper">{f.value}</dd>
  </div>
  ))}
  </dl>
@@ -187,7 +188,7 @@ export default async function CouncilProfilePage({
  <T k="study.councils.receivedInPart" />
  )}
  </p>
- <p className="mt-2 font-serif text-ui text-paper/80 leading-[1.6]">
+ <p lang="en" dir="ltr" className="mt-2 font-serif text-ui text-paper/80 leading-[1.6]">
  {c.reception.note}
  </p>
  </aside>
@@ -221,10 +222,10 @@ export default async function CouncilProfilePage({
  <ul className="space-y-3">
  {c.pendingDocuments.map((p, i) => (
  <li key={i}>
- <p className="font-serif text-body text-paper/75">
+ <p lang="en" dir="ltr" className="font-serif text-body text-paper/75">
  {p.title}
  </p>
- <p className="mt-1 font-serif text-ui text-paper/55 leading-[1.6]">
+ <p lang="en" dir="ltr" className="mt-1 font-serif text-ui text-paper/55 leading-[1.6]">
  {p.note}
  </p>
  </li>
@@ -250,7 +251,7 @@ export default async function CouncilProfilePage({
  <h2 className="font-sans text-caption font-semibold text-paper/55 mb-4">
  <T k="study.councils.defined" />
  </h2>
- <ul className="space-y-3 font-serif text-body text-paper/85 leading-[1.65] list-disc pl-5 marker:text-paper/60">
+ <ul lang="en" dir="ltr" className="space-y-3 font-serif text-body text-paper/85 leading-[1.65] list-disc pl-5 marker:text-paper/60">
  {c.defined.map((d, i) => (
  <li key={i}>{named(marked(d, sources, ACCOUNT_SOURCE))}</li>
  ))}
@@ -260,7 +261,7 @@ export default async function CouncilProfilePage({
  <h2 className="font-sans text-caption font-semibold text-paper/55 mb-4">
  <T k="study.councils.condemned" />
  </h2>
- <ul className="space-y-3 font-serif text-body text-paper/85 leading-[1.65] list-disc pl-5 marker:text-paper/30">
+ <ul lang="en" dir="ltr" className="space-y-3 font-serif text-body text-paper/85 leading-[1.65] list-disc pl-5 marker:text-paper/30">
  {c.condemned.map((x, i) => (
  <li key={i}>{named(marked(x, sources, ACCOUNT_SOURCE))}</li>
  ))}
@@ -278,7 +279,7 @@ export default async function CouncilProfilePage({
  <T k="study.heresies.oursAwaitingReview" />
  </p>
  )}
- <div className="space-y-5 font-serif text-lede md:text-lede text-paper/85 leading-[1.7]">
+ <div lang="en" dir="ltr" className="space-y-5 font-serif text-lede md:text-lede text-paper/85 leading-[1.7]">
  {c.life.map((para, i) => (
  <p key={i}>{named(marked(para, sources, ACCOUNT_SOURCE))}</p>
  ))}
@@ -295,7 +296,7 @@ export default async function CouncilProfilePage({
  <ul className="space-y-5">
  {c.principalOpposed.map((o, i) => (
  <li key={i} className="rounded-md border border-paper/10 bg-paper/[0.015] px-5 py-4">
- <p className="font-sans text-ui font-semibold text-paper/85">
+ <p lang="en" dir="ltr" className="font-sans text-ui font-semibold text-paper/85">
  {o.slug ? (
  <Link
  href={`/heresies/${o.slug}`}
@@ -307,7 +308,7 @@ export default async function CouncilProfilePage({
  o.name
  )}
  </p>
- <p className="mt-2 font-serif text-ui text-paper/70 leading-[1.6]">
+ <p lang="en" dir="ltr" className="mt-2 font-serif text-ui text-paper/70 leading-[1.6]">
  {o.teaching}
  </p>
  </li>
@@ -329,10 +330,10 @@ export default async function CouncilProfilePage({
  href={`/heresies/${h.slug}`}
  className="group block rounded-md border border-paper/12 bg-paper/[0.03] hover:border-paper/45 hover:bg-paper/[0.04] transition-colors px-5 py-4"
  >
- <p className="font-serif text-lede text-paper group-hover:text-paper transition-colors">
+ <p lang="en" dir="ltr" className="font-serif text-lede text-paper group-hover:text-paper transition-colors">
  {h.name}
  </p>
- <p className="mt-2 font-serif text-ui text-paper/75 leading-[1.6]">
+ <p lang="en" dir="ltr" className="mt-2 font-serif text-ui text-paper/75 leading-[1.6]">
  {h.shortBio}
  </p>
  </Link>

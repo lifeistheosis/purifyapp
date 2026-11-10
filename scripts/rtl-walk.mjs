@@ -52,15 +52,26 @@ export function englishOutOfPlace() {
     if (inner) continue;
     // A reader's own words may be in any language: they say dir="auto" and run as they are written.
     if (el.closest('[dir="auto"]')) continue;
-    const said = el.closest("[lang]");
-    const lang = (said && said !== document.documentElement ? said.getAttribute("lang") : page) || page;
-    const dir = getComputedStyle(el).direction;
-    const why = [];
-    if (dir === "rtl") why.push("runs right to left");
-    if (lang.toLowerCase() === page) why.push(`is announced as ${page || "the page's language"}`);
-    if (!why.length) continue;
+    // Each run of English words where it sits: a row keeps the page's direction (its chevron, its
+    // order) while the English inside it says its language and runs left to right.
+    const why = new Set();
+    let lang = page;
+    const walker = document.createTreeWalker(el, NodeFilter.SHOW_TEXT);
+    for (let n = walker.nextNode(); n; n = walker.nextNode()) {
+      if (!(n.textContent.match(LATIN) || []).length) continue;
+      const at = n.parentElement;
+      if (!at || at.closest('[dir="auto"]')) continue;
+      const said = at.closest("[lang]");
+      const own = ((said && said !== document.documentElement ? said.getAttribute("lang") : page) || page).toLowerCase();
+      if (getComputedStyle(at).direction === "rtl") why.add("runs right to left");
+      if (own === page) {
+        why.add(`is announced as ${page || "the page's language"}`);
+        lang = own;
+      } else if (lang === page) lang = own;
+    }
+    if (!why.size) continue;
     const cls = (el.getAttribute("class") || "").split(/\s+/).filter(Boolean).slice(0, 4).join(".");
-    out.push({ tag: el.tagName.toLowerCase(), id: el.id, cls, lang, why: why.join(" and "), words: text.slice(0, 60) });
+    out.push({ tag: el.tagName.toLowerCase(), id: el.closest("[id]")?.id ?? "", cls, lang, why: [...why].join(" and "), words: text.slice(0, 60) });
   }
   return out;
 }
@@ -72,6 +83,8 @@ const SELF_TEST = `<!doctype html><html lang="ar" dir="rtl"><head><meta charset=
 <p id="both" lang="en" dir="ltr">In the beginning was the Word, and the Word was with God.</p>
 <p id="name-inside">قال القديس John Chrysostom في عظته</p>
 <p id="own" dir="auto">My own note about this verse, in English.</p>
+<a id="row" href="#" style="display:flex"><span lang="en" dir="ltr">St. John Chrysostom, Homilies on Matthew 1</span><span>›</span></a>
+<a id="row-bare" href="#" style="display:flex"><span>St. John Chrysostom, Homilies on Matthew 2</span><span>›</span></a>
 </body></html>`;
 
 async function selfTest(browser) {
@@ -82,9 +95,10 @@ async function selfTest(browser) {
   // The bare paragraph and the one with lang alone fail, each for its reason; lang with dir, an
   // English name inside Arabic and a reader's own note pass.
   const got = Object.fromEntries(found.map((f) => [f.id, f.why]));
-  const want = { bare: "runs right to left and is announced as ar", "lang-only": "runs right to left" };
+  // A row of the page's whose English says its language and runs left to right passes; the same row bare fails.
+  const want = { bare: "runs right to left and is announced as ar", "lang-only": "runs right to left", "row-bare": "runs right to left and is announced as ar" };
   const ok = JSON.stringify(got) === JSON.stringify(want);
-  console.log(ok ? "self-test: an unmarked block and one with lang alone fail; lang with dir, an English name inside Arabic and a reader's own note pass" : `self-test FAILED: found ${JSON.stringify(got)}, wanted ${JSON.stringify(want)}`);
+  console.log(ok ? "self-test: an unmarked block, one with lang alone and a bare row fail; lang with dir, a row whose English says both, an English name inside Arabic and a reader's own note pass" : `self-test FAILED: found ${JSON.stringify(got)}, wanted ${JSON.stringify(want)}`);
   return ok;
 }
 

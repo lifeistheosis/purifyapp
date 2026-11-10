@@ -151,15 +151,28 @@ export function CoverTile({
   const author = card.author ?? t("reading.work.anonymous");
   // The link's name: the cover that carries the words is hidden from assistive technology.
   const name = [card.title, author].join(", ");
+  // After an English title, the reader's own word for an author not known ("Anonymous").
+  const byTail = ["", author].join(", ");
   return (
     <li className="w-[112px] md:w-[148px]">
       {/* No prefetch: a row scrolled past would fetch every work, and on the
           website a work's page carries its whole text. */}
       <Link href={href ?? cardHref(card)} prefetch={false} className="press-card group block rounded-[6px]">
-        <span className="sr-only">{name}</span>
+        {/* The link's name in its languages: the title English, the author English or the reader's "Anonymous". */}
+        {card.author ? (
+          <span className="sr-only" lang="en" dir="ltr">
+            {name}
+          </span>
+        ) : (
+          <span className="sr-only">
+            <span lang="en" dir="ltr">{card.title}</span>
+            {byTail}
+          </span>
+        )}
         <WorkCover
           title={card.title}
           author={author}
+          authorLang={card.author ? "en" : null}
           iconUrl={card.cover?.src}
           focusY={card.cover?.focusY}
           crop={card.cover?.crop}

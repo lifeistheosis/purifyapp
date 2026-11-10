@@ -30,7 +30,9 @@ export function CouncilShelves({ shelves }: { shelves: { council: ShelfCouncil; 
             id={`council-${council.slug}`}
             title={
               <Link href={`/reading/councils/${council.slug}`} className="inline-flex max-w-full items-baseline gap-1 hover:underline hover:underline-offset-4">
-                <span className="truncate">{council.byname}</span>
+                <span lang="en" dir="ltr" className="truncate">
+                  {council.byname}
+                </span>
                 <ChevronRight size={15} className="shrink-0 self-center text-paper/45 rtl:-scale-x-100" />
               </Link>
             }

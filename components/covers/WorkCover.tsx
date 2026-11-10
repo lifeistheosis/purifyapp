@@ -6,6 +6,7 @@ import { cn } from "@/lib/cn";
 import { avifFor } from "@/lib/media/streamed";
 import { GEOMETRY, SIZES, coverWords, type CoverScale, type CoverSize } from "@/lib/reading/coverText";
 import { windowStyle, type CoverWindow } from "@/lib/reading/coverWindow";
+import { textDir } from "@/lib/i18n/textDir";
 
 /**
  * One cover for every book, shared by the reading room (note 18), a saint's
@@ -145,9 +146,21 @@ export function WorkCover({
   hold,
   onArrive,
   className,
+  lang = "en",
+  authorLang,
 }: {
   title: string;
   author?: string;
+  /**
+   * The language of the cover's words (build 90 note 4): the library's titles
+   * and authors are English, which reads left to right under Arabic and Urdu.
+   */
+  lang?: string;
+  /**
+   * The author line's, when it is not the title's: null when the line is the
+   * reader's own word in a name's place ("Anonymous", from the catalog).
+   */
+  authorLang?: string | null;
   /** The icon of the work's saint: a settled picture only (lib/reading/coverArt.ts). */
   iconUrl?: string | null;
   /** Where the face sits in the icon, percent from its top. */
@@ -168,6 +181,7 @@ export function WorkCover({
   className?: string;
 }) {
   const src = imageUrl || iconUrl || null;
+  const byLang = authorLang === undefined ? lang : (authorLang ?? undefined);
   /** The picture that has loaded, the one given up on, and whether this one is the second asking. */
   const [loaded, setLoaded] = useState<string | null>(null);
   const [gone, setGone] = useState<string | null>(null);
@@ -320,14 +334,20 @@ export function WorkCover({
           style={{ padding: `${pct(g.aloneTop)} ${pct(g.padX)} ${pct(g.foot)}` }}
         >
           <span className="flex min-h-0 w-full flex-1 items-center justify-center">
-            <span data-cover-title="" className="font-serif text-[length:var(--cover-px)] font-semibold text-balance text-paper" style={titleStyle}>
+            <span data-cover-title="" lang={lang} dir={textDir(lang)} className="font-serif text-[length:var(--cover-px)] font-semibold text-balance text-paper" style={titleStyle}>
               {words.title}
             </span>
           </span>
           {words.author && g.author ? (
             <>
               <span aria-hidden className="block h-px w-[18%] shrink-0 bg-paper/35" style={{ margin: `${pct(g.rule / 2)} 0` }} />
-              <span data-cover-author="" className="font-sans text-[length:var(--cover-px)] font-medium text-balance text-paper/80" style={authorStyle}>
+              <span
+                data-cover-author=""
+                lang={byLang}
+                dir={textDir(byLang)}
+                className="font-sans text-[length:var(--cover-px)] font-medium text-balance text-paper/80"
+                style={authorStyle}
+              >
                 {words.author}
               </span>
             </>
@@ -348,6 +368,8 @@ export function WorkCover({
         >
           <span
             data-cover-title=""
+            lang={lang}
+            dir={textDir(lang)}
             className="font-serif text-[length:var(--cover-px)] font-semibold text-balance text-paper [text-shadow:0_1px_2px_rgba(0,0,0,0.5)]"
             style={titleStyle}
           >
@@ -356,6 +378,8 @@ export function WorkCover({
           {words.author && g.author ? (
             <span
               data-cover-author=""
+              lang={byLang}
+              dir={textDir(byLang)}
               className="font-sans text-[length:var(--cover-px)] font-medium text-balance text-paper/80 [text-shadow:0_1px_2px_rgba(0,0,0,0.5)]"
               style={{ ...authorStyle, marginTop: pct(gap) }}
             >
