@@ -59,18 +59,12 @@ describe("a commentary note cut from a work the library holds", () => {
   it("names where it begins in the library, every one of them", () => {
     const of = NOTES.filter(({ note }) => fromLibrary(note));
     expect(of.length).toBeGreaterThan(4_700);
-    // None missing, but where the work's file gives the section its heading
-    // names twice (Cyril on Luke, Sermons 29 and 96), which no number can open.
-    const twice = (key: string, n: number) => work(key).sections.filter((s) => s.n === n).length > 1;
-    const missing = of
-      .filter(({ note }) => !note.at)
-      .filter(({ note }) => {
-        const n = Number(/(\d+)$/.exec(note.work)?.[1]);
-        return !twice(fromLibrary(note)![2], n);
-      })
-      .map(({ where }) => where);
+    // None missing. Seven were, until 1.9: Cyril on Luke gave Sermons 29 and
+    // 96 two sections each under one number, which no number could open;
+    // their second halves have numbers of their own now (1029 and 97,
+    // lib/saints/sharedSections.ts), and the seven are placed.
+    const missing = of.filter(({ note }) => !note.at).map(({ where }) => where);
     expect(missing).toEqual([]);
-    expect(of.filter(({ note }) => !note.at).length).toBeLessThanOrEqual(7);
     // And only those: no other note claims a place in the library.
     const stray = NOTES.filter(({ note }) => note.at && !fromLibrary(note)).map(({ where }) => where);
     expect(stray).toEqual([]);
