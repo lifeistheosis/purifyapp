@@ -51,6 +51,19 @@ written as 1.9 is planned to ship.
 8. **The Terms tick on a new campaign** ("I agree to the Terms of Service")
    is in the build: the campaigns chat's screen and its fourth SQL file
    (signed). Until both are in, part B leaves that sentence out.
+9. **No dormant features** (Guideline 2.5.19, new: "Don't include any
+   hidden, dormant, or undocumented features"). Part B documents what is in
+   the build and switched off, but a reviewer may still read campaign
+   pictures, built and switched off on the server, as dormant. The safer
+   paths are pictures on before the submission (his three steps), or their
+   controls out of the build until then. His call, through the arbiter,
+   before R5d.
+10. **The age ratings** are answered again in R5d for user content. Apple's
+   answer "Social media: yes" sets 13+; the store listing's "4+" goes with
+   it (`docs/launch/STORE-LISTINGS.md`).
+11. **New in 1.9** in part B matches the 1.9 note as shipped (Guideline
+   2.3.1(a): new features "described with specificity in the Notes for
+   Review").
 
 ---
 
@@ -61,6 +74,9 @@ Copy everything between the two lines, then fill the last line.
 ---
 
 Purify is a free Eastern Orthodox library and prayer companion: Scripture with the Church Fathers' commentary, the lives of the saints, the Church's calendar and fasts, the prayers and the Hours, and the councils. The whole library works without an account and offline.
+
+NEW IN 1.9
+A journal by the Church's day (free). Hold a verse to open its window: highlight, copy, share as a picture, a note, its Greek. Five more Bibles to download. In Purify Plus: study on a verse (cross-references, the Greek of every word, Compare, Remember the verse), new reading plans, the Florilegium and the Thread, Candlelight and ambience. The Creed by council, Church history on Today, and a widget. Prayer campaigns reworked, with the moderation below. New welcome questions: a new reader is offered an account either as the last question or on a card on Today, one of the two for each device; both are in this build.
 
 PURIFY PLUS AND PURIFY PRO (in-app purchase)
 Two optional auto-renewable subscriptions, sold through the App Store: Purify Plus (monthly, or yearly with a free week on a first subscription) and Purify Pro (monthly or yearly). To find them: the Plus button at the top of Today, or You, then Purify Plus. A Plus feature, such as Compare on a verse, opens the same Purify Plus sheet. Restore purchases is on the Purify Plus page and in the sheet, beside the Terms of Service and the Privacy Policy. The library itself stays free.

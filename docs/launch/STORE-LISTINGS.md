@@ -70,7 +70,7 @@ Connect record exactly.
 `fasting,calendar,pascha,liturgy,saint,daily,readings,christian,church,icon,akathist,psalter,creed` (97)
 
 **Category**: Primary Reference, Secondary Lifestyle
-**Age rating**: 4+ (questionnaire: no objectionable content in any category)
+**Age rating**: 13+ from 1.9 (questionnaire answered again for user content: user-generated content, messaging and chat, and social media yes; the content questions as before; docs/1.9-build/OWNER-STEPS.md, R5d). Before 1.9: 4+.
 **Support URL**: https://purifyapp.net/support
 **Marketing URL**: https://purifyapp.net
 **Privacy Policy URL**: https://purifyapp.net/privacy

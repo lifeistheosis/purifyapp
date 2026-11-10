@@ -1166,6 +1166,8 @@ reviewer should not meet that hold.
 3. Open the confirmation email and confirm.
 4. Sign in with it once on a phone. Give it a display name, and save a verse
    or write a journal page, so the reviewer does not meet empty screens.
+   Leave it without Plus: Apple wants the reviewer to meet the whole
+   purchase screen, and buys in its own test mode.
 5. Nowhere else: not a chat, not a file. In R5d it goes into App Store
    Connect, and that is its only place.
 
@@ -1213,12 +1215,46 @@ with notes".
 
 Only after R5b, and after R5c (or your "send with notes").
 
+**The age ratings, first** (Apple's and Google's own pages, read
+2026-11-10). The questionnaires were last answered before Community and
+prayer campaigns, when nothing readers wrote could be seen by others. Both
+stores ask for honest answers, and Google may remove an app whose answers are
+wrong. Answer only the questions below differently; everything else stays as
+it is.
+
 Google Play:
-1. Play Console, **Internal testing**, the 1.9 release, **Promote release**,
+1. Play Console, **Purify**, **Policy and programs** (under **Monitor and
+   improve**), **App content**, **Content rating**, **Start new
+   questionnaire** (or **Edit**). Keep the email and the category already
+   there.
+2. Where it asks whether users can interact or share content with one
+   another: **Yes** (public posts, replies, prayer campaigns and their
+   comments, profile photos). Where it asks about buying digital goods:
+   **Yes** (Plus and Pro). Every other answer as before.
+3. **Save**, **Next**: Google shows the ratings it worked out. Expect the
+   same ages as today in most countries, with a notice that users interact;
+   Germany may show 12. Then **Submit**.
+4. **Internal testing**, the 1.9 release, **Promote release**,
    **Production**.
-2. **Next**, **Save**, then **Send for review** (or **Start rollout**).
+5. **Next**, **Save**, then **Send for review** (or **Start rollout**).
 
 App Store:
+0. **App Information** (left, under **General**), **Edit** at the top of the
+   page, the age rating questions:
+   - **User-Generated Content**: **Yes**.
+   - **Messaging and Chat**: **Yes** (Apple counts public posts and replies).
+   - **Social Media**: **Yes** (Community is a feed where readers reply to
+     and react to one another's posts). This sets 13+.
+   - **Social Media Disabled for Users Under 13**: **No** (Apple allows that
+     answer only for an app that checks a reader's age through its own
+     service, which Purify does not do).
+   - **Advertising**, **Parental Controls**, **Age Assurance**,
+     **Unrestricted Web Access**: **No**.
+   - **Shared Location** and **Dating and Relationships** (new from 16
+     November): **No**.
+   - Every content question as before. **Save**. App Store Connect shows
+     the rating it worked out: expect **13+** (16+ in Australia, and higher
+     in a few other countries). It goes out with 1.9.
 1. **App Store** tab, the **1.9** version (click **+** next to iOS App to make
    it, if needed).
 2. **Build**: **Add Build**, pick the one you walked in R5b.
