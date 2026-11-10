@@ -578,6 +578,19 @@ from about 45 small files where there was one. After that first tap the
 chapter is kept. A work in parts opens whole as before (Chrysostom on John:
 68 files, 3.2 MB, 193 ms).
 
+That cost is taken back by reading ahead (the arbiter's ask, the same
+day: he asked for less lag, not more). Once a chapter has opened and settled
+(1.5 s, then an idle moment), the reader reads its commentary in the
+background (`lib/bible/warmCommentary.ts`), so the tap finds it read. Never
+on the first paint; in the apps the files are in the bundle, so no network
+is used; in a browser it stays away under Save Data or a mobile connection.
+Measured the same way, three runs each, tapping 4 s after the chapter opens:
+John 14 at 391, 418 and 443 ms (519 before item 5), John 1 at 708, 736 and
+768 ms (641 before item 5, one run). The tap itself now reads no commentary
+file at all. John 1 is within the spread of single runs of the old number
+but is not shown to be faster; a reader who taps inside the first second
+and a half still waits as the paragraph above says.
+
 Held by tests on the real data: every quoted work comes back whole from its
 parts, every span comes back as its note word for word (more than 4,000 of
 them), a part that cannot be read leaves its note out and shows nothing in

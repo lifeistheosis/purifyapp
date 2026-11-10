@@ -10,7 +10,9 @@ import {
   loadInterlinear,
   loadStrongs,
 } from "@/lib/bible/chapterData";
+import { warmCommentaryWhenIdle } from "@/lib/bible/warmCommentary";
 import { useInterlinear } from "@/lib/bible/interlinear";
+import { isNativeClient } from "@/lib/platform/native";
 import { useReadingFlow } from "@/lib/reader/readingFlow";
 import { plusFeaturesNow } from "@/lib/entitlements/usePlusFeatures";
 import { useUpgradeModal } from "@/components/billing/UpgradeModal";
@@ -125,7 +127,14 @@ export function ChapterReader({
   const g = greek?.key === key ? greek.data : null;
 
   // The commentary, read the first time a verse's commentary is opened,
-  // unless the page brought it.
+  // unless the page brought it. In the apps it is also read ahead once the
+  // chapter has settled, so that first tap does not wait for it
+  // (lib/bible/warmCommentary.ts).
+  const hasNotes = !commentary && (commentaryVerses?.length ?? 0) > 0;
+  useEffect(() => {
+    if (!hasNotes) return;
+    return warmCommentaryWhenIdle(book, chapter, isNativeClient());
+  }, [book, chapter, hasNotes]);
   const [readNotes, setReadNotes] = useState<Read<ChapterCommentary>>(null);
   const notes = commentary ?? (readNotes?.key === key ? readNotes.data : NO_NOTES);
   const openCommentary = (n: number) => {
