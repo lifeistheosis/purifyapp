@@ -262,7 +262,7 @@ function Chapter({
         >
           <span
             aria-hidden
-            className={cn("w-[22px] shrink-0 font-serif text-[15px] font-medium italic leading-[22px]", isOpen ? "text-paper/70" : "text-paper/40")}
+            className={cn("w-[22px] shrink-0 font-serif text-[15px] font-medium italic leading-[22px]", isOpen ? "text-paper/70" : "text-paper/45")}
           >
             {chapter.numeral}
           </span>

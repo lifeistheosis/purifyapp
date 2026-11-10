@@ -100,7 +100,7 @@ export function PrayerBookIndex({ variant }: { variant: "desktop" | "mobile" }) 
                       ) : null}
                       <span
                         aria-hidden
-                        className="shrink-0 font-sans text-ui text-paper/35 transition-transform duration-200 group-hover/row:translate-x-0.5 group-hover/row:text-paper motion-reduce:transition-none"
+                        className="shrink-0 font-sans text-ui text-paper/45 transition-transform duration-200 group-hover/row:translate-x-0.5 group-hover/row:text-paper motion-reduce:transition-none"
                       >
                         →
                       </span>

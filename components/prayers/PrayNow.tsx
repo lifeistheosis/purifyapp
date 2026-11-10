@@ -124,7 +124,7 @@ export function PrayNow({ variant }: { variant: "desktop" | "mobile" }) {
                     {tn("prayers.approxMin", c.minutes)}
                   </span>
                 ) : null}
-                <span aria-hidden className="shrink-0 font-sans text-ui text-paper/35">
+                <span aria-hidden className="shrink-0 font-sans text-ui text-paper/45">
                   →
                 </span>
               </Link>
