@@ -377,6 +377,93 @@ Send back what the Android row says, and whether the phone showed it:
 - No Android row at all: step 2 did not reach your account. Send what the
   Notifications screen says under the button.
 
+### Pictures. What campaigns need before they carry pictures (P1 to P5)
+
+Your word, "rec yes to all" (2026-11-10 about 16:45 UTC): pictures open
+once P1 to P3 are done, and PhotoDNA (P4) joins when Microsoft approves.
+For the apps to carry pictures in 1.9, P1 to P3 and P5 must be done before
+the store builds are cut (R5c says why: Apple's rule 2.5.19); otherwise
+pictures wait for a later build. Each fact below was read on the service's
+own page on 2026-11-10, unless it says otherwise.
+
+**P1. Amazon's picture check: an account, and one key that can only check
+pictures (about 20 minutes).**
+1. aws.amazon.com, **Create an AWS account**, with the company's email.
+   When it asks for a plan, choose the **Paid plan**. AWS's page: on the
+   Free plan "the account closes on its own 6 months after you open it or
+   when your credits run out, whichever comes first", and pictures would
+   stop being accepted that day. The Paid plan still gets the new
+   customer credits.
+2. Turn on two-step sign-in (MFA) for the account's main user: the account
+   name at the top right, **Security credentials**, **Assign MFA device**.
+3. **Billing and Cost Management**, **Budgets**, **Create budget**: a
+   monthly cost budget of $5, with an email alert to you. The check costs
+   $0.001 a picture, $1 for 1,000 (AWS's price list, us-east-1), so a $5
+   alert means something is wrong.
+4. **IAM**, **Users**, **Create user**: name `purify-picture-check`, no
+   access to the console.
+5. On that user: **Add permissions**, **Create inline policy**, **JSON**,
+   and paste:
+   `{"Version":"2012-10-17","Statement":[{"Effect":"Allow","Action":"rekognition:DetectModerationLabels","Resource":"*"}]}`
+   Name it `picture-check-only`, **Create policy**. (The action's name is
+   the one AWS's own read-only policy for Rekognition lists.)
+6. On that user: **Security credentials**, **Create access key**,
+   **Application running outside AWS**. It shows two values once: the
+   access key ID and the secret access key.
+7. Render, the **test web** service, **Environment**, add three:
+   `PICTURE_CHECK_AWS_ACCESS_KEY_ID`, `PICTURE_CHECK_AWS_SECRET_ACCESS_KEY`
+   and `PICTURE_CHECK_AWS_REGION` = `us-east-1`. **Save**. Never in a chat
+   or a file. The main web gets the same three only after P5.
+
+**P2. NCMEC's CyberTipline: register Purify as a provider (one email,
+about 10 minutes).** NCMEC's page: US law requires a US service that
+becomes aware of apparent child sexual abuse material on its systems to
+report it to NCMEC's CyberTipline, and a provider who wants to register
+writes to espteam@ncmec.org.
+1. From the company's address, write to espteam@ncmec.org: Purify Orthodox
+   LLC; what Purify is (an Orthodox prayer and Scripture app and website,
+   purifyapp.net); that readers will be able to add pictures to prayer
+   campaigns; and that you ask to register to report to the CyberTipline.
+2. Send the arbiter what NCMEC answers about how to report, never a login
+   or a password. The code's path for such a picture is not relied on
+   until their guidance is written into it.
+
+**P3. The Copyright Office: name an agent for copyright notices (about 15
+minutes, $6).** The legal shelter for what readers post needs an agent
+registered with the Office and shown on the website.
+1. dmca.copyright.gov/osp/login.html: create an account, then designate an
+   agent (the Office takes nothing on paper).
+2. The service provider: its full legal name, Purify Orthodox LLC, and its
+   street address (the Office takes no post office box for this one).
+   Alternate names: Purify, purifyapp.net, and the apps' name as the
+   stores show it.
+3. The agent: a role, such as "Copyright Agent" (the Office allows a title
+   in place of a person's name), with a postal address (a post office box
+   is allowed for the agent), a phone and an email (legal@purifyapp.net).
+4. Pay the $6 fee.
+5. Everything you enter is public: the company's address, not your home.
+6. It runs out three years after you register it unless you resubmit it
+   ($6 again): put a reminder on the Calendar for October 2029.
+7. Send the arbiter the agent's details as you entered them. The law asks
+   the website to show the same, so the Terms' section 8 gains them, and
+   that wording comes to you to sign.
+
+**P4. PhotoDNA (Microsoft), when you can.** microsoft.com/photodna,
+**Apply**, as the organisation. Microsoft's page (as the campaigns chat
+read it on 2026-11-10; it refused this chat's reader): "free for qualified
+customers", "subject to approval by third-party vetting service". The wait
+is Microsoft's, and pictures do not wait for it: it joins when they
+approve.
+
+**P5. The first real picture, on the test web (after P1).** On the test
+web, add one picture to a campaign of yours. The check is written to
+Amazon's documentation and tested against a stand-in; this picture is the
+first proof that it works. If it fails, nothing is stored and the server's
+log says why.
+
+Send back: "P1 done", "P2 sent", "P3 done", "P4 applied", and for P5
+"picture checked" or what the screen said.
+
 ### 23. Do iPhone purchases reach your account? Done
 
 Your word, 2026-11-10 about 18:05 UTC, after looking at Admin, **Money**,
