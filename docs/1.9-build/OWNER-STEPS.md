@@ -1302,7 +1302,14 @@ sends readers to a build that is not there. Each store on its own day.
 
 Send back: "R6 Play done" / "R6 App Store done".
 
-### R7. After 1.9 is live: your admin sign-in code
+### R7. Not in 1.9: your admin sign-in code, once you moderate from the website
+
+Your word, 2026-11-10 ("all recs yes"): the code stays off for 1.9, so you
+can moderate from your phone. So do not add it yet. Once a code is added,
+the admin and Community moderation ask for it, and the phone apps have
+nowhere to type it: from that moment your account moderates from the
+website only. Do this step on the day you choose to moderate from the
+website.
 
 1. purifyapp.net/admin, **Settings**, **Add a sign-in code**.
 2. Scan the picture with an authenticator app on your phone (Google
@@ -1316,7 +1323,7 @@ Send back: "R6 Play done" / "R6 App Store done".
 From then on, the admin and Community moderation ask for the code. The phone
 apps have no code screen, so you moderate from the website.
 
-Send back: "R7 done".
+Send back: "R7 done", on that day.
 
 ### R8. Tell people, in the drop's order
 
@@ -1334,19 +1341,19 @@ The arbiter says the day for each moment.
 
 Send back: what went, as you go.
 
-### R9. After 1.9 is out: July's old campaign rows (your decision; 1 minute)
+### R9. After 1.9 is out: July's old campaign rows go on their own (nothing to run)
+
+Your word, 2026-11-10 ("all recs yes"): July's old campaign rows are deleted
+30 days after 1.9 ships (your item 125: nobody's illness stays up by
+neglect).
 
 The campaigns from July's first version are still in the database. Since
 1.9 nobody sees them but the reader who started each, who finds it among
-their own as ended and can take it down. The check at the foot of
-`campaigns-1-rework.sql` counts how many there are.
+their own as ended and can take it down. On the 30th day after 1.9 ships,
+the website deletes them by itself, in the heartbeat's daily upkeep
+(`lib/ops/maintenance.ts`, built by the campaigns chat). It is code, not a
+SQL file, so a second chat reads it before it ships, as for every change
+to the live database.
 
-Choose one:
-
-- keep them unseen, as now, or
-- delete them on a date. Recommended: 30 days after 1.9 ships (your item
-  125: nobody's illness stays up by neglect).
-
-Send back: "July rows: delete on <date>", or "July rows: keep". Deleting is
-a change to the live database, so it comes back to you in plain words, after
-a second chat has reviewed the SQL, as in R0b.
+Nothing for you to run, set or send. The arbiter tells you when it has
+happened.
