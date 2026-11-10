@@ -20,3 +20,11 @@ from these notes is built until he says start. Work he approved before (the
 campaigns, the security updates, the small fixes in flight) carries on.
 
 ## His notes
+
+### 1. The account step's "Terms" and "Privacy Policy" open nothing; show them in a sheet (2026-11-10)
+
+What he saw: in the onboarding, on the screen that says "Carry your prayers on every device", the line "By continuing you agree with our Terms and Privacy Policy": tapping Terms or Privacy Policy does not show them. His words: "So on the section on the onboarding where it says carry your prayers on every device, when it says by continuing you agree with our terms and privacy policy, when you click on terms and privacy policy, it doesn't actually show you the terms or the privacy policy. So I want to have either a pop-up show up with the terms, which is preferred actually, and you can easily scroll to see, and the privacy policy too."
+
+Where it is: for Admin to find (the legal pages are Admin's).
+
+Planned (brainstorm, nothing built until his start): Terms and Privacy Policy each open in the house's own sheet over the screen, the whole text easy to scroll, closing back to where the reader was; working in the apps with no signal; the same wherever the app says "you agree to our Terms and Privacy Policy" (sign-in, sign-up, checkout), not only here.
