@@ -1915,6 +1915,20 @@
    "version": null,
    "outcome": null,
    "note": "The optimization audit's item 4 (the details stay with the arbiter); his \"all recs\" of 2026-11-10, through the arbiter. bb45cc0f Capacitor 8.4.3 and zod 4.6.6; 2346e7cc Next 16.4.6. PLAN 13i. Left: the release APK and iPhone walks on the next phone walk."
+  },
+  {
+   "id": "c-guardrail-followups",
+   "section": "Beauty",
+   "kind": "flag",
+   "title": "The guardrail faults found walking the contrast sweep: True black Prayers' marks, three 44px targets, Saints' initials, Prayers in Arabic",
+   "from": "claude",
+   "asked": "2026-11-10",
+   "status": "built",
+   "decided": "2026-11-10",
+   "needsDesign": false,
+   "version": null,
+   "outcome": null,
+   "note": "The arbiter's yes. f0333363 prayers' small marks; 8ad8525f the language picker; 484fea9d Saints' chips and century marks; c0d1f6aa the icon stand-in's initials; 0a1478a6 Prayers in Arabic; fe6c5277 the export walk's two stale checks. PLAN 13j."
   }
  ]
 }
