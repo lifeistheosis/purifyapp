@@ -2097,6 +2097,48 @@
    "version": "1.9",
    "outcome": null,
    "note": "The clear takes it down everywhere, deletes the files provably theirs, and keeps Google's photo from standing for them again (app_metadata, lib/profile/signInPicture.ts). Store blocker (Apple 1.2), the Admin chat's find. ea6dd2342. PLAN 13t."
+  },
+  {
+   "id": "e-guardrails-six-screens",
+   "section": "Design",
+   "kind": "bug",
+   "title": "Six older screens and the profile card broke the written guardrails: contrast under 4.5:1, targets under 44px, placement by left and right, typed colours",
+   "from": "claude",
+   "asked": "2026-11-10",
+   "status": "built",
+   "decided": "2026-11-10",
+   "needsDesign": false,
+   "version": "1.9",
+   "outcome": null,
+   "note": "checkMock 97 NO to 0 on the 13 screens and 20 to 0 on the profile card's still. 1b4dd0e63, 933484914. PLAN 13u."
+  },
+  {
+   "id": "e-typed-48-fields",
+   "section": "Language",
+   "kind": "bug",
+   "title": "The Updates chat's 48 typed fields ran right to left under Arabic and Urdu, whatever the writer wrote",
+   "from": "claude",
+   "asked": "2026-11-10",
+   "status": "built",
+   "decided": "2026-11-10",
+   "needsDesign": false,
+   "version": "1.9",
+   "outcome": null,
+   "note": "dir=\"auto\" on each; typedWords.test.ts green. 638aa3277. PLAN 13v."
+  },
+  {
+   "id": "e-cyril-book5-contents",
+   "section": "Saints",
+   "kind": "bug",
+   "title": "St Cyril on John: Book 5's table of chapters was shown as his words, in the library and on the rail at John 7:39",
+   "from": "claude",
+   "asked": "2026-11-10",
+   "status": "built",
+   "decided": "2026-11-10",
+   "needsDesign": false,
+   "version": "1.9",
+   "outcome": null,
+   "note": "Empty slots, no mark moved; the section opens with its first lemma. 5bcc64a5a. PLAN 13w."
   }
  ]
 }
