@@ -2046,10 +2046,25 @@ English alone.
   ended and can take it down; it is on no board, joined by nobody, carried by
   nobody and not counted against the campaigns its creator may run; and the
   row itself is left exactly as it was. `routes.test.ts` holds each of those.
-  How many there are on production is not known from here: the check at the
-  foot of the SQL file's header counts them. **What becomes of them in the
-  end is his to say** (kept unseen as now; or deleted after a date, which
-  item 125's "nobody's illness stays up by neglect" argues for).
+  **Production holds one**, probed on 2026-11-10 at 08:38 UTC with the
+  site's own public key and nothing fetched but its state: active, for the
+  living, its last day long past. **What becomes of it in the end is his to
+  say** (kept unseen as now; or deleted after a date, which item 125's
+  "nobody's illness stays up by neglect" argues for).
+- **Production, probed the same minute: file one had not run.** The arbiter
+  relayed his words of that morning, "ran both sql's and success", as file
+  one run by hand. The probe said otherwise, in Postgres's own words:
+  `column prayer_campaigns.days does not exist`, and the same for `places`
+  on the join rows; and the public key still read the campaigns table, its
+  creator's account id with it, which file one's section 3 closes. So nothing
+  was recorded as applied, and the file's header still says it is not. The
+  rule this follows is the house's own: being recorded is not the same as
+  having run. Checked at the same time, from main's code at `27f1bcaf`: when
+  file one does run, nothing in the live 1.8 site reads either table with the
+  public key (every campaign page is not found and every route answers 404
+  first; the one direct read is July's "My prayers" screen, which no page
+  mounts and which fails quietly), and no row policy, view or trigger on any
+  table reads the campaigns table.
 - **The prayer page changed under the build** (build 89 note 7: nothing is
   ticked under a prayer, each is counted as it is passed, and a long hold
   saves one). A campaign's psalm follows: it is not one of the rule's own
