@@ -20,6 +20,7 @@ import { catchUp, nextDay, planStreak, startPlan, usePlans, type PlanProgress } 
 import { hrefOfReading, startPlanSession } from "@/lib/plans/session";
 import { readAloudCover } from "@/lib/readAloud/covers";
 import { useMounted } from "@/lib/useMounted";
+import { useCoversVersion } from "@/lib/readAloud/useCovers";
 
 /**
  * The reading plans (1.9, the owner's pick for Practice of 2026-11-06, "a mix
@@ -45,6 +46,7 @@ import { useMounted } from "@/lib/useMounted";
  * (lib/ui/__tests__/pictureCorners.test.ts; app/globals.css, .plan-tile-picture).
  */
 export function PlansClient({ minutes }: { minutes: Record<string, number> }) {
+  useCoversVersion();
   const { t, tn } = useTranslate();
   const router = useRouter();
   const upgrade = useUpgradeModal();

@@ -1,4 +1,5 @@
 import { streamedUrl } from "@/lib/media/streamed";
+import type { CoversPack } from "@/lib/packs/types";
 
 /**
  * The read-aloud covers (1.7): an icon of each book's saint or prophet on
@@ -41,6 +42,16 @@ import { streamedUrl } from "@/lib/media/streamed";
  *
  * One registry, so the reading room and the saints' pages can use the same
  * icons later (the owner's pattern 6: one cover system).
+ *
+ * FROM THE WEBSITE (1.9, the covers pack; docs/PACKS.md). The website sends
+ * this map, each figure's file and its name in every language
+ * (lib/packs/server.ts), so a cover chosen after a store build (a book of the
+ * eighteen that have none, a better picture) reaches the apps with a website
+ * deploy. The apps keep it with the other packs and use it only when it is the
+ * newer (packsTrusted), only after their first screen is drawn
+ * (components/native/PackBridge.tsx puts it in place), so a page drawn into the
+ * export and its first draw in the app agree, and a book it does not name
+ * keeps this map's cover.
  */
 
 export type FigureId =
@@ -400,15 +411,91 @@ export type ReadAloudCover = {
   src: string;
   /** What to show when `src` cannot load: the plate, which the apps carry. */
   fallback: string;
-  /** The figure's name, or null for the plate. */
+  /** The figure's name, or null for the plate (or a figure only the website's pack names). */
   nameKey: string | null;
+  /** The figure's name by language, when the website's pack gave the cover. */
+  names?: Readonly<Record<string, string>>;
   /** The picture's size for the lock screen, when it is a cover. */
   size: string | null;
 };
 
+/** The website's map, once the app has put it in place, or null: the map above. */
+let packed: CoversPack | null = null;
+let packedVersion = 0;
+const coverListeners = new Set<() => void>();
+
+/** Put the website's covers in place (components/native/PackBridge.tsx), or take them away with null. */
+export function setCoversPack(pack: CoversPack | null): void {
+  if (pack === packed) return;
+  packed = pack;
+  packedVersion += 1;
+  for (const listener of coverListeners) listener();
+}
+
+/** For a screen that draws covers: told when the website's covers come or go. */
+export function subscribeCovers(listener: () => void): () => void {
+  coverListeners.add(listener);
+  return () => {
+    coverListeners.delete(listener);
+  };
+}
+
+/** Changes each time the covers in use change. */
+export function coversVersion(): number {
+  return packedVersion;
+}
+
+/** A book's cover by the website's map, or undefined where the map does not name the book. */
+function packedCover(pack: CoversPack, book: string): ReadAloudCover | undefined {
+  const id = pack.books[book];
+  if (id === undefined) return undefined;
+  const figure = id === "plate" ? undefined : pack.figures[id];
+  if (!figure) return { src: COVER_PLATE, fallback: COVER_PLATE, nameKey: null, size: null };
+  return {
+    src: streamedUrl(figure.file),
+    fallback: COVER_PLATE,
+    nameKey: FIGURES[id as FigureId]?.nameKey ?? null,
+    names: figure.names,
+    size: COVER_SIZE,
+  };
+}
+
 export function readAloudCover(book: string): ReadAloudCover {
+  const fromWebsite = packed ? packedCover(packed, book) : undefined;
+  if (fromWebsite) return fromWebsite;
   const id = BOOK_COVERS[book];
   const figure = id && id !== "plate" ? FIGURES[id] : undefined;
   if (!figure) return { src: COVER_PLATE, fallback: COVER_PLATE, nameKey: null, size: null };
   return { src: streamedUrl(figure.file), fallback: COVER_PLATE, nameKey: figure.nameKey, size: COVER_SIZE };
+}
+
+/**
+ * The figure's name, as the line under a title says it: the website's word in
+ * the reader's language when its pack gave the cover (then English), else the
+ * build's own, else null for the plate. `language` defaults to the page's.
+ */
+export function coverName(cover: ReadAloudCover, t: (key: string) => string, language?: string): string | null {
+  if (cover.names) {
+    const lang = language ?? (typeof document === "undefined" ? "en" : document.documentElement.lang || "en");
+    return cover.names[lang] ?? cover.names[lang.split("-")[0]] ?? (cover.nameKey ? t(cover.nameKey) : null) ?? cover.names.en ?? null;
+  }
+  return cover.nameKey ? t(cover.nameKey) : null;
+}
+
+/**
+ * This map as the website's covers pack (lib/packs/server.ts): every book's
+ * cover, and each figure a book uses with its file and its name in each
+ * language, from the website's own catalogs (`names` by language code). The
+ * apps read it strictly (readCoversPack in lib/packs/types.ts).
+ */
+export function coversPackOf(namesOf: (nameKey: string) => Record<string, string>): CoversPack {
+  const figures: CoversPack["figures"] = {};
+  for (const id of Object.values(BOOK_COVERS)) {
+    if (id === "plate" || figures[id]) continue;
+    const figure = FIGURES[id];
+    if (figure) figures[id] = { file: figure.file, names: namesOf(figure.nameKey) };
+  }
+  const books: CoversPack["books"] = {};
+  for (const [book, id] of Object.entries(BOOK_COVERS)) books[book] = id === "plate" || !figures[id] ? "plate" : id;
+  return { schema: 1, books, figures };
 }

@@ -17,7 +17,8 @@ import { useTranslate } from "@/components/i18n/MessagesProvider";
 import { CoverArt } from "@/components/player/CoverArt";
 import { SaveOfflineMark } from "@/components/player/SaveOffline";
 import { getBook } from "@/lib/bible/books";
-import { readAloudCover } from "@/lib/readAloud/covers";
+import { coverName, readAloudCover } from "@/lib/readAloud/covers";
+import { useCoversVersion } from "@/lib/readAloud/useCovers";
 import { TRY_CHAPTER, TRY_SAVE_MS, savedSoFar } from "@/lib/premium/plusTry";
 
 import { TryWindow } from "./TryKit";
@@ -29,11 +30,13 @@ const TICK_MS = 120;
 type Phase = { look: "save" } | { look: "saving"; since: number; now: number } | { look: "saved"; open: boolean };
 
 export default function TryOffline({ row }: TryProps) {
-  const { t } = useTranslate();
+  const { t, locale } = useTranslate();
   const book = TRY_CHAPTER.book;
   const name = t(`bible.books.${book}`);
   const total = getBook(book)?.chapters ?? 21;
+  useCoversVersion();
   const cover = readAloudCover(book);
+  const figureName = coverName(cover, t, locale);
   const [phase, setPhase] = useState<Phase>({ look: "save" });
 
   // The first time, the mark is tapped by itself after a moment.
@@ -76,7 +79,7 @@ export default function TryOffline({ row }: TryProps) {
         <div className="mt-5 flex w-full max-w-[300px] items-end justify-between gap-3">
           <div className="min-w-0">
             <p className="font-serif text-[22px] font-bold leading-tight text-paper">{`${name} ${TRY_CHAPTER.chapter}`}</p>
-            {cover.nameKey ? <p className="mt-1 truncate font-sans text-detail text-paper/55">{t(cover.nameKey)}</p> : null}
+            {figureName ? <p className="mt-1 truncate font-sans text-detail text-paper/55">{figureName}</p> : null}
           </div>
           {phase.look === "saving" ? (
             <SaveOfflineMark look="saving" share={total ? done / total : 0} label={t("player.offline.saving", { done, total })} className="-mr-2.5" />

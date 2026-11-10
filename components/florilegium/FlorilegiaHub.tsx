@@ -18,6 +18,7 @@ import { STARTERS, starterItems, starterPicture, starterReference, type Starter 
 import { useFlorilegiaSyncedAt, useMinute } from "@/lib/florilegium/syncedAt";
 import { dateLocale } from "@/lib/i18n/deviceDates";
 import { useMounted } from "@/lib/useMounted";
+import { useCoversVersion } from "@/lib/readAloud/useCovers";
 
 /** Where a gathered line came from, as its card prints it (lib/florilegium/asText.ts); named here too, for the pages that ask this file. */
 export { itemSource };
@@ -47,6 +48,7 @@ export { itemSource };
  * nothing that begins or keeps one.
  */
 export function FlorilegiaHub({ readOnly = false }: { readOnly?: boolean } = {}) {
+  useCoversVersion();
   const { t } = useTranslate();
   const router = useRouter();
   const { florilegia, create, addItem } = useFlorilegia();

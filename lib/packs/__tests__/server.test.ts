@@ -24,6 +24,7 @@ describe("what /api/packs answers", () => {
     expect(read).not.toBeNull();
     expect(read!.packs["verse-of-day"]).toEqual(made.packs["verse-of-day"]);
     expect(read!.packs.board).toEqual(made.packs.board);
+    expect(read!.packs.covers).toEqual(made.packs.covers);
     for (const [day, entry] of Object.entries(made.packs["verse-of-day"]!.days)) {
       expect(readVerseEntry(entry), day).not.toBeNull();
     }

@@ -22,6 +22,7 @@ apps the next time they are online.
 | `verse-of-day` | The Verse of the Day card's entries, from yesterday to two months ahead, made by the same `getVerseOfDayTable()` the card renders from. TEMPORARY, from 1.7.1: each day also carries its machine translation for a language with no Bible of its own (`machine`, lib/today/machineVerse.ts), so a reader in Turkish sees a verse chosen after the store build translated and labelled | Add or correct a pick in `data/today/verse-picks.json`, with its Turkish in `data/today/machine-verse/tr.json` (lib/today/__tests__/machineVerse.test.ts refuses a pick without one), then a website deploy |
 | `board` | The board message at the top of What's New, the row published in Admin (the committed `board.json` when the table is empty) | Publish it in Admin. No deploy at all |
 | `release` | The next Purify update (name, version, date) for the home screen widgets' countdown, from `data/changelog/next-update.json` | Set or move it in that file, then a website deploy |
+| `covers` (1.9) | Each Bible book's read-aloud cover: the figure, its picture's file under `/covers/` and its name in all 21 languages, made by `coversPackOf()` from the same map the website uses (`lib/readAloud/covers.ts`) | Add the picture to `public/covers/` and its figure and book to `lib/readAloud/covers.ts` (with its rights in `docs/licensing/READ_COVERS.md`), then a website deploy |
 
 The website keeps its answer five minutes, and a phone asks at most once in
 half an hour, a few seconds after the app opens or comes back to the front.
@@ -62,6 +63,14 @@ No store build, no review, no update prompt.
   screens show what the build carries, exactly as before packs existed.
 - **The apps only.** The website renders its own content, already current,
   and never reads a pack.
+- **Covers come after the first draw.** A book's cover is read in plain code
+  as well as on screens (the lock screen's picture is set when a chapter
+  starts), so the covers pack is put in place by `components/native/PackBridge.tsx`
+  once the app has drawn its first screen, and screens that show covers draw
+  again when it comes (`useCoversVersion`). A page drawn into the export and
+  its first draw in the app always agree. A cover's file must be a versioned
+  `.jpg` in the website's own `/covers/` folder, and a book the pack does not
+  name keeps the build's cover.
 
 ## Adding a pack
 

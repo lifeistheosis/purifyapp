@@ -37,6 +37,7 @@ import type { SavedItem } from "@/lib/saved/feed";
 import { saintNameOf } from "@/lib/saved/passages";
 import { coverOf, subjectOf, type YouCover } from "@/lib/you/covers";
 import { keptRows, type KeptGroup } from "@/lib/you/you";
+import { useCoversVersion } from "@/lib/readAloud/useCovers";
 
 /** Each group's name: the chip of Saved it opens. A closed map of literal keys. */
 const GROUP_KEY: Record<KeptGroup, string> = {
@@ -60,6 +61,7 @@ export function KeptShelf({
   verseLabel: (book: string, chapter: number, verse: number) => string;
   className?: string;
 }) {
+  useCoversVersion();
   const { t } = useTranslate();
   const locked = usePlusFeatures() === false;
   const upgrade = useUpgradeModal();

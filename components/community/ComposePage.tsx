@@ -44,6 +44,7 @@ import { glideScroll } from "@/lib/ui/glideScroll";
 import { prefersReducedMotion } from "@/lib/ui/motion";
 import { lockBodyScroll, setOverlayOpen, unlockBodyScroll } from "@/lib/ui/overlay";
 import { useKeyboardUp, useVisibleFrame } from "@/lib/ui/viewport";
+import { useCoversVersion } from "@/lib/readAloud/useCovers";
 
 /**
  * Making a post in Community, a page of its own (1.8): the owner's pick of
@@ -122,6 +123,7 @@ export function ComposePage({
   /** Posted; `held` when it waits for a moderator. */
   onPosted: (held: boolean) => void;
 }) {
+  useCoversVersion();
   const { t } = useTranslate();
   const inGroup = groupId !== null;
 

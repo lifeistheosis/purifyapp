@@ -36,6 +36,7 @@ import { useReadingProgress } from "@/lib/reading/progress";
 import { saintNameOf } from "@/lib/saved/passages";
 import { coverOf, type CoverSubject } from "@/lib/you/covers";
 import { howFar, latestFirst, type Place } from "@/lib/you/you";
+import { useCoversVersion } from "@/lib/readAloud/useCovers";
 
 /** Each plan's name, a closed map of literal keys for the key test. */
 const PLAN_NAME: Record<string, string> = {
@@ -204,6 +205,7 @@ export function PickUpCard({ className }: { className?: string }) {
 
 /** A place's cover: its book's or its saint's icon, the Pantocrator for a prayer, or the plate. */
 function Cover({ subject, width, height, className }: { subject: CoverSubject | null; width: number; height: number; className?: string }) {
+  useCoversVersion();
   const cover = coverOf(subject);
   return (
     <span aria-hidden className={cn("you-cover relative block shrink-0 overflow-hidden", className)} style={{ width, height }}>

@@ -55,7 +55,9 @@ const OUT = path.resolve(argv[0] ?? "out");
 const SHOTS = path.resolve(".release-logs/walk");
 fs.mkdirSync(SHOTS, { recursive: true });
 
-const browser = await chromium.launch();
+// A machine whose browser is not the one this Playwright downloads (a cloud
+// session's /opt/pw-browsers/chromium) names it in PW_CHROMIUM.
+const browser = await chromium.launch(process.env.PW_CHROMIUM ? { executablePath: process.env.PW_CHROMIUM } : {});
 /** Every document any context asked for, and any page's own .html: section 11 reads them. */
 const everyDocument = [];
 const everyPageFile = [];
@@ -3054,7 +3056,7 @@ await section(29, async () => {
 // one gets a pack whose verse leads somewhere it must not and shows the
 // build's verse again. Nothing here reaches any real website.
 await section(30, async () => {
-  console.log("\n30. Content packs: the website's verse and board message reach the app");
+  console.log("\n30. Content packs: the website's verse, board message and covers reach the app");
   const release = fs.readFileSync("lib/whatsNew/version.ts", "utf8").match(/CURRENT_VERSION = "([^"]+)"/)?.[1] ?? "0";
   const DAY = "2026-11-13";
   const pack = (verse) => ({
@@ -3066,6 +3068,13 @@ await section(30, async () => {
       board: {
         schema: 1,
         message: { week: "2026-W46", date: "2026-11-12", eyebrow: "This week at Purify", headline: "A message from the walk", body: ["Published after the build was made."] },
+      },
+      // The covers pack (1.9): John's books wear the Patmos icon, a figure
+      // the build has, so the walk needs no new picture to see the map move.
+      covers: {
+        schema: 1,
+        books: { john: "johnPatmos" },
+        figures: { johnPatmos: { file: "/covers/johnPatmos.v1.jpg", names: { en: "St John the Theologian, on Patmos" } } },
       },
     },
   });
@@ -3114,6 +3123,17 @@ await section(30, async () => {
   await go(good.page, "/");
   await good.page.waitForTimeout(1500);
   must(good.asks.length === 1, `moving around the app does not ask again (${good.asks.length})`);
+  // The covers pack: the plans page's John plans ask the website for the
+  // pack's figure, not the build's. The walk has no website, so each picture
+  // then shows the plate it falls back on; what was asked is the proof.
+  const coverAsks = [];
+  good.page.on("request", (r) => {
+    if (/\/covers\//.test(r.url())) coverAsks.push(new URL(r.url()).pathname);
+  });
+  await go(good.page, "/plans/");
+  await good.page.waitForTimeout(2500);
+  must(coverAsks.includes("/covers/johnPatmos.v1.jpg") && !coverAsks.includes("/covers/john.v1.jpg"), `the covers pack reaches the plans page: John's plans ask for the pack's figure (${[...new Set(coverAsks)].join(", ")})`);
+  await good.page.screenshot({ path: path.join(SHOTS, "packs-covers.png") });
   must(good.errors.length === 0, `no page errors${good.errors.length ? ": " + good.errors.slice(0, 2).join(" | ") : ""}`);
   await good.ctx.close();
 

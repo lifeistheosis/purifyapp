@@ -1,6 +1,9 @@
 import "server-only";
 
 import nextUpdate from "@/data/changelog/next-update.json";
+import { getMessages } from "@/lib/i18n";
+import { LOCALES } from "@/lib/i18n/locales";
+import { coversPackOf } from "@/lib/readAloud/covers";
 import { packMachineVerses } from "@/lib/today/machineVerse.server";
 import { getVerseOfDayTable } from "@/lib/today/verseOfDay";
 import type { VerseOfDayEntry } from "@/lib/today/verseOfDay.types";
@@ -24,6 +27,10 @@ import { PACK_SCHEMAS, PACKS_FORMAT, readNextUpdate, type Packs } from "./types"
  *   published from the admin panel, or the committed file when the table is
  *   empty or out of reach. Publishing a message reaches the apps within the
  *   time the answer is kept (MADE_FOR_MS), with no deploy at all.
+ * - "covers" (1.9) is the read-aloud covers' own map (lib/readAloud/covers.ts):
+ *   each book's figure, its file under /covers/ and its name in every
+ *   language, so a cover chosen after a store build reaches the apps with
+ *   the website deploy that carries its picture.
  *
  * Kept in memory for five minutes, because the verse window reads sixty
  * chapters off disk and the answer is the same for every reader.
@@ -63,8 +70,19 @@ export async function buildPacks(now: Date = new Date()): Promise<Packs> {
         schema: PACK_SCHEMAS.release,
         next: readNextUpdate(nextUpdate) ?? { name: null, version: null, date: null },
       },
+      covers: { ...coversPackOf(coverNames), schema: PACK_SCHEMAS.covers },
     },
   };
+}
+
+/** A figure's name in each of the app's languages, from the website's catalogs (English where one has none). */
+function coverNames(nameKey: string): Record<string, string> {
+  const names: Record<string, string> = {};
+  for (const { code } of LOCALES) {
+    const name = getMessages(code)[nameKey];
+    if (typeof name === "string" && name.trim()) names[code] = name.trim();
+  }
+  return names;
 }
 
 /** buildPacks(), kept for MADE_FOR_MS. */

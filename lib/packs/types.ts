@@ -26,7 +26,7 @@ import { readMachineRow, type MachineVerseRow, type VerseOfDayEntry } from "@/li
 export const PACKS_FORMAT = 1;
 
 /** Each pack's own shape number. A pack at another number is skipped, the rest still used. */
-export const PACK_SCHEMAS = { "verse-of-day": 1, board: 1, release: 1 } as const;
+export const PACK_SCHEMAS = { "verse-of-day": 1, board: 1, release: 1, covers: 1 } as const;
 
 export type PackName = keyof typeof PACK_SCHEMAS;
 
@@ -60,6 +60,21 @@ export type ReleasePack = {
   next: NextUpdate;
 };
 
+/** A figure on a book's cover: its picture on the website and its name in each language. */
+export type CoverFigurePack = {
+  /** /covers/<name>.v<n>.jpg, the website's own file, never anywhere else. */
+  file: string;
+  /** The figure's name by language code ("en", "ru"); English always there. */
+  names: Record<string, string>;
+};
+
+export type CoversPack = {
+  schema: number;
+  /** Each book's cover: a figure of `figures`, or "plate" for the manuscript. */
+  books: Record<string, string>;
+  figures: Record<string, CoverFigurePack>;
+};
+
 export type Packs = {
   format: number;
   /** The release the website was serving when it made these packs ("1.6"). */
@@ -70,6 +85,7 @@ export type Packs = {
     "verse-of-day"?: VerseOfDayPack;
     board?: BoardPack;
     release?: ReleasePack;
+    covers?: CoversPack;
   };
 };
 
@@ -196,6 +212,53 @@ function readReleasePack(v: unknown): ReleasePack | null {
   return next ? { schema: PACK_SCHEMAS.release, next } : null;
 }
 
+// A cover is a file of the website's own /covers/ folder, by the name and
+// version the covers are made with (lib/readAloud/covers.ts), and nothing else:
+// no other folder, no other site, no way up out of it.
+const COVER_FILE = /^\/covers\/(?:[a-z0-9-]{1,40}\/)?[A-Za-z0-9-]{1,60}\.v\d{1,3}\.jpg$/;
+const FIGURE_ID = /^[a-z][A-Za-z0-9-]{0,40}$/;
+const LANGUAGE = /^[a-z]{2,3}$/;
+
+/** A name as a person reads it: plain words, no markup and no control characters. */
+const isName = (v: unknown): v is string =>
+  isText(v, 80) && !/[<>\u0000-\u001f\u007f]/.test(v) && v.trim() === v;
+
+/**
+ * The covers pack, rebuilt field by field. Every book a slug, every cover a
+ * figure the pack names or the plate, every figure a file of /covers/ and an
+ * English name at least. One bad entry spoils the pack, and the build's own
+ * map stays.
+ */
+export function readCoversPack(v: unknown): CoversPack | null {
+  if (!isRecord(v) || v.schema !== PACK_SCHEMAS.covers || !isRecord(v.books) || !isRecord(v.figures)) return null;
+  const figureIds = Object.keys(v.figures);
+  if (figureIds.length > 120) return null;
+  const figures: Record<string, CoverFigurePack> = {};
+  for (const id of figureIds) {
+    const f = v.figures[id];
+    if (!FIGURE_ID.test(id) || !isRecord(f) || typeof f.file !== "string" || !COVER_FILE.test(f.file) || !isRecord(f.names)) return null;
+    const languages = Object.keys(f.names);
+    if (languages.length === 0 || languages.length > 40) return null;
+    const names: Record<string, string> = {};
+    for (const language of languages) {
+      const name = f.names[language];
+      if (!LANGUAGE.test(language) || !isName(name)) return null;
+      names[language] = name;
+    }
+    if (!names.en) return null;
+    figures[id] = { file: f.file, names };
+  }
+  const bookSlugs = Object.keys(v.books);
+  if (bookSlugs.length === 0 || bookSlugs.length > 120) return null;
+  const books: Record<string, string> = {};
+  for (const book of bookSlugs) {
+    const cover = v.books[book];
+    if (!SLUG.test(book) || typeof cover !== "string" || (cover !== "plate" && !figures[cover])) return null;
+    books[book] = cover;
+  }
+  return { schema: PACK_SCHEMAS.covers, books, figures };
+}
+
 /**
  * The website's answer, read: null when it is not a packs answer this build
  * understands, and otherwise only the packs that passed their own check.
@@ -212,6 +275,8 @@ export function readPacks(v: unknown): Packs | null {
   if (board) out.packs.board = board;
   const release = readReleasePack(v.packs.release);
   if (release) out.packs.release = release;
+  const covers = readCoversPack(v.packs.covers);
+  if (covers) out.packs.covers = covers;
   return out;
 }
 

@@ -4,7 +4,7 @@ import { play, seek, setLoopMode, setTrack } from "@/lib/prayers/persistentAudio
 import { readSpeed } from "@/lib/player/speed";
 
 import { readAloudManifest, readAloudSrc, verseCaptions } from "./chapters";
-import { readAloudCover } from "./covers";
+import { coverName, readAloudCover } from "./covers";
 import { startOf, watchPlaces } from "./resume";
 
 /**
@@ -35,7 +35,7 @@ export async function startReading(book: string, chapter: number, title: string,
     title,
     // The saint or prophet on the cover, "St John the Theologian"; the plain
     // "Read aloud" where the cover is the manuscript plate.
-    artist: cover.nameKey ? t(cover.nameKey) : t("readAloud.by"),
+    artist: coverName(cover, t) ?? t("readAloud.by"),
     art: cover.src,
     artFallback: cover.fallback,
     artSize: cover.size ?? undefined,
