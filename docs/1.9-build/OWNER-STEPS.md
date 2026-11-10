@@ -1188,16 +1188,21 @@ words for a reader in crisis (your item 129).
    **Deploy live**, and every reader has campaigns on the website. The store
    builds you walked ask the website, so they follow it with no new build.
 
-Do this before R5d. Apple refuses a build with a hidden or dormant feature
-in it (guideline 2.3.1), and a build reviewed while campaigns are still at
-testers carries them asleep. If 113 or 129 is not ready, you choose:
+Do this before R5d. Apple's rule 2.5.19 (its page, read 2026-11-10): "Don't
+include any hidden, dormant, or undocumented features in your app"; hiding
+one is grounds for removing the app and closing the developer account. A
+build reviewed while campaigns are still at testers carries them asleep. If
+113 or 129 is not ready, you choose:
 
-- hold the stores until it is, or
+- hold the stores until it is (the safe choice), or
 - send the builds now, and say in R5d's notes for review that campaigns are
   in the build and switched off.
 
-Either way the notes for review name the two parts that ship switched off
-by your word: pictures on campaigns, and "Prayed by many" (your item 130).
+Pictures on campaigns are the one part still off. The store builds carry
+them only if your three steps are done before the builds are cut; otherwise
+an app has no picture and no picture control at all, whatever the website
+says, and turning them on in the apps takes a new build, which Apple
+reviews. "Prayed by many" is on, by your word, and ships live.
 
 Send back: "R5c open", or "R5c wait, hold the stores", or "R5c wait, send
 with notes".
@@ -1217,7 +1222,8 @@ Your word, 2026-11-10 ("all recs for 6"): violence is answered "infrequent
 or mild", for the martyrdoms the saints' lives tell; Play's audience stays 13
 and over; campaign pictures are on at submission only if your three steps
 are done, and otherwise left out of the store builds (one line in the
-release commit; the arbiter says which that morning); Australia's law gets a
+release commit, `PICTURES_IN_STORE_BUILDS` in `lib/campaigns/flags.ts`; the
+arbiter says which that morning); Australia's law gets a
 lawyer's look after 1.9, and nothing waits on it.
 
 Google Play:

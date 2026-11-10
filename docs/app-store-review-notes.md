@@ -36,10 +36,15 @@ written as 1.9 is planned to ship.
    the notice already: posts, replies, comments, shared journal pages, and
    (since `aa6417915`) campaigns and their pictures. Until the SQL has run,
    say only that moderators remove what breaks the rules.
-4. **Pictures on prayer campaigns** are switched off on the server
-   (`lib/campaigns/parts.ts`, `pictures: false`) until his three steps are
-   done. Part B says so. If they are switched on before R5d, change that line
-   to "every picture is checked before anyone else sees it".
+4. **Pictures on prayer campaigns** have two switches: the server's
+   (`CAMPAIGN_PARTS.pictures` in `lib/campaigns/parts.ts`, off until his
+   three steps are done) and the store builds' own (`PICTURES_IN_STORE_BUILDS`
+   in `lib/campaigns/flags.ts`, from `bac1be393`), which a test holds false
+   while the server's is off. Part B is written for the store builds' switch
+   false: the app shows no picture and offers no way to add one, whatever the
+   server says. If both are true in the build being submitted, replace part
+   B's pictures line with "Pictures on prayer campaigns: every picture is
+   checked by a moderator before anyone else sees it, and each has Report."
 5. **The safety line** for a campaign whose writer may be in danger (his yes
    to its words, 2026-11-10) is named in part B only once it is in the build.
    The moderators' queue already reads such a campaign first.
@@ -52,13 +57,16 @@ written as 1.9 is planned to ship.
 8. **The Terms tick on a new campaign** ("I agree to the Terms of Service")
    is in the build: the campaigns chat's screen and its fourth SQL file
    (signed). Until both are in, part B leaves that sentence out.
-9. **No dormant features** (Guideline 2.5.19, new: "Don't include any
-   hidden, dormant, or undocumented features"). Part B documents what is in
-   the build and switched off, but a reviewer may still read campaign
-   pictures, built and switched off on the server, as dormant. The safer
-   paths are pictures on before the submission (his three steps), or their
-   controls out of the build until then. His call, through the arbiter,
-   before R5d.
+9. **No dormant features** (Guideline 2.5.19, read on Apple's page
+   2026-11-10, last updated 16 October 2026: "Don't include any hidden,
+   dormant, or undocumented features in your app"; hiding one is "grounds
+   for removal of your app from the App Store and termination of your
+   developer account"). Pictures are answered by item 4: while the store
+   builds' switch is false, nothing of them can be reached in the app, the
+   server cannot turn them on there, and part B says so plainly. Campaigns
+   as a whole are answered by R5c: open before R5d, or, by his choice,
+   named in part B as in the build and switched off (holding the stores is
+   the safe choice).
 10. **The age ratings** are answered again in R5d for user content. Apple's
    answer "Social media: yes" sets 13+; the store listing's "4+" goes with
    it (`docs/launch/STORE-LISTINGS.md`).
@@ -89,7 +97,7 @@ USER-GENERATED CONTENT (Guideline 1.2)
 Readers write in two places, both for signed-in readers only.
 - Community: public posts and replies. Before a post goes up, a filter holds it for a moderator when it comes from a new account, carries links or reads as spam, and a word filter masks objectionable words and sends the post to a moderator. Every post and reply has Report; enough reports hide it until a moderator looks. Any reader can block another and then sees nothing of theirs.
 - Prayer campaigns (Pray together): a reader asks others to pray for someone or something. Every new campaign waits for a moderator before anyone else sees it, and one that suggests the writer may be in danger is read first. Starting one requires ticking "I agree to the Terms of Service", and the campaign rules are shown beside it. Campaigns, their updates and their comments have Report.
-Moderators remove what breaks the rules, and the reader who posted it is told why, with the reason and an address to write to (support@purifyapp.net). Anything that sexualises or endangers a child is removed at once and reported to the authorities. Pictures on prayer campaigns are in this build and switched off on our server; when they are on, every picture is checked before anyone else sees it.
+Moderators remove what breaks the rules, and the reader who posted it is told why, with the reason and an address to write to (support@purifyapp.net). Anything that sexualises or endangers a child is removed at once and reported to the authorities. Pictures on prayer campaigns are not in this build: the app shows none and offers no way to add one, and only a new build, sent for review, can add them.
 Contact for anything a reader posts: support@purifyapp.net.
 
 ACCOUNT DELETION

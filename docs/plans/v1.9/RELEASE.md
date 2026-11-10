@@ -107,6 +107,15 @@ Drafted now, sent later. The owner sends every one. How a drop works is in
       and deletes nothing; thirty days after the day it names, the
       heartbeat deletes July's rows, and it leaves the public mark
       `campaigns-july-rows-deleted` in `data_moves` when none is left.
+- [ ] Campaign pictures in the store builds (OWNER-STEPS R5d; the review
+      notes, part A, items 4 and 9): `PICTURES_IN_STORE_BUILDS` in
+      `lib/campaigns/flags.ts` stays `false` unless pictures are on when the
+      store builds are cut, and is set `true` only together with the
+      server's own switch (`CAMPAIGN_PARTS.pictures` in
+      `lib/campaigns/parts.ts`); `lib/campaigns/__tests__/storePictures.test.ts`
+      refuses `true` while the server's switch is off. While it is `false`,
+      the apps draw no picture and no picture control, whatever the server
+      says, and the review notes' part B says so.
 - [ ] `git fetch origin`, rebase on `origin/main`, `node scripts/release.mjs back`
       again, and section 4's check again.
 - [ ] Push `main`. That is the deploy.
