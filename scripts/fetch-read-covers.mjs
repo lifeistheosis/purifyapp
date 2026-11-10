@@ -22,6 +22,12 @@
 //   --only   Cut only these covers again (after moving a square).
 //   --sheet  Also write a contact sheet of every cover with its books, for
 //            the owner's look before anything ships.
+//   --offline  Do not read the licence on Commons again, for a machine
+//            Commons refuses (its API answers 429 to the cloud sandboxes):
+//            only an entry that records the licence read on its page the day
+//            it was chosen (`license`) and the size of the picture its square
+//            was measured on (`size`) is cut, from the cache, never
+//            downloaded, and a cached picture of another size is refused.
 //
 // Writes public/covers/<id>.v1.jpg, and prints the FIGURES fields for
 // lib/readAloud/covers.ts and the rows for docs/licensing/READ_COVERS.md.
@@ -83,6 +89,19 @@ const COVERS = [
   // squares start under the clamps, the crowns whole.
   { id: "david", name: "The Prophet and King David", books: ["Psalms"], title: K04, crop: { left: 1425, top: 44, size: 1000 }, quality: 75 },
   { id: "solomon", name: "King Solomon", books: ["Proverbs", "Ecclesiastes", "Song of Solomon", "Wisdom"], title: K04, crop: { left: 2640, top: 64, size: 1000 }, quality: 78 },
+  // 1 and 2 Chronicles (1.9, the owner's 98): David and Solomon from the drum
+  // of the dome at Lagoudera, a pair, each cut to the halo, the crowned head
+  // and the shoulders. The close-ups of their heads are taller than they are
+  // wide, so no square holds crown and beard whole: these are the standing
+  // figures, photographed whole. CC0, read on 2026-11-10 through the Wikidata
+  // query service (Commons' API refused the sandbox); the inscriptions read
+  // "the Prophet David" and "the Prophet Solomon" in the same set's photographs.
+  // Cut from Commons' 1920px copies, its standard size, since it refuses the
+  // sandbox the originals: each square starts under the white line of the
+  // register's border, so both halos meet the top edge; the inscriptions
+  // either side are left out.
+  { id: "davidLagoudera", name: "The Prophet and King David", books: ["1 Chronicles"], title: "File:Church of Panagia tou Arakos, nave, center bay, drum, wall paintings, Lagoudera, Cyprus - Prophet David - MSBZ004 BF S 1979 2019 - Dumbarton Oaks.jpg", license: "CC0", width: 1920, size: { width: 1920, height: 2970 }, crop: { left: 672, top: 213, size: 620 } },
+  { id: "solomonLagoudera", name: "King Solomon", books: ["2 Chronicles"], title: "File:Church of Panagia tou Arakos, nave, center bay, drum, wall paintings, Lagoudera, Cyprus - Prophet Solomon - MSBZ004 BF S 1979 1980 - Dumbarton Oaks.jpg", license: "CC0", width: 1920, size: { width: 1920, height: 2957 }, crop: { left: 692, top: 195, size: 600 } },
   { id: "hosea", name: "The Prophet Hosea", books: ["Hosea"], title: K06, crop: { left: 40, top: 30, size: 592 } },
   { id: "amos", name: "The Prophet Amos", books: ["Amos"], title: K06, crop: { left: 725, top: 30, size: 600 } },
   { id: "micah", name: "The Prophet Micah", books: ["Micah"], title: K03, crop: { left: 50, top: 22, size: 655 } },
@@ -117,6 +136,7 @@ const opt = (name) => {
   return i === -1 ? null : (argv[i + 1] ?? null);
 };
 const cache = opt("--cache");
+const offline = argv.includes("--offline");
 const only = (opt("--only") ?? "").split(",").filter(Boolean);
 const sheetPath = opt("--sheet");
 if (!cache) {
@@ -172,13 +192,30 @@ async function fileInfo(title, width) {
   };
 }
 
+/** With --offline: the licence the entry recorded, never a guess. */
+function recorded(cover) {
+  if (!cover.license || !cover.size) return { error: "records no licence and size, so it is cut only with Commons answering" };
+  if (REJECT.test(cover.license) || !ALLOWED.test(cover.license)) return { error: `licence "${cover.license}" is not public domain` };
+  return { license: cover.license, artist: "as recorded in lib/readAloud/covers.ts", workDate: "as recorded", page: `https://commons.wikimedia.org/wiki/${encodeURI(cover.title.replace(/ /g, "_"))}` };
+}
+
 async function original(cover, info) {
   const dir = path.join(cache, cover.id);
   if (existsSync(dir)) {
     const files = (await fs.readdir(dir)).filter((f) => /\.(jpe?g|png|tiff?)$/i.test(f));
-    if (files.length === 1) return path.join(dir, files[0]);
+    if (files.length === 1) {
+      const file = path.join(dir, files[0]);
+      // The square was measured on a picture of this size.
+      if (cover.size) {
+        const meta = await sharp(file).metadata();
+        if (meta.width !== cover.size.width || meta.height !== cover.size.height)
+          throw new Error(`${file} is ${meta.width}x${meta.height}, not the ${cover.size.width}x${cover.size.height} its square was measured on`);
+      }
+      return file;
+    }
     if (files.length > 1) throw new Error(`${dir} holds ${files.length} pictures; keep one`);
   }
+  if (offline) throw new Error(`${dir} holds no picture, and --offline downloads nothing`);
   await fs.mkdir(dir, { recursive: true });
   await sleep(1000);
   const r = await get(info.url);
@@ -209,7 +246,7 @@ const rows = [];
 for (const cover of COVERS) {
   if (only.length && !only.includes(cover.id)) continue;
   await sleep(1000);
-  const info = await fileInfo(cover.title, cover.width);
+  const info = offline ? recorded(cover) : await fileInfo(cover.title, cover.width);
   if (info.error) {
     console.error(`${cover.id}: ${cover.title}: ${info.error}. Not written.`);
     process.exitCode = 1;
@@ -239,7 +276,7 @@ const PLATE = {
   id: "plate",
   name: "The manuscript plate",
   file: path.join(ROOT, "public", "sections", "bible.jpg"),
-  books: ["1 and 2 Chronicles", "1 Esdras", "Ezra", "Nehemiah", "Tobit", "Judith", "Esther", "1 to 3 Maccabees", "Sirach", "Baruch", "Obadiah", "Zechariah", "Prayer of Manasseh", "2 Esdras", "Jude"],
+  books: ["1 Esdras", "Ezra", "Nehemiah", "Tobit", "Judith", "Esther", "1 to 3 Maccabees", "Sirach", "Baruch", "Obadiah", "Zechariah", "Prayer of Manasseh", "2 Esdras", "Jude"],
 };
 
 if (sheetPath) {

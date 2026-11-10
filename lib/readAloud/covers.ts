@@ -16,15 +16,20 @@ import type { CoversPack } from "@/lib/packs/types";
  *      Moses for the Law, David for the Psalms, Solomon for Proverbs,
  *      Jeremiah for Kings and Lamentations, Ezra for Chronicles, Luke for
  *      Acts, Paul for his letters and Hebrews.
- *   C. Where neither gives a holy person, or no public-domain icon of them
- *      passed (below), the book has the manuscript plate, the Codex
+ *   C. The eighteen books that had none until 1.9 take a picture of their
+ *      own, shown on no other book: of the book's author, or of a person or
+ *      a scene of the book (the owner's 86, 2026-11-09). His 98: 1 and 2
+ *      Chronicles take David and Solomon, from the dome at Lagoudera, not the
+ *      icons the Psalms and Solomon's books show.
+ *   D. Where none of these gives a holy person, or no public-domain icon of
+ *      them passed (below), the book has the manuscript plate, the Codex
  *      Sinaiticus page the Bible section already carries.
  * lib/readAloud/__tests__/covers.test.ts holds the map to these rules. The
  * attributions are the Church's tradition as Before you read gives it, and
  * every one is marked for the future clergy review: no priest reviews Purify
  * yet (the owner, 2026-10-16), so nothing waits on one.
  *
- * THE PICTURES. Public domain only, each read on its own Commons page, and
+ * THE PICTURES. Public domain or CC0 only, each read on its own Commons page, and
  * each opened and looked at before it was cut: the right saint, read from
  * the icon's inscription where it has one, sharp, the whole head and halo,
  * nothing outside the painted panel. docs/licensing/READ_COVERS.md records
@@ -68,7 +73,9 @@ export type FigureId =
   | "maccabees"
   | "job"
   | "david"
+  | "davidLagoudera"
   | "solomon"
+  | "solomonLagoudera"
   | "sirach"
   | "hosea"
   | "amos"
@@ -210,6 +217,37 @@ export const FIGURES: Partial<Record<FigureId, Figure>> = {
   },
   david: prophet("david", K04, "the Prophet and King David", "King David, bearded, in a tall jewelled crown and a dark blue mantle over red and gold robes, beside his scroll."),
   solomon: prophet("solomon", K04, "King Solomon", "King Solomon, young and beardless, in a jewelled crown and a red cloak, his hand raised in blessing."),
+  // 1 and 2 Chronicles (the owner's 98): David and Solomon each in a picture of
+  // their own, a pair from the drum of the dome at Lagoudera, Cyprus, painted
+  // in 1192 and inscribed there "the Prophet David" and "the Prophet Solomon";
+  // photographed by the Byzantine Institute and given to the public domain
+  // (CC0) by Dumbarton Oaks. Named as their other covers name them.
+  davidLagoudera: {
+    nameKey: "readAloud.cover.davidLagoudera",
+    file: "/covers/davidLagoudera.v1.jpg",
+    alt: "King David, white-haired and white-bearded, looking aside, in a jewelled crown hung with pearls, on a broad gold halo against blue, a red cloak edged with pearls at his shoulders.",
+    work: "The Prophet David, fresco in the drum of the dome, Panagia tou Arakou, Lagoudera, Cyprus",
+    artist: "Unknown painter of Lagoudera; photograph by the Byzantine Institute (Dumbarton Oaks)",
+    workDate: "1192; the photograph between 1968 and 1973",
+    source: "File:Church of Panagia tou Arakos, nave, center bay, drum, wall paintings, Lagoudera, Cyprus - Prophet David - MSBZ004 BF S 1979 2019 - Dumbarton Oaks.jpg",
+    license: "CC0",
+    evidenceUrl: commons("File:Church of Panagia tou Arakos, nave, center bay, drum, wall paintings, Lagoudera, Cyprus - Prophet David - MSBZ004 BF S 1979 2019 - Dumbarton Oaks.jpg"),
+    inspectedOn: "2026-11-10",
+    review: "clergy",
+  },
+  solomonLagoudera: {
+    nameKey: "readAloud.cover.solomonLagoudera",
+    file: "/covers/solomonLagoudera.v1.jpg",
+    alt: "King Solomon, young and beardless, brown-haired, looking out, in a jewelled crown hung with pearls, on a broad gold halo against blue, a pearl collar and a red cloak at his shoulders.",
+    work: "The Prophet Solomon, fresco in the drum of the dome, Panagia tou Arakou, Lagoudera, Cyprus",
+    artist: "Unknown painter of Lagoudera; photograph by the Byzantine Institute (Dumbarton Oaks)",
+    workDate: "1192; the photograph between 1968 and 1973",
+    source: "File:Church of Panagia tou Arakos, nave, center bay, drum, wall paintings, Lagoudera, Cyprus - Prophet Solomon - MSBZ004 BF S 1979 1980 - Dumbarton Oaks.jpg",
+    license: "CC0",
+    evidenceUrl: commons("File:Church of Panagia tou Arakos, nave, center bay, drum, wall paintings, Lagoudera, Cyprus - Prophet Solomon - MSBZ004 BF S 1979 1980 - Dumbarton Oaks.jpg"),
+    inspectedOn: "2026-11-10",
+    review: "clergy",
+  },
   hosea: prophet("hosea", K06, "the Prophet Hosea", "The Prophet Hosea, with long dark hair and beard, in a red cloak over green, blessing, beside his scroll."),
   amos: prophet("amos", K06, "the Prophet Amos", "The Prophet Amos, balding, with a long grey-brown beard and a dark green cloak, beside his scroll, his name in red."),
   micah: prophet("micah", K03, "the Prophet Micah", "The Prophet Micah, with wavy fair hair and beard, an ochre cloak flying behind him, beside his scroll."),
@@ -326,6 +364,7 @@ export const COVER_SIZE = "1024x1024";
  * Each book's cover: a figure, or the plate. Every book of
  * data/bible/books.json. Where the rule's first figure has no picture that
  * passed, the book takes the next by the rule (Ruth, Samuel), or the plate.
+ * 1 and 2 Chronicles take David and Solomon in pictures of their own (rule C).
  * No public-domain icon passed for Ezra, Nehemiah, Tobit, Judith, Esther,
  * the Maccabees, Jesus son of Sirach, Obadiah, Baruch or Jude, nor for the
  * prophet Zechariah (the Zechariah of the Kirillo boards is the priest, the
@@ -345,8 +384,8 @@ export const BOOK_COVERS: Record<string, FigureId | "plate"> = {
   "2-samuel": "samuel",
   "1-kings": "jeremiah",
   "2-kings": "jeremiah",
-  "1-chronicles": "plate",
-  "2-chronicles": "plate",
+  "1-chronicles": "davidLagoudera",
+  "2-chronicles": "solomonLagoudera",
   "1-esdras": "plate",
   ezra: "plate",
   nehemiah: "plate",

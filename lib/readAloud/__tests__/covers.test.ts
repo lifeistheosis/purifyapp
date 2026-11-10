@@ -10,8 +10,12 @@
 //    named with its version, and nothing sits in the folder unused;
 //  - the rule of who is shown: the figure is named in the book's own name
 //    (Ruth, Job, 1 Samuel) or in its "by" line in Before you read
-//    (data/bible/intros/facts.json), or the book has the manuscript plate.
-//    So the cover never says something the book's page does not.
+//    (data/bible/intros/facts.json), or, for a person or a scene of the book
+//    (the owner's 86, 2026-11-09), in the book's own words; or the book has
+//    the manuscript plate. So the cover never says something the book does
+//    not;
+//  - the eighteen books that had no cover until 1.9 (his 86) each take a
+//    picture of their own, shown on no other book, or keep the plate.
 
 import fs from "node:fs";
 import path from "node:path";
@@ -44,7 +48,9 @@ const NAMED_AS: Record<FigureId, string[]> = {
   maccabees: ["Maccabees"],
   job: ["Job"],
   david: ["David"],
+  davidLagoudera: ["David"],
   solomon: ["Solomon"],
+  solomonLagoudera: ["Solomon"],
   sirach: ["Sirach"],
   hosea: ["Hosea"],
   amos: ["Amos"],
@@ -72,6 +78,46 @@ const NAMED_AS: Record<FigureId, string[]> = {
   peter: ["Peter"],
   jude: ["Jude"],
 };
+
+/** A book's own words as the reader reads them, every chapter of data/bible/<book>/. */
+function bookWords(slug: string): string {
+  const dir = path.join(ROOT, "data", "bible", slug);
+  return fs
+    .readdirSync(dir)
+    .filter((f) => /^\d+\.json$/.test(f))
+    .map((f) => (JSON.parse(fs.readFileSync(path.join(dir, f), "utf8")) as { verses: { text: string }[] }).verses.map((v) => v.text).join(" "))
+    .join(" ");
+}
+
+/**
+ * The books with no cover until 1.9. The owner's 86, 2026-11-09: "make each
+ * book have a unique icon that's attributed to its book, either its author or
+ * like an icon about something that happened in the book." One picture each,
+ * shown on no other book; a book with none after a fair search keeps the
+ * plate until one turns up. His 98: 1 and 2 Chronicles take David and Solomon,
+ * each in a picture of its own (David's and Solomon's other covers stay on
+ * the Psalms and on Solomon's books).
+ */
+const OWN_PICTURE = [
+  "1-chronicles",
+  "2-chronicles",
+  "1-esdras",
+  "ezra",
+  "nehemiah",
+  "tobit",
+  "judith",
+  "esther",
+  "1-maccabees",
+  "2-maccabees",
+  "3-maccabees",
+  "sirach",
+  "obadiah",
+  "zechariah",
+  "baruch",
+  "prayer-of-manasseh",
+  "2-esdras",
+  "jude",
+];
 
 /** A JPEG's pixel size, read from its frame header. */
 function jpegSize(buf: Buffer): { width: number; height: number } | null {
@@ -104,13 +150,28 @@ describe("every book's cover", () => {
     }
   });
 
-  it("shows someone the book's own name or its by-line names", () => {
+  it("shows someone the book's own name, its by-line or its own words name", () => {
     for (const b of BOOKS) {
       const cover = BOOK_COVERS[b.slug];
       if (cover === "plate") continue;
       const by = BY[b.slug]?.by ?? "";
-      const said = NAMED_AS[cover].some((w) => b.name.includes(w) || by.includes(w));
-      expect(said, `${b.slug} shows ${cover}, but neither "${b.name}" nor "${by}" names them`).toBe(true);
+      const words = NAMED_AS[cover];
+      const said = words.some((w) => b.name.includes(w) || by.includes(w)) || words.some((w) => bookWords(b.slug).includes(w));
+      expect(said, `${b.slug} shows ${cover}, but neither "${b.name}", "${by}" nor the book's words name them`).toBe(true);
+    }
+  });
+
+  it("gives each of the eighteen books of his 86 a picture of its own, or the plate", () => {
+    expect(new Set(OWN_PICTURE).size).toBe(18);
+    for (const book of OWN_PICTURE) expect(BOOK_COVERS[book], book).toBeDefined();
+    const booksOf = new Map<string, string[]>();
+    for (const [book, cover] of Object.entries(BOOK_COVERS)) if (cover !== "plate") booksOf.set(cover, [...(booksOf.get(cover) ?? []), book]);
+    const files = figures.map(([, f]) => f.file);
+    for (const book of OWN_PICTURE) {
+      const cover = BOOK_COVERS[book];
+      if (cover === "plate") continue;
+      expect(booksOf.get(cover), `${book}'s ${cover} is on other books too`).toEqual([book]);
+      expect(files.filter((f) => f === FIGURES[cover]!.file), `${book}'s picture is another figure's file`).toHaveLength(1);
     }
   });
 

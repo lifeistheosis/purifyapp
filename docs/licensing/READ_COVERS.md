@@ -32,7 +32,13 @@ nearly did here: see Zechariah below.
 **Who is shown** is the Church's tradition as Before you read gives it
 (`data/bible/intros/facts.json`), by the rules in `lib/readAloud/covers.ts`:
 a book named for a holy person shows that person; otherwise the person its
-"by" line names; otherwise the manuscript plate. Every mapping is marked for
+"by" line names; otherwise the manuscript plate. From 1.9 the eighteen books
+that had the plate each take a picture of their own, shown on no other book,
+of the book's author or of a person or a scene of the book (the owner's 86,
+2026-11-09: "make each book have a unique icon that's attributed to its book,
+either its author or like an icon about something that happened in the
+book"); a book with none after a fair search keeps the plate until one turns
+up. The covers test holds a person of the book to the book's own words. Every mapping is marked for
 the future clergy review. No priest reviews Purify yet (the owner,
 2026-10-16), so nothing waits on one.
 
@@ -42,7 +48,7 @@ never inside the apps: the native build sets the folder aside
 (`scripts/native-build.mjs`). An app with no signal shows the plate the apps
 carry, `/sections/bible.jpg` (`SECTION_MEDIA.md`), in the cover's place. Each
 file is 1024 by 1024, a square cut from the source and saved with mozjpeg,
-under 200 KB; the 28 are 4.3 MB together. A replacement gets a new version
+under 200 KB; the 30 are 4.5 MB together. A replacement gets a new version
 in its name (`moses.v2.jpg`), and taking a file off the website takes it out
 of every app within a day.
 
@@ -66,6 +72,8 @@ to build anything. Squares are in `scripts/fetch-read-covers.mjs`.
 | `job.v1.jpg` | The Righteous Job | Job | The Righteous Job, icon, northern Russia | Russian (Mstera), as the page names it | Late 17th century by its description, circa 1800 by its date field | Public domain | [Commons](https://commons.wikimedia.org/wiki/File:Icon_of_Job_(North_Russia,_17_c.).jpg) |
 | `david.v1.jpg` | The Prophet and King David | Psalms | Kirillo-Belozersky iconostasis, prophets row, board 04 (middle) | Anonymous Russian icon painters | 1497 | Public domain | [Commons](https://commons.wikimedia.org/wiki/File:Kirillo-Belozersky_iconostasis_04._Daniel,_David,_Solomon.jpg) |
 | `solomon.v1.jpg` | King Solomon | Proverbs, Ecclesiastes, Song of Solomon, Wisdom | the same, board 04 (right) | Anonymous Russian icon painters | 1497 | Public domain | [Commons](https://commons.wikimedia.org/wiki/File:Kirillo-Belozersky_iconostasis_04._Daniel,_David,_Solomon.jpg) |
+| `davidLagoudera.v1.jpg` | The Prophet and King David | 1 Chronicles | The Prophet David, fresco in the drum of the dome, Panagia tou Arakou, Lagoudera, Cyprus | Unknown painter; photograph by the Byzantine Institute (Dumbarton Oaks) | 1192; the photograph between 1968 and 1973 | CC0 | [Commons](https://commons.wikimedia.org/wiki/File:Church_of_Panagia_tou_Arakos,_nave,_center_bay,_drum,_wall_paintings,_Lagoudera,_Cyprus_-_Prophet_David_-_MSBZ004_BF_S_1979_2019_-_Dumbarton_Oaks.jpg) |
+| `solomonLagoudera.v1.jpg` | King Solomon | 2 Chronicles | The Prophet Solomon, the same dome | Unknown painter; photograph by the Byzantine Institute (Dumbarton Oaks) | 1192; the photograph between 1968 and 1973 | CC0 | [Commons](https://commons.wikimedia.org/wiki/File:Church_of_Panagia_tou_Arakos,_nave,_center_bay,_drum,_wall_paintings,_Lagoudera,_Cyprus_-_Prophet_Solomon_-_MSBZ004_BF_S_1979_1980_-_Dumbarton_Oaks.jpg) |
 | `hosea.v1.jpg` | The Prophet Hosea | Hosea | the same, board 06 (left) | Anonymous Russian icon painters | 1497 | Public domain | [Commons](https://commons.wikimedia.org/wiki/File:Kirillo-Belozersky_iconostasis_06._Hosea,_Amos,_Zephaniah.jpg) |
 | `amos.v1.jpg` | The Prophet Amos | Amos | the same, board 06 (middle) | Anonymous Russian icon painters | 1497 | Public domain | [Commons](https://commons.wikimedia.org/wiki/File:Kirillo-Belozersky_iconostasis_06._Hosea,_Amos,_Zephaniah.jpg) |
 | `micah.v1.jpg` | The Prophet Micah | Micah | the same, board 03 (left) | Anonymous Russian icon painters | 1497 | Public domain | [Commons](https://commons.wikimedia.org/wiki/File:Kirillo-Belozersky_iconostasis_03._Micah,_Elijah,_Gideon.jpg) |
@@ -129,15 +137,32 @@ Notes, by file:
 - **James**: inscribed "Ὁ ΑΓΙΟΣ ΙΑΚΩΒΟΣ Ὁ ΑΔΕΛΦΟΘΕΟΣ" (not James of Alphaeus or
   of Zebedee). The square leaves out the red of the panel's corner and his
   name to the left.
+- **1 and 2 Chronicles (1.9, the owner's 98)**: David and Solomon, each in a
+  picture of their own, a pair from the drum of the dome of the Panagia tou
+  Arakou at Lagoudera, painted in 1192 (the church's dedicatory inscription;
+  the Commons pages date only the photographs). The same set's photographs
+  show the inscriptions: "Ο ΠΡΟΦΗΤΗΣ ΔΑ(ΥΙ)Δ" with Psalm 44(45):11 on his
+  scroll, and "Ο ΠΡΟΦΗΤΗΣ ΣΟΛΟΜΩΝ" with Proverbs 31:29 on his; the covers name
+  them as their other covers do. The pages state CC0 (Dumbarton Oaks), read
+  on 2026-11-10 through the Wikidata query service, since Commons' own API
+  refused the sandbox. The close-ups of the two heads (`... detail of head -
+  MSBZ004 BF S 1979 2021D` and `1981D`, and the slide `BF T Lag E 23 2`) are
+  taller than they are wide, so no square holds crown and beard whole; the
+  covers are cut from the standing figures, from Commons' 1920px copies (its
+  standard size; it refused the sandbox the originals), each a square of
+  about 600px enlarged to 1024, as the Kirillo prophets are. Each starts
+  under the white line of the register's border, so the halos meet the top
+  edge, and the inscriptions either side are left out.
 
 ## The plate
 
 These books show the manuscript plate, `/sections/bible.jpg` (the Codex
 Sinaiticus, `SECTION_MEDIA.md`), and the line under the title says "Read
-aloud" rather than a name: 1 and 2 Chronicles, 1 Esdras, Ezra, Nehemiah,
-Tobit, Judith, Esther, 1 to 3 Maccabees, Sirach, Obadiah, Zechariah, Baruch,
-the Prayer of Manasseh, 2 Esdras and Jude. Either no holy person is named for
-them, or no public-domain icon of the one named passed. Ruth shows Samuel, whom
+aloud" rather than a name: 1 Esdras, Ezra, Nehemiah, Tobit, Judith,
+Esther, 1 to 3 Maccabees, Sirach, Obadiah, Zechariah, Baruch, the Prayer of
+Manasseh, 2 Esdras and Jude. Either no holy person is named for them, or no
+public-domain icon of the one named passed. 1 and 2 Chronicles left the plate
+in 1.9 (above). Ruth shows Samuel, whom
 her "by" line names, because no icon of Ruth passed.
 
 ## Rejected, and why
@@ -172,12 +197,16 @@ not tell you any of this. Open the image and look at it.**
 2. Add the figure to `COVERS` in `scripts/fetch-read-covers.mjs` with its
    square, and run `node scripts/fetch-read-covers.mjs --cache <a folder
    outside the repository> --only <id> --sheet <png>`. The script refuses a
-   file whose page does not state public domain or CC0.
+   file whose page does not state public domain or CC0. Where Commons refuses
+   the machine (the cloud sandboxes get 429), record the licence read on the
+   page and the size of the cached picture in the entry and add `--offline`:
+   it cuts from the cache only, and refuses a picture of another size.
 3. **Open the cover and look at it**, at full size: the right figure, the
    whole head, nothing outside its panel, sharp.
 4. Add or change its entry in `FIGURES` and `BOOK_COVERS`
    (`lib/readAloud/covers.ts`), its name in all 21 catalogs, and its row
    above. A replaced picture gets the next version in its name. The covers
    test fails on a missing field, a missing name, a file that is not a 1024px
-   square JPEG under 200 KB, or a book that shows someone neither its name nor
-   its "by" line names.
+   square JPEG under 200 KB, a book that shows someone neither its name, its
+   "by" line nor its own words name, or a book of the eighteen whose picture
+   is shown on another book too.
