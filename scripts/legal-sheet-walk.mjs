@@ -36,8 +36,9 @@ function must(ok, what) {
   if (!ok) failures.push(what);
 }
 
-const { browser, ctx, page } = await openPhone({ scale: SHOTS ? 2 : 1, set: { "purify:testers": "{}" } });
-// A first opening: the onboarding is shown (Testers mode starts it at its welcome).
+const { browser, ctx, page } = await openPhone({ scale: SHOTS ? 2 : 1 });
+// A first opening, as his phone had it: the welcome, then the account step.
+// (Testers mode walks the new questions, which ask for no account.)
 await ctx.addInitScript(() => {
   try {
     localStorage.removeItem("purify:onboarded");
@@ -66,11 +67,15 @@ await termsSheet.waitFor({ timeout: 10000 }).catch(() => {});
 must(await termsSheet.isVisible().catch(() => false), "Terms opens in a sheet");
 await page.waitForTimeout(700);
 const onTop = await page.evaluate(() => {
-  const panel = document.querySelector('[role="dialog"] [data-sheet-panel]');
-  if (!panel) return false;
-  const r = panel.getBoundingClientRect();
-  const hit = document.elementFromPoint(r.left + r.width / 2, r.top + Math.min(r.height / 2, 200));
-  return Boolean(hit && panel.contains(hit));
+  // The point at the middle of the text on the screen belongs to the sheet, not to the onboarding beneath.
+  const words = document.querySelector("[data-legal-sheet]");
+  const dialog = words?.closest('[role="dialog"]');
+  if (!words || !dialog) return false;
+  const r = words.getBoundingClientRect();
+  const top = Math.max(r.top, 0);
+  const bottom = Math.min(r.bottom, innerHeight);
+  const hit = document.elementFromPoint(r.left + r.width / 2, (top + bottom) / 2);
+  return Boolean(hit && dialog.contains(hit));
 });
 must(onTop, "the sheet stands over the onboarding (the point at its middle is the sheet's)");
 await termsSheet.getByText("The terms, plainly.").waitFor({ timeout: 10000 }).catch(() => {});
@@ -101,7 +106,8 @@ const pageDuring = await page.evaluate(() => ({ path: location.pathname, y: wind
 must(pageDuring.path === pageBefore.path && pageDuring.y === pageBefore.y, "the page beneath has not moved");
 
 // 3. The Privacy Policy, from a link inside the Terms.
-const inner = termsSheet.locator('a[href="/privacy"]').first();
+// The app's build writes its links with a closing slash ("/privacy/").
+const inner = termsSheet.locator('a[href^="/privacy"]').first();
 if (await inner.count()) {
   await inner.scrollIntoViewIfNeeded();
   await inner.click();
@@ -112,9 +118,12 @@ if (await inner.count()) {
 }
 
 // 4. Close: back on the account step.
-await page.locator('[role="dialog"] [data-sheet-panel] button[aria-label="Close"]').first().click();
-await page.locator('[role="dialog"]').first().waitFor({ state: "detached", timeout: 8000 }).catch(() => {});
-must((await page.locator('[role="dialog"]').count()) === 0, "Close takes the sheet away");
+// The sheet's own Close (the backdrop is a button with the same name, out of the tab order).
+await page.locator('[role="dialog"] button[aria-label="Close"]:not([tabindex="-1"])').first().click();
+// The onboarding is a dialog of its own: count the legal sheet's alone.
+const legalOpen = () => page.locator('[role="dialog"]:has([data-legal-sheet])').count();
+await page.locator('[role="dialog"]:has([data-legal-sheet])').first().waitFor({ state: "detached", timeout: 8000 }).catch(() => {});
+must((await legalOpen()) === 0, "Close takes the sheet away");
 must(await onAccount(), "and the reader is on the account step still");
 
 // 5. Privacy Policy, with no signal.
@@ -127,13 +136,13 @@ await page.waitForTimeout(600);
 if (SHOTS) await page.screenshot({ path: path.join(SHOTS, "01-legal-sheet-privacy.png") });
 
 // 7. checkMock on the open sheet.
-const result = await checkMock(page, '[role="dialog"] [data-sheet-panel]');
+const result = await checkMock(page, '[role="dialog"]:has([data-legal-sheet])');
 must(printMockCheck(result, "the Privacy Policy's sheet"), "checkMock passes on the sheet in all five palettes");
 
 // 6. Escape closes it alone.
 await page.keyboard.press("Escape");
-await page.locator('[role="dialog"]').first().waitFor({ state: "detached", timeout: 8000 }).catch(() => {});
-must((await page.locator('[role="dialog"]').count()) === 0 && (await onAccount()), "Escape closes the sheet, and the onboarding stays on the account step");
+await page.locator('[role="dialog"]:has([data-legal-sheet])').first().waitFor({ state: "detached", timeout: 8000 }).catch(() => {});
+must((await legalOpen()) === 0 && (await onAccount()), "Escape closes the sheet, and the onboarding stays on the account step");
 
 await browser.close();
 console.log(failures.length ? `\n${failures.length} failing.` : "\nAll clean.");

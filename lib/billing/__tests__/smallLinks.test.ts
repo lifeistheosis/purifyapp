@@ -18,14 +18,15 @@ describe("the links under the plans", () => {
     const links = /const links = "([^"]*)"/.exec(read("components/billing/KeptPaywall.tsx"))?.[1] ?? "";
     expect(words(links)).toEqual(expect.arrayContaining(["min-h-11", "min-w-11"]));
     const dock = read("components/billing/KeptPaywall.tsx");
-    for (const href of ["/terms", "/privacy"]) expect(dock).toContain(`<Link href="${href}" onClick={onNavigate} className={links}>`);
+    // Each opens its text in a sheet over the plans (build 90 note 1).
+    for (const doc of ["terms", "privacy"]) expect(dock).toContain(`<LegalLink doc="${doc}" className={links}>`);
   });
 
   it("are 44 by 44 on the apps' /pricing page", () => {
     const page = read("components/billing/PlusPaywall.tsx");
-    for (const href of ["/terms", "/privacy"]) {
-      const cls = new RegExp(`<Link href="${href}" className="([^"]*)"`).exec(page)?.[1] ?? "";
-      expect(words(cls), href).toEqual(expect.arrayContaining(["min-h-11", "min-w-11"]));
+    for (const doc of ["terms", "privacy"]) {
+      const cls = new RegExp(`<LegalLink doc="${doc}" className="([^"]*)"`).exec(page)?.[1] ?? "";
+      expect(words(cls), doc).toEqual(expect.arrayContaining(["min-h-11", "min-w-11"]));
     }
   });
 });
