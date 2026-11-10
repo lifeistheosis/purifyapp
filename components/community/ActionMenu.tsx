@@ -176,8 +176,9 @@ export function ActionMenu({
                     item.onSelect();
                   }}
                   className={cn(
-                    "block w-full whitespace-nowrap px-4 py-2.5 text-left font-sans text-detail font-medium transition-colors disabled:cursor-default disabled:opacity-55",
-                    item.checked !== undefined && "flex items-center justify-between gap-6",
+                    // 44px to the touch, each row (1.9: they were 41.4px).
+                    "flex min-h-11 w-full items-center whitespace-nowrap px-4 py-2.5 text-start font-sans text-detail font-medium transition-colors disabled:cursor-default disabled:opacity-55",
+                    item.checked !== undefined && "justify-between gap-6",
                     item.danger
                       ? "text-crimson-soft hover:bg-crimson/[0.12] focus-visible:bg-crimson/[0.12]"
                       : item.checked

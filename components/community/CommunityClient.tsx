@@ -6,6 +6,7 @@ import { createContext, Fragment, memo, useCallback, useContext, useEffect, useL
 import { flushSync } from "react-dom";
 
 import { ActionMenu, type ActionMenuItem } from "@/components/community/ActionMenu";
+import { ReplyMenu } from "@/components/community/ReplyMenu";
 import { MentionField } from "@/components/community/MentionField";
 import { CommunityAvatar as Avatar } from "@/components/community/CommunityAvatar";
 import { CommunityBell } from "@/components/community/CommunityBell";
@@ -284,6 +285,9 @@ function CommunityScreen({
   const result = fetched && fetched.scope === groupId ? fetched.value : undefined;
   const [version, setVersion] = useState(0);
   const [myPostIds, setMyPostIds] = useState<Set<string>>(() => new Set());
+  // The reader's own replies, from the same call: a reply's menu offers
+  // Report on everyone's but these (ReplyMenu).
+  const [myReplyIds, setMyReplyIds] = useState<Set<string>>(() => new Set());
   // Which way this reader voted, from the same authenticated call as
   // ownership. Not in the feed: it is per-user and the feed is cached public.
   const [myReactions, setMyReactions] = useState<Record<string, ReactionState>>(
@@ -390,6 +394,7 @@ function CommunityScreen({
       // Only when something changed: a new Set or map on every refresh would
       // re-render every post card for nothing.
       setMyPostIds((prev) => sameMembers(prev, ids.postIds));
+      setMyReplyIds((prev) => sameMembers(prev, ids.replyIds));
       setMyReactions((prev) => sameEntries(prev, ids.reactions.posts));
       setMyReplyReactions((prev) => sameEntries(prev, ids.reactions.replies));
       setMyResponses((prev) => sameResponseMap(prev, ids.responses.posts));
@@ -828,6 +833,7 @@ function CommunityScreen({
                   post={linked}
                   me={me}
                   myPostIds={myPostIds}
+                  myReplyIds={myReplyIds}
                   myReaction={myReactions[linked.id] ?? null}
                   myReplyReactions={myReplyReactions}
                   myResponses={myResponses[linked.id] ?? NO_KINDS}
@@ -906,6 +912,7 @@ function CommunityScreen({
                       post={p}
                       me={me}
                       myPostIds={myPostIds}
+                      myReplyIds={myReplyIds}
                       myReaction={myReactions[p.id] ?? null}
                       myReplyReactions={myReplyReactions}
                       myResponses={myResponses[p.id] ?? NO_KINDS}
@@ -1171,6 +1178,7 @@ function PostCardInner({
   post,
   me,
   myPostIds,
+  myReplyIds,
   myReaction,
   myReplyReactions,
   myResponses,
@@ -1182,6 +1190,8 @@ function PostCardInner({
   me: Me;
   /** From GET /api/community/mine. The feed itself carries no author id. */
   myPostIds: Set<string>;
+  /** The reader's own replies, from the same call. */
+  myReplyIds: Set<string>;
   /** From the same call, for the same reason: per-reader, so not in the feed. */
   myReaction: ReactionState;
   /** Keyed by reply id, from the same call. Every thread reads from one map. */
@@ -1207,6 +1217,9 @@ function PostCardInner({
   const [busy, setBusy] = useState(false);
   const [actionError, setActionError] = useState<string | null>(null);
   const [reported, setReported] = useState(false);
+  // Replies this reader sent from this card, until the next ownership read
+  // has them, so their own new reply never shows Report.
+  const [sentReplyIds, setSentReplyIds] = useState<Set<string>>(() => new Set());
   const [blocked, setBlocked] = useState(false);
   const [muted, setMuted] = useState(false);
   // Said under the thread once: a reply that waits for a moderator.
@@ -1399,6 +1412,8 @@ function PostCardInner({
       // Drop the placeholder and take the server's copy, which carries the
       // real id, author name and timestamp.
       setPending((list) => list.filter((p) => p.tempId !== tempId));
+      const sentId = res.id;
+      if (sentId) setSentReplyIds((ids) => new Set(ids).add(sentId));
       const fresh = await fetchReplies(post.id);
       if (fresh.state === "ok") setReplies(fresh.replies);
       onChanged();
@@ -1807,6 +1822,7 @@ function PostCardInner({
                   // In a question, what verified clergy said stands first, in
                   // its own light: a raised panel, white edged, its label lit.
                   const clergyAnswer = question && Boolean(r.author_clergy);
+                  const writer = replySeed(r);
                   return (
                     <div
                       key={r.id}
@@ -1833,7 +1849,7 @@ function PostCardInner({
                         >
                           <Avatar name={r.author_name} url={r.author_avatar} size={28} decoration={r.author_decoration} />
                         </AuthorButton>
-                        <div className="min-w-0">
+                        <div className="min-w-0 flex-1">
                           <p className="flex flex-wrap items-center gap-1 font-sans text-caption text-paper/50">
                             {r.author_handle ? (
                               <AuthorButton
@@ -1883,6 +1899,13 @@ function PostCardInner({
                             />
                           </div>
                         </div>
+                        <ReplyMenu
+                          replyId={r.id}
+                          signedIn={Boolean(me)}
+                          mine={myReplyIds.has(r.id) || sentReplyIds.has(r.id)}
+                          onViewProfile={writer ? () => opener?.open(writer.handle, writer) : null}
+                          onFailed={setActionError}
+                        />
                       </div>
                     </div>
                   );
@@ -2028,7 +2051,7 @@ function AuthorButton({
       }}
       tabIndex={decorative ? -1 : undefined}
       aria-hidden={decorative ? true : undefined}
-      className={cn("group text-left", className)}
+      className={cn("group text-start", className)}
     >
       {children}
     </button>
