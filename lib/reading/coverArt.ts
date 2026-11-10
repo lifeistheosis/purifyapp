@@ -1,7 +1,7 @@
 import { SITE_URL } from "@/lib/site";
 import { SAINT_HEROES } from "@/lib/saints/heroes";
 
-import { AUTHOR_COVERS, COUNCIL_COVERS, WORK_COVERS } from "./authorCovers";
+import { AUTHOR_COVERS, COUNCIL_COVERS, FEELING_COVERS, WORK_COVERS } from "./authorCovers";
 
 /**
  * The picture on a book's cover (1.7, the owner's note 18): the icon of the
@@ -141,12 +141,18 @@ export const COVER_ART: Readonly<Record<string, CoverArt>> = {
  *    Arius, the council of Nicaea that followed it; St Nectarius, chosen
  *    bishop at the council of 381; St Celestine's letter, read at Ephesus;
  *    St John Cassian's On the Incarnation, written against Nestorius on the
- *    eve of Ephesus (his other books wait for a picture of him);
+ *    eve of Ephesus;
  *  - and a saint of the text who already has a cover (the owner's "ok to
  *    all" to the research's four): the Apostle Philip for his daughter St
  *    Hermione, St Pachomius for St Isidora of his Tabenna, St John
  *    Chrysostom for St Olympias, his deaconess, and the Apostle John for St
- *    Papias, his hearer.
+ *    Papias, his hearer;
+ *  - and a Desert Father of the book (the owner's "all recs", 2026-11-10):
+ *    St Moses the Ethiopian, Desert Father of Scetis, for St John Cassian's
+ *    Conferences, which open in Scetis with the two conferences of Abbot
+ *    Moses. It is the Anger door's icon (FEELING_COVERS), no new file. His
+ *    Institutes keep the plate, as St Symeon's, St Irenaeus's and St
+ *    Isaac's books do: no picture passed for them.
  */
 export const WORK_ART: Readonly<Record<string, CoverArt>> = {
   ...WORK_COVERS,
@@ -158,6 +164,7 @@ export const WORK_ART: Readonly<Record<string, CoverArt>> = {
   "isidora-of-tabenna/life-of-isidora": COVER_ART["pachomius-the-great"],
   "olympias-the-deaconess/life-of-olympias": COVER_ART["john-chrysostom"],
   "papias-of-hierapolis/the-living-voice": COVER_ART["apostle-john"],
+  "john-cassian/conferences": FEELING_COVERS.anger,
 };
 
 /** The settled picture for a book's saint, or null for the plate alone. */

@@ -217,6 +217,16 @@ Life of his daughter St Hermione, St Pachomius for the Life of St Isidora of
 his Tabenna, St John Chrysostom for the Life of his deaconess St Olympias,
 and the Apostle John for St Papias, his hearer. No new file.
 
+**A Desert Father of the book, for one** (the owner's "all recs",
+2026-11-10). St John Cassian's Conferences open in the desert of Scetis with
+the two conferences of Abbot Moses, so the book carries St Moses the
+Ethiopian, Desert Father of Scetis: the Anger door's icon
+(`feelings/anger.v1.jpg`, in the table below), marked as the book's own
+picture and never drawn beside the byline as St John's face. No new file.
+St Symeon the New Theologian, St Irenaeus, St Isaac the Syrian and St John
+Cassian's Institutes keep the plate: no picture passed for them, and no CC
+BY photograph fit.
+
 **An icon on each How you feel door** (`FEELING_COVERS`), each a canonical
 Orthodox saint known for the struggle or its healing. The reasons are ours,
 from Scripture and the lives and sayings as the Church tells them, marked for
