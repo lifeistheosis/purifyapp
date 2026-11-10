@@ -3184,11 +3184,15 @@ campaign asks.
 
 ### 22.3 What a reader sees
 
-- **Starting a campaign:** choosing the kind sets the row "The prayer" to
-  that kind's preset, by name. The creator can change it to any other on the
-  list, or to "The name alone". Today the row offers the name alone or one
-  of three psalms (90, 26, 50) and nothing is set for them; those three stay
-  on the list.
+- **Starting a campaign:** choosing the kind sets the prayer's row to that
+  kind's preset, by name. The creator can change it to any other on the
+  list, or to "The name alone". Today that row is named "A psalm"
+  (`campaigns.new.psalm`), offers the name alone or one of three psalms (90,
+  26, 50), and nothing is set for the creator; those three stay on the list.
+  With presets it takes the name the campaign's page already gives it, "The
+  prayer" (`campaigns.thePrayer`), a line every language has. (This note
+  first called the row "The prayer" as if it were so today; the photo for
+  his call, `decisions/prayers-1-start.png`, shows it as it is.)
 - **On the campaign's page:** the prayer's name, its words, and under them
   the printing they are from, as a psalm stands there today.
 - **In a reader's own prayers:** the name stands among those they pray for,
@@ -3282,4 +3286,48 @@ second condition dropped, the day not waited for, a circle not kept, a row
 deleted though its picture stayed, the delete not narrowed, an unwritten day
 taken as today, a group in use not kept, a failed read passed over. The
 tables' keys the job relies on are read from the SQL that made them.
+
+## 24. A moderator's removal tells its creator why (2026-11-10)
+
+**His word** (the Terms for what readers post, his yes of that day): "When we
+remove something you posted, we tell you why, unless the law or someone's
+safety stops us." The notice itself is the Admin chat's
+(`lib/community/removal.ts`: one row in the reader's own inbox, what was
+removed and a reason from a fixed list, no push). This is campaigns' side of
+it, at Admin's ask.
+
+- **A campaign taken down by a moderator** tells its creator once: a
+  campaign, the reason, and its title in one line
+  (`lib/campaigns/moderation.ts`, `removeCampaign`).
+- **A picture taken down by a moderator** tells the campaign's creator, who
+  is the only one who can put a picture on a campaign: a picture, the
+  reason, and no words (`lib/campaigns/pictures.ts`,
+  `removePictureAsModerator`).
+- **The reason** is the one the moderator chose in the team's panel, carried
+  from its route through `runCampaignModAction`. The moderators' page in the
+  app asks none yet, and the notice then says the house rules, as it does
+  for a post.
+- **Once.** Only the removal that took it down tells anyone. A second tap on
+  a campaign that is down changes nothing of its row and tells nobody, and
+  two moderators deciding at once make one notice: the write is held to a
+  row that is still up. Before this a second tap rewrote the reason and the
+  time, and the upkeep counts its thirty days from that time, so a second tap
+  quietly kept a removed campaign thirty days longer. It no longer does. It
+  still tries once more for a picture's file the first try could not delete.
+- **Never when it was not us:** a campaign whose days ran out and that the
+  upkeep deletes, July's rows, a creator's own take-down, their own picture
+  or comment. A test holds that the notice is written from the two removals
+  and from nowhere else in campaigns.
+- **A removal never waits on its notice.** Before the notice's SQL has run
+  (`docs/1.9-build/sql/removal-notices.sql`, which waits for his yes), the
+  campaign is taken down all the same and no notice is written.
+- **A campaign's comment** removed by a moderator goes through Community's
+  own removal of a reply, which already tells its writer, as "your reply".
+  Saying "comment" there is Admin's to change; `isCampaignThread` is the
+  question it needs.
+
+**Held by** `lib/campaigns/__tests__/removalNotice.test.ts`, 15 cases, and one
+more in `lib/admin/__tests__/communityRoute.test.ts` (the panel's reason
+reaches the removal). Five ways of breaking it were tried, and each failed a
+case.
 

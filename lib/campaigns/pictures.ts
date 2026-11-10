@@ -5,6 +5,7 @@ import sharp from "sharp";
 
 import { isTableAbsent } from "@/lib/admin/tableAbsent";
 import { AUTO, logMod, type ModActor, type ModResult } from "@/lib/community/moderation";
+import { writeRemovalNotice, type RemovalReason } from "@/lib/community/removal";
 import { findLinks } from "@/lib/community/spam";
 import { subscriptionTier } from "@/lib/profile/cosmetics";
 import { forgetUploads, recordUploadOwner } from "@/lib/security/uploadOwners";
@@ -670,17 +671,28 @@ export async function approvePicture(admin: SupabaseClient, actor: ModActor, pic
  * Refuse a waiting picture or take down a shown one: its file is deleted
  * wherever it is, and the row is kept as the record of what was decided,
  * with no picture behind it.
+ *
+ * Whoever put it up is told why, once (lib/community/removal.ts; the Terms,
+ * "What we may remove"): the campaign's creator, since nobody else can put a
+ * picture on a campaign. The notice names a picture and quotes nothing.
+ * `code` is the reason the moderator chose; with none it says the house
+ * rules. A picture that is down already answers that it is, and tells
+ * nobody again.
  */
-export async function removePictureAsModerator(admin: SupabaseClient, actor: ModActor, pictureId: string, reason?: string | null): Promise<ModResult> {
+export async function removePictureAsModerator(admin: SupabaseClient, actor: ModActor, pictureId: string, reason?: string | null, code?: RemovalReason | null): Promise<ModResult> {
   const row = await readRow(admin, pictureId);
   if (!row) return { ok: false, status: 404, error: "That picture is gone." };
   if (row.status === "removed") return { ok: false, status: 409, error: "That picture is already removed." };
   if (!(await deleteFile(admin, row.bucket, row.path))) return { ok: false, status: 500, error: "Couldn't delete the picture's file. It is still there; please try again." };
-  const { error } = await admin
+  const { data: taken, error } = await admin
     .from("prayer_campaign_pictures")
     .update({ status: "removed", removed_reason: reason?.trim().slice(0, 300) || null, reviewed_by_email: actor.email ?? actor.name, reviewed_at: new Date().toISOString() })
-    .eq("id", pictureId);
+    .eq("id", pictureId)
+    // Two moderators at once: the second finds it down, and is not the one who took it down.
+    .neq("status", "removed")
+    .select("id");
   if (error) return { ok: false, status: 500, error: error.message };
+  if ((taken ?? []).length === 0) return { ok: false, status: 409, error: "That picture is already removed." };
   await closePictureReports(admin, pictureId, "actioned");
   const campaign = await campaignOf(admin, row.campaign_id);
   await logMod(admin, actor, {
@@ -689,6 +701,7 @@ export async function removePictureAsModerator(admin: SupabaseClient, actor: Mod
     targetId: pictureId,
     summary: [campaign ? `${campaign.creator_name ?? "A reader"}: ${flat(campaign.title)}` : null, reason?.trim() || null].filter(Boolean).join(". ") || null,
   });
+  if (campaign) await writeRemovalNotice(admin, { userId: campaign.creator_id, target: "picture", reason: code });
   return { ok: true };
 }
 

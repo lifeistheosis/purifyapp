@@ -77,11 +77,12 @@
 // should step 3 have to wait, the build's notes for review say plainly what
 // is in it and switched off.
 //
-// WHERE IT IS NOT CLOSED, THE REWORK'S SQL MUST HAVE RUN: the three files he
-// signed (supabase/migrations, the three campaign files of 2026-11-10). On
-// the test web's own database, before a test build is walked; on production,
-// at the merge, which runs them. Until they have, the new columns are absent
-// and the routes answer 404 whatever this says (lib/campaigns/opening.ts).
+// WHERE IT IS NOT CLOSED, THE REWORK'S SQL MUST HAVE RUN: the four files he
+// signed (supabase/migrations, the four campaign files of 2026-11-10, the
+// fourth being the acceptance of the Terms). On the test web's own database,
+// before a test build is walked; on production, at the merge, which runs
+// them. Until they have, the new columns are absent and the routes answer
+// 404 whatever this says (lib/campaigns/opening.ts).
 
 export type CampaignsOpening = "closed" | "testers" | "open";
 

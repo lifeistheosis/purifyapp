@@ -3,6 +3,7 @@ import "server-only";
 import type { SupabaseClient } from "@supabase/supabase-js";
 
 import { AUTO, logMod, type ModActor, type ModResult } from "@/lib/community/moderation";
+import { writeRemovalNotice, type RemovalReason } from "@/lib/community/removal";
 import { removeOwnedUpload } from "@/lib/security/uploadOwners";
 
 import {
@@ -114,16 +115,45 @@ export async function approveCampaign(admin: SupabaseClient, actor: ModActor, id
  * in case of an appeal or a lawful request, and then deleted by the upkeep
  * (lib/campaigns/upkeep.ts); those who carry it let go of it the next time
  * their app is online.
+ *
+ * ITS CREATOR IS TOLD WHY, ONCE (the Terms, "What we may remove", his yes of
+ * 2026-11-10: "When we remove something you posted, we tell you why";
+ * lib/community/removal.ts). `code` is the reason the moderator chose from
+ * the list the notice reads from; with none, the notice says the house
+ * rules. Only a removal that took the campaign down tells anyone. One that
+ * is down already stays as it was taken down, by whom, why and from when, so
+ * a second tap writes no second notice and does not start its thirty days
+ * again; it only tries once more for what a first try may have left of its
+ * pictures' files. And only a moderator's removal: the upkeep's deletes and
+ * a creator's own take-down are not this function and tell nobody.
  */
-export async function removeCampaign(admin: SupabaseClient, actor: ModActor, id: string, reason?: string | null, now: number = Date.now()): Promise<ModResult> {
+export async function removeCampaign(
+  admin: SupabaseClient,
+  actor: ModActor,
+  id: string,
+  reason?: string | null,
+  now: number = Date.now(),
+  code?: RemovalReason | null,
+): Promise<ModResult> {
   const c = await read(admin, id);
   if (!c) return { ok: false, status: 404, error: "That campaign is gone." };
+  if (c.status === "removed") {
+    // Down already: nothing of its row changes and nobody is told again.
+    // What a first try may have left of its pictures' files is tried once more.
+    await removePicture(admin, id, c.creator_id);
+    await deletePicturesOf(admin, [id], { keepRows: "its campaign was removed" });
+    return { ok: true };
+  }
   const at = new Date(now).toISOString();
-  const { error } = await admin
+  const { data: taken, error } = await admin
     .from("prayer_campaigns")
     .update({ status: "removed", removed_reason: reason?.trim().slice(0, 300) || null, removed_by_email: actor.email ?? actor.name, updated_at: at })
-    .eq("id", id);
+    .eq("id", id)
+    // Two moderators at once: the second finds it down, and is not the one who took it down.
+    .neq("status", "removed")
+    .select("id");
   if (error) return { ok: false, status: 500, error: error.message };
+  if ((taken ?? []).length === 0) return { ok: true };
   await removePicture(admin, id, c.creator_id);
   // Its pictures' files go at once, from wherever they are: a removed
   // campaign leaves nothing at an address. Their rows are kept, marked, as
@@ -131,6 +161,7 @@ export async function removeCampaign(admin: SupabaseClient, actor: ModActor, id:
   await deletePicturesOf(admin, [id], { keepRows: "its campaign was removed" });
   await closeReports(admin, actor, id, "actioned");
   await logMod(admin, actor, { action: "remove_campaign", target: "campaign", targetId: id, summary: summary(c) });
+  await writeRemovalNotice(admin, { userId: c.creator_id, target: "campaign", reason: code, excerpt: c.title });
   return { ok: true };
 }
 
@@ -193,19 +224,26 @@ export async function dismissCampaignReport(admin: SupabaseClient, actor: ModAct
 // without reaching into this file, which only the server may load.
 export { CAMPAIGN_MOD_ACTIONS, isCampaignModAction, type CampaignModAction, type OpenCampaignReport, type WaitingCampaign };
 
-/** Run one of them as `actor`. `id` is the campaign's, or the report's for a dismissal. */
+/**
+ * Run one of them as `actor`. `id` is the campaign's, or the report's for a
+ * dismissal. `code` is why, from the list a removal's notice reads from
+ * (lib/community/removal.ts), for the two actions that remove: the creator
+ * is told that reason. The moderators' page sends none yet, and the notice
+ * then says the house rules.
+ */
 export async function runCampaignModAction(
   admin: SupabaseClient,
   actor: ModActor,
   action: CampaignModAction,
   id: string,
   reason?: string | null,
+  code?: RemovalReason | null,
 ): Promise<ModResult> {
   switch (action) {
     case "approve_campaign":
       return approveCampaign(admin, actor, id);
     case "remove_campaign":
-      return removeCampaign(admin, actor, id, reason);
+      return removeCampaign(admin, actor, id, reason, undefined, code);
     case "restore_campaign":
       return restoreCampaign(admin, actor, id);
     case "dismiss_campaign_report":
@@ -216,7 +254,7 @@ export async function runCampaignModAction(
     case "approve_picture":
     case "remove_picture":
       if (!campaignPart("pictures") || !actor.admin) return { ok: false, status: 404, error: "Not found." };
-      return action === "approve_picture" ? approvePicture(admin, actor, id) : removePictureAsModerator(admin, actor, id, reason);
+      return action === "approve_picture" ? approvePicture(admin, actor, id) : removePictureAsModerator(admin, actor, id, reason, code);
   }
 }
 

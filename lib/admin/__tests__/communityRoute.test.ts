@@ -35,7 +35,7 @@ const state = vi.hoisted(() => ({
   /** The campaigns that wait to be read, as the campaigns' own moderation would list them. */
   waitingCampaigns: [] as { id: string }[],
   /** Every decision handed to the campaigns' own moderation, in order. */
-  campaignDecisions: [] as { actor: string | undefined; action: string; id: string; reason: string | null }[],
+  campaignDecisions: [] as { actor: string | undefined; action: string; id: string; reason: string | null; code?: string | null }[],
   /** What that moderation answers. */
   campaignAnswer: { ok: true } as { ok: true } | { ok: false; status: number; error: string },
 }));
@@ -52,8 +52,9 @@ vi.mock("@/lib/community/moderation", () => ({
 vi.mock("@/lib/campaigns/moderation", async (original) => ({
   ...(await original<typeof import("@/lib/campaigns/moderation")>()),
   readWaitingCampaigns: async () => ({ rows: state.waitingCampaigns }),
-  runCampaignModAction: async (_admin: unknown, actor: { email?: string }, action: string, id: string, reason?: string | null) => {
-    state.campaignDecisions.push({ actor: actor.email, action, id, reason: reason ?? null });
+  runCampaignModAction: async (_admin: unknown, actor: { email?: string }, action: string, id: string, reason?: string | null, code?: string | null) => {
+    // The reason's code is kept only when one was sent, so the cases that send none read as they did.
+    state.campaignDecisions.push({ actor: actor.email, action, id, reason: reason ?? null, ...(code ? { code } : {}) });
     return state.campaignAnswer;
   },
 }));
@@ -217,6 +218,17 @@ describe("/api/admin/community, in a build that has the rework", () => {
     expect(state.campaignDecisions.map((d) => d.action)).toEqual(["approve_campaign"]);
     __setCampaignsOpening("closed");
     expect((await act({ action: "approve_campaign", id: CAMP_1 })).status).toBe(400);
+    expect(state.campaignDecisions).toHaveLength(1);
+  });
+
+  it("carries the reason the moderator chose to a campaign's removal, so its creator is told that reason", async () => {
+    // The panel's list of reasons (lib/community/removal.ts) is what the
+    // creator's notice reads from. A removal that lost it on the way would
+    // tell every creator "the house rules", whatever the moderator chose.
+    expect((await act({ action: "remove_campaign", id: CAMP_1, reason: "Asks for money", reason_code: "spam" })).status).toBe(200);
+    expect(state.campaignDecisions).toEqual([{ actor: "owner@example.com", action: "remove_campaign", id: CAMP_1, reason: "Asks for money", code: "spam" }]);
+    // A code that is not on the list is not an action at all.
+    expect((await act({ action: "remove_campaign", id: CAMP_1, reason_code: "because" })).status).toBe(400);
     expect(state.campaignDecisions).toHaveLength(1);
   });
 

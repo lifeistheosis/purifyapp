@@ -140,6 +140,15 @@ const COLUMNS: Record<string, string[]> = {
   ],
   // 20261110001550_psalms_113_115_move.sql: the names of the moves made, and when.
   data_moves: ["name", "done_at"],
+  // 20260801000000_community_notifications.sql, 20261002000000_community_social.sql (actor_handle),
+  // then what a removal's notice adds, which waits for his yes
+  // (docs/1.9-build/sql/removal-notices.sql: target_kind, reason). A suite
+  // that wants the table as production has it today names those two in
+  // World.missing.
+  community_notifications: [
+    "id", "user_id", "kind", "post_id", "reply_id", "actor_name", "actor_handle", "excerpt",
+    "read_at", "created_at", "target_kind", "reason",
+  ],
   // 20261005000000_community_three.sql
   community_mod_log: [
     "id", "actor_id", "actor_name", "actor_email", "action", "target_kind", "target_id",
