@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useCallback, useEffect, useRef, useState, type CSSProperties } from "react";
+import { useCallback, useEffect, useLayoutEffect, useRef, useState, type CSSProperties, type RefObject } from "react";
 
 import { AddToFlorilegium } from "@/components/florilegium/AddToFlorilegium";
 import { useTranslate } from "@/components/i18n/MessagesProvider";
@@ -10,6 +10,7 @@ import { Book } from "@/components/ui/icons/Book";
 import { ChevronLeft } from "@/components/ui/icons/ChevronLeft";
 import { ChevronRight } from "@/components/ui/icons/ChevronRight";
 import { Share } from "@/components/ui/icons/Share";
+import { cn } from "@/lib/cn";
 import { isNativeClient } from "@/lib/platform/native";
 import { CARD_LINES, CARD_TEXT, medallionInitial, type DeckPassage } from "@/lib/theology/page";
 import { scrollBehavior } from "@/lib/ui/motion";
@@ -43,6 +44,8 @@ export function PassageDeck({ passages }: { passages: DeckPassage[] }) {
   const deck = useRef<HTMLUListElement>(null);
   const frame = useRef(0);
   useFolds(deck, passages);
+  const tools = useRef<HTMLDivElement>(null);
+  const stacked = useStacked(tools, at);
 
   /** One card and its gap apart, as the deck scrolls. */
   const stepOf = useCallback((el: HTMLUListElement) => {
@@ -180,15 +183,35 @@ export function PassageDeck({ passages }: { passages: DeckPassage[] }) {
           its foot. Under the deck, not inside it: the deck scrolls sideways,
           and the actions are the card in view's, not each card's own. (Until
           1.9 Gather opened a menu under its button, which the deck would
-          have clipped; it opens the one sheet that picks a gathering now.) */}
+          have clipped; it opens the one sheet that picks a gathering now.)
+          Where the three are wider than the card at their own size (in
+          Greek on a 360px phone they ran 11px past it; in most languages
+          they are, and in every one once Gather wears its Plus mark), Read
+          where it's from takes the line to itself and Gather and Share
+          stand under it at either end: a second line for the row, every
+          word whole. The two lines stand 44px apart, centre to centre (34px
+          actions, a 10px gap), so each target keeps its 44px reach (hit-44)
+          and none lies over another's (globals.css: "those need real
+          spacing instead"). Read where it's from has no padding of its own,
+          so its book stands at the card's edge, over Gather's first letter.
+          Measured on the device, as the bar's title is fitted
+          (lib/ui/titleFit.ts), and again when a word or the width changes. */}
       <div
+        ref={tools}
         data-quote-tools=""
-        className="mt-1 flex w-[min(318px,calc(100vw_-_56px))] max-w-full items-center justify-between gap-2 border-t border-paper/8 pt-1.5"
+        data-stacked={stacked ? "" : undefined}
+        className={cn(
+          "mt-1 grid w-[min(318px,calc(100vw_-_56px))] max-w-full items-center justify-between gap-x-1.5 gap-y-2.5 border-t border-paper/8 pt-1.5",
+          stacked ? "grid-cols-[auto_auto]" : "grid-cols-[auto_auto_auto]",
+        )}
       >
         {current.source ? (
           <ReadSource
             source={current.source}
-            className="tap-press hit-44 inline-flex h-[34px] items-center gap-1.5 px-0.5 font-sans text-[12.5px] font-semibold text-paper/82 hover:text-paper"
+            className={cn(
+              "tap-press hit-44 inline-flex h-[34px] items-center gap-1.5 justify-self-start whitespace-nowrap font-sans text-[12.5px] font-semibold text-paper/82 hover:text-paper",
+              stacked && "col-span-2",
+            )}
           >
             <Book size={16} />
             {t("today.saintWords.readSource")}
@@ -196,15 +219,17 @@ export function PassageDeck({ passages }: { passages: DeckPassage[] }) {
         ) : (
           <span aria-hidden />
         )}
-        <AddToFlorilegium
-          key={`${current.father}-${at}`}
-          item={{ kind: "father", text: current.text, author: current.author, saintSlug: current.saintSlug, work: current.work, href: current.gatherHref }}
-        />
+        <span className="flex justify-self-start whitespace-nowrap">
+          <AddToFlorilegium
+            key={`${current.father}-${at}`}
+            item={{ kind: "father", text: current.text, author: current.author, saintSlug: current.saintSlug, work: current.work, href: current.gatherHref }}
+          />
+        </span>
         <button
           type="button"
           data-quote-share=""
           onClick={() => setSharing(true)}
-          className="reader-lit tap-press hit-44 inline-flex h-[34px] items-center gap-1.5 rounded-pill bg-paper px-3 font-sans text-[12.5px] font-semibold text-night"
+          className="reader-lit tap-press hit-44 inline-flex h-[34px] items-center gap-1.5 justify-self-end whitespace-nowrap rounded-pill bg-paper px-3 font-sans text-[12.5px] font-semibold text-night"
         >
           <Share size={14} />
           {t("common.share")}
@@ -216,4 +241,32 @@ export function PassageDeck({ passages }: { passages: DeckPassage[] }) {
       <PassagePicture passage={current} open={sharing} onClose={() => setSharing(false)} onDevice={onDevice} native={native} />
     </section>
   );
+}
+
+/**
+ * Whether the row's actions are wider, at their own size, than the row: then
+ * the first takes a line to itself. Every action is drawn whole (no wrap)
+ * and at its own width in either arrangement, so the sum is the same in both
+ * and the answer never swings between them. Asked again when the row or an
+ * action changes size: a word in another language, a wider phone.
+ */
+function useStacked(row: RefObject<HTMLDivElement | null>, passage: number): boolean {
+  const [stacked, setStacked] = useState(false);
+  useLayoutEffect(() => {
+    const el = row.current;
+    if (!el || typeof ResizeObserver === "undefined") return;
+    const fit = () => {
+      const items = [...el.children].map((c) => c.getBoundingClientRect().width).filter((w) => w > 0);
+      const gap = parseFloat(window.getComputedStyle(el).columnGap) || 0;
+      const natural = items.reduce((sum, w) => sum + w, 0) + gap * Math.max(0, items.length - 1);
+      setStacked(natural > el.clientWidth + 0.5);
+    };
+    fit();
+    const watch = new ResizeObserver(fit);
+    watch.observe(el);
+    for (const c of el.children) watch.observe(c);
+    return () => watch.disconnect();
+    // A new passage may bring a new first action (or none): its own watch.
+  }, [row, passage]);
+  return stacked;
 }

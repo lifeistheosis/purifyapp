@@ -181,6 +181,28 @@ three runs 11px past its card, before this change and after it ("Διαβάστ�
 από πού είναι", "Συγκέντρωση", "Κοινοποίηση"). It is the row's, not the
 button's, and wants its own decision.
 
+Decided the same day (Updates 2, at the arbiter's word of 07:12 UTC): where
+the three are wider than the card at their own size, Read where it's from
+takes the line to itself and Gather and Share stand under it at either end
+(`components/theology/PassageDeck.tsx`, `useStacked`: measured on the device,
+as `lib/ui/titleFit.ts` fits the bar's title, and again when a word or the
+width changes). The two lines stand 44px apart, centre to centre, so no
+target's 44px reach lies over another's (the rule `.hit-44` keeps in
+`app/globals.css`), and the book stands at the card's edge, over Gather's
+first letter. Measured on the Android export in all 21 languages at 390 and
+360px, as this build draws the row and again with Gather's Plus mark put in
+by hand (a build made here sells nothing, so it draws no mark): nothing past
+the card, every word on one line, every target with its 44px reach and none
+over another's.
+On one line in Arabic, German, English, Italian, Portuguese, Romanian and
+Turkish at both widths, and in Spanish, French and Urdu at 390; on two
+everywhere else, and in every language once Gather wears its Plus mark
+(with it the three are wider than the card in all 21). `checkMock` clean on the
+row in Greek, French and Georgian at 360 and English at 390, and with the
+mark in Greek at 360 and English at 390. Stills:
+`build-89/12-passage-row-*.png` (Greek and Georgian at 360, English at 390
+without the mark and with it).
+
 Checked for this part, on its own tree: typecheck 0, lint 0 errors, unit 849
 files and 10,264 tests, the Android export green at 70.8 MB packed,
 `scripts/mock-florilegium.mjs` now eleven screens through `checkMock` (the
