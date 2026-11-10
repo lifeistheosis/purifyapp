@@ -9,7 +9,7 @@ import { reportCampaign } from "@/lib/campaigns/client";
 import { REPORT_REASONS, REPORT_REASON_LABEL, type ReportReason } from "@/lib/campaigns/model";
 
 /**
- * Reporting a campaign (1.9.1): a reason to tick, and words when the reader
+ * Reporting a campaign (1.9): a reason to tick, and words when the reader
  * has some. The first reason is the one a person named without their
  * blessing needs, and it hides the campaign at once until a moderator looks
  * (lib/campaigns/moderation.ts). The reader is told it was sent and that a

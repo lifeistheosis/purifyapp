@@ -1,4 +1,4 @@
-// Prayer campaigns, phase 1 (1.9.1), on the native export: a still of each
+// Prayer campaigns, phase 1 (1.9), on the native export: a still of each
 // screen, held to checkMock on all five palettes, and a walk of each flow as
 // a reader does it, with what it sends checked.
 //

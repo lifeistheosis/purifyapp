@@ -20,7 +20,7 @@ export const BOARD_TITLE = "campaigns-title";
 const DOOR_ROW = "set-link rule-way flex w-full items-center gap-3 text-start";
 
 /**
- * Every campaign running now (1.9.1), where "See all" under Pray together
+ * Every campaign running now (1.9), where "See all" under Pray together
  * leads: the page's name and its one line, the way to start one, the
  * campaigns as rows of one lit panel, newest first, and under them the
  * reader's own and the rules. A choice of kind behind the sliders comes with

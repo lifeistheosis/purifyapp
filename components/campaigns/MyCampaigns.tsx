@@ -17,7 +17,7 @@ import { todayKey } from "@/lib/rhythm/dayKey";
 export const MINE_TITLE = "my-campaigns-title";
 
 /**
- * The reader's own campaigns (1.9.1), reached from You and from the board:
+ * The reader's own campaigns (1.9), reached from You and from the board:
  * those they are praying, and those they started.
  *
  * Those they are praying are read from this device (lib/campaigns/

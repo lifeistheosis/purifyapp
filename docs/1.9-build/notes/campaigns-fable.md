@@ -9,9 +9,12 @@ this date and carries its file: read at `6a302fb4`, and checked again at
 about production is marked as probed by someone else or as not probed.
 
 **Since then (2026-11-10, the same day):** he answered every question with "ok
-to all", and phase 1 was built behind a switch that is committed closed.
-Sections 1 to 9 are the design as it was put to him and are left as written;
-section 10 says what was built, what holds it, and where the build differs.
+to all", and phase 1 was built behind a switch that is committed closed. Then
+his word changed one answer: "ok to all ensure its all in v1.9". Campaigns ship
+in 1.9 itself, not in a small release after it. Sections 1 to 9 are the design
+as it was put to him and are left as written, so where they say 1.9.1, or that
+the SQL waits until 1.9 has merged, section 10 is what holds: it says what was
+built, what holds it, where the build differs, and how release day goes.
 
 His words, the brief this answers (at more length in `BRAINSTORM.md`): "I wanted
 version 1.9 to have the prayer campaign system, right? I never saw that
@@ -1834,13 +1837,28 @@ but for the stylesheet, whose changes touch neither item 3's rule nor item
 
 **The word.** His answer to every question of 8.1, relayed by the arbiter:
 "ok to all", 2026-11-10, about 04:13 UTC, covering items 116 to 128 on his
-page, every recommendation as written (`BRAINSTORM.md`). The arbiter's four
-rules for the build: the SQL stays in these notes and out of
-`supabase/migrations` until 1.9 has merged and he has signed the SQL itself;
-with the switch closed and no new tables the app behaves exactly as today, and
-a test holds that; pictures (121) wait, "Prayed by many" (118) is later, and
-prayers come from the prayer book only (123); stills of each screen go to the
-arbiter before anything is pushed.
+page, every recommendation as written (`BRAINSTORM.md`). About 04:20 UTC his
+word changed item 116: "ok to all ensure its all in v1.9". And about 04:48
+UTC: "finalize all of this and let's get going", so finished work no longer
+waits for his eye before a push behind the switch.
+
+What that makes the rules of the build, as the arbiter relayed them:
+
+- Campaigns are in 1.9: phases 1, 2 and 4. Pictures (phase 3, item 121) and
+  "Prayed by many" (item 118) are built and ship in 1.9 switched off, by a
+  switch on the server, and turn on with no store build once the image
+  checking service and the lawyer are done.
+- The SQL goes into `supabase/migrations`, where the merge of 1.9 runs it on
+  production, and only after he has signed the SQL itself. Until then it
+  waits in `docs/1.9-build/sql/` (10.2).
+- With the switch closed the app behaves exactly as it did, and a test holds
+  that.
+- Prayers come from the prayer book only (123).
+- Each push is behind the switch, in commits that can be read one at a time,
+  with the stills sent to the arbiter at the push.
+- Still his own word, and not built around: the SQL's signature, the words on
+  the privacy page and in the Terms (113), the words for a reader in crisis
+  (129), the stores' forms (130), and anything on main or production.
 
 **The stills, of the real screens:** https://claude.ai/artifact/SCpqiXD3xgQP6cmrCxLpL9
 (private; sixteen, one of each screen). The four of section 7 were drawings
@@ -1886,19 +1904,49 @@ asks for the sign-in code, as it does for a post.
 
 `open`: for everyone.
 
-The order, each step his:
+**The SQL, for his signature:** `docs/1.9-build/sql/campaigns-1-rework.sql`.
+It is file one of 5.2, word for word (a test holds the two together), under a
+header in plain words: what it changes, what a reader can reach once it has
+run (nothing new), what happens to July's campaigns (nothing), and a read-only
+check to run after it. It makes no new table. It ran twice on a scratch
+PostgreSQL 16 standing on every migration in the folder as of this date, and
+the schema after the second run is the schema after the first. On his yes
+(`OWNER-STEPS.md`, R0b) it is copied into `supabase/migrations/` under a
+fourteen-digit name from that day's clock, and the test that today holds it
+out of that folder changes to hold the migration to the SQL he signed. Files
+two and three (updates and comments; pictures) join it in `docs/1.9-build/sql/`
+as their phases are built against them.
 
-1. He signs file one of 5.2, and it is run: by hand in the SQL editor, or as
-   a migration once 1.9 has merged. Until it has run, a build at `testers`
-   still shows nothing: every route that meets the missing columns answers
-   404 and says so in the log.
-2. The constant moves to `testers` on the website, and he walks it on his
-   own phone.
-3. Before `open`: the privacy page's lines and the Terms' section (113), the
-   words for a reader in crisis (129), the stores' forms (130).
-4. The constant moves to `open`. A build sent to a store for review is cut
-   `closed` or `open`, never `testers` (the reasons are under "What can
-   safely ride in 1.9").
+**Release day, in order** (his word through the arbiter, and
+`OWNER-STEPS.md` R2 to R5c). The constant stays `closed` on the branch until
+then.
+
+1. The merge to main carries the constant at `testers`. The website has the
+   server side, for his account alone, and the SQL he signed runs. Until it
+   has run, a build at `testers` shows nothing: every route that meets the
+   missing columns answers 404 and says so in the log.
+2. Both store builds are cut from that commit and go to internal testing. He
+   walks campaigns on his phones: starting one, clearing it as a moderator on
+   the website, joining it, praying it, ending it.
+3. One line moves the constant to `open` on main: the website, for every
+   reader. That is his word, and it waits for the words that are his, a
+   lawyer's and a priest's: the privacy page's lines and the Terms' section
+   (113), and the words for a reader in crisis (129).
+4. The stores go public with the builds he walked. Cut at `testers`, they ask
+   the website, which now says open, so they show campaigns to every reader
+   with no new store build. Two quiet places in such a build read the
+   constant itself and wait for the next store build: the Discover menu's row
+   on a wide screen, and the free plan's line that names campaigns. Neither
+   promises anything that is not there.
+
+**What the stores' rule asks of this.** Apple wants a new feature "accessible
+for review" and forbids "hidden, dormant, or undocumented features" (section
+6, with the guideline numbers). So step 3 comes before step 4: a build
+reviewed while the website still says `testers` carries campaigns asleep. If
+step 3 has to wait for the lawyer or the priest, the choice is his: hold the
+stores, or send the builds with campaigns named in the notes for review as
+switched off. Pictures and "Prayed by many" are in that second position by his
+word either way, so the notes for review name them plainly (his item 130).
 
 ### 10.3 What holds it
 
@@ -1906,11 +1954,13 @@ The order, each step his:
   constant is committed closed and read from no setting of the environment;
   each of the five pages is not found before anything of theirs is drawn;
   the device makes no request and touches no list, whatever it holds; the
-  screens that carry campaigns reach them only through the two gates; and
-  none of the rework's columns is named in `supabase/migrations`.
+  screens that carry campaigns reach them only through the two gates; none of
+  the rework's columns is named in `supabase/migrations` until he has signed;
+  and the file put before him is the SQL that was checked, word for word.
 - `routes.test.ts`: every route, run against an in-memory database: closed
   means 404 and no read; testers first; 404 where the SQL has not run; a
-  campaign is written held; no response carries an account id or a count.
+  campaign is written held; no response carries an account id or a count;
+  and July's campaigns run for nobody (10.6).
 - `moderating.test.ts`: the moderators' queue by the switch and by the
   sign-in code; the team's one queue (one row a campaign, danger first); how
   long a campaign is kept, and July's rows left alone.
@@ -1948,14 +1998,28 @@ The order, each step his:
 - **Upkeep rides the heartbeat** (`/api/cron/hourly-goals`), as housekeeping
   does, so it needs no new line on Render.
 
-### 10.5 Not built yet
+### 10.5 Not built yet, and the order for 1.9
 
-Updates and comments (phase 2). Pictures (phase 3, and 121's wait). A place,
-one circle as the audience, "Prayed by many" (phase 4). Changing a campaign's
-words after it is sent. "Run it again". Telling a creator that a moderator
-has decided. A choice of kind behind the sliders on the board. The crisis
-words a reader is shown (129): only the hold in the moderators' queue is
-built, and it reads English alone.
+In this order, each pushed behind the switch with its stills:
+
+1. **Phase 2, updates and comments** (about 10 hours): the creator's updates;
+   comments, which the creator can close or take one off; no reactions (126);
+   no links and no asking for money (124); file two of the SQL.
+2. **Phase 4, the rest in words** (about 16 hours): one circle as the
+   audience (122); a place; a campaign's door on its creator's profile;
+   changing a campaign's words after it is sent (read again by a moderator);
+   "Run it again"; telling a creator that a moderator has decided; a choice
+   of kind behind the sliders on the board.
+3. **"Prayed by many"** (118), built and switched off on the server: no
+   number, and a creator can stay out.
+4. **Pictures** (121; about 14 hours), built and switched off on the server:
+   3, or 20 with Plus, each checked before it is shown, with "I am 18 or
+   older"; file three of the SQL. Off until the image checking service is
+   chosen and the lawyer has answered.
+
+Not built, and not to be built without his word: the crisis words a reader is
+shown (129). Only the hold in the moderators' queue is built, and it reads
+English alone.
 
 ### 10.6 Found while building
 
@@ -1969,6 +2033,26 @@ built, and it reads English alone.
 - **The campaign card's buttons were 38 pixels.** It was drawn for 1.8 and
   never shown, since no campaign ran. They reach the 44 pixel target now
   (`hit-44`), with not a pixel of ink moved.
+- **July's campaigns would have come back with the board.** July's rows are
+  still in the table: public then, with no last day, and never read by a
+  moderator. The first build of the board listed whatever was active and
+  public, so on the day campaigns opened, a months-old campaign for someone's
+  illness would have stood on it with no end, and a reader who tapped
+  "prayed" once in July would have found it among those they carry. Now the
+  rework runs none of them (`isJulyRow`: a campaign with no length). Nobody
+  is shown one but the reader who started it, who finds it among their own as
+  ended and can take it down; it is on no board, joined by nobody, carried by
+  nobody and not counted against the campaigns its creator may run; and the
+  row itself is left exactly as it was. `routes.test.ts` holds each of those.
+  How many there are on production is not known from here: the check at the
+  foot of the SQL file's header counts them. **What becomes of them in the
+  end is his to say** (kept unseen as now; or deleted after a date, which
+  item 125's "nobody's illness stays up by neglect" argues for).
+- **The prayer page changed under the build** (build 89 note 7: nothing is
+  ticked under a prayer, each is counted as it is passed, and a long hold
+  saves one). A campaign's psalm follows: it is not one of the rule's own
+  prayers, so passing it counts nothing, and a long hold saves the psalm
+  itself under its own rule in the prayer book.
 - **The guard on Your rule was restated.** `yourRulePage.test.ts` forbade
   the word "campaign" in the page's four files, which was 1.9's way of
   saying nothing is drawn. It now holds that `Diptychs` mounts exactly one

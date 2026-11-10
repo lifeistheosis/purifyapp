@@ -12,9 +12,13 @@
 //   - NOTHING WAS DELETED when it was withdrawn. July's tables stay, and the
 //     rework builds on them.
 //
-// THREE POSITIONS (the owner's yes to item 116, 2026-11-10: "Campaigns are
-// built now behind a switch, you test them first, and they lead a small 1.9.1
-// right after"):
+// THREE POSITIONS. The owner's yes to item 116 (2026-11-10) was to build
+// campaigns behind a switch, for him to test first, and to lead a small
+// release after 1.9. His later word the same day moved them into 1.9 itself
+// ("ok to all ensure its all in v1.9"), with his walk on release day: the
+// website first, the store builds on internal testing, his walk, and only
+// then the stores (docs/1.9-build/OWNER-STEPS.md, R2 to R5c). The switch is
+// the same either way:
 //
 //   closed    As from 2026-08-26. Every campaign page is a 404 in the build,
 //             every campaign route answers 404, and no screen draws or asks
@@ -37,14 +41,33 @@
 // them only when the server answers (lib/campaigns/useCampaignsOpen.ts), so
 // an app follows the website with no new store build.
 //
-// A BUILD SENT TO A STORE'S REVIEW IS CUT CLOSED OR OPEN, NEVER TESTERS: a
-// feature asleep in a reviewed build is what Apple's guidelines 2.3.1 and
-// 2.5.19 warn of.
+// RELEASE DAY, IN ORDER. It stays closed on the branch until then.
 //
-// BEFORE IT LEAVES CLOSED: the SQL of the rework (docs/1.9-build/notes/
-// campaigns-fable.md, 5.2) must have run on production, which is the owner's
-// to sign and to run. Until it has, the new columns are absent and the routes
-// answer 404 whatever this says (lib/campaigns/opening.ts).
+//   1. The merge to main carries it at testers: the website has the server
+//      side, for his account alone, and the SQL he signed runs.
+//   2. Both store builds are cut from that commit and go to internal testing.
+//      He walks campaigns on his phones.
+//   3. One line moves it to open on main: the website, for every reader.
+//      That waits for his word, and for the words that are his, a lawyer's
+//      and a priest's (items 113 and 129).
+//   4. The stores go public with the builds he walked. Cut at testers, they
+//      ask the website, which now says open, so they show campaigns to every
+//      reader. Two quiet places read this constant itself and wait for the
+//      next store build: the Discover menu's row on a wide screen, and the
+//      free plan's line that names campaigns (lib/premium/plans.ts). Neither
+//      promises anything that is not there.
+//
+// WHEN A BUILD GOES TO A STORE'S REVIEW, CAMPAIGNS ARE OPEN ON THE WEBSITE OR
+// ARE NOT IN THE BUILD. A build cut at testers and reviewed while the website
+// still says testers carries a feature asleep, which is what Apple's
+// guidelines 2.3.1 and 2.5.19 warn of. So step 3 comes before step 4; and
+// should step 3 have to wait, the build's notes for review say plainly what
+// is in it and switched off.
+//
+// BEFORE IT LEAVES CLOSED: the SQL of the rework (docs/1.9-build/sql/
+// campaigns-1-rework.sql) must have run on production, which is the owner's
+// to sign. Until it has, the new columns are absent and the routes answer 404
+// whatever this says (lib/campaigns/opening.ts).
 
 export type CampaignsOpening = "closed" | "testers" | "open";
 

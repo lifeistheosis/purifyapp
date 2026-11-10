@@ -24,7 +24,7 @@ import { todayKey } from "@/lib/rhythm/dayKey";
 const SHOWN = 4;
 
 /**
- * Prayer campaigns in Pray together (1.9.1), between its head and the prayer
+ * Prayer campaigns in Pray together (1.9), between its head and the prayer
  * wall: the campaign the reader carries as the card the owner picked for it
  * (components/community/CampaignCard.tsx, r3-02), any others they carry as
  * rows, then "Newly asked" as rows with a small picture each, and the way to

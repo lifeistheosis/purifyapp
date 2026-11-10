@@ -11,7 +11,7 @@ const RULES = ["campaigns.rules.1", "campaigns.rules.2", "campaigns.rules.3", "c
 
 
 /**
- * The rules of praying together (1.9.1): the short page a reader agrees to
+ * The rules of praying together (1.9): the short page a reader agrees to
  * before they start a campaign (components/campaigns/StartCampaign.tsx), and
  * can read at any time from the board.
  *

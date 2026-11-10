@@ -27,7 +27,7 @@ type Named = { id: string; name: string };
  * lets the names from the wall go; they stay on this page, marked, until it
  * is left, and the end of the page says so (PrayerRuleReader.tsx).
  *
- * A prayer campaign the reader carries (1.9.1, lib/campaigns/carried.ts)
+ * A prayer campaign the reader carries (1.9, lib/campaigns/carried.ts)
  * brings its name here and nothing else: among the living, with the campaign
  * named under it as the wall's words stand under a name; among the departed,
  * inside the Church's prayer where the edition prints NN., with the campaign

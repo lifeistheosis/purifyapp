@@ -16,7 +16,7 @@ import { useRememberedPlaces } from "@/lib/prayers/useCommemoration";
 import { todayKey } from "@/lib/rhythm/dayKey";
 
 /**
- * Joining a campaign is "Add to my prayers" (1.9.1): the prayer wall's own
+ * Joining a campaign is "Add to my prayers" (1.9): the prayer wall's own
  * sheet (components/community/AddToPrayersSheet.tsx) with one more choice.
  * The reader ticks the prayers that will carry the name, the reader's whole
  * list's choice to begin with, and for how long (his yes to item 120): until

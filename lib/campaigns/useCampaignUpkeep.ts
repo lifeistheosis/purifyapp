@@ -1,6 +1,6 @@
 "use client";
 
-// Keeping the campaigns a reader carries true to the world (1.9.1), from the
+// Keeping the campaigns a reader carries true to the world (1.9), from the
 // screens where they are seen: Pray together, the page of Your rule, a
 // campaign's own page. Never from the prayer reader, which reads the device's
 // list and asks nobody, so a campaign is prayed with no signal.

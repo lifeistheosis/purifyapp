@@ -561,7 +561,7 @@ export type ModQueue = {
   reports: ModReport[];
   log: ModLogLine[];
   me: { name: string; admin: boolean };
-  /** Prayer campaigns waiting and reported (1.9.1). Absent unless campaigns are open for this moderator. */
+  /** Prayer campaigns waiting and reported (1.9). Absent unless campaigns are open for this moderator. */
   campaigns?: CampaignQueue;
 };
 

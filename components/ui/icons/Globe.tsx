@@ -4,7 +4,7 @@ import type { SVGProps } from "react";
  * The whole Community: who can read what is being written, beside the button
  * that sends it. Drawn as the page for a new post draws its own
  * (components/community/ComposePage.tsx), for the page that starts a prayer
- * campaign (1.9.1). Inherits `currentColor`.
+ * campaign (1.9). Inherits `currentColor`.
  */
 export function Globe({
   size = 15,

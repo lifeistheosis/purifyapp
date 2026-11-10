@@ -29,7 +29,7 @@ export const dynamic = "force-dynamic";
  * Words, web addresses, pins and badges stay with the team's console.
  * Nothing here carries a reader's auth id or email.
  *
- * Prayer campaigns (1.9.1) wait in the same queue: every campaign is read
+ * Prayer campaigns (1.9) wait in the same queue: every campaign is read
  * before it is public, and readers' reports can hide one again. They are in
  * the queue, and their four actions are taken, only for a moderator campaigns
  * are open for (lib/campaigns/opening.ts): nobody while the switch is closed,

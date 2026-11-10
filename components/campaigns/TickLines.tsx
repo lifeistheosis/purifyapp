@@ -7,7 +7,7 @@ import { Check } from "@/components/ui/icons/Check";
 /**
  * One choice among a few, each a line to tick in a lit panel: how long a
  * campaign runs, what it is for, its psalm, how long a reader carries it, the
- * reason on a report (1.9.1). Drawn as the prayers to tick are
+ * reason on a report (1.9). Drawn as the prayers to tick are
  * (components/prayers/PlaceChips.tsx), which the owner picked over a cloud of
  * pills (2026-10-29: never pills for a choice). There several may be ticked;
  * here one is, so it is a radio group to a screen reader and to the arrow

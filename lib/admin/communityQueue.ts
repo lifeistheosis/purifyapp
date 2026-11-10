@@ -104,7 +104,7 @@ export type QueueSources = {
   /** Shared journal pages with their reports (1.9, admin A1; lib/admin/sharedPages.ts). Absent before the sharing table. */
   sharedPages?: SharedPageIn[];
   /**
-   * Prayer campaigns waiting to be read (1.9.1, the rework): every campaign
+   * Prayer campaigns waiting to be read (1.9, the rework): every campaign
    * once, before it is public, and again when readers' reports hide it
    * (lib/campaigns/moderation.ts). Absent while campaigns are closed.
    */
@@ -443,7 +443,7 @@ export function buildQueue(src: QueueSources): QueueRow[] {
     });
   }
 
-  // Prayer campaigns waiting to be read (1.9.1): one row a campaign, the
+  // Prayer campaigns waiting to be read (1.9): one row a campaign, the
   // reports on it folded in, so one hidden by reports is not a second row.
   const waiting = new Set((src.waitingCampaigns ?? []).map((c) => c.id));
   for (const c of src.waitingCampaigns ?? []) {

@@ -162,7 +162,7 @@ export function ModerationClient() {
               {queue.holds.length === 0 && queue.reports.length === 0 && campaignsWaitingCount(queue.campaigns) === 0 ? (
                 <p className="py-10 text-center font-sans text-ui text-paper/55">{t("mod.nothing")}</p>
               ) : null}
-              {/* Prayer campaigns waiting to be read, and those reported (1.9.1):
+              {/* Prayer campaigns waiting to be read, and those reported (1.9):
                   first, since one may mean its writer is in danger. Nothing
                   unless campaigns are open for this moderator. */}
               <CampaignModeration queue={queue.campaigns} onDone={load} onNotice={setNotice} />

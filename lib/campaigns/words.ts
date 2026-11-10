@@ -1,4 +1,4 @@
-// How a campaign is said on a screen (1.9.1): its length, its last day, the
+// How a campaign is said on a screen (1.9): its length, its last day, the
 // line under its title, its psalm's name, and the picture it wears. Pure, so
 // the page, the rows, the card and the sheets all say the same thing.
 //

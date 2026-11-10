@@ -21,7 +21,7 @@ import { cn } from "@/lib/cn";
 import { timeAgo } from "@/lib/community/types";
 
 /**
- * Prayer campaigns in the moderators' queue (1.9.1), drawn as the queue's own
+ * Prayer campaigns in the moderators' queue (1.9), drawn as the queue's own
  * cards are (components/community/moderation/ModerationClient.tsx): a line of
  * what it is and why it waits, who asked and when, the words as written, and
  * the decisions.

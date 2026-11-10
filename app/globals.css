@@ -2065,7 +2065,7 @@ html[data-reading-mode="parchment"] .rule-ring-lit {
  font-size: 13px;
  color: color-mix(in srgb, var(--color-paper) 50%, transparent);
 }
-/* The names' small lines on every palette (1.9.1, measured on the export
+/* The names' small lines on every palette (1.9, measured on the export
    while the campaigns' medallions were drawn beside them). A list's name is
    the ink at 58 percent and a medallion's line at 50, written here and not
    as text-paper utilities, so the stylesheet's own lift of its faint text

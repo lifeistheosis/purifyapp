@@ -3,10 +3,11 @@
 // switch closed and no new tables, the app behaves exactly as today. A test
 // holds that.").
 //
-// The rework lives in the app from 1.9 on, built and dark, and leads 1.9.1
-// (his "ok to all", item 116). What makes that safe is one constant
-// (lib/campaigns/flags.ts) and the handful of places that ask it. This file
-// holds each of them:
+// The rework is built behind a switch that stays committed closed until
+// release day, and it ships in 1.9 (his later word of the same day: "ok to
+// all ensure its all in v1.9"). What makes building it beside the rest of
+// 1.9 safe is one constant (lib/campaigns/flags.ts) and the handful of
+// places that ask it. This file holds each of them:
 //
 //   the switch   committed closed
 //   the server   every route answers 404 and reads nothing
@@ -17,7 +18,8 @@
 //                campaigns is neither read nor written, whatever it holds
 //   the doors    the screens that carry campaigns reach them only through
 //                those two gates, and draw nothing of them
-//   the data     the rework's SQL is in the notes, not in the folder a merge
+//   the data     the rework's SQL waits for his signature in docs/1.9-build/
+//                sql, word for word what the notes hold, not in the folder a merge
 //                runs against production
 //
 // What would go wrong if this broke: a reader of 1.9 shown a door to a
@@ -314,15 +316,40 @@ describe("closed: the doors", () => {
 });
 
 describe("closed: the data", () => {
-  it("keeps the rework's SQL out of the folder a merge runs against production", () => {
-    // A migration on this branch would run on production when 1.9 merges
-    // (AGENTS.md, "Merging a migration to main runs it"). The three files
-    // are drafts in the notes until the owner has signed the SQL itself.
-    // Columns only the rework has (July's file made the tables themselves).
-    const NEW = /consent_kind|keep_after_end|until_on|prayer_rule|creator_handle/;
+  // Columns only the rework has (July's file made the tables themselves).
+  const NEW = /consent_kind|keep_after_end|until_on|prayer_rule|creator_handle/;
+  const FOR_HIS_SIGNATURE = "docs/1.9-build/sql/campaigns-1-rework.sql";
+  /** A file's SQL from its first statement on, its header left out. */
+  const statements = (sql: string) => sql.slice(sql.search(/^set lock_timeout/m));
+
+  it("keeps the rework's SQL out of the folder a merge runs against production, until he has signed it", () => {
+    // A migration on this branch runs on production when 1.9 merges
+    // (AGENTS.md, "Merging a migration to main runs it"), and campaigns ship
+    // in 1.9, so the SQL goes into that folder: but only once the owner has
+    // signed the SQL itself (docs/1.9-build/OWNER-STEPS.md, R0b). Until
+    // then it waits in docs/1.9-build/sql and says so. On his signature this
+    // test changes, to hold the migration to the SQL he signed, word for word.
     const hits = readdirSync(join(ROOT, "supabase/migrations")).filter((f) => NEW.test(read(`supabase/migrations/${f}`)));
     expect(hits).toEqual([]);
-    expect(existsSync(join(ROOT, "docs/1.9-build/notes/campaigns-fable.md"))).toBe(true);
-    expect(read("docs/1.9-build/notes/campaigns-fable.md")).toMatch(/consent_kind/);
+    expect(existsSync(join(ROOT, FOR_HIS_SIGNATURE))).toBe(true);
+    expect(read(FOR_HIS_SIGNATURE)).toMatch(/^-- NOT APPLIED YET, AND NOT SIGNED YET\./m);
+  });
+
+  it("puts before him the SQL that was checked: the file is the notes' own, word for word", () => {
+    // The notes' file one (5.2) is what ran twice on a scratch database and
+    // what the routes' tests name their columns from. The copy he reads has a
+    // header of its own in plain words, and not one statement of its own.
+    const notes = read("docs/1.9-build/notes/campaigns-fable.md");
+    const block = [...notes.matchAll(/```sql\n([\s\S]*?)```/g)].map((m) => m[1]).find((b) => b.includes("prayer_campaigns_intention_check"));
+    expect(block).toBeTruthy();
+    const signed = statements(read(FOR_HIS_SIGNATURE));
+    expect(signed.length).toBeGreaterThan(5000);
+    expect(signed).toBe(statements(block!));
+    expect(signed).toMatch(NEW);
+    // Safe to run twice: nothing is made without "if not exists", a check
+    // first, or dropping what it is about to make.
+    expect(signed).not.toMatch(/create (?:unique )?index (?!if not exists)/i);
+    expect(signed).not.toMatch(/add column (?!if not exists)/i);
+    expect(signed).not.toMatch(/create policy/i);
   });
 });

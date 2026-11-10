@@ -6,7 +6,7 @@ import { More } from "@/components/ui/icons/More";
 import { openCampaignMenu } from "@/lib/campaigns/pageMenu";
 
 /**
- * The round ••• over a campaign's page, opposite the way back (1.9.1). It is
+ * The round ••• over a campaign's page, opposite the way back (1.9). It is
  * the page's top bar's `trailing`, drawn from the house's one plate (build 89
  * note 15, components/nav/topPlate.ts) as the works' reader draws its own
  * (components/saints/MobileWorkActions.tsx), and one of the plates

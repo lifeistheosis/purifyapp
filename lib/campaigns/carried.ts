@@ -1,4 +1,4 @@
-// The campaigns a reader carries in their own prayers (1.9.1), kept on the
+// The campaigns a reader carries in their own prayers (1.9), kept on the
 // device as the names from the prayer wall are (lib/prayers/wallNames.ts).
 //
 // Joining a campaign is "Add to my prayers": its name goes into "Those I

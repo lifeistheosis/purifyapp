@@ -186,7 +186,7 @@ export function PrayerRuleReader({
   const wallList = useWallNames();
   const [openedAt] = useState(() => Date.now());
   const wall = useMemo(() => wallNamesFor(wallList, rule.id, openedAt), [wallList, rule.id, openedAt]);
-  // The prayer campaigns the reader carries in this prayer today (1.9.1):
+  // The prayer campaigns the reader carries in this prayer today (1.9):
   // read from this device and nowhere else, so a campaign is prayed with no
   // signal, and nothing is sent when it is. None in a build where campaigns
   // are closed (lib/campaigns/useCarried.ts), so the page then stands as it

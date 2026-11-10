@@ -1,6 +1,6 @@
 "use client";
 
-// The ••• over a campaign's page and the page itself (1.9.1). The button is
+// The ••• over a campaign's page and the page itself (1.9). The button is
 // the page's top bar's `trailing`, and a bar is mounted by the page's FILE,
 // never by a component (lib/nav/__tests__/backBar.test.ts reads pages and
 // layouts to know which routes bring their own bar). So the button cannot be

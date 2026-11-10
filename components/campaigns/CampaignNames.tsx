@@ -17,7 +17,7 @@ type MedallionPart = ComponentType<{ name: string; sub?: string | null; onOpen: 
 
 /**
  * The campaigns a reader carries, among those they pray for on the page of
- * Your rule (1.9.1): each name as a medallion with the day it leaves
+ * Your rule (1.9): each name as a medallion with the day it leaves
  * ("Until Dec 19"), after the reader's own lists and the names from the
  * prayer wall. A tap opens the joining sheet again, to move it to
  * other prayers or take it out.

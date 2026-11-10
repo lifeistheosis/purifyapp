@@ -20,7 +20,7 @@ import {
 import { CAMPAIGN_BUCKET, campaignImage } from "./image";
 import { reworkAbsent } from "./opening";
 
-// Moderating prayer campaigns (the rework of 1.9.1), once, for everyone who
+// Moderating prayer campaigns (the rework of 1.9), once, for everyone who
 // moderates: the team's console and readers holding the Moderator badge work
 // the same functions, as they do for posts (lib/community/moderation.ts),
 // and every decision is written to the same log under who took it.

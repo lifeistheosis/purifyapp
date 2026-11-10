@@ -168,7 +168,7 @@ export async function GET(req: Request) {
       // Shared journal pages that wait (1.9, admin A1): the same pages the
       // queue shows, from their reports and their state.
       readReportedShares(admin, true),
-      // Prayer campaigns waiting to be read (1.9.1). Nothing is read while they are closed.
+      // Prayer campaigns waiting to be read (1.9). Nothing is read while they are closed.
       campaignsWaiting(admin),
     ]);
     // Older shapes: no review_id before the Kitchen migration, no profile_id
@@ -357,7 +357,7 @@ const actionSchema = z.object({
     "remove_recipe",
     "remove_campaign",
     "dismiss_campaign_report",
-    // Prayer campaigns, reworked (1.9.1): every campaign is read before it
+    // Prayer campaigns, reworked (1.9): every campaign is read before it
     // is public, and one hidden by reports or removed can be put back. Not
     // actions at all while campaigns are closed (the POST below).
     "approve_campaign",

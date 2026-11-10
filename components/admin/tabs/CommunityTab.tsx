@@ -69,7 +69,7 @@ type CommunityData = {
   kitchen?: KitchenBlock;
   /** Reported shared journal pages (1.9, admin A1); absent before the sharing table. */
   sharedPages?: SharedPageIn[];
-  /** Prayer campaigns waiting to be read (1.9.1); absent while campaigns are closed. */
+  /** Prayer campaigns waiting to be read (1.9); absent while campaigns are closed. */
   waitingCampaigns?: WaitingCampaign[];
 };
 

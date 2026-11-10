@@ -46,7 +46,7 @@ const PILL =
   "tap-press inline-flex min-h-11 min-w-0 items-center justify-center gap-2 rounded-pill px-4 font-sans text-ui font-semibold motion-safe:transition-colors";
 
 /**
- * A campaign's own page (1.9.1), built as a saint's page is: its picture at
+ * A campaign's own page (1.9), built as a saint's page is: its picture at
  * the head under a clear bar, its name over the picture's foot, then what a
  * reader does with it. Pray goes to the prayer, which stands whole on the
  * page with the name in it, word for word from the prayer book and with its

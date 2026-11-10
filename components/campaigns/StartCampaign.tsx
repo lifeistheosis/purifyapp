@@ -64,7 +64,7 @@ type Opened = "kind" | "length" | "psalm" | null;
 type LengthChoice = (typeof LENGTHS)[number] | "own";
 
 /**
- * Starting a prayer campaign (1.9.1), a page of its own built as making a
+ * Starting a prayer campaign (1.9), a page of its own built as making a
  * post in Community is (components/community/ComposePage.tsx, the owner's
  * pick of r3-24): the picture of its kind fading in at the head, two doors
  * for whom it is, the title and the name on a hairline with no box, the

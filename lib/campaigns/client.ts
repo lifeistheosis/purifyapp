@@ -1,6 +1,6 @@
 "use client";
 
-// What the screens ask of the campaign routes (1.9.1, the rework). Every call
+// What the screens ask of the campaign routes (1.9, the rework). Every call
 // goes through apiFetch, so the apps reach the live website with the reader's
 // token and the website uses its own session.
 //

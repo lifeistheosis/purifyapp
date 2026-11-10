@@ -19,7 +19,7 @@ import { activeWallName } from "@/lib/prayers/wallNames";
  * runningCampaign.ts), the card is not drawn and the wall stands under the
  * head. Never a sample in its place.
  *
- * 1.9.1, the rework: readers' own prayer campaigns stand between the head
+ * 1.9, the rework: readers' own prayer campaigns stand between the head
  * and the wall (components/campaigns/PrayTogetherCampaigns.tsx), the one the
  * reader carries as that same card. That part draws nothing, and asks nobody
  * anything, unless campaigns are open for this reader, so with the switch

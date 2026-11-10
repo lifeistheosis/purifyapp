@@ -13,7 +13,7 @@ export type ChurchPrayer = {
   text: string;
   /**
    * The public-domain printing: "Hapgood, Service Book (1906), p. 91". Empty
-   * only for the one line the app itself says over the living (1.9.1,
+   * only for the one line the app itself says over the living (1.9,
    * lib/prayers/commemoration.ts), which has no printing to name: the card
    * then draws no line for it.
    */

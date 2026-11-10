@@ -402,7 +402,7 @@ export function isSupabaseStorageUrl(value: string): boolean {
 }
 
 /**
- * /api/campaigns POST body: start a prayer campaign (the rework of 1.9.1,
+ * /api/campaigns POST body: start a prayer campaign (the rework of 1.9,
  * lib/campaigns/model.ts). The client proposes the human fields and nothing
  * else: who made it, its state, its dates past the first day and every
  * moderation column are the server's.

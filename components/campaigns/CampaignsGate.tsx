@@ -6,7 +6,7 @@ import { NotFoundScreen } from "@/components/layout/NotFoundScreen";
 import { useCampaignsAnswer } from "@/lib/campaigns/useCampaignsOpen";
 
 /**
- * The door of every campaign page (1.9.1). A page shown in the apps cannot
+ * The door of every campaign page (1.9). A page shown in the apps cannot
  * ask the server who is reading it (AGENTS.md), so the page's file can only
  * know whether campaigns are in this build at all, and answers 404 itself
  * when they are not (lib/campaigns/flags.ts). Whether they are open for THIS

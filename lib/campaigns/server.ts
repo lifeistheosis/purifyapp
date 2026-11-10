@@ -29,7 +29,7 @@ import {
 } from "./model";
 import { reworkAbsent } from "./opening";
 
-// Prayer campaigns on the server (the rework of 1.9.1): every read and every
+// Prayer campaigns on the server (the rework of 1.9): every read and every
 // write a route makes. Service role throughout, because the table answers no
 // one else: the SQL of the rework drops July's public policy
 // (docs/1.9-build/notes/campaigns-fable.md, 5.2), which let anyone holding

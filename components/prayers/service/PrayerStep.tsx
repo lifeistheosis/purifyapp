@@ -63,7 +63,7 @@ export function PrayerStep({
   title: string;
   /** The rule it was brought from, in a reader's own rule. */
   from?: string;
-  /** One line over its name, already in the reader's words: why it stands here (a campaign's psalm, 1.9.1). */
+  /** One line over its name, already in the reader's words: why it stands here (a campaign's psalm, 1.9). */
   note?: string;
   contentLang: string;
   /** False for a step that is no prayer of the prayer book (a reader's own names). */

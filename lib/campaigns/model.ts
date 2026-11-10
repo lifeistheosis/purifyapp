@@ -1,4 +1,4 @@
-// Prayer campaigns, reworked (1.9.1): what a campaign is, and its rules.
+// Prayer campaigns, reworked (1.9): what a campaign is, and its rules.
 //
 // The owner, 2026-11-10: "creating a prayer campaign for whatever, you know,
 // the reposed, your sickness, your school exam. And users can participate in

@@ -4,7 +4,7 @@ import type { SupabaseClient } from "@supabase/supabase-js";
 
 import { reworkAbsent } from "./opening";
 
-// Keeping prayer campaigns only as long as was said (the rework of 1.9.1),
+// Keeping prayer campaigns only as long as was said (the rework of 1.9),
 // once an hour from the maintenance heartbeat (lib/ops/maintenance.ts), and
 // only in a build that has campaigns.
 //

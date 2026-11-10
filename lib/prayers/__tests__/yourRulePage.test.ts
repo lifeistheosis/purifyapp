@@ -330,10 +330,10 @@ describe("the page as the owner picked it, r3-27 A", () => {
   });
 
   it("draws nothing for prayer campaigns while they are closed: the one part they bring is empty then", () => {
-    // 1.9 (note 70) kept the campaigns' place on this page in words only.
-    // 1.9.1, the rework, draws it behind the switch (his "ok to all" of
-    // 2026-11-10, item 116): the names mount one part, CampaignNames, and
-    // the page says nothing else of campaigns.
+    // 1.9 (note 70) at first kept the campaigns' place on this page in words
+    // only. The rework, in 1.9 too, draws it behind the switch (his "ok to
+    // all ensure its all in v1.9" of 2026-11-10): the names mount one part,
+    // CampaignNames, and the page says nothing else of campaigns.
     for (const src of [builder, head, steps]) expect(src).not.toMatch(/campaign/i);
     expect(names).toContain("<CampaignNames Medallion={Medallion} />");
     expect(names.replace(/CampaignNames/g, "").replace(/@\/components\/campaigns\//g, "")).not.toMatch(/campaign/i);
