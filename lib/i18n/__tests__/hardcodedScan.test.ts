@@ -7,10 +7,21 @@
 //
 // What would go wrong if this broke: a check that fails on code (and is
 // ignored), or one that passes a screen with English nailed into it.
+//
+// And it runs here, over the folders already in the catalog (the arbiter's
+// yes of 2026-11-10): npm run i18n:check sat outside the unit tests, which is
+// how six false findings piled up unseen. Words a reader sees belong in the
+// catalogs, so a chat that types English into one of these screens is stopped
+// here, with the file, the words and what to do.
+
+import fs from "node:fs";
+import path from "node:path";
 
 import { describe, expect, it } from "vitest";
 
-import { scanSource } from "@/scripts/i18n/scan.mjs";
+import { CONVERTED_DIRS, scanDirs, scanSource } from "@/scripts/i18n/scan.mjs";
+
+const ROOT = path.resolve(__dirname, "..", "..", "..");
 
 const texts = (source: string) => scanSource(source).map((h: { text: string }) => h.text);
 
@@ -64,5 +75,26 @@ describe("the hardcoded-string scan", () => {
 
   it("lets through what the allowlist names", () => {
     expect(scanSource(`<p>Open Purify on your phone</p>`, ["Purify"])).toEqual([]);
+  });
+});
+
+describe("the screens already in the catalog", () => {
+  it("are all still where the list says", () => {
+    // A folder renamed away from the list would be skipped without a word.
+    expect(CONVERTED_DIRS.length).toBeGreaterThan(40);
+    const missing = CONVERTED_DIRS.filter((dir: string) => !fs.existsSync(path.join(ROOT, dir)));
+    expect(missing, "scripts/i18n/scan.mjs lists a folder that is gone: give it its new name").toEqual([]);
+  });
+
+  it("have no English typed into them", () => {
+    const found = scanDirs(ROOT, CONVERTED_DIRS) as Array<{ file: string; hits: Array<{ line: number; text: string }> }>;
+    const lines = found.flatMap(({ file, hits }) => hits.map((h) => `  ${file}, line ${h.line}: "${h.text}"`));
+    const message = [
+      "Words a reader sees, typed into a screen whose words live in the catalog:",
+      ...lines,
+      'Put them in the catalog: a key in lib/i18n/messages/en.json, shown with t("key") or <T k="key" />. A language without the line shows the English until it is translated.',
+      "If a find is code and not words, teach scripts/i18n/scan.mjs to tell (and add the line to this file). A brand name or a citation goes in scripts/i18n/scan-allowlist.json.",
+    ].join("\n");
+    expect(lines, message).toEqual([]);
   });
 });

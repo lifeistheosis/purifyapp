@@ -16,81 +16,13 @@
 import fs from "node:fs";
 import path from "node:path";
 
-import { scanSource } from "./i18n/scan.mjs";
+import { CONVERTED_DIRS, scanDirs } from "./i18n/scan.mjs";
 
 const ROOT = path.resolve(path.dirname(new URL(import.meta.url).pathname.replace(/^\/([A-Za-z]:)/, "$1")), "..");
 const MESSAGES_DIR = path.join(ROOT, "lib", "i18n", "messages");
-const ALLOWLIST_PATH = path.join(ROOT, "scripts", "i18n", "scan-allowlist.json");
 
-// Directories whose UI strings have been fully extracted. Grows one
-// surface at a time through Phase 2; the scan hard-fails on literals
-// found under these.
-const CONVERTED_DIRS = [
-  "components/layout",
-  "components/nav",
-  "components/i18n",
-  "components/today",
-  "components/calendar",
-  "components/fasting",
-  "components/prayers",
-  "components/discover",
-  "app/(app)/prayers",
-  "components/bible",
-  "app/(app)/bible",
-  "components/saints",
-  "app/(app)/saints",
-  "app/(app)/councils",
-  "app/(app)/history",
-  "app/(app)/theology",
-  "app/(app)/topics",
-  "app/(app)/apologetics",
-  "app/(app)/heresies",
-  "app/(app)/discover",
-  "app/(app)/reading",
-  "app/(app)/saved",
-  "app/(app)/florilegium",
-  "app/(app)/chants",
-  "app/(app)/walkthroughs",
-  "app/(app)/account",
-  "app/(auth)",
-  "app/(app)/premium",
-  "app/(app)/pricing",
-  "app/(app)/plan",
-  "app/(app)/whats-new",
-  "app/(app)/faq",
-  "app/(app)/about",
-  "app/(app)/support",
-  "components/profile",
-  "components/account",
-  "components/premium",
-  "components/onboarding",
-  "components/pwa",
-  "components/mobile",
-  "app/(app)/shop",
-  "app/(app)/campaigns",
-  "components/shop",
-  "components/campaigns",
-  "components/gifts",
-  "components/marketing",
-  "components/reader",
-  "components/ui",
-  "components/native",
-  "components/analytics",
-  "components/feature",
-  "components/content",
-  "components/history",
-  "components/florilegium",
-  "components/theology",
-  "components/saved",
-  "components/reading",
-  "components/chants",
-  "components/walkthrough",
-  "app/(app)/parishes",
-  "components/parishes",
-  "components/widget",
-  "components/start",
-  "app/(app)/start",
-];
+// The directories whose UI strings have been fully extracted (the ratchet),
+// with the reading of a file: scripts/i18n/scan.mjs.
 
 const args = new Set(process.argv.slice(2));
 const asJson = args.has("--json");
@@ -212,45 +144,15 @@ coverage.sort((a, b) => b.pct - a.pct);
 // literals (brand names, citations, punctuation-only nodes).
 const scanResults = [];
 if (doScan || triageDirs) {
-  const allowlist = fs.existsSync(ALLOWLIST_PATH)
-    ? JSON.parse(fs.readFileSync(ALLOWLIST_PATH, "utf8"))
-    : { substrings: [], files: [] };
-
-  // What counts as words a reader sees, and what is code read as words, is
-  // scripts/i18n/scan.mjs (held both ways by lib/i18n/__tests__/hardcodedScan.test.ts).
-  function scanFile(rel) {
-    return scanSource(fs.readFileSync(path.join(ROOT, rel), "utf8"), allowlist.substrings);
-  }
-
-  function* walk(dir) {
-    for (const entry of fs.readdirSync(dir, { withFileTypes: true })) {
-      const full = path.join(dir, entry.name);
-      if (entry.isDirectory()) yield* walk(full);
-      // JSX copy lives in .tsx; scanning .ts only yields type-position
-      // false positives.
-      else if (entry.name.endsWith(".tsx")) yield full;
-    }
-  }
-
-  for (const relDir of triageDirs ?? CONVERTED_DIRS) {
-    const abs = path.join(ROOT, relDir);
-    if (!fs.existsSync(abs)) continue;
-    for (const file of walk(abs)) {
-      const rel = path.relative(ROOT, file).replace(/\\/g, "/");
-      if (allowlist.files.includes(rel)) continue;
-      if ((allowlist.dirPrefixes ?? []).some((d) => rel.includes(d))) continue;
-      const hits = scanFile(rel);
-      if (hits.length > 0) {
-        scanResults.push({ file: rel, hits });
-        if (triageDirs) {
-          console.log(`${rel} (${hits.length}):`);
-          for (const h of hits.slice(0, 12)) console.log(`   L${h.line} ${h.text}`);
-        } else {
-          failures.push(
-            `${rel}: ${hits.length} hardcoded string(s) in a converted directory (first: line ${hits[0].line} "${hits[0].text}")`,
-          );
-        }
-      }
+  for (const { file: rel, hits } of scanDirs(ROOT, triageDirs ?? CONVERTED_DIRS)) {
+    scanResults.push({ file: rel, hits });
+    if (triageDirs) {
+      console.log(`${rel} (${hits.length}):`);
+      for (const h of hits.slice(0, 12)) console.log(`   L${h.line} ${h.text}`);
+    } else {
+      failures.push(
+        `${rel}: ${hits.length} hardcoded string(s) in a converted directory (first: line ${hits[0].line} "${hits[0].text}")`,
+      );
     }
   }
 }

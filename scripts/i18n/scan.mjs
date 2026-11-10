@@ -18,6 +18,115 @@
 //     blanked like a comment before the scan reads the file.
 // And code's operators (`!=`, `==`, `??`, `?.`) never stand in prose.
 
+import fs from "node:fs";
+import path from "node:path";
+
+/**
+ * Directories whose UI strings have been fully extracted. Grows one surface at
+ * a time; the scan fails on words typed into a file under these, in
+ * npm run i18n:check --scan and in lib/i18n/__tests__/hardcodedScan.test.ts.
+ */
+export const CONVERTED_DIRS = [
+  "components/layout",
+  "components/nav",
+  "components/i18n",
+  "components/today",
+  "components/calendar",
+  "components/fasting",
+  "components/prayers",
+  "components/discover",
+  "app/(app)/prayers",
+  "components/bible",
+  "app/(app)/bible",
+  "components/saints",
+  "app/(app)/saints",
+  "app/(app)/councils",
+  "app/(app)/history",
+  "app/(app)/theology",
+  "app/(app)/topics",
+  "app/(app)/apologetics",
+  "app/(app)/heresies",
+  "app/(app)/discover",
+  "app/(app)/reading",
+  "app/(app)/saved",
+  "app/(app)/florilegium",
+  "app/(app)/chants",
+  "app/(app)/walkthroughs",
+  "app/(app)/account",
+  "app/(auth)",
+  "app/(app)/premium",
+  "app/(app)/pricing",
+  "app/(app)/plan",
+  "app/(app)/whats-new",
+  "app/(app)/faq",
+  "app/(app)/about",
+  "app/(app)/support",
+  "components/profile",
+  "components/account",
+  "components/premium",
+  "components/onboarding",
+  "components/pwa",
+  "components/mobile",
+  "app/(app)/shop",
+  "app/(app)/campaigns",
+  "components/shop",
+  "components/campaigns",
+  "components/gifts",
+  "components/marketing",
+  "components/reader",
+  "components/ui",
+  "components/native",
+  "components/analytics",
+  "components/feature",
+  "components/content",
+  "components/history",
+  "components/florilegium",
+  "components/theology",
+  "components/saved",
+  "components/reading",
+  "components/chants",
+  "components/walkthrough",
+  "app/(app)/parishes",
+  "components/parishes",
+  "components/widget",
+  "components/start",
+  "app/(app)/start",
+];
+
+/** Intentional literals the scan lets through: brand names, citations, whole files. */
+export const ALLOWLIST_FILE = path.join("scripts", "i18n", "scan-allowlist.json");
+
+export function readAllowlist(root) {
+  const file = path.join(root, ALLOWLIST_FILE);
+  return fs.existsSync(file) ? JSON.parse(fs.readFileSync(file, "utf8")) : { substrings: [], files: [] };
+}
+
+function* tsxUnder(dir) {
+  for (const entry of fs.readdirSync(dir, { withFileTypes: true })) {
+    const full = path.join(dir, entry.name);
+    if (entry.isDirectory()) yield* tsxUnder(full);
+    // JSX copy lives in .tsx; scanning .ts only yields type-position false positives.
+    else if (entry.name.endsWith(".tsx")) yield full;
+  }
+}
+
+/** Every .tsx under these directories (relative to root), scanned with the allowlist: [{ file, hits }]. */
+export function scanDirs(root, dirs, allowlist = readAllowlist(root)) {
+  const results = [];
+  for (const relDir of dirs) {
+    const abs = path.join(root, relDir);
+    if (!fs.existsSync(abs)) continue;
+    for (const full of tsxUnder(abs)) {
+      const file = path.relative(root, full).replace(/\\/g, "/");
+      if ((allowlist.files ?? []).includes(file)) continue;
+      if ((allowlist.dirPrefixes ?? []).some((d) => file.includes(d))) continue;
+      const hits = scanSource(fs.readFileSync(full, "utf8"), allowlist.substrings ?? []);
+      if (hits.length > 0) results.push({ file, hits });
+    }
+  }
+  return results;
+}
+
 /** User-facing string props. */
 const PROP_RE = /(?:title|aria-label|placeholder|alt|label)=\s*"([^"]{3,})"/g;
 /**
