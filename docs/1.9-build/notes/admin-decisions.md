@@ -157,3 +157,18 @@ live with its feature (lib/admin/__tests__/privacyLines.test.ts holds them):
    screen counts, and said nothing of error reports or searches. "And the
    others described above" was added the same day, at the arbiter's word, so
    that the eight testing counts of 140, kept the same way, are covered.)
+
+## After 1.9: the panel
+
+1. **A row for a waiting picture** (the campaigns chat's 13.4, noted
+   2026-11-10; nothing before pictures open). Campaign pictures ship switched
+   off (`pictures` in `lib/campaigns/parts.ts`). When they open, the panel's
+   one queue (`lib/admin/communityQueue.ts`) gains a row for each picture
+   that waits: a new one, one hidden by readers' reports, or one still shown
+   that readers have reported. It reads `readWaitingPictures`
+   (`lib/campaigns/pictures.ts`); its two buttons are the decisions there,
+   clear (`approvePicture`) and take down (`removePictureAsModerator`, with
+   the ten-second Undo every removal has); and `waitingKeys` counts it, so
+   the rail's badge stays the number of rows. Until then the moderators' page
+   carries them, for the team alone. Not before: a row would show a part that
+   is switched off.
