@@ -164,9 +164,13 @@ Why: St John of Damascus draws the same lesson from the same verse and adds 1 Co
 
 Place: section 29, paragraph 0 (51 words of the paragraph's 480).
 
-> For I hold it apostolic to abide also by the unwritten traditions. "I praise you," it is said, "that ye remember me in all things, and keep the ordinances as I delivered them to you;" and "Hold fast the traditions which ye have been taught whether by word, or our Epistle.
+> For I hold it apostolic to abide also by the unwritten traditions. "I praise you," it is said, "that ye remember me in all things, and keep the ordinances as I delivered them to you;" and "Hold fast the traditions which ye have been taught whether by word, or our Epistle."
 
 Why: An alternate, also St Basil, two chapters on: I hold it apostolic to abide also by the unwritten traditions, with the same two verses.
+
+## Three slips in the text as held
+
+Three small slips stand inside the proposed passages, as the library's files hold them: a missing space in A1 (after "the Lord is that Spirit;"), the spelling "unchangableness" in A2, and "un originated" as two words in B1. They have not been checked against the printed edition, so they are printed here as held, and the chat that has the Fathers' works is told. If the edition prints them otherwise, the files are mended first and the passages follow.
 
 ## What applying his answer takes
 
