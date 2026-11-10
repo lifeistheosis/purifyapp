@@ -3,7 +3,6 @@
 import { useTranslate } from "@/components/i18n/MessagesProvider";
 import { useReaderPrefs } from "@/components/reader/ReaderPrefs";
 import { LINE_SIZE, lineFont } from "@/components/prayers/service/PrayerStep";
-import { Check } from "@/components/ui/icons/Check";
 import { cn } from "@/lib/cn";
 import { DEPARTED_PRAYER, departedPrayer, wallLine } from "@/lib/prayers/commemoration";
 import type { WallName } from "@/lib/prayers/wallNames";
@@ -21,26 +20,22 @@ type Named = { id: string; name: string };
  * it asked with. Over the departed, the Church's prayer, Hapgood's "O God of
  * spirits", with their names where the edition prints NN.
  *
- * "Mark prayed" marks it for today, as a prayer is marked, and lets the names
- * from the wall go; they stay on this page, marked, until it is left.
+ * Nothing is ticked under it since 1.9 (build 89 note 7, the arbiter's yes of
+ * 2026-11-10): the Amen at the end of the page marks it with the rule, and
+ * lets the names from the wall go; they stay on this page, marked, until it
+ * is left, and the end of the page says so (PrayerRuleReader.tsx).
  */
 export function CommemorationStep({
   stepId,
   living,
   wall,
   departed,
-  done,
-  hydrated,
-  onToggle,
 }: {
   /** "names" where it stands as the reader's own step in their rule. */
   stepId: string;
   living: readonly Named[];
   wall: readonly WallName[];
   departed: readonly Named[];
-  done: boolean;
-  hydrated: boolean;
-  onToggle: () => void;
 }) {
   const { t } = useTranslate();
   const { size, font, leadingValue } = useReaderPrefs();
@@ -101,32 +96,6 @@ export function CommemorationStep({
           </p>
         </div>
       ) : null}
-
-      <div data-step-actions className="mt-6">
-        <button
-          type="button"
-          onClick={onToggle}
-          disabled={!hydrated}
-          aria-pressed={done}
-          className={cn(
-            "tap-press inline-flex min-h-11 items-center gap-2.5 rounded-pill px-3 font-sans text-detail motion-safe:transition-colors disabled:opacity-40",
-            done ? "text-paper" : "text-paper/65 hover:text-paper",
-          )}
-        >
-          <span
-            aria-hidden
-            className={cn("grid size-6 shrink-0 place-items-center rounded-full", done ? "bg-paper text-night" : "ring-1 ring-inset ring-paper/35")}
-          >
-            {done ? <Check size={14} /> : null}
-          </span>
-          {done ? t("shop.prayedToday") : t("prayers.reader.markPrayed")}
-        </button>
-        {done && wall.length > 0 ? (
-          <p role="status" className="mt-1 font-sans text-caption text-paper/50">
-            {t("prayers.wall.left")}
-          </p>
-        ) : null}
-      </div>
     </section>
   );
 }

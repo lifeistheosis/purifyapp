@@ -202,25 +202,12 @@ export function PrayerRuleReader({
     }
   }
 
-  /** Mark "Those I pray for", or take the mark back, with the names from the wall in it. */
-  function toggleCommemoration() {
-    const marking = !commemorationDone;
-    const next = new Set(done);
-    if (marking) next.add(commemorationId);
-    else next.delete(commemorationId);
-    persist(next);
-    if (wallIds.length > 0) updateWallNames((list) => (marking ? markWallPrayed(list, wallIds) : unmarkWallPrayed(list, wallIds)));
-  }
-
   const commemorationStep = commemorated ? (
     <CommemorationStep
       stepId={commemorationId}
       living={livingHere}
       wall={wall}
       departed={departedHere}
-      done={commemorationDone}
-      hydrated={hydrated}
-      onToggle={toggleCommemoration}
     />
   ) : null;
 
@@ -289,6 +276,11 @@ export function PrayerRuleReader({
               <p role="status" className="font-serif text-body italic leading-[1.6] text-paper/80">
                 {t("prayers.reader.complete")}
               </p>
+              {/* The names from the prayer wall were marked with the rule and
+                  leave the reader's prayers now; said where they were let go. */}
+              {commemorationDone && wall.length > 0 ? (
+                <p className="font-sans text-caption text-paper/55">{t("prayers.wall.left")}</p>
+              ) : null}
               <button
                 type="button"
                 onClick={() => {

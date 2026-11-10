@@ -98,13 +98,14 @@ describe("the line being prayed lit, the rest dim", () => {
     }
     // No circle and no bookmark under each prayer since 1.9 (build 89 note 7,
     // his "ok to all" of 2026-11-10): one Amen at the end of the page marks
-    // the whole rule (prayerPages.test.ts). The names keep their own mark,
-    // apart from the words, as they had it.
-    const step = code(STEP);
-    expect(step).not.toContain("data-step-actions");
-    expect(step).not.toContain('t("prayers.reader.markPrayed")');
-    expect(step).not.toContain("togglePrayerBookmark(");
-    expect(code(NAMES)).toContain("data-step-actions");
+    // the whole rule (prayerPages.test.ts). The names step lost its own mark
+    // the same day (the arbiter's yes): the Amen marks it with the rule.
+    for (const file of [STEP, NAMES]) {
+      const src = code(file);
+      expect(src, file).not.toContain("data-step-actions");
+      expect(src, file).not.toContain('t("prayers.reader.markPrayed")');
+    }
+    expect(code(STEP)).not.toContain("togglePrayerBookmark(");
   });
 
   it("steps the other prayers back with motion on only: their lines and names, never a caption or an action", () => {

@@ -146,6 +146,10 @@ describe("a prayer page", () => {
     expect(end).toMatch(/persist\(new Set\(\[\.\.\.rule\.prayers\.map\(\(p\) => p\.id\)/);
     expect(end).toContain('t("prayers.reader.complete")');
     expect(end).toContain('t("prayers.rope.reset")');
+    // The names go with the rule, and the end says the wall's names leave now.
+    expect(end).toMatch(/\.\.\.\(commemorated \? \[commemorationId\] : \[\]\)/);
+    expect(end).toContain("markWallPrayed(list, wallIds)");
+    expect(end).toContain('t("prayers.wall.left")');
     expect(reader).toContain("writeTodayDone(rule.id");
     expect(reader).toContain("markRuleCompletedToday(rule.id)");
     expect(reader).toContain("softTick()");
