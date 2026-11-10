@@ -646,10 +646,10 @@ export const ENTRIES: Readonly<Record<WorkKey, ReadingEntry>> = {
     scope: "complete",
     themes: [
       t("holyWeek", "Book 12 on John 18:28 to 19: the trial before Pilate, the Cross and the burial", {
-        sections: [[1017, 1052]],
+        sections: [[1017, 1061]],
         part: { kind: "book", from: 12 },
       }),
-      t("pascha", "Book 12 on John 20: the empty tomb, Mary Magdalene, and Thomas", { sections: [[1053, 1099]], part: { kind: "book", from: 12 } }),
+      t("pascha", "Book 12 on John 20: the empty tomb, Mary Magdalene, and Thomas", { sections: [[1062, 1092]], part: { kind: "book", from: 12 } }),
     ],
     review: R,
   },

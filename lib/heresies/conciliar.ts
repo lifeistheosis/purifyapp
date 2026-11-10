@@ -512,7 +512,7 @@ export const CONCILIAR_HERESIES: Heresy[] = [
         workSlug: "commentary-on-john",
         sectionN: 17,
         stance: "refutes",
-        gloss: "On John 3:35: the misconceit of Eunomius' party, answered from the Gospel.",
+        gloss: "On John 1:1: the misconceit of Eunomius' party, answered from the Gospel.",
       },
     ],
     curatedBy: "Editorial",

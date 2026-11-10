@@ -9037,6 +9037,57 @@ await section(61, async () => {
   }
 });
 
+// ---- 62. St Cyril on John's sections named by the verse he is on (1.9,
+// quick win 14A, F-49). The ingest named each by the first quotation of John
+// in it; lib/saints/__tests__/cyrilJohnPlaces.test.ts holds the titles and
+// their copies, and this reads them where a reader meets them: the work's
+// own headings, the rail's place as the apps are shipped it, a Theology
+// page's reference and a heresy page's gloss.
+await section(62, async () => {
+  console.log("\n62. St Cyril on John: each section named by the verse he is on, on the work, the rail, Theology and a heresy page (F-49)");
+  const { ctx, page, errors } = await open({ width: 390, height: 844, phone: true });
+  const heading = async (n) => {
+    await go(page, "/");
+    await page.waitForTimeout(300);
+    await go(page, `/saints/cyril-of-alexandria/commentary-on-john/#s${n}`);
+    await page.waitForFunction((n) => !!document.getElementById(`p-${n}-0`), n, { timeout: 20000 }).catch(() => {});
+    await page.waitForTimeout(600);
+    return page.evaluate((n) => (document.getElementById(`s${n}`)?.querySelector("[data-work-head]")?.textContent ?? "").replace(/\s+/g, " ").trim(), n);
+  };
+  const preface = await heading(1);
+  const eunomius = await heading(17);
+  const book5 = await heading(453);
+  const cross = await heading(1053);
+  must(/Preface/.test(preface) && !/John 12:35/.test(preface), `Book 1's opening is its Preface, not "on John 12:35" (${preface})`);
+  must(/John 1:1\b/.test(eunomius) && !/3:35/.test(eunomius), `the answer to Eunomius is under John 1:1, not 3:35 (${eunomius})`);
+  must(/John 7:25\b/.test(book5) && !/7:39/.test(book5), `Book 5 opens on John 7:25, not 7:39 (${book5})`);
+  must(/John 19:30\b/.test(cross) && !/20:31/.test(cross), `the section after "It is finished" is still on John 19:30, not 20:31 (${cross})`);
+
+  // The rail's place, as the apps carry it: the note on John 7:39 is from Book 5's opening, on 7:25.
+  const rail = await page.evaluate(async () => {
+    const r = await fetch("/bible-data/commentary/john/7.json");
+    if (!r.ok) return { status: r.status };
+    const d = await r.json();
+    // Two of its notes are from sections truly on 7:39; the one from section 453 is not.
+    const notes = (d["39"] ?? []).filter((n) => n.at?.work === "cyril-of-alexandria/commentary-on-john" && n.at.section === 453);
+    return { status: r.status, places: notes.map((n) => n.at.place) };
+  });
+  must(rail.status === 200 && rail.places?.length === 1 && rail.places[0] === "Book 5, on John 7:25", `the rail's note on John 7:39 from Book 5's opening names its place as Book 5, on John 7:25 (${JSON.stringify(rail)})`);
+
+  await go(page, "/theology/theosis/read/");
+  await page.waitForTimeout(1200);
+  // textContent: the quotations stand far down a long page, not yet laid out, so innerText skips them.
+  const theosis = await page.evaluate(() => document.body.textContent ?? "");
+  must(theosis.includes("Book 9, on John 14:20") && !theosis.includes("Book 9, on John 15:15"), `Theosis quotes St Cyril from Book 9, on John 14:20, not 15:15`);
+
+  await go(page, "/heresies/eunomianism/");
+  await page.waitForTimeout(1200);
+  const heresy = await page.evaluate(() => document.body.innerText);
+  must(heresy.includes("On John 1:1: the misconceit of Eunomius") && !heresy.includes("On John 3:35"), `the Eunomianism page cites St Cyril on John 1:1, not 3:35`);
+  must(errors.length === 0, `no page errors${errors.length ? ": " + errors.slice(0, 2).join(" | ") : ""}`);
+  await ctx.close();
+});
+
 await browser.close();
 if (!everySection) console.log(`\nOnly the sections chosen were walked: ${walked.join(", ") || "none"}.`);
 console.log(failed ? `\n${failed} check(s) failed.` : "\nEvery check passed.");

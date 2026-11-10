@@ -1920,6 +1920,42 @@ findings:
       off takes it off both, as always), and one made since is the half's it
       was made on (lib/saints/sharedSections.ts; held, with every work's
       section numbers used once, by lib/saints/__tests__/sharedSections.test.ts).
+      2026-11-10 (1.9, quick win 14A): St Cyril on John's section titles set
+      from the printed commentary. The ingest (scripts/ingest-cyril-john.mjs)
+      named each section by the first italic quotation of John in it, so 505
+      of the 1,066 titles named a verse Cyril quotes in passing, back or
+      forward ("Book 1, on John 12:35" over his preface; "Book 1, on John
+      3:35" over his answer to Eunomius on 1:1). Each is now the lemma in
+      force where its section begins, read from tertullian.org's
+      transcription of LFC 43 and 48 and checked against the app's Bible
+      (scripts/lib/lemma-verify.mjs): 754 lemma lines found and 697 placed,
+      570 by their printed verse numbers (31 of them one verse earlier than
+      printed, where the transcription's numbers run on by one, as through
+      John 3, or the lemma begins inside the verse before), 22 by a printed
+      chapter, 104 by their words between the printed ones, and one Cyril
+      quoting 2:14 again after 2:16; the 57 left are headings, index lines
+      and other books quoted. Checked by hiding the numbers: the 570 placed
+      by their words alone agree in 556, differ in one (1:3 or 1:4, where
+      the divisions differ) and leave 13 unplaced. A title already inside
+      the passage being expounded was kept (561); a changed one names the
+      passage's first verse, or continues the passage the section before it
+      names (500); Book 1's first four sections are "Book 1, Preface", the
+      library's form for an opening, its fifth is on John 1:1, and section
+      453 is on 7:25 (Book 5's table of chapters, then its first lemma, read
+      by hand). Only titles changed: no paragraph moved and no section was
+      renumbered, so no reader's mark moved (this list said relabelling would
+      move them; it does not). The contents ran back through the Gospel 284
+      times and now runs back 4, each named, and every book stays inside its
+      stretch of John. Followed by: the rail's places (513 notes, 4,745 of
+      4,745 still placed) and three plan sayings (scripts/place-commentary.mjs);
+      three Theology references (Book 6 on 10:10, not 6:40; Book 9 on 14:20,
+      not 15:15; Book 2 on 1:32, not 1:31, an older slip); the Eunomianism
+      page's gloss (on John 1:1, not 3:35); and the reading room's two Book 12
+      themes, set to the chapters their words name (18:28 to 19, sections 1017
+      to 1061; John 20, 1062 to 1092, which had run on into John 21).
+      lib/saints/__tests__/cyrilJohnPlaces.test.ts holds the titles, the
+      books' stretches, the four steps back and every copy; five of its seven
+      checks fail on the old titles.
       STILL OPEN: the quotation marks still to settle (18 paragraphs where CCEL
       itself differs, the 28 paragraph-opening marks of Antony's speeches and
       4 in 2 Corinthians that CCEL never closes, 6 lost double marks at
@@ -1928,10 +1964,17 @@ findings:
       Galatians, Philippians, Colossians, 1 Thessalonians, 2 Timothy and the
       Harmony); Cyril on John and the Morals read against the printed page, as
       Cyril on Luke was (their words are their transcriptions', so what is
-      left is fidelity to the page, not words given to the wrong hand); Cyril
-      on John's section titles, which its ingest took from italics it matched
-      to the wrong verses ("Book 1, on John 12:35", sections opening
-      mid-sentence), whose relabelling would move readers' marks; and a test
+      left is fidelity to the page, not words given to the wrong hand); from
+      Cyril on John's ingest, three more: its sections begin where it found a
+      quotation, often mid-sentence (moving their bounds would move readers'
+      marks); the openings of seven books are not in the library, about 1,370
+      words (Book 12's first three paragraphs, 806, and the opening of Cyril's
+      preface to Book 1, 183, the largest); and Book 5's table of chapters is
+      read in as the words of its first section (453, paragraphs 0 to 3, and
+      the rail's copy at John 7:39); on the rail, 518 of its 1,067 notes from
+      Cyril on John stand on the verse the ingest took them for, not the one
+      their passage expounds (440 of them in another chapter or more than
+      three verses away); and a test
       that holds each library section to its volume, which needs the volumes
       kept offline.
     evidence: data/saints/*/*.json (sections and their voice); data/bible/commentary; lib/reading/entries.ts; lib/saints/saints.ts; data/reading/quoted-sources.json; lib/reading/__tests__/quotedWords.test.ts; CCEL transcriptions of ANF 1, 5, 6 and NPNF I 6 to 14, II 1 to 14; Schaff, Creeds of Christendom II; Hapgood, Service Book (1906)
