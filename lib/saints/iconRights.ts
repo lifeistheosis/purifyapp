@@ -1231,6 +1231,36 @@ export const ICON_RIGHTS: Record<string, IconRights> = {
     license: "Public domain",
     evidenceUrl: "https://commons.wikimedia.org/wiki/File:Basil_of_Caesarea.jpg",
   },
+  // In place of an unsourced modern Greek icon (2026-11-10). Commons holds the
+  // file at 300 pixels wide; this is its 250-pixel standard thumbnail, kept at
+  // its own size (scripts/fetch-saint-icons.mjs asks for no original).
+  "gregory-theologian.v2.jpg": {
+    status: "verified",
+    inspectedOn: "2026-11-10",
+    alt: "A painted icon of a balding bishop with a long brown beard, his head inclined, within a gold halo, his name lettered at the top left; in a white phelonion covered with red crosses and an omophorion with blue crosses, blessing with one hand and holding a jewelled red and gold Gospel book.",
+    work: "Icon of St Gregory the Theologian, Russian, as the Commons page describes it",
+    artist: "Unknown",
+    workDate: "16th century",
+    source: "Wikimedia Commons (from days.pravoslavie.ru)",
+    license: "Public domain",
+    evidenceUrl: "https://commons.wikimedia.org/wiki/File:Gregory_of_Nazianzus.jpg",
+  },
+  // In place of a 2018 Commons upload naming no author, on terms the icon
+  // tool's gate does not take (2026-11-10). Cut from his books' cover, as
+  // November's St Philip's and St Matthew's are, so he wears one picture
+  // everywhere: the reading room, Today and his own page. The arbiter's rule:
+  // a public-domain icon of him with a known date, or the portrait.
+  "seraphim-of-sarov.v2.jpg": {
+    status: "verified",
+    inspectedOn: "2026-11-10",
+    alt: "A painted icon of an old monk with long white hair and a full white beard, in a dark mantle and a pale stole with gold crosses, his right hand on his chest, within a halo of painted flowers on chased gold.",
+    work: "Icon of St Seraphim of Sarov, perhaps from the workshop of the Diveyevo monastery, oil on panel (the picture on his books' covers, lib/reading/authorCovers.ts)",
+    artist: "Unknown Russian icon painter",
+    workDate: "After 1903",
+    source: "Wikimedia Commons",
+    license: "Public domain",
+    evidenceUrl: "https://commons.wikimedia.org/wiki/File:Seraphim_of_Sarov_(after_1903,_priv.coll).jpg",
+  },
 };
 
 /**
@@ -1338,8 +1368,6 @@ export const UNVERIFIED_ICONS: Record<string, string> = {
     "No source, licence or attribution recorded. Fetched before scripts/fetch-missing-icons.mjs had a licence gate. Referenced by SAINTS.iconUrl for florian-of-lorch. 332x420 JPG, 32 KB. Not yet opened and inspected.",
   "gregory-of-nyssa.v2.jpg":
     "No source, licence or attribution recorded. Fetched before scripts/fetch-missing-icons.mjs had a licence gate. Referenced by SAINTS.iconUrl for gregory-of-nyssa and AUTHOR_ICONS. 258x420 JPG, 28 KB, cut on 2026-10-17 from the 266x420 file, inside the white at its top left (1.7.1). Its source is not yet looked into.",
-  "gregory-theologian.jpg":
-    "No source, licence or attribution recorded. Fetched before scripts/fetch-missing-icons.mjs had a licence gate. Referenced by SAINTS.iconUrl for gregory-theologian and AUTHOR_ICONS. 300x420 JPG, 30 KB. Opened 2026-11-10 (the icon batches): a modern Greek icon of a white-bearded bishop holding an open scroll, his name in Greek in red. Not found on Commons by search and picture hash. To be swapped for a public-domain icon, or the plate.",
   "hermione-of-ephesus.jpg":
     "No source, licence or attribution recorded. Fetched before scripts/fetch-missing-icons.mjs had a licence gate. Referenced by SAINTS.iconUrl for hermione-of-ephesus. 322x420 JPG, 22 KB. Not yet opened and inspected.",
   "hosius-of-cordova.v2.jpg":
@@ -1410,8 +1438,6 @@ export const UNVERIFIED_ICONS: Record<string, string> = {
     "No source, licence or attribution recorded. Fetched before scripts/fetch-missing-icons.mjs had a licence gate. Referenced by SAINTS.iconUrl for quadratus-the-apologist. 330x404 JPG, 22 KB, cut on 2026-10-17 from the 351x420 file, inside the white border it was scanned on (1.7.1). Its source is not yet looked into.",
   "sava-of-serbia.jpg":
     "No source, licence or attribution recorded. Fetched before scripts/fetch-missing-icons.mjs had a licence gate. Referenced by SAINTS.iconUrl for sava-of-serbia. 322x420 JPG, 31 KB. Not yet opened and inspected.",
-  "seraphim-of-sarov.jpg":
-    "No source, licence or attribution recorded. Fetched before scripts/fetch-missing-icons.mjs had a licence gate. Referenced by SAINTS.iconUrl for seraphim-of-sarov and AUTHOR_ICONS. 356x420 JPG, 16 KB. Opened 2026-11-10 (the icon batches): a painted icon of a white-haired, white-bearded elder with his right hand raised, in a monk's black habit and a white stole with crosses, his name in Church Slavonic above him. The same picture as Commons' File:Saint Seraphim of Sarov.jpg (1 of 64 bits apart), a 2018 upload naming no author, on terms the icon tool's gate does not take. To be swapped for an older icon, or kept on his word.",
   "sergius-of-radonezh.jpg":
     "No source, licence or attribution recorded. Fetched before scripts/fetch-missing-icons.mjs had a licence gate. Referenced by SAINTS.iconUrl for sergius-of-radonezh. 345x420 JPG, 24 KB. Not yet opened and inspected.",
   "silouan-the-athonite.jpg":

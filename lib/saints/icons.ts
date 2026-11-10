@@ -9,8 +9,8 @@ export const AUTHOR_ICONS: Record<string, string> = {
   "St. Athanasius": "/saints/icons/athanasius-the-great.v2.jpg",
   "St. Basil the Great": "/saints/icons/basil-the-great.jpg",
   "St. Basil": "/saints/icons/basil-the-great.jpg",
-  "St. Gregory the Theologian": "/saints/icons/gregory-theologian.jpg",
-  "St. Gregory of Nazianzus": "/saints/icons/gregory-theologian.jpg",
+  "St. Gregory the Theologian": "/saints/icons/gregory-theologian.v2.jpg",
+  "St. Gregory of Nazianzus": "/saints/icons/gregory-theologian.v2.jpg",
 
   // Latin + Alexandrian + Gaulish on John.
   "St. Augustine of Hippo": "/saints/icons/augustine-of-hippo.jpg",
@@ -30,8 +30,8 @@ export const AUTHOR_ICONS: Record<string, string> = {
   "St. Maximus": "/saints/icons/maximus-the-confessor.jpg",
   "St. Symeon the New Theologian": "/saints/icons/symeon-the-new-theologian.jpg",
   "St. Symeon": "/saints/icons/symeon-the-new-theologian.jpg",
-  "St. Seraphim of Sarov": "/saints/icons/seraphim-of-sarov.jpg",
-  "St. Seraphim": "/saints/icons/seraphim-of-sarov.jpg",
+  "St. Seraphim of Sarov": "/saints/icons/seraphim-of-sarov.v2.jpg",
+  "St. Seraphim": "/saints/icons/seraphim-of-sarov.v2.jpg",
   "St. Paisios the Athonite": "/saints/icons/paisios-the-athonite.jpg",
   "St. Paisios": "/saints/icons/paisios-the-athonite.jpg",
   "Elder Paisios": "/saints/icons/paisios-the-athonite.jpg",

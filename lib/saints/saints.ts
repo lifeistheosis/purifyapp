@@ -880,7 +880,7 @@ export const SAINTS: Saint[] = [
  {
  slug: "gregory-theologian",
  byname: "The Theologian",
- iconUrl: "/saints/icons/gregory-theologian.jpg",
+ iconUrl: "/saints/icons/gregory-theologian.v2.jpg",
  name: "St. Gregory the Theologian",
  epithet: "Archbishop of Constantinople · The Theologian",
  born: "c. 329 (Arianzus in Cappadocia)",
@@ -1171,7 +1171,7 @@ export const SAINTS: Saint[] = [
  {
  slug: "seraphim-of-sarov",
  byname: "Acquirer of the Holy Spirit",
- iconUrl: "/saints/icons/seraphim-of-sarov.jpg",
+ iconUrl: "/saints/icons/seraphim-of-sarov.v2.jpg",
  name: "St. Seraphim of Sarov",
  epithet: "Wonderworker · Acquirer of the Holy Spirit",
  born: "July 19, 1759 (Kursk)",
