@@ -2537,6 +2537,48 @@ build.
 - **True black, Prayers**: the arrows at 3.21:1 and the Roman numerals at
   3.83:1.
 
+**Mended the same day, by Updates** (added 2026-11-10 by this chat, which
+had not recorded it and told the arbiter the list was still open): every
+item above was built as PLAN 13h and 13j, a commit and a test for each
+kind. The odd shares and Light's cards `14aa6ce8`; Light's accent words
+`eb72e554`; Settings' size preview and First focus `389cc3b5`; words over
+pictures `af15d22c`; Theology's plates `b65c84b7`; True black's arrows and
+numerals in Prayers `f0333363`. PLAN.md's record: on the export, by the
+pixels on all five palettes, every place passes, the lowest 4.74:1. The
+finds routed with the Plus words are done too: the Plus pages' Terms and
+Privacy links `84b85224`, the EIKON Box note `d17c470f`, and the admin's
+label for the palettes lock reads "Reading modes".
+
+**Measured again that evening**, on the export of section 32, with the
+house's own measure for words on a ground that is not flat
+(`scripts/words-on-pictures.mjs`: the ground is taken where the letters
+are, and a halo drawn for reading counts as ground), on the five palettes
+and the two earned ones, which 13h did not walk. The eight places 13h named
+pass on all seven. This chat's own audit still read some of them low, and
+it was wrong to: it takes a word's shadow off before it looks, so it cannot
+see the halo those words now wear. Four small groups that nobody had named
+are under 4.5:1, each in another chat's file, and each has gone to its
+owner with the arbiter:
+
+- **Settings, the names under the text size slider** ("Small", "Medium",
+  "Extra large"; 10.5px, the ink at 50 percent, `.set-slider-names`): Light
+  2.97:1, Candlelight 3.87, Monastery 4.42, Councils and Cappadocian 4.35.
+  Dark and True black hold (5.09, 5.22). At the share a track's unchosen
+  choices already have (62, Light 72, Candlelight 64) every palette holds:
+  5.54:1 at the lowest (Candlelight).
+- **Theology's hub** (`components/theology/TheologyHub.tsx`): "1 of 9" on
+  Light 4.26:1; "7 citations from the Fathers" on Monastery 4.49, Councils
+  and Cappadocian 4.38.
+- **The Plus page** (`app/(app)/premium/page.tsx`): "Entirely optional. Give
+  once, or not at all.", the ink at 40 percent: 3.82:1 on Dark, Light and
+  True black, 2.97 on Candlelight, 3.40 on Monastery, 3.32 on Councils and
+  Cappadocian; and "Yearly saves 40% and begins with 7 days free" on
+  Candlelight, 4.46.
+- **The reading room's covers on Light** (`components/covers/WorkCover.tsx`):
+  the author's name on a cover, white at 80 percent over the shade Light
+  gives a cover, 3.70 to 4.10:1 ("St. John Cassian", ten covers); a title,
+  3.78 to 3.84 ("Hymns on the Nativity"); and "2 h 38 min", 4.49.
+
 ## 26. What is left in the repository to hold it
 
 - `scripts/theme-pictures.mjs` makes every picture again, and a test holds
@@ -3139,3 +3181,122 @@ held to the foot's quarter, as it was built. No walk says where each
 page's last words rest on a look (the prayer pages' last lines rest clear
 of the foot); a page whose last words rest inside a foot would keep them
 part veiled.
+
+## 32. After note 8: a page's end on a look, the strip above the page, and the two other builds
+
+The arbiter's order of 2026-11-10, 17:12 UTC, under his "I want everything
+in version 1.9" (BRAINSTORM.md): of the list this chat sent with note 8's
+report, build 2 (the status bar on Android 14 and older), 5 (the last-words
+walk, with its margins) and 8 (the iOS export and the website build) now.
+Items 1, 3 and 4 went to him with the arbiter's recommendations. Item 10,
+the contrast sweep, had been built that morning by Updates (section 25's
+addendum, above): nothing of it was built twice.
+
+**A page ends above its foot (item 5, `fa1f1a1f`).** The prayer page's walk asked where
+a prayer's last line rests on a look, and nothing asked it of any other
+page. Asked of every route of the export, in Olive: on 88 of 123 screens the
+page's last words rested inside the foot, on 68 of them below its quarter.
+The foot is the look's picture drawn over the last 240px of the screen, and
+the app's frame leaves room under a page for the bars alone, 86px, so the
+last row of a page had nowhere higher to go. Settings' last row, "About",
+stood half taken by Olive's sprigs; on the sign-in page "Continue with
+Google" was washed out and the line at its foot, "Glory to God for all
+things.", was under the picture altogether. (He had sent this kind of note
+before, of the mini player, on 2026-10-29: "it hides the bottom, the very
+bottom of the screen".)
+
+Now, on a look with a foot, at the widths the foot is drawn at:
+
+- the frame leaves the foot's own height under the page (`--foot-clear`), or
+  the bars' height where they stand taller (a mini player over the tab
+  bar): `.safe-pb` and the reader's `.safe-pb-reader`, each as the larger of
+  the frame's own sum and the foot;
+- the sign-in pages, which stand outside the frame, end above the foot the
+  same way (the shell under `body` with no frame inside it).
+
+Three rules in `app/globals.css` ("The page ends above its foot"), in the
+looks' own block; no component is touched. A reader on a look scrolls about
+154px further at a page's end and sees the look's picture whole under the
+last words. Two screens made to fit between the bars exactly (the saints'
+web, a chant's screen) now scroll by that much on a look, which is what
+lets their last lines come up clear too.
+
+Held by `lib/ui/__tests__/lookFootRoom.test.ts` (the room is the foot's own
+length, on exactly the looks that have a foot, only at phone widths, and it
+is written against the frame's own sum so the two cannot drift) and by a new
+walk, `node scripts/last-words-walk.mjs`: one page of every route, at its
+end, the lowest word or control of the page's own flow against where the
+foot begins. The routes come from `scripts/lib/screens.mjs` now, which
+`scripts/room-walk.mjs` reads too.
+
+**The strip above the page (item 2, `0ef3741a`).** On Android 14 and older the status
+bar is an opaque strip the app paints. It was the app's night colour on
+every palette but True black, so it was a grey band over Candlelight's and
+Night sky's black and a neutral one over Mosaic's lapis and Damask's wine
+(section 24's limit). It is now the page colour of the palette the app is
+WEARING, for every dark palette: the nine dark looks, and Candlelight,
+Monastery, Councils and Cappadocian, which had the same band. What is worn
+and not what is stored, so a look the gate has put down, or Candlelight at
+Vespers over a reader's own palette, paints the right strip; the bridge
+watches the root's two attributes and repaints when they change.
+`lib/reader/statusBarColor.ts` is the rule, pure and tested;
+`components/native/NativeBridge.tsx` reads the page and paints.
+
+Light and the light looks keep the dark strip Light has always had. Whether
+Light's strip should be its own paper with dark marks is his call, put to
+him by the arbiter with two stills
+(`notes/decisions/themes-1-light-today.png` and `themes-2-light-matched.png`):
+it would change how the free palette looks on those phones, so it is not
+done without his word.
+
+No screen here shows that strip: only a phone on Android 14 or older does.
+`lib/reader/__tests__/statusBarPalette.test.ts` holds what can be held: the
+colour for each of the 25 palettes, in the form the status bar takes; that
+every strip is dark enough for the light marks drawn on it; and that the
+bridge paints what is worn and repaints when it changes.
+
+**The two other builds (item 8).** On `18f61f63`: `npm run build:ios`
+clean, 177.8 MB on disk in 6,747 files and 62.6 MB packed; `npm run build`
+(the website, a build only, nothing deployed) clean, 6,123 pages. Both had
+gone unrun since the looks (sections 28 to 31 say so each time).
+
+**Measured**, on the Android export built from `83378eab` with these on it
+(177.9 MB on disk, 62.7 MB packed):
+
+- `node scripts/last-words-walk.mjs`. Before, on the iOS export of
+  `18f61f63`, in Olive: the last words of 88 of 123 screens rested inside
+  the foot, 68 of them below its quarter. After, in four looks, one of each
+  height of foot and one more (Mosaic 246px, Patmos 244, Olive and the Holy
+  Mountain 240): 492 screens, every one rests clear; the lowest rests 1px
+  above where the foot begins (a council's canons, whose last link ends the
+  page with no margin of its own).
+- `scripts/room-walk.mjs`, through the shared list: 246 screens, nothing
+  covers a look's room.
+- The prayer pages again, since their end changed: `prayer-ground-walk.mjs
+  --part words` on eight palettes (Dark, Light, Dawn, the Holy Mountain,
+  Jordan, Patmos, Olive, Mosaic), four pages head to end, 9,437 words, none
+  under its floor. One run read "Choose" at 1.24:1: the chant's question had
+  put itself away between the audit's two pictures. The audit asks each
+  word's place again after the second picture now
+  (`scripts/lib/pixel-audit.mjs`, `02cf9235`), and the page passes.
+- The house's export walk, whole (`PW_CHROMIUM=/opt/pw-browsers/chromium
+  node scripts/export-walk.mjs`): 1,596 checks pass and 26 fail, none in
+  what changed here. 23 are in sections 58 and 59, which were added to the
+  walk after this export was built, so they say nothing of it. Three are in
+  older sections: 1 (the commentary's file is asked for where the check
+  expects none), 12 (a tap on a page at rest selects the verse) and 35 (a
+  read-aloud cover ships inside the app). They read like checks that have
+  fallen behind the day's changes; they have gone to the arbiter.
+- Typecheck 0, the unit suite 915 files and 11,379 tests, lint 0 errors, on
+  `447e7860` with these on it; typecheck again on the pushed head, after a
+  rebase that brought another chat's commit under them.
+
+**Not done, and his on a phone.** The strip on an Android 14 or older phone.
+The end of a page on a look, with a thumb: whether the extra room at the end
+feels right. Both are in the handoff's phone-walk lines.
+
+**Left as it is.** The website at a phone's width is not the apps' export
+and was not walked: a Plus reader wearing a look there has the site's last
+lines in the foot as before. At a tablet's width the Bible's last lines show
+again under the reader's dock and beside the tab bar, on any palette (seen
+in `notes/decisions/themes-3-wide.png`); told to the arbiter for Updates.
