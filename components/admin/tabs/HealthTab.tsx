@@ -125,7 +125,7 @@ export function ServicesPage({ libraryOpen = false }: { libraryOpen?: boolean })
               href={p.open.href}
               target="_blank"
               rel="noopener noreferrer"
-              className="adm-control inline-flex min-h-[34px] shrink-0 items-center justify-center gap-1.5 rounded-[var(--adm-radius-sm)] border px-3 font-sans text-[12.5px] font-medium"
+              className="adm-control inline-flex min-h-11 shrink-0 items-center justify-center gap-1.5 rounded-[var(--adm-radius-sm)] border px-3 font-sans text-[12.5px] font-medium"
               style={
                 {
                   "--_bd": "var(--adm-line-strong)",

@@ -1086,11 +1086,11 @@ export function TrafficLiveTab() {
                 <button
                   type="button"
                   onClick={() => setReader(s.id)}
-                  className="adm-control -mx-2 flex w-[calc(100%+1rem)] items-start gap-3 rounded-[6px] px-2 py-2.5 text-left"
+                  className="adm-control -mx-2 flex min-h-11 w-[calc(100%+1rem)] items-start gap-3 rounded-[6px] px-2 py-2.5 text-left"
                   style={{ "--_bg": "transparent", "--_bg-hover": "var(--adm-hover)" } as React.CSSProperties}
                 >
                   <span
-                    className="mt-0.5 grid h-[20px] min-w-[28px] place-items-center rounded-[5px] border px-1 font-mono text-[10px] font-semibold"
+                    className="mt-0.5 grid min-w-[28px] place-items-center rounded-[5px] border px-1 font-mono text-[10px] font-semibold leading-[18px]"
                     style={{ borderColor: "var(--adm-line-strong)", color: "var(--adm-ink-2)" }}
                   >
                     {s.countryCode ?? "?"}

@@ -251,7 +251,7 @@ export function Segmented<T extends string>({
             type="button"
             onClick={() => onChange(id)}
             aria-pressed={on}
-            className={`adm-control relative -ml-px -mt-px inline-flex min-h-[34px] items-center justify-center gap-1.5 border px-3 font-sans text-[12.5px] font-medium first:rounded-l-[var(--adm-radius-sm)] last:rounded-r-[var(--adm-radius-sm)] ${full ? "flex-1" : ""}`}
+            className={`adm-control relative -ml-px -mt-px inline-flex min-h-11 items-center justify-center gap-1.5 border px-3 font-sans text-[12.5px] font-medium first:rounded-l-[var(--adm-radius-sm)] last:rounded-r-[var(--adm-radius-sm)] ${full ? "flex-1" : ""}`}
             style={
               on
                 ? ({

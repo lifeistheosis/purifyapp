@@ -575,7 +575,7 @@ export function HomeTab() {
             <button
               type="button"
               onClick={() => moveLine(new Date().toISOString())}
-              className="adm-control inline-flex min-h-11 items-center gap-1.5 rounded-[6px] border px-3 font-sans text-[12.5px] md:min-h-[36px]"
+              className="adm-control inline-flex min-h-11 items-center gap-1.5 rounded-[6px] border px-3 font-sans text-[12.5px]"
               style={
                 {
                   borderColor: "var(--adm-line-strong)",
@@ -690,7 +690,7 @@ export function HomeTab() {
                   <button
                     type="button"
                     onClick={loadOlder}
-                    className="adm-control inline-flex min-h-11 items-center rounded-[6px] border px-3 font-sans text-[12.5px] md:min-h-[36px]"
+                    className="adm-control inline-flex min-h-11 items-center rounded-[6px] border px-3 font-sans text-[12.5px]"
                     style={
                       {
                         borderColor: "var(--adm-line-strong)",

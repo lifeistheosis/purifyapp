@@ -280,13 +280,16 @@ function NavItem({
       {/* A word per page, the open page solid ink and lit, its figure a quiet
           mono number at the end of the row. A page that has a figure and
           also has people waiting wears a ring before the figure, so a queue
-          is still seen while the page is closed. */}
+          is still seen while the page is closed. 44px to a finger (the rail
+          shows on an iPad held sideways); with a mouse it keeps its old
+          height, about 34px, so the whole rail still fits a laptop's
+          screen (pointer-fine). */}
       <button
         type="button"
         onClick={() => onSelect(page.id)}
         aria-current={on ? "page" : undefined}
         aria-expanded={tabViews(page).length > 1 ? on : undefined}
-        className="adm-control flex min-h-[33px] w-full items-center gap-2 rounded-[var(--adm-radius-sm)] px-2.5 text-left font-sans text-[13.5px]"
+        className="adm-control flex min-h-11 w-full items-center gap-2 rounded-[var(--adm-radius-sm)] px-2.5 text-left font-sans text-[13.5px] pointer-fine:min-h-0 pointer-fine:py-[7px]"
         style={
           on
             ? ({

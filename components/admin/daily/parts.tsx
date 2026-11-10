@@ -53,7 +53,7 @@ export function Segmented<T extends string>({
           type="button"
           aria-pressed={value === id}
           onClick={() => onChange(id)}
-          className={"adm-seg-btn font-sans" + (stretch ? " flex-1" : "") + (tall ? " min-h-[38px] px-[13px] text-[13.5px]" : "")}
+          className={"adm-seg-btn font-sans" + (stretch ? " flex-1" : "") + (tall ? " min-h-11 px-[13px] text-[13.5px]" : "")}
         >
           {text}
         </button>

@@ -1193,7 +1193,7 @@ export function SubTabs<T extends string>({
             type="button"
             onClick={() => onChange(id)}
             aria-pressed={on}
-            className="adm-control relative -ml-px -mt-px inline-flex min-h-[34px] items-center border px-3 font-sans text-[12.5px] font-medium first:rounded-l-[var(--adm-radius-sm)] last:rounded-r-[var(--adm-radius-sm)]"
+            className="adm-control relative -ml-px -mt-px inline-flex min-h-11 items-center border px-3 font-sans text-[12.5px] font-medium first:rounded-l-[var(--adm-radius-sm)] last:rounded-r-[var(--adm-radius-sm)]"
             style={
               on
                 ? ({

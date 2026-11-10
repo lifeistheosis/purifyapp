@@ -157,7 +157,14 @@ const MAX_SMALL_TARGETS = 26;
 // (30 to 42px, a computer's mouse more than a finger), the shop's 7, and
 // one each in the reader's settings, the journal's Today, Now Playing,
 // Today's masthead and the profile's settings. IT MAY ONLY FALL, as above.
-const MAX_WRITTEN_SMALL_TARGETS = 29;
+// The admin panel's 17 went to 44 the same evening (the arbiter's word: he
+// uses the panel on his phone, and the rail shows on his iPad): the rail's
+// rows, the segmented controls, the reader card's actions, the grab handle,
+// and the rows that were 44 only under md now at every width. Two of the 17
+// were a child's height read as the button's (the handle's 4px bar, a 20px
+// code badge): each button is min-h-11 now, and the child keeps its look by
+// its style or its line height.
+const MAX_WRITTEN_SMALL_TARGETS = 12;
 
 describe("touch targets", () => {
   const { total, byFile, written, writtenByFile } = countSmallTargets();

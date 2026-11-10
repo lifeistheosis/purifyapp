@@ -219,9 +219,9 @@ export function AdminMobileNav({
               aria-hidden
               tabIndex={-1}
               onClick={tapHandle}
-              className="mx-auto mb-1 block px-6 py-3"
+              className="mx-auto mb-1 flex min-h-11 items-center px-6"
             >
-              <span className="block h-[4px] w-10 rounded-full" style={{ background: "var(--adm-line-strong)" }} />
+              <span className="block w-10 rounded-full" style={{ height: 4, background: "var(--adm-line-strong)" }} />
             </button>
             {sheetGroups.map((g) => (
               <div key={g.group} className="mb-4">

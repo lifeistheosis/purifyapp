@@ -326,7 +326,7 @@ export function ContentDesk({ focus }: { focus?: "ratings" | "catechism" | "chan
                             type="button"
                             onClick={() => void undo(r)}
                             disabled={m.state === "undoing"}
-                            className="min-h-[34px] font-semibold underline underline-offset-[3px] disabled:opacity-50"
+                            className="min-h-11 font-semibold underline underline-offset-[3px] disabled:opacity-50"
                             style={ink}
                           >
                             Undo

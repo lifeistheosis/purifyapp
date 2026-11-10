@@ -376,7 +376,7 @@ export function ReaderCard({ id, onChanged, onBack }: { id: string; onChanged: (
               <button
                 type="button"
                 disabled={busy}
-                className="min-h-[30px] rounded-[4px] px-1 text-[12px] underline underline-offset-[3px]"
+                className="min-h-11 rounded-[4px] px-1 text-[12px] underline underline-offset-[3px]"
                 style={{ color: "var(--adm-ink-3)" }}
                 onClick={() =>
                   void act(
@@ -403,7 +403,7 @@ export function ReaderCard({ id, onChanged, onBack }: { id: string; onChanged: (
               <button
                 type="button"
                 disabled={busy}
-                className="min-h-[30px] rounded-[4px] px-1 text-[12px] underline underline-offset-[3px]"
+                className="min-h-11 rounded-[4px] px-1 text-[12px] underline underline-offset-[3px]"
                 style={{ color: "var(--adm-ink-3)" }}
                 onClick={() => void act(() => patchJson("/api/admin/clergy", { userId: id, status: "declined", note: null }), "Took the clergy seal back.")}
               >
@@ -412,7 +412,7 @@ export function ReaderCard({ id, onChanged, onBack }: { id: string; onChanged: (
             ) : data.seal?.status !== "requested" ? (
               <button
                 type="button"
-                className="min-h-[30px] rounded-[4px] px-1 text-[12px] underline underline-offset-[3px]"
+                className="min-h-11 rounded-[4px] px-1 text-[12px] underline underline-offset-[3px]"
                 style={{ color: "var(--adm-ink-3)" }}
                 onClick={() => setPanel(panel === "give-seal" ? null : "give-seal")}
               >
@@ -512,7 +512,7 @@ export function ReaderCard({ id, onChanged, onBack }: { id: string; onChanged: (
                       <button
                         type="button"
                         disabled={busy}
-                        className="ml-auto min-h-[30px] rounded-[4px] px-1 underline underline-offset-[3px]"
+                        className="ml-auto min-h-11 rounded-[4px] px-1 underline underline-offset-[3px]"
                         style={{ color: "var(--adm-ink-3)" }}
                         onClick={() =>
                           void act(

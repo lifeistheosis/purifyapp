@@ -231,7 +231,7 @@ export function ReadersTab() {
               type="button"
               disabled={offset === 0}
               onClick={() => setOffset(Math.max(0, offset - (data.pageSize || 50)))}
-              className="min-h-11 rounded-[6px] border px-3 disabled:opacity-40 md:min-h-[30px]"
+              className="min-h-11 rounded-[6px] border px-3 disabled:opacity-40"
               style={{ borderColor: "var(--adm-line-strong)", color: "var(--adm-ink-2)" }}
             >
               Before
@@ -240,7 +240,7 @@ export function ReadersTab() {
               type="button"
               disabled={offset >= lastPage}
               onClick={() => setOffset(Math.min(lastPage, offset + (data.pageSize || 50)))}
-              className="min-h-11 rounded-[6px] border px-3 disabled:opacity-40 md:min-h-[30px]"
+              className="min-h-11 rounded-[6px] border px-3 disabled:opacity-40"
               style={{ borderColor: "var(--adm-line-strong)", color: "var(--adm-ink-2)" }}
             >
               Next
@@ -367,7 +367,7 @@ export function ReadersTab() {
             type="button"
             onClick={() => void exportCsv()}
             disabled={exporting}
-            className="adm-control inline-flex min-h-[42px] items-center gap-1.5 rounded-[6px] border px-3 font-sans text-[12.5px]"
+            className="adm-control inline-flex min-h-11 items-center gap-1.5 rounded-[6px] border px-3 font-sans text-[12.5px]"
             style={{ borderColor: "var(--adm-line-strong)", color: "var(--adm-ink-2)", "--_bg": "transparent", "--_bg-hover": "var(--adm-panel-2)" } as React.CSSProperties}
           >
             <svg width="14" height="14" viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
