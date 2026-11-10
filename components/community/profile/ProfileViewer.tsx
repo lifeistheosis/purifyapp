@@ -445,7 +445,7 @@ export function ProfileViewer({
             </>
           );
           const card =
-            "block w-full rounded-[20px] border border-paper/[0.085] bg-gradient-to-b from-paper/[0.07] to-paper/[0.025] px-[15px] py-[13px] text-left";
+            "block w-full rounded-[20px] border border-paper/[0.085] bg-gradient-to-b from-paper/[0.07] to-paper/[0.025] px-[15px] py-[13px] text-start";
           return (
             <li key={p.id}>
               {inFeed ? (
@@ -482,7 +482,7 @@ export function ProfileViewer({
               <button
                 type="button"
                 onClick={() => onOpenProfile?.(m.handle, { handle: m.handle, name: m.name, avatar: m.avatar })}
-                className="press-card flex w-full items-center gap-3 rounded-2xl border border-paper/10 bg-paper/[0.04] p-2.5 text-left hover:border-paper/25"
+                className="press-card flex w-full items-center gap-3 rounded-2xl border border-paper/10 bg-paper/[0.04] p-2.5 text-start hover:border-paper/25"
               >
                 <CommunityAvatar name={m.name} url={m.avatar} size={36} />
                 <span className="min-w-0">
@@ -529,7 +529,8 @@ export function ProfileViewer({
             here both ways, and from its body when scrolled up. */}
         <div className="absolute inset-x-0 top-0 z-20 h-8 cursor-grab touch-none select-none active:cursor-grabbing md:hidden" {...grab}>
           <div className="flex justify-center pt-2.5">
-            <span aria-hidden className="block h-1.5 w-11 rounded-full bg-white/55 shadow-sm" />
+            {/* Over the banner's picture: a dark island, white on every palette, by the palette's own tokens. */}
+            <span aria-hidden className="dark-island block h-1.5 w-11 rounded-full bg-paper/55 shadow-sm" />
           </div>
         </div>
         <button
@@ -537,7 +538,9 @@ export function ProfileViewer({
           type="button"
           aria-label={t("common.close")}
           onClick={onClose}
-          className="hit-44 absolute right-3 top-3 z-20 inline-flex size-9 items-center justify-center rounded-pill bg-black/45 text-white hover:bg-black/60"
+          // Over the banner's picture, at the end of the line: a dark island, so the
+          // palette's night and paper are dark and white on Light too.
+          className="dark-island hit-44 absolute end-3 top-3 z-20 inline-flex size-9 items-center justify-center rounded-pill bg-night/45 text-paper hover:bg-night/60"
         >
           <Close size={15} />
         </button>

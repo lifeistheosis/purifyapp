@@ -254,7 +254,7 @@ export function ProfileMoment({
   action: ReactNode;
 }) {
   return (
-    <div className="mt-4 flex flex-wrap items-center gap-3 rounded-2xl border border-paper/20 bg-paper/[0.06] p-3 text-left shadow-[0_0_22px_rgb(255_255_255/0.06)]">
+    <div className="mt-4 flex flex-wrap items-center gap-3 rounded-2xl border border-paper/20 bg-paper/[0.06] p-3 text-start shadow-[0_0_22px_rgb(255_255_255/0.06)]">
       <span className="inline-flex size-9 shrink-0 items-center justify-center rounded-xl bg-paper/[0.1] text-paper" aria-hidden="true">
         {icon}
       </span>
@@ -304,7 +304,7 @@ export function PatronCard({ patron, onNavigate }: { patron: { slug: string; nam
       onClick={onNavigate}
       prefetch={false}
       data-profile-patron={patron.slug}
-      className={cn(PANEL, "press-card flex items-center gap-3.5 py-[11px] pl-[11px] pr-3 text-left")}
+      className={cn(PANEL, "press-card flex items-center gap-3.5 py-[11px] ps-[11px] pe-3 text-start")}
     >
       <span className="relative h-16 w-[52px] shrink-0 overflow-hidden rounded-xl bg-paper/[0.08] shadow-[0_0_0_1px_rgb(255_255_255/0.16),0_8px_16px_-8px_rgb(0_0_0/0.9)]">
         {facts?.icon ? (
@@ -406,7 +406,7 @@ export function VerseCard({
   return (
     <div
       data-profile-verse={verse.ref}
-      className={cn(PANEL, "relative overflow-hidden px-4 pb-[13px] pt-[15px] text-left")}
+      className={cn(PANEL, "relative overflow-hidden px-4 pb-[13px] pt-[15px] text-start")}
     >
       <span aria-hidden className="pointer-events-none absolute inset-0 bg-[radial-gradient(120%_90%_at_0%_0%,rgb(255_255_255/0.07),rgb(255_255_255/0)_60%)]" />
       <p className={cn(EYEBROW, "relative flex items-center gap-1.5")}>
@@ -502,7 +502,7 @@ export function ProfileAboutDoor({
   const links = profile.links ?? [];
   const label = "font-sans text-caption font-semibold text-paper/52";
   return (
-    <div className="space-y-2.5 text-left">
+    <div className="space-y-2.5 text-start">
       {clergy ? (
         // Who they are to the Church, said once, plainly: the seal's name,
         // then where they serve when they shared it.
@@ -581,7 +581,7 @@ export function ProfileAboutDoor({
                 </span>
                 <span className="min-w-0 truncate">{l.label}</span>
                 <span className="shrink-0 text-[13px] text-paper/50">{l.kind === "website" ? t("profile.linkWebsite") : networkName(l.kind)}</span>
-                <ChevronRight size={15} className="ml-auto shrink-0 text-paper/35" />
+                <ChevronRight size={15} className="ms-auto shrink-0 text-paper/35 rtl:-scale-x-100" />
               </a>
             </li>
           ))}
