@@ -33,28 +33,20 @@ import { INTRO_BUILD_MS, INTRO_QUICK_BUILD_MS, LIFT_ANYWAY_MS } from "@/lib/plat
 import { isNativeClient } from "@/lib/platform/native";
 import { listenForTaps, refreshNative, refreshNativeIfMoved, relinkNative } from "@/lib/push/native";
 import { onlyTheHashChanges, setPushOpener } from "@/lib/push/open";
-import { READING_THEME_KEY, coerceReadingTheme } from "@/lib/reader/readingModes";
+import { statusBarColor } from "@/lib/reader/statusBarColor";
 import { createClient } from "@/lib/supabase/client";
 
-const NIGHT = "#101013";
-// True black's ground: html[data-reading-mode="black"] in app/globals.css.
-const BLACK = "#000000";
-
 /**
- * The status bar's colour for the palette this device has stored. Every
- * palette keeps the night colour the bar has always had, except True black.
- * On Android 14 and older the bar is an opaque strip, and a strip one shade
- * off black is the only lit thing above a page that is switched off. True
- * black is free (FREE_THEMES), so what is stored is what is applied.
+ * The status bar's colour: the page colour of the palette the app is wearing
+ * (lib/reader/statusBarColor.ts says which, and why Light keeps the night
+ * strip). What is worn, not what is stored: a look a reader without Plus
+ * still has stored is put down by the gate, and Candlelight at Vespers is
+ * worn over a reader's own palette. Both are on the root element
+ * (components/theme/AppThemeController.tsx), so that is what is read.
  */
 function barColor(): string {
-  let raw: string | null = null;
-  try {
-    raw = window.localStorage.getItem(READING_THEME_KEY);
-  } catch {
-    /* storage blocked: the night colour */
-  }
-  return coerceReadingTheme(raw) === "black" ? BLACK : NIGHT;
+  const root = document.documentElement;
+  return statusBarColor(root.getAttribute("data-reading-mode"), getComputedStyle(root).getPropertyValue("--color-night"));
 }
 
 export function NativeBridge() {
@@ -267,28 +259,27 @@ export function NativeBridge() {
     const fallback = setTimeout(() => void hideSplash(), 4000);
 
     // Keep the status bar the colour of the page so the system chrome reads
-    // as part of the app: night on every palette, black on True black
-    // (barColor). This matters on Android 14 and older, where the bar is an
-    // opaque strip. On the iPhone the bar overlays the page and the call
-    // draws nothing.
+    // as part of the app: each dark palette's own page colour, and the night
+    // strip over Light (barColor). This matters on Android 14 and older,
+    // where the bar is an opaque strip. On the iPhone the bar overlays the
+    // page and the call draws nothing.
     (async () => {
       try {
         const { StatusBar, Style } = await import("@capacitor/status-bar");
         if (cancelled) return;
         await StatusBar.setStyle({ style: Style.Dark });
         if (cancelled) return;
-        // Painted now, and again whenever the reader picks a palette: the
-        // event ReaderPrefs broadcasts, and storage for another window.
+        // Painted now, and again whenever what the app wears changes: a
+        // palette picked, Candlelight put on at sunset, a look put down by
+        // the gate. Each of them lands on the root element's two attributes,
+        // so those are watched, and the bar never asks what is stored.
         const paintBar = () => {
           void StatusBar.setBackgroundColor({ color: barColor() }).catch(() => {});
         };
         paintBar();
-        window.addEventListener("purify:reader-prefs", paintBar);
-        window.addEventListener("storage", paintBar);
-        stopBar = () => {
-          window.removeEventListener("purify:reader-prefs", paintBar);
-          window.removeEventListener("storage", paintBar);
-        };
+        const worn = new MutationObserver(paintBar);
+        worn.observe(document.documentElement, { attributes: true, attributeFilter: ["data-reading-mode", "data-look"] });
+        stopBar = () => worn.disconnect();
         // NB: we intentionally do NOT call setOverlaysWebView here. Android 16
         // (targetSdk 36) forces edge-to-edge, where that call is a no-op and
         // env(safe-area-inset-top) reads 0, leaving the top bar under the
