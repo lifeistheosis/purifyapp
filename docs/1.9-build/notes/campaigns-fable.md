@@ -2261,8 +2261,9 @@ and the lawyer, then turned on with no store build".
 Built to the form 2.8 proposed and he said yes to, and no wider:
 
 - **A second list on the board,** under "Newly asked" and never in its
-  place, with one switch for the time: Today, This week, This month, This
-  year. A switch that filters what is on screen is where a pill belongs.
+  place, with one switch for the time, in his own words for them: Day, Week,
+  Month, Year. A switch that filters what is on screen is where a pill
+  belongs.
 - **An order, and never a figure.** A row is the board's own row: what a
   campaign is for and until when. The route hands on campaigns and nothing
   else; the tally is made on the server, used to sort, and dropped.
@@ -2301,6 +2302,13 @@ committed off and the server's alone; what an app believes; off means 404 and
 no read; the order, the spans, the floor, who is left out; every reader
 counted past the thousand rows one request returns; no figure in what is
 handed on; the minute; and the creator's switch.
+
+**Found on its first still, on Light:** the house's switch draws its off
+labels at 65 percent of the ink, which is 4.52:1 on Light's page and 4.41:1
+on the switch's own 3 percent track, so `checkMock` refused it. Here the
+switch stands on the page with no tint under it. The same number holds for
+every switch drawn on that track on Light (`SegmentedSwitch`, `BarSwitch`,
+the doors' slim row): the palette's to mend, reported and not changed here.
 
 **Found while building it:** the first draft tallied one request's rows, and
 the house's own test refused it (`lib/supabase/__tests__/rowCap.test.ts`):

@@ -27,10 +27,13 @@ import { useCampaignPart } from "@/lib/campaigns/useCampaignsOpen";
  * nothing a reader needs.
  */
 
+// His own words for them: "of the month, of the year, of the week, of the
+// day". One short word each, so that four fit a phone's width in every
+// language: "This month" was cut off at 390 pixels in the first still.
 const SPAN_LABEL: Record<ManySpan, string> = {
-  day: "calendar.today",
-  week: "widget.thisWeek",
-  month: "footer.thisMonth",
+  day: "campaigns.many.day",
+  week: "campaigns.many.week",
+  month: "campaigns.many.month",
   year: "campaigns.many.year",
 };
 

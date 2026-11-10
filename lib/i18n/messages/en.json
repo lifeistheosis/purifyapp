@@ -5330,9 +5330,12 @@
   "campaigns.noteRemoveFailed": "We could not take that off. Please try again.",
   "mod.action.creator_remove_comment": "took a comment off their own campaign",
   "campaigns.many.title": "Prayed by many",
-  "campaigns.many.year": "This year",
+  "campaigns.many.year": "Year",
   "campaigns.many.over": "Over what time",
   "campaigns.many.none": "Nothing here for this time.",
   "campaigns.many.listed": "In Prayed by many",
-  "campaigns.many.listedBody": "The list of campaigns many readers carry. It never shows a number."
+  "campaigns.many.listedBody": "The list of campaigns many readers carry. It never shows a number.",
+  "campaigns.many.day": "Day",
+  "campaigns.many.week": "Week",
+  "campaigns.many.month": "Month"
 }
