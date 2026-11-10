@@ -101,6 +101,12 @@ Drafted now, sent later. The owner sends every one. How a drop works is in
       `lib/legal/__tests__/termsDate.test.ts` refuses one without the other.
       The bump asks every reader to accept again at their next sign-in,
       checkout or EIKON claim, and arms Admin's terms notice.
+- [ ] July's campaign rows (his word of 2026-11-10; OWNER-STEPS R9): the
+      same commit writes `SHIPPED_ON` in `lib/campaigns/julyRows.ts` as the
+      release day, in UTC, `"YYYY-MM-DD"`. While it is `null` the job reads
+      and deletes nothing; thirty days after the day it names, the
+      heartbeat deletes July's rows, and it leaves the public mark
+      `campaigns-july-rows-deleted` in `data_moves` when none is left.
 - [ ] `git fetch origin`, rebase on `origin/main`, `node scripts/release.mjs back`
       again, and section 4's check again.
 - [ ] Push `main`. That is the deploy.

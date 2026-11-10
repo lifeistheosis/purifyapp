@@ -1352,5 +1352,9 @@ the website deletes them by itself, in the heartbeat's daily upkeep
 SQL file, so a second chat reads it before it ships, as for every change
 to the live database.
 
-Nothing for you to run, set or send. The arbiter tells you when it has
-happened.
+Nothing for you to run, set or send. The day is written in the release
+commit (`SHIPPED_ON` in `lib/campaigns/julyRows.ts`, the release day; the
+1.9 checklist, `docs/plans/v1.9/RELEASE.md`, section 6), and until it is
+written the job deletes nothing. The arbiter tells you when it has
+happened: the job leaves a public mark when nothing of July's is left
+(`campaigns-july-rows-deleted`, in `data_moves`).
