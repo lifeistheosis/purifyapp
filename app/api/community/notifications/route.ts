@@ -8,12 +8,16 @@
 // `auth.uid() = user_id`, so this deliberately uses the REQUEST-scoped
 // client and NOT the service role. A service-role read here would bypass
 // that policy and one wrong `.eq()` would serve somebody else's inbox.
+// The one service-role read below is not of notifications: it looks up the
+// campaign of a thread post the reader's own rows already name
+// (withCampaignIds).
 
 import { NextResponse } from "next/server";
 
 import { corsPreflight, withCors } from "@/lib/api/cors";
 import { communityEnabled } from "@/lib/community/flags";
 import { ipKey, rateLimited } from "@/lib/security/ratelimit";
+import { createAdminClient } from "@/lib/supabase/admin";
 import { isColumnAbsent } from "@/lib/supabase/columnAbsent";
 import { createClientFromRequest } from "@/lib/supabase/server";
 
@@ -23,6 +27,44 @@ const COLS =
 const COLS_WITH_HANDLE = `${COLS}, actor_handle`;
 // A removal notice's two fields arrive with supabase/migrations/20261110204814_removal_notices.sql.
 const COLS_WITH_REMOVAL = `${COLS_WITH_HANDLE}, target_kind, reason`;
+
+type Row = { read_at: string | null; target_kind?: string | null; post_id?: string | null; campaign_id?: string | null };
+
+/**
+ * A notice about a prayer campaign (phase 4, 2026-11-10: a moderator
+ * approved yours, or one in your prayers has an update) is handed only to an
+ * inbox that asks for it with "campaigns=1". An app built before it would
+ * draw it as "replied to your post" and open a thread Community does not
+ * show, so it never sees one, and its unread count leaves them out too.
+ */
+function asksForCampaigns(req: Request): boolean {
+  return new URL(req.url).searchParams.get("campaigns") === "1";
+}
+
+/**
+ * Each campaign notice that names a post, with the campaign the post is the
+ * thread of, so a tap opens the campaign's updates. Read with the service
+ * role, because a campaign's thread is not a post Community lets a reader
+ * read; and only for the post ids already in this reader's own rows, which
+ * RLS chose, so it can tell them nothing about anyone else's. A row it
+ * cannot place keeps campaign_id null and opens Your campaigns.
+ */
+async function withCampaignIds(rows: Row[]): Promise<Row[]> {
+  const ids = [...new Set(rows.filter((r) => r.target_kind === "campaign" && r.post_id).map((r) => r.post_id as string))];
+  if (ids.length === 0) return rows;
+  let byPost = new Map<string, string>();
+  try {
+    const { data } = await createAdminClient().from("community_posts").select("id, campaign_id").in("id", ids);
+    byPost = new Map(
+      ((data ?? []) as { id: string; campaign_id: string | null }[])
+        .filter((p) => p.campaign_id)
+        .map((p) => [p.id, p.campaign_id as string]),
+    );
+  } catch {
+    /* each row opens Your campaigns instead */
+  }
+  return rows.map((r) => (r.target_kind === "campaign" ? { ...r, campaign_id: (r.post_id && byPost.get(r.post_id)) || null } : r));
+}
 
 async function handleGET(req: Request) {
   if (!communityEnabled()) {
@@ -57,7 +99,9 @@ async function handleGET(req: Request) {
     return NextResponse.json({ notifications: [], unread: 0 });
   }
 
-  const notifications = (data ?? []) as unknown as { read_at: string | null }[];
+  const campaigns = asksForCampaigns(req);
+  const rows = (data ?? []) as unknown as Row[];
+  const notifications = campaigns ? await withCampaignIds(rows) : rows.filter((r) => r.target_kind !== "campaign");
 
   // Count over the whole table, not over the fifty rows we just fetched.
   //
@@ -70,10 +114,14 @@ async function handleGET(req: Request) {
   //
   // `head: true` sends no rows back, so this costs one index scan and no
   // payload. RLS still scopes it to the caller.
-  const { count, error: countError } = await supabase
-    .from("community_notifications")
-    .select("id", { count: "exact", head: true })
-    .is("read_at", null);
+  const unreadQuery = () => supabase.from("community_notifications").select("id", { count: "exact", head: true }).is("read_at", null);
+  // An inbox that cannot draw a campaign notice is not told of an unread one.
+  // A null target_kind is every older kind, so it is kept by name.
+  let { count, error: countError } = campaigns
+    ? await unreadQuery()
+    : await unreadQuery().or("target_kind.is.null,target_kind.neq.campaign");
+  // Before the removal notice's SQL there is no target_kind, and so no campaign notice to leave out.
+  if (countError && !campaigns && isColumnAbsent(countError)) ({ count, error: countError } = await unreadQuery());
 
   const unread = countError
     ? notifications.filter((n) => !n.read_at).length
