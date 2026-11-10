@@ -48,6 +48,21 @@ import { isColumnAbsent } from "@/lib/supabase/columnAbsent";
 //                                       history is a place it would (Admin's
 //                                       find on the second read, and the
 //                                       arbiter's yes, 2026-11-10).
+//   community_mod_log.summary           The moderators' log quoted the
+//                                       words too: each time a moderator
+//                                       decided a hold on a request's words
+//                                       it wrote the reader's handle and the
+//                                       first eighty characters of what they
+//                                       had asked (lib/community/moderation.ts,
+//                                       the profile hold's decision). Those
+//                                       lines keep who decided, what and
+//                                       when, and lose the quotation. Only
+//                                       those: the same three actions are
+//                                       also written for a post's or a
+//                                       reply's hold, under another target,
+//                                       and are not touched (Admin's find on
+//                                       the read of the fifth statement,
+//                                       2026-11-10).
 //   profile_prayers                     Who said "I prayed" for whose
 //                                       request: every row deleted. Nothing
 //                                       reads it since 1.9.
@@ -121,11 +136,20 @@ export type RequestsEndReport =
       holds: Cleared;
       /** Holds a moderator had decided, kept as records and emptied of the reader's words. */
       emptied: Cleared;
+      /** Lines of the moderators' log that quoted a request's words, kept as records and emptied of the quotation. */
+      logged: Cleared;
       /** "I prayed" rows deleted. */
       prayers: Cleared;
       /** Whether the public mark stands: only once a run has gone through with nothing failed. */
       marked: boolean;
     };
+
+/**
+ * The three things a moderator could decide of a hold on a request's words,
+ * as the log names them (lib/community/moderation.ts). With the target
+ * "profile" they are a request's and nothing else's.
+ */
+const REQUEST_WORDS_ACTIONS = ["approve_words", "keep_masked", "remove_request_words"];
 
 type Changed = { data: unknown; error: { code?: string | null; message?: string | null } | null };
 
@@ -183,16 +207,22 @@ export async function endPrayerRequests(admin: SupabaseClient, now: number = Dat
     admin.from("community_text_holds").update({ original_body: null }).not("profile_id", "is", null).not("original_body", "is", null).select("id"),
     "emptying the decided holds of their words",
   );
+  // The moderators' log quoted those words when a hold on them was decided. The line stays; the quotation does not.
+  // Both halves of the filter matter: the three actions are also a post's and a reply's, under another target.
+  const logged = await step(
+    admin.from("community_mod_log").update({ summary: null }).eq("target_kind", "profile").in("action", REQUEST_WORDS_ACTIONS).not("summary", "is", null).select("id"),
+    "emptying the moderators' log of the words it quoted",
+  );
   const prayers = await step(admin.from("profile_prayers").delete().not("owner_id", "is", null).select("owner_id"), "deleting who prayed");
 
-  const all = [requests, words, holds, emptied, prayers];
+  const all = [requests, words, holds, emptied, logged, prayers];
   const failed = all.includes("failed");
   const changed = all.reduce<number>((sum, n) => sum + (typeof n === "number" ? n : 0), 0);
   if (changed > 0) {
     // Counts only: no words, and nobody's name.
-    const summary = `Asking for prayers ended with the prayer wall: ${requests} requests cleared, ${words} with words, ${holds} waiting holds deleted, ${emptied} decided holds emptied of their words, ${prayers} prayers deleted.`;
+    const summary = `Asking for prayers ended with the prayer wall: ${requests} requests cleared, ${words} with words, ${holds} waiting holds deleted, ${emptied} decided holds emptied of their words, ${logged} log lines emptied of the words they quoted, ${prayers} prayers deleted.`;
     console.info(`[community] ${summary}`);
     await logMod(admin, AUTO, { action: "requests_ended", target: "hold", summary });
   }
-  return { state: "ran", from, requests, words, holds, emptied, prayers, marked: failed ? false : await mark(admin) };
+  return { state: "ran", from, requests, words, holds, emptied, logged, prayers, marked: failed ? false : await mark(admin) };
 }

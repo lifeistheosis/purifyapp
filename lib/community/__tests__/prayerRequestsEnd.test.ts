@@ -84,7 +84,17 @@ function world() {
     // A reader's own inbox is theirs.
     community_notifications: [{ id: "n1", user_id: ANNA, kind: "prayed", actor_name: "Ben" }],
     data_moves: [],
-    community_mod_log: [],
+    community_mod_log: [
+      // What a moderator decided of a hold on a request's words: the log quoted the reader's handle and words.
+      { id: "l-approve", actor_id: null, actor_name: "The team", action: "approve_words", target_kind: "profile", target_id: "h-decided", summary: "@ben: Old words", created_at: "2026-10-02T09:00:00.000Z" },
+      { id: "l-keep", actor_id: null, actor_name: "The team", action: "keep_masked", target_kind: "profile", target_id: "h-gone-1", summary: "@anna: For my mother, who is ill", created_at: "2026-09-02T09:00:00.000Z" },
+      { id: "l-remove", actor_id: null, actor_name: "The team", action: "remove_request_words", target_kind: "profile", target_id: "h-gone-2", summary: "@cara: For last spring", created_at: "2026-05-02T09:00:00.000Z" },
+      // The same actions for a post's and a reply's hold: another target, and not a request's.
+      { id: "l-post", actor_id: null, actor_name: "The team", action: "approve_words", target_kind: "post", target_id: "p1", summary: "A post's words", created_at: "2026-10-03T09:00:00.000Z" },
+      { id: "l-reply", actor_id: null, actor_name: "The team", action: "keep_masked", target_kind: "reply", target_id: "r1", summary: "A reply's words", created_at: "2026-10-04T09:00:00.000Z" },
+      // Something else done to a profile, which quotes no request.
+      { id: "l-clear", actor_id: null, actor_name: "The team", action: "clear_profile", target_kind: "profile", target_id: "rep1", summary: "@dan", created_at: "2026-10-05T09:00:00.000Z" },
+    ],
   };
   const api = cappedApi(tables, {}, { upserts: true });
   reads = api.requests;
@@ -145,7 +155,7 @@ describe("before the day", () => {
 
 describe("on the day", () => {
   it("clears every request's time and words, the holds on those words, and who prayed, and says how many", async () => {
-    expect(await run()).toEqual({ state: "ran", from: "2026-12-04", requests: 2, words: 3, holds: 1, emptied: 1, prayers: 3, marked: true });
+    expect(await run()).toEqual({ state: "ran", from: "2026-12-04", requests: 2, words: 3, holds: 1, emptied: 1, logged: 3, prayers: 3, marked: true });
     for (const profile of tables.profiles) {
       expect(profile.prayer_request_at, String(profile.handle)).toBeNull();
       expect(profile.prayer_request_intention, String(profile.handle)).toBeNull();
@@ -174,19 +184,48 @@ describe("on the day", () => {
     const decided = tables.community_text_holds.find((h) => h.id === "h-decided");
     expect(decided).toEqual({ id: "h-decided", profile_id: BEN, post_id: null, reply_id: null, original_body: null, hits: 1, status: "approved", resolved_by_email: "mod@example.com", resolved_at: "2026-10-02T09:00:00.000Z" });
     // Nowhere in what is left is a word any reader wrote of their request.
-    expect(JSON.stringify([tables.profiles, tables.community_text_holds.filter((h) => h.profile_id), tables.profile_prayers])).not.toMatch(/mother|exams|spring|Old words|zorbak/);
+    expect(JSON.stringify([tables.profiles, tables.community_text_holds.filter((h) => h.profile_id), tables.profile_prayers, tables.community_mod_log])).not.toMatch(/mother|exams|spring|Old words|zorbak/);
+  });
+
+  it("the moderators' log keeps its lines about a request and loses the words it quoted", async () => {
+    await run();
+    const line = (id: string) => tables.community_mod_log.find((l) => l.id === id);
+    // Who decided, what and when stay; the reader's handle and words do not.
+    expect(line("l-approve")).toEqual({ id: "l-approve", actor_id: null, actor_name: "The team", action: "approve_words", target_kind: "profile", target_id: "h-decided", summary: null, created_at: "2026-10-02T09:00:00.000Z" });
+    expect(line("l-keep")).toMatchObject({ action: "keep_masked", target_kind: "profile", target_id: "h-gone-1", summary: null });
+    expect(line("l-remove")).toMatchObject({ action: "remove_request_words", target_kind: "profile", target_id: "h-gone-2", summary: null });
+  });
+
+  it("and touches no other line of it: a post's, a reply's, or anything else done to a profile", async () => {
+    await run();
+    const line = (id: string) => tables.community_mod_log.find((l) => l.id === id);
+    // The same action names, under another target: a post's and a reply's words are theirs to keep.
+    expect(line("l-post")).toMatchObject({ action: "approve_words", target_kind: "post", summary: "A post's words" });
+    expect(line("l-reply")).toMatchObject({ action: "keep_masked", target_kind: "reply", summary: "A reply's words" });
+    // The same target, another action.
+    expect(line("l-clear")).toMatchObject({ action: "clear_profile", target_kind: "profile", summary: "@dan" });
+    // No line was deleted, and the one added is this job's own.
+    expect(tables.community_mod_log.map((l) => (l.action === "requests_ended" ? "its own" : l.id))).toEqual(["l-approve", "l-keep", "l-remove", "l-post", "l-reply", "l-clear", "its own"]);
   });
 
   it("says so once in the moderators' log, in counts, with no words and no names", async () => {
+    const before = tables.community_mod_log.length;
     await run();
-    expect(tables.community_mod_log).toHaveLength(1);
-    const line = tables.community_mod_log[0];
+    const own = tables.community_mod_log.filter((l) => l.action === "requests_ended");
+    expect(own).toHaveLength(1);
+    expect(tables.community_mod_log).toHaveLength(before + 1);
+    const line = own[0];
     expect(line).toMatchObject({ actor_id: null, actor_name: "Auto-moderation", action: "requests_ended", target_kind: "hold", target_id: null });
-    expect(line.summary).toBe("Asking for prayers ended with the prayer wall: 2 requests cleared, 3 with words, 1 waiting holds deleted, 1 decided holds emptied of their words, 3 prayers deleted.");
+    expect(line.summary).toBe(
+      "Asking for prayers ended with the prayer wall: 2 requests cleared, 3 with words, 1 waiting holds deleted, 1 decided holds emptied of their words, 3 log lines emptied of the words they quoted, 3 prayers deleted.",
+    );
+    // It fits the log's own limit with room to spare, whatever the counts.
+    expect(String(line.summary).length).toBeLessThan(260);
     expect(String(line.summary)).not.toMatch(/anna|ben|cara|mother|exams|spring|zorbak|@/i);
-    // A run that changes nothing says nothing.
+    // Its own line is not one it would empty on a later run.
     await run(THE_DAY + 86_400_000);
-    expect(tables.community_mod_log).toHaveLength(1);
+    expect(tables.community_mod_log).toHaveLength(before + 1);
+    expect(tables.community_mod_log.find((l) => l.action === "requests_ended")?.summary).toBe(line.summary);
   });
 
   it("reads no profile and no request to do it: it only sets empty what is set", async () => {
@@ -197,7 +236,7 @@ describe("on the day", () => {
   it("a second run changes nothing", async () => {
     await run();
     const after = structuredClone(tables);
-    expect(await run(THE_DAY + 86_400_000)).toEqual({ state: "ran", from: "2026-12-04", requests: 0, words: 0, holds: 0, emptied: 0, prayers: 0, marked: true });
+    expect(await run(THE_DAY + 86_400_000)).toEqual({ state: "ran", from: "2026-12-04", requests: 0, words: 0, holds: 0, emptied: 0, logged: 0, prayers: 0, marked: true });
     expect(tables).toEqual(after);
     expect(tables.data_moves).toHaveLength(1);
   });
@@ -209,7 +248,7 @@ describe("a database that lacks a part, or fails", () => {
     const real = cappedApi(tables, {}, { upserts: true }).client;
     const broken = (): Record<string, unknown> => {
       const q: Record<string, unknown> = {};
-      for (const method of ["not", "eq", "select"]) q[method] = () => q;
+      for (const method of ["not", "eq", "in", "select"]) q[method] = () => q;
       q.then = (resolve: (value: unknown) => unknown) => Promise.resolve({ data: null, error }).then(resolve);
       return q;
     };
@@ -226,7 +265,7 @@ describe("a database that lacks a part, or fails", () => {
   it("says absent for the words' column before its SQL, and for a table that is not there, and clears the rest", async () => {
     vi.spyOn(console, "warn").mockImplementation(() => {});
     const noWords = failing("profiles", { code: "42703", message: "column profiles.prayer_request_intention does not exist" }, (patch) => Boolean(patch && "prayer_request_intention" in patch));
-    expect(await endPrayerRequests(noWords, THE_DAY, { shippedOn: SHIPPED })).toEqual({ state: "ran", from: "2026-12-04", requests: 2, words: "absent", holds: 1, emptied: 1, prayers: 3, marked: true });
+    expect(await endPrayerRequests(noWords, THE_DAY, { shippedOn: SHIPPED })).toEqual({ state: "ran", from: "2026-12-04", requests: 2, words: "absent", holds: 1, emptied: 1, logged: 3, prayers: 3, marked: true });
 
     world();
     const noPrayers = cappedApi({ ...tables, profile_prayers: undefined as never }, {}, { upserts: true }).client;
@@ -236,20 +275,50 @@ describe("a database that lacks a part, or fails", () => {
   it("when a step fails the others still run, the mark is held back, and the next run finishes", async () => {
     vi.spyOn(console, "warn").mockImplementation(() => {});
     const down = failing("profile_prayers", { code: "XX000", message: "boom" });
-    expect(await endPrayerRequests(down, THE_DAY, { shippedOn: SHIPPED })).toEqual({ state: "ran", from: "2026-12-04", requests: 2, words: 3, holds: 1, emptied: 1, prayers: "failed", marked: false });
+    expect(await endPrayerRequests(down, THE_DAY, { shippedOn: SHIPPED })).toEqual({ state: "ran", from: "2026-12-04", requests: 2, words: 3, holds: 1, emptied: 1, logged: 3, prayers: "failed", marked: false });
     expect(tables.profile_prayers).toHaveLength(3);
     expect(tables.data_moves).toEqual([]);
 
-    expect(await run(THE_DAY + 86_400_000)).toEqual({ state: "ran", from: "2026-12-04", requests: 0, words: 0, holds: 0, emptied: 0, prayers: 3, marked: true });
+    expect(await run(THE_DAY + 86_400_000)).toEqual({ state: "ran", from: "2026-12-04", requests: 0, words: 0, holds: 0, emptied: 0, logged: 0, prayers: 3, marked: true });
     expect(tables.profile_prayers).toEqual([]);
+  });
+
+  it("when emptying the log's quotation fails the others still run, the mark is held back, and the next run finishes", async () => {
+    vi.spyOn(console, "warn").mockImplementation(() => {});
+    const down = failing("community_mod_log", { code: "XX000", message: "boom" });
+    expect(await endPrayerRequests(down, THE_DAY, { shippedOn: SHIPPED })).toEqual({ state: "ran", from: "2026-12-04", requests: 2, words: 3, holds: 1, emptied: 1, logged: "failed", prayers: 3, marked: false });
+    expect(tables.data_moves).toEqual([]);
+    expect(tables.community_mod_log.find((l) => l.id === "l-keep")?.summary).toBe("@anna: For my mother, who is ill");
+    // The heartbeat comes round again: only the log is left, it is done, and the mark is written.
+    expect(await run(THE_DAY + 86_400_000)).toEqual({ state: "ran", from: "2026-12-04", requests: 0, words: 0, holds: 0, emptied: 0, logged: 3, prayers: 0, marked: true });
+    expect(tables.community_mod_log.find((l) => l.id === "l-keep")?.summary).toBeNull();
+  });
+});
+
+describe("the log's quotation is a step like the others", () => {
+  it("a run that found only a quotation left still says what it did", async () => {
+    await run();
+    expect(tables.community_mod_log.filter((l) => l.action === "requests_ended")).toHaveLength(1);
+    // One more line that quotes a request, written after the first run.
+    tables.community_mod_log.push({ id: "l-late", actor_id: null, actor_name: "The team", action: "keep_masked", target_kind: "profile", target_id: "h-late", summary: "@ben: For my exams", created_at: "2026-12-04T08:00:00.000Z" });
+    expect(await run(THE_DAY + 86_400_000)).toMatchObject({ requests: 0, words: 0, holds: 0, emptied: 0, logged: 1, prayers: 0, marked: true });
+    expect(tables.community_mod_log.find((l) => l.id === "l-late")?.summary).toBeNull();
+    const own = tables.community_mod_log.filter((l) => l.action === "requests_ended");
+    expect(own).toHaveLength(2);
+    expect(String(own[1].summary)).toContain("1 log lines emptied of the words they quoted");
+    // And neither of its own lines was emptied by the other run.
+    expect(own.every((l) => typeof l.summary === "string")).toBe(true);
   });
 });
 
 describe("what it may write, read from its own code", () => {
   const source = readFileSync(join(process.cwd(), "lib/community/prayerRequestsEnd.ts"), "utf8").replace(/^\s*\/\/.*$/gm, "");
 
-  it("three updates: the request's two fields, and a decided hold's words; each only where one is set", () => {
-    expect(source.match(/\.update\(/g)).toHaveLength(3);
+  it("four updates: the request's two fields, a decided hold's words, and the log's quotation; each only where one is set", () => {
+    expect(source.match(/\.update\(/g)).toHaveLength(4);
+    // The log: only a request's lines (the target and the three actions together), and only their quotation.
+    expect(source).toContain('admin.from("community_mod_log").update({ summary: null }).eq("target_kind", "profile").in("action", REQUEST_WORDS_ACTIONS).not("summary", "is", null)');
+    expect(source).toContain('const REQUEST_WORDS_ACTIONS = ["approve_words", "keep_masked", "remove_request_words"];');
     expect(source).toContain('admin.from("profiles").update({ prayer_request_at: null }).not("prayer_request_at", "is", null)');
     expect(source).toContain('admin.from("profiles").update({ prayer_request_intention: null }).not("prayer_request_intention", "is", null)');
     // Only a hold on a request's words (profile_id is set on those and on no other), and only its words.
@@ -260,7 +329,7 @@ describe("what it may write, read from its own code", () => {
     expect(source.match(/\.delete\(\)/g)).toHaveLength(2);
     expect(source).toContain('admin.from("community_text_holds").delete().not("profile_id", "is", null).eq("status", "pending")');
     expect(source).toContain('admin.from("profile_prayers").delete().not("owner_id", "is", null)');
-    expect([...source.matchAll(/\.from\("([a-z_]+)"\)/g)].map((m) => m[1]).sort()).toEqual(["community_text_holds", "community_text_holds", "data_moves", "profile_prayers", "profiles", "profiles"]);
+    expect([...source.matchAll(/\.from\("([a-z_]+)"\)/g)].map((m) => m[1]).sort()).toEqual(["community_mod_log", "community_text_holds", "community_text_holds", "data_moves", "profile_prayers", "profiles", "profiles"]);
     // Its one line for the moderators goes through the log's own writer, and it writes nothing else of its own.
     expect(source).not.toMatch(/\.insert\(/);
     expect(source.match(/logMod\(/g)).toHaveLength(1);
