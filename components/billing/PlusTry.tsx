@@ -153,13 +153,20 @@ export function bringRowBack(list: RefObject<HTMLElement | null>, id: string): v
 }
 
 /**
- * The preview's title bar: the arrow back to the list, the feature's name,
- * "Preview", and in the sheet its close. In the sheet it stands in the
- * sheet's own title bar, under the handle that still drags it.
+ * The preview's title bar: the arrow back to the list, the feature's name
+ * with "Preview" under it, and in the sheet its close. In the sheet it stands
+ * in the sheet's own title bar, under the handle that still drags it.
  *
  * The name takes two lines before it is cut (1.9): one line cut "Candlelight
  * and Monastery reading" to "Candlelight and Monastery rea..." on a phone,
  * and the longer languages cut more.
+ *
+ * The name stands over "Preview" and has the bar's whole width between the
+ * way back and the close (1.9, Admin's pick A of 2026-11-10). "Preview" stood
+ * beside the name and did not give way, so the name had 120 to 130px on a
+ * 360-wide phone: "Nineteen reading modes" was cut there in Greek and in
+ * Georgian, and in seven languages at 320. The way back and the close keep
+ * to the bar's middle however tall the name makes it.
  */
 export function PlusTryHead({ name, onBack, onClose }: { name: string; onBack: () => void; onClose?: () => void }) {
   const { t } = useTranslate();
@@ -170,9 +177,10 @@ export function PlusTryHead({ name, onBack, onClose }: { name: string; onBack: (
           <ChevronLeft size={18} className="rtl:-scale-x-100" />
         </span>
       </button>
-      <p className="min-w-0 line-clamp-2 font-sans text-ui font-semibold leading-tight text-paper">{name}</p>
-      <span className="shrink-0 font-sans text-[12.5px] font-medium text-paper/50">{t("profile.previewing")}</span>
-      <span className="min-w-0 flex-1" />
+      <div className="min-w-0 flex-1">
+        <p className="line-clamp-2 font-sans text-ui font-semibold leading-tight text-paper">{name}</p>
+        <span className="mt-0.5 block font-sans text-[12.5px] font-medium leading-tight text-paper/50">{t("profile.previewing")}</span>
+      </div>
       {onClose ? (
         <button
           type="button"

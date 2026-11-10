@@ -97,6 +97,18 @@ describe("the preview's frame", () => {
     expect(render(createElement(PlusTryHead, { name: "Ambience", onBack: () => {} }))).not.toContain('aria-label="Close"');
   });
 
+  it("stands the name over Preview, with the bar's whole width between the way back and the close", () => {
+    // Admin's pick A, 2026-11-10: beside the name, "Preview" did not give way, and "Nineteen reading
+    // modes" was cut at 360 wide in Greek and in Georgian. The name keeps its two lines.
+    const out = render(createElement(PlusTryHead, { name: "Ambience", onBack: () => {}, onClose: () => {} }));
+    expect(out).toMatch(/<div class="min-w-0 flex-1"><p class="line-clamp-2 [^"]*">Ambience<\/p><span class="[^"]*\bblock\b[^"]*">Preview<\/span><\/div>/);
+    // Nothing else takes the bar's width: the name's block is the one part that grows.
+    expect(out.match(/\bflex-1\b/g)).toHaveLength(1);
+    // The way back and the close are 44px, and keep to the bar's middle however tall the name makes it.
+    expect(out.match(/\bh-11 w-11 shrink-0\b/g)).toHaveLength(2);
+    expect(out).toMatch(/^<div class="flex items-center [^"]*" data-plus-try-head="">/);
+  });
+
   it("says what stays free under a page, and Next names the following feature", () => {
     const rows = plusRowsLedBy(null);
     const plans = row("plans");
