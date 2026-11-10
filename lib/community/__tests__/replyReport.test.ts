@@ -132,6 +132,18 @@ describe("the menu on the page", () => {
     expect(author).toContain('className={cn("group text-start", className)}');
   });
 
+  it("a reply's picture is the 44px way to its writer, and its name is allowed by name", () => {
+    // The arbiter's yes, 2026-11-10: the picture reaches 44px (its reach fits
+    // the gap beside it); a 44px reach on the name would cover the reply's
+    // first line, so the name says why it is smaller, for checkMock.
+    const src = read("components/community/CommunityClient.tsx");
+    const row = src.slice(src.indexOf("orderedReplies.map((r) => {"), src.indexOf("{replyNotice ? ("));
+    expect(row).toContain('className="hit-44 shrink-0 rounded-full"');
+    expect(row).toMatch(/smallBecause="[^"]*View profile are the 44px ways to the profile"/);
+    const author = src.slice(src.indexOf("function AuthorButton"), src.indexOf("function AuthorButton") + 2000);
+    expect(author).toContain('"data-mock-allow": "target", "data-mock-why": smallBecause');
+  });
+
   it("uses words every language already has, in its own file", () => {
     // Read from each language's own file, not through getMessages, which
     // fills a missing line with the English one.

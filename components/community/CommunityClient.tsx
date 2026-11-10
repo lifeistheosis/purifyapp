@@ -1851,10 +1851,13 @@ function PostCardInner({
                         </p>
                       ) : null}
                       <div className="flex items-start gap-2.5">
+                        {/* The picture is the 44px way to the writer's profile:
+                            its reach fits the gap beside it (the arbiter's yes,
+                            2026-11-10). The name under 44px is named below. */}
                         <AuthorButton
                           seed={replySeed(r)}
                           decorative
-                          className="shrink-0 rounded-full"
+                          className="hit-44 shrink-0 rounded-full"
                         >
                           <Avatar name={r.author_name} url={r.author_avatar} size={28} decoration={r.author_decoration} />
                         </AuthorButton>
@@ -1863,6 +1866,7 @@ function PostCardInner({
                             {r.author_handle ? (
                               <AuthorButton
                                 seed={replySeed(r)}
+                                smallBecause="a 44px reach here would cover the reply's first line; the picture beside it and the menu's View profile are the 44px ways to the profile"
                                 className={cn(
                                   "font-semibold text-paper/85 decoration-paper/40 underline-offset-2 hover:text-paper hover:underline",
                                   nameColorClass(r.author_name_color),
@@ -2037,11 +2041,17 @@ function AuthorButton({
   seed,
   decorative = false,
   className,
+  smallBecause,
   children,
 }: {
   seed: ProfileSeed | null;
   decorative?: boolean;
   className?: string;
+  /**
+   * Why this button may stay under 44px, named on it for checkMock
+   * (data-mock-allow), where a larger reach would cover words a reader taps.
+   */
+  smallBecause?: string;
   children: React.ReactNode;
 }) {
   const opener = useContext(ProfileOpenerContext);
@@ -2060,6 +2070,7 @@ function AuthorButton({
       }}
       tabIndex={decorative ? -1 : undefined}
       aria-hidden={decorative ? true : undefined}
+      {...(smallBecause ? { "data-mock-allow": "target", "data-mock-why": smallBecause } : {})}
       className={cn("group text-start", className)}
     >
       {children}
