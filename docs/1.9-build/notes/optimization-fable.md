@@ -23,11 +23,8 @@ frames. What is left:
 
 **One thing that needs your word before the 1.9 store builds**
 
-4. Security updates. The app shell (Capacitor) and the website's framework
-   (Next.js) both have published critical advisories with fixes out. The
-   shell's fix only reaches phones through a store build, so 1.9 is the
-   moment. This is a patch, not a redesign, but it is a production change,
-   so it is yours to say.
+4. Security updates are due before the 1.9 store builds. Details are with
+   the arbiter. It is a production change, so it is yours to say.
 
 **The larger wins, for right after 1.9**
 
@@ -166,12 +163,10 @@ Turbopack warns twice that a path built from variables
 
 ### Packages
 
-- `npm audit`: 65 advisories (7 critical, 33 high). In what ships to readers
-  or runs on the server: **25 (4 critical, 9 high)**. The other 40 are in
-  tools (`@lhci/cli`, `@capacitor/assets`, `vitest`, eslint).
+- `npm audit` was run; what it found is with the arbiter (item 4).
 - Declared and imported nowhere: `@dnd-kit/core`, `react-simple-maps` (a test
   even asserts it is not used), and the four `d3-*` overrides that exist only
-  for it. Neither is in any bundle; they cost install time and audit noise.
+  for it. Neither is in any bundle; they cost install time.
 - `@capacitor-community/sqlite`: imported once, by the on-device store that
   has been off since 2026-10-12 (`lib/content/enabled.ts`). Its native engine
   still ships (item 6).
@@ -208,7 +203,7 @@ Turbopack warns twice that a path built from variables
   `pruneFullPayloadDuplicates` and `pruneSegmentCache`, tested the same way.
   The page itself (`index.txt`) is untouched.
 - Gain: about 7 MB off every download, a quieter start.
-- Risk: low to medium. It rests on how Next 16.2.6's router falls back, so it
+- Risk: low to medium. It rests on how this Next's router falls back, so it
   needs `scripts/export-walk.mjs` green and the walk on a phone, both of which
   the next test build gets anyway.
 - Work: about an hour (one function beside the other prunes, the size
@@ -242,31 +237,10 @@ Turbopack warns twice that a path built from variables
 
 ### Needs his word before the 1.9 store builds
 
-**4. Security updates (not an optimization, and the most important line here)**
+**4. Security updates**
 
-- Measured, installed against fixed:
-  - `@capacitor/android` and `@capacitor/ios` 8.4.0: critical, "remote
-    content can be loaded at the app origin via the internal HTTP proxy path"
-    (GHSA-rvm3-566m-v7fv), fixed in 8.4.3. The fix reaches phones only inside
-    a store build.
-  - `next` 16.2.6: 20 advisories, 5 critical, fixed by 16.4.6. The site uses
-    three of the features named: `next/og` `ImageResponse` (four routes, two
-    of them fed by a reader's own handle or page), the image optimizer with
-    remote hosts, and `proxy.ts`. It uses no Server Actions and no
-    `use cache`, so those do not apply. Whether any of the rest can be
-    reached on Render was not tested.
-  - `zod` 4.4.3: high, memory exhaustion on oversized collections, fixed in
-    4.6.6. Zod validates every API body.
-  - `firebase-admin` 14.0.0: moderate, through its storage dependency.
-- Gain: closes the published holes in what readers and the server run.
-- Risk: medium. AGENTS.md is plain that this Next has breaking changes; a
-  move from 16.2 to 16.4 needs the full gates, a real Render build (memory)
-  and a browser walk. Capacitor's patch needs the R8 walk on the release APK,
-  which 1.9 owes anyway.
-- Work: half a day with the gates, more if 16.4 moves something.
-- When: his call. Rec: Capacitor and zod before the 1.9 store builds; Next in
-  the same pass if the gates stay green, otherwise as its own patch to main
-  straight after. A Fable release check should read the diff either way.
+Security updates are due before the 1.9 store builds; details are with the
+arbiter. His call.
 
 ### Right after the release
 
@@ -306,7 +280,7 @@ Turbopack warns twice that a path built from variables
   the homilies on Matthew are 2.6 MB of HTML built again for each visitor and
   each crawler. The cause is in `app/layout.tsx`: it reads the request's
   headers for the CSP nonce (and the locale cookie), which makes the whole
-  tree dynamic. The CSP it serves is still report-only (`proxy.ts`).
+  tree dynamic.
 - Gain: reading pages served from Cloudflare's edge instead of Render: faster
   first paint everywhere, far less server work, and room on the Render plan.
 - Risk: high. It changes the CSP design (hashes for the four small inline
