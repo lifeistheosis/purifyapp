@@ -402,7 +402,13 @@ await shot("11-how-long", "starting one: how long", "/campaigns/new", "[role=dia
 
 // 12 In the prayers: Evening prayers at Those I pray for, with both names and the psalm.
 await shot("12-in-the-prayers", "the campaigns inside the prayers", "/prayers/evening", "#commemoration", {
-  set: { "purify.intentions.living": JSON.stringify([{ id: "22222222-2222-4222-8222-222222222222", name: "Catherine", addedAt: now }]) },
+  set: {
+    "purify.intentions.living": JSON.stringify([{ id: "22222222-2222-4222-8222-222222222222", name: "Catherine", addedAt: now }]),
+    // Easy Scroll (build 89 note 7) settles the page on a prayer's first line,
+    // which pulls a still set at the names back to the prayer before them.
+    // Off for this one picture, as a reader who has turned it off sees it.
+    "purify.easyScroll": "off",
+  },
   prepare: async (page) => {
     await page.waitForSelector("#commemoration", { timeout: 15000 });
     await page.waitForSelector("#campaign-psalm-90", { timeout: 15000 });
