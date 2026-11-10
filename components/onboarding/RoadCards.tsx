@@ -18,31 +18,42 @@ import Link from "next/link";
 import { useEffect, useState, useSyncExternalStore } from "react";
 
 import { useTranslate } from "@/components/i18n/MessagesProvider";
+import { PlusMark } from "@/components/billing/PlusMark";
+import { useUpgradeModal } from "@/components/billing/UpgradeModal";
 import { CARD_BG } from "@/components/ui/Graphite";
 import { Close } from "@/components/ui/icons/Close";
 import { cn } from "@/lib/cn";
 import {
   ONBOARDING_EVENT,
   isOnboarded,
+  isPlusIntroDone,
   isSecondChanceDone,
+  markPlusIntroDone,
   markSecondChanceDone,
   readBackground,
   readKeep,
   readLevel,
   readOnboardedDay,
   readWeek,
+  wasOnboardedAgain,
   writeBackground,
   writeKeep,
   type KeepState,
 } from "@/lib/onboarding/state";
 import { ROAD_PILLS, type Background } from "@/lib/onboarding/space";
-import { reached } from "@/lib/ab/device";
+import { armHere, exposed, reached } from "@/lib/ab/device";
+import { PLUS_INTRODUCED } from "@/lib/ab/tests";
 import { countReminders, countTodayCard, markAccountFrom } from "@/lib/analytics/moreCount";
 import { countAccountFromCard } from "@/lib/onboarding/count";
+import { introRow, plusIntroDue } from "@/lib/onboarding/plusIntro";
 import { mayPromiseReminders } from "@/lib/onboarding/reminderPromise";
+import type { Road } from "@/lib/onboarding/road";
 import { isTesting, previewSignedOut } from "@/lib/onboarding/testing";
+import { useDayOneShown } from "@/lib/onboarding/useDayOne";
 import { useRoads } from "@/lib/onboarding/useRoads";
+import { readRoad } from "@/lib/onboarding/useWeek";
 import { localDay } from "@/lib/onboarding/week";
+import { usePlusFeatures } from "@/lib/entitlements/usePlusFeatures";
 import { isNativeClient, nativePlatform } from "@/lib/platform/native";
 import { EVENING_DEFAULT, MORNING_DEFAULT, enableReminders, remindersStatus, type EnableWhy } from "@/lib/push/reminders";
 import { readLocalSessionUser } from "@/lib/supabase/localSession";
@@ -63,6 +74,7 @@ function subscribe(onChange: () => void): () => void {
 function TipCard({
   id,
   eyebrow,
+  mark,
   title,
   body,
   note,
@@ -73,6 +85,8 @@ function TipCard({
 }: {
   id: string;
   eyebrow?: string;
+  /** In place of the eyebrow: a mark the card wears (the Plus mark). */
+  mark?: React.ReactNode;
   title: string;
   body?: string;
   /** A second, quieter line. */
@@ -94,7 +108,8 @@ function TipCard({
       <div className="flex items-start gap-3">
         <div className="min-w-0 flex-1">
           {eyebrow ? <p className="font-sans text-caption font-semibold text-paper/55">{eyebrow}</p> : null}
-          <p id={id} className={cn("font-heading text-title-sm font-bold leading-tight text-paper", eyebrow && "mt-2")}>
+          {mark ? <p>{mark}</p> : null}
+          <p id={id} className={cn("font-heading text-title-sm font-bold leading-tight text-paper", (eyebrow || mark) && "mt-2")}>
             {title}
           </p>
           {body ? <p className="mt-1.5 font-sans text-detail leading-[1.55] text-paper/65">{body}</p> : null}
@@ -373,3 +388,72 @@ function SecondChance({ onDone }: { onDone: () => void }) {
     </div>
   );
 }
+
+/**
+ * Plus, introduced once (1.9, his 111; lib/onboarding/plusIntro.ts): a week
+ * after the questions, one card with the one Plus feature that fits what the
+ * reader came for, opening its Try it. Whether a reader meets it at all is
+ * the test's to say (lib/ab/tests.ts, PLUS_INTRODUCED): a device is counted
+ * as shown at the moment the card would be due, whichever version it has,
+ * and only the "card" version draws it. Shut for readers until he has seen
+ * it (lib/onboarding/flags.ts, PLUS_INTRO_LIVE); in Testers mode an admin
+ * who picks "card" sees it at once, with no week to wait.
+ *
+ * Every word is the feature's own, as the Plus sheet says it, under the one
+ * Plus mark. Tapped or closed, it is gone for good.
+ */
+export function PlusIntroCard({ className }: { className?: string }) {
+  const { t } = useTranslate();
+  const roads = useRoads();
+  const upgrade = useUpgradeModal();
+  const plus = usePlusFeatures();
+  const weekUp = useDayOneShown();
+  // `${done}|${the day the questions ended}|${asked again}|${road}`, empty on the server and the hydration render.
+  const snap = useSyncExternalStore(
+    subscribe,
+    () => `${isPlusIntroDone() ? "1" : ""}|${readOnboardedDay() ?? ""}|${wasOnboardedAgain() ? "1" : ""}|${readRoad() ?? ""}`,
+    () => "",
+  );
+  const [arm, setArm] = useState<string | null>(null);
+
+  const [done, onboardedDay, again, roadName] = snap.split("|");
+  const road = (roadName || null) as Road | null;
+  const row = introRow(road);
+  const testing = roads && snap !== "" && isTesting();
+  const due =
+    roads &&
+    snap !== "" &&
+    (testing
+      ? !done && !!row
+      : plusIntroDue({ road, again: again === "1", onboardedDay: onboardedDay || null, today: localDay(new Date()), plus, done: done === "1", weekUp }));
+
+  // The device's version, read once the card's moment has come, and said
+  // once as shown: here both versions are still the same Today.
+  useEffect(() => {
+    if (!due) return;
+    const id = window.setTimeout(() => {
+      const here = armHere("today");
+      exposed("today");
+      setArm(here?.test.id === PLUS_INTRODUCED.id ? here.arm : null);
+    }, 0);
+    return () => window.clearTimeout(id);
+  }, [due]);
+
+  if (!due || arm !== "card" || !row?.feature) return null;
+  const feature = row.feature;
+  return (
+    <TipCard id="plus-intro" mark={<PlusMark />} title={t(row.name)} body={t(row.body)} onClose={markPlusIntroDone} className={className}>
+      <button
+        type="button"
+        onClick={() => {
+          markPlusIntroDone();
+          upgrade.open(feature, { tryNow: true });
+        }}
+        className={WAY_ON}
+      >
+        {t("plus.try.open")}
+      </button>
+    </TipCard>
+  );
+}
+

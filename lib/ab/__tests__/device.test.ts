@@ -6,7 +6,11 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 const world = vi.hoisted(() => ({ roads: true, counting: true, now: "2026-12-10T10:00:00Z" }));
 
-vi.mock("@/lib/onboarding/flags", () => ({ roadsBuilt: () => world.roads }));
+vi.mock("@/lib/onboarding/flags", () => ({
+  roadsBuilt: () => world.roads,
+  // Plus, introduced once, stays shut in these tests: they are the first test's.
+  litNow: () => ({ roads: world.roads, plusIntro: false }),
+}));
 vi.mock("@/lib/onboarding/count", () => ({ countPlatform: () => "android", countingAllowed: () => world.counting }));
 vi.mock("@/lib/platform/native", () => ({ isNativeClient: () => false }));
 vi.mock("@/lib/site", () => ({ SITE_URL: "https://purifyapp.net" }));

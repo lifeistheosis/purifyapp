@@ -40,6 +40,10 @@ import { MILESTONES, type Milestone } from "./milestones";
 export type AbSurface = "onboarding" | "today" | "plus" | "plans" | "reminders" | "themes" | "offer";
 export const AB_SURFACES: readonly AbSurface[] = ["onboarding", "today", "plus", "plans", "reminders", "themes", "offer"];
 
+/** What a test may wait on before it runs. */
+export type AbGate = "roads" | "plusIntro";
+export type AbLit = Readonly<Record<AbGate, boolean>>;
+
 export type AbTest = {
   /** A short name: lower-case letters, digits and dashes. Never reused for another test. */
   id: string;
@@ -53,8 +57,14 @@ export type AbTest = {
   /** First and last day, YYYY-MM-DD (UTC). */
   begins: string;
   ends: string;
-  /** Runs only while this holds: "roads" is the revised onboarding lit for readers. */
-  gate?: "roads";
+  /**
+   * Runs only while this holds (lib/onboarding/flags.ts, litNow): "roads" is
+   * the revised onboarding lit for readers; "plusIntro" is the Plus card
+   * after the first week, shut until the owner has seen its stills.
+   */
+  gate?: AbGate;
+  /** Tests this one never runs together with, by id: they read the same readers at the same moment. */
+  apart?: readonly string[];
   /** The one milestone the test is judged by, decided before it starts. */
   judge: Milestone;
   /** The milestones that must not get clearly worse: a change that sells more and keeps fewer loses. */
@@ -106,7 +116,45 @@ export const ACCOUNT_PLACE: AbTest = {
   floor: 0.2,
 };
 
-export const AB_TESTS: readonly AbTest[] = [ACCOUNT_PLACE];
+/**
+ * Plus, introduced once (the owner's 111, built on his "everything in 1.9"
+ * of 2026-11-10; lib/onboarding/plusIntro.ts).
+ *
+ * A new reader without Plus, a week after the questions, meets Plus either
+ * only as the locks they come upon ("locks", as built), or also once, as one
+ * calm card on Today that shows the one Plus feature fitting what they said
+ * they came for and opens its Try it ("card"). Never a reader who is back,
+ * never where Plus is not sold, never the newcomer's road.
+ *
+ * Judged by Plus bought; readers coming back must not get clearly worse. A
+ * purchase is rare, so this needs many readers and may well end unsettled,
+ * in which case Purify stays as it is.
+ *
+ * SHUT: its gate is PLUS_INTRO_LIVE (lib/onboarding/flags.ts), false until
+ * the owner has seen the card's stills. ITS DAYS ARE SET WHEN IT IS LIT, as
+ * the first test's were; until then they hold nothing open. It never runs
+ * together with the Plus sheet's order test (`apart`), since both read the
+ * same buyers.
+ */
+export const PLUS_INTRODUCED: AbTest = {
+  id: "plus-introduced",
+  surface: "today",
+  asks: "Should a new reader meet Plus only as the locks they come upon, or also once, on a calm card on Today after their first week?",
+  arms: ["locks", "card"],
+  share: 1,
+  begins: "2026-11-10",
+  ends: "2026-11-10",
+  gate: "plusIntro",
+  apart: ["plus-sheet-order"],
+  judge: "plus_bought",
+  guards: ["back_week2"],
+  // To tell 2 in 100 buying from 4 in 100 (./size.ts, readersPerArm).
+  needs: 1140,
+  warmup: 200,
+  floor: 0.2,
+};
+
+export const AB_TESTS: readonly AbTest[] = [ACCOUNT_PLACE, PLUS_INTRODUCED];
 
 /**
  * Whether a "shown" or a "reached" row may leave a device. On since the
@@ -158,6 +206,8 @@ export function registryFaults(tests: readonly AbTest[]): string[] {
       else if (a.judge === "back_week2" && b.judge === "back_week2") {
         faults.push(`"${a.id}" and "${b.id}" are both judged on readers coming back, at the same time`);
       }
+      // And two tests that name each other apart never share a day.
+      if (a.apart?.includes(b.id) || b.apart?.includes(a.id)) faults.push(`"${a.id}" and "${b.id}" are kept apart, and run at the same time`);
     }
   }
   return faults;
@@ -170,7 +220,7 @@ export function registryFaults(tests: readonly AbTest[]): string[] {
 export function runningTest(
   surface: AbSurface,
   day: string,
-  lit: { roads: boolean },
+  lit: AbLit,
   tests: readonly AbTest[] = AB_TESTS,
 ): AbTest | null {
   return tests.find((t) => t.surface === surface && t.begins <= day && day <= t.ends && (!t.gate || lit[t.gate])) ?? null;
@@ -217,7 +267,8 @@ export function shownDayOk(shown: string, today: string): boolean {
 
 /**
  * The tests that come after, in the order the owner agreed (2026-11-10), as
- * a record and for his panel. NOT BUILT AND NOT REGISTERED: a test's second
+ * a record and for his panel. (Plus, introduced once, was the third of them
+ * and is built and registered above, shut.) NOT BUILT AND NOT REGISTERED: a test's second
  * version is built two weeks before its turn, so it is built against the
  * screens as they then are, and each waits for the one before it to settle
  * or end. `waits` says what each is waiting for besides its turn.
@@ -241,14 +292,6 @@ export const AB_PLANNED: readonly PlannedTest[] = [
     judge: "The button to subscribe tapped.",
     guards: "Plus bought; readers coming back in their second week.",
     waits: "Its turn. Same price, same words, same close in both versions, so it needs no word of its own.",
-  },
-  {
-    id: "plus-introduced",
-    asks: "Should Plus be met only as a lock, or also once, on a calm card after the first week?",
-    versions: ["Locks only, as built", "One card on Today after the first week, showing the Plus feature that fits what the reader asked for, opening its Try it"],
-    judge: "The Plus sheet opened, then a trial begun.",
-    guards: "Readers coming back in their second week; Plus bought.",
-    waits: "Its turn, and the card itself, which is his item 111. Never shown to a reader who came with a need, nor where Plus is not sold.",
   },
 ];
 

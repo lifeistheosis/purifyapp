@@ -22,7 +22,7 @@
 
 import { countPlatform, countingAllowed } from "@/lib/onboarding/count";
 import { daysBetween, utcDay } from "@/lib/onboarding/counting";
-import { roadsBuilt } from "@/lib/onboarding/flags";
+import { litNow } from "@/lib/onboarding/flags";
 import { isTesting } from "@/lib/onboarding/testing";
 import { isNativeClient } from "@/lib/platform/native";
 import { SITE_URL } from "@/lib/site";
@@ -56,7 +56,7 @@ function writeJson(key: string, value: unknown): boolean {
   }
 }
 
-const lit = () => ({ roads: roadsBuilt() });
+const lit = () => litNow();
 
 /**
  * The website, from a page of it or from the apps. A plain fetch with no

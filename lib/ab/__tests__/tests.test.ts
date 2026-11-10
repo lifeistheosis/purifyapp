@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 
-import { ROADS_LIVE } from "@/lib/onboarding/flags";
+import { PLUS_INTRO_LIVE, ROADS_LIVE, litNow } from "@/lib/onboarding/flags";
 import { trackEventSchema } from "@/lib/security/schemas";
 
 import { MILESTONES } from "../milestones";
@@ -8,6 +8,7 @@ import {
   ACCOUNT_PLACE,
   AB_PLANNED,
   AB_SENDING,
+  PLUS_INTRODUCED,
   AB_TESTS,
   abWord,
   abWords,
@@ -36,8 +37,8 @@ const test = (o: Partial<AbTest> = {}): AbTest => ({
   floor: 0.2,
   ...o,
 });
-const open = { roads: true };
-const shut = { roads: false };
+const open = { roads: true, plusIntro: true };
+const shut = { roads: false, plusIntro: false };
 
 describe("the tests Purify runs", () => {
   it("are a registry with nothing wrong in it", () => {
@@ -45,7 +46,7 @@ describe("the tests Purify runs", () => {
   });
 
   it("hold the account's place, as the owner agreed it", () => {
-    expect(AB_TESTS).toEqual([ACCOUNT_PLACE]);
+    expect(AB_TESTS).toEqual([ACCOUNT_PLACE, PLUS_INTRODUCED]);
     // The built version first: what the test falls back to.
     expect(ACCOUNT_PLACE.arms).toEqual(["card", "end"]);
     expect(ACCOUNT_PLACE.judge).toBe("back_week2");
@@ -66,7 +67,7 @@ describe("the tests Purify runs", () => {
     const days = (Date.parse(ACCOUNT_PLACE.ends) - Date.parse(ACCOUNT_PLACE.begins)) / 86_400_000;
     expect(days).toBe(84);
     // And lit, it runs: on its first day, on its last, and not the day after.
-    const open = { roads: true };
+    const open = { roads: true, plusIntro: false };
     expect(runningTest("onboarding", ACCOUNT_PLACE.begins, open)?.id).toBe("account-place");
     expect(runningTest("onboarding", ACCOUNT_PLACE.ends, open)?.id).toBe("account-place");
     const after = new Date(Date.parse(ACCOUNT_PLACE.ends) + 86_400_000).toISOString().slice(0, 10);
@@ -192,7 +193,8 @@ describe("the rules for more than one test", () => {
   });
 
   it("keep the next three on record, in order, and built into nothing", () => {
-    expect(AB_PLANNED.map((p) => p.id)).toEqual(["reminders-moment", "plus-sheet-order", "plus-introduced"]);
+    // Plus, introduced once, was the third: it is built and registered now, shut.
+    expect(AB_PLANNED.map((p) => p.id)).toEqual(["reminders-moment", "plus-sheet-order"]);
     for (const p of AB_PLANNED) {
       expect(AB_TESTS.some((t) => t.id === p.id), p.id).toBe(false);
       expect(p.versions.length, p.id).toBe(2);
@@ -223,6 +225,34 @@ describe("which test is running", () => {
   it("names a test and its arm in one word, and lists every word it can say", () => {
     expect(abWord(test(), "b")).toBe("day1-guided:b");
     expect(abWords(tests)).toEqual(["day1-guided:a", "day1-guided:b", "plus-card:a", "plus-card:b"]);
-    expect(abWords()).toEqual(["account-place:card", "account-place:end"]);
+    expect(abWords()).toEqual(["account-place:card", "account-place:end", "plus-introduced:locks", "plus-introduced:card"]);
   });
 });
+
+describe("Plus, introduced once: built, and shut until he has seen it", () => {
+  it("runs on no day while its switch is off, whatever else is lit", () => {
+    expect(PLUS_INTRO_LIVE).toBe(false);
+    expect(litNow().plusIntro).toBe(false);
+    for (const day of ["2026-11-10", "2026-12-25", "2027-06-01"]) {
+      expect(runningTest("today", day, { roads: true, plusIntro: false }), day).toBeNull();
+      expect(runningTest("today", day, litNow()), day).toBeNull();
+    }
+  });
+
+  it("is judged by Plus bought, with readers coming back guarded, and is never a test on a price", () => {
+    expect(PLUS_INTRODUCED).toMatchObject({ surface: "today", arms: ["locks", "card"], judge: "plus_bought", guards: ["back_week2"], gate: "plusIntro" });
+    // Purify as it is comes first: what the test falls back to.
+    expect(PLUS_INTRODUCED.arms[0]).toBe("locks");
+    expect(PLUS_INTRODUCED.surface).not.toBe("offer");
+  });
+
+  it("may run beside the first test, and never beside the Plus sheet's order", () => {
+    const lit = { ...PLUS_INTRODUCED, begins: "2026-12-01", ends: "2027-02-23" };
+    expect(registryFaults([ACCOUNT_PLACE, lit])).toEqual([]);
+    const sheet = test({ id: "plus-sheet-order", surface: "plus", judge: "plus_bought", guards: ["back_week2"], begins: "2027-01-01", ends: "2027-03-26" });
+    expect(registryFaults([lit, sheet]).join()).toContain("are kept apart, and run at the same time");
+    // One after the other, they may.
+    expect(registryFaults([lit, { ...sheet, begins: "2027-02-24", ends: "2027-05-19" }])).toEqual([]);
+  });
+});
+

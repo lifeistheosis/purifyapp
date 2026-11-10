@@ -4,7 +4,7 @@ import { tally, verdict } from "@/lib/ab/bandit";
 import { readAbRows } from "@/lib/ab/read";
 import { AB_TESTS, runningTest } from "@/lib/ab/tests";
 import { corsPreflight, corsRoute } from "@/lib/api/cors";
-import { roadsBuilt } from "@/lib/onboarding/flags";
+import { litNow } from "@/lib/onboarding/flags";
 import { ipKey, rateLimited } from "@/lib/security/ratelimit";
 
 export const runtime = "nodejs";
@@ -37,7 +37,7 @@ async function handleGET(req: Request) {
   if (cache && Date.now() - cache.at < HOUR) return NextResponse.json(cache.body, { headers });
 
   const today = new Date().toISOString().slice(0, 10);
-  const lit = { roads: roadsBuilt() };
+  const lit = litNow();
   const running = AB_TESTS.filter((t) => runningTest(t.surface, today, lit)?.id === t.id);
   const body: AbWeightsPayload = { v: 1, tests: {} };
   if (running.length) {

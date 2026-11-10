@@ -91,6 +91,8 @@ const SECOND_CHANCE_KEY = "purify:secondchance.done";
 // back signed in (the reminders are then offered), "done" once it is
 // answered or closed.
 const KEEP_KEY = "purify:keep";
+// "1" once the one card that introduces Plus has been tapped or closed (./plusIntro.ts).
+const PLUS_INTRO_KEY = "purify:plusintro";
 
 /**
  * Every key above: the answers and the flow's own marks. Testers mode
@@ -117,6 +119,7 @@ export const SPACE_KEYS: readonly string[] = [
   ONBOARDED_DAY_KEY,
   SECOND_CHANCE_KEY,
   KEEP_KEY,
+  PLUS_INTRO_KEY,
   SIGNED_OUT_PREVIEW_KEY,
 ];
 
@@ -555,6 +558,14 @@ export function markSecondChanceDone(): void {
  * untouched, gone to sign in from it, back signed in (the reminders offered),
  * or finished with.
  */
+/** The one card that introduces Plus has been tapped or closed. */
+export function isPlusIntroDone(): boolean {
+  return readString(PLUS_INTRO_KEY) === "1";
+}
+export function markPlusIntroDone(): void {
+  writeString(PLUS_INTRO_KEY, "1");
+}
+
 export type KeepState = "open" | "asked" | "in" | "done";
 export function readKeep(): KeepState {
   const v = readString(KEEP_KEY);

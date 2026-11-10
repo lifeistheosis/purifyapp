@@ -5,7 +5,7 @@ import { panelOf, type TestPanel } from "@/lib/ab/panel";
 import { readAbRows } from "@/lib/ab/read";
 import { AB_PLANNED, AB_TESTS, runningTest, type PlannedTest } from "@/lib/ab/tests";
 import { getAdminUser } from "@/lib/admin/access";
-import { roadsBuilt } from "@/lib/onboarding/flags";
+import { litNow } from "@/lib/onboarding/flags";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -26,7 +26,7 @@ export async function GET() {
     return NextResponse.json(payload, { headers: { "Cache-Control": "no-store" } });
   }
   const today = new Date().toISOString().slice(0, 10);
-  const lit = { roads: roadsBuilt() };
+  const lit = litNow();
   const payload: AbAdminPayload = {
     tests: AB_TESTS.map((test) => {
       const tallies = tally(test, read.rows, today);

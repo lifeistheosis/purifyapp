@@ -36,3 +36,18 @@ export function roadsBuilt(): boolean {
 export function roadsEnabled(): boolean {
   return roadsBuilt() || isTesting();
 }
+
+/**
+ * Plus, introduced once (1.9, his 111): one calm card on Today after a new
+ * reader's first week (lib/onboarding/plusIntro.ts), run as a test against
+ * Purify as it is (lib/ab/tests.ts, PLUS_INTRODUCED). Built and SHUT: his
+ * word of 2026-11-10 puts the card's stills before him first, and nothing
+ * shows it to a reader until this is true. In Testers mode an admin picks
+ * the version to look at, whatever this says.
+ */
+export const PLUS_INTRO_LIVE = false;
+
+/** What is lit for readers in this build, by the name a test's gate asks for (lib/ab/tests.ts). */
+export function litNow(): { roads: boolean; plusIntro: boolean } {
+  return { roads: roadsBuilt(), plusIntro: roadsBuilt() && PLUS_INTRO_LIVE };
+}

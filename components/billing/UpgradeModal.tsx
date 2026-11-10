@@ -13,8 +13,9 @@ import {
 } from "react";
 
 import { DockNote, KeptHero, PlansDock, PlusFeatureRows, PlusReviews, ScribePicture } from "@/components/billing/KeptPaywall";
-import { PlusTryHead, PlusTryPage, bringRowBack, useTryRows } from "@/components/billing/PlusTry";
+import { PlusTryHead, PlusTryPage, TRY_PREVIEW_IDS, bringRowBack, useTryRows } from "@/components/billing/PlusTry";
 import { PREMIUM_CTA } from "@/components/premium/PremiumUI";
+import { PLUS_ROWS } from "@/lib/premium/plusRows";
 import { beginTry, endTrySound } from "@/lib/premium/plusTrySound";
 import { countBought, countLock } from "@/lib/analytics/lockCount";
 import { countPlusStep } from "@/lib/analytics/moreCount";
@@ -129,7 +130,11 @@ export type UpgradeFeature =
 
 /** `overPlayer`: the lock was met inside Now Playing or a sheet over it (the
  *  ambience sheet, 1.7), so the upgrade sheet stands over the player too. */
-type OpenOptions = { overPlayer?: boolean };
+type OpenOptions = {
+  overPlayer?: boolean;
+  /** Open straight on the feature's own Try it (the one card that introduces Plus, lib/onboarding/plusIntro.ts). */
+  tryNow?: boolean;
+};
 
 type Ctx = { open: (feature: UpgradeFeature, opts?: OpenOptions) => void; available: boolean };
 
@@ -223,7 +228,14 @@ export function UpgradeModalProvider({
     setOverPlayer(Boolean(opts?.overPlayer));
     setPhase("pitch");
     endTrySound();
-    setTrying(null);
+    // Straight to the feature's own screen where the reader asked to try it;
+    // the list and the plans are one tap back, as from any Try it.
+    const tried = opts?.tryNow ? PLUS_ROWS.find((r) => r.feature === next) : undefined;
+    if (tried && TRY_PREVIEW_IDS.includes(tried.id)) {
+      countPlusStep(next, "tried");
+      beginTry(tried.id);
+      setTrying(tried.id);
+    } else setTrying(null);
     setOffers(null);
     setPlan("yearly");
     setCanBuyHere(false);

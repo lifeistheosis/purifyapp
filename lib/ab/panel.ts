@@ -67,7 +67,11 @@ function cell(hits: number, of: number): PanelCell {
 }
 
 function line(test: AbTest, v: Verdict, running: boolean, began: boolean): string {
-  if (!running && !began) return "Not running. It starts when the revised onboarding is lit for readers, at release.";
+  if (!running && !began) {
+    return test.gate === "plusIntro"
+      ? "Not running. Built and shut: it starts once you have seen the card and said yes, on the days set then."
+      : "Not running. It starts when the revised onboarding is lit for readers, at release.";
+  }
   switch (v.state) {
     case "waiting":
       return `Learning: too few yet. The shares stay equal until each version has ${test.warmup} devices past their second week.`;
