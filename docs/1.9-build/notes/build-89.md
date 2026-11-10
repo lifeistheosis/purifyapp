@@ -161,8 +161,8 @@ Planned fix (given to Admin, after note 15): when a sheet rises, what stands beh
 
 ### 17. The patron saint widget does not work (2026-11-10)
 
-What he saw: the My Saint widget on his Android home screen, on build 89. His words: "also fix the patron Saint widget not working". What it does instead is asked of him (blank, the wrong saint, nothing on a tap, or will not add).
+What he saw: the My Saint widget on his Android home screen, on build 89. His words: "also fix the patron Saint widget not working". Asked what it does, his words: "when you click on it, it directs you to the app but there's no setting for it in the app". The tap opens the app, and he finds no place to choose a patron.
 
 Where it is: for Updates to find (the Android widget is `android/app/src/main/java/net/purifyapp/purify/widget/`, the bridge `WidgetBridgePlugin`; Updates built U5's widgets in 1.9). Two leads to rule in or out first: build 89 is a release build shrunk by R8 since 2026-10-04, and a plugin or provider reached only by reflection fails on a phone and not in the build (`docs/RELEASE.md`, "The Android app is shrunk"); and build 89 talks to the live 1.8 website, so anything the widget fetches from a 1.9 address cannot work on it before release.
 
-Planned fix (given to Updates the same hour): find the cause, fix it, prove it on the release APK where a phone is needed (the R8 walk), and say plainly whether it is a bug or something build 89 cannot show.
+Planned fix (given to Updates the same hour): the widget's tap lands exactly where a reader chooses their patron saint, and that choice is easy to find in the app itself (Settings or You), with one still to him if a screen changes; find the cause, fix it, prove it on the release APK where a phone is needed (the R8 walk), and say plainly whether it is a bug or something build 89 cannot show.
