@@ -1509,10 +1509,10 @@ index 00000000..f47901bc
 +  return tests.flatMap((t) => t.arms.map((arm) => abWord(t, arm)));
 +}
 diff --git a/lib/i18n/messages/en.json b/lib/i18n/messages/en.json
-index 9ba72af6..4f5c956e 100644
+index 652141c8..f397aed5 100644
 --- a/lib/i18n/messages/en.json
 +++ b/lib/i18n/messages/en.json
-@@ -4423,6 +4423,29 @@
+@@ -4424,6 +4424,29 @@
    "onboard.returning.body": "A few quick questions, so Purify fits how you pray and read now. It takes under a minute, and nothing you have saved changes.",
    "onboard.returning.next": "Next step",
    "onboard.returning.nextEyebrow": "Your next step",
