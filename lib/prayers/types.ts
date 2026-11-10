@@ -58,6 +58,20 @@ export type Prayer = {
  origin?: { ruleId: string; prayerId: string };
 };
 
+/**
+ * A part of a rule that is another rule's prayer, word for word (1.9, build
+ * 90 note 7): the First Hour's opening prayers are the Morning Rule's own.
+ * It names the prayer and may give its own word on how to pray it; its
+ * title, words and rubric come from where it points when the rule is loaded
+ * (lib/prayers/hours.ts), so the words exist once and the two can never
+ * differ. Never a stand-in: lib/prayers/__tests__/noStandIns.test.ts.
+ */
+export type PrayerFrom = {
+ id: string;
+ from: { ruleId: string; prayerId: string };
+ instruction?: string;
+};
+
 export type Rule = {
  id: string;
  title: string;

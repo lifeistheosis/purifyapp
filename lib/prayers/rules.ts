@@ -123,7 +123,8 @@ export const RULES: RuleMeta[] = [
  descriptionDe: "Prim, bei Sonnenaufgang; Psalmen 5, 89 und 100 mit dem Troparion der Stunde.",
  category: "daily",
  href: "/prayers/hours/first-hour",
- estimatedMinutes: 6,
+ // 7 from build 90 note 7: its opening prayers, 188 words more, at its own pace.
+ estimatedMinutes: 7,
  timeOfDay: "morning",
  },
  {

@@ -4,8 +4,8 @@
   "title": "The First Hour",
   "subtitle": "Prime, prayed at sunrise, roughly 6 a.m.",
   "intro": "The First Hour sanctifies the dawn. Read it after the Morning Rule when the schedule allows, or alone, standing toward the icons. The Hours are short, about five minutes each.",
-  "estimatedMinutes": 6,
-  "source": "Common Orthodox Horologion. Psalms from Brenton's public-domain Septuagint; troparia in the public-domain liturgical English of the older service books.",
+  "estimatedMinutes": 7,
+  "source": "Common Orthodox Horologion. The opening prayers in the words of the Morning Rule (the common Orthodox prayer book's public-domain English). Psalms from Brenton's public-domain Septuagint; troparia in the public-domain liturgical English of the older service books.",
   "prayers": [
     {
       "id": "opening",
@@ -14,10 +14,26 @@
       "text": "Through the prayers of our holy fathers, O Lord Jesus Christ our God, have mercy on us. Amen."
     },
     {
-      "id": "trisagion-to-our-father",
-      "title": "Trisagion through the Lord's Prayer",
-      "instruction": "Pray the usual beginning. Cite the standard text from the Morning Rule if you have it open.",
-      "text": "(see Morning Rule: Heavenly King · Trisagion · Most Holy Trinity · Lord have mercy · Glory · Now and ever · Our Father.)"
+      "id": "heavenly-king",
+      "from": {
+        "ruleId": "morning",
+        "prayerId": "heavenly-king"
+      },
+      "instruction": "The opening prayers, as in the Morning Rule."
+    },
+    {
+      "id": "trisagion",
+      "from": {
+        "ruleId": "morning",
+        "prayerId": "trisagion"
+      }
+    },
+    {
+      "id": "our-father",
+      "from": {
+        "ruleId": "morning",
+        "prayerId": "our-father"
+      }
     },
     {
       "id": "psalm-5",
@@ -40,7 +56,7 @@
     {
       "id": "troparion",
       "title": "Troparion of the day",
-      "instruction": "Insert the troparion appointed for today; the simple form below applies to ordinary weekdays of Great Lent and the fasts.",
+      "instruction": "Here the troparion of the day is said. On the ordinary weekdays of Great Lent and the fasts, the line below.",
       "text": "In the morning hear my voice, O my King and my God."
     },
     {
