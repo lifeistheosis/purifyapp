@@ -81,7 +81,7 @@ export function RelatedRail({
               <Link href={link.href} className="theology-row flex min-h-[54px] items-center gap-3 rounded-[14px] px-2 py-2">
                 <RelatedMark group={g} link={link} />
                 <span className="min-w-0 flex-1">
-                  <span lang="en" dir="ltr" className="block font-serif text-[15.5px] font-semibold leading-[1.26] text-paper/92">
+                  <span lang="en" dir="ltr" className="block font-serif text-[15.5px] font-semibold leading-[1.26] text-paper/92 rtl:text-right">
                     {link.label}
                   </span>
                   <span className="mt-0.5 block font-sans text-caption text-paper/55">
