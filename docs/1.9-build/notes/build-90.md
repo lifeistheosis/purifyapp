@@ -174,3 +174,19 @@ What he saw: on a prayer hour (The First Hour, at Psalm 89; `build-90/06-easy-sc
 Where it is and why: asked of Updates, which built Easy Scroll (`3be66d8c`, build 89 note 7).
 
 Planned (brainstorm, nothing built until his start): to come from Updates.
+
+### 7. The First Hour says "(see Morning Rule: ...)" where the prayers should be (2026-11-10)
+
+What he saw: on The First Hour (`build-90/07-first-hour-see-morning-rule.png`), the section "Trisagion through the Lord's Prayer" shows, under its title, "Pray the usual beginning. Cite the standard text from the Morning Rule if you have it open.", and in the prayer's place "(see Morning Rule: Heavenly King · Trisagion · Most Holy Trinity · Lord have mercy · Glory · Now and ever · Our Father.)". His words: "And the guided prayers that we had originally were actually pretty good in terms of the system. And like, there's a section here where it's just messed up. ... And also, like, I don't know why it says this, right? See morning rule. Like, what does that even mean? It should say the prayer."
+
+Where it is and why: asked of Updates 2.
+
+Planned (brainstorm, nothing built until his start): to come from Updates 2.
+
+### 8. The prayer page's background should fit the theme the reader picked (2026-11-10)
+
+What he saw: the prayer page as it is in build 90 (both screenshots of notes 6 and 7: a dark grey ground with a soft pool of light behind the prayer being read). His words: "I mean, overall, let's change the background design also. Like, make it more, like, fit the theme the user picked."
+
+Where it is and why: asked of Fable Themes, which made the looks; Updates owns the page's scrolling (note 6), so the two plans name their files and the arbiter orders the work at his start.
+
+Planned (brainstorm, nothing built until his start): to come from Fable Themes.
