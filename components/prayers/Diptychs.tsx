@@ -27,6 +27,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import { useTranslate } from "@/components/i18n/MessagesProvider";
+import { formatMmDd, NameForm } from "@/components/prayers/NameForm";
 import { PlaceChips } from "@/components/prayers/PlaceChips";
 import { SearchField } from "@/components/search/SearchField";
 import { Sheet } from "@/components/ui/Sheet";
@@ -38,15 +39,12 @@ import {
   restoreIntention,
   upsertIntention,
   useIntentions,
-  uuid,
   type Intention,
   type IntentionKind,
 } from "@/lib/prayers/storage";
 import { updateWallNames, useWallNames } from "@/lib/prayers/useWallNames";
 import { markWallPrayed, setWallPlaces, unmarkWallPrayed, waitingWallNames, wallLeavesText, type WallName } from "@/lib/prayers/wallNames";
 
-const FIELD =
-  "min-h-11 w-full rounded-[10px] bg-paper/[0.06] px-3 py-2 font-sans text-ui text-paper placeholder:text-paper/55 focus:outline-none";
 
 /** How long "Removed ... Undo" stays, as under the rule's own rows (MyRuleBuilder). */
 const UNDO_MS = 5000;
@@ -272,7 +270,7 @@ function NameSheet({
           {kind === "living" ? t("prayers.diptychs.livingIntro") : t("prayers.diptychs.reposedIntro")}
         </p>
       )}
-      <IntentionForm
+      <NameForm
         kind={kind}
         initial={entry ?? undefined}
         focusFirst={!entry}
@@ -350,143 +348,4 @@ function WallNameSheet({
       </div>
     </Sheet>
   );
-}
-
-function IntentionForm({
-  kind,
-  initial,
-  focusFirst = true,
-  onCancel,
-  onSave,
-}: {
-  kind: IntentionKind;
-  initial?: Intention;
-  /** The name's field takes the focus: for a new name, not one opened to read. */
-  focusFirst?: boolean;
-  onCancel: () => void;
-  onSave: (entry: Intention) => void;
-}) {
-  const { t } = useTranslate();
-  const [name, setName] = useState(initial?.name ?? "");
-  const [relationship, setRelationship] = useState(initial?.relationship ?? "");
-  const [note, setNote] = useState(initial?.note ?? "");
-  const [nameday, setNameday] = useState(initial?.nameday ?? "");
-  const [repose, setRepose] = useState(initial?.repose ?? "");
-  const [tagText, setTagText] = useState((initial?.tags ?? []).join(", "));
-
-  function handleSave() {
-    if (!name.trim()) return;
-    const entry: Intention = {
-      id: initial?.id ?? uuid(),
-      name: name.trim(),
-      relationship: relationship.trim() || undefined,
-      note: note.trim() || undefined,
-      tags: tagText
-        .split(",")
-        .map((s) => s.trim())
-        .filter(Boolean),
-      addedAt: initial?.addedAt ?? new Date().toISOString(),
-      ...(kind === "living"
-        ? { nameday: nameday.match(/^\d{2}-\d{2}$/) ? nameday : undefined }
-        : { repose: repose.match(/^\d{4}-\d{2}-\d{2}$/) ? repose : undefined }),
-    };
-    onSave(entry);
-  }
-
-  return (
-    <div className="mt-3 space-y-3 pb-1">
-      <div className="grid grid-cols-1 gap-3 md:grid-cols-3">
-        <input
-          /* eslint-disable-next-line jsx-a11y/no-autofocus -- the sheet is
-             opened by an explicit user action (Add), so moving focus into
-             its first field is expected, not a steal. */
-          autoFocus={focusFirst}
-          placeholder={t("prayers.diptychs.name")}
-          aria-label={t("prayers.diptychs.name")}
-          value={name}
-          onChange={(e) => setName(e.target.value)}
-          className={`${FIELD} md:col-span-2`}
-        />
-        <input
-          placeholder={t("prayers.diptychs.relationship")}
-          aria-label={t("prayers.diptychs.relationship")}
-          value={relationship}
-          onChange={(e) => setRelationship(e.target.value)}
-          className={FIELD}
-        />
-      </div>
-      <textarea
-        placeholder={t("prayers.diptychs.note")}
-        aria-label={t("prayers.diptychs.note")}
-        maxLength={500}
-        rows={2}
-        value={note}
-        onChange={(e) => setNote(e.target.value)}
-        className={FIELD}
-      />
-      <div className="grid grid-cols-1 gap-3 md:grid-cols-2">
-        {kind === "living" ? (
-          <input
-            placeholder={t("prayers.diptychs.nameday")}
-            aria-label={t("prayers.diptychs.nameday")}
-            value={nameday}
-            onChange={(e) => setNameday(e.target.value)}
-            pattern="\d{2}-\d{2}"
-            className={FIELD}
-          />
-        ) : (
-          <input
-            type="date"
-            placeholder={t("prayers.diptychs.reposed")}
-            aria-label={t("prayers.diptychs.reposed")}
-            value={repose}
-            onChange={(e) => setRepose(e.target.value)}
-            className={FIELD}
-          />
-        )}
-        <input
-          placeholder={t("prayers.diptychs.tags")}
-          aria-label={t("prayers.diptychs.tags")}
-          value={tagText}
-          onChange={(e) => setTagText(e.target.value)}
-          className={FIELD}
-        />
-      </div>
-      <div className="flex justify-end gap-2">
-        <button
-          type="button"
-          onClick={onCancel}
-          className="tap-press inline-flex min-h-11 items-center px-3 font-sans text-detail text-paper/65 hover:text-paper"
-        >
-          {t("common.cancel")}
-        </button>
-        <button
-          type="button"
-          onClick={handleSave}
-          disabled={!name.trim()}
-          className="tap-press inline-flex min-h-11 items-center rounded-pill bg-paper px-5 font-sans text-detail font-semibold text-night disabled:cursor-not-allowed disabled:opacity-40"
-        >
-          {t("common.save")}
-        </button>
-      </div>
-    </div>
-  );
-}
-
-const MONTH_ABBR_KEYS = [
-  "common.monthAbbr.jan", "common.monthAbbr.feb", "common.monthAbbr.mar",
-  "common.monthAbbr.apr", "common.monthAbbr.may", "common.monthAbbr.jun",
-  "common.monthAbbr.jul", "common.monthAbbr.aug", "common.monthAbbr.sep",
-  "common.monthAbbr.oct", "common.monthAbbr.nov", "common.monthAbbr.dec",
-];
-
-function formatMmDd(
-  mmdd: string,
-  t: (key: string, replacements?: Record<string, string | number>) => string,
-): string {
-  const [m, d] = mmdd.split("-").map((s) => parseInt(s, 10));
-  if (Number.isNaN(m) || Number.isNaN(d)) return mmdd;
-  const monthKey = MONTH_ABBR_KEYS[m - 1];
-  if (!monthKey) return mmdd;
-  return t("common.monthDay", { month: t(monthKey), day: d });
 }

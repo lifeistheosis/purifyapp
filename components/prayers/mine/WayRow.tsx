@@ -2,6 +2,7 @@
 
 import type { ReactNode } from "react";
 
+import { ChevronDown } from "@/components/ui/icons/ChevronDown";
 import { ChevronRight } from "@/components/ui/icons/ChevronRight";
 
 /**
@@ -20,6 +21,7 @@ export function WayRow({
   desc,
   onClick,
   opensSheet = false,
+  expanded,
   oneLine = false,
   data,
 }: {
@@ -30,6 +32,8 @@ export function WayRow({
   onClick: () => void;
   /** The row opens a sheet, and says so to a screen reader. */
   opensSheet?: boolean;
+  /** The row opens something in place under it (the nameday's choice): whether it is open. */
+  expanded?: boolean;
   /** Keep the line to one line, cut with an ellipsis (a list of names that can run long). */
   oneLine?: boolean;
   /** A marker for the export walk and the tests, as `{ "data-remembered-in": "" }`. */
@@ -40,6 +44,7 @@ export function WayRow({
       type="button"
       onClick={onClick}
       aria-haspopup={opensSheet ? "dialog" : undefined}
+      aria-expanded={expanded}
       className="set-link rule-way flex w-full items-center gap-3 text-start"
       {...data}
     >
@@ -48,7 +53,16 @@ export function WayRow({
         <span className="set-label">{label}</span>
         <span className={oneLine ? "set-desc truncate" : "set-desc"}>{desc}</span>
       </span>
-      <ChevronRight size={15} className="set-chev rtl:-scale-x-100" />
+      {expanded === undefined ? (
+        <ChevronRight size={15} className="set-chev rtl:-scale-x-100" />
+      ) : (
+        // It opens in place under the row, so its arrow points down, and turns
+        // up while open (his yes to 104, the Nameday row).
+        <ChevronDown
+          size={15}
+          className={`set-chev motion-safe:transition-transform motion-safe:duration-300 motion-safe:ease-house${expanded ? " rotate-180" : ""}`}
+        />
+      )}
     </button>
   );
 }

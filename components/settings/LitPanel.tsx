@@ -186,6 +186,11 @@ export function Track<T extends string>({
           aria-checked={value === o.value}
           onClick={() => onChange(o.value)}
           className="hit-44"
+          // The lit choice stands on its raised plate (::before), which
+          // checkMock cannot read as a ground; measured on the export it is
+          // 11:1 or more on every palette (build 89 note 11).
+          data-mock-allow={value === o.value ? "contrast" : undefined}
+          data-mock-why={value === o.value ? "the lit choice on its raised plate (::before), 11:1 or more, measured" : undefined}
         >
           {o.face ?? o.label}
         </button>
