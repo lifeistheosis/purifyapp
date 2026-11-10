@@ -131,7 +131,92 @@ export type SearchLabels = {
 
 const byKey = (cards: Card[]) => new Map(cards.map((c) => [c.key, c]));
 
-/** At most `perAuthor` of one author before the next author's turn, so a row is not one saint. */
+/**
+ * What a cover shows, so that two of one picture are kept apart (1.9, build
+ * 90; the owner's yes of 2026-11-10: "in every row, two books wearing the same
+ * picture never stand side by side"). St Pachomius's own Life, Isidora's Life
+ * and The Institutes all wear his icon, and every book of St John Chrysostom
+ * wears his.
+ *
+ * A picture is its file, wherever it is asked from and whichever its cut:
+ * "pachomius-the-great" in the apps and on the website alike, a second cut
+ * (".v2") the same icon. A council's document shows its own window of the
+ * council's icon (lib/reading/coverWindow.ts), so two windows are two
+ * pictures. A book with no picture wears its plate, its own words, which no
+ * other book shares.
+ */
+export function pictureOf(c: Pick<Card, "key" | "cover">): string {
+  if (!c.cover) return `plate:${c.key}`;
+  const name = c.cover.src.replace(/[?#].*$/, "").replace(/^.*\//, "").replace(/(\.v\d+)?\.[a-z0-9]+$/i, "");
+  return c.cover.crop ? `${name}@${c.cover.crop.x},${c.cover.crop.y},${c.cover.crop.zoom}` : name;
+}
+
+/**
+ * A row in its order, with no two neighbours wearing the same picture: each
+ * place takes the first one left whose picture is not the one before it, so a
+ * book moves no further than it must.
+ *
+ * With `max`, a row drawn from more than it shows (a tradition, short reads,
+ * More like this): its first stays first, and it ends where nothing left could
+ * stand there; See all keeps the rest. Without it every one is shown (a season,
+ * the search, Continue, a collection's sources), and a place also looks ahead,
+ * going to a picture only while what follows can still be parted, so the first
+ * stays first wherever the row can be parted with it there. Two of one
+ * picture stand together only where no order could part them, as in a search
+ * for one author's name, and then as few times as can be.
+ * lib/reading/__tests__/apart.test.ts holds every row to it.
+ */
+export function apart<T>(items: readonly T[], pic: (item: T) => string, max?: number): T[] {
+  const left = [...items];
+  const out: T[] = [];
+  const lastPic = () => (out.length ? pic(out[out.length - 1]) : null);
+  if (max !== undefined) {
+    while (out.length < max && left.length) {
+      const last = lastPic();
+      const i = left.findIndex((t) => pic(t) !== last);
+      if (i < 0) break;
+      out.push(left.splice(i, 1)[0]);
+    }
+    return out;
+  }
+  const count = new Map<string, number>();
+  for (const t of left) count.set(pic(t), (count.get(pic(t)) ?? 0) + 1);
+  const place = (i: number) => {
+    const [t] = left.splice(i, 1);
+    const p = pic(t);
+    const n = (count.get(p) ?? 1) - 1;
+    if (n) count.set(p, n);
+    else count.delete(p);
+    out.push(t);
+  };
+  while (left.length) {
+    const last = lastPic();
+    // The two pictures most left. After this place, r are left, and they can
+    // still be parted if no other picture has more than half of them, rounded
+    // up, and this one no more than half, rounded down (the next place is
+    // beside it).
+    let first: [string, number] = ["", 0];
+    let second: [string, number] = ["", 0];
+    for (const [p, n] of count) {
+      if (n > first[1]) [first, second] = [[p, n], first];
+      else if (n > second[1]) second = [p, n];
+    }
+    const r = left.length - 1;
+    const parts = (p: string) => (first[0] === p ? second[1] : first[1]) <= Math.ceil(r / 2) && (count.get(p) ?? 0) - 1 <= Math.floor(r / 2);
+    let i = left.findIndex((t) => pic(t) !== last && parts(pic(t)));
+    // Where nothing can part what is left, the picture most left goes wherever
+    // it may, so that the others are spent between its copies.
+    if (i < 0 && first[0] !== last) i = left.findIndex((t) => pic(t) === first[0]);
+    if (i < 0) i = left.findIndex((t) => pic(t) !== last);
+    place(i < 0 ? 0 : i);
+  }
+  return out;
+}
+
+/**
+ * At most `perAuthor` of one author before the next author's turn, so a row
+ * is not one saint, and never two of one picture side by side (apart).
+ */
 export function varied(cards: Card[], perAuthor = 2, max = 16): Card[] {
   const ranked = [...cards].sort((a, b) => rank(b) - rank(a) || a.title.localeCompare(b.title));
   const out: Card[] = [];
@@ -145,7 +230,7 @@ export function varied(cards: Card[], perAuthor = 2, max = 16): Card[] {
       taken.set(who, n + 1);
     } else rest.push(c);
   }
-  return [...out, ...rest].slice(0, max);
+  return apart([...out, ...rest], pictureOf, max);
 }
 
 /** The Fathers' own words first, whole works before excerpts, a picture before a plate. */
@@ -155,21 +240,34 @@ function rank(c: Card): number {
 
 export function beginRow(room: Room): Card[] {
   const map = byKey(room.cards);
-  return room.begin.map((k) => map.get(k)).filter((c): c is Card => Boolean(c));
+  return apart(
+    room.begin.map((k) => map.get(k)).filter((c): c is Card => Boolean(c)),
+    pictureOf,
+  );
 }
 
-/** The passions, the virtues or daily life: the one best reading of each theme, in order. */
+/**
+ * The passions, the virtues or daily life: the one best reading of each theme,
+ * in order. The order is the themes' own (the eight passions as St John
+ * Cassian counts them), so it is never moved: two tiles of one picture here
+ * are one book read part by part (apart.test.ts).
+ */
 export function themeRow(room: Room, group: Exclude<ThemeGroup, "seasons">): ThemePick[] {
   return themesIn(group)
     .map((theme) => room.picks.find((p) => p.theme === theme && p.best))
     .filter((p): p is ThemePick => Boolean(p));
 }
 
-/** A season's readings: its parts of works first, then whole works. */
+/** A season's readings: its parts of works first, then whole works, never two of one picture side by side. */
 export function seasonRow(room: Room, season: SeasonId): ThemePick[] {
-  return room.picks
-    .filter((p) => p.theme === season)
-    .sort((a, b) => Number(Boolean(b.part)) - Number(Boolean(a.part)));
+  const map = byKey(room.cards);
+  return apart(
+    room.picks.filter((p) => p.theme === season).sort((a, b) => Number(Boolean(b.part)) - Number(Boolean(a.part))),
+    (p) => {
+      const card = map.get(p.key);
+      return card ? pictureOf(card) : `plate:${p.key}`;
+    },
+  );
 }
 
 /** A row per tradition with at least `min` works; the empty ones wait for their works. */
@@ -209,7 +307,8 @@ export function moreLikeThis(room: Room, key: string, n = 8): Card[] {
     })
     .filter((s) => s.score >= 1.5)
     .sort((a, b) => b.score - a.score || a.c.title.localeCompare(b.c.title));
-  // Two of one author at most, as on every row, in the order of the score.
+  // Two of one author at most, as on every row, in the order of the score,
+  // and never two of one picture side by side.
   const out: Card[] = [];
   const taken = new Map<string, number>();
   for (const { c } of scored) {
@@ -218,9 +317,8 @@ export function moreLikeThis(room: Room, key: string, n = 8): Card[] {
     if (k >= 2) continue;
     out.push(c);
     taken.set(who, k + 1);
-    if (out.length >= n) break;
   }
-  return out;
+  return apart(out, pictureOf, n);
 }
 
 /** Folded for matching: no case, no accents ("Ephrem" finds "Ephrém"). */
@@ -241,7 +339,8 @@ export function matchesFilters(c: Card, f: Filters): boolean {
  * The search: every word of the query must be found somewhere in a work, its
  * title and subtitle, its author's name and byname, its topics, or the names
  * of its themes, traditions and era in the reader's language. Then the
- * filters. Titles that match come first.
+ * filters. Titles that match come first, and two of one picture never stand
+ * side by side where anything else can stand between them (apart).
  */
 export function searchCards(room: Room, query: string, filters: Filters, labels: SearchLabels): Card[] {
   const words = fold(query).split(/[^\p{L}\p{N}]+/u).filter(Boolean);
@@ -278,7 +377,10 @@ export function searchCards(room: Room, query: string, filters: Filters, labels:
     }
     if (all) hits.push({ c, score });
   }
-  return hits.sort((a, b) => b.score - a.score || rank(b.c) - rank(a.c) || a.c.title.localeCompare(b.c.title)).map((h) => h.c);
+  return apart(
+    hits.sort((a, b) => b.score - a.score || rank(b.c) - rank(a.c) || a.c.title.localeCompare(b.c.title)).map((h) => h.c),
+    pictureOf,
+  );
 }
 
 /** A work's page (lib/reading/workHref.ts), from its key: the cards do not carry it. */

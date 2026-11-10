@@ -22,6 +22,7 @@ import { usePartWords } from "@/components/saints/partWords";
 import { withPackedCovers } from "@/lib/reading/packedCovers";
 import { readingSeason } from "@/lib/reading/seasons";
 import {
+  apart,
   beginRow,
   featuredFor,
   moreLikeThis,
@@ -34,6 +35,7 @@ import {
   type Room,
   type ThemePick,
   cardHref,
+  pictureOf,
 } from "@/lib/reading/select";
 import { useMounted } from "@/lib/useMounted";
 
@@ -222,7 +224,9 @@ export function ReadingRoom({ room: built, library }: { room: Room; library: Lib
   /** A work registered twice was read under either address. */
   const cardOf = (key: string): Card | undefined => cards.get(key) ?? (key === "anthony-the-great/life-of-antony" ? cards.get("athanasius-the-great/life-of-antony") : undefined);
 
-  // What the reader is in the middle of: works opened, not finished, newest first.
+  // What the reader is in the middle of: works opened, not finished, newest
+  // first, and two of one picture never side by side where another can stand
+  // between them (lib/reading/select.ts, apart).
   const continuing = useMemo(() => {
     if (!mounted) return [];
     const out: { card: Card; at?: number; of?: number; n?: number; pill?: Progress["pill"] }[] = [];
@@ -235,7 +239,7 @@ export function ReadingRoom({ room: built, library }: { room: Room; library: Lib
       out.push({ card, at: p?.i, of: p?.of, n: p?.n, pill: p?.pill });
       if (out.length >= 10) break;
     }
-    return out;
+    return apart(out, (o) => pictureOf(o.card));
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [mounted, history, progress, cards]);
 

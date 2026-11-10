@@ -24,6 +24,7 @@ import { LOCALES } from "@/lib/i18n/locales";
 import { PASSAGES, passageHref, type FatherPassage } from "@/lib/reading/collections";
 import { collectionPage, markOf, placeOf } from "@/lib/reading/collectionView";
 import { ENTRIES, type WorkKey } from "@/lib/reading/entries";
+import { apart, pictureOf } from "@/lib/reading/select";
 import { COLLECTION_SLUGS, COLLECTIONS_REVIEW, FEELINGS, collectionIntroKey, collectionNameKey } from "@/lib/reading/feelings";
 import { SAINTS } from "@/lib/saints/saints";
 
@@ -173,8 +174,12 @@ describe("a collection's page", () => {
           expect(["kjv", "brenton"]).toContain(p.translation);
         }
       }
+      // Each book once, in the order the passages first cite it, but for two of
+      // one picture, which never stand side by side (lib/reading/__tests__/apart.test.ts).
       const works = new Set(PASSAGES[slug].filter((p): p is FatherPassage => p.kind === "father").map((p) => `${p.saint}/${p.work}`));
-      expect(page.sources.map((c) => c.key), slug).toEqual([...works]);
+      const cards = new Map(page.sources.map((c) => [c.key, c]));
+      expect(page.sources.map((c) => c.key).sort(), slug).toEqual([...works].sort());
+      expect(page.sources, slug).toEqual(apart([...works].map((k) => cards.get(k)!), pictureOf));
     }
   });
 

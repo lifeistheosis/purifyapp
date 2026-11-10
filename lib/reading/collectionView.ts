@@ -6,7 +6,7 @@ import { shownCite } from "@/lib/citations/shown";
 import { allCards } from "./cards";
 import { PASSAGES, type Passage } from "./collections";
 import type { CollectionSlug } from "./feelings";
-import { tileOf, type TileCard } from "./select";
+import { apart, pictureOf, tileOf, type TileCard } from "./select";
 
 // The place under a passage is the line every quotation in the app has
 // (1.8, lib/citations): its rules began here and live there now.
@@ -62,5 +62,6 @@ export function collectionPage(slug: CollectionSlug, native: boolean): Collectio
     const card = cards.get(key);
     if (card) sources.push(tileOf(card));
   }
-  return { slug, passages: passages.map(shown), sources };
+  // Never two of one picture side by side (lib/reading/select.ts, apart).
+  return { slug, passages: passages.map(shown), sources: apart(sources, pictureOf) };
 }
