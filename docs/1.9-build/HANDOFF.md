@@ -10,6 +10,8 @@ file is what it needs to take over. Read it first, then `BRAINSTORM.md` and
 
 **His decisions page is simple** (his word, 2026-11-10 about 17:50 UTC: "can you make the your call screen have a easy to understand simplified design? its always cluttered and unoptimized", after "show photos for everything you are referring to in what you need me to do"). Every decision put to him comes with its picture, on one page: https://claude.ai/artifact/HtMHvpk9SsKLwXG7AgJutq (built from the scratchpad's `decisions/template.html`; the pictures live in `docs/1.9-build/notes/decisions/`). One card per decision: a number, a short title, one line, small pictures that open whole on a tap, "We suggest" in one line, big answer buttons that copy the word, and anything longer folded under Details. Nothing else on it. A choice between options shows each option on the card itself, in one plain line with its own button, never only behind Details (his word, about 17:55 UTC: "there no clarification for what is wall a or b").
 
+**SQL goes in the chat, not on his page** (his word, 2026-11-10 about 20:12 UTC: "send it in the chat. Don't put it in the, you know, the calls."). Any SQL he is to run is sent to him in the chat, each statement in its own block, with what to check and what to send back; the decisions page holds decisions only.
+
 **The arbiter routes; it does not dig** (his word, 2026-11-10: "remember you
 are the arbiter, you worked on the last issue and it's fine don't make that
 mistake again"). A note from him goes into the notes with his words and his
