@@ -354,11 +354,16 @@ Send back: "R1 both green".
    - **Success**: every 1.9 database change ran. Done.
    - **Failure**: open it. The summary names the error. Send it to the
      arbiter, then paste each 1.9 migration by hand, in the order of its
-     file name, in **SQL Editor**, one at a time. The arbiter sends the
-     final list that morning. Today it is
-     `supabase/migrations/20261109180246_shared_pages.sql`, and the 1.9 SQL
-     you approved (Plus history, sync, the admin tables, the florilegium
-     kinds) joins it as files before the release.
+     file name, in **SQL Editor**, one at a time. Each is written to run
+     twice, so one that already ran does no harm. The arbiter sends the
+     final list that morning. Today, in `supabase/migrations/`:
+     - `20261109180246_shared_pages.sql`
+     - `20261110002920_plus_events.sql`
+     - `20261110002921_chant_pulls.sql`
+     - `20261110002922_app_errors.sql`
+     - `20261110002923_search_misses.sql`
+     and the rest of the 1.9 SQL you approved (sync, the florilegium kinds)
+     as Updates moves it in.
 
 ### R4. Android: build, then Play Console
 
