@@ -19,9 +19,13 @@ export const dynamic = "force-dynamic";
  * Share a journal page (1.9, docs/1.9-build/JOURNAL.md, step 3).
  *
  *   GET     how many shares the reader has left this month (null: no limit),
- *           and whether sharing is ready on the server at all;
+ *           and whether sharing is ready on the server at all; with
+ *           ?recordId=, how many copies of that page are shared now;
  *   POST    share a page: a copy of it, made public at /p/<id>;
- *   DELETE  stop sharing one (?id=), the reader's own only.
+ *   DELETE  stop sharing: one copy (?id=) or every copy of a page
+ *           (?recordId=), the reader's own only. Stopping deletes the copy,
+ *           and the reports on it with it, as the privacy page says (his
+ *           yes, 2026-11-09, to its version B).
  *
  * Signed in only. The copy is made from what lib/journal/share.ts lets a
  * page show in public (no notebook, no tags, no library mark), checked here
@@ -39,6 +43,8 @@ const postSchema = z.object({
   recordId: z.string().uuid().optional(),
   body: z.string().min(1).max(MAX_BODY),
 });
+
+const uuid = z.string().uuid();
 
 function absent(error: { code?: string; message?: string } | null): boolean {
   return !!error && (error.code === "42P01" || error.code === "PGRST205" || /shared_pages/.test(error.message ?? ""));
@@ -78,13 +84,31 @@ async function usedToday(admin: ReturnType<typeof createAdminClient>, userId: st
     .gte("created_at", new Date(Date.now() - 86_400_000).toISOString());
 }
 
+/** How many copies of one of the reader's pages are shared now. */
+async function sharedCopies(admin: ReturnType<typeof createAdminClient>, userId: string, recordId: string) {
+  return admin
+    .from("shared_pages")
+    .select("id", { count: "exact", head: true })
+    .eq("owner_id", userId)
+    .eq("record_id", recordId)
+    .is("withdrawn_at", null);
+}
+
 async function handleGET(req: Request) {
+  const recordId = new URL(req.url).searchParams.get("recordId");
   const who = await whoAndLimit(req);
   if (!who) return NextResponse.json({ error: "Sign in to share a page." }, { status: 401 });
   const { count, error } = await usedThisMonth(who.admin, who.user.id);
   if (absent(error)) return NextResponse.json({ ready: false });
   if (error) return NextResponse.json({ error: "Could not read your shares." }, { status: 500 });
-  return NextResponse.json({ ready: true, left: who.limited ? sharesLeft(count ?? 0) : null });
+  // The page's own copies, so the app can offer Stop sharing on it.
+  let shared = 0;
+  if (recordId && uuid.safeParse(recordId).success) {
+    const { count: copies, error: copiesError } = await sharedCopies(who.admin, who.user.id, recordId);
+    if (copiesError) return NextResponse.json({ error: "Could not read your shares." }, { status: 500 });
+    shared = copies ?? 0;
+  }
+  return NextResponse.json({ ready: true, left: who.limited ? sharesLeft(count ?? 0) : null, shared });
 }
 
 async function handlePOST(req: Request) {
@@ -150,12 +174,22 @@ async function handlePOST(req: Request) {
 }
 
 async function handleDELETE(req: Request) {
-  const id = new URL(req.url).searchParams.get("id") ?? "";
-  if (!z.string().uuid().safeParse(id).success) return NextResponse.json({ error: "Invalid share." }, { status: 400 });
+  if (await rateLimited(`journal-share-stop:${ipKey(req.headers)}`, 3600, 60)) {
+    return NextResponse.json({ error: "Too many requests just now. Please try again shortly." }, { status: 429 });
+  }
+  const params = new URL(req.url).searchParams;
+  const id = params.get("id");
+  const recordId = params.get("recordId");
+  const one = id !== null && uuid.safeParse(id).success;
+  const page = !one && recordId !== null && uuid.safeParse(recordId).success;
+  if (!one && !page) return NextResponse.json({ error: "Invalid share." }, { status: 400 });
   const who = await whoAndLimit(req);
   if (!who) return NextResponse.json({ error: "Sign in to stop sharing." }, { status: 401 });
-  // The reader's own share only: owner_id is matched here, with the service role.
-  const { error } = await who.admin.from("shared_pages").update({ withdrawn_at: new Date().toISOString() }).eq("id", id).eq("owner_id", who.user.id);
+  // The reader's own copies only: owner_id is matched here, with the service
+  // role. Stopping a share deletes the copy, and the reports on it with it
+  // (shared_page_reports cascades), as the privacy page says.
+  const mine = who.admin.from("shared_pages").delete().eq("owner_id", who.user.id);
+  const { error } = one ? await mine.eq("id", id) : await mine.eq("record_id", recordId);
   if (absent(error)) return NextResponse.json({ error: "Sharing is not ready yet." }, { status: 503 });
   if (error) return NextResponse.json({ error: "Could not stop sharing." }, { status: 500 });
   return NextResponse.json({ ok: true });

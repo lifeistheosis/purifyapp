@@ -26,7 +26,7 @@ import { useCallback, useEffect, useLayoutEffect, useRef } from "react";
 
 import { useTranslate } from "@/components/i18n/MessagesProvider";
 import { PageBlocks, PageToolbar } from "@/components/journal/PageBlocks";
-import { SharePageButton } from "@/components/journal/SharePageButton";
+import { SharedPageLine, SharePageButton, useJournalShare } from "@/components/journal/SharePageButton";
 import { usePage } from "@/components/journal/usePage";
 import { Sheet } from "@/components/ui/Sheet";
 import { cn } from "@/lib/cn";
@@ -72,6 +72,9 @@ export function JournalComposer({
   const editor = usePage(open, draft.body, (body) => onChange({ ...draft, body }));
   const { setCursor } = editor;
   const empty = isNote ? draft.body.trim().length === 0 : pageIsEmpty(editor.page);
+  // A saved page may be shared (step 3), and its sharing stopped; a verse's note and a page not yet kept may not.
+  const shareable = open && !!draft.editing && !isNote && !empty;
+  const share = useJournalShare(shareable && draft.editing ? draft.editing : null, draft.body, editor.page.title);
 
   // The words grow the field, so the sheet scrolls as one page.
   const grow = useCallback(() => {
@@ -150,8 +153,7 @@ export function JournalComposer({
         {t("common.close")}
       </button>
       <p className="min-w-0 flex-1 truncate text-center font-sans text-caption text-paper/50">{today}</p>
-      {/* A saved page may be shared (step 3); a verse's note and a page not yet kept may not. */}
-      {open && draft.editing && !isNote && !empty ? <SharePageButton recordId={draft.editing} body={draft.body} title={editor.page.title} /> : null}
+      {shareable ? <SharePageButton share={share} /> : null}
       <button
         type="button"
         onClick={onDone}
@@ -178,6 +180,7 @@ export function JournalComposer({
       bodyClassName="pb-10"
     >
       <div data-journal-composer="">
+        {shareable ? <SharedPageLine share={share} /> : null}
         {draft.source || draft.prompt ? <SourceCard source={draft.source} prompt={draft.prompt?.text} sourceLabel={sourceLabel} openLink={openLink} /> : null}
 
         {isNote ? null : (

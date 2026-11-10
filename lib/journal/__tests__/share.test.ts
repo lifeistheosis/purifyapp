@@ -85,10 +85,22 @@ describe("the server makes the copy, and the count", () => {
     expect(route).toContain("deriveEntitlements(data as EntitlementRow | null, { enforced: true }).plusFeatures");
   });
 
-  it("stops sharing only the reader's own, and says so plainly before the table exists", () => {
-    expect(route).toMatch(/update\(\{ withdrawn_at: new Date\(\)\.toISOString\(\) \}\)\.eq\("id", id\)\.eq\("owner_id", who\.user\.id\)/);
+  it("stops sharing only the reader's own, by deleting the copy (his yes to version B), and says so plainly before the table exists", () => {
+    // One copy by its id, or every copy of a page by the page's id; the reader's own only.
+    expect(route).toContain('const mine = who.admin.from("shared_pages").delete().eq("owner_id", who.user.id);');
+    expect(route).toContain('const { error } = one ? await mine.eq("id", id) : await mine.eq("record_id", recordId);');
+    expect(route).toMatch(/const one = id !== null && uuid\.safeParse\(id\)\.success;\s*const page = !one && recordId !== null && uuid\.safeParse\(recordId\)\.success;\s*if \(!one && !page\) return NextResponse\.json\(\{ error: "Invalid share\." \}, \{ status: 400 \}\);/);
+    // Deleted, not marked withdrawn: the copy goes, and the reports on it by the table's cascade.
+    expect(route).not.toContain("withdrawn_at: new Date()");
+    expect(read("supabase/migrations/20261109180246_shared_pages.sql")).toMatch(/page_id uuid not null references public\.shared_pages on delete cascade/);
+    expect(route).toContain("rateLimited(`journal-share-stop:");
     expect(route).toContain('return NextResponse.json({ ready: false });');
     expect(route).toContain('{ error: "Sharing is not ready yet." }, { status: 503 }');
+  });
+
+  it("says how many copies of a page are out, so the app can offer Stop sharing on it", () => {
+    expect(route).toMatch(/\.eq\("owner_id", userId\)\s*\.eq\("record_id", recordId\)\s*\.is\("withdrawn_at", null\);/);
+    expect(route).toContain("return NextResponse.json({ ready: true, left: who.limited ? sharesLeft(count ?? 0) : null, shared });");
   });
 
   it("a report: signed in, once per reader, rate limited", () => {
@@ -124,9 +136,33 @@ describe("the shared page", () => {
 
   it("the Share button: only where it works; with none left, the upgrade sheet named for the journal", () => {
     expect(button).toContain("if (!ready) return null;");
-    expect(button).toMatch(/if \(res\.status === 403\) \{\s*setReady\(\{ left: 0 \}\);\s*upgrade\.open\("journal"\);/);
+    expect(button).toMatch(/if \(res\.status === 403\) \{\s*setReady\(\{ \.\.\.ready, left: 0 \}\);\s*upgrade\.open\("journal"\);/);
     expect(button).toContain("await shareText(");
-    expect(read("components/journal/JournalComposer.tsx")).toContain("{open && draft.editing && !isNote && !empty ? <SharePageButton");
+    const composer = read("components/journal/JournalComposer.tsx");
+    expect(composer).toContain("const shareable = open && !!draft.editing && !isNote && !empty;");
+    expect(composer).toContain("{shareable ? <SharePageButton share={share} /> : null}");
+  });
+
+  it("Stop sharing: said under the composer's header while a copy is out, asked first, then deleted", () => {
+    const composer = read("components/journal/JournalComposer.tsx");
+    expect(composer).toContain("{shareable ? <SharedPageLine share={share} /> : null}");
+    expect(button).toContain("if (!share.ready || share.ready.shared === 0) return null;");
+    // A confirm step, in the reader's own words, because it deletes.
+    expect(button).toMatch(/<ConfirmDialog\s+open=\{asking\}\s+title=\{t\("journal\.share\.stopTitle"\)\}\s+description=\{t\("journal\.share\.stopBody"\)\}\s+confirmLabel=\{t\("journal\.share\.stop"\)\}\s+cancelLabel=\{t\("common\.cancel"\)\}\s+destructive/);
+    expect(button).toContain('apiFetch(`/api/journal/share?recordId=${encodeURIComponent(recordId)}`, { method: "DELETE" })');
+    // Its control reaches 44px, as every control does.
+    expect(button).toMatch(/data-journal-stop-sharing=""\s+className="tap-press ms-auto inline-flex min-h-11/);
+    // Every language has its words.
+    for (const lang of ["en", "ar", "bg", "de", "el", "es", "fil", "fr", "hu", "id", "it", "ka", "ne", "pl", "pt", "ro", "ru", "sr", "tr", "uk", "ur"]) {
+      const words = JSON.parse(read(`lib/i18n/messages/${lang}.json`)) as Record<string, string>;
+      for (const key of ["journal.share.sharedLine", "journal.share.stop", "journal.share.stopTitle", "journal.share.stopBody"]) expect(words[key], `${lang} ${key}`).toBeTruthy();
+    }
+  });
+
+  it("the privacy page says so, in English and in German (version B)", () => {
+    const privacy = read("app/(app)/privacy/page.tsx");
+    expect(privacy).toContain("Stop sharing deletes the\n copy at once, and any reports on it.");
+    expect(privacy).toContain("Wenn du das Teilen\n beendest, wird die Kopie sofort gelöscht, mit allen Meldungen dazu.");
   });
 });
 

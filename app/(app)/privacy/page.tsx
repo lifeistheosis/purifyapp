@@ -122,6 +122,21 @@ export default async function PrivacyPage() {
  page views in aggregate, without your account identity, whether you
  are signed in or not.
  </p>
+ {/* Sharing a journal page (1.9; his yes of 2026-11-09 to version B,
+     docs/1.9-build/drafts/privacy-sharing.md): each sentence rests on
+     app/api/journal/share, lib/journal/share.ts and the shared_pages SQL. */}
+ <p className="mt-3 font-serif text-body text-paper/80 leading-[1.7]">
+ <strong className="font-semibold text-paper">Sharing a journal page.</strong>{" "}
+ When you share a page, we keep a copy of it as it stood when you
+ shared it, at its own link (purifyapp.net/p/...). Anyone with the
+ link can read it. Search engines are kept away from it until we have
+ reviewed it; after that they may list it. Your notebooks and tags are
+ never in the copy. If someone reports a shared page, we keep the
+ report, the account that made it, and anything written with it, up to
+ 500 characters, so we can review the page. Stop sharing deletes the
+ copy at once, and any reports on it. Deleting your account deletes
+ every page you shared, and its reports.
+ </p>
 
  {/* What we record */}
  <p className="mt-10 font-sans text-caption font-semibold text-paper/45">
@@ -810,6 +825,20 @@ function PrivacyDe() {
  von Modellen gebraucht. Die unten beschriebene Analytik ist von
  beiden getrennt: sie zeichnet Seitenaufrufe in Summe auf, ohne
  deine Konto-Identität, ob du angemeldet bist oder nicht.
+ </p>
+ <p className="mt-3 font-serif text-body text-paper/80 leading-[1.7]">
+ <strong className="font-semibold text-paper">Eine Journalseite teilen.</strong>{" "}
+ Wenn du eine Seite teilst, behalten wir eine Kopie davon, so wie sie
+ beim Teilen war, unter einem eigenen Link (purifyapp.net/p/...).
+ Jeder mit dem Link kann sie lesen. Suchmaschinen halten wir von ihr
+ fern, bis wir sie geprüft haben; danach dürfen sie sie aufführen.
+ Deine Notizbücher und Schlagwörter sind nie Teil der Kopie. Wenn
+ jemand eine geteilte Seite meldet, behalten wir die Meldung, das
+ Konto, das sie gemacht hat, und was dazu geschrieben wurde, bis zu
+ 500 Zeichen, damit wir die Seite prüfen können. Wenn du das Teilen
+ beendest, wird die Kopie sofort gelöscht, mit allen Meldungen dazu.
+ Wenn du dein Konto löschst, werden alle Seiten gelöscht, die du
+ geteilt hast, mit ihren Meldungen.
  </p>
 
  {/* What we record */}
