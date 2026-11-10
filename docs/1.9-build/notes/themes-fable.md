@@ -2490,7 +2490,7 @@ Also his:
   hyphen as type breaks them (French dix-huit, Indonesian masing-masing
   and berjam-jam), and Ukrainian's name, cut in the head at both widths:
   the head's word beside it was two long words, so it is one now,
-  "Перегляд" (`d7747a0b`), and the name is whole. The palette earned by
+  "Перегляд" (`12a84a1b`), and the name is whole. The palette earned by
   the Cappadocians agrees with the five in Russian, Bulgarian and
   Ukrainian (`d862e24b`). Stills: `build-89/palette-names-plus-lit-el-360.png`
   and `palette-names-cappadocian-ru-360.png`.
