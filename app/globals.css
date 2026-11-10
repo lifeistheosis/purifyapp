@@ -11602,18 +11602,21 @@ html[data-look]:not([data-reading-mode]) :is(.set-hint, .set-desc, .set-sub, .se
  color: color-mix(in srgb, var(--color-paper) var(--look-quiet), transparent);
 }
 
-/* A light look's accent, where the app writes it at a share for words
-   (text-gold/65 to /80, text-gold-pale/70): a look's accent is a colour, the
-   wine of Roses or the green of Olive, lighter than the graphite Light keeps
-   in its place, and under 85 percent it would fall below 4.5:1 on the page.
-   So a look draws those at the share that holds it. The fainter shares (/35
-   to /55) are ornaments, hidden from a screen reader, and stay as written.
+/* Light's accent, and a light look's, where the app writes it at a share for
+   words (text-gold/65 to /80, text-gold-pale/70): under 85 percent it falls
+   below 4.5:1 on the page. A look's accent is a colour, the wine of Roses or
+   the green of Olive; Light's is a graphite (#45454b), and the Themes chat
+   measured its words at those shares at 3.0:1 to 4.2:1 on Light's page (34
+   places; the Saints' Greek line at 3.32:1), section 25 of its notes. So
+   Light and every light look draw those at the share that holds it: this rule
+   was the looks' alone until 2026-11-10. The fainter shares (/35 to /55) are
+   ornaments, hidden from a screen reader, and stay as written.
    lib/ui/__tests__/faintText.test.ts does the sums. */
 @layer utilities {
- :where(html[data-look][data-reading-mode="parchment"]) :is(.text-gold\/65, .text-gold\/70, .text-gold\/75, .text-gold\/80) {
+ :where(html[data-reading-mode="parchment"]) :is(.text-gold\/65, .text-gold\/70, .text-gold\/75, .text-gold\/80) {
   color: color-mix(in oklab, var(--color-gold) 85%, transparent);
  }
- :where(html[data-look][data-reading-mode="parchment"]) .text-gold-pale\/70 {
+ :where(html[data-reading-mode="parchment"]) .text-gold-pale\/70 {
   color: color-mix(in oklab, var(--color-gold-pale) 80%, transparent);
  }
 }

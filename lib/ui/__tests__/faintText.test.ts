@@ -287,8 +287,9 @@ describe("faint text on every look", () => {
   });
 });
 
-// A light look's accent (1.9). Light's own accent is a graphite, dark enough
-// to be written at 85 percent and hold 4.5:1. A look's accent is a colour
+// Light's accent and a light look's (1.9). Light's own accent is a graphite,
+// dark enough to be written at 85 percent and hold 4.5:1, but not at the 65
+// to 80 the app writes for words (3.0:1 to 4.2:1, the Themes chat's sweep). A look's accent is a colour
 // (the wine of Roses, the green of Olive), and the app writes accent words
 // at shares from 65 to 90 percent (text-gold/NN, text-gold-pale/NN). A look
 // draws the shares under 85 at 85, by one rule for every light look, so an
@@ -308,7 +309,7 @@ describe("a light look's accent, at the shares the app writes for words", () => 
     return [...src.matchAll(/\btext-(gold-pale|gold)\/(\d+)\b/g)].map((m) => ({ file, token: m[1] as Use["token"], share: Number(m[2]), before: src.slice(Math.max(0, m.index - 220), m.index) }));
   });
   const rule = (token: string) => {
-    const m = new RegExp(`:where\\(html\\[data-look\\]\\[data-reading-mode="parchment"\\]\\) (?::is\\(([^)]*)\\)|(\\.text-${token}\\\\\\/\\d+)) \\{\\s*color: color-mix\\(in oklab, var\\(--color-${token}\\) (\\d+)%, transparent\\);`).exec(BARE);
+    const m = new RegExp(`:where\\(html\\[data-reading-mode="parchment"\\]\\) (?::is\\(([^)]*)\\)|(\\.text-${token}\\\\\\/\\d+)) \\{\\s*color: color-mix\\(in oklab, var\\(--color-${token}\\) (\\d+)%, transparent\\);`).exec(BARE);
     if (!m) throw new Error(`no rule for a light look's text-${token} shares`);
     const lifted = [...(m[1] ?? m[2]).matchAll(new RegExp(`\\.text-${token}\\\\\\/(\\d+)`, "g"))].map((c) => Number(c[1]));
     return { lifted, to: Number(m[3]) };
@@ -329,11 +330,17 @@ describe("a light look's accent, at the shares the app writes for words", () => 
     }
   });
 
-  for (const look of LOOKS.filter((l) => l.light)) {
-    it(`${look.id}: an accent word is 4.5:1 or more on the page, a card and a 4 percent box`, () => {
-      const c = lookColours(look.id);
-      const tokenOf = (name: string) => hex(token(`html[data-look="${look.id}"]`, name) ?? "");
-      const inks = { gold: tokenOf("--color-gold"), "gold-pale": tokenOf("--color-gold-pale") };
+  // Light itself first (1.9, the Themes chat's sweep): its graphite accent at
+  // 65 to 80 percent was 3.0:1 to 4.2:1 on its page, so the rule is Light's too.
+  const LIGHT = { id: "light (the palette)", colours: () => ({ ...colours("parchment") }), ink: (name: string) => hex(token('html[data-reading-mode="parchment"]', name) ?? "") };
+  const SUBJECTS = [
+    LIGHT,
+    ...LOOKS.filter((l) => l.light).map((look) => ({ id: look.id, colours: () => lookColours(look.id), ink: (name: string) => hex(token(`html[data-look="${look.id}"]`, name) ?? "") })),
+  ];
+  for (const subject of SUBJECTS) {
+    it(`${subject.id}: an accent word is 4.5:1 or more on the page, a card and a 4 percent box`, () => {
+      const c = subject.colours();
+      const inks = { gold: subject.ink("--color-gold"), "gold-pale": subject.ink("--color-gold-pale") };
       const grounds: Record<string, Rgb> = { page: c.night, card: c.soft, box: mix(c.paper, c.night, 0.04), "box on a card": mix(c.paper, c.soft, 0.04) };
       const short: string[] = [];
       for (const [name, set] of [["gold", GOLD], ["gold-pale", PALE]] as const) {
@@ -350,11 +357,12 @@ describe("a light look's accent, at the shares the app writes for words", () => 
     });
   }
 
-  it("the rule is for the looks only, under :where() in the utilities layer, and leaves Light as it is", () => {
-    const at = BARE.indexOf(':where(html[data-look][data-reading-mode="parchment"]) :is(.text-gold');
+  it("the rule is Light's and every light look's, under :where() in the utilities layer", () => {
+    const at = BARE.indexOf(':where(html[data-reading-mode="parchment"]) :is(.text-gold');
     expect(at).toBeGreaterThan(0);
     expect(BARE.lastIndexOf("@layer utilities {", at)).toBeGreaterThan(BARE.lastIndexOf("@layer base {", at));
-    expect(BARE).not.toMatch(/:where\(html\[data-reading-mode="parchment"\]\) [^{]*\.text-gold/);
+    // Not the looks' alone any more: no copy of it narrowed to [data-look].
+    expect(BARE).not.toMatch(/:where\(html\[data-look\]\[data-reading-mode="parchment"\]\) [^{]*\.text-gold/);
   });
 });
 
