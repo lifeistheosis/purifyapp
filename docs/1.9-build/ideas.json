@@ -2041,6 +2041,20 @@
    "version": "1.9",
    "outcome": null,
    "note": "The second halves are 1029 (Sermon 29, the fragments) and 97 (Sermon 97, from the Catena); no stored mark rewritten, marks from before show on both until changed. 50aa710b. PLAN 13p."
+  },
+  {
+   "id": "e-lang-saints-and-pages",
+   "section": "Language",
+   "kind": "bug",
+   "title": "The reader's language in the apps: the saints' lives in German and the five German pages (About, Privacy, the FAQ, Support, What's New) were English for every reader in the apps",
+   "from": "claude",
+   "asked": "2026-11-10",
+   "status": "built",
+   "decided": "2026-11-10",
+   "needsDesign": false,
+   "version": "1.9",
+   "outcome": null,
+   "note": "Each page writes the English; German is its own file loaded on the device. About and the FAQ lose a note that was true of no reader. 76d58364. PLAN 13q; build-90.md, the reader's language in the apps."
   }
  ]
 }
