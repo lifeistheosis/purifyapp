@@ -571,7 +571,7 @@ await section(10, async () => {
 // into a card over the page (components/bible/VerseFocus.tsx), and never the
 // pill over the tab bar.
 await section(12, async () => {
-  console.log("\n12. The apps select nothing by themselves, and a hold copies");
+  console.log("\n12. The apps select nothing by themselves, a hold copies, and a verse answers its gestures");
   const { ctx, page, errors } = await open({ width: 390, height: 844, phone: true });
   await ctx.grantPermissions(["clipboard-read", "clipboard-write"], { origin: ORIGIN });
   const cdp = await ctx.newCDPSession(page);
@@ -729,28 +729,55 @@ await section(12, async () => {
   await page.keyboard.press("Escape").catch(() => {});
   await page.waitForTimeout(500);
 
-  // Build 88 note 2: a touch on a page still moving is the scroll's. The page
-  // is kept scrolling a step every 30ms while a finger taps a verse: no tools.
-  // Then a tap on a page at rest: the tools.
+  // Build 88 note 2: a touch on a page still moving is the scroll's. Build 90
+  // note 10 made the gestures what they are now: a lone tap opens nothing, a
+  // double tap highlights the verse in the colour picked last, and a hold
+  // opens its window (held above). The page is kept scrolling a step every
+  // 30ms while a finger double-taps a verse: nothing is marked or opened.
+  // Then on a page at rest: a lone tap, nothing; a double tap, the highlight;
+  // a second double tap takes it off, leaving the page as it was found.
   const tapAt = async ({ x, y }) => {
     await cdp.send("Input.dispatchTouchEvent", { type: "touchStart", touchPoints: [{ x, y }] });
     await page.waitForTimeout(60);
     await cdp.send("Input.dispatchTouchEvent", { type: "touchEnd", touchPoints: [] });
   };
+  const doubleTapAt = async (at) => {
+    await tapAt(at);
+    await page.waitForTimeout(110);
+    await tapAt(at);
+  };
+  const aVerse = () =>
+    page.evaluate(() => {
+      const el = document.querySelector("[data-own-press]");
+      const r = el.getBoundingClientRect();
+      return { x: Math.round(r.left + Math.min(140, r.width / 2)), y: Math.round(r.top + Math.min(20, r.height / 2)), id: el.closest("[id^='v']")?.id ?? null };
+    });
+  const marked = (id) =>
+    page.evaluate((id) => ({
+      any: document.querySelectorAll("[id^='v'][data-hl='true']").length,
+      hl: id ? document.getElementById(id)?.getAttribute("data-hl") === "true" : false,
+      tools: !!document.querySelector("[data-verse-focus]"),
+    }), id);
   await page.evaluate(() => { window.__glide = setInterval(() => window.scrollBy(0, 2), 30); });
   await page.waitForTimeout(200);
-  const moving = await page.evaluate(() => { const r = document.querySelector("[data-own-press]").getBoundingClientRect(); return { x: Math.round(r.left + Math.min(140, r.width / 2)), y: Math.round(r.top + Math.min(20, r.height / 2)) }; });
-  await tapAt(moving);
+  await doubleTapAt(await aVerse());
   await page.evaluate(() => clearInterval(window.__glide));
   await page.waitForTimeout(500);
-  const onGlide = await page.evaluate(() => !!document.querySelector("[data-verse-focus]"));
-  must(!onGlide, `a finger put down on a page still gliding selects nothing (${onGlide ? "the tools opened" : "nothing opened"})`);
+  const onGlide = await marked(null);
+  must(onGlide.any === 0 && !onGlide.tools, `a double tap on a page still gliding marks nothing and opens nothing (${onGlide.any} marked, ${onGlide.tools ? "the tools opened" : "no tools"})`);
   await page.waitForTimeout(400);
-  const still = await page.evaluate(() => { const r = document.querySelector("[data-own-press]").getBoundingClientRect(); return { x: Math.round(r.left + Math.min(140, r.width / 2)), y: Math.round(r.top + Math.min(20, r.height / 2)) }; });
+  const still = await aVerse();
   await tapAt(still);
   await page.waitForTimeout(600);
-  const atRest = await page.evaluate(() => !!document.querySelector("[data-verse-focus]"));
-  must(atRest, `and a tap on a page at rest selects the verse (${atRest ? "the tools opened" : "nothing opened"})`);
+  const lone = await marked(still.id);
+  must(!lone.hl && !lone.tools, `a lone tap on a page at rest opens nothing and marks nothing (${lone.hl ? "marked" : "not marked"}, ${lone.tools ? "the tools opened" : "no tools"})`);
+  await doubleTapAt(still);
+  await page.waitForTimeout(600);
+  const twice = await marked(still.id);
+  must(twice.hl && !twice.tools, `a double tap on a page at rest highlights the verse, with no window (${twice.hl ? "highlighted" : "not highlighted"}, ${twice.tools ? "the tools opened" : "no tools"})`);
+  await doubleTapAt(still);
+  await page.waitForTimeout(600);
+  must(!(await marked(still.id)).hl, "and a second double tap takes it off");
   must(errors.length === 0, `no page errors${errors.length ? ": " + errors.slice(0, 2).join(" | ") : ""}`);
   await ctx.close();
 
