@@ -2434,14 +2434,20 @@ No faces are read, matched or named, anywhere.
   the head is the app's own icon of the campaign's kind, as before, so nobody
   feels they must post a photograph of a sick person. A picture that still
   waits is never the head: its creator sees the head every reader sees.
-- **A row under About,** "Pictures": every cleared picture; a tap opens one,
-  with what its creator says it shows, Previous and Next, and Report.
+- **A grid under About,** "Pictures", four across: every cleared picture; a
+  tap opens one, with what its creator says it shows, and one row under it:
+  the picture before, Report, the picture after. Never a row to drag
+  sideways: twenty pictures stand in five rows.
 - **Its creator sees besides:** their own pictures that wait, each marked
-  "Waiting"; "Add a picture" while a place is free; and at three, where Plus
-  can be bought, the next place with the Plus mark, which opens the upgrade
-  sheet. Plus is shown where it is met and never promised to every reader.
-  Where Plus cannot be bought (iPhone today) that place is not drawn, and the
-  limit there is three, since the server decides by entitlement.
+  "Waiting"; a place to add one while a place is free, which is the plus
+  sign alone with "Add a picture" as its name for a screen reader (13.8 has
+  why); and at three, where Plus can be bought, the next place with the Plus
+  mark, on the second row and two places wide so the mark stands whole in
+  it, which opens the upgrade sheet. Plus is shown where it is met and never
+  promised to every reader. Where Plus cannot be bought (iPhone today) that
+  place is not drawn, and the limit there is three, since the server decides
+  by entitlement. Where it is drawn is a rule of its own with a test
+  (`showsPlusPlace`, `lib/campaigns/model.ts`).
 - **Adding one** is a sheet: the picture, what it shows (optional, for a
   reader who cannot see it), the two lines to tick, and one line saying that
   campaigns are public and that the picture is made again, which removes the
@@ -2538,3 +2544,76 @@ keeps it. `routes.test.ts` walks the whole way through the real path: read,
 reported and hidden, kept, and then not hidden again. Keeping a campaign also
 no longer sets aside a report of one of its pictures, which nobody had
 decided about.
+
+### 13.8 What the first stills found, and what was done
+
+- **Report was under the fold.** A picture opened at six tenths of the
+  screen's height, and what could be done with it had to be scrolled to. The
+  picture is a little smaller now and Previous, Report (or Remove) and Next
+  share one row, on the screen.
+- **The Plus place was off the right edge.** The pictures stood in a row that
+  scrolls sideways, so the place after the third could not be seen. That is
+  why they are a grid.
+- **The hidden file input** counted as a target too small to tap. It is
+  hidden as the profile editor hides its own.
+- **"Add a picture" as words on its tile** was cut in twenty-four of
+  sixty-three cases (twenty-one languages at 390, 360 and 320 pixels,
+  measured with the export's own fonts). The tile carries the sign alone.
+
+## 14. The last pass for 1.9 (2026-11-10)
+
+### 14.1 The languages
+
+The 62 lines of phases 2 and after (updates and comments, "Prayed by many",
+pictures) were English alone. They are in the twenty other languages now, in
+one pass, by four translators working from one brief, each reusing its
+catalog's own words for campaigns, moderators, reports and pictures. Checked
+for every language before it went in: the same 62 keys, each placeholder
+once, no em or en dash, nothing left in English, and a picture's size written
+with the unit that catalog already uses beside the same button.
+
+**Three names are the translators' own renderings,** and worth an eye from
+someone who prays in the language before campaigns open to every reader:
+
+- **"Prayed by many."** No language was given a word for ranking. Most say
+  "many pray" (Russian "Молятся многие") or "in the prayers of many" (Greek
+  "Στις προσευχές πολλών", Italian "Nelle preghiere di molti"); German says
+  "Viele beten mit", French "Portées par beaucoup".
+- **"Updates."** Where a catalog's word for an update means a software
+  update, the everyday word for news of a person was used (Russian
+  "Новости", Polish "Wieści", German "Neuigkeiten").
+- **"I am 18 or older."** Several languages say it with their own set phrase
+  for having turned eighteen. It is a line a lawyer reads with the rest
+  (8.3).
+
+One thing the pass showed in the catalogs as they already were: Russian says
+"campaign" three ways (in `community.prayerCampaigns`, in July's lines, and in
+phase 1's), and Serbian two. The new lines follow phase 1's word. Making them
+one is a small pass of its own, and a reader's word on which is right would
+settle it.
+
+### 14.2 What the languages found in the screens
+
+**"Prayed by many" cut the word for "week".** The house's switch gives its
+parts equal widths and cuts a word that does not fit, and "week" is long in
+some languages beside very short words for day and year (Romanian: Zi,
+Săptămână, Lună, An). Measured in all twenty-one languages at 390, 360 and
+320 pixels: nineteen cuts. Each part of that switch is now as wide as its own
+word needs, with the room left over shared out, and none is cut. English
+looks as it did.
+
+### 14.3 The eighteen looks
+
+Every campaign still, all twenty-four, was held to the mockup check wearing
+each of the eighteen looks as well as the five palettes: contrast, 44 pixel
+targets, the house icons, palette colours, no gold, no side stripes, Arabic
+mirroring, no em dashes, no light rays. `ALL_LOOKS=1` on
+`scripts/mock-campaigns.mjs` does it. Nothing of campaigns failed on a look.
+
+### 14.4 The stills and the walk
+
+Twenty-four stills, one of each screen, and twenty flows walked in a browser
+against the same export, with what each sends checked. The scratch export
+for them has the switch open, and made-up purchase keys so that Plus counts
+as sold and the Plus place is drawn (the head of the script says which).
+
