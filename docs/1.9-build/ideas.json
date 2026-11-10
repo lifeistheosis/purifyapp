@@ -1887,6 +1887,20 @@
    "version": null,
    "outcome": null,
    "note": "His 86 (BRAINSTORM.md, late 2026-11-09), with 98 (1 and 2 Chronicles take David and Solomon; Zechariah and Jude held until checked) and 99 (CC BY and CC BY-SA allowed, each photographer named on a credits page) in his \"ok to all\" of 2026-11-10; the icons Updates' to choose by those rules. Built 2026-11-10: 3158e475, 1 and 2 Chronicles, David and Solomon from the dome at Lagoudera (1192), a pair, CC0 (Dumbarton Oaks); 36d2a43a, Obadiah, his inscribed mosaic in the Pammakaristos dome (CC BY-SA 4.0, credited to Dosseman on /credits), and 2 Esdras, Ezra with the Archangel Uriel (Moldavian panel, public domain); 24fc639b, Zechariah, the young prophet of the same dome (CC0), the hold released by the arbiter once the inscription over the same figure was read (Jude stays held: his mosaic names him Thaddeus, for clergy). The covers test holds a person of the book to the book's own words and each of the eighteen to a picture no other book shows. The search finished the same day: no usable Orthodox picture on Commons for Ezra, 1 Esdras, Nehemiah, Tobit, Judith, Esther, 1 to 3 Maccabees, Sirach, Baruch or the Prayer of Manasseh, so those 12 keep the plate until one turns up; St Solomonia of Santa Maria Antiqua declined for 2 Maccabees (damaged, and an Italian heritage notice on commercial reproduction)."
+  },
+  {
+   "id": "c-contrast-sweep",
+   "section": "Beauty",
+   "kind": "flag",
+   "title": "The contrast sweep: every word the Themes chat found under 4.5:1 on the five palettes, mended, a test for each kind",
+   "from": "claude",
+   "asked": "2026-11-10",
+   "status": "built",
+   "decided": "2026-11-10",
+   "needsDesign": false,
+   "version": null,
+   "outcome": null,
+   "note": "The Themes chat's findings (docs/1.9-build/notes/themes-fable.md, section 25), the arbiter's request; PLAN 13h. 14aa6ce8 the odd text shares on every palette; eb72e554 Light's accent words at 85 percent; 389cc3b5 Settings' size preview (its caption and verse numbers) and First focus on Light; af15d22c words over pictures (the house's .words-halo, the poster's warm shade on Light, the Plus pill on the bar's plate); b65c84b7 Theology's plates' shadow on Light. By the pixels on all five palettes every place passes, the lowest 4.74:1. Left for the arbiter: True black Prayers' arrows and Roman numerals."
   }
  ]
 }
