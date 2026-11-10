@@ -118,3 +118,11 @@ Planned fix (on his start), with the design pass of notes 2, 4, 6, 7 and 10:
 - The Supporter mark shown on a profile as others see it, and the Discord status shown as it appears in Discord, each with a plain line on what it is.
 - Each preview says in one plain line what the reader gains, never pressure; a test holds every row to a working preview.
 - The Florilegium (hub, a gathering, the starters of note 6, the lapsed reader's view of 10) redesigned as one piece in the house style.
+
+### 13. Search's Look in row: the glow and shade behind the pictures are cut off (2026-11-10)
+
+What he saw: on the Search screen, the soft glow and shade behind the Look in tiles (Everything, Bible, Saints, Prayers, Reading) stop at a hard edge above and below the row (`build-89/13-search-look-in.png`). His words: "And I'm not sure if you could see that, but the glow and the shade in the back of the photos actually cut out. So fix that."
+
+Where it is: `components/search/CommandPalette.tsx` (`search.lookIn`). A row that scrolls sideways clips everything outside its box, top and bottom too, so a tile's shadow and the lit tile's glow are cut at the row's edge.
+
+Planned fix (on his start): the row gets room inside itself for the glow and the shade (padding above and below, taken back with a negative margin so nothing else moves), and room at its ends, so every tile's light falls off softly; the same check on every sideways row that wears a shadow (the reading room's rows, the Florilegium's starters, Today's cards), checked by eye in the export on all five palettes.
