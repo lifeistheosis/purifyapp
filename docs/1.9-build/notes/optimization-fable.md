@@ -435,6 +435,114 @@ chapter, Discover, Prayers, You, a saint and a work in the Reading Room;
 every screen should open as before, with no blank page and no jump back to
 Today.**
 
+## The plan for items 5 to 9 inside 1.9 (2026-11-10, plan only)
+
+His word, about 15:50 UTC: "Again, not off at release. I want everything in
+version 1.9." So the larger wins come into 1.9. Nothing below is built; it
+waits for the arbiter's answer. None of the five is done yet: the lighter app
+(`caf6a665`) took the router files and did not touch the commentary. The
+security updates (item 4) are done by Updates (`bb45cc0f`, `2346e7cc`).
+
+| Item | Hours | Risk | Done | Gain |
+|---|---|---|---|---|
+| 5. The commentary once, not twice | 20 | medium to high | no | about 6 MB off the download |
+| 6. SQLCipher out, the old store deleted | 6, plus his phone walk and one iOS build | medium | no | 2.2 MB of download, 5 MB installed, 32.7 MB back on phones that had 1.5 |
+| 7a. Website pictures cached at the edge | 1 | low | no | pictures stop going back to Render |
+| 7b. The library's pages cached at the edge | 16, plus one Cloudflare rule that is his, and a Fable review | high | no | less server work; a modest gain for a reader |
+| 8. Start-up code without the data | 9 for two parts; the third (12 more) is not recommended in 1.9 | medium | no | an estimated 250 to 400 KB less to parse at every start |
+| 9. The Reading Room's scroll | 1 to confirm on his phone, then 4 to 6 | low | no | the one laggy screen |
+
+About 57 to 59 hours for all of it (without 8's third part), one chat. Order:
+9's check on the next test build, then 8, 6, 5, 7a, and 7b last, because it
+is the one that can be left out without anything else depending on it.
+
+**5. The commentary once.** Two steps. First each Father's work becomes one
+file a section (today the largest is a single 4.2 MB file), which also makes
+long works open faster in the Reading Room: 8 hours. Then, in the apps only,
+a note that is word for word inside a work carries its place (work, section,
+where it starts, how long) and the reader fetches that section: 9 hours. The
+website keeps the commentary in the page, as now (`IS_STATIC_EXPORT`). Gates
+and the walk: 3 hours. Held by: `chapterExtras.test.ts` and
+`writingFile.test.ts` extended, plus a new test that rebuilds every pointed
+note from its work and compares it to the note's own words, all 4,631. Risk:
+it is the reader's own path, and the offline case must stay whole (both files
+are in the app, so it does).
+
+**6. SQLCipher out.** His word of 2026-10-12 was "keep what we built": the
+code in `lib/content` stays, only the plugin leaves the build. One release
+can do both halves if the old store is deleted without the plugin: a few
+lines in each shell (Android `deleteDatabase`, iOS removing the file) that
+run once. 6 hours. Risk: native code on both platforms that cannot be run
+from a cloud chat, so it is proved only by the R8 walk on the release APK
+and by an "iOS build (signed)" run; a wrong file name deletes nothing and
+harms nothing. Held by: a unit test that the plugin is in no gradle or pod
+list and that the build does not need it.
+
+**7. The website's caching, in two parts.**
+
+7a is headers only, on pictures whose names carry a version. 1 hour.
+
+7b is the one to be careful with. The rule he set: no page that carries a
+reader's own data, their session, or anything set by Testers mode may ever
+be cached or shared. The design that keeps it:
+
+- One pure function decides, `cacheable(request)`, and it answers yes only
+  when all of these hold: a GET; a path on a written list of library pages
+  (Bible chapters, the Fathers' works, councils, theology, history, the
+  prayer texts); and **no cookie at all other than the language cookie set
+  to English**. A list of what is allowed, not of what is forbidden, so a
+  cookie nobody thought of (a session, the developer Plus cookie, the
+  calendar style that Testers mode sets, a referral code) makes the page
+  private by default. Every other answer keeps today's
+  `private, no-store`.
+- Account, Community, the shop, You, Settings, sign-in, and every `/api`
+  route are not on the list and cannot be added without failing a test.
+- One library page reads the session on the server today
+  (`app/(app)/saints/[slug]/page.tsx`, line 61). It stays off the list
+  until that read moves to the client (2 of the 16 hours).
+- Testers mode itself lives on the device (`lib/onboarding/testers.ts`),
+  never in the HTML; the one cookie it sets is covered by the rule above.
+
+Held by three tests. A unit test of `cacheable` over a table of requests
+(each cookie the app sets, each path family, each method). A test that reads
+the source: no page on the list, nor a layout above it, imports
+`lib/supabase/server` or `lib/entitlements/server` or reads a cookie other
+than the language. And an end-to-end check on the test web, run before any
+main web change: the same address asked for bare and then with a signed-in
+cookie, where the second must answer `private, no-store`; and two bare
+answers that are the same but for one value.
+
+Two things are his: the Cloudflare cache rule (one rule, written out for
+him), and a decision about the script policy on cached pages, whose details
+are with the arbiter. First measured on the test web, as he asked. If the
+test web is not behind Cloudflare, only the headers can be proved there and
+the edge itself is first seen on the main web: that would be named to him
+before the walk.
+
+What it does not buy: the first byte already arrives in 0.11 to 0.19 s, so a
+reader gains little; the gain is server work and cost. If time runs short,
+7b is the item to hold.
+
+**8. Start-up code.** Three parts. The patch notes: the start carries the
+newest note, the history is read when What's New opens: 4 hours. The
+calendar's year of commemorations: Today keeps today's row, the rest is read
+when the calendar opens: 5 hours. The English text file split by screen: 12
+hours and the fallback for all 21 languages sits on it, so not in 1.9. Held
+by: a test on the built start-up scripts' total size, so it cannot creep
+back.
+
+**9. The Reading Room.** First his phone, on the next test build: scroll the
+Reading Room's first screen. If it is smooth there, nothing is done. If not,
+4 to 6 hours on the hero in `components/reading/FeaturedWork.tsx` and the
+one long task on open, measured before and after.
+
+**The smaller ones (10 to 13), if "everything" means them too:** link
+prefetch off in the apps, 4 hours; long pages drawn in parts (John 1, the
+Saints index), 16 hours and not small; the web billing script out of the
+apps, 4; the two unused packages, 0.5; the twelve Discover tiles resized,
+1; the service worker's cache given a limit, 4; the last dead link in
+`StoreClient.tsx`, 1; signed-out apps not asking for notifications, 0.5.
+
 ## Left alone, on purpose
 
 - The 21 language files (about 2.5 MB packed) and the script fonts
