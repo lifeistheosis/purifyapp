@@ -28,6 +28,8 @@
 //   node scripts/fetch-saint-icons.mjs --fetch <slug> "<search terms>"
 //       Searches, applies the licence gate, downloads to .icon-review/,
 //       and writes everything Commons knows about the file beside it.
+//       Given "File:<Commons title>" in place of the search terms, stages
+//       that file: the one chosen after looking at the candidates.
 //       Nothing enters public/saints/icons/.
 //
 //   node scripts/fetch-saint-icons.mjs --list
@@ -163,17 +165,19 @@ function uploadUrl(name, width) {
  * is ample for every size the app draws an icon; the rights are read from the
  * file's page, as before.
  */
-const STANDARD_WIDTHS = { compare: [330, 500, 960], keep: [960, 500, 330] };
+const STANDARD_WIDTHS = { compare: [330, 250, 500, 960, 120], keep: [960, 500, 330, 250, 120] };
 
 /**
  * A Commons picture at the first of `widths` it serves: for comparing with
  * ours, the 330px thumbnail Wikipedia's pages ask for (so usually made
- * already); for keeping, the 960px. A busy answer (429) is waited out twice
- * before the next width is tried, and a width wider than the file (which
- * Commons will not draw) gives way to the next.
+ * already); for keeping, the 960px. Only widths up to the file's own are
+ * asked for: Commons draws no thumbnail wider than the file, and answers one
+ * with 429 as it does a size off its list (a 300px icon's 330px, 2026-11-10).
+ * A busy answer (429) is waited out twice before the next width is tried.
  */
-async function picture(name, widths = STANDARD_WIDTHS.compare) {
-  for (const width of widths) {
+async function picture(name, widths = STANDARD_WIDTHS.compare, fileWidth = Infinity) {
+  const fit = widths.filter((w) => w <= fileWidth);
+  for (const width of fit.length ? fit : widths.slice(-1)) {
     const url = uploadUrl(name, width);
     for (let attempt = 0; attempt < 3; attempt++) {
       const r = await get(url);
@@ -211,13 +215,13 @@ async function provenance(title) {
   try {
     const r = await get(
       `https://commons.wikimedia.org/w/api.php?action=query&titles=${encodeURIComponent(title)}` +
-        `&prop=imageinfo&iiprop=url|extmetadata&format=json`,
+        `&prop=imageinfo&iiprop=url|size|extmetadata&format=json`,
     );
     if (r.status === 200) {
       const info = Object.values(JSON.parse(r.body.toString()).query?.pages || {})[0]?.imageinfo?.[0];
       if (info?.url) {
         const m = info.extmetadata || {};
-        return described(title, info.url, info.descriptionurl, (k) => m[k]?.value);
+        return { ...described(title, info.url, info.descriptionurl, (k) => m[k]?.value), fileWidth: info.width };
       }
     }
   } catch {
@@ -238,6 +242,7 @@ async function provenanceViaQueryService(title) {
       ?title wikibase:apiOutput mwapi:title.
       ?url wikibase:apiOutput "imageinfo/ii/@url".
       ?page wikibase:apiOutput "imageinfo/ii/@descriptionurl".
+      ?width wikibase:apiOutput "imageinfo/ii/@width".
       ${FIELDS.map((f) => `?${f} wikibase:apiOutput "imageinfo/ii/extmetadata/${f}/@value".`).join("\n      ")}
     }
   }`;
@@ -247,7 +252,7 @@ async function provenanceViaQueryService(title) {
   const rows = JSON.parse(r.body.toString().replace(/[\u0000-\u001f]/g, " ")).results?.bindings ?? [];
   const b = rows.find((x) => x.title?.value.replace(/ /g, "_") === `File:${name}`);
   if (!b?.url) return null;
-  return described(b.title.value, b.url.value, b.page?.value, (k) => b[k]?.value);
+  return { ...described(b.title.value, b.url.value, b.page?.value, (k) => b[k]?.value), fileWidth: Number(b.width?.value) || undefined };
 }
 
 function described(title, fileUrl, page, ext) {
@@ -268,7 +273,8 @@ function described(title, fileUrl, page, ext) {
 
 async function doFetch(slug, query) {
   await fs.mkdir(STAGE, { recursive: true });
-  const candidates = await search(query);
+  // An exact "File:..." title stages that file: the one chosen after looking at the candidates.
+  const candidates = /^File:/i.test(query) ? [query] : await search(query);
   if (!candidates.length) {
     console.log(`${slug}: nothing matched "${query}".`);
     return;
@@ -281,11 +287,12 @@ async function doFetch(slug, query) {
       console.log(`  skip, licence "${p.license || "unknown"}": ${title}`);
       continue;
     }
-    const body = await picture(p.commonsTitle.replace(/^File:/, "").replace(/ /g, "_"), STANDARD_WIDTHS.keep);
+    const body = await picture(p.commonsTitle.replace(/^File:/, "").replace(/ /g, "_"), STANDARD_WIDTHS.keep, p.fileWidth ?? Infinity);
     if (!body) continue;
 
     const jpg = await sharp(body)
-      .resize({ width: 800, height: 800, fit: "inside" })
+      // Smaller, never larger: a thumbnail under 800px is kept at its own size.
+      .resize({ width: 800, height: 800, fit: "inside", withoutEnlargement: true })
       .jpeg({ quality: 85, mozjpeg: true })
       .toBuffer();
     const meta = await sharp(jpg).metadata();
@@ -328,7 +335,7 @@ async function doSource(file, title) {
     console.log(`${file}: licence "${p.license || "unknown"}" does not pass the gate. Nothing staged.`);
     return;
   }
-  const theirs = await picture(p.commonsTitle.replace(/^File:/, "").replace(/ /g, "_"));
+  const theirs = await picture(p.commonsTitle.replace(/^File:/, "").replace(/ /g, "_"), STANDARD_WIDTHS.compare, p.fileWidth ?? Infinity);
   if (!theirs) {
     console.log(`${file}: the Commons picture could not be fetched to compare. Nothing staged; try again later.`);
     return;
