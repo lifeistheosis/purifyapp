@@ -9,6 +9,7 @@ import { BACKGROUNDS, INTENTS } from "@/lib/onboarding/space";
 import { useAdminFetch } from "../adminFetch";
 import { BarChart } from "../charts";
 import { Card, KpiCard, SubTabs } from "../primitives";
+import { AbTests } from "./AbTests";
 
 /**
  * Traffic > Onboarding: how the welcome questions go (1.8).
@@ -179,6 +180,9 @@ export function OnboardingTab() {
           ) : null}
         </Card>
       </div>
+
+      {/* Tests of two versions (1.9, lib/ab/): the account's place first. */}
+      <AbTests />
     </div>
   );
 }

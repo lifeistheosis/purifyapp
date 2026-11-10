@@ -100,7 +100,9 @@ import { DiscordModes } from "@/components/desktop/DiscordModes";
 import { useIsAdmin } from "@/lib/admin/useIsAdmin";
 import { useSpace } from "@/lib/onboarding/useSpace";
 import { useTesting } from "@/lib/onboarding/useTesting";
-import { backToMyOwn, testAs, testFirstOpen, testSignedOut } from "@/lib/onboarding/testers";
+import { pickArm, pickedArm } from "@/lib/ab/device";
+import { AB_TESTS } from "@/lib/ab/tests";
+import { backToMyOwn, startTesting, testAs, testFirstOpen, testSignedOut } from "@/lib/onboarding/testers";
 import { previewSignedOut } from "@/lib/onboarding/testing";
 import { saveSpaceToAccount } from "@/lib/onboarding/accountSync";
 import {
@@ -391,8 +393,13 @@ function TestersSection({ signedIn }: { signedIn: boolean }) {
   // and whenever a test starts or ends; a tap sets both. Deferred a tick, so
   // no state is set from the effect's own body.
   const [signedOut, setSignedOut] = useState(false);
+  // The version of each test this admin chose to look at, read the same way.
+  const [picks, setPicks] = useState<Record<string, string>>({});
   useEffect(() => {
-    const id = window.setTimeout(() => setSignedOut(previewSignedOut()), 0);
+    const id = window.setTimeout(() => {
+      setSignedOut(previewSignedOut());
+      setPicks(Object.fromEntries(AB_TESTS.flatMap((t) => (testing && pickedArm(t.id) ? [[t.id, pickedArm(t.id) as string]] : []))));
+    }, 0);
     return () => window.clearTimeout(id);
   }, [testing]);
   if (!admin) return null;
@@ -415,6 +422,22 @@ function TestersSection({ signedIn }: { signedIn: boolean }) {
           label={t("settings.level")}
         />
       </Row>
+      {/* 1.9: the version of a test to look at (lib/ab/device.ts, pickArm). A
+          test shows an admin nothing by itself, and this is said to nobody. */}
+      {AB_TESTS.map((test) => (
+        <Row key={test.id} icon={<Sparkle size={16} />} label={t("testers.version")} sub={test.asks}>
+          <Track
+            value={picks[test.id] ?? null}
+            options={test.arms.map((arm) => ({ value: arm, label: arm }))}
+            onChange={(arm) => {
+              startTesting();
+              pickArm(test.id, arm);
+              setPicks((p) => ({ ...p, [test.id]: arm }));
+            }}
+            label={t("testers.version")}
+          />
+        </Row>
+      ))}
       {/* 1.9, his question 137: the roads' signed-out way through, which an
           admin, always signed in, could not otherwise walk on their own phone. */}
       <ButtonRow
