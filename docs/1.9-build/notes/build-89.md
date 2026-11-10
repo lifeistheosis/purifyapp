@@ -78,3 +78,11 @@ What he saw: on the Prayers tab, opening a chapter of the prayer book (Devotiona
 Where it is: `components/prayers/PrayerBookContents.tsx`. By design (build 87's walk, section 48) the tapped chapter is held where the finger left it while the page above shuts and its own page folds open under it (`.book-fold`, 240ms, held by FOLD_HOLD_MS); nothing then brings the opened page into view.
 
 Planned fix (on his start): keep the fold he likes and the hold that stops the jump; as the page opens, the screen glides with it on the same curve and in the same time, carrying the chapter's title up toward the top (below the header, clear of the tab bar and the safe areas) so its first prayers are in sight when the fold ends; a chapter already in view is not moved; reduced motion opens it in place at once. Checked in the export at 360 and 390 wide, opening each chapter from the foot of the screen.
+
+### 9. Your rule opens on the right part of the day, with no switch (2026-11-10)
+
+What he saw: opening Your rule from Prayers' Practices shows Morning, then slides over to Evening a moment later (`build-89/09-your-rule.png`). His words: "So when you open the your rule, it switches from morning to like night. I want it to just automatically go to wherever it's at in the day, because it kind of ruins the immersion, right? The clean immersion that it has. It makes it look as if like it was bugged and then it just loaded in."
+
+Where it is: `components/prayers/mine/MyRuleBuilder.tsx`. The part is decided after the page mounts (the clock, the address and the kept rule are the device's, so the export cannot bake them): `part` is null until then, and the control then slides to the part the hour gives (`ruleIdForHour`), or to the part that holds prayers.
+
+Planned fix (on his start): the page's first paint is already on the right part. Until the device has answered, neither half of the control is lit and neither part's list is drawn (the space is kept, so nothing moves); when the answer comes, the control is set with no slide and the list appears with the page's own fade. The slide stays for a reader's own tap. The rule for which part opens is unchanged. Checked in the export, opened at a morning hour and at an evening hour.
