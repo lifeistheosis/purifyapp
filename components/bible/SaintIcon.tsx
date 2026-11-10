@@ -3,30 +3,8 @@
 import { useEffect, useRef, useState } from "react";
 import { cn } from "@/lib/cn";
 import { authorIcon } from "@/lib/saints/icons";
+import { saintInitials } from "@/lib/saints/initials";
 
-const FILLER = new Set([
-  "the",
-  "of",
-  "and",
-  "a",
-  "an",
-  "to",
-  "in",
-  "st",
-  "st.",
-  "saint",
-  "pope",
-]);
-
-function initialsOf(author: string): string {
-  const parts = author
-    .replace(/[.,]/g, "")
-    .split(/\s+/)
-    .filter((p) => p && !FILLER.has(p.toLowerCase()));
-  if (parts.length === 0) return "?";
-  const letters = parts.slice(0, 2).map((p) => p.charAt(0).toUpperCase());
-  return letters.join("");
-}
 
 // One dignified monochrome treatment for every initials fallback. A
 // per-author rotating tint read as a "generated avatar" and undercut the
@@ -101,7 +79,7 @@ export function SaintIcon({
         className,
       )}
     >
-      {initialsOf(author)}
+      {saintInitials(author)}
     </span>
   );
 }

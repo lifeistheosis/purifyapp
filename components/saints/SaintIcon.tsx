@@ -3,6 +3,7 @@
 import Image from "next/image";
 import type { Saint } from "@/lib/saints/saints";
 import { cn } from "@/lib/cn";
+import { saintInitials } from "@/lib/saints/initials";
 import { useArrivingImage } from "@/lib/ui/useArrivingImage";
 
 // Renders a saint's icon as a small framed panel reminiscent of an Orthodox
@@ -47,12 +48,7 @@ export function SaintIcon({
  const d = dims[size];
  const { ref, onArrive } = useArrivingImage(saint.iconUrl ?? null);
 
- const initials = saint.name
- .replace(/^St\.?\s+/i, "")
- .split(/\s+/)
- .slice(0, 2)
- .map((w) => w[0])
- .join("");
+ const initials = saintInitials(saint.name);
 
  return (
  <div

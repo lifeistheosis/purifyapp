@@ -3,6 +3,7 @@
 import Image from "next/image";
 
 import { cn } from "@/lib/cn";
+import { saintInitials } from "@/lib/saints/initials";
 import type { ShopSaint } from "@/lib/shop/bySaint";
 import { useArrivingImage } from "@/lib/ui/useArrivingImage";
 
@@ -36,12 +37,7 @@ export function SaintAvatar({
   imageClassName?: string;
 }) {
   const { ref, onArrive } = useArrivingImage(saint.iconUrl ?? null);
-  const initials = saint.shortName
-    .split(/\s+/)
-    .filter((w) => /^\p{Lu}/u.test(w))
-    .slice(0, 2)
-    .map((w) => w[0])
-    .join("");
+  const initials = saintInitials(saint.shortName);
   return (
     <span
       aria-hidden
