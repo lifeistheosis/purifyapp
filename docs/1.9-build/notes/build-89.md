@@ -15,6 +15,8 @@ release-day SQL, the new sync slices, the 1.9 counts. It also predates 85, 10,
 
 ## His notes
 
+**Start, his word, 2026-11-10 (about 01:55 UTC):** "But that's everything for now, right? Obviously, I can have more critiques ... You could start working on the fixes, right? While I do my thing, and when I come back, you could just update me on the status." Given out the same minute: Admin, notes 9, 14, 13 and 11; Updates (after 79), notes 8, 10 and 7; Updates 2 (after 88 and the 1.9 tour), notes 1 and 5, then 12, then 3 once its icons are found and his OK is in; Fable 5.2 on the Theology pages, note 2, then 4, then 6 with the Florilegium of 12. Every redesign sends one still to him through the arbiter before it is pushed.
+
 ### 1. No side stripes (2026-11-10)
 
 What he saw: the grey bar down the left of the reading room's editorial summary ("Editorial summary · Summarized by the editorials, not St. Gregory Palamas's words") and of the councils' quotes under "In the council's own words" (`build-89/01-stripe-editorial-summary.png`, `build-89/01-stripe-council-words.png`). His words: "the line on the left is a vibe-coded AI slob guardrail that gets hit, and it gets detected through impeccable, which is an AI slob detector. So add this to our guardrails because it's implemented throughout certain sections, and we cannot have this." The rule is in CLAUDE.md.
