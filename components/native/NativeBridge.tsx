@@ -4,9 +4,10 @@
 // ordinary browsers; inside the Capacitor app it
 //   1. hides the launch splash as soon as the web app has painted
 //      (config launchAutoHide is the fallback if this never runs), and
-//   2. keeps the status bar the colour of the page (night on every
-//      palette, black on True black) so the system chrome reads as part
-//      of the app, and
+//   2. keeps the status bar with the page: the strip behind it the page
+//      colour of the palette worn, and the clock and battery marks light or
+//      dark to suit what is behind them (./statusBar.ts), so the system
+//      chrome reads as part of the app, and
 //   3. re-registers for push when reminders are on, so a token Apple or
 //      Google has changed reaches the server (lib/push/native.ts), and again
 //      after a sign-in, so the phone belongs to the account now signed in,
@@ -30,24 +31,12 @@ import { useRouter } from "next/navigation";
 import { whenLanguageSettled } from "@/lib/i18n/launchLanguage";
 import { ENTRY_KEY, FRONT_DOOR_MARK, entryAction } from "@/lib/nav/entry";
 import { INTRO_BUILD_MS, INTRO_QUICK_BUILD_MS, LIFT_ANYWAY_MS } from "@/lib/platform/launchFrame";
-import { isNativeClient } from "@/lib/platform/native";
+import { isNativeClient, nativePlatform } from "@/lib/platform/native";
 import { listenForTaps, refreshNative, refreshNativeIfMoved, relinkNative } from "@/lib/push/native";
 import { onlyTheHashChanges, setPushOpener } from "@/lib/push/open";
-import { statusBarColor } from "@/lib/reader/statusBarColor";
 import { createClient } from "@/lib/supabase/client";
 
-/**
- * The status bar's colour: the page colour of the palette the app is wearing
- * (lib/reader/statusBarColor.ts says which, and why Light keeps the night
- * strip). What is worn, not what is stored: a look a reader without Plus
- * still has stored is put down by the gate, and Candlelight at Vespers is
- * worn over a reader's own palette. Both are on the root element
- * (components/theme/AppThemeController.tsx), so that is what is read.
- */
-function barColor(): string {
-  const root = document.documentElement;
-  return statusBarColor(root.getAttribute("data-reading-mode"), getComputedStyle(root).getPropertyValue("--color-night"));
-}
+import { followStatusBar } from "./statusBar";
 
 export function NativeBridge() {
   const router = useRouter();
@@ -258,28 +247,29 @@ export function NativeBridge() {
     });
     const fallback = setTimeout(() => void hideSplash(), 4000);
 
-    // Keep the status bar the colour of the page so the system chrome reads
-    // as part of the app: each dark palette's own page colour, and the night
-    // strip over Light (barColor). This matters on Android 14 and older,
-    // where the bar is an opaque strip. On the iPhone the bar overlays the
-    // page and the call draws nothing.
+    // Keep the status bar with the page so the system chrome reads as part
+    // of the app: the strip the page colour of the palette worn (Android 14
+    // and older, where the bar is an opaque strip the app paints), and the
+    // marks light or dark to suit what is behind them, on every phone
+    // (./statusBar.ts follows; lib/reader/statusBarColor.ts is the rule).
     (async () => {
       try {
         const { StatusBar, Style } = await import("@capacitor/status-bar");
         if (cancelled) return;
+        // Light marks until what is behind them is known, as the app has always drawn them.
         await StatusBar.setStyle({ style: Style.Dark });
         if (cancelled) return;
-        // Painted now, and again whenever what the app wears changes: a
-        // palette picked, Candlelight put on at sunset, a look put down by
-        // the gate. Each of them lands on the root element's two attributes,
-        // so those are watched, and the bar never asks what is stored.
-        const paintBar = () => {
-          void StatusBar.setBackgroundColor({ color: barColor() }).catch(() => {});
-        };
-        paintBar();
-        const worn = new MutationObserver(paintBar);
-        worn.observe(document.documentElement, { attributes: true, attributeFilter: ["data-reading-mode", "data-look"] });
-        stopBar = () => worn.disconnect();
+        const platform = nativePlatform();
+        // No phone named (Capacitor has not said which): the marks stay light and nothing follows.
+        if (!platform) return;
+        stopBar = followStatusBar({
+          platform,
+          paintStrip: (color) => StatusBar.setBackgroundColor({ color }),
+          // An Android phone gives its strip's colour; an iPhone has no strip, and gives none.
+          stripNow: async () => (await StatusBar.getInfo()).color ?? null,
+          // The plugin names a style for the ground it is meant for: "Dark" draws light marks, "Light" dark ones.
+          drawMarks: (marks) => StatusBar.setStyle({ style: marks === "dark" ? Style.Light : Style.Dark }),
+        });
         // NB: we intentionally do NOT call setOverlaysWebView here. Android 16
         // (targetSdk 36) forces edge-to-edge, where that call is a no-op and
         // env(safe-area-inset-top) reads 0, leaving the top bar under the
