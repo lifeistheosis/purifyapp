@@ -7,6 +7,7 @@ import {
   type FunnelOrder,
   type StageEvent,
 } from "@/lib/shop/funnel";
+import { withoutOwnTestOrders } from "@/lib/admin/testOrders";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { pageAllIn, pageAllSettled } from "@/lib/supabase/pageAll";
 import type { ShopFulfillmentStatus } from "@/lib/shop/types";
@@ -70,7 +71,8 @@ export async function GET() {
   if (ordersRead.error) {
     return NextResponse.json({ error: ordersRead.error.message }, { status: 500 });
   }
-  const orders = (ordersRead.data ?? []) as unknown as FunnelRow[];
+  // His own test orders are no sale (his item 54, lib/admin/testOrders.ts).
+  const orders = withoutOwnTestOrders((ordersRead.data ?? []) as unknown as FunnelRow[]);
   const events = eventsRead.data ?? [];
   const now = new Date();
 

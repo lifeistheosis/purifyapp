@@ -3,6 +3,7 @@ import { z } from "zod";
 
 import { getAdminUser } from "@/lib/admin/access";
 import { logActivity } from "@/lib/admin/activityLog";
+import { withoutOwnTestOrders } from "@/lib/admin/testOrders";
 import { subscribersOf } from "@/lib/email/preferences";
 import { readReminderSwitches } from "@/lib/shop/cartReminderSweep";
 import { outcomesOfNotes, type NoteSend } from "@/lib/shop/cartReminders";
@@ -44,7 +45,7 @@ export async function GET() {
     pageAllSettled((from, to) =>
       admin
         .from("shop_orders")
-        .select("id, user_id, total_cents, payment_status, created_at, items:shop_order_items(quantity, unit_price_cents, list_price_cents, discount_kind)")
+        .select("id, user_id, email, total_cents, payment_status, created_at, items:shop_order_items(quantity, unit_price_cents, list_price_cents, discount_kind)")
         .in("payment_status", ["paid", "refunded"])
         .order("created_at", { ascending: true })
         .order("id")
@@ -71,7 +72,8 @@ export async function GET() {
     subscribersOf(admin, "shop_offers"),
   ]);
 
-  const orders = (ordersRes.data ?? []) as OrderRow[];
+  // His own test orders are no sale (his item 54, lib/admin/testOrders.ts).
+  const orders = withoutOwnTestOrders((ordersRes.data ?? []) as (OrderRow & { email: string | null })[]) as OrderRow[];
   const retention = cohorts(orders, (refundsRes.data ?? []) as RetentionRefund[]);
   const unit = unitEconomics(orders, (expensesRes.data ?? []) as Expense[], now);
 

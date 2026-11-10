@@ -2,6 +2,8 @@ import { NextResponse } from "next/server";
 
 import { getAdminUser } from "@/lib/admin/access";
 import { staleCounts } from "@/lib/admin/attentionOrders";
+import { notOwnTestOrdersFilter, withoutOwnTestCharges, withoutOwnTestOrders } from "@/lib/admin/testOrders";
+import { ownTestIntents } from "@/lib/admin/testOrders.server";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { subscriptionStats } from "@/lib/entitlements/adminStats";
 import { cachedLedger, chargedIntents, dailyNet } from "@/lib/billing/stripeLedger";
@@ -83,8 +85,9 @@ export async function GET() {
     Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate()),
   ).toISOString();
 
+  // His own test orders count for nothing here (his item 54, lib/admin/testOrders.ts).
   const orderCount = (status?: string) => {
-    let q = admin.from("shop_orders").select("id", { count: "exact", head: true });
+    let q = admin.from("shop_orders").select("id", { count: "exact", head: true }).or(notOwnTestOrdersFilter());
     if (status) q = q.eq("payment_status", status);
     return q;
   };
@@ -169,7 +172,7 @@ export async function GET() {
       .maybeSingle<{ created_at: string }>(),
   ]);
 
-  const orders30 = (recentOrdersRes.data ?? []) as {
+  const orders30 = withoutOwnTestOrders((recentOrdersRes.data ?? []) as OrderRow[]) as {
     id: string;
     total_cents: number;
     payment_status: "pending" | "paid" | "refunded" | "cancelled";
@@ -202,7 +205,10 @@ export async function GET() {
   // refund taken off its order (lib/shop/partialRefunds.ts). Until 2026-11-09
   // this placed orders on the day checkout opened and counted a partly
   // refunded order whole.
-  const ledger = await cachedLedger("30d", new Map());
+  const ledgerRead = await cachedLedger("30d", new Map());
+  // His test orders' charges leave Stripe's copy of the books as the orders
+  // leave the shop's (item 54).
+  const ledger = { ...ledgerRead, rows: withoutOwnTestCharges(ledgerRead.rows, await ownTestIntents(admin)) };
   const stripeReadable = ledger.configured && !ledger.error;
   let refunds: RefundsByOrder | null = null;
   if (!stripeReadable && !recentOrdersRes.failed) refunds = await refundsByOrder(admin, paidTotals(orders30));

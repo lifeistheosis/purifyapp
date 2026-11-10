@@ -3,6 +3,7 @@ import "server-only";
 import type { SupabaseClient } from "@supabase/supabase-js";
 
 import { adminEmails } from "@/lib/admin/access";
+import { withoutOwnTestOrders } from "@/lib/admin/testOrders";
 import { isLetterDay, lastWeek, letterHtml, letterSubject, type Pair, type WeekFigures, type WeekWindow } from "@/lib/admin/weekly";
 import { LOCK_EVENTS, LOCK_LABELS, summarizeLocks, type LockEventRow } from "@/lib/analytics/lockCounting";
 import { getProjectMetrics, getRevenueBetween } from "@/lib/billing/revenuecatMetrics";
@@ -53,7 +54,7 @@ async function readTraffic(admin: SupabaseClient, w: WeekWindow): Promise<Pick<W
   }
 }
 
-type OrderRow = { id: string; total_cents: number; payment_status: string; created_at: string; paid_at: string | null };
+type OrderRow = { id: string; email: string | null; total_cents: number; payment_status: string; created_at: string; paid_at: string | null };
 
 /** The shop, both weeks: paid orders on the day their money landed, less refunds. */
 async function readShop(admin: SupabaseClient, w: WeekWindow): Promise<WeekFigures["shop"]> {
@@ -62,14 +63,15 @@ async function readShop(admin: SupabaseClient, w: WeekWindow): Promise<WeekFigur
   const res = await pageAllSettled((a, b) =>
     admin
       .from("shop_orders")
-      .select("id, total_cents, payment_status, created_at, paid_at")
+      .select("id, email, total_cents, payment_status, created_at, paid_at")
       .in("payment_status", ["paid", "refunded"])
       .or(`and(paid_at.gte."${from}",paid_at.lt."${to}"),and(paid_at.is.null,created_at.gte."${from}",created_at.lt."${to}")`)
       .order("id")
       .range(a, b),
   );
   if (res.error) return null;
-  const orders = res.data as OrderRow[];
+  // His own test orders are no sale (his item 54, lib/admin/testOrders.ts).
+  const orders = withoutOwnTestOrders(res.data as OrderRow[]);
   const refunds = await refundsByOrder(admin, paidTotals(orders));
   if (!refunds) return null;
   const inWeek = (o: OrderRow, start: string, end: string) => {

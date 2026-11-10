@@ -1,6 +1,7 @@
 import { emailsByUserId } from "@/lib/admin/accountEmails";
 import type { SinceEvent } from "@/lib/admin/since";
 import { isTableAbsent } from "@/lib/admin/tableAbsent";
+import { isOwnTestOrder } from "@/lib/admin/testOrders";
 import { formatPrice } from "@/lib/shop/format";
 import type { createAdminClient } from "@/lib/supabase/admin";
 
@@ -120,6 +121,8 @@ export async function readTimelineWindow(
     paid_at: string | null;
     items: { quantity: number }[] | null;
   }[]) {
+    // His own test orders are no sale, and no news (his item 54, lib/admin/testOrders.ts).
+    if (isOwnTestOrder(o)) continue;
     const items = (o.items ?? []).reduce((a, i) => a + (i.quantity ?? 0), 0);
     const kept = o.payment_status === "paid";
     if (kept) orderCents += o.total_cents;

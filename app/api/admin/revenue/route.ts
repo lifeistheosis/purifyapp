@@ -12,6 +12,8 @@ import { subscriptionStats } from "@/lib/entitlements/adminStats";
 import { estimatedMrrCents, estimatedArrCents } from "@/lib/premium/mrr";
 import { getProjectMetrics, getRevenueBetween, realArpuAnnual } from "@/lib/billing/revenuecatMetrics";
 import { cachedLedger, monthlyNet, notShopCents } from "@/lib/billing/stripeLedger";
+import { withoutOwnTestCharges, withoutOwnTestOrders } from "@/lib/admin/testOrders";
+import { ownTestIntents } from "@/lib/admin/testOrders.server";
 import { INVESTOR_PLAN } from "@/lib/invest/plan";
 import { paidTotals, refundsByOrder } from "@/lib/shop/partialRefunds";
 import { realizedRevenue } from "@/lib/admin/realized";
@@ -58,7 +60,7 @@ export async function GET() {
         // route's gross figure and its top-products figure reconcile.
         // user_id and store_id feed the split and the abandonment figures
         // (lib/shop/commerceMetrics.ts).
-        .select("id, user_id, store_id, items_total_cents, total_cents, payment_status, created_at, items:shop_order_items(product_id, title, unit_price_cents, quantity)")
+        .select("id, user_id, email, store_id, items_total_cents, total_cents, payment_status, created_at, items:shop_order_items(product_id, title, unit_price_cents, quantity)")
         .order("created_at", { ascending: false })
         .order("id")
         .range(from, to),
@@ -71,21 +73,25 @@ export async function GET() {
     eikonStoreIds(admin),
   ]);
 
-  const orders = (ordersRes.data ?? []) as {
-    id: string;
-    user_id: string | null;
-    store_id: string | null;
-    items_total_cents: number;
-    total_cents: number;
-    payment_status: "pending" | "paid" | "refunded" | "cancelled";
-    created_at: string;
-    items: {
-      product_id: string | null;
-      title: string;
-      unit_price_cents: number;
-      quantity: number;
-    }[];
-  }[];
+  // His own test orders are no sale (his item 54, lib/admin/testOrders.ts).
+  const orders = withoutOwnTestOrders(
+    (ordersRes.data ?? []) as {
+      id: string;
+      user_id: string | null;
+      email: string | null;
+      store_id: string | null;
+      items_total_cents: number;
+      total_cents: number;
+      payment_status: "pending" | "paid" | "refunded" | "cancelled";
+      created_at: string;
+      items: {
+        product_id: string | null;
+        title: string;
+        unit_price_cents: number;
+        quantity: number;
+      }[];
+    }[],
+  );
 
   // Partial refunds leave an order paid; the part that went back is on its
   // refund requests. A failed read is said (partialRefundsRead), never taken
@@ -152,7 +158,9 @@ export async function GET() {
   // billing charges this Stripe account, so Stripe can say what members paid
   // on the website; it cannot see Google Play or the App Store, and the
   // total says so (complete: false, missing names them).
-  const stripe = subsRealizedCents == null ? await cachedLedger("all", new Map()) : null;
+  const stripeRead = subsRealizedCents == null ? await cachedLedger("all", new Map()) : null;
+  // Stripe's copy of his test orders' charges leaves with them (item 54).
+  const stripe = stripeRead ? { ...stripeRead, rows: withoutOwnTestCharges(stripeRead.rows, await ownTestIntents(admin)) } : null;
   const stripeReadable = !!stripe && stripe.configured && !stripe.error;
   const webPlusCents = stripeReadable && stripe ? notShopCents(stripe.rows) : null;
   // Kept for the Stripe card's line, as what it is: a transfer to the bank.

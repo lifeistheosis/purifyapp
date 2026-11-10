@@ -2,6 +2,7 @@ import "server-only";
 
 import type { createAdminClient } from "@/lib/supabase/admin";
 import type { HourlyMetric } from "./hourlyGoals";
+import { withoutOwnTestOrders } from "./testOrders";
 import {
   autoTarget,
   baselineFor,
@@ -82,12 +83,13 @@ export async function measure(
   // it would announce money that may never arrive.
   const { data } = await supa
     .from("shop_orders")
-    .select("total_cents")
+    .select("total_cents, email")
     .eq("payment_status", "paid")
     .gte("created_at", fromIso)
     .lt("created_at", toIso);
-  return (data ?? []).reduce(
-    (sum, o) => sum + ((o as { total_cents: number }).total_cents ?? 0),
+  // His own test orders are no sale (his item 54, ./testOrders.ts).
+  return withoutOwnTestOrders((data ?? []) as { total_cents: number; email: string | null }[]).reduce(
+    (sum, o) => sum + (o.total_cents ?? 0),
     0,
   );
 }

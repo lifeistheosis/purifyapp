@@ -20,6 +20,7 @@ import { getRevenueBetween } from "@/lib/billing/revenuecatMetrics";
 import { covers, readPlusFacts } from "@/lib/admin/plusEvents.server";
 import { tally } from "@/lib/admin/plusHistory";
 import { cachedLedger, summarise } from "@/lib/billing/stripeLedger";
+import { notOwnTestOrdersFilter, withoutOwnTestOrders } from "@/lib/admin/testOrders";
 import { INVESTOR_PLAN } from "@/lib/invest/plan";
 import { paidTotals, refundsByOrder } from "@/lib/shop/partialRefunds";
 import { subscriptionStats } from "@/lib/entitlements/adminStats";
@@ -82,7 +83,8 @@ export async function GET(req: NextRequest) {
       .from("shop_orders")
       .select("id", { count: "exact", head: true })
       .eq("payment_status", "pending")
-      .gte("created_at", new Date(now.getTime() - 86_400_000).toISOString()),
+      .gte("created_at", new Date(now.getTime() - 86_400_000).toISOString())
+      .or(notOwnTestOrdersFilter()),
     admin.from("expense_lines").select("monthly_cents, active"),
     admin.from("donations_monthly").select("year_month, total_cents, goal_cents").order("year_month", { ascending: true }),
     subscriptionStats(admin).catch((e: Error) => {
@@ -92,7 +94,9 @@ export async function GET(req: NextRequest) {
   ]);
 
   // ── The shop ─────────────────────────────────────────────────────────
-  const all = ordersRes.error ? null : (ordersRes.data as Order[]);
+  // His own test orders are no sale (his item 54, lib/admin/testOrders.ts).
+  // Stripe's fees on them stay below: that money did go out.
+  const all = ordersRes.error ? null : withoutOwnTestOrders(ordersRes.data as Order[]);
   if (ordersRes.error) unread.push("the orders");
   const inWindow = (all ?? []).filter((o) => landedAt(o) >= w.since);
   // Partial refunds leave an order paid; what went back is on the refund

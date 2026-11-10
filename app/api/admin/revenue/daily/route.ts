@@ -2,6 +2,7 @@ import { NextResponse, type NextRequest } from "next/server";
 
 import { getAdminUser } from "@/lib/admin/access";
 import { foldDailyRevenue, REVENUE_STATUSES, type RevenueOrder } from "@/lib/admin/revenueDaily";
+import { withoutOwnTestOrders } from "@/lib/admin/testOrders";
 import { paidTotals, refundsByOrder } from "@/lib/shop/partialRefunds";
 import { createAdminClient } from "@/lib/supabase/admin";
 
@@ -55,7 +56,8 @@ const PAGE = 1000;
 /** Refuse a range that would page forever. Two years of daily buckets. */
 const MAX_DAYS = 750;
 
-const COLUMNS = "id, total_cents, payment_status, created_at, paid_at";
+// email: his own test orders are no sale (item 54, lib/admin/testOrders.ts).
+const COLUMNS = "id, email, total_cents, payment_status, created_at, paid_at";
 
 function isDayKey(v: string | null): v is string {
   return !!v && /^\d{4}-\d{2}-\d{2}$/.test(v);
@@ -174,7 +176,7 @@ export async function GET(req: NextRequest) {
   // Partial refunds leave an order paid; the part that went back is on its
   // refund requests (lib/shop/partialRefunds.ts). Unreadable is said in the
   // answer (refundsRead), never taken as none.
-  const rows = [...stamped.rows, ...unstamped.rows];
+  const rows = withoutOwnTestOrders([...stamped.rows, ...unstamped.rows] as (RevenueOrder & { email?: string | null })[]);
   const refunds = await refundsByOrder(supa, paidTotals(rows));
   const days = foldDailyRevenue(rows, dayKeys, refunds);
 
