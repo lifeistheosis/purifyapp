@@ -20,7 +20,9 @@
 //
 // Polytonic Greek is set in Cardo (--font-greek), the one font the app
 // carries that has every accent of it (the Greek beside the English uses it
-// too); the reader's font choice is for the scripts it covers.
+// too); the reader's font choice is for the scripts it covers. The Arabic
+// runs right to left whatever the app's language (its verse numbers stand at
+// the start of each line, on the right), in the Naskh the serif stack carries.
 
 import Link from "next/link";
 import { Fragment } from "react";
@@ -78,6 +80,7 @@ export function DownloadedChapter({
   return (
     <article
       lang={bible.textLang}
+      dir={bible.dir}
       data-bible={bible.id}
       className={cn("text-paper/90", FONT_CLASSES[font], SIZE_CLASSES[size])}
       style={{ ...(leadingValue ? { lineHeight: leadingValue } : {}), ...(greek ? { fontFamily: "var(--font-greek), serif" } : {}) }}

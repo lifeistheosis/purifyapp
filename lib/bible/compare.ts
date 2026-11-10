@@ -66,6 +66,9 @@ export function wordsAt(file: BibleBookFile, place: ComparePlace): string | null
 const MAPS: Record<BibleId, () => Promise<{ default: unknown }>> = {
   "ru-synodal": () => import("@/data/bibles/maps/ru-synodal.json"),
   "grc-lxx-patriarchal": () => import("@/data/bibles/maps/grc-lxx-patriarchal.json"),
+  "sr-danicic-karadzic": () => import("@/data/bibles/maps/sr-danicic-karadzic.json"),
+  "ar-van-dyck": () => import("@/data/bibles/maps/ar-van-dyck.json"),
+  "es-reina-valera-1909": () => import("@/data/bibles/maps/es-reina-valera-1909.json"),
 };
 
 const loaded = new Map<BibleId, Promise<CompareMap | null>>();

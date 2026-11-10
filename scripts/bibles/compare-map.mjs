@@ -448,10 +448,16 @@ const CREDIT =
 
 // The Greek is Brenton's own Septuagint, numbered nearly as the standard
 // Septuagint is (its Proverbs 30 in chapter 24, its Joel in four chapters),
-// and the 1904 Patriarchal New Testament.
+// and the 1904 Patriarchal New Testament. The Serbian, Arabic and Spanish are
+// Bibles of the Hebrew canon in eBible's files, numbered as the English
+// Bibles are, with their own turns where the edition has them (the Spanish's
+// Numbers 13:1 is the English's 12:16): the English standard, then the texts.
 const BIBLES = [
   { id: "ru-synodal", target: "rso", sameEdition: false },
   { id: "grc-lxx-patriarchal", target: "lxx", sameEdition: true },
+  { id: "sr-danicic-karadzic", target: "eng", sameEdition: false },
+  { id: "ar-van-dyck", target: "eng", sameEdition: false },
+  { id: "es-reina-valera-1909", target: "eng", sameEdition: false },
 ];
 
 export { expected, appBook, bibleBook, placeBible, BIBLES };

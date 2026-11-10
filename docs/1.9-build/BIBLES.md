@@ -95,6 +95,80 @@ name in 21 languages calls the deuterocanon "deuterocanonical" in English and,
 as each Church says it, "неканонические" in Russian and "αναγινωσκόμενα" in
 Greek. Those lines are the only words about the Bibles that are ours.
 
+## What shipped (2026-11-09): the Serbian, Arabic and Spanish
+
+His answer on the sheet's 15, the labels and the clergy: "we can't really get
+it checked by priests right now, so just, I guess, do your best". So the
+three Bibles of the Hebrew canon are built, each labelled for what it is, and
+the label lines wait for the clergy whenever they can read them. His word on
+their release, late 2026-11-09: "Yes, the three new Bibles should go in
+version 1.9."
+
+| Bible | Books | On the phone | To download (gzip) |
+|---|---|---|---|
+| Превод Вука Караџића и Ђуре Даничића (1868) | 66 | 5.8 MB | about 1.4 MB |
+| ترجمة فاندايك (1865) | 66 | 7.7 MB | about 1.6 MB |
+| Reina-Valera (1909) | 66 | 4.2 MB | about 1.4 MB |
+
+Sources, checked against the files on 2026-11-09 (sha256 in
+`scripts/bibles/build.mjs`): eBible `srp1868` (Cyrillic), `arb-vd` and
+`spaRV1909`, all Public Domain. Each is numbered as the English Bibles are
+(Joel in three chapters, Malachi in four, the Psalms as the Hebrew numbers
+them), with its own turns where its edition has them.
+
+**The lines under each name (ours, for the clergy to read):** in English,
+"A Protestant translation. Its Old Testament is from the Hebrew, without the
+deuterocanonical books. Public domain." for the Arabic and the Spanish, and
+"Its Old Testament is from the Hebrew, without the deuterocanonical books.
+Public domain." for the Serbian, whose translators were Orthodox. Each of the
+21 languages says the deuterocanon as it already does for the Synodal. The
+source line under a chapter names the translators and the year, and for the
+Serbian, "in the Ekavian form of later editions".
+
+**Mended, and named in the build script and its tests:**
+
+- A psalm's title is the opening line of its psalm, unnumbered, as the
+  editions print it (the Arabic and Serbian files mark it; the Spanish file
+  runs it into verse 1, and it is set apart again at the psalm's first word
+  in capitals, the edition's own mark: 124 psalms). The app's English has no
+  titles, so verse 1 is verse 1 in Compare too.
+- The Spanish file keeps 18 verse numbers with no words, where the edition
+  sets the words in the verse before or after (its Numbers 13:1 is the
+  English's 12:16, its Acts 19:40 ends with 19:41): left out, so the page
+  numbers as the edition does. The notes after Paul's fourteen letters
+  ("Fué escrita de Corinto á los Romanos..."), which the file runs on after
+  the last "Amén.", are the edition's apparatus and are left out, as the
+  app's English leaves the King James Bible's out. Psalm 119's Hebrew
+  letters over its stanzas are headings, left out as the Arabic's are.
+- The Arabic begins Nehemiah 8 and Jeremiah 39 with words printed before
+  verse 1 (the end of a sentence that runs on into it): kept there, as the
+  opening line. "(to verse 73)" over Nehemiah 7 is a reader's pointer, not
+  words of the book: left out. Its vowel marks are stored in Unicode's
+  composed order (NFC), as every other Bible's already were; the text is the
+  same mark for mark.
+- Psalm 151 and Daniel 13 and 14 (Susanna, Bel) are not in these Bibles:
+  their pages show the English and say "This chapter is not in this Bible,
+  so it is shown in English."
+- The Arabic reads right to left whatever the app's language.
+
+**Compare** places 95.0% of the app's verses in the Serbian, 96.2% in the
+Arabic and 95.0% in the Spanish (the Synodal 91.3%, the Greek 94.9%). Not
+placed: Esther (the app's is the Septuagint's, with its additions), Daniel 13
+and 14, Psalm 151, and the chapters where an edition turns otherwise than the
+English standard says and the texts cannot settle where (the Spanish's
+Numbers 13 and Jonah 2): left out rather than shown wrong.
+
+**Still open:**
+
+- **Romanian 1914:** not built. It needs his word on the legal footing above
+  (item 2) and proofing of the OCR against the scan before import.
+- **Serbian:** the file is the Ekavian form of later editions, and eBible's
+  Latin `srp1865` is the same text letter for letter once transliterated
+  (checked 2026-11-09), so it is no safer base. It ships in 1.9 on its
+  source's public-domain mark (eBible marks the file Public Domain); whether
+  the change from the 1868 Ijekavian adds protectable work (item 4 above) is
+  still a question for him.
+
 ## How it fits the app
 
 - Every Bible needs the verse-number map (item 22): texts numbered as the

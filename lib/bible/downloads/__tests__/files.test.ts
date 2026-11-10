@@ -23,6 +23,10 @@ const verse = (bible: string, slug: string, chapter: number, label: number | str
 const APP = new Map((BOOKS as { slug: string; chapters: number }[]).map((b) => [b.slug, b.chapters]));
 const RU = "ru-synodal";
 const GRC = "grc-lxx-patriarchal";
+const SR = "sr-danicic-karadzic";
+const AR = "ar-van-dyck";
+const ES = "es-reina-valera-1909";
+const HEBREW_CANON = [SR, AR, ES];
 
 describe("the list the apps carry", () => {
   it("is the website's own list of each Bible, version, size and books", () => {
@@ -42,6 +46,28 @@ describe("the list the apps carry", () => {
     expect(grc.books).toHaveLength(77);
     expect(hasBook(grc, "2-esdras")).toBe(false);
     expect(hasBook(ru, "2-esdras")).toBe(true);
+  });
+
+  it("knows the Bibles of the Hebrew canon for what they are: 66 books, none of the deuterocanonical", () => {
+    for (const id of HEBREW_CANON) {
+      const b = DOWNLOADABLE_BIBLES.find((x) => x.id === id)!;
+      expect(b.books, id).toHaveLength(66);
+      for (const slug of ["tobit", "judith", "wisdom", "sirach", "baruch", "1-maccabees"]) expect(hasBook(b, slug), `${id} ${slug}`).toBe(false);
+      for (const slug of ["genesis", "psalms", "daniel", "malachi", "matthew", "revelation"]) expect(hasBook(b, slug), `${id} ${slug}`).toBe(true);
+    }
+  });
+
+  it("runs the Arabic right to left, and every other left to right", () => {
+    for (const b of DOWNLOADABLE_BIBLES) expect(b.dir, b.id).toBe(b.id === AR ? "rtl" : "ltr");
+  });
+
+  it("says how each numbers the Psalms, as its file does: the Synodal and the Greek as the Septuagint, the rest as the Hebrew", () => {
+    for (const b of DOWNLOADABLE_BIBLES) {
+      expect(b.psalms, b.id).toBe(HEBREW_CANON.includes(b.id) ? "hebrew" : "septuagint");
+      // "Have mercy upon me, O God" is the Septuagint's Psalm 50 and the Hebrew's 51, verse 1 or past the title.
+      const fifty = book(b.id, "psalms").chapters[b.psalms === "hebrew" ? 50 : 49].map(([, t]) => t).join(" ");
+      expect(fifty, b.id).toMatch(/Помилуй меня, Боже|Ἐλέησον με|Смилуј се на ме|اِرْحَمْنِي يَا ٱللهُ|TEN piedad de mí/);
+    }
   });
 
   it("downloads in under 10 MB a Bible", () => {
@@ -157,6 +183,69 @@ describe("the Greek: Brenton's Septuagint (1851) and the Patriarchal New Testame
       const empty = file.chapters.map((c, i) => (c.length ? 0 : i + 1)).filter(Boolean);
       expect(empty, entry.book).toEqual(entry.book === "proverbs" ? [30] : []);
       if (!["joel", "malachi"].includes(entry.book)) expect(file.chapters.length, entry.book).toBe(APP.get(entry.book));
+    }
+  });
+});
+
+describe("the Bibles of the Hebrew canon: the Serbian (1868), the Arabic (1865) and the Spanish (1909), from eBible.org", () => {
+  it("are their words, in their own numbering", () => {
+    expect(verse(SR, "genesis", 1, 1)).toBe("У почетку створи Бог небо и земљу.");
+    expect(verse(SR, "john", 1, 1)).toBe("У почетку беше Реч, и Реч беше у Бога, и Бог беше Реч.");
+    expect(verse(AR, "genesis", 1, 1)).toBe("فِي ٱلْبَدْءِ خَلَقَ ٱللهُ ٱلسَّمَاوَاتِ وَٱلْأَرْضَ.");
+    expect(verse(AR, "john", 1, 1)).toBe("فِي ٱلْبَدْءِ كَانَ ٱلْكَلِمَةُ، وَٱلْكَلِمَةُ كَانَ عِنْدَ ٱللهِ، وَكَانَ ٱلْكَلِمَةُ ٱللهَ.");
+    expect(verse(ES, "genesis", 1, 1)).toBe("EN el principio crió Dios los cielos y la tierra.");
+    expect(verse(ES, "john", 1, 1)).toBe("EN el principio era el Verbo, y el Verbo era con Dios, y el Verbo era Dios.");
+    // The psalms numbered as the Hebrew numbers them: Psalm 51 is the Septuagint's 50.
+    expect(verse(SR, "psalms", 51, 1)).toMatch(/^Смилуј се на ме, Боже/);
+    expect(verse(AR, "psalms", 51, 1)).toMatch(/^اِرْحَمْنِي يَا ٱللهُ/);
+    expect(verse(ES, "psalms", 51, 1)).toMatch(/^TEN piedad de mí, oh Dios/);
+  });
+
+  it("print a psalm's title before its verse 1, unnumbered, as the editions do", () => {
+    for (const id of HEBREW_CANON) {
+      const psalm = book(id, "psalms").chapters[50];
+      expect(psalm[0][0], id).toBe("");
+      expect(psalm[1][0], id).toBe(1);
+    }
+    expect(book(ES, "psalms").chapters[50][0][1]).toBe("Al Músico principal: Salmo de David, cuando después que entró á Bathsebah, vino á él Nathán el profeta.");
+    // "A TI, oh Jehová": the one-letter first word stays with its psalm.
+    expect(book(ES, "psalms").chapters[24].slice(0, 2)).toEqual([["", "Salmo de David."], [1, "A TI, oh Jehová, levantaré mi alma."]]);
+    // An untitled psalm has none.
+    expect(book(ES, "psalms").chapters[0][0][0]).toBe(1);
+    // Psalm 119's Hebrew letters are headings over its stanzas, left out as headings are.
+    expect(verse(ES, "psalms", 119, 1)).toMatch(/^BIENAVENTURADOS los perfectos/);
+    expect(verse(ES, "psalms", 119, 9)).toMatch(/^¿Con qué limpiará el joven/);
+  });
+
+  it("end the Psalms at 150 and Daniel at 12, and every other book where the app does", () => {
+    for (const id of HEBREW_CANON) {
+      for (const entry of manifest(id).books) {
+        const expected = entry.book === "psalms" ? 150 : entry.book === "daniel" ? 12 : APP.get(entry.book);
+        expect(entry.chapters, `${id} ${entry.book}`).toBe(expected);
+        const file = book(id, entry.book);
+        expect(file.elsewhere, `${id} ${entry.book}`).toBeUndefined();
+        expect(file.chapters.every((c) => c.length > 0), `${id} ${entry.book}`).toBe(true);
+      }
+    }
+  });
+
+  it("keep the Arabic's opening words where it prints them, before verse 1, and leave out an editor's pointer", () => {
+    expect(book(AR, "nehemiah").chapters[7][0]).toEqual(["", "وَلَمَّا ٱسْتُهِلَّ ٱلشَّهْرُ ٱلسَّابِعُ وَبَنُو إِسْرَائِيلَ فِي مُدُنِهِمِ،"]);
+    expect(book(AR, "jeremiah").chapters[38][0]).toEqual(["", "وَلَمَّا أُخِذَتْ أُورُشَلِيمُ،"]);
+    // "(to verse 73)" over Nehemiah 7 is a reader's pointer, not words of the book.
+    expect(book(AR, "nehemiah").chapters[6][0][0]).toBe(1);
+    expect(JSON.stringify(book(AR, "nehemiah").chapters)).not.toContain("عدد73");
+  });
+
+  it("leave out the Spanish file's empty verse numbers and the notes after Paul's letters", () => {
+    // Numbers 12:16 is the Reina-Valera's 13:1, which the file kept empty at 12:16 as well.
+    expect(book(ES, "numbers").chapters[11].at(-1)?.[0]).toBe(15);
+    expect(verse(ES, "numbers", 13, 1)).toMatch(/^Y DESPUÉS movió el pueblo de Haseroth/);
+    expect(verse(ES, "romans", 16, 27)).toBe("Al solo Dios sabio, sea gloria por Jesucristo para siempre. Amén.");
+    expect(verse(ES, "hebrews", 13, 25)).toBe("La gracia sea con todos vosotros. Amén.");
+    expect(verse(ES, "2-corinthians", 13, 13)).toMatch(/sea con vosotros todos\. Amén\.$/);
+    for (const slug of ["romans", "galatians", "1-timothy", "titus", "philemon", "hebrews"]) {
+      expect(JSON.stringify(book(ES, slug).chapters.at(-1)), slug).not.toMatch(/fué escrita|Escrita de|fué enviada|Enviada de/);
     }
   });
 });

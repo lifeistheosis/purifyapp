@@ -37,6 +37,15 @@ describe("a page of a downloaded Bible", () => {
     expect(biblePage(book("grc-lxx-patriarchal", "proverbs"), 30, 31)).toEqual({ sections: [], elsewhere: 24, last: 0 });
   });
 
+  it("is empty, and says nothing of elsewhere, for a chapter the Bible does not have: the screen shows the English then", () => {
+    // The Bibles of the Hebrew canon end the Psalms at 150 and Daniel at 12.
+    for (const id of ["sr-danicic-karadzic", "ar-van-dyck", "es-reina-valera-1909"]) {
+      expect(biblePage(book(id, "psalms"), 151, 151), id).toEqual({ sections: [], elsewhere: null, last: 0 });
+      expect(biblePage(book(id, "daniel"), 13, 14), id).toEqual({ sections: [], elsewhere: null, last: 0 });
+      expect(biblePage(book(id, "daniel"), 12, 14).sections.map((s) => s.chapter), id).toEqual([12]);
+    }
+  });
+
   it("anchors a verse of its own chapter as the English does, and one past the app's last apart", () => {
     expect(verseAnchor(50, 50, 3)).toBe("v3");
     expect(verseAnchor(4, 3, 1)).toBe("c4v1");

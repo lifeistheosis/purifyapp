@@ -18,7 +18,7 @@
 import STATS from "@/data/bibles/catalog.json";
 import type { LocaleCode } from "@/lib/i18n/locales";
 
-export type BibleId = "ru-synodal" | "grc-lxx-patriarchal";
+export type BibleId = "ru-synodal" | "grc-lxx-patriarchal" | "sr-danicic-karadzic" | "ar-van-dyck" | "es-reina-valera-1909";
 
 export type DownloadableBible = {
   id: BibleId;
@@ -26,6 +26,10 @@ export type DownloadableBible = {
   language: LocaleCode;
   /** The language of its words, for the page: Koine Greek is "grc", not the app's Modern Greek. */
   textLang: string;
+  /** The direction its words run: the Arabic right to left, whatever the app's language. */
+  dir: "ltr" | "rtl";
+  /** How it numbers the Psalms: as the Septuagint, as the app does (Psalm 50 is "Have mercy"), or as the Hebrew and most Bibles (Psalm 51). */
+  psalms: "septuagint" | "hebrew";
   /** Its name as its readers know it, kept as written: a proper name, not copy. */
   title: string;
   /** The computer's toolbar pill. */
@@ -41,12 +45,20 @@ export type DownloadableBible = {
 type Stats = Record<BibleId, { version: string; bytes: number; books: string[] }>;
 const stats = STATS as Stats;
 
-/** In the order the list shows them: the owner's order of 2026-11-06 for the first six (Russian, then Greek, of the two ready). */
+/**
+ * In the order the list shows them: the owner's order of 2026-11-06 for the
+ * first six (Romanian, Russian, Greek, Serbian, Arabic, Spanish), of the five
+ * ready. The Serbian, Arabic and Spanish are Bibles of the Hebrew canon, as
+ * their publishers made them, and the line under each name says so
+ * (bible.translationNote.<id>).
+ */
 export const DOWNLOADABLE_BIBLES: readonly DownloadableBible[] = [
   {
     id: "ru-synodal",
     language: "ru",
     textLang: "ru",
+    dir: "ltr",
+    psalms: "septuagint",
     title: "Синодальный перевод (1876)",
     shortLabel: "Синодальный",
     ...stats["ru-synodal"],
@@ -55,9 +67,41 @@ export const DOWNLOADABLE_BIBLES: readonly DownloadableBible[] = [
     id: "grc-lxx-patriarchal",
     language: "el",
     textLang: "grc",
+    dir: "ltr",
+    psalms: "septuagint",
     title: "Οι Εβδομήκοντα και το Πατριαρχικό κείμενο (1904)",
     shortLabel: "Ελληνικά",
     ...stats["grc-lxx-patriarchal"],
+  },
+  {
+    id: "sr-danicic-karadzic",
+    language: "sr",
+    textLang: "sr",
+    dir: "ltr",
+    psalms: "hebrew",
+    title: "Превод Вука Караџића и Ђуре Даничића (1868)",
+    shortLabel: "Вук и Даничић",
+    ...stats["sr-danicic-karadzic"],
+  },
+  {
+    id: "ar-van-dyck",
+    language: "ar",
+    textLang: "ar",
+    dir: "rtl",
+    psalms: "hebrew",
+    title: "ترجمة فاندايك (1865)",
+    shortLabel: "فاندايك",
+    ...stats["ar-van-dyck"],
+  },
+  {
+    id: "es-reina-valera-1909",
+    language: "es",
+    textLang: "es",
+    dir: "ltr",
+    psalms: "hebrew",
+    title: "Reina-Valera (1909)",
+    shortLabel: "Reina-Valera",
+    ...stats["es-reina-valera-1909"],
   },
 ];
 
@@ -65,7 +109,7 @@ export function downloadableBible(id: string | null | undefined): DownloadableBi
   return DOWNLOADABLE_BIBLES.find((b) => b.id === id) ?? null;
 }
 
-/** Whether the Bible has the book: the Greek has no 2 Esdras, which survives in Latin. */
+/** Whether the Bible has the book: the Greek has no 2 Esdras, which survives in Latin, and the Bibles of the Hebrew canon none of the deuterocanonical books. */
 export function hasBook(bible: DownloadableBible, book: string): boolean {
   return bible.books.includes(book);
 }

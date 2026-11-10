@@ -91,8 +91,11 @@ export function BibleRow({
           className={cn("flex min-w-0 flex-1 items-center gap-3 rounded-md px-3 py-3 text-start", !current && "hover:bg-paper/[0.04]")}
         >
           <span className="min-w-0 flex-1">
-            <span lang={bible.textLang} className="block font-sans text-ui font-semibold text-paper">
-              {bible.title}
+            <span className="block font-sans text-ui font-semibold text-paper">
+              {/* Its own direction inside, the row's alignment outside: the Arabic name reads right to left and starts where the others do. */}
+              <span lang={bible.textLang} dir={bible.dir}>
+                {bible.title}
+              </span>
             </span>
             <span lang={locale} aria-live={downloading ? "polite" : undefined} className="mt-0.5 block font-sans text-caption text-paper/50">
               {note}

@@ -106,7 +106,37 @@ describe("the verse maps for Compare", () => {
     expect(place(grc, "3-john", 1, 14)).toBe("1:14-15");
   });
 
-  it("place nearly all of the New Testament, numbered alike in all three", () => {
+  it("place the well-known verses in the Bibles of the Hebrew canon, numbered as the English Bibles are", () => {
+    const [sr, ar, es] = ["sr-danicic-karadzic", "ar-van-dyck", "es-reina-valera-1909"].map(read);
+    for (const map of [sr, ar, es]) {
+      // The psalms one ahead of the app's, their titles apart from verse 1.
+      expect(place(map, "psalms", 50, 1), map.bible).toBe("51:1");
+      expect(place(map, "psalms", 22, 1), map.bible).toBe("23:1");
+      // The Septuagint's Psalm 113:9, "Not unto us", is their 115:1.
+      expect(place(map, "psalms", 113, 9), map.bible).toBe("115:1");
+      // The Septuagint's Jeremiah in the Hebrew's order, and Malachi's last verses in theirs.
+      expect(place(map, "jeremiah", 39, 1), map.bible).toBe("32:1");
+      expect(place(map, "malachi", 4, 5), map.bible).toBe("4:6");
+      expect(place(map, "malachi", 4, 6), map.bible).toBe("4:4");
+      expect(place(map, "romans", 16, 25), map.bible).toBe("16:25");
+      // The app's Esther is the Septuagint's, with its additions: not theirs.
+      expect(map.books.esther, map.bible).toBeUndefined();
+    }
+    // Each where its own edition turns: the app's Numbers 13:1 and Jonah 2:1
+    // are the English Bibles' 12:16 and 1:17, as the Van Dyck numbers them,
+    // and the Serbian sets Jonah's as the Hebrew does.
+    expect(place(ar, "numbers", 13, 1)).toBe("12:16");
+    expect(place(ar, "jonah", 2, 1)).toBe("1:17");
+    expect(place(sr, "jonah", 2, 1)).toBe("2:1");
+    expect(place(sr, "3-john", 1, 14)).toBe("1:14-15");
+    expect(place(ar, "3-john", 1, 14)).toBe("1:14-15");
+    expect(place(es, "3-john", 1, 14)).toBe("1:14");
+    // The Reina-Valera's Numbers 13 begins a verse early, as the Hebrew does,
+    // and not as the English standard says: left out rather than shown wrong.
+    expect(es.books.numbers?.["13"]).toBeUndefined();
+  });
+
+  it("place nearly all of the New Testament, numbered alike in every Bible", () => {
     for (const { id } of BIBLES as { id: string }[]) {
       const map = read(id);
       for (const book of ["matthew", "mark", "luke", "john", "acts", "romans", "hebrews", "revelation"]) {

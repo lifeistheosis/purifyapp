@@ -95,7 +95,11 @@ export function StorageSection() {
       {downloaded.map((b) => (
         <Row
           key={b.id}
-          label={<span lang={b.textLang}>{b.title}</span>}
+          label={
+            <span lang={b.textLang} dir={b.dir}>
+              {b.title}
+            </span>
+          }
           description={`${t("settings.storageBible")} · ${megabytes(bibles[b.id].bytes, locale)}`}
           control={remove(() => void removeBible(b.id), t("bible.downloads.removeAria", { name: b.title }))}
         />

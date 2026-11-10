@@ -136,15 +136,23 @@ export function ChapterScreen({
   rail: ReactNode;
 }) {
   const slug = book.slug;
-  const psalmLine = slug === "psalms" ? hebrewLine(chapter) : null;
   // A Bible the reader downloaded (1.9, lib/bible/downloads/): the chapter in
   // its words, when the reader reads in it and it has the book. Until its
   // book is read the page holds its place; a book that cannot be had shows
-  // the English, and says so, as does a book the Bible does not have.
+  // the English, and says so, as does a book the Bible does not have, and a
+  // chapter it does not have: the Bibles of the Hebrew canon end the Psalms at
+  // 150 and Daniel at 12, so Psalm 151 and Susanna and Bel are in English.
   const { t } = useTranslate();
   const { shown, lacking } = useShownBible(slug);
   const text = useBibleText(shown, slug, chapter, book.chapters);
-  const downloaded = shown && text && text.state !== "failed" ? { bible: shown, text } : null;
+  const read = shown && text && text.state !== "failed" ? { bible: shown, text } : null;
+  const missing = read?.text.state === "ready" && read.text.page.sections.length === 0 && !read.text.page.elsewhere ? read.bible : null;
+  const downloaded = missing ? null : read;
+  // Under a psalm's number, where most Bibles have it: for the app's
+  // Septuagint numbering, and a Bible that keeps it (the Synodal, the Greek).
+  // A Bible numbered as the Hebrew (the Van Dyck, the Reina-Valera, the
+  // Serbian) is where most Bibles are already, so its page says nothing.
+  const psalmLine = slug === "psalms" && downloaded?.bible.psalms !== "hebrew" ? hebrewLine(chapter) : null;
   const unopened = shown && text?.state === "failed" ? shown : null;
   const verses = downloaded?.text.state === "ready" && downloaded.text.page.last ? downloaded.text.page.last : totalVerses;
   // The round buttons over the page, the pill at its foot and the app's tab
@@ -377,11 +385,16 @@ export function ChapterScreen({
                   </p>
                 )}
 
-                {/* The chosen Bible has no such book (the Greek has no 2 Esdras),
-                    or its book could not be read: the English, saying why. */}
-                {lacking || unopened ? (
+                {/* The chosen Bible has no such book (the Greek has no 2 Esdras)
+                    or chapter (Psalm 151 in a Bible of the Hebrew canon), or its
+                    book could not be read: the English, saying why. */}
+                {lacking || missing || unopened ? (
                   <p className="page-open-after mb-6 font-sans text-detail leading-[1.55] text-paper/70" data-bible-note="">
-                    {lacking ? t("bible.downloads.notInBible", { book: t(`bible.books.${slug}`) }) : t("bible.downloads.couldNotOpen")}
+                    {lacking
+                      ? t("bible.downloads.notInBible", { book: t(`bible.books.${slug}`) })
+                      : missing
+                        ? t("bible.downloads.chapterNotInBible")
+                        : t("bible.downloads.couldNotOpen")}
                   </p>
                 ) : null}
 

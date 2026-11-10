@@ -237,6 +237,9 @@ describe("the chapter opens like a book", () => {
     expect(screen.indexOf("{intro && introFacts ? (")).toBeGreaterThan(screen.indexOf("</header>"));
     // The verses: the page's reader, or a Bible the reader downloaded in its place (1.9).
     expect(screen.indexOf(" : reader}")).toBeGreaterThan(screen.indexOf("{intro && introFacts ? ("));
+    // "Psalm 52 in most Bibles" is the Septuagint numbering's line: a Bible
+    // numbered as the Hebrew (the Van Dyck's Psalm 51 is Psalm 51) has none.
+    expect(screen).toContain('const psalmLine = slug === "psalms" && downloaded?.bible.psalms !== "hebrew" ? hebrewLine(chapter) : null;');
   });
 });
 

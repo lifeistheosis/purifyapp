@@ -132,13 +132,15 @@ function BibleRow({ bible, row }: { bible: DownloadableBible; row: Row }) {
   return (
     <li className="py-3.5" data-compare-row={bible.id}>
       <p className="font-sans text-detail font-semibold text-premium-ink">
-        <span lang={bible.textLang}>{bible.title}</span>
+        <span lang={bible.textLang} dir={bible.dir}>
+          {bible.title}
+        </span>
         {row.state === "words" && row.at ? <span className="font-normal tabular-nums text-paper/60"> · {row.at}</span> : null}
       </p>
       {row.state === "loading" ? (
         <SkeletonText lines={2} className="mt-2" />
       ) : row.state === "words" ? (
-        <p lang={bible.textLang} className={greek ? "mt-1 text-body leading-[1.6] text-paper/80" : "mt-1 font-serif text-body leading-[1.6] text-paper/80"} style={greek ? GREEK : undefined}>
+        <p lang={bible.textLang} dir={bible.dir} className={greek ? "mt-1 text-body leading-[1.6] text-paper/80" : "mt-1 font-serif text-body leading-[1.6] text-paper/80"} style={greek ? GREEK : undefined}>
           {row.words}
         </p>
       ) : (
