@@ -253,14 +253,14 @@ function NextRow({ step, steps, progress, short = false }: { step: PathStep; ste
           <KindIcon kind={read.kind} size={17} />
         </span>
         <span className="min-w-0 flex-1">
-          <span lang="en" dir="ltr" className="block font-serif text-[15.5px] font-semibold leading-[1.26] text-paper">
+          <span lang="en" dir="ltr" className="block font-serif text-[15.5px] font-semibold leading-[1.26] text-paper rtl:text-right">
             {read.title}
           </span>
           <span className="mt-0.5 block font-sans text-caption text-paper/52">
             <ReadMeta read={read} progress={progress} />
           </span>
           {short && read.kind === "question" && step.short ? (
-            <span lang="en" dir="ltr" className="mt-[7px] block font-serif text-[14px] italic leading-[1.45] text-paper/80">
+            <span lang="en" dir="ltr" className="mt-[7px] block font-serif text-[14px] italic leading-[1.45] text-paper/80 rtl:text-right">
               {step.short}
             </span>
           ) : null}
@@ -278,7 +278,7 @@ function NextRow({ step, steps, progress, short = false }: { step: PathStep; ste
         <ArrivingImage src={next.picture.src} className="h-full w-full object-cover" style={{ objectPosition: next.picture.focus ?? "50% 30%" }} />
       </span>
       <span className="min-w-0 flex-1">
-        <span lang="en" dir="ltr" className="block font-serif text-[15.5px] font-semibold leading-[1.26] text-paper">
+        <span lang="en" dir="ltr" className="block font-serif text-[15.5px] font-semibold leading-[1.26] text-paper rtl:text-right">
           {next.title}
         </span>
         <span className="mt-0.5 block font-sans text-caption text-paper/52">{t("walk.upNext")}</span>

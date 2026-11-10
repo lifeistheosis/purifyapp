@@ -94,8 +94,8 @@ export default function CouncilsPage() {
  {isCirca(c) ? <T k="councils.circa" replacements={{ year: c.year }} /> : c.year}
  </span>
  <span className="min-w-0 flex-1">
- <span lang="en" dir="ltr" className="block truncate font-sans text-[15px] font-semibold text-paper">{shortName(c.byname)}</span>
- <span lang="en" dir="ltr" className="mt-px block truncate font-sans text-caption text-paper/50">{placeOf(c.location)}</span>
+ <span lang="en" dir="ltr" className="block truncate font-sans text-[15px] font-semibold text-paper rtl:text-right">{shortName(c.byname)}</span>
+ <span lang="en" dir="ltr" className="mt-px block truncate font-sans text-caption text-paper/50 rtl:text-right">{placeOf(c.location)}</span>
  </span>
  <ChevronRight size={16} className="shrink-0 text-paper/40 rtl:-scale-x-100" />
  </Link>

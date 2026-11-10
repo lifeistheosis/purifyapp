@@ -174,7 +174,7 @@ export function StudyReader({
             <span className="block font-sans text-[10.5px] font-bold uppercase tracking-[0.14em] text-paper/50">
               {nextHeading !== null ? `${t("walk.upNext")} · ${part + 1}` : t("walk.upNext")}
             </span>
-            <span lang={nextLang} dir={textDir(nextLang)} className="mt-1 block font-serif text-[15px] font-semibold leading-[1.3] text-paper">
+            <span lang={nextLang} dir={textDir(nextLang)} className="mt-1 block font-serif text-[15px] font-semibold leading-[1.3] text-paper rtl:text-right">
               {nextHeading !== null ? nextHeading || t("paths.part", { n: part + 1, total }) : end.title ?? t("study.apologetics.goDeeper")}
             </span>
           </span>

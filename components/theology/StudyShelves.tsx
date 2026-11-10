@@ -55,10 +55,10 @@ export function StudyShelves({ shelves }: { shelves: StudyShelf[] }) {
               <WholeIcon src={shelf.picture} eager={at < 3} className="aspect-[4/5] w-full rounded-[3px]" />
             </span>
             <div className="min-w-0 flex-1">
-              <h2 id={`shelf-${shelf.id}`} lang="en" dir="ltr" className={WAY_H2}>
+              <h2 id={`shelf-${shelf.id}`} lang="en" dir="ltr" className={`${WAY_H2} rtl:text-right`}>
                 {shelf.title}
               </h2>
-              <p lang="en" dir="ltr" className="mt-1 font-sans text-caption leading-[1.42] text-paper/55">
+              <p lang="en" dir="ltr" className="mt-1 font-sans text-caption leading-[1.42] text-paper/55 rtl:text-right">
                 {shelf.line}
               </p>
             </div>
@@ -84,7 +84,7 @@ export function StudyShelves({ shelves }: { shelves: StudyShelf[] }) {
                         <KindIcon kind="study" size={18} />
                       </span>
                     )}
-                    <span lang="en" dir="ltr" className={`min-w-0 flex-1 font-serif text-[15px] font-semibold leading-[1.26] ${read ? "text-paper/60" : "text-paper/92"}`}>
+                    <span lang="en" dir="ltr" className={`min-w-0 flex-1 font-serif text-[15px] font-semibold leading-[1.26] rtl:text-right ${read ? "text-paper/60" : "text-paper/92"}`}>
                       {study.title}
                     </span>
                     <span className={WAY_FACT}>

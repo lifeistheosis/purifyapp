@@ -55,7 +55,7 @@ export function StudyContents({ slug, parts, end }: { slug: string; parts: Conte
               <span
                 lang={part.heading ? "en" : undefined}
                 dir={textDir(part.heading ? "en" : undefined)}
-                className={`min-w-0 flex-1 font-serif text-[14.5px] font-semibold leading-[1.28] ${state === "next" ? "text-paper" : "text-paper/86"}`}
+                className={`min-w-0 flex-1 font-serif text-[14.5px] font-semibold leading-[1.28] rtl:text-right ${state === "next" ? "text-paper" : "text-paper/86"}`}
               >
                 {part.heading || t("paths.part", { n, total })}
               </span>

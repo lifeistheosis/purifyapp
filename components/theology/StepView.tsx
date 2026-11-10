@@ -120,7 +120,7 @@ export function StepView({
                         ) : null}
                       </span>
                       {qi === 0 && step.short ? (
-                        <span lang="en" dir="ltr" className="mt-[5px] block font-serif text-[14px] italic leading-[1.48] text-paper/80">
+                        <span lang="en" dir="ltr" className="mt-[5px] block font-serif text-[14px] italic leading-[1.48] text-paper/80 rtl:text-right">
                           {step.short}
                         </span>
                       ) : null}
@@ -145,7 +145,7 @@ export function StepView({
                         <span className="min-w-0 flex-1">
                           <span
                             lang="en" dir="ltr"
-                            className={`block font-serif text-[15px] font-semibold leading-[1.28] ${s === "read" ? "text-paper/60" : "text-paper/92"}`}
+                            className={`block font-serif text-[15px] font-semibold leading-[1.28] rtl:text-right ${s === "read" ? "text-paper/60" : "text-paper/92"}`}
                           >
                             {read.title}
                           </span>
@@ -186,7 +186,7 @@ export function StepView({
           <span
             lang={next ? "en" : undefined}
             dir={textDir(next ? "en" : undefined)}
-            className="mt-1 block font-serif text-[15px] font-semibold leading-[1.3] text-paper"
+            className="mt-1 block font-serif text-[15px] font-semibold leading-[1.3] text-paper rtl:text-right"
           >
             {next ? next.title : t("study.apologetics.goDeeper")}
           </span>
