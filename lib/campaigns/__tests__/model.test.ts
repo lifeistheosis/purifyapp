@@ -25,6 +25,7 @@ import {
   publicCampaign,
   startsNow,
 } from "@/lib/campaigns/model";
+import { campaignPsalmText, sourceStart } from "@/lib/campaigns/psalms";
 import { campaignCreateSchema } from "@/lib/security/schemas";
 import en from "@/lib/i18n/messages/en.json";
 import { RULE_FILES } from "@/lib/prayers/library";
@@ -157,6 +158,32 @@ describe("the prayer it places", () => {
     expect(campaignPsalm({ rule: "protection", id: "psalm-91" })).toBeNull();
     expect(campaignPsalm({ rule: "morning", id: "our-father" })).toBeNull();
     expect(campaignPsalm(null)).toBeNull();
+  });
+});
+
+describe("the printing a psalm names", () => {
+  it("is its rule's own words about its psalms, cut and never rephrased", () => {
+    for (const psalm of CAMPAIGN_PSALMS) {
+      const rule = RULE_FILES[`rules/${psalm.rule}.json`];
+      const found = campaignPsalmText(psalm);
+      expect(found, `${psalm.rule}/${psalm.id}`).not.toBeNull();
+      // The start of the rule's own line, to the letter.
+      expect(rule.source?.startsWith(found!.source), `${psalm.rule}: ${found!.source}`).toBe(true);
+      expect(found!.source.length).toBeGreaterThan(20);
+      // A whole sentence, not a line broken off part way.
+      expect(found!.source.endsWith("."), found!.source).toBe(true);
+      // And nothing of the rule's other prayers, which are not the psalm's.
+      expect(found!.source).not.toMatch(/petition/i);
+    }
+    expect(campaignPsalmText({ rule: "protection", id: "psalm-90" })?.source).toBe("Psalms from Brenton's public-domain Septuagint.");
+    expect(campaignPsalmText({ rule: "repentance", id: "psalm-50" })?.source).toBe(RULE_FILES["rules/repentance.json"].source);
+  });
+
+  it("cuts a line at its sentences, and leaves a shorter line whole", () => {
+    expect(sourceStart("One. Two. Three.", 1)).toBe("One.");
+    expect(sourceStart("One. Two. Three.", 2)).toBe("One. Two.");
+    expect(sourceStart("One. Two. Three.", 9)).toBe("One. Two. Three.");
+    expect(sourceStart("One line with no stop", 1)).toBe("One line with no stop");
   });
 });
 

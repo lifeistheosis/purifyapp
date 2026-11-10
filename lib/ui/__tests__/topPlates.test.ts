@@ -63,7 +63,7 @@ function sources(dir: string): string[] {
 }
 
 /** What may stand opposite the way back: each draws its button from TOP_PLATE. */
-const PLATES = ["MobileReaderActions", "MobileWorkActions", "ShareButton", "BookmarkSaintButton", "BookmarkEventButton", "EventBarActions"];
+const PLATES = ["MobileReaderActions", "MobileWorkActions", "ShareButton", "BookmarkSaintButton", "BookmarkEventButton", "EventBarActions", "CampaignMenuButton"];
 
 /** Each `trailing` a page hands MobileTopBar, a name it holds resolved to what it holds. */
 function trailings(): { file: string; expr: string }[] {
@@ -106,6 +106,7 @@ describe("the round buttons at the top of a screen", () => {
     const files: Record<string, RegExp[]> = {
       "components/bible/MobileReaderActions.tsx": [/<More size=\{TOP_ICON\.size\} \/>/],
       "components/saints/MobileWorkActions.tsx": [/<More size=\{TOP_ICON\.size\} \/>/],
+      "components/campaigns/CampaignMenuButton.tsx": [/<More size=\{TOP_ICON\.size\} \/>/],
       "components/saints/BookmarkSaintButton.tsx": [/<Bookmark \{\.\.\.\(variant === "bar" \? TOP_ICON : /],
       "components/history/BookmarkEventButton.tsx": [/<Bookmark \{\.\.\.TOP_ICON\}/],
       "components/ui/ShareButton.tsx": [/<Check \{\.\.\.TOP_ICON\} \/> : <ShareIcon size=\{TOP_ICON\.size\} stroke=\{TOP_ICON\.strokeWidth\} \/>/],

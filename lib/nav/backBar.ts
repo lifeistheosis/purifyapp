@@ -171,6 +171,15 @@ export const OWN_HEADER_PATTERNS: RegExp[] = [
   // and Share, solid with the chant's name once the name has gone up under
   // it. It leads back to Chants. Not Chants itself, which keeps the back bar.
   /^\/chants\/[^/]+$/,
+  // Prayer campaigns (1.9.1): the board, a campaign's own page (its bar
+  // clear over its picture, as a saint's is, with the way back and the •••),
+  // the reader's own campaigns and the rules. The board and a campaign lead
+  // back to Pray together, the reader's own to You, the rules to the board.
+  // Not Starting one (/campaigns/new), which holds the whole screen with its
+  // own way out as making a post does, nor the old address /campaigns/[id],
+  // which only sends a reader on to the campaign's page.
+  /^\/campaigns$/,
+  /^\/campaigns\/(detail|mine|rules)$/,
 ];
 
 /**

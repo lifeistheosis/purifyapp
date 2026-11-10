@@ -1,25 +1,48 @@
 import { notFound } from "next/navigation";
 import { Suspense } from "react";
 
-import { CampaignDetailClient } from "@/components/campaigns/CampaignDetailClient";
-import { campaignsEnabled } from "@/lib/campaigns/flags";
+import { CampaignMenuButton } from "@/components/campaigns/CampaignMenuButton";
+import { CampaignPage } from "@/components/campaigns/CampaignPage";
+import { CampaignsGate } from "@/components/campaigns/CampaignsGate";
+import { MobileTopBar } from "@/components/nav/MobileTopBar";
+import { campaignsInBuild } from "@/lib/campaigns/flags";
 
 export const metadata = {
+  // It names nobody: the campaign is read on the device, and a link to this
+  // page says only what it is (docs/1.9-build/notes/campaigns-fable.md, 2.10).
   title: "Prayer Campaign",
-  description: "A community prayer campaign on Purify.",
+  description: "A prayer campaign on Purify.",
+  robots: { index: false, follow: false },
 };
 
+/** Where the campaigns live in the app: Community's first half. */
+const HOME = "/community#pray";
+
 export default function CampaignDetailPage() {
-  // WITHDRAWN, so this is a 404 and not a page. It used to render a
-  // FeatureShell: an eyebrow, a title, a paragraph and a call to action,
-  // which is a marketing page for a feature that is not there. Anyone who
-  // guessed the URL or held an old link was invited to come back, and search
-  // engines were handed something to index. "Not visible" has to mean absent,
-  // not politely deferred. See lib/campaigns/flags.ts.
-  if (!campaignsEnabled()) notFound();
+  // A 404 while the switch is closed, and the gate for everyone campaigns
+  // are not open for: see app/(app)/campaigns/page.tsx.
+  if (!campaignsInBuild()) notFound();
   return (
+    // The campaign's id is read from the address on the device.
     <Suspense fallback={null}>
-      <CampaignDetailClient />
+      <CampaignsGate>
+        {/* The bars are mounted here, by the page, and set by the page's
+            component: the clear one over the picture once the campaign is on
+            the screen, the plain one while it opens (CampaignPage). */}
+        <CampaignPage
+          bar={
+            <MobileTopBar
+              titleKey="community.prayerCampaigns"
+              back
+              backFallback={HOME}
+              revealTitleOn="campaign-title"
+              overlay
+              trailing={<CampaignMenuButton />}
+            />
+          }
+          plainBar={<MobileTopBar titleKey="community.prayerCampaigns" back backFallback={HOME} />}
+        />
+      </CampaignsGate>
     </Suspense>
   );
 }

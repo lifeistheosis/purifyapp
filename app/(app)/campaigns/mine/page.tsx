@@ -1,19 +1,24 @@
 import { notFound } from "next/navigation";
-import { MyPrayers } from "@/components/campaigns/MyPrayers";
-import { campaignsEnabled } from "@/lib/campaigns/flags";
+
+import { CampaignsGate } from "@/components/campaigns/CampaignsGate";
+import { MINE_TITLE, MyCampaigns } from "@/components/campaigns/MyCampaigns";
+import { MobileTopBar } from "@/components/nav/MobileTopBar";
+import { campaignsInBuild } from "@/lib/campaigns/flags";
 
 export const metadata = {
-  title: "My Prayers",
-  description: "The prayer campaigns you have joined and started on Purify.",
+  title: "My Prayer Campaigns",
+  description: "The prayer campaigns you are praying and those you started on Purify.",
+  robots: { index: false, follow: false },
 };
 
-export default function MyPrayersPage() {
-  // WITHDRAWN, so this is a 404 and not a page. It used to render a
-  // FeatureShell: an eyebrow, a title, a paragraph and a call to action,
-  // which is a marketing page for a feature that is not there. Anyone who
-  // guessed the URL or held an old link was invited to come back, and search
-  // engines were handed something to index. "Not visible" has to mean absent,
-  // not politely deferred. See lib/campaigns/flags.ts.
-  if (!campaignsEnabled()) notFound();
-  return <MyPrayers />;
+export default function MyCampaignsPage() {
+  // A 404 while the switch is closed, and the gate for everyone campaigns
+  // are not open for: see app/(app)/campaigns/page.tsx.
+  if (!campaignsInBuild()) notFound();
+  return (
+    <CampaignsGate>
+      <MobileTopBar titleKey="campaigns.mine.title" back backFallback="/account" revealTitleOn={MINE_TITLE} />
+      <MyCampaigns />
+    </CampaignsGate>
+  );
 }

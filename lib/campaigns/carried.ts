@@ -283,7 +283,7 @@ export function settleCarried(
   return changed ? next : (list as CarriedCampaign[]);
 }
 
-/** Those carried today, the first to leave first. */
+/** Those carried today, the newest first (carry() sets each at the head). */
 export function carriedNow(list: readonly CarriedCampaign[], today: string): CarriedCampaign[] {
   return list.filter((c) => !c.leftAt && c.until >= today);
 }

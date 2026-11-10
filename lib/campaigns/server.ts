@@ -109,7 +109,9 @@ export async function hiddenFor(admin: SupabaseClient, userId: string | null): P
 
 /** The row as its reader receives it, saying whether they started it. */
 export function forReader(row: CampaignRow, userId: string | null): PublicCampaign {
-  return { ...publicCampaign(row), mine: userId !== null && row.creator_id === userId };
+  const mine = userId !== null && row.creator_id === userId;
+  // Whether it is kept after its last day is its creator's own setting, and told to nobody else.
+  return { ...publicCampaign(row), mine, ...(mine ? { keep_after_end: row.keep_after_end === true } : {}) };
 }
 
 /**

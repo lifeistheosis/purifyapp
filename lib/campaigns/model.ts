@@ -256,6 +256,8 @@ export type PublicCampaign = {
   created_at: string;
   /** This reader started it. Only on the routes that know who asks. */
   mine?: boolean;
+  /** Its creator keeps it after its last day (for the reposed; his yes to item 125). Told to its creator alone. */
+  keep_after_end?: boolean;
 };
 
 /** Every column a read may name. No creator_id, no praying_count, no prayer_count. */
@@ -318,3 +320,60 @@ export const REPORT_REASON_LABEL: Readonly<Record<ReportReason, string>> = {
 export const RUNNING_CAP = { fresh: 1, settled: 3 } as const;
 /** And at most this many started in a day. */
 export const STARTED_A_DAY = 3;
+
+// ── Moderating ──────────────────────────────────────────────────────────────
+
+/** The decisions a moderator takes on campaigns, by name, as the queue's buttons send them (./moderation.ts runs them). */
+export const CAMPAIGN_MOD_ACTIONS = ["approve_campaign", "remove_campaign", "restore_campaign", "dismiss_campaign_report"] as const;
+export type CampaignModAction = (typeof CAMPAIGN_MOD_ACTIONS)[number];
+
+export function isCampaignModAction(v: unknown): v is CampaignModAction {
+  return typeof v === "string" && (CAMPAIGN_MOD_ACTIONS as readonly string[]).includes(v);
+}
+
+/** A campaign waiting for a moderator, as the queue shows it: its words, and why it waits. Never its creator's account. */
+export type WaitingCampaign = {
+  id: string;
+  title: string;
+  intention: string;
+  for_whom: string;
+  subject_name: string | null;
+  details: string | null;
+  days: number | null;
+  ends_on: string | null;
+  creator_name: string | null;
+  creator_handle: string | null;
+  /** Why it waits, in the server's own few words: "new; crisis; words (2 masked); money, phone; address", or "reports (3)". */
+  held_reason: string | null;
+  created_at: string;
+};
+
+/** A campaign's open report as the queue shows it: the reason ticked, the words, and the campaign. Never who reported. */
+export type OpenCampaignReport = {
+  id: string;
+  reason: string | null;
+  reason_code: string | null;
+  created_at: string;
+  campaign: { id: string; title: string; status: string; intention: string; subject_name: string | null; details?: string | null; creator_name?: string | null } | null;
+};
+
+/** What the moderators' queue carries of campaigns, when they are open for the moderator who asks. */
+export type CampaignQueue = { waiting: WaitingCampaign[]; reports: OpenCampaignReport[]; live: boolean };
+
+/**
+ * Why a campaign waits, read from the server's few words into what a
+ * moderator is shown: every campaign is read once ("new"); the rest are what
+ * the filters saw, and whether readers' reports hid it.
+ */
+export type HeldWhy = "crisis" | "words" | "asks" | "address" | "reports";
+
+export function heldWhy(reason: string | null | undefined): HeldWhy[] {
+  const said = (reason ?? "").toLowerCase();
+  const out: HeldWhy[] = [];
+  if (/\bcrisis\b/.test(said)) out.push("crisis");
+  if (/\bwords\b/.test(said)) out.push("words");
+  if (/\b(?:money|phone|email|contact)\b/.test(said)) out.push("asks");
+  if (/\baddress\b/.test(said)) out.push("address");
+  if (/\breports\b/.test(said)) out.push("reports");
+  return out;
+}

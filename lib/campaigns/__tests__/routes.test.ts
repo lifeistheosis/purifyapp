@@ -443,6 +443,12 @@ describe("one campaign", () => {
     const res = await patchOne(new Request(`${SITE}/api/campaigns/${id}`, json({ keepAfterEnd: true }, "PATCH")), params(id));
     expect(res.status).toBe(200);
     expect(byId(id).keep_after_end).toBe(true);
+    // Whether it is kept is its creator's own setting: told to them, and to nobody else.
+    const asCreator = (await (await getOne(new Request(`${SITE}/api/campaigns/${id}`), params(id))).json()) as { campaign: Record<string, unknown> };
+    expect(asCreator.campaign.keep_after_end).toBe(true);
+    signIn(BEN);
+    const asReader = (await (await getOne(new Request(`${SITE}/api/campaigns/${id}`), params(id))).json()) as { campaign: Record<string, unknown> };
+    expect(asReader.campaign).not.toHaveProperty("keep_after_end");
   });
 });
 

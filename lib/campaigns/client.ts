@@ -1,431 +1,231 @@
 "use client";
 
-// Client-side calls for Prayer Campaigns. Public reads and every write go
-// through the API via apiFetch (native rewrites to SITE_URL + Bearer); the
-// user's own join/activity rows are read straight from Supabase under RLS
-// (self-select), the same split the shop uses.
+// What the screens ask of the campaign routes (1.9.1, the rework). Every call
+// goes through apiFetch, so the apps reach the live website with the reader's
+// token and the website uses its own session.
+//
+// A closed build asks nothing: each call answers "closed" before any request
+// is made (./flags.ts). Failure is kept apart from emptiness, as in
+// lib/community/client.ts: a reader offline in a church is not told that
+// nobody has asked for prayers.
+//
+// July's client stood here (prayed today, the streak, the groups inside a
+// campaign, the picture stored as uploaded). Its routes are retired and it
+// went with the pages that called it.
 
 import { apiFetch } from "@/lib/api/client";
-import { createClient } from "@/lib/supabase/client";
-import { todayKey } from "@/lib/rhythm/dayKey";
-import type { CampaignGroup, GroupMember } from "./groups";
-import type { CampaignDay } from "./streak";
-import type {
-  CampaignIntention,
-  ForWhom,
-  PrayerCampaign,
-} from "./campaigns";
+import type { PrayPlace } from "@/lib/prayers/commemoration";
 
-/**
- * Failure kept apart from emptiness, the same shape and for the same reason
- * as PostsResult in lib/community/client.ts.
- *
- * These used to return `[]` and `null` for a 500, a 404 and a dropped
- * connection alike, which the board renders as "No campaigns here yet. Be
- * the first to ask." A reader offline in a church was told the community had
- * asked for nothing. AUDIT-2026-07-27 prescribed exactly this fix.
- */
-export type CampaignsResult =
-  | { state: "dark" }
-  | { state: "ok"; campaigns: PrayerCampaign[] }
-  | { state: "error" };
+import type { CampaignState } from "./carried";
+import { campaignsInBuild } from "./flags";
+import type { CampaignKind, CampaignModAction, Closing, ConsentKind, ForWhom, PrayerRef, PublicCampaign, ReportReason } from "./model";
 
-export type CampaignResult =
-  | { state: "dark" }
-  | { state: "ok"; campaign: PrayerCampaign }
-  | { state: "missing" }
-  | { state: "error" };
+const JSON_POST = { method: "POST", headers: { "content-type": "application/json" } } as const;
 
-export async function fetchCampaigns(
-  intention?: CampaignIntention,
-): Promise<CampaignsResult> {
+async function body(res: Response): Promise<Record<string, unknown>> {
   try {
-    const qs = intention ? `?intention=${intention}` : "";
-    const res = await apiFetch(`/api/campaigns${qs}`);
-    // 404 is the flag guard in app/api/campaigns/route.ts, not a failure.
-    if (res.status === 404) return { state: "dark" };
+    return (await res.json()) as Record<string, unknown>;
+  } catch {
+    return {};
+  }
+}
+
+export type BoardResult = { state: "closed" } | { state: "ok"; campaigns: PublicCampaign[] } | { state: "error" };
+
+/** The board, "Newly asked". */
+export async function fetchBoard(): Promise<BoardResult> {
+  if (!campaignsInBuild()) return { state: "closed" };
+  try {
+    const res = await apiFetch("/api/campaigns");
+    if (res.status === 404) return { state: "closed" };
     if (!res.ok) return { state: "error" };
-    const json = (await res.json()) as { campaigns?: PrayerCampaign[] };
-    return { state: "ok", campaigns: json.campaigns ?? [] };
+    return { state: "ok", campaigns: ((await body(res)).campaigns as PublicCampaign[] | undefined) ?? [] };
   } catch {
     return { state: "error" };
   }
 }
 
-export async function fetchCampaign(id: string): Promise<CampaignResult> {
+export type OneResult = { state: "ok"; campaign: PublicCampaign } | { state: "missing" } | { state: "error" };
+
+/** One campaign, for its page. A closed feature and a missing campaign read alike: there is nothing to open. */
+export async function fetchCampaign(id: string): Promise<OneResult> {
+  if (!campaignsInBuild()) return { state: "missing" };
   try {
-    const res = await apiFetch(`/api/campaigns/${id}`);
-    if (res.status === 404) {
-      // The route answers 404 both for a dark flag and a missing row. The
-      // body distinguishes them: the flag guard sends `{ error: "Not found." }`
-      // with no campaign key either way, so treat an unparseable body as
-      // missing rather than claiming the feature is off.
-      return { state: "missing" };
-    }
+    const res = await apiFetch(`/api/campaigns/${encodeURIComponent(id)}`);
+    if (res.status === 404) return { state: "missing" };
     if (!res.ok) return { state: "error" };
-    const json = (await res.json()) as { campaign?: PrayerCampaign };
-    return json.campaign
-      ? { state: "ok", campaign: json.campaign }
-      : { state: "missing" };
+    const campaign = (await body(res)).campaign as PublicCampaign | undefined;
+    return campaign ? { state: "ok", campaign } : { state: "missing" };
   } catch {
     return { state: "error" };
   }
 }
 
-export type CreateCampaignInput = {
-  title: string;
-  intention: CampaignIntention;
+export type StartInput = {
   forWhom: ForWhom;
-  subjectName?: string | null;
-  note?: string | null;
-  /** Chosen preset prayer key; omitted falls back to the intention default. */
-  prayerKey?: string | null;
-  /** Campaign length: 7, 9, or 40 days; omitted/null = ongoing. */
-  durationDays?: 7 | 9 | 40 | null;
+  kind: CampaignKind;
+  title: string;
+  name: string;
+  words: string | null;
+  days: number;
+  /** The reader's own calendar day. */
+  startsOn: string;
+  prayer: PrayerRef | null;
+  consent: ConsentKind;
   blessing: true;
-  /** Public URL returned by uploadCampaignImage, or null for no image. */
-  imageUrl?: string | null;
-  /** Required by the API whenever imageUrl is set. */
-  photoConsent?: true;
+  rules: true;
+  confirmFiltered?: boolean;
 };
 
-export type ApiResult = { ok: boolean; error?: string; id?: string };
+export type StartResult =
+  | { ok: true; id: string }
+  | { ok: false; status: number; code: string | null; error: string | null; limit: number | null; preview: { title: string | null; name: string | null; words: string | null } | null };
 
-async function readResult(res: Response): Promise<ApiResult> {
-  let json: Record<string, unknown> = {};
+export async function startCampaign(input: StartInput): Promise<StartResult> {
+  if (!campaignsInBuild()) return { ok: false, status: 404, code: null, error: null, limit: null, preview: null };
   try {
-    json = (await res.json()) as Record<string, unknown>;
-  } catch {
-    /* empty body */
-  }
-  if (!res.ok) {
-    return { ok: false, error: (json.error as string) || "Something went wrong." };
-  }
-  return { ok: true, id: json.id as string | undefined };
-}
-
-export async function createCampaign(
-  input: CreateCampaignInput,
-): Promise<ApiResult> {
-  const res = await apiFetch("/api/campaigns", {
-    method: "POST",
-    headers: { "content-type": "application/json" },
-    body: JSON.stringify(input),
-  });
-  return readResult(res);
-}
-
-export type UploadResult = { ok: boolean; url?: string; error?: string };
-
-/**
- * Upload one campaign image and get its public URL back. The URL is not
- * attached to anything yet; it travels in the create body, where the server
- * re-validates that it is one of ours. Goes through apiFetch so the native
- * shell reaches purifyapp.net with a bearer token instead of https://localhost.
- */
-export async function uploadCampaignImage(file: File): Promise<UploadResult> {
-  try {
-    const body = new FormData();
-    body.append("file", file);
-    const res = await apiFetch("/api/campaigns/image", { method: "POST", body });
-    const json = (await res.json().catch(() => ({}))) as {
-      url?: string;
-      error?: string;
-    };
-    if (res.ok && json.url) return { ok: true, url: json.url };
-    return { ok: false, error: json.error ?? `Upload failed (${res.status}).` };
-  } catch {
-    return { ok: false, error: "Upload failed: network dropped. Try again." };
-  }
-}
-
-export type PrayResult = ApiResult & {
-  alreadyToday?: boolean;
-  /** The day the server recorded, echoed back so the client can add it to
-   *  the local day set without a refetch. */
-  dayKey?: string;
-  totalDays?: number;
-};
-
-/**
- * Mark this campaign prayed for the reader's own calendar day.
- *
- * The day key is computed HERE and sent up, because the server has no way to
- * know what day it is where the reader is standing. This is the same key
- * every other day-keyed surface in the app uses, so a campaign day and a
- * prayer-rule day mean the same thing on the same device.
- */
-export async function prayCampaign(id: string): Promise<PrayResult> {
-  try {
-    const res = await apiFetch(`/api/campaigns/${id}/pray`, {
-      method: "POST",
-      headers: { "content-type": "application/json" },
-      body: JSON.stringify({ dayKey: todayKey() }),
-    });
-    let json: Record<string, unknown> = {};
-    try {
-      json = (await res.json()) as Record<string, unknown>;
-    } catch {
-      /* empty */
-    }
-    if (!res.ok) {
-      return {
-        ok: false,
-        error: (json.error as string) || "Couldn't record it.",
-      };
-    }
+    const res = await apiFetch("/api/campaigns", { ...JSON_POST, body: JSON.stringify(input) });
+    const json = await body(res);
+    if (res.ok && typeof json.id === "string") return { ok: true, id: json.id };
     return {
-      ok: true,
-      alreadyToday: Boolean(json.alreadyToday),
-      dayKey: typeof json.dayKey === "string" ? json.dayKey : undefined,
-      totalDays: typeof json.totalDays === "number" ? json.totalDays : undefined,
+      ok: false,
+      status: res.status,
+      code: typeof json.code === "string" ? json.code : null,
+      error: typeof json.error === "string" ? json.error : null,
+      limit: typeof json.limit === "number" ? json.limit : null,
+      preview: (json.preview as { title: string | null; name: string | null; words: string | null } | undefined) ?? null,
     };
   } catch {
-    return { ok: false, error: "Network dropped. Please try again." };
+    return { ok: false, status: 0, code: null, error: null, limit: null, preview: null };
+  }
+}
+
+export type MineResult =
+  | { state: "closed" }
+  | { state: "error" }
+  | { state: "ok"; signedIn: boolean; started: PublicCampaign[]; carried: { campaign: PublicCampaign; places: string[]; until_on: string | null }[] };
+
+/** The reader's own: what they started, and what their account carries. */
+export async function fetchMine(): Promise<MineResult> {
+  if (!campaignsInBuild()) return { state: "closed" };
+  try {
+    const res = await apiFetch("/api/campaigns/mine");
+    if (res.status === 404) return { state: "closed" };
+    if (!res.ok) return { state: "error" };
+    const json = await body(res);
+    return {
+      state: "ok",
+      signedIn: json.signedIn === true,
+      started: (json.started as PublicCampaign[] | undefined) ?? [],
+      carried: (json.carried as { campaign: PublicCampaign; places: string[]; until_on: string | null }[] | undefined) ?? [],
+    };
+  } catch {
+    return { state: "error" };
   }
 }
 
 /**
- * The reader's own kept days for one campaign, read direct under RLS.
- *
- * prayer_campaign_days has a self-select policy, so this needs no route. An
- * absent table (before the migration lands) reads as no days rather than an
- * error, so the streak simply does not appear and nothing breaks.
+ * Keep a signed-in reader's choice with their account, so it follows them to
+ * another device. Best effort, and silent: the campaign is carried on this
+ * device whether or not this lands, and a reader who is not signed in is
+ * simply told nothing (the route answers 401).
  */
-export async function fetchCampaignDays(
-  campaignId: string,
-): Promise<CampaignDay[]> {
+export async function keepJoin(id: string, places: readonly PrayPlace[], until: string | null): Promise<void> {
+  if (!campaignsInBuild()) return;
   try {
-    const supabase = createClient();
-    const {
-      data: { user },
-    } = await supabase.auth.getUser();
-    if (!user) return [];
-    const { data, error } = await supabase
-      .from("prayer_campaign_days")
-      .select("day_key")
-      .eq("campaign_id", campaignId)
-      .eq("user_id", user.id)
-      .order("day_key", { ascending: false })
-      .limit(400);
-    if (error || !data) return [];
-    return data as CampaignDay[];
+    await apiFetch(`/api/campaigns/${encodeURIComponent(id)}/join`, { ...JSON_POST, body: JSON.stringify({ places, until }) });
   } catch {
-    return [];
+    // Offline: the device's own list is the one that is prayed from.
   }
 }
 
-// ── Parish groups ───────────────────────────────────────────────────────────
-
-export type GroupResult = {
-  group: CampaignGroup | null;
-  members: GroupMember[];
-};
-
-/** The caller's own group for this campaign, with its roster, or null. */
-export async function fetchMyGroup(campaignId: string): Promise<GroupResult> {
+/** And take it off the account when the reader takes it out. Best effort, as above. */
+export async function dropJoin(id: string): Promise<void> {
+  if (!campaignsInBuild()) return;
   try {
-    const res = await apiFetch(`/api/campaigns/${campaignId}/groups`);
-    if (!res.ok) return { group: null, members: [] };
-    const json = (await res.json()) as Partial<GroupResult>;
-    return {
-      group: json.group ?? null,
-      members: Array.isArray(json.members) ? json.members : [],
-    };
+    await apiFetch(`/api/campaigns/${encodeURIComponent(id)}/join`, { method: "DELETE" });
   } catch {
-    return { group: null, members: [] };
+    // Offline.
   }
 }
 
-export type CreateGroupResult = ApiResult & { inviteCode?: string };
+export type Sent = { ok: true } | { ok: false; status: number; error: string | null };
 
-export async function createGroup(
-  campaignId: string,
-  name: string,
-): Promise<CreateGroupResult> {
+/** What a closed build answers, having asked nobody: the same as the server's own 404. */
+const CLOSED: Sent = { ok: false, status: 404, error: null };
+
+async function sent(res: Response): Promise<Sent> {
+  if (res.ok) return { ok: true };
+  const json = await body(res);
+  return { ok: false, status: res.status, error: typeof json.error === "string" ? json.error : null };
+}
+
+export async function reportCampaign(id: string, reason: ReportReason, words: string | null): Promise<Sent> {
+  if (!campaignsInBuild()) return CLOSED;
   try {
-    const res = await apiFetch(`/api/campaigns/${campaignId}/groups`, {
-      method: "POST",
-      headers: { "content-type": "application/json" },
-      body: JSON.stringify({ name }),
-    });
-    let json: Record<string, unknown> = {};
-    try {
-      json = (await res.json()) as Record<string, unknown>;
-    } catch {
-      /* empty */
-    }
-    if (!res.ok) {
-      return {
-        ok: false,
-        error: (json.error as string) || "Couldn't start that group.",
-      };
-    }
-    return {
-      ok: true,
-      id: json.id as string | undefined,
-      inviteCode: json.inviteCode as string | undefined,
-    };
+    return await sent(await apiFetch(`/api/campaigns/${encodeURIComponent(id)}/report`, { ...JSON_POST, body: JSON.stringify({ reason, words }) }));
   } catch {
-    return { ok: false, error: "Network dropped. Please try again." };
+    return { ok: false, status: 0, error: null };
   }
 }
 
-export async function joinGroup(inviteCode: string): Promise<ApiResult> {
+/** The creator closes it early, with one of the two closings. */
+export async function closeCampaign(id: string, status: Closing): Promise<Sent> {
+  if (!campaignsInBuild()) return CLOSED;
   try {
-    const res = await apiFetch("/api/campaigns/groups", {
-      method: "POST",
-      headers: { "content-type": "application/json" },
-      body: JSON.stringify({ inviteCode }),
-    });
-    return readResult(res);
+    return await sent(
+      await apiFetch(`/api/campaigns/${encodeURIComponent(id)}`, { method: "PATCH", headers: { "content-type": "application/json" }, body: JSON.stringify({ status }) }),
+    );
   } catch {
-    return { ok: false, error: "Network dropped. Please try again." };
+    return { ok: false, status: 0, error: null };
   }
 }
 
-export async function leaveGroup(groupId: string): Promise<ApiResult> {
+/** The creator keeps a campaign for the reposed after its last day, or stops keeping it. */
+export async function keepCampaign(id: string, keep: boolean): Promise<Sent> {
+  if (!campaignsInBuild()) return CLOSED;
   try {
-    const res = await apiFetch("/api/campaigns/groups", {
-      method: "DELETE",
-      headers: { "content-type": "application/json" },
-      body: JSON.stringify({ groupId }),
-    });
-    return readResult(res);
+    return await sent(
+      await apiFetch(`/api/campaigns/${encodeURIComponent(id)}`, { method: "PATCH", headers: { "content-type": "application/json" }, body: JSON.stringify({ keepAfterEnd: keep }) }),
+    );
   } catch {
-    return { ok: false, error: "Network dropped. Please try again." };
+    return { ok: false, status: 0, error: null };
   }
 }
 
-/** Turn this campaign's daily reminder on or off. Default is off. */
-export async function setCampaignReminder(
-  campaignId: string,
-  enabled: boolean,
-  time?: string,
-): Promise<ApiResult> {
+/** The creator takes it down for good. */
+export async function takeDownCampaign(id: string): Promise<Sent> {
+  if (!campaignsInBuild()) return CLOSED;
   try {
-    const res = await apiFetch(`/api/campaigns/${campaignId}/remind`, {
-      method: "PUT",
-      headers: { "content-type": "application/json" },
-      body: JSON.stringify({ enabled, time: enabled ? (time ?? "08:00") : null }),
-    });
-    return readResult(res);
+    return await sent(await apiFetch(`/api/campaigns/${encodeURIComponent(id)}`, { method: "DELETE" }));
   } catch {
-    return { ok: false, error: "Network dropped. Please try again." };
+    return { ok: false, status: 0, error: null };
   }
 }
 
-export async function leaveCampaign(id: string): Promise<ApiResult> {
-  const res = await apiFetch(`/api/campaigns/${id}/pray`, { method: "DELETE" });
-  return readResult(res);
-}
-
-export async function reportCampaign(
-  id: string,
-  reason?: string,
-): Promise<ApiResult> {
-  const res = await apiFetch(`/api/campaigns/${id}/report`, {
-    method: "POST",
-    headers: { "content-type": "application/json" },
-    body: JSON.stringify({ reason: reason || null }),
-  });
-  return readResult(res);
-}
-
-/** Creator takes their own campaign down for good, image included. */
-export async function deleteCampaign(id: string): Promise<ApiResult> {
-  const res = await apiFetch(`/api/campaigns/${id}`, { method: "DELETE" });
-  return readResult(res);
-}
-
-export async function closeCampaign(
-  id: string,
-  status: "answered" | "memory_eternal",
-): Promise<ApiResult> {
-  const res = await apiFetch(`/api/campaigns/${id}`, {
-    method: "PATCH",
-    headers: { "content-type": "application/json" },
-    body: JSON.stringify({ status }),
-  });
-  return readResult(res);
-}
-
-// ── The signed-in user's own prayer life (self-select RLS, read direct) ──────
-
-export type MyJoinedCampaign = {
-  campaign: PrayerCampaign;
-  last_prayed_at: string | null;
-  prayer_days: number;
-};
-
-export type MyPrayers = {
-  userId: string | null;
-  joined: MyJoinedCampaign[];
-  created: PrayerCampaign[];
-};
-
-const BASE_COLS =
-  "id, creator_id, title, intention, for_whom, subject_name, note, prayer_key, ends_at, praying_count, prayer_count, status, created_at";
-
-/** Same not-yet-migrated guard as lib/campaigns/catalog.ts: My Prayers reads
- *  Supabase directly, so naming image_url before the migration lands would
- *  blank the page for everyone. */
-const campaignCols = (withImage: boolean) =>
-  withImage ? `${BASE_COLS}, image_url` : BASE_COLS;
-
-const missingImageColumn = (message: string | undefined) =>
-  Boolean(message && /image_url/i.test(message));
-
-export async function fetchMyPrayers(): Promise<MyPrayers> {
-  const empty: MyPrayers = { userId: null, joined: [], created: [] };
-  const supabase = createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-  if (!user) return empty;
-
-  const fetchBoth = (withImage: boolean) => {
-    const cols = campaignCols(withImage);
-    return Promise.all([
-      supabase
-        .from("prayer_campaign_prayers")
-        .select(`last_prayed_at, prayer_days, campaign:prayer_campaigns(${cols})`)
-        .eq("user_id", user.id)
-        .order("joined_at", { ascending: false }),
-      supabase
-        .from("prayer_campaigns")
-        .select(cols)
-        .eq("creator_id", user.id)
-        .order("created_at", { ascending: false }),
-    ]);
-  };
-
-  let [joinedRes, createdRes] = await fetchBoth(true);
-  if (
-    missingImageColumn(joinedRes.error?.message) ||
-    missingImageColumn(createdRes.error?.message)
-  ) {
-    [joinedRes, createdRes] = await fetchBoth(false);
+/** Where the campaigns this device carries stand, or null when that could not be asked. */
+export async function fetchStates(ids: readonly string[]): Promise<Record<string, CampaignState> | null> {
+  if (!campaignsInBuild() || ids.length === 0) return null;
+  try {
+    const res = await apiFetch("/api/campaigns/state", { ...JSON_POST, body: JSON.stringify({ ids: ids.slice(0, 24) }) });
+    if (!res.ok) return null;
+    return ((await body(res)).states as Record<string, CampaignState> | undefined) ?? null;
+  } catch {
+    return null;
   }
+}
 
-  const joined: MyJoinedCampaign[] = ((joinedRes.data ?? []) as unknown as {
-    last_prayed_at: string | null;
-    prayer_days: number;
-    campaign: PrayerCampaign | null;
-  }[])
-    .filter((r) => r.campaign)
-    .map((r) => ({
-      campaign: r.campaign as PrayerCampaign,
-      last_prayed_at: r.last_prayed_at,
-      prayer_days: r.prayer_days ?? 0,
-    }));
-
-  // totalPrayerDays summed j.prayer_days across every campaign, for a tile
-  // on /campaigns/mine reading "Prayers offered". The tile is gone and this
-  // was its only consumer, so the sum goes with it rather than remaining as a
-  // lifetime total of one reader's praying that nothing displays. The
-  // per-campaign prayer_days still arrives on each row; nothing aggregates it.
-  const created = (createdRes.data ?? []) as unknown as PrayerCampaign[];
-
-  return { userId: user.id, joined, created };
+/**
+ * One decision of a moderator on a campaign (lib/campaigns/model.ts,
+ * CAMPAIGN_MOD_ACTIONS), sent where every moderation action goes
+ * (app/api/community/moderation), which asks who the moderator is as it does
+ * for a post. `id` is the campaign's, or the report's for a dismissal.
+ */
+export async function moderateCampaign(action: CampaignModAction, id: string, reason?: string | null): Promise<Sent> {
+  if (!campaignsInBuild()) return CLOSED;
+  try {
+    return await sent(await apiFetch("/api/community/moderation", { ...JSON_POST, body: JSON.stringify({ action, id, reason: reason ?? null }) }));
+  } catch {
+    return { ok: false, status: 0, error: null };
+  }
 }
