@@ -975,6 +975,34 @@ await shot("34-place", "starting one: a place, a country chosen and a town typed
   },
 });
 
+// 40 The start screen with a place given: the row says the town and the country, as they will be sent.
+await shot("40-start-place", "starting one: the Place row with a town and a country", "/campaigns/new", "[data-campaign-new]", {
+  prepare: async (page) => {
+    await page.waitForSelector("#campaign-title-field", { timeout: 15000 });
+    await page.fill("#campaign-title-field", "For Peter's exams");
+    await page.fill("#campaign-name-field", "Peter");
+    await page.fill("#campaign-words-field", "His finals begin on Monday.");
+    await page.locator("[data-campaign-new] .set-panel button").nth(0).click();
+    await page.locator("[role=radio]", { hasText: "An exam or studies" }).click();
+    await settle(page, 700);
+    await page.locator("[data-campaign-new] .set-panel button", { hasText: "Place" }).click();
+    await page.waitForSelector("[data-campaign-place] [role=combobox]", { timeout: 8000 });
+    await settle(page, 500);
+    await choosePlace(page, "gree", "Greece");
+    await page.fill("#campaign-town", "Thessaloniki");
+    await page.locator("[data-campaign-place] button", { hasText: "Done" }).click();
+    await page.waitForSelector("[data-campaign-place]", { state: "detached", timeout: 8000 });
+    await page.evaluate(() => document.activeElement?.blur());
+    const h = await page.evaluate(() => {
+      const root = document.querySelector("[data-campaign-new]");
+      const scroller = root.querySelector(".overflow-y-auto");
+      const foot = root.querySelector(".compose-foot");
+      return Math.ceil(scroller.scrollHeight + foot.getBoundingClientRect().height);
+    });
+    await page.setViewportSize({ width: 390, height: Math.max(844, h) });
+  },
+});
+
 // 35 A campaign's page with its place, beside who started it.
 await shot("35-campaign-place", "a campaign's page with its place beside who started it", `/campaigns/detail?id=${PETER}`, "[data-campaign-page]", {
   prepare: async (page) => {
@@ -1485,7 +1513,8 @@ if (WALK) {
     // What was written and chosen then.
     expectThat((await page.inputValue("#campaign-title-field")) === "For Irene's recovery" && (await page.inputValue("#campaign-name-field")) === "Irene", "the title and the name did not come over");
     expectThat((await page.inputValue("#campaign-words-field")).startsWith("She is home and mending."), "the words did not come over");
-    const rows = plain(await page.locator("[data-campaign-new] .set-panel").innerText());
+    // The first panel is the rows; the second holds the lines of who it is for.
+    const rows = plain(await page.locator("[data-campaign-new] .set-panel").first().innerText());
     for (const part of ["An illness", "A week", "The Trisagion Prayers", "Sibiu, Romania"]) expectThat(rows.includes(part), `the rows do not say "${part}": ${rows.replace(/\n/g, " / ")}`);
     // What is given again: who it is for, and the two ticks. Create is dim until they are.
     const create = page.locator("[data-campaign-new] .compose-foot button");
