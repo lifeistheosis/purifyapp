@@ -5,6 +5,7 @@ import type { SupabaseClient } from "@supabase/supabase-js";
 import { isTableAbsent } from "@/lib/admin/tableAbsent";
 import { NOT_BEFORE, SHIPPED_ON } from "@/lib/campaigns/julyRows";
 import { isDay } from "@/lib/campaigns/model";
+import { AUTO, logMod } from "@/lib/community/moderation";
 import { isColumnAbsent } from "@/lib/supabase/columnAbsent";
 
 // The requests that stood on the prayer wall when 1.9 shipped, cleared
@@ -38,6 +39,15 @@ import { isColumnAbsent } from "@/lib/supabase/columnAbsent";
 //                                       (profile_id is set on those holds
 //                                       and on no other): deleted, as it
 //                                       always was when a request came down.
+//   community_text_holds.original_body  A hold a moderator had already
+//                                       decided keeps its record, who
+//                                       decided and when, and loses the
+//                                       reader's own words: the wall ends so
+//                                       that nobody's illness stays written
+//                                       down by neglect, and the moderators'
+//                                       history is a place it would (Admin's
+//                                       find on the second read, and the
+//                                       arbiter's yes, 2026-11-10).
 //   profile_prayers                     Who said "I prayed" for whose
 //                                       request: every row deleted. Nothing
 //                                       reads it since 1.9.
@@ -47,6 +57,16 @@ import { isColumnAbsent } from "@/lib/supabase/columnAbsent";
 // their own prayers, which are on their device and leave after their week;
 // and the two columns and the table themselves, which a later SQL file of
 // his signing drops.
+//
+// NOTHING IS HELD BACK FOR A REPORT. What was ever reported to the
+// authorities has to be kept, by US law, and that was asked of him before
+// this could run. His answer, 2026-11-10 about 20:12 UTC: "I don't know what
+// you're talking about to the authorities. Like, no, we didn't do that." No
+// request was ever reported, so every one is cleared.
+//
+// A LINE IN THE MODERATORS' LOG, for a run that changed something: how many
+// of each, and no words and no names, so a moderator who saw a hold
+// yesterday can see why it went (as auto-moderation says what it hid).
 //
 // WHEN. On and after SHIPPED_ON plus fourteen days, once a day, from the
 // maintenance heartbeat (lib/ops/maintenance.ts). SHIPPED_ON is the one line
@@ -97,8 +117,10 @@ export type RequestsEndReport =
       requests: Cleared;
       /** Profiles whose request's words were cleared. */
       words: Cleared;
-      /** Holds on a request's words that were deleted. */
+      /** Holds on a request's words that still waited, deleted. */
       holds: Cleared;
+      /** Holds a moderator had decided, kept as records and emptied of the reader's words. */
+      emptied: Cleared;
       /** "I prayed" rows deleted. */
       prayers: Cleared;
       /** Whether the public mark stands: only once a run has gone through with nothing failed. */
@@ -156,10 +178,21 @@ export async function endPrayerRequests(admin: SupabaseClient, now: number = Dat
   const words = await step(admin.from("profiles").update({ prayer_request_intention: null }).not("prayer_request_intention", "is", null).select("id"), "clearing their words");
   // profile_id is set on a hold of a request's words and on no other hold.
   const holds = await step(admin.from("community_text_holds").delete().not("profile_id", "is", null).eq("status", "pending").select("id"), "deleting the holds on their words");
+  // What is left with profile_id set was decided by a moderator: the record stays, the reader's words do not.
+  const emptied = await step(
+    admin.from("community_text_holds").update({ original_body: null }).not("profile_id", "is", null).not("original_body", "is", null).select("id"),
+    "emptying the decided holds of their words",
+  );
   const prayers = await step(admin.from("profile_prayers").delete().not("owner_id", "is", null).select("owner_id"), "deleting who prayed");
 
-  const failed = [requests, words, holds, prayers].includes("failed");
-  const changed = [requests, words, holds, prayers].reduce<number>((sum, n) => sum + (typeof n === "number" ? n : 0), 0);
-  if (changed > 0) console.info(`[community] old prayer requests cleared: ${requests} requests, ${words} with words, ${holds} holds, ${prayers} prayers`);
-  return { state: "ran", from, requests, words, holds, prayers, marked: failed ? false : await mark(admin) };
+  const all = [requests, words, holds, emptied, prayers];
+  const failed = all.includes("failed");
+  const changed = all.reduce<number>((sum, n) => sum + (typeof n === "number" ? n : 0), 0);
+  if (changed > 0) {
+    // Counts only: no words, and nobody's name.
+    const summary = `Asking for prayers ended with the prayer wall: ${requests} requests cleared, ${words} with words, ${holds} waiting holds deleted, ${emptied} decided holds emptied of their words, ${prayers} prayers deleted.`;
+    console.info(`[community] ${summary}`);
+    await logMod(admin, AUTO, { action: "requests_ended", target: "hold", summary });
+  }
+  return { state: "ran", from, requests, words, holds, emptied, prayers, marked: failed ? false : await mark(admin) };
 }

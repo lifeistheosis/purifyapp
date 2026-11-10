@@ -75,6 +75,21 @@ import { isDay } from "./model";
 // such marks), so that it can be seen to have happened without reading a
 // campaign.
 //
+// NOTHING IS HELD BACK FOR A REPORT. What a provider has reported to the
+// authorities it has to keep, by US law (Admin's note on the second read),
+// so that was asked of him before the day could be written. His answer,
+// 2026-11-10 about 20:12 UTC: "I don't know what you're talking about to the
+// authorities. Like, no, we didn't do that." No campaign of July's was ever
+// reported, so every one of them goes.
+//
+// A LIMIT TO KNOW (Admin's note, not met today). A run reads the oldest
+// hundred of July's rows. Rows it must keep (a picture the storage will not
+// delete, a group in use) are read again the next day, so a hundred kept
+// rows would be all a run ever read, and the rest would wait behind them.
+// Nothing keeps a hundred today: no campaign is kept to one of July's
+// groups, and a kept picture is one row. The report's `kept` says how many
+// stand, and at a hundred this wants a cursor.
+//
 // Not the hourly upkeep (./upkeep.ts): every statement there names "days is
 // not null" and touches only the rework's own rows. This is the one place
 // that deletes July's.

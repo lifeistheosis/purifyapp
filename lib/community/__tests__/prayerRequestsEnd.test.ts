@@ -52,7 +52,7 @@ const SHIPPED = "2026-11-20";
 const THE_DAY = Date.parse("2026-12-04T00:00:30.000Z");
 const THE_EVE = Date.parse("2026-12-03T23:59:59.000Z");
 
-let tables: { profiles: Row[]; community_text_holds: Row[]; profile_prayers: Row[]; community_notifications: Row[]; data_moves: Row[] };
+let tables: { profiles: Row[]; community_text_holds: Row[]; profile_prayers: Row[]; community_notifications: Row[]; data_moves: Row[]; community_mod_log: Row[] };
 let reads: { table: string }[];
 /** Every table a run asked of, read or write, in order. */
 let asked: string[];
@@ -74,7 +74,7 @@ function world() {
       { id: "h-request", profile_id: ANNA, post_id: null, reply_id: null, original_body: "For my mother, a zorbak", hits: 1, status: "pending" },
       // A hold on a post, and a request's hold a moderator has already decided: neither is this job's.
       { id: "h-post", profile_id: null, post_id: "p1", reply_id: null, original_body: "A post's words", hits: 1, status: "pending" },
-      { id: "h-decided", profile_id: BEN, post_id: null, reply_id: null, original_body: "Old words", hits: 1, status: "approved" },
+      { id: "h-decided", profile_id: BEN, post_id: null, reply_id: null, original_body: "Old words", hits: 1, status: "approved", resolved_by_email: "mod@example.com", resolved_at: "2026-10-02T09:00:00.000Z" },
     ],
     profile_prayers: [
       { owner_id: ANNA, prayer_id: BEN, request_at: "2026-11-19T10:00:00.000Z" },
@@ -84,6 +84,7 @@ function world() {
     // A reader's own inbox is theirs.
     community_notifications: [{ id: "n1", user_id: ANNA, kind: "prayed", actor_name: "Ben" }],
     data_moves: [],
+    community_mod_log: [],
   };
   const api = cappedApi(tables, {}, { upserts: true });
   reads = api.requests;
@@ -144,7 +145,7 @@ describe("before the day", () => {
 
 describe("on the day", () => {
   it("clears every request's time and words, the holds on those words, and who prayed, and says how many", async () => {
-    expect(await run()).toEqual({ state: "ran", from: "2026-12-04", requests: 2, words: 3, holds: 1, prayers: 3, marked: true });
+    expect(await run()).toEqual({ state: "ran", from: "2026-12-04", requests: 2, words: 3, holds: 1, emptied: 1, prayers: 3, marked: true });
     for (const profile of tables.profiles) {
       expect(profile.prayer_request_at, String(profile.handle)).toBeNull();
       expect(profile.prayer_request_intention, String(profile.handle)).toBeNull();
@@ -161,10 +162,31 @@ describe("on the day", () => {
       [CARA, "cara", "Hello"],
       [DAN, "dan", "A reader"],
     ]);
-    // The post's hold waits as it did; the request's hold a moderator already decided stays as the record.
+    // The post's hold waits as it did, words and all.
     expect(tables.community_text_holds.map((h) => h.id)).toEqual(["h-post", "h-decided"]);
+    expect(tables.community_text_holds[0]).toMatchObject({ id: "h-post", original_body: "A post's words", status: "pending" });
     expect(tables.community_notifications).toHaveLength(1);
-    expect(new Set(asked)).toEqual(new Set(["profiles", "community_text_holds", "profile_prayers", "data_moves"]));
+    expect(new Set(asked)).toEqual(new Set(["profiles", "community_text_holds", "profile_prayers", "data_moves", "community_mod_log"]));
+  });
+
+  it("a hold a moderator had decided keeps its record and loses the reader's words", async () => {
+    await run();
+    const decided = tables.community_text_holds.find((h) => h.id === "h-decided");
+    expect(decided).toEqual({ id: "h-decided", profile_id: BEN, post_id: null, reply_id: null, original_body: null, hits: 1, status: "approved", resolved_by_email: "mod@example.com", resolved_at: "2026-10-02T09:00:00.000Z" });
+    // Nowhere in what is left is a word any reader wrote of their request.
+    expect(JSON.stringify([tables.profiles, tables.community_text_holds.filter((h) => h.profile_id), tables.profile_prayers])).not.toMatch(/mother|exams|spring|Old words|zorbak/);
+  });
+
+  it("says so once in the moderators' log, in counts, with no words and no names", async () => {
+    await run();
+    expect(tables.community_mod_log).toHaveLength(1);
+    const line = tables.community_mod_log[0];
+    expect(line).toMatchObject({ actor_id: null, actor_name: "Auto-moderation", action: "requests_ended", target_kind: "hold", target_id: null });
+    expect(line.summary).toBe("Asking for prayers ended with the prayer wall: 2 requests cleared, 3 with words, 1 waiting holds deleted, 1 decided holds emptied of their words, 3 prayers deleted.");
+    expect(String(line.summary)).not.toMatch(/anna|ben|cara|mother|exams|spring|zorbak|@/i);
+    // A run that changes nothing says nothing.
+    await run(THE_DAY + 86_400_000);
+    expect(tables.community_mod_log).toHaveLength(1);
   });
 
   it("reads no profile and no request to do it: it only sets empty what is set", async () => {
@@ -175,7 +197,7 @@ describe("on the day", () => {
   it("a second run changes nothing", async () => {
     await run();
     const after = structuredClone(tables);
-    expect(await run(THE_DAY + 86_400_000)).toEqual({ state: "ran", from: "2026-12-04", requests: 0, words: 0, holds: 0, prayers: 0, marked: true });
+    expect(await run(THE_DAY + 86_400_000)).toEqual({ state: "ran", from: "2026-12-04", requests: 0, words: 0, holds: 0, emptied: 0, prayers: 0, marked: true });
     expect(tables).toEqual(after);
     expect(tables.data_moves).toHaveLength(1);
   });
@@ -204,7 +226,7 @@ describe("a database that lacks a part, or fails", () => {
   it("says absent for the words' column before its SQL, and for a table that is not there, and clears the rest", async () => {
     vi.spyOn(console, "warn").mockImplementation(() => {});
     const noWords = failing("profiles", { code: "42703", message: "column profiles.prayer_request_intention does not exist" }, (patch) => Boolean(patch && "prayer_request_intention" in patch));
-    expect(await endPrayerRequests(noWords, THE_DAY, { shippedOn: SHIPPED })).toEqual({ state: "ran", from: "2026-12-04", requests: 2, words: "absent", holds: 1, prayers: 3, marked: true });
+    expect(await endPrayerRequests(noWords, THE_DAY, { shippedOn: SHIPPED })).toEqual({ state: "ran", from: "2026-12-04", requests: 2, words: "absent", holds: 1, emptied: 1, prayers: 3, marked: true });
 
     world();
     const noPrayers = cappedApi({ ...tables, profile_prayers: undefined as never }, {}, { upserts: true }).client;
@@ -214,11 +236,11 @@ describe("a database that lacks a part, or fails", () => {
   it("when a step fails the others still run, the mark is held back, and the next run finishes", async () => {
     vi.spyOn(console, "warn").mockImplementation(() => {});
     const down = failing("profile_prayers", { code: "XX000", message: "boom" });
-    expect(await endPrayerRequests(down, THE_DAY, { shippedOn: SHIPPED })).toEqual({ state: "ran", from: "2026-12-04", requests: 2, words: 3, holds: 1, prayers: "failed", marked: false });
+    expect(await endPrayerRequests(down, THE_DAY, { shippedOn: SHIPPED })).toEqual({ state: "ran", from: "2026-12-04", requests: 2, words: 3, holds: 1, emptied: 1, prayers: "failed", marked: false });
     expect(tables.profile_prayers).toHaveLength(3);
     expect(tables.data_moves).toEqual([]);
 
-    expect(await run(THE_DAY + 86_400_000)).toEqual({ state: "ran", from: "2026-12-04", requests: 0, words: 0, holds: 0, prayers: 3, marked: true });
+    expect(await run(THE_DAY + 86_400_000)).toEqual({ state: "ran", from: "2026-12-04", requests: 0, words: 0, holds: 0, emptied: 0, prayers: 3, marked: true });
     expect(tables.profile_prayers).toEqual([]);
   });
 });
@@ -226,18 +248,23 @@ describe("a database that lacks a part, or fails", () => {
 describe("what it may write, read from its own code", () => {
   const source = readFileSync(join(process.cwd(), "lib/community/prayerRequestsEnd.ts"), "utf8").replace(/^\s*\/\/.*$/gm, "");
 
-  it("two updates, of the request's two fields and nothing else, each only where one is set", () => {
-    expect(source.match(/\.update\(/g)).toHaveLength(2);
+  it("three updates: the request's two fields, and a decided hold's words; each only where one is set", () => {
+    expect(source.match(/\.update\(/g)).toHaveLength(3);
     expect(source).toContain('admin.from("profiles").update({ prayer_request_at: null }).not("prayer_request_at", "is", null)');
     expect(source).toContain('admin.from("profiles").update({ prayer_request_intention: null }).not("prayer_request_intention", "is", null)');
+    // Only a hold on a request's words (profile_id is set on those and on no other), and only its words.
+    expect(source).toContain('admin.from("community_text_holds").update({ original_body: null }).not("profile_id", "is", null).not("original_body", "is", null)');
   });
 
   it("two deletes: the holds on a request's words that still wait, and who prayed; never a profile, a post or a notice", () => {
     expect(source.match(/\.delete\(\)/g)).toHaveLength(2);
     expect(source).toContain('admin.from("community_text_holds").delete().not("profile_id", "is", null).eq("status", "pending")');
     expect(source).toContain('admin.from("profile_prayers").delete().not("owner_id", "is", null)');
-    expect([...source.matchAll(/\.from\("([a-z_]+)"\)/g)].map((m) => m[1]).sort()).toEqual(["community_text_holds", "data_moves", "profile_prayers", "profiles", "profiles"]);
+    expect([...source.matchAll(/\.from\("([a-z_]+)"\)/g)].map((m) => m[1]).sort()).toEqual(["community_text_holds", "community_text_holds", "data_moves", "profile_prayers", "profiles", "profiles"]);
+    // Its one line for the moderators goes through the log's own writer, and it writes nothing else of its own.
     expect(source).not.toMatch(/\.insert\(/);
+    expect(source.match(/logMod\(/g)).toHaveLength(1);
+    expect(source).toContain('await logMod(admin, AUTO, { action: "requests_ended", target: "hold", summary });');
   });
 });
 
