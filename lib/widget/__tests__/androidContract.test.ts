@@ -6,6 +6,8 @@ import { WIDGET_KEYS } from "../bridge";
 import { buildDayTable } from "../dayTable";
 import { rememberEntry, rememberFaces } from "../remember";
 import { patronEntry, patronFacts } from "../state";
+import { widgetTarget, widgetUrl } from "../open";
+import { PATRON_HOME } from "@/lib/profile/patronEvent";
 
 /**
  * The contract between the emitter, the app and the Android widgets
@@ -193,6 +195,20 @@ describe("android widgets: the contract", () => {
     }
     const info = read(path.join(MAIN, "res/xml/mysaint_widget_info.xml"));
     expect(num("NARROWEST_DP")).toBe(Number(info.match(/android:minResizeWidth="(\d+)dp"/)?.[1]));
+  });
+
+  it("opens the patron picker when My saint asks for a saint, on both phones (build 89, note 17)", () => {
+    // "When you click on it, it directs you to the app but there's no setting
+    // for it in the app": the tap opened Today. It opens the picker now.
+    const java = read(path.join(JAVA_DIR, "widget/MySaintWidgetProvider.java"));
+    expect(java).toMatch(/message\(context, id, WidgetData\.label\(context, "chooseSaint", "Choose your saint in Purify"\), "patron"\)/);
+    const base = read(path.join(JAVA_DIR, "widget/PurifyWidgetProvider.java"));
+    expect(base).toContain("protected static RemoteViews message(Context context, int id, String line, String target)");
+    expect(base).toContain("WidgetOpen.tap(context, id, target)");
+    const swift = read(path.join(ROOT, "ios/App/PurifyWidgets/WidgetStore.swift"));
+    expect(swift).toContain('guard let slug = slug else { return "patron" }');
+    // And the app knows the address the two phones send.
+    expect(widgetTarget(widgetUrl("patron"))).toBe(PATRON_HOME);
   });
 
   it("stores exactly the keys the app may hand over, the same on both phones", () => {

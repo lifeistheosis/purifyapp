@@ -19,6 +19,7 @@
  */
 
 import profiledSaints from "@/data/calendar/profiled-saints.json";
+import { PATRON_HOME } from "@/lib/profile/patronEvent";
 import { getBook } from "@/lib/bible/books";
 import { getRuleMeta } from "@/lib/prayers/rules";
 
@@ -49,6 +50,11 @@ const FIXED = new Map<string, () => string>([
   // families show.
   ["calendar", () => "/calendar"],
   ["whats-new", () => "/whats-new"],
+  // My saint with no saint chosen asks the reader to choose one, so its tap
+  // opens the picker, not Today, where there was nothing to choose with
+  // (build 89, note 17: "it directs you to the app but there's no setting
+  // for it in the app").
+  ["patron", () => PATRON_HOME],
   ["pray/morning", () => ruleRoute("morning")],
   ["pray/evening", () => ruleRoute("evening")],
 ]);

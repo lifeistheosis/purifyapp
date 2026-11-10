@@ -22,6 +22,10 @@ describe("the screens a widget opens", () => {
     expect(widgetTarget(widgetUrl("pray/evening"))).toBe("/prayers/evening");
   });
 
+  it("opens the patron picker, brought into view on the reader's own page, for My saint with no saint chosen (build 89, note 17)", () => {
+    expect(widgetTarget(widgetUrl("patron"))).toBe("/account/profile#patron");
+  });
+
   it("opens the Morning Rule where the icon's shortcut opens it", () => {
     expect(widgetTarget(widgetUrl("pray/morning"))).toBe(shortcutTarget("morning-prayers", null));
   });

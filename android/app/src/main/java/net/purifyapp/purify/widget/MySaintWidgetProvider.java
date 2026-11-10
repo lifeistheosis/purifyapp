@@ -21,8 +21,9 @@ import java.util.regex.Pattern;
  * <p>The icon is drawn only when the app sends one, which it does only for an
  * icon whose rights are cleared (lib/saints/iconRights.ts); otherwise the
  * widget is its text version, as the mock allows. With no patron chosen it
- * asks the reader to choose one in Purify, and a tap opens the app; with one,
- * a tap opens that saint's page.
+ * asks the reader to choose one in Purify, and a tap opens the picker on the
+ * reader's own page (build 89, note 17); with one, a tap opens that saint's
+ * page.
  */
 public class MySaintWidgetProvider extends PurifyWidgetProvider {
 
@@ -69,7 +70,9 @@ public class MySaintWidgetProvider extends PurifyWidgetProvider {
         JSONObject patron = WidgetData.handed(context, "patron");
         String name = WidgetData.text(patron, "name");
         if (name.isEmpty()) {
-            return message(context, id, WidgetData.label(context, "chooseSaint", "Choose your saint in Purify"));
+            // It asks the reader to choose a saint, so a tap opens the picker
+            // (lib/widget/open.ts, "patron"), not Today (build 89, note 17).
+            return message(context, id, WidgetData.label(context, "chooseSaint", "Choose your saint in Purify"), "patron");
         }
         String nameDay = WidgetData.text(patron, "nameDay");
         Integer days = WidgetPieces.daysFromToday(nameDay);

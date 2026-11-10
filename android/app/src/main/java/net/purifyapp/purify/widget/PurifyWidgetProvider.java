@@ -117,9 +117,14 @@ public abstract class PurifyWidgetProvider extends AppWidgetProvider {
 
     /** A card with one plain line, for a widget with nothing true to show yet. Tapping it opens the app. */
     protected static RemoteViews message(Context context, int id, String line) {
+        return message(context, id, line, "today");
+    }
+
+    /** The same card, its tap opening where the line asks the reader to go (lib/widget/open.ts names each target). */
+    protected static RemoteViews message(Context context, int id, String line, String target) {
         RemoteViews views = new RemoteViews(context.getPackageName(), R.layout.widget_message);
         views.setTextViewText(R.id.widget_message_text, line);
-        views.setOnClickPendingIntent(R.id.widget_root, WidgetOpen.tap(context, id, "today"));
+        views.setOnClickPendingIntent(R.id.widget_root, WidgetOpen.tap(context, id, target));
         return views;
     }
 }

@@ -364,11 +364,12 @@ enum WidgetTap {
         return "verse/\(book)/\(chapter)/\(verse)"
     }
 
-    /// "saint/<slug>" for a slug shaped like one, else "today". The app checks
-    /// the slug against the saints it knows.
+    /// "saint/<slug>" for a slug shaped like one, else "today"; with no saint
+    /// chosen, "patron", the picker where one is chosen (lib/widget/open.ts;
+    /// build 89, note 17). The app checks the slug against the saints it knows.
     static func saint(_ slug: String?) -> String {
-        guard let slug = slug,
-              let pattern = try? NSRegularExpression(pattern: "^[a-z0-9]+(?:-[a-z0-9]+)*$"),
+        guard let slug = slug else { return "patron" }
+        guard let pattern = try? NSRegularExpression(pattern: "^[a-z0-9]+(?:-[a-z0-9]+)*$"),
               pattern.firstMatch(in: slug, options: [], range: NSRange(slug.startIndex..., in: slug)) != nil
         else { return "today" }
         return "saint/" + slug

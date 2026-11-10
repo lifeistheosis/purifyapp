@@ -19,6 +19,16 @@
 export const PATRON_EVENT = "purify:patron";
 
 /**
+ * Where a reader chooses their patron saint, and the picker's name there
+ * (build 89, note 17): the reader's own page under You, the picker brought
+ * into view. The My saint widget opens it when no saint is chosen
+ * (lib/widget/open.ts, "patron"); Settings has the same picker in a row of
+ * its own (components/settings/PatronRow.tsx).
+ */
+export const PATRON_ANCHOR = "patron";
+export const PATRON_HOME = `/account/profile#${PATRON_ANCHOR}`;
+
+/**
  * Where Today keeps the day's patron (components/today/NameDayCard.tsx), so
  * that it asks the website once a day and not on every open. A patron saved
  * is newer than that answer, so announcing one forgets it, whether or not
