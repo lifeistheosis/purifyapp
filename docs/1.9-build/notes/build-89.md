@@ -158,3 +158,11 @@ What he saw: the Bible reader (Genesis 2) with the mini player and the tab bar a
 Where it is: for Admin to find.
 
 Planned fix (given to Admin, after note 15): when a sheet rises, what stands behind it (the tab bar, the mini player, the plates at the top) fades out with it, in the house's motion, on the sheet's own curve and time, and comes back the same way when it closes; every sheet, not only the sleep timer; reduced motion stays still. Shown to him with a few stills across the fade.
+
+### 17. The patron saint widget does not work (2026-11-10)
+
+What he saw: the My Saint widget on his Android home screen, on build 89. His words: "also fix the patron Saint widget not working". What it does instead is asked of him (blank, the wrong saint, nothing on a tap, or will not add).
+
+Where it is: for Updates to find (the Android widget is `android/app/src/main/java/net/purifyapp/purify/widget/`, the bridge `WidgetBridgePlugin`; Updates built U5's widgets in 1.9). Two leads to rule in or out first: build 89 is a release build shrunk by R8 since 2026-10-04, and a plugin or provider reached only by reflection fails on a phone and not in the build (`docs/RELEASE.md`, "The Android app is shrunk"); and build 89 talks to the live 1.8 website, so anything the widget fetches from a 1.9 address cannot work on it before release.
+
+Planned fix (given to Updates the same hour): find the cause, fix it, prove it on the release APK where a phone is needed (the R8 walk), and say plainly whether it is a bug or something build 89 cannot show.
