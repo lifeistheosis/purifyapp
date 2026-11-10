@@ -2,7 +2,7 @@
 
 import type { SupabaseClient } from "@supabase/supabase-js";
 
-import { canSync } from "@/lib/entitlements/client";
+import { canSyncPlaces } from "@/lib/sync/gate";
 import {
   cleanRecords,
   isJournalKind,
@@ -134,7 +134,7 @@ export function fromRow(row: Row): JournalRecord | null {
 }
 
 async function session(): Promise<{ supabase: SupabaseClient; userId: string } | null> {
-  if (!(await canSync())) return null;
+  if (!(await canSyncPlaces())) return null;
   const supabase = createClient();
   const {
     data: { user },

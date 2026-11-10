@@ -3,7 +3,7 @@
 import type { SupabaseClient } from "@supabase/supabase-js";
 
 import { readLastRead, writeLastRead } from "@/lib/bible/lastRead";
-import { canSync } from "@/lib/entitlements/client";
+import { canSyncPlaces } from "@/lib/sync/gate";
 import { readPlansForSync, writePlansFromSync } from "@/lib/plans/progress";
 import { readAllPositions, readClearedPositions, writePositionsFromSync } from "@/lib/reader/position";
 import { rememberStore, writeScheduleFromSync } from "@/lib/remember/schedule";
@@ -41,8 +41,9 @@ import {
  * what another device sent since: it is merged first. What the merge puts on
  * the device is marked as the sync's, so it is not sent back.
  *
- * Carrying a library across devices is the Purify Plus layer: canSync()
- * before anything, as every sync module does.
+ * Carrying a library across devices is the Purify Plus layer: canSyncPlaces()
+ * (lib/sync/gate.ts) before anything, as every sync of verse-numbered things
+ * does.
  */
 
 export const KEPT_SLICES = ["plans", "remember", "places", "reading"] as const;
@@ -222,7 +223,7 @@ function writePlansMet(userId: string, ids: Iterable<string>): void {
 }
 
 async function session(): Promise<{ supabase: SupabaseClient; userId: string } | null> {
-  if (!(await canSync())) return null;
+  if (!(await canSyncPlaces())) return null;
   const supabase = createClient();
   const {
     data: { user },

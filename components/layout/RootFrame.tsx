@@ -51,7 +51,15 @@ import { InputModality } from "@/components/ui/InputModality";
 import { MotionRoot } from "@/components/ui/MotionRoot";
 import { UpdateBridge } from "@/components/update/UpdateBridge";
 import { TourHost } from "@/components/whats-new/tour/TourHost";
+import { settlePsalmsMove } from "@/lib/bible/psalmMoveBoot";
 import type { LocaleCode } from "@/lib/i18n/locales";
+
+// A reader's things on Psalms 113 to 115 move to their new places once the
+// server has moved its own (lib/bible/psalmMoveBoot.ts, his yes of
+// 2026-11-09). Asked as the app's code loads, so a reader who is not signed
+// in is moved too; every sync of verse-numbered things waits for the answer
+// (lib/sync/gate.ts). On the server this does nothing.
+void settlePsalmsMove();
 
 export function RootFrame({
   locale,

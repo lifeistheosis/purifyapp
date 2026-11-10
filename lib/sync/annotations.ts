@@ -4,7 +4,7 @@ import type { SupabaseClient } from "@supabase/supabase-js";
 
 import { createClient } from "@/lib/supabase/client";
 import { pageAllSettled } from "@/lib/supabase/pageAll";
-import { canSync } from "@/lib/entitlements/client";
+import { canSyncPlaces } from "@/lib/sync/gate";
 import { buried, canonicalKey, flushTombstones, tombstoneIndex } from "@/lib/sync/tombstones";
 
 /**
@@ -187,7 +187,7 @@ function rowFields(v: LocalValue, withColor: boolean) {
 async function signedIn(): Promise<{ supabase: SupabaseClient; userId: string } | null> {
   // Cross-device sync is part of the Purify Plus layer (see
   // lib/entitlements/client). Open on web + native until enforced.
-  if (!(await canSync())) return null;
+  if (!(await canSyncPlaces())) return null;
   const supabase = createClient();
   const {
     data: { user },

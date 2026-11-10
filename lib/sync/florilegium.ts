@@ -2,7 +2,7 @@
 
 import { createClient } from "@/lib/supabase/client";
 import { pageAllSettled } from "@/lib/supabase/pageAll";
-import { canSync } from "@/lib/entitlements/client";
+import { canSyncPlaces } from "@/lib/sync/gate";
 import type {
   Florilegium,
   FlorilegiumItem,
@@ -68,7 +68,7 @@ export async function pushAllLocalFlorilegia() {
   try {
     // Cross-device sync is part of the Purify Plus layer. Native-aware:
     // open on web + native until enforcement flips, then Plus-only.
-    if (!(await canSync())) return;
+    if (!(await canSyncPlaces())) return;
     const supabase = createClient();
     const {
       data: { user },
@@ -115,7 +115,7 @@ export async function pushAllLocalFlorilegia() {
 /** Pull every server florilegium + item and union-merge into local. */
 export async function pullServerFlorilegia() {
   try {
-    if (!(await canSync())) return;
+    if (!(await canSyncPlaces())) return;
     const supabase = createClient();
     const {
       data: { user },
