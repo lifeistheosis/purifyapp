@@ -148,12 +148,13 @@ export const EMAIL_MODE: EmailMode = "night";
 export const T: EmailTheme = EMAIL_THEMES[EMAIL_MODE];
 
 /**
- * Fonts. Gmail strips the stylesheet link and shows the fallbacks, which is
- * why the fallback is named rather than left to the client: Georgia and Arial
- * are the two faces every mail client has had for twenty years, and they sit
- * close enough to Lora and DM Sans that the layout does not move.
+ * Fonts, named and never fetched. A letter linked Google Fonts until 1.9, so
+ * a mail client that loads stylesheets called Google as the letter opened;
+ * the owner's yes to 145 (2026-11-10) took the link out, as 143 took every
+ * outside load out of the pages. Lora and DM Sans show where a reader has
+ * them; everywhere else Georgia and Arial, the two faces every mail client has
+ * had for twenty years, which sit close enough that the layout does not move.
+ * Gmail always showed these, since it strips the stylesheet link.
  */
 export const SERIF = "Lora,Georgia,'Times New Roman',serif";
 export const SANS = "'DM Sans',Arial,Helvetica,sans-serif";
-export const FONT_LINK =
-  "https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,600;1,400&family=DM+Sans:wght@400;600&display=swap";

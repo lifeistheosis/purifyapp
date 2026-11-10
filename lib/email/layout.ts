@@ -2,7 +2,7 @@ import { SUPPORT_EMAIL } from "@/lib/legal/entity";
 import { SITE_URL } from "@/lib/site";
 
 import { escapeHtml } from "./send";
-import { FONT_LINK, SANS, SERIF, T } from "./theme";
+import { SANS, SERIF, T } from "./theme";
 import { UNSUBSCRIBE_SLOT } from "./unsubscribe";
 
 /**
@@ -51,7 +51,6 @@ export function emailLayout(opts: {
 
   return `<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <meta name="color-scheme" content="${T.scheme}"><meta name="supported-color-schemes" content="${T.scheme}">
-<link href="${FONT_LINK}" rel="stylesheet">
 <style>@media (max-width:480px){.pad{padding:28px 22px !important}.h1{font-size:25px !important}}</style></head>
 <body style="margin:0;padding:0;background:${T.canvas}">
 <table role="presentation" width="100%" cellpadding="0" cellspacing="0" bgcolor="${T.canvas}" style="background:${T.canvas}"><tr><td align="center" style="padding:36px 14px 40px">

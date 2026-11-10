@@ -82,6 +82,12 @@ describe("the shell", () => {
     expect(amp).not.toContain("&amp;amp;");
   });
 
+  it("fetches no font: opening a letter calls nobody (145)", () => {
+    expect(html).not.toMatch(/<link\b/);
+    expect(html).not.toMatch(/fonts\.(googleapis|gstatic)\.com/);
+    expect(html).toContain("Georgia");
+  });
+
   it("keeps the footer as HTML, so an unsubscribe link survives", () => {
     const withLink = emailLayout({ heading: "x", bodyHtml: "", footer: '<a href="https://x/u">Unsubscribe</a>' });
     expect(withLink).toContain('<a href="https://x/u">Unsubscribe</a>');
