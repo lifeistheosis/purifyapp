@@ -4,32 +4,36 @@ import { T } from "@/components/i18n/T";
 import { SUPPORT_EMAIL } from "@/lib/legal/entity";
 import { websiteHref } from "@/lib/nav/websiteHref";
 
+import { LegalContents } from "./LegalContents";
+import { LEGAL_A, LEGAL_H1, LEGAL_H2, LEGAL_LEAD, LEGAL_P } from "./legalStyle";
+
 // EIKON's shipping and returns policy, from its heading to its end: one text,
 // drawn by the page (app/(app)/shop/policies/page.tsx) and by the sheet the
 // checkout opens where it says you agree to it (components/legal/
 // LegalSheet.tsx; build 90 note 1, his yes of 2026-11-10). Moved here word for
 // word from the page, so the two can never say different things.
 
-const H2 =
-  "mt-12 font-sans text-title-sm md:text-title font-bold text-paper leading-[1.15]";
-const P = "mt-4 font-serif text-body text-paper/85 leading-[1.7]";
-const A =
-  "text-paper underline underline-offset-2 decoration-paper/30 hover:decoration-paper";
+// The look is the three legal texts' shared one (./legalStyle.ts, 1.9).
+const H2 = LEGAL_H2;
+const P = LEGAL_P;
+const A = LEGAL_A;
 
 
 export function ShopPoliciesText() {
   return (
     <>
-        <h1 className="font-sans text-display-sm font-bold leading-[1.05] tracking-[-0.025em] text-paper md:text-display">
+        <h1 className={LEGAL_H1}>
           <T k="shop.howWeShipAndHow" />
         </h1>
-        <p className="mt-6 font-serif text-body leading-[1.7] text-paper/65">
+        <p className={LEGAL_LEAD}>
           <T k="shop.effectiveJuly172026This" />{" "}
           <Link href="/terms" className={A}>
             <T k="ui.termsOfServiceX" />
           </Link>{" "}
           <T k="shop.andAppliesToEveryEikon" />
         </p>
+        {/* The text's own headings, folded, as a way through it (./LegalContents.tsx). */}
+        <LegalContents />
 
         <h2 className={H2}><T k="shop.howEikonFulfillsOrders" /></h2>
         <p className={P}>

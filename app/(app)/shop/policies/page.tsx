@@ -1,4 +1,4 @@
-import { T } from "@/components/i18n/T";
+import { LegalPage } from "@/components/legal/LegalPage";
 import { ShopPoliciesText } from "@/components/legal/ShopPoliciesText";
 
 export const metadata = {
@@ -7,15 +7,16 @@ export const metadata = {
     "How EIKON ships, our dispatch windows, returns and refunds, cancellations, and product-safety guidance.",
 };
 
+/**
+ * EIKON's shipping and returns: the text (components/legal/
+ * ShopPoliciesText.tsx, which the checkout's sheet draws too) in the frame
+ * the three legal pages share (components/legal/LegalPage.tsx; 1.9). It
+ * stands under the shop's own tabs, so it takes no bar of its own.
+ */
 export default function ShopPoliciesPage() {
   return (
-    <section className="bg-night px-5 py-16 md:px-8 md:py-24">
-      <article className="mx-auto w-full max-w-[760px]">
-        <p className="mb-4 font-sans text-detail font-semibold text-paper/55">
-          <T k="shop.eikonShippingReturns" />
-        </p>
-        <ShopPoliciesText />
-      </article>
-    </section>
+    <LegalPage doc="shop-policies">
+      <ShopPoliciesText />
+    </LegalPage>
   );
 }

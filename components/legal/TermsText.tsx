@@ -2,20 +2,22 @@ import Link from "next/link";
 
 import { LEGAL_EMAIL, LEGAL_NAME, SUPPORT_EMAIL } from "@/lib/legal/entity";
 
+import { LegalContents } from "./LegalContents";
+import { LEGAL_A, LEGAL_H1, LEGAL_H2, LEGAL_H3, LEGAL_LEAD, LEGAL_P, LEGAL_UL } from "./legalStyle";
+
 // The Terms of Service, from their heading to their end: one text, drawn by
 // the page (app/(app)/terms/page.tsx) and by the sheet that opens wherever the
 // app says you agree to them (components/legal/LegalSheet.tsx; build 90 note
 // 1). Moved here word for word from the page on 2026-11-10, so the two can
 // never say different things. English only, as the page always was.
 
-const H2 =
-  "mt-12 font-sans text-title-sm md:text-title font-bold text-paper leading-[1.15]";
-const H3 = "mt-7 font-sans text-ui font-semibold text-paper";
-const P = "mt-4 font-serif text-body text-paper/85 leading-[1.7]";
-const A =
-  "text-paper underline underline-offset-2 decoration-paper/30 hover:decoration-paper";
+// The look is the three legal texts' shared one (./legalStyle.ts, 1.9).
+const H2 = LEGAL_H2;
+const H3 = LEGAL_H3;
+const P = LEGAL_P;
+const A = LEGAL_A;
 // A list inside the Terms, in the privacy page's own list style.
-const UL = "mt-3 space-y-2 font-serif text-body text-paper/85 leading-[1.7] list-disc pl-6 marker:text-paper/35";
+const UL = LEGAL_UL;
 
 
 export function TermsText() {
@@ -24,10 +26,10 @@ export function TermsText() {
   // right, as English is set.
   return (
     <div lang="en" dir="ltr">
-        <h1 className="font-sans text-display-sm font-bold leading-[1.05] tracking-[-0.025em] text-paper md:text-display">
+        <h1 className={LEGAL_H1}>
           The terms, plainly.
         </h1>
-        <p className="mt-6 font-serif text-body leading-[1.7] text-paper/65">
+        <p className={LEGAL_LEAD}>
           Effective August 14, 2026. These terms are a binding agreement
           between you and {LEGAL_NAME} (&ldquo;Purify,&rdquo; &ldquo;we,&rdquo;
           &ldquo;us&rdquo;), covering the website at purifyapp.net, the
@@ -38,6 +40,8 @@ export function TermsText() {
           </strong>{" "}
           (below), which affect how disputes are resolved. Please read them.
         </p>
+        {/* The text's own headings, folded, as a way through it (./LegalContents.tsx). */}
+        <LegalContents />
 
         <h2 className={H2}>1. Who may use Purify</h2>
         <p className={P}>

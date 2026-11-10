@@ -4,6 +4,8 @@ import { T } from "@/components/i18n/T";
 import { LEGAL_EMAIL, LEGAL_NAME, SUPPORT_EMAIL } from "@/lib/legal/entity";
 import { websiteHref } from "@/lib/nav/websiteHref";
 
+import { LegalContents } from "./LegalContents";
+
 // The Privacy Policy, from its heading to its end, in English and in German:
 // one text, drawn by the page (app/(app)/privacy/page.tsx) and by the sheet
 // that opens wherever the app says you agree to it (components/legal/
@@ -24,14 +26,14 @@ export function PrivacyText({ lang }: { lang: "en" | "de" }) {
 function PrivacyEn() {
   return (
     <>
- <h1 className="font-sans text-display-sm md:text-display font-bold leading-[1.05] tracking-[-0.025em] text-paper">
+ <h1 className="font-serif text-title font-bold leading-[1.12] tracking-[-0.01em] text-balance text-paper">
  <T k="privacy.h1" />
  </h1>
  {/* The heading is the catalog's, in the reader's language; from here on the
      text is English, and says so with its direction (build 90 note 4), so
      an Arabic reader reads it left to right, as English is set. */}
  <div lang="en" dir="ltr">
- <p className="mt-6 font-serif text-body text-paper/65 leading-[1.7]">
+ <p className="mt-4 font-serif text-[17px] leading-[1.65] text-paper/80">
  The short version is on the{" "}
  <Link
  href="/about"
@@ -45,7 +47,7 @@ function PrivacyEn() {
  it.
  </p>
  {/* Who runs Purify (his word of 2026-11-10; lib/legal/entity.ts). */}
- <p className="mt-3 font-serif text-body text-paper/65 leading-[1.7]">
+ <p className="mt-3 font-serif text-[17px] leading-[1.65] text-paper/80">
  Purify is run by {LEGAL_NAME}. To write to the company, use{" "}
  <a
  href={`mailto:${LEGAL_EMAIL}`}
@@ -55,12 +57,14 @@ function PrivacyEn() {
  </a>
  .
  </p>
+ {/* The text's own headings, folded, as a way through it (./LegalContents.tsx). */}
+ <LegalContents />
 
  {/* Two account paths */}
- <h2 className="mt-12 font-sans text-title-sm md:text-title font-bold text-paper leading-[1.15]">
+ <h2 className="mt-11 scroll-mt-20 font-serif text-[21px] font-bold leading-[1.2] text-balance text-paper">
  On this device vs signed in
  </h2>
- <p className="mt-4 font-serif text-body text-paper/85 leading-[1.7]">
+ <p className="mt-3.5 font-serif text-[16.5px] leading-[1.7] text-paper/88">
  Purify works privately on this device with no account; signing in
  exists to keep your reading synchronized across devices. When you
  open{" "}
@@ -73,12 +77,12 @@ function PrivacyEn() {
  you pick one of the two paths. Neither is the default; the choice
  is presented plainly.
  </p>
- <div className="mt-6 grid grid-cols-1 md:grid-cols-2 gap-4">
- <div className="rounded-md border border-paper/12 bg-paper/[0.02] p-5">
- <p className="font-sans text-caption font-semibold text-paper/55 mb-2">
+ <div className="mt-5 grid grid-cols-1 gap-3 md:grid-cols-2">
+ <div className="theology-tray rounded-[18px] px-4 py-4">
+ <p className="mb-2 font-sans text-detail font-semibold text-paper">
  On this device (no account)
  </p>
- <p className="font-serif text-body text-paper/85 leading-[1.65]">
+ <p className="font-serif text-[16px] leading-[1.65] text-paper/88">
  Highlights, notes, bookmarks, your prayer streak, and reader
  preferences (font, size) are stored in your browser&rsquo;s{" "}
  <code className="font-mono text-ui text-paper/70">localStorage</code>.
@@ -86,17 +90,17 @@ function PrivacyEn() {
  our database. The trade-off: it lives on this device only, and
  goes away if you clear browser data.
  </p>
- <p className="mt-3 font-sans text-caption text-paper/55 leading-[1.55]">
+ <p className="mt-3 font-sans text-detail leading-[1.55] text-paper/60">
  To remove the name you claimed on this device, open /account
  and click &ldquo;Remove this name.&rdquo; To wipe all local
  data, clear site data for this origin in your browser settings.
  </p>
  </div>
- <div className="rounded-md border border-gold/30 bg-gold/[0.04] p-5">
- <p className="font-sans text-caption font-semibold text-gold mb-2">
+ <div className="theology-tray rounded-[18px] px-4 py-4">
+ <p className="mb-2 font-sans text-detail font-semibold text-paper">
  Signed in (synchronized)
  </p>
- <p className="font-serif text-body text-paper/85 leading-[1.65]">
+ <p className="font-serif text-[16px] leading-[1.65] text-paper/88">
  The same items go to our Supabase Postgres database so they
  sync across every device you sign in on. We store: your email
  (used to sign you in and to send confirmations on
@@ -114,7 +118,7 @@ function PrivacyEn() {
  {/* 1.9, his yes to 59 (2026-11-10), word for word: what is kept while
  reading travels with Plus (supabase/migrations/20261110012059_user_kept.sql).
  Held by lib/admin/__tests__/privacyLines.test.ts. */}
- <p className="mt-3 font-serif text-body text-paper/85 leading-[1.65]">
+ <p className="mt-3 font-serif text-[16px] leading-[1.65] text-paper/88">
  With Purify Plus, what you keep while reading travels too: your
  progress in each reading plan, Remember the verse&rsquo;s schedule
  (which verse is due when, not its words), your place in the Bible
@@ -123,14 +127,14 @@ function PrivacyEn() {
  only your account can read or change, and it is deleted with your
  account.
  </p>
- <p className="mt-3 font-sans text-caption text-paper/55 leading-[1.55]">
+ <p className="mt-3 font-sans text-detail leading-[1.55] text-paper/60">
  To delete the account and every server-side row it created,
  use the &ldquo;Delete account&rdquo; button on /account. The
  deletion is immediate and cascades.
  </p>
  </div>
  </div>
- <p className="mt-5 font-serif text-body text-paper/80 leading-[1.7]">
+ <p className="mt-3.5 font-serif text-[16.5px] leading-[1.7] text-paper/88">
  If you start on this device and later sign in, your existing
  highlights, notes, and bookmarks are pushed to your account on
  first sign-in; nothing on the device is removed. Prayer streaks,
@@ -138,7 +142,7 @@ function PrivacyEn() {
  they have no server table yet. Signing out never deletes what is
  saved on the device.
  </p>
- <p className="mt-3 font-serif text-body text-paper/80 leading-[1.7]">
+ <p className="mt-3.5 font-serif text-[16.5px] leading-[1.7] text-paper/88">
  Nothing in either path is sold, shared, or used to train models.
  The analytics described below are separate from both: they record
  page views in aggregate, without your account identity, whether you
@@ -147,7 +151,7 @@ function PrivacyEn() {
  {/* Sharing a journal page (1.9; his yes of 2026-11-09 to version B,
      docs/1.9-build/drafts/privacy-sharing.md): each sentence rests on
      app/api/journal/share, lib/journal/share.ts and the shared_pages SQL. */}
- <p className="mt-3 font-serif text-body text-paper/80 leading-[1.7]">
+ <p className="mt-3.5 font-serif text-[16.5px] leading-[1.7] text-paper/88">
  <strong className="font-semibold text-paper">Sharing a journal page.</strong>{" "}
  When you share a page, we keep a copy of it as it stood when you
  shared it, at its own link (purifyapp.net/p/...). Anyone with the
@@ -163,7 +167,7 @@ function PrivacyEn() {
      those terms are good", to docs/1.9-build/drafts/terms-posts.md, built
      on the campaigns chat's draft in campaigns-fable.md 4.7). What each
      sentence rests on is listed in the draft. */}
- <p className="mt-3 font-serif text-body text-paper/80 leading-[1.7]">
+ <p className="mt-3.5 font-serif text-[16.5px] leading-[1.7] text-paper/88">
  <strong className="font-semibold text-paper">Prayer campaigns.</strong>{" "}
  A prayer campaign is public unless you keep it to a circle: its
  title, the first name of the person it is for, what you wrote, its
@@ -175,13 +179,13 @@ function PrivacyEn() {
  asked to affirm that they, or their family, have given their
  blessing, and we keep the day you did.
  </p>
- <p className="mt-3 font-serif text-body text-paper/80 leading-[1.7]">
+ <p className="mt-3.5 font-serif text-[16.5px] leading-[1.7] text-paper/88">
  Pictures are made again on our server before they are stored, which
  removes the place and the device a photo carries inside it, and a
  moderator looks at each one before it is shown. A place is a country
  and a town that you type; the app never asks where you are.
  </p>
- <p className="mt-3 font-serif text-body text-paper/80 leading-[1.7]">
+ <p className="mt-3.5 font-serif text-[16.5px] leading-[1.7] text-paper/88">
  Who has added a campaign to their prayers is never shown, to its
  creator or to anyone, and no number of them is shown. If you are
  signed in, the campaigns you carry are kept with your account so
@@ -189,7 +193,7 @@ function PrivacyEn() {
  on your device alone. The name and the campaign&rsquo;s title are
  kept on your device while you carry it, and leave when it ends.
  </p>
- <p className="mt-3 font-serif text-body text-paper/80 leading-[1.7]">
+ <p className="mt-3.5 font-serif text-[16.5px] leading-[1.7] text-paper/88">
  You can end a campaign, remove a picture, close its comments, or take
  the whole campaign down at any time. Taking it down deletes it from
  our servers with its pictures, updates and comments, and it leaves
@@ -204,14 +208,14 @@ function PrivacyEn() {
  with the campaign, and if you delete your account first, it stays
  without your name.
  </p>
- <p className="mt-3 font-serif text-body text-paper/80 leading-[1.7]">
+ <p className="mt-3.5 font-serif text-[16.5px] leading-[1.7] text-paper/88">
  If a campaign names you, or someone in your care, and you did not
  agree to it, report it from its page or write to{" "}
  <a href={`mailto:${SUPPORT_EMAIL}`} className="text-paper underline underline-offset-2 decoration-paper/30 hover:decoration-paper">{SUPPORT_EMAIL}</a> and we will take it down. If a picture in it is yours and
  was used without your permission, write to{" "}
  <a href={`mailto:${LEGAL_EMAIL}`} className="text-paper underline underline-offset-2 decoration-paper/30 hover:decoration-paper">{LEGAL_EMAIL}</a>. Our terms say what you agree to when you post.
  </p>
- <p className="mt-3 font-serif text-body text-paper/80 leading-[1.7]">
+ <p className="mt-3.5 font-serif text-[16.5px] leading-[1.7] text-paper/88">
  <strong className="font-semibold text-paper">Community.</strong>{" "}
  Posts and replies in the Community are public: anyone can read them,
  in the apps and on our website, with the name and picture your
@@ -225,16 +229,16 @@ function PrivacyEn() {
  </p>
 
  {/* What we record */}
- <p className="mt-10 font-sans text-caption font-semibold text-paper/45">
+ <h2 className="mt-11 scroll-mt-20 font-serif text-[21px] font-bold leading-[1.2] text-balance text-paper">
  What we record
- </p>
- <p className="mt-3 font-serif text-body text-paper/85 leading-[1.7]">
+ </h2>
+ <p className="mt-3.5 font-serif text-[16.5px] leading-[1.7] text-paper/88">
  The only thing the site records about a visit is an anonymous,
  ephemeral session, used for the small &ldquo;who is reading
  right now&rdquo; view that helps us understand whether the work
  is finding anyone. From your browser, on every page load:
  </p>
- <ul className="mt-3 space-y-2 font-serif text-lede text-paper/85 leading-[1.65] list-disc pl-6 marker:text-paper/35">
+ <ul className="mt-3 list-disc space-y-2 ps-6 font-serif text-[16.5px] leading-[1.7] text-paper/88 marker:text-paper/40">
  <li>
  A random <em>session id</em> the browser generates on first
  visit, kept in <code>sessionStorage</code> for the tab&rsquo;s
@@ -257,11 +261,11 @@ function PrivacyEn() {
                 the page then takes it off the address in your browser.
               </li>
  </ul>
- <p className="mt-4 font-serif text-body text-paper/85 leading-[1.7]">
+ <p className="mt-3.5 font-serif text-[16.5px] leading-[1.7] text-paper/88">
  On the server, when a session is first seen, we additionally
  derive and store:
  </p>
- <ul className="mt-3 space-y-2 font-serif text-lede text-paper/85 leading-[1.65] list-disc pl-6 marker:text-paper/35">
+ <ul className="mt-3 list-disc space-y-2 ps-6 font-serif text-[16.5px] leading-[1.7] text-paper/88 marker:text-paper/40">
  <li>
  Your <em>user-agent</em> string (browser + OS), truncated to
  300 characters. Used to tell phones from computers and our apps from the website, and to see when a visit came through another app&rsquo;s built-in browser. Our Windows app also says that it is the Windows app, and we note that beside it.
@@ -273,7 +277,7 @@ function PrivacyEn() {
  href="https://ipwho.is/"
  target="_blank"
  rel="noopener noreferrer"
- className="text-link hover:text-paper underline underline-offset-2"
+ className="text-paper underline underline-offset-2 decoration-paper/30 hover:decoration-paper"
  >ipwho.is</a>. Your IP itself is <em>not</em> stored; only the
  city-level fields above are.
  </li>
@@ -288,7 +292,7 @@ function PrivacyEn() {
  </ul>
  {/* Ambassador links, added 2026-09-30 with the ambassador program
  (lib/ambassadors). Worded to match exactly what the code keeps. */}
- <p className="mt-4 font-serif text-body text-paper/85 leading-[1.7]">
+ <p className="mt-3.5 font-serif text-[16.5px] leading-[1.7] text-paper/88">
  <em>Ambassador links.</em> Some readers are invited to share the
  Purify shop as ambassadors, with a link ending in{" "}
  <code>?ref=</code> and their code. If you arrive through one, we
@@ -300,7 +304,7 @@ function PrivacyEn() {
  Your order records which code it came with so the ambassador can
  be paid; they see an order number and an amount, never your name.
  </p>
- <p className="mt-4 font-serif text-body text-paper/85 leading-[1.7]">
+ <p className="mt-3.5 font-serif text-[16.5px] leading-[1.7] text-paper/88">
  If you sign in to sync your highlights and bookmarks, Supabase
  stores the email address you signed in with and the rows you
  create (highlights, notes, prayer-rule check-offs, bookmarks).
@@ -309,10 +313,10 @@ function PrivacyEn() {
  </p>
 
  {/* What we don't */}
- <p className="mt-10 font-sans text-caption font-semibold text-paper/45">
+ <h2 className="mt-11 scroll-mt-20 font-serif text-[21px] font-bold leading-[1.2] text-balance text-paper">
  What we don&rsquo;t
- </p>
- <ul className="mt-3 space-y-3 font-serif text-lede text-paper/85 leading-[1.65] list-disc pl-6 marker:text-paper/35">
+ </h2>
+ <ul className="mt-3 list-disc space-y-2 ps-6 font-serif text-[16.5px] leading-[1.7] text-paper/88 marker:text-paper/40">
  <li>No third-party advertising. No ad SDKs, no ad cookies.</li>
  <li>No behavioral profile, no cross-site tracking, no fingerprinting.</li>
  <li>
@@ -356,10 +360,10 @@ function PrivacyEn() {
  </ul>
 
  {/* Where it lives */}
- <p className="mt-10 font-sans text-caption font-semibold text-paper/45">
+ <h2 className="mt-11 scroll-mt-20 font-serif text-[21px] font-bold leading-[1.2] text-balance text-paper">
  Where it lives
- </p>
- <p className="mt-3 font-serif text-body text-paper/85 leading-[1.7]">
+ </h2>
+ <p className="mt-3.5 font-serif text-[16.5px] leading-[1.7] text-paper/88">
  All session and pageview rows are written to a Supabase Postgres
  database we control, in two tables: <code>analytics_sessions</code>{" "}
  (one row per session, with the coarse geo + user-agent) and{" "}
@@ -369,7 +373,7 @@ function PrivacyEn() {
  browser. A small admin page lets us see the live counts; it is
  the only reader.
  </p>
-<p className="mt-3 font-serif text-body text-paper/85 leading-[1.7]">
+<p className="mt-3.5 font-serif text-[16.5px] leading-[1.7] text-paper/88">
  Today&rsquo;s Catechism adds two aggregate tables, and neither
  holds a person. <code>quiz_question_stats</code> keeps, per
  question, how many times it was shown and how many times it was
@@ -382,7 +386,7 @@ function PrivacyEn() {
  you, and deleted with it. If you are not, they stay on your
  device and only the two counters above leave it.
 </p>
-<p className="mt-3 font-serif text-body text-paper/85 leading-[1.7]">
+<p className="mt-3.5 font-serif text-[16.5px] leading-[1.7] text-paper/88">
  The welcome questions are counted in the same table, so we can
  see where new readers come from and what helps them: each screen
  reached, each answer given, a skip, a finish, and, from your own
@@ -394,7 +398,7 @@ function PrivacyEn() {
  is one more on a total, never you. Your answers themselves stay
  on your device and in your own account, for making Purify yours.
 </p>
-<p className="mt-3 font-serif text-body text-paper/85 leading-[1.7]">
+<p className="mt-3.5 font-serif text-[16.5px] leading-[1.7] text-paper/88">
  The screens are counted in the same table, so we can see where
  reading stops and whether new readers come back. When you put the
  app away or close the page, one row says what kind of screen was
@@ -413,7 +417,7 @@ function PrivacyEn() {
  {/* 1.9 (lib/analytics/lockCounting.ts). Drafted for the owner's word
  before the release, and listed in the 1.9 letter, as "Changes to this
  page" below promises. */}
-<p className="mt-3 font-serif text-body text-paper/85 leading-[1.7]">
+<p className="mt-3.5 font-serif text-[16.5px] leading-[1.7] text-paper/88">
  What Purify Plus is wanted for is counted in the same table. When
  you tap something that needs Plus, one row says which feature it
  was (&ldquo;Reading plans&rdquo;, &ldquo;Ambience&rdquo;), never
@@ -427,7 +431,7 @@ function PrivacyEn() {
 </p>
  {/* 1.9, admin item A5 (lib/analytics/featureCounting.ts): the owner's line
  of 2026-11-09, word for word, listed in the 1.9 letter. */}
-<p className="mt-3 font-serif text-body text-paper/85 leading-[1.7]">
+<p className="mt-3.5 font-serif text-[16.5px] leading-[1.7] text-paper/88">
  We count, without your name, which Bible translations are downloaded,
  which reading plans are begun and finished, how many journal pages are
  written and shared, and which version of the app is in use.
@@ -437,14 +441,14 @@ function PrivacyEn() {
  the line on errors as he approved it again on 2026-11-10 (82a), naming
  what a report keeps and when it goes. A test holds them
  (lib/admin/__tests__/privacyLines.test.ts). */}
-<p className="mt-3 font-serif text-body text-paper/85 leading-[1.7]">
+<p className="mt-3.5 font-serif text-[16.5px] leading-[1.7] text-paper/88">
  When something fails, Purify keeps a short report: what failed and
  the error it gave, the page, the app version and the kind of device,
  never who you are. Anything in it that looks like an email address
  or a phone number is removed first, and each report is deleted after
  14 days.
 </p>
-<p className="mt-3 font-serif text-body text-paper/85 leading-[1.7]">
+<p className="mt-3.5 font-serif text-[16.5px] leading-[1.7] text-paper/88">
  When a search finds nothing, we keep the words you searched, never
  who you are, for 90 days, so we can add what readers are looking
  for. Anything that looks like an email address or a phone number is
@@ -454,7 +458,7 @@ function PrivacyEn() {
     listed in the 1.9 letter. A test holds it
     (lib/admin/__tests__/privacyLines.test.ts). No test of two versions
     runs before it is on this page. */}
-<p className="mt-3 font-serif text-body text-paper/85 leading-[1.7]">
+<p className="mt-3.5 font-serif text-[16.5px] leading-[1.7] text-paper/88">
   Sometimes two readers are shown a different version of the same
   screen, so we can learn which one helps. Which version your device
   shows is decided on your device, by a random number that never
@@ -467,7 +471,7 @@ function PrivacyEn() {
     140, his "all recs" of 2026-11-10, word for word, listed in the 1.9
     letter. A test holds them, and the counts are sent only while they
     stand here (lib/analytics/__tests__/moreCounting.test.ts). */}
-<p className="mt-3 font-serif text-body text-paper/85 leading-[1.7]">
+<p className="mt-3.5 font-serif text-[16.5px] leading-[1.7] text-paper/88">
   The first time a device finishes a prayer or a chapter, one row says
   which of the two it was and how many days after it first opened
   Purify. The steps of a first week are counted the same way: which
@@ -477,7 +481,7 @@ function PrivacyEn() {
   on or off, one row says so and where. The note your device sends
   when you come back also says whether reminders were on.
 </p>
-<p className="mt-3 font-serif text-body text-paper/85 leading-[1.7]">
+<p className="mt-3.5 font-serif text-[16.5px] leading-[1.7] text-paper/88">
   In the Plus sheet, one row says when a feature&rsquo;s Try it was
   opened and when the button to subscribe was tapped, with the feature
   the sheet was opened on. A purchase made on the pricing page is
@@ -493,10 +497,10 @@ function PrivacyEn() {
  these rows at 90 days. That job (docs/operations/analytics-retention.md)
  was never switched on, and the owner chose to have the page say what
  happens rather than start it. */}
- <p className="mt-10 font-sans text-caption font-semibold text-paper/45">
+ <h2 className="mt-11 scroll-mt-20 font-serif text-[21px] font-bold leading-[1.2] text-balance text-paper">
  How long we keep it
- </p>
- <p className="mt-3 font-serif text-body text-paper/85 leading-[1.7]">
+ </h2>
+ <p className="mt-3.5 font-serif text-[16.5px] leading-[1.7] text-paper/88">
  We keep the anonymous visit data: the session and pageview rows,
  and the counts described above (the catechism, the welcome
  questions, the screens, what Purify Plus is wanted for, the Bibles
@@ -517,10 +521,10 @@ function PrivacyEn() {
  </p>
 
  {/* Third parties */}
- <p className="mt-10 font-sans text-caption font-semibold text-paper/45">
+ <h2 className="mt-11 scroll-mt-20 font-serif text-[21px] font-bold leading-[1.2] text-balance text-paper">
  Third parties the site touches
- </p>
- <ul className="mt-3 space-y-3 font-serif text-lede text-paper/85 leading-[1.65] list-disc pl-6 marker:text-paper/35">
+ </h2>
+ <ul className="mt-3 list-disc space-y-2 ps-6 font-serif text-[16.5px] leading-[1.7] text-paper/88 marker:text-paper/40">
  <li>
  <strong>Supabase</strong>, hosted Postgres and auth. Stores
  your sync data and the anonymous analytics tables.
@@ -577,14 +581,14 @@ function PrivacyEn() {
  </ul>
 
  {/* The shop & payments */}
- <p className="mt-10 font-sans text-caption font-semibold text-paper/45">
+ <h2 className="mt-11 scroll-mt-20 font-serif text-[21px] font-bold leading-[1.2] text-balance text-paper">
  The EIKON shop and payments
- </p>
- <p className="mt-3 font-serif text-body text-paper/85 leading-[1.7]">
+ </h2>
+ <p className="mt-3.5 font-serif text-[16.5px] leading-[1.7] text-paper/88">
  When you buy from EIKON we collect only what an order needs, and we
  share it only with the providers that fulfill it. We never sell it.
  </p>
- <ul className="mt-3 space-y-3 font-serif text-lede text-paper/85 leading-[1.65] list-disc pl-6 marker:text-paper/35">
+ <ul className="mt-3 list-disc space-y-2 ps-6 font-serif text-[16.5px] leading-[1.7] text-paper/88 marker:text-paper/40">
  <li>
  <strong>Order &amp; shipping details</strong>, the items you buy,
  totals, status, and the name, email, and shipping address you enter
@@ -630,17 +634,17 @@ function PrivacyEn() {
  </ul>
 
  {/* Prayer features — what's local, what's synced */}
- <p className="mt-10 font-sans text-caption font-semibold text-paper/45">
+ <h2 className="mt-11 scroll-mt-20 font-serif text-[21px] font-bold leading-[1.2] text-balance text-paper">
  The prayer features
- </p>
- <p className="mt-3 font-serif text-body text-paper/85 leading-[1.7]">
+ </h2>
+ <p className="mt-3.5 font-serif text-[16.5px] leading-[1.7] text-paper/88">
  The morning and evening rules, the Jesus
  Prayer lessons, and the diptychs are all local-first. By default
  every count, every check-off, every name on your diptych lives
  in your browser&rsquo;s <code>localStorage</code> on this device
  and never reaches us. Specifically:
  </p>
- <ul className="mt-3 space-y-2 font-serif text-lede text-paper/85 leading-[1.65] list-disc pl-6 marker:text-paper/35">
+ <ul className="mt-3 list-disc space-y-2 ps-6 font-serif text-[16.5px] leading-[1.7] text-paper/88 marker:text-paper/40">
  <li>
  <em>Rule completions</em>: the dates you finished the morning
  or evening rule, kept under{" "}
@@ -684,7 +688,7 @@ function PrivacyEn() {
  our server. Turn it off at any time on the same page.
  </li>
  </ul>
- <p className="mt-4 font-serif text-body text-paper/85 leading-[1.7]">
+ <p className="mt-3.5 font-serif text-[16.5px] leading-[1.7] text-paper/88">
  If you sign in, the same shapes mirror to
  four Supabase tables:{" "}
  <code className="font-mono text-ui text-paper/70">prayer_completions</code>,{" "}
@@ -698,10 +702,10 @@ function PrivacyEn() {
  </p>
 
  {/* AI bots */}
- <p className="mt-10 font-sans text-caption font-semibold text-paper/45">
+ <h2 className="mt-11 scroll-mt-20 font-serif text-[21px] font-bold leading-[1.2] text-balance text-paper">
  The AI-crawler policy
- </p>
- <p className="mt-3 font-serif text-body text-paper/85 leading-[1.7]">
+ </h2>
+ <p className="mt-3.5 font-serif text-[16.5px] leading-[1.7] text-paper/88">
  This is a policy about the published library, not about you.
  Nothing in this section touches your account, your reading, your
  notes, or your bookmarks, which are never given to anyone.{" "}
@@ -711,7 +715,7 @@ function PrivacyEn() {
  >Our robots file</Link>{" "}
  sorts AI agents into three groups, and it is the whole rule.
  </p>
- <ul className="mt-4 space-y-3 font-serif text-body text-paper/85 leading-[1.7] list-disc pl-5">
+ <ul className="mt-3 list-disc space-y-2 ps-6 font-serif text-[16.5px] leading-[1.7] text-paper/88 marker:text-paper/40">
  <li>
  <strong className="font-semibold text-paper">
  The saints are open, training included.
@@ -754,7 +758,7 @@ function PrivacyEn() {
  unchanged from our first robots file.
  </li>
  </ul>
- <p className="mt-4 font-serif text-body text-paper/85 leading-[1.7]">
+ <p className="mt-3.5 font-serif text-[16.5px] leading-[1.7] text-paper/88">
  When a model quotes a Father from these pages, the honest
  attribution is to the saint and to the public-domain translation.
  Purify never writes patristic text and never paraphrases it, so a
@@ -768,10 +772,10 @@ function PrivacyEn() {
  </p>
 
  {/* Browser storage */}
- <p className="mt-10 font-sans text-caption font-semibold text-paper/45">
+ <h2 className="mt-11 scroll-mt-20 font-serif text-[21px] font-bold leading-[1.2] text-balance text-paper">
  What lives in your browser
- </p>
- <p className="mt-3 font-serif text-body text-paper/85 leading-[1.7]">
+ </h2>
+ <p className="mt-3.5 font-serif text-[16.5px] leading-[1.7] text-paper/88">
  If you aren&rsquo;t signed in, your reader preferences (font,
  size, translation choice), your bookmarks, and any streak counters
  are kept in your browser&rsquo;s <code>localStorage</code> on
@@ -780,10 +784,10 @@ function PrivacyEn() {
  </p>
 
  {/* Changes */}
- <p className="mt-10 font-sans text-caption font-semibold text-paper/45">
+ <h2 className="mt-11 scroll-mt-20 font-serif text-[21px] font-bold leading-[1.2] text-balance text-paper">
  Changes to this page
- </p>
- <p className="mt-3 font-serif text-body text-paper/85 leading-[1.7]">
+ </h2>
+ <p className="mt-3.5 font-serif text-[16.5px] leading-[1.7] text-paper/88">
  If we change what is recorded, or add a third party that sees
  your traffic, this page is updated first and the change is
  listed in the next{" "}
@@ -797,10 +801,10 @@ function PrivacyEn() {
  </p>
 
  {/* Offline cache */}
- <h2 className="mt-16 font-sans text-title-sm md:text-title font-bold text-paper leading-[1.15]">
+ <h2 className="mt-11 scroll-mt-20 font-serif text-[21px] font-bold leading-[1.2] text-balance text-paper">
  Offline cache (the service worker)
  </h2>
- <p className="mt-4 font-serif text-body text-paper/85 leading-[1.7]">
+ <p className="mt-3.5 font-serif text-[16.5px] leading-[1.7] text-paper/88">
  If you add Purify to your home screen, a small service worker
  (<code className="font-mono text-ui text-paper/70">/sw.js</code>)
  caches the pages and assets you&rsquo;ve already visited so the
@@ -814,7 +818,7 @@ function PrivacyEn() {
  translation API) are never intercepted and never cached, so your
  session stays on the network where it belongs.
  </p>
- <p className="mt-4 font-serif text-body text-paper/85 leading-[1.7]">
+ <p className="mt-3.5 font-serif text-[16.5px] leading-[1.7] text-paper/88">
  To clear the cache, uninstall the home-screen app, or in your
  browser settings, clear site data for the Purify origin. We can
  also bump the cache version on a release, which evicts the old
@@ -822,8 +826,8 @@ function PrivacyEn() {
  </p>
 
  {/* Closing */}
- <div className="mt-16 pt-10 border-t border-paper/10">
- <p className="font-serif text-body text-paper/65 leading-[1.7]">
+ <div className="mt-12 border-t border-paper/8 pt-6">
+ <p className="font-serif text-[16.5px] leading-[1.7] text-paper/75">
  Questions, corrections, or a privacy concern? Write to{" "}
  <a
  href={`mailto:${LEGAL_EMAIL}`}
@@ -846,12 +850,12 @@ function PrivacyEn() {
 function PrivacyDe() {
   return (
     <>
- <h1 className="font-sans text-display-sm md:text-display font-bold leading-[1.05] tracking-[-0.025em] text-paper">
+ <h1 className="font-serif text-title font-bold leading-[1.12] tracking-[-0.01em] text-balance text-paper">
  Was wir aufzeichnen und was nicht.
  </h1>
  {/* Its own language, as the English says its own: the two keep one shape. */}
  <div lang="de" dir="ltr">
- <p className="mt-6 font-serif text-body text-paper/65 leading-[1.7]">
+ <p className="mt-4 font-serif text-[17px] leading-[1.65] text-paper/80">
  Die Kurzfassung steht auf der{" "}
  <Link
  href="/about"
@@ -865,7 +869,7 @@ function PrivacyDe() {
  schreib uns; wir bringen es in Ordnung.
  </p>
  {/* Wer Purify betreibt (sein Wort vom 2026-11-10; lib/legal/entity.ts). */}
- <p className="mt-3 font-serif text-body text-paper/65 leading-[1.7]">
+ <p className="mt-3 font-serif text-[17px] leading-[1.65] text-paper/80">
  Purify wird von der {LEGAL_NAME} betrieben. Du erreichst das
  Unternehmen unter{" "}
  <a
@@ -876,12 +880,14 @@ function PrivacyDe() {
  </a>
  .
  </p>
+ {/* The text's own headings, folded, as a way through it (./LegalContents.tsx). */}
+ <LegalContents />
 
  {/* Two account paths */}
- <h2 className="mt-12 font-sans text-title-sm md:text-title font-bold text-paper leading-[1.15]">
+ <h2 className="mt-11 scroll-mt-20 font-serif text-[21px] font-bold leading-[1.2] text-balance text-paper">
  Auf diesem Gerät oder angemeldet
  </h2>
- <p className="mt-4 font-serif text-body text-paper/85 leading-[1.7]">
+ <p className="mt-3.5 font-serif text-[16.5px] leading-[1.7] text-paper/88">
  Purify funktioniert privat auf diesem Gerät, ohne Konto; die
  Anmeldung gibt es, damit dein Lesen auf allen deinen Geräten
  abgeglichen bleibt. Wenn du{" "}
@@ -894,12 +900,12 @@ function PrivacyDe() {
  öffnest, wählst du einen von zwei Wegen. Keiner ist voreingestellt;
  die Wahl wird schlicht vorgelegt.
  </p>
- <div className="mt-6 grid grid-cols-1 md:grid-cols-2 gap-4">
- <div className="rounded-md border border-paper/12 bg-paper/[0.02] p-5">
- <p className="font-sans text-caption font-semibold text-paper/55 mb-2">
+ <div className="mt-5 grid grid-cols-1 gap-3 md:grid-cols-2">
+ <div className="theology-tray rounded-[18px] px-4 py-4">
+ <p className="mb-2 font-sans text-detail font-semibold text-paper">
  Auf diesem Gerät (ohne Konto)
  </p>
- <p className="font-serif text-body text-paper/85 leading-[1.65]">
+ <p className="font-serif text-[16px] leading-[1.65] text-paper/88">
  Markierungen, Notizen, Lesezeichen, deine Gebets-Strähne und die
  Lese-Einstellungen (Schrift, Größe) werden im{" "}
  <code className="font-mono text-ui text-paper/70">localStorage</code>{" "}
@@ -908,18 +914,18 @@ function PrivacyDe() {
  Kehrseite: es lebt nur auf diesem Gerät und geht verloren, wenn
  du die Browserdaten löschst.
  </p>
- <p className="mt-3 font-sans text-caption text-paper/55 leading-[1.55]">
+ <p className="mt-3 font-sans text-detail leading-[1.55] text-paper/60">
  Um den Namen zu entfernen, den du auf diesem Gerät gewählt hast,
  öffne /account und tippe auf &bdquo;Diesen Namen
  entfernen&ldquo;. Um alle lokalen Daten zu löschen, lösche in
  deinen Browser-Einstellungen die Seitendaten für diese Herkunft.
  </p>
  </div>
- <div className="rounded-md border border-gold/30 bg-gold/[0.04] p-5">
- <p className="font-sans text-caption font-semibold text-gold mb-2">
+ <div className="theology-tray rounded-[18px] px-4 py-4">
+ <p className="mb-2 font-sans text-detail font-semibold text-paper">
  Angemeldet (abgeglichen)
  </p>
- <p className="font-serif text-body text-paper/85 leading-[1.65]">
+ <p className="font-serif text-[16px] leading-[1.65] text-paper/88">
  Dieselben Posten gehen in unsere Supabase-Postgres-Datenbank,
  damit sie sich auf jedem Gerät abgleichen, auf dem du dich
  anmeldest. Wir speichern: deine E-Mail (um dich anzumelden und
@@ -937,7 +943,7 @@ function PrivacyDe() {
  nie dein Google- oder Apple-Passwort, nur das OAuth-Token.
  </p>
  {/* 1.9, his yes to 59 (2026-11-10), word for word in German. */}
- <p className="mt-3 font-serif text-body text-paper/85 leading-[1.65]">
+ <p className="mt-3 font-serif text-[16px] leading-[1.65] text-paper/88">
  Mit Purify Plus wandert auch mit, was du beim Lesen behältst: dein
  Fortschritt in jedem Leseplan, der Plan von &bdquo;Den Vers auswendig
  lernen&ldquo; (welcher Vers wann dran ist, nicht sein Wortlaut),
@@ -946,7 +952,7 @@ function PrivacyDe() {
  Fokus). Jedes davon ist ein kleiner Eintrag, den nur dein Konto lesen
  oder ändern kann und der mit deinem Konto gelöscht wird.
  </p>
- <p className="mt-3 font-sans text-caption text-paper/55 leading-[1.55]">
+ <p className="mt-3 font-sans text-detail leading-[1.55] text-paper/60">
  Um das Konto und jede serverseitige Zeile, die es angelegt hat,
  zu löschen, benutze die Schaltfläche &bdquo;Konto löschen&ldquo;
  auf /account. Die Löschung geschieht sofort und erfasst alles,
@@ -954,7 +960,7 @@ function PrivacyDe() {
  </p>
  </div>
  </div>
- <p className="mt-5 font-serif text-body text-paper/80 leading-[1.7]">
+ <p className="mt-3.5 font-serif text-[16.5px] leading-[1.7] text-paper/88">
  Wenn du auf diesem Gerät beginnst und dich später anmeldest,
  werden deine bestehenden Markierungen, Notizen und Lesezeichen bei
  der ersten Anmeldung in dein Konto übertragen; auf dem Gerät wird
@@ -963,13 +969,13 @@ function PrivacyDe() {
  Servertabelle. Die Abmeldung löscht niemals, was auf dem Gerät
  gespeichert ist.
  </p>
- <p className="mt-3 font-serif text-body text-paper/80 leading-[1.7]">
+ <p className="mt-3.5 font-serif text-[16.5px] leading-[1.7] text-paper/88">
  Nichts auf beiden Wegen wird verkauft, geteilt oder zum Training
  von Modellen gebraucht. Die unten beschriebene Analytik ist von
  beiden getrennt: sie zeichnet Seitenaufrufe in Summe auf, ohne
  deine Konto-Identität, ob du angemeldet bist oder nicht.
  </p>
- <p className="mt-3 font-serif text-body text-paper/80 leading-[1.7]">
+ <p className="mt-3.5 font-serif text-[16.5px] leading-[1.7] text-paper/88">
  <strong className="font-semibold text-paper">Eine Journalseite teilen.</strong>{" "}
  Wenn du eine Seite teilst, behalten wir eine Kopie davon, so wie sie
  beim Teilen war, unter einem eigenen Link (purifyapp.net/p/...).
@@ -983,7 +989,7 @@ function PrivacyDe() {
  Wenn du dein Konto löschst, werden alle Seiten gelöscht, die du
  geteilt hast, mit ihren Meldungen.
  </p>
- <p className="mt-3 font-serif text-body text-paper/80 leading-[1.7]">
+ <p className="mt-3.5 font-serif text-[16.5px] leading-[1.7] text-paper/88">
  <strong className="font-semibold text-paper">Gebetskampagnen.</strong>{" "}
  Eine Gebetskampagne ist öffentlich, es sei denn, du beschränkst sie
  auf einen Kreis: ihr Titel, der Vorname des Menschen, für den gebetet
@@ -996,14 +1002,14 @@ function PrivacyDe() {
  dass dieser Mensch oder seine Familie den Segen dazu gegeben hat, und
  wir speichern den Tag, an dem du das bestätigt hast.
  </p>
- <p className="mt-3 font-serif text-body text-paper/80 leading-[1.7]">
+ <p className="mt-3.5 font-serif text-[16.5px] leading-[1.7] text-paper/88">
  Bilder werden auf unserem Server neu erzeugt, bevor sie gespeichert
  werden. Dabei gehen der Ort und das Gerät verloren, die ein Foto in
  sich trägt, und ein Moderator sieht sich jedes Bild an, bevor es
  gezeigt wird. Ein Ort besteht aus einem Land und einer Stadt, die du
  selbst eintippst; die App fragt nie, wo du bist.
  </p>
- <p className="mt-3 font-serif text-body text-paper/80 leading-[1.7]">
+ <p className="mt-3.5 font-serif text-[16.5px] leading-[1.7] text-paper/88">
  Wer eine Kampagne in seine Gebete aufgenommen hat, wird niemandem
  gezeigt, auch nicht dem, der sie angelegt hat, und keine Zahl davon
  wird gezeigt. Bist du angemeldet, werden die Kampagnen, die du
@@ -1012,7 +1018,7 @@ function PrivacyDe() {
  deinem Gerät. Der Name und der Titel der Kampagne liegen auf deinem
  Gerät, solange du sie mitträgst, und verschwinden, wenn sie endet.
  </p>
- <p className="mt-3 font-serif text-body text-paper/80 leading-[1.7]">
+ <p className="mt-3.5 font-serif text-[16.5px] leading-[1.7] text-paper/88">
  Du kannst eine Kampagne jederzeit beenden, ein Bild entfernen, ihre
  Kommentare schließen oder die ganze Kampagne löschen. Beim Löschen
  wird sie mit ihren Bildern, Neuigkeiten und Kommentaren von unseren
@@ -1029,7 +1035,7 @@ function PrivacyDe() {
  Moderator sie prüfen kann; sie wird mit der Kampagne gelöscht, und
  wenn du vorher dein Konto löschst, bleibt sie ohne deinen Namen.
  </p>
- <p className="mt-3 font-serif text-body text-paper/80 leading-[1.7]">
+ <p className="mt-3.5 font-serif text-[16.5px] leading-[1.7] text-paper/88">
  Nennt eine Kampagne dich oder einen Menschen in deiner Obhut, ohne
  dass du zugestimmt hast, melde sie auf ihrer Seite oder schreib an{" "}
  <a href={`mailto:${SUPPORT_EMAIL}`} className="text-paper underline underline-offset-2 decoration-paper/30 hover:decoration-paper">{SUPPORT_EMAIL}</a>, und wir nehmen sie herunter. Gehört dir ein Bild darin,
@@ -1037,7 +1043,7 @@ function PrivacyDe() {
  <a href={`mailto:${LEGAL_EMAIL}`} className="text-paper underline underline-offset-2 decoration-paper/30 hover:decoration-paper">{LEGAL_EMAIL}</a>. Was du zusagst, wenn du etwas veröffentlichst, steht in
  unseren Nutzungsbedingungen.
  </p>
- <p className="mt-3 font-serif text-body text-paper/80 leading-[1.7]">
+ <p className="mt-3.5 font-serif text-[16.5px] leading-[1.7] text-paper/88">
  <strong className="font-semibold text-paper">Gemeinschaft.</strong>{" "}
  Beiträge und Antworten in der Gemeinschaft sind öffentlich: Jeder
  kann sie lesen, in den Apps und auf unserer Website, mit dem Namen
@@ -1054,17 +1060,17 @@ function PrivacyDe() {
  </p>
 
  {/* What we record */}
- <p className="mt-10 font-sans text-caption font-semibold text-paper/45">
+ <h2 className="mt-11 scroll-mt-20 font-serif text-[21px] font-bold leading-[1.2] text-balance text-paper">
  Was wir aufzeichnen
- </p>
- <p className="mt-3 font-serif text-body text-paper/85 leading-[1.7]">
+ </h2>
+ <p className="mt-3.5 font-serif text-[16.5px] leading-[1.7] text-paper/88">
  Das Einzige, was die Seite über einen Besuch aufzeichnet, ist eine
  anonyme, vergängliche Sitzung, die für die kleine &bdquo;Wer liest
  gerade jetzt&ldquo;-Ansicht gebraucht wird, die uns hilft zu
  verstehen, ob die Arbeit jemanden findet. Vom Browser, bei jedem
  Seitenaufruf:
  </p>
- <ul className="mt-3 space-y-2 font-serif text-lede text-paper/85 leading-[1.65] list-disc pl-6 marker:text-paper/35">
+ <ul className="mt-3 list-disc space-y-2 ps-6 font-serif text-[16.5px] leading-[1.7] text-paper/88 marker:text-paper/40">
  <li>
  Eine zufällige <em>Sitzungs-Kennung</em>, die der Browser beim
  ersten Besuch erzeugt, in <code>sessionStorage</code> für die
@@ -1092,11 +1098,11 @@ function PrivacyDe() {
  deinem Browser.
  </li>
  </ul>
- <p className="mt-4 font-serif text-body text-paper/85 leading-[1.7]">
+ <p className="mt-3.5 font-serif text-[16.5px] leading-[1.7] text-paper/88">
  Auf dem Server leiten wir zusätzlich, wenn eine Sitzung erstmals
  gesehen wird, ab und speichern:
  </p>
- <ul className="mt-3 space-y-2 font-serif text-lede text-paper/85 leading-[1.65] list-disc pl-6 marker:text-paper/35">
+ <ul className="mt-3 list-disc space-y-2 ps-6 font-serif text-[16.5px] leading-[1.7] text-paper/88 marker:text-paper/40">
  <li>
  Deinen <em>User-Agent</em>-String (Browser + Betriebssystem),
  auf 300 Zeichen gekürzt. Wird benutzt, um Telefone von Computern
@@ -1113,7 +1119,7 @@ function PrivacyDe() {
  href="https://ipwho.is/"
  target="_blank"
  rel="noopener noreferrer"
- className="text-link hover:text-paper underline underline-offset-2"
+ className="text-paper underline underline-offset-2 decoration-paper/30 hover:decoration-paper"
  >
  ipwho.is
  </a>
@@ -1131,7 +1137,7 @@ function PrivacyDe() {
  </li>
  </ul>
  {/* Ambassador links, as the English page has them since 2026-09-30. */}
- <p className="mt-4 font-serif text-body text-paper/85 leading-[1.7]">
+ <p className="mt-3.5 font-serif text-[16.5px] leading-[1.7] text-paper/88">
  <em>Botschafter-Links.</em> Einige Leser sind eingeladen, den
  Purify-Laden als Botschafter weiterzuempfehlen, mit einem Link, der
  auf <code>?ref=</code> und ihren Code endet. Wenn du über einen
@@ -1145,7 +1151,7 @@ function PrivacyDe() {
  werden kann; er sieht eine Bestellnummer und einen Betrag, niemals
  deinen Namen.
  </p>
- <p className="mt-4 font-serif text-body text-paper/85 leading-[1.7]">
+ <p className="mt-3.5 font-serif text-[16.5px] leading-[1.7] text-paper/88">
  Wenn du dich anmeldest, um deine Markierungen und Lesezeichen
  abzugleichen, speichert Supabase die E-Mail-Adresse, mit der du
  dich angemeldet hast, sowie die Zeilen, die du erstellst
@@ -1156,10 +1162,10 @@ function PrivacyDe() {
  </p>
 
  {/* What we don't */}
- <p className="mt-10 font-sans text-caption font-semibold text-paper/45">
+ <h2 className="mt-11 scroll-mt-20 font-serif text-[21px] font-bold leading-[1.2] text-balance text-paper">
  Was wir nicht tun
- </p>
- <ul className="mt-3 space-y-3 font-serif text-lede text-paper/85 leading-[1.65] list-disc pl-6 marker:text-paper/35">
+ </h2>
+ <ul className="mt-3 list-disc space-y-2 ps-6 font-serif text-[16.5px] leading-[1.7] text-paper/88 marker:text-paper/40">
  <li>Keine Drittwerbung. Keine Werbe-SDKs, keine Werbe-Cookies.</li>
  <li>Kein Verhaltensprofil, keine seitenübergreifende Verfolgung, kein Fingerabdruck.</li>
  <li>
@@ -1206,10 +1212,10 @@ function PrivacyDe() {
  </ul>
 
  {/* Where it lives */}
- <p className="mt-10 font-sans text-caption font-semibold text-paper/45">
+ <h2 className="mt-11 scroll-mt-20 font-serif text-[21px] font-bold leading-[1.2] text-balance text-paper">
  Wo es liegt
- </p>
- <p className="mt-3 font-serif text-body text-paper/85 leading-[1.7]">
+ </h2>
+ <p className="mt-3.5 font-serif text-[16.5px] leading-[1.7] text-paper/88">
  Alle Sitzungs- und Seitenaufrufzeilen werden in eine
  Supabase-Postgres-Datenbank geschrieben, die wir verwalten, in
  zwei Tabellen: <code>analytics_sessions</code> (eine Zeile je
@@ -1221,7 +1227,7 @@ function PrivacyDe() {
  kleine Admin-Seite lässt uns die Live-Zahlen sehen; sie ist die
  einzige Leserin.
  </p>
- <p className="mt-3 font-serif text-body text-paper/85 leading-[1.7]">
+ <p className="mt-3.5 font-serif text-[16.5px] leading-[1.7] text-paper/88">
  Die Katechese des Tages fügt zwei Summentabellen hinzu, und keine
  von beiden enthält eine Person. <code>quiz_question_stats</code>{" "}
  hält je Frage fest, wie oft sie gezeigt und wie oft sie richtig
@@ -1235,7 +1241,7 @@ function PrivacyDe() {
  nicht, bleiben sie auf deinem Gerät, und nur die beiden Zähler
  oben verlassen es.
  </p>
- <p className="mt-3 font-serif text-body text-paper/85 leading-[1.7]">
+ <p className="mt-3.5 font-serif text-[16.5px] leading-[1.7] text-paper/88">
  Die Willkommensfragen werden in derselben Tabelle gezählt, damit
  wir sehen, woher neue Leser kommen und was ihnen hilft: jeder
  erreichte Bildschirm, jede gegebene Antwort, ein Überspringen, ein
@@ -1250,7 +1256,7 @@ function PrivacyDe() {
  bleiben auf deinem Gerät und in deinem eigenen Konto, damit Purify
  zu deinem wird.
  </p>
- <p className="mt-3 font-serif text-body text-paper/85 leading-[1.7]">
+ <p className="mt-3.5 font-serif text-[16.5px] leading-[1.7] text-paper/88">
  Die Bildschirme werden in derselben Tabelle gezählt, damit wir
  sehen, wo das Lesen aufhört und ob neue Leser wiederkommen. Wenn
  du die App weglegst oder die Seite schließt, sagt eine Zeile,
@@ -1268,7 +1274,7 @@ function PrivacyDe() {
  Summe, nie du. Der Tag, an dem du Purify zum ersten Mal geöffnet
  hast, bleibt auf deinem Gerät.
  </p>
- <p className="mt-3 font-serif text-body text-paper/85 leading-[1.7]">
+ <p className="mt-3.5 font-serif text-[16.5px] leading-[1.7] text-paper/88">
  Wofür Purify Plus gewünscht wird, zählen wir in derselben Tabelle.
  Wenn du etwas antippst, das Plus braucht, sagt eine Zeile, welche
  Funktion es war (&bdquo;Lesepläne&ldquo;,
@@ -1283,7 +1289,7 @@ function PrivacyDe() {
  du.
  </p>
  {/* 1.9, admin item A5: the owner's line of 2026-11-09, word for word in German. */}
- <p className="mt-3 font-serif text-body text-paper/85 leading-[1.7]">
+ <p className="mt-3.5 font-serif text-[16.5px] leading-[1.7] text-paper/88">
  Wir zählen, ohne deinen Namen, welche Bibelübersetzungen
  heruntergeladen werden, welche Lesepläne begonnen und beendet werden,
  wie viele Tagebuchseiten geschrieben und geteilt werden und welche
@@ -1292,14 +1298,14 @@ function PrivacyDe() {
  {/* 1.9, admin items A10 and A11: the owner's lines of 2026-11-09, word for
  word in German, the line on errors as of 2026-11-10 (82a). A test holds
  them (lib/admin/__tests__/privacyLines.test.ts). */}
- <p className="mt-3 font-serif text-body text-paper/85 leading-[1.7]">
+ <p className="mt-3.5 font-serif text-[16.5px] leading-[1.7] text-paper/88">
  Wenn etwas fehlschlägt, behält Purify einen kurzen Bericht: was
  fehlgeschlagen ist und welchen Fehler es gab, die Seite, die
  App-Version und die Art des Geräts, niemals, wer du bist. Alles
  darin, was wie eine E-Mail-Adresse oder eine Telefonnummer aussieht,
  wird vorher entfernt, und jeder Bericht wird nach 14 Tagen gelöscht.
  </p>
- <p className="mt-3 font-serif text-body text-paper/85 leading-[1.7]">
+ <p className="mt-3.5 font-serif text-[16.5px] leading-[1.7] text-paper/88">
  Wenn eine Suche nichts findet, behalten wir 90 Tage lang die Wörter,
  nach denen du gesucht hast, niemals aber, wer du bist, damit wir
  ergänzen können, wonach Leser suchen. Alles, was wie eine
@@ -1307,7 +1313,7 @@ function PrivacyDe() {
  bevor es behalten wird.
  </p>
  {/* 1.9 (lib/ab/): the owner's line of 2026-11-10, in German. A test holds it. */}
- <p className="mt-3 font-serif text-body text-paper/85 leading-[1.7]">
+ <p className="mt-3.5 font-serif text-[16.5px] leading-[1.7] text-paper/88">
    Manchmal sehen zwei Leser eine unterschiedliche Fassung desselben
    Bildschirms, damit wir lernen, welche hilft. Welche Fassung dein
    Gerät zeigt, wird auf deinem Gerät entschieden, durch eine
@@ -1318,7 +1324,7 @@ function PrivacyDe() {
    wieder&ldquo; ist einer mehr in einer Summe, nie du.
  </p>
  {/* 1.9 (lib/analytics/moreCounting.ts): the eight sentences of his item 140, in German. A test holds them. */}
-<p className="mt-3 font-serif text-body text-paper/85 leading-[1.7]">
+<p className="mt-3.5 font-serif text-[16.5px] leading-[1.7] text-paper/88">
    Wenn ein Gerät zum ersten Mal ein Gebet oder ein Kapitel beendet,
    sagt eine Zeile, welches von beiden es war und wie viele Tage nach
    dem ersten Öffnen von Purify. Die Schritte einer ersten Woche werden
@@ -1329,7 +1335,7 @@ function PrivacyDe() {
    sagt eine Zeile das und wo. Die Notiz, die dein Gerät sendet, wenn
    du wiederkommst, sagt auch, ob Erinnerungen eingeschaltet waren.
 </p>
-<p className="mt-3 font-serif text-body text-paper/85 leading-[1.7]">
+<p className="mt-3.5 font-serif text-[16.5px] leading-[1.7] text-paper/88">
    Im Plus-Blatt sagt eine Zeile, wann das Ausprobieren einer Funktion
    geöffnet und wann die Schaltfläche zum Abonnieren angetippt wurde,
    mit der Funktion, für die das Blatt geöffnet wurde. Ein Kauf auf der
@@ -1343,10 +1349,10 @@ function PrivacyDe() {
 </p>
 
  {/* Retention */}
- <p className="mt-10 font-sans text-caption font-semibold text-paper/45">
+ <h2 className="mt-11 scroll-mt-20 font-serif text-[21px] font-bold leading-[1.2] text-balance text-paper">
  Wie lange wir es behalten
- </p>
- <p className="mt-3 font-serif text-body text-paper/85 leading-[1.7]">
+ </h2>
+ <p className="mt-3.5 font-serif text-[16.5px] leading-[1.7] text-paper/88">
  Die anonymen Besuchsdaten behalten wir: die Sitzungs- und
  Seitenaufruf-Zeilen und die oben beschriebenen Zählungen (zur
  Katechese, zu den Willkommensfragen, zu den Bildschirmen, dazu,
@@ -1368,10 +1374,10 @@ function PrivacyDe() {
  </p>
 
  {/* Third parties */}
- <p className="mt-10 font-sans text-caption font-semibold text-paper/45">
+ <h2 className="mt-11 scroll-mt-20 font-serif text-[21px] font-bold leading-[1.2] text-balance text-paper">
  Dritte, die die Seite berührt
- </p>
- <ul className="mt-3 space-y-3 font-serif text-lede text-paper/85 leading-[1.65] list-disc pl-6 marker:text-paper/35">
+ </h2>
+ <ul className="mt-3 list-disc space-y-2 ps-6 font-serif text-[16.5px] leading-[1.7] text-paper/88 marker:text-paper/40">
  <li>
  <strong>Supabase</strong>, gehostetes Postgres und Auth.
  Speichert deine Abgleichsdaten und die anonymen
@@ -1431,15 +1437,15 @@ function PrivacyDe() {
  </ul>
 
  {/* The shop & payments */}
- <p className="mt-10 font-sans text-caption font-semibold text-paper/45">
+ <h2 className="mt-11 scroll-mt-20 font-serif text-[21px] font-bold leading-[1.2] text-balance text-paper">
  Der EIKON-Laden und Zahlungen
- </p>
- <p className="mt-3 font-serif text-body text-paper/85 leading-[1.7]">
+ </h2>
+ <p className="mt-3.5 font-serif text-[16.5px] leading-[1.7] text-paper/88">
  Wenn du bei EIKON kaufst, erheben wir nur, was eine Bestellung
  braucht, und geben es nur an die Anbieter weiter, die sie
  ausführen. Wir verkaufen es nie.
  </p>
- <ul className="mt-3 space-y-3 font-serif text-lede text-paper/85 leading-[1.65] list-disc pl-6 marker:text-paper/35">
+ <ul className="mt-3 list-disc space-y-2 ps-6 font-serif text-[16.5px] leading-[1.7] text-paper/88 marker:text-paper/40">
  <li>
  <strong>Bestell- und Versanddaten</strong>, die Artikel, die du
  kaufst, Summen, Status sowie Name, E-Mail und Lieferadresse, die du
@@ -1490,17 +1496,17 @@ function PrivacyDe() {
  </ul>
 
  {/* Prayer features */}
- <p className="mt-10 font-sans text-caption font-semibold text-paper/45">
+ <h2 className="mt-11 scroll-mt-20 font-serif text-[21px] font-bold leading-[1.2] text-balance text-paper">
  Die Gebetsfunktionen
- </p>
- <p className="mt-3 font-serif text-body text-paper/85 leading-[1.7]">
+ </h2>
+ <p className="mt-3.5 font-serif text-[16.5px] leading-[1.7] text-paper/88">
  Die Morgen- und die Abendregel, die Lektionen zum Jesusgebet und
  die Diptychen arbeiten zuerst lokal. Von Haus aus lebt jede
  Zählung, jede Abhakung, jeder Name in deinen Diptychen im{" "}
  <code>localStorage</code> deines Browsers auf diesem Gerät und
  erreicht uns nie. Im Einzelnen:
  </p>
- <ul className="mt-3 space-y-2 font-serif text-lede text-paper/85 leading-[1.65] list-disc pl-6 marker:text-paper/35">
+ <ul className="mt-3 list-disc space-y-2 ps-6 font-serif text-[16.5px] leading-[1.7] text-paper/88 marker:text-paper/40">
  <li>
  <em>Erledigte Gebetsregeln</em>: die Tage, an denen du die
  Morgen- oder Abendregel beendet hast, gehalten unter{" "}
@@ -1548,7 +1554,7 @@ function PrivacyDe() {
  signiert. Schalte es jederzeit auf derselben Seite aus.
  </li>
  </ul>
- <p className="mt-4 font-serif text-body text-paper/85 leading-[1.7]">
+ <p className="mt-3.5 font-serif text-[16.5px] leading-[1.7] text-paper/88">
  Wenn du dich anmeldest, werden dieselben Formen in vier
  Supabase-Tabellen gespiegelt:{" "}
  <code className="font-mono text-ui text-paper/70">prayer_completions</code>,{" "}
@@ -1562,10 +1568,10 @@ function PrivacyDe() {
  </p>
 
  {/* AI bots */}
- <p className="mt-10 font-sans text-caption font-semibold text-paper/45">
+ <h2 className="mt-11 scroll-mt-20 font-serif text-[21px] font-bold leading-[1.2] text-balance text-paper">
  Die KI-Crawler-Regel
- </p>
- <p className="mt-3 font-serif text-body text-paper/85 leading-[1.7]">
+ </h2>
+ <p className="mt-3.5 font-serif text-[16.5px] leading-[1.7] text-paper/88">
  Dies ist eine Regel über die veröffentlichte Bibliothek, nicht
  über dich. Nichts in diesem Abschnitt betrifft dein Konto, dein
  Lesen, deine Notizen oder deine Lesezeichen; die werden niemandem
@@ -1577,7 +1583,7 @@ function PrivacyDe() {
  teilt die KI-Agenten in drei Gruppen ein, und das ist die ganze
  Regel.
  </p>
- <ul className="mt-4 space-y-3 font-serif text-body text-paper/85 leading-[1.7] list-disc pl-5">
+ <ul className="mt-3 list-disc space-y-2 ps-6 font-serif text-[16.5px] leading-[1.7] text-paper/88 marker:text-paper/40">
  <li>
  <strong className="font-semibold text-paper">
  Die Heiligen sind offen, das Training eingeschlossen.
@@ -1621,7 +1627,7 @@ function PrivacyDe() {
  seit unserer ersten Robots-Datei unverändert.
  </li>
  </ul>
- <p className="mt-4 font-serif text-body text-paper/85 leading-[1.7]">
+ <p className="mt-3.5 font-serif text-[16.5px] leading-[1.7] text-paper/88">
  Wenn ein Modell einen Vater von diesen Seiten zitiert, gebührt
  die Nennung dem Heiligen und der gemeinfreien Übersetzung. Purify
  schreibt niemals patristischen Text und schreibt ihn niemals um;
@@ -1636,10 +1642,10 @@ function PrivacyDe() {
  </p>
 
  {/* Browser storage */}
- <p className="mt-10 font-sans text-caption font-semibold text-paper/45">
+ <h2 className="mt-11 scroll-mt-20 font-serif text-[21px] font-bold leading-[1.2] text-balance text-paper">
  Was in deinem Browser liegt
- </p>
- <p className="mt-3 font-serif text-body text-paper/85 leading-[1.7]">
+ </h2>
+ <p className="mt-3.5 font-serif text-[16.5px] leading-[1.7] text-paper/88">
  Wenn du nicht angemeldet bist, werden deine Lese-Einstellungen
  (Schrift, Größe, Übersetzungswahl), deine Lesezeichen und alle
  Strähnen-Zähler im <code>localStorage</code> deines Browsers auf
@@ -1648,10 +1654,10 @@ function PrivacyDe() {
  </p>
 
  {/* Changes */}
- <p className="mt-10 font-sans text-caption font-semibold text-paper/45">
+ <h2 className="mt-11 scroll-mt-20 font-serif text-[21px] font-bold leading-[1.2] text-balance text-paper">
  Änderungen an dieser Seite
- </p>
- <p className="mt-3 font-serif text-body text-paper/85 leading-[1.7]">
+ </h2>
+ <p className="mt-3.5 font-serif text-[16.5px] leading-[1.7] text-paper/88">
  Wenn wir ändern, was aufgezeichnet wird, oder einen Dritten
  hinzufügen, der deinen Verkehr sieht, wird diese Seite zuerst
  aktualisiert und die Änderung im nächsten{" "}
@@ -1665,10 +1671,10 @@ function PrivacyDe() {
  </p>
 
  {/* Offline cache */}
- <h2 className="mt-16 font-sans text-title-sm md:text-title font-bold text-paper leading-[1.15]">
+ <h2 className="mt-11 scroll-mt-20 font-serif text-[21px] font-bold leading-[1.2] text-balance text-paper">
  Offline-Zwischenspeicher (der Service-Worker)
  </h2>
- <p className="mt-4 font-serif text-body text-paper/85 leading-[1.7]">
+ <p className="mt-3.5 font-serif text-[16.5px] leading-[1.7] text-paper/88">
  Wenn du Purify auf deinen Startbildschirm legst, speichert ein
  kleiner Service-Worker (
  <code className="font-mono text-ui text-paper/70">/sw.js</code>
@@ -1685,7 +1691,7 @@ function PrivacyDe() {
  zwischengespeichert, damit deine Sitzung im Netz bleibt, wo sie
  hingehört.
  </p>
- <p className="mt-4 font-serif text-body text-paper/85 leading-[1.7]">
+ <p className="mt-3.5 font-serif text-[16.5px] leading-[1.7] text-paper/88">
  Um den Zwischenspeicher zu leeren, deinstalliere die
  Startbildschirm-App, oder lösche in deinen Browser-Einstellungen
  die Seitendaten für die Purify-Herkunft. Wir können auch die
@@ -1695,8 +1701,8 @@ function PrivacyDe() {
  </p>
 
  {/* Closing */}
- <div className="mt-16 pt-10 border-t border-paper/10">
- <p className="font-serif text-body text-paper/65 leading-[1.7]">
+ <div className="mt-12 border-t border-paper/8 pt-6">
+ <p className="font-serif text-[16.5px] leading-[1.7] text-paper/75">
  Fragen, Korrekturen oder ein Datenschutz-Anliegen? Schreib an{" "}
  <a
  href={`mailto:${LEGAL_EMAIL}`}
