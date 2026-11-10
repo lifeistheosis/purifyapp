@@ -1,0 +1,36 @@
+{
+  "about": "Butler's Lives for fifteen of December's saints, published on the owner's word of 2026-11-10 (no priest's check): the London stereotype edition (John Murphy), vol. XII for the December saints and vols. I, II, III, V and XI for those Butler keeps on other days. The first scan of each volume is Princeton Theological Seminary's (its page images are read); the second, the Digital Library of India's, is a copy of the same stereotype plates, line for line the same. The others are the same text set again at Edinburgh (1798-1800) and Derby (1842).",
+  "volumes": {
+    "xii": ["livesoffathersma12butl_0", "in.ernet.dli.2015.41806/2015.41806.The-Lives-Of-Fathers-Martyrs--Vol12"],
+    "i": ["livesoffathersma01butl_0", "in.ernet.dli.2015.24075/2015.24075.The-Lives-Of-The-Fathers-Martyrs--Vol-1"],
+    "ii": ["livesoffathersma02butl_1", "in.ernet.dli.2015.24076/2015.24076.The-Lives-Of-The-Fathers-Martyrs--Vol-2"],
+    "iii": ["livesoffathersma03butl_0", "in.ernet.dli.2015.24077/2015.24077.The-Lives-Of-The-Fathers-Martyrs--Vol-3"],
+    "v": ["livesoffathersma05butl_0", "in.ernet.dli.2015.24078/2015.24078.The-Lives-Of-The-Fathers-Martyrs--Vol-5"],
+    "xi": ["livesoffathersma11butl_0", "in.ernet.dli.2015.92761/2015.92761.The-Lives-Of-The-Fathers-Martyrs--Vol-11"]
+  },
+  "lives": {
+    "barbara": ["xii", ["st", "barbara", "v", "m"]],
+    "sabas": ["xii", ["st", "sabas", "abbot"]],
+    "lucy": ["xii", ["st", "lucy", "virgin", "martyr"]],
+    "crete": ["xii", ["ten", "martyrs", "of", "crete"]],
+    "anastasia": ["xii", ["st", "anastasia", "m"]],
+    "eugenia": ["xii", ["st", "eugenia", "v", "m"]],
+    "theodorus": ["xii", ["st", "theodorus", "grapt", "c"]],
+    "marcellus": ["xii", ["st", "marcellus", "abbot", "of", "the", "accimetes"]],
+    "anysia": ["xii", ["st", "anysia", "m"]],
+    "sebastian": ["i", ["st", "sebastian", "m"]],
+    "thyrsus": ["i", ["ss", "thyrsus", "leucius", "and", "callinicus", "mm"]],
+    "juliana": ["ii", ["saint", "juliana", "virgin", "and", "martyr"]],
+    "apollonius": ["iii", ["ss", "apollonius", "philemon", "c", "mm"]],
+    "boniface": ["v", [["st", "boniface", "m"], ["st", "bonifach", "m"]]],
+    "chrysogonus": ["xi", ["st", "chrysogonus", "m"]]
+  },
+  "others": {
+    "xii": [["E", "bim_eighteenth-century_lives-of-the-saints-t_butler-alban_1800_12"], ["R", "livesoffathersma12butl"]],
+    "i": [["E", "bim_eighteenth-century_lives-of-the-saints-t_butler-alban_1798_1"], ["R", "livesoffathersma01butl"]],
+    "ii": [["E", "bim_eighteenth-century_lives-of-the-saints-t_butler-alban_1798_2"], ["R", "livesoffathersma02butl_0"]],
+    "iii": [["E", "bim_eighteenth-century_lives-of-the-saints-t_butler-alban_1798_3"], ["R", "livesoffathersma03butl"]],
+    "v": [["E", "bim_eighteenth-century_lives-of-the-saints-t_butler-alban_1799_5"], ["R", "livesoffathersma05butl"]],
+    "xi": [["E", "bim_eighteenth-century_lives-of-the-saints-t_butler-alban_1799_11"], ["R", "livesoffathersma11butl"]]
+  }
+}

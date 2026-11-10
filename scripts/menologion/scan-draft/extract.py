@@ -77,7 +77,15 @@ def is_heading(line, W):
 
 def find_start(pages, want):
     """The Life's heading: its words (one misread allowed in a long heading),
-    in capitals, set in from the margin."""
+    in capitals, set in from the margin. `want` may list its spellings, where
+    a scan's text misreads a short heading ("ST. BONIFACH, M.")."""
+    if want and isinstance(want[0], list):
+        for alt in want:
+            try:
+                return find_start(pages, alt)
+            except SystemExit:
+                continue
+        raise SystemExit(f"heading {want} not found")
     for p in pages:
         W = p["W"] or 2000
         for i, line in enumerate(p["lines"]):
