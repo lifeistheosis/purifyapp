@@ -667,11 +667,12 @@ export const ENTRIES: Readonly<Record<WorkKey, ReadingEntry>> = {
     review: R,
   },
   "hermione-of-ephesus/life-of-hermione": { by: null, about: "hermione-of-ephesus", form: "retelling", scope: "complete", themes: [], review: R },
+  // 1.9 (F-49): Palladius's own chapter, Lausiac History XXXIV, in Lowther Clarke's English, with our short introductions.
   "isidora-of-tabenna/life-of-isidora": {
     by: null,
     about: "isidora-of-tabenna",
-    form: "retelling",
-    scope: "complete",
+    form: "life",
+    scope: "selections",
     themes: [t("humility", "The sister who hid her holiness as a fool among the nuns of Tabenna")],
     review: R,
   },

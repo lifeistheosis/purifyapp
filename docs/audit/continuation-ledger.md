@@ -6069,3 +6069,51 @@ green (735 tests); eslint clean on the changed files.
 build and its walk. It reaches the website when it is on `main` (the
 owner's word), and the apps with their next store build. A reader on an
 installed app keeps the old answer until then.
+
+## Addendum, 2026-11-10: 1.9, F-49's remaining cases (item 88), on branch `ccr-07896cf2-bo0afd`
+
+**Asked by the arbiter, for Edgar's 1.9.** Find every reading-room section
+still shown as a saint's or a historian's words that the book it cites does
+not hold, and fix it: the edition's own words with the edition named, or our
+words, marked as ours.
+
+**Measured.** Every section not marked ours, where the 2026-10-24 check had
+not reached, by eight-word runs against the text it was taken from: Cyril on
+John 99.98% (tertullian.org, LFC 43 and 48), the Morals 99.4%
+(lectionarycentral, the Oxford translation), the Way of a Pilgrim 99.85%
+(CCEL, French's 1930 English), the desert fathers' Lives of 2026-10-30,
+Hilarion's sayings, Antony's miracles and the Palamas florilegium's
+witnesses. What differs is page marks, footnote numbers and the translators'
+bracketed notes taken out on 2026-10-23: no section is another hand's words.
+
+**Found.** The quotations in our own prose had never been tested: 29 of 90 in
+retellings, introductions and notes were not their sources' words (Eusebius,
+Polycrates, Papias, Irenaeus, Ignatius, Polycarp, Clement, Cyril, Ambrose,
+the Damascene, Palladius). Isidora's Life quoted dialogue "as Palladius says"
+that its own notes called a paraphrase; St Seraphim's Instructions, marked
+ours, spoke in his first person from an English nobody named; the Pilgrim
+showed a transcriber's "[unclear]"; St Jerome's Perpetual Virginity showed
+its translator's introduction as ours.
+
+**Fix.** The 29 in their editions' words with the edition named, or in our
+words without quotation marks (the sources: CCEL's NPNF, ANF and Lightfoot,
+the 1918 Palladius and its scan, Moore's Dialogue, Schaff's History, Hapgood's
+scan, Pusey). Isidora's Life is Palladius XXXIV in Lowther Clarke's English
+with our introductions, its five sections and paragraph slots kept. St
+Seraphim's teaching is told in the third person. `data/reading/provenance.json`
+gains the Pilgrim and Isidora; the Perpetual Virginity is no longer marked as
+holding words of ours. `lib/reading/__tests__/quotedWords.test.ts` holds every
+quotation of six words or more in our prose to the library, the app's Bible or
+`data/reading/quoted-sources.json` (12 passages cut from the editions).
+`docs/editorial-standards.md` item 28 and `findings.yaml` F-49 have the detail.
+
+**Verified here.** The new test passes, and fails on the old Anianus line put
+back. The reading, saints, citations, search and Bible tests: 101 files, 1,472
+tests green; `data/reading/stats.json` regenerated (`node
+scripts/reading-stats.mjs`). Isidora's new text is 100% the transcription's
+words and 96% of the scan's OCR, the rest OCR noise.
+
+**Not done.** F-49's STILL OPEN list: Sermons 29 and 96 of Cyril on Luke, the
+quotation-mark leftovers, Cyril on John and the Morals read against the printed
+page, Cyril on John's section titles, and a test holding each library section
+to its volume. None of it is words given to the wrong hand.

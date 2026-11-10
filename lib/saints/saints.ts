@@ -1152,10 +1152,10 @@ export const SAINTS: Saint[] = [
  {
  slug: "spiritual-instructions",
  title: "Spiritual Instructions",
- subtitle: "Selected sayings",
+ subtitle: "His teaching, told in our words",
  year: "Recorded 1815-1833",
  blurb:
- "Brief instructions on prayer, silence, the Jesus Prayer, and the acquisition of the Holy Spirit, gathered from his oral teaching.",
+ "His teaching on the acquisition of the Holy Spirit, on joy and on unceasing prayer, told in our words: no public-domain English of his Instructions or of his conversation with Motovilov has been found.",
  topics: ["Prayer", "Holy Spirit", "Jesus Prayer", "Joy", "Repentance"],
  },
  ],
@@ -1670,9 +1670,9 @@ export const SAINTS: Saint[] = [
  {
  slug: "life-of-isidora",
  title: "The Life of the Holy Mother Isidora, Fool-for-Christ",
- subtitle: "From Palladius's account of the Tabennesiot sisterhood",
+ subtitle: "From the Lausiac History of Palladius",
  blurb:
- "A careful five-section vita drawn from Palladius of Helenopolis, Lausiac History ch. xxxiv (Lowther Clarke 1918, public domain), the single ancient witness to her life. Palladius gives her no name; the name Isidora is supplied by the Synaxarion of Constantinople for the first of May. Every section's notes name what Palladius reports and where he stops.",
+ "Palladius's own chapter on her, Lausiac History XXXIV, the single ancient witness to her life, in the public-domain English of W. K. Lowther Clarke (1918), with short introductions of ours. Palladius gives her no name; the name Isidora is supplied by the Synaxarion of Constantinople for the first of May.",
  topics: [
  "Hagiography",
  "Fool-for-Christ",

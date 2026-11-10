@@ -1864,19 +1864,67 @@ findings:
       reader's mark moves; the reading room's lengths follow, and
       lib/saints/__tests__/ignatiusRecension.test.ts holds it. Found on the
       way: CCEL's "possible ... impossible" in Ephesians 7 is its own slip
-      for the printed "passible ... impassible", which the app has. STILL
-      OPEN: Sermons 29 and 96 of St Cyril on Luke, as above; the large works that name no CCEL volume
-      (Cyril on John, the Way of a Pilgrim, Isaac, the Sayings of Arsenius,
-      Photius) against their own editions; the quotation marks still to settle (18
-      paragraphs where CCEL itself differs, the 28 paragraph-opening marks of
-      Antony's speeches and 4 in 2 Corinthians that CCEL never closes, 6 lost
-      double marks at paragraph starts in John, Hebrews and Acts, one in the
-      Confessions, and 15 library paragraphs whose rail copies are now
-      restored: Romans, Galatians, Philippians, Colossians, 1 Thessalonians,
-      2 Timothy and the Harmony); and a test that holds each quoted section
-      to its volume.
-    evidence: data/saints/*/*.json (sections and their voice); data/bible/commentary; lib/reading/entries.ts; lib/saints/saints.ts; CCEL transcriptions of ANF 1, 5, 6 and NPNF I 6 to 14, II 1 to 14; Schaff, Creeds of Christendom II; Hapgood, Service Book (1906)
-    action: "Done with the owner's yes of 2026-10-23 for what is listed above. Left (the apolytikia and the Palamas texts settled 2026-10-26, queue item 23; Ignatius's recensions settled 2026-11-09): the large non-CCEL works against their own editions, and a test that holds each quoted section to its volume."
+      for the printed "passible ... impassible", which the app has.
+      2026-11-10 (1.9, item 88): what the 2026-10-24 check had not reached was
+      measured, and the quotations in our own prose were tested for the first
+      time. Measured clean, each the words of the text it was taken from:
+      Cyril on John (99.98% of tertullian.org's transcription of LFC 43 and
+      48), the Morals on Job (99.4% of lectionarycentral's transcription of
+      the Oxford translation, the rest page marks and the translator's
+      bracketed notes taken out on 2026-10-23), the Way of a Pilgrim (99.85%
+      of CCEL's transcription of French's 1930 English, now a checked row in
+      data/reading/provenance.json), the four desert fathers' Lives of
+      2026-10-30, Hilarion's sayings, Antony's miracles and the Palamas
+      florilegium's witnesses. Our prose was another matter: of 90 quotations
+      in retellings, introductions and notes, 29 were not their sources'
+      words, in 15 works, nearly all of them words given to a Father or a
+      historian: Eusebius on Anianus, Polycrates, Papias and Ignatius reworded
+      from McGiffert; Irenaeus and Ignatius reworded from ANF 1 (Irenaeus's
+      "wheat of Christ ... pure bread of God" given as "wheat of God ... pure
+      bread"); a sentence given to Eusebius (III.31) that he never wrote; a
+      Latin word given to Ambrose (cognoscuntur, where his text has operibus
+      aestimatur); the Damascene's definition of energy reworded; the twelfth
+      anathema given the later theopaschite formula; Pusey's Scholia given two
+      formulas it does not hold; Polycarp's chapter 6 neither ANF's nor
+      Lightfoot's; Clement's saying of Matthias in nobody's English (ANF 2
+      leaves that book in Latin); Palladius's Dialogue twice; the Life of
+      Olympias and the Synaxarion quoted with no English to quote. Each is now
+      its edition's words with the edition named, or said in our words without
+      quotation marks. Isidora's Life, whose dialogue stood in quotation marks
+      under "Palladius says" while its own notes said it was paraphrased, is
+      now Palladius's chapter XXXIV in Lowther Clarke's English (1918), read
+      against the scan, with our short introductions (a life, no longer a
+      retelling, and a checked row). St Seraphim's Spiritual Instructions,
+      marked as our summary but speaking in his first person from an English
+      nobody named, now tell his teaching in the third person: no English of
+      the Motovilov conversation or of the Instructions before 1968 was found.
+      Also: the Pilgrim showed CCEL's transcriber's "[unclear]" as the book's
+      words (taken out, with a note); St Jerome's Perpetual Virginity showed
+      its 1893 translator's introduction as our summary (now W. H.
+      Fremantle's, another hand); St John's Life cited Jerome on Galatians to
+      NPNF II 3, which does not hold it ("Little children, love one another"
+      is Philip Schaff's English, History of the Christian Church I, 1882).
+      lib/reading/__tests__/quotedWords.test.ts now holds every quotation of
+      six words or more in our prose to the library, the app's Bible, or a
+      passage of its edition recorded in data/reading/quoted-sources.json (12
+      passages, cut from the editions as downloaded); it fails on the old
+      Anianus line. STILL OPEN: Sermons 29 and 96 of St Cyril on Luke, as
+      above; the quotation marks still to settle (18 paragraphs where CCEL
+      itself differs, the 28 paragraph-opening marks of Antony's speeches and
+      4 in 2 Corinthians that CCEL never closes, 6 lost double marks at
+      paragraph starts in John, Hebrews and Acts, one in the Confessions, and
+      15 library paragraphs whose rail copies are now restored: Romans,
+      Galatians, Philippians, Colossians, 1 Thessalonians, 2 Timothy and the
+      Harmony); Cyril on John and the Morals read against the printed page, as
+      Cyril on Luke was (their words are their transcriptions', so what is
+      left is fidelity to the page, not words given to the wrong hand); Cyril
+      on John's section titles, which its ingest took from italics it matched
+      to the wrong verses ("Book 1, on John 12:35", sections opening
+      mid-sentence), whose relabelling would move readers' marks; and a test
+      that holds each library section to its volume, which needs the volumes
+      kept offline.
+    evidence: data/saints/*/*.json (sections and their voice); data/bible/commentary; lib/reading/entries.ts; lib/saints/saints.ts; data/reading/quoted-sources.json; lib/reading/__tests__/quotedWords.test.ts; CCEL transcriptions of ANF 1, 5, 6 and NPNF I 6 to 14, II 1 to 14; Schaff, Creeds of Christendom II; Hapgood, Service Book (1906)
+    action: "Done with the owner's yes of 2026-10-23 for what is listed above. Left (the apolytikia and the Palamas texts settled 2026-10-26, queue item 23; Ignatius's recensions settled 2026-11-09; the large non-CCEL works measured, and our prose's quotations corrected and held by a test, 2026-11-10, queue item 28): the STILL OPEN list above, none of it words given to the wrong hand."
     safe_to_automate: false
     review: owner
 

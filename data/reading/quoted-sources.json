@@ -1,0 +1,65 @@
+{
+ "comment": "The editions' own words for each quotation in our prose (a retelling, an introduction, a note) whose source the app does not carry: lib/reading/__tests__/quotedWords.test.ts finds every quotation of six words or more in the library, the app's Bible, or here (F-49, 1.9). Each passage was cut from the edition's text as downloaded, never retyped: CCEL's transcriptions, the tertullian.org transcription and archive.org scans, as each row says. A quotation that none of them holds is not the source's words: quote the source, or say it in our words without quotation marks.",
+ "passages": [
+  {
+   "edition": "Eusebius, Church History, tr. A. C. McGiffert, Nicene and Post-Nicene Fathers, Series II, Vol. 1 (1890)",
+   "place": "II.24.1",
+   "text": "When Nero was in the eighth year of his reign, Annianus succeeded Mark the evangelist in the administration of the parish of Alexandria."
+  },
+  {
+   "edition": "Eusebius, Church History, tr. A. C. McGiffert, Nicene and Post-Nicene Fathers, Series II, Vol. 1 (1890)",
+   "place": "III.31.3 to 5, with Polycrates, Proclus and the Acts as Eusebius quotes them",
+   "text": "For in Asia also great lights have fallen asleep, which shall rise again on the last day, at the coming of the Lord, when he shall come with glory from heaven and shall seek out all the saints. Among these are Philip, one of the twelve apostles, who sleeps in Hierapolis, and his two aged virgin daughters, and another daughter who lived in the Holy Spirit and now rests at Ephesus; and moreover John, who was both a witness and a teacher, who reclined upon the bosom of the Lord, and being a priest wore the sacerdotal plate. He also sleeps at Ephesus.\" 4. So much concerning their death. And in the Dialogue of Caius which we mentioned a little above, Proclus, against whom he directed his disputation, in agreement with what has been quoted, speaks thus concerning the death of Philip and his daughters: \"After him there were four prophetesses, the daughters of Philip, at Hierapolis in Asia. Their tomb is there and the tomb of their father.\" Such is his statement. 5. But Luke, in the Acts of the Apostles, mentions the daughters of Philip who were at that time at Cæsarea in Judea with their father, and were honored with the gift of prophecy. His words are as follows: \"We came unto Cæsarea; and entering into the house of Philip the evangelist, who was one of the seven"
+  },
+  {
+   "edition": "Eusebius, Church History, tr. A. C. McGiffert, Nicene and Post-Nicene Fathers, Series II, Vol. 1 (1890)",
+   "place": "III.36.3",
+   "text": "Report says that he was sent from Syria to Rome, and became food for wild beasts on account of his testimony to Christ."
+  },
+  {
+   "edition": "Eusebius, Church History, tr. A. C. McGiffert, Nicene and Post-Nicene Fathers, Series II, Vol. 1 (1890)",
+   "place": "III.39.1, quoting Irenaeus",
+   "text": "These things are attested by Papias, an ancient man who was a hearer of John and a companion of Polycarp, in his fourth book."
+  },
+  {
+   "edition": "Irenaeus, Against Heresies, Ante-Nicene Fathers, Vol. 1 (1885)",
+   "place": "III.3.4",
+   "text": "Then, again, the Church in Ephesus, founded by Paul, and having John remaining among them permanently until the times of Trajan, is a true witness of the tradition of the apostles."
+  },
+  {
+   "edition": "Irenaeus, Against Heresies, Ante-Nicene Fathers, Vol. 1 (1885)",
+   "place": "V.28.4",
+   "text": "As a certain man of ours said, when he was condemned to the wild beasts because of his testimony with respect to God: \"I am the wheat of Christ, and am ground by the teeth of the wild beasts, that I may be found the pure bread of God.\""
+  },
+  {
+   "edition": "Irenaeus, Against Heresies, Ante-Nicene Fathers, Vol. 1 (1885)",
+   "place": "V.30.3",
+   "text": "For that was seen no very long time since, but almost in our day, towards the end of Domitian's reign."
+  },
+  {
+   "edition": "The Council of Chalcedon, Session II, Nicene and Post-Nicene Fathers, Series II, Vol. 14 (1900)",
+   "place": "the bishops' acclamation after the reading of Leo's Tome",
+   "text": "After the reading of the foregoing epistle, the most reverend bishops cried out: This is the faith of the fathers, this is the faith of the Apostles. So we all believe, thus the orthodox believe. Anathema to him who does not thus believe. Peter has spoken thus through Leo."
+  },
+  {
+   "edition": "Palladius, Dialogue on the Life of St. John Chrysostom, tr. Herbert Moore (1921), from the tertullian.org transcription",
+   "place": "Olympias' charities",
+   "text": "I know that she did more to maintain the blessed Nectarius—so much so, that he took her advice even in ecclesiastical affairs—and I need not mention Amphilochius, Optimus, Gregorius, Peter the brother of Basil, and Epiphanius Bishop of Cyprus, those saints to whom she actually made gifts of lands and money. When Optimus was dying in Constantinople, she closed his eyes with her own hands. Besides these, she generously provided everything they required for the wretched Antiochus, Acacius, and Severianus; and to put it briefly, for every priest who visited the city, and a host of ascetics and virgins."
+  },
+  {
+   "edition": "J. B. Lightfoot, The Apostolic Fathers (1891), as CCEL transcribes it, read against the archive.org scan (apostolicfathers00lighuoft)",
+   "place": "Polycarp, Epistle to the Philippians 6",
+   "text": "And the presbyters also must be compassionate, merciful towards all men, turning back the sheep that are gone astray, visiting all the infirm, not neglecting a widow or an orphan or a poor man: but providing always for that which is honorable in the sight of God and of men"
+  },
+  {
+   "edition": "J. B. Lightfoot, The Apostolic Fathers (1891), as CCEL transcribes it, read against the archive.org scan (apostolicfathers00lighuoft)",
+   "place": "The Martyrdom of Polycarp 9",
+   "text": "Fourscore and six years have I been His servant, and He hath done me no wrong. How then can I blaspheme my King who saved me?"
+  },
+  {
+   "edition": "Isabel Florence Hapgood, Service Book of the Holy Orthodox-Catholic Apostolic (Greco-Russian) Church (Boston, 1906), pp. 61 to 62, from the archive.org scan (cu31924029363128)",
+   "place": "the kontakion of St. Nicholas, Tone III",
+   "text": "In Myra, O Saint, wast thou shown forth a sacrificing priest; for fulfilling the Gospel of Christ, O Holy One, thou didst lay down thy life"
+  }
+ ]
+}

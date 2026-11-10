@@ -1,5 +1,5 @@
 {
- "comment": "Works checked word for word against the edition named (F-49). Written by the reading-room check (Homebase/tools/reading-room-check): CCEL's transcriptions measured by eight-word runs at 94% or more, and scans read by hand. A retelling is never listed. Checked 2026-10-24.",
+ "comment": "Works checked word for word against the edition named (F-49). Written by the reading-room check (Homebase/tools/reading-room-check): CCEL's transcriptions measured by eight-word runs at 94% or more, and scans read by hand. A retelling is never listed. Checked 2026-10-24. Added 2026-11-10 (1.9, F-49): the Way of a Pilgrim, measured the same way against CCEL's transcription of the 1930 English (99.85%), and Isidora's Life, now Palladius's own chapter, read against the 1918 printing's scan and the tertullian.org transcription.",
  "works": {
   "agatho-of-rome/the-letter-to-the-emperors": {
    "edition": "Nicene and Post-Nicene Fathers, Series II, Vol. 14",
@@ -318,6 +318,10 @@
   "isaac-the-syrian/mystic-treatises": {
    "edition": "A. J. Wensinck, Mystic Treatises by Isaac of Nineveh (1923)"
   },
+  "isidora-of-tabenna/life-of-isidora": {
+   "edition": "W. K. Lowther Clarke, The Lausiac History of Palladius (1918)",
+   "withNotes": true
+  },
   "jerome-of-stridon/life-of-malchus-the-captive-monk": {
    "edition": "Nicene and Post-Nicene Fathers, Series II, Vol. 6",
    "share": 1.0,
@@ -335,8 +339,7 @@
   },
   "jerome-of-stridon/the-perpetual-virginity-of-blessed-mary": {
    "edition": "Nicene and Post-Nicene Fathers, Series II, Vol. 6",
-   "share": 0.998,
-   "withNotes": true
+   "share": 0.998
   },
   "john-cassian/conferences": {
    "edition": "Nicene and Post-Nicene Fathers, Series II, Vol. 11",
@@ -513,6 +516,10 @@
    "edition": "Nicene and Post-Nicene Fathers, Series II, Vol. 2 and Nicene and Post-Nicene Fathers, Series II, Vol. 3",
    "share": 0.987,
    "withNotes": true
+  },
+  "theophan-the-recluse/way-of-a-pilgrim": {
+   "edition": "R. M. French's English (Philip Allan, 1930)",
+   "share": 0.998
   },
   "theotokos/the-magnificat": {
    "edition": "the King James Version (1611)",
