@@ -552,7 +552,6 @@ next test build's phone walk (`HANDOFF.md`).
 |---|---|---|---|
 | 8. The patch notes leave the start-up scripts | "The front door no longer loads every patch note ever written" | 32 scripts, 2,509 KB (760 KB packed) at the front door | 2,345 KB (705 KB packed) |
 | 7a. Pictures kept at the edge | "The website's pictures are kept at the edge" | every picture `max-age=0` at the origin | a year for a name with a version, a day for any other; the streamed folders unchanged |
-
 | 6. SQLCipher out, the old store deleted | "SQLCipher leaves the apps, and the store 1.5 filled is deleted" | 5.0 MB installed, 2.2 MB of download on an arm64 phone; 33 MB held on phones that had 1.5 | the plugin in no build; each shell deletes the old file at start |
 
 Item 6's gates: typecheck 0; unit tests 10,905 passed, 8 skipped, 0 failed;
