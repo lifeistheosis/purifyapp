@@ -1,11 +1,19 @@
 "use client";
 
 import Link from "next/link";
+import { useLayoutEffect, useRef } from "react";
 import { coverageWords } from "@/lib/i18n/coverage";
 import { LOCALES, type LocaleCode } from "@/lib/i18n/locales";
 import { textDir } from "@/lib/i18n/textDir";
 import { useIsNative } from "@/lib/platform/native";
 import { useTranslate } from "./MessagesProvider";
+
+/** How near a side of the screen, or the tab bar, the open list may come, in CSS pixels. */
+const EDGE_PX = 16;
+/** The space between the trigger and the list (the classes' mt-2 and mb-2). */
+const GAP_PX = 8;
+/** Below this, a list that opens downward opens upward instead, where there is more room: about four languages. */
+const MIN_LIST_PX = 200;
 
 /**
  * The grouped locale list shared by the footer switcher and the account
@@ -29,6 +37,56 @@ export function LocaleMenu({
 }) {
   const { t } = useTranslate();
   const isNative = useIsNative();
+  const listRef = useRef<HTMLUListElement>(null);
+
+  // The list opens from its trigger, at the trigger's start, wherever the
+  // trigger stands, and stays whole on the screen (1.9). On a phone a trigger
+  // part way along a row ran a list this wide past the screen's edge: in
+  // Settings, with the picker after the globe, it opened off the left edge
+  // and its names could not be seen at 390px. And opened downward it ran on
+  // under the tab bar, where its last languages could never be scrolled into
+  // sight. So once drawn it moves sideways, if it must, to keep EDGE_PX from
+  // either side; a list that opens downward stops EDGE_PX above the tab bar,
+  // and opens upward instead, under the top bar, when there is not room for
+  // MIN_LIST_PX below and there is more above. Again if the screen turns.
+  // Written to the element, not kept as state: nothing is drawn twice for it.
+  useLayoutEffect(() => {
+    const el = listRef.current;
+    if (!el) return;
+    const edge = (selector: string, side: "top" | "bottom"): number | null => {
+      const box = document.querySelector(selector)?.getBoundingClientRect();
+      return box && box.height > 0 ? box[side] : null;
+    };
+    const fit = () => {
+      el.style.translate = "";
+      el.style.maxHeight = "";
+      el.style.top = el.style.bottom = el.style.marginTop = el.style.marginBottom = "";
+      const r = el.getBoundingClientRect();
+      const width = document.documentElement.clientWidth;
+      const dx = r.left < EDGE_PX ? EDGE_PX - r.left : r.right > width - EDGE_PX ? width - EDGE_PX - r.right : 0;
+      if (dx) el.style.translate = `${Math.round(dx)}px 0`;
+      if (placement !== "down") return;
+      const anchor = (el.offsetParent ?? el.parentElement)?.getBoundingClientRect();
+      if (!anchor) return;
+      const floor = Math.min(window.innerHeight, edge("[data-tab-bar]", "top") ?? Infinity) - EDGE_PX;
+      const ceiling = (edge("[data-mobile-topbar]", "bottom") ?? 0) + EDGE_PX;
+      const below = floor - anchor.bottom - GAP_PX;
+      const above = anchor.top - GAP_PX - ceiling;
+      if (r.height <= below) return;
+      if (below >= MIN_LIST_PX || below >= above) {
+        el.style.maxHeight = `${Math.max(0, Math.floor(below))}px`;
+        return;
+      }
+      el.style.top = "auto";
+      el.style.bottom = "100%";
+      el.style.marginTop = "0";
+      el.style.marginBottom = `${GAP_PX}px`;
+      el.style.maxHeight = `${Math.floor(Math.min(r.height, above))}px`;
+    };
+    fit();
+    window.addEventListener("resize", fit);
+    return () => window.removeEventListener("resize", fit);
+  }, [placement]);
 
   const ready = LOCALES.filter((l) => l.ready);
   const editorial = LOCALES.filter((l) => !l.ready && l.editorial);
@@ -36,18 +94,19 @@ export function LocaleMenu({
   const inProgressLabel = t("footer.localeGroupInProgress");
 
   const position =
-    placement === "up" ? "bottom-full left-0 mb-2" : "top-full right-0 mt-2";
+    placement === "up" ? "bottom-full start-0 mb-2" : "top-full start-0 mt-2";
 
   return (
     <ul
+      ref={listRef}
       role="listbox"
       aria-label={t("footer.languageLabel")}
-      className={`absolute ${position} z-50 w-[20rem] max-w-[92vw] max-h-[min(60vh,22rem)] overflow-y-auto overscroll-contain rounded-lg border border-paper/12 bg-night-soft py-1.5 shadow-xl shadow-black/40 [scrollbar-width:thin]`}
+      className={`absolute ${position} z-50 w-[20rem] text-start max-w-[calc(100vw-2rem)] max-h-[min(60vh,22rem)] overflow-y-auto overscroll-contain rounded-lg border border-paper/12 bg-night-soft py-1.5 shadow-xl shadow-black/40 [scrollbar-width:thin]`}
     >
       {/* Menu title */}
       <li
         role="presentation"
-        className="px-3 pb-2 pt-1.5 font-sans text-caption font-semibold text-paper/40"
+        className="px-3 pb-2 pt-1.5 font-sans text-caption font-semibold text-paper/60"
       >
         {t("footer.languageLabel")}
       </li>
@@ -55,7 +114,7 @@ export function LocaleMenu({
       {/* Available */}
       <li
         role="presentation"
-        className="px-3 pb-1 pt-1 font-sans text-caption text-paper/30"
+        className="px-3 pb-1 pt-1 font-sans text-caption text-paper/55"
       >
         {t("footer.localeGroupAvailable")}
       </li>
@@ -73,11 +132,11 @@ export function LocaleMenu({
             >
               <span className="min-w-0 flex-1">
                 <span className="block truncate">
-                  <span lang={l.code} dir={textDir(l.code)} className={active ? "text-gold" : "text-paper/90"}>
+                  <span lang={l.code} dir={textDir(l.code)} className={`${active ? "text-gold" : "text-paper/90"} ${l.englishLabel !== l.nativeLabel ? "me-1.5" : ""}`}>
                     {l.nativeLabel}
                   </span>
                   {l.englishLabel !== l.nativeLabel && (
-                    <span lang="en" dir="ltr" className="ml-1.5 text-[11px] text-paper/35">
+                    <span lang="en" dir="ltr" className="text-[11px] text-paper/55">
                       ({l.englishLabel})
                     </span>
                   )}
@@ -100,7 +159,7 @@ export function LocaleMenu({
         <>
           <li
             role="presentation"
-            className="mt-1 border-t border-paper/8 px-3 pb-1 pt-2.5 font-sans text-caption text-paper/30"
+            className="mt-1 border-t border-paper/8 px-3 pb-1 pt-2.5 font-sans text-caption text-paper/55"
           >
             {inProgressLabel}
           </li>
@@ -118,11 +177,11 @@ export function LocaleMenu({
                 >
                   <span className="min-w-0 flex-1">
                     <span className="block truncate">
-                      <span lang={l.code} dir={textDir(l.code)} className={active ? "text-gold" : "text-paper/90"}>
+                      <span lang={l.code} dir={textDir(l.code)} className={`${active ? "text-gold" : "text-paper/90"} ${l.englishLabel !== l.nativeLabel ? "me-1.5" : ""}`}>
                         {l.nativeLabel}
                       </span>
                       {l.englishLabel !== l.nativeLabel && (
-                        <span lang="en" dir="ltr" className="ml-1.5 text-[11px] text-paper/35">
+                        <span lang="en" dir="ltr" className="text-[11px] text-paper/55">
                           ({l.englishLabel})
                         </span>
                       )}
@@ -149,7 +208,7 @@ export function LocaleMenu({
       {notReady.length > 0 && (
         <li
           role="presentation"
-          className="mt-1 border-t border-paper/8 px-3 pb-1 pt-2.5 font-sans text-caption text-paper/30"
+          className="mt-1 border-t border-paper/8 px-3 pb-1 pt-2.5 font-sans text-caption text-paper/55"
         >
           {t("signin.comingSoon")}
         </li>
@@ -158,8 +217,8 @@ export function LocaleMenu({
         const inner = (
           <>
             <span className="min-w-0 flex-1 truncate">
-              <span className="text-paper/85">{l.nativeLabel}</span>
-              <span className="ml-1.5 text-[11px] text-paper/35">
+              <span className="me-1.5 text-paper/85">{l.nativeLabel}</span>
+              <span className="text-[11px] text-paper/55">
                 ({l.englishLabel})
               </span>
             </span>
