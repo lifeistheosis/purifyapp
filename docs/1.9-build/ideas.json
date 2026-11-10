@@ -552,7 +552,7 @@
    "needsDesign": false,
    "version": null,
    "outcome": null,
-   "note": "Built 2026-11-07, on Android (lib/readAloud/week.ts). When the app opens and comes back to the front, for a reader with a sure yes to Plus, on Wi-Fi only (never mobile data, never a connection the phone cannot name): every chapter read aloud that the Church reads in the next seven days by the reader's calendar is saved as a saved book is, and noted as the week's; once its last day has passed the week takes it away, unless the reader saved its book themselves. The reader's own saving goes first. On by default for Plus, as \"by themselves\" asks; Settings, On this device, has the switch and what it keeps (off takes it all away). A week on the new calendar is 15 to 17 chapters (counted for four weeks from 7 November 2026 to Holy Week 2027); the old calendar's days carry fewer readings in the app, so fewer. Not on iPhone yet: the recordings are kept in the folder iCloud backs up, and a week's worth every week on its own would make that worse (c-ios-offline-backup, waiting for his word). Tests: lib/readAloud/__tests__/week.test.ts. Walked in a browser as the app: the switch and its count; not walked on a phone Read over the same evening, and one race mended: a reader who tapped Save on a book while the week was fetching a chapter of it would have had that chapter marked the week's, and taken out of their saved book once its day had passed. A book the reader saves is now recorded as theirs until they take it off the phone, and the week marks none of its chapters (lib/readAloud/weekKept.ts; the race held by lib/readAloud/__tests__/week.test.ts, which fails without the guard)."
+   "note": "Built 2026-11-07, on Android (lib/readAloud/week.ts). When the app opens and comes back to the front, for a reader with a sure yes to Plus, on Wi-Fi only (never mobile data, never a connection the phone cannot name): every chapter read aloud that the Church reads in the next seven days by the reader's calendar is saved as a saved book is, and noted as the week's; once its last day has passed the week takes it away, unless the reader saved its book themselves. The reader's own saving goes first. On by default for Plus, as \"by themselves\" asks; Settings, On this device, has the switch and what it keeps (off takes it all away). A week on the new calendar is 15 to 17 chapters (counted for four weeks from 7 November 2026 to Holy Week 2027); the old calendar's days carry fewer readings in the app, so fewer. Not on iPhone yet: the recordings are kept in the folder iCloud backs up, and a week's worth every week on its own would make that worse (c-ios-offline-backup, waiting for his word). Tests: lib/readAloud/__tests__/week.test.ts. Walked in a browser as the app: the switch and its count; not walked on a phone Read over the same evening, and one race mended: a reader who tapped Save on a book while the week was fetching a chapter of it would have had that chapter marked the week's, and taken out of their saved book once its day had passed. A book the reader saves is now recorded as theirs until they take it off the phone, and the week marks none of its chapters (lib/readAloud/weekKept.ts; the race held by lib/readAloud/__tests__/week.test.ts, which fails without the guard). On iPhone too since 2026-11-10 (his \"everything in 1.9\"): the gate and the Settings row's condition went, the recordings having left the folder iCloud backs up (c-ios-offline-backup). 06f80f78. PLAN 13o."
   },
   {
    "id": "s3-02",
@@ -1985,6 +1985,48 @@
    "version": "1.9",
    "outcome": null,
    "note": "A prayer rested only at its start and end, so a swipe from its end carried its last verses off the screen. Now every verse rests, a fling never leaves the prayer, long verses rest in parts; the click once per prayer. 4639fa9e. PLAN 13n."
+  },
+  {
+   "id": "e-qw-philemon-philippians-tags",
+   "section": "Bible",
+   "kind": "bug",
+   "title": "Philemon showed no Greek beside the English, and Philippians had no English tags (the source keeps Philippians inside Philemon's file)",
+   "from": "claude",
+   "asked": "2026-11-10",
+   "status": "built",
+   "decided": "2026-11-10",
+   "needsDesign": false,
+   "version": "1.9",
+   "outcome": null,
+   "note": "The source's Phm.json carries Philippians under the key \"Phl\"; the ingest read every key and asked for Philippians as \"Php\". It now reads a file's own key and asks for \"Phl\"; both books written again and checked against the app's English; Philemon unblocked; the data test holds every New Testament book to its tags. e73ffe10. PLAN 13o."
+  },
+  {
+   "id": "e-qw-timeline-link-44",
+   "section": "Saints",
+   "kind": "bug",
+   "title": "\"Explore the interactive timeline\" under a page's events in Orthodox History was 20px tall to the touch",
+   "from": "claude",
+   "asked": "2026-11-10",
+   "status": "built",
+   "decided": "2026-11-10",
+   "needsDesign": false,
+   "version": "1.9",
+   "outcome": null,
+   "note": "Flagged by the November saints chat's checkMock on every saint page with History events. Now 44px (inline-flex, min-h-11), its words where they stood; held by lib/history/__tests__/timelineLink.test.ts; 187 by 47 on the export. 62da0a28. PLAN 13o."
+  },
+  {
+   "id": "e-qw-today-face-across",
+   "section": "Today",
+   "kind": "bug",
+   "title": "The saint window's round face was cut about the portrait's middle, not his face (Theology's T5)",
+   "from": "claude",
+   "asked": "2026-11-10",
+   "status": "built",
+   "decided": "2026-11-10",
+   "needsDesign": false,
+   "version": "1.9",
+   "outcome": null,
+   "note": "The window passes his face's place (across), as Theology's frames do, held by lib/today/__tests__/saintFaces.test.ts. The window is drawn nowhere in the app (never mounted in the repo's history; Today shows the saint by its band), so nothing on screen changes. 62da0a28. PLAN 13o."
   }
  ]
 }
