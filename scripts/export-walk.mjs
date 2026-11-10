@@ -5830,17 +5830,14 @@ await section(41, async () => {
       const tiles = document.querySelectorAll("[data-reading-row] li").length;
       const imgs = [...document.querySelectorAll("[data-reading-row] img, [data-featured] img")];
       const broken = imgs.filter((i) => i.complete && i.naturalWidth === 0 && i.getClientRects().length > 0).map((i) => i.getAttribute("src"));
-      // The website is the build's SITE_URL (lib/site.ts): purifyapp.net
-      // where the build is given it, as the store builds are, and Render's
-      // own name for the same site where it is not, as in a build made here.
-      const foreign = imgs.map((i) => i.getAttribute("src") ?? "").filter((src) => !src.startsWith("/saints/icons/") && !/^https:\/\/purifyapp\.(net|onrender\.com)\/covers\/authors\/[a-z0-9-]+\.v\d+\.jpg$/.test(src));
+      const pictures = imgs.map((i) => i.getAttribute("src") ?? "").filter((src) => !src.startsWith("/saints/icons/"));
       const text = (document.querySelector("[data-route-content]") ?? document.body).innerText;
       return {
         rows,
         passions,
         tiles,
         broken,
-        foreign,
+        pictures,
         featured: document.querySelector("[data-featured]")?.getAttribute("data-featured") ?? null,
         h1: document.querySelector("[data-tab-topbar] h1")?.textContent?.trim() ?? null,
         glyphs: glyphs.filter((g) => text.includes(g)),
@@ -5851,7 +5848,19 @@ await section(41, async () => {
     must(room.tiles >= 60, `${size.width}px: covers to swipe (${room.tiles} on the rows)`);
     must(Boolean(room.featured) && room.featured !== "pending", `${size.width}px: a book stands at the top for the day (${room.featured})`);
     must(room.broken.length === 0, `${size.width}px: no broken picture with no network: a cover the website holds falls back to its plate${room.broken.length ? ": " + room.broken.slice(0, 3).join(", ") : ""}`);
-    must(room.foreign.length === 0, `${size.width}px: every picture is a settled one${room.foreign.length ? ": " + room.foreign.slice(0, 3).join(", ") : ""}`);
+    // A settled picture is an icon the app carries, or a cover the website
+    // serves from its covers (public/covers): a saint's own (authors/) and,
+    // from 1.9's build 89 note 3, a council's icon on its books (councils/)
+    // and a How you feel door's saint (feelings/), which a borrowed cover
+    // shares. The website is the build's SITE_URL (lib/site.ts): purifyapp.net
+    // where the build is given it, as the store builds are, and Render's own
+    // name for the same site where it is not, as in a build made here.
+    const settled = (src) => {
+      const file = /^https:\/\/purifyapp\.(?:net|onrender\.com)\/(covers\/(?:authors|councils|feelings)\/[a-z0-9-]+\.v\d+\.jpg)$/.exec(src)?.[1];
+      return Boolean(file) && fs.existsSync(path.resolve("public", file));
+    };
+    const foreign = room.pictures.filter((src) => !settled(src));
+    must(foreign.length === 0, `${size.width}px: every picture is a settled one${foreign.length ? ": " + foreign.slice(0, 3).join(", ") : ""}`);
     must(room.h1 === en["nav.reading"] && room.glyphs.length === 0, `${size.width}px: the tab bar names the room, and no character is set as an icon${room.glyphs.length ? ": " + room.glyphs.join(" ") : ""}`);
     await page.screenshot({ path: path.join(SHOTS, `reading-room-${size.width}.png`) });
     await page.screenshot({ path: path.join(SHOTS, `reading-room-${size.width}-full.png`), fullPage: true });
