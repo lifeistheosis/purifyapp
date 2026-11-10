@@ -22,6 +22,18 @@ import { isNativeClient } from "@/lib/platform/native";
 // asynchronous), so the answer is right from the frame the sheet opens.
 let owners = 0;
 
+// Who takes a press: the one that became active last and is still active (a
+// sheet opened over another, the legal sheet over a purchase sheet; build 90
+// note 1). Every listener hears the button, so each asks whether it is on top
+// before it acts, and one press closes one thing. A parent that already steps
+// aside while its child is open (ComposePage, VerseFocus) is simply not here.
+const stack: symbol[] = [];
+
+/** Whether `me` is the overlay a press of Back belongs to. */
+function onTop(me: symbol): boolean {
+  return stack[stack.length - 1] === me;
+}
+
 /**
  * True while a sheet or a dialog has taken the phone's Back for itself. The
  * page's own Back (components/nav/RouteTransition.tsx, 1.9) asks, and stands
@@ -49,13 +61,15 @@ export function useAndroidBack(active: boolean, onBack: () => void): void {
   useEffect(() => {
     if (!active || !isNativeClient()) return;
     owners += 1;
+    const me = Symbol("back");
+    stack.push(me);
     let disposed = false;
     let remove: (() => void) | undefined;
     void (async () => {
       const { App } = await import("@capacitor/app");
-      const handle = await App.addListener("backButton", () =>
-        onBackRef.current(),
-      );
+      const handle = await App.addListener("backButton", () => {
+        if (onTop(me)) onBackRef.current();
+      });
       // If the effect was cleaned up before registration finished, remove the
       // handle we just added so it can't leak.
       if (disposed) {
@@ -66,6 +80,8 @@ export function useAndroidBack(active: boolean, onBack: () => void): void {
     })();
     return () => {
       owners -= 1;
+      const at = stack.lastIndexOf(me);
+      if (at >= 0) stack.splice(at, 1);
       disposed = true;
       remove?.();
     };

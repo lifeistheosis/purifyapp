@@ -75,6 +75,7 @@ import { PlusTryHead, PlusTryPage, usePlusTry, type PlusTry } from "@/components
 import { PREMIUM_CTA, PREMIUM_GHOST } from "@/components/premium/PremiumUI";
 import { cn } from "@/lib/cn";
 import { useAndroidBack } from "@/lib/platform/useAndroidBack";
+import { LegalLink } from "@/components/legal/LegalLink";
 
 type Phase = "loading" | "signed-out" | "unavailable" | "ready" | "subscribed";
 export type Tier = "plus" | "pro";
@@ -705,12 +706,12 @@ export function FooterRow({
           {busy === "restore" ? t("plus.restoring") : t("plus.restore")}
         </button>
       ) : null}
-      <Link href="/terms" className="inline-flex min-h-11 min-w-11 items-center justify-center hover:text-paper">
+      <LegalLink doc="terms" className="inline-flex min-h-11 min-w-11 items-center justify-center hover:text-paper">
         {t("shop.terms")}
-      </Link>
-      <Link href="/privacy" className="inline-flex min-h-11 min-w-11 items-center justify-center hover:text-paper">
+      </LegalLink>
+      <LegalLink doc="privacy" className="inline-flex min-h-11 min-w-11 items-center justify-center hover:text-paper">
         {t("footer.privacy")}
-      </Link>
+      </LegalLink>
     </div>
   );
 }

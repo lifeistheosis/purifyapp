@@ -153,7 +153,7 @@ describe("nothing a reader opens is fetched from another company (143)", () => {
   });
 
   it("each exception is still in use where it is named, and the privacy page names it in both languages", () => {
-    const privacy = read("app/(app)/privacy/page.tsx");
+    const privacy = read("components/legal/PrivacyText.tsx");
     for (const [host, { file, why, privacy: says }] of Object.entries(EXCEPTIONS)) {
       expect(why.length, host).toBeGreaterThan(40);
       expect(loadsIn(file, read(file)).map((f) => f.host), host).toContain(host);

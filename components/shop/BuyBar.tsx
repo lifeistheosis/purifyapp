@@ -11,6 +11,7 @@ import { getCartToken } from "@/lib/shop/cartSync";
 import { closeNativeCheckout, openStripe } from "@/lib/shop/openStripe";
 import { useTranslate } from "@/components/i18n/MessagesProvider";
 import { SecureCheckoutNote } from "./SecureCheckoutNote";
+import { LegalLink } from "@/components/legal/LegalLink";
 
 /**
  * Sticky mobile purchase bar (static sidebar block on md+). Three
@@ -197,13 +198,13 @@ export function BuyBar({
               />
               <span className="font-sans text-caption leading-[1.5] text-paper/60">
                 {t("ui.iAgreeToThe")}{" "}
-                <Link href="/terms" className="underline underline-offset-2 hover:text-paper/80">
+                <LegalLink doc="terms" className="underline underline-offset-2 hover:text-paper/80">
                   {t("shop.terms")}
-                </Link>{" "}
+                </LegalLink>{" "}
                 {t("ui.andThe")}{" "}
-                <Link href="/shop/policies" className="underline underline-offset-2 hover:text-paper/80">
+                <LegalLink doc="shop-policies" className="underline underline-offset-2 hover:text-paper/80">
                   {t("shop.shippingRefundPolicy")}
-                </Link>
+                </LegalLink>
                 .
               </span>
             </label>

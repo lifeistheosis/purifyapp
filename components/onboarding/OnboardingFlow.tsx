@@ -78,6 +78,7 @@ import { recordAcceptance } from "@/lib/legal/recordAcceptance";
 import { authOrigin } from "@/lib/site";
 import { createClient } from "@/lib/supabase/client";
 import { Compass } from "@/components/ui/icons/Compass";
+import { LegalLink } from "@/components/legal/LegalLink";
 import { Book } from "@/components/ui/icons/Book";
 import { Cross } from "@/components/ui/icons/Cross";
 import { ClergyJurisdiction, ClergyParish, ClergyWhere } from "./ClergySteps";
@@ -1168,13 +1169,13 @@ function AccountStep({ onSkip, skipLabel }: { onSkip: () => void; skipLabel: str
             />
             <span className="text-start font-sans text-caption leading-[1.5] text-paper/70">
               {t("ui.iAgreeToThe")}{" "}
-              <Link href="/terms" className="text-paper underline underline-offset-2">
+              <LegalLink doc="terms" className="text-paper underline underline-offset-2">
                 {t("ui.termsOfServiceX")}
-              </Link>{" "}
+              </LegalLink>{" "}
               {t("ui.and")}{" "}
-              <Link href="/privacy" className="text-paper underline underline-offset-2">
+              <LegalLink doc="privacy" className="text-paper underline underline-offset-2">
                 {t("ui.privacyPolicyX")}
-              </Link>
+              </LegalLink>
               .
             </span>
           </label>

@@ -1,6 +1,6 @@
-import Link from "next/link";
 import { SignUpForm } from "@/components/auth/SignUpForm";
 import { T } from "@/components/i18n/T";
+import { LegalLink } from "@/components/legal/LegalLink";
 
 export const metadata = {
   title: "Create an account",
@@ -19,19 +19,13 @@ export default function SignUpPage() {
       <SignUpForm />
       <p className="mt-6 font-sans text-caption text-paper/45 leading-[1.6]">
         <T k="ui.byCreatingAnAccountYou" />{" "}
-        <Link
-          href="/terms"
-          className="text-paper/70 underline underline-offset-2 decoration-paper/30 hover:text-paper"
-        >
+        <LegalLink doc="terms" className="text-paper/70 underline underline-offset-2 decoration-paper/30 hover:text-paper">
           <T k="ui.termsOfService" />
-        </Link>{" "}
+        </LegalLink>{" "}
         <T k="ui.andThe" />{" "}
-        <Link
-          href="/privacy"
-          className="text-paper/70 underline underline-offset-2 decoration-paper/30 hover:text-paper"
-        >
+        <LegalLink doc="privacy" className="text-paper/70 underline underline-offset-2 decoration-paper/30 hover:text-paper">
           <T k="ui.privacyPolicy" />
-        </Link>
+        </LegalLink>
         .
       </p>
     </div>

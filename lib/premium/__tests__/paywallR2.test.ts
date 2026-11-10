@@ -215,13 +215,14 @@ describe("every legal line the paywall had", () => {
   });
 
   it("links Terms and Privacy, and Restore purchases where the store can restore", () => {
-    expect(dock).toMatch(/href="\/terms"[\s\S]{0,120}t\("shop\.terms"\)/);
-    expect(dock).toMatch(/href="\/privacy"[\s\S]{0,120}t\("footer\.privacy"\)/);
+    // Each opens its text in a sheet over the plans (build 90 note 1, lib/legal/__tests__/legalSheet.test.ts).
+    expect(dock).toMatch(/<LegalLink doc="terms"[\s\S]{0,120}t\("shop\.terms"\)/);
+    expect(dock).toMatch(/<LegalLink doc="privacy"[\s\S]{0,120}t\("footer\.privacy"\)/);
     expect(dock).toContain('t("plus.restore")');
     expect(sheet).toContain("canRestore={isNative && canRestore}");
     expect(screen).toContain("onRestore={onRestore}");
-    expect(screen).toMatch(/href="\/terms"/);
-    expect(screen).toMatch(/href="\/privacy"/);
+    expect(screen).toMatch(/<LegalLink doc="terms"/);
+    expect(screen).toMatch(/<LegalLink doc="privacy"/);
   });
 
   it("keeps what the apps' screen has always said around a purchase, now in every language", () => {

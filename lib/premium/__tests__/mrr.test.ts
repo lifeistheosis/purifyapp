@@ -29,7 +29,7 @@ describe("the prices the estimate counts", () => {
   });
 
   it("are the prices the Terms state", () => {
-    const terms = readFileSync(path.resolve(__dirname, "../../../app/(app)/terms/page.tsx"), "utf8").replace(/\s+/g, " ");
+    const terms = readFileSync(path.resolve(__dirname, "../../../components/legal/TermsText.tsx"), "utf8").replace(/\s+/g, " ");
     const usd = (c: number) => `US $${c % 100 ? (c / 100).toFixed(2) : c / 100}`;
     expect(terms).toContain(`${usd(PLAN_PRICE_CENTS.plusMonthly)} per month or ${usd(PLAN_PRICE_CENTS.plusYearly)} per year`);
     expect(terms).toContain(`${usd(PLAN_PRICE_CENTS.proMonthly)} per month or ${usd(PLAN_PRICE_CENTS.proYearly)} per year`);

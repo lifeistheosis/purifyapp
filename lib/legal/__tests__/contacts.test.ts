@@ -69,14 +69,14 @@ describe("Purify's addresses", () => {
   });
 
   it("send every legal matter in the terms to the legal inbox", () => {
-    const terms = fs.readFileSync(path.join(process.cwd(), "app/(app)/terms/page.tsx"), "utf8");
+    const terms = fs.readFileSync(path.join(process.cwd(), "components/legal/TermsText.tsx"), "utf8");
     // Copyright notices, the informal dispute, the arbitration opt-out, and Contact.
     expect(terms.match(/href=\{`mailto:\$\{LEGAL_EMAIL\}`\}/g)?.length).toBe(4);
     expect(terms).not.toContain("SUPPORT_EMAIL");
   });
 
   it("give the legal inbox on the privacy page, in English and in German", () => {
-    const privacy = fs.readFileSync(path.join(process.cwd(), "app/(app)/privacy/page.tsx"), "utf8");
+    const privacy = fs.readFileSync(path.join(process.cwd(), "components/legal/PrivacyText.tsx"), "utf8");
     // The company's own line and the closing line, once in each language.
     expect(privacy.match(/href=\{`mailto:\$\{LEGAL_EMAIL\}`\}/g)?.length).toBe(4);
     expect(privacy).not.toContain("SUPPORT_EMAIL");

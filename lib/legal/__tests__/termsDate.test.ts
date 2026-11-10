@@ -15,7 +15,7 @@ import { TERMS_VERSION } from "../version";
  */
 describe("the terms", () => {
   it("say they take effect on the day their version names", () => {
-    const page = fs.readFileSync(path.join(process.cwd(), "app/(app)/terms/page.tsx"), "utf8");
+    const page = fs.readFileSync(path.join(process.cwd(), "components/legal/TermsText.tsx"), "utf8");
     const day = new Date(`${TERMS_VERSION}T00:00:00Z`).toLocaleDateString("en-US", {
       month: "long",
       day: "numeric",

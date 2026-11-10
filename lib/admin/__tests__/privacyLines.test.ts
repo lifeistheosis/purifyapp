@@ -14,7 +14,7 @@ import { describe, expect, it } from "vitest";
 
 import { KEEP_DAYS } from "@/lib/ops/prune";
 
-const page = fs.readFileSync("app/(app)/privacy/page.tsx", "utf8").replace(/\s+/g, " ");
+const page = fs.readFileSync("components/legal/PrivacyText.tsx", "utf8").replace(/\s+/g, " ");
 
 const LINES = {
   "Plus records (A2, lib/billing/plusEvents.ts; 68)":

@@ -120,7 +120,7 @@ describe("the upgrade sheet counts", () => {
   });
 
   it("and the privacy page says so", () => {
-    const privacy = read("app/(app)/privacy/page.tsx");
+    const privacy = read("components/legal/PrivacyText.tsx");
     expect(privacy).toContain("What Purify Plus is wanted for is counted in the same table.");
   });
 });

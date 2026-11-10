@@ -15,9 +15,11 @@ import fs from "node:fs";
 
 import { describe, expect, it } from "vitest";
 
+// The two texts, which the page and the legal sheet draw (build 90 note 1).
+const text = fs.readFileSync("components/legal/PrivacyText.tsx", "utf8");
+const english = text.slice(text.indexOf("function PrivacyEn()"), text.indexOf("function PrivacyDe()"));
+const german = text.slice(text.indexOf("function PrivacyDe()"));
 const source = fs.readFileSync("app/(app)/privacy/page.tsx", "utf8");
-const english = source.slice(source.indexOf("export default async function PrivacyPage"), source.indexOf("function PrivacyDe()"));
-const german = source.slice(source.indexOf("function PrivacyDe()"));
 
 /** Each block, in order: its tag and its look. */
 const blocks = (page: string) =>

@@ -192,7 +192,7 @@ describe("release news", () => {
   });
 
   it("is what the privacy page tells readers", () => {
-    const page = read("app/(app)/privacy/page.tsx").replace(/\s+/g, " ");
+    const page = read("components/legal/PrivacyText.tsx").replace(/\s+/g, " ");
     expect(page).toContain("No marketing email unless you ask for it.");
     expect(page).toContain("when a new version of Purify is released, we email every account");
     expect(page).toContain("on unless you turn it off");

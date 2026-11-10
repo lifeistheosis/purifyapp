@@ -40,6 +40,9 @@ import { useTranslate } from "@/components/i18n/MessagesProvider";
  *    the sleep timer, the ambience sheet and the upgrade sheet opened from
  *    the player (1.7). Every other sheet stays at z-[60], under the player,
  *    as before.
+ *  - `layer="over-all"` (build 90 note 1, the Terms and the Privacy Policy)
+ *    stands it at z-[110], over whatever opened it: the onboarding's layer
+ *    (z-[100]) and a purchase sheet.
  *  - `fill` (1.7, the journal's writing): the sheet takes the whole height
  *    of what the on-screen keyboard leaves (lib/ui/viewport.ts,
  *    useVisibleFrame), so a field in it is never under the keyboard. The box
@@ -84,7 +87,7 @@ export function Sheet({
    * opening would hide below the screen.
    */
   openFull = false,
-  /** Over Now Playing, for a sheet opened from inside it. */
+  /** Over Now Playing, for a sheet opened from inside it; or over everything. */
   layer,
   /** Beside the title, before the close button: a small mark (the Plus mark). */
   titleExtra,
@@ -108,7 +111,7 @@ export function Sheet({
   bodyClassName?: string;
   desktop?: boolean;
   openFull?: boolean;
-  layer?: "over-player";
+  layer?: "over-player" | "over-all";
   titleExtra?: React.ReactNode;
   fill?: boolean;
   keyboard?: boolean;
@@ -169,7 +172,8 @@ export function Sheet({
         // native-md-block: inside the native shell a sheet is the only picker
         // there is, at every width. Without it a tablet lost the chapter grid,
         // the reader actions, the TOC and the update prompt above 768px.
-        (desktop ? "" : "md:hidden native-md-block ") + (layer === "over-player" ? "fixed inset-0 z-[80]" : "fixed inset-0 z-[60]")
+        (desktop ? "" : "md:hidden native-md-block ") +
+        (layer === "over-all" ? "fixed inset-0 z-[110]" : layer === "over-player" ? "fixed inset-0 z-[80]" : "fixed inset-0 z-[60]")
       }
       role="dialog"
       aria-modal="true"

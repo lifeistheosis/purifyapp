@@ -182,6 +182,8 @@ describe("the screens that were frozen in English", () => {
     "app/(app)/councils/page.tsx",
     "app/(app)/faq/page.tsx",
     "app/(app)/privacy/page.tsx",
+    // Its text, which the page and the legal sheet draw (build 90 note 1).
+    "components/legal/PrivacyText.tsx",
     "app/(app)/saints/page.tsx",
     "app/(app)/support/page.tsx",
     "app/(app)/topics/page.tsx",

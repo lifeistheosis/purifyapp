@@ -64,8 +64,10 @@ describe("asking: the Terms notice", () => {
     const src = read(OAUTH_BUTTONS);
     expect(src).toMatch(/showTermsNotice\s*=\s*true/);
     expect(src).toContain(NOTICE_KEY);
-    expect(src).toMatch(/href="\/terms"/);
-    expect(src).toMatch(/href="\/privacy"/);
+    // Links to the two texts, which open over the screen in a sheet (build 90
+    // note 1; LegalLink is an ordinary link to /terms and /privacy underneath).
+    expect(src).toMatch(/<LegalLink doc="terms"/);
+    expect(src).toMatch(/<LegalLink doc="privacy"/);
   });
 
   it("still says the thing that makes continuing count as agreeing", () => {

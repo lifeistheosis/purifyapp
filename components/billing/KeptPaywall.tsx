@@ -50,6 +50,7 @@ import type { LocaleCode } from "@/lib/i18n/locales";
 import { paywallReviews } from "@/lib/premium/paywallReviews";
 import { plusRowsLedBy, rowsHere } from "@/lib/premium/plusRows";
 import { useDesktopApp } from "@/lib/desktop/useDesktopApp";
+import { LegalLink } from "@/components/legal/LegalLink";
 
 /* ── The scribe, and why ─────────────────────────────────────────────────── */
 
@@ -533,12 +534,12 @@ export function PlansDock({
               {busy === "restore" ? t("plus.restoring") : t("plus.restore")}
             </button>
           ) : null}
-          <Link href="/terms" onClick={onNavigate} className={links}>
+          <LegalLink doc="terms" className={links}>
             {t("shop.terms")}
-          </Link>
-          <Link href="/privacy" onClick={onNavigate} className={links}>
+          </LegalLink>
+          <LegalLink doc="privacy" className={links}>
             {t("footer.privacy")}
-          </Link>
+          </LegalLink>
           {more}
         </div>
       </div>

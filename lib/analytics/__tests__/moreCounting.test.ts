@@ -34,7 +34,7 @@ const takes = (body: string) => trackEventSchema.safeParse(JSON.parse(body)).suc
 const takesRaw = (name: string, props: Record<string, unknown>) => trackEventSchema.safeParse({ name, props }).success;
 
 describe("the switch", () => {
-  const page = read("app/(app)/privacy/page.tsx").replace(/\s+/g, " ");
+  const page = read("components/legal/PrivacyText.tsx").replace(/\s+/g, " ");
   const german = page.slice(page.indexOf("function PrivacyDe()"));
   const english = page.slice(0, page.indexOf("function PrivacyDe()"));
   const onPage = (text: string, sentence: string) =>
@@ -50,7 +50,7 @@ describe("the switch", () => {
   });
 
   it("stands beside the Terms' paragraph on tests, word for word", () => {
-    const terms = read("app/(app)/terms/page.tsx").replace(/\s+/g, " ");
+    const terms = read("components/legal/TermsText.tsx").replace(/\s+/g, " ");
     expect(terms).toContain(TERMS_PARAGRAPH);
     expect(TERMS_PARAGRAPH).not.toContain("\u2014");
   });

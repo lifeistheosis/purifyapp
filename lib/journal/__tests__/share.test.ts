@@ -160,7 +160,7 @@ describe("the shared page", () => {
   });
 
   it("the privacy page says so, in English and in German (version B)", () => {
-    const privacy = read("app/(app)/privacy/page.tsx");
+    const privacy = read("components/legal/PrivacyText.tsx");
     expect(privacy).toContain("Stop sharing deletes the\n copy at once, and any reports on it.");
     expect(privacy).toContain("Wenn du das Teilen\n beendest, wird die Kopie sofort gelöscht, mit allen Meldungen dazu.");
   });

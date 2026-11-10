@@ -1,6 +1,5 @@
 "use client";
 
-import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { createClient } from "@/lib/supabase/client";
@@ -11,6 +10,7 @@ import { useIsNative, nativePlatform } from "@/lib/platform/native";
 import { isDesktopApp, openAuthInBrowser } from "@/lib/desktop/bridge";
 import { desktopAuthRedirect } from "@/lib/desktop/auth";
 import { useTranslate } from "@/components/i18n/MessagesProvider";
+import { LegalLink } from "@/components/legal/LegalLink";
 
 /**
  * Continue-with-Google and Sign-in-with-Apple buttons. Used by both
@@ -229,19 +229,13 @@ export function OAuthButtons({
       {showTermsNotice ? (
         <p className="mb-3 font-sans text-caption leading-[1.5] text-paper/55">
           {t("signin.byContinuingYouAgreeToOur")}{" "}
-          <Link
-            href="/terms"
-            className="text-paper/80 underline decoration-paper/30 underline-offset-2 hover:decoration-paper/60"
-          >
+          <LegalLink doc="terms" className="text-paper/80 underline decoration-paper/30 underline-offset-2 hover:decoration-paper/60">
             {t("shop.terms")}
-          </Link>{" "}
+          </LegalLink>{" "}
           {t("ui.and")}{" "}
-          <Link
-            href="/privacy"
-            className="text-paper/80 underline decoration-paper/30 underline-offset-2 hover:decoration-paper/60"
-          >
+          <LegalLink doc="privacy" className="text-paper/80 underline decoration-paper/30 underline-offset-2 hover:decoration-paper/60">
             {t("ui.privacyPolicyX")}
-          </Link>
+          </LegalLink>
           .
         </p>
       ) : null}

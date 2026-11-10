@@ -33,6 +33,7 @@ import { SecureCheckoutNote } from "./SecureCheckoutNote";
 import { OrderBump } from "./OrderBump";
 import { SetFinish } from "./SetFinish";
 import { streamedUrl } from "@/lib/media/streamed";
+import { LegalLink } from "@/components/legal/LegalLink";
 
 /**
  * The cart. Local until the moment of checkout: items live on the device,
@@ -419,13 +420,13 @@ export function CartClient() {
             />
             <span className="font-sans text-caption leading-[1.5] text-paper/60">
               {t("ui.iAgreeToThe")}{" "}
-              <Link href="/terms" className="underline underline-offset-2 hover:text-paper/80">
+              <LegalLink doc="terms" className="underline underline-offset-2 hover:text-paper/80">
                 {t("shop.terms")}
-              </Link>{" "}
+              </LegalLink>{" "}
               {t("ui.andThe")}{" "}
-              <Link href="/shop/policies" className="underline underline-offset-2 hover:text-paper/80">
+              <LegalLink doc="shop-policies" className="underline underline-offset-2 hover:text-paper/80">
                 {t("shop.shippingRefundPolicy")}
-              </Link>
+              </LegalLink>
               .
             </span>
           </label>

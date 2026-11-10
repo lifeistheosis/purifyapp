@@ -9,6 +9,7 @@ import { authOrigin } from "@/lib/site";
 import { useTranslate } from "@/components/i18n/MessagesProvider";
 import { PasswordInput } from "./PasswordInput";
 import { OAuthButtons } from "./OAuthButtons";
+import { LegalLink } from "@/components/legal/LegalLink";
 
 /**
  * Email + password sign-up. The Supabase trigger creates the profiles
@@ -178,19 +179,13 @@ export function SignUpForm() {
         />
         <span className="font-sans text-caption leading-[1.5] text-paper/70">
           {t("ui.iAgreeToThe")}{" "}
-          <Link
-            href="/terms"
-            className="text-paper underline underline-offset-2"
-          >
+          <LegalLink doc="terms" className="text-paper underline underline-offset-2">
             {t("ui.termsOfServiceX")}
-          </Link>{" "}
+          </LegalLink>{" "}
           {t("ui.and")}{" "}
-          <Link
-            href="/privacy"
-            className="text-paper underline underline-offset-2"
-          >
+          <LegalLink doc="privacy" className="text-paper underline underline-offset-2">
             {t("ui.privacyPolicyX")}
-          </Link>
+          </LegalLink>
           .
         </span>
       </label>

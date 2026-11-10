@@ -395,7 +395,7 @@ describe("the website's /pricing, as R2", () => {
     expect(web).toContain('phase === "ready" && held === "loading" && heldGrace');
     // The Terms name the manage-subscription link on the pricing page as the
     // way to cancel a subscription bought on the web.
-    expect(code("app/(app)/terms/page.tsx")).toContain("manage-subscription link on the");
+    expect(code("components/legal/TermsText.tsx")).toContain("manage-subscription link on the");
     expect(web).toContain("webManagementURL(user.id)");
     expect(web).toContain('router.push("/account")');
     const owned = render(createElement(PlusOwnedFoot, { onManage: () => {}, busy: null }));
