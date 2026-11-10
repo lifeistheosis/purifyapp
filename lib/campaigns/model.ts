@@ -469,6 +469,12 @@ export type PublicCampaign = {
    */
   circle?: { name: string };
   /**
+   * For its creator alone: its words can still be changed, because it waits
+   * for its first read and no moderator has read them yet
+   * (lib/campaigns/server.ts, mayChange).
+   */
+  changeable?: boolean;
+  /**
    * For its creator alone, while it waits: its words may mean someone is in
    * danger, a moderator reads it first, and the page shows the safety line
    * (./safety.ts). Never told to another reader, and never on a list.

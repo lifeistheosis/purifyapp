@@ -425,6 +425,8 @@ const SAMPLE_RELATION = { mine: false, following: false, followsYou: false, mutu
 
 const seen = new Set();
 /** Every request a screen made of the server, for the walk to hold. */
+/** A waiting campaign's words as its creator last changed them, by id, for the page's read after a change. */
+const changedWords = new Map();
 let calls = [];
 /** And each one's address with its query, in order. */
 let asked = [];
@@ -485,11 +487,22 @@ async function answer(ctx, opts = {}) {
       const ids = JSON.parse(req.postData() ?? "{}").ids ?? [];
       return json({ states: Object.fromEntries(ids.map((id) => [id, "running"])) });
     }
+    // Its creator changes a waiting campaign's words (lib/campaigns/server.ts, changeCampaign). With `late`, a
+    // moderator has read it in the meantime, and the server says so and changes nothing.
+    const wordsOf = /^\/api\/campaigns\/([0-9a-f-]{36})\/words$/.exec(p);
+    if (wordsOf && req.method() === "POST") {
+      if (opts.late) return json({ error: "A moderator has read this campaign, so its words stay as they are.", code: "not_waiting" }, 409);
+      changedWords.set(wordsOf[1], { title: sent.title, subject_name: sent.name, details: sent.words ?? null });
+      return json({ ok: true });
+    }
     const one = /^\/api\/campaigns\/([0-9a-f-]{36})$/.exec(p);
     if (one && req.method() === "GET") {
       const c = CAMPAIGNS[one[1]];
       if (c?.circle && !opts.circles) return json({ error: "Not found." }, 404);
-      return c ? json({ campaign: { ...c, ...(opts.mine?.includes(c.id) ? { mine: true, keep_after_end: false, listed: true } : {}) } }) : json({ error: "Not found." }, 404);
+      const mine = opts.mine?.includes(c?.id);
+      // What the route tells its creator alone: its settings, and that a waiting campaign's words can still be changed.
+      const own = mine ? { mine: true, keep_after_end: false, listed: true, ...(c.status === "held" ? { changeable: true } : {}) } : {};
+      return c ? json({ campaign: { ...c, ...own, ...(changedWords.get(c.id) ?? {}) } }) : json({ error: "Not found." }, 404);
     }
     // Talk together's feed: nothing said yet, so the conversations draw as they are and not as "opening soon".
     if (p === "/api/community/posts" && req.method() === "GET") return json({ posts: [] });
@@ -1011,6 +1024,19 @@ await shot("35-campaign-place", "a campaign's page with its place beside who sta
   },
 });
 
+// 39 Changing a waiting campaign's words: the sheet, with what was written.
+await shot("39-change-words", "a campaign that still waits: its creator changes its words", `/campaigns/detail?id=${HELD}`, "[role=dialog]:has([data-campaign-change])", {
+  mine: [HELD],
+  prepare: async (page) => {
+    await page.waitForSelector("#campaign-title", { timeout: 15000 });
+    await page.evaluate(() => window.dispatchEvent(new Event("purify:campaign-menu-open")));
+    await page.locator("[role=dialog] button", { hasText: "Change the words" }).click();
+    await page.waitForSelector("[data-campaign-change] #campaign-change-title", { timeout: 8000 });
+    await settle(page, 600);
+    await page.evaluate(() => document.activeElement?.blur());
+  },
+});
+
 // 38 The board with a kind chosen behind the sliders: they are lit and say its name, and the list keeps to it.
 await shot("38-board-kind", "the board with a kind chosen behind the sliders", "/campaigns", "[data-campaign-board]", {
   prepare: async (page) => {
@@ -1080,7 +1106,7 @@ async function pictureWalk(label, ...rest) {
   if (!FLOWS.length || FLOWS.some((f) => label.toLowerCase().includes(f))) console.log(`left  ${label}: needs an export cut with pictures (PICTURES_BUILD=1; see the header)`);
 }
 
-async function walk(label, where, run, { set = {}, signedIn = true, mine, closed = false, parts, pictures, holdOpen = false, circles = false, holds, board } = {}) {
+async function walk(label, where, run, { set = {}, signedIn = true, mine, closed = false, parts, pictures, holdOpen = false, circles = false, holds, board, late = false } = {}) {
   if (FLOWS.length && !FLOWS.some((f) => label.toLowerCase().includes(f))) return;
   const seed = {
     "purify.prayers.campaigns": JSON.stringify(CARRIED),
@@ -1092,13 +1118,14 @@ async function walk(label, where, run, { set = {}, signedIn = true, mine, closed
   page.on("pageerror", (e) => errors.push(e.message));
   calls = [];
   asked = [];
+  changedWords.clear();
   let ok = true;
   let why = "";
   try {
     // With `holdOpen`, the website's answer to "are campaigns open for this reader" waits for the flow's own word.
     let letGo = () => {};
     const heldOpen = holdOpen ? { until: new Promise((done) => (letGo = done)) } : null;
-    await answer(ctx, { mine, closed, parts, pictures, heldOpen, circles, holds, board });
+    await answer(ctx, { mine, closed, parts, pictures, heldOpen, circles, holds, board, late });
     await go(page, where);
     await settle(page, 1800);
     try {
@@ -1454,6 +1481,56 @@ if (WALK) {
     const place = page.locator("[data-mod-campaign] [data-mod-campaign-place]");
     expectThat((await place.count()) === 1 && plain(await place.innerText()) === "Place: Novi Sad, Serbia", `the moderators' list says "${(await place.count()) ? plain(await place.innerText()) : "nothing"}"`);
   });
+
+  // Changing its words while it waits (1.9; the notes, section 33).
+  await walk("changing its words: offered while a campaign waits for its first read; saved, the page shows the new words and says a moderator will read it as it is now", `/campaigns/detail?id=${HELD}`, async (page) => {
+    await page.waitForSelector("#campaign-title", { timeout: 15000 });
+    await page.evaluate(() => window.dispatchEvent(new Event("purify:campaign-menu-open")));
+    await page.locator("[role=dialog] button", { hasText: "Change the words" }).click();
+    const sheet = page.locator("[data-campaign-change]");
+    await sheet.waitFor({ timeout: 8000 });
+    // It begins from the campaign as it stands, and says until when it can be changed.
+    expectThat((await page.inputValue("#campaign-change-title")) === "For Elias on his journey" && (await page.inputValue("#campaign-change-name")) === "Elias", "the sheet does not begin from the campaign's own words");
+    expectThat((await page.inputValue("#campaign-change-words")) === "He travels home on Friday.", "the words did not come into the sheet");
+    expectThat((await sheet.innerText()).includes("until a moderator has read your campaign"), "the sheet does not say until when");
+    const save = sheet.locator("button", { hasText: "Save" });
+    expectThat(await save.isDisabled(), "Save is lit with nothing changed");
+    await page.fill("#campaign-change-title", "For Elias on his way home");
+    await page.fill("#campaign-change-words", "He travels home on Saturday now.");
+    expectThat(!(await save.isDisabled()), "Save stays dim with the words changed");
+    await save.click();
+    await sheet.waitFor({ state: "detached", timeout: 8000 });
+    const [sent] = sentTo("POST", /^\/api\/campaigns\/[0-9a-f-]{36}\/words$/);
+    expectThat(sent && sent.path.includes(HELD), "the change was not sent for this campaign");
+    expectThat(JSON.stringify(sent.body) === JSON.stringify({ title: "For Elias on his way home", name: "Elias", words: "He travels home on Saturday now." }), `sent ${JSON.stringify(sent.body)}`);
+    await settle(page, 900);
+    expectThat((await page.locator("#campaign-title").innerText()).includes("For Elias on his way home"), `the page still says "${await page.locator("#campaign-title").innerText()}"`);
+    expectThat((await page.locator("[data-campaign-page]").innerText()).includes("Saved. A moderator will read it as it is now."), "the page does not say it was saved");
+    expectThat((await page.locator("[data-campaign-standing]").innerText()).includes("Waiting for a moderator"), "it no longer says it waits");
+  }, { mine: [HELD] });
+
+  await walk("changing its words: not offered once a moderator has read it, and one read in the meantime keeps its words and says why", `/campaigns/detail?id=${NICHOLAS}`, async (page) => {
+    await page.waitForSelector("#campaign-title", { timeout: 15000 });
+    await page.evaluate(() => window.dispatchEvent(new Event("purify:campaign-menu-open")));
+    await page.waitForSelector("[role=dialog] .set-panel", { timeout: 8000 });
+    expectThat((await page.locator("[role=dialog] button", { hasText: "Change the words" }).count()) === 0, "a campaign a moderator has read offers to change its words");
+    await page.keyboard.press("Escape");
+    // One that waited when the page opened, and was read before Save was pressed.
+    await go(page, `/campaigns/detail?id=${HELD}`);
+    await page.waitForSelector("#campaign-title", { timeout: 15000 });
+    await settle(page, 900);
+    await page.evaluate(() => window.dispatchEvent(new Event("purify:campaign-menu-open")));
+    await page.locator("[role=dialog] button", { hasText: "Change the words" }).click();
+    await page.waitForSelector("[data-campaign-change]", { timeout: 8000 });
+    await page.fill("#campaign-change-title", "For Elias on his way home");
+    await page.locator("[data-campaign-change] button", { hasText: "Save" }).click();
+    const said = page.locator("[data-campaign-change-error]");
+    await said.waitFor({ timeout: 8000 });
+    expectThat((await said.innerText()).includes("A moderator has read this campaign, so its words stay as they are."), `the sheet says "${await said.innerText()}"`);
+    await page.keyboard.press("Escape");
+    await settle(page, 700);
+    expectThat((await page.locator("#campaign-title").innerText()).includes("For Elias on his journey"), "the page shows words that were not kept");
+  }, { mine: [NICHOLAS, HELD], late: true });
 
   // A kind on the board (1.9; the notes, 2.10).
   await walk("the board: a kind behind the sliders keeps the list to it, the same choice again shows every campaign, and the server is asked nothing for it", "/campaigns", async (page) => {

@@ -217,6 +217,21 @@ export async function reportCampaign(id: string, reason: ReportReason, words: st
   }
 }
 
+export type ChangeResult = { ok: true } | { ok: false; status: number; code: string | null };
+
+/** Its creator changes its title, name and words, while it still waits for its first read. */
+export async function changeCampaignWords(id: string, input: { title: string; name: string; words: string | null; confirmFiltered?: boolean }): Promise<ChangeResult> {
+  if (!campaignsInBuild()) return { ok: false, status: 404, code: null };
+  try {
+    const res = await apiFetch(`/api/campaigns/${encodeURIComponent(id)}/words`, { ...JSON_POST, body: JSON.stringify(input) });
+    if (res.ok) return { ok: true };
+    const json = await body(res);
+    return { ok: false, status: res.status, code: typeof json.code === "string" ? json.code : null };
+  } catch {
+    return { ok: false, status: 0, code: null };
+  }
+}
+
 /** The creator closes it early, with one of the two closings. */
 export async function closeCampaign(id: string, status: Closing): Promise<Sent> {
   if (!campaignsInBuild()) return CLOSED;

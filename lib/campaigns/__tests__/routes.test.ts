@@ -77,6 +77,7 @@ vi.mock("@/lib/community/notify", () => ({
 import { GET as getOne, PATCH as patchOne } from "@/app/api/campaigns/[id]/route";
 import { DELETE as leave, POST as join } from "@/app/api/campaigns/[id]/join/route";
 import { POST as report } from "@/app/api/campaigns/[id]/report/route";
+import { POST as words } from "@/app/api/campaigns/[id]/words/route";
 import { GET as mine } from "@/app/api/campaigns/mine/route";
 import { GET as isOpen } from "@/app/api/campaigns/open/route";
 import { GET as board, POST as create } from "@/app/api/campaigns/route";
@@ -520,6 +521,151 @@ describe("starting a campaign", () => {
     // One that is over does not count against the three.
     campaigns().find((r) => r.creator_id === BEN)!.status = "ended";
     expect((await start({ title: "A fourth" })).status).toBe(200);
+  });
+});
+
+describe("changing its words while it waits", () => {
+  const change = (id: string, body: Record<string, unknown>) => words(new Request(`${SITE}/api/campaigns/${id}/words`, json(body)), params(id));
+  const waiting = async (over: Record<string, unknown> = {}) => ((await (await start(over)).json()) as { id: string }).id;
+  const NEW = { title: "Forty days for Nikolaos", name: "Nikolaos", words: "Pray with us for our father, who fell asleep on Sunday night." };
+  const code = async (res: Response) => ((await res.json()) as { code?: string }).code;
+  const shown = async (id: string) => ((await (await getOne(new Request(`${SITE}/api/campaigns/${id}`), params(id))).json()) as { campaign: Record<string, unknown> }).campaign;
+
+  it("its creator changes the title, the name and the words, and nothing else of it moves", async () => {
+    const id = await waiting({ place: { country: "GR", town: "Thessaloniki" } });
+    const before = { ...byId(id) };
+    const res = await change(id, NEW);
+    expect(res.status).toBe(200);
+    const row = byId(id);
+    expect(row).toMatchObject({ title: NEW.title, subject_name: NEW.name, details: NEW.words, status: "held", held_reason: "new" });
+    for (const kept of ["id", "creator_id", "intention", "for_whom", "days", "starts_on", "ends_on", "ends_at", "consent_kind", "consent_at", "terms_accepted_at", "audience", "place_country", "place_name", "creator_name"]) {
+      expect(row[kept], kept).toEqual(before[kept]);
+    }
+    // Words can be taken away altogether: a title and a name are a campaign.
+    expect((await change(id, { title: NEW.title, name: NEW.name, words: "" })).status).toBe(200);
+    expect(byId(id).details).toBeNull();
+  });
+
+  it("takes those three and nothing else: a kind, a length, a place or a standing sent with them changes nothing", async () => {
+    const id = await waiting();
+    const res = await change(id, { ...NEW, kind: "study", forWhom: "living", days: 1, status: "active", held_reason: null, place: { country: "GR", town: "Athens" }, creator_id: BEN, consent: "self" });
+    expect(res.status).toBe(200);
+    expect(byId(id)).toMatchObject({ intention: "departed", for_whom: "departed", days: 40, status: "held", held_reason: "new", creator_id: ANNA, consent_kind: "family" });
+    expect(byId(id).place_country ?? null).toBeNull();
+  });
+
+  it("reads the changed words as it read the first: a link refuses, and a word the filter masks asks first", async () => {
+    const id = await waiting();
+    const before = { ...byId(id) };
+    for (const over of [{ words: "See https://example.com/give for more." }, { title: "Help at example.com/give" }, { name: "www.example.com" }]) {
+      const res = await change(id, { ...NEW, ...over });
+      expect(res.status, JSON.stringify(over)).toBe(400);
+      expect(await code(res)).toBe("campaign_link");
+    }
+    expect(byId(id)).toEqual(before);
+
+    state.masked = new Map([["damn", "****"]]);
+    const asked = await change(id, { ...NEW, words: "This damn illness." });
+    expect(asked.status).toBe(409);
+    const said = (await asked.json()) as { code: string; preview: { words: string } };
+    expect([said.code, said.preview.words]).toEqual(["filtered", "This **** illness."]);
+    expect(byId(id)).toEqual(before);
+    expect((await change(id, { ...NEW, words: "This damn illness.", confirmFiltered: true })).status).toBe(200);
+    expect(byId(id)).toMatchObject({ details: "This **** illness.", held_reason: "new; words (1 masked)" });
+  });
+
+  it("tells the moderator again what the filters saw, danger first, and its creator is shown the safety line", async () => {
+    const id = await waiting();
+    expect((await shown(id)).safety).toBeUndefined();
+    expect((await change(id, { ...NEW, words: "I do not want to live any more. Pray for me." })).status).toBe(200);
+    expect(byId(id).held_reason).toMatch(/^new; crisis/);
+    expect((await shown(id)).safety).toBe(true);
+    // And when the words that said so are taken out, the mark goes with them.
+    expect((await change(id, NEW)).status).toBe(200);
+    expect(byId(id).held_reason).toBe("new");
+    expect((await shown(id)).safety).toBeUndefined();
+    // What else the filters see is said too.
+    expect((await change(id, { ...NEW, words: "Send what you can by cash app, any amount helps." })).status).toBe(200);
+    expect(byId(id).held_reason).toContain("money");
+  });
+
+  it("is nobody else's to change, and answers as if it were not there", async () => {
+    const id = await waiting();
+    const before = { ...byId(id) };
+    signIn(BEN);
+    const other = await change(id, NEW);
+    expect(other.status).toBe(404);
+    signIn(EDGAR);
+    expect((await change(id, NEW)).status).toBe(404);
+    signIn(null);
+    expect((await change(id, NEW)).status).toBe(401);
+    signIn(ANNA);
+    expect((await change(crypto.randomUUID(), NEW)).status).toBe(404);
+    expect((await change("not-an-id", NEW)).status).toBe(404);
+    expect(byId(id)).toEqual(before);
+  });
+
+  it("is not changed once a moderator has read it: the words they read are the words it carries", async () => {
+    const id = await waiting();
+    expect((await approveCampaign(state.admin as never, MOD, id)).ok).toBe(true);
+    const read = { ...byId(id) };
+    const res = await change(id, NEW);
+    expect(res.status).toBe(409);
+    expect(await code(res)).toBe("not_waiting");
+    expect(byId(id)).toEqual(read);
+    // Nor once it is over, or closed with a closing.
+    for (const status of ["ended", "answered", "memory_eternal"]) {
+      byId(id).status = status;
+      expect((await change(id, NEW)).status, status).toBe(409);
+    }
+    expect(byId(id).title).toBe(read.title);
+  });
+
+  it("is not changed while it is hidden on readers' reports: the words reported are the words a moderator must read", async () => {
+    const id = running(ANNA, { status: "held", held_reason: "reports (3)" });
+    const before = { ...byId(id) };
+    const res = await change(id, NEW);
+    expect(res.status).toBe(409);
+    expect(await code(res)).toBe("not_waiting");
+    expect(byId(id)).toEqual(before);
+  });
+
+  it("is never for one of July's, which no moderator reads", async () => {
+    const id = running(ANNA, { status: "held", held_reason: "new", days: null, ends_at: null, ends_on: null });
+    expect((await change(id, NEW)).status).toBe(409);
+    expect(byId(id).title).toBe("For Maria");
+  });
+
+  it("tells its creator alone that it can still be changed, and only while that is so", async () => {
+    const id = await waiting();
+    expect((await shown(id)).changeable).toBe(true);
+    expect((await approveCampaign(state.admin as never, MOD, id)).ok).toBe(true);
+    expect((await shown(id)).changeable).toBeUndefined();
+    signIn(BEN);
+    expect((await shown(id)).changeable).toBeUndefined();
+    // Hidden on reports, its creator sees it waiting, and is not told it can be changed.
+    signIn(ANNA);
+    const hidden = running(ANNA, { status: "held", held_reason: "reports (3)" });
+    expect((await shown(hidden)).changeable).toBeUndefined();
+  });
+
+  it("needs a title and a name of the lengths a campaign is started with", async () => {
+    const id = await waiting();
+    for (const bad of [{ ...NEW, title: "ab" }, { ...NEW, title: "t".repeat(121) }, { ...NEW, name: "" }, { ...NEW, name: "n".repeat(81) }, { ...NEW, words: "w".repeat(601) }, { title: NEW.title }, {}]) {
+      expect((await change(id, bad)).status, JSON.stringify(bad).slice(0, 60)).toBe(400);
+    }
+    expect(byId(id).title).toBe("Forty days for Nicholas");
+  });
+
+  it("answers 404 while campaigns are closed, and the database is never asked", async () => {
+    const id = await waiting();
+    const kept = state.admin;
+    __setCampaignsOpening("closed");
+    // No database at all: a route that reached for one would throw.
+    state.admin = null;
+    expect((await change(id, NEW)).status).toBe(404);
+    state.admin = kept;
+    expect(byId(id).title).toBe("Forty days for Nicholas");
   });
 });
 

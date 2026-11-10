@@ -173,6 +173,8 @@ export function forReader(row: CampaignRow, userId: string | null, circle: strin
     // the safety line (./safety.ts). Told to its creator and to nobody else,
     // and no longer once a moderator has read it.
     ...(mine && row.status === "held" && typeof row.held_reason === "string" && saysDanger(row.held_reason) ? { safety: true } : {}),
+    // Its words can still be changed: no moderator has read them yet (mayChange, below).
+    ...(mine && mayChange(row) ? { changeable: true } : {}),
     // Kept to a circle: its name, for the line that says who can see it.
     // Only a caller that has already decided this reader may open it hands
     // a name in.
@@ -609,6 +611,105 @@ export async function startCampaign(
     return { ok: false, status: 500, error: "Couldn't start your campaign. Please try again." };
   }
   return { ok: true, id: (created as { id: string }).id };
+}
+
+// ── Changing its words while it waits ───────────────────────────────────────
+//
+// 1.9; the notes, 4.4 ("Their words: edit them (read again by a moderator)").
+// What is built is the part that needs no new column: while a campaign still
+// waits for its FIRST read, its creator can change its title, the name and
+// the words. Nothing is seen unread and nothing needs a second read: the
+// moderator reads it once, as changed, and is told again what the filters
+// saw in the new words.
+//
+// Once a moderator has read it, the words they read are the words it
+// carries. Its creator writes an update, or ends it and runs it again.
+// Changing a running campaign's words needs somewhere to keep the new words
+// while a moderator reads them, which is a column, which is SQL for the
+// owner's signature: not built (the notes, section 33).
+//
+// Never while it is hidden on readers' reports: the words that were reported
+// are the words a moderator must read.
+
+/** How many changes an account may make in an hour: enough to mend what was written, and no way to keep a moderator reading. */
+export const CHANGES_AN_HOUR = 20;
+
+/** Whether its creator may still change its words: it waits for its first read. Never one of July's, which is not read at all. */
+export function mayChange(row: Record<string, unknown>): boolean {
+  return row.status === "held" && typeof row.held_reason === "string" && /^new\b/.test(row.held_reason) && !isJulyRow(row);
+}
+
+export type ChangeInput = { title: string; name: string; words?: string | null; confirmFiltered?: boolean };
+
+export type Changed =
+  | { ok: true }
+  | { ok: false; status: number; error: string; code?: string; preview?: { title: string | null; name: string | null; words: string | null } };
+
+const NOT_THERE: Changed = { ok: false, status: 404, error: "Not found." };
+const READ_ALREADY: Changed = { ok: false, status: 409, error: "A moderator has read this campaign, so its words stay as they are.", code: "not_waiting" };
+
+/**
+ * Change a waiting campaign's title, name and words, as its creator. Held
+ * to everything a new campaign is: no link, the word filter with its writer
+ * asked first, and the moderator told what the filters saw, danger first.
+ * One answer for a campaign that is not there and one that is someone
+ * else's, so this tells nobody what exists.
+ */
+export async function changeCampaign(admin: SupabaseClient, user: Pick<User, "id">, id: string, input: ChangeInput): Promise<Changed> {
+  const found = await readCampaignRow(admin, id);
+  if (!found.ok) return found.why === "absent" ? NOT_THERE : { ok: false, status: 500, error: "Couldn't change your campaign. Please try again." };
+  const row = found.value;
+  if (!row || row.status === "removed" || row.creator_id !== user.id) return NOT_THERE;
+  if (!mayChange(row)) return READ_ALREADY;
+  if (await rateLimited(`campaign-change-user:${user.id}`, 3600, CHANGES_AN_HOUR)) {
+    return { ok: false, status: 429, error: "That is a lot of changes. Please try again in a while.", code: "campaigns_changes" };
+  }
+
+  // Words taken away altogether are no words, never an empty line.
+  const words = (input.words ?? "").trim() || null;
+  // Its place is not changed here, and is still read with the rest.
+  const town = typeof row.place_name === "string" ? row.place_name : null;
+  const texts = [input.title, input.name, words, town];
+  if (findLinks(texts).length > 0) {
+    return { ok: false, status: 400, error: "A prayer campaign can't carry a link.", code: "campaign_link" };
+  }
+  const [censored, censoredName] = await Promise.all([
+    censorPost(admin, { title: input.title, body: words }),
+    censorPost(admin, { title: input.name }),
+  ]);
+  const hits = censored.hits + censoredName.hits;
+  if (hits > 0 && !input.confirmFiltered) {
+    return {
+      ok: false,
+      status: 409,
+      error: "Some words in this campaign will be hidden until a moderator reviews them.",
+      code: "filtered",
+      preview: { title: censored.title, name: censoredName.title, words: censored.body },
+    };
+  }
+
+  // Only while it still waits for that first read: a moderator who read it
+  // a moment ago has read the words it had, and they stay.
+  const { data: written, error } = await admin
+    .from("prayer_campaigns")
+    .update({
+      title: censored.title ?? input.title,
+      subject_name: censoredName.title ?? input.name,
+      details: censored.body || null,
+      held_reason: heldReasons(texts, hits),
+      updated_at: new Date().toISOString(),
+    })
+    .eq("id", id)
+    .eq("creator_id", user.id)
+    .eq("status", "held")
+    .like("held_reason", "new%")
+    .select("id");
+  if (error) {
+    console.warn("[campaigns] change failed", error.message);
+    return { ok: false, status: 500, error: "Couldn't change your campaign. Please try again." };
+  }
+  if (!written || written.length === 0) return READ_ALREADY;
+  return { ok: true };
 }
 
 // ── What a device asks ──────────────────────────────────────────────────────

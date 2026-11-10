@@ -5,6 +5,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useState, type CSSProperties, type ReactNode } from "react";
 
 import { CAMPAIGN_DOORS, CampaignDoors, type CampaignDoor } from "@/components/campaigns/CampaignDoors";
+import { CampaignChangeSheet } from "@/components/campaigns/CampaignChangeSheet";
 import { CampaignJoinSheet } from "@/components/campaigns/CampaignJoinSheet";
 import { CampaignComments, CampaignUpdates, useCampaignThread } from "@/components/campaigns/CampaignNotes";
 import { CampaignPictures, useCampaignPictures } from "@/components/campaigns/CampaignPictures";
@@ -21,6 +22,7 @@ import { ChatBubble } from "@/components/ui/icons/ChatBubble";
 import { Check } from "@/components/ui/icons/Check";
 import { Close } from "@/components/ui/icons/Close";
 import { Erase } from "@/components/ui/icons/Erase";
+import { Pen } from "@/components/ui/icons/Pen";
 import { Hourglass } from "@/components/ui/icons/Hourglass";
 import { Lampada } from "@/components/ui/icons/Lampada";
 import { Orans } from "@/components/ui/icons/Orans";
@@ -128,7 +130,7 @@ function Opened({ first, bar }: { first: PublicCampaign; bar: ReactNode }) {
   const [campaign, setCampaign] = useState(first);
   const carried = useCarried();
   const today = todayKey();
-  const [sheet, setSheet] = useState<"join" | "menu" | "report" | "end" | null>(null);
+  const [sheet, setSheet] = useState<"join" | "menu" | "report" | "end" | "change" | null>(null);
   const [confirm, setConfirm] = useState<"takeDown" | "block" | null>(null);
   const [closing, setClosing] = useState<Closing>(first.for_whom === "departed" ? "memory_eternal" : "answered");
   const [busy, setBusy] = useState(false);
@@ -245,6 +247,14 @@ function Opened({ first, bar }: { first: PublicCampaign; bar: ReactNode }) {
     setSheet(null);
     setFailed(null);
     setNotice(message);
+  }
+
+  /** Its words were changed: said, and the page reads it again, as the server now holds it (a word the filter masked is shown masked). */
+  function changed(message: string) {
+    said(message);
+    void fetchCampaign(campaign.id).then((again) => {
+      if (again.state === "ok") setCampaign(again.campaign);
+    });
   }
 
   async function end() {
@@ -493,6 +503,8 @@ function Opened({ first, bar }: { first: PublicCampaign; bar: ReactNode }) {
 
       <CampaignJoinSheet open={sheet === "join"} pick={pick} onClose={() => setSheet(null)} onDone={said} />
       <CampaignReportSheet open={sheet === "report"} campaignId={campaign.id} onClose={() => setSheet(null)} onDone={said} />
+      {/* Its words, while no moderator has read them yet (the notes, section 33). */}
+      {campaign.changeable ? <CampaignChangeSheet open={sheet === "change"} campaign={campaign} onClose={() => setSheet(null)} onDone={changed} /> : null}
 
       {/* The menu at the top: what its creator can do, or Report and Block. */}
       <Sheet open={sheet === "menu"} onClose={() => setSheet(null)} title={campaign.title} desktop openFull>
@@ -501,6 +513,8 @@ function Opened({ first, bar }: { first: PublicCampaign; bar: ReactNode }) {
         <div className="set-panel mb-1 mt-1">
           {mine ? (
             <>
+              {/* While it waits for its first read, its words are still its creator's to mend. */}
+              {campaign.changeable ? <ButtonRow icon={<Pen size={17} />} label={t("campaigns.change")} onClick={() => setSheet("change")} /> : null}
               {/* Not for one of July's (no length): the housekeeping that
                   deletes after thirty days leaves July's rows alone, so
                   there is nothing to keep it from. */}

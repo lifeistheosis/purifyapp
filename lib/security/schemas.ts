@@ -489,6 +489,20 @@ export const campaignStatusSchema = z
   .refine((c) => c.status !== undefined || c.keepAfterEnd !== undefined || c.commentsOpen !== undefined || c.listed !== undefined, { message: "Nothing to change." });
 
 /**
+ * /api/campaigns/[id]/words POST body: its creator changes a waiting
+ * campaign's title, name and words (lib/campaigns/server.ts,
+ * changeCampaign). The same three fields, held to the same lengths, as a
+ * campaign is started with; nothing else of a campaign is changed here.
+ */
+export const campaignChangeSchema = z.object({
+  title: z.string().trim().min(3).max(120),
+  name: z.string().trim().min(1).max(80),
+  words: z.string().trim().max(600).optional().nullable(),
+  /** The writer has seen which of their words the filter will mask, and sends them all the same. */
+  confirmFiltered: z.boolean().optional(),
+});
+
+/**
  * /api/campaigns/[id]/thread POST body: the creator's update, or a reader's
  * comment. Words only, a thousand characters (lib/campaigns/model.ts,
  * NOTE_MAX). Who wrote it and whether it is held are the server's.

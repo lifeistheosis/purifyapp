@@ -4216,3 +4216,78 @@ Held by `lib/campaigns/__tests__/boardKind.test.ts` (15 cases; twelve ways
 of breaking it tried, each caught). The walk: two flows. Still: the board
 with a kind chosen (38). Its accessible name is a line the catalog has,
 "What for".
+
+---
+
+## 33. Changing a campaign's words: what is built, and what waits for him (2026-11-10)
+
+The notes, 4.4: "Their words: edit them (read again by a moderator)."
+
+### 33.1 What is built: a change while it still waits
+
+- **When.** From the moment a campaign is sent until a moderator reads it
+  for the first time. That is when a creator sees the slip: a name
+  misspelled, a day that moved.
+- **What.** Its title, the name and the words. Nothing else: not who it is
+  for, its kind, its length, its prayer, its place, or who can see it.
+- **Where.** On its page, in its creator's menu: "Change the words". The
+  sheet begins from the campaign as it stands and says until when: "You can
+  change these until a moderator has read your campaign. After that, write
+  an update, or end it and run it again."
+- **Held to everything a new campaign is.** No link. A word the filter
+  masks is asked about first. The moderator is told again what the filters
+  saw in the new words, and words that may mean danger put it first in
+  their queue and show its creator the safety line, as at the start.
+- **Nothing is seen unread and nothing is read twice.** The moderator reads
+  it once, as changed. If they read it between the sheet opening and Save,
+  the change is refused and the sheet says why: "A moderator has read this
+  campaign, so its words stay as they are." The rule is asked again inside
+  the write itself, so there is no moment between the two.
+- **Never while hidden on readers' reports.** The words that were reported
+  are the words a moderator must read.
+- **Twenty changes an hour** for an account, which mends any slip and keeps
+  nobody reading the same campaign all day.
+
+### 33.2 What is not built, and why it is his call
+
+Changing the words of a campaign that is **already running** cannot be done
+honestly with the table as it is. There are three ways, and two are wrong:
+
+1. **The change goes live at once.** Then words nobody read are in front of
+   everyone, and "a moderator reads every campaign before anyone sees it"
+   stops being true. Approve something plain, then change it: that is the
+   door this would open. Not built, and I would not build it.
+2. **The campaign goes back to waiting.** Then it leaves the board, its page
+   closes to everyone but its creator, and it drops out of the prayers of
+   everyone who carries it, for as long as a moderator takes. A typo would
+   cost a sick person their prayers for an afternoon. Not built.
+3. **The new words wait beside the old ones.** The campaign stays exactly as
+   it is until a moderator reads the change, and then the new words take
+   the old ones' place. This is the right one, and it needs somewhere to
+   keep the waiting words: five columns on the campaigns table, which is
+   one small SQL file for his signature, with a second chat's read, on a
+   day that already carries the others.
+
+**My recommendation:** ship 1.9 with the change while it waits (33.1), and
+take the third way in 1.9.1 if he wants it. Until then a running campaign's
+creator has what the note in the sheet says: write an update (which readers
+see at once, and which is held by the same filters), or end it and run it
+again with the words mended (section 31).
+
+### 33.3 What holds it
+
+`lib/campaigns/__tests__/routes.test.ts`, "changing its words while it
+waits" (11 cases: whose, when, what, the filters, danger, July's, the
+closed door) and `lib/campaigns/__tests__/change.test.ts` (12 cases: the
+rule's one function, the write that asks it again, and the screens).
+Fifteen ways of breaking it were tried and each failed a case. The walk:
+two flows. Still: the sheet (39).
+
+### 33.4 Words for his OK (English; the twenty languages after)
+
+| Key | English |
+|---|---|
+| `campaigns.change` | Change the words |
+| `campaigns.change.note` | You can change these until a moderator has read your campaign. After that, write an update, or end it and run it again. |
+| `campaigns.change.saved` | Saved. A moderator will read it as it is now. |
+| `campaigns.change.late` | A moderator has read this campaign, so its words stay as they are. |
