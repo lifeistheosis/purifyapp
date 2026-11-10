@@ -37,3 +37,11 @@ Planned (brainstorm, nothing built until his start):
 4. **Over whatever opened it:** the sheet stands above the layer it was opened from: over the onboarding (above its layer of 100) and over a purchase sheet (`lib/ui/overlay.ts` already counts layers), so no reader is sent beneath again.
 5. **Nothing in the words changes:** the agreement lines stay as he approved them, the checkout's required agreement (`termsAccepted`) stays, and the whole text beside the action only makes the notice stronger.
 6. **Held by:** a unit test that none of those places links to `/terms` or `/privacy` bare, and that the pages and the sheet draw the same text; a walk on the app's export (the account step, Terms, to the end, Close, still on the account step; the network off, then Privacy opens); and `checkMock` on the sheet in all five palettes.
+
+### 2. Turning on notifications in the onboarding does not work; it just says "static" (2026-11-10)
+
+What he saw: in the onboarding, the step that turns on notifications (reminders) does not work on build 90; it shows only the word "static". His words: "turning on notifications doesn't work it just says static (on the onboarding)".
+
+Where it is: for the Fable onboarding chat to find (the onboarding and its reminders step; F-21 and item 89 on reminders reaching Android).
+
+Planned (brainstorm, nothing built until his start): find why the step fails and why a reader sees a raw word instead of a sentence; the step either turns reminders on or says plainly, in the house's words, why it cannot; never a code word on screen. Checked on the export and on the phone walk (row 19).
