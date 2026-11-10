@@ -67,7 +67,8 @@ describe("the Old Testament interlinear gate", () => {
 
   it("leaves the New Testament rule as it was", () => {
     expect(interlinearAvailable("john", "NT")).toBe(true);
-    expect(interlinearAvailable("philemon", "NT")).toBe(false);
+    // Philemon's English was written again in 1.9 (lib/bible/interlinearBooks.ts).
+    expect(interlinearAvailable("philemon", "NT")).toBe(true);
   });
 });
 

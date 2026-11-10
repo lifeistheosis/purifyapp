@@ -13,20 +13,27 @@ import "server-only";
 // never a half-built experience whose missing half looks like a loading state.
 // The ordinary chapter text is completely unaffected.
 //
-// ── Currently blocked ──────────────────────────────────────────────────────
+// ── Currently blocked: none ────────────────────────────────────────────────
 //
-// philemon — data/bible/english-tagged/philemon/ was written by an ingest that
-//   carried its accumulator across a book boundary. `1.json` held 55 entries:
-//   Philemon 1-25 followed by Philippians 1:1-30, and `{2,3,4}.json` were
-//   Philippians 2-4 under a Philemon path. Because the reader builds its token
-//   map as `englishTokensByNum[v.n] = v.tokens` (last write wins), the English
-//   side of Philemon 1-25 rendered PHILIPPIANS. The corrupt files are deleted;
-//   Philemon stays blocked until a regenerated set is validated, because with
-//   them gone it would otherwise fall back to a Greek-only column.
+// philemon was, until 1.9. data/bible/english-tagged/philemon/ had been
+//   written with Philippians in it: `1.json` held Philemon 1-25 followed by
+//   Philippians 1:1-30, and `{2,3,4}.json` were Philippians 2-4 under a
+//   Philemon path. Because the reader builds its token map as
+//   `englishTokensByNum[v.n] = v.tokens` (last write wins), the English side
+//   of Philemon 1-25 rendered PHILIPPIANS. The cause was found when it was
+//   written again in 1.9 (his "everything in 1.9", 2026-11-10): the source's
+//   Phm.json carries all of Philippians under the key "Phl" after Philemon's
+//   25 verses, the ingest read every key in a file, and it asked for
+//   Philippians as "Php", which is not there, so Philippians itself had no
+//   English tags at all. scripts/fetch-tagged-kjv.mjs now reads only a file's
+//   own key and asks for "Phl"; both books were written again, every verse's
+//   words checked against the app's English, and Philemon was let through.
 //
-// Removing a book from this list requires the regenerated data to pass
-// lib/bible/__tests__/interlinearData.test.ts, which is the point of that test.
-const BLOCKED_BOOKS: ReadonlySet<string> = new Set(["philemon"]);
+// Adding a book to this list means deleting its data/bible/english-tagged
+// folder in the same change, and removing one requires the regenerated data
+// to pass lib/bible/__tests__/interlinearData.test.ts, which is the point of
+// that test.
+const BLOCKED_BOOKS: ReadonlySet<string> = new Set<string>();
 
 // The Old Testament books with no Greek in data/bible/original (Swete's
 // Septuagint does not reach them here): nothing to set beside the English.

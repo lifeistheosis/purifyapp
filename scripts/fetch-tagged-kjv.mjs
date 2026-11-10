@@ -8,7 +8,8 @@
 // Multiple consecutive English words can share the same Strong's number
 // when one Greek word maps to a phrase (e.g. "to be an apostle" -> G652).
 //
-// Usage: node scripts/fetch-tagged-kjv.mjs
+// Usage: node scripts/fetch-tagged-kjv.mjs [--only <code>]
+//   --only Phm   fetch and write that one book (their code), nothing else
 
 import fs from "node:fs/promises";
 import path from "node:path";
@@ -25,7 +26,9 @@ const OUT = path.join(ROOT, "data", "bible", "english-tagged");
 const NT = {
   Mat: "matthew", Mar: "mark", Luk: "luke", Jhn: "john", Act: "acts",
   Rom: "romans", "1Co": "1-corinthians", "2Co": "2-corinthians",
-  Gal: "galatians", Eph: "ephesians", Php: "philippians", Col: "colossians",
+  // Philippians is "Phl" there, file and keys alike; asked for as "Php" it
+  // was never fetched, and the app had no English tags for it until 1.9.
+  Gal: "galatians", Eph: "ephesians", Phl: "philippians", Col: "colossians",
   "1Th": "1-thessalonians", "2Th": "2-thessalonians",
   "1Ti": "1-timothy", "2Ti": "2-timothy",
   Tit: "titus", Phm: "philemon", Heb: "hebrews", Jas: "james",
@@ -116,12 +119,23 @@ function cleanTokens(tokens) {
 // Some kaiserlik files have escape-sequence errors in the bg/ch/sp fields
 // that make JSON.parse choke. We only need the `en` field, so we extract
 // each verse's English directly via regex on the raw text.
-function extractEnglish(raw) {
+//
+// A file can hold another book's verses as well as its own: theirs for
+// Philemon, Phm.json, carries all of Philippians under the key "Phl" after
+// Philemon's 25 verses, which is how Philemon's English came to read
+// Philippians (lib/bible/interlinearBooks.ts). So only the verses keyed with
+// the file's own code are read, or, where the file holds one code alone, that
+// one; a file with several codes and none its own stops the ingest.
+function extractEnglish(raw, code) {
   const re =
     /"([A-Za-z0-9]+)\|(\d+)\|(\d+)"\s*:\s*\{[^{}]*?"en"\s*:\s*"((?:[^"\\]|\\.)*)"/g;
+  const codes = new Set([...raw.matchAll(/"([A-Za-z0-9]+)\|\d+\|\d+"\s*:/g)].map((k) => k[1]));
+  const own = codes.has(code) ? code : codes.size === 1 ? [...codes][0] : null;
+  if (!own) throw new Error(`${code}.json holds ${[...codes].join(", ")} and not ${code}`);
   const out = new Map(); // chapter -> [{ n, en }]
   let m;
   while ((m = re.exec(raw)) !== null) {
+    if (m[1] !== own) continue;
     const chapter = parseInt(m[2], 10);
     const verse = parseInt(m[3], 10);
     // Unescape JSON-style backslash sequences.
@@ -135,9 +149,14 @@ function extractEnglish(raw) {
   return out;
 }
 
+/** `--only <code>`: one book, as when Philemon was written again (1.9). */
+const ONLY = process.argv.includes("--only") ? process.argv[process.argv.indexOf("--only") + 1] : null;
+if (ONLY && !(ONLY in NT)) throw new Error(`--only ${ONLY}: not one of ${Object.keys(NT).join(", ")}`);
+
 async function buildNT() {
   let total = 0;
   for (const [code, slug] of Object.entries(NT)) {
+    if (ONLY && code !== ONLY) continue;
     let raw;
     try {
       raw = await get(`${BASE}/${code}.json`);
@@ -146,7 +165,7 @@ async function buildNT() {
       continue;
     }
     const byChapter = new Map();
-    for (const [chapter, vs] of extractEnglish(raw)) {
+    for (const [chapter, vs] of extractEnglish(raw, code)) {
       const list = vs
         .map(({ n, en }) => ({ n, tokens: parseVerse(en) }))
         .filter((v) => v.tokens.length > 0);

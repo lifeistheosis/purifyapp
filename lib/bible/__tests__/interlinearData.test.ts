@@ -211,6 +211,41 @@ describe("interlinear data integrity", () => {
     expect(offenders, offenders.join("\n  ")).toEqual([]);
   });
 
+  it("every New Testament book has its English tags, unless it is blocked", () => {
+    // Philippians had none until 1.9: the source names it "Phl", the ingest
+    // asked for "Php", and the miss was a warning nobody read.
+    const blocked = new Set(blockedInterlinearBooks());
+    const missing = BOOKS.filter((b) => b.testament === "NT" && !blocked.has(b.slug) && !fs.existsSync(path.join(TAGGED, b.slug))).map((b) => b.slug);
+    expect(missing).toEqual([]);
+  });
+
+  it("Philemon's and Philippians' English tags are their own words (written again in 1.9)", () => {
+    // Identity, not bounds: the words of each tagged verse, read in order,
+    // are the words of that verse in the app's English. One verse of the
+    // five chapters ends a word short in the source (Philippians 1:13, "in
+    // all other places", the last word supplied in italics), which the
+    // reader's word tap already allows for (lib/bible/wordAlign.ts).
+    const words = (s: string) => s.replace(/[\u2018\u2019]/g, "'").replace(/[^A-Za-z0-9' ]/g, " ").replace(/\s+/g, " ").trim().toLowerCase();
+    const off: string[] = [];
+    let verses = 0;
+    for (const [slug, chapters] of [["philemon", 1], ["philippians", 4]] as const) {
+      for (let c = 1; c <= chapters; c++) {
+        const tagged = readJson<{ book: string; verses: { n: number; tokens: { w: string }[] }[] }>(path.join(TAGGED, slug, `${c}.json`));
+        const english = readJson<{ verses: { n: number; text: string }[] }>(path.join(ROOT, "data/bible", slug, `${c}.json`));
+        expect(tagged.verses.map((v) => v.n), `${slug} ${c}`).toEqual(english.verses.map((v) => v.n));
+        for (const v of english.verses) {
+          verses++;
+          const t = tagged.verses.find((x) => x.n === v.n)!;
+          const a = words(v.text);
+          const b = words(t.tokens.map((x) => x.w).join(" "));
+          if (a !== b) off.push(`${slug} ${c}:${v.n}`);
+        }
+      }
+    }
+    expect(verses).toBe(129);
+    expect(off).toEqual(["philippians 1:13"]);
+  });
+
   it("a blocked book ships no interlinear data at all", () => {
     // Blocking without deleting would leave the data one boolean away from
     // being served again; deleting without blocking would leave a Greek-only
