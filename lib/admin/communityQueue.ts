@@ -23,7 +23,7 @@
  * first, lib/admin/undoDelay.ts).
  */
 
-import { heldWhy, type HeldWhy, type WaitingCampaign } from "@/lib/campaigns/model";
+import { heldWhy, type HeldWhy, type WaitingCampaign, type WaitingPicture } from "@/lib/campaigns/model";
 
 import { openReports, sharedKey, sharedWords, waitsForDecision, type SharedPageIn } from "./sharedPages";
 
@@ -109,6 +109,14 @@ export type QueueSources = {
    * (lib/campaigns/moderation.ts). Absent while campaigns are closed.
    */
   waitingCampaigns?: WaitingCampaign[];
+  /**
+   * A campaign's pictures that wait for a moderator (1.9, "After 1.9: the
+   * panel", item 1, moved into 1.9 with pictures): a new one, one hidden by
+   * readers' reports, or one still shown that readers have reported
+   * (lib/campaigns/pictures.ts, readWaitingPictures). Absent while pictures
+   * are switched off (lib/campaigns/parts.ts).
+   */
+  waitingPictures?: WaitingPicture[];
 };
 
 // ── The keys: one per thing ──────────────────────────────────────────────
@@ -125,6 +133,8 @@ export const recipeKey = (recipeId: string | null | undefined, reportId: string)
 export const reviewKey = (reviewId: string | null | undefined, reportId: string) => (reviewId ? `review:${reviewId}` : `review-report:${reportId}`);
 export const campaignKey = (campaignId: string | null | undefined, reportId: string) =>
   campaignId ? `campaign:${campaignId}` : `campaign-report:${reportId}`;
+/** A campaign's picture: its own row, apart from its campaign's (a moderator decides each). */
+export const pictureKey = (pictureId: string) => `picture:${pictureId}`;
 
 /** How many rows wait: the distinct things, whatever number of holds and reports name them. */
 export function countWaiting(keys: Iterable<string>): number {
@@ -174,6 +184,13 @@ export type QueueRow = {
 const COMMUNITY = "/api/admin/community";
 const FILTER = "/api/admin/community/filter";
 const SHARED = "/api/admin/shared-pages";
+
+/** What a reader ticked when reporting a picture, in the panel's words (the reader's are lib/campaigns/model.ts PICTURE_REPORT_REASON_LABEL). */
+const PICTURE_REASON_WORDS: Record<string, string> = {
+  about_me: "shows the reporter or someone in their care, without agreement",
+  picture: "should not be here",
+  other: "something else",
+};
 
 const KIND_WORDS: Record<string, string> = {
   discussion: "a post in Discussion",
@@ -508,6 +525,52 @@ export function buildQueue(src: QueueSources): QueueRow[] {
       actions: [
         ...(!c || gone ? [] : [{ id: "remove", label: "Remove campaign", tone: "danger" as const, removal: true, calls: [{ url: COMMUNITY, body: { action: "remove_campaign", id: c.id } }], done: "Removed." }]),
         { id: "dismiss", label: "Dismiss", tone: "default", removal: false, calls: dismissAll("dismiss_campaign_report", reps.map((r) => r.id)), done: "Dismissed. A record is kept in the moderation log." },
+      ],
+    });
+  }
+
+  // A campaign's pictures (1.9): one row a picture, the reports on it folded
+  // in. Its two decisions are the campaigns chat's (lib/campaigns/pictures.ts):
+  // clear (approvePicture) and take down (removePictureAsModerator), the
+  // second held back ten seconds with Undo like every removal.
+  for (const pic of src.waitingPictures ?? []) {
+    const n = pic.reports.length;
+    // What readers ticked, in the panel's words, or what they wrote.
+    const said = pic.reports.map((r) => (r.reason_code ? (PICTURE_REASON_WORDS[r.reason_code] ?? r.reason_code) : r.reason));
+    rows.push({
+      key: pictureKey(pic.id),
+      what: [
+        pic.shown ? `Reported · ${plural(n, "report", "reports")}` : n > 0 ? `Hidden by reports · ${plural(n, "report", "reports")}` : "New picture",
+        pic.shown ? "a picture readers can see" : "a picture waiting to be cleared",
+      ].join(" · "),
+      at: pic.created_at,
+      who: pic.campaign.creator_name ? { name: pic.campaign.creator_name, handle: null } : null,
+      text: `On the campaign "${flat(pic.campaign.title)}"`,
+      written: null,
+      reasons: tallyReasons(said),
+      note:
+        [pic.alt ? `Its creator says it shows: ${flat(pic.alt)}` : null, pic.check_result && pic.check_result !== "clear" ? `The check said: ${flat(pic.check_result)}` : null]
+          .filter(Boolean)
+          .join(" · ") || null,
+      more: null,
+      picture: pic.url,
+      actions: [
+        {
+          id: "approve",
+          label: pic.shown ? "Keep it" : "Clear it",
+          tone: "primary",
+          removal: false,
+          calls: [{ url: COMMUNITY, body: { action: "approve_picture", id: pic.id } }],
+          done: pic.shown ? "Kept. Reports no longer hide it." : "Cleared. Readers can see it.",
+        },
+        {
+          id: "remove",
+          label: "Take it down",
+          tone: "danger",
+          removal: true,
+          calls: [{ url: COMMUNITY, body: { action: "remove_picture", id: pic.id, reason: topReason(said) } }],
+          done: "Taken down. Its file is deleted.",
+        },
       ],
     });
   }

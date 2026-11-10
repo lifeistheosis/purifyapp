@@ -9,10 +9,13 @@ import { campaignsInBuild } from "@/lib/campaigns/flags";
 import { CAMPAIGN_BUCKET, campaignImage } from "@/lib/campaigns/image";
 import { isCampaignModAction } from "@/lib/campaigns/model";
 import { readWaitingCampaigns, runCampaignModAction } from "@/lib/campaigns/moderation";
+import { campaignPart } from "@/lib/campaigns/parts";
+import { readWaitingPictures } from "@/lib/campaigns/pictures";
 import {
   campaignKey,
   countWaiting,
   holdKey,
+  pictureKey,
   recipeKey,
   recipeNewKey,
   reportKey,
@@ -156,6 +159,22 @@ async function campaignsWaiting(admin: AdminClient): Promise<{ rows: Awaited<Ret
   }
 }
 
+/**
+ * A campaign's pictures that wait for a moderator (lib/campaigns/pictures.ts).
+ * None, and no read, while campaigns are closed or pictures switched off.
+ */
+function picturesOn(): boolean {
+  return campaignsInBuild() && campaignPart("pictures");
+}
+async function picturesWaiting(admin: AdminClient): Promise<{ rows: Awaited<ReturnType<typeof readWaitingPictures>>["rows"]; error: { message: string } | null }> {
+  if (!picturesOn()) return { rows: [], error: null };
+  try {
+    return { rows: (await readWaitingPictures(admin)).rows, error: null };
+  } catch (e) {
+    return { rows: [], error: { message: e instanceof Error ? e.message : String(e) } };
+  }
+}
+
 export async function GET(req: Request) {
   const adminUser = await getAdminUser();
   if (!adminUser) return NextResponse.json({ error: "Forbidden" }, { status: 403 });
@@ -170,7 +189,7 @@ export async function GET(req: Request) {
   // reads of ids only; any failed read is a 500, because this route's own
   // comment below says why an unread queue must never read as empty.
   if (new URL(req.url).searchParams.get("summary") === "1") {
-    const [recipes, campaignReports, recipeReportsFirst, reportsFirst, holdsRead, sharedFirst, waitingCampaigns] = await Promise.all([
+    const [recipes, campaignReports, recipeReportsFirst, reportsFirst, holdsRead, sharedFirst, waitingCampaigns, waitingPictures] = await Promise.all([
       admin.from("trapeza_recipes").select("id").eq("status", "pending").limit(1000),
       openCampaignReports(admin, "id, campaign_id", 1000),
       admin.from("trapeza_recipe_reports").select("id, recipe_id, review_id").limit(1000),
@@ -181,6 +200,8 @@ export async function GET(req: Request) {
       readReportedShares(admin, true),
       // Prayer campaigns waiting to be read (1.9). Nothing is read while they are closed.
       campaignsWaiting(admin),
+      // Their pictures that wait (1.9). Nothing is read while pictures are off.
+      picturesWaiting(admin),
     ]);
     // Older shapes: no review_id before the Kitchen migration, no profile_id
     // before profile reports, no holds table before the filter.
@@ -191,7 +212,7 @@ export async function GET(req: Request) {
       ? await admin.from("community_reports").select("id, post_id, reply_id").eq("status", "open").limit(1000)
       : reportsFirst;
     const holds = isTableAbsent(holdsRead.error) ? { data: [], error: null } : holdsRead;
-    const err = recipes.error ?? campaignReports.error ?? recipeReports.error ?? reports.error ?? holds.error ?? sharedFirst.error ?? waitingCampaigns.error;
+    const err = recipes.error ?? campaignReports.error ?? recipeReports.error ?? reports.error ?? holds.error ?? sharedFirst.error ?? waitingCampaigns.error ?? waitingPictures.error;
     if (err) {
       console.error("[admin/community] moderation count failed", err.message);
       return NextResponse.json({ error: "The moderation queue could not be counted." }, { status: 500 });
@@ -211,6 +232,7 @@ export async function GET(req: Request) {
       // The same key as its reports: a waiting campaign and the reports on it are one row.
       ...waitingCampaigns.rows.map((c) => campaignKey(c.id, c.id)),
       ...sharedFirst.data.filter(waitsForDecision).map((p) => sharedKey(p.id)),
+      ...waitingPictures.rows.map((p) => pictureKey(p.id)),
     ];
     return NextResponse.json(
       {
@@ -242,7 +264,7 @@ export async function GET(req: Request) {
       .limit(200);
   const PENDING = "id, title, fast_level, season, tradition, summary, ingredients, steps, created_at";
 
-  const [pendingFirst, campaignReports, recipeReports, recentPosts, kitchen, sharedPages, waitingCampaigns] = await Promise.all([
+  const [pendingFirst, campaignReports, recipeReports, recentPosts, kitchen, sharedPages, waitingCampaigns, waitingPictures] = await Promise.all([
     pendingQuery(`${PENDING}, photo_url`),
     openCampaignReports(admin, "id, reason, created_at, campaign:prayer_campaigns(id, title, status, intention, subject_name, image_url)", 200),
     recipeReportsOnly(admin),
@@ -265,6 +287,7 @@ export async function GET(req: Request) {
     loadKitchen(admin),
     readReportedShares(admin),
     campaignsWaiting(admin),
+    picturesWaiting(admin),
   ]);
   // The submission's photo arrives with 20260928000000_kitchen.sql; before it, ask
   // again without the column.
@@ -287,7 +310,8 @@ export async function GET(req: Request) {
     conversationReports.error ??
     kitchen.error ??
     sharedPages.error ??
-    waitingCampaigns.error;
+    waitingCampaigns.error ??
+    waitingPictures.error;
   if (readError) {
     console.error("[admin/community] moderation read failed", readError.message);
     return NextResponse.json(
@@ -307,6 +331,8 @@ export async function GET(req: Request) {
       campaignReports: campaignReports.data ?? [],
       // Absent, not empty, while campaigns are closed.
       ...(campaignsInBuild() ? { waitingCampaigns: waitingCampaigns.rows } : {}),
+      // Absent, not empty, while pictures are switched off.
+      ...(picturesOn() ? { waitingPictures: waitingPictures.rows } : {}),
       recipeReports: recipeReports.data ?? [],
       conversationReports: reports,
       recentPosts: recentPosts.data ?? [],
@@ -373,6 +399,10 @@ const actionSchema = z.object({
     // actions at all while campaigns are closed (the POST below).
     "approve_campaign",
     "restore_campaign",
+    // A campaign's picture (1.9): clear it, or take it down. Not actions at
+    // all while pictures are switched off (lib/campaigns/moderation.ts).
+    "approve_picture",
+    "remove_picture",
     "dismiss_recipe_report",
     // The Kitchen's reviews. Removing keeps the row, as with conversations,
     // and deletes its photos from the public bucket, as with campaigns.

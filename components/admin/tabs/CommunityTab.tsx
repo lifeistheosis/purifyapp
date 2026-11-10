@@ -34,7 +34,7 @@ import {
 } from "@/lib/admin/communityQueue";
 import { MAX_PINNED } from "@/lib/community/pinning";
 import type { SharedPageIn } from "@/lib/admin/sharedPages";
-import type { WaitingCampaign } from "@/lib/campaigns/model";
+import type { WaitingCampaign, WaitingPicture } from "@/lib/campaigns/model";
 
 import { AmbassadorsPart } from "../community/Ambassadors";
 import { QueueList } from "../community/Queue";
@@ -71,6 +71,8 @@ type CommunityData = {
   sharedPages?: SharedPageIn[];
   /** Prayer campaigns waiting to be read (1.9); absent while campaigns are closed. */
   waitingCampaigns?: WaitingCampaign[];
+  /** Their pictures that wait (1.9); absent while pictures are switched off. */
+  waitingPictures?: WaitingPicture[];
 };
 
 export type CommunityPart = "waiting" | "announcements" | "shared" | "filter" | "kitchen" | "ambassadors";
@@ -193,6 +195,7 @@ export function CommunityPage({ part: first = "waiting" }: { part?: CommunityPar
         reviewReports: community.kitchen?.reviewReports ?? [],
         sharedPages: community.sharedPages ?? [],
         waitingCampaigns: community.waitingCampaigns ?? [],
+        waitingPictures: community.waitingPictures ?? [],
       })
     : [];
   const waitingNow = rows.filter((r) => !decided[r.key] && !removals.pending[r.key]).length;

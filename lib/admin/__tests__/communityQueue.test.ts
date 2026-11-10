@@ -1,3 +1,6 @@
+import { readFileSync } from "node:fs";
+import { join } from "node:path";
+
 import { describe, expect, it } from "vitest";
 
 import {
@@ -209,5 +212,89 @@ describe("ten seconds of Undo", () => {
   it("tallies reasons once each, most given first", () => {
     expect(tallyReasons(["Rude", null, "Spam", "Rude", "  "])).toBe("Rude 2 · Spam");
     expect(tallyReasons([null])).toBeNull();
+  });
+});
+
+/**
+ * A campaign's pictures ("After 1.9: the panel", item 1, moved into 1.9 with
+ * pictures, at the arbiter's word of 2026-11-10): one row a picture, its
+ * reports folded in, cleared or taken down by the campaigns chat's two
+ * decisions (lib/campaigns/pictures.ts), the second held back with Undo.
+ * Every campaign, picture and reader below is made up.
+ */
+describe("a campaign's pictures that wait", () => {
+  const PIC = "33333333-3333-4333-8333-333333333333";
+  const picture = (over: Partial<NonNullable<QueueSources["waitingPictures"]>[number]> = {}) => ({
+    id: PIC,
+    url: "https://example.test/held/picture.jpg?token=short-lived",
+    shown: false,
+    alt: "Our parish's icon corner",
+    check_result: "clear",
+    created_at: "2026-11-10T10:00:00Z",
+    reports: [] as { reason_code: string | null; reason: string | null }[],
+    campaign: { id: "44444444-4444-4444-8444-444444444444", title: "For Maria's recovery", creator_name: "Reader C" },
+    ...over,
+  });
+
+  it("shows none while pictures are off (the source is absent)", () => {
+    expect(buildQueue(EMPTY)).toEqual([]);
+  });
+
+  it("gives a new picture one row, with its campaign, its words and the picture itself", () => {
+    const [row] = buildQueue({ ...EMPTY, waitingPictures: [picture()] });
+    expect(row.key).toBe(`picture:${PIC}`);
+    expect(row.what).toBe("New picture · a picture waiting to be cleared");
+    expect(row.text).toBe('On the campaign "For Maria\'s recovery"');
+    expect(row.note).toBe("Its creator says it shows: Our parish's icon corner");
+    expect(row.picture).toBe("https://example.test/held/picture.jpg?token=short-lived");
+    expect(row.who).toEqual({ name: "Reader C", handle: null });
+    expect(row.actions.map((a) => a.label)).toEqual(["Clear it", "Take it down"]);
+  });
+
+  it("clears with approve_picture, and takes down with remove_picture held back for Undo, carrying the reason readers gave most", () => {
+    const [row] = buildQueue({
+      ...EMPTY,
+      waitingPictures: [picture({ reports: [{ reason_code: "about_me", reason: null }, { reason_code: "about_me", reason: null }, { reason_code: "other", reason: null }] })],
+    });
+    const [clear, down] = row.actions;
+    expect(clear.calls).toEqual([{ url: "/api/admin/community", body: { action: "approve_picture", id: PIC } }]);
+    expect(clear.removal).toBe(false);
+    expect(down.removal).toBe(true);
+    expect(down.tone).toBe("danger");
+    expect(down.calls[0].body).toEqual({ action: "remove_picture", id: PIC, reason: "shows the reporter or someone in their care, without agreement" });
+    expect(row.what).toBe("Hidden by reports · 3 reports · a picture waiting to be cleared");
+    expect(row.reasons).toBe("shows the reporter or someone in their care, without agreement 2 · something else");
+  });
+
+  it("says when a reported picture is still shown, and offers to keep it", () => {
+    const [row] = buildQueue({ ...EMPTY, waitingPictures: [picture({ shown: true, reports: [{ reason_code: null, reason: "Not a photo of the person" }] })] });
+    expect(row.what).toBe("Reported · 1 report · a picture readers can see");
+    expect(row.actions[0].label).toBe("Keep it");
+    expect(row.reasons).toBe("Not a photo of the person");
+  });
+
+  it("names what the check said, when it said anything but clear", () => {
+    const [row] = buildQueue({ ...EMPTY, waitingPictures: [picture({ alt: null, check_result: "possible face of a child" })] });
+    expect(row.note).toBe("The check said: possible face of a child");
+  });
+
+  it("counts each picture once on the rail, beside its campaign's own row", () => {
+    const keys = waitingKeys({ ...EMPTY, waitingPictures: [picture(), picture({ id: "55555555-5555-4555-8555-555555555555" })] });
+    expect(countWaiting(keys)).toBe(2);
+  });
+});
+
+describe("the route reads pictures only while they are on", () => {
+  const route = readFileSync(join(process.cwd(), "app/api/admin/community/route.ts"), "utf8");
+
+  it("asks for campaigns and the pictures part both, and reads nothing otherwise", () => {
+    expect(route).toContain('return campaignsInBuild() && campaignPart("pictures");');
+    expect(route).toContain("if (!picturesOn()) return { rows: [], error: null };");
+    expect(route).toContain("...(picturesOn() ? { waitingPictures: waitingPictures.rows } : {}),");
+  });
+
+  it("counts them on the rail with the queue's own key, and takes their two decisions", () => {
+    expect(route).toContain("...waitingPictures.rows.map((p) => pictureKey(p.id)),");
+    expect(route).toMatch(/"approve_picture",\s*\n\s*"remove_picture",/);
   });
 });
