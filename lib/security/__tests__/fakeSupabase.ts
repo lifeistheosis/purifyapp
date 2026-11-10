@@ -570,11 +570,22 @@ export function client(w: World) {
     from: (table: string) => new Query(w, table),
     storage: {
       createBucket: async (name: string, options?: { public?: boolean }) => {
-        if (buckets.has(name)) return { data: null, error: { message: "The resource already exists" } };
+        // The first making of a bucket decides it, as on the real service:
+        // one that is already there, made by this client or by anyone
+        // before it, answers "already exists" and stays as it was made.
+        if (buckets.has(name) || w.buckets.has(name)) {
+          buckets.add(name);
+          return { data: null, error: { message: "The resource already exists" } };
+        }
         buckets.add(name);
-        // The first making of a bucket decides it, as on the real service.
-        if (!w.buckets.has(name)) w.buckets.set(name, { public: options?.public === true });
+        w.buckets.set(name, { public: options?.public === true });
         return { data: { name }, error: null };
+      },
+      // A bucket's own record: whether it is public is read from here, not from how it was asked for.
+      getBucket: async (name: string) => {
+        const made = w.buckets.get(name);
+        if (!made) return { data: null, error: { message: "Bucket not found", statusCode: "404" } };
+        return { data: { id: name, name, public: made.public }, error: null };
       },
       from: (bucket: string) => ({
         getPublicUrl: (path: string) => ({ data: { publicUrl: publicUrl(bucket, path) } }),

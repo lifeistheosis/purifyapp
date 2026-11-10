@@ -2397,7 +2397,10 @@ the branch 13.6 names), and `pictures: true`.
    creator before the file exists, and marked held. Nobody can load it but
    its creator and the team, each through an address that expires in an hour.
    Nobody else learns that one waits: to every other reader the list is as if
-   it were not there.
+   it were not there. **That the bucket is private is read back from the
+   storage before anything is written to it, and never assumed** (13.9): one
+   of that name that is public, or whose record cannot be read, takes no
+   picture at all.
 7. **A moderator looks.** Cleared: it is copied to the public bucket
    (`campaign-media`) under a new random name, the private copy is deleted,
    and every reader who may open the campaign is handed it. Refused: the file
@@ -2489,7 +2492,7 @@ No faces are read, matched or named, anywhere.
 
 ### 13.5 What holds it
 
-`lib/campaigns/__tests__/pictures.test.ts`, 48 cases against the in-memory
+`lib/campaigns/__tests__/pictures.test.ts`, 51 cases against the in-memory
 Supabase, with real images through the real decoder: switched off (nothing
 answered, nothing read, the second lock); what is stored (no place, no
 device, upright, what the check was shown, private, random, written down);
@@ -2501,8 +2504,8 @@ hide twice; and every way a campaign goes, with its files. Each guarantee was
 broken on purpose once and a test failed each time: the photo stored as sent,
 the waiting bucket made public, a waiting picture handed to anyone, the limit
 believed, a report that only marks the row, the second lock removed, a file
-taken by the name it gives itself, and the housekeeping reading every
-campaign's pictures at once.
+taken by the name it gives itself, the housekeeping reading every campaign's
+pictures at once, and the waiting place taken to be private without asking.
 
 `closed.test.ts` holds file three out of the migrations folder, to the notes'
 own words, and to giving the public key nothing; and holds that a closed
@@ -2561,6 +2564,32 @@ decided about.
 - **"Add a picture" as words on its tile** was cut in twenty-four of
   sixty-three cases (twenty-one languages at 390, 360 and 320 pixels,
   measured with the export's own fonts). The tile carries the sign alone.
+
+### 13.9 From the second chat's read of file three (Admin, 2026-11-10)
+
+Safe at the merge, with two changes, both made:
+
+1. **In the SQL: the moment of consent has no default.** `consent_at` was
+   "not null default now()", so any write to the table would have recorded
+   that a creator affirmed being 18 and having everyone's blessing, whether or
+   not anything had asked them. It is "not null" with no default: only the
+   route that asked writes the moment, and a write without it is refused.
+   Changed in the file and in 5.4, run twice again on a table made fresh, and
+   held by a test.
+2. **In the code: private is a check, not an assumption.** Asking the storage
+   for a private bucket proves nothing when one of that name is already
+   there, since "already exists" is the same answer whoever made it and
+   however, and a bucket can be made public afterwards from the dashboard. So
+   before anything is written to the waiting place its own record is read,
+   and unless that says it is not public, nothing is written there.
+
+One consequence had to be decided with the second: **a reported picture is
+still hidden when the waiting place cannot be used.** If the check fails at
+the moment reports say a picture must go out of sight, its file is given a
+new name where it is, so the address readers had opens nothing, the new one
+is handed to nobody but its creator and the team, and the log says so in
+plain words. Hiding does not wait on the storage being set up right: the one
+who reported is the one this is for.
 
 ## 14. The last pass for 1.9 (2026-11-10)
 

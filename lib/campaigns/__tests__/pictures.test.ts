@@ -333,6 +333,66 @@ describe("what is stored", () => {
   });
 });
 
+describe("the waiting place is private, and that is read back", () => {
+  it("takes no picture when a bucket of that name is already there and public", async () => {
+    // Made before, by a hand or by another program, and public. Asking for
+    // a private one changes nothing: the answer is only "already exists".
+    w.buckets.set(HELD_BUCKET, { public: true });
+    const id = running();
+    const res = await send(id, await smallPhoto());
+    expect(res.status).toBe(500);
+    expect([...w.objects]).toEqual([]);
+    expect(pictures()).toEqual([]);
+    expect(w.tables.upload_owners).toEqual([]);
+    // Mended, the same upload goes in.
+    w.buckets.set(HELD_BUCKET, { public: false });
+    expect((await send(id, await smallPhoto())).status).toBe(200);
+    expect(stored(HELD_BUCKET)).toHaveLength(1);
+  });
+
+  it("takes no picture when the bucket's own record cannot be read", async () => {
+    const real = client(w);
+    state.admin = { ...real, storage: { ...real.storage, getBucket: async () => ({ data: null, error: { message: "storage is down" } }) } };
+    const id = running();
+    expect((await send(id, await smallPhoto())).status).toBe(500);
+    expect([...w.objects]).toEqual([]);
+    expect(pictures()).toEqual([]);
+  });
+
+  it("still hides a reported picture when the waiting place cannot be used: a new name where it is, handed to no reader", async () => {
+    const id = running();
+    const pic = await added(id);
+    signInTeam();
+    expect((await act("approve_picture", pic)).status).toBe(200);
+    const before = String(picture(pic).path);
+    w.tables.community_mod_log = [];
+    // Someone has since made the waiting place public.
+    w.buckets.set(HELD_BUCKET, { public: true });
+    vi.spyOn(console, "error").mockImplementation(() => {});
+
+    signIn(BEN);
+    expect((await tell(id, { reason: "about_me", picture: pic })).status).toBe(200);
+    const row = picture(pic);
+    expect(row.status).toBe("held");
+    // Nothing went into the public "waiting" place, and the address readers had is dead.
+    expect(stored(HELD_BUCKET)).toEqual([]);
+    expect(w.objects.has(`${CAMPAIGN_BUCKET}/${before}`)).toBe(false);
+    expect(row.path).not.toBe(before);
+    expect([...w.objects]).toEqual([`${row.bucket}/${row.path}`]);
+    expect(owners()).toEqual([`${row.bucket}/${row.path}:${ANNA}`]);
+    expect(w.tables.community_mod_log).toMatchObject([{ action: "auto_hide", target_kind: "picture", target_id: pic }]);
+    expect(String(w.tables.community_mod_log![0].summary)).toContain("could not be moved to the private place");
+    // No reader is handed it; its creator still is, and the team can still decide about it.
+    signIn(null);
+    expect((await shown(id)).pictures).toEqual([]);
+    signIn(ANNA);
+    expect((await shown(id)).pictures).toMatchObject([{ id: pic, held: true }]);
+    signInTeam();
+    expect((await act("remove_picture", pic)).status).toBe(200);
+    expect([...w.objects]).toEqual([]);
+  });
+});
+
 describe("who is handed a picture that waits", () => {
   it("its creator alone, by an address that expires; nobody else learns that one waits", async () => {
     const id = running();

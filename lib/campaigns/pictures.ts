@@ -48,6 +48,8 @@ import type { CampaignRow, Read } from "./server";
 //   3. It is stored in a PRIVATE bucket, under a random name that says
 //      nothing of whose it is, and marked held. Nobody can load it but its
 //      creator and the moderators, each through an address that expires.
+//      That the bucket is private is read back from the storage before
+//      anything is written to it, and never assumed (ensureBucket).
 //   4. A moderator looks. Cleared, it is copied to the public bucket under a
 //      new random name and the private copy is deleted. Refused, the file is
 //      deleted and the row is kept as the record.
@@ -158,9 +160,9 @@ async function rowsOf(admin: SupabaseClient, campaignId: string): Promise<Read<P
   return { ok: true, value: (data ?? []) as unknown as PictureRow[] };
 }
 
-/** An address that expires, into the private bucket. Null when it could not be made. */
-async function heldUrl(admin: SupabaseClient, path: string): Promise<string | null> {
-  const { data, error } = await admin.storage.from(HELD_BUCKET).createSignedUrl(path, HELD_URL_SECONDS);
+/** An address that expires, to a picture that waits, wherever its row says its file is. Null when it could not be made. */
+async function heldUrl(admin: SupabaseClient, row: Pick<PictureRow, "bucket" | "path">): Promise<string | null> {
+  const { data, error } = await admin.storage.from(row.bucket).createSignedUrl(row.path, HELD_URL_SECONDS);
   if (error || !data?.signedUrl) return null;
   return data.signedUrl;
 }
@@ -189,7 +191,7 @@ export async function readPictures(
     if (row.status === "shown") {
       pictures.push({ id: row.id, url: shownUrl(admin, row), width: row.width, height: row.height, alt: row.alt, held: false });
     } else if (row.status === "held" && mine) {
-      const url = await heldUrl(admin, row.path);
+      const url = await heldUrl(admin, row);
       if (url) pictures.push({ id: row.id, url, width: row.width, height: row.height, alt: row.alt, held: true });
     }
   }
@@ -340,7 +342,18 @@ export async function addPicture(
   return { ok: true, id: (created as { id: string }).id };
 }
 
-/** A bucket of ours, made on first use: the public one as July made it, the private one private. */
+/**
+ * A bucket of ours, made on first use: the public one as July made it, the
+ * waiting place private.
+ *
+ * PRIVATE IS READ BACK, NOT ASSUMED. Asking for a private bucket proves
+ * nothing when one of that name is already there: "already exists" is the
+ * same answer whoever made it and however, and a bucket can be made public
+ * afterwards from the dashboard. So before anything is written to the
+ * waiting place its own record is read, and unless that says it is not
+ * public this answers false and nothing is written there: a picture that
+ * waits for a moderator is never stored where its address alone opens it.
+ */
 async function ensureBucket(admin: SupabaseClient, bucket: string): Promise<boolean> {
   const { error } = await admin.storage.createBucket(bucket, {
     public: bucket === CAMPAIGN_BUCKET,
@@ -349,6 +362,13 @@ async function ensureBucket(admin: SupabaseClient, bucket: string): Promise<bool
   });
   if (error && !/already exists/i.test(error.message)) {
     console.warn("[campaigns] bucket", bucket, error.message);
+    return false;
+  }
+  if (bucket === CAMPAIGN_BUCKET) return true;
+  const { data, error: unread } = await admin.storage.getBucket(bucket);
+  if (unread || !data || data.public !== false) {
+    // Loud: this is a fault in how the storage is set up, and it stops every upload until it is mended.
+    console.error("[campaigns] the waiting place for pictures is not private, or could not be read; nothing is written to it", bucket, unread?.message ?? `public: ${String(data?.public)}`);
     return false;
   }
   return true;
@@ -563,25 +583,38 @@ async function maybeHidePicture(admin: SupabaseClient, row: PictureRow, creatorI
     const say = await reportsSay(admin, creatorId, all, now);
     if (!say.hide) return false;
 
-    const path = await moveFile(admin, row, HELD_BUCKET, creatorId);
+    // To the waiting place. If that cannot be used (it is not private, or
+    // the storage would not have it), the picture is still taken out of
+    // readers' sight: its file is given a new name where it is, so the
+    // address readers had opens nothing and the new one is handed to nobody
+    // but its creator and the team. Hiding does not wait on the storage
+    // being right; the one who reported is the one this is for.
+    let to = HELD_BUCKET;
+    let path = await moveFile(admin, row, HELD_BUCKET, creatorId);
+    if (!path) {
+      to = row.bucket;
+      path = await moveFile(admin, row, row.bucket, creatorId);
+      if (path) console.error("[campaigns] a reported picture could not be moved to the waiting place; it was renamed where it is", row.id);
+    }
     if (!path) return false;
     const { data: changed, error } = await admin
       .from("prayer_campaign_pictures")
-      .update({ bucket: HELD_BUCKET, path, status: "held" })
+      .update({ bucket: to, path, status: "held" })
       .eq("id", row.id)
       .eq("status", "shown")
       .select("id");
     if (error || !changed || (changed as unknown[]).length === 0) {
       // It was not shown any more (removed, or hidden a moment ago): the copy just made goes.
-      await deleteFile(admin, HELD_BUCKET, path);
+      await deleteFile(admin, to, path);
       return false;
     }
     await deleteFile(admin, row.bucket, row.path);
+    const why = say.aboutMe ? "A picture hidden on a report that it shows someone without their blessing" : `A picture hidden after ${say.reporters} reports`;
     await logMod(admin, AUTO, {
       action: "auto_hide",
       target: "picture",
       targetId: row.id,
-      summary: say.aboutMe ? "A picture hidden on a report that it shows someone without their blessing" : `A picture hidden after ${say.reporters} reports`,
+      summary: to === HELD_BUCKET ? why : `${why}. Its file could not be moved to the private place and was renamed where it is`,
     });
     return true;
   } catch (e) {
@@ -701,7 +734,7 @@ export async function readWaitingPictures(admin: SupabaseClient): Promise<{ rows
     if (!c || c.status === "removed") continue;
     out.push({
       id: row.id,
-      url: row.status === "shown" ? shownUrl(admin, row) : await heldUrl(admin, row.path),
+      url: row.status === "shown" ? shownUrl(admin, row) : await heldUrl(admin, row),
       shown: row.status === "shown",
       alt: row.alt,
       check_result: row.check_result,
