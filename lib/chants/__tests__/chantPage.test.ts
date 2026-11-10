@@ -168,7 +168,10 @@ describe("the dock, over the tab bar (A's player, note 60)", () => {
   });
 
   it("puts the mini player aside for this chant's own recordings only", () => {
-    expect(pageSource).toContain("useOwnPlayer(row.variants.map((v) => v.audio.src));");
+    // Streamed, or from its copy on the phone (1.9, item 8): the copy's
+    // address ends as this recording's own does, "/chants/<slug>/<id>.mp3",
+    // so it names this chant's recordings and no other's.
+    expect(pageSource).toContain('useOwnPlayer(row.variants.flatMap((v) => [v.audio.src, recordingTail(v.audio.src) ?? ""]));');
     const store = fs.readFileSync("lib/player/pagePlayer.ts", "utf8");
     // Before the frame is painted, and given back as the page goes.
     expect(store).toMatch(/useIsoLayoutEffect\(\(\) => \{\s*set\(key \? key\.split\("\\n"\) : NONE\);\s*return \(\) => set\(NONE\);\s*\}, \[key\]\);/);

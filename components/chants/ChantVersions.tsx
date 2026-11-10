@@ -5,7 +5,8 @@ import { PreviewButton } from "@/components/player/PreviewButton";
 import { Pause } from "@/components/ui/icons/Pause";
 import { Play } from "@/components/ui/icons/Play";
 import { cn } from "@/lib/cn";
-import { chantMediaUrl, formatDuration } from "@/lib/chants/media";
+import { formatDuration } from "@/lib/chants/media";
+import { chantSrc } from "@/lib/chants/offline";
 import { traditionKey } from "@/lib/chants/names";
 import type { ChantIndexVariant, ChantLine } from "@/lib/chants/types";
 import { usePreview } from "@/lib/player/preview";
@@ -168,7 +169,7 @@ function VersionRow({
           onToggle={() =>
             previewing
               ? preview.stop()
-              : preview.start({ id: `${slug}/${variant.id}`, src: chantMediaUrl(variant.audio.src), ...variant.preview })
+              : preview.start({ id: `${slug}/${variant.id}`, src: chantSrc(slug, variant), ...variant.preview })
           }
         />
       ) : null}

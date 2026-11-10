@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useMemo, useSyncExternalStore } from "react";
 
 import { chantMediaUrl, isStreamed, LIVE_LIST_PATH, variantRef } from "./media";
+import { isChantSaved, keepOnlyListed, useSavedChants } from "./offline";
 
 /**
  * Which recordings may play now (1.7).
@@ -28,6 +29,12 @@ import { chantMediaUrl, isStreamed, LIVE_LIST_PATH, variantRef } from "./media";
  * "unavailable" ("Not available now"). On 2026-10-17 the 1.7 apps went out
  * before the website carried the list, and every reader with a perfectly
  * good connection was told to find one.
+ *
+ * 1.9 (item 8): a recording saved on the phone (lib/chants/offline.ts)
+ * plays when no list can be read, as a bundled one does, and every list
+ * that is read takes off the phone what it does not name as live. While the
+ * list is still being read it waits, as a streamed one does, so a recording
+ * taken down does not start from its copy in the moment before.
  */
 export type Availability = "checking" | "playable" | "offline" | "unavailable" | "pulled";
 
@@ -59,6 +66,7 @@ export function availabilityOf(
   list: LiveList | null | "unknown" | ListFailure,
   slug: string,
   variant: { id: string; audio: { src: string } },
+  saved: boolean = false,
 ): Availability {
   const ref = variantRef(slug, variant.id);
   const streamed = isStreamed(variant.audio.src);
@@ -69,6 +77,8 @@ export function availabilityOf(
   }
   if (!streamed) return "playable";
   if (list === "unknown") return "checking";
+  // Saved on the phone (1.9): no list to be had, and its copy plays.
+  if (saved) return "playable";
   return list === "unavailable" ? "unavailable" : "offline";
 }
 
@@ -172,6 +182,8 @@ export function loadLiveList(): Promise<void> {
       failures = 0;
       readAt = Date.now();
       set({ status: "ready", live: new Set(list.live), pulled: new Set(list.pulled) });
+      // A recording the list no longer names is taken off the phone (1.9).
+      void keepOnlyListed(list);
     })
     // Nothing came back: no signal, a dropped request, or no answer in time.
     .catch(() => failed("offline", startedAt))
@@ -253,10 +265,14 @@ function known(s: ListState): LiveList | "unknown" | ListFailure {
  */
 export function useChantAvailability(ask: boolean = true): (slug: string, variant: { id: string; audio: { src: string } }) => Availability {
   const s = useSyncExternalStore(subscribe, () => state, () => IDLE);
+  const saved = useSavedChants();
   useEffect(() => {
     if (!ask) return;
     return askForLiveList();
   }, [ask]);
   const list = useMemo(() => known(s), [s]);
-  return useCallback((slug, variant) => availabilityOf(list, slug, variant), [list]);
+  return useCallback(
+    (slug, variant) => availabilityOf(list, slug, variant, saved.has(variantRef(slug, variant.id)) && isChantSaved(slug, variant)),
+    [list, saved],
+  );
 }

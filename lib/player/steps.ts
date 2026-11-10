@@ -1,4 +1,5 @@
 import { nextChapter, prevChapter } from "@/lib/bible/books";
+import { sameRecording } from "@/lib/chants/media";
 import { readingOfSrc } from "@/lib/readAloud/chapters";
 
 /**
@@ -41,7 +42,8 @@ export type ChantVersionLike = { id: string; audio: { src: string } };
 /**
  * The chant row and version a recording is, from the chants library's index:
  * the address ends in the version's own (on the website it is that address;
- * in the apps the website's, lib/chants/media.ts). Null when it is no chant's.
+ * in the apps the website's, lib/chants/media.ts), or is its copy saved on
+ * the phone (1.9, sameRecording). Null when it is no chant's.
  */
 export function chantVersionOf<V extends ChantVersionLike, R extends ChantRowLike<V>>(
   src: string | null,
@@ -50,7 +52,7 @@ export function chantVersionOf<V extends ChantVersionLike, R extends ChantRowLik
   if (!src || !rows) return null;
   for (const row of rows) {
     for (const variant of row.variants) {
-      if (src === variant.audio.src || src.endsWith(variant.audio.src)) return { row, variant };
+      if (sameRecording(src, variant.audio.src)) return { row, variant };
     }
   }
   return null;

@@ -20,6 +20,8 @@
 //
 // Pure, so the tests can hold every key against every catalog.
 
+import { CHANT_SAVING } from "@/lib/chants/saving";
+
 /** The locks that open the sheet on one feature (UpgradeFeature less "general"). */
 export type PlusLock =
   | "wordstudy"
@@ -67,7 +69,15 @@ export const PLUS_ROWS: readonly PlusRow[] = [
   { feature: "palettes", id: "reading-modes", title: "plus.palettes.title", name: "plus.active.modes", body: "plus.palettes.body", keep: "plus.palettes.keep" },
   { feature: "crossrefs", id: "cross-refs", title: "plus.crossrefs.title", name: "bible.crossRefs", body: "plus.crossrefs.body", keep: "plus.crossrefs.keep" },
   { feature: "journal", id: "journal", title: "plus.journal.title", name: "plus.active.journal", body: "plus.journal.body", keep: "plus.journal.keep" },
-  { feature: "offline", id: "offline", title: "plus.offline.title", name: "plus.offline.name", body: "plus.offline.body", keep: "plus.offline.keep" },
+  // Its line names chants while keeping one is Plus (1.9, item 8; the one switch, lib/chants/saving.ts).
+  {
+    feature: "offline",
+    id: "offline",
+    title: "plus.offline.title",
+    name: "plus.offline.name",
+    body: CHANT_SAVING === "plus" ? "plus.offline.bodyChants" : "plus.offline.body",
+    keep: "plus.offline.keep",
+  },
   { feature: "ambience", id: "ambience", title: "plus.ambience.title", name: "ambience.title", body: "plus.ambience.body", keep: "plus.ambience.keep" },
   // Compare (1.9, rec 85): a verse in the Greek and each Bible a reader can download, at the place each numbers it.
   { feature: "compare", id: "compare", title: "plus.compare.title", name: "bible.compare", body: "plus.compare.body", keep: "plus.compare.keep" },

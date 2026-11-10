@@ -9,6 +9,7 @@ import { withCleared } from "@/lib/chants/cleared";
 import { useClearedWords } from "@/lib/chants/clearedClient";
 import type { ChantDoor } from "@/lib/chants/doors";
 import { useChantAvailability } from "@/lib/chants/live";
+import { recordingTail, sameRecording } from "@/lib/chants/media";
 import { chantLineKey, chantTitleKey, kindKey } from "@/lib/chants/names";
 import { playChant, warmTiming } from "@/lib/chants/play";
 import type { Chant, ChantIndexRow } from "@/lib/chants/types";
@@ -73,7 +74,7 @@ export function ChantPage({ chant, row, related }: { chant: Chant; row: ChantInd
   // this chant's is: the player's Read opens this page to its words, lit
   // where the singing has got to (1.8, components/player/NowPlayingSheet.tsx).
   const { src: playingSrc } = usePersistentAudio();
-  const playingHere = playingSrc ? variants.find((v) => playingSrc === v.audio.src || playingSrc.endsWith(v.audio.src)) : undefined;
+  const playingHere = playingSrc ? variants.find((v) => sameRecording(playingSrc, v.audio.src)) : undefined;
   const variant = variants.find((v) => v.id === chosen) ?? playingHere ?? firstVersion(variants, locale);
   const indexVariant = row.variants.find((v) => v.id === variant.id) ?? row.variants[0];
   const play = useChantPlay({
@@ -95,8 +96,9 @@ export function ChantPage({ chant, row, related }: { chant: Chant; row: ChantInd
   useEffect(() => warmTiming(indexVariant), [indexVariant]);
 
   // The dock is this chant's player here: while what the mini player would
-  // show is one of these recordings, it steps aside.
-  useOwnPlayer(row.variants.map((v) => v.audio.src));
+  // show is one of these recordings, it steps aside; streamed, or from its
+  // copy on the phone (1.9), whose address ends as the recording's own does.
+  useOwnPlayer(row.variants.flatMap((v) => [v.audio.src, recordingTail(v.audio.src) ?? ""]));
 
   // The switch on the words, for every version of a chant that has a version
   // with its sound written out, so choosing another never takes it away.

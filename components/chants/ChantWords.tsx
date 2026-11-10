@@ -6,7 +6,7 @@ import { useTranslate } from "@/components/i18n/MessagesProvider";
 import { LiveCaptions } from "@/components/player/LiveCaptions";
 import { cn } from "@/lib/cn";
 import type { ShownVariant } from "@/lib/chants/cleared";
-import { captionsFor, chantMediaUrl, loadTiming, timingInHand, WORDS_VIEWS, type WordsView } from "@/lib/chants/media";
+import { captionsFor, loadTiming, timingInHand, WORDS_VIEWS, type WordsView } from "@/lib/chants/media";
 import { useChantPlayback } from "@/lib/chants/play";
 import type { ChantIndexVariant, ChantTiming, ChantVariant } from "@/lib/chants/types";
 import { setWordsPrefs, useWordsPrefs } from "@/lib/chants/wordsPrefs";
@@ -102,8 +102,10 @@ export function ChantWords({
     if (!loaded || !sung.timed) return;
     const snap = getAudioSnapshot();
     if (!snap.src || JSON.stringify(snap.captions) === JSON.stringify(source)) return;
-    setTrack(chantMediaUrl(indexVariant.audio.src), { captions: source });
-  }, [indexVariant.audio.src, loaded, source, sung.timed]);
+    // The address the player has, streamed or the copy on the phone (1.9):
+    // handing over the words never switches the recording.
+    setTrack(snap.src, { captions: source });
+  }, [loaded, source, sung.timed]);
 
   // A tap on a line: there, and playing.
   const onSeek = useCallback((at: number) => {

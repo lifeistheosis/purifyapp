@@ -175,6 +175,8 @@ describe("saved recordings, across an update and a move cut short", () => {
   it("is settled at every launch, before anything else the saving does", async () => {
     const { readFileSync } = await import("node:fs");
     const bridge = readFileSync("components/native/SavingBridge.tsx", "utf8");
-    expect(bridge).toContain("const run = () => void checkSaved().then(() => resumeSaving()).then(() => keepWeek());");
+    expect(bridge).toContain("void checkSaved().then(() => resumeSaving()).then(() => keepWeek());");
+    // The chants kept on the phone are settled beside them (1.9, item 8).
+    expect(bridge).toContain("void checkSavedChants().then((saved) => (saved > 0 ? loadLiveList() : undefined));");
   });
 });

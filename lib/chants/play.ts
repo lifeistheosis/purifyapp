@@ -5,7 +5,8 @@ import type { CaptionSource } from "@/lib/prayers/persistentAudioStore";
 import { currentSrc, play, setLoopMode, setTrack, usePersistentAudio } from "@/lib/prayers/persistentAudioStore";
 
 import { clearedNow } from "./clearedClient";
-import { captionsFor, chantMediaUrl, loadTiming, type WordsPrefs } from "./media";
+import { captionsFor, chantMediaUrl, loadTiming, sameRecording, type WordsPrefs } from "./media";
+import { chantSrc } from "./offline";
 import type { ChantIndexVariant, ChantLine, ChantTiming } from "./types";
 
 /**
@@ -56,7 +57,8 @@ export function captionsFromTiming(timing: ChantTiming): CaptionSource {
 }
 
 export function playChant(req: PlayRequest): void {
-  const src = chantMediaUrl(req.variant.audio.src);
+  // The copy saved on the phone, when there is one (1.9, lib/chants/offline.ts).
+  const src = chantSrc(req.slug, req.variant);
   const meta = {
     title: req.title,
     artist: artistOf(req.variant),
@@ -109,7 +111,7 @@ export function useChantPlayback(variant: Pick<ChantIndexVariant, "audio"> | nul
 } {
   const audio = usePersistentAudio();
   if (!variant || !audio.src) return { loaded: false, playing: false, position: 0 };
-  const src = chantMediaUrl(variant.audio.src);
-  const loaded = audio.src === src || audio.src.endsWith(variant.audio.src);
+  // Streamed, or from its copy on the phone (1.9).
+  const loaded = audio.src === chantMediaUrl(variant.audio.src) || sameRecording(audio.src, variant.audio.src);
   return { loaded, playing: loaded && audio.playing, position: loaded ? audio.currentTime : 0 };
 }

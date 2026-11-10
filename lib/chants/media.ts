@@ -75,6 +75,33 @@ export function variantRef(slug: string, variantId: string): string {
   return `${slug}/${variantId}`;
 }
 
+const TAIL = /\/chants\/[a-z0-9]+(?:-[a-z0-9]+)*\/[a-z0-9]+(?:-[a-z0-9]+)*\.mp3$/;
+
+/**
+ * The part of a recording's address that names it wherever it is kept:
+ * "/chants/<slug>/<id>.mp3". The bucket's address ends so, the website's
+ * (/audio/chants/...) does, and so does a copy saved on the phone
+ * (lib/chants/offline.ts keeps it at audio/chants/<slug>/<id>.mp3). Null
+ * for anything that is not a chant's recording.
+ */
+export function recordingTail(src: string | null | undefined): string | null {
+  if (!src) return null;
+  const m = TAIL.exec(src.split(/[?#]/, 1)[0]);
+  return m ? m[0] : null;
+}
+
+/**
+ * Whether the player's address is this recording (1.9): the address itself,
+ * the website's in the apps, or the copy saved on the phone, which plays
+ * from the app's own files under another address.
+ */
+export function sameRecording(playing: string | null | undefined, variantSrc: string): boolean {
+  if (!playing) return false;
+  if (playing === variantSrc || playing.endsWith(variantSrc)) return true;
+  const tail = recordingTail(variantSrc);
+  return tail !== null && recordingTail(playing) === tail;
+}
+
 /**
  * The conventional paths of a version: its recording on the website (the
  * Anthem's, from 1.7), and its timing file, in the bundle.

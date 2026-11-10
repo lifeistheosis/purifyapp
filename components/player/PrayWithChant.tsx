@@ -33,7 +33,8 @@ import { ChevronRight } from "@/components/ui/icons/ChevronRight";
 import { Note } from "@/components/ui/icons/Note";
 import { cn } from "@/lib/cn";
 import { useChantAvailability } from "@/lib/chants/live";
-import { chantMediaUrl } from "@/lib/chants/media";
+import { chantMediaUrl, sameRecording } from "@/lib/chants/media";
+import { chantSrc } from "@/lib/chants/offline";
 import { chantTitleKey } from "@/lib/chants/names";
 import { playChant } from "@/lib/chants/play";
 import type { ChantIndexRow } from "@/lib/chants/types";
@@ -115,8 +116,9 @@ export function ChantPicker({ open, onClose }: { open: boolean; onClose: () => v
             const why = availabilityKey(availability);
             const isSelected = can && selected != null && choiceId(selected.chant, selected.v) === id;
             const previewing = playingId === id;
-            const src = chantMediaUrl(v.audio.src);
-            const now = Boolean(audio.src && audio.src.endsWith(v.audio.src) && audio.playing);
+            // Its copy on the phone, when saved (1.9): a preview plays with no signal too.
+            const src = chantSrc(chant.slug, v);
+            const now = Boolean(sameRecording(audio.src, v.audio.src) && audio.playing);
             const title = t(chantTitleKey(chant.key));
             return (
               <div

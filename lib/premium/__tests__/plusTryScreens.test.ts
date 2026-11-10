@@ -80,7 +80,8 @@ describe("the rows", () => {
     const out = render(createElement(PlusFeatureRows, { onTry: () => {} }));
     const offline = out.slice(out.indexOf('data-plus-feature="offline"'), out.indexOf('data-plus-feature="ambience"'));
     expect(offline).toContain(html(say("en", "plus.offline.name")));
-    expect(offline).toContain(html(say("en", "plus.offline.body")));
+    // Its line names chants while keeping one is Plus (lib/chants/saving.ts).
+    expect(offline).toContain(html(say("en", PLUS_ROWS.find((r) => r.id === "offline")!.body)));
     expect(offline).not.toContain("paywall-in");
     expect(out.match(/paywall-in/g)).toHaveLength(1);
   });

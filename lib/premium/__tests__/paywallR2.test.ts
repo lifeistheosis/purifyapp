@@ -20,6 +20,7 @@ import path from "node:path";
 import { describe, expect, it } from "vitest";
 
 import { AMBIENCE_TRACKS } from "@/lib/ambience/ambience";
+import { CHANT_SAVING } from "@/lib/chants/saving";
 import { PLUS_ROWS, isPlusLock, plusRowsLedBy } from "@/lib/premium/plusRows";
 import { TRY_PALETTES } from "@/lib/premium/plusTry";
 
@@ -128,7 +129,9 @@ describe("the features, in depth", () => {
     for (const row of PLUS_ROWS) {
       if (row.feature === null) continue;
       expect(row.title, row.id).toBe(`plus.${row.feature}.title`);
-      expect(row.body, row.id).toBe(`plus.${row.feature}.body`);
+      // Listen offline names chants while keeping one is Plus (1.9, item 8; lib/chants/saving.ts).
+      const body = row.feature === "offline" && CHANT_SAVING === "plus" ? "plus.offline.bodyChants" : `plus.${row.feature}.body`;
+      expect(row.body, row.id).toBe(body);
       expect(row.keep, row.id).toBe(`plus.${row.feature}.keep`);
     }
     const rows = bare("components/billing/KeptPaywall.tsx");

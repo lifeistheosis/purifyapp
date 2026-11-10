@@ -52,6 +52,8 @@ describe("the save mark", () => {
   it("says the size inside its one button, and to a screen reader", () => {
     expect(source).toMatch(/size=\{offline\.size\}/);
     expect(source).toMatch(/label=\{`\$\{t\("player\.offline\.save", \{ book: name \}\)\}, \$\{offline\.size\}`\}/);
-    expect(source.match(/data-save-size=""/g)?.length).toBe(2);
+    // The book's mark and row, and the chant's row (1.9, item 8), whose mark is the same SaveOfflineMark.
+    expect(source.match(/data-save-size=""/g)?.length).toBe(3);
+    expect(source).toMatch(/size=\{chant\.size\}/);
   });
 });
