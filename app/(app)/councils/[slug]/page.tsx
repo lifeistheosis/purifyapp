@@ -121,6 +121,7 @@ export default async function CouncilProfilePage({
   back
   backFallback="/councils"
   revealTitleOn="council-name"
+  solidFrom="council-ordinal"
   overlay={Boolean(picture)}
   trailing={<ShareButton title={c.byname} round className="border-0 bg-transparent text-paper/80 hover:text-paper" />}
  />
@@ -136,7 +137,7 @@ export default async function CouncilProfilePage({
  {/* The head: the icon, and the name over its foot. */}
  {picture ? <CouncilHero picture={picture} focus={councilFocus(c.slug)} /> : null}
  <header className={cn("saint-head-in", picture ? "relative -mt-24 md:mt-6" : "pt-8 md:pt-0")}>
- <p className="font-sans text-caption font-semibold text-paper/80">
+ <p id="council-ordinal" className="font-sans text-caption font-semibold text-paper/80">
  <T k={ordinalKey(c)} />
  </p>
  <h1 id="council-name" className="mt-1.5 font-serif text-[26px] font-bold leading-[1.1] tracking-[-0.01em] text-balance text-paper md:text-display-sm">

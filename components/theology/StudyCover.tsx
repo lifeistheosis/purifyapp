@@ -33,7 +33,11 @@ const PILL =
  * the website in the apps, so it is chosen on the device. On a phone the
  * cover starts under the clear bar.
  */
-export function StudyCover({ subject, passage }: { subject: { src: string }; passage: DeckPassage | null }) {
+/**
+ * `firstId`: the id the epigraph takes when it is the head's first words, so
+ * the bar over the picture turns solid as it reaches it (build 90 note 3).
+ */
+export function StudyCover({ subject, passage, firstId }: { subject: { src: string }; passage: DeckPassage | null; firstId?: string }) {
   const { t } = useTranslate();
   const onDevice = useMounted();
   const native = onDevice && isNativeClient();
@@ -58,7 +62,7 @@ export function StudyCover({ subject, passage }: { subject: { src: string }; pas
       </div>
 
       {passage ? (
-        <figure ref={words} data-study-epigraph="" className="study-cover-words relative px-3 text-center">
+        <figure ref={words} id={firstId} data-study-epigraph="" className="study-cover-words relative px-3 text-center">
           <blockquote
             lang="en"
             data-card-words=""

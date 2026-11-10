@@ -92,7 +92,8 @@ describe("a council's page (C, at a glance)", () => {
   });
 
   it("keeps its bar clear over the icon, and solid with the council's name once the name has gone up", () => {
-    expect(page).toMatch(/<MobileTopBar\s+title=\{c\.byname\}\s+back\s+backFallback="\/councils"\s+revealTitleOn="council-name"\s+overlay=\{Boolean\(picture\)\}/);
+    // Solid from its ordinal line, the head's first words (build 90 note 3, lib/ui/__tests__/clearBar.test.ts).
+    expect(page).toMatch(/<MobileTopBar\s+title=\{c\.byname\}\s+back\s+backFallback="\/councils"\s+revealTitleOn="council-name"\s+solidFrom="council-ordinal"\s+overlay=\{Boolean\(picture\)\}/);
     expect(code("components/councils/CouncilHero.tsx")).toMatch(/"saint-icon-in under-topbar relative -mx-5/);
     expect(code("components/councils/CouncilHero.tsx")).toContain('"picture-melt"');
   });

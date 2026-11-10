@@ -1,6 +1,6 @@
 import { notFound } from "next/navigation";
 
-import { TopicReader } from "@/components/theology/TopicReader";
+import { DOCTRINE_FIRST_WORDS, TopicReader } from "@/components/theology/TopicReader";
 import { MobileTopBar } from "@/components/nav/MobileTopBar";
 import { ShareButton } from "@/components/ui/ShareButton";
 import { eventsForTheologyTopic } from "@/lib/history/events";
@@ -63,6 +63,7 @@ export default async function TheologyTopicPage({
         back
         backFallback="/theology"
         revealTitleOn="doctrine-title"
+        solidFrom={DOCTRINE_FIRST_WORDS}
         overlay
         searchPlace="theology"
         trailing={<ShareButton title={meta.title} round />}

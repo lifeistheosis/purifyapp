@@ -38,10 +38,12 @@ import { useTranslate } from "@/components/i18n/MessagesProvider";
  *   up under the bar, the slim bar of the owner's note 19 (the iOS artist
  *   page he pointed at), and not a second h1.
  * - `overlay` (1.7): on a phone the bar starts clear over the page's picture,
- *   its buttons on round plates, and turns solid with the name as above
- *   (globals.css, "A page bar over a picture"). The page pulls its picture up
- *   under the bar with `.under-topbar`. Never on a tablet: the iPad keeps a
- *   solid bar.
+ *   its buttons on round plates (each with a fine edge, so it reads on a dark
+ *   icon), and turns solid once the head's first words reach it, `solidFrom`
+ *   or the name (build 90 note 3; globals.css, "A page bar over a picture").
+ *   Its title still arrives with the name, as above. The page pulls its
+ *   picture up under the bar with `.under-topbar`. Never on a tablet: the
+ *   iPad keeps a solid bar.
  * - `center` (1.8, the saint web): a control in the middle of the bar in
  *   place of the title, the Web / Timeline switch the owner asked for ("I
  *   want that to just be a button"). The page then names itself with its own
@@ -72,6 +74,7 @@ export function MobileTopBar({
   backFallback,
   trailing,
   revealTitleOn,
+  solidFrom,
   overlay = false,
   center,
   plates = false,
@@ -88,6 +91,13 @@ export function MobileTopBar({
   trailing?: React.ReactNode;
   /** The id of the page's own h1; the bar's title shows once it has scrolled away. */
   revealTitleOn?: string;
+  /**
+   * With `overlay`: the id of the head's first words, the ones nearest the
+   * bar (a council's ordinal line, a doctrine's quoted line). The bar turns
+   * solid as soon as they reach it. Leave it out when the name is the first
+   * of the head's words.
+   */
+  solidFrom?: string;
   /** Start clear over the page's picture, on a phone. Needs `revealTitleOn`. */
   overlay?: boolean;
   /** A control in the middle of the bar, in place of the title. */
@@ -110,32 +120,67 @@ export function MobileTopBar({
   // observer, which only speaks when the heading crosses the bar's foot, and
   // an attribute on the bar: no React state and no work while scrolling.
   // Looked up again on a new address, whose page has a heading of its own.
+  //
+  // A bar over a picture (`overlay`) keeps two marks (build 90 note 3). Its
+  // ground turns solid (data-solid) as soon as the head's first words reach
+  // its foot: `solidFrom`, or the name itself when the page gives none. The
+  // name in the bar (data-revealed) still waits for the page's name to have
+  // gone, so no second name shows early. Before, the ground waited for the
+  // name too, and the words above it (a council's ordinal line, a doctrine's
+  // quoted line) and then the name passed under the clear bar, under the way
+  // back's plate, before it turned.
   const pathname = usePathname();
   useEffect(() => {
     const bar = barRef.current;
     if (!revealTitleOn || !bar) return;
     const heading = document.getElementById(revealTitleOn);
+    const clear = overlay;
+    const first = clear ? (solidFrom ? document.getElementById(solidFrom) : null) ?? heading : null;
+    const mark = (name: string, on: boolean) => (on ? bar.setAttribute(name, "") : bar.removeAttribute(name));
     if (!heading || typeof IntersectionObserver === "undefined") {
       // Nothing to wait for: the bar keeps its title, solid.
-      bar.setAttribute("data-revealed", "");
+      mark("data-revealed", true);
+      mark("data-solid", true);
       return;
     }
+    const foot = () => bar.offsetHeight;
     // Where the page is now (a page come back to may be scrolled), before
-    // the observer's first word arrives a frame later.
-    if (heading.getBoundingClientRect().bottom <= bar.offsetHeight + 1) bar.setAttribute("data-revealed", "");
-    else bar.removeAttribute("data-revealed");
+    // the observers' first word arrives a frame later.
+    let gone = heading.getBoundingClientRect().bottom <= foot() + 1;
+    let reached = first ? first.getBoundingClientRect().top < foot() : true;
+    mark("data-revealed", gone);
+    mark("data-solid", gone || reached);
+    const margin = { rootMargin: `-${Math.round(foot())}px 0px 0px 0px` };
     const io = new IntersectionObserver(
       ([entry]) => {
         const top = entry.rootBounds?.top ?? 0;
-        const gone = !entry.isIntersecting && entry.boundingClientRect.bottom <= top + 1;
-        if (gone) bar.setAttribute("data-revealed", "");
-        else bar.removeAttribute("data-revealed");
+        gone = !entry.isIntersecting && entry.boundingClientRect.bottom <= top + 1;
+        mark("data-revealed", gone);
+        mark("data-solid", gone || reached);
       },
-      { rootMargin: `-${Math.round(bar.offsetHeight)}px 0px 0px 0px`, threshold: 0 },
+      { ...margin, threshold: 0 },
     );
     io.observe(heading);
-    return () => io.disconnect();
-  }, [revealTitleOn, pathname]);
+    // The first words: wholly below the bar's foot, the bar stays clear; any
+    // of them under it, solid. Asked again at each quarter of the line, so a
+    // line that slips under by a fraction of a pixel (a Theology path's
+    // kicker, at 50.8px under a 51px bar) is caught as it goes on.
+    const firstIo = first
+      ? new IntersectionObserver(
+          ([entry]) => {
+            const top = entry.rootBounds?.top ?? 0;
+            reached = entry.boundingClientRect.top < top;
+            mark("data-solid", gone || reached);
+          },
+          { ...margin, threshold: [0, 0.25, 0.5, 0.75, 1] },
+        )
+      : null;
+    if (first && firstIo) firstIo.observe(first);
+    return () => {
+      io.disconnect();
+      firstIo?.disconnect();
+    };
+  }, [revealTitleOn, solidFrom, overlay, pathname]);
 
   const backClass = `${TOP_PLATE} text-paper/80 transition-colors hover:text-paper focus-visible:outline-2 focus-visible:outline-paper focus-visible:outline-offset-2`;
 

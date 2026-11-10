@@ -51,6 +51,9 @@ const FALLBACK_COVER = { src: "/discover/tiles/theology.v2.webp" };
  * study rests on it (lib/theology/parts.ts). Scripture and Related, which
  * stood behind two of the doors, are kept as the page's foot.
  */
+/** The id of a doctrine's first words, which the page's bar reads (app/(app)/theology/[topic]/page.tsx). */
+export const DOCTRINE_FIRST_WORDS = "doctrine-first";
+
 export function TopicReader({
   body,
   groups,
@@ -80,12 +83,16 @@ export function TopicReader({
           </Link>
         </p>
 
-        <StudyCover subject={subject ? { src: subject.picture.src } : FALLBACK_COVER} passage={epigraph} />
+        {/* The head's first words, whichever comes first, name the place the
+            bar over the picture turns solid (build 90 note 3): the epigraph,
+            else the path's step, else the name itself. */}
+        <StudyCover subject={subject ? { src: subject.picture.src } : FALLBACK_COVER} passage={epigraph} firstId={epigraph ? DOCTRINE_FIRST_WORDS : undefined} />
 
         <div className="saint-head-in mt-7" style={{ "--i": 1 } as CSSProperties}>
           {subject ? (
             <Link
               href={`/theology/path/${subject.id}`}
+              id={epigraph ? undefined : DOCTRINE_FIRST_WORDS}
               data-study-step=""
               className="tap-press inline-flex max-w-full items-center gap-[9px] font-sans text-[10.5px] font-bold uppercase tracking-[0.14em] text-paper/55 hover:text-paper"
             >

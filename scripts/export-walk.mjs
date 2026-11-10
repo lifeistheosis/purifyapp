@@ -5018,7 +5018,8 @@ await section(39, async () => {
           top: box ? Math.round(box.getBoundingClientRect().top) : null,
           edges: box ? Math.round(box.getBoundingClientRect().left) === 0 && Math.round(box.getBoundingClientRect().right) === document.documentElement.clientWidth : false,
           nameOnIt: Boolean(box && h1 && h1.getBoundingClientRect().top < box.getBoundingClientRect().bottom && h1.getBoundingClientRect().top > 0),
-          clearBar: Boolean(bar && bar.hasAttribute("data-overlay") && !bar.hasAttribute("data-revealed")),
+          // Clear until the head's first words reach it (build 90 note 3: data-solid, not the name's data-revealed).
+          clearBar: Boolean(bar && bar.hasAttribute("data-overlay") && !bar.hasAttribute("data-solid")),
           tabs: [...document.querySelectorAll('[role="tablist"] [role="tab"]')].map((tab) => `${tab.id}:${tab.getAttribute("aria-selected")}`),
           pray: document.querySelector("[data-mine-pray]")?.getAttribute("href") ?? null,
           meta: document.querySelector("[data-mine-pray-meta]")?.textContent?.trim() ?? "",

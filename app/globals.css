@@ -655,25 +655,38 @@ html.is-native .below-topbar {
    A saint's page on a phone (the owner's note 19 of 2026-10-16, and the iOS
    artist page he pointed at): the saint's icon fills the top of the screen,
    the bar starts clear over it with its buttons on round plates, and turns
-   into the solid bar with the name once the name has scrolled up under it.
-   MobileTopBar's `overlay` marks the bar and sets data-revealed when the
-   page's h1 is gone (an IntersectionObserver, nothing per frame). No blur on
-   the plates or the clear bar: a blurred layer over a moving picture is
+   into the solid bar once the head's first words reach it (build 90 note 3:
+   it waited for the name to have gone, and the words above the name, then
+   the name, passed under the clear bar and its plates). MobileTopBar's
+   `overlay` marks the bar: data-solid when the first words (`solidFrom`, or
+   the name) reach its foot, data-revealed when the page's h1 is gone and the
+   bar's own name may show (IntersectionObservers, nothing per frame). No blur
+   on the plates or the clear bar: a blurred layer over a moving picture is
    repainted on every frame on Android (Homebase reference "web perf traps").
    Phones only. On a tablet the bar is solid from the start and the picture
    sits beside the name. */
 @media (max-width: 767.98px) {
- [data-mobile-topbar][data-overlay]:not([data-revealed]) {
+ [data-mobile-topbar][data-overlay]:not([data-solid]) {
   background-color: transparent;
   border-bottom-color: transparent;
   -webkit-backdrop-filter: none;
   backdrop-filter: none;
  }
- [data-mobile-topbar][data-overlay]:not([data-revealed]) :is(a, button) {
+ /* A plate's edge is there from the start, unseen on the solid bar, so it
+    can fade with the ground instead of vanishing. */
+ [data-mobile-topbar][data-overlay] :is(a, button) {
+  border: 1px solid transparent;
+ }
+ [data-mobile-topbar][data-overlay]:not([data-solid]) :is(a, button) {
   border-radius: 9999px;
   /* For a WebView without color-mix (Android before 111). */
   background-color: rgb(16 16 19 / 0.55);
   background-color: color-mix(in srgb, var(--color-night) 55%, transparent);
+  /* A fine edge of paper, as the new post page's Close has, so the plate
+     reads over a dark icon too (build 90 note 3: at night 55% alone it was a
+     faint disc on St John's icon). */
+  border-color: rgb(255 255 255 / 0.13);
+  border-color: color-mix(in srgb, var(--color-paper) 13%, transparent);
   color: var(--color-paper);
  }
  /* The page's picture starts at the top of the screen, under the bar: the
@@ -717,7 +730,7 @@ html.is-native .below-topbar {
  transition-timing-function: cubic-bezier(0.23, 1, 0.32, 1);
 }
 :where([data-motion="full"]) [data-mobile-topbar][data-overlay] :is(a, button) {
- transition-property: background-color, color;
+ transition-property: background-color, color, border-color;
  transition-duration: 200ms;
 }
 

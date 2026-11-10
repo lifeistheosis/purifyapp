@@ -157,7 +157,8 @@ describe("a step, as a room over its icon (B) with C's line", () => {
     const page = code(STEP_PAGE);
     expect(page).toContain("export const dynamicParams = false;");
     expect(page).toContain("THEOLOGY_SUBJECTS.map((s) => ({ subject: s.id }))");
-    expect(page).toMatch(/<MobileTopBar title=\{step\.title\} back backFallback="\/theology" revealTitleOn="step-title" overlay/);
+    // Solid from the step's kicker, the head's first words (build 90 note 3, lib/ui/__tests__/clearBar.test.ts).
+    expect(page).toMatch(/<MobileTopBar title=\{step\.title\} back backFallback="\/theology" revealTitleOn="step-title" solidFrom="step-kicker" overlay/);
     expect(page).toContain('id="step-title"');
     expect(page).toContain('className="step-room saint-icon-in"');
     expect(page).toContain('className="step-body relative z-[1] ');

@@ -42,7 +42,7 @@ export default async function TheologyStepPage({ params }: { params: Promise<{ s
 
   return (
     <>
-      <MobileTopBar title={step.title} back backFallback="/theology" revealTitleOn="step-title" overlay searchPlace="theology" />
+      <MobileTopBar title={step.title} back backFallback="/theology" revealTitleOn="step-title" solidFrom="step-kicker" overlay searchPlace="theology" />
       <article className="relative bg-night px-5 pb-12 md:px-8 md:py-14">
         <div className="mx-auto w-full max-w-[640px]">
           {/* B's room: the icon whole, in its light, behind the page. */}
@@ -53,6 +53,7 @@ export default async function TheologyStepPage({ params }: { params: Promise<{ s
 
           <header className="relative z-[1] pb-6 md:mt-6">
             <p
+              id="step-kicker"
               className="doctrine-shadow saint-head-in font-sans text-[10.5px] font-bold uppercase tracking-[0.14em] text-paper/70"
               style={{ "--i": 1 } as CSSProperties}
             >
