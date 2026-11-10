@@ -1178,9 +1178,13 @@ Send back: "R5b walked", or what broke.
 
 ### R5c. Open prayer campaigns to every reader (one line; your word)
 
-Only after R5b, and only once the words that are yours are settled: the
-lawyer's lines for the privacy page and the Terms (your item 113), and the
-words for a reader in crisis (your item 129).
+Only after R5b and your walk on the test web (T10), and once the two things
+the Terms promise for campaigns are in the release: circles ("public unless
+you keep it to a circle") and the removal notice with its SQL ("we tell you
+why"). The words are already settled by you: items 113 and 129 ("we don't
+need a priest or a lawyer to make prayer campaigns", 2026-11-10), the
+Terms' words ("yes those terms are good") and the safety line's words
+("rec yes to all").
 
 1. Send the arbiter: "open campaigns".
 2. A chat changes one line on `main`, `CAMPAIGNS_OPENING` from `"testers"`
@@ -1192,7 +1196,7 @@ Do this before R5d. Apple's rule 2.5.19 (its page, read 2026-11-10): "Don't
 include any hidden, dormant, or undocumented features in your app"; hiding
 one is grounds for removing the app and closing the developer account. A
 build reviewed while campaigns are still at testers carries them asleep. If
-113 or 129 is not ready, you choose:
+circles or the removal notice is not ready when the stores go, you choose:
 
 - hold the stores until it is (the safe choice), or
 - send the builds now, and say in R5d's notes for review that campaigns are
