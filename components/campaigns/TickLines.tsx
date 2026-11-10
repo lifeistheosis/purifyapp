@@ -62,3 +62,19 @@ export function TickLines<T extends string | number>({
     </div>
   );
 }
+
+/**
+ * One line to tick, on its own: the family's blessing and the rules when a
+ * campaign is started, and the two lines a picture needs
+ * (components/campaigns/CampaignPictures.tsx).
+ */
+export function TickBox({ on, onChange, children }: { on: boolean; onChange: (next: boolean) => void; children: ReactNode }) {
+  return (
+    <button type="button" role="checkbox" aria-checked={on} onClick={() => onChange(!on)} className="flex min-h-11 w-full items-start gap-3 py-2 text-start">
+      <span aria-hidden className="rule-tick mt-0.5" data-on={on ? "" : undefined}>
+        {on ? <Check size={12} /> : null}
+      </span>
+      <span className="min-w-0 flex-1 font-sans text-detail leading-relaxed text-paper/85">{children}</span>
+    </button>
+  );
+}

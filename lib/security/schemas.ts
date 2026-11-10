@@ -449,8 +449,11 @@ export const campaignCreateSchema = z
  * reader has some.
  */
 export const campaignReportSchema = z.object({
-  reason: z.enum(["about_me", "private_details", "money", "unkind", "not_prayer", "other"]),
+  // "picture" is a reason for a report of one picture only; the route holds each list to its own.
+  reason: z.enum(["about_me", "private_details", "money", "unkind", "not_prayer", "picture", "other"]),
   words: z.string().trim().max(500).optional().nullable(),
+  /** One of the campaign's pictures, when it is the picture that is reported and not the campaign. */
+  picture: z.string().uuid().optional(),
 });
 
 /**

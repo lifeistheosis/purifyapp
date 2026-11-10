@@ -1312,15 +1312,17 @@ For phase 3.
 -- Prayer campaigns, reworked: a campaign's pictures, up to 3, or 20 with
 -- Purify Plus.
 --
--- DRAFT in docs/1.9-build/notes/campaigns-fable.md. Named
--- <YYYYMMDDHHMMSS>_campaign_pictures.sql when Edgar signs it off, after the
--- core file. Written to run twice.
+-- The copy for his signature, with its header in plain words and its check,
+-- is docs/1.9-build/sql/campaigns-3-pictures.sql, and the statements below
+-- are that file's, word for word (lib/campaigns/__tests__/closed.test.ts
+-- holds the two together). Named <YYYYMMDDHHMMSS>_campaign_pictures.sql when
+-- Edgar signs it off, after files one and two. Written to run twice.
 --
--- The limit of 3 or 20 is the route's to hold, from the creator's
+-- The limit of 3 or 20 is the server's to hold, from the creator's
 -- entitlement at the moment of the upload (the table's own ceiling is 20). A
 -- picture is stored only after the server has made it again from its pixels
--- (no EXIF, so no place and no device), and it is `held` until a moderator
--- has looked: its address is random and is given to nobody before then.
+-- (no EXIF, so no place and no device), and it is `held`, in a private
+-- bucket, until a moderator has looked. Section 13 has what was built.
 --
 -- image_url on prayer_campaigns (20260725000000) stays for the old rows and
 -- is not written again.
@@ -1328,11 +1330,15 @@ For phase 3.
 set lock_timeout = '3s';
 set statement_timeout = '120s';
 
+-- 1. A campaign's pictures ---------------------------------------------------
 create table if not exists public.prayer_campaign_pictures (
   id uuid primary key default gen_random_uuid(),
   campaign_id uuid not null references public.prayer_campaigns (id) on delete cascade,
-  bucket text not null default 'campaign-media' check (char_length(bucket) between 1 and 60),
-  -- c/<uuid>.<ext>: a random name, as lib/campaigns/image.ts already makes.
+  -- Where the file is: the private bucket while it waits, the public one
+  -- once a moderator has cleared it. Its name is random in both
+  -- (c/<uuid>.<ext>) and says nothing of whose it is; who uploaded it is in
+  -- upload_owners, as for every stored file.
+  bucket text not null check (char_length(bucket) between 1 and 60),
   path text not null check (char_length(path) between 3 and 200),
   -- Its place in the row of pictures; the first is the page's head.
   position smallint not null check (position between 0 and 19),
@@ -1340,13 +1346,19 @@ create table if not exists public.prayer_campaign_pictures (
   height integer check (height is null or height between 1 and 4096),
   -- What it shows, in the creator's words, for a reader who cannot see it.
   alt text check (alt is null or char_length(alt) <= 140),
+  -- held: waiting for a moderator, seen by its creator and the moderators
+  -- alone; it is new, or readers' reports have hidden it again. shown:
+  -- cleared. removed: taken off by a moderator, or with its campaign; the
+  -- file is deleted and the row is kept as the record.
   status text not null default 'held' check (status in ('held', 'shown', 'removed')),
-  -- What the automatic check answered, in a word, when there is one.
+  -- What the automatic check answered, in a word.
   check_result text check (check_result is null or char_length(check_result) <= 120),
   reviewed_by_email text,
   reviewed_at timestamptz,
-  -- "This picture is mine to share, and anyone in it has given me their
-  -- blessing to post it": when the creator affirmed it.
+  removed_reason text check (removed_reason is null or char_length(removed_reason) <= 300),
+  -- When the creator affirmed the two lines a picture needs: "I am 18 or
+  -- older", and "This picture is mine to share, and anyone in it has given
+  -- me their blessing to post it".
   consent_at timestamptz not null default now(),
   created_at timestamptz not null default now(),
   unique (bucket, path)
@@ -1363,8 +1375,12 @@ create index if not exists prayer_campaign_pictures_held_idx
   on public.prayer_campaign_pictures (created_at)
   where status = 'held';
 
+-- 2. Nobody reads it straight from the table --------------------------------
+--
+-- Row level security with no policy at all, and no right for the public key:
+-- every read and every write is a route's (app/api/campaigns), with the
+-- service role, behind the campaigns switch and the pictures' own switch.
 alter table public.prayer_campaign_pictures enable row level security;
--- No policy: read and written by routes, with the service role.
 revoke all on public.prayer_campaign_pictures from anon, authenticated;
 grant all on public.prayer_campaign_pictures to service_role;
 ```
@@ -2014,10 +2030,10 @@ In this order, each pushed behind the switch with its stills:
    SQL.
 2. **"Prayed by many"** (118), built and switched off on the server: no
    number, and a creator can stay out.
-3. **Pictures** (121), built and switched off on the server: 3, or 20 with
-   Plus, each checked before it is shown, with "I am 18 or older"; file three
-   of the SQL. Off until the image checking service is chosen and the lawyer
-   has answered.
+3. **Pictures** (121): built and switched off on the server (section 13): 3,
+   or 20 with Plus, each checked before it is shown, with "I am 18 or older";
+   file three of the SQL. Off until the image checking service is chosen and
+   the lawyer has answered.
 4. **The new lines in twenty languages**, in one pass, and the screens held
    to the eighteen looks.
 
@@ -2316,3 +2332,190 @@ the API returns a thousand rows a request and says nothing when it stops, so
 the board would have been ordered by the newest thousand joins and read as
 whole. The tally reads every row of the span in pages now, with a total
 order, and says aloud if it ever meets its cost limit.
+
+## 13. Pictures, as built (2026-11-10)
+
+His item 121, his words: "a 3-image photo limit for normal users. And for
+premium users, they can add as up to 20 photos." His yes: three, or twenty
+with Plus; each checked before it is shown; "I am 18 or older" to put one up;
+and it waits for a checking service and a lawyer. So it is built whole, and
+it ships asleep.
+
+### 13.1 Two locks, both his
+
+1. **The pictures' switch** (`pictures` in `lib/campaigns/parts.ts`, 12.1):
+   off. Every pictures route answers 404 and reads nothing, a picture cannot
+   be reported, the two decisions about a picture are not actions, the team's
+   queue does not carry the key, and no screen draws or asks for anything.
+2. **The automatic check** (`lib/campaigns/pictureCheck.ts`): no service is
+   wired in, and with none **no picture is accepted at all**, whatever the
+   switch says. So turning the switch on by mistake opens nothing. A test
+   holds the committed value to "none", and that an upload then answers 503
+   with nothing stored.
+
+Turning pictures on is therefore two changes on main, and no store build:
+the service wired into that one file (with the lawyer's answer written into
+the branch 13.6 names), and `pictures: true`.
+
+### 13.2 What happens to a picture, in order
+
+1. **On the device** it is drawn again at 1600 pixels as a JPEG
+   (`lib/trapeza/upload.ts`, shared). This saves the reader's data. It is not
+   the guarantee.
+2. **The route asks first:** signed in; the campaign's own creator, and to
+   anyone else the campaign is simply not found; the two lines each sent as a
+   yes ("I am 18 or older", and that it is theirs to share with the blessing
+   of anyone in it); a still JPEG, PNG or WebP of 4 MB at most; a campaign
+   that waits or runs, and never one of July's.
+3. **The limit is the server's:** three, or twenty when the creator's own
+   entitlement says Plus at that moment (`subscriptionTier`, as the profile
+   banner's route reads it). Nothing in the request is asked about Plus, and
+   a test sends "plus" every way a request can and is still refused the
+   fourth. If Plus lapses, pictures already up stay up and no more can be
+   added past three.
+4. **Made again on the server** from its pixels (`lib/shop/imageNormalize.ts`,
+   `sharp`): turned upright, 1600 pixels at most, written with no EXIF. Only
+   that copy is ever stored. The test uploads a phone's photograph that
+   really carries a place and a device, reads the stored bytes back, and
+   finds neither; the photo as it was sent is kept nowhere.
+5. **The automatic check** is shown that same copy and is never told whose it
+   is. Clear: it goes on. Refused: nothing is stored, and its writer is told
+   only "That picture can't be used here." A check that cannot answer is not
+   a pass.
+6. **Stored in a private bucket** (`campaign-held`), under a random name that
+   says nothing of whose it is, written down in `upload_owners` under its
+   creator before the file exists, and marked held. Nobody can load it but
+   its creator and the team, each through an address that expires in an hour.
+   Nobody else learns that one waits: to every other reader the list is as if
+   it were not there.
+7. **A moderator looks.** Cleared: it is copied to the public bucket
+   (`campaign-media`) under a new random name, the private copy is deleted,
+   and every reader who may open the campaign is handed it. Refused: the file
+   is deleted and the row is kept as the record, with the reason.
+8. **A reader can report it** from its viewer, with a picture's own reasons:
+   it shows me or someone in my care and I did not agree; it should not be
+   here; something else. Reports hide it until a moderator looks, by the rule
+   that hides a campaign (`lib/campaigns/reportsSay.ts`, one rule written
+   once): at once on the first reason from an account older than a day, or
+   when three readers' reports add up. Hidden means its file goes **back to
+   the private bucket under a new name**, so the address readers had opens
+   nothing. A report that does not hide it still reaches the team, who keep
+   it or remove it. Kept after reports, it is not hidden by reports again.
+9. **It goes** when its creator removes it (file first, then the row, at
+   once); when its creator takes the campaign down; when a moderator removes
+   the campaign (files deleted, rows kept and marked); when the housekeeping
+   deletes the campaign thirty days on (`lib/campaigns/upkeep.ts` now asks
+   which campaigns a rule is about to delete, has their files deleted, and
+   only then deletes them, since a cascade deletes rows and never a file);
+   and with the account (`lib/auth/accountFiles.ts` takes every file
+   `upload_owners` gives a reader, and every copy is written there).
+
+No faces are read, matched or named, anywhere.
+
+### 13.3 What a reader sees
+
+- **The first picture a moderator has cleared is the page's head.** With none,
+  the head is the app's own icon of the campaign's kind, as before, so nobody
+  feels they must post a photograph of a sick person. A picture that still
+  waits is never the head: its creator sees the head every reader sees.
+- **A row under About,** "Pictures": every cleared picture; a tap opens one,
+  with what its creator says it shows, Previous and Next, and Report.
+- **Its creator sees besides:** their own pictures that wait, each marked
+  "Waiting"; "Add a picture" while a place is free; and at three, where Plus
+  can be bought, the next place with the Plus mark, which opens the upgrade
+  sheet. Plus is shown where it is met and never promised to every reader.
+  Where Plus cannot be bought (iPhone today) that place is not drawn, and the
+  limit there is three, since the server decides by entitlement.
+- **Adding one** is a sheet: the picture, what it shows (optional, for a
+  reader who cannot see it), the two lines to tick, and one line saying that
+  campaigns are public and that the picture is made again, which removes the
+  place and the device a photograph carries.
+- **The rules page** gains the rule about pictures the notes drafted (3.2),
+  fourth, and only while pictures are on.
+- **The team's queue** (the moderators' page, for an admin's account past the
+  sign-in code): each picture covered until it is tapped, with its campaign,
+  what its creator says it shows, what the check answered and any reasons
+  readers ticked. Approve or Remove; for one still shown and reported, Keep
+  it or Remove. Readers holding the Moderator badge are shown no picture and
+  can decide nothing about one (3.4: the admin's alone at first).
+
+### 13.4 Where it differs from the design above, and why
+
+- **Pictures are added from the campaign's own page, not in the creating
+  screen** (2.5 said a row in creating). A picture belongs to a campaign that
+  exists, and every campaign waits for a moderator anyway, so its creator
+  lands on their waiting campaign and adds pictures there. A row in creating
+  would mean holding files on the device and uploading after the campaign is
+  made, with a second way to fail. Said here so it is a choice and not a gap.
+- **A card on the board keeps the icon of its kind.** Only the campaign's own
+  page shows its pictures: a photograph of someone unwell is seen by a reader
+  who opened that campaign, and is not laid out on a public list.
+- **The Plus list has no line for it yet** (the plan named
+  `lib/premium/plusRows.ts`). A line there would promise, in every app,
+  something that is switched off. What Plus includes is his word; the line
+  goes in when pictures open.
+- **The team's panel has no row for a waiting picture yet.** The moderators'
+  page carries them, for the team alone, and the button in Community counts
+  them. The panel's own queue (`lib/admin/communityQueue.ts`) is Admin's, and
+  gains its row when pictures open.
+- **A removed campaign's pictures are deleted, not set aside.** A campaign
+  put back comes back without them. Keeping the files of something a
+  moderator removed is a question for the lawyer (13.6), and until it is
+  answered the smaller keeping is the safer one.
+
+### 13.5 What holds it
+
+`lib/campaigns/__tests__/pictures.test.ts`, 42 cases against the in-memory
+Supabase, with real images through the real decoder: switched off (nothing
+answered, nothing read, the second lock); what is stored (no place, no
+device, upright, what the check was shown, private, random, written down);
+who is handed a waiting picture; what is asked first; three and twenty; the
+check's three answers; a moderator's decisions and the team alone; its
+creator removing one; reports that hide, that reach the team, that cannot
+hide twice; and every way a campaign goes, with its files. Each guarantee was
+broken on purpose once and a test failed each time: the photo stored as sent,
+the waiting bucket made public, a waiting picture handed to anyone, the limit
+believed, a report that only marks the row, the second lock removed.
+
+`closed.test.ts` holds file three out of the migrations folder, to the notes'
+own words, and to giving the public key nothing; and holds that a closed
+device asks nothing of the four new calls.
+
+The in-memory Supabase gained what this needed and nothing more: a private
+bucket and an address that expires, a copy to another bucket, the bytes of
+what was uploaded, the pictures' table with its two unique rules, and the
+one cascade.
+
+### 13.6 What is not this chat's to finish
+
+- **The service** that checks a picture: his to choose. It is wired into
+  `lib/campaigns/pictureCheck.ts` and nowhere else.
+- **A lawyer's answers** (8.3), before the switch: what the law says must be
+  kept and who must be told when a service answers "report" (the branch that
+  handles that verdict in `addPicture` stores nothing, tells the team at
+  once, and says in its own comment that it is not to be relied on until the
+  answer is written into it); whether "I am 18 or older" is the right line
+  and enough; whether a removed picture must be kept for a time.
+- **The words:** the rule about pictures on the rules page is the draft of
+  3.2; the privacy page's lines are 4.7's, with item 113.
+- **File three's signature,** on its plain summary, after a second chat has
+  read the SQL.
+
+### 13.7 Found while building it, in phase 1's own code
+
+**No report could hide a campaign.** Every campaign is read before it is
+public (117), and the first approval marked it "cleared by a moderator"; a
+cleared campaign is never hidden by reports. So "it is about me or someone in
+my care", the report that is meant to take a campaign down at once for the
+person it names, would have done nothing, and neither would three readers.
+The tests had not seen it because they began from a running campaign that
+had never been approved, which the real path never makes. Campaigns were
+closed, so no reader met it.
+
+Now a first reading is only a reading: it clears nothing, because whoever
+reads a new campaign cannot know whether the person it names agreed. A
+campaign is cleared when a moderator looks at it after reports hid it and
+keeps it. `routes.test.ts` walks the whole way through the real path: read,
+reported and hidden, kept, and then not hidden again. Keeping a campaign also
+no longer sets aside a report of one of its pictures, which nobody had
+decided about.

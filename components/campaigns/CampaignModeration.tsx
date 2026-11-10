@@ -3,18 +3,22 @@
 import { useState, type ReactNode } from "react";
 
 import { useTranslate } from "@/components/i18n/MessagesProvider";
+import { ArrivingImage } from "@/components/ui/ArrivingImage";
 import { ConfirmDialog } from "@/components/ui/ConfirmDialog";
 import { moderateCampaign } from "@/lib/campaigns/client";
 import {
   KIND_LABEL,
+  PICTURE_REPORT_REASON_LABEL,
   REPORT_REASON_LABEL,
   heldWhy,
   type CampaignModAction,
   type CampaignQueue,
   type HeldWhy,
   type OpenCampaignReport,
+  type PictureReportReason,
   type ReportReason,
   type WaitingCampaign,
+  type WaitingPicture,
 } from "@/lib/campaigns/model";
 import { dayText, lengthText } from "@/lib/campaigns/words";
 import { cn } from "@/lib/cn";
@@ -35,6 +39,11 @@ import { timeAgo } from "@/lib/community/types";
  * Removing asks first, as it does for a post. Nothing here names who
  * reported, or carries anyone's account.
  *
+ * Pictures (his item 121) wait here too, for the team alone and only while
+ * the server has pictures switched on: the queue carries them for nobody
+ * else (app/api/community/moderation). Each is drawn covered until it is
+ * tapped, so a moderator chooses the moment they look.
+ *
  * Drawn in the palette's own ink throughout (checkMock, on all five
  * palettes): what must be read first is the heavier line, never a red one,
  * and a box is the ink at four percent, never a black typed in.
@@ -53,6 +62,7 @@ const WHY: Record<HeldWhy, { label: string; tone: string }> = {
 };
 
 const isReason = (v: string | null): v is ReportReason => v !== null && Object.prototype.hasOwnProperty.call(REPORT_REASON_LABEL, v);
+const isPictureReason = (v: string | null): v is PictureReportReason => v !== null && Object.prototype.hasOwnProperty.call(PICTURE_REPORT_REASON_LABEL, v);
 
 function Chip({ className, children }: { className?: string; children: ReactNode }) {
   return <span className={cn("inline-flex items-center rounded-pill border px-2.5 py-0.5 font-sans text-eyebrow font-semibold", className)}>{children}</span>;
@@ -76,7 +86,7 @@ function ActionButton({ label, onClick, busy, primary = false }: { label: string
 
 /** How many things of campaigns wait, for the tab's count. */
 export function campaignsWaitingCount(queue: CampaignQueue | undefined): number {
-  return queue ? queue.waiting.length + queue.reports.length : 0;
+  return queue ? queue.waiting.length + queue.reports.length + (queue.pictures?.length ?? 0) : 0;
 }
 
 export function CampaignModeration({
@@ -92,7 +102,7 @@ export function CampaignModeration({
 }) {
   const { t } = useTranslate();
   const [busy, setBusy] = useState<string | null>(null);
-  const [confirming, setConfirming] = useState<string | null>(null);
+  const [confirming, setConfirming] = useState<{ action: "remove_campaign" | "remove_picture"; id: string } | null>(null);
   if (!queue || campaignsWaitingCount(queue) === 0) return null;
 
   async function act(action: CampaignModAction, id: string) {
@@ -108,7 +118,7 @@ export function CampaignModeration({
     await onDone();
   }
   const isBusy = (action: CampaignModAction, id: string) => busy === `${action}:${id}`;
-  const remove = (id: string) => setConfirming(id);
+  const remove = (id: string) => setConfirming({ action: "remove_campaign", id });
 
   return (
     <div data-mod-campaigns="" className="space-y-3">
@@ -132,18 +142,28 @@ export function CampaignModeration({
           onDismiss={() => void act("dismiss_campaign_report", r.id)}
         />
       ))}
+      {(queue.pictures ?? []).map((p) => (
+        <PictureCard
+          key={p.id}
+          picture={p}
+          approving={isBusy("approve_picture", p.id)}
+          removing={isBusy("remove_picture", p.id)}
+          onApprove={() => void act("approve_picture", p.id)}
+          onRemove={() => setConfirming({ action: "remove_picture", id: p.id })}
+        />
+      ))}
       <ConfirmDialog
         open={confirming !== null}
         title={t("mod.removeTitle")}
-        description={t("mod.removeBody")}
+        description={t(confirming?.action === "remove_picture" ? "mod.pictureRemoveBody" : "mod.removeBody")}
         confirmLabel={t("mod.remove")}
         cancelLabel={t("common.cancel")}
         destructive
         pending={busy !== null}
         onConfirm={() => {
-          const id = confirming;
+          const what = confirming;
           setConfirming(null);
-          if (id) void act("remove_campaign", id);
+          if (what) void act(what.action, what.id);
         }}
         onCancel={() => setConfirming(null)}
       />
@@ -258,6 +278,66 @@ function ReportedCard({
         {c && !removed ? <ActionButton label={t("mod.remove")} busy={busy === `remove_campaign:${c.id}`} onClick={() => onRemove(c.id)} /> : null}
         {c && hidden ? <ActionButton primary label={t("mod.restore")} busy={busy === `approve_campaign:${c.id}`} onClick={() => onShowAgain(c.id)} /> : null}
         <ActionButton label={t("mod.dismiss")} busy={busy === `dismiss_campaign_report:${r.id}`} onClick={onDismiss} />
+      </div>
+    </article>
+  );
+}
+
+/**
+ * One picture to look at. Covered until it is tapped: a moderator opens a
+ * queue to many things, and chooses when to look at a photograph.
+ */
+function PictureCard({
+  picture: p,
+  approving,
+  removing,
+  onApprove,
+  onRemove,
+}: {
+  picture: WaitingPicture;
+  approving: boolean;
+  removing: boolean;
+  onApprove: () => void;
+  onRemove: () => void;
+}) {
+  const { t } = useTranslate();
+  const [seen, setSeen] = useState(false);
+  const reported = p.reports.length > 0;
+  return (
+    <article data-mod-campaign-picture="" className="rounded-2xl border border-paper/10 bg-paper/[0.03] p-4">
+      <div className="flex flex-wrap items-center gap-2">
+        <Chip className={reported ? STRONG : QUIET}>{t(p.shown ? "mod.reported" : reported ? "mod.hidden" : "mod.pictureWaiting")}</Chip>
+        <Chip className={QUIET}>{t("mod.picture")}</Chip>
+        <span className="font-sans text-caption text-paper/70">
+          {p.campaign.creator_name ?? t("mod.unknown")} · {timeAgo(p.created_at)}
+        </span>
+      </div>
+      {p.reports.map((r, i) => {
+        const reason = [isPictureReason(r.reason_code) ? t(PICTURE_REPORT_REASON_LABEL[r.reason_code]) : null, r.reason].filter(Boolean).join(" ");
+        // A reader's own words, set in as written (the catalogs' interpolation reads "$&" as a pattern).
+        return reason ? (
+          <p key={i} className="mt-2 break-words font-sans text-caption text-paper/70">
+            {t("mod.reasonGiven").replace("{reason}", () => reason)}
+          </p>
+        ) : null;
+      })}
+      <div className={BOX}>
+        <p className="break-words font-semibold">{p.campaign.title}</p>
+        {p.alt ? <p className="break-words">{t("mod.pictureShows").replace("{alt}", () => p.alt ?? "")}</p> : null}
+        {p.check_result ? <p className="break-words text-paper/75">{t("mod.pictureCheck").replace("{result}", () => p.check_result ?? "")}</p> : null}
+      </div>
+      <div className="mt-3">
+        {!p.url ? (
+          <p className="font-sans text-detail text-paper/75">{t("mod.pictureGone")}</p>
+        ) : seen ? (
+          <ArrivingImage src={p.url} alt={p.alt ?? t("campaigns.pictureAlt")} decoding="async" className="max-h-72 w-auto max-w-full rounded-lg" />
+        ) : (
+          <ActionButton label={t("mod.pictureShow")} busy={false} onClick={() => setSeen(true)} />
+        )}
+      </div>
+      <div className="mt-3 flex flex-wrap gap-2">
+        <ActionButton primary label={t(p.shown ? "mod.pictureKeep" : reported ? "mod.restore" : "mod.approve")} busy={approving} onClick={onApprove} />
+        <ActionButton label={t("mod.remove")} busy={removing} onClick={onRemove} />
       </div>
     </article>
   );

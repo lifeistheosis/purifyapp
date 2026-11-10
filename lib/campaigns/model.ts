@@ -359,6 +359,45 @@ export const MANY_FLOOR = 5;
 /** How many campaigns the list holds. */
 export const MANY_SHOWN = 12;
 
+// ── Pictures ────────────────────────────────────────────────────────────────
+//
+// His words: "a 3-image photo limit for normal users. And for premium users,
+// they can add as up to 20 photos." His yes to item 121: three, or twenty
+// with Plus; each checked before it is shown; "I am 18 or older" to put one
+// up. Built in 1.9 and switched off on the server until the image checking
+// service is chosen and a lawyer has answered (lib/campaigns/parts.ts,
+// lib/campaigns/pictures.ts).
+
+/** How many pictures a campaign may carry: for everyone, and with Purify Plus. */
+export const PICTURES_FREE = 3;
+export const PICTURES_PLUS = 20;
+/** What may be sent: a still JPEG, PNG or WebP of at most 4 MB. The server makes it again from its pixels. */
+export const PICTURE_MAX_BYTES = 4 * 1024 * 1024;
+export const PICTURE_TYPES: readonly string[] = ["image/jpeg", "image/png", "image/webp"];
+/** What it shows, in its creator's words, for a reader who cannot see it. */
+export const PICTURE_ALT_MAX = 140;
+
+/** A picture as a reader receives it: where to load it, its size, and what it shows. */
+export type CampaignPicture = {
+  id: string;
+  /** Its public address once shown. While it waits, a short-lived one, handed to its creator alone. */
+  url: string;
+  width: number | null;
+  height: number | null;
+  alt: string | null;
+  /** Waiting for a moderator. Only its creator is ever handed one that is. */
+  held: boolean;
+};
+
+/** A campaign's pictures, in their order, with what this reader may do. */
+export type CampaignPictures = {
+  pictures: CampaignPicture[];
+  /** For its creator: how many this campaign may carry now, by their own Plus at this moment. */
+  limit: number | null;
+  /** Its creator, on a campaign that waits or runs, with a place still free. */
+  canAdd: boolean;
+};
+
 // ── Updates and comments ────────────────────────────────────────────────────
 //
 // His words: "free users can add announcements, right, to their campaign ...
@@ -424,6 +463,15 @@ export type CampaignThread = {
 export const REPORT_REASONS = ["about_me", "private_details", "money", "unkind", "not_prayer", "other"] as const;
 export type ReportReason = (typeof REPORT_REASONS)[number];
 
+/** The reasons to tick on a report of one picture, from its viewer. */
+export const PICTURE_REPORT_REASONS = ["about_me", "picture", "other"] as const;
+export type PictureReportReason = (typeof PICTURE_REPORT_REASONS)[number];
+export const PICTURE_REPORT_REASON_LABEL: Readonly<Record<PictureReportReason, string>> = {
+  about_me: "campaigns.report.pictureAboutMe",
+  picture: "campaigns.report.picture",
+  other: "campaigns.report.other",
+};
+
 export const REPORT_REASON_LABEL: Readonly<Record<ReportReason, string>> = {
   about_me: "campaigns.report.aboutMe",
   private_details: "campaigns.report.privateDetails",
@@ -443,7 +491,7 @@ export const STARTED_A_DAY = 3;
 // ── Moderating ──────────────────────────────────────────────────────────────
 
 /** The decisions a moderator takes on campaigns, by name, as the queue's buttons send them (./moderation.ts runs them). */
-export const CAMPAIGN_MOD_ACTIONS = ["approve_campaign", "remove_campaign", "restore_campaign", "dismiss_campaign_report"] as const;
+export const CAMPAIGN_MOD_ACTIONS = ["approve_campaign", "remove_campaign", "restore_campaign", "dismiss_campaign_report", "approve_picture", "remove_picture"] as const;
 export type CampaignModAction = (typeof CAMPAIGN_MOD_ACTIONS)[number];
 
 export function isCampaignModAction(v: unknown): v is CampaignModAction {
@@ -476,8 +524,31 @@ export type OpenCampaignReport = {
   campaign: { id: string; title: string; status: string; intention: string; subject_name: string | null; details?: string | null; creator_name?: string | null } | null;
 };
 
-/** What the moderators' queue carries of campaigns, when they are open for the moderator who asks. */
-export type CampaignQueue = { waiting: WaitingCampaign[]; reports: OpenCampaignReport[]; live: boolean };
+/**
+ * A picture waiting for a moderator, as the queue shows it: the picture, what
+ * its creator says it shows, what the automatic check answered, and whose
+ * campaign by its title. With reasons when readers' reports hid it, and
+ * none when it is new. Never an account, and never who reported.
+ */
+export type WaitingPicture = {
+  id: string;
+  /** A short-lived address: the file is in the private bucket until it is cleared. Null when one could not be made. */
+  url: string | null;
+  /** Still shown to readers: reported, and not hidden by its reports. Then `url` is its public address. */
+  shown: boolean;
+  alt: string | null;
+  check_result: string | null;
+  created_at: string;
+  reports: { reason_code: string | null; reason: string | null }[];
+  campaign: { id: string; title: string; creator_name: string | null };
+};
+
+/**
+ * What the moderators' queue carries of campaigns, when they are open for
+ * the moderator who asks. `pictures` is there only while the server has
+ * pictures switched on, and only for the team (the notes, 3.4).
+ */
+export type CampaignQueue = { waiting: WaitingCampaign[]; reports: OpenCampaignReport[]; live: boolean; pictures?: WaitingPicture[] };
 
 /**
  * Why a campaign waits, read from the server's few words into what a

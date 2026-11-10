@@ -68,6 +68,11 @@ const COLUMNS: Record<string, string[]> = {
     "id", "campaign_id", "reporter_id", "reason", "created_at", "target_kind", "target_id",
     "reason_code", "status", "closed_at",
   ],
+  // The rework's file three (docs/1.9-build/sql/campaigns-3-pictures.sql): a campaign's pictures.
+  prayer_campaign_pictures: [
+    "id", "campaign_id", "bucket", "path", "position", "width", "height", "alt", "status",
+    "check_result", "reviewed_by_email", "reviewed_at", "removed_reason", "consent_at", "created_at",
+  ],
   // 20260801000100_community_safety.sql, 20261005000000_community_three.sql
   community_blocks: ["blocker_id", "blocked_id", "created_at"],
   community_mutes: ["muter_id", "muted_id", "created_at"],
@@ -150,19 +155,41 @@ const DEFAULTS: Record<string, Row> = {
   trapeza_recipes: { status: "pending", photo_url: null },
   trapeza_recipe_reviews: { status: "published", photo_urls: [] },
   prayer_campaigns: { status: "active", image_url: null, audience: "public", ends_at: null, mod_cleared_at: null },
-  prayer_campaign_reports: { status: "open", target_kind: "campaign" },
+  prayer_campaign_reports: { status: "open", target_kind: "campaign", target_id: null },
+  prayer_campaign_pictures: {
+    status: "held", width: null, height: null, alt: null, check_result: null, reviewed_by_email: null,
+    reviewed_at: null, removed_reason: null,
+  },
   community_posts: { status: "visible", campaign_id: null, reply_count: 0 },
   community_post_replies: { status: "visible", campaign_update: false },
 };
 
 /**
- * Unique indexes these suites lean on: a reader's one open report of a
- * campaign (prayer_campaign_reports_once_idx), and a campaign's one thread
- * (community_posts_campaign_thread_idx), both the rework's SQL.
+ * Unique indexes these suites lean on, all the rework's SQL: a reader's one
+ * open report of a campaign, and of each of its pictures
+ * (prayer_campaign_reports_once_idx, which is on the campaign, the reader and
+ * coalesce(target_id, campaign_id)); a campaign's one thread
+ * (community_posts_campaign_thread_idx); and a picture's place in its row and
+ * its file (prayer_campaign_pictures_place_idx, and unique (bucket, path)).
  */
 const UNIQUE: Record<string, { columns: string[]; where?: (row: Row) => boolean }[]> = {
-  prayer_campaign_reports: [{ columns: ["campaign_id", "reporter_id"], where: (row) => row.status === "open" && row.reporter_id != null }],
+  prayer_campaign_reports: [
+    { columns: ["campaign_id", "reporter_id", "target_id"], where: (row) => row.status === "open" && row.reporter_id != null },
+  ],
+  prayer_campaign_pictures: [
+    { columns: ["campaign_id", "position"], where: (row) => row.status !== "removed" },
+    { columns: ["bucket", "path"] },
+  ],
   community_posts: [{ columns: ["campaign_id"], where: (row) => row.campaign_id != null }],
+};
+
+/**
+ * Rows that go with the row they belong to (`on delete cascade`), for the
+ * tables where a suite proves what is left behind: a campaign's pictures go
+ * with it, and their FILES do not, which is why the code deletes those first.
+ */
+const CASCADE: Record<string, [table: string, column: string][]> = {
+  prayer_campaigns: [["prayer_campaign_pictures", "campaign_id"]],
 };
 
 export type World = {
@@ -172,6 +199,10 @@ export type World = {
   missing: Record<string, string[]>;
   /** Every stored object, as "<bucket>/<path>". */
   objects: Set<string>;
+  /** What was uploaded at "<bucket>/<path>", for a suite that reads a stored file back. A copy carries it along. */
+  bodies: Map<string, unknown>;
+  /** Each bucket as createBucket was asked to make it: public or private. */
+  buckets: Map<string, { public: boolean }>;
   /** Accounts that exist: upload_owners.owner_id references auth.users. */
   users: Set<string>;
   /** Each account's user_metadata, as auth.admin.updateUserById leaves it. */
@@ -214,6 +245,8 @@ export function world(): World {
     },
     missing: {},
     objects: new Set(),
+    bodies: new Map(),
+    buckets: new Map(),
     users: new Set(),
     metadata: new Map(),
     emails: new Map(),
@@ -231,6 +264,11 @@ export function world(): World {
 /** The public URL supabase-js builds for bucket/path. */
 export function publicUrl(bucket: string, path: string): string {
   return encodeURI(`${STORAGE}/object/public/${bucket}/${path}`);
+}
+
+/** An address that expires, as the service signs one: never the public address, and it says for how long. */
+export function signedUrl(bucket: string, path: string, seconds: number): string {
+  return encodeURI(`${STORAGE}/object/sign/${bucket}/${path}?token=signed-for-${seconds}s`);
 }
 
 class Query {
@@ -421,6 +459,10 @@ class Query {
     if (this.op === "delete") {
       const gone = hit();
       this.w.tables[this.table] = rows.filter((row) => !gone.includes(row));
+      for (const [table, column] of CASCADE[this.table] ?? []) {
+        const theirs = this.w.tables[table];
+        if (theirs) this.w.tables[table] = theirs.filter((row) => !gone.some((parent) => parent.id === row[column]));
+      }
       return { data: copy(gone), error: null };
     }
     if (this.op === "update") {
@@ -527,38 +569,54 @@ export function client(w: World) {
   return {
     from: (table: string) => new Query(w, table),
     storage: {
-      createBucket: async (name: string) => {
+      createBucket: async (name: string, options?: { public?: boolean }) => {
         if (buckets.has(name)) return { data: null, error: { message: "The resource already exists" } };
         buckets.add(name);
+        // The first making of a bucket decides it, as on the real service.
+        if (!w.buckets.has(name)) w.buckets.set(name, { public: options?.public === true });
         return { data: { name }, error: null };
       },
       from: (bucket: string) => ({
         getPublicUrl: (path: string) => ({ data: { publicUrl: publicUrl(bucket, path) } }),
-        upload: async (path: string) => {
+        // An address that expires, into a bucket of either kind. "Object not
+        // found" for a file that is not there, as the service answers.
+        createSignedUrl: async (path: string, seconds: number) => {
+          if (!w.objects.has(`${bucket}/${path}`)) return { data: null, error: { message: "Object not found", statusCode: "404" } };
+          return { data: { signedUrl: signedUrl(bucket, path, seconds) }, error: null };
+        },
+        upload: async (path: string, body?: unknown) => {
           w.calls.upload++;
           if (w.fail.upload) return { data: null, error: { message: "storage is down" } };
           if (w.objects.has(`${bucket}/${path}`)) {
             return { data: null, error: { message: "The resource already exists" } };
           }
           w.objects.add(`${bucket}/${path}`);
+          w.bodies.set(`${bucket}/${path}`, body);
           return { data: { path }, error: null };
         },
-        copy: async (from: string, to: string) => {
+        // To another bucket when `destinationBucket` names one, as the
+        // service's copy does.
+        copy: async (from: string, to: string, options?: { destinationBucket?: string }) => {
           w.calls.copy++;
+          const target = options?.destinationBucket ?? bucket;
           if (w.fail.copy) return { data: null, error: { message: "storage is down" } };
           if (!w.objects.has(`${bucket}/${from}`)) {
             return { data: null, error: { message: "Object not found", statusCode: "404" } };
           }
-          if (w.objects.has(`${bucket}/${to}`)) {
+          if (w.objects.has(`${target}/${to}`)) {
             return { data: null, error: { message: "The resource already exists" } };
           }
-          w.objects.add(`${bucket}/${to}`);
+          w.objects.add(`${target}/${to}`);
+          w.bodies.set(`${target}/${to}`, w.bodies.get(`${bucket}/${from}`));
           return { data: { path: to }, error: null };
         },
         remove: async (paths: string[]) => {
           w.calls.remove++;
           if (w.fail.remove === bucket) return { data: null, error: { message: "storage is down" } };
-          for (const path of paths) w.objects.delete(`${bucket}/${path}`);
+          for (const path of paths) {
+            w.objects.delete(`${bucket}/${path}`);
+            w.bodies.delete(`${bucket}/${path}`);
+          }
           return { data: [], error: null };
         },
         // What the storage API answers for a folder: the names directly

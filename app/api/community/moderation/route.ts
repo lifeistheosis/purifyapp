@@ -4,6 +4,8 @@ import { z } from "zod";
 import { corsPreflight, corsRoute } from "@/lib/api/cors";
 import { CAMPAIGN_MOD_ACTIONS, isCampaignModAction, readOpenCampaignReports, readWaitingCampaigns, runCampaignModAction } from "@/lib/campaigns/moderation";
 import { campaignsCaller } from "@/lib/campaigns/opening";
+import { campaignPart } from "@/lib/campaigns/parts";
+import { readWaitingPictures } from "@/lib/campaigns/pictures";
 import { requestStanding } from "@/lib/community/adminStanding";
 import { communityEnabled } from "@/lib/community/flags";
 import { MOD_ACTIONS, moderatorFor, readModLog, readOpenReports, readPendingHolds, runModAction } from "@/lib/community/moderation";
@@ -59,7 +61,7 @@ async function handleGET(req: Request) {
     const [holds, reports, campaigns] = await Promise.all([
       head("community_text_holds").eq("status", "pending"),
       head("community_reports").eq("status", "open"),
-      campaignsWaiting(req, admin),
+      campaignsWaiting(req, admin, who.actor.admin),
     ]);
     return NextResponse.json(
       { waiting: (holds.error ? 0 : (holds.count ?? 0)) + (reports.error ? 0 : (reports.count ?? 0)) + campaigns },
@@ -72,7 +74,7 @@ async function handleGET(req: Request) {
       readPendingHolds(admin),
       readOpenReports(admin),
       readModLog(admin, { limit: 60 }),
-      campaignQueue(req, admin),
+      campaignQueue(req, admin, who.actor.admin),
     ]);
     return NextResponse.json(
       {
@@ -96,18 +98,27 @@ async function handleGET(req: Request) {
 
 type Admin = ReturnType<typeof createAdminClient>;
 
-/** The campaigns waiting to be read and their open reports, or null when campaigns are not open for whoever asks. */
-async function campaignQueue(req: Request, admin: Admin) {
+/**
+ * The campaigns waiting to be read and their open reports, or null when
+ * campaigns are not open for whoever asks. And the pictures waiting to be
+ * looked at, only while pictures are switched on (lib/campaigns/parts.ts),
+ * and only for the team: nobody else is shown a picture before it is
+ * cleared (the notes, 3.4). While they are off the key is absent and the
+ * pictures' table is never read.
+ */
+async function campaignQueue(req: Request, admin: Admin, team: boolean) {
   if (!(await campaignsCaller(req)).open) return null;
   const [waiting, reports] = await Promise.all([readWaitingCampaigns(admin), readOpenCampaignReports(admin)]);
-  return { waiting: waiting.rows, reports: reports.rows, live: waiting.live && reports.live };
+  const queue = { waiting: waiting.rows, reports: reports.rows, live: waiting.live && reports.live };
+  if (!team || !campaignPart("pictures")) return queue;
+  return { ...queue, pictures: (await readWaitingPictures(admin)).rows };
 }
 
-/** How many of them wait, for the button in Community: one for each campaign waiting, one for each open report. */
-async function campaignsWaiting(req: Request, admin: Admin): Promise<number> {
+/** How many of them wait, for the button in Community: one for each campaign waiting, one for each open report, one for each picture. */
+async function campaignsWaiting(req: Request, admin: Admin, team: boolean): Promise<number> {
   try {
-    const queue = await campaignQueue(req, admin);
-    return queue ? queue.waiting.length + queue.reports.length : 0;
+    const queue = await campaignQueue(req, admin, team);
+    return queue ? queue.waiting.length + queue.reports.length + ("pictures" in queue ? queue.pictures.length : 0) : 0;
   } catch {
     // The count is a hint on a button; the queue itself says when it could not be read.
     return 0;

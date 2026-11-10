@@ -127,11 +127,22 @@ async function recipeReportsOnly(admin: AdminClient) {
  * are closed every row is read, exactly as before. In a build that has the
  * rework a report is kept with its state, and only the open ones wait; where
  * its SQL has not run yet the column is absent, and the old read stands.
+ *
+ * The campaign's own reports only: a report of one of its pictures
+ * (target_kind 'picture', lib/campaigns/pictures.ts) is shown with the
+ * picture on the moderators' page, and would read here as a report of the
+ * whole campaign.
  */
 async function openCampaignReports(admin: AdminClient, columns: string, limit: number) {
   const all = () => admin.from("prayer_campaign_reports").select(columns).order("created_at", { ascending: false }).limit(limit);
   if (!campaignsInBuild()) return all();
-  const open = await admin.from("prayer_campaign_reports").select(columns).eq("status", "open").order("created_at", { ascending: false }).limit(limit);
+  const open = await admin
+    .from("prayer_campaign_reports")
+    .select(columns)
+    .eq("status", "open")
+    .eq("target_kind", "campaign")
+    .order("created_at", { ascending: false })
+    .limit(limit);
   return isColumnAbsent(open.error) ? all() : open;
 }
 

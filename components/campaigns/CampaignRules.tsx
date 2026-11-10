@@ -1,13 +1,21 @@
 "use client";
 
 import { useTranslate } from "@/components/i18n/MessagesProvider";
+import { useCampaignPart } from "@/lib/campaigns/useCampaignsOpen";
 import { SUPPORT_EMAIL } from "@/lib/legal/entity";
 
 /** The id of the page's own heading: its bar takes the name once this has gone up under it. */
 export const RULES_TITLE = "campaign-rules-title";
 
-/** The rules as numbered lines: a rule about pictures joins them with pictures (phase 3). */
+/**
+ * The rules as numbered lines. The rule about pictures stands fourth, where
+ * the notes drafted it (3.2), and only while the server has pictures
+ * switched on (lib/campaigns/parts.ts): a rule about something a reader
+ * cannot do would only puzzle them.
+ */
 const RULES = ["campaigns.rules.1", "campaigns.rules.2", "campaigns.rules.3", "campaigns.rules.4", "campaigns.rules.5"] as const;
+const PICTURES_RULE = "campaigns.rules.pictures";
+const PICTURES_RULE_AFTER = 3;
 
 
 /**
@@ -22,6 +30,8 @@ const RULES = ["campaigns.rules.1", "campaigns.rules.2", "campaigns.rules.3", "c
  */
 export function CampaignRules() {
   const { t } = useTranslate();
+  const pictures = useCampaignPart("pictures");
+  const rules: string[] = pictures ? [...RULES.slice(0, PICTURES_RULE_AFTER), PICTURES_RULE, ...RULES.slice(PICTURES_RULE_AFTER)] : [...RULES];
   return (
     <section data-campaign-rules="" className="bg-night px-5 pb-12 pt-6 md:px-8 md:py-14">
       <div className="mx-auto w-full max-w-[640px]">
@@ -29,7 +39,7 @@ export function CampaignRules() {
           {t("campaigns.rules.title")}
         </h1>
         <ol className="mt-6 space-y-4">
-          {RULES.map((key, i) => (
+          {rules.map((key, i) => (
             <li key={key} className="flex gap-3.5">
               <span aria-hidden className="w-5 shrink-0 font-serif text-body font-semibold tabular-nums leading-[1.6] text-paper/70">
                 {i + 1}

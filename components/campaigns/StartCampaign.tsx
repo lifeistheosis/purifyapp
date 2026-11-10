@@ -4,7 +4,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useRef, useState, type ReactNode } from "react";
 
-import { TickLines } from "@/components/campaigns/TickLines";
+import { TickBox, TickLines } from "@/components/campaigns/TickLines";
 import { CommunityAvatar } from "@/components/community/CommunityAvatar";
 import { useTranslate } from "@/components/i18n/MessagesProvider";
 import { TOP_PLATE } from "@/components/nav/topPlate";
@@ -13,7 +13,6 @@ import { ArrivingImage } from "@/components/ui/ArrivingImage";
 import { ConfirmDialog } from "@/components/ui/ConfirmDialog";
 import { DOOR, DOOR_COLS, DOOR_OFF, DOOR_ON } from "@/components/ui/doors";
 import { Book } from "@/components/ui/icons/Book";
-import { Check } from "@/components/ui/icons/Check";
 import { Clock } from "@/components/ui/icons/Clock";
 import { Close } from "@/components/ui/icons/Close";
 import { Globe } from "@/components/ui/icons/Globe";
@@ -553,17 +552,5 @@ export function StartCampaign() {
         onCancel={() => setAskFiltered(false)}
       />
     </div>
-  );
-}
-
-/** One line to tick, on its own: the family's blessing, and the rules. */
-function TickBox({ on, onChange, children }: { on: boolean; onChange: (next: boolean) => void; children: ReactNode }) {
-  return (
-    <button type="button" role="checkbox" aria-checked={on} onClick={() => onChange(!on)} className="flex min-h-11 w-full items-start gap-3 py-2 text-start">
-      <span aria-hidden className="rule-tick mt-0.5" data-on={on ? "" : undefined}>
-        {on ? <Check size={12} /> : null}
-      </span>
-      <span className="min-w-0 flex-1 font-sans text-detail leading-relaxed text-paper/85">{children}</span>
-    </button>
   );
 }

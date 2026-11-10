@@ -51,17 +51,21 @@ import { PrayTogether } from "@/components/community/PrayTogether";
 import { MessagesProvider } from "@/components/i18n/MessagesProvider";
 import { CARRIED_KEY, carry, type CarriedCampaign } from "@/lib/campaigns/carried";
 import {
+  addPicture,
   closeCampaign,
   dropJoin,
   fetchBoard,
   fetchCampaign,
   fetchMany,
   fetchMine,
+  fetchPictures,
   fetchStates,
   fetchThread,
   keepJoin,
   removeNote,
+  removePicture,
   reportCampaign,
+  reportPicture,
   setCommentsOpen,
   setListed,
   startCampaign,
@@ -222,6 +226,11 @@ describe("closed: the device", () => {
     expect((await setCommentsOpen(ID, false)).ok).toBe(false);
     expect(await fetchMany("week")).toEqual([]);
     expect((await setListed(ID, false)).ok).toBe(false);
+    // Pictures: closed with campaigns, and switched off on the server besides.
+    expect(await fetchPictures(ID)).toEqual({ state: "none" });
+    expect((await addPicture(ID, new File(["x"], "p.jpg", { type: "image/jpeg" }), { adult: true, consent: true, alt: "" })).ok).toBe(false);
+    expect((await removePicture(ID, ID)).ok).toBe(false);
+    expect((await reportPicture(ID, ID, "picture", null)).ok).toBe(false);
     await campaignUpkeep(true);
     expect(calls).toEqual([]);
   });
@@ -338,6 +347,8 @@ describe("closed: the data", () => {
   const SIGNED = "supabase/migrations/20261110084116_campaigns_rework.sql";
   /** File two: a campaign's updates and comments, as its own thread in Community. Not signed yet. */
   const THREADS_FOR_HIS_SIGNATURE = "docs/1.9-build/sql/campaigns-2-threads.sql";
+  /** File three: a campaign's pictures. Not signed yet, and switched off on the server besides. */
+  const PICTURES_FOR_HIS_SIGNATURE = "docs/1.9-build/sql/campaigns-3-pictures.sql";
   /** A file's SQL from its first statement on, its header left out. */
   const statements = (sql: string) => sql.slice(sql.search(/^set lock_timeout/m));
 
@@ -366,6 +377,32 @@ describe("closed: the data", () => {
     expect(hits).toEqual([]);
     expect(existsSync(join(ROOT, THREADS_FOR_HIS_SIGNATURE))).toBe(true);
     expect(read(THREADS_FOR_HIS_SIGNATURE)).toMatch(/^-- NOT APPLIED YET, AND NOT SIGNED YET\./m);
+  });
+
+  it("keeps file three out of that folder too, and it gives the public key nothing", () => {
+    const hits = readdirSync(join(ROOT, "supabase/migrations")).filter((f) => /prayer_campaign_pictures/.test(read(`supabase/migrations/${f}`)));
+    expect(hits).toEqual([]);
+    expect(read(PICTURES_FOR_HIS_SIGNATURE)).toMatch(/^-- NOT APPLIED YET, AND NOT SIGNED YET\./m);
+    const sql = statements(read(PICTURES_FOR_HIS_SIGNATURE));
+    // Nobody reads a picture's row straight from the table: row level
+    // security with no policy, and no right for the public key or a
+    // signed-in reader (run with both roles on a scratch PostgreSQL). Where a
+    // file is kept is the server's alone.
+    expect(sql).toContain("alter table public.prayer_campaign_pictures enable row level security;");
+    expect(sql).toContain("revoke all on public.prayer_campaign_pictures from anon, authenticated;");
+    expect(sql).not.toMatch(/create policy/i);
+    expect(sql).not.toMatch(/grant [^;]*\bto\s+(?:anon|authenticated|public)\b/i);
+    // It waits unless a moderator says otherwise, and goes with its campaign.
+    expect(sql).toContain("status text not null default 'held' check (status in ('held', 'shown', 'removed'))");
+    expect(sql).toContain("references public.prayer_campaigns (id) on delete cascade");
+    // Safe to run twice.
+    expect(sql).toMatch(/create table if not exists public\.prayer_campaign_pictures/);
+    expect(sql).not.toMatch(/create (?:unique )?index (?!if not exists)/i);
+    // And it is the notes' own, word for word (5.4), as file one is.
+    const notes = read("docs/1.9-build/notes/campaigns-fable.md");
+    const block = [...notes.matchAll(/```sql\n([\s\S]*?)```/g)].map((m) => m[1]).find((b) => b.includes("create table if not exists public.prayer_campaign_pictures"));
+    expect(block).toBeTruthy();
+    expect(statements(block!).trim()).toBe(sql.trim());
   });
 
   it("makes a campaign's thread a post with a state of its own, which is what keeps it out of Community", () => {

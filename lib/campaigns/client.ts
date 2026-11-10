@@ -15,10 +15,26 @@
 
 import { apiFetch } from "@/lib/api/client";
 import type { PrayPlace } from "@/lib/prayers/commemoration";
+import { shrink } from "@/lib/trapeza/upload";
 
 import type { CampaignState } from "./carried";
 import { campaignsInBuild } from "./flags";
-import type { CampaignKind, CampaignModAction, CampaignThread, Closing, ConsentKind, ForWhom, ManySpan, NoteKind, PrayerRef, PublicCampaign, ReportReason } from "./model";
+import type {
+  CampaignKind,
+  CampaignModAction,
+  CampaignPictures,
+  CampaignThread,
+  Closing,
+  ConsentKind,
+  ForWhom,
+  ManySpan,
+  NoteKind,
+  PictureReportReason,
+  PrayerRef,
+  PublicCampaign,
+  ReportReason,
+} from "./model";
+import { campaignPartNow } from "./useCampaignsOpen";
 
 const JSON_POST = { method: "POST", headers: { "content-type": "application/json" } } as const;
 
@@ -307,6 +323,77 @@ export async function removeNote(id: string, noteId: string): Promise<Sent> {
   if (!campaignsInBuild()) return CLOSED;
   try {
     return await sent(await apiFetch(`/api/campaigns/${encodeURIComponent(id)}/thread?note=${encodeURIComponent(noteId)}`, { method: "DELETE" }));
+  } catch {
+    return { ok: false, status: 0, error: null };
+  }
+}
+
+// ── Pictures ────────────────────────────────────────────────────────────────
+//
+// Switched off on the server since they were built (lib/campaigns/parts.ts).
+// Every call here asks nothing until the server has told this device the
+// part is on (./useCampaignsOpen.ts): a build never asks on its own belief.
+
+const picturesOff = () => !campaignsInBuild() || !campaignPartNow("pictures");
+
+export type PicturesResult = { state: "ok"; pictures: CampaignPictures } | { state: "none" } | { state: "error" };
+
+/** A campaign's pictures: the ones a moderator has cleared, and for its creator their own that wait. */
+export async function fetchPictures(id: string): Promise<PicturesResult> {
+  if (picturesOff()) return { state: "none" };
+  try {
+    const res = await apiFetch(`/api/campaigns/${encodeURIComponent(id)}/pictures`);
+    if (res.status === 404) return { state: "none" };
+    if (!res.ok) return { state: "error" };
+    const json = (await body(res)) as Partial<CampaignPictures>;
+    return { state: "ok", pictures: { pictures: json.pictures ?? [], limit: typeof json.limit === "number" ? json.limit : null, canAdd: json.canAdd === true } };
+  } catch {
+    return { state: "error" };
+  }
+}
+
+/** What adding a picture came to. `plus` is the server saying Purify Plus would give more room. */
+export type PictureAdded = { ok: true; id: string } | { ok: false; status: number; code: string | null; plus: boolean };
+
+/**
+ * Its creator adds one picture. `said` is the two lines ticked on the sheet:
+ * each is sent as a yes only when it was ticked, and the server refuses
+ * without both. The photo is drawn again on the device first, which saves the
+ * reader's data; the server makes it again whatever it is sent.
+ */
+export async function addPicture(id: string, file: File, said: { adult: boolean; consent: boolean; alt: string }): Promise<PictureAdded> {
+  if (picturesOff()) return { ok: false, status: 404, code: null, plus: false };
+  try {
+    const blob = await shrink(file);
+    const form = new FormData();
+    form.append("file", blob, blob === file ? file.name : "photo.jpg");
+    if (said.adult) form.append("adult", "yes");
+    if (said.consent) form.append("consent", "yes");
+    if (said.alt.trim()) form.append("alt", said.alt.trim());
+    const res = await apiFetch(`/api/campaigns/${encodeURIComponent(id)}/pictures`, { method: "POST", body: form });
+    const json = await body(res);
+    if (res.ok && typeof json.id === "string") return { ok: true, id: json.id };
+    return { ok: false, status: res.status, code: typeof json.code === "string" ? json.code : null, plus: json.plus === true };
+  } catch {
+    return { ok: false, status: 0, code: null, plus: false };
+  }
+}
+
+/** Its creator removes one of their pictures: from the page and from the servers at once. */
+export async function removePicture(id: string, pictureId: string): Promise<Sent> {
+  if (picturesOff()) return CLOSED;
+  try {
+    return await sent(await apiFetch(`/api/campaigns/${encodeURIComponent(id)}/pictures?picture=${encodeURIComponent(pictureId)}`, { method: "DELETE" }));
+  } catch {
+    return { ok: false, status: 0, error: null };
+  }
+}
+
+/** A reader reports one picture, from its viewer. */
+export async function reportPicture(id: string, pictureId: string, reason: PictureReportReason, words: string | null): Promise<Sent> {
+  if (picturesOff()) return CLOSED;
+  try {
+    return await sent(await apiFetch(`/api/campaigns/${encodeURIComponent(id)}/report`, { ...JSON_POST, body: JSON.stringify({ reason, words, picture: pictureId }) }));
   } catch {
     return { ok: false, status: 0, error: null };
   }

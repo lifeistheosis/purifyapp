@@ -239,6 +239,49 @@ const MANY = {
   year: [CAMPAIGNS[NICHOLAS], CAMPAIGNS[MARIA], CAMPAIGNS[PETER]],
 };
 
+// A campaign's pictures (his item 121), as the pictures route hands them on.
+// The sample pictures are the app's own artwork, already in the export: an
+// icon is what a reader might well attach, and no photograph of anyone is
+// made up for a drawing.
+const pic = (n, src, over = {}) => ({ id: `dddddddd-dddd-4ddd-8ddd-ddddddddddd${n}`, url: src, width: 1200, height: 1600, alt: null, held: false, ...over });
+const PICTURES = {
+  [MARIA]: [
+    pic(1, "/icons/prayer/theotokos-of-vladimir.jpg", { alt: "The icon in her room" }),
+    pic(2, "/icons/prayer/christ-pantocrator.v2.jpg"),
+    pic(3, "/icons/prayer/anastasis.jpg", { alt: "From the parish, at Pascha" }),
+  ],
+};
+/** What the route answers: every reader the ones cleared; its creator also their own that wait, their limit, and whether a place is free. */
+function picturesFor(id, { mine = false, waiting = 0, limit = 3 } = {}) {
+  const all = PICTURES[id] ?? [];
+  if (!mine) return { pictures: all, limit: null, canAdd: false };
+  const pictures = all.map((p, i) => (i >= all.length - waiting ? { ...p, held: true } : p));
+  return { pictures, limit, canAdd: pictures.length < limit };
+}
+/** The team's queue with pictures on: one new, covered until it is tapped, and one a reader reported. */
+const MOD_PICTURES = [
+  {
+    id: "dddddddd-dddd-4ddd-8ddd-ddddddddddd7",
+    url: "/icons/prayer/theotokos-of-vladimir.jpg",
+    shown: false,
+    alt: "The icon in her room",
+    check_result: "nothing found",
+    created_at: new Date(Date.now() - 25 * 60_000).toISOString(),
+    reports: [],
+    campaign: { id: MARIA, title: "For Maria before her operation", creator_name: "John" },
+  },
+  {
+    id: "dddddddd-dddd-4ddd-8ddd-ddddddddddd8",
+    url: "/icons/prayer/anastasis.jpg",
+    shown: true,
+    alt: null,
+    check_result: "nothing found",
+    created_at: new Date(Date.now() - 3 * 3_600_000).toISOString(),
+    reports: [{ reason_code: "picture", reason: "Is this theirs to share?" }],
+    campaign: { id: PETER, title: "For Peter's exams", creator_name: "Helen" },
+  },
+];
+
 const seen = new Set();
 /** Every request a screen made of the server, for the walk to hold. */
 let calls = [];
@@ -265,6 +308,14 @@ async function answer(ctx, opts = {}) {
       return json({ campaigns: MANY[url.searchParams.get("span") ?? "week"] ?? [] });
     }
     if (opts.closed && p.startsWith("/api/campaigns")) return json({ error: "Not found." }, 404);
+    const pictures = /^\/api\/campaigns\/([0-9a-f-]{36})\/pictures$/.exec(p);
+    if (pictures) {
+      // Switched off on the server, it is not there for anyone.
+      if (!parts.pictures) return json({ error: "Not found." }, 404);
+      if (req.method() === "GET") return json(picturesFor(pictures[1], { mine: Boolean(opts.mine?.includes(pictures[1])), ...(opts.pictures ?? {}) }));
+      if (req.method() === "POST") return json({ ok: true, id: "dddddddd-dddd-4ddd-8ddd-ddddddddddd9" });
+      return json({ ok: true });
+    }
     if (p === "/api/campaigns" && req.method() === "POST") return json({ ok: true, id: HELD, status: "held" });
     if (/^\/api\/campaigns\/[0-9a-f-]{36}\/(join|report)$/.test(p)) return json({ ok: true });
     const thread = /^\/api\/campaigns\/([0-9a-f-]{36})\/thread$/.exec(p);
@@ -286,7 +337,11 @@ async function answer(ctx, opts = {}) {
       return c ? json({ campaign: { ...c, ...(opts.mine?.includes(c.id) ? { mine: true, keep_after_end: false, listed: true } : {}) } }) : json({ error: "Not found." }, 404);
     }
     if (p === "/api/community/prayer-wall") return json(WALL);
-    if (p === "/api/community/moderation") return json(url.searchParams.get("summary") ? { waiting: 2 } : MOD_QUEUE);
+    if (p === "/api/community/moderation") {
+      if (url.searchParams.get("summary")) return json({ waiting: 2 });
+      // The team's queue carries pictures only while the server has them on.
+      return json(parts.pictures ? { ...MOD_QUEUE, campaigns: { ...MOD_QUEUE.campaigns, waiting: [], reports: [], pictures: MOD_PICTURES } } : MOD_QUEUE);
+    }
     return json({ error: "Not found." }, 404);
   });
 }
@@ -300,7 +355,7 @@ async function whole(page, min = 844) {
   await page.setViewportSize({ width: 390, height: Math.max(min, h) });
 }
 
-async function shot(name, label, where, selector, { set = {}, prepare, signedIn = true, mine, board, parts, check = true } = {}) {
+async function shot(name, label, where, selector, { set = {}, prepare, signedIn = true, mine, board, parts, pictures, check = true } = {}) {
   if (WALK) return;
   if (ONLY && !ONLY.has(name.slice(0, 2))) return;
   const seed = {
@@ -312,7 +367,7 @@ async function shot(name, label, where, selector, { set = {}, prepare, signedIn 
   const errors = [];
   page.on("pageerror", (e) => errors.push(e.message));
   try {
-    await answer(ctx, { mine, board, signedIn, parts });
+    await answer(ctx, { mine, board, signedIn, parts, pictures });
     await go(page, where);
     await settle(page);
     if (prepare) await prepare(page);
@@ -547,7 +602,61 @@ await shot("19-prayed-by-many", "the board with Prayed by many, switched on", "/
   },
 });
 
-async function walk(label, where, run, { set = {}, signedIn = true, mine, closed = false, parts } = {}) {
+// 20 to 24 Pictures (his item 121), as they would be once the server switches
+// them on. They ship switched off, and the walk holds that off draws nothing.
+
+// 20 A reader's view: the first picture is the page's head, the rest stand in a row under About.
+await shot("20-pictures", "a campaign with pictures, switched on", `/campaigns/detail?id=${MARIA}`, "[data-campaign-page]", {
+  parts: { pictures: true },
+  prepare: async (page) => {
+    await page.waitForSelector("[data-campaign-pictures] button img", { timeout: 15000 });
+    await whole(page);
+  },
+});
+
+// 21 Its creator's view at three: one still waits, and the next place wears the Plus mark.
+await shot("21-pictures-creator", "its creator's pictures: one waiting, and where Plus is met", `/campaigns/detail?id=${MARIA}`, "[data-campaign-page]", {
+  mine: [MARIA],
+  parts: { pictures: true },
+  pictures: { waiting: 1 },
+  prepare: async (page) => {
+    await page.waitForSelector("[data-campaign-pictures] button img", { timeout: 15000 });
+    await page.locator("[data-campaign-pictures]").scrollIntoViewIfNeeded();
+  },
+});
+
+// 22 Adding one: the picture, what it shows, and the two lines to tick.
+await shot("22-picture-add", "adding a picture: the two lines to tick", `/campaigns/detail?id=${NICHOLAS}`, "[role=dialog]", {
+  mine: [NICHOLAS],
+  parts: { pictures: true },
+  prepare: async (page) => {
+    await page.waitForSelector("[data-campaign-pictures]", { timeout: 15000 });
+    await page.locator("[data-campaign-pictures] button", { hasText: "Add a picture" }).click();
+    await page.waitForSelector("[role=dialog] [role=checkbox]", { timeout: 8000 });
+    await page.locator("[role=dialog] [role=checkbox]").first().click();
+  },
+});
+
+// 23 One picture, opened: what it shows, and Report.
+await shot("23-picture-open", "a picture opened, with Report", `/campaigns/detail?id=${MARIA}`, "[role=dialog]", {
+  parts: { pictures: true },
+  prepare: async (page) => {
+    await page.waitForSelector("[data-campaign-pictures] button img", { timeout: 15000 });
+    await page.locator("[data-campaign-pictures] button").first().click();
+    await page.waitForSelector("[role=dialog] img", { timeout: 8000 });
+  },
+});
+
+// 24 The team's queue: a picture is covered until it is tapped.
+await shot("24-pictures-team", "the team's queue: pictures to look at", "/community/moderate", "[data-mod-campaigns]", {
+  parts: { pictures: true },
+  prepare: async (page) => {
+    await page.waitForSelector("[data-mod-campaign-picture]", { timeout: 15000 });
+    await whole(page);
+  },
+});
+
+async function walk(label, where, run, { set = {}, signedIn = true, mine, closed = false, parts, pictures } = {}) {
   const seed = {
     "purify.prayers.campaigns": JSON.stringify(CARRIED),
     ...(signedIn ? { "purify.supabase.auth": JSON.stringify([{ name: "sb-placeholder-auth-token", value: JSON.stringify(SESSION) }]) } : {}),
@@ -560,7 +669,7 @@ async function walk(label, where, run, { set = {}, signedIn = true, mine, closed
   let ok = true;
   let why = "";
   try {
-    await answer(ctx, { mine, closed, parts });
+    await answer(ctx, { mine, closed, parts, pictures });
     await go(page, where);
     await settle(page, 1800);
     await run(page);
@@ -793,6 +902,86 @@ if (WALK) {
     expectThat(sentTo("PATCH", /^\/api\/campaigns\/[0-9a-f-]{36}$/).some((c) => c.body.listed === false), "staying out was not sent");
     expectThat((await sw.getAttribute("aria-checked")) === "false", "the switch did not turn");
   }, { mine: [MARIA], parts: { many: true } });
+
+  await walk("pictures, switched off as they ship: the page draws none and asks for none", `/campaigns/detail?id=${MARIA}`, async (page) => {
+    await page.waitForSelector("#campaign-title", { timeout: 15000 });
+    await settle(page, 1200);
+    expectThat((await page.locator("[data-campaign-pictures]").count()) === 0, "pictures are drawn");
+    expectThat(!calls.some((c) => c.path.endsWith("/pictures")), "the pictures were asked for");
+    // Its creator's menu and page offer no place to add one either.
+    expectThat((await page.getByText("Add a picture").count()) === 0, "a place to add one is offered");
+  }, { mine: [MARIA] });
+
+  await walk("pictures, on: its creator adds one only with both lines ticked, and it is sent with both", `/campaigns/detail?id=${NICHOLAS}`, async (page) => {
+    await page.waitForSelector("[data-campaign-pictures]", { timeout: 15000 });
+    await page.locator("[data-campaign-pictures] button", { hasText: "Add a picture" }).click();
+    await page.waitForSelector("[role=dialog] [role=checkbox]", { timeout: 8000 });
+    const add = page.locator("[role=dialog] button", { hasText: "Add a picture" }).last();
+    expectThat(await add.isDisabled(), "Add is lit before a picture is chosen");
+    // A small real picture, made here.
+    const png = Buffer.from("iVBORw0KGgoAAAANSUhEUgAAAAgAAAAGCAIAAABxZ0isAAAAEklEQVR4nGNgYGD4z4AJBhQQAHJLAf8D3q3TAAAAAElFTkSuQmCC", "base64");
+    await page.locator("[role=dialog] input[type=file]").setInputFiles({ name: "icon.png", mimeType: "image/png", buffer: png });
+    await settle(page, 500);
+    expectThat(await add.isDisabled(), "Add is lit before either line is ticked");
+    const ticks = page.locator("[role=dialog] [role=checkbox]");
+    expectThat((await ticks.count()) === 2, "there are not two lines to tick");
+    await ticks.nth(0).click();
+    expectThat(await add.isDisabled(), "Add is lit with one line ticked");
+    await ticks.nth(1).click();
+    expectThat(!(await add.isDisabled()), "Add is not lit with both ticked");
+    await page.fill("#campaign-picture-alt", "The icon in his room");
+    const sent = page.waitForRequest((r) => r.method() === "POST" && /\/api\/campaigns\/[0-9a-f-]{36}\/pictures$/.test(new URL(r.url()).pathname));
+    await add.click();
+    const body = (await sent).postData() ?? "";
+    for (const field of ['name="adult"', 'name="consent"', 'name="alt"', 'name="file"']) expectThat(body.includes(field), `the upload carries no ${field}`);
+    expectThat(/name="adult"\r\n\r\nyes/.test(body) && /name="consent"\r\n\r\nyes/.test(body), "the two lines were not sent as yes");
+    await settle(page, 900);
+    expectThat((await page.getByText("Your picture is waiting for a moderator.").count()) > 0, "its creator is not told it waits");
+  }, { mine: [NICHOLAS], parts: { pictures: true } });
+
+  await walk("pictures, on: a reader opens one and reports it, by the picture and with a picture's own reason", `/campaigns/detail?id=${MARIA}`, async (page) => {
+    await page.waitForSelector("[data-campaign-pictures] button img", { timeout: 15000 });
+    expectThat((await page.locator("[data-campaign-pictures] button").count()) === 3, "a reader is offered more than the three pictures");
+    await page.locator("[data-campaign-pictures] button").first().click();
+    await page.waitForSelector("[role=dialog] img", { timeout: 8000 });
+    expectThat((await page.locator("[role=dialog]").innerText()).includes("The icon in her room"), "what it shows is not said");
+    await page.locator("[role=dialog] button", { hasText: "Report this picture" }).click();
+    await page.waitForSelector("[role=dialog] [role=radio]", { timeout: 8000 });
+    expectThat((await page.locator("[role=dialog] [role=radio]").count()) === 3, "a picture's reasons are not three");
+    await page.locator("[role=dialog] [role=radio]", { hasText: "It shows me or someone in my care" }).click();
+    await page.locator("[role=dialog] button", { hasText: "Send" }).click();
+    await settle(page, 900);
+    const report = sentTo("POST", /\/report$/)[0];
+    expectThat(report && report.body.picture === PICTURES[MARIA][0].id && report.body.reason === "about_me", `reported ${JSON.stringify(report?.body)}`);
+  }, { parts: { pictures: true } });
+
+  await walk("pictures, on: its creator removes one, after being asked", `/campaigns/detail?id=${MARIA}`, async (page) => {
+    await page.waitForSelector("[data-campaign-pictures] button img", { timeout: 15000 });
+    await page.locator("[data-campaign-pictures] button").nth(1).click();
+    await page.locator("[role=dialog] button", { hasText: "Remove" }).click();
+    await page.waitForSelector("[role=alertdialog], [role=dialog] >> text=Remove this picture?", { timeout: 8000 });
+    expectThat(sentTo("DELETE", /\/pictures$/).length === 0, "it was removed before the question was answered");
+    await page.getByRole("button", { name: "Remove", exact: true }).last().click();
+    await settle(page, 900);
+    const gone = calls.find((c) => c.method === "DELETE" && c.path.endsWith("/pictures"));
+    expectThat(Boolean(gone), "the removal was not sent");
+  }, { mine: [MARIA], parts: { pictures: true }, pictures: { waiting: 1 } });
+
+  await walk("pictures, on: the team's queue covers each picture until it is tapped, and clears one", "/community/moderate", async (page) => {
+    await page.waitForSelector("[data-mod-campaign-picture]", { timeout: 15000 });
+    const card = page.locator("[data-mod-campaign-picture]").first();
+    expectThat((await card.locator("img").count()) === 0, "a picture is drawn before it is asked for");
+    await card.locator("button", { hasText: "Show the picture" }).click();
+    await card.locator("img").waitFor({ timeout: 8000 });
+    await card.locator("button", { hasText: "Approve" }).click();
+    await settle(page, 900);
+    const sent = sentTo("POST", /^\/api\/community\/moderation$/)[0];
+    expectThat(sent && sent.body.action === "approve_picture" && sent.body.id === MOD_PICTURES[0].id, `sent ${JSON.stringify(sent?.body)}`);
+    // The reported one that is still shown: kept, or removed.
+    const reported = page.locator("[data-mod-campaign-picture]").nth(1);
+    expectThat((await reported.innerText()).includes("Is this theirs to share?"), "the reader's reason is not shown");
+    expectThat((await reported.locator("button", { hasText: "Keep it" }).count()) === 1, "a reported picture cannot be kept");
+  }, { parts: { pictures: true } });
 
   await walk("not open for this reader: the pages are the app's not-found page, and Pray together shows nothing of campaigns", "/campaigns", async (page) => {
     await settle(page, 1500);

@@ -433,6 +433,10 @@ const LOGGED = [
   "dismiss_campaign_report",
   // A campaign's creator took a comment off their own campaign (lib/campaigns/thread.ts).
   "creator_remove_comment",
+  // A campaign's pictures (1.9, switched off on the server until they open).
+  "approve_picture",
+  "remove_picture",
+  "picture_flagged",
 ] as const;
 
 function LogList({ rows }: { rows: ModLogLine[] }) {

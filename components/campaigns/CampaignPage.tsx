@@ -7,6 +7,7 @@ import { useEffect, useState, type CSSProperties, type ReactNode } from "react";
 import { CAMPAIGN_DOORS, CampaignDoors, type CampaignDoor } from "@/components/campaigns/CampaignDoors";
 import { CampaignJoinSheet } from "@/components/campaigns/CampaignJoinSheet";
 import { CampaignComments, CampaignUpdates, useCampaignThread } from "@/components/campaigns/CampaignNotes";
+import { CampaignPictures, useCampaignPictures } from "@/components/campaigns/CampaignPictures";
 import { CampaignReportSheet } from "@/components/campaigns/CampaignReportSheet";
 import { TickLines } from "@/components/campaigns/TickLines";
 import { CommunityAvatar } from "@/components/community/CommunityAvatar";
@@ -143,6 +144,13 @@ function Opened({ first, bar }: { first: PublicCampaign; bar: ReactNode }) {
   // menu is drawn only once the server says the part is on.
   const manyOn = useCampaignPart("many");
   const { result: thread, reload: reloadThread } = useCampaignThread(campaign.id, hasThread);
+  // Pictures are switched off on the server too: asked for, and drawn, only
+  // once the server says the part is on, and never under one of July's.
+  const picturesOn = useCampaignPart("pictures") && campaign.days !== null;
+  const { result: pictures, reload: reloadPictures } = useCampaignPictures(campaign.id, picturesOn);
+  // The first picture a moderator has cleared is the page's head. One that
+  // still waits never is, so its creator sees the head every reader sees.
+  const headPicture = pictures?.state === "ok" ? (pictures.pictures.pictures.find((p) => !p.held) ?? null) : null;
 
   const name = campaign.subject_name ?? campaign.title;
   const running = isRunning(campaign);
@@ -299,6 +307,8 @@ function Opened({ first, bar }: { first: PublicCampaign; bar: ReactNode }) {
 
       {campaign.details ? <p className="whitespace-pre-line break-words font-serif text-body leading-[1.7] text-paper/90">{campaign.details}</p> : null}
 
+      {picturesOn ? <CampaignPictures campaignId={campaign.id} mine={mine} result={pictures} reload={reloadPictures} onNotice={said} /> : null}
+
       {/* The prayer, whole, with the name in it: word for word from the
           prayer book, and where it is printed. */}
       <h2 id="campaign-prayer" tabIndex={-1} className="mt-8 scroll-mt-24 font-heading text-lede leading-tight text-paper focus:outline-none">
@@ -348,9 +358,15 @@ function Opened({ first, bar }: { first: PublicCampaign; bar: ReactNode }) {
       <section className="bg-night px-5 pb-16">
         <div className="mx-auto w-full max-w-[640px]">
           <header className="pb-2">
-            {/* The picture a campaign wears: the app's own icon of its kind. */}
+            {/* The picture a campaign wears: its own first picture once a
+                moderator has cleared one, and otherwise the app's own icon of
+                its kind, so nobody feels they must post a photograph. */}
             <div className="saint-icon-in under-topbar picture-melt relative -mx-5 aspect-[9/10] max-h-[70svh] overflow-hidden">
-              {icon ? <ArrivingImage src={icon.src} alt={icon.alt} decoding="async" className="absolute inset-0 h-full w-full object-cover object-top" /> : null}
+              {headPicture ? (
+                <ArrivingImage key={headPicture.id} src={headPicture.url} alt={headPicture.alt ?? t("campaigns.pictureAlt")} decoding="async" className="absolute inset-0 h-full w-full object-cover" />
+              ) : icon ? (
+                <ArrivingImage src={icon.src} alt={icon.alt} decoding="async" className="absolute inset-0 h-full w-full object-cover object-top" />
+              ) : null}
               <div aria-hidden className="pointer-events-none absolute inset-x-0 top-0 h-36 bg-gradient-to-b from-night/80 to-transparent" />
             </div>
             <div className="relative -mt-28 text-start">

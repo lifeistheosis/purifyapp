@@ -14,7 +14,13 @@ import { apiFetch } from "@/lib/api/client";
 const MAX_SIDE = 1600;
 const QUALITY = 0.85;
 
-async function shrink(file: File): Promise<Blob> {
+/**
+ * The photo drawn again at 1600 pixels as a JPEG, or the file itself where
+ * this browser cannot do that. Shared with a campaign's pictures
+ * (lib/campaigns/client.ts), where it saves the reader's data and is not the
+ * guarantee: the server makes every picture again whatever it is sent.
+ */
+export async function shrink(file: File): Promise<Blob> {
   if (typeof createImageBitmap !== "function") return file;
   let bitmap: ImageBitmap;
   try {

@@ -4,6 +4,7 @@ import { corsPreflight, withCors } from "@/lib/api/cors";
 import { CAMPAIGN_BUCKET, campaignImage } from "@/lib/campaigns/image";
 import { isJulyRow } from "@/lib/campaigns/model";
 import { campaignsCaller } from "@/lib/campaigns/opening";
+import { deletePicturesOf } from "@/lib/campaigns/pictures";
 import { forReader, hiddenFor, mayRead, readCampaignRow } from "@/lib/campaigns/server";
 import { ipKey, rateLimited } from "@/lib/security/ratelimit";
 import { campaignStatusSchema } from "@/lib/security/schemas";
@@ -126,6 +127,9 @@ async function handleDELETE(req: Request, id: string) {
   const { data: imageRow } = await admin.from("prayer_campaigns").select("image_url").eq("id", id).maybeSingle<{ image_url: string | null }>();
   if (imageRow) imageUrl = imageRow.image_url;
 
+  // Its pictures' files first: the database deletes their rows with the
+  // campaign's, and would leave the files (lib/campaigns/pictures.ts).
+  await deletePicturesOf(admin, [id]);
   const { error } = await admin.from("prayer_campaigns").delete().eq("id", id).eq("creator_id", who.user.id);
   if (error) {
     console.warn("[campaigns] delete failed", error.message);

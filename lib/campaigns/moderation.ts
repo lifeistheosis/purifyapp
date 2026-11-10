@@ -2,10 +2,7 @@ import "server-only";
 
 import type { SupabaseClient } from "@supabase/supabase-js";
 
-import { isAdminEmail } from "@/lib/admin/access";
 import { AUTO, logMod, type ModActor, type ModResult } from "@/lib/community/moderation";
-import { AUTO_HIDE_WEIGHT, NEW_ACCOUNT_MS, reportWeight } from "@/lib/community/trust";
-import { staffAmong } from "@/lib/community/trustServer";
 import { removeOwnedUpload } from "@/lib/security/uploadOwners";
 
 import {
@@ -19,6 +16,9 @@ import {
 } from "./model";
 import { CAMPAIGN_BUCKET, campaignImage } from "./image";
 import { reworkAbsent } from "./opening";
+import { campaignPart } from "./parts";
+import { approvePicture, deletePicturesOf, removePictureAsModerator } from "./pictures";
+import { reportsSay } from "./reportsSay";
 
 // Moderating prayer campaigns (the rework of 1.9), once, for everyone who
 // moderates: the team's console and readers holding the Moderator badge work
@@ -59,17 +59,20 @@ async function read(admin: SupabaseClient, id: string): Promise<Row | null> {
 
 const summary = (c: Row) => `${c.creator_name ?? "A reader"}: ${excerpt(c.title)}`;
 
-/** Close a campaign's open reports as acted on or dismissed, by whoever decided. */
+/**
+ * Close a campaign's open reports as acted on or dismissed, by whoever
+ * decided. Keeping a campaign answers the reports of the campaign and leaves
+ * a report of one of its pictures open, since nobody has decided about the
+ * picture; removing it answers every one, since its pictures go with it.
+ */
 async function closeReports(admin: SupabaseClient, actor: ModActor, campaignId: string, status: "actioned" | "dismissed") {
-  const { error } = await admin
-    .from("prayer_campaign_reports")
-    .update({ status, closed_at: new Date().toISOString() })
-    .eq("campaign_id", campaignId)
-    .eq("status", "open");
+  let query = admin.from("prayer_campaign_reports").update({ status, closed_at: new Date().toISOString() }).eq("campaign_id", campaignId).eq("status", "open");
+  if (status === "dismissed") query = query.eq("target_kind", "campaign");
+  const { error } = await query;
   if (error && !reworkAbsent(error)) console.warn("[campaigns] reports not closed", actor.name, error.message);
 }
 
-/** Hidden by readers' reports, by the words maybeHideCampaign writes below. */
+/** Hidden by readers' reports, by the words ./reportsSay.ts's caller writes below. */
 const hiddenByReports = (reason: string | null) => /\breports\b/.test(reason ?? "");
 
 /**
@@ -122,6 +125,10 @@ export async function removeCampaign(admin: SupabaseClient, actor: ModActor, id:
     .eq("id", id);
   if (error) return { ok: false, status: 500, error: error.message };
   await removePicture(admin, id, c.creator_id);
+  // Its pictures' files go at once, from wherever they are: a removed
+  // campaign leaves nothing at an address. Their rows are kept, marked, as
+  // the campaign's is. So one put back comes back without its pictures.
+  await deletePicturesOf(admin, [id], { keepRows: "its campaign was removed" });
   await closeReports(admin, actor, id, "actioned");
   await logMod(admin, actor, { action: "remove_campaign", target: "campaign", targetId: id, summary: summary(c) });
   return { ok: true };
@@ -203,6 +210,13 @@ export async function runCampaignModAction(
       return restoreCampaign(admin, actor, id);
     case "dismiss_campaign_report":
       return dismissCampaignReport(admin, actor, id);
+    // A picture's two. Not actions at all while pictures are switched off,
+    // and the team's alone while they are new: nobody else is shown a
+    // picture before it is cleared (the notes, 3.4).
+    case "approve_picture":
+    case "remove_picture":
+      if (!campaignPart("pictures") || !actor.admin) return { ok: false, status: 404, error: "Not found." };
+      return action === "approve_picture" ? approvePicture(admin, actor, id) : removePictureAsModerator(admin, actor, id, reason);
   }
 }
 
@@ -223,7 +237,8 @@ export type Reported = { ok: true; hidden: boolean } | { ok: false; status: numb
  *     three readers, a new account counting half, a moderator's at once).
  * Never when a moderator has already looked at reports of it and kept it
  * (approveCampaign, above: read is not yet cleared), so that neither rule
- * can be used to silence a campaign twice; and never the team's own.
+ * can be used to silence a campaign twice; and never the team's own. The
+ * weighing is ./reportsSay.ts, which a picture's reports share.
  */
 export async function reportCampaign(
   admin: SupabaseClient,
@@ -258,38 +273,19 @@ export async function maybeHideCampaign(admin: SupabaseClient, campaignId: strin
     const c = await read(admin, campaignId);
     if (!c || c.status !== "active" || c.mod_cleared_at) return false;
 
+    // The campaign's own reports: one of a picture is weighed for the picture (./pictures.ts).
     const { data: reports } = await admin
       .from("prayer_campaign_reports")
       .select("reporter_id, reason_code")
       .eq("campaign_id", campaignId)
+      .eq("target_kind", "campaign")
       .eq("status", "open")
       .limit(50);
-    const rows = ((reports ?? []) as { reporter_id: string | null; reason_code: string | null }[]).filter((r) => r.reporter_id);
-    const reporters = [...new Set(rows.map((r) => r.reporter_id as string))];
-    if (reporters.length === 0) return false;
+    const say = await reportsSay(admin, c.creator_id, (reports ?? []) as { reporter_id: string | null; reason_code: string | null }[], now);
+    if (!say.hide) return false;
+    const { aboutMe, reporters } = say;
 
-    const [staffSet, profiles] = await Promise.all([
-      staffAmong(admin, [...reporters, c.creator_id]),
-      admin.from("profiles").select("id, joined_at").in("id", reporters),
-    ]);
-    if (staffSet.has(c.creator_id)) return false;
-    const joined = new Map(
-      ((profiles.data ?? []) as { id: string; joined_at: string | null }[]).map((p) => [p.id, p.joined_at ? new Date(p.joined_at).getTime() : NaN]),
-    );
-    const ageOf = (id: string) => {
-      const at = joined.get(id);
-      return at !== undefined && Number.isFinite(at) ? now - at : Number.MAX_SAFE_INTEGER;
-    };
-    let weight = 0;
-    for (const r of reporters) weight += reportWeight(ageOf(r), staffSet.has(r));
-    const aboutMe = rows.some((r) => r.reason_code === "about_me" && ageOf(r.reporter_id as string) >= NEW_ACCOUNT_MS);
-    if (!aboutMe && weight < AUTO_HIDE_WEIGHT) return false;
-
-    // The team's own, by email and with no badge, is asked last, only when it matters.
-    const { data: author } = await admin.auth.admin.getUserById(c.creator_id);
-    if (isAdminEmail(author?.user?.email)) return false;
-
-    const detail = aboutMe ? "reports; about_me" : `reports (${reporters.length})`;
+    const detail = aboutMe ? "reports; about_me" : `reports (${reporters})`;
     const { error } = await admin
       .from("prayer_campaigns")
       .update({ status: "held", held_reason: detail, updated_at: new Date(now).toISOString() })
@@ -300,7 +296,7 @@ export async function maybeHideCampaign(admin: SupabaseClient, campaignId: strin
       action: "auto_hide",
       target: "campaign",
       targetId: campaignId,
-      summary: `${aboutMe ? "Hidden on a report that it names someone without their blessing" : `Hidden after ${reporters.length} reports`}. ${summary(c)}`,
+      summary: `${aboutMe ? "Hidden on a report that it names someone without their blessing" : `Hidden after ${reporters} reports`}. ${summary(c)}`,
     });
     return true;
   } catch (e) {
@@ -359,6 +355,10 @@ export async function readOpenCampaignReports(admin: SupabaseClient): Promise<{ 
     .from("prayer_campaign_reports")
     .select("id, reason, reason_code, created_at, campaign:prayer_campaigns(id, title, status, intention, subject_name, details, creator_name)")
     .eq("status", "open")
+    // A report of one picture is shown with the picture (./pictures.ts,
+    // readWaitingPictures), to the team alone, and not here as a report of
+    // the campaign.
+    .eq("target_kind", "campaign")
     .order("created_at", { ascending: true })
     .limit(200);
   if (error) {
