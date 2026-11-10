@@ -934,10 +934,18 @@ SQL (above).
   signed 2026-11-10 ("yes florilegium"), and in `supabase/migrations/` as
   `20261110090516_florilegium_kinds.sql`.
 
+- **Waiting for your yes:** the baseline,
+  `20261110155643_production_baseline.sql`. It makes, on a new database
+  (the test web's), the ten tables the live database was once given by
+  hand, and on the live database it does nothing at all. It is already in
+  `supabase/migrations/` because the test web needs it, so it needs your yes
+  before the push like the rest. The arbiter sends you its plain words once
+  its second reader is done.
+
 Do not run any of these by hand: the push runs them.
 
-Nothing waits: every 1.9 change to the database is signed. A change that
-comes later waits for your yes in the same way.
+Every other 1.9 change to the database is signed. A change that comes later
+waits for your yes in the same way.
 
 ### R0c. The new onboarding: your word, after you try it again
 
