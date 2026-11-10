@@ -17,7 +17,16 @@ every icon. Sixty-one of the icons the app carries have never been opened or
 sourced (`lib/saints/iconRights.ts`, `UNVERIFIED_ICONS`), so none of them is
 used: a saint with no settled picture has the plate with the title alone.
 
-**Public domain only.** A cover carries no credit line, so it must need none.
+**Public domain, or a credited photograph.** A cover carries no credit line, so
+until 1.9 it had to need none. From 1.9 (the owner's yes to his page's 99,
+2026-11-10) a CC BY or CC BY-SA photograph is allowed too, its photographer
+named, with the licence and the photograph's page, on the Photo credits page
+(`/credits`, from `lib/credits/photos.ts`, which
+`lib/credits/__tests__/photos.test.ts` holds to every registry here), and
+only where the work photographed is itself old enough to be free: a CC
+photograph of a contemporary icon is never used, since the painter's rights
+are not the photographer's to give. Until such a row is added, the rest of
+this paragraph holds for every cover.
 Every Commons file below is public domain or CC0 as its own page states it,
 read on 2026-10-16, and its page names no CC BY, CC BY-SA or GFDL licence in
 its categories (a photographer's licence over an old icon shows only there).

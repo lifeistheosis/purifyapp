@@ -47,6 +47,12 @@ export type StreamedArt = {
   source: string;
   /** As the file's Commons page states it. */
   license: string;
+  /**
+   * For a CC BY or CC BY-SA photograph (1.9): the photographer, as the
+   * file's page asks to be credited, named on the Photo credits page
+   * (lib/credits/photos.ts). Required with such a licence.
+   */
+  credit?: string;
   evidenceUrl: string;
   /** The day the cut was opened and looked at. */
   inspectedOn: string;

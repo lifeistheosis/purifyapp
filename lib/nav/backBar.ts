@@ -116,6 +116,9 @@ export const OWN_HEADER_PATTERNS: RegExp[] = [
   /^\/calendar$/,
   /^\/privacy$/,
   /^\/terms$/,
+  // Photo credits (1.9): reached from About, with its own bar as About's
+  // other pages have.
+  /^\/credits$/,
   /^\/settings$/,
   // The rest of what is reached from You and its Settings (1.8): Purify's
   // rows (Support Purify and the FAQ it opens, What's new, About), Export

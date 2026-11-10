@@ -274,7 +274,10 @@ export function MobileTabBar() {
         p === "/faq" ||
         p.startsWith("/faq/") ||
         p === "/terms" ||
-        p.startsWith("/terms/"),
+        p.startsWith("/terms/") ||
+        // Photo credits (1.9), which only About leads to.
+        p === "/credits" ||
+        p.startsWith("/credits/"),
     },
   ];
 

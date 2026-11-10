@@ -3,6 +3,7 @@ import { MobileTopBar } from "@/components/nav/MobileTopBar";
 import { getServerLocale } from "@/lib/i18n/server";
 import { TranslationDisclaimer } from "@/components/i18n/TranslationDisclaimer";
 import { T } from "@/components/i18n/T";
+import { photoCredits } from "@/lib/credits/photos";
 
 export const metadata = {
  title: "About",
@@ -175,6 +176,15 @@ async function AboutContent() {
  <p className="mt-4 font-serif text-ui text-paper/55 leading-[1.65] italic">
  <T k="ui.ifYouHaveContributedA" />
  </p>
+
+ {/* 1.9: the photographers some pictures are made from (lib/credits/photos.ts), once there is one to name. */}
+ {photoCredits().length > 0 ? (
+ <p className="mt-4 font-sans text-ui text-paper/70">
+ <Link href="/credits" className="hit-44 underline underline-offset-2 decoration-paper/30 hover:text-paper hover:decoration-paper">
+ <T k="credits.title" />
+ </Link>
+ </p>
+ ) : null}
 
  {/* §5b Promoters */}
  <p className="mt-12 font-sans text-caption font-semibold text-paper/45">
@@ -389,6 +399,15 @@ function AboutDe() {
  <p className="mt-4 font-serif text-ui text-paper/55 leading-[1.65] italic">
  <T k="ui.wennDuEinZitatEine" />
  </p>
+
+ {/* 1.9: the photographers some pictures are made from (lib/credits/photos.ts), once there is one to name. */}
+ {photoCredits().length > 0 ? (
+ <p className="mt-4 font-sans text-ui text-paper/70">
+ <Link href="/credits" className="hit-44 underline underline-offset-2 decoration-paper/30 hover:text-paper hover:decoration-paper">
+ <T k="credits.title" />
+ </Link>
+ </p>
+ ) : null}
 
  {/* §5b Förderer */}
  <p className="mt-12 font-sans text-caption font-semibold text-paper/45">

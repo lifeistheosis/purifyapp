@@ -11,6 +11,7 @@ import path from "node:path";
 
 import { describe, expect, it } from "vitest";
 
+import { isCcLicence } from "@/lib/credits/photos";
 import { streamedUrl } from "@/lib/media/streamed";
 import { AUTHOR_COVERS, COUNCIL_COVERS, FEELING_COVERS, WORK_COVERS } from "@/lib/reading/authorCovers";
 import { buildRoom } from "@/lib/reading/cards";
@@ -59,7 +60,9 @@ describe("the covers' pictures", () => {
         expect(art[field]?.trim(), `${slug} ${field}`).toBeTruthy();
         expect(art[field].includes(EM_DASH), `${slug} ${field}`).toBe(false);
       }
-      expect(art.license, slug).toMatch(PD);
+      // Public domain or CC0; or, from 1.9, a CC BY or CC BY-SA photograph
+      // whose photographer the credits page names (lib/credits/photos.ts).
+      expect(PD.test(art.license) || (isCcLicence(art.license) && Boolean(art.credit?.trim())), `${slug}: ${art.license}`).toBe(true);
       expect(art.source, slug).toMatch(/^File:/);
       expect(art.evidenceUrl, slug).toMatch(/^https:\/\/commons\.wikimedia\.org\/wiki\/File:/);
       expect(art.width / art.height, slug).toBeCloseTo(0.8, 2);

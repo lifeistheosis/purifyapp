@@ -281,6 +281,7 @@ describe("shouldShowBack", () => {
     expect(shouldShowBack("/saints/basil/on-the-spirit")).toBe(false);
     expect(shouldShowBack("/privacy")).toBe(false);
     expect(shouldShowBack("/terms")).toBe(false);
+    expect(shouldShowBack("/credits")).toBe(false);
     expect(shouldShowBack("/settings")).toBe(false);
     // The councils carry their own from 1.8 (the owner's pick of r3-03): a
     // council's bar is clear over its icon, as a saint's is, and a document

@@ -235,6 +235,8 @@ const RULES: readonly (readonly [string, ScreenKey])[] = [
   ["/plan", "plus"],
   ["/whats-new", "whats-new"],
   ["/about", "about"],
+  // Photo credits (1.9): a part of About, which alone leads there.
+  ["/credits", "about"],
   ["/faq", "faq"],
   ["/privacy", "legal"],
   ["/terms", "legal"],

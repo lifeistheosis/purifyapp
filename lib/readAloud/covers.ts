@@ -111,6 +111,13 @@ export type Figure = {
   source: string;
   /** As the file's Commons page states it. */
   license: string;
+  /**
+   * For a CC BY or CC BY-SA photograph (1.9, the owner's yes to his page's
+   * 99): the photographer, as the file's page asks to be credited, named on
+   * the Photo credits page (lib/credits/photos.ts). Required with such a
+   * licence; absent for the public domain and CC0.
+   */
+  credit?: string;
   /** The Commons page the licence was read on. */
   evidenceUrl: string;
   /** The day the picture was opened and looked at. */
