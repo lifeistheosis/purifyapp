@@ -45,6 +45,26 @@ const securityHeaders = [
 const pictureHeaders = [
   { key: "Cross-Origin-Resource-Policy", value: "cross-origin" },
 ];
+// HOW LONG A PICTURE IS KEPT (1.9, the optimization audit's item 7a).
+//
+// Next serves a file under public/ with "max-age=0", so Cloudflare went back
+// to Render for every picture on every request (cf-cache-status: REVALIDATED,
+// about a quarter of a second for a 40 KB icon, measured 2026-11-10) and a
+// browser kept one for the four hours Cloudflare adds by itself.
+//
+// A picture whose name carries a version (john-chrysostom.v2.jpg) never
+// changes under that name: a new picture gets a new name. So it is kept for a
+// year. Any other picture is kept for a day, the life a cover already has, so
+// one replaced under its old name is everywhere within a day.
+//
+// The folders the apps stream (covers, history, the shop's photos) keep their
+// own day below, whatever their names: the rule after wins, and a day is what
+// lets a picture taken off the website leave the apps (see streamedMediaHeaders).
+const pictureKeptADay = [{ key: "Cache-Control", value: "public, max-age=86400" }];
+const pictureKeptAYear = [{ key: "Cache-Control", value: "public, max-age=31536000, immutable" }];
+const PICTURE_FILE = "/:picture(.*\\.(?:png|jpg|jpeg|webp|gif|avif|svg|ico))";
+const VERSIONED_PICTURE_FILE = "/:picture(.*\\.v\\d+\\.(?:png|jpg|jpeg|webp|gif|avif))";
+
 const PICTURE_SOURCES = [
   "/:picture(.*\\.(?:png|jpg|jpeg|webp|gif|avif|svg|ico))",
   "/_next/image",
@@ -198,6 +218,8 @@ const nextConfig: NextConfig = isNative
           // After the rule above on purpose: when two rules set the same key
           // on one path, the later one wins (Next's headers guide).
           ...PICTURE_SOURCES.map((source) => ({ source, headers: pictureHeaders })),
+          { source: PICTURE_FILE, headers: pictureKeptADay },
+          { source: VERSIONED_PICTURE_FILE, headers: pictureKeptAYear },
           { source: CHANT_MEDIA_SOURCE, headers: streamedMediaHeaders },
           { source: CHANT_LIVE_LIST, headers: [{ key: "Cache-Control", value: "public, max-age=300" }] },
           { source: READ_COVERS_SOURCE, headers: streamedMediaHeaders },
