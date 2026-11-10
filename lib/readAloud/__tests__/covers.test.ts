@@ -42,6 +42,7 @@ const NAMED_AS: Record<FigureId, string[]> = {
   ruth: ["Ruth"],
   jeremiah: ["Jeremiah"],
   ezra: ["Ezra", "Esdras"],
+  ezraUriel: ["Esdras", "Ezra"],
   nehemiah: ["Nehemiah"],
   tobit: ["Tobit"],
   judith: ["Judith"],
@@ -226,7 +227,7 @@ describe("every cover picture", () => {
         // His 99 (2026-11-10): CC BY and CC BY-SA photographs of old icons are
         // allowed, each photographer named on the credits page;
         // lib/credits/__tests__/photos.test.ts holds the credit.
-        expect(/^(public domain|pd-art|cc0)$/i.test(f.license) || isCcLicence(f.license), `${id}.license: ${f.license}`).toBe(true);
+        expect(/^(public domain|pd-art|cc0)$/i.test(f.license) || (isCcLicence(f.license) && Boolean(f.credit?.trim())), `${id}.license: ${f.license}`).toBe(true);
         expect(f.source.startsWith("File:"), `${id}.source`).toBe(true);
         expect(f.evidenceUrl.startsWith("https://commons.wikimedia.org/wiki/File:"), `${id}.evidenceUrl`).toBe(true);
         for (const field of ["work", "artist", "workDate"] as const) expect(f[field].trim(), `${id}.${field}`).not.toBe("");

@@ -107,6 +107,19 @@ const COVERS = [
   // either side are left out.
   { id: "davidLagoudera", name: "The Prophet and King David", books: ["1 Chronicles"], title: "File:Church of Panagia tou Arakos, nave, center bay, drum, wall paintings, Lagoudera, Cyprus - Prophet David - MSBZ004 BF S 1979 2019 - Dumbarton Oaks.jpg", license: "CC0", width: 1920, size: { width: 1920, height: 2970 }, crop: { left: 672, top: 213, size: 620 } },
   { id: "solomonLagoudera", name: "King Solomon", books: ["2 Chronicles"], title: "File:Church of Panagia tou Arakos, nave, center bay, drum, wall paintings, Lagoudera, Cyprus - Prophet Solomon - MSBZ004 BF S 1979 1980 - Dumbarton Oaks.jpg", license: "CC0", width: 1920, size: { width: 1920, height: 2957 }, crop: { left: 692, top: 195, size: 600 } },
+  // Obadiah (1.9, the owner's 86): the mosaic of the dome of the parekklesion
+  // of the Pammakaristos (Fethiye Camii), Istanbul, early 14th century,
+  // inscribed "Ο ΠΡΟΦ(ΗΤΗΣ) ΑΒΔΙΟΥ", his scroll Obadiah 1:17. A photograph
+  // under CC BY-SA 4.0 (the owner's 99), credited as its page asks; the square
+  // is his head, halo and shoulders in Commons' 3840px copy, the young
+  // Zechariah beside him and the name above left out.
+  { id: "obadiah", name: "The Prophet Obadiah", books: ["Obadiah"], title: "File:Pammakaristos Church Main dome mosaic Zacharias - Obadiah in 2010 05 9612.jpg", license: "CC BY-SA 4.0", credit: "Dosseman", width: 3840, size: { width: 3840, height: 2555 }, crop: { left: 2331, top: 740, size: 700 }, quality: 76 },
+  // 2 Esdras (1.9, the owner's 86: a scene of the book): the Prophet Ezra and
+  // the Archangel Uriel, who speaks with him from its fourth chapter on, a
+  // Moldavian panel of the late 18th century, both named on it in Slavonic.
+  // Public domain. The square holds both figures and their names, inside the
+  // gilded frame strips and right of the panel's text, in Commons' 1280px copy.
+  { id: "ezraUriel", name: "The Prophet Ezra and the Archangel Uriel", books: ["2 Esdras"], title: "File:Prophet Esdra und Erzengel Uriel.jpg", license: "Public domain", width: 1280, size: { width: 1280, height: 632 }, crop: { left: 238, top: 47, size: 543 }, quality: 66 },
   { id: "hosea", name: "The Prophet Hosea", books: ["Hosea"], title: K06, crop: { left: 40, top: 30, size: 592 } },
   { id: "amos", name: "The Prophet Amos", books: ["Amos"], title: K06, crop: { left: 725, top: 30, size: 600 } },
   { id: "micah", name: "The Prophet Micah", books: ["Micah"], title: K03, crop: { left: 50, top: 22, size: 655 } },
@@ -282,7 +295,7 @@ const PLATE = {
   id: "plate",
   name: "The manuscript plate",
   file: path.join(ROOT, "public", "sections", "bible.jpg"),
-  books: ["1 Esdras", "Ezra", "Nehemiah", "Tobit", "Judith", "Esther", "1 to 3 Maccabees", "Sirach", "Baruch", "Obadiah", "Zechariah", "Prayer of Manasseh", "2 Esdras", "Jude"],
+  books: ["1 Esdras", "Ezra", "Nehemiah", "Tobit", "Judith", "Esther", "1 to 3 Maccabees", "Sirach", "Baruch", "Zechariah", "Prayer of Manasseh", "Jude"],
 };
 
 if (sheetPath) {

@@ -57,7 +57,7 @@ never inside the apps: the native build sets the folder aside
 (`scripts/native-build.mjs`). An app with no signal shows the plate the apps
 carry, `/sections/bible.jpg` (`SECTION_MEDIA.md`), in the cover's place. Each
 file is 1024 by 1024, a square cut from the source and saved with mozjpeg,
-under 200 KB; the 30 are 4.5 MB together. A replacement gets a new version
+under 200 KB; the 32 are 4.9 MB together. A replacement gets a new version
 in its name (`moses.v2.jpg`), and taking a file off the website takes it out
 of every app within a day.
 
@@ -83,6 +83,8 @@ to build anything. Squares are in `scripts/fetch-read-covers.mjs`.
 | `solomon.v1.jpg` | King Solomon | Proverbs, Ecclesiastes, Song of Solomon, Wisdom | the same, board 04 (right) | Anonymous Russian icon painters | 1497 | Public domain | [Commons](https://commons.wikimedia.org/wiki/File:Kirillo-Belozersky_iconostasis_04._Daniel,_David,_Solomon.jpg) |
 | `davidLagoudera.v1.jpg` | The Prophet and King David | 1 Chronicles | The Prophet David, fresco in the drum of the dome, Panagia tou Arakou, Lagoudera, Cyprus | Unknown painter; photograph by the Byzantine Institute (Dumbarton Oaks) | 1192; the photograph between 1968 and 1973 | CC0 | [Commons](https://commons.wikimedia.org/wiki/File:Church_of_Panagia_tou_Arakos,_nave,_center_bay,_drum,_wall_paintings,_Lagoudera,_Cyprus_-_Prophet_David_-_MSBZ004_BF_S_1979_2019_-_Dumbarton_Oaks.jpg) |
 | `solomonLagoudera.v1.jpg` | King Solomon | 2 Chronicles | The Prophet Solomon, the same dome | Unknown painter; photograph by the Byzantine Institute (Dumbarton Oaks) | 1192; the photograph between 1968 and 1973 | CC0 | [Commons](https://commons.wikimedia.org/wiki/File:Church_of_Panagia_tou_Arakos,_nave,_center_bay,_drum,_wall_paintings,_Lagoudera,_Cyprus_-_Prophet_Solomon_-_MSBZ004_BF_S_1979_1980_-_Dumbarton_Oaks.jpg) |
+| `obadiah.v1.jpg` | The Prophet Obadiah | Obadiah | The Prophet Obadiah, mosaic in the dome of the parekklesion, Pammakaristos (Fethiye Camii), Istanbul | Unknown mosaicist; photograph by Dosseman (credited on the Photo credits page) | Early 14th century; the photograph 2010 | CC BY-SA 4.0 | [Commons](https://commons.wikimedia.org/wiki/File:Pammakaristos_Church_Main_dome_mosaic_Zacharias_-_Obadiah_in_2010_05_9612.jpg) |
+| `ezraUriel.v1.jpg` | The Prophet Ezra and the Archangel Uriel | 2 Esdras | The Prophet Ezra and the Archangel Uriel, panel, Moldavia | Unknown | Late 18th century | Public domain | [Commons](https://commons.wikimedia.org/wiki/File:Prophet_Esdra_und_Erzengel_Uriel.jpg) |
 | `hosea.v1.jpg` | The Prophet Hosea | Hosea | the same, board 06 (left) | Anonymous Russian icon painters | 1497 | Public domain | [Commons](https://commons.wikimedia.org/wiki/File:Kirillo-Belozersky_iconostasis_06._Hosea,_Amos,_Zephaniah.jpg) |
 | `amos.v1.jpg` | The Prophet Amos | Amos | the same, board 06 (middle) | Anonymous Russian icon painters | 1497 | Public domain | [Commons](https://commons.wikimedia.org/wiki/File:Kirillo-Belozersky_iconostasis_06._Hosea,_Amos,_Zephaniah.jpg) |
 | `micah.v1.jpg` | The Prophet Micah | Micah | the same, board 03 (left) | Anonymous Russian icon painters | 1497 | Public domain | [Commons](https://commons.wikimedia.org/wiki/File:Kirillo-Belozersky_iconostasis_03._Micah,_Elijah,_Gideon.jpg) |
@@ -162,16 +164,43 @@ Notes, by file:
   about 600px enlarged to 1024, as the Kirillo prophets are. Each starts
   under the white line of the register's border, so the halos meet the top
   edge, and the inscriptions either side are left out.
+- **Obadiah (1.9, the owner's 86 and 99)**: the mosaic of the dome of the
+  Pammakaristos parekklesion, early 14th century, inscribed "Ο ΠΡΟΦ(ΗΤΗΣ)
+  ΑΒΔΙΟΥ", his scroll Obadiah 1:17 in the Septuagint ("ΕΝ ΤΩ ΟΡΕΙ ΣΙΩΝ ΕΣΤΑΙ
+  Η ΣΩΤΗΡΙΑ"), both read on a 3840px copy; the photographer's own title was
+  not relied on (his description says he named only some of the prophets).
+  The first cover from a photograph under CC BY-SA 4.0: the page asks for
+  attribution and names the author "Dosseman", so `credit` is "Dosseman"
+  and the Photo credits page names him with the licence and the
+  photograph's page; the square, a derivative, is shared under the same
+  licence there. Cut from Commons' 3840px copy (it refuses the sandbox the
+  original, 4256x2832): a 700px square of his head, halo and shoulders, the
+  young Zechariah beside him and the name above left out, saved at quality
+  76 to stay under 200 KB (the tesserae are a busy surface).
+- **2 Esdras (1.9, the owner's 86, a scene of the book)**: the Prophet Ezra
+  and the Archangel Uriel, who answers him from the book's fourth chapter
+  on. A Moldavian panel of the late 18th century (its page: "Moldau, Ende 18.
+  Jhd.", Inv.-Nr. 4097; the source line names no museum), both named on it
+  in Slavonic, "ПРОРОКЪ ЕЗДРА" and the angel of the Lord Uriel, beside a text
+  panel on the angel showing Ezra the withered trees. Public domain (PD-old)
+  on its page. The only Orthodox Ezra on Commons, so it serves this book,
+  where Uriel speaks, and not Ezra's own. Cut from Commons' 1280px copy of
+  the 1600x790 original: a 543px square, as small as Samuel's, holding both
+  figures and their names inside the gilded frame strips and right of the
+  text panel; the dark ground band along the panel's foot is in it. Saved at
+  quality 66 to stay under 200 KB; at that size it was compared with 80 by
+  eye and does not differ.
 
 ## The plate
 
 These books show the manuscript plate, `/sections/bible.jpg` (the Codex
 Sinaiticus, `SECTION_MEDIA.md`), and the line under the title says "Read
 aloud" rather than a name: 1 Esdras, Ezra, Nehemiah, Tobit, Judith,
-Esther, 1 to 3 Maccabees, Sirach, Obadiah, Zechariah, Baruch, the Prayer of
-Manasseh, 2 Esdras and Jude. Either no holy person is named for them, or no
-public-domain icon of the one named passed. 1 and 2 Chronicles left the plate
-in 1.9 (above). Ruth shows Samuel, whom
+Esther, 1 to 3 Maccabees, Sirach, Zechariah, Baruch, the Prayer of Manasseh
+and Jude. Either no holy person is named for them, or no public-domain icon
+of the one named passed. 1 and 2 Chronicles, Obadiah and 2 Esdras left the
+plate in 1.9 (above). Zechariah and Jude are held by the owner until checked
+(his 98). Ruth shows Samuel, whom
 her "by" line names, because no icon of Ruth passed.
 
 ## Rejected, and why
@@ -191,9 +220,16 @@ not tell you any of this. Open the image and look at it.**
 | `File:Baruch (Kirillo-Belozersk).jpg` | 17th century, Kirillo-Belozersky, but a soft museum photograph with glare and a face in shadow, about 640px. |
 | `File:Obadiah (Овдий).jpg` and the Kizhi prophets row | Public domain, but about 430x500. |
 | `File:Fethiye Camii, parekklesion, dome, mosaics ... - Zechariah and Obadiah - ...` (Dumbarton Oaks) | Mislabelled: the mosaic's own inscriptions read Isaiah and Moses, and Jeremiah and Zephaniah. |
-| `File:Pammakaristos Church Main dome mosaic Obadiah in 2016 07 1086.jpg` | CC BY-SA 4.0. |
+| `File:Pammakaristos Church Main dome mosaic Obadiah in 2016 07 1086.jpg` | CC BY-SA 4.0, before 1.9; and 799x1200. The 2010 photograph of the same mosaic is Obadiah's cover. |
+| `File:Pammakaristos Church Main dome mosaic Obadiah and Habakkuk in 2010 06 9613.jpg` (Dosseman, CC BY-SA 4.0) | The same mosaic two seconds later, softer at full size (the tesserae's edges doubled). |
+| `File:Pammakaristos Church - main dome of parekklesion - Zacharia, Obadiah, and Habbakuk - P1030430.JPG` (CC BY-SA 3.0) | 2560x1920 for three figures: smaller than the 2010 photograph. |
+| `File:Cyril's Church. Murals 08.jpg` (Vi Ko, CC BY-SA 4.0) | Obadiah inscribed "АВДІИ" with Obadiah 1:15, but a 19th-century mural in a phone photograph with colour noise. |
+| `File:The prophet Obadiah PRIZREN 2 IMG 5307-2.jpg` (BLAGO Fund, CC BY 4.0) | The fresco is hacked over with pick marks; the face is mostly gone. |
+| `File:RossanoGospelsFolio007vGoodSamaritan.jpg` | The only Orthodox Sirach found ("ΣΙΡΑΧ", Rossano Gospels, 6th century, public domain), but his square is about 330px. |
+| `File:Prophets01 (Ferapontov).jpg` | Its page names Baruch, but the figure's name is illegible and his scroll is Jeremiah 11:18; his head is about 300px. |
+| `File:Codex Amiantinus. Firenze, Biblioteca Medicea Laurenziana, Amiat.1, fol. 5r.jpg` (CC BY-SA 4.0) and the Florence Baptistery Ezra, Nehemiah and Zerubbabel | Western, and small for Ezra's head. No Orthodox Ezra, Nehemiah, Zerubbabel or Baruch at size was found under any name form in English, Russian, Greek, Serbian, Romanian or Georgian (the search of 2026-11-10). |
 | `File:Righteous Ruth.jpg`, `File:Righteous Esther.jpg` | 175x175 details of an icon whose large photographs are all CC BY-SA. |
-| `File:Prophet Esdra und Erzengel Uriel.jpg` | Two figures on a late 18th-century Moldavian panel; Ezra's square would be well under the prophets'. |
+| `File:Prophet Esdra und Erzengel Uriel.jpg`, for Ezra | Two figures on a late 18th-century Moldavian panel; Ezra's square would be well under the prophets'. From 1.9 it is 2 Esdras' cover, as the scene of both (above). |
 | `File:Икона евангелиста Марка Icon of Mark the Evangelist.jpg` | A crack runs down his face; the Tzanes Mark was chosen. Its page claims the 2005 scan as the uploader's own work. |
 | "Kremlin exhibition" photographs of the Kirillo iconostasis, `File:Prophets01 (Kirillo-Belozersk).jpg`, `File:Prophets02 (Kirillo-Belozersk) 1.jpg` to `4.jpg` | Larger, but CC BY-SA. |
 | `File:Prophets from Ferapontov01.jpg` to `05` and the Sergiev Posad prophets of the 1420s | Public domain, but museum photographs with glare and faces darkened to silhouettes. |

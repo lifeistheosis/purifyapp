@@ -68,6 +68,7 @@ export type FigureId =
   | "ruth"
   | "jeremiah"
   | "ezra"
+  | "ezraUriel"
   | "nehemiah"
   | "tobit"
   | "judith"
@@ -250,6 +251,41 @@ export const FIGURES: Partial<Record<FigureId, Figure>> = {
     inspectedOn: "2026-11-10",
     review: "clergy",
   },
+  // Obadiah (the owner's 86): the dome of the parekklesion of the
+  // Pammakaristos, Istanbul, early 14th century, inscribed "the Prophet
+  // Obadiah" (ΑΒΔΙΟΥ) with Obadiah 1:17 on his scroll. A CC BY-SA 4.0
+  // photograph (the owner's 99), its photographer named on the Photo credits
+  // page; the square, a derivative, is shared under the same licence there.
+  obadiah: {
+    nameKey: "readAloud.cover.obadiah",
+    file: "/covers/obadiah.v1.jpg",
+    alt: "The Prophet Obadiah in mosaic, white-haired and white-bearded, in a white mantle, inside a thin red halo on a ground of gold tesserae.",
+    work: "The Prophet Obadiah, mosaic in the dome of the parekklesion, Pammakaristos (Fethiye Camii), Istanbul",
+    artist: "Unknown mosaicist",
+    workDate: "Early 14th century; the photograph 2010",
+    source: "File:Pammakaristos Church Main dome mosaic Zacharias - Obadiah in 2010 05 9612.jpg",
+    license: "CC BY-SA 4.0",
+    credit: "Dosseman",
+    evidenceUrl: commons("File:Pammakaristos Church Main dome mosaic Zacharias - Obadiah in 2010 05 9612.jpg"),
+    inspectedOn: "2026-11-10",
+    review: "clergy",
+  },
+  // 2 Esdras (the owner's 86, a scene of the book): the Prophet Ezra and the
+  // Archangel Uriel, who answers him from the book's fourth chapter on; a
+  // Moldavian panel of the late 18th century, both named on it in Slavonic.
+  ezraUriel: {
+    nameKey: "readAloud.cover.ezraUriel",
+    file: "/covers/ezraUriel.v1.jpg",
+    alt: "The Prophet Ezra in a tall jewelled cap and patterned robes, his hand raised, facing the Archangel Uriel, winged and haloed, who points onward, on ochre hills under a blue sky, their names above them.",
+    work: "The Prophet Ezra and the Archangel Uriel, panel, Moldavia",
+    artist: "Unknown",
+    workDate: "Late 18th century",
+    source: "File:Prophet Esdra und Erzengel Uriel.jpg",
+    license: "Public domain",
+    evidenceUrl: commons("File:Prophet Esdra und Erzengel Uriel.jpg"),
+    inspectedOn: "2026-11-10",
+    review: "clergy",
+  },
   hosea: prophet("hosea", K06, "the Prophet Hosea", "The Prophet Hosea, with long dark hair and beard, in a red cloak over green, blessing, beside his scroll."),
   amos: prophet("amos", K06, "the Prophet Amos", "The Prophet Amos, balding, with a long grey-brown beard and a dark green cloak, beside his scroll, his name in red."),
   micah: prophet("micah", K03, "the Prophet Micah", "The Prophet Micah, with wavy fair hair and beard, an ochre cloak flying behind him, beside his scroll."),
@@ -366,11 +402,13 @@ export const COVER_SIZE = "1024x1024";
  * Each book's cover: a figure, or the plate. Every book of
  * data/bible/books.json. Where the rule's first figure has no picture that
  * passed, the book takes the next by the rule (Ruth, Samuel), or the plate.
- * 1 and 2 Chronicles take David and Solomon in pictures of their own (rule C).
  * No public-domain icon passed for Ezra, Nehemiah, Tobit, Judith, Esther,
- * the Maccabees, Jesus son of Sirach, Obadiah, Baruch or Jude, nor for the
- * prophet Zechariah (the Zechariah of the Kirillo boards is the priest, the
+ * the Maccabees, Jesus son of Sirach, Baruch or Jude, nor for the prophet
+ * Zechariah (the Zechariah of the Kirillo boards is the priest, the
  * Forerunner's father); docs/licensing/READ_COVERS.md says why for each.
+ * From 1.9 (rule C): 1 and 2 Chronicles take David and Solomon, Obadiah a
+ * CC BY-SA photograph of his mosaic, and 2 Esdras the scene of Ezra with
+ * the Archangel Uriel.
  */
 export const BOOK_COVERS: Record<string, FigureId | "plate"> = {
   genesis: "moses",
@@ -408,7 +446,7 @@ export const BOOK_COVERS: Record<string, FigureId | "plate"> = {
   amos: "amos",
   micah: "micah",
   joel: "joel",
-  obadiah: "plate",
+  obadiah: "obadiah",
   jonah: "jonah",
   nahum: "nahum",
   habakkuk: "habakkuk",
@@ -424,7 +462,7 @@ export const BOOK_COVERS: Record<string, FigureId | "plate"> = {
   ezekiel: "ezekiel",
   daniel: "daniel",
   "prayer-of-manasseh": "plate",
-  "2-esdras": "plate",
+  "2-esdras": "ezraUriel",
   matthew: "matthew",
   mark: "mark",
   luke: "luke",
