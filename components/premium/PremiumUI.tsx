@@ -186,6 +186,16 @@ const ICONS: Record<string, ReactNode> = {
       <path d="M12 15V3" />
     </svg>
   ),
+  // Two pages side by side, their lines standing at different heights: a
+  // verse at the place each Bible numbers it (Compare, 1.9, rec 85).
+  compare: (
+    <svg {...S}>
+      <rect x="3" y="4.5" width="7.5" height="15" rx="1.5" />
+      <rect x="13.5" y="4.5" width="7.5" height="15" rx="1.5" />
+      <path d="M5.5 9h2.5M5.5 12h2.5M5.5 15h2.5" />
+      <path d="M16 8h2.5M16 11h2.5M16 14h2.5" />
+    </svg>
+  ),
   // A profile card: the banner across its top, the portrait under it (1.8).
   profile: (
     <svg {...S}>

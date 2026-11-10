@@ -68,14 +68,14 @@ const TRY_FILES = ["components/billing/PlusTry.tsx", "lib/premium/plusTry.ts", "
 const NEW_KEYS = ["plus.try.open", "plus.try.next", "plus.try.minute", "plus.try.example"];
 
 describe("every row, in depth (his note 39)", () => {
-  it("has a live look of its own: all fourteen, not a sample", () => {
-    expect(PLUS_ROWS).toHaveLength(14);
+  it("has a live look of its own: all fifteen, not a sample (Compare joined in 1.9)", () => {
+    expect(PLUS_ROWS).toHaveLength(15);
     expect([...TRY_PREVIEW_IDS].sort()).toEqual(PLUS_ROWS.map((r) => r.id).sort());
     const host = code("components/billing/PlusTry.tsx");
     const files = new Map([...host.matchAll(/^\s*"?([a-z-]+)"?: lazy\(\(\) => import\("\.\/plusTry\/(Try\w+)"\)\),?\s*$/gm)].map((m) => [m[1], m[2]]));
-    expect(files.size).toBe(14);
+    expect(files.size).toBe(15);
     // Each its own screen: no two rows share one.
-    expect(new Set(files.values()).size).toBe(14);
+    expect(new Set(files.values()).size).toBe(15);
     for (const id of TRY_PREVIEW_IDS) {
       const file = files.get(id);
       expect(file, id).toBeTruthy();

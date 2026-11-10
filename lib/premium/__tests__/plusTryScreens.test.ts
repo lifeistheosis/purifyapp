@@ -1,7 +1,7 @@
 // What each Plus preview draws (r3-07 A, the owner's notes 8 and 39 of build
 // 80: "showing like a visual for every single one"), rendered: the rows with
 // their Try it, the preview's title bar and its foot, and each of the
-// fourteen features' own screens, in the reader's language.
+// fifteen features' own screens, in the reader's language.
 //
 // What a reader would notice if this broke: a Try it that is not there, a
 // preview that shows nothing, an example not marked as one, a page in English
@@ -14,6 +14,7 @@ import { describe, expect, it } from "vitest";
 import { PlusFeatureRows } from "@/components/billing/KeptPaywall";
 import { PlusTryHead, PlusTryPage, type TryProps } from "@/components/billing/PlusTry";
 import TryAmbience from "@/components/billing/plusTry/TryAmbience";
+import TryCompare from "@/components/billing/plusTry/TryCompare";
 import TryCrossRefs from "@/components/billing/plusTry/TryCrossRefs";
 import TryDiscord from "@/components/billing/plusTry/TryDiscord";
 import TryFlorilegium from "@/components/billing/plusTry/TryFlorilegium";
@@ -32,6 +33,7 @@ import { AMBIENCE_TRACKS } from "@/lib/ambience/ambience";
 import { getMessages } from "@/lib/i18n";
 import { PLUS_ROWS, plusRowsLedBy, rowsHere, type PlusRow } from "@/lib/premium/plusRows";
 import { TRY_PALETTES } from "@/lib/premium/plusTry";
+import { TRY_COMPARE_BIBLES } from "@/lib/premium/tryCompare";
 
 type ProviderProps = Parameters<typeof MessagesProvider>[0];
 function render(node: ReactElement, lang = "en"): string {
@@ -51,7 +53,7 @@ describe("the rows", () => {
     const opens = [...out.matchAll(/data-plus-try-open="([a-z-]+)"/g)].map((m) => m[1]);
     // Off the Windows app, Discord status is not offered (1.9, rowsHere).
     expect(opens).toEqual(rowsHere(PLUS_ROWS, { desktopApp: false }).map((r) => r.id));
-    expect(out.match(/>Try it<svg/g)).toHaveLength(13);
+    expect(out.match(/>Try it<svg/g)).toHaveLength(14);
     // Each names the feature it tries.
     for (const m of out.matchAll(/aria-describedby="([^"]+)"/g)) expect(out).toContain(`id="${m[1]}"`);
   });
@@ -151,6 +153,20 @@ describe("each feature's own screen", () => {
     const out = preview(TryCrossRefs, "cross-refs");
     expect(out).toContain(html(say("en", "bible.crossRefsFor", { reference: "John 1:1" })));
     expect(out).toContain(">1:14</span>");
+  });
+
+  it("Compare: Psalm 50:1 in the app's English and each Bible at its own place, in the reader's language", () => {
+    const out = preview(TryCompare, "compare");
+    expect(out).toContain(html(say("en", "bible.compareFor", { reference: "Psalms 50:1" })));
+    expect(out).toContain("Have mercy upon me, O God");
+    for (const r of TRY_COMPARE_BIBLES) {
+      expect(out, r.bible).toContain(html(r.words));
+      expect(out, r.bible).toContain(`data-compare-row="${r.bible}"`);
+    }
+    expect(out).toContain(" · <!-- -->50:3");
+    expect(out).toContain(" · <!-- -->51:1");
+    expect(out).toContain('dir="rtl"');
+    expect(preview(TryCompare, "compare", "el")).toContain(html(say("el", "bible.compareFor", { reference: `${say("el", "bible.books.psalms")} 50:1` })));
   });
 
   it("the journal: its page, From this day, entries by day, each a Father's line with his name, marked Example", () => {

@@ -10,7 +10,8 @@
 // feature shipped (plus.<feature>.body). The list the paywall drew before was
 // lib/premium/plans.ts, which is written in English and German only; these
 // are the same features, and two it never named, Listen offline (1.8) and the
-// Community profile's extras, with the new ambience under Ambience.
+// Community profile's extras, with the new ambience under Ambience. Compare
+// joined in 1.9 (rec 85), after Ambience.
 //
 // `feature` is the name a lock opens the upgrade sheet with
 // (components/billing/UpgradeModal.tsx, upgrade.open("offline")): that row
@@ -32,7 +33,8 @@ export type PlusLock =
   | "florilegium"
   | "sync"
   | "history"
-  | "profile";
+  | "profile"
+  | "compare";
 
 export type PlusRow = {
   /** The lock that opens the sheet on this feature, when one does. */
@@ -67,6 +69,8 @@ export const PLUS_ROWS: readonly PlusRow[] = [
   { feature: "journal", id: "journal", title: "plus.journal.title", name: "plus.active.journal", body: "plus.journal.body", keep: "plus.journal.keep" },
   { feature: "offline", id: "offline", title: "plus.offline.title", name: "plus.offline.name", body: "plus.offline.body", keep: "plus.offline.keep" },
   { feature: "ambience", id: "ambience", title: "plus.ambience.title", name: "ambience.title", body: "plus.ambience.body", keep: "plus.ambience.keep" },
+  // Compare (1.9, rec 85): a verse in the Greek and each Bible a reader can download, at the place each numbers it.
+  { feature: "compare", id: "compare", title: "plus.compare.title", name: "bible.compare", body: "plus.compare.body", keep: "plus.compare.keep" },
   { feature: "plans", id: "plans", title: "plus.plans.title", name: "plus.active.plans", body: "plus.plans.body", keep: "plus.plans.keep" },
   { feature: "remember", id: "remember", title: "plus.remember.title", name: "remember.title", body: "plus.remember.body", keep: "plus.remember.keep" },
   { feature: "florilegium", id: "florilegium", title: "plus.florilegium.title", name: "plus.active.florilegium", body: "plus.florilegium.body", keep: "plus.florilegium.keep" },

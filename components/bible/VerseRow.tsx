@@ -665,12 +665,13 @@ export function VerseRow({
  rows.push({ key: "crossrefs", label: t("bible.crossRefs"), onSelect: onOpenCrossRefs, locked: plusAllowed === false });
  }
  // Compare (1.9, the sheet's 14): the verse in each Bible the app may show, a Plus tool.
+ // Without Plus it opens the sheet on Compare's own row (rec 85).
  rows.push({
  key: "compare",
  label: t("bible.compare"),
  onSelect: () => {
  setShowTools(false);
- if (plusAllowed === false) upgrade.open("general");
+ if (plusAllowed === false) upgrade.open("compare");
  else setCompareOpen(true);
  },
  locked: plusAllowed === false,

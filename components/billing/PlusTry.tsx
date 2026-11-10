@@ -51,7 +51,7 @@ import { TryWindow } from "./plusTry/TryKit";
 /** What every feature's screen is given: its row (its name, its words). */
 export type TryProps = { row: PlusRow };
 
-/** Each feature's screen, by its row's id: every one of the fourteen (his note 39). */
+/** Each feature's screen, by its row's id: every one of the fifteen (his note 39; Compare joined in 1.9). */
 const PREVIEWS: Readonly<Record<string, LazyExoticComponent<ComponentType<TryProps>>>> = {
   "word-study": lazy(() => import("./plusTry/TryWordStudy")),
   "reading-modes": lazy(() => import("./plusTry/TryReadingModes")),
@@ -59,6 +59,7 @@ const PREVIEWS: Readonly<Record<string, LazyExoticComponent<ComponentType<TryPro
   journal: lazy(() => import("./plusTry/TryJournal")),
   offline: lazy(() => import("./plusTry/TryOffline")),
   ambience: lazy(() => import("./plusTry/TryAmbience")),
+  compare: lazy(() => import("./plusTry/TryCompare")),
   plans: lazy(() => import("./plusTry/TryPlans")),
   remember: lazy(() => import("./plusTry/TryRemember")),
   florilegium: lazy(() => import("./plusTry/TryFlorilegium")),

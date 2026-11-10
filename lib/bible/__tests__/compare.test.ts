@@ -63,7 +63,8 @@ describe("Compare in a verse's Study", () => {
     const at = row.slice(row.indexOf('key: "compare"'), row.indexOf("if (hasCommentary)"));
     expect(at).toContain('label: t("bible.compare")');
     expect(at).toContain("locked: plusAllowed === false");
-    expect(at).toMatch(/if \(plusAllowed === false\) upgrade\.open\("general"\);\s*else setCompareOpen\(true\);/);
+    // Rec 85: the sheet opens on Compare's own row, lit, not on the general list.
+    expect(at).toMatch(/if \(plusAllowed === false\) upgrade\.open\("compare"\);\s*else setCompareOpen\(true\);/);
   });
 
   it("is mounted only once asked for, so no verse loads anything before", () => {

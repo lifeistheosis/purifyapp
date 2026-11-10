@@ -49,6 +49,7 @@ export const LOCKS = [
   "remember",
   "ambience",
   "offline",
+  "compare",
   "general",
 ] as const;
 export type Lock = (typeof LOCKS)[number];
@@ -67,6 +68,7 @@ export const LOCK_LABELS: Record<Lock, string> = {
   remember: "Remember the verse",
   ambience: "Ambience",
   offline: "Listen offline",
+  compare: "Compare",
   general: "The Plus button (no lock)",
 };
 

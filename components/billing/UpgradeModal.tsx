@@ -122,6 +122,8 @@ export type UpgradeFeature =
   | "ambience"
   // A book's readings saved on the phone to listen offline (1.8).
   | "offline"
+  // Compare, a verse in each Bible the app may show (1.9, rec 85).
+  | "compare"
   | "general";
 
 /** `overPlayer`: the lock was met inside Now Playing or a sheet over it (the

@@ -30,7 +30,7 @@ import { TRANSLATIONS } from "@/lib/bible/translations";
 import { isNativeClient } from "@/lib/platform/native";
 
 /** What a Bible's row shows. */
-type Row =
+export type CompareRow =
   | { state: "loading" }
   | { state: "words"; words: string; at: string | null }
   | { state: "unplaced" }
@@ -66,7 +66,7 @@ export function CompareSheet({
   // another verse shows its own as loading until they come.
   const key = `${book}:${chapter}:${verse}`;
   const [greek, setGreek] = useState<{ key: string; text: string | null } | null>(null);
-  const [found, setFound] = useState<{ key: string; rows: Record<string, Row> }>({ key: "", rows: {} });
+  const [found, setFound] = useState<{ key: string; rows: Record<string, CompareRow> }>({ key: "", rows: {} });
   const native = isNativeClient();
   const onPhone = (b: DownloadableBible) => !native || Boolean(saved[b.id]?.books.includes(book));
 
@@ -80,7 +80,7 @@ export function CompareSheet({
       if (native && !saved[b.id]?.books.includes(book)) continue;
       void Promise.all([loadCompareMap(b.id), readBibleBook(b.id, book)]).then(([map, file]) => {
         if (!live) return;
-        let row: Row;
+        let row: CompareRow;
         if (!map || !file) row = { state: "unread" };
         else {
           const place = placeIn(map, book, chapter, verse);
@@ -96,17 +96,12 @@ export function CompareSheet({
   }, [open, key, book, chapter, verse, bibles, saved, native]);
 
   const greekWords = greek?.key === key ? greek.text : null;
-  const rowOf = (b: DownloadableBible): Row => (!onPhone(b) ? { state: "absent" } : found.key === key ? (found.rows[b.id] ?? { state: "loading" }) : { state: "loading" });
+  const rowOf = (b: DownloadableBible): CompareRow => (!onPhone(b) ? { state: "absent" } : found.key === key ? (found.rows[b.id] ?? { state: "loading" }) : { state: "loading" });
 
   return (
     <Sheet open={open} onClose={onClose} title={t("bible.compareFor", { reference })} desktop bodyClassName="px-5 pb-6 pt-1">
       <ol className="divide-y divide-paper/10" data-compare="">
-        <li className="py-3.5" data-compare-row="english">
-          <p className="font-sans text-detail font-semibold text-premium-ink">{english?.fullLabel}</p>
-          <p lang="en" className="mt-1 font-serif text-body leading-[1.6] text-paper/80">
-            {words}
-          </p>
-        </li>
+        <CompareEnglishRow label={english?.fullLabel ?? ""} words={words} />
         {greekWords ? (
           <li className="py-3.5" data-compare-row="greek">
             <p className="font-sans text-detail font-semibold text-premium-ink">
@@ -118,7 +113,7 @@ export function CompareSheet({
           </li>
         ) : null}
         {bibles.map((b) => (
-          <BibleRow key={b.id} bible={b} row={rowOf(b)} />
+          <CompareBibleRow key={b.id} bible={b} row={rowOf(b)} />
         ))}
       </ol>
       <p className="mt-4 font-sans text-caption text-paper/45">{t("bible.compareCredit")}</p>
@@ -126,7 +121,20 @@ export function CompareSheet({
   );
 }
 
-function BibleRow({ bible, row }: { bible: DownloadableBible; row: Row }) {
+/** The verse in the app's English, its edition's name over it: the list's first row (and the Plus screen's preview's, components/billing/plusTry/TryCompare.tsx). */
+export function CompareEnglishRow({ label, words }: { label: string; words: string }) {
+  return (
+    <li className="py-3.5" data-compare-row="english">
+      <p className="font-sans text-detail font-semibold text-premium-ink">{label}</p>
+      <p lang="en" className="mt-1 font-serif text-body leading-[1.6] text-paper/80">
+        {words}
+      </p>
+    </li>
+  );
+}
+
+/** A downloadable Bible's row: its name, the place it numbers the verse when that differs, and its words or why there are none. */
+export function CompareBibleRow({ bible, row }: { bible: DownloadableBible; row: CompareRow }) {
   const { t } = useTranslate();
   const greek = bible.textLang === "grc";
   return (
