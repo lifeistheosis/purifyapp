@@ -8421,15 +8421,15 @@ html[data-reading-mode="parchment"] .part-segment[data-state="current"] {
    only where prayer campaigns are open for this reader, and the app learns
    that from the website a moment after the page is drawn
    (lib/community/halves.ts, prayDoor). While it waits, the switch's place is
-   kept: the switch's own height (PrayTalkSwitch, 60px) and the space above
-   it (16px), with nothing in it, so the page under it does not move when the
-   switch comes. A switch that comes into a kept place fades in. A place kept
-   for nothing closes, on the house curve. With motion off, each is simply
-   so. lib/community/__tests__/prayAndTalk.test.ts holds the two heights
-   together. */
+   kept, with nothing in it, so the page under it does not move when the
+   switch comes. Its size is not written here: the place wears the same two
+   utilities the switch and its wrapper wear (CommunityHead: mt-4 and
+   h-[60px]), because a rem is 17px on a phone and 16px elsewhere, and a
+   size written in px here stood a pixel off the switch. A switch that comes
+   into a kept place fades in. A place kept for nothing closes, on the house
+   curve. With motion off, each is simply so.
+   lib/community/__tests__/prayAndTalk.test.ts holds the two together. */
 .community-door-place {
- height: 60px;
- margin-top: 16px;
  transition:
   height var(--duration-base) var(--ease-house),
   margin-top var(--duration-base) var(--ease-house);

@@ -88,8 +88,10 @@ export function CommunityHead({
             <PrayTalkSwitch half={half} onChoose={onChoose} idBase={idBase} />
           </div>
         ) : door === "none" ? null : (
-          // The switch's place: its height and the space above it, and nothing in it.
-          <div aria-hidden data-door-place={door} className="community-door-place" />
+          // The switch's place, and nothing in it: the same two measures the
+          // switch and its wrapper wear (mt-4 above, h-[60px]), so the two
+          // are one size whatever the reader's text size makes of a rem.
+          <div aria-hidden data-door-place={door} className="community-door-place mt-4 h-[60px]" />
         )}
       </header>
     </div>

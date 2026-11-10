@@ -212,7 +212,7 @@ describe("the prayer wall is gone, with everything that drew it", () => {
       const waiting = head(half, "waiting");
       expect(waiting).not.toContain('role="tablist"');
       expect(waiting).not.toContain("Pray together");
-      expect(waiting).toMatch(/<div aria-hidden="true" data-door-place="waiting" class="community-door-place"><\/div>/);
+      expect(waiting).toMatch(/<div aria-hidden="true" data-door-place="waiting" class="community-door-place mt-4 h-\[60px\]"><\/div>/);
     }
     // The switch that comes into that place fades in; one that was there from the first is simply there.
     expect(head("talk", "open", true)).toContain("community-door-arrives");
@@ -226,8 +226,10 @@ describe("the prayer wall is gone, with everything that drew it", () => {
     expect(screen).toContain('if (door === "waiting" && !groupId && !placeKept) setPlaceKept(true);');
     expect(screen).toContain("arrives={placeKept}");
 
-    // The place is the switch's own height and the space above it, and it
-    // closes to nothing. With motion off, neither moves.
+    // The place is the switch's own height and the space above it, by the
+    // very utilities the switch and its wrapper wear (a rem is 17px on a
+    // phone, so a size written in px in the stylesheet stood a pixel off),
+    // and it closes to nothing. With motion off, neither moves.
     const css = read("app/globals.css");
     const rule = (selector: string) => {
       const at = css.indexOf(`\n${selector} {`);
@@ -236,7 +238,9 @@ describe("the prayer wall is gone, with everything that drew it", () => {
     };
     expect(read("components/community/PrayTalkSwitch.tsx")).toContain('className="community-halves relative grid h-[60px] ');
     expect(read("components/community/CommunityHead.tsx")).toContain('<div className={cn("mt-4 lg:max-w-[720px]", arrives && "community-door-arrives")}>');
-    expect(rule(".community-door-place")).toMatch(/height: 60px;\s*margin-top: 16px;/);
+    expect(read("components/community/CommunityHead.tsx")).toContain('<div aria-hidden data-door-place={door} className="community-door-place mt-4 h-[60px]" />');
+    expect(rule(".community-door-place")).toMatch(/transition:\s*height var\(--duration-base\) var\(--ease-house\),\s*margin-top var\(--duration-base\) var\(--ease-house\);/);
+    expect(rule(".community-door-place")).not.toMatch(/(?:^|\s)(?:height|margin-top): \d/);
     expect(rule('.community-door-place[data-door-place="shut"]')).toMatch(/height: 0;\s*margin-top: 0;/);
     expect(rule(':where([data-motion="reduce"]) .community-door-place')).toContain("transition: none;");
     expect(rule(':where([data-motion="reduce"]) .community-door-arrives')).toContain("animation: none;");

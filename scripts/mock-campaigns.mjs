@@ -377,8 +377,8 @@ async function answer(ctx, opts = {}) {
     // The parts that ship switched off are off unless a picture asks for one, as the server says them.
     const parts = { many: false, pictures: false, ...(opts.parts ?? {}) };
     if (p === "/api/campaigns/open") {
-      // A slow answer, for the walk to look at Community while it waits to hear.
-      if (opts.openAfter) await new Promise((done) => setTimeout(done, opts.openAfter));
+      // An answer held back until the walk lets it go, so it can look at Community while the app waits to hear.
+      if (opts.heldOpen) await opts.heldOpen.until;
       return opts.closed ? json({ error: "Not found." }, 404) : json({ open: true, parts });
     }
     if (p === "/api/campaigns/many") {
@@ -414,6 +414,14 @@ async function answer(ctx, opts = {}) {
       const c = CAMPAIGNS[one[1]];
       return c ? json({ campaign: { ...c, ...(opts.mine?.includes(c.id) ? { mine: true, keep_after_end: false, listed: true } : {}) } }) : json({ error: "Not found." }, 404);
     }
+    // Talk together's feed: nothing said yet, so the conversations draw as they are and not as "opening soon".
+    if (p === "/api/community/posts" && req.method() === "GET") return json({ posts: [] });
+    // A reader's inbox (lib/community/inbox.ts): empty, or what a still puts in it.
+    if (p === "/api/community/notifications") {
+      if (req.method() === "POST") return json({ ok: true });
+      const inbox = opts.inbox ?? [];
+      return json({ notifications: inbox, unread: inbox.filter((n) => !n.read_at).length });
+    }
     // The prayer wall went in 1.9: the server answers an app of 1.8 with nobody on it, and this app never asks.
     if (p === "/api/community/prayer-wall") return json({ requests: [], intentions: false });
     // A profile, opened over Community (/community/#@handle).
@@ -439,7 +447,7 @@ async function whole(page, min = 844) {
   await page.setViewportSize({ width: WIDTH, height: Math.max(min, h) });
 }
 
-async function shot(name, label, where, selector, { set = {}, prepare, signedIn = true, mine, board, parts, pictures, check = true } = {}) {
+async function shot(name, label, where, selector, { set = {}, prepare, signedIn = true, mine, board, parts, pictures, check = true, inbox } = {}) {
   if (WALK) return;
   if (ONLY && !ONLY.has(name.slice(0, 2))) return;
   const seed = {
@@ -453,7 +461,7 @@ async function shot(name, label, where, selector, { set = {}, prepare, signedIn 
   page.on("pageerror", (e) => errors.push(e.message));
   try {
     if (WIDTH !== 390) await page.setViewportSize({ width: WIDTH, height: 844 });
-    await answer(ctx, { mine, board, signedIn, parts, pictures });
+    await answer(ctx, { mine, board, signedIn, parts, pictures, inbox });
     await go(page, where);
     await settle(page);
     if (prepare) await prepare(page);
@@ -760,6 +768,35 @@ await shot("25-profile", "a reader's profile: no request for prayers, and no I p
   },
 });
 
+// 26 A moderator's removal tells the campaign's creator why (lib/campaigns/moderation.ts,
+// lib/community/removal.ts): the notice as its reader finds it behind the phone's bell. A STUB: the row is
+// made up here, and no such row is in any database. It is the picture his call 18 was put to him with
+// (docs/1.9-build/notes/decisions/removal-notice.png).
+const REMOVAL_NOTICE = {
+  id: "eeeeeeee-eeee-4eee-8eee-eeeeeeeeeee1",
+  kind: "removed",
+  post_id: null,
+  reply_id: null,
+  actor_name: "Purify",
+  actor_handle: null,
+  excerpt: "For Maria before her operation",
+  read_at: null,
+  created_at: new Date(Date.now() - 25 * 60_000).toISOString(),
+  target_kind: "campaign",
+  reason: "consent",
+};
+await shot("26-removal-notice", "the removal notice in a reader's inbox: a campaign, and why", "/", "[role=dialog]", {
+  inbox: [REMOVAL_NOTICE],
+  prepare: async (page) => {
+    const bell = page.locator('header button[aria-haspopup=dialog][aria-label^="Notifications"]').first();
+    await bell.waitFor({ timeout: 20000 });
+    await bell.click();
+    await page.waitForSelector("[role=dialog]", { timeout: 15000 });
+    await page.waitForFunction(() => document.querySelector("[role=dialog]")?.innerText.includes("We removed your prayer campaign"), null, { timeout: 15000 });
+    await settle(page, 900);
+  },
+});
+
 // The two photos his decision on the prayer wall was made from
 // (docs/1.9-build/notes/decisions/wall-1-today.png and wall-2-after.png) were stills 30 and 31 of this
 // script as it stood at commit 35205d89c, drawn while the wall was still in the app. It is not any more,
@@ -771,7 +808,7 @@ async function pictureWalk(label, ...rest) {
   if (!FLOWS.length || FLOWS.some((f) => label.toLowerCase().includes(f))) console.log(`left  ${label}: needs an export cut with pictures (PICTURES_BUILD=1; see the header)`);
 }
 
-async function walk(label, where, run, { set = {}, signedIn = true, mine, closed = false, parts, pictures, openAfter } = {}) {
+async function walk(label, where, run, { set = {}, signedIn = true, mine, closed = false, parts, pictures, holdOpen = false } = {}) {
   if (FLOWS.length && !FLOWS.some((f) => label.toLowerCase().includes(f))) return;
   const seed = {
     "purify.prayers.campaigns": JSON.stringify(CARRIED),
@@ -786,10 +823,17 @@ async function walk(label, where, run, { set = {}, signedIn = true, mine, closed
   let ok = true;
   let why = "";
   try {
-    await answer(ctx, { mine, closed, parts, pictures, openAfter });
+    // With `holdOpen`, the website's answer to "are campaigns open for this reader" waits for the flow's own word.
+    let letGo = () => {};
+    const heldOpen = holdOpen ? { until: new Promise((done) => (letGo = done)) } : null;
+    await answer(ctx, { mine, closed, parts, pictures, heldOpen });
     await go(page, where);
     await settle(page, 1800);
-    await run(page);
+    try {
+      await run(page, letGo);
+    } finally {
+      letGo();
+    }
     if (errors.length) throw new Error(`page errors: ${errors.slice(0, 2).join(" | ")}`);
   } catch (e) {
     ok = false;
@@ -859,7 +903,7 @@ if (WALK) {
   await walk("Pray together: campaigns alone, behind its own door, and nothing is asked of the prayer wall", "/community#pray", async (page) => {
     await page.waitForSelector("[data-campaigns]", { timeout: 15000 });
     await settle(page, 1200);
-    expectThat((await page.locator("[role=tablist] [role=tab]").count()) === 2, "the switch between the two halves is not drawn");
+    expectThat((await page.locator("[data-tour=community-halves] [role=tab]").count()) === 2, "the switch between the two halves is not drawn");
     expectThat((await page.locator("[data-prayer-wall]").count()) === 0, "the prayer wall is drawn");
     const said = await page.locator("[role=tabpanel]").innerText();
     expectThat(!/prayer wall|Ask for prayers|I prayed/i.test(said), `the wall's words are on the page: ${said.slice(0, 120)}`);
@@ -867,37 +911,39 @@ if (WALK) {
   });
 
   // The door to Pray together is the switch, drawn only once the website has said campaigns are open
-  // for this reader. With the answer held back five seconds, the walk looks at Community while it
-  // waits: no switch, its place kept; and then that nothing under it moved when the switch came.
+  // for this reader. With the answer held back until the walk lets it go, the walk looks at Community
+  // while it waits: no switch, its place kept; and then that nothing under it moved when the switch came.
   const doorPlace = (page) =>
     page.evaluate(() => {
       const place = document.querySelector("[data-door-place]");
       const head = document.querySelector(".community-head");
       return {
         place: place ? { state: place.getAttribute("data-door-place"), height: Math.round(place.getBoundingClientRect().height) } : null,
-        tabs: document.querySelectorAll("[role=tablist] [role=tab]").length,
+        tabs: document.querySelectorAll("[data-tour=community-halves] [role=tab]").length,
         under: head?.nextElementSibling ? Math.round(head.nextElementSibling.getBoundingClientRect().top + window.scrollY) : null,
       };
     });
 
-  await walk("the door, waiting then open: the switch's place is kept, and the page under it does not move when the switch comes", "/community#pray", async (page) => {
+  await walk("the door, waiting then open: the switch's place is kept, and the page under it does not move when the switch comes", "/community#pray", async (page, answerNow) => {
     const before = await doorPlace(page);
     expectThat(before.tabs === 0, "the switch is drawn before the website has said campaigns are open");
     expectThat(before.place?.state === "waiting" && before.place.height === 60, `its place is not kept: ${JSON.stringify(before.place)}`);
-    await page.waitForSelector("[role=tablist] [role=tab]", { timeout: 15000 });
+    answerNow();
+    await page.waitForSelector("[data-tour=community-halves] [role=tab]", { timeout: 15000 });
     await settle(page, 900);
     const after = await doorPlace(page);
     expectThat(after.tabs === 2 && after.place === null, `the switch did not take its place: ${JSON.stringify(after)}`);
     expectThat(before.under !== null && after.under === before.under, `the page under the switch moved, from ${before.under} to ${after.under}`);
-    expectThat((await page.locator(".community-door-arrives [role=tablist]").count()) === 1, "the switch that came into its place does not fade in");
+    expectThat((await page.locator(".community-door-arrives [data-tour=community-halves]").count()) === 1, "the switch that came into its place does not fade in");
     // And it was Pray together that was asked for.
     await page.waitForSelector("[data-campaigns]", { timeout: 15000 });
-    expectThat((await page.locator("[role=tab][aria-selected=true]").innerText()).trim() === "Pray together", "Pray together is not the open half");
-  }, { openAfter: 5000 });
+    expectThat((await page.locator("[data-tour=community-halves] [role=tab][aria-selected=true]").innerText()).trim() === "Pray together", "Pray together is not the open half");
+  }, { holdOpen: true });
 
-  await walk("the door, waiting then no: the place closes, there is no switch, and the conversations are shown", "/community#pray", async (page) => {
+  await walk("the door, waiting then no: the place closes, there is no switch, and the conversations are shown", "/community#pray", async (page, answerNow) => {
     const before = await doorPlace(page);
     expectThat(before.tabs === 0 && before.place?.state === "waiting" && before.place.height === 60, `while waiting: ${JSON.stringify(before)}`);
+    answerNow();
     await page.waitForSelector('[data-door-place="shut"]', { timeout: 15000 });
     await settle(page, 900);
     const after = await doorPlace(page);
@@ -905,7 +951,7 @@ if (WALK) {
     expectThat((await page.locator("[data-campaigns]").count()) === 0, "Pray together draws campaigns");
     expectThat((await page.locator("[data-feed-tab]").count()) > 0, "the conversations are not shown");
     expectThat((await page.locator(".community-on-picture").count()) === 0, "the head still wears Pray together's picture");
-  }, { closed: true, openAfter: 5000 });
+  }, { closed: true, holdOpen: true });
 
   await walk("a profile: no request for prayers on it, no I prayed, and the old answer is asked of no one", `/community/#@${SAMPLE_READER.handle}`, async (page) => {
     await page.waitForFunction((h) => document.querySelector("[data-profile-card]")?.innerText.includes(`@${h}`) && !!document.querySelector("[data-profile-card] [data-profile-doors]"), SAMPLE_READER.handle, { timeout: 25000 });
@@ -1226,7 +1272,7 @@ if (WALK) {
     await settle(page, 1800);
     expectThat((await page.locator("[data-campaigns]").count()) === 0, "Pray together draws campaigns");
     expectThat((await page.locator("[data-prayer-wall]").count()) === 0, "the prayer wall is drawn");
-    expectThat((await page.locator("[role=tablist] [role=tab]").count()) === 0, "the switch to Pray together is drawn with nothing behind it");
+    expectThat((await page.locator("[data-tour=community-halves] [role=tab]").count()) === 0, "the switch to Pray together is drawn with nothing behind it");
     const ofCampaigns = calls.filter((c) => c.path.startsWith("/api/campaigns")).map((c) => c.path);
     expectThat(ofCampaigns.every((p) => p === "/api/campaigns/open") && ofCampaigns.length === 1, `asked ${ofCampaigns.join(", ")}`);
     expectThat(!calls.some((c) => c.path === "/api/community/prayer-wall"), "the prayer wall was asked for");

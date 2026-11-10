@@ -3401,10 +3401,13 @@ ships. Section 21 is the plan; where the two differ, this section holds.
   - not open: no switch, Community shows the conversations, and an address
     that asks for Pray together shows them too;
   - not said yet (the app asks the website once a page load): nothing is
-    drawn, and the switch's place is kept empty, its own 60px and the 16px
-    above it, so the page under it does not move when the switch comes. The
-    switch fades into the kept place; a place kept for nothing closes on the
-    house curve. With motion off neither moves.
+    drawn, and the switch's place is kept empty, its own height and the
+    space above it, so the page under it does not move when the switch
+    comes. The switch fades into the kept place; a place kept for nothing
+    closes on the house curve. With motion off neither moves. (The place
+    wears the switch's own two measures and not a size of its own: on the
+    export a rem is 17px on a phone, and a place written in px stood one
+    pixel off, which the walk caught.)
 - **A profile** carries no "Asking for your prayers", no I prayed and no
   count of who prayed, and its editor has no switch for one
   (`ProfileViewer.tsx`, `ProfileEditor.tsx`).
@@ -3523,3 +3526,95 @@ The wall's own code is in the repository's history. It is whole at
 `bac1be393`: `components/community/PrayerWall.tsx`, `AskPrayersSheet.tsx`,
 and the routes as they were. Its picture is
 `docs/1.9-build/notes/decisions/wall-1-today.png`.
+
+## 27. A campaign kept to one circle: the plan and its size (2026-11-10; a plan, nothing built)
+
+**Why now.** The privacy page he approved says "A prayer campaign is public
+unless you keep it to a circle" (`components/legal/PrivacyText.tsx`), and a
+reader cannot yet. The arbiter put it first after the wall for that reason.
+The design is section 4.2: a campaign can be kept to one circle (a parish, a
+household, friends: the circles of Read together, joined by a code); then
+only its members can open it, its updates and comments are theirs alone, and
+it is on no board.
+
+### 27.1 What is there already, from the code
+
+- **The columns:** `prayer_campaigns.audience` ("public" or "circle") and
+  `circle_id`, with a check that the two agree, in file one (run and signed).
+  No SQL is needed.
+- **The circles:** rows of `prayer_campaign_groups` that follow a reading
+  path (`campaign_id` empty, `path_id` set), their members in
+  `prayer_campaign_group_members`, made and joined on a path's page
+  (`app/api/circles`, `components/reading/ReadTogether.tsx`).
+- **The server refuses them today:** every start writes "public", the board
+  and "Prayed by many" read only "public", and `mayRead` answers no for a
+  row that says "circle" (`lib/campaigns/server.ts`).
+- **One edge that decides the size:** a circle is deleted when its last
+  member leaves (`app/api/circles/[id]`), and file one's foreign key then
+  deletes a campaign kept to it, rows and all. Its picture files in storage
+  are not rows, and would be left behind.
+
+### 27.2 The plan
+
+1. **Choosing it.** One more row on the start screen, "Who can see it",
+   opening a sheet: Everyone in Community (as now), or one of the reader's
+   own circles by name. Recommended: the row is drawn only for a reader who
+   is in a circle, so nobody is offered a choice they do not have. Circles
+   are still made and joined where they are today, on a reading path's page.
+2. **The reader's circles and what is in them:** one new route of campaigns'
+   own, `GET /api/campaigns/circles`, for a signed-in reader: their reading
+   circles (never one of July's groups), and the campaigns running in them.
+3. **Starting one:** the start takes a circle's id. The server takes it only
+   if the caller is a member and it is a reading circle; anything else is
+   answered as "no such circle", the same for a circle that is not theirs
+   and one that does not exist.
+4. **Who may open it:** its circle's members, and its creator. Everyone else
+   is told what they are told of a campaign that does not exist. The one
+   question is asked in one place and used by every route that opens a
+   campaign (its page, its updates and comments, joining, reporting, its
+   pictures, and the check a device makes of the names it carries).
+5. **Finding it:** Pray together gains a list, "In your circles", above the
+   newly asked, for a reader who has any. It is on no board and in no
+   "Prayed by many", as now. Its page says who can see it in one line.
+6. **A member who leaves the circle** can no longer open it, and its name
+   leaves their prayers at the device's next check, with the line the app
+   already has.
+7. **A moderator reads it first**, like every campaign (recommended: the
+   reasons for the reading, a named person's health and their blessing,
+   hold in a circle too). The moderators' queue says it is kept to a circle,
+   and which.
+8. **A circle that ends.** When the last member leaves, the campaigns kept to
+   it go with it, as file one already has it. Before that, the leave route
+   removes their picture files, with the call July's job uses; if a file
+   cannot be removed the circle is kept, empty, and the next leave tries
+   again. This touches ten lines of Read together's leave route.
+9. **July's groups** are never offered, and July's job already keeps a group
+   that a campaign of 1.9 is kept to.
+
+### 27.3 Words for his OK (English; then the twenty languages)
+
+| Where | Line |
+| --- | --- |
+| The start screen's row | Who can see it |
+| Its sheet, first choice | Everyone in Community |
+| Its sheet, under the choices | A campaign kept to a circle is seen by its members only, and is on no list. |
+| Pray together's new list | In your circles |
+| The campaign's page | Only {circle} can see this. |
+
+The circle's kind (Parish, Household, Friends) uses the words Read together
+already has. The moderators' queue is English and says "Kept to a circle".
+
+### 27.4 What holds it, and its size
+
+Tests: who may open one, as a table of cases; the start's rule (not a member,
+one of July's groups, no such circle); the new route (only the caller's, only
+reading circles); each of the seven routes answering a reader outside the
+circle as not found; the leave route's cleanup. The walk: starting one kept
+to a circle; a member finds and opens it; a reader outside it is shown the
+not-found page. Three stills: the row and its sheet, Pray together with the
+new list, the page's line.
+
+**About 9 hours.** The phased plan said 4 (section 6); the difference is
+items 5, 7 and 8, which that figure did not count. Nothing here waits on SQL.
+It does not miss 1.9 on its own account: the build can go ahead in English
+and the five lines take their other languages after his OK.
