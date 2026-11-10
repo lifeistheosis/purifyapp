@@ -589,6 +589,12 @@ Filing the note needs the database's service key, which only your PC has
 (the `.env.local` from 70; if you have not made it yet, do that part of 70
 first). The arbiter confirms that morning that the note's file is final.
 
+Your word, "ok to all ensure its all in v1.9" (2026-11-10): 1.9 also carries
+prayer campaigns, the new onboarding and a new set of Plus themes. The note,
+the board message and the email gain a line for each only once it is built
+and switched on for readers (a note never claims what readers cannot open).
+The arbiter confirms that morning which of the three are in.
+
 On your PC, in a terminal, in your purifyapp folder:
 
 ```
@@ -613,6 +619,17 @@ Then in Admin:
    change the address in its last line to `support@purifyapp.net` too.
 
 Done: the 1.9 note shows as accepted. Until then the website does not show it.
+
+### R0b. Sign off the prayer campaigns SQL, before the push
+
+The prayer campaigns chat writes the campaigns' database change. It goes
+into `supabase/migrations/` and runs on the live database by itself when
+`main` is pushed, so it needs your yes before the push, not after.
+
+1. The arbiter sends you the file's name and what it makes, in plain words.
+2. Read it. Say yes, or ask.
+
+Send back: "R0b yes", or your question. Without it, the push waits.
 
 ### R1. Two SQL pastes, just before the push
 
@@ -685,10 +702,14 @@ Send back: "R2b sent", or what went wrong.
      - `20261110002922_app_errors.sql`
      - `20261110002923_search_misses.sql`
      - `20261110012059_user_kept.sql`
-     and the rest of the 1.9 SQL you approved (the florilegium kinds) as
-     Updates moves it in.
+     and the rest of the 1.9 SQL you approved (the florilegium kinds, and
+     the prayer campaigns from R0b) as each chat moves it in.
 
-### R4. Android: build, then Play Console
+The order on the day (your word, 2026-11-10): the website first (R2), then
+both store builds to internal testing (R4, R5), then your walk on a phone
+(R5b), and only then do the stores go public (R5c).
+
+### R4. Android: build, then Play Console's internal testing
 
 1. GitHub, **Actions**, **Android build**, **Run workflow**.
 2. **Use workflow from**: `main`.
@@ -696,27 +717,55 @@ Send back: "R2b sent", or what went wrong.
 4. **Run workflow**. Wait for the green tick.
 5. GitHub, **Releases**, **Purify Android (release)**: download
    `app-release.aab`.
-6. play.google.com/console, **Purify**, **Test and release**, **Production**.
+6. play.google.com/console, **Purify**, **Test and release**, **Testing**,
+   **Internal testing**.
 7. **Create new release**.
 8. Upload `app-release.aab`. Note the **version code** it shows.
 9. Release notes: purifyapp.net/admin, **Releases**, the piece **What's new,
    for Google Play**, **Copy**, and paste. The arbiter confirms that morning that it is
    final.
-10. **Next**, **Save**, then **Send for review** (or **Start rollout**).
+10. **Next**, **Save**, then **Start rollout to Internal testing**. Install it
+    on your phone from the testers' link.
 
-Send back: "R4 sent, version code N".
+Send back: "R4 internal, version code N".
 
-### R5. iPhone: build, then App Store Connect
+### R5. iPhone: build, then TestFlight
 
 1. GitHub, **Actions**, **iOS build (signed)**, **Run workflow**.
 2. **Use workflow from**: `main`. Both boxes ticked (local-first, upload).
 3. **Run workflow**. Wait for the green tick (about 40 minutes).
 4. App Store Connect, **Apps**, **Purify**, **TestFlight**: wait until the new
    build is done processing (5 to 15 minutes). Note its **build number**.
-5. **App Store** tab, the **1.9** version (click **+** next to iOS App to make
+   Install it on your iPhone from the TestFlight app.
+
+Send back: "R5 in TestFlight, build N".
+
+### R5b. Walk 1.9 on your phones, before any reader has it
+
+On the internal Android build and the TestFlight build, as
+`docs/PHONE-WALK.md` lays out, and with it:
+
+1. Prayer campaigns: start one, join one, see it in your prayers.
+2. The new onboarding: from a fresh install (or the Testers switch, "Preview
+   as signed out"), each first question and the first card on Today.
+3. Anything that looks wrong: a screenshot to the arbiter, and stop here.
+
+Send back: "R5b walked", or what broke.
+
+### R5c. The stores go public
+
+Only after R5b.
+
+Google Play:
+1. Play Console, **Internal testing**, the 1.9 release, **Promote release**,
+   **Production**.
+2. **Next**, **Save**, then **Send for review** (or **Start rollout**).
+
+App Store:
+1. **App Store** tab, the **1.9** version (click **+** next to iOS App to make
    it, if needed).
-6. **Build**: **Add Build**, pick the new one.
-7. **What's New in This Version**: purifyapp.net/admin, **Releases**, the
+2. **Build**: **Add Build**, pick the one you walked in R5b.
+3. **What's New in This Version**: purifyapp.net/admin, **Releases**, the
    piece **What's New in This Version, for the App Store**, **Copy**, and
    paste (it names no Purify Plus, since
    every feature is free on iPhone; if 87 is done, the arbiter sends the
@@ -725,11 +774,11 @@ Send back: "R4 sent, version code N".
    2026 Purify Orthodox LLC. Under **App Review Information**, the contact
    email is one you read on review days (support@ lands in Admin,
    **Messages**).
-8. If 87 is done: **In-App Purchases and Subscriptions**, **+**, both
+4. If 87 is done: **In-App Purchases and Subscriptions**, **+**, both
    products (87, steps 28 and 29).
-9. **Add for Review**, then **Submit for Review**.
+5. **Add for Review**, then **Submit for Review**.
 
-Send back: "R5 submitted, build N".
+Send back: "R5c Play sent, App Store submitted".
 
 ### R6. Tell installed apps, once each store serves 1.9
 
