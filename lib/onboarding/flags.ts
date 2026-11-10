@@ -54,11 +54,17 @@ export const PLUS_INTRO_LIVE = true;
 /**
  * The Plus sheet's order (1.9; lib/ab/tests.ts, PLUS_SHEET_ORDER): when a
  * reader taps a lock, the sheet opens as it is built, on its list, or
- * straight on that feature working. Built and SHUT, like the card above:
- * its second version goes before him first. It is not part of the new
- * onboarding, so it does not wait on that flag.
+ * straight on that feature working.
+ *
+ * ON since 2026-11-10, his word on the stills: "yes to all suggested", call
+ * 9. On is not running: its days begin the day after the Plus card's last
+ * (the registry never runs the two together), so no reader meets the second
+ * version before then. In the release commit its days are set again, to
+ * follow the card's (docs/1.9-build/OWNER-STEPS.md, R0c). Off again is this
+ * one line. It is not part of the new onboarding, so it does not wait on
+ * that flag.
  */
-export const PLUS_ORDER_LIVE = false;
+export const PLUS_ORDER_LIVE = true;
 
 /** What is lit for readers in this build, by the name a test's gate asks for (lib/ab/tests.ts). */
 export function litNow(): { roads: boolean; plusIntro: boolean; plusOrder: boolean } {

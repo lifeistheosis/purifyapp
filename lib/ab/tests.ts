@@ -177,9 +177,11 @@ export const PLUS_INTRODUCED: AbTest = {
  * Judged by the button to subscribe tapped; Plus bought and readers coming
  * back must not get clearly worse.
  *
- * SHUT: its gate is PLUS_ORDER_LIVE (lib/onboarding/flags.ts). ITS DAYS ARE
- * SET WHEN IT IS LIT, and never across the Plus card's days (`apart`): both
- * read the same buyers.
+ * ON since 2026-11-10, his "yes to all suggested": its gate, PLUS_ORDER_LIVE
+ * (lib/onboarding/flags.ts), is true. It begins the day after the Plus
+ * card's last day and runs twelve weeks, never across the card's days
+ * (`apart`): both read the same buyers. ITS DAYS ARE SET AGAIN IN THE
+ * RELEASE COMMIT, to follow the card's new last day.
  */
 export const PLUS_SHEET_ORDER: AbTest = {
   id: "plus-sheet-order",
@@ -187,9 +189,9 @@ export const PLUS_SHEET_ORDER: AbTest = {
   asks: "When a reader taps a lock, should the Plus sheet open on its list, with that feature first, or straight on that feature working?",
   arms: ["list", "working"],
   share: 1,
-  // Shut. A day after the Plus card's last, so the two can never share one, lit or not.
+  // The day after the Plus card's last, and twelve weeks on.
   begins: "2027-02-03",
-  ends: "2027-02-03",
+  ends: "2027-04-28",
   gate: "plusOrder",
   apart: ["plus-introduced"],
   judge: "plus_pay",

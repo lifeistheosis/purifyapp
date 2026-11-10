@@ -255,9 +255,9 @@ describe("Plus, introduced once: on, by his word on the stills", () => {
     expect(runningTest("today", PLUS_INTRODUCED.begins, { roads: true, plusIntro: false, plusOrder: true })).toBeNull();
   });
 
-  it("leaves the Plus sheet's order shut, with days that can never meet its own", () => {
-    expect(PLUS_ORDER_LIVE).toBe(false);
-    expect(PLUS_SHEET_ORDER.begins > PLUS_INTRODUCED.ends).toBe(true);
+  it("is followed by the Plus sheet's order, which begins the day after its last and never shares a day with it", () => {
+    const next = new Date(Date.parse(PLUS_INTRODUCED.ends) + 86_400_000).toISOString().slice(0, 10);
+    expect(PLUS_SHEET_ORDER.begins).toBe(next);
     expect(registryFaults(AB_TESTS)).toEqual([]);
   });
 
@@ -278,16 +278,23 @@ describe("Plus, introduced once: on, by his word on the stills", () => {
   });
 });
 
-describe("the Plus sheet's order: built, and shut until he has seen it", () => {
+describe("the Plus sheet's order: on, by his word on the stills, and waiting its turn", () => {
   const sheet = readFileSync("components/billing/UpgradeModal.tsx", "utf8").replace(/\s+/g, " ");
 
-  it("runs on no day while its switch is off", () => {
-    expect(PLUS_ORDER_LIVE).toBe(false);
-    expect(litNow().plusOrder).toBe(false);
-    for (const day of ["2026-11-11", "2026-12-25", PLUS_SHEET_ORDER.begins, "2027-06-01"]) {
+  it("runs for its twelve weeks after the Plus card's, and on no day before", () => {
+    // "yes to all suggested", call 9, 2026-11-10 (lib/onboarding/flags.ts).
+    expect(PLUS_ORDER_LIVE).toBe(true);
+    expect(litNow().plusOrder).toBe(true);
+    const days = (Date.parse(PLUS_SHEET_ORDER.ends) - Date.parse(PLUS_SHEET_ORDER.begins)) / 86_400_000;
+    expect(days).toBe(84);
+    // While the Plus card's test runs, the sheet opens as built for everyone.
+    for (const day of [PLUS_INTRODUCED.begins, "2026-12-25", PLUS_INTRODUCED.ends]) {
       expect(runningTest("plus", day, litNow()), day).toBeNull();
-      expect(runningTest("plus", day, { roads: true, plusIntro: true, plusOrder: false }), day).toBeNull();
     }
+    expect(runningTest("plus", PLUS_SHEET_ORDER.begins, litNow())?.id).toBe("plus-sheet-order");
+    expect(runningTest("plus", PLUS_SHEET_ORDER.ends, litNow())?.id).toBe("plus-sheet-order");
+    // With its switch off, it runs on no day.
+    expect(runningTest("plus", PLUS_SHEET_ORDER.begins, { roads: true, plusIntro: true, plusOrder: false })).toBeNull();
   });
 
   it("is judged by the button to subscribe, with purchases and readers coming back guarded, and is no test on an offer", () => {

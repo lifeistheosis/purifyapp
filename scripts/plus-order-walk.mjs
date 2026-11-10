@@ -1,5 +1,6 @@
-// The Plus sheet's order (1.9), pictured from the export for his OK before
-// it is switched on for readers (lib/onboarding/flags.ts, PLUS_ORDER_LIVE).
+// The Plus sheet's order (1.9; on since his "yes to all suggested" of
+// 2026-11-10, and waiting its turn after the Plus card's test:
+// lib/onboarding/flags.ts, PLUS_ORDER_LIVE; lib/ab/tests.ts).
 // The rules are held by lib/ab/__tests__/tests.test.ts; this reads what is
 // drawn when a reader taps a lock: a reading plan's Begin, without Plus.
 //
@@ -8,7 +9,8 @@
 //   - "working", its second version: the same sheet open straight on that
 //     feature working, the list one tap back;
 //   - the plans stand at the foot in both;
-//   - a reader, not a tester: the sheet as it is built, since the test is shut.
+//   - a reader, not a tester: the sheet as it is built. The test's days have
+//     not come, and a browser driven by a script is in no test in any case.
 //
 // The second version is reached the way an admin reaches it: Testers mode,
 // with the version picked. The export has to hold Plus's locks, so it is

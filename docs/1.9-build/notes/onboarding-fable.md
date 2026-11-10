@@ -1672,3 +1672,13 @@ test's (`OWNER-STEPS.md`, R0c); a test holds the span, not the date. Off
 again is the one line. The Plus sheet's order stays shut, and its
 placeholder days sit after the card's last day, so the registry's rule that
 the two never share a day holds whether or not either is lit.
+
+**The Plus sheet's order is on, and waits its turn (his word, 2026-11-10,
+about 18:30 UTC: "yes to all suggested", call 9).** `PLUS_ORDER_LIVE` is
+`true`, and `PLUS_SHEET_ORDER` runs 2027-02-03 to 2027-04-28: the day after
+the Plus card's last day, and twelve weeks on. Until then every reader meets
+the sheet as it is built. In the release commit both tests' days move
+together: the card's to the day of release and 84 days on, the sheet's to
+the day after that and 84 days on (`OWNER-STEPS.md`, R0c). Tests hold each
+span, and that the sheet begins the day after the card ends, so the two
+cannot be set apart from each other by mistake. Off again is the one line.
