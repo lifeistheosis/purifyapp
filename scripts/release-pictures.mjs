@@ -63,7 +63,7 @@ for (const shot of shots) {
   const release = version.split(".").slice(0, 2).join(".");
   await context.addInitScript((values) => {
     for (const [k, v] of Object.entries(values)) window.localStorage.setItem(k, v);
-  }, { "purify:onboarded": "3", "purify:tour": JSON.stringify({ [release]: "finished" }), ...(shot.set ?? {}) });
+  }, { "purify:onboarded": "99", "purify:tour": JSON.stringify({ [release]: "finished" }), ...(shot.set ?? {}) });
   const page = await context.newPage();
   await page.goto(SITE + shot.url, { waitUntil: "networkidle", timeout: 90_000 });
   await page.evaluate(() => document.fonts.ready);

@@ -6,7 +6,7 @@ import { useTranslate } from "@/components/i18n/MessagesProvider";
 import { PrayerRope } from "@/components/streak/PrayerRope";
 import { StreakSheet } from "@/components/streak/StreakSheet";
 import { cn } from "@/lib/cn";
-import { useDayOneShown } from "@/lib/onboarding/useDayOne";
+import { useStreakWaits } from "@/lib/onboarding/useDayOne";
 import { todayKey } from "@/lib/rhythm/dayKey";
 import { ropeRow, ropeWeek } from "@/lib/streak/rope";
 import { useStreak, type StreakView } from "@/lib/streak/useStreak";
@@ -29,7 +29,7 @@ import { useStreak, type StreakView } from "@/lib/streak/useStreak";
  */
 export function StreakRow({ className }: { className?: string }) {
   const view = useStreak();
-  const dayOne = useDayOneShown();
+  const dayOne = useStreakWaits();
   const place = ropeRow(view, dayOne);
   if (place === "none") return null;
   // The rope's height, held before the streak is read, so the cards under it

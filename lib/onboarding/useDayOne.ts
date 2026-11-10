@@ -8,7 +8,7 @@
 import { useSyncExternalStore } from "react";
 
 import { roadsEnabled } from "./flags";
-import { ONBOARDING_EVENT, isNudgeDismissed, isNudgeEligible } from "./state";
+import { ONBOARDING_EVENT, isNudgeDismissed, isNudgeEligible, wasOnboardedAgain } from "./state";
 import { TESTERS_EVENT } from "./testing";
 import { isWeekStepShown, readRoad } from "./useWeek";
 
@@ -37,4 +37,22 @@ function subscribe(onChange: () => void): () => void {
 /** False on the server and the hydration render, so the markup there is the same. */
 export function useDayOneShown(): boolean {
   return useSyncExternalStore(subscribe, isDayOneShown, () => false);
+}
+
+/**
+ * Whether the streak's rope and its evening card wait for the card. They do
+ * for a new reader, who has no streak to see. They never do for a reader who
+ * is back and was asked the new questions (1.9, his 110): that reader may
+ * have a streak going, the week's card is up on seven mornings and not one,
+ * and the evening card is what tells them the day is not yet kept. "Nothing
+ * you have saved changes" has to hold for the streak too.
+ */
+export function streakWaits(): boolean {
+  if (!isDayOneShown()) return false;
+  return !(roadsEnabled() && readRoad() && wasOnboardedAgain());
+}
+
+/** False on the server and the hydration render, so the markup there is the same. */
+export function useStreakWaits(): boolean {
+  return useSyncExternalStore(subscribe, streakWaits, () => false);
 }

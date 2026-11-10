@@ -88,7 +88,7 @@ for (const size of SIZES) {
   const ctx = await browser.newContext({ viewport: { width: size.width, height: size.height }, deviceScaleFactor: 1, colorScheme: "dark", isMobile: true, hasTouch: true, userAgent: NATIVE_UA });
   await ctx.addInitScript(() => {
     try {
-      localStorage.setItem("purify:onboarded", "3");
+      localStorage.setItem("purify:onboarded", "99");
       localStorage.setItem("purify:whatsNewSeen", "99");
     } catch {}
   });

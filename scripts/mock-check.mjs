@@ -579,7 +579,7 @@ export async function openPhone({ scale = 1, set = {}, browser: given } = {}) {
   const ctx = await browser.newContext({ viewport: { width: 390, height: 844 }, deviceScaleFactor: scale, colorScheme: "dark", isMobile: true, hasTouch: true, userAgent: NATIVE_UA });
   await ctx.addInitScript((values) => {
     for (const [k, v] of Object.entries(values)) localStorage.setItem(k, v);
-  }, { "purify:onboarded": "3", "purify:whatsNewSeen": "99", ...set });
+  }, { "purify:onboarded": "99", "purify:whatsNewSeen": "99", ...set });
   await serveLikeTheShell(ctx, OUT, {});
   return { browser, ctx, page: await ctx.newPage() };
 }

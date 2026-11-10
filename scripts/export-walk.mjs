@@ -63,7 +63,7 @@ const everyDocument = [];
 const everyPageFile = [];
 async function open({ width, height, phone, set = {}, locale, userAgent = NATIVE_UA }) {
   const ctx = await browser.newContext({ viewport: { width, height }, deviceScaleFactor: phone ? 2 : 1, colorScheme: "dark", ...(locale ? { locale } : {}), ...(phone ? { isMobile: true, hasTouch: true, userAgent } : {}) });
-  await ctx.addInitScript((values) => { for (const [k, v] of Object.entries(values)) window.localStorage.setItem(k, v); }, { "purify:onboarded": "3", "purify:whatsNewSeen": "99", ...set });
+  await ctx.addInitScript((values) => { for (const [k, v] of Object.entries(values)) window.localStorage.setItem(k, v); }, { "purify:onboarded": "99", "purify:whatsNewSeen": "99", ...set });
   const log = await serveLikeTheShell(ctx, OUT, { documents: everyDocument, pageFiles: everyPageFile });
   const page = await ctx.newPage();
   const errors = [];

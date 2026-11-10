@@ -13,6 +13,7 @@
 // Pure, so the rules are tested directly (lib/onboarding/__tests__/counting.test.ts).
 // Sending is lib/onboarding/count.ts.
 
+import { roadsBuilt } from "./flags";
 import { BACKGROUNDS, FASTING_RULES, INTENTS, LEVELS, type Background, type Intent, type Level } from "./space";
 
 /**
@@ -29,8 +30,13 @@ import { BACKGROUNDS, FASTING_RULES, INTENTS, LEVELS, type Background, type Inte
  *      reached, never by its answer, and a priest's or deacon's own screens
  *      after it are not counted at all (a skip there counts at "role"): those
  *      answers leave the device only inside a request for the clergy seal.
+ *   6  1.9, with the new onboarding lit (./flags.ts): no account screen and
+ *      no reminders screen for a reader with no account, the third question
+ *      asked by where the reader comes from, the clergy's question behind a
+ *      line. The answers counted are the same; the screens reached are not,
+ *      so a row says which shape it walked.
  */
-export const COUNT_VERSION = 5;
+export const COUNT_VERSION = roadsBuilt() ? 6 : 5;
 
 export const ONBOARDING_STEPS = [
   "welcome",

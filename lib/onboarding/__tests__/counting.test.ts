@@ -1,5 +1,7 @@
 import { describe, expect, it } from "vitest";
 
+import { roadsBuilt } from "../flags";
+
 import { trackEventSchema } from "@/lib/security/schemas";
 import {
   COUNT_ANSWERS,
@@ -87,10 +89,11 @@ describe("the onboarding's counts", () => {
     ]);
   });
 
-  it("says which version of the questions a count answers: the fifth, from 1.8.x", () => {
+  it("says which version of the questions a count answers: the fifth from 1.8.x, the sixth with the new onboarding lit", () => {
     // 4: "Where are you coming from?" asked, eleven answers, every pick counted.
     // 5: the practicing asked "Are you a priest, a deacon, or a layman?".
-    expect(COUNT_VERSION).toBe(5);
+    // 6: the new onboarding's shape (1.9), which follows its flag.
+    expect(COUNT_VERSION).toBe(roadsBuilt() ? 6 : 5);
   });
 
   it("counts the clergy's question as a screen reached, never by its answer, and none of a priest's own screens", () => {

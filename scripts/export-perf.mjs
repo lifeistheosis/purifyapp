@@ -32,7 +32,7 @@ for (const p of PAGES) {
   if (!inBundle(OUT, p)) { rows.push({ page: p, note: "not in the export" }); continue; }
   const ctx = await browser.newContext({ viewport: { width: 390, height: 844 }, deviceScaleFactor: 2, colorScheme: "dark", isMobile: true, hasTouch: true, userAgent: NATIVE_UA });
   await ctx.addInitScript(() => {
-    window.localStorage.setItem("purify:onboarded", "3");
+    window.localStorage.setItem("purify:onboarded", "99");
     window.localStorage.setItem("purify:whatsNewSeen", "99");
     window.__long = 0;
     try { new PerformanceObserver((l) => { for (const e of l.getEntries()) window.__long += e.duration; }).observe({ type: "longtask", buffered: true }); } catch {}

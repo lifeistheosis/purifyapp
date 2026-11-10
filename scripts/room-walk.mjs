@@ -148,7 +148,7 @@ for (const look of LOOKS) {
   const ctx = await browser.newContext({ viewport: { width: 390, height: 844 }, deviceScaleFactor: 1, colorScheme: "dark", isMobile: true, hasTouch: true, userAgent: NATIVE_UA });
   await ctx.addInitScript((id) => {
     try {
-      localStorage.setItem("purify:onboarded", "3");
+      localStorage.setItem("purify:onboarded", "99");
       localStorage.setItem("purify:whatsNewSeen", "99");
       localStorage.setItem("purify.motion", "off");
       // The app's own way of wearing a look: the reader's stored choice.

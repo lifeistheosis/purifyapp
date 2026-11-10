@@ -1,6 +1,3 @@
-import { readFileSync } from "node:fs";
-import { join } from "node:path";
-
 import { test, expect, devices } from "@playwright/test";
 import { NATIVE_UA_TOKEN } from "@/lib/platform/token";
 
@@ -40,10 +37,10 @@ import { NATIVE_UA_TOKEN } from "@/lib/platform/token";
 // every tab tap here. So the device has finished this version, read from the
 // source so it never falls behind, and has seen the release notes, as
 // scripts/export-walk.mjs sets up every device it walks.
-const ONBOARDED =
-  /export const ONBOARDING_VERSION = (\d+);/.exec(
-    readFileSync(join(process.cwd(), "lib", "onboarding", "state.ts"), "utf8"),
-  )?.[1] ?? "";
+// A number no version of the questions reaches, as the release notes' is: the
+// version follows a flag since 1.9 (lib/onboarding/state.ts) and is no longer
+// one number to read from the source.
+const ONBOARDED = "99";
 
 test.beforeEach(async ({ page }) => {
   expect(ONBOARDED, "the welcome's version, read from lib/onboarding/state.ts").toMatch(/^\d+$/);

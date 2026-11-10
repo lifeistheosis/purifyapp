@@ -5,6 +5,7 @@ import { usePathname, useRouter } from "next/navigation";
 import {
   accountAnsweredThisVersion,
   fillSpaceFromAccount,
+  finishedEarlierVersion,
   isOnboarded,
   markOnboardedSilently,
   readResumeStage,
@@ -16,7 +17,7 @@ import {
 import { abTick } from "@/lib/ab/device";
 import { countAccountIfNew } from "@/lib/analytics/moreCount";
 import { readLocalSessionUser } from "@/lib/supabase/localSession";
-import { roadsEnabled } from "@/lib/onboarding/flags";
+import { roadsBuilt, roadsEnabled } from "@/lib/onboarding/flags";
 import { readRoad } from "@/lib/onboarding/useWeek";
 import { localDay, stepTaken } from "@/lib/onboarding/week";
 import { countReturns } from "@/lib/onboarding/count";
@@ -159,7 +160,10 @@ export function FirstRunGate({
       } catch {
         /* no session to read: fall through to the signed-out check */
       }
-      if (!mobileWeb && shouldShowOnboarding() && alive) setStart("welcome");
+      // Signed out. A device that finished an earlier version is a reader who
+      // is back, greeted as one, with what they answered then marked; anyone
+      // else is a new visitor (1.9, his 110).
+      if (!mobileWeb && shouldShowOnboarding() && alive) setStart(roadsBuilt() && finishedEarlierVersion() ? "returning" : "welcome");
     })();
     return () => {
       alive = false;

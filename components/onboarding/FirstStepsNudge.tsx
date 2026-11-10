@@ -52,7 +52,8 @@ export function FirstStepsNudge() {
     const today = () => localDay(new Date());
     return (
       <StepCard
-        eyebrow={t("onboard.week.eyebrow", { n: week.index + 1 })}
+        // A reader who is back is not in their first week: the same steps, called their next step.
+        eyebrow={again ? t("onboard.returning.nextEyebrow") : t("onboard.week.eyebrow", { n: week.index + 1 })}
         title={t(week.step.titleKey)}
         body={week.step.bodyKey ? t(week.step.bodyKey) : null}
         href={week.step.href}

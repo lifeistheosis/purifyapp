@@ -205,7 +205,7 @@ for (const testers of [false, true]) {
   const p2 = (n) => String(n).padStart(2, "0");
   const today = `${d.getFullYear()}-${p2(d.getMonth() + 1)}-${p2(d.getDate())}`;
   const { ctx, page } = await phone({
-    "purify:onboarded": "3",
+    "purify:onboarded": "99",
     "purify:firststeps.eligible": "1",
     "purify:background": "catholic",
     "purify:level": "inquirer",
@@ -239,7 +239,7 @@ for (const testers of [false, true]) {
   await ctx.close();
 }
 {
-  const { ctx, page } = await phone({ "purify:onboarded": "3", ...SIGNED_IN });
+  const { ctx, page } = await phone({ "purify:onboarded": "99", ...SIGNED_IN });
   await go(page, "/account/notifications");
   const turnOn = page.getByRole("button", { name: "Turn on reminders", exact: true }).first();
   const there = await turnOn.waitFor({ timeout: 30000 }).then(() => true, () => false);

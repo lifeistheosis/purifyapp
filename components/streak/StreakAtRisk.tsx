@@ -4,7 +4,7 @@ import Link from "next/link";
 
 import { useTranslate } from "@/components/i18n/MessagesProvider";
 import { cn } from "@/lib/cn";
-import { useDayOneShown } from "@/lib/onboarding/useDayOne";
+import { useStreakWaits } from "@/lib/onboarding/useDayOne";
 import { todayKey } from "@/lib/rhythm/dayKey";
 import { atRiskShown, ropeWeek } from "@/lib/streak/rope";
 import { useStreak } from "@/lib/streak/useStreak";
@@ -25,7 +25,7 @@ import { keepDayLinks } from "./StreakSheet";
 export function StreakAtRisk({ className, waitsForDayOne = false }: { className?: string; waitsForDayOne?: boolean }) {
   const { t, tn } = useTranslate();
   const view = useStreak();
-  const dayOne = useDayOneShown();
+  const dayOne = useStreakWaits();
   if (!atRiskShown(view, waitsForDayOne && dayOne)) return null;
   const links = keepDayLinks();
   const week = ropeWeek(view.strip, todayKey(), view.keptToday);

@@ -35,7 +35,7 @@ async function shot(name, route, { theme, scale = 3, wait = 2500, set = {} } = {
   const ctx = await browser.newContext({ viewport: { width: 390, height: 844 }, deviceScaleFactor: scale, colorScheme: "dark", isMobile: true, hasTouch: true, userAgent: NATIVE_UA });
   await ctx.addInitScript((values) => {
     for (const [k, v] of Object.entries(values)) localStorage.setItem(k, v);
-  }, { "purify:onboarded": "3", "purify:whatsNewSeen": "99", ...(theme ? { "purify.reader.theme": theme } : {}), ...set });
+  }, { "purify:onboarded": "99", "purify:whatsNewSeen": "99", ...(theme ? { "purify.reader.theme": theme } : {}), ...set });
   await serveLikeTheShell(ctx, EXPORT, {});
   const page = await ctx.newPage();
   await go(page, route);

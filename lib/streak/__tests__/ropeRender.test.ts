@@ -18,6 +18,9 @@ vi.mock("@/lib/streak/useStreak", async (importOriginal) => ({
 vi.mock("@/lib/onboarding/useDayOne", async (importOriginal) => ({
   ...(await importOriginal<typeof import("@/lib/onboarding/useDayOne")>()),
   useDayOneShown: () => live.dayOne,
+  // What the rope and the evening card ask since 1.9: the same answer for a
+  // new reader; a reader who is back is held by lib/onboarding's own test.
+  useStreakWaits: () => live.dayOne,
 }));
 
 import { MessagesProvider } from "@/components/i18n/MessagesProvider";

@@ -32,7 +32,7 @@ const browser = await launch();
 const open = async (route) => {
   const ctx = await browser.newContext({ viewport: { width: 390, height: 844 }, deviceScaleFactor: 6, colorScheme: "dark", isMobile: true, hasTouch: true, userAgent: NATIVE_UA });
   await ctx.addInitScript(() => {
-    localStorage.setItem("purify:onboarded", "3");
+    localStorage.setItem("purify:onboarded", "99");
     localStorage.setItem("purify:whatsNewSeen", "99");
   });
   await serveLikeTheShell(ctx, EXPORT, {});

@@ -517,8 +517,10 @@ export function OnboardingFlow({
     // The account's test (lib/ab/tests.ts): a reader with no account is in
     // one of its two versions from here, the last screen they share, and is
     // counted as shown here whichever it is. Never where the questions began
-    // at the account, and never while no test is running (armHere says).
-    if (roads && !hasAccount && startAt !== "account") {
+    // at the account, never a reader who is back and asked again (the test
+    // asks where a new reader should be offered an account), and never while
+    // no test is running (armHere says).
+    if (roads && !hasAccount && startAt !== "account" && startAt !== "returning") {
       const here = armHere("onboarding");
       exposed("onboarding");
       if (here?.test.id === ACCOUNT_PLACE.id && here.arm === "end") setAccountAtEnd(true);

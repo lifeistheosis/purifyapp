@@ -18,7 +18,7 @@ import {
   type Intent,
   type Level,
 } from "./space";
-import { roadsEnabled } from "./flags";
+import { roadsBuilt, roadsEnabled } from "./flags";
 import { SIGNED_OUT_PREVIEW_KEY, isTesting } from "./testing";
 import { NEW_WEEK, localDay, parseWeek, type WeekState } from "./week";
 
@@ -34,12 +34,21 @@ import { NEW_WEEK, localDay, parseWeek, type WeekState } from "./week";
  *      without seeing a question (the prior-use check below), and so has no
  *      level, no intent and no Day 1.
  *
+ *   4  1.9, with the new onboarding lit (./flags.ts): the questions in their
+ *      new shape, asked of everyone once (his 110: "Readers who already
+ *      answered are asked the new questions once", yes). A reader who is
+ *      back, with an account or without one, is greeted "We updated our
+ *      onboarding", finds what they answered before marked, and loses
+ *      nothing they have set. It follows the flag: with the new onboarding
+ *      turned off the version is 3 again, and nobody is asked twice, since a
+ *      reader who answered 4 has answered 3.
+ *
  * Only this version counts as onboarded now. Until 1.5.2 any finished version
  * did, and prior use counted as finished. A signed-in reader who is back is
  * still greeted differently, and nothing they have set is reset
  * (components/onboarding/FirstRunGate.tsx); they are no longer excused.
  */
-export const ONBOARDING_VERSION = 3;
+export const ONBOARDING_VERSION = roadsBuilt() ? 4 : 3;
 /** The first version that wrote the answers to the account (accountSync.ts). */
 const FIRST_ACCOUNT_VERSION = 2;
 
@@ -241,6 +250,21 @@ export function markOnboarded(opts: { again?: boolean } = {}): void {
     /* ignore */
   }
   emit();
+}
+
+/**
+ * This device finished an earlier version of the questions and not this one:
+ * a reader who is back, whether or not anyone is signed in. They are greeted
+ * as one (components/onboarding/FirstRunGate.tsx), not as a new visitor.
+ */
+export function finishedEarlierVersion(): boolean {
+  if (typeof window === "undefined") return false;
+  try {
+    const v = Number(window.localStorage.getItem(ONBOARDED_KEY));
+    return Number.isFinite(v) && v >= 1 && v < ONBOARDING_VERSION;
+  } catch {
+    return false;
+  }
 }
 
 /** The flow this reader finished was the one for a reader who is back. */
