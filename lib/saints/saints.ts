@@ -3911,7 +3911,10 @@ export const SAINTS: Saint[] = [
  },
  {
  slug: "adrian-of-rome",
- iconUrl: "/saints/icons/adrian-of-rome.jpg",
+ // No icon (1.9, build 90 note 3, the arbiter's word of 2026-11-10): the file
+ // this page showed is a young martyr with a cross, not Pope Adrian I. The
+ // plate until a true picture of him passes (lib/saints/iconRights.ts,
+ // ICON_QUESTIONS). The file stays in the app, unshown.
  name: "St. Adrian of Rome",
  epithet: "Pope of Rome · Father of the Seventh Council",
  born: "Rome",
