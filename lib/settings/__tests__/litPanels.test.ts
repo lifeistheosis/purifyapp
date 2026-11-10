@@ -134,11 +134,21 @@ describe("the reading modes", () => {
     expect(asking.some((p) => p.plus)).toBe(false);
   });
 
-  it("shows a collection's palette only while it is the one applied, as a sixth page", () => {
-    const drawn = draw(createElement(ModePages, { theme: "councils", font: "serif", allows: EVERY, locked: false, onPick: () => {} }));
-    expect(pages(drawn).map((p) => p.palette)).toEqual(["default", "parchment", "black", "candlelight", "monastery", "councils"]);
-    expect(drawn).toContain('data-count="6"');
-    expect(draw(createElement(ModePages, { theme: "default", font: "serif", allows: EVERY, locked: false, onPick: () => {} }))).toContain('data-count="5"');
+  it("shows the two earned palettes on a row of their own under the five, as goals with how far the reader is until earned (1.9, rec 79)", () => {
+    const drawn = draw(createElement(ModePages, { theme: "default", font: "serif", allows: EVERY, locked: false, onPick: () => {} }));
+    // The five as ever (pages() reads the buttons that apply a palette), then the two.
+    expect(pages(drawn).map((p) => p.palette)).toEqual(["default", "parchment", "black", "candlelight", "monastery"]);
+    expect(drawn).toContain('data-count="5"');
+    expect([...drawn.matchAll(/class="set-mode-page" data-palette="([^"]+)"/g)].map((m) => m[1])).toEqual(["default", "parchment", "black", "candlelight", "monastery", "councils", "cappadocian"]);
+    expect(drawn).toMatch(/class="set-modes set-modes-earned" data-count="2"/);
+    // Nothing is earned in the first draw (the device's reading is read after it): both are goals.
+    expect(drawn.match(/data-palette-goal="(councils|cappadocian)"/g)).toHaveLength(2);
+    expect(drawn).toContain('<span class="set-mode-progress">0 of 19</span>');
+    expect(drawn).toContain('<span class="set-mode-progress">0 of 3</span>');
+    // One already applied is a palette, not a goal, so it can be put down again.
+    const applied = draw(createElement(ModePages, { theme: "councils", font: "serif", allows: EVERY, locked: false, onPick: () => {} }));
+    expect(applied.match(/data-palette-goal="(councils|cappadocian)"/g)).toEqual(['data-palette-goal="cappadocian"']);
+    expect(pages(applied).map((p) => p.palette)).toEqual(["default", "parchment", "black", "candlelight", "monastery", "councils"]);
   });
 
   it("sets the verses in the reader's own face", () => {

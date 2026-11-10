@@ -38,6 +38,7 @@ import { useScrollAway } from "@/lib/ui/scrollAway";
 import { useTranslate } from "@/components/i18n/MessagesProvider";
 import { unitFor } from "@/lib/desktop/presenceModes";
 import type { TileCard } from "@/lib/reading/select";
+import { ReadToEndMark } from "@/components/reading/ReadToEndMark";
 
 /** What About this book shows: the book's page, as the page draws it on a computer. */
 export type AboutBook = { header: React.ComponentProps<typeof BookHeader>; key: string; like: TileCard[] };
@@ -196,6 +197,11 @@ export function WritingReader({
  </ul>
  </aside>
  ) : null}
+
+ {/* The last chapter's foot: the work read to its end once it comes
+     into view, towards the Cappadocian palette (1.9, rec 79,
+     lib/reader/earned.ts). */}
+ {next ? null : <ReadToEndMark kind="work" id={key} />}
 
  {/* A computer turns the chapter here; a phone has the pill. */}
  {many ? <Pager prev={prev} next={next} onGo={go} /> : null}

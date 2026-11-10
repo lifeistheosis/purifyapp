@@ -13,14 +13,16 @@
 // held beside them in app/globals.css ("Settings: lit panels") and checked
 // against them by lib/settings/__tests__/litPanels.test.ts.
 
-import { Fragment } from "react";
+import { Fragment, useState } from "react";
 
 import { useUpgradeModal } from "@/components/billing/UpgradeModal";
 import { useTranslate } from "@/components/i18n/MessagesProvider";
 import { FONT_CLASSES, useReaderPrefs, type ReaderFont } from "@/components/reader/ReaderPrefs";
+import { useEarnedPalettes } from "@/components/reader/useEarnedPalettes";
 import { usePlusReadingModes } from "@/components/reader/usePlusReadingModes";
 import { Check } from "@/components/ui/icons/Check";
 import { cn } from "@/lib/cn";
+import type { EarnedPalettes } from "@/lib/reader/earned";
 import { READING_THEMES, isCollectionTheme, type ReadingTheme } from "@/lib/reader/readingModes";
 import { JOHN_1_OPENING, PREVIEW_CHAPTER } from "@/lib/settings/preview";
 
@@ -59,45 +61,84 @@ export function ModePages({
   onPick: (theme: ReadingTheme) => void;
 }) {
   const { t } = useTranslate();
-  const modes = READING_THEMES.filter((m) => !isCollectionTheme(m.id) || theme === m.id);
+  // The five palettes, as ever, and under them the two earned by reading (1.9,
+  // rec 79, lib/reader/earned.ts): until earned they stand as goals, with how
+  // far the reader is, and say how under their row once tapped.
+  const earned = useEarnedPalettes();
+  const [goal, setGoal] = useState<keyof EarnedPalettes | null>(null);
+  const modes = READING_THEMES.filter((m) => !isCollectionTheme(m.id));
+  const kept = READING_THEMES.filter((m) => isCollectionTheme(m.id));
   const book = t("bible.books.john");
   const chapter = t("bible.chapterN", { n: PREVIEW_CHAPTER });
+  const palette = (mode: (typeof READING_THEMES)[number]) => {
+    const allowed = allows(mode.id);
+    const on = theme === mode.id && allowed;
+    const paid = locked && !allowed;
+    const name = mode.labelKey ? t(mode.labelKey) : mode.label;
+    const blurb = mode.blurbKey ? t(mode.blurbKey) : mode.blurb;
+    return (
+      <button
+        key={mode.id}
+        type="button"
+        aria-pressed={on}
+        title={paid ? `${blurb}. Purify Plus.` : blurb}
+        onClick={() => onPick(mode.id)}
+        className="set-mode"
+      >
+        <ModePage palette={mode.id} font={font} book={book} chapter={chapter} />
+        {on ? (
+          <span aria-hidden className="set-check set-mode-check">
+            <Check size={10} strokeWidth={2.8} />
+          </span>
+        ) : null}
+        <span className="set-mode-name">{name}</span>
+        {paid ? <span className="set-mode-plus">Purify Plus</span> : null}
+      </button>
+    );
+  };
   return (
-    <div
-      role="group"
-      aria-label={t("ui.readingMode")}
-      className="set-modes"
-      data-count={modes.length}
-      // What the release's tour lights for Settings (lib/whatsNew/tour.ts).
-      data-tour="settings-panels"
-    >
-      {modes.map((mode) => {
-        const allowed = allows(mode.id);
-        const on = theme === mode.id && allowed;
-        const paid = locked && !allowed;
-        const name = mode.labelKey ? t(mode.labelKey) : mode.label;
-        const blurb = mode.blurbKey ? t(mode.blurbKey) : mode.blurb;
-        return (
-          <button
-            key={mode.id}
-            type="button"
-            aria-pressed={on}
-            title={paid ? `${blurb}. Purify Plus.` : blurb}
-            onClick={() => onPick(mode.id)}
-            className="set-mode"
-          >
-            <ModePage palette={mode.id} font={font} book={book} chapter={chapter} />
-            {on ? (
-              <span aria-hidden className="set-check set-mode-check">
-                <Check size={10} strokeWidth={2.8} />
-              </span>
-            ) : null}
-            <span className="set-mode-name">{name}</span>
-            {paid ? <span className="set-mode-plus">Purify Plus</span> : null}
-          </button>
-        );
-      })}
-    </div>
+    <>
+      <div
+        role="group"
+        aria-label={t("ui.readingMode")}
+        className="set-modes"
+        data-count={modes.length}
+        // What the release's tour lights for Settings (lib/whatsNew/tour.ts).
+        data-tour="settings-panels"
+      >
+        {modes.map(palette)}
+      </div>
+      <div role="group" aria-label={t("settings.paletteEarnedRow")} className="set-modes set-modes-earned" data-count={kept.length}>
+        {kept.map((mode) => {
+          const id = mode.id as keyof EarnedPalettes;
+          const progress = earned[id];
+          // Earned, or already applied (so it can be put down again): a palette like the rest.
+          if (!progress || progress.earned || theme === mode.id) return palette(mode);
+          return (
+            <button
+              key={mode.id}
+              type="button"
+              data-palette-goal={mode.id}
+              aria-expanded={goal === id}
+              aria-controls="set-palette-goal"
+              onClick={() => setGoal(goal === id ? null : id)}
+              className="set-mode set-mode-goal"
+            >
+              <ModePage palette={mode.id} font={font} book={book} chapter={chapter} />
+              <span className="set-mode-name">{mode.labelKey ? t(mode.labelKey) : mode.label}</span>
+              <span className="set-mode-progress">{t("settings.paletteProgress", { count: progress.read, total: progress.of })}</span>
+            </button>
+          );
+        })}
+      </div>
+      {goal ? (
+        <p id="set-palette-goal" role="status" className="set-mode-goal-line" data-palette-goal-line="">
+          {t(goal === "councils" ? "settings.paletteEarnCouncils" : "settings.paletteEarnCappadocian", { count: earned[goal].read, total: earned[goal].of })}
+          {/* Plus is never promised to every reader: a reader without it is told before they read for it. */}
+          {locked ? ` ${t("settings.palettePlusNote")}` : null}
+        </p>
+      ) : null}
+    </>
   );
 }
 

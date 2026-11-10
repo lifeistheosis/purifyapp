@@ -22,6 +22,7 @@ import { fatherFaces } from "@/lib/councils/fathers";
 import { councilQuote, lineOfCouncil } from "@/lib/councils/lines";
 import { councilFocus, councilPicture, ordinalKey, placeOf } from "@/lib/councils/page";
 import { cn } from "@/lib/cn";
+import { ReadToEndMark } from "@/components/reading/ReadToEndMark";
 
 /** Where a mark in a council's account leads: its source, under the history. */
 const ACCOUNT_SOURCE = "account-source-";
@@ -351,6 +352,9 @@ export default async function CouncilProfilePage({
  {picture.credit}
  </p>
  ) : null}
+ {/* The page's foot: read to its end once it comes into view, towards
+     the Councils palette (1.9, rec 79, lib/reader/earned.ts). */}
+ <ReadToEndMark kind="council" id={c.slug} />
  </article>
  </section>
  </>

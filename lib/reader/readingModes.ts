@@ -100,8 +100,24 @@ export const READING_THEMES: {
   // entry here with `collection: true`, the id in lib/reader/prepaint.ts, a
   // swatch in components/reader/ReadingModeChips.tsx, and a collection in
   // data/catechism/collections.json that names it. docs/CATECHISM.md walks it.
-  { id: "councils", label: "Councils", blurb: "Deep navy and gold", collection: true },
-  { id: "cappadocian", label: "Cappadocian", blurb: "Warm dusk, cream and rubric red", collection: true },
+  // From 1.9 these two are earned by reading (lib/reader/earned.ts, rec 79),
+  // and have their names in every language.
+  {
+    id: "councils",
+    label: "Councils",
+    blurb: "Deep navy and gold",
+    labelKey: "settings.paletteCouncils",
+    blurbKey: "settings.paletteCouncilsHint",
+    collection: true,
+  },
+  {
+    id: "cappadocian",
+    label: "Cappadocian",
+    blurb: "Warm dusk, cream and rubric red",
+    labelKey: "settings.paletteCappadocian",
+    blurbKey: "settings.paletteCappadocianHint",
+    collection: true,
+  },
 ];
 
 /**

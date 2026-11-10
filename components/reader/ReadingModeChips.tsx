@@ -5,8 +5,12 @@
 // Premium Reading Modes; the Focus toggle (chrome half) stays separate
 // and composes with any palette.
 
+import { useState } from "react";
+
 import { useReaderPrefs } from "@/components/reader/ReaderPrefs";
+import { useEarnedPalettes } from "@/components/reader/useEarnedPalettes";
 import { usePlusReadingModes } from "@/components/reader/usePlusReadingModes";
+import type { EarnedPalettes } from "@/lib/reader/earned";
 import { READING_THEMES, isCollectionTheme } from "@/lib/reader/readingModes";
 import { cn } from "@/lib/cn";
 import { useTranslate } from "@/components/i18n/MessagesProvider";
@@ -34,6 +38,9 @@ export function ReadingModeChips({
   const upgrade = useUpgradeModal();
   const { theme, setTheme } = useReaderPrefs();
   const { allows, locked } = usePlusReadingModes();
+  const earned = useEarnedPalettes();
+  // The goal a reader tapped: how it is earned, said under the grid.
+  const [goal, setGoal] = useState<keyof EarnedPalettes | null>(null);
 
   return (
     <div>
@@ -48,20 +55,47 @@ export function ReadingModeChips({
         {t("ui.readingMode")}
       </p>
       <div className="grid grid-cols-2 gap-1.5">
-        {/* A collection palette is offered from its collection once that is
-            complete (components/catechism/ThemeRow.tsx), not from here, so the
-            grid does not advertise palettes a reader has no path to yet. It
-            appears here only while it is the one applied, so it can be put
-            down again from the same place as every other palette. */}
-        {READING_THEMES.filter((mode) => !isCollectionTheme(mode.id) || theme === mode.id).map((mode) => {
+        {/* The earned palettes (1.9, rec 79, lib/reader/earned.ts): Councils
+            and Cappadocian stand here as goals, with how far the reader is,
+            until they are earned by reading; then they are palettes like the
+            rest. One already applied stays, so it can be put down again. */}
+        {READING_THEMES.map((mode) => {
           const sw = THEME_SWATCHES[mode.id];
+          const progress = isCollectionTheme(mode.id) ? earned[mode.id as keyof EarnedPalettes] : null;
+          if (progress && !progress.earned && theme !== mode.id) {
+            const id = mode.id as keyof EarnedPalettes;
+            const label = mode.labelKey ? t(mode.labelKey) : mode.label;
+            return (
+              <button
+                key={mode.id}
+                type="button"
+                data-palette-goal={mode.id}
+                aria-expanded={goal === id}
+                aria-controls="palette-goal"
+                onClick={() => setGoal(goal === id ? null : id)}
+                className={cn(
+                  "inline-flex items-center gap-2 rounded-md border border-dashed border-paper/20 px-2.5 py-2 text-start font-sans font-medium text-paper/70 transition-colors hover:text-paper",
+                  touch ? "min-h-11 text-detail" : "text-caption",
+                )}
+              >
+                <span aria-hidden className="inline-flex h-4 w-4 shrink-0 items-center justify-center rounded-full border border-paper/25" style={{ backgroundColor: sw?.page }}>
+                  <span className="block h-1.5 w-1.5 rounded-full" style={{ backgroundColor: sw?.ink }} />
+                </span>
+                <span className="min-w-0 flex-1 break-words leading-tight">
+                  <span className="block">{label}</span>
+                  <span className="mt-0.5 block font-sans text-[10px] font-semibold tabular-nums text-paper/55">
+                    {t("settings.paletteProgress", { count: progress.read, total: progress.of })}
+                  </span>
+                </span>
+              </button>
+            );
+          }
           const themeAllowed = allows(mode.id);
           const active = theme === mode.id && themeAllowed;
           const showPaidBadge = locked && !themeAllowed;
           // The palette's name and its one line, in the reader's language. The
           // registry holds the catalog keys beside the English (see labelKey in
-          // lib/reader/readingModes.ts). A collection palette has no keys yet
-          // and is drawn as the registry wrote it.
+          // lib/reader/readingModes.ts), the earned two among them since 1.9.
           const label = mode.labelKey ? t(mode.labelKey) : mode.label;
           const blurb = mode.blurbKey ? t(mode.blurbKey) : mode.blurb;
           return (
@@ -89,11 +123,11 @@ export function ReadingModeChips({
               title={showPaidBadge ? `${blurb}. Purify Plus.` : blurb}
               aria-pressed={active}
               className={cn(
-                "inline-flex items-center gap-2 rounded-md border px-2.5 py-2 text-left font-sans font-medium transition-colors",
+                "inline-flex items-center gap-2 rounded-md border px-2.5 py-2 text-start font-sans font-medium transition-colors",
                 touch ? "min-h-11 text-detail" : "text-caption",
                 active
                   ? "bg-paper/15 border-paper/45 text-paper"
-                  : "border-paper/12 text-paper/65 hover:bg-paper/8 hover:text-paper",
+                  : "border-paper/12 text-paper/70 hover:bg-paper/8 hover:text-paper",
               )}
             >
               <span
@@ -125,6 +159,13 @@ export function ReadingModeChips({
           );
         })}
       </div>
+      {goal ? (
+        <p id="palette-goal" role="status" className="mt-2 font-sans text-caption leading-[1.45] text-paper/70" data-palette-goal-line="">
+          {t(goal === "councils" ? "settings.paletteEarnCouncils" : "settings.paletteEarnCappadocian", { count: earned[goal].read, total: earned[goal].of })}
+          {/* Plus is never promised to every reader: a reader without it is told before they read for it. */}
+          {locked ? ` ${t("settings.palettePlusNote")}` : null}
+        </p>
+      ) : null}
     </div>
   );
 }
