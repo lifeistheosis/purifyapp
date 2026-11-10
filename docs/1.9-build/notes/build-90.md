@@ -208,9 +208,65 @@ Size: about four hours. The Hour's three parts pointing to the Morning Rule (the
 
 What he saw: the prayer page as it is in build 90 (both screenshots of notes 6 and 7: a dark grey ground with a soft pool of light behind the prayer being read). His words: "I mean, overall, let's change the background design also. Like, make it more, like, fit the theme the user picked."
 
-Where it is and why: asked of Fable Themes, which made the looks; Updates owns the page's scrolling (note 6), so the two plans name their files and the arbiter orders the work at his start.
+Where it is and why (Fable Themes, 2026-11-10; read in the code and measured on the Android export at `24634b8b`, on The First Hour, with each of the 25 palettes worn in turn):
 
-Planned (brainstorm, nothing built until his start): to come from Fable Themes.
+- **Which page.** Every prayer that is prayed line by line is one component, `components/prayers/PrayerRuleReader.tsx`: the morning and evening rules, the five Hours, the akathist, a plan's rule and a reader's own rule. One change reaches all of them.
+- **What its ground is today.** Three things, back to front. First the palette's own page colour, and on a look the look's picture and foot: these do follow the theme he picked, as on every page. Over them, fixed, the page's own icon drawn large, blurred and with its colour taken out, at 22 percent (10 on Light): `.prayer-light`, in `app/globals.css` under "While you pray". Over that, a faint white breath that drifts while motion is on (`.prayer-light-breath`; not drawn on Light). The icon's light and the breath are his pick B of 1.8 ("the line being prayed lit, the rest dim, the icon's light behind"), made when the app had five palettes.
+- **Why it does not fit the theme.** That light is the same neutral grey-white on every palette, and it lies over the theme, not in it. Nothing in the stylesheet dresses this page for a look. Measured with the words taken out, the ground's colour at the screen's left edge near the top and where the prayer is read, beside the page's own colour:
+
+  | Theme | Its own page | At the screen's edge | Where the prayer is read |
+  | --- | --- | --- | --- |
+  | Dark | rgb(16, 16, 19) | rgb(30, 30, 33) | rgb(43, 43, 45) |
+  | True black | rgb(0, 0, 0) | rgb(18, 18, 18) | rgb(30, 30, 30) |
+  | Monastery | rgb(13, 17, 25) | rgb(28, 31, 37) | rgb(39, 42, 47) |
+  | Mosaic | rgb(13, 28, 64) | rgb(28, 40, 68) | rgb(39, 50, 77) |
+  | Damask | rgb(36, 11, 20) | rgb(46, 26, 33) | rgb(56, 37, 44) |
+  | Forest | rgb(11, 23, 17) | rgb(26, 36, 31) | rgb(40, 48, 45) |
+  | Night sky | rgb(5, 7, 13) | rgb(20, 21, 26) | rgb(32, 34, 39) |
+  | Light | rgb(241, 232, 212) | rgb(225, 217, 199) | rgb(224, 216, 198) |
+  | Patmos | rgb(247, 247, 245) | rgb(230, 230, 229) | rgb(229, 229, 228) |
+
+  So on every dark theme the page is lifted toward the same grey, edge to edge, over the upper three quarters of the screen. True black is not black where the prayers are: rgb(18, 18, 18) at the edge, and still rgb(7, 7, 7) low on the screen. Monastery's indigo, Mosaic's lapis, Damask's wine and Forest's green lose their colour most where the eye rests, and Night sky's stars stand behind a grey veil. On Light and the nine light looks there is no pool at all, only an even grey shade over the paper: Patmos's white wall and Linen's white cloth go grey. And on a dark look a white breath drifts behind the words, on a page whose promise is that nothing moves.
+- **What is sound, and stays.** Every word on the page is 4.5:1 or more today on all 25 palettes, the lines stepped back included (4.87:1 at the lowest on Light, 4.90:1 on Dawn). The looks borrow Dark's and Light's steps back, and `lib/prayers/__tests__/prayerLight.test.ts` holds only the seven older palettes. The lit line, the steps back, Easy Scroll and the words are not this note's.
+
+Planned (Fable Themes; brainstorm, nothing built until his start):
+
+The rule, in one line: **on a prayer page the ground is the theme he picked, whole, and the light behind the prayer is that theme's own light, a soft pool or nothing.**
+
+1. **The neutral light goes.** The blurred icon comes out from behind the prayers on every palette. The icon still heads the page (`ServiceHeader`). Nothing grey lies over a theme any more.
+2. **What each theme gets in its place:**
+
+   | Themes | The ground | The light behind the prayer |
+   | --- | --- | --- |
+   | Dark, True black (free) | The page's own colour to every corner. True black is black. | A soft pool of white where the prayer is read, no lighter at its centre than today's. |
+   | Candlelight (Plus) | Its black. | Its candle, the soft pool the Bible has. With "Candlelight keeps the season" on, the fast's colour (his call 2). |
+   | Monastery (Plus); Councils and Cappadocian (earned) | The palette's own colour, unveiled. | A soft pool of the palette's own ink: cool on Monastery, cream on the other two. Never red, never gold. |
+   | The nine dark looks (Plus): Night sky, Dawn, Fire, Incense, Holy Mountain, Forest, Galilee, Mosaic, Damask | The look as on every other page: its colours, its picture, its foot. | Nothing added. The look's picture is its sign, and a second light would compete with it. |
+   | Light (free) and the nine light looks (Plus): Desert, Jordan, Patmos, Blush, Roses, Lavender, Olive, Stone, Linen | Clean paper, with the look's picture at its foot. No grey shade. | Nothing: light cannot glow on paper. The line being prayed is the ink whole, as today. |
+
+   The pool is a plain soft gradient at the reading place (two fifths down, where the line is lit), in the palette's own token. No picture, no blur, no rays. On a tablet and on the website the rule is the same; a look's scene stands down there, as on every page.
+3. **The lit line's glow takes the theme's ink** in place of a white typed into the stylesheet. On Dark and True black nothing changes; on a coloured dark look the glow is the look's own light.
+4. **Motion.** The slow breath stays on the six plain dark palettes, in the palette's light, and is still on a look, where nothing moves. With the app's motion off, or the phone's reduced motion on, nothing drifts and every line stands at full strength, as today. The pool never moves: it is fixed at the reading place and follows nothing.
+5. **Every word at 4.5:1 or better on all 25.** With the grey gone, the ground under the words is darker on a dark theme and lighter on paper, so the words' contrast rises everywhere except at the pool, and the pool's centre is held no lighter than today's. Each look gets the two steps back its own picture allows, measured, where today it borrows Dark's or Light's.
+6. **Android and iPhone.** Today's light is a 52px blur over a picture up to 960px wide, kept as a layer for as long as the page is open. A gradient costs nothing to keep. The pool is fixed and reads no scroll, so Easy Scroll's snapping is untouched. The foot and the bars are the look's own, already right under the home indicator and the tab bar. One old limit stays: on Android 14 and older the strip behind the status bar keeps the app's night colour on a look.
+
+Held by:
+
+- `lib/prayers/__tests__/prayerLight.test.ts`, taken from 7 palettes to all 25: no picture, no blur and no typed colour in the light; a pool only on the six plain dark palettes, in the palette's own token; no drift on a look; the faintest words that step back at 4.5:1 or more over the pool's centre, by arithmetic.
+- `scripts/scene-check.mjs`, which already measures each look's picture alone against its faintest text, given the prayer page's steps back.
+- A walk on the export, `scripts/prayer-ground-walk.mjs`: The First Hour, the morning rule, the akathist and a reader's own rule, on all 25 palettes, at the head, mid-prayer and at the end. Every word against its pixels at 4.5:1 or more; the corners the palette's own colour (rgb(0, 0, 0) on True black); paper unshaded; nothing drifting on a look; the same in Arabic.
+- `checkMock` on the page on all 25 palettes, its rays, palette and mirror tests among them, and `lib/ui/__tests__/noRays.test.ts` as it stands.
+- The phone walk: True black on an OLED screen, a long Hour scrolled on an older Android, Easy Scroll as before.
+
+His calls:
+
+1. The icon's light leaves the ground; the icon stays at the page's head. Recommended: it is what makes every theme the same grey.
+2. Candlelight keeps the season on a prayer page too: violet in Lent and Holy Week, deep blue in the Nativity Fast, the Mother of God's blue in her fast. Recommended, and no new words: the switch already says it. Readers will be in the Nativity Fast when 1.9 reaches them.
+3. The slow breath stays on the plain dark themes and is still on a look. Recommended.
+
+Files this would touch, for the arbiter's ordering: `app/globals.css` (the "While you pray" block only: `.prayer-light`, `.prayer-light-breath`, their rules for Light and the lit line's glow; one pool token in each of the six plain dark palettes' blocks; and the steps back for the looks, beside the seven that are there); `components/prayers/PrayerRuleReader.tsx` (the two light layers, lines 277 to 285); `lib/prayers/__tests__/prayerLight.test.ts`; `scripts/scene-check.mjs`; a new `scripts/prayer-ground-walk.mjs`; and for call 2, `components/reader/CandleVeil.tsx` and `lib/reader/candleSeason.ts`. Not touched: Easy Scroll (`components/prayers/service/useEasyScroll.ts`, `lib/prayers/easyScroll.ts`, and its block in the stylesheet, which stands right under this one), the lit line (`service/useLitLine.ts`), `service/PrayerStep.tsx`, the prayers' words and data, and the catalogs: no new words. The pool stands at a fixed two fifths, not at Easy Scroll's `--easy-place`, so neither depends on the other. Updates' note 6 and this one meet in two files, `PrayerRuleReader.tsx` and `app/globals.css`, in different places; either can go first.
+
+Size: 6 to 8 hours of one chat. The stylesheet and the reader are the small part, about an hour. Most of it is the measure of each look's steps back, the test's 25 palettes and the walk; then one export build, walked, with stills of four themes at the push. Call 2 adds about an hour. No migration, no new words, and nothing for the website beyond its next deploy.
 
 ### 9. With the Greek on, a saved verse does not open at its verse (2026-11-10)
 
