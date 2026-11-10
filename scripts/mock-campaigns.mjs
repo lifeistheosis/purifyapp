@@ -1,0 +1,614 @@
+// Prayer campaigns, phase 1 (1.9.1), on the native export: a still of each
+// screen, held to checkMock on all five palettes, and a walk of each flow as
+// a reader does it, with what it sends checked.
+//
+// The export has no server, so the campaign routes are answered here, in the
+// browser, with made-up campaigns. Nothing leaves the machine: the shell
+// server aborts every other origin, and Playwright answers the preflights.
+//
+// THE SWITCH MUST BE OPEN IN THE EXPORT THIS READS. Campaigns are committed
+// closed (lib/campaigns/flags.ts), and a closed export has none of these
+// screens. So, in a scratch copy or with an edit that is never committed:
+// set CAMPAIGNS_OPENING to "open", run `npm run build:android`, put the
+// constant back, then:
+//
+//   node scripts/mock-campaigns.mjs [scale] [only] [folder]   the stills
+//   WALK=1 node scripts/mock-campaigns.mjs                    the walk
+//   EYE=parchment,black node scripts/mock-campaigns.mjs 1     and by eye, on other palettes
+//
+// `scale` 2 for pictures a person will see (1 to check); `only` is "all" or
+// the stills' numbers ("01,08"); `folder` is where they are written, a
+// folder of its own name and never one in docs.
+import fs from "node:fs";
+import path from "node:path";
+
+import { checkMock, openPhone, printMockCheck } from "./mock-check.mjs";
+import { go } from "./lib/shell-server.mjs";
+
+const SCALE = Number(process.argv[2] ?? 1);
+const ONLY = process.argv[3] && process.argv[3] !== "all" ? new Set(process.argv[3].split(",")) : null;
+const OUT = path.resolve(process.argv[4] ?? "campaign-stills");
+const EYE = (process.env.EYE ?? "").split(",").filter(Boolean);
+const WALK = process.env.WALK === "1";
+if (!WALK) fs.mkdirSync(OUT, { recursive: true });
+const tag = SCALE === 2 ? "" : "x1-";
+
+const DAY = 86_400_000;
+const day = (n) => new Date(Date.now() + n * DAY).toISOString().slice(0, 10);
+const TODAY = day(0);
+const ends = (lastDay) => `${new Date(Date.parse(`${lastDay}T12:00:00Z`) + DAY).toISOString().slice(0, 10)}T12:00:00.000Z`;
+
+const NICHOLAS = "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaa1";
+const MARIA = "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaa2";
+const PETER = "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaa3";
+const SOPHIA = "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaa4";
+const HELD = "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaa5";
+const ENDED = "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaa6";
+
+function campaign(id, over) {
+  const days = over.days ?? 7;
+  const last = day(days - 1);
+  return {
+    id,
+    title: "",
+    intention: "healing",
+    for_whom: "living",
+    subject_name: null,
+    details: null,
+    days,
+    starts_on: TODAY,
+    ends_on: last,
+    ends_at: ends(last),
+    prayer_rule: null,
+    prayer_id: null,
+    status: "active",
+    creator_name: "Anna",
+    creator_handle: "anna",
+    created_at: new Date().toISOString(),
+    mine: false,
+    ...over,
+  };
+}
+
+const CAMPAIGNS = {
+  [NICHOLAS]: campaign(NICHOLAS, {
+    title: "Forty days for Nicholas",
+    intention: "departed",
+    for_whom: "departed",
+    subject_name: "Nicholas",
+    details: "Our father fell asleep in the Lord on Sunday. Please remember him with us for his forty days.",
+    days: 40,
+  }),
+  [MARIA]: campaign(MARIA, {
+    title: "For Maria before her operation",
+    intention: "healing",
+    subject_name: "Maria",
+    details: "She goes into hospital on Thursday. Please remember her this week.",
+    days: 7,
+    prayer_rule: "protection",
+    prayer_id: "psalm-90",
+    creator_name: "John",
+    creator_handle: "john",
+  }),
+  [PETER]: campaign(PETER, { title: "For Peter's exams", intention: "study", subject_name: "Peter", details: "His finals begin on Monday.", days: 12, creator_name: "Helen", creator_handle: "helen" }),
+  [SOPHIA]: campaign(SOPHIA, { title: "Thanksgiving for Sophia", intention: "thanksgiving", subject_name: "Sophia", details: "She came home safely.", days: 1, creator_name: "Mark", creator_handle: "mark" }),
+  [HELD]: campaign(HELD, {
+    title: "For Elias on his journey",
+    intention: "travel",
+    subject_name: "Elias",
+    details: "He travels home on Friday.",
+    days: 7,
+    status: "held",
+    creator_name: "Anna",
+    mine: true,
+  }),
+  [ENDED]: campaign(ENDED, { title: "For Irene's recovery", intention: "healing", subject_name: "Irene", details: null, days: 7, status: "answered", mine: true }),
+};
+const BOARD = [MARIA, PETER, SOPHIA, NICHOLAS].map((id) => CAMPAIGNS[id]);
+
+const now = new Date().toISOString();
+const carried = (id, places, until) => {
+  const c = CAMPAIGNS[id];
+  return {
+    id,
+    name: c.subject_name,
+    title: c.title,
+    forWhom: c.for_whom,
+    prayer: c.prayer_rule ? { rule: c.prayer_rule, id: c.prayer_id } : null,
+    places,
+    lastDay: c.ends_on,
+    until: until ?? c.ends_on,
+    addedAt: now,
+    leftAt: null,
+    left: null,
+    asked: false,
+    changedAt: now,
+  };
+};
+const CARRIED = [carried(NICHOLAS, ["morning", "evening"]), carried(MARIA, ["evening"])];
+// One that has run its course and waits for its one answer on Your rule.
+const OVER = { ...carried(ENDED, ["evening"], day(-1)), lastDay: day(-1), leftAt: now, left: "over" };
+
+const SESSION = {
+  access_token: "stills.stills.stills",
+  refresh_token: "stills",
+  token_type: "bearer",
+  expires_in: 31_536_000,
+  expires_at: Math.floor(Date.now() / 1000) + 31_536_000,
+  user: {
+    id: "11111111-1111-4111-8111-111111111111",
+    aud: "authenticated",
+    role: "authenticated",
+    email: "anna@example.com",
+    app_metadata: {},
+    user_metadata: { display_name: "Anna" },
+    created_at: "2026-01-01T00:00:00Z",
+  },
+};
+
+const WALL = {
+  intentions: true,
+  requests: [
+    { handle: "thomas", name: "Thomas", avatar: null, since: now, count: 0, prayed: false, mine: false, intention: "For my mother, who is unwell." },
+    { handle: "nina", name: "Nina", avatar: null, since: now, count: 0, prayed: false, mine: false, intention: null },
+  ],
+};
+
+const MOD_QUEUE = {
+  holds: [],
+  reports: [],
+  log: [],
+  live: { holds: true, log: true },
+  me: { name: "Anna", admin: true },
+  campaigns: {
+    live: true,
+    waiting: [
+      {
+        id: HELD,
+        title: "For Elias on his journey",
+        intention: "travel",
+        for_whom: "living",
+        subject_name: "Elias",
+        details: "He travels home on Friday.",
+        days: 7,
+        ends_on: day(6),
+        creator_name: "Anna",
+        creator_handle: "anna",
+        held_reason: "new",
+        created_at: new Date(Date.now() - 40 * 60_000).toISOString(),
+      },
+    ],
+    reports: [
+      {
+        id: "bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbb1",
+        reason: null,
+        reason_code: "money",
+        created_at: new Date(Date.now() - 2 * 3_600_000).toISOString(),
+        campaign: { id: PETER, title: "For Peter's exams", status: "active", intention: "study", subject_name: "Peter", details: "His finals begin on Monday.", creator_name: "Helen" },
+      },
+    ],
+  },
+};
+
+const seen = new Set();
+/** Every request a screen made of the server, for the walk to hold. */
+let calls = [];
+async function answer(ctx, opts = {}) {
+  await ctx.route("https://purifyapp.net/api/**", async (route) => {
+    const req = route.request();
+    const url = new URL(req.url());
+    const p = url.pathname;
+    const cors = { "Access-Control-Allow-Origin": "https://localhost", "Access-Control-Allow-Credentials": "true", Vary: "Origin" };
+    const json = (body, status = 200) => route.fulfill({ status, headers: { ...cors, "content-type": "application/json" }, body: JSON.stringify(body) });
+    seen.add(`${req.method()} ${p}`);
+    let sent = null;
+    try {
+      sent = JSON.parse(req.postData() ?? "null");
+    } catch {
+      sent = null;
+    }
+    calls.push({ method: req.method(), path: p, body: sent });
+    if (p === "/api/campaigns/open") return opts.closed ? json({ error: "Not found." }, 404) : json({ open: true });
+    if (opts.closed && p.startsWith("/api/campaigns")) return json({ error: "Not found." }, 404);
+    if (p === "/api/campaigns" && req.method() === "POST") return json({ ok: true, id: HELD, status: "held" });
+    if (/^\/api\/campaigns\/[0-9a-f-]{36}\/(join|report)$/.test(p)) return json({ ok: true });
+    if (/^\/api\/campaigns\/[0-9a-f-]{36}$/.test(p) && (req.method() === "PATCH" || req.method() === "DELETE")) return json({ ok: true });
+    if (p === "/api/community/moderation" && req.method() === "POST") return json({ ok: true });
+    if (p === "/api/campaigns" && req.method() === "GET") return json({ campaigns: opts.board ?? BOARD });
+    if (p === "/api/campaigns/mine") return json({ signedIn: true, started: [CAMPAIGNS[HELD], { ...CAMPAIGNS[NICHOLAS], mine: true }, CAMPAIGNS[ENDED]], carried: [] });
+    if (p === "/api/campaigns/state") {
+      const ids = JSON.parse(req.postData() ?? "{}").ids ?? [];
+      return json({ states: Object.fromEntries(ids.map((id) => [id, "running"])) });
+    }
+    const one = /^\/api\/campaigns\/([0-9a-f-]{36})$/.exec(p);
+    if (one && req.method() === "GET") {
+      const c = CAMPAIGNS[one[1]];
+      return c ? json({ campaign: { ...c, ...(opts.mine?.includes(c.id) ? { mine: true, keep_after_end: false } : {}) } }) : json({ error: "Not found." }, 404);
+    }
+    if (p === "/api/community/prayer-wall") return json(WALL);
+    if (p === "/api/community/moderation") return json(url.searchParams.get("summary") ? { waiting: 2 } : MOD_QUEUE);
+    return json({ error: "Not found." }, 404);
+  });
+}
+
+const results = [];
+const settle = (page, ms = 2200) => page.waitForTimeout(ms);
+
+/** The whole page in one picture: the viewport grown to the page's own height. */
+async function whole(page, min = 844) {
+  const h = await page.evaluate(() => Math.ceil(document.documentElement.scrollHeight));
+  await page.setViewportSize({ width: 390, height: Math.max(min, h) });
+}
+
+async function shot(name, label, where, selector, { set = {}, prepare, signedIn = true, mine, board, check = true } = {}) {
+  if (WALK) return;
+  if (ONLY && !ONLY.has(name.slice(0, 2))) return;
+  const seed = {
+    "purify.prayers.campaigns": JSON.stringify(CARRIED),
+    ...(signedIn ? { "purify.supabase.auth": JSON.stringify([{ name: "sb-placeholder-auth-token", value: JSON.stringify(SESSION) }]) } : {}),
+    ...set,
+  };
+  const { browser, page, ctx } = await openPhone({ scale: SCALE, set: seed });
+  const errors = [];
+  page.on("pageerror", (e) => errors.push(e.message));
+  try {
+    await answer(ctx, { mine, board });
+    await go(page, where);
+    await settle(page);
+    if (prepare) await prepare(page);
+    await settle(page, 900);
+    let ok = true;
+    if (check) {
+      ok = printMockCheck(await checkMock(page, selector), label);
+    }
+    results.push([label, ok]);
+    await settle(page, 400);
+    await page.screenshot({ path: path.join(OUT, `${tag}${name}.png`) });
+    // What the checker could not measure (words on a lit panel's gradient) is looked at by eye on the other palettes.
+    for (const mode of EYE) {
+      await page.evaluate((m) => document.documentElement.setAttribute("data-reading-mode", m), mode);
+      await settle(page, 500);
+      await page.screenshot({ path: path.join(OUT, `eye-${mode}-${name}.png`) });
+    }
+    if (EYE.length) await page.evaluate(() => document.documentElement.removeAttribute("data-reading-mode"));
+    if (errors.length) console.log(`  page errors on ${name}:`, errors.slice(0, 3));
+  } finally {
+    await browser.close();
+  }
+}
+
+// 01 Pray together: the carried card, the others carried, Newly asked, then the wall.
+await shot("01-pray-together", "Pray together, with campaigns", "/community#pray", "[data-campaigns]", {
+  prepare: async (page) => {
+    await page.waitForSelector("[data-campaigns]", { timeout: 15000 });
+    await whole(page);
+  },
+});
+
+// 02 The board.
+await shot("02-board", "the board: every campaign running", "/campaigns", "[data-campaign-board]", {
+  prepare: async (page) => {
+    await page.waitForSelector("[data-campaign-row]", { timeout: 15000 });
+    await whole(page);
+  },
+});
+
+// 03 A campaign's page, for the reposed.
+await shot("03-campaign-reposed", "a campaign's page, for the reposed", `/campaigns/detail?id=${NICHOLAS}`, "[data-campaign-page]", {
+  prepare: async (page) => {
+    await page.waitForSelector("#campaign-title", { timeout: 15000 });
+    await whole(page);
+  },
+});
+
+// 04 A campaign's page, for the living, with its psalm.
+await shot("04-campaign-living", "a campaign's page, for the living, with a psalm", `/campaigns/detail?id=${MARIA}`, "[data-campaign-page]", {
+  prepare: async (page) => {
+    await page.waitForSelector("#campaign-title", { timeout: 15000 });
+    await page.waitForFunction(() => document.querySelectorAll("[data-campaign-page] h3").length > 0, null, { timeout: 15000 });
+    await whole(page);
+  },
+});
+
+// 05 Its creator's page while it waits for a moderator.
+await shot("05-campaign-waiting", "a campaign waiting for a moderator, as its creator sees it", `/campaigns/detail?id=${HELD}`, "[data-campaign-page]", {
+  mine: [HELD],
+  prepare: async (page) => {
+    await page.waitForSelector("#campaign-title", { timeout: 15000 });
+    await whole(page);
+  },
+});
+
+// 06 The creator's menu.
+await shot("06-creator-menu", "the creator's menu", `/campaigns/detail?id=${NICHOLAS}`, "[role=dialog]", {
+  mine: [NICHOLAS],
+  prepare: async (page) => {
+    await page.waitForSelector("#campaign-title", { timeout: 15000 });
+    await page.evaluate(() => window.dispatchEvent(new Event("purify:campaign-menu-open")));
+    await page.waitForSelector("[role=dialog]", { timeout: 8000 });
+  },
+});
+
+// 07 Reporting.
+await shot("07-report", "reporting a campaign", `/campaigns/detail?id=${MARIA}`, "[role=dialog]", {
+  prepare: async (page) => {
+    await page.waitForSelector("#campaign-title", { timeout: 15000 });
+    await page.evaluate(() => window.dispatchEvent(new Event("purify:campaign-menu-open")));
+    await page.waitForSelector("[role=dialog]", { timeout: 8000 });
+    await settle(page, 600);
+    await page.locator("[role=dialog] button", { hasText: "Report" }).first().click();
+    await settle(page, 900);
+    await page.setViewportSize({ width: 390, height: 980 });
+  },
+});
+
+// 08 Joining: Add to my prayers, on one not yet carried.
+await shot("08-add-to-my-prayers", "joining: add to my prayers", `/campaigns/detail?id=${PETER}`, "[role=dialog]", {
+  prepare: async (page) => {
+    await page.waitForSelector("#campaign-title", { timeout: 15000 });
+    await page.locator("[data-campaign-page] button[aria-haspopup=dialog]", { hasText: "Add to my prayers" }).first().click();
+    await page.waitForSelector("[data-campaign-join]", { timeout: 8000 });
+    await page.setViewportSize({ width: 390, height: 980 });
+  },
+});
+
+// 09 Starting one, for the living.
+await shot("09-start-living", "starting a campaign, for the living", "/campaigns/new", "[data-campaign-new]", {
+  prepare: async (page) => {
+    await page.waitForSelector("#campaign-title-field", { timeout: 15000 });
+    await page.fill("#campaign-title-field", "For Maria before her operation");
+    await page.fill("#campaign-name-field", "Maria");
+    await page.fill("#campaign-words-field", "She goes into hospital on Thursday. Please remember her this week.");
+    await page.evaluate(() => document.activeElement?.blur());
+    const h = await page.evaluate(() => {
+      const root = document.querySelector("[data-campaign-new]");
+      const scroller = root.querySelector(".overflow-y-auto");
+      const foot = root.querySelector(".compose-foot");
+      return Math.ceil(scroller.scrollHeight + foot.getBoundingClientRect().height);
+    });
+    await page.setViewportSize({ width: 390, height: Math.max(844, h) });
+  },
+});
+
+// 10 Starting one, for the reposed.
+await shot("10-start-reposed", "starting a campaign, for the reposed", "/campaigns/new", "[data-campaign-new]", {
+  prepare: async (page) => {
+    await page.waitForSelector("#campaign-title-field", { timeout: 15000 });
+    await page.locator("[data-campaign-new] button[aria-pressed]").nth(1).click();
+    await page.fill("#campaign-title-field", "Forty days for Nicholas");
+    await page.fill("#campaign-name-field", "Nicholas");
+    for (const box of await page.locator("[data-campaign-new] [role=checkbox]").all()) await box.click();
+    await page.evaluate(() => document.activeElement?.blur());
+    const h = await page.evaluate(() => {
+      const root = document.querySelector("[data-campaign-new]");
+      const scroller = root.querySelector(".overflow-y-auto");
+      const foot = root.querySelector(".compose-foot");
+      return Math.ceil(scroller.scrollHeight + foot.getBoundingClientRect().height);
+    });
+    await page.setViewportSize({ width: 390, height: Math.max(844, h) });
+  },
+});
+
+// 11 How long: the sheet of lines to tick.
+await shot("11-how-long", "starting one: how long", "/campaigns/new", "[role=dialog]:not([data-campaign-new])", {
+  prepare: async (page) => {
+    await page.waitForSelector("#campaign-title-field", { timeout: 15000 });
+    await page.locator("[data-campaign-new] .set-panel button").nth(1).click();
+    await page.waitForSelector("[role=radiogroup]", { timeout: 8000 });
+    await page.locator("[role=radio]").last().click();
+    await settle(page, 500);
+  },
+});
+
+// 12 In the prayers: Evening prayers at Those I pray for, with both names and the psalm.
+await shot("12-in-the-prayers", "the campaigns inside the prayers", "/prayers/evening", "#commemoration", {
+  set: { "purify.intentions.living": JSON.stringify([{ id: "22222222-2222-4222-8222-222222222222", name: "Catherine", addedAt: now }]) },
+  prepare: async (page) => {
+    await page.waitForSelector("#commemoration", { timeout: 15000 });
+    await page.waitForSelector("#campaign-psalm-90", { timeout: 15000 });
+    await page.setViewportSize({ width: 390, height: 1500 });
+    await page.evaluate(() => {
+      const el = document.getElementById("commemoration");
+      window.scrollTo({ top: el.getBoundingClientRect().top + window.scrollY - 64, behavior: "instant" });
+    });
+  },
+});
+
+// 13 Your rule: the names, with the campaigns and the one question.
+await shot("13-your-rule-names", "Your rule: the campaigns among those you pray for", "/prayers/personal", "[data-names=campaigns]", {
+  set: { "purify.prayers.campaigns": JSON.stringify([...CARRIED, OVER]) },
+  prepare: async (page) => {
+    await page.waitForSelector("[data-names=campaigns]", { timeout: 15000 });
+    await page.setViewportSize({ width: 390, height: 900 });
+    await page.evaluate(() => {
+      const el = document.querySelector("[data-names=campaigns]");
+      window.scrollTo({ top: el.getBoundingClientRect().top + window.scrollY - 360, behavior: "instant" });
+    });
+  },
+});
+
+// 14 My campaigns.
+await shot("14-my-campaigns", "my campaigns", "/campaigns/mine", "[data-my-campaigns]", {
+  prepare: async (page) => {
+    await page.waitForSelector("[data-my-campaigns] [data-campaign-row]", { timeout: 15000 });
+    await page.waitForFunction(() => document.querySelectorAll("[data-my-campaigns] [data-campaign-row]").length >= 4, null, { timeout: 15000 });
+    await whole(page);
+  },
+});
+
+// 15 The rules.
+await shot("15-rules", "the rules of praying together", "/campaigns/rules", "[data-campaign-rules]", {
+  prepare: async (page) => {
+    await page.waitForSelector("[data-campaign-rules]", { timeout: 15000 });
+    await whole(page);
+  },
+});
+
+// 16 The moderators' page.
+await shot("16-moderation", "the moderators' queue, with campaigns", "/community/moderate", "[data-mod-campaigns]", {
+  prepare: async (page) => {
+    await page.waitForSelector("[data-mod-campaigns]", { timeout: 15000 });
+    await whole(page);
+  },
+});
+
+
+// ── The walk: each flow done as a reader does it, and what it sent ──────────
+const walked = [];
+async function walk(label, where, run, { set = {}, signedIn = true, mine, closed = false } = {}) {
+  const seed = {
+    "purify.prayers.campaigns": JSON.stringify(CARRIED),
+    ...(signedIn ? { "purify.supabase.auth": JSON.stringify([{ name: "sb-placeholder-auth-token", value: JSON.stringify(SESSION) }]) } : {}),
+    ...set,
+  };
+  const { browser, page, ctx } = await openPhone({ scale: 1, set: seed });
+  const errors = [];
+  page.on("pageerror", (e) => errors.push(e.message));
+  calls = [];
+  let ok = true;
+  let why = "";
+  try {
+    await answer(ctx, { mine, closed });
+    await go(page, where);
+    await settle(page, 1800);
+    await run(page);
+    if (errors.length) throw new Error(`page errors: ${errors.slice(0, 2).join(" | ")}`);
+  } catch (e) {
+    ok = false;
+    why = e.message.split("\n")[0];
+  } finally {
+    await browser.close();
+  }
+  walked.push([label, ok, why]);
+  console.log(`${ok ? "ok  " : "NO  "} ${label}${why ? `: ${why}` : ""}`);
+}
+const expectThat = (cond, what) => {
+  if (!cond) throw new Error(what);
+};
+const sentTo = (method, re) => calls.filter((c) => c.method === method && re.test(c.path));
+const stored = (page, key) => page.evaluate((k) => JSON.parse(localStorage.getItem(k) ?? "null"), key);
+
+if (WALK) {
+  console.log("\nThe walk:");
+
+  await walk("starting one: the page sends what the route asks, then opens the campaign waiting", "/campaigns/new", async (page) => {
+    await page.waitForSelector("#campaign-title-field", { timeout: 15000 });
+    const create = page.locator("[data-campaign-new] .compose-foot button");
+    expectThat(await create.isDisabled(), "Create is lit before anything is written");
+    await page.fill("#campaign-title-field", "For Elias on his journey");
+    await page.fill("#campaign-name-field", "Elias");
+    await page.fill("#campaign-words-field", "He travels home on Friday.");
+    // What for: a journey.
+    await page.locator("[data-campaign-new] .set-panel button").nth(0).click();
+    await page.locator("[role=radio]", { hasText: "A journey" }).click();
+    await settle(page, 700);
+    // A psalm: Psalm 90.
+    await page.locator("[data-campaign-new] .set-panel button").nth(2).click();
+    await page.locator("[role=radio]", { hasText: "Psalm 90" }).click();
+    await settle(page, 700);
+    expectThat(await create.isDisabled(), "Create is lit with no blessing ticked");
+    await page.locator("[role=radio]", { hasText: "Someone else" }).click();
+    await page.locator("[data-campaign-new] [role=checkbox]").click();
+    expectThat(!(await create.isDisabled()), "Create stays dim when everything is said");
+    await create.click();
+    await page.waitForFunction(() => location.pathname.replace(/\/$/, "") === "/campaigns/detail", null, { timeout: 15000 });
+    await page.waitForSelector("[data-campaign-standing]", { timeout: 15000 });
+    const [post] = sentTo("POST", /^\/api\/campaigns$/);
+    expectThat(post, "nothing was sent");
+    const b = post.body;
+    expectThat(b.forWhom === "living" && b.kind === "travel" && b.title === "For Elias on his journey" && b.name === "Elias", `sent ${JSON.stringify(b)}`);
+    expectThat(b.words === "He travels home on Friday." && b.days === 7 && b.startsOn === TODAY, `sent ${JSON.stringify(b)}`);
+    expectThat(b.prayer?.rule === "protection" && b.prayer?.id === "psalm-90" && b.consent === "blessing" && b.blessing === true && b.rules === true, `sent ${JSON.stringify(b)}`);
+    expectThat((await page.locator("[data-campaign-standing]").innerText()).includes("Waiting for a moderator"), "the campaign does not say it waits");
+  }, { mine: [HELD] });
+
+  await walk("joining: the name goes into the device's list and the choice to the account; taking it out lets go", `/campaigns/detail?id=${PETER}`, async (page) => {
+    await page.waitForSelector("#campaign-title", { timeout: 15000 });
+    await page.locator("[data-campaign-page] button[aria-haspopup=dialog]", { hasText: "Add to my prayers" }).first().click();
+    await page.waitForSelector("[data-campaign-join]", { timeout: 8000 });
+    await page.locator("[data-campaign-join] [role=radio]", { hasText: "A week" }).click();
+    await page.locator("[data-campaign-join] button", { hasText: "Add to my prayers" }).last().click();
+    await settle(page, 900);
+    const list = await stored(page, "purify.prayers.campaigns");
+    const mine = list.find((c) => c.id === PETER);
+    expectThat(mine && mine.name === "Peter" && mine.leftAt === null, "Peter is not in the device's list");
+    expectThat(mine.until === day(6) && mine.lastDay === CAMPAIGNS[PETER].ends_on, `kept until ${mine.until}`);
+    expectThat(mine.places.join() === "morning,evening,mine", `in ${mine.places}`);
+    const [join] = sentTo("POST", /\/join$/);
+    expectThat(join && join.body.until === day(6) && join.body.places.length === 3, `the account was sent ${JSON.stringify(join?.body)}`);
+    expectThat(await page.locator("[data-campaign-page] button", { hasText: "In my prayers" }).count(), "the page does not say it is in my prayers");
+    // And out again.
+    await page.locator("[data-campaign-page] button", { hasText: "In my prayers" }).first().click();
+    await page.waitForSelector("[data-campaign-join]", { timeout: 8000 });
+    await page.locator("[data-campaign-join] button", { hasText: "Take out of my prayers" }).click();
+    await settle(page, 900);
+    const after = (await stored(page, "purify.prayers.campaigns")).find((c) => c.id === PETER);
+    expectThat(after.leftAt && after.left === "out" && after.asked === true, "taking it out did not let go");
+    expectThat(sentTo("DELETE", /\/join$/).length === 1, "the account was not told");
+  });
+
+  await walk("reporting: a reason ticked and sent, and said", `/campaigns/detail?id=${MARIA}`, async (page) => {
+    await page.waitForSelector("#campaign-title", { timeout: 15000 });
+    await page.evaluate(() => window.dispatchEvent(new Event("purify:campaign-menu-open")));
+    await page.locator("[role=dialog] button", { hasText: "Report" }).first().click();
+    await settle(page, 800);
+    await page.locator("[role=radio]", { hasText: "It asks for money" }).click();
+    await page.locator("[role=dialog] button", { hasText: "Send" }).click();
+    await settle(page, 900);
+    const [report] = sentTo("POST", /\/report$/);
+    expectThat(report && report.body.reason === "money", `sent ${JSON.stringify(report?.body)}`);
+    expectThat((await page.locator("[data-campaign-page] [role=status]").innerText()).includes("A moderator will look at it"), "nothing was said");
+  });
+
+  await walk("its creator: keeps it, and ends it early with its closing", `/campaigns/detail?id=${NICHOLAS}`, async (page) => {
+    await page.waitForSelector("#campaign-title", { timeout: 15000 });
+    await page.evaluate(() => window.dispatchEvent(new Event("purify:campaign-menu-open")));
+    await page.locator("[role=dialog] [role=switch]").click();
+    await settle(page, 700);
+    expectThat(sentTo("PATCH", /^\/api\/campaigns\/[0-9a-f-]{36}$/).some((c) => c.body.keepAfterEnd === true), "keeping it was not sent");
+    expectThat((await page.locator("[role=dialog] [role=switch]").getAttribute("aria-checked")) === "true", "the switch did not turn");
+    await page.locator("[role=dialog] button", { hasText: "End it early" }).click();
+    await settle(page, 800);
+    await page.locator("[role=dialog] button", { hasText: "End it early" }).last().click();
+    await settle(page, 900);
+    expectThat(sentTo("PATCH", /^\/api\/campaigns\/[0-9a-f-]{36}$/).some((c) => c.body.status === "memory_eternal"), "its closing was not sent");
+    expectThat((await page.locator("[data-campaign-standing]").innerText()).includes("Memory eternal"), "the page does not say how it closed");
+  }, { mine: [NICHOLAS] });
+
+  await walk("Your rule: Keep puts the name in the reader's own list, once", "/prayers/personal", async (page) => {
+    await page.waitForSelector("[data-campaign-keep]", { timeout: 15000 });
+    await page.locator("[data-campaign-keep] button", { hasText: "Keep" }).click();
+    await settle(page, 700);
+    const living = await stored(page, "purify.intentions.living");
+    expectThat(Array.isArray(living) && living.some((n) => n.name === "Irene"), "Irene is not among the living");
+    expectThat((await page.locator("[data-campaign-keep]").count()) === 0, "the question is still asked");
+    expectThat((await stored(page, "purify.prayers.campaigns")).find((c) => c.id === ENDED).asked === true, "the answer was not kept");
+  }, { set: { "purify.prayers.campaigns": JSON.stringify([...CARRIED, OVER]) } });
+
+  await walk("the moderators' page: Approve is sent as the campaign's own action", "/community/moderate", async (page) => {
+    await page.waitForSelector("[data-mod-campaign]", { timeout: 15000 });
+    await page.locator("[data-mod-campaign] button", { hasText: "Approve" }).click();
+    await settle(page, 900);
+    const [sent] = sentTo("POST", /^\/api\/community\/moderation$/);
+    expectThat(sent && sent.body.action === "approve_campaign" && sent.body.id === HELD, `sent ${JSON.stringify(sent?.body)}`);
+  });
+
+  await walk("not open for this reader: the pages are the app's not-found page, and Pray together shows nothing of campaigns", "/campaigns", async (page) => {
+    await settle(page, 1500);
+    expectThat((await page.locator("[data-campaign-board]").count()) === 0, "the board is drawn");
+    expectThat((await page.locator("main h1").first().innerText()).length > 0 && (await page.getByText("404").count()) > 0, "the not-found page is not shown");
+    await go(page, "/community#pray");
+    await page.waitForSelector("[data-prayer-wall]", { timeout: 15000 });
+    await settle(page, 1200);
+    expectThat((await page.locator("[data-campaigns]").count()) === 0, "Pray together draws campaigns");
+    const asked = calls.filter((c) => c.path.startsWith("/api/campaigns")).map((c) => c.path);
+    expectThat(asked.every((p) => p === "/api/campaigns/open") && asked.length === 1, `asked ${asked.join(", ")}`);
+  }, { closed: true });
+
+  console.log("\n" + walked.map(([l, ok]) => `${ok ? "PASS" : "FAIL"}  ${l}`).join("\n"));
+  process.exit(walked.every(([, ok]) => ok) ? 0 : 1);
+}
+
+console.log("\nasked of the server:", [...seen].sort().join(", "));
+console.log("\n" + results.map(([l, ok]) => `${ok ? "PASS" : "FAIL"}  ${l}`).join("\n"));
+process.exit(results.every(([, ok]) => ok) ? 0 : 1);

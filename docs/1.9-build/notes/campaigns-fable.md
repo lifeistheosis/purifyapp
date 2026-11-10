@@ -8,6 +8,11 @@ this date and carries its file: read at `6a302fb4`, and checked again at
 `f6987145`, thirty-three commits on, before this file was pushed. Every claim
 about production is marked as probed by someone else or as not probed.
 
+**Since then (2026-11-10, the same day):** he answered every question with "ok
+to all", and phase 1 was built behind a switch that is committed closed.
+Sections 1 to 9 are the design as it was put to him and are left as written;
+section 10 says what was built, what holds it, and where the build differs.
+
 His words, the brief this answers (at more length in `BRAINSTORM.md`): "I wanted
 version 1.9 to have the prayer campaign system, right? I never saw that
 implemented ... creating a prayer campaign for whatever, you know, the reposed,
@@ -22,7 +27,8 @@ theory, it's actualized through Halo. They have done it, but we need to make our
 own version."
 
 **The stills:** https://claude.ai/artifact/7EuY9gDq4iu5iRQNGEhfP9 (private; four
-screens, one version each; section 7).
+screens, one version each; section 7). Of the screens as built, sixteen:
+https://claude.ai/artifact/SCpqiXD3xgQP6cmrCxLpL9 (private; section 10).
 
 **The whole design in five sentences.** A campaign is a name carried together:
 one reader asks, and whoever joins carries that name in their own prayers, in
@@ -45,6 +51,7 @@ Contents:
 7. The stills
 8. What waits on Edgar, on a priest and on a lawyer
 9. Found on the way
+10. Phase 1, as built
 
 ---
 
@@ -1820,3 +1827,160 @@ but for the stylesheet, whose changes touch neither item 3's rule nor item
     measures the new edge, 1 pixel at 32 percent. A reader who arrives by
     tapping never sees it; a page opened whole does (a link, a reload, the
     app brought back to that page). For the chat that holds note 11.
+
+---
+
+## 10. Phase 1, as built (2026-11-10)
+
+**The word.** His answer to every question of 8.1, relayed by the arbiter:
+"ok to all", 2026-11-10, about 04:13 UTC, covering items 116 to 128 on his
+page, every recommendation as written (`BRAINSTORM.md`). The arbiter's four
+rules for the build: the SQL stays in these notes and out of
+`supabase/migrations` until 1.9 has merged and he has signed the SQL itself;
+with the switch closed and no new tables the app behaves exactly as today, and
+a test holds that; pictures (121) wait, "Prayed by many" (118) is later, and
+prayers come from the prayer book only (123); stills of each screen go to the
+arbiter before anything is pushed.
+
+**The stills, of the real screens:** https://claude.ai/artifact/SCpqiXD3xgQP6cmrCxLpL9
+(private; sixteen, one of each screen). The four of section 7 were drawings
+of a proposal; these are the screens.
+
+### 10.1 What is in the app now
+
+Everything is behind one constant, `CAMPAIGNS_OPENING` in
+`lib/campaigns/flags.ts`, committed `closed`.
+
+| Part | Where |
+|---|---|
+| The switch in three positions, and who campaigns are open for | `lib/campaigns/flags.ts`, `opening.ts`, `useCampaignsOpen.ts`, `app/api/campaigns/open` |
+| The model: kinds, lengths, the psalms a campaign may name, the blessing, what a reader is handed | `lib/campaigns/model.ts` |
+| The device's list of carried campaigns | `lib/campaigns/carried.ts`, `useCarried.ts`, `useCampaignUpkeep.ts` |
+| The routes: the board, one campaign, start, close and keep, take down, join and leave, the state of those carried, mine, report | `app/api/campaigns/**`, `lib/campaigns/server.ts` |
+| The screens | `components/campaigns/*`, `app/(app)/campaigns/**` |
+| Pray together's section, and the card for the campaign a reader carries | `components/campaigns/PrayTogetherCampaigns.tsx`, `components/community/CampaignCard.tsx` |
+| In the prayers: the name in Those I pray for, the psalm as a step | `components/prayers/service/CommemorationStep.tsx`, `components/campaigns/CampaignPsalmSteps.tsx`, `lib/campaigns/psalms.ts` |
+| Your rule: the medallions, and "Keep this name?" | `components/campaigns/CampaignNames.tsx` |
+| Moderation: the four decisions, reports that hide, the queue | `lib/campaigns/moderation.ts`, `app/api/community/moderation`, `app/api/admin/community`, `lib/admin/communityQueue.ts`, `components/campaigns/CampaignModeration.tsx` |
+| Kept only as long as was said | `lib/campaigns/upkeep.ts`, from `lib/ops/maintenance.ts` |
+| The new lines, 93 of them, in all 21 languages | `lib/i18n/messages/*.json` |
+| The stills and the walk, to run again | `scripts/mock-campaigns.mjs` |
+
+July's screens and client went (`CampaignsClient`, `CampaignDetailClient`,
+`CreateCampaignClient`, `CampaignGroup`, `CampaignProgress`, `MyPrayers`).
+July's routes for praying, reminding, groups and the picture are kept and
+closed for good (`julyCampaignRoutes()`), as the Vault asks: nothing made is
+deleted that could be wanted, and their tables are untouched.
+
+### 10.2 The switch, and the order to open it
+
+`closed`: every route answers 404 and reads nothing; every campaign page is
+not found; the device asks the server nothing and neither reads nor writes
+its list; no screen draws anything of campaigns.
+
+`testers`: the same build serves everyone, and campaigns answer only for the
+accounts the server names as admins (the list Testers mode already asks
+about). Everyone else finds exactly what a closed build gives them: the
+pages draw the app's own not-found page (`CampaignsGate`). Moderating still
+asks for the sign-in code, as it does for a post.
+
+`open`: for everyone.
+
+The order, each step his:
+
+1. He signs file one of 5.2, and it is run: by hand in the SQL editor, or as
+   a migration once 1.9 has merged. Until it has run, a build at `testers`
+   still shows nothing: every route that meets the missing columns answers
+   404 and says so in the log.
+2. The constant moves to `testers` on the website, and he walks it on his
+   own phone.
+3. Before `open`: the privacy page's lines and the Terms' section (113), the
+   words for a reader in crisis (129), the stores' forms (130).
+4. The constant moves to `open`. A build sent to a store for review is cut
+   `closed` or `open`, never `testers` (the reasons are under "What can
+   safely ride in 1.9").
+
+### 10.3 What holds it
+
+- `lib/campaigns/__tests__/closed.test.ts`: the arbiter's rule 2. The
+  constant is committed closed and read from no setting of the environment;
+  each of the five pages is not found before anything of theirs is drawn;
+  the device makes no request and touches no list, whatever it holds; the
+  screens that carry campaigns reach them only through the two gates; and
+  none of the rework's columns is named in `supabase/migrations`.
+- `routes.test.ts`: every route, run against an in-memory database: closed
+  means 404 and no read; testers first; 404 where the SQL has not run; a
+  campaign is written held; no response carries an account id or a count.
+- `moderating.test.ts`: the moderators' queue by the switch and by the
+  sign-in code; the team's one queue (one row a campaign, danger first); how
+  long a campaign is kept, and July's rows left alone.
+- `model.test.ts`, `carried.test.ts`: the pure parts.
+- The stills: sixteen screens, each passing `checkMock` on all five palettes.
+- The walk (`WALK=1 node scripts/mock-campaigns.mjs`): seven flows in the
+  browser against the export, with what each sends checked.
+
+### 10.4 Where the build differs from the design above, and why
+
+- **The title is typed, never composed** from the parts (2.1 offered both):
+  a composed "Forty days for Nicholas" needs the name's case in twenty
+  languages.
+- **The blessing is one choice among three for the living** (someone else,
+  me, a child in my care), which sets what is kept (`consent_kind`). For the
+  reposed it is one line to tick.
+- **The page has no doors row.** About, Updates and Comments were its three
+  doors; with updates and comments in phase 2 there is one, so the page is
+  one column until then.
+- **A psalm follows the names** as a step of its own. In Your rule it moves
+  with "Those I pray for", which the reader can already drag. Dragging it
+  apart from the names is not built.
+- **Keeping a campaign for the reposed** (125) is a switch in its creator's
+  menu, since the profile's Campaigns door is phase 4. Kept, it stays at its
+  own address and among "Campaigns you started".
+- **A campaign that waits for a moderator cannot be shared** by its creator:
+  its link opens for nobody else yet.
+- **On the card, a campaign for the living shows the line the app's own
+  prayers say over the living**, with no printing under it, because it has
+  none: it is ours since 1.7.1 and is marked for the clergy's review
+  (`COMMEMORATION_REVIEW`). No new words were written for campaigns.
+- **A psalm's printing is its rule's own words about its psalms, cut and
+  never rephrased.** The rule's line also names the printings of its
+  petitions, which are not the psalm's.
+- **Upkeep rides the heartbeat** (`/api/cron/hourly-goals`), as housekeeping
+  does, so it needs no new line on Render.
+
+### 10.5 Not built yet
+
+Updates and comments (phase 2). Pictures (phase 3, and 121's wait). A place,
+one circle as the audience, "Prayed by many" (phase 4). Changing a campaign's
+words after it is sent. "Run it again". Telling a creator that a moderator
+has decided. A choice of kind behind the sliders on the board. The crisis
+words a reader is shown (129): only the hold in the moderators' queue is
+built, and it reads English alone.
+
+### 10.6 Found while building
+
+- **Your rule's small lines were under the contrast floor.** A list's name
+  (58 percent) and a medallion's line (50 percent) are written in the
+  stylesheet and not as `text-paper` utilities, so the lift of faint text
+  never reached them: 3.72:1 and 2.97:1 on Light, 3.91:1 on Candlelight,
+  measured on the export. Mended in `app/globals.css`, each palette at the
+  share that lift gives it, with a test in `yourRulePage.test.ts`. The fault
+  was the page's own, on every name a reader keeps.
+- **The campaign card's buttons were 38 pixels.** It was drawn for 1.8 and
+  never shown, since no campaign ran. They reach the 44 pixel target now
+  (`hit-44`), with not a pixel of ink moved.
+- **The guard on Your rule was restated.** `yourRulePage.test.ts` forbade
+  the word "campaign" in the page's four files, which was 1.9's way of
+  saying nothing is drawn. It now holds that `Diptychs` mounts exactly one
+  part for campaigns, and that the part is empty while the switch is closed.
+- **Three Serbian campaign lines stood in Latin script** in a Cyrillic
+  catalog. Set in Cyrillic, letter for letter. 143 other Serbian lines are
+  still Latin; they are not campaigns' and were left.
+- **The Russian, Greek and Polish catalogs name the feature in two or three
+  words** each (the heading one way, the running text another). The new
+  lines follow each catalog's commonest word. A native reader should settle
+  one for each.
+- **The moderators' page draws red and typed-in black** (`border-crimson`,
+  `bg-black/25`), which `checkMock` refuses on Light. The campaign cards on
+  it are drawn in the palette's own ink. The page's older cards were left to
+  the chat that holds it.
