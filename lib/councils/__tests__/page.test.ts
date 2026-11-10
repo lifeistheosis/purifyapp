@@ -28,7 +28,7 @@ import {
   shortName,
 } from "../page";
 import { COVER_ART } from "@/lib/reading/coverArt";
-import { iconRightsFor, isUnverified } from "@/lib/saints/iconRights";
+import { UNVERIFIED_ICONS, iconRightsFor, isUnverified } from "@/lib/saints/iconRights";
 import { SAINTS } from "@/lib/saints/saints";
 import { COVER_FACES, ICON_FOCUS, iconAcross } from "@/lib/today/saintFaces";
 
@@ -239,7 +239,10 @@ describe("the Holy Fathers principally associated", () => {
   // the app carries of him, but only one whose rights are settled.
   it("puts the icon the app carries behind a streamed portrait, only where its rights are settled", () => {
     expect(carriedIcon({ iconUrl: "/saints/icons/cyprian-of-carthage.jpg" })).toEqual({ src: "/saints/icons/cyprian-of-carthage.jpg", focusY: ICON_FOCUS });
-    expect(carriedIcon({ iconUrl: "/saints/icons/athanasius-the-great.v2.jpg" })).toBeNull();
+    // An icon nobody has settled yet, while the debt holds one (St Athanasius's
+    // was the example until his was settled, 2026-11-10).
+    const unsettled = Object.keys(UNVERIFIED_ICONS)[0];
+    if (unsettled) expect(carriedIcon({ iconUrl: `/saints/icons/${unsettled}` })).toBeNull();
     expect(carriedIcon({})).toBeNull();
     const bySlug = new Map(SAINTS.map((s) => [s.slug, s]));
     for (const f of all) {

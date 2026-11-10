@@ -74,7 +74,7 @@ describe("the apps' check", () => {
   const KEY = "tarasius-of-constantinople/words-at-the-seventh-council";
 
   it.each([
-    ["a book's picture outside /covers/", (p: Wire) => (p.works[KEY].file = "/saints/icons/tarasius-of-constantinople.jpg")],
+    ["a book's picture outside /covers/", (p: Wire) => (p.works[KEY].file = "/saints/icons/tarasius-of-constantinople.v2.jpg")],
     ["a book's picture on another site", (p: Wire) => (p.works[KEY].file = "https://example.com/covers/authors/x.v1.jpg")],
     ["a book that is not a work's key", (p: Wire) => (p.works["../etc"] = { file: "/covers/authors/x.v1.jpg", focusY: 30 })],
     ["a focus off the picture", (p: Wire) => (p.works[KEY].focusY = 140)],

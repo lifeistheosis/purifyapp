@@ -460,7 +460,7 @@ export const SAINTS: Saint[] = [
  {
  slug: "athanasius-the-great",
  byname: "Pillar of Orthodoxy",
- iconUrl: "/saints/icons/athanasius-the-great.v2.jpg",
+ iconUrl: "/saints/icons/athanasius-the-great.v3.jpg",
  name: "St. Athanasius the Great",
  epithet: "Patriarch of Alexandria · Pillar of Orthodoxy",
  born: "c. 296 (Alexandria)",
@@ -1114,7 +1114,7 @@ export const SAINTS: Saint[] = [
  {
  slug: "john-of-damascus",
  byname: "Defender of the Holy Icons",
- iconUrl: "/saints/icons/john-of-damascus.jpg",
+ iconUrl: "/saints/icons/john-of-damascus.v2.jpg",
  name: "St. John of Damascus",
  epithet: "Hymnographer · Defender of the Holy Icons",
  born: "c. 675 (Damascus)",
@@ -1201,7 +1201,7 @@ export const SAINTS: Saint[] = [
  {
  slug: "ignatius-of-antioch",
  byname: "Theophorus, Disciple of John",
- iconUrl: "/saints/icons/ignatius-of-antioch.jpg",
+ iconUrl: "/saints/icons/ignatius-of-antioch.v2.jpg",
  name: "St. Ignatius of Antioch",
  epithet: "Bishop of Antioch · Disciple of the Theologian · Apostolic Father",
  born: "c. 35",
@@ -1540,7 +1540,7 @@ export const SAINTS: Saint[] = [
  {
  slug: "apostle-paul",
  byname: "The Apostle to the Nations",
- iconUrl: "/saints/icons/apostle-paul.jpg",
+ iconUrl: "/saints/icons/apostle-paul.v2.jpg",
  name: "Holy Apostle Paul",
  epithet: "Apostle to the Nations · Chosen Vessel",
  born: "c. AD 5 (Tarsus in Cilicia)",
@@ -1571,7 +1571,7 @@ export const SAINTS: Saint[] = [
  slug: "mary-of-egypt",
  pronoun: "her",
  byname: "The Desert Penitent",
- iconUrl: "/saints/icons/mary-of-egypt.jpg",
+ iconUrl: "/saints/icons/mary-of-egypt.v2.jpg",
  name: "St. Mary of Egypt",
  epithet: "Ascetic of the Jordan · Mother of all penitents",
  born: "c. 344 (Alexandria)",
@@ -1761,7 +1761,7 @@ export const SAINTS: Saint[] = [
  {
  slug: "gregory-of-nyssa",
  byname: "The Cappadocian",
- iconUrl: "/saints/icons/gregory-of-nyssa.v2.jpg",
+ iconUrl: "/saints/icons/gregory-of-nyssa.v3.jpg",
  name: "St. Gregory of Nyssa",
  epithet: "Bishop of Nyssa · The Cappadocian Father",
  born: "c. 335 (Caesarea in Cappadocia)",
@@ -1998,7 +1998,7 @@ export const SAINTS: Saint[] = [
  {
  slug: "apostle-john",
  byname: "The Theologian",
- iconUrl: "/saints/icons/apostle-john.jpg",
+ iconUrl: "/saints/icons/apostle-john.v2.jpg",
  name: "Holy Apostle and Evangelist John",
  epithet: "The Theologian · The Beloved Disciple",
  born: "1st century (Bethsaida of Galilee)",
@@ -2155,7 +2155,7 @@ export const SAINTS: Saint[] = [
  slug: "mary-magdalene",
  pronoun: "her",
  byname: "Equal-to-the-Apostles",
- iconUrl: "/saints/icons/mary-magdalene.jpg",
+ iconUrl: "/saints/icons/mary-magdalene.v2.jpg",
  name: "St. Mary Magdalene",
  epithet: "Myrrhbearer · Equal-to-the-Apostles · Apostle to the Apostles",
  born: "1st century (Magdala on the Sea of Galilee)",
@@ -2337,7 +2337,7 @@ export const SAINTS: Saint[] = [
  {
  slug: "apostle-bartholomew",
  byname: "Nathanael, the Israelite Indeed",
- iconUrl: "/saints/icons/apostle-bartholomew.jpg",
+ iconUrl: "/saints/icons/apostle-bartholomew.v2.jpg",
  name: "Holy Apostle Bartholomew",
  epithet: "Nathanael of Cana · Apostle of Armenia and India",
  born: "1st century (Cana of Galilee)",
@@ -2560,7 +2560,7 @@ export const SAINTS: Saint[] = [
  {
  slug: "polycarp-of-smyrna",
  byname: "Disciple of John",
- iconUrl: "/saints/icons/polycarp-of-smyrna.jpg",
+ iconUrl: "/saints/icons/polycarp-of-smyrna.v2.jpg",
  name: "St. Polycarp of Smyrna",
  epithet: "Bishop of Smyrna · Hieromartyr · Disciple of the Theologian",
  born: "c. 69",
@@ -2682,7 +2682,7 @@ export const SAINTS: Saint[] = [
  {
  slug: "prochorus-the-deacon",
  byname: "Scribe of the Theologian",
- iconUrl: "/saints/icons/prochorus-the-deacon.jpg",
+ iconUrl: "/saints/icons/prochorus-the-deacon.v2.jpg",
  name: "St. Prochorus, Deacon and Bishop",
  epithet: "One of the Seven Deacons · Scribe of John on Patmos · Bishop of Nicomedia",
  born: "1st century",
@@ -2821,7 +2821,7 @@ export const SAINTS: Saint[] = [
  {
  slug: "constantine-the-great",
  byname: "Equal-to-the-Apostles",
- iconUrl: "/saints/icons/constantine-the-great.jpg",
+ iconUrl: "/saints/icons/constantine-the-great.v2.jpg",
  name: "St. Constantine the Great",
  epithet: "Equal-to-the-Apostles · First Christian Emperor · Convener of the First Ecumenical Council",
  born: "c. 272 (Naissus, Moesia Superior)",
@@ -2931,7 +2931,7 @@ export const SAINTS: Saint[] = [
  {
  slug: "eustathius-of-antioch",
  byname: "The Confessor",
- iconUrl: "/saints/icons/eustathius-of-antioch.jpg",
+ iconUrl: "/saints/icons/eustathius-of-antioch.v2.jpg",
  name: "St. Eustathius of Antioch",
  epithet: "Patriarch of Antioch · Confessor · Opener of the First Council",
  born: "c. 270 (Side, Pamphylia)",
@@ -2969,7 +2969,7 @@ export const SAINTS: Saint[] = [
  {
  slug: "spyridon-of-trimythous",
  byname: "The Wonderworker",
- iconUrl: "/saints/icons/spyridon-of-trimythous.jpg",
+ iconUrl: "/saints/icons/spyridon-of-trimythous.v2.jpg",
  name: "St. Spyridon of Trimythous",
  epithet: "Shepherd of Cyprus · Bishop of Trimythous · Wonderworker · Father of Nicaea",
  born: "c. 270 (Cyprus)",
@@ -3159,7 +3159,7 @@ export const SAINTS: Saint[] = [
  {
  slug: "epiphanius-of-salamis",
  byname: "Hammer of Heresies",
- iconUrl: "/saints/icons/epiphanius-of-salamis.jpg",
+ iconUrl: "/saints/icons/epiphanius-of-salamis.v2.jpg",
  name: "St. Epiphanius of Salamis",
  epithet: "Archbishop of Salamis · Confessor · Author of the Panarion",
  born: "c. 315 (Besanduc, near Eleutheropolis, Palestine)",
@@ -3326,7 +3326,7 @@ export const SAINTS: Saint[] = [
  {
  slug: "justin-martyr",
  byname: "The Philosopher",
- iconUrl: "/saints/icons/justin-martyr.jpg",
+ iconUrl: "/saints/icons/justin-martyr.v2.jpg",
  name: "St. Justin Martyr",
  epithet: "Philosopher and Martyr · Apologist of the Second Century",
  born: "c. 100 (Flavia Neapolis, Samaria)",
@@ -3866,7 +3866,7 @@ export const SAINTS: Saint[] = [
  },
  {
  slug: "tarasius-of-constantinople",
- iconUrl: "/saints/icons/tarasius-of-constantinople.jpg",
+ iconUrl: "/saints/icons/tarasius-of-constantinople.v2.jpg",
  name: "St. Tarasius of Constantinople",
  epithet: "Patriarch of Constantinople · President of the Seventh Council",
  born: "c. 730 (Constantinople)",

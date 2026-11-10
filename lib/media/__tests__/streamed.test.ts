@@ -26,7 +26,7 @@ describe("a streamed file's address", () => {
   });
 
   it("leaves what the bundle carries as it is, in the apps too", () => {
-    for (const bundled of ["/sections/bible.jpg", "/audio/ambience/rain.mp3", "/audio/art/anthem.jpg", "/saints/icons/apostle-john.jpg"]) {
+    for (const bundled of ["/sections/bible.jpg", "/audio/ambience/rain.mp3", "/audio/art/anthem.jpg", "/saints/icons/apostle-john.v2.jpg"]) {
       expect(isStreamedMedia(bundled), bundled).toBe(false);
       expect(streamedUrl(bundled, true)).toBe(bundled);
     }
