@@ -1,7 +1,9 @@
 // The icons on the reading room's covers (1.7, the owner's note 18, and his
 // yes of 2026-10-16 to downloading public-domain icons from Wikimedia Commons
 // for the covers): write public/covers/authors/<slug>.v1.jpg, four wide by
-// five tall, at most 600 by 750, never enlarged.
+// five tall, at most 600 by 750, never enlarged. From 1.9 (build 89 note 3)
+// the same for a council's icon on its books (public/covers/councils/) and
+// for each How you feel door (public/covers/feelings/).
 //
 // Two kinds:
 //  - HEROES: the ten saints whose page already has a picture from Commons
@@ -135,6 +137,73 @@ const COMMONS = [
   // The Way of a Pilgrim has no author to show: a work's own cover
   // (lib/reading/coverArt.ts, WORK_COVERS).
   { slug: "way-of-a-pilgrim", title: "File:Перов Странник(ГТГ).jpg", size: [1255, 2048], crop: { left: 153, top: 10, width: 1000 } },
+  // 1.9, build 89 note 3 (the owner's "ok to all", 2026-11-10): the plate's
+  // saints with a picture of their own, from Updates' research
+  // (docs/1.9-build/notes/build-89/03-covers-research.md). St Arsenius right
+  // of the plaster that fills the mosaic's left edge, his name in the gold;
+  // St Tarasius whole, halo and name; St Anianus, the cobbler on the left,
+  // healed by St Mark (in blue), with no icon of him that passed.
+  {
+    slug: "arsenius-the-great",
+    title: "File:Fethiye Camii, parekklesion, southwest bay, mosaics, Istanbul, Turkey - North arch, east soffit, St. Arsenius, detail of bust - MSBZ004 BF T F 040 A - Dumbarton Oaks.jpg",
+    size: [1061, 1500],
+    crop: { left: 214, top: 40, width: 847 },
+    // The tesserae cost bytes: at the covers' quality 80 the cut is just over
+    // the 200 KB a cover may weigh (lib/reading/__tests__/coverArt.test.ts).
+    quality: 76,
+  },
+  { slug: "tarasius-of-constantinople", title: "File:Agios Tarasios Peribleptos.jpg", size: [846, 1200], crop: { left: 0, top: 10, width: 846 } },
+  {
+    slug: "anianus-of-alexandria",
+    title: "File:1498 da Conegliano Die Heilung des Anianus durch den heiligen Markus Gemäldegalerie Berlin anagoria.jpg",
+    size: [3840, 4866],
+    crop: { left: 600, top: 2550, width: 1500 },
+  },
+];
+
+/**
+ * 1.9, build 89 note 3: the icon of the council a book belongs to, for a
+ * book whose author has no picture (lib/reading/coverArt.ts, WORK_ART), each
+ * under /covers/councils/. Nicaea whole inside its panel, Arius under the arch
+ * at its foot; the council of 381 on the oldest picture of it, off the
+ * flaking at its lower right; Ephesus on the emperor among the bishops, the
+ * spears above; the Ferapontov Ephesus between the brick where the plaster is
+ * lost and the doorway's arch; the Seventh Council's emperor and empress.
+ */
+const COUNCILS = [
+  { slug: "first-nicaea", title: "File:Μιχαήλ Δαμασκηνός - Α΄ Οικουμενική Σύνοδος 7741.jpg", size: [1920, 2560], crop: { left: 230, top: 560, width: 1460 } },
+  { slug: "first-constantinople", title: "File:Homilies of Gregory the Theologian gr. 510, f 723.jpg", size: [4707, 6703], crop: { left: 915, top: 915, width: 2744 } },
+  { slug: "ephesus", title: "File:Council of Constantinople 381-stavropoleos church.jpg", size: [1920, 1487], crop: { left: 508, top: 330, width: 920 } },
+  { slug: "ephesus-ferapontov", title: "File:EcumenicalCouncil 3rd 09-07.jpg", size: [800, 1076], crop: { left: 136, top: 130, width: 480 } },
+];
+
+/**
+ * 1.9, build 89 note 3: each How you feel door's icon (lib/reading/
+ * feelings.ts), under /covers/feelings/, four wide by five tall like a cover,
+ * the face high enough to clear the name at the door's foot. The Three Holy
+ * Youths' furnace is wider than a door: the angel and the youth beneath him
+ * whole, his two companions at the edges, and the stokers below stay outside
+ * the cut, as the Forerunner's dish does.
+ */
+const FEELINGS = [
+  { slug: "love", title: "File:Ritzos Andreas - St John the Theologian writing his Revelations on an open scroll - Google Art Project.jpg", size: [1920, 2485], crop: { left: 270, top: 140, width: 1560 } },
+  { slug: "anger", title: "File:Преподобный Моисей Мурин. Фрагмент новгородской иконы конца XV века.jpg", size: [1046, 1500], crop: { left: 0, top: 120, width: 1046 } },
+  {
+    slug: "hatred",
+    title: "File:Church of Panagia tou Arakos, bema, sanctuary, walls, wall paintings, Lagoudera, Cyprus - North recess, east side, St. Stephen, the Protomartyr - MSBZ004 BF T Lag D 1 3 - Dumbarton Oaks.jpg",
+    size: [1280, 1626],
+    crop: { left: 222, top: 150, width: 487 },
+  },
+  { slug: "fear", title: "File:Shadrach, Meshach, and Abednego icon.jpg", size: [2525, 3244], crop: { left: 568, top: 190, width: 1400 } },
+  { slug: "grief", title: "File:Meister von Nerezi 001.jpg", size: [1920, 1417], crop: { left: 0, top: 100, width: 1000 } },
+  { slug: "despondency", title: "File:Saint Anthony from the Dionysiou Monastery on Mount Athos.jpg", size: [931, 1280], crop: { left: 28, top: 20, width: 872 } },
+  {
+    slug: "envy",
+    title: "File:École de (École bulgare) Bulgarie - Saint Jean-Baptiste - PPP4890 - Musée des Beaux-Arts de la ville de Paris.jpg",
+    size: [4627, 6664],
+    crop: { left: 1464, top: 650, width: 1800 },
+  },
+  { slug: "loneliness", title: "File:Elijah (Lebanon) 18th Century.jpg", size: [1920, 2531], crop: { left: 340, top: 240, width: 1408 } },
 ];
 
 const argv = process.argv.slice(2);
@@ -192,11 +261,11 @@ async function theOriginal(slug, size) {
   return file;
 }
 
-async function write(slug, pipeline) {
-  const buf = await pipeline.jpeg({ quality: 80, mozjpeg: true }).toBuffer();
-  await fs.writeFile(path.join(OUT, `${slug}.v1.jpg`), buf);
+async function write(slug, pipeline, dir = OUT, quality = 80) {
+  const buf = await pipeline.jpeg({ quality, mozjpeg: true }).toBuffer();
+  await fs.writeFile(path.join(dir, `${slug}.v1.jpg`), buf);
   const meta = await sharp(buf).metadata();
-  console.log(`${slug}: ${meta.width}x${meta.height}, ${(buf.length / 1024).toFixed(0)} KB`);
+  console.log(`${path.basename(dir)}/${slug}: ${meta.width}x${meta.height}, ${(buf.length / 1024).toFixed(0)} KB`);
 }
 
 await fs.mkdir(OUT, { recursive: true });
@@ -205,8 +274,14 @@ for (const slug of HEROES) {
   const hero = path.join(ROOT, "public", "covers", "saints", `${slug}.v1.jpg`);
   await write(slug, sharp(hero).resize({ width: WIDTH, height: Math.round(WIDTH * 1.25), fit: "cover", position: "top" }));
 }
-for (const c of COMMONS) {
+const FOLDERS = [
+  ...COMMONS.map((c) => ({ ...c, dir: OUT })),
+  ...COUNCILS.map((c) => ({ ...c, dir: path.join(ROOT, "public", "covers", "councils") })),
+  ...FEELINGS.map((c) => ({ ...c, dir: path.join(ROOT, "public", "covers", "feelings") })),
+];
+for (const c of FOLDERS) {
   if (only.length && !only.includes(c.slug)) continue;
+  await fs.mkdir(c.dir, { recursive: true });
   if (!offline) {
     await sleep(500);
     const lic = await licence(c.title);
@@ -227,5 +302,7 @@ for (const c of COMMONS) {
       .rotate()
       .extract({ left, top, width, height })
       .resize({ width: out, height: Math.round(out * 1.25) }),
+    c.dir,
+    c.quality,
   );
 }

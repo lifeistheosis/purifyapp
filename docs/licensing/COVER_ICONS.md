@@ -7,7 +7,8 @@ books", "a cover for every work") and his yes the same day to downloading
 public-domain icons from Wikimedia Commons for the covers. Policy, matching
 `READ_COVERS.md`, `SAINT_HEROES.md` and `icon-provenance.md`: **a picture
 ships only if its source and licence are documented here.** The same records
-are `COVER_ART` in `lib/reading/coverArt.ts` and `AUTHOR_COVERS` in
+are `COVER_ART` and `WORK_ART` in `lib/reading/coverArt.ts` and
+`AUTHOR_COVERS`, `WORK_COVERS`, `COUNCIL_COVERS` and `FEELING_COVERS` in
 `lib/reading/authorCovers.ts`, which `lib/reading/__tests__/coverArt.test.ts`
 holds to the files.
 
@@ -143,6 +144,111 @@ Hilarion's photograph was taken before the wall was cleaned. In 1.7.2: the
 four Simone Martini panels are cut under their arched frames, so the top of
 each halo runs off the cover rather than the frame running onto it; St Mary
 of Egypt's gold is cracked and shows worm holes.
+
+## Shipped in 1.9: build 89 note 3, a cover on every book and an icon on each feeling
+
+The owner's note 3 of 2026-11-10 ("I want every single book in reading to
+actually have a cover photo ... you can easily do the icon of the council
+... we can also attribute an icon that is attributable to that specific
+feeling ... ensure it's an Eastern Orthodox canonical saint"), Updates'
+research of the same day (`docs/1.9-build/notes/build-89/03-covers-research.md`,
+every candidate opened, each page's licence read through the Wikidata query
+service's bridge to the Commons API, since Commons' own API answered 429),
+and his "ok to all" at about 04:13 UTC, relayed by the arbiter. Cut and
+opened again on 2026-11-10 by `scripts/fetch-author-covers.mjs` (run with
+`--offline`, the licence read by the research that day), from the sizes
+Commons serves (1920 or 3840 wide where the scan is larger, the file
+itself where it is not). The same rules as above: public domain or CC0 as
+the page states it, four wide by five tall, never under 480 wide, nothing
+enlarged, nothing outside the painted field.
+
+**The plate's saints with a picture of their own.** St Arsenius (his name in
+the gold; a sharper cut of the photograph his saint's page carries), St
+Tarasius (Ο ΑΓ ΤΑΡΑΣΙΟΣ), and for St Anianus, of whom no icon passed, Cima's
+painting of the story his book tells, as the rule allows a Western painting
+where no icon passed; it is his book's own picture (`WORK_COVERS`), never
+drawn as his face. Three more are the settled page icons the app already
+carries (`lib/saints/iconRights.ts`, 2026-10-31), now on their books too: St
+Cyril of Jerusalem, St Photius and St Justinian, small, at a page icon's
+size, as the owner was told.
+
+| File | Work | Artist | Date | Licence | Source |
+|---|---|---|---|---|---|
+| `authors/arsenius-the-great.v1.jpg` | Mosaic of St Arsenius the Great, the parekklesion of the Pammakaristos church (Fethiye Camii), Constantinople | Unknown Byzantine mosaicists (the photograph is the Byzantine Institute's for Dumbarton Oaks, CC0) | c. 1310 | CC0 | [Fethiye Camii, parekklesion, southwest bay, mosaics, Istanbul, Turkey - North arch, east soffit, St. Arsenius, detail of bust - MSBZ004 BF T F 040 A - Dumbarton Oaks.jpg](https://commons.wikimedia.org/wiki/File:Fethiye_Camii,_parekklesion,_southwest_bay,_mosaics,_Istanbul,_Turkey_-_North_arch,_east_soffit,_St._Arsenius,_detail_of_bust_-_MSBZ004_BF_T_F_040_A_-_Dumbarton_Oaks.jpg) |
+| `authors/tarasius-of-constantinople.v1.jpg` | Fresco of St Tarasius of Constantinople, the church of the Theotokos Peribleptos, Ohrid | Unknown | 14th century | Public domain | [Agios Tarasios Peribleptos.jpg](https://commons.wikimedia.org/wiki/File:Agios_Tarasios_Peribleptos.jpg) |
+| `authors/anianus-of-alexandria.v1.jpg` | The Healing of Anianus by St Mark, by Cima da Conegliano, the Gemäldegalerie, Berlin (his book's own picture) | Cima da Conegliano | 1497 to 1499 | Public domain | [1498 da Conegliano Die Heilung des Anianus durch den heiligen Markus Gemäldegalerie Berlin anagoria.jpg](https://commons.wikimedia.org/wiki/File:1498_da_Conegliano_Die_Heilung_des_Anianus_durch_den_heiligen_Markus_Gem%C3%A4ldegalerie_Berlin_anagoria.jpg) |
+
+**A council's icon on its books.** For a book whose author has no picture,
+the icon of the council it belongs to (`COUNCIL_COVERS`, given to each book
+in `WORK_ART`, `lib/reading/coverArt.ts`), marked as the book's own picture so
+it is never drawn beside the byline as the author's face. The Stavropoleos
+painting is filed on Commons as the council of 381; its own Romanian Cyrillic
+inscriptions, read on a 1920 copy, name Theodosius the Younger, Pope
+Celestine and St Cyril at Ephesus. The Ferapontov fresco is cut between the
+bare brick where its plaster is lost and the doorway's arch, 480 wide. St
+Irene's letters wait for the Seventh Council's fresco (Dionisius, Ferapontov,
+1502, `File:EcumenicalCouncil 7th 07-08.jpg`, public domain), which Commons
+refused to this address with 429 all session; it is cut once Commons
+answers, and the covers pack carries it to the apps with the website deploy
+that adds the file. Chalcedon, the Fifth and the Sixth Councils need no new picture: no
+book on the plate is theirs, and the research's choice for each is the
+picture the app already shows them (`lib/councils/page.ts`, `councilPicture`).
+
+| File | Work | Artist | Date | Licence | On | Source |
+|---|---|---|---|---|---|---|
+| `councils/first-nicaea.v1.jpg` | Icon of the First Ecumenical Council by Michael Damaskinos, from the Vrontisi monastery, the collection of St Catherine, Heraklion | Michael Damaskinos (the photograph is C. Messier's) | 1591 | Public domain | St Alexander's Encyclical against Arius | [Μιχαήλ Δαμασκηνός - Α΄ Οικουμενική Σύνοδος 7741.jpg](https://commons.wikimedia.org/wiki/File:%CE%9C%CE%B9%CF%87%CE%B1%CE%AE%CE%BB_%CE%94%CE%B1%CE%BC%CE%B1%CF%83%CE%BA%CE%B7%CE%BD%CF%8C%CF%82_-_%CE%91%CE%84_%CE%9F%CE%B9%CE%BA%CE%BF%CF%85%CE%BC%CE%B5%CE%BD%CE%B9%CE%BA%CE%AE_%CE%A3%CF%8D%CE%BD%CE%BF%CE%B4%CE%BF%CF%82_7741.jpg) |
+| `councils/first-constantinople.v1.jpg` | The Second Ecumenical Council, a miniature of the Homilies of St Gregory the Theologian, Paris, BnF gr. 510, fol. 355 | Unknown Byzantine illuminators | c. 880 | Public domain | St Nectarius, the Senator Bishop | [Homilies of Gregory the Theologian gr. 510, f 723.jpg](https://commons.wikimedia.org/wiki/File:Homilies_of_Gregory_the_Theologian_gr._510,_f_723.jpg) |
+| `councils/ephesus.v1.jpg` | Wall painting of the Third Ecumenical Council, Ephesus 431, the Stavropoleos church, Bucharest (filed on Commons as the council of 381; its own inscriptions name Ephesus, Theodosius the Younger, Pope Celestine and St Cyril) | Unknown (the photograph is Kostisl's, released by him into the public domain) | Not given on its page (the church was built in 1724) | Public domain | St Celestine's Letter to the Synod of Ephesus | [Council of Constantinople 381-stavropoleos church.jpg](https://commons.wikimedia.org/wiki/File:Council_of_Constantinople_381-stavropoleos_church.jpg) |
+| `councils/ephesus-ferapontov.v1.jpg` | Fresco of the Third Ecumenical Council, the cathedral of the Nativity of the Theotokos, Ferapontov monastery | Dionisius | 1502 | Public domain | St John Cassian's On the Incarnation | [EcumenicalCouncil 3rd 09-07.jpg](https://commons.wikimedia.org/wiki/File:EcumenicalCouncil_3rd_09-07.jpg) |
+
+**A saint of the text, for four books.** Their own subjects have no picture
+that passed, so each carries a cover the room already has, of a saint the
+book belongs to, marked as the book's own picture: the Apostle Philip for the
+Life of his daughter St Hermione, St Pachomius for the Life of St Isidora of
+his Tabenna, St John Chrysostom for the Life of his deaconess St Olympias,
+and the Apostle John for St Papias, his hearer. No new file.
+
+**An icon on each How you feel door** (`FEELING_COVERS`), each a canonical
+Orthodox saint known for the struggle or its healing. The reasons are ours,
+from Scripture and the lives and sayings as the Church tells them, marked for
+the clergy review with the collections themselves (`COLLECTIONS_REVIEW`,
+`lib/reading/feelings.ts`). The door is four wide by five tall, as the icons
+are cut, the face high enough to clear the feeling's name at its foot. The
+owner was shown, before his yes, what each holds: the Lamentation shows
+Christ's dead body (he OKed it as it is); the Three Holy Youths' furnace is
+wider than a door, so the angel and the youth beneath him are cut whole,
+his two companions at the edges, the stokers below left out; the Forerunner's dish with his head is outside the
+cut; St John, the Theotokos, St Antony and the Forerunner already have
+covers, here in other pictures.
+
+| Door | File | Saint and work | Artist | Date | Licence | Why | Source |
+|---|---|---|---|---|---|---|---|
+| love | `feelings/love.v1.jpg` | St John the Theologian: icon by Andreas Ritzos, the Benaki Museum, Athens | Andreas Ritzos | 1449 to 1450 | Public domain | The disciple whom Jesus loved, who wrote "God is love" (1 John 4:8); in his old age, as St Jerome tells it, he would say only "Little children, love one another". | [Ritzos Andreas - St John the Theologian writing his Revelations on an open scroll - Google Art Project.jpg](https://commons.wikimedia.org/wiki/File:Ritzos_Andreas_-_St_John_the_Theologian_writing_his_Revelations_on_an_open_scroll_-_Google_Art_Project.jpg) |
+| anger | `feelings/anger.v1.jpg` | St Moses the Ethiopian: a detail of a Novgorod icon of St Pimen, the Prophet Elijah and St Moses, the Novgorod Museum | Unknown Novgorod icon painter | End of the 15th century | Public domain | A slave and robber chief of violent temper who became a monk of Scetis; when the clergy drove him out with insults to test him, he went out saying they had done right by him (the Sayings of the Desert Fathers). | [Преподобный Моисей Мурин. Фрагмент новгородской иконы конца XV века.jpg](https://commons.wikimedia.org/wiki/File:%D0%9F%D1%80%D0%B5%D0%BF%D0%BE%D0%B4%D0%BE%D0%B1%D0%BD%D1%8B%D0%B9_%D0%9C%D0%BE%D0%B8%D1%81%D0%B5%D0%B9_%D0%9C%D1%83%D1%80%D0%B8%D0%BD._%D0%A4%D1%80%D0%B0%D0%B3%D0%BC%D0%B5%D0%BD%D1%82_%D0%BD%D0%BE%D0%B2%D0%B3%D0%BE%D1%80%D0%BE%D0%B4%D1%81%D0%BA%D0%BE%D0%B9_%D0%B8%D0%BA%D0%BE%D0%BD%D1%8B_%D0%BA%D0%BE%D0%BD%D1%86%D0%B0_XV_%D0%B2%D0%B5%D0%BA%D0%B0.jpg) |
+| hatred | `feelings/hatred.v1.jpg` | St Stephen the Protomartyr: wall painting in the sanctuary of the Panagia tou Arakos, Lagoudera, Cyprus | Unknown (the photograph is Dumbarton Oaks', CC0) | Not given on its page (the church's paintings are generally dated 1192) | CC0 | Stoned by those who hated his witness, he knelt and prayed for them: "Lord, lay not this sin to their charge" (Acts 7:60). | [Church of Panagia tou Arakos, bema, sanctuary, walls, wall paintings, Lagoudera, Cyprus - North recess, east side, St. Stephen, the Protomartyr - MSBZ004 BF T Lag D 1 3 - Dumbarton Oaks.jpg](https://commons.wikimedia.org/wiki/File:Church_of_Panagia_tou_Arakos,_bema,_sanctuary,_walls,_wall_paintings,_Lagoudera,_Cyprus_-_North_recess,_east_side,_St._Stephen,_the_Protomartyr_-_MSBZ004_BF_T_Lag_D_1_3_-_Dumbarton_Oaks.jpg) |
+| fear | `feelings/fear.v1.jpg` | The Three Holy Youths in the furnace: an icon from the Levant (Icônes arabes, Institut du monde arabe, 2003), the angel and the youth beneath him, his companions at the edges | Unknown | 16th century | Public domain | They told the king they would not serve his gods whatever he did (Daniel 3:16-18), and in the fire an angel was with them; the seventh and eighth odes of the Church's canons are their song. | [Shadrach, Meshach, and Abednego icon.jpg](https://commons.wikimedia.org/wiki/File:Shadrach,_Meshach,_and_Abednego_icon.jpg) |
+| grief | `feelings/grief.v1.jpg` | The Most Holy Theotokos at the Lamentation: wall painting in St Panteleimon, Nerezi | Unknown painters of Nerezi | 1164 | Public domain | The Theotokos weeping over her Son at His burial, the sorrow the Church sings in the Lamentations of Holy Saturday. | [Meister von Nerezi 001.jpg](https://commons.wikimedia.org/wiki/File:Meister_von_Nerezi_001.jpg) |
+| despondency | `feelings/despondency.v1.jpg` | St Antony the Great: a Cretan icon, the Dionysiou monastery, Mount Athos | Unknown Cretan painter | 16th century | Public domain | Beset by despondency in the desert, he asked God how to be saved, and an angel showed him: work, then pray, then work again (the first of his Sayings). | [Saint Anthony from the Dionysiou Monastery on Mount Athos.jpg](https://commons.wikimedia.org/wiki/File:Saint_Anthony_from_the_Dionysiou_Monastery_on_Mount_Athos.jpg) |
+| envy | `feelings/envy.v1.jpg` | St John the Forerunner as the Angel of the Desert: a Bulgarian icon, the Musée des Beaux-Arts de la Ville de Paris (Petit Palais) | Unknown Bulgarian icon painter | 1702 | Public domain | When his disciples, jealous for him, complained that all now went to Christ, he answered: "He must increase, but I must decrease" (John 3:26-30). | [École de (École bulgare) Bulgarie - Saint Jean-Baptiste - PPP4890 - Musée des Beaux-Arts de la ville de Paris.jpg](https://commons.wikimedia.org/wiki/File:%C3%89cole_de_(%C3%89cole_bulgare)_Bulgarie_-_Saint_Jean-Baptiste_-_PPP4890_-_Mus%C3%A9e_des_Beaux-Arts_de_la_ville_de_Paris.jpg) |
+| loneliness | `feelings/loneliness.v1.jpg` | The Prophet Elijah in the wilderness: an icon from the Levant (Icônes arabes, Institut du monde arabe, 2003) | Unknown | 18th century | Public domain | Alone in the wilderness, fed by the ravens (1 Kings 17:6), he said in the cave at Horeb "I, even I only, am left", and God answered him in a still small voice (1 Kings 19:10-12). | [Elijah (Lebanon) 18th Century.jpg](https://commons.wikimedia.org/wiki/File:Elijah_(Lebanon)_18th_Century.jpg) |
+
+How each was named: by the inscription painted on it, read in a zoom, for St
+Arsenius, St Tarasius, St Stephen (Ο ΑΓ ΣΤΕΦΑΝΟΣ Ο ΠΡΩΤΟΜΑΡΤΥΣ), St Antony
+(Ο ΑΓ ΑΝΤΩΝΙΟΣ), the Forerunner (Ο ΑΓΙΟΣ ΙΩ Ο ΠΡ), the Theotokos and Christ at
+Nerezi (ΜΡ ΘΥ, ΙΣ ΧΣ) and the Stavropoleos council; by the scroll that opens
+his Gospel, for St John; by the whole icon's inscription over his figure, for
+St Moses (МОИСЕИ МУРИН); by the scene and its page for the Three Youths,
+Elijah, the Ferapontov frescoes, the Paris miniature, Damaskinos's icon and
+Cima's painting. Known blemishes: St John's panel is worn at its edges, the
+Paris miniature has lost much of its paint, St Moses's halo runs off both
+sides of the detail.
+
+Where they live: `public/covers/councils/` and `public/covers/feelings/`
+beside `public/covers/authors/`, on the website only, each with its AVIF
+(`scripts/covers-avif.mjs`). The reading room's map of every book's picture
+and every door's icon also goes to the apps in the covers pack
+(`docs/PACKS.md`), so a cover cut after a store build reaches them with the
+website deploy that carries its file.
 
 ## Also drawn: the Plus paywall's picture
 

@@ -4,6 +4,7 @@ import nextUpdate from "@/data/changelog/next-update.json";
 import { getMessages } from "@/lib/i18n";
 import { LOCALES } from "@/lib/i18n/locales";
 import { coversPackOf } from "@/lib/readAloud/covers";
+import { readingCovers } from "@/lib/reading/cards";
 import { packMachineVerses } from "@/lib/today/machineVerse.server";
 import { getVerseOfDayTable } from "@/lib/today/verseOfDay";
 import type { VerseOfDayEntry } from "@/lib/today/verseOfDay.types";
@@ -30,7 +31,9 @@ import { PACK_SCHEMAS, PACKS_FORMAT, readNextUpdate, type Packs } from "./types"
  * - "covers" (1.9) is the read-aloud covers' own map (lib/readAloud/covers.ts):
  *   each book's figure, its file under /covers/ and its name in every
  *   language, so a cover chosen after a store build reaches the apps with
- *   the website deploy that carries its picture.
+ *   the website deploy that carries its picture; and the reading room's
+ *   books and How you feel doors (lib/reading/cards.ts, readingCovers), the
+ *   same way (build 89 note 3).
  *
  * Kept in memory for five minutes, because the verse window reads sixty
  * chapters off disk and the answer is the same for every reader.
@@ -70,7 +73,7 @@ export async function buildPacks(now: Date = new Date()): Promise<Packs> {
         schema: PACK_SCHEMAS.release,
         next: readNextUpdate(nextUpdate) ?? { name: null, version: null, date: null },
       },
-      covers: { ...coversPackOf(coverNames), schema: PACK_SCHEMAS.covers },
+      covers: { ...coversPackOf(coverNames), ...readingCovers(), schema: PACK_SCHEMAS.covers },
     },
   };
 }

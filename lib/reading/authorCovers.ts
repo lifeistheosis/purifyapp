@@ -23,6 +23,17 @@ import type { StreamedArt } from "./coverArt";
  * Theodosius, for whom no icon passed; and the Way of a Pilgrim, which has no
  * author to show, its own picture (WORK_COVERS). Fifteen subjects found
  * nothing that passed and keep the plate.
+ *
+ * 1.9, build 89 note 3 (the owner's "ok to all", 2026-11-10, to Updates'
+ * research in docs/1.9-build/notes/build-89/03-covers-research.md): three
+ * more saints of their own (St Arsenius, St Tarasius, and St Anianus in a
+ * Venetian painting of his healing, since no icon of him passed); the icon of
+ * the council a book belongs to, for a book whose author has none
+ * (COUNCIL_COVERS, under /covers/councils/, given to its books in
+ * lib/reading/coverArt.ts, WORK_ART); and an icon for each How you feel door
+ * (FEELING_COVERS, under /covers/feelings/), each a canonical Orthodox saint
+ * known for that struggle, with its reason in COVER_ICONS.md. Same rules,
+ * same checks, read on the pages by the research and cut here.
  */
 
 const commons = (title: string) => `https://commons.wikimedia.org/wiki/${encodeURI(title.replace(/ /g, "_"))}`;
@@ -35,10 +46,11 @@ function art(
   license: "Public domain" | "CC0",
   rights: { work: string; artist: string; workDate: string; alt: string },
   inspectedOn = "2026-10-16",
+  folder: "authors" | "councils" | "feelings" = "authors",
 ): StreamedArt {
   return {
     kind: "streamed",
-    file: `/covers/authors/${slug}.v1.jpg`,
+    file: `/covers/${folder}/${slug}.v1.jpg`,
     width: size[0],
     height: size[1],
     focusY,
@@ -309,11 +321,240 @@ export const AUTHOR_COVERS: Readonly<Record<string, StreamedArt>> = {
     workDate: "1619 to 1620",
     alt: "An emperor crowned with laurel, in a red cloak over armour, held back at the church door by the outstretched hands of a white-bearded bishop in a gold mitre and gold vestments, with a crozier and onlookers behind.",
   }, "2026-10-19"),
+  // 1.9, build 89 note 3. His saint's page carries a small cut of the same
+  // photograph (lib/saints/iconRights.ts); this one is the sharper cover.
+  "arsenius-the-great": art(
+    "arsenius-the-great",
+    FULL,
+    30,
+    "File:Fethiye Camii, parekklesion, southwest bay, mosaics, Istanbul, Turkey - North arch, east soffit, St. Arsenius, detail of bust - MSBZ004 BF T F 040 A - Dumbarton Oaks.jpg",
+    "CC0",
+    {
+      work: "Mosaic of St Arsenius the Great, the parekklesion of the Pammakaristos church (Fethiye Camii), Constantinople",
+      artist: "Unknown Byzantine mosaicists (the photograph is the Byzantine Institute's for Dumbarton Oaks, CC0)",
+      workDate: "c. 1310",
+      alt: "A gold mosaic bust of an old monk with close grey curls and a long white beard falling in waves to his chest, in a brown mantle, within a gold halo, the last letters of his Greek name set in the gold at the right.",
+    },
+    "2026-11-10",
+  ),
+  "tarasius-of-constantinople": art("tarasius-of-constantinople", FULL, 28, "File:Agios Tarasios Peribleptos.jpg", "Public domain", {
+    work: "Fresco of St Tarasius of Constantinople, the church of the Theotokos Peribleptos, Ohrid",
+    artist: "Unknown",
+    workDate: "14th century",
+    alt: "A grey-haired bishop with a long grey-brown beard in a gold halo, in a white omophorion with large black crosses, blessing and holding a jewelled Gospel, on a deep blue ground with his name in white.",
+  }, "2026-11-10"),
+};
+
+/**
+ * The icon of a council, for its books whose author has no picture (1.9,
+ * build 89 note 3: "there's some books in there that are attributed to
+ * councils ... you can easily do the icon of the council"), given to each
+ * book in lib/reading/coverArt.ts (WORK_ART). Ephesus has two: the
+ * Stavropoleos painting, whose own words name St Celestine at the council,
+ * for his letter; Dionisius's Ferapontov fresco for St John Cassian's On the
+ * Incarnation, written against Nestorius on the eve of the council. The
+ * councils whose picture no book on the plate needs keep the one the app
+ * already shows them (lib/councils/page.ts, councilPicture).
+ */
+export const COUNCIL_COVERS: Readonly<Record<string, StreamedArt>> = {
+  "first-nicaea": art(
+    "first-nicaea",
+    FULL,
+    30,
+    "File:Μιχαήλ Δαμασκηνός - Α΄ Οικουμενική Σύνοδος 7741.jpg",
+    "Public domain",
+    {
+      work: "Icon of the First Ecumenical Council by Michael Damaskinos, from the Vrontisi monastery, the collection of St Catherine, Heraklion",
+      artist: "Michael Damaskinos (the photograph is C. Messier's)",
+      workDate: "1591",
+      alt: "An emperor enthroned among tiers of haloed bishops in white vestments with black crosses, an open Gospel on a throne at the centre, and Arius bowed under an arch at the foot, all on gold.",
+    },
+    "2026-11-10",
+    "councils",
+  ),
+  "first-constantinople": art(
+    "first-constantinople",
+    FULL,
+    30,
+    "File:Homilies of Gregory the Theologian gr. 510, f 723.jpg",
+    "Public domain",
+    {
+      work: "The Second Ecumenical Council, a miniature of the Homilies of St Gregory the Theologian, Paris, Bibliothèque nationale de France, gr. 510, fol. 355",
+      artist: "Unknown Byzantine illuminators",
+      workDate: "c. 880",
+      alt: "An open Gospel on a jewelled throne under an arch, bishops on a curved bench at the left and a haloed emperor among bishops at the right, before pink and blue buildings, the paint flaked in many places.",
+    },
+    "2026-11-10",
+    "councils",
+  ),
+  ephesus: art(
+    "ephesus",
+    FULL,
+    40,
+    "File:Council of Constantinople 381-stavropoleos church.jpg",
+    "Public domain",
+    {
+      work: "Wall painting of the Third Ecumenical Council, Ephesus 431, the Stavropoleos church, Bucharest; its own inscriptions name Theodosius the Younger, Pope Celestine and St Cyril at Ephesus, though Commons files it as the council of 381",
+      artist: "Unknown (the photograph is Kostisl's, released by him into the public domain)",
+      workDate: "Not given on its page (the church was built in 1724)",
+      alt: "An emperor enthroned at the centre holding a cross, bishops with gold haloes seated close on both sides, and a forest of spears with pennants rising above them against a grey-blue sky.",
+    },
+    "2026-11-10",
+    "councils",
+  ),
+  "ephesus-ferapontov": art(
+    "ephesus-ferapontov",
+    [480, 600],
+    30,
+    "File:EcumenicalCouncil 3rd 09-07.jpg",
+    "Public domain",
+    {
+      work: "Fresco of the Third Ecumenical Council, the cathedral of the Nativity of the Theotokos, Ferapontov monastery",
+      artist: "Dionisius",
+      workDate: "1502",
+      alt: "A young emperor enthroned under a domed canopy between seated bishops in white, and below them a row of standing bishops with gold haloes holding a long patterned cloth, in pale ochre, red and white on blue.",
+    },
+    "2026-11-10",
+    "councils",
+  ),
+};
+
+/**
+ * An icon for each How you feel door (lib/reading/feelings.ts; 1.9, build
+ * 89 note 3: "an icon attributed to a saint that is also attributed to that
+ * specific emotion ... ensure it's an Eastern Orthodox canonical saint").
+ * Why each saint answers his feeling is in docs/licensing/COVER_ICONS.md,
+ * ours, marked for the clergy review with the collections themselves
+ * (COLLECTIONS_REVIEW). Four wide by five tall, the face high enough to
+ * clear the name at the door's foot.
+ */
+export const FEELING_COVERS: Readonly<Record<string, StreamedArt>> = {
+  love: art(
+    "love",
+    FULL,
+    33,
+    "File:Ritzos Andreas - St John the Theologian writing his Revelations on an open scroll - Google Art Project.jpg",
+    "Public domain",
+    {
+      work: "Icon of St John the Theologian writing, by Andreas Ritzos, the Benaki Museum, Athens",
+      artist: "Andreas Ritzos",
+      workDate: "1449 to 1450",
+      alt: "St John, balding and grey-bearded, in a dark green tunic and a rose mantle, bends over an unrolled scroll that opens his Gospel in Greek, a reed pen in his hand, on a worn gold ground.",
+    },
+    "2026-11-10",
+    "feelings",
+  ),
+  anger: art(
+    "anger",
+    FULL,
+    37,
+    "File:Преподобный Моисей Мурин. Фрагмент новгородской иконы конца XV века.jpg",
+    "Public domain",
+    {
+      work: "St Moses the Ethiopian, a detail of a Novgorod icon of St Pimen, the Prophet Elijah and St Moses, the Novgorod Museum",
+      artist: "Unknown Novgorod icon painter",
+      workDate: "End of the 15th century",
+      alt: "The dark face of a monk with white curling hair and a white curling beard, in a dark collar and a red-brown mantle, before a worn gold halo.",
+    },
+    "2026-11-10",
+    "feelings",
+  ),
+  hatred: art(
+    "hatred",
+    [487, 609],
+    30,
+    "File:Church of Panagia tou Arakos, bema, sanctuary, walls, wall paintings, Lagoudera, Cyprus - North recess, east side, St. Stephen, the Protomartyr - MSBZ004 BF T Lag D 1 3 - Dumbarton Oaks.jpg",
+    "CC0",
+    {
+      work: "Wall painting of St Stephen the Protomartyr, the sanctuary of the Panagia tou Arakos, Lagoudera, Cyprus",
+      artist: "Unknown (the photograph is Dumbarton Oaks', CC0)",
+      workDate: "Not given on its page (the church's paintings are generally dated 1192)",
+      alt: "A young deacon with short brown hair in a white sticharion, his head tilted inside a large ochre halo, holding a small jewelled casket, on a deep blue-green ground with his name and title in white Greek letters.",
+    },
+    "2026-11-10",
+    "feelings",
+  ),
+  fear: art(
+    "fear",
+    FULL,
+    30,
+    "File:Shadrach, Meshach, and Abednego icon.jpg",
+    "Public domain",
+    {
+      work: "Icon of the Three Holy Youths in the furnace, from the Levant (Icônes arabes, Institut du monde arabe, 2003): the angel and the youth beneath him, his companions at the edges",
+      artist: "Unknown",
+      workDate: "16th century",
+      alt: "An angel with a gold halo and orange wings leans over a young man in a jewelled robe who stands with his hands raised in a gold halo, red flames rising around them, two more haloed youths at the edges of the white-framed furnace.",
+    },
+    "2026-11-10",
+    "feelings",
+  ),
+  grief: art(
+    "grief",
+    FULL,
+    40,
+    "File:Meister von Nerezi 001.jpg",
+    "Public domain",
+    {
+      work: "The Lamentation, wall painting in the church of St Panteleimon, Nerezi",
+      artist: "Unknown painters of Nerezi",
+      workDate: "1164",
+      alt: "The Theotokos, in a dark mantle within a gold halo, holds her dead Son's face to her own, His body bare to the waist on a white shroud, Greek letters naming them above, on a grey-blue and ochre ground.",
+    },
+    "2026-11-10",
+    "feelings",
+  ),
+  despondency: art(
+    "despondency",
+    FULL,
+    27,
+    "File:Saint Anthony from the Dionysiou Monastery on Mount Athos.jpg",
+    "Public domain",
+    {
+      work: "Cretan icon of St Antony the Great, the Dionysiou monastery, Mount Athos",
+      artist: "Unknown Cretan painter",
+      workDate: "16th century",
+      alt: "An old monk with a white beard in a blue-grey cowl marked with a cross and a brown mantle, holding a staff with a carved head, within an ornamented gold halo on a gold ground with his name in red.",
+    },
+    "2026-11-10",
+    "feelings",
+  ),
+  envy: art(
+    "envy",
+    FULL,
+    30,
+    "File:École de (École bulgare) Bulgarie - Saint Jean-Baptiste - PPP4890 - Musée des Beaux-Arts de la ville de Paris.jpg",
+    "Public domain",
+    {
+      work: "Icon of St John the Forerunner as the Angel of the Desert, a Bulgarian icon, the Musée des Beaux-Arts de la Ville de Paris (Petit Palais)",
+      artist: "Unknown Bulgarian icon painter",
+      workDate: "1702",
+      alt: "A gaunt man with long dark hair and a dark beard within a worn ornamented halo, in a red tunic under a dark mantle, pale wings rising behind his shoulders and a thin cross at his side.",
+    },
+    "2026-11-10",
+    "feelings",
+  ),
+  loneliness: art(
+    "loneliness",
+    FULL,
+    38,
+    "File:Elijah (Lebanon) 18th Century.jpg",
+    "Public domain",
+    {
+      work: "Icon of the Prophet Elijah in the wilderness, from the Levant (Icônes arabes, Institut du monde arabe, 2003)",
+      artist: "Unknown",
+      workDate: "18th century",
+      alt: "An old prophet with long grey hair and a grey beard sits alone in a dark cave, his head resting on his hand, in an orange tunic, a red mantle and a blue-green fur cloak, a black raven with bread on the rock above.",
+    },
+    "2026-11-10",
+    "feelings",
+  ),
 };
 
 /**
  * A book with no saint to show carries its own picture, keyed by the work
- * (lib/reading/cards.ts): the Way of a Pilgrim, which is anonymous.
+ * (lib/reading/cards.ts): the Way of a Pilgrim, which is anonymous; and from
+ * 1.9 St Anianus's Life, whose picture is the scene it tells.
  */
 export const WORK_COVERS: Readonly<Record<string, StreamedArt>> = {
   "theophan-the-recluse/way-of-a-pilgrim": art("way-of-a-pilgrim", FULL, 21, "File:Перов Странник(ГТГ).jpg", "Public domain", {
@@ -321,5 +562,21 @@ export const WORK_COVERS: Readonly<Record<string, StreamedArt>> = {
     artist: "Vasily Perov",
     workDate: "1870",
     alt: "An old wanderer with grey hair and a white beard, a sack and a rolled umbrella on his back and a tin mug at his belt, leaning on his staff against a dark ground.",
-  }, "2026-10-19"),
+  }, "2026-10-19"),  // 1.9, build 89 note 3. No icon of St Anianus passed: the painting of the
+  // story his book tells, as the rule above allows, his own book's picture
+  // and not his face (he wears a turban and no halo, not yet baptized).
+  "anianus-of-alexandria/the-second-bishop": art(
+    "anianus-of-alexandria",
+    FULL,
+    40,
+    "File:1498 da Conegliano Die Heilung des Anianus durch den heiligen Markus Gemäldegalerie Berlin anagoria.jpg",
+    "Public domain",
+    {
+      work: "The Healing of Anianus by St Mark, by Cima da Conegliano, the Gemäldegalerie, Berlin: the cobbler and the evangelist",
+      artist: "Cima da Conegliano",
+      workDate: "1497 to 1499",
+      alt: "A cobbler in a white turban and a green jerkin, seated at his bench, holds out his wounded hand to a dark-bearded man in a blue mantle who reaches to heal it, among turbaned men in rich robes in a city square.",
+    },
+    "2026-11-10",
+  ),
 };

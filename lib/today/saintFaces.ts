@@ -38,6 +38,7 @@ export const SAINT_FACES: Readonly<Record<string, number>> = {
   "apostle-simon-zealot": 33,
   "apostle-thomas": 29,
   "archangel-michael": 20,
+  "arsenius-the-great": 30,
   "athanasius-the-great": 33,
   "augustine-of-hippo": 26,
   "basil-the-great": 20,
@@ -69,6 +70,7 @@ export const SAINT_FACES: Readonly<Record<string, number>> = {
   "prochorus-the-deacon": 34,
   "seraphim-of-sarov": 40,
   "spyridon-of-trimythous": 32,
+  "tarasius-of-constantinople": 28,
   "theodosius-the-great": 36,
   theotokos: 24,
 };
@@ -133,6 +135,8 @@ export const COVER_FACES: Readonly<Record<string, readonly [number, number, Gaze
   "apostle-simon-zealot": [0.46, 0.4, "ahead"],
   "apostle-thomas": [0.29, 0.31, "ahead"],
   "archangel-michael": [0.75, 0.24, "left"],
+  // 1.9, build 89 note 3, found by eye on 2026-11-10 as above.
+  "arsenius-the-great": [0.38, 0.4, "left"],
   "athanasius-the-great": [0.5, 0.33, "right"],
   "augustine-of-hippo": [0.47, 0.27, "right"],
   "basil-the-great": [0.74, 0.23, "right"],
@@ -164,6 +168,7 @@ export const COVER_FACES: Readonly<Record<string, readonly [number, number, Gaze
   "prochorus-the-deacon": [0.48, 0.35, "left"],
   "seraphim-of-sarov": [0.47, 0.4, "ahead"],
   "spyridon-of-trimythous": [0.48, 0.32, "ahead"],
+  "tarasius-of-constantinople": [0.51, 0.34, "ahead"],
   "theodosius-the-great": [0.45, 0.44, "right"],
   theotokos: [0.5, 0.38, "left"],
 };

@@ -6,7 +6,9 @@ import { useEffect, useState } from "react";
 import { WorkCover } from "@/components/covers/WorkCover";
 import { useTranslate } from "@/components/i18n/MessagesProvider";
 import { ChevronRight } from "@/components/ui/icons/ChevronRight";
+import { useCoversVersion } from "@/lib/readAloud/useCovers";
 import { eraKey, themeKey, traditionKey, type ThemeId } from "@/lib/reading/catalog";
+import { packedCard } from "@/lib/reading/packedCovers";
 import type { Provenance } from "@/lib/reading/provenance";
 import type { HeaderCard } from "@/lib/reading/select";
 import { loadPosition, placeHash, type WorkPlace } from "@/lib/reader/position";
@@ -30,7 +32,7 @@ import { RoundIcon } from "./FeaturedWork";
  * reader left off. On a tablet and a computer the cover stands beside it.
  */
 export function BookHeader({
-  card,
+  card: built,
   blurb,
   authorHref,
   themes,
@@ -60,6 +62,8 @@ export function BookHeader({
   heading?: "h1" | "h2";
 }) {
   const { t } = useTranslate();
+  // 1.9, build 89 note 3: in the apps, the website's picture once its covers are in place.
+  const card = packedCard(built, useCoversVersion());
   const Heading = heading;
   const name = card.author ?? t("reading.work.anonymous");
   const byline =
@@ -105,10 +109,13 @@ export function BookHeader({
             </p>
           ) : null}
           <p className="mt-3 flex items-center gap-2 font-sans text-ui text-paper/80">
-            {card.cover ? <RoundIcon src={card.cover.src} focusY={card.cover.focusY} /> : null}
+            {/* The saint beside his name: never a picture that is the book's own and not of him. */}
+            {card.cover && !card.cover.bookOnly ? <RoundIcon src={card.cover.src} focusY={card.cover.focusY} /> : null}
             {authorHref ? (
-              <Link href={authorHref} data-byline="" className="min-w-0 truncate underline-offset-4 hover:underline">
-                {byline}
+              // The whole line is the target, 44px tall (hit-44); the words
+              // inside it are what truncate, so the target is not clipped.
+              <Link href={authorHref} data-byline="" className="hit-44 min-w-0 underline-offset-4 hover:underline">
+                <span className="block truncate">{byline}</span>
               </Link>
             ) : (
               <span data-byline="" className="min-w-0 truncate">{byline}</span>
@@ -119,7 +126,7 @@ export function BookHeader({
             <a
               href="#source"
               data-provenance={provenance.kind}
-              className="mt-2 inline-flex max-w-[58ch] items-start gap-1.5 font-sans text-caption leading-[1.45] text-paper/60 underline-offset-4 hover:text-paper hover:underline"
+              className="hit-44 mt-2 inline-flex max-w-[58ch] items-start gap-1.5 font-sans text-caption leading-[1.45] text-paper/60 underline-offset-4 hover:text-paper hover:underline"
             >
               {provenance.kind === "checked" ? <CheckMark /> : null}
               <span>

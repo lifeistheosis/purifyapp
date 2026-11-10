@@ -143,12 +143,14 @@ describe("every cover picture", () => {
   it("serves at least one book, and every file in the folder is one", () => {
     const used = new Set(Object.values(BOOK_COVERS));
     for (const [id] of figures) expect(used.has(id), `${id} is on no book`).toBe(true);
-    // The folder's own files. Its two folders are held to registries of their
+    // The folder's own files. Its folders are held to registries of their
     // own: saints/, the saints' hero pictures (lib/saints/__tests__/heroes.test.ts),
-    // and authors/, the reading room's cover icons (lib/reading/__tests__/coverArt.test.ts).
+    // and authors/, the reading room's cover icons, with from 1.9 councils/ and
+    // feelings/, a council's icon on its books and the How you feel doors'
+    // (lib/reading/__tests__/coverArt.test.ts).
     const dir = path.join(ROOT, "public", "covers");
     const entries = fs.readdirSync(dir, { withFileTypes: true });
-    expect(entries.filter((e) => e.isDirectory()).map((e) => e.name).sort()).toEqual(["authors", "saints"]);
+    expect(entries.filter((e) => e.isDirectory()).map((e) => e.name).sort()).toEqual(["authors", "councils", "feelings", "saints"]);
     // Each picture also has its AVIF beside it (1.7.2, scripts/covers-avif.mjs), and nothing else is there.
     const onDisk = entries.filter((e) => e.isFile()).map((e) => `/covers/${e.name}`);
     const files = figures.map(([, f]) => f.file);

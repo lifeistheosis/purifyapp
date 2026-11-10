@@ -47,8 +47,14 @@ export type Card = {
   selections?: true;
   retelling?: true;
   begin?: true;
-  /** The picture: `crop` when the book is a part of a larger one (a council's document, lib/reading/coverWindow.ts). */
-  cover?: { src: string; focusY: number; crop?: CoverWindow };
+  /**
+   * The picture: `crop` when the book is a part of a larger one (a council's
+   * document, lib/reading/coverWindow.ts); `bookOnly` when it is the book's
+   * own and not a picture of the person its byline names (a council's icon,
+   * a saint of the text, the scene it tells: lib/reading/coverArt.ts,
+   * WORK_ART), so it is never drawn beside his name as his face.
+   */
+  cover?: { src: string; focusY: number; crop?: CoverWindow; bookOnly?: true };
   /** The registry's own topics, for the search. */
   topics: string[];
 };

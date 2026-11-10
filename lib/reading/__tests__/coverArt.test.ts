@@ -12,14 +12,20 @@ import path from "node:path";
 import { describe, expect, it } from "vitest";
 
 import { streamedUrl } from "@/lib/media/streamed";
-import { AUTHOR_COVERS, WORK_COVERS } from "@/lib/reading/authorCovers";
+import { AUTHOR_COVERS, COUNCIL_COVERS, FEELING_COVERS, WORK_COVERS } from "@/lib/reading/authorCovers";
 import { buildRoom } from "@/lib/reading/cards";
-import { COVER_ART, coverSrc } from "@/lib/reading/coverArt";
+import { COVER_ART, WORK_ART, coverSrc } from "@/lib/reading/coverArt";
 import { AUTHOR_META, SUBJECTS } from "@/lib/reading/entries";
+import { COLLECTION_SLUGS } from "@/lib/reading/feelings";
 import { iconRightsFor, isUnverified } from "@/lib/saints/iconRights";
 
 const ROOT = path.resolve(__dirname, "..", "..", "..");
 const DIR = path.join(ROOT, "public", "covers", "authors");
+/** Every streamed picture the covers carry: the saints', the works' own, the councils' and the feelings' doors'. */
+const ALL_STREAMED = () =>
+  [...Object.entries(COVER_ART), ...Object.entries(WORK_COVERS), ...Object.entries(COUNCIL_COVERS), ...Object.entries(FEELING_COVERS)].filter(
+    (e): e is [string, Extract<(typeof e)[1], { kind: "streamed" }>] => e[1].kind === "streamed",
+  );
 const PD = /^(public domain|cc0)$/i;
 const EM_DASH = String.fromCharCode(0x2014);
 
@@ -33,16 +39,22 @@ describe("the covers' pictures", () => {
     const streamed = [...Object.values(COVER_ART), ...Object.values(WORK_COVERS)].filter((a) => a.kind === "streamed");
     const files = fs.readdirSync(DIR).filter((f) => f.endsWith(".jpg"));
     expect(streamed.map((a) => path.basename(a.file)).sort()).toEqual([...files].sort());
-    for (const art of streamed) {
-      expect(art.file, art.file).toMatch(/^\/covers\/authors\/[a-z-]+\.v\d+\.jpg$/);
+    // 1.9, build 89 note 3: a folder each for the councils' icons and the feelings' doors.
+    for (const [folder, map] of [["councils", COUNCIL_COVERS], ["feelings", FEELING_COVERS]] as const) {
+      const here = fs.readdirSync(path.join(ROOT, "public", "covers", folder)).filter((f) => f.endsWith(".jpg"));
+      expect(Object.values(map).map((a) => path.basename(a.file)).sort(), folder).toEqual([...here].sort());
+    }
+    for (const [, art] of ALL_STREAMED()) {
+      expect(art.file, art.file).toMatch(/^\/covers\/(authors|councils|feelings)\/[a-z-]+\.v\d+\.jpg$/);
       const bytes = fs.statSync(path.join(ROOT, "public", art.file)).size;
       expect(bytes, art.file).toBeLessThan(200 * 1024);
+      // Each has its lighter copy beside it (lib/media/streamed.ts, avifFor).
+      expect(fs.existsSync(path.join(ROOT, "public", art.file.replace(/\.jpg$/, ".avif"))), art.file).toBe(true);
     }
   });
 
   it("are public domain as their pages state, with every rights field written", () => {
-    for (const [slug, art] of [...Object.entries(COVER_ART), ...Object.entries(WORK_COVERS)]) {
-      if (art.kind !== "streamed") continue;
+    for (const [slug, art] of ALL_STREAMED()) {
       for (const field of ["alt", "work", "artist", "workDate", "source", "evidenceUrl", "inspectedOn"] as const) {
         expect(art[field]?.trim(), `${slug} ${field}`).toBeTruthy();
         expect(art[field].includes(EM_DASH), `${slug} ${field}`).toBe(false);
@@ -80,17 +92,58 @@ describe("the covers' pictures", () => {
     }
   });
 
-  it("give an anonymous book its own picture, and only a book the room carries", () => {
+  it("give a book a picture of its own (an anonymous book, a council's icon, a saint of the text), and only a book the room carries", () => {
     const cards = new Map(buildRoom(false).cards.map((c) => [c.key, c]));
-    for (const [key, art] of Object.entries(WORK_COVERS)) {
-      expect(cards.get(key as never)?.cover?.src, key).toBe(art.file);
+    for (const [key, art] of Object.entries(WORK_ART)) {
+      expect(cards.get(key as never)?.cover?.src, key).toBe(coverSrc(art, false));
     }
+    for (const key of Object.keys(WORK_COVERS)) expect(WORK_ART[key], key).toBe(WORK_COVERS[key]);
+    // Every council's icon is on a book: none is cut for nothing.
+    const used = new Set(Object.values(WORK_ART).map((a) => a.file));
+    for (const [council, art] of Object.entries(COUNCIL_COVERS)) expect(used.has(art.file), council).toBe(true);
+    // A council's icon or a borrowed cover never stands for the saint himself elsewhere (coverArtFor).
+    const own = new Set(Object.values(COVER_ART).map((a) => a.file));
+    for (const art of Object.values(COUNCIL_COVERS)) expect(own.has(art.file), art.file).toBe(false);
   });
 
   it("are the only pictures on a cover: no unopened icon reaches one", () => {
-    const allowed = new Set([...Object.values(COVER_ART), ...Object.values(WORK_COVERS)].map((a) => a.file));
+    const allowed = new Set([...Object.values(COVER_ART), ...Object.values(WORK_ART)].map((a) => a.file));
     for (const card of buildRoom(false).cards) {
       if (card.cover) expect(allowed.has(card.cover.src), `${card.key}: ${card.cover.src}`).toBe(true);
     }
+  });
+
+  it("leave on the plate only the books no picture has passed for yet (build 89 note 3)", () => {
+    // The owner's "ok to all" filled the rest. These wait for question 99
+    // (CC BY and CC BY-SA photographs, credited) or, for St Irene's letters,
+    // for the Seventh Council's fresco to be fetched and cut.
+    const plate = buildRoom(false)
+      .cards.filter((c) => !c.cover)
+      .map((c) => c.key)
+      .sort();
+    expect(plate).toEqual(
+      [
+        "irenaeus-of-lyons/against-heresies-on-john",
+        "irene-the-empress/letters-for-the-seventh-council",
+        "isaac-the-syrian/mystic-treatises",
+        "john-cassian/conferences",
+        "john-cassian/institutes",
+        "symeon-the-new-theologian/discourse-on-faith",
+      ].sort(),
+    );
+  });
+
+  it("give every How you feel door its saint's icon, asked of the website in the apps", () => {
+    expect(Object.keys(FEELING_COVERS).sort()).toEqual([...COLLECTION_SLUGS].sort());
+    for (const native of [false, true]) {
+      for (const door of buildRoom(native).feelings) {
+        expect(door.cover?.src, door.slug).toBe(coverSrc(FEELING_COVERS[door.slug], native));
+      }
+    }
+    // The door waits for its icon as a cover does, and stands as before without it.
+    const row = fs.readFileSync(path.join(ROOT, "components/reading/FeelingsRow.tsx"), "utf8");
+    expect(row).toContain("HOLD_MS");
+    expect(row).toContain("aspect-[4/5]");
+    expect(row).toContain("styles.door");
   });
 });

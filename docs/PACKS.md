@@ -22,7 +22,7 @@ apps the next time they are online.
 | `verse-of-day` | The Verse of the Day card's entries, from yesterday to two months ahead, made by the same `getVerseOfDayTable()` the card renders from. TEMPORARY, from 1.7.1: each day also carries its machine translation for a language with no Bible of its own (`machine`, lib/today/machineVerse.ts), so a reader in Turkish sees a verse chosen after the store build translated and labelled | Add or correct a pick in `data/today/verse-picks.json`, with its Turkish in `data/today/machine-verse/tr.json` (lib/today/__tests__/machineVerse.test.ts refuses a pick without one), then a website deploy |
 | `board` | The board message at the top of What's New, the row published in Admin (the committed `board.json` when the table is empty) | Publish it in Admin. No deploy at all |
 | `release` | The next Purify update (name, version, date) for the home screen widgets' countdown, from `data/changelog/next-update.json` | Set or move it in that file, then a website deploy |
-| `covers` (1.9) | Each Bible book's read-aloud cover: the figure, its picture's file under `/covers/` and its name in all 21 languages, made by `coversPackOf()` from the same map the website uses (`lib/readAloud/covers.ts`) | Add the picture to `public/covers/` and its figure and book to `lib/readAloud/covers.ts` (with its rights in `docs/licensing/READ_COVERS.md`), then a website deploy |
+| `covers` (1.9) | Each Bible book's read-aloud cover: the figure, its picture's file under `/covers/` and its name in all 21 languages, made by `coversPackOf()` from the same map the website uses (`lib/readAloud/covers.ts`). And the reading room's (build 89 note 3): every book's picture that is a file of `/covers/`, by its work, and each How you feel door's icon, made by `readingCovers()` from the functions the room is drawn with (`lib/reading/cards.ts`), laid over the build's in the room and on a book's page (`lib/reading/packedCovers.ts`) | For a Bible book: add the picture to `public/covers/` and its figure and book to `lib/readAloud/covers.ts` (with its rights in `docs/licensing/READ_COVERS.md`). For a reading room book or door: cut the picture with `scripts/fetch-author-covers.mjs`, run `scripts/covers-avif.mjs`, add its row to `lib/reading/authorCovers.ts` or `coverArt.ts` (with its rights in `docs/licensing/COVER_ICONS.md`). Then a website deploy |
 
 The website keeps its answer five minutes, and a phone asks at most once in
 half an hour, a few seconds after the app opens or comes back to the front.
@@ -70,7 +70,10 @@ No store build, no review, no update prompt.
   again when it comes (`useCoversVersion`). A page drawn into the export and
   its first draw in the app always agree. A cover's file must be a versioned
   `.jpg` in the website's own `/covers/` folder, and a book the pack does not
-  name keeps the build's cover.
+  name keeps the build's cover. In the reading room a council's document
+  keeps its window onto its council's icon, and a picture the pack marks as a
+  book's own (`bookOnly`: a council's icon, a saint of the text) is never
+  drawn beside the byline as the author's face.
 
 ## Adding a pack
 

@@ -68,11 +68,27 @@ export type CoverFigurePack = {
   names: Record<string, string>;
 };
 
+/**
+ * A picture in the reading room (1.9, build 89 note 3): the website's file
+ * under /covers/, where its face is from the top, and `bookOnly` when it is
+ * the book's own picture and not of the person its byline names
+ * (lib/reading/select.ts, Card).
+ */
+export type ReadingCoverPack = { file: string; focusY: number; bookOnly?: true };
+
 export type CoversPack = {
   schema: number;
   /** Each book's cover: a figure of `figures`, or "plate" for the manuscript. */
   books: Record<string, string>;
   figures: Record<string, CoverFigurePack>;
+  /**
+   * The reading room's books, by work ("saint/work"): each one's picture as
+   * the website's room shows it (lib/reading/cards.ts, readingCovers). A
+   * book the map does not name keeps the build's cover.
+   */
+  works?: Record<string, ReadingCoverPack>;
+  /** Each How you feel door's icon, by feeling (lib/reading/authorCovers.ts, FEELING_COVERS). */
+  feelings?: Record<string, ReadingCoverPack>;
 };
 
 export type Packs = {
@@ -226,8 +242,9 @@ const isName = (v: unknown): v is string =>
 /**
  * The covers pack, rebuilt field by field. Every book a slug, every cover a
  * figure the pack names or the plate, every figure a file of /covers/ and an
- * English name at least. One bad entry spoils the pack, and the build's own
- * map stays.
+ * English name at least; and from 1.9 the reading room's books and doors,
+ * each a file of /covers/ too. One bad entry spoils the pack, and the
+ * build's own map stays.
  */
 export function readCoversPack(v: unknown): CoversPack | null {
   if (!isRecord(v) || v.schema !== PACK_SCHEMAS.covers || !isRecord(v.books) || !isRecord(v.figures)) return null;
@@ -256,7 +273,33 @@ export function readCoversPack(v: unknown): CoversPack | null {
     if (!SLUG.test(book) || typeof cover !== "string" || (cover !== "plate" && !figures[cover])) return null;
     books[book] = cover;
   }
-  return { schema: PACK_SCHEMAS.covers, books, figures };
+  const out: CoversPack = { schema: PACK_SCHEMAS.covers, books, figures };
+  for (const [field, key, most] of [["works", WORK_KEY, 600], ["feelings", SLUG, 40]] as const) {
+    if (v[field] === undefined) continue;
+    const map = readReadingCovers(v[field], key, most);
+    if (!map) return null;
+    out[field] = map;
+  }
+  return out;
+}
+
+// A reading room book's key: the saint's slug and the work's, as lib/reading/entries.ts writes them.
+const WORK_KEY = /^[a-z0-9-]{1,60}\/[a-z0-9-]{1,80}$/;
+
+/** A reading room map of the covers pack: every key of its shape, every picture a file of /covers/ and a focus from 0 to 100. */
+function readReadingCovers(v: unknown, key: RegExp, most: number): Record<string, ReadingCoverPack> | null {
+  if (!isRecord(v)) return null;
+  const keys = Object.keys(v);
+  if (keys.length > most) return null;
+  const out: Record<string, ReadingCoverPack> = {};
+  for (const k of keys) {
+    const c = v[k];
+    if (!key.test(k) || !isRecord(c) || typeof c.file !== "string" || !COVER_FILE.test(c.file)) return null;
+    if (typeof c.focusY !== "number" || !Number.isFinite(c.focusY) || c.focusY < 0 || c.focusY > 100) return null;
+    if (c.bookOnly !== undefined && c.bookOnly !== true) return null;
+    out[k] = { file: c.file, focusY: c.focusY, ...(c.bookOnly ? { bookOnly: true as const } : {}) };
+  }
+  return out;
 }
 
 /**

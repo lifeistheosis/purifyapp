@@ -445,6 +445,15 @@ export function coversVersion(): number {
   return packedVersion;
 }
 
+/**
+ * The reading room's part of the website's map (1.9, build 89 note 3), once
+ * the app has put it in place, or null. lib/reading/packedCovers.ts lays it
+ * over the build's covers.
+ */
+export function packedReadingCovers(): Pick<CoversPack, "works" | "feelings"> | null {
+  return packed ? { works: packed.works, feelings: packed.feelings } : null;
+}
+
 /** A book's cover by the website's map, or undefined where the map does not name the book. */
 function packedCover(pack: CoversPack, book: string): ReadAloudCover | undefined {
   const id = pack.books[book];

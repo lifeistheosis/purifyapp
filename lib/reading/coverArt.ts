@@ -1,7 +1,7 @@
 import { SITE_URL } from "@/lib/site";
 import { SAINT_HEROES } from "@/lib/saints/heroes";
 
-import { AUTHOR_COVERS } from "./authorCovers";
+import { AUTHOR_COVERS, COUNCIL_COVERS, WORK_COVERS } from "./authorCovers";
 
 /**
  * The picture on a book's cover (1.7, the owner's note 18): the icon of the
@@ -112,9 +112,46 @@ export const COVER_ART: Readonly<Record<string, CoverArt>> = {
   "ammon-of-nitria": bundled("ammon-of-nitria.jpg", 34),
   "hilarion-the-great": bundled("hilarion-the-great.jpg", 30),
   "macarius-the-great": bundled("macarius-the-great.jpg", 42),
+  // 1.9, build 89 note 3: three saints whose books were on the plate while
+  // their settled page icons (2026-10-31) were not yet on them. Small, as the
+  // owner was told: the app carries them at a page icon's size.
+  "cyril-of-jerusalem": bundled("cyril-of-jerusalem.v2.jpg", 26),
+  "photius-the-great": bundled("photius-the-great.v2.jpg", 24),
+  "justinian-the-great": bundled("justinian-the-great.v2.jpg", 26),
 
   // From Wikimedia Commons for the covers (lib/reading/authorCovers.ts).
   ...AUTHOR_COVERS,
+};
+
+/**
+ * A book's own picture, ahead of its saint's (lib/reading/cards.ts), where
+ * the picture is not of the person whose book it is, so it is keyed by the
+ * work and never stands for the saint elsewhere (a saint's face on a
+ * council's page, the You tab: coverArtFor):
+ *
+ *  - the anonymous Way of a Pilgrim's own (WORK_COVERS);
+ *  - 1.9, build 89 note 3: the icon of the council a book belongs to, for an
+ *    author with no picture (COUNCIL_COVERS): St Alexander's letter against
+ *    Arius, the council of Nicaea that followed it; St Nectarius, chosen
+ *    bishop at the council of 381; St Celestine's letter, read at Ephesus;
+ *    St John Cassian's On the Incarnation, written against Nestorius on the
+ *    eve of Ephesus (his other books wait for a picture of him);
+ *  - and a saint of the text who already has a cover (the owner's "ok to
+ *    all" to the research's four): the Apostle Philip for his daughter St
+ *    Hermione, St Pachomius for St Isidora of his Tabenna, St John
+ *    Chrysostom for St Olympias, his deaconess, and the Apostle John for St
+ *    Papias, his hearer.
+ */
+export const WORK_ART: Readonly<Record<string, CoverArt>> = {
+  ...WORK_COVERS,
+  "alexander-of-alexandria/encyclical-against-arius": COUNCIL_COVERS["first-nicaea"],
+  "nectarius-of-constantinople/the-senator-bishop": COUNCIL_COVERS["first-constantinople"],
+  "celestine-of-rome/letter-to-the-synod-of-ephesus": COUNCIL_COVERS.ephesus,
+  "john-cassian/on-the-incarnation": COUNCIL_COVERS["ephesus-ferapontov"],
+  "hermione-of-ephesus/life-of-hermione": COVER_ART["apostle-philip"],
+  "isidora-of-tabenna/life-of-isidora": COVER_ART["pachomius-the-great"],
+  "olympias-the-deaconess/life-of-olympias": COVER_ART["john-chrysostom"],
+  "papias-of-hierapolis/the-living-voice": COVER_ART["apostle-john"],
 };
 
 /** The settled picture for a book's saint, or null for the plate alone. */

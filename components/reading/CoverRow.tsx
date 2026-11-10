@@ -28,6 +28,11 @@ export function cardMeta(card: Pick<Card, "minutes" | "selections">, t: T): stri
 /** Whether a row is about to be seen, so its covers load before they are swiped to. */
 const RowNear = createContext(false);
 
+/** For a picture on a row that is not a cover (a feeling's door): whether its row is near. */
+export function useRowNear(): boolean {
+  return useContext(RowNear);
+}
+
 /**
  * One row of the reading room (1.7, the owner's note 18: "browsing by
  * swiping through rows"): its name, a See all where the row is a cut of a

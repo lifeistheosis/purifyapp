@@ -1,12 +1,14 @@
 import "server-only";
 
+import type { ReadingCoverPack } from "@/lib/packs/types";
+
 import stats from "@/data/reading/stats.json";
 import { SAINTS, type Saint } from "@/lib/saints/saints";
 
-import { WORK_COVERS } from "./authorCovers";
+import { FEELING_COVERS } from "./authorCovers";
 import { THEME_IDS, type EraId, type ThemeId, type TraditionId } from "./catalog";
 import { PASSAGES } from "./collections";
-import { coverArtFor, coverSrc } from "./coverArt";
+import { WORK_ART, coverArtFor, coverSrc, type CoverArt } from "./coverArt";
 import { AUTHOR_META, BEGIN_ORDER, ENTRIES, SUBJECTS, bylineOf, coverSubject, type ReadingEntry, type ThemeTag, type WorkKey } from "./entries";
 import { COLLECTION_SLUGS } from "./feelings";
 import { provenanceOf } from "./provenance";
@@ -73,15 +75,23 @@ function firstSections(themes: readonly ThemeTag[]): Card["at"] {
   return Object.keys(at).length ? at : undefined;
 }
 
+/**
+ * A work's picture: only a settled one, the work's own (an anonymous book, a
+ * council's icon, a saint of the text: WORK_ART), else its subject's, else
+ * its author's. The covers pack carries the same answer (readingCovers).
+ */
+export function workArt(key: WorkKey, entry: ReadingEntry): CoverArt | null {
+  const subject = coverSubject(entry);
+  return WORK_ART[key] ?? coverArtFor(subject) ?? (entry.by && entry.by !== subject ? coverArtFor(entry.by) : null);
+}
+
 export function cardFor(saint: Saint, workSlug: string, native: boolean): Card | null {
   const key = `${saint.slug}/${workSlug}` as WorkKey;
   const entry = ENTRIES[key];
   const work = saint.works.find((w) => w.slug === workSlug);
   if (!entry || !work) return null;
   const line = bylineOf(entry);
-  const subject = coverSubject(entry);
-  // Only a settled picture: the work's own (an anonymous book), the subject's, else the author's.
-  const art = WORK_COVERS[key] ?? coverArtFor(subject) ?? (entry.by && entry.by !== subject ? coverArtFor(entry.by) : null);
+  const art = workArt(key, entry);
   return {
     key,
     title: work.title,
@@ -98,7 +108,7 @@ export function cardFor(saint: Saint, workSlug: string, native: boolean): Card |
     ...(entry.scope === "selections" ? { selections: true as const } : {}),
     ...(entry.form === "retelling" ? { retelling: true as const } : {}),
     ...(entry.begin ? { begin: true as const } : {}),
-    ...(art ? { cover: { src: coverSrc(art, native), focusY: art.focusY } } : {}),
+    ...(art ? { cover: { src: coverSrc(art, native), focusY: art.focusY, ...(WORK_ART[key] ? { bookOnly: true as const } : {}) } } : {}),
     topics: work.topics ?? [],
   };
 }
@@ -135,6 +145,29 @@ function authorInfo(slug: string): AuthorInfo | null {
 }
 
 /** Every work the room shows, once: a work registered twice is shown as its twin. */
+/**
+ * The reading room's pictures as the covers pack carries them to the apps
+ * (lib/packs/server.ts; 1.9, build 89 note 3: "so later ones go live from
+ * the website"): each book's and each door's picture where it is a file of
+ * the website's /covers/, by the same functions the room is drawn with. A
+ * cover found after a store build reaches the apps with the website deploy
+ * that carries its file; a picture the apps carry themselves (a settled
+ * page icon) stays the build's.
+ */
+export function readingCovers(): { works: Record<string, ReadingCoverPack>; feelings: Record<string, ReadingCoverPack> } {
+  const works: Record<string, ReadingCoverPack> = {};
+  for (const card of allCards(false)) {
+    const c = card.cover;
+    if (c && !c.crop && c.src.startsWith("/covers/")) works[card.key] = { file: c.src, focusY: c.focusY, ...(c.bookOnly ? { bookOnly: true as const } : {}) };
+  }
+  const feelings: Record<string, ReadingCoverPack> = {};
+  for (const slug of COLLECTION_SLUGS) {
+    const art = FEELING_COVERS[slug];
+    if (art) feelings[slug] = { file: art.file, focusY: art.focusY };
+  }
+  return { works, feelings };
+}
+
 export function allCards(native: boolean): Card[] {
   const out: Card[] = [];
   for (const saint of SAINTS) {
@@ -192,8 +225,12 @@ export function buildRoom(native: boolean): Room {
     const first = statFor(card.key)?.sections[0]?.[0] ?? 1;
     featured.push({ key: card.key, blurb, first, ...(entry.featured.seasons?.length ? { seasons: [...entry.featured.seasons] } : {}) });
   }
-  // The row by feeling (1.8): each door carries only its count, never a passage.
-  const feelings = COLLECTION_SLUGS.map((slug) => ({ slug, count: PASSAGES[slug].length }));
+  // The row by feeling (1.8): each door carries only its count, never a
+  // passage, and from 1.9 its icon's address (build 89 note 3).
+  const feelings = COLLECTION_SLUGS.map((slug) => {
+    const art = FEELING_COVERS[slug];
+    return { slug, count: PASSAGES[slug].length, ...(art ? { cover: { src: coverSrc(art, native) } } : {}) };
+  });
   return { cards, picks: themePicks(), authors, featured, begin: [...BEGIN_ORDER], feelings };
 }
 

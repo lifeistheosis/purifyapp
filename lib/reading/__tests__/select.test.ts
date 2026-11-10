@@ -55,7 +55,8 @@ describe("the room's cards", () => {
     expect(pimen.byline).toBe("about");
     expect(pimen.retelling).toBe(true);
     const unverified = room.cards.filter((c) => c.cover && /\/saints\/icons\//.test(c.cover.src));
-    for (const c of unverified) expect(c.cover!.src, c.key).toMatch(/^\/saints\/icons\/[a-z-]+\.jpg$/);
+    // A settled icon's file, by its name and, from a second cut on, its version (cyril-of-jerusalem.v2.jpg).
+    for (const c of unverified) expect(c.cover!.src, c.key).toMatch(/^\/saints\/icons\/[a-z-]+(\.v\d+)?\.jpg$/);
   });
 });
 

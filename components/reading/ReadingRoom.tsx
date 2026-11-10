@@ -13,11 +13,13 @@ import { cn } from "@/lib/cn";
 import { useCalendarStyleDefault } from "@/lib/calendar/useCalendarStyleDefault";
 import { useToday } from "@/lib/calendar/useToday";
 import { avifFor } from "@/lib/media/streamed";
+import { useCoversVersion } from "@/lib/readAloud/useCovers";
 import { useSpace } from "@/lib/onboarding/useSpace";
 import { ERA_IDS, LENGTH_IDS, THEME_IDS, TRADITION_IDS, partKey, themeKey, traditionKey } from "@/lib/reading/catalog";
 import { useReadingHistory } from "@/lib/reading/history";
 import { useReadingProgress, type Progress } from "@/lib/reading/progress";
 import { usePartWords } from "@/components/saints/partWords";
+import { withPackedCovers } from "@/lib/reading/packedCovers";
 import { readingSeason } from "@/lib/reading/seasons";
 import {
   beginRow,
@@ -130,7 +132,11 @@ function warm(cover: Card["cover"], first = false) {
  * history, the progress, the answer about how new they are) is worked out on
  * the device after the page wakes.
  */
-export function ReadingRoom({ room, library }: { room: Room; library: LibraryLink[] }) {
+export function ReadingRoom({ room: built, library }: { room: Room; library: LibraryLink[] }) {
+  // 1.9, build 89 note 3: in the apps, the website's covers and doors' icons
+  // once its covers pack is in place (lib/reading/packedCovers.ts).
+  const placed = useCoversVersion();
+  const room = useMemo(() => withPackedCovers(built, placed), [built, placed]);
   const { t } = useTranslate();
   const { sayPill } = usePartWords();
   const mounted = useMounted();

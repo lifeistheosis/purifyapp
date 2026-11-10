@@ -113,6 +113,8 @@ const OWN = [
   "components/covers/WorkCover.tsx",
   "components/walkthrough/NoteFigures.tsx",
   "components/reading/FeaturedWork.tsx",
+  // 1.9, build 89 note 3: a feeling's door waits for its icon as a cover does.
+  "components/reading/FeelingsRow.tsx",
 ];
 
 describe("the rule, in one place", () => {

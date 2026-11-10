@@ -159,8 +159,11 @@ describe("the Holy Fathers principally associated", () => {
 
   it("shows a face only where the reading room's covers have a settled picture of him", () => {
     const pictured = unique.filter((f) => f.picture);
-    // Fourteen when the sheet was drawn, and St. Cyprian with his slug.
-    expect(pictured).toHaveLength(15);
+    // Fourteen when the sheet was drawn, and St. Cyprian with his slug; and
+    // from 1.9 (build 89 note 3, the plate's saints given their pictures) St.
+    // Cyril of Jerusalem at the Second Council, St. Justinian at the Fifth
+    // and St. Tarasius at the Seventh.
+    expect(pictured).toHaveLength(18);
     for (const f of pictured) {
       const slug = f.href!.replace("/saints/", "");
       expect(COVER_ART[slug], slug).toBeDefined();

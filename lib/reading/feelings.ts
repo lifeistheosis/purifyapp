@@ -55,8 +55,12 @@ export function collectionHref(slug: CollectionSlug): string {
   return `/reading/collections/${slug}`;
 }
 
-/** A door on the room's row: which collection, and how many passages it holds. */
-export type FeelingDoor = { slug: CollectionSlug; count: number };
+/**
+ * A door on the room's row: which collection, how many passages it holds,
+ * and, from 1.9 (build 89 note 3), the address of its icon
+ * (lib/reading/authorCovers.ts, FEELING_COVERS): the website's in the apps.
+ */
+export type FeelingDoor = { slug: CollectionSlug; count: number; cover?: { src: string } };
 
 /**
  * Our words in the collections, waiting for a future clergy review: the
