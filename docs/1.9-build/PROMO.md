@@ -12,10 +12,11 @@ only, with no phone around it and nothing drawn by hand:
 
 1. **Today's journal page**, by the Church's day: the date, the saint, the page to write on.
 2. **A verse card in the journal**, quoted from the Bible with Quote in journal.
-3. **The verse focus**: a verse tapped, its one bar open (colours, copy, share, image, note,
-   Greek, compare, cross-references).
-4. **A word tapped for its Greek**.
-5. **A verse highlighted** with a double tap.
+3. **The verse's window**: a verse held, its window open (the colours, Copy, Share, Image,
+   Note, and Study, where the Greek, Compare and the cross-references are). Since build 90 a
+   hold opens it and a single tap opens nothing (`notes/build-90.md`, note 10).
+4. **The Greek**: with the Greek beside the English, a Greek word tapped for its study.
+5. **A verse highlighted** with a double tap, in the last colour picked.
 6. **Compare**: the verse in the app's English, its Greek and a downloaded Bible. It is a
    Plus card, so its words say Plus.
 7. **The journal for Plus**: a cover, blocks, a notebook. Its words say Plus; nothing
