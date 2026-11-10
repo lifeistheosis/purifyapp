@@ -18,7 +18,7 @@ import type { PrayPlace } from "@/lib/prayers/commemoration";
 
 import type { CampaignState } from "./carried";
 import { campaignsInBuild } from "./flags";
-import type { CampaignKind, CampaignModAction, Closing, ConsentKind, ForWhom, PrayerRef, PublicCampaign, ReportReason } from "./model";
+import type { CampaignKind, CampaignModAction, CampaignThread, Closing, ConsentKind, ForWhom, NoteKind, PrayerRef, PublicCampaign, ReportReason } from "./model";
 
 const JSON_POST = { method: "POST", headers: { "content-type": "application/json" } } as const;
 
@@ -198,6 +198,84 @@ export async function takeDownCampaign(id: string): Promise<Sent> {
   if (!campaignsInBuild()) return CLOSED;
   try {
     return await sent(await apiFetch(`/api/campaigns/${encodeURIComponent(id)}`, { method: "DELETE" }));
+  } catch {
+    return { ok: false, status: 0, error: null };
+  }
+}
+
+// ── Updates and comments ────────────────────────────────────────────────────
+
+/** The creator opens comments, or closes them: those already written stay. */
+export async function setCommentsOpen(id: string, open: boolean): Promise<Sent> {
+  if (!campaignsInBuild()) return CLOSED;
+  try {
+    return await sent(
+      await apiFetch(`/api/campaigns/${encodeURIComponent(id)}`, { method: "PATCH", headers: { "content-type": "application/json" }, body: JSON.stringify({ commentsOpen: open }) }),
+    );
+  } catch {
+    return { ok: false, status: 0, error: null };
+  }
+}
+
+export type ThreadResult = { state: "ok"; thread: CampaignThread } | { state: "missing" } | { state: "error" };
+
+/** A campaign's updates and comments. */
+export async function fetchThread(id: string): Promise<ThreadResult> {
+  if (!campaignsInBuild()) return { state: "missing" };
+  try {
+    const res = await apiFetch(`/api/campaigns/${encodeURIComponent(id)}/thread`);
+    if (res.status === 404) return { state: "missing" };
+    if (!res.ok) return { state: "error" };
+    const json = (await body(res)) as Partial<CampaignThread>;
+    return {
+      state: "ok",
+      thread: {
+        updates: json.updates ?? [],
+        comments: json.comments ?? [],
+        commentsOpen: json.commentsOpen !== false,
+        signedIn: json.signedIn === true,
+        canUpdate: json.canUpdate === true,
+        canComment: json.canComment === true,
+      },
+    };
+  } catch {
+    return { state: "error" };
+  }
+}
+
+/**
+ * What writing an update or a comment came to. `held` is a note that waits
+ * for a moderator; `filtered` asks the writer first, with the words as they
+ * would be shown; the rest are refusals the screen says in its own words.
+ */
+export type NoteResult =
+  | { ok: true; id: string; held: boolean }
+  | { ok: false; status: number; code: string | null; error: string | null; preview: string | null };
+
+export async function writeNote(id: string, kind: NoteKind, text: string, confirmFiltered = false): Promise<NoteResult> {
+  if (!campaignsInBuild()) return { ok: false, status: 404, code: null, error: null, preview: null };
+  try {
+    const res = await apiFetch(`/api/campaigns/${encodeURIComponent(id)}/thread`, { ...JSON_POST, body: JSON.stringify({ kind, body: text, ...(confirmFiltered ? { confirmFiltered: true } : {}) }) });
+    const json = await body(res);
+    if (res.ok && typeof json.id === "string") return { ok: true, id: json.id, held: json.held === true };
+    const preview = (json.preview as { body?: string | null } | undefined)?.body;
+    return {
+      ok: false,
+      status: res.status,
+      code: typeof json.code === "string" ? json.code : null,
+      error: typeof json.error === "string" ? json.error : null,
+      preview: typeof preview === "string" ? preview : null,
+    };
+  } catch {
+    return { ok: false, status: 0, code: null, error: null, preview: null };
+  }
+}
+
+/** Take a note off: one's own, or a comment on one's own campaign. */
+export async function removeNote(id: string, noteId: string): Promise<Sent> {
+  if (!campaignsInBuild()) return CLOSED;
+  try {
+    return await sent(await apiFetch(`/api/campaigns/${encodeURIComponent(id)}/thread?note=${encodeURIComponent(noteId)}`, { method: "DELETE" }));
   } catch {
     return { ok: false, status: 0, error: null };
   }

@@ -4,7 +4,9 @@ import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useState, type CSSProperties, type ReactNode } from "react";
 
+import { CAMPAIGN_DOORS, CampaignDoors, type CampaignDoor } from "@/components/campaigns/CampaignDoors";
 import { CampaignJoinSheet } from "@/components/campaigns/CampaignJoinSheet";
+import { CampaignComments, CampaignUpdates, useCampaignThread } from "@/components/campaigns/CampaignNotes";
 import { CampaignReportSheet } from "@/components/campaigns/CampaignReportSheet";
 import { TickLines } from "@/components/campaigns/TickLines";
 import { CommunityAvatar } from "@/components/community/CommunityAvatar";
@@ -13,6 +15,7 @@ import { ButtonRow, Row, Switch } from "@/components/settings/LitPanel";
 import { ArrivingImage } from "@/components/ui/ArrivingImage";
 import { ConfirmDialog } from "@/components/ui/ConfirmDialog";
 import { Bookmark } from "@/components/ui/icons/Bookmark";
+import { ChatBubble } from "@/components/ui/icons/ChatBubble";
 import { Check } from "@/components/ui/icons/Check";
 import { Close } from "@/components/ui/icons/Close";
 import { Erase } from "@/components/ui/icons/Erase";
@@ -23,7 +26,7 @@ import { Shield } from "@/components/ui/icons/Shield";
 import { ShareButton } from "@/components/ui/ShareButton";
 import { Sheet } from "@/components/ui/Sheet";
 import { carriedOne, type CarryPick } from "@/lib/campaigns/carried";
-import { closeCampaign, fetchCampaign, keepCampaign, takeDownCampaign, type OneResult } from "@/lib/campaigns/client";
+import { closeCampaign, fetchCampaign, keepCampaign, setCommentsOpen, takeDownCampaign, type OneResult } from "@/lib/campaigns/client";
 import { CLOSINGS, isDay, isRunning, type Closing, type PublicCampaign } from "@/lib/campaigns/model";
 import { CAMPAIGN_MENU_EVENT } from "@/lib/campaigns/pageMenu";
 import { campaignUpkeep } from "@/lib/campaigns/useCampaignUpkeep";
@@ -36,6 +39,7 @@ import { DEPARTED_PRAYER, departedPrayer } from "@/lib/prayers/commemoration";
 import { getPrayerIcon } from "@/lib/prayers/icons";
 import { SUPPORT_EMAIL } from "@/lib/legal/entity";
 import { goBack } from "@/lib/nav/goBack";
+import { hashFor, tabFromHash } from "@/lib/ui/sectionTabs";
 import { todayKey } from "@/lib/rhythm/dayKey";
 
 /** Where the campaigns live in the app: Community's first half. */
@@ -125,6 +129,15 @@ function Opened({ first, bar }: { first: PublicCampaign; bar: ReactNode }) {
   const [busy, setBusy] = useState(false);
   const [notice, setNotice] = useState<string | null>(null);
   const [failed, setFailed] = useState<string | null>(null);
+  // Which door is open, kept in the address as a saint's page keeps its own
+  // (lib/ui/sectionTabs.ts): #updates and #comments, and nothing for About.
+  // This part of the page is only ever drawn on the device, once the
+  // campaign has come, so the address can be read in the first render.
+  const [door, setDoor] = useState<CampaignDoor>(() => (typeof window === "undefined" ? "about" : tabFromHash(window.location.hash, CAMPAIGN_DOORS)));
+  // Its updates and comments (phase 2). None while it waits for a moderator,
+  // and none under one of July's, which takes no words.
+  const hasThread = campaign.status !== "held" && campaign.days !== null;
+  const { result: thread, reload: reloadThread } = useCampaignThread(campaign.id, hasThread);
 
   const name = campaign.subject_name ?? campaign.title;
   const running = isRunning(campaign);
@@ -161,6 +174,40 @@ function Opened({ first, bar }: { first: PublicCampaign; bar: ReactNode }) {
     if (window.location.hash !== "#campaign-prayer") return;
     document.getElementById("campaign-prayer")?.scrollIntoView({ block: "start" });
   }, []);
+
+  function openDoor(next: CampaignDoor) {
+    setDoor(next);
+    window.history.replaceState(window.history.state, "", `${window.location.pathname}${window.location.search}${hashFor(next, CAMPAIGN_DOORS)}`);
+  }
+
+  // Pray leads to the prayer, which is behind About: from another door the
+  // door is opened first, and the prayer is reached once it is drawn.
+  const [toPrayer, setToPrayer] = useState(0);
+  useEffect(() => {
+    if (toPrayer === 0) return;
+    const el = document.getElementById("campaign-prayer");
+    el?.scrollIntoView({ block: "start" });
+    el?.focus({ preventScroll: true });
+  }, [toPrayer]);
+  function pray(e: { preventDefault: () => void }) {
+    e.preventDefault();
+    openDoor("about");
+    setToPrayer((n) => n + 1);
+  }
+
+  /** Its creator opens comments, or closes them (his yes to item 126). */
+  async function comments(open: boolean) {
+    if (busy) return;
+    setBusy(true);
+    const res = await setCommentsOpen(campaign.id, open);
+    setBusy(false);
+    if (!res.ok) {
+      setSheet(null);
+      setFailed(t("campaigns.err.failed"));
+      return;
+    }
+    reloadThread();
+  }
 
   function said(message: string) {
     setSheet(null);
@@ -224,6 +271,58 @@ function Opened({ first, bar }: { first: PublicCampaign; bar: ReactNode }) {
     goBack(router, HOME);
   }
 
+  // What the page says of the campaign: behind the About door once it has
+  // doors, and the whole of the page under its head before then.
+  const about = (
+    <>
+      {campaign.status === "held" ? <p className="mb-6 font-sans text-detail leading-relaxed text-paper/75">{t("campaigns.waitingBody")}</p> : null}
+      {standing && campaign.status !== "held" ? <p className="mb-6 font-sans text-detail leading-relaxed text-paper/75">{t("campaigns.endedBody")}</p> : null}
+
+      {campaign.details ? <p className="whitespace-pre-line break-words font-serif text-body leading-[1.7] text-paper/90">{campaign.details}</p> : null}
+
+      {/* The prayer, whole, with the name in it: word for word from the
+          prayer book, and where it is printed. */}
+      <h2 id="campaign-prayer" tabIndex={-1} className="mt-8 scroll-mt-24 font-heading text-lede leading-tight text-paper focus:outline-none">
+        {t("campaigns.thePrayer")}
+      </h2>
+      {campaign.for_whom === "departed" ? (
+        <>
+          <div lang="en" className="mt-3">
+            {departedPrayer([name]).map((line, i) => (
+              <p key={i} className={cn("break-words font-serif text-[16px] italic leading-[1.6] text-paper/90", i > 0 && "mt-2")}>
+                {line}
+              </p>
+            ))}
+          </div>
+          <p className="mt-3 font-sans text-caption leading-relaxed text-paper/70">
+            {t("prayers.reader.sourceLabel")} {DEPARTED_PRAYER.source}
+          </p>
+        </>
+      ) : (
+        <div className="mt-3">
+          <p className="break-words font-serif text-[16px] italic leading-[1.6] text-paper/90">{t("prayers.commemorate.living")}</p>
+          <p className="mt-2 break-words font-serif text-[16px] leading-[1.6] text-paper">{name}</p>
+        </div>
+      )}
+      {psalm ? (
+        <div className="mt-6">
+          <h3 className="font-sans text-detail font-semibold text-paper/80">{t("today.greet.psalm", { ref: psalm.number })}</h3>
+          <div lang="en" className="mt-2">
+            {(psalm.prayer.text ?? "").split(/\n\n+/).map((stanza, i) => (
+              <p key={i} className={cn("whitespace-pre-line break-words font-serif text-[16px] leading-[1.6] text-paper/90", i > 0 && "mt-3")}>
+                {stanza}
+              </p>
+            ))}
+          </div>
+          <p className="mt-3 font-sans text-caption leading-relaxed text-paper/70">
+            {t("prayers.reader.sourceLabel")} {psalm.source}
+          </p>
+        </div>
+      ) : null}
+      {pick ? <p className="mt-5 font-sans text-caption leading-relaxed text-paper/70">{setIn(t("campaigns.thePrayerHow"), { name })}</p> : null}
+    </>
+  );
+
   return (
     <div data-campaign-page="">
       {bar}
@@ -269,7 +368,7 @@ function Opened({ first, bar }: { first: PublicCampaign; bar: ReactNode }) {
               {/* The three things a reader does with it, as its card under
                   Pray together has them (components/community/CampaignCard.tsx). */}
               <div className="saint-head-in mt-5 flex items-center gap-2" style={{ "--i": 3 } as CSSProperties}>
-                <a href="#campaign-prayer" className={cn(PILL, "reader-lit shrink-0 bg-paper text-night")}>
+                <a href="#campaign-prayer" onClick={pray} className={cn(PILL, "reader-lit shrink-0 bg-paper text-night")}>
                   <Lampada size={18} />
                   {t("streak.pray")}
                 </a>
@@ -298,51 +397,20 @@ function Opened({ first, bar }: { first: PublicCampaign; bar: ReactNode }) {
           </header>
 
           <div className="pt-5">
-            {campaign.status === "held" ? <p className="mb-6 font-sans text-detail leading-relaxed text-paper/75">{t("campaigns.waitingBody")}</p> : null}
-            {standing && campaign.status !== "held" ? <p className="mb-6 font-sans text-detail leading-relaxed text-paper/75">{t("campaigns.endedBody")}</p> : null}
-
-            {campaign.details ? <p className="whitespace-pre-line break-words font-serif text-body leading-[1.7] text-paper/90">{campaign.details}</p> : null}
-
-            {/* The prayer, whole, with the name in it: word for word from the
-                prayer book, and where it is printed. */}
-            <h2 id="campaign-prayer" tabIndex={-1} className="mt-8 scroll-mt-24 font-heading text-lede leading-tight text-paper focus:outline-none">
-              {t("campaigns.thePrayer")}
-            </h2>
-            {campaign.for_whom === "departed" ? (
-              <>
-                <div lang="en" className="mt-3">
-                  {departedPrayer([name]).map((line, i) => (
-                    <p key={i} className={cn("break-words font-serif text-[16px] italic leading-[1.6] text-paper/90", i > 0 && "mt-2")}>
-                      {line}
-                    </p>
-                  ))}
-                </div>
-                <p className="mt-3 font-sans text-caption leading-relaxed text-paper/70">
-                  {t("prayers.reader.sourceLabel")} {DEPARTED_PRAYER.source}
-                </p>
-              </>
+            {hasThread ? (
+              <CampaignDoors
+                open={door}
+                onOpen={openDoor}
+                label={campaign.title}
+                panels={{
+                  about,
+                  updates: <CampaignUpdates campaignId={campaign.id} result={thread} reload={reloadThread} campaignMine={mine} running={running} />,
+                  comments: <CampaignComments campaignId={campaign.id} result={thread} reload={reloadThread} campaignMine={mine} running={running} />,
+                }}
+              />
             ) : (
-              <div className="mt-3">
-                <p className="break-words font-serif text-[16px] italic leading-[1.6] text-paper/90">{t("prayers.commemorate.living")}</p>
-                <p className="mt-2 break-words font-serif text-[16px] leading-[1.6] text-paper">{name}</p>
-              </div>
+              about
             )}
-            {psalm ? (
-              <div className="mt-6">
-                <h3 className="font-sans text-detail font-semibold text-paper/80">{t("today.greet.psalm", { ref: psalm.number })}</h3>
-                <div lang="en" className="mt-2">
-                  {(psalm.prayer.text ?? "").split(/\n\n+/).map((stanza, i) => (
-                    <p key={i} className={cn("whitespace-pre-line break-words font-serif text-[16px] leading-[1.6] text-paper/90", i > 0 && "mt-3")}>
-                      {stanza}
-                    </p>
-                  ))}
-                </div>
-                <p className="mt-3 font-sans text-caption leading-relaxed text-paper/70">
-                  {t("prayers.reader.sourceLabel")} {psalm.source}
-                </p>
-              </div>
-            ) : null}
-            {pick ? <p className="mt-5 font-sans text-caption leading-relaxed text-paper/70">{setIn(t("campaigns.thePrayerHow"), { name })}</p> : null}
 
             <div className="mt-10 border-t border-paper/10 pt-5 font-sans text-caption leading-[1.6] text-paper/70">
               <p>{t("shop.campaignsAreThePrayersOf")}</p>
@@ -371,6 +439,14 @@ function Opened({ first, bar }: { first: PublicCampaign; bar: ReactNode }) {
                   label={t("campaigns.keepAfter")}
                   description={t("campaigns.keptThirty")}
                   control={<Switch on={campaign.keep_after_end === true} onChange={(on) => void keep(on)} label={t("campaigns.keepAfter")} />}
+                />
+              ) : null}
+              {running && thread?.state === "ok" ? (
+                <Row
+                  icon={<ChatBubble size={17} />}
+                  label={t("campaigns.comments")}
+                  description={t("campaigns.commentsSwitchBody")}
+                  control={<Switch on={thread.thread.commentsOpen} onChange={(on) => void comments(on)} label={t("campaigns.comments")} />}
                 />
               ) : null}
               {running ? <ButtonRow icon={<Hourglass size={17} />} label={t("campaigns.end")} onClick={() => setSheet("end")} /> : null}

@@ -190,6 +190,45 @@ const MOD_QUEUE = {
   },
 };
 
+// A campaign's updates and comments (phase 2), as its thread route hands them on.
+const ago = (minutes) => new Date(Date.now() - minutes * 60_000).toISOString();
+const note = (n, over) => ({
+  id: `cccccccc-cccc-4ccc-8ccc-ccccccccccc${n}`,
+  update: false,
+  body: "",
+  author_name: "Reader",
+  author_handle: null,
+  author_avatar: null,
+  author_clergy: null,
+  created_at: ago(60),
+  mine: false,
+  muted: false,
+  ...over,
+});
+const THREADS = {
+  [NICHOLAS]: {
+    updates: [
+      note(1, { update: true, body: "The forty days end on the feast. Thank you for carrying him with us.", author_name: "Anna", created_at: ago(90) }),
+      note(2, { update: true, body: "The funeral was this morning. Memory eternal.", author_name: "Anna", created_at: ago(2 * 1440) }),
+    ],
+    comments: [note(3, { body: "Memory eternal.", author_name: "Thomas", created_at: ago(300) })],
+  },
+  [MARIA]: {
+    updates: [note(4, { update: true, body: "The operation is on Thursday at nine.", author_name: "John", created_at: ago(1440) })],
+    comments: [
+      note(5, { body: "Praying for Maria this week.", author_name: "Thomas", author_handle: "thomas", created_at: ago(600) }),
+      note(6, { body: "Lord, have mercy.", author_name: "Father Andrew", author_handle: "frandrew", author_clergy: "priest", created_at: ago(240) }),
+      note(7, { body: "She is in our prayers at home.", author_name: "Anna", created_at: ago(30), mine: true }),
+    ],
+  },
+};
+/** The thread a page is handed: what this reader may do follows who they are, as the route decides it. */
+function threadFor(id, { mine = false, signedIn = true, commentsOpen = true } = {}) {
+  const t = THREADS[id] ?? { updates: [], comments: [] };
+  const running = CAMPAIGNS[id]?.status === "active";
+  return { ...t, commentsOpen, signedIn, canUpdate: running && mine, canComment: running && signedIn && commentsOpen };
+}
+
 const seen = new Set();
 /** Every request a screen made of the server, for the walk to hold. */
 let calls = [];
@@ -212,6 +251,11 @@ async function answer(ctx, opts = {}) {
     if (opts.closed && p.startsWith("/api/campaigns")) return json({ error: "Not found." }, 404);
     if (p === "/api/campaigns" && req.method() === "POST") return json({ ok: true, id: HELD, status: "held" });
     if (/^\/api\/campaigns\/[0-9a-f-]{36}\/(join|report)$/.test(p)) return json({ ok: true });
+    const thread = /^\/api\/campaigns\/([0-9a-f-]{36})\/thread$/.exec(p);
+    if (thread && req.method() === "GET") return json(threadFor(thread[1], { mine: Boolean(opts.mine?.includes(thread[1])), signedIn: opts.signedIn !== false, commentsOpen: opts.commentsOpen !== false }));
+    if (thread && req.method() === "POST") return json({ ok: true, id: "cccccccc-cccc-4ccc-8ccc-ccccccccccc9", held: opts.held === true });
+    if (thread && req.method() === "DELETE") return json({ ok: true });
+    if (p === "/api/community/report" && req.method() === "POST") return json({ ok: true });
     if (/^\/api\/campaigns\/[0-9a-f-]{36}$/.test(p) && (req.method() === "PATCH" || req.method() === "DELETE")) return json({ ok: true });
     if (p === "/api/community/moderation" && req.method() === "POST") return json({ ok: true });
     if (p === "/api/campaigns" && req.method() === "GET") return json({ campaigns: opts.board ?? BOARD });
@@ -252,7 +296,7 @@ async function shot(name, label, where, selector, { set = {}, prepare, signedIn 
   const errors = [];
   page.on("pageerror", (e) => errors.push(e.message));
   try {
-    await answer(ctx, { mine, board });
+    await answer(ctx, { mine, board, signedIn });
     await go(page, where);
     await settle(page);
     if (prepare) await prepare(page);
@@ -461,6 +505,23 @@ await shot("16-moderation", "the moderators' queue, with campaigns", "/community
 
 // ── The walk: each flow done as a reader does it, and what it sent ──────────
 const walked = [];
+// 17 Updates: the creator's own word to those who pray, with the field at its head.
+await shot("17-updates", "a campaign's updates, as its creator sees them", `/campaigns/detail?id=${NICHOLAS}#updates`, "[data-campaign-page]", {
+  mine: [NICHOLAS],
+  prepare: async (page) => {
+    await page.waitForSelector("[data-campaign-updates] [data-note=update]", { timeout: 15000 });
+    await whole(page);
+  },
+});
+
+// 18 Comments: drawn as the replies under a post are, with the field at the foot.
+await shot("18-comments", "a campaign's comments", `/campaigns/detail?id=${MARIA}#comments`, "[data-campaign-page]", {
+  prepare: async (page) => {
+    await page.waitForSelector("[data-campaign-comments] [data-note=comment]", { timeout: 15000 });
+    await whole(page);
+  },
+});
+
 async function walk(label, where, run, { set = {}, signedIn = true, mine, closed = false } = {}) {
   const seed = {
     "purify.prayers.campaigns": JSON.stringify(CARRIED),
@@ -569,10 +630,11 @@ if (WALK) {
   await walk("its creator: keeps it, and ends it early with its closing", `/campaigns/detail?id=${NICHOLAS}`, async (page) => {
     await page.waitForSelector("#campaign-title", { timeout: 15000 });
     await page.evaluate(() => window.dispatchEvent(new Event("purify:campaign-menu-open")));
-    await page.locator("[role=dialog] [role=switch]").click();
+    // Two switches for the reposed: keep it, then comments.
+    await page.locator("[role=dialog] [role=switch]").first().click();
     await settle(page, 700);
     expectThat(sentTo("PATCH", /^\/api\/campaigns\/[0-9a-f-]{36}$/).some((c) => c.body.keepAfterEnd === true), "keeping it was not sent");
-    expectThat((await page.locator("[role=dialog] [role=switch]").getAttribute("aria-checked")) === "true", "the switch did not turn");
+    expectThat((await page.locator("[role=dialog] [role=switch]").first().getAttribute("aria-checked")) === "true", "the switch did not turn");
     await page.locator("[role=dialog] button", { hasText: "End it early" }).click();
     await settle(page, 800);
     await page.locator("[role=dialog] button", { hasText: "End it early" }).last().click();
@@ -598,6 +660,69 @@ if (WALK) {
     const [sent] = sentTo("POST", /^\/api\/community\/moderation$/);
     expectThat(sent && sent.body.action === "approve_campaign" && sent.body.id === HELD, `sent ${JSON.stringify(sent?.body)}`);
   });
+
+  await walk("an update: its creator writes one behind the Updates door, and it is sent as an update", `/campaigns/detail?id=${NICHOLAS}`, async (page) => {
+    await page.waitForSelector("[data-campaign-doors]", { timeout: 15000 });
+    await page.locator("#campaign-tab-updates").click();
+    expectThat(new URL(page.url()).hash === "#updates", `the address says ${new URL(page.url()).hash}`);
+    await page.waitForSelector("[data-note-field=update] textarea", { timeout: 8000 });
+    const post = page.locator("[data-note-field=update] button");
+    expectThat(await post.isDisabled(), "Post is lit before anything is written");
+    await page.fill("[data-note-field=update] textarea", "He was buried beside his wife.");
+    await post.click();
+    await settle(page, 900);
+    const [sent] = sentTo("POST", /\/thread$/);
+    expectThat(sent && sent.body.kind === "update" && sent.body.body === "He was buried beside his wife.", `sent ${JSON.stringify(sent?.body)}`);
+    expectThat((await page.inputValue("[data-note-field=update] textarea")) === "", "the field kept the words");
+    expectThat(sentTo("GET", /\/thread$/).length >= 2, "the updates were not asked for again");
+    // Pray leads back to the prayer, behind About.
+    await page.locator("[data-campaign-page] a[href='#campaign-prayer']").click();
+    await settle(page, 500);
+    expectThat((await page.locator("#campaign-tab-about").getAttribute("aria-selected")) === "true", "Pray did not open About");
+    expectThat(await page.locator("#campaign-prayer").isVisible(), "the prayer is not shown");
+  }, { mine: [NICHOLAS] });
+
+  await walk("a comment: written at the foot, another's reported, and one's own deleted", `/campaigns/detail?id=${MARIA}#comments`, async (page) => {
+    await page.waitForSelector("[data-campaign-comments] [data-note=comment]", { timeout: 15000 });
+    expectThat((await page.locator("#campaign-tab-comments").getAttribute("aria-selected")) === "true", "the address did not open Comments");
+    await page.fill("[data-note-field=comment] textarea", "Remembering her at the Liturgy on Sunday.");
+    await page.locator("[data-note-field=comment] button").click();
+    await settle(page, 900);
+    const [sent] = sentTo("POST", /\/thread$/);
+    expectThat(sent && sent.body.kind === "comment" && sent.body.body === "Remembering her at the Liturgy on Sunday.", `sent ${JSON.stringify(sent?.body)}`);
+    // Nothing under a comment to react with, and no number anywhere in the panel.
+    expectThat((await page.locator("[data-campaign-comments] button[aria-pressed]").count()) === 0, "a comment has something to react with");
+    // Someone else's: Report, from its menu.
+    const first = page.locator("[data-campaign-comments] [data-note=comment]").first();
+    await first.locator("button[aria-haspopup]").click();
+    await page.locator("[role=menu] [role=menuitem]", { hasText: "Report" }).click();
+    await settle(page, 700);
+    const [report] = sentTo("POST", /^\/api\/community\/report$/);
+    expectThat(report && report.body.replyId === THREADS[MARIA].comments[0].id, `reported ${JSON.stringify(report?.body)}`);
+    // One's own: Delete, asked first.
+    const mine = page.locator("[data-campaign-comments] [data-note=comment]").nth(2);
+    await mine.locator("button[aria-haspopup]").click();
+    await page.locator("[role=menu] [role=menuitem]", { hasText: "Delete" }).click();
+    await page.locator("[role=alertdialog] button, [role=dialog] button", { hasText: "Delete" }).last().click();
+    await settle(page, 900);
+    const [gone] = sentTo("DELETE", /\/thread$/);
+    expectThat(gone, "nothing was deleted");
+  });
+
+  await walk("its creator: takes a comment off, and closes comments from the menu", `/campaigns/detail?id=${NICHOLAS}#comments`, async (page) => {
+    await page.waitForSelector("[data-campaign-comments] [data-note=comment]", { timeout: 15000 });
+    await page.locator("[data-campaign-comments] [data-note=comment]").first().locator("button[aria-haspopup]").click();
+    await page.locator("[role=menu] [role=menuitem]", { hasText: "Take off" }).click();
+    await page.locator("[role=alertdialog] button, [role=dialog] button", { hasText: "Take off" }).last().click();
+    await settle(page, 900);
+    expectThat(sentTo("DELETE", /\/thread$/).length === 1, "taking it off was not sent");
+    await page.evaluate(() => window.dispatchEvent(new Event("purify:campaign-menu-open")));
+    await page.waitForSelector("[role=dialog] [role=switch]", { timeout: 8000 });
+    // For the reposed the menu has two switches: keep it, then comments.
+    await page.locator("[role=dialog] [role=switch]").nth(1).click();
+    await settle(page, 700);
+    expectThat(sentTo("PATCH", /^\/api\/campaigns\/[0-9a-f-]{36}$/).some((c) => c.body.commentsOpen === false), "closing comments was not sent");
+  }, { mine: [NICHOLAS] });
 
   await walk("not open for this reader: the pages are the app's not-found page, and Pray together shows nothing of campaigns", "/campaigns", async (page) => {
     await settle(page, 1500);

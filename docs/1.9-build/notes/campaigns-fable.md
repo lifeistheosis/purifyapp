@@ -55,6 +55,7 @@ Contents:
 8. What waits on Edgar, on a priest and on a lawyer
 9. Found on the way
 10. Phase 1, as built
+11. Phase 2, as built: updates and comments
 
 ---
 
@@ -1915,7 +1916,8 @@ the schema after the second run is the schema after the first. On his yes
 fourteen-digit name from that day's clock, and the test that today holds it
 out of that folder changes to hold the migration to the SQL he signed. Files
 two and three (updates and comments; pictures) join it in `docs/1.9-build/sql/`
-as their phases are built against them.
+as their phases are built against them. File two is there now:
+`docs/1.9-build/sql/campaigns-2-threads.sql` (section 11).
 
 **Release day, in order** (his word through the arbiter, and
 `OWNER-STEPS.md` R2 to R5c). The constant stays `closed` on the branch until
@@ -2068,3 +2070,123 @@ English alone.
   `bg-black/25`), which `checkMock` refuses on Light. The campaign cards on
   it are drawn in the palette's own ink. The page's older cards were left to
   the chat that holds it.
+
+---
+
+## 11. Phase 2, as built: updates and comments (2026-11-10)
+
+His words: "free users can add announcements, right, to their campaign ...
+Each day they can post an update if they want", and "allow comments on the
+prayer campaign". His yes to item 126 (its creator can close comments and take
+one off; no reactions) and to item 124 (no links, no asking for money).
+
+### 11.1 What a reader sees
+
+A campaign's page has three doors under its head, the squares a saint's page
+and a profile wear: **About** (what the page was: the words, the prayer, the
+psalm), **Updates** and **Comments**. The open door is kept in the address
+(`#updates`, `#comments`), as a saint's page keeps its own. A campaign that
+waits for a moderator has no doors yet, and one of July's has none.
+
+- **Updates** are its creator's own word to those who pray, newest first,
+  each under its day. The creator has a field at the head: words only, a
+  thousand characters, three a day.
+- **Comments** are drawn as the replies under a post are, oldest first, with
+  the field at the foot for a signed-in reader. A comment has a menu: Report
+  on someone else's; Delete on one's own; and, for the campaign's creator,
+  Take off, on a comment under their campaign.
+- **Nothing is counted and nothing can be reacted to.** No number stands on a
+  door, under a comment or anywhere on the page.
+- The creator's menu gains one row, **Comments**, a switch. Closing stops new
+  comments; those already written stay. Updates still go up.
+- **Pray** leads to the prayer from any door: About opens, then the prayer.
+
+### 11.2 How it is kept
+
+Both are replies in the campaign's own thread in Community, as 2.6 and 2.7
+proposed, so the word filter, the spam guard, holds, reports, blocks, mutes,
+the moderators' queue, its log and its Undo apply as they stand, with nothing
+built twice. **One thing changed from the draft of 5.3, and it is the
+important one.** There, a thread was a post that carried the campaign's id,
+and every read of Community would have had to learn to skip it. Here a thread
+is a post with a state of its own, `campaign`:
+
+- Every read of Community already asks for a post that is `visible`: the
+  feed, a post's page, its replies, a profile, the weekly letter. So a thread
+  is in none of them, with no read changed.
+- The tables' own row policies ask the same, and a reply can be read only
+  when its post is visible (`20260811000100_community_group_threads.sql`). So
+  neither a thread nor one comment under it can be read with the public key.
+  **Checked on a scratch PostgreSQL with that key's role:** it read Talk
+  together's post and reply, and no thread and no comment.
+- A thread must say `campaign` and only a thread may; one thread a campaign;
+  deleting a campaign deletes its thread and every comment under it. Each
+  was tried on the scratch database and held.
+
+**The SQL, for his signature:** `docs/1.9-build/sql/campaigns-2-threads.sql`
+(file two; it replaces the draft in 5.3, which is left as it was written). It
+makes no new table: one column and one more state on posts, one column on
+replies. It ran twice on the scratch database standing on every migration and
+on file one, and the schema after the second run is the schema after the
+first. Not signed, and not in `supabase/migrations`.
+
+| Part | Where |
+|---|---|
+| Reading a thread, writing a note, taking one off, the guards | `lib/campaigns/thread.ts` |
+| The route | `app/api/campaigns/[id]/thread` (GET, POST, DELETE) |
+| Opening and closing comments | `app/api/campaigns/[id]` (PATCH `commentsOpen`) |
+| The doors, and the two panels | `components/campaigns/CampaignDoors.tsx`, `CampaignNotes.tsx` |
+| No reaction under a campaign | `app/api/community/reactions`, `app/api/community/responses` |
+| A held comment approved tells nobody yet | `lib/community/moderation.ts`, `restoreReply` |
+
+### 11.3 The rules a note is held to
+
+- **A campaign that is running**, and one of the rework's: not one that
+  waits, has ended, was removed, or is July's.
+- **An update is its creator's alone**, three a day.
+- **A comment needs an account**, comments open, and a writer its creator has
+  not blocked.
+- **No link**, as the campaign itself carries none: refused, with its reason.
+- **Words that ask for money wait for a moderator.** They are held, not
+  refused, since "we gave to the parish in his memory" asks for nothing. The
+  pattern reads English alone, which is said in the code: an ask in another
+  language is caught by a reader's report and by the spam guard's own signs.
+- **The word filter asks first**, as under a post, and the words as written
+  go to the moderators with the masked ones.
+- **The spam guard** holds or refuses as it does a reply: a new account's
+  first words wait.
+- **Its own writer deletes a note**, and it is gone. **The campaign's creator
+  takes a comment off**: the row is kept, marked removed as a moderator's
+  removal is, and the moderators' log names the creator, so a creator cannot
+  quietly erase what a moderator may need to read.
+- **Nobody is told of anything yet.** No notice goes out for an update, a
+  comment or an approval under a campaign. Notices come in phase 4, asked for
+  by each reader and off until then.
+
+### 11.4 With the switch closed
+
+Nothing of this is reached: the thread route answers 404 and reads nothing.
+The two guards in Community's reaction routes read nothing either while
+campaigns are closed, so a reaction in Community costs exactly what it did,
+and the approval of a held reply reads its parent only where it always did.
+`thread.test.ts` holds each.
+
+### 11.5 What holds it
+
+- `lib/campaigns/__tests__/thread.test.ts`, 28 cases against the in-memory
+  database: the switch; who may read; no account id and no count in what a
+  reader is handed; blocks and mutes; each rule of 11.3; taking one off and
+  its line in the log; the guards on reactions; and that every read of
+  Community still asks for a post that is visible.
+- `closed.test.ts`: file two is held out of `supabase/migrations` until he
+  signs, and has to go on giving a thread its own state.
+- The stills and the walk (`scripts/mock-campaigns.mjs`): two more screens
+  and three more flows.
+
+### 11.6 Not built in this phase
+
+- On the moderators' page a held or reported comment is drawn as any reply
+  is, with no word that it stands under a campaign (the hold's own line says
+  so only when it asked for money).
+- The day of the latest update on a campaign's card and row (2.6).
+- Telling anyone anything (phase 4).

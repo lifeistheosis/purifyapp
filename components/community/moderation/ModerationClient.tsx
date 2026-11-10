@@ -431,6 +431,8 @@ const LOGGED = [
   "remove_campaign",
   "restore_campaign",
   "dismiss_campaign_report",
+  // A campaign's creator took a comment off their own campaign (lib/campaigns/thread.ts).
+  "creator_remove_comment",
 ] as const;
 
 function LogList({ rows }: { rows: ModLogLine[] }) {
