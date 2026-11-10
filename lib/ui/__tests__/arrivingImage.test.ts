@@ -74,7 +74,7 @@ const HOOKED = [
   "components/player/CoverArt.tsx",
   "components/reading/FeaturedWork.tsx",
   "components/councils/CouncilBookHeader.tsx",
-  "components/councils/CouncilFathers.tsx",
+  // CouncilFathers.tsx draws its faces through SaintFace, above (1.9, build 90 note 3).
   "components/councils/CouncilShelf.tsx",
   "components/settings/FirstFocus.tsx",
 ];
