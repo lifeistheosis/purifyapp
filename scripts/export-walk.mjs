@@ -222,7 +222,10 @@ async function cornerLift(page, selector, corners) {
   return { lift: Math.max(...Object.values(each)), most: Math.round(most), each };
 }
 
-// ---- 1. A phone, the Greek off: the page is its verses and asks for nothing more.
+// ---- 1. A phone, the Greek off: the page is its verses and asks for nothing
+// more at its first paint. Once it has settled (1.9, lib/bible/warmCommentary.ts:
+// SETTLE_MS, then an idle moment) it reads its commentary ahead, so the first
+// tap on a verse's mark finds it read, and nothing else.
 await section(1, async () => {
   const { ctx, page, asked, missing, errors } = await open({ width: 390, height: 844, phone: true });
   const t0 = Date.now();
@@ -230,12 +233,16 @@ await section(1, async () => {
   // A loaded machine can take seconds to draw the reader. Wait for the verse
   // itself, up to twenty seconds, and only then judge the page.
   await page.waitForFunction(() => document.body.innerText.includes("In the beginning was the Word"), null, { timeout: 20000 }).catch(() => {});
+  // What the first paint asked for, before the chapter has settled.
+  const atFirstPaint = data(asked);
   await page.waitForTimeout(2500);
   console.log("\n1. John 1 on a phone, Greek off");
   const verses = await page.locator("[data-verse], [id^='v']").count();
   const text = await page.evaluate(() => document.body.innerText);
   must(text.includes("In the beginning was the Word"), "the first verse is on the page");
-  must(data(asked).length === 0, `no chapter file asked for (asked: ${data(asked).join(", ") || "none"})`);
+  must(atFirstPaint.length === 0, `no chapter file asked for at the first paint (asked: ${atFirstPaint.join(", ") || "none"})`);
+  const ahead = data(asked);
+  must(ahead.every((p) => p === "/bible-data/commentary/john/1.json"), `once settled, only its commentary is read ahead, so a tap finds it read (asked: ${ahead.join(", ") || "none"})`);
   must(errors.length === 0, `no page errors${errors.length ? ": " + errors.slice(0, 2).join(" | ") : ""}`);
   say("  verse elements", verses);
   say("  payload bytes", payloadBytes(OUT, "/bible/john/1/"));
