@@ -12,7 +12,45 @@ is listed in the next /whats-new letter."
 
 ## Owed
 
-All three are owed by the 1.8 note. Written down on 2026-10-30, after the
+### By the 1.9 note, which says them all
+
+The owner's "all recs" (2026-11-10): the 1.9 letter names every privacy change
+of 1.9. The draft (`docs/plans/v1.9/patch-note-1.9.json`) carries them in five
+lines under Bugs and Maintenance, beginning "What we count", "New in 1.9",
+"What we keep", "With Purify Plus" and "A saint's books in print". Each is on
+the privacy page on the branch, in English and German, and goes live with the
+1.9 push. When the note is published, move these and the three below to
+"Said" with its words.
+
+- **Which Purify Plus feature a reader taps, and whether that leads to a
+  purchase** (`6282fcc5`, `lib/analytics/lockCounting.ts`).
+- **The 1.9 counts:** Bibles downloaded, plans begun and finished, journal
+  pages written and shared, the app version in use (`5b0e5217`, admin A5).
+- **Tests of two versions of a screen:** which version a count came from,
+  decided on the device (`3d4be178`, `lib/ab/`).
+- **The membership record:** the store, the plan, a trial or not, the price,
+  the dates and why it ended, unlinked when the account is deleted
+  (`419d3482`, admin A2; the line as of his yes to 68).
+- **Error reports:** what failed and the error, the page, the version and the
+  kind of device, scrubbed, deleted after 14 days (admin A10; his yes to 82a).
+- **Searches that found nothing:** the words, never the reader, for 90 days
+  (admin A11).
+- **Shared journal pages:** the copy at its link, and a report on it with the
+  reporter's account, both gone with Stop sharing (`4f951531`).
+- **How long it is all kept** (his yes to 82b): the visit data and every count
+  with no schedule to delete them; error reports 14 days; searches 90.
+- **What travels with Purify Plus:** plan progress, Remember the verse's
+  schedule, places and reading settings (`4e482d6e`, his yes to 59).
+- **Who runs Purify, and where to write:** Purify Orthodox LLC; support@ for
+  help, legal@ for legal (`53426a98`, `a715c7fd`).
+- **Two outside loads gone:** a saint's books in print no longer load covers
+  from Amazon (`8e5b8b10`, item 143), and the emails no longer load fonts from
+  Google (item 145).
+
+### By the 1.8 note, which never said them
+
+The 1.8 note was published without these three, so the 1.9 note's "What we
+count" and "What we keep" lines say them. Written down on 2026-10-30, after the
 fact: the note of 2026-10-27 came before the second and third, and none of the
 three was entered here on its day.
 
