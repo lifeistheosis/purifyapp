@@ -356,6 +356,50 @@ arbiter. His call.
 - Brotli on the website's code would save about 7% over the gzip it sends.
   A Cloudflare setting, not code.
 
+## Bugs and lag (added the same day)
+
+His word, a minute after the first: "(certain bugs, lag, etc also)". Measured
+the same way, once each. **No bug was found that harms readers now, on the
+live site or on the branch.**
+
+### What was run
+
+- The unit tests: 3,310 files, 10,087 tests, 10,079 passed, 0 failed,
+  8 skipped (each needs a file that is not in the repository: the content
+  package, the 1.9 email pictures, his export). The test known to fail on
+  main, `lib/sync/__tests__/pull.test.ts` "a bookmark removed here does not
+  come back on the pull", passes on this branch.
+- The export, 59 screens in one app session with no network (every top-level
+  screen and 21 deeper ones): no page error, no unhandled rejection, no
+  missing file other than the router's prefetch files (item 1 and 10).
+- purifyapp.net, 22 pages in a phone-sized browser: every page 200, no
+  console error, no failed request, layout shift 0 on 21 pages (0.046 on
+  Community), largest paint between 0.8 and 2.0 s.
+- Memory, the same five screens ten times round (50 page switches): the heap
+  went from 20.3 MB to 21.8 MB, and the page's nodes (737) and listeners
+  (842) did not move at all. No leak worth chasing.
+- Taps on the tab bar and on links, six times slowed: the app starts work
+  8 to 61 ms after the finger, and a tap is answered in 48 to 152 ms. The
+  address changes 180 to 480 ms after a tap.
+- Frames during a page switch, six times slowed: 2 to 7 frames over 34 ms
+  per switch. The worst single frame is 467 ms, on the Bible tab, while
+  John 1's 4,298 nodes are drawn (item 11). Reduced motion was not walked.
+
+### What it found, ranked
+
+| | Finding | Measured | Harm now | When |
+|---|---|---|---|---|
+| B1 | Three dead links in the apps | item 3 | a tap that goes nowhere; the 1.8 apps have them too | 1.9 |
+| B2 | The Bible tab's switch has one long frame | 467 ms at six times slowed, against 67 to 167 ms on the other tabs | a visible hitch on a slow phone | after (item 11) |
+| B3 | The Reading Room stutters and opens slowly | item 9 | the one laggy screen | after, phone first |
+| B4 | Signed-out readers ask for their notifications | `/api/community/notifications` asked on 8 of 59 screens with nobody signed in; the website answers 401 | none to the reader; wasted calls on every phone | after, 30 minutes (`lib/community/inbox.ts`: ask only with a session) |
+| B5 | Two pages make third-party loads | details with the arbiter | none seen | his call |
+| B6 | `/plan` and `/set-password` do not open when signed out | the router moved on from both in the walk | likely by design; not walked signed in | check on the phone walk |
+
+Not covered: anything behind a sign-in (no test account here), Render's
+server logs (no access from this chat), sheets and the players by hand, and
+a slow connection as opposed to none.
+
 ## Left alone, on purpose
 
 - The 21 language files (about 2.5 MB packed) and the script fonts
