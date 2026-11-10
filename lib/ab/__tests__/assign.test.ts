@@ -43,6 +43,30 @@ describe("a device's arm", () => {
     for (const s of inTenth) expect(armOf(test, s)).toBe(armOf(tenth, s));
   });
 
+  it("follows the shares a test has learned, a device already in keeping its place along them", () => {
+    const toB = (weights: Record<string, number>) => seeds.filter((s) => armOf(test, s, weights) === "b").length / seeds.length;
+    expect(toB({ a: 0.5, b: 0.5 })).toBeCloseTo(seeds.filter((s) => armOf(test, s) === "b").length / seeds.length, 9);
+    expect(toB({ a: 0.2, b: 0.8 })).toBeGreaterThan(0.76);
+    expect(toB({ a: 0.2, b: 0.8 })).toBeLessThan(0.84);
+    expect(toB({ a: 1, b: 0 })).toBe(0);
+    expect(toB({ a: 0, b: 1 })).toBe(1);
+    // Shares need not sum to one to be read as shares.
+    expect(toB({ a: 1, b: 4 })).toBeCloseTo(toB({ a: 0.2, b: 0.8 }), 9);
+    // A device given "a" at a fifth is still "a" when "a" is given more.
+    for (const s of seeds.filter((s) => armOf(test, s, { a: 0.2, b: 0.8 }) === "a")) expect(armOf(test, s, { a: 0.6, b: 0.4 })).toBe("a");
+  });
+
+  it("falls back to equal arms when the shares are missing or are not shares", () => {
+    for (const s of seeds.slice(0, 300)) {
+      const plain = armOf(test, s);
+      expect(armOf(test, s, null)).toBe(plain);
+      expect(armOf(test, s, {})).toBe(plain);
+      expect(armOf(test, s, { a: 0.5 })).toBe(plain);
+      expect(armOf(test, s, { a: 0, b: 0 })).toBe(plain);
+      expect(armOf(test, s, { a: Number.NaN, b: 1 })).toBe(plain);
+    }
+  });
+
   it("is none for a device that could keep no seed", () => {
     expect(armOf(test, "")).toBeNull();
   });

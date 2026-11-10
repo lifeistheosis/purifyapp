@@ -1,64 +1,151 @@
 import { describe, expect, it } from "vitest";
 
+import { ROADS_LIVE } from "@/lib/onboarding/flags";
 import { trackEventSchema } from "@/lib/security/schemas";
 
-import { AB_SENDING, AB_TESTS, abWord, abWords, registryFaults, runningTest, type AbTest } from "../tests";
+import { MILESTONES } from "../milestones";
+import {
+  ACCOUNT_PLACE,
+  AB_SENDING,
+  AB_TESTS,
+  abWord,
+  abWords,
+  isAbArm,
+  readsMilestone,
+  registryFaults,
+  runningTest,
+  shownDayOk,
+  type AbTest,
+} from "../tests";
 
-// The registry of tests (1.9; docs/1.9-build/notes/onboarding-fable.md, 4).
+// The registry of tests (1.9; docs/1.9-build/notes/onboarding-fable.md, 4 and 10).
 
 const test = (o: Partial<AbTest> = {}): AbTest => ({
   id: "day1-guided",
   surface: "onboarding",
+  asks: "Is a guided first step better than a section's front door?",
   arms: ["a", "b"],
   share: 1,
   begins: "2026-12-07",
-  ends: "2026-12-27",
-  outcome: "back on day 7",
-  guard: "back on day 30",
+  ends: "2027-02-28",
+  judge: "back_week2",
+  guards: ["finished"],
   needs: 1100,
+  warmup: 200,
+  floor: 0.2,
   ...o,
 });
+const open = { roads: true };
+const shut = { roads: false };
 
 describe("the tests Purify runs", () => {
-  it("are none, and nothing leaves a device, until the owner agrees the privacy page's sentence", () => {
-    expect(AB_TESTS).toEqual([]);
-    expect(AB_SENDING).toBe(false);
-  });
-
   it("are a registry with nothing wrong in it", () => {
     expect(registryFaults(AB_TESTS)).toEqual([]);
   });
 
-  it("may only send what the server's closed list takes", () => {
-    // A running test whose words the server refuses would count nothing and
-    // say so nowhere. Adding a test means adding its member to
-    // trackEventSchema in the same change (the head of ../tests.ts).
+  it("hold the account's place, as the owner agreed it", () => {
+    expect(AB_TESTS).toEqual([ACCOUNT_PLACE]);
+    // The built version first: what the test falls back to.
+    expect(ACCOUNT_PLACE.arms).toEqual(["card", "end"]);
+    expect(ACCOUNT_PLACE.judge).toBe("back_week2");
+    expect(ACCOUNT_PLACE.guards).toEqual(["finished", "account", "plus_bought"]);
+    expect(ACCOUNT_PLACE).toMatchObject({ warmup: 200, floor: 0.2, needs: 1100, share: 1, gate: "roads" });
+  });
+
+  it("run nothing before the roads are lit for readers, whatever the day", () => {
+    for (const day of ["2026-11-10", "2026-12-25", "2027-06-01"]) {
+      expect(runningTest("onboarding", day, shut), day).toBeNull();
+    }
+  });
+
+  it("are given their twelve weeks in the commit that lights the roads", () => {
+    // While the roads are off the days hold nothing open. Lit, the test must
+    // have been given its first day and a last day twelve weeks on.
+    if (!ROADS_LIVE) return;
+    const days = (Date.parse(ACCOUNT_PLACE.ends) - Date.parse(ACCOUNT_PLACE.begins)) / 86_400_000;
+    expect(days).toBe(84);
+  });
+
+  it("send only once the privacy page says how a test is counted", () => {
+    // lib/admin/__tests__/privacyLines.test.ts holds the page to the sentence.
+    expect(AB_SENDING).toBe(true);
+  });
+});
+
+describe("what the server takes of a test", () => {
+  const exposed = (props: Record<string, unknown>) => trackEventSchema.safeParse({ name: "ab_exposed", props }).success;
+  const reached = (props: Record<string, unknown>) => trackEventSchema.safeParse({ name: "ab_reached", props }).success;
+
+  it("is every version of a registered test, and every milestone it reads", () => {
     for (const t of AB_TESTS) {
       for (const arm of t.arms) {
-        const row = { name: "ab_exposed", props: { test: t.id, arm, platform: "ios" } };
-        expect(trackEventSchema.safeParse(row).success, abWord(t, arm)).toBe(true);
+        expect(exposed({ test: t.id, arm, platform: "ios" }), abWord(t, arm)).toBe(true);
+        for (const what of [t.judge, ...t.guards]) {
+          expect(reached({ test: t.id, arm, what, shown: "2026-12-01", platform: "android" }), `${abWord(t, arm)} ${what}`).toBe(true);
+        }
       }
     }
-    // And while none runs, the server takes no such row at all.
-    if (AB_TESTS.length === 0) {
-      expect(trackEventSchema.safeParse({ name: "ab_exposed", props: { test: "x", arm: "a", platform: "ios" } }).success).toBe(false);
+  });
+
+  it("is nothing else: no other test, version, milestone or word", () => {
+    expect(exposed({ test: "price-test", arm: "a", platform: "ios" })).toBe(false);
+    expect(exposed({ test: "account-place", arm: "middle", platform: "ios" })).toBe(false);
+    expect(exposed({ test: "account-place", arm: "card", platform: "ios", seed: "abc123" })).toBe(false);
+    expect(exposed({ test: "account-place", arm: "card", platform: "ios", background: "catholic" })).toBe(false);
+    expect(reached({ test: "account-place", arm: "card", what: "first_step", shown: "2026-12-01", platform: "ios" })).toBe(false);
+    expect(reached({ test: "account-place", arm: "card", what: "prayed", shown: "2026-12-01", platform: "ios" })).toBe(false);
+    expect(reached({ test: "account-place", arm: "card", what: "finished", shown: "2026-12-01T09:14:00Z", platform: "ios" })).toBe(false);
+    expect(reached({ test: "account-place", arm: "card", what: "finished", platform: "ios" })).toBe(false);
+    expect(reached({ test: "account-place", arm: "card", what: "finished", shown: "2026-12-01", platform: "ios", user: "x" })).toBe(false);
+  });
+
+  it("is held to the registry, version by version and milestone by milestone", () => {
+    expect(isAbArm("account-place", "end")).toBe(true);
+    expect(isAbArm("account-place", "b")).toBe(false);
+    expect(isAbArm("nothing", "a")).toBe(false);
+    for (const what of MILESTONES) {
+      const read = ACCOUNT_PLACE.judge === what || ACCOUNT_PLACE.guards.includes(what);
+      expect(readsMilestone("account-place", what), what).toBe(read);
     }
+    expect(readsMilestone("nothing", "finished")).toBe(false);
+  });
+
+  it("keeps a reached row under the day its device was shown, if that is a day a device could say", () => {
+    const today = "2026-12-20";
+    expect(shownDayOk("2026-12-20", today)).toBe(true);
+    expect(shownDayOk("2026-12-07", today)).toBe(true);
+    // A clock a day ahead, or the last day of the window read a day late.
+    expect(shownDayOk("2026-12-21", today)).toBe(true);
+    expect(shownDayOk("2026-12-05", today)).toBe(true);
+    // Not a day in the future, a day long past, or anything that is not a day.
+    expect(shownDayOk("2026-12-23", today)).toBe(false);
+    expect(shownDayOk("2026-11-01", today)).toBe(false);
+    expect(shownDayOk("yesterday", today)).toBe(false);
+    expect(shownDayOk("2026-12-20T10:00:00Z", today)).toBe(false);
   });
 });
 
 describe("what a registry entry must say", () => {
-  it("passes one that names its outcome, its guard, its readers and its last day", () => {
+  it("passes one that names its question, its judge, its guards, its readers and its last day", () => {
     expect(registryFaults([test()])).toEqual([]);
   });
 
-  it("refuses one with no outcome, no guard, no end, too few readers or a share of nobody", () => {
-    expect(registryFaults([test({ outcome: " " })]).join()).toContain("the one outcome");
-    expect(registryFaults([test({ guard: "" })]).join()).toContain("must not fall");
+  it("refuses one with no question, no guard, no end, too few readers or a share of nobody", () => {
+    expect(registryFaults([test({ asks: " " })]).join()).toContain("the question it asks");
+    expect(registryFaults([test({ guards: [] })]).join()).toContain("must not get worse");
+    expect(registryFaults([test({ guards: ["back_week2"] })]).join()).toContain("not the judge");
     expect(registryFaults([test({ ends: "" })]).join()).toContain("a first and a last day");
     expect(registryFaults([test({ ends: "2026-12-01" })]).join()).toContain("in order");
     expect(registryFaults([test({ needs: 12 })]).join()).toContain("how many readers");
     expect(registryFaults([test({ share: 0 })]).join()).toContain("share");
     expect(registryFaults([test({ share: 1.5 })]).join()).toContain("share");
+  });
+
+  it("refuses shares that would move on too few devices, or leave a version too little to learn from", () => {
+    expect(registryFaults([test({ warmup: 20 })]).join()).toContain("a warmup of");
+    expect(registryFaults([test({ warmup: 2000 })]).join()).toContain("no more than it needs");
+    expect(registryFaults([test({ floor: 0 })]).join()).toContain("a floor of");
+    expect(registryFaults([test({ floor: 0.6 })]).join()).toContain("no more than an equal share");
   });
 
   it("refuses an id or an arm that could hold more than a short word", () => {
@@ -70,9 +157,9 @@ describe("what a registry entry must say", () => {
   });
 
   it("refuses two tests on one surface at the same time, and allows them one after the other or on two surfaces", () => {
-    const second = test({ id: "door-led", begins: "2026-12-20", ends: "2027-01-10" });
+    const second = test({ id: "door-led", begins: "2027-01-20", ends: "2027-03-10" });
     expect(registryFaults([test(), second]).join()).toContain("at the same time");
-    expect(registryFaults([test(), test({ id: "door-led", begins: "2026-12-28", ends: "2027-01-17" })])).toEqual([]);
+    expect(registryFaults([test(), test({ id: "door-led", begins: "2027-03-01", ends: "2027-05-17" })])).toEqual([]);
     expect(registryFaults([test(), test({ id: "plus-card", surface: "plus" })])).toEqual([]);
   });
 });
@@ -81,17 +168,24 @@ describe("which test is running", () => {
   const tests = [test(), test({ id: "plus-card", surface: "plus", begins: "2026-12-14", ends: "2027-01-03" })];
 
   it("is the one whose days hold today, on its own surface", () => {
-    expect(runningTest("onboarding", "2026-12-06", tests)).toBeNull();
-    expect(runningTest("onboarding", "2026-12-07", tests)?.id).toBe("day1-guided");
-    expect(runningTest("onboarding", "2026-12-27", tests)?.id).toBe("day1-guided");
-    expect(runningTest("onboarding", "2026-12-28", tests)).toBeNull();
-    expect(runningTest("plus", "2026-12-20", tests)?.id).toBe("plus-card");
-    expect(runningTest("plus", "2026-12-07", tests)).toBeNull();
+    expect(runningTest("onboarding", "2026-12-06", open, tests)).toBeNull();
+    expect(runningTest("onboarding", "2026-12-07", open, tests)?.id).toBe("day1-guided");
+    expect(runningTest("onboarding", "2027-02-28", open, tests)?.id).toBe("day1-guided");
+    expect(runningTest("onboarding", "2027-03-01", open, tests)).toBeNull();
+    expect(runningTest("plus", "2026-12-20", open, tests)?.id).toBe("plus-card");
+    expect(runningTest("plus", "2026-12-07", open, tests)).toBeNull();
+  });
+
+  it("waits for its gate, and a test with none does not", () => {
+    const gated = [test({ gate: "roads" })];
+    expect(runningTest("onboarding", "2026-12-20", shut, gated)).toBeNull();
+    expect(runningTest("onboarding", "2026-12-20", open, gated)?.id).toBe("day1-guided");
+    expect(runningTest("onboarding", "2026-12-20", shut, tests)?.id).toBe("day1-guided");
   });
 
   it("names a test and its arm in one word, and lists every word it can say", () => {
     expect(abWord(test(), "b")).toBe("day1-guided:b");
     expect(abWords(tests)).toEqual(["day1-guided:a", "day1-guided:b", "plus-card:a", "plus-card:b"]);
-    expect(abWords()).toEqual([]);
+    expect(abWords()).toEqual(["account-place:card", "account-place:end"]);
   });
 });

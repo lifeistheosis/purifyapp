@@ -1,27 +1,35 @@
 // The tests Purify runs: one file, in the repository (1.9). The why and the
-// rules are docs/1.9-build/notes/onboarding-fable.md, section 4.
+// rules are docs/1.9-build/notes/onboarding-fable.md, sections 4 and 10.
 //
 // A test is added, changed and ended by a commit here, so each is reviewed
 // like code and there is a record of what ran and when. No dashboard decides
 // what a reader sees.
 //
-// NONE IS RUNNING. The list is empty and the sender is off (AB_SENDING), on
-// the owner's frame of 2026-11-10: the system is built, and no test runs
-// until he has agreed its sentence on the privacy page (his question 112).
+// ONE IS REGISTERED, AND IT IS NOT RUNNING: the account's place, the owner's
+// "go" of 2026-11-10. It runs only while the roads are lit for readers
+// (lib/onboarding/flags.ts, ROADS_LIVE), so not before release, and never in
+// Testers mode. The sender is on (AB_SENDING): the privacy page has carried
+// its sentence since 3d4be178, and with no test running nothing is sent.
 //
-// To run one, in a single change:
-//   1. its entry in AB_TESTS below, with the one outcome it is judged by, the
-//      number that must not fall, how many readers it needs and its last day;
-//   2. its words on the server's closed list (lib/security/schemas.ts): the
-//      `ab_exposed` event and the optional `ab` word on the rows that carry
-//      an outcome. lib/ab/__tests__/tests.test.ts refuses a running test the
-//      server would not take;
-//   3. the sentence on /privacy, and AB_SENDING turned on.
+// To add one, in a single change:
+//   1. its entry in AB_TESTS below, with the one milestone it is judged by,
+//      the milestones that must not get worse, how many readers it needs and
+//      its last day;
+//   2. where the screen that differs is drawn: `armHere` to choose, and
+//      `exposed` at the last moment the versions are the same screen
+//      (./device.ts). The server takes its words by itself: its closed list
+//      is built from this file (lib/security/schemas.ts);
+//   3. a new milestone, if it needs one (./milestones.ts), with its sentence
+//      on /privacy in the same change.
 //
 // What may be tested: two honest versions of the same screen. Never the
 // paywall of a reader who named a need, never a countdown, scarcity or a
 // subscriber count (components/billing/UpgradeModal.tsx), never a
-// notification that puts a clock on the reader (lib/push/doctrine.ts).
+// notification that puts a clock on the reader (lib/push/doctrine.ts), never
+// the texts. A price, a trial or what Plus includes is tested in RevenueCat,
+// on the owner's word for that one test.
+
+import { MILESTONES, type Milestone } from "./milestones";
 
 /** Where a test lives. A device is in at most one test on each surface at a time. */
 export type AbSurface = "onboarding" | "plus";
@@ -31,30 +39,71 @@ export type AbTest = {
   /** A short name: lower-case letters, digits and dashes. Never reused for another test. */
   id: string;
   surface: AbSurface;
-  /** The versions, the first of them Purify as it is. Two to four short words. */
+  /** The question, in a sentence, as the admin reads it. */
+  asks: string;
+  /** The versions, the first of them Purify as it is built: what a test falls back to. Two to four short words. */
   arms: readonly string[];
   /** The share of devices in the test, above 0 and up to 1. The rest see Purify as it is and are not counted in it. */
   share: number;
-  /** First and last day, YYYY-MM-DD (UTC). Whole weeks: a Sunday's readers are not a Tuesday's. */
+  /** First and last day, YYYY-MM-DD (UTC). */
   begins: string;
   ends: string;
-  /** The one count the test is judged by, decided before it starts. */
-  outcome: string;
-  /** The count that must not fall: a change that sells more and keeps fewer loses. */
-  guard: string;
-  /** Readers each arm needs before the result means anything (./size.ts, readersPerArm). */
+  /** Runs only while this holds: "roads" is the revised onboarding lit for readers. */
+  gate?: "roads";
+  /** The one milestone the test is judged by, decided before it starts. */
+  judge: Milestone;
+  /** The milestones that must not get clearly worse: a change that sells more and keeps fewer loses. */
+  guards: readonly Milestone[];
+  /** Devices each version needs, their two weeks behind them, before the test may settle (./size.ts). */
   needs: number;
+  /** Devices each version needs before the shares begin to move. */
+  warmup: number;
+  /** The least share any version is given while the test runs, so the system can change its mind. */
+  floor: number;
 };
 
-/** Nothing is running. See the head of this file before adding one. */
-export const AB_TESTS: readonly AbTest[] = [];
+/**
+ * The account's place (the owner's question 106, his "go" of 2026-11-10).
+ *
+ * A new reader with no account is offered one either by the card on Today
+ * after a first step of their week ("card", as built), or as the last of the
+ * welcome questions ("end"). Judged by readers coming back in their second
+ * week; finishing the questions, accounts and Plus must not get clearly
+ * worse. A reader who is signed in already is in neither version.
+ *
+ * ITS DAYS ARE SET IN THE RELEASE COMMIT, with ROADS_LIVE: the first day the
+ * day of release, the last twelve weeks on. Until the roads are lit the days
+ * below hold nothing open, since the gate keeps the test shut, and
+ * lib/ab/__tests__/tests.test.ts refuses lit roads with days that are not
+ * twelve weeks apart.
+ */
+export const ACCOUNT_PLACE: AbTest = {
+  id: "account-place",
+  surface: "onboarding",
+  asks: "Where should a new reader be offered an account: a card on Today after their first step, or the last of the welcome questions?",
+  arms: ["card", "end"],
+  share: 1,
+  begins: "2026-11-10",
+  ends: "2026-11-10",
+  gate: "roads",
+  judge: "back_week2",
+  guards: ["finished", "account", "plus_bought"],
+  needs: 1100,
+  warmup: 200,
+  floor: 0.2,
+};
+
+export const AB_TESTS: readonly AbTest[] = [ACCOUNT_PLACE];
 
 /**
- * Whether an exposure or an arm may leave a device. Off until the owner has
- * agreed the privacy page's sentence for tests. While it is off a device
- * still works out its arm (so a build can be walked), and says nothing.
+ * Whether a "shown" or a "reached" row may leave a device. On since the
+ * privacy page carried the sentence for tests (the owner's "sure" of
+ * 2026-11-10; lib/admin/__tests__/privacyLines.test.ts holds the page to it).
  */
-export const AB_SENDING = false;
+export const AB_SENDING = true;
+
+/** No test moves its shares on fewer devices a version than this. */
+export const SMALLEST_WARMUP = 100;
 
 const ID = /^[a-z0-9](?:[a-z0-9-]{0,22}[a-z0-9])?$/;
 const DAY = /^\d{4}-\d{2}-\d{2}$/;
@@ -73,9 +122,13 @@ export function registryFaults(tests: readonly AbTest[]): string[] {
     for (const arm of t.arms) if (!ID.test(arm) || arm.length > 12) faults.push(`${at}: arm "${arm}" is a short word`);
     if (!(t.share > 0 && t.share <= 1)) faults.push(`${at}: share is above 0 and up to 1`);
     if (!DAY.test(t.begins) || !DAY.test(t.ends) || t.ends < t.begins) faults.push(`${at}: a first and a last day, in order`);
-    if (!t.outcome.trim()) faults.push(`${at}: the one outcome it is judged by`);
-    if (!t.guard.trim()) faults.push(`${at}: the count that must not fall`);
+    if (!t.asks.trim()) faults.push(`${at}: the question it asks, in a sentence`);
+    if (!(MILESTONES as readonly string[]).includes(t.judge)) faults.push(`${at}: the one milestone it is judged by`);
+    if (t.guards.length === 0) faults.push(`${at}: at least one milestone that must not get worse`);
+    if (t.guards.some((g) => !(MILESTONES as readonly string[]).includes(g) || g === t.judge)) faults.push(`${at}: its guards are milestones, and not the judge`);
     if (!(Number.isInteger(t.needs) && t.needs >= 100)) faults.push(`${at}: how many readers each arm needs, a hundred at least`);
+    if (!(Number.isInteger(t.warmup) && t.warmup >= SMALLEST_WARMUP && t.warmup <= t.needs)) faults.push(`${at}: a warmup of ${SMALLEST_WARMUP} at least, and no more than it needs`);
+    if (!(t.floor >= 0.05 && t.floor <= 1 / t.arms.length)) faults.push(`${at}: a floor of 5% at least, and no more than an equal share`);
   }
   // One test on a surface at a time: a row carries one test's word, never two.
   for (const a of tests) {
@@ -88,9 +141,17 @@ export function registryFaults(tests: readonly AbTest[]): string[] {
   return faults;
 }
 
-/** The test running on a surface on a day (YYYY-MM-DD, UTC), if any. */
-export function runningTest(surface: AbSurface, day: string, tests: readonly AbTest[] = AB_TESTS): AbTest | null {
-  return tests.find((t) => t.surface === surface && t.begins <= day && day <= t.ends) ?? null;
+/**
+ * The test running on a surface on a day (YYYY-MM-DD, UTC), if any. `lit`
+ * says which gates are open: a test with a gate runs only while its gate is.
+ */
+export function runningTest(
+  surface: AbSurface,
+  day: string,
+  lit: { roads: boolean },
+  tests: readonly AbTest[] = AB_TESTS,
+): AbTest | null {
+  return tests.find((t) => t.surface === surface && t.begins <= day && day <= t.ends && (!t.gate || lit[t.gate])) ?? null;
 }
 
 /** A test and an arm as one word, the only form in which either leaves a device: "day1-guided:b". */
@@ -101,4 +162,33 @@ export function abWord(test: Pick<AbTest, "id">, arm: string): string {
 /** Every word the registry can say: the closed list the server takes. */
 export function abWords(tests: readonly AbTest[] = AB_TESTS): string[] {
   return tests.flatMap((t) => t.arms.map((arm) => abWord(t, arm)));
+}
+
+/** Whether a word is a version of a registered test. What the server's closed list asks. */
+export function isAbArm(testId: string, arm: string, tests: readonly AbTest[] = AB_TESTS): boolean {
+  return tests.some((t) => t.id === testId && t.arms.includes(arm));
+}
+
+/** Whether a registered test reads a milestone, as its judge or as a guard. */
+export function readsMilestone(testId: string, what: Milestone, tests: readonly AbTest[] = AB_TESTS): boolean {
+  return tests.some((t) => t.id === testId && (t.judge === what || t.guards.includes(what)));
+}
+
+/** The two rows a test sends, by name. */
+export const AB_EVENTS = ["ab_exposed", "ab_reached"] as const;
+export function isAbEvent(name: string): name is (typeof AB_EVENTS)[number] {
+  return (AB_EVENTS as readonly string[]).includes(name);
+}
+
+/**
+ * The day a "reached" row is kept under: the day its device was shown its
+ * version, as the device says it, if that is a day a device could honestly
+ * say. A milestone is sent only in a device's first two weeks after it was
+ * shown (./milestones.ts), so the day is within them, give or take a day
+ * for a clock set a little wrong; anything else is refused.
+ */
+export function shownDayOk(shown: string, today: string): boolean {
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(shown)) return false;
+  const age = Math.round((Date.parse(`${today}T00:00:00Z`) - Date.parse(`${shown}T00:00:00Z`)) / 86_400_000);
+  return Number.isFinite(age) && age >= -1 && age <= 15;
 }

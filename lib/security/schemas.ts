@@ -1,5 +1,7 @@
 import { z } from "zod";
 
+import { MILESTONES } from "@/lib/ab/milestones";
+import { isAbArm, readsMilestone } from "@/lib/ab/tests";
 import { APP_VERSION, BIBLE_ID, PLAN_ID } from "@/lib/analytics/featureCounting";
 import { BOUGHT_PLANS, LOCKS } from "@/lib/analytics/lockCounting";
 import { OPEN_SPANS } from "@/lib/analytics/screenCounting";
@@ -704,6 +706,34 @@ export const trackEventSchema = z.discriminatedUnion("name", [
   z.object({
     name: z.literal("plus_bought"),
     props: z.object({ lock: z.enum(LOCKS), plan: z.enum(BOUGHT_PLANS), platform: z.enum(COUNT_PLATFORMS) }).strict(),
+  }),
+  // A test of two versions (1.9, lib/ab/): that a device was shown a version,
+  // and that a device shown one reached a point the test reads. The test and
+  // its version are held to the registry in the repository (lib/ab/tests.ts)
+  // and the point to the closed list of milestones, so with no test
+  // registered the server takes neither row. "shown" is the day the device
+  // was shown its version, which the row is then kept under, and nothing
+  // finer (app/api/track/event). No reader is in either.
+  z.object({
+    name: z.literal("ab_exposed"),
+    props: z
+      .object({ test: z.string().max(24), arm: z.string().max(12), platform: z.enum(COUNT_PLATFORMS) })
+      .strict()
+      .refine((p) => isAbArm(p.test, p.arm), "not a version of a registered test"),
+  }),
+  z.object({
+    name: z.literal("ab_reached"),
+    props: z
+      .object({
+        test: z.string().max(24),
+        arm: z.string().max(12),
+        what: z.enum(MILESTONES),
+        shown: z.string().regex(/^\d{4}-\d{2}-\d{2}$/),
+        platform: z.enum(COUNT_PLATFORMS),
+      })
+      .strict()
+      .refine((p) => isAbArm(p.test, p.arm), "not a version of a registered test")
+      .refine((p) => readsMilestone(p.test, p.what), "not a point this test reads"),
   }),
   // The 1.9 counts (admin item A5, lib/analytics/featureCounting.ts): a Bible
   // translation, a reading plan or the app's version, each held to the shape

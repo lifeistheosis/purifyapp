@@ -35,10 +35,31 @@ export function fraction(seed: string, word: string): number {
  * (outside the test's share). Two draws from the one seed: whether it is in,
  * and which arm, so widening a test's share never moves a device that was
  * already in from one arm to another.
+ *
+ * `weights` are the shares the test has learned so far (./bandit.ts), one
+ * public setting the same for every device; without them the arms are
+ * equal. The device's own draw is laid along the shares in the arms' order,
+ * so the choice is still the device's, by a number that never leaves it.
  */
-export function armOf(test: Pick<AbTest, "id" | "arms" | "share">, seed: string): string | null {
+export function armOf(
+  test: Pick<AbTest, "id" | "arms" | "share">,
+  seed: string,
+  weights?: Readonly<Record<string, number>> | null,
+): string | null {
   if (!seed || fraction(seed, `${test.id}#in`) >= test.share) return null;
-  return test.arms[Math.floor(fraction(seed, `${test.id}#arm`) * test.arms.length)] ?? test.arms[0];
+  const draw = fraction(seed, `${test.id}#arm`);
+  const w = test.arms.map((arm) => Math.max(0, weights?.[arm] ?? NaN));
+  const sum = w.reduce((a, b) => a + b, 0);
+  // Shares that are missing, or are not shares: equal arms.
+  if (!weights || !(sum > 0) || w.some((x) => Number.isNaN(x))) {
+    return test.arms[Math.floor(draw * test.arms.length)] ?? test.arms[0];
+  }
+  let run = 0;
+  for (let i = 0; i < test.arms.length; i++) {
+    run += w[i] / sum;
+    if (draw < run) return test.arms[i];
+  }
+  return test.arms[test.arms.length - 1];
 }
 
 function newSeed(): string {

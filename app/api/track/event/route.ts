@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 
+import { isAbEvent, shownDayOk } from "@/lib/ab/tests";
 import { corsPreflight, corsRoute, isAllowedNativeOrigin } from "@/lib/api/cors";
 import { isTableAbsent } from "@/lib/admin/tableAbsent";
 import { isAutomatedAgent } from "@/lib/analytics/bot";
@@ -79,12 +80,30 @@ async function handlePOST(req: Request) {
     // (lib/analytics/featureCounting.ts): a share stamped to the second
     // would sit beside the shared page itself.
     const toTheDay = name.startsWith("onboarding_") || isScreenEvent(name) || isLockEvent(name) || isFeatureEvent(name);
+    // And a test's two rows (lib/ab/): a version stamped to the second would
+    // sit beside the page views of the one session that was shown it.
+    const dayOnly = toTheDay || isAbEvent(name);
+    const today = new Date().toISOString().slice(0, 10);
+    // A "reached" row is kept under the day its device was shown its version,
+    // not today: every row of a test then holds one day, the day shown, and a
+    // version's readers are read once their two weeks are behind them, like
+    // with like (lib/ab/bandit.ts). The day is the row's own and is not kept
+    // a second time among its words. A day no device could honestly say is
+    // answered as if recorded and dropped.
+    let day = today;
+    let kept: Record<string, unknown> = props ?? {};
+    if (parsed.data.name === "ab_reached") {
+      const { shown, ...rest } = parsed.data.props;
+      if (!shownDayOk(shown, today)) return NextResponse.json({ ok: true }, { headers: { "Cache-Control": "no-store" } });
+      day = shown > today ? today : shown;
+      kept = rest;
+    }
     const { error } = await createAdminClient()
       .from("analytics_events")
       .insert({
         name,
-        props: props ?? {},
-        ...(toTheDay ? { ts: `${new Date().toISOString().slice(0, 10)}T00:00:00Z` } : {}),
+        props: kept,
+        ...(dayOnly ? { ts: `${day}T00:00:00Z` } : {}),
       });
     if (error && !isTableAbsent(error)) {
       console.error("[track/event] insert failed", error.message);

@@ -30,11 +30,19 @@ import {
 import { SIGNED_OUT_PREVIEW_KEY, TESTERS_EVENT, TESTERS_KEY, isTesting } from "./testing";
 
 /**
+ * The version of a test an admin chose to look at (lib/ab/device.ts,
+ * pickArm). Written out here and not imported: this file is read by the
+ * onboarding's state, and the tests' device side reads the onboarding's.
+ * lib/ab/__tests__/device.test.ts holds the two to the same key.
+ */
+export const AB_PICK_KEY = "purify:ab.pick";
+
+/**
  * Every key a test can change, kept and put back as one: the answers and the
  * flow's own marks (a "First open" runs the whole flow, which also sets the
  * calendar a new reader starts on).
  */
-export const TESTER_KEYS: readonly string[] = [...SPACE_KEYS, CALENDAR_STYLE_KEY];
+export const TESTER_KEYS: readonly string[] = [...SPACE_KEYS, CALENDAR_STYLE_KEY, AB_PICK_KEY];
 
 /** What the device held before the test: each key's value, null for absent. */
 type Kept = { v: 1; keys: Record<string, string | null> };
