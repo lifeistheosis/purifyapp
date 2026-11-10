@@ -63,6 +63,23 @@ describe("the letter written for a release", () => {
     }
     expect(JSON.stringify(RELEASE_EMAIL)).not.toContain(EM_DASH);
   });
+
+  it("carries an earlier release's news only when it is truly earlier, and in that note's words", () => {
+    // His item 71: 1.8's letter never went, so 1.9's carries its news in a line.
+    const earlier = RELEASE_EMAIL.earlier;
+    if (!earlier) return;
+    const older = ENTRIES.find((e) => e.version === earlier.version);
+    expect(older, earlier.version).toBeDefined();
+    const [a, b] = [earlier.version, RELEASE_EMAIL.version].map((v) => v.split(".").map(Number));
+    expect(a[0] * 1000 + a[1], `${earlier.version} before ${RELEASE_EMAIL.version}`).toBeLessThan(b[0] * 1000 + b[1]);
+    expect(earlier.line).toMatch(/\.$/);
+    expect(earlier.line.length).toBeLessThanOrEqual(230);
+    // Every name the line gives is one the older note gives.
+    const said = JSON.stringify(older);
+    for (const words of ["whole New Testament", "verse by verse", "Toward the Nativity", "Nativity Fast", "the Fathers, a day at a time"]) {
+      if (earlier.line.includes(words)) expect(said, words).toContain(words);
+    }
+  });
 });
 
 describe.runIf(entry)(`the release email for ${ANNOUNCED}`, () => {
@@ -75,6 +92,11 @@ describe.runIf(entry)(`the release email for ${ANNOUNCED}`, () => {
     expect(v, explainEmail(v)).toEqual([]);
     const whole = checkEmailCopy({ subject: email.subject, body: email.text }, { naming: true });
     expect(whole, explainEmail(whole)).toEqual([]);
+  });
+
+  it.runIf(letter?.earlier)("says the earlier release's line after the points and before the closing", () => {
+    expect(body.after).toEqual([letter!.earlier!.line, letter!.closing]);
+    expect(email.text).toContain(letter!.earlier!.line);
   });
 
   it("has every line it sends in what the route checks", () => {

@@ -65,7 +65,7 @@ All green on the commit that will be pushed.
 Drafted now, sent later. The owner sends every one. How a drop works is in
 `docs/DROP.md`.
 
-- [ ] The drop, `drop.json`: `node scripts/drop.mjs new 1.9`, the points
+- [x] The drop, `drop.json`: `node scripts/drop.mjs new 1.9`, the points
       written (ten at most, each naming the note line it comes from), what may
       not be said yet under `never`, then `node scripts/drop.mjs draft` and
       every piece read and tuned. A patch has none: it is added to its

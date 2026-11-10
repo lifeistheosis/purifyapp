@@ -139,7 +139,7 @@ export function monthlyBody(opts: {
  */
 export function releaseBody(
   entry: Pick<Entry, "version" | "kind" | "blurb" | "name">,
-  letter?: Pick<ReleaseEmail, "picture" | "intro" | "points" | "closing"> | null,
+  letter?: Pick<ReleaseEmail, "picture" | "intro" | "points" | "closing" | "earlier"> | null,
 ): MarketingBody {
   // What the letter calls the release: "Purify 1.5", and its name after that when it has one.
   const release = `Purify ${versionLabel(entry.version, entry.name)}`;
@@ -164,7 +164,9 @@ export function releaseBody(
     paragraphs: points
       ? [letter!.intro].filter(Boolean)
       : [entry.blurb || `What changed in ${release} is on the What's New page.`],
-    ...(points ? { points, after: [letter!.closing].filter(Boolean) } : {}),
+    // An earlier release's news, when its own letter never went (item 71),
+    // comes after the points and before the closing line.
+    ...(points ? { points, after: [letter!.earlier?.line, letter!.closing].filter((l): l is string => Boolean(l)) } : {}),
     action: { label: "See everything that is new", href: siteUrl("/whats-new") },
   };
 }

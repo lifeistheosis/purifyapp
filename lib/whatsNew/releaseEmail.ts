@@ -47,68 +47,66 @@ export type ReleaseEmail = {
      */
     sells?: boolean;
   }[];
+  /**
+   * The news of an earlier release whose own letter never went, in one line
+   * after the points (his item 71: 1.8's letter was never sent, so 1.9's
+   * carries it). Its words are that release's note's, and it never names a
+   * release later than this one.
+   */
+  earlier?: { version: string; line: string } | null;
   /** One line after them. */
   closing: string;
 };
 
 export const RELEASE_EMAIL: ReleaseEmail = {
-  version: "1.7",
-  // Three real 1.7 screens: Today, Discover and John 1 read aloud, framed as
-  // 1.6's were. The picture is the website's alone: scripts/native-build.mjs
-  // leaves every release email's picture out of the apps' export.
-  picture: {
-    src: "/whats-new/1.7/email.jpg",
-    width: 960,
-    height: 600,
-    alt: "Purify 1.7 on a phone: Today with the Verse of the Day first, Discover with a picture on every tile, and John 1 read aloud with the verse being read lit.",
-  },
-  intro: "1.7 rebuilds almost every page to be calmer and simpler on your phone. Here is what is new.",
+  version: "1.9",
+  // The picture is taken from the live site once 1.9 is out
+  // (scripts/release-pictures.mjs, docs/plans/v1.9/pictures.json); until
+  // then the letter goes without one.
+  picture: null,
+  intro: "1.9 is for keeping what you read. Here is what is new.",
   points: [
     {
-      emoji: "✨",
-      name: "A calmer Purify",
-      text: "One top bar on every tab, new Today, Discover and You screens, and quieter pages across the app.",
-    },
-    {
-      emoji: "🔥",
-      name: "Your streak, in view",
-      text: "A flame and your count beside Plus on every tab, and a flame that grows the longer you keep it.",
+      emoji: "📓",
+      name: "Your journal, by the Church's day",
+      text: "Today's page shows the day's feast or saints and its readings, each with a pen to begin a page. Add verse cards and highlights, and export or print it. Free for everyone.",
     },
     {
       emoji: "📖",
-      name: "A cleaner Scripture screen",
-      text: "Before you read for every book, paragraphs, the minutes left in a chapter, and John 1 read aloud to you.",
+      name: "Every verse, opened",
+      text: "Tap a verse to highlight it, copy it, share it as a picture, write a note and see its Greek.",
     },
     {
-      emoji: "🎵",
-      name: "Chants",
-      text: "In the Kitchen's place on Discover, with the words lit as they are sung. The first is the Prayer Rope Anthem, in English, French and Arabic.",
+      emoji: "🌍",
+      name: "Five more Bibles",
+      text: "The Russian Synodal, the Greek Septuagint, the Serbian of Karadžić and Daničić, and the Arabic Van Dyck and Spanish Reina-Valera, both Protestant and labelled so.",
     },
     {
-      emoji: "🙏",
-      name: "Prayers that read like lyrics",
-      text: "Every prayer flows down the page line by line, and Pray with plays a chant on a loop while you pray.",
+      emoji: "🔎",
+      name: "Study a verse, in Purify Plus",
+      text: "Cross-references into the Septuagint, the Greek of every word, Compare across your Bibles, and Remember the verse in three steps.",
     },
     {
-      emoji: "📚",
-      name: "A reading room on a stage",
-      text: "The day's book on a stage, the Church Fathers as posters by theme and by tradition, and eight collections for how you feel.",
+      emoji: "🗓️",
+      name: "New reading plans, in Purify Plus",
+      text: "John in 21 days, Acts in 28 days, the New Testament in a year, the Nativity Fast and Holy Week, with the Fathers nearly every day.",
     },
     {
-      emoji: "🕯️",
-      name: "Those I pray for",
-      text: "Your family, your departed and the names you add from the prayer wall, inside the prayers you choose.",
-    },
-    {
-      emoji: "🔗",
-      name: "Every quotation with its source",
-      text: "A saint's words, a Father's comment or a line of Scripture shows where it comes from, and opens there.",
+      emoji: "☦️",
+      name: "The Creed by council",
+      text: "The Symbol of Faith article by article, with the words the Council of Constantinople added lit.",
     },
     {
       emoji: "📜",
-      name: "Orthodox History",
-      text: "One quiet timeline, and twenty events written in full from their sources, each with a picture, in English for now.",
+      name: "Church history on Today",
+      text: "On the days an event of Orthodox History fell, it is on Today under the saint of the day.",
     },
   ],
+  // 1.8's letter never went (his item 71, 2026-11-10), so 1.9's carries its
+  // news in a line, in the words of the 1.8 note.
+  earlier: {
+    version: "1.8",
+    line: "Missed 1.8? It reads the whole New Testament aloud, verse by verse, and Toward the Nativity walks the forty days of the Nativity Fast with the Fathers, a day at a time.",
+  },
   closing: "The Scriptures, the saints, the prayers and the calendar stay free.",
 };
