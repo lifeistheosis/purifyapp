@@ -2055,6 +2055,20 @@
    "version": "1.9",
    "outcome": null,
    "note": "Each page writes the English; German is its own file loaded on the device. About and the FAQ lose a note that was true of no reader. 283d62bf. PLAN 13q; build-90.md, the reader's language in the apps."
+  },
+  {
+   "id": "e-note4-updates-families",
+   "section": "Language",
+   "kind": "bug",
+   "title": "Build 90 note 4, the Updates chat's families: in Arabic and Urdu the app's English ran right to left on the saints, What's New, history, the dictionary, the calendar, the parish finder, the shop and the legal pages",
+   "from": "claude",
+   "asked": "2026-11-10",
+   "status": "built",
+   "decided": "2026-11-10",
+   "needsDesign": false,
+   "version": "1.9",
+   "outcome": null,
+   "note": "0 on the 38 routes in Arabic and Urdu (268 before). 36e51c851. PLAN 13r; build-90.md note 4. Left: Support on the website; six screens' older guardrail faults listed for the arbiter."
   }
  ]
 }
