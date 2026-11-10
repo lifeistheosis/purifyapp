@@ -127,7 +127,7 @@ export function BookSwitcher({ currentSlug }: { currentSlug: string }) {
                 onKeyDown={onInputKey}
                 placeholder={t("bible.searchBooksPlaceholder")}
                 aria-label={t("bible.searchBooksAria")}
-                className="w-full bg-paper/[0.04] border border-paper/10 rounded-md pl-8 pr-3 py-2 font-sans text-detail text-paper placeholder:text-paper/35 focus:outline-none focus:border-paper/25 focus:bg-paper/[0.06]"
+                className="w-full bg-paper/[0.04] border border-paper/10 rounded-md pl-8 pr-3 py-2 font-sans text-detail text-paper placeholder:text-paper/55 focus:outline-none focus:border-paper/25 focus:bg-paper/[0.06]"
               />
             </div>
           </div>

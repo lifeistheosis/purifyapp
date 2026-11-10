@@ -97,7 +97,7 @@ export function SearchField({
         placeholder={placeholder}
         aria-label={label ?? placeholder}
         // 16px: an iPhone zooms the page into a field set any smaller.
-        className="h-full min-w-0 flex-1 bg-transparent font-sans text-[16px] text-paper placeholder:text-paper/45"
+        className="h-full min-w-0 flex-1 bg-transparent font-sans text-[16px] text-paper placeholder:text-paper/55"
       />
       {value ? (
         <button

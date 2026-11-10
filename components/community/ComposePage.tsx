@@ -514,7 +514,7 @@ export function ComposePage({
                     rows={1}
                     maxLength={4000}
                     placeholder={t("community.reflectionPlaceholder")}
-                    className="block w-full resize-none border-b border-paper/[0.08] bg-transparent pb-3 font-sans text-[15px] leading-[22px] text-paper/90 field-sizing-content placeholder:text-paper/35 focus:border-paper/25 focus:outline-none"
+                    className="block w-full resize-none border-b border-paper/[0.08] bg-transparent pb-3 font-sans text-[15px] leading-[22px] text-paper/90 field-sizing-content placeholder:text-paper/55 focus:border-paper/25 focus:outline-none"
                   />
                 </div>
                 {gathered.length === 0 ? (
@@ -584,7 +584,7 @@ export function ComposePage({
                   // every field to (app/globals.css), and the question's
                   // longer prompt a size down so it stays on one line.
                   style={{ fontSize: kind === "question" ? 20 : 22 }}
-                  className="block w-full border-b border-paper/10 bg-transparent pb-2.5 font-serif font-semibold leading-[30px] text-paper placeholder:text-paper/35 focus:border-paper/30 focus:outline-none"
+                  className="block w-full border-b border-paper/10 bg-transparent pb-2.5 font-serif font-semibold leading-[30px] text-paper placeholder:text-paper/55 focus:border-paper/30 focus:outline-none"
                 />
                 <div data-compose-words="" className="mt-4">
                   <MentionField
@@ -595,7 +595,7 @@ export function ComposePage({
                     rows={4}
                     maxLength={4000}
                     placeholder={kind === "question" ? t("community.questionPlaceholder") : t("community.bodyPlaceholder")}
-                    className="block min-h-[max(12rem,36svh)] w-full resize-none bg-transparent font-sans text-[16px] leading-[24px] text-paper/90 field-sizing-content placeholder:text-paper/35 focus:outline-none"
+                    className="block min-h-[max(12rem,36svh)] w-full resize-none bg-transparent font-sans text-[16px] leading-[24px] text-paper/90 field-sizing-content placeholder:text-paper/55 focus:outline-none"
                   />
                 </div>
               </div>

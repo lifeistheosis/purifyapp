@@ -449,7 +449,7 @@ export function ParagraphRow({
  }}
  placeholder={t("saints.paragraphNotePlaceholder")}
  rows={3}
- className="w-full bg-transparent border-0 outline-none resize-y font-sans text-ui text-paper placeholder:text-paper/40 leading-[1.55]"
+ className="w-full bg-transparent border-0 outline-none resize-y font-sans text-ui text-paper placeholder:text-paper/55 leading-[1.55]"
  />
  <div className="mt-2 flex items-center justify-between gap-2">
  <span className="font-sans text-eyebrow text-paper/40">

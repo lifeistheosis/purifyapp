@@ -130,7 +130,7 @@ function sameResponseMap(
 type Me = { id: string; name: string; avatar: string | null } | null;
 
 const field =
-  "w-full rounded-lg border border-paper/15 bg-night px-3.5 py-2.5 font-sans text-ui text-paper placeholder:text-paper/35 focus:outline-none focus:border-paper/40";
+  "w-full rounded-lg border border-paper/15 bg-night px-3.5 py-2.5 font-sans text-ui text-paper placeholder:text-paper/55 focus:outline-none focus:border-paper/40";
 
 /**
  * How often the open conversation refetches itself, in ms.

@@ -127,7 +127,7 @@ export function WhoSaidIt() {
               placeholder={t("whoSaidIt.placeholder")}
               rows={3}
               maxLength={600}
-              className="w-full resize-y rounded-[14px] border border-paper/10 bg-paper/[0.04] px-4 py-3 font-serif text-body leading-[1.6] text-paper placeholder:text-paper/45 focus:border-paper/30 focus:outline-none"
+              className="w-full resize-y rounded-[14px] border border-paper/10 bg-paper/[0.04] px-4 py-3 font-serif text-body leading-[1.6] text-paper placeholder:text-paper/55 focus:border-paper/30 focus:outline-none"
             />
           </label>
           <button

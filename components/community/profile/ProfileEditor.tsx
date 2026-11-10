@@ -560,7 +560,7 @@ export function ProfileEditor() {
                   spellCheck={false}
                   aria-invalid={problem ? true : undefined}
                   aria-describedby="pe-handle-note"
-                  className="w-full bg-transparent px-1.5 py-2.5 font-sans text-ui text-paper placeholder:text-paper/35 focus:outline-none"
+                  className="w-full bg-transparent px-1.5 py-2.5 font-sans text-ui text-paper placeholder:text-paper/55 focus:outline-none"
                 />
               </div>
               <p id="pe-handle-note" className={cn("mt-1.5 font-sans text-caption", problem ? "text-rose-300" : "text-paper/45")}>
@@ -1121,7 +1121,7 @@ export function ProfileEditor() {
 }
 
 const FIELD =
-  "w-full rounded-lg border border-paper/15 bg-night px-3.5 py-2.5 font-sans text-ui text-paper placeholder:text-paper/35 focus:border-paper/40 focus:outline-none";
+  "w-full rounded-lg border border-paper/15 bg-night px-3.5 py-2.5 font-sans text-ui text-paper placeholder:text-paper/55 focus:border-paper/40 focus:outline-none";
 
 function Section({ title, children }: { title: string; children: ReactNode }) {
   return (

@@ -130,7 +130,7 @@ export function ReadTogether({ pathId, state }: { pathId: string; state: Circles
     await state.reload();
   }
 
-  const field = "h-11 w-full rounded-[12px] border border-paper/15 bg-paper/[0.04] px-3 font-sans text-ui text-paper placeholder:text-paper/40 focus:border-paper/35 focus:outline-none";
+  const field = "h-11 w-full rounded-[12px] border border-paper/15 bg-paper/[0.04] px-3 font-sans text-ui text-paper placeholder:text-paper/55 focus:border-paper/35 focus:outline-none";
   const pill = "tap-press inline-flex min-h-11 items-center rounded-pill border border-paper/15 px-4 font-sans text-detail font-semibold text-paper/85 hover:border-paper/35";
 
   return (

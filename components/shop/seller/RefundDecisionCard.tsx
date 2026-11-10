@@ -8,7 +8,7 @@ import type { ShopRefundReason } from "@/lib/shop/types";
 import { useTranslate } from "@/components/i18n/MessagesProvider";
 
 const field =
-  "w-full rounded-md border border-paper/15 bg-night px-4 py-3 font-sans text-ui text-paper placeholder:text-paper/35 focus:outline-none focus:border-paper/40 focus:ring-1 focus:ring-paper/20";
+  "w-full rounded-md border border-paper/15 bg-night px-4 py-3 font-sans text-ui text-paper placeholder:text-paper/55 focus:outline-none focus:border-paper/40 focus:ring-1 focus:ring-paper/20";
 
 /**
  * A pending refund request from the seller's side.

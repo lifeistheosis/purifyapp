@@ -321,7 +321,7 @@ export function SearchSelect<V extends string>({
                   aria-controls={listId}
                   aria-activedescendant={active >= 0 ? optionId(active) : undefined}
                   // 16px on phones: iOS Safari zooms the page for anything smaller.
-                  className="w-full rounded-md border border-paper/15 bg-night px-3 py-2 text-[16px] text-paper outline-none placeholder:text-paper/40 focus:border-paper/40 md:text-detail"
+                  className="w-full rounded-md border border-paper/15 bg-night px-3 py-2 text-[16px] text-paper outline-none placeholder:text-paper/55 focus:border-paper/40 md:text-detail"
                 />
               </div>
               <ul

@@ -67,7 +67,7 @@ export function ContactForm({ defaultEmail = "" }: { defaultEmail?: string }) {
   }
 
   const field =
-    "mt-1 w-full rounded-lg border border-paper/15 bg-paper/[0.03] px-3 py-2.5 font-sans text-ui text-paper placeholder:text-paper/35 focus:border-paper/40 focus:outline-none";
+    "mt-1 w-full rounded-lg border border-paper/15 bg-paper/[0.03] px-3 py-2.5 font-sans text-ui text-paper placeholder:text-paper/55 focus:border-paper/40 focus:outline-none";
   const label = "font-sans text-caption font-medium text-paper/70";
 
   return (

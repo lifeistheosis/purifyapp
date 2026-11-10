@@ -140,19 +140,24 @@ function Rows({
             <Link
               href={slot.href}
               aria-current={on ? "time" : undefined}
-              className={cn("press-card flex items-start gap-4 py-3", quiet && !on && "opacity-70")}
+              // A part of the day the clock is not in steps back in its words alone, as
+              // drawn (his pick "Lifted", the photo page's 9, 2026-11-09): its icon in
+              // full colour, its name and its "prayed today" at 70 percent of the ink,
+              // its small line at the caption share. A faded row took the captions
+              // under 4.5:1 on every palette.
+              className="press-card flex items-start gap-4 py-3"
             >
               <ArtPlate id={slot.id} size="sm" />
               <span className="flex min-w-0 flex-1 flex-col pt-1">
                 <span className="flex flex-wrap items-baseline gap-x-2">
-                  <span className={cn("font-serif text-lede font-semibold leading-tight", on ? "text-paper" : "text-paper/85")}>
+                  <span className={cn("font-serif text-lede font-semibold leading-tight", on ? "text-paper" : quiet ? "text-paper/70" : "text-paper/85")}>
                     {t(slot.titleKey)}
                   </span>
                   {on && nowWord ? <span className="font-sans text-caption font-semibold text-paper/70">{nowWord}</span> : null}
                 </span>
                 {meta.length ? <span className="mt-1 font-sans text-caption text-paper/55">{meta.join(" · ")}</span> : null}
                 {kept.has(slot.id) ? (
-                  <span className="mt-1 inline-flex items-center gap-1.5 font-sans text-caption font-semibold text-paper/80">
+                  <span className={cn("mt-1 inline-flex items-center gap-1.5 font-sans text-caption font-semibold", quiet && !on ? "text-paper/70" : "text-paper/80")}>
                     <Check size={13} className="shrink-0" />
                     {t("shop.prayedToday")}
                   </span>

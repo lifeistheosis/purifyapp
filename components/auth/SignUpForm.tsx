@@ -134,7 +134,7 @@ export function SignUpForm() {
           onChange={(e) => setDisplayName(e.target.value)}
           placeholder="Edgar"
           maxLength={64}
-          className="w-full bg-paper/[0.04] border border-paper/20 rounded-pill px-4 py-3 font-sans text-ui text-paper placeholder:text-paper/40 focus:outline-none focus:border-paper/55 transition-colors"
+          className="w-full bg-paper/[0.04] border border-paper/20 rounded-pill px-4 py-3 font-sans text-ui text-paper placeholder:text-paper/55 focus:outline-none focus:border-paper/55 transition-colors"
         />
       </div>
       <div>
@@ -153,7 +153,7 @@ export function SignUpForm() {
           value={email}
           onChange={(e) => setEmail(e.target.value)}
           placeholder={t("ui.youSomewhereCom")}
-          className="w-full bg-paper/[0.04] border border-paper/20 rounded-pill px-4 py-3 font-sans text-ui text-paper placeholder:text-paper/40 focus:outline-none focus:border-paper/55 transition-colors"
+          className="w-full bg-paper/[0.04] border border-paper/20 rounded-pill px-4 py-3 font-sans text-ui text-paper placeholder:text-paper/55 focus:outline-none focus:border-paper/55 transition-colors"
         />
       </div>
       <PasswordInput

@@ -218,7 +218,7 @@ export function ItemCard({
             autoFocus
             aria-label={t("bible.yourNote")}
             placeholder={t("study.florilegium.notePlaceholder")}
-            className="w-full rounded-2xl border border-paper/20 bg-paper/[0.05] px-4 py-3 font-serif text-detail leading-[1.6] text-paper transition-colors placeholder:text-paper/40 focus:border-paper/50 focus:outline-none"
+            className="w-full rounded-2xl border border-paper/20 bg-paper/[0.05] px-4 py-3 font-serif text-detail leading-[1.6] text-paper transition-colors placeholder:text-paper/55 focus:border-paper/50 focus:outline-none"
           />
           <div className="mt-3 flex flex-wrap gap-2">
             <button

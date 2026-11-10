@@ -19,7 +19,7 @@ import {
 import { useTranslate } from "@/components/i18n/MessagesProvider";
 
 const field =
-  "w-full rounded-xl border border-paper/15 bg-night px-4 py-3 font-sans text-ui text-paper placeholder:text-paper/35 focus:outline-none focus:border-paper/40 focus:ring-1 focus:ring-paper/20";
+  "w-full rounded-xl border border-paper/15 bg-night px-4 py-3 font-sans text-ui text-paper placeholder:text-paper/55 focus:outline-none focus:border-paper/40 focus:ring-1 focus:ring-paper/20";
 
 async function loadAuth(): Promise<{ signedIn: boolean }> {
   const auth = await resolveUser();

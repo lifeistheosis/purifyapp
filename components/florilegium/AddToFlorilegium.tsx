@@ -128,7 +128,7 @@ export function AddToFlorilegium({
                 maxLength={80}
                 // eslint-disable-next-line jsx-a11y/no-autofocus
                 autoFocus
-                className="w-full bg-paper/[0.05] border border-paper/20 rounded-md px-3 py-2 font-sans text-detail text-paper placeholder:text-paper/40 focus:outline-none focus:border-paper/50"
+                className="w-full bg-paper/[0.05] border border-paper/20 rounded-md px-3 py-2 font-sans text-detail text-paper placeholder:text-paper/55 focus:outline-none focus:border-paper/50"
               />
               <div className="mt-2 flex gap-2">
                 <button

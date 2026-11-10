@@ -960,7 +960,7 @@ function AccountStep({ onSkip, skipLabel }: { onSkip: () => void; skipLabel: str
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             placeholder={t("ui.youSomewhereCom")}
-            className="w-full rounded-pill border border-paper/20 bg-paper/[0.04] px-4 py-3 font-sans text-ui text-paper transition-colors placeholder:text-paper/40 focus:border-paper/55 focus:outline-none"
+            className="w-full rounded-pill border border-paper/20 bg-paper/[0.04] px-4 py-3 font-sans text-ui text-paper transition-colors placeholder:text-paper/55 focus:border-paper/55 focus:outline-none"
           />
           <input
             type="password"
@@ -970,7 +970,7 @@ function AccountStep({ onSkip, skipLabel }: { onSkip: () => void; skipLabel: str
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             placeholder={t("ui.password8Characters")}
-            className="w-full rounded-pill border border-paper/20 bg-paper/[0.04] px-4 py-3 font-sans text-ui text-paper transition-colors placeholder:text-paper/40 focus:border-paper/55 focus:outline-none"
+            className="w-full rounded-pill border border-paper/20 bg-paper/[0.04] px-4 py-3 font-sans text-ui text-paper transition-colors placeholder:text-paper/55 focus:border-paper/55 focus:outline-none"
           />
           <label className="flex cursor-pointer items-start gap-2.5 py-1">
             <input

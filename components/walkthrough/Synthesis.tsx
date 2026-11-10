@@ -365,7 +365,7 @@ export function Synthesis({
               rows={4}
               aria-label={t("walk.ledgerTitle")}
               placeholder={t("walk.ledgerPlaceholder")}
-              className="mt-3 w-full resize-y rounded-2xl border border-paper/15 bg-transparent px-4 py-3 font-serif text-body leading-[1.55] text-paper placeholder:text-paper/50 focus:border-paper/40 focus:outline-none"
+              className="mt-3 w-full resize-y rounded-2xl border border-paper/15 bg-transparent px-4 py-3 font-serif text-body leading-[1.55] text-paper placeholder:text-paper/55 focus:border-paper/40 focus:outline-none"
             />
             <p className="mt-1 font-sans text-caption text-paper/50">{t("walk.ledgerPrivate")}</p>
             <div className="mt-4 flex flex-wrap items-center gap-2">

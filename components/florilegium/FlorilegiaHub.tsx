@@ -108,7 +108,7 @@ export function FlorilegiaHub() {
                 maxLength={80}
                 // eslint-disable-next-line jsx-a11y/no-autofocus
                 autoFocus
-                className="mt-2 w-full rounded-pill border border-paper/20 bg-paper/[0.05] px-3.5 py-2.5 font-sans text-ui text-paper transition-colors placeholder:text-paper/40 focus:border-paper/50 focus:outline-none"
+                className="mt-2 w-full rounded-pill border border-paper/20 bg-paper/[0.05] px-3.5 py-2.5 font-sans text-ui text-paper transition-colors placeholder:text-paper/55 focus:border-paper/50 focus:outline-none"
               />
               <div className="mt-auto flex flex-wrap gap-1.5 pt-3">
                 <button

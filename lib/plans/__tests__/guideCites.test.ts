@@ -109,9 +109,11 @@ describe("a line of Scripture in a reading plan's guide", () => {
     expect(card).toContain("<SourceList ");
     const questions = fs.readFileSync(path.join(ROOT, "components/plans/PlanQuestions.tsx"), "utf8");
     expect(questions).toContain("<SourceLine key={k} cite={s}");
-    // Its box's placeholder passes 4.5:1 on all five palettes at 70% (checkMock,
-    // 1.9); at 40% it was 2.28:1 on Light, the faint fill lowering it.
-    expect(questions).toContain("placeholder:text-paper/70");
+    // Its box's placeholder passes 4.5:1 on all five palettes: the house share,
+    // 55%, which Light draws at 70 and Candlelight at 60 (the sweep, 1.9; every
+    // field held by lib/ui/__tests__/placeholderContrast.test.ts). At 40% it was
+    // 2.28:1 on Light, the faint fill lowering it.
+    expect(questions).toContain("placeholder:text-paper/55");
     const plan = fs.readFileSync(path.join(ROOT, "components/plans/PlanClient.tsx"), "utf8");
     // The verses come with the page (lib/plans/words.ts, the owner's note 42 of build 80).
     expect(plan).toContain("usePlanGuide(locale, true, words)");

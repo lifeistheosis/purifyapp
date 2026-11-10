@@ -116,7 +116,7 @@ export function Composer({
               rows={1}
               maxLength={4000}
               placeholder={placeholder}
-              className="block max-h-[132px] min-h-[38px] w-full resize-none bg-transparent py-[9px] font-sans text-ui leading-[20px] text-paper placeholder:text-paper/45 focus:outline-none"
+              className="block max-h-[132px] min-h-[38px] w-full resize-none bg-transparent py-[9px] font-sans text-ui leading-[20px] text-paper placeholder:text-paper/55 focus:outline-none"
             />
           </label>
           <button

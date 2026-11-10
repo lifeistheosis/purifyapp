@@ -96,7 +96,7 @@ export function DayThread({
             maxLength={4000}
             placeholder={t("together.placeholder")}
             aria-label={t("together.placeholder")}
-            className="w-full resize-y rounded-[12px] border border-paper/15 bg-paper/[0.04] px-3 py-2 font-sans text-ui leading-[1.55] text-paper placeholder:text-paper/40 focus:border-paper/35 focus:outline-none"
+            className="w-full resize-y rounded-[12px] border border-paper/15 bg-paper/[0.04] px-3 py-2 font-sans text-ui leading-[1.55] text-paper placeholder:text-paper/55 focus:border-paper/35 focus:outline-none"
           />
           <button
             type="submit"

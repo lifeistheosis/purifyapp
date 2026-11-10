@@ -137,7 +137,7 @@ function Row({
 }
 
 const FIELD =
-  "w-full rounded-pill border border-paper/20 bg-paper/[0.04] px-4 py-3 font-sans text-ui text-paper transition-colors placeholder:text-paper/40 focus:border-paper/55 focus:outline-none";
+  "w-full rounded-pill border border-paper/20 bg-paper/[0.04] px-4 py-3 font-sans text-ui text-paper transition-colors placeholder:text-paper/55 focus:border-paper/55 focus:outline-none";
 
 function SearchField({ value, onChange, label }: { value: string; onChange: (v: string) => void; label: string }) {
   return (

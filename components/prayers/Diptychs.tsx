@@ -46,7 +46,7 @@ import { updateWallNames, useWallNames } from "@/lib/prayers/useWallNames";
 import { markWallPrayed, setWallPlaces, unmarkWallPrayed, waitingWallNames, wallLeavesText, type WallName } from "@/lib/prayers/wallNames";
 
 const FIELD =
-  "min-h-11 w-full rounded-[10px] bg-paper/[0.06] px-3 py-2 font-sans text-ui text-paper placeholder:text-paper/45 focus:outline-none focus-visible:ring-2 focus-visible:ring-paper/40";
+  "min-h-11 w-full rounded-[10px] bg-paper/[0.06] px-3 py-2 font-sans text-ui text-paper placeholder:text-paper/55 focus:outline-none focus-visible:ring-2 focus-visible:ring-paper/40";
 
 /** How long "Removed ... Undo" stays, as under the rule's own rows (MyRuleBuilder). */
 const UNDO_MS = 5000;

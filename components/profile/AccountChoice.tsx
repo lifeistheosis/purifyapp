@@ -78,7 +78,7 @@ export function AccountChoice() {
                 onChange={(e) => setLocalName(e.target.value)}
                 placeholder={t("ui.edgar")}
                 maxLength={48}
-                className="bg-paper/[0.04] border border-paper/20 rounded-pill px-4 py-3 font-sans text-ui text-paper placeholder:text-paper/40 focus:outline-none focus:border-paper/50 transition-colors"
+                className="bg-paper/[0.04] border border-paper/20 rounded-pill px-4 py-3 font-sans text-ui text-paper placeholder:text-paper/55 focus:outline-none focus:border-paper/50 transition-colors"
               />
               <button
                 type="submit"

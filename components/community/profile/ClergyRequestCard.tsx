@@ -31,7 +31,7 @@ export function ClergyRequestCard({ initial }: { initial: MyClergy | undefined }
   const [error, setError] = useState<string | null>(null);
 
   const field =
-    "w-full rounded-lg border border-paper/15 bg-night px-3.5 py-2.5 font-sans text-ui text-paper placeholder:text-paper/35 focus:border-paper/40 focus:outline-none";
+    "w-full rounded-lg border border-paper/15 bg-night px-3.5 py-2.5 font-sans text-ui text-paper placeholder:text-paper/55 focus:border-paper/40 focus:outline-none";
 
   async function send() {
     if (busy) return;

@@ -54,7 +54,7 @@ export function PasswordInput({
           placeholder={placeholder}
           minLength={minLength}
           required
-          className="w-full bg-paper/[0.04] border border-paper/20 rounded-pill pl-4 pr-12 py-3 font-sans text-ui text-paper placeholder:text-paper/40 focus:outline-none focus:border-paper/55 transition-colors"
+          className="w-full bg-paper/[0.04] border border-paper/20 rounded-pill pl-4 pr-12 py-3 font-sans text-ui text-paper placeholder:text-paper/55 focus:outline-none focus:border-paper/55 transition-colors"
         />
         <button
           type="button"

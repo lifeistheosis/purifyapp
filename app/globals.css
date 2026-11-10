@@ -434,14 +434,25 @@ html.is-native .now-playing-lift {
  border-radius: 14px;
  background-image: linear-gradient(to bottom, rgb(var(--panel-sheen) / 0.035), transparent 72%);
  transition:
-  width var(--duration-base) var(--ease-house),
-  height var(--duration-base) var(--ease-house),
-  border-radius var(--duration-base) var(--ease-house);
+  width var(--reader-back-duration) var(--ease-house),
+  height var(--reader-back-duration) var(--ease-house),
+  border-radius var(--reader-back-duration) var(--ease-house);
 }
 [data-mini-player][data-drawn] .mini-player {
  width: var(--mini-player-pill-w, 9rem);
  height: 2.5rem;
  border-radius: 1.25rem;
+}
+/* Drawing in at the reader's bars' pace (his word, 2026-11-09: the whole
+   bottom slower, one pace for all that moves on that scroll): it narrows
+   over --reader-away-duration on the even curve, the card's face going over
+   the first part and the pill's coming over the rest; it comes back at
+   --reader-back-duration (above). */
+[data-mini-player][data-drawn] .mini-player {
+ transition:
+  width var(--reader-away-duration) var(--reader-away-ease),
+  height var(--reader-away-duration) var(--reader-away-ease),
+  border-radius var(--reader-away-duration) var(--reader-away-ease);
 }
 .mini-player-card,
 [data-mini-player][data-drawn] .mini-player-pill {
@@ -461,6 +472,17 @@ html.is-native .now-playing-lift {
   opacity var(--duration-fast) var(--ease-house),
   visibility 0s linear var(--duration-fast);
 }
+[data-mini-player][data-drawn] .mini-player-card {
+ transition:
+  opacity calc(var(--reader-away-duration) - 200ms) var(--reader-away-ease),
+  visibility 0s linear calc(var(--reader-away-duration) - 200ms);
+}
+[data-mini-player][data-drawn] .mini-player-pill {
+ transition:
+  opacity calc(var(--reader-away-duration) - 200ms) var(--reader-away-ease) 200ms,
+  visibility 0s;
+}
+:where([data-motion="reduce"]) [data-mini-player][data-drawn] .mini-player,
 :where([data-motion="reduce"]) .mini-player,
 :where([data-motion="reduce"]) .mini-player-card,
 :where([data-motion="reduce"]) .mini-player-pill,
@@ -5056,12 +5078,31 @@ html[data-reading-mode="black"] .tile-sheen {
  :where(html[data-reading-mode="monastery"], html[data-reading-mode="councils"], html[data-reading-mode="cappadocian"]) :is(.text-paper\/45, .text-paper\/50) {
  color: color-mix(in oklab, var(--color-paper) 55%, transparent);
  }
- /* The writing sheet's placeholder (1.9): the 55 percent share, Light's and
-    Candlelight's own as above. */
+ /* Every field's placeholder (1.9, the placeholder sweep; it began with the
+    writing sheet's): the 55 percent share, Light's and Candlelight's own as
+    above. lib/ui/__tests__/placeholderContrast.test.ts holds every field in
+    app/ and components/ to it. */
  :where(html[data-reading-mode="parchment"]) .placeholder\:text-paper\/55::placeholder {
  color: color-mix(in oklab, var(--color-paper) 70%, transparent);
  }
  :where(html[data-reading-mode="candlelight"]) .placeholder\:text-paper\/55::placeholder {
+ color: color-mix(in oklab, var(--color-paper) 60%, transparent);
+ }
+}
+
+/* A field with no placeholder colour of its own: Tailwind's default is the
+   field's own text at 50 percent, under 4.5:1 on Light, Candlelight and
+   Monastery. It takes the same 55 percent share of the palette's ink, at
+   each palette's own share, in the base layer, so a field's own placeholder:
+   class still wins. The admin keeps its own (.adm ::placeholder). */
+@layer base {
+ ::placeholder {
+ color: color-mix(in oklab, var(--color-paper) 55%, transparent);
+ }
+ :where(html[data-reading-mode="parchment"]) ::placeholder {
+ color: color-mix(in oklab, var(--color-paper) 70%, transparent);
+ }
+ :where(html[data-reading-mode="candlelight"]) ::placeholder {
  color: color-mix(in oklab, var(--color-paper) 60%, transparent);
  }
 }

@@ -254,7 +254,11 @@ describe("drawing in", () => {
     const pill = css.match(/\[data-mini-player\]\[data-drawn\] \.mini-player \{[^}]*\}/)?.[0] ?? "";
     expect(card).toMatch(/width: 100%;\s*height: 3\.5rem;\s*border-radius: 14px;/);
     expect(pill).toMatch(/width: var\(--mini-player-pill-w, 9rem\);\s*height: 2\.5rem;\s*border-radius: 1\.25rem;/);
-    for (const prop of ["width", "height", "border-radius"]) expect(card).toContain(`${prop} var(--duration-base) var(--ease-house)`);
+    // Back at the reader's bars' return pace; drawn in at their leaving pace
+    // (his word, 2026-11-09: one pace for all that moves on that scroll).
+    for (const prop of ["width", "height", "border-radius"]) expect(card).toContain(`${prop} var(--reader-back-duration) var(--ease-house)`);
+    const drawing = [...css.matchAll(/\[data-mini-player\]\[data-drawn\] \.mini-player \{[^}]*\}/g)].map((m) => m[0]).join("\n");
+    for (const prop of ["width", "height", "border-radius"]) expect(drawing).toContain(`${prop} var(--reader-away-duration) var(--reader-away-ease)`);
     // The width is the pill's own, measured as its name sets it.
     expect(bar).toMatch(/surface\.style\.setProperty\("--mini-player-pill-w", /);
     expect(bar).toMatch(/new ResizeObserver\(measure\)/);

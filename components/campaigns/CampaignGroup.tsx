@@ -35,7 +35,7 @@ import {
 import { cn } from "@/lib/cn";
 
 const field =
-  "w-full rounded-lg border border-paper/15 bg-night px-3.5 py-2.5 font-sans text-ui text-paper placeholder:text-paper/35 focus:outline-none focus:border-paper/40";
+  "w-full rounded-lg border border-paper/15 bg-night px-3.5 py-2.5 font-sans text-ui text-paper placeholder:text-paper/55 focus:outline-none focus:border-paper/40";
 
 type Mode = "idle" | "creating" | "joining";
 

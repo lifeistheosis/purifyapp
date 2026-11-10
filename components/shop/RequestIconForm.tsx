@@ -16,7 +16,7 @@ import { findSaints, saintByName, type RequestSaint } from "@/lib/shop/requestSa
 import type { ShopBudgetBand, ShopIconRequest } from "@/lib/shop/types";
 
 const field =
-  "w-full rounded-[14px] shop-well px-3.5 py-3 font-sans text-ui text-paper placeholder:text-paper/40 focus:outline-none focus:ring-1 focus:ring-paper/40";
+  "w-full rounded-[14px] shop-well px-3.5 py-3 font-sans text-ui text-paper placeholder:text-paper/55 focus:outline-none focus:ring-1 focus:ring-paper/40";
 const labelCls = "font-sans text-[13px] font-semibold text-paper/60";
 
 type Kind = ShopIconRequest["request_type"];
@@ -203,7 +203,7 @@ export function RequestIconForm({
               onKeyDown={onKeyDown}
               maxLength={200}
               placeholder={t("shop.stMosesTheBlackChrist")}
-              className="min-h-12 w-full min-w-0 bg-transparent py-3 font-sans text-ui text-paper placeholder:text-paper/40 focus:outline-none"
+              className="min-h-12 w-full min-w-0 bg-transparent py-3 font-sans text-ui text-paper placeholder:text-paper/55 focus:outline-none"
             />
           </div>
           {open ? (

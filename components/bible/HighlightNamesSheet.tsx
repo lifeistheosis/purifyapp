@@ -167,7 +167,7 @@ function NamesSheet({ open, onClose, focusId = null }: Props) {
                   if (next) inputs.current[next.id]?.focus();
                   else e.currentTarget.blur();
                 }}
-                className="h-12 min-w-0 flex-1 bg-transparent font-sans text-ui text-paper placeholder:text-paper/65 focus:outline-none"
+                className="h-12 min-w-0 flex-1 bg-transparent font-sans text-ui text-paper placeholder:text-paper/55 focus:outline-none"
               />
               {draft ? (
                 <button

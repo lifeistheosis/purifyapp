@@ -87,7 +87,7 @@ export function AskPrayersSheet({
             rows={3}
             placeholder={t("community.wallIntentionPlaceholder")}
             aria-describedby="wall-intention-hint"
-            className="block w-full resize-none rounded-lg border border-paper/15 bg-night px-3.5 py-2.5 font-sans text-ui leading-relaxed text-paper placeholder:text-paper/35 focus:border-paper/40 focus:outline-none"
+            className="block w-full resize-none rounded-lg border border-paper/15 bg-night px-3.5 py-2.5 font-sans text-ui leading-relaxed text-paper placeholder:text-paper/55 focus:border-paper/40 focus:outline-none"
           />
           <p id="wall-intention-hint" className="mt-1.5 font-sans text-caption leading-relaxed text-paper/50">
             {t("community.wallIntentionHint")}
