@@ -7,7 +7,6 @@ import { Diptychs } from "@/components/prayers/Diptychs";
 import { PART_KEY, PartSwitch } from "@/components/prayers/mine/PartSwitch";
 import { RuleHead } from "@/components/prayers/mine/RuleHead";
 import { Book } from "@/components/ui/icons/Book";
-import { ChevronRight } from "@/components/ui/icons/ChevronRight";
 import { Plus } from "@/components/ui/icons/Plus";
 import { libraryRule, libraryRules } from "@/lib/prayers/library";
 import {
@@ -32,6 +31,7 @@ import { readMyRule, useMyRule, writeMyRule } from "@/lib/prayers/useMyRule";
 import { ItemSheet } from "./ItemSheet";
 import { LibrarySheet } from "./LibrarySheet";
 import { RememberedIn } from "./RememberedIn";
+import { WayPicture, WayPlate, WayRow } from "./WayRow";
 import { ReorderList, type ReorderRow } from "./ReorderList";
 
 /** How long "Removed ... Undo" stays. */
@@ -269,32 +269,26 @@ export function MyRuleBuilder() {
             </div>
             {/* The two ways in: one choice of two rows drawn alike, each saying what it brings. */}
             <div data-mine-ways className="set-panel mt-4">
-              <button type="button" onClick={() => save(addItems(rule, p, seed))} className="set-link rule-way flex w-full items-center gap-3 text-start">
-                <span aria-hidden className="rule-way-pic">
-                  {/* eslint-disable-next-line @next/next/no-img-element -- the app's own file, as the head's */}
-                  <img src={art.src} alt="" loading="lazy" decoding="async" className="h-full w-full object-cover" style={{ objectPosition: art.focus }} />
-                </span>
-                <span className="min-w-0 flex-1">
-                  <span className="set-label">{p === "morning" ? t("prayers.mine.startFromMorning") : t("prayers.mine.startFromEvening")}</span>
-                  <span className="set-desc">
-                    {t("prayers.mine.startFromWhat", {
-                      prayers: tn("prayers.reader.prayerCount", seed.length),
-                      minutes: t("today.minRead", { count: partMinutes(seed, lookup) }),
-                    })}
-                  </span>
-                </span>
-                <ChevronRight size={15} className="set-chev rtl:-scale-x-100" />
-              </button>
-              <button type="button" onClick={() => openAdd(p)} aria-haspopup="dialog" className="set-link rule-way flex w-full items-center gap-3 text-start">
-                <span aria-hidden className="set-plate rule-way-plate">
-                  <Book size={18} />
-                </span>
-                <span className="min-w-0 flex-1">
-                  <span className="set-label">{t("prayers.mine.addOneByOne")}</span>
-                  <span className="set-desc">{t("prayers.mine.addOneByOneWhat")}</span>
-                </span>
-                <ChevronRight size={15} className="set-chev rtl:-scale-x-100" />
-              </button>
+              <WayRow
+                lead={<WayPicture src={art.src} focus={art.focus} />}
+                label={p === "morning" ? t("prayers.mine.startFromMorning") : t("prayers.mine.startFromEvening")}
+                desc={t("prayers.mine.startFromWhat", {
+                  prayers: tn("prayers.reader.prayerCount", seed.length),
+                  minutes: t("today.minRead", { count: partMinutes(seed, lookup) }),
+                })}
+                onClick={() => save(addItems(rule, p, seed))}
+              />
+              <WayRow
+                lead={
+                  <WayPlate>
+                    <Book size={18} />
+                  </WayPlate>
+                }
+                label={t("prayers.mine.addOneByOne")}
+                desc={t("prayers.mine.addOneByOneWhat")}
+                onClick={() => openAdd(p)}
+                opensSheet
+              />
             </div>
           </div>
         )}

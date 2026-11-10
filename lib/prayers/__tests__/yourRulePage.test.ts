@@ -288,7 +288,9 @@ describe("the page as the owner picked it, r3-27 A", () => {
 
   it("offers an empty part's two ways in as one choice of two rows drawn alike, each saying what it brings", () => {
     const ways = builder.slice(builder.indexOf("data-mine-ways"), builder.indexOf("{undo && undo.part === p"));
-    expect(ways.match(/className="set-link rule-way/g)).toHaveLength(2);
+    // Both are the one shared row (build 89 note 14).
+    expect(ways.match(/<WayRow\b/g)).toHaveLength(2);
+    expect(code("components/prayers/mine/WayRow.tsx")).toContain('className="set-link rule-way flex w-full items-center gap-3 text-start"');
     expect(ways).toContain('t("prayers.mine.startFromWhat"');
     expect(ways).toContain('t("prayers.mine.addOneByOne")');
     expect(ways).toContain('t("prayers.mine.addOneByOneWhat")');
@@ -303,6 +305,18 @@ describe("the page as the owner picked it, r3-27 A", () => {
     expect(names).toContain('aria-haspopup="dialog"');
     // Sentence-case labels: no list's name is set in capitals.
     expect(names).not.toMatch(/\buppercase\b/);
+  });
+
+  it("asks In which prayers in the same row as Add prayers one by one (build 89 note 14)", () => {
+    // The shared row, never a second drawing of it.
+    expect(where).toContain("<WayRow");
+    expect(where).not.toMatch(/className="[^"]*\bset-link\b/);
+    // `.set-row` sets display: block outside Tailwind's layers, so it beats
+    // `flex` or `grid` on the same element: that is how this row stacked.
+    for (const file of ["components/prayers/mine/RememberedIn.tsx", "components/prayers/mine/MyRuleBuilder.tsx", "components/settings/LitPanel.tsx", "components/settings/SettingsClient.tsx"]) {
+      expect(code(file), file).not.toMatch(/className="[^"]*\bset-row\b[^"]*\b(flex|grid)\b/);
+      expect(code(file), file).not.toMatch(/className="[^"]*\b(flex|grid)\b[^"]*\bset-row\b/);
+    }
   });
 
   it("asks In which prayers in one row that opens a sheet of lines to tick, never pills", () => {
