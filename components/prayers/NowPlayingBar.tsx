@@ -91,8 +91,13 @@ export function NowPlayingBar() {
   const visible = (Boolean(src) && !open && !playsOnPage(src, ownPlayer)) || (soundOnly && !hostsEverything(ownPlayer));
 
   // The lock screen and the notification's controls (1.8), in the apps only.
-  // Here because this bar is mounted once for the whole app (RootFrame).
-  useEffect(() => connectLockScreen(), []);
+  // Here because this bar is mounted once for the whole app (RootFrame). The
+  // shade names a sound in the reader's words, read when it is named (1.9).
+  const words = useRef(t);
+  useEffect(() => {
+    words.current = t;
+  }, [t]);
+  useEffect(() => connectLockScreen((key) => words.current(key)), []);
 
   if (!visible) return null;
 

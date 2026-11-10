@@ -2072,6 +2072,55 @@ findings:
     safe_to_automate: false
     review: requires-owner
 
+  - id: F-51
+    title: No call from the app ever reached the media-session or widget plugins, so the player never showed in Android's shade, the widgets never had the app's values, and a phone hiding Purify's notifications read as showing them
+    area: native/push
+    severity: P1
+    confidence: high
+    status: corrected-unverified
+    status_notes: >-
+      Found 2026-11-10 on ccr-07896cf2-bo0afd from his report on Android test
+      build 90: the voice went on when he left the app, and no player showed
+      in the shade. Capacitor's plugin object (registerPlugin, @capacitor/core
+      8.4.3) answers every property as a method of the plugin, "then" among
+      them, so a promise resolved with it never settles: JavaScript calls its
+      then(), Capacitor sends that to the phone, which has no such method (it
+      rejects where nobody listens: "MediaSession.then() is not implemented on
+      android"), and the promise waits for ever. lib/player/lockScreen.ts
+      (from 2026-10-26, 1.8) and lib/widget/bridge.ts (from 2026-10-14) each
+      handed their plugin back from a then(), so every call behind it waited
+      for ever, with nothing said. What it cost: the player in Android's
+      shade and on its lock screen (1.8's listening with the phone locked
+      never reached the plugin); every value the app hands the widgets
+      (streak, prayed, patron, labels, calendar style, the update countdown,
+      from 1.9 the remembered verse); and lib/push/native.ts blockedOnPhone(),
+      which asks the widget plugin whether the phone shows Purify's
+      notifications inside a 3 s wait, timed out and read "not blocked", so
+      reminders read as on for a phone that drops them (since c84dd89a2,
+      2026-11-01; Admin's reading). The tests stood in for registerPlugin with
+      a plain object, which has no then(). A scan of all 2,481 files of app/,
+      components/ and lib/ as they were found these two places and no other.
+      CORRECTED ON THE BRANCH, NOT YET ON A PHONE. lib/platform/nativePlugin.ts
+      hands a plugin over in a box ({ api, platform }), and both bridges use
+      it. lib/platform/__tests__/nativePlugin.test.ts runs Capacitor's own
+      code on a stand-in Android bridge, and fails on the old lock screen
+      bridge with Capacitor's own message. pluginTrap.test.ts scans the app
+      for a plugin object handed through a promise (returned from an async
+      function or a then() or catch() callback, awaited, given to
+      Promise.resolve, to a new Promise's resolve or in Promise.all's list)
+      and for registerPlugin outside the helper; which names are plugin
+      objects it learns from each plugin package the app carries, loaded on
+      Capacitor's own code. The iPhone keeps the web view's own Now Playing
+      (navigator.mediaSession, as the plugin's own JavaScript does on iOS);
+      the bridge drives the plugin on Android only. Two things the plugin
+      cannot do are with the arbiter: 15 second buttons on Android 13 and
+      newer (custom actions), and androidx's MediaButtonReceiver starting the
+      plugin's service with no player behind it.
+    evidence: lib/platform/nativePlugin.ts; lib/player/lockScreen.ts; lib/widget/bridge.ts; lib/push/native.ts (blockedOnPhone); lib/platform/__tests__/nativePlugin.test.ts; lib/platform/__tests__/pluginTrap.test.ts; node_modules/@capacitor/core/dist/index.js (registerPlugin's Proxy has no case for then)
+    action: "Branch: done. A phone: docs/PHONE-WALK.md rows 27 to 29 on the next test build. Main web: nothing, the apps carry it."
+    safe_to_automate: false
+    review: owner (walk on device)
+
 corrections:
   - id: C-01
     fixes: F-02

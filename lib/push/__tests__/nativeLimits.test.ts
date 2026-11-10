@@ -38,7 +38,7 @@ vi.mock("@/lib/api/client", () => ({
   },
 }));
 vi.mock("@capacitor/core", () => ({
-  Capacitor: { isPluginAvailable: (name: string) => name === "WidgetBridge" },
+  Capacitor: { isPluginAvailable: (name: string) => name === "WidgetBridge", getPlatform: () => "android" },
   registerPlugin: () => ({
     update: async () => ({ stored: 0 }),
     notificationsEnabled: () => (state.phoneCheck === "silent" ? never() : Promise.resolve({ enabled: true })),

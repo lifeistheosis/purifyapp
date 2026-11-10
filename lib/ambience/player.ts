@@ -375,6 +375,19 @@ function subscribe(l: () => void) {
   };
 }
 
+export type AmbienceSnapshot = Snap;
+
+/** The sounds' state, read once, outside React: the player in Android's shade (lib/player/lockScreen.ts, 1.9). */
+export function getAmbienceSnapshot(): AmbienceSnapshot {
+  prime();
+  return snap;
+}
+
+/** Told of every change, outside React; returns the way to stop listening. */
+export function subscribeAmbience(listener: () => void): () => void {
+  return subscribe(listener);
+}
+
 export function useAmbience(): Snap {
   return useSyncExternalStore(subscribe, () => snap, () => SERVER);
 }

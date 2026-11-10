@@ -1,4 +1,5 @@
 import { isNativeClient } from "@/lib/platform/native";
+import { nativePlugin, type NativePluginBox } from "@/lib/platform/nativePlugin";
 
 /**
  * The app's end of the widget bridge: hands the home screen widgets what only
@@ -52,26 +53,21 @@ type WidgetBridgePlugin = {
   notificationsEnabled(): Promise<{ enabled?: unknown }>;
 };
 
-/** The plugin, once asked for. Null in a shell that has none. */
-let plugin: Promise<WidgetBridgePlugin | null> | null = null;
-
 /** What the plugin has taken, key by key, in this app session. */
 const sent = new Map<WidgetKey, string | null>();
 
 /** The pushes still to send, one after another. */
 let queue: Promise<void> = Promise.resolve();
 
-function loadPlugin(): Promise<WidgetBridgePlugin | null> {
-  plugin ??= import("@capacitor/core")
-    .then(({ Capacitor, registerPlugin }) =>
-      Capacitor.isPluginAvailable("WidgetBridge") ? registerPlugin<WidgetBridgePlugin>("WidgetBridge") : null,
-    )
-    .catch(() => {
-      // The chunk did not load (offline before it was cached): asked again next time.
-      plugin = null;
-      return null;
-    });
-  return plugin;
+/**
+ * The plugin, in its box: null in a shell that has none, and when the chunk
+ * did not load (offline before it was cached), asked again next time. Never
+ * the bare plugin through a promise, which never settles: until 1.9 no push
+ * reached the widgets, and the phone's notifications were never asked
+ * (lib/platform/nativePlugin.ts).
+ */
+function loadPlugin(): Promise<NativePluginBox<WidgetBridgePlugin> | null> {
+  return nativePlugin<WidgetBridgePlugin>("WidgetBridge");
 }
 
 async function send(entries: WidgetEntries): Promise<void> {
@@ -86,7 +82,7 @@ async function send(entries: WidgetEntries): Promise<void> {
   if (Object.keys(changed).length === 0) return;
   const bridge = await loadPlugin();
   if (!bridge) return;
-  await bridge.update({ entries: changed });
+  await bridge.api.update({ entries: changed });
   for (const key of WIDGET_KEYS) if (key in changed) sent.set(key, changed[key]);
 }
 
@@ -102,7 +98,7 @@ export async function phoneNotificationsEnabled(): Promise<boolean | null> {
   try {
     const bridge = await loadPlugin();
     if (!bridge) return null;
-    const { enabled } = await bridge.notificationsEnabled();
+    const { enabled } = await bridge.api.notificationsEnabled();
     return typeof enabled === "boolean" ? enabled : null;
   } catch {
     return null;

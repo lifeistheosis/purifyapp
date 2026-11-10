@@ -26,7 +26,7 @@ async function load(isNative: boolean, p: ReturnType<typeof plugin>, available =
   vi.doMock("@capacitor/core", () => {
     p.loads += 1;
     return {
-      Capacitor: { isPluginAvailable: (name: string) => available && name === "WidgetBridge" },
+      Capacitor: { isPluginAvailable: (name: string) => available && name === "WidgetBridge", getPlatform: () => "android" },
       registerPlugin: (name: string) => (name === "WidgetBridge" ? { update: p.update } : {}),
     };
   });
