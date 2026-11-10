@@ -50,3 +50,11 @@ Planned fix (on his start): read Next 16's own guide in `node_modules/next/dist/
 What he saw: the line down the left of each gathering card's quoted line (`build-89/05-stripe-florilegium.png`). His words: "I just caught the vibe coded AI design also here with the line." It is `components/florilegium/FlorilegiaHub.tsx` (border-s-2), already on note 1's list, and Updates flagged it the same night. Seen beside it in the same picture: "Begin a new gathering" ends in a typed arrow (→), which the glyph rule forbids (icons come from `components/ui/icons`).
 
 Planned fix (on his start): with note 1's sweep; the arrow becomes the house's own icon.
+
+### 6. The Florilegium's starters, and where they lead (2026-11-10)
+
+What he saw: the row "Begin with a gathering" on the Florilegium hub (The Prologue of John, The Beatitudes, The Song of the Theotokos; `build-89/06-florilegium-starters.png`). His words: "The UX experience on these need to get fixed also, like these, this section and like where it leads to."
+
+Where it is: `components/florilegium/FlorilegiaHub.tsx` with `lib/florilegium/starters.ts`. The row's title is an uppercase eyebrow; a tile opens a bare sheet (StarterSheet) with the reference, Keep, and the passage a verse a line; Keep makes it the reader's own gathering and stays on the sheet; a kept tile only gains a small tick beside its reference, with no word for what the tick means.
+
+Planned fix (on his start), as one piece of design with notes 2 and 4: the row gets a real title in the house's type, not an eyebrow; a tile opens its passage as a page or a full sheet that carries the tile's icon in (note 4), with the passage set to read, one clear action to keep it, and once kept, a plain line saying it is in the reader's gatherings with a way to open it; the tick becomes words a reader understands. Drawn from the app's own components, `checkMock` on all five palettes, one still to him before it ships.
