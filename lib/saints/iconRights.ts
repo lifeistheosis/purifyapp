@@ -1220,6 +1220,17 @@ export const ICON_RIGHTS: Record<string, IconRights> = {
     license: "Public domain",
     evidenceUrl: "https://commons.wikimedia.org/wiki/File:Agios_Memnon_Ephesou_Dionysiou.jpg",
   },
+  "basil-the-great.jpg": {
+    status: "verified",
+    inspectedOn: "2026-11-10",
+    alt: "A mosaic of a bishop with dark hair and a dark beard, within a halo on a gold ground, his name in Greek in dark letters down either side; in a white omophorion with black crosses over a dark robe, holding a jewelled Gospel book before him.",
+    work: "Mosaic of St Basil the Great, St Sophia Cathedral, Kyiv, as the Commons page describes it",
+    artist: "Unknown",
+    workDate: "11th century",
+    source: "Wikimedia Commons (from sedmitza.ru)",
+    license: "Public domain",
+    evidenceUrl: "https://commons.wikimedia.org/wiki/File:Basil_of_Caesarea.jpg",
+  },
 };
 
 /**
@@ -1294,7 +1305,7 @@ export const UNVERIFIED_ICONS: Record<string, string> = {
   "apostle-paul.jpg":
     "No source, licence or attribution recorded. Fetched before scripts/fetch-missing-icons.mjs had a licence gate. Referenced by SAINTS.iconUrl for apostle-paul and AUTHOR_ICONS. 268x420 JPG, 28 KB. Not yet opened and inspected.",
   "apostle-peter.jpg":
-    "No source, licence or attribution recorded. Fetched before scripts/fetch-missing-icons.mjs had a licence gate. Referenced by SAINTS.iconUrl for apostle-peter and AUTHOR_ICONS. 281x420 JPG, 25 KB. Not yet opened and inspected.",
+    "No source, licence or attribution recorded. Fetched before scripts/fetch-missing-icons.mjs had a licence gate. Referenced by SAINTS.iconUrl for apostle-peter and AUTHOR_ICONS. 281x420 JPG, 25 KB. Not found on Commons by search and picture hash (2026-11-10, the icon batches).",
   "apostle-simon-zealot.jpg":
     "No source, licence or attribution recorded. Fetched before scripts/fetch-missing-icons.mjs had a licence gate. Referenced by SAINTS.iconUrl for apostle-simon-zealot and AUTHOR_ICONS. 281x420 JPG, 24 KB. Not yet opened and inspected.",
   "athanasius-the-great.v2.jpg":
@@ -1303,8 +1314,6 @@ export const UNVERIFIED_ICONS: Record<string, string> = {
     "No source, licence or attribution recorded. Fetched before scripts/fetch-missing-icons.mjs had a licence gate. Referenced by SAINTS.iconUrl for augustine-of-hippo and AUTHOR_ICONS. 292x420 JPG, 34 KB. Not yet opened and inspected.",
   "basil-of-ostrog.jpg":
     "No source, licence or attribution recorded. Fetched before scripts/fetch-missing-icons.mjs had a licence gate. Referenced by SAINTS.iconUrl for basil-of-ostrog. 322x420 JPG, 36 KB. Not yet opened and inspected.",
-  "basil-the-great.jpg":
-    "No source, licence or attribution recorded. Fetched before scripts/fetch-missing-icons.mjs had a licence gate. Referenced by SAINTS.iconUrl for basil-the-great and AUTHOR_ICONS. 308x420 JPG, 55 KB. Not yet opened and inspected.",
   "celestine-of-rome.jpg":
     "No source, licence or attribution recorded. Fetched before scripts/fetch-missing-icons.mjs had a licence gate. Referenced by SAINTS.iconUrl for celestine-of-rome. 118x420 JPG, 15 KB. Opened 2026-11-10 (build 90 note 3): a narrow cut of a wall painting of a standing grey-bearded bishop in a chequered sakkos with a Gospel book and a scroll, his name in Greek above him. Not found on Commons by search and picture hash (none of the files found has its shape).",
   "cleopa-ilie.jpg":
@@ -1314,11 +1323,11 @@ export const UNVERIFIED_ICONS: Record<string, string> = {
   "cyril-and-methodius.jpg":
     "No source, licence or attribution recorded. Fetched before scripts/fetch-missing-icons.mjs had a licence gate. Referenced by SAINTS.iconUrl for cyril-and-methodius. 336x420 JPG, 33 KB. Not yet opened and inspected.",
   "cyril-of-alexandria.jpg":
-    "No source, licence or attribution recorded. Fetched before scripts/fetch-missing-icons.mjs had a licence gate. Referenced by SAINTS.iconUrl for cyril-of-alexandria and AUTHOR_ICONS. 316x420 JPG, 21 KB. Not yet opened and inspected.",
+    "No source, licence or attribution recorded. Fetched before scripts/fetch-missing-icons.mjs had a licence gate. Referenced by SAINTS.iconUrl for cyril-of-alexandria and AUTHOR_ICONS. 316x420 JPG, 21 KB. Opened 2026-11-10 (the icon batches): a modern icon inscribed in English, SAINT CYRIL PATR. OF ALEXANDRIA. Not found on Commons by search and picture hash. To be swapped for a public-domain icon, or the plate.",
   "dumitru-staniloae.jpg":
     "No source, licence or attribution recorded. Fetched before scripts/fetch-missing-icons.mjs had a licence gate. Referenced by SAINTS.iconUrl for dumitru-staniloae. 336x420 JPG, 38 KB. Not yet opened and inspected.",
   "ephraim-the-syrian.jpg":
-    "No source, licence or attribution recorded. Fetched before scripts/fetch-missing-icons.mjs had a licence gate. Referenced by SAINTS.iconUrl for ephraim-the-syrian. 305x420 JPG, 26 KB. Not yet opened and inspected.",
+    "No source, licence or attribution recorded. Fetched before scripts/fetch-missing-icons.mjs had a licence gate. Referenced by SAINTS.iconUrl for ephraim-the-syrian. 305x420 JPG, 26 KB. Not found on Commons by search and picture hash (2026-11-10, the icon batches).",
   "epiphanius-of-salamis.jpg":
     "No source, licence or attribution recorded. Fetched before scripts/fetch-missing-icons.mjs had a licence gate. Referenced by SAINTS.iconUrl for epiphanius-of-salamis. 312x420 JPG, 27 KB. Not yet opened and inspected.",
   "eustathius-of-antioch.jpg":
@@ -1330,7 +1339,7 @@ export const UNVERIFIED_ICONS: Record<string, string> = {
   "gregory-of-nyssa.v2.jpg":
     "No source, licence or attribution recorded. Fetched before scripts/fetch-missing-icons.mjs had a licence gate. Referenced by SAINTS.iconUrl for gregory-of-nyssa and AUTHOR_ICONS. 258x420 JPG, 28 KB, cut on 2026-10-17 from the 266x420 file, inside the white at its top left (1.7.1). Its source is not yet looked into.",
   "gregory-theologian.jpg":
-    "No source, licence or attribution recorded. Fetched before scripts/fetch-missing-icons.mjs had a licence gate. Referenced by SAINTS.iconUrl for gregory-theologian and AUTHOR_ICONS. 300x420 JPG, 30 KB. Not yet opened and inspected.",
+    "No source, licence or attribution recorded. Fetched before scripts/fetch-missing-icons.mjs had a licence gate. Referenced by SAINTS.iconUrl for gregory-theologian and AUTHOR_ICONS. 300x420 JPG, 30 KB. Opened 2026-11-10 (the icon batches): a modern Greek icon of a white-bearded bishop holding an open scroll, his name in Greek in red. Not found on Commons by search and picture hash. To be swapped for a public-domain icon, or the plate.",
   "hermione-of-ephesus.jpg":
     "No source, licence or attribution recorded. Fetched before scripts/fetch-missing-icons.mjs had a licence gate. Referenced by SAINTS.iconUrl for hermione-of-ephesus. 322x420 JPG, 22 KB. Not yet opened and inspected.",
   "hosius-of-cordova.v2.jpg":
@@ -1342,7 +1351,7 @@ export const UNVERIFIED_ICONS: Record<string, string> = {
   "irene-the-empress.jpg":
     "No source, licence or attribution recorded. Fetched before scripts/fetch-missing-icons.mjs had a licence gate. Referenced by SAINTS.iconUrl for irene-the-empress. 300x420 JPG, 32 KB. Opened 2026-11-10 (build 90 note 3): a contemporary icon of a crowned empress in a jewelled robe holding a scroll, her name in Latin letters on a gold ground. Not found on Commons by search and picture hash (nearest 21 of 64 bits apart, a coin of hers).",
   "isaac-the-syrian.jpg":
-    "No source, licence or attribution recorded. Fetched before scripts/fetch-missing-icons.mjs had a licence gate. Referenced by SAINTS.iconUrl for isaac-the-syrian. 293x420 JPG, 24 KB. Not yet opened and inspected.",
+    "No source, licence or attribution recorded. Fetched before scripts/fetch-missing-icons.mjs had a licence gate. Referenced by SAINTS.iconUrl for isaac-the-syrian. 293x420 JPG, 24 KB. Not found on Commons by search and picture hash (2026-11-10, the icon batches).",
   "john-cassian.jpg":
     "No source, licence or attribution recorded. Fetched before scripts/fetch-missing-icons.mjs had a licence gate. Referenced by SAINTS.iconUrl for john-cassian. 313x420 JPG, 28 KB. Not yet opened and inspected.",
   "john-of-damascus.jpg":
@@ -1366,7 +1375,7 @@ export const UNVERIFIED_ICONS: Record<string, string> = {
   "marina-the-great-martyr.jpg":
     "No source, licence or attribution recorded. Fetched before scripts/fetch-missing-icons.mjs had a licence gate. Referenced by SAINTS.iconUrl for marina-the-great-martyr. 305x420 JPG, 31 KB. Not yet opened and inspected.",
   "mark-of-ephesus.jpg":
-    "No source, licence or attribution recorded. Fetched before scripts/fetch-missing-icons.mjs had a licence gate. Referenced by SAINTS.iconUrl for mark-of-ephesus. 337x420 JPG, 30 KB. Not yet opened and inspected.",
+    "No source, licence or attribution recorded. Fetched before scripts/fetch-missing-icons.mjs had a licence gate. Referenced by SAINTS.iconUrl for mark-of-ephesus. 337x420 JPG, 30 KB. Not found on Commons by search and picture hash (2026-11-10, the icon batches).",
   "martin-the-confessor.v2.jpg":
     "No source, licence or attribution recorded. Fetched before scripts/fetch-missing-icons.mjs had a licence gate. Referenced by SAINTS.iconUrl for martin-the-confessor. 319x390 JPG, 28 KB, cut on 2026-10-17 from the 329x400 file, inside the white lines at its edges (1.7.1). Its source is not yet looked into. Opened 2026-11-10 (build 90 note 3): a contemporary icon in the Russian manner, a white-bearded pope in a white mitre holding the Image Not Made by Hands, his name in Church Slavonic. Not found on Commons by search and picture hash of the file it was cut from (nearest 24 of 64 bits apart).",
   "mary-magdalene.jpg":
@@ -1374,7 +1383,7 @@ export const UNVERIFIED_ICONS: Record<string, string> = {
   "mary-of-egypt.jpg":
     "No source, licence or attribution recorded. Fetched before scripts/fetch-missing-icons.mjs had a licence gate. Referenced by SAINTS.iconUrl for mary-of-egypt and AUTHOR_ICONS. 350x410 JPG, 27 KB. Not yet opened and inspected.",
   "maximus-the-confessor.jpg":
-    "No source, licence or attribution recorded. Fetched before scripts/fetch-missing-icons.mjs had a licence gate. Referenced by SAINTS.iconUrl for maximus-the-confessor and AUTHOR_ICONS. 286x420 JPG, 23 KB. Not yet opened and inspected.",
+    "No source, licence or attribution recorded. Fetched before scripts/fetch-missing-icons.mjs had a licence gate. Referenced by SAINTS.iconUrl for maximus-the-confessor and AUTHOR_ICONS. 286x420 JPG, 23 KB. Opened 2026-11-10 (the icon batches): an icon of a grey-bearded monk on a gold ground holding a scroll, his name in Greek. Not found on Commons by search and picture hash; its age not yet settled.",
   "nicholas-of-cabasilas.jpg":
     "No source, licence or attribution recorded. Fetched before scripts/fetch-missing-icons.mjs had a licence gate. Referenced by SAINTS.iconUrl for nicholas-cabasilas. 315x420 JPG, 36 KB. Not yet opened and inspected.",
   "niketas-the-goth.jpg":
@@ -1402,7 +1411,7 @@ export const UNVERIFIED_ICONS: Record<string, string> = {
   "sava-of-serbia.jpg":
     "No source, licence or attribution recorded. Fetched before scripts/fetch-missing-icons.mjs had a licence gate. Referenced by SAINTS.iconUrl for sava-of-serbia. 322x420 JPG, 31 KB. Not yet opened and inspected.",
   "seraphim-of-sarov.jpg":
-    "No source, licence or attribution recorded. Fetched before scripts/fetch-missing-icons.mjs had a licence gate. Referenced by SAINTS.iconUrl for seraphim-of-sarov and AUTHOR_ICONS. 356x420 JPG, 16 KB. Not yet opened and inspected.",
+    "No source, licence or attribution recorded. Fetched before scripts/fetch-missing-icons.mjs had a licence gate. Referenced by SAINTS.iconUrl for seraphim-of-sarov and AUTHOR_ICONS. 356x420 JPG, 16 KB. Opened 2026-11-10 (the icon batches): a painted icon of a white-haired, white-bearded elder with his right hand raised, in a monk's black habit and a white stole with crosses, his name in Church Slavonic above him. The same picture as Commons' File:Saint Seraphim of Sarov.jpg (1 of 64 bits apart), a 2018 upload naming no author, on terms the icon tool's gate does not take. To be swapped for an older icon, or kept on his word.",
   "sergius-of-radonezh.jpg":
     "No source, licence or attribution recorded. Fetched before scripts/fetch-missing-icons.mjs had a licence gate. Referenced by SAINTS.iconUrl for sergius-of-radonezh. 345x420 JPG, 24 KB. Not yet opened and inspected.",
   "silouan-the-athonite.jpg":
@@ -1422,7 +1431,7 @@ export const UNVERIFIED_ICONS: Record<string, string> = {
   "tarasius-of-constantinople.jpg":
     "No source, licence or attribution recorded. Fetched before scripts/fetch-missing-icons.mjs had a licence gate. Referenced by SAINTS.iconUrl for tarasius-of-constantinople. 315x420 JPG, 38 KB. Opened 2026-11-10 (build 90 note 3): a contemporary icon on a board made to look old, a white-bearded bishop with a Gospel book, his name in Church Slavonic. Not found on Commons by search and picture hash (nearest 30 of 64 bits apart). His cover portrait (carried in the apps since note 5) is his face on the councils.",
   "theodosius-the-great.jpg":
-    "No source, licence or attribution recorded. Fetched before scripts/fetch-missing-icons.mjs had a licence gate. Referenced by SAINTS.iconUrl for theodosius-the-great. 336x420 JPG, 25 KB. Not yet opened and inspected.",
+    "No source, licence or attribution recorded. Fetched before scripts/fetch-missing-icons.mjs had a licence gate. Referenced by SAINTS.iconUrl for theodosius-the-great. 336x420 JPG, 25 KB. Not found on Commons by search and picture hash (2026-11-10, the icon batches).",
   "theophan-the-recluse.jpg":
     "No source, licence or attribution recorded. Fetched before scripts/fetch-missing-icons.mjs had a licence gate. Referenced by SAINTS.iconUrl for theophan-the-recluse. 301x420 JPG, 24 KB. Not yet opened and inspected.",
 };
