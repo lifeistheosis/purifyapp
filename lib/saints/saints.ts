@@ -4463,7 +4463,18 @@ export const SAINTS: Saint[] = [
       "His reading is millenarian in places, expecting a literal reign of a thousand years upon the earth. He writes before the Church had settled its mind on the question, and the later tradition did not follow him there. St Jerome, who valued him, revised the commentary to remove those passages, and both forms have come down to us.",
       "He is honored as a martyr, and his memory is kept on the second of November. He is included here because he speaks in this library, and a reader who meets him at the Apocalypse is entitled to know both what he was and where the Church did not follow him.",
     ],
-    works: [],
+    works: [
+      // November's works (1.9, docs/1.9-build/notes/november-saints.md).
+      {
+        slug: "on-the-creation-of-the-world",
+        title: "On the Creation of the World",
+        subtitle: "The seven days of creation",
+        year: "3rd century",
+        blurb:
+          "His meditation on the six days of creation and the seventh, and on the number seven in Scripture. A fragment, its gaps marked as the edition prints them. In the public-domain English of 1886.",
+        topics: ["Creation", "Scripture"],
+      },
+    ],
   },
   {
     slug: "isidore-of-seville",
@@ -6342,6 +6353,7 @@ export const SAINTS: Saint[] = [
 
   {
     slug: "gregory-the-wonderworker",
+    iconUrl: "/saints/icons/gregory-the-wonderworker.jpg",
     name: "St. Gregory the Wonderworker",
     byname: "Thaumaturgus",
     epithet: "Bishop of Neocaesarea · Disciple of Origen",
@@ -6364,11 +6376,48 @@ export const SAINTS: Saint[] = [
           "Eusebius on Origen's pupil and the bishop of Pontus, St. Jerome's chapter on him, and St. Basil's praise of the great Gregory in On the Holy Spirit. In the public-domain English of 1890 to 1895.",
         topics: ["Episcopate", "Tradition", "Miracles"],
       },
+      {
+        slug: "a-declaration-of-faith",
+        title: "A Declaration of Faith",
+        subtitle: "His creed of the Holy Trinity",
+        year: "3rd century",
+        blurb:
+          "His short confession of one God the Father, one Lord, and one Holy Spirit, a perfect Trinity. In the public-domain English of 1886.",
+        topics: ["Trinity", "Creed"],
+      },
+      {
+        slug: "metaphrase-of-ecclesiastes",
+        title: "A Metaphrase of the Book of Ecclesiastes",
+        subtitle: "The Preacher's words, opened in his own",
+        year: "3rd century",
+        blurb:
+          "The Book of Ecclesiastes, set out by him at length in plain words, chapter by chapter. In the public-domain English of 1886.",
+        topics: ["Scripture", "Wisdom"],
+      },
+      {
+        slug: "canonical-epistle",
+        title: "The Canonical Epistle",
+        subtitle: "On the Christians of Pontus after the barbarians' raids",
+        year: "258 or 262",
+        blurb:
+          "His letter to a bishop on the Christians of Pontus after the raids of the barbarians: the captives, and those who took advantage of their neighbours' ruin. Canons I to X; the eleventh, which the edition judges a later addition, is left out. In the public-domain English of 1886.",
+        topics: ["Repentance", "Church"],
+      },
+      {
+        slug: "panegyric-to-origen",
+        title: "The Oration and Panegyric Addressed to Origen",
+        subtitle: "His farewell to his teacher at Caesarea",
+        year: "c. 238",
+        blurb:
+          "His farewell oration to Origen, under whom he studied at Caesarea: how he came there, and all he was taught. In the public-domain English of 1886.",
+        topics: ["Learning", "Philosophy"],
+      },
     ],
   },
 
   {
     slug: "nikon-of-radonezh",
+    iconUrl: "/saints/icons/nikon-of-radonezh.jpg",
     name: "St. Nikon of Radonezh",
     epithet: "Hegumen of the Trinity Lavra · Disciple of St. Sergius",
     reposed: "1426",
@@ -6437,6 +6486,7 @@ export const SAINTS: Saint[] = [
 
   {
     slug: "prophet-obadiah",
+    iconUrl: "/saints/icons/prophet-obadiah.jpg",
     name: "The Prophet Obadiah",
     byname: "Abdias",
     epithet: "One of the Twelve Minor Prophets",
@@ -6463,6 +6513,7 @@ export const SAINTS: Saint[] = [
 
   {
     slug: "barlaam-and-josaphat",
+    iconUrl: "/saints/icons/barlaam-and-josaphat.jpg",
     name: "Sts. Barlaam and Josaphat of India",
     epithet: "Barlaam the monk · Josaphat (Ioasaph), son of King Abenner",
     feastDays: ["November 19"],
@@ -6504,6 +6555,7 @@ export const SAINTS: Saint[] = [
 
   {
     slug: "gregory-of-decapolis",
+    iconUrl: "/saints/icons/gregory-of-decapolis.jpg",
     name: "St. Gregory of Decapolis",
     epithet: "Confessor under the iconoclasts",
     born: "Irenopolis, in the Decapolis of Isauria",
@@ -6547,6 +6599,7 @@ export const SAINTS: Saint[] = [
 
   {
     slug: "michael-of-tver",
+    iconUrl: "/saints/icons/michael-of-tver.jpg",
     name: "St. Michael of Tver",
     epithet: "Right-believing Prince · Martyr in the Horde",
     reposed: "1318, in the Horde (the Chronicle of Novgorod enters it under 1319)",
@@ -6599,6 +6652,7 @@ export const SAINTS: Saint[] = [
 
   {
     slug: "alexander-nevsky",
+    iconUrl: "/saints/icons/alexander-nevsky.jpg",
     name: "St. Alexander Nevsky",
     epithet: "Right-believing Prince · Of Novgorod and Vladimir",
     reposed: "November 14, 1263 (Gorodets)",
@@ -6625,6 +6679,7 @@ export const SAINTS: Saint[] = [
 
   {
     slug: "clement-of-rome",
+    iconUrl: "/saints/icons/clement-of-rome.jpg",
     name: "St. Clement of Rome",
     epithet: "Pope of Rome · Hieromartyr",
     reposed: "In the third year of Trajan",
@@ -6646,11 +6701,21 @@ export const SAINTS: Saint[] = [
           "St. Irenaeus on the bishops of Rome and Clement's letter, Eusebius's chapters on his episcopate and his epistle, and St. Jerome's chapter on him. In the public-domain English of 1885 to 1892.",
         topics: ["Episcopate", "Tradition", "Unity"],
       },
+      {
+        slug: "first-epistle-to-the-corinthians",
+        title: "The First Epistle to the Corinthians",
+        subtitle: "The letter of the Church of Rome to the Church of Corinth",
+        year: "c. 96",
+        blurb:
+          "The letter the Church of Rome sent to the Church of Corinth, when a few had risen against its presbyters, which the early Church knew as St. Clement's: a call to repentance, humility and peace, ending in a long prayer. In the public-domain English of 1885, completed in 1896 from a manuscript found after the first printing.",
+        topics: ["Church", "Episcopate", "Humility", "Repentance", "Prayer"],
+      },
     ],
   },
 
   {
     slug: "peter-of-alexandria",
+    iconUrl: "/saints/icons/peter-of-alexandria.jpg",
     name: "St. Peter of Alexandria",
     epithet: "Archbishop of Alexandria · Hieromartyr",
     reposed: "311, beheaded (Alexandria)",
@@ -6672,11 +6737,21 @@ export const SAINTS: Saint[] = [
           "Eusebius's three notices of the bishop and martyr, and the Genuine Acts: his election, his strife with Meletius and Arius, his last night in prison and his death. In the public-domain English of 1886 and 1890.",
         topics: ["Martyrdom", "Episcopate", "Persecution"],
       },
+      {
+        slug: "the-canonical-epistle",
+        title: "The Canonical Epistle",
+        subtitle: "The canons on the lapsed, from his sermon on penitence",
+        year: "306",
+        blurb:
+          "His fifteen canons on how those who fell away under the persecution are to be received back, from his sermon on penitence, written at the fourth Pascha of the persecution. In the public-domain English of 1886.",
+        topics: ["Repentance", "Persecution"],
+      },
     ],
   },
 
   {
     slug: "catherine-of-alexandria",
+    iconUrl: "/saints/icons/catherine-of-alexandria.jpg",
     name: "St. Catherine of Alexandria",
     epithet: "Great-martyr · Virgin of Alexandria",
     reposed: "c. 307 to 310 (Alexandria)",
@@ -6693,6 +6768,7 @@ export const SAINTS: Saint[] = [
 
   {
     slug: "mercurius-of-caesarea",
+    iconUrl: "/saints/icons/mercurius-of-caesarea.jpg",
     name: "St. Mercurius of Caesarea",
     epithet: "Great-martyr · Soldier",
     reposed: "250 (Caesarea in Cappadocia)",
@@ -6709,6 +6785,7 @@ export const SAINTS: Saint[] = [
 
   {
     slug: "innocent-of-irkutsk",
+    iconUrl: "/saints/icons/innocent-of-irkutsk.jpg",
     name: "St. Innocent of Irkutsk",
     epithet: "First Bishop of Irkutsk",
     reposed: "18th century (Irkutsk)",
@@ -6735,6 +6812,7 @@ export const SAINTS: Saint[] = [
 
   {
     slug: "james-the-persian",
+    iconUrl: "/saints/icons/james-the-persian.jpg",
     name: "St. James the Persian",
     byname: "Intercisus",
     epithet: "Great-martyr · The one cut in pieces",
@@ -6752,6 +6830,7 @@ export const SAINTS: Saint[] = [
 
   {
     slug: "stephen-the-new",
+    iconUrl: "/saints/icons/stephen-the-new.jpg",
     name: "St. Stephen the New",
     epithet: "Venerable-martyr · Confessor for the holy icons",
     reposed: "c. 764 (Constantinople)",
@@ -6800,6 +6879,7 @@ export const SAINTS: Saint[] = [
 
   {
     slug: "acacius-of-sinai",
+    iconUrl: "/saints/icons/acacius-of-sinai.jpg",
     name: "St. Acacius of Sinai",
     epithet: "Monk of Sinai",
     reposed: "6th century (Sinai)",

@@ -125,26 +125,21 @@ describe("the covers' pictures", () => {
     // to be fetched and cut.
     //
     // November's saints (1.9, docs/1.9-build/notes/november-saints.md) added
-    // twenty books of their Lives; two have their saint's settled icon, and
-    // these sixteen stand on the plate until a picture of each passes (the
-    // icons' search for the second half of the month is under way). Each
-    // leaves this list when its cover goes in.
+    // the books of their Lives and works; those whose saint has a settled icon
+    // wear it, and these stand on the plate until a picture of each passes
+    // (none has yet: the searches of 2026-11-10 are in the note). St
+    // Victorinus's treatise joined them: he has no icon. Each leaves this
+    // list when its cover goes in.
     const november = [
       "acepsimas-joseph-and-aithalas/life-of-acepsimas",
-      "alexander-nevsky/life-of-alexander-nevsky",
       "amphilochius-of-iconium/life-of-amphilochius",
-      "clement-of-rome/life-of-clement",
       "erastus-olympas-rodion-sosipater-quartus-and-tertius/their-names-in-scripture",
       "frumentius-of-axum/life-of-frumentius",
-      "gregory-the-wonderworker/life-of-gregory-the-wonderworker",
       "gurias-samonas-and-habib/acts-of-gurias-samonas-and-habib",
-      "innocent-of-irkutsk/life-of-innocent-of-irkutsk",
-      "michael-of-tver/life-of-michael-of-tver",
       "patrobas-hermas-linus-gaius-and-philologus/their-names-in-scripture",
-      "peter-of-alexandria/life-of-peter-of-alexandria",
       "plato-and-romanus/martyrdom-of-romanus",
       "proclus-of-constantinople/life-of-proclus",
-      "prophet-obadiah/the-vision-of-obadiah",
+      "victorinus-of-pettau/on-the-creation-of-the-world",
       "zacchaeus-and-alphaeus/martyrdom-of-zacchaeus-and-alphaeus",
     ];
     const plate = buildRoom(false)

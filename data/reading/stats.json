@@ -144,6 +144,7 @@
   "jerome-of-stridon/life-of-saint-hilarion": {"words":11395,"minutes":63,"sections":[[1,106],[2,351],[3,124],[4,358],[5,197],[6,214],[7,177],[8,88],[9,81],[10,68],[11,141],[12,240],[13,168],[14,202],[15,485],[16,104],[17,89],[18,229],[19,437],[20,98],[21,455],[22,446],[23,493],[24,324],[25,148],[26,309],[27,173],[28,234],[29,222],[30,282],[31,524],[32,393],[33,207],[34,260],[35,244],[36,180],[37,88],[38,255],[39,276],[40,168],[41,274],[42,272],[43,251],[44,485],[45,153],[46,67],[47,112],[48,143]]},
   "jerome-of-stridon/life-of-malchus-the-captive-monk": {"words":3396,"minutes":19,"sections":[[1,22],[2,267],[3,217],[4,442],[5,209],[6,174],[7,662],[8,269],[9,288],[10,613],[11,233]]},
   "jerome-of-stridon/the-perpetual-virginity-of-blessed-mary": {"words":10830,"minutes":60,"sections":[[1,367],[2,238],[3,161],[4,237],[5,1219],[6,219],[7,519],[8,397],[9,476],[10,91],[11,319],[12,147],[13,730],[14,491],[15,253],[16,619],[17,959],[18,540],[19,620],[20,208],[21,273],[22,224],[23,859],[24,532],[25,132]]},
+  "victorinus-of-pettau/on-the-creation-of-the-world": {"words":1973,"minutes":11,"sections":[[1,1973]]},
   "theophan-the-recluse/way-of-a-pilgrim": {"words":35077,"minutes":195,"sections":[[1,5249],[2,14489],[3,1565],[4,13774]]},
   "cyprian-of-carthage/the-bishop-of-carthage": {"words":1457,"minutes":8,"sections":[[1,204],[2,251],[3,249],[4,177],[5,245],[6,331]]},
   "cyprian-of-carthage/the-life-and-passion-of-cyprian": {"words":7018,"minutes":39,"sections":[[1,406],[2,550],[3,529],[4,146],[5,394],[6,226],[7,490],[8,236],[9,397],[10,262],[11,510],[12,506],[13,532],[14,281],[15,428],[16,348],[17,227],[18,297],[19,253]]},
@@ -170,6 +171,10 @@
   "erastus-olympas-rodion-sosipater-quartus-and-tertius/their-names-in-scripture": {"words":118,"minutes":1,"sections":[[1,24],[2,18],[3,18],[4,46],[5,12]]},
   "gurias-samonas-and-habib/acts-of-gurias-samonas-and-habib": {"words":10031,"minutes":56,"sections":[[1,5113],[2,4918]]},
   "gregory-the-wonderworker/life-of-gregory-the-wonderworker": {"words":1105,"minutes":6,"sections":[[1,116],[2,106],[3,104],[4,161],[5,618]]},
+  "gregory-the-wonderworker/a-declaration-of-faith": {"words":227,"minutes":1,"sections":[[1,227]]},
+  "gregory-the-wonderworker/metaphrase-of-ecclesiastes": {"words":7817,"minutes":43,"sections":[[1,621],[2,1062],[3,577],[4,662],[5,696],[6,361],[7,894],[8,657],[9,701],[10,553],[11,428],[12,605]]},
+  "gregory-the-wonderworker/canonical-epistle": {"words":1524,"minutes":8,"sections":[[1,267],[2,411],[3,121],[4,267],[5,103],[6,93],[7,112],[8,58],[9,62],[10,30]]},
+  "gregory-the-wonderworker/panegyric-to-origen": {"words":15532,"minutes":86,"sections":[[1,563],[2,1029],[3,959],[4,959],[5,1659],[6,1684],[7,1340],[8,340],[9,834],[10,421],[11,853],[12,465],[13,637],[14,1208],[15,772],[16,1248],[17,200],[18,155],[19,206]]},
   "plato-and-romanus/martyrdom-of-romanus": {"words":377,"minutes":2,"sections":[[1,377]]},
   "zacchaeus-and-alphaeus/martyrdom-of-zacchaeus-and-alphaeus": {"words":324,"minutes":2,"sections":[[1,324]]},
   "prophet-obadiah/the-vision-of-obadiah": {"words":681,"minutes":4,"sections":[[1,681]]},
@@ -179,7 +184,9 @@
   "amphilochius-of-iconium/life-of-amphilochius": {"words":481,"minutes":3,"sections":[[1,451],[2,30]]},
   "alexander-nevsky/life-of-alexander-nevsky": {"words":914,"minutes":5,"sections":[[1,325],[2,359],[3,133],[4,33],[5,64]]},
   "clement-of-rome/life-of-clement": {"words":876,"minutes":5,"sections":[[1,383],[2,21],[3,62],[4,96],[5,43],[6,72],[7,199]]},
+  "clement-of-rome/first-epistle-to-the-corinthians": {"words":13325,"minutes":74,"sections":[[1,284],[2,239],[3,142],[4,281],[5,168],[6,113],[7,185],[8,254],[9,104],[10,303],[11,136],[12,291],[13,208],[14,170],[15,159],[16,534],[17,189],[18,337],[19,127],[20,284],[21,318],[22,144],[23,205],[24,146],[25,197],[26,102],[27,175],[28,137],[29,128],[30,207],[31,100],[32,175],[33,263],[34,221],[35,351],[36,210],[37,163],[38,216],[39,252],[40,173],[41,134],[42,163],[43,300],[44,200],[45,272],[46,273],[47,185],[48,207],[49,153],[50,231],[51,196],[52,103],[53,207],[54,112],[55,230],[56,390],[57,280],[58,119],[59,307],[60,214],[61,179],[62,157],[63,139],[64,86],[65,97]]},
   "peter-of-alexandria/life-of-peter-of-alexandria": {"words":6833,"minutes":38,"sections":[[1,88],[2,74],[3,70],[4,6601]]},
+  "peter-of-alexandria/the-canonical-epistle": {"words":4054,"minutes":23,"sections":[[1,236],[2,178],[3,169],[4,193],[5,316],[6,107],[7,138],[8,128],[9,676],[10,389],[11,435],[12,204],[13,599],[14,192],[15,94]]},
   "innocent-of-irkutsk/life-of-innocent-of-irkutsk": {"words":87,"minutes":1,"sections":[[1,87]]},
   "frumentius-of-axum/life-of-frumentius": {"words":795,"minutes":4,"sections":[[1,692],[2,103]]}
 }

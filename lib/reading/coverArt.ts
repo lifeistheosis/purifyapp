@@ -130,6 +130,14 @@ export const COVER_ART: Readonly<Record<string, CoverArt>> = {
   // the month keep the plate until a picture of each is settled.
   "paul-the-confessor": bundled("paul-the-confessor.jpg", 26),
   "varlaam-of-khutyn": bundled("varlaam-of-khutyn.jpg", 36),
+  // Push 2: the second half of the month's icons, on their books.
+  "gregory-the-wonderworker": bundled("gregory-the-wonderworker.jpg", 34),
+  "clement-of-rome": bundled("clement-of-rome.jpg", 31),
+  "peter-of-alexandria": bundled("peter-of-alexandria.jpg", 54),
+  "prophet-obadiah": bundled("prophet-obadiah.jpg", 29),
+  "michael-of-tver": bundled("michael-of-tver.jpg", 25),
+  "alexander-nevsky": bundled("alexander-nevsky.jpg", 34),
+  "innocent-of-irkutsk": bundled("innocent-of-irkutsk.jpg", 31),
 
   // From Wikimedia Commons for the covers (lib/reading/authorCovers.ts).
   ...AUTHOR_COVERS,

@@ -275,3 +275,37 @@ saint's screen, with stills to the arbiter.
   Maximus of Moscow, John the Merciful, Nilus), each looked at and recorded in
   `lib/saints/iconRights.ts`; the rest stand on the plate until a picture of
   each passes. Two of the nine are on their books' covers.
+
+## Push 2, as built (2026-11-10)
+
+- **Seven works, whole, every word read against two scans of its volume**
+  (`scripts/menologion/november-works.mjs`, review in
+  `docs/editorial/ingest-review/november-works.md`): St Clement's First
+  Epistle to the Corinthians, complete in its 65 chapters (ANF 9, 1896, the
+  translation of ANF 1 completed from the manuscript found after it); St
+  Gregory the Wonderworker's Declaration of Faith, Metaphrase of
+  Ecclesiastes, Canonical Epistle and Oration to Origen (ANF 6, 1886), the
+  four the edition counts as his, with canon XI of the epistle left out as the
+  edition's own note judges it a later addition; St Peter of Alexandria's
+  Canonical Epistle, his fifteen canons without the commentaries of Balsamon
+  and Zonaras the edition prints after each (ANF 6); and St Victorinus's On
+  the Creation of the World (ANF 7, 1886), its gaps as printed.
+- **Misprints of the printed page are kept**, as push 1 kept them: "inquity"
+  (St Clement 35), "wisdon" and "may he" (the Metaphrase), "coveteousness"
+  (St Gregory's epistle). Each is read on the page image and listed in the
+  review.
+- **Fifteen more icons settled** for the second half of the month (St Gregory
+  the Wonderworker, Nikon, Obadiah, Barlaam and Ioasaph, Gregory of
+  Decapolis, Michael of Tver, Alexander Nevsky, Clement, Peter of Alexandria,
+  Catherine, Mercurius, Innocent, James the Persian, Stephen the New,
+  Acacius); seven of them on their saints' books, and St Gregory's face now
+  stands on the council of Antioch's page. Two candidates did not pass: the
+  only picture of St Romanus is Zurbarán's painting of him alone, and the
+  panel of Sts Gurias, Samonas and Habib shows three standing figures that
+  cannot be cut to a portrait without losing one. Nothing usable was found
+  for Proclus, Amphilochius, Philemon and Apphia, Zacchaeus and Alphaeus,
+  Irenarchus, Paramonus or Frumentius; the Vatican's scans of the Menologion
+  carry its watermark and were not used.
+- **Barlaam and Ioasaph goes in push 3**: the Gutenberg transcription of the
+  Loeb has no chapter marks, so the forty chapters are being placed from the
+  scan before every word is compared.

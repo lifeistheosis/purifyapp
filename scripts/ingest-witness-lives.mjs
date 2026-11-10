@@ -93,13 +93,17 @@ function paragraphsOf(raw) {
     if (/^\[\d+\]/.test(lines[0])) continue; // a footnote's own paragraph
     if (lines.every((l) => /^[_\-]{3,}$/.test(l))) continue; // a rule
     // A footnote's mark can touch the next word ("among [3301]the"): it
-    // leaves a space, and a space before a stop is then closed.
+    // leaves a space, and a space before a stop is then closed; not before
+    // an ellipsis, which opens the words after it ("ungodliness. ...For"),
+    // and a gap the edition prints as spaced dots (". . .") stays as printed.
     const p = lines
       .join(" ")
       .replace(NOTE_MARK, " ")
       .replace(/ ?-- ?/g, "—")
       .replace(/[ \t]+/g, " ")
-      .replace(/ ([,.;:!?])/g, "$1")
+      .replace(/ \. \. \./g, "\uE000")
+      .replace(/ ([,.;:!?])(?!\.)/g, "$1")
+      .replace(/\uE000/g, " . . .")
       .trim();
     if (p) out.push(p);
   }
@@ -144,6 +148,59 @@ function cutPassage(text, p, label) {
     paras[last] = paras[last].slice(0, i + p.endAfter.length);
   }
   return paras;
+}
+
+/**
+ * A whole work, chapter by chapter (from November's works, 1.9). CCEL sets a
+ * chapter's footnotes between two rules after it, and a footnote can run to
+ * several paragraphs, so here every stretch between rules that opens with a
+ * note's mark is dropped whole before the paragraphs are read. Then the text
+ * is split at the edition's own chapter headings (`chapters.heading`, a
+ * pattern whose groups are the chapter's number and its title): each chapter
+ * is a section, titled as the edition titles it, its heading out of its
+ * words. Text before the first heading stays with the first chapter.
+ */
+const ROMAN = { I: 1, V: 5, X: 10, L: 50, C: 100 };
+const fromRoman = (s) =>
+  [...s.toUpperCase()].reduce((n, c, i, a) => (ROMAN[c] < (ROMAN[a[i + 1]] ?? 0) ? n - ROMAN[c] : n + ROMAN[c]), 0);
+
+function cutWork(text, p, label) {
+  const at = text.indexOf(p.from);
+  if (at < 0) throw new Error(`${label}: "${p.from}" not found in ${p.vol}`);
+  if (text.indexOf(p.from, at + 1) >= 0) throw new Error(`${label}: "${p.from}" is not unique in ${p.vol}`);
+  const end = text.indexOf(p.to, at + p.from.length);
+  if (end < 0) throw new Error(`${label}: end "${p.to}" not found after the start`);
+  const raw = text.slice(text.lastIndexOf("\n", at) + 1, text.lastIndexOf("\n", end) + 1);
+  const kept = raw
+    .split(/^[ \t]*_{5,}[ \t]*$/m)
+    .filter((stretch) => !/^\s*\[\d+\]/.test(stretch))
+    .join("\n\n");
+  const heading = new RegExp(p.chapters.heading);
+  // `dropFrom`: where an edition prints commentators after each chapter (St
+  // Peter's canons with Balsamon and Zonaras), the chapter ends at the first
+  // paragraph of theirs; only the author's words are kept.
+  const dropFrom = p.chapters.dropFrom ? new RegExp(p.chapters.dropFrom) : null;
+  const chapters = [];
+  for (const para of paragraphsOf(kept).slice(p.heading ?? 0)) {
+    const m = heading.exec(para);
+    if (m) {
+      // A chapter with no title of its own ("Canon I.") is titled as printed.
+      const title = (m[2] ?? "").trim() || para;
+      chapters.push({ numeral: m[1], n: /^[IVXLC]+$/i.test(m[1]) ? fromRoman(m[1]) : Number(m[1]), title: title.replace(/\.$/, "").replace(/\s*—\s*/g, ": "), paras: [], closed: false });
+    } else if (chapters.length) {
+      const c = chapters[chapters.length - 1];
+      if (dropFrom?.test(para)) c.closed = true;
+      if (!c.closed) c.paras.push(para);
+    } else throw new Error(`${label}: words before the first chapter heading: "${para.slice(0, 60)}"`);
+  }
+  if (p.chapters.expect && chapters.length !== p.chapters.expect) {
+    throw new Error(`${label}: ${chapters.length} chapters, the spec expects ${p.chapters.expect}`);
+  }
+  chapters.forEach((c, i) => {
+    if (c.n !== (p.chapters.first ?? 1) + i) throw new Error(`${label}: chapter ${c.numeral} out of its place (${i + 1})`);
+    if (!c.paras.length) throw new Error(`${label}: chapter ${c.numeral} has no words`);
+  });
+  return chapters;
 }
 
 /**
@@ -326,6 +383,32 @@ function compareWithScans(paras, scans) {
   return report;
 }
 
+/**
+ * A passage's words against every scan of its printing. A flagged word is
+ * settled one of two ways, both read off the page image: a `fix` (CCEL's
+ * slip, the page's word put in) or an `ocr` entry (the page has our word; the
+ * scans misread it). Anything else stays open, and nothing is written while a
+ * word is open.
+ */
+async function checkAgainstScans(paras, p, label) {
+  const scans = [];
+  const read = [];
+  for (const id of p.scans) {
+    try {
+      scans.push(scanWords(await scanText(id)));
+      read.push(id);
+    } catch (err) {
+      console.warn(`${label}: scan ${id} could not be read (${err.message}); compared with the others`);
+    }
+  }
+  if (!scans.length) throw new Error(`${label}: no scan of ${p.vol} could be read, so nothing was compared`);
+  const result = compareWithScans(paras, scans);
+  const ocr = new Set((p.ocr ?? []).map(norm));
+  const checked = result.differences.filter((d) => ocr.has(d.ours));
+  const open = result.differences.filter((d) => !ocr.has(d.ours));
+  return { label, scansRead: read, fixes: p.fix ?? [], ...result, checked, open };
+}
+
 /* ---------- One Life ---------- */
 
 async function buildLife(spec) {
@@ -333,6 +416,35 @@ async function buildLife(spec) {
   const checks = [];
   for (const [k, p] of spec.passages.entries()) {
     const label = `${spec.slug} §${k + 1}`;
+    if (p.chapters) {
+      // A whole work: one section for each of the edition's chapters, in the
+      // author's own voice, each cited to its chapter.
+      const chapters = cutWork(await ccelVolume(p.vol), p, label);
+      // Each fix once, in the first paragraph of the work that holds it.
+      for (const [from, to] of p.fix ?? []) {
+        const c = chapters.find((ch) => ch.paras.some((x) => x.includes(from)));
+        if (!c) throw new Error(`${label}: fix "${from}" matched nothing`);
+        const i = c.paras.findIndex((x) => x.includes(from));
+        c.paras[i] = c.paras[i].replace(from, to);
+      }
+      const all = chapters.flatMap((c) => c.paras);
+      for (const para of all) {
+        if (/\[\d+\]|\{\{|\}\}|<[a-z/]|file:\/\//i.test(para)) throw new Error(`${label}: markup left in "${para.slice(0, 60)}"`);
+        if (para.includes("�")) throw new Error(`${label}: a replacement character in "${para.slice(0, 60)}"`);
+      }
+      if (p.scans?.length) checks.push(await checkAgainstScans(all, p, label));
+      for (const c of chapters) {
+        sections.push({
+          n: sections.length + 1,
+          title: c.title,
+          voice: p.voice ?? "saint",
+          ...(p.author ? { voiceAuthor: p.author } : {}),
+          citation: p.chapters.cite(c.n),
+          paragraphs: c.paras,
+        });
+      }
+      continue;
+    }
     let paras;
     if (p.kind === "scripture") paras = scripture(p, label);
     else if (p.kind === "transcribed") paras = p.text.slice();
@@ -350,33 +462,14 @@ async function buildLife(spec) {
     const total = paras.join(" ").split(/\s+/).length;
     if (total < minWords) throw new Error(`${label}: only ${total} words`);
 
-    if (p.scans?.length) {
-      const scans = [];
-      const read = [];
-      for (const id of p.scans) {
-        try {
-          scans.push(scanWords(await scanText(id)));
-          read.push(id);
-        } catch (err) {
-          console.warn(`${label}: scan ${id} could not be read (${err.message}); compared with the others`);
-        }
-      }
-      if (!scans.length) throw new Error(`${label}: no scan of ${p.vol} could be read, so nothing was compared`);
-      const result = compareWithScans(paras, scans);
-      // A flagged word is settled one of two ways, both read off the page
-      // image: a `fix` (CCEL's slip, the page's word put in) or an `ocr`
-      // entry (the page has our word; the scans misread it). Anything else
-      // stays open, and nothing is written while a word is open.
-      const ocr = new Set((p.ocr ?? []).map(norm));
-      const checked = result.differences.filter((d) => ocr.has(d.ours));
-      const open = result.differences.filter((d) => !ocr.has(d.ours));
-      checks.push({ label, scansRead: read, fixes: p.fix ?? [], ...result, checked, open });
-    }
+    if (p.scans?.length) checks.push(await checkAgainstScans(paras, p, label));
     sections.push({
       n: k + 1,
       title: p.title,
-      voice: p.kind === "scripture" ? "scripture" : "witness",
-      ...(p.kind === "scripture" ? {} : { voiceAuthor: p.author }),
+      // A witness's words name the witness; a saint's own words (a work's
+      // passage, `voice: "saint"`) and Scripture need no name.
+      voice: p.voice ?? (p.kind === "scripture" ? "scripture" : "witness"),
+      ...((p.voice ?? (p.kind === "scripture" ? "scripture" : "witness")) === "witness" ? { voiceAuthor: p.author } : {}),
       citation: p.citation,
       paragraphs: paras,
     });
@@ -398,14 +491,17 @@ async function buildLife(spec) {
 async function main() {
   const [month, ...rest] = process.argv.slice(2);
   if (!month) {
-    console.error("usage: node scripts/ingest-witness-lives.mjs <month> [--only <slug>] [--check]");
+    console.error("usage: node scripts/ingest-witness-lives.mjs <month> [--works] [--only <slug>] [--check]");
     process.exit(2);
   }
   const only = rest.includes("--only") ? rest[rest.indexOf("--only") + 1] : null;
   const checkOnly = rest.includes("--check");
-  const specFile = path.join(ROOT, "scripts", "menologion", `${month}-lives.mjs`);
-  const { LIVES } = await import(specFile);
-  const todo = LIVES.filter((s) => !only || s.saint === only || s.slug === only);
+  // --works reads the month's works (scripts/menologion/<month>-works.mjs,
+  // WORKS) instead of its Lives; the same checks, its own review file.
+  const kind = rest.includes("--works") ? "works" : "lives";
+  const specFile = path.join(ROOT, "scripts", "menologion", `${month}-${kind}.mjs`);
+  const mod = await import(specFile);
+  const todo = (kind === "works" ? mod.WORKS : mod.LIVES).filter((s) => !only || s.saint === only || s.slug === only);
   if (!todo.length) throw new Error(`no Life in ${specFile} matches ${only}`);
 
   const built = [];
@@ -432,7 +528,7 @@ async function main() {
     fs.writeFileSync(out, JSON.stringify(doc, null, 2) + "\n");
     console.log(`wrote ${path.relative(ROOT, out)} (${doc.sections.length} sections)`);
   }
-  if (!only) writeReview(month, built);
+  if (!only) writeReview(month, built, kind);
 }
 
 /**
@@ -442,11 +538,12 @@ async function main() {
  * single scan could not settle. No timestamp, so a changed file is changed
  * evidence.
  */
-function writeReview(month, built) {
+function writeReview(month, built, kind = "lives") {
+  const Month = `${month[0].toUpperCase()}${month.slice(1)}`;
   const lines = [
-    `# ${month[0].toUpperCase()}${month.slice(1)}'s Lives in the witnesses' words: ingest review`,
+    kind === "works" ? `# ${Month}'s works: ingest review` : `# ${Month}'s Lives in the witnesses' words: ingest review`,
     "",
-    `Generated by \`node scripts/ingest-witness-lives.mjs ${month}\` from \`scripts/menologion/${month}-lives.mjs\`. Do not hand-edit.`,
+    `Generated by \`node scripts/ingest-witness-lives.mjs ${month}${kind === "works" ? " --works" : ""}\` from \`scripts/menologion/${month}-${kind}.mjs\`. Do not hand-edit.`,
     "",
     "Each passage was cut from CCEL's transcription of the printed volume and compared word for word with archive.org's text of scans of that printing. A word the scans read differently was read on the page image and settled: a **fix** puts the page's word in place of CCEL's; a **misreading** is a word the page has as we have it, which the scans' OCR misread. A **doubt** is a word one scan alone could not confirm; most are the OCR's letters, listed here so a person can check any of them.",
     "",
@@ -465,7 +562,7 @@ function writeReview(month, built) {
     }
     lines.push("");
   }
-  const file = path.join(ROOT, "docs", "editorial", "ingest-review", `${month}-lives.md`);
+  const file = path.join(ROOT, "docs", "editorial", "ingest-review", `${month}-${kind}.md`);
   fs.writeFileSync(file, lines.join("\n"));
   console.log(`wrote ${path.relative(ROOT, file)}`);
 }

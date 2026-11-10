@@ -61,6 +61,12 @@ Pages written before November (with a life of ours) are reported, never failed.
    kept and noted. The script writes nothing while a difference is open. Then
    run it without `--check`; it writes the files and the review
    (docs/editorial/ingest-review/<month>-lives.md).
+   The saints' own writings go the same way with `--works`, from
+   `scripts/menologion/<month>-works.mjs`: a whole work is split at the
+   edition's own chapter headings (`chapters`), a commentary the edition
+   prints after each chapter is left out (`dropFrom`), and a part the
+   edition itself judges not the author's is left out and said so in the
+   work's source line (St Gregory's eleventh canon, November).
 
 5. **Write the pages.** For each saint: the registry entry (`life: []`, the
    entry, `entrySource`, the works); the group membership (groups.ts); the
