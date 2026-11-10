@@ -979,8 +979,8 @@ SQL (above).
   given by hand, and on the live database it does nothing at all.
 - Prayer campaigns, file four (whoever starts a campaign accepts the Terms):
   signed 2026-11-10 by "rec yes to all", which covered it once the Admin
-  chat's second read passed; it passed the same day. The campaigns chat
-  moves it into `supabase/migrations/` under its own name.
+  chat's second read passed; it passed the same day. In
+  `supabase/migrations/` as `20261110172648_campaign_terms.sql`.
 - **Waiting for your yes:** the notice that tells a reader why something
   they posted was removed, `docs/1.9-build/sql/removal-notices.sql`. It
   stays out of `supabase/migrations/` until then. The arbiter sends you its
@@ -1112,6 +1112,8 @@ Send back: "R2b sent", or what went wrong.
        signed 2026-11-10)
      - `20261110155643_production_baseline.sql` (signed 2026-11-10; on the
        live database it does nothing)
+     - `20261110172648_campaign_terms.sql` (prayer campaigns, file four,
+       signed 2026-11-10)
 
 The order on the day (your word, 2026-11-10): the website first (R2), then
 both store builds to internal testing (R4, R5), then your walk on a phone
