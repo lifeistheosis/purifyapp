@@ -111,6 +111,8 @@ What he saw: on the Plus sheet's walk through the features (1 of 12), Cross-refe
 
 Where it is: the rows are `lib/premium/plusRows.ts` (word study, palettes, cross-references, journal, offline, ambience, compare, plans, remember, florilegium, sync, history, profile, the supporter mark, the Discord frames); the previews are `components/billing/plusTry/`. Compare's preview (85, 9dd0cde) is the model: real verses, in the sheet, held by a test.
 
+A first look: a preview exists in code for every row (TryCrossRefs, TryWordStudy, TryPlans, TryMark, TryDiscord, TryFlorilegium and the rest), so what he saw may be partly a fault in build 89 (a preview falling back to its plain card, or its words not loading in the app) rather than a preview never built. Find that out first, on the export and on a phone.
+
 Planned fix (on his start), with the design pass of notes 2, 4, 6, 7 and 10:
 - Every row's Try it is the feature itself, small and live inside the sheet, from real words the app carries: a verse with its cross-references beside it; a Greek word tapped to its lemma, parsing and meaning; a plan's first day; and so on. Nothing leaves the sheet to drop the reader somewhere else; where a row opens a page, it moves there with note 4's transition and no load.
 - The Supporter mark shown on a profile as others see it, and the Discord status shown as it appears in Discord, each with a plain line on what it is.
