@@ -39,6 +39,7 @@
 // stores' own reviews between the features and the plans; and the renewal
 // said plainly wherever the screen sells.
 
+import { countPricingBought, markAccountFrom } from "@/lib/analytics/moreCount";
 import { useCallback, useEffect, useRef, useState, type CSSProperties, type ReactNode } from "react";
 import Link from "next/link";
 import {
@@ -204,7 +205,11 @@ export function PlusPaywall() {
       const outcome = await purchase(pkg, tier);
       if (outcome === "active") {
         if (tier === "pro") setPhase("subscribed");
-        else setActive("plus");
+        else {
+          // The pricing page's own purchases, which the sheet's count does not see (1.9).
+          countPricingBought(selected === "yearly" ? "yearly" : "monthly");
+          setActive("plus");
+        }
       } else if (outcome === "error") {
         setNote("failed");
       }
@@ -568,7 +573,7 @@ export function SignedOutFoot({ place }: { place: BuyPlace }) {
       <p className="mx-auto max-w-[320px] text-center font-sans text-ui leading-relaxed text-paper/70">
         {t("plus.screen.signedOut")}
       </p>
-      <Link href="/signin?next=/pricing" className={cn(PREMIUM_CTA, "mt-5 min-h-14 w-full text-lede")}>
+      <Link href="/signin?next=/pricing" onClick={() => markAccountFrom("plus")} className={cn(PREMIUM_CTA, "mt-5 min-h-14 w-full text-lede")}>
         {t("plus.screen.signIn")}
       </Link>
       <BilledLine place={place} />

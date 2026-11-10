@@ -5,6 +5,7 @@ import { useTranslate } from "@/components/i18n/MessagesProvider";
 import { Close } from "@/components/ui/icons/Close";
 import { CARD_BG } from "@/components/ui/Graphite";
 import { reached } from "@/lib/ab/device";
+import { countWeekStep } from "@/lib/analytics/moreCount";
 import { dismissNudge, readWeek, wasOnboardedAgain, writeWeek } from "@/lib/onboarding/state";
 import { countDayOne } from "@/lib/onboarding/count";
 import { DAY_ONE_KEYS, dayOneFor, type DayOneKey } from "@/lib/onboarding/space";
@@ -56,7 +57,10 @@ export function FirstStepsNudge() {
         body={week.step.bodyKey ? t(week.step.bodyKey) : null}
         href={week.step.href}
         // Closed unopened: this step is passed over, and the next comes tomorrow.
-        onDismiss={() => writeWeek(stepPassed(readWeek(), today()))}
+        onDismiss={() => {
+          countWeekStep(week.index + 1, "passed");
+          writeWeek(stepPassed(readWeek(), today()));
+        }}
         // The first step is the Day 1 the counts have always taken, where it
         // is one of theirs. The days after it are not counted: their sentence
         // on the privacy page is not agreed (notes/onboarding-fable.md, 5.2).
@@ -68,6 +72,7 @@ export function FirstStepsNudge() {
               ...(intent ? { intent } : {}),
             });
           }
+          countWeekStep(week.index + 1, "opened");
           if (week.index === 0) reached("first_step");
           writeWeek(stepTaken(readWeek(), today()));
         }}

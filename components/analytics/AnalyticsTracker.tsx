@@ -5,7 +5,9 @@ import { usePathname } from "next/navigation";
 import { apiFetch } from "@/lib/api/client";
 import { isAutomatedAgent } from "@/lib/analytics/bot";
 import { countVersionInUse } from "@/lib/analytics/featureCount";
+import { countFirstAct } from "@/lib/analytics/moreCount";
 import { countClose, countVisit } from "@/lib/analytics/screenCount";
+import { PRAYER_EVENT } from "@/lib/prayers/storage";
 import { screenOf } from "@/lib/analytics/screens";
 import { tagFromSearch, withoutTag } from "@/lib/analytics/tag";
 import { isDesktopApp } from "@/lib/desktop/bridge";
@@ -160,6 +162,19 @@ export function AnalyticsTracker() {
     shownAtRef.current = document.visibilityState === "visible" ? Date.now() : null;
     record();
   }, [pathname, record]);
+
+  // The first prayer or chapter a new device finishes (1.9,
+  // lib/analytics/moreCounting.ts): the day's ledger says when a mark is made
+  // here, with its rule and its day (lib/streak/dayKept.ts, isOwnMark). Sent
+  // only once its sentence is on the privacy page.
+  useEffect(() => {
+    const onMark = (e: Event) => {
+      const detail = (e as CustomEvent<{ ruleId?: unknown; date?: unknown }>).detail;
+      if (detail && typeof detail.ruleId === "string" && typeof detail.date === "string") countFirstAct(detail.ruleId);
+    };
+    window.addEventListener(PRAYER_EVENT, onMark);
+    return () => window.removeEventListener(PRAYER_EVENT, onMark);
+  }, []);
 
   // Wait for a person, then record the page they are on, and count the visit
   // itself: a first open, or a return after a day, a week or a month.

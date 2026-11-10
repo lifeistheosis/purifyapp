@@ -5,6 +5,7 @@
 // Capacitor shell and Web Push in the browser, via the reminders facade.
 // No third-party notification provider.
 
+import { countReminders } from "@/lib/analytics/moreCount";
 import { useEffect, useState } from "react";
 import {
   EVENING_DEFAULT,
@@ -71,6 +72,7 @@ export function PushOptIn() {
         else setFailed(true);
         return;
       }
+      countReminders("on", "settings");
       setState({
         kind: "subscribed",
         times: { morning: MORNING_DEFAULT, evening: EVENING_DEFAULT },
@@ -86,6 +88,7 @@ export function PushOptIn() {
     setBusy(true);
     try {
       await disableReminders();
+      countReminders("off", "settings");
       setState({ kind: "not-subscribed" });
     } finally {
       setBusy(false);

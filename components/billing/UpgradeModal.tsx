@@ -17,6 +17,7 @@ import { PlusTryHead, PlusTryPage, bringRowBack, useTryRows } from "@/components
 import { PREMIUM_CTA } from "@/components/premium/PremiumUI";
 import { beginTry, endTrySound } from "@/lib/premium/plusTrySound";
 import { countBought, countLock } from "@/lib/analytics/lockCount";
+import { countPlusStep } from "@/lib/analytics/moreCount";
 import { Sheet } from "@/components/ui/Sheet";
 import { cn } from "@/lib/cn";
 import { useTranslate } from "@/components/i18n/MessagesProvider";
@@ -198,10 +199,15 @@ export function UpgradeModalProvider({
     setPhase("pitch");
   }, []);
 
-  const tryFeature = useCallback((id: string) => {
-    beginTry(id);
-    setTrying(id);
-  }, []);
+  const tryFeature = useCallback(
+    (id: string) => {
+      // A feature's Try it opened, with the lock the sheet opened on (1.9, lib/analytics/moreCounting.ts).
+      countPlusStep(feature ?? "general", "tried");
+      beginTry(id);
+      setTrying(id);
+    },
+    [feature],
+  );
 
   const leaveTry = useCallback(() => {
     endTrySound();
@@ -286,6 +292,8 @@ export function UpgradeModalProvider({
   }, [pathname]);
 
   const buy = useCallback(async () => {
+    // The button to subscribe, tapped: the step before a purchase (1.9).
+    countPlusStep(feature ?? "general", "pay");
     setPhase("buying");
     try {
       const user = readLocalSessionUser();

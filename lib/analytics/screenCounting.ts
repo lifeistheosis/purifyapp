@@ -93,9 +93,13 @@ export function parseVisitRecord(raw: string | null): VisitRecord | null {
 }
 
 export type ScreenEvent =
-  | { name: "screen_closed"; props: { screen: ScreenKey; open: OpenSpan } }
+  // `first` (1.9, ./moreCounting.ts): the device's first day, so the screen a
+  // new reader leaves from is seen apart. `reminders`: whether the device had
+  // reminders on when it came back. Neither is sent before its sentence is on
+  // the privacy page.
+  | { name: "screen_closed"; props: { screen: ScreenKey; open: OpenSpan; first?: true } }
   | { name: "first_open"; props: Record<string, never> }
-  | { name: "came_back"; props: { day: CameBackDay } };
+  | { name: "came_back"; props: { day: CameBackDay; reminders?: boolean } };
 
 /**
  * The body the device sends: the event and the kind of device, nothing else.

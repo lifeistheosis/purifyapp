@@ -19,6 +19,7 @@ import { priorUseDetected } from "@/lib/onboarding/state";
 import { isNativeClient } from "@/lib/platform/native";
 import { SITE_URL } from "@/lib/site";
 
+import { MORE_COUNTS_SENDING } from "./moreCounting";
 import {
   cameBackDue,
   openSpan,
@@ -69,7 +70,20 @@ function send(event: ScreenEvent): void {
 
 /** The app was put away, or the page closed, on this screen after this long. */
 export function countClose(screen: ScreenKey, shownMs: number): void {
-  send({ name: "screen_closed", props: { screen, open: openSpan(shownMs) } });
+  // On the device's first day the row says so (1.9, ./moreCounting.ts), once
+  // its sentence is on the privacy page.
+  const first = MORE_COUNTS_SENDING && firstOpenDay() === utcDay(new Date());
+  send({ name: "screen_closed", props: { screen, open: openSpan(shownMs), ...(first ? { first: true as const } : {}) } });
+}
+
+/**
+ * The day this device first opened Purify, where that is known: a device
+ * that had used Purify before the screens were counted has none.
+ */
+export function firstOpenDay(): string | null {
+  if (typeof window === "undefined") return null;
+  const record = readRecord();
+  return record && !record.before ? record.at : null;
 }
 
 function readRecord(): VisitRecord | null {
@@ -107,5 +121,20 @@ export function countVisit(): void {
   const due = cameBackDue(record, today);
   if (!due.length) return;
   if (!keep({ ...record, sent: [...record.sent, ...due] })) return;
-  for (const day of due) send({ name: "came_back", props: { day } });
+  if (!MORE_COUNTS_SENDING) {
+    for (const day of due) send({ name: "came_back", props: { day } });
+    return;
+  }
+  // With whether reminders were on (1.9, ./moreCounting.ts): asked of the
+  // device, which answers in a moment; if it cannot, the note goes without.
+  void import("@/lib/push/reminders")
+    .then((m) => m.remindersStatus())
+    .then(
+      (status) => {
+        for (const day of due) send({ name: "came_back", props: { day, reminders: status === "subscribed" } });
+      },
+      () => {
+        for (const day of due) send({ name: "came_back", props: { day } });
+      },
+    );
 }

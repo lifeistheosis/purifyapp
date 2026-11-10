@@ -30,6 +30,7 @@ import {
   writeRole,
 } from "@/lib/onboarding/state";
 import { armHere, exposed, reached as abReached, refreshWeights } from "@/lib/ab/device";
+import { countReminders, markAccountFrom } from "@/lib/analytics/moreCount";
 import { ACCOUNT_PLACE } from "@/lib/ab/tests";
 import { roadsEnabled } from "@/lib/onboarding/flags";
 import { previewSignedOut } from "@/lib/onboarding/testing";
@@ -347,6 +348,8 @@ export function OnboardingFlow({
     // already: a sign-in that leaves the page comes back to the reminders and
     // the end, and the card on Today is not for this reader.
     if (step === "account") {
+      // If an account comes of this step, the welcome questions are where it was made.
+      markAccountFrom("questions");
       setResumeStage(accountAtEnd ? "reminders" : "assessment");
       if (accountAtEnd) writeKeep("done");
     }
@@ -595,6 +598,7 @@ export function OnboardingFlow({
         return;
       }
       countAnswer("reminders", "on");
+      countReminders("on", "questions");
       // The question as it stands now, the busy button still in it. A reader
       // who went back while the prompt was up is not on it, and later finds
       // the reminders already standing.

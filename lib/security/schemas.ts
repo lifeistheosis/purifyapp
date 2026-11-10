@@ -4,6 +4,17 @@ import { MILESTONES } from "@/lib/ab/milestones";
 import { isAbArm, readsMilestone } from "@/lib/ab/tests";
 import { APP_VERSION, BIBLE_ID, PLAN_ID } from "@/lib/analytics/featureCounting";
 import { BOUGHT_PLANS, LOCKS } from "@/lib/analytics/lockCounting";
+import {
+  ACCOUNT_PLACES,
+  ACT_DAYS,
+  CARD_DID,
+  FIRST_ACTS,
+  PLUS_STEPS,
+  PRICING_PLANS,
+  REMINDER_PLACES,
+  STEP_DID,
+  TODAY_CARDS,
+} from "@/lib/analytics/moreCounting";
 import { OPEN_SPANS } from "@/lib/analytics/screenCounting";
 import { SCREENS } from "@/lib/analytics/screens";
 import { cleanTag } from "@/lib/analytics/tag";
@@ -685,7 +696,10 @@ export const trackEventSchema = z.discriminatedUnion("name", [
   // screen, never its address, and the kind of device.
   z.object({
     name: z.literal("screen_closed"),
-    props: z.object({ screen: z.enum(SCREENS), open: z.enum(OPEN_SPANS), platform: z.enum(COUNT_PLATFORMS) }).strict(),
+    // `first` (1.9, lib/analytics/moreCounting.ts): the device's first day.
+    props: z
+      .object({ screen: z.enum(SCREENS), open: z.enum(OPEN_SPANS), platform: z.enum(COUNT_PLATFORMS), first: z.literal(true).optional() })
+      .strict(),
   }),
   z.object({
     name: z.literal("first_open"),
@@ -694,7 +708,10 @@ export const trackEventSchema = z.discriminatedUnion("name", [
   z.object({
     name: z.literal("came_back"),
     // CAME_BACK_DAYS, written out; the screens' counting test holds the two equal.
-    props: z.object({ day: z.union([z.literal(1), z.literal(7), z.literal(30)]), platform: z.enum(COUNT_PLATFORMS) }).strict(),
+    // `reminders` (1.9, lib/analytics/moreCounting.ts): whether the device had them on.
+    props: z
+      .object({ day: z.union([z.literal(1), z.literal(7), z.literal(30)]), platform: z.enum(COUNT_PLATFORMS), reminders: z.boolean().optional() })
+      .strict(),
   }),
   // Which lock a reader taps, and which leads to a purchase (1.9,
   // lib/analytics/lockCounting.ts): the feature's name, never the page, the
@@ -706,6 +723,39 @@ export const trackEventSchema = z.discriminatedUnion("name", [
   z.object({
     name: z.literal("plus_bought"),
     props: z.object({ lock: z.enum(LOCKS), plan: z.enum(BOUGHT_PLANS), platform: z.enum(COUNT_PLATFORMS) }).strict(),
+  }),
+  // The seven counts of 1.9 (lib/analytics/moreCounting.ts), each for one
+  // decision, each a few words from a closed list and the kind of device. The
+  // devices send none of them until each one's sentence is on /privacy
+  // (MORE_COUNTS_SENDING, held to the page by a test), which is why the list
+  // may take them before the page says them: taking is not counting.
+  z.object({
+    name: z.literal("first_act"),
+    props: z.object({ kind: z.enum(FIRST_ACTS), day: z.enum(ACT_DAYS), platform: z.enum(COUNT_PLATFORMS) }).strict(),
+  }),
+  z.object({
+    name: z.literal("week_step"),
+    props: z.object({ n: z.number().int().min(1).max(7), did: z.enum(STEP_DID), platform: z.enum(COUNT_PLATFORMS) }).strict(),
+  }),
+  z.object({
+    name: z.literal("account_made"),
+    props: z.object({ where: z.enum(ACCOUNT_PLACES), platform: z.enum(COUNT_PLATFORMS) }).strict(),
+  }),
+  z.object({
+    name: z.literal("reminders_set"),
+    props: z.object({ to: z.enum(["on", "off"]), where: z.enum(REMINDER_PLACES), platform: z.enum(COUNT_PLATFORMS) }).strict(),
+  }),
+  z.object({
+    name: z.literal("plus_step"),
+    props: z.object({ lock: z.enum(LOCKS), step: z.enum(PLUS_STEPS), platform: z.enum(COUNT_PLATFORMS) }).strict(),
+  }),
+  z.object({
+    name: z.literal("pricing_bought"),
+    props: z.object({ plan: z.enum(PRICING_PLANS), platform: z.enum(COUNT_PLATFORMS) }).strict(),
+  }),
+  z.object({
+    name: z.literal("today_card"),
+    props: z.object({ card: z.enum(TODAY_CARDS), did: z.enum(CARD_DID), platform: z.enum(COUNT_PLATFORMS) }).strict(),
   }),
   // A test of two versions (1.9, lib/ab/): that a device was shown a version,
   // and that a device shown one reached a point the test reads. The test and

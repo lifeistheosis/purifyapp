@@ -14,6 +14,7 @@ import {
   writeWeek,
 } from "@/lib/onboarding/state";
 import { abTick } from "@/lib/ab/device";
+import { countAccountIfNew } from "@/lib/analytics/moreCount";
 import { readLocalSessionUser } from "@/lib/supabase/localSession";
 import { roadsEnabled } from "@/lib/onboarding/flags";
 import { readRoad } from "@/lib/onboarding/useWeek";
@@ -92,7 +93,11 @@ export function FirstRunGate({
     // And, for a device shown a version of a running test, the milestones
     // that are a state of the device and not a tap: it opened Purify again,
     // and whether someone is signed in on it (lib/ab/device.ts).
-    abTick(!!readLocalSessionUser());
+    const user = readLocalSessionUser();
+    abTick(!!user);
+    // An account made on this device in the last half hour, said once, with
+    // where it was made (lib/analytics/moreCounting.ts).
+    if (user) countAccountIfNew(user.created_at);
   }, []);
 
   useEffect(() => {

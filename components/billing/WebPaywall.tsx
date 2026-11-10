@@ -26,6 +26,7 @@
 // the page reads whole before any script runs; only the bottom waits on the
 // reader's account.
 
+import { countPricingBought } from "@/lib/analytics/moreCount";
 import { useCallback, useEffect, useState, type ReactNode } from "react";
 import { useRouter } from "next/navigation";
 
@@ -180,7 +181,11 @@ export function WebPaywall() {
         setManageUrl(await webManagementURL(userId));
         // Pro is proved by Pro itself, not by the Plus it includes.
         if (tier === "pro" && (await isWebProActive(userId))) setPhase("subscribed");
-        else setActive("plus");
+        else {
+          // The pricing page's own purchases, which the sheet's count does not see (1.9).
+          if (tier !== "pro") countPricingBought(selected === "yearly" ? "yearly" : "monthly");
+          setActive("plus");
+        }
       } else if (outcome === "error") {
         setNote("failed");
       }

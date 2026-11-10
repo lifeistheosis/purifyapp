@@ -37,6 +37,7 @@ import {
 } from "@/lib/onboarding/state";
 import { ROAD_PILLS, type Background } from "@/lib/onboarding/space";
 import { reached } from "@/lib/ab/device";
+import { countReminders, countTodayCard, markAccountFrom } from "@/lib/analytics/moreCount";
 import { countAccountFromCard } from "@/lib/onboarding/count";
 import { previewSignedOut } from "@/lib/onboarding/testing";
 import { useRoads } from "@/lib/onboarding/useRoads";
@@ -179,10 +180,21 @@ export function KeepCard({ className }: { className?: string }) {
         title={t("onboard.account.title")}
         body={t("onboard.account.body")}
         note={t("onboard.reminders.needsAccount")}
-        onClose={() => writeKeep("done")}
+        onClose={() => {
+          countTodayCard("keep", "closed");
+          writeKeep("done");
+        }}
         className={className}
       >
-        <Link href="/signin?next=/" onClick={() => writeKeep("asked")} className={WAY_ON}>
+        <Link
+          href="/signin?next=/"
+          onClick={() => {
+            markAccountFrom("card");
+            countTodayCard("keep", "answered");
+            writeKeep("asked");
+          }}
+          className={WAY_ON}
+        >
           {t("common.signIn")}
         </Link>
       </TipCard>
@@ -194,7 +206,10 @@ export function KeepCard({ className }: { className?: string }) {
     setNote(null);
     try {
       const result = await enableReminders(MORNING_DEFAULT, EVENING_DEFAULT);
-      if (result.ok) setOn(true);
+      if (result.ok) {
+        countReminders("on", "card");
+        setOn(true);
+      }
       else if (result.reason === "denied")
         setNote(isNativeClient() ? t("onboard.reminders.blockedPhone") : t("onboard.reminders.blocked"));
       else if (result.reason === "unsupported") setNote(t("onboard.reminders.unsupported"));
@@ -253,7 +268,15 @@ export function SecondChanceCard({ className }: { className?: string }) {
   return (
     <>
       {due ? (
-        <TipCard id="second-chance" title={t("onboard.second.title")} onClose={markSecondChanceDone} className={className}>
+        <TipCard
+          id="second-chance"
+          title={t("onboard.second.title")}
+          onClose={() => {
+            countTodayCard("second", "closed");
+            markSecondChanceDone();
+          }}
+          className={className}
+        >
           <button type="button" onClick={() => setOpen(true)} className={WAY_ON}>
             {t("onboard.day1.open")}
           </button>
@@ -281,6 +304,8 @@ function SecondChance({ onDone }: { onDone: () => void }) {
   const leave = (kept: Background | null) => {
     if (exiting) return;
     if (kept) {
+      // That it was answered, never what was answered.
+      countTodayCard("second", "answered");
       writeBackground(kept);
       markSecondChanceDone();
     }

@@ -6,6 +6,7 @@ import { isTableAbsent } from "@/lib/admin/tableAbsent";
 import { isAutomatedAgent } from "@/lib/analytics/bot";
 import { isFeatureEvent } from "@/lib/analytics/featureCounting";
 import { isLockEvent } from "@/lib/analytics/lockCounting";
+import { isMoreEvent } from "@/lib/analytics/moreCounting";
 import { isScreenEvent } from "@/lib/analytics/screenCounting";
 import { ipKey, rateLimited } from "@/lib/security/ratelimit";
 import { trackEventSchema } from "@/lib/security/schemas";
@@ -82,7 +83,9 @@ async function handlePOST(req: Request) {
     const toTheDay = name.startsWith("onboarding_") || isScreenEvent(name) || isLockEvent(name) || isFeatureEvent(name);
     // And a test's two rows (lib/ab/): a version stamped to the second would
     // sit beside the page views of the one session that was shown it.
-    const dayOnly = toTheDay || isAbEvent(name);
+    // And the seven counts of 1.9 (lib/analytics/moreCounting.ts): an account
+    // made, stamped to the second, would sit beside the account itself.
+    const dayOnly = toTheDay || isAbEvent(name) || isMoreEvent(name);
     const today = new Date().toISOString().slice(0, 10);
     // A "reached" row is kept under the day its device was shown its version,
     // not today: every row of a test then holds one day, the day shown, and a
