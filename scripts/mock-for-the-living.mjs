@@ -7,7 +7,8 @@
 import { checkMock, openPhone, printMockCheck } from "./mock-check.mjs";
 import { go } from "./lib/shell-server.mjs";
 
-const shot = process.argv[2] ?? "docs/1.9-build/notes/build-89/11-for-the-living-redesign.png";
+// A still of its own name: never written over one in docs (the arbiter, 2026-11-10).
+const shot = process.argv[2] ?? "for-the-living.png";
 const { browser, page } = await openPhone({ scale: 2 });
 let ok = false;
 try {
@@ -24,18 +25,27 @@ try {
   await sheet.locator("[data-nameday-choice] [role=radiogroup]").nth(1).locator("[role=radio]").nth(5).click();
   await page.waitForTimeout(600);
   ok = printMockCheck(await checkMock(page, "[role=dialog]:has([data-name-form])"), "the For the living sheet");
-  // The house's quiet focus on a tapped field, and typing with a space keeps it (note 11's standard).
+  // A tapped field shows it is reached its own quiet way, its fill lighting
+  // (focus:bg-), and nothing besides: no ring, and since the arbiter's ruling
+  // of 2026-11-10 not the fine edge either. Typing with a space keeps it so.
   const name = sheet.locator("input").first();
-  const edge = () => name.evaluate((el) => ({ input: document.documentElement.dataset.input, width: getComputedStyle(el).outlineWidth, color: getComputedStyle(el).outlineColor }));
+  const edge = () =>
+    name.evaluate((el) => {
+      const cs = getComputedStyle(el);
+      return { input: document.documentElement.dataset.input, outline: cs.outlineStyle === "none" ? "none" : `${cs.outlineWidth} ${cs.outlineColor}`, fill: cs.backgroundColor };
+    });
   await page.locator("[data-name-form] p").first().tap();
+  await page.waitForTimeout(450);
+  const rest = await edge();
   await name.tap();
+  await page.waitForTimeout(450);
   const first = await edge();
   await page.keyboard.type(" of Myra");
   await page.waitForTimeout(450);
   const settled = await edge();
   const alpha = (c) => Number((/\/\s*([\d.]+)\)\s*$/.exec(c) ?? [0, 1])[1]);
-  console.log(`\nA tapped field: at once ${JSON.stringify(first)}; after typing with a space ${JSON.stringify(settled)}`);
-  ok = ok && first.input === "pointer" && first.width === "1px" && alpha(first.color) <= 0.33 && settled.input === "pointer" && settled.width === "1px" && Math.abs(alpha(settled.color) - 0.32) < 0.02;
+  console.log(`\nA field at rest: ${JSON.stringify(rest)}; tapped: ${JSON.stringify(first)}; after typing with a space ${JSON.stringify(settled)}`);
+  ok = ok && [first, settled].every((e) => e.input === "pointer" && e.outline === "none" && alpha(e.fill) > alpha(rest.fill) + 0.01);
   await page.evaluate(() => (document.activeElement instanceof HTMLElement ? document.activeElement.blur() : null));
   // The whole sheet in one picture: a phone as tall as the sheet.
   await page.setViewportSize({ width: 390, height: 1900 });
