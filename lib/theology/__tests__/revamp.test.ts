@@ -280,6 +280,17 @@ describe("the revamp's look", () => {
     }
   });
 
+  it("throws the plates' shadow in a light page's own ink, never black under a name", () => {
+    // The Themes chat's sweep: black at nine tenths darkened the first line of
+    // the name under each plate on Light ("III" at 4.32:1).
+    const light = rule('html[data-reading-mode="parchment"] .path-plate:not([data-state="current"])');
+    expect(light, "Light's own rule for the plates").not.toBe("");
+    expect(light).toContain("color-mix(in srgb, var(--color-paper) 55%, transparent)");
+    expect(light).not.toMatch(/rgb\(0 0 0/);
+    // Light's, and so every light look's: no copy behind [data-look] alone.
+    expect(css).not.toContain('html[data-look][data-reading-mode="parchment"] .path-plate');
+  });
+
   it("keeps every motion behind Purify's motion switch", () => {
     for (const selector of [".path-plate", ".part-segment"]) {
       expect(rule(selector), selector).toMatch(/transition: /);
