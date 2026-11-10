@@ -4940,8 +4940,9 @@ await section(39, async () => {
     must(lit.following && lit.on === 1 && lit.bright > 0.95 && lit.back < 0.6, `${size.width}px: the line being read is lit and the rest step back (${lit.on} lit, ${lit.bright} against ${lit.back})`);
     must(lit.barTitle, `${size.width}px: once the name has scrolled away the bar shows it`);
     await page.screenshot({ path: path.join(SHOTS, `prayers-hour-lines-${size.width}.png`) });
-    // Mark prayed, each prayer, as before: Mark all keeps the Hour for today.
-    await tap(page.locator("[data-prayer-reader] button", { hasText: en["prayers.reader.markAll"] }).first());
+    // The rule's one Amen at its end keeps the Hour for today (build 89 note
+    // 7: nothing is ticked under each prayer, and Mark all went with the marks).
+    await tap(page.locator("[data-prayer-reader] [data-amen]").first());
     await page.waitForTimeout(700);
     const day = await today(page);
     const done = await page.evaluate(
@@ -5089,7 +5090,8 @@ await section(39, async () => {
       mine.title === en["prayers.mine.morningTitle"] && mine.steps.length === 10 && mine.steps[0] === "morning--glory-to-thee" && mine.steps[1] === "morning--sign-of-cross",
       `${size.width}px: Pray my rule opens Your morning rule, its ten prayers in the reader's order (${mine.steps.slice(0, 2).join(", ")})`,
     );
-    await tap(page.locator("[data-prayer-reader] button", { hasText: en["prayers.reader.markAll"] }).first());
+    // Its Amen, as every rule's (build 89 note 7).
+    await tap(page.locator("[data-prayer-reader] [data-amen]").first());
     await page.waitForTimeout(700);
     must((await kept(page, "mine-morning")).includes(await today(page)), `${size.width}px: praying it through keeps the day under mine-morning, which the streak reads`);
     await page.screenshot({ path: path.join(SHOTS, `prayers-mine-reader-${size.width}.png`) });
@@ -5524,10 +5526,17 @@ await section(40, async () => {
       season: (document.querySelector("[data-plans-season] a")?.getAttribute("href") ?? "").replace(/\/$/, "") || null,
       continuing: Boolean(document.querySelector("[data-plans-continue]")),
     }));
-    const PLANS = ["psalter", "gospels", "john", "proverbs", "nativity"];
+    // Every plan the app has, in its order (lib/plans/plans.ts, READING_PLANS),
+    // read from the source so a new plan does not leave this list behind (it
+    // did: Acts, the New Testament and Holy Week came in 1.9). A season's
+    // plan out of its season is a tile like the rest.
+    const source = fs.readFileSync(path.resolve("lib/plans/plans.ts"), "utf8");
+    const listAt = source.indexOf("export const READING_PLANS");
+    const PLANS = [...source.slice(listAt, source.indexOf("\n];", listAt)).matchAll(/\bid: "([a-z0-9-]+)"/g)].map((m) => m[1]);
+    const SEASONS = [...source.slice(listAt, source.indexOf("\n];", listAt)).matchAll(/\bid: "([a-z0-9-]+)", strand: "[a-z]+", season:/g)].map((m) => `/plans/${m[1]}`);
     const tilesWanted = PLANS.filter((id) => `/plans/${id}` !== listed.season).map((id) => `${id} /plans/${id}`);
     must(
-      !listed.continuing && (listed.season === null || listed.season === "/plans/nativity") && JSON.stringify(listed.tiles) === JSON.stringify(tilesWanted),
+      PLANS.length > 0 && !listed.continuing && (listed.season === null || SEASONS.includes(listed.season)) && JSON.stringify(listed.tiles) === JSON.stringify(tilesWanted),
       `${w}px: every plan, none begun: ${listed.season ? `the season's card (${listed.season}), then ` : ""}the tiles (${listed.tiles.map((x) => x.split(" ")[0]).join(", ")})`,
     );
     await tap(page.locator('[data-plans-tiles] [data-plan-tile="gospels"]'));
