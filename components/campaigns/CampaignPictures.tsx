@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 
-import { PlusLock, PlusMark } from "@/components/billing/PlusMark";
+import { PlusMark } from "@/components/billing/PlusMark";
 import { useUpgradeModal } from "@/components/billing/UpgradeModal";
 import { CampaignReportSheet } from "@/components/campaigns/CampaignReportSheet";
 import { TickBox } from "@/components/campaigns/TickLines";
@@ -86,7 +86,8 @@ function refusal(res: Extract<PictureAdded, { ok: false }>, t: Translate): strin
   }
 }
 
-const TILE = "relative h-24 w-24 shrink-0 overflow-hidden rounded-[14px]";
+/** One place in the grid of pictures: a square, four to a row on a phone. */
+const TILE = "relative aspect-square w-full min-w-0 overflow-hidden rounded-[14px]";
 
 export function CampaignPictures({
   campaignId,
@@ -142,34 +143,43 @@ export function CampaignPictures({
       <h2 id="campaign-pictures-title" className="font-heading text-lede leading-tight text-paper">
         {t("campaigns.pictures")}
       </h2>
-      <div className="-mx-5 mt-3 flex gap-2 overflow-x-auto px-5 pb-1">
+      {/* A grid, four to a row, and never a row to scroll sideways: twenty
+          pictures stand in five rows, and the place after the third is on
+          the screen where its creator will see it. */}
+      <div className="mt-3 grid grid-cols-4 gap-2">
         {pictures.map((p) => (
           <button key={p.id} type="button" aria-haspopup="dialog" onClick={() => setOpenId(p.id)} className={cn(TILE, "tap-press bg-paper/[0.06]")}>
             <ArrivingImage src={p.url} alt={p.alt ?? t("campaigns.pictureAlt")} decoding="async" className="absolute inset-0 h-full w-full object-cover" />
             {p.held ? (
-              <span className="absolute inset-x-0 bottom-0 bg-night px-1.5 py-1 text-center font-sans text-[11px] font-semibold leading-tight text-paper">{t("campaigns.pictureWaits")}</span>
+              <span className="absolute inset-x-0 bottom-0 bg-night px-1 py-1 text-center font-sans text-[11px] font-semibold leading-tight text-paper [overflow-wrap:anywhere]">
+                {t("campaigns.pictureWaits")}
+              </span>
             ) : null}
           </button>
         ))}
         {canAdd ? (
+          // The sign alone, with its words as its name: "Add a picture" is
+          // two long words in most languages and was cut on a tile this
+          // size in twenty-four of sixty-three cases (twenty-one languages
+          // at 390, 360 and 320 pixels). The sheet it opens says it in full.
           <button
             type="button"
             aria-haspopup="dialog"
+            aria-label={t("campaigns.picturesAdd")}
             onClick={() => setAdding(true)}
-            className={cn(TILE, "tap-press flex flex-col items-center justify-center gap-1.5 border border-paper/25 px-2 text-paper hover:border-paper/45")}
+            className={cn(TILE, "tap-press flex items-center justify-center border border-paper/25 text-paper hover:border-paper/45")}
           >
-            <Plus size={18} />
-            <span className="text-center font-sans text-caption font-semibold leading-tight">{t("campaigns.picturesAdd")}</span>
+            <Plus size={22} />
           </button>
         ) : null}
         {plusPlace ? (
+          // Two places wide, so the one Plus mark stands whole in it (components/billing/PlusMark.tsx).
           <button
             type="button"
             aria-label={t("campaigns.picturesPlus")}
             onClick={() => upgrade.open("general")}
-            className={cn(TILE, "tap-press flex w-auto min-w-24 flex-col items-center justify-center gap-2 border border-paper/15 px-3 text-paper/75 hover:border-paper/35")}
+            className="tap-press col-span-2 flex aspect-[2/1] min-w-0 items-center justify-center rounded-[14px] border border-paper/15 px-2 hover:border-paper/35"
           >
-            <PlusLock size={16} />
             <PlusMark />
           </button>
         ) : null}

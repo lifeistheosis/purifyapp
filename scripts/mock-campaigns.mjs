@@ -16,6 +16,7 @@
 //   WALK=1 node scripts/mock-campaigns.mjs                    the walk
 //   EYE=parchment,black node scripts/mock-campaigns.mjs 1     and by eye, on other palettes
 //   ALL_LOOKS=1 node scripts/mock-campaigns.mjs 1             held on the eighteen looks as well as the five palettes
+//   LOCALE=ro WIDTH=360 node scripts/mock-campaigns.mjs 2 19   a still in another language, on a narrower phone
 //
 // `scale` 2 for pictures a person will see (1 to check); `only` is "all" or
 // the stills' numbers ("01,08"); `folder` is where they are written, a
@@ -23,9 +24,18 @@
 //
 // THE PLACE THAT WEARS THE PLUS MARK (still 21, and one flow of the walk) is
 // drawn only where Plus can be bought, which a build knows from its purchase
-// key. So that scratch build is also given a made-up one for the website,
-// the surface a plain browser is: NEXT_PUBLIC_REVENUECAT_WEB_KEY=placeholder.
-// Without it the still shows the row with no such place and the flow says so.
+// keys. This harness wears the apps' own user agent with no Capacitor behind
+// it, so to the app it is a phone whose store is not known yet, and Plus is
+// held to be sold there only when both stores sell it
+// (lib/entitlements/entitlements.ts, "native-unknown"). So that scratch
+// build is also given made-up keys for both:
+//
+//   NEXT_PUBLIC_REVENUECAT_ANDROID_KEY=placeholder
+//   NEXT_PUBLIC_REVENUECAT_IOS_KEY=placeholder
+//   NEXT_PUBLIC_PLUS_ENFORCED_IOS=true
+//
+// Without them the still shows the pictures with no such place, which is
+// what an iPhone shows today, and the flow says so.
 import fs from "node:fs";
 import path from "node:path";
 
@@ -37,6 +47,10 @@ const ONLY = process.argv[3] && process.argv[3] !== "all" ? new Set(process.argv
 const OUT = path.resolve(process.argv[4] ?? "campaign-stills");
 const EYE = (process.env.EYE ?? "").split(",").filter(Boolean);
 const WALK = process.env.WALK === "1";
+/** Another language for the stills, as the app keeps a reader's choice on the phone. The walk reads English and is not run in one. */
+const LOCALE = process.env.LOCALE ?? null;
+/** The phone's width, for a still on a narrower one. */
+const WIDTH = Number(process.env.WIDTH ?? 390);
 /** The eighteen looks as well as the five palettes (scripts/mock-check.mjs, LOOKS). */
 const WORN = process.env.ALL_LOOKS === "1" ? { palettes: [...PALETTES, ...LOOKS] } : {};
 if (!WALK) fs.mkdirSync(OUT, { recursive: true });
@@ -361,7 +375,7 @@ const settle = (page, ms = 2200) => page.waitForTimeout(ms);
 /** The whole page in one picture: the viewport grown to the page's own height. */
 async function whole(page, min = 844) {
   const h = await page.evaluate(() => Math.ceil(document.documentElement.scrollHeight));
-  await page.setViewportSize({ width: 390, height: Math.max(min, h) });
+  await page.setViewportSize({ width: WIDTH, height: Math.max(min, h) });
 }
 
 async function shot(name, label, where, selector, { set = {}, prepare, signedIn = true, mine, board, parts, pictures, check = true } = {}) {
@@ -370,12 +384,14 @@ async function shot(name, label, where, selector, { set = {}, prepare, signedIn 
   const seed = {
     "purify.prayers.campaigns": JSON.stringify(CARRIED),
     ...(signedIn ? { "purify.supabase.auth": JSON.stringify([{ name: "sb-placeholder-auth-token", value: JSON.stringify(SESSION) }]) } : {}),
+    ...(LOCALE ? { "CapacitorStorage.purify_locale": LOCALE } : {}),
     ...set,
   };
   const { browser, page, ctx } = await openPhone({ scale: SCALE, set: seed });
   const errors = [];
   page.on("pageerror", (e) => errors.push(e.message));
   try {
+    if (WIDTH !== 390) await page.setViewportSize({ width: WIDTH, height: 844 });
     await answer(ctx, { mine, board, signedIn, parts, pictures });
     await go(page, where);
     await settle(page);
@@ -640,7 +656,7 @@ await shot("22-picture-add", "adding a picture: the two lines to tick", `/campai
   parts: { pictures: true },
   prepare: async (page) => {
     await page.waitForSelector("[data-campaign-pictures]", { timeout: 15000 });
-    await page.locator("[data-campaign-pictures] button", { hasText: "Add a picture" }).click();
+    await page.locator('[data-campaign-pictures] button[aria-label="Add a picture"]').click();
     await page.waitForSelector("[role=dialog] [role=checkbox]", { timeout: 8000 });
     await page.locator("[role=dialog] [role=checkbox]").first().click();
   },
@@ -918,12 +934,12 @@ if (WALK) {
     expectThat((await page.locator("[data-campaign-pictures]").count()) === 0, "pictures are drawn");
     expectThat(!calls.some((c) => c.path.endsWith("/pictures")), "the pictures were asked for");
     // Its creator's menu and page offer no place to add one either.
-    expectThat((await page.getByText("Add a picture").count()) === 0, "a place to add one is offered");
+    expectThat((await page.locator('button[aria-label="Add a picture"]').count()) === 0, "a place to add one is offered");
   }, { mine: [MARIA] });
 
   await walk("pictures, on: its creator adds one only with both lines ticked, and it is sent with both", `/campaigns/detail?id=${NICHOLAS}`, async (page) => {
     await page.waitForSelector("[data-campaign-pictures]", { timeout: 15000 });
-    await page.locator("[data-campaign-pictures] button", { hasText: "Add a picture" }).click();
+    await page.locator('[data-campaign-pictures] button[aria-label="Add a picture"]').click();
     await page.waitForSelector("[role=dialog] [role=checkbox]", { timeout: 8000 });
     const add = page.locator("[role=dialog] button", { hasText: "Add a picture" }).last();
     expectThat(await add.isDisabled(), "Add is lit before a picture is chosen");
@@ -981,7 +997,7 @@ if (WALK) {
     const place = page.getByRole("button", { name: "Up to twenty pictures with Purify Plus" });
     expectThat((await place.count()) === 1, "the place with the Plus mark is not drawn (was this export built with a purchase key? see the head of this file)");
     expectThat((await place.innerText()).includes("Purify Plus"), "the place does not wear the mark");
-    expectThat((await page.locator("[data-campaign-pictures] button", { hasText: "Add a picture" }).count()) === 0, "a fourth picture is offered without Plus");
+    expectThat((await page.locator('[data-campaign-pictures] button[aria-label="Add a picture"]').count()) === 0, "a fourth picture is offered without Plus");
     await place.click();
     await settle(page, 900);
     expectThat((await page.locator("[role=dialog]").count()) > 0, "the upgrade sheet did not open");
@@ -992,7 +1008,7 @@ if (WALK) {
     await page.waitForSelector("[data-campaign-pictures] button img", { timeout: 15000 });
     expectThat((await page.getByRole("button", { name: "Up to twenty pictures with Purify Plus" }).count()) === 0, "a reader is shown the Plus mark");
     expectThat((await page.locator("[data-campaign-pictures]").innerText()).includes("Purify Plus") === false, "Plus is named to a reader");
-    expectThat((await page.locator("[data-campaign-pictures] button", { hasText: "Add a picture" }).count()) === 0, "a reader is offered a place to add");
+    expectThat((await page.locator('[data-campaign-pictures] button[aria-label="Add a picture"]').count()) === 0, "a reader is offered a place to add");
   }, { parts: { pictures: true } });
 
   await walk("pictures, on: the team's queue covers each picture until it is tapped, and clears one", "/community/moderate", async (page) => {
