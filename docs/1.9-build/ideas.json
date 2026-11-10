@@ -1943,6 +1943,20 @@
    "version": null,
    "outcome": null,
    "note": "The Themes chat's findings, the arbiter's list and yes. 16998e76 initials; 84b85224 the links under the plans; d17c470f the EIKON note; d4828028 the Pro ribbon in Arabic. The supporters' names were already mended by 14aa6ce8. PLAN 13k."
+  },
+  {
+   "id": "e-build90-note9-verse-landing",
+   "section": "Bible",
+   "kind": "bug",
+   "title": "A verse opened with the Greek on lands on its verse (build 90 note 9)",
+   "from": "edgar",
+   "asked": "2026-11-10",
+   "status": "built",
+   "decided": "2026-11-10",
+   "needsDesign": false,
+   "version": "1.9",
+   "outcome": null,
+   "note": "His saved verse of Matthew 1 opened at verse 9 with the Greek on. The Greek arrives after the landing and doubles the height above the verse; the landing now holds the verse while the chapter settles. c2c201f9. PLAN 13l."
   }
  ]
 }
