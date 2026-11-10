@@ -1663,3 +1663,12 @@ behind it. Judged by the button to subscribe tapped (a new milestone,
 version to tell 5 in 100 from 8 in 100. Never on a day the Plus card's test
 runs. Held by `lib/ab/__tests__/tests.test.ts` and
 `node scripts/plus-order-walk.mjs`.
+
+**The Plus card is on (his word, 2026-11-10, about 18:00 UTC: "yes Plus
+card").** `PLUS_INTRO_LIVE` is `true`, and `PLUS_INTRODUCED` runs 2026-11-10
+to 2027-02-02, the test builds' twelve weeks. In the release commit its two
+days are set again to the day of release and 84 days on, beside the first
+test's (`OWNER-STEPS.md`, R0c); a test holds the span, not the date. Off
+again is the one line. The Plus sheet's order stays shut, and its
+placeholder days sit after the card's last day, so the registry's rule that
+the two never share a day holds whether or not either is lit.

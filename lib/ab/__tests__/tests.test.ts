@@ -239,14 +239,26 @@ describe("which test is running", () => {
   });
 });
 
-describe("Plus, introduced once: built, and shut until he has seen it", () => {
-  it("runs on no day while its switch is off, whatever else is lit", () => {
-    expect(PLUS_INTRO_LIVE).toBe(false);
-    expect(litNow().plusIntro).toBe(false);
-    for (const day of ["2026-11-10", "2026-12-25", "2027-06-01"]) {
-      expect(runningTest("today", day, { roads: true, plusIntro: false, plusOrder: true }), day).toBeNull();
-      expect(runningTest("today", day, litNow()), day).toBeNull();
-    }
+describe("Plus, introduced once: on, by his word on the stills", () => {
+  it("runs for its twelve weeks while its switch and the new onboarding are both lit, and on no other day", () => {
+    // "yes Plus card", 2026-11-10 (lib/onboarding/flags.ts).
+    expect(PLUS_INTRO_LIVE).toBe(true);
+    expect(litNow().plusIntro).toBe(ROADS_LIVE);
+    const days = (Date.parse(PLUS_INTRODUCED.ends) - Date.parse(PLUS_INTRODUCED.begins)) / 86_400_000;
+    expect(days).toBe(84);
+    const lit = { roads: true, plusIntro: true, plusOrder: false };
+    expect(runningTest("today", PLUS_INTRODUCED.begins, lit)?.id).toBe("plus-introduced");
+    expect(runningTest("today", PLUS_INTRODUCED.ends, lit)?.id).toBe("plus-introduced");
+    const after = new Date(Date.parse(PLUS_INTRODUCED.ends) + 86_400_000).toISOString().slice(0, 10);
+    expect(runningTest("today", after, lit)).toBeNull();
+    // With its own switch off, or the new onboarding off, it runs on no day.
+    expect(runningTest("today", PLUS_INTRODUCED.begins, { roads: true, plusIntro: false, plusOrder: true })).toBeNull();
+  });
+
+  it("leaves the Plus sheet's order shut, with days that can never meet its own", () => {
+    expect(PLUS_ORDER_LIVE).toBe(false);
+    expect(PLUS_SHEET_ORDER.begins > PLUS_INTRODUCED.ends).toBe(true);
+    expect(registryFaults(AB_TESTS)).toEqual([]);
   });
 
   it("is judged by Plus bought, with readers coming back guarded, and is never a test on a price", () => {
@@ -272,7 +284,7 @@ describe("the Plus sheet's order: built, and shut until he has seen it", () => {
   it("runs on no day while its switch is off", () => {
     expect(PLUS_ORDER_LIVE).toBe(false);
     expect(litNow().plusOrder).toBe(false);
-    for (const day of ["2026-11-11", "2026-12-25", "2027-06-01"]) {
+    for (const day of ["2026-11-11", "2026-12-25", PLUS_SHEET_ORDER.begins, "2027-06-01"]) {
       expect(runningTest("plus", day, litNow()), day).toBeNull();
       expect(runningTest("plus", day, { roads: true, plusIntro: true, plusOrder: false }), day).toBeNull();
     }

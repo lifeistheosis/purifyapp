@@ -1,10 +1,10 @@
-// Plus, introduced once (1.9, his 111), pictured from the export for his OK
-// before it is switched on for readers (lib/onboarding/flags.ts,
-// PLUS_INTRO_LIVE). The rules are held by
-// lib/onboarding/__tests__/plusIntro.test.ts; this reads what is drawn.
+// Plus, introduced once (1.9, his 111; on since his "yes Plus card" of
+// 2026-11-10, lib/onboarding/flags.ts, PLUS_INTRO_LIVE). The rules are held
+// by lib/onboarding/__tests__/plusIntro.test.ts; this reads what is drawn.
 //
-// The card is shut for readers, so it is reached the way an admin reaches
-// it: Testers mode, with the test's "card" version picked. Four roads, each
+// A browser driven by a script is kept out of every test, so the card is
+// reached the way an admin reaches it: Testers mode, with the test's "card"
+// version picked. Four roads, each
 // with its own feature, then the tap: the Plus sheet opens straight on that
 // feature's Try it. And a reader not in Testers mode is drawn no card.
 //
@@ -105,12 +105,12 @@ for (const [road, answers] of ROADS) {
   await ctx.close();
 }
 
-// A reader, not a tester: no card, since it is shut.
+// A browser driven by a script is in no test (lib/onboarding/count.ts), so no card is drawn for it.
 {
   const { ctx, page } = await phone({ "purify:background": "catholic", "purify:level": "inquirer", "purify:onboarded.day": "2026-01-01" });
   await go(page, "/");
   await page.waitForTimeout(4000);
-  say((await page.locator(CARD).count()) === 0, "a reader, a year after the questions: no card while it is shut");
+  say((await page.locator(CARD).count()) === 0, "a browser driven by a script, a year after the questions: in no test, so no card");
   await ctx.close();
 }
 

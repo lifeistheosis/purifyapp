@@ -133,11 +133,12 @@ export const ACCOUNT_PLACE: AbTest = {
  * purchase is rare, so this needs many readers and may well end unsettled,
  * in which case Purify stays as it is.
  *
- * SHUT: its gate is PLUS_INTRO_LIVE (lib/onboarding/flags.ts), false until
- * the owner has seen the card's stills. ITS DAYS ARE SET WHEN IT IS LIT, as
- * the first test's were; until then they hold nothing open. It never runs
- * together with the Plus sheet's order test (`apart`), since both read the
- * same buyers.
+ * ON since 2026-11-10, his "yes Plus card" on the stills: its gate,
+ * PLUS_INTRO_LIVE (lib/onboarding/flags.ts), is true. The days below are the
+ * test builds', twelve weeks from that day; ITS DAYS ARE SET AGAIN IN THE
+ * RELEASE COMMIT, the first the day of release, as the first test's are. It
+ * never runs together with the Plus sheet's order test (`apart`), since both
+ * read the same buyers.
  */
 export const PLUS_INTRODUCED: AbTest = {
   id: "plus-introduced",
@@ -146,7 +147,7 @@ export const PLUS_INTRODUCED: AbTest = {
   arms: ["locks", "card"],
   share: 1,
   begins: "2026-11-10",
-  ends: "2026-11-10",
+  ends: "2027-02-02",
   gate: "plusIntro",
   apart: ["plus-sheet-order"],
   judge: "plus_bought",
@@ -186,8 +187,9 @@ export const PLUS_SHEET_ORDER: AbTest = {
   asks: "When a reader taps a lock, should the Plus sheet open on its list, with that feature first, or straight on that feature working?",
   arms: ["list", "working"],
   share: 1,
-  begins: "2026-11-11",
-  ends: "2026-11-11",
+  // Shut. A day after the Plus card's last, so the two can never share one, lit or not.
+  begins: "2027-02-03",
+  ends: "2027-02-03",
   gate: "plusOrder",
   apart: ["plus-introduced"],
   judge: "plus_pay",

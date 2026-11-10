@@ -40,12 +40,16 @@ export function roadsEnabled(): boolean {
 /**
  * Plus, introduced once (1.9, his 111): one calm card on Today after a new
  * reader's first week (lib/onboarding/plusIntro.ts), run as a test against
- * Purify as it is (lib/ab/tests.ts, PLUS_INTRODUCED). Built and SHUT: his
- * word of 2026-11-10 puts the card's stills before him first, and nothing
- * shows it to a reader until this is true. In Testers mode an admin picks
- * the version to look at, whatever this says.
+ * Purify as it is (lib/ab/tests.ts, PLUS_INTRODUCED).
+ *
+ * ON since 2026-11-10, his word on the stills: "yes Plus card". It runs for
+ * the test builds from that day, and in the release commit its two days are
+ * set again to the day of release, as the first test's are
+ * (docs/1.9-build/OWNER-STEPS.md, R0c). Off again is this one line. It needs
+ * the new onboarding lit as well (litNow below): the card is for a reader
+ * with a road.
  */
-export const PLUS_INTRO_LIVE = false;
+export const PLUS_INTRO_LIVE = true;
 
 /**
  * The Plus sheet's order (1.9; lib/ab/tests.ts, PLUS_SHEET_ORDER): when a
