@@ -148,3 +148,11 @@ What he saw: the round plates at the top of a reader, the way back at the left a
 Where it is: the way back is `backClass` in `components/nav/MobileTopBar.tsx`, `h-11 w-11` (44px); the ••• beside it is `h-10 w-10` (40px) with `hit-44` in `components/bible/MobileReaderActions.tsx` (the Bible) and `components/saints/MobileWorkActions.tsx` (the Fathers' works and the councils' documents). On his phone that is 130px against 117px, the bigger one the way back. The row (`data-plates-row`) is 52px tall with 12px at each side, so the 44px plate stands 4px under the status bar's strip and the line along it, and the 40px one 6px. The overlay bars that put their buttons on plates have the same mismatch in places (`app/(app)/councils/[slug]/page.tsx`, Share at `h-10 w-10` beside the 44px way back).
 
 Planned fix (given to Admin the same hour): one size for every round plate at the top, 44px, the house's target, the way back and whatever stands opposite it (•••, Share, Save) in the plates bar and in the overlay bar alike, held by a test so the two cannot drift apart again; the row set so the plates stand clear of the status bar's strip and the line along it with an even gap, on the same inset at both sides, lined up with the page's own margins or the other top bars, whichever the export shows reads cleaner. Checked on his phone's width in the export on all five palettes; one before and after still to him with the push.
+
+### 16. A sheet over the reader: what stands behind it fades out better (2026-11-10)
+
+What he saw: the Bible reader (Genesis 2) with the mini player and the tab bar at its foot, then the Sleep timer sheet opened from the player over it (`build-89/16-reader-with-player.png`, `build-89/16-sleep-timer-sheet.png`). His words: "I found a new issue/suggestion make the objects in the back fade out better when this new screen shows up (bottom UI + player)". The round K at the right is the phone's call bubble, not the app.
+
+Where it is: for Admin to find.
+
+Planned fix (given to Admin, after note 15): when a sheet rises, what stands behind it (the tab bar, the mini player, the plates at the top) fades out with it, in the house's motion, on the sheet's own curve and time, and comes back the same way when it closes; every sheet, not only the sleep timer; reduced motion stays still. Shown to him with a few stills across the fade.

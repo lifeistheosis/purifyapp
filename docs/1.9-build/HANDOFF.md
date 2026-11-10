@@ -6,6 +6,12 @@ the arbiter, the main chat that sends requests out to the other chats. This
 file is what it needs to take over. Read it first, then `BRAINSTORM.md` and
 `PLAN.md` in this folder.
 
+**The arbiter routes; it does not dig** (his word, 2026-11-10: "remember you
+are the arbiter, you worked on the last issue and it's fine don't make that
+mistake again"). A note from him goes into the notes with his words and his
+screenshots, then straight to a chat with the plan, and the chat finds the
+cause in the code. The arbiter reads the record, not the code.
+
 ## The chats (each Opus 5.5 at max effort)
 
 | Chat | Session | What it is for |
