@@ -200,6 +200,10 @@ const STASH_PATHS = [
   // the admin's switches applied; the apps ask the website for it, as they
   // asked for the file it replaced. Appended, for the slot-index reason above.
   ["app", "audio"],
+  // The investor overview's own fonts (143): Lora and DM Sans, served from
+  // our site so the page fetches nothing from Google. Web only, like the page
+  // (app/invest, above). Appended, for the slot-index reason above.
+  ["public", "invest"],
 ];
 
 function slot(i) {

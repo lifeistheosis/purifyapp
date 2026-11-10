@@ -12,6 +12,11 @@ export type LicensedWork = {
   blurb: string;
   topics?: string[];
   amazonAsin: string;
+  /**
+   * Our own picture of the book's cover: a path on this site ("/..."), never
+   * another host, which a reader's device would call as the page opens (143;
+   * lib/ui/__tests__/noThirdPartyLoads.test.ts reads every file).
+   */
   coverImageUrl?: string;
   directPublisherUrl?: string;
 };

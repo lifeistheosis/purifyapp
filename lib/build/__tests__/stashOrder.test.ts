@@ -38,6 +38,7 @@ const ORDER = [
   '["app", "(app)", "p"]',
   '["instrumentation.ts"]',
   '["app", "audio"]',
+  '["public", "invest"]',
 ];
 
 describe("the native export's stash list", () => {

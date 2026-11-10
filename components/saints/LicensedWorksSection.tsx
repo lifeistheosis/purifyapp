@@ -1,5 +1,5 @@
 import type { LicensedWork } from "@/lib/saints/licensedWorks";
-import { buildAmazonUrl, getAmazonCoverUrl, HAS_AMAZON_TAG } from "@/lib/affiliate/amazon";
+import { buildAmazonUrl, HAS_AMAZON_TAG } from "@/lib/affiliate/amazon";
 import { authorIcon } from "@/lib/saints/icons";
 import { CoverListRow } from "@/components/covers/CoverListRow";
 import { WorkCover } from "@/components/covers/WorkCover";
@@ -16,9 +16,11 @@ const ROLE_LABEL_KEY: Record<NonNullable<LicensedWork["authorRole"]>, string> = 
  * Books in print: the saint's works and books about him that are under
  * copyright, so Purify cannot host them, with a way to buy each (1.7: the
  * same cover rows as his works, components/covers/). A book's cover is its
- * own only where the site may show it, which is a build with an associate
- * tag (lib/affiliate/amazon.ts); everywhere else it is the plate, with the
- * author's icon where the app has one.
+ * own only where we hold one (`coverImageUrl`, a path on our own site);
+ * everywhere else it is the plate, with the author's icon where the app has
+ * one. Never Amazon's: a picture from Amazon made a reader's device call
+ * Amazon as the page opened (143, lib/affiliate/amazon.ts). Amazon is reached
+ * only when a reader taps the link to buy.
  */
 export function LicensedWorksSection({ works }: { works: LicensedWork[] }) {
   if (works.length === 0) return null;
@@ -49,8 +51,10 @@ export function LicensedWorksSection({ works }: { works: LicensedWork[] }) {
               <WorkCover
                 title={w.title}
                 author={w.author}
-                iconUrl={authorIcon(w.author)}
-                imageUrl={w.coverImageUrl ?? getAmazonCoverUrl(w.amazonAsin)}
+                // A book names a Father as the record does ("John Chrysostom"),
+                // the icons as the commentary does ("St. John Chrysostom").
+                iconUrl={authorIcon(w.author) ?? authorIcon(`St. ${w.author}`)}
+                imageUrl={w.coverImageUrl}
                 size="sm"
               />
             }

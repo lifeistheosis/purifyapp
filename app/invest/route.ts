@@ -20,15 +20,16 @@ export const dynamic = "force-static";
 export const revalidate = 3600;
 
 // Enforced, and narrower than the site's policy: the page needs its own inline
-// style and script, Google Fonts, and the site icon, and nothing else. proxy.ts
+// style and script, its fonts and the site icon, all from our own site, and
+// nothing else (143: its fonts came from Google until 1.9). proxy.ts
 // skips /invest so the site-wide report-only policy does not also apply. The
 // data block is JSON (type="application/json"), which is never executed, so it
 // needs nothing from script-src.
 const CSP = [
   "default-src 'none'",
   "script-src 'unsafe-inline'",
-  "style-src 'unsafe-inline' https://fonts.googleapis.com",
-  "font-src https://fonts.gstatic.com",
+  "style-src 'unsafe-inline'",
+  "font-src 'self'",
   "img-src 'self'",
   "base-uri 'none'",
   "form-action 'none'",
