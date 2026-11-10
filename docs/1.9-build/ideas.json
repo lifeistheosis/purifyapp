@@ -1873,6 +1873,20 @@
    "version": null,
    "outcome": null,
    "note": "campaigns-fable.md section 9, items 5, 6 and 8; the arbiter's request. Report on a reply 19629f5f, a block stops writing c845f2f8, no count on the wall b53fa976."
+  },
+  {
+   "id": "c-plate-books-covers",
+   "section": "Listening",
+   "kind": "idea",
+   "title": "A read-aloud cover of its own for each of the eighteen books on the plate: its author, or a person or scene of the book, shown on no other book",
+   "from": "edgar",
+   "asked": "2026-11-09",
+   "status": "approved",
+   "decided": "2026-11-10",
+   "needsDesign": false,
+   "version": null,
+   "outcome": null,
+   "note": "His 86 (BRAINSTORM.md, late 2026-11-09), with 98 (1 and 2 Chronicles take David and Solomon; Zechariah and Jude held until checked) and 99 (CC BY and CC BY-SA allowed, each photographer named on a credits page) in his \"ok to all\" of 2026-11-10; the icons Updates' to choose by those rules. Built 2026-11-10 (b917d9ce): 1 and 2 Chronicles, David and Solomon from the dome at Lagoudera (1192), a pair, CC0 (Dumbarton Oaks); the covers test holds a person of the book to the book's own words and each of the eighteen to a picture no other book shows. The other 16 in research."
   }
  ]
 }
