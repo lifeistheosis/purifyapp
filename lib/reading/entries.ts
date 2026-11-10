@@ -30,6 +30,16 @@ import type { EraId, FormId, PartKind, SeasonId, ThemeId, TraditionId } from "./
  * virtues, daily life): always the Fathers' own words, never a retelling.
  * `part` names that part on the row ("Book 8").
  *
+ * From 1.9 the passions and the virtues open on several Fathers, not St John
+ * Cassian alone (his yes to call 15, 2026-11-10): St John Chrysostom for
+ * gluttony and anger (Homilies 13 and 16 on Matthew) and for vainglory (On
+ * the Priesthood), St Polycarp for avarice, Abba Arsenius's own sayings for
+ * humility (the arbiter's word under that yes), Theodoret's account of St
+ * Theodosius's penance for repentance, St Isaac the Syrian for watchfulness.
+ * The three picks that were our retellings (St Mary of Egypt, St Seraphim,
+ * Abba Pimen) could not open a row, so lust, despondency and the rest keep
+ * Cassian, the classic.
+ *
  * REVIEW. Every entry is `review: "pending-clergy"`: written as canonically
  * as we can, and waiting for a future clergy review (the owner, 2026-10-16:
  * there is no priest reviewing yet; nothing waits on one). The texts
@@ -325,7 +335,10 @@ export const ENTRIES: Readonly<Record<WorkKey, ReadingEntry>> = {
     form: "treatise",
     scope: "complete",
     themes: [
-      t("vainglory", "Books 3 and 5: the love of glory that besets the priest and the preacher", { sections: [[3, 3], [5, 5]] }),
+      t("vainglory", "Books 3 and 5: the love of glory that besets the priest and the preacher", {
+        sections: [[3, 3], [5, 5]],
+        best: true,
+      }),
     ],
     featured: {},
     review: R,
@@ -335,6 +348,16 @@ export const ENTRIES: Readonly<Record<WorkKey, ReadingEntry>> = {
     form: "homilies",
     scope: "complete",
     themes: [
+      t("gluttony", "Homily 13 on Matthew 4:1 to 11: the fast and the first temptation; Adam cast out of paradise by the incontinence of the belly, and the devil begins with the necessity of the belly", {
+        sections: [[13, 13]],
+        best: true,
+        part: { kind: "homily", from: 13 },
+      }),
+      t("anger", "Homily 16 on Matthew 5:17 to 26: whosoever is angry with his brother without a cause", {
+        sections: [[16, 16]],
+        best: true,
+        part: { kind: "homily", from: 16 },
+      }),
       t("almsgiving", "Homily 50: honour Christ's body by not neglecting him naked and hungry in the poor", {
         sections: [[50, 50]],
         best: true,
@@ -796,6 +819,7 @@ export const ENTRIES: Readonly<Record<WorkKey, ReadingEntry>> = {
     themes: [
       t("avarice", "Chapters 4 and 11: the love of money is the beginning of all troubles; the presbyter Valens", {
         sections: [[5, 5], [12, 12]],
+        best: true,
       }),
       t("patience", "Chapters 8 and 9: persevere in hope; imitate the patience of Christ and the martyrs", { sections: [[9, 10]] }),
     ],
@@ -829,7 +853,7 @@ export const ENTRIES: Readonly<Record<WorkKey, ReadingEntry>> = {
     about: "theodosius-the-great",
     form: "life",
     scope: "selections",
-    themes: [t("repentance", "The emperor's public penance at Milan after Thessalonica, as Theodoret tells it")],
+    themes: [t("repentance", "The emperor's public penance at Milan after Thessalonica, as Theodoret tells it", { best: true })],
     review: R,
   },
   "meletius-of-antioch/the-confessor-and-the-funeral": { by: null, about: "meletius-of-antioch", form: "life", scope: "selections", themes: [], review: R },
@@ -893,7 +917,12 @@ export const ENTRIES: Readonly<Record<WorkKey, ReadingEntry>> = {
     by: "isaac-the-syrian",
     form: "homilies",
     scope: "selections",
-    themes: [t("watchfulness", "Homily I: the mind held to meditation on the things to come, away from the world's distractions")],
+    themes: [
+      t("watchfulness", "Homily I: the mind held to meditation on the things to come, away from the world's distractions", {
+        sections: [[1, 1]],
+        best: true,
+      }),
+    ],
     featured: {},
     review: R,
   },
@@ -922,7 +951,7 @@ export const ENTRIES: Readonly<Record<WorkKey, ReadingEntry>> = {
     scope: "selections",
     themes: [
       t("watchfulness", "Vigil all night, one hour's sleep, Get thee gone, O wicked handmaiden", { sections: [[4, 4]] }),
-      t("humility", "The figs, the villager's alphabet, the two old men and obedience", { sections: [[6, 6]] }),
+      t("humility", "The figs, the villager's alphabet, the two old men and obedience", { sections: [[6, 6]], best: true }),
       t("work", "Palm leaves twisted into ropes until the sixth hour", { sections: [[5, 5]] }),
       t("death", "Blessed art thou, for thou didst weep over thyself; no commemoration but the Offering", { sections: [[8, 8]] }),
     ],
@@ -939,19 +968,18 @@ export const ENTRIES: Readonly<Record<WorkKey, ReadingEntry>> = {
       t("prayer", "Books 2 and 3: the canonical prayers and psalms of the night and the day", { sections: [[12, 41]] }),
       t("humility", "Book 4: the renunciant's obedience and humility, and the ten signs of humility", {
         sections: [[42, 84]],
-        best: true,
         part: { kind: "book", from: 4 },
       }),
       t("temptation", "Book 4, chapters 37 and 38: the devil lies in wait; the renunciant's preparation against temptation", {
         sections: [[78, 79]],
       }),
-      t("gluttony", "Book 5: the spirit of gluttony", { sections: [[85, 125]], best: true, part: { kind: "book", from: 5 } }),
-      t("avarice", "Book 7: the spirit of covetousness", { sections: [[126, 156]], best: true, part: { kind: "book", from: 7 } }),
-      t("anger", "Book 8: the spirit of anger", { sections: [[157, 178]], best: true, part: { kind: "book", from: 8 } }),
+      t("gluttony", "Book 5: the spirit of gluttony", { sections: [[85, 125]], part: { kind: "book", from: 5 } }),
+      t("avarice", "Book 7: the spirit of covetousness", { sections: [[126, 156]], part: { kind: "book", from: 7 } }),
+      t("anger", "Book 8: the spirit of anger", { sections: [[157, 178]], part: { kind: "book", from: 8 } }),
       t("sorrow", "Book 9: the spirit of dejection", { sections: [[179, 191]], best: true, part: { kind: "book", from: 9 } }),
       t("acedia", "Book 10: the spirit of accidie", { sections: [[192, 216]], best: true, part: { kind: "book", from: 10 } }),
       t("work", "Book 10, chapters 7 to 24: the labour of the hands against idleness", { sections: [[198, 215]] }),
-      t("vainglory", "Book 11: the spirit of vainglory", { sections: [[217, 235]], best: true, part: { kind: "book", from: 11 } }),
+      t("vainglory", "Book 11: the spirit of vainglory", { sections: [[217, 235]], part: { kind: "book", from: 11 } }),
       t("pride", "Book 12: the spirit of pride", { sections: [[236, 268]], best: true, part: { kind: "book", from: 12 } }),
       t("lent", "Book 5: fasting and the measure of food", { sections: [[85, 125]], part: { kind: "book", from: 5 } }),
     ],
@@ -965,7 +993,6 @@ export const ENTRIES: Readonly<Record<WorkKey, ReadingEntry>> = {
     themes: [
       t("watchfulness", "Conferences 1 and 2: Abba Moses on the heart's aim, the discerning of thoughts, and discretion", {
         sections: [[1, 49]],
-        best: true,
         part: { kind: "conference", from: 1, to: 2 },
       }),
       t("temptation", "Conference 4, Abba Daniel on the flesh and the spirit; Conference 7, Abba Serenus on the wandering mind and the spirits of wickedness", {
@@ -998,7 +1025,6 @@ export const ENTRIES: Readonly<Record<WorkKey, ReadingEntry>> = {
       }),
       t("repentance", "Conference 20: Abba Pinufius on the end of penitence and the marks of satisfaction", {
         sections: [[398, 409]],
-        best: true,
         part: { kind: "conference", from: 20 },
       }),
       t("pascha", "Conference 21, chapters 19 to 23: why the fast is not kept through the fifty days", {

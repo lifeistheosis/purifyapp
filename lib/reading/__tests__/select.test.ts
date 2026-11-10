@@ -71,10 +71,14 @@ describe("the rows", () => {
         expect(p.minutes).toBeGreaterThan(0);
       }
     }
-    // Anger: Cassian's Institutes, Book 8, from its first chapter.
+    // Anger: St John Chrysostom's Homily 16 on Matthew, on "whosoever is angry with his brother without a
+    // cause" (1.9, his yes to call 15: the passions on several Fathers, not Cassian alone).
     const anger = themeRow(room, "passions").find((p) => p.theme === "anger")!;
-    expect(anger.href).toBe("/saints/john-cassian/institutes#s157");
-    expect(anger.part).toEqual({ kind: "book", from: 8 });
+    expect(anger.href).toBe("/saints/john-chrysostom/homilies-on-matthew#s16");
+    expect(anger.part).toEqual({ kind: "homily", from: 16 });
+    // Humility: Abba Arsenius in his own sayings, not a retelling (the arbiter's word under that yes).
+    const humility = themeRow(room, "virtues").find((p) => p.theme === "humility")!;
+    expect(humility.key).toBe("arsenius-the-great/sayings-of-abba-arsenius");
   });
 
   it("have a row for each tradition with four works or more, and none for an empty one", () => {
