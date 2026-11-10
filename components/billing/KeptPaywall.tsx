@@ -217,11 +217,16 @@ export function FeatureRow({
         {onTry ? (
           // The whole row is the button's (its ::after covers the row), and
           // it is named with the feature, so "Try it" is never said alone.
+          // The mock checker measures a control by its own box, 20px tall
+          // here, and cannot see a reach drawn by ::after: the allowance
+          // tells it, with the reason (scripts/mock-check.mjs, "target").
           <button
             type="button"
             onClick={onTry}
             aria-describedby={nameId}
             data-plus-try-open={id}
+            data-mock-allow="target"
+            data-mock-why="the whole row is this button's: its ::after covers the row, which is taller than 44px"
             className="mt-1.5 inline-flex cursor-pointer items-center gap-0.5 font-sans text-[13px] font-semibold text-paper after:absolute after:inset-0 after:rounded-[18px] after:content-[''] focus-visible:outline-none focus-visible:after:ring-2 focus-visible:after:ring-paper/70"
           >
             {t("plus.try.open")}

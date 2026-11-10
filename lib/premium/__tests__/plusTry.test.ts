@@ -111,6 +111,8 @@ describe("the Plus page's rows", () => {
     expect(kept).toContain('{t("plus.try.open")}');
     expect(kept).toContain("aria-describedby={nameId}");
     expect(kept).toContain("after:absolute after:inset-0");
+    // And it says so to the mock checker, which measures a button by its own box.
+    expect(kept).toMatch(/data-plus-try-open=\{id\}\s*data-mock-allow="target"\s*data-mock-why="the whole row is this button's/);
     expect(kept).toContain("onTry={onTry ? () => onTry(row.id) : undefined}");
   });
 
