@@ -3,8 +3,10 @@
 // so the locales cannot drift apart and the ladder cannot silently lose
 // or regain a perk (free shipping famously moved from Plus to Pro).
 
+import { readFileSync } from "node:fs";
 import { describe, it, expect } from "vitest";
 import { campaignsEnabled } from "@/lib/campaigns/flags";
+import { READING_THEMES, THEME_FAMILIES, isCollectionTheme, isFreeTheme, isLook } from "@/lib/reader/readingModes";
 import {
   PREMIUM_PLAN_EN,
   PREMIUM_PLAN_DE,
@@ -82,6 +84,53 @@ describe("the restructured ladder", () => {
       // "black and light grey" and is paid, so the bare word is not the
       // test: the palette's name is.
       expect(sub).not.toContain("true black");
+    }
+  });
+
+  it("the words count the reading modes Plus opens, and the registry agrees (1.9)", () => {
+    // The owner's word, 2026-11-10 ("all recs"): the sheet a reader without
+    // Plus meets and the plan's row now say how many reading modes are Plus,
+    // and name two of them. A number in words is true only while the
+    // registry holds that many, so it is read here. If this fails because a
+    // look was added or dropped, the three lines say what Plus includes, and
+    // changing them waits for his word.
+    const plus = READING_THEMES.filter((t) => !isFreeTheme(t.id) && !isCollectionTheme(t.id));
+    const looks = plus.filter((t) => isLook(t.id));
+    const WORDS: Record<number, [string, string]> = { 4: ["four", "vier"], 18: ["eighteen", "achtzehn"], 20: ["twenty", "zwanzig"] };
+    const word = (n: number, de = false) => WORDS[n]?.[de ? 1 : 0] ?? `no word for ${n}`;
+    const capital = (w: string) => w[0].toUpperCase() + w.slice(1);
+    const names = plus.map((t) => t.label);
+
+    // The two that are not looks are the two the app had before them.
+    expect(plus.filter((t) => !isLook(t.id)).map((t) => t.label)).toEqual(["Candlelight", "Monastery"]);
+    // Every one of them stands in a family, so "in four families" is all of them.
+    expect(new Set(plus.map((t) => t.family))).toEqual(new Set(THEME_FAMILIES.map((f) => f.id)));
+
+    const en = JSON.parse(readFileSync("lib/i18n/messages/en.json", "utf8")) as Record<string, string>;
+    expect(en["plus.palettes.title"]).toBe(`${capital(word(plus.length))} reading modes are part of Purify Plus`);
+    expect(en["plus.palettes.body"]).toBe(
+      `Candlelight, Monastery and ${word(looks.length)} looks in ${word(THEME_FAMILIES.length)} families, each one calm page with a sign of its own, built for long hours in the Scriptures and the Fathers.`,
+    );
+
+    // The row's own short name (Your plan, the paywall's list, a preview's head): the
+    // title's first words, on the arbiter's word the same morning ("the same approved
+    // words in its own short form").
+    expect(en["plus.active.modes"]).toBe(`${capital(word(plus.length))} reading modes`);
+    expect(en["plus.palettes.title"].startsWith(en["plus.active.modes"])).toBe(true);
+
+    const row = (plan: typeof PREMIUM_PLAN_EN) => plan.plusItems.find((i) => i.id === "reading-modes")?.sub ?? "";
+    expect(row(PREMIUM_PLAN_EN)).toBe(
+      `${capital(word(plus.length))} reading modes, from Candlelight to the Holy Mountain, in the Scriptures and the writings of the Fathers`,
+    );
+    expect(row(PREMIUM_PLAN_DE)).toBe(
+      `${capital(word(plus.length, true))} Lesemodi, von Kerzenlicht bis zum Heiligen Berg, in den Schriften und den Werken der V\u00e4ter`,
+    );
+    // The two it names are Plus reading modes, by the names the picker shows.
+    expect(names).toContain("Candlelight");
+    expect(names).toContain("Holy Mountain");
+    // No em dash in words a reader sees.
+    for (const line of [en["plus.palettes.title"], en["plus.palettes.body"], en["plus.active.modes"], row(PREMIUM_PLAN_EN), row(PREMIUM_PLAN_DE)]) {
+      expect(line).not.toContain("\u2014");
     }
   });
 

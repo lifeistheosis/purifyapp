@@ -13,7 +13,8 @@ are at https://claude.ai/artifact/ALDy4Fz1XPGyHfQ7vcVZwD.
 this and let's get going"). What is in the app, how it differs from what was
 drawn, what was measured and what still waits for him are at "Built", the
 last part of this file (sections 19 to 26). The same page now shows the real
-build. Candlelight through the Church's year, built after them, is section 27.
+build. Candlelight through the Church's year, built after them, is section 27,
+and the words about Plus, as he approved them, section 28.
 
 His words, the same day: "I also want you to cook up better themes ... I don't
 like the themes we have now, except that light mode, parchment, and the dark
@@ -2420,6 +2421,8 @@ Until he says, a reader without Plus who taps a look meets the sheet as it
 is today, which names Candlelight and Monastery and not the look they
 tapped. It says nothing untrue; it says less than it could.
 
+He said yes the same morning, and the lines are in: section 28.
+
 Also his:
 
 - **Fire's flames.** They keep a flame's own colours, in the picture at the
@@ -2676,3 +2679,90 @@ Vespers and this switch are independent: one says when Candlelight is worn,
 the other what its light is. The two lines of words are in 21 languages,
 with each language's own names for the three fasts taken from its catalog,
 written by the chat and not read by a reader of each.
+
+## 28. The words about Plus, as he approved them
+
+His word, 2026-11-10, about 08:25 UTC, in `docs/1.9-build/BRAINSTORM.md`:
+"all recs". The arbiter gave it to this chat as yes to the three lines of
+section 23 as drafted, and yes to the six questions as recommended (Fire's
+flames keep a flame's colours; the foot; Candlelight and Monastery kept; all
+18 looks; the new words; the earned two on the picker's last shelf). None of
+the six changes what is built. The arbiter added the row's own short name
+the same morning ("the same approved words in its own short form"), so four
+lines changed, in one commit:
+
+| Where a reader meets it | Key or file | Now |
+| --- | --- | --- |
+| The sheet a reader without Plus meets: the lit row's title | `plus.palettes.title` | Twenty reading modes are part of Purify Plus |
+| The same row's body, and the row's line in Your plan | `plus.palettes.body` | Candlelight, Monastery and eighteen looks in four families, each one calm page with a sign of its own, built for long hours in the Scriptures and the Fathers. |
+| The row's short name: Your plan, the paywall's list, a preview's head, "Purify Plus is active" | `plus.active.modes` | Twenty reading modes |
+| The plan's page, the Reading modes row | `lib/premium/plans.ts`, English | Twenty reading modes, from Candlelight to the Holy Mountain, in the Scriptures and the writings of the Fathers |
+| The same row in German | `lib/premium/plans.ts`, German | Zwanzig Lesemodi, von Kerzenlicht bis zum Heiligen Berg, in den Schriften und den Werken der Väter |
+
+**The count is held to the registry.** Twenty is Candlelight, Monastery and
+the eighteen looks. The two palettes earned by reading are not in it: Plus
+alone does not open them. `lib/premium/__tests__/plans.test.ts` counts the
+registry and fails the day a look is added or dropped, and says why the
+words then wait: they say what Plus includes, which is his to say.
+
+**The other languages.** The three catalog keys changed in English only.
+The other twenty catalogs keep their old words until the Updates 2 chat
+translates them in its pass on the palettes' names (the arbiter's routing;
+the keys went to that chat). Until then a reader in those languages sees the
+sheet name Candlelight and Monastery, which is less than is true and
+nothing untrue. The plan's page has only English and German, and both are
+in. The German row is drawn by the website alone, by the reader's language
+on the server, so it was not seen on the export: the unit test holds it
+letter for letter.
+
+**Not touched.** The admin's own label for this lock
+(`lib/analytics/lockCounting.ts`, "Candlelight and Monastery") is the
+Admin chat's, and is told to the arbiter. The try screen under the row
+still shows Candlelight with Dark and Monastery beside it: a preview, not a
+count.
+
+**Measured**, on an export built with the gate on for both stores, as a
+reader without Plus (2026-11-10):
+
+- A tap on a look opens the sheet, and its lit row has the new title on two
+  lines and the new body on four, both whole, with "Dark, Light and True
+  black stay free, always." under them. None of the old words is left on
+  the sheet.
+- The preview's head says "Twenty reading modes", on one line.
+- The plan's page has the new Reading modes row, whole, on three lines. The
+  app's checker passes on the Plus card and on the row.
+- The earlier walk of a reader without Plus passes again: a stored look is
+  put down, each family says Plus once, a tap changes nothing, Light still
+  applies.
+- Typecheck 0, the unit suite 862 files and 10,554 tests, lint 0 errors,
+  and the Android export clean with the gate on. The export and lint were
+  run before the last rebase, which brought three other chats' commits
+  under this one; typecheck and the unit suite were run again after it.
+
+**Not seen.** Your plan draws the rows by their short names only for a
+subscriber, whose plan it reads from the account, so a walk with no account
+cannot reach it; the two keys it draws are the ones seen on the sheet and
+at the preview's head. The German row is the website's. The iOS export and
+the website build were not run for four lines of words.
+
+**Seen on the way, the sheet's own and older than these words.** The app's
+checker does not pass on the whole sheet, so no still of the sheet was
+sent:
+
+- Three names in the sheet's list of supporters are 4.45:1 on Light; the
+  floor is 4.5:1.
+- The Terms and Privacy links at the sheet's foot are 34 and 41px wide (47
+  tall); the floor is 44 by 44.
+- The checker counts each row's Try it as 48 by 20px. That one is the
+  checker's misreading: the button's `::after` covers the whole row (348 by
+  190px on the lit row), and a tap in the row's corner lands on the button.
+  Either the checker learns that shape or the button says so by name.
+- On the plan's page, the Pro card's note "The EIKON Box is claimed, not
+  sent automatically" is 2.31:1 to 3.82:1 across the palettes.
+
+All four went to the arbiter.
+
+**A thought, not built.** The preview under the row is headed "Twenty
+reading modes" and lets a reader try three palettes: Dark, Candlelight and
+Monastery. It promises nothing false, and it would show the looks better
+with one of them in it.

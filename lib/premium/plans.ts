@@ -35,6 +35,15 @@
 // to carry (lib/reader/readingModes.ts FREE_THEMES), and it named Focus,
 // which nothing gates anywhere in the codebase. What is listed here has to
 // be something a reader actually cannot have without paying.
+//
+// From 1.9 the row counts them: twenty, which is Candlelight, Monastery and
+// the eighteen looks in their four families (the owner's word, 2026-11-10,
+// "all recs", on the three lines drafted for him; the other two are the
+// sheet's title and body, plus.palettes.title and plus.palettes.body, and
+// the row's short name, plus.active.modes, is the title's first words). A
+// number in words goes stale the day a look is added or dropped, so
+// lib/premium/__tests__/plans.test.ts reads it against the registry. The two
+// palettes earned by reading are not in the count.
 
 // Numeric plan prices in cents, the single source for any MATH (the
 // localized copy strings below cannot be parsed). Used by the admin
@@ -148,7 +157,7 @@ export const PREMIUM_PLAN_EN: PremiumPlanCopy = {
     {
       id: "reading-modes",
       title: "Reading modes",
-      sub: "Candlelight and Monastery reading, in the Scriptures and the writings of the Fathers",
+      sub: "Twenty reading modes, from Candlelight to the Holy Mountain, in the Scriptures and the writings of the Fathers",
     },
     {
       id: "florilegium",
@@ -269,7 +278,7 @@ export const PREMIUM_PLAN_DE: PremiumPlanCopy = {
     {
       id: "reading-modes",
       title: "Lesemodi",
-      sub: "Kerzenlicht und Kloster, in den Schriften und den Werken der Väter",
+      sub: "Zwanzig Lesemodi, von Kerzenlicht bis zum Heiligen Berg, in den Schriften und den Werken der Väter",
     },
     {
       id: "florilegium",
