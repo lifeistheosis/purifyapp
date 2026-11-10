@@ -22,22 +22,55 @@ waits until the arbiter says go.
 
 ## Now: move to the company
 
-You start tonight. Four rules for this whole section:
+**The paperwork now, the stores after 1.9 is live** (the arbiter's
+recommendation, for your word). C0 and C0b are paperwork: start them now.
+C1 and C2 move the store accounts themselves: each waits until 1.9 is live
+in that store, then C3 to C5 follow. Apple's and Google's own pages were
+read on 2026-11-10 for these steps.
+
+Four rules for this whole section:
 
 - **Numbers stay out of chats and files.** Never post the EIN, the D-U-N-S
   number, an address or a phone number in a chat or in this repository. They
   go only into the vendors' own forms.
-- **If a switch is still going on release day, the store upload may have to
-  wait.** Google asks you to wait at least 72 hours after its change before
-  submitting a new app, and Apple's change can take days. Tell the arbiter
-  where each one stands before R4 and R5.
+- **Never during a release.** Apple: once the change is asked for,
+  developers on Apple's forums report that the account's membership is
+  paused while Apple works on it (no new builds, no TestFlight, no updates),
+  for anything from a day to months; Apple's own pages say nothing either
+  way. So C1 starts only once 1.9 is live on the App Store. Google: its
+  pages block no update to an app that is already on Play, and its 72-hour
+  wait after the change is for new apps only. C2 still waits until 1.9 is
+  live on Play, so that a request for documents cannot land in release week.
 - **The company's name exactly as the IRS and D&B have it.** No "DBA", no
   trade name. Send the arbiter the exact form from the EIN letter (a comma
   before LLC, or not): the website's pages take it from one line.
-- Where a step says **(from Google's page; not opened directly)**, it comes
-  from Google's or D&B's own help page as search results showed it, because
-  those pages could not be opened from here. If the screen differs, stop and
-  tell the arbiter.
+- Where a step says **(from D&B's page; not opened directly)** or **(from
+  Google's page; not opened directly)**, it comes from a help page as search
+  results showed it, because that page could not be opened from here. If the
+  screen differs, stop and tell the arbiter.
+
+**What the change moves, and what it does not.** Both stores change the
+account in place (C1, C2), so the app, its account and its keys stay where
+they are. Apple's and Google's pages say little outright about an in-place
+change; this is what follows from what they do say.
+
+- **Readers, installs, ratings and reviews:** stay. It is the same app in
+  the same account. Apple keeps the Team ID (Apple's developer support, on
+  Apple's forum); Google keeps the account, whose ID only a transfer
+  changes.
+- **Subscriptions and subscribers:** stay with the app. Apple then asks for
+  a new Paid Apps Agreement in the company's name (C1, afterwards). Google:
+  ask Play support where payouts go (C2, step 5).
+- **RevenueCat:** nothing to link again is expected. Its Google key lives in
+  the Google Cloud project and in Play Console's users; Apple's in-app
+  purchase key and API key belong to the team, whose ID stays. Its
+  credential check confirms (C4).
+- **Sign-in:** Google sign-in on Android is registered in the Google Cloud
+  project with the fingerprint of the app's signing key, and neither
+  changes. Sign in with Apple belongs to the team, whose ID stays.
+- **Firebase and push:** a Firebase project is a Google Cloud project, apart
+  from the Play account, so push keeps working.
+- **What does change:** the seller name on both stores becomes the company.
 
 ### C0. FIRST: the address on the D-U-N-S record
 
@@ -77,37 +110,70 @@ The same corrected business address goes into `EMAIL_POSTAL_ADDRESS` (the
 
 Send back: "C0 asked" when sent, "C0 done" when Apple's lookup shows it.
 
-### C1. Apple: from Individual to Organization
+### C0b. The papers, ready before C1 and C2 (anytime now)
 
-Before you start: C0 done; you are the Account Holder; you are the company's
-founder with the authority to bind it; the company has a website on its own
-domain (purifyapp.net) and you have a work email on that domain.
+Apple's and Google's pages ask for these. Gather them now, so neither switch
+waits on paper:
+
+1. The LLC's registration papers, with the name exactly as on the D&B
+   record. Google asks that the two names match; Apple may ask for papers
+   and sometimes wants them notarized.
+2. The EIN letter.
+3. The company's bank account (C3 needs it for both stores and Stripe).
+4. purifyapp.net in Google Search Console under your Google account
+   (search.google.com/search-console, **Add property**, the domain, then the
+   DNS check it shows). C2's first step needs it, and it changes nothing on
+   the website.
+5. A work email on purifyapp.net that you read (Apple asks for one on the
+   company's domain): support@purifyapp.net reaches you in Admin,
+   **Messages**.
+6. Your Apple membership's renewal date (developer.apple.com, **Membership
+   details**). Apple refuses a change while a renewal is under way, so C1
+   must not fall in that window.
+
+Send back: "C0b done", or which paper is missing.
+
+### C1. Apple: from Individual to Organization (after 1.9 is live on the App Store)
+
+Before you start: 1.9 approved and live on the App Store; C0 and C0b done;
+your membership not in its renewal window; you are the Account Holder and
+the company's founder, with the authority to bind it.
+
+Apple's page: developer.apple.com/help/account/membership/updating-your-account-information,
+"Updating an individual membership to an organization membership".
 
 1. developer.apple.com, sign in as the Account Holder.
-2. Open developer.apple.com/contact/request/migrate-individual-account
-   (Apple's request to change an individual membership to an organization).
+2. Open that page and click **submit a request** (it opens
+   developer.apple.com/contact/request/migrate-individual-account).
 3. Give the company's legal name exactly as on the D-U-N-S record, the
-   D-U-N-S number, the website, and your work email. Confirm you can bind
-   the company.
-4. In the same request, ask Apple: does the Team ID stay the same, and is
-   anything about the app's installs or keys changed? (Apple's pages do not
-   say.)
-5. Submit. Apple may email or call, and may ask for business documents,
-   sometimes notarized.
-6. Wait. The developer site shows the migration as in progress.
+   D-U-N-S number, the website (purifyapp.net) and your work email on that
+   domain. Confirm you can bind the company.
+4. Submit. Apple may email or call, and may ask for business documents,
+   sometimes notarized (C0b).
+5. Wait. While Apple works on it, plan on no iPhone build, TestFlight upload
+   or update (developers' reports; Apple's pages give no time).
+6. When it is done: App Store Connect, **Business**. If the **Paid Apps**
+   agreement shows **Pending (New Legal Entity)** or **Pending (Update Legal
+   Entity)**, sign it and add the company's tax form and bank account at
+   once (C3). Until it is active, Apple takes no update to a paid app or its
+   in-app purchases (Apple's page).
 
-Do not start it just before an iPhone build you need: ship urgent builds
-first (others report the change taking from a day to months).
+Apple's developer support said on Apple's forum, a week ago, that the Team
+ID stays the same and readers are not affected.
 
-Done: **Membership details** says Organization, with the company's name. On
-the App Store the seller becomes the company.
+Done: **Membership details** says Organization, with the company's name;
+the Paid Apps agreement is active. On the App Store the seller becomes the
+company.
 
 Send back: "C1 asked", then "C1 done".
 
-### C2. Google Play: from Personal to Organization (in place)
+### C2. Google Play: from Personal to Organization, in place (after 1.9 is live on Play)
 
-From Google's page (not opened directly), Play Console can change the account
-in place. Before you start: C0 done.
+Google's page: support.google.com/googleplay/android-developer/answer/16260648,
+"Convert a personal developer account to an organization account". Before
+you start: 1.9 live on Play; C0 and C0b done; your account fully verified,
+with no verification warning pending (Google's condition). The change is
+one way: an organization account cannot go back to personal.
 
 1. play.google.com/console, **Developer account**, **About you**.
 2. **Website**: enter purifyapp.net and save. Click **Send verification
@@ -117,18 +183,29 @@ in place. Before you start: C0 done.
    pending, click **Change account type**.
 4. Select or create an **organization payments profile**: the company's
    legal name, the D-U-N-S number, organization type, size and a business
-   phone. Google may ask for documents. (A personal payments profile cannot
-   become an organization one: this is a new profile.)
-5. Click **Link your payments profile to your developer account**, then
+   phone. Google may ask for documents, and answers by email. (A personal
+   payments profile cannot become an organization one: this is a new
+   profile.)
+5. Before you link it: Play Console, **Help**, contact Play support, and
+   ask: "After I change my account type, are my app's subscription payouts
+   paid to the new organization payments profile?" Google's pages say a
+   linked profile can never be unlinked, and that the profile used to check
+   who you are may not be the one that is paid. Send the arbiter the answer.
+6. Click **Link your payments profile to your developer account**, then
    **Confirm and save**.
-6. Watch the status on **Account details**.
+7. Watch the status on **Account details**.
 
 After it completes, Google asks you to wait at least 72 hours before
-submitting any new app.
+submitting any new app. That wait is not for updates to Purify (Google's
+page).
 
 If Play Console shows no **Change account type**: stop and tell the arbiter.
-The other way is a new organization account and an app transfer, which also
-needs RevenueCat re-linked (C4); do not start that alone.
+The other way is a new organization account ($25) and an app transfer.
+Google moves the readers, ratings, reviews, statistics and subscriptions
+with the app, and the signing key continues; it does not move old orders,
+reports, promotions or test groups, and the Firebase link, the Google Cloud
+project's owner and RevenueCat's access all have to be set again (C4). Do
+not start that alone.
 
 Done: **About you** says Organization; **Account details** shows the new
 payments profile linked.
@@ -136,6 +213,9 @@ payments profile linked.
 Send back: "C2 done".
 
 ### C3. Payouts, tax and Stripe
+
+Steps 1 and 2 follow C1 and C2. Stripe's, 3 to 5, can be done any time
+outside release week: Stripe may check the account again.
 
 1. Apple: App Store Connect, **Business** (agreements, tax and banking). On
    the **Paid Apps** agreement: the company's tax form (W-9) with the EIN and
@@ -166,9 +246,11 @@ Send back: "C3 done" (and "Stripe asked to verify again" if it did).
    Store app, and run each one's credential check. RevenueCat's pages do not
    cover an in-place change; nothing should need re-linking, and the check
    says if something does.
-2. Only if Google went the transfer way (C2's fallback): RevenueCat needs a
-   new service account key from the new account and the notifications
-   (Pub/Sub topic) set up again there. The arbiter writes those steps.
+2. Only if Google went the transfer way (C2's fallback): RevenueCat's
+   service account is invited again in the new account's **Users and
+   permissions**, the Google Cloud project gains the new account as an
+   owner, the Firebase link moves, and the notifications (Pub/Sub topic) are
+   checked. The arbiter writes those steps.
 3. Render, Supabase and GitHub: only if one of those accounts moves to the
    company. Then: the site still deploys (Render, **Events**), Services in
    Admin shows the heartbeat green, and the GitHub builds still run.
