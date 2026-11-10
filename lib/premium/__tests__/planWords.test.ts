@@ -100,6 +100,34 @@ describe("the Plus page and Your plan, from the catalogs", () => {
     }
   });
 
+  it("every line of the two screens is in all twenty-one languages, with every plural form each has", () => {
+    // Landed 2026-11-10, the eight lines that forced a choice of meaning on
+    // the arbiter's calls. A line added in English later, and not in the
+    // other twenty, would show its English: this says so here.
+    const dir = path.join(ROOT, "lib/i18n/messages");
+    const codes = fs.readdirSync(dir).filter((f) => f.endsWith(".json")).map((f) => f.slice(0, -5));
+    expect(codes).toHaveLength(21);
+    const en = CATALOGS.en;
+    const lines = Object.keys(en).filter((k) => (k.startsWith("premium.") || k.startsWith("yourPlan.")) && !k.startsWith("premium.plusTrial."));
+    const missing: string[] = [];
+    for (const code of codes) {
+      const c = catalog(code);
+      for (const k of lines) if (c[k] === undefined) missing.push(`${code}: ${k}`);
+      for (const form of new Intl.PluralRules(code).resolvedOptions().pluralCategories) {
+        if (c[`premium.plusTrial.${form}`] === undefined) missing.push(`${code}: premium.plusTrial.${form}`);
+      }
+    }
+    expect(missing).toEqual([]);
+  });
+
+  it("every language counts the reading modes with the word its own catalog uses", () => {
+    for (const code of fs.readdirSync(path.join(ROOT, "lib/i18n/messages")).map((f) => f.slice(0, -5))) {
+      const c = catalog(code);
+      const word = c["plus.active.modes"].split(/\s+/)[0].toLowerCase();
+      expect(c["premium.plus.readingModes.sub"].toLowerCase(), code).toContain(word);
+    }
+  });
+
   it("every key the two screens ask for is in the English catalog", () => {
     const en = CATALOGS.en;
     const asked = new Set<string>([

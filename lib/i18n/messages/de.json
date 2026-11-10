@@ -4103,6 +4103,8 @@
   "plus.screen.restoreError": "Ein früheres Abo konnte nicht gesucht werden. Bitte versuch es noch einmal.",
   "plus.web.getOnPlay": "{tier} bei Google Play holen",
   "plus.promise.supporters": "Ein gegebenes Versprechen bleibt bestehen: Unterstützer aus der Zeit vor dem Start behalten die geräteübergreifende Synchronisierung auf Lebenszeit, ohne Abonnement. Dieses Versprechen gilt der Synchronisierung selbst; die weiteren Plus-Werkzeuge gehören zum Abonnement.",
+  "yourPlan.lifetime": "Auf Lebenszeit",
+  "yourPlan.source.comp": "Kostenlos",
   "premium.owned.current": "Dein aktueller Plan",
   "premium.owned.includedWithPro": "In Purify Pro enthalten",
   "yourPlan.source.web": "Abrechnung im Web",
