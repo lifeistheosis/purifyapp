@@ -770,6 +770,8 @@
   "bible.night.hint": "Candlelight, czytanie w skupieniu, większy tekst i {sound}",
   "bible.vespers.title": "Candlelight na nieszpory",
   "bible.vespers.hint": "Włącza się sam o zachodzie słońca, gdy zaczyna się dzień Kościoła, i wyłącza rano",
+  "bible.season.title": "Candlelight podąża za rokiem cerkiewnym",
+  "bible.season.hint": "Jego łagodne światło przybiera barwę długich postów Cerkwi, fiolet lub głęboki błękit",
   "bible.moreActions": "Więcej działań",
   "bible.reader": "Czytnik",
   "bible.clearWordHighlights": "Usuń zaznaczenia słów",

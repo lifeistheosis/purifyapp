@@ -33,6 +33,7 @@ import { SkeletonText } from "@/components/ui/Skeleton";
 import type { DownloadableBible } from "@/lib/bible/downloads/catalog";
 import { verseAnchor } from "@/lib/bible/downloads/page";
 import type { BibleText } from "@/lib/bible/downloads/useShownBible";
+import { CandleVeil } from "@/components/reader/CandleVeil";
 import { cn } from "@/lib/cn";
 import { useReadingLine } from "@/lib/reader/useReadingLine";
 
@@ -85,7 +86,7 @@ export function DownloadedChapter({
       className={cn("text-paper/90", FONT_CLASSES[font], SIZE_CLASSES[size])}
       style={{ ...(leadingValue ? { lineHeight: leadingValue } : {}), ...(greek ? { fontFamily: "var(--font-greek), serif" } : {}) }}
     >
-      {candle ? <div aria-hidden className="candle-veil" /> : null}
+      {candle ? <CandleVeil /> : null}
       <div className={cn("page-open-words space-y-2", candle && "candle-reading")}>
         {page.sections.map((section) => (
           <Fragment key={section.chapter}>

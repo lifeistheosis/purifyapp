@@ -754,6 +754,8 @@
   "bible.night.hint": "Candlelight, Lesefokus, größere Schrift und {sound}",
   "bible.vespers.title": "Candlelight zur Vesper",
   "bible.vespers.hint": "Schaltet sich bei Sonnenuntergang ein, wenn der Tag der Kirche beginnt, und am Morgen aus",
+  "bible.season.title": "Candlelight folgt dem Kirchenjahr",
+  "bible.season.hint": "Sein sanftes Licht nimmt die Farbe der langen Fastenzeiten der Kirche an, Violett oder tiefes Blau",
   "bible.moreActions": "Weitere Aktionen",
   "bible.reader": "Leseansicht",
   "bible.clearWordHighlights": "Wortmarkierungen löschen",

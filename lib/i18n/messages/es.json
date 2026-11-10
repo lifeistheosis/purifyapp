@@ -756,6 +756,8 @@
   "bible.night.hint": "Candlelight, lectura concentrada, texto más grande y {sound}",
   "bible.vespers.title": "Candlelight en Vísperas",
   "bible.vespers.hint": "Se enciende solo al ponerse el sol, cuando empieza el día de la Iglesia, y se apaga por la mañana",
+  "bible.season.title": "Candlelight sigue el año de la Iglesia",
+  "bible.season.hint": "Su luz suave toma el color de los largos ayunos de la Iglesia, violeta o azul profundo",
   "bible.moreActions": "Más acciones",
   "bible.reader": "Lector",
   "bible.clearWordHighlights": "Borrar los resaltados de palabras",

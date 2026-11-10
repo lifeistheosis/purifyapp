@@ -752,6 +752,8 @@
   "bible.night.hint": "Candlelight, baca fokus, teks lebih besar, dan {sound}",
   "bible.vespers.title": "Candlelight saat Ibadat Senja",
   "bible.vespers.hint": "Menyala sendiri saat matahari terbenam, ketika hari Gereja dimulai, dan mati pada pagi hari",
+  "bible.season.title": "Candlelight mengikuti tahun Gereja",
+  "bible.season.hint": "Cahaya lembutnya mengambil warna masa puasa panjang Gereja, ungu atau biru tua",
   "bible.moreActions": "Tindakan lainnya",
   "bible.reader": "Pembaca",
   "bible.clearWordHighlights": "Hapus sorotan kata",

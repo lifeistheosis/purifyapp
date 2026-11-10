@@ -63,6 +63,7 @@ import { PlusMark } from "@/components/billing/PlusMark";
 import { LanguagePicker } from "@/components/i18n/LanguagePicker";
 import { useTranslate } from "@/components/i18n/MessagesProvider";
 import { FONT_CLASSES, ReaderPrefsProvider, useReaderPrefs, type ReaderFont } from "@/components/reader/ReaderPrefs";
+import { useCandleSeason } from "@/components/reader/CandleSeasonSwitch";
 import { useVespers } from "@/components/reader/VespersSwitch";
 import { Bell } from "@/components/ui/icons/Bell";
 import { Bolt } from "@/components/ui/icons/Bolt";
@@ -252,6 +253,29 @@ function VespersRow() {
       }
       description={t("bible.vespers.hint")}
       control={<Switch on={on} onChange={set} label={t("bible.vespers.title")} />}
+    />
+  );
+}
+
+/**
+ * Candlelight keeps the season (1.9): its soft light in the colour of the
+ * Church's long fasts. The same switch as under Candlelight at Vespers in
+ * the reader's settings (components/reader/CandleSeasonSwitch.tsx).
+ */
+function CandleSeasonRow() {
+  const { t } = useTranslate();
+  const { on, set, locked } = useCandleSeason();
+  return (
+    <Row
+      icon={<Calendar size={17} />}
+      label={
+        <span className="inline-flex items-center gap-2">
+          {t("bible.season.title")}
+          {locked ? <PlusMark /> : null}
+        </span>
+      }
+      description={t("bible.season.hint")}
+      control={<Switch on={on} onChange={set} label={t("bible.season.title")} />}
     />
   );
 }
@@ -589,6 +613,7 @@ function Body() {
           <ReadingModePages />
         </Row>
         <VespersRow />
+        <CandleSeasonRow />
         <Row icon={<FacesGlyph />} label={t("ui.readerFont")} description={t("settings.fontHint")}>
           <Track
             faces

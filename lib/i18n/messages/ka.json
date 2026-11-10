@@ -754,6 +754,8 @@
   "bible.night.hint": "Candlelight, ფოკუსირებული კითხვა, უფრო დიდი ტექსტი და {sound}",
   "bible.vespers.title": "Candlelight მწუხრზე",
   "bible.vespers.hint": "თავისით ირთვება მზის ჩასვლისას, როცა ეკლესიის დღე იწყება, და დილით ითიშება",
+  "bible.season.title": "Candlelight მიჰყვება საეკლესიო წელს",
+  "bible.season.hint": "მისი რბილი შუქი ეკლესიის ხანგრძლივი მარხვების ფერს იღებს, იისფერს ან მუქ ლურჯს",
   "bible.moreActions": "მეტი მოქმედება",
   "bible.reader": "მკითხველი",
   "bible.clearWordHighlights": "სიტყვების მონიშვნების გასუფთავება",

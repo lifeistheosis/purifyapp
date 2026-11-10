@@ -754,6 +754,8 @@
   "bible.night.hint": "Gyertyafény, fókuszált olvasás, nagyobb betű és {sound}",
   "bible.vespers.title": "Gyertyafény vecsernyekor",
   "bible.vespers.hint": "Napnyugtakor magától bekapcsol, amikor az Egyház napja kezdődik, és reggel kikapcsol",
+  "bible.season.title": "A Gyertyafény követi az egyházi évet",
+  "bible.season.hint": "Lágy fénye felveszi az Egyház hosszú böjtjeinek színét, lilát vagy mélykéket",
   "bible.moreActions": "További műveletek",
   "bible.reader": "Olvasó",
   "bible.clearWordHighlights": "Szókiemelések törlése",

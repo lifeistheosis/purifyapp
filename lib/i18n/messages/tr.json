@@ -754,6 +754,8 @@
   "bible.night.hint": "Candlelight, odaklı okuma, daha büyük yazı ve {sound}",
   "bible.vespers.title": "Akşam Ayininde Candlelight",
   "bible.vespers.hint": "Gün batımında, Kilise'nin günü başladığında kendiliğinden açılır ve sabah kapanır",
+  "bible.season.title": "Candlelight Kilise yılını izler",
+  "bible.season.hint": "Yumuşak ışığı Kilisenin uzun oruçlarının rengini alır, mor ya da koyu mavi",
   "bible.moreActions": "Diğer işlemler",
   "bible.reader": "Okuyucu",
   "bible.clearWordHighlights": "Kelime vurgularını temizle",

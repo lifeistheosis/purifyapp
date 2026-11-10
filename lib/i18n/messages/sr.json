@@ -761,6 +761,8 @@
   "bible.night.hint": "Candlelight, читање без ометања, већи текст и {sound}",
   "bible.vespers.title": "Candlelight на вечерњи",
   "bible.vespers.hint": "Сам се укључује у сутон, кад почиње дан Цркве, и искључује се ујутру",
+  "bible.season.title": "Candlelight прати црквену годину",
+  "bible.season.hint": "Његова блага светлост узима боју дугих постова Цркве, љубичасту или тамноплаву",
   "bible.moreActions": "Још радњи",
   "bible.reader": "Читач",
   "bible.clearWordHighlights": "Обриши означене речи",

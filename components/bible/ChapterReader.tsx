@@ -27,6 +27,7 @@ import {
   useReaderPrefs,
 } from "@/components/reader/ReaderPrefs";
 import { useReadingLine } from "@/lib/reader/useReadingLine";
+import { CandleVeil } from "@/components/reader/CandleVeil";
 import { cn } from "@/lib/cn";
 import { reportNowReading } from "@/lib/profile/client";
 import { useUndo } from "@/lib/ui/useUndo";
@@ -185,7 +186,7 @@ export function ChapterReader({
             Fathers comment, as every verse does: the title over it is the
             page's opening now, and the drop cap it had until 1.7 is not in
             the owner's pick (round 2, B). */}
-        {candle ? <div aria-hidden className="candle-veil" /> : null}
+        {candle ? <CandleVeil /> : null}
         <div className={cn("page-open-words", flowing ? "reading-paragraphs" : "space-y-2", candle && "candle-reading")}>
           {verses.map((v) => (
             <VerseRow

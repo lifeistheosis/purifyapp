@@ -754,6 +754,8 @@
   "bible.night.hint": "Candlelight, Focus, larger text and {sound}",
   "bible.vespers.title": "Candlelight at Vespers",
   "bible.vespers.hint": "On by itself at sunset, when the Church's day begins, and off in the morning",
+  "bible.season.title": "Candlelight keeps the season",
+  "bible.season.hint": "Its soft light takes the colour of the Church's long fasts, violet or deep blue",
   "bible.moreActions": "More actions",
   "bible.reader": "Reader",
   "bible.clearWordHighlights": "Clear word highlights",

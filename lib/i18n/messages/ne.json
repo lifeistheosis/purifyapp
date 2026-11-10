@@ -754,6 +754,8 @@
   "bible.night.hint": "Candlelight, एकाग्र पठन, ठूलो अक्षर र {sound}",
   "bible.vespers.title": "साँझको आराधनामा Candlelight",
   "bible.vespers.hint": "सूर्यास्तमा, जब मण्डलीको दिन सुरु हुन्छ, आफैँ खुल्छ र बिहान बन्द हुन्छ",
+  "bible.season.title": "Candlelight ले मण्डलीको वर्ष पछ्याउँछ",
+  "bible.season.hint": "यसको नरम उज्यालोले मण्डलीका लामा उपवासहरूको रङ लिन्छ, बैजनी वा गाढा नीलो",
   "bible.moreActions": "थप कार्यहरू",
   "bible.reader": "पाठक",
   "bible.clearWordHighlights": "शब्द हाइलाइट हटाउनुहोस्",

@@ -12,6 +12,7 @@ import type {
 } from "@/components/reader/ReaderPrefs";
 import { NightReadingRow } from "@/components/reader/NightReadingRow";
 import { ReadingModeChips } from "@/components/reader/ReadingModeChips";
+import { CandleSeasonToggle } from "@/components/reader/CandleSeasonSwitch";
 import { VespersToggle } from "@/components/reader/VespersSwitch";
 import { useTranslate } from "@/components/i18n/MessagesProvider";
 import { cn } from "@/lib/cn";
@@ -262,6 +263,8 @@ function ReaderSettingsControls({
         <ReadingModeChips touch={touch} />
         {/* 1.9: Candlelight from sunset to the morning, by itself. */}
         <VespersToggle touch={touch} />
+        {/* 1.9: its soft light in the colour of the Church's fasts. */}
+        <CandleSeasonToggle touch={touch} />
       </div>
 
       <div className="pt-3 border-t border-paper/10">

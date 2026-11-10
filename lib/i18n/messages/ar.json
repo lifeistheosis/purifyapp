@@ -783,6 +783,8 @@
   "bible.night.hint": "Candlelight، قراءة مركّزة، نص أكبر و{sound}",
   "bible.vespers.title": "Candlelight عند صلاة الغروب",
   "bible.vespers.hint": "يعمل وحده عند الغروب، حين يبدأ يوم الكنيسة، ويتوقف في الصباح",
+  "bible.season.title": "Candlelight يتبع السنة الكنسية",
+  "bible.season.hint": "يأخذ نوره الهادئ لون أصوام الكنيسة الطويلة، بنفسجيًا أو أزرق داكنًا",
   "bible.moreActions": "المزيد من الإجراءات",
   "bible.reader": "القارئ",
   "bible.clearWordHighlights": "مسح تظليل الكلمات",

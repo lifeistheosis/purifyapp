@@ -754,6 +754,8 @@
   "bible.night.hint": "Candlelight, εστιασμένη ανάγνωση, μεγαλύτερα γράμματα και {sound}",
   "bible.vespers.title": "Candlelight στον Εσπερινό",
   "bible.vespers.hint": "Ανάβει μόνο του τη δύση, όταν αρχίζει η ημέρα της Εκκλησίας, και σβήνει το πρωί",
+  "bible.season.title": "Το Candlelight ακολουθεί το εκκλησιαστικό έτος",
+  "bible.season.hint": "Το απαλό του φως παίρνει το χρώμα των μεγάλων νηστειών της Εκκλησίας, βιολετί ή βαθύ μπλε",
   "bible.moreActions": "Περισσότερες ενέργειες",
   "bible.reader": "Ανάγνωση",
   "bible.clearWordHighlights": "Καθαρισμός επισημάνσεων λέξεων",

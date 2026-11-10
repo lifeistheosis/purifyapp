@@ -756,6 +756,8 @@
   "bible.night.hint": "Candlelight, lecture concentrée, texte plus grand et {sound}",
   "bible.vespers.title": "Candlelight aux Vêpres",
   "bible.vespers.hint": "S'allume de lui-même au coucher du soleil, quand commence le jour de l'Église, et s'éteint le matin",
+  "bible.season.title": "Candlelight suit l'année de l'Église",
+  "bible.season.hint": "Sa douce lumière prend la couleur des longs carêmes de l'Église, violet ou bleu profond",
   "bible.moreActions": "Plus d'actions",
   "bible.reader": "Lecteur",
   "bible.clearWordHighlights": "Effacer les surlignages de mots",

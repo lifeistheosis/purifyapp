@@ -4768,6 +4768,37 @@ html[data-reading-mode="candlelight"] {
   radial-gradient(ellipse 90% 34% at 50% 40%, rgb(255 255 255 / 0.05), rgb(255 255 255 / 0) 72%),
   radial-gradient(130% 105% at 50% 42%, rgb(0 0 0 / 0) 56%, rgb(0 0 0 / 0.55) 100%);
 }
+/* Candlelight keeps the season (1.9: PLAN 15, "palettes of the season";
+   lib/reader/candleSeason.ts). In the Church's three long fasts the candle's
+   light takes the fast's colour, the one the calendar already gives it
+   (lib/calendar/tone.ts): violet from Clean Monday to Holy Saturday, a deep
+   blue through the Nativity Fast, the Mother of God's blue through the
+   Dormition Fast. At every other time it is the white above.
+
+   The white lies over the words, and can: it adds to the ink as much as to
+   the ground. A colour laid over light-grey words would take them down with
+   it, so a season's light lies behind them: while the veil is up in a
+   season the root says which (components/reader/CandleVeil.tsx), the light
+   is this palette's room, laid under the page exactly as a look's picture is
+   ("The looks (1.9)", whose rules for a room answer this attribute too), and
+   the veil keeps only its dark edges. Each light is as full as it can be
+   with every word on the page still 4.5:1 or more on this ground, the
+   stepped-back commentary numbers deciding it as they did the step back
+   (lib/reader/__tests__/candleSeason.test.ts does the sums). A green cannot
+   be seen at that strength, so the calendar's two green seasons keep the
+   white. No gold. Nothing moves. */
+html[data-candle-season="lent"] {
+ --room: radial-gradient(ellipse 90% 34% at 50% 40%, rgb(82 36 110 / 0.17), rgb(82 36 110 / 0) 72%);
+}
+html[data-candle-season="nativity"] {
+ --room: radial-gradient(ellipse 90% 34% at 50% 40%, rgb(50 60 130 / 0.13), rgb(50 60 130 / 0) 72%);
+}
+html[data-candle-season="dormition"] {
+ --room: radial-gradient(ellipse 90% 34% at 50% 40%, rgb(60 95 155 / 0.09), rgb(60 95 155 / 0) 72%);
+}
+html[data-candle-season] .candle-veil {
+ background: radial-gradient(130% 105% at 50% 42%, rgb(0 0 0 / 0) 56%, rgb(0 0 0 / 0.55) 100%);
+}
 .candle-reading [data-verse] {
  transition: opacity 420ms var(--ease-house);
 }
@@ -11425,15 +11456,18 @@ html[data-reading-mode="parchment"] .chant-version-dot {
 }
 
 /* A room: one still picture under the page, held to the foot of the screen.
+   (Candlelight in one of the Church's fasts has a room too, a soft light
+   where the eye rests: "Candlelight keeps the season", by the veil's rules.
+   These three rules answer its attribute as they answer a look's.)
    The html element paints the page colour, so the body steps aside for it.
    Nothing in it moves and nothing is blended, so it costs one paint. What a
    picture puts behind the words has to carry the look's faintest text
    anywhere above its foot: scripts/scene-check.mjs measures each picture on
    its own, and Dawn's sunrise and Incense's plume were brought down by it. */
-html[data-look] body {
+html:is([data-look], [data-candle-season]) body {
  background-color: transparent;
 }
-html[data-look] body::before {
+html:is([data-look], [data-candle-season]) body::before {
  content: "";
  position: fixed;
  inset: 0;
@@ -11452,8 +11486,8 @@ html[data-look] body::before {
    the cells (a heresy's claim beside the Church's answer).
    scripts/room-walk.mjs walks every screen of the export to hold this to
    what is really drawn. */
-html[data-look] :is(main, body > .safe-pt) .bg-night:not(.sticky, .fixed, .absolute, .inline-block, .dark-island, [class*="rounded"], .gap-px > *),
-html[data-look] body > .bg-night.min-h-screen {
+html:is([data-look], [data-candle-season]) :is(main, body > .safe-pt) .bg-night:not(.sticky, .fixed, .absolute, .inline-block, .dark-island, [class*="rounded"], .gap-px > *),
+html:is([data-look], [data-candle-season]) body > .bg-night.min-h-screen {
  background-color: transparent;
 }
 

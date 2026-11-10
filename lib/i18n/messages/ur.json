@@ -754,6 +754,8 @@
   "bible.night.hint": "Candlelight، یکسو مطالعہ، بڑا متن اور {sound}",
   "bible.vespers.title": "نمازِ شام پر Candlelight",
   "bible.vespers.hint": "غروبِ آفتاب پر، جب کلیسیا کا دن شروع ہوتا ہے، خود آن ہوتا ہے اور صبح بند ہو جاتا ہے",
+  "bible.season.title": "Candlelight کلیسیائی سال کے ساتھ چلتا ہے",
+  "bible.season.hint": "اس کی نرم روشنی کلیسیا کے طویل روزوں کا رنگ لے لیتی ہے، بنفشی یا گہرا نیلا",
   "bible.moreActions": "مزید اقدامات",
   "bible.reader": "ریڈر",
   "bible.clearWordHighlights": "الفاظ کی نمایاں کاری صاف کریں",
