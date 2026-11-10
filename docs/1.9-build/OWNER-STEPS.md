@@ -341,7 +341,10 @@ Send back: "C7 done".
 
 ## Anytime
 
-### 23. Is Plus selling on iPhone? (1 minute; do this before 87)
+### 23. Do iPhone purchases reach your account? (1 minute)
+
+Plus has been sold on iPhone since 1.8 (87, below). This checks that what a
+reader buys there unlocks Plus for them.
 
 1. Open purifyapp.net/admin and sign in.
 2. In the left menu, click **Money**.
@@ -518,99 +521,21 @@ Done: the push says `ccr-07896cf2-bo0afd -> ccr-07896cf2-bo0afd`, or
 
 Send back: "70 done" (or the last red line).
 
-### 87. Plus on iPhone (about an hour, mostly Apple's forms)
+### 87. Plus on iPhone: done before 1.8 (found 2026-11-10)
 
-Do 23 first and send its answer: if an **App Store** slice already exists, the
-arbiter checks before you start.
+Nothing to do. Found on 2026-11-10, from the apps themselves:
 
-What the app expects (this does not change):
+- The App Store lists four in-app purchases for Purify: Plus at $9.99 and
+  $71.99, Pro at $19.99 and $199. Apple approved them.
+- The iPhone build Apple has served since 3 November (1.8, built 1
+  November) carries the iPhone purchase key and has the Plus switch on
+  (`NEXT_PUBLIC_PLUS_ENFORCED_IOS` "true"): iPhone readers without Plus meet
+  the lock and can buy Plus, as on Android.
+- Leave that switch as it is (the arbiter's recommendation): the 1.9 iPhone
+  build takes it as 1.8 did.
 
-- One RevenueCat entitlement named `plus`.
-- The **current** offering, with a **Monthly** package and an **Annual**
-  package. On iPhone the app sells whatever App Store products those two
-  packages hold.
-- The words in the app say the yearly plan **begins with 7 days free, on a
-  first subscription**. So the yearly product needs that free week.
-
-**A. App Store Connect** (appstoreconnect.apple.com):
-
-1. **Business**: the **Paid Apps** agreement must show **Active**. If it
-   does not, finish what it asks for (bank, tax) first.
-2. **Apps**, **Purify**, then **Monetization**, **Subscriptions**.
-3. If a group already holds two products (they may say **Missing
-   Metadata**), use those two and skip to step 6. Their IDs do not matter.
-4. Otherwise click **+** next to **Subscription Groups**. Reference name
-   `Purify Plus`.
-5. In the group, click **+** twice to make two products:
-   - Reference name `Plus Monthly`, Product ID `purify_plus_monthly`.
-   - Reference name `Plus Yearly`, Product ID `purify_plus_yearly`.
-6. For the monthly product: **Subscription Duration** 1 month.
-7. For the yearly product: **Subscription Duration** 1 year.
-8. For each: **Subscription Prices**, add a price. The prices are your call.
-   (Google Play and the website sell at $9.99 a month and $71.99 a year.)
-9. For the yearly product: **Introductory Offers**, **+**, **Free**, duration
-   **1 week**, all countries.
-10. For each: **Localization**, English: display name `Purify Plus` and a
-    one-line description, for example "Sync, reading plans, ambience and
-    more."
-11. For each: **Review Information**, add a screenshot of the Purify Plus
-    screen (in the app: **Account**, then **Purify Plus**).
-12. The group itself: **Localization**, English, display name `Purify Plus`.
-
-**B. Apple's In-App Purchase key** (needed by RevenueCat):
-
-13. App Store Connect, **Users and Access**, **Integrations**, tab
-    **In-App Purchase**.
-14. Click **+** (Generate). Name it `RevenueCat`.
-15. Download the `SubscriptionKey_….p8`. It downloads ONCE. Note its **Key
-    ID**. The **Issuer ID** is on the **App Store Connect API** tab of the
-    same page (the same Issuer ID the build already uses).
-    (This key is not the `AuthKey_….p8` the build uses. Two different keys.)
-
-**C. RevenueCat** (app.revenuecat.com, the Purify project):
-
-16. **Apps** (newer layout: **Apps & providers**), **+ Add app** (or
-    **+ New**), **App Store**.
-17. Bundle ID `net.purifyapp.purify`.
-18. Upload the `SubscriptionKey_….p8` from step 15, paste its Key ID and the
-    Issuer ID. **Save**.
-19. In that new App Store app, copy the **public API key** (it starts with
-    `appl_`).
-20. **Product catalog**, **Products**, **+ New**: add both App Store
-    products by their Product IDs (or **Import**, if RevenueCat offers it).
-21. **Entitlements**, open `plus`, **Attach**, tick both App Store products.
-22. **Offerings**, open the offering marked **current** (default).
-23. Open its **Monthly** package, add the App Store monthly product.
-24. Open its **Annual** package, add the App Store yearly product.
-
-**D. GitHub secrets** (github.com/lifeistheosis/purifyapp, **Settings**,
-**Secrets and variables**, **Actions**):
-
-25. **New repository secret** (or edit it if it exists):
-    `NEXT_PUBLIC_REVENUECAT_IOS_KEY`, value: the `appl_` key from step 19.
-26. Do NOT set `NEXT_PUBLIC_PLUS_ENFORCED_IOS` yet. It locks Plus features on
-    iPhone, and must wait until Apple has approved the subscriptions (step 30).
-
-**E. The builds:**
-
-27. Nothing more today. The 1.9 iPhone build (Release day, R5) carries the
-    key and can sell Plus.
-28. When you submit 1.9 in App Store Connect (R5), on the version page under
-    **In-App Purchases and Subscriptions**, click **+** and select both
-    products, so Apple reviews them with the app.
-29. In **App Review Information**, **Notes**: delete the sentence that says
-    the build has no in-app purchases, and add: "Purify Plus is an
-    auto-renewable subscription, monthly or yearly (the yearly begins with
-    a free week). To see it: Account, then Purify Plus. The whole library
-    stays free without it."
-30. After Apple approves the subscriptions: set the GitHub secret
-    `NEXT_PUBLIC_PLUS_ENFORCED_IOS` to `true`, then run **iOS build
-    (signed)** on `main` with upload ticked, and submit that build. From
-    that build on, iPhone readers meet the Plus sheet, as on Android.
-
-Done: A to D finished; step 30 waits for Apple.
-
-Send back: "87 A to D done" (no keys).
+What is left is 23: one look that the purchases reach your account. The
+steps this item held are in the repository's history (before 2026-11-10).
 
 ### Mail. The company's postal address for list email (5 minutes; before the 1.9 email)
 
@@ -1278,18 +1203,17 @@ App Store:
 2. **Build**: **Add Build**, pick the one you walked in R5b.
 3. **What's New in This Version**: purifyapp.net/admin, **Releases**, the
    piece **What's New in This Version, for the App Store**, **Copy**, and
-   paste (it names no Purify Plus, since
-   every feature is free on iPhone; if 87 is done, the arbiter sends the
-   version with Plus). On the same
+   paste (it marks what is in Purify Plus, as the Play text does). On the
+   same
    page: **Support URL** https://purifyapp.net/support, and **Copyright**
    2026 Purify Orthodox LLC. Under **App Review Information**, the contact
    email is one you read on review days (support@ lands in Admin,
    **Messages**). In its **Notes** (your item 130), name what is in the build
    and switched off: pictures on prayer campaigns, and "Prayed by many"; and
    prayer campaigns themselves if R5c is still waiting.
-4. If 87 is done: **In-App Purchases and Subscriptions**, **+**, both
-   products (87, steps 28 and 29).
-5. **Add for Review**, then **Submit for Review**.
+4. **Add for Review**, then **Submit for Review**. (The subscriptions are
+   approved already, so nothing is added under **In-App Purchases and
+   Subscriptions**.)
 
 Send back: "R5d Play sent, App Store submitted".
 

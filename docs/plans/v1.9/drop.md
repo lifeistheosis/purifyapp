@@ -99,9 +99,9 @@ The Scriptures, the saints, the prayers and the calendar stay free.
 
 ### What's New in This Version, for the App Store
 
-`appstore-whats-new` · App Store, What's New in This Version · App Store Connect, the version, What's New in This Version · Ready · 2349 of 4000 characters
+`appstore-whats-new` · App Store, What's New in This Version · App Store Connect, the version, What's New in This Version · Ready · 2429 of 4000 characters
 
-> On iPhone every feature is free, as App Review was told (docs/app-store-review-notes.md), so this text names no Purify Plus. If 87 is done and Plus sells on iPhone before R5, put "in Purify Plus" back on the study, plans, Florilegium, Candlelight and listening lines, as the Play text has them.
+> Plus has been sold on iPhone since 1.8 (the App Store lists its four subscriptions; OWNER-STEPS 87, found 2026-11-10), so this text marks what is in Purify Plus, as the Play text does: the study, the plans, the Florilegium and the Thread, Candlelight and ambience, and listening offline.
 
 ~~~text
 Purify 1.9: Keep a journal by the Church's day, and go deeper into every verse.
@@ -118,10 +118,10 @@ FIVE MORE BIBLES
 The Russian Synodal, the Greek Septuagint, the Serbian of Karadžić and Daničić, and the Arabic Van Dyck and Spanish Reina-Valera, both Protestant and labelled so.
 
 STUDY A VERSE
-Cross-references into the Septuagint, the Greek of every word, Compare across your Bibles, and Remember the verse in three steps.
+Cross-references into the Septuagint, the Greek of every word, Compare across your Bibles, and Remember the verse in three steps. In Purify Plus.
 
 NEW READING PLANS
-John in 21 days, Acts in 28 days, the New Testament in a year, the Nativity Fast and Holy Week, with the Fathers nearly every day.
+John in 21 days, Acts in 28 days, the New Testament in a year, the Nativity Fast and Holy Week, with the Fathers nearly every day. In Purify Plus.
 
 THE CREED BY COUNCIL
 The Symbol of Faith article by article, with the words the Council of Constantinople added lit.
@@ -130,16 +130,16 @@ CHURCH HISTORY ON TODAY
 On the days an event of Orthodox History fell, it is on Today under the saint of the day.
 
 THE FLORILEGIUM AND THE THREAD
-Your gatherings as cards and a line from them on Today, and the Thread walks 35 events of Orthodox History on their maps.
+Your gatherings as cards and a line from them on Today, and the Thread walks 35 events of Orthodox History on their maps. In Purify Plus.
 
 CANDLELIGHT AND AMBIENCE
-Candlelight lights the lines you are reading and can come on at Vespers, and ambience plays two sounds at once.
+Candlelight lights the lines you are reading and can come on at Vespers, and ambience plays two sounds at once. In Purify Plus.
 
 REMEMBER THE VERSE ON YOUR HOME SCREEN
 A widget keeps your verse on your home screen, the same for every reader.
 
 ALSO
-• Listening offline: each book's size shown before you save it, and saving that waits for Wi-Fi and picks up after a lost signal.
+• Listening offline, in Purify Plus: each book's size shown before you save it, and saving that waits for Wi-Fi and picks up after a lost signal.
 • Psalms 113 to 115 are divided as the Septuagint divides them, and your notes, highlights and saved verses move with their verses.
 • The plans page keeps your place and puts the season's plan at the top.
 • Orthodox History shows its great events as large cards, and every picture for every reader.
