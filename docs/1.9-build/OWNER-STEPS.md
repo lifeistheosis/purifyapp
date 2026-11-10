@@ -620,16 +620,22 @@ Then in Admin:
 
 Done: the 1.9 note shows as accepted. Until then the website does not show it.
 
-### R0b. Sign off the prayer campaigns SQL, before the push
+### R0b. Sign the prayer campaigns SQL, all three files, before the push
 
-The prayer campaigns chat writes the campaigns' database change. It goes
-into `supabase/migrations/` and runs on the live database by itself when
-`main` is pushed, so it needs your yes before the push, not after.
+Prayer campaigns change the live database in three files. Once you sign
+one, it goes into `supabase/migrations/` and runs on the live database by
+itself when `main` is pushed, so each needs your signature before the push,
+not after.
 
-1. The arbiter sends you the file's name and what it makes, in plain words.
-2. Read it. Say yes, or ask.
+1. File one is ready: `docs/1.9-build/sql/campaigns-1-rework.sql`. Its
+   header says in plain words what it changes, and ends with a read-only
+   check to run after it.
+2. Files two and three: the arbiter sends you each one's name and what it
+   makes, in plain words, as it lands.
+3. Read each. Sign it, or ask.
 
-Send back: "R0b yes", or your question. Without it, the push waits.
+Send back, for each file: "R0b yes 1" (then 2, then 3), or your question.
+Until all three are signed, the push waits.
 
 ### R0c. The new onboarding: your word, after you try it again
 
@@ -687,6 +693,9 @@ Send back: "R1 both green".
    deploy. It carries the terms' new date (your item 96): the terms say
    "Effective" today, and every reader is asked to accept them again at
    their next sign-in, checkout or EIKON claim. You do nothing for that.
+   It also carries prayer campaigns at **testers**: live on the website for
+   your account alone, with the SQL you signed in R0b. No reader sees them
+   until R5c.
 3. Render, the **purifyapp** service, **Events**: wait for **Deploy live**.
 4. purifyapp.net/whats-new shows 1.9.
 
@@ -733,7 +742,8 @@ Send back: "R2b sent", or what went wrong.
 
 The order on the day (your word, 2026-11-10): the website first (R2), then
 both store builds to internal testing (R4, R5), then your walk on a phone
-(R5b), and only then do the stores go public (R5c). With the roads on (R0c)
+(R5b), then campaigns open on the website (R5c), and only then do the stores
+go public (R5d). With the roads on (R0c)
 the website has to go first for one more reason: the first test's shares and
 its counts are kept by the website, so it must be serving 1.9 before any
 phone asks it which version to show.
@@ -781,9 +791,35 @@ On the internal Android build and the TestFlight build, as
 
 Send back: "R5b walked", or what broke.
 
-### R5c. The stores go public
+### R5c. Open prayer campaigns to every reader (one line; your word)
 
-Only after R5b.
+Only after R5b, and only once the words that are yours are settled: the
+lawyer's lines for the privacy page and the Terms (your item 113), and the
+words for a reader in crisis (your item 129).
+
+1. Send the arbiter: "open campaigns".
+2. A chat changes one line on `main`, `CAMPAIGNS_OPENING` from `"testers"`
+   to `"open"` in `lib/campaigns/flags.ts`, and pushes. Render, **Events**:
+   **Deploy live**, and every reader has campaigns on the website. The store
+   builds you walked ask the website, so they follow it with no new build.
+
+Do this before R5d. Apple refuses a build with a hidden or dormant feature
+in it (guideline 2.3.1), and a build reviewed while campaigns are still at
+testers carries them asleep. If 113 or 129 is not ready, you choose:
+
+- hold the stores until it is, or
+- send the builds now, and say in R5d's notes for review that campaigns are
+  in the build and switched off.
+
+Either way the notes for review name the two parts that ship switched off
+by your word: pictures on campaigns, and "Prayed by many" (your item 130).
+
+Send back: "R5c open", or "R5c wait, hold the stores", or "R5c wait, send
+with notes".
+
+### R5d. The stores go public
+
+Only after R5b, and after R5c (or your "send with notes").
 
 Google Play:
 1. Play Console, **Internal testing**, the 1.9 release, **Promote release**,
@@ -802,12 +838,14 @@ App Store:
    page: **Support URL** https://purifyapp.net/support, and **Copyright**
    2026 Purify Orthodox LLC. Under **App Review Information**, the contact
    email is one you read on review days (support@ lands in Admin,
-   **Messages**).
+   **Messages**). In its **Notes** (your item 130), name what is in the build
+   and switched off: pictures on prayer campaigns, and "Prayed by many"; and
+   prayer campaigns themselves if R5c is still waiting.
 4. If 87 is done: **In-App Purchases and Subscriptions**, **+**, both
    products (87, steps 28 and 29).
 5. **Add for Review**, then **Submit for Review**.
 
-Send back: "R5c Play sent, App Store submitted".
+Send back: "R5d Play sent, App Store submitted".
 
 ### R6. Tell installed apps, once each store serves 1.9
 
@@ -855,3 +893,20 @@ Send back: "R7 done".
 The arbiter says the day for each moment.
 
 Send back: what went, as you go.
+
+### R9. After 1.9 is out: July's old campaign rows (your decision; 1 minute)
+
+The campaigns from July's first version are still in the database. Since
+1.9 nobody sees them but the reader who started each, who finds it among
+their own as ended and can take it down. The check at the foot of
+`campaigns-1-rework.sql` counts how many there are.
+
+Choose one:
+
+- keep them unseen, as now, or
+- delete them on a date. Recommended: 30 days after 1.9 ships (your item
+  125: nobody's illness stays up by neglect).
+
+Send back: "July rows: delete on <date>", or "July rows: keep". Deleting is
+a change to the live database, so it comes back to you as a file to sign,
+as in R0b.
