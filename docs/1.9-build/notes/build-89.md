@@ -166,3 +166,11 @@ What he saw: the My Saint widget on his Android home screen, on build 89. His wo
 Where it is: for Updates to find (the Android widget is `android/app/src/main/java/net/purifyapp/purify/widget/`, the bridge `WidgetBridgePlugin`; Updates built U5's widgets in 1.9). Two leads to rule in or out first: build 89 is a release build shrunk by R8 since 2026-10-04, and a plugin or provider reached only by reflection fails on a phone and not in the build (`docs/RELEASE.md`, "The Android app is shrunk"); and build 89 talks to the live 1.8 website, so anything the widget fetches from a 1.9 address cannot work on it before release.
 
 Planned fix (given to Updates the same hour): the widget's tap lands exactly where a reader chooses their patron saint, and that choice is easy to find in the app itself (Settings or You), with one still to him if a screen changes; find the cause, fix it, prove it on the release APK where a phone is needed (the R8 walk), and say plainly whether it is a bug or something build 89 cannot show.
+
+### 18. The Remember the verse widget stays on "Open Purify to refresh" (2026-11-10)
+
+What he saw: the Remember the verse widget on his Android home screen, on build 89. His words: "remember the verse widget also is stuck on "open purify to refresh"".
+
+Where it is: for Updates to find, with note 17 (Updates built U5, `eb93a667` and `32caa197`: the app hands each day's verse to the widgets). The same two leads as note 17: the bridge cut by R8 in a release build, and build 89 reading the live 1.8 website, where the chosen verses (a pack, `docs/PACKS.md`) may not be served yet.
+
+Planned fix (given to Updates the same hour, in one pass with note 17): find why opening the app does not hand the verse over, fix it, prove it on the release APK where only a phone can, and say plainly whether it is a bug or something build 89 cannot show.
