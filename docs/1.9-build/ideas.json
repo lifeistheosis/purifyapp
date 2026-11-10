@@ -2139,6 +2139,20 @@
    "version": "1.9",
    "outcome": null,
    "note": "Empty slots, no mark moved; the section opens with its first lemma. 5bcc64a5a. PLAN 13w."
+  },
+  {
+   "id": "e-support-web-language",
+   "section": "Support",
+   "kind": "bug",
+   "title": "The website's Support page: its own English lines ran right to left in Arabic and Urdu, and the German reader's date and time were English",
+   "from": "claude",
+   "asked": "2026-11-10",
+   "status": "built",
+   "decided": "2026-11-10",
+   "needsDesign": false,
+   "version": "1.9",
+   "outcome": null,
+   "note": "Each line says its language and direction; 28 out of place in Arabic and Urdu before, 0 after. 9398bcfdf. PLAN 13x."
   }
  ]
 }
