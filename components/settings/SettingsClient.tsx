@@ -116,6 +116,7 @@ import {
 import { ALL_BACKGROUNDS, FASTING_RULES, LEVELS, depthFor, focusFor } from "@/lib/onboarding/space";
 import { isDeveloperEmail } from "@/lib/dev/developer";
 import { useShowSupporterMark } from "@/lib/profile/useShowSupporterMark";
+import { READING_THEMES } from "@/lib/reader/readingModes";
 import { readLocalSessionUser } from "@/lib/supabase/localSession";
 import { resolveUser } from "@/lib/supabase/resolveUser";
 
@@ -554,7 +555,10 @@ function WidgetSection() {
 function Body() {
   const { t } = useTranslate();
   // The size is ReaderSizeRow's, which asks as the Bible does (BIBLE_START_SIZE).
-  const { font, setFont } = useReaderPrefs();
+  const { font, setFont, theme } = useReaderPrefs();
+  // The palette the reader chose, named under the Reading mode row's head.
+  const mode = READING_THEMES.find((m) => m.id === theme);
+  const modeName = mode ? (mode.labelKey ? t(mode.labelKey) : mode.label) : undefined;
   const { on: interlinearOn, toggle: toggleInterlinear } = useInterlinear();
   const [calStyle, pickCalStyle] = useCalendarStyleDefault();
   const reader = useReader();
@@ -579,7 +583,9 @@ function Body() {
         title={t("settings.reading")}
         hint={t("settings.readingHint")}
       >
-        <Row icon={<Book size={18} />} label={t("ui.readingMode")}>
+        {/* Its head is the way to every palette, the eighteen looks among
+            them (1.9, ./ReadingModeGallery.tsx), and says which one is on. */}
+        <Row icon={<Book size={18} />} label={t("ui.readingMode")} description={modeName} href="/settings/reading-mode/">
           <ReadingModePages />
         </Row>
         <VespersRow />

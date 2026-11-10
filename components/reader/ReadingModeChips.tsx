@@ -5,6 +5,7 @@
 // Premium Reading Modes; the Focus toggle (chrome half) stays separate
 // and composes with any palette.
 
+import Link from "next/link";
 import { useState } from "react";
 
 import { useReaderPrefs } from "@/components/reader/ReaderPrefs";
@@ -15,6 +16,7 @@ import { READING_THEMES, isCollectionTheme } from "@/lib/reader/readingModes";
 import { cn } from "@/lib/cn";
 import { useTranslate } from "@/components/i18n/MessagesProvider";
 import { useUpgradeModal } from "@/components/billing/UpgradeModal";
+import { ChevronRight } from "@/components/ui/icons/ChevronRight";
 
 /** Tiny page/ink swatch advertising each palette inside its chip. Hexes
  * mirror the html[data-reading-mode] blocks in app/globals.css. */
@@ -27,6 +29,9 @@ const THEME_SWATCHES: Record<string, { page: string; ink: string }> = {
   councils: { page: "#0a1020", ink: "#eaeaec" },
   cappadocian: { page: "#160f12", ink: "#eaeaec" },
 };
+
+/** An applied look's swatch: the page and the ink the app is wearing. */
+const WORN = { page: "var(--color-night)", ink: "var(--color-paper)" };
 
 export function ReadingModeChips({
   touch = false,
@@ -59,8 +64,12 @@ export function ReadingModeChips({
             and Cappadocian stand here as goals, with how far the reader is,
             until they are earned by reading; then they are palettes like the
             rest. One already applied stays, so it can be put down again. */}
-        {READING_THEMES.map((mode) => {
-          const sw = THEME_SWATCHES[mode.id];
+        {/* The looks (1.9) are chosen on their own page, eighteen of them:
+            here only the one applied stands with the palettes, so it can be
+            put down, and the row under the grid opens the rest. Its swatch is
+            the page and ink the app is wearing. */}
+        {READING_THEMES.filter((mode) => !mode.look || mode.id === theme).map((mode) => {
+          const sw = THEME_SWATCHES[mode.id] ?? (mode.look ? WORN : undefined);
           const progress = isCollectionTheme(mode.id) ? earned[mode.id as keyof EarnedPalettes] : null;
           if (progress && !progress.earned && theme !== mode.id) {
             const id = mode.id as keyof EarnedPalettes;
@@ -159,6 +168,15 @@ export function ReadingModeChips({
           );
         })}
       </div>
+      {/* Every palette, by family, on its own page (components/settings/ReadingModeGallery.tsx). */}
+      <Link
+        href="/settings/reading-mode/"
+        data-all-modes=""
+        className="mt-1.5 flex min-h-11 items-center justify-between gap-2 rounded-md px-2.5 font-sans text-caption font-medium text-paper/70 transition-colors hover:bg-paper/8 hover:text-paper"
+      >
+        <span>{t("common.seeAll")}</span>
+        <ChevronRight size={14} className="shrink-0 rtl:-scale-x-100" />
+      </Link>
       {goal ? (
         <p id="palette-goal" role="status" className="mt-2 font-sans text-caption leading-[1.45] text-paper/70" data-palette-goal-line="">
           {t(goal === "councils" ? "settings.paletteEarnCouncils" : "settings.paletteEarnCappadocian", { count: earned[goal].read, total: earned[goal].of })}

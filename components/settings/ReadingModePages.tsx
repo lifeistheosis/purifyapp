@@ -12,6 +12,14 @@
 // it is the one applied. Each page's colours are its palette's own tokens,
 // held beside them in app/globals.css ("Settings: lit panels") and checked
 // against them by lib/settings/__tests__/litPanels.test.ts.
+//
+// From 1.9 there are eighteen looks beside these (lib/reader/readingModes.ts).
+// They are chosen on a page of their own, which this row's head opens
+// (./ReadingModeGallery.tsx), so the row stays the five a reader knows. A
+// look that is applied stands here as a sixth page, as an applied collection
+// palette does, so it can be seen and put down from Settings too. The page
+// and the tile are exported for that gallery, which draws every palette with
+// them.
 
 import { Fragment, useState } from "react";
 
@@ -66,36 +74,14 @@ export function ModePages({
   // far the reader is, and say how under their row once tapped.
   const earned = useEarnedPalettes();
   const [goal, setGoal] = useState<keyof EarnedPalettes | null>(null);
-  const modes = READING_THEMES.filter((m) => !isCollectionTheme(m.id));
+  // The five, and a look only while it is the one applied (1.9): the rest are on their own page.
+  const modes = READING_THEMES.filter((m) => !isCollectionTheme(m.id) && (!m.look || m.id === theme));
   const kept = READING_THEMES.filter((m) => isCollectionTheme(m.id));
   const book = t("bible.books.john");
   const chapter = t("bible.chapterN", { n: PREVIEW_CHAPTER });
-  const palette = (mode: (typeof READING_THEMES)[number]) => {
-    const allowed = allows(mode.id);
-    const on = theme === mode.id && allowed;
-    const paid = locked && !allowed;
-    const name = mode.labelKey ? t(mode.labelKey) : mode.label;
-    const blurb = mode.blurbKey ? t(mode.blurbKey) : mode.blurb;
-    return (
-      <button
-        key={mode.id}
-        type="button"
-        aria-pressed={on}
-        title={paid ? `${blurb}. Purify Plus.` : blurb}
-        onClick={() => onPick(mode.id)}
-        className="set-mode"
-      >
-        <ModePage palette={mode.id} font={font} book={book} chapter={chapter} />
-        {on ? (
-          <span aria-hidden className="set-check set-mode-check">
-            <Check size={10} strokeWidth={2.8} />
-          </span>
-        ) : null}
-        <span className="set-mode-name">{name}</span>
-        {paid ? <span className="set-mode-plus">Purify Plus</span> : null}
-      </button>
-    );
-  };
+  const palette = (mode: ReadingMode) => (
+    <ModeTile key={mode.id} mode={mode} theme={theme} font={font} allows={allows} locked={locked} book={book} chapter={chapter} onPick={onPick} />
+  );
   return (
     <>
       <div
@@ -115,19 +101,7 @@ export function ModePages({
           // Earned, or already applied (so it can be put down again): a palette like the rest.
           if (!progress || progress.earned || theme === mode.id) return palette(mode);
           return (
-            <button
-              key={mode.id}
-              type="button"
-              data-palette-goal={mode.id}
-              aria-expanded={goal === id}
-              aria-controls="set-palette-goal"
-              onClick={() => setGoal(goal === id ? null : id)}
-              className="set-mode set-mode-goal"
-            >
-              <ModePage palette={mode.id} font={font} book={book} chapter={chapter} />
-              <span className="set-mode-name">{mode.labelKey ? t(mode.labelKey) : mode.label}</span>
-              <span className="set-mode-progress">{t("settings.paletteProgress", { count: progress.read, total: progress.of })}</span>
-            </button>
+            <GoalTile key={mode.id} mode={mode} progress={progress} open={goal === id} font={font} book={book} chapter={chapter} onToggle={() => setGoal(goal === id ? null : id)} />
           );
         })}
       </div>
@@ -142,13 +116,95 @@ export function ModePages({
   );
 }
 
+export type ReadingMode = (typeof READING_THEMES)[number];
+
+/**
+ * A palette as a reader picks it: its small page, the check on the one
+ * applied, its name, and Purify Plus under a paid one where the gate has said
+ * no. `mark` false leaves that last line out, for a shelf whose family says
+ * it once (./ReadingModeGallery.tsx); the title keeps it either way.
+ */
+export function ModeTile({
+  mode,
+  theme,
+  font,
+  allows,
+  locked,
+  book,
+  chapter,
+  onPick,
+  mark = true,
+}: {
+  mode: ReadingMode;
+  theme: ReadingTheme;
+  font: ReaderFont;
+  allows: (theme: ReadingTheme) => boolean;
+  locked: boolean;
+  book: string;
+  chapter: string;
+  onPick: (theme: ReadingTheme) => void;
+  mark?: boolean;
+}) {
+  const { t } = useTranslate();
+  const allowed = allows(mode.id);
+  const on = theme === mode.id && allowed;
+  const paid = locked && !allowed;
+  const name = mode.labelKey ? t(mode.labelKey) : mode.label;
+  const blurb = mode.blurbKey ? t(mode.blurbKey) : mode.blurb;
+  return (
+    <button type="button" aria-pressed={on} title={paid ? `${blurb}. Purify Plus.` : blurb} onClick={() => onPick(mode.id)} className="set-mode">
+      <ModePage palette={mode.id} font={font} book={book} chapter={chapter} />
+      {on ? (
+        <span aria-hidden className="set-check set-mode-check">
+          <Check size={10} strokeWidth={2.8} />
+        </span>
+      ) : null}
+      <span className="set-mode-name">{name}</span>
+      {paid && mark ? <span className="set-mode-plus">Purify Plus</span> : null}
+    </button>
+  );
+}
+
+/** A palette still to be earned by reading (lib/reader/earned.ts): its page inside a dashed edge, and how far the reader is. */
+export function GoalTile({
+  mode,
+  progress,
+  open,
+  font,
+  book,
+  chapter,
+  onToggle,
+}: {
+  mode: ReadingMode;
+  progress: { read: number; of: number };
+  open: boolean;
+  font: ReaderFont;
+  book: string;
+  chapter: string;
+  onToggle: () => void;
+}) {
+  const { t } = useTranslate();
+  return (
+    <button type="button" data-palette-goal={mode.id} aria-expanded={open} aria-controls="set-palette-goal" onClick={onToggle} className="set-mode set-mode-goal">
+      <ModePage palette={mode.id} font={font} book={book} chapter={chapter} />
+      <span className="set-mode-name">{mode.labelKey ? t(mode.labelKey) : mode.label}</span>
+      <span className="set-mode-progress">{t("settings.paletteProgress", { count: progress.read, total: progress.of })}</span>
+    </button>
+  );
+}
+
 /**
  * One page: the book, its chapter, a rule and the opening verses, in the
  * palette's ground and ink. Drawn at three times its size and scaled down,
  * so its small type is set as type (a browser's least font size would
  * otherwise swell it).
+ *
+ * It is a picture of a page, hidden from a screen reader, and the words a
+ * reader goes by are the palette's name under it. So it says to the mock
+ * checker (scripts/mock-check.mjs) what it is: its colours are one palette's
+ * own whatever palette is on, and its small type is not held as body text.
  */
-function ModePage({
+export function ModePage({
   palette,
   font,
   book,
@@ -160,7 +216,13 @@ function ModePage({
   chapter: string;
 }) {
   return (
-    <span aria-hidden className="set-mode-page" data-palette={palette}>
+    <span
+      aria-hidden
+      className="set-mode-page"
+      data-palette={palette}
+      data-mock-allow="contrast palette"
+      data-mock-why="a small picture of a page in one palette's own colours, whatever palette is on; the palette's name is the words under it"
+    >
       <span className="set-mode-canvas">
         <span className="set-mode-book">{book}</span>
         <span className="set-mode-chapter">{chapter}</span>

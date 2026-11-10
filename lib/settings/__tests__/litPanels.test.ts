@@ -151,13 +151,30 @@ describe("the reading modes", () => {
     expect(pages(applied).map((p) => p.palette)).toEqual(["default", "parchment", "black", "candlelight", "monastery", "councils"]);
   });
 
+  it("keeps the looks on their own page, and stands the one applied here as a sixth (1.9)", () => {
+    // The row is still the five: eighteen more would not be a row.
+    const five = pages(draw(createElement(ModePages, { theme: "default", font: "serif", allows: EVERY, locked: false, onPick: () => {} })));
+    expect(five).toHaveLength(5);
+    const worn = draw(createElement(ModePages, { theme: "athos", font: "serif", allows: EVERY, locked: false, onPick: () => {} }));
+    const got = pages(worn);
+    expect(got.map((p) => p.palette)).toEqual(["default", "parchment", "black", "candlelight", "monastery", "athos"]);
+    expect(got.filter((p) => p.pressed).map((p) => p.palette)).toEqual(["athos"]);
+    expect(got[5].name).toBe("Holy Mountain");
+    expect(worn).toContain('data-count="6"');
+    // And its small page has rules of its own, with its picture behind its words.
+    expect(decls('.set-mode-page[data-palette="athos"]')["--mp-back"]).toContain("var(--scene-athos)");
+    expect(decls(".set-mode-page").background).toBe("var(--mp-back, var(--mp-ground))");
+  });
+
   it("sets the verses in the reader's own face", () => {
     const drawn = draw(createElement(ModePages, { theme: "default", font: "sans", allows: EVERY, locked: false, onPick: () => {} }));
     expect(drawn).toMatch(/class="set-mode-verses font-sans"/);
   });
 
   it("wears each palette's own ground, ink and accent, as its block in the stylesheet sets them", () => {
-    const tokens = (id: ReadingTheme) => (id === "default" ? THEME : decls(`html[data-reading-mode="${id}"]`));
+    // A look's tokens are under its own attribute (1.9); the rest under their mode.
+    const looks = new Set(READING_THEMES.filter((t) => t.look).map((t) => t.id));
+    const tokens = (id: ReadingTheme) => (id === "default" ? THEME : decls(looks.has(id) ? `html[data-look="${id}"]` : `html[data-reading-mode="${id}"]`));
     const page = (id: ReadingTheme) => ({ ...decls(".set-mode-page"), ...(id === "default" ? {} : decls(`.set-mode-page[data-palette="${id}"]`)) });
     for (const { id } of READING_THEMES) {
       const want = tokens(id);

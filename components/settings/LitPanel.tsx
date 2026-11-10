@@ -56,7 +56,9 @@ export function Plate({ children }: { children: ReactNode }) {
  * A row: its plate, its name and a line under it, and what it holds. A
  * switch sits beside the name (`control`); a track, the pages or the cards
  * go under it (`children`), and under those, in italic, what the choice
- * means (`sub`).
+ * means (`sub`). With `href` the row's head is also the way to a screen of
+ * its own, with the chevron a LinkRow has, while what it holds stays here
+ * (the reading modes, 1.9).
  */
 export function Row({
   icon,
@@ -64,6 +66,7 @@ export function Row({
   description,
   control,
   sub,
+  href,
   children,
 }: {
   icon?: ReactNode;
@@ -71,18 +74,35 @@ export function Row({
   description?: ReactNode;
   control?: ReactNode;
   sub?: ReactNode;
+  href?: string;
   children?: ReactNode;
 }) {
+  const head = (
+    <>
+      {icon ? <Plate>{icon}</Plate> : null}
+      <span className="block min-w-0 flex-1">
+        <span className="set-label">{label}</span>
+        {description ? <span className="set-desc">{description}</span> : null}
+      </span>
+    </>
+  );
   return (
     <div className="set-row">
-      <div className="set-lab">
-        {icon ? <Plate>{icon}</Plate> : null}
-        <div className="min-w-0 flex-1">
-          <p className="set-label">{label}</p>
-          {description ? <p className="set-desc">{description}</p> : null}
+      {href ? (
+        <Link href={href} className="set-lab set-link">
+          {head}
+          <ChevronRight size={15} className="set-chev rtl:-scale-x-100" />
+        </Link>
+      ) : (
+        <div className="set-lab">
+          {icon ? <Plate>{icon}</Plate> : null}
+          <div className="min-w-0 flex-1">
+            <p className="set-label">{label}</p>
+            {description ? <p className="set-desc">{description}</p> : null}
+          </div>
+          {control}
         </div>
-        {control}
-      </div>
+      )}
       {children}
       {sub ? <p className="set-sub">{sub}</p> : null}
     </div>

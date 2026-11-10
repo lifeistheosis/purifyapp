@@ -120,6 +120,10 @@ export const OWN_HEADER_PATTERNS: RegExp[] = [
   // other pages have.
   /^\/credits$/,
   /^\/settings$/,
+  // The reading modes' own page (1.9): every palette on its shelf, opened
+  // from Settings' Reading mode row, with its own bar and the way back to
+  // Settings.
+  /^\/settings\/reading-mode$/,
   // The rest of what is reached from You and its Settings (1.8): Purify's
   // rows (Support Purify and the FAQ it opens, What's new, About), Export
   // your library and Developer, and the Florilegium, Saved's first row. Each

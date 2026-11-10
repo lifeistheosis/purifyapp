@@ -216,6 +216,8 @@ const RULES: readonly (readonly [string, ScreenKey])[] = [
   ["/saved", "saved"],
   ["/journal", "journal"],
   ["/settings", "settings"],
+  // The reading modes' own page (1.9): every palette on its shelf. Settings' own.
+  ["/settings/reading-mode", "settings"],
   ["/u/*", "profile"],
   // A shared journal page (1.9, step 3): a page of the journal, read by its visitor.
   ["/p/*", "journal"],

@@ -33,7 +33,7 @@ import { MessagesProvider } from "@/components/i18n/MessagesProvider";
 import { FeastDays } from "@/components/saints/FeastDays";
 import { getMessages } from "@/lib/i18n";
 import { LOCALES } from "@/lib/i18n/locales";
-import { READING_THEMES } from "@/lib/reader/readingModes";
+import { READING_THEMES, THEME_FAMILIES } from "@/lib/reader/readingModes";
 import { MOVABLE_FEAST_KEYS, feastDaysIn } from "@/lib/saints/feastDay";
 import { SAINT_GROUPS } from "@/lib/saints/groups";
 import { SAINTS } from "@/lib/saints/saints";
@@ -48,11 +48,26 @@ const CODES = LOCALES.map((l) => l.code);
 /** A key, the English the source holds for it, and where that English is. */
 type Pair = { key: string; english: string; from: string };
 
-// The five everyday palettes. The two collection palettes have no keys yet.
-const palettes: Pair[] = READING_THEMES.filter((mode) => !mode.collection).flatMap((mode) => [
+// The five everyday palettes. The two collection palettes have no keys yet,
+// and the looks of 1.9 are held further down, with their families.
+const palettes: Pair[] = READING_THEMES.filter((mode) => !mode.collection && !mode.look).flatMap((mode) => [
   { key: mode.labelKey ?? "", english: mode.label, from: `the ${mode.id} palette's name` },
   { key: mode.blurbKey ?? "", english: mode.blurb, from: `the ${mode.id} palette's one line` },
 ]);
+
+// The looks (1.9): eighteen Plus themes, each a name and one line, and the
+// four families their own page shelves them in, each a name and one line.
+// They are drawn the way the five are, by key, so nothing else would notice
+// one drawn as its key, or in English on a Greek phone.
+const looks: Pair[] = READING_THEMES.filter((mode) => mode.look).flatMap((mode) => [
+  { key: mode.labelKey ?? "", english: mode.label, from: `the ${mode.id} look's name` },
+  { key: mode.blurbKey ?? "", english: mode.blurb, from: `the ${mode.id} look's one line` },
+]);
+const families: Pair[] = THEME_FAMILIES.flatMap((family) => [
+  { key: family.labelKey, english: family.label, from: `the ${family.id} family's name` },
+  { key: family.lineKey, english: family.line, from: `the ${family.id} family's one line` },
+]);
+const LOOKS: Pair[] = [...looks, ...families];
 
 const groups: Pair[] = SAINT_GROUPS.map((group) => ({
   key: group.labelKey,
@@ -138,6 +153,46 @@ describe("the small labels", () => {
     const support = read("app/(app)/support/page.tsx");
     expect(support).toContain(`? "${de["support.workBehindTheApp"]}"`);
     expect(support).toContain(`? "${de["support.gladYouAreHere"]}"`);
+  });
+});
+
+describe("the looks' words (1.9)", () => {
+  it("are forty-four, each with a key of its own", () => {
+    expect(looks.length).toBe(36);
+    expect(families.length).toBe(8);
+    for (const { key, from } of LOOKS) expect(key, from).toMatch(/^[a-z]+(\.[A-Za-z]+)+$/);
+    expect(new Set(LOOKS.map((pair) => pair.key)).size).toBe(44);
+    // No look borrows a word from the five, and none of the five from a look.
+    const everyday = new Set(palettes.map((pair) => pair.key));
+    for (const { key, from } of LOOKS) expect(everyday.has(key), from).toBe(false);
+  });
+
+  it("say in English exactly what the source says", () => {
+    for (const { key, english, from } of LOOKS) expect(EN[key], `${key}: ${from}`).toBe(english);
+  });
+
+  it("have words in all twenty-one languages", () => {
+    const longDash = String.fromCharCode(0x2014);
+    const gaps: string[] = [];
+    for (const code of CODES) {
+      const words = catalog(code);
+      for (const { key } of LOOKS) {
+        const value = words[key];
+        if (typeof value !== "string" || value.trim() === "") gaps.push(`${code}: ${key} has no words`);
+        else if (value.includes(longDash)) gaps.push(`${code}: ${key} has a long dash`);
+      }
+    }
+    expect(gaps).toEqual([]);
+  });
+
+  it("are asked of the catalog by the page that draws them", () => {
+    const gallery = read("components/settings/ReadingModeGallery.tsx");
+    expect(gallery.trimStart().startsWith('"use client";')).toBe(true);
+    expect(gallery).toContain("t(family.labelKey)");
+    expect(gallery).toContain("t(family.lineKey)");
+    const pages = read("components/settings/ReadingModePages.tsx");
+    expect(pages).toContain("t(mode.labelKey)");
+    expect(pages).toContain("t(mode.blurbKey)");
   });
 });
 
