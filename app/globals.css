@@ -7508,6 +7508,19 @@ html[data-reading-mode="parchment"] .whole-icon-light {
  object-fit: contain;
 }
 
+/* A saint's icon waiting for its picture (components/saints/SaintIcon.tsx)
+   is a dark icon board on every palette, as the icon itself is (the owner,
+   1.8: the house greys, as dark as it was). Its initials are the palette's
+   own light ink on that board: the paper on a dark palette, and on Light,
+   where the paper is the dark ink, the page's ground. They were a cream typed
+   in, the same on every palette (checkMock, 2026-11-10). */
+.saint-icon-initials {
+ color: var(--color-paper);
+}
+html[data-reading-mode="parchment"] .saint-icon-initials {
+ color: var(--color-night);
+}
+
 /* The nine as plates (components/theology/PathPlates.tsx): each icon framed
    on a mat of the deepest ground, the step in hand ringed in white light, a
    walked step marked with a check. */
