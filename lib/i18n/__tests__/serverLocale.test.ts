@@ -21,6 +21,8 @@ import path from "node:path";
 
 import { describe, expect, it } from "vitest";
 
+import { SAINTS_AND_PAGES } from "./stillChosen.saintsAndPages";
+
 const ROOT = process.cwd();
 
 const STILL_CHOSEN_ON_THE_SERVER: Record<string, string> = {
@@ -30,14 +32,9 @@ const STILL_CHOSEN_ON_THE_SERVER: Record<string, string> = {
   "app/(app)/discover/page.tsx": "the computer's twin of Discover, hidden in the apps (serverWords.test.ts)",
   "app/(app)/account/(you)/page.tsx": "the computer's twin of the account page, hidden in the apps (serverWords.test.ts)",
   // The rest of the sweep, as listed to the arbiter on 2026-11-10: in the
-  // apps each is still English for every reader.
-  "app/(app)/saints/[slug]/page.tsx": "55 saints' lives in German (data/saints/*/i18n/de.json)",
-  "app/(app)/saints/page.tsx": "the Greek line under the heading, hidden for a Greek reader",
-  "app/(app)/about/page.tsx": "About in German",
-  "app/(app)/privacy/page.tsx": "the Privacy Policy in German",
-  "app/(app)/faq/page.tsx": "the FAQ in German",
-  "app/(app)/support/page.tsx": "Support in German",
-  "app/(app)/whats-new/page.tsx": "What's New in German",
+  // apps each is still English for every reader. The saints and the five
+  // German pages are the Updates chat's, listed in their own file
+  // (stillChosen.saintsAndPages.ts); these are the Updates 2 chat's.
   "app/(app)/councils/[slug]/[document]/page.tsx": "the Symbol of the Faith in German, and the note that a text is in English",
   "app/(app)/saints/[slug]/[work]/page.tsx": "a work's translation (none yet) and the note that it is in English",
   "components/saints/HymnsSection.tsx": "a work's translation (none yet)",
@@ -85,7 +82,9 @@ describe("words a page chooses on the server by the reader's language", () => {
   });
 
   it("are only the pages named, each with why, and the list only shrinks", () => {
-    const named = Object.keys(STILL_CHOSEN_ON_THE_SERVER).sort();
+    // Each file is named in one list only: the two lists belong to two chats.
+    for (const file of Object.keys(SAINTS_AND_PAGES)) expect(STILL_CHOSEN_ON_THE_SERVER, file).not.toHaveProperty([file]);
+    const named = [...Object.keys(STILL_CHOSEN_ON_THE_SERVER), ...Object.keys(SAINTS_AND_PAGES)].sort();
     expect(
       [...choosers].sort(),
       "In the apps getServerLocale answers English for every reader. Let the device choose: " +
