@@ -60,7 +60,6 @@ const PHRASES: Array<[string, string]> = [
   ["App Store", "a store"],
   ["Google Play", "a store"],
   ["Web Push", "a web standard"],
-  ["True black", "a palette's name, as the Serbian picker shows it"],
   ["Harrison Hill", "a reader's name, as he gives it (every catalog keeps it)"],
   ["Creative Commons", "the licences' own name"],
   ["CC BY-SA", "a licence"],
@@ -78,8 +77,8 @@ const WORDS: Record<string, string> = {
   // Churches, editions, sources and people, by their own names.
   OCA: "the Orthodox Church in America's own initials", Nestle: "an edition", "Ante-Nicene": "a series' title", Schaff: "an editor", Wace: "an editor",
   Edgar: "the owner, as he signs", ChristosAnesti: "a reader's name, as he gives it", Markos: "a reader's name, as he gives it",
-  // The palettes, as the Serbian picker names them (German, Greek, Romanian and Georgian keep them too).
-  Candlelight: "", Monastery: "", Dark: "", Light: "",
+  // Two palettes as the Plus sheet's title still names them, until its new words (waiting on the owner's yes) come.
+  Candlelight: "", Monastery: "",
   // A typeface, a print, formats, units and terms of the trade.
   Lora: "a typeface", "Giclée": "a kind of print", "Wi-Fi": "", OLED: "", PDF: "", JPEG: "", PNG: "", WebP: "", AVIF: "", JSON: "",
   Markdown: "", MB: "", IP: "", URL: "", USD: "", OAuth: "", localStorage: "a browser's store, by its name in code", push: "the phone's own push service",

@@ -2449,6 +2449,33 @@ Also his:
   Russian has its own). The looks' names beside them are translated, so a
   Greek or Arabic reader sees both on one page. Those five are older words,
   not touched here.
+  Done the same day (Updates 2, at the arbiter's word of 07:43 UTC): the
+  five are in each language's own words in the 16 catalogs that had them in
+  English (Bulgarian, Hungarian, Russian and Ukrainian had theirs), and so
+  are the lines that name them in those 16: "Candlelight at Vespers", the
+  night reading line and "Dark, Light and True black stay free, always",
+  with the Plus row's name where it called a palette by another word, and
+  section 27's "Candlelight keeps the season", which came in with the
+  English name in the same 16 and which the new test caught on the rebase.
+  "Candlelight and Monastery are part of Purify Plus" is left as it was, at
+  the arbiter's word: the new words for it drafted above wait on the
+  owner's yes, and it is translated with them. Each word was taken from the
+  catalog's own word for the thing where it had one (its monastery, its
+  candle, its dark palette), and measured on the export in all 21 languages
+  at 390 and 360px where the names are drawn: Settings' small pages (66px
+  wide, and a word cannot break), the reading mode page, the Plus
+  preview's switch (it cuts a long name short) and the Bible's reader
+  sheet. Six first choices were too wide and gave way to shorter words of
+  the same catalog (Greek Light, and Candlelight in Filipino, Italian,
+  Georgian, Nepali and Urdu). `lib/i18n/__tests__/paletteNames.test.ts`
+  holds every palette's, look's and family's name to differ from the
+  English in every catalog, and no line of another catalog to name a
+  palette in English, unless named as a deliberate exception with its
+  reason: Jordan and Patmos, places the language spells as English does;
+  Roses in French; Linen in Indonesian; and the Plus title until its new
+  words come. Stills: `build-89/palette-names-*.png` (Settings in Greek,
+  the reading mode page in Georgian, the Plus preview in Filipino, all at
+  360px).
 - **The new words were written by the chat**, 38 in each of 20 languages,
   and not read by a reader of each language. Places and things of the
   Church were given the Church's own names (Άγιον Όρος, Святая Гора).
