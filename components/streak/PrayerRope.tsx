@@ -46,7 +46,7 @@ export function PrayerRope({
           <span
             className={cn(
               "font-sans text-[10.5px] font-semibold leading-none",
-              knot.today ? (knot.state === "kept" ? "text-paper/90" : "text-paper/80") : "text-paper/40",
+              knot.today ? (knot.state === "kept" ? "text-paper/90" : "text-paper/80") : "text-paper/45",
             )}
           >
             {letter(knot.date)}

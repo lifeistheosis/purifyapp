@@ -114,7 +114,7 @@ export function VerseOfDayView({
               then which Bible the words are from (1.8), more quietly. */}
           <p className="mt-2.5 font-sans text-detail font-semibold text-paper/60">
             {vod ? <Reference>{referenceIn(vod.label, vod.book, books)}</Reference> : " "}
-            {vod ? <span className="font-normal text-paper/40">{edition}</span> : null}
+            {vod ? <span className="font-normal text-paper/45">{edition}</span> : null}
           </p>
         </Link>
 

@@ -121,3 +121,22 @@ describe("faint text on every palette", () => {
     expect(layer).not.toMatch(/!important/);
   });
 });
+
+// Two lines of words were left at 40 percent, under the shares above, as
+// though decorative: the week's day letters under the streak (the prayer rope,
+// on Today, on You and on the evening card) and the Bible's name after the
+// Verse of the Day's reference (", King James Version"). The Themes chat
+// measured them on 2026-11-10 at 3.8:1 on Dark and True black, 2.3:1 on
+// Light, 2.9:1 on Candlelight and 3.3:1 on Monastery. They are words a reader
+// reads, so they wear the faintest share the rules above hold to 4.5:1.
+describe("words once drawn at 40 percent", () => {
+  for (const file of ["components/streak/PrayerRope.tsx", "components/today/VerseOfDayView.tsx"]) {
+    it(`${file}: every text share is one the rules hold`, () => {
+      const src = readFileSync(join(process.cwd(), file), "utf8");
+      const shares = [...src.matchAll(/\btext-paper\/(\d+)\b/g)].map((m) => Number(m[1]));
+      expect(shares.length, file).toBeGreaterThan(0);
+      const under = shares.filter((share) => share < SHARES[0]);
+      expect(under, `${file}: text-paper/${under.join(", /")} is under the faintest share held to 4.5:1`).toEqual([]);
+    });
+  }
+});
