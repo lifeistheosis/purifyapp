@@ -2,21 +2,25 @@ import "server-only";
 
 import type { CampaignPart } from "./model";
 
-// The parts of prayer campaigns that ship in 1.9 built, and switched off.
+// The parts of prayer campaigns that have a switch of their own on the
+// server.
 //
-// His word, 2026-11-10, as docs/1.9-build/BRAINSTORM.md records it: pictures
-// and "Prayed by many" are "built and shipped switched off by a server-side
-// switch until the image check service and the lawyer, then turned on with no
-// store build".
+// His word, 2026-11-10 in the morning, as docs/1.9-build/BRAINSTORM.md
+// records it: pictures and "Prayed by many" were "built and shipped switched
+// off by a server-side switch", to be "turned on with no store build". His
+// later words the same day ("I want everything in version 1.9", and "rec yes
+// to all") turn each on as what it waited for is done:
 //
 //   many       "Prayed by many" (his item 118): a second list on the board,
 //              the campaigns most readers have added to their prayers. It
-//              shows an order and never a figure. Turning it on also needs
-//              his own line in CONTRIBUTING.md, which today allows no list
-//              ordered by how many pray ("On prayer, no figures at all").
-//   pictures   Pictures on a campaign (his item 121): three, or twenty with
-//              Plus, each checked before it is shown. Off until the image
-//              checking service is chosen and a lawyer has answered.
+//              shows an order and never a figure. ON since 2026-11-10: it
+//              waited for his own rule to allow it, and CONTRIBUTING.md
+//              ("On prayer, no figures at all") now carries the one
+//              exception, in his words, with the date.
+//   pictures   Pictures on a campaign (his item 121), each checked before
+//              it is shown. Off until his three steps are done: the account
+//              for the automatic check, the registration with NCMEC, and
+//              the Copyright Office's agent (docs/1.9-build/OWNER-STEPS.md).
 //
 // A CONSTANT IN VERSION CONTROL, as the campaigns' own switch is and for its
 // reasons (./flags.ts): it carries a date and a reason, and no dashboard can
@@ -32,8 +36,8 @@ import type { CampaignPart } from "./model";
 // and read nothing, so a request written by hand reaches nothing the screens
 // do not offer.
 
-/** The switches. Both off since they were built, 2026-11-10. */
-export const CAMPAIGN_PARTS: Readonly<Record<CampaignPart, boolean>> = { many: false, pictures: false };
+/** The switches. Both were off when they were built, 2026-11-10; "Prayed by many" is on since that evening, by his word. */
+export const CAMPAIGN_PARTS: Readonly<Record<CampaignPart, boolean>> = { many: true, pictures: false };
 
 let parts: Record<CampaignPart, boolean> = { ...CAMPAIGN_PARTS };
 

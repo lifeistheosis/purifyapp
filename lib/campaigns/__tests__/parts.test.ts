@@ -21,6 +21,11 @@ import { client, world, type Row, type World } from "@/lib/security/__tests__/fa
  * listed so that the list says who carries it, or a campaign listed against
  * its creator's wish. His own rule allows none of those (CONTRIBUTING.md,
  * "On prayer, no figures at all").
+ *
+ * "Prayed by many" is on since 2026-11-10, by his word ("rec yes to all"):
+ * his rule now carries the one exception, in the form these cases hold. Off
+ * is still a position, as pictures are today, so the cases that hold what
+ * off means set it and do not assume it.
  */
 
 const state = vi.hoisted(() => ({
@@ -149,10 +154,28 @@ const titles = async (span = "week") => {
 };
 
 describe("the switches", () => {
-  it("are committed off, both of them", () => {
-    expect(CAMPAIGN_PARTS).toEqual({ many: false, pictures: false });
-    expect(campaignPart("many")).toBe(false);
+  it("are committed as he has said: Prayed by many on, pictures off until his three steps are done", () => {
+    expect(CAMPAIGN_PARTS).toEqual({ many: true, pictures: false });
+    expect(campaignPart("many")).toBe(true);
     expect(campaignPart("pictures")).toBe(false);
+  });
+
+  it("Prayed by many is on only because his own rule now allows it, in his words and in this form", () => {
+    // The part was built off and waited for this: CONTRIBUTING.md allowed no
+    // list ordered by how many pray. If the exception is ever taken out of
+    // his rule, this fails until the part is switched off again.
+    const rule = readFileSync(join(ROOT, "CONTRIBUTING.md"), "utf8").replace(/\s+/g, " ");
+    expect(rule).toContain("### On prayer, no figures at all");
+    expect(rule).toContain("**One list is permitted, on the owner's word** (2026-11-10: \"rec yes to all\"");
+    for (const promise of [
+      "The order is shown; no figure ever is: no number of people, and no rank numeral.",
+      "A campaign is listed only once five readers carry it",
+      "It stands under the newest campaigns and never in their place",
+      "a creator can keep a campaign out of it",
+      "it is no precedent for a count beside an intention, anywhere",
+    ]) {
+      expect(rule, promise).toContain(promise);
+    }
   });
 
   it("are the server's alone: the file loads only on the server, and nothing a reader's device runs reads it", () => {
@@ -181,6 +204,7 @@ describe("the switches", () => {
 
   it("are told to an app with the answer that campaigns are open, and nowhere else", async () => {
     const told = async () => (await (await isOpen(new Request(`${SITE}/api/campaigns/open`))).json()) as { open: boolean; parts: Record<string, boolean> };
+    __setCampaignPart("many", false);
     expect(await told()).toEqual({ open: true, parts: { many: false, pictures: false } });
     __setCampaignPart("many", true);
     expect(await told()).toEqual({ open: true, parts: { many: true, pictures: false } });
@@ -242,6 +266,8 @@ describe("what an app believes of a part", () => {
 });
 
 describe("Prayed by many, switched off", () => {
+  beforeEach(() => __setCampaignPart("many", false));
+
   it("answers 404 and reads nothing, whoever asks and whatever campaigns' own switch says", async () => {
     state.admin = null;
     for (const opening of ["open", "testers", "closed"] as const) {

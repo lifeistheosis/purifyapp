@@ -224,8 +224,8 @@ describe("the switch", () => {
     signIn(null);
     const res = await isOpen(new Request(`${SITE}/api/campaigns/open`));
     expect(res.status).toBe(200);
-    // With the parts that ship switched off, each said to be off (parts.test.ts).
-    expect(await res.json()).toEqual({ open: true, parts: { many: false, pictures: false } });
+    // With each part as it is committed (parts.test.ts): "Prayed by many" on, pictures off.
+    expect(await res.json()).toEqual({ open: true, parts: { many: true, pictures: false } });
     expect((await board(new Request(`${SITE}/api/campaigns`))).status).toBe(200);
   });
 

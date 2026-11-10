@@ -107,6 +107,20 @@ another ranks a board of needs, and it ranks it backwards: the one with two is
 the one that needs somebody. Nobody designed that ranking. It is what a visible
 count does when you put it next to a need.
 
+**One list is permitted, on the owner's word** (2026-11-10: "rec yes to all",
+answering the recommendation put to him as: "Prayed by many" with one
+exception to the "no figures on prayer" rule, an order only, never a number,
+five praying first, a creator can stay out). On the board of prayer
+campaigns, "Prayed by many" orders campaigns by how many readers added them
+to their prayers in a day, a week, a month or a year. The order is shown; no
+figure ever is: no number of people, and no rank numeral. A campaign is
+listed only once five readers carry it, so the list never says who carries a
+small one. It stands under the newest campaigns and never in their place, so
+a need nobody carries yet is still seen first. And a creator can keep a
+campaign out of it. This is the ranking the paragraph above warns of, allowed
+in this one form and in no other: it is no precedent for a count beside an
+intention, anywhere.
+
 One thing is permitted and the distinction matters. A **state** is not a
 tally: "you have prayed today" counts nothing, accumulates nothing and reads
 the same on the four hundredth day as on the first. A fourteen-day rhythm

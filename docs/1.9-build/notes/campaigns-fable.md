@@ -2302,12 +2302,14 @@ Built to the form 2.8 proposed and he said yes to, and no wider:
 - **Kept for a minute,** so the board cannot be used to watch one reader
   join.
 
-**Two things stand between this and the day it is turned on, both his:**
+**Two things stood between this and the day it was turned on, both his,
+and both are done (2026-11-10, section 19):**
 
 1. **His own rule.** `CONTRIBUTING.md` (2026-08-22, "On prayer, no figures at
-   all") allows no list ordered by how many pray. The words for it are in
-   2.8, for his hand. Until that line is in the file, the switch stays off.
-2. **One line on main:** `many: true` in `lib/campaigns/parts.ts`.
+   all") allowed no list ordered by how many pray. It now carries the one
+   exception, in his words, with the date.
+2. **One line:** `many: true` in `lib/campaigns/parts.ts`, on the branch, so
+   it is on wherever campaigns are.
 
 It needs no SQL: the join rows and `listed` are file one's.
 
@@ -2954,3 +2956,31 @@ when a sheet counts as standing over the page), and the walk's first flow,
 which now also opens the Terms from the line, sees the tick untouched,
 closes the sheet with Escape and finds the page and its written words still
 there, and ticks the line by its words.
+
+## 19. "Prayed by many" is on (2026-11-10)
+
+**His word** (`BRAINSTORM.md`, "rec yes to all", answering the recommendation
+as the arbiter put it): "Prayed by many" with one exception to the "no
+figures on prayer" rule: an order only, never a number, five praying first,
+a creator can stay out.
+
+- **His rule carries the exception now.** `CONTRIBUTING.md`, under "On
+  prayer, no figures at all", after the paragraph that says why public counts
+  went: one list is permitted, on his word, with the date; the order is shown
+  and no figure ever is; a campaign is listed only once five readers carry
+  it; it stands under the newest campaigns and never in their place; a
+  creator can keep a campaign out; and it is no precedent for a count beside
+  an intention anywhere. The words are the ones drafted in 2.8, with the
+  floor of five written in, since that is part of what he said yes to.
+- **The part is switched on:** `lib/campaigns/parts.ts`, `many: true`. An app
+  is told with the answer that campaigns are open, as before, so no build is
+  needed for it.
+- **Tied together by a test:** `parts.test.ts` holds that the part is on only
+  while his rule carries the exception, in this form. If the paragraph is
+  ever taken out of his rule, the test fails until the part is off again.
+- **Off is still a position,** as pictures are today: the cases that hold
+  what off means (404, nothing read, nothing drawn) set it and no longer
+  assume it.
+- **What it is, unchanged from 12.2:** a second list under "Newly asked", by
+  Day, Week, Month or Year; an order and never a figure; five readers before
+  a campaign is listed; kept for a minute; a creator's switch to stay out.
