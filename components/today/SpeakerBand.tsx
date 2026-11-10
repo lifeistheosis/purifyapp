@@ -71,6 +71,11 @@ export function SpeakerBand({ eyebrow, name, words, who, cite, face, onShare, sh
     <article
       {...attributes}
       data-face={side ?? "none"}
+      // The band is placed by the face, not by the line: the portrait stands on
+      // the side the speaker looks from in every language (standsOn), so the
+      // mirror check of scripts/mock-check.mjs is told why it does not turn.
+      data-mock-allow="mirror"
+      data-mock-why="the portrait stands on the side the speaker looks from, in every language (lib/today/saintFaces.ts, standsOn)"
       className="today-band relative isolate overflow-hidden rounded-[18px] bg-night-deep text-start"
       style={side ? { minHeight: BAND_PORTRAIT.minHeight } : undefined}
     >

@@ -31,7 +31,7 @@ export function StreakCard({ className }: { className?: string }) {
       <button
         type="button"
         onClick={() => setOpen(true)}
-        className="tap-press -m-1 flex w-[calc(100%+0.5rem)] items-center gap-3.5 rounded-xl p-1 text-left transition-colors hover:bg-paper/[0.04]"
+        className="tap-press -m-1 flex w-[calc(100%+0.5rem)] items-center gap-3.5 rounded-xl p-1 text-start transition-colors hover:bg-paper/[0.04]"
       >
         <span className={cn("inline-flex shrink-0", view.atRisk && "streak-pulse", state === "out" && "text-paper")}>
           <StreakFlame size={46} state={state} tier={tierLevel(view.current)} />

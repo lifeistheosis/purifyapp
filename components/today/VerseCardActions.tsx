@@ -247,8 +247,19 @@ export function VerseCardActions({
             aria-label={heard.playing ? t("readAloud.pause") : t("readAloud.listen")}
             className={cn(ROUND, heard.playing ? "reader-lit border-paper/45" : "border-paper/15")}
           >
-            {/* The triangle's weight sits left of its box: a pixel right centres it. */}
-            {heard.playing ? <Pause size={17} /> : <Play size={17} className="translate-x-px" />}
+            {/* The triangle's weight sits left of its box: a pixel right centres
+                it. It points right in every language, as media controls do, so
+                the pixel stays right in Arabic too. */}
+            {heard.playing ? (
+              <Pause size={17} />
+            ) : (
+              <Play
+                size={17}
+                className="translate-x-px"
+                data-mock-allow="mirror"
+                data-mock-why="a play mark points right in every language, as media controls do; its pixel centres it by eye"
+              />
+            )}
           </button>
         ) : null}
         <button
@@ -331,7 +342,7 @@ function SheetItem({ label, onClick }: { label: string; onClick: () => void }): 
     <button
       type="button"
       onClick={onClick}
-      className="w-full rounded-md px-3 py-3 text-left font-sans text-ui text-paper hover:bg-paper/[0.05] transition-colors"
+      className="w-full rounded-md px-3 py-3 text-start font-sans text-ui text-paper hover:bg-paper/[0.05] transition-colors"
     >
       {label}
     </button>

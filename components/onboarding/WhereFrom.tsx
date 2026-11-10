@@ -137,12 +137,13 @@ export function WhereFrom({
 export function WhereFromSky() {
   return (
     <div aria-hidden className="pointer-events-none fixed inset-0 -z-10 overflow-hidden text-paper">
+      {/* From the line's start, as the intro's stars are, so the sky carries on star for star in Arabic too. */}
       <div className="ob-wf-stars">
         {HORIZON_STARS.map((s) => (
           <i
             key={`${s.left}${s.top}`}
             className="absolute rounded-full bg-paper"
-            style={{ left: s.left, top: s.top, width: s.size, height: s.size, opacity: s.opacity, animationDelay: `${s.delay}ms` }}
+            style={{ insetInlineStart: s.left, top: s.top, width: s.size, height: s.size, opacity: s.opacity, animationDelay: `${s.delay}ms` }}
           />
         ))}
       </div>

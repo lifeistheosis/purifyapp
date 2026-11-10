@@ -59,12 +59,16 @@ export function LaunchFrame() {
       <div data-launch-frame="" aria-hidden="true" className="dark-island fixed inset-0 z-[200] overflow-hidden bg-night">
         {/* Everything that lifts away together when the cover goes. */}
         <div data-launch-stage="" className="absolute inset-0 text-paper">
+          {/* Each star from the line's start, so the sky turns with the page
+              in Arabic, as the welcome flow's and the tour's skies do. The
+              splash is up until the reader's language is on the page
+              (NativeBridge, whenLanguageSettled), so no one sees it turn. */}
           <div className="launch-stars">
             {HORIZON_STARS.map((s) => (
               <i
                 key={`${s.left}${s.top}`}
                 className="absolute rounded-full bg-paper"
-                style={{ left: s.left, top: s.top, width: s.size, height: s.size, opacity: s.opacity, ["--star-at" as string]: `${s.delay}ms` }}
+                style={{ insetInlineStart: s.left, top: s.top, width: s.size, height: s.size, opacity: s.opacity, ["--star-at" as string]: `${s.delay}ms` }}
               />
             ))}
           </div>

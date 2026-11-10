@@ -65,7 +65,7 @@ function Rope({ view, className }: { view: StreakView; className?: string }) {
         aria-label={`${tn("streak.count", view.current)}. ${line}`}
         aria-haspopup="dialog"
         className={cn(
-          "tap-press flex w-full flex-col gap-[9px] rounded-[17px] border border-paper/12 bg-paper/[0.035] px-3.5 pb-2.5 pt-3 text-left transition-colors hover:bg-paper/[0.06]",
+          "tap-press flex w-full flex-col gap-[9px] rounded-[17px] border border-paper/12 bg-paper/[0.035] px-3.5 pb-2.5 pt-3 text-start transition-colors hover:bg-paper/[0.06]",
           className,
         )}
       >

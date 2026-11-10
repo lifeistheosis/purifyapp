@@ -131,7 +131,7 @@ describe("its night and its light", () => {
     expect(sky).toContain("top-[84%]");
     expect(sky).toMatch(/class="absolute left-1\/2 top-0 h-\[324vw\] w-\[324vw\]/);
     // The intro's own stars, in the same places.
-    const stars = (html: string) => [...html.matchAll(/<i class="absolute rounded-full bg-paper" style="(left:[^;]+;top:[^;]+)/g)].map((m) => m[1]);
+    const stars = (html: string) => [...html.matchAll(/<i class="absolute rounded-full bg-paper" style="(inset-inline-start:[^;]+;top:[^;]+)/g)].map((m) => m[1]);
     expect(stars(sky).length).toBeGreaterThan(20);
     expect(stars(sky)).toEqual(stars(intro));
     // Behind the step, fixed to the screen, never in the way of a tap.

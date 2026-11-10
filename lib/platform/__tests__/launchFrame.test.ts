@@ -106,7 +106,8 @@ describe("the intro", () => {
   it("keeps its stars above the horizon and clear of the cross", () => {
     // The crest is at 71% of the screen and falls away to the sides.
     expect(cover).toContain("top-[71%]");
-    const stars = [...cover.matchAll(/<i [^>]*style="left:([\d.]+)%;top:([\d.]+)%/g)].map((m) => ({ x: Number(m[1]), y: Number(m[2]) }));
+    // Placed from the line's start, so the sky turns with the page in Arabic (checkMock's mirror pass).
+    const stars = [...cover.matchAll(/<i [^>]*style="inset-inline-start:([\d.]+)%;top:([\d.]+)%/g)].map((m) => ({ x: Number(m[1]), y: Number(m[2]) }));
     expect(stars.length).toBeGreaterThan(20);
     for (const s of stars) {
       expect(s.y).toBeLessThan(61);
