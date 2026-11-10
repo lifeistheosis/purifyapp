@@ -972,31 +972,12 @@ SQL (above).
   signed 2026-11-10 by "rec yes to all", which covered it once the Admin
   chat's second read passed; it passed the same day. In
   `supabase/migrations/` as `20261110172648_campaign_terms.sql`.
-- **Waiting for your yes:** the notice that tells a reader why something
-  they posted was removed, `docs/1.9-build/sql/removal-notices.sql`. Its
-  second read passed (the Updates chat, 2026-11-10). It stays out of
-  `supabase/migrations/` until your yes, and the arbiter sends you its plain
-  words. Before you say yes, one look at the live database that changes
-  nothing (2 minutes):
-  1. Supabase, check the project at the top holds
-     `avbqyvjgcrucjwevwixt`, then **SQL Editor**, **New query**.
-  2. Paste this, all of it (on GitHub, the copy button at the box's top
-     right), and click **Run**:
-
-     ```sql
-     select
-       (select string_agg(conname || ': ' || pg_get_constraintdef(oid), ' | ' order by conname)
-          from pg_constraint
-         where conrelid = 'public.community_notifications'::regclass and contype = 'c') as checks,
-       (select coalesce(string_agg(distinct kind, ', '), 'none')
-          from public.community_notifications
-         where kind not in ('reply', 'mention', 'follow', 'name_day', 'prayed', 'gift',
-                            'question', 'answer', 'approved', 'removed')) as kinds_outside;
-     ```
-
-  3. It should show one check, `community_notifications_kind_check`, with
-     nine kinds, and `none` beside `kinds_outside`. If it shows anything
-     else, do not say yes: send a screenshot to the arbiter.
+- The notice that tells a reader why something they posted was removed:
+  signed 2026-11-10 by your "Yes to all recommended suggestions", after your
+  read-only look at about 20:46 UTC showed the check
+  `community_notifications_kind_check` and `none` beside `kinds_outside`
+  (second read: the Updates chat). In `supabase/migrations/` as
+  `20261110204814_removal_notices.sql`.
 
 Do not run any of these by hand: the push runs them.
 

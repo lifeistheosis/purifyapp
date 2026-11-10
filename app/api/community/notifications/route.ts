@@ -21,7 +21,7 @@ const COLS =
   "id, kind, post_id, reply_id, actor_name, excerpt, read_at, created_at";
 // actor_handle arrives with 20261002000000_community_social.sql.
 const COLS_WITH_HANDLE = `${COLS}, actor_handle`;
-// A removal notice's two fields arrive with docs/1.9-build/sql/removal-notices.sql.
+// A removal notice's two fields arrive with supabase/migrations/20261110204814_removal_notices.sql.
 const COLS_WITH_REMOVAL = `${COLS_WITH_HANDLE}, target_kind, reason`;
 
 async function handleGET(req: Request) {

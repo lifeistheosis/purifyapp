@@ -25,7 +25,7 @@ import {
 
 const ROOT = process.cwd();
 const read = (rel: string) => fs.readFileSync(path.join(ROOT, rel), "utf8");
-const SQL = read("docs/1.9-build/sql/removal-notices.sql").replace(/--.*$/gm, "");
+const SQL = read("supabase/migrations/20261110204814_removal_notices.sql").replace(/--.*$/gm, "");
 /** The values a check constraint allows, by its name. */
 const allowed = (constraint: string) => {
   const at = SQL.indexOf(`add constraint ${constraint}`);
@@ -46,10 +46,15 @@ describe("the code and the SQL name the same things", () => {
     expect(kinds).toContain("removed");
   });
 
-  it("stays out of the migrations folder until his yes", () => {
-    for (const f of fs.readdirSync(path.join(ROOT, "supabase/migrations"))) {
-      expect(read(`supabase/migrations/${f}`), f).not.toContain("community_notifications_reason_check");
-    }
+  it("is in the migrations folder once, signed, now that he has said yes", () => {
+    // It waited in docs/1.9-build/sql/ until his yes of 2026-11-10 and his
+    // read-only look; it moved here unchanged, so the merge of 1.9 runs it.
+    const holding = fs
+      .readdirSync(path.join(ROOT, "supabase/migrations"))
+      .filter((f) => read(`supabase/migrations/${f}`).includes("community_notifications_reason_check"));
+    expect(holding).toEqual(["20261110204814_removal_notices.sql"]);
+    expect(read("supabase/migrations/20261110204814_removal_notices.sql")).toMatch(/^-- SIGNED 2026-11-10, AND RUNS WITH THE MERGE\./m);
+    expect(fs.existsSync(path.join(ROOT, "docs/1.9-build/sql/removal-notices.sql"))).toBe(false);
   });
 });
 

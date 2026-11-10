@@ -31,11 +31,13 @@ written as 1.9 is planned to ship.
    for the team only when the build is submitted, part B says so in one line
    ("Prayer campaigns are in this build and open to our team only").
 3. **The removal notice.** "The reader who posted it is told why" is true
-   once `docs/1.9-build/sql/removal-notices.sql` has run on the live database
-   (his yes, then the push). Every moderator's removal in the build writes
-   the notice already: posts, replies, comments, shared journal pages, and
-   (since `aa6417915`) campaigns and their pictures. Until the SQL has run,
-   say only that moderators remove what breaks the rules.
+   once `supabase/migrations/20261110204814_removal_notices.sql` (signed
+   2026-11-10) has run on the live database, which the release push does:
+   the Supabase check on that push must read success. Every moderator's
+   removal in the build writes the notice already: posts, replies, comments,
+   shared journal pages, and (since `aa6417915`) campaigns and their
+   pictures. If the check failed, say only that moderators remove what breaks
+   the rules.
 4. **Pictures on prayer campaigns** have two switches: the server's
    (`CAMPAIGN_PARTS.pictures` in `lib/campaigns/parts.ts`, off until his
    three steps are done) and the store builds' own (`PICTURES_IN_STORE_BUILDS`

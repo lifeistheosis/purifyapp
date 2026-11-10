@@ -1,13 +1,17 @@
 -- The notice that tells a reader why something they posted was removed.
 --
--- NOT SIGNED, AND NOT IN supabase/migrations/. It stays here until his plain
--- yes (the arbiter's word, 2026-11-10); then it moves into the folder under a
--- new fourteen-digit name and the merge runs it. Second read: the Updates
--- chat, 2026-11-10, "it reads right, and I would sign it".
+-- SIGNED 2026-11-10, AND RUNS WITH THE MERGE. Second read: the Updates chat,
+-- 2026-11-10, "it reads right, and I would sign it". Signed by his "Yes to
+-- all recommended suggestions" (about 20:07 UTC, BRAINSTORM c884b768a), which
+-- stood once his read-only look below matched: run by him on the live
+-- database at about 20:46 UTC, it showed community_notifications_kind_check
+-- as the check and "none" beside kinds_outside. Not applied by hand: the
+-- integration runs this file on the merge of 1.9 to main. It was kept in
+-- docs/1.9-build/sql/ until then, and moved here unchanged below this header.
 --
--- BEFORE HE SIGNS, one read-only query on the live database (it changes
--- nothing and returns no counts), because the public key cannot read the
--- table's checks or other readers' rows:
+-- THE READ-ONLY LOOK, as he ran it before signing (it changes nothing and
+-- returns no counts), because the public key cannot read the table's checks
+-- or other readers' rows:
 --
 --   select
 --     (select string_agg(conname || ': ' || pg_get_constraintdef(oid), ' | ' order by conname)

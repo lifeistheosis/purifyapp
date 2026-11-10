@@ -35,7 +35,7 @@ export type CommunityNotification = {
   excerpt: string | null;
   read_at: string | null;
   created_at: string;
-  /** A "removed" notice: what was removed, and why (lib/community/removal.ts; docs/1.9-build/sql/removal-notices.sql). */
+  /** A "removed" notice: what was removed, and why (lib/community/removal.ts; supabase/migrations/20261110204814_removal_notices.sql). */
   target_kind?: string | null;
   reason?: string | null;
 };

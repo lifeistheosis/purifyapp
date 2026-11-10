@@ -11,7 +11,7 @@
 // No push: a removal is said in the inbox, not on a lock screen.
 //
 // Best effort, like every notice: a removal never waits on its notice. Before
-// docs/1.9-build/sql/removal-notices.sql has run, the table refuses the row
+// supabase/migrations/20261110204814_removal_notices.sql has run, the table refuses the row
 // (no such kind, no such columns), and that is logged once and passed over.
 
 import type { SupabaseClient } from "@supabase/supabase-js";
@@ -101,7 +101,7 @@ export async function writeRemovalNotice(admin: SupabaseClient, n: Parameters<ty
     const { error } = await admin.from("community_notifications").insert(removalNoticeRow(n));
     if (error && !warned) {
       warned = true;
-      console.warn("[community] removal notice not written (is docs/1.9-build/sql/removal-notices.sql applied?)", error.message);
+      console.warn("[community] removal notice not written (is supabase/migrations/20261110204814_removal_notices.sql applied?)", error.message);
     }
   } catch (e) {
     if (!warned) {
