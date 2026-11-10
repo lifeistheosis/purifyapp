@@ -1,10 +1,14 @@
 /**
  * What an error report may keep (admin item A10, supabase/migrations/20261110002922_app_errors.sql).
  *
- * The privacy line Edgar approved on 2026-11-09: "When something fails, the
- * app reports the page, the app version and the kind of device, never who you
- * are." So a report is cut down here before it is kept, on the server, for
- * every source (the website's own server and the apps):
+ * The privacy line Edgar approved (2026-11-09, and as it reads from his yes to
+ * 82a on 2026-11-10): "When something fails, Purify keeps a short report:
+ * what failed and the error it gave, the page, the app version and the kind
+ * of device, never who you are. Anything in it that looks like an email
+ * address or a phone number is removed first, and each report is deleted
+ * after 14 days." So a report is cut down here before it is kept, on the
+ * server, for every source (the website's own server and the apps), and
+ * lib/ops/prune.ts deletes it after KEEP_DAYS.app_errors (14):
  *
  *   - the page as a path alone: never the query string or the hash, which can
  *     carry an address, a token or a search;

@@ -371,11 +371,16 @@ export default async function PrivacyPage() {
  written and shared, and which version of the app is in use.
 </p>
  {/* 1.9, admin items A10 and A11 (lib/errors/, lib/search/missWords.ts):
- the owner's lines of 2026-11-09, word for word, listed in the 1.9 letter.
- A test holds them (lib/admin/__tests__/privacyLines.test.ts). */}
+ the owner's lines of 2026-11-09, word for word, listed in the 1.9 letter;
+ the line on errors as he approved it again on 2026-11-10 (82a), naming
+ what a report keeps and when it goes. A test holds them
+ (lib/admin/__tests__/privacyLines.test.ts). */}
 <p className="mt-3 font-serif text-body text-paper/85 leading-[1.7]">
- When something fails, the app reports the page, the app version and
- the kind of device, never who you are.
+ When something fails, Purify keeps a short report: what failed and
+ the error it gave, the page, the app version and the kind of device,
+ never who you are. Anything in it that looks like an email address
+ or a phone number is removed first, and each report is deleted after
+ 14 days.
 </p>
 <p className="mt-3 font-serif text-body text-paper/85 leading-[1.7]">
  When a search finds nothing, we keep the words you searched, never
@@ -431,9 +436,12 @@ export default async function PrivacyPage() {
  </p>
  <p className="mt-3 font-serif text-body text-paper/85 leading-[1.7]">
  We keep the anonymous visit data: the session and pageview rows,
- and the catechism, welcome-question and screen counts described
- above. Nothing deletes them on a schedule; we keep them to see how
- Purify is used over time. Sync data tied to your account
+ and the counts described above (the catechism, the welcome
+ questions, the screens, what Purify Plus is wanted for, and the
+ Bibles downloaded, reading plans, journal pages and app versions).
+ Nothing deletes them on a schedule; we keep them to see how Purify
+ is used over time. Error reports are deleted after 14 days, and
+ searches that found nothing after 90. Sync data tied to your account
  (highlights, bookmarks, etc.) is kept as long as your account
  exists; deleting your account from{" "}
  <Link
@@ -544,9 +552,10 @@ export default async function PrivacyPage() {
  optional subscription, the purchase is processed by RevenueCat and by
  Apple or Google under their own policies; we receive whether your
  subscription is active, not your payment details. When you buy or
- renew a membership, we keep a record of it: which store, the price
- and the dates. Once you delete your account, it is no longer linked
- to you.
+ renew a membership, we keep a record of it: which store, the plan,
+ whether it is a free trial, the price and the dates, and, when a
+ membership ends, why. Once you delete your account, it is no longer
+ linked to you.
  </li>
  <li>
  <strong>Apple / Google push (native apps only)</strong>, the iOS and
@@ -1162,10 +1171,14 @@ function PrivacyDe() {
  Version der App benutzt wird.
  </p>
  {/* 1.9, admin items A10 and A11: the owner's lines of 2026-11-09, word for
- word in German. A test holds them (lib/admin/__tests__/privacyLines.test.ts). */}
+ word in German, the line on errors as of 2026-11-10 (82a). A test holds
+ them (lib/admin/__tests__/privacyLines.test.ts). */}
  <p className="mt-3 font-serif text-body text-paper/85 leading-[1.7]">
- Wenn etwas fehlschlägt, meldet die App die Seite, die App-Version
- und die Art des Geräts, niemals, wer du bist.
+ Wenn etwas fehlschlägt, behält Purify einen kurzen Bericht: was
+ fehlgeschlagen ist und welchen Fehler es gab, die Seite, die
+ App-Version und die Art des Geräts, niemals, wer du bist. Alles
+ darin, was wie eine E-Mail-Adresse oder eine Telefonnummer aussieht,
+ wird vorher entfernt, und jeder Bericht wird nach 14 Tagen gelöscht.
  </p>
  <p className="mt-3 font-serif text-body text-paper/85 leading-[1.7]">
  Wenn eine Suche nichts findet, behalten wir 90 Tage lang die Wörter,
@@ -1216,10 +1229,13 @@ function PrivacyDe() {
  </p>
  <p className="mt-3 font-serif text-body text-paper/85 leading-[1.7]">
  Die anonymen Besuchsdaten behalten wir: die Sitzungs- und
- Seitenaufruf-Zeilen und die oben beschriebenen Zählungen zur
- Katechese, zu den Willkommensfragen und zu den Bildschirmen. Nichts
- löscht sie nach Plan; wir behalten sie, um zu sehen, wie Purify
- über die Zeit genutzt wird. Abgleichsdaten, die an dein Konto
+ Seitenaufruf-Zeilen und die oben beschriebenen Zählungen (zur
+ Katechese, zu den Willkommensfragen, zu den Bildschirmen, dazu,
+ wofür Purify Plus gewünscht wird, und zu den heruntergeladenen
+ Bibeln, den Leseplänen, den Tagebuchseiten und den App-Versionen).
+ Nichts löscht sie nach Plan; wir behalten sie, um zu sehen, wie
+ Purify über die Zeit genutzt wird. Fehlerberichte werden nach 14
+ Tagen gelöscht, erfolglose Suchen nach 90 Tagen. Abgleichsdaten, die an dein Konto
  gebunden sind (Markierungen, Lesezeichen usw.), werden so lange
  behalten, wie dein Konto besteht; die Löschung deines Kontos über{" "}
  <Link
@@ -1340,8 +1356,9 @@ function PrivacyDe() {
  wir erfahren, ob dein Abonnement aktiv ist, nicht deine
  Zahlungsdaten. Wenn du eine Mitgliedschaft abschließt oder
  verlängerst, bewahren wir eine Aufzeichnung davon auf: welcher
- Store, der Preis und die Datumsangaben. Sobald du dein Konto
- löschst, ist sie nicht mehr mit dir verbunden.
+ Store, der Tarif, ob es eine kostenlose Probezeit ist, der Preis
+ und die Datumsangaben und, wenn eine Mitgliedschaft endet, warum.
+ Sobald du dein Konto löschst, ist sie nicht mehr mit dir verbunden.
  </li>
  <li>
  <strong>Apple- und Google-Push (nur in den Apps)</strong>, die

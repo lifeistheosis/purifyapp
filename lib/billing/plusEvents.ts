@@ -16,9 +16,11 @@ import { isTableAbsent } from "@/lib/admin/tableAbsent";
  * retried purchase is the one thing the webhook must never cause). A retried
  * delivery is kept once: the event's own id is unique in the table.
  *
- * What a row holds is the privacy line Edgar approved: "When you buy or renew
- * a membership, we keep a record of it: which store, the price and the dates.
- * Once you delete your account, it is no longer linked to you." So: the
+ * What a row holds is the privacy line Edgar approved (2026-11-09, and as it
+ * reads from his yes to 68 on 2026-11-10): "When you buy or renew a
+ * membership, we keep a record of it: which store, the plan, whether it is a
+ * free trial, the price and the dates, and, when a membership ends, why. Once
+ * you delete your account, it is no longer linked to you." So: the
  * member's account id (cleared when the account is deleted), and never a card,
  * an email, a country or the store's own order number (which the store could
  * trace back to the buyer after the account is gone).

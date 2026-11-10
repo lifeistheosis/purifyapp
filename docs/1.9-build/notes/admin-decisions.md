@@ -126,10 +126,18 @@ next letter. These are the Admin chat's lines, Edgar's "yes to all 4" of
 live with its feature (lib/admin/__tests__/privacyLines.test.ts holds them):
 
 1. Plus records (A2), under RevenueCat and the app stores: "When you buy or
-   renew a membership, we keep a record of it: which store, the price and the
-   dates. Once you delete your account, it is no longer linked to you."
-2. Errors (A10): "When something fails, the app reports the page, the app
-   version and the kind of device, never who you are."
+   renew a membership, we keep a record of it: which store, the plan, whether
+   it is a free trial, the price and the dates, and, when a membership ends,
+   why. Once you delete your account, it is no longer linked to you." (As it
+   reads from his yes to 68, 2026-11-10; the first version named only the
+   store, the price and the dates.)
+2. Errors (A10): "When something fails, Purify keeps a short report: what
+   failed and the error it gave, the page, the app version and the kind of
+   device, never who you are. Anything in it that looks like an email address
+   or a phone number is removed first, and each report is deleted after 14
+   days." (As it reads from his yes to 82a, 2026-11-10; the first version,
+   "the app reports the page, the app version and the kind of device", left
+   out the message kept and how long.)
 3. Searches that found nothing (A11): "When a search finds nothing, we keep
    the words you searched, never who you are, for 90 days, so we can add what
    readers are looking for. Anything that looks like an email address or a
@@ -138,3 +146,12 @@ live with its feature (lib/admin/__tests__/privacyLines.test.ts holds them):
    which Bible translations are downloaded, which reading plans are begun and
    finished, how many journal pages are written and shared, and which version
    of the app is in use."
+5. How long we keep it (82b, his yes of 2026-11-10), the paragraph's opening:
+   "We keep the anonymous visit data: the session and pageview rows, and the
+   counts described above (the catechism, the welcome questions, the screens,
+   what Purify Plus is wanted for, and the Bibles downloaded, reading plans,
+   journal pages and app versions). Nothing deletes them on a schedule; we
+   keep them to see how Purify is used over time. Error reports are deleted
+   after 14 days, and searches that found nothing after 90." (It named only
+   the catechism, welcome-question and screen counts, and said nothing of
+   error reports or searches.)

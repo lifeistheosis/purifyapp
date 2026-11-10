@@ -5,8 +5,9 @@
  * app/api/errors/route.ts.
  *
  * What it sends is what the privacy line Edgar approved says, and nothing
- * else: the page, what failed, the app version and the kind of device. Never
- * the reader: no token, no cookie (credentials "omit"), no account.
+ * else: the page, what failed and the error it gave, the app version and the
+ * kind of device. Never the reader: no token, no cookie (credentials "omit"),
+ * no account. The line (his yes to 82a, 2026-11-10) is quoted in ./scrub.ts.
  *
  * Quiet by design: a report that cannot be sent is dropped, the same fault is
  * sent once per visit, and no more than ten go from one visit, so a screen
