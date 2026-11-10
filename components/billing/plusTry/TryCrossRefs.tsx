@@ -49,7 +49,10 @@ export default function TryCrossRefs({ row }: TryProps) {
       <TryWindow label={t(row.name)} tall>
         <div className="px-5 pb-16 pt-5">
           <p className="font-sans text-ui font-semibold text-paper">{t("bible.crossRefsFor", { reference: reference(verse) })}</p>
-          <p className="mt-2 font-serif text-body leading-[1.6] text-paper/85">{johnVerse(verse)}</p>
+          {/* The app's own English verse: it says so and runs left to right in every language (TryBible.tsx). */}
+          <p lang="en" dir="ltr" className="mt-2 font-serif text-body leading-[1.6] text-paper/85">
+            {johnVerse(verse)}
+          </p>
           {refs ? (
             <div className="mt-3">
               <CrossRefList items={items} />

@@ -46,7 +46,11 @@ export default function TryMark({ row }: TryProps) {
               </span>
               <ExampleTag className="ms-auto shrink-0" />
             </div>
-            <p className="mt-3 font-serif text-body leading-[1.6] text-paper/90">{johnVerse(POST_VERSE)}</p>
+            {/* The app's own English verse, so it says so and runs left to right in every language, as the page of
+                Scripture in the previews does (TryBible.tsx): in Arabic and Urdu its full stop stood at its start. */}
+            <p lang="en" dir="ltr" className="mt-3 font-serif text-body leading-[1.6] text-paper/90">
+              {johnVerse(POST_VERSE)}
+            </p>
             <p className="mt-1.5 font-sans text-caption text-paper/50">{reference(POST_VERSE)}</p>
           </article>
         </div>

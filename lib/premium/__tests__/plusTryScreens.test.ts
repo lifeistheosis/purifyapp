@@ -165,6 +165,25 @@ describe("each feature's own screen", () => {
     }
   });
 
+  it("Your mark and the cross-references: their one English verse says it is English and runs left to right, in every language", () => {
+    // 1.9, the arbiter's of 09:56 UTC: in Arabic and Urdu each drew its verse
+    // with the sheet, from the right, its full stop at its start, as the page
+    // of Scripture did. Remember a verse (dir="auto" on the card's verse) and
+    // the Florilegium (its line runs left to right) already ran it so.
+    for (const lang of ["en", "ar", "ur"]) {
+      for (const [C, id, words] of [
+        [TryMark, "supporter-mark", "In him was life; and the life was the light of men."],
+        [TryCrossRefs, "cross-refs", "In the beginning was the Word, and the Word was with God, and the Word was God."],
+      ] as const) {
+        const out = preview(C, id, lang);
+        const verse = /<p lang="en" dir="ltr" class="[^"]*">([^<]*)<\/p>/.exec(out)?.[1] ?? "";
+        expect(verse, `${id} in ${lang}`).toBe(html(words));
+        // Where it is from stays in the reader's language and direction.
+        expect(out, `${id} in ${lang}`).toContain(html(say(lang, "bible.books.john")));
+      }
+    }
+  });
+
   it("the word study: the Word of John 1:1 first, with life and light beside it", () => {
     const out = preview(TryWordStudy, "word-study");
     expect(out).toContain(">λόγος<");
