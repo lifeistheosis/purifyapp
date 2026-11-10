@@ -70,3 +70,26 @@ Also in his screenshot: at the top, the way back's chevron stands on the small h
 Where it is: the faces for Updates 2 to find (note 3's covers and their faces; some come through the covers pack, which the live 1.8 website does not serve yet, so say which are a build 90 limit and which are real); the way back on the heading for Admin (the top plates of note 15).
 
 Planned (brainstorm, nothing built until his start): every Father with an icon shows it, cut about the face and centred in its round frame, on every council page; a Father with no icon that passes our rules shows the house's plate, not a bare letter, or a related icon by the same rule as the borrowed covers; the way back stands on its plate, clear of the heading, on every page with a picture at its head. Held by a test and checkMock on the seven councils.
+
+**The way back on the heading (found by the Admin chat).** Cause, on build 90 and at the head alike (the rule and its styles have not changed since build 90):
+
+- A council's page uses the bar that starts clear over the page's picture (`MobileTopBar` with `overlay`), not the Bible reader's plates of note 15. At rest the way back stands well clear of the heading (on the export, its foot at 48px, the heading at 148px).
+- Its plate is drawn: night at 55%, with no blur and no edge. Over a dark icon it barely shows, and it dims the words that pass under it instead of hiding them. In his screenshot it is there, a faint disc, with "Seven" greyed under the chevron.
+- The bar turns solid only once the page's name (the `h1` that `revealTitleOn` names) has gone entirely under it: the observer's "gone" is the name's foot above the bar's. Words above the name (the council's ordinal line) and then the name itself pass under the clear bar first, under the plates and the chevron. On the Second Council of Nicaea that is from 105px of scroll until about 150px, and his screenshot stopped there.
+
+Where else, measured on the app's export, scrolling every page whose bar starts clear over a picture 5px at a time:
+
+- every council with a picture, from 105px (the ordinal line, then the name);
+- Your rule, from 95px;
+- a Theology topic, from 185px (a quoted line above the title);
+- a Theology path, from 355px;
+- a saint's page, the name itself, from 265px.
+
+Chants come out clean. Campaign pages use the same bar (closed in these builds), so they take the same fix.
+
+Planned for the way back (brainstorm, nothing built until his start):
+
+1. **The bar turns solid when the page's first words reach it,** not when the name has gone. `MobileTopBar` gains `solidFrom`, the id of the head's first words, which defaults to the name, and watches that element's top cross the bar's foot. While it is wholly below the bar, the bar stays clear; once any of it is under the bar, the bar is solid. The bar's own title still waits for the name to go (two marks: one for the solid ground, one for the title), so no second name shows early.
+2. **Each clear-bar page names its first words:** a council its ordinal line, a Theology topic its quoted line, a Theology path and Your rule their first lines. A saint and a chant keep the default, the name.
+3. **The plate shows over any picture:** a fine edge of paper at 13%, as the new post page's Close has, so it reads on a dark icon too. At rest the bar stays clear, as today.
+4. **Held by:** a test that every clear-bar page names its first words (or its name is its first word); the same scroll measurement as a script on the export, which must find no words under a button while the bar is clear on any of these pages; and `checkMock` on a council's head in all five palettes.
