@@ -85,6 +85,7 @@ vi.mock("@/lib/community/notify", () => ({
 }));
 
 import { PATCH as patchOne } from "@/app/api/campaigns/[id]/route";
+import { DELETE as deletePost } from "@/app/api/community/posts/[id]/route";
 import { DELETE as takeOff, GET as read, POST as write } from "@/app/api/campaigns/[id]/thread/route";
 import { __setCampaignsOpening } from "@/lib/campaigns/flags";
 import { asksForMoney, isCampaignReply, isCampaignThread } from "@/lib/campaigns/thread";
@@ -452,6 +453,41 @@ describe("taking one off", () => {
     expect(replies().find((r) => r.id === note)).toMatchObject({ status: "visible" });
     signIn(null);
     expect((await remove(id, note)).status).toBe(401);
+  });
+});
+
+describe("a thread goes only with its campaign", () => {
+  // Found by Admin's review of the SQL, 2026-11-10: a thread is a post of
+  // the campaign's creator, and Community lets a post's author delete their
+  // post. That would have let a creator wipe every reader's comment at once,
+  // where his yes to item 126 gives them two things only: close comments,
+  // and take one off.
+  const remove = (postId: string) => deletePost(new Request(`${SITE}/api/community/posts/${postId}`, { method: "DELETE" }), params(postId));
+
+  beforeEach(() => vi.stubEnv("NEXT_PUBLIC_COMMUNITY_ENABLED", "1"));
+  afterEach(() => vi.unstubAllEnvs());
+
+  it("cannot be deleted through Community's own delete, by its creator or by anyone", async () => {
+    const id = running();
+    await say(id, "comment", "Praying for Maria.");
+    signIn(CARA);
+    await say(id, "comment", "Lord, have mercy.");
+    const threadId = String(posts()[0].id);
+    for (const who of [ANNA, BEN, CARA]) {
+      signIn(who);
+      expect((await remove(threadId)).status, who).toBe(404);
+    }
+    expect(posts()).toHaveLength(1);
+    expect(replies()).toHaveLength(2);
+  });
+
+  it("leaves Community's own delete as it was for a post of Talk together", async () => {
+    posts().push({ id: "cccccccc-cccc-4ccc-8ccc-cccccccccccc", user_id: BEN, kind: "discussion", title: "A talk", body: "Hello", status: "visible", campaign_id: null });
+    signIn(CARA);
+    expect((await remove("cccccccc-cccc-4ccc-8ccc-cccccccccccc")).status).toBe(403);
+    signIn(BEN);
+    expect((await remove("cccccccc-cccc-4ccc-8ccc-cccccccccccc")).status).toBe(200);
+    expect(posts()).toEqual([]);
   });
 });
 

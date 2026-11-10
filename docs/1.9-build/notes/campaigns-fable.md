@@ -2209,7 +2209,20 @@ and the approval of a held reply reads its parent only where it always did.
 - The stills and the walk (`scripts/mock-campaigns.mjs`): two more screens
   and three more flows.
 
-### 11.6 Not built in this phase
+### 11.6 Found in review, and closed
+
+Admin read files one and two on their own and found both safe at the merge,
+with nothing to change. The same reading found one hole in the app, which is
+closed: **a campaign's creator could have deleted the whole thread.** A
+thread is a post of the creator's, and Community lets a post's author delete
+their own post, with every reply under it. His yes to item 126 gives a
+creator two things only, to close comments and to take one off. Community's
+delete now answers "not found" for a thread, as every other read of
+Community does, and a thread goes only with its campaign.
+`thread.test.ts` holds it both ways: a thread cannot be deleted there by
+anyone, and a post of Talk together still can by its writer.
+
+### 11.7 Not built in this phase
 
 - On the moderators' page a held or reported comment is drawn as any reply
   is, with no word that it stands under a campaign (the hold's own line says

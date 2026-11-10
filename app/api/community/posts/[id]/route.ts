@@ -7,7 +7,15 @@ import { createAdminClient } from "@/lib/supabase/admin";
 import { createClientFromRequest } from "@/lib/supabase/server";
 
 /** Delete your OWN post (replies cascade). Moderation removals happen with
- *  the service role directly and set status='removed' instead. */
+ *  the service role directly and set status='removed' instead.
+ *
+ *  Never a prayer campaign's thread. A thread is a post of the campaign's
+ *  creator, with a state of its own (lib/campaigns/thread.ts), and deleting
+ *  it here would take every reader's comment with it. A creator closes
+ *  comments or takes one off (the owner's yes to item 126); the thread goes
+ *  only with its campaign. It answers as a post that is not there, which is
+ *  what every other read of Community says of a thread. Found by Admin's
+ *  review of the campaigns SQL, 2026-11-10. */
 async function handleDELETE(req: Request, id: string) {
   if (!communityEnabled()) {
     return NextResponse.json({ error: "Not found." }, { status: 404 });
@@ -27,10 +35,10 @@ async function handleDELETE(req: Request, id: string) {
   const admin = createAdminClient();
   const { data: row } = await admin
     .from("community_posts")
-    .select("id, user_id")
+    .select("id, user_id, status")
     .eq("id", id)
     .maybeSingle();
-  if (!row) return NextResponse.json({ error: "Not found." }, { status: 404 });
+  if (!row || row.status === "campaign") return NextResponse.json({ error: "Not found." }, { status: 404 });
   if (row.user_id !== user.id) {
     return NextResponse.json({ error: "Not your post." }, { status: 403 });
   }
