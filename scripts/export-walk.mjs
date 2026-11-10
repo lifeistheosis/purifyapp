@@ -9074,16 +9074,29 @@ await section(62, async () => {
   must(!/That no work of Jewish might/.test(book5Words) && /Some therefore of them of Jerusalem said/.test(book5Words), `Book 5's table of chapters is not shown as his words; the section opens with its first lemma (${book5Words.slice(0, 90)})`);
   must(/John 19:30\b/.test(cross) && !/20:31/.test(cross), `the section after "It is finished" is still on John 19:30, not 20:31 (${cross})`);
 
-  // The rail's place, as the apps carry it: the note on John 7:39 is from Book 5's opening, on 7:25.
+  // The rail, as the apps carry it: the note from Book 5's opening stands on
+  // John 7:25, the verse its passage expounds (1.9, (a)), not on 7:39, where
+  // the first ingest put it; it names its place as Book 5, on John 7:25.
   const rail = await page.evaluate(async () => {
     const r = await fetch("/bible-data/commentary/john/7.json");
     if (!r.ok) return { status: r.status };
     const d = await r.json();
-    // Two of its notes are from sections truly on 7:39; the one from section 453 is not.
-    const notes = (d["39"] ?? []).filter((n) => n.at?.work === "cyril-of-alexandria/commentary-on-john" && n.at.section === 453);
-    return { status: r.status, places: notes.map((n) => n.at.place) };
+    const from453 = (v) => (d[v] ?? []).filter((n) => n.at?.work === "cyril-of-alexandria/commentary-on-john" && n.at.section === 453);
+    return { status: r.status, places: from453("25").map((n) => n.at.place), at39: from453("39").length };
   });
-  must(rail.status === 200 && rail.places?.length === 1 && rail.places[0] === "Book 5, on John 7:25", `the rail's note on John 7:39 from Book 5's opening names its place as Book 5, on John 7:25 (${JSON.stringify(rail)})`);
+  must(rail.status === 200 && rail.places?.length === 1 && rail.places[0] === "Book 5, on John 7:25" && rail.at39 === 0, `the rail's note from Book 5's opening stands on John 7:25 and names it, and none is on 7:39 (${JSON.stringify(rail)})`);
+  // The Preface's four notes open John 1:1, where the Commentary begins, and
+  // none stands on 12:35, where a passing quotation of Solomon had put one.
+  const onRail = await page.evaluate(async () => {
+    const fromPreface = async (c, v) => {
+      const r = await fetch(`/bible-data/commentary/john/${c}.json`);
+      if (!r.ok) return null;
+      const d = await r.json();
+      return (d[v] ?? []).filter((n) => n.at?.work === "cyril-of-alexandria/commentary-on-john" && n.at.place === "Book 1, Preface").length;
+    };
+    return { on1: await fromPreface(1, "1"), on1235: await fromPreface(12, "35") };
+  });
+  must(onRail.on1 === 4 && onRail.on1235 === 0, `the Preface's four notes open John 1:1, none on 12:35 (${JSON.stringify(onRail)})`);
 
   await go(page, "/theology/theosis/read/");
   await page.waitForTimeout(1200);

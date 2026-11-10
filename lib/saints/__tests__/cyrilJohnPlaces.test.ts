@@ -134,6 +134,77 @@ describe("St Cyril on John: each section names the verse he is on", () => {
     expect(copy?.text).toMatch(/^25 Some therefore of them of Jerusalem said/);
   });
 
+  it("stands each note on the rail on the verse its passage expounds", () => {
+    // The first ingest took every italic quotation of John as a lemma, so a
+    // note began wherever St Cyril quoted a verse in passing and stood on that
+    // verse: his comment on 17:1 on John 1:3, on 4:6 on 1:14. 1.9's (a) moved
+    // 456 of the 1,067 to their passage (its section's title, read from the
+    // edition in 14A), and the Preface's four, which stood on 12:17, 12:35,
+    // 13:10 and 14:26 by a passing quotation, to John 1:1, where the
+    // Commentary begins. A note may stand elsewhere only inside its own
+    // passage (its chapter, three verses before to twelve after), where it
+    // opens on the verse it stands on: 47 do, read by eye.
+    let off = 0;
+    const outside: string[] = [];
+    const preface: string[] = [];
+    for (let c = 1; c <= 21; c++) {
+      const rail = read<Record<string, { at?: { work?: string; section?: number } }[]>>(`data/bible/commentary/john/${c}.json`);
+      for (const [v, notes] of Object.entries(rail)) {
+        for (const n of notes) {
+          if (n.at?.work !== "cyril-of-alexandria/commentary-on-john") continue;
+          const m = PLACE.exec(TITLE.get(n.at.section!) ?? "");
+          if (!m?.[2]) {
+            if (c !== 1 || v !== "1") preface.push(`${c}:${v} from section ${n.at.section}`);
+            continue;
+          }
+          const [tc, tv] = [Number(m[2]), Number(m[3])];
+          if (c === tc && Number(v) === tv) continue;
+          off++;
+          if (!(c === tc && Number(v) >= tv - 3 && Number(v) <= tv + 12)) outside.push(`${c}:${v} from section ${n.at.section} (${TITLE.get(n.at.section!)})`);
+        }
+      }
+    }
+    expect(outside, outside.join("\n")).toEqual([]);
+    expect(preface, preface.join("\n")).toEqual([]);
+    expect(off).toBeLessThanOrEqual(47);
+    // Moves by name: his comment on 17:1; "He that hath seen Me hath seen the
+    // Father", which a wrong link (below) had taken off 14:9; the Preface.
+    const ch = (c: number) => read<Record<string, { at?: { section?: number } }[]>>(`data/bible/commentary/john/${c}.json`);
+    const on = (c: number, v: number, section: number) => (ch(c)[String(v)] ?? []).some((n) => n.at?.section === section);
+    expect(on(17, 1, 957)).toBe(true);
+    expect(on(1, 3, 957)).toBe(false);
+    expect(on(14, 9, 837)).toBe(true);
+    expect(on(13, 23, 837)).toBe(false);
+    expect([1, 2, 3, 4].every((s) => on(1, 1, s))).toBe(true);
+    expect(on(12, 35, 1)).toBe(false);
+  });
+
+  it("links each note on the rail to the section that holds its words", () => {
+    // The rail stands a note by the section it links to, and that link opens
+    // the library there. scripts/place-commentary.mjs linked a note to the
+    // first section holding its opening words, so 49 of his notes that open
+    // on a verse he quotes more than once linked the section before theirs,
+    // or one on another verse ("Rabbi, we know that Thou art a Teacher" to
+    // his comment on 2:25, not on 5:34). It now searches first the section
+    // that holds a note whole, and every note is whole in the one it links.
+    const words = (s: string) => s.normalize("NFKC").toLowerCase().replace(/[^\p{L}\p{N}]+/gu, " ").trim();
+    const held = new Map(WORK.sections.map((s) => [s.n, words(s.paragraphs.join(" "))]));
+    const wrong: string[] = [];
+    let notes = 0;
+    for (let c = 1; c <= 21; c++) {
+      const rail = read<Record<string, { text: string; at?: { work?: string; section?: number } }[]>>(`data/bible/commentary/john/${c}.json`);
+      for (const [v, list] of Object.entries(rail)) {
+        for (const n of list) {
+          if (n.at?.work !== "cyril-of-alexandria/commentary-on-john") continue;
+          notes++;
+          if (!held.get(n.at.section!)?.includes(words(n.text))) wrong.push(`${c}:${v} links section ${n.at.section}`);
+        }
+      }
+    }
+    expect(notes).toBe(1067);
+    expect(wrong, wrong.join("\n")).toEqual([]);
+  });
+
   it("keeps its sections in order and numbered once", () => {
     const ns = WORK.sections.map((s) => s.n);
     expect(new Set(ns).size).toBe(ns.length);

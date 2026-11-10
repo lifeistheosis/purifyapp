@@ -113,7 +113,8 @@ function work(key) {
     const paras = file.sections
       .filter((s) => seen.get(s.n) === 1)
       .flatMap((s) => s.paragraphs.map((p, i) => ({ n: s.n, i, title: s.title, w: words(p) })));
-    works.set(key, { file, paras, d: divisionsOf(key, file), twice: new Set([...seen].filter(([, c]) => c > 1).map(([n]) => n)) });
+    const secs = file.sections.filter((s) => seen.get(s.n) === 1).map((s) => ({ n: s.n, title: s.title, w: s.paragraphs.map(words).join(" ") }));
+    works.set(key, { file, paras, secs, d: divisionsOf(key, file), twice: new Set([...seen].filter(([, c]) => c > 1).map(([n]) => n)) });
   }
   return works.get(key);
 }
@@ -127,11 +128,20 @@ export function placeNote(note, chapter) {
   const w = work(key);
   const inNamed = named(kind, m, chapter);
   const paragraphs = String(note.text).split(/\n\s*\n/).map(words).filter((p) => p.split(" ").length >= 8);
+  // The section that holds the note's words whole is searched first (1.9).
+  // A note that opens on a verse St Cyril quotes more than once was placed in
+  // the first section quoting it: 49 of his notes on John opened a section
+  // their words are not in, the one before or one on another verse, and the
+  // rail stood them by its title. Where no section holds a note whole (its
+  // words run across two, or its edition differs), the search is as before.
+  const whole = words(note.text);
+  const holder = (list) => list.find((s) => s.w.includes(whole));
+  const holds = holder(w.secs.filter((s) => inNamed(s.title))) ?? holder(w.secs);
   for (const p of paragraphs.slice(0, 4)) {
     const all = p.split(" ");
     const anchor = all.slice(0, Math.min(14, all.length)).join(" ");
     const pick = (list) => list.find((x) => x.w.includes(anchor));
-    const hit = pick(w.paras.filter((x) => inNamed(x.title))) ?? pick(w.paras);
+    const hit = (holds && pick(w.paras.filter((x) => x.n === holds.n))) ?? pick(w.paras.filter((x) => inNamed(x.title))) ?? pick(w.paras);
     if (!hit) continue;
     const place = w.d ? placeAt(w.d, w.file, hit.n, hit.i) : null;
     const section = w.file.sections.find((s) => s.n === hit.n);
