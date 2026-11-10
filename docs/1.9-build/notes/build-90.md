@@ -61,6 +61,16 @@ Planned (brainstorm, nothing built until his start):
 5. **The proof, on the phone walk (row 19, Android).** Signed in: the questions' step turns reminders on and its cards appear. Then a test reminder to his devices is watched arriving as a banner. Only then does Android turn to yes in `lib/onboarding/reminderPromise.ts`, and the account card may say its line there. If it turns on and nothing arrives, that is F-21, and the offer on Android is hidden until it is mended, as recommended to the arbiter.
 6. **Held by:** unit tests that the step settles inside its limits when the phone never answers, and that a reader with no account is never drawn the button; the walk of the export run here, kept as a script, for both sets of questions; `checkMock` on any screen that changes.
 
+Built on his "All recommendations. Start." (2026-11-10, `eaefcb73e`), steps 1 to 6:
+
+- No account: the step offers the sign-in at once, with its line; the button is never drawn (`components/onboarding/OnboardingFlow.tsx`).
+- No wait for good: each call into the phone has `PHONE_WAIT_MS` (3 seconds) beside the website's 10; the phone's own question has none (`lib/push/native.ts`).
+- A failure carries which wait it was (`EnableWhy`: the phone, the address, the connection, the website). The reader's sentence is the existing one, with "Try again" beside "Continue". No new line for readers was needed, so nothing waits on his yes or on the other languages. Sentences of their own for "no connection" and "no address" are offered to the arbiter as words, not built.
+- Testers only: one plain line, in English, under the sentence (`testers.reminders.*`).
+- Held by `lib/push/__tests__/nativeLimits.test.ts` and `node scripts/reminders-walk.mjs` (17 checks on the export, all passing, with `checkMock` on the three screens).
+- Stills: https://claude.ai/artifact/79rbBLRqbTpjsxydwRQLYc, the section "Turning reminders on in the questions".
+- Not proven from here, and his on the phone walk (row 19, rewritten): that it turns on on his Android phone, and that a reminder then arrives. The account card and the Settings page keep their older handling of a failure; they gain the limits, since they call the same code.
+
 ### 3. The councils' Fathers: their pictures missing, or not framed right (2026-11-10)
 
 What he saw: on an Ecumenical Council's page (the Second Council of Nicaea), under "The Holy Fathers principally associated", St Tarasius, St Irene and St Adrian show only a letter in a circle, and St John's icon is cut off-centre in its round frame (`build-90/03-council-fathers.png`). His words: "I noticed that in the ecumenical councils, the profile pictures of the Holy Fathers principally associated either don't show, or they do show and it's not framed correctly."
