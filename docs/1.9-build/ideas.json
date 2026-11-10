@@ -1901,6 +1901,20 @@
    "version": null,
    "outcome": null,
    "note": "The Themes chat's findings (docs/1.9-build/notes/themes-fable.md, section 25), the arbiter's request; PLAN 13h. 14aa6ce8 the odd text shares on every palette; eb72e554 Light's accent words at 85 percent; 389cc3b5 Settings' size preview (its caption and verse numbers) and First focus on Light; af15d22c words over pictures (the house's .words-halo, the poster's warm shade on Light, the Plus pill on the bar's plate); b65c84b7 Theology's plates' shadow on Light. By the pixels on all five palettes every place passes, the lowest 4.74:1. Left for the arbiter: True black Prayers' arrows and Roman numerals."
+  },
+  {
+   "id": "c-security-updates",
+   "section": "Foundation",
+   "kind": "flag",
+   "title": "The security updates due before the 1.9 store builds: Capacitor, zod and Next",
+   "from": "claude",
+   "asked": "2026-11-10",
+   "status": "built",
+   "decided": "2026-11-10",
+   "needsDesign": false,
+   "version": null,
+   "outcome": null,
+   "note": "The optimization audit's item 4 (the details stay with the arbiter); his \"all recs\" of 2026-11-10, through the arbiter. bb45cc0f Capacitor 8.4.3 and zod 4.6.6; 2346e7cc Next 16.4.6. PLAN 13i. Left: the release APK and iPhone walks on the next phone walk."
   }
  ]
 }
