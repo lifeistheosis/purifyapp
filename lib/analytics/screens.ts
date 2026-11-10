@@ -195,6 +195,8 @@ const RULES: readonly (readonly [string, ScreenKey])[] = [
   ["/fathers-on/*", "fathers-on-struggle"],
   ["/florilegium", "florilegium"],
   ["/florilegium/*", "florilegium"],
+  // A starter's own page (1.9, build 89 note 6): one of four whole passages to begin a gathering with.
+  ["/florilegium/begin/*", "florilegium"],
   ["/dictionary", "dictionary"],
   ["/catechism", "catechism"],
   ["/catechism/collections", "catechism-collections"],

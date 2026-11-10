@@ -1,45 +1,57 @@
 "use client";
 
 import Link from "next/link";
-import { useRouter } from "next/navigation";
-import { useCallback, useMemo, useState } from "react";
+import { useState } from "react";
 
 import { useTranslate } from "@/components/i18n/MessagesProvider";
 import { CoverArt } from "@/components/player/CoverArt";
-import { Sheet } from "@/components/ui/Sheet";
+import { Book } from "@/components/ui/icons/Book";
 import { Check } from "@/components/ui/icons/Check";
 import { ChevronRight } from "@/components/ui/icons/ChevronRight";
+import { Flower } from "@/components/ui/icons/Flower";
 import { Plus } from "@/components/ui/icons/Plus";
-import { localBookNames } from "@/lib/bible/books";
+import { Quill } from "@/components/ui/icons/Quill";
 import { cn } from "@/lib/cn";
 import { itemSource } from "@/lib/florilegium/asText";
 import { useFlorilegia, type Florilegium } from "@/lib/florilegium/florilegium";
-import { gatheringHref } from "@/lib/florilegium/href";
-import { STARTERS, starterItems, starterPicture, starterReference, type Starter } from "@/lib/florilegium/starters";
+import { gatheringHref, starterHref } from "@/lib/florilegium/href";
+import { keptStarter, STARTERS, starterPicture, starterReference } from "@/lib/florilegium/starters";
 import { useFlorilegiaSyncedAt, useMinute } from "@/lib/florilegium/syncedAt";
 import { dateLocale } from "@/lib/i18n/deviceDates";
-import { useMounted } from "@/lib/useMounted";
 import { useCoversVersion } from "@/lib/readAloud/useCovers";
+import { useMounted } from "@/lib/useMounted";
+
+import { FLOR_FACT, FLOR_FIELD, FLOR_H2, FLOR_PLATE, FLOR_ROW, FLOR_TRAY } from "./florStyle";
+import { useBookName } from "./useBookName";
 
 /** Where a gathered line came from, as its card prints it (lib/florilegium/asText.ts); named here too, for the pages that ask this file. */
 export { itemSource };
 
 /**
- * The Florilegium's first page (1.9, the owner's pick for Keeping of
- * 2026-11-06, "honestly, a whole entire revamp", and for it "a mix of A and
- * C": the reader's collections and the sync line on top, the ready
- * collections below as tiles; docs/1.9-build/BRAINSTORM.md).
+ * The Florilegium's first page (1.9, build 89 notes 6 and 12; the owner,
+ * 2026-11-10, of the starters: "The UX experience on these need to get fixed
+ * also, like these, this section and like where it leads to", and of the
+ * whole: "I also want the Florilegium, like entire design revamped. I just
+ * don't like that"). The plan is docs/1.9-build/notes/florilegium-fable.md.
+ *
+ * Drawn from the forms he has passed:
+ *
+ *   Your gatherings   rows in one raised tray, as Theology's pages list
+ *                     their places to go: a gathering's name in Lora, its
+ *                     newest line under it so a reader tells them apart by
+ *                     what is in them (his request of 2026-09-28), and how
+ *                     many lines it keeps. The tray's last row begins a new
+ *                     one, and opens into the naming field in place.
+ *   Begin with a      four whole passages of Scripture to begin with
+ *   gathering         (lib/florilegium/starters.ts), as the plans' picture
+ *                     tiles, two across. A tile opens the passage's own
+ *                     page (StarterPage.tsx), carrying its picture in; one
+ *                     the reader already keeps says so in words, where it
+ *                     wore a tick with no word for what the tick meant.
  *
  * On top, when this device has exchanged the collections with the server,
  * when it last did (lib/florilegium/syncedAt.ts); never a count of devices,
- * which nothing in the app knows. Then the reader's gatherings as cards in two
- * columns, each with its newest line and where it came from, so a reader
- * tells them apart by what is in them (the owner's request of 2026-09-28),
- * and "Begin a new gathering" first, opening into the naming form in place.
- * Below, four whole passages of Scripture to begin with
- * (lib/florilegium/starters.ts), as picture tiles: a tap shows the passage,
- * and Keep makes it the reader's own gathering, a verse a line. A starter
- * already kept opens the reader's own.
+ * which nothing in the app knows.
  *
  * Local-first: the list comes straight from localStorage via useFlorilegia,
  * so it is instant and works offline. Sign-in (with Plus) syncs it.
@@ -51,14 +63,28 @@ export { itemSource };
 export function FlorilegiaHub({ readOnly = false }: { readOnly?: boolean } = {}) {
   useCoversVersion();
   const { t } = useTranslate();
-  const router = useRouter();
-  const { florilegia, create, addItem } = useFlorilegia();
+  const { florilegia, create } = useFlorilegia();
   const mounted = useMounted();
+  const bookName = useBookName();
   const [creating, setCreating] = useState(false);
   const [title, setTitle] = useState("");
-  const [preview, setPreview] = useState<Starter | null>(null);
-  const books = useMemo(() => localBookNames(t), [t]);
-  const bookName = useCallback((slug: string) => books[slug] ?? t(`bible.books.${slug}`), [books, t]);
+
+  if (readOnly) {
+    return (
+      <section aria-labelledby="florilegium-yours" className="mt-9">
+        <h2 id="florilegium-yours" className={FLOR_H2}>
+          {t("study.florilegium.yours")}
+        </h2>
+        <ul className={cn(FLOR_TRAY, "mt-2.5")} data-florilegium-yours="">
+          {florilegia.map((f) => (
+            <li key={f.id} className="theology-rule">
+              <GatheringRow f={f} />
+            </li>
+          ))}
+        </ul>
+      </section>
+    );
+  }
 
   function submit(e: React.FormEvent) {
     e.preventDefault();
@@ -75,131 +101,112 @@ export function FlorilegiaHub({ readOnly = false }: { readOnly?: boolean } = {})
     setTitle("");
   }
 
-  /** The reader's own copy of a starter: its name and its reference, as Keep wrote them. */
-  const keptOf = (s: Starter) =>
-    florilegia.find((f) => f.title === t(s.nameKey) && f.description === starterReference(s, bookName(s.book)));
-
-  function keep(s: Starter) {
-    const id = create(t(s.nameKey), starterReference(s, bookName(s.book)));
-    for (const item of starterItems(s, bookName(s.book))) addItem(id, item);
-    setPreview(null);
-    router.push(gatheringHref(id));
-  }
-
   const empty = mounted && florilegia.length === 0;
 
-  if (readOnly) {
-    return (
-      <ul className="mt-8 grid grid-cols-2 gap-3 lg:grid-cols-3" data-florilegium-yours="">
-        {florilegia.map((f) => (
-          <li key={f.id} className="min-w-0">
-            <GatheringCard f={f} />
-          </li>
-        ))}
-      </ul>
-    );
-  }
-
   return (
-    <div className="mt-8">
+    <div data-florilegium-hub="">
       <SyncLine />
-      {empty ? (
-        <p className="mt-3 max-w-[52ch] font-serif text-detail italic leading-[1.6] text-paper/65">{t("study.florilegium.definition")}</p>
-      ) : null}
 
-      <ul className="mt-5 grid grid-cols-2 gap-3 lg:grid-cols-3" data-florilegium-yours="">
-        <li className="min-w-0">
-          {creating ? (
-            <form onSubmit={submit} className="flex h-full min-h-[156px] flex-col rounded-[20px] bg-night-soft p-4 ring-1 ring-inset ring-paper/10">
-              {/* Its own id: the page's title is florilegium-title. */}
-              <label htmlFor="florilegium-name" className="block font-sans text-caption font-semibold text-paper/55">
-                {t("study.florilegium.nameThisGathering")}
-              </label>
-              <input
-                id="florilegium-name"
-                type="text"
-                value={title}
-                onChange={(e) => setTitle(e.target.value)}
-                onKeyDown={(e) => {
-                  if (e.key === "Escape") cancel();
-                }}
-                placeholder={t("study.florilegium.hubPlaceholder")}
-                maxLength={80}
-                // eslint-disable-next-line jsx-a11y/no-autofocus
-                autoFocus
-                className="mt-2 w-full rounded-pill border border-paper/20 bg-paper/[0.05] px-3.5 py-2.5 font-sans text-ui text-paper transition-colors placeholder:text-paper/55 focus:border-paper/50 focus:outline-none"
-              />
-              <div className="mt-auto flex flex-wrap gap-1.5 pt-3">
-                <button
-                  type="submit"
-                  className="inline-flex min-h-11 items-center rounded-pill bg-paper px-4 font-sans text-ui font-semibold text-night transition-colors hover:bg-paper/90"
-                >
-                  {t("today.prayNow.begin")}
-                </button>
-                <button
-                  type="button"
-                  onClick={cancel}
-                  className="inline-flex min-h-11 items-center rounded-pill px-3 font-sans text-ui font-medium text-paper/70 transition-colors hover:bg-paper/10 hover:text-paper"
-                >
-                  {t("common.cancel")}
-                </button>
-              </div>
-            </form>
-          ) : (
-            <button
-              type="button"
-              onClick={() => setCreating(true)}
-              className="tap-press flex h-full min-h-[156px] w-full flex-col items-start rounded-[20px] border border-dashed border-paper/20 p-4 text-start transition-colors duration-150 hover:border-paper/35 hover:bg-paper/[0.03]"
-            >
-              <span aria-hidden className="grid size-10 place-items-center rounded-full bg-paper/10 text-paper">
-                <Plus size={20} />
-              </span>
-              {/* The way on is the house's own chevron, never a typed arrow (build 89 note 5). */}
-              <span className="mt-auto flex items-center gap-1 pt-4 font-sans text-ui font-semibold leading-snug text-paper">
-                {t("study.florilegium.beginNew")}
-                <ChevronRight size={16} aria-hidden className="shrink-0 text-paper/60 rtl:-scale-x-100" />
-              </span>
-            </button>
-          )}
-        </li>
-        {florilegia.map((f) => (
-          <li key={f.id} className="min-w-0">
-            <GatheringCard f={f} />
+      <section aria-labelledby="florilegium-yours" className="mt-7">
+        <h2 id="florilegium-yours" className={FLOR_H2}>
+          {t("study.florilegium.yours")}
+        </h2>
+        <ul className={cn(FLOR_TRAY, "mt-2.5")} data-florilegium-yours="">
+          {empty ? <li className="px-2.5 pb-1.5 pt-3 font-sans text-detail leading-[1.5] text-paper/60">{t("study.florilegium.youHaveNone")}</li> : null}
+          {florilegia.map((f) => (
+            <li key={f.id} className="theology-rule">
+              <GatheringRow f={f} />
+            </li>
+          ))}
+          <li className="theology-rule">
+            {creating ? (
+              <form onSubmit={submit} className="px-2 pb-2.5 pt-3.5" data-florilegium-naming="">
+                {/* Its own id: the page's title is florilegium-title. */}
+                <label htmlFor="florilegium-name" className="block font-sans text-caption font-semibold text-paper/60">
+                  {t("study.florilegium.nameThisGathering")}
+                </label>
+                <input
+                  id="florilegium-name"
+                  type="text"
+                  value={title}
+                  onChange={(e) => setTitle(e.target.value)}
+                  onKeyDown={(e) => {
+                    if (e.key === "Escape") cancel();
+                  }}
+                  placeholder={t("study.florilegium.hubPlaceholder")}
+                  maxLength={80}
+                  // eslint-disable-next-line jsx-a11y/no-autofocus
+                  autoFocus
+                  className={cn(FLOR_FIELD, "mt-2 min-h-12 py-2.5 font-sans text-ui")}
+                />
+                <div className="mt-3 flex flex-wrap gap-2">
+                  <button
+                    type="submit"
+                    className="tap-press inline-flex h-11 items-center rounded-pill bg-paper px-5 font-sans text-ui font-semibold text-night transition-colors hover:bg-paper/90"
+                  >
+                    {t("today.prayNow.begin")}
+                  </button>
+                  <button
+                    type="button"
+                    onClick={cancel}
+                    className="tap-press inline-flex h-11 items-center rounded-pill px-3.5 font-sans text-ui font-medium text-paper/70 transition-colors hover:bg-paper/10 hover:text-paper"
+                  >
+                    {t("common.cancel")}
+                  </button>
+                </div>
+              </form>
+            ) : (
+              <button type="button" onClick={() => setCreating(true)} data-florilegium-begin="" className={FLOR_ROW}>
+                <span aria-hidden className={FLOR_PLATE}>
+                  <Plus size={18} />
+                </span>
+                <span className="min-w-0 flex-1 font-sans text-ui font-semibold leading-snug text-paper">{t("study.florilegium.beginNew")}</span>
+              </button>
+            )}
           </li>
-        ))}
-      </ul>
+        </ul>
+      </section>
 
-      <section aria-labelledby="florilegium-starters" className="mt-10">
-        <h2 id="florilegium-starters" className="font-sans text-eyebrow font-semibold uppercase tracking-[0.08em] text-paper/55">
+      <section aria-labelledby="florilegium-starters" className="mt-9">
+        <h2 id="florilegium-starters" className={FLOR_H2}>
           {t("study.florilegium.starters")}
         </h2>
-        <ul className="-mx-5 mt-3 flex snap-x snap-mandatory gap-3 overflow-x-auto px-5 pb-2 md:mx-0 md:px-0" data-florilegium-starters="">
+        <ul className="mt-3 grid grid-cols-2 gap-3 md:grid-cols-4" data-florilegium-starters="">
           {STARTERS.map((s) => {
-            const kept = mounted ? keptOf(s) : undefined;
+            const reference = starterReference(s, bookName(s.book));
+            const kept = mounted ? keptStarter(florilegia, t(s.nameKey), reference) : undefined;
             const picture = starterPicture(s);
             return (
-              <li key={s.id} className="w-40 shrink-0 snap-start">
-                <button
-                  type="button"
+              <li key={s.id}>
+                {/* The plans' picture tile (components/plans/PlansClient.tsx). */}
+                <Link
+                  href={starterHref(s.id)}
                   data-starter={s.id}
-                  aria-haspopup={kept ? undefined : "dialog"}
-                  onClick={() => (kept ? router.push(gatheringHref(kept.id)) : setPreview(s))}
-                  className="tap-press relative flex aspect-[4/5] w-full flex-col justify-end overflow-hidden rounded-[18px] bg-night-soft p-3 text-start ring-1 ring-inset ring-paper/10"
+                  data-kept={kept ? "" : undefined}
+                  className="tap-press relative flex aspect-[4/5] flex-col justify-end overflow-hidden rounded-[18px] bg-night-soft p-3 ring-1 ring-inset ring-paper/10"
                 >
-                  <CoverArt src={picture.src} fallback={picture.fallback} size={240} className="plan-tile-picture absolute inset-0 h-full w-full" />
-                  <span className="relative block font-sans text-ui font-semibold leading-tight text-paper">{t(s.nameKey)}</span>
-                  <span className="relative mt-1 flex items-center gap-1.5 font-sans text-caption text-paper/70">
-                    {kept ? <Check size={13} className="shrink-0" /> : null}
-                    {starterReference(s, bookName(s.book))}
+                  {/* The picture in a frame of its own, cut to the tile's
+                      shape: what travels to the head of the page the tile
+                      opens (lib/ui/routeMotion.ts). */}
+                  <span data-carry={picture.src} className="absolute inset-0 overflow-hidden rounded-[inherit]">
+                    <CoverArt src={picture.src} fallback={picture.fallback} size={240} className="plan-tile-picture absolute inset-0 h-full w-full" />
                   </span>
-                </button>
+                  <h3 className="relative font-serif text-[16px] font-semibold leading-[1.15] text-paper">{t(s.nameKey)}</h3>
+                  {kept ? (
+                    // In words: the tick alone said nothing a reader could read (build 89 note 6).
+                    <p className="relative mt-1 flex items-start gap-1.5 font-sans text-caption leading-[1.35] text-paper/85" data-starter-kept="">
+                      <Check size={13} aria-hidden className="mt-0.5 shrink-0" />
+                      <span>{t("study.florilegium.inYours")}</span>
+                    </p>
+                  ) : (
+                    <p className="relative mt-1 font-sans text-caption leading-[1.35] text-paper/70">{reference}</p>
+                  )}
+                </Link>
               </li>
             );
           })}
         </ul>
       </section>
-
-      <StarterSheet starter={preview} bookName={bookName} onClose={() => setPreview(null)} onKeep={keep} />
     </div>
   );
 }
@@ -216,74 +223,40 @@ function SyncLine() {
   const when = ago < 60 ? rtf.format(-ago, "minute") : ago < 1440 ? rtf.format(-Math.round(ago / 60), "hour") : rtf.format(-Math.round(ago / 1440), "day");
   const line = `${t("ui.lastSynced")} ${when}`;
   return (
-    <p className="flex items-center gap-2 font-sans text-caption text-paper/60" data-florilegium-synced="">
+    <p className="mt-5 flex items-center gap-2 font-sans text-caption text-paper/60" data-florilegium-synced="">
       <Check size={14} className="shrink-0" />
       {line}
     </p>
   );
 }
 
-/** A starter's passage: its reference, Keep, then the passage a verse a line. */
-function StarterSheet({
-  starter,
-  bookName,
-  onClose,
-  onKeep,
-}: {
-  starter: Starter | null;
-  bookName: (slug: string) => string;
-  onClose: () => void;
-  onKeep: (s: Starter) => void;
-}) {
-  const { t } = useTranslate();
-  return (
-    <Sheet open={starter !== null} onClose={onClose} title={starter ? t(starter.nameKey) : ""} desktop>
-      {starter ? (
-        <div data-starter-sheet={starter.id}>
-          <p className="font-sans text-caption font-semibold text-paper/55">{starterReference(starter, bookName(starter.book))}</p>
-          {/* Keep above the passage, in sight without reading to its end. */}
-          <button
-            type="button"
-            onClick={() => onKeep(starter)}
-            data-starter-keep=""
-            className="tap-press mt-4 inline-flex h-12 w-full items-center justify-center rounded-pill bg-paper font-sans text-ui font-semibold text-night transition-colors hover:bg-paper/90"
-          >
-            {t("study.florilegium.keepStarter")}
-          </button>
-          <ol className="mt-5 space-y-2.5">
-            {starter.lines.map((l) => (
-              <li key={l.verse} className="flex gap-2.5 font-serif text-detail leading-[1.65] text-paper/85">
-                <span aria-hidden className="w-5 shrink-0 pt-0.5 text-end font-sans text-caption tabular-nums text-paper/40">
-                  {l.verse}
-                </span>
-                <span>{l.text}</span>
-              </li>
-            ))}
-          </ol>
-        </div>
-      ) : null}
-    </Sheet>
-  );
-}
-
-function GatheringCard({ f }: { f: Florilegium }) {
+/**
+ * One of the reader's gatherings as a row: the mark of where its newest
+ * line is from (the Scriptures or a Father; the flower while it keeps
+ * nothing), its name, that line, and how many it keeps.
+ */
+function GatheringRow({ f }: { f: Florilegium }) {
   const { tn } = useTranslate();
   const newest = f.items[0];
+  const Mark = !newest ? Flower : newest.kind === "scripture" ? Book : Quill;
   return (
-    <Link
-      href={gatheringHref(f.id)}
-      className="tap-press flex h-full min-h-[156px] flex-col rounded-[20px] bg-night-soft p-4 ring-1 ring-inset ring-paper/10 transition-colors hover:ring-paper/20"
-    >
-      <p className="line-clamp-2 font-sans text-ui font-semibold leading-snug text-paper">{f.title}</p>
-      <p className="mt-1 font-sans text-caption tabular-nums text-paper/55">{tn("study.florilegium.lineCount", f.items.length)}</p>
-      {newest ? (
-        <figure className={cn("mt-auto pt-3")}>
-          <blockquote className="line-clamp-2 font-serif text-caption italic leading-[1.55] text-paper/70">
+    <Link href={gatheringHref(f.id)} className={FLOR_ROW} data-gathering={f.id}>
+      <span aria-hidden className={FLOR_PLATE}>
+        <Mark size={18} />
+      </span>
+      <span className="min-w-0 flex-1">
+        {/* The reader's words and the line's, each read its own way, so a line of English in a page that reads from the right is cut at its end, not its beginning. */}
+        <span dir="auto" className="block truncate font-serif text-[15.5px] font-semibold leading-tight text-paper/92">
+          {f.title}
+        </span>
+        {newest ? (
+          <span dir="auto" className="mt-0.5 block truncate font-serif text-caption italic text-paper/60">
             {newest.text}
-          </blockquote>
-          <figcaption className="mt-1 truncate font-sans text-caption font-semibold text-paper/45">{itemSource(newest)}</figcaption>
-        </figure>
-      ) : null}
+          </span>
+        ) : null}
+      </span>
+      <span className={FLOR_FACT}>{tn("study.florilegium.lineCount", f.items.length)}</span>
+      <ChevronRight size={14} aria-hidden className="shrink-0 text-paper/45 rtl:-scale-x-100" />
     </Link>
   );
 }

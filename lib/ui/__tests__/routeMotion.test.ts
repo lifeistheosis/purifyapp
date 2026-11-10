@@ -600,6 +600,9 @@ describe("a picture that leads to its own page", () => {
     // All prayers' pieces wear the icons Practices' tiles do, and go where
     // they go (build 89 note 10 made them pictures, the same night).
     has("components/prayers/PrayerPieces.tsx", "data-carry={p.art?.src}");
+    // A starter's tile on the Florilegium, into the head of its own page (notes 6 and 12).
+    has("components/florilegium/FlorilegiaHub.tsx", "<span data-carry={picture.src}");
+    has("components/florilegium/StarterPage.tsx", "data-carry-into={picture.src}");
     has("components/saints/SaintIcon.tsx", "data-carry={saint.iconUrl || undefined}");
     has("components/theology/TheologyLibrary.tsx", "data-carry={`way:${w.key}`}");
     // Into a page.

@@ -1,10 +1,8 @@
-import { Suspense } from "react";
-
-import { FlorilegiumByQuery } from "@/components/florilegium/FlorilegiumByQuery";
 import { FlorilegiumGate } from "@/components/florilegium/FlorilegiumGate";
+import { FLOR_H1, FLOR_KICKER } from "@/components/florilegium/florStyle";
 import { T } from "@/components/i18n/T";
 import { MobileTopBar } from "@/components/nav/MobileTopBar";
-import { Eyebrow } from "@/components/ui/Graphite";
+import { Flower } from "@/components/ui/icons/Flower";
 
 export const metadata = {
   title: "Florilegium",
@@ -13,47 +11,57 @@ export const metadata = {
 };
 
 /*
- * Redrawn 2026-09-28 at the owner's request, in the language of the Prayer
- * and Discover redesign: the front page's candle glow behind a left-aligned
- * hero, then the gatherings as graphite cards (FlorilegiaHub).
+ * The Florilegium's first page (1.9, build 89 note 12, the owner: "I also
+ * want the Florilegium, like entire design revamped. I just don't like
+ * that"), redrawn as one piece with a gathering and a starter's page
+ * (docs/1.9-build/notes/florilegium-fable.md).
+ *
+ * It opened on a small label over a giant sentence over a long paragraph.
+ * The head is now the house's: the flower, lit, beside the page's name in
+ * Lora with its one small line, then what a florilegium is, in a line. The
+ * long paragraph, the same words, closes the page in small type, as the
+ * councils' page and Theology's four close.
  *
  * On a phone it wears the bar every screen under You wears from 1.8 (it is
  * the first row of Saved): the way back, and the Florilegium's name once the
- * heading has gone up under it. It wore the apps' plain back bar until then.
+ * heading has gone up under it.
+ *
+ * A gathering is a page of its own, in the apps too (lib/florilegium/
+ * href.ts), so opening one is a page switch and moves as one (build 89
+ * note 4).
  */
 export default function FlorilegiumPage() {
-  const hub = (
-    <section className="relative overflow-hidden bg-night min-h-[calc(100dvh-72px)] px-5 py-12 md:px-8 md:py-16">
-      <div
-        aria-hidden
-        className="page-halo pointer-events-none absolute inset-x-0 top-0 h-[520px]"
-        style={{
-          background: "radial-gradient(ellipse 70% 60% at 20% 10%, rgba(255,255,255,0.05) 0%, transparent 65%)",
-        }}
-      />
-      <article className="relative mx-auto w-full max-w-[1120px]">
-        <Eyebrow>
-          <T k="study.florilegium.title" />
-        </Eyebrow>
-        <h1 id="florilegium-title" className="mt-4 text-heading font-bold leading-[1.05] tracking-[-0.025em] text-paper md:text-display-sm lg:text-display">
-          <T k="study.florilegium.lead" />
-        </h1>
-        <p className="mt-5 max-w-[620px] font-sans text-ui leading-[1.6] text-paper/75 md:text-lede">
-          <T k="study.keepTheLinesThatStrike" />
-        </p>
-
-        <FlorilegiumGate />
-      </article>
-    </section>
-  );
-
   return (
     <>
       <MobileTopBar titleKey="study.florilegium.title" back backFallback="/saved" revealTitleOn="florilegium-title" />
-      {/* In the apps a gathering opens here, named in the query (1.9, lib/florilegium/href.ts). */}
-      <Suspense fallback={hub}>
-        <FlorilegiumByQuery hub={hub} />
-      </Suspense>
+      <section data-florilegium-page="hub" className="bg-night px-5 pb-12 pt-6 md:px-8 md:py-14">
+        <div className="mx-auto w-full max-w-[640px]">
+          <header data-florilegium-head="">
+            <div className="flex items-center gap-3.5">
+              <span aria-hidden className="theology-glyph shrink-0 text-paper">
+                <Flower size={32} />
+              </span>
+              <div className="min-w-0">
+                <h1 id="florilegium-title" className={FLOR_H1}>
+                  <T k="study.florilegium.title" />
+                </h1>
+                <p className={FLOR_KICKER}>
+                  <T k="study.florilegium.lead" />
+                </p>
+              </div>
+            </div>
+            <p className="mt-4 max-w-[58ch] font-serif text-[15px] italic leading-[1.5] text-paper/70">
+              <T k="study.florilegium.definition" />
+            </p>
+          </header>
+
+          <FlorilegiumGate />
+
+          <p data-florilegium-note="" className="mt-10 border-t border-paper/8 pt-5 font-sans text-detail leading-[1.6] text-paper/55">
+            <T k="study.keepTheLinesThatStrike" />
+          </p>
+        </div>
+      </section>
     </>
   );
 }

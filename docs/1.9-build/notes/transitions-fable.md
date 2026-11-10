@@ -128,6 +128,7 @@ place that uses one has it:
 | An All prayers piece on Prayers (`PrayerPieces`, build 89 note 10, which made them pictures the same night) | the same icon on the page it opens: Morning's and Evening's plate, and where a Practices tile goes for the rest | the icon's address |
 | A prayer's plate in a row (`ArtPlate`) | the same plate on the page it opens | the icon's address |
 | A saint's icon in any card (`SaintIcon`) | the icon at the head of the saint's page | the icon's address |
+| A starter's tile on the Florilegium (`FlorilegiaHub`, notes 6 and 12) | the same picture at the head of the starter's own page (`StarterPage`) | the picture's address |
 | A cover (`WorkCover`) | the same cover at the head of the page it opens (a walkthrough) | the title |
 | One of Theology's four buttons, tiles and rows (`TheologyLibrary`) | the glyph at the head of the way's page (`WayPage`) | the way |
 
@@ -157,7 +158,8 @@ picture leaves with its page, in the page's own motion):
 
 `node scripts/route-motion.mjs` opens the export in Chromium, the Android
 WebView's engine, served as the shells serve it, walks the app and reads from
-the browser what it pictured. Eight walks. `--film <folder>` writes stills of
+the browser what it pictured. Twelve walks (eight, and four on the
+Florilegium since its redesign). `--film <folder>` writes stills of
 the middle of each transition, which a screenshot of a running app cannot
 take: the transition is stopped as it becomes ready and stepped to each time.
 
@@ -185,13 +187,13 @@ walk (`docs/PHONE-WALK.md`):
   the website's header stand still.
 - Coming back to a tile, its name is under the arriving picture until the
   change is over, and then stands on it again.
-- In the apps a gathering opens on the Florilegium's own address, named in
-  its query (`/florilegium?g=<id>`, `lib/florilegium/href.ts`), and the
-  bridge counts a change of query as a filter, not a page. So that one page
-  switch still cuts in the apps; on the website a gathering has an address of
-  its own and moves like any page. It is the only page that opens this way
-  (every other reader of a query here is a filter), and it comes with the
-  Florilegium's redesign, notes 6 and 12, which is next.
+- (Closed with the Florilegium's redesign, notes 6 and 12, the same day.) In
+  the apps a gathering opened on the Florilegium's own address, named in its
+  query (`/florilegium?g=<id>`), and the bridge counts a change of query as a
+  filter, not a page, so that one page switch cut. A gathering now has a page
+  of its own there, `/florilegium/gathering?g=<id>` (`lib/florilegium/
+  href.ts`), as the shop's orders and icons have their `detail` pages, and
+  moves like any page. The check walks it.
 - What takes the phone's Back for itself is counted in the hook every taker
   uses (`lib/platform/useAndroidBack.ts`), not read from the sheets' own
   record (`body[data-sheet-up]`, `lib/ui/overlay.ts`): eight of the nineteen

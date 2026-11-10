@@ -1,9 +1,15 @@
 import { FlorilegiumGate } from "@/components/florilegium/FlorilegiumGate";
+import { MobileTopBar } from "@/components/nav/MobileTopBar";
 
 export const metadata = {
   title: "Florilegium",
 };
 
+/*
+ * A gathering, on the website: its own address. (In the apps it opens on
+ * florilegium/gathering, named in the query: lib/florilegium/href.ts.) A
+ * reading column, as a starter's page and the Florilegium's first page are.
+ */
 export default async function FlorilegiumDetailPage({
   params,
 }: {
@@ -11,19 +17,15 @@ export default async function FlorilegiumDetailPage({
 }) {
   const { id } = await params;
 
-  // A reading column, narrower than the hub: the lines are meant to be read.
   return (
-    <section className="relative overflow-hidden bg-night min-h-[calc(100dvh-72px)] px-5 py-12 md:px-8 md:py-16">
-      <div
-        aria-hidden
-        className="page-halo pointer-events-none absolute inset-x-0 top-0 h-[520px]"
-        style={{
-          background: "radial-gradient(ellipse 70% 60% at 20% 10%, rgba(255,255,255,0.05) 0%, transparent 65%)",
-        }}
-      />
-      <article className="relative mx-auto w-full max-w-[820px]">
-        <FlorilegiumGate detailId={id} />
-      </article>
-    </section>
+    <>
+      {/* The bar names the Florilegium throughout: the gathering's own name is the page's heading, known only on the device. */}
+      <MobileTopBar titleKey="study.florilegium.title" back backFallback="/florilegium" />
+      <section data-florilegium-page="gathering" className="bg-night px-5 pb-12 pt-6 md:px-8 md:py-14">
+        <div className="mx-auto w-full max-w-[640px]">
+          <FlorilegiumGate detailId={id} />
+        </div>
+      </section>
+    </>
   );
 }

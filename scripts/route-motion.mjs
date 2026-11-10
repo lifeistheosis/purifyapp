@@ -21,7 +21,10 @@
 //             (route-leave, route-arrive)
 //   the tab bar is pictured apart from the page in each of them
 //   a card's picture travels to the head of its page, and back into its card
-//             (a saint's icon, from the list and to it)
+//             (a saint's icon, from the list and to it; a starter's tile on
+//             the Florilegium, and back)
+//   a gathering, whose page in the apps is one page for all of them named in
+//             its query, is a page switch like any (lib/florilegium/href.ts)
 //   each is over within 350ms
 //   the browser's own Back is not pictured (the platform's rule)
 //   with motion reduced, nothing is pictured at all
@@ -224,7 +227,18 @@ export async function checkRouteMotion({ film = null, scale = 1 } = {}) {
   const report = [];
   const note = (name, faults, said) => report.push({ name, faults, said });
 
-  const { browser, ctx, page } = await openPhone({ scale });
+  // One gathering of the reader's own, to open: a real verse, as the Bible here carries it.
+  const verse = JSON.parse(fs.readFileSync(path.resolve("data/bible/john/1.json"), "utf8")).verses.find((v) => v.n === 5);
+  const mine = [
+    {
+      id: "walk-gathering",
+      title: "On the light",
+      createdAt: 1,
+      updatedAt: 1,
+      items: [{ id: "walk-line", addedAt: 1, kind: "scripture", text: verse.text, reference: "John 1:5", book: "john", chapter: 1, verse: 5 }],
+    },
+  ];
+  const { browser, ctx, page } = await openPhone({ scale, set: { "purify:florilegia": JSON.stringify(mine) } });
   await ctx.addInitScript(watchTransitions);
   const chevron = 'button[aria-label="Back"]:visible, a[aria-label="Back"]:visible';
   try {
@@ -278,6 +292,35 @@ export async function checkRouteMotion({ film = null, scale = 1 } = {}) {
       note("a scrolled list: back to the same place, the icon back in its card", back, `${r.from} to ${r.to}, the tapped saint at ${where}px (was ${tapped.top}px)`);
       if (film) await sheet(ctx, film, "return", r.stills);
     }
+
+    // The Florilegium (build 89 notes 6 and 12). A starter's tile carries its
+    // picture to the head of the page it opens, and back. The Song of the
+    // Theotokos, whose icon the apps carry, so there is a picture with no
+    // network.
+    await go(page, "/florilegium/");
+    await sleep(page, 1200);
+    r = await walk(page, "starter", () => page.locator('a[data-starter="magnificat"]').first().click(), { film });
+    note(
+      "a starter: its tile's picture travelling to the head of its page",
+      judge(r, { old: "route-leave", fresh: "route-settle", to: "/florilegium/begin/magnificat", carried: true }),
+      `${r.from} to ${r.to}`,
+    );
+    if (film) await sheet(ctx, film, "starter", r.stills);
+    r = await walk(page, "starter-back", () => page.locator(chevron).first().click(), { film });
+    note("a starter: back, the picture back in its tile", judge(r, { old: "route-sink", fresh: "route-arrive", to: "/florilegium", carried: true }), `${r.from} to ${r.to}`);
+    if (film) await sheet(ctx, film, "starter-back", r.stills);
+
+    // A gathering: in the apps, one page for all of them, which one named in
+    // its query. A page of its own, so opening it moves, and so does the way back.
+    r = await walk(page, "gathering", () => page.locator("a[data-gathering]").first().click(), { film });
+    const opened = judge(r, { old: "route-leave", fresh: "route-settle", to: "/florilegium/gathering" });
+    const named = await page.evaluate(() => new URLSearchParams(location.search).get("g"));
+    if (named !== "walk-gathering") opened.push(`the gathering named in the address is "${named}", not the one tapped`);
+    if (!(await page.locator("[data-gathering-page]").count())) opened.push("the gathering's page did not draw");
+    note("a gathering in the apps: a page of its own, so it moves", opened, `${r.from} to ${r.to}?g=${named}`);
+    if (film) await sheet(ctx, film, "gathering", r.stills);
+    r = await walk(page, "gathering-back", () => page.locator(chevron).first().click());
+    note("a gathering: back to the Florilegium", judge(r, { old: "route-sink", fresh: "route-arrive", to: "/florilegium" }), `${r.from} to ${r.to}`);
 
     // The browser's own Back: the page changes, and nothing is pictured.
     await go(page, "/prayers/");

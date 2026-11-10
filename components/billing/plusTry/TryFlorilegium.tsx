@@ -1,9 +1,10 @@
 "use client";
 
 // Try your Florilegium (r3-07 A): a gathering's own page
-// (components/florilegium/FlorilegiumDetail.tsx), its name, how many lines
-// it keeps, and each line as its card draws it (ItemCard, the real card): the
-// words set large, where they are from, and a note of the reader's own.
+// (components/florilegium/FlorilegiumDetail.tsx) as it is drawn from 1.9's
+// redesign (build 89 note 12): its name in Lora with how many lines it keeps
+// under it, and each line as the page sets it (ItemCard, the real one): the
+// words to read, where they are from, and a note of the reader's own.
 //
 // A reader's gatherings are their own, so this one is an example, marked so:
 // "John 1", two of its verses in the Bible's words and a Father's line on it
@@ -15,8 +16,8 @@ import { useState } from "react";
 
 import type { TryProps } from "@/components/billing/PlusTry";
 import { ItemCard } from "@/components/florilegium/FlorilegiumDetail";
+import { FLOR_H1, FLOR_KICKER } from "@/components/florilegium/florStyle";
 import { useTranslate } from "@/components/i18n/MessagesProvider";
-import { Eyebrow } from "@/components/ui/Graphite";
 import type { FlorilegiumItem } from "@/lib/florilegium/florilegium";
 import { TRY_CHAPTER, TRY_GATHERING } from "@/lib/premium/plusTry";
 
@@ -52,17 +53,16 @@ export default function TryFlorilegium({ row }: TryProps) {
   return (
     <TryWindow label={t(row.name)} tall>
       <div className="px-5 pb-16 pt-6">
-        <Eyebrow>{t("study.florilegium.title")}</Eyebrow>
-        <h3 className="mt-3 text-heading font-bold leading-[1.05] tracking-[-0.025em] text-paper">{title}</h3>
-        <p className="mt-4 flex flex-wrap items-center gap-2">
-          <span className="inline-flex items-center rounded-pill border border-paper/15 bg-paper/[0.04] px-3 py-1 font-sans text-caption tabular-nums text-paper/75">
-            {tn("study.florilegium.lineCount", items.length)}
+        <h3 className={FLOR_H1}>{title}</h3>
+        <p className={`${FLOR_KICKER} flex flex-wrap items-center gap-2`}>
+          <span>
+            {t("study.florilegium.title")} · <span className="tabular-nums">{tn("study.florilegium.lineCount", items.length)}</span>
           </span>
           <ExampleTag />
         </p>
-        <ul className="mt-6 space-y-4">
+        <ul className="mt-4">
           {items.map((item) => (
-            <li key={item.id}>
+            <li key={item.id} className="border-t border-paper/8 first:border-t-0">
               <ItemCard
                 item={item}
                 onRemove={() => setItems((was) => was.filter((i) => i.id !== item.id))}

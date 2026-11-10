@@ -127,6 +127,12 @@ export const OWN_HEADER_PATTERNS: RegExp[] = [
   /^\/faq$/,
   /^\/whats-new$/,
   /^\/florilegium$/,
+  // A gathering and a starter's page (1.9, build 89 notes 6 and 12): each a
+  // page of its own with its own bar, back to the Florilegium. A gathering's
+  // address is florilegium/<id> on the website and florilegium/gathering in
+  // the apps (lib/florilegium/href.ts); one pattern holds both.
+  /^\/florilegium\/[^/]+$/,
+  /^\/florilegium\/begin\/[^/]+$/,
   /^\/account\/(export|developer)$/,
   // The (signed) account group: the bar comes from the LAYOUT, not the pages,
   // which is why it cannot be spotted by reading page files. Its siblings

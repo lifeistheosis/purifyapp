@@ -29,6 +29,11 @@ export type Starter = {
 
 export const STARTERS: readonly Starter[] = STARTERS_FILE.starters;
 
+/** A starter by its id, or undefined for an address no starter has. */
+export function starterById(id: string): Starter | undefined {
+  return STARTERS.find((s) => s.id === id);
+}
+
 /**
  * A starter's picture: the Theotokos, whose icon the apps carry, or its
  * book's cover, which they ask the website for, with the plate when it cannot
@@ -45,6 +50,15 @@ export function starterReference(s: Starter, bookName: string): string {
   const first = s.lines[0]?.verse ?? 1;
   const last = s.lines[s.lines.length - 1]?.verse ?? first;
   return `${bookName} ${s.chapter}:${first}-${last}`;
+}
+
+/**
+ * The reader's own copy of a starter, if this device keeps one: the gathering
+ * with the starter's name and its reference, as Keep wrote them
+ * (components/florilegium/StarterPage.tsx).
+ */
+export function keptStarter<T extends { title: string; description?: string }>(florilegia: readonly T[], name: string, reference: string): T | undefined {
+  return florilegia.find((f) => f.title === name && f.description === reference);
 }
 
 /**

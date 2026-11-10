@@ -11,6 +11,7 @@ import { STARTERS, starterItems, starterReference } from "@/lib/florilegium/star
 
 const read = (rel: string) => fs.readFileSync(path.resolve(__dirname, "../../..", rel), "utf8");
 const HUB = read("components/florilegium/FlorilegiaHub.tsx");
+const STARTER = read("components/florilegium/StarterPage.tsx");
 const SYNC = read("lib/sync/florilegium.ts");
 const MESSAGES = fs.readdirSync(path.resolve(__dirname, "../../i18n/messages")).filter((f) => f.endsWith(".json"));
 
@@ -48,7 +49,9 @@ describe("the starters", () => {
     expect(items.at(-1)).toMatchObject({ kind: "scripture", reference: "John 1:1", book: "john", chapter: 1, verse: 1 });
     expect(items[0]).toMatchObject({ reference: "John 1:18", verse: 18 });
     expect(starterReference(prologue, "John")).toBe("John 1:1-18");
-    expect(HUB).toContain("const id = create(t(s.nameKey), starterReference(s, bookName(s.book)));");
+    // Kept on the starter's own page (1.9, build 89 note 6), named and described as before.
+    expect(STARTER).toContain("const id = create(t(s.nameKey), starterReference(s, bookName(s.book)));");
+    expect(STARTER).toContain("for (const item of starterItems(s, bookName(s.book))) addItem(id, item);");
   });
 });
 

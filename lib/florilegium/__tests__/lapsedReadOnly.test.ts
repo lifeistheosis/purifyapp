@@ -35,14 +35,18 @@ describe("a lapsed reader's gatherings", () => {
     const start = hub.indexOf("if (readOnly) {");
     const branch = hub.slice(start, hub.indexOf("\n  }\n", start));
     expect(branch).toContain("data-florilegium-yours");
-    expect(branch).toContain("<GatheringCard f={f} />");
+    expect(branch).toContain("<GatheringRow f={f} />");
     for (const absent of ["setCreating", "STARTERS", "SyncLine", "StarterSheet", "create("]) expect(branch, absent).not.toContain(absent);
   });
 
   it("a gathering, read-only: its lines and notes, with no note added, nothing removed, nothing handed on, no Delete", () => {
     expect(detail).toContain("readOnly={readOnly}");
-    expect(detail).toContain("{readOnly ? null : f.items.length > 0 ? (");
-    expect(detail).toMatch(/\{readOnly \? null : \(\s*<div className="mt-16 border-t border-paper\/10 pt-6">/);
+    // Handing on and Delete stand in one part at the foot, and the whole of it is a reader's with Plus.
+    const tools = detail.slice(detail.indexOf("{readOnly ? null : ("), detail.indexOf("<ConfirmDialog"));
+    expect(tools).toMatch(/^\{readOnly \? null : \(\s*<div className="mt-8" data-gathering-tools="">/);
+    for (const held of ["shareText(", "printPart", "setConfirmingDelete(true)"]) expect(tools, held).toContain(held);
+    const before = detail.slice(0, detail.indexOf("{readOnly ? null : ("));
+    for (const held of ["shareText(", "onClick={printPart}", "setConfirmingDelete(true)"]) expect(before, held).not.toContain(held);
     expect(detail).toContain("{!editing && !readOnly && (");
   });
 

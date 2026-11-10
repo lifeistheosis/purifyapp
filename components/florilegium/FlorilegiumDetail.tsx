@@ -2,14 +2,14 @@
 
 import { useMemo, useState } from "react";
 import Link from "next/link";
-import { notFound } from "next/navigation";
 
 import { useTranslate } from "@/components/i18n/MessagesProvider";
 import { ConfirmDialog } from "@/components/ui/ConfirmDialog";
-import { ChevronLeft } from "@/components/ui/icons/ChevronLeft";
-import { CARD, CARD_BG, Eyebrow, ICON_TILE_SM, PILL } from "@/components/ui/Graphite";
 import { Book } from "@/components/ui/icons/Book";
+import { ChevronLeft } from "@/components/ui/icons/ChevronLeft";
 import { Quill } from "@/components/ui/icons/Quill";
+import { Scroll } from "@/components/ui/icons/Scroll";
+import { Share } from "@/components/ui/icons/Share";
 import { cn } from "@/lib/cn";
 import { florilegiumAsText, itemSource } from "@/lib/florilegium/asText";
 import {
@@ -19,29 +19,28 @@ import {
 import { useIsNative } from "@/lib/platform/native";
 import { shareText } from "@/lib/share/shareImage";
 import { printPart } from "@/lib/ui/printPart";
+import { useMounted } from "@/lib/useMounted";
 
-const SMALL_PILL =
-  "inline-flex min-h-11 items-center rounded-pill px-3.5 font-sans text-caption font-medium text-paper/65 transition-colors hover:bg-paper/10 hover:text-paper";
+import { FLOR_FIELD, FLOR_H1, FLOR_KICKER, FLOR_PLATE, FLOR_QUIET, FLOR_ROW, FLOR_TITLE, FLOR_TRAY } from "./florStyle";
 
 /**
- * One florilegium: its gathered lines, each rendered as a pull-quote
- * with its source and the reader's own note beneath. Local-first via
- * useFlorilegia. If the id is unknown (e.g. deleted on another device,
- * or a stale link), fall through to notFound after the store has had a
- * chance to hydrate.
+ * One gathering: its name, and its lines set to read (1.9, build 89 note 12,
+ * the owner of the Florilegium: "entire design revamped. I just don't like
+ * that"). Local-first via useFlorilegia.
  *
- * Redrawn 2026-09-28 at the owner's request: each line is a graphite card
- * with its source's mark (the Scriptures or a Father), the quotation set
- * large, and the reader's note in a panel of its own beneath it, where they
- * were a rule, a quote and two grey words.
+ * It was a small label over a giant title over an outlined count, a second
+ * way back under the bar's own, and every line a boxed card with an icon
+ * tile. Now it is a page of a commonplace book: the name in Lora with what
+ * it is and how many lines it keeps under it, then each line on its own
+ * type (ItemCard), a hairline between two, and at the foot the one thing to
+ * do with the whole of it.
  *
  * Handed on (1.9, s5-05: "share a florilegium as a page or a booklet,
  * citations kept exact"): on the website, Print or save as PDF prints the
  * gathering alone as a booklet (lib/ui/printPart.ts); in the apps, Share
  * hands its words to the phone's share sheet, each line as it was kept with
  * its source (lib/florilegium/asText.ts).
- */
-/**
+ *
  * `readOnly`: a reader whose Plus has lapsed (rec 10): the gathering's lines
  * and notes to read, with no note added, no line removed, nothing handed on
  * and no Delete; the Plus card stands under it (FlorilegiumGate).
@@ -55,57 +54,57 @@ export function FlorilegiumDetail({ id, readOnly = false }: { id: string; readOn
     [florilegia, id],
   );
   const [confirmingDelete, setConfirmingDelete] = useState(false);
+  const mounted = useMounted();
 
-  // The store reads synchronously from localStorage, so by first client
-  // render `florilegia` is populated. An unknown id is a genuine miss.
+  // The gatherings are the device's own, so a server, and the first draw
+  // that must agree with it, know none: nothing is said until the device has
+  // been read. After that an unknown id is a genuine miss (deleted on
+  // another device, or a stale link): said gently, with the way back, never
+  // a hard 404 inside a client component.
   if (!f) {
-    if (typeof window !== "undefined" && florilegia.length >= 0) {
-      // Render a gentle empty state rather than a hard 404 inside a
-      // client component (notFound() in a client component throws).
-      return (
-        <div className={cn(CARD, "mt-10 items-center text-center hover:translate-y-0")} style={CARD_BG}>
-          <p className="font-serif text-lede italic text-paper/70">{t("study.florilegium.gone")}</p>
-          <Link href="/florilegium" className={cn(PILL, "mt-6 text-detail")}>
-            {t("study.florilegium.backToYours")}
-          </Link>
-        </div>
-      );
-    }
-    notFound();
+    if (!mounted) return null;
+    return (
+      <div className="pt-6 text-center" data-gathering-gone="">
+        <p className="font-serif text-lede italic leading-[1.5] text-paper/70">{t("study.florilegium.gone")}</p>
+        <Link
+          href="/florilegium"
+          className="tap-press mt-6 inline-flex h-12 items-center rounded-pill border border-paper/20 bg-paper/[0.05] px-6 font-sans text-ui font-semibold text-paper transition-colors hover:bg-paper/10"
+        >
+          {t("study.florilegium.backToYours")}
+        </Link>
+      </div>
+    );
   }
 
   return (
-    <div>
-      <Link href="/florilegium" className={cn(PILL, "px-4 py-1.5 text-detail")}>
-        <ChevronLeft size={16} className="me-1.5 shrink-0 rtl:-scale-x-100" />
-        {t("study.florilegium.backToYours")}
-      </Link>
+    <div data-gathering-page={f.id}>
+      {/* On a computer, the way back to the gatherings; a phone has the bar's. */}
+      <p className="mb-6 hidden md:block native-md-hidden">
+        <Link href="/florilegium" className="inline-flex items-center font-sans text-detail font-semibold text-paper/55 transition-colors hover:text-paper">
+          <ChevronLeft size={16} className="me-1.5 shrink-0 rtl:-scale-x-100" />
+          {t("study.florilegium.backToYours")}
+        </Link>
+      </p>
 
       {/* What the booklet prints: the name, its line, and the lines (1.9). */}
       <div data-print-part="">
-        <Eyebrow className="mt-10">{t("study.florilegium.title")}</Eyebrow>
-        <h1 className="mt-4 text-heading font-bold leading-[1.05] tracking-[-0.025em] text-paper md:text-display-sm">
-          {f.title}
-        </h1>
-        {f.description ? (
-          <p className="mt-4 font-serif text-lede italic leading-[1.55] text-paper/70">{f.description}</p>
-        ) : null}
-        <p className="mt-5">
-          <span className="inline-flex items-center rounded-pill border border-paper/15 bg-paper/[0.04] px-3 py-1 font-sans text-caption tabular-nums text-paper/70">
-            {tn("study.florilegium.lineCount", f.items.length)}
-          </span>
-        </p>
+        <header>
+          {/* The reader's own words, and lines in whatever language they were gathered in: each reads its own way (dir="auto"), as a kept verse does on You. */}
+          <h1 id={FLOR_TITLE} dir="auto" className={cn(FLOR_H1, "text-balance")}>
+            {f.title}
+          </h1>
+          <p className={FLOR_KICKER}>
+            {f.description ? `${f.description} · ` : null}
+            <span className="tabular-nums">{tn("study.florilegium.lineCount", f.items.length)}</span>
+          </p>
+        </header>
 
         {f.items.length === 0 ? (
-          <div className={cn(CARD, "mt-10 hover:translate-y-0")} style={CARD_BG}>
-            <p className="max-w-[52ch] font-serif text-body italic leading-[1.6] text-paper/65">
-              {t("study.nothingGatheredYetAsYou")}
-            </p>
-          </div>
+          <p className="mt-7 max-w-[52ch] font-serif text-body italic leading-[1.6] text-paper/70">{t("study.nothingGatheredYetAsYou")}</p>
         ) : (
-          <ul className="mt-10 space-y-5">
+          <ul className="mt-4" data-gathering-lines="">
             {f.items.map((item) => (
-              <li key={item.id}>
+              <li key={item.id} className="border-t border-paper/8 first:border-t-0">
                 <ItemCard
                   item={item}
                   readOnly={readOnly}
@@ -118,30 +117,31 @@ export function FlorilegiumDetail({ id, readOnly = false }: { id: string; readOn
         )}
       </div>
 
-      {readOnly ? null : f.items.length > 0 ? (
-        <div className="mt-8">
-          {native ? (
-            <button
-              type="button"
-              onClick={() => void shareText(f.title, florilegiumAsText(f))}
-              className={cn(PILL, "px-4 py-1.5 text-detail")}
-            >
-              {t("common.share")}
-            </button>
-          ) : (
-            <button type="button" onClick={printPart} className={cn(PILL, "px-4 py-1.5 text-detail")}>
-              {t("journal.print")}
-            </button>
-          )}
-        </div>
-      ) : null}
-
       {readOnly ? null : (
-        <div className="mt-16 border-t border-paper/10 pt-6">
+        <div className="mt-8" data-gathering-tools="">
+          {f.items.length > 0 ? (
+            <div className={FLOR_TRAY}>
+              {native ? (
+                <button type="button" onClick={() => void shareText(f.title, florilegiumAsText(f))} className={FLOR_ROW}>
+                  <span aria-hidden className={FLOR_PLATE}>
+                    <Share size={18} />
+                  </span>
+                  <span className="min-w-0 flex-1 font-sans text-ui font-semibold leading-snug text-paper">{t("common.share")}</span>
+                </button>
+              ) : (
+                <button type="button" onClick={printPart} className={FLOR_ROW}>
+                  <span aria-hidden className={FLOR_PLATE}>
+                    <Scroll size={18} />
+                  </span>
+                  <span className="min-w-0 flex-1 font-sans text-ui font-semibold leading-snug text-paper">{t("journal.print")}</span>
+                </button>
+              )}
+            </div>
+          ) : null}
           <button
             type="button"
             onClick={() => setConfirmingDelete(true)}
-            className="inline-flex min-h-11 items-center rounded-pill px-3.5 font-sans text-detail text-paper/50 transition-colors hover:bg-crimson/15 hover:text-crimson-soft"
+            className="tap-press mt-3 inline-flex min-h-11 items-center rounded-pill px-3.5 font-sans text-detail font-semibold text-paper/60 transition-colors hover:bg-crimson/15 hover:text-crimson-soft"
           >
             {t("study.florilegium.deleteThis")}
           </button>
@@ -169,8 +169,12 @@ export function FlorilegiumDetail({ id, readOnly = false }: { id: string; readOn
 }
 
 /**
- * One gathered line as its collection shows it. Also what the Plus page's
- * preview of the Florilegium draws (components/billing/plusTry/TryFlorilegium.tsx).
+ * One gathered line as its gathering shows it: the words on their own type,
+ * in the size the app reads at, never in a box and never beside a rule
+ * (CLAUDE.md, "No side stripes"); under them where they are from, with the
+ * mark of the Scriptures or of a Father, which opens the place; then the
+ * reader's own note. Also what the Plus page's preview of the Florilegium
+ * draws (components/billing/plusTry/TryFlorilegium.tsx).
  */
 export function ItemCard({
   item,
@@ -193,51 +197,60 @@ export function ItemCard({
     item.kind === "scripture"
       ? `/bible/${item.book}/${item.chapter}`
       : item.href;
+  const mark = item.kind === "scripture" ? <Book size={15} aria-hidden className="shrink-0 text-paper/55" /> : <Quill size={15} aria-hidden className="shrink-0 text-paper/55" />;
+  const SOURCE = "inline-flex min-h-11 min-w-0 items-center gap-2 font-sans text-caption font-semibold text-paper/65";
 
   return (
-    <article className={cn(CARD, "hover:translate-y-0 md:p-8")} style={CARD_BG}>
-      {/* The mark above the quotation on a phone, beside it from sm up, so a
-          narrow screen gives the words its whole width. */}
-      <div className="flex flex-col gap-4 sm:flex-row sm:items-start">
-        <span aria-hidden className={ICON_TILE_SM}>
-          {item.kind === "scripture" ? <Book size={20} /> : <Quill size={20} />}
-        </span>
-        <div className="min-w-0 flex-1">
-          <blockquote className="font-serif text-lede italic leading-[1.6] text-paper/90 md:text-title-sm md:leading-[1.55]">
-            {item.text}
-          </blockquote>
-          <p className="mt-3 font-sans text-caption font-semibold text-paper/55">
-            {href ? (
-              <Link href={href} className="transition-colors hover:text-paper">
-                {source}
-              </Link>
-            ) : (
-              source
-            )}
+    <article data-gathered-line={item.kind} className="pb-2 pt-5">
+      <blockquote dir="auto" className="font-serif text-[17px] leading-[1.7] text-paper/90">
+        {item.text}
+      </blockquote>
+
+      <div className="mt-1.5 flex flex-wrap items-center gap-x-2">
+        {href ? (
+          <Link href={href} className={cn(SOURCE, "transition-colors hover:text-paper")}>
+            {mark}
+            <span dir="auto" className="min-w-0">{source}</span>
+          </Link>
+        ) : (
+          <p className={SOURCE}>
+            {mark}
+            <span dir="auto" className="min-w-0">{source}</span>
           </p>
-        </div>
+        )}
+        {!editing && !readOnly && (
+          <span className="ms-auto flex shrink-0 items-center" data-print-hide="">
+            <button type="button" onClick={() => setEditing(true)} className={FLOR_QUIET}>
+              {item.note ? t("bible.editNote") : t("bible.addNote")}
+            </button>
+            <button type="button" onClick={onRemove} className={FLOR_QUIET}>
+              {t("prayers.diptychs.remove")}
+            </button>
+          </span>
+        )}
       </div>
 
       {editing ? (
-        <div className="mt-6" data-print-hide="">
+        <div className="mb-3 mt-2" data-print-hide="">
           <textarea
             value={draft}
             onChange={(e) => setDraft(e.target.value)}
             rows={3}
             // eslint-disable-next-line jsx-a11y/no-autofocus
             autoFocus
+            dir="auto"
             aria-label={t("bible.yourNote")}
             placeholder={t("study.florilegium.notePlaceholder")}
-            className="w-full rounded-2xl border border-paper/20 bg-paper/[0.05] px-4 py-3 font-serif text-detail leading-[1.6] text-paper transition-colors placeholder:text-paper/55 focus:border-paper/50 focus:outline-none"
+            className={cn(FLOR_FIELD, "py-3 font-serif text-detail leading-[1.6]")}
           />
-          <div className="mt-3 flex flex-wrap gap-2">
+          <div className="mt-2.5 flex flex-wrap gap-2">
             <button
               type="button"
               onClick={() => {
                 onNote(draft);
                 setEditing(false);
               }}
-              className="inline-flex min-h-11 items-center rounded-pill bg-paper px-4 font-sans text-detail font-semibold text-night transition-colors hover:bg-paper/90"
+              className="tap-press inline-flex h-11 items-center rounded-pill bg-paper px-5 font-sans text-detail font-semibold text-night transition-colors hover:bg-paper/90"
             >
               {t("study.florilegium.saveNote")}
             </button>
@@ -247,31 +260,20 @@ export function ItemCard({
                 setDraft(item.note ?? "");
                 setEditing(false);
               }}
-              className={SMALL_PILL}
+              className={FLOR_QUIET}
             >
               {t("common.cancel")}
             </button>
           </div>
         </div>
       ) : item.note ? (
-        <div className="mt-6 rounded-2xl bg-paper/[0.04] px-4 py-3.5 ring-1 ring-inset ring-paper/10">
-          <p className="font-sans text-caption font-semibold text-paper/50">
-            {t("bible.yourNote")}
+        <div className="mb-3 mt-1.5 rounded-[14px] bg-paper/[0.05] px-3.5 py-3" data-gathered-note="">
+          <p className="font-sans text-caption font-semibold text-paper/60">{t("bible.yourNote")}</p>
+          <p dir="auto" className="mt-1 font-serif text-detail leading-[1.6] text-paper/85">
+            {item.note}
           </p>
-          <p className="mt-1.5 font-serif text-detail leading-[1.6] text-paper/80">{item.note}</p>
         </div>
       ) : null}
-
-      {!editing && !readOnly && (
-        <div className="mt-5 flex flex-wrap gap-1.5" data-print-hide="">
-          <button type="button" onClick={() => setEditing(true)} className={SMALL_PILL}>
-            {item.note ? t("bible.editNote") : t("bible.addNote")}
-          </button>
-          <button type="button" onClick={onRemove} className={SMALL_PILL}>
-            {t("prayers.diptychs.remove")}
-          </button>
-        </div>
-      )}
     </article>
   );
 }
