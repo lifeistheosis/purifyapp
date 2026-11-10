@@ -9,8 +9,9 @@ import { identity } from "@/lib/profile/server";
 import { isColumnAbsent } from "@/lib/supabase/columnAbsent";
 
 import { standingOf, type CommunityUser } from "./adminStanding";
+import { DANGER_NEEDS_REASON, DANGER_NEEDS_REASON_CODE, DANGER_NOT_QUOTED, repliesHeldForDanger } from "./dangerHolds";
 import { insertNotifications, notifyClergyOfQuestion, notifyMentions, notifyOfReply } from "./notify";
-import { writeRemovalNotice, type RemovalReason } from "./removal";
+import { DEFAULT_REMOVAL_REASON, writeRemovalNotice, type RemovalReason } from "./removal";
 import { STAFF_BADGES } from "./trustServer";
 
 // Moderation, once, for everyone who moderates: the team's console
@@ -254,7 +255,7 @@ export const MOD_ACTIONS = [
 ] as const;
 export type ModAction = (typeof MOD_ACTIONS)[number];
 
-export type ModResult = { ok: true } | { ok: false; status: number; error: string };
+export type ModResult = { ok: true } | { ok: false; status: number; error: string; code?: string };
 
 type Hold = {
   id: string;
@@ -341,6 +342,13 @@ async function removeReply(admin: SupabaseClient, actor: ModActor, id: string, r
   const { data: reply } = await admin.from("community_post_replies").select("post_id, user_id, status, body, author_name").eq("id", id).maybeSingle();
   if (!reply) return { ok: false, status: 404, error: "That reply is gone." };
   const r = reply as { post_id: string; user_id: string | null; status: string; body: string; author_name: string };
+  // Words the safety line held (./dangerHolds.ts): removed only for a reason
+  // a moderator chose, and never for the one that stands for none, so that
+  // the notice its writer is sent is true. Asked before anything is changed.
+  const danger = (await repliesHeldForDanger(admin, [id])).has(id);
+  if (danger && (!code || code === DEFAULT_REMOVAL_REASON)) {
+    return { ok: false, status: 400, error: DANGER_NEEDS_REASON, code: DANGER_NEEDS_REASON_CODE };
+  }
   const { error } = await admin
     .from("community_post_replies")
     .update({ status: "removed", removed_reason: reason?.trim() || null, removed_by_email: actor.email ?? actor.name })
@@ -350,7 +358,8 @@ async function removeReply(admin: SupabaseClient, actor: ModActor, id: string, r
   if (r.status === "visible") await admin.rpc("community_bump_reply_count", { p_post_id: r.post_id, p_delta: -1 });
   await closeReports(admin, actor, { reply_id: id }, "actioned");
   await resolveHolds(admin, actor, { reply_id: id }, "removed");
-  await logMod(admin, actor, { action: "remove_reply", target: "reply", targetId: id, summary: `${r.author_name}: ${excerpt(r.body)}` });
+  // The log says what was done, and for such words it does not say the words.
+  await logMod(admin, actor, { action: "remove_reply", target: "reply", targetId: id, summary: `${r.author_name}: ${danger ? DANGER_NOT_QUOTED : excerpt(r.body)}` });
   // Its writer is told why (the Terms, "What we may remove"; lib/community/removal.ts),
   // once. A reply in a prayer campaign's thread is that campaign's comment,
   // and is named so (lib/campaigns/thread.ts, which imports this file, so it
@@ -481,7 +490,9 @@ async function restoreReply(admin: SupabaseClient, actor: ModActor, id: string):
       skip: told ? [told] : [],
     });
   }
-  await logMod(admin, actor, { action: "restore_reply", target: "reply", targetId: id, summary: `${reply.author_name}: ${excerpt(reply.body)}` });
+  // Words the safety line held are not quoted in the log, approved or removed (./dangerHolds.ts).
+  const danger = (await repliesHeldForDanger(admin, [id])).has(id);
+  await logMod(admin, actor, { action: "restore_reply", target: "reply", targetId: id, summary: `${reply.author_name}: ${danger ? DANGER_NOT_QUOTED : excerpt(reply.body)}` });
   return { ok: true };
 }
 

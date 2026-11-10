@@ -9,6 +9,7 @@ import { readWaitingPictures } from "@/lib/campaigns/pictures";
 import { requestStanding } from "@/lib/community/adminStanding";
 import { communityEnabled } from "@/lib/community/flags";
 import { MOD_ACTIONS, moderatorFor, readModLog, readOpenReports, readPendingHolds, runModAction } from "@/lib/community/moderation";
+import { REMOVAL_REASONS } from "@/lib/community/removal";
 import { signedInUser } from "@/lib/community/social";
 import { rateLimited } from "@/lib/security/ratelimit";
 import { createAdminClient } from "@/lib/supabase/admin";
@@ -134,6 +135,10 @@ const schema = z.object({
   action: z.enum([...MOD_ACTIONS, ...CAMPAIGN_MOD_ACTIONS]),
   id: z.string().uuid(),
   reason: z.string().max(300).optional().nullable(),
+  // Why, from the list a removal's notice says (lib/community/removal.ts). The
+  // moderators' page sends one only where it must be chosen: for words the
+  // safety line held (lib/community/dangerHolds.ts).
+  reason_code: z.enum(REMOVAL_REASONS).optional().nullable(),
 });
 
 async function handlePOST(req: Request) {
@@ -151,16 +156,18 @@ async function handlePOST(req: Request) {
   }
   const parsed = schema.safeParse(body);
   if (!parsed.success) return NextResponse.json({ error: "Invalid action." }, { status: 400 });
-  const { action, id, reason } = parsed.data;
+  const { action, id, reason, reason_code: code } = parsed.data;
   if (isCampaignModAction(action)) {
     // Not an action at all where campaigns are closed for this moderator.
     if (!(await campaignsCaller(req)).open) return NextResponse.json({ error: "Invalid action." }, { status: 400 });
+    // The moderators' page asks no reason for a campaign's removal yet, so none is passed on for one.
     const res = await runCampaignModAction(who.admin, who.actor, action, id, reason);
     if (!res.ok) return NextResponse.json({ error: res.error }, { status: res.status });
     return NextResponse.json({ ok: true });
   }
-  const res = await runModAction(who.admin, who.actor, action, id, reason);
-  if (!res.ok) return NextResponse.json({ error: res.error }, { status: res.status });
+  const res = await runModAction(who.admin, who.actor, action, id, reason, code);
+  // `code` says what the screen can do about a refusal: "reason_needed" asks for the removal's reason.
+  if (!res.ok) return NextResponse.json({ error: res.error, code: res.code }, { status: res.status });
   return NextResponse.json({ ok: true });
 }
 

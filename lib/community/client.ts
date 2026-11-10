@@ -9,6 +9,7 @@ import type { CampaignQueue } from "@/lib/campaigns/model";
 import { partInThisBuild, queueInThisBuild } from "@/lib/campaigns/partsHere";
 import { parseReactionMap, type ReactionState } from "@/lib/community/reactions";
 import { parseResponseMap, type ResponseCounts, type ResponseKind } from "@/lib/community/responses";
+import type { RemovalReason } from "./removal";
 import type { CommunityPost, CommunityReply } from "./types";
 
 export type CommunityResult = {
@@ -569,12 +570,17 @@ export async function fetchModWaiting(): Promise<number | null> {
   }
 }
 
-export async function moderate(action: ModAction, id: string, reason?: string | null): Promise<CommunityResult> {
+/**
+ * One of the moderators' actions. `code` is a removal's reason from the list
+ * its notice says (lib/community/removal.ts): sent only where one has to be
+ * chosen, which the server says by refusing with the code "reason_needed".
+ */
+export async function moderate(action: ModAction, id: string, reason?: string | null, code?: RemovalReason | null): Promise<CommunityResult> {
   try {
     const res = await apiFetch("/api/community/moderation", {
       method: "POST",
       headers: { "content-type": "application/json" },
-      body: JSON.stringify({ action, id, reason: reason ?? null }),
+      body: JSON.stringify({ action, id, reason: reason ?? null, ...(code ? { reason_code: code } : {}) }),
     });
     return readResult(res);
   } catch {

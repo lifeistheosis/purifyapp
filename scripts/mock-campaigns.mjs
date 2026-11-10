@@ -1171,6 +1171,22 @@ if (WALK) {
     // The ordinary one keeps its own reason.
     const plain = await page.locator("article", { hasText: "Praying for Maria tonight." }).innerText();
     expectThat(!plain.includes("Read first"), "an ordinary hold is marked as danger");
+    // Removing such words asks why, at once, and never offers the reason that stands for none.
+    await card.locator("button", { hasText: "Remove" }).click();
+    const sheet = page.locator("[data-mod-removal-reason]");
+    await sheet.waitFor({ timeout: 8000 });
+    const reasons = (await sheet.locator("[role=radio]").allInnerTexts()).map((x) => x.trim());
+    expectThat(reasons.length === 6 && !reasons.some((r) => /house rules/i.test(r)), `the reasons offered are ${JSON.stringify(reasons)}`);
+    expectThat(reasons.includes("Private details about another person"), "a real reason is missing from the list");
+    const remove = sheet.locator("button", { hasText: "Remove" });
+    expectThat(await remove.isDisabled(), "Remove is lit before a reason is chosen");
+    expectThat(sentTo("POST", /^\/api\/community\/moderation$/).length === 0, "it was removed before a reason was chosen");
+    await sheet.locator("[role=radio]", { hasText: "Private details about another person" }).click();
+    expectThat(!(await remove.isDisabled()), "Remove stays dim with a reason chosen");
+    await remove.click();
+    await settle(page, 900);
+    const [sent] = sentTo("POST", /^\/api\/community\/moderation$/);
+    expectThat(sent && sent.body.action === "remove_hold" && sent.body.id === MOD_HOLDS[1].id && sent.body.reason_code === "private", `sent ${JSON.stringify(sent?.body)}`);
   }, { holds: MOD_HOLDS });
 
   await walk("Pray together: campaigns alone, behind its own door, and nothing is asked of the prayer wall", "/community#pray", async (page) => {

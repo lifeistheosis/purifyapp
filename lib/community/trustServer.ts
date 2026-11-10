@@ -3,6 +3,7 @@ import "server-only";
 import type { SupabaseClient, User } from "@supabase/supabase-js";
 
 import { standingOf, type CommunityUser } from "./adminStanding";
+import { repliesHeldForDanger } from "./dangerHolds";
 import { TRUST_LIMITS, trustLevel, type TrustFacts, type TrustLevel, type TrustLimits } from "./trust";
 
 // Reading what lib/community/trust.ts decides on. Service role: the counts
@@ -60,7 +61,7 @@ export async function readTrust(
   const removedSince = (table: "community_posts" | "community_post_replies") =>
     admin
       .from(table)
-      .select("created_at")
+      .select("id, created_at")
       .eq("user_id", user.id)
       .eq("status", "removed")
       .not("removed_by_email", "is", null)
@@ -72,9 +73,15 @@ export async function readTrust(
     removedSince("community_posts"),
     removedSince("community_post_replies"),
   ]);
-  const removedAt = [...(removedPosts.data ?? []), ...(removedReplies.data ?? [])].map((r) =>
-    new Date((r as { created_at: string }).created_at).getTime(),
+  // Words the safety line held are never against their writer: a removal of
+  // such a reply is not counted here (./dangerHolds.ts). The reply keeps the
+  // record of who removed it.
+  const replies = (removedReplies.data ?? []) as { id: string; created_at: string }[];
+  const spared = await repliesHeldForDanger(
+    admin,
+    replies.map((r) => r.id),
   );
+  const removedAt = [...((removedPosts.data ?? []) as { created_at: string }[]), ...replies.filter((r) => !spared.has(r.id))].map((r) => new Date(r.created_at).getTime());
   const created = user.created_at ? new Date(user.created_at).getTime() : NaN;
   const facts: TrustFacts = {
     // An account whose age cannot be read is treated as old enough to post,

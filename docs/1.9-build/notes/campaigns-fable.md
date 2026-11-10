@@ -3990,11 +3990,10 @@ your words first."
   myself", "end my life", "self-harm"). It will hold a comment about a death
   by suicide in a family, and it will miss what is said in other words. A
   moderator reads every campaign either way.
-- **A held comment that a moderator then removes** counts against its writer
-  as any removal does (a reader with removals posts under tighter limits),
-  and they are sent the removal's notice. For words like these that may be
-  the wrong weight. Not changed here: it is the moderators' shared rule, and
-  it is named to Admin.
+- **A held comment that a moderator then removes** counted against its
+  writer as any removal does, and its notice said "against the house rules"
+  unless a reason was chosen. For words like these that is the wrong weight.
+  Named to Admin, whose rule for the moderators is in 29.5 and is built.
 - **The words say nothing of doctrine,** and none was written for this.
 
 ### 29.4 What holds it
@@ -4015,3 +4014,36 @@ The walk: five flows (the rules, the start screen, a creator's waiting
 campaign, a comment, the moderators' queue). Stills: the rules (31), a
 waiting campaign in danger as its creator sees it (32), a comment's answer
 (33), and the start screen (09), which now ends in the line.
+
+### 29.5 The moderators' rule for such words (Admin's, 2026-11-10; built)
+
+Held by `lib/community/dangerHolds.ts` and
+`lib/community/__tests__/dangerHolds.test.ts` (14 cases, seven ways of
+breaking it each caught). A hold is known by the mark in its detail,
+whatever reason it is filed under and whether it still waits or was decided,
+so the rule holds on every road to the same words: the queue's, or a
+report's.
+
+- **Never against the writer.** Removing words the safety line held does not
+  count in their standing (`lib/community/trustServer.ts`): their limits are
+  as they were. The reply keeps the record of who removed it.
+- **Never "against the house rules".** Removing them needs a reason a
+  moderator chose from the list, and the one that stands for "none was
+  chosen" is refused, so the notice their writer is sent is true. The server
+  refuses on every road; the moderators' page asks for the reason at once on
+  such a card, offers the six real reasons, and keeps Remove dim until one is
+  ticked. If no rule is broken the words are approved, or left waiting: a
+  request for prayer in a hard hour is what campaigns are for.
+- **Never quoted.** The moderators' log says such words were removed, or
+  approved, and by whom, and not the words ("words that may mean danger, not
+  quoted").
+- **Filed as "spam", and never called it.** The holds' table has no reason
+  for this and a new one would be SQL for his signature. The reason "words"
+  will not do: it means "shown with some words masked", and approving such a
+  hold would not show a note that is hidden. So the storage says "spam", the
+  truth is in the detail, the moderators' page draws the mark from the
+  detail, and nothing counts these as spam. The admin panel's own queue is
+  Admin's to bring to the same mark.
+- **Whether a moderator writes to such a writer,** in what words and with
+  which help lines, is his to decide and is with the arbiter as a call. Not
+  built.

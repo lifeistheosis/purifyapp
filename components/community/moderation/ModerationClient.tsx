@@ -4,8 +4,10 @@ import Link from "next/link";
 import { useCallback, useEffect, useState } from "react";
 
 import { CampaignModeration, campaignsWaitingCount } from "@/components/campaigns/CampaignModeration";
+import { TickLines } from "@/components/campaigns/TickLines";
 import { useTranslate } from "@/components/i18n/MessagesProvider";
 import { ConfirmDialog } from "@/components/ui/ConfirmDialog";
+import { Sheet } from "@/components/ui/Sheet";
 import { SkeletonList } from "@/components/ui/Skeleton";
 import { dangerFirst, saysDanger } from "@/lib/campaigns/safety";
 import { cn } from "@/lib/cn";
@@ -18,6 +20,7 @@ import {
   type ModQueue,
   type ModReport,
 } from "@/lib/community/client";
+import { DEFAULT_REMOVAL_REASON, REMOVAL_REASONS, REMOVAL_REASON_WORDS, type RemovalReason } from "@/lib/community/removal";
 import { timeAgo } from "@/lib/community/types";
 
 /**
@@ -42,6 +45,15 @@ type Loaded =
 
 type Pending = { action: ModAction; id: string; label: string } | null;
 
+/**
+ * The reasons offered for removing words the safety line held: the list a
+ * removal's notice says, without the one that stands for "none was chosen".
+ * Such words are never removed as against the house rules (the moderators'
+ * rule, lib/community/dangerHolds.ts); if no rule is broken they are
+ * approved, or left waiting.
+ */
+const DANGER_REASONS = REMOVAL_REASONS.filter((r) => r !== DEFAULT_REMOVAL_REASON);
+
 export function ModerationClient() {
   const { t } = useTranslate();
   const [loaded, setLoaded] = useState<Loaded>({ state: "loading" });
@@ -49,6 +61,9 @@ export function ModerationClient() {
   const [busy, setBusy] = useState<string | null>(null);
   const [notice, setNotice] = useState<string | null>(null);
   const [confirming, setConfirming] = useState<Pending>(null);
+  // A removal that must say why: what is being removed, and the reason chosen so far.
+  const [reasoning, setReasoning] = useState<{ action: ModAction; id: string } | null>(null);
+  const [reason, setReason] = useState<RemovalReason | null>(null);
 
   const load = useCallback(async () => {
     const res = await fetchModQueue();
@@ -74,12 +89,22 @@ export function ModerationClient() {
     };
   }, []);
 
-  async function act(action: ModAction, id: string) {
+  const askReason = (action: ModAction, id: string) => {
+    setReason(null);
+    setReasoning({ action, id });
+  };
+
+  async function act(action: ModAction, id: string, code?: RemovalReason) {
     setBusy(`${action}:${id}`);
     setNotice(null);
-    const res = await moderate(action, id);
+    const res = await moderate(action, id, null, code ?? null);
     setBusy(null);
     if (!res.ok) {
+      // The server holds the rule on every path: where it asks for a reason, the list is shown.
+      if (res.code === "reason_needed") {
+        askReason(action, id);
+        return;
+      }
       setNotice(res.error ?? t("mod.failed"));
       return;
     }
@@ -90,7 +115,9 @@ export function ModerationClient() {
   const queue: ModQueue | null = loaded.state === "ok" ? loaded.queue : null;
 
   function ask(action: ModAction, id: string, label: string) {
-    if (action === "remove_post" || action === "remove_reply" || action === "remove_hold") setConfirming({ action, id, label });
+    // Words that may mean danger are removed only for a chosen reason: the list, and no plain "Remove this?".
+    if (action === "remove_hold" && queue?.holds.some((h) => h.id === id && saysDanger(h.detail))) askReason(action, id);
+    else if (action === "remove_post" || action === "remove_reply" || action === "remove_hold") setConfirming({ action, id, label });
     else void act(action, id);
   }
 
@@ -196,6 +223,32 @@ export function ModerationClient() {
         }}
         onCancel={() => setConfirming(null)}
       />
+
+      {/* Why it is removed, where that has to be chosen. The reasons are the
+          panel's own words, in English as the panel has them. */}
+      <Sheet open={reasoning !== null} onClose={() => setReasoning(null)} title={t("mod.removeTitle")} desktop openFull>
+        <p id="mod-removal-reason" className="sr-only">
+          {t("mod.removeTitle")}
+        </p>
+        <div data-mod-removal-reason="" className="pb-1 pt-1">
+          <TickLines value={reason} options={DANGER_REASONS.map((r) => ({ id: r, label: REMOVAL_REASON_WORDS[r] }))} onChange={setReason} labelledBy="mod-removal-reason" />
+          <div className="mt-4 flex justify-end">
+            <button
+              type="button"
+              disabled={!reason || busy !== null}
+              onClick={() => {
+                const r = reasoning;
+                const code = reason;
+                setReasoning(null);
+                if (r && code) void act(r.action, r.id, code);
+              }}
+              className="inline-flex min-h-11 items-center rounded-pill border border-crimson/50 px-5 font-sans text-detail font-semibold text-crimson-soft transition-colors hover:border-crimson disabled:opacity-50"
+            >
+              {t("mod.remove")}
+            </button>
+          </div>
+        </div>
+      </Sheet>
     </div>
   );
 }
