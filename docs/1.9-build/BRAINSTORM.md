@@ -330,6 +330,8 @@ local app, not built):
 | Double tap | Highlights the verse | The same; the first tap selects, so nothing waits |
 | Hold | An eighteen-row menu | Hold and drag marks some words, as now; the menu's rows move into the bar and More |
 
+**Superseded for tap, double tap and hold (his word, build 90 note 10, built 2026-11-10 by Updates, `e7aa51c7`):** "make it so that when you double tap, it automatically highlights the last color you picked. And also make it so that when you hold it down, then that window pops up." Now: a single tap does nothing, with no wait added; a double tap highlights the verse in the colour last picked (yellow if none was ever picked), with the soft tap and Undo, and a double tap on a highlighted verse takes it off; a hold opens the verse's window. The red verse numbers and the Greek words keep their own taps. Each verse has a hidden "Verse actions" button for screen readers and keyboards. The Fathers' paragraphs take the same double tap. The three choices were built to the chat's recs under his "All recommendations"; he can flip any after the next test build. The table above records the 2026-11-06 proposal.
+
 Nothing appears while a reader only reads: no popups until a tap. Compare,
 if Plus, needs one check first: licensed translations (NIV, NKJV, NLT) often
 may not be sold behind a paywall under their publishers' terms.
