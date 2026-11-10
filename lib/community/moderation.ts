@@ -319,7 +319,7 @@ async function closeReports(
 const HELD_AT_WRITE = (reason: string) => reason === "spam" || reason === "links" || reason === "new_account";
 
 async function removePost(admin: SupabaseClient, actor: ModActor, id: string, reason?: string | null, code?: RemovalReason | null): Promise<ModResult> {
-  const { data: post } = await admin.from("community_posts").select("id, user_id, title, body, author_name").eq("id", id).maybeSingle();
+  const { data: post } = await admin.from("community_posts").select("id, user_id, title, body, author_name, status").eq("id", id).maybeSingle();
   if (!post) return { ok: false, status: 404, error: "That post is gone." };
   const { error } = await admin
     .from("community_posts")
@@ -328,10 +328,11 @@ async function removePost(admin: SupabaseClient, actor: ModActor, id: string, re
   if (error) return { ok: false, status: 500, error: error.message };
   await closeReports(admin, actor, { post_id: id }, "actioned");
   await resolveHolds(admin, actor, { post_id: id }, "removed");
-  const p = post as { user_id: string | null; title: string | null; body: string | null; author_name: string };
+  const p = post as { user_id: string | null; title: string | null; body: string | null; author_name: string; status?: string };
   await logMod(admin, actor, { action: "remove_post", target: "post", targetId: id, summary: `${p.author_name}: ${excerpt(p.title || p.body)}` });
-  // Its writer is told why (the Terms, "What we may remove"; lib/community/removal.ts).
-  if (p.user_id) await writeRemovalNotice(admin, { userId: p.user_id, target: "post", reason: code, postId: id, excerpt: p.title || p.body });
+  // Its writer is told why (the Terms, "What we may remove"; lib/community/removal.ts),
+  // once: a second removal of what was already removed tells nobody again.
+  if (p.user_id && p.status !== "removed") await writeRemovalNotice(admin, { userId: p.user_id, target: "post", reason: code, postId: id, excerpt: p.title || p.body });
   return { ok: true };
 }
 
@@ -349,8 +350,15 @@ async function removeReply(admin: SupabaseClient, actor: ModActor, id: string, r
   await closeReports(admin, actor, { reply_id: id }, "actioned");
   await resolveHolds(admin, actor, { reply_id: id }, "removed");
   await logMod(admin, actor, { action: "remove_reply", target: "reply", targetId: id, summary: `${r.author_name}: ${excerpt(r.body)}` });
-  // Its writer is told why (the Terms, "What we may remove"; lib/community/removal.ts).
-  if (r.user_id) await writeRemovalNotice(admin, { userId: r.user_id, target: "reply", reason: code, postId: r.post_id, replyId: id, excerpt: r.body });
+  // Its writer is told why (the Terms, "What we may remove"; lib/community/removal.ts),
+  // once. A reply in a prayer campaign's thread is that campaign's comment,
+  // and is named so (lib/campaigns/thread.ts, which imports this file, so it
+  // is fetched when needed rather than at the top).
+  if (r.user_id && r.status !== "removed") {
+    const { isCampaignThread } = await import("@/lib/campaigns/thread");
+    const comment = await isCampaignThread(admin, r.post_id).catch(() => false);
+    await writeRemovalNotice(admin, { userId: r.user_id, target: comment ? "comment" : "reply", reason: code, postId: r.post_id, replyId: id, excerpt: r.body });
+  }
   return { ok: true };
 }
 

@@ -106,7 +106,12 @@ describe("every removal by a moderator tells its poster", () => {
   it("posts and replies, from the moderation both consoles share", () => {
     const mod = read("lib/community/moderation.ts");
     expect(mod).toMatch(/writeRemovalNotice\(admin, \{ userId: p\.user_id, target: "post"/);
-    expect(mod).toMatch(/writeRemovalNotice\(admin, \{ userId: r\.user_id, target: "reply"/);
+    expect(mod).toMatch(/writeRemovalNotice\(admin, \{ userId: r\.user_id, target: comment \? "comment" : "reply"/);
+    // A reply in a campaign's thread is told as that campaign's comment.
+    expect(mod).toContain("const comment = await isCampaignThread(admin, r.post_id)");
+    // Once: removing what was already removed tells nobody again.
+    expect(mod).toContain('if (p.user_id && p.status !== "removed")');
+    expect(mod).toContain('if (r.user_id && r.status !== "removed")');
     // A held post or reply removed goes the same way, with the reason.
     expect(mod).toContain('removePost(admin, actor, hold.post_id, "Held for review", code)');
   });
