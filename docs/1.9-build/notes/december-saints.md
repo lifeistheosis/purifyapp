@@ -289,3 +289,48 @@ two scans of its printing, the review in
   dashes).
 - **Stills**: `december-saints/05-st-john-on-holy-images.png`,
   `06-st-ambrose-on-the-duties-of-the-clergy.png`.
+
+## Push 3, as built: Butler's Lives (2026-11-10)
+
+On the owner's word ("again no preist so just full publish", call 11 in
+`docs/1.9-build/BRAINSTORM.md`), Alban Butler's Lives for the fifteen of the
+month's saints whose one Life in English is his, published with no priest's
+check, word for word with his name on each. In
+`scripts/menologion/december-lives.mjs` with the month's other Lives; the
+check of every word against three more scans is
+`docs/editorial/ingest-review/december-lives.md`.
+
+- **The fifteen**: St Barbara (December 4), St Sabbas (5), St Lucia (13), the
+  Ten Martyrs of Crete (23), St Anastasia and St Eugenia (25), St Theodore
+  the Branded (27), St Marcellus (29) and St Anysia (30) from vol. XII; St
+  Sebastian and Sts Thyrsus, Leucius and Callinicus from vol. I, St Juliana
+  from vol. II, Sts Apollonius and Philemon from vol. III, St Boniface from
+  vol. V and St Chrysogonus from vol. XI, on Butler's own days. St
+  Eleutherius is not in Butler and keeps his entry, as does St Theodore the
+  Studite.
+- **How**: each read from the page images of Princeton Theological
+  Seminary's copy of the London stereotype edition, line by line against the
+  Digital Library of India's scan of the same plates (St Boniface's and St
+  Eugenia's typed from the page). The result was checked again: every word
+  no scan confirms was read on the page, and ten of the proofreader's
+  corrections were checked on the page. One slip was found and mended ("the
+  little interval", St Marcellus, where the draft kept the OCR's "liftle").
+- **Nothing cut**: no passage of Roman doctrine against the Orthodox Church
+  and no sentence demeaning a people in the fifteen. St Anastasia's Life ends
+  where Butler turns to another St Anastasia, as November's St Menas does.
+  The page's misprints are kept and named: "calendars. but" (St Barbara),
+  "presecution" (St Anysia), "Daie" for Daia (St Boniface).
+- **Two titles** are set without "St." so their covers fit (the cover tests
+  hold every title whole at every size): The Martyrdom of Chrysogonus, The
+  Martyrdom of Apollonius and Philemon.
+- **The reading room**: fifteen books, all on the plate until their saints'
+  icons pass. December's Egypt books now fill that row's sixteen places
+  before St Isidora's excerpts are reached, and `apart.test.ts` says so.
+- **The apps**: about 60 KB of text more; the exports are 66.6 MB packed of
+  85.
+- **Walked** on the iOS export: St Sabbas's page (Writings) and his Life, St
+  Lucia's, St Marcellus's, St Anastasia's, St Chrysogonus's page, St
+  Boniface's Life, and the reading room. No errors; checkMock clean on the two
+  Lives it measured.
+- **Stills**: `december-saints/07-butler-st-sabbas-writings.png`,
+  `08-butler-life-of-st-sabbas.png`.

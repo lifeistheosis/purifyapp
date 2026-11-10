@@ -140,6 +140,14 @@ for (const native of [false, true]) {
         const keys = row.map((c) => c.key);
         const life = keys.indexOf("pachomius-the-great/life-of-pachomius");
         const isidora = keys.indexOf("isidora-of-tabenna/life-of-isidora");
+        // December's saints (1.9) brought whole Lives of Egypt that rank above
+        // St. Isidora's excerpts, and the Egypt row shows sixteen of its books:
+        // hers is not reached there, so the parting is not in question on it.
+        if (id === "egypt" && isidora < 0) {
+          expect(row.length, id).toBe(16);
+          expect(life, id).toBeGreaterThanOrEqual(0);
+          continue;
+        }
         expect(life, id).toBeGreaterThanOrEqual(0);
         expect(isidora, id).toBeGreaterThanOrEqual(0);
         expect(Math.abs(life - isidora), id).toBeGreaterThan(1);

@@ -164,6 +164,23 @@ describe("the covers' pictures", () => {
       "prophet-nahum/the-prophecy-of-nahum",
       "prophet-zephaniah/the-prophecy-of-zephaniah",
       "sosthenes-apollos-cephas-and-tychicus/their-names-in-scripture",
+      // Butler's fifteen Lives (2026-11-10): their saints' icons are the
+      // month's second push too.
+      "anastasia-the-pharmakolytria/martyrdom-of-anastasia",
+      "anysia-of-thessaloniki/martyrdom-of-anysia",
+      "barbara-the-great-martyr/martyrdom-of-barbara",
+      "boniface-of-tarsus/martyrdom-of-boniface",
+      "chrysogonus/martyrdom-of-chrysogonus",
+      "eugenia-of-rome/martyrdom-of-eugenia",
+      "juliana-of-nicomedia/martyrdom-of-juliana",
+      "lucia-of-syracuse/martyrdom-of-lucia",
+      "marcellus-of-the-unsleeping-ones/life-of-marcellus",
+      "philemon-apollonius-and-arrianus/martyrdom-of-apollonius-and-philemon",
+      "sabbas-the-sanctified/life-of-sabbas",
+      "sebastian-and-companions/martyrdom-of-sebastian",
+      "ten-martyrs-of-crete/the-ten-martyrs-of-crete",
+      "theodore-the-branded/life-of-theodore-the-branded",
+      "thyrsus-leucius-and-callinicus/martyrdom-of-thyrsus-leucius-and-callinicus",
     ];
     const plate = buildRoom(false)
       .cards.filter((c) => !c.cover)

@@ -7223,7 +7223,17 @@ export const SAINTS: Saint[] = [
     entrySource:
       "The Book of Saints (1921), under Barbara; Baring-Gould, The Lives of the Saints XV (1898), December 4",
     life: [],
-    works: [],
+    works: [
+      {
+        slug: "martyrdom-of-barbara",
+        title: "The Martyrdom of St. Barbara",
+        subtitle: "As Alban Butler tells it",
+        year: "1756 to 1759",
+        blurb:
+          "Alban Butler's short notice of the virgin martyr who suffered at Heliopolis under Galerius about the year 306, and of the acts he trusts and those he does not. In public-domain English.",
+        topics: ["Martyrdom"],
+      },
+    ],
   },
 
   {
@@ -7241,7 +7251,17 @@ export const SAINTS: Saint[] = [
     entrySource:
       "A Dictionary of Christian Biography IV (1887), under Sabas (6); The Book of Saints (1921), under Sabbas; Baring-Gould, The Lives of the Saints XV (1898), December 5",
     life: [],
-    works: [],
+    works: [
+      {
+        slug: "life-of-sabbas",
+        title: "The Life of St. Sabbas",
+        subtitle: "As Alban Butler tells it",
+        year: "1756 to 1759",
+        blurb:
+          "Alban Butler's Life of the Cappadocian born in 439 who learned the desert under St. Euthymius, founded his own laura in Palestine and was sent to the emperor Anastasius for the council of Chalcedon. In public-domain English.",
+        topics: ["Monasticism", "Desert"],
+      },
+    ],
   },
 
   {
@@ -7383,7 +7403,17 @@ export const SAINTS: Saint[] = [
     entrySource:
       "A Dictionary of Christian Biography III (1882), under Lucia (1); The Book of Saints (1921), under Lucy; Baring-Gould, The Lives of the Saints XV (1898), December 13",
     life: [],
-    works: [],
+    works: [
+      {
+        slug: "martyrdom-of-lucia",
+        title: "The Martyrdom of St. Lucia",
+        subtitle: "As Alban Butler tells it",
+        year: "1756 to 1759",
+        blurb:
+          "Alban Butler's account of the virgin of Syracuse brought before the governor Paschasius in the persecution of Diocletian, with his thoughts on how a child's first habits are formed. In public-domain English.",
+        topics: ["Martyrdom"],
+      },
+    ],
   },
 
   {
@@ -7399,7 +7429,17 @@ export const SAINTS: Saint[] = [
     entrySource:
       "Baring-Gould, The Lives of the Saints I (1897), January 28; A Dictionary of Christian Biography III (1882), under Leucius (3)",
     life: [],
-    works: [],
+    works: [
+      {
+        slug: "martyrdom-of-thyrsus-leucius-and-callinicus",
+        title: "The Martyrdom of Sts. Thyrsus, Leucius and Callinicus",
+        subtitle: "As Alban Butler tells it",
+        year: "1756 to 1759",
+        blurb:
+          "Alban Butler's short notice of the three put to death at Apollonia in Phrygia under Decius, and of the churches built in St. Thyrsus's name. In public-domain English.",
+        topics: ["Martyrdom"],
+      },
+    ],
   },
 
   {
@@ -7415,7 +7455,17 @@ export const SAINTS: Saint[] = [
     entrySource:
       "The Book of Saints (1921), under Philemon and Apollonius; A Dictionary of Christian Biography IV (1887), under Philemon (1); Baring-Gould, The Lives of the Saints III (1897), March 8",
     life: [],
-    works: [],
+    works: [
+      {
+        slug: "martyrdom-of-apollonius-and-philemon",
+        title: "The Martyrdom of Apollonius and Philemon",
+        subtitle: "As Alban Butler tells it",
+        year: "1756 to 1759",
+        blurb:
+          "Alban Butler's account of the anchorite taken at Antinoe and the famous musician who mocked him in his chains, then confessed Christ and died with him. In public-domain English.",
+        topics: ["Martyrdom", "Repentance"],
+      },
+    ],
   },
 
   {
@@ -7533,7 +7583,17 @@ export const SAINTS: Saint[] = [
     entrySource:
       "A Dictionary of Christian Biography IV (1887), under Sebastianus (2) and Nicostratus (2); Baring-Gould, The Lives of the Saints I (1897), January 20",
     life: [],
-    works: [],
+    works: [
+      {
+        slug: "martyrdom-of-sebastian",
+        title: "The Martyrdom of St. Sebastian",
+        subtitle: "As Alban Butler tells it",
+        year: "1756 to 1759",
+        blurb:
+          "Alban Butler's account of the officer at Rome who strengthened the confessors in prison, was shot with arrows by Diocletian's archers, and when he lived was beaten to death. In public-domain English.",
+        topics: ["Martyrdom", "Persecution"],
+      },
+    ],
   },
 
   {
@@ -7565,7 +7625,17 @@ export const SAINTS: Saint[] = [
     entrySource:
       "The Book of Saints (1921), under Boniface; Baring-Gould, The Lives of the Saints V (1898), May 14",
     life: [],
-    works: [],
+    works: [
+      {
+        slug: "martyrdom-of-boniface",
+        title: "The Martyrdom of St. Boniface",
+        subtitle: "As Alban Butler tells it",
+        year: "1756 to 1759",
+        blurb:
+          "Alban Butler's account of the steward of the Roman lady Aglaë, a man of wine and debauchery, who went to Tarsus to bring back martyrs' relics and was martyred there himself. In public-domain English.",
+        topics: ["Martyrdom", "Repentance"],
+      },
+    ],
   },
 
   {
@@ -7614,7 +7684,17 @@ export const SAINTS: Saint[] = [
     entrySource:
       "The Book of Saints (1921), under Juliana; A Dictionary of Christian Biography III (1882), under Juliana (3); Baring-Gould, The Lives of the Saints II (1897), February 16",
     life: [],
-    works: [],
+    works: [
+      {
+        slug: "martyrdom-of-juliana",
+        title: "The Martyrdom of St. Juliana",
+        subtitle: "As Alban Butler tells it",
+        year: "1756 to 1759",
+        blurb:
+          "Alban Butler's short notice of the virgin beheaded at Nicomedia under Galerius Maximianus, and where her relics went. In public-domain English.",
+        topics: ["Martyrdom"],
+      },
+    ],
   },
 
   {
@@ -7631,7 +7711,17 @@ export const SAINTS: Saint[] = [
     entrySource:
       "A Dictionary of Christian Biography I (1877), under Anastasia; The Book of Saints (1921), under Anastasia; Baring-Gould, The Lives of the Saints XV (1898), December 25",
     life: [],
-    works: [],
+    works: [
+      {
+        slug: "martyrdom-of-anastasia",
+        title: "The Martyrdom of St. Anastasia",
+        subtitle: "As Alban Butler tells it",
+        year: "1756 to 1759",
+        blurb:
+          "Alban Butler's notice of the Roman martyr burnt alive in 304, the church at Rome that bears her name, and the carrying of her relics to Constantinople. In public-domain English.",
+        topics: ["Martyrdom"],
+      },
+    ],
   },
 
   {
@@ -7647,7 +7737,17 @@ export const SAINTS: Saint[] = [
     entrySource:
       "A Dictionary of Christian Biography I (1877), under Chrysogonus (4); The Book of Saints (1921), under Chrysogonus",
     life: [],
-    works: [],
+    works: [
+      {
+        slug: "martyrdom-of-chrysogonus",
+        title: "The Martyrdom of Chrysogonus",
+        subtitle: "As Alban Butler tells it",
+        year: "1756 to 1759",
+        blurb:
+          "Alban Butler's short notice of the martyr taken at Rome and beheaded at Aquileia under Diocletian, and the church at Rome that keeps his name. In public-domain English.",
+        topics: ["Martyrdom"],
+      },
+    ],
   },
 
   {
@@ -7663,7 +7763,17 @@ export const SAINTS: Saint[] = [
     entrySource:
       "The Book of Saints (1921), under Theodulus, Saturninus, Euporus, &c., and under Basilides; Baring-Gould, The Lives of the Saints XV (1898), December 23",
     life: [],
-    works: [],
+    works: [
+      {
+        slug: "the-ten-martyrs-of-crete",
+        title: "The Ten Martyrs of Crete",
+        subtitle: "As Alban Butler tells it",
+        year: "1756 to 1759",
+        blurb:
+          "Alban Butler's account of the ten Christians of Crete tortured and beheaded at Gortyna under Decius, and of the towns they came from. In public-domain English.",
+        topics: ["Martyrdom", "Persecution"],
+      },
+    ],
   },
 
   {
@@ -7696,7 +7806,17 @@ export const SAINTS: Saint[] = [
     entrySource:
       "A Dictionary of Christian Biography II (1880), under Eugenia (1); The Book of Saints (1921), under Eugenia",
     life: [],
-    works: [],
+    works: [
+      {
+        slug: "martyrdom-of-eugenia",
+        title: "The Martyrdom of St. Eugenia",
+        subtitle: "As Alban Butler tells it",
+        year: "1756 to 1759",
+        blurb:
+          "Alban Butler's short notice of the virgin who suffered at Rome under Valerian, about the year 257. In public-domain English.",
+        topics: ["Martyrdom"],
+      },
+    ],
   },
 
   {
@@ -7712,7 +7832,17 @@ export const SAINTS: Saint[] = [
     entrySource:
       "The Book of Saints (1921), under Theodore and Theophanes; Baring-Gould, The Lives of the Saints XV (1898), December 27; the Church's calendar, December 27",
     life: [],
-    works: [],
+    works: [
+      {
+        slug: "life-of-theodore-the-branded",
+        title: "The Life of St. Theodore the Branded",
+        subtitle: "As Alban Butler tells it",
+        year: "1756 to 1759",
+        blurb:
+          "Alban Butler's Life of the monk of St. Sabas's monastery who stood for the holy images under the Iconoclast emperors, and had verses cut into his face with his brother Theophanes. In public-domain English.",
+        topics: ["Icons", "Persecution"],
+      },
+    ],
   },
 
   {
@@ -7782,7 +7912,17 @@ export const SAINTS: Saint[] = [
     entrySource:
       "The Book of Saints (1921), under Marcellus, Abbot; A Dictionary of Christian Biography III (1882), under Marcellus (8)",
     life: [],
-    works: [],
+    works: [
+      {
+        slug: "life-of-marcellus",
+        title: "The Life of St. Marcellus",
+        subtitle: "As Alban Butler tells it",
+        year: "1756 to 1759",
+        blurb:
+          "Alban Butler's Life of the abbot of the Acoemetes at Constantinople, whose choirs sang the office day and night without a pause; he died in 485 or 486. In public-domain English.",
+        topics: ["Monasticism", "Prayer"],
+      },
+    ],
   },
 
   {
@@ -7798,7 +7938,17 @@ export const SAINTS: Saint[] = [
     entrySource:
       "The Book of Saints (1921), under Anysia; Baring-Gould, The Lives of the Saints XV (1898), December 30",
     life: [],
-    works: [],
+    works: [
+      {
+        slug: "martyrdom-of-anysia",
+        title: "The Martyrdom of St. Anysia",
+        subtitle: "As Alban Butler tells it",
+        year: "1756 to 1759",
+        blurb:
+          "Alban Butler's account of the orphaned young woman of Thessalonica run through with a soldier's sword on her way to the assembly of the faithful, in 304. In public-domain English.",
+        topics: ["Martyrdom"],
+      },
+    ],
   },
 
   {

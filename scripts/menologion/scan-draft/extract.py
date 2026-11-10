@@ -88,7 +88,10 @@ def find_start(pages, want):
         raise SystemExit(f"heading {want} not found")
     for p in pages:
         W = p["W"] or 2000
+        H = p["H"] or 3000
         for i, line in enumerate(p["lines"]):
+            if line["top"] < H * 0.12:
+                continue  # the running head ("TEN MARTYRS OF CRETE.") is no heading
             toks = [norm(w["t"]) for w in line["words"]]
             toks = [t for t in toks if t]
             joined = "".join(toks)
@@ -110,7 +113,9 @@ def classify(page):
     small, in the lower part of the page."""
     W = page["W"] or 2000
     H = page["H"] or 3000
-    lines = [l for l in page["lines"] if len(re.sub(r"[^A-Za-z]", "", l["text"])) >= 2]
+    # A line of two letters or more, or one with a figure ("p. 489.", a
+    # reference's last line).
+    lines = [l for l in page["lines"] if len(re.sub(r"[^A-Za-z]", "", l["text"])) >= 2 or re.search(r"\d", l["text"])]
     if not lines:
         return []
     top = min(l["top"] for l in lines)
