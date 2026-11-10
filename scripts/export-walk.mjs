@@ -29,6 +29,7 @@ import { chromium } from "playwright";
 
 import { IPAD_UA, NATIVE_UA, ORIGIN, go, inBundle, payloadBytes, serveLikeTheShell } from "./lib/shell-server.mjs";
 import { englishOutOfPlace } from "./rtl-walk.mjs";
+import { LONG_HEADING_LANGUAGES, LONG_HEADING_PAGES } from "../lib/ui/longHeadings.ts";
 
 const argv = process.argv.slice(2);
 /** The value after a flag, taken out of the arguments so the out dir is what is left. */
@@ -8997,6 +8998,43 @@ await section(60, async () => {
   must(peek !== null && inPeek.length === 0, `an event's peek in Arabic (${peek ?? "not opened"}): no English running right to left or announced as Arabic${inPeek.length ? ` (${inPeek.length}: ${said(inPeek)})` : ""}`);
   must(errors.length === 0, `no page errors${errors.length ? ": " + errors.slice(0, 2).join(" | ") : ""}`);
   await ctx.close();
+});
+
+// ---- 61. A heading's long words stay inside a phone's width (1.9, build 90;
+// the arbiter's yes of 2026-11-10 to a general rule). At 320px, in each
+// language whose own words ran past a heading's box when measured
+// (lib/ui/longHeadings.ts: German and Georgian), on the pages with the largest
+// headings and the saints' cards: no drawn heading runs past its own box or
+// the screen's edge. A heading in a row that scrolls sideways may start past
+// the screen by design and is not counted; one cut short on purpose
+// (truncate) keeps its ellipsis. The rule is app/globals.css's block of that
+// name; lib/ui/__tests__/longHeadings.test.ts holds it.
+await section(61, async () => {
+  console.log(`\n61. A heading's long words stay inside a phone's width at 320: ${LONG_HEADING_LANGUAGES.join(", ")}`);
+  for (const lang of LONG_HEADING_LANGUAGES) {
+    const { ctx, page, errors } = await open({ width: 320, height: 720, phone: true, set: { "CapacitorStorage.purify_locale": lang } });
+    for (const at of LONG_HEADING_PAGES) {
+      await go(page, at);
+      await page.waitForTimeout(1200);
+      const shown = await page.evaluate(() => document.documentElement.lang);
+      const past = await page.evaluate(() => {
+        const out = [];
+        for (const h of document.querySelectorAll("h1, h2, h3")) {
+          const r = h.getBoundingClientRect();
+          if (r.width <= 2 || r.height <= 2 || h.classList.contains("sr-only")) continue;
+          const st = getComputedStyle(h);
+          if (st.visibility === "hidden" || st.textOverflow === "ellipsis") continue;
+          if (r.left < -1 || r.left > window.innerWidth - 8) continue;
+          const by = Math.max(h.scrollWidth - h.clientWidth, Math.round(r.right - window.innerWidth));
+          if (by > 1) out.push(`"${(h.textContent || "").replace(/\s+/g, " ").trim().slice(0, 32)}" +${by}px`);
+        }
+        return out;
+      });
+      must(shown === lang && past.length === 0, `${lang} ${at} at 320: no heading past its edge${shown !== lang ? ` (the page said lang="${shown}")` : ""}${past.length ? ` (${past.length}: ${past.slice(0, 3).join(", ")})` : ""}`);
+    }
+    must(errors.length === 0, `${lang}: no page errors${errors.length ? ": " + errors.slice(0, 2).join(" | ") : ""}`);
+    await ctx.close();
+  }
 });
 
 await browser.close();

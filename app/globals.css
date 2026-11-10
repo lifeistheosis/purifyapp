@@ -13060,3 +13060,35 @@ a.set-lab.set-link {
  background: var(--head-linen) center / 100% 100% no-repeat;
  opacity: 1;
 }
+
+/* ----------------------------------------------------------------------
+   A heading's long words stay inside a phone's width (1.9, build 90; the
+   arbiter's yes of 2026-11-10 to a general rule). A heading is set large,
+   so a 320px phone has room for few letters on its line, and some of the
+   app's languages build words longer than that: German's compounds
+   ("Glaubensbekenntnis" ran off the edge of the Creed's page,
+   "Kirchengeschichte" off Theology's) and Georgian's long words
+   ("მართლმადიდებლური" ran 66px past its box on Discover). Measured at 320
+   in all 21 languages on the pages with the largest headings, those two
+   were the ones whose own words ran past.
+
+   - In those languages a heading breaks a long word where the language's
+     hyphenation allows.
+   - In every language a word still too long for its line breaks inside
+     itself rather than running past the edge (overflow-wrap). A word that
+     fits is never broken, and a heading cut short on purpose (truncate)
+     keeps its ellipsis.
+
+   In the base layer, so a component that sets its own wrapping wins. Held
+   by lib/ui/__tests__/longHeadings.test.ts (the rule and its languages) and
+   the export walk's section 61 (no heading past its edge at 320 in these
+   languages).
+   ---------------------------------------------------------------------- */
+@layer base {
+ :where(h1, h2, h3) {
+  overflow-wrap: break-word;
+ }
+ :where(h1, h2, h3):where(:lang(de), :lang(ka)) {
+  hyphens: auto;
+ }
+}
