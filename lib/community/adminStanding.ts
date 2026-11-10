@@ -24,14 +24,16 @@ import { createClientFromRequest } from "@/lib/supabase/server";
  * nothing either, so a Team badge on the same account is no way round the
  * code. Readers who moderate by badge are unchanged.
  *
- * THE SWITCH IS OFF until Edgar's word, and off means the email alone, exactly
- * as before. Turning it on is the one line below. The phone apps have no code
- * prompt (the code is typed in /admin on the website), so with it on the
- * admin moderates from the website once his code is added.
+ * THE SWITCH IS ON, by Edgar's yes to item 64 of 2026-11-10 ("all recs",
+ * the arbiter's reading). Off would be the email alone, as before 1.9. It
+ * changes nothing until his code is added: an admin with no code passes the
+ * panel's rule unless ADMIN_MFA=required is set. Once it is added, the phone
+ * apps have no code prompt (the code is typed in /admin on the website), so
+ * he moderates from the website (docs/1.9-build/OWNER-STEPS.md, R7).
  *
  * Tested in lib/community/__tests__/adminStanding.test.ts.
  */
-export const COMMUNITY_ADMIN_NEEDS_CODE = false;
+export const COMMUNITY_ADMIN_NEEDS_CODE = true;
 
 export type AdminStanding = "admin" | "held" | "reader";
 

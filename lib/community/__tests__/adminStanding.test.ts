@@ -83,8 +83,8 @@ beforeEach(() => {
 afterEach(() => __setCommunityAdminNeedsCode(COMMUNITY_ADMIN_NEEDS_CODE));
 
 describe("the switch", () => {
-  it("is off until Edgar's word", () => {
-    expect(COMMUNITY_ADMIN_NEEDS_CODE).toBe(false);
+  it("is on, by Edgar's yes to item 64 (2026-11-10)", () => {
+    expect(COMMUNITY_ADMIN_NEEDS_CODE).toBe(true);
   });
 });
 
