@@ -4,6 +4,9 @@
 // The calendar is the real one (lib/calendar/orthodox.ts); the files, the
 // connection, Plus and the platform are stand-ins.
 
+import fs from "node:fs";
+import path from "node:path";
+
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
 import { startOfDayLocal } from "@/lib/calendar/orthodox";
@@ -121,21 +124,30 @@ describe("keeping the week", () => {
     expect(fetched).toEqual([]);
   });
 
-  it("fetches nothing without a sure yes to Plus, when turned off, on iPhone, or while the reader's own saving runs", async () => {
+  it("fetches nothing without a sure yes to Plus, when turned off, or while the reader's own saving runs", async () => {
     plus = null;
     await W.keepWeek(new Date("2026-11-07T09:00:00"));
     plus = false;
     await W.keepWeek(new Date("2026-11-07T09:00:00"));
     plus = true;
-    ios = true;
-    await W.keepWeek(new Date("2026-11-07T09:00:00"));
-    ios = false;
     userJob = { book: "mark", waiting: null };
     await W.keepWeek(new Date("2026-11-07T09:00:00"));
     userJob = null;
     store.set("purify:readAloud.week", "0");
     await W.keepWeek(new Date("2026-11-07T09:00:00"));
     expect(fetched).toEqual([]);
+  });
+
+  it("keeps the week on iPhone as on Android (1.9: the recordings live in the Library kept out of iCloud backups)", async () => {
+    ios = true;
+    await W.keepWeek(new Date("2026-11-07T09:00:00"));
+    ios = false;
+    expect(fetched.length).toBeGreaterThan(0);
+    expect(Object.keys(K.weekKept()).length).toBe(fetched.length);
+    // Nothing in the week's own files asks which phone it is on.
+    const src = fs.readFileSync(path.join(process.cwd(), "lib/readAloud/week.ts"), "utf8");
+    expect(src).not.toMatch(/isIOSClient/);
+    expect(fs.readFileSync(path.join(process.cwd(), "components/settings/StorageSection.tsx"), "utf8")).not.toMatch(/isIOSClient/);
   });
 
   it("takes away what the week kept once its day has passed, and only that", async () => {

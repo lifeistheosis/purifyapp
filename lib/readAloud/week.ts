@@ -17,10 +17,11 @@
 // Only on Wi-Fi, never on mobile data, never on a connection the phone
 // cannot name: nobody asked for these, so they cost nothing. On by default
 // for Plus, off in Settings (components/settings/StorageSection.tsx, which
-// also shows what it keeps). Not on iPhone yet: the recordings are kept in
-// the folder iCloud backs up, which Apple's rules keep for what cannot be
-// fetched again (ideas.json c-ios-offline-backup, waiting for the owner); a
-// week's worth, every week, on its own, would make that worse.
+// also shows what it keeps). On iPhone too since 1.9 (his "everything in
+// 1.9", 2026-11-10): it waited for the recordings to leave the folder iCloud
+// backs up, which Apple's rules keep for what cannot be fetched again, and
+// they now live in the Library kept out of backups (./offline.ts, home;
+// ideas.json c-ios-offline-backup).
 
 import { useSyncExternalStore } from "react";
 
@@ -28,7 +29,7 @@ import { dayReadings, readingsOptionsFor, startOfDayLocal, type CalStyle } from 
 import { readCalendarStyleDefault } from "@/lib/calendar/styleDefault";
 import { plusFeaturesNow } from "@/lib/entitlements/usePlusFeatures";
 import { streamedUrl } from "@/lib/media/streamed";
-import { isIOSClient, isNativeClient } from "@/lib/platform/native";
+import { isNativeClient } from "@/lib/platform/native";
 
 import { hasReadAloud, readAloudRecording } from "./chapters";
 import { onSavedChange, removeChapter, saveChapters, savedChapters, type Saved } from "./offline";
@@ -116,7 +117,7 @@ export async function keepWeek(now: Date = new Date()): Promise<void> {
   try {
     const today = startOfDayLocal(now);
     await takeAway(pastChapters(weekKept(), dayKey(today)));
-    if (!weekReadingsOn() || isIOSClient()) return;
+    if (!weekReadingsOn()) return;
     const job = getSaving().job;
     if (job && !job.waiting) return;
     // Only with a sure yes: nothing is fetched on a guess.

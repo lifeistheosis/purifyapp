@@ -10,12 +10,12 @@
 // Bible a reader reads in takes them back to the English, as its own Remove
 // does. The sizes are what each took on the phone when it was saved.
 //
-// Above them, on Android, the week's readings (1.9, lib/readAloud/week.ts):
+// Above them, in both apps, the week's readings (1.9, lib/readAloud/week.ts):
 // a switch, and what it keeps now. Its chapters are counted there and not
 // again under their books. Plus, shown to every reader with its mark; a
 // reader without Plus who turns it on meets the upgrade sheet for listening
-// offline. Not on iPhone until the recordings leave the folder iCloud backs
-// up (docs/1.9-build/ideas.json, c-ios-offline-backup).
+// offline. On iPhone since the recordings left the folder iCloud backs up
+// (docs/1.9-build/ideas.json, c-ios-offline-backup).
 
 import { useSyncExternalStore } from "react";
 
@@ -25,7 +25,7 @@ import { useTranslate } from "@/components/i18n/MessagesProvider";
 import { DOWNLOADABLE_BIBLES, megabytes } from "@/lib/bible/downloads/catalog";
 import { removeBible, useBibles } from "@/lib/bible/downloads/store";
 import { usePlusFeatures } from "@/lib/entitlements/usePlusFeatures";
-import { isIOSClient, useIsNative } from "@/lib/platform/native";
+import { useIsNative } from "@/lib/platform/native";
 import { onSavedChange, removeBook, savedChapters, type Saved } from "@/lib/readAloud/offline";
 import { setWeekReadings, useWeekReadings } from "@/lib/readAloud/week";
 import { weekKept } from "@/lib/readAloud/weekKept";
@@ -72,7 +72,6 @@ export function StorageSection() {
   const kept = weekKept();
   const books = savedByBook(Object.fromEntries(Object.entries(listening).filter(([key]) => !kept[key])));
   const total = downloaded.reduce((n, b) => n + bibles[b.id].bytes, 0) + savedByBook(listening).reduce((n, b) => n + b.bytes, 0);
-  const weekRow = !isIOSClient();
   const remove = (onClick: () => void, label: string) => (
     <button
       type="button"
@@ -86,12 +85,10 @@ export function StorageSection() {
 
   return (
     <Section id="storage" title={t("settings.storage")} hint={total ? t("settings.storageTotal", { size: megabytes(total, locale) }) : t("settings.storageHint")}>
-      {weekRow ? (
-        <UpgradeModalProvider>
-          <WeekRow chapters={week.chapters} bytes={week.bytes} on={week.on} />
-        </UpgradeModalProvider>
-      ) : null}
-      {downloaded.length === 0 && books.length === 0 && !(weekRow && week.chapters) ? <Row label={t("settings.storageEmpty")} /> : null}
+      <UpgradeModalProvider>
+        <WeekRow chapters={week.chapters} bytes={week.bytes} on={week.on} />
+      </UpgradeModalProvider>
+      {downloaded.length === 0 && books.length === 0 && !week.chapters ? <Row label={t("settings.storageEmpty")} /> : null}
       {downloaded.map((b) => (
         <Row
           key={b.id}
