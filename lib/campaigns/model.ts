@@ -347,6 +347,12 @@ export type PublicCampaign = {
    * Community can see.
    */
   circle?: { name: string };
+  /**
+   * For its creator alone, while it waits: its words may mean someone is in
+   * danger, a moderator reads it first, and the page shows the safety line
+   * (./safety.ts). Never told to another reader, and never on a list.
+   */
+  safety?: boolean;
 };
 
 /** Every column a read may name. No creator_id, no praying_count, no prayer_count. */

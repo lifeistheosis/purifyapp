@@ -5359,6 +5359,8 @@
   "campaigns.commentSignIn": "Masuk untuk berkomentar.",
   "campaigns.commentsSwitchBody": "Pembaca dapat menulis di bawah kampanye Anda.",
   "campaigns.noteHeld": "Terima kasih. Kata-kata Anda sedang menunggu moderator dan akan tampil setelah ditinjau.",
+  "campaigns.safety.line": "Jika Anda atau orang lain sedang dalam bahaya saat ini, hubungi nomor darurat di negara Anda (911 di Amerika Serikat, 112 di Uni Eropa). Di Amerika Serikat, Anda dapat menelepon atau mengirim pesan teks ke 988 kapan saja. Untuk negara lain, findahelpline.com memuat daftar layanan bantuan menurut negara.",
+  "campaigns.safety.first": "Moderator akan membaca kata-kata Anda lebih dahulu.",
   "campaigns.err.updatesToday": "Itu sudah semua kabar untuk hari ini. Kabar berikutnya dapat dikirim besok.",
   "campaigns.err.blocked": "Anda tidak dapat berkomentar di kampanye ini.",
   "campaigns.noteTakeOff": "Turunkan",

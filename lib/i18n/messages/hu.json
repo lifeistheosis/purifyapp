@@ -5362,6 +5362,8 @@
   "campaigns.commentSignIn": "A hozzászóláshoz jelentkezzen be.",
   "campaigns.commentsSwitchBody": "Az olvasók írhatnak a kampánya alá.",
   "campaigns.noteHeld": "Köszönjük. A szavai egy moderátorra várnak, és megjelennek, amint átnézte őket.",
+  "campaigns.safety.line": "Ha Ön vagy valaki más éppen most veszélyben van, hívja országa segélyhívó számát (az Egyesült Államokban a 911-et, az Európai Unióban a 112-t). Az Egyesült Államokban a 988-as számot bármikor hívhatja, vagy üzenetet is küldhet rá. Más országokra a findahelpline.com országonként sorolja fel a segélyvonalakat.",
+  "campaigns.safety.first": "A szavait először egy moderátor olvassa el.",
   "campaigns.err.updatesToday": "Mára ennyi a hír. Holnap újabb kerülhet fel.",
   "campaigns.err.blocked": "Ehhez a kampányhoz nem szólhat hozzá.",
   "campaigns.noteTakeOff": "Levétel",

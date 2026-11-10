@@ -1,5 +1,6 @@
 "use client";
 
+import { SafetyLine } from "@/components/campaigns/SafetyLine";
 import { useTranslate } from "@/components/i18n/MessagesProvider";
 import { useCampaignPart } from "@/lib/campaigns/useCampaignsOpen";
 import { SUPPORT_EMAIL } from "@/lib/legal/entity";
@@ -49,7 +50,9 @@ export function CampaignRules() {
           ))}
         </ol>
         <div className="mt-9 border-t border-paper/10 pt-5 font-sans text-caption leading-[1.6] text-paper/70">
-          <p>{t("shop.campaignsAreThePrayersOf")}</p>
+          {/* Always there, for a reader in danger or one who fears for someone (./SafetyLine.tsx). */}
+          <SafetyLine className="leading-[1.6]" />
+          <p className="mt-3">{t("shop.campaignsAreThePrayersOf")}</p>
           <p className="mt-2 select-text">{t("campaigns.contact", { email: SUPPORT_EMAIL })}</p>
         </div>
       </div>

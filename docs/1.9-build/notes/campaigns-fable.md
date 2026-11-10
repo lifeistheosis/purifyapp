@@ -3924,3 +3924,94 @@ sick still needs its source found. Each is read off its page image and held
 by a test, about three hours apiece. A preset is a pointer, so a prayer
 takes a psalm's place in `KIND_PRAYER` and nothing else changes. Given to
 the arbiter for the timeline's list of what comes after 1.9.
+
+## 29. The safety line: as built (2026-11-10)
+
+**His word.** Item 129 is answered (`BRAINSTORM.md`, 2026-11-10): no priest
+and no lawyer is needed for campaigns, and "a plain safety line points a
+reader in danger to emergency help". The words are the ones put to him and
+approved in "rec yes to all", after each number and the site was checked on
+its own page that day (the FCC for 911, the European Commission for 112,
+988's own site, findahelpline.com's own). The one change that check made is
+in them: "the European Union", where the draft said "most of Europe".
+
+> If you or someone else is in danger right now, call your local emergency
+> number (911 in the United States, 112 in the European Union). In the United
+> States you can call or text 988 at any hour. Elsewhere, findahelpline.com
+> lists helplines by country.
+
+And over it, to a writer whose own words were caught: "A moderator will read
+your words first."
+
+### 29.1 Where a reader meets it
+
+- **Always:** at the foot of the rules page, and at the foot of the start
+  screen under the line about the moderator. A quiet line, for whoever reads
+  that far before they write a word.
+- **At once, to the writer of words that may mean danger:**
+  - on their campaign's own page while it waits, under what the page says of
+    waiting and above their own words;
+  - under the field, the moment they send an update or a comment with such
+    words.
+  Both say "A moderator will read your words first." over the line, set apart
+  so that it is seen.
+- **The site's name is the one thing to tap,** and it opens the list of
+  helplines outside the app. The numbers are words and not buttons, so that
+  nobody calls an emergency line by a slip of the thumb.
+- **Nobody else is ever told.** The mark is handed to a campaign's own
+  creator and to a note's own writer, in the answer to their own request,
+  and to no other reader, on no list and no card.
+
+### 29.2 What happens to the words
+
+- **A campaign** always waits for a moderator while campaigns are new. Words
+  that may mean danger put it at the head of their queue, marked "Read first:
+  the writer may be in danger". That was built in phase 1; what is new is
+  that its writer is shown the line.
+- **An update or a comment** was never read for this. Now it is: such words
+  wait for a moderator instead of showing at once, their hold stands first in
+  the moderators' queue, and its card says "Read first: the writer may be in
+  danger" where it would have named a reason.
+- **No SQL.** The table that keeps holds allows a few reasons and none is
+  this one. Such a hold is filed as a note held at writing already is (the
+  reason "spam", as words that ask for money are) with the truth in its
+  detail ("crisis: the writer may be in danger"), and the queue draws the
+  mark from the detail, never from the reason. Where something else held the
+  note too (a new account's first words), the mark goes before it and that
+  reason is kept.
+
+### 29.3 What it does not do, said plainly
+
+- **It reads English alone.** A reader in danger who writes in another
+  language is read by the moderator who reads every campaign, and no sooner;
+  the line that is always there is in their language.
+- **It is a pattern, not a judgment.** It reads for a handful of plain
+  phrases ("I want to die", "I do not want to live", "suicide", "kill
+  myself", "end my life", "self-harm"). It will hold a comment about a death
+  by suicide in a family, and it will miss what is said in other words. A
+  moderator reads every campaign either way.
+- **A held comment that a moderator then removes** counts against its writer
+  as any removal does (a reader with removals posts under tighter limits),
+  and they are sent the removal's notice. For words like these that may be
+  the wrong weight. Not changed here: it is the moderators' shared rule, and
+  it is named to Admin.
+- **The words say nothing of doctrine,** and none was written for this.
+
+### 29.4 What holds it
+
+`lib/campaigns/__tests__/safety.test.ts` (14 cases): the phrases read and
+the ordinary words of a grief left alone; the mark, and that nothing a
+reader could write into a hold's detail makes one; the queue's order; his
+words to the letter in English; in each of the 21 languages the three
+numbers once each in the digits a phone dials, no other number, the site
+once, no em dash; the one link and no number to tap; who is told; where it
+is drawn. `routes.test.ts` (2 new): a creator's own waiting campaign says so
+and no other reader's ever does, on its page or the board, and not once it
+has been read. `thread.test.ts` (4 new): an update and a comment held with
+the mark, the mark before another reason, and plain words told nothing.
+Eight ways of breaking it were tried and each failed a case.
+
+The walk: five flows (the rules, the start screen, a creator's waiting
+campaign, a comment, the moderators' queue). Stills: the rules (31), a
+waiting campaign in danger as its creator sees it (32), a comment's answer
+(33), and the start screen (09), which now ends in the line.

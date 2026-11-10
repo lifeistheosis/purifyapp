@@ -5521,6 +5521,8 @@
   "campaigns.commentSignIn": "Zaloguj się, aby skomentować.",
   "campaigns.commentsSwitchBody": "Czytelnicy mogą pisać pod twoją intencją.",
   "campaigns.noteHeld": "Dziękujemy. Twoje słowa czekają na moderatora i pojawią się zaraz po sprawdzeniu.",
+  "campaigns.safety.line": "Jeśli Tobie lub komuś innemu grozi teraz niebezpieczeństwo, zadzwoń pod numer alarmowy w swoim kraju (911 w Stanach Zjednoczonych, 112 w Unii Europejskiej). W Stanach Zjednoczonych możesz o każdej porze zadzwonić lub wysłać SMS pod numer 988. W innych krajach findahelpline.com podaje telefony zaufania według kraju.",
+  "campaigns.safety.first": "Moderator najpierw przeczyta Twoje słowa.",
   "campaigns.err.updatesToday": "To już wszystkie wieści na dziś. Kolejne można dodać jutro.",
   "campaigns.err.blocked": "Nie możesz komentować tej intencji.",
   "campaigns.noteTakeOff": "Zdejmij",

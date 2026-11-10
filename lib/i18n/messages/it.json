@@ -5367,6 +5367,8 @@
   "campaigns.commentSignIn": "Accedi per commentare.",
   "campaigns.commentsSwitchBody": "I lettori possono scrivere sotto la tua campagna.",
   "campaigns.noteHeld": "Grazie. Le tue parole sono in attesa di un moderatore e compariranno appena le avrà controllate.",
+  "campaigns.safety.line": "Se tu o un'altra persona siete in pericolo in questo momento, chiama il numero di emergenza del tuo paese (911 negli Stati Uniti, 112 nell'Unione europea). Negli Stati Uniti puoi chiamare il 988 o scrivergli un SMS a qualsiasi ora. Altrove, findahelpline.com elenca le linee di aiuto paese per paese.",
+  "campaigns.safety.first": "Un moderatore leggerà per prima cosa le tue parole.",
   "campaigns.err.updatesToday": "Questi sono gli aggiornamenti di oggi. Domani potrai pubblicarne un altro.",
   "campaigns.err.blocked": "Non puoi commentare questa campagna.",
   "campaigns.noteTakeOff": "Togli",

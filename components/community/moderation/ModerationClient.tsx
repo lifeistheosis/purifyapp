@@ -7,6 +7,7 @@ import { CampaignModeration, campaignsWaitingCount } from "@/components/campaign
 import { useTranslate } from "@/components/i18n/MessagesProvider";
 import { ConfirmDialog } from "@/components/ui/ConfirmDialog";
 import { SkeletonList } from "@/components/ui/Skeleton";
+import { dangerFirst, saysDanger } from "@/lib/campaigns/safety";
 import { cn } from "@/lib/cn";
 import {
   fetchModQueue,
@@ -166,7 +167,8 @@ export function ModerationClient() {
                   first, since one may mean its writer is in danger. Nothing
                   unless campaigns are open for this moderator. */}
               <CampaignModeration queue={queue.campaigns} onDone={load} onNotice={setNotice} />
-              {queue.holds.map((h) => (
+              {/* A hold whose words may mean danger is read before the others (lib/campaigns/safety.ts). */}
+              {dangerFirst(queue.holds).map((h) => (
                 <HoldCard key={h.id} hold={h} busy={busy} onAct={ask} />
               ))}
               {queue.reports.map((r) => (
@@ -216,6 +218,9 @@ const REASON_TONE: Record<ModHold["reason"], string> = {
   new_account: "border-sage/40 text-sage-soft",
   reports: "border-crimson/50 text-crimson-soft",
 };
+
+/** The mark of a hold whose words may mean danger: the campaigns' own strong tone (components/campaigns/CampaignModeration.tsx). */
+const DANGER_TONE = "border-paper/60 text-paper";
 
 function Chip({ className, children }: { className?: string; children: React.ReactNode }) {
   return (
@@ -276,13 +281,15 @@ function HoldCard({
       ? hold.post.title || hold.post.body || hold.post.quote_text
       : hold.reply?.body;
   const words = hold.reason === "words";
+  const danger = saysDanger(hold.detail);
   const isBusy = (a: ModAction) => busy === `${a}:${hold.id}`;
   const authorName = request ? request.name : target?.author_name;
   const authorHandle = request ? request.handle : target?.author_handle;
   return (
     <article className="rounded-2xl border border-paper/10 bg-paper/[0.03] p-4">
       <div className="flex flex-wrap items-center gap-2">
-        <Chip className={REASON_TONE[hold.reason]}>{t(`mod.reason.${hold.reason}`)}</Chip>
+        {/* Words that may mean danger are filed under a reason the table allows, and say what they are here. */}
+        {danger ? <Chip className={DANGER_TONE}>{t("mod.campaignCrisis")}</Chip> : <Chip className={REASON_TONE[hold.reason]}>{t(`mod.reason.${hold.reason}`)}</Chip>}
         <Chip className="border-paper/15 text-paper/60">{request ? t("mod.prayerRequest") : hold.post ? t("mod.post") : t("mod.reply")}</Chip>
         {target?.status === "held" ? <Chip className="border-paper/15 text-paper/60">{t("mod.hidden")}</Chip> : null}
         <span className="font-sans text-caption text-paper/45">

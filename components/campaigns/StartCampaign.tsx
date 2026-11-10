@@ -23,6 +23,7 @@ import { Minus } from "@/components/ui/icons/Minus";
 import { Orans } from "@/components/ui/icons/Orans";
 import { Plus } from "@/components/ui/icons/Plus";
 import { Scroll } from "@/components/ui/icons/Scroll";
+import { SafetyLine } from "@/components/campaigns/SafetyLine";
 import { Sheet } from "@/components/ui/Sheet";
 import { fetchCircles, startCampaign, type CircleChoice, type StartResult } from "@/lib/campaigns/client";
 import {
@@ -485,6 +486,8 @@ export function StartCampaign() {
                 </div>
 
                 <p className="mt-6 font-sans text-caption leading-[1.5] text-paper/70">{t(kept ? "campaigns.new.noteCircle" : "campaigns.new.note")}</p>
+                {/* Always there, for whoever needs it before they write a word. */}
+                <SafetyLine className="mt-3" />
               </>
             )}
           </div>

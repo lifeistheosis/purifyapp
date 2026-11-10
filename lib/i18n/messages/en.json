@@ -5379,6 +5379,8 @@
   "campaigns.commentSignIn": "Sign in to comment.",
   "campaigns.commentsSwitchBody": "Readers can write under your campaign.",
   "campaigns.noteHeld": "Thank you. Your words are waiting for a moderator and will appear once they have looked at them.",
+  "campaigns.safety.line": "If you or someone else is in danger right now, call your local emergency number (911 in the United States, 112 in the European Union). In the United States you can call or text 988 at any hour. Elsewhere, findahelpline.com lists helplines by country.",
+  "campaigns.safety.first": "A moderator will read your words first.",
   "campaigns.err.updatesToday": "That is today's updates. Another can go up tomorrow.",
   "campaigns.err.blocked": "You can't comment on this campaign.",
   "campaigns.noteTakeOff": "Take off",

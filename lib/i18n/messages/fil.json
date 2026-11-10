@@ -5362,6 +5362,8 @@
   "campaigns.commentSignIn": "Mag-sign in upang magkomento.",
   "campaigns.commentsSwitchBody": "Makakasulat ang mga mambabasa sa ilalim ng iyong kampanya.",
   "campaigns.noteHeld": "Salamat. Naghihintay ang iyong mga salita sa isang moderator at lalabas ang mga ito kapag natingnan na niya.",
+  "campaigns.safety.line": "Kung ikaw o ibang tao ay nasa panganib ngayon, tawagan ang emergency number sa inyong bansa (911 sa Estados Unidos, 112 sa European Union). Sa Estados Unidos, maaari kang tumawag o mag-text sa 988 anumang oras. Sa ibang bansa, nakalista sa findahelpline.com ang mga helpline ayon sa bansa.",
+  "campaigns.safety.first": "Babasahin muna ng isang moderator ang iyong mga salita.",
   "campaigns.err.updatesToday": "Iyan na ang mga balita para sa araw na ito. Maaaring maglagay ng isa pa bukas.",
   "campaigns.err.blocked": "Hindi ka maaaring magkomento sa kampanyang ito.",
   "campaigns.noteTakeOff": "Alisin",

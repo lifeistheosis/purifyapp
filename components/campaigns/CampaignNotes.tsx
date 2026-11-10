@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useEffect, useId, useState } from "react";
 
+import { SafetyLine } from "@/components/campaigns/SafetyLine";
 import { ActionMenu, type ActionMenuItem } from "@/components/community/ActionMenu";
 import { ClergySeal } from "@/components/community/ClergySeal";
 import { CommunityAvatar } from "@/components/community/CommunityAvatar";
@@ -80,6 +81,8 @@ function NoteField({ campaignId, kind, onSent }: { campaignId: string; kind: Not
   const [draft, setDraft] = useState("");
   const [busy, setBusy] = useState(false);
   const [notice, setNotice] = useState<string | null>(null);
+  // The words just sent may mean someone is in danger: the safety line is shown at once (lib/campaigns/safety.ts).
+  const [safety, setSafety] = useState(false);
   const [failed, setFailed] = useState<string | null>(null);
   // The word filter asks first, as under a post.
   const [ask, setAsk] = useState(false);
@@ -91,12 +94,15 @@ function NoteField({ campaignId, kind, onSent }: { campaignId: string; kind: Not
     setBusy(true);
     setFailed(null);
     setNotice(null);
+    setSafety(false);
     const res = await writeNote(campaignId, kind, text, confirmFiltered);
     setBusy(false);
     setAsk(false);
     if (res.ok) {
       setDraft("");
-      if (res.held) setNotice(t("campaigns.noteHeld"));
+      // "A moderator will read your words first." says that it waits, so the plain notice is not said twice.
+      setSafety(res.safety);
+      if (res.held && !res.safety) setNotice(t("campaigns.noteHeld"));
       onSent();
       return;
     }
@@ -138,6 +144,7 @@ function NoteField({ campaignId, kind, onSent }: { campaignId: string; kind: Not
           {failed ?? notice}
         </p>
       ) : null}
+      {safety && !failed ? <SafetyLine first className="mt-3" /> : null}
       <ConfirmDialog
         open={ask}
         title={t("community.filteredTitle")}

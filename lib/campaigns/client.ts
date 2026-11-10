@@ -326,7 +326,7 @@ export async function fetchThread(id: string): Promise<ThreadResult> {
  * would be shown; the rest are refusals the screen says in its own words.
  */
 export type NoteResult =
-  | { ok: true; id: string; held: boolean }
+  | { ok: true; id: string; held: boolean; safety: boolean }
   | { ok: false; status: number; code: string | null; error: string | null; preview: string | null };
 
 export async function writeNote(id: string, kind: NoteKind, text: string, confirmFiltered = false): Promise<NoteResult> {
@@ -334,7 +334,7 @@ export async function writeNote(id: string, kind: NoteKind, text: string, confir
   try {
     const res = await apiFetch(`/api/campaigns/${encodeURIComponent(id)}/thread`, { ...JSON_POST, body: JSON.stringify({ kind, body: text, ...(confirmFiltered ? { confirmFiltered: true } : {}) }) });
     const json = await body(res);
-    if (res.ok && typeof json.id === "string") return { ok: true, id: json.id, held: json.held === true };
+    if (res.ok && typeof json.id === "string") return { ok: true, id: json.id, held: json.held === true, safety: json.safety === true };
     const preview = (json.preview as { body?: string | null } | undefined)?.body;
     return {
       ok: false,

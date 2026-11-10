@@ -9,6 +9,7 @@ import { CampaignJoinSheet } from "@/components/campaigns/CampaignJoinSheet";
 import { CampaignComments, CampaignUpdates, useCampaignThread } from "@/components/campaigns/CampaignNotes";
 import { CampaignPictures, useCampaignPictures } from "@/components/campaigns/CampaignPictures";
 import { CampaignReportSheet } from "@/components/campaigns/CampaignReportSheet";
+import { SafetyLine } from "@/components/campaigns/SafetyLine";
 import { TickLines } from "@/components/campaigns/TickLines";
 import { CommunityAvatar } from "@/components/community/CommunityAvatar";
 import { useTranslate } from "@/components/i18n/MessagesProvider";
@@ -308,6 +309,9 @@ function Opened({ first, bar }: { first: PublicCampaign; bar: ReactNode }) {
           {campaign.circle ? t("campaigns.waitingBodyCircle", { circle: campaign.circle.name }) : t("campaigns.waitingBody")}
         </p>
       ) : null}
+      {/* Its words may mean someone is in danger: said to its creator alone,
+          at once, while a moderator reads it first (lib/campaigns/safety.ts). */}
+      {campaign.status === "held" && campaign.safety ? <SafetyLine first className="mb-6" /> : null}
       {standing && campaign.status !== "held" ? <p className="mb-6 font-sans text-detail leading-relaxed text-paper/75">{t("campaigns.endedBody")}</p> : null}
 
       {campaign.details ? <p dir="auto" className="whitespace-pre-line break-words font-serif text-body leading-[1.7] text-paper/90">{campaign.details}</p> : null}

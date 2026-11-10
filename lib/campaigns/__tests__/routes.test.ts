@@ -315,6 +315,39 @@ describe("starting a campaign", () => {
     expect((await getOne(new Request(`${SITE}/api/campaigns/${id}`), params(id))).status).toBe(404);
   });
 
+  it("tells its creator alone, while it waits, that its words may mean danger; never another reader, and not once it has been read", async () => {
+    const one = async (id: string) => ((await (await getOne(new Request(`${SITE}/api/campaigns/${id}`), params(id))).json()) as { campaign: Record<string, unknown> }).campaign;
+    // Words that may mean danger: the creator's own page is told, at once.
+    const { id } = (await (await start({ forWhom: "living", kind: "comfort", consent: "self", title: "Pray for me", name: "Anna", words: "I do not want to live any more. Pray for me." })).json()) as { id: string };
+    expect(byId(id).held_reason).toMatch(/^new; crisis/);
+    expect(await one(id)).toMatchObject({ status: "held", mine: true, safety: true });
+    // Their own list is theirs; the board is everyone's, and it is not on it at all while it waits.
+    const listed = (await (await board(new Request(`${SITE}/api/campaigns`))).json()) as { campaigns: Record<string, unknown>[] };
+    expect(listed.campaigns).toEqual([]);
+
+    // A moderator reads it and lets it run: the mark is gone with the reason, for its creator too.
+    expect(await approveCampaign(client(w) as never, MOD, id)).toEqual({ ok: true });
+    const read = await one(id);
+    expect(read).toMatchObject({ status: "active", mine: true });
+    expect("safety" in read).toBe(false);
+    // And no other reader was ever told: on its page, or on the board.
+    signIn(BEN);
+    const theirs = await one(id);
+    expect(theirs).toMatchObject({ status: "active", mine: false });
+    expect("safety" in theirs).toBe(false);
+    expect(JSON.stringify(theirs)).not.toMatch(/crisis|safety|held_reason/);
+    const board2 = (await (await board(new Request(`${SITE}/api/campaigns`))).json()) as { campaigns: Record<string, unknown>[] };
+    expect(board2.campaigns).toHaveLength(1);
+    expect(JSON.stringify(board2)).not.toMatch(/crisis|safety|held_reason/);
+  });
+
+  it("says nothing of danger on a waiting campaign whose words have none", async () => {
+    const { id } = (await (await start()).json()) as { id: string };
+    const own = ((await (await getOne(new Request(`${SITE}/api/campaigns/${id}`), params(id))).json()) as { campaign: Record<string, unknown> }).campaign;
+    expect(own).toMatchObject({ status: "held", mine: true });
+    expect("safety" in own).toBe(false);
+  });
+
   it("needs an account", async () => {
     signIn(null);
     expect((await start()).status).toBe(401);

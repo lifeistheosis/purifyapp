@@ -5362,6 +5362,8 @@
   "campaigns.commentSignIn": "Yorum yazmak için giriş yapın.",
   "campaigns.commentsSwitchBody": "Okurlar kampanyanızın altına yazabilir.",
   "campaigns.noteHeld": "Teşekkürler. Sözleriniz bir moderatörü bekliyor ve moderatör inceledikten sonra görünecek.",
+  "campaigns.safety.line": "Siz ya da bir başkası şu anda tehlikedeyse, ülkenizin acil yardım numarasını arayın (Amerika Birleşik Devletleri'nde 911, Avrupa Birliği'nde 112). Amerika Birleşik Devletleri'nde 988'i günün her saatinde arayabilir ya da mesaj gönderebilirsiniz. Diğer ülkeler için findahelpline.com, yardım hatlarını ülkelere göre listeler.",
+  "campaigns.safety.first": "Sözlerinizi önce bir moderatör okuyacak.",
   "campaigns.err.updatesToday": "Bugünün haberleri bu kadar. Yarın bir yenisi eklenebilir.",
   "campaigns.err.blocked": "Bu kampanyaya yorum yazamazsınız.",
   "campaigns.noteTakeOff": "Kaldır",

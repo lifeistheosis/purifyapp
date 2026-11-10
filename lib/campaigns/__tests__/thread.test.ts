@@ -88,6 +88,7 @@ import { PATCH as patchOne } from "@/app/api/campaigns/[id]/route";
 import { DELETE as deletePost } from "@/app/api/community/posts/[id]/route";
 import { DELETE as takeOff, GET as read, POST as write } from "@/app/api/campaigns/[id]/thread/route";
 import { __setCampaignsOpening } from "@/lib/campaigns/flags";
+import { saysDanger } from "@/lib/campaigns/safety";
 import { asksForMoney, isCampaignReply, isCampaignThread } from "@/lib/campaigns/thread";
 
 const ANNA = "11111111-1111-4111-8111-111111111111";
@@ -400,6 +401,50 @@ describe("a comment", () => {
     expect((await res.json()) as { held: boolean }).toMatchObject({ ok: true, held: true });
     expect(replies()).toMatchObject([{ status: "held" }]);
     expect(holds()).toMatchObject([{ reason: "spam", detail: "money asked under a prayer campaign" }]);
+  });
+
+  it("words that may mean danger wait for a moderator who reads them first, and their writer is told at once", async () => {
+    const id = running();
+    signIn(BEN);
+    const res = await say(id, "comment", "I do not want to live any more. Please pray for me too.");
+    expect(res.status).toBe(200);
+    expect(await res.json()).toMatchObject({ ok: true, held: true, safety: true });
+    // Held from everyone until a moderator has read it.
+    expect(replies()).toMatchObject([{ status: "held", campaign_update: false }]);
+    expect((await thread(id)).comments).toEqual([]);
+    // Filed under a reason the table allows, with the truth in its detail, which the queue reads first.
+    expect(holds()).toMatchObject([{ reply_id: replies()[0].id, reason: "spam", detail: "crisis: the writer may be in danger" }]);
+    expect(saysDanger(holds()[0].detail as string)).toBe(true);
+  });
+
+  it("the same for its creator's own update", async () => {
+    const id = running();
+    signIn(ANNA);
+    const res = await say(id, "update", "She told me today that she wants to kill herself. I am frightened; she said: I want to die.");
+    expect(await res.json()).toMatchObject({ ok: true, held: true, safety: true });
+    expect(replies()).toMatchObject([{ status: "held", campaign_update: true }]);
+    expect((await thread(id)).updates).toEqual([]);
+    expect(holds()).toMatchObject([{ reason: "spam", detail: "crisis: the writer may be in danger" }]);
+  });
+
+  it("the mark goes before whatever else held it, under that reason", async () => {
+    const id = running();
+    signIn(BEN);
+    state.guard = { kind: "hold", trust: state.trust, reason: "new_account", detail: "first words from a new account" };
+    const res = await say(id, "comment", "Thoughts of suicide again tonight.");
+    expect(await res.json()).toMatchObject({ ok: true, held: true, safety: true });
+    expect(holds()).toMatchObject([{ reason: "new_account", detail: "crisis; first words from a new account" }]);
+    expect(saysDanger(holds()[0].detail as string)).toBe(true);
+  });
+
+  it("words with no danger in them are told nothing of it, held or not", async () => {
+    const id = running();
+    signIn(BEN);
+    const plain = await say(id, "comment", "Praying for Maria.");
+    expect(await plain.json()).toMatchObject({ ok: true, held: false, safety: false });
+    const money = await say(id, "comment", "Please donate to her family.");
+    expect(await money.json()).toMatchObject({ ok: true, held: true, safety: false });
+    expect(holds().map((h) => h.detail)).toEqual(["money asked under a prayer campaign"]);
   });
 
   it("is refused as the spam guard refuses it, with its reason", async () => {

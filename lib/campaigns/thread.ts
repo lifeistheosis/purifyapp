@@ -16,6 +16,7 @@ import { signInPicture } from "@/lib/profile/signInPicture";
 import { campaignsInBuild } from "./flags";
 import { NOTE_MAX, UPDATES_A_DAY, isJulyRow, isOver, type CampaignNote, type CampaignThread, type NoteKind } from "./model";
 import { reworkAbsent } from "./opening";
+import { maySpeakOfDanger, withDangerMark } from "./safety";
 import type { CampaignRow, Read } from "./server";
 
 // A campaign's updates and comments (the rework, phase 2).
@@ -192,7 +193,8 @@ export async function readThread(
 }
 
 export type Wrote =
-  | { ok: true; id: string; held: boolean }
+  /** `safety`: its words may mean someone is in danger, so it waits for a moderator who reads it first, and its writer is shown the safety line. */
+  | { ok: true; id: string; held: boolean; safety: boolean }
   | { ok: false; status: number; error: string; code?: string; preview?: { body: string | null }; limit?: number };
 
 /**
@@ -203,8 +205,9 @@ export type Wrote =
  * comment where comments are closed, or from someone its creator has blocked;
  * a link anywhere in it, as the campaign itself refuses one. Asked first:
  * words the filter will mask, as a reply asks. Held for a moderator: what the
- * spam guard holds, a new account's first words, and words that ask for
- * money.
+ * spam guard holds, a new account's first words, words that ask for money,
+ * and words that may mean someone is in danger (./safety.ts), which a
+ * moderator reads first.
  */
 export async function writeNote(
   admin: SupabaseClient,
@@ -278,6 +281,12 @@ export async function writeNote(
   if (guard.kind === "refuse") return { ok: false, status: guard.status, error: guard.error, code: guard.code, limit: guard.limit };
   let hold: { reason: HoldReason; detail: string } | null = guard.kind === "hold" ? { reason: guard.reason, detail: guard.detail } : null;
   if (!hold && asksForMoney(own)) hold = { reason: "spam", detail: "money asked under a prayer campaign" };
+  // Words that may mean someone is in danger wait for a moderator, who reads
+  // them first: the mark goes before whatever else held it. The table has no
+  // reason of its own for this, so it is filed as a note held at writing is
+  // and the queue reads the mark from the detail (./safety.ts).
+  const danger = maySpeakOfDanger([own]);
+  if (danger) hold = { reason: hold?.reason ?? "spam", detail: withDangerMark(hold?.detail) };
 
   await ensureCleanHandle(admin, user.id);
   const meta = (user.user_metadata ?? {}) as { display_name?: string };
@@ -319,7 +328,7 @@ export async function writeNote(
     const { error: holdError } = await admin.from("community_text_holds").insert({ reply_id: id, original_body: own, hits: Math.min(censored.hits, 500) });
     if (holdError) console.warn("[campaigns] filter hold not written", holdError.message);
   }
-  return { ok: true, id, held: hold !== null };
+  return { ok: true, id, held: hold !== null, safety: danger };
 }
 
 export type Removed = { ok: true } | { ok: false; status: number; error: string };

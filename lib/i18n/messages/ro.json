@@ -5451,6 +5451,8 @@
   "campaigns.commentSignIn": "Autentificați-vă ca să comentați.",
   "campaigns.commentsSwitchBody": "Cititorii pot scrie sub campania dumneavoastră.",
   "campaigns.noteHeld": "Mulțumim. Cuvintele dumneavoastră așteaptă un moderator și vor apărea după ce le verifică.",
+  "campaigns.safety.line": "Dacă dumneavoastră sau altcineva sunteți în pericol chiar acum, sunați la numărul de urgență din țara dumneavoastră (911 în Statele Unite, 112 în Uniunea Europeană). În Statele Unite puteți suna sau trimite un mesaj la 988 la orice oră. Pentru alte țări, findahelpline.com are liste de linii de ajutor pe țări.",
+  "campaigns.safety.first": "Un moderator vă va citi mai întâi cuvintele.",
   "campaigns.err.updatesToday": "Acestea sunt veștile de astăzi. Următoarea poate fi scrisă mâine.",
   "campaigns.err.blocked": "Nu puteți comenta la această campanie.",
   "campaigns.noteTakeOff": "Scoate",

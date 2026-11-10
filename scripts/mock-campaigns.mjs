@@ -78,6 +78,9 @@ const PETER = "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaa3";
 const SOPHIA = "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaa4";
 const HELD = "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaa5";
 const ENDED = "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaa6";
+// A campaign whose own words may mean its writer is in danger: it waits, a moderator reads it first, and its
+// creator is shown the safety line at once (lib/campaigns/safety.ts). A SAMPLE, written here; nobody's words.
+const DANGER = "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaa8";
 // A campaign kept to one circle (the notes, section 27), and the circles of the reader who looks.
 const THOMAS = "eeeeeeee-eeee-4eee-8eee-eeeeeeeeeee7";
 const PARISH = { id: "ffffffff-ffff-4fff-8fff-fffffffffff1", name: "St Nicholas parish", kind: "parish" };
@@ -141,6 +144,18 @@ const CAMPAIGNS = {
     status: "held",
     creator_name: "Anna",
     mine: true,
+  }),
+  [DANGER]: campaign(DANGER, {
+    title: "Pray for me",
+    intention: "comfort",
+    subject_name: "Anna",
+    details: "I do not want to live any more. Please pray for me.",
+    days: 7,
+    status: "held",
+    creator_name: "Anna",
+    mine: true,
+    // What the route tells its creator alone, while it waits.
+    safety: true,
   }),
   [ENDED]: campaign(ENDED, { title: "For Irene's recovery", intention: "healing", subject_name: "Irene", details: null, days: 7, status: "answered", mine: true }),
   // Kept to the parish: on no board, and handed on only to its circle's members, with the circle's name.
@@ -330,6 +345,14 @@ const MOD_PICTURES = [
   },
 ];
 
+// Two comments under a campaign that wait for a moderator, as the queue hands them on: a new account's first
+// words, and, written after it, words that may mean their writer is in danger. SAMPLES, nobody's words.
+const heldReply = (n, body, name, handle) => ({ id: `99999999-9999-4999-8999-99999999990${n}`, post_id: "99999999-9999-4999-8999-999999999900", body, author_name: name, author_handle: handle, status: "held" });
+const MOD_HOLDS = [
+  { id: "88888888-8888-4888-8888-888888888801", post_id: null, reply_id: heldReply(1).id, reason: "new_account", detail: "first words from a new account", original_title: null, original_body: null, hits: 1, created_at: new Date(Date.now() - 50 * 60_000).toISOString(), post: null, reply: heldReply(1, "Praying for Maria tonight.", "Luke", "luke") },
+  { id: "88888888-8888-4888-8888-888888888802", post_id: null, reply_id: heldReply(2).id, reason: "spam", detail: "crisis: the writer may be in danger", original_title: null, original_body: null, hits: 1, created_at: new Date(Date.now() - 5 * 60_000).toISOString(), post: null, reply: heldReply(2, "Some days I do not want to live any more myself.", "Ben", "ben") },
+];
+
 // A reader's profile, as the profile's route hands one on. A SAMPLE reader, no
 // one real and nothing from production (the same one the export walk's
 // section 50 opens). Asking for prayers went from a profile in 1.9: the
@@ -412,7 +435,11 @@ async function answer(ctx, opts = {}) {
     if (/^\/api\/campaigns\/[0-9a-f-]{36}\/(join|report)$/.test(p)) return json({ ok: true });
     const thread = /^\/api\/campaigns\/([0-9a-f-]{36})\/thread$/.exec(p);
     if (thread && req.method() === "GET") return json(threadFor(thread[1], { mine: Boolean(opts.mine?.includes(thread[1])), signedIn: opts.signedIn !== false, commentsOpen: opts.commentsOpen !== false }));
-    if (thread && req.method() === "POST") return json({ ok: true, id: "cccccccc-cccc-4ccc-8ccc-ccccccccccc9", held: opts.held === true });
+    if (thread && req.method() === "POST") {
+      // As the route answers (lib/campaigns/thread.ts): words that may mean danger wait for a moderator, and their writer is told.
+      const danger = /want to (?:live|die)|suicid/i.test(String(req.postDataJSON()?.body ?? ""));
+      return json({ ok: true, id: "cccccccc-cccc-4ccc-8ccc-ccccccccccc9", held: danger || opts.held === true, safety: danger });
+    }
     if (thread && req.method() === "DELETE") return json({ ok: true });
     if (p === "/api/community/report" && req.method() === "POST") return json({ ok: true });
     if (/^\/api\/campaigns\/[0-9a-f-]{36}$/.test(p) && (req.method() === "PATCH" || req.method() === "DELETE")) return json({ ok: true });
@@ -447,7 +474,7 @@ async function answer(ctx, opts = {}) {
       if (url.searchParams.get("summary")) return json({ waiting: 2 });
       // The team's queue carries pictures only while the server has them on, and never for a build that says it has none.
       const sendsPictures = parts.pictures && url.searchParams.get("pictures") !== "0";
-      return json(sendsPictures ? { ...MOD_QUEUE, campaigns: { ...MOD_QUEUE.campaigns, waiting: [], reports: [], pictures: MOD_PICTURES } } : MOD_QUEUE);
+      return json(sendsPictures ? { ...MOD_QUEUE, campaigns: { ...MOD_QUEUE.campaigns, waiting: [], reports: [], pictures: MOD_PICTURES } } : { ...MOD_QUEUE, holds: opts.holds ?? MOD_QUEUE.holds });
     }
     return json({ error: "Not found." }, 404);
   });
@@ -849,6 +876,38 @@ await shot("30-the-prayer", "starting one: the prayer, with the kind's own ticke
   },
 });
 
+// 31 to 33 The safety line (his item 129): always at the foot of the rules and of the start screen (still 09),
+// and at once to the writer of words that may mean danger.
+
+// 31 The rules, with the safety line at their foot.
+await shot("31-rules-safety", "the rules of praying together, with the safety line at their foot", "/campaigns/rules", "[data-campaign-rules]", {
+  prepare: async (page) => {
+    await page.waitForSelector("[data-campaign-rules] [data-campaign-safety]", { timeout: 15000 });
+    await whole(page);
+  },
+});
+
+// 32 A waiting campaign whose own words may mean danger, as its creator sees it at once.
+await shot("32-campaign-safety", "a waiting campaign whose words may mean danger, as its creator sees it", `/campaigns/detail?id=${DANGER}`, "[data-campaign-page]", {
+  mine: [DANGER],
+  prepare: async (page) => {
+    await page.waitForSelector("[data-campaign-safety=first]", { timeout: 15000 });
+    await whole(page);
+  },
+});
+
+// 33 A comment whose words may mean danger: what its writer is shown under the field, at once.
+await shot("33-comment-safety", "a comment whose words may mean danger: what its writer is shown", `/campaigns/detail?id=${MARIA}#comments`, "[data-campaign-page]", {
+  prepare: async (page) => {
+    await page.waitForSelector("[data-note-field=comment] textarea", { timeout: 15000 });
+    await page.fill("[data-note-field=comment] textarea", "I am praying for her. Some days I do not want to live any more myself.");
+    await page.locator("[data-note-field=comment] button").click();
+    await page.waitForSelector("[data-note-field=comment] [data-campaign-safety=first]", { timeout: 8000 });
+    await page.evaluate(() => document.activeElement?.blur());
+    await whole(page);
+  },
+});
+
 // 28 Pray together for a reader with a campaign in one of their circles: "In your circles", above the newly asked.
 await shot("28-in-your-circles", "Pray together: a campaign in one of the reader's circles", "/community#pray", "[role=tabpanel]", {
   circles: true,
@@ -878,7 +937,7 @@ async function pictureWalk(label, ...rest) {
   if (!FLOWS.length || FLOWS.some((f) => label.toLowerCase().includes(f))) console.log(`left  ${label}: needs an export cut with pictures (PICTURES_BUILD=1; see the header)`);
 }
 
-async function walk(label, where, run, { set = {}, signedIn = true, mine, closed = false, parts, pictures, holdOpen = false, circles = false } = {}) {
+async function walk(label, where, run, { set = {}, signedIn = true, mine, closed = false, parts, pictures, holdOpen = false, circles = false, holds } = {}) {
   if (FLOWS.length && !FLOWS.some((f) => label.toLowerCase().includes(f))) return;
   const seed = {
     "purify.prayers.campaigns": JSON.stringify(CARRIED),
@@ -896,7 +955,7 @@ async function walk(label, where, run, { set = {}, signedIn = true, mine, closed
     // With `holdOpen`, the website's answer to "are campaigns open for this reader" waits for the flow's own word.
     let letGo = () => {};
     const heldOpen = holdOpen ? { until: new Promise((done) => (letGo = done)) } : null;
-    await answer(ctx, { mine, closed, parts, pictures, heldOpen, circles });
+    await answer(ctx, { mine, closed, parts, pictures, heldOpen, circles, holds });
     await go(page, where);
     await settle(page, 1800);
     try {
@@ -1016,6 +1075,90 @@ if (WALK) {
     await choose("A trial");
     expectThat((await row()).includes("The name alone"), `a change of kind set a prayer over "The name alone": the row reads "${await row()}"`);
   });
+
+  await walk("the safety line: always at the foot of the rules, with the three numbers and the one site to open", "/campaigns/rules", async (page) => {
+    const line = page.locator("[data-campaign-rules] [data-campaign-safety]");
+    await line.waitFor({ timeout: 15000 });
+    const words = await line.innerText();
+    for (const part of ["911", "112", "988", "findahelpline.com"]) expectThat(words.includes(part), `the line has no ${part}: "${words}"`);
+    // The site is the one thing to tap, and it opens outside the app. No number is a button.
+    const links = line.locator("a");
+    expectThat((await links.count()) === 1, `the line has ${await links.count()} links, not the one site`);
+    expectThat((await links.getAttribute("href")) === "https://findahelpline.com" && (await links.getAttribute("target")) === "_blank", "the site does not open as the helplines' list");
+    expectThat((await page.locator('[data-campaign-rules] a[href^="tel:"]').count()) === 0, "a number is something to tap");
+    // On the rules nothing was written, so nothing is said of a moderator reading first.
+    expectThat((await page.locator("[data-campaign-safety=first]").count()) === 0, "the rules say a moderator will read words nobody wrote");
+  });
+
+  await walk("the safety line: at the foot of the start screen before a word is written", "/campaigns/new", async (page) => {
+    await page.waitForSelector("#campaign-title-field", { timeout: 15000 });
+    const line = page.locator("[data-campaign-new] [data-campaign-safety]");
+    expectThat((await line.count()) === 1, `the start screen has ${await line.count()} safety lines`);
+    expectThat((await line.innerText()).includes("988") && (await line.locator("a").count()) === 1, "the start screen's line is not the whole line");
+    expectThat((await page.locator("[data-campaign-safety=first]").count()) === 0, "the start screen says a moderator will read words nobody wrote");
+  });
+
+  await walk("the safety line: its creator is shown it at once on a waiting campaign whose words may mean danger, and on no other", `/campaigns/detail?id=${DANGER}`, async (page) => {
+    await page.waitForSelector("[data-campaign-standing]", { timeout: 15000 });
+    const block = page.locator("[data-campaign-safety=first]");
+    await block.waitFor({ timeout: 8000 });
+    const words = await block.innerText();
+    expectThat(words.includes("A moderator will read your words first."), `the block does not say who reads first: "${words}"`);
+    for (const part of ["911", "112", "988", "findahelpline.com"]) expectThat(words.includes(part), `the block has no ${part}`);
+    // It stands with what the page says of waiting, above the campaign's own words.
+    const order = await page.evaluate(() => {
+      const safety = document.querySelector("[data-campaign-safety=first]").getBoundingClientRect().top;
+      const standing = document.querySelector("[data-campaign-standing]").getBoundingClientRect().top;
+      return standing < safety;
+    });
+    expectThat(order, "the block stands above the page's head");
+    // A waiting campaign with no such words: nothing of it.
+    await go(page, `/campaigns/detail?id=${HELD}`);
+    await page.waitForSelector("[data-campaign-standing]", { timeout: 15000 });
+    await settle(page, 900);
+    expectThat((await page.locator("[data-campaign-safety]").count()) === 0, "a waiting campaign with no such words shows the safety line");
+  }, { mine: [DANGER, HELD] });
+
+  await walk("the safety line: a comment whose words may mean danger is answered with it at once, and a plain comment is not", `/campaigns/detail?id=${MARIA}#comments`, async (page) => {
+    await page.waitForSelector("[data-note-field=comment] textarea", { timeout: 15000 });
+    const field = page.locator("[data-note-field=comment]");
+    // A plain comment: sent, and nothing of safety.
+    await field.locator("textarea").fill("Remembering her at the Liturgy on Sunday.");
+    await field.locator("button").click();
+    await settle(page, 900);
+    expectThat((await field.locator("[data-campaign-safety]").count()) === 0, "a plain comment is answered with the safety line");
+    // Words that may mean danger: the block, at once, under the field, and the plain notice is not said as well.
+    await field.locator("textarea").fill("Some days I do not want to live any more myself.");
+    await field.locator("button").click();
+    const block = field.locator("[data-campaign-safety=first]");
+    await block.waitFor({ timeout: 8000 });
+    const words = await block.innerText();
+    expectThat(words.includes("A moderator will read your words first.") && words.includes("988"), `the block reads "${words}"`);
+    expectThat(!(await field.innerText()).includes("Your words are waiting for a moderator"), "the waiting is said twice");
+    const sent = sentTo("POST", /\/thread$/);
+    expectThat(sent.length === 2 && sent[1].body.kind === "comment", `sent ${JSON.stringify(sent.map((x) => x.body))}`);
+    // The next plain comment clears it: it never stands over other words.
+    await field.locator("textarea").fill("Lord, have mercy.");
+    await field.locator("button").click();
+    await settle(page, 900);
+    expectThat((await field.locator("[data-campaign-safety]").count()) === 0, "the block stayed over the next words");
+  });
+
+  await walk("the safety line: the moderators' queue reads a comment that may mean danger before the others, and says what it is", "/community/moderate", async (page) => {
+    await page.waitForSelector("[data-mod-campaigns]", { timeout: 15000 });
+    await page.waitForFunction(() => document.body.innerText.includes("do not want to live"), null, { timeout: 15000 });
+    const text = await page.evaluate(() => document.body.innerText);
+    // The one written later stands first, because of what its words may mean.
+    expectThat(text.indexOf("do not want to live") < text.indexOf("Praying for Maria tonight."), "the comment that may mean danger is not read first");
+    // It says what it is, and is not shown under the reason it is filed as.
+    const card = page.locator("article", { hasText: "do not want to live" });
+    const said = await card.innerText();
+    expectThat(said.includes("Read first: the writer may be in danger"), `its card reads "${said.replace(/\n/g, " / ").slice(0, 200)}"`);
+    expectThat(!/\bSpam\b/i.test(said.split("\n")[0]), "its card is headed as spam");
+    // The ordinary one keeps its own reason.
+    const plain = await page.locator("article", { hasText: "Praying for Maria tonight." }).innerText();
+    expectThat(!plain.includes("Read first"), "an ordinary hold is marked as danger");
+  }, { holds: MOD_HOLDS });
 
   await walk("Pray together: campaigns alone, behind its own door, and nothing is asked of the prayer wall", "/community#pray", async (page) => {
     await page.waitForSelector("[data-campaigns]", { timeout: 15000 });

@@ -34,6 +34,7 @@ import {
 } from "./model";
 import { circleNames, circlesHolding, mayKeepTo, readerCircles, type ReaderCircle } from "./circles";
 import { reworkAbsent } from "./opening";
+import { DANGER_MARK, maySpeakOfDanger, saysDanger } from "./safety";
 
 // Prayer campaigns on the server (the rework of 1.9): every read and every
 // write a route makes. Service role throughout, because the table answers no
@@ -165,6 +166,11 @@ export function forReader(row: CampaignRow, userId: string | null, circle: strin
     ...publicCampaign(row),
     mine,
     ...(mine ? { keep_after_end: row.keep_after_end === true, listed: row.listed !== false } : {}),
+    // Its own words may mean someone is in danger, and it still waits for
+    // the moderator who reads such a campaign first: its creator is shown
+    // the safety line (./safety.ts). Told to its creator and to nobody else,
+    // and no longer once a moderator has read it.
+    ...(mine && row.status === "held" && typeof row.held_reason === "string" && saysDanger(row.held_reason) ? { safety: true } : {}),
     // Kept to a circle: its name, for the line that says who can see it.
     // Only a caller that has already decided this reader may open it hands
     // a name in.
@@ -431,16 +437,6 @@ export type Started =
   | { ok: true; id: string }
   | { ok: false; status: number; error: string; code?: string; preview?: { title: string | null; name: string | null; words: string | null }; limit?: number };
 
-/**
- * Words that may mean the writer is in danger. Only to bring the campaign to
- * the head of the moderators' queue: the words shown to its writer are the
- * owner's and a priest's to write (his item 129), and none is shown until
- * they have. English only for now, which is said plainly here: a reader in
- * crisis in another language is read by the moderator who reads every
- * campaign, and no sooner.
- */
-const CRISIS = /\b(?:suicid\w*|kill\s+my\s?self|end\s+my\s+(?:own\s+)?life|take\s+my\s+(?:own\s+)?life|want\s+to\s+die|(?:don'?t|do\s+not)\s+want\s+to\s+(?:live|be\s+alive)|self[-\s]?harm)\b/i;
-
 /** A street address, as far as a pattern can tell one: a number, a few words, a street word. */
 const STREET = /\b\d{1,5}\s+(?:[\p{L}'.-]+\s+){1,4}(?:street|st\.?|avenue|ave\.?|road|rd\.?|boulevard|blvd\.?|lane|ln\.?|drive|dr\.?|strasse|straße|rue|calle|ulica|ulitsa)\b/iu;
 
@@ -453,7 +449,8 @@ const STREET = /\b\d{1,5}\s+(?:[\p{L}'.-]+\s+){1,4}(?:street|st\.?|avenue|ave\.?
 export function heldReasons(texts: readonly (string | null | undefined)[], filterHits: number): string {
   const all = texts.filter(Boolean).join("\n");
   const reasons: string[] = [];
-  if (CRISIS.test(all)) reasons.push("crisis");
+  // Words that may mean someone is in danger (./safety.ts): read first, and its writer is shown the safety line.
+  if (maySpeakOfDanger(texts)) reasons.push(DANGER_MARK);
   if (filterHits > 0) reasons.push(`words (${Math.min(filterHits, 99)} masked)`);
   const { signals } = spamSignals(texts);
   const asks = signals.filter((s) => s === "money" || s === "phone" || s === "email" || s === "contact");

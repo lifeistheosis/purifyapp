@@ -5362,6 +5362,8 @@
   "campaigns.commentSignIn": "Melde dich an, um zu kommentieren.",
   "campaigns.commentsSwitchBody": "Leser können unter deiner Gebetsaktion schreiben.",
   "campaigns.noteHeld": "Danke. Deine Worte warten auf einen Moderator und erscheinen, sobald er sie angesehen hat.",
+  "campaigns.safety.line": "Wenn du oder jemand anderes gerade in Gefahr ist, ruf den Notruf deines Landes an (911 in den Vereinigten Staaten, 112 in der Europäischen Union). In den Vereinigten Staaten kannst du die 988 jederzeit anrufen oder ihr eine SMS schreiben. Für andere Länder führt findahelpline.com Hilfetelefone nach Land auf.",
+  "campaigns.safety.first": "Ein Moderator liest deine Worte zuerst.",
   "campaigns.err.updatesToday": "Das waren die Neuigkeiten für heute. Morgen kann eine weitere erscheinen.",
   "campaigns.err.blocked": "Du kannst diese Gebetsaktion nicht kommentieren.",
   "campaigns.noteTakeOff": "Herausnehmen",

@@ -72,7 +72,8 @@ async function handlePOST(req: Request, id: string) {
   if (!wrote.ok) {
     return NextResponse.json({ error: wrote.error, code: wrote.code, preview: wrote.preview, limit: wrote.limit }, { status: wrote.status });
   }
-  return NextResponse.json({ ok: true, id: wrote.id, held: wrote.held });
+  // `safety` is said to the writer of these words and to nobody else: this answer is theirs alone.
+  return NextResponse.json({ ok: true, id: wrote.id, held: wrote.held, safety: wrote.safety });
 }
 
 /**
