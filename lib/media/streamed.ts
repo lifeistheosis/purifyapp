@@ -1,3 +1,4 @@
+import { isCarried } from "@/lib/media/carried";
 import { isNativeClient } from "@/lib/platform/native";
 import { SITE_URL } from "@/lib/site";
 
@@ -36,9 +37,12 @@ import { SITE_URL } from "@/lib/site";
  */
 export const STREAMED_ROOTS = ["/audio/chants/", "/covers/", "/history/media/", "/audio/read/", "/shop/media/", "/bibles/"] as const;
 
-/** A file the apps do not carry, asked of the website. */
+/**
+ * A file the apps do not carry, asked of the website. A cover the apps carry
+ * as well (lib/media/carried.ts, from 1.9) is the bundle's own, not this.
+ */
 export function isStreamedMedia(path: string): boolean {
-  return STREAMED_ROOTS.some((root) => path.startsWith(root));
+  return STREAMED_ROOTS.some((root) => path.startsWith(root)) && !isCarried(path);
 }
 
 /**

@@ -217,15 +217,21 @@ Life of his daughter St Hermione, St Pachomius for the Life of St Isidora of
 his Tabenna, St John Chrysostom for the Life of his deaconess St Olympias,
 and the Apostle John for St Papias, his hearer. No new file.
 
-**A Desert Father of the book, for one** (the owner's "all recs",
-2026-11-10). St John Cassian's Conferences open in the desert of Scetis with
-the two conferences of Abbot Moses, so the book carries St Moses the
-Ethiopian, Desert Father of Scetis: the Anger door's icon
-(`feelings/anger.v1.jpg`, in the table below), marked as the book's own
-picture and never drawn beside the byline as St John's face. No new file.
-St Symeon the New Theologian, St Irenaeus, St Isaac the Syrian and St John
-Cassian's Institutes keep the plate: no picture passed for them, and no CC
-BY photograph fit.
+**A Desert Father of the book, for St John Cassian's two** (the owner's "all
+recs", 2026-11-10, and build 90 note 5, his "All recommendations. Start." of
+the same day). His Conferences open in the desert of Scetis with the two
+conferences of Abbot Moses, so the book carries St Moses the Ethiopian,
+Desert Father of Scetis; his Institutes set out in their first books the
+dress and the rule of the monks of Egypt, and in the fourth tell of the
+Tabennesiots, so they carry St Pachomius. Both are icons the app carries,
+verified in `lib/saints/iconRights.ts` (St Moses: the Dionysiou fresco of
+1547, `moses-the-black.v2.jpg`; St Pachomius: `pachomius-the-great.jpg`, the
+same as St Isidora's Life), so both show with no signal. Each is marked as
+the book's own picture and never drawn beside the byline as St John's face.
+No new file. Until note 5 the Conferences wore the Anger door's icon
+(`feelings/anger.v1.jpg`), which a build talking to the 1.8 website could not
+fetch. St Symeon the New Theologian, St Irenaeus and St Isaac the Syrian keep
+the plate: no picture passed for them, and no CC BY photograph fit.
 
 **An icon on each How you feel door** (`FEELING_COVERS`), each a canonical
 Orthodox saint known for the struggle or its healing. The reasons are ours,

@@ -1,3 +1,4 @@
+import { isCarried } from "@/lib/media/carried";
 import { SITE_URL } from "@/lib/site";
 
 /**
@@ -195,5 +196,6 @@ export function saintHero(slug: string): SaintHero | null {
  * and this one is read on the server; heroes.test.ts holds the two together.
  */
 export function heroSrc(hero: SaintHero, native: boolean): string {
-  return native ? `${SITE_URL}${hero.file}` : hero.file;
+  // A picture the apps carry as well (lib/media/carried.ts) is the bundle's own.
+  return native && !isCarried(hero.file) ? `${SITE_URL}${hero.file}` : hero.file;
 }

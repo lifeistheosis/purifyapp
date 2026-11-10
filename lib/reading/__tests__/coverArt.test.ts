@@ -118,8 +118,9 @@ describe("the covers' pictures", () => {
 
   it("leave on the plate only the books no picture has passed for yet (build 89 note 3)", () => {
     // The owner's "ok to all" filled the rest, and his "all recs" (2026-11-10)
-    // gave St John Cassian's Conferences St Moses's icon and left these four
-    // on the plate: no picture passed for them, and no CC BY photograph fit
+    // gave St John Cassian's Conferences St Moses's icon; build 90 note 5 gave
+    // his Institutes St Pachomius's (both carried icons). These four stay on
+    // the plate: no picture passed for them, and no CC BY photograph fit
     // (question 99). St Irene's letters wait for the Seventh Council's fresco
     // to be fetched and cut.
     const plate = buildRoom(false)
@@ -131,7 +132,6 @@ describe("the covers' pictures", () => {
         "irenaeus-of-lyons/against-heresies-on-john",
         "irene-the-empress/letters-for-the-seventh-council",
         "isaac-the-syrian/mystic-treatises",
-        "john-cassian/institutes",
         "symeon-the-new-theologian/discourse-on-faith",
       ].sort(),
     );

@@ -5834,6 +5834,7 @@ await section(40, async () => {
 // picture, and the icons the app carries must draw.
 await section(41, async () => {
   console.log("\n41. The reading room");
+  const CARRIED = JSON.parse(fs.readFileSync(path.resolve("lib/media/carriedCovers.json"), "utf8")).covers;
   const en = JSON.parse(fs.readFileSync(path.resolve("lib/i18n/messages/en.json"), "utf8"));
   const GLYPHS = [0x2190, 0x2192, 0x203a, 0x2039, 0x2713, 0x2726, 0x2605, 0x2014].map((c) => String.fromCharCode(c));
   const PASSIONS = ["gluttony", "lust", "avarice", "anger", "sorrow", "acedia", "vainglory", "pride"].map((id) => en[`reading.theme.${id}`]);
@@ -5845,13 +5846,24 @@ await section(41, async () => {
     await page.waitForFunction(() => !!document.querySelector("[data-reading-row='passions'] li"), null, { timeout: 20000 }).catch(() => {});
     await page.waitForFunction(() => document.querySelector("[data-featured]")?.getAttribute("data-featured") !== "pending", null, { timeout: 8000 }).catch(() => {});
     await page.waitForTimeout(1500);
-    const room = await page.evaluate((glyphs) => {
+    // Every picture on the page asked for: a cover loads as it nears the screen.
+    await page.evaluate(async () => {
+      for (let y = 0; y < document.body.scrollHeight; y += 600) {
+        window.scrollTo(0, y);
+        await new Promise((r) => setTimeout(r, 80));
+      }
+      window.scrollTo(0, 0);
+    });
+    await page.waitForTimeout(1500);
+    const room = await page.evaluate(({ glyphs, carried }) => {
       const rows = [...document.querySelectorAll("[data-reading-row]")].map((r) => r.getAttribute("data-reading-row"));
       const passions = [...document.querySelectorAll("[data-reading-row='passions'] li")].map((li) => li.querySelector("[data-tile-label]")?.textContent?.trim() ?? "");
       const tiles = document.querySelectorAll("[data-reading-row] li").length;
       const imgs = [...document.querySelectorAll("[data-reading-row] img, [data-featured] img")];
       const broken = imgs.filter((i) => i.complete && i.naturalWidth === 0 && i.getClientRects().length > 0).map((i) => i.getAttribute("src"));
       const pictures = imgs.map((i) => i.getAttribute("src") ?? "").filter((src) => !src.startsWith("/saints/icons/"));
+      // The covers the apps carry (lib/media/carried.ts): drawn from the bundle, so with no network they load.
+      const carriedShown = imgs.filter((i) => carried.includes(i.getAttribute("src") ?? ""));
       const text = (document.querySelector("[data-route-content]") ?? document.body).innerText;
       return {
         rows,
@@ -5859,11 +5871,13 @@ await section(41, async () => {
         tiles,
         broken,
         pictures,
+        carriedShown: carriedShown.length,
+        carriedUnloaded: carriedShown.filter((i) => !(i.complete && i.naturalWidth > 0)).map((i) => i.getAttribute("src")),
         featured: document.querySelector("[data-featured]")?.getAttribute("data-featured") ?? null,
         h1: document.querySelector("[data-tab-topbar] h1")?.textContent?.trim() ?? null,
         glyphs: glyphs.filter((g) => text.includes(g)),
       };
-    }, GLYPHS);
+    }, { glyphs: GLYPHS, carried: CARRIED });
     must(["begin", "passions", "virtues", "life", "tradition-greek", "tradition-latin", "tradition-desert", "short"].every((r) => room.rows.includes(r)), `${size.width}px: the rows are drawn (${room.rows.join(", ")})`);
     must(room.passions.join("|") === PASSIONS.join("|"), `${size.width}px: the passions row is the eight, in Cassian's order (${room.passions.join(", ")})`);
     must(room.tiles >= 60, `${size.width}px: covers to swipe (${room.tiles} on the rows)`);
@@ -5875,13 +5889,18 @@ await section(41, async () => {
     // and a How you feel door's saint (feelings/), which a borrowed cover
     // shares. The website is the build's SITE_URL (lib/site.ts): purifyapp.net
     // where the build is given it, as the store builds are, and Render's own
-    // name for the same site where it is not, as in a build made here.
+    // name for the same site where it is not, as in a build made here. From
+    // build 90 note 5 the pictures the website cannot serve yet are carried
+    // (lib/media/carried.ts): their address is the bundle's own, the file is in
+    // the export itself, and one asked of the website is not settled.
     const settled = (src) => {
+      if (CARRIED.includes(src)) return fs.existsSync(path.join(OUT, src.slice(1)));
       const file = /^https:\/\/purifyapp\.(?:net|onrender\.com)\/(covers\/(?:authors|councils|feelings)\/[a-z0-9-]+\.v\d+\.jpg)$/.exec(src)?.[1];
-      return Boolean(file) && fs.existsSync(path.resolve("public", file));
+      return Boolean(file) && !CARRIED.includes(`/${file}`) && fs.existsSync(path.resolve("public", file));
     };
     const foreign = room.pictures.filter((src) => !settled(src));
     must(foreign.length === 0, `${size.width}px: every picture is a settled one${foreign.length ? ": " + foreign.slice(0, 3).join(", ") : ""}`);
+    must(room.carriedShown > 0 && room.carriedUnloaded.length === 0, `${size.width}px: the covers the apps carry load from the bundle with no network (${room.carriedShown} drawn${room.carriedUnloaded.length ? "; not loaded: " + room.carriedUnloaded.slice(0, 3).join(", ") : ""})`);
     must(room.h1 === en["nav.reading"] && room.glyphs.length === 0, `${size.width}px: the tab bar names the room, and no character is set as an icon${room.glyphs.length ? ": " + room.glyphs.join(" ") : ""}`);
     await page.screenshot({ path: path.join(SHOTS, `reading-room-${size.width}.png`) });
     await page.screenshot({ path: path.join(SHOTS, `reading-room-${size.width}-full.png`), fullPage: true });

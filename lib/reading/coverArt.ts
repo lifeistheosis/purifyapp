@@ -1,7 +1,8 @@
+import { isCarried } from "@/lib/media/carried";
 import { SITE_URL } from "@/lib/site";
 import { SAINT_HEROES } from "@/lib/saints/heroes";
 
-import { AUTHOR_COVERS, COUNCIL_COVERS, FEELING_COVERS, WORK_COVERS } from "./authorCovers";
+import { AUTHOR_COVERS, COUNCIL_COVERS, WORK_COVERS } from "./authorCovers";
 
 /**
  * The picture on a book's cover (1.7, the owner's note 18): the icon of the
@@ -150,9 +151,17 @@ export const COVER_ART: Readonly<Record<string, CoverArt>> = {
  *  - and a Desert Father of the book (the owner's "all recs", 2026-11-10):
  *    St Moses the Ethiopian, Desert Father of Scetis, for St John Cassian's
  *    Conferences, which open in Scetis with the two conferences of Abbot
- *    Moses. It is the Anger door's icon (FEELING_COVERS), no new file. His
- *    Institutes keep the plate, as St Symeon's, St Irenaeus's and St
- *    Isaac's books do: no picture passed for them.
+ *    Moses; and St Pachomius for his Institutes, whose first books set out
+ *    the dress and the rule of the monks of Egypt, and whose fourth tells of
+ *    the Tabennesiots, St Pachomius's monasteries (build 90 note 5, his "All
+ *    recommendations. Start." of 2026-11-10). Both are icons the app carries,
+ *    verified in lib/saints/iconRights.ts, so both show with no signal and in
+ *    a build that talks to an older website: St Moses is the fresco of 1547
+ *    at Dionysiou (until note 5 the Conferences wore the Anger door's
+ *    Novgorod icon, a file the 1.8 website does not have, so a plate in
+ *    build 90; the door keeps it). St John Cassian's own carried icon is
+ *    unverified, so neither book wears it. St Symeon's, St Irenaeus's and St
+ *    Isaac's books keep the plate: no picture passed for them.
  */
 export const WORK_ART: Readonly<Record<string, CoverArt>> = {
   ...WORK_COVERS,
@@ -164,7 +173,8 @@ export const WORK_ART: Readonly<Record<string, CoverArt>> = {
   "isidora-of-tabenna/life-of-isidora": COVER_ART["pachomius-the-great"],
   "olympias-the-deaconess/life-of-olympias": COVER_ART["john-chrysostom"],
   "papias-of-hierapolis/the-living-voice": COVER_ART["apostle-john"],
-  "john-cassian/conferences": FEELING_COVERS.anger,
+  "john-cassian/conferences": bundled("moses-the-black.v2.jpg", 27),
+  "john-cassian/institutes": COVER_ART["pachomius-the-great"],
 };
 
 /** The settled picture for a book's saint, or null for the plate alone. */
@@ -182,5 +192,6 @@ export function coverArtFor(subject: string | null): CoverArt | null {
  * lib/saints/heroes.ts has, and the test holds the two together.
  */
 export function coverSrc(art: CoverArt, native: boolean): string {
-  return art.kind === "streamed" && native ? `${SITE_URL}${art.file}` : art.file;
+  // A picture the apps carry as well (lib/media/carried.ts) is the bundle's own.
+  return art.kind === "streamed" && native && !isCarried(art.file) ? `${SITE_URL}${art.file}` : art.file;
 }
