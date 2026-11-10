@@ -43,7 +43,8 @@ export function CampaignCard({
     const url = shareLink(campaign.href);
     if (typeof navigator !== "undefined" && typeof navigator.share === "function") {
       try {
-        await navigator.share({ title: campaign.title, text: campaign.title, url });
+        const said = campaign.shareTitle ?? campaign.title;
+        await navigator.share({ title: said, text: said, url });
       } catch {
         /* the reader closed the share sheet */
       }
@@ -75,13 +76,13 @@ export function CampaignCard({
           <h2 className="mt-1 font-heading text-[15.5px] font-semibold leading-[1.25] text-paper">{campaign.title}</h2>
           {/* The Church's words as printed, faded where the card ends: Pray opens them whole. */}
           <p className="community-campaign-prayer mt-1.5 font-serif text-[12.5px] italic leading-[1.45] text-paper/75">{campaign.prayer.text}</p>
-          <p className="mt-1 font-sans text-[10.5px] text-paper/50">{campaign.prayer.source}</p>
+          {campaign.prayer.source ? <p className="mt-1 font-sans text-[10.5px] text-paper/50">{campaign.prayer.source}</p> : null}
         </div>
       </div>
       <div className="flex items-center gap-2 border-t border-paper/[0.06] px-3 py-2.5">
         <Link
           href={campaign.href}
-          className="tap-press reader-lit inline-flex h-[38px] shrink-0 items-center gap-1.5 rounded-pill bg-paper px-3.5 font-sans text-ui font-semibold text-night"
+          className="tap-press hit-44 reader-lit inline-flex h-[38px] shrink-0 items-center gap-1.5 rounded-pill bg-paper px-3.5 font-sans text-ui font-semibold text-night"
         >
           <Lampada size={17} />
           {t("streak.pray")}
@@ -91,7 +92,7 @@ export function CampaignCard({
           onClick={onAdd}
           aria-haspopup="dialog"
           className={cn(
-            "tap-press inline-flex h-[38px] min-w-0 items-center gap-1.5 rounded-pill border px-3 font-sans text-detail font-semibold",
+            "tap-press hit-44 inline-flex h-[38px] min-w-0 items-center gap-1.5 rounded-pill border px-3 font-sans text-detail font-semibold",
             added ? "border-paper/40 text-paper" : "border-paper/25 text-paper/90 hover:border-paper/45",
           )}
         >
@@ -102,7 +103,7 @@ export function CampaignCard({
           type="button"
           onClick={() => void share()}
           aria-label={copied ? t("common.linkCopied") : t("common.share")}
-          className="tap-press ms-auto inline-flex size-9 shrink-0 items-center justify-center rounded-full border border-paper/[0.18] text-paper/85 hover:text-paper"
+          className="tap-press hit-44 ms-auto inline-flex size-9 shrink-0 items-center justify-center rounded-full border border-paper/[0.18] text-paper/85 hover:text-paper"
         >
           {copied ? <Check size={15} /> : <Share size={16} />}
         </button>

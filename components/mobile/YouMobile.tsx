@@ -63,7 +63,7 @@ import { useCompletedCollections } from "@/lib/catechism/useCollectionProgress";
 import { useCompletionCount } from "@/lib/catechism/useCompletionCount";
 import { useTranslate } from "@/components/i18n/MessagesProvider";
 import { usePremiumTier } from "@/lib/entitlements/usePremiumTier";
-import { campaignsEnabled } from "@/lib/campaigns/flags";
+import { useCampaignsOpen } from "@/lib/campaigns/useCampaignsOpen";
 import { eikonBoxEnabled } from "@/lib/eikonBox/flags";
 import { localBookNames } from "@/lib/bible/books";
 import { useJournal } from "@/lib/bible/journal";
@@ -113,6 +113,10 @@ function useReader(): YouWho {
 
 export function YouMobile() {
   const { t, tn } = useTranslate();
+  // Prayer campaigns have a row here only for a reader they are open for:
+  // nobody in a closed build, the testers alone while they are tested, and
+  // everyone once they open (lib/campaigns/useCampaignsOpen.ts).
+  const campaignsOpen = useCampaignsOpen();
   const reader = useReader();
   const [intentions, setIntentions] = useState(0);
 
@@ -215,10 +219,10 @@ export function YouMobile() {
     // These two used to exist only on the desktop dashboard's settings
     // list. That list no longer renders on a phone, so they live here now
     // rather than nowhere.
-    ...(campaignsEnabled()
+    ...(campaignsOpen
       ? [
           {
-            label: t("shop.myPrayers"),
+            label: t("community.prayerCampaigns"),
             href: "/campaigns/mine",
             hint: t("ui.campaignsYouPrayWithThe"),
             icon: <Glyph kind="halo" />,

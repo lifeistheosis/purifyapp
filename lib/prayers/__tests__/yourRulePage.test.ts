@@ -329,9 +329,38 @@ describe("the page as the owner picked it, r3-27 A", () => {
     expect(code("components/community/AddToPrayersSheet.tsx")).toContain("<PlaceChips ");
   });
 
-  it("draws nothing for 1.9's campaigns, which keep their place in words only", () => {
-    for (const src of [builder, head, steps, names]) expect(src).not.toMatch(/campaign/i);
+  it("draws nothing for prayer campaigns while they are closed: the one part they bring is empty then", () => {
+    // 1.9 (note 70) kept the campaigns' place on this page in words only.
+    // 1.9.1, the rework, draws it behind the switch (his "ok to all" of
+    // 2026-11-10, item 116): the names mount one part, CampaignNames, and
+    // the page says nothing else of campaigns.
+    for (const src of [builder, head, steps]) expect(src).not.toMatch(/campaign/i);
+    expect(names).toContain("<CampaignNames Medallion={Medallion} />");
+    expect(names.replace(/CampaignNames/g, "").replace(/@\/components\/campaigns\//g, "")).not.toMatch(/campaign/i);
+    // That part draws nothing while the reader carries no campaign and none
+    // waits for its answer, and a closed build reads no list at all, so with
+    // the switch closed the page is what it was (lib/campaigns/__tests__/
+    // closed.test.ts holds the switch itself).
+    expect(code("components/campaigns/CampaignNames.tsx")).toContain("if (now.length === 0 && asking.length === 0 && !notice) return null;");
+    expect(code("lib/campaigns/useCarried.ts")).toContain('if (typeof window === "undefined" || !campaignsInBuild()) return EMPTY;');
     expect(read("components/prayers/mine/MyRuleBuilder.tsx")).toMatch(/1\.9 \(note 70\)/);
+  });
+
+  it("draws the names' small lines at each palette's own share, so each holds 4.5:1", () => {
+    // A list's name (58 percent) and a medallion's line (50) are written in
+    // the stylesheet, not as text-paper utilities, so "Faint text on every
+    // palette" never reached them: 3.72:1 and 2.97:1 on Light, 3.91:1 on
+    // Candlelight, measured on the export. Each palette draws them at the
+    // share that table gives it (lib/ui/__tests__/faintText.test.ts does its
+    // arithmetic).
+    const css = read("app/globals.css");
+    expect(css).toMatch(
+      /html\[data-reading-mode="parchment"\] :is\(\.rule-names-label, \.rule-med-sub, \.rule-meds-none\) \{\s*color: color-mix\(in srgb, var\(--color-paper\) 70%, transparent\);/,
+    );
+    expect(css).toMatch(/html\[data-reading-mode="candlelight"\] :is\(\.rule-med-sub, \.rule-meds-none\) \{\s*color: color-mix\(in srgb, var\(--color-paper\) 60%, transparent\);/);
+    expect(css).toMatch(
+      /:is\(html\[data-reading-mode="monastery"\], html\[data-reading-mode="councils"\], html\[data-reading-mode="cappadocian"\]\) :is\(\.rule-med-sub, \.rule-meds-none\) \{\s*color: color-mix\(in srgb, var\(--color-paper\) 55%, transparent\);/,
+    );
   });
 
   it("is black, white and grey in every palette, and still with motion off", () => {

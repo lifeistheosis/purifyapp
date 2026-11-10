@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 
+import { PrayTogetherCampaigns } from "@/components/campaigns/PrayTogetherCampaigns";
 import { AddToPrayersSheet, type WallPick } from "@/components/community/AddToPrayersSheet";
 import { CampaignCard } from "@/components/community/CampaignCard";
 import { PrayerWall } from "@/components/community/PrayerWall";
@@ -17,6 +18,12 @@ import { activeWallName } from "@/lib/prayers/wallNames";
  * With no campaign running, and none runs in 1.8 (lib/community/
  * runningCampaign.ts), the card is not drawn and the wall stands under the
  * head. Never a sample in its place.
+ *
+ * 1.9.1, the rework: readers' own prayer campaigns stand between the head
+ * and the wall (components/campaigns/PrayTogetherCampaigns.tsx), the one the
+ * reader carries as that same card. That part draws nothing, and asks nobody
+ * anything, unless campaigns are open for this reader, so with the switch
+ * closed this half is exactly what it was.
  */
 export function PrayTogether({
   signedIn,
@@ -65,6 +72,7 @@ export function PrayTogether({
           />
         </div>
       ) : null}
+      <PrayTogetherCampaigns signedIn={signedIn} />
       <PrayerWall signedIn={signedIn} onOpenProfile={onOpenProfile} />
     </div>
   );

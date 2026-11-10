@@ -3,6 +3,8 @@
 import { useTranslate } from "@/components/i18n/MessagesProvider";
 import { useReaderPrefs } from "@/components/reader/ReaderPrefs";
 import { LINE_SIZE, lineFont } from "@/components/prayers/service/PrayerStep";
+import type { CarriedCampaign } from "@/lib/campaigns/carried";
+import { dayText, setIn } from "@/lib/campaigns/words";
 import { cn } from "@/lib/cn";
 import { DEPARTED_PRAYER, departedPrayer, wallLine } from "@/lib/prayers/commemoration";
 import type { WallName } from "@/lib/prayers/wallNames";
@@ -24,25 +26,39 @@ type Named = { id: string; name: string };
  * 2026-11-10): the Amen at the end of the page marks it with the rule, and
  * lets the names from the wall go; they stay on this page, marked, until it
  * is left, and the end of the page says so (PrayerRuleReader.tsx).
+ *
+ * A prayer campaign the reader carries (1.9.1, lib/campaigns/carried.ts)
+ * brings its name here and nothing else: among the living, with the campaign
+ * named under it as the wall's words stand under a name; among the departed,
+ * inside the Church's prayer where the edition prints NN., with the campaign
+ * named under the printing. It stays until its last day, whatever is marked.
  */
 export function CommemorationStep({
   stepId,
   living,
   wall,
   departed,
+  campaigns = [],
 }: {
   /** "names" where it stands as the reader's own step in their rule. */
   stepId: string;
   living: readonly Named[];
   wall: readonly WallName[];
   departed: readonly Named[];
+  /** The campaigns this prayer carries today. None in a build where campaigns are closed. */
+  campaigns?: readonly CarriedCampaign[];
 }) {
-  const { t } = useTranslate();
+  const { t, locale } = useTranslate();
   const { size, font, leadingValue } = useReaderPrefs();
   const lineClass = cn(lineFont(font), LINE_SIZE[size], "text-paper");
   const leading = { lineHeight: leadingValue ?? 1.5 };
-  const hasLiving = living.length + wall.length > 0;
-  const hasDeparted = departed.length > 0;
+  const campaignLiving = campaigns.filter((c) => c.forWhom === "living");
+  const campaignDeparted = campaigns.filter((c) => c.forWhom === "departed");
+  const hasLiving = living.length + wall.length + campaignLiving.length > 0;
+  const hasDeparted = departed.length + campaignDeparted.length > 0;
+  // "With the prayer campaign “Forty days for Nicholas”, until December 19."
+  // The title is a stranger's words, set in exactly as written.
+  const campaignLine = (c: CarriedCampaign) => setIn(t("campaigns.inPrayersLine"), { title: c.title, date: dayText(c.until, locale) });
 
   // A step of the page, set in the middle as every prayer of it is since 1.8
   // (PrayerStep, the owner's pick B, Immersive).
@@ -79,6 +95,14 @@ export function CommemorationStep({
                 </span>
               </li>
             ))}
+            {campaignLiving.map((c) => (
+              <li key={c.id} data-campaign-name="" className="mt-[0.35em]">
+                <span data-line className={cn("block break-words", lineClass)}>
+                  {c.name}
+                </span>
+                <span className="mt-1 block break-words font-sans text-detail leading-[1.55] text-paper/60">{campaignLine(c)}</span>
+              </li>
+            ))}
           </ul>
         </div>
       ) : null}
@@ -86,7 +110,7 @@ export function CommemorationStep({
       {hasDeparted ? (
         <div className={hasLiving ? "mt-[1.6em]" : "mt-5"} style={leading}>
           <div lang="en">
-            {departedPrayer(departed.map((n) => n.name)).map((line, i) => (
+            {departedPrayer([...departed.map((n) => n.name), ...campaignDeparted.map((c) => c.name)]).map((line, i) => (
               <span key={i} data-line {...(i === 0 && !hasLiving ? { "data-snap-start": "" } : {})} className={cn("block break-words", i > 0 && "mt-[0.35em]", lineClass)}>
                 {line}
               </span>
@@ -95,6 +119,11 @@ export function CommemorationStep({
           <p className="mt-4 font-sans text-caption text-paper/50">
             {t("prayers.reader.sourceLabel")} {DEPARTED_PRAYER.source}
           </p>
+          {campaignDeparted.map((c) => (
+            <p key={c.id} data-campaign-name="" className="mt-1 break-words font-sans text-caption text-paper/50">
+              {campaignLine(c)}
+            </p>
+          ))}
         </div>
       ) : null}
       {/* Where a long list of names settles at its end, before the next prayer. */}

@@ -11,7 +11,12 @@
 /** The Church's prayer a campaign carries, word for word, and where it is printed. */
 export type ChurchPrayer = {
   text: string;
-  /** The public-domain printing: "Hapgood, Service Book (1906), p. 91". */
+  /**
+   * The public-domain printing: "Hapgood, Service Book (1906), p. 91". Empty
+   * only for the one line the app itself says over the living (1.9.1,
+   * lib/prayers/commemoration.ts), which has no printing to name: the card
+   * then draws no line for it.
+   */
   source: string;
 };
 
@@ -29,6 +34,8 @@ export type RunningCampaign = {
   href: string;
   /** Who it prays for, as Add to my prayers carries a name into the reader's prayers. */
   name: string;
+  /** What Share says with the link, when the title names a person: "Prayer campaigns". */
+  shareTitle?: string;
 };
 
 /**

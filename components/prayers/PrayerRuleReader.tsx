@@ -57,6 +57,7 @@
 import { Fragment, useMemo, useRef, useState, useSyncExternalStore } from "react";
 
 import { useTranslate } from "@/components/i18n/MessagesProvider";
+import { CampaignPsalmSteps } from "@/components/campaigns/CampaignPsalmSteps";
 import { CommemorationStep } from "@/components/prayers/service/CommemorationStep";
 import { ServiceHeader } from "@/components/prayers/service/ServiceHeader";
 import { PrayerStep } from "@/components/prayers/service/PrayerStep";
@@ -65,6 +66,8 @@ import { goToPrayer, useLitLine } from "@/components/prayers/service/useLitLine"
 import { usePassedSteps } from "@/components/prayers/service/usePassedSteps";
 import { useEasyScrollOn } from "@/lib/prayers/easyScrollSetting";
 import { isRuleBookmarked, toggleRuleBookmark } from "@/lib/prayers/bookmarks";
+import { carriedFor } from "@/lib/campaigns/carried";
+import { useCarried } from "@/lib/campaigns/useCarried";
 import { commemorationPlacement, placeOf } from "@/lib/prayers/commemoration";
 import { serviceArt } from "@/lib/prayers/serviceArt";
 import { markRuleCompletedToday, readTodayDone, useIntentions, writeTodayDone, PRAYER_EVENT } from "@/lib/prayers/storage";
@@ -183,13 +186,20 @@ export function PrayerRuleReader({
   const wallList = useWallNames();
   const [openedAt] = useState(() => Date.now());
   const wall = useMemo(() => wallNamesFor(wallList, rule.id, openedAt), [wallList, rule.id, openedAt]);
+  // The prayer campaigns the reader carries in this prayer today (1.9.1):
+  // read from this device and nowhere else, so a campaign is prayed with no
+  // signal, and nothing is sent when it is. None in a build where campaigns
+  // are closed (lib/campaigns/useCarried.ts), so the page then stands as it
+  // did before they were built.
+  const carriedList = useCarried();
+  const campaigns = useMemo(() => (snap.today ? carriedFor(carriedList, rule.id, snap.today) : []), [carriedList, rule.id, snap.today]);
   const placement = commemorationPlacement(rule.prayers);
   // The reader's own step in their own rule: one of the rule's prayers.
   const ownStep = rule.kind === "custom" && placement.replaces;
   const carriesList = ownStep || (place !== null && remembered.includes(place));
   const livingHere = carriesList ? living : [];
   const departedHere = carriesList ? departed : [];
-  const commemorated = ownStep || livingHere.length + departedHere.length + wall.length > 0;
+  const commemorated = ownStep || livingHere.length + departedHere.length + wall.length + campaigns.length > 0;
   const commemorationId = ownStep ? "names" : COMMEMORATION_ID;
   const wallIds = wall.map((n) => n.id);
   // Marked for today, with every name from the wall here marked too: a name
@@ -230,12 +240,19 @@ export function PrayerRuleReader({
   usePassedSteps(article, passed, { ready: hydrated });
 
   const commemorationStep = commemorated ? (
-    <CommemorationStep
-      stepId={commemorationId}
-      living={livingHere}
-      wall={wall}
-      departed={departedHere}
-    />
+    <>
+      <CommemorationStep
+        stepId={commemorationId}
+        living={livingHere}
+        wall={wall}
+        departed={departedHere}
+        campaigns={campaigns}
+      />
+      {/* A campaign's psalm follows the names, as a step of its own. */}
+      {campaigns.length > 0 ? (
+        <CampaignPsalmSteps campaigns={campaigns} ruleHas={(id) => rule.prayers.some((p) => p.id === id)} contentLang={contentLocale ?? "en"} />
+      ) : null}
+    </>
   ) : null;
 
   function begin() {

@@ -53,6 +53,7 @@ export function PrayerStep({
   prayer,
   title,
   from,
+  note,
   contentLang,
   bookmarkable = true,
 }: {
@@ -62,6 +63,8 @@ export function PrayerStep({
   title: string;
   /** The rule it was brought from, in a reader's own rule. */
   from?: string;
+  /** One line over its name, already in the reader's words: why it stands here (a campaign's psalm, 1.9.1). */
+  note?: string;
   contentLang: string;
   /** False for a step that is no prayer of the prayer book (a reader's own names). */
   bookmarkable?: boolean;
@@ -104,6 +107,7 @@ export function PrayerStep({
       className="scroll-mt-16 border-t border-paper/10 py-9 text-center md:scroll-mt-24"
     >
       {from ? <p className="mb-1 font-sans text-caption text-paper/50">{t("prayers.mine.fromRule", { rule: from })}</p> : null}
+      {note ? <p className="mb-1 break-words font-sans text-caption text-paper/50">{note}</p> : null}
       <h2
         id={`${prayer.id}-title`}
         {...(settlesOn === "title" ? snap : {})}

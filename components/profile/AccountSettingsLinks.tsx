@@ -11,7 +11,7 @@
 import { useEffect, useState } from "react";
 import { SettingsList, type SettingsItem } from "@/components/mobile/SettingsList";
 import { SettingsGlyph as Glyph } from "@/components/mobile/SettingsGlyph";
-import { campaignsEnabled } from "@/lib/campaigns/flags";
+import { useCampaignsOpen } from "@/lib/campaigns/useCampaignsOpen";
 import { eikonBoxEnabled } from "@/lib/eikonBox/flags";
 import { readIntentions } from "@/lib/prayers/storage";
 import { useTranslate } from "@/components/i18n/MessagesProvider";
@@ -19,6 +19,10 @@ import { usePremiumTier } from "@/lib/entitlements/usePremiumTier";
 
 export function AccountSettingsLinks() {
   const { t, tn } = useTranslate();
+  // Prayer campaigns have a row here only for a reader they are open for:
+  // nobody in a closed build, the testers alone while they are tested, and
+  // everyone once they open (lib/campaigns/useCampaignsOpen.ts).
+  const campaignsOpen = useCampaignsOpen();
   const [intentions, setIntentions] = useState(0);
   const tier = usePremiumTier();
 
@@ -67,10 +71,10 @@ export function AccountSettingsLinks() {
           : tn("prayers.intentionCount", intentions),
       icon: <Glyph kind="halo" />,
     },
-    ...(campaignsEnabled()
+    ...(campaignsOpen
       ? [
           {
-            label: t("shop.myPrayers"),
+            label: t("community.prayerCampaigns"),
             href: "/campaigns/mine",
             hint: t("ui.campaignsYouPrayWithThe"),
             icon: <Glyph kind="halo" />,

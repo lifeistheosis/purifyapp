@@ -22,10 +22,13 @@
 // with the name under it and one line of what it is (a relationship, a
 // nameday, a repose, the day it leaves); "Add" is the last medallion of
 // each list. A tap opens the name in a sheet, to change it or remove it
-// (NameSheet, WallNameSheet). 1.9 (note 70) keeps a place in words only: a
-// campaign's name joins the reposed until its last day.
+// (NameSheet, WallNameSheet). 1.9 (note 70) kept a place in words only: a
+// campaign's name joins the reposed until its last day. 1.9.1 draws it:
+// the campaigns a reader carries stand after the wall's names, each with the
+// day it leaves (components/campaigns/CampaignNames.tsx).
 
 import { useEffect, useRef, useState } from "react";
+import { CampaignNames } from "@/components/campaigns/CampaignNames";
 import { useTranslate } from "@/components/i18n/MessagesProvider";
 import { formatMmDd, NameForm } from "@/components/prayers/NameForm";
 import { PlaceChips } from "@/components/prayers/PlaceChips";
@@ -124,6 +127,10 @@ export function Diptychs() {
       <NameList kind="living" heading={t("prayers.diptychs.livingHeading")} onOpen={(entry) => open({ kind: "living", entry })} />
       <NameList kind="departed" heading={t("prayers.diptychs.reposedHeading")} onOpen={(entry) => open({ kind: "departed", entry })} />
       <WallList onOpen={(entry) => open({ kind: "wall", entry })} />
+      {/* The campaigns the reader carries (1.9.1), and "Keep this name?" for
+          one that has ended. Nothing while there are none, and none in a
+          build where campaigns are closed. */}
+      <CampaignNames Medallion={Medallion} />
 
       {undo ? (
         <p role="status" className="flex min-h-11 items-center gap-3 font-sans text-detail text-paper/75">
