@@ -174,6 +174,29 @@ export const AUTHOR_META: Readonly<Record<string, MetaRow>> = {
 
   "nektarios-of-aegina": { traditions: ["greek"], era: "modern" },
   "paisios-the-athonite": { traditions: ["greek"], era: "modern" },
+
+  // November's saints (1.9): the saints of the month's Lives in the witnesses' words.
+  "patrobas-hermas-linus-gaius-and-philologus": { traditions: [], era: "apostolic" },
+  "erastus-olympas-rodion-sosipater-quartus-and-tertius": { traditions: [], era: "apostolic" },
+  "onesiphorus-and-porphyrius": { traditions: [], era: "apostolic" },
+  "philemon-and-apphia": { traditions: [], era: "apostolic" },
+  "clement-of-rome": { traditions: ["latin"], era: "apostolic" },
+  // Before the apostles, as the Maccabees are.
+  "prophet-obadiah": { traditions: [] },
+  "gregory-the-wonderworker": { traditions: ["greek"], era: "early" },
+  "peter-of-alexandria": { traditions: ["egypt"], era: "early" },
+  "gurias-samonas-and-habib": { traditions: ["syriac"], era: "early" },
+  "plato-and-romanus": { traditions: ["greek"], era: "early" },
+  "zacchaeus-and-alphaeus": { traditions: ["greek"], era: "early" },
+  "acepsimas-joseph-and-aithalas": { traditions: ["syriac"], era: "councils" },
+  "paul-the-confessor": { traditions: ["greek"], era: "councils" },
+  "amphilochius-of-iconium": { traditions: ["greek"], era: "councils" },
+  "proclus-of-constantinople": { traditions: ["greek"], era: "councils" },
+  "frumentius-of-axum": { traditions: ["egypt"], era: "councils" },
+  "varlaam-of-khutyn": { traditions: ["russian"], era: "byzantine" },
+  "alexander-nevsky": { traditions: ["russian"], era: "byzantine" },
+  "michael-of-tver": { traditions: ["russian"], era: "byzantine" },
+  "innocent-of-irkutsk": { traditions: ["russian"], era: "afterByzantium" },
 };
 
 /**
@@ -1140,6 +1163,28 @@ export const ENTRIES: Readonly<Record<WorkKey, ReadingEntry>> = {
     themes: [],
     review: R,
   },
+  // November's saints (1.9): each Life is its witnesses' own words, cut where a
+  // chapter runs on to other men (scripts/menologion/november-lives.mjs).
+  "acepsimas-joseph-and-aithalas/life-of-acepsimas": { by: null, about: "acepsimas-joseph-and-aithalas", form: "life", scope: "selections", themes: [], review: R },
+  "patrobas-hermas-linus-gaius-and-philologus/their-names-in-scripture": { by: null, about: "patrobas-hermas-linus-gaius-and-philologus", form: "scripture", scope: "selections", themes: [], review: R },
+  "paul-the-confessor/life-of-paul-the-confessor": { by: null, about: "paul-the-confessor", form: "life", scope: "selections", themes: [], review: R },
+  "erastus-olympas-rodion-sosipater-quartus-and-tertius/their-names-in-scripture": { by: null, about: "erastus-olympas-rodion-sosipater-quartus-and-tertius", form: "scripture", scope: "selections", themes: [], review: R },
+  "onesiphorus-and-porphyrius/onesiphorus-in-scripture": { by: "apostle-paul", about: "onesiphorus-and-porphyrius", form: "scripture", scope: "selections", themes: [], review: R },
+  "gurias-samonas-and-habib/acts-of-gurias-samonas-and-habib": { by: null, about: "gurias-samonas-and-habib", form: "life", scope: "complete", themes: [], review: R },
+  "gregory-the-wonderworker/life-of-gregory-the-wonderworker": { by: null, about: "gregory-the-wonderworker", form: "life", scope: "selections", themes: [], review: R },
+  "plato-and-romanus/martyrdom-of-romanus": { by: null, about: "plato-and-romanus", form: "life", scope: "complete", themes: [], review: R },
+  "zacchaeus-and-alphaeus/martyrdom-of-zacchaeus-and-alphaeus": { by: null, about: "zacchaeus-and-alphaeus", form: "life", scope: "selections", themes: [], review: R },
+  "prophet-obadiah/the-vision-of-obadiah": { by: "prophet-obadiah", form: "scripture", scope: "complete", themes: [], review: R },
+  "proclus-of-constantinople/life-of-proclus": { by: null, about: "proclus-of-constantinople", form: "life", scope: "selections", themes: [], review: R },
+  "philemon-and-apphia/the-epistle-to-philemon": { by: "apostle-paul", about: "philemon-and-apphia", form: "scripture", scope: "complete", themes: [], review: R },
+  "michael-of-tver/life-of-michael-of-tver": { by: null, about: "michael-of-tver", form: "life", scope: "selections", themes: [], review: R },
+  "amphilochius-of-iconium/life-of-amphilochius": { by: null, about: "amphilochius-of-iconium", form: "life", scope: "selections", themes: [], review: R },
+  "alexander-nevsky/life-of-alexander-nevsky": { by: null, about: "alexander-nevsky", form: "life", scope: "selections", themes: [], review: R },
+  "clement-of-rome/life-of-clement": { by: null, about: "clement-of-rome", form: "life", scope: "selections", themes: [], review: R },
+  "peter-of-alexandria/life-of-peter-of-alexandria": { by: null, about: "peter-of-alexandria", form: "life", scope: "selections", themes: [], review: R },
+  "innocent-of-irkutsk/life-of-innocent-of-irkutsk": { by: null, about: "innocent-of-irkutsk", form: "life", scope: "selections", themes: [], review: R },
+  "frumentius-of-axum/life-of-frumentius": { by: null, about: "frumentius-of-axum", form: "life", scope: "selections", themes: [], review: R },
+  "varlaam-of-khutyn/life-of-varlaam": { by: null, about: "varlaam-of-khutyn", form: "life", scope: "selections", themes: [], review: R },
 };
 
 /**

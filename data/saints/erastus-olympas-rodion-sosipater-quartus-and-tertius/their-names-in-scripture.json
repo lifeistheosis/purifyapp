@@ -1,0 +1,55 @@
+{
+  "saint": "erastus-olympas-rodion-sosipater-quartus-and-tertius",
+  "slug": "their-names-in-scripture",
+  "title": "Their Names in Scripture",
+  "subtitle": "Where the Acts and St. Paul name them",
+  "source": "Scripture is the King James Version, as the app's Bible carries it, word for word. Rodion is the Herodion of Romans 16:11.",
+  "originalLanguage": "grc",
+  "sections": [
+    {
+      "n": 1,
+      "title": "Acts 19:22",
+      "voice": "scripture",
+      "citation": "Acts 19:22 (King James Version)",
+      "paragraphs": [
+        "So he sent into Macedonia two of them that ministered unto him, Timotheus and Erastus; but he himself stayed in Asia for a season."
+      ]
+    },
+    {
+      "n": 2,
+      "title": "Romans 16:11",
+      "voice": "scripture",
+      "citation": "Romans 16:11 (King James Version)",
+      "paragraphs": [
+        "Salute Herodion my kinsman. Greet them that be of the household of Narcissus, which are in the Lord."
+      ]
+    },
+    {
+      "n": 3,
+      "title": "Romans 16:15",
+      "voice": "scripture",
+      "citation": "Romans 16:15 (King James Version)",
+      "paragraphs": [
+        "Salute Philologus, and Julia, Nereus, and his sister, and Olympas, and all the saints which are with them."
+      ]
+    },
+    {
+      "n": 4,
+      "title": "Romans 16:21-23",
+      "voice": "scripture",
+      "citation": "Romans 16:21-23 (King James Version)",
+      "paragraphs": [
+        "Timotheus my workfellow, and Lucius, and Jason, and Sosipater, my kinsmen, salute you. I Tertius, who wrote this epistle, salute you in the Lord. Gaius mine host, and of the whole church, saluteth you. Erastus the chamberlain of the city saluteth you, and Quartus a brother."
+      ]
+    },
+    {
+      "n": 5,
+      "title": "2 Timothy 4:20",
+      "voice": "scripture",
+      "citation": "2 Timothy 4:20 (King James Version)",
+      "paragraphs": [
+        "Erastus abode at Corinth: but Trophimus have I left at Miletum sick."
+      ]
+    }
+  ]
+}

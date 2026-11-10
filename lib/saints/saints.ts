@@ -35,6 +35,15 @@ export type Saint = {
  feastDays: string[];
  see?: string;
  shortBio: string;
+ /**
+  * Where the short bio's facts are read from, named under it on his page
+  * ("Source: Sozomen, Ecclesiastical History II.13 (1890)"). From November
+  * 2026 a new saint's page carries no life of ours (the owner's "public-domain
+  * lives only"): its Life is a witness's own words, as a work, and the page
+  * holds only the plain facts and this line saying where they come from
+  * (docs/1.9-build/notes/november-saints.md). Older pages leave it unset.
+  */
+ entrySource?: string;
  life: string[];
  works: Work[];
  /**
@@ -547,6 +556,14 @@ export const SAINTS: Saint[] = [
  blurb:
  "Athanasius's life of his friend St. Anthony the Great: the call of the Gospel, the long warfare in the tombs and the desert, and the wisdom by which the desert was made a city. The book that carried monasticism across the world.",
  topics: ["Monasticism", "Asceticism", "Spiritual Warfare", "Desert", "Prayer"],
+ },
+ ],
+ disciples: [
+ {
+ slug: "frumentius-of-axum",
+ relation: "Made bishop by him",
+ blurb:
+ "Frumentius came to Alexandria and asked St. Athanasius to send a bishop to the people he had begun to teach the faith. Athanasius made Frumentius himself their bishop and sent him back (Socrates, Church History I.19).",
  },
  ],
  },
@@ -4502,6 +4519,14 @@ export const SAINTS: Saint[] = [
       "He was granted a vision of the Mother of God, who came to him with the apostles and promised her protection over his house. He reposed on the twenty-fifth of September, 1392, having foretold the day. His relics were found incorrupt and remain at the Holy Trinity and St. Sergius Lavra, the heart of the Russian Church. The Church keeps his memory on the twenty-fifth of September and the uncovering of his relics on the fifth of July.",
     ],
     works: [],
+    disciples: [
+      {
+        slug: "nikon-of-radonezh",
+        relation: "Disciple, and hegumen after him",
+        blurb:
+          "A disciple of St. Sergius and hegumen of the Trinity Lavra. Building its stone church of the Holy Trinity after the invasion of Edigei, he found St. Sergius's relics and laid them in it (Mouravieff, 1842).",
+      },
+    ],
   },
   {
     slug: "nicholas-cabasilas",
@@ -5852,6 +5877,964 @@ export const SAINTS: Saint[] = [
       "He is commemorated on the twenty-sixth of November. The calendar note carried in this app places his death in 640; the older reference works are less precise and say only that he belongs to the seventh century, so the year is not stated here as settled.",
     ],
     works: [],
+  },
+
+  // November's saints (1.9; docs/1.9-build/notes/november-saints.md and
+  // docs/editorial/menologion-month.md). No life of ours: each page holds a
+  // short entry of plain facts, `entrySource` naming where they are read, and,
+  // where a witness wrote of the saint, the witness's own words as a work.
+  // Held to that by lib/saints/__tests__/menologionMonth.test.ts.
+
+  {
+    slug: "cosmas-and-damian-of-asia",
+    iconUrl: "/saints/icons/cosmas-and-damian-of-asia.jpg",
+    name: "Sts. Cosmas and Damian of Asia",
+    epithet: "Unmercenary physicians · Sons of St. Theodota",
+    feastDays: ["November 1"],
+    see: "(physicians)",
+    pronoun: "his",
+    shortBio:
+      "Brothers and physicians who took no fees for their healing, the sons of Theodota. The Greek Church keeps three pairs of brothers of these names, each on its own day; these are the pair of November 1, and, unlike the other two, they are not numbered among the martyrs.",
+    entrySource:
+      "A Dictionary of Christian Biography I (1877), under Cosmas and Damianus",
+    life: [],
+    works: [],
+  },
+
+  {
+    slug: "theodota-mother-of-the-unmercenaries",
+    name: "St. Theodota",
+    epithet: "Mother of the Unmercenaries Cosmas and Damian of Asia",
+    feastDays: ["November 1"],
+    see: "(laywoman)",
+    pronoun: "her",
+    shortBio:
+      "Named in the old sources only as the mother of Sts. Cosmas and Damian of Asia, the unmercenary physicians kept on the same day.",
+    entrySource:
+      "A Dictionary of Christian Biography I (1877), under Cosmas and Damianus; the Church's calendar, November 1",
+    life: [],
+    works: [],
+  },
+
+  {
+    slug: "acindynus-and-companions",
+    name: "Sts. Acindynus and Companions",
+    epithet: "Martyrs of Persia · Acindynus, Pegasius, Aphthonius, Elpidephorus and Anempodistus",
+    reposed: "4th century, under Sapor II (Persia)",
+    feastDays: ["November 2"],
+    see: "(martyrs)",
+    pronoun: "his",
+    shortBio:
+      "Acindynus, Pegasius, Aphthonius, Elpidephorus and Anempodistus, Christians of Persia put to death under King Sapor II. Elpidephorus, a Persian of senatorial rank, was won to the faith by the constancy of Acindynus, Pegasius and Anempodistus, and was tortured and beheaded; the Greek account of their passion makes all or nearly all of them priests or clerics.",
+    entrySource:
+      "The Book of Saints (1921), under Acindynus, Pegasius, &c.; A Dictionary of Christian Biography II (1880), under Elpidephorus (1)",
+    life: [],
+    works: [],
+  },
+
+  {
+    slug: "marcian-of-cyrrhus",
+    name: "St. Marcian of Cyrrhus",
+    epithet: "Hermit of the desert of Chalcis in Syria",
+    born: "Cyrrhus in Syria",
+    reposed: "c. 387 (the desert of Chalcis, Syria)",
+    feastDays: ["November 2"],
+    see: "(hermit)",
+    pronoun: "his",
+    shortBio:
+      "A hermit of the desert of Chalcis in Syria, a native of Cyrrhus, who left the imperial court for the desert. He died about 387 and, as he had asked, was buried in secret; his tomb was found later and became a place of pilgrimage. Theodoret wrote of him.",
+    entrySource:
+      "The Book of Saints (1921), under Marcian; A Dictionary of Christian Biography III (1882), under Marcianus (3)",
+    life: [],
+    works: [],
+  },
+
+  {
+    slug: "acepsimas-joseph-and-aithalas",
+    name: "Sts. Acepsimas, Joseph and Aithalas",
+    epithet: "Martyrs of Persia under King Sapor",
+    reposed: "4th century, in the persecution of Sapor II (Persia)",
+    feastDays: ["November 3"],
+    see: "(martyrs)",
+    pronoun: "his",
+    shortBio:
+      "Acepsimas, a bishop in Persia, who died under torture by the Magi rather than worship the sun, in the persecution of King Sapor; Sozomen tells of him and of the presbyter Aithalas, whose arms were torn from his shoulders. The Church keeps Joseph's memory with theirs.",
+    entrySource:
+      "Sozomen, Ecclesiastical History II.13 (NPNF II 2, 1890); the Church's calendar, November 3",
+    life: [],
+    works: [
+      {
+        slug: "life-of-acepsimas",
+        title: "The Martyrdom of Sts. Acepsimas and Aithalas",
+        subtitle: "As Sozomen tells it",
+        year: "c. 440",
+        blurb:
+          "Sozomen's account of the bishop Acepsimas and the presbyter Aithalas, tortured by the Magi under King Sapor for refusing to worship the sun. In the public-domain English of 1890.",
+        topics: ["Martyrdom", "Persecution"],
+      },
+    ],
+  },
+
+  {
+    slug: "joannicius-the-great",
+    iconUrl: "/saints/icons/joannicius-the-great.jpg",
+    name: "St. Joannicius the Great",
+    epithet: "Hermit of Mount Olympus in Bithynia · Opponent of the iconoclasts",
+    born: "Bithynia",
+    reposed: "846 (Mount Antides, Bithynia)",
+    feastDays: ["November 4"],
+    see: "(hermit)",
+    pronoun: "his",
+    shortBio:
+      "A native of Bithynia who served as a soldier, then became a hermit near Mount Olympus, and an opponent of the iconoclasts. In old age he shut himself in a cell of the monastery of Mount Antides, and he died in 846.",
+    entrySource:
+      "The Book of Saints (1921), under Joannicius; Baring-Gould, The Lives of the Saints XIII (1897), S. Joannicus",
+    life: [],
+    works: [],
+  },
+
+  {
+    slug: "nicander-and-hermas",
+    name: "Sts. Nicander and Hermas",
+    epithet: "Hieromartyrs of Myra in Lycia",
+    reposed: "Date uncertain (Myra in Lycia)",
+    feastDays: ["November 4"],
+    see: "(martyrs)",
+    pronoun: "his",
+    shortBio:
+      "Nicander, a bishop, and Hermas, a priest, who were put to death for the faith at Myra in Lycia. Their date is uncertain.",
+    entrySource:
+      "The Book of Saints (1921), under Nicander and Hermas",
+    life: [],
+    works: [],
+  },
+
+  {
+    slug: "patrobas-hermas-linus-gaius-and-philologus",
+    name: "Sts. Patrobas, Hermas and Companions",
+    epithet: "Apostles of the Seventy · Patrobas, Hermas, Linus, Gaius and Philologus",
+    reposed: "1st century",
+    feastDays: ["November 5"],
+    see: "(apostles of the Seventy)",
+    pronoun: "his",
+    shortBio:
+      "Patrobas, Hermas, Linus, Gaius and Philologus, five of the Seventy, whom St. Paul greets by name in his Epistle to the Romans and his Second Epistle to Timothy; of Linus, St. Irenaeus writes that the apostles committed to him the episcopate of the Church at Rome.",
+    entrySource:
+      "Romans 16:14-15 and 23, 2 Timothy 4:21 (King James Version); St. Irenaeus, Against Heresies III.3.3 (ANF 1, 1885)",
+    life: [],
+    works: [
+      {
+        slug: "their-names-in-scripture",
+        title: "Their Names in Scripture",
+        subtitle: "Where St. Paul names them, and St. Irenaeus and Eusebius on Linus",
+        year: "1st to 4th century",
+        blurb:
+          "The verses of St. Paul's letters that greet them by name, and St. Irenaeus and Eusebius on Linus, the first bishop of the Church at Rome after the apostles.",
+        topics: ["Scripture", "Mission", "Episcopate"],
+      },
+    ],
+  },
+
+  {
+    slug: "galaction-and-episteme",
+    name: "Sts. Galaction and Episteme",
+    epithet: "Martyrs of Emesa · Husband and wife",
+    reposed: "3rd century (Emesa in Phoenicia)",
+    feastDays: ["November 5"],
+    see: "(martyrs)",
+    pronoun: "his",
+    shortBio:
+      "A husband and wife of Emesa in Phoenicia. Galaction baptized his wife Episteme; both entered monasteries, and both confessed the faith at Emesa and were martyred there, in the third century.",
+    entrySource:
+      "The Book of Saints (1921), under Galation (Galacteon) and Epistemis; A Dictionary of Christian Biography II (1880), under Galacteon",
+    life: [],
+    works: [],
+  },
+
+  {
+    slug: "paul-the-confessor",
+    iconUrl: "/saints/icons/paul-the-confessor.jpg",
+    name: "St. Paul the Confessor",
+    epithet: "Archbishop of Constantinople · Confessor against the Arians",
+    reposed: "c. 350, strangled in exile (Cucusus in Cappadocia)",
+    feastDays: ["November 6"],
+    see: "Constantinople",
+    pronoun: "his",
+    shortBio:
+      "Bishop of Constantinople in the years of the Arian struggle, driven from his see again and again and as often restored, until he was strangled in exile at Cucusus in Cappadocia, as St. Athanasius and Socrates record.",
+    entrySource:
+      "Socrates, Ecclesiastical History II.6 to II.26 (NPNF II 2, 1890); St. Athanasius, History of the Arians 7 (NPNF II 4, 1892)",
+    life: [],
+    works: [
+      {
+        slug: "life-of-paul-the-confessor",
+        title: "The Life of St. Paul the Confessor",
+        subtitle: "From Socrates and St. Athanasius",
+        year: "c. 357 to 440",
+        blurb:
+          "Socrates's chapters on his election, his exiles and his returns, and the Council of Sardica that restored him, with St. Athanasius on his death at Cucusus. In the public-domain English of 1890 and 1892.",
+        topics: ["Arianism", "Martyrdom", "Episcopate", "Persecution"],
+      },
+    ],
+  },
+
+  {
+    slug: "varlaam-of-khutyn",
+    iconUrl: "/saints/icons/varlaam-of-khutyn.jpg",
+    name: "St. Varlaam of Khutyn",
+    epithet: "Founder of the Khutyn monastery · Novgorod",
+    reposed: "12th century (Khutyn, near Novgorod)",
+    feastDays: ["November 6"],
+    see: "(monk of Novgorod)",
+    pronoun: "his",
+    shortBio:
+      "Aleksa Mikhalevits, a monk of Novgorod under the name Varlaam, who in 1192 built the church of the Transfiguration of the Saviour at Khutyn, which Vladyka Gavrilo of Novgorod consecrated, and so founded the monastery there.",
+    entrySource:
+      "The Chronicle of Novgorod, A.D. 1192 (tr. 1914)",
+    life: [],
+    works: [
+      {
+        slug: "life-of-varlaam",
+        title: "St. Varlaam in the Chronicle of Novgorod",
+        subtitle: "The founding of Khutyn, 1192",
+        year: "12th century",
+        blurb:
+          "The Chronicle of Novgorod's entry for 1192 on the monk Varlam and the church he built at Khutin. In the public-domain English of 1914.",
+        topics: ["Monasticism"],
+      },
+    ],
+  },
+
+  {
+    slug: "martyrs-of-melitene",
+    name: "The Thirty-three Martyrs of Melitene",
+    epithet: "Hiero, Hesychius, Nicander and their companions",
+    reposed: "Early 4th century, under Diocletian (Melitene in Armenia)",
+    feastDays: ["November 7"],
+    see: "(martyrs)",
+    pronoun: "his",
+    shortBio:
+      "Thirty-three Christians of Armenia, Hiero, Hesychius and Nicander among them, who were martyred at Melitene in the persecution of Diocletian, in the first years of the fourth century.",
+    entrySource:
+      "The Book of Saints (1921), under Hiero, Nicander, Hesychius and Others; A Dictionary of Christian Biography III (1882), under Hesychius (16)",
+    life: [],
+    works: [],
+  },
+
+  {
+    slug: "lazarus-of-galesion",
+    name: "St. Lazarus of Mount Galesion",
+    epithet: "The Wonderworker",
+    reposed: "1053",
+    feastDays: ["November 7"],
+    see: "(monk)",
+    pronoun: "his",
+    shortBio:
+      "A monk of Mount Galesion, called the Wonderworker, who reposed in 1053. The Church keeps his memory on November 7.",
+    entrySource:
+      "The Church's calendar, November 7",
+    life: [],
+    works: [],
+  },
+
+  {
+    slug: "onesiphorus-and-porphyrius",
+    name: "Sts. Onesiphorus and Porphyrius",
+    epithet: "Apostle of the Seventy, and martyr",
+    reposed: "1st century",
+    feastDays: ["November 9"],
+    see: "(martyrs)",
+    pronoun: "his",
+    shortBio:
+      "Onesiphorus, of whom St. Paul wrote that he often refreshed him, was not ashamed of his chain, and sought him out diligently at Rome; and Porphyrius, whom the Church keeps with him.",
+    entrySource:
+      "2 Timothy 1:16-18 and 4:19 (King James Version); the Church's calendar, November 9",
+    life: [],
+    works: [
+      {
+        slug: "onesiphorus-in-scripture",
+        title: "St. Onesiphorus in Scripture",
+        subtitle: "Where St. Paul writes of him",
+        year: "1st century",
+        blurb:
+          "The verses of St. Paul's Second Epistle to Timothy that tell of Onesiphorus and his house.",
+        topics: ["Scripture", "Love"],
+      },
+    ],
+  },
+
+  {
+    slug: "matrona-of-constantinople",
+    name: "St. Matrona of Constantinople",
+    epithet: "Matrona of Perga · Nun",
+    born: "Perga in Pamphylia",
+    reposed: "5th century, at the age of a hundred",
+    feastDays: ["November 9"],
+    see: "(nun)",
+    pronoun: "her",
+    shortBio:
+      "Born at Perga in Pamphylia, she married a nobleman named Domitian and moved with her household to Constantinople. She was received into the monastery of St. Bassianus under the name of Babylas, and after her husband's death she returned to Constantinople. She died in the fifth century, at the age of a hundred.",
+    entrySource:
+      "Agnes B. C. Dunbar, A Dictionary of Saintly Women II (1905), under Matrona (18); the Church's calendar, November 9",
+    life: [],
+    works: [],
+  },
+
+  {
+    slug: "erastus-olympas-rodion-sosipater-quartus-and-tertius",
+    name: "Sts. Erastus, Olympas and Companions",
+    epithet: "Apostles of the Seventy · Erastus, Olympas, Rodion, Sosipater, Quartus and Tertius",
+    reposed: "1st century",
+    feastDays: ["November 10"],
+    see: "(apostles of the Seventy)",
+    pronoun: "his",
+    shortBio:
+      "Six of the Seventy, helpers of St. Paul whom the Acts and his letters name: Erastus, whom he sent into Macedonia; Tertius, who wrote the Epistle to the Romans; and Olympas, Rodion, Sosipater and Quartus, whom he greets or sends greeting from.",
+    entrySource:
+      "Acts 19:22, Romans 16:11 to 23 and 2 Timothy 4:20 (King James Version)",
+    life: [],
+    works: [
+      {
+        slug: "their-names-in-scripture",
+        title: "Their Names in Scripture",
+        subtitle: "Where the Acts and St. Paul name them",
+        year: "1st century",
+        blurb:
+          "The verses of the Acts of the Apostles and of St. Paul's letters that name them.",
+        topics: ["Scripture", "Mission"],
+      },
+    ],
+  },
+
+  {
+    slug: "arsenius-of-cappadocia",
+    name: "St. Arsenius of Cappadocia",
+    epithet: "Priest of Pharasa · Wonderworker",
+    born: "Pharasa in Cappadocia",
+    reposed: "November 10, 1924 (Corfu)",
+    feastDays: ["November 10"],
+    see: "(priest of Pharasa)",
+    pronoun: "his",
+    shortBio:
+      "A priest of Pharasa in Cappadocia, who led his parish to Greece in the exchange of populations between Greece and Turkey and died on Corfu on November 10, 1924. The Patriarchate of Constantinople glorified him in 1986; his relics are at the monastery of Souroti, near Thessalonica.",
+    entrySource:
+      "Ancient Faith Ministries, Saint of the Day, November 10; Wikipedia, Arsenios the Cappadocian",
+    life: [],
+    works: [],
+  },
+
+  {
+    slug: "menas-of-egypt",
+    iconUrl: "/saints/icons/menas-of-egypt.jpg",
+    name: "St. Menas of Egypt",
+    epithet: "Great-martyr · Egyptian soldier",
+    reposed: "Between 296 and 304 (Cotyaeum in Phrygia)",
+    feastDays: ["November 11"],
+    see: "(soldier)",
+    pronoun: "his",
+    shortBio:
+      "An Egyptian, an officer of the imperial army in Asia Minor, who declared himself a Christian at Cotyaeum in Phrygia and was put to death there. His body was buried in Egypt, and a church was built over his grave.",
+    entrySource:
+      "The Book of Saints (1921), under Mennas; Baring-Gould, The Lives of the Saints XIII (1897), S. Mennas",
+    life: [],
+    works: [],
+  },
+
+  {
+    slug: "theodore-the-studite",
+    iconUrl: "/saints/icons/theodore-the-studite.jpg",
+    name: "St. Theodore the Studite",
+    epithet: "Abbot of the Studion · Confessor for the holy icons",
+    born: "759",
+    reposed: "November 11, 826 (the peninsula of St. Tryphon, Bithynia)",
+    feastDays: ["November 11"],
+    see: "(abbot)",
+    pronoun: "his",
+    shortBio:
+      "Abbot of the Studion in Constantinople, from which he takes his name. Born in 759, he was trained at Saccudium under his uncle Plato and succeeded him as abbot there in 794. When the emperor Leo the Armenian moved against the holy icons, Theodore led the monks' resistance. He was exiled four times, and died in exile on November 11, 826.",
+    entrySource:
+      "A Dictionary of Christian Biography IV (1887), under Theodorus (82) Studita; Baring-Gould, The Lives of the Saints XIII (1897), S. Theodore of the Studium",
+    life: [],
+    works: [],
+  },
+
+  {
+    slug: "maximus-of-moscow",
+    iconUrl: "/saints/icons/maximus-of-moscow.jpg",
+    name: "Blessed Maximus of Moscow",
+    epithet: "Fool for Christ",
+    reposed: "1434 (Moscow)",
+    feastDays: ["November 11"],
+    see: "(fool for Christ)",
+    pronoun: "his",
+    shortBio:
+      "Blessed Maximus, fool for Christ at Moscow, who reposed in 1434. The Church keeps his memory on November 11.",
+    entrySource:
+      "The Church's calendar, November 11",
+    life: [],
+    works: [],
+  },
+
+  {
+    slug: "john-the-merciful",
+    iconUrl: "/saints/icons/john-the-merciful.jpg",
+    name: "St. John the Merciful",
+    byname: "The Almoner",
+    epithet: "Patriarch of Alexandria",
+    born: "Amathus in Cyprus",
+    reposed: "619 (Cyprus)",
+    feastDays: ["November 12"],
+    see: "Alexandria",
+    pronoun: "his",
+    shortBio:
+      "Patriarch of Alexandria from about 608, known as the Almoner and the Merciful. He was born at Amathus in Cyprus, the son of Epiphanius, governor of the island, and he died in Cyprus, his native island, in 619.",
+    entrySource:
+      "The Book of Saints (1921), under John the Almoner; A Dictionary of Christian Biography III (1882), under Joannes (15)",
+    life: [],
+    works: [],
+  },
+
+  {
+    slug: "nilus-of-sinai",
+    iconUrl: "/saints/icons/nilus-of-sinai.jpg",
+    name: "St. Nilus of Sinai",
+    epithet: "Ascetic of Sinai · Once prefect of Constantinople",
+    reposed: "c. 430 or later",
+    feastDays: ["November 12"],
+    see: "(monk)",
+    pronoun: "his",
+    shortBio:
+      "An ascetic of Sinai, probably born in Galatia, who had been prefect of Constantinople. About 390 he left for Sinai with his son Theodulus. He died about 430 or later, and the emperor Justin II afterwards brought his body to Constantinople.",
+    entrySource:
+      "A Dictionary of Christian Biography IV (1887), under Nilus (3); The Book of Saints (1921), under Nilus; Baring-Gould, The Lives of the Saints XIII (1897), S. Nilus",
+    life: [],
+    works: [],
+  },
+
+  {
+    slug: "gurias-samonas-and-habib",
+    name: "Sts. Gurias, Samonas and Habib",
+    epithet: "Confessors of Edessa",
+    reposed: "4th century (Edessa)",
+    feastDays: ["November 15"],
+    see: "(martyrs of Edessa)",
+    pronoun: "his",
+    shortBio:
+      "Shamuna and Guria of Edessa, and Habib, a deacon of that city, who would not sacrifice to the gods and were put to death at Edessa in the persecutions of the early fourth century; the Acts of their trials and deaths are kept in Syriac and in Greek.",
+    entrySource:
+      "The Martyrdom of Shamuna, Guria and Habib, and the Martyrdom of Habib the Deacon (ANF 8, 1886)",
+    life: [],
+    works: [
+      {
+        slug: "acts-of-gurias-samonas-and-habib",
+        title: "The Martyrdom of Sts. Gurias, Samonas and Habib",
+        subtitle: "The Acts of the confessors of Edessa",
+        year: "4th to 10th century",
+        blurb:
+          "The Acts of their trials before the governors of Edessa and of their deaths: Simeon Metaphrastes's account of the three, and the Syriac Martyrdom of Habib the Deacon. In the public-domain English of 1886.",
+        topics: ["Martyrdom", "Persecution"],
+      },
+    ],
+  },
+
+  {
+    slug: "gregory-the-wonderworker",
+    name: "St. Gregory the Wonderworker",
+    byname: "Thaumaturgus",
+    epithet: "Bishop of Neocaesarea · Disciple of Origen",
+    reposed: "3rd century (Neocaesarea in Pontus)",
+    feastDays: ["November 17"],
+    see: "Neocaesarea",
+    pronoun: "his",
+    shortBio:
+      "Theodorus, afterwards called Gregory, of Pontus, who studied five years under Origen at Caesarea and became bishop of Neocaesarea, famous, St. Jerome writes, for the signs and wonders he worked as bishop; St. Basil numbers him with the apostles and prophets.",
+    entrySource:
+      "Eusebius, Church History VI.30 (NPNF II 1, 1890); St. Jerome, Lives of Illustrious Men 65 (NPNF II 3, 1892); St. Basil, On the Holy Spirit 74 (NPNF II 8, 1895)",
+    life: [],
+    works: [
+      {
+        slug: "life-of-gregory-the-wonderworker",
+        title: "The Life of St. Gregory Thaumaturgus",
+        subtitle: "From Eusebius, St. Jerome and St. Basil",
+        year: "c. 325 to 392",
+        blurb:
+          "Eusebius on Origen's pupil and the bishop of Pontus, St. Jerome's chapter on him, and St. Basil's praise of the great Gregory in On the Holy Spirit. In the public-domain English of 1890 to 1895.",
+        topics: ["Episcopate", "Tradition", "Miracles"],
+      },
+    ],
+  },
+
+  {
+    slug: "nikon-of-radonezh",
+    name: "St. Nikon of Radonezh",
+    epithet: "Hegumen of the Trinity Lavra · Disciple of St. Sergius",
+    reposed: "1426",
+    feastDays: ["November 17"],
+    see: "(abbot)",
+    pronoun: "his",
+    shortBio:
+      "A disciple of St. Sergius of Radonezh, and hegumen of the Trinity Lavra after him. Building its stone church of the Holy Trinity after the invasion of Edigei, he found St. Sergius's relics and laid them in it. His feast was among those confirmed by the council of 1551.",
+    entrySource:
+      "A. N. Mouravieff, A History of the Church of Russia, tr. R. W. Blackmore (1842), pp. 68 and 103-104; the Church's calendar, November 17",
+    life: [],
+    works: [],
+  },
+
+  {
+    slug: "plato-and-romanus",
+    name: "Sts. Plato and Romanus",
+    epithet: "Martyrs",
+    reposed: "Early 4th century, in the Great Persecution",
+    feastDays: ["November 18"],
+    see: "(martyrs)",
+    pronoun: "his",
+    shortBio:
+      "Romanus, a deacon and exorcist of Caesarea in Palestine, who rebuked those sacrificing to the idols at Antioch, had his tongue cut out, and was strangled in the stocks in the first year of the Great Persecution, as Eusebius records; and Plato, a martyr whom the Church keeps on the same day.",
+    entrySource:
+      "Eusebius, The Martyrs of Palestine 2 (NPNF II 1, 1890); the Church's calendar, November 18",
+    life: [],
+    works: [
+      {
+        slug: "martyrdom-of-romanus",
+        title: "The Martyrdom of St. Romanus",
+        subtitle: "As Eusebius tells it",
+        year: "c. 311",
+        blurb:
+          "Eusebius's chapter on Romanus, the deacon of Caesarea who rebuked those sacrificing at Antioch, lost his tongue, and was strangled in the stocks. In the public-domain English of 1890.",
+        topics: ["Martyrdom", "Persecution"],
+      },
+    ],
+  },
+
+  {
+    slug: "zacchaeus-and-alphaeus",
+    name: "Sts. Zacchaeus and Alphaeus",
+    epithet: "Martyrs of Caesarea in Palestine",
+    reposed: "303 (Caesarea in Palestine)",
+    feastDays: ["November 18"],
+    see: "(martyrs)",
+    pronoun: "his",
+    shortBio:
+      "The two whom Eusebius counts as crowned martyrs among all who suffered at Caesarea in the first months of the Great Persecution: after scourging, the rack and the stocks, they confessed one God and Christ Jesus as king, and were beheaded.",
+    entrySource:
+      "Eusebius, The Martyrs of Palestine 1 (NPNF II 1, 1890)",
+    life: [],
+    works: [
+      {
+        slug: "martyrdom-of-zacchaeus-and-alphaeus",
+        title: "The Martyrdom of Sts. Zacchaeus and Alphaeus",
+        subtitle: "As Eusebius tells it",
+        year: "c. 311",
+        blurb:
+          "Eusebius on the first martyrs of Caesarea in the persecution of 303: the many who were broken, and the two who were beheaded for confessing one God and Christ Jesus as king. In the public-domain English of 1890.",
+        topics: ["Martyrdom", "Persecution"],
+      },
+    ],
+  },
+
+  {
+    slug: "prophet-obadiah",
+    name: "The Prophet Obadiah",
+    byname: "Abdias",
+    epithet: "One of the Twelve Minor Prophets",
+    feastDays: ["November 19"],
+    see: "(prophet)",
+    pronoun: "his",
+    shortBio:
+      "One of the Twelve, whose short prophecy against Edom, for its violence against his brother Jacob, ends with the word that the kingdom shall be the Lord's.",
+    entrySource:
+      "The Book of Obadiah, in Brenton's Septuagint (1851)",
+    life: [],
+    works: [
+      {
+        slug: "the-vision-of-obadiah",
+        title: "The Vision of Obadiah",
+        subtitle: "His prophecy, whole",
+        year: "Before Christ",
+        blurb:
+          "The whole of his prophecy, twenty-one verses, as the Septuagint gives it in Brenton's English.",
+        topics: ["Scripture", "Prophecy", "Repentance"],
+      },
+    ],
+  },
+
+  {
+    slug: "barlaam-and-josaphat",
+    name: "Sts. Barlaam and Josaphat of India",
+    epithet: "Barlaam the monk · Josaphat (Ioasaph), son of King Abenner",
+    feastDays: ["November 19"],
+    see: "(monks)",
+    pronoun: "his",
+    shortBio:
+      "Barlaam, a monk and priest of the wilderness of Senaar, and Ioasaph, son of Abenner, a king of India who persecuted the Christians. In the Greek book Barlaam and Ioasaph, Barlaam comes to the prince disguised as a merchant and teaches him the faith; Abenner too becomes a Christian before his death, and Ioasaph gives the throne to Barachias and goes into the desert.",
+    entrySource:
+      "Barlaam and Ioasaph, ascribed to St. John of Damascus, tr. G. R. Woodward and H. Mattingly (Loeb Classical Library, 1914)",
+    life: [],
+    works: [],
+  },
+
+  {
+    slug: "proclus-of-constantinople",
+    name: "St. Proclus of Constantinople",
+    epithet: "Archbishop of Constantinople",
+    reposed: "5th century (Constantinople)",
+    feastDays: ["November 20"],
+    see: "Constantinople",
+    pronoun: "his",
+    shortBio:
+      "A reader from his youth and secretary to Atticus, bishop of Constantinople, ordained bishop of Cyzicus but refused by its people, and at last made Archbishop of Constantinople, where he brought home the body of St. John Chrysostom and laid it in the Church of the Apostles.",
+    entrySource:
+      "Socrates, Ecclesiastical History VII.28, 40, 41 and 45 (NPNF II 2, 1890)",
+    life: [],
+    works: [
+      {
+        slug: "life-of-proclus",
+        title: "The Life of St. Proclus",
+        subtitle: "As Socrates tells it",
+        year: "c. 440",
+        blurb:
+          "Socrates's chapters on Proclus: his ordination to Cyzicus, his election at Constantinople, his gentleness, and the bringing home of St. John Chrysostom's body. In the public-domain English of 1890.",
+        topics: ["Episcopate", "Unity"],
+      },
+    ],
+  },
+
+  {
+    slug: "gregory-of-decapolis",
+    name: "St. Gregory of Decapolis",
+    epithet: "Confessor under the iconoclasts",
+    born: "Irenopolis, in the Decapolis of Isauria",
+    reposed: "Soon after 820",
+    feastDays: ["November 20"],
+    see: "(monk)",
+    pronoun: "his",
+    shortBio:
+      "A confessor of the ninth century who suffered in the iconoclast persecution, named from his birthplace, Irenopolis, one of the cities of the Isaurian Decapolis. He died soon after 820, the year of the emperor Leo V's death, and his pupil Joseph the Hymnographer built a monastery to hold his body.",
+    entrySource:
+      "A Dictionary of Christian Biography II (1880), under Gregorius Decapolites; The Book of Saints (1921), under Gregory Decapolites",
+    life: [],
+    works: [],
+  },
+
+  {
+    slug: "philemon-and-apphia",
+    name: "Sts. Philemon and Apphia",
+    epithet: "Apostles of the Seventy",
+    reposed: "1st century",
+    feastDays: ["November 22"],
+    see: "(apostles of the Seventy)",
+    pronoun: "his",
+    shortBio:
+      "Philemon, St. Paul's dearly beloved and fellowlabourer, to whom, with Apphia, Archippus and the church in his house, the Apostle wrote the letter asking him to receive Onesimus no longer as a servant, but as a brother beloved.",
+    entrySource:
+      "The Epistle to Philemon, and Colossians 4:9 and 17 (King James Version)",
+    life: [],
+    works: [
+      {
+        slug: "the-epistle-to-philemon",
+        title: "The Epistle to Philemon",
+        subtitle: "St. Paul's letter to Philemon, Apphia and Archippus",
+        year: "1st century",
+        blurb:
+          "The whole of the letter written to them, and the two verses of the Epistle to the Colossians that name Onesimus and Archippus again.",
+        topics: ["Scripture", "Love", "Repentance"],
+      },
+    ],
+  },
+
+  {
+    slug: "michael-of-tver",
+    name: "St. Michael of Tver",
+    epithet: "Right-believing Prince · Martyr in the Horde",
+    reposed: "1318, in the Horde (the Chronicle of Novgorod enters it under 1319)",
+    feastDays: ["November 22"],
+    see: "(prince of Tver)",
+    pronoun: "his",
+    shortBio:
+      "Prince of Tver and Grand Prince, put to death in the Horde through the intrigues of Yuri of Moscow; the Church, Mouravieff writes, added him to the number of the saints as a martyr.",
+    entrySource:
+      "The Chronicle of Novgorod, A.D. 1319 (tr. 1914); A. N. Mouravieff, A History of the Church of Russia (tr. 1842)",
+    life: [],
+    works: [
+      {
+        slug: "life-of-michael-of-tver",
+        title: "The Martyrdom of St. Michael of Tver",
+        subtitle: "In the Chronicle of Novgorod and in Mouravieff",
+        year: "14th to 19th century",
+        blurb:
+          "The Chronicle of Novgorod's notice of his death in the Horde, and Mouravieff on the martyrdom of the prince and the fall of his house. In the public-domain English of 1914 and 1842.",
+        topics: ["Martyrdom"],
+      },
+    ],
+  },
+
+  {
+    slug: "amphilochius-of-iconium",
+    name: "St. Amphilochius of Iconium",
+    epithet: "Bishop of Iconium",
+    reposed: "Late 4th century (Iconium)",
+    feastDays: ["November 23"],
+    see: "Iconium",
+    pronoun: "his",
+    shortBio:
+      "Bishop of Iconium, who taught the emperor Theodosius, by slighting his son before him, how the Son is to be honoured with the Father; St. Jerome heard him read his book On the Holy Spirit.",
+    entrySource:
+      "Theodoret, Ecclesiastical History V.16, and St. Jerome, Lives of Illustrious Men 133 (NPNF II 3, 1892)",
+    life: [],
+    works: [
+      {
+        slug: "life-of-amphilochius",
+        title: "The Life of Amphilochius",
+        subtitle: "From Theodoret and St. Jerome",
+        year: "c. 392 to 450",
+        blurb:
+          "Theodoret's account of the bishop who would not greet the emperor's son as he greeted the emperor, and St. Jerome's note of his book On the Holy Spirit. In the public-domain English of 1892.",
+        topics: ["Trinity", "Holy Spirit", "Arianism"],
+      },
+    ],
+  },
+
+  {
+    slug: "alexander-nevsky",
+    name: "St. Alexander Nevsky",
+    epithet: "Right-believing Prince · Of Novgorod and Vladimir",
+    reposed: "November 14, 1263 (Gorodets)",
+    feastDays: ["November 23"],
+    see: "(prince)",
+    pronoun: "his",
+    shortBio:
+      "Prince of Novgorod, who beat the Swedes on the Neva in 1240 and the Germans on the ice of Lake Chud in 1242, turned the papal legates away, and coming home from the Horde took the monastic habit and died the same night, November 14, 1263; he was buried at Vladimir on the day of St. Amphilochius.",
+    entrySource:
+      "The Chronicle of Novgorod, A.D. 1240, 1242 and 1263 (tr. 1914); A. N. Mouravieff, A History of the Church of Russia (tr. 1842)",
+    life: [],
+    works: [
+      {
+        slug: "life-of-alexander-nevsky",
+        title: "St. Alexander Nevsky in the Chronicle of Novgorod",
+        subtitle: "The Neva, the ice, and his last day, with Mouravieff",
+        year: "13th to 19th century",
+        blurb:
+          "The Chronicle of Novgorod's entries for the battle on the Neva, the battle on the ice and his death, and Mouravieff on the legates he refused and the habit he took at the hour of death. In the public-domain English of 1914 and 1842.",
+        topics: ["Faith", "Courage"],
+      },
+    ],
+  },
+
+  {
+    slug: "clement-of-rome",
+    name: "St. Clement of Rome",
+    epithet: "Pope of Rome · Hieromartyr",
+    reposed: "In the third year of Trajan",
+    feastDays: ["November 24"],
+    see: "Rome",
+    pronoun: "his",
+    shortBio:
+      "The third bishop of Rome after the apostles, who had seen them and had their preaching still in his ears, St. Irenaeus writes; in his time the Church of Rome sent the Corinthians the letter that bears his name.",
+    entrySource:
+      "St. Irenaeus, Against Heresies III.3.3 (ANF 1, 1885); Eusebius, Church History III.15 and III.34 (NPNF II 1, 1890); St. Jerome, Lives of Illustrious Men 15 (NPNF II 3, 1892)",
+    life: [],
+    works: [
+      {
+        slug: "life-of-clement",
+        title: "The Life of St. Clement of Rome",
+        subtitle: "From St. Irenaeus, Eusebius and St. Jerome",
+        year: "c. 180 to 392",
+        blurb:
+          "St. Irenaeus on the bishops of Rome and Clement's letter, Eusebius's chapters on his episcopate and his epistle, and St. Jerome's chapter on him. In the public-domain English of 1885 to 1892.",
+        topics: ["Episcopate", "Tradition", "Unity"],
+      },
+    ],
+  },
+
+  {
+    slug: "peter-of-alexandria",
+    name: "St. Peter of Alexandria",
+    epithet: "Archbishop of Alexandria · Hieromartyr",
+    reposed: "311, beheaded (Alexandria)",
+    feastDays: ["November 24"],
+    see: "Alexandria",
+    pronoun: "his",
+    shortBio:
+      "Bishop of Alexandria for twelve years, less than three of them before the Great Persecution, eminent, Eusebius writes, for his life and his study of the Scriptures; in the ninth year of the persecution he was beheaded, as if by the command of Maximinus.",
+    entrySource:
+      "Eusebius, Church History VII.32.31 and IX.6.2 (NPNF II 1, 1890); The Genuine Acts of Peter (ANF 6, 1886)",
+    life: [],
+    works: [
+      {
+        slug: "life-of-peter-of-alexandria",
+        title: "The Life of St. Peter of Alexandria",
+        subtitle: "Eusebius, and the Genuine Acts of his martyrdom",
+        year: "c. 311 to 325, and after",
+        blurb:
+          "Eusebius's three notices of the bishop and martyr, and the Genuine Acts: his election, his strife with Meletius and Arius, his last night in prison and his death. In the public-domain English of 1886 and 1890.",
+        topics: ["Martyrdom", "Episcopate", "Persecution"],
+      },
+    ],
+  },
+
+  {
+    slug: "catherine-of-alexandria",
+    name: "St. Catherine of Alexandria",
+    epithet: "Great-martyr · Virgin of Alexandria",
+    reposed: "c. 307 to 310 (Alexandria)",
+    feastDays: ["November 25"],
+    see: "(virgin martyr)",
+    pronoun: "her",
+    shortBio:
+      "A maiden of Alexandria, rich, noble and learned, who confessed Christ there under the emperor Maximinus and was put to death, by tradition in 310. In the eighth or ninth century her body was taken to the monastery on Mount Sinai, where it is venerated.",
+    entrySource:
+      "The Book of Saints (1921), under Catharine; A Dictionary of Christian Biography I (1877), under Catharine; Baring-Gould, The Lives of the Saints XIV (1897), S. Catharine",
+    life: [],
+    works: [],
+  },
+
+  {
+    slug: "mercurius-of-caesarea",
+    name: "St. Mercurius of Caesarea",
+    epithet: "Great-martyr · Soldier",
+    reposed: "250 (Caesarea in Cappadocia)",
+    feastDays: ["November 25"],
+    see: "(soldier)",
+    pronoun: "his",
+    shortBio:
+      "An Armenian soldier who had risen to high rank in the imperial army, and who refused to take part in an idolatrous rite under the edict of Decius. He was tortured and beheaded in 250. Some of his relics are venerated in southern Italy.",
+    entrySource:
+      "The Book of Saints (1921), under Mercurius; Baring-Gould, The Lives of the Saints XIV (1897), S. Mercurius",
+    life: [],
+    works: [],
+  },
+
+  {
+    slug: "innocent-of-irkutsk",
+    name: "St. Innocent of Irkutsk",
+    epithet: "First Bishop of Irkutsk",
+    reposed: "18th century (Irkutsk)",
+    feastDays: ["November 26"],
+    see: "Irkutsk",
+    pronoun: "his",
+    shortBio:
+      "The first bishop of Irkutsk, named head of the spiritual mission to Peking, who laid there, Mouravieff writes, a good foundation for the Church, and was honoured for the holiness of his life and for the finding of his relics incorrupt.",
+    entrySource:
+      "A. N. Mouravieff, A History of the Church of Russia, pp. 280-281 (tr. 1842)",
+    life: [],
+    works: [
+      {
+        slug: "life-of-innocent-of-irkutsk",
+        title: "St. Innocent of Irkutsk in Mouravieff",
+        subtitle: "The first bishop of Irkutsk",
+        year: "19th century",
+        blurb:
+          "Mouravieff's lines on the first bishop of Irkutsk, his holiness and the finding of his relics. In the public-domain English of 1842.",
+        topics: ["Mission", "Episcopate"],
+      },
+    ],
+  },
+
+  {
+    slug: "james-the-persian",
+    name: "St. James the Persian",
+    byname: "Intercisus",
+    epithet: "Great-martyr · The one cut in pieces",
+    reposed: "November 27, 421 (Persia)",
+    feastDays: ["November 27"],
+    see: "(nobleman)",
+    pronoun: "his",
+    shortBio:
+      "A Persian nobleman who fell away from the faith under King Yezdegird, returned to it, and was martyred under King Varanes. He is called Intercisus, the one cut in pieces, because he was dismembered alive. He died on November 27, 421.",
+    entrySource:
+      "The Book of Saints (1921), under James Intercisus; Baring-Gould, The Lives of the Saints XIV (1897), S. James Intercisus",
+    life: [],
+    works: [],
+  },
+
+  {
+    slug: "stephen-the-new",
+    name: "St. Stephen the New",
+    epithet: "Venerable-martyr · Confessor for the holy icons",
+    reposed: "c. 764 (Constantinople)",
+    feastDays: ["November 28"],
+    see: "(monk)",
+    pronoun: "his",
+    shortBio:
+      "A monk who defended the holy icons under the emperor Constantine Copronymus, and was put to death after torture: a mob in Constantinople killed him with a club and tore his body apart, about 764.",
+    entrySource:
+      "A Dictionary of Christian Biography IV (1887), under Stephanus (51); Baring-Gould, The Lives of the Saints XIV (1897), S. Stephen the Younger",
+    life: [],
+    works: [],
+  },
+
+  {
+    slug: "irenarchus-and-the-seven-women",
+    name: "St. Irenarchus and the Seven Women",
+    epithet: "Martyrs of Sebaste",
+    reposed: "c. 303 (Sebaste in Armenia)",
+    feastDays: ["November 28"],
+    see: "(martyrs)",
+    pronoun: "his",
+    shortBio:
+      "At Sebaste in Armenia, in the persecution of Diocletian, seven Christian women died rather than offer incense. Irenarchus, whose office was to torture the martyrs, was won to Christ by their patience; he confessed Christ and was put to death with the priest Acacius.",
+    entrySource:
+      "The Book of Saints (1921), under Hirenarchus, Acacius and Others; A Dictionary of Christian Biography III (1882), under Irenarchus (1)",
+    life: [],
+    works: [],
+  },
+
+  {
+    slug: "paramonus-and-the-370",
+    name: "St. Paramonus and the 370 Martyrs",
+    epithet: "Martyrs under Decius",
+    reposed: "250, under Decius",
+    feastDays: ["November 29"],
+    see: "(martyrs)",
+    pronoun: "his",
+    shortBio:
+      "Paramonus and his companions, martyrs honored especially by the Greeks, who are said to have died on one day in the persecution of Decius, in 250. Baring-Gould counts them three hundred and seventy; the Book of Saints, three hundred and seventy-five.",
+    entrySource:
+      "The Book of Saints (1921), under Paramon and Others; Baring-Gould, The Lives of the Saints XIV (1897), November 29",
+    life: [],
+    works: [],
+  },
+
+  {
+    slug: "acacius-of-sinai",
+    name: "St. Acacius of Sinai",
+    epithet: "Monk of Sinai",
+    reposed: "6th century (Sinai)",
+    feastDays: ["November 29"],
+    see: "(monk)",
+    pronoun: "his",
+    shortBio:
+      "A monk of Sinai in the sixth century. St. John Climacus tells of his obedience to his elder in The Ladder. The Church keeps his memory on November 29.",
+    entrySource:
+      "St. John Climacus, The Ladder of Divine Ascent, Step 4; the Church's calendar, November 29",
+    life: [],
+    works: [],
+  },
+
+  {
+    slug: "frumentius-of-axum",
+    name: "St. Frumentius of Axum",
+    epithet: "Enlightener of Abyssinia · Bishop of Auxumis",
+    reposed: "4th century",
+    feastDays: ["November 30"],
+    see: "Axum",
+    pronoun: "his",
+    shortBio:
+      "A youth of Tyre, taken captive with his brother Edesius and brought up at the court of the king of that land, who gathered the Christians there and was consecrated their bishop by St. Athanasius at Alexandria.",
+    entrySource:
+      "Socrates, Ecclesiastical History I.19 (NPNF II 2, 1890); St. Athanasius, Apology to Constantius 29 (NPNF II 4, 1892)",
+    life: [],
+    works: [
+      {
+        slug: "life-of-frumentius",
+        title: "The Life of St. Frumentius",
+        subtitle: "From Socrates and St. Athanasius",
+        year: "c. 357 to 440",
+        blurb:
+          "Socrates's account of the captive youths of Tyre and the faith they brought to the far south, and St. Athanasius on the emperor's letter against Frumentius, Bishop of Auxumis. In the public-domain English of 1890 and 1892.",
+        topics: ["Mission", "Episcopate"],
+      },
+    ],
   },
 ];
 

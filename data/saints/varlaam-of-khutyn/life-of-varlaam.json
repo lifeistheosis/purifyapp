@@ -1,0 +1,20 @@
+{
+  "saint": "varlaam-of-khutyn",
+  "slug": "life-of-varlaam",
+  "title": "St. Varlaam in the Chronicle of Novgorod",
+  "subtitle": "The founding of Khutyn, 1192",
+  "source": "The Chronicle of Novgorod, A.D. 1192, p. 35, tr. Robert Michell and Nevill Forbes (The Chronicle of Novgorod, 1016-1471, Camden Third Series 25, London, 1914), public domain. Typed from the page images of archive.org's scan of the printing, read line by line, and compared word for word with the scan's text. The editions' footnotes and their marks are left out, and italics are set plain; the paragraphs are as printed. The section titles name the place in each book. The Chronicle spells his name Varlam and the place Khutin.",
+  "originalLanguage": "orv",
+  "sections": [
+    {
+      "n": 1,
+      "title": "The Chronicle of Novgorod, 1192",
+      "voice": "witness",
+      "voiceAuthor": "The Chronicle of Novgorod",
+      "citation": "The Chronicle of Novgorod, A.D. 1192, p. 35, tr. Robert Michell and Nevill Forbes (The Chronicle of Novgorod, 1016-1471, Camden Third Series 25, London, 1914)",
+      "paragraphs": [
+        "The same year the monk Varlam, whose secular name was Aleksa Mikhalevits, put up a church below at Khutin in the name of the Transfiguration of the Holy Saviour; and Vladyka Gavrilo consecrated it on the [day of that] festival, and named the monastery."
+      ]
+    }
+  ]
+}

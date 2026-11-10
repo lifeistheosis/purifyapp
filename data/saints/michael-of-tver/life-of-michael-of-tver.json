@@ -1,0 +1,30 @@
+{
+  "saint": "michael-of-tver",
+  "slug": "life-of-michael-of-tver",
+  "title": "The Martyrdom of St. Michael of Tver",
+  "subtitle": "In the Chronicle of Novgorod and in Mouravieff",
+  "source": "The Chronicle of Novgorod, A.D. 1319, p. 121, tr. Robert Michell and Nevill Forbes (The Chronicle of Novgorod, 1016-1471, Camden Third Series 25, London, 1914), and A. N. Mouravieff, A History of the Church of Russia, ch. IV, p. 51, tr. R. W. Blackmore (A. N. Mouravieff, A History of the Church of Russia, Oxford, 1842); public domain. Typed from the page images of archive.org's scan of the printing, read line by line, and compared word for word with the scan's text. The editions' footnotes and their marks are left out, and italics are set plain; the paragraphs are as printed. The section titles name the place in each book. The Chronicle of Novgorod enters his death under the year 1319 and calls him Knyaz Mikhail; Yuri (Mouravieff's Yury and George) is Yuri of Moscow.",
+  "originalLanguage": "orv",
+  "sections": [
+    {
+      "n": 1,
+      "title": "The Chronicle of Novgorod, 1319",
+      "voice": "witness",
+      "voiceAuthor": "The Chronicle of Novgorod",
+      "citation": "The Chronicle of Novgorod, A.D. 1319, p. 121, tr. Robert Michell and Nevill Forbes (The Chronicle of Novgorod, 1016-1471, Camden Third Series 25, London, 1914)",
+      "paragraphs": [
+        "A.D. 1319. A.M. 6827. The Tsar killed Knyaz Mikhail of Tver in the Horde and gave the title of Veliki Knyaz to Yuri, and gave over to him Mikhail's son Kostyantin and his Boyars."
+      ]
+    },
+    {
+      "n": 2,
+      "title": "A History of the Church of Russia, p. 51",
+      "voice": "witness",
+      "voiceAuthor": "A. N. Mouravieff",
+      "citation": "A. N. Mouravieff, A History of the Church of Russia, ch. IV, p. 51, tr. R. W. Blackmore (A. N. Mouravieff, A History of the Church of Russia, Oxford, 1842)",
+      "paragraphs": [
+        "First, Michael himself, by the intrigues of Yury, suffered the death of a martyr, and was added by the Church to the number of the saints; then his son Demetrius fell, after having himself struck down Yury, the murderer of his father, in the very presence of the khan Usbek; and lastly, another son of Michael, Alexander, with his boy Theodore, was executed by order of the same khan, for having dared to put to death at Tver, Shefkal, one of his nobles, and the Tartars, who were endeavouring to introduce Mahometanism."
+      ]
+    }
+  ]
+}

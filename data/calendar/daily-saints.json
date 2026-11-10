@@ -2841,70 +2841,84 @@
   "11-01": [
     {
       "name": "Holy Unmercenaries Cosmas and Damian of Asia",
+      "slug": "cosmas-and-damian-of-asia",
       "note": "physicians who took no fee, +3rd c."
     },
     {
       "name": "St. Theodota, mother of the Holy Unmercenaries",
+      "slug": "theodota-mother-of-the-unmercenaries",
       "note": "+3rd c."
     }
   ],
   "11-02": [
     {
       "name": "Martyrs Acindynus, Pegasius, Aphthonius, Elpidephorus, Anempodistus",
+      "slug": "acindynus-and-companions",
       "note": "of Persia, +ca. 341"
     },
     {
       "name": "Ven. Marcian of Cyrrhus",
+      "slug": "marcian-of-cyrrhus",
       "note": "Desert Father of Syria, +388"
     }
   ],
   "11-03": [
     {
       "name": "Martyrs Acepsimas, Joseph, and Aithalas of Persia",
+      "slug": "acepsimas-joseph-and-aithalas",
       "note": "+ca. 341"
     },
     {
       "name": "Dedication of the Church of Great-martyr George at Lydda",
-      "kind": "feast"
+      "kind": "feast",
+      "slug": "saint-george"
     }
   ],
   "11-04": [
     {
       "name": "St. Joannicus the Great of Bithynia",
+      "slug": "joannicius-the-great",
       "note": "+846"
     },
     {
       "name": "Hieromartyrs Nicander and Hermas",
+      "slug": "nicander-and-hermas",
       "note": "+1st c."
     }
   ],
   "11-05": [
     {
       "name": "Saints Galaction and Episteme",
+      "slug": "galaction-and-episteme",
       "note": "of Emesa, +253"
     },
     {
       "name": "Apostles Patrobus, Hermas, Linus, Gaius, and Philologus",
+      "slug": "patrobas-hermas-linus-gaius-and-philologus",
       "note": "of the Seventy"
     }
   ],
   "11-06": [
     {
       "name": "St. Paul the Confessor, Archbishop of Constantinople",
+      "slug": "paul-the-confessor",
       "note": "+350"
     },
     {
       "name": "St. Varlaam of Khutyn",
+      "slug": "varlaam-of-khutyn",
       "note": "wonderworker of Novgorod, +1192"
     }
   ],
   "11-07": [
     {
       "name": "33 Martyrs of Melitene",
+      "slug": "martyrs-of-melitene",
       "note": "+ca. 298"
     },
     {
       "name": "Ven. Lazarus the Wonderworker of Mount Galesius",
+      "slug": "lazarus-of-galesion",
       "note": "+1053"
     }
   ],
@@ -2923,44 +2937,53 @@
     },
     {
       "name": "Saints Onesiphorus and Porphyrius",
+      "slug": "onesiphorus-and-porphyrius",
       "note": "+ca. 284"
     },
     {
       "name": "St. Matrona of Constantinople",
+      "slug": "matrona-of-constantinople",
       "note": "ammas, +ca. 492"
     }
   ],
   "11-10": [
     {
       "name": "Apostles Erastus, Olympas, Rhodion, Sosipater, Quartus, Tertius",
+      "slug": "erastus-olympas-rodion-sosipater-quartus-and-tertius",
       "note": "of the Seventy"
     },
     {
       "name": "St. Arsenius of Cappadocia",
+      "slug": "arsenius-of-cappadocia",
       "note": "+1924"
     }
   ],
   "11-11": [
     {
       "name": "Great-martyr Menas of Egypt",
+      "slug": "menas-of-egypt",
       "note": "+ca. 304"
     },
     {
       "name": "St. Theodore the Studite",
+      "slug": "theodore-the-studite",
       "note": "abbot of the Studion, +826"
     },
     {
       "name": "Blessed Maximus, Fool-for-Christ of Moscow",
+      "slug": "maximus-of-moscow",
       "note": "+1434"
     }
   ],
   "11-12": [
     {
       "name": "St. John the Merciful, Patriarch of Alexandria",
+      "slug": "john-the-merciful",
       "note": "+620"
     },
     {
       "name": "St. Nilus the Faster of Sinai",
+      "slug": "nilus-of-sinai",
       "note": "+451"
     }
   ],
@@ -2996,6 +3019,7 @@
     },
     {
       "name": "Confessors Gurias, Samonas, and Habibus",
+      "slug": "gurias-samonas-and-habib",
       "note": "of Edessa, +ca. 322"
     }
   ],
@@ -3010,44 +3034,53 @@
   "11-17": [
     {
       "name": "St. Gregory the Wonderworker, Bishop of Neocaesarea",
+      "slug": "gregory-the-wonderworker",
       "note": "disciple of Origen, +ca. 270"
     },
     {
       "name": "St. Nikon of Radonezh",
+      "slug": "nikon-of-radonezh",
       "note": "successor of St. Sergius, +1426"
     }
   ],
   "11-18": [
     {
       "name": "Martyrs Plato and Romanus",
+      "slug": "plato-and-romanus",
       "note": "+ca. 306"
     },
     {
       "name": "Martyrs Zacchaeus the Deacon and Alphaeus the Reader",
+      "slug": "zacchaeus-and-alphaeus",
       "note": "+303"
     }
   ],
   "11-19": [
     {
       "name": "Prophet Obadiah",
+      "slug": "prophet-obadiah",
       "note": "of the Twelve, +9th c. BC"
     },
     {
       "name": "Sts. Barlaam and Josaphat of India",
+      "slug": "barlaam-and-josaphat",
       "note": "and Abenner the King"
     }
   ],
   "11-20": [
     {
       "name": "Forefeast of the Entrance of the Theotokos",
-      "kind": "feast"
+      "kind": "feast",
+      "slug": "theotokos"
     },
     {
       "name": "St. Gregory of Decapolis",
+      "slug": "gregory-of-decapolis",
       "note": "+ca. 820"
     },
     {
       "name": "St. Proclus, Archbishop of Constantinople",
+      "slug": "proclus-of-constantinople",
       "note": "disciple of John Chrysostom, +447"
     }
   ],
@@ -3061,40 +3094,48 @@
   "11-22": [
     {
       "name": "Apostle Philemon and Apphia of the Seventy",
+      "slug": "philemon-and-apphia",
       "note": "recipients of Paul's letter"
     },
     {
       "name": "Right-believing Prince Michael of Tver",
+      "slug": "michael-of-tver",
       "note": "+1318"
     }
   ],
   "11-23": [
     {
       "name": "St. Amphilochius, Bishop of Iconium",
+      "slug": "amphilochius-of-iconium",
       "note": "Cappadocian, friend of Basil and the Gregorys, +395"
     },
     {
       "name": "Right-believing Prince Alexander Nevsky",
+      "slug": "alexander-nevsky",
       "note": "+1263"
     }
   ],
   "11-24": [
     {
       "name": "Hieromartyr Clement, Pope of Rome",
+      "slug": "clement-of-rome",
       "note": "disciple of Peter, +ca. 101"
     },
     {
       "name": "Hieromartyr Peter, Archbishop of Alexandria",
+      "slug": "peter-of-alexandria",
       "note": "+311"
     }
   ],
   "11-25": [
     {
       "name": "Great-martyr Catherine of Alexandria",
+      "slug": "catherine-of-alexandria",
       "note": "+305"
     },
     {
       "name": "Great-martyr Mercurius",
+      "slug": "mercurius-of-caesarea",
       "note": "of Caesarea, +259"
     }
   ],
@@ -3106,17 +3147,20 @@
     },
     {
       "name": "St. Innocent, First Bishop of Irkutsk",
+      "slug": "innocent-of-irkutsk",
       "note": "+1731"
     }
   ],
   "11-27": [
     {
       "name": "Great-martyr James the Persian",
+      "slug": "james-the-persian",
       "note": "+421"
     },
     {
       "name": "Icon of the Theotokos 'The Sign'",
       "kind": "feast",
+      "slug": "theotokos",
       "note": "of Novgorod, 1170"
     }
   ],
@@ -3128,20 +3172,24 @@
     },
     {
       "name": "Venerable-martyr Stephen the New, Confessor",
+      "slug": "stephen-the-new",
       "note": "iconophile, +767"
     },
     {
       "name": "Martyr Irenarchus of Sebaste and the Seven Women",
+      "slug": "irenarchus-and-the-seven-women",
       "note": "+303"
     }
   ],
   "11-29": [
     {
       "name": "Martyr Paramonus and 370 with him",
+      "slug": "paramonus-and-the-370",
       "note": "of Bithynia, +250"
     },
     {
       "name": "Ven. Acacius of Sinai",
+      "slug": "acacius-of-sinai",
       "note": "of The Ladder, +6th c."
     }
   ],
@@ -3154,6 +3202,7 @@
     },
     {
       "name": "St. Frumentius, Enlightener of Abyssinia",
+      "slug": "frumentius-of-axum",
       "note": "+ca. 380"
     }
   ],

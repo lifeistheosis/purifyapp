@@ -1,0 +1,50 @@
+{
+  "saint": "proclus-of-constantinople",
+  "slug": "life-of-proclus",
+  "title": "The Life of St. Proclus",
+  "subtitle": "As Socrates tells it",
+  "source": "Socrates Scholasticus, Ecclesiastical History VII.28, 40, 41 and 45, tr. A. C. Zenos (NPNF II 2, 1890), public domain. CCEL's transcription of each volume read word for word against archive.org's scans of the same printing; where they differ, the printed page is followed. The editions' footnotes, page numbers and running heads, and their marks in the text, are left out; the paragraphs and the numbers at their heads are as printed. The section titles name the place in each book.",
+  "originalLanguage": "grc",
+  "sections": [
+    {
+      "n": 1,
+      "title": "Ecclesiastical History VII.28",
+      "voice": "witness",
+      "voiceAuthor": "Socrates Scholasticus",
+      "citation": "Socrates, Ecclesiastical History VII.28, tr. A. C. Zenos (NPNF II 2, 1890)",
+      "paragraphs": [
+        "The bishop of Cyzicus having died, Sisinnius ordained Proclus to the bishopric of that city. But while he was preparing to depart thither, the inhabitants anticipated him, by electing an ascetic named Dalmatius. This they did in disregard of a law which forbade their ordination of a bishop without the sanction of the bishop of Constantinople; but they pretended that this was a special privilege granted to Atticus personally. Proclus therefore continued destitute of the presidency over his own church, but acquired celebrity for his discourses in the churches of Constantinople. We shall however speak of him more particularly in an appropriate place. Sisinnius having survived his appointment to the bishopric by barely two entire years, was removed by death on the 24th of December, in the consulate of Hierius and Ardaburius. For his temperance, integrity of life, and benignity to the poor, he was deservedly eminent; he was moreover singularly affable and guileless in disposition, and this rendered him rather averse to business, so that by men of active habits he was accounted indolent."
+      ]
+    },
+    {
+      "n": 2,
+      "title": "Ecclesiastical History VII.40",
+      "voice": "witness",
+      "voiceAuthor": "Socrates Scholasticus",
+      "citation": "Socrates, Ecclesiastical History VII.40, tr. A. C. Zenos (NPNF II 2, 1890)",
+      "paragraphs": [
+        "Maximian, having peacefully governed the church during two years and five months, died on the 12th of April, in the consulate of Areobindus and Aspar. This happened to be on the fifth day of the week of fasts which immediately precedes Easter. The day of the week was Thursday. Then the Emperor Theodosius wishing to prevent the disturbances in the church which usually attend the election of a bishop, made a wise provision for this affair; for in order that there might be no dispute again about the choice of a bishop and tumult thus arise, without delaying, before the body of Maximian was interred, he directed the bishops who were then in the city to place Proclus in the episcopal chair. For he had received already letters from Cælestinus bishop of Rome approving of this election, which he had forwarded to Cyril of Alexandria, John of Antioch, and Rufus of Thessalonica; in which he assured them that there was no impediment to the translation to another see, of a person who had been nominated and really was the bishop of some one church. Proclus, being thus invested with the bishopric, performed the funeral obsequies of Maximian: but it is now time briefly to give some account of him also."
+      ]
+    },
+    {
+      "n": 3,
+      "title": "Ecclesiastical History VII.41",
+      "voice": "witness",
+      "voiceAuthor": "Socrates Scholasticus",
+      "citation": "Socrates, Ecclesiastical History VII.41, tr. A. C. Zenos (NPNF II 2, 1890)",
+      "paragraphs": [
+        "Proclus was a reader at a very early age, and assiduously frequenting the schools, became devoted to the study of rhetoric. On attaining manhood he was in the habit of constant intercourse with Atticus the bishop, having been constituted his secretary. When he had made great progress, his patron promoted him to the rank of deacon; subsequently being elevated to the presbyterate, as we have before stated, he was ordained by Sisinnius to be bishop of Cyzicus. But all these things were done long before. At this time he was allotted the episcopal chair of Constantinople. He was a man of moral excellence equal to any other; for having been trained by Atticus, he was a zealous imitator of all that bishop's virtues. Patience, however, he exercised to a greater degree than his master, who occasionally practiced severities upon the heretics; for Proclus was gentle towards everybody, being convinced that kindness is far more effective than violence in advancing the cause of truth. Resolving therefore to vexatiously interfere with no heresy whatever, he restored in his own person to the church that mild and benign dignity of character, which had so often before been unhappily violated. In this respect he followed the example of the Emperor Theodosius; for as the latter had determined never to exercise his imperial authority against criminals, so had Proclus likewise purposed not to disquiet those who entertained other sentiments on divine subjects than those which he cherished himself."
+      ]
+    },
+    {
+      "n": 4,
+      "title": "Ecclesiastical History VII.45",
+      "voice": "witness",
+      "voiceAuthor": "Socrates Scholasticus",
+      "citation": "Socrates, Ecclesiastical History VII.45, tr. A. C. Zenos (NPNF II 2, 1890)",
+      "paragraphs": [
+        "Not long after this, Proclus the bishop brought back to the Church those who had separated themselves from it on account of Bishop John's deposition, he having soothed the irritation by a prudent expedient. What this was we must now recount. Having obtained the emperor's permission, he removed the body of John from Comana, where it was buried, to Constantinople, in the thirty-fifth year after his deposition. And when he had carried it in solemn procession through the city, he deposited it with much honor in the church termed The Apostles. By this means the admirers of that prelate were conciliated, and again associated in communion with the [catholic] Church. This happened on the 27th of January, in the sixteenth consulate of the Emperor Theodosius. But it astonishes me that envy, which has been vented against Origen since his death, has spared John. For the former was excommunicated by Theophilus about two hundred years after his decease; while the latter was restored to communion by Proclus in the thirty-fifth year after his death! So different was Proclus from Theophilus. And men of observation and intelligence cannot be deceived in reference to how these things were done and are continually being done."
+      ]
+    }
+  ]
+}

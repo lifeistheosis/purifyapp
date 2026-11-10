@@ -1,0 +1,33 @@
+{
+  "saint": "amphilochius-of-iconium",
+  "slug": "life-of-amphilochius",
+  "title": "The Life of Amphilochius",
+  "subtitle": "From Theodoret and St. Jerome",
+  "source": "Theodoret, Ecclesiastical History V.16, tr. Blomfield Jackson (NPNF II 3, 1892), and St. Jerome, Lives of Illustrious Men 133, tr. Ernest Cushing Richardson (NPNF II 3, 1892), public domain. CCEL's transcription of each volume read word for word against archive.org's scans of the same printing; where they differ, the printed page is followed. The editions' footnotes, page numbers and running heads, and their marks in the text, are left out; the paragraphs and the numbers at their heads are as printed. The section titles name the place in each book.",
+  "originalLanguage": "grc",
+  "sections": [
+    {
+      "n": 1,
+      "title": "Ecclesiastical History V.16",
+      "voice": "witness",
+      "voiceAuthor": "Theodoret of Cyrrhus",
+      "citation": "Theodoret, Ecclesiastical History V.16, tr. Blomfield Jackson (NPNF II 3, 1892)",
+      "paragraphs": [
+        "On the emperor's return the admirable Amphilochius, whom I have often mentioned, came to beg that the Arian congregations might be expelled from the cities. The emperor thought the petition too severe, and refused it. The very wise Amphilochius at the moment was silent, for he had hit upon a memorable device. The next time he entered the Palace and beheld standing at the emperor's side his son Arcadius, who had lately been appointed emperor, he saluted Theodosius as was his wont, but did no honour to Arcadius. The emperor, thinking that this neglect was due to forgetfulness, commanded Amphilochius to approach and to salute his son. \"Sir,\" said he, \"the honour which I have paid you is enough.\" Theodosius was indignant at the discourtesy, and said, \"Dishonour done to my son is a rudeness to myself.\" Then, and not till then, the very wise Amphilochius disclosed the object of his conduct, and said with a loud voice, \"You see, sir, that you do not brook dishonour done your son, and are bitterly angry with those who are rude to him. Believe then that the God of all the world abominates them that blaspheme the Only begotten Son, and hates them as ungrateful to their Saviour and Benefactor.\"",
+        "Then the emperor understood the bishop's drift, and admired both what he had done and what he had said. Without further delay he put out an edict forbidding the congregations of heretics.",
+        "But to escape all the snares of the common enemy of mankind is no easy task. Often it happens that one who has kept clear of lascivious passion is fixed fast in the toils of avarice; and if he prove superior to greed there on the other side is the pitfall of envy, and even if he leap safe over this he will find a net of passion waiting for him on the other side. Other innumerable stumbling blocks the enemy sets in men's paths, trying to catch them to their ruin.",
+        "Then he has at his disposal the bodily passions to help the wiles which he lays against the soul. The mind alone, if it keep awake, gets the better of him, frustrating the assault of his devices by its inclination to what is Divine. Now, since this admirable emperor had his share of human nature, and was not free from its emotions, his righteous anger passed the bounds of moderation, and caused the perpetration of a savage and lawless deed. I must tell this story for the sake of those into whose hands it will fall; it does not, indeed, only involve blame of the admirable emperor, but so redounds to his credit as to deserve to be remembered."
+      ]
+    },
+    {
+      "n": 2,
+      "title": "Lives of Illustrious Men 133",
+      "voice": "witness",
+      "voiceAuthor": "Jerome",
+      "citation": "St. Jerome, Lives of Illustrious Men 133, tr. Ernest Cushing Richardson (NPNF II 3, 1892)",
+      "paragraphs": [
+        "Amphilochius, bishop of Iconium, recently read to me a book On the Holy Spirit, arguing that He is God, that He is to be worshipped, and that He is omnipotent."
+      ]
+    }
+  ]
+}

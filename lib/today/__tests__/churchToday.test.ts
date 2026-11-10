@@ -10,7 +10,9 @@ import { describe, expect, it, vi } from "vitest";
 // same kind. Drawn on the sheet's four real days of the app's own calendar:
 // Friday 13 November 2026, St John Chrysostom; Saturday 31 October, three
 // readings for the saints and Abba Isaac's saying; Wednesday 28 October, St
-// Antony's saying; Monday 2 November, Abba Moses'. And Sunday 25 October, no
+// Antony's saying; Thursday 29 October, Abba Moses' (Monday 2 November was
+// his day until November's saints had their pages, 1.9: the saying stands
+// only on a day whose saint has none). And Sunday 25 October, no
 // fast, and Saturday 21 November, a great feast. Only the reader's day, the
 // Nativity path's line and the reader's fasting setting are set here.
 
@@ -71,7 +73,7 @@ const day = (iso: string) => new Date(`${iso}T12:00:00Z`);
 const NOV_13 = day("2026-11-13");
 const OCT_31 = day("2026-10-31");
 const OCT_28 = day("2026-10-28");
-const NOV_2 = day("2026-11-02");
+const OCT_29 = day("2026-10-29");
 const OCT_25 = day("2026-10-25");
 const NOV_21 = day("2026-11-21");
 
@@ -271,7 +273,7 @@ describe("the Desert Fathers' saying, as a band of its own", () => {
 
   it("stands Abba Moses and Abba Isaac beside their words with the owner's picks of sheet r3-22, the icons the app carries", () => {
     for (const [d, who, file] of [
-      [NOV_2, "Abba Moses", "moses-the-black.v2.jpg"],
+      [OCT_29, "Abba Moses", "moses-the-black.v2.jpg"],
       [OCT_31, "Abba Isaac", "fathers-of-sinai.jpg"],
     ] as const) {
       const band = element(draw(d), "data-today-saying", "article");

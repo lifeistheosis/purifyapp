@@ -41,7 +41,7 @@ export function SaintLife({
 }: {
   saint: Pick<
     Saint,
-    "slug" | "shortBio" | "life" | "titles" | "greatFeasts" | "quotes" | "disciples" | "pronoun" | "featured" | "born" | "reposed" | "see" | "feastDays"
+    "slug" | "shortBio" | "entrySource" | "life" | "titles" | "greatFeasts" | "quotes" | "disciples" | "pronoun" | "featured" | "born" | "reposed" | "see" | "feastDays"
   >;
   events: HistoryEventMeta[];
   /** The account of his miracles (MiraclesSection), when there is one. */
@@ -90,6 +90,14 @@ export function SaintLife({
   return (
     <div>
       <p className="max-w-[640px] font-sans text-body leading-relaxed text-paper/80">{saint.shortBio}</p>
+      {/* Where those facts come from (1.9, November's saints): a page with no
+          life of ours names its source under the entry, in the words of the
+          study's own "Source". */}
+      {saint.entrySource ? (
+        <p className="mt-3 max-w-[640px] font-sans text-caption leading-[1.55] text-paper/55">
+          <T k="study.source" />: {saint.entrySource}
+        </p>
+      ) : null}
       <div className="mt-6 border-t border-paper/8 pt-5 lg:hidden">
         <SaintFacts saint={saint} />
       </div>

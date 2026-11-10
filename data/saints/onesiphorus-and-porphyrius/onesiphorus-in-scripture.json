@@ -1,0 +1,28 @@
+{
+  "saint": "onesiphorus-and-porphyrius",
+  "slug": "onesiphorus-in-scripture",
+  "title": "St. Onesiphorus in Scripture",
+  "subtitle": "Where St. Paul writes of him",
+  "source": "Scripture is the King James Version, as the app's Bible carries it, word for word. St. Porphyrius, who shares the day, has no public-domain account.",
+  "originalLanguage": "grc",
+  "sections": [
+    {
+      "n": 1,
+      "title": "2 Timothy 1:16-18",
+      "voice": "scripture",
+      "citation": "2 Timothy 1:16-18 (King James Version)",
+      "paragraphs": [
+        "The Lord give mercy unto the house of Onesiphorus; for he oft refreshed me, and was not ashamed of my chain: But, when he was in Rome, he sought me out very diligently, and found me. The Lord grant unto him that he may find mercy of the Lord in that day: and in how many things he ministered unto me at Ephesus, thou knowest very well."
+      ]
+    },
+    {
+      "n": 2,
+      "title": "2 Timothy 4:19",
+      "voice": "scripture",
+      "citation": "2 Timothy 4:19 (King James Version)",
+      "paragraphs": [
+        "Salute Prisca and Aquila, and the household of Onesiphorus."
+      ]
+    }
+  ]
+}

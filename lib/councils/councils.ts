@@ -847,6 +847,8 @@ export const COUNCILS: Council[] = [
  principalFathers: [
  {
  name: "St. Gregory the Wonderworker",
+ // His page, from November's saints (1.9).
+ slug: "gregory-the-wonderworker",
  role: "Bishop of Neocaesarea, the great missionary and wonderworker of Pontus, who with his brother Athenodorus took part in the earlier synods against Paul.",
  },
  {

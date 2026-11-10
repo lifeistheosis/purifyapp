@@ -125,6 +125,11 @@ export const COVER_ART: Readonly<Record<string, CoverArt>> = {
   "cyril-of-jerusalem": bundled("cyril-of-jerusalem.v2.jpg", 26),
   "photius-the-great": bundled("photius-the-great.v2.jpg", 24),
   "justinian-the-great": bundled("justinian-the-great.v2.jpg", 26),
+  // November's saints (1.9, docs/1.9-build/notes/november-saints.md): page
+  // icons settled on 2026-11-10, on the books of their Lives. The others of
+  // the month keep the plate until a picture of each is settled.
+  "paul-the-confessor": bundled("paul-the-confessor.jpg", 26),
+  "varlaam-of-khutyn": bundled("varlaam-of-khutyn.jpg", 36),
 
   // From Wikimedia Commons for the covers (lib/reading/authorCovers.ts).
   ...AUTHOR_COVERS,

@@ -123,6 +123,30 @@ describe("the covers' pictures", () => {
     // the plate: no picture passed for them, and no CC BY photograph fit
     // (question 99). St Irene's letters wait for the Seventh Council's fresco
     // to be fetched and cut.
+    //
+    // November's saints (1.9, docs/1.9-build/notes/november-saints.md) added
+    // twenty books of their Lives; two have their saint's settled icon, and
+    // these sixteen stand on the plate until a picture of each passes (the
+    // icons' search for the second half of the month is under way). Each
+    // leaves this list when its cover goes in.
+    const november = [
+      "acepsimas-joseph-and-aithalas/life-of-acepsimas",
+      "alexander-nevsky/life-of-alexander-nevsky",
+      "amphilochius-of-iconium/life-of-amphilochius",
+      "clement-of-rome/life-of-clement",
+      "erastus-olympas-rodion-sosipater-quartus-and-tertius/their-names-in-scripture",
+      "frumentius-of-axum/life-of-frumentius",
+      "gregory-the-wonderworker/life-of-gregory-the-wonderworker",
+      "gurias-samonas-and-habib/acts-of-gurias-samonas-and-habib",
+      "innocent-of-irkutsk/life-of-innocent-of-irkutsk",
+      "michael-of-tver/life-of-michael-of-tver",
+      "patrobas-hermas-linus-gaius-and-philologus/their-names-in-scripture",
+      "peter-of-alexandria/life-of-peter-of-alexandria",
+      "plato-and-romanus/martyrdom-of-romanus",
+      "proclus-of-constantinople/life-of-proclus",
+      "prophet-obadiah/the-vision-of-obadiah",
+      "zacchaeus-and-alphaeus/martyrdom-of-zacchaeus-and-alphaeus",
+    ];
     const plate = buildRoom(false)
       .cards.filter((c) => !c.cover)
       .map((c) => c.key)
@@ -133,6 +157,7 @@ describe("the covers' pictures", () => {
         "irene-the-empress/letters-for-the-seventh-council",
         "isaac-the-syrian/mystic-treatises",
         "symeon-the-new-theologian/discourse-on-faith",
+        ...november,
       ].sort(),
     );
   });

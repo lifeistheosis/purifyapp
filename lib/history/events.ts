@@ -365,7 +365,7 @@ export const HISTORY_EVENTS: HistoryEventMeta[] = [
     depth: "full",
     reviewedBy: "Purify editorial, pending review",
     rel: {
-      saints: ["apostle-peter", "theotokos", "apostle-john", "apostle-matthias"],
+      saints: ["apostle-peter", "theotokos", "apostle-john", "apostle-matthias", "apostle-andrew", "apostle-james-zebedee", "apostle-philip", "apostle-thomas", "apostle-bartholomew", "apostle-matthew", "apostle-james-alphaeus", "apostle-simon-zealot", "apostle-jude"],
       scripture: ["Acts 1:1-26", "Acts 2:1-47", "Joel 2:28-32", "Leviticus 23:15-16", "John 15:26"],
       resultedIn: ["council-of-jerusalem", "missions-of-apostle-paul"],
     },
@@ -708,7 +708,7 @@ export const HISTORY_EVENTS: HistoryEventMeta[] = [
     depth: "full",
     reviewedBy: "Purify editorial, pending review",
     rel: {
-      saints: ["saint-george", "florian-of-lorch"],
+      saints: ["saint-george", "florian-of-lorch", "peter-of-alexandria", "zacchaeus-and-alphaeus", "plato-and-romanus"],
       resultedIn: ["edict-of-milan"],
     },
     media: {
@@ -907,7 +907,7 @@ export const HISTORY_EVENTS: HistoryEventMeta[] = [
     reviewedBy: "Purify editorial, pending review",
     rel: {
       scripture: ["John 15:26"],
-      saints: ["gregory-theologian", "theodosius-the-great", "meletius-of-antioch", "nectarius-of-constantinople", "gregory-of-nyssa", "cyril-of-jerusalem"],
+      saints: ["gregory-theologian", "theodosius-the-great", "meletius-of-antioch", "nectarius-of-constantinople", "gregory-of-nyssa", "cyril-of-jerusalem", "amphilochius-of-iconium"],
       councils: ["first-constantinople"],
       heresies: ["arianism", "macedonianism"],
       theology: ["filioque"],
@@ -1191,7 +1191,7 @@ export const HISTORY_EVENTS: HistoryEventMeta[] = [
     depth: "full",
     reviewedBy: "Purify editorial, pending review",
     rel: {
-      saints: ["john-of-damascus"],
+      saints: ["john-of-damascus", "stephen-the-new"],
       heresies: ["iconoclasm"],
       resultedIn: ["second-council-of-nicaea"],
     },
@@ -1272,6 +1272,7 @@ export const HISTORY_EVENTS: HistoryEventMeta[] = [
     depth: "full",
     reviewedBy: "Purify editorial, pending review",
     rel: {
+      saints: ["theodore-the-studite"],
       heresies: ["iconoclasm"],
       precededBy: ["second-council-of-nicaea"],
       resultedIn: ["triumph-of-orthodoxy"],
@@ -1312,7 +1313,7 @@ export const HISTORY_EVENTS: HistoryEventMeta[] = [
     reviewedBy: "Purify editorial, pending review",
     rel: {
       scripture: ["John 1:14"],
-      saints: ["aemilian-of-cyzicus"],
+      saints: ["aemilian-of-cyzicus", "theodore-the-studite"],
       heresies: ["iconoclasm"],
       precededBy: ["second-iconoclasm"],
     },

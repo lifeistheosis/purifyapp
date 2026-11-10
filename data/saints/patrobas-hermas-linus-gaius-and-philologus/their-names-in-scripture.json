@@ -1,0 +1,57 @@
+{
+  "saint": "patrobas-hermas-linus-gaius-and-philologus",
+  "slug": "their-names-in-scripture",
+  "title": "Their Names in Scripture",
+  "subtitle": "Where St. Paul names them, and St. Irenaeus and Eusebius on Linus",
+  "source": "Scripture is the King James Version, as the app's Bible carries it, word for word. St. Irenaeus, Against Heresies III.3.3, tr. Alexander Roberts and W. H. Rambaut (ANF 1, 1885), and Eusebius, Church History III.2, tr. Arthur Cushman McGiffert (NPNF II 1, 1890), public domain. CCEL's transcription of each volume read word for word against archive.org's scans of the same printing; where they differ, the printed page is followed. The editions' footnotes, page numbers and running heads, and their marks in the text, are left out; the paragraphs and the numbers at their heads are as printed. The section titles name the place in each book.",
+  "originalLanguage": "grc",
+  "sections": [
+    {
+      "n": 1,
+      "title": "Romans 16:14-15",
+      "voice": "scripture",
+      "citation": "Romans 16:14-15 (King James Version)",
+      "paragraphs": [
+        "Salute Asyncritus, Phlegon, Hermas, Patrobas, Hermes, and the brethren which are with them. Salute Philologus, and Julia, Nereus, and his sister, and Olympas, and all the saints which are with them."
+      ]
+    },
+    {
+      "n": 2,
+      "title": "Romans 16:23",
+      "voice": "scripture",
+      "citation": "Romans 16:23 (King James Version)",
+      "paragraphs": [
+        "Gaius mine host, and of the whole church, saluteth you. Erastus the chamberlain of the city saluteth you, and Quartus a brother."
+      ]
+    },
+    {
+      "n": 3,
+      "title": "2 Timothy 4:21",
+      "voice": "scripture",
+      "citation": "2 Timothy 4:21 (King James Version)",
+      "paragraphs": [
+        "Do thy diligence to come before winter. Eubulus greeteth thee, and Pudens, and Linus, and Claudia, and all the brethren."
+      ]
+    },
+    {
+      "n": 4,
+      "title": "Against Heresies III.3.3",
+      "voice": "witness",
+      "voiceAuthor": "Irenaeus of Lyons",
+      "citation": "St. Irenaeus, Against Heresies III.3.3, tr. Alexander Roberts and W. H. Rambaut (ANF 1, 1885)",
+      "paragraphs": [
+        "3. The blessed apostles, then, having founded and built up the Church, committed into the hands of Linus the office of the episcopate. Of this Linus, Paul makes mention in the Epistles to Timothy."
+      ]
+    },
+    {
+      "n": 5,
+      "title": "Church History III.2",
+      "voice": "witness",
+      "voiceAuthor": "Eusebius of Caesarea",
+      "citation": "Eusebius, Church History III.2, tr. Arthur Cushman McGiffert (NPNF II 1, 1890)",
+      "paragraphs": [
+        "1. After the martyrdom of Paul and of Peter, Linus was the first to obtain the episcopate of the church at Rome. Paul mentions him, when writing to Timothy from Rome, in the salutation at the end of the epistle."
+      ]
+    }
+  ]
+}
