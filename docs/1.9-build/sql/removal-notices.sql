@@ -2,8 +2,29 @@
 --
 -- NOT SIGNED, AND NOT IN supabase/migrations/. It stays here until his plain
 -- yes (the arbiter's word, 2026-11-10); then it moves into the folder under a
--- new fourteen-digit name and the merge runs it. Second reader: the Updates
--- chat.
+-- new fourteen-digit name and the merge runs it. Second read: the Updates
+-- chat, 2026-11-10, "it reads right, and I would sign it".
+--
+-- BEFORE HE SIGNS, one read-only query on the live database (it changes
+-- nothing and returns no counts), because the public key cannot read the
+-- table's checks or other readers' rows:
+--
+--   select
+--     (select string_agg(conname || ': ' || pg_get_constraintdef(oid), ' | ' order by conname)
+--        from pg_constraint
+--       where conrelid = 'public.community_notifications'::regclass and contype = 'c') as checks,
+--     (select coalesce(string_agg(distinct kind, ', '), 'none')
+--        from public.community_notifications
+--       where kind not in ('reply', 'mention', 'follow', 'name_day', 'prayed', 'gift',
+--                          'question', 'answer', 'approved', 'removed')) as kinds_outside;
+--
+-- Expected: "checks" names one check, community_notifications_kind_check,
+-- listing the nine kinds; "kinds_outside" says none. Anything else, stop:
+-- a second kind check under another name would still refuse "removed", and
+-- a notice of another kind would make that reader's "mark all read" fail
+-- once this check stands (a NOT VALID check still holds every row an UPDATE
+-- writes; Updates' read). Run on a scratch PostgreSQL 16 standing on the 104
+-- files, the query gave exactly the expected answer.
 --
 -- WHY. His yes of 2026-11-10 to the Terms for what readers post: "When we
 -- remove something you posted, we tell you why, unless the law or someone's
