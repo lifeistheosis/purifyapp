@@ -97,6 +97,25 @@ export function AbTests() {
       {data.tests.map((test) => (
         <Test key={test.id} test={test} />
       ))}
+      {data.planned.length ? (
+        <Card title="The tests after it, in order. None is built.">
+          <ol className="space-y-4">
+            {data.planned.map((p, i) => (
+              <li key={p.id} className="font-sans text-[13px]" style={ink2}>
+                <p className="text-[14px] font-semibold" style={{ color: "var(--adm-ink)" }}>
+                  {i + 1}. {p.asks}
+                </p>
+                <p className="mt-1">Versions: {p.versions.join(" Or: ")}.</p>
+                <p className="mt-1">Judged by: {p.judge}</p>
+                <p className="mt-1">Must not get worse: {p.guards}</p>
+                <p className="mt-1" style={ink3}>
+                  Waits for: {p.waits}
+                </p>
+              </li>
+            ))}
+          </ol>
+        </Card>
+      ) : null}
     </div>
   );
 }

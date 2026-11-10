@@ -31,9 +31,14 @@
 
 import { MILESTONES, type Milestone } from "./milestones";
 
-/** Where a test lives. A device is in at most one test on each surface at a time. */
-export type AbSurface = "onboarding" | "plus";
-export const AB_SURFACES: readonly AbSurface[] = ["onboarding", "plus"];
+/**
+ * Where a test lives: any screen may register one. A device is in at most
+ * one test on a surface at a time. "offer" is a price, a trial or what Plus
+ * includes: such a test is the owner's word each time (see `word`), and its
+ * versions are RevenueCat offerings, never two prices drawn by the app.
+ */
+export type AbSurface = "onboarding" | "today" | "plus" | "plans" | "reminders" | "themes" | "offer";
+export const AB_SURFACES: readonly AbSurface[] = ["onboarding", "today", "plus", "plans", "reminders", "themes", "offer"];
 
 export type AbTest = {
   /** A short name: lower-case letters, digits and dashes. Never reused for another test. */
@@ -60,6 +65,12 @@ export type AbTest = {
   warmup: number;
   /** The least share any version is given while the test runs, so the system can change its mind. */
   floor: number;
+  /**
+   * The day the owner said yes to this one test, YYYY-MM-DD. Required of a
+   * test on a price, a trial or what Plus includes (surface "offer"); the
+   * registry refuses one without it.
+   */
+  word?: string;
 };
 
 /**
@@ -130,11 +141,20 @@ export function registryFaults(tests: readonly AbTest[]): string[] {
     if (!(Number.isInteger(t.warmup) && t.warmup >= SMALLEST_WARMUP && t.warmup <= t.needs)) faults.push(`${at}: a warmup of ${SMALLEST_WARMUP} at least, and no more than it needs`);
     if (!(t.floor >= 0.05 && t.floor <= 1 / t.arms.length)) faults.push(`${at}: a floor of 5% at least, and no more than an equal share`);
   }
-  // One test on a surface at a time: a row carries one test's word, never two.
+  for (const t of tests) {
+    if (t.surface === "offer" && !(t.word && DAY.test(t.word))) {
+      faults.push(`"${t.id}": a test on a price, a trial or what Plus includes names the day of the owner's word for it`);
+    }
+  }
   for (const a of tests) {
     for (const b of tests) {
-      if (a.id < b.id && a.surface === b.surface && a.begins <= b.ends && b.begins <= a.ends) {
-        faults.push(`"${a.id}" and "${b.id}" run on ${a.surface} at the same time`);
+      if (!(a.id < b.id && a.begins <= b.ends && b.begins <= a.ends)) continue;
+      // One test on a surface at a time: a screen shows one test's version, never two.
+      if (a.surface === b.surface) faults.push(`"${a.id}" and "${b.id}" run on ${a.surface} at the same time`);
+      // And one test judged on readers coming back at a time: two would each
+      // move the thing the other is judged by, and neither could be read.
+      else if (a.judge === "back_week2" && b.judge === "back_week2") {
+        faults.push(`"${a.id}" and "${b.id}" are both judged on readers coming back, at the same time`);
       }
     }
   }
@@ -192,3 +212,41 @@ export function shownDayOk(shown: string, today: string): boolean {
   const age = Math.round((Date.parse(`${today}T00:00:00Z`) - Date.parse(`${shown}T00:00:00Z`)) / 86_400_000);
   return Number.isFinite(age) && age >= -1 && age <= 15;
 }
+
+/**
+ * The tests that come after, in the order the owner agreed (2026-11-10), as
+ * a record and for his panel. NOT BUILT AND NOT REGISTERED: a test's second
+ * version is built two weeks before its turn, so it is built against the
+ * screens as they then are, and each waits for the one before it to settle
+ * or end. `waits` says what each is waiting for besides its turn.
+ */
+export type PlannedTest = { id: string; asks: string; versions: readonly string[]; judge: string; guards: string; waits: string };
+
+export const AB_PLANNED: readonly PlannedTest[] = [
+  {
+    id: "reminders-moment",
+    asks: "When should a reader be asked about reminders: on the account card, or in one line right after a first finished prayer or chapter?",
+    versions: ["On the account card, as built", 'After a first prayer or chapter: "Shall Purify remind you tomorrow?"'],
+    judge: "Readers coming back in their second week. Early sign: reminders turned on.",
+    guards: "Accounts; Plus bought.",
+    waits:
+      "Reminders that need no account on the phones. Today a reminder is kept with an account, so for a reader with none the second version would be the account card under another name. It is worth testing once a phone can remind without one.",
+  },
+  {
+    id: "plus-sheet-order",
+    asks: "What should the Plus sheet show first: the feature the reader tapped, working, or the plans?",
+    versions: ["The tapped feature first, as built", "The plans first"],
+    judge: "The button to subscribe tapped.",
+    guards: "Plus bought; readers coming back in their second week.",
+    waits: "Its turn. Same price, same words, same close in both versions, so it needs no word of its own.",
+  },
+  {
+    id: "plus-introduced",
+    asks: "Should Plus be met only as a lock, or also once, on a calm card after the first week?",
+    versions: ["Locks only, as built", "One card on Today after the first week, showing the Plus feature that fits what the reader asked for, opening its Try it"],
+    judge: "The Plus sheet opened, then a trial begun.",
+    guards: "Readers coming back in their second week; Plus bought.",
+    waits: "Its turn, and the card itself, which is his item 111. Never shown to a reader who came with a need, nor where Plus is not sold.",
+  },
+];
+

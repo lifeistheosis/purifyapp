@@ -6,6 +6,7 @@ import { trackEventSchema } from "@/lib/security/schemas";
 import { MILESTONES } from "../milestones";
 import {
   ACCOUNT_PLACE,
+  AB_PLANNED,
   AB_SENDING,
   AB_TESTS,
   abWord,
@@ -160,7 +161,37 @@ describe("what a registry entry must say", () => {
     const second = test({ id: "door-led", begins: "2027-01-20", ends: "2027-03-10" });
     expect(registryFaults([test(), second]).join()).toContain("at the same time");
     expect(registryFaults([test(), test({ id: "door-led", begins: "2027-03-01", ends: "2027-05-17" })])).toEqual([]);
-    expect(registryFaults([test(), test({ id: "plus-card", surface: "plus" })])).toEqual([]);
+    expect(registryFaults([test(), test({ id: "plus-card", surface: "plus", judge: "plus_bought", guards: ["back_week2"] })])).toEqual([]);
+  });
+});
+
+describe("the rules for more than one test", () => {
+  it("refuse two tests judged on readers coming back at the same time, on any two screens", () => {
+    const today = test({ id: "today-order", surface: "today" });
+    expect(registryFaults([test(), today]).join()).toContain("both judged on readers coming back");
+    // Judged by something else, they may run together.
+    const sheet = test({ id: "plus-order", surface: "plus", judge: "plus_bought", guards: ["back_week2"] });
+    expect(registryFaults([test(), sheet])).toEqual([]);
+    // Or one after the other.
+    expect(registryFaults([test(), test({ id: "today-order", surface: "today", begins: "2027-03-01", ends: "2027-05-24" })])).toEqual([]);
+  });
+
+  it("refuse a test on a price, a trial or what Plus includes that does not name the day of his word", () => {
+    const offer = test({ id: "yearly-first", surface: "offer", judge: "plus_bought", guards: ["back_week2"] });
+    expect(registryFaults([offer]).join()).toContain("names the day of the owner's word");
+    expect(registryFaults([{ ...offer, word: "soon" }]).join()).toContain("names the day of the owner's word");
+    expect(registryFaults([{ ...offer, word: "2026-12-01" }])).toEqual([]);
+    // No such test is registered.
+    expect(AB_TESTS.some((t) => t.surface === "offer")).toBe(false);
+  });
+
+  it("keep the next three on record, in order, and built into nothing", () => {
+    expect(AB_PLANNED.map((p) => p.id)).toEqual(["reminders-moment", "plus-sheet-order", "plus-introduced"]);
+    for (const p of AB_PLANNED) {
+      expect(AB_TESTS.some((t) => t.id === p.id), p.id).toBe(false);
+      expect(p.versions.length, p.id).toBe(2);
+      for (const text of [p.asks, p.judge, p.guards, p.waits, ...p.versions]) expect(text, p.id).not.toContain("\u2014");
+    }
   });
 });
 
