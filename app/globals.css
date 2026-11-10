@@ -3121,6 +3121,15 @@ html[data-input="pointer"] *:focus-visible:not(input, textarea, select, [content
 :where(html[data-input="pointer"]) :where([class*="focus-within:"]) :where(input, textarea, select):focus-visible {
  outline: none;
 }
+/* A field with a quiet focus of its own (its own fill or its own edge as it
+   is reached: focus:bg-, focus:border-) keeps only that, the arbiter's
+   ruling of 2026-11-10 on the standard above: the fine edge would be a
+   second mark round it, as on a new post's title over its underline. Its
+   own way is held to the standard (the palette's ink, no ring, never gold or
+   red) by lib/ui/__tests__/fieldFocus.test.ts. */
+:where(html[data-input="pointer"]) :where(input, textarea, select, [contenteditable="true"]):where([class*="focus:bg-"], [class*="focus:border-"], [class*="focus-visible:bg-"], [class*="focus-visible:border-"]):focus-visible {
+ outline: none;
+}
 /* At rest a field's edge colour is clear, so a field whose colours move
    (transition-colors moves outline-color too) fades its fine edge in, rather
    than flashing the text's colour first. In the base layer, so a field's own

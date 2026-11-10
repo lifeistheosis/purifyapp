@@ -63,6 +63,21 @@ describe("a tapped field", () => {
     expect(css).toMatch(/:where\(\[class\*="focus-within:"\]\) :where\(input, textarea, select\):focus-visible \{\s*outline: none;/);
   });
 
+  it("keeps only its own quiet focus where it has one, in the palette's ink", () => {
+    // The arbiter's ruling of 2026-11-10: a field that lights its own fill or
+    // edge as it is reached keeps only that, not the fine edge as well.
+    expect(css).toMatch(
+      /:where\(html\[data-input="pointer"\]\) :where\(input, textarea, select, \[contenteditable="true"\]\):where\(\[class\*="focus:bg-"\], \[class\*="focus:border-"\], \[class\*="focus-visible:bg-"\], \[class\*="focus-visible:border-"\]\):focus-visible \{\s*outline: none;/,
+    );
+    // After the fine edge, so it wins it at the same weight.
+    expect(css.indexOf('[class*="focus:bg-"]')).toBeGreaterThan(css.indexOf(':where(html[data-input="pointer"]) :where(input:not('));
+    // Each such field's own way is a fill or an edge in the palette's ink, never clear, gold or red.
+    const files = [...sources("app"), ...sources("components")];
+    const own = files.flatMap((f) => fields(read(f)).flatMap((attrs) => [...attrs.matchAll(/\b(?:focus|focus-visible):(?:bg|border)-[^\s"`}]+/g)].map((m) => `${f}: ${m[0]}`)));
+    expect(own.length).toBeGreaterThan(10);
+    expect(own.filter((o) => !/:(?:bg|border)-paper\/(?:\[0\.\d+\]|\d+)$/.test(o))).toEqual([]);
+  });
+
   it("fades its edge in from clear, never flashing the text's colour first", () => {
     // transition-colors moves outline-color too: at rest a field's edge is clear.
     expect(css).toMatch(/@layer base \{\s*:where\(input, textarea, select, \[contenteditable="true"\]\) \{\s*outline-color: transparent;/);
