@@ -25,7 +25,7 @@ import { todayKey } from "@/lib/rhythm/dayKey";
 import { idsToSettle, mergeCarried, settleCarried, type CarryPick } from "./carried";
 import { fetchMine, fetchStates } from "./client";
 import { campaignsInBuild } from "./flags";
-import { campaignPsalm, isDay } from "./model";
+import { campaignPrayer, isDay } from "./model";
 import { keepExpiry, readCarried, updateCarried } from "./useCarried";
 
 const ASKED_KEY = "purify.prayers.campaigns.asked";
@@ -65,7 +65,7 @@ export async function campaignUpkeep(force = false): Promise<void> {
   const account = mine.carried.flatMap(({ campaign, places, until_on }) => {
     const chosen = cleanPlaces(places) ?? [];
     if (!campaign.subject_name || !isDay(campaign.ends_on) || chosen.length === 0) return [];
-    const psalm = campaignPsalm({ rule: campaign.prayer_rule, id: campaign.prayer_id });
+    const psalm = campaignPrayer({ rule: campaign.prayer_rule, id: campaign.prayer_id });
     const pick: CarryPick = {
       id: campaign.id,
       name: campaign.subject_name,

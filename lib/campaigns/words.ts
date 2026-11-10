@@ -8,7 +8,7 @@
 
 import { dateLocale } from "@/lib/i18n/deviceDates";
 
-import { KIND_LABEL, LENGTHS, LENGTH_LABEL, campaignPsalm, dayNoon, isDay, type ForWhom, type PublicCampaign } from "./model";
+import { KIND_LABEL, LENGTHS, LENGTH_LABEL, campaignPrayer, dayNoon, isDay, type CampaignPrayer, type ForWhom, type PublicCampaign } from "./model";
 
 type T = (key: string, replacements?: Record<string, string | number>) => string;
 type Tn = (key: string, count: number, replacements?: Record<string, string | number>) => string;
@@ -77,10 +77,15 @@ export function standingLabel(status: PublicCampaign["status"]): string | null {
   }
 }
 
-/** The psalm a campaign names, as the app names a psalm ("Psalm 90"), or null. */
-export function psalmLabel(c: { prayer_rule?: string | null; prayer_id?: string | null }, t: T): string | null {
-  const psalm = campaignPsalm({ rule: c.prayer_rule, id: c.prayer_id });
-  return psalm ? t("today.greet.psalm", { ref: psalm.number }) : null;
+/** A prayer of the list by its name: a psalm as the app names a psalm ("Psalm 90"), another by the catalog's own line for it ("The Trisagion Prayers"). */
+export function prayerName(prayer: CampaignPrayer, t: T): string {
+  return prayer.number !== undefined ? t("today.greet.psalm", { ref: prayer.number }) : t(prayer.title);
+}
+
+/** The prayer a campaign names, by its name, or null. */
+export function prayerLabel(c: { prayer_rule?: string | null; prayer_id?: string | null }, t: T): string | null {
+  const prayer = campaignPrayer({ rule: c.prayer_rule, id: c.prayer_id });
+  return prayer ? prayerName(prayer, t) : null;
 }
 
 /**

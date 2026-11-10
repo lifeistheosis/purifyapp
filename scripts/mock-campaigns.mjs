@@ -133,13 +133,15 @@ const CAMPAIGNS = {
     subject_name: "Maria",
     details: "She goes into hospital on Thursday. Please remember her this week.",
     days: 7,
-    prayer_rule: "protection",
-    prayer_id: "psalm-90",
+    // An illness starts with the Trisagion prayers (lib/campaigns/model.ts, KIND_PRAYER).
+    prayer_rule: "morning",
+    prayer_id: "trisagion",
     creator_name: "John",
     creator_handle: "john",
   }),
   [PETER]: campaign(PETER, { title: "For Peter's exams", intention: "study", subject_name: "Peter", details: "His finals begin on Monday.", days: 12, creator_name: "Helen", creator_handle: "helen" }),
-  [SOPHIA]: campaign(SOPHIA, { title: "Thanksgiving for Sophia", intention: "thanksgiving", subject_name: "Sophia", details: "She came home safely.", days: 1, creator_name: "Mark", creator_handle: "mark" }),
+  // Thanksgiving starts with Psalm 102, read from the Bible's own file.
+  [SOPHIA]: campaign(SOPHIA, { title: "Thanksgiving for Sophia", intention: "thanksgiving", subject_name: "Sophia", details: "She came home safely.", days: 1, prayer_rule: "psalter", prayer_id: "psalm-102", creator_name: "Mark", creator_handle: "mark" }),
   [HELD]: campaign(HELD, {
     title: "For Elias on his journey",
     intention: "travel",
@@ -184,7 +186,9 @@ const carried = (id, places, until) => {
     changedAt: now,
   };
 };
-const CARRIED = [carried(NICHOLAS, ["morning", "evening"]), carried(MARIA, ["evening"])];
+// Maria's prayer is the Trisagion prayers, which Evening prayers already say: her name is read and no step is added.
+// Sophia's is Psalm 102, which they do not: it follows the names as a step of its own.
+const CARRIED = [carried(NICHOLAS, ["morning", "evening"]), carried(MARIA, ["evening"]), carried(SOPHIA, ["evening"])];
 // One that has run its course and waits for its one answer on Your rule.
 const OVER = { ...carried(ENDED, ["evening"], day(-1)), lastDay: day(-1), leftAt: now, left: "over" };
 
@@ -535,8 +539,8 @@ await shot("03-campaign-reposed", "a campaign's page, for the reposed", `/campai
   },
 });
 
-// 04 A campaign's page, for the living, with its psalm.
-await shot("04-campaign-living", "a campaign's page, for the living, with a psalm", `/campaigns/detail?id=${MARIA}`, "[data-campaign-page]", {
+// 04 A campaign's page, for the living, with its prayer.
+await shot("04-campaign-living", "a campaign's page, for the living, with its prayer", `/campaigns/detail?id=${MARIA}`, "[data-campaign-page]", {
   prepare: async (page) => {
     await page.waitForSelector("#campaign-title", { timeout: 15000 });
     await page.waitForFunction(() => document.querySelectorAll("[data-campaign-page] h3").length > 0, null, { timeout: 15000 });
@@ -593,6 +597,10 @@ await shot("09-start-living", "starting a campaign, for the living", "/campaigns
     await page.fill("#campaign-title-field", "For Maria before her operation");
     await page.fill("#campaign-name-field", "Maria");
     await page.fill("#campaign-words-field", "She goes into hospital on Thursday. Please remember her this week.");
+    // What for: an illness, which brings its own prayer to the row under it.
+    await page.locator("[data-campaign-new] .set-panel button").nth(0).click();
+    await page.locator("[role=radio]", { hasText: "An illness" }).click();
+    await settle(page, 700);
     await page.evaluate(() => document.activeElement?.blur());
     const h = await page.evaluate(() => {
       const root = document.querySelector("[data-campaign-new]");
@@ -634,7 +642,7 @@ await shot("11-how-long", "starting one: how long", "/campaigns/new", "[role=dia
   },
 });
 
-// 12 In the prayers: Evening prayers at Those I pray for, with both names and the psalm.
+// 12 In the prayers: Evening prayers at Those I pray for, with the names and a campaign's psalm.
 await shot("12-in-the-prayers", "the campaigns inside the prayers", "/prayers/evening", "#commemoration", {
   set: {
     "purify.intentions.living": JSON.stringify([{ id: "22222222-2222-4222-8222-222222222222", name: "Catherine", addedAt: now }]),
@@ -645,7 +653,7 @@ await shot("12-in-the-prayers", "the campaigns inside the prayers", "/prayers/ev
   },
   prepare: async (page) => {
     await page.waitForSelector("#commemoration", { timeout: 15000 });
-    await page.waitForSelector("#campaign-psalm-90", { timeout: 15000 });
+    await page.waitForSelector("#campaign-psalm-102", { timeout: 15000 });
     await page.setViewportSize({ width: 390, height: 1500 });
     await page.evaluate(() => {
       const el = document.getElementById("commemoration");
@@ -834,6 +842,20 @@ await shot("27-circle-choice", "starting one: who can see it, with a circle chos
   },
 });
 
+// 30 The prayer: the list a creator may choose from, with the kind's own ticked (an illness, the Trisagion prayers).
+await shot("30-the-prayer", "starting one: the prayer, with the kind's own ticked", "/campaigns/new", "[role=dialog]:not([data-campaign-new])", {
+  prepare: async (page) => {
+    await page.waitForSelector("#campaign-title-field", { timeout: 15000 });
+    await page.locator("[data-campaign-new] .set-panel button").nth(0).click();
+    await page.locator("[role=radio]", { hasText: "An illness" }).click();
+    await settle(page, 700);
+    await page.locator("[data-campaign-new] .set-panel button").nth(2).click();
+    await page.waitForSelector("[role=radiogroup]", { timeout: 8000 });
+    await settle(page, 700);
+    await page.setViewportSize({ width: 390, height: 980 });
+  },
+});
+
 // 28 Pray together for a reader with a campaign in one of their circles: "In your circles", above the newly asked.
 await shot("28-in-your-circles", "Pray together: a campaign in one of the reader's circles", "/community#pray", "[role=tabpanel]", {
   circles: true,
@@ -915,14 +937,14 @@ if (WALK) {
     await page.fill("#campaign-title-field", "For Elias on his journey");
     await page.fill("#campaign-name-field", "Elias");
     await page.fill("#campaign-words-field", "He travels home on Friday.");
-    // What for: a journey.
+    // The prayer's row, before a kind is chosen: the name alone.
+    const prayerRow = page.locator("[data-campaign-new] .set-panel button").nth(2);
+    expectThat((await prayerRow.innerText()).includes("The prayer") && (await prayerRow.innerText()).includes("The name alone"), `the prayer's row reads "${(await prayerRow.innerText()).replace(/\n/g, " / ")}" before a kind is chosen`);
+    // What for: a journey, which brings its own prayer, Psalm 120. It is sent as the kind set it.
     await page.locator("[data-campaign-new] .set-panel button").nth(0).click();
     await page.locator("[role=radio]", { hasText: "A journey" }).click();
     await settle(page, 700);
-    // A psalm: Psalm 90.
-    await page.locator("[data-campaign-new] .set-panel button").nth(2).click();
-    await page.locator("[role=radio]", { hasText: "Psalm 90" }).click();
-    await settle(page, 700);
+    expectThat((await prayerRow.innerText()).includes("Psalm 120"), `a journey did not bring Psalm 120: the row reads "${(await prayerRow.innerText()).replace(/\n/g, " / ")}"`);
     expectThat(await create.isDisabled(), "Create is lit with no blessing ticked");
     await page.locator("[role=radio]", { hasText: "Someone else" }).click();
     // Two lines to tick: the rules, and the Terms of Service.
@@ -950,10 +972,55 @@ if (WALK) {
     const b = post.body;
     expectThat(b.forWhom === "living" && b.kind === "travel" && b.title === "For Elias on his journey" && b.name === "Elias", `sent ${JSON.stringify(b)}`);
     expectThat(b.words === "He travels home on Friday." && b.days === 7 && b.startsOn === TODAY, `sent ${JSON.stringify(b)}`);
-    expectThat(b.prayer?.rule === "protection" && b.prayer?.id === "psalm-90" && b.consent === "blessing" && b.blessing === true && b.rules === true, `sent ${JSON.stringify(b)}`);
+    expectThat(b.prayer?.rule === "psalter" && b.prayer?.id === "psalm-120" && b.consent === "blessing" && b.blessing === true && b.rules === true, `sent ${JSON.stringify(b)}`);
     expectThat(b.termsAccepted === true, `the acceptance of the Terms was not sent: ${JSON.stringify(b)}`);
     expectThat((await page.locator("[data-campaign-standing]").innerText()).includes("Waiting for a moderator"), "the campaign does not say it waits");
   }, { mine: [HELD] });
+
+  await walk("starting one: each kind brings its own prayer, and a prayer the creator chose stays through a change of kind", "/campaigns/new", async (page) => {
+    await page.waitForSelector("#campaign-title-field", { timeout: 15000 });
+    const rows = page.locator("[data-campaign-new] .set-panel button");
+    const row = async () => (await rows.nth(2).innerText()).replace(/\n/g, " / ");
+    const choose = async (kind) => {
+      await rows.nth(0).click();
+      await page.locator("[role=radio]", { hasText: kind }).click();
+      await settle(page, 700);
+    };
+    // His mapping, kind by kind, as the row says it.
+    const KINDS = [
+      ["An illness", "The Trisagion Prayers"],
+      ["A trial", "Psalm 90"],
+      ["The persecuted", "Psalm 26"],
+      ["Guidance", "Psalm 142"],
+      ["A journey", "Psalm 120"],
+      ["Thanksgiving", "Psalm 102"],
+      ["An exam or studies", "The name alone"],
+      ["Something else", "The name alone"],
+    ];
+    for (const [kind, prayer] of KINDS) {
+      await choose(kind);
+      expectThat((await row()).includes(prayer), `"${kind}" did not bring "${prayer}": the row reads "${await row()}"`);
+    }
+    // The list: the name alone, then the eight prayers by their names.
+    await rows.nth(2).click();
+    await page.waitForSelector("[role=radiogroup]", { timeout: 8000 });
+    const offered = (await page.locator("[role=radio]").allInnerTexts()).map((x) => x.trim().split("\n")[0]);
+    const WANT = ["The name alone", "The Trisagion Prayers", "Psalm 24", "Psalm 26", "Psalm 50", "Psalm 90", "Psalm 102", "Psalm 120", "Psalm 142"];
+    expectThat(JSON.stringify(offered) === JSON.stringify(WANT), `the list offers ${JSON.stringify(offered)}`);
+    // The creator chooses one themselves: Psalm 24, for studies.
+    await page.locator("[role=radio]", { hasText: "Psalm 24" }).click();
+    await settle(page, 700);
+    expectThat((await row()).includes("Psalm 24"), `the creator's choice is not on the row: "${await row()}"`);
+    // A change of kind now leaves it as they set it.
+    await choose("An illness");
+    expectThat((await row()).includes("Psalm 24"), `a change of kind took the creator's own choice away: the row reads "${await row()}"`);
+    // And the name alone, chosen by hand, stays too.
+    await rows.nth(2).click();
+    await page.locator("[role=radio]", { hasText: "The name alone" }).click();
+    await settle(page, 700);
+    await choose("A trial");
+    expectThat((await row()).includes("The name alone"), `a change of kind set a prayer over "The name alone": the row reads "${await row()}"`);
+  });
 
   await walk("Pray together: campaigns alone, behind its own door, and nothing is asked of the prayer wall", "/community#pray", async (page) => {
     await page.waitForSelector("[data-campaigns]", { timeout: 15000 });

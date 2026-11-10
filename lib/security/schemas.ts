@@ -427,8 +427,9 @@ export const campaignCreateSchema = z
     // Its first day on the creator's own calendar. The route holds it to a
     // day that can be today somewhere.
     startsOn: z.string().regex(/^\d{4}-\d{2}-\d{2}$/),
-    // A prayer of the prayer book by reference, or none. The route holds it
-    // to the psalms a campaign may carry.
+    // A prayer of the app's own by reference, or none. The route holds it
+    // to the prayers a campaign may carry (lib/campaigns/model.ts,
+    // CAMPAIGN_PRAYERS).
     prayer: z
       .object({ rule: z.string().regex(/^[a-z0-9-]{1,80}$/), id: z.string().regex(/^[a-z0-9-]{1,80}$/) })
       .optional()

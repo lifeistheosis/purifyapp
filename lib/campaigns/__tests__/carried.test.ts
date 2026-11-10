@@ -95,6 +95,11 @@ describe("carrying a campaign", () => {
   it("keeps only a prayer the book is known to hold", () => {
     expect(carry([], MARIA, ["morning"], MARIA.lastDay, TODAY, AT)[0].prayer).toEqual({ rule: "protection", id: "psalm-90" });
     expect(carry([], { ...MARIA, prayer: { rule: "ours", id: "for-the-sick" } }, ["morning"], MARIA.lastDay, TODAY, AT)[0].prayer).toBeNull();
+    // Each kind's own prayer is one the list holds: the Trisagion prayers, and a psalm of the Bible's file.
+    expect(carry([], { ...MARIA, prayer: { rule: "morning", id: "trisagion" } }, ["morning"], MARIA.lastDay, TODAY, AT)[0].prayer).toEqual({ rule: "morning", id: "trisagion" });
+    expect(carry([], { ...MARIA, prayer: { rule: "psalter", id: "psalm-120" } }, ["morning"], MARIA.lastDay, TODAY, AT)[0].prayer).toEqual({ rule: "psalter", id: "psalm-120" });
+    // And never a psalm of the Bible's that is not on it.
+    expect(carry([], { ...MARIA, prayer: { rule: "psalter", id: "psalm-1" } }, ["morning"], MARIA.lastDay, TODAY, AT)[0].prayer).toBeNull();
   });
 
   it("is carried once, however often it is added", () => {

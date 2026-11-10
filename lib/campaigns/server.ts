@@ -18,7 +18,7 @@ import {
   MANY_SPAN_DAYS,
   RUNNING_CAP,
   STARTED_A_DAY,
-  campaignPsalm,
+  campaignPrayer,
   endsAtOf,
   isJulyRow,
   isOver,
@@ -478,7 +478,7 @@ export async function startCampaign(
   now: number = Date.now(),
 ): Promise<Started> {
   if (!startsNow(input.startsOn, now)) return { ok: false, status: 400, error: "That first day is not today.", code: "bad_day" };
-  const prayer = input.forWhom === "living" && input.prayer ? campaignPsalm(input.prayer) : null;
+  const prayer = input.forWhom === "living" && input.prayer ? campaignPrayer(input.prayer) : null;
   if (input.prayer && !prayer) return { ok: false, status: 400, error: "That prayer is not one a campaign can carry.", code: "bad_prayer" };
 
   const texts = [input.title, input.name, input.words ?? null];

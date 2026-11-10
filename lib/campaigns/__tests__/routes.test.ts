@@ -321,7 +321,7 @@ describe("starting a campaign", () => {
     expect(campaigns()).toEqual([]);
   });
 
-  it("carries a psalm the prayer book holds for the living, and no other prayer", async () => {
+  it("carries a prayer of the list for the living, and no other prayer", async () => {
     const living = { forWhom: "living", kind: "healing", consent: "blessing", title: "For Maria", name: "Maria", days: 7 };
     const res = await start({ ...living, prayer: { rule: "protection", id: "psalm-90" } });
     expect(res.status).toBe(200);
@@ -330,6 +330,34 @@ describe("starting a campaign", () => {
     const bad = await start({ ...living, prayer: { rule: "morning", id: "our-father" } });
     expect(bad.status).toBe(400);
     expect(((await bad.json()) as { code: string }).code).toBe("bad_prayer");
+  });
+
+  it("carries each kind's own prayer by its pointer: the Trisagion prayers, and a psalm of the Bible's file", async () => {
+    // An illness, with the Trisagion prayers of the morning prayers.
+    const sick = await start({ forWhom: "living", kind: "healing", consent: "blessing", title: "For Maria", name: "Maria", days: 7, prayer: { rule: "morning", id: "trisagion" } });
+    expect(sick.status).toBe(200);
+    expect(byId(((await sick.json()) as { id: string }).id)).toMatchObject({ prayer_rule: "morning", prayer_id: "trisagion" });
+    // A journey, with Psalm 120, which only the Bible's file holds.
+    signIn(BEN);
+    const journey = await start({ forWhom: "living", kind: "travel", consent: "blessing", title: "For Elias", name: "Elias", days: 7, prayer: { rule: "psalter", id: "psalm-120" } });
+    expect(journey.status).toBe(200);
+    expect(byId(((await journey.json()) as { id: string }).id)).toMatchObject({ prayer_rule: "psalter", prayer_id: "psalm-120" });
+    // The pointer is to the list and to nothing else: not any psalm of the
+    // Bible, and not the prayer book's psalm under the Bible's name.
+    signIn(CARA);
+    for (const prayer of [
+      { rule: "psalter", id: "psalm-1" },
+      { rule: "psalter", id: "psalm-90" },
+      { rule: "morning", id: "creed" },
+    ]) {
+      const bad = await start({ forWhom: "living", kind: "other", consent: "blessing", title: "For Peter", name: "Peter", days: 7, prayer });
+      expect(bad.status, JSON.stringify(prayer)).toBe(400);
+      expect(((await bad.json()) as { code: string }).code).toBe("bad_prayer");
+    }
+    // And the kind does not bind the prayer: a creator may choose any of the list.
+    const own = await start({ forWhom: "living", kind: "study", consent: "blessing", title: "For Peter", name: "Peter", days: 7, prayer: { rule: "psalter", id: "psalm-24" } });
+    expect(own.status).toBe(200);
+    expect(byId(((await own.json()) as { id: string }).id)).toMatchObject({ intention: "study", prayer_rule: "psalter", prayer_id: "psalm-24" });
   });
 
   it("refuses a link anywhere in it", async () => {

@@ -26,7 +26,7 @@ import { Scroll } from "@/components/ui/icons/Scroll";
 import { Sheet } from "@/components/ui/Sheet";
 import { fetchCircles, startCampaign, type CircleChoice, type StartResult } from "@/lib/campaigns/client";
 import {
-  CAMPAIGN_PSALMS,
+  CAMPAIGN_PRAYERS,
   CONSENT_LINE,
   DEFAULT_DAYS,
   KIND_LABEL,
@@ -39,12 +39,13 @@ import {
   TITLE_MIN,
   WORDS_MAX,
   lastDayOf,
+  prayerAfterKind,
   type ConsentKind,
   type ForWhom,
   type LivingKind,
   type PrayerRef,
 } from "@/lib/campaigns/model";
-import { campaignIcon, dayText, lengthText } from "@/lib/campaigns/words";
+import { campaignIcon, dayText, lengthText, prayerName } from "@/lib/campaigns/words";
 import { cn } from "@/lib/cn";
 import { goBack } from "@/lib/nav/goBack";
 import { useAndroidBack } from "@/lib/platform/useAndroidBack";
@@ -76,7 +77,8 @@ type LengthChoice = (typeof LENGTHS)[number] | "own";
  *
  * What it asks: for the living or the reposed; a title; a first name; the
  * creator's own words; what for (the living); how long, one to forty days;
- * a psalm of the prayer book (the living), or the name alone; and, for a
+ * the prayer said with the name (the living): the one its kind starts
+ * with, another of the list, or the name alone; and, for a
  * reader who is in a circle of Read together, who can see it: everyone in
  * Community, or that circle alone (1.9; the notes, section 27). Then the
  * blessing, worded for who it is for and kept with its day, and the rules.
@@ -100,6 +102,9 @@ export function StartCampaign() {
   const [length, setLength] = useState<Record<ForWhom, LengthChoice>>({ living: DEFAULT_DAYS.living as LengthChoice, departed: DEFAULT_DAYS.departed as LengthChoice });
   const [ownDays, setOwnDays] = useState(14);
   const [psalm, setPsalm] = useState<PrayerRef | null>(null);
+  // Whether the creator has chosen the prayer themselves. A kind sets its own
+  // prayer only until they have: what a creator chose is never changed for them.
+  const [prayerByHand, setPrayerByHand] = useState(false);
   // The reader's own circles, and the one this campaign is kept to (none: everyone in Community).
   const [circles, setCircles] = useState<CircleChoice[]>([]);
   const [circleId, setCircleId] = useState<string | null>(null);
@@ -232,7 +237,8 @@ export function StartCampaign() {
     }
   }
 
-  const psalmLine = psalm ? t("today.greet.psalm", { ref: CAMPAIGN_PSALMS.find((p) => p.rule === psalm.rule && p.id === psalm.id)?.number ?? "" }) : t("campaigns.new.psalmNone");
+  const chosenPrayer = psalm ? (CAMPAIGN_PRAYERS.find((p) => p.rule === psalm.rule && p.id === psalm.id) ?? null) : null;
+  const psalmLine = chosenPrayer ? prayerName(chosenPrayer, t) : t("campaigns.new.psalmNone");
 
   return (
     <div role="dialog" aria-modal="true" aria-labelledby="campaign-new-title" data-campaign-new="" className="compose-page fixed inset-0 z-[80] bg-night">
@@ -398,7 +404,7 @@ export function StartCampaign() {
                           <Book size={18} />
                         </WayPlate>
                       }
-                      label={t("campaigns.new.psalm")}
+                      label={t("campaigns.thePrayer")}
                       desc={psalmLine}
                       onClick={() => setOpened("psalm")}
                       opensSheet
@@ -524,6 +530,10 @@ export function StartCampaign() {
             options={LIVING_KINDS.map((k) => ({ id: k, label: t(KIND_LABEL[k]) }))}
             onChange={(k) => {
               setKind(k);
+              // Each kind starts with its own prayer (lib/campaigns/model.ts,
+              // KIND_PRAYER; his "yes prayers"): said on the row under this
+              // one, where the creator can change it or choose the name alone.
+              setPsalm(prayerAfterKind(k, psalm, prayerByHand));
               setOpened(null);
             }}
             labelledBy="campaign-kind-label"
@@ -583,20 +593,21 @@ export function StartCampaign() {
       </Sheet>
 
       {/* A psalm of the prayer book, or the name alone. */}
-      <Sheet open={opened === "psalm"} onClose={() => setOpened(null)} title={t("campaigns.new.psalm")} desktop openFull layer="over-player">
+      <Sheet open={opened === "psalm"} onClose={() => setOpened(null)} title={t("campaigns.thePrayer")} desktop openFull layer="over-player">
         <p id="campaign-psalm-label" className="sr-only">
-          {t("campaigns.new.psalm")}
+          {t("campaigns.thePrayer")}
         </p>
         <div className="pb-1 pt-1">
           <TickLines
             value={psalm ? `${psalm.rule}/${psalm.id}` : "none"}
             options={[
               { id: "none", label: t("campaigns.new.psalmNone") },
-              ...CAMPAIGN_PSALMS.map((p) => ({ id: `${p.rule}/${p.id}`, label: t("today.greet.psalm", { ref: p.number }) })),
+              ...CAMPAIGN_PRAYERS.map((p) => ({ id: `${p.rule}/${p.id}`, label: prayerName(p, t) })),
             ]}
             onChange={(id) => {
-              const found = CAMPAIGN_PSALMS.find((p) => `${p.rule}/${p.id}` === id);
+              const found = CAMPAIGN_PRAYERS.find((p) => `${p.rule}/${p.id}` === id);
               setPsalm(found ? { rule: found.rule, id: found.id } : null);
+              setPrayerByHand(true);
               setOpened(null);
             }}
             labelledBy="campaign-psalm-label"

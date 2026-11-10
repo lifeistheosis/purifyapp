@@ -60,7 +60,7 @@
 import { Fragment, useMemo, useRef, useState, useSyncExternalStore } from "react";
 
 import { useTranslate } from "@/components/i18n/MessagesProvider";
-import { CampaignPsalmSteps } from "@/components/campaigns/CampaignPsalmSteps";
+import { CampaignPrayerSteps } from "@/components/campaigns/CampaignPrayerSteps";
 import { CommemorationStep } from "@/components/prayers/service/CommemorationStep";
 import { PrayerLight } from "@/components/prayers/service/PrayerLight";
 import { ServiceHeader } from "@/components/prayers/service/ServiceHeader";
@@ -254,7 +254,7 @@ export function PrayerRuleReader({
       />
       {/* A campaign's psalm follows the names, as a step of its own. */}
       {campaigns.length > 0 ? (
-        <CampaignPsalmSteps campaigns={campaigns} ruleHas={(id) => rule.prayers.some((p) => p.id === id)} contentLang={contentLocale ?? "en"} />
+        <CampaignPrayerSteps campaigns={campaigns} ruleHas={(id) => rule.prayers.some((p) => p.id === id)} contentLang={contentLocale ?? "en"} />
       ) : null}
     </>
   ) : null;

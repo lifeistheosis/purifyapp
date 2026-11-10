@@ -30,7 +30,7 @@
 
 import { cleanPlaces, placeOf, type PrayPlace } from "@/lib/prayers/commemoration";
 
-import { addDays, campaignPsalm, isDay, NAME_MAX, TITLE_MAX, type ForWhom, type PrayerRef } from "./model";
+import { addDays, campaignPrayer, isDay, NAME_MAX, TITLE_MAX, type ForWhom, type PrayerRef } from "./model";
 
 /** Why a campaign left the reader's prayers. */
 export type LeftWhy =
@@ -108,7 +108,7 @@ function parseOne(x: unknown): CarriedCampaign | null {
   if (!id || !name || !title || !places || places.length === 0 || !addedAt || !isDay(o.lastDay) || !isDay(o.until)) return null;
   const leftAt = o.leftAt == null ? null : iso(o.leftAt);
   const left = leftAt && WHYS.includes(o.left as LeftWhy) ? (o.left as LeftWhy) : leftAt ? "out" : null;
-  const prayer = campaignPsalm(o.prayer as { rule?: unknown; id?: unknown } | null);
+  const prayer = campaignPrayer(o.prayer as { rule?: unknown; id?: unknown } | null);
   return {
     id,
     name,
@@ -203,7 +203,7 @@ export function carry(
   if (!UUID.test(pick.id) || !name || !title || chosen.length === 0 || !isDay(pick.lastDay) || !isDay(until) || !isDay(today)) return [...list];
   if (pick.lastDay < today) return [...list];
   const at = now.toISOString();
-  const prayer = campaignPsalm(pick.prayer);
+  const prayer = campaignPrayer(pick.prayer);
   const next: CarriedCampaign = {
     id: pick.id.toLowerCase(),
     name,

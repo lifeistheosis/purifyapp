@@ -187,27 +187,95 @@ export function isOver(c: { status: string; ends_at?: string | null }, now: numb
 export type PrayerRef = { rule: string; id: string };
 
 /**
+ * A prayer a campaign may carry: a psalm, named by its number as the app
+ * names a psalm, or a prayer of the prayer book, named by a line the catalog
+ * already has.
+ */
+export type CampaignPrayer = PrayerRef & ({ number: number; title?: undefined } | { number?: undefined; title: string });
+
+/**
  * The prayers a campaign for the living may carry beside the name (his yes
  * to item 123: "a campaign for the living carries the name, and a psalm if
- * the creator wants"): the psalms the prayer book already holds, each read
- * from its own file when it is prayed and never copied. A campaign for the
- * reposed names none: the Church's prayer for the departed is said over its
- * name, as over every name of the reader's departed
- * (lib/prayers/commemoration.ts, DEPARTED_PRAYER).
+ * the creator wants"), each read from the app's own file when it is prayed
+ * and never copied (./prayerTexts.ts). A campaign keeps a pointer to one
+ * (prayer_rule, prayer_id) and never its words, so a correction to the book
+ * reaches every campaign.
  *
- * Which prayer goes with which need is a priest's question
- * (docs/1.9-build/notes/campaigns-fable.md, 8.2), so nothing here pairs one
- * with a kind: the creator chooses, or chooses none.
+ * Three kinds of pointer:
+ *   protection, repentance   a psalm the prayer book's own files hold
+ *   psalter                  a psalm read from the Bible's file (Brenton's
+ *                            Septuagint, the Psalter the prayer book prints
+ *                            its psalms from), which the prayer book has no
+ *                            copy of
+ *   morning                  the Trisagion prayers, as the morning prayers
+ *                            have them
+ *
+ * A campaign for the reposed names none: the Church's prayer for the
+ * departed is said over its name, as over every name of the reader's
+ * departed (lib/prayers/commemoration.ts, DEPARTED_PRAYER).
+ *
+ * The Trisagion first, then the psalms by their number.
  */
-export const CAMPAIGN_PSALMS: readonly (PrayerRef & { number: number })[] = [
-  { rule: "protection", id: "psalm-90", number: 90 },
+export const CAMPAIGN_PRAYERS: readonly CampaignPrayer[] = [
+  { rule: "morning", id: "trisagion", title: "onboard.day1.trisagion.title" },
+  { rule: "psalter", id: "psalm-24", number: 24 },
   { rule: "protection", id: "psalm-26", number: 26 },
   { rule: "repentance", id: "psalm-50", number: 50 },
+  { rule: "protection", id: "psalm-90", number: 90 },
+  { rule: "psalter", id: "psalm-102", number: 102 },
+  { rule: "psalter", id: "psalm-120", number: 120 },
+  { rule: "psalter", id: "psalm-142", number: 142 },
 ];
 
-export function campaignPsalm(ref: { rule?: unknown; id?: unknown } | null | undefined): (PrayerRef & { number: number }) | null {
+export function campaignPrayer(ref: { rule?: unknown; id?: unknown } | null | undefined): CampaignPrayer | null {
   if (!ref) return null;
-  return CAMPAIGN_PSALMS.find((p) => p.rule === ref.rule && p.id === ref.id) ?? null;
+  return CAMPAIGN_PRAYERS.find((p) => p.rule === ref.rule && p.id === ref.id) ?? null;
+}
+
+/**
+ * The prayer each kind starts with (his "yes prayers", 2026-11-10, to the
+ * mapping of docs/1.9-build/notes/campaigns-fable.md, section 22): choosing
+ * a kind on the start screen sets the prayer's row to it, and the creator
+ * can change it to any other on the list, or to the name alone.
+ *
+ * Each is here for words of its own that ask what the campaign asks, read
+ * from the app's file (the notes give them, and
+ * lib/campaigns/__tests__/model.test.ts holds every one to its file):
+ *
+ *   an illness       the Trisagion prayers   "visit and heal our infirmities"
+ *   a trial          Psalm 90                "I am with him in affliction"
+ *   the persecuted   Psalm 26                "my persecutors and mine enemies"
+ *   guidance         Psalm 142               "Teach me to do thy will"
+ *   a journey        Psalm 120               "thy coming in, and thy going out"
+ *   thanksgiving     Psalm 102               "forget not all his praises"
+ *
+ * An exam or studies, and something else, start with the name alone: the
+ * app holds nothing that speaks of studies (Psalm 24, "teach me thy paths",
+ * is on the list for whoever wants it). Only the reposed have a prayer the
+ * Church made for that need, and theirs is not chosen here. Prayers made
+ * for the sick, for studies, for a journey and for thanksgiving come after
+ * 1.9, one at a time, each read off its page (section 22.4): a preset is a
+ * pointer, so one takes a psalm's place here and nothing else changes.
+ */
+export const KIND_PRAYER: Readonly<Record<LivingKind, PrayerRef | null>> = {
+  healing: { rule: "morning", id: "trisagion" },
+  comfort: { rule: "protection", id: "psalm-90" },
+  persecuted: { rule: "protection", id: "psalm-26" },
+  guidance: { rule: "psalter", id: "psalm-142" },
+  travel: { rule: "psalter", id: "psalm-120" },
+  thanksgiving: { rule: "psalter", id: "psalm-102" },
+  study: null,
+  other: null,
+};
+
+/**
+ * The prayer the start screen holds once its creator has chosen a kind: the
+ * kind's own, until they have chosen the prayer themselves. From then on a
+ * change of kind leaves it as they set it, the name alone included: what a
+ * creator chose is never changed for them.
+ */
+export function prayerAfterKind(kind: LivingKind, held: PrayerRef | null, byHand: boolean): PrayerRef | null {
+  return byHand ? held : KIND_PRAYER[kind];
 }
 
 // ── The blessing ────────────────────────────────────────────────────────────
@@ -296,7 +364,7 @@ export function publicCampaign(row: Record<string, unknown>): PublicCampaign {
   const said = row.status === "held" || row.status === "answered" || row.status === "memory_eternal" || row.status === "ended" ? row.status : "active";
   // One of July's still says active, and runs for nobody: it reads as ended.
   const status = said === "active" && isJulyRow(row) ? "ended" : said;
-  const prayer = campaignPsalm({ rule: row.prayer_rule, id: row.prayer_id });
+  const prayer = campaignPrayer({ rule: row.prayer_rule, id: row.prayer_id });
   return {
     id: String(row.id),
     title: String(row.title ?? ""),

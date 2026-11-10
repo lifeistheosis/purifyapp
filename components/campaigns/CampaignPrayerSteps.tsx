@@ -5,9 +5,9 @@ import { useEffect, useState } from "react";
 import { useTranslate } from "@/components/i18n/MessagesProvider";
 import { PrayerStep } from "@/components/prayers/service/PrayerStep";
 import type { CarriedCampaign } from "@/lib/campaigns/carried";
-import { campaignPsalm } from "@/lib/campaigns/model";
-import type { CampaignPsalm } from "@/lib/campaigns/psalms";
-import { dayText, setIn } from "@/lib/campaigns/words";
+import { campaignPrayer } from "@/lib/campaigns/model";
+import type { CampaignPrayerText } from "@/lib/campaigns/prayerTexts";
+import { dayText, prayerName, setIn } from "@/lib/campaigns/words";
 
 /**
  * The psalm a campaign for the living names (his yes to item 123: a psalm of
@@ -19,14 +19,14 @@ import { dayText, setIn } from "@/lib/campaigns/words";
  * Each psalm once, however many campaigns name it, and not at all in a rule
  * that already prays that psalm. Its words are a piece of the app's code,
  * asked for only when a campaign with a psalm stands in the prayer being
- * prayed (lib/campaigns/psalms.ts): no other prayer page carries them.
+ * prayed (lib/campaigns/prayerTexts.ts): no other prayer page carries them.
  *
  * The step is not one of the rule's own, so nothing about it is marked or
  * counted: the page counts a prayer as it is passed only when the rule holds
  * it (PrayerRuleReader, passed), and Amen at the foot of the page is the
  * rule's.
  */
-export function CampaignPsalmSteps({
+export function CampaignPrayerSteps({
   campaigns,
   ruleHas,
   contentLang,
@@ -41,23 +41,23 @@ export function CampaignPsalmSteps({
   // The first campaign to name each psalm speaks for it.
   const wanted: { key: string; campaign: CarriedCampaign }[] = [];
   for (const c of campaigns) {
-    const known = c.forWhom === "living" ? campaignPsalm(c.prayer) : null;
+    const known = c.forWhom === "living" ? campaignPrayer(c.prayer) : null;
     if (!known || ruleHas(known.id)) continue;
     const key = `${known.rule}/${known.id}`;
     if (!wanted.some((w) => w.key === key)) wanted.push({ key, campaign: c });
   }
   const keys = wanted.map((w) => w.key).join(" ");
-  const [loaded, setLoaded] = useState<{ keys: string; psalms: Record<string, CampaignPsalm | null> } | null>(null);
+  const [loaded, setLoaded] = useState<{ keys: string; psalms: Record<string, CampaignPrayerText | null> } | null>(null);
 
   useEffect(() => {
     if (!keys) return;
     let live = true;
-    void import("@/lib/campaigns/psalms").then((m) => {
+    void import("@/lib/campaigns/prayerTexts").then((m) => {
       if (!live) return;
-      const psalms: Record<string, CampaignPsalm | null> = {};
+      const psalms: Record<string, CampaignPrayerText | null> = {};
       for (const key of keys.split(" ")) {
         const [rule, id] = key.split("/");
-        psalms[key] = m.campaignPsalmText({ rule, id });
+        psalms[key] = m.campaignPrayerText({ rule, id });
       }
       setLoaded({ keys, psalms });
     });
@@ -85,7 +85,10 @@ export function CampaignPsalmSteps({
             // words: the page's foot names the printing of the rule being
             // prayed, which is not this psalm's.
             prayer={{ ...psalm.prayer, id: `campaign-${psalm.prayer.id}`, source: psalm.source, origin: psalm.prayer.origin ?? home }}
-            title={t("today.greet.psalm", { ref: psalm.number })}
+            title={prayerName(psalm.entry, t)}
+            // A psalm read from the Bible's file has no place in the prayer
+            // book to be saved under: it is kept from the Bible, where it lives.
+            bookmarkable={psalm.ref.rule !== "psalter"}
             note={setIn(t("campaigns.inPrayersLine"), { title: campaign.title, date: dayText(campaign.until, locale) })}
             contentLang={contentLang}
           />

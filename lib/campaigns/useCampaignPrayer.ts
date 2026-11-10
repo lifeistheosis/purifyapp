@@ -2,23 +2,23 @@
 
 import { useEffect, useState } from "react";
 
-import { campaignPsalm, type PrayerRef } from "./model";
-import type { CampaignPsalm } from "./psalms";
+import { campaignPrayer, type PrayerRef } from "./model";
+import type { CampaignPrayerText } from "./prayerTexts";
 
 /**
  * A campaign's psalm with its words, fetched as a piece of the app's code
- * only when a campaign that names one is on the screen (./psalms.ts). Null
+ * only when a campaign that names one is on the screen (./prayerTexts.ts). Null
  * while it loads and when the campaign names none.
  */
-export function useCampaignPsalm(ref: PrayerRef | null | undefined): CampaignPsalm | null {
-  const known = campaignPsalm(ref);
+export function useCampaignPrayer(ref: PrayerRef | null | undefined): CampaignPrayerText | null {
+  const known = campaignPrayer(ref);
   const key = known ? `${known.rule}/${known.id}` : null;
-  const [loaded, setLoaded] = useState<{ key: string; psalm: CampaignPsalm | null } | null>(null);
+  const [loaded, setLoaded] = useState<{ key: string; psalm: CampaignPrayerText | null } | null>(null);
   useEffect(() => {
     if (!key || !known) return;
     let live = true;
-    void import("./psalms").then((m) => {
-      if (live) setLoaded({ key, psalm: m.campaignPsalmText(known) });
+    void import("./prayerTexts").then((m) => {
+      if (live) setLoaded({ key, psalm: m.campaignPrayerText(known) });
     });
     return () => {
       live = false;

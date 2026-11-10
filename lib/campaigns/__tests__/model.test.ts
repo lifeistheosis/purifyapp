@@ -1,17 +1,21 @@
+import { readFileSync } from "node:fs";
+import { join } from "node:path";
+
 import { describe, expect, it } from "vitest";
 
 import {
   CAMPAIGN_COLS,
-  CAMPAIGN_PSALMS,
+  CAMPAIGN_PRAYERS,
   DEFAULT_DAYS,
   KIND_LABEL,
+  KIND_PRAYER,
   LENGTHS,
   LENGTH_LABEL,
   LIVING_KINDS,
   MAX_DAYS,
   REPORT_REASONS,
   addDays,
-  campaignPsalm,
+  campaignPrayer,
   consentFits,
   daysBetween,
   endsAtOf,
@@ -23,10 +27,11 @@ import {
   isRunning,
   kindFits,
   lastDayOf,
+  prayerAfterKind,
   publicCampaign,
   startsNow,
 } from "@/lib/campaigns/model";
-import { campaignPsalmText, sourceStart } from "@/lib/campaigns/psalms";
+import { campaignPrayerText, psalterText, sourceStart } from "@/lib/campaigns/prayerTexts";
 import { campaignCreateSchema } from "@/lib/security/schemas";
 import en from "@/lib/i18n/messages/en.json";
 import { RULE_FILES } from "@/lib/prayers/library";
@@ -143,42 +148,161 @@ describe("its state", () => {
 });
 
 describe("the prayer it places", () => {
-  it("is one of the psalms the prayer book holds, each of which opens", () => {
-    expect(CAMPAIGN_PSALMS.map((p) => p.number)).toEqual([90, 26, 50]);
-    for (const psalm of CAMPAIGN_PSALMS) {
-      const rule = RULE_FILES[`rules/${psalm.rule}.json`];
-      expect(rule, psalm.rule).toBeDefined();
-      const prayer = rule.prayers.find((p) => p.id === psalm.id);
-      expect(prayer?.text?.length ?? 0, `${psalm.rule}/${psalm.id}`).toBeGreaterThan(400);
-      // The rule says where its words are printed: nothing here is ours.
-      expect(rule.source.length).toBeGreaterThan(20);
+  /** A psalm as the Bible's own file holds it. */
+  const bible = (n: number) => JSON.parse(readFileSync(join(process.cwd(), `data/bible/psalms/${n}.json`), "utf8")) as { book: string; chapter: number; source: string; verses: { n: number; text: string }[] };
+
+  it("is one of eight the app holds: the Trisagion prayers, then seven psalms by their number", () => {
+    expect(CAMPAIGN_PRAYERS.map((p) => p.number ?? p.title)).toEqual(["onboard.day1.trisagion.title", 24, 26, 50, 90, 102, 120, 142]);
+    // No pointer twice, and each of a shape the table's own check takes.
+    expect(new Set(CAMPAIGN_PRAYERS.map((p) => `${p.rule}/${p.id}`)).size).toBe(CAMPAIGN_PRAYERS.length);
+    for (const p of CAMPAIGN_PRAYERS) expect(`${p.rule} ${p.id}`).toMatch(/^[a-z0-9-]{1,80} [a-z0-9-]{1,80}$/);
+    // Each is named by a line the catalog already has.
+    expect((en as Record<string, string>)["onboard.day1.trisagion.title"]).toBe("The Trisagion Prayers");
+    expect((en as Record<string, string>)["today.greet.psalm"]).toContain("{ref}");
+  });
+
+  it("each opens from the app's own file, word for word", () => {
+    for (const p of CAMPAIGN_PRAYERS) {
+      const found = campaignPrayerText(p);
+      expect(found, `${p.rule}/${p.id}`).not.toBeNull();
+      expect(found!.prayer.text?.length ?? 0, `${p.rule}/${p.id}`).toBeGreaterThan(300);
+      expect(found!.entry).toBe(p);
+      if (p.rule === "psalter") {
+        // The Bible's file of that psalm, and no other: Brenton's, a verse a line, nothing added.
+        const file = bible(p.number!);
+        expect([file.book, file.chapter, file.source]).toEqual(["psalms", p.number, "brenton-lxx-pd"]);
+        expect(found!.prayer.text).toBe(file.verses.map((v) => v.text).join("\n"));
+        expect(found!.prayer.title).toBe(`Psalm ${p.number}`);
+      } else {
+        const rule = RULE_FILES[`rules/${p.rule}.json`];
+        expect(rule, p.rule).toBeDefined();
+        expect(found!.prayer.text).toBe(rule.prayers.find((x) => x.id === p.id)?.text);
+        // The rule says where its words are printed: nothing here is ours.
+        expect(rule.source.length).toBeGreaterThan(20);
+      }
     }
+  });
+
+  it("a psalm set from the Bible's file is set as the prayer book sets one", () => {
+    // Psalms 90 and 26 stand in both. The prayer book's copy and the Bible's
+    // file are the same words, a verse a line: so the four read from the
+    // Bible are the Psalter the prayer book prints its own psalms from.
+    for (const n of [90, 26]) {
+      const book = RULE_FILES["rules/protection.json"].prayers.find((p) => p.id === `psalm-${n}`);
+      expect(bible(n).verses.map((v) => v.text).join("\n"), `Psalm ${n}`).toBe(book?.text);
+    }
+  });
+
+  it("reads a psalm only from a file that is that psalm, in Brenton's text", () => {
+    const file = bible(120);
+    expect(psalterText(file, 120)).toBe(file.verses.map((v) => v.text).join("\n"));
+    // Another psalm's file, another book's, another text's, and no file at all:
+    // none is shown under Brenton's name.
+    expect(psalterText(file, 121)).toBeNull();
+    expect(psalterText({ ...file, book: "proverbs" }, 120)).toBeNull();
+    expect(psalterText({ ...file, source: "kjv" }, 120)).toBeNull();
+    expect(psalterText({ ...file, verses: [] }, 120)).toBeNull();
+    expect(psalterText(undefined, 120)).toBeNull();
   });
 
   it("is nothing a reader could have made up", () => {
-    expect(campaignPsalm({ rule: "protection", id: "psalm-90" })).toMatchObject({ number: 90 });
-    expect(campaignPsalm({ rule: "protection", id: "psalm-91" })).toBeNull();
-    expect(campaignPsalm({ rule: "morning", id: "our-father" })).toBeNull();
-    expect(campaignPsalm(null)).toBeNull();
+    expect(campaignPrayer({ rule: "protection", id: "psalm-90" })).toMatchObject({ number: 90 });
+    expect(campaignPrayer({ rule: "morning", id: "trisagion" })).toMatchObject({ title: "onboard.day1.trisagion.title" });
+    expect(campaignPrayer({ rule: "protection", id: "psalm-91" })).toBeNull();
+    expect(campaignPrayer({ rule: "morning", id: "our-father" })).toBeNull();
+    // A psalm of the Bible's that is not on the list, and one the prayer book holds under its own rule.
+    expect(campaignPrayer({ rule: "psalter", id: "psalm-1" })).toBeNull();
+    expect(campaignPrayer({ rule: "psalter", id: "psalm-90" })).toBeNull();
+    expect(campaignPrayerText({ rule: "psalter", id: "psalm-23" })).toBeNull();
+    expect(campaignPrayer(null)).toBeNull();
   });
 });
 
-describe("the printing a psalm names", () => {
-  it("is its rule's own words about its psalms, cut and never rephrased", () => {
-    for (const psalm of CAMPAIGN_PSALMS) {
-      const rule = RULE_FILES[`rules/${psalm.rule}.json`];
-      const found = campaignPsalmText(psalm);
-      expect(found, `${psalm.rule}/${psalm.id}`).not.toBeNull();
+describe("the prayer each kind starts with", () => {
+  it("is his mapping: six kinds with a prayer of the list, two with the name alone", () => {
+    expect(KIND_PRAYER).toEqual({
+      healing: { rule: "morning", id: "trisagion" },
+      comfort: { rule: "protection", id: "psalm-90" },
+      persecuted: { rule: "protection", id: "psalm-26" },
+      guidance: { rule: "psalter", id: "psalm-142" },
+      travel: { rule: "psalter", id: "psalm-120" },
+      thanksgiving: { rule: "psalter", id: "psalm-102" },
+      study: null,
+      other: null,
+    });
+    // Every kind of the living has its answer, and each prayer named is on the list.
+    expect(Object.keys(KIND_PRAYER).sort()).toEqual([...LIVING_KINDS].sort());
+    for (const ref of Object.values(KIND_PRAYER)) if (ref) expect(campaignPrayer(ref), JSON.stringify(ref)).not.toBeNull();
+    // The reposed have the Church's own prayer, and no pointer of this kind.
+    expect("departed" in KIND_PRAYER).toBe(false);
+  });
+
+  it("each is there for words of its own that ask what the campaign asks, as its file has them", () => {
+    // The lines put to him with the mapping (the notes, 22.2), each read from the app's file.
+    const WORDS: Record<string, string[]> = {
+      healing: ["Holy God, visit and heal our infirmities, for Thy Name's sake."],
+      comfort: ["I am with him in affliction; and I will deliver him"],
+      persecuted: ["my persecutors and mine enemies, they fainted and fell"],
+      guidance: ["Teach me to do thy will", "thy good Spirit shall guide me in the straight way."],
+      travel: ["The Lord shall keep thy coming in, and thy going out"],
+      thanksgiving: ["Bless the Lord, O my soul, and forget not all his praises"],
+    };
+    for (const [kind, lines] of Object.entries(WORDS)) {
+      const text = campaignPrayerText(KIND_PRAYER[kind as keyof typeof KIND_PRAYER])?.prayer.text ?? "";
+      for (const line of lines) expect(text, `${kind}: ${line}`).toContain(line);
+    }
+    // And the psalm offered for studies, which no kind starts with.
+    expect(campaignPrayerText({ rule: "psalter", id: "psalm-24" })?.prayer.text).toContain("Shew me thy ways, O Lord; and teach me thy paths.");
+  });
+});
+
+describe("the prayer the start screen holds when a kind is chosen", () => {
+  it("is the kind's own until the creator has chosen one themselves, and theirs from then on", () => {
+    // Nothing chosen by hand: each kind brings its own, and a later kind takes the earlier one's place.
+    expect(prayerAfterKind("travel", null, false)).toEqual({ rule: "psalter", id: "psalm-120" });
+    expect(prayerAfterKind("healing", { rule: "psalter", id: "psalm-120" }, false)).toEqual({ rule: "morning", id: "trisagion" });
+    // A kind with the name alone clears what an earlier kind had set.
+    expect(prayerAfterKind("study", { rule: "morning", id: "trisagion" }, false)).toBeNull();
+    // Chosen by hand: it stays through every change of kind.
+    const own = { rule: "repentance", id: "psalm-50" };
+    for (const kind of LIVING_KINDS) expect(prayerAfterKind(kind, own, true)).toBe(own);
+    // The name alone, chosen by hand, stays too.
+    for (const kind of LIVING_KINDS) expect(prayerAfterKind(kind, null, true)).toBeNull();
+  });
+
+  it("is wired so on the start screen: a kind sets it through that rule, and the prayer's own sheet marks it chosen", () => {
+    const screen = readFileSync(join(process.cwd(), "components/campaigns/StartCampaign.tsx"), "utf8");
+    expect(screen).toContain("setPsalm(prayerAfterKind(k, psalm, prayerByHand));");
+    // The one place the creator chooses the prayer says so, and no other place does.
+    expect(screen.match(/setPrayerByHand\(true\)/g)?.length).toBe(1);
+    const sheet = screen.slice(screen.indexOf('open={opened === "psalm"}'));
+    expect(sheet.slice(0, sheet.indexOf("</Sheet>"))).toContain("setPrayerByHand(true);");
+    // And the row is named by the line the campaign's page already has for it.
+    expect(screen).toContain('label={t("campaigns.thePrayer")}');
+    expect(screen).not.toContain("campaigns.new.psalm\"");
+  });
+});
+
+describe("the printing a prayer names", () => {
+  it("is its file's own words about it, cut and never rephrased", () => {
+    for (const p of CAMPAIGN_PRAYERS) {
+      // A psalm from the Bible's file is named in the prayer book's own words for the same Psalter.
+      const rule = RULE_FILES[`rules/${p.rule === "psalter" ? "protection" : p.rule}.json`];
+      const found = campaignPrayerText(p);
+      expect(found, `${p.rule}/${p.id}`).not.toBeNull();
       // The start of the rule's own line, to the letter.
-      expect(rule.source?.startsWith(found!.source), `${psalm.rule}: ${found!.source}`).toBe(true);
+      expect(rule.source?.startsWith(found!.source), `${p.rule}: ${found!.source}`).toBe(true);
       expect(found!.source.length).toBeGreaterThan(20);
       // A whole sentence, not a line broken off part way.
       expect(found!.source.endsWith("."), found!.source).toBe(true);
-      // And nothing of the rule's other prayers, which are not the psalm's.
-      expect(found!.source).not.toMatch(/petition/i);
+      // And for a psalm, nothing of the rule's other prayers, which are not the psalm's.
+      if (p.number !== undefined) expect(found!.source).not.toMatch(/petition/i);
     }
-    expect(campaignPsalmText({ rule: "protection", id: "psalm-90" })?.source).toBe("Psalms from Brenton's public-domain Septuagint.");
-    expect(campaignPsalmText({ rule: "repentance", id: "psalm-50" })?.source).toBe(RULE_FILES["rules/repentance.json"].source);
+    const BRENTON = "Psalms from Brenton's public-domain Septuagint.";
+    expect(campaignPrayerText({ rule: "protection", id: "psalm-90" })?.source).toBe(BRENTON);
+    expect(campaignPrayerText({ rule: "psalter", id: "psalm-142" })?.source).toBe(BRENTON);
+    expect(campaignPrayerText({ rule: "repentance", id: "psalm-50" })?.source).toBe(RULE_FILES["rules/repentance.json"].source);
+    expect(campaignPrayerText({ rule: "morning", id: "trisagion" })?.source).toBe(RULE_FILES["rules/morning.json"].source);
   });
 
   it("cuts a line at its sentences, and leaves a shorter line whole", () => {

@@ -33,10 +33,10 @@ import { closeCampaign, fetchCampaign, keepCampaign, setCommentsOpen, setListed,
 import { CLOSINGS, isDay, isRunning, type Closing, type PublicCampaign } from "@/lib/campaigns/model";
 import { CAMPAIGN_MENU_EVENT } from "@/lib/campaigns/pageMenu";
 import { campaignUpkeep } from "@/lib/campaigns/useCampaignUpkeep";
-import { useCampaignPsalm } from "@/lib/campaigns/useCampaignPsalm";
+import { useCampaignPrayer } from "@/lib/campaigns/useCampaignPrayer";
 import { useCampaignPart } from "@/lib/campaigns/useCampaignsOpen";
 import { useCarried } from "@/lib/campaigns/useCarried";
-import { campaignIcon, dayText, forWhomLabel, lengthTo, setIn, standingLabel } from "@/lib/campaigns/words";
+import { campaignIcon, dayText, forWhomLabel, lengthTo, prayerName, setIn, standingLabel } from "@/lib/campaigns/words";
 import { cn } from "@/lib/cn";
 import { blockCommunityAuthor } from "@/lib/community/client";
 import { DEPARTED_PRAYER, departedPrayer } from "@/lib/prayers/commemoration";
@@ -169,7 +169,7 @@ function Opened({ first, bar }: { first: PublicCampaign; bar: ReactNode }) {
           lastDay: campaign.ends_on,
         }
       : null;
-  const psalm = useCampaignPsalm(pick?.prayer ?? (campaign.prayer_rule && campaign.prayer_id ? { rule: campaign.prayer_rule, id: campaign.prayer_id } : null));
+  const psalm = useCampaignPrayer(pick?.prayer ?? (campaign.prayer_rule && campaign.prayer_id ? { rule: campaign.prayer_rule, id: campaign.prayer_id } : null));
   const icon = getPrayerIcon(campaignIcon(campaign.for_whom));
   const length = lengthTo(campaign, locale, t, tn);
   const started = dayText(campaign.starts_on ?? campaign.created_at.slice(0, 10), locale);
@@ -340,7 +340,7 @@ function Opened({ first, bar }: { first: PublicCampaign; bar: ReactNode }) {
       )}
       {psalm ? (
         <div className="mt-6">
-          <h3 className="font-sans text-detail font-semibold text-paper/80">{t("today.greet.psalm", { ref: psalm.number })}</h3>
+          <h3 className="font-sans text-detail font-semibold text-paper/80">{prayerName(psalm.entry, t)}</h3>
           <div lang="en" dir="ltr" className="mt-2">
             {(psalm.prayer.text ?? "").split(/\n\n+/).map((stanza, i) => (
               <p key={i} className={cn("whitespace-pre-line break-words font-serif text-[16px] leading-[1.6] text-paper/90", i > 0 && "mt-3")}>
