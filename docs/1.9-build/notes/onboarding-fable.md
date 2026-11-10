@@ -1199,10 +1199,11 @@ flag, off for readers; phases 1, 3 (the account only), 4, then 2; build to the
 recommendations where his word is pending (his questions 105 to 112); stills to
 him before any push.
 
-**Where it is.** Built and held as a patch, `notes/onboarding-roads.patch`
-(33 files, against `77b5d4ce` and later), until he has seen the stills:
-https://claude.ai/artifact/79rbBLRqbTpjsxydwRQLYc. Apply with
-`git apply docs/1.9-build/notes/onboarding-roads.patch`.
+**Where it is.** Pushed to the branch on his "ok to all" of 2026-11-10 (about
+04:13 UTC, on the stills: https://claude.ai/artifact/79rbBLRqbTpjsxydwRQLYc),
+in five commits: the Arabic fixes on their own, the rules, the screens, the
+two cards on Today, and the A/B system. The patch that held the work while it
+waited was deleted in the same push.
 
 **The flag.** `lib/onboarding/flags.ts`: `ROADS_LIVE = false`. On while Testers
 mode is on (Settings, Testers, "First open"), and in a build made with
@@ -1231,13 +1232,28 @@ touch.
 | Counts (5.2) | Nothing new is counted. The week's first step counts as the Day 1 open where it is one of Day 1's own steps. The new pill's answer is left off every row |
 | The questions' version | Not raised |
 
+**Added on his OK:** "Preview as signed out" in Settings, Testers (his
+question 137), since an admin is always signed in and could not otherwise walk
+the signed-out way through on their own phone. It survives "First open" and
+ends with "Back to my own".
+
+**Waiting on his word:** the line under "Just curious", which still says "a
+short tour first" where there is no tour. Proposed English: "We'll start you
+with a few small steps into the faith." Not changed in the build until he OKs
+the words; then the other 20 languages, with every other new string here.
+
 **Not behind the flag:** the answer cards and the handoff's lines were set
 `text-left` and would not turn in Arabic; `checkMock` caught it and they are
-`text-start` now. And `markOnboarded` keeps the day the questions ended, which
-only the flag reads.
+`text-start` now, in their own commit. And `markOnboarded` keeps the day the
+questions ended, which only the flag reads.
 
-**Checked:** typecheck 0; unit 9,952 passed (new: `road.test.ts`,
-`week.test.ts`, the roads in `flowSteps.test.ts`, `lib/ab/__tests__`); lint 0
-errors; `build:android` green with the flag on; `checkMock` passes on all
-eleven screens and cards. Still to run before a push: `build:android` with the
-flag off, and `build:ios`.
+**Checked before the push:** typecheck 0; unit 9,999 passed (new:
+`road.test.ts`, `week.test.ts`, the roads in `flowSteps.test.ts`, the preview
+in `testers.test.ts`, `lib/ab/__tests__`); lint 0 errors; `build:android` and
+`build:ios` green with the flag off, and `build:android` green with it on;
+`checkMock` passes on all eleven screens and cards of the stills.
+
+**To see it on a phone:** Settings, Testers, "First open" walks the new
+questions, with nothing counted and nothing synced; "Preview as signed out"
+first, to walk them as a reader with no account. To light it for readers, on
+his word: `ROADS_LIVE` in `lib/onboarding/flags.ts`.
