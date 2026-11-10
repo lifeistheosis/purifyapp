@@ -14,6 +14,12 @@
 // rules for a room answer this attribute too) and takes the white out of the
 // veil. Nothing is said before the device's own day is known, so the export
 // bakes no season in, and the attribute goes when the reader leaves the page.
+//
+// The prayer page keeps the season too (1.9, build 90 note 8, his call 2):
+// in Candlelight its light is the same light, in the same room, so it says
+// the season on the root the same way (useCandleSeason, below;
+// components/prayers/service/PrayerLight.tsx). It draws no veil: a prayer
+// has its own lit line and steps back.
 
 import { useEffect, useSyncExternalStore } from "react";
 
@@ -38,16 +44,39 @@ export function useCandleSeasonOn(): boolean {
   return useSyncExternalStore(subscribe, candleSeasonOn, () => true);
 }
 
-export function CandleVeil() {
+/**
+ * Whose word the root is carrying. Two pages say the season now, and a reader
+ * goes from one straight to the other (a chapter, then the evening rule): the
+ * page being left must take away only what it said itself, whichever of the
+ * two the browser finishes with first.
+ */
+let saying: object | null = null;
+
+/**
+ * While `active`, the page's root says which fast it is, if it is one and the
+ * switch is on. Whoever calls it is a page Candlelight lights: the Bible's
+ * veil always, the prayer page while Candlelight is the palette worn.
+ */
+export function useCandleSeason(active = true): void {
   const today = useToday();
   const [style] = useCalendarStyleDefault();
   const on = useCandleSeasonOn();
-  const season = today && on ? (candleLight(today, style)?.id ?? null) : null;
+  const season = active && today && on ? (candleLight(today, style)?.id ?? null) : null;
   useEffect(() => {
+    if (!season) return;
     const root = document.documentElement;
-    if (season) root.setAttribute("data-candle-season", season);
-    else root.removeAttribute("data-candle-season");
-    return () => root.removeAttribute("data-candle-season");
+    const mine = {};
+    saying = mine;
+    root.setAttribute("data-candle-season", season);
+    return () => {
+      if (saying !== mine) return;
+      saying = null;
+      root.removeAttribute("data-candle-season");
+    };
   }, [season]);
+}
+
+export function CandleVeil() {
+  useCandleSeason();
   return <div aria-hidden className="candle-veil" />;
 }

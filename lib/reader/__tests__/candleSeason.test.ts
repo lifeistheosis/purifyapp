@@ -213,8 +213,16 @@ describe("the veil and the switch", () => {
     const veil = code("components/reader/CandleVeil.tsx");
     expect(veil.trimStart().startsWith('"use client";')).toBe(true);
     expect(veil).toContain("const today = useToday();");
-    expect(veil).toContain("const season = today && on ? (candleLight(today, style)?.id ?? null) : null;");
-    expect(veil).toMatch(/if \(season\) root\.setAttribute\("data-candle-season", season\);\s*else root\.removeAttribute\("data-candle-season"\);\s*return \(\) => root\.removeAttribute\("data-candle-season"\);/);
+    // The season is said by a hook, so the prayer page can keep it too (build 90 note 8): the veil
+    // always says it, the prayer page only while Candlelight is the palette worn.
+    expect(veil).toContain("export function useCandleSeason(active = true): void {");
+    expect(veil).toContain("const season = active && today && on ? (candleLight(today, style)?.id ?? null) : null;");
+    expect(veil).toMatch(/export function CandleVeil\(\) \{\s*useCandleSeason\(\);/);
+    // Nothing is said while there is no season, and a page that leaves takes away only its own
+    // word: a reader goes from a chapter straight to a prayer, and both say the season.
+    expect(veil).toMatch(/if \(!season\) return;\s*const root = document\.documentElement;\s*const mine = \{\};\s*saying = mine;\s*root\.setAttribute\("data-candle-season", season\);/);
+    expect(veil).toMatch(/return \(\) => \{\s*if \(saying !== mine\) return;\s*saying = null;\s*root\.removeAttribute\("data-candle-season"\);\s*\};/);
+    expect(veil.match(/removeAttribute\("data-candle-season"\)/g)).toHaveLength(1);
     expect(veil).toContain('return <div aria-hidden className="candle-veil" />;');
   });
 

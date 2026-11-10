@@ -22,6 +22,18 @@
 // no foot. Below that the page's last lines are giving way to the scene, as
 // they give way under the reader's dock on every palette.
 //
+// The prayer page asks one thing more of the picture (build 90 note 8).
+// While a prayer is prayed its other lines step back, and the prayers before
+// and after step back further: the faintest word there is the closing line,
+// the ink at 85 percent, at the look's own --prayer-rest (app/globals.css,
+// "A look's two steps"). It lies over the same picture, with nothing between
+// them since the page's neutral light went, so it is held here too: 4.5:1 or
+// more anywhere above the place the foot BEGINS (--foot-clear from the
+// screen's foot). Not down to the foot's quarter, as the faint text is: the
+// foot is drawn over a line that has come into it, the line is going quiet
+// by the look's own design, and a step that kept it whole there would cost
+// the lit line its contrast on the whole screen.
+//
 // The first run, on the build of 2026-11-10, found two of eighteen: Dawn's
 // sunrise reached the lines still being read (faint text 2.7:1 a finger above
 // the foot) and Incense's plume stood at seven tenths of its strength behind
@@ -44,6 +56,22 @@ const lin = (c) => {
   return v <= 0.03928 ? v / 12.92 : ((v + 0.055) / 1.055) ** 2.4;
 };
 const lum = (r, g, b) => 0.2126 * lin(r) + 0.7152 * lin(g) + 0.0722 * lin(b);
+
+/** Every rule of the stylesheet, as its selectors and its declarations. */
+const RULES = [...CSS.matchAll(/([^{}]+)\{([^{}]*)\}/g)].map((m) => [m[1].split(",").map((x) => x.trim()), m[2]]);
+/** How far the prayers around the one being prayed step back on a look: its own rule, else Light's for a light look, else the looks' shared one. */
+function prayerRest(look, mode) {
+  const tries = [`html[data-look="${look}"] [data-prayer-reader]`, mode === "parchment" ? 'html[data-reading-mode="parchment"] [data-prayer-reader]' : ":where(html[data-look]) [data-prayer-reader]"];
+  for (const selector of tries) {
+    for (const [selectors, body] of RULES) {
+      const m = selectors.includes(selector) ? /--prayer-rest:\s*([\d.]+)/.exec(body) : null;
+      if (m) return Number(m[1]);
+    }
+  }
+  throw new Error(`no --prayer-rest for ${look} in app/globals.css`);
+}
+/** The closing line of a prayer is the ink at 85 percent (text-paper/85), the faintest word that steps back. */
+const CLOSING = 0.85;
 
 // The screen, and the window passed over it: a short line of caption text.
 const W = 390;
@@ -87,11 +115,14 @@ for (const [label, mode, look] of LOOKS) {
   const faint = new RegExp(`:where\\(html\\[data-look="${look}"\\]\\) :is\\([^)]*\\) \\{\\s*color: color-mix\\(in oklab, var\\(--color-paper\\) (\\d+)%`).exec(CSS);
   if (!faint) throw new Error(`no faint-text rule for ${look} in app/globals.css`);
   const share = Number(faint[1]) / 100;
+  const rest = prayerRest(look, mode);
   const line = clear ? Math.round(H - clear * 0.72) : TAB_BAR_TOP;
+  // A prayer's line stepped back is held above where the foot begins, not down to its quarter.
+  const begins = clear ? H - clear : TAB_BAR_TOP;
   await page.waitForTimeout(350);
   const { data, info } = await sharp(await page.screenshot()).removeAlpha().raw().toBuffer({ resolveWithObject: true });
   const light = lum(...facts.paper) < lum(...facts.night);
-  const worst = { faint: { r: Infinity }, full: { r: Infinity } };
+  const worst = { faint: { r: Infinity }, full: { r: Infinity }, prayer: { r: Infinity } };
   for (let y = TOP; y + WINDOW.h <= line; y += WINDOW.dy) {
     for (let x = 0; x + WINDOW.w <= W; x += WINDOW.dx) {
       const px = [];
@@ -103,7 +134,8 @@ for (const [label, mode, look] of LOOKS) {
       }
       px.sort((a, b) => a[0] - b[0]);
       const ground = light ? px[Math.floor(px.length * 0.01)] : px[Math.min(px.length - 1, Math.floor(px.length * 0.99))];
-      for (const [kind, a] of [["faint", share], ["full", 1]]) {
+      for (const [kind, a] of [["faint", share], ["full", 1], ["prayer", CLOSING * rest]]) {
+        if (kind === "prayer" && y + WINDOW.h > begins) continue;
         const ink = facts.paper.map((v, i) => v * a + ground[i + 1] * (1 - a));
         const [hi, lo] = [lum(...ink), ground[0]].sort((p, q) => q - p);
         const r = (hi + 0.05) / (lo + 0.05);
@@ -111,13 +143,13 @@ for (const [label, mode, look] of LOOKS) {
       }
     }
   }
-  const ok = worst.faint.r >= 4.5 && worst.full.r >= 7;
+  const ok = worst.faint.r >= 4.5 && worst.full.r >= 7 && worst.prayer.r >= 4.5;
   if (!ok) short += 1;
   console.log(
-    `${ok ? "ok  " : "NO  "} ${label.padEnd(14)} faintest text (${Math.round(share * 100)}%) ${worst.faint.r.toFixed(2)}:1 at its worst, ${worst.faint.x},${worst.faint.y} on rgb(${worst.faint.ground.join(", ")}); full ink ${worst.full.r.toFixed(2)}:1; measured above y=${line}`,
+    `${ok ? "ok  " : "NO  "} ${label.padEnd(14)} faintest text (${Math.round(share * 100)}%) ${worst.faint.r.toFixed(2)}:1 at its worst, ${worst.faint.x},${worst.faint.y} on rgb(${worst.faint.ground.join(", ")}); full ink ${worst.full.r.toFixed(2)}:1; measured above y=${line}; a prayer's closing line stepped back to ${Math.round(rest * 100)}% ${worst.prayer.r.toFixed(2)}:1 above where the foot begins (y=${begins})`,
   );
 }
 await browser.close();
 
-console.log(short ? `\n${short} look(s) put something behind the words that their faintest text cannot stand on` : "\nevery look's picture carries its faintest text anywhere above its foot");
+console.log(short ? `\n${short} look(s) put something behind the words that their faintest text, or a prayer's line stepped back, cannot stand on` : "\nevery look's picture carries its faintest text anywhere above its foot, and a prayer's line stepped back above where the foot begins");
 process.exit(short ? 1 : 0);

@@ -10934,36 +10934,52 @@ html[data-place-focus] [data-work-reader] [data-place]:not([data-focus]) {
    underneath" (components/prayers/PrayerRuleReader.tsx), on the 1.7 page
    below and its one scroll-driven light.
 
-   The icon's light: the page's own icon (lib/prayers/serviceArt.ts), large
-   behind the reading place, soft and dim, and without its colour, so the
-   light it gives is white, never the gold of the panel. It is fixed and does
-   not move: a blurred layer is drawn once and only composited after, which
-   the 1.9 notes allow (blur on fixed layers, never on what scrolls). What
-   moves, with motion on, is a faint white breath over it, a gradient with no
-   filter that drifts on the compositor; with motion off it is still. On
-   Parchment a white light cannot be seen, so the icon is a soft shade and
-   the breath is not drawn. */
-.prayer-light {
- position: fixed;
- z-index: 0;
- left: 50%;
- top: 6vh;
- width: min(150vw, 960px);
- height: 72vh;
- margin-left: calc(min(150vw, 960px) / -2);
- background-size: cover;
- background-position: 50% 22%;
- background-repeat: no-repeat;
- filter: blur(52px) grayscale(1);
- opacity: 0.22;
- pointer-events: none;
-}
+   The light behind the prayer (1.9, build 90 note 8; his words on that
+   build: "let's change the background design also. Like, make it more, like,
+   fit the theme the user picked"). It was the page's own icon, large,
+   blurred and without its colour, at 22 percent, with a white breath over
+   it: one neutral grey-white light, the same on every palette and laid over
+   it. Measured on the export, True black was rgb(18, 18, 18) at the screen's
+   edge and rgb(30, 30, 30) where the prayer is read, a look's own colour
+   went grey there, and paper took an even grey shade. It also took the
+   prayers' notes and instructions under 4.5:1 on Monastery, Councils and
+   Cappadocian (4.49, 4.38, 4.36), and a caption on Blush (4.49).
+
+   Now the ground is the palette's own, whole, and the light is the
+   palette's own light, a soft pool or nothing
+   (components/prayers/service/PrayerLight.tsx):
+
+   - the six plain dark palettes (Dark, True black, Candlelight, Monastery,
+     Councils, Cappadocian): a soft pool of the palette's ink where the
+     prayer is read, two fifths down the screen (lib/ui/readingPlace.ts),
+     and over it the slow breath, the ink again, which drifts only while
+     motion is on. --prayer-pool and --prayer-breath are how full each is.
+     Together, where they are fullest, they leave every word 4.5:1 or more:
+     the notes, and the closing line stepped back, decide it;
+   - a look: nothing. Its picture is its sign, and nothing moves on a look;
+   - Light and the light looks: nothing. Light cannot glow on paper;
+   - Candlelight in one of the Church's three long fasts: the fast's light,
+     in the room, as in the Bible (.candle-veil, above), and neither pool
+     nor breath over it.
+
+   A plain gradient, fixed, in the palette's own token: no picture, no blur,
+   no rays, and it follows nothing. lib/prayers/__tests__/prayerLight.test.ts
+   holds all 25 palettes to this, and scripts/prayer-ground-walk.mjs measures
+   it on the export. */
+.prayer-light,
 .prayer-light-breath {
+ --prayer-pool: 6%;
+ --prayer-breath: 3%;
  position: fixed;
  z-index: 0;
  inset: 0;
- background: radial-gradient(42% 30% at 50% 40%, rgb(255 255 255 / 0.07), rgb(255 255 255 / 0) 70%);
  pointer-events: none;
+}
+.prayer-light {
+ background: radial-gradient(ellipse 90% 34% at 50% 40%, color-mix(in srgb, var(--color-paper) var(--prayer-pool), transparent), transparent 72%);
+}
+.prayer-light-breath {
+ background: radial-gradient(42% 30% at 50% 40%, color-mix(in srgb, var(--color-paper) var(--prayer-breath), transparent), transparent 70%);
  animation: prayer-light-drift 24s ease-in-out infinite alternate;
 }
 @keyframes prayer-light-drift {
@@ -10973,10 +10989,24 @@ html[data-place-focus] [data-work-reader] [data-place]:not([data-focus]) {
 :where([data-motion="reduce"]) .prayer-light-breath {
  animation: none;
 }
-html[data-reading-mode="parchment"] .prayer-light {
- opacity: 0.1;
+html[data-reading-mode="monastery"] .prayer-light,
+html[data-reading-mode="monastery"] .prayer-light-breath {
+ --prayer-pool: 5%;
+ --prayer-breath: 2%;
 }
-html[data-reading-mode="parchment"] .prayer-light-breath {
+html[data-reading-mode="councils"] .prayer-light,
+html[data-reading-mode="councils"] .prayer-light-breath,
+html[data-reading-mode="cappadocian"] .prayer-light,
+html[data-reading-mode="cappadocian"] .prayer-light-breath {
+ --prayer-pool: 3.5%;
+ --prayer-breath: 1.5%;
+}
+html[data-reading-mode="parchment"] .prayer-light,
+html[data-reading-mode="parchment"] .prayer-light-breath,
+html[data-look] .prayer-light,
+html[data-look] .prayer-light-breath,
+html[data-candle-season] .prayer-light,
+html[data-candle-season] .prayer-light-breath {
  display: none;
 }
 
@@ -11011,6 +11041,28 @@ html[data-reading-mode="councils"] [data-prayer-reader],
 html[data-reading-mode="cappadocian"] [data-prayer-reader] {
  --prayer-rest: 0.62;
  --prayer-unlit: 0.74;
+}
+/* A look's two steps (1.9, build 90 note 8). Until then a look took Dark's
+   steps or Light's and its picture was never asked. Each has been asked now
+   (scripts/scene-check.mjs): how far back may the closing line (the ink at
+   85%) step and still stand at 4.6:1 anywhere above the place the look's
+   foot begins? The nine dark looks answer between 57 and 61 percent, Incense
+   asking the most, so they step back as far as Monastery, a little less
+   than Dark. Light's own steps hold on the light looks; Blush asks a little
+   more of its ink.
+   A line inside the foot is held to nothing here. The foot is the look's
+   picture drawn over the page's last lines, which go quiet into it by the
+   look's own design, and a step that kept them whole there would take the
+   lit line's contrast from the whole screen to do it.
+   The first rule weighs nothing (:where), so Light's own rule above still
+   answers for a light look, and Blush's own rule below answers last. */
+:where(html[data-look]) [data-prayer-reader] {
+ --prayer-rest: 0.62;
+ --prayer-unlit: 0.74;
+}
+html[data-look="blush"] [data-prayer-reader] {
+ --prayer-rest: 0.83;
+ --prayer-unlit: 0.89;
 }
 :where([data-motion="full"]) [data-prayer-reader] [data-step] > * {
  transition: opacity 420ms var(--ease-house);
@@ -11083,9 +11135,12 @@ html[data-reading-mode="cappadocian"] [data-prayer-reader] {
 
 /* The line being prayed is the page's accent: white with a soft white glow
    (the owner, 2026-10-28: the accent is a glowing white, never yellow). On
-   Parchment, where white cannot glow, it is the plain ink at full strength. */
+   Parchment, where white cannot glow, it is the plain ink at full strength.
+   The glow is the palette's ink (1.9, build 90 note 8), which is that white
+   on Dark and True black and a look's own light on a look, never a colour
+   typed in here. */
 :where([data-motion="full"]) [data-prayer-reader][data-following] [data-line][data-lit] {
- text-shadow: 0 0 18px rgba(255, 255, 255, 0.35);
+ text-shadow: 0 0 18px color-mix(in srgb, var(--color-paper) 35%, transparent);
 }
 html[data-reading-mode="parchment"] [data-prayer-reader] [data-line][data-lit] {
  text-shadow: none;

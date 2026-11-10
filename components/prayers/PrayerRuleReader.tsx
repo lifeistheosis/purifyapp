@@ -38,12 +38,15 @@
 // on the 1.7 page, not beside it: the same scroll lights the line, and now
 // also marks the prayer it stands in (service/useLitLine.ts), so the prayers
 // before and after step back further than its own unlit lines; the prayers
-// stand in the middle of the page; behind them is the page's own icon
-// (lib/prayers/serviceArt.ts), drawn large, soft, dim and without its
-// colour, so the light is white, with a faint white breath that drifts only
-// while motion is on; and once Pray with has scrolled away, its chant waits
-// at the foot of the screen (components/player/PrayWith.tsx). Still no count
-// and no place kept.
+// stand in the middle of the page; behind them is a soft light; and once
+// Pray with has scrolled away, its chant waits at the foot of the screen
+// (components/player/PrayWith.tsx). Still no count and no place kept.
+//
+// That light was the page's own icon, drawn large, soft, dim and without its
+// colour, under a faint white breath. From 1.9 (build 90 note 8, "make it
+// more, like, fit the theme the user picked") it is the palette's own light,
+// a soft pool or nothing, and the ground is the palette's own, whole
+// (service/PrayerLight.tsx). The icon still heads the page.
 //
 // "Those I pray for" (1.7.1, lib/prayers/commemoration.ts): the reader's own
 // diptychs, living and departed, and the names they brought from the prayer
@@ -59,6 +62,7 @@ import { Fragment, useMemo, useRef, useState, useSyncExternalStore } from "react
 import { useTranslate } from "@/components/i18n/MessagesProvider";
 import { CampaignPsalmSteps } from "@/components/campaigns/CampaignPsalmSteps";
 import { CommemorationStep } from "@/components/prayers/service/CommemorationStep";
+import { PrayerLight } from "@/components/prayers/service/PrayerLight";
 import { ServiceHeader } from "@/components/prayers/service/ServiceHeader";
 import { PrayerStep } from "@/components/prayers/service/PrayerStep";
 import { useEasyScroll } from "@/components/prayers/service/useEasyScroll";
@@ -69,7 +73,6 @@ import { isRuleBookmarked, toggleRuleBookmark } from "@/lib/prayers/bookmarks";
 import { carriedFor } from "@/lib/campaigns/carried";
 import { useCarried } from "@/lib/campaigns/useCarried";
 import { commemorationPlacement, placeOf } from "@/lib/prayers/commemoration";
-import { serviceArt } from "@/lib/prayers/serviceArt";
 import { markRuleCompletedToday, readTodayDone, useIntentions, writeTodayDone, PRAYER_EVENT } from "@/lib/prayers/storage";
 import type { Prayer, Rule } from "@/lib/prayers/types";
 import { useRememberedPlaces } from "@/lib/prayers/useCommemoration";
@@ -274,15 +277,12 @@ export function PrayerRuleReader({
     return v === key ? undefined : v;
   };
 
-  const light = serviceArt(artId ?? rule.id);
-
   return (
     <>
-      {/* The icon's light behind the prayer: fixed, so it stays behind the
-          line being prayed as the page moves, and drawn once (globals.css,
-          .prayer-light). Decoration: the icon itself heads the page. */}
-      <div aria-hidden className="prayer-light" style={{ backgroundImage: `url(${light.src})` }} />
-      <div aria-hidden className="prayer-light-breath" />
+      {/* The light behind the prayer: the palette's own soft pool, or nothing
+          (service/PrayerLight.tsx; globals.css, .prayer-light). The icon
+          itself heads the page. */}
+      <PrayerLight />
       <article ref={article} data-prayer-reader className="relative mx-auto w-full max-w-[640px]">
         {/* The head of the page and its foot are places Easy Scroll can rest too. */}
         <span aria-hidden data-snap-edge="top" />

@@ -18,6 +18,14 @@ import { serviceArt, serviceArtPairs } from "@/lib/prayers/serviceArt";
  * on the 1.7 prayer page and its one scroll-driven light, not beside it.
  * The 1.7 rules the page keeps (no count, the lit line behind the motion
  * switch) are prayerPages.test.ts.
+ *
+ * "The icon's light behind" was the page's own icon, blurred and grey, on
+ * every palette. On build 90 he asked for the ground to fit the theme a
+ * reader picked (note 8), and to its first call, his "All recommendations",
+ * that light left the ground: the icon stays at the page's head, and the
+ * light behind the prayer is the palette's own, a soft pool or nothing.
+ * What is held here is that shape; every palette's own light and its sums
+ * are prayerLight.test.ts.
  */
 
 const ROOT = process.cwd();
@@ -41,43 +49,66 @@ const LIT = "components/prayers/service/useLitLine.ts";
 const WITH = "components/player/PrayWith.tsx";
 const css = read("app/globals.css");
 
-describe("the icon's light behind the prayer", () => {
-  it("is the page's own icon, the one at its head", () => {
+const LIGHT = "components/prayers/service/PrayerLight.tsx";
+
+describe("the light behind the prayer", () => {
+  it("is no longer the page's icon: the icon stays at the head, and nothing of it lies behind the prayers", () => {
     const reader = code(READER);
-    expect(reader).toContain("const light = serviceArt(artId ?? rule.id);");
-    expect(reader).toMatch(/<div aria-hidden className="prayer-light" style=\{\{ backgroundImage: `url\(\$\{light\.src\}\)` \}\} \/>/);
-    // The head's plate is drawn from the same id.
+    // The head's plate is still drawn from the page's own id.
     expect(reader).toContain("artId={artId ?? rule.id}");
     // Every prayer page has one, under Christ Pantocrator where no other is paired.
     for (const [id] of serviceArtPairs()) expect(serviceArt(id).src).toMatch(/^\/icons\/prayer\/.+\.jpg$/);
+    // And the reader draws no picture of its own behind the words (build 90 note 8, his call 1).
+    expect(reader).not.toContain("serviceArt(");
+    expect(reader).not.toContain("backgroundImage");
+    expect(reader).not.toContain('className="prayer-light"');
+    const light = code(LIGHT);
+    expect(light).not.toMatch(/backgroundImage|url\(|<img|serviceArt/);
   });
 
   it("stands behind the words: before them in the page, the words lifted over it", () => {
     const reader = code(READER);
-    expect(reader.indexOf('className="prayer-light"')).toBeLessThan(reader.indexOf("<article"));
+    expect(reader.indexOf("<PrayerLight />")).toBeGreaterThan(-1);
+    expect(reader.indexOf("<PrayerLight />")).toBeLessThan(reader.indexOf("<article"));
     expect(reader).toContain('<article ref={article} data-prayer-reader className="relative ');
+    // Two layers and no more: the pool, and the breath over it. Neither is read aloud.
+    const light = code(LIGHT);
+    expect(light).toMatch(/<div aria-hidden className="prayer-light" \/>\s*<div\s+aria-hidden\s+className="prayer-light-breath"\s+data-mock-allow="mirror"\s+data-mock-why="[^"]+"\s*\/>/);
   });
 
-  it("is soft, dim and white: the icon without its colour, never the gold of the panel", () => {
-    const light = rule(css, ".prayer-light");
-    expect(light).toContain("position: fixed;");
-    expect(light).toMatch(/filter: blur\(\d+px\) grayscale\(1\);/);
-    expect(light).not.toMatch(/sepia|saturate|hue-rotate/);
-    expect(Number(/opacity: ([\d.]+);/.exec(light)?.[1])).toBeLessThanOrEqual(0.3);
-    expect(rule(css, ".prayer-light-breath")).toMatch(/rgb\(255 255 255 \/ 0\.\d+\)/);
+  it("is a soft pool in the palette's own ink: no picture, no blur, no white typed in", () => {
+    const both = rule(css, ".prayer-light,\n.prayer-light-breath");
+    expect(both).toContain("position: fixed;");
+    expect(both).toContain("pointer-events: none;");
+    const pool = /\n\.prayer-light \{\n([^}]*)\}/.exec(css)?.[1] ?? "";
+    const breath = /[^,]\n\.prayer-light-breath \{\n([^}]*)\}/.exec(css)?.[1] ?? "";
+    expect(pool).toMatch(/background: radial-gradient\([^;]*color-mix\(in srgb, var\(--color-paper\) var\(--prayer-pool\), transparent\), transparent \d+%\);/);
+    expect(breath).toMatch(/background: radial-gradient\([^;]*color-mix\(in srgb, var\(--color-paper\) var\(--prayer-breath\), transparent\), transparent \d+%\);/);
+    for (const body of [both, pool, breath]) {
+      expect(body).not.toMatch(/filter|url\(|opacity|conic|rgba?\(|#[0-9a-f]{3,8}\b|sepia|saturate|hue-rotate/i);
+    }
   });
 
   it("is drawn once and never moves; only the breath drifts, and only with motion on", () => {
-    expect(rule(css, ".prayer-light")).not.toContain("animation");
-    expect(rule(css, ".prayer-light-breath")).toMatch(/animation: prayer-light-drift \d+s ease-in-out infinite alternate;/);
+    const pool = /\n\.prayer-light \{\n([^}]*)\}/.exec(css)?.[1] ?? "";
+    const breath = /[^,]\n\.prayer-light-breath \{\n([^}]*)\}/.exec(css)?.[1] ?? "";
+    expect(pool).toBeTruthy();
+    expect(pool).not.toContain("animation");
+    expect(rule(css, ".prayer-light,\n.prayer-light-breath")).not.toContain("animation");
+    expect(breath).toMatch(/animation: prayer-light-drift \d+s ease-in-out infinite alternate;/);
     expect(rule(css, ':where([data-motion="reduce"]) .prayer-light-breath')).toContain("animation: none;");
-    // No blur on the layer that moves.
-    expect(rule(css, ".prayer-light-breath")).not.toContain("filter");
   });
 
-  it("is a soft shade on Parchment, where white cannot be seen", () => {
-    expect(rule(css, 'html[data-reading-mode="parchment"] .prayer-light')).toMatch(/opacity: 0\.1;/);
-    expect(rule(css, 'html[data-reading-mode="parchment"] .prayer-light-breath')).toContain("display: none;");
+  it("is nothing at all on paper, on a look, and in a fast: neither pool nor breath is drawn", () => {
+    const none = [
+      'html[data-reading-mode="parchment"] .prayer-light',
+      'html[data-reading-mode="parchment"] .prayer-light-breath',
+      "html[data-look] .prayer-light",
+      "html[data-look] .prayer-light-breath",
+      "html[data-candle-season] .prayer-light",
+      "html[data-candle-season] .prayer-light-breath",
+    ].join(",\n");
+    expect(rule(css, none)).toContain("display: none;");
   });
 });
 
@@ -116,11 +147,12 @@ describe("the line being prayed lit, the rest dim", () => {
     expect(css).not.toMatch(/:where\(\[data-motion="reduce"\]\)[^{]*\[data-step\][^{]*\{\s*opacity/);
   });
 
-  it("lights the line being prayed in white with a soft glow, plain ink on Parchment", () => {
-    expect(rule(css, ':where([data-motion="full"]) [data-prayer-reader][data-following] [data-line][data-lit]')).toBeTruthy();
-    expect(css).toMatch(
-      /:where\(\[data-motion="full"\]\) \[data-prayer-reader\]\[data-following\] \[data-line\]\[data-lit\] \{\s*text-shadow: 0 0 \d+px rgba\(255, 255, 255, 0\.\d+\);/,
-    );
+  it("lights the line being prayed with a soft glow of the palette's own ink, plain ink on Parchment", () => {
+    // White on Dark and True black, whose ink is that white (the owner, 2026-10-28: the accent is a
+    // glowing white, never yellow); a look's own light on a look. Never a colour typed in (note 8).
+    const lit = rule(css, ':where([data-motion="full"]) [data-prayer-reader][data-following] [data-line][data-lit]');
+    expect(lit).toMatch(/text-shadow: 0 0 \d+px color-mix\(in srgb, var\(--color-paper\) \d+%, transparent\);/);
+    expect(lit).not.toMatch(/rgba?\(|#[0-9a-f]{3,8}\b/i);
     expect(rule(css, 'html[data-reading-mode="parchment"] [data-prayer-reader] [data-line][data-lit]')).toContain("text-shadow: none;");
   });
 
