@@ -77,8 +77,6 @@ const WORDS: Record<string, string> = {
   // Churches, editions, sources and people, by their own names.
   OCA: "the Orthodox Church in America's own initials", Nestle: "an edition", "Ante-Nicene": "a series' title", Schaff: "an editor", Wace: "an editor",
   Edgar: "the owner, as he signs", ChristosAnesti: "a reader's name, as he gives it", Markos: "a reader's name, as he gives it",
-  // Two palettes as the Plus sheet's title still names them, until its new words (waiting on the owner's yes) come.
-  Candlelight: "", Monastery: "",
   // A typeface, a print, formats, units and terms of the trade.
   Lora: "a typeface", "Giclée": "a kind of print", "Wi-Fi": "", OLED: "", PDF: "", JPEG: "", PNG: "", WebP: "", AVIF: "", JSON: "",
   Markdown: "", MB: "", IP: "", URL: "", USD: "", OAuth: "", localStorage: "a browser's store, by its name in code", push: "the phone's own push service",

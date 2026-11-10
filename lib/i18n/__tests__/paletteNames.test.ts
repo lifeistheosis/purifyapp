@@ -76,10 +76,6 @@ const SAME_AS_ENGLISH: Record<string, string> = {
 const NOT_THE_PALETTE: Record<string, string> = {
   "*:ui.theMorningAndEveningRules": "St. Tikhon's Monastery Press, a publisher's name, kept as it is printed",
   "hu:player.offline.waitingWifi": "Wi-Fire, Wi-Fi with the Hungarian ending -re",
-  // Left as it was at the arbiter's word (2026-11-10): the Themes chat has new words for it,
-  // "Twenty reading modes are part of Purify Plus", waiting on the owner's yes
-  // (docs/1.9-build/notes/themes-fable.md, section 24). It is translated with them, and this goes then.
-  "*:plus.palettes.title": "new words for it wait on the owner's yes",
 };
 
 /** Where `name` stands as a word of its own in `line`. */
