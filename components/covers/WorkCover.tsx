@@ -95,6 +95,12 @@ const GROUND = "radial-gradient(130% 75% at 50% 0%, rgba(255,255,255,0.14), rgba
 /** A book with no picture: a pool of light where its title stands, the edges falling away to black. */
 const LIT =
   "radial-gradient(85% 55% at 50% 40%, rgba(255,255,255,0.16), rgba(255,255,255,0.05) 55%, rgba(255,255,255,0) 80%), linear-gradient(to bottom, rgba(0,0,0,0) 55%, rgba(0,0,0,0.45))";
+/**
+ * The plate's light, for a face with no picture as for a book (1.9, build 90
+ * note 3: a council's Father with no settled icon stands on this plate, never
+ * a letter, never another saint's face: components/councils/CouncilFathers.tsx).
+ */
+export const PLATE_LIGHT = LIT;
 /** The fade the words sit on: clear where it begins, eased, as dark as their first line where they start. */
 const FADE = "linear-gradient(to bottom, rgba(0,0,0,0), rgba(0,0,0,0.1) 30%, rgba(0,0,0,0.3) 55%, rgba(0,0,0,0.56) 80%, rgba(0,0,0,0.72))";
 /** And under the words, darker still to the foot. */

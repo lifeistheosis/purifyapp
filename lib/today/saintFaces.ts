@@ -261,6 +261,16 @@ const ICON_FACES: Readonly<Record<string, readonly [number, number, number?]>> =
   "justinian-the-great.v2.jpg": [0.5, 0.27, 0.51],
 };
 
+/**
+ * Where the face is across a carried icon placed by eye (ICON_FACES above),
+ * 0 to 1, for a frame cut about it (faceShift); undefined for any other, a
+ * figure standing in its middle (1.9, build 90 note 3: the councils' faces).
+ */
+export function iconAcross(src: string): number | undefined {
+  const file = src.split(/[?#]/)[0].split("/").pop() ?? "";
+  return ICON_FACES[file]?.[0];
+}
+
 /** A carried icon whose rights are recorded, as a face: its point, its circle where it has one, facing us. */
 function carriedFace(file: string, src: string): QuoteFace | null {
   if (!SHAREABLE_ICONS.has(file)) return null;

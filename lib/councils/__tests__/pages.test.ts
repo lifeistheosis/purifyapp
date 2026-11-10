@@ -98,17 +98,19 @@ describe("a council's page (C, at a glance)", () => {
     expect(code("components/councils/CouncilHero.tsx")).toContain('"picture-melt"');
   });
 
-  it("draws a Father with no settled picture as a halo and his initial, and the one shown lit in the page's ink, never gold", () => {
+  it("stands every Father on the plate, his picture over it cut about his face, never a letter, and the one shown lit in the page's ink, never gold", () => {
     const fathers = code("components/councils/CouncilFathers.tsx");
-    // His settled picture; with no signal the settled icon the app carries,
-    // where he has one (build 83's walk of the apps); then his name.
-    expect(fathers).toContain(
-      "const tries: FacePictureData[] = face.picture ? [face.picture, ...(face.picture.fallback ? [face.picture.fallback] : [])] : [];",
-    );
-    expect(fathers).toContain("const picture = tries.find((p) => !gone.includes(p.src)) ?? null;");
-    expect(fathers).toMatch(/\{picture \? \(\s*<FacePicture\s+key=\{picture\.src\}\s+picture=\{picture\}/);
-    expect(fathers).toContain('<Halo initial={face.initial} shape={shape} />');
-    expect(fathers).toContain('data-father-halo=""');
+    // Build 90 note 3: the plate a book with no cover wears, under every face;
+    // his settled picture over it through the house's one framed face, cut
+    // about his face, with the settled icon the app carries behind a streamed
+    // portrait for no signal (build 83's walk of the apps); never mirrored.
+    expect(fathers).toContain('<span data-father-plate="" className="absolute inset-0 rounded-[inherit]" style={{ backgroundImage: PLATE_LIGHT }} />');
+    expect(fathers).toContain('import { PLATE_LIGHT } from "@/components/covers/WorkCover";');
+    expect(fathers).toContain("fallback: p.fallback?.src ?? null");
+    expect(fathers).toMatch(/<SaintFace key=\{picture\.src\} picture=\{picture\} zoom=\{shape === "round" \? 1\.9 : 1\.4\} across=\{p\?\.across\}/);
+    expect(fathers).toMatch(/aria-hidden\s+dir="ltr"/);
+    // No letter, no halo, no second drawing of a face.
+    for (const gone of ["Halo", "initial", "data-father-halo", "useArrivingImage", "<img"]) expect(fathers, gone).not.toContain(gone);
     expect(fathers).toContain("aria-pressed={on}");
     expect(fathers).toContain("0_0_0_3.5px_var(--color-paper),0_0_18px_3px_rgb(255_255_255/0.3)");
     // A council with one Father has no row to choose from.

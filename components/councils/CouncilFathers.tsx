@@ -1,13 +1,16 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useState, type CSSProperties } from "react";
+import { useState } from "react";
 
+import { PLATE_LIGHT } from "@/components/covers/WorkCover";
 import { useTranslate } from "@/components/i18n/MessagesProvider";
+import { SaintFace } from "@/components/today/SaintFace";
 import { cn } from "@/lib/cn";
 import { faceLabelSize } from "@/lib/councils/faceLabel";
-import type { CouncilFace, FacePicture as FacePictureData } from "@/lib/councils/fathers";
-import { useArrivingImage } from "@/lib/ui/useArrivingImage";
+import type { CouncilFace } from "@/lib/councils/fathers";
+import { avifFor } from "@/lib/media/streamed";
+import type { SaintPicture } from "@/lib/today/saintFaces";
 
 /**
  * "The Holy Fathers principally associated", one at a time (1.8, the owner's
@@ -18,9 +21,10 @@ import { useArrivingImage } from "@/lib/ui/useArrivingImage";
  * a face shows him; the one shown is lit, ringed in the page's ink with a
  * soft white glow, never gold.
  *
- * A Father with no settled picture (lib/councils/fathers.ts) is drawn by his
- * name: a halo and his initial on the dark ground a cover has, never a face.
- * A council with one Father has no row to choose from.
+ * A Father with no settled picture (lib/councils/fathers.ts) stands on the
+ * plate a book with no cover wears, his name beside it, never a letter and
+ * never another saint's face (1.9, build 90 note 3). A council with one
+ * Father has no row to choose from.
  */
 export function CouncilFathers({ fathers }: { fathers: CouncilFace[] }) {
   const { t } = useTranslate();
@@ -103,95 +107,41 @@ export function CouncilFathers({ fathers }: { fathers: CouncilFace[] }) {
 }
 
 /**
- * A Father's face, as a portrait for the card or a round to tap: his settled
- * picture, cut nearer to his face, fading in as it arrives; or, with none, a
- * halo and his initial. Either way a dark island, as a cover is, on every
- * palette.
- *
- * With no signal (build 83's walk of the apps) a portrait the website streams
- * cannot come: then the icon the app carries of him, where its rights are
- * settled (lib/councils/fathers.ts, `fallback`), and only then his name.
+ * A Father's face, as a portrait for the card or a round to tap (1.9, build
+ * 90 note 3; his words: "the profile pictures of the Holy Fathers principally
+ * associated either don't show, or they do show and it's not framed
+ * correctly"). It stands on the plate a book with no cover wears (the
+ * reading room's own light, PLATE_LIGHT), and his settled picture comes over
+ * it as it arrives, drawn by the house's one framed face
+ * (components/today/SaintFace.tsx): cut about his face where his picture has
+ * him to one side (`across`, lib/today/saintFaces.ts faceShift), and never
+ * mirrored in Arabic, as a picture is not. With no signal a portrait the
+ * website streams gives way to the icon the app carries of him, where its
+ * rights are settled (lib/councils/fathers.ts, `fallback`); when nothing can
+ * be had, or he has no settled picture, the plate is what is seen, his name
+ * beside it. Never a letter, never another saint's face (the owner's yes).
+ * Either way a dark island, as a cover is, on every palette.
  */
-export function FatherFace({ face, shape }: { face: Pick<CouncilFace, "picture" | "initial">; shape: "portrait" | "round" }) {
-  // The pictures that could not come, so the next is tried, and then his name.
-  const [gone, setGone] = useState<readonly string[]>([]);
+export function FatherFace({ face, shape }: { face: Pick<CouncilFace, "picture">; shape: "portrait" | "round" }) {
   const box = shape === "portrait" ? "h-32 w-24 rounded-[12px]" : "size-11 rounded-full";
-  const tries: FacePictureData[] = face.picture ? [face.picture, ...(face.picture.fallback ? [face.picture.fallback] : [])] : [];
-  const picture = tries.find((p) => !gone.includes(p.src)) ?? null;
+  const p = face.picture;
+  const picture: SaintPicture | null = p
+    ? { kind: "cover", src: p.src, avif: avifFor(p.src), fallback: p.fallback?.src ?? null, focusY: p.focusY }
+    : null;
   return (
     <span
       aria-hidden
+      dir="ltr"
       className={cn(
         "dark-island relative block shrink-0 overflow-hidden bg-night shadow-[0_10px_20px_-10px_rgba(0,0,0,0.9)]",
         box,
       )}
     >
+      <span data-father-plate="" className="absolute inset-0 rounded-[inherit]" style={{ backgroundImage: PLATE_LIGHT }} />
       {picture ? (
-        <FacePicture
-          key={picture.src}
-          picture={picture}
-          zoom={shape === "round" ? 1.9 : 1.4}
-          onFail={() => setGone((g) => (g.includes(picture.src) ? g : [...g, picture.src]))}
-        />
-      ) : (
-        <Halo initial={face.initial} shape={shape} />
-      )}
+        <SaintFace key={picture.src} picture={picture} zoom={shape === "round" ? 1.9 : 1.4} across={p?.across} className="absolute inset-0" />
+      ) : null}
       <span aria-hidden className="pointer-events-none absolute inset-0 rounded-[inherit] ring-1 ring-inset ring-white/10" />
-    </span>
-  );
-}
-
-function FacePicture({ picture, zoom, onFail }: { picture: FacePictureData; zoom: number; onFail: () => void }) {
-  const { ref, onArrive } = useArrivingImage(picture.src);
-  // One that failed before the page could listen.
-  useEffect(() => {
-    const img = ref.current;
-    if (img && img.complete && img.currentSrc && img.naturalWidth === 0) onFail();
-  }, [ref, onFail]);
-  const at = `50% ${picture.focusY}%`;
-  const style: CSSProperties = { objectPosition: at, transformOrigin: at, transform: `scale(${zoom})` };
-  return (
-    // eslint-disable-next-line @next/next/no-img-element -- the cover's own picture, cut nearer.
-    <img
-      ref={ref}
-      src={picture.src}
-      alt=""
-      loading="lazy"
-      decoding="async"
-      onLoad={onArrive}
-      onError={onFail}
-      className="img-arrive absolute inset-0 h-full w-full object-cover"
-      style={style}
-    />
-  );
-}
-
-/** No settled picture: a halo and his initial, lit softly from above, never a face. */
-function Halo({ initial, shape }: { initial: string; shape: "portrait" | "round" }) {
-  const ground = {
-    backgroundImage:
-      shape === "round"
-        ? "radial-gradient(circle at 50% 40%, rgb(255 255 255 / 0.12), rgb(255 255 255 / 0.03) 70%)"
-        : "radial-gradient(80% 60% at 50% 38%, rgb(255 255 255 / 0.12), rgb(255 255 255 / 0) 75%)",
-  } as CSSProperties;
-  if (shape === "round") {
-    return (
-      <span data-father-halo="" className="absolute inset-0 grid place-items-center font-serif text-[17px] font-semibold text-paper/75" style={ground}>
-        {initial}
-      </span>
-    );
-  }
-  return (
-    <span data-father-halo="" className="absolute inset-0 rounded-[inherit]" style={ground}>
-      <span className="absolute inset-[3px] rounded-[inherit] ring-1 ring-inset ring-white/10" />
-      <span
-        className={cn(
-          "absolute left-1/2 grid -translate-x-1/2 place-items-center rounded-full font-serif font-semibold text-paper/80",
-          "top-[30px] size-10 text-[19px] ring-[1.3px] ring-white/55 shadow-[0_0_12px_rgb(255_255_255/0.25),inset_0_0_10px_rgb(255_255_255/0.08)]",
-        )}
-      >
-        {initial}
-      </span>
     </span>
   );
 }

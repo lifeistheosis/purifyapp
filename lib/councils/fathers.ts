@@ -1,7 +1,7 @@
-import { coverArtFor, coverSrc } from "@/lib/reading/coverArt";
+import { coverArtFor, coverSrc, type CoverArt } from "@/lib/reading/coverArt";
 import { iconRightsFor } from "@/lib/saints/iconRights";
 import { getSaint } from "@/lib/saints/saints";
-import { ICON_FOCUS } from "@/lib/today/saintFaces";
+import { COVER_FACES, ICON_FOCUS, iconAcross } from "@/lib/today/saintFaces";
 
 import type { Council } from "./councils";
 
@@ -14,11 +14,18 @@ import type { Council } from "./councils";
  * A face is a settled picture only: the one the reading room's covers of him
  * carry (lib/reading/coverArt.ts), opened, cut and credited. A Father whose
  * icon in the library has no rights record yet (lib/saints/iconRights.ts),
- * or who has no icon at all, is drawn by his name, a halo and his initial on
- * the page's own ground, never a face, until his icon is checked, as the
- * room's covers and the widgets already do (the sheet's "A Father with no
- * settled icon"). Of the thirty-six Fathers the councils name, fifteen have a
- * settled picture (lib/councils/__tests__/page.test.ts counts them).
+ * or who has no icon at all, stands on the plate a book with no cover wears,
+ * his name beside it (1.9, build 90 note 3, the owner's yes: "a plate, never
+ * another saint's face"; until then a halo and his initial, which read as a
+ * picture missing). lib/councils/__tests__/page.test.ts counts the faces.
+ *
+ * FRAMED ABOUT HIS FACE (build 90 note 3: "they do show and it's not framed
+ * correctly"). A portrait with him to one side is cut about his face, where
+ * COVER_FACES records it, and a carried icon placed by eye where ICON_FACES
+ * does (lib/today/saintFaces.ts), through the house's one framed face
+ * (components/today/SaintFace.tsx, faceShift). St John of Damascus stands at
+ * 0.71 across his portrait, St Gregory the Theologian at 0.65, St Cyril of
+ * Alexandria at 0.36: each was cut off-centre about the portrait's middle.
  *
  * WITH NO SIGNAL (build 83's walk of the apps). Most of those pictures are
  * cover portraits on the website, which the apps ask for, so with no signal
@@ -33,6 +40,8 @@ export type FacePicture = {
   src: string;
   /** Where his face is, percent from its top. */
   focusY: number;
+  /** Where his face is across it, 0 to 1, where that is recorded: the frame is cut about it. */
+  across?: number;
 };
 
 export type CouncilFace = {
@@ -40,8 +49,6 @@ export type CouncilFace = {
   name: string;
   /** The word under his face: his first name, or what tells two of one name apart. */
   label: string;
-  /** His initial, drawn in the halo when he has no settled picture. */
-  initial: string;
   /** His byname on his saint's page ("Pillar of Orthodoxy"), when he has one. */
   byname?: string;
   /** His part at the council. */
@@ -71,6 +78,12 @@ export function carriedIcon(saint: { iconUrl?: string } | null | undefined): Fac
   return saint?.iconUrl && iconRightsFor(saint.iconUrl) ? { src: saint.iconUrl, focusY: ICON_FOCUS } : null;
 }
 
+/** Where his face is across his picture, where it is recorded: a portrait's in COVER_FACES, a carried icon's in ICON_FACES. */
+function placeOf(art: CoverArt, slug: string | undefined): { across?: number } {
+  const across = art.kind === "streamed" ? (slug ? COVER_FACES[slug]?.[0] : undefined) : iconAcross(art.file);
+  return across === undefined ? {} : { across };
+}
+
 export function fatherFaces(c: Pick<Council, "principalFathers">, native: boolean): CouncilFace[] {
   const fathers = c.principalFathers ?? [];
   const firsts = fathers.map((f) => firstNameOf(f.name));
@@ -83,11 +96,10 @@ export function fatherFaces(c: Pick<Council, "principalFathers">, native: boolea
     return {
       name: f.name,
       label: shared ? lastWordOf(f.name) : firsts[i],
-      initial: firsts[i].charAt(0).toUpperCase(),
       ...(saint?.byname ? { byname: saint.byname } : {}),
       role: f.role,
       ...(saint ? { href: `/saints/${saint.slug}` } : {}),
-      ...(art ? { picture: { src: coverSrc(art, native), focusY: art.focusY, ...(fallback ? { fallback } : {}) } } : {}),
+      ...(art ? { picture: { src: coverSrc(art, native), focusY: art.focusY, ...placeOf(art, saint?.slug), ...(fallback ? { fallback } : {}) } } : {}),
     };
   });
 }

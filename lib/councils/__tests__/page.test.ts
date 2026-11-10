@@ -30,7 +30,7 @@ import {
 import { COVER_ART } from "@/lib/reading/coverArt";
 import { iconRightsFor, isUnverified } from "@/lib/saints/iconRights";
 import { SAINTS } from "@/lib/saints/saints";
-import { ICON_FOCUS } from "@/lib/today/saintFaces";
+import { COVER_FACES, ICON_FOCUS, iconAcross } from "@/lib/today/saintFaces";
 
 const council = (slug: string) => {
   const c = getCouncil(slug);
@@ -171,8 +171,32 @@ describe("the Holy Fathers principally associated", () => {
     // An icon in the library with no rights record is never a face here.
     const library = SAINTS.filter((s) => s.iconUrl && !COVER_ART[s.slug]).map((s) => `/saints/${s.slug}`);
     for (const f of all) if (f.href && library.includes(f.href)) expect(f.picture, f.name).toBeUndefined();
-    // Drawn by name: a halo and his initial.
-    for (const f of all.filter((x) => !x.picture)) expect(f.initial, f.name).toMatch(/^\p{Lu}$/u);
+    // No letter in his place (1.9, build 90 note 3): one with no picture stands on the plate.
+    for (const f of all) expect(f, f.name).not.toHaveProperty("initial");
+  });
+
+  // Build 90 note 3, his words: "they do show and it's not framed correctly".
+  // Each face is cut about the face where his picture has him to one side: a
+  // portrait where COVER_FACES records it, a carried icon where ICON_FACES does.
+  it("cuts every face about the face, where his picture records where it is", () => {
+    for (const native of [false, true]) {
+      for (const c of COUNCILS) {
+        for (const f of fatherFaces(c, native)) {
+          if (!f.picture) continue;
+          const slug = f.href!.replace("/saints/", "");
+          const art = COVER_ART[slug];
+          const want = art.kind === "streamed" ? COVER_FACES[slug]?.[0] : iconAcross(art.file);
+          expect(f.picture.across, `${c.slug}: ${f.name}`).toBe(want);
+          // Every portrait the website streams has its face recorded.
+          if (art.kind === "streamed") expect(want, `${slug}'s face in COVER_FACES`).toBeDefined();
+        }
+      }
+    }
+    // The three his screenshot and the walk found off-centre.
+    const second = fatherFaces(council("second-nicaea"), false);
+    expect(second.find((f) => /John/.test(f.name))?.picture?.across).toBe(0.71);
+    expect(fatherFaces(council("first-constantinople"), false).find((f) => /Theologian/.test(f.name))?.picture?.across).toBe(0.65);
+    expect(fatherFaces(council("ephesus"), false).find((f) => /Cyril/.test(f.name))?.picture?.across).toBe(0.36);
   });
 
   it("puts each Father's first name under his face, and tells two of one name apart", () => {
