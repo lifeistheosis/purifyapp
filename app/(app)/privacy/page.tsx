@@ -639,10 +639,10 @@ export default async function PrivacyPage() {
  <p className="font-serif text-body text-paper/65 leading-[1.7]">
  Questions, corrections, or a privacy concern? Write to{" "}
  <a
- href="mailto:team@purify.app"
+ href="mailto:legal@purifyapp.net"
  className="text-paper underline underline-offset-2 decoration-paper/30 hover:decoration-paper"
  >
- team@purify.app
+ legal@purifyapp.net
  </a>{" "}
  and we&rsquo;ll get back to you.
  </p>
@@ -1332,10 +1332,10 @@ function PrivacyDe() {
  <p className="font-serif text-body text-paper/65 leading-[1.7]">
  Fragen, Korrekturen oder ein Datenschutz-Anliegen? Schreib an{" "}
  <a
- href="mailto:team@purify.app"
+ href="mailto:legal@purifyapp.net"
  className="text-paper underline underline-offset-2 decoration-paper/30 hover:decoration-paper"
  >
- team@purify.app
+ legal@purifyapp.net
  </a>
  , und wir melden uns bei dir.
  </p>

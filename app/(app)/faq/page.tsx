@@ -210,7 +210,7 @@ const QUESTIONS: QA[] = [
  <p>
  <T k="ui.forFeedbackEmail" />{" "}
  <a
- href="mailto:team@purify.app"
+ href="mailto:support@purifyapp.net"
  className="text-paper underline underline-offset-2 decoration-paper/30 hover:decoration-paper"
  >
  <T k="ui.teamPurifyApp" />
@@ -346,7 +346,7 @@ const QUESTIONS_DE: QA[] = [
  <p>
  <T k="ui.fRRCkmeldungSchreib" />{" "}
  <a
- href="mailto:team@purify.app"
+ href="mailto:support@purifyapp.net"
  className="text-paper underline underline-offset-2 decoration-paper/30 hover:decoration-paper"
  >
  <T k="ui.teamPurifyApp" />
