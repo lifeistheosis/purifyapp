@@ -7,11 +7,12 @@
 // public/whats-new/<version>/. Replace the set with each release that has
 // something to show; strings are catalog keys.
 //
-// The 1.8 set has its headline and no pills, as 1.7's had: a pill opens a
-// real screenshot, taken from the live site, and 1.8's features are live only
-// once it is pushed. So the top of What's New says what 1.8 is in words (its
-// strings in all 21 languages) and draws no pill. The 1.6 pills and their
-// pictures left with the 1.6 set; the 1.6 release email keeps its own picture.
+// The 1.9 set has its headline and no pills, as 1.7's and 1.8's had: a pill
+// opens a real screenshot, taken from the live site, and 1.9's features are
+// live only once it is pushed. So the top of What's New says what 1.9 is in
+// words (its strings in all 21 languages) and draws no pill. The 1.6 pills and
+// their pictures left with the 1.6 set; the 1.6 release email keeps its own
+// picture.
 
 export type Highlight = {
   /** The pill's own name, unique in its set. */
@@ -26,7 +27,7 @@ export type Highlight = {
 };
 
 export const RELEASE_HIGHLIGHTS = {
-  version: "1.8",
+  version: "1.9",
   eyebrow: "whatsnew.highlights.eyebrow",
   title: "whatsnew.highlights.title",
   sub: "whatsnew.highlights.sub",

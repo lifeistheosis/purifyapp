@@ -1,0 +1,24 @@
+{
+  "version": "1.9",
+  "categories": {
+    "fixes": {
+      "status": "shipped"
+    },
+    "saints": {
+      "status": "shipped"
+    },
+    "library": {
+      "status": "shipped"
+    },
+    "shop": {
+      "status": "shipped"
+    },
+    "perks": {
+      "status": "shipped"
+    },
+    "stats": {
+      "status": "skipped",
+      "reason": "No totals are restated this release. The library grew (five Bibles to download, four reading plans, the Creed by council, this day in Church history), and each line says what was added."
+    }
+  }
+}
