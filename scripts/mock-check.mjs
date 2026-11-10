@@ -71,7 +71,9 @@ export const BY_EYE = [
 // ── In the page ─────────────────────────────────────────────────────────
 
 /** What the part of the page named by `selector` shows, on the palette it wears now. */
-function look(selector) {
+function look(arg) {
+  // A selector, or { selector, only: "stripe" } for the stripe measure alone.
+  const { selector, only } = typeof arg === "string" ? { selector: arg, only: null } : arg;
   const root = document.querySelector(selector);
   if (!root) return null;
   // Any colour syntax (Tailwind's color-mix computes to oklab), read back as sRGB.
@@ -132,6 +134,28 @@ function look(selector) {
 
   // Every element but the insides of an icon.
   const all = [root, ...root.querySelectorAll("*")].filter((e) => !(e.closest("svg") && e.tagName.toLowerCase() !== "svg"));
+
+  const stripes = [];
+  for (const e of all) {
+    if (!shown(e)) continue;
+    const cs = getComputedStyle(e);
+    const width = (s) => (cs[`border${s}Style`] === "none" ? 0 : parseFloat(cs[`border${s}Width`]));
+    const [top, right, bottom, left] = ["Top", "Right", "Bottom", "Left"].map(width);
+    const oneSide = (left > 0) !== (right > 0) && top === 0 && bottom === 0 && (e.innerText || "").trim().length > 0;
+    let bar = false;
+    const r = e.getBoundingClientRect();
+    const parent = e.parentElement?.getBoundingClientRect();
+    if (parent && r.width <= 4 && r.height >= 16 && rgba(cs.backgroundColor)[3] >= 0.25) {
+      const atEdge = Math.abs(r.left - parent.left) <= 2 || Math.abs(r.right - parent.right) <= 2;
+      bar = atEdge && r.height >= parent.height * 0.6;
+    }
+    if (oneSide || bar) {
+      stripes.push({ name: nameOf(e), how: oneSide ? `a border on its ${left > 0 ? "left" : "right"} side only` : `a bar ${Math.round(r.width)}px wide down its box's edge`, allow: allowance(e, "stripe") });
+    }
+  }
+
+  // The stripe measure alone, for the walk over every screen (stripesOn).
+  if (only === "stripe") return { words: [], placeholders: [], controls: [], paints: [], stripes, rays: [], emDash: false };
 
   const words = [];
   const walker = document.createTreeWalker(root, NodeFilter.SHOW_TEXT);
@@ -206,25 +230,6 @@ function look(selector) {
     return p;
   });
 
-  const stripes = [];
-  for (const e of all) {
-    if (!shown(e)) continue;
-    const cs = getComputedStyle(e);
-    const width = (s) => (cs[`border${s}Style`] === "none" ? 0 : parseFloat(cs[`border${s}Width`]));
-    const [top, right, bottom, left] = ["Top", "Right", "Bottom", "Left"].map(width);
-    const oneSide = (left > 0) !== (right > 0) && top === 0 && bottom === 0 && (e.innerText || "").trim().length > 0;
-    let bar = false;
-    const r = e.getBoundingClientRect();
-    const parent = e.parentElement?.getBoundingClientRect();
-    if (parent && r.width <= 4 && r.height >= 16 && rgba(cs.backgroundColor)[3] >= 0.25) {
-      const atEdge = Math.abs(r.left - parent.left) <= 2 || Math.abs(r.right - parent.right) <= 2;
-      bar = atEdge && r.height >= parent.height * 0.6;
-    }
-    if (oneSide || bar) {
-      stripes.push({ name: nameOf(e), how: oneSide ? `a border on its ${left > 0 ? "left" : "right"} side only` : `a bar ${Math.round(r.width)}px wide down its box's edge`, allow: allowance(e, "stripe") });
-    }
-  }
-
   // A burst of separate rays: a repeating conic gradient, drawn on a thing or
   // on its ::before or ::after (where the app's own two are drawn).
   const rays = [];
@@ -240,6 +245,18 @@ function look(selector) {
   const said = [root.innerText, ...[root, ...root.querySelectorAll("[aria-label], [placeholder], [title], [alt]")].flatMap((e) => ["aria-label", "placeholder", "title", "alt"].map((a) => e.getAttribute(a) || ""))].join("\n");
 
   return { words, placeholders, controls, paints, stripes, rays, emDash: said.includes("\u2014") };
+}
+
+/**
+ * The side stripes alone, in the part of the page a selector names, each with
+ * its reason when it carries one (data-mock-allow="stripe" data-mock-why):
+ * the measure checkMock's `stripe` uses, for the walk over every screen of
+ * the export (scripts/stripe-walk.mjs; build 89 notes 1 and 5). Null when
+ * nothing answers the selector.
+ */
+export async function stripesOn(page, selector = "body") {
+  const seen = await page.evaluate(look, { selector, only: "stripe" });
+  return seen ? seen.stripes : null;
 }
 
 /** Where each thing is across the part of the page, start to end, to compare in Arabic. */

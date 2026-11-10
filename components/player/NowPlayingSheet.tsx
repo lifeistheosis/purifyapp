@@ -187,6 +187,7 @@ export function NowPlayingSheet() {
         )}
       />
       <div
+        data-mock-allow="stripe" data-mock-why="the player's edge, docked beside the page on a wide screen"
         className={cn(
           // Dark on every palette, as a player is (dark-island puts the
           // dark palette's tokens back inside it on Light).

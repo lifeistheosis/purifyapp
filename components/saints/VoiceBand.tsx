@@ -15,10 +15,12 @@ import { useTranslate } from "@/components/i18n/MessagesProvider";
  * Smyrna writing about him; St Nicholas's troparion is the Church's hymn to
  * him; the miracles in the Life of Antony are Athanasius narrating.
  *
- * Deliberately set in SANS against the reading serif, at reduced contrast,
- * with a rule down the left. It has to be legible without competing with
- * the text it introduces: the point is that a skimmer registers it, not
- * that it shouts.
+ * Deliberately set in SANS against the reading serif, at reduced contrast.
+ * It has to be legible without competing with the text it introduces: the
+ * point is that a skimmer registers it, not that it shouts. It stands on
+ * that type alone, with no rule beside it: the grey bar down its left was
+ * the side stripe he caught here in build 89 ("the line on the left is a
+ * vibe-coded AI slob guardrail", note 1).
  *
  * `saint` renders nothing. That is the expected case, and labelling it
  * would train readers to ignore the band exactly where it matters.
@@ -43,18 +45,16 @@ export function VoiceBand({
   return (
     <p
       className={cn(
-        "mb-5 border-l-2 pl-4 font-sans text-caption leading-[1.55]",
+        "mb-5 font-sans text-caption leading-[1.55]",
         // Editorial is the one a reader is most likely to mistake for the
-        // saint, so it carries the warmer rule; the rest stay neutral.
-        voice === "editorial"
-          ? "border-gold/40 text-paper/60"
-          : "border-paper/20 text-paper/55",
+        // saint, so it reads a step stronger; the rest stay neutral.
+        voice === "editorial" ? "text-paper/60" : "text-paper/55",
       )}
     >
       <span className="font-semibold text-paper/45">
         {label}
       </span>
-      <span className="mx-2 text-paper/25" aria-hidden>
+      <span className="mx-2 text-paper/45" aria-hidden>
         ·
       </span>
       {body}

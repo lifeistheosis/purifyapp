@@ -341,6 +341,7 @@ export function ShopHomeClient() {
         </Link>
         <Link
           href="/shop/sell"
+          data-mock-allow="stripe" data-mock-why="the line between the shop's two columns on a wide screen"
           className="group block border-t border-paper/10 py-7 md:border-l md:border-t-0 md:py-9 md:pl-10"
         >
           <h2 className="font-heading text-title-sm text-paper">{t("shop.doYouMakeOrSell")}</h2>

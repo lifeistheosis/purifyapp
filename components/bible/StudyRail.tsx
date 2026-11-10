@@ -84,11 +84,10 @@ function CommentaryCard({
  {/* Editorial digest, when one has been written. A summary ABOUT the
      passage, never a paraphrase wearing the Father's quotation marks.
      Absent on most notes, and absent renders nothing at all. */}
- {/* Neutral hairline rule, the idiom this app already uses for an aside
-     beside quoted text (components/saints/WritingReader.tsx,
-     components/saints/MiraclesSection.tsx). Not a coloured accent tab. */}
+ {/* It stands on its own type, sans against the Father's serif, with
+     no rule beside it (build 89 note 1: a side stripe is AI slop). */}
  {digest && (
- <p className="border-l-2 border-paper/15 pl-4 font-sans text-caption leading-[1.6] text-paper/60">
+ <p className="font-sans text-caption leading-[1.6] text-paper/60">
  {digest}
  </p>
  )}
@@ -152,7 +151,7 @@ function FatherGroup({ author, items }: { author: string; items: Note[] }) {
  </p>
  </div>
  </div>
- <div className="pl-2 ml-2 border-l border-paper/10 space-y-2">
+ <div className="ps-4 space-y-2">
  {items.map((it, i) => (
  <CommentaryCard key={i} title={it.work} text={it.text} digest={it.digest} cite={noteCite(it)} />
  ))}

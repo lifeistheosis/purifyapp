@@ -115,6 +115,7 @@ export function ShopSubTabs() {
           type="button"
           onClick={openCartDrawer}
           aria-label={count > 0 ? tn("shop.openCartCount", count) : t("shop.openCart")}
+          data-mock-allow="stripe" data-mock-why="the line between the shop's tabs and the cart"
           className="tap-press relative inline-flex h-12 w-14 shrink-0 items-center justify-center border-s border-white/8 text-paper/85 transition-colors hover:text-paper"
         >
           <Cart size={21} />

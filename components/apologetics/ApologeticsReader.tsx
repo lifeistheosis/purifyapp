@@ -173,7 +173,7 @@ function EssayPart({ block }: { block: EssayBlock }) {
   }
   if (block.kind === "blockquote") {
     return (
-      <blockquote className="border-l border-gold/40 pl-5 font-serif italic text-body text-paper/85 leading-[1.7]">
+      <blockquote className="ps-5 font-serif italic text-body text-paper/85 leading-[1.7]">
         {block.text}
         {block.source ? (
           <p className="mt-2 not-italic font-sans text-detail text-paper/50">
@@ -228,7 +228,7 @@ function QuotationCard({ q }: { q: Quotation }) {
           {q.reference ?? null}
         </p>
       ) : null}
-      <blockquote className="mt-4 border-l border-gold/40 pl-5 font-serif italic text-body text-paper/90 leading-[1.7]">
+      <blockquote className="mt-4 ps-5 font-serif italic text-body text-paper/90 leading-[1.7]">
         {q.text}
       </blockquote>
       {shown ? <SourceLine cite={shown} className="mt-3" /> : null}

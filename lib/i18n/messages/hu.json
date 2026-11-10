@@ -2509,7 +2509,7 @@
   "study.history.viewInHistory": "Megtekintés a Történelemben",
   "study.florilegium.addTo": "Hozzáadás egy florilégiumhoz",
   "study.florilegium.backToYours": "Vissza a gyűjteményeihez",
-  "study.florilegium.beginNewArrow": "Új gyűjtemény kezdése →",
+  "study.florilegium.beginNew": "Új gyűjtemény kezdése",
   "study.florilegium.beginNewEllipsis": "Új gyűjtemény kezdése…",
   "study.florilegium.definition": "A florilégium egy helyen őrzött sorok gyűjteménye.",
   "study.florilegium.deleteThis": "Ennek a gyűjteménynek a törlése",

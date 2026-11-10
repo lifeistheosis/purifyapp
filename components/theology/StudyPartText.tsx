@@ -31,7 +31,7 @@ function EssayPart({ block }: { block: EssayBlock }) {
   }
   if (block.kind === "blockquote") {
     return (
-      <blockquote className="border-s border-paper/40 ps-5 font-serif text-[16.5px] italic leading-[1.7] text-paper/85">
+      <blockquote className="ps-5 font-serif text-[16.5px] italic leading-[1.7] text-paper/85">
         {block.text}
         {block.source ? <p className="mt-2 font-sans text-detail not-italic text-paper/50">{block.source}</p> : null}
       </blockquote>

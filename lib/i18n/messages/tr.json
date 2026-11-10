@@ -2509,7 +2509,7 @@
   "study.history.viewInHistory": "Tarih'te görüntüle",
   "study.florilegium.addTo": "Bir florilegium'a ekle",
   "study.florilegium.backToYours": "Derlemelerinize dön",
-  "study.florilegium.beginNewArrow": "Yeni bir derleme başlat →",
+  "study.florilegium.beginNew": "Yeni bir derleme başlat",
   "study.florilegium.beginNewEllipsis": "Yeni bir derleme başlat…",
   "study.florilegium.definition": "Florilegium, tek bir yerde saklanan satırların derlemesidir.",
   "study.florilegium.deleteThis": "Bu derlemeyi sil",

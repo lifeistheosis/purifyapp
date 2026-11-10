@@ -160,7 +160,7 @@ export default async function HeresyProfilePage({
             <ul className="space-y-5">
               {condemnations.map((c, i) => (
                 <li key={i}>
-                  <blockquote className="border-s-2 border-paper/25 ps-4 font-serif text-ui italic text-paper/85 leading-[1.7]">
+                  <blockquote className="ps-4 font-serif text-ui italic text-paper/85 leading-[1.7]">
                     {/* A line taken from inside a sentence says so. */}
                     {/^[a-z]/.test(c.words) ? "… " : ""}
                     {c.words}

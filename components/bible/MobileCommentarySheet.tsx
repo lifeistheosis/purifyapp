@@ -143,7 +143,7 @@ function NoteCard({
         </span>
       </div>
       {note.digest ? (
-        <p className="mb-3 border-l-2 border-paper/15 pl-3 font-sans text-caption leading-[1.6] text-paper/60">
+        <p className="mb-3 font-sans text-caption leading-[1.6] text-paper/60">
           {note.digest}
         </p>
       ) : null}

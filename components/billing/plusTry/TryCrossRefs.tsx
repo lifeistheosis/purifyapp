@@ -49,7 +49,7 @@ export default function TryCrossRefs({ row }: TryProps) {
       <TryWindow label={t(row.name)} tall>
         <div className="px-5 pb-16 pt-5">
           <p className="font-sans text-ui font-semibold text-paper">{t("bible.crossRefsFor", { reference: reference(verse) })}</p>
-          <p className="mt-2 border-s-2 border-paper/20 ps-3 font-serif text-body leading-[1.6] text-paper/85">{johnVerse(verse)}</p>
+          <p className="mt-2 font-serif text-body leading-[1.6] text-paper/85">{johnVerse(verse)}</p>
           {refs ? (
             <div className="mt-3">
               <CrossRefList items={items} />

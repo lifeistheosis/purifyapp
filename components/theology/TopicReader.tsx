@@ -112,6 +112,8 @@ export function TopicReader({
         {/* How long it is, how many parts, how many Fathers. */}
         <div
           data-study-stats=""
+          data-mock-allow="stripe"
+          data-mock-why="the lines between the study's three figures"
           className="theology-tray saint-head-in mt-5 flex items-stretch rounded-[16px]"
           style={{ "--i": 2 } as CSSProperties}
         >

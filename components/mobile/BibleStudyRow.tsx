@@ -32,7 +32,7 @@ export function BibleStudyRow() {
       <Link href="/plans" className={half}>
         {t("plans.title")}
       </Link>
-      <Link href="/journal" className={`${half} border-s border-paper/[0.06]`}>
+      <Link href="/journal" data-mock-allow="stripe" data-mock-why="the line between the row's two halves" className={`${half} border-s border-paper/[0.06]`}>
         {t("journal.title")}
       </Link>
     </nav>

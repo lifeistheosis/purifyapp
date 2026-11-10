@@ -8,6 +8,7 @@ import { useTranslate } from "@/components/i18n/MessagesProvider";
 import { CoverArt } from "@/components/player/CoverArt";
 import { Sheet } from "@/components/ui/Sheet";
 import { Check } from "@/components/ui/icons/Check";
+import { ChevronRight } from "@/components/ui/icons/ChevronRight";
 import { Plus } from "@/components/ui/icons/Plus";
 import { localBookNames } from "@/lib/bible/books";
 import { cn } from "@/lib/cn";
@@ -153,7 +154,11 @@ export function FlorilegiaHub({ readOnly = false }: { readOnly?: boolean } = {})
               <span aria-hidden className="grid size-10 place-items-center rounded-full bg-paper/10 text-paper">
                 <Plus size={20} />
               </span>
-              <span className="mt-auto block pt-4 font-sans text-ui font-semibold leading-snug text-paper">{t("study.florilegium.beginNewArrow")}</span>
+              {/* The way on is the house's own chevron, never a typed arrow (build 89 note 5). */}
+              <span className="mt-auto flex items-center gap-1 pt-4 font-sans text-ui font-semibold leading-snug text-paper">
+                {t("study.florilegium.beginNew")}
+                <ChevronRight size={16} aria-hidden className="shrink-0 text-paper/60 rtl:-scale-x-100" />
+              </span>
             </button>
           )}
         </li>
@@ -273,10 +278,10 @@ function GatheringCard({ f }: { f: Florilegium }) {
       <p className="mt-1 font-sans text-caption tabular-nums text-paper/55">{tn("study.florilegium.lineCount", f.items.length)}</p>
       {newest ? (
         <figure className={cn("mt-auto pt-3")}>
-          <blockquote className="line-clamp-2 border-s-2 border-paper/15 ps-2.5 font-serif text-caption italic leading-[1.55] text-paper/70">
+          <blockquote className="line-clamp-2 font-serif text-caption italic leading-[1.55] text-paper/70">
             {newest.text}
           </blockquote>
-          <figcaption className="mt-1 truncate ps-2.5 font-sans text-caption font-semibold text-paper/45">{itemSource(newest)}</figcaption>
+          <figcaption className="mt-1 truncate font-sans text-caption font-semibold text-paper/45">{itemSource(newest)}</figcaption>
         </figure>
       ) : null}
     </Link>

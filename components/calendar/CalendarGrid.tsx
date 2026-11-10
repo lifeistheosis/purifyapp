@@ -98,7 +98,7 @@ export function CalendarGrid({
         ))}
       </div>
 
-      <div className="grid grid-cols-7 border-l border-paper/12">
+      <div data-mock-allow="stripe" data-mock-why="the month grid's lines" className="grid grid-cols-7 border-l border-paper/12">
         {cells.map((cell) => {
           const isSelected = cell.inMonth && cell.iso === selectedIso;
           return (

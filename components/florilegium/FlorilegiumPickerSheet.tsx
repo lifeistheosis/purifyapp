@@ -63,7 +63,7 @@ export function FlorilegiumPickerSheet({
   return (
     <Sheet open={open} onClose={onClose} title={t("study.florilegium.gatherInto")} desktop bodyClassName="px-5 pb-6 pt-1">
       {item ? (
-        <blockquote className="mb-5 border-l border-gold/40 pl-4 font-serif italic text-detail text-paper/75 leading-[1.6] line-clamp-3">
+        <blockquote className="mb-5 font-serif italic text-detail text-paper/75 leading-[1.6] line-clamp-3">
           {item.text}
         </blockquote>
       ) : null}

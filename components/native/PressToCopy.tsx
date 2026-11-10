@@ -241,6 +241,7 @@ export function PressToCopy() {
               type="button"
               onClick={onQuote}
               data-press-quote={locked ? "locked" : ""}
+              data-mock-allow="stripe" data-mock-why="the line between Copy and Quote in journal"
               className="tap-press inline-flex min-w-0 items-center gap-2 border-s border-paper/15 pe-6 ps-5 active:bg-night-soft"
             >
               {locked ? <PlusLock size={14} /> : <Pen size={18} className="shrink-0" />}
