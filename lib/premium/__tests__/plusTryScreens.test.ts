@@ -132,13 +132,20 @@ describe("each feature's own screen", () => {
     expect(out.match(/aria-pressed=/g)).toHaveLength(AMBIENCE_TRACKS.length);
   });
 
-  it("Candlelight and Monastery: John 1 in Candlelight, with Dark and Monastery beside it", () => {
+  it("the reading modes: John 1 in Candlelight, with Dark, Monastery and one look beside it as Settings' small pages", () => {
     const out = preview(TryReadingModes, "reading-modes");
     expect(out).toContain(`--color-night:${TRY_PALETTES.candlelight.night}`);
-    expect(out).toMatch(/aria-checked="true"[^>]*><span class="block truncate">Candlelight<\/span>/);
-    expect(out.match(/aria-checked="true"/g)).toHaveLength(1);
-    expect(out).toContain(">Dark</span>");
-    expect(out).toContain(">Monastery</span>");
+    // Four small pages, each with its name whole under it, and the one shown lit.
+    const tiles = out.match(/<button type="button" aria-pressed="(?:true|false)"[^>]*class="set-mode">[\s\S]*?<\/button>/g) ?? [];
+    expect(tiles).toHaveLength(4);
+    expect(tiles.map((b) => /<span class="set-mode-name">([^<]*)<\/span>/.exec(b)?.[1])).toEqual(["Dark", "Candlelight", "Monastery", "Night sky"]);
+    expect(tiles.map((b) => /data-palette="([^"]*)"/.exec(b)?.[1])).toEqual(["default", "candlelight", "monastery", "nightsky"]);
+    expect(tiles.filter((b) => b.includes('aria-pressed="true"'))).toHaveLength(1);
+    expect(tiles[1]).toContain('aria-pressed="true"');
+    // A preview locks nothing: no page says Purify Plus under its name.
+    expect(out).not.toContain("set-mode-plus");
+    // It opens in Candlelight, which is not the look, so the window wears no look yet.
+    expect(out).not.toContain("data-try-look");
     expect(out).toContain("All things were made by him");
   });
 

@@ -12654,6 +12654,46 @@ a.set-lab.set-link {
  background: var(--sky-horizon) center / 100% 100% no-repeat;
  opacity: 1;
 }
+
+/* The Plus preview's window wearing Night sky (1.9,
+   components/billing/plusTry/TryReadingModes.tsx): what its small page has, at
+   the window's size. The sky stands behind the page and the star over the
+   horizon in the place of the short rule at the chapter's head, as on a
+   reader's own screen. The window's glow from above is put out, since the
+   look's light is its own. lib/premium/__tests__/plusTry.test.ts holds the
+   sky to the small page's, layer for layer. */
+[data-try-look="nightsky"] > .plus-try-window {
+ background: var(--sky-stars) center top / cover no-repeat, radial-gradient(140% 52% at 50% 112%, rgb(72 100 168 / 0.2), rgb(72 100 168 / 0) 66%), linear-gradient(180deg, #03050a 0%, #05070d 40%, #070b14 100%);
+}
+[data-try-look="nightsky"] > .plus-try-window > .plus-try-glow {
+ display: none;
+}
+[data-try-look="nightsky"] .try-page-rule {
+ width: min(300px, 88%);
+ height: 64px;
+ margin-top: 2px;
+ background: var(--sky-horizon) center / 100% 100% no-repeat;
+}
+[dir="rtl"] [data-try-look="nightsky"] .try-page-rule {
+ transform: scaleX(-1);
+}
+/* The small pages under that window: Settings' own row, at the scale it
+   keeps for six, on a screen of any width (the row's wide-screen scale is
+   for Settings' own column). */
+.set-modes.plus-try-modes {
+ --mp-k: 0.2857;
+ justify-content: space-between;
+ gap: 0;
+}
+/* Their names stand on the sheet's own ground, not a Settings panel's: the
+   share that holds 4.5:1 there on Light (60 was 3.73:1, measured on the
+   export), as on the reading modes' own page. */
+.set-modes.plus-try-modes .set-mode-name {
+ color: color-mix(in srgb, var(--color-paper) 75%, transparent);
+}
+.set-modes.plus-try-modes .set-mode[aria-pressed="true"] .set-mode-name {
+ color: var(--color-paper);
+}
 .set-mode-page[data-palette="dawn"] {
  --mp-ground: #080a1e;
  --mp-ink: #f2eff8;

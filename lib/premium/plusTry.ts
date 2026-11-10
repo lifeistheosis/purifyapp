@@ -49,26 +49,43 @@ export const TRY_CHAPTER = { book: "john", chapter: 1 } as const;
 export const TRY_VERSES = 14;
 
 /**
- * The palettes the Candlelight and Monastery preview switches between, as
- * app/globals.css sets them (the :root theme for Dark, and the
- * html[data-reading-mode] blocks). Set on the preview's window only: the
+ * The palettes the reading modes preview shows, as app/globals.css sets them
+ * (the :root theme for Dark, the html[data-reading-mode] blocks, and for the
+ * look its html[data-look] block). Set on the preview's window only: the
  * reader's own palette is never touched. lib/premium/__tests__/plusTry.test.ts
  * holds every value to globals.css.
+ *
+ * Night sky is one of the eighteen looks (1.9, the arbiter's word of
+ * 2026-11-10: "let the preview under Twenty reading modes show one of the
+ * looks beside Dark, Candlelight and Monastery"). It was chosen on the
+ * export: its sky lies behind the whole page and its sign stands at the
+ * chapter's head, so both are seen in a window with no bar and no foot, and
+ * every word stays at 4.5:1 or more over it. A look with a scene at the foot
+ * (the Holy Mountain was tried) lays its picture under the last lines, which
+ * a reader's screen fades out and a window does not.
  */
 export const TRY_PALETTES = {
   default: { night: "#101013", nightSoft: "#1d1d20", nightDeep: "#0b0b0e", paper: "#ffffff" },
   candlelight: { night: "#050505", nightSoft: "#18181b", nightDeep: "#000000", paper: "#d4d4d8" },
   monastery: { night: "#0d1119", nightSoft: "#171e2b", nightDeep: "#080b11", paper: "#e6ebf4" },
+  nightsky: { night: "#05070d", nightSoft: "#0f1420", nightDeep: "#020308", paper: "#edf0f6" },
 } as const;
 
 export type TryPalette = keyof typeof TRY_PALETTES;
 
-/** The three palettes in the order of the switch, each by its name's catalog key. */
+/** The four in the order they stand under the window, each by its name's catalog key. */
 export const TRY_PALETTE_ORDER: readonly { id: TryPalette; labelKey: string }[] = [
   { id: "default", labelKey: "settings.paletteDark" },
   { id: "candlelight", labelKey: "settings.paletteCandlelight" },
   { id: "monastery", labelKey: "settings.paletteMonastery" },
+  { id: "nightsky", labelKey: "settings.paletteNightSky" },
 ];
+
+/**
+ * The look among them. Its window wears more than its four colours: the
+ * look's own picture and sign, drawn by app/globals.css on [data-try-look].
+ */
+export const TRY_LOOK: TryPalette = "nightsky";
 
 /** A palette as the CSS variables the page's utilities read, for the window's style. */
 export function paletteVars(id: TryPalette): Record<string, string> {

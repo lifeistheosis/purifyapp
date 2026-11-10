@@ -14,7 +14,8 @@ this and let's get going"). What is in the app, how it differs from what was
 drawn, what was measured and what still waits for him are at "Built", the
 last part of this file (sections 19 to 26). The same page now shows the real
 build. Candlelight through the Church's year, built after them, is section 27,
-and the words about Plus, as he approved them, section 28.
+and the words about Plus, as he approved them, section 28. The look in the
+Plus preview is section 29.
 
 His words, the same day: "I also want you to cook up better themes ... I don't
 like the themes we have now, except that light mode, parchment, and the dark
@@ -2777,7 +2778,98 @@ sent:
 
 All four went to the arbiter.
 
-**A thought, not built.** The preview under the row is headed "Twenty
-reading modes" and lets a reader try three palettes: Dark, Candlelight and
-Monastery. It promises nothing false, and it would show the looks better
-with one of them in it.
+**A thought, built the same morning.** The preview under the row is headed
+"Twenty reading modes" and let a reader try three palettes: Dark,
+Candlelight and Monastery. It promised nothing false, and it shows the
+looks better with one of them in it: section 29.
+
+## 29. The Plus preview shows a look
+
+The arbiter's word, 2026-11-10, 08:56 UTC, on the thought at the end of
+section 28: "let the preview under 'Twenty reading modes' show one of the
+looks beside Dark, Candlelight and Monastery (Night sky, or the one that
+reads best there), one small commit, a still at the push."
+
+**What a reader sees.** In the sheet a reader without Plus meets, the
+reading modes row ends in Try it, and its preview is John 1 in a window.
+Under the window stood one carved switch of three: Dark, Candlelight,
+Monastery. Four small pages stand there now, Settings' own (`ModeTile`):
+Dark, Candlelight, Monastery and Night sky. A tap repaints the window and
+nothing else. In Night sky the window has what a reader's screen has: the
+sky behind the page, and the star over the horizon in the place of the
+short rule at the chapter's head.
+
+**Why Night sky.** Tried on the export by restyling the built preview. Its
+sky lies behind the whole page and its sign is at the chapter's head, so
+both are seen in a window that has no bar and no foot, and every word stays
+at 4.5:1 or more. The Holy Mountain, which the plan's line names, was tried
+too: its picture is at the foot, where a reader's screen fades the page's
+last lines and a window does not, and verse numbers over it fell to 3.09:1.
+
+**Why not the switch.** Four names do not fit one carved switch. Measured
+on the export in the 21 languages at the switch's own type, with segments
+as wide as their names: a name is cut at 390px in 5 languages and at 360px
+in 14. With equal segments it is cut in English too. Settings' small pages
+carry a name of any length under them and are what a reader picks from once
+they have Plus. They add 34px to the preview's height.
+
+**How.** `lib/premium/plusTry.ts` gains Night sky's four colours
+(`TRY_PALETTES`, held to `html[data-look="nightsky"]` by the test) and
+names it the look (`TRY_LOOK`). `components/billing/plusTry/TryReadingModes.tsx`
+draws the row with `ModeTile` and marks the window's wrapper
+`data-try-look` while the look is shown. The stylesheet gives that window
+the small page's own sky (the test holds the two layer for layer) and puts
+the star over the horizon on the page's short rule (`.try-page-rule`,
+`TryBible.tsx`), mirrored in Arabic as the reader's is. The row keeps one
+scale on every screen (`.set-modes.plus-try-modes`).
+
+**Mended in passing.** The chapter line of that page ("Chapter 1") was
+`text-paper/55`. In Candlelight, which the preview opens in, it measured
+4.48:1 under the window's glow. It is 60 now, on every preview that draws
+the page.
+
+**Measured**, on an export built with the gate on, as a reader without Plus
+(42 steps, all as they should be):
+
+- Four small pages under the window, by name. It opens in Candlelight, lit,
+  and no page is marked as locked. Each is a target of 48 by 86px.
+- A tap on each repaints the window alone: the reader's own palette, and
+  what is stored, never change. Only Night sky wears a look.
+- In Night sky the sky is behind the page and the star over the horizon
+  stands at the chapter's head (274 by 64px). On the other three the page
+  keeps its short rule.
+- Every word against its pixels, in the window and around it: 4.51:1 at
+  the lowest in Candlelight (a verse number), 5.36:1 in Dark and in Night
+  sky, 5.34:1 in Monastery, and 5.23:1 for a reader on Light.
+- `checkMock` passes on the preview and on its head, for a reader on Dark
+  and for a reader on Light.
+- The line under the row and Next stand clear of the Join bar on a 390 by
+  844 screen, with 59px to spare.
+- Greek at 360px, the longest names: four names whole, two of them on two
+  lines, inside the sheet, and the sheet does not scroll sideways.
+- Arabic: the four run from the right, and the star over the horizon is
+  mirrored.
+- The words' walk of section 28 and the walk of a reader without Plus pass
+  again on the same export.
+- Typecheck 0, the unit suite 866 files and 10,618 tests, lint 0 errors,
+  and the Android export clean with the gate on (229.1 MB of 240 on disk,
+  72.3 MB packed of 85). The export and lint were run before the last
+  rebase onto other chats' commits; typecheck and the unit suite again
+  after it.
+
+**Found by the walk before the push, and mended.** The names under the
+small pages were 3.73:1 for a reader on Light. Settings draws them at 60 on
+a panel, and the sheet's ground is not a panel's. Here they take 75, the
+share the reading modes' own page uses.
+
+**Not done.** No iOS export and no website build. No phone has seen it.
+
+**Seen on the way, not this change's.**
+
+- Settings' own row draws those names at 60 for every reader. Measured the
+  same morning on the export, for a reader on Light: 3.81 to 3.90:1 by
+  their pixels. It is the row as 1.8 built it. Told to the arbiter.
+- In Arabic the previews' English verses are laid out right to left, so a
+  line's full stop stands at its start (".was God"). The app's small page
+  marks its sample verses as English, left to right; the previews' page
+  does not. Told to the arbiter.

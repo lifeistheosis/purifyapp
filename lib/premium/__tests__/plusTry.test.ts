@@ -234,7 +234,7 @@ describe("the Thread the history preview follows", () => {
   });
 });
 
-describe("the palettes the Candlelight preview switches between", () => {
+describe("the palettes the reading modes preview shows", () => {
   const css = code("app/globals.css");
   const block = (selector: string) => {
     const re = new RegExp(`${selector.replace(/[[\]"()]/g, (c) => `\\${c}`)} \\{([^}]*)\\}`, "g");
@@ -248,6 +248,8 @@ describe("the palettes the Candlelight preview switches between", () => {
       default: theme,
       candlelight: block('html[data-reading-mode="candlelight"]'),
       monastery: block('html[data-reading-mode="monastery"]'),
+      // The look among them (1.9): its own block, the one a reader's screen wears.
+      nightsky: block('html[data-look="nightsky"]'),
     } as const;
     for (const [id, src] of Object.entries(sources) as [keyof typeof TRY_PALETTES, string][]) {
       const p = TRY_PALETTES[id];
@@ -265,8 +267,51 @@ describe("the palettes the Candlelight preview switches between", () => {
       "--color-night-deep": "#000000",
       "--color-paper": "#d4d4d8",
     });
-    expect(TRY_PALETTE_ORDER.map((p) => p.id)).toEqual(["default", "candlelight", "monastery"]);
+    expect(TRY_PALETTE_ORDER.map((p) => p.id)).toEqual(["default", "candlelight", "monastery", "nightsky"]);
     expect(bare(`${TRY_DIR}/TryReadingModes.tsx`)).toContain('useState<TryPalette>("candlelight")');
+  });
+
+  it("show one look beside the three, by the names the registry gives them (1.9)", async () => {
+    // The arbiter's word, 2026-11-10: the preview under "Twenty reading modes"
+    // shows one of the looks beside Dark, Candlelight and Monastery.
+    const { READING_THEMES, isFreeTheme, isLook } = await import("@/lib/reader/readingModes");
+    const { TRY_LOOK } = await import("@/lib/premium/plusTry");
+    const entry = (id: string) => READING_THEMES.find((m) => m.id === id);
+    for (const p of TRY_PALETTE_ORDER) expect(entry(p.id)?.labelKey, p.id).toBe(p.labelKey);
+    expect(TRY_PALETTE_ORDER.filter((p) => isLook(p.id)).map((p) => p.id)).toEqual([TRY_LOOK]);
+    // Dark is the one a reader has; the other three are what Plus adds.
+    expect(TRY_PALETTE_ORDER.filter((p) => isFreeTheme(p.id)).map((p) => p.id)).toEqual(["default"]);
+  });
+
+  it("stand under the window as Settings' own small pages, since four names do not fit a switch", () => {
+    // Measured on the export in the 21 languages: in one carved switch a name
+    // was cut at 390px in 5 of them and at 360px in 14.
+    const src = bare(`${TRY_DIR}/TryReadingModes.tsx`);
+    expect(src).toContain('import { ModeTile } from "@/components/settings/ReadingModePages";');
+    expect(src).not.toContain("TrySwitch");
+    expect(src).toContain('className="set-modes plus-try-modes"');
+    // Nothing in a preview is locked or applied: a tap repaints the window alone.
+    expect(src).toContain("locked={false}");
+    expect(src).not.toMatch(/setTheme|READING_THEME_KEY|localStorage/);
+    // The row keeps one scale on every screen: Settings' wide-screen scale is for its own column.
+    expect(block(".set-modes.plus-try-modes")).toMatch(/--mp-k:\s*0\.2857;[\s\S]*justify-content:\s*space-between;/);
+  });
+
+  it("the look's window wears its sky and its sign, the small page's own", () => {
+    const src = bare(`${TRY_DIR}/TryReadingModes.tsx`);
+    expect(src).toContain("data-try-look={palette === TRY_LOOK ? palette : undefined}");
+    // The sky behind the page is the small page's, layer for layer.
+    const small = /--mp-back:\s*([^;]+);/.exec(block('.set-mode-page[data-palette="nightsky"]'))?.[1]?.trim();
+    const win = /background:\s*([^;]+);/.exec(block('[data-try-look="nightsky"] > .plus-try-window'))?.[1]?.trim();
+    expect(small).toMatch(/^var\(--sky-stars\)/);
+    expect(win).toBe(small);
+    // The star over the horizon stands where the page's short rule was, and mirrors as the reader's does.
+    expect(bare(`${TRY_DIR}/TryBible.tsx`)).toContain('className="try-page-rule mx-auto mt-3 block h-px w-6 bg-paper/25"');
+    expect(block('[data-try-look="nightsky"] .try-page-rule')).toContain("background: var(--sky-horizon) center / 100% 100% no-repeat;");
+    expect(block('html[data-look="nightsky"] .page-open-rule')).toContain("background: var(--sky-horizon) center / 100% 100% no-repeat;");
+    expect(block('[dir="rtl"] [data-try-look="nightsky"] .try-page-rule')).toContain("transform: scaleX(-1);");
+    // No ray of light, and nothing that moves.
+    expect(win).not.toMatch(/conic-gradient|repeating-/);
   });
 });
 
