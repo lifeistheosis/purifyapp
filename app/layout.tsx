@@ -106,12 +106,20 @@ const notoSansDevanagari = Noto_Sans_Devanagari({
 
 // Cardo: a serif designed for biblical scholarship, covers polytonic Greek
 // (U+1F00 to 1FFF) and Hebrew. Used only for the interlinear column.
+//
+// preload: false since 1.9. Left to its default it was preloaded on every
+// page of the website and at every start of the apps: 9 files, 108 KB, for a
+// column most readers never open (the optimization audit of 2026-11-10,
+// docs/1.9-build/notes/optimization-fable.md, item 2). Its @font-face rules
+// are still written, so the files are fetched the first time Greek is drawn
+// in it, and `swap` shows the fallback face until they arrive.
 const cardo = Cardo({
  variable: "--font-greek",
  subsets: ["latin", "greek", "greek-ext"],
  weight: ["400", "700"],
  style: ["normal", "italic"],
  display: "swap",
+ preload: false,
 });
 
 // The website's head: what a search engine, a link preview and a home-screen
