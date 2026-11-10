@@ -5320,6 +5320,8 @@
   "campaigns.new.audience": "Who can see it",
   "campaigns.audience.everyone": "Everyone in Community",
   "campaigns.audience.note": "A campaign kept to a circle is seen by its members only, and is on no list.",
+  "campaigns.again": "Run it again",
+  "campaigns.again.note": "A new campaign, starting from what you wrote last time. Change anything you like. A moderator will read it first, and no one is added to it without choosing to be.",
   "campaigns.new.place": "Place",
   "campaigns.new.placeTown": "Town or region",
   "campaigns.new.placeNote": "A place is shown with the campaign to everyone who can see it. Give a town or a region, never an address.",

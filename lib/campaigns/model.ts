@@ -181,6 +181,55 @@ export function isOver(c: { status: string; ends_at?: string | null }, now: numb
   return c.status === "active" && !isRunning(c, now);
 }
 
+// ── Run it again ────────────────────────────────────────────────────────────
+//
+// The notes, 2.2: forty days is the ceiling, and "a need that lasts longer is
+// renewed: 'Run it again' makes a new campaign from the same parts, and
+// nobody is carried over without choosing to be." So it is a new campaign in
+// every way: its creator gives the blessing again and accepts the rules and
+// the Terms again, a moderator reads it again, and it is in nobody's prayers
+// until they add it themselves. Only what its creator wrote and chose comes
+// over (the parts below), and its creator can change any of it first.
+
+/** Whether this reader may run it again: it is their own, and it is over. Never one that waits or runs, and one taken down is not there to ask about. */
+export function mayRunAgain(c: Pick<PublicCampaign, "status" | "ends_at" | "mine">, now: number = Date.now()): boolean {
+  return c.mine === true && isOver(c, now);
+}
+
+/** What a new campaign takes from one that is over: what its creator wrote and chose, and nothing of anyone else. */
+export type AgainParts = {
+  forWhom: ForWhom;
+  /** Its kind, for the living; null for the reposed, and for a kind the list no longer has. */
+  kind: LivingKind | null;
+  title: string;
+  name: string;
+  words: string;
+  /** Its length; null for one of July's, which had none. */
+  days: number | null;
+  prayer: PrayerRef | null;
+  country: string | null;
+  town: string;
+  /** The circle it was kept to, by its name; null for one everyone in Community could see. */
+  circle: string | null;
+};
+
+export function partsToRunAgain(c: PublicCampaign): AgainParts {
+  const living = c.for_whom === "living";
+  const prayer = living ? campaignPrayer({ rule: c.prayer_rule, id: c.prayer_id }) : null;
+  return {
+    forWhom: c.for_whom,
+    kind: living && (LIVING_KINDS as readonly string[]).includes(c.intention) ? (c.intention as LivingKind) : null,
+    title: c.title.slice(0, TITLE_MAX),
+    name: (c.subject_name ?? "").slice(0, NAME_MAX),
+    words: (c.details ?? "").slice(0, WORDS_MAX),
+    days: isLength(c.days) ? c.days : null,
+    prayer: prayer ? { rule: prayer.rule, id: prayer.id } : null,
+    country: c.place_country,
+    town: c.place_country ? (c.place_name ?? "") : "",
+    circle: c.circle?.name ?? null,
+  };
+}
+
 // ── A place ─────────────────────────────────────────────────────────────────
 //
 // His words: "Allow them to add a location." The notes, 2.9: a country from

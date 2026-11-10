@@ -83,6 +83,8 @@ const ENDED = "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaa6";
 const DANGER = "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaa8";
 // A campaign kept to one circle (the notes, section 27), and the circles of the reader who looks.
 const THOMAS = "eeeeeeee-eeee-4eee-8eee-eeeeeeeeeee7";
+// One of the reader's own that was kept to the parish and is over: what "Run it again" begins from, with its circle.
+const PARISH_OVER = "eeeeeeee-eeee-4eee-8eee-eeeeeeeeeee9";
 const PARISH = { id: "ffffffff-ffff-4fff-8fff-fffffffffff1", name: "St Nicholas parish", kind: "parish" };
 const HOUSEHOLD = { id: "ffffffff-ffff-4fff-8fff-fffffffffff2", name: "Our household", kind: "household" };
 
@@ -160,7 +162,21 @@ const CAMPAIGNS = {
     // What the route tells its creator alone, while it waits.
     safety: true,
   }),
-  [ENDED]: campaign(ENDED, { title: "For Irene's recovery", intention: "healing", subject_name: "Irene", details: null, days: 7, status: "answered", mine: true }),
+  // Over, and the reader's own: "Run it again" begins a new one from these parts.
+  [ENDED]: campaign(ENDED, {
+    title: "For Irene's recovery",
+    intention: "healing",
+    subject_name: "Irene",
+    details: "She is home and mending. Please keep her in your prayers a while longer.",
+    days: 7,
+    status: "answered",
+    prayer_rule: "morning",
+    prayer_id: "trisagion",
+    place_country: "RO",
+    place_name: "Sibiu",
+    mine: true,
+  }),
+  [PARISH_OVER]: campaign(PARISH_OVER, { title: "For Anna's surgery", intention: "healing", subject_name: "Anna", details: "Her surgery is on Tuesday.", days: 7, status: "ended", mine: true, circle: { name: PARISH.name } }),
   // Kept to the parish: on no board, and handed on only to its circle's members, with the circle's name.
   [THOMAS]: campaign(THOMAS, {
     title: "For Thomas after his fall",
@@ -967,6 +983,34 @@ await shot("35-campaign-place", "a campaign's page with its place beside who sta
   },
 });
 
+// Run it again (1.9; the notes, 2.2): a new campaign from the parts of one that is over.
+
+// 36 One of the reader's own that is over: Run it again stands where Add to my prayers stood.
+await shot("36-run-again", "a campaign that is over, as its creator sees it: Run it again", `/campaigns/detail?id=${ENDED}`, "[data-campaign-page]", {
+  mine: [ENDED],
+  prepare: async (page) => {
+    await page.waitForSelector("[data-campaign-page] a[data-campaign-again]", { timeout: 15000 });
+    await whole(page);
+  },
+});
+
+// 37 The start screen as it opens from it: what was written before, and nothing ticked.
+await shot("37-run-again-start", "Run it again: the start screen begins with what was written before", `/campaigns/new?from=${ENDED}`, "[data-campaign-new]", {
+  mine: [ENDED],
+  prepare: async (page) => {
+    await page.waitForSelector("[data-campaign-new] p[data-campaign-again]", { timeout: 15000 });
+    await settle(page, 700);
+    await page.evaluate(() => document.activeElement?.blur());
+    const h = await page.evaluate(() => {
+      const root = document.querySelector("[data-campaign-new]");
+      const scroller = root.querySelector(".overflow-y-auto");
+      const foot = root.querySelector(".compose-foot");
+      return Math.ceil(scroller.scrollHeight + foot.getBoundingClientRect().height);
+    });
+    await page.setViewportSize({ width: 390, height: Math.max(844, h) });
+  },
+});
+
 // 28 Pray together for a reader with a campaign in one of their circles: "In your circles", above the newly asked.
 await shot("28-in-your-circles", "Pray together: a campaign in one of the reader's circles", "/community#pray", "[role=tabpanel]", {
   circles: true,
@@ -1370,6 +1414,85 @@ if (WALK) {
     const place = page.locator("[data-mod-campaign] [data-mod-campaign-place]");
     expectThat((await place.count()) === 1 && plain(await place.innerText()) === "Place: Novi Sad, Serbia", `the moderators' list says "${(await place.count()) ? plain(await place.innerText()) : "nothing"}"`);
   });
+
+  // Run it again (1.9; the notes, 2.2).
+  await walk("run it again: offered to its creator once a campaign is over; the start page begins with its parts and nothing ticked, and a new campaign is sent", `/campaigns/detail?id=${ENDED}`, async (page) => {
+    const offer = page.locator("[data-campaign-page] a[data-campaign-again]");
+    await offer.waitFor({ timeout: 15000 });
+    expectThat((await offer.innerText()).trim() === "Run it again", `the offer reads "${await offer.innerText()}"`);
+    // One that is over has nothing to add to one's prayers: the offer stands in that place.
+    expectThat((await page.locator("[data-campaign-page] button[aria-haspopup=dialog]", { hasText: "Add to my prayers" }).count()) === 0, "a campaign that is over can still be added");
+    await offer.click();
+    await page.waitForFunction(() => location.pathname.replace(/\/$/, "") === "/campaigns/new", null, { timeout: 15000 });
+    const note = page.locator("[data-campaign-new] p[data-campaign-again]");
+    await note.waitFor({ timeout: 15000 });
+    expectThat((await note.innerText()).includes("A moderator will read it first") && (await note.innerText()).includes("no one is added"), `the page says "${await note.innerText()}"`);
+    // What was written and chosen then.
+    expectThat((await page.inputValue("#campaign-title-field")) === "For Irene's recovery" && (await page.inputValue("#campaign-name-field")) === "Irene", "the title and the name did not come over");
+    expectThat((await page.inputValue("#campaign-words-field")).startsWith("She is home and mending."), "the words did not come over");
+    const rows = plain(await page.locator("[data-campaign-new] .set-panel").innerText());
+    for (const part of ["An illness", "A week", "The Trisagion Prayers", "Sibiu, Romania"]) expectThat(rows.includes(part), `the rows do not say "${part}": ${rows.replace(/\n/g, " / ")}`);
+    // What is given again: who it is for, and the two ticks. Create is dim until they are.
+    const create = page.locator("[data-campaign-new] .compose-foot button");
+    expectThat(await create.isDisabled(), "Create is lit with no blessing given again");
+    expectThat((await page.locator("[data-campaign-new] [role=radio][aria-checked=true]").count()) === 0, "a blessing came over");
+    expectThat((await page.locator("[data-campaign-new] [role=checkbox][aria-checked=true]").count()) === 0, "a tick came over");
+    await page.locator("[role=radio]", { hasText: "Someone else" }).click();
+    const boxes = page.locator("[data-campaign-new] [role=checkbox]");
+    await boxes.nth(0).click();
+    await boxes.nth(1).click();
+    expectThat(!(await create.isDisabled()), "Create stays dim when everything is said again");
+    await create.click();
+    await settle(page, 1500);
+    const [sent] = sentTo("POST", /^\/api\/campaigns$/);
+    expectThat(sent, "nothing was sent");
+    const b = sent.body;
+    expectThat(b.forWhom === "living" && b.kind === "healing" && b.title === "For Irene's recovery" && b.name === "Irene" && b.days === 7 && b.startsOn === TODAY, `sent ${JSON.stringify(b)}`);
+    expectThat(b.prayer?.rule === "morning" && b.prayer?.id === "trisagion" && b.place?.country === "RO" && b.place?.town === "Sibiu", `sent ${JSON.stringify(b)}`);
+    expectThat(b.consent === "blessing" && b.blessing === true && b.rules === true && b.termsAccepted === true, `the blessing and the ticks sent are ${JSON.stringify([b.consent, b.blessing, b.rules, b.termsAccepted])}`);
+    // A new campaign in every way: nothing of the old one's is sent with it.
+    expectThat(!JSON.stringify(b).includes(ENDED), "the old campaign's id was sent with the new one");
+  }, { mine: [ENDED] });
+
+  await walk("run it again: not offered on one that runs or waits, and an address naming one of those, or anyone else's, starts an empty page", `/campaigns/detail?id=${NICHOLAS}`, async (page) => {
+    await page.waitForSelector("[data-campaign-page] h1", { timeout: 15000 });
+    await settle(page, 900);
+    expectThat((await page.locator("[data-campaign-again]").count()) === 0, "a campaign that still runs offers to run again");
+    await go(page, `/campaigns/detail?id=${HELD}`);
+    await page.waitForSelector("[data-campaign-standing]", { timeout: 15000 });
+    await settle(page, 900);
+    expectThat((await page.locator("[data-campaign-again]").count()) === 0, "a campaign that waits offers to run again");
+    // By the address: one that waits (the reader's own), one that runs (their own), and one that is someone else's.
+    for (const from of [HELD, NICHOLAS, MARIA]) {
+      await go(page, `/campaigns/new?from=${from}`);
+      await page.waitForSelector("#campaign-title-field", { timeout: 15000 });
+      await settle(page, 1500);
+      expectThat((await page.inputValue("#campaign-title-field")) === "" && (await page.inputValue("#campaign-name-field")) === "", `the page began from ${from}`);
+      expectThat((await page.locator("[data-campaign-again]").count()) === 0, `the page says it began from ${from}`);
+    }
+  }, { mine: [NICHOLAS, HELD] });
+
+  await walk("run it again: one kept to a circle comes over kept to it, and says who will see it", `/campaigns/new?from=${PARISH_OVER}`, async (page) => {
+    await page.waitForSelector("[data-campaign-new] p[data-campaign-again]", { timeout: 15000 });
+    expectThat((await page.inputValue("#campaign-title-field")) === "For Anna's surgery", "the title did not come over");
+    const foot = page.locator("[data-campaign-audience-line]");
+    expectThat((await foot.getAttribute("data-campaign-audience-line")) === "circle" && (await foot.innerText()).includes(`Only ${PARISH.name} can see this.`), `the foot says ${await foot.innerText()}`);
+    await page.locator("[role=radio]", { hasText: "This is my own request." }).click();
+    const boxes = page.locator("[data-campaign-new] [role=checkbox]");
+    await boxes.nth(0).click();
+    await boxes.nth(1).click();
+    await page.locator("[data-campaign-new] .compose-foot button").click();
+    await settle(page, 1500);
+    const [sent] = sentTo("POST", /^\/api\/campaigns$/);
+    expectThat(sent && sent.body.circleId === PARISH.id, `the start sent ${JSON.stringify(sent?.body?.circleId)} for its circle`);
+  }, { mine: [PARISH_OVER], circles: true });
+
+  await walk("run it again: one kept to a circle the reader is no longer in brings nothing over, so nothing of it is set out for everyone", `/campaigns/new?from=${PARISH_OVER}`, async (page) => {
+    await page.waitForSelector("#campaign-title-field", { timeout: 15000 });
+    await settle(page, 2000);
+    expectThat((await page.inputValue("#campaign-title-field")) === "" && (await page.inputValue("#campaign-name-field")) === "" && (await page.inputValue("#campaign-words-field")) === "", "its words came over without its circle");
+    expectThat((await page.locator("[data-campaign-again]").count()) === 0, "the page says it began from it");
+  }, { mine: [PARISH_OVER] });
 
   await walk("Pray together: campaigns alone, behind its own door, and nothing is asked of the prayer wall", "/community#pray", async (page) => {
     await page.waitForSelector("[data-campaigns]", { timeout: 15000 });

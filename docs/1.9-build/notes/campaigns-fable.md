@@ -4132,3 +4132,55 @@ campaign's page with its place (35).
 
 Already in the catalog and used as they are: Country (`shop.country`), None
 (`profile.none`), Search for a country, No matches., Optional, Done.
+
+---
+
+## 31. Run it again: as built (2026-11-10)
+
+The notes, 2.2: forty days is the ceiling, and "a need that lasts longer is
+renewed: 'Run it again' makes a new campaign from the same parts, and nobody
+is carried over without choosing to be." No SQL, and no change to the
+server: a campaign run again is a new campaign through the same door.
+
+### 31.1 What a reader sees
+
+- **On its creator's own campaign, once it is over** (past its last day, or
+  closed with "Answered, glory to God" or "Memory eternal"), the place where
+  "Add to my prayers" stood holds **Run it again**. Nobody else sees it, and
+  it is not there on one that still runs or still waits for a moderator.
+- **It opens the start screen** with what was written and chosen then: for
+  whom, the kind, the title, the name, the words, the length, the prayer (or
+  the name alone), the place, and the circle it was kept to. One line at the
+  head says what this is: "A new campaign, starting from what you wrote last
+  time. Change anything you like. A moderator will read it first, and no one
+  is added to it without choosing to be."
+- **What never comes over:** who it is for by blessing (the three lines to
+  choose from), the rules' tick and the Terms' tick. They are given again,
+  and Create stays dim until they are. The blessing is kept with its own
+  day, so a blessing given for forty days never stands for eighty unasked.
+- **A new campaign in every way.** A moderator reads it before anyone sees
+  it, it begins in nobody's prayers, and the old campaign is untouched: it
+  is still deleted thirty days after its last day, as the page says.
+- **One of July's** can be run again by the reader who started it: the one
+  way a campaign of July's comes into the new form, by its creator's own
+  hand and read by a moderator like any other.
+
+### 31.2 What holds it
+
+- Only the reader's own, and only once over (`lib/campaigns/model.ts`,
+  `mayRunAgain`). The route says whose a campaign is, so an address that
+  names anyone else's, or one that runs or waits, opens an empty page.
+- **Never wider.** One that was kept to a circle comes over only if that
+  circle is still among the reader's own, and then kept to it. Otherwise
+  nothing comes over at all, so what was written for a parish is never set
+  out on a page that would send it to everyone.
+- `lib/campaigns/__tests__/again.test.ts` (15 cases). The walk: four flows.
+  Stills: the ended campaign with the offer (36) and the start screen as it
+  opens from it (37).
+
+### 31.3 Words for his OK (English; the twenty languages after)
+
+| Key | English |
+|---|---|
+| `campaigns.again` | Run it again |
+| `campaigns.again.note` | A new campaign, starting from what you wrote last time. Change anything you like. A moderator will read it first, and no one is added to it without choosing to be. |

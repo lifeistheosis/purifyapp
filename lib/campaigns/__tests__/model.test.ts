@@ -273,10 +273,13 @@ describe("the prayer the start screen holds when a kind is chosen", () => {
   it("is wired so on the start screen: a kind sets it through that rule, and the prayer's own sheet marks it chosen", () => {
     const screen = readFileSync(join(process.cwd(), "components/campaigns/StartCampaign.tsx"), "utf8");
     expect(screen).toContain("setPsalm(prayerAfterKind(k, psalm, prayerByHand));");
-    // The one place the creator chooses the prayer says so, and no other place does.
-    expect(screen.match(/setPrayerByHand\(true\)/g)?.length).toBe(1);
+    // The two places a prayer is the creator's own choice say so, and no other place does: the
+    // prayer's own sheet, and Run it again, which brings the prayer they chose last time (again.test.ts).
+    expect(screen.match(/setPrayerByHand\(true\)/g)?.length).toBe(2);
     const sheet = screen.slice(screen.indexOf('open={opened === "psalm"}'));
     expect(sheet.slice(0, sheet.indexOf("</Sheet>"))).toContain("setPrayerByHand(true);");
+    const again = screen.slice(screen.indexOf('.get("from")'));
+    expect(again.slice(0, again.indexOf("const leave ="))).toMatch(/setPsalm\(parts\.prayer\);\s*setPrayerByHand\(true\);/);
     // And the row is named by the line the campaign's page already has for it.
     expect(screen).toContain('label={t("campaigns.thePrayer")}');
     expect(screen).not.toContain("campaigns.new.psalm\"");

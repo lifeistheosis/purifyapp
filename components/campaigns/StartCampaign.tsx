@@ -27,7 +27,7 @@ import { Scroll } from "@/components/ui/icons/Scroll";
 import { SafetyLine } from "@/components/campaigns/SafetyLine";
 import { SearchSelect } from "@/components/ui/SearchSelect";
 import { Sheet } from "@/components/ui/Sheet";
-import { fetchCircles, startCampaign, type CircleChoice, type StartResult } from "@/lib/campaigns/client";
+import { fetchCampaign, fetchCircles, startCampaign, type CircleChoice, type StartResult } from "@/lib/campaigns/client";
 import {
   CAMPAIGN_PRAYERS,
   CONSENT_LINE,
@@ -44,6 +44,8 @@ import {
   WORDS_MAX,
   cleanTown,
   lastDayOf,
+  mayRunAgain,
+  partsToRunAgain,
   prayerAfterKind,
   townFits,
   type ConsentKind,
@@ -94,6 +96,11 @@ type LengthChoice = (typeof LENGTHS)[number] | "own";
  * region as typed, never read from the device (the notes, 2.9). Then the
  * blessing, worded for who it is for and kept with its day, and the rules.
  *
+ * Run it again (the notes, 2.2): opened from one of the reader's own that is
+ * over (`?from=` its id), the page starts with what they wrote and chose
+ * then, for them to change. The blessing and the two ticks are never
+ * carried: they are given again, and a moderator reads it again.
+ *
  * What it promises is what happens: a campaign is read by a moderator before
  * everyone can see it, and carries no link and no asking for money
  * (lib/campaigns/server.ts, startCampaign).
@@ -130,6 +137,8 @@ export function StartCampaign() {
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [askFiltered, setAskFiltered] = useState(false);
+  // Run it again: the page began with the parts of one of the reader's own that is over.
+  const [again, setAgain] = useState(false);
   const closeRef = useRef<HTMLButtonElement>(null);
 
   // The page holds the screen, as the page for a new post does: what is
@@ -158,6 +167,48 @@ export function StartCampaign() {
         if (live) setCircles(found.circles);
       });
     });
+    return () => {
+      live = false;
+    };
+  }, []);
+
+  // Run it again. Only from one of the reader's own that is over (the route
+  // says whose it is; lib/campaigns/model.ts, mayRunAgain), so an id in the
+  // address that is anyone else's, or still runs, starts an empty page. One
+  // that was kept to a circle comes over only with that circle still the
+  // reader's own: what was for a few is never set out for everyone unasked.
+  useEffect(() => {
+    const from = new URLSearchParams(window.location.search).get("from");
+    if (!from) return;
+    let live = true;
+    void (async () => {
+      const found = await fetchCampaign(from);
+      if (!live || found.state !== "ok" || !mayRunAgain(found.campaign)) return;
+      const parts = partsToRunAgain(found.campaign);
+      let circle: string | null = null;
+      if (parts.circle !== null) {
+        const mine = (await fetchCircles()).circles.filter((c) => c.name === parts.circle);
+        if (!live || mine.length !== 1) return;
+        circle = mine[0].id;
+      }
+      setWhom(parts.forWhom);
+      setTitle(parts.title);
+      setName(parts.name);
+      setWords(parts.words);
+      setKind(parts.kind);
+      if (parts.days !== null) {
+        const offered = (LENGTHS as readonly number[]).includes(parts.days);
+        if (!offered) setOwnDays(parts.days);
+        setLength((l) => ({ ...l, [parts.forWhom]: (offered ? parts.days : "own") as LengthChoice }));
+      }
+      // The prayer it had, or the name alone if it had none: its creator's own choice then, so no kind changes it now.
+      setPsalm(parts.prayer);
+      setPrayerByHand(true);
+      setCountry(parts.country);
+      setTown(parts.town);
+      setCircleId(circle);
+      setAgain(true);
+    })();
     return () => {
       live = false;
     };
@@ -326,6 +377,12 @@ export function StartCampaign() {
               </div>
             ) : (
               <>
+                {/* Run it again: said once at the head, what this page began with and what it did not bring. */}
+                {again ? (
+                  <p role="status" data-campaign-again="" className="mt-6 font-sans text-detail leading-relaxed text-paper/75">
+                    {t("campaigns.again.note")}
+                  </p>
+                ) : null}
                 {/* For whom: the doors, as making a post has them. */}
                 <div role="group" aria-label={t("shop.forTheLivingOrThe")} className={cn("mt-7 grid gap-[9px]", DOOR_COLS[doors.length])}>
                   {doors.map((d) => (

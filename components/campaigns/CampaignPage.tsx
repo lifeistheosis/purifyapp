@@ -31,7 +31,7 @@ import { Lock } from "@/components/ui/icons/Lock";
 import { Sheet } from "@/components/ui/Sheet";
 import { carriedOne, type CarryPick } from "@/lib/campaigns/carried";
 import { closeCampaign, fetchCampaign, keepCampaign, setCommentsOpen, setListed, takeDownCampaign, type OneResult } from "@/lib/campaigns/client";
-import { CLOSINGS, isDay, isRunning, type Closing, type PublicCampaign } from "@/lib/campaigns/model";
+import { CLOSINGS, isDay, isRunning, mayRunAgain, type Closing, type PublicCampaign } from "@/lib/campaigns/model";
 import { CAMPAIGN_MENU_EVENT } from "@/lib/campaigns/pageMenu";
 import { campaignUpkeep } from "@/lib/campaigns/useCampaignUpkeep";
 import { useCampaignPrayer } from "@/lib/campaigns/useCampaignPrayer";
@@ -176,6 +176,8 @@ function Opened({ first, bar }: { first: PublicCampaign; bar: ReactNode }) {
   const started = dayText(campaign.starts_on ?? campaign.created_at.slice(0, 10), locale);
   const creator = campaign.creator_name;
   const place = placeText(campaign, locale);
+  // Run it again: for its creator, once it is over. The start page opens with its parts.
+  const againHref = mayRunAgain(campaign) ? `/campaigns/new?from=${encodeURIComponent(campaign.id)}` : null;
 
   // The ••• at the top is the bar's, and asks (lib/campaigns/pageMenu.ts).
   useEffect(() => {
@@ -444,6 +446,12 @@ function Opened({ first, bar }: { first: PublicCampaign; bar: ReactNode }) {
                     {added ? <Check size={16} className="shrink-0" /> : <Plus size={16} className="shrink-0" />}
                     <span className="truncate">{added ? t("community.wallInMyPrayers") : t("community.wallAdd")}</span>
                   </button>
+                ) : againHref ? (
+                  // Over, and its creator's own: a new one from the same parts (the notes, 2.2).
+                  <Link href={againHref} data-campaign-again="" className={cn(PILL, "flex-1 border border-paper/25 text-paper hover:border-paper/50")}>
+                    <Plus size={16} className="shrink-0" />
+                    <span className="truncate">{t("campaigns.again")}</span>
+                  </Link>
                 ) : (
                   <span className="flex-1" />
                 )}
