@@ -133,6 +133,12 @@ his call.
 
 All three work on the one branch, `ccr-07896cf2-bo0afd`. Each pulls
 (`git pull --rebase origin ccr-07896cf2-bo0afd`) before it pushes.
+Never stop a native build part way (`npm run build:android` or `build:ios`): it sets
+web-only trees aside in `.native-export-stash` and puts them back only when it
+ends by itself. If one dies, run its restoreAll logic by hand and check that
+`git status` is clean before anything else (Fable Theology, 2026-11-10: a stopped
+build left 1,300 deletions until restored). AGENTS.md no longer carries
+Next's managed-block markers, so `next dev` with agentRules off leaves it alone.
 A walk, picture or smoke script that needs a reader past the questions sets
 `purify:onboarded` to `"99"`, never to a version number (Fable onboarding,
 2026-11-10: with the onboarding's version raised, ten scripts that used `3` met
