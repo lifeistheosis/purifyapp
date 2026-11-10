@@ -80,7 +80,7 @@ export function HandoffSlate({
         </span>
       </h2>
 
-      <ul className="mt-7 w-full max-w-[320px] space-y-2.5 text-left">
+      <ul className="mt-7 w-full max-w-[320px] space-y-2.5 text-start">
         {lines.map((line, i) => (
           <li
             key={line.label}

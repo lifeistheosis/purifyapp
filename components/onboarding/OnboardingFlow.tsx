@@ -979,7 +979,7 @@ function AccountStep({ onSkip, skipLabel }: { onSkip: () => void; skipLabel: str
               onChange={(e) => setAgreed(e.target.checked)}
               className="mt-0.5 h-4 w-4 shrink-0 accent-gold"
             />
-            <span className="text-left font-sans text-caption leading-[1.5] text-paper/70">
+            <span className="text-start font-sans text-caption leading-[1.5] text-paper/70">
               {t("ui.iAgreeToThe")}{" "}
               <Link href="/terms" className="text-paper underline underline-offset-2">
                 {t("ui.termsOfServiceX")}
@@ -1093,7 +1093,7 @@ function ChoiceCard({
       type="button"
       onClick={onClick}
       aria-pressed={selected}
-      className={`ob-choice ob-rise flex min-h-11 w-full items-center gap-3.5 rounded-2xl border text-left ${
+      className={`ob-choice ob-rise flex min-h-11 w-full items-center gap-3.5 rounded-2xl border text-start ${
         compact ? "px-3.5 py-3" : "p-4"
       } ${
         selected
