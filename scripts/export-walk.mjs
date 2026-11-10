@@ -8132,6 +8132,120 @@ await section(51, async () => {
     await ctx.close();
   }
 });
+// Build 89's notes 9, 13 and 14 (docs/1.9-build/notes/build-89.md), on the
+// built pages, reached inside the app as a reader reaches them.
+await section(52, async () => {
+  console.log("\n52. Your rule's first frame and its rows, and rows that keep their shade (build 89 notes 9, 13, 14)");
+
+  // How much of the shadows inside each sideways row the row cuts, in px.
+  const cuts = (page, selector) =>
+    page.evaluate((sel) => {
+      const parse = (s) =>
+        !s || s === "none"
+          ? []
+          : s
+              .split(/,(?![^(]*\))/)
+              .filter((part) => !/\binset\b/.test(part) && !/rgba\([^)]*,\s*0\s*\)/.test(part))
+              .map((part) => {
+                const [x = 0, y = 0, blur = 0, spread = 0] = (part.replace(/rgba?\([^)]*\)|color-mix\([^)]*\)/g, "").match(/-?[\d.]+px/g) ?? []).map(parseFloat);
+                return { x, y, blur, spread };
+              });
+      return [...document.querySelectorAll(sel)].map((row) => {
+        const box = row.getBoundingClientRect();
+        let top = 0;
+        let bottom = 0;
+        for (const el of row.querySelectorAll("*")) {
+          const r = el.getBoundingClientRect();
+          if (!r.width) continue;
+          for (const sh of parse(getComputedStyle(el).boxShadow)) {
+            top = Math.max(top, box.top - (r.top + sh.y - sh.spread - sh.blur));
+            bottom = Math.max(bottom, r.bottom + sh.y + sh.spread + sh.blur - box.bottom);
+          }
+        }
+        return { top: Math.round(top), bottom: Math.round(bottom) };
+      });
+    }, selector);
+
+  // Note 9: the part the hour gives, from the first frame the switch is drawn.
+  for (const [hour, want, other] of [
+    [20, "evening", "morning"],
+    [8, "morning", "evening"],
+  ]) {
+    const { ctx, page, errors } = await open({ width: 390, height: 844, phone: true, set: { "purify.motion": "on" } });
+    await page.clock.setFixedTime(new Date(`2026-11-10T${String(hour).padStart(2, "0")}:00:00`));
+    await ctx.addInitScript(() => {
+      const frames = (window.__ruleFrames = []);
+      const tick = () => {
+        if (document.getElementById("mine-tab-morning")) {
+          const lit = [...document.querySelectorAll('[id^="mine-tab-"][aria-selected="true"]')].map((b) => b.id.slice(9));
+          frames.push(lit.join(",") || "none");
+        }
+        requestAnimationFrame(tick);
+      };
+      requestAnimationFrame(tick);
+    });
+    await go(page, "/prayers/");
+    await go(page, "/prayers/personal/");
+    await page.waitForSelector("#mine-tab-morning", { timeout: 20000 });
+    await page.waitForTimeout(900);
+    const seen = await page.evaluate(() => ({
+      frames: window.__ruleFrames,
+      still: document.querySelector(".rule-track")?.hasAttribute("data-still") ?? null,
+    }));
+    const order = seen.frames.filter((f, i) => f !== seen.frames[i - 1]);
+    must(seen.frames.length > 0 && !seen.frames.includes(other) && seen.frames.at(-1) === want, `Your rule at ${hour}:00 opens on ${want}, and ${other} is never lit first (${order.join(" then ")})`);
+    must(seen.still === false, "once open, a reader's tap crosses again");
+
+    // Note 14: In which prayers is the same row as Add prayers one by one.
+    const rows = await page.evaluate((part) => {
+      const add = document.querySelectorAll(`#mine-panel-${part} [data-mine-ways] > button`)[1];
+      const where = document.querySelector("[data-remembered-in]");
+      const shape = (b) => {
+        const r = b.getBoundingClientRect();
+        const plate = b.querySelector(".rule-way-plate")?.getBoundingClientRect();
+        const label = b.querySelector(".set-label")?.getBoundingClientRect();
+        const chev = b.querySelector(".set-chev")?.getBoundingClientRect();
+        if (!plate || !label || !chev) return null;
+        return {
+          plate: `${Math.round(plate.width)}x${Math.round(plate.height)}`,
+          beside: plate.right <= label.left && chev.left >= label.right - 1,
+          level: Math.abs((chev.top + chev.bottom) / 2 - (r.top + r.bottom) / 2) < 4 && Math.abs((plate.top + plate.bottom) / 2 - (r.top + r.bottom) / 2) < 4,
+        };
+      };
+      return { add: add ? shape(add) : null, where: where ? shape(where) : null };
+    }, want);
+    must(
+      Boolean(rows.add && rows.where) && rows.where.beside && rows.where.level && rows.where.plate === rows.add.plate,
+      `In which prayers is drawn as Add prayers one by one: the plate at the start, the arrow at the end, on one line (${JSON.stringify(rows)})`,
+    );
+    must(errors.length === 0, `no page errors${errors.length ? ": " + errors.slice(0, 2).join(" | ") : ""}`);
+    await ctx.close();
+  }
+
+  // Note 13: the doors of Search, and the reading room's rows, cut no shade.
+  {
+    const { ctx, page, errors } = await open({ width: 390, height: 844, phone: true });
+    const en = JSON.parse(fs.readFileSync(path.resolve("lib/i18n/messages/en.json"), "utf8"));
+    await go(page, "/");
+    // The bar's magnifier, as a reader opens it (section 44 does the same).
+    await tap(page.locator(`button[aria-label="${en["search.open"]}"]:visible`).first());
+    await page.waitForSelector("[data-search-doors] .search-door-pic", { timeout: 20000 });
+    await page.waitForTimeout(500);
+    // What a row cuts is what reaches past its own edges.
+    const doors = await cuts(page, "[data-search-doors]");
+    must(doors.length === 1 && doors[0].top <= 1 && doors[0].bottom <= 1, `Search's Look in row cuts none of the doors' glow or shade (${doors[0] ? `${doors[0].top}px above, ${doors[0].bottom}px below` : "no row"})`);
+    await page.keyboard.press("Escape");
+    await go(page, "/reading/");
+    await page.waitForSelector("[data-reading-row] li", { timeout: 20000 });
+    await page.waitForTimeout(500);
+    const ids = await page.evaluate(() => [...document.querySelectorAll("[data-reading-row] [class*='overflow-x-auto']")].map((t) => t.closest("[data-reading-row]").getAttribute("data-reading-row")));
+    const shade = await cuts(page, "[data-reading-row] [class*='overflow-x-auto']");
+    const cut = shade.map((c, i) => (c.top > 1 || c.bottom > 1 ? `${ids[i]} (${c.top}px above, ${c.bottom}px below)` : null)).filter(Boolean);
+    must(shade.length > 0 && cut.length === 0, `every reading room row keeps its tiles' shade (${shade.length} rows${cut.length ? "; cut in " + cut.join(", ") : ""})`);
+    must(errors.length === 0, `no page errors${errors.length ? ": " + errors.slice(0, 2).join(" | ") : ""}`);
+    await ctx.close();
+  }
+});
 await browser.close();
 if (!everySection) console.log(`\nOnly the sections chosen were walked: ${walked.join(", ") || "none"}.`);
 console.log(failed ? `\n${failed} check(s) failed.` : "\nEvery check passed.");

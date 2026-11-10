@@ -474,7 +474,12 @@ export function Doors({
     // body ran taller than the room the keyboard leaves (the day under the
     // doors, r3-31 B) the doors were squeezed to a sliver and everything
     // under them rose: build 87's walk, section 44.
-    <div data-search-doors="" className={cn("no-scrollbar flex shrink-0 overflow-x-auto px-5 pb-1 pt-1 md:flex-wrap md:gap-y-3 md:overflow-x-visible", small ? "gap-[11px]" : "gap-3")}>
+    // pt-6 -mt-5: a row that scrolls sideways cuts everything outside its
+    // box, so the lit door's glow (24px) and every door's shade were cut at a
+    // hard line above the row (build 89 note 13). The room is inside the row
+    // and taken back above it, so nothing moves; what sits in that room is
+    // the Look in label, which takes no tap.
+    <div data-search-doors="" className={cn("no-scrollbar -mt-5 flex shrink-0 overflow-x-auto px-5 pb-1 pt-6 md:flex-wrap md:gap-y-3 md:overflow-x-visible", small ? "gap-[11px]" : "gap-3")}>
       {doors.map((id) => {
         const door = doorOf(id);
         const n = counts?.get(id);

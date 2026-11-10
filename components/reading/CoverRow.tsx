@@ -102,7 +102,10 @@ export function CoverRow({
           label={typeof title === "string" ? title : undefined}
           snap
           className="-mx-5 mt-3.5 md:-mx-8"
-          trackClassName="gap-2.5 px-5 scroll-px-5 pb-1 md:gap-3.5 md:px-8 md:scroll-px-8"
+          // pb-7 -mb-6: room under the row for the shade the feelings' doors
+          // cast (24px), which the row cut at a hard line; taken back below,
+          // in the gap before the next row, so nothing moves (build 89 note 13).
+          trackClassName="-mb-6 gap-2.5 px-5 scroll-px-5 pb-7 md:gap-3.5 md:px-8 md:scroll-px-8"
         >
           {children}
         </ScrollRail>
