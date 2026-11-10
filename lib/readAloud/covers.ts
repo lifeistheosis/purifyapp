@@ -29,7 +29,9 @@ import type { CoversPack } from "@/lib/packs/types";
  * every one is marked for the future clergy review: no priest reviews Purify
  * yet (the owner, 2026-10-16), so nothing waits on one.
  *
- * THE PICTURES. Public domain or CC0 only, each read on its own Commons page, and
+ * THE PICTURES. Public domain or CC0, and from 1.9 a CC BY or CC BY-SA
+ * photograph of an old icon with its photographer in `credit`, named on the
+ * Photo credits page (the owner's 99). Each read on its own Commons page, and
  * each opened and looked at before it was cut: the right saint, read from
  * the icon's inscription where it has one, sharp, the whole head and halo,
  * nothing outside the painted panel. docs/licensing/READ_COVERS.md records

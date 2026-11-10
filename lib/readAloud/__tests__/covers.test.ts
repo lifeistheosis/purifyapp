@@ -24,6 +24,7 @@ import { describe, expect, it } from "vitest";
 
 import books from "@/data/bible/books.json";
 import facts from "@/data/bible/intros/facts.json";
+import { isCcLicence } from "@/lib/credits/photos";
 import { LOCALES } from "@/lib/i18n/locales";
 import { BOOK_COVERS, COVER_PLATE, COVER_SIZE, FIGURES, readAloudCover, type FigureId } from "@/lib/readAloud/covers";
 
@@ -221,8 +222,11 @@ describe("every cover picture", () => {
 
   for (const [id, f] of figures) {
     describe(id, () => {
-      it("is public domain, read on its Commons page, opened, and marked for the clergy review", () => {
-        expect(f.license, `${id}.license`).toMatch(/^(public domain|pd-art|cc0)$/i);
+      it("is public domain, or a CC BY or CC BY-SA photograph credited on the Photo credits page, read on its Commons page, opened, and marked for the clergy review", () => {
+        // His 99 (2026-11-10): CC BY and CC BY-SA photographs of old icons are
+        // allowed, each photographer named on the credits page;
+        // lib/credits/__tests__/photos.test.ts holds the credit.
+        expect(/^(public domain|pd-art|cc0)$/i.test(f.license) || isCcLicence(f.license), `${id}.license: ${f.license}`).toBe(true);
         expect(f.source.startsWith("File:"), `${id}.source`).toBe(true);
         expect(f.evidenceUrl.startsWith("https://commons.wikimedia.org/wiki/File:"), `${id}.evidenceUrl`).toBe(true);
         for (const field of ["work", "artist", "workDate"] as const) expect(f[field].trim(), `${id}.${field}`).not.toBe("");

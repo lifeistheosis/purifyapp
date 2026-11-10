@@ -50,9 +50,14 @@ const SIZE = 1024;
 const UA = "PurifyApp/1.0 (https://purifyapp.net; lifeistheosis@users.noreply.github.com)";
 
 // The same gate as fetch-section-media.mjs, minus the attribution licences:
-// a cover carries no credit line, so it must need none.
+// a cover carries no credit line, so it must need none. From 1.9 (the
+// owner's 99) a CC BY or CC BY-SA photograph passes too, but only for an
+// entry that names its photographer (`credit`), whom the Photo credits page
+// names (lib/credits/photos.ts).
 const ALLOWED = /^(public domain|pd-art|pd|pd-old.*|cc0( 1\.0)?)$/i;
 const REJECT = /(cc by|by-sa|by-nc|by-nd|-nd\b|gfdl|non-?commercial|no derivatives|fair use)/i;
+const CREDITED = /^cc by(-sa)? \d\.\d$/i;
+const passes = (license, cover) => (CREDITED.test(license) ? Boolean(cover.credit?.trim()) : !REJECT.test(license) && ALLOWED.test(license));
 
 /**
  * One entry per figure. `title` is the Commons file; `crop` is the square
@@ -172,14 +177,15 @@ const strip = (s) =>
     .trim();
 
 /** The file's address and what its page says about it; null if the licence fails. */
-async function fileInfo(title, width) {
+async function fileInfo(cover) {
+  const { title, width } = cover;
   const q = `https://commons.wikimedia.org/w/api.php?action=query&titles=${encodeURIComponent(title)}&prop=imageinfo&iiprop=url|size|extmetadata${width ? `&iiurlwidth=${width}` : ""}&format=json`;
   const json = JSON.parse((await get(q)).body.toString());
   const info = Object.values(json.query?.pages || {})[0]?.imageinfo?.[0];
   if (!info?.url) return { error: "no such file" };
   const meta = info.extmetadata || {};
   const license = strip(meta.LicenseShortName?.value) || strip(meta.License?.value);
-  if (!license || REJECT.test(license) || !ALLOWED.test(license)) return { error: `licence "${license}" is not public domain` };
+  if (!license || !passes(license, cover)) return { error: `licence "${license}" is not public domain, or a CC photograph whose entry names no photographer` };
   return {
     url: width && info.thumburl ? info.thumburl : info.url,
     width: width && info.thumbwidth ? info.thumbwidth : info.width,
@@ -195,7 +201,7 @@ async function fileInfo(title, width) {
 /** With --offline: the licence the entry recorded, never a guess. */
 function recorded(cover) {
   if (!cover.license || !cover.size) return { error: "records no licence and size, so it is cut only with Commons answering" };
-  if (REJECT.test(cover.license) || !ALLOWED.test(cover.license)) return { error: `licence "${cover.license}" is not public domain` };
+  if (!passes(cover.license, cover)) return { error: `licence "${cover.license}" is not public domain, or a CC photograph whose entry names no photographer` };
   return { license: cover.license, artist: "as recorded in lib/readAloud/covers.ts", workDate: "as recorded", page: `https://commons.wikimedia.org/wiki/${encodeURI(cover.title.replace(/ /g, "_"))}` };
 }
 
@@ -246,7 +252,7 @@ const rows = [];
 for (const cover of COVERS) {
   if (only.length && !only.includes(cover.id)) continue;
   await sleep(1000);
-  const info = offline ? recorded(cover) : await fileInfo(cover.title, cover.width);
+  const info = offline ? recorded(cover) : await fileInfo(cover);
   if (info.error) {
     console.error(`${cover.id}: ${cover.title}: ${info.error}. Not written.`);
     process.exitCode = 1;

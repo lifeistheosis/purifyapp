@@ -11,14 +11,23 @@ documented here.** The same records are the `FIGURES` registry in
 `lib/readAloud/covers.ts`, which `lib/readAloud/__tests__/covers.test.ts`
 holds.
 
-**Public domain only.** A cover carries no credit line, so it must need none.
-Every file below is public domain or CC0 as its own Commons page states it,
-read on 2026-10-16 (the file's `LicenseShortName`, and the licence template on
-the page). `scripts/fetch-read-covers.mjs` reads it again on every run and
-writes nothing that fails. CC BY and CC BY-SA are rejected, including a
-photographer's CC BY-SA photograph of an old icon: most of the "Kremlin
-exhibition" photographs of the Kirillo iconostasis are of that kind. No
-licence here is inferred.
+**Public domain, and from 1.9 a credited photograph.** A cover carries no
+credit line of its own. Every file below is public domain or CC0 as its own
+Commons page states it, read on the day in its row (the file's
+`LicenseShortName`, and the licence template on the page).
+`scripts/fetch-read-covers.mjs` reads it again on every run and writes nothing
+that fails. Until 1.9, CC BY and CC BY-SA were rejected, including a
+photographer's CC BY-SA photograph of an old icon (most of the "Kremlin
+exhibition" photographs of the Kirillo iconostasis are of that kind). The
+owner's 99 (2026-11-10): "CC BY and CC BY-SA photographs are now allowed,
+each photographer named on a credits page". Such a cover carries `credit` in
+`FIGURES`, the photographer as the file's page asks to be credited, and the
+Photo credits page (`/credits`, `lib/credits/photos.ts`) names them with the
+licence and the photograph's page; `lib/credits/__tests__/photos.test.ts`
+holds every one to its credit. Only a photograph of an old work: a CC
+photograph of a contemporary icon is never used, since the painter's rights
+are not the photographer's to give (`COVER_ICONS.md`). No licence here is
+inferred.
 
 **Every picture was opened and looked at** before it was cut, and every cut
 was opened again at full size: the figure is the one the book is about, read
