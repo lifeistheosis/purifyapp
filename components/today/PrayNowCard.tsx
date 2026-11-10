@@ -84,7 +84,8 @@ export function PrayRail({ className }: { className?: string }) {
         </p>
         <Link
           href="/prayers"
-          className="tap-press inline-flex items-center gap-0.5 font-sans text-caption text-paper/55 hover:text-paper"
+          // A line of words, 44 to the touch (.hit-44): the heading beside it taps nothing.
+          className="hit-44 tap-press inline-flex items-center gap-0.5 font-sans text-caption text-paper/55 hover:text-paper"
         >
           {t("common.seeAll")}
           <ChevronRight size={13} />

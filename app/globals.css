@@ -6823,6 +6823,26 @@ html[data-reading-mode="parchment"] .plus-try-tile-lit:not(.dark-island *) {
  min-height: 44px;
  transform: translate(-50%, -50%);
 }
+/* A mark standing in a line of words (the Bible's commentary marker): the
+   44px square stands beside it rather than round it, so it never lies over
+   a word. Before the words (-lead), the square ends where the words begin
+   and reaches back into the margin; after them (-trail), it starts where
+   they end. The 0.375rem is the mark's own gap to the words (me-1.5 and
+   ms-1.5 in components/bible/VerseRow.tsx). Physical sides first, then the
+   logical one, so it turns in Arabic. */
+.hit-44.hit-44-lead::after,
+.hit-44.hit-44-trail::after {
+ left: auto;
+ right: auto;
+ width: 44px;
+ transform: translateY(-50%);
+}
+.hit-44.hit-44-lead::after {
+ inset-inline-end: -0.375rem;
+}
+.hit-44.hit-44-trail::after {
+ inset-inline-start: -0.375rem;
+}
 
 /* A generic content entrance: a gentle fade + rise, matching the hero/
    onboarding cascades. Opt a list into a stagger by setting

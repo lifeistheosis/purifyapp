@@ -62,13 +62,19 @@ import { lastPageScrollAt, watchPageScroll } from "@/lib/ui/pageScroll";
 /**
  * The mobile commentary marker is a superscript verse number plus a 5px dot,
  * sized for the page, not for a thumb: as laid out its button box measures
- * about 19x5, well under the 24x24 WCAG 2.5.8 asks for, and a real tap on it
- * misses more often than it lands. This grows the touch region only, with an
- * out-of-flow pseudo-element centred on the marker, so the superscript keeps
- * its deliberate size and the verse line box is untouched.
+ * about 14x5, and a real tap on it misses more often than it lands. The
+ * house's touch floor (`.hit-44`, app/globals.css) grows the touch region
+ * only, a 44px square, so the superscript keeps its deliberate size and the
+ * verse line box is untouched. It was 24px, WCAG 2.5.8's floor, until the
+ * guardrail list of 2026-11-10 held it to the app's 44 like every other
+ * control. Centred on the marker, the square lay over a short first word
+ * ("In" of John 1:1, measured on the export), so it stands beside the
+ * marker instead: before a verse it ends where the words begin and reaches
+ * back into the margin (-lead); after a drop-capped first verse it starts
+ * where the words end (-trail).
  */
-const TAP_TARGET =
- "relative touch-manipulation after:absolute after:content-[''] after:top-1/2 after:left-1/2 after:-translate-x-1/2 after:-translate-y-1/2 after:h-6 after:w-full after:min-w-6";
+const TAP_TARGET = "touch-manipulation hit-44 hit-44-lead";
+const TAP_TARGET_AFTER = "touch-manipulation hit-44 hit-44-trail";
 
 function tokenize(text: string): string[] {
  return text.trim().split(/\s+/);
@@ -973,7 +979,7 @@ export function VerseRow({
  // drop cap), so its commentary marker hangs AFTER the text instead.
  // Matters now that whole works anchor at verse 1: the Hexaemeron on
  // Genesis 1:1, the psalm openings, the first tractates on John 1:1.
- <span className="inline-flex items-baseline ml-1.5 align-super">
+ <span className="inline-flex items-baseline ms-1.5 align-super">
  <a
  href={`#rail-v${verse.n}`}
  className="hidden lg:inline-flex native-md-hidden text-comment hover:text-comment-hover transition-colors"
@@ -994,7 +1000,7 @@ export function VerseRow({
  }}
  className={cn(
  "lg:hidden native-md-inline-flex inline-flex items-baseline text-comment active:text-comment-hover transition-colors",
- TAP_TARGET,
+ TAP_TARGET_AFTER,
  )}
  aria-label={t("bible.openCommentaryOnVerse", { verse: verse.n })}
  >

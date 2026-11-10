@@ -101,7 +101,8 @@ export function ChapterPager({
  {pBook ? (
  <Link
  href={`/bible/${pBook.slug}/1${vq(pBook.slug)}`}
- className="hover:text-paper transition-colors"
+ // 19px of words, 44 to the touch (.hit-44): nothing else to tap within reach.
+ className="hit-44 hover:text-paper transition-colors"
  >
  ⇤ {t(`bible.books.${pBook.slug}`)}
  </Link>
@@ -114,7 +115,7 @@ export function ChapterPager({
  {nBook ? (
  <Link
  href={`/bible/${nBook.slug}/1${vq(nBook.slug)}`}
- className="hover:text-paper transition-colors"
+ className="hit-44 hover:text-paper transition-colors"
  >
  {t(`bible.books.${nBook.slug}`)} ⇥
  </Link>

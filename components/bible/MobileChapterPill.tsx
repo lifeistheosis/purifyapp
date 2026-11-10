@@ -68,7 +68,8 @@ function Arrow({
     <Link
       href={`/bible/${target.slug}/${target.chapter}`}
       aria-label={label}
-      className="h-10 w-10 shrink-0 inline-flex items-center justify-center text-paper/85 hover:text-paper font-sans text-lede leading-none"
+      // 40px drawn, 44 to the touch (.hit-44), as the dock's own arrows (ReaderDock).
+      className="hit-44 h-10 w-10 shrink-0 inline-flex items-center justify-center text-paper/85 hover:text-paper font-sans text-lede leading-none"
     >
       {dir === "‹" ? <ChevronLeft size={20} className="rtl:-scale-x-100" /> : <ChevronLeft size={20} className="-scale-x-100 rtl:scale-x-100" />}
     </Link>

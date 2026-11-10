@@ -114,7 +114,13 @@ function countSmallTargets(): { total: number; byFile: Record<string, number> } 
 // w-11. The top bar's back button had the same size in a class constant this
 // count cannot see, and went to h-11 w-11 with them. The tree stood at 31
 // before it.
-const MAX_SMALL_TARGETS = 29;
+// 29 -> 28 on 2026-11-10 (1.9, the arbiter's guardrail list from the Themes
+// chat's scripts/mock-check.mjs run on John 1): the chapter pill's two arrows
+// were h-10 w-10, 42.5px, and are 44 to the touch with .hit-44, as the audio
+// dock's arrows already were. The 44 commentary markers on the same page,
+// about 14 by 5 drawn, had a 24px touch box in a class constant this count
+// cannot see, and are .hit-44 with them (held below).
+const MAX_SMALL_TARGETS = 28;
 
 describe("touch targets", () => {
   const { total, byFile } = countSmallTargets();
@@ -132,6 +138,32 @@ describe("touch targets", () => {
         `has room, or app/globals.css .hit-44 where it does not, then lower the\n` +
         `ceiling in this file. Worst offenders:\n${worst}`,
     ).toBeLessThanOrEqual(MAX_SMALL_TARGETS);
+  });
+
+  it("the Bible's commentary markers and the chapter pill's arrows are 44px to the touch", () => {
+    const verse = readFileSync(join(ROOT, "components/bible/VerseRow.tsx"), "utf8");
+    // Beside the marker, never over a word: before a verse, and after a drop-capped first verse.
+    expect(verse).toContain('const TAP_TARGET = "touch-manipulation hit-44 hit-44-lead";');
+    expect(verse).toContain('const TAP_TARGET_AFTER = "touch-manipulation hit-44 hit-44-trail";');
+    expect((verse.match(/^\s*TAP_TARGET,$/gm) ?? []).length).toBe(1);
+    expect((verse.match(/^\s*TAP_TARGET_AFTER,$/gm) ?? []).length).toBe(1);
+    // The squares' gap is the markers' own (0.375rem, spacing 1.5), and it is logical.
+    expect(verse).toContain('<span className="inline-flex items-baseline me-1.5 align-super">');
+    expect(verse).toContain('<span className="inline-flex items-baseline ms-1.5 align-super">');
+    const css = readFileSync(join(ROOT, "app", "globals.css"), "utf8");
+    expect(css).toMatch(/\.hit-44\.hit-44-lead::after \{\s*inset-inline-end: -0\.375rem;\s*\}/);
+    expect(css).toMatch(/\.hit-44\.hit-44-trail::after \{\s*inset-inline-start: -0\.375rem;\s*\}/);
+    const pill = readFileSync(join(ROOT, "components/bible/MobileChapterPill.tsx"), "utf8");
+    const link = pill.slice(pill.indexOf("<Link"), pill.indexOf(">", pill.indexOf("className=", pill.indexOf("<Link"))));
+    expect(link).toMatch(/className="hit-44 h-10 w-10 /);
+  });
+
+  it("the small text links the same checkMock run found are 44px to the touch", () => {
+    // John 1's links to the neighbouring books (41 by 19) and Today's "See all" (51 by 19).
+    const pager = readFileSync(join(ROOT, "components/bible/ChapterPager.tsx"), "utf8");
+    expect((pager.match(/className="hit-44 hover:text-paper transition-colors"/g) ?? []).length).toBe(2);
+    const pray = readFileSync(join(ROOT, "components/today/PrayNowCard.tsx"), "utf8");
+    expect(pray).toContain('className="hit-44 tap-press inline-flex items-center gap-0.5');
   });
 
   it("the .hit-44 utility the fixes rely on is still defined", () => {
