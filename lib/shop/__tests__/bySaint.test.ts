@@ -103,7 +103,16 @@ describe("shopSaints", () => {
     const named = new Set(seeds.flatMap((s) => (s.subjects ?? []).filter((x) => x.type === "saint").map((x) => x.slug)));
     const rows = shopSaints(catalogue);
     expect(rows.map((r) => r.slug).sort()).toEqual([...named].sort());
-    for (const r of rows) expect(r.iconUrl, r.slug).toBeTruthy();
+    // St Nicholas's icon came off on 2026-11-10 (a painter's signature in the
+    // paint, no source recorded: the survey of the saints' icons, build 90).
+    // SaintAvatar draws him by his initials until a sourced icon of him is
+    // settled. Every other saint the shop names still has its picture (the
+    // Archangel's marked file gave way to a sourced copy the same day).
+    const offForRights = new Set(["nicholas-the-wonderworker"]);
+    for (const r of rows) {
+      if (offForRights.has(r.slug)) expect(r.iconUrl, r.slug).toBeNull();
+      else expect(r.iconUrl, r.slug).toBeTruthy();
+    }
   });
 });
 

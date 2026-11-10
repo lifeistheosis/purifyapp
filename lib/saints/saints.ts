@@ -1580,7 +1580,6 @@ export const SAINTS: Saint[] = [
  {
  slug: "nicholas-the-wonderworker",
  byname: "The Wonderworker",
- iconUrl: "/saints/icons/nicholas-the-wonderworker.jpg",
  name: "St. Nicholas the Wonderworker",
  epithet: "Archbishop of Myra in Lycia · The Wonderworker",
  born: "c. 270 (Patara in Lycia)",
@@ -1669,7 +1668,6 @@ export const SAINTS: Saint[] = [
  slug: "isidora-of-tabenna",
  pronoun: "her",
  byname: "The Fool-for-Christ",
- iconUrl: "/saints/icons/isidora-of-tabenna.jpg",
  name: "St. Isidora of Tabenna",
  epithet: "Fool-for-Christ · Nun of the Tabennisi Convent",
  born: "4th century",
@@ -2086,7 +2084,6 @@ export const SAINTS: Saint[] = [
  {
  slug: "apostle-thomas",
  byname: "Didymus, the Twin",
- iconUrl: "/saints/icons/apostle-thomas.jpg",
  name: "Holy Apostle Thomas",
  epithet: "Apostle to India · The Twin",
  born: "1st century (Galilee)",
@@ -2627,7 +2624,6 @@ export const SAINTS: Saint[] = [
  {
  slug: "papias-of-hierapolis",
  byname: "Hearer of the Elders",
- iconUrl: "/saints/icons/papias-of-hierapolis.jpg",
  name: "St. Papias of Hierapolis",
  epithet: "Bishop of Hierapolis · Hearer of John · Companion of Polycarp",
  born: "c. 70",
@@ -3023,7 +3019,6 @@ export const SAINTS: Saint[] = [
  {
  slug: "meletius-of-antioch",
  byname: "Confessor of Antioch",
- iconUrl: "/saints/icons/meletius-of-antioch.jpg",
  name: "St. Meletius of Antioch",
  epithet: "Patriarch of Antioch · Confessor · Presider of the Second Council",
  born: "c. 310 (Melitene, Armenia)",
@@ -3239,7 +3234,6 @@ export const SAINTS: Saint[] = [
  {
  slug: "theophylact-of-ohrid",
  byname: "The Bulgarian",
- iconUrl: "/saints/icons/theophylact-of-ohrid.jpg",
  name: "St. Theophylact of Ohrid",
  epithet: "Archbishop of Ohrid · Explainer of the Gospels",
  born: "c. 1055 (Euripos, Euboea)",
@@ -3610,7 +3604,6 @@ export const SAINTS: Saint[] = [
  },
  {
  slug: "memnon-of-ephesus",
- iconUrl: "/saints/icons/memnon-of-ephesus.v2.jpg",
  name: "St. Memnon of Ephesus",
  epithet: "Archbishop of Ephesus · Host and Father of the Third Council",
  born: "Fourth century",
@@ -3912,9 +3905,9 @@ export const SAINTS: Saint[] = [
  {
  slug: "adrian-of-rome",
  // No icon (1.9, build 90 note 3, the arbiter's word of 2026-11-10): the file
- // this page showed is a young martyr with a cross, not Pope Adrian I. The
- // plate until a true picture of him passes (lib/saints/iconRights.ts,
- // ICON_QUESTIONS). The file stays in the app, unshown.
+ // this page showed was a young martyr with a cross, not Pope Adrian I, and it
+ // is out of the app since the same day. The plate until a true picture of him
+ // passes (lib/saints/iconRights.ts).
  name: "St. Adrian of Rome",
  epithet: "Pope of Rome · Father of the Seventh Council",
  born: "Rome",
@@ -4225,7 +4218,6 @@ export const SAINTS: Saint[] = [
   },
   {
     slug: "xenia-of-petersburg",
-    iconUrl: "/saints/icons/xenia-of-petersburg.v2.jpg",
     name: "St. Xenia of St. Petersburg",
     byname: "Blessed Xenia, Fool for Christ",
     epithet: "Fool for Christ · Wonderworker of St. Petersburg",
@@ -4644,7 +4636,6 @@ export const SAINTS: Saint[] = [
   },
   {
     slug: "sophrony-of-essex",
-    iconUrl: "/saints/icons/sophrony-of-essex.jpg",
     name: "St. Sophrony of Essex",
     byname: "Sophrony Sakharov",
     epithet: "Disciple of St. Silouan · Founder of the monastery in Essex",
