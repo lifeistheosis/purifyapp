@@ -32,9 +32,10 @@ written as 1.9 is planned to ship.
    ("Prayer campaigns are in this build and open to our team only").
 3. **The removal notice.** "The reader who posted it is told why" is true
    once `docs/1.9-build/sql/removal-notices.sql` has run on the live database
-   (his yes, then the push) and the campaigns chat's campaign and picture
-   removals write the notice. Until then, say only that moderators remove
-   what breaks the rules.
+   (his yes, then the push). Every moderator's removal in the build writes
+   the notice already: posts, replies, comments, shared journal pages, and
+   (since `aa6417915`) campaigns and their pictures. Until the SQL has run,
+   say only that moderators remove what breaks the rules.
 4. **Pictures on prayer campaigns** are switched off on the server
    (`lib/campaigns/parts.ts`, `pictures: false`) until his three steps are
    done. Part B says so. If they are switched on before R5d, change that line
