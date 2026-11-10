@@ -3127,3 +3127,97 @@ profile. Which goes?
 The wall's code stays in the repository's history; its Vault entry names the
 commit that takes it out.
 
+## 22. A preset prayer for each kind: the mapping for his OK (2026-11-10; a plan, nothing built)
+
+**His word** (the arbiter's relay, about 17:28 UTC): "we're gonna add preset
+per, so like if it's for the reposed, we're gonna use like Saint Ticon's
+prayers for the reposed. If it's for the martyred, we have the martyred. If
+it's for healing, we have healing, etc."
+
+### 22.1 What the app holds, read from its files
+
+- **A prayer made for the need, for one kind only:** the reposed. "O God of
+  spirits, and of all flesh", Hapgood's Service Book (1906), p. 91, public
+  domain (`lib/prayers/commemoration.ts`, `DEPARTED_PRAYER`). A campaign for
+  the reposed already says it.
+- **No prayer for the sick, for travellers, for students, for the
+  persecuted, to the martyrs, or of thanksgiving for a mercy** is in the
+  prayer book (`data/prayers`: every text read by a search for those needs'
+  own words). Nothing stands under St Tikhon's name either: the prayer
+  book's own source lines say the Jordanville, St Tikhon's and Hapgood books
+  carry these prayers in nearly the same form, and the words printed are
+  public-domain English.
+- **What he remembers is July's.** July's campaigns had nine presets ("For
+  the sick", "For the persecuted", "Memory eternal" and so on,
+  `lib/campaigns/campaigns.ts`, `PRESET_PRAYERS`). Six were sentences written
+  for the feature, with no printing behind them, and that is why the rework
+  did not carry them: his standard takes the Church's words from a
+  public-domain printing, word for word, and nothing written by us
+  (`docs/editorial-standards.md`). The three true ones were the Jesus
+  Prayer, the Trisagion and "Most Holy Theotokos, save us".
+- **What it does hold that speaks to a need in its own words:** the common
+  prayers of the morning rule, and the whole Psalter in Brenton's Septuagint
+  (1851, public domain): some psalms in the prayer book's files (90, 26, 50,
+  and those of the Hours), every psalm in the Bible's.
+
+### 22.2 The mapping proposed
+
+Each line is the prayer, the words in it that speak to the need (read from
+the app's file, not typed from memory), and where it is printed from.
+
+| Kind | Preset | Its words | Printed from |
+|---|---|---|---|
+| The reposed | "O God of spirits, and of all flesh" | "give rest to the souls of thy departed servants" | Hapgood (1906), p. 91. As built |
+| An illness | The Trisagion prayers | "Holy God, visit and heal our infirmities, for Thy Name's sake." | The common prayer book, as the morning prayers have it |
+| A trial | Psalm 90 | "I am with him in affliction; and I will deliver him" | Brenton (1851) |
+| The persecuted | Psalm 26 | "my persecutors and mine enemies, they fainted and fell" | Brenton |
+| Guidance | Psalm 142 | "Teach me to do thy will ... thy good Spirit shall guide me in the straight way." | Brenton |
+| A journey | Psalm 120 | "The Lord shall keep thy coming in, and thy going out" | Brenton |
+| Thanksgiving | Psalm 102 | "Bless the Lord, O my soul, and forget not all his praises" | Brenton |
+| An exam or studies | The name alone | Nothing the app holds speaks of studies. The nearest is Psalm 24, "Shew me thy ways, O Lord; and teach me thy paths." | |
+| Something else | The name alone | The creator may choose any prayer on the list | |
+
+The pairing of a prayer with a need is a judgment, and it is his to approve
+line by line. Only the reposed's is a prayer the Church made for that need;
+the rest are psalms and one common prayer whose own words ask for what the
+campaign asks.
+
+### 22.3 What a reader sees
+
+- **Starting a campaign:** choosing the kind sets the row "The prayer" to
+  that kind's preset, by name. The creator can change it to any other on the
+  list, or to "The name alone". Today the row offers the name alone or one
+  of three psalms (90, 26, 50) and nothing is set for them; those three stay
+  on the list.
+- **On the campaign's page:** the prayer's name, its words, and under them
+  the printing they are from, as a psalm stands there today.
+- **In a reader's own prayers:** the name stands among those they pray for,
+  and when they pray the campaign its prayer is read as a step of its own,
+  as the psalm is today.
+- **For the reposed nothing changes.**
+- **No SQL:** a campaign already keeps a pointer to a prayer of the book
+  (`prayer_rule`, `prayer_id`) and never its words, so a correction to the
+  book reaches every campaign.
+
+### 22.4 The gaps, and what would close them
+
+Prayers made for the sick, for studies, for a journey and for thanksgiving
+exist in public-domain books and are not in the app. Hapgood has a
+thanksgiving for an answer to prayer (p. 512), a service for children
+beginning instruction (p. 519) and a blessing for a journey (p. 524), each a
+priest's service (section 2.4, read from its contents only); a prayer for the
+sick still needs its source found. Each would be read off its page image,
+word for word, and held by a test, about three hours apiece. Because a
+preset is a pointer, a real prayer can take a psalm's place later without
+anything else changing.
+
+July's written lines are not proposed: they are ours, not the Church's.
+
+### 22.5 Size
+
+About 8 hours with the gates: the list and a kind's default with their
+tests (1.5), reading a prayer from the prayer book's or the Bible's own file
+when it is needed, with its printing's line (2), the start screen (1.5), the
+campaign's page and the prayer's step (1), new words if any for his OK and
+twenty languages (0.5), tests, three stills, the walk and the builds (2).
+
