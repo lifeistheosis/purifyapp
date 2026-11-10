@@ -17,7 +17,7 @@ import { Plus } from "@/components/ui/icons/Plus";
 import { Shield } from "@/components/ui/icons/Shield";
 import { Sheet } from "@/components/ui/Sheet";
 import { addPicture, fetchPictures, removePicture, type PictureAdded, type PicturesResult } from "@/lib/campaigns/client";
-import { PICTURES_FREE, PICTURE_ALT_MAX, PICTURE_MAX_BYTES, PICTURE_TYPES } from "@/lib/campaigns/model";
+import { PICTURE_ALT_MAX, PICTURE_MAX_BYTES, PICTURE_TYPES, showsPlusPlace } from "@/lib/campaigns/model";
 import { cn } from "@/lib/cn";
 import { clientSurface } from "@/lib/entitlements/client";
 import { plusEnforcedFor } from "@/lib/entitlements/entitlements";
@@ -77,6 +77,8 @@ function refusal(res: Extract<PictureAdded, { ok: false }>, t: Translate): strin
       return t("campaigns.err.pictureRefused");
     case "picture_limit":
       return t("campaigns.err.pictureLimit");
+    case "campaign_link":
+      return t("campaigns.err.link");
     case "not_running":
       return t("campaigns.endedBody");
     default:
@@ -117,7 +119,7 @@ export function CampaignPictures({
   const open = openAt >= 0 ? pictures[openAt] : null;
   const waits = pictures.some((p) => p.held);
   // At three, where Plus can be bought: the next place is shown, with its mark.
-  const plusPlace = mine && !canAdd && limit === PICTURES_FREE && pictures.length >= PICTURES_FREE && plusEnforcedFor(clientSurface());
+  const plusPlace = showsPlusPlace({ mine, canAdd, limit, pictures: pictures.length, plusSold: plusEnforcedFor(clientSurface()) });
 
   async function remove() {
     const id = removing;
@@ -184,41 +186,31 @@ export function CampaignPictures({
         {open ? (
           <div className="pb-1 pt-1">
             <div className="overflow-hidden rounded-[14px] bg-paper/[0.06]">
-              <ArrivingImage key={open.id} src={open.url} alt={open.alt ?? t("campaigns.pictureAlt")} decoding="async" className="mx-auto block max-h-[60svh] w-auto max-w-full object-contain" />
+              <ArrivingImage key={open.id} src={open.url} alt={open.alt ?? t("campaigns.pictureAlt")} decoding="async" className="mx-auto block max-h-[48svh] w-auto max-w-full object-contain" />
             </div>
             {open.alt ? <p className="mt-3 break-words font-serif text-body leading-[1.6] text-paper/90">{open.alt}</p> : null}
             {open.held ? <p className="mt-3 font-sans text-detail leading-relaxed text-paper/75">{t("campaigns.picturesWaitingBody")}</p> : null}
-            {pictures.length > 1 ? (
-              <div className="mt-4 flex items-center justify-between">
+            {/* One row: the picture before, what can be done with this one, the picture after. */}
+            <div className="mt-4 flex items-center gap-2">
+              {pictures.length > 1 ? (
                 <button
                   type="button"
                   aria-label={t("common.previous")}
                   disabled={openAt <= 0}
                   onClick={() => setOpenId(pictures[openAt - 1].id)}
-                  className="tap-press inline-flex h-11 w-11 items-center justify-center rounded-full border border-paper/25 text-paper disabled:opacity-40"
+                  className="tap-press inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-full border border-paper/25 text-paper disabled:opacity-40"
                 >
                   <ChevronLeft size={18} className="rtl:-scale-x-100" />
                 </button>
-                <button
-                  type="button"
-                  aria-label={t("common.next")}
-                  disabled={openAt >= pictures.length - 1}
-                  onClick={() => setOpenId(pictures[openAt + 1].id)}
-                  className="tap-press inline-flex h-11 w-11 items-center justify-center rounded-full border border-paper/25 text-paper disabled:opacity-40"
-                >
-                  <ChevronRight size={18} className="rtl:-scale-x-100" />
-                </button>
-              </div>
-            ) : null}
-            <div className="mt-4">
+              ) : null}
               {mine ? (
                 <button
                   type="button"
                   onClick={() => setRemoving(open.id)}
-                  className="tap-press inline-flex min-h-11 items-center gap-2 rounded-pill border border-paper/25 px-4 font-sans text-detail font-semibold text-paper hover:border-paper/45"
+                  className="tap-press inline-flex min-h-11 min-w-0 flex-1 items-center justify-center gap-2 rounded-pill border border-paper/25 px-4 font-sans text-detail font-semibold text-paper hover:border-paper/45"
                 >
-                  <Erase size={16} />
-                  {t("campaigns.pictureRemove")}
+                  <Erase size={16} className="shrink-0" />
+                  <span className="truncate">{t("campaigns.pictureRemove")}</span>
                 </button>
               ) : (
                 <button
@@ -228,12 +220,23 @@ export function CampaignPictures({
                     setReporting(open.id);
                     setOpenId(null);
                   }}
-                  className="tap-press inline-flex min-h-11 items-center gap-2 rounded-pill border border-paper/25 px-4 font-sans text-detail font-semibold text-paper hover:border-paper/45"
+                  className="tap-press inline-flex min-h-11 min-w-0 flex-1 items-center justify-center gap-2 rounded-pill border border-paper/25 px-4 font-sans text-detail font-semibold text-paper hover:border-paper/45"
                 >
-                  <Shield size={16} />
-                  {t("campaigns.report.pictureTitle")}
+                  <Shield size={16} className="shrink-0" />
+                  <span className="truncate">{t("campaigns.report.pictureTitle")}</span>
                 </button>
               )}
+              {pictures.length > 1 ? (
+                <button
+                  type="button"
+                  aria-label={t("common.next")}
+                  disabled={openAt >= pictures.length - 1}
+                  onClick={() => setOpenId(pictures[openAt + 1].id)}
+                  className="tap-press inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-full border border-paper/25 text-paper disabled:opacity-40"
+                >
+                  <ChevronRight size={18} className="rtl:-scale-x-100" />
+                </button>
+              ) : null}
             </div>
           </div>
         ) : null}
@@ -339,9 +342,7 @@ function AddPictureSheet({ open, campaignId, onClose, onAdded }: { open: boolean
           ref={input}
           type="file"
           accept={PICTURE_TYPES.join(",")}
-          className="sr-only"
-          tabIndex={-1}
-          aria-hidden
+          className="hidden"
           onChange={(e) => {
             choose(e.target.files?.[0] ?? null);
             e.target.value = "";

@@ -2366,7 +2366,15 @@ the branch 13.6 names), and `pictures: true`.
    anyone else the campaign is simply not found; the two lines each sent as a
    yes ("I am 18 or older", and that it is theirs to share with the blessing
    of anyone in it); a still JPEG, PNG or WebP of 4 MB at most; a campaign
-   that waits or runs, and never one of July's.
+   that waits or runs, and never one of July's. Three things are not taken on
+   the sender's word. **Its length:** the body is read with a hard limit and
+   dropped as it arrives if it runs past it, whatever length it declared.
+   **Its kind:** the bytes are read for what they really are, since the image
+   library opens far more kinds than these three (a drawing in SVG among
+   them, which is a program for a renderer and not a picture), and a small
+   file can claim a size that would fill the server's memory. **Its words:**
+   what it shows, in its creator's words, cannot carry a link, as nothing in
+   a campaign can.
 3. **The limit is the server's:** three, or twenty when the creator's own
    entitlement says Plus at that moment (`subscriptionTier`, as the profile
    banner's route reads it). Nothing in the request is asked about Plus, and
@@ -2391,7 +2399,12 @@ the branch 13.6 names), and `pictures: true`.
 7. **A moderator looks.** Cleared: it is copied to the public bucket
    (`campaign-media`) under a new random name, the private copy is deleted,
    and every reader who may open the campaign is handed it. Refused: the file
-   is deleted and the row is kept as the record, with the reason.
+   is deleted and the row is kept as the record, with the reason. A file is
+   stored to be cached for five minutes and not the service's hour, so that
+   what a browser or the storage's own cache already holds outlives a
+   removal only that long. (Whether the copy to the public bucket keeps that
+   time is the storage service's doing and could not be tried here, where
+   there is none: to be looked at once on the day pictures open.)
 8. **A reader can report it** from its viewer, with a picture's own reasons:
    it shows me or someone in my care and I did not agree; it should not be
    here; something else. Reports hide it until a moderator looks, by the rule
@@ -2406,7 +2419,10 @@ the branch 13.6 names), and `pictures: true`.
    the campaign (files deleted, rows kept and marked); when the housekeeping
    deletes the campaign thirty days on (`lib/campaigns/upkeep.ts` now asks
    which campaigns a rule is about to delete, has their files deleted, and
-   only then deletes them, since a cascade deletes rows and never a file);
+   only then deletes them, since a cascade deletes rows and never a file;
+   the pictures are read fifty campaigns at a time, so that no read meets
+   the thousand rows the API stops at, and a test deletes sixty campaigns of
+   twenty pictures each and finds no file left);
    and with the account (`lib/auth/accountFiles.ts` takes every file
    `upload_owners` gives a reader, and every copy is written there).
 
@@ -2465,17 +2481,20 @@ No faces are read, matched or named, anywhere.
 
 ### 13.5 What holds it
 
-`lib/campaigns/__tests__/pictures.test.ts`, 42 cases against the in-memory
+`lib/campaigns/__tests__/pictures.test.ts`, 48 cases against the in-memory
 Supabase, with real images through the real decoder: switched off (nothing
 answered, nothing read, the second lock); what is stored (no place, no
 device, upright, what the check was shown, private, random, written down);
-who is handed a waiting picture; what is asked first; three and twenty; the
+who is handed a waiting picture; what is asked first, and what is not taken
+on the sender's word; three and twenty; where the Plus mark is drawn; the
 check's three answers; a moderator's decisions and the team alone; its
 creator removing one; reports that hide, that reach the team, that cannot
 hide twice; and every way a campaign goes, with its files. Each guarantee was
 broken on purpose once and a test failed each time: the photo stored as sent,
 the waiting bucket made public, a waiting picture handed to anyone, the limit
-believed, a report that only marks the row, the second lock removed.
+believed, a report that only marks the row, the second lock removed, a file
+taken by the name it gives itself, and the housekeeping reading every
+campaign's pictures at once.
 
 `closed.test.ts` holds file three out of the migrations folder, to the notes'
 own words, and to giving the public key nothing; and holds that a closed

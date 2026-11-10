@@ -1,9 +1,11 @@
 import "server-only";
 
 import type { SupabaseClient } from "@supabase/supabase-js";
+import sharp from "sharp";
 
 import { isTableAbsent } from "@/lib/admin/tableAbsent";
 import { AUTO, logMod, type ModActor, type ModResult } from "@/lib/community/moderation";
+import { findLinks } from "@/lib/community/spam";
 import { subscriptionTier } from "@/lib/profile/cosmetics";
 import { forgetUploads, recordUploadOwner } from "@/lib/security/uploadOwners";
 import { normalizeShopImage } from "@/lib/shop/imageNormalize";
@@ -34,6 +36,9 @@ import type { CampaignRow, Read } from "./server";
 //
 // WHAT HAPPENS TO A PICTURE, in order:
 //
+//   0. Its bytes are read for what they really are: a still JPEG, PNG or
+//      WebP, whatever the upload calls itself. Anything else is refused
+//      before it is opened.
 //   1. The server makes it again from its pixels (lib/shop/imageNormalize.ts):
 //      turned upright, 1600 pixels at most, and written with no EXIF at all.
 //      Only that new copy is ever stored, so no place, no device and no
@@ -63,10 +68,43 @@ import type { CampaignRow, Read } from "./server";
 //
 // No faces are read, matched or named, here or anywhere.
 
+/** What a picture's own bytes may be, whatever the upload says of itself. */
+const REAL_KINDS = ["jpeg", "png", "webp"];
+/** The most pixels a picture may hold as sent: more than any phone takes, and far under what would fill the server's memory. */
+const MAX_PIXELS = 60_000_000;
+
+/**
+ * Whether these bytes really are a still JPEG, PNG or WebP of a size a
+ * camera makes. The type an upload declares is the sender's word; the image
+ * library reads far more kinds than these three (a drawing in SVG among
+ * them, which is a program for a renderer and not a picture), and a small
+ * file can claim a size that would fill the server's memory when opened. So
+ * the header is read, and nothing else is opened unless it says one of the
+ * three and a sane size.
+ */
+async function realPicture(bytes: ArrayBuffer): Promise<boolean> {
+  try {
+    const meta = await sharp(Buffer.from(bytes)).metadata();
+    if (!REAL_KINDS.includes(meta.format ?? "")) return false;
+    if (!meta.width || !meta.height) return false;
+    return meta.width * meta.height <= MAX_PIXELS;
+  } catch {
+    return false;
+  }
+}
+
 /** Where a picture waits: private, so its address alone opens nothing. */
 export const HELD_BUCKET = "campaign-held";
 /** How long an address into the private bucket lasts. */
 const HELD_URL_SECONDS = 3600;
+/**
+ * How long a browser or the storage's own cache may keep a picture, in
+ * seconds, set when the file is first stored. Five minutes and not the
+ * service's hour: a picture that is removed, or hidden by reports, is
+ * deleted from where it was, and what is already cached somewhere can
+ * outlive that only this long.
+ */
+const CACHE_SECONDS = "300";
 /** What the server writes after making a picture again. */
 const STORED_TYPES = ["image/jpeg", "image/png"];
 
@@ -201,6 +239,15 @@ export async function addPicture(
   if (file.size === 0 || file.size > PICTURE_MAX_BYTES || file.bytes.byteLength > PICTURE_MAX_BYTES) {
     return { ok: false, status: 400, error: "A picture can be up to 4 MB.", code: "picture_size" };
   }
+  // What it says it is, is the sender's word. What its bytes are, is read.
+  if (!(await realPicture(file.bytes))) {
+    return { ok: false, status: 400, error: "Use a JPEG, PNG, or WebP image.", code: "picture_type" };
+  }
+  // What it shows, in its creator's words, is public with it: no link there either, as nowhere in a campaign.
+  const alt = (said.alt ?? "").replace(/\s+/g, " ").trim().slice(0, PICTURE_ALT_MAX) || null;
+  if (alt && findLinks([alt]).length > 0) {
+    return { ok: false, status: 400, error: "A prayer campaign can't carry a link.", code: "campaign_link" };
+  }
 
   const limit = await pictureLimit(admin, user.id);
   const existing = await rowsOf(admin, campaign.id);
@@ -253,7 +300,7 @@ export async function addPicture(
   if (recorded !== "recorded") {
     return recorded === "absent" ? { ok: false, status: 503, error: "Pictures are not open yet.", code: "no_owners" } : { ok: false, status: 500, error: "Couldn't add the picture. Please try again." };
   }
-  const { error: uploadError } = await admin.storage.from(HELD_BUCKET).upload(path, made.bytes, { contentType: made.contentType, upsert: false });
+  const { error: uploadError } = await admin.storage.from(HELD_BUCKET).upload(path, made.bytes, { contentType: made.contentType, cacheControl: CACHE_SECONDS, upsert: false });
   if (uploadError) {
     await forgetUploads(admin, HELD_BUCKET, [path]);
     console.warn("[campaigns] picture not stored", uploadError.message);
@@ -264,7 +311,6 @@ export async function addPicture(
   const taken = new Set(existing.value.map((r) => r.position));
   let position = 0;
   while (taken.has(position)) position++;
-  const alt = (said.alt ?? "").replace(/\s+/g, " ").trim().slice(0, PICTURE_ALT_MAX) || null;
   const { data: created, error } = await admin
     .from("prayer_campaign_pictures")
     .insert({
@@ -398,6 +444,20 @@ export async function removeOwnPicture(admin: SupabaseClient, user: { id: string
  * the account's deletion takes it.
  */
 export async function deletePicturesOf(admin: SupabaseClient, campaignIds: readonly string[], opts: { keepRows?: string } = {}): Promise<void> {
+  // A few campaigns at a time, so that one read holds every picture of
+  // them: the API hands back a thousand rows at most and says nothing when
+  // it stops (lib/supabase/__tests__/rowCap.test.ts), a campaign carries
+  // twenty pictures at most, and a picture missed here is a file left
+  // behind once its row has gone with its campaign.
+  for (let at = 0; at < campaignIds.length; at += CAMPAIGNS_A_READ) {
+    await deletePicturesOfFew(admin, campaignIds.slice(at, at + CAMPAIGNS_A_READ), opts);
+  }
+}
+
+/** How many campaigns' pictures one read can be sure to hold whole: a thousand rows, twenty pictures a campaign. */
+const CAMPAIGNS_A_READ = 50;
+
+async function deletePicturesOfFew(admin: SupabaseClient, campaignIds: readonly string[], opts: { keepRows?: string }): Promise<void> {
   if (campaignIds.length === 0) return;
   try {
     const { data, error } = await admin
@@ -405,7 +465,7 @@ export async function deletePicturesOf(admin: SupabaseClient, campaignIds: reado
       .select("id, bucket, path")
       .in("campaign_id", [...campaignIds])
       .neq("status", "removed")
-      .limit(PICTURES_PLUS * 50);
+      .limit(CAMPAIGNS_A_READ * PICTURES_PLUS);
     if (error) {
       if (!absent(error)) console.warn("[campaigns] pictures of removed campaigns not read", error.message);
       return;

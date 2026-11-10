@@ -86,7 +86,15 @@ export function PrayedByMany() {
         // On the page itself, with no tint under the switch: the house's
         // off label is the ink at 65 percent, which is 4.52:1 on Light's
         // page and 4.41:1 on the switch's own tinted track.
-        className="mt-2 bg-transparent"
+        //
+        // Each part as wide as its own word needs, and the room left over
+        // shared out: the house's switch gives its parts equal widths and
+        // cuts a word that does not fit, and "week" is a long word in some
+        // languages beside very short ones for day and year (Romanian: Zi,
+        // Săptămână, Lună, An). Measured with the export's own fonts in all
+        // twenty-one languages at 390, 360 and 320 pixels: in equal parts
+        // nineteen were cut; this way none is.
+        className="mt-2 auto-cols-auto bg-transparent"
       />
       <div id={`many-panel-${span}`} role="tabpanel" aria-labelledby={`many-tab-${span}`} className="mt-3">
         {list === undefined ? (

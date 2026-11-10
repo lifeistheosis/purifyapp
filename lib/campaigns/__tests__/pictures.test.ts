@@ -68,7 +68,7 @@ import { GET as queue, POST as decide } from "@/app/api/community/moderation/rou
 import { accountFiles } from "@/lib/auth/accountFiles";
 import { __setCampaignsOpening } from "@/lib/campaigns/flags";
 import { CAMPAIGN_BUCKET } from "@/lib/campaigns/image";
-import { PICTURES_FREE, PICTURES_PLUS, type CampaignPictures, type WaitingPicture } from "@/lib/campaigns/model";
+import { PICTURES_FREE, PICTURES_PLUS, showsPlusPlace, type CampaignPictures, type WaitingPicture } from "@/lib/campaigns/model";
 import { approveCampaign, removeCampaign } from "@/lib/campaigns/moderation";
 import { __resetCampaignParts, __setCampaignPart } from "@/lib/campaigns/parts";
 import { PICTURE_CHECK, __setPictureCheck, type PictureVerdict } from "@/lib/campaigns/pictureCheck";
@@ -388,6 +388,61 @@ describe("what is asked before a picture is taken", () => {
     expect(pictures()).toEqual([]);
   });
 
+  it("a body that is too large is dropped as it arrives, whatever it says of its own length", async () => {
+    const id = running();
+    // Five megabytes sent as a stream, with no length declared.
+    let sent = 0;
+    const body = new ReadableStream<Uint8Array>({
+      pull(controller) {
+        if (sent >= 5 * 1024 * 1024) return controller.close();
+        sent += 64 * 1024;
+        controller.enqueue(new Uint8Array(64 * 1024));
+      },
+    });
+    const res = await add(
+      new Request(`${SITE}/api/campaigns/${id}/pictures`, { method: "POST", body, headers: { "content-type": "multipart/form-data; boundary=x" }, duplex: "half" } as RequestInit),
+      params(id),
+    );
+    expect(res.status).toBe(413);
+    // It stopped reading soon after the limit, and did not take the whole of it in.
+    expect(sent).toBeLessThan(5 * 1024 * 1024);
+    expect(pictures()).toEqual([]);
+    // And one that only claims to be too large is refused before a byte is read.
+    const claims = await add(
+      new Request(`${SITE}/api/campaigns/${id}/pictures`, { method: "POST", body: "x", headers: { "content-type": "multipart/form-data; boundary=x", "content-length": String(50 * 1024 * 1024) } }),
+      params(id),
+    );
+    expect(claims.status).toBe(413);
+  });
+
+  it("the words for what it shows cannot carry a link, as nothing in a campaign can", async () => {
+    const id = running();
+    const res = await send(id, await smallPhoto(), { alt: "See more at example.com/maria" });
+    expect(res.status).toBe(400);
+    expect(((await res.json()) as { code: string }).code).toBe("campaign_link");
+    expect([...w.objects]).toEqual([]);
+    expect(pictures()).toEqual([]);
+  });
+
+  it("by what its bytes are, not by what the upload calls itself", async () => {
+    const id = running();
+    // A drawing in SVG is a program for a renderer, and the image library
+    // would open it. A moving GIF is not a still. Each says it is a JPEG.
+    const svg = Buffer.from('<svg xmlns="http://www.w3.org/2000/svg" width="64" height="48"><rect width="64" height="48" fill="#335577"/></svg>');
+    const gif = await sharp({ create: { width: 8, height: 6, channels: 3, background: "#335577" } }).gif().toBuffer();
+    for (const [what, bytes] of [["svg", svg], ["gif", gif]] as const) {
+      const res = await send(id, bytes, { type: "image/jpeg", name: "photo.jpg" });
+      expect(res.status, what).toBe(400);
+      expect(((await res.json()) as { code: string }).code, what).toBe("picture_type");
+    }
+    // A real WebP is one of the three, and is stored as a JPEG like the rest.
+    const webp = await sharp({ create: { width: 64, height: 48, channels: 3, background: "#335577" } }).webp().toBuffer();
+    expect((await send(id, webp, { type: "image/webp", name: "photo.webp" })).status).toBe(200);
+    expect(checked).toHaveLength(1);
+    expect(pictures()).toHaveLength(1);
+    expect(String(pictures()[0].path)).toMatch(/\.jpg$/);
+  });
+
   it("only on a campaign that waits or runs, and never on one of July's", async () => {
     const waiting = running({ status: "held" });
     expect((await send(waiting, await smallPhoto())).status).toBe(200);
@@ -457,6 +512,28 @@ describe("three, or twenty with Plus, by the server's own record", () => {
     expect((await removeOne(new Request(`${SITE}/api/campaigns/${id}/pictures?picture=${second}`, { method: "DELETE" }), params(id))).status).toBe(200);
     const next = await added(id);
     expect(picture(next).position).toBe(1);
+  });
+});
+
+describe("the place that wears the Plus mark", () => {
+  // Its creator, at the three everyone has, where Plus can be bought.
+  const met = { mine: true, canAdd: false, limit: PICTURES_FREE, pictures: PICTURES_FREE, plusSold: true };
+
+  it("is drawn where Plus is met: its creator, at three, on a device that can buy it", () => {
+    expect(showsPlusPlace(met)).toBe(true);
+  });
+
+  it("is never promised to every reader, and never where it cannot be bought", () => {
+    // Another reader is told no limit at all.
+    expect(showsPlusPlace({ ...met, mine: false, limit: null })).toBe(false);
+    // A phone whose store does not sell Plus: the limit there is three, and no door is shown.
+    expect(showsPlusPlace({ ...met, plusSold: false })).toBe(false);
+    // While a place is still free, "Add a picture" stands there.
+    expect(showsPlusPlace({ ...met, canAdd: true, pictures: 2 })).toBe(false);
+    // With Plus, twenty is the whole of it.
+    expect(showsPlusPlace({ ...met, limit: PICTURES_PLUS, pictures: PICTURES_PLUS })).toBe(false);
+    // Nothing can be added because the campaign has ended, with one picture up: that is not the limit, and Plus would not change it.
+    expect(showsPlusPlace({ ...met, pictures: 1 })).toBe(false);
   });
 });
 
@@ -801,6 +878,29 @@ describe("when its campaign goes, its pictures' files go", () => {
     expect(pictures().map((p) => p.campaign_id)).toEqual([kept.id, kept.id]);
     expect([...w.objects].sort()).toEqual(pictures().map((p) => `${p.bucket}/${p.path}`).sort());
     expect(pictures().some((p) => p.campaign_id === old.id)).toBe(false);
+  });
+
+  it("the housekeeping misses no file when many campaigns go at once, past the thousand rows one read returns", async () => {
+    // Sixty campaigns, twenty pictures each, all thirty-one days past their
+    // last day: twelve hundred pictures, and the API returns a thousand rows
+    // a request and says nothing when it stops.
+    w.maxRows = 1000;
+    for (let c = 0; c < 60; c++) {
+      const id = running({ ends_at: plus(-31), status: "ended" });
+      for (let i = 0; i < PICTURES_PLUS; i++) {
+        const path = `c/${crypto.randomUUID()}.jpg`;
+        w.objects.add(`${CAMPAIGN_BUCKET}/${path}`);
+        w.tables.upload_owners!.push({ bucket: CAMPAIGN_BUCKET, path, owner_id: ANNA });
+        pictures().push({ id: crypto.randomUUID(), campaign_id: id, bucket: CAMPAIGN_BUCKET, path, position: i, status: "shown", created_at: new Date().toISOString() });
+      }
+    }
+    expect(w.objects.size).toBe(1200);
+    const report = await runCampaignUpkeep(client(w) as never);
+    expect(report.deleted.living).toBe(60);
+    expect(w.tables.prayer_campaigns).toEqual([]);
+    expect([...w.objects]).toEqual([]);
+    expect(pictures()).toEqual([]);
+    expect(w.tables.upload_owners).toEqual([]);
   });
 
   it("the account's deletion finds every copy, waiting and shown", async () => {

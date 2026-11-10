@@ -377,6 +377,18 @@ export const PICTURE_TYPES: readonly string[] = ["image/jpeg", "image/png", "ima
 /** What it shows, in its creator's words, for a reader who cannot see it. */
 export const PICTURE_ALT_MAX = 140;
 
+/**
+ * Whether the creator's row of pictures ends in the place that wears the
+ * Plus mark. Only for the campaign's own creator; only when the server says
+ * their limit is the three everyone has and all three are taken; and only
+ * where Plus can be bought on this device. So Plus is shown where it is met
+ * and never promised to every reader, and a reader on a phone that cannot
+ * sell it is not shown a door that does not open.
+ */
+export function showsPlusPlace(at: { mine: boolean; canAdd: boolean; limit: number | null; pictures: number; plusSold: boolean }): boolean {
+  return at.mine && at.plusSold && !at.canAdd && at.limit === PICTURES_FREE && at.pictures >= PICTURES_FREE;
+}
+
 /** A picture as a reader receives it: where to load it, its size, and what it shows. */
 export type CampaignPicture = {
   id: string;

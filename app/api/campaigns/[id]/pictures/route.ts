@@ -49,6 +49,38 @@ async function handleGET(req: Request, id: string) {
   return NextResponse.json(pictures.value, { headers: PRIVATE });
 }
 
+/** What a form may weigh beyond its picture: its few short fields and the multipart's own lines. */
+const FORM_OVERHEAD = 64 * 1024;
+
+/**
+ * A request's form, read only as far as `max` bytes. "too_large" as soon as
+ * more than that has arrived, by its declared length when it gives one and
+ * by counting when it does not; null when it is not a form at all.
+ */
+async function formWithin(req: Request, max: number): Promise<FormData | "too_large" | null> {
+  const declared = Number(req.headers.get("content-length") ?? "0");
+  if (Number.isFinite(declared) && declared > max) return "too_large";
+  if (!req.body) return null;
+  const reader = req.body.getReader();
+  const chunks: Uint8Array[] = [];
+  let read = 0;
+  try {
+    for (;;) {
+      const { done, value } = await reader.read();
+      if (done) break;
+      read += value.byteLength;
+      if (read > max) {
+        await reader.cancel();
+        return "too_large";
+      }
+      chunks.push(value);
+    }
+    return await new Response(Buffer.concat(chunks), { headers: { "content-type": req.headers.get("content-type") ?? "" } }).formData();
+  } catch {
+    return null;
+  }
+}
+
 /**
  * Its creator adds one picture: multipart, with the file and two lines said
  * yes to, each sent as the word "yes":
@@ -73,18 +105,11 @@ async function handlePOST(req: Request, id: string) {
   if (await rateLimited(`campaign-picture:${who.user.id}`, 86_400, 60)) {
     return NextResponse.json({ error: "Too many uploads today. Try again tomorrow." }, { status: 429 });
   }
-  // Refused by its declared size before it is read into memory.
-  const declared = Number(req.headers.get("content-length") ?? "0");
-  if (Number.isFinite(declared) && declared > PICTURE_MAX_BYTES + 64 * 1024) {
-    return NextResponse.json({ error: "A picture can be up to 4 MB.", code: "picture_size" }, { status: 413 });
-  }
-
-  let form: FormData;
-  try {
-    form = await req.formData();
-  } catch {
-    return NextResponse.json({ error: "Expected multipart form data." }, { status: 400 });
-  }
+  // Read with a hard limit, whatever the request says of its own length: a
+  // body that is too large is dropped while it arrives, never held whole.
+  const form = await formWithin(req, PICTURE_MAX_BYTES + FORM_OVERHEAD);
+  if (form === "too_large") return NextResponse.json({ error: "A picture can be up to 4 MB.", code: "picture_size" }, { status: 413 });
+  if (!form) return NextResponse.json({ error: "Expected multipart form data." }, { status: 400 });
   const file = form.get("file");
   if (!(file instanceof File)) return NextResponse.json({ error: "Missing file." }, { status: 400 });
   if (form.get("adult") !== "yes" || form.get("consent") !== "yes") {

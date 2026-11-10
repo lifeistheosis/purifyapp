@@ -15,14 +15,21 @@
 //   node scripts/mock-campaigns.mjs [scale] [only] [folder]   the stills
 //   WALK=1 node scripts/mock-campaigns.mjs                    the walk
 //   EYE=parchment,black node scripts/mock-campaigns.mjs 1     and by eye, on other palettes
+//   ALL_LOOKS=1 node scripts/mock-campaigns.mjs 1             held on the eighteen looks as well as the five palettes
 //
 // `scale` 2 for pictures a person will see (1 to check); `only` is "all" or
 // the stills' numbers ("01,08"); `folder` is where they are written, a
 // folder of its own name and never one in docs.
+//
+// THE PLACE THAT WEARS THE PLUS MARK (still 21, and one flow of the walk) is
+// drawn only where Plus can be bought, which a build knows from its purchase
+// key. So that scratch build is also given a made-up one for the website,
+// the surface a plain browser is: NEXT_PUBLIC_REVENUECAT_WEB_KEY=placeholder.
+// Without it the still shows the row with no such place and the flow says so.
 import fs from "node:fs";
 import path from "node:path";
 
-import { checkMock, openPhone, printMockCheck } from "./mock-check.mjs";
+import { LOOKS, PALETTES, checkMock, openPhone, printMockCheck } from "./mock-check.mjs";
 import { go } from "./lib/shell-server.mjs";
 
 const SCALE = Number(process.argv[2] ?? 1);
@@ -30,6 +37,8 @@ const ONLY = process.argv[3] && process.argv[3] !== "all" ? new Set(process.argv
 const OUT = path.resolve(process.argv[4] ?? "campaign-stills");
 const EYE = (process.env.EYE ?? "").split(",").filter(Boolean);
 const WALK = process.env.WALK === "1";
+/** The eighteen looks as well as the five palettes (scripts/mock-check.mjs, LOOKS). */
+const WORN = process.env.ALL_LOOKS === "1" ? { palettes: [...PALETTES, ...LOOKS] } : {};
 if (!WALK) fs.mkdirSync(OUT, { recursive: true });
 const tag = SCALE === 2 ? "" : "x1-";
 
@@ -374,7 +383,7 @@ async function shot(name, label, where, selector, { set = {}, prepare, signedIn 
     await settle(page, 900);
     let ok = true;
     if (check) {
-      ok = printMockCheck(await checkMock(page, selector), label);
+      ok = printMockCheck(await checkMock(page, selector, WORN), label);
     }
     results.push([label, ok]);
     await settle(page, 400);
@@ -621,7 +630,7 @@ await shot("21-pictures-creator", "its creator's pictures: one waiting, and wher
   pictures: { waiting: 1 },
   prepare: async (page) => {
     await page.waitForSelector("[data-campaign-pictures] button img", { timeout: 15000 });
-    await page.locator("[data-campaign-pictures]").scrollIntoViewIfNeeded();
+    await whole(page);
   },
 });
 
@@ -966,6 +975,25 @@ if (WALK) {
     const gone = calls.find((c) => c.method === "DELETE" && c.path.endsWith("/pictures"));
     expectThat(Boolean(gone), "the removal was not sent");
   }, { mine: [MARIA], parts: { pictures: true }, pictures: { waiting: 1 } });
+
+  await walk("pictures, on: at three its creator meets the Plus mark, which opens the upgrade sheet; a reader never sees it", `/campaigns/detail?id=${MARIA}`, async (page) => {
+    await page.waitForSelector("[data-campaign-pictures] button img", { timeout: 15000 });
+    const place = page.getByRole("button", { name: "Up to twenty pictures with Purify Plus" });
+    expectThat((await place.count()) === 1, "the place with the Plus mark is not drawn (was this export built with a purchase key? see the head of this file)");
+    expectThat((await place.innerText()).includes("Purify Plus"), "the place does not wear the mark");
+    expectThat((await page.locator("[data-campaign-pictures] button", { hasText: "Add a picture" }).count()) === 0, "a fourth picture is offered without Plus");
+    await place.click();
+    await settle(page, 900);
+    expectThat((await page.locator("[role=dialog]").count()) > 0, "the upgrade sheet did not open");
+    expectThat(!calls.some((c) => c.method === "POST" && c.path.endsWith("/pictures")), "something was uploaded");
+  }, { mine: [MARIA], parts: { pictures: true }, pictures: { waiting: 1 } });
+
+  await walk("pictures, on: a reader who did not start the campaign is shown no Plus mark and no place to add", `/campaigns/detail?id=${MARIA}`, async (page) => {
+    await page.waitForSelector("[data-campaign-pictures] button img", { timeout: 15000 });
+    expectThat((await page.getByRole("button", { name: "Up to twenty pictures with Purify Plus" }).count()) === 0, "a reader is shown the Plus mark");
+    expectThat((await page.locator("[data-campaign-pictures]").innerText()).includes("Purify Plus") === false, "Plus is named to a reader");
+    expectThat((await page.locator("[data-campaign-pictures] button", { hasText: "Add a picture" }).count()) === 0, "a reader is offered a place to add");
+  }, { parts: { pictures: true } });
 
   await walk("pictures, on: the team's queue covers each picture until it is tapped, and clears one", "/community/moderate", async (page) => {
     await page.waitForSelector("[data-mod-campaign-picture]", { timeout: 15000 });
