@@ -39,7 +39,7 @@ import {
   type CountStep,
   type FinishedRecord,
 } from "./counting";
-import type { Background, DayOneKey, Intent, Level } from "./space";
+import { isCountedBackground, type Background, type DayOneKey, type Intent, type Level } from "./space";
 
 const OFF_KEY = "purify:count.off";
 const FINISHED_KEY = "purify:onboarding.counted";
@@ -47,6 +47,19 @@ const FINISHED_KEY = "purify:onboarding.counted";
 const VIA_KEY = "purify:via";
 
 type Answers = { background?: Background; level?: Level; intent?: Intent };
+
+/**
+ * The answers as the counts may carry them. "Another Christian tradition"
+ * (1.9, ./space.ts) is not on the server's closed list, and is not counted
+ * until its sentence on the privacy page is agreed: a row from a reader who
+ * tapped it says everything else and leaves that one answer off.
+ */
+function counted<A extends Answers>(answers: A): A {
+  if (!answers.background || isCountedBackground(answers.background)) return answers;
+  const rest = { ...answers };
+  delete rest.background;
+  return rest;
+}
 
 type OnboardingEvent =
   | { name: "onboarding_step"; props: { route: CountRoute; step: CountStep } }
@@ -57,11 +70,11 @@ type OnboardingEvent =
   | { name: "onboarding_returned"; props: { route: CountRoute; day: 2 | 7 | 30 } & Answers };
 
 /** The words already counted in this run of the questions. */
-let counted = new Set<string>();
+let seen = new Set<string>();
 
 /** A new run of the questions: every screen and question may count once again. */
 export function beginCountRun(): void {
-  counted = new Set();
+  seen = new Set();
 }
 
 /** This device counts nothing from now on (the admin, opened here). */
@@ -145,8 +158,10 @@ export function countOnboarding(event: Extract<OnboardingEvent, { name: "onboard
           ? `answer:intent:${event.props.answer}`
           : `answer:${event.props.question}`
         : "skipped";
-  if (counted.has(key)) return;
-  counted.add(key);
+  if (seen.has(key)) return;
+  seen.add(key);
+  // An answer the counts do not take is not sent (see `counted`).
+  if (event.name === "onboarding_answer" && event.props.question === "background" && !isCountedBackground(event.props.answer)) return;
   send(event);
 }
 
@@ -161,10 +176,11 @@ export function countPicks(route: CountRoute, picks: readonly Intent[]): void {
  * The questions were finished: counted, and kept on the device so that its
  * coming back can be counted with these answers later.
  */
-export function countFinished(route: CountRoute, answers: Answers, account: boolean): void {
-  if (counted.has("finished")) return;
-  counted.add("finished");
+export function countFinished(route: CountRoute, given: Answers, account: boolean): void {
+  if (seen.has("finished")) return;
+  seen.add("finished");
   if (!countingAllowed()) return;
+  const answers = counted(given);
   const d = door();
   send({ name: "onboarding_finished", props: { route, account, ...answers } });
   const record: FinishedRecord = { at: utcDay(new Date()), v: COUNT_VERSION, route, ...(d ? { door: d } : {}), ...answers, sent: [] };
@@ -176,8 +192,9 @@ export function countFinished(route: CountRoute, answers: Answers, account: bool
 }
 
 /** The Day 1 card's step was opened from Today. */
-export function countDayOne(key: DayOneKey, answers: Answers): void {
+export function countDayOne(key: DayOneKey, given: Answers): void {
   if (typeof window === "undefined") return;
+  const answers = counted(given);
   const record = readRecord();
   send(
     { name: "onboarding_dayone", props: { key, ...(record ? { route: record.route } : {}), ...answers } },

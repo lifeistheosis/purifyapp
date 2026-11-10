@@ -11,7 +11,8 @@
 
 import { pushProfilePrefs } from "@/lib/profile/preferences";
 import { createClient } from "@/lib/supabase/client";
-import { ONBOARDING_VERSION, readBackground, readFastingRule, readIntent, readIntents, readLevel } from "./state";
+import { roadsEnabled } from "./flags";
+import { ONBOARDING_VERSION, readBackground, readFastingRule, readIntent, readIntents, readLevel, readReturning } from "./state";
 import { isTesting } from "./testing";
 
 /**
@@ -50,8 +51,16 @@ export async function saveSpaceToAccount(opts: { finished?: boolean } = {}): Pro
           intents: readIntents(),
           fasting: readFastingRule(),
           // Where they come from (1.8), in their own account only, so a new
-          // device of theirs starts from it too.
-          background: readBackground(),
+          // device of theirs starts from it too. With the roads on (1.9) it
+          // stays on the device and is not written here: a reader's faith
+          // background is special-category data (GDPR Art. 9), the device is
+          // where Purify is drawn, and nobody was asked whether it may be
+          // kept beside their email (notes/onboarding-fable.md, 6.3). The
+          // copies already in accounts are left as they are: taking them out
+          // is a change to production data, and the owner's word.
+          ...(roadsEnabled() ? {} : { background: readBackground() }),
+          // Coming back after time away (1.9): practicing, on the road back.
+          ...(readReturning() ? { returning: true } : {}),
           savedAt: new Date().toISOString(),
           ...(v === undefined ? {} : { v }),
         },

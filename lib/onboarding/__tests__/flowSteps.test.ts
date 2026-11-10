@@ -111,3 +111,80 @@ describe("a reader back from the sign-in their reminders asked for", () => {
     expect(path.indexOf("reminders")).toBe(path.length - 2);
   });
 });
+
+/**
+ * The questions' shape with the roads on (1.9, lib/onboarding/flags.ts;
+ * docs/1.9-build/notes/onboarding-fable.md, 3.2): fewer screens, each asked
+ * where it is of use. Off, every list above stands as it is.
+ */
+describe("with the roads on", () => {
+  const roads = (o: Partial<Parameters<typeof flowSteps>[0]> = {}) => steps({ roads: true, ...o });
+
+  it("shows a new reader Purify before it asks for an account or for reminders", () => {
+    expect(roads({ level: "inquirer" })).toEqual(["welcome", "background", "level", "intent", "handoff"]);
+    expect(roads({ level: "learning" })).toEqual(["welcome", "background", "level", "intent", "handoff"]);
+  });
+
+  it("asks the practicing their calendar and fast, and the clergy's question of nobody who did not open it", () => {
+    expect(roads({ level: "practicing" })).toEqual(["welcome", "background", "level", "rule", "intent", "handoff"]);
+    for (const role of ["priest", "deacon", "layman", null] as (Role | null)[]) {
+      const s = roads({ level: "practicing", role, country: "US" });
+      expect(s, String(role)).not.toContain("role");
+      expect(s.some((x) => x.startsWith("clergy")), String(role)).toBe(false);
+    }
+  });
+
+  it("opens the clergy's screens after the rule, from its quiet line", () => {
+    expect(roads({ level: "practicing", clergyOpen: true })).toEqual(["welcome", "background", "level", "rule", "role", "intent", "handoff"]);
+    const priest = roads({ level: "practicing", clergyOpen: true, role: "priest", country: "US" });
+    expect(priest.slice(priest.indexOf("rule"), priest.indexOf("intent"))).toEqual([
+      "rule",
+      "role",
+      "clergyWhere",
+      "clergyJurisdiction",
+      "clergyParish",
+    ]);
+    // Never for a reader who is not baptized Orthodox, whatever was opened before they changed their answer.
+    for (const level of ["learning", "inquirer", null] as (Level | null)[]) {
+      expect(roads({ level, clergyOpen: true, role: "priest", country: "US" }), String(level)).not.toContain("role");
+    }
+  });
+
+  it("asks for reminders in the questions only of a reader who is signed in, since they are kept with an account", () => {
+    expect(roads({ level: "inquirer" })).not.toContain("reminders");
+    expect(roads({ level: "inquirer", signedIn: true })).toEqual(["welcome", "background", "level", "intent", "reminders", "handoff"]);
+    expect(roads({ startAt: "level", level: "inquirer", signedIn: true })).toEqual(["background", "level", "intent", "reminders", "handoff"]);
+    // A reader who is back with reminders on is still not asked to turn on what is on.
+    expect(roads({ startAt: "returning", level: "inquirer", signedIn: true, remindersOn: true })).not.toContain("reminders");
+    expect(roads({ startAt: "returning", level: "inquirer", signedIn: true })).toContain("reminders");
+  });
+
+  it("still begins at the account on the mobile website, where the reader came to make one", () => {
+    expect(roads({ startAt: "account", level: "inquirer" })).toEqual(["account", "background", "level", "intent", "handoff"]);
+  });
+
+  it("leaves a reader back from signing in for their reminders exactly where they were", () => {
+    expect(roads({ startAt: "reminders" })).toEqual(["reminders", "handoff"]);
+  });
+
+  it("measures the progress line against a path that holds every screen it can show, in its order", () => {
+    for (const startAt of ["welcome", "account", "level", "returning", "reminders"] as FlowStart[]) {
+      const path = progressPath(startAt, true);
+      expect(new Set(path).size, startAt).toBe(path.length);
+      for (const level of [...LEVELS, null] as (Level | null)[]) {
+        for (const role of ["priest", "deacon", "layman", null] as (Role | null)[]) {
+          for (const clergyOpen of [false, true]) {
+            for (const signedIn of [false, true]) {
+              const shown = roads({ startAt, level, role, country: "US", clergyOpen, signedIn });
+              const at = shown.map((x: StepId) => path.indexOf(x));
+              const label = `${startAt} ${level} ${role} ${clergyOpen} ${signedIn}`;
+              expect(at.every((i) => i >= 0), label).toBe(true);
+              // Only ever forward.
+              expect([...at].sort((a, b) => a - b), label).toEqual(at);
+            }
+          }
+        }
+      }
+    }
+  });
+});

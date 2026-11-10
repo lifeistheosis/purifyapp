@@ -47,6 +47,21 @@ function head(startAt: Exclude<FlowStart, "reminders">): StepId[] {
  * States their parish. A reader who is back is not asked to turn on
  * reminders that are on. A reader back from signing in for their reminders
  * is shown the reminders and the end, and nothing they have answered again.
+ *
+ * With the roads on (1.9, ./flags.ts) the questions are fewer, and each is
+ * asked where it is of use (docs/1.9-build/notes/onboarding-fable.md, 3.2):
+ *
+ *   - no account step for a new reader: Purify is shown before it asks for
+ *     anything, and the account is offered on Today after a first step
+ *     (components/onboarding/KeepCard.tsx). The mobile website still begins
+ *     at it, since there the reader came to make an account;
+ *   - reminders are asked in the questions only of a reader who is signed
+ *     in, since they are kept with an account: asked of anyone else, the
+ *     answer "yes" would send them out of the questions to sign in. The same
+ *     card offers them with the account;
+ *   - the clergy's question is not a screen every practicing reader passes:
+ *     a quiet line on the rule's screen opens it (`clergyOpen`), and its
+ *     screens then follow the rule.
  */
 export function flowSteps(o: {
   startAt: FlowStart;
@@ -54,8 +69,26 @@ export function flowSteps(o: {
   role: Role | null;
   country: string | null;
   remindersOn: boolean;
+  /** The roads are on (./flags.ts). Off, the questions are as they have been since 1.8.x. */
+  roads?: boolean;
+  /** Roads only: someone is signed in on this device. */
+  signedIn?: boolean;
+  /** Roads only: the reader tapped "I am a priest or deacon" on the rule's screen. */
+  clergyOpen?: boolean;
 }): StepId[] {
   if (o.startAt === "reminders") return ["reminders", "handoff"];
+  if (o.roads) {
+    return [
+      ...roadsHead(o.startAt),
+      "background",
+      "level",
+      ...(asksRule(o.level) ? (["rule"] as StepId[]) : []),
+      ...(asksClergy(o.level) && o.clergyOpen ? (["role", ...clergySteps(o.role, o.country)] as StepId[]) : []),
+      "intent",
+      ...(o.signedIn && !(o.startAt === "returning" && o.remindersOn) ? (["reminders"] as StepId[]) : []),
+      "handoff",
+    ];
+  }
   return [
     ...head(o.startAt),
     "background",
@@ -68,6 +101,11 @@ export function flowSteps(o: {
   ];
 }
 
+/** The way in with the roads on: a new reader's welcome is not followed by the account step. */
+function roadsHead(startAt: Exclude<FlowStart, "reminders">): StepId[] {
+  return startAt === "welcome" ? ["welcome"] : head(startAt);
+}
+
 /**
  * What the progress line is measured against: the longest way through, a
  * US priest's, with every screen anyone can be shown, so the line only ever
@@ -77,9 +115,26 @@ export function flowSteps(o: {
  * in for their reminders is measured as one who was signed in already, so
  * the line stands where they left it, near its end.
  */
-export function progressPath(startAt: FlowStart): StepId[] {
+export function progressPath(startAt: FlowStart, roads = false): StepId[] {
+  const from = startAt === "reminders" ? "level" : startAt;
+  if (roads) {
+    // The rule comes before the clergy's screens here, as flowSteps has them.
+    return [
+      ...roadsHead(from),
+      "background",
+      "level",
+      "rule",
+      "role",
+      "clergyWhere",
+      "clergyJurisdiction",
+      "clergyParish",
+      "intent",
+      "reminders",
+      "handoff",
+    ];
+  }
   return [
-    ...head(startAt === "reminders" ? "level" : startAt),
+    ...head(from),
     "background",
     "level",
     "role",

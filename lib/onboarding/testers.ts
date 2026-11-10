@@ -27,7 +27,7 @@ import {
   writeFastingRule,
   writeLevel,
 } from "./state";
-import { TESTERS_EVENT, TESTERS_KEY, isTesting } from "./testing";
+import { SIGNED_OUT_PREVIEW_KEY, TESTERS_EVENT, TESTERS_KEY, isTesting } from "./testing";
 
 /**
  * Every key a test can change, kept and put back as one: the answers and the
@@ -94,6 +94,23 @@ export function testAs(change: { background?: Background; level?: Level }): void
 }
 
 /**
+ * "Preview as signed out" (1.9): the roads' screens as a reader with no
+ * account meets them, the admin still signed in (./testing.ts,
+ * previewSignedOut). Starts a test if none is under way, like every switch.
+ */
+export function testSignedOut(on: boolean): void {
+  startTesting();
+  if (!isTesting()) return;
+  try {
+    if (on) window.localStorage.setItem(SIGNED_OUT_PREVIEW_KEY, "1");
+    else window.localStorage.removeItem(SIGNED_OUT_PREVIEW_KEY);
+  } catch {
+    /* ignore */
+  }
+  emit(ONBOARDING_EVENT);
+}
+
+/**
  * "First open": the device as a new reader's, its answers and the flow's own
  * marks cleared, so home shows the welcome questions again
  * (components/onboarding/FirstRunGate.tsx).
@@ -102,7 +119,8 @@ export function testFirstOpen(): void {
   startTesting();
   if (!isTesting()) return;
   try {
-    for (const key of SPACE_KEYS) window.localStorage.removeItem(key);
+    // The signed-out preview is a switch of the test itself, not an answer: it stays as it is set.
+    for (const key of SPACE_KEYS) if (key !== SIGNED_OUT_PREVIEW_KEY) window.localStorage.removeItem(key);
   } catch {
     /* ignore */
   }

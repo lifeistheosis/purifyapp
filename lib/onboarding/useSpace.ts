@@ -20,7 +20,7 @@ function subscribe(onChange: () => void): () => void {
 }
 
 /** Server and first client render: no answers, fasting as it always showed. */
-const SERVER_SNAPSHOT = "||strict|";
+const SERVER_SNAPSHOT = "||strict|||";
 
 export function useSpace() {
   const snapshot = useSyncExternalStore(subscribe, spaceSnapshot, () => SERVER_SNAPSHOT);

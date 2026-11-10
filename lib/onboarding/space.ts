@@ -131,13 +131,35 @@ export function depthFor(level: Level): "inquirer" | "faithful" {
  * "none" is drawn as "Just curious" (components/onboarding/WhereFrom.tsx, the
  * owner's pick "E + I" of 2026-10-28).
  */
-export type Background = "orthodox" | "catholic" | "protestant" | "other-faith" | "none" | "prefer-not";
-export const BACKGROUNDS: readonly Background[] = ["orthodox", "catholic", "protestant", "other-faith", "none", "prefer-not"];
+export type Background = "orthodox" | "catholic" | "protestant" | "christian" | "other-faith" | "none" | "prefer-not";
+
+/**
+ * The answers the question has offered since 1.8, and the only ones counted
+ * (lib/onboarding/counting.ts, lib/security/schemas.ts): the privacy page's
+ * sentence was read and agreed for these.
+ */
+export const BACKGROUNDS = ["orthodox", "catholic", "protestant", "other-faith", "none", "prefer-not"] as const satisfies readonly Background[];
 
 /** The answers drawn as pills of light, in their order. "Prefer not to say" sits under them, quieter. */
 export const BACKGROUND_PILLS = ["orthodox", "catholic", "protestant", "other-faith", "none"] as const satisfies readonly Background[];
 
+/**
+ * The pills with the roads on (1.9, ./flags.ts): one more, "Another Christian
+ * tradition", for a reader whose church is neither Catholic nor Protestant
+ * (the Oriental Orthodox among them), who had no honest answer before. It
+ * stands after the three it sits beside.
+ */
+export const ROAD_PILLS = ["orthodox", "catholic", "protestant", "christian", "other-faith", "none"] as const satisfies readonly Background[];
+
+/** Every answer a device may hold, the new pill's among them. */
+export const ALL_BACKGROUNDS: readonly Background[] = [...ROAD_PILLS, "prefer-not"];
+
 export function isBackground(v: unknown): v is Background {
+  return typeof v === "string" && (ALL_BACKGROUNDS as readonly string[]).includes(v);
+}
+
+/** Whether an answer is one the counts take. The new pill's is not, until its privacy sentence is agreed. */
+export function isCountedBackground(v: unknown): v is (typeof BACKGROUNDS)[number] {
   return typeof v === "string" && (BACKGROUNDS as readonly string[]).includes(v);
 }
 

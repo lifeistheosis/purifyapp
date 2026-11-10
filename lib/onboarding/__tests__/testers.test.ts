@@ -59,8 +59,8 @@ import {
   readLevel,
   writeIntents,
 } from "../state";
-import { TESTER_KEYS, backToMyOwn, startTesting, testAs, testFirstOpen } from "../testers";
-import { TESTERS_KEY, isTesting } from "../testing";
+import { TESTER_KEYS, backToMyOwn, startTesting, testAs, testFirstOpen, testSignedOut } from "../testers";
+import { SIGNED_OUT_PREVIEW_KEY, TESTERS_KEY, isTesting, previewSignedOut } from "../testing";
 
 function storage() {
   const map = new Map<string, string>();
@@ -172,6 +172,29 @@ describe("Testers mode switches the device, and only the device", () => {
     for (const key of SPACE_KEYS) expect(store.getItem(key), key).toBeNull();
     // What is not the space is not touched.
     expect(store.getItem("purify:bookmarks")).toBe(OWN["purify:bookmarks"]);
+  });
+
+  it("previews the signed-out way through, only while testing, and through a first open (1.9)", () => {
+    // Not a thing a reader's device can hold: the key alone, with no test, says nothing.
+    store.setItem(SIGNED_OUT_PREVIEW_KEY, "1");
+    expect(previewSignedOut()).toBe(false);
+    store.removeItem(SIGNED_OUT_PREVIEW_KEY);
+
+    testSignedOut(true);
+    expect(isTesting()).toBe(true);
+    expect(previewSignedOut()).toBe(true);
+    // "First open" clears the answers and keeps the switch: it is the test's own, not an answer.
+    testFirstOpen();
+    expect(previewSignedOut()).toBe(true);
+    for (const key of SPACE_KEYS) if (key !== SIGNED_OUT_PREVIEW_KEY) expect(store.getItem(key), key).toBeNull();
+    testSignedOut(false);
+    expect(previewSignedOut()).toBe(false);
+    // And "Back to my own" ends it with the test.
+    testSignedOut(true);
+    backToMyOwn();
+    expect(isTesting()).toBe(false);
+    expect(store.getItem(SIGNED_OUT_PREVIEW_KEY)).toBeNull();
+    expect(previewSignedOut()).toBe(false);
   });
 });
 

@@ -30,3 +30,24 @@ export function isTesting(): boolean {
     return false;
   }
 }
+
+/**
+ * "Preview as signed out" (1.9, his question 137): set in Testers mode to see
+ * the questions and Today as a reader with no account meets them, while the
+ * admin stays signed in (an admin always is, so without this the signed-out
+ * road could not be walked on their own phone). Read only by the roads'
+ * screens (components/onboarding/OnboardingFlow.tsx, RoadCards.tsx); it signs
+ * nobody out and changes nothing else. One of the keys a test keeps and puts
+ * back (./state.ts, SPACE_KEYS), so "Back to my own" ends it.
+ */
+export const SIGNED_OUT_PREVIEW_KEY = "purify:testers.signedout";
+
+/** True only while Testers mode is on and the preview is switched on. */
+export function previewSignedOut(): boolean {
+  if (!isTesting()) return false;
+  try {
+    return window.localStorage.getItem(SIGNED_OUT_PREVIEW_KEY) === "1";
+  } catch {
+    return false;
+  }
+}

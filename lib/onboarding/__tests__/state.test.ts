@@ -9,16 +9,22 @@ import {
   fillSpaceFromAccount,
   isNudgeDismissed,
   isOnboarded,
+  isSecondChanceDone,
   markOnboarded,
   markOnboardedSilently,
+  markSecondChanceDone,
   parseSpaceSnapshot,
   priorUseDetected,
   readBackground,
   readFastingRule,
   readIntent,
   readIntents,
+  readKeep,
   readLevel,
+  readOnboardedDay,
   readResumeStage,
+  readReturning,
+  readWeek,
   refreshDayOne,
   setResumeStage,
   shouldShowOnboarding,
@@ -28,7 +34,10 @@ import {
   writeFastingRule,
   writeIntent,
   writeIntents,
+  writeKeep,
   writeLevel,
+  writeReturning,
+  writeWeek,
 } from "../state";
 
 function storage() {
@@ -73,7 +82,8 @@ describe("onboarding state", () => {
   });
 
   it("round-trips the answers through one snapshot string", () => {
-    expect(parseSpaceSnapshot(spaceSnapshot())).toEqual({ level: null, intent: null, fasting: "strict", background: null });
+    const nothing = { level: null, intent: null, fasting: "strict", background: null, returning: false, intents: [] };
+    expect(parseSpaceSnapshot(spaceSnapshot())).toEqual(nothing);
     writeLevel("learning");
     writeIntent("liturgy");
     writeFastingRule("modified");
@@ -83,19 +93,67 @@ describe("onboarding state", () => {
       intent: "liturgy",
       fasting: "modified",
       background: "protestant",
+      returning: false,
+      intents: ["liturgy"],
     });
     expect(events).toContain(ONBOARDING_EVENT);
   });
 
+  it("carries the road back and every pick in the snapshot too (1.9)", () => {
+    writeLevel("practicing");
+    writeReturning(true);
+    writeIntents(["prayer", "saints", "feasts"]);
+    writeBackground("christian");
+    expect(parseSpaceSnapshot(spaceSnapshot())).toEqual({
+      level: "practicing",
+      intent: "prayer",
+      fasting: "strict",
+      background: "christian",
+      returning: true,
+      intents: ["prayer", "saints", "feasts"],
+    });
+    writeReturning(false);
+    expect(readReturning()).toBe(false);
+    expect(parseSpaceSnapshot(spaceSnapshot()).returning).toBe(false);
+  });
+
   it("ignores junk in a snapshot rather than trusting it", () => {
-    expect(parseSpaceSnapshot("bishop|nap|feast|martian")).toEqual({ level: null, intent: null, fasting: "strict", background: null });
+    expect(parseSpaceSnapshot("bishop|nap|feast|martian|yes|nap,quiet,nap")).toEqual({
+      level: null,
+      intent: null,
+      fasting: "strict",
+      background: null,
+      returning: false,
+      intents: ["quiet"],
+    });
     // A snapshot written before where-you-come-from was asked.
     expect(parseSpaceSnapshot("learning|liturgy|modified")).toEqual({
       level: "learning",
       intent: "liturgy",
       fasting: "modified",
       background: null,
+      returning: false,
+      intents: [],
     });
+  });
+
+  it("keeps a first week, the day the questions ended and the two cards' marks (1.9)", () => {
+    expect(readWeek()).toEqual({ at: 0, day: null, passed: 0 });
+    writeWeek({ at: 3, day: "2026-11-10", passed: 1 });
+    expect(readWeek()).toEqual({ at: 3, day: "2026-11-10", passed: 1 });
+    expect(readOnboardedDay()).toBeNull();
+    // Finishing the questions begins the week again from its first day and keeps the day.
+    markOnboarded();
+    expect(readWeek()).toEqual({ at: 0, day: null, passed: 0 });
+    expect(readOnboardedDay()).toMatch(/^\d{4}-\d{2}-\d{2}$/);
+    expect(readKeep()).toBe("open");
+    writeKeep("asked");
+    expect(readKeep()).toBe("asked");
+    writeKeep("done");
+    expect(readKeep()).toBe("done");
+    expect(isSecondChanceDone()).toBe(false);
+    markSecondChanceDone();
+    expect(isSecondChanceDone()).toBe(true);
   });
 
   describe("the picks of What are you looking for?", () => {

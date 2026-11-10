@@ -18,7 +18,9 @@ import {
   type Intent,
   type Level,
 } from "./space";
-import { isTesting } from "./testing";
+import { roadsEnabled } from "./flags";
+import { SIGNED_OUT_PREVIEW_KEY, isTesting } from "./testing";
+import { NEW_WEEK, localDay, parseWeek, type WeekState } from "./week";
 
 /**
  * The flow a reader finished, stored when they finish it.
@@ -65,6 +67,20 @@ const STAGE_KEY = "purify:onboarding.stage";
 // "1" when the flow this reader finished was the one for a reader who is
 // back. Their first step is then called a next step, not a Day 1.
 const AGAIN_KEY = "purify:onboarding.again";
+// The roads (1.9, ./flags.ts). "1" for a baptized Orthodox reader coming back
+// after time away: practicing underneath, on the road back (./road.ts).
+const RETURNING_KEY = "purify:returning";
+// Where the reader stands in their first week (./week.ts, WeekState).
+const WEEK_KEY = "purify:week";
+// The day the questions were finished or skipped, the device's own
+// (YYYY-MM-DD), so the one question a skip is offered later waits a day.
+const ONBOARDED_DAY_KEY = "purify:onboarded.day";
+// "1" once the one question offered after a skip is answered or closed.
+const SECOND_CHANCE_KEY = "purify:secondchance.done";
+// The card that offers an account and reminders after a first step:
+// "asked" once the reader has gone to sign in from it, "done" once it is
+// answered or closed.
+const KEEP_KEY = "purify:keep";
 
 /**
  * Every key above: the answers and the flow's own marks. Testers mode
@@ -86,6 +102,12 @@ export const SPACE_KEYS: readonly string[] = [
   CLERGY_REQUEST_KEY,
   STAGE_KEY,
   AGAIN_KEY,
+  RETURNING_KEY,
+  WEEK_KEY,
+  ONBOARDED_DAY_KEY,
+  SECOND_CHANCE_KEY,
+  KEEP_KEY,
+  SIGNED_OUT_PREVIEW_KEY,
 ];
 
 /** Fired in-tab whenever onboarding state changes. */
@@ -208,8 +230,10 @@ export function markOnboarded(opts: { again?: boolean } = {}): void {
     window.localStorage.setItem(ONBOARDED_KEY, String(ONBOARDING_VERSION));
     window.localStorage.setItem(NUDGE_ELIGIBLE_KEY, "1");
     window.localStorage.removeItem(STAGE_KEY);
-    // A fresh Day 1 card for a fresh answer.
+    // A fresh Day 1 card for a fresh answer, and a first week from its first day.
     window.localStorage.removeItem(NUDGE_DISMISSED_KEY);
+    window.localStorage.removeItem(WEEK_KEY);
+    window.localStorage.setItem(ONBOARDED_DAY_KEY, localDay(new Date()));
     if (opts.again) window.localStorage.setItem(AGAIN_KEY, "1");
     else window.localStorage.removeItem(AGAIN_KEY);
   } catch {
@@ -417,7 +441,10 @@ export function fillSpaceFromAccount(remote: unknown): boolean {
   // holds the intent alone.
   if (readIntent() == null && isIntent(r.intent)) writeIntents([r.intent, ...cleanIntents(r.intents)]);
   if (readString(FASTING_KEY) == null && isFastingRule(r.fasting)) writeFastingRule(r.fasting);
-  if (readBackground() == null && isBackground(r.background)) writeBackground(r.background);
+  // With the roads on, where the reader comes from is kept on the device
+  // alone (./accountSync.ts), so an older copy in the account is not taken.
+  if (!roadsEnabled() && readBackground() == null && isBackground(r.background)) writeBackground(r.background);
+  if (readString(RETURNING_KEY) == null && r.returning === true) writeReturning(true);
   return true;
 }
 
@@ -438,7 +465,7 @@ export function accountAnsweredThisVersion(remote: unknown): boolean {
 
 /** The answers as one primitive, for useSyncExternalStore snapshots. */
 export function spaceSnapshot(): string {
-  return `${readLevel() ?? ""}|${readIntent() ?? ""}|${readFastingRule()}|${readBackground() ?? ""}`;
+  return `${readLevel() ?? ""}|${readIntent() ?? ""}|${readFastingRule()}|${readBackground() ?? ""}|${readReturning() ? "1" : ""}|${readIntents().join(",")}`;
 }
 
 export function parseSpaceSnapshot(snapshot: string): {
@@ -446,14 +473,66 @@ export function parseSpaceSnapshot(snapshot: string): {
   intent: Intent | null;
   fasting: FastingRule;
   background: Background | null;
+  /** Baptized Orthodox, coming back after time away (1.9). */
+  returning: boolean;
+  /** Every answer to "What are you looking for?", in the order tapped, the intent first. */
+  intents: Intent[];
 } {
-  const [l, i, f, b] = snapshot.split("|");
+  const [l, i, f, b, r, picks] = snapshot.split("|");
   return {
     level: isLevel(l) ? l : null,
     intent: isIntent(i) ? i : null,
     fasting: isFastingRule(f) ? f : "strict",
     background: isBackground(b) ? b : null,
+    returning: r === "1",
+    intents: cleanIntents((picks ?? "").split(",")),
   };
+}
+
+// --- The roads (1.9): the road back, the first week, the two cards -------
+
+/** Baptized Orthodox and coming back after time away, as answered on this device. */
+export function readReturning(): boolean {
+  return readString(RETURNING_KEY) === "1";
+}
+export function writeReturning(returning: boolean): void {
+  writeString(RETURNING_KEY, returning ? "1" : null);
+}
+
+/** Where the reader stands in their first week. */
+export function readWeek(): WeekState {
+  return typeof window === "undefined" ? NEW_WEEK : parseWeek(readString(WEEK_KEY));
+}
+export function writeWeek(week: WeekState): void {
+  writeString(WEEK_KEY, JSON.stringify(week));
+}
+/** The week as one primitive, for useSyncExternalStore snapshots. */
+export function weekSnapshot(): string {
+  return readString(WEEK_KEY) ?? "";
+}
+
+/** The day the questions were finished or skipped (the device's own), or null for a device from before it was kept. */
+export function readOnboardedDay(): string | null {
+  const v = readString(ONBOARDED_DAY_KEY);
+  return v && /^\d{4}-\d{2}-\d{2}$/.test(v) ? v : null;
+}
+
+/** The one question offered after a skip has been answered or closed. */
+export function isSecondChanceDone(): boolean {
+  return readString(SECOND_CHANCE_KEY) === "1";
+}
+export function markSecondChanceDone(): void {
+  writeString(SECOND_CHANCE_KEY, "1");
+}
+
+/** The card that offers an account and reminders after a first step: untouched, gone to sign in, or finished with. */
+export type KeepState = "open" | "asked" | "done";
+export function readKeep(): KeepState {
+  const v = readString(KEEP_KEY);
+  return v === "asked" || v === "done" ? v : "open";
+}
+export function writeKeep(state: KeepState): void {
+  writeString(KEEP_KEY, state === "open" ? null : state);
 }
 
 /**
