@@ -1,5 +1,7 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
+import { roadsBuilt } from "../flags";
+
 import {
   ONBOARDING_EVENT,
   ONBOARDING_VERSION,
@@ -209,9 +211,11 @@ describe("onboarding state", () => {
     });
   });
 
-  it("takes where the reader comes from from the account, never over this device's answer", () => {
+  it("takes where the reader comes from from the account, never over this device's answer; with the new onboarding lit, not at all", () => {
     expect(fillSpaceFromAccount({ level: "inquirer", background: "catholic" })).toBe(true);
-    expect(readBackground()).toBe("catholic");
+    // The new onboarding keeps where a reader comes from on the device alone
+    // (his 108, ../flags.ts), so the account's copy is not taken once it is lit.
+    expect(readBackground()).toBe(roadsBuilt() ? null : "catholic");
     writeBackground("prefer-not");
     fillSpaceFromAccount({ level: "inquirer", background: "orthodox" });
     expect(readBackground()).toBe("prefer-not");
