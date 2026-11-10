@@ -2083,6 +2083,20 @@
    "version": "1.9",
    "outcome": null,
    "note": "Each title is the lemma in force where its section begins (LFC 43 and 48), checked against the app's Bible; titles only, no mark moved. The rail's places, plan sayings, Theology references, the Eunomianism gloss and the Book 12 themes follow. 3c6ecbfec. PLAN 13s."
+  },
+  {
+   "id": "e-profile-photo-clear",
+   "section": "Community",
+   "kind": "bug",
+   "title": "A moderator's \"clear profile\" left the reader's profile picture up, on the profile and on everything that had copied it",
+   "from": "claude",
+   "asked": "2026-11-10",
+   "status": "built",
+   "decided": "2026-11-10",
+   "needsDesign": false,
+   "version": "1.9",
+   "outcome": null,
+   "note": "The clear takes it down everywhere, deletes the files provably theirs, and keeps Google's photo from standing for them again (app_metadata, lib/profile/signInPicture.ts). Store blocker (Apple 1.2), the Admin chat's find. ea6dd2342. PLAN 13t."
   }
  ]
 }
