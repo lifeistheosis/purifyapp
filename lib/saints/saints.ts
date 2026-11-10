@@ -1937,7 +1937,7 @@ export const SAINTS: Saint[] = [
  {
  slug: "apostle-matthew",
  byname: "The Evangelist",
- iconUrl: "/saints/icons/apostle-matthew.jpg",
+ iconUrl: "/saints/icons/apostle-matthew.v2.jpg",
  name: "Holy Apostle and Evangelist Matthew",
  epithet: "Evangelist · Levi the Publican",
  born: "1st century (Galilee)",
@@ -2193,7 +2193,7 @@ export const SAINTS: Saint[] = [
  {
  slug: "apostle-andrew",
  byname: "The First-Called",
- iconUrl: "/saints/icons/apostle-andrew.jpg",
+ iconUrl: "/saints/icons/apostle-andrew.v2.jpg",
  name: "Holy Apostle Andrew",
  epithet: "Protokletos · The First-Called · Brother of Peter",
  born: "1st century (Bethsaida of Galilee)",
@@ -2275,7 +2275,7 @@ export const SAINTS: Saint[] = [
  {
  slug: "apostle-philip",
  byname: "Of Bethsaida",
- iconUrl: "/saints/icons/apostle-philip.jpg",
+ iconUrl: "/saints/icons/apostle-philip.v2.jpg",
  name: "Holy Apostle Philip",
  epithet: "Apostle of Hierapolis · One of the Twelve",
  born: "1st century (Bethsaida of Galilee)",
@@ -2697,7 +2697,7 @@ export const SAINTS: Saint[] = [
  {
  slug: "archangel-michael",
  byname: "Captain of the Heavenly Hosts",
- iconUrl: "/saints/icons/archangel-michael.v2.jpg",
+ iconUrl: "/saints/icons/archangel-michael.v3.jpg",
  name: "The Holy Archangel Michael",
  epithet: "Archistratigos of the Bodiless Hosts · Defender of the Faith · First among the Angels",
  feastDays: ["September 6", "November 8"],
@@ -2732,7 +2732,7 @@ export const SAINTS: Saint[] = [
  {
  slug: "nektarios-of-aegina",
  byname: "Wonderworker of Aegina",
- iconUrl: "/saints/icons/nektarios-of-aegina.jpg",
+ iconUrl: "/saints/icons/nektarios-of-aegina.v2.jpg",
  name: "St. Nektarios of Aegina",
  epithet: "Metropolitan of Pentapolis · Wonderworker · Modern Saint",
  born: "October 1, 1846 (Selybria, Eastern Thrace)",
@@ -3182,7 +3182,7 @@ export const SAINTS: Saint[] = [
  {
  slug: "gregory-palamas",
  byname: "Defender of Hesychasm",
- iconUrl: "/saints/icons/gregory-palamas.jpg",
+ iconUrl: "/saints/icons/gregory-palamas.v2.jpg",
  name: "St. Gregory Palamas",
  epithet: "Archbishop of Thessaloniki · Theologian of the Uncreated Light · Defender of the Hesychasts",
  born: "1296 (Constantinople)",
@@ -3513,7 +3513,7 @@ export const SAINTS: Saint[] = [
  {
  slug: "nikon-metanoeite",
  byname: "Metanoeite (Repent)",
- iconUrl: "/saints/icons/nikon-metanoeite.jpg",
+ iconUrl: "/saints/icons/nikon-metanoeite.v2.jpg",
  name: "St. Nikon the Metanoeite",
  epithet: "Preacher of Repentance · Enlightener of Crete and Sparta",
  born: "c. 930 (Pontus)",
@@ -3935,7 +3935,7 @@ export const SAINTS: Saint[] = [
   {
     slug: "paisius-velichkovsky",
     byname: "Translator of the Philokalia",
-    iconUrl: "/saints/icons/paisius-velichkovsky.jpg",
+    iconUrl: "/saints/icons/paisius-velichkovsky.v2.jpg",
     name: "St. Paisius Velichkovsky",
     epithet: "Elder of Neamț · Reviver of Hesychasm",
     born: "December 21, 1722 (Poltava)",
@@ -4015,7 +4015,6 @@ export const SAINTS: Saint[] = [
   {
     slug: "arsenius-of-prislop",
     byname: "Spiritual Father of the Romanians",
-    iconUrl: "/saints/icons/arsenios-prislop.jpg",
     name: "St. Arsenius of Prislop",
     epithet: "Hieromonk of Prislop · Confessor",
     born: "September 29, 1910 (Vața de Sus, Transylvania)",
@@ -4626,7 +4625,6 @@ export const SAINTS: Saint[] = [
   },
   {
     slug: "iakovos-of-evia",
-    iconUrl: "/saints/icons/iakovos-of-evia.jpg",
     name: "St. Iakovos of Evia",
     byname: "The Elder Iakovos Tsalikis",
     epithet: "Abbot of the Monastery of St. David · Shepherd of Evia",
@@ -4763,7 +4761,6 @@ export const SAINTS: Saint[] = [
   },
   {
     slug: "philoumenos-of-jacobs-well",
-    iconUrl: "/saints/icons/philoumenos-of-jacobs-well.jpg",
     name: "St. Philoumenos of Jacob's Well",
     byname: "The Hieromartyr of Jacob's Well",
     epithet: "Guardian of Jacob's Well · New hieromartyr",
@@ -4784,7 +4781,6 @@ export const SAINTS: Saint[] = [
   },
   {
     slug: "gabriel-of-georgia",
-    iconUrl: "/saints/icons/gabriel-of-georgia.jpg",
     name: "St. Gabriel of Georgia",
     byname: "Gabriel the Fool-for-Christ and Confessor",
     epithet: "Fool for Christ and confessor · Wonderworker of Georgia",

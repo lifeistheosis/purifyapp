@@ -43,7 +43,7 @@ describe("the Orthodox reader's greeting", () => {
     expect(leadOn(civil(2026, 11, 8))).toEqual({
       name: "Synaxis of the Holy Archangel Michael and All the Bodiless Powers",
       kind: "feast",
-      iconUrl: "/saints/icons/archangel-michael.v2.jpg",
+      iconUrl: "/saints/icons/archangel-michael.v3.jpg",
       hymnsHref: "/saints/archangel-michael#hymns",
     });
   });

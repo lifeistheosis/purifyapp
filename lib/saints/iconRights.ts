@@ -1103,6 +1103,116 @@ export const ICON_RIGHTS: Record<string, IconRights> = {
     license: "Public domain",
     evidenceUrl: "https://commons.wikimedia.org/wiki/File:%D0%9F%D1%80%D0%B5%D0%BF%D0%BE%D0%B4%D0%BE%D0%B1%D0%BD%D1%8B%D0%B9_%D0%90%D0%BA%D0%B0%D0%BA%D0%B8%D0%B9_%D0%A1%D0%B8%D0%BD%D0%B0%D0%B9%D1%81%D0%BA%D0%B8%D0%B9._%D0%A4%D1%80%D0%B5%D1%81%D0%BA%D0%B0_%D1%86%D0%B5%D1%80%D0%BA%D0%B2%D0%B8_%D0%A1%D0%B2._%D0%A1%D0%B8%D0%BC%D0%B5%D0%BE%D0%BD%D0%B0_%D0%91%D0%BE%D0%B3%D0%BE%D0%BF%D1%80%D0%B8%D0%B8%D0%BC%D1%86%D0%B0_%D0%B2_%D0%97%D0%B2%D0%B5%D1%80%D0%B8%D0%BD%D0%BE%D0%BC_%D0%BC%D0%BE%D0%BD%D0%B0%D1%81%D1%82%D1%8B%D1%80%D0%B5_%D0%B2_%D0%9D%D0%BE%D0%B2%D0%B3%D0%BE%D1%80%D0%BE%D0%B4%D0%B5._1468_%D0%B3%D0%BE%D0%B4.jpg",
   },
+  // November's saints, the thirteen older icons (1.9, 2026-11-10; the
+  // arbiter's word: each opened and checked, an icon that fails gives way to
+  // the plate). The Theotokos's is the Vladimir icon, found on Commons (its
+  // page's Russian title calls it the Iverskaya by mistake). St Andrew's and
+  // the Archangel's are cut from their pages' large pictures, St Matthew's,
+  // St Philip's and St Gregory Palamas's from their books' covers, so a
+  // saint wears one picture everywhere; St Nikon's is the Hosios Loukas
+  // mosaic, St Nektarios's a photograph taken before 1908, St Paisius's the
+  // old portrait (its page names no painter or date). St Gabriel, St Arsenie,
+  // St Iakovos and St Philoumenos keep the plate: no picture of them is in
+  // the public domain, and their files are gone. Every file was opened.
+  "theotokos.jpg": {
+    status: "verified",
+    inspectedOn: "2026-11-10",
+    alt: "The Mother of God in a dark maphorion edged with gold, a star on her shoulder, her face inclined to the Child, who presses his cheek to hers and holds her neck, in ochre robes streaked with gold, against a worn gold ground.",
+    work: "The Theotokos of Vladimir, the Tretyakov Gallery, Moscow",
+    artist: "Unknown icon painter",
+    workDate: "12th century",
+    source: "Wikimedia Commons",
+    license: "Public domain",
+    evidenceUrl: "https://commons.wikimedia.org/wiki/File:Vladimirskaya.jpg",
+  },
+  "apostle-andrew.v2.jpg": {
+    status: "verified",
+    inspectedOn: "2026-11-10",
+    alt: "An apostle with tousled grey-brown hair and a long beard, bowing to the left in a blue-green cloak, holding a rolled scroll, on a worn yellow-gold ground: a cut of the Kirillo-Belozersky board, below its red letters.",
+    work: "Deesis row of the iconostasis of the Dormition cathedral, Kirillo-Belozersky monastery: St Andrew the Apostle (his page's large picture, lib/saints/heroes.ts)",
+    artist: "Anonymous Russian icon painters",
+    workDate: "1497",
+    source: "Wikimedia Commons",
+    license: "Public domain",
+    evidenceUrl: "https://commons.wikimedia.org/wiki/File:Kirillo-Belozersky_iconostasis_15_-_Andrew.jpg",
+  },
+  "archangel-michael.v3.jpg": {
+    status: "verified",
+    inspectedOn: "2026-11-10",
+    alt: "The Archangel Michael with curly brown hair bound by a blue ribbon, his head bowed, dark wings behind him, in a red cloak over a jewelled tunic, holding a staff and a sphere marked with the name of Christ, on a gold ground.",
+    work: "Deesis row of the iconostasis of the Dormition cathedral, Kirillo-Belozersky monastery: the Archangel Michael (his page's large picture, lib/saints/heroes.ts)",
+    artist: "Anonymous Russian icon painters",
+    workDate: "1497",
+    source: "Wikimedia Commons",
+    license: "Public domain",
+    evidenceUrl: "https://commons.wikimedia.org/wiki/File:Kirillo-Belozersky_iconostasis_09_-_Michael.jpg",
+  },
+  "apostle-matthew.v2.jpg": {
+    status: "verified",
+    inspectedOn: "2026-11-10",
+    alt: "An apostle with dark hair and a long grey-brown beard, in a brown mantle, turning the pages of an open Gospel bound in red and gold, under red Greek letters naming him Matthew, on a pale ground streaked with old paint loss.",
+    work: "The Apostle Matthew, icon (the picture on his books' covers, lib/reading/authorCovers.ts)",
+    artist: "Unknown icon painter",
+    workDate: "Not given on its page",
+    source: "Wikimedia Commons",
+    license: "CC0",
+    evidenceUrl: "https://commons.wikimedia.org/wiki/File:The_Apostle_Matthew.jpg",
+  },
+  "apostle-philip.v2.jpg": {
+    status: "verified",
+    inspectedOn: "2026-11-10",
+    alt: "A fresco of a young beardless apostle with short brown hair in a gold halo, in a white tunic under a plum-purple cloak, holding a rolled white scroll, on a deep blue ground with Greek letters naming him Philip.",
+    work: "Fresco of the Apostle Philip, the church of the Theotokos Peribleptos, Ohrid (the picture on his books' covers, lib/reading/authorCovers.ts)",
+    artist: "Michael and Eutychios",
+    workDate: "14th century",
+    source: "Wikimedia Commons",
+    license: "Public domain",
+    evidenceUrl: "https://commons.wikimedia.org/wiki/File:Paintings_in_the_Church_of_the_Theotokos_Peribleptos_of_Ohrid_037.jpg",
+  },
+  "gregory-palamas.v2.jpg": {
+    status: "verified",
+    inspectedOn: "2026-11-10",
+    alt: "A bishop with dark hair and a full dark beard under a halo, in a white omophorion with black crosses over a vestment of gold-ringed crosses, blessing and holding a red and gold Gospel, with red Greek letters naming him Gregory of Thessalonica.",
+    work: "Icon of St Gregory Palamas, Archbishop of Thessalonica, the Pushkin Museum, Moscow (the picture on his books' covers, lib/reading/authorCovers.ts)",
+    artist: "Unknown icon painter",
+    workDate: "15th century",
+    source: "Wikimedia Commons",
+    license: "Public domain",
+    evidenceUrl: "https://commons.wikimedia.org/wiki/File:%D0%93%D1%80%D0%B8%D0%B3%D0%BE%D1%80%D0%B8%D0%B9_%D0%9F%D0%B0%D0%BB%D0%B0%D0%BC%D0%B0_14%D0%B2.jpg",
+  },
+  "nikon-metanoeite.v2.jpg": {
+    status: "verified",
+    inspectedOn: "2026-11-10",
+    alt: "A mosaic of a monk with dark hair and a long dark beard under a halo, in a black mantle, both hands raised in prayer, on a gold ground, with Greek letters naming him St Nikon the Metanoeite.",
+    work: "Mosaic of St Nikon the Metanoeite, lunette in the south-west bay of the nave, Hosios Loukas monastery, Boeotia, named in the mosaic",
+    artist: "Unknown mosaicist",
+    workDate: "Early 11th century",
+    source: "Wikimedia Commons",
+    license: "Public domain",
+    evidenceUrl: "https://commons.wikimedia.org/wiki/File:Hosios_Loukas_(nave,_lunette_in_south-west_bay_of_nave)_-_Nikon_Metanoeite.jpg",
+  },
+  "nektarios-of-aegina.v2.jpg": {
+    status: "verified",
+    inspectedOn: "2026-11-10",
+    alt: "A black and white photograph of an old bishop with a long white beard, in a black veil over his kalimavkion and a dark cassock, a chain at his chest, looking a little to one side.",
+    work: "Photograph of St Nektarios of Aegina, \"taken in Greece before 1908\" as its page says",
+    artist: "Unknown photographer",
+    workDate: "Before 1908",
+    source: "Wikimedia Commons (from OrthodoxWiki)",
+    license: "Public domain",
+    evidenceUrl: "https://commons.wikimedia.org/wiki/File:Saint_Nektarios_of_Aegina_at_Rizario.jpg",
+  },
+  "paisius-velichkovsky.v2.jpg": {
+    status: "verified",
+    inspectedOn: "2026-11-10",
+    alt: "A painted portrait of an old monk with a long white beard and long grey hair falling to his shoulders, in a tall black klobuk and a black habit, his hands together at his chest holding a prayer rope, on a dark ground.",
+    work: "Portrait of St Paisius Velichkovsky, the page naming no painter",
+    artist: "Unknown painter",
+    workDate: "Not given on its page",
+    source: "Wikimedia Commons",
+    license: "Public domain",
+    evidenceUrl: "https://commons.wikimedia.org/wiki/File:Paisius.jpg",
+  },
 };
 
 /**
@@ -1170,8 +1280,6 @@ export const UNVERIFIED_ICONS: Record<string, string> = {
     "No source, licence or attribution recorded. Fetched before scripts/fetch-missing-icons.mjs had a licence gate. Referenced by SAINTS.iconUrl for anatolius-of-constantinople. 382x420 JPG, 42 KB. Opened 2026-11-10 (build 90 note 3): a wall painting on a worn grey ground, a brown-bearded bishop with a yellow halo, a white omophorion with large black crosses and a Gospel book, his name in Greek beside him. Not found on Commons by search and picture hash (nearest 25 of 64 bits apart).",
   "anianus-of-alexandria.jpg":
     "No source, licence or attribution recorded. Fetched before scripts/fetch-missing-icons.mjs had a licence gate. Referenced by SAINTS.iconUrl for anianus-of-alexandria and AUTHOR_ICONS. 400x400 JPG, 32 KB. Not yet opened and inspected.",
-  "apostle-andrew.jpg":
-    "No source, licence or attribution recorded. Fetched before scripts/fetch-missing-icons.mjs had a licence gate. Referenced by SAINTS.iconUrl for apostle-andrew and AUTHOR_ICONS. 316x420 JPG, 33 KB. Not yet opened and inspected.",
   "apostle-bartholomew.jpg":
     "No source, licence or attribution recorded. Fetched before scripts/fetch-missing-icons.mjs had a licence gate. Referenced by SAINTS.iconUrl for apostle-bartholomew and AUTHOR_ICONS. 290x420 JPG, 25 KB. Not yet opened and inspected.",
   "apostle-james-alphaeus.jpg":
@@ -1182,24 +1290,16 @@ export const UNVERIFIED_ICONS: Record<string, string> = {
     "No source, licence or attribution recorded. Fetched before scripts/fetch-missing-icons.mjs had a licence gate. Referenced by SAINTS.iconUrl for apostle-john and AUTHOR_ICONS. 309x420 JPG, 25 KB. Not yet opened and inspected.",
   "apostle-jude.jpg":
     "No source, licence or attribution recorded. Fetched before scripts/fetch-missing-icons.mjs had a licence gate. Referenced by SAINTS.iconUrl for apostle-jude and AUTHOR_ICONS. 281x420 JPG, 27 KB. Not yet opened and inspected.",
-  "apostle-matthew.jpg":
-    "No source, licence or attribution recorded. Fetched before scripts/fetch-missing-icons.mjs had a licence gate. Referenced by SAINTS.iconUrl for apostle-matthew and AUTHOR_ICONS. 311x400 JPG, 29 KB. Not yet opened and inspected.",
   "apostle-matthias.jpg":
     "No source, licence or attribution recorded. Fetched before scripts/fetch-missing-icons.mjs had a licence gate. Referenced by SAINTS.iconUrl for apostle-matthias and AUTHOR_ICONS. 304x420 JPG, 33 KB. Not yet opened and inspected.",
   "apostle-paul.jpg":
     "No source, licence or attribution recorded. Fetched before scripts/fetch-missing-icons.mjs had a licence gate. Referenced by SAINTS.iconUrl for apostle-paul and AUTHOR_ICONS. 268x420 JPG, 28 KB. Not yet opened and inspected.",
   "apostle-peter.jpg":
     "No source, licence or attribution recorded. Fetched before scripts/fetch-missing-icons.mjs had a licence gate. Referenced by SAINTS.iconUrl for apostle-peter and AUTHOR_ICONS. 281x420 JPG, 25 KB. Not yet opened and inspected.",
-  "apostle-philip.jpg":
-    "No source, licence or attribution recorded. Fetched before scripts/fetch-missing-icons.mjs had a licence gate. Referenced by SAINTS.iconUrl for apostle-philip and AUTHOR_ICONS. 320x400 JPG, 40 KB. Not yet opened and inspected.",
   "apostle-simon-zealot.jpg":
     "No source, licence or attribution recorded. Fetched before scripts/fetch-missing-icons.mjs had a licence gate. Referenced by SAINTS.iconUrl for apostle-simon-zealot and AUTHOR_ICONS. 281x420 JPG, 24 KB. Not yet opened and inspected.",
   "apostle-thomas.jpg":
     "No source, licence or attribution recorded. Fetched before scripts/fetch-missing-icons.mjs had a licence gate. Referenced by SAINTS.iconUrl for apostle-thomas and AUTHOR_ICONS. 300x420 JPG, 33 KB. Opened 2026-11-10 (the survey of the saints' pages for the arbiter): a contemporary painted icon with a workshop's red seal, a cross in a ring, in its lower right corner.",
-  "archangel-michael.v2.jpg":
-    "No source, licence or attribution recorded. Fetched before scripts/fetch-missing-icons.mjs had a licence gate. Referenced by SAINTS.iconUrl for archangel-michael. 296x416 JPG, 30 KB, cut on 2026-10-17 from the 301x420 file, inside the white line down its right side (1.7.1). Its source is not yet looked into. Opened 2026-11-10 (the survey of the saints' pages for the arbiter): a contemporary painted icon with a workshop's faint red round seal in its lower right corner.",
-  "arsenios-prislop.jpg":
-    "No source, licence or attribution recorded. Fetched before scripts/fetch-missing-icons.mjs had a licence gate. Referenced by SAINTS.iconUrl for arsenius-of-prislop. 280x420 JPG, 27 KB. Not yet opened and inspected.",
   "athanasius-the-great.v2.jpg":
     "No source, licence or attribution recorded. Fetched before scripts/fetch-missing-icons.mjs had a licence gate. Referenced by SAINTS.iconUrl for athanasius-the-great and AUTHOR_ICONS. 243x402 JPG, 32 KB, cut on 2026-10-17 from the 302x420 file, inside the worn edge of the panel, off the white ground it was photographed on (1.7.1). Its source is not yet looked into.",
   "augustine-of-hippo.jpg":
@@ -1230,20 +1330,14 @@ export const UNVERIFIED_ICONS: Record<string, string> = {
     "No source, licence or attribution recorded. Fetched before scripts/fetch-missing-icons.mjs had a licence gate. Referenced by SAINTS.iconUrl for eutychius-of-constantinople. 314x420 JPG, 33 KB. Opened 2026-11-10 (build 90 note 3): a contemporary panel icon of a white-bearded bishop with a red Gospel book, his name in Greek on a gold ground, a painter's small inscription at its foot. Not found on Commons by search and picture hash (nearest 28 of 64 bits apart).",
   "florian-of-lorch.jpg":
     "No source, licence or attribution recorded. Fetched before scripts/fetch-missing-icons.mjs had a licence gate. Referenced by SAINTS.iconUrl for florian-of-lorch. 332x420 JPG, 32 KB. Not yet opened and inspected.",
-  "gabriel-of-georgia.jpg":
-    "No source, licence or attribution recorded. Fetched before scripts/fetch-missing-icons.mjs had a licence gate. Referenced by SAINTS.iconUrl for gabriel-of-georgia. 322x420 JPG, 22 KB. Not yet opened and inspected.",
   "gregory-of-nyssa.v2.jpg":
     "No source, licence or attribution recorded. Fetched before scripts/fetch-missing-icons.mjs had a licence gate. Referenced by SAINTS.iconUrl for gregory-of-nyssa and AUTHOR_ICONS. 258x420 JPG, 28 KB, cut on 2026-10-17 from the 266x420 file, inside the white at its top left (1.7.1). Its source is not yet looked into.",
-  "gregory-palamas.jpg":
-    "No source, licence or attribution recorded. Fetched before scripts/fetch-missing-icons.mjs had a licence gate. Referenced by SAINTS.iconUrl for gregory-palamas. 311x420 JPG, 37 KB. Not yet opened and inspected.",
   "gregory-theologian.jpg":
     "No source, licence or attribution recorded. Fetched before scripts/fetch-missing-icons.mjs had a licence gate. Referenced by SAINTS.iconUrl for gregory-theologian and AUTHOR_ICONS. 300x420 JPG, 30 KB. Not yet opened and inspected.",
   "hermione-of-ephesus.jpg":
     "No source, licence or attribution recorded. Fetched before scripts/fetch-missing-icons.mjs had a licence gate. Referenced by SAINTS.iconUrl for hermione-of-ephesus. 322x420 JPG, 22 KB. Not yet opened and inspected.",
   "hosius-of-cordova.v2.jpg":
     "No source, licence or attribution recorded. Fetched before scripts/fetch-missing-icons.mjs had a licence gate. Referenced by SAINTS.iconUrl for hosius-of-cordova. 273x416 JPG, 21 KB, cut on 2026-10-17 from the 275x420 file, inside the white line along its foot (1.7.1). Its source is not yet looked into.",
-  "iakovos-of-evia.jpg":
-    "No source, licence or attribution recorded. Fetched before scripts/fetch-missing-icons.mjs had a licence gate. Referenced by SAINTS.iconUrl for iakovos-of-evia. 299x420 JPG, 22 KB. Opened 2026-11-10 (the survey of the saints' pages for the arbiter): a contemporary painted icon with a workshop's red round seal in its lower right corner.",
   "ignatius-of-antioch.jpg":
     "No source, licence or attribution recorded. Fetched before scripts/fetch-missing-icons.mjs had a licence gate. Referenced by SAINTS.iconUrl for ignatius-of-antioch and AUTHOR_ICONS. 299x420 JPG, 31 KB. Not yet opened and inspected.",
   "irenaeus-of-lyons.jpg":
@@ -1290,8 +1384,6 @@ export const UNVERIFIED_ICONS: Record<string, string> = {
     "No source, licence or attribution recorded. Fetched before scripts/fetch-missing-icons.mjs had a licence gate. Referenced by SAINTS.iconUrl for meletius-of-antioch. 297x420 JPG, 30 KB. Opened 2026-11-10 (the survey of the saints' pages for the arbiter): a contemporary painted icon, and a faint signature laid over the picture low on the left.",
   "memnon-of-ephesus.v2.jpg":
     "No source, licence or attribution recorded. Fetched before scripts/fetch-missing-icons.mjs had a licence gate. Referenced by SAINTS.iconUrl for memnon-of-ephesus. 415x280 JPG, 24 KB, cut on 2026-10-17 from the 420x286 file, inside the white lines at its edges; a website's watermark is still at its foot, right (1.7.1). Its source is not yet looked into. Opened 2026-11-10 (build 90 note 3): a bust of a dark-bearded bishop in a fresco, his name in Greek on a blue ground; the same picture as two Commons files of the fresco at Dionysiou (1 and 3 of 64 bits apart, through the file it was cut from), but it carries a website's mark, \"IconSV.ru\", in its lower right corner: a question for the owner (ICON_QUESTIONS).",
-  "nektarios-of-aegina.jpg":
-    "No source, licence or attribution recorded. Fetched before scripts/fetch-missing-icons.mjs had a licence gate. Referenced by SAINTS.iconUrl for nektarios-of-aegina. 336x420 JPG, 30 KB. Not yet opened and inspected.",
   "nicholas-of-cabasilas.jpg":
     "No source, licence or attribution recorded. Fetched before scripts/fetch-missing-icons.mjs had a licence gate. Referenced by SAINTS.iconUrl for nicholas-cabasilas. 315x420 JPG, 36 KB. Not yet opened and inspected.",
   "nicholas-the-wonderworker.jpg":
@@ -1300,20 +1392,14 @@ export const UNVERIFIED_ICONS: Record<string, string> = {
     "No source, licence or attribution recorded. Fetched before scripts/fetch-missing-icons.mjs had a licence gate. Referenced by SAINTS.iconUrl for niketas-the-goth. 315x420 JPG, 36 KB. Not yet opened and inspected.",
   "nikodemos-the-hagiorite.jpg":
     "No source, licence or attribution recorded. Fetched before scripts/fetch-missing-icons.mjs had a licence gate. Referenced by SAINTS.iconUrl for nikodemos-the-hagiorite. 336x420 JPG, 33 KB. Not yet opened and inspected.",
-  "nikon-metanoeite.jpg":
-    "No source, licence or attribution recorded. Fetched before scripts/fetch-missing-icons.mjs had a licence gate. Referenced by SAINTS.iconUrl for nikon-metanoeite. 315x420 JPG, 27 KB. Opened 2026-11-10 (the survey of the saints' pages for the arbiter): a contemporary painted icon, signed in the paint by its painter at the lower right.",
   "nino-nina-of-georiga.jpg":
     "No source, licence or attribution recorded. Fetched before scripts/fetch-missing-icons.mjs had a licence gate. Referenced by SAINTS.iconUrl for nino-of-georgia. 322x420 JPG, 24 KB. Not yet opened and inspected.",
   "olympias-the-deaconess.jpg":
     "No source, licence or attribution recorded. Fetched before scripts/fetch-missing-icons.mjs had a licence gate. Referenced by SAINTS.iconUrl for olympias-the-deaconess. 315x420 JPG, 17 KB. Not yet opened and inspected.",
   "paisios-the-athonite.jpg":
     "No source, licence or attribution recorded. Fetched before scripts/fetch-missing-icons.mjs had a licence gate. Referenced by SAINTS.iconUrl for paisios-the-athonite and AUTHOR_ICONS. 301x420 JPG, 23 KB. Not yet opened and inspected.",
-  "paisius-velichkovsky.jpg":
-    "No source, licence or attribution recorded. Fetched before scripts/fetch-missing-icons.mjs had a licence gate. Referenced by SAINTS.iconUrl for paisius-velichkovsky. 295x420 JPG, 21 KB. Not yet opened and inspected.",
   "papias-of-hierapolis.jpg":
     "No source, licence or attribution recorded. Fetched before scripts/fetch-missing-icons.mjs had a licence gate. Referenced by SAINTS.iconUrl for papias-of-hierapolis and AUTHOR_ICONS. 279x420 JPG, 22 KB. Opened 2026-11-10 (the survey of the saints' pages for the arbiter): a contemporary painted icon, signed in the paint by its painter at the lower left, with the words \"Holy Mountain\" in Greek.",
-  "philoumenos-of-jacobs-well.jpg":
-    "No source, licence or attribution recorded. Fetched before scripts/fetch-missing-icons.mjs had a licence gate. Referenced by SAINTS.iconUrl for philoumenos-of-jacobs-well. 420x360 JPG, 31 KB. Not yet opened and inspected.",
   "polycarp-of-smyrna.jpg":
     "No source, licence or attribution recorded. Fetched before scripts/fetch-missing-icons.mjs had a licence gate. Referenced by SAINTS.iconUrl for polycarp-of-smyrna and AUTHOR_ICONS. 276x420 JPG, 20 KB. Not yet opened and inspected.",
   "praying.jpg":
@@ -1356,8 +1442,6 @@ export const UNVERIFIED_ICONS: Record<string, string> = {
     "No source, licence or attribution recorded. Fetched before scripts/fetch-missing-icons.mjs had a licence gate. Referenced by SAINTS.iconUrl for theophan-the-recluse. 301x420 JPG, 24 KB. Not yet opened and inspected.",
   "theophylact-of-ohrid.jpg":
     "No source, licence or attribution recorded. Fetched before scripts/fetch-missing-icons.mjs had a licence gate. Referenced by SAINTS.iconUrl for theophylact-of-ohrid and AUTHOR_ICONS. 336x420 JPG, 26 KB. Opened 2026-11-10 (the survey of the saints' pages for the arbiter): a contemporary painted icon, and laid over its foot at the right, a painter's name with the words \"painter of sacred icons\": a website's copy of a painter's work.",
-  "theotokos.jpg":
-    "No source, licence or attribution recorded. Fetched before scripts/fetch-missing-icons.mjs had a licence gate. Referenced by SAINTS.iconUrl for theotokos. 281x420 JPG, 39 KB. Not yet opened and inspected.",
   "xenia-of-petersburg.v2.jpg":
     "No source, licence or attribution recorded. Fetched before scripts/fetch-missing-icons.mjs had a licence gate. Referenced by SAINTS.iconUrl for xenia-of-petersburg. 278x376 JPG, 18 KB, cut on 2026-10-17 from the 303x420 file, to the icon itself, off the white wall it was photographed on; small writing is at its foot, right (1.7.1). Its source is not yet looked into. Opened 2026-11-10 (the survey of the saints' pages for the arbiter): the small writing at its foot is a seller's line laid over the picture, beginning \"Hand made\": a website's copy.",};
 

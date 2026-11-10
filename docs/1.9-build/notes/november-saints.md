@@ -323,3 +323,49 @@ saint's screen, with stills to the arbiter.
   book names its writer John the Monk, of the monastery of St Sabas, and the
   page says both. Their icon (the Russian North, 17th century) is on its
   cover.
+
+## Push 4, as built (2026-11-10)
+
+- **Butler's Lives for the eight, held for a priest**, on his yes through the
+  arbiter ("rec yes to all"): St Marcian, St Joannicius, St Menas, St Nilus,
+  St Catherine, St James the Persian, St Stephen the New and St John the
+  Merciful, in Alban Butler's words (about 9,200), from the London
+  stereotype edition (John Murphy; vol. I 1812, vol. XI 1815). No one has
+  transcribed that printing, so each Life was drafted from two scans of it
+  (Princeton's and the Digital Library of India's, the same pages line for
+  line), and every page image was read against the draft. The page put the
+  drafts right where the scans' text was wrong: "389" for St Marcian's "387",
+  "aiaebins" for "Eusebius", words run together, and a two-column footnote
+  run into St Nilus's text. The ingest then checked every word against three
+  more scans (the DLI's and the Edinburgh and Derby printings): nothing open.
+  The page's own misprints are kept and named ("Methodias", "harshnesss",
+  "worse that beastly lust", St John's closing comma). Two cuts, each shown
+  as [...]: Butler's sentence that the iconoclast council was not general
+  without the pope of Rome (St Stephen; his rule), and a sentence likening
+  peoples he calls savages to apes (St Catherine; not Roman doctrine, our
+  judgment, for him and the priest to confirm). They are not in the app:
+  `docs/editorial/held/november/`, clergy item 31 in
+  docs/editorial-standards.md, and a test keeps them out of data/saints/ and
+  the registry until `--held --release`. Until then each saint keeps his
+  short entry.
+- **St Paul the Confessor among the Fathers of Sardica**, with his icon:
+  "Bishop of Constantinople, whom the bishops of the East would have shut out
+  with St. Athanasius, and whom the council restored to his see" (Socrates
+  II.20 and II.22). The councils now name 37 Fathers, 20 with a face.
+- **The thirteen older icons**, each opened and checked (a helper traced
+  each file on Commons; every picture and every rights page was then read
+  here). The Theotokos's is the Vladimir icon (12th century, public domain)
+  and stays. Eight give way to settled pictures of the same saints: St Andrew
+  and the Archangel from their pages' Kirillo-Belozersky icons (1497), St
+  Matthew, St Philip and St Gregory Palamas from their books' covers, St
+  Nikon from the Hosios Loukas mosaic (early 11th century), St Nektarios
+  from a photograph taken before 1908, St Paisius from the old portrait (its
+  page names no painter or date, the weakest of the eight). Four modern
+  saints have no public-domain picture and stand on the plate: St Gabriel of
+  Georgia, St Arsenie of Prislop, St Iakovos of Evia and St Philoumenos. Icons
+  with no rights record: 99 to 86.
+- **The path**: `--held` in scripts/ingest-witness-lives.mjs, and the
+  drafting tools in scripts/menologion/scan-draft/ (README there), both in
+  docs/editorial/menologion-month.md.
+- **The apps**: the held Lives are not in them; the icons are 122 KB lighter
+  (eight new files, twelve gone).

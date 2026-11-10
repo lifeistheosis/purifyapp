@@ -1,0 +1,21 @@
+{
+  "about": "Butler's Lives for eight of November's saints: the London stereotype edition (John Murphy), vol. I 1812 and vol. XI 1815. The first scan of each volume is Princeton Theological Seminary's (its page images are read); the second, the Digital Library of India's, is the same printing line for line. The others are the same text set again at Edinburgh (1798-1799) and Derby (1842).",
+  "volumes": {
+    "xi": ["livesoffathersma11butl_0", "in.ernet.dli.2015.92761/2015.92761.The-Lives-Of-The-Fathers-Martyrs--Vol-11"],
+    "i": ["livesoffathersma01butl_0", "in.ernet.dli.2015.24075/2015.24075.The-Lives-Of-The-Fathers-Martyrs--Vol-1"]
+  },
+  "lives": {
+    "marcian": ["xi", ["st", "marcian", "anchoret"]],
+    "joannicius": ["xi", ["st", "joannicius", "abbot"]],
+    "mennas": ["xi", ["st", "mennas", "m"]],
+    "nilus": ["xi", ["st", "nilus", "anchoret"]],
+    "catharine": ["xi", ["st", "catharine", "v", "m"]],
+    "james": ["xi", ["st", "james", "surnamed", "intercisus"]],
+    "stephen": ["xi", ["st", "stephen", "the", "younger"]],
+    "john": ["i", ["st", "john", "the", "almoner"]]
+  },
+  "others": {
+    "xi": [["E", "bim_eighteenth-century_lives-of-the-saints-t_butler-alban_1799_11"], ["R", "livesoffathersma11butl"]],
+    "i": [["E", "bim_eighteenth-century_lives-of-the-saints-t_butler-alban_1798_1"], ["R", "livesoffathersma01butl"]]
+  }
+}

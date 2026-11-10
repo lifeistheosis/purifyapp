@@ -112,6 +112,13 @@ Priority order: the twentieth-century figures first, since a photograph of a
 modern person is the least likely to be public domain. `dumitru-staniloae.jpg`
 and `iakovos-of-evia.jpg` are the clearest cases.
 
+2026-11-10 (November's saints, 1.9): `iakovos-of-evia.jpg` is gone, with
+St Gabriel of Georgia's, St Arsenie of Prislop's and St Philoumenos's: no
+public-domain picture of any of them was found, and their pages stand on the
+plate. The other nine of November's unrecorded icons are settled in
+lib/saints/iconRights.ts (the block "November's saints, the thirteen older
+icons").
+
 ## The Desert Fathers' sayings (2026-10-31)
 
 Today stands each Father beside his saying (1.8, round 3 r3-21, the owner's

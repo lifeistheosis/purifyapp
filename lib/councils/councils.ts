@@ -1153,6 +1153,13 @@ export const COUNCILS: Council[] = [
  name: "St. Athanasius the Great",
  role: "Archbishop of Alexandria, whose seat at the council divided it at the outset, and whom the bishops who remained upheld.",
  },
+ {
+ // 1.9, November's saints (the owner's yes, 2026-11-10): Socrates,
+ // Church History II.20 and II.22.
+ slug: "paul-the-confessor",
+ name: "St. Paul the Confessor",
+ role: "Bishop of Constantinople, whom the bishops of the East would have shut out with St. Athanasius, and whom the council restored to his see.",
+ },
  ],
  documents: [
  {

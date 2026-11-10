@@ -80,6 +80,55 @@ describe("a month marked done", () => {
   }
 });
 
+/**
+ * Lives held for a priest (1.9, November's push 4; docs/editorial-standards.md,
+ * clergy item 31). A compiler's Life used on the owner's word (Butler's, for
+ * eight of November's saints) waits in docs/editorial/held/<month>/ until a
+ * priest has read it, and nothing in the apps may reach it before
+ * `node scripts/ingest-witness-lives.mjs <month> --held --release` moves it:
+ * no file of it under data/saints/, no work of it in the registry. Until then
+ * it already carries the compiler's name on every passage, as it will in the
+ * apps.
+ */
+describe("a Life held for a priest", () => {
+  const HELD = path.join(ROOT, "docs", "editorial", "held");
+  const held = fs.existsSync(HELD)
+    ? fs.readdirSync(HELD).flatMap((month) =>
+        fs.readdirSync(path.join(HELD, month)).flatMap((saint) =>
+          fs
+            .readdirSync(path.join(HELD, month, saint))
+            .filter((f) => f.endsWith(".json"))
+            .map((f) => ({ month, saint, slug: f.replace(/\.json$/, ""), file: path.join(HELD, month, saint, f) })),
+        ),
+      )
+    : [];
+  const EM_DASH = String.fromCharCode(0x2014);
+
+  for (const h of held) {
+    it(`${h.month}: ${h.saint}/${h.slug} stays out of the apps until it is released`, () => {
+      expect(fs.existsSync(path.join(ROOT, "data", "saints", h.saint, `${h.slug}.json`)), "in data/saints").toBe(false);
+      const saint = SAINTS.find((s) => s.slug === h.saint);
+      expect(saint, h.saint).toBeDefined();
+      expect(saint!.works.some((w) => w.slug === h.slug), "a work in the registry").toBe(false);
+    });
+
+    it(`${h.month}: ${h.saint}/${h.slug} names its author on every passage, and its source`, () => {
+      const doc = JSON.parse(fs.readFileSync(h.file, "utf8"));
+      expect(doc.saint).toBe(h.saint);
+      expect(doc.slug).toBe(h.slug);
+      for (const s of doc.sections) {
+        expect(s.voice).toBe("witness");
+        expect(s.voiceAuthor?.trim()).toBeTruthy();
+        expect(doc.source).toContain(s.voiceAuthor);
+        expect(s.citation).toContain(s.voiceAuthor);
+      }
+      for (const ours of [doc.title, doc.subtitle ?? "", doc.source, ...doc.sections.map((s: { title: string; citation: string }) => s.title + s.citation)]) {
+        expect(ours.includes(EM_DASH), ours).toBe(false);
+      }
+    });
+  }
+});
+
 describe("the rule book, on pages made to fail", () => {
   const settled = "/saints/icons/settled.jpg";
   const files: Record<string, { voice?: string; citation?: string; paragraphs: string[] }[]> = {

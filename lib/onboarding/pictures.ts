@@ -69,7 +69,7 @@ export const ANSWER_PICTURES: Readonly<Record<Intent, AnswerPicture>> = {
   // own page (lib/saints/iconRights.ts). Not History's larger copy: the apps
   // ask the website for History's pictures, and a first open may have no
   // signal.
-  quiet: { slot: "onboarding-quiet", src: "/saints/icons/gregory-palamas.jpg", focus: "50% 20%" },
+  quiet: { slot: "onboarding-quiet", src: "/saints/icons/gregory-palamas.v2.jpg", focus: "50% 20%" },
   // Stand-in: St Prochorus writing the Gospel of John, E. Lambardos, 1602,
   // in the black and white the Plus paywall carries (docs/licensing/
   // COVER_ICONS.md). Not the colour cover: the apps ask the website for the

@@ -44,7 +44,7 @@ describe("the greeting, drawn", () => {
     const out = await draw("orthodox", NOV_8);
     expect(out).toContain("Sunday, November 8 · Feast · No fast");
     expect(out).toContain(SYNAXIS);
-    expect(out).toContain('src="/saints/icons/archangel-michael.v2.jpg"');
+    expect(out).toContain('src="/saints/icons/archangel-michael.v3.jpg"');
     expect(out).toContain('href="/saints/archangel-michael#hymns"');
     expect(out).toContain(en["today.greet.hymns"]);
     expect(out).toContain('href="/prayers/morning"');

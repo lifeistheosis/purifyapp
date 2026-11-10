@@ -73,6 +73,17 @@ Pages written before November (with a life of ours) are reported, never failed.
    book's misreadings are tied to their place (`ocr: [[word, the words
    around it]]`). Barlaam and Ioasaph, November: 82,504 words, 55 of the
    transcription's slips put back to the page.
+   A compiler's Life used on the owner's word (Butler's, November) is held
+   for a priest: it goes in `scripts/menologion/<month>-held.mjs` (`HELD`),
+   and `--held` writes it to `docs/editorial/held/<month>/`, where the apps
+   never read it, with a clergy item in docs/editorial-standards.md saying
+   what the priest is asked; `--held --release` moves it into data/saints/
+   once he has read it (lib/saints/__tests__/menologionMonth.test.ts keeps a
+   held Life out of the apps until then). A printing no one has transcribed
+   is typed from its page images with scripts/menologion/scan-draft/: two
+   scans of the same printing lined up word by word into a draft, every page
+   read against it, and the text then checked against scans that did not
+   draft it (its README has the steps).
 
 5. **Write the pages.** For each saint: the registry entry (`life: []`, the
    entry, `entrySource`, the works); the group membership (groups.ts); the
@@ -135,3 +146,11 @@ Pages written before November (with a life of ours) are reported, never failed.
   the entry, its source line, titles and citations.
 - A passage that runs on into another man's story is cut at the last sentence
   about the saint (`endAfter`), never edited.
+- A scan's text is not the page, even when two scans agree: Butler's page
+  read "387" where one scan said "389", and printed "worse that beastly
+  lust" where two other printings read "than"; the page decides, and its
+  own misprint is kept and named.
+- An icon is settled once: where a saint's page hero or book cover already
+  has a settled picture, his page icon is cut from it, so he wears one
+  picture everywhere (St Andrew, the Archangel, St Matthew, St Philip, St
+  Gregory Palamas, November).

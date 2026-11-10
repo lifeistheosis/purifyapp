@@ -150,8 +150,9 @@ describe("the Holy Fathers principally associated", () => {
   const all = COUNCILS.flatMap((c) => fatherFaces(c, false).map((f) => ({ council: c.slug, ...f })));
   const unique = [...new Map(all.map((f) => [f.href ?? f.name, f])).values()];
 
-  it("names thirty-six Fathers, St. Cyprian with his page now (the sheet's one-line fix)", () => {
-    expect(unique).toHaveLength(36);
+  it("names thirty-seven Fathers, St. Cyprian with his page now (the sheet's one-line fix)", () => {
+    // Thirty-seven from 1.9: St. Paul the Confessor at Sardica (November's saints).
+    expect(unique).toHaveLength(37);
     const cyprian = council("carthage-256").principalFathers?.find((f) => /Cyprian/.test(f.name));
     expect(cyprian?.slug).toBe("cyprian-of-carthage");
     for (const f of all) if (f.href) expect(SAINTS.some((s) => `/saints/${s.slug}` === f.href), f.href).toBe(true);
@@ -163,8 +164,9 @@ describe("the Holy Fathers principally associated", () => {
     // from 1.9 (build 89 note 3, the plate's saints given their pictures) St.
     // Cyril of Jerusalem at the Second Council, St. Justinian at the Fifth
     // and St. Tarasius at the Seventh; and from November's saints (1.9) St.
-    // Gregory the Wonderworker at Antioch (268), his page and his mosaic.
-    expect(pictured).toHaveLength(19);
+    // Gregory the Wonderworker at Antioch (268), his page and his mosaic,
+    // and St. Paul the Confessor at Sardica, his page and his icon.
+    expect(pictured).toHaveLength(20);
     for (const f of pictured) {
       const slug = f.href!.replace("/saints/", "");
       expect(COVER_ART[slug], slug).toBeDefined();
