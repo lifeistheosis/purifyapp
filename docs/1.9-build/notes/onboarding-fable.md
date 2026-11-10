@@ -1682,3 +1682,13 @@ together: the card's to the day of release and 84 days on, the sheet's to
 the day after that and 84 days on (`OWNER-STEPS.md`, R0c). Tests hold each
 span, and that the sheet begins the day after the card ends, so the two
 cannot be set apart from each other by mistake. Off again is the one line.
+
+**The account card's reminders line, on the website too (2026-11-10).** His
+words, about 20:53 UTC: "Though web notification pops up for me, but not the
+Android app itself." That is his own sighting of a notification from Purify
+in his browser, the same measure the iPhone line was accepted on, so
+`lib/onboarding/reminderPromise.ts` has the website at yes, with the quote,
+the day and who saw it. Android stays at no: the same sentence says none has
+come there. The file now says its measure plainly: his word that a
+notification arrived, not a reminder watched at its own hour, which is the
+phone walk's stricter proof.
