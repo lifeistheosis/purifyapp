@@ -680,17 +680,16 @@ try {
 // few, each JPEG and the AVIF a cover offers first, are copied back into the
 // export, where the apps draw them from their own files (lib/media/carried.ts).
 function carryCovers(dir) {
-  const { covers } = JSON.parse(fs.readFileSync(path.join(ROOT, "lib", "media", "carriedCovers.json"), "utf8"));
+  const { covers, jpegOnly } = JSON.parse(fs.readFileSync(path.join(ROOT, "lib", "media", "carriedCovers.json"), "utf8"));
   let files = 0;
   let bytes = 0;
-  for (const jpg of covers) {
-    for (const file of [jpg, jpg.replace(/\.jpg$/, ".avif")]) {
-      const to = path.join(dir, file);
-      fs.mkdirSync(path.dirname(to), { recursive: true });
-      fs.copyFileSync(path.join(ROOT, "public", file), to);
-      files += 1;
-      bytes += fs.statSync(to).size;
-    }
+  // A cover with the AVIF it offers first; the read-aloud covers, which the player draws as a plain JPEG, alone.
+  for (const file of [...covers.flatMap((jpg) => [jpg, jpg.replace(/\.jpg$/, ".avif")]), ...jpegOnly]) {
+    const to = path.join(dir, file);
+    fs.mkdirSync(path.dirname(to), { recursive: true });
+    fs.copyFileSync(path.join(ROOT, "public", file), to);
+    files += 1;
+    bytes += fs.statSync(to).size;
   }
   console.log(`• carried ${files} cover file(s) the website cannot serve yet, ${(bytes / 1048576).toFixed(2)} MB`);
 }

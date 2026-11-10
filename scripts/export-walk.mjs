@@ -4044,7 +4044,8 @@ await section(34, async () => {
 // (lib/media/carriedCovers.json, lib/media/__tests__/carried.test.ts): note
 // 3's pictures, the seven councils' portraits and the five read-aloud covers
 // new in 1.9 (his yes of 2026-11-10). Exactly that list ships, each JPEG with
-// its AVIF, and nothing else under /covers/; every other cover is still the
+// its AVIF, the five read-aloud covers as the JPEG alone (the player offers
+// no AVIF), and nothing else under /covers/; every other cover is still the
 // website's.
 //
 // From 1.8's second round (the owner's "add everything we left out" of
@@ -4057,9 +4058,8 @@ await section(34, async () => {
 await section(35, async () => {
   console.log("\n35. The read-aloud covers and the ambience sheet");
   const en = JSON.parse(fs.readFileSync(path.resolve("lib/i18n/messages/en.json"), "utf8"));
-  const carriedList = JSON.parse(fs.readFileSync(path.resolve("lib/media/carriedCovers.json"), "utf8"))
-    .covers.flatMap((jpg) => [jpg, jpg.replace(/\.jpg$/, ".avif")])
-    .sort();
+  const carriedJson = JSON.parse(fs.readFileSync(path.resolve("lib/media/carriedCovers.json"), "utf8"));
+  const carriedList = [...carriedJson.covers.flatMap((jpg) => [jpg, jpg.replace(/\.jpg$/, ".avif")]), ...carriedJson.jpegOnly].sort();
   const shippedCovers = [];
   const listCovers = (dir, rel) => {
     for (const e of fs.readdirSync(dir, { withFileTypes: true })) {

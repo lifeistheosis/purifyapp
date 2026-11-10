@@ -20,8 +20,6 @@
     "/covers/councils/ephesus.v1.jpg",
     "/covers/councils/first-constantinople.v1.jpg",
     "/covers/councils/first-nicaea.v1.jpg",
-    "/covers/davidLagoudera.v1.jpg",
-    "/covers/ezraUriel.v1.jpg",
     "/covers/feelings/anger.v1.jpg",
     "/covers/feelings/despondency.v1.jpg",
     "/covers/feelings/envy.v1.jpg",
@@ -29,7 +27,11 @@
     "/covers/feelings/grief.v1.jpg",
     "/covers/feelings/hatred.v1.jpg",
     "/covers/feelings/loneliness.v1.jpg",
-    "/covers/feelings/love.v1.jpg",
+    "/covers/feelings/love.v1.jpg"
+  ],
+  "jpegOnly": [
+    "/covers/davidLagoudera.v1.jpg",
+    "/covers/ezraUriel.v1.jpg",
     "/covers/obadiah.v1.jpg",
     "/covers/solomonLagoudera.v1.jpg",
     "/covers/zechariah.v1.jpg"

@@ -25,16 +25,23 @@ import CARRIED from "./carriedCovers.json";
  *
  * The list is carriedCovers.json, read here and by the native build, which
  * copies each JPEG and the AVIF beside it into the export
- * (scripts/native-build.mjs, carryCovers). lib/media/__tests__/carried.test.ts
+ * (scripts/native-build.mjs, carryCovers). The five read-aloud covers are
+ * its "jpegOnly": the player draws a read-aloud cover as a plain JPEG
+ * (components/player/CoverArt.tsx) and offers no AVIF first, so the apps
+ * carry their JPEG alone, 0.52 MB lighter (the arbiter's yes of 2026-11-10:
+ * "Five Bible covers JPEG-only: yes"). lib/media/__tests__/carried.test.ts
  * holds the files, the list and the readers together. Server-safe: no module
  * here asks the device, so lib/reading/coverArt.ts and lib/saints/heroes.ts,
  * which decide the address at build time, read it too.
  */
-export const CARRIED_COVERS: readonly string[] = CARRIED.covers;
+export const CARRIED_COVERS: readonly string[] = [...CARRIED.covers, ...CARRIED.jpegOnly];
 
-const CARRIED_SET = new Set<string>(CARRIED_COVERS.flatMap((jpg) => [jpg, jpg.replace(/\.jpg$/, ".avif")]));
+/** The carried covers that come as the JPEG alone: the read-aloud covers, which the player draws with no AVIF. */
+export const JPEG_ONLY_COVERS: readonly string[] = CARRIED.jpegOnly;
 
-/** Whether the apps carry this file (a carried JPEG or the AVIF beside it). */
+const CARRIED_SET = new Set<string>([...CARRIED.covers.flatMap((jpg) => [jpg, jpg.replace(/\.jpg$/, ".avif")]), ...CARRIED.jpegOnly]);
+
+/** Whether the apps carry this file (a carried JPEG, or the AVIF beside one that offers it). */
 export function isCarried(path: string): boolean {
   return CARRIED_SET.has(path);
 }

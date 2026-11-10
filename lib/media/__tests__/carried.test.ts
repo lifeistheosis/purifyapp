@@ -6,7 +6,9 @@
 //
 //  - Every carried picture is a file of the website's /covers/, with the
 //    AVIF a cover offers first beside it (a carried JPEG without its AVIF
-//    would leave the app's <picture> with a broken first choice).
+//    would leave the app's <picture> with a broken first choice), except
+//    the five read-aloud covers, which the player draws as a plain JPEG and
+//    which are carried as the JPEG alone (the arbiter's yes of 2026-11-10).
 //  - Note 3's pictures are all carried: the councils' icons, the How you
 //    feel doors' and the three new portraits.
 //  - Every portrait a council's Fathers' faces ask the website for is
@@ -18,8 +20,9 @@
 //  - In the apps a carried picture's address is the bundle's own, in every
 //    place that decides an address (streamedUrl, coverSrc, heroSrc); every
 //    other cover's is still the website's.
-//  - The native build copies the same list, JPEG and AVIF, into the export
-//    after the folders set aside come back and before the size is weighed.
+//  - The native build copies the same list, JPEG and AVIF (the read-aloud
+//    covers' JPEG alone), into the export after the folders set aside come
+//    back and before the size is weighed.
 //  - St John Cassian's two books wear icons the app carries, verified.
 //
 // What it does not hold: that the export has them. The export walk does
@@ -32,7 +35,7 @@ import path from "node:path";
 import { describe, expect, it } from "vitest";
 
 import { COUNCILS } from "@/lib/councils/councils";
-import { CARRIED_COVERS, isCarried } from "@/lib/media/carried";
+import { CARRIED_COVERS, JPEG_ONLY_COVERS, isCarried } from "@/lib/media/carried";
 import { isStreamedMedia, streamedUrl } from "@/lib/media/streamed";
 import { AUTHOR_COVERS, COUNCIL_COVERS, FEELING_COVERS, WORK_COVERS } from "@/lib/reading/authorCovers";
 import { WORK_ART, coverArtFor, coverSrc } from "@/lib/reading/coverArt";
@@ -71,14 +74,16 @@ function councilPortraits(): string[] {
 }
 
 describe("the covers the apps carry", () => {
-  it("are files of the website's /covers/, each with its AVIF", () => {
+  it("are files of the website's /covers/, each with its AVIF where it offers one", () => {
     expect(CARRIED_COVERS.length).toBeGreaterThan(0);
     expect(new Set(CARRIED_COVERS).size).toBe(CARRIED_COVERS.length);
     for (const jpg of CARRIED_COVERS) {
       // A reading room picture lives in a folder of its kind; a read-aloud cover at the root, by its figure's id.
       expect(jpg, jpg).toMatch(/^\/covers\/(?:[a-z]+\/[a-z0-9-]+|[a-zA-Z0-9]+)\.v\d+\.jpg$/);
       expect(fs.existsSync(path.join(ROOT, "public", jpg)), jpg).toBe(true);
-      expect(fs.existsSync(path.join(ROOT, "public", jpg.replace(/\.jpg$/, ".avif"))), `${jpg}: its AVIF`).toBe(true);
+      const avif = jpg.replace(/\.jpg$/, ".avif");
+      if (JPEG_ONLY_COVERS.includes(jpg)) expect(isCarried(avif), `${jpg}: no AVIF carried`).toBe(false);
+      else expect(fs.existsSync(path.join(ROOT, "public", avif)), `${jpg}: its AVIF`).toBe(true);
     }
   });
 
@@ -106,6 +111,19 @@ describe("the covers the apps carry", () => {
       const file = FIGURES[id]?.file;
       expect(file, id).toBeDefined();
       expect(isCarried(file!), id).toBe(true);
+    }
+  });
+
+  it("carry the read-aloud covers as the JPEG alone, which is all the player draws", () => {
+    // The arbiter's yes of 2026-11-10 ("Five Bible covers JPEG-only: yes"): 0.52 MB lighter.
+    expect([...JPEG_ONLY_COVERS].sort()).toEqual(NEW_READ_COVERS.map((id) => FIGURES[id]!.file).sort());
+    // The player's cover is a plain <img> of the JPEG, and no picture that offers an AVIF first reads these covers.
+    expect(fs.readFileSync(path.join(ROOT, "components/player/CoverArt.tsx"), "utf8")).not.toMatch(/avif/i);
+    for (const file of ["components/you/KeptShelf.tsx", "components/you/PickUpCard.tsx", "lib/you/covers.ts"]) {
+      expect(fs.readFileSync(path.join(ROOT, file), "utf8"), file).not.toMatch(/avif/i);
+    }
+    for (const file of ["components/councils/CouncilFathers.tsx", "components/covers/WorkCover.tsx", "components/reading/FeaturedWork.tsx", "components/reading/FeelingsRow.tsx", "components/reading/ReadingRoom.tsx", "components/saints/SaintHeroPicture.tsx", "components/today/SpeakerBand.tsx", "lib/today/saintFaces.ts"]) {
+      expect(fs.readFileSync(path.join(ROOT, file), "utf8"), file).not.toContain("readAloud/covers");
     }
   });
 
@@ -140,10 +158,10 @@ describe("the covers the apps carry", () => {
     expect(heroes).toMatch(/native && !isCarried\(hero\.file\)/);
   });
 
-  it("are copied into the export by the native build, JPEG and AVIF, before the size is weighed", () => {
+  it("are copied into the export by the native build, JPEG and AVIF (the read-aloud covers' JPEG alone), before the size is weighed", () => {
     const build = fs.readFileSync(path.join(ROOT, "scripts/native-build.mjs"), "utf8");
     expect(build).toContain('path.join(ROOT, "lib", "media", "carriedCovers.json")');
-    expect(build).toMatch(/\[jpg, jpg\.replace\(\/\\\.jpg\$\/, "\.avif"\)\]/);
+    expect(build).toMatch(/\[jpg, jpg\.replace\(\/\\\.jpg\$\/, "\.avif"\)\]\), \.\.\.jpegOnly\]/);
     const carry = build.indexOf("carryCovers(path.join(ROOT, \"out\"))");
     expect(carry).toBeGreaterThan(build.indexOf("restoreAll();\n}"));
     expect(carry).toBeLessThan(build.indexOf('run("node --experimental-strip-types scripts/export-size.mjs'));
