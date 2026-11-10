@@ -371,11 +371,14 @@ describe("an answer", () => {
 
   it("keeps the study's own words as they stood: its line, its summary, its essay, its note", () => {
     const reader = code(READER);
-    for (const part of ["{body.subtitle}", "{body.summary}", "<EssayPart key={i} block={b} />", "{q.text}", "{q.gloss}", "{q.author}", "{q.work}", "{q.reference ?? null}", "{body.origin}", "{s.ref}", "{s.note}"]) {
+    for (const part of ["{body.subtitle}", "{body.summary}", "<EssayPart key={i} block={b} />", "{q.text}", "{q.gloss}", "{q.author}", "{q.work}", "{q.reference ?? null}", "{s.ref}", "{s.note}"]) {
       expect(reader, part).toContain(part);
     }
-    // The line an answer shows where its Fathers are not yet gathered, word for word.
-    expect(reader.replace(/\s+/g, " ")).toContain("The verbatim patristic florilegium for this entry is being assembled and will be added here.");
+    // Two things it showed were written for editors and are gone (lib/prayers/__tests__/noStandIns.test.ts):
+    // the promise where an answer has no passages yet, and the file's own note under who curated it.
+    expect(reader).not.toContain("being assembled");
+    expect(reader).not.toContain("body.origin");
+    expect(reader).toContain('<T k="study.curatedBy" /> {body.curatedBy}');
     // Where the words stand, as every quotation's line names it (lib/citations/__tests__/quotes.test.ts).
     expect(reader).toContain("shownCite(q.cite)");
     expect(reader).toContain("<SourceLine cite={shown} />");

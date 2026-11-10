@@ -42,6 +42,15 @@ import type { RelatedGroups } from "@/lib/theology/relations";
  * The headings are the catalog's now, in every language; the saints and the
  * answers beside it are listed once, by their names. No word of the answer's
  * own changed.
+ *
+ * Two things a reader saw here were written for editors, and are gone (the
+ * arbiter's word of 2026-11-10, "readers seeing words written for editors,
+ * the same fault as the First Hour's stand-ins"): the line that stood where
+ * an answer has no passages from the Fathers yet ("... is being assembled
+ * and will be added here"), and the file's own note of how the answer came
+ * to be (`origin`), under who curated it. An answer with no passages simply
+ * has no such part, as a topic has no empty one.
+ * lib/prayers/__tests__/noStandIns.test.ts holds both.
  */
 export function ApologeticsReader({
   body,
@@ -91,13 +100,7 @@ export function ApologeticsReader({
             ))}
           </ul>
         </LeafPart>
-      ) : (
-        // The study's own note, as it stood.
-        <p lang="en" dir="ltr" className="mt-9 font-sans text-detail italic leading-[1.6] text-paper/55">
-          The verbatim patristic florilegium for this entry is being assembled
-          and will be added here.
-        </p>
-      )}
+      ) : null}
 
       {body.scripture && body.scripture.length > 0 ? (
         <LeafPart
@@ -133,22 +136,14 @@ export function ApologeticsReader({
 
       <RelatedRail groups={groups} title={<T k="study.apologetics.goDeeper" />} />
 
-      {body.curatedBy || body.origin ? (
+      {/* Who curated it, and when. The file's `origin` is the editors' own
+          record of how the answer came to be ("Opened in v9.9 as a foundation
+          entry ...") and is never drawn: a reader was shown it until 1.9. */}
+      {body.curatedBy ? (
         <LeafNote>
           <p>
-            {body.curatedBy ? (
-              <>
-                <T k="study.curatedBy" /> {body.curatedBy}
-              </>
-            ) : null}
-            {body.curatedBy && body.curatedOn ? <> · </> : null}
-            {body.curatedOn ?? null}
-            {body.origin ? (
-              <>
-                <br />
-                <span lang="en" dir="ltr">{body.origin}</span>
-              </>
-            ) : null}
+            <T k="study.curatedBy" /> {body.curatedBy}
+            {body.curatedOn ? <> · {body.curatedOn}</> : null}
           </p>
         </LeafNote>
       ) : null}
