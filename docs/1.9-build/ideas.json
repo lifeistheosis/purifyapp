@@ -1783,12 +1783,12 @@
    "title": "The prayer page: one way in (Begin between Save and Share), nothing ticked under each prayer, one Amen at the end; Easy Scroll with a tick",
    "from": "edgar",
    "asked": "2026-11-10",
-   "status": "approved",
+   "status": "built",
    "decided": "2026-11-10",
    "needsDesign": true,
    "version": null,
    "outcome": null,
-   "note": "Build 89 note 7, his \"ok to all\" of 2026-11-10 (his page's 103). Built: the head, no marks under a prayer, the Amen (beaecf24). To build: Easy Scroll, each prayer counted as prayed as it is passed, saving one prayer from a long press."
+   "note": "Build 89 note 7, his \"ok to all\" of 2026-11-10 (his page's 103) and the arbiter's yes to the rest. The head, no marks under a prayer, the Amen (beaecf24); the names step's mark (3a1f0935); Easy Scroll with its click, each prayer counted as passed, Save from the long hold, and the Settings row in 21 languages (3be66d8c)."
   },
   {
    "id": "b89-10",
