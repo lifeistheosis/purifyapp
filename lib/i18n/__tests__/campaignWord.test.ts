@@ -1,16 +1,21 @@
 // One word for a prayer campaign in each catalog (1.9, the arbiter's of
 // 2026-11-10 11:45 UTC: "Russian names 'campaign' three ways in the catalog
-// and Serbian two: settle each on the word the campaigns' phase 1 uses").
-// The campaigns chat found it (docs/1.9-build/notes/campaigns-fable.md, 13.7
-// and 14.1): Russian said кампания, просьба and призыв, and Serbian кампања
-// and акција. Phase 1's own lines (4dd15000, a81bd525) say просьба in Russian
-// and кампања in Serbian, so every line does now.
+// and Serbian two: settle each on the word the campaigns' phase 1 uses", and
+// of 12:26 UTC: "Greek and Polish settled on one word for 'campaign' the same
+// way"). The campaigns chat found it (docs/1.9-build/notes/campaigns-fable.md,
+// 13.7 and 14.1): Russian said кампания, просьба and призыв; Serbian кампања
+// and акција; Greek εκστρατεία, καμπάνια and αίτημα; Polish kampania, akcja
+// modlitewna and intencja. Phase 1's own lines (4dd15000, a81bd525) say
+// просьба in Russian, кампања in Serbian, αίτημα in Greek (its reader's
+// lines; its two others and the moderators' log said εκστρατεία) and
+// intencja in Polish, so every line does now.
 //
 // What this holds: in each catalog named here, no line names the feature with
 // one of the words it replaced, and the feature's own names (the menu, the
 // community's heading, the profile's tab, a reader's list, the moderators'
 // label) say phase 1's word. The words are matched at a word's start, so the
-// Russian and Serbian for the editors (редакция, редакција) are not counted.
+// Russian and Serbian for the editors (редакция, редакција) are not counted,
+// and the Greek for a bell (καμπάνα, καμπανάκι) is not καμπάνια.
 //
 // What it does not hold: lines that speak of a campaign without naming it
 // ("No one is asking for a campaign right now" is "no one is asking for
@@ -29,6 +34,8 @@ const catalog = (code: string) =>
 const WORD: Record<string, { word: RegExp; not: RegExp }> = {
   ru: { word: /(?<![\p{L}])просьб/iu, not: /(?<![\p{L}])(кампани|призыв)/iu },
   sr: { word: /(?<![\p{L}])кампањ/iu, not: /(?<![\p{L}])акциј/iu },
+  el: { word: /(?<![\p{L}])(αίτημ|αιτήμ|αιτημ)/iu, not: /(?<![\p{L}])(εκστρατε|καμπάνι|καμπανι)/iu },
+  pl: { word: /(?<![\p{L}])intencj/iu, not: /(?<![\p{L}])(kampani|akcj)/iu },
 };
 
 /** The feature's own names, each of which says the word. */
