@@ -75,12 +75,11 @@ written as 1.9 is planned to ship.
    Review").
 12. **Profiles** (a name, a photo, a banner, a few lines) are seen by other
    readers, so Guideline 1.2 covers them too. Every profile has Report and
-   Block today, but a moderator's "clear profile" takes the banner and the
-   words and not the photo (`lib/community/moderation.ts`, `clear_profile`;
-   with the Updates chat, 2026-11-10). Once it takes the photo too, part B's
-   list gains: "- Profiles: a name, a photo and a few lines. Every profile has
-   Report and Block, and a moderator can clear any of it, the photo
-   included." Until then part B leaves profiles out.
+   Block, and since `ea6dd2342` (the Updates chat) a moderator's "clear
+   profile" takes the photo with the banner and the words: the profile row,
+   its copies on the reader's posts, replies and kitchen reviews, the
+   sign-in picture's stand-in, and the reader's own files. Part B names
+   profiles.
 
 ---
 
@@ -102,8 +101,9 @@ SIGN-IN
 An account is needed only for Community, prayer campaigns, sync across devices and the shop. A demo account is in Sign-In Information. Readers sign in with Apple, Google or email; every sign-in screen says that continuing accepts the Terms of Service and the Privacy Policy.
 
 USER-GENERATED CONTENT (Guideline 1.2)
-Readers write in two places, both for signed-in readers only.
+Readers write in three places, all for signed-in readers only.
 - Community: public posts and replies. Before a post goes up, a filter holds it for a moderator when it comes from a new account, carries links or reads as spam, and a word filter masks objectionable words and sends the post to a moderator. Every post and reply has Report; enough reports hide it until a moderator looks. Any reader can block another and then sees nothing of theirs.
+- Profiles: a name, a photo and a few lines. Every profile has Report and Block, and a moderator can clear any of it, the photo included.
 - Prayer campaigns (Pray together): a reader asks others to pray for someone or something. Every new campaign waits for a moderator before anyone else sees it, and one that suggests the writer may be in danger is read first. Starting one requires ticking "I agree to the Terms of Service", and the campaign rules are shown beside it. Campaigns, their updates and their comments have Report.
 Moderators remove what breaks the rules, and the reader who posted it is told why, with the reason and an address to write to (support@purifyapp.net). Anything that sexualises or endangers a child is removed at once and reported to the authorities. Pictures on prayer campaigns are not in this build: the app shows none and offers no way to add one, and only a new build, sent for review, can add them.
 Contact for anything a reader posts: support@purifyapp.net.
