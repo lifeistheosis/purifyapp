@@ -2027,6 +2027,20 @@
    "version": "1.9",
    "outcome": null,
    "note": "The window passes his face's place (across), as Theology's frames do, held by lib/today/__tests__/saintFaces.test.ts. The window is drawn nowhere in the app (never mounted in the repo's history; Today shows the saint by its band), so nothing on screen changes. 62da0a28. PLAN 13o."
+  },
+  {
+   "id": "e-qw-cyril-luke-29-96",
+   "section": "Saints",
+   "kind": "bug",
+   "title": "St Cyril on Luke: Sermons 29 and 96 each stood as two sections under one number, so a highlight on one showed on both (F-49)",
+   "from": "claude",
+   "asked": "2026-10-26",
+   "status": "built",
+   "decided": "2026-11-10",
+   "needsDesign": false,
+   "version": "1.9",
+   "outcome": null,
+   "note": "The second halves are 1029 (Sermon 29, the fragments) and 97 (Sermon 97, from the Catena); no stored mark rewritten, marks from before show on both until changed. 50aa710b. PLAN 13p."
   }
  ]
 }
