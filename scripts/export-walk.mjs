@@ -8502,6 +8502,181 @@ await section(54, async () => {
     await ctx.close();
   }
 });
+
+// Build 90 note 6, his words: "I noticed myself scrolling to another section
+// when I just realistically want to scroll to the next verse or next bar
+// within the same section." Measured on build 90's export: a prayer rested
+// only at its first line and, when tall, at its end at the foot, which left
+// the last two to five verses below the reading place unread; from there a
+// flick carried them off the screen. Now every verse rests (useEasyScroll.ts,
+// lib/prayers/easyScroll.ts). Real touch with its fling: Input.dispatchTouchEvent
+// (the touch kind of synthesizeScrollGesture does not scroll in this Chromium).
+await section(55, async () => {
+  console.log("\n55. Easy Scroll by the verse: a short swipe brings the next verse, never the next prayer early (build 90 note 6)");
+  const settle = async (page) => {
+    let last = -1;
+    let still = 0;
+    for (let i = 0; i < 100 && still < 6; i++) {
+      await page.waitForTimeout(100);
+      const y = await page.evaluate(() => scrollY);
+      if (Math.abs(y - last) < 0.5) still++;
+      else still = 0;
+      last = y;
+    }
+    await page.waitForTimeout(250);
+  };
+  const swipe = async (cdp, page, dist, ms) => {
+    const y0 = 560;
+    const steps = Math.max(4, Math.round(ms / 16));
+    await cdp.send("Input.dispatchTouchEvent", { type: "touchStart", touchPoints: [{ x: 195, y: y0 }] });
+    for (let i = 1; i <= steps; i++) {
+      await cdp.send("Input.dispatchTouchEvent", { type: "touchMove", touchPoints: [{ x: 195, y: y0 - (dist * i) / steps }] });
+      await new Promise((r) => setTimeout(r, ms / steps));
+    }
+    await cdp.send("Input.dispatchTouchEvent", { type: "touchEnd", touchPoints: [] });
+    await settle(page);
+  };
+  // The verse lit, and the prayer it stands in.
+  const lit = (page) =>
+    page.evaluate(() => {
+      const el = document.querySelector("[data-prayer-reader] [data-lit]");
+      const step = el?.closest("[data-step]");
+      return { step: step?.id ?? null, n: step ? [...step.querySelectorAll("[data-line]")].indexOf(el) + 1 : 0, of: step ? step.querySelectorAll("[data-line]").length : 0, y: Math.round(scrollY) };
+    });
+  // A prayer's first verse brought to the reading place, as Begin brings it.
+  const toFirst = async (page, id) => {
+    await page.evaluate((id) => {
+      const html = document.documentElement;
+      const place = (parseFloat(html.style.getPropertyValue("--easy-place")) || 0) + (parseFloat(getComputedStyle(html).scrollPaddingTop) || 0);
+      const line = document.getElementById(id).querySelector("[data-line]");
+      window.scrollTo({ top: scrollY + line.getBoundingClientRect().top - place, behavior: "instant" });
+    }, id);
+    await settle(page);
+  };
+
+  // Psalm 89 of the First Hour at Large, as he read it: a gentle flick from each verse.
+  {
+    const { ctx, page, errors } = await open({ width: 390, height: 844, phone: true, set: { "purify.reader.size": "lg" } });
+    const cdp = await ctx.newCDPSession(page);
+    await go(page, "/");
+    await go(page, "/prayers/hours/first-hour/");
+    await page.waitForSelector("#psalm-89 [data-verse-stop]", { state: "attached", timeout: 20000 });
+    await page.waitForTimeout(800);
+    must(await page.evaluate(() => document.documentElement.hasAttribute("data-easy-scroll")), "Easy Scroll is on for a finger, with motion on");
+    await toFirst(page, "psalm-89");
+    const start = await lit(page);
+    const path = [`${start.n}`];
+    let jumped = null;
+    let prev = start;
+    for (let k = 0; k < 30; k++) {
+      await swipe(cdp, page, 60, 80);
+      const now = await lit(page);
+      if (now.step !== "psalm-89") {
+        path.push(`${now.step}:${now.n}`);
+        if (prev.n !== prev.of) jumped = `left Psalm 89 from verse ${prev.n} of ${prev.of}`;
+        break;
+      }
+      path.push(`${now.n}`);
+      if (now.n - prev.n > 2) jumped = `from verse ${prev.n} to ${now.n}`;
+      prev = now;
+    }
+    must(start.step === "psalm-89" && start.n === 1, `Psalm 89 opens at its first verse, lit (${start.step}:${start.n})`);
+    must(!jumped && path.at(-1) === "psalm-100:1", `a gentle flick walks Psalm 89 verse by verse, its last verse lit before Psalm 100 begins (${path.join(" > ")}${jumped ? "; " + jumped : ""})`);
+    // A brisk fling stays in the psalm.
+    await toFirst(page, "psalm-89");
+    await swipe(cdp, page, 150, 60);
+    const brisk = await lit(page);
+    must(brisk.step === "psalm-89" && brisk.n > 1, `a brisk fling runs on through the verses and stays in Psalm 89 (verse ${brisk.n})`);
+    must(errors.length === 0, `no page errors${errors.length ? ": " + errors.slice(0, 2).join(" | ") : ""}`);
+    await ctx.close();
+  }
+
+  // The Lord's Prayer at the largest size: one unbroken verse taller than the room.
+  {
+    const { ctx, page, errors } = await open({ width: 390, height: 844, phone: true, set: { "purify.reader.size": "xl" } });
+    const cdp = await ctx.newCDPSession(page);
+    await go(page, "/");
+    await go(page, "/prayers/morning/");
+    await page.waitForSelector("#our-father [data-verse-stop]", { state: "attached", timeout: 20000 });
+    await page.waitForTimeout(800);
+    const parts = await page.evaluate(() => [...document.querySelectorAll("#our-father [data-verse-stop]")].map((m) => m.getAttribute("data-verse-stop")));
+    await toFirst(page, "our-father");
+    const a = await lit(page);
+    await swipe(cdp, page, 60, 80);
+    const b = await lit(page);
+    await swipe(cdp, page, 60, 80);
+    const c = await lit(page);
+    must(parts.join(",") === "edge,after" && a.step === "our-father" && b.step === "our-father" && b.y > a.y && c.step !== "our-father", `the Lord's Prayer rests at its start, then with its end at the foot, then the next prayer comes (${parts.join(",")}; ${a.step} y${a.y}, ${b.step} y${b.y}, ${c.step})`);
+    must(errors.length === 0, `no page errors${errors.length ? ": " + errors.slice(0, 2).join(" | ") : ""}`);
+    await ctx.close();
+  }
+
+  // Morning Prayers walked to the Amen with gentle flicks: every prayer counted once, none early.
+  {
+    const { ctx, page, errors } = await open({ width: 390, height: 844, phone: true });
+    const cdp = await ctx.newCDPSession(page);
+    await go(page, "/");
+    await go(page, "/prayers/morning/");
+    await page.waitForSelector("[data-prayer-reader] [data-verse-stop]", { state: "attached", timeout: 20000 });
+    await page.waitForTimeout(800);
+    const ids = await page.evaluate(() => [...document.querySelectorAll("[data-prayer-reader] [data-step]")].map((s) => s.id));
+    await toFirst(page, ids[0]);
+    let early = [];
+    let prev = await lit(page);
+    for (let k = 0; k < 160; k++) {
+      await swipe(cdp, page, 60, 80);
+      const now = await lit(page);
+      if (now.step !== prev.step && prev.step && prev.n !== prev.of) early.push(`${prev.step} at ${prev.n} of ${prev.of}`);
+      if (now.y === prev.y) break;
+      prev = now;
+    }
+    const today = await page.evaluate(() => {
+      const d = new Date();
+      const key = `purify.prayers.morning.today.${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
+      try {
+        return JSON.parse(localStorage.getItem(key) ?? "[]");
+      } catch {
+        return [];
+      }
+    });
+    const counted = new Set(today);
+    const missed = ids.filter((id) => !counted.has(id));
+    must(early.length === 0, `no prayer left before its last verse was lit (${early.length ? early.join(", ") : `${ids.length} prayers`})`);
+    must(missed.length <= 1 && today.length === counted.size, `every prayer passed is counted once (${counted.size} of ${ids.length}${missed.length ? "; the last, not passed: " + missed.join(", ") : ""})`);
+    // A hold on a verse still offers Save.
+    await page.evaluate(() => document.querySelector("#creed [data-line]").scrollIntoView({ block: "center" }));
+    await page.waitForTimeout(500);
+    const at = await page.evaluate(() => {
+      const r = document.querySelector("#creed [data-line]").getBoundingClientRect();
+      return { x: Math.round(r.left + r.width / 2), y: Math.round(r.top + r.height / 2) };
+    });
+    await cdp.send("Input.dispatchTouchEvent", { type: "touchStart", touchPoints: [at] });
+    await page.waitForTimeout(900);
+    await cdp.send("Input.dispatchTouchEvent", { type: "touchEnd", touchPoints: [] });
+    await page.waitForTimeout(500);
+    const pill = await page.evaluate(() => {
+      const d = [...document.querySelectorAll("[role=dialog]")].find((x) => x.getAttribute("aria-label") === "Actions for this text");
+      return d ? [...d.querySelectorAll("button")].map((b) => b.getAttribute("aria-label") || (b.innerText || "").trim()).filter(Boolean) : [];
+    });
+    must(pill.some((b) => /Bookmark this prayer/.test(b)), `a hold on a verse still offers Save (${pill.join(", ") || "no pill"})`);
+    must(errors.length === 0, `no page errors${errors.length ? ": " + errors.slice(0, 2).join(" | ") : ""}`);
+    await ctx.close();
+  }
+
+  // With Purify's motion off, nothing rests: the page scrolls as any page.
+  {
+    const { ctx, page, errors } = await open({ width: 390, height: 844, phone: true, set: { "purify.motion": "off" } });
+    await go(page, "/");
+    await go(page, "/prayers/morning/");
+    await page.waitForSelector("[data-prayer-reader] [data-step]", { timeout: 20000 });
+    await page.waitForTimeout(800);
+    const off = await page.evaluate(() => ({ easy: document.documentElement.hasAttribute("data-easy-scroll"), marks: document.querySelectorAll("[data-verse-stop]").length, snap: getComputedStyle(document.documentElement).scrollSnapType }));
+    must(!off.easy && off.marks === 0 && off.snap === "none", `with motion off nothing rests (${JSON.stringify(off)})`);
+    must(errors.length === 0, `no page errors${errors.length ? ": " + errors.slice(0, 2).join(" | ") : ""}`);
+    await ctx.close();
+  }
+});
+
 await browser.close();
 if (!everySection) console.log(`\nOnly the sections chosen were walked: ${walked.join(", ") || "none"}.`);
 console.log(failed ? `\n${failed} check(s) failed.` : "\nEvery check passed.");

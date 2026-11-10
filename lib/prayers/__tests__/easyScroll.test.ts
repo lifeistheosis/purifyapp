@@ -5,7 +5,10 @@
 // It pretty much helps you scroll to the next section easily, and it with
 // like an easy swipe ... and also add a haptic feedback when they scroll to
 // each section", and "I don't like the bookmark button just being there in
-// every single individual prayer". The sums are lib/prayers/easyScroll.ts;
+// every single individual prayer". By the verse since build 90 note 6: "I
+// noticed myself scrolling to another section when I just realistically want
+// to scroll to the next verse or next bar within the same section". The sums
+// are lib/prayers/easyScroll.ts;
 // the gesture is the phone's own scroll snapping (app/globals.css, "Easy
 // Scroll"), switched on by components/prayers/service/useEasyScroll.ts.
 //
@@ -17,7 +20,7 @@ import { join } from "node:path";
 
 import { describe, expect, it } from "vitest";
 
-import { ON_PLACE_PX, isTall, passedNow, stepAtPlace, type PassState } from "@/lib/prayers/easyScroll";
+import { ON_PLACE_PX, clicksFor, holdsAFling, passedNow, restsInside, stepAtPlace, stopsOf, type PassState } from "@/lib/prayers/easyScroll";
 
 const root = join(__dirname, "..", "..", "..");
 const read = (p: string) => readFileSync(join(root, p), "utf8").replace(/\r\n/g, "\n");
@@ -30,14 +33,71 @@ const css = read("app/globals.css").replace(/\/\*[\s\S]*?\*\//g, "");
 
 const fresh = (): PassState => ({ seen: new Set(), told: new Set() });
 
-describe("a prayer that stops at its end too", () => {
-  // The reading place at 300px, the foot of what can be seen at 760px: 460px of room under it.
-  it("is one whose end lies below the foot when its first line stands at the reading place", () => {
-    expect(isTall(300, 300 + 400, 300, 760)).toBe(false);
-    expect(isTall(300, 300 + 461 + 1, 300, 760)).toBe(true);
-    // Measured wherever the prayer is now: only the length below its first line counts.
-    expect(isTall(1200, 1200 + 900, 300, 760)).toBe(true);
-    expect(isTall(-500, -500 + 200, 300, 760)).toBe(false);
+// Build 90 note 6, measured on the export (Android's engine, 390 by 844, The
+// First Hour): a prayer rested only at its first line and, when taller than
+// the screen, at its end at the foot. At that end the verse lit was 12, 14 or
+// 15 of Psalm 89's 17, and from it 40 of 52 flicks carried the last verses
+// off the screen into the next prayer. Now every verse rests.
+describe("where a prayer rests (build 90 note 6)", () => {
+  // 426px of room under the reading place, lines of 42px: the phone the export walk holds.
+  const ROOM = 426;
+  const LINE = 42;
+
+  it("rests at every verse's start, a fling held at the first and the last", () => {
+    const verses = [0, 120, 260, 380].map((top) => ({ top, height: 100, line: LINE }));
+    const stops = stopsOf(verses, ROOM);
+    expect(stops.filter((s) => s.kind !== "after").map((s) => s.at)).toEqual([0, 120, 260, 380]);
+    expect(stops.map((s) => s.kind)).toEqual(["edge", "verse", "verse", "edge", "after"]);
+    expect(stops.filter((s) => holdsAFling(s.kind)).map((s) => s.at)).toEqual([0, 380, 380 + LINE]);
+  });
+
+  it("keeps a last rest a line into the last verse, so a swipe carried over it lands there, not in the next prayer", () => {
+    // From a one-line verse just before the last ("Lord, have mercy. (3x)" in the Trisagion,
+    // which a gentle swipe carried into the Lord's Prayer when tried by hand).
+    const stops = stopsOf([{ top: 0, height: 29, line: 29 }, { top: 36, height: 86, line: 29 }], ROOM);
+    expect(stops).toEqual([
+      { at: 0, kind: "edge" },
+      { at: 36, kind: "edge" },
+      { at: 36 + 29, kind: "after" },
+    ]);
+  });
+
+  it("rests inside a verse taller than the room, a room less a line apart, the last with its end at the foot", () => {
+    expect(restsInside(ROOM, ROOM, LINE)).toEqual([]);
+    // The Lord's Prayer at the largest size, one unbroken verse of 546px.
+    expect(restsInside(546, ROOM, LINE)).toEqual([120]);
+    const rests = restsInside(1400, ROOM, LINE);
+    expect(rests.at(-1)).toBe(1400 - ROOM);
+    for (const [i, at] of rests.entries()) {
+      const before = i === 0 ? 0 : rests[i - 1];
+      // Never further apart than the room less a line: no words pass unseen at rest.
+      expect(at - before).toBeLessThanOrEqual(ROOM - LINE);
+      expect(at - before).toBeGreaterThan(0);
+    }
+  });
+
+  it("holds the parts of a tall last verse, and makes its end the prayer's last rest", () => {
+    const stops = stopsOf([{ top: 0, height: 100, line: LINE }, { top: 130, height: 1400, line: LINE }], ROOM);
+    const kinds = stops.map((s) => s.kind);
+    expect(kinds[0]).toBe("edge");
+    expect(kinds[1]).toBe("edge");
+    expect(kinds.at(-1)).toBe("after");
+    expect(stops.at(-1)!.at).toBe(130 + 1400 - ROOM);
+    expect(kinds.slice(2, -1).every((k) => k === "inside")).toBe(true);
+  });
+
+  it("gives a step with one verse its start and a rest a line in", () => {
+    expect(stopsOf([{ top: 40, height: 33, line: 33 }], ROOM)).toEqual([
+      { at: 40, kind: "edge" },
+      { at: 73, kind: "after" },
+    ]);
+  });
+
+  it("clicks once as each new prayer comes to rest, never for another verse of the same prayer", () => {
+    expect(clicksFor(null, "psalm-89")).toBe(true);
+    expect(clicksFor("psalm-89", "psalm-89")).toBe(false);
+    expect(clicksFor("psalm-89", "psalm-100")).toBe(true);
+    expect(clicksFor("psalm-89", null)).toBe(false);
   });
 });
 
@@ -96,10 +156,18 @@ describe("the page, as it is written", () => {
     expect(hook).toContain('"onscrollsnapchange" in window');
     // A snap is measured inside the page's own scroll padding (72px at the
     // top): the export walk found every prayer settling 72px low without this.
-    expect(hook).toContain("parseFloat(style.scrollPaddingTop)");
+    expect(hook).toContain("parseFloat(getComputedStyle(html).scrollPaddingTop)");
     expect(hook).toContain("`${Math.round(place - padTop)}px`");
-    expect(hook).toContain("`${Math.max(0, Math.round(foot - padBottom))}px`");
-    expect(hook).toContain('step.style.setProperty("--easy-start", `${Math.round(place - padTop - into)}px`);');
+    // Each prayer's rests, placed from one measure, written only when they moved.
+    expect(hook).toContain("const stops = stopsOf(verses, room);");
+    expect(hook).toContain("if (holder.dataset.sig === sig) continue;");
+    expect(hook).toContain('mark.setAttribute("data-verse-stop", s.kind);');
+    // Its own writes are not news to it.
+    expect(hook).toContain("if (records.every((r) => (r.target as Element).closest?.(HOLDER))) return;");
+    // The click: once per prayer.
+    expect(hook).toContain("if (!clicksFor(arrived, id)) return;");
+    // No prayer is a stop as a whole any more.
+    expect(hook).not.toMatch(/--easy-start|data-tall|isTall/);
   });
 
   it("can be turned off in Settings, Reading, in every language's own words", () => {
@@ -124,30 +192,39 @@ describe("the page, as it is written", () => {
     }
   });
 
-  it("settles each prayer on its first line at the reading place, a long one at its end too", () => {
+  it("rests at the marks, each verse's start at the reading place, a fling held at a prayer's edges", () => {
     const easy = css.slice(css.indexOf("@media (pointer: coarse) {\n html[data-easy-scroll]"));
     expect(easy).toMatch(/html\[data-easy-scroll\] \{\s*scroll-snap-type: y mandatory;/);
-    // The whole prayer settles, so one taller than the screen moves freely inside
-    // (the export walk found the Creed's middle skipped when only its first line
-    // and its end could settle); its margin puts the first line at the place.
-    expect(easy).toMatch(/\[data-prayer-reader\] \[data-step\] \{\s*scroll-snap-align: start;\s*scroll-snap-stop: always;\s*scroll-margin-top: var\(--easy-start, var\(--easy-place, 40vh\)\);/);
-    expect(easy).toMatch(/\[data-step\]\[data-tall\] > \[data-snap-end\] \{\s*scroll-snap-align: end;\s*scroll-snap-stop: always;\s*scroll-margin-bottom: var\(--easy-foot, 0px\);/);
+    expect(easy).toMatch(/\[data-prayer-reader\] \[data-verse-stop\] \{\s*scroll-snap-align: start;\s*scroll-margin-top: var\(--easy-place, 40vh\);/);
+    expect(easy).toMatch(/:is\(\[data-verse-stop="edge"\], \[data-verse-stop="after"\]\) \{\s*scroll-snap-stop: always;/);
+    // No prayer is a stop as a whole: a stop taller than the screen let the
+    // page run free inside it, and that freedom ended short of its end.
+    expect(css).not.toMatch(/\[data-step\][^{]*\{\s*scroll-snap-align/);
+    expect(css).not.toMatch(/data-snap-end|data-tall/);
     expect(easy).toMatch(/\[data-snap-edge="top"\] \{\s*scroll-snap-align: start;\s*scroll-margin-top: 200vh;/);
     expect(easy).toMatch(/\[data-snap-edge="bottom"\] \{\s*scroll-snap-align: end;\s*scroll-margin-bottom: 200vh;/);
+    // The marks stand out of the flow, so placing them moves nothing.
+    expect(css).toMatch(/\[data-prayer-reader\] \[data-verse-rests\] \{\s*position: absolute;/);
+    expect(css).toMatch(/\[data-prayer-reader\] \[data-verse-stop\] \{\s*position: absolute;/);
+    // With Purify's motion off the page scrolls as any page.
+    expect(css).toMatch(/html:where\(\[data-motion="reduce"\]\) \{[^}]*scroll-snap-type: none;/);
   });
 
-  it("marks where each prayer settles, and where it ends", () => {
+  it("gives each prayer, and the names, a holder for its rests, and marks where each begins", () => {
     const step = code("components/prayers/service/PrayerStep.tsx");
     expect(step).toContain("{...(s === 0 && l === 0 ? snap : {})}");
-    expect(step).toContain('<span aria-hidden data-snap-end="" />');
-    // A step of words without lines (the examination) settles on its refrain
+    expect(step).toContain('<span aria-hidden data-verse-rests="" />');
+    expect(step).toMatch(/className="relative scroll-mt-16/);
+    expect(step).not.toContain("data-snap-end");
+    // A step of words without lines (the examination) begins at its refrain
     // or its name: the export walk found it passed over before (2026-11-10).
     expect(step).toContain('const settlesOn: "line" | "refrain" | "title" = stanzas.length ? "line" : refrain ? "refrain" : "title";');
     expect(step).toContain('{...(settlesOn === "title" ? snap : {})}');
     expect(step).toContain('{...(settlesOn === "refrain" ? snap : {})}');
     const names = code("components/prayers/service/CommemorationStep.tsx");
     expect(names).toContain('data-snap-start=""');
-    expect(names).toContain('<span aria-hidden data-snap-end="" />');
+    expect(names).toContain('<span aria-hidden data-verse-rests="" />');
+    expect(names).not.toContain("data-snap-end");
     const reader = code("components/prayers/PrayerRuleReader.tsx");
     expect(reader).toContain('<span aria-hidden data-snap-edge="top" />');
     expect(reader).toContain('<span aria-hidden data-snap-edge="bottom" />');

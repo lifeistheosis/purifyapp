@@ -125,8 +125,9 @@ describe("the line being prayed lit, the rest dim", () => {
   });
 
   it("sets the prayers in the middle of the page", () => {
-    expect(code(STEP)).toMatch(/className="scroll-mt-16 border-t border-paper\/10 py-9 text-center md:scroll-mt-24"/);
-    expect(code(NAMES)).toMatch(/className="scroll-mt-16 border-t border-paper\/10 py-9 text-center md:scroll-mt-24"/);
+    // `relative` holds Easy Scroll's rests, placed inside each step (build 90 note 6).
+    expect(code(STEP)).toMatch(/className="relative scroll-mt-16 border-t border-paper\/10 py-9 text-center md:scroll-mt-24"/);
+    expect(code(NAMES)).toMatch(/className="relative scroll-mt-16 border-t border-paper\/10 py-9 text-center md:scroll-mt-24"/);
   });
 
   it("draws a prayer as a step, its words line by line, nothing to tick under it", () => {

@@ -63,7 +63,7 @@ export function CommemorationStep({
   // A step of the page, set in the middle as every prayer of it is since 1.8
   // (PrayerStep, the owner's pick B, Immersive).
   return (
-    <section id={stepId} data-step aria-labelledby={`${stepId}-title`} className="scroll-mt-16 border-t border-paper/10 py-9 text-center md:scroll-mt-24">
+    <section id={stepId} data-step aria-labelledby={`${stepId}-title`} className="relative scroll-mt-16 border-t border-paper/10 py-9 text-center md:scroll-mt-24">
       <h2 id={`${stepId}-title`} tabIndex={-1} className="font-serif text-title-sm font-semibold leading-snug text-paper/90 focus:outline-none">
         {t("prayers.mine.names")}
       </h2>
@@ -73,7 +73,7 @@ export function CommemorationStep({
 
       {hasLiving ? (
         <div className="mt-5" style={leading}>
-          {/* Where Easy Scroll settles this step (app/globals.css). */}
+          {/* Where this step begins (Easy Scroll rests at every name). */}
           <span data-line data-snap-start="" className={cn("block", lineClass)}>
             {t("prayers.commemorate.living")}
           </span>
@@ -126,8 +126,9 @@ export function CommemorationStep({
           ))}
         </div>
       ) : null}
-      {/* Where a long list of names settles at its end, before the next prayer. */}
-      <span aria-hidden data-snap-end="" />
+      {/* Where the names rest under Easy Scroll: each name and line, and a
+          last rest in the last (useEasyScroll.ts; build 90 note 6). */}
+      <span aria-hidden data-verse-rests="" />
     </section>
   );
 }

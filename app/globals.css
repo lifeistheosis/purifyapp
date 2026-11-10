@@ -11020,33 +11020,36 @@ html[data-reading-mode="cappadocian"] [data-prayer-reader] {
  opacity: var(--prayer-rest);
 }
 
-/* Easy Scroll (1.9, build 89 note 7, his name for it): on a prayer page a
-   short swipe settles on the next prayer, its first line at the reading place
-   where it is lit; a prayer taller than the room under the reading place
-   scrolls freely and settles at its end before the next swipe moves on. It is
-   the phone's own scroll snapping, so it has the phone's own feel. On only
-   while a prayer page is open, on a touch screen, with Purify's motion on:
-   components/prayers/service/useEasyScroll.ts sets data-easy-scroll and two
-   numbers, --easy-place (the reading place, from the top of the screen) and
-   --easy-foot (the bars at its foot), gives each prayer the margin that puts
-   its first line there (--easy-start), and marks the tall prayers. The whole
-   prayer is the snap area, so one taller than the screen moves freely under
-   the finger between its first line and its end. A
-   frame-by-frame scroll would fight it; the page's own moves (Begin, Your
-   rule) are the browser's smooth scroll, which lands where a prayer settles. */
+/* Easy Scroll (1.9, build 89 note 7, his name for it), by the verse since
+   build 90 note 6 (his words: "I noticed myself scrolling to another section
+   when I just realistically want to scroll to the next verse or next bar
+   within the same section"): on a prayer page a short swipe brings the next
+   verse to the reading place, where it is lit; a fling runs on through the
+   verses but never past a prayer's last; the next prayer comes on a swipe of
+   its own. It is the phone's own scroll snapping, so it has the phone's own
+   feel. On only while a prayer page is open, on a touch screen, with Purify's
+   motion on: components/prayers/service/useEasyScroll.ts sets
+   data-easy-scroll and --easy-place (the reading place, from the top of the
+   screen), and places each prayer's rests as small marks in its holder
+   (data-verse-rests): each verse's start ("edge" for its first and last,
+   "verse" between), the parts of a verse taller than the room ("inside"), and
+   a last rest a line into its last verse ("after"). No prayer is a stop as a
+   whole any more: a stop taller than the screen let the page run free inside
+   it, and on the export that freedom ended about 160px short of its end and
+   left the last verses below the reading place unread. A frame-by-frame
+   scroll would fight it; the page's own moves (Begin, Your rule) are the
+   browser's smooth scroll, which lands on a prayer's first verse. */
 @media (pointer: coarse) {
  html[data-easy-scroll] {
   scroll-snap-type: y mandatory;
  }
- html[data-easy-scroll] [data-prayer-reader] [data-step] {
+ html[data-easy-scroll] [data-prayer-reader] [data-verse-stop] {
   scroll-snap-align: start;
-  scroll-snap-stop: always;
-  scroll-margin-top: var(--easy-start, var(--easy-place, 40vh));
+  scroll-margin-top: var(--easy-place, 40vh);
  }
- html[data-easy-scroll] [data-prayer-reader] [data-step][data-tall] > [data-snap-end] {
-  scroll-snap-align: end;
+ /* A fling never runs past a prayer's first verse, its last, or its last rest. */
+ html[data-easy-scroll] [data-prayer-reader] :is([data-verse-stop="edge"], [data-verse-stop="after"]) {
   scroll-snap-stop: always;
-  scroll-margin-bottom: var(--easy-foot, 0px);
  }
  /* The head of the page and its foot rest too: a margin wider than the screen
     puts their places past the very top and the very end, where the browser
@@ -11060,8 +11063,21 @@ html[data-reading-mode="cappadocian"] [data-prayer-reader] {
   scroll-margin-bottom: 200vh;
  }
 }
-[data-prayer-reader] :is([data-snap-end], [data-snap-edge]) {
+[data-prayer-reader] [data-snap-edge] {
  display: block;
+ height: 0;
+}
+/* A prayer's rests: out of the flow, so placing them moves nothing. */
+[data-prayer-reader] [data-verse-rests] {
+ position: absolute;
+ inset-inline: 0;
+ top: 0;
+ height: 0;
+ pointer-events: none;
+}
+[data-prayer-reader] [data-verse-stop] {
+ position: absolute;
+ inset-inline: 0;
  height: 0;
 }
 
