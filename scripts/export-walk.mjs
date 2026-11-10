@@ -8731,6 +8731,84 @@ await section(56, async () => {
   }
 });
 
+// St Cyril on Luke stood twice as two sections under one number (F-49, quick
+// win 15 of his "everything in 1.9"): Sermon 29 and its fragments, Sermon 96
+// and the Catena's Sermon 97. The second halves have numbers of their own,
+// 1029 and 97; a highlight kept before the split shows on both halves as it
+// did, and a highlight made since is the half's it was made on
+// (lib/saints/sharedSections.ts).
+await section(57, async () => {
+  console.log("\n57. St Cyril on Luke's second halves under numbers of their own, a highlight from before on both (F-49)");
+  const KEY = (n, i) => `purify:saint:cyril-of-alexandria:commentary-on-luke:${n}:${i}`;
+  const { ctx, page, errors } = await open({
+    width: 390,
+    height: 844,
+    phone: true,
+    set: {
+      "purify:bible:highlight-last": "teal",
+      "purify:saints:sharedSplitAt": String(Date.parse("2026-11-10T12:00:00Z")),
+      [KEY(29, 2)]: JSON.stringify({ highlighted: true, color: "blue", at: "2026-10-01T09:00:00.000Z" }),
+    },
+  });
+  const cdp = await ctx.newCDPSession(page);
+  const shown = (n) =>
+    page.evaluate((n) => {
+      const sec = document.getElementById(`s${n}`);
+      const p = (i) => document.getElementById(`p-${n}-${i}`);
+      return {
+        here: !!sec,
+        sections: document.querySelectorAll("section[id^=s]").length,
+        heading: (sec?.querySelector("[data-work-head]")?.textContent ?? "").replace(/\s+/g, " ").trim(),
+        hl2: p(2)?.getAttribute("data-hl") === "true" ? p(2).getAttribute("data-hl-color") : null,
+        hl4: p(4)?.getAttribute("data-hl") === "true" ? p(4).getAttribute("data-hl-color") : null,
+        nextHref: [...document.querySelectorAll("a[href*='#s']")].map((a) => a.getAttribute("href")).filter((h) => /commentary-on-luke/.test(h ?? "")),
+      };
+    }, n);
+  const openAt = async (n) => {
+    await go(page, "/");
+    await page.waitForTimeout(300);
+    await go(page, `/saints/cyril-of-alexandria/commentary-on-luke/#s${n}`);
+    await page.waitForFunction((n) => !!document.getElementById(`p-${n}-2`), n, { timeout: 20000 }).catch(() => {});
+    await page.waitForTimeout(700);
+    return shown(n);
+  };
+  await go(page, "/");
+
+  const first = await openAt(29);
+  const fragments = await openAt(1029);
+  const sermon96 = await openAt(96);
+  const catena = await openAt(97);
+  must(first.here && fragments.here && sermon96.here && catena.here, `Sermon 29, its fragments, Sermon 96 and the Catena's Sermon 97 each open at their own address (#s29, #s1029, #s96, #s97)`);
+  must(/Sermon 29/.test(fragments.heading) && /the fragments/.test(fragments.heading) && /Sermon 97/.test(catena.heading) && /from the Catena/.test(catena.heading), `the second halves are headed Sermon 29, the fragments, and Sermon 97, from the Catena (${fragments.heading} | ${catena.heading})`);
+  must(first.hl2 === "blue" && fragments.hl2 === "blue", `a highlight kept on Sermon 29 before the split shows on both halves, as it did (${first.hl2}, ${fragments.hl2})`);
+
+  // A double tap on the fragments' fifth paragraph: the highlight is theirs.
+  await openAt(1029);
+  const pt = await page.evaluate(() => {
+    const el = document.getElementById("p-1029-4");
+    el.scrollIntoView({ block: "center" });
+    return el.id;
+  });
+  await page.waitForTimeout(400);
+  const xy = await page.evaluate((id) => {
+    const r = document.getElementById(id).getBoundingClientRect();
+    return { x: Math.round(r.left + Math.min(60, r.width / 3)), y: Math.round(r.top + Math.min(14, r.height / 2)) };
+  }, pt);
+  for (let i = 0; i < 2; i++) {
+    await cdp.send("Input.dispatchTouchEvent", { type: "touchStart", touchPoints: [xy] });
+    await page.waitForTimeout(40);
+    await cdp.send("Input.dispatchTouchEvent", { type: "touchEnd", touchPoints: [] });
+    if (i === 0) await page.waitForTimeout(110);
+  }
+  await page.waitForTimeout(600);
+  const kept = await page.evaluate((keys) => keys.map((k) => localStorage.getItem(k) !== null), [KEY(1029, 4), KEY(29, 4)]);
+  const back = await openAt(29);
+  const again = await openAt(1029);
+  must(kept[0] && !kept[1] && again.hl4 === "teal" && back.hl4 === null, `a highlight made on the fragments since is theirs: kept under 1029, and not on Sermon 29 (${JSON.stringify(kept)}, ${again.hl4}, ${back.hl4})`);
+  must(errors.length === 0, `no page errors${errors.length ? ": " + errors.slice(0, 2).join(" | ") : ""}`);
+  await ctx.close();
+});
+
 await browser.close();
 if (!everySection) console.log(`\nOnly the sections chosen were walked: ${walked.join(", ") || "none"}.`);
 console.log(failed ? `\n${failed} check(s) failed.` : "\nEvery check passed.");

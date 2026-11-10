@@ -5,6 +5,8 @@ import { useCallback, useSyncExternalStore } from "react";
 import { lastHighlightColor } from "@/lib/bible/highlightColors";
 import { addTombstone, dropTombstone } from "@/lib/sync/tombstones";
 
+import { fromBeforeSplit, seeSplit, sharedBefore } from "./sharedSections";
+
 /**
  * Per-paragraph annotations on saint writings, stored in localStorage.
  * Mirrors the shape of `lib/bible/annotations.ts:useVerseAnnotation` so the UI
@@ -40,6 +42,39 @@ function key(
 }
 
 const EMPTY: ParagraphAnnotation = {};
+
+/**
+ * Where a paragraph's mark is read from: its own key, or, on a section that
+ * shared its number with the one before it until 1.9 (./sharedSections.ts),
+ * the key of a mark made before the halves were apart, while that mark is
+ * there and none of the paragraph's own is (`shared`). Asked at each read and
+ * each write, so it follows the mark: changed here, the change is this half's
+ * own (ownPlace); taken off here, it is taken off both, as it always was.
+ */
+function placeOf(saintSlug: string, workSlug: string, sectionN: number, paragraphIdx: number): { k: string; sectionN: number; shared: boolean } {
+  const own = key(saintSlug, workSlug, sectionN, paragraphIdx);
+  const mine = { k: own, sectionN, shared: false };
+  if (typeof window === "undefined") return mine;
+  seeSplit(saintSlug, workSlug);
+  const before = sharedBefore(saintSlug, workSlug, sectionN);
+  if (before === undefined) return mine;
+  try {
+    if (window.localStorage.getItem(own) !== null) return mine;
+    const old = key(saintSlug, workSlug, before, paragraphIdx);
+    const raw = window.localStorage.getItem(old);
+    if (raw !== null && fromBeforeSplit((JSON.parse(raw) as ParagraphAnnotation).at)) return { k: old, sectionN: before, shared: true };
+  } catch {
+    /* storage may be unavailable, or the mark unreadable: the paragraph's own */
+  }
+  return mine;
+}
+
+/** Where a write lands: a change to a mark shared from before is this half's own copy; taking it off takes it off both. */
+function writePlace(saintSlug: string, workSlug: string, sectionN: number, paragraphIdx: number, empty: boolean): { k: string; sectionN: number } {
+  const shown = placeOf(saintSlug, workSlug, sectionN, paragraphIdx);
+  if (shown.shared && !empty) return { k: key(saintSlug, workSlug, sectionN, paragraphIdx), sectionN };
+  return shown;
+}
 
 // Stable-snapshot cache (see lib/bible/annotations.ts for the rationale).
 const snapCache = new Map<
@@ -86,7 +121,7 @@ export function readParagraphAnnotation(
   sectionN: number,
   paragraphIdx: number,
 ): ParagraphAnnotation {
-  return readSnapshot(key(saintSlug, workSlug, sectionN, paragraphIdx));
+  return readSnapshot(placeOf(saintSlug, workSlug, sectionN, paragraphIdx).k);
 }
 
 /**
@@ -103,10 +138,10 @@ export function writeParagraphAnnotation(
   paragraphIdx: number,
   next: ParagraphAnnotation,
 ): void {
-  const k = key(saintSlug, workSlug, sectionN, paragraphIdx);
-  const locator = { saintSlug, workSlug, sectionN, paragraphIdx };
+  const empty = !next.highlighted && !next.note;
+  const { k, sectionN: n } = writePlace(saintSlug, workSlug, sectionN, paragraphIdx, empty);
+  const locator = { saintSlug, workSlug, sectionN: n, paragraphIdx };
   try {
-    const empty = !next.highlighted && !next.note;
     const value: ParagraphAnnotation = empty ? {} : { ...next, at: next.at ?? new Date().toISOString() };
     if (!empty) {
       window.localStorage.setItem(k, JSON.stringify(value));
@@ -119,7 +154,7 @@ export function writeParagraphAnnotation(
     snapCache.delete(k);
     window.dispatchEvent(
       new CustomEvent("purify:annotation", {
-        detail: { kind: "saint-paragraph", saintSlug, workSlug, sectionN, paragraphIdx, data: value },
+        detail: { kind: "saint-paragraph", saintSlug, workSlug, sectionN: n, paragraphIdx, data: value },
       }),
     );
   } catch {
@@ -133,10 +168,9 @@ export function useParagraphAnnotation(
   sectionN: number,
   paragraphIdx: number,
 ) {
-  const k = key(saintSlug, workSlug, sectionN, paragraphIdx);
   const data = useSyncExternalStore(
     subscribe,
-    () => readSnapshot(k),
+    () => readSnapshot(placeOf(saintSlug, workSlug, sectionN, paragraphIdx).k),
     () => EMPTY,
   );
 
@@ -144,9 +178,10 @@ export function useParagraphAnnotation(
     (next: ParagraphAnnotation) => {
       try {
         const isEmpty = !next.highlighted && !next.note;
+        const { k, sectionN: n } = writePlace(saintSlug, workSlug, sectionN, paragraphIdx, isEmpty);
         // A cleared paragraph leaves a tombstone, so the sync deletes the
         // server's copy instead of pulling it back (lib/sync/tombstones.ts).
-        const locator = { saintSlug, workSlug, sectionN, paragraphIdx };
+        const locator = { saintSlug, workSlug, sectionN: n, paragraphIdx };
         if (!isEmpty) {
           window.localStorage.setItem(k, JSON.stringify({ ...next, at: new Date().toISOString() }));
           dropTombstone("annotations", "saint-paragraph", locator);
@@ -162,7 +197,7 @@ export function useParagraphAnnotation(
               kind: "saint-paragraph",
               saintSlug,
               workSlug,
-              sectionN,
+              sectionN: n,
               paragraphIdx,
               data: next,
             },
@@ -172,7 +207,7 @@ export function useParagraphAnnotation(
         /* storage may be unavailable */
       }
     },
-    [k, saintSlug, workSlug, sectionN, paragraphIdx],
+    [saintSlug, workSlug, sectionN, paragraphIdx],
   );
 
   const toggleHighlight = useCallback(

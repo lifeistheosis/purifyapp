@@ -1908,8 +1908,19 @@ findings:
       six words or more in our prose to the library, the app's Bible, or a
       passage of its edition recorded in data/reading/quoted-sources.json (12
       passages, cut from the editions as downloaded); it fails on the old
-      Anianus line. STILL OPEN: Sermons 29 and 96 of St Cyril on Luke, as
-      above; the quotation marks still to settle (18 paragraphs where CCEL
+      Anianus line. 2026-11-10 (1.9, quick win 15 of his "everything in
+      1.9"): Sermons 29 and 96 of St Cyril on Luke set apart. The second
+      halves are 1029, "Sermon 29, the fragments", and 97, "Sermon 97, from
+      the Catena", as Roger Pearse's contents name them ("Fragments from
+      Sermon 29"; "Catena extracts replacing end of sermon 96, all of sermon
+      97, start of sermon 98"), their words and places untouched. No stored
+      mark is rewritten: a highlight, note or section bookmark kept before a
+      phone first had the halves apart shows on both, as it did, until it is
+      changed (a change on a second half is that half's own copy; taking one
+      off takes it off both, as always), and one made since is the half's it
+      was made on (lib/saints/sharedSections.ts; held, with every work's
+      section numbers used once, by lib/saints/__tests__/sharedSections.test.ts).
+      STILL OPEN: the quotation marks still to settle (18 paragraphs where CCEL
       itself differs, the 28 paragraph-opening marks of Antony's speeches and
       4 in 2 Corinthians that CCEL never closes, 6 lost double marks at
       paragraph starts in John, Hebrews and Acts, one in the Confessions, and

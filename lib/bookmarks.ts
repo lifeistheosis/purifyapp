@@ -3,6 +3,7 @@
 import { useCallback, useSyncExternalStore } from "react";
 
 import { isNativeClient } from "@/lib/platform/native";
+import { fromBeforeSplit, sharedBefore } from "@/lib/saints/sharedSections";
 import { productHref } from "@/lib/shop/productHref";
 import { addTombstone, dropTombstone } from "@/lib/sync/tombstones";
 
@@ -156,7 +157,8 @@ export type BookmarkLocator =
 const STORAGE_KEY = "purify:bookmarks";
 const EVENT = "purify:bookmark";
 
-function matches(b: Bookmark, loc: BookmarkLocator): boolean {
+/** Whether a kept bookmark is the one at a place (exported for the tests). */
+export function matches(b: Bookmark, loc: BookmarkLocator): boolean {
  if (b.kind !== loc.kind) return false;
  if (b.kind === "bible-verse" && loc.kind === "bible-verse") {
  return (
@@ -167,10 +169,14 @@ function matches(b: Bookmark, loc: BookmarkLocator): boolean {
  return b.book === loc.book && b.chapter === loc.chapter;
  }
  if (b.kind === "writing-section" && loc.kind === "writing-section") {
+ // A section that shared its number with the one before it until 1.9
+ // also wears a bookmark kept on that number before the halves were apart
+ // (lib/saints/sharedSections.ts); taking it off takes it off both.
  return (
  b.saintSlug === loc.saintSlug &&
  b.workSlug === loc.workSlug &&
- b.sectionN === loc.sectionN
+ (b.sectionN === loc.sectionN ||
+ (b.sectionN === sharedBefore(loc.saintSlug, loc.workSlug, loc.sectionN) && fromBeforeSplit(b.addedAt)))
  );
  }
  if (b.kind === "history-event" && loc.kind === "history-event") {
