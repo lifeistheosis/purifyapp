@@ -583,7 +583,23 @@ Send back: "56 done, N changed". Never the ids.
 Do these in order, on the day the arbiter names, and only after the arbiter
 says go.
 
-### R0. Accept the 1.9 note
+### R0. Put the 1.9 note in your queue, then accept it
+
+Filing the note needs the database's service key, which only your PC has
+(the `.env.local` from 70; if you have not made it yet, do that part of 70
+first). The arbiter confirms that morning that the note's file is final.
+
+On your PC, in a terminal, in your purifyapp folder:
+
+```
+git pull origin ccr-07896cf2-bo0afd
+node scripts/patch-notes.mjs propose --file docs/plans/v1.9/patch-note-1.9.json
+node scripts/patch-notes.mjs propose --file docs/plans/v1.9/patch-note-1.9.json --apply
+```
+
+The first `propose` only shows what it would file. The second files it.
+
+Then in Admin:
 
 1. purifyapp.net/admin, **Releases**, then **Patch notes**.
 2. Read the 1.9 note. **Accept** it, or **Suggest** a change.
