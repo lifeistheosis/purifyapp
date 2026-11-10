@@ -44,11 +44,32 @@ const COLUMNS: Record<string, string[]> = {
     "id", "recipe_id", "author_id", "author_name", "author_avatar", "stars", "body", "photo_urls",
     "status", "created_at", "updated_at",
   ],
-  // 20260713000200_prayer_campaigns.sql, 20260713000300 (prayer duration), 20260725000000_prayer_campaign_image.sql
+  // 20260713000200_prayer_campaigns.sql, 20260713000300 (prayer duration), 20260725000000_prayer_campaign_image.sql,
+  // then the rework's columns (REWORK_COLUMNS below), which are NOT a migration
+  // yet: their SQL is a draft in docs/1.9-build/notes/campaigns-fable.md, 5.2,
+  // until the owner signs it. A suite that wants the table as production has
+  // it today names them in World.missing.
   prayer_campaigns: [
     "id", "creator_id", "title", "intention", "for_whom", "subject_name", "note", "praying_count",
     "prayer_count", "status", "created_at", "updated_at", "prayer_key", "ends_at", "image_url",
+    "details", "days", "starts_on", "ends_on", "prayer_rule", "prayer_id", "place_country",
+    "place_name", "audience", "circle_id", "comments_open", "listed", "keep_after_end",
+    "creator_name", "creator_handle", "consent_kind", "consent_at", "held_reason",
+    "mod_cleared_at", "removed_reason", "removed_by_email", "ended_at",
   ],
+  // 20260713000200 (the join row), 20260811000000 (the reminder), then the rework's places, until_on, notify_updates
+  prayer_campaign_prayers: [
+    "campaign_id", "user_id", "joined_at", "last_prayed_at", "prayer_days", "remind_enabled",
+    "remind_time", "places", "until_on", "notify_updates",
+  ],
+  // 20260713000200 (the table), then the rework's target, reason to tick and state
+  prayer_campaign_reports: [
+    "id", "campaign_id", "reporter_id", "reason", "created_at", "target_kind", "target_id",
+    "reason_code", "status", "closed_at",
+  ],
+  // 20260801000100_community_safety.sql, 20261005000000_community_three.sql
+  community_blocks: ["blocker_id", "blocked_id", "created_at"],
+  community_mutes: ["muter_id", "muted_id", "created_at"],
   // 20260518000000 (the table), then 20260526000000, 20260527000100, 20260719000000,
   // 20260802000000, 20260905000100, 20260914000000, 20261001000000 (handle, bio, banner),
   // 20261002000000 (parish), 20261003000000 (avatar_url), 20261005000000 (social_links),
@@ -98,10 +119,31 @@ const COLUMNS: Record<string, string[]> = {
   ],
 };
 
+/** What the rework's SQL adds to each campaign table (docs/1.9-build/notes/campaigns-fable.md, 5.2). */
+export const REWORK_COLUMNS: Record<string, string[]> = {
+  prayer_campaigns: [
+    "details", "days", "starts_on", "ends_on", "prayer_rule", "prayer_id", "place_country",
+    "place_name", "audience", "circle_id", "comments_open", "listed", "keep_after_end",
+    "creator_name", "creator_handle", "consent_kind", "consent_at", "held_reason",
+    "mod_cleared_at", "removed_reason", "removed_by_email", "ended_at",
+  ],
+  prayer_campaign_prayers: ["places", "until_on", "notify_updates"],
+  prayer_campaign_reports: ["target_kind", "target_id", "reason_code", "status", "closed_at"],
+};
+
 const DEFAULTS: Record<string, Row> = {
   trapeza_recipes: { status: "pending", photo_url: null },
   trapeza_recipe_reviews: { status: "published", photo_urls: [] },
-  prayer_campaigns: { status: "active", image_url: null },
+  prayer_campaigns: { status: "active", image_url: null, audience: "public", ends_at: null, mod_cleared_at: null },
+  prayer_campaign_reports: { status: "open", target_kind: "campaign" },
+};
+
+/**
+ * Unique indexes these suites lean on: a reader's one open report of a
+ * campaign (prayer_campaign_reports_once_idx, the rework's SQL).
+ */
+const UNIQUE: Record<string, { columns: string[]; where?: (row: Row) => boolean }[]> = {
+  prayer_campaign_reports: [{ columns: ["campaign_id", "reporter_id"], where: (row) => row.status === "open" && row.reporter_id != null }],
 };
 
 export type World = {
@@ -115,6 +157,8 @@ export type World = {
   users: Set<string>;
   /** Each account's user_metadata, as auth.admin.updateUserById leaves it. */
   metadata: Map<string, Row>;
+  /** Each account's email, for auth.admin.getUserById. */
+  emails: Map<string, string>;
   /**
    * The CHECK on profiles.avatar_url. "own_upload" is the one
    * 20261003000000_profile_pictures.sql made, which holds a picture to the
@@ -153,6 +197,7 @@ export function world(): World {
     objects: new Set(),
     users: new Set(),
     metadata: new Map(),
+    emails: new Map(),
     avatarCheck: "shape",
     maxRows: Infinity,
     fail: {
@@ -177,6 +222,7 @@ class Query {
   private conflict: string[] = [];
   private window: [number, number] = [0, Infinity];
   private sortBy = "id";
+  private descending = false;
   private one: "maybe" | "single" | null = null;
 
   constructor(
@@ -235,9 +281,22 @@ class Query {
   contains(column: string, values: unknown[]) {
     return this.where(column, (v) => Array.isArray(v) && values.every((x) => v.includes(x)));
   }
-  order(column: string) {
+  gte(column: string, value: unknown) {
+    return this.where(column, (v) => v != null && String(v) >= String(value));
+  }
+  /** PostgREST's not: `not("col", "in", "(a,b)")` and `not("col", "is", null)`. */
+  not(column: string, operator: string, value: unknown) {
+    if (operator === "in") {
+      const list = String(value).replace(/^\(|\)$/g, "").split(",").map((x) => x.trim()).filter(Boolean);
+      return this.where(column, (v) => !list.includes(String(v)));
+    }
+    if (operator === "is" && value === null) return this.where(column, (v) => v !== null && v !== undefined);
+    throw new Error(`fakeSupabase: not(${operator}) is not kept here`);
+  }
+  order(column: string, opts: { ascending?: boolean } = {}) {
     this.named.add(column);
     this.sortBy = column;
+    this.descending = opts.ascending === false;
     return this;
   }
   range(from: number, to: number) {
@@ -296,7 +355,7 @@ class Query {
     const hit = () => rows.filter((row) => this.filters.every((test) => test(row)));
 
     if (this.op === "select") {
-      const sorted = hit().sort((a, b) => String(a[this.sortBy]).localeCompare(String(b[this.sortBy])));
+      const sorted = hit().sort((a, b) => String(a[this.sortBy]).localeCompare(String(b[this.sortBy])) * (this.descending ? -1 : 1));
       const [from, to] = this.window;
       return { data: copy(sorted.slice(from, to + 1).slice(0, this.w.maxRows)), error: null };
     }
@@ -350,6 +409,14 @@ class Query {
       this.op === "upsert"
         ? rows.find((row) => this.conflict.every((c) => row[c] === this.values[c]))
         : undefined;
+    if (!existing) {
+      const fresh = { ...DEFAULTS[this.table], ...this.values };
+      for (const index of UNIQUE[this.table] ?? []) {
+        if (index.where && !index.where(fresh)) continue;
+        const taken = rows.some((row) => (!index.where || index.where(row)) && index.columns.every((c) => row[c] === fresh[c]));
+        if (taken) return { data: null, error: { code: "23505", message: "duplicate key value violates unique constraint" } };
+      }
+    }
     if (existing) {
       Object.assign(existing, structuredClone(this.values));
       return { data: copy([existing]), error: null };
@@ -456,6 +523,10 @@ export function client(w: World) {
     },
     auth: {
       admin: {
+        getUserById: async (id: string) => ({
+          data: { user: w.users.has(id) ? { id, email: w.emails.get(id) ?? null } : null },
+          error: null,
+        }),
         // GoTrue merges user_metadata key by key, and a null deletes its key.
         updateUserById: async (id: string, attrs: { user_metadata?: Row }) => {
           if (w.fail.updateUser) return { data: { user: null }, error: { message: "Database error updating user" } };

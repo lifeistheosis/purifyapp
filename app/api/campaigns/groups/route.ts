@@ -11,7 +11,7 @@
 import { NextResponse } from "next/server";
 
 import { corsPreflight, corsRoute } from "@/lib/api/cors";
-import { campaignsEnabled } from "@/lib/campaigns/flags";
+import { julyCampaignRoutes } from "@/lib/campaigns/flags";
 import { ipKey, rateLimited } from "@/lib/security/ratelimit";
 import { campaignGroupJoinSchema } from "@/lib/security/schemas";
 import { createAdminClient } from "@/lib/supabase/admin";
@@ -37,7 +37,7 @@ function displayName(user: {
 }
 
 async function handlePOST(req: Request) {
-  if (!campaignsEnabled()) {
+  if (!julyCampaignRoutes()) {
     return NextResponse.json({ error: "Not found." }, { status: 404 });
   }
   // Tight, and keyed on IP as well as user below, because this endpoint is
@@ -149,7 +149,7 @@ async function handlePOST(req: Request) {
 }
 
 async function handleDELETE(req: Request) {
-  if (!campaignsEnabled()) {
+  if (!julyCampaignRoutes()) {
     return NextResponse.json({ error: "Not found." }, { status: 404 });
   }
   const user = await authUser(req);

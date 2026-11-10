@@ -17,14 +17,14 @@
 import { NextResponse } from "next/server";
 
 import { corsPreflight, withCors } from "@/lib/api/cors";
-import { campaignsEnabled } from "@/lib/campaigns/flags";
+import { julyCampaignRoutes } from "@/lib/campaigns/flags";
 import { rateLimited } from "@/lib/security/ratelimit";
 import { campaignRemindSchema } from "@/lib/security/schemas";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { createClientFromRequest } from "@/lib/supabase/server";
 
 async function handlePUT(req: Request, id: string) {
-  if (!campaignsEnabled()) {
+  if (!julyCampaignRoutes()) {
     return NextResponse.json({ error: "Not found." }, { status: 404 });
   }
 

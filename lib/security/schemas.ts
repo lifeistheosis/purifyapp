@@ -401,61 +401,88 @@ export function isSupabaseStorageUrl(value: string): boolean {
   }
 }
 
-/** /api/campaigns POST body (create a prayer campaign). The server owns every
- *  counter and workflow column; a client only proposes the human fields. The
- *  blessing literal is the privacy affirmation, mirroring the checkout
- *  clickwrap: it must be true. */
-export const campaignCreateSchema = z.object({
-  title: z.string().min(3).max(120),
-  intention: z.enum([
-    "healing",
-    "comfort",
-    "guidance",
-    "persecuted",
-    "thanksgiving",
-    "departed",
-  ]),
-  forWhom: z.enum(["living", "departed"]),
-  // First name or a cause. Privacy is enforced by copy + this length cap, never
-  // a surname or identifying detail of a third party.
-  subjectName: z.string().max(80).optional().nullable(),
-  note: z.string().max(280).optional().nullable(),
-  // The chosen preset prayer's key. Validated against the catalog in the route
-  // (isPrayerKey); an unknown or absent key falls back to the intention default.
-  prayerKey: z.string().max(40).optional().nullable(),
-  // Campaign length in days: a week, a novena, or forty days. Omitted/null = ongoing.
-  durationDays: z
-    .union([z.literal(7), z.literal(9), z.literal(40)])
-    .optional()
-    .nullable(),
-  // "This is my own request, or I have the person's blessing to share it."
-  blessing: z.literal(true),
-  // Public URL of an already-uploaded image from /api/campaigns/image. Pinned
-  // to the Supabase storage host so a client can never store an arbitrary
-  // remote URL (which would let a campaign card hotlink anywhere, and leak
-  // viewer IPs to a third-party server). The host is all this checks: that
-  // the picture is the caller's own upload is checked in the route.
-  imageUrl: z
-    .string()
-    .url()
-    .max(1000)
-    .refine(isSupabaseStorageUrl, "Image must be uploaded through Purify.")
-    .optional()
-    .nullable(),
-  // Required only when an image is attached: the uploader affirms they may
-  // share this picture. Campaigns are public-read, so this is the same kind
-  // of affirmation as `blessing`, not a duplicate of it.
-  photoConsent: z.literal(true).optional(),
-});
+/**
+ * /api/campaigns POST body: start a prayer campaign (the rework of 1.9.1,
+ * lib/campaigns/model.ts). The client proposes the human fields and nothing
+ * else: who made it, its state, its dates past the first day and every
+ * moderation column are the server's.
+ *
+ * `blessing` is the tick before Create, and `rules` the reader's agreement
+ * to the rules of praying together: both literals, as the checkout clickwrap
+ * is, so a request without them is not a request.
+ */
+export const campaignCreateSchema = z
+  .object({
+    forWhom: z.enum(["living", "departed"]),
+    kind: z.enum(["healing", "study", "travel", "thanksgiving", "comfort", "guidance", "persecuted", "other", "departed"]),
+    title: z.string().trim().min(3).max(120),
+    // Who it prays for: a first name, as the Church remembers them. Held to
+    // its length here and to first names by the page's own words and a
+    // moderator's eye.
+    name: z.string().trim().min(1).max(80),
+    // What the creator asks prayers for, in their own words.
+    words: z.string().trim().max(600).optional().nullable(),
+    // One to forty days (lib/campaigns/model.ts, MAX_DAYS).
+    days: z.number().int().min(1).max(40),
+    // Its first day on the creator's own calendar. The route holds it to a
+    // day that can be today somewhere.
+    startsOn: z.string().regex(/^\d{4}-\d{2}-\d{2}$/),
+    // A prayer of the prayer book by reference, or none. The route holds it
+    // to the psalms a campaign may carry.
+    prayer: z
+      .object({ rule: z.string().regex(/^[a-z0-9-]{1,80}$/), id: z.string().regex(/^[a-z0-9-]{1,80}$/) })
+      .optional()
+      .nullable(),
+    consent: z.enum(["self", "blessing", "guardian", "family"]),
+    blessing: z.literal(true),
+    rules: z.literal(true),
+    // The writer has seen which of their words the filter will mask, and
+    // sends it all the same (as a post does).
+    confirmFiltered: z.boolean().optional(),
+  })
+  .refine((c) => (c.forWhom === "departed") === (c.kind === "departed"), { message: "That kind does not fit." })
+  .refine((c) => (c.forWhom === "departed") === (c.consent === "family"), { message: "That blessing does not fit." })
+  .refine((c) => c.forWhom === "living" || !c.prayer, { message: "A campaign for the reposed names no prayer of its own." });
 
-/** /api/campaigns/[id]/report POST body. */
+/**
+ * /api/campaigns/[id]/report POST body: a reason to tick, and words when the
+ * reader has some.
+ */
 export const campaignReportSchema = z.object({
-  reason: z.string().max(500).optional().nullable(),
+  reason: z.enum(["about_me", "private_details", "money", "unkind", "not_prayer", "other"]),
+  words: z.string().trim().max(500).optional().nullable(),
 });
 
-/** /api/campaigns/[id] PATCH body (creator closes their own campaign). */
-export const campaignStatusSchema = z.object({
-  status: z.enum(["answered", "memory_eternal"]),
+/**
+ * /api/campaigns/[id] PATCH body: the creator closes their own campaign
+ * early with one of the two closings, or chooses whether it stays on their
+ * profile once it has ended.
+ */
+export const campaignStatusSchema = z
+  .object({
+    status: z.enum(["answered", "memory_eternal"]).optional(),
+    keepAfterEnd: z.boolean().optional(),
+  })
+  .refine((c) => c.status !== undefined || c.keepAfterEnd !== undefined, { message: "Nothing to change." });
+
+const PRAY_PLACE = z.enum(["morning", "midday", "evening", "hours", "compline", "mine"]);
+
+/**
+ * /api/campaigns/[id]/join POST body: the prayers a signed-in reader carries
+ * it in, and their own last day when it is sooner than the campaign's.
+ */
+export const campaignJoinSchema = z.object({
+  places: z.array(PRAY_PLACE).min(1).max(6),
+  until: z
+    .string()
+    .regex(/^\d{4}-\d{2}-\d{2}$/)
+    .optional()
+    .nullable(),
+});
+
+/** /api/campaigns/state POST body: the campaigns a device carries, by id. */
+export const campaignStateSchema = z.object({
+  ids: z.array(z.string().uuid()).min(1).max(24),
 });
 
 /** /api/campaigns/[id]/groups POST body (start a parish group in a campaign).

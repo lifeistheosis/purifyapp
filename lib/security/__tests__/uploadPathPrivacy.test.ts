@@ -40,7 +40,10 @@ const STILL_NAMED: Record<string, string> = {};
 const ATTACH_ROUTES = [
   "app/api/trapeza/route.ts",
   "app/api/trapeza/[id]/reviews/route.ts",
-  "app/api/campaigns/route.ts",
+  // app/api/campaigns/route.ts stood here while starting a campaign took a
+  // picture's URL. The rework's create takes none (1.9.1): pictures come
+  // back in a later phase with a table and a route of their own, and that
+  // route joins this list when it is written.
 ];
 
 /** What carries the auth uuid into a path. */

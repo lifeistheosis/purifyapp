@@ -14,7 +14,7 @@ import { randomInt } from "node:crypto";
 import { NextResponse } from "next/server";
 
 import { corsPreflight, withCors } from "@/lib/api/cors";
-import { campaignsEnabled } from "@/lib/campaigns/flags";
+import { julyCampaignRoutes } from "@/lib/campaigns/flags";
 import { makeInviteCode } from "@/lib/campaigns/groups";
 import { ipKey, rateLimited } from "@/lib/security/ratelimit";
 import { campaignGroupCreateSchema } from "@/lib/security/schemas";
@@ -42,7 +42,7 @@ function displayName(user: {
 }
 
 async function handleGET(req: Request, id: string) {
-  if (!campaignsEnabled()) {
+  if (!julyCampaignRoutes()) {
     return NextResponse.json({ error: "Not found." }, { status: 404 });
   }
   const user = await authUser(req);
@@ -90,7 +90,7 @@ async function handleGET(req: Request, id: string) {
 }
 
 async function handlePOST(req: Request, id: string) {
-  if (!campaignsEnabled()) {
+  if (!julyCampaignRoutes()) {
     return NextResponse.json({ error: "Not found." }, { status: 404 });
   }
   if (await rateLimited(`campaign-group-new:${ipKey(req.headers)}`, 3600, 10)) {

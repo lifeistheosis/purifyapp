@@ -5213,5 +5213,17 @@
   "settings.storageBible": "Bible",
   "settings.storageListening": "To listen offline",
   "settings.storageRemoveBook": "Remove {book} from this device",
-  "bible.downloads.removeAria": "Remove {name} from this device"
+  "bible.downloads.removeAria": "Remove {name} from this device",
+  "campaigns.kind.healing": "An illness",
+  "campaigns.kind.study": "An exam or studies",
+  "campaigns.kind.travel": "A journey",
+  "campaigns.kind.thanksgiving": "Thanksgiving",
+  "campaigns.kind.comfort": "A trial",
+  "campaigns.kind.guidance": "Guidance",
+  "campaigns.kind.persecuted": "The persecuted",
+  "campaigns.kind.other": "Something else",
+  "campaigns.length.day": "A day",
+  "campaigns.length.week": "A week",
+  "campaigns.length.thirty": "Thirty days",
+  "campaigns.length.forty": "Forty days"
 }

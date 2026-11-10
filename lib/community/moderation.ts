@@ -56,7 +56,14 @@ export async function moderatorFor(admin: SupabaseClient, user: CommunityUser): 
   return { id: user.id, name, email: user.email ?? null, admin: byEmail };
 }
 
-export type LogTarget = "post" | "reply" | "profile" | "report" | "hold" | "term" | "clergy";
+/**
+ * What a line of the log may be about. "campaign" and "picture" are prayer
+ * campaigns' (lib/campaigns/moderation.ts); the table's own list takes them
+ * with the rework's SQL (docs/1.9-build/notes/campaigns-fable.md, 5.2), and
+ * until it has run a line about one is simply not written (logMod is best
+ * effort).
+ */
+export type LogTarget = "post" | "reply" | "profile" | "report" | "hold" | "term" | "clergy" | "campaign" | "picture";
 
 /** Write one line to the log. Best effort: a missing table never fails an action. */
 export async function logMod(

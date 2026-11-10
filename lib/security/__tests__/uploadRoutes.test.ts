@@ -5,7 +5,8 @@ import { client, PROJECT, publicUrl, world, type Row, type World } from "./fakeS
 /**
  * The upload routes and everything that trusts what they return, run for
  * real against an in-memory Supabase: the Kitchen (upload, review, recipe
- * submission) and prayer campaigns (picture, create, take down).
+ * submission) and prayer campaigns (July's picture upload, and taking a
+ * campaign down).
  *
  * These cannot be walked in a browser without signing in to, and writing to,
  * the production project, so this is where the flow is exercised. What is
@@ -27,13 +28,22 @@ vi.mock("@/lib/supabase/server", () => ({
 }));
 vi.mock("@/lib/security/ratelimit", () => ({ rateLimited: async () => false, ipKey: () => "test" }));
 vi.mock("@/lib/trapeza/flags", () => ({ trapezaEnabled: () => true }));
-// Campaigns are withdrawn from the web (lib/campaigns/flags.ts); the routes
-// are kept, and so are tested as they will run when the feature returns.
-vi.mock("@/lib/campaigns/flags", () => ({ campaignsEnabled: () => true }));
+// Campaigns are closed (lib/campaigns/flags.ts). July's picture upload is
+// retired with July's other routes and kept, so it is tested as it stands;
+// taking a campaign down is the rework's route, tested as it runs once
+// campaigns are open. Starting one takes no picture any more: pictures come
+// back in a later phase with a table and a route of their own
+// (docs/1.9-build/notes/campaigns-fable.md, 2.5), and the rework's own routes
+// are tested in lib/campaigns/__tests__/routes.test.ts.
+vi.mock("@/lib/campaigns/flags", () => ({
+  julyCampaignRoutes: () => true,
+  campaignsOpening: () => "open",
+  campaignsInBuild: () => true,
+  campaignsEnabled: () => true,
+}));
 
 import { DELETE as takeDownCampaign } from "@/app/api/campaigns/[id]/route";
 import { POST as uploadCampaignImage } from "@/app/api/campaigns/image/route";
-import { POST as createCampaign } from "@/app/api/campaigns/route";
 import { DELETE as deleteReview, POST as saveReview } from "@/app/api/trapeza/[id]/reviews/route";
 import { POST as submitRecipe } from "@/app/api/trapeza/route";
 import { POST as uploadKitchenPhoto } from "@/app/api/trapeza/upload/route";
@@ -288,19 +298,14 @@ describe("prayer campaign pictures", () => {
     expect(res.status).toBe(200);
     return ((await res.json()) as { url: string }).url;
   }
-  const create = (imageUrl: string | null) =>
-    createCampaign(
-      new Request(
-        `${SITE}/api/campaigns`,
-        json({
-          title: "For Maria", intention: "healing", forWhom: "living", blessing: true,
-          imageUrl, photoConsent: imageUrl ? true : undefined,
-        }),
-      ),
-    );
+  /** A July campaign row, as the table held them: the creator and the one picture it names. */
+  function julyCampaign(creator: string, imageUrl: string | null, id: string = crypto.randomUUID()): string {
+    w.tables.prayer_campaigns!.push({ id, creator_id: creator, title: "For Maria", status: "active", audience: "public", image_url: imageUrl });
+    return id;
+  }
   const takeDown = (id: string) =>
     takeDownCampaign(new Request(`${SITE}/api/campaigns/${id}`, { method: "DELETE" }), params(id));
-  const campaign = (id: string) => w.tables.prayer_campaigns!.find((r) => r.id === id) as Row;
+  const campaign = (id: string) => w.tables.prayer_campaigns!.find((r) => r.id === id);
 
   it("stores a picture on a random path and writes down whose it is", async () => {
     const url = await uploadPicture();
@@ -321,41 +326,11 @@ describe("prayer campaign pictures", () => {
     expect(w.objects.size).toBe(0);
   });
 
-  it("creates a campaign with the caller's own picture", async () => {
+  it("deletes the creator's own picture when they take the campaign down, and the row with it", async () => {
     const url = await uploadPicture();
-    const res = await create(url);
-    expect(res.status).toBe(200);
-    const { id } = (await res.json()) as { id: string };
-    expect(campaign(id)).toMatchObject({ creator_id: ANNA, image_url: url });
-  });
-
-  it("refuses any other public file of ours as a campaign's picture", async () => {
-    signIn(BEN);
-    const bens = await uploadPicture();
-    signIn(ANNA);
-    const kitchenPhoto = await upload("review");
-    for (const url of [
-      bens,
-      kitchenPhoto,
-      publicUrl("avatars", "b/99999999-9999-4999-8999-999999999999.jpg"),
-      publicUrl("campaign-media", `c/${ANNA}/1727500000000.jpg`),
-      publicUrl("campaign-media", `c/${BEN}/1727500000000.jpg`),
-    ]) {
-      expect((await create(url)).status, url).toBe(400);
-    }
-    expect(w.tables.prayer_campaigns).toEqual([]);
-  });
-
-  it("still creates a campaign with no picture, with no record to read", async () => {
-    w.tables.upload_owners = null;
-    expect((await create(null)).status).toBe(200);
-  });
-
-  it("deletes the creator's own picture when they take the campaign down", async () => {
-    const url = await uploadPicture();
-    const { id } = (await (await create(url)).json()) as { id: string };
+    const id = julyCampaign(ANNA, url);
     expect((await takeDown(id)).status).toBe(200);
-    expect(campaign(id).status).toBe("removed");
+    expect(campaign(id)).toBeUndefined();
     expect(w.objects.size).toBe(0);
     expect(owners()).toEqual([]);
   });
@@ -363,27 +338,25 @@ describe("prayer campaign pictures", () => {
   it("deletes a picture on an old path that carries the creator's own id", async () => {
     const oldPath = `c/${ANNA}/1727500000000.jpg`;
     w.objects.add(`campaign-media/${oldPath}`);
-    w.tables.prayer_campaigns!.push({ id: "old", creator_id: ANNA, status: "active", image_url: publicUrl("campaign-media", oldPath) });
-    expect((await takeDown("old")).status).toBe(200);
+    const id = julyCampaign(ANNA, publicUrl("campaign-media", oldPath));
+    expect((await takeDown(id)).status).toBe(200);
     expect(w.objects.has(`campaign-media/${oldPath}`)).toBe(false);
   });
 
   it("never deletes somebody else's picture that a campaign row names", async () => {
     // Anna's campaign, with her picture.
     const annas = await uploadPicture();
-    await create(annas);
+    julyCampaign(ANNA, annas);
     const annasOld = `c/${ANNA}/1727500000000.jpg`;
     w.objects.add(`campaign-media/${annasOld}`);
-    // Rows as the create route once accepted them, with only a host check:
-    // Ben's campaigns name Anna's pictures as their own.
-    w.tables.prayer_campaigns!.push(
-      { id: "bens-1", creator_id: BEN, status: "active", image_url: annas },
-      { id: "bens-2", creator_id: BEN, status: "active", image_url: publicUrl("campaign-media", annasOld) },
-    );
+    // Rows as July's create route once accepted them, with only a host
+    // check: Ben's campaigns name Anna's pictures as their own.
+    const first = julyCampaign(BEN, annas);
+    const second = julyCampaign(BEN, publicUrl("campaign-media", annasOld));
     signIn(BEN);
-    expect((await takeDown("bens-1")).status).toBe(200);
-    expect((await takeDown("bens-2")).status).toBe(200);
-    expect(campaign("bens-1").status).toBe("removed");
+    expect((await takeDown(first)).status).toBe(200);
+    expect((await takeDown(second)).status).toBe(200);
+    expect(campaign(first)).toBeUndefined();
     expect(w.objects.has(`campaign-media/${mediaPath(annas)}`)).toBe(true);
     expect(w.objects.has(`campaign-media/${annasOld}`)).toBe(true);
     expect(w.calls.remove).toBe(0);
@@ -391,9 +364,10 @@ describe("prayer campaign pictures", () => {
 
   it("only lets the creator take a campaign down", async () => {
     const url = await uploadPicture();
-    const { id } = (await (await create(url)).json()) as { id: string };
+    const id = julyCampaign(ANNA, url);
     signIn(BEN);
     expect((await takeDown(id)).status).toBe(403);
+    expect(campaign(id)).toBeDefined();
     expect(w.objects.size).toBe(1);
   });
 });

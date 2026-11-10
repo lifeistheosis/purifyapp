@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 
 import { corsPreflight, corsRoute } from "@/lib/api/cors";
-import { campaignsEnabled } from "@/lib/campaigns/flags";
+import { julyCampaignRoutes } from "@/lib/campaigns/flags";
 import { CAMPAIGN_BUCKET } from "@/lib/campaigns/image";
 import { rateLimited } from "@/lib/security/ratelimit";
 import { forgetUploads, recordUploadOwner } from "@/lib/security/uploadOwners";
@@ -14,7 +14,7 @@ import { createClientFromRequest } from "@/lib/supabase/server";
  * that is authenticated, cross-origin correct, and proven in production.
  *
  * Differences from the avatar route, all deliberate:
- *   * flag-gated behind campaignsEnabled(), like every other campaigns route,
+ *   * closed with the rest of July's routes (julyCampaignRoutes, lib/campaigns/flags.ts),
  *     so it 404s while the feature is dark,
  *   * rate limited on the AUTHENTICATED USER rather than the IP: ipKey()
  *     collapses to the literal "unknown" with no forwarded-for header, and
@@ -37,7 +37,7 @@ const TYPES: Record<string, string> = {
 };
 
 async function handlePOST(req: Request) {
-  if (!campaignsEnabled()) {
+  if (!julyCampaignRoutes()) {
     return NextResponse.json({ error: "Not found." }, { status: 404 });
   }
 

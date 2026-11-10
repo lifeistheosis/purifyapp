@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 
 import { corsPreflight, withCors } from "@/lib/api/cors";
-import { campaignsEnabled } from "@/lib/campaigns/flags";
+import { julyCampaignRoutes } from "@/lib/campaigns/flags";
 import { ipKey, rateLimited } from "@/lib/security/ratelimit";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { createClientFromRequest } from "@/lib/supabase/server";
@@ -60,7 +60,7 @@ function readDayKey(body: unknown): string | null {
  * insert branch and the loser 500'd on a primary key violation.
  */
 async function handlePray(req: Request, id: string) {
-  if (!campaignsEnabled()) {
+  if (!julyCampaignRoutes()) {
     return NextResponse.json({ error: "Not found." }, { status: 404 });
   }
   if (await rateLimited(`campaign-pray:${ipKey(req.headers)}`, 3600, 200)) {
@@ -207,7 +207,7 @@ async function handlePray(req: Request, id: string) {
  *  the day log, so rejoining later restores the reader's history instead of
  *  resetting them to day one. */
 async function handleLeave(req: Request, id: string) {
-  if (!campaignsEnabled()) {
+  if (!julyCampaignRoutes()) {
     return NextResponse.json({ error: "Not found." }, { status: 404 });
   }
   const user = await authUser(req);
