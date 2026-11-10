@@ -15,8 +15,8 @@ Three rules for all of them:
   message is enough.
 
 The order: **Now** (the company) as you start it, **Anytime** whenever
-suits you. **The test web** waits for the arbiter's word. **Release day**
-waits until the arbiter says go.
+suits you. **The test web** when you are home (T1 to T10), and T11 at
+payday. **Release day** waits until the arbiter says go.
 
 ---
 
@@ -684,7 +684,12 @@ to you, send the bounce's first lines (they hold no key).
 
 ---
 
-## The test web: WAIT for the arbiter's word
+## The test web: on Render's free size now, the $7 size at payday
+
+Your word, 2026-11-10 ("rec yes to all"): yes to the test web, at payday, or
+on Render's free size before then if it carries your walk. It does (Render's
+own pages, checked the same day), so you do T1 to T10 on the free size when
+you are home, and T11 at payday.
 
 **What it is** (your word, 2026-11-10): a second, private website on Render
 that runs the 1.9 branch with its own database, so a test build can try
@@ -702,8 +707,9 @@ touch the main web's database, hold a live payment key, email anyone but you,
 appear in a search engine, or be named in a store build.
 
 **Order:** T1 to T6 once (about 30 minutes), T7 to T9 once (about 15
-minutes), then T10 for every test build, and T11 on payday. Keep the test web's address and its
-password to yourself, like any key: nothing should link to it.
+minutes), then T10 for every test build, and T11 on payday. Keep the test
+web's address and its password to yourself, like any key: nothing should
+link to it.
 
 ### T1. A free Supabase project for the test web (5 minutes, then a few minutes of waiting)
 

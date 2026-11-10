@@ -7,7 +7,7 @@ public release." The rule is in CLAUDE.md; his steps are in `OWNER-STEPS.md`,
 "The test web". This note is the Admin chat's record: what was decided, on
 what evidence, and what the code does.
 
-## What was decided (the arbiter's yes to plan v2, 15:44 UTC; his yes pending)
+## What was decided (the arbiter's yes to plan v2, 15:44 UTC; his yes, "rec yes to all", about 16:45 UTC)
 
 - **A second Render web service** running `ccr-07896cf2-bo0afd`, at the
   onrender.com address Render gives it. **Free size until his payday, then
