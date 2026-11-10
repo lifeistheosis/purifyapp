@@ -8,7 +8,17 @@
 // is a way through it, not a switch that hides the rest.
 //
 // The look is the app's segmented switch (components/ui/SegmentedSwitch.tsx),
-// in short words so four fit a phone. It is a list of links, not tabs: every
+// in short words so four fit a phone, and it holds its words the same way: a
+// part is never cut, the parts are equal while every word fits its share, and
+// a longer word takes what it needs (1.9, the arbiter's of 2026-11-10). In
+// equal quarters, 22 words were cut in fourteen languages at 390 and 360
+// pixels (German lost three of four). Four parts are tight, so each part's
+// padding is 4 pixels a side, not 8: measured with the export's own fonts in
+// all twenty-one languages, every row then holds its words at 390 and 360
+// pixels. At 320, five still need more (German, Bulgarian, Filipino, Georgian
+// and Hungarian, by 9 to 39 pixels), and there the row scrolls inside its rim;
+// nothing is cut.
+// It is a list of links, not tabs: every
 // part is always there. A tap moves the page and never the history, so Back
 // still leaves the page. Solid, never blurred (a blurred layer over moving
 // text is repainted on every frame on Android).
@@ -78,21 +88,21 @@ export function EventPartsNav({ parts }: { parts: EventPart[] }) {
       aria-label={t("study.history.partsNav")}
       className="history-era-head -mx-5 px-5 py-2 md:-mx-8 md:px-8"
     >
-      <ul className="mx-auto grid max-w-[460px] grid-flow-col auto-cols-fr gap-1 rounded-pill border border-paper/10 p-1 md:mx-0">
+      <ul className="no-scrollbar mx-auto grid max-w-[460px] grid-flow-col auto-cols-[minmax(max-content,1fr)] gap-1 overflow-x-auto rounded-pill border border-paper/10 p-1 md:mx-0">
         {parts.map((part) => {
           const on = part.id === current;
           return (
-            <li key={part.id} className="min-w-0">
+            <li key={part.id}>
               <a
                 href={`#${part.id}`}
                 onClick={(e) => go(e, part.id)}
                 aria-current={on ? "location" : undefined}
                 className={cn(
-                  "tap-press flex min-h-11 min-w-0 items-center justify-center truncate rounded-pill px-2 font-sans text-detail font-semibold motion-safe:transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-paper",
+                  "tap-press flex min-h-11 min-w-11 items-center justify-center whitespace-nowrap rounded-pill px-1 font-sans text-detail font-semibold motion-safe:transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-paper",
                   on ? "bg-paper text-night" : "text-paper/65 hover:text-paper",
                 )}
               >
-                <span className="truncate">{t(part.labelKey)}</span>
+                <span>{t(part.labelKey)}</span>
               </a>
             </li>
           );

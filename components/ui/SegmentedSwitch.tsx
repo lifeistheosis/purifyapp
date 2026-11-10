@@ -12,6 +12,19 @@ import { tabForKey } from "@/lib/ui/sectionTabs";
  * in the reading direction, Home and End go to the ends, and only the chosen
  * part is in the tab order (lib/ui/sectionTabs.ts, tabForKey).
  *
+ * A word is never cut (1.9, the arbiter's of 2026-11-10 11:45 UTC). The parts
+ * are equal while every word fits its share; a part whose word needs more
+ * takes what it needs, and the others share what is left, each still whole.
+ * Until then the parts were equal always and a long word was cut: "Your
+ * ledger" in Greek, "Το σημειωματάριό σας", at 360 pixels. A part's padding
+ * is 4 pixels a side, which shows only when a part is as wide as its words,
+ * and lets the Lent prayer's two wordings ("ROCOR (Jordanville)", "OCA (St.
+ * Tikhon's)") fit at 320. Measured with the export's own fonts on every use
+ * in all twenty-one languages at 390, 360 and 320 pixels: every row holds its
+ * words. Should one ever not (a longer word, a phone's larger text), the row
+ * scrolls inside its own rim, so nothing is cut and nothing spills onto the
+ * page; no part is narrower than a finger.
+ *
  * Each part's tab is `${idBase}-tab-${id}` and controls `${idBase}-panel-${id}`.
  */
 export function SegmentedSwitch<T extends string>({
@@ -50,7 +63,7 @@ export function SegmentedSwitch<T extends string>({
       role="tablist"
       aria-label={label}
       className={cn(
-        "grid grid-flow-col auto-cols-fr gap-1 rounded-pill border border-paper/10 bg-paper/[0.03] p-1",
+        "no-scrollbar grid grid-flow-col auto-cols-[minmax(max-content,1fr)] gap-1 overflow-x-auto rounded-pill border border-paper/10 bg-paper/[0.03] p-1",
         className,
       )}
     >
@@ -68,7 +81,7 @@ export function SegmentedSwitch<T extends string>({
             onClick={() => onSelect(item.id)}
             onKeyDown={onKeyDown}
             className={cn(
-              "tap-press min-h-11 min-w-0 truncate rounded-pill px-2 font-sans text-detail font-semibold motion-safe:transition-colors",
+              "tap-press min-h-11 min-w-11 whitespace-nowrap rounded-pill px-1 font-sans text-detail font-semibold motion-safe:transition-colors",
               on ? "bg-paper text-night" : "text-paper/65 hover:text-paper",
             )}
           >
