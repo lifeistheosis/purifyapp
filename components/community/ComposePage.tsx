@@ -17,6 +17,7 @@ import { ChatBubble } from "@/components/ui/icons/ChatBubble";
 import { Check } from "@/components/ui/icons/Check";
 import { Church } from "@/components/ui/icons/Church";
 import { Close } from "@/components/ui/icons/Close";
+import { TOP_PLATE } from "@/components/nav/topPlate";
 import { Quill } from "@/components/ui/icons/Quill";
 import { Share } from "@/components/ui/icons/Share";
 import { PurifyMark } from "@/components/ui/PurifyMark";
@@ -373,7 +374,7 @@ export function ComposePage({
               data-compose-close=""
               onClick={onClose}
               aria-label={t("common.close")}
-              className="compose-plate inline-flex size-10 items-center justify-center rounded-full border border-paper/[0.13] text-paper"
+              className={`compose-plate ${TOP_PLATE} border border-paper/[0.13] text-paper`}
             >
               <Close size={18} />
             </button>
@@ -469,7 +470,10 @@ export function ComposePage({
             </div>
           </div>
 
-          <div className="mx-auto w-full max-w-[640px] px-5 pb-8">
+          {/* relative: drawn over the head's picture, which reaches past the
+              head and painted over the doors while this stood unpositioned
+              (the campaigns chat's item 1). */}
+          <div className="relative mx-auto w-full max-w-[640px] px-5 pb-8">
             {/* What is being written: the doors, as a saint's page has them. */}
             <div
               ref={doorsRef}
@@ -586,7 +590,7 @@ export function ComposePage({
                   // every field to (app/globals.css), and the question's
                   // longer prompt a size down so it stays on one line.
                   style={{ fontSize: kind === "question" ? 20 : 22 }}
-                  className="block w-full border-b border-paper/10 bg-transparent pb-2.5 font-serif font-semibold leading-[30px] text-paper placeholder:text-paper/55 focus:border-paper/30 focus:outline-none"
+                  className="block min-h-11 w-full border-b border-paper/10 bg-transparent pb-2.5 font-serif font-semibold leading-[30px] text-paper placeholder:text-paper/55 focus:border-paper/30 focus:outline-none"
                 />
                 <div data-compose-words="" className="mt-4">
                   <MentionField
@@ -603,7 +607,7 @@ export function ComposePage({
               </div>
             )}
 
-            <p className="mt-8 font-sans text-[11.5px] leading-[1.5] text-paper/40">{t("community.houseRules")}</p>
+            <p className="mt-8 font-sans text-[11.5px] leading-[1.5] text-paper/66">{t("community.houseRules")}</p>
           </div>
         </div>
 
