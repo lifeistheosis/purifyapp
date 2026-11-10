@@ -121,8 +121,10 @@ Drafted now, sent later. The owner sends every one. How a drop works is in
       and deletes nothing; thirty days after the day it names, the
       heartbeat deletes July's rows, and it leaves the public mark
       `campaigns-july-rows-deleted` in `data_moves` when none is left. The
-      prayer wall's clearing job (the campaigns chat, being built) will count
-      its fourteen days from the same constant.
+      prayer wall's end counts its fourteen days from the same constant
+      (`lib/community/prayerRequestsEnd.ts`, 88931feae): on that day the
+      requests' words, their holds and who prayed are cleared, and the mark
+      `prayer-requests-cleared` stands in `data_moves`.
 - [ ] Campaign pictures in the store builds (OWNER-STEPS R5d; the review
       notes, part A, items 4 and 9): `PICTURES_IN_STORE_BUILDS` in
       `lib/campaigns/flags.ts` stays `false` unless pictures are on when the
