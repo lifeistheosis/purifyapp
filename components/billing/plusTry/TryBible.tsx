@@ -50,7 +50,9 @@ export function JohnPage({ verses = TRY_VERSES }: { verses?: number }) {
         {/* The short rule at the chapter's head. A look puts its own sign in its place (app/globals.css, [data-try-look]). */}
         <span aria-hidden className="try-page-rule mx-auto mt-3 block h-px w-6 bg-paper/25" />
       </header>
-      <div className={cn("mt-2.5 space-y-2 text-[17px] leading-[1.6] text-paper/90", FONT_CLASSES[font])}>
+      {/* The app's own English text (data/bible/john/1.json), so it says so and runs left to right in every
+          language, as Settings' small page does: in Arabic a line's full stop stood at its start. */}
+      <div lang="en" dir="ltr" className={cn("mt-2.5 space-y-2 text-[17px] leading-[1.6] text-paper/90", FONT_CLASSES[font])}>
         {JOHN_1.verses.slice(0, verses).map((v) => (
           <p key={v.n}>
             <sup className="me-1.5 align-super font-sans text-eyebrow font-medium tracking-[0.05em] text-paper/55">{v.n}</sup>

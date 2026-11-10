@@ -171,6 +171,42 @@ describe("the reading modes", () => {
     expect(drawn).toMatch(/class="set-mode-verses font-sans"/);
   });
 
+  it("holds every name under its small page to 4.5:1 on every palette (1.9)", () => {
+    // 1.8 drew the names at 60 percent of the palette's ink. Measured on the
+    // export against their pixels (2026-11-10), a name was then under 4.5:1
+    // for a reader on Light and on ten more palettes: 3.67:1 at the lowest,
+    // on Jordan, and 4.46:1 on Candlelight's lit panel. 68 is the least share
+    // that holds by the pixels (4.57:1), and 70 leaves room (4.88:1).
+    //
+    // This is the arithmetic on the page's own ground, which is where the
+    // names stand on the light palettes, the ones that decide it. The pixels
+    // read up to 0.17 under it (the panel's grain, the letters' edges), so
+    // the floor here is 4.7, not 4.5: a share or a token nudged under that
+    // fails here before a reader on Light meets it.
+    const share = Number(/var\(--color-paper\) (\d+)%, transparent\)/.exec(decls(".set-mode-name").color ?? "")?.[1]) / 100;
+    expect(share, decls(".set-mode-name").color).toBeGreaterThan(0);
+    const hex = (raw: string) => [1, 3, 5].map((i) => parseInt(raw.slice(i, i + 2), 16));
+    const lin = (c: number) => (c / 255 <= 0.03928 ? c / 255 / 12.92 : ((c / 255 + 0.055) / 1.055) ** 2.4);
+    const lum = ([r, g, b]: number[]) => 0.2126 * lin(r) + 0.7152 * lin(g) + 0.0722 * lin(b);
+    const short = READING_THEMES.map((theme) => {
+      const own = theme.id === "default" ? THEME : decls(theme.look ? `html[data-look="${theme.id}"]` : `html[data-reading-mode="${theme.id}"]`);
+      const ground = hex(own["--color-night"] ?? "");
+      const ink = hex(own["--color-paper"] ?? "");
+      const name = ink.map((v, i) => v * share + ground[i] * (1 - share));
+      return { id: theme.id, r: (Math.max(lum(name), lum(ground)) + 0.05) / (Math.min(lum(name), lum(ground)) + 0.05) };
+    })
+      .filter(({ r }) => !(r >= 4.7))
+      .map(({ id, r }) => `${id}: ${r.toFixed(2)}:1 at ${Math.round(share * 100)} percent of the ink`);
+    expect(READING_THEMES.length).toBeGreaterThanOrEqual(25);
+    expect(short, short.join("\n")).toEqual([]);
+    // The one applied is the ink whole, and a shelf or a preview that sets its own share sets no less.
+    expect(decls('.set-mode[aria-pressed="true"] .set-mode-name').color).toBe("var(--color-paper)");
+    for (const other of [".set-shelf .set-mode-name", ".set-modes.plus-try-modes .set-mode-name"]) {
+      const own = Number(/var\(--color-paper\) (\d+)%/.exec(decls(other).color ?? "")?.[1]) / 100;
+      expect(own, other).toBeGreaterThanOrEqual(share);
+    }
+  });
+
   it("wears each palette's own ground, ink and accent, as its block in the stylesheet sets them", () => {
     // A look's tokens are under its own attribute (1.9); the rest under their mode.
     const looks = new Set(READING_THEMES.filter((t) => t.look).map((t) => t.id));

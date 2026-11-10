@@ -6356,7 +6356,11 @@ html[data-reading-mode="parchment"] .testers-dot { box-shadow: none; }
  font-weight: 500;
  line-height: 1.2;
  text-align: center;
- color: color-mix(in srgb, var(--color-paper) 60%, transparent);
+ /* 70, not 1.8's 60 (1.9): at 60 a name was under 4.5:1 for a reader on
+    Light and on ten more palettes, 3.67:1 at the lowest, measured against
+    its pixels on the export. 68 is the least that holds (4.57:1); 70 leaves
+    room (4.88:1). lib/settings/__tests__/litPanels.test.ts holds it. */
+ color: color-mix(in srgb, var(--color-paper) 70%, transparent);
 }
 .set-mode[aria-pressed="true"] .set-mode-name {
  font-weight: 600;

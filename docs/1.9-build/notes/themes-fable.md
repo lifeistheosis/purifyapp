@@ -15,7 +15,7 @@ drawn, what was measured and what still waits for him are at "Built", the
 last part of this file (sections 19 to 26). The same page now shows the real
 build. Candlelight through the Church's year, built after them, is section 27,
 and the words about Plus, as he approved them, section 28. The look in the
-Plus preview is section 29.
+Plus preview is section 29, and two small mends found beside it section 30.
 
 His words, the same day: "I also want you to cook up better themes ... I don't
 like the themes we have now, except that light mode, parchment, and the dark
@@ -2873,3 +2873,68 @@ share the reading modes' own page uses.
   line's full stop stands at its start (".was God"). The app's small page
   marks its sample verses as English, left to right; the previews' page
   does not. Told to the arbiter.
+
+## 30. Two small mends found beside the preview
+
+The arbiter's word, 2026-11-10, 09:34 UTC, on the two finds at the end of
+section 29: "Yes to both of your finds, from you, each one line with its
+test: (1) .set-mode-name to the share that holds 4.5:1 for every reader
+(Light included); (2) lang="en" dir="ltr" on the previews' sample verses
+... as Settings' small page has. One small commit, a still at the push."
+
+**The names under Settings' small pages.** 1.8 drew them at 60 percent of
+the palette's ink. Measured on the export against their pixels, on all 25
+palettes: a name was under 4.5:1 for a reader on Light (3.81:1) and on ten
+more palettes, 3.67:1 at the lowest (Jordan), and 4.46:1 on Candlelight's
+lit panel. By share, the lowest name anywhere:
+
+| Share | Lowest name, by its pixels | Palettes under 4.5:1 |
+| --- | --- | --- |
+| 60 (as it was) | 3.67:1 | 11 |
+| 64 | 4.13:1 | 9 |
+| 66 | 4.32:1 | 5 |
+| 68 | 4.57:1 | none |
+| 70 | 4.88:1 | none |
+
+It is 70 now: 68 is the least that holds, and 70 leaves room. One number
+in `.set-mode-name`. The reading modes' own page and the Plus preview set
+their own share (75) and keep it. The app's checker cannot see this one:
+the panel's ground is a picture, so it measures nothing there. The test
+does the arithmetic on every palette's own ground with a floor of 4.7,
+since the pixels read up to 0.17 under the arithmetic, and so fails at 66
+and passes from 68 (`lib/settings/__tests__/litPanels.test.ts`).
+
+**The previews' verses in Arabic.** The page of Scripture two previews
+draw (the reading modes and Ambience; `JohnPage`,
+`components/billing/plusTry/TryBible.tsx`) holds the app's own English
+text. In a sheet that runs from the right the verses ran with it, and a
+line's full stop stood at its start (".was God"). The verses now say what
+they are, `lang="en" dir="ltr"`, as Settings' small page does; the book's
+name and the chapter's line stay in the reader's language and direction
+(`lib/premium/__tests__/plusTryScreens.test.ts`).
+
+**Measured**, on the export, with the gate on:
+
+- The names as the export draws them: the ink at 70 percent.
+- Every name under a small page in Settings, against its pixels, on all 25
+  palettes: 4.88:1 at the lowest (Roses). For a reader on Light they are
+  5.05 to 5.20:1, where they were 3.81 to 3.90:1.
+- In Arabic the preview's sheet and the page's head run from the right. The
+  verses say they are English and run left to right, each line from the
+  window's left edge with the verse's number before its words. Every word
+  there is 4.51:1 or more.
+- The preview's walk of section 29 (42 steps), the words' walk of section
+  28 and the walk of a reader without Plus pass again on the same export.
+- Typecheck 0, the unit suite 868 files and 10,662 tests, lint 0 errors,
+  and the Android export clean with the gate on. The export and lint were
+  run before the last rebase onto other chats' commits; typecheck and the
+  unit suite again after it. The export is 203.2 MB on disk and 64.6 MB
+  packed now: another chat's commit of the same morning prunes router files
+  the apps never read, and none of the drop is this change's.
+
+**Not done.** No iOS export and no website build. No phone has seen it.
+
+**Left as they are.** Four other previews draw one English verse in their
+own markup (`johnVerse()`: Your mark, cross-references, Remember a verse,
+the Florilegium). They were not looked at in Arabic here. Told to the
+arbiter.

@@ -149,6 +149,22 @@ describe("each feature's own screen", () => {
     expect(out).toContain("All things were made by him");
   });
 
+  it("the page of Scripture: its English verses say they are English and run left to right, in every language", () => {
+    // In Arabic and Urdu the sheet runs from the right, and the page's verses,
+    // the app's own English text, ran with it: a line's full stop stood at its
+    // start (".was God"). Settings' small page marks its sample verses the
+    // same way.
+    for (const lang of ["en", "ar", "ur"]) {
+      for (const [C, id] of [[TryReadingModes, "reading-modes"], [TryAmbience, "ambience"]] as const) {
+        const out = preview(C, id, lang);
+        const verses = /<div lang="en" dir="ltr" class="[^"]*">(?:<p>[\s\S]*?<\/p>)+<\/div>/.exec(out)?.[0] ?? "";
+        expect(verses, `${id} in ${lang}`).toContain("In the beginning was the Word, and the Word was with God, and the Word was God.");
+        // The book's name and the chapter's line stay in the reader's language and direction.
+        expect(out.slice(0, out.indexOf('<div lang="en" dir="ltr"')), `${id} in ${lang}`).toContain(html(say(lang, "bible.books.john")));
+      }
+    }
+  });
+
   it("the word study: the Word of John 1:1 first, with life and light beside it", () => {
     const out = preview(TryWordStudy, "word-study");
     expect(out).toContain(">λόγος<");
