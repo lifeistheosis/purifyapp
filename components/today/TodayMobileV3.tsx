@@ -9,6 +9,7 @@ import { TodayGreeting } from "./TodayGreeting";
 import { StreakRow } from "./StreakRow";
 import { NativityFastCard } from "./NativityFastCard";
 import { FirstStepsNudge } from "@/components/onboarding/FirstStepsNudge";
+import { KeepCard, SecondChanceCard } from "@/components/onboarding/RoadCards";
 import { StreakAtRisk } from "@/components/streak/StreakAtRisk";
 import { CatechismCard } from "@/components/catechism/CatechismCard";
 import { WidgetTipCard } from "@/components/widget/WidgetTip";
@@ -75,6 +76,12 @@ export function TodayMobileV3() {
           <StreakAtRisk className="mt-4" waitsForDayOne />
 
           <FirstStepsNudge />
+
+          {/* The roads (1.9, off for readers: lib/onboarding/flags.ts). After
+              a first step, the account and the reminders in one offer; and
+              for a reader who skipped the questions, one of them, a day on. */}
+          <KeepCard className="mt-4" />
+          <SecondChanceCard className="mt-4" />
 
           {/* The Nativity Fast's day (1.8, his pick C of round 9): during the
               fast only, under the streak, its star a little higher each day. */}

@@ -100,7 +100,8 @@ import { DiscordModes } from "@/components/desktop/DiscordModes";
 import { useIsAdmin } from "@/lib/admin/useIsAdmin";
 import { useSpace } from "@/lib/onboarding/useSpace";
 import { useTesting } from "@/lib/onboarding/useTesting";
-import { backToMyOwn, testAs, testFirstOpen } from "@/lib/onboarding/testers";
+import { backToMyOwn, testAs, testFirstOpen, testSignedOut } from "@/lib/onboarding/testers";
+import { previewSignedOut } from "@/lib/onboarding/testing";
 import { saveSpaceToAccount } from "@/lib/onboarding/accountSync";
 import {
   refreshDayOne,
@@ -110,7 +111,7 @@ import {
   writeIntent,
   writeLevel,
 } from "@/lib/onboarding/state";
-import { BACKGROUNDS, FASTING_RULES, LEVELS, depthFor, focusFor } from "@/lib/onboarding/space";
+import { ALL_BACKGROUNDS, FASTING_RULES, LEVELS, depthFor, focusFor } from "@/lib/onboarding/space";
 import { isDeveloperEmail } from "@/lib/dev/developer";
 import { useShowSupporterMark } from "@/lib/profile/useShowSupporterMark";
 import { readLocalSessionUser } from "@/lib/supabase/localSession";
@@ -385,13 +386,21 @@ function TestersSection({ signedIn }: { signedIn: boolean }) {
   const admin = useIsAdmin(signedIn);
   const testing = useTesting();
   const { level, background } = useSpace();
+  // The signed-out preview as the device holds it, read after the page wakes
+  // and whenever a test starts or ends; a tap sets both. Deferred a tick, so
+  // no state is set from the effect's own body.
+  const [signedOut, setSignedOut] = useState(false);
+  useEffect(() => {
+    const id = window.setTimeout(() => setSignedOut(previewSignedOut()), 0);
+    return () => window.clearTimeout(id);
+  }, [testing]);
   if (!admin) return null;
   return (
     <Section id="testers" title={t("testers.title")} hint={t("testers.hint")}>
       <Row icon={<Church size={18} />} label={t("testers.from")}>
         <Track
           value={background}
-          options={BACKGROUNDS.map((b) => ({ value: b, label: t(`onboard.background.${b}`) }))}
+          options={ALL_BACKGROUNDS.map((b) => ({ value: b, label: t(`onboard.background.${b}`) }))}
           onChange={(b) => testAs({ background: b })}
           label={t("testers.from")}
           cols={3}
@@ -405,6 +414,17 @@ function TestersSection({ signedIn }: { signedIn: boolean }) {
           label={t("settings.level")}
         />
       </Row>
+      {/* 1.9, his question 137: the roads' signed-out way through, which an
+          admin, always signed in, could not otherwise walk on their own phone. */}
+      <ButtonRow
+        icon={<User size={18} strokeWidth={1.7} />}
+        label={t("testers.signedOut")}
+        description={signedOut ? t("testers.signedOutOn") : t("testers.signedOutHint")}
+        onClick={() => {
+          testSignedOut(!signedOut);
+          setSignedOut(!signedOut);
+        }}
+      />
       <ButtonRow
         icon={<Sparkle size={16} />}
         label={t("testers.firstOpen")}
