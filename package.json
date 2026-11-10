@@ -28,13 +28,13 @@
   "dependencies": {
     "@capacitor-community/safe-area": "^8.0.1",
     "@capacitor-community/sqlite": "^8.1.0",
-    "@capacitor/android": "^8.4.0",
+    "@capacitor/android": "^8.4.3",
     "@capacitor/app": "^8.1.0",
     "@capacitor/browser": "^8.0.3",
-    "@capacitor/core": "^8.4.0",
+    "@capacitor/core": "^8.4.3",
     "@capacitor/filesystem": "^8.1.2",
     "@capacitor/haptics": "^8.0.2",
-    "@capacitor/ios": "^8.4.0",
+    "@capacitor/ios": "^8.4.3",
     "@capacitor/network": "^8.0.1",
     "@capacitor/preferences": "^8.0.1",
     "@capacitor/push-notifications": "^8.1.1",
@@ -60,7 +60,7 @@
     "stripe": "^22.3.0",
     "tailwind-merge": "^3.6.0",
     "web-push": "^3.6.7",
-    "zod": "^4.4.3"
+    "zod": "^4.6.6"
   },
   "overrides": {
     "d3-color": "^3.1.0",
@@ -71,7 +71,7 @@
   "devDependencies": {
     "@axe-core/playwright": "^4.11.3",
     "@capacitor/assets": "^3.0.5",
-    "@capacitor/cli": "^8.4.0",
+    "@capacitor/cli": "^8.4.3",
     "@lhci/cli": "^0.15.1",
     "@playwright/test": "^1.60.0",
     "@tailwindcss/postcss": "^4",
