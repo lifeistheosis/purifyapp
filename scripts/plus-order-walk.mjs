@@ -53,8 +53,8 @@ const SHEET = '[role="dialog"]';
 
 async function openFromLock(page) {
   await go(page, "/plans/john");
-  // The plan's own Begin, whatever it is drawn as and whatever its longer name for a screen reader.
-  const begin = page.locator("main button, main a").filter({ hasText: /^\s*Begin\s*$/ }).first();
+  // The plan's own Begin. Locked, it wears the Plus mark, so its words are "Begin Purify Plus".
+  const begin = page.locator("main button").filter({ hasText: "Begin" }).first();
   if (!(await begin.waitFor({ timeout: 30000 }).then(() => true, () => false))) return false;
   // The lock is drawn once the app knows this reader has no Plus.
   await page.waitForTimeout(1500);
