@@ -105,7 +105,7 @@ export const READING_THEMES: {
   {
     id: "councils",
     label: "Councils",
-    blurb: "Deep navy and gold",
+    blurb: "Deep navy, cream and silver",
     labelKey: "settings.paletteCouncils",
     blurbKey: "settings.paletteCouncilsHint",
     collection: true,

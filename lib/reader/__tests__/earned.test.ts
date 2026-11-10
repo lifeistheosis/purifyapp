@@ -94,6 +94,33 @@ describe("the marks and the palettes", () => {
     expect(reader).toContain("const key = `${saint.slug}/${content.slug}`;");
   });
 
+  it("say Councils as it has looked since 1.8, deep navy, cream and silver, with no gold in any language", () => {
+    // Gold left every palette in 1.8 (the owner, 2026-10-28: the accent is a
+    // glowing white, never yellow), but Councils' line still said "Deep navy
+    // and gold" in all 21 languages until 2026-11-10 (the Themes chat's note,
+    // docs/1.9-build/notes/themes-fable.md). Each language's own word for
+    // gold, as that line had it:
+    const GOLD: Record<string, RegExp> = {
+      ar: /ذهب/, bg: /злат/i, de: /gold/i, el: /χρυσ/i, en: /gold/i, es: /\boro\b/i, fil: /ginto/i,
+      fr: /\bor\b/i, hu: /arany/i, id: /emas/i, it: /\boro\b/i, ka: /ოქრო/, ne: /सुन/, pl: /złot/i,
+      pt: /\bouro\b/i, ro: /\baur/i, ru: /золот/i, sr: /злат/i, tr: /altın/i, uk: /золот/i, ur: /سنہر/,
+    };
+    const files = fs.readdirSync("lib/i18n/messages").filter((f) => f.endsWith(".json"));
+    expect(files.map((f) => f.replace(".json", "")).sort()).toEqual(Object.keys(GOLD).sort());
+    for (const f of files) {
+      const line = (JSON.parse(fs.readFileSync(`lib/i18n/messages/${f}`, "utf8")) as Record<string, string>)["settings.paletteCouncilsHint"];
+      expect(line, f).not.toMatch(GOLD[f.replace(".json", "")]);
+    }
+    const en = JSON.parse(fs.readFileSync("lib/i18n/messages/en.json", "utf8")) as Record<string, string>;
+    expect(en["settings.paletteCouncilsHint"]).toBe("Deep navy, cream and silver");
+    expect(READING_THEMES.find((t) => t.id === "councils")?.blurb).toBe(en["settings.paletteCouncilsHint"]);
+    // What the palette is: navy ground, cream ink, and the house's white and silver where gold was.
+    const css = fs.readFileSync("app/globals.css", "utf8");
+    const block = /html\[data-reading-mode="councils"\] \{([^}]*)\}/.exec(css)?.[1] ?? "";
+    expect(block).toContain("--color-night: #0a1020;");
+    expect(block).toContain("--color-gold: #eaeaec;");
+  });
+
   it("are named in every language, with how they are earned, and Plus said to a reader without it", () => {
     const keys = ["settings.paletteCouncils", "settings.paletteCouncilsHint", "settings.paletteCappadocian", "settings.paletteCappadocianHint", "settings.paletteProgress", "settings.paletteEarnCouncils", "settings.paletteEarnCappadocian", "settings.palettePlusNote", "settings.paletteEarnedRow"];
     const files = fs.readdirSync("lib/i18n/messages").filter((f) => f.endsWith(".json"));
