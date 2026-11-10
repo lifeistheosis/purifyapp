@@ -1,12 +1,27 @@
 {
   "covers": [
+    "/covers/authors/agatho-of-rome.v1.jpg",
     "/covers/authors/anianus-of-alexandria.v1.jpg",
     "/covers/authors/arsenius-the-great.v1.jpg",
+    "/covers/authors/athanasius-the-great.v1.jpg",
+    "/covers/authors/cyril-of-alexandria.v1.jpg",
+    "/covers/authors/eustathius-of-antioch.v1.jpg",
+    "/covers/authors/gregory-of-nyssa.v1.jpg",
+    "/covers/authors/gregory-theologian.v1.jpg",
+    "/covers/authors/hosius-of-cordova.v1.jpg",
+    "/covers/authors/john-of-damascus.v1.jpg",
+    "/covers/authors/leo-the-great.v1.jpg",
+    "/covers/authors/maximus-the-confessor.v1.jpg",
+    "/covers/authors/meletius-of-antioch.v1.jpg",
+    "/covers/authors/nicholas-the-wonderworker.v1.jpg",
+    "/covers/authors/spyridon-of-trimythous.v1.jpg",
     "/covers/authors/tarasius-of-constantinople.v1.jpg",
     "/covers/councils/ephesus-ferapontov.v1.jpg",
     "/covers/councils/ephesus.v1.jpg",
     "/covers/councils/first-constantinople.v1.jpg",
     "/covers/councils/first-nicaea.v1.jpg",
+    "/covers/davidLagoudera.v1.jpg",
+    "/covers/ezraUriel.v1.jpg",
     "/covers/feelings/anger.v1.jpg",
     "/covers/feelings/despondency.v1.jpg",
     "/covers/feelings/envy.v1.jpg",
@@ -14,6 +29,9 @@
     "/covers/feelings/grief.v1.jpg",
     "/covers/feelings/hatred.v1.jpg",
     "/covers/feelings/loneliness.v1.jpg",
-    "/covers/feelings/love.v1.jpg"
+    "/covers/feelings/love.v1.jpg",
+    "/covers/obadiah.v1.jpg",
+    "/covers/solomonLagoudera.v1.jpg",
+    "/covers/zechariah.v1.jpg"
   ]
 }

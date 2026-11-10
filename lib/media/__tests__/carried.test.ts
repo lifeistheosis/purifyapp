@@ -9,6 +9,12 @@
 //    would leave the app's <picture> with a broken first choice).
 //  - Note 3's pictures are all carried: the councils' icons, the How you
 //    feel doors' and the three new portraits.
+//  - Every portrait a council's Fathers' faces ask the website for is
+//    carried too, so the councils show their faces with no signal, and the
+//    five read-aloud covers new in 1.9 that the 1.8 website does not have
+//    (his yes of 2026-11-10: "The councils' 13 portraits carried in the apps
+//    (+2.1 MB) and the five Bible covers (+0.9 MB): yes").
+//  - Nothing else is carried: the list is those groups and no more.
 //  - In the apps a carried picture's address is the bundle's own, in every
 //    place that decides an address (streamedUrl, coverSrc, heroSrc); every
 //    other cover's is still the website's.
@@ -25,10 +31,12 @@ import path from "node:path";
 
 import { describe, expect, it } from "vitest";
 
+import { COUNCILS } from "@/lib/councils/councils";
 import { CARRIED_COVERS, isCarried } from "@/lib/media/carried";
 import { isStreamedMedia, streamedUrl } from "@/lib/media/streamed";
 import { AUTHOR_COVERS, COUNCIL_COVERS, FEELING_COVERS, WORK_COVERS } from "@/lib/reading/authorCovers";
-import { WORK_ART, coverSrc } from "@/lib/reading/coverArt";
+import { WORK_ART, coverArtFor, coverSrc } from "@/lib/reading/coverArt";
+import { FIGURES, type FigureId } from "@/lib/readAloud/covers";
 import { ICON_RIGHTS } from "@/lib/saints/iconRights";
 import { SITE_URL } from "@/lib/site";
 
@@ -41,12 +49,34 @@ const ROOT = path.resolve(__dirname, "..", "..", "..");
  */
 const NEW_PORTRAITS = [AUTHOR_COVERS["arsenius-the-great"], AUTHOR_COVERS["tarasius-of-constantinople"], WORK_COVERS["anianus-of-alexandria/the-second-bishop"]];
 
+/** The read-aloud covers note 3 added for 1.9 (David and Solomon from Lagoudera, Ezra with the archangel Uriel, Obadiah, Zechariah). */
+const NEW_READ_COVERS: FigureId[] = ["davidLagoudera", "ezraUriel", "obadiah", "solomonLagoudera", "zechariah"];
+
+/**
+ * Every portrait on the website that the seven Ecumenical Councils' Fathers'
+ * faces draw (lib/councils/fathers.ts: a Father's cover art, when it is a
+ * streamed portrait). His yes was for these. A local council's faces are not
+ * carried: the Council of Carthage of 419 draws St Augustine's portrait
+ * (0.13 MB with its AVIF), which still needs the website.
+ */
+function councilPortraits(): string[] {
+  const files = new Set<string>();
+  for (const council of COUNCILS.filter((c) => c.ordinal)) {
+    for (const father of council.principalFathers ?? []) {
+      const art = father.slug ? coverArtFor(father.slug) : null;
+      if (art?.kind === "streamed") files.add(art.file);
+    }
+  }
+  return [...files].sort();
+}
+
 describe("the covers the apps carry", () => {
   it("are files of the website's /covers/, each with its AVIF", () => {
     expect(CARRIED_COVERS.length).toBeGreaterThan(0);
     expect(new Set(CARRIED_COVERS).size).toBe(CARRIED_COVERS.length);
     for (const jpg of CARRIED_COVERS) {
-      expect(jpg, jpg).toMatch(/^\/covers\/[a-z]+\/[a-z0-9-]+\.v\d+\.jpg$/);
+      // A reading room picture lives in a folder of its kind; a read-aloud cover at the root, by its figure's id.
+      expect(jpg, jpg).toMatch(/^\/covers\/(?:[a-z]+\/[a-z0-9-]+|[a-zA-Z0-9]+)\.v\d+\.jpg$/);
       expect(fs.existsSync(path.join(ROOT, "public", jpg)), jpg).toBe(true);
       expect(fs.existsSync(path.join(ROOT, "public", jpg.replace(/\.jpg$/, ".avif"))), `${jpg}: its AVIF`).toBe(true);
     }
@@ -61,7 +91,32 @@ describe("the covers the apps carry", () => {
         return art.file;
       }),
     ];
-    expect([...new Set(note3)].sort()).toEqual([...CARRIED_COVERS].sort());
+    for (const file of note3) expect(isCarried(file), file).toBe(true);
+  });
+
+  it("hold every portrait a council's Fathers' faces ask the website for", () => {
+    const portraits = councilPortraits();
+    // Thirteen with his yes, and St Tarasius's, which note 3 carried already.
+    expect(portraits.length).toBe(14);
+    for (const file of portraits) expect(isCarried(file), file).toBe(true);
+  });
+
+  it("hold the five read-aloud covers new in 1.9, which the 1.8 website does not have", () => {
+    for (const id of NEW_READ_COVERS) {
+      const file = FIGURES[id]?.file;
+      expect(file, id).toBeDefined();
+      expect(isCarried(file!), id).toBe(true);
+    }
+  });
+
+  it("are those groups and no more", () => {
+    const note3 = [
+      ...Object.values(COUNCIL_COVERS).map((art) => art.file),
+      ...Object.values(FEELING_COVERS).map((art) => art.file),
+      ...NEW_PORTRAITS.map((art) => art.file),
+    ];
+    const meant = new Set([...note3, ...councilPortraits(), ...NEW_READ_COVERS.map((id) => FIGURES[id]!.file)]);
+    expect([...meant].sort()).toEqual([...CARRIED_COVERS].sort());
   });
 
   it("are the bundle's own in the apps, and every other cover is still the website's", () => {

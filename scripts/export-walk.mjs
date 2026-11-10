@@ -4039,6 +4039,13 @@ await section(34, async () => {
 // the cover's place, never a broken picture. lib/readAloud/__tests__/
 // covers.test.ts holds the map and the files.
 //
+// From 1.9 the apps carry a short list of covers as well as the website
+// (lib/media/carriedCovers.json, lib/media/__tests__/carried.test.ts): note
+// 3's pictures, the seven councils' portraits and the five read-aloud covers
+// new in 1.9 (his yes of 2026-11-10). Exactly that list ships, each JPEG with
+// its AVIF, and nothing else under /covers/; every other cover is still the
+// website's.
+//
 // From 1.8's second round (the owner's "add everything we left out" of
 // 2026-10-28), the player's controls round 8 A drew and the first build left
 // out: previous and next (the chapters either side that have a recording),
@@ -4049,7 +4056,24 @@ await section(34, async () => {
 await section(35, async () => {
   console.log("\n35. The read-aloud covers and the ambience sheet");
   const en = JSON.parse(fs.readFileSync(path.resolve("lib/i18n/messages/en.json"), "utf8"));
-  must(!fs.existsSync(path.join(OUT, "covers")), "no read-aloud cover ships inside the app: they stay on the website");
+  const carriedList = JSON.parse(fs.readFileSync(path.resolve("lib/media/carriedCovers.json"), "utf8"))
+    .covers.flatMap((jpg) => [jpg, jpg.replace(/\.jpg$/, ".avif")])
+    .sort();
+  const shippedCovers = [];
+  const listCovers = (dir, rel) => {
+    for (const e of fs.readdirSync(dir, { withFileTypes: true })) {
+      if (e.isDirectory()) listCovers(path.join(dir, e.name), `${rel}/${e.name}`);
+      else shippedCovers.push(`${rel}/${e.name}`);
+    }
+  };
+  if (fs.existsSync(path.join(OUT, "covers"))) listCovers(path.join(OUT, "covers"), "/covers");
+  const moreCovers = shippedCovers.filter((f) => !carriedList.includes(f));
+  const missingCovers = carriedList.filter((f) => !shippedCovers.includes(f));
+  must(
+    moreCovers.length === 0 && missingCovers.length === 0,
+    `exactly the carried covers ship inside the app, ${carriedList.length} files, and every other cover stays on the website ` +
+      `(${moreCovers.length ? `more: ${moreCovers.slice(0, 3).join(", ")}` : "none more"}; ${missingCovers.length ? `missing: ${missingCovers.slice(0, 3).join(", ")}` : "none missing"})`,
+  );
   must(fs.existsSync(path.join(OUT, "sections", "bible.jpg")), "and the plate a cover falls back to does");
 
   const { ctx, page, errors } = await open({ width: 390, height: 844, phone: true });

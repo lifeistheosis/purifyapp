@@ -220,10 +220,16 @@ describe("the Holy Fathers principally associated", () => {
     expect(new Set(second).size).toBe(second.length);
   });
 
-  it("asks for a picture where the build says: the website's own, or the website's address in the apps", () => {
+  it("asks for a picture where the build says: the app's own for a carried portrait, the website's address in the apps for any other", () => {
+    // The seven councils' portraits are carried (lib/media/carriedCovers.json, his yes of
+    // 2026-11-10), so the apps draw them with no signal: the bundle's own address in both builds.
     const athanasius = fatherFaces(council("first-nicaea"), true)[0];
-    expect(athanasius.picture?.src).toMatch(/^https:\/\/.+\/covers\/authors\/athanasius-the-great\.v1\.jpg$/);
+    expect(athanasius.picture?.src).toBe("/covers/authors/athanasius-the-great.v1.jpg");
     expect(fatherFaces(council("first-nicaea"), false)[0].picture?.src).toBe("/covers/authors/athanasius-the-great.v1.jpg");
+    // A local council's portrait is not carried: the website's address in the apps (St Augustine at Carthage, 419).
+    const augustine = fatherFaces(council("carthage-419"), true).find((f) => f.href === "/saints/augustine-of-hippo");
+    expect(augustine?.picture?.src).toMatch(/^https:\/\/.+\/covers\/authors\/augustine-of-hippo\.v1\.jpg$/);
+    expect(fatherFaces(council("carthage-419"), false).find((f) => f.href === "/saints/augustine-of-hippo")?.picture?.src).toBe("/covers/authors/augustine-of-hippo.v1.jpg");
   });
 
   // Build 83's walk of the apps with no signal: every streamed portrait gave

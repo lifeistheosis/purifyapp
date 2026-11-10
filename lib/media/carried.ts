@@ -16,6 +16,13 @@ import CARRIED from "./carriedCovers.json";
  * store build comes as a new versioned file, through the covers pack, from
  * the website.
  *
+ * Two more groups join them on his yes of the same day ("The councils' 13
+ * portraits carried in the apps (+2.1 MB) and the five Bible covers
+ * (+0.9 MB): yes"): every portrait the seven Ecumenical Councils' Fathers'
+ * faces ask the website for, so the councils show their faces with no
+ * signal, and the five read-aloud covers new in 1.9 (David and Solomon from
+ * Lagoudera, Ezra, Obadiah, Zechariah), which the 1.8 website does not have.
+ *
  * The list is carriedCovers.json, read here and by the native build, which
  * copies each JPEG and the AVIF beside it into the export
  * (scripts/native-build.mjs, carryCovers). lib/media/__tests__/carried.test.ts
