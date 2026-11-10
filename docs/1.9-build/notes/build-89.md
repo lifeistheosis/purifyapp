@@ -167,6 +167,8 @@ Where it is: for Updates to find (the Android widget is `android/app/src/main/ja
 
 Planned fix (given to Updates the same hour): the widget's tap lands exactly where a reader chooses their patron saint, and that choice is easy to find in the app itself (Settings or You), with one still to him if a screen changes; find the cause, fix it, prove it on the release APK where a phone is needed (the R8 walk), and say plainly whether it is a bug or something build 89 cannot show.
 
+Done (Updates, 2026-11-10): a bug build 89 shows, not a test-build limit. "Choose your saint in Purify" now opens the picker on Android and iPhone (`d9d1f830`), and the widget fills within a second of choosing. A "Patron saint" row in Settings, under The calendar, opens the same picker: his word on his page's 139, about 04:05 UTC, "yes".
+
 ### 18. The Remember the verse widget stays on "Open Purify to refresh" (2026-11-10)
 
 What he saw: the Remember the verse widget on his Android home screen, on build 89. His words: "remember the verse widget also is stuck on "open purify to refresh"".
