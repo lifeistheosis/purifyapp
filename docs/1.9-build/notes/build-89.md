@@ -126,3 +126,11 @@ What he saw: on the Search screen, the soft glow and shade behind the Look in ti
 Where it is: `components/search/CommandPalette.tsx` (`search.lookIn`). A row that scrolls sideways clips everything outside its box, top and bottom too, so a tile's shadow and the lit tile's glow are cut at the row's edge.
 
 Planned fix (on his start): the row gets room inside itself for the glow and the shade (padding above and below, taken back with a negative margin so nothing else moves), and room at its ends, so every tile's light falls off softly; the same check on every sideways row that wears a shadow (the reading room's rows, the Florilegium's starters, Today's cards), checked by eye in the export on all five palettes.
+
+### 14. Your rule: "In which prayers" drawn like "Add prayers one by one" (2026-11-10)
+
+What he saw: on Your rule, "Add prayers one by one" is a row (its icon at the left, the title and line beside it, the arrow at the right), while "In which prayers" under Those you pray for stacks its icon on top and its arrow under the words (`build-89/14-your-rule-rows.png`). His words: "So on this section, as you can see, the add prayers one by one looks different than the in which prayers. That's a UI bug. I want both to look the same. Realistically, I want the in which prayers to look like the add prayers one by one. So fix that UI bug."
+
+Where it is: "Add prayers one by one" in `components/prayers/mine/MyRuleBuilder.tsx`; "In which prayers" (`community.wallAddWhen`) in `components/prayers/mine/RememberedIn.tsx` (also used by `components/prayers/Diptychs.tsx` and `components/community/AddToPrayersSheet.tsx`).
+
+Planned fix (on his start): "In which prayers" takes the same row as "Add prayers one by one", by using the one shared row rather than a second drawing of it, so the two cannot drift apart again; checked in the export with `checkMock`, and the other places that use RememberedIn looked at in the same pass.
