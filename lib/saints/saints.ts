@@ -1318,7 +1318,7 @@ export const SAINTS: Saint[] = [
  {
  slug: "maximus-the-confessor",
  byname: "The Confessor",
- iconUrl: "/saints/icons/maximus-the-confessor.jpg",
+ iconUrl: "/saints/icons/maximus-the-confessor.v2.jpg",
  name: "St. Maximus the Confessor",
  epithet: "Monk · Theologian of the Two Wills of Christ",
  born: "c. 580 (Constantinople)",
@@ -1436,7 +1436,7 @@ export const SAINTS: Saint[] = [
  {
  slug: "cyril-of-alexandria",
  byname: "Seal of the Fathers",
- iconUrl: "/saints/icons/cyril-of-alexandria.jpg",
+ iconUrl: "/saints/icons/cyril-of-alexandria.v2.jpg",
  name: "St. Cyril of Alexandria",
  epithet: "Patriarch of Alexandria · Seal of the Fathers",
  born: "c. 376 (Alexandria or its surrounds)",
@@ -1895,7 +1895,7 @@ export const SAINTS: Saint[] = [
  {
  slug: "apostle-peter",
  byname: "Chief of the Apostles",
- iconUrl: "/saints/icons/apostle-peter.jpg",
+ iconUrl: "/saints/icons/apostle-peter.v2.jpg",
  name: "Holy Apostle Peter",
  epithet: "Chief of the Apostles · The Rock",
  born: "c. AD 1 (Bethsaida of Galilee)",
@@ -3279,7 +3279,7 @@ export const SAINTS: Saint[] = [
  {
  slug: "ephraim-the-syrian",
  byname: "Harp of the Spirit",
- iconUrl: "/saints/icons/ephraim-the-syrian.jpg",
+ iconUrl: "/saints/icons/ephraim-the-syrian.v2.jpg",
  name: "St. Ephraim the Syrian",
  epithet: "Deacon of Edessa · Harp of the Spirit",
  born: "c. 306 (Nisibis)",

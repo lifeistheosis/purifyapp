@@ -1261,6 +1261,57 @@ export const ICON_RIGHTS: Record<string, IconRights> = {
     license: "Public domain",
     evidenceUrl: "https://commons.wikimedia.org/wiki/File:Seraphim_of_Sarov_(after_1903,_priv.coll).jpg",
   },
+  // Four more in place of unsourced files (2026-11-10), each cut from the
+  // picture his books already wear, as St Seraphim's above: St Cyril's from
+  // the Cretan icon, St Maximus's and St Ephraim's from the Nea Moni mosaics,
+  // the Apostle Peter's from the Kirillo-Belozersky board that is also his
+  // page's large picture. Nothing new was fetched: the pictures and their
+  // rights were settled with the covers. Each is the cover trimmed at both
+  // sides to the carried icons' 3 by 4, at 315 by 420.
+  "cyril-of-alexandria.v2.jpg": {
+    status: "verified",
+    inspectedOn: "2026-11-10",
+    alt: "A painted icon of a bishop with a long dark beard, in a white cowl with a black cross and an omophorion with large black crosses, blessing and holding a red jewelled Gospel, on a gold ground with his name in red.",
+    work: "Cretan icon of St Cyril and St Athanasius of Alexandria: St Cyril alone, under his name (the picture on his books' covers, lib/reading/authorCovers.ts)",
+    artist: "Unknown Cretan painter",
+    workDate: "16th to 17th century",
+    source: "Wikimedia Commons",
+    license: "Public domain",
+    evidenceUrl: "https://commons.wikimedia.org/wiki/File:Cretan_Icon_of_Saint_Kyrillos_and_Saint_Athanasios_of_Alexandria.jpg",
+  },
+  "maximus-the-confessor.v2.jpg": {
+    status: "verified",
+    inspectedOn: "2026-11-10",
+    alt: "A mosaic of a monk with short brown hair and a full beard in a blue-grey mantle, holding a small cross and raising his open palm, in a gold medallion edged with a beaded border, his name in dark letters on either side.",
+    work: "Mosaic medallion of St Maximus the Confessor, Nea Moni, Chios (the picture on his books' covers, lib/reading/authorCovers.ts)",
+    artist: "Unknown",
+    workDate: "11th century",
+    source: "Wikimedia Commons",
+    license: "Public domain",
+    evidenceUrl: "https://commons.wikimedia.org/wiki/File:Maximus_the_Confessor_(mosaic).jpg",
+  },
+  "ephraim-the-syrian.v2.jpg": {
+    status: "verified",
+    inspectedOn: "2026-11-10",
+    alt: "A mosaic of a monk with short grey hair and a short grey beard in a dark olive cloak, on a field of gold tesserae with parts of dark Greek letters at both edges.",
+    work: "Mosaic of St Ephraim the Syrian, Nea Moni, Chios (the picture on his books' covers, lib/reading/authorCovers.ts)",
+    artist: "Unknown",
+    workDate: "11th century",
+    source: "Wikimedia Commons",
+    license: "Public domain",
+    evidenceUrl: "https://commons.wikimedia.org/wiki/File:Ephrem_the_Syrian_(mosaic_in_Nea_Moni).jpg",
+  },
+  "apostle-peter.v2.jpg": {
+    status: "verified",
+    inspectedOn: "2026-11-10",
+    alt: "An apostle with curly grey hair and a short beard, bowing to the right in a dark blue tunic and an ochre cloak, holding an unrolled scroll written in Slavonic, on a gold ground: a cut of the Kirillo-Belozersky board.",
+    work: "Deesis row of the iconostasis of the Dormition cathedral, Kirillo-Belozersky monastery: St Peter the Apostle (his page's large picture, lib/saints/heroes.ts, and his books' cover)",
+    artist: "Anonymous Russian icon painters",
+    workDate: "1497",
+    source: "Wikimedia Commons",
+    license: "Public domain",
+    evidenceUrl: "https://commons.wikimedia.org/wiki/File:Kirillo-Belozersky_iconostasis_08_-_Peter.jpg",
+  },
 };
 
 /**
@@ -1334,8 +1385,6 @@ export const UNVERIFIED_ICONS: Record<string, string> = {
     "No source, licence or attribution recorded. Fetched before scripts/fetch-missing-icons.mjs had a licence gate. Referenced by SAINTS.iconUrl for apostle-matthias and AUTHOR_ICONS. 304x420 JPG, 33 KB. Not yet opened and inspected.",
   "apostle-paul.jpg":
     "No source, licence or attribution recorded. Fetched before scripts/fetch-missing-icons.mjs had a licence gate. Referenced by SAINTS.iconUrl for apostle-paul and AUTHOR_ICONS. 268x420 JPG, 28 KB. Not yet opened and inspected.",
-  "apostle-peter.jpg":
-    "No source, licence or attribution recorded. Fetched before scripts/fetch-missing-icons.mjs had a licence gate. Referenced by SAINTS.iconUrl for apostle-peter and AUTHOR_ICONS. 281x420 JPG, 25 KB. Not found on Commons by search and picture hash (2026-11-10, the icon batches).",
   "apostle-simon-zealot.jpg":
     "No source, licence or attribution recorded. Fetched before scripts/fetch-missing-icons.mjs had a licence gate. Referenced by SAINTS.iconUrl for apostle-simon-zealot and AUTHOR_ICONS. 281x420 JPG, 24 KB. Not yet opened and inspected.",
   "athanasius-the-great.v2.jpg":
@@ -1352,12 +1401,8 @@ export const UNVERIFIED_ICONS: Record<string, string> = {
     "No source, licence or attribution recorded. Fetched before scripts/fetch-missing-icons.mjs had a licence gate. Referenced by SAINTS.iconUrl for constantine-the-great. 322x420 JPG, 30 KB. Not yet opened and inspected.",
   "cyril-and-methodius.jpg":
     "No source, licence or attribution recorded. Fetched before scripts/fetch-missing-icons.mjs had a licence gate. Referenced by SAINTS.iconUrl for cyril-and-methodius. 336x420 JPG, 33 KB. Not yet opened and inspected.",
-  "cyril-of-alexandria.jpg":
-    "No source, licence or attribution recorded. Fetched before scripts/fetch-missing-icons.mjs had a licence gate. Referenced by SAINTS.iconUrl for cyril-of-alexandria and AUTHOR_ICONS. 316x420 JPG, 21 KB. Opened 2026-11-10 (the icon batches): a modern icon inscribed in English, SAINT CYRIL PATR. OF ALEXANDRIA. Not found on Commons by search and picture hash. To be swapped for a public-domain icon, or the plate.",
   "dumitru-staniloae.jpg":
     "No source, licence or attribution recorded. Fetched before scripts/fetch-missing-icons.mjs had a licence gate. Referenced by SAINTS.iconUrl for dumitru-staniloae. 336x420 JPG, 38 KB. Not yet opened and inspected.",
-  "ephraim-the-syrian.jpg":
-    "No source, licence or attribution recorded. Fetched before scripts/fetch-missing-icons.mjs had a licence gate. Referenced by SAINTS.iconUrl for ephraim-the-syrian. 305x420 JPG, 26 KB. Not found on Commons by search and picture hash (2026-11-10, the icon batches).",
   "epiphanius-of-salamis.jpg":
     "No source, licence or attribution recorded. Fetched before scripts/fetch-missing-icons.mjs had a licence gate. Referenced by SAINTS.iconUrl for epiphanius-of-salamis. 312x420 JPG, 27 KB. Not yet opened and inspected.",
   "eustathius-of-antioch.jpg":
@@ -1410,8 +1455,6 @@ export const UNVERIFIED_ICONS: Record<string, string> = {
     "No source, licence or attribution recorded. Fetched before scripts/fetch-missing-icons.mjs had a licence gate. Referenced by SAINTS.iconUrl for mary-magdalene and AUTHOR_ICONS. 310x420 JPG, 34 KB. Not yet opened and inspected.",
   "mary-of-egypt.jpg":
     "No source, licence or attribution recorded. Fetched before scripts/fetch-missing-icons.mjs had a licence gate. Referenced by SAINTS.iconUrl for mary-of-egypt and AUTHOR_ICONS. 350x410 JPG, 27 KB. Not yet opened and inspected.",
-  "maximus-the-confessor.jpg":
-    "No source, licence or attribution recorded. Fetched before scripts/fetch-missing-icons.mjs had a licence gate. Referenced by SAINTS.iconUrl for maximus-the-confessor and AUTHOR_ICONS. 286x420 JPG, 23 KB. Opened 2026-11-10 (the icon batches): an icon of a grey-bearded monk on a gold ground holding a scroll, his name in Greek. Not found on Commons by search and picture hash; its age not yet settled.",
   "nicholas-of-cabasilas.jpg":
     "No source, licence or attribution recorded. Fetched before scripts/fetch-missing-icons.mjs had a licence gate. Referenced by SAINTS.iconUrl for nicholas-cabasilas. 315x420 JPG, 36 KB. Not yet opened and inspected.",
   "niketas-the-goth.jpg":

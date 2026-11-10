@@ -85,7 +85,7 @@ describe("shopSaints", () => {
       slug: "apostle-peter",
       name: "Holy Apostle Peter",
       shortName: "Apostle Peter",
-      iconUrl: "/saints/icons/apostle-peter.jpg",
+      iconUrl: "/saints/icons/apostle-peter.v2.jpg",
       pieces: 1,
     });
   });

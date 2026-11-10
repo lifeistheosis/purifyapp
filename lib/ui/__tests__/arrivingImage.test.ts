@@ -294,7 +294,7 @@ describe("an avatar as the server draws it", () => {
   it("in the shop: the hover's zoom moves the frame, and the picture in it arrives on its own", () => {
     const html = draw(
       createElement(SaintAvatar, {
-        saint: { shortName: "Apostle Peter", iconUrl: "/saints/icons/apostle-peter.jpg" },
+        saint: { shortName: "Apostle Peter", iconUrl: "/saints/icons/apostle-peter.v2.jpg" },
         sizes: "64px",
         className: "size-16",
         imageClassName: "transition-transform group-hover:scale-[1.06]",
