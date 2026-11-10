@@ -16,6 +16,8 @@
 import fs from "node:fs";
 import path from "node:path";
 
+import { scanSource } from "./i18n/scan.mjs";
+
 const ROOT = path.resolve(path.dirname(new URL(import.meta.url).pathname.replace(/^\/([A-Za-z]:)/, "$1")), "..");
 const MESSAGES_DIR = path.join(ROOT, "lib", "i18n", "messages");
 const ALLOWLIST_PATH = path.join(ROOT, "scripts", "i18n", "scan-allowlist.json");
@@ -214,67 +216,10 @@ if (doScan || triageDirs) {
     ? JSON.parse(fs.readFileSync(ALLOWLIST_PATH, "utf8"))
     : { substrings: [], files: [] };
 
-  const PROP_RE = /(?:title|aria-label|placeholder|alt|label)=\s*"([^"]{3,})"/g;
-  // JSX text: > ...letters... < on one line, not starting with { (an
-  // expression) and containing at least one ASCII letter run of 3+.
-  const TEXT_RE = />\s*([^<>{}\n]*[A-Za-z]{3}[^<>{}\n]*?)\s*</g;
-
+  // What counts as words a reader sees, and what is code read as words, is
+  // scripts/i18n/scan.mjs (held both ways by lib/i18n/__tests__/hardcodedScan.test.ts).
   function scanFile(rel) {
-    const full = path.join(ROOT, rel);
-    // Blank out comments (keeping newlines for line numbers) so doc
-    // comments and type annotations in them cannot match.
-    const src = fs
-      .readFileSync(full, "utf8")
-      .replace(/\/\*[\s\S]*?\*\//g, (c) => c.replace(/[^\n]/g, " "))
-      .replace(/(^|[^:])\/\/[^\n]*/g, (c) => c.replace(/[^\n]/g, " "));
-    const hits = [];
-    for (const re of [PROP_RE, TEXT_RE]) {
-      re.lastIndex = 0;
-      let m;
-      while ((m = re.exec(src))) {
-        const text = m[1].trim();
-        if (!/[A-Za-z]{3}/.test(text)) continue;
-        // Single identifier-like words in a text position are almost
-        // always TS generics (Promise<void>, ReactNode) rather than
-        // copy; eslint jsx-no-literals is the net for one-word JSX
-        // text. Props (title=, aria-label=) are always checked.
-        if (re === TEXT_RE && !text.includes(" ") && text.length < 10) continue;
-        // JSX ternary/expression connectors between two tags, e.g.
-        // ") : headline ? (" or "cond === x ? (" — code, not copy.
-        if (re === TEXT_RE && /^[)\]}].*[({[]$/.test(text)) continue;
-        if (re === TEXT_RE && /[({[]$/.test(text) && /[?=&|]/.test(text)) continue;
-        // The two guards above only catch a code fragment whose brackets sit
-        // at its very ends. A match can also slice through the MIDDLE of a
-        // call: `if (Math.abs(dx) > 48) step(dx < 0 ? 1 : -1)` hands this
-        // regex "48) step(dx", because the > and the < read as tag
-        // delimiters. It begins with an operand, so neither anchored guard
-        // fires. What gives it away is a closing bracket with no opening
-        // bracket before it, which balanced prose cannot produce. Copy that
-        // opens its own parenthetical, "Read more (opens a new tab)", is
-        // still flagged, because there the open comes first.
-        if (re === TEXT_RE) {
-          const close = text.search(/[)\]}]/);
-          const open = text.search(/[({[]/);
-          if (close !== -1 && (open === -1 || close < open)) continue;
-        }
-        // An object literal between two tags is code: `<T .../>, title: <T`
-        // hands this regex ", title:", and `{ start: x > 4, end: y < max }`
-        // hands it "4, end: el.scrollLeft". Prose does not start with a comma
-        // and end on a colon, or read as `operand, key: member.access`.
-        if (re === TEXT_RE && /^,\s*\w+:$/.test(text)) continue;
-        if (re === TEXT_RE && /^\w+,\s*\w+:\s*\w+(\.\w+)+$/.test(text)) continue;
-        // Template-literal interiors are code.
-        if (text.includes("${")) continue;
-        // Comparison/boolean expressions spanning tag-like operators
-        // (a > b && c < d) are code, not copy.
-        if (/^=|&&|\|\|/.test(text) || /^[=!<>]/.test(text)) continue;
-        if (text.startsWith("(") && text.includes(".")) continue;
-        if (allowlist.substrings.some((s) => text.includes(s))) continue;
-        const line = src.slice(0, m.index).split("\n").length;
-        hits.push({ line, text: text.slice(0, 60) });
-      }
-    }
-    return hits;
+    return scanSource(fs.readFileSync(path.join(ROOT, rel), "utf8"), allowlist.substrings);
   }
 
   function* walk(dir) {
