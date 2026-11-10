@@ -42,10 +42,74 @@ function Forward() {
 }
 
 /**
+ * Notices Purify's moderators send, which stand under "From Purify" and not
+ * with what other readers sent: a post or reply approved (written as from
+ * "Purify", lib/community/moderation.ts), and something taken down, with its
+ * reason (lib/community/removal.ts).
+ */
+const FROM_PURIFY: ReadonlySet<CommunityNotification["kind"]> = new Set(["approved", "removed"]);
+
+/** One notice as a row: what happened, when, and where it opens. */
+function NoticeRow({
+  n,
+  first,
+  fresh,
+  locale,
+  onClose,
+}: {
+  n: CommunityNotification;
+  first: boolean;
+  fresh: ReadonlySet<string>;
+  locale: string;
+  onClose: () => void;
+}) {
+  const href = hrefOf(n);
+  const isNew = fresh.has(n.id) || !n.read_at;
+  const body = (
+    <>
+      <span className="min-w-0 flex-1">
+        <span className={cn("block font-sans text-detail leading-snug", isNew ? "text-paper" : "text-paper/70")}>
+          <NoticeLine n={n} />
+        </span>
+        <span className="mt-0.5 block truncate font-sans text-caption text-paper/45">
+          {relativeTime(n.created_at, locale)}
+          {n.excerpt ? (
+            <>
+              {" · "}
+              <span className="font-serif italic">{n.excerpt}</span>
+            </>
+          ) : null}
+        </span>
+        {n.kind === "removed" ? (
+          <span className="mt-0.5 block font-sans text-caption text-paper/60">
+            <NoticeAppeal n={n} />
+          </span>
+        ) : null}
+      </span>
+      {href ? <Forward /> : null}
+    </>
+  );
+  return (
+    <li className={first ? undefined : "border-t border-paper/[0.06]"}>
+      {href ? (
+        <Link href={href} onClick={onClose} className={cn(ROW, "transition-colors active:bg-paper/[0.04]")}>
+          {body}
+        </Link>
+      ) : (
+        // Nothing left to open (a row from before profiles whose
+        // post is gone): said, but not offered as a link.
+        <div className={ROW}>{body}</div>
+      )}
+    </li>
+  );
+}
+
+/**
  * The bell's sheet, from the phone tab bar (NotificationsButton): what other
  * readers sent (replies, mentions, follows, prayers), then what Purify sent
- * (What's new). One place for both, where the bell used to open the patch
- * notes and the inbox could only be found inside Chat.
+ * (a post approved or taken down, with its reason, then What's new). One place
+ * for both, where the bell used to open the patch notes and the inbox could
+ * only be found inside Chat.
  *
  * Rows that came in since the reader last looked are written brighter. No
  * dot, and no count: the sheet is already the place the reader chose to look.
@@ -72,6 +136,8 @@ export function NotificationsSheet({
   const pathname = usePathname() ?? "/";
   const inbox = useInbox();
   const rows = inbox.notifications.slice(0, SHOWN);
+  const fromReaders = rows.filter((n) => !FROM_PURIFY.has(n.kind));
+  const fromPurify = signedIn && inbox.loaded ? rows.filter((n) => FROM_PURIFY.has(n.kind)) : [];
 
   return (
     <Sheet open={open} onClose={onClose} title={t("settings.notifications")} bodyClassName="pt-1">
@@ -97,51 +163,13 @@ export function NotificationsSheet({
               </li>
             ))}
           </ul>
-        ) : rows.length === 0 ? (
+        ) : fromReaders.length === 0 ? (
           <p className={cn(INDEX_LIST_LOOK, "px-4 py-3 font-sans text-detail text-paper/55")}>{t("notifications.readersEmpty")}</p>
         ) : (
           <ul className={INDEX_LIST_LOOK}>
-            {rows.map((n, i) => {
-              const href = hrefOf(n);
-              const isNew = fresh.has(n.id) || !n.read_at;
-              const body = (
-                <>
-                  <span className="min-w-0 flex-1">
-                    <span className={cn("block font-sans text-detail leading-snug", isNew ? "text-paper" : "text-paper/70")}>
-                      <NoticeLine n={n} />
-                    </span>
-                    <span className="mt-0.5 block truncate font-sans text-caption text-paper/45">
-                      {relativeTime(n.created_at, locale)}
-                      {n.excerpt ? (
-                        <>
-                          {" · "}
-                          <span className="font-serif italic">{n.excerpt}</span>
-                        </>
-                      ) : null}
-                    </span>
-                    {n.kind === "removed" ? (
-                      <span className="mt-0.5 block font-sans text-caption text-paper/60">
-                        <NoticeAppeal n={n} />
-                      </span>
-                    ) : null}
-                  </span>
-                  {href ? <Forward /> : null}
-                </>
-              );
-              return (
-                <li key={n.id} className={i > 0 ? "border-t border-paper/[0.06]" : undefined}>
-                  {href ? (
-                    <Link href={href} onClick={onClose} className={cn(ROW, "transition-colors active:bg-paper/[0.04]")}>
-                      {body}
-                    </Link>
-                  ) : (
-                    // Nothing left to open (a row from before profiles whose
-                    // post is gone): said, but not offered as a link.
-                    <div className={ROW}>{body}</div>
-                  )}
-                </li>
-              );
-            })}
+            {fromReaders.map((n, i) => (
+              <NoticeRow key={n.id} n={n} first={i === 0} fresh={fresh} locale={locale} onClose={onClose} />
+            ))}
           </ul>
         )}
       </section>
@@ -149,7 +177,11 @@ export function NotificationsSheet({
       <section className="mt-6">
         <Heading>{t("notifications.fromPurify")}</Heading>
         <ul className={INDEX_LIST_LOOK}>
-          <li>
+          {/* What Purify's moderators sent this reader, newest first, above What's new. */}
+          {fromPurify.map((n, i) => (
+            <NoticeRow key={n.id} n={n} first={i === 0} fresh={fresh} locale={locale} onClose={onClose} />
+          ))}
+          <li className={fromPurify.length > 0 ? "border-t border-paper/[0.06]" : undefined}>
             <Link href="/whats-new" onClick={onClose} className={cn(ROW, "transition-colors active:bg-paper/[0.04]")}>
               <span className="min-w-0 flex-1">
                 <span className={cn("block font-heading text-ui font-semibold leading-tight", whatsNewFresh ? "text-paper" : "text-paper/75")}>
