@@ -261,8 +261,18 @@ function localContentEnabled() {
   return found[1] === "true";
 }
 
+// The tools a step runs (`next` above all) live in node_modules/.bin. `npm run
+// build:android` puts that folder on PATH; a bare `node scripts/native-build.mjs`
+// does not, and the Android workflow has called it bare since 52a17faca, which
+// left `next` not found (run 42881412873). So the folder goes first here, however
+// the script was started.
+const BIN = path.join(ROOT, "node_modules", ".bin");
+
 function run(cmd, extraEnv = {}) {
-  execSync(cmd, { stdio: "inherit", env: { ...process.env, ...extraEnv } });
+  const env = { ...process.env, ...extraEnv };
+  const key = Object.keys(env).find((k) => k.toUpperCase() === "PATH") ?? "PATH";
+  env[key] = [BIN, env[key]].filter(Boolean).join(path.delimiter);
+  execSync(cmd, { stdio: "inherit", env });
 }
 
 // Prune the RSC prefetch payload duplicate that `next build` emits per route.
