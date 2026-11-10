@@ -25,7 +25,9 @@
 //                down a box's edge (1.7, notes 21 and 24)
 //   mirror       everything mirrors in Arabic; what stays put was placed
 //                with left or right, not start or end
-//   emdash       no em dash in a word, a label or a placeholder
+//   emdash       no em dash in a word, a label or a placeholder; words the
+//                app did not write (a Father's, a council's, as their
+//                edition prints them) say so on themselves, as below
 //   rays         no burst of separate light rays (a repeating conic gradient,
 //                on a thing or its ::before or ::after): vibe-coded AI slop,
 //                the owner's word of 2026-11-08; light is a soft pool
@@ -34,6 +36,7 @@
 // A piece meant to break one of these says so on itself, with its reason,
 // and the report lists every such allowance:
 //   data-mock-allow="stripe" data-mock-why="the reading progress bar"
+//   data-mock-allow="emdash" data-mock-why="a Father's own words, as his edition prints them"
 //
 // Use, from a mockup's own script (it leaves the page as it found it):
 //   import { checkMock, printMockCheck } from "./mock-check.mjs";
@@ -211,7 +214,7 @@ function look(arg) {
   }
 
   // The stripe measure alone, for the walk over every screen (stripesOn).
-  if (only === "stripe") return { words: [], placeholders: [], controls: [], paints: [], stripes, rays: [], emDash: false };
+  if (only === "stripe") return { words: [], placeholders: [], controls: [], paints: [], stripes, rays: [], emDash: false, dashes: [] };
 
   const words = [];
   const walker = document.createTreeWalker(root, NodeFilter.SHOW_TEXT);
@@ -298,9 +301,24 @@ function look(arg) {
     }
   }
 
-  const said = [root.innerText, ...[root, ...root.querySelectorAll("[aria-label], [placeholder], [title], [alt]")].flatMap((e) => ["aria-label", "placeholder", "title", "alt"].map((a) => e.getAttribute(a) || ""))].join("\n");
+  // An em dash. What is said is what is shown (innerText) and what is read
+  // out (the labels). A dash in words the app did not write, the Fathers'
+  // and the councils' as their editions print them, is allowed by name on
+  // the piece that holds them; a label is the app's own, and never is.
+  const labels = [root, ...root.querySelectorAll("[aria-label], [placeholder], [title], [alt]")].flatMap((e) => ["aria-label", "placeholder", "title", "alt"].map((a) => e.getAttribute(a) || "")).join("\n");
+  const dashes = [];
+  if (root.innerText.includes("\u2014")) {
+    const texts = document.createTreeWalker(root, NodeFilter.SHOW_TEXT);
+    for (let t = texts.nextNode(); t; t = texts.nextNode()) {
+      const el = t.parentElement;
+      if (!el || !t.textContent.includes("\u2014")) continue;
+      // Words that are not drawn are not said.
+      if (el.getClientRects().length === 0 || getComputedStyle(el).visibility === "hidden") continue;
+      dashes.push({ name: nameOf(el), allow: allowance(el, "emdash") });
+    }
+  }
 
-  return { words, placeholders, controls, paints, stripes, rays, emDash: said.includes("\u2014") };
+  return { words, placeholders, controls, paints, stripes, rays, emDash: labels.includes("\u2014") || dashes.some((d) => !d.allow), dashes: dashes.filter((d) => d.allow) };
 }
 
 /**
@@ -500,6 +518,7 @@ export async function checkMock(page, selector, { allowGold = false, palettes = 
       else fail("rays", null, r.name, "a burst of separate light rays (a repeating conic gradient): vibe-coded, the owner's word of 2026-11-08; light is a soft pool");
     }
     if (dark.emDash) fail("emdash", null, "the words", "an em dash; use a comma, a colon or a full stop");
+    for (const d of dark.dashes) allow("emdash", d.name, d.allow);
 
     // Arabic: everything is where it was, measured from the other side.
     await wear(page, before.mode, before.look);
@@ -616,6 +635,7 @@ const FIXTURES = `
   <span class="relative mt-3 block h-[72px] w-[72px] overflow-hidden rounded-[18px] bg-night-soft">
     <img alt="" src="data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==" class="absolute inset-0 h-full w-full object-cover" style="object-position:30% 40%;transform:scale(1.25);transform-origin:30% 40%">
   </span>
+  <blockquote lang="en" data-mock-allow="emdash" data-mock-why="a Father's own words, as his edition prints them" class="mt-3 font-serif text-body italic leading-[1.6] text-paper/85">Chapter I.\u2014Introduction. Reason for writing</blockquote>
 </div>`;
 
 async function selfTest() {
@@ -632,11 +652,13 @@ async function selfTest() {
     printMockCheck(good, "the same parts from the house's classes");
     const caught = new Set(bad.failures.map((f) => f.check));
     const missed = ["contrast", "target", "glyph", "palette", "gold", "stripe", "mirror", "emdash", "rays"].filter((c) => !caught.has(c));
-    const ok = missed.length === 0 && good.failures.length === 0;
+    // A Father's own words keep their edition's dash, by name; the allowance is said in the report.
+    const named = good.allowed.some((a) => a.startsWith("emdash on "));
+    const ok = missed.length === 0 && good.failures.length === 0 && named;
     console.log(
       ok
         ? "\nself-test: every mistake caught, and the house's own parts pass"
-        : `\nself-test FAILED: ${missed.length ? `missed ${missed.join(", ")}` : ""}${good.failures.length ? ` the house's parts failed ${good.failures.length} times` : ""}`,
+        : `\nself-test FAILED: ${missed.length ? `missed ${missed.join(", ")}` : ""}${good.failures.length ? ` the house's parts failed ${good.failures.length} times` : ""}${named ? "" : " an em dash allowed by name was not listed"}`,
     );
     return ok;
   } finally {
