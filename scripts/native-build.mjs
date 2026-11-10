@@ -222,6 +222,12 @@ const STASH_PATHS = [
   // our site so the page fetches nothing from Google. Web only, like the page
   // (app/invest, above). Appended, for the slot-index reason above.
   ["public", "invest"],
+  // The route that answers a missing icon file with a 404 (1.9,
+  // app/(app)/saints/icons/[file]/route.ts): a missing file on the website
+  // fell through to a work's page and answered 200. The apps carry the
+  // icons and have no server to answer with. Appended, for the slot-index
+  // reason above.
+  ["app", "(app)", "saints", "icons"],
 ];
 
 function slot(i) {
