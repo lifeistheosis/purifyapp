@@ -437,3 +437,149 @@ work, since it is every row's in the app and not these pages' alone: a row's
 English name now stands at the far side of the row from its mark (it reads
 left to right, so it starts at the left). `rtl:text-right` on a row's name
 would hold it by its mark.
+
+## The Arianism find, and the sweep after it (2026-11-10)
+
+Found while checking the new heresy page by eye: under "Refuted by the
+Fathers", beside St Athanasius's face, the Arianism page quoted three
+chapter summaries written by the edition's editor as if they were his words.
+The arbiter's word (16:41 UTC): take it whole, (a) the rule for the two
+works with the before and after of every place, (b) a sweep of every
+citation the app shows as a Father's words, with a test, (c) the paragraphs
+of his own words the three cards should quote, proposed for the owner. At
+18:19 UTC it added the editors' lines a reader could see on two answers of
+Apologetics.
+
+### What was wrong
+
+The library knows an edition's chapter heading by a rule per work
+(`lib/saints/divisions.ts`), and a card never quotes a paragraph the rule
+knows as a heading (`lib/citations/resolve.ts`). The rule for St
+Athanasius's works was written on 2026-10-23 at 14:49 (`8e65a64e`) and looked
+for a chapter's number followed by two hyphens. The same day at 18:17
+(`ed7f910c`) the works were read again from the edition, which prints a long
+dash there. From then on the rule knew none of the 30 chapter headings of
+the Four Discourses and none of the 7 of On the Nicene Definition. Three
+things shared the two-hyphen assumption and so failed together: the rule,
+the reader's own line that prints a heading's words, and the one test that
+guarded a card against quoting a heading.
+
+Two neighbours had the same fault in other clothes. On the Councils opens
+its parts with summaries that carry no chapter number at all. Discourse IV
+is headed by nine summaries of the form "§§1-5." and not by chapters. And in
+St John of Damascus's Exact Exposition, Book III chapter 2's heading stands
+inside chapter 1's section, run on.
+
+### What changed
+
+| File | Change |
+| --- | --- |
+| `lib/saints/divisions.ts` | A chapter heading is known with either mark after its number. A work can name its summaries (`summary`: by a pattern, or by their opening words), and a title rule can name a heading that runs on inside a section (`heading`). A heading stands where the text directly under it stands (`markUnder`), so no paragraph of the author's moves. |
+| `components/saints/WritingReader.tsx` | A summary is shown whole as the edition's own line; a chapter heading keeps its words without the number, as before. |
+| `lib/citations/__tests__/quotes.test.ts` | Every quotation cited to a place in a work, wherever the app shows it, is refused if that place is a heading or a summary. A card of a topic or a heresy is checked twice: by how the paragraph reads and by what the library knows. A card that quotes a paragraph which is another's words whole (a homily's opening verse) is held by name. |
+| `lib/saints/__tests__/editionHeadings.test.ts` (new) | Across the whole library: every paragraph that reads as an edition's heading is known as one, summaries open the sections they belong to, and no work without a rule has any. |
+| `lib/saints/__tests__/divisions.test.ts` | The four works' counts and places, and "22 (continued)" carrying on where it stood. |
+| `components/apologetics/ApologeticsReader.tsx` | The line "being assembled and will be added here" and the editors' note at the foot are out. An answer with no Fathers yet says nothing in their place. |
+| `lib/prayers/__tests__/noStandIns.test.ts` | Extended, with the chat that wrote it told: no answer of Apologetics shows a reader words written for editors, in the page or in what the page is given. |
+| `components/theology/RelatedRail.tsx` | The count beside a group's name passes contrast on all five palettes (measured by the chat that holds build 90 note 4). |
+| `docs/1.9-build/notes/fathers-passages-proposed.md` (new) | The passages proposed for the owner's OK. |
+
+### Before and after, every place in the works
+
+Taken by listing every paragraph's place before the change and after it,
+and comparing the two lists.
+
+- **Four Discourses Against the Arians**: 39 headings known where none was
+  (30 chapter headings, 9 summaries in Discourse IV). The 26 paragraphs that
+  follow a heading keep their place, and the heading now begins it. No other
+  paragraph moved. Every section's name is as it was.
+- **On the Nicene Definition**: 7 headings known where none was. 6
+  paragraphs after a heading keep their place. Nothing else moved.
+- **On the Councils**: 4 summaries known where none was. 1 paragraph after
+  a heading keeps its place. Nothing else moved.
+- **An Exact Exposition of the Orthodox Faith**: one section. The paragraphs
+  under Book III chapter 2's run-on heading are cited as chapter 2, where
+  they were cited as chapter 1.
+- **The other 58 works that have a rule**: nothing changed, paragraph for
+  paragraph.
+- **The library**: 151 paragraphs read as an edition's heading, and all 151
+  are known as one.
+
+The first try was simply to accept the long dash. The comparison caught what
+that would have done: an old look-ahead that had never run would have moved
+the paragraphs marked "22 (continued)" into the next section, ten citation
+lines wrong in two works. Hence `markUnder`.
+
+### The sweep
+
+Counted by script, then read by eye where a script cannot judge.
+
+- **Cards of a topic or a heresy** (the app chooses the paragraph): 47
+  citations, 29 on topics and 18 on heresies, at 34 places. 33 are quoted in
+  the Father's words and 14 show the line only (retellings and gatherings,
+  as before). Before the fix 7 of them, at 3 places, quoted the edition's
+  summary as St Athanasius's words: Arianism's three, the same three on The
+  Holy Trinity, and the first again on The Incarnation. After it, none.
+- **Quotations with their own place written down**: 167 across the app (32
+  on saints' pages, 1 in a life, 3 in councils' accounts, 1 in a heresy's
+  text, 12 for Today, 63 in the studies of Theology, 9 in Apologetics, 12 in
+  History, 34 in the reading room's collections). None stands on a heading
+  or a summary, and none is another writer's words given to a Father. The
+  two that stand in a paragraph wholly inside quotation marks are St Justin
+  speaking for himself in the Dialogue; St Polycarp's are his own words in
+  the account of his martyrdom.
+- **Found beside it**: 4 cards of the heresies (Sabellianism, Marcellianism,
+  Photinianism, Paulianism) quote the verse St John Chrysostom's homily
+  opens on, under his face, where our line above each describes a paragraph
+  of his own further down. Which words a Father is quoted as saying is the
+  owner's choice, so those paragraphs are proposed with the rest and the
+  four wait by name in the test; no fifth can join them.
+- The Florilegium's starters are Scripture only, held to the app's Bible by
+  their own test.
+
+### Found, and left
+
+- The file of On the Councils repeats the edition's caption "Blasphemies of
+  Arius." at the end of §15's paragraph and again as the next paragraph. A
+  blemish in the text as held; it belongs to the chat that has the Fathers'
+  works.
+- A quoted paragraph keeps the edition's number at its front ("11. At his
+  suggestion"), and the line under it says §11 as well. 10 of the 33 quoted
+  cards show it. The card could leave the number to the line. Asked, not
+  done.
+- The Incarnation's card for St Cyril's Commentary on John shows nine words
+  that start mid-sentence under a label for a later chapter. The labels and
+  the dropped lines of that work are already in another chat's hands.
+- The file of the Homilies on John opens Homily 2 and Homily 3 on the same
+  fragment. Told to the same chat.
+- A study of Theology still shows its `origin` line at its foot
+  (`StudyCurated`, `components/theology/StudyPartText.tsx`). It names where
+  the study began, which is closer to a credit than to an editor's note, so
+  it was asked about and not removed.
+
+### Checked (commands, on the merged tree)
+
+- `npm run typecheck`: 0 errors.
+- `npm run test:unit`: 913 files and 11,363 tests passing (one file is
+  skipped by its own condition, the content package, as on every machine
+  without it).
+- `npm run lint`: 0 errors.
+- `npm run build:android`: green, 62.8 MB packed of the 85 allowed (178.3 MB
+  on disk of 240).
+- `npm run build` (the website, where a work's text stays in the page):
+  green.
+- `node scripts/mock-leaf-pages.mjs`, on the Android export: the six pages
+  pass `checkMock` on all five palettes, all ten checks. The Arianism page's
+  two listed allowances are St Athanasius's own paragraphs now.
+- The reader, opened on the export at seven headings in the four works (a
+  chapter of Discourse I and its opening, a summary of Discourse IV, both
+  kinds in On the Councils, a chapter of On the Nicene Definition, and the
+  Damascene's run-on heading): each is drawn as the edition's own line, with
+  the author's text under it.
+- The quotation test was run against the old rule first, and failed on the
+  three cards, before it was run against the new one.
+- By eye, on stills: the Arianism page's first and third cards, the reader
+  at Discourse I chapter 4, and the end of On deism.
+
+Not run on this tree: `npm run build:ios` (no platform code changed; green
+on the tree before), and a hand on a phone.
