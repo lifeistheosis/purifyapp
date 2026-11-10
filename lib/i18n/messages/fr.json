@@ -4609,7 +4609,7 @@
   "prayers.wall.alsoFor": "Je prie aussi pour {name} et à son intention : « {intention} »",
   "prayers.wall.left": "Ceux du mur de prière quittent maintenant vos prières.",
   "prayers.commemorate.living": "Souviens-toi, Seigneur, de tes serviteurs pour qui je prie, et aie pitié d’eux.",
-  "prayers.commemorate.whereHint": "Ces noms sont commémorés avant le renvoi, dans les prières que vous choisissez, avec ceux que vous ajoutez depuis le mur de prière.",
+  "prayers.commemorate.whereHint": "Ces noms sont commémorés avant le renvoi, dans les prières que vous choisissez.",
   "prayers.commemorate.nowhere": "Aucune choisie",
   "prayers.timeline.title": "Les prières du jour",
   "prayers.timeline.now": "Maintenant",

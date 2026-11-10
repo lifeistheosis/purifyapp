@@ -4581,7 +4581,7 @@
   "prayers.wall.alsoFor": "{name} için ve onun niyeti için de dua ediyorum: “{intention}”",
   "prayers.wall.left": "Dua duvarından gelenler artık dualarınızdan çıkıyor.",
   "prayers.commemorate.living": "Ya Rab, uğruna dua ettiğim kullarını an ve onlara merhamet et.",
-  "prayers.commemorate.whereHint": "Bu isimler, seçtiğiniz duaların kapanışından önce, dua duvarından eklediklerinizle birlikte anılır.",
+  "prayers.commemorate.whereHint": "Bu isimler, seçtiğiniz duaların kapanışından önce anılır.",
   "prayers.commemorate.nowhere": "Hiçbiri seçilmedi",
   "prayers.timeline.title": "Günün duaları",
   "prayers.timeline.now": "Şimdi",

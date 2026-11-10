@@ -4581,7 +4581,7 @@
   "prayers.wall.alsoFor": "Imádkozom {name} szándékáért is: „{intention}”",
   "prayers.wall.left": "Az imafalról valók most kikerülnek az imáiból.",
   "prayers.commemorate.living": "Emlékezzél meg, Uram, szolgáidról, akikért imádkozom, és irgalmazz nekik.",
-  "prayers.commemorate.whereHint": "Ezekről a nevekről az elbocsátás előtt emlékezünk meg a választott imákban, azokkal együtt, akiket az imafalról ad hozzá.",
+  "prayers.commemorate.whereHint": "Ezekről a nevekről az elbocsátás előtt emlékezünk meg a választott imákban.",
   "prayers.commemorate.nowhere": "Nincs kiválasztva",
   "prayers.timeline.title": "A nap imái",
   "prayers.timeline.now": "Most",

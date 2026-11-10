@@ -4578,7 +4578,7 @@
   "prayers.wall.alsoFor": "Saya juga berdoa untuk {name}, untuk permohonannya: “{intention}”",
   "prayers.wall.left": "Mereka yang dari dinding doa sekarang keluar dari doa Anda.",
   "prayers.commemorate.living": "Ingatlah, ya Tuhan, hamba-hamba-Mu yang aku doakan, dan kasihanilah mereka.",
-  "prayers.commemorate.whereHint": "Nama-nama ini diingat sebelum penutup doa yang Anda pilih, bersama mereka yang Anda tambahkan dari dinding doa.",
+  "prayers.commemorate.whereHint": "Nama-nama ini diingat sebelum penutup doa yang Anda pilih.",
   "prayers.commemorate.nowhere": "Belum ada yang dipilih",
   "prayers.timeline.title": "Doa-doa hari ini",
   "prayers.timeline.now": "Sekarang",

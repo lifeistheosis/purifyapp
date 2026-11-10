@@ -4586,7 +4586,7 @@
   "prayers.wall.alsoFor": "Prego anche per {name}, secondo la sua intenzione: «{intention}»",
   "prayers.wall.left": "Quelli della bacheca di preghiera ora escono dalle tue preghiere.",
   "prayers.commemorate.living": "Ricordati, Signore, dei tuoi servi per i quali prego, e abbi pietà di loro.",
-  "prayers.commemorate.whereHint": "Questi nomi sono ricordati prima del congedo nelle preghiere che scegli, insieme a quelli che aggiungi dalla bacheca di preghiera.",
+  "prayers.commemorate.whereHint": "Questi nomi sono ricordati prima del congedo nelle preghiere che scegli.",
   "prayers.commemorate.nowhere": "Nessuna scelta",
   "prayers.timeline.title": "Le preghiere del giorno",
   "prayers.timeline.now": "Ora",

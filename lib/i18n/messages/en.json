@@ -4623,7 +4623,7 @@
   "prayers.wall.alsoFor": "I also pray for {name}, for their intention: “{intention}”",
   "prayers.wall.left": "Those from the prayer wall leave your prayers now.",
   "prayers.commemorate.living": "Remember, O Lord, Thy servants for whom I pray, and have mercy on them.",
-  "prayers.commemorate.whereHint": "These names are remembered before the dismissal of the prayers you choose, with those you add from the prayer wall.",
+  "prayers.commemorate.whereHint": "These names are remembered before the dismissal of the prayers you choose.",
   "prayers.commemorate.nowhere": "None chosen",
   "prayers.timeline.title": "The day's prayers",
   "prayers.timeline.now": "Now",

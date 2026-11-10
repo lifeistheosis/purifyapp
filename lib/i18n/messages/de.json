@@ -4605,7 +4605,7 @@
   "prayers.wall.alsoFor": "Ich bete auch für {name} und für das Anliegen dieser Bitte: „{intention}“",
   "prayers.wall.left": "Die Namen von der Gebetswand sind damit aus Ihren Gebeten genommen.",
   "prayers.commemorate.living": "Gedenke, o Herr, Deiner Diener, für die ich bete, und erbarme Dich ihrer.",
-  "prayers.commemorate.whereHint": "Diese Namen werden vor der Entlassung der Gebete genannt, die Sie wählen, zusammen mit denen, die Sie von der Gebetswand hinzufügen.",
+  "prayers.commemorate.whereHint": "Diese Namen werden vor der Entlassung der Gebete genannt, die Sie wählen.",
   "prayers.commemorate.nowhere": "Keine ausgewählt",
   "prayers.timeline.title": "Die Gebete des Tages",
   "prayers.timeline.now": "Jetzt",

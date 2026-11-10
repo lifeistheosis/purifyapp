@@ -4731,7 +4731,7 @@
   "prayers.wall.alsoFor": "Молюся також за людину на ім’я {name} і за її прохання: «{intention}»",
   "prayers.wall.left": "Імена з молитовної стіни тепер виходять із ваших молитов.",
   "prayers.commemorate.living": "Пом’яни, Господи, рабів Твоїх, за яких я молюся, і помилуй їх.",
-  "prayers.commemorate.whereHint": "Ці імена поминаються перед відпустом у вибраних вами молитвах, разом із тими, кого ви додасте з молитовної стіни.",
+  "prayers.commemorate.whereHint": "Ці імена поминаються перед відпустом у вибраних вами молитвах.",
   "prayers.commemorate.nowhere": "Нічого не вибрано",
   "prayers.timeline.title": "Молитви дня",
   "prayers.timeline.now": "Зараз",

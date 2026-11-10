@@ -289,6 +289,23 @@ describe("the words of a name carried into a reader's prayers", () => {
     }
   });
 
+  it("the line under Those I pray for no longer sends a reader to the wall for names", () => {
+    // It ended "with those you add from the prayer wall". That clause was cut
+    // in every language when the wall went (the arbiter's word of 2026-11-10,
+    // as a consequence of his "wall B": a removal only, no new words), so the
+    // line is true whether or not campaigns are open for the reader.
+    expect(catalog("en")["prayers.commemorate.whereHint"]).toBe("These names are remembered before the dismissal of the prayers you choose.");
+    const WALL = /prayer wall|Gebetswand|mur de prière|muro de oración|mural de oração|bacheca di preghiera|молитвен|молитовн|τοίχο προσευχής|imafal|dinding doa|pader ng panalangin|ściany modlitwy|peretele de rugăciune|dua duvarı|لوحة الصلاة|دعا کی دیوار|ლოცვის კედ|प्रार्थना भित्ता/i;
+    for (const { code } of LOCALES) {
+      const line = catalog(code)["prayers.commemorate.whereHint"];
+      expect(line.length, code).toBeGreaterThan(20);
+      expect(line, code).not.toMatch(WALL);
+      // One sentence, ended as its language ends one.
+      expect(line, code).toMatch(/[.।۔]$/);
+      expect(line.slice(0, -1), code).not.toMatch(/[.।۔،,]$/);
+    }
+  });
+
   it("say the days as the model keeps them: a week", () => {
     expect(WALL_DAYS).toBe(7);
     expect(catalog("en")["community.wallAddNote"]).toContain("for a week");

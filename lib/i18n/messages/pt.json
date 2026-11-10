@@ -4586,7 +4586,7 @@
   "prayers.wall.alsoFor": "Rezo também por {name}, pela sua intenção: “{intention}”",
   "prayers.wall.left": "Os do mural de oração saem agora das suas orações.",
   "prayers.commemorate.living": "Lembra-te, Senhor, dos teus servos pelos quais rezo, e tem piedade deles.",
-  "prayers.commemorate.whereHint": "Estes nomes são lembrados antes da despedida nas orações que você escolher, com os que você adicionar do mural de oração.",
+  "prayers.commemorate.whereHint": "Estes nomes são lembrados antes da despedida nas orações que você escolher.",
   "prayers.commemorate.nowhere": "Nenhuma escolhida",
   "prayers.timeline.title": "As orações do dia",
   "prayers.timeline.now": "Agora",

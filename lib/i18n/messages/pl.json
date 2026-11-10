@@ -4734,7 +4734,7 @@
   "prayers.wall.alsoFor": "Modlę się także za {name}, w intencji tej osoby: „{intention}”",
   "prayers.wall.left": "Osoby ze ściany modlitwy znikają teraz z Twoich modlitw.",
   "prayers.commemorate.living": "Wspomnij, Panie, na sługi Twoje, za które się modlę, i zmiłuj się nad nimi.",
-  "prayers.commemorate.whereHint": "Te imiona są wspominane przed rozesłaniem w modlitwach, które wybierzesz, razem z osobami dodanymi ze ściany modlitwy.",
+  "prayers.commemorate.whereHint": "Te imiona są wspominane przed rozesłaniem w modlitwach, które wybierzesz.",
   "prayers.commemorate.nowhere": "Nic nie wybrano",
   "prayers.timeline.title": "Modlitwy dnia",
   "prayers.timeline.now": "Teraz",

@@ -3483,11 +3483,15 @@ Kept: the ones campaigns borrow (`community.wallAdd`, `wallAddWhen`,
 already carried from the wall, which leave within a week
 (`prayers.diptychs.wallHeading`, `prayers.wall.left`).
 
-**One line is stale and waits for his word:** `prayers.commemorate.whereHint`,
-"These names are remembered before the dismissal of the prayers you choose,
-with those you add from the prayer wall." Recommended: end it at "the prayers
-you choose." That is true whether or not campaigns are open for the reader,
-and names nothing that could be dark.
+**One line named the wall and lost that clause:**
+`prayers.commemorate.whereHint`, "These names are remembered before the
+dismissal of the prayers you choose, with those you add from the prayer
+wall." It now ends at "the prayers you choose." On the arbiter's word
+(2026-11-10, 19:15 UTC), as a consequence of his wall B: it only takes away
+the clause the wall's removal makes false and adds no new words, as with the
+email's line. In the twenty other languages the same clause was cut from
+each existing translation, with no new translation; a test holds that every
+one is still one sentence and names no wall.
 
 ### 26.5 What holds it
 
@@ -3502,7 +3506,8 @@ and names nothing that could be dark.
 - `halves.test.ts` and `prayAndTalk.test.ts`: the door's rule, the kept
   place and its height, no file naming the wall's parts, a profile with no
   request. Six ways of breaking the door were tried, and each failed a case.
-- `wallNames.test.ts`: the wall's own words are in no language any more.
+- `wallNames.test.ts`: the wall's own words are in no language any more,
+  and the line under Those I pray for sends nobody to the wall.
 - The walk (`scripts/mock-campaigns.mjs`): Pray together with campaigns alone
   and the wall never asked for; the door waiting then open, with the page
   under it not moving; waiting then no; a reader campaigns are not open for;
@@ -3511,7 +3516,6 @@ and names nothing that could be dark.
 ### 26.6 What waits
 
 - Admin's second read of `lib/community/prayerRequestsEnd.ts`.
-- His word on `prayers.commemorate.whereHint`, then its twenty languages.
 - The note's line, held by Admin in the release checklist until the wall is
   gone from the build and campaigns are open
   (`docs/plans/v1.9/RELEASE.md`, "Held lines").

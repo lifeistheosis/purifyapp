@@ -4667,7 +4667,7 @@
   "prayers.wall.alsoFor": "Mă rog și pentru {name}, pentru cererea sa: „{intention}”",
   "prayers.wall.left": "Cei de pe peretele de rugăciune ies acum din rugăciunile dumneavoastră.",
   "prayers.commemorate.living": "Pomenește, Doamne, pe robii Tăi pentru care mă rog, și îi miluiește.",
-  "prayers.commemorate.whereHint": "Aceste nume sunt pomenite înainte de otpust, în rugăciunile pe care le alegeți, împreună cu cei adăugați de pe peretele de rugăciune.",
+  "prayers.commemorate.whereHint": "Aceste nume sunt pomenite înainte de otpust, în rugăciunile pe care le alegeți.",
   "prayers.commemorate.nowhere": "Nimic ales",
   "prayers.timeline.title": "Rugăciunile zilei",
   "prayers.timeline.now": "Acum",

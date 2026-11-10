@@ -4658,7 +4658,7 @@
   "prayers.wall.alsoFor": "Молим се и за особу по имену {name} и за њену молбу: „{intention}“",
   "prayers.wall.left": "Имена са молитвеног зида сада излазе из ваших молитава.",
   "prayers.commemorate.living": "Помени, Господе, слуге Своје за које се молим и помилуј их.",
-  "prayers.commemorate.whereHint": "Ова имена се помињу пре отпуста у молитвама које изаберете, заједно са онима које додате са молитвеног зида.",
+  "prayers.commemorate.whereHint": "Ова имена се помињу пре отпуста у молитвама које изаберете.",
   "prayers.commemorate.nowhere": "Ништа није изабрано",
   "prayers.timeline.title": "Молитве дана",
   "prayers.timeline.now": "Сада",
