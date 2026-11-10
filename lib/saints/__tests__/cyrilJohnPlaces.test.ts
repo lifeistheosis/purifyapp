@@ -81,13 +81,14 @@ const STEPS_BACK = new Map<number, string>([
 ]);
 
 describe("St Cyril on John: each section names the verse he is on", () => {
-  it("names a verse of John the app carries, or Book 1's Preface", () => {
+  it("names a verse of John the app carries, or a book's Preface", () => {
     const bad: string[] = [];
     for (const s of WORK.sections) {
       const m = PLACE.exec(s.title);
       if (!m) bad.push(`${s.n}: ${s.title}`);
       else if (m[2] && !JOHN.get(Number(m[2]))?.has(Number(m[3]))) bad.push(`${s.n}: ${s.title} (no such verse)`);
-      else if (!m[2] && (Number(m[1]) !== 1 || s.n > 4)) bad.push(`${s.n}: ${s.title} (only Book 1 opens with a preface)`);
+      // Book 1's Preface, and Book 3's, Cyril's opening before its first lemma (restored in 1.9).
+      else if (!m[2] && !((Number(m[1]) === 1 && s.n <= 4) || (Number(m[1]) === 3 && s.n === 2003))) bad.push(`${s.n}: ${s.title} (only Books 1 and 3 open with a preface)`);
     }
     expect(bad, bad.join("\n")).toEqual([]);
   });
@@ -208,8 +209,61 @@ describe("St Cyril on John: each section names the verse he is on", () => {
   it("keeps its sections in order and numbered once", () => {
     const ns = WORK.sections.map((s) => s.n);
     expect(new Set(ns).size).toBe(ns.length);
-    expect(ns).toEqual([...ns].sort((a, b) => a - b));
-    expect(WORK.sections.length).toBe(1066);
+    // The four that hold the books' restored openings (1.9, (b)) are numbered
+    // 2000 and their book, past any number the file has had (1,101 sections
+    // until 1.7.2, the edition's end-notes among them), so no place kept
+    // under an old number opens on them; each stands before its book's first
+    // section. Every other number runs in order.
+    const OPENINGS = [2002, 2003, 2004, 2012];
+    const rest = ns.filter((n) => !OPENINGS.includes(n));
+    expect(rest).toEqual([...rest].sort((a, b) => a - b));
+    expect(Math.max(...rest)).toBeLessThanOrEqual(1101);
+    for (const n of OPENINGS) {
+      const i = ns.indexOf(n);
+      expect(WORK.sections[i].title, String(n)).toMatch(new RegExp(`^Book ${n - 2000}, `));
+      expect(WORK.sections[i + 1].title, String(n)).toMatch(new RegExp(`^Book ${n - 2000}, `));
+      expect(WORK.sections[i - 1].title, String(n)).toMatch(new RegExp(`^Book ${n - 2001}, `));
+    }
+    // 1,066, and the four.
+    expect(WORK.sections.length).toBe(1070);
+  });
+
+  it("opens each book with St Cyril's own first words, none moving a reader's mark", () => {
+    // The ingest began each book at its first italic quotation, so the words
+    // before it were lost: Book 12's first three paragraphs, the opening of
+    // Book 1's Preface and of Books 2, 3, 4, 6 and 9 (about 1,550 words with
+    // their lemmas). Marks are kept by section and paragraph, so words cut
+    // from the front of a first paragraph went back at its front, and whole
+    // paragraphs went into a section of their own before the book, numbered
+    // past any the file has had (above), none renumbered.
+    const at = (n: number) => WORK.sections.find((s) => s.n === n)!;
+    expect(at(1).paragraphs[0]).toMatch(/^Exact of a truth, and God-taught is the mind of the holy Evangelists[\s\S]*royal road\. For he that walketh simply walketh surely, as saith Solomon\.$/);
+    expect(at(2002).title).toBe("Book 2, on John 1:29");
+    expect(at(2002).paragraphs[0]).toBe("29 The next day he seeth Jesus coming to him.");
+    expect(at(110).paragraphs[0]).toMatch(/^No longer has prepare ye the way fit place/);
+    expect(at(2003).title).toBe("Book 3, Preface");
+    expect(at(2003).paragraphs[0]).toMatch(/^CHAPTER I\. A critical enquiry why the blessed Baptist/);
+    expect(at(2003).paragraphs[1]).toMatch(/^Having but now with toil stayed our pen on the second book[\s\S]*Our second book then ended with,$/);
+    expect(at(266).paragraphs[0]).toMatch(/^But I receive not testimony from man/);
+    expect(at(2004).paragraphs.map((p) => p.slice(0, 30))).toEqual(["CHAPTER I. That in nothing is ", "38, 39 Because I have come dow"]);
+    expect(at(354).paragraphs[0]).toMatch(/^This passage will seem hard[\s\S]*for all things are plain to them that understand, as it is written/);
+    expect(at(585).paragraphs[0]).toMatch(/^44 Ye are of your father the devil/);
+    expect(at(770).paragraphs[0]).toMatch(/^S\. John xii\. 49, 50\. For I spake not from Myself; but the Father Which sent Me/);
+    expect(at(2012).title).toBe("Book 12, on John 18:24");
+    expect(at(2012).paragraphs.map((p) => p.slice(0, 32))).toEqual([
+      "xviii. 24, 25, 26, 27 Annas ther",
+      "The inspired Evangelist, to our ",
+      "But perhaps some opponent, absta",
+      "It was expedient, then, that the",
+    ]);
+    // The rail's copy of each first paragraph begins where the paragraph now
+    // does: the Preface on 1:1, Book 2 on 1:29, Book 4 on 6:38, Book 6 on
+    // 8:44, Book 9 on 12:49.
+    for (const [c, v, n] of [[1, 1, 1], [1, 29, 110], [6, 38, 354], [8, 44, 585], [12, 49, 770]] as const) {
+      const rail = read<Record<string, { text: string; at?: { work?: string; section?: number; paragraph?: number } }[]>>(`data/bible/commentary/john/${c}.json`);
+      const copy = (rail[String(v)] ?? []).find((x) => x.at?.work === "cyril-of-alexandria/commentary-on-john" && x.at.section === n && x.at.paragraph === 0);
+      expect(copy?.text.startsWith(at(n).paragraphs[0]), `${c}:${v}, section ${n}`).toBe(true);
+    }
   });
 });
 

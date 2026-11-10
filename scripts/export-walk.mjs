@@ -9068,6 +9068,16 @@ await section(62, async () => {
   // Read while it is here (the work loads in parts); textContent, as a long work lays out only what is near.
   const book5Words = await page.evaluate(() => (document.getElementById("s453")?.textContent ?? "").replace(/\s+/g, " "));
   const cross = await heading(1053);
+  // The books' openings, restored in 1.9 ((b)): Book 1's Preface from its first word, and Book 12's first page.
+  const openingWords = async (n) => {
+    await heading(n);
+    return page.evaluate((n) => (document.getElementById(`s${n}`)?.textContent ?? "").replace(/\s+/g, " "), n);
+  };
+  const book1Words = await openingWords(1);
+  const book12 = await heading(2012);
+  const book12Words = await page.evaluate(() => (document.getElementById("s2012")?.textContent ?? "").replace(/\s+/g, " "));
+  must(/Exact of a truth, and God-taught is the mind of the holy Evangelists/.test(book1Words) && /royal road\. For he that walketh simply walketh surely/.test(book1Words), `Book 1's Preface opens with its first words ("${book1Words.slice(book1Words.indexOf("Exact"), book1Words.indexOf("Exact") + 60)}")`);
+  must(/John 18:24\b/.test(book12) && /The inspired Evangelist, to our profit, checks the course of his narrative/.test(book12Words), `Book 12 opens on John 18:24 with its first paragraphs (${book12})`);
   must(/Preface/.test(preface) && !/John 12:35/.test(preface), `Book 1's opening is its Preface, not "on John 12:35" (${preface})`);
   must(/John 1:1\b/.test(eunomius) && !/3:35/.test(eunomius), `the answer to Eunomius is under John 1:1, not 3:35 (${eunomius})`);
   must(/John 7:25\b/.test(book5) && !/7:39/.test(book5), `Book 5 opens on John 7:25, not 7:39 (${book5})`);
@@ -9097,6 +9107,16 @@ await section(62, async () => {
     return { on1: await fromPreface(1, "1"), on1235: await fromPreface(12, "35") };
   });
   must(onRail.on1 === 4 && onRail.on1235 === 0, `the Preface's four notes open John 1:1, none on 12:35 (${JSON.stringify(onRail)})`);
+  // The rail's copy of Book 6's first paragraph begins where the paragraph
+  // now does, "44 Ye are of your father the devil" ((b)): the apps carry it
+  // as a span of its section, from the section's first character.
+  const b6 = await page.evaluate(async () => {
+    const r = await fetch("/bible-data/commentary/john/8.json");
+    if (!r.ok) return { status: r.status };
+    const d = await r.json();
+    return { status: r.status, spans: (d["44"] ?? []).filter((n) => n.at?.work === "cyril-of-alexandria/commentary-on-john" && n.at.section === 585).map((n) => n.span ?? null) };
+  });
+  must(b6.status === 200 && b6.spans?.length === 1 && b6.spans[0]?.[0] === 0, `the rail's copy of Book 6's opening begins with its first words, "44 Ye" (${JSON.stringify(b6)})`);
 
   await go(page, "/theology/theosis/read/");
   await page.waitForTimeout(1200);
