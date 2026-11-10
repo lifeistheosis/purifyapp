@@ -268,6 +268,9 @@ describe("a gathering's page", () => {
     expect(src).not.toContain("PILL");
     // Nothing is said of a gathering before the device's own list has been read.
     expect(src).toContain("if (!mounted) return null;");
+    // One that is not here has no name to head its page, and the bar's is for the eye alone:
+    // the page still has a heading for a screen reader, unseen, so it looks as it did.
+    expect(src).toMatch(/<div className="pt-6 text-center" data-gathering-gone="">\s*<h1 className="sr-only">\{t\("study\.florilegium\.title"\)\}<\/h1>\s*<p className="font-serif text-lede italic/);
   });
 
   it("is a page with its own bar at both of its addresses, which takes the gathering's own name", () => {

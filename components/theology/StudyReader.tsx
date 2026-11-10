@@ -182,7 +182,7 @@ export function StudyReader({
             <button
               type="button"
               onClick={() => showPart(part + 1)}
-              className="reader-lit tap-press inline-flex h-[42px] shrink-0 items-center gap-1.5 rounded-pill bg-paper px-5 font-sans text-[14.5px] font-semibold text-night"
+              className="reader-lit tap-press inline-flex h-11 shrink-0 items-center gap-1.5 rounded-pill bg-paper px-5 font-sans text-[14.5px] font-semibold text-night"
             >
               {t("common.next")}
               <ChevronRight size={15} className="rtl:-scale-x-100" />
@@ -191,7 +191,7 @@ export function StudyReader({
             <Link
               href={end.href}
               onClick={() => (end.read ? noteOpened(end.read, end.read.step) : undefined)}
-              className="reader-lit tap-press inline-flex h-[42px] shrink-0 items-center gap-1.5 rounded-pill bg-paper px-5 font-sans text-[14.5px] font-semibold text-night"
+              className="reader-lit tap-press inline-flex h-11 shrink-0 items-center gap-1.5 rounded-pill bg-paper px-5 font-sans text-[14.5px] font-semibold text-night"
             >
               {t("common.next")}
               <ChevronRight size={15} className="rtl:-scale-x-100" />

@@ -290,6 +290,12 @@ changed.
   gathering in the apps, its script still on its way": one switch, and no
   name on show in the bar while the page arrives), with the picture's
   journey for a kept starter beside it.
+
+  One thing that design left, mended the same evening on the arbiter's word
+  (accessibility is one of his written rules): the bar's name is for the eye
+  alone, so the page of a gathering this device does not keep had no heading
+  for a screen reader. It has one now, unseen ("The Florilegium"), and the
+  page looks as it did (`components/florilegium/FlorilegiumDetail.tsx`).
 - One catalog line nothing drew was taken out of all 21 languages (F7:
   `study.florilegium.beginNewEllipsis`), with three more that the old
   Theology shell had been the last to use (`topics.eyebrow`, `study.period`,

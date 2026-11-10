@@ -91,6 +91,10 @@ export function FlorilegiumDetail({ id, readOnly = false }: { id: string; readOn
     if (!mounted) return null;
     return (
       <div className="pt-6 text-center" data-gathering-gone="">
+        {/* The page's heading, for a screen reader. A gathering's page is headed by the gathering's own name;
+            this one has none, and the name in the bar over it is for the eye alone (aria-hidden,
+            components/nav/MobileTopBar.tsx). Unseen, so the page looks as it did. */}
+        <h1 className="sr-only">{t("study.florilegium.title")}</h1>
         <p className="font-serif text-lede italic leading-[1.5] text-paper/70">{t("study.florilegium.gone")}</p>
         <Link
           href="/florilegium"
