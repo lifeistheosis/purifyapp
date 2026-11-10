@@ -17,11 +17,12 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
  * every row of it. The branch's switch has said "testers" since 2026-11-10
  * (lib/campaigns/flags.ts), so the position is set here and not assumed.
  *
- * NOT HELD HERE, AND NOT YET ANYWHERE: this handler in a build that has the
- * rework. There it hands a campaign decision to lib/campaigns/moderation.ts
- * and reads the open reports alone; that library is held by
- * lib/campaigns/__tests__/moderating.test.ts, but no test runs this handler
- * in that position.
+ * The second group runs the same handler in a build that has the rework.
+ * There it hands a campaign decision to lib/campaigns/moderation.ts and
+ * deletes nothing itself, and the rail counts the campaigns that wait with
+ * the open reports on them. What that library then does is held by
+ * lib/campaigns/__tests__/moderating.test.ts; here it is stood in for, so
+ * these cases are the handler's own.
  */
 
 type Row = Record<string, unknown>;
@@ -31,6 +32,12 @@ const state = vi.hoisted(() => ({
   tables: {} as Record<string, Record<string, unknown>[]>,
   deleted: [] as { table: string; id: unknown }[],
   logged: [] as Record<string, unknown>[],
+  /** The campaigns that wait to be read, as the campaigns' own moderation would list them. */
+  waitingCampaigns: [] as { id: string }[],
+  /** Every decision handed to the campaigns' own moderation, in order. */
+  campaignDecisions: [] as { actor: string | undefined; action: string; id: string; reason: string | null }[],
+  /** What that moderation answers. */
+  campaignAnswer: { ok: true } as { ok: true } | { ok: false; status: number; error: string },
 }));
 
 vi.mock("@/lib/admin/access", () => ({ getAdminUser: async () => state.admin }));
@@ -41,6 +48,14 @@ vi.mock("@/lib/community/moderation", () => ({
   },
   readOpenReports: async () => [],
   runModAction: async () => ({ ok: true }),
+}));
+vi.mock("@/lib/campaigns/moderation", async (original) => ({
+  ...(await original<typeof import("@/lib/campaigns/moderation")>()),
+  readWaitingCampaigns: async () => ({ rows: state.waitingCampaigns }),
+  runCampaignModAction: async (_admin: unknown, actor: { email?: string }, action: string, id: string, reason?: string | null) => {
+    state.campaignDecisions.push({ actor: actor.email, action, id, reason: reason ?? null });
+    return state.campaignAnswer;
+  },
 }));
 vi.mock("@/lib/supabase/admin", () => ({
   createAdminClient: () => ({
@@ -90,6 +105,9 @@ beforeEach(() => {
   state.admin = { id: "u-owner", email: "owner@example.com" };
   state.deleted = [];
   state.logged = [];
+  state.waitingCampaigns = [];
+  state.campaignDecisions = [];
+  state.campaignAnswer = { ok: true };
   state.tables = {
     trapeza_recipes: [{ id: "rec-1", status: "pending" }],
     prayer_campaign_reports: [{ id: REPORT_ID, campaign_id: "camp-1", reason: "Not a prayer", campaign: { title: "A campaign" } }],
@@ -157,5 +175,55 @@ describe("/api/admin/community", () => {
     expect(state.logged).toEqual([
       { action: "dismiss_campaign_report", target: "report", targetId: REPORT_ID, summary: "A report on A campaign: Not a prayer" },
     ]);
+  });
+});
+
+describe("/api/admin/community, in a build that has the rework", () => {
+  const CAMP_1 = "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaa1";
+  const CAMP_3 = "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaa3";
+  const OPEN_REPORT = "44444444-4444-4444-8444-444444444441";
+
+  beforeEach(() => {
+    __setCampaignsOpening("testers");
+    state.tables.prayer_campaign_reports = [
+      { id: OPEN_REPORT, campaign_id: CAMP_1, status: "open", target_kind: "campaign" },
+      // A report of one of its pictures is shown with the picture, on the moderators' page.
+      { id: "44444444-4444-4444-8444-444444444442", campaign_id: CAMP_1, status: "open", target_kind: "picture" },
+      // One a moderator set aside is kept with its state, and waits no longer.
+      { id: "44444444-4444-4444-8444-444444444443", campaign_id: "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaa2", status: "dismissed", target_kind: "campaign" },
+    ];
+    state.waitingCampaigns = [{ id: CAMP_1 }, { id: CAMP_3 }];
+  });
+
+  it("counts a campaign that waits and the open reports on it as one row, and leaves out a picture's report and one set aside", async () => {
+    const body = (await (await summary()).json()) as Record<string, number>;
+    // The post, the held reply and the recipe, as closed; then two campaigns:
+    // one that waits and is reported (one row), and one that waits.
+    expect(body.waiting).toBe(5);
+    // Three on the post, and the one open report of a campaign itself.
+    expect(body.reports).toBe(4);
+  });
+
+  it("hands a campaign decision to the campaigns' own moderation, as this admin, and deletes nothing itself", async () => {
+    const res = await act({ action: "dismiss_campaign_report", id: OPEN_REPORT });
+    expect(res.status).toBe(200);
+    expect(state.campaignDecisions).toEqual([{ actor: "owner@example.com", action: "dismiss_campaign_report", id: OPEN_REPORT, reason: null }]);
+    // July's way deleted the report; here it is kept with its state, by that library.
+    expect(state.deleted).toEqual([]);
+  });
+
+  it("takes Approve as an action, which closed refuses as none", async () => {
+    expect((await act({ action: "approve_campaign", id: CAMP_1 })).status).toBe(200);
+    expect(state.campaignDecisions.map((d) => d.action)).toEqual(["approve_campaign"]);
+    __setCampaignsOpening("closed");
+    expect((await act({ action: "approve_campaign", id: CAMP_1 })).status).toBe(400);
+    expect(state.campaignDecisions).toHaveLength(1);
+  });
+
+  it("answers as that moderation answers when it refuses", async () => {
+    state.campaignAnswer = { ok: false, status: 404, error: "Not found." };
+    const res = await act({ action: "remove_campaign", id: CAMP_1, reason: "Asks for money" });
+    expect(res.status).toBe(404);
+    expect(state.campaignDecisions).toEqual([{ actor: "owner@example.com", action: "remove_campaign", id: CAMP_1, reason: "Asks for money" }]);
   });
 });

@@ -2829,3 +2829,46 @@ priest and no lawyer. The Terms say campaigns are readers' own, starting one
 carries the acceptance, and a plain safety line points a reader in danger to
 emergency help. Opening for every reader waits on his walk on the test web
 and his OK of those words, and on nothing else.
+
+### 17.1 The test web stands one step ahead, and the main web never does
+
+**His word for a test build:** "as if it was public release". The build is
+cut as the store builds will be, at "testers", and it should meet campaigns
+as readers will once he has opened them. One commit makes both the website
+and the build, so the constant cannot say "testers" to one and "open" to the
+other.
+
+**So the server has one rule of its own** (`lib/campaigns/opening.ts`,
+`serverOpening`; the arbiter's word, with Admin's plan in
+`docs/1.9-build/notes/test-web.md`): where the constant says "testers" and
+this server is the test web, it answers "open", to every account there.
+
+- **It lifts "testers" and nothing else.** A branch that says closed has no
+  campaigns on the test web either.
+- **It cannot reach the main web.** `lib/testWeb.ts` answers yes only with
+  the test web's marker (`PURIFY_TEST_WEB=1`, a server-side value that no app
+  and no page carries), on an address that is not the main web's
+  (purifyapp.net, a name under it, or the main service's own Render address),
+  on a database that is not the main web's. The marker pasted into the main
+  web's settings by mistake changes nothing there. The main web opens by the
+  one line in `flags.ts`, on his word, and by nothing else.
+- **The constant's file still reads no setting,** and every campaign route
+  still asks one place.
+- **Held by** `lib/campaigns/__tests__/testWeb.test.ts`, sixteen cases; with
+  the address check, the database check or "testers only" taken out, it
+  fails.
+
+**What will differ from the release on the test web, to tell him before he
+walks:** two quiet places read the constant itself and do not follow the
+server, the Discover menu's row on a wide screen and the free plan's line
+that names campaigns. They stay hidden there, as they do in a store build
+until the build after campaigns open. And "Prayed by many" and pictures are
+constants of the server too (`lib/campaigns/parts.ts`): off there until they
+are turned on for everyone.
+
+**The gap named above is closed:** the admin panel's community route is now
+run in a build that has the rework as well
+(`lib/admin/__tests__/communityRoute.test.ts`, four cases): the rail counts a
+campaign that waits and the open reports on it as one row, a decision is
+handed to the campaigns' own moderation as that admin, and the route deletes
+nothing itself.

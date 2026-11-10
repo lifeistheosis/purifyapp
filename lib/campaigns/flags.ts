@@ -41,6 +41,13 @@
 // them only when the server answers (lib/campaigns/useCampaignsOpen.ts), so
 // an app follows the website with no new store build.
 //
+// ONE SERVER MAY STAND A STEP AHEAD: THE TEST WEB. Where this constant says
+// "testers", the test web answers "open" to every account, so that a test
+// build meets campaigns as readers will at release. That rule is the
+// server's and is not here (lib/campaigns/opening.ts, serverOpening;
+// lib/testWeb.ts): this file reads no setting, and the main web can be
+// opened by this line alone.
+//
 // RELEASE DAY, IN ORDER. Step 1's position has been on the branch since
 // 2026-11-10, done early at his word ("exactly I meant it should be in my
 // build"): a test build then has the campaign pages, and the test web
