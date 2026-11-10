@@ -355,20 +355,21 @@ saint's screen, with stills to the arbiter.
 - **The thirteen older icons**, each opened and checked (a helper traced
   each file on Commons; every picture and every rights page was then read
   here). The Theotokos's is the Vladimir icon (12th century, public domain)
-  and stays. Eight give way to settled pictures of the same saints: St Andrew
-  and the Archangel from their pages' Kirillo-Belozersky icons (1497), St
-  Matthew, St Philip and St Gregory Palamas from their books' covers, St
+  and stays. Seven give way to settled pictures of the same saints: St
+  Andrew and the Archangel from their pages' Kirillo-Belozersky icons (1497),
+  St Matthew, St Philip and St Gregory Palamas from their books' covers, St
   Nikon from the Hosios Loukas mosaic (early 11th century), St Nektarios
-  from a photograph taken before 1908, St Paisius from the old portrait (its
-  page names no painter or date, the weakest of the eight). Four modern
-  saints have no public-domain picture and stand on the plate: St Gabriel of
-  Georgia, St Arsenie of Prislop, St Iakovos of Evia and St Philoumenos. Icons
-  with no rights record: 99 to 86.
+  from a photograph taken before 1908. Four modern saints have no
+  public-domain picture and stand on the plate: St Gabriel of Georgia, St
+  Arsenie of Prislop, St Iakovos of Evia and St Philoumenos. St Paisius
+  joins them on the arbiter's word: the one old portrait of him on Commons
+  names no painter or date, so it waits until they are found. Icons with no
+  rights record: 99 to 86.
 - **The path**: `--held` in scripts/ingest-witness-lives.mjs, and the
   drafting tools in scripts/menologion/scan-draft/ (README there), both in
   docs/editorial/menologion-month.md.
-- **The apps**: the held Lives are not in them; the icons are 122 KB lighter
-  (eight new files, twelve gone).
+- **The apps**: the held Lives are not in them; the icons are 140 KB lighter
+  (seven new files, twelve gone).
 - **Stills** (the Android export, the app's way): St Paul among Sardica's
   Fathers (`november-saints/11-st-paul-at-sardica.png`); St Andrew, St Nikon
   and St Nektarios with their new pictures, and St Iakovos's page without one

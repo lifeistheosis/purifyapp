@@ -3935,7 +3935,6 @@ export const SAINTS: Saint[] = [
   {
     slug: "paisius-velichkovsky",
     byname: "Translator of the Philokalia",
-    iconUrl: "/saints/icons/paisius-velichkovsky.v2.jpg",
     name: "St. Paisius Velichkovsky",
     epithet: "Elder of Neamț · Reviver of Hesychasm",
     born: "December 21, 1722 (Poltava)",

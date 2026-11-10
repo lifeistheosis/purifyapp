@@ -1110,10 +1110,12 @@ export const ICON_RIGHTS: Record<string, IconRights> = {
   // the Archangel's are cut from their pages' large pictures, St Matthew's,
   // St Philip's and St Gregory Palamas's from their books' covers, so a
   // saint wears one picture everywhere; St Nikon's is the Hosios Loukas
-  // mosaic, St Nektarios's a photograph taken before 1908, St Paisius's the
-  // old portrait (its page names no painter or date). St Gabriel, St Arsenie,
-  // St Iakovos and St Philoumenos keep the plate: no picture of them is in
-  // the public domain, and their files are gone. Every file was opened.
+  // mosaic, St Nektarios's a photograph taken before 1908. St Gabriel, St
+  // Arsenie, St Iakovos and St Philoumenos keep the plate: no picture of them
+  // is in the public domain, and their files are gone. So does St Paisius,
+  // on the arbiter's word: the one old portrait of him on Commons
+  // (File:Paisius.jpg) names no painter or date, so it waits until they are
+  // found. Every file was opened.
   "theotokos.jpg": {
     status: "verified",
     inspectedOn: "2026-11-10",
@@ -1201,17 +1203,6 @@ export const ICON_RIGHTS: Record<string, IconRights> = {
     source: "Wikimedia Commons (from OrthodoxWiki)",
     license: "Public domain",
     evidenceUrl: "https://commons.wikimedia.org/wiki/File:Saint_Nektarios_of_Aegina_at_Rizario.jpg",
-  },
-  "paisius-velichkovsky.v2.jpg": {
-    status: "verified",
-    inspectedOn: "2026-11-10",
-    alt: "A painted portrait of an old monk with a long white beard and long grey hair falling to his shoulders, in a tall black klobuk and a black habit, his hands together at his chest holding a prayer rope, on a dark ground.",
-    work: "Portrait of St Paisius Velichkovsky, the page naming no painter",
-    artist: "Unknown painter",
-    workDate: "Not given on its page",
-    source: "Wikimedia Commons",
-    license: "Public domain",
-    evidenceUrl: "https://commons.wikimedia.org/wiki/File:Paisius.jpg",
   },
 };
 

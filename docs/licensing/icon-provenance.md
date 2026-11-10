@@ -115,9 +115,10 @@ and `iakovos-of-evia.jpg` are the clearest cases.
 2026-11-10 (November's saints, 1.9): `iakovos-of-evia.jpg` is gone, with
 St Gabriel of Georgia's, St Arsenie of Prislop's and St Philoumenos's: no
 public-domain picture of any of them was found, and their pages stand on the
-plate. The other nine of November's unrecorded icons are settled in
-lib/saints/iconRights.ts (the block "November's saints, the thirteen older
-icons").
+plate, as St Paisius Velichkovsky's does until the painter and date of his
+one old portrait are found. The other eight of November's unrecorded icons
+are settled in lib/saints/iconRights.ts (the block "November's saints, the
+thirteen older icons").
 
 ## The Desert Fathers' sayings (2026-10-31)
 
