@@ -166,6 +166,11 @@ describe("touch targets", () => {
     expect(pray).toContain('className="hit-44 tap-press inline-flex items-center gap-0.5');
   });
 
+  it("Theology's councils heading, a 22px line of words, is 44px to the touch", () => {
+    const lib = readFileSync(join(ROOT, "components/theology/TheologyLibrary.tsx"), "utf8");
+    expect(lib).toContain('<Link href="/councils" className="hit-44 tap-press flex items-baseline justify-between gap-3">');
+  });
+
   it("the .hit-44 utility the fixes rely on is still defined", () => {
     const css = readFileSync(join(ROOT, "app", "globals.css"), "utf8");
     expect(css).toMatch(/\.hit-44::after\s*\{/);

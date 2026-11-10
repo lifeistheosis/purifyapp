@@ -32,7 +32,13 @@ export const WAYS: readonly { key: "doctrine" | "topics" | "heresies" | "apologe
 
 export type WayCounts = Record<(typeof WAYS)[number]["key"], number>;
 
-/** C's Go deeper: the four ways as rows in one raised tray, each with how many it holds. */
+/**
+ * C's Go deeper: the four ways as rows in one raised tray, each with how many
+ * it holds. The kind and count under each name are /55, the faintest share the
+ * faint-text rules hold to 4.5:1 on every palette, here on the tray's own
+ * lightest ground too (lib/ui/__tests__/faintText.test.ts); at /52 they read
+ * 3.07:1 on Light and 4.24:1 on Candlelight (the Theology chat, 2026-11-10).
+ */
 export function WaysRows({ counts }: { counts: WayCounts }) {
   return (
     <ul data-theology-ways="rows" className="theology-tray overflow-hidden rounded-[20px] px-1.5 py-1">
@@ -46,7 +52,7 @@ export function WaysRows({ counts }: { counts: WayCounts }) {
               <span className="block truncate font-serif text-[15.5px] font-semibold leading-tight text-paper/92">
                 <T k={w.label} />
               </span>
-              <span className="mt-0.5 block truncate font-sans text-caption text-paper/52">
+              <span className="mt-0.5 block truncate font-sans text-caption text-paper/55">
                 <T k={w.kicker} /> · <span className="tabular-nums">{counts[w.key]}</span>
               </span>
             </span>
@@ -102,7 +108,7 @@ export function CreedRow({ added = false }: { added?: boolean }) {
             <span className="block truncate font-serif text-[15.5px] font-semibold leading-tight text-paper/92">
               <T k="creed.title" />
             </span>
-            <span className="mt-0.5 block truncate font-sans text-caption text-paper/52">
+            <span className="mt-0.5 block truncate font-sans text-caption text-paper/55">
               {added ? (
                 <T k="creed.added" />
               ) : (
@@ -135,7 +141,9 @@ export type FilmCouncil = {
 export function CouncilFilm({ councils }: { councils: FilmCouncil[] }) {
   return (
     <section data-theology-councils="" aria-labelledby="theology-councils" className="mt-6">
-      <Link href="/councils" className="tap-press flex items-baseline justify-between gap-3">
+      {/* The heading's line is 22px of words: 44 to the touch (.hit-44), the filmstrip
+          below it beginning past the reach of the square. */}
+      <Link href="/councils" className="hit-44 tap-press flex items-baseline justify-between gap-3">
         <h3 id="theology-councils" className="font-serif text-[17px] font-bold leading-tight text-paper">
           <T k="study.theology.ecumenicalCouncils" />
         </h3>

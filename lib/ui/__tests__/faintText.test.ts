@@ -140,3 +140,29 @@ describe("words once drawn at 40 percent", () => {
     });
   }
 });
+
+// The theology tray (app/globals.css, .theology-tray) stands a little above a
+// 4 percent box: a gradient from the ink at 5 percent over the page, at its
+// top, to 2 at its foot. Its rows' kind lines (Theology's four ways as rows
+// and the Creed's row, components/theology/TheologyLibrary.tsx) were
+// text-paper/52, outside the shares above: 3.07:1 on Light and 4.24:1 on
+// Candlelight, as the Theology chat measured on 2026-11-10. They wear /55,
+// which each palette draws at a share that holds 4.5:1 on the tray's top.
+describe("the theology tray's rows", () => {
+  it("draw their kind lines at a share that holds 4.5:1 on the tray's lightest ground, on every palette", () => {
+    expect(CSS).toMatch(/\.theology-tray \{[^}]*color-mix\(in srgb, var\(--color-paper\) 5%, var\(--color-night\)\) 0%/);
+    const src = readFileSync(join(process.cwd(), "components/theology/TheologyLibrary.tsx"), "utf8");
+    const lines = [...src.matchAll(/mt-0\.5 block truncate font-sans text-caption text-paper\/(\d+)/g)].map((m) => Number(m[1]));
+    expect(lines).toHaveLength(2);
+    const short: string[] = [];
+    for (const share of lines) {
+      for (const mode of MODES) {
+        const { night, paper } = colours(mode);
+        const tray = mix(paper, night, 0.05);
+        const r = ratio(mix(paper, tray, drawn(mode, share) / 100), tray);
+        if (r < 4.5) short.push(`${mode}: text-paper/${share} at ${r.toFixed(2)}:1`);
+      }
+    }
+    expect(short, short.join("\n")).toEqual([]);
+  });
+});
