@@ -278,6 +278,28 @@ Done: A to D finished; step 30 waits for Apple.
 
 Send back: "87 A to D done" (no keys).
 
+### Mail. The company's postal address for list email (5 minutes; before the 1.9 email)
+
+The law (CAN-SPAM) asks every list email to carry a postal address, and
+Purify refuses to send one without it (`lib/email/consent.ts`). So the 1.9
+release email cannot go until this is set.
+
+The address must be the company's mailing address: a PO box, a virtual
+mailbox, or the registered agent's address. Never your home: every list
+email prints it. Use the corrected business address (see "Now: move to the
+company"), not the one the D-U-N-S record has today.
+
+1. dashboard.render.com, the **purifyapp** web service, **Environment**.
+2. **+ Add Environment Variable**.
+3. Key: `EMAIL_POSTAL_ADDRESS`. Value: the address on one line, for
+   example street or box, city, state, ZIP, country.
+4. **Save Changes**, then **Save and deploy**.
+
+Done: Admin, **Releases**, **Email**: a list send no longer says "Held:
+list email needs EMAIL_POSTAL_ADDRESS".
+
+Send back: "Mail done" (never the address).
+
 ### 56. Fix the website members filed as Google Play: WAIT for the arbiter's OK
 
 Fable reviews this SQL first. Do not run it until the arbiter says so.
@@ -328,10 +350,12 @@ copy a file: open it on GitHub on the branch `ccr-07896cf2-bo0afd`, click
    Click **Run**. It must say success.
    (It makes the table the next file also writes to. It is written to run
    twice, so the release running it again is harmless.)
-3. **New query**. Paste all of `docs/1.9-build/sql/psalms-113-115-move.sql`.
+3. **New query**. Paste all of
+   `supabase/migrations/20261110001550_psalms_113_115_move.sql`.
    Click **Run**. It must say success.
    (It moves readers' notes, highlights and saved verses on Psalms 113 to
-   115 to the new numbering. It must run before any 1.9 app or website
+   115 to the new numbering, and leaves the mark the apps wait for before
+   they move their own copies. It must run before any 1.9 app or website
    does; run twice, it does nothing.)
 4. If either goes red: stop, change nothing else, send the arbiter the red
    message.
@@ -358,6 +382,7 @@ Send back: "R1 both green".
      twice, so one that already ran does no harm. The arbiter sends the
      final list that morning. Today, in `supabase/migrations/`:
      - `20261109180246_shared_pages.sql`
+     - `20261110001550_psalms_113_115_move.sql`
      - `20261110002920_plus_events.sql`
      - `20261110002921_chant_pulls.sql`
      - `20261110002922_app_errors.sql`
