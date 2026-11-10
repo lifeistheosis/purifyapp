@@ -6403,14 +6403,14 @@ html[data-reading-mode="parchment"] .testers-dot { box-shadow: none; }
  letter-spacing: 0.06em;
  line-height: 1;
  text-transform: uppercase;
- color: color-mix(in srgb, var(--color-paper) 40%, transparent);
+ color: color-mix(in srgb, var(--color-paper) 55%, transparent);
 }
 .set-well .set-vn {
  margin-inline-end: 0.18em;
  font-family: var(--font-sans);
  font-size: 0.55em;
  vertical-align: 0.5em;
- color: color-mix(in srgb, var(--color-gold) 50%, transparent);
+ color: color-mix(in srgb, var(--color-paper) 55%, transparent);
 }
 /* The slider takes a press anywhere along it, and a drag across it; a drag
    up or down is the page's, so it still scrolls from here. */
@@ -6566,6 +6566,15 @@ html[data-reading-mode="parchment"] .testers-dot { box-shadow: none; }
  top: 7px;
  inset-inline-end: 7px;
 }
+/* On Light the wash over each picture is paper and its name the ink, and a
+   dark picture showed through where the wash was still thin: the name's
+   first line read 2.14:1 to 4.03:1 by the pixels (the Themes chat's sweep,
+   section 25; the same on a light look). Light's wash comes up sooner and
+   fuller, so every line of a name stands on paper (6.0:1 and over, three
+   lines too), and the picture still shows above it. */
+html[data-reading-mode="parchment"] .set-focus-wash {
+ background-image: linear-gradient(to bottom, transparent 25%, color-mix(in srgb, var(--color-night) 72%, transparent) 58%, color-mix(in srgb, var(--color-night) 92%, transparent) 100%);
+}
 .set-root .set-focus-card img {
  transition: opacity 320ms var(--ease-house);
 }
@@ -6689,12 +6698,17 @@ html[data-reading-mode="parchment"] .set-track > button::before {
    Councils and Cappadocian dipped under it there too. Each palette that
    needs it draws them at the share that holds 4.5:1 on its own ground (the
    page, the panel where it is lightest, the track), as the faint-text rules
-   do for the short shares; Dark and True black keep theirs.
+   do for the short shares; Dark and True black keep theirs. The size
+   preview's caption ("John 1", on the well's own ground) joined them in the
+   Themes chat's sweep: at 40 percent it read 2.31:1 to 3.82:1 on all five.
+   Its verse numbers too, which were the accent at 50 percent (2.39:1 on
+   Light, by checkMock on the export): now the ink at the quiet share, as
+   the Bible draws its verse numbers in the ink.
    lib/ui/__tests__/faintText.test.ts does the arithmetic. */
-html[data-reading-mode="parchment"] :is(.set-hint, .set-desc, .set-sub, .set-track > button[aria-checked="false"]:not(:hover)) {
+html[data-reading-mode="parchment"] :is(.set-hint, .set-desc, .set-sub, .set-well-ref, .set-well .set-vn, .set-track > button[aria-checked="false"]:not(:hover)) {
  color: color-mix(in srgb, var(--color-paper) 72%, transparent);
 }
-html[data-reading-mode="candlelight"] :is(.set-hint, .set-desc, .set-sub, .set-track > button[aria-checked="false"]:not(:hover)) {
+html[data-reading-mode="candlelight"] :is(.set-hint, .set-desc, .set-sub, .set-well-ref, .set-well .set-vn, .set-track > button[aria-checked="false"]:not(:hover)) {
  color: color-mix(in srgb, var(--color-paper) 64%, transparent);
 }
 :where(html[data-reading-mode="monastery"], html[data-reading-mode="councils"], html[data-reading-mode="cappadocian"]) .set-desc {
@@ -11598,7 +11612,7 @@ html[data-look][data-reading-mode="parchment"] .community-head-shade {
 /* Settings' quiet words (its hints, its lines, a track's unlit choices) on a
    dark look, at the share that holds 4.5:1 on its page and its panels, as
    Candlelight has its own. A light look takes Light's. */
-html[data-look]:not([data-reading-mode]) :is(.set-hint, .set-desc, .set-sub, .set-track > button[aria-checked="false"]:not(:hover)) {
+html[data-look]:not([data-reading-mode]) :is(.set-hint, .set-desc, .set-sub, .set-well-ref, .set-well .set-vn, .set-track > button[aria-checked="false"]:not(:hover)) {
  color: color-mix(in srgb, var(--color-paper) var(--look-quiet), transparent);
 }
 

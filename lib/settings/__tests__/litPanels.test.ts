@@ -281,6 +281,55 @@ describe("first focus", () => {
     expect(drawn).not.toContain("set-day");
   });
 
+  // The Themes chat's sweep (1.9, notes/themes-fable.md section 25): on Light
+  // the wash over each picture is paper and the name the ink, and a dark
+  // picture showed through where the wash was still thin, 2.14:1 by the
+  // pixels. Light's own wash (and so every light look's) holds the first line
+  // of a name three lines long to 4.5:1 even over a black picture.
+  it("stands every line of a name on paper on Light and every light look, over the darkest picture", () => {
+    const drawn = draw(createElement(FirstFocus, { intent: null, level: null, again: false, label: "First focus", onPick: () => {} }));
+    expect([...drawn.matchAll(/<span aria-hidden="true" class="set-focus-wash [^"]*to-night\/90"/g)]).toHaveLength(INTENTS.length);
+    // The name as the arithmetic below takes it: 12px type at 1.2, 8px up from the card's foot.
+    const names = [...drawn.matchAll(/<span class="(absolute inset-x-2\.5 bottom-2 [^"]*)">/g)].map((m) => m[1].split(" "));
+    expect(names).toHaveLength(INTENTS.length);
+    for (const cls of names) expect(cls).toEqual(expect.arrayContaining(["bottom-2", "text-caption", "leading-[1.2]"]));
+    expect(THEME["--text-caption"]).toBe("12px");
+    const height = parseFloat(decls(".set-focus-card").height);
+    const top = (height - 8 - 3 * 12 * 1.2) / height;
+
+    const wash = decls('html[data-reading-mode="parchment"] .set-focus-wash')["background-image"] ?? "";
+    const stops = [...wash.matchAll(/(transparent|color-mix\(in srgb, var\(--color-night\) (\d+)%, transparent\)) (\d+)%/g)].map((m) => ({
+      alpha: m[1] === "transparent" ? 0 : Number(m[2]) / 100,
+      at: Number(m[3]) / 100,
+    }));
+    expect(stops.length, wash).toBeGreaterThanOrEqual(2);
+    const after = stops.findIndex((s) => s.at >= top);
+    expect(after, "the wash ends above the name").toBeGreaterThan(0);
+    const [a, b] = [stops[after - 1], stops[after]];
+    const alpha = a.alpha + ((b.alpha - a.alpha) * (top - a.at)) / (b.at - a.at);
+
+    const hex = (raw: string) => [1, 3, 5].map((i) => parseInt(raw.slice(i, i + 2), 16));
+    const lin = (c: number) => (c / 255 <= 0.03928 ? c / 255 / 12.92 : ((c / 255 + 0.055) / 1.055) ** 2.4);
+    const lum = ([r, g, b]: number[]) => 0.2126 * lin(r) + 0.7152 * lin(g) + 0.0722 * lin(b);
+    const lights = [
+      { id: "Light", own: decls('html[data-reading-mode="parchment"]') },
+      ...READING_THEMES.filter((theme) => theme.look === "light").map((theme) => ({ id: theme.id, own: decls(`html[data-look="${theme.id}"]`) })),
+    ];
+    expect(lights.length).toBeGreaterThan(1);
+    const short = lights
+      .map(({ id, own }) => {
+        const night = hex(own["--color-night"] ?? "");
+        const ink = hex(own["--color-paper"] ?? "");
+        // The wash over black, the darkest a picture can be.
+        const ground = night.map((v) => v * alpha);
+        const r = (Math.max(lum(ink), lum(ground)) + 0.05) / (Math.min(lum(ink), lum(ground)) + 0.05);
+        return { id, r };
+      })
+      .filter(({ r }) => !(r >= 4.5))
+      .map(({ id, r }) => `${id}: ${r.toFixed(2)}:1 at ${(alpha * 100).toFixed(0)} percent of the page`);
+    expect(short, short.join("\n")).toEqual([]);
+  });
+
   it("writes the one answer as the intent, the others staying behind it", () => {
     const space = code("components/settings/SettingsClient.tsx");
     const at = space.indexOf("function SpaceSection(");

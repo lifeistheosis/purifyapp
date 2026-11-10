@@ -122,8 +122,8 @@ function FocusCard({ intent, on, onPick }: { intent: Intent; on: boolean; onPick
         className="img-arrive absolute inset-0 h-full w-full object-cover"
         style={{ objectPosition: picture.focus }}
       />
-      {/* The page's own ground, so on Parchment it is a wash of paper with the ink on it. */}
-      <span aria-hidden className="absolute inset-0 bg-gradient-to-b from-transparent from-30% to-night/90" />
+      {/* The page's own ground, so on Parchment it is a wash of paper with the ink on it, and there it comes up fuller (.set-focus-wash). */}
+      <span aria-hidden className="set-focus-wash absolute inset-0 bg-gradient-to-b from-transparent from-30% to-night/90" />
       <span className="absolute inset-x-2.5 bottom-2 font-sans text-caption font-semibold leading-[1.2] text-paper">
         {t(`onboard.intent.${intent}`)}
       </span>

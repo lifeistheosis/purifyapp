@@ -413,10 +413,13 @@ describe("the theology tray's rows", () => {
 
 // Settings' quiet words (build 89's guardrail list of 2026-11-10): the hint
 // under a section's title, the line under a row's name, what a chosen answer
-// means, and a track's unchosen choices. Each is held to 4.5:1 on its own
-// ground on every palette: the hint on the page, the track's choices on the
-// track (night-deep), the row's lines on the panel where it is lightest (on
-// Light, the panel's own cream at its darkest stop).
+// means, and a track's unchosen choices; and since the Themes chat's sweep
+// (1.9, section 25) the size preview's caption, "John 1" over the verse,
+// and its verse numbers.
+// Each is held to 4.5:1 on its own ground on every palette: the hint and the
+// caption on the page's own ground (the preview's well is drawn in it), the
+// track's choices on the track (night-deep), the row's lines on the panel
+// where it is lightest (on Light, the panel's own cream at its darkest stop).
 describe("Settings' quiet words", () => {
   const share = (re: RegExp, what: string): number => {
     const m = re.exec(BARE);
@@ -429,9 +432,11 @@ describe("Settings' quiet words", () => {
     desc: share(ink("\\.set-desc"), ".set-desc"),
     sub: share(ink("\\.set-sub"), ".set-sub"),
     track: share(ink("\\.set-track > button"), ".set-track > button"),
+    caption: share(ink("\\.set-well-ref"), ".set-well-ref"),
+    numbers: share(ink("\\.set-well \\.set-vn"), ".set-well .set-vn"),
   };
   const quiet = (mode: string) =>
-    new RegExp(`html\\[data-reading-mode="${mode}"\\] :is\\(\\.set-hint, \\.set-desc, \\.set-sub, \\.set-track > button\\[aria-checked="false"\\]:not\\(:hover\\)\\) \\{\\s*color: color-mix\\(in srgb, var\\(--color-paper\\) (\\d+)%`);
+    new RegExp(`html\\[data-reading-mode="${mode}"\\] :is\\(\\.set-hint, \\.set-desc, \\.set-sub, \\.set-well-ref, \\.set-well \\.set-vn, \\.set-track > button\\[aria-checked="false"\\]:not\\(:hover\\)\\) \\{\\s*color: color-mix\\(in srgb, var\\(--color-paper\\) (\\d+)%`);
   const OWN: Partial<Record<Mode, number>> = { parchment: share(quiet("parchment"), "Light"), candlelight: share(quiet("candlelight"), "Candlelight") };
   const TRIO = share(/:where\(html\[data-reading-mode="monastery"\], html\[data-reading-mode="councils"\], html\[data-reading-mode="cappadocian"\]\) \.set-desc \{\s*color: color-mix\(in srgb, var\(--color-paper\) (\d+)%/, "the trio's .set-desc");
   const lightPanel = hex(/html\[data-reading-mode="parchment"\] \.set-panel \{[^}]*linear-gradient\([^;]*?(#[0-9a-f]{6}) 100%\)/.exec(BARE)?.[1] ?? "");
@@ -448,6 +453,8 @@ describe("Settings' quiet words", () => {
         ["a row's line", own ?? (trio ? TRIO : BASE.desc), panel],
         ["what a chosen answer means", own ?? BASE.sub, panel],
         ["a track's unchosen choice", own ?? BASE.track, deep(mode)],
+        ["the size preview's caption", own ?? BASE.caption, night],
+        ["the size preview's verse numbers", own ?? BASE.numbers, night],
       ];
       const short = lines
         .map(([what, at, ground]) => ({ what, at, r: ratio(mix(paper, ground, at / 100), ground) }))
@@ -462,7 +469,7 @@ describe("Settings' quiet words", () => {
   // unchanged. A dark look's panel is the app's own; a light look's is its
   // own paper, a gradient that ends on its page colour, where it is darkest.
   it("a dark look draws them at its own share, by one rule that reads it", () => {
-    expect(BARE).toMatch(/html\[data-look\]:not\(\[data-reading-mode\]\) :is\(\.set-hint, \.set-desc, \.set-sub, \.set-track > button\[aria-checked="false"\]:not\(:hover\)\) \{\s*color: color-mix\(in srgb, var\(--color-paper\) var\(--look-quiet\), transparent\);/);
+    expect(BARE).toMatch(/html\[data-look\]:not\(\[data-reading-mode\]\) :is\(\.set-hint, \.set-desc, \.set-sub, \.set-well-ref, \.set-well \.set-vn, \.set-track > button\[aria-checked="false"\]:not\(:hover\)\) \{\s*color: color-mix\(in srgb, var\(--color-paper\) var\(--look-quiet\), transparent\);/);
     expect(BARE).toMatch(/html\[data-look\]\[data-reading-mode="parchment"\] \.set-panel \{[^}]*linear-gradient\(155deg, var\(--look-paper-high\) 0%, [^;]*var\(--color-night\) 100%\)/);
   });
 
@@ -478,6 +485,8 @@ describe("Settings' quiet words", () => {
         ["a row's line", panel],
         ["what a chosen answer means", panel],
         ["a track's unchosen choice", c.deep],
+        ["the size preview's caption", c.night],
+        ["the size preview's verse numbers", c.night],
       ];
       const short = lines
         .map(([what, ground]) => ({ what, r: ratio(mix(c.paper, ground, at / 100), ground) }))
