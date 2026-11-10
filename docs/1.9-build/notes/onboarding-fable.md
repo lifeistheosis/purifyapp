@@ -1228,7 +1228,7 @@ touch.
 | The clergy question a quiet line | Built, on the rule's screen |
 | The second chance (3.2) | Built (`SecondChanceCard`): the question's own screen, with a close |
 | Background on the device only (6.3) | With the flag on it is not written to the account and not filled from it. Copies already in accounts are not removed |
-| The A/B system (4) | `lib/ab`: assignment, the registry with its checks, exposure, the summary with the small-cell rule, readers per arm. The registry is empty and `AB_SENDING` is false. `trackEventSchema` is unchanged; a test refuses a running test the server would not take. No admin panel and no arm picker yet: with no test there is nothing for either to show |
+| The A/B system (4) | `lib/ab`: built first with an empty registry and its sender off. Then, on his word the same day, the first test, its learning rule, its panel and its picker: section 10 |
 | Counts (5.2) | Nothing new is counted. The week's first step counts as the Day 1 open where it is one of Day 1's own steps. The new pill's answer is left off every row |
 | The questions' version | Not raised |
 
@@ -1265,3 +1265,99 @@ in `testers.test.ts`, `lib/ab/__tests__`); lint 0 errors; `build:android` and
 questions, with nothing counted and nothing synced; "Preview as signed out"
 first, to walk them as a reader with no account. To light it for readers, on
 his word: `ROADS_LIVE` in `lib/onboarding/flags.ts`.
+
+---
+
+## 10. The first test, as built: the account's place (2026-11-10)
+
+His word, about 04:36 UTC: "sure. ensure you have a A/B test based around
+this. a self learning criterion etc". The design went to the arbiter in plain
+lines and came back "go". The wider system (one testing system for all of
+Purify, seven new counts, the Terms paragraph) is a separate page waiting on
+his OK, https://claude.ai/artifact/94eopwRhoMrd991kvz1mg6, and none of it is
+built.
+
+**The question.** Where a new reader with no account is offered one.
+`lib/ab/tests.ts`, `ACCOUNT_PLACE`, two versions:
+
+- `card`: as built. No account in the questions; the card on Today after a
+  first step of the week.
+- `end`: the account step as the last question, after "What are you looking
+  for?"; then the reminders if they signed in; then the handoff. No card.
+
+A reader who is signed in already is in neither.
+
+**When it runs.** Only while the roads are lit for readers (`gate: "roads"`),
+so not before release and never in Testers mode. Its days are set in the
+release commit with `ROADS_LIVE`: the first day the day of release, the last
+twelve weeks on. A unit test refuses lit roads with any other span.
+
+**The criterion.**
+
+- Judged by `back_week2`: the device opened Purify again in its second week,
+  days 7 to 13 after it was shown its version. Not "day 7 or later": while the
+  shares move, one version's devices are newer than the other's, and an open
+  end would lean against whichever is gaining.
+- Must not get clearly worse: `finished`, `account`, `plus_bought`. Clearly
+  worse is 19 chances in 20 that a version is a fifth or more behind the
+  other. A version that is cannot be given more than an equal share.
+- Every milestone is something in a device's first two weeks after it was
+  shown (`lib/ab/milestones.ts`), and nothing is read of a device until its
+  fourteenth day has passed. So like is compared with like.
+
+**Self-learning** (`lib/ab/bandit.ts`, pure and exact, no random draw). Equal
+shares until each version has 200 devices past their two weeks. Then each
+version's share is the chance it is the best on the judge (Thompson sampling,
+worked out on a grid so the same counts always give the same shares). No
+version under 20%. Settled when each has 1,100, one is ahead 19 in 20 and is
+not held: every new device gets it. Past its last day unsettled: back to
+`card`, the version that was built.
+
+**The device** (`lib/ab/device.ts`). It draws a seed once and keeps it; its
+version is worked out from the seed against the shares as they stand that day,
+and kept for good. It is counted as shown at one moment for both versions, as
+it leaves "What are you looking for?", the last screen they share. It says each
+milestone once.
+
+**The shares** come from `/api/ab/weights`: one public setting, the same for
+every device, worked out at most once an hour. A device asks with no cookie and
+no sign-in, and uses equal shares if it has none.
+
+**The rows.** Two, in `analytics_events`, on the server's closed list
+(`lib/security/schemas.ts`), held to the registry and the milestones:
+
+- `ab_exposed`: the test, the version, the kind of device, the day.
+- `ab_reached`: the test, the version, the milestone, the kind of device, and
+  one day: the day the device was shown its version, which the row is filed
+  under (`app/api/track/event`). So a row still holds the day and not the time,
+  as the privacy page says of every count, and holds no second date.
+
+No account, no device id, no session id, and the seed is in neither.
+
+**Accounts.** The arbiter's ruling: a sign-in from the card counts as the
+answer the account step has always counted, `onboarding_answer` "account:
+signed in" (`lib/onboarding/count.ts`, `countAccountFromCard`), since the page
+already says each answer is counted.
+
+**What he sees.** Admin, Reach, Onboarding, under the charts
+(`components/admin/tabs/AbTests.tsx`, from `lib/ab/panel.ts`): the question,
+one sentence on where it stands, and for each version how many were shown, how
+many are past two weeks, the judge and each guard as a count and a rate, and
+today's share. Nothing under 20 is shown. Before release it reads "Not
+running. It starts when the revised onboarding is lit for readers, at release."
+
+**To look at each version before release:** Settings, Testers, "A test's
+version to look at", then "Preview as signed out" and "First open".
+
+**One thing he should expect.** The `end` version will very likely make
+clearly more accounts than the card: it asks everyone, the card asks only those
+who took a first step. If so the panel will read "Held: card is clearly behind
+on accounts", and the card will not be favoured even if it brings more readers
+back. That is the guardrail doing its job, and the trade is then his to
+weigh: more accounts, or more readers kept.
+
+**The honest pace.** A device counts two weeks after it is shown. Learning
+starts at 200 devices a version, settling needs 1,100. At a few hundred new
+readers a week, of whom only those with no account are in it, a settled
+answer is two to three months away, and may not come inside twelve weeks.
+
