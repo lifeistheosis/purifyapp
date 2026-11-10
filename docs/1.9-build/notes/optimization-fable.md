@@ -400,6 +400,41 @@ Not covered: anything behind a sign-in (no test account here), Render's
 server logs (no access from this chat), sheets and the players by hand, and
 a slow connection as opposed to none.
 
+## Phase 2, done (2026-11-10)
+
+His word, about 08:25 UTC: "all recs". Items 1 to 3, each its own commit.
+The before numbers here are from the same branch head, built without the
+change, so they differ a little from the first measure above.
+
+| Item | Commit | Before | After |
+|---|---|---|---|
+| 1. Three router files leave every page | `caf6a665` | 224.6 MB on disk, 12,363 files, 71.4 MB packed; a cold start asks for 124 files | 202.9 MB, 5,811 files, **64.6 MB packed**; 72 files |
+| 2. Cardo is not preloaded | `8c6bb511` | 15 font files, 243 KB at every start | 6 files, 135 KB |
+| 3. Dead links go to the website | `c9e0d1a3` | 8 bare paths to pages the apps do not hold (English and German privacy, the shop's policies) | 0, and a test holds `app/` to it |
+
+The gates, on the three together: typecheck 0 errors; unit tests 10,537
+passed, 8 skipped, 0 failed; lint 0 errors (8 warnings, none in these files);
+`build:android` then `build:ios`, both green at 64.6 MB packed.
+
+The export walk (`scripts/export-walk.mjs`, every section, 21 minutes): 1,514
+checks passed and 12 did not, in sections 39, 40 and 41 (the Mark all button
+under Prayers, the plans' tiles, the councils' covers in the Reading Room).
+The same 12 fail on an export built without these changes, so they belong to
+other work on the branch and are for the Updates chat. Section 21 has one new
+check: no page carries the three files.
+
+Left as it was: the two size ceilings (240 MB and 85 MB) are his numbers
+(`lib/build/exportSize.ts`); with the export at 64.6 MB there is room to
+bring the packed one down when he wishes. One more dead link of the same
+kind is in `components/shop/StoreClient.tsx`, only for a store with no
+support email; it is a client component and needs a different fix, after
+the release.
+
+For the phone walk: **open the app cold, then tap through Today, Bible, a
+chapter, Discover, Prayers, You, a saint and a work in the Reading Room;
+every screen should open as before, with no blank page and no jump back to
+Today.**
+
 ## Left alone, on purpose
 
 - The 21 language files (about 2.5 MB packed) and the script fonts
