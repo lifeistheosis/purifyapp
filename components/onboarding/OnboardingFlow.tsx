@@ -15,6 +15,7 @@ import {
   readFastingRule,
   readIntents,
   readLevel,
+  readReturning,
   readRole,
   setResumeStage,
   writeBackground,
@@ -24,8 +25,13 @@ import {
   writeFocus,
   writeIntents,
   writeLevel,
+  writeReturning,
   writeRole,
 } from "@/lib/onboarding/state";
+import { roadsEnabled } from "@/lib/onboarding/flags";
+import { previewSignedOut } from "@/lib/onboarding/testing";
+import { leanOf, roadOf } from "@/lib/onboarding/road";
+import { weekFor } from "@/lib/onboarding/week";
 import {
   NO_ANSWERS,
   OTHER,
@@ -41,6 +47,8 @@ import {
 import { fileClergyRequest } from "@/lib/onboarding/clergyRequest";
 import { flowSteps, progressPath, type StepId } from "@/lib/onboarding/flowSteps";
 import {
+  BACKGROUND_PILLS,
+  ROAD_PILLS,
   dayOneFor,
   defaultsFor,
   depthFor,
@@ -141,8 +149,9 @@ export function OnboardingFlow({
   catechismAvailable = false,
 }: {
   /** Fires once the overlay has faded: the Day 1 step when the reader
-   *  reached the handoff, null when they skipped or left for another page. */
-  onDone: (dayOne: { key: DayOneKey; href: string } | null) => void;
+   *  reached the handoff (with the roads on, the first step of their week),
+   *  null when they skipped or left for another page. */
+  onDone: (dayOne: { key: DayOneKey | string; href: string } | null) => void;
   /** "level" when the reader is already signed in (a resumed sign-in or a brand-new account). */
   startAt?: OnboardingStart;
   /** One optional line on the account step, shown only while the bank has questions. */
@@ -151,6 +160,14 @@ export function OnboardingFlow({
   const { t } = useTranslate();
   const router = useRouter();
   const returning = startAt === "returning";
+  // The roads (1.9, lib/onboarding/flags.ts): read once, as the overlay
+  // opens, so the questions keep one shape from first screen to last.
+  const [roads] = useState(roadsEnabled);
+  // Roads only: whether someone is signed in, which decides whether the
+  // reminders are asked here or on Today (lib/onboarding/flowSteps.ts).
+  // In Testers mode an admin may preview the signed-out way through
+  // (lib/onboarding/testing.ts, previewSignedOut): an admin is always signed in.
+  const [hasAccount] = useState(() => roads && !!readLocalSessionUser() && !previewSignedOut());
   // Back from the sign-in the reminders step sent them to: every answer
   // before it is given already, and the end shows them as they were.
   const resumed = startAt === "reminders";
@@ -173,6 +190,11 @@ export function OnboardingFlow({
   // A priest, a deacon or a layman, and a priest's or deacon's answers after
   // it (1.8.x). Marked for a reader who is back, as every answer is.
   const [role, setRole] = useState<Role | null>(() => (answered ? readRole() : null));
+  // Roads only. Coming back after time away: practicing, on the road back.
+  const [away, setAway] = useState(() => (answered ? readReturning() : false));
+  // Roads only. The clergy's question is behind a quiet line on the rule's
+  // screen; open already for a reader who answered it before.
+  const [clergyOpen, setClergyOpen] = useState(() => (answered ? isClergyRole(readRole()) : false));
   const [clergy, setClergy] = useState<ClergyAnswers>(() => (answered ? readClergy() : NO_ANSWERS));
   // Whether a request for the seal goes at the end or waits for a sign-in,
   // for the handoff's line. Asked of the device as the clergy's questions open.
@@ -203,11 +225,20 @@ export function OnboardingFlow({
   const advancing = useRef(false);
 
   const steps = useMemo<StepId[]>(
-    () => flowSteps({ startAt, level, role, country: clergy.country, remindersOn }),
-    [startAt, level, role, clergy.country, remindersOn],
+    () => flowSteps({ startAt, level, role, country: clergy.country, remindersOn, roads, signedIn: hasAccount, clergyOpen }),
+    [startAt, level, role, clergy.country, remindersOn, roads, hasAccount, clergyOpen],
   );
   const step = steps[Math.min(index, steps.length - 1)];
-  const dayOne = useMemo(() => dayOneFor(level, intent), [level, intent]);
+  // The first step the handoff names and the website opens. With the roads
+  // on it is the first day of the reader's week (lib/onboarding/week.ts), or
+  // the Day 1 step when they have said nothing to choose a road by.
+  const dayOne = useMemo<{ key: DayOneKey | string; href: string; titleKey: string }>(() => {
+    const road = roads ? roadOf({ background, level, intent, returning: away }) : null;
+    if (road) return weekFor({ road, lean: leanOf(intent), level, picks })[0];
+    const one = dayOneFor(level, intent);
+    return { ...one, titleKey: `onboard.day1.${one.key}.title` };
+  }, [roads, background, level, intent, away, picks]);
+  const onRoad = roads && roadOf({ background, level, intent, returning: away }) != null;
   const route = routeFor(startAt);
 
   // Lock background scroll while the overlay is up.
@@ -353,14 +384,17 @@ export function OnboardingFlow({
     advanceSoon();
   }
 
-  function chooseLevel(l: Level) {
+  // `comingBack` is the roads' third answer for the Orthodox (1.9): the
+  // level is still "practicing", with the mark that puts them on the road
+  // back, and the fast starts shown plainly, not as the full rule.
+  function chooseLevel(l: Level, comingBack = false) {
     if (advancing.current) return;
     // The same answer again (after going back) keeps whatever the rule step
     // already set; only a new answer brings its own defaults. And never for a
     // reader who is back: they keep the calendar and the fast they have. The
     // practicing are shown both on the next step and can change them there.
-    if (l !== level && !returning) {
-      const d = defaultsFor(l);
+    if ((l !== level || comingBack !== away) && !returning) {
+      const d = comingBack ? { calendar: "new" as const, fasting: "modified" as const } : defaultsFor(l);
       setCalendar(d.calendar);
       setFasting(d.fasting);
       writeCalendarStyleDefault(d.calendar);
@@ -369,7 +403,22 @@ export function OnboardingFlow({
     setLevel(l);
     writeLevel(l);
     writeDepth(depthFor(l));
+    if (roads) {
+      setAway(comingBack);
+      writeReturning(comingBack);
+    }
+    // Counted by the level it is underneath: coming back is practicing.
     countAnswer("level", l);
+    advanceSoon();
+  }
+
+  // Roads only: the quiet line on the rule's screen. The clergy's question
+  // becomes the next screen, and the rule's answers are counted as it is left.
+  function openClergy() {
+    if (advancing.current) return;
+    countAnswer("calendar", calendar);
+    countAnswer("fasting", fasting);
+    setClergyOpen(true);
     advanceSoon();
   }
 
@@ -574,14 +623,17 @@ export function OnboardingFlow({
       : []),
     // A reader who is back is not on their first day.
     {
-      label: returning ? t("onboard.returning.next") : t("onboard.handoff.first"),
-      value: t(`onboard.day1.${dayOne.key}.title`),
+      // On a road, the week itself, and that it comes one step a day: the
+      // step that leads it is the reader's own first pick, which the Focus
+      // line above has just said.
+      label: returning ? t("onboard.returning.next") : onRoad ? t("onboard.week.title") : t("onboard.handoff.first"),
+      value: onRoad && !returning ? t("onboard.week.sub") : t(dayOne.titleKey),
     },
   ];
 
   // Measured against the longest way through, so the line only ever grows
   // (lib/onboarding/flowSteps.ts, progressPath).
-  const path = progressPath(startAt);
+  const path = progressPath(startAt, roads);
   const progress = Math.max(0, path.indexOf(step)) / (path.length - 1);
   const stepClass = dir === "fwd" ? "ob-step-fwd" : "ob-step-back";
 
@@ -699,10 +751,73 @@ export function OnboardingFlow({
         )}
 
         {step === "background" && (
-          <WhereFrom answer={background} onChoose={chooseBackground} onContinue={leaveBackground} onPreferNot={preferNotToSay} />
+          <WhereFrom
+            answer={background}
+            pills={roads ? ROAD_PILLS : BACKGROUND_PILLS}
+            onChoose={chooseBackground}
+            onContinue={leaveBackground}
+            onPreferNot={preferNotToSay}
+          />
         )}
 
-        {step === "level" && (
+        {/* Roads only (1.9): how far along, asked in the reader's own terms.
+            The Orthodox are asked where they are now; everyone else whether
+            they have been to an Orthodox church. Underneath it is the same
+            answer as ever (lib/onboarding/space.ts, Level), so nothing that
+            reads it changes. "Prefer not to say" keeps the question as it was. */}
+        {step === "level" && roads && background === "orthodox" && (
+          <Step eyebrow={t("onboard.level.eyebrow")} title={t("onboard.where.title")}>
+            <div className="flex flex-col gap-2.5">
+              <ChoiceCard
+                selected={level === "practicing" && !away}
+                onClick={() => chooseLevel("practicing")}
+                icon={<Cross size={20} />}
+                title={t("onboard.level.practicing")}
+                sub={t("onboard.level.practicingSub")}
+                delay={0}
+              />
+              <ChoiceCard
+                selected={level === "practicing" && away}
+                onClick={() => chooseLevel("practicing", true)}
+                icon={<Compass size={20} />}
+                title={t("onboard.where.returning")}
+                sub={t("onboard.where.returningSub")}
+                delay={1}
+              />
+              <ChoiceCard
+                selected={level === "learning"}
+                onClick={() => chooseLevel("learning")}
+                icon={<Book size={20} />}
+                title={t("onboard.where.preparing")}
+                sub={t("onboard.level.learningSub")}
+                delay={2}
+              />
+            </div>
+          </Step>
+        )}
+        {step === "level" && roads && background !== "orthodox" && background !== "prefer-not" && background !== null && (
+          <Step eyebrow={t("onboard.level.eyebrow")} title={t("onboard.been.title")}>
+            <div className="flex flex-col gap-2.5">
+              <ChoiceCard
+                selected={level === "inquirer"}
+                onClick={() => chooseLevel("inquirer")}
+                icon={<Compass size={20} />}
+                title={t("onboard.been.notYet")}
+                sub={t("onboard.level.inquirerSub")}
+                delay={0}
+              />
+              <ChoiceCard
+                selected={level === "learning"}
+                onClick={() => chooseLevel("learning")}
+                icon={<Book size={20} />}
+                title={t("onboard.been.going")}
+                sub={t("onboard.level.learningSub")}
+                delay={1}
+              />
+            </div>
+          </Step>
+        )}
+        {step === "level" && (!roads || background === "prefer-not" || background === null) && (
           <Step eyebrow={t("onboard.level.eyebrow")} title={t("onboard.level.title")}>
             <div className="flex flex-col gap-2.5">
               <ChoiceCard
@@ -732,7 +847,6 @@ export function OnboardingFlow({
             </div>
           </Step>
         )}
-
         {/* The baptized Orthodox only (1.8.x, the owner's note 54). A priest
             or deacon goes on to where they serve; a layman to the rule. */}
         {step === "role" && (
@@ -804,6 +918,17 @@ export function OnboardingFlow({
             <div className="mt-8">
               <PrimaryButton onClick={leaveRule}>{t("onboard.continue")}</PrimaryButton>
             </div>
+            {/* Roads only: the clergy's question, a quiet line for the few it
+                is for, where it was a screen every practicing reader passed. */}
+            {roads && !clergyOpen ? (
+              <button
+                type="button"
+                onClick={openClergy}
+                className="mt-2 inline-flex min-h-11 items-center self-center rounded-pill px-4 font-sans text-caption text-paper/55 transition-colors hover:text-paper"
+              >
+                {t("onboard.rule.clergy")}
+              </button>
+            ) : null}
           </Step>
         )}
 

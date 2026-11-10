@@ -35,12 +35,15 @@ import { PrimaryButton } from "./PrimaryButton";
  */
 export function WhereFrom({
   answer,
+  pills = BACKGROUND_PILLS,
   onChoose,
   onContinue,
   onPreferNot,
 }: {
   /** The answer given, if any: a pill, or "prefer-not". */
   answer: Background | null;
+  /** The pills offered, in order. With the roads on (1.9), ROAD_PILLS: one more, "Another Christian tradition". */
+  pills?: readonly Background[];
   onChoose: (background: Background) => void;
   onContinue: () => void;
   onPreferNot: () => void;
@@ -71,7 +74,7 @@ export function WhereFrom({
       </p>
 
       <div role="group" aria-labelledby={`${id}q`} className="mt-[26px] flex flex-wrap justify-center gap-[9px]">
-        {BACKGROUND_PILLS.map((b, i) => (
+        {pills.map((b, i) => (
           <button
             key={b}
             type="button"

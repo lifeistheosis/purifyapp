@@ -8,9 +8,14 @@ import {
   isOnboarded,
   markOnboardedSilently,
   readResumeStage,
+  readWeek,
   setResumeStage,
   shouldShowOnboarding,
+  writeWeek,
 } from "@/lib/onboarding/state";
+import { roadsEnabled } from "@/lib/onboarding/flags";
+import { readRoad } from "@/lib/onboarding/useWeek";
+import { localDay, stepTaken } from "@/lib/onboarding/week";
 import { countReturns } from "@/lib/onboarding/count";
 import { isTesting } from "@/lib/onboarding/testing";
 import { isDesktopApp } from "@/lib/desktop/bridge";
@@ -160,7 +165,12 @@ export function FirstRunGate({
         // The apps land on Today, where the first-step card waits. The
         // website's home is the front page, so it goes straight to that
         // step. A skip stays where it is.
-        if (dayOne && !native) router.push(dayOne.href);
+        if (dayOne && !native) {
+          // With the roads on, that step is the first day of their week, and
+          // going to it is taking it: the second day waits for tomorrow.
+          if (roadsEnabled() && readRoad()) writeWeek(stepTaken(readWeek(), localDay(new Date())));
+          router.push(dayOne.href);
+        }
       }}
     />
   );
