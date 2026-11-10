@@ -3242,7 +3242,7 @@ day in a build that has campaigns (`lib/ops/maintenance.ts`,
   days. Rows go on that day plus thirty. Null, a string that is not a real
   day, or a day before 2026-11-10 means nothing is read and nothing is
   deleted, and the report says which. Agreed with Admin, who adds the line to
-  R9 and to R0c's release-commit list.
+  R9 and to the release checklist (`docs/plans/v1.9/RELEASE.md`, section 6).
 - **Only July's:** no length AND made before 2026-09-01, both, at every read
   and again at the delete, by id. A row with no length made later is left
   alone and counted as a stray.
@@ -3333,8 +3333,8 @@ case.
 
 ## 25. A store build has pictures only when it was cut with them (2026-11-10)
 
-**Why.** The stores' rule against a feature asleep in a build (Apple's 2.3.1
-and 2.5.19, already the rule for campaigns as a whole in
+**Why.** The stores' rule against a feature asleep in a build (Apple's
+2.5.19, already the rule for campaigns as a whole in
 `lib/campaigns/flags.ts`). Pictures have a switch of their own on the server
 (`lib/campaigns/parts.ts`). A store build that carried their controls while
 the server had them off, to be turned on later by the server alone, would
@@ -3344,8 +3344,8 @@ build he will submit.
 
 - **The constant:** `PICTURES_IN_STORE_BUILDS` in `lib/campaigns/flags.ts`,
   committed false. In the release commit it is true only if pictures are on
-  at submission (`OWNER-STEPS.md`, R0c). A test holds it false for as long
-  as the server's own switch is off.
+  at submission (`docs/plans/v1.9/RELEASE.md`, section 6; `OWNER-STEPS.md`,
+  R5d). A test holds it false for as long as the server's own switch is off.
 - **False:** an app draws no picture and no picture control and asks the
   pictures' route for nothing, whatever the server answers. Turning pictures
   on in the apps then takes a new store build, which is reviewed.

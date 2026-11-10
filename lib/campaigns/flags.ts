@@ -72,8 +72,8 @@
 //
 // WHEN A BUILD GOES TO A STORE'S REVIEW, CAMPAIGNS ARE OPEN ON THE WEBSITE OR
 // ARE NOT IN THE BUILD. A build cut at testers and reviewed while the website
-// still says testers carries a feature asleep, which is what Apple's
-// guidelines 2.3.1 and 2.5.19 warn of. So step 3 comes before step 4; and
+// still says testers carries a feature asleep, which Apple's guideline
+// 2.5.19 forbids. So step 3 comes before step 4; and
 // should step 3 have to wait, the build's notes for review say plainly what
 // is in it and switched off.
 //
@@ -86,7 +86,8 @@
 // for nothing, whatever the server answers, and turning pictures on in the
 // apps takes a new store build, which is reviewed. The website has no such
 // rule and follows the server. In the release commit it is true only if
-// pictures are on at submission (docs/1.9-build/OWNER-STEPS.md, R0c).
+// pictures are on at submission (docs/plans/v1.9/RELEASE.md, section 6;
+// docs/1.9-build/OWNER-STEPS.md, R5d).
 //
 // WHERE IT IS NOT CLOSED, THE REWORK'S SQL MUST HAVE RUN: the four files he
 // signed (supabase/migrations, the four campaign files of 2026-11-10, the

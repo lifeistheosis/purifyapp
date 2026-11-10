@@ -82,7 +82,8 @@ afterEach(() => {
 describe("as committed", () => {
   it("store builds are cut without pictures while the server has them off", () => {
     // The release commit sets it true only if pictures are on at submission
-    // (docs/1.9-build/OWNER-STEPS.md, R0c). Cut with pictures while the
+    // (docs/plans/v1.9/RELEASE.md, section 6; docs/1.9-build/OWNER-STEPS.md,
+    // R5d). Cut with pictures while the
     // server has them off, a store build would carry them asleep.
     expect(PICTURES_IN_STORE_BUILDS && !CAMPAIGN_PARTS.pictures).toBe(false);
     __setPicturesInStoreBuilds(PICTURES_IN_STORE_BUILDS);
