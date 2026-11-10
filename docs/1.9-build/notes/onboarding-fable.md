@@ -1488,3 +1488,37 @@ Not decided here, because it is older than the roads and wider than the card:
 the offer to turn reminders on, which the questions, the account page and
 this card after a sign-in make on every platform, and which the live 1.8
 makes today. That is F-21 and his item 89.
+
+### The words are on the pages, and the counts are on (2026-11-10, about 08:25 UTC)
+
+His "all recs" covered his page's item 140: yes to the eight privacy
+sentences and the Terms paragraph as written. So, in one change:
+
+- `/privacy` carries the eight sentences in English and in German, in two
+  paragraphs after the line for tests, in the order he read them.
+- The Terms carry the paragraph in section 2, "What Purify is". The Terms
+  page is in English only, so there is no German there. Its date and version
+  are not touched: they move on release day (his 96). The lawyer still reads
+  the paragraph (his 113).
+- `MORE_COUNTS_SENDING` is `true`. The test now refuses it true without every
+  sentence on the page, so a sentence cannot be taken off while its count is
+  sent, and it holds the Terms paragraph word for word (`TERMS_PARAGRAPH`).
+
+Before release nothing is counted on the live site: the page, the server's
+list and the apps ship together with 1.9. A test build from this branch sends
+the new rows to the live server, which does not know their names yet and
+refuses them.
+
+No new line in the app's own languages came with this: the privacy page is
+written in English and German only, and the counts show a reader nothing.
+
+For the 1.9 letter's "Changes to this page", given to the arbiter for Admin:
+"The privacy page now names eight more things Purify counts, each as a total
+and never a person: a first prayer or chapter, the steps of a first week,
+where an account is made, reminders turned on or off, the steps of the Plus
+sheet, a device's first day, the two small cards on Today, and the first
+step opened. The Terms now say that two readers may at times be shown
+different versions of a screen."
+
+One thing for Admin's item 141: its new "How long we keep it" paragraph
+lists the kept counts by name, and should cover these as well.

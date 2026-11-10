@@ -31,10 +31,13 @@
 // the device reminded when it came back), and `first` on screen_closed (the
 // device's first day, so the screen new readers leave from is seen apart).
 //
-// THE SWITCH. None of these is sent until its sentence is on the privacy
-// page: the words go to the owner, and ship at release. MORE_COUNTS_SENDING
-// stays false until then, and lib/analytics/__tests__/moreCounting.test.ts
-// refuses it true while the page lacks a sentence, in English or in German.
+// THE SWITCH. On since the sentences went onto the privacy page, in
+// English and in German (his item 140, "all recs" of 2026-11-10).
+// lib/analytics/__tests__/moreCounting.test.ts refuses MORE_COUNTS_SENDING
+// true while the page lacks any one of them, so a sentence cannot be taken
+// off the page while its count is still sent. Before release nothing is
+// counted on the live site in any case: the page and the counts ship
+// together with 1.9.
 //
 // Pure, so the rules are tested directly. Sending is ./moreCount.ts.
 
@@ -42,8 +45,8 @@ import type { CountPlatform } from "@/lib/onboarding/counting";
 
 import type { Lock } from "./lockCounting";
 
-/** Off until every sentence below is on /privacy. See the head of this file. */
-export const MORE_COUNTS_SENDING = false;
+/** On only while every sentence below is on /privacy. See the head of this file. */
+export const MORE_COUNTS_SENDING = true;
 
 export const MORE_EVENTS = ["first_act", "week_step", "account_made", "reminders_set", "plus_step", "pricing_bought", "today_card"] as const;
 export type MoreEventName = (typeof MORE_EVENTS)[number];
@@ -109,8 +112,8 @@ export function moreEventBody(event: MoreEvent, platform: CountPlatform): string
 
 /**
  * Each count's sentence for the privacy page, in English and in German, as
- * put to the owner. The page must carry every one, word for word, before the
- * switch above may be turned on. The last is not a new count: it names the
+ * the owner approved them. The page must carry every one, word for word,
+ * while the switch above is on. The last is not a new count: it names the
  * first step opened, which is counted today and which the page omits.
  */
 export const PRIVACY_SENTENCES: readonly { what: string; en: string; de: string }[] = [
@@ -155,3 +158,7 @@ export const PRIVACY_SENTENCES: readonly { what: string; en: string; de: string 
     de: "Von deinem eigenen Gerät sagt eine Zeile auch, wann der erste Schritt deiner ersten Woche geöffnet wurde.",
   },
 ];
+
+/** The Terms' paragraph on tests of two versions, as the owner approved it (item 140). */
+export const TERMS_PARAGRAPH =
+  "Purify changes as we learn what helps its readers. At times two readers are shown different versions of the same screen while we find out which serves them better. A test never changes what you have already paid for, the price you are shown is the price you pay, and no test changes the texts of Scripture, the prayers or the Fathers. What is counted, and how, is in the Privacy Policy.";

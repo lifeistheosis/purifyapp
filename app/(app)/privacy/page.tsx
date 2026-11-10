@@ -396,6 +396,31 @@ export default async function PrivacyPage() {
   &ldquo;A reader shown the second version came back a week
   later&rdquo; is one more on a total, never you.
 </p>
+{/* 1.9 (lib/analytics/moreCounting.ts): the eight sentences of his item
+    140, his "all recs" of 2026-11-10, word for word, listed in the 1.9
+    letter. A test holds them, and the counts are sent only while they
+    stand here (lib/analytics/__tests__/moreCounting.test.ts). */}
+<p className="mt-3 font-serif text-body text-paper/85 leading-[1.7]">
+  The first time a device finishes a prayer or a chapter, one row says
+  which of the two it was and how many days after it first opened
+  Purify. The steps of a first week are counted the same way: which
+  day of the seven it was and whether it was opened or closed, never
+  which step. When an account is made, one row says where in Purify it
+  was made, and nothing about the account. When reminders are turned
+  on or off, one row says so and where. The note your device sends
+  when you come back also says whether reminders were on.
+</p>
+<p className="mt-3 font-serif text-body text-paper/85 leading-[1.7]">
+  In the Plus sheet, one row says when a feature&rsquo;s Try it was
+  opened and when the button to subscribe was tapped, with the feature
+  the sheet was opened on. A purchase made on the pricing page is
+  counted like one made in the sheet. The row that says what kind of
+  screen was showing when the app was put away also says whether it
+  was the device&rsquo;s first day. The two small cards a new reader
+  may meet on Today are counted as answered or closed. From your own
+  device, one row also says when the first step of your first week was
+  opened.
+</p>
 
  {/* Retention. Until 2026-10-29 this said a scheduled job deleted
  these rows at 90 days. That job (docs/operations/analytics-retention.md)
@@ -1160,6 +1185,30 @@ function PrivacyDe() {
    Leser, dem die zweite Fassung gezeigt wurde, kam eine Woche später
    wieder&ldquo; ist einer mehr in einer Summe, nie du.
  </p>
+ {/* 1.9 (lib/analytics/moreCounting.ts): the eight sentences of his item 140, in German. A test holds them. */}
+<p className="mt-3 font-serif text-body text-paper/85 leading-[1.7]">
+   Wenn ein Gerät zum ersten Mal ein Gebet oder ein Kapitel beendet,
+   sagt eine Zeile, welches von beiden es war und wie viele Tage nach
+   dem ersten Öffnen von Purify. Die Schritte einer ersten Woche werden
+   ebenso gezählt: welcher der sieben Tage es war und ob er geöffnet
+   oder geschlossen wurde, nie welcher Schritt. Wenn ein Konto angelegt
+   wird, sagt eine Zeile, wo in Purify es angelegt wurde, und nichts
+   über das Konto. Wenn Erinnerungen ein- oder ausgeschaltet werden,
+   sagt eine Zeile das und wo. Die Notiz, die dein Gerät sendet, wenn
+   du wiederkommst, sagt auch, ob Erinnerungen eingeschaltet waren.
+</p>
+<p className="mt-3 font-serif text-body text-paper/85 leading-[1.7]">
+   Im Plus-Blatt sagt eine Zeile, wann das Ausprobieren einer Funktion
+   geöffnet und wann die Schaltfläche zum Abonnieren angetippt wurde,
+   mit der Funktion, für die das Blatt geöffnet wurde. Ein Kauf auf der
+   Preisseite wird gezählt wie einer im Blatt. Die Zeile, die sagt,
+   welche Art von Bildschirm zu sehen war, als die App weggelegt wurde,
+   sagt auch, ob es der erste Tag des Geräts war. Die zwei kleinen
+   Karten, denen ein neuer Leser auf Heute begegnen kann, werden als
+   beantwortet oder geschlossen gezählt. Von deinem eigenen Gerät sagt
+   eine Zeile auch, wann der erste Schritt deiner ersten Woche geöffnet
+   wurde.
+</p>
 
  {/* Retention */}
  <p className="mt-10 font-sans text-caption font-semibold text-paper/45">

@@ -17,6 +17,7 @@ import {
   PRIVACY_SENTENCES,
   REMINDER_PLACES,
   STEP_DID,
+  TERMS_PARAGRAPH,
   TODAY_CARDS,
   actDay,
   actOf,
@@ -39,11 +40,19 @@ describe("the switch", () => {
   const onPage = (text: string, sentence: string) =>
     text.includes(sentence) || text.includes(sentence.replace(/'/g, "&rsquo;").replace(/"([^"]*)"/g, "&ldquo;$1&rdquo;"));
 
-  it("is off until every count's sentence is on the privacy page, in English and in German", () => {
+  it("is on only while every count's sentence is on the privacy page, in English and in German", () => {
     const missing = PRIVACY_SENTENCES.filter((s) => !onPage(english, s.en) || !onPage(german, s.de)).map((s) => s.what);
-    // Turned on in the change that puts the sentences on the page, and not before.
+    // Turned on in the change that put the sentences on the page (his item 140, 2026-11-10).
     if (MORE_COUNTS_SENDING) expect(missing).toEqual([]);
     else expect(MORE_COUNTS_SENDING).toBe(false);
+    expect(MORE_COUNTS_SENDING).toBe(true);
+    expect(missing).toEqual([]);
+  });
+
+  it("stands beside the Terms' paragraph on tests, word for word", () => {
+    const terms = read("app/(app)/terms/page.tsx").replace(/\s+/g, " ");
+    expect(terms).toContain(TERMS_PARAGRAPH);
+    expect(TERMS_PARAGRAPH).not.toContain("\u2014");
   });
 
   it("has a sentence for each count, for the two words on older rows, and for the first step the page omits", () => {

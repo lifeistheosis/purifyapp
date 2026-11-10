@@ -66,6 +66,17 @@ export default function TermsPage() {
           devotional goods (Section 6). Purify is offered as a devotional
           and educational resource.
         </p>
+        {/* 1.9: tests of two versions (lib/ab/). His item 140, "all recs" of
+            2026-11-10, word for word; lib/analytics/__tests__/moreCounting.test.ts
+            holds it. The lawyer still reads it (his 113). */}
+        <p className={P}>
+          Purify changes as we learn what helps its readers. At times two
+          readers are shown different versions of the same screen while we
+          find out which serves them better. A test never changes what you
+          have already paid for, the price you are shown is the price you
+          pay, and no test changes the texts of Scripture, the prayers or
+          the Fathers. What is counted, and how, is in the Privacy Policy.
+        </p>
 
         <h2 className={H2}>3. Not professional advice</h2>
         <p className={P}>
