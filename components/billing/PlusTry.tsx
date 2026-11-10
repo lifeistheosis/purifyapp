@@ -48,8 +48,12 @@ import { useDesktopApp } from "@/lib/desktop/useDesktopApp";
 
 import { TryWindow } from "./plusTry/TryKit";
 
-/** What every feature's screen is given: its row (its name, its words). */
-export type TryProps = { row: PlusRow };
+/**
+ * What every feature's screen is given: its row (its name, its words), and
+ * whether the reader has the feature already (Your plan's posters, build 89
+ * note 12): a preview then never shows a lock or counts a minute.
+ */
+export type TryProps = { row: PlusRow; owned?: boolean };
 
 /** Each feature's screen, by its row's id: every one of the fifteen (his note 39; Compare joined in 1.9). */
 const PREVIEWS: Readonly<Record<string, LazyExoticComponent<ComponentType<TryProps>>>> = {
@@ -72,6 +76,22 @@ const PREVIEWS: Readonly<Record<string, LazyExoticComponent<ComponentType<TryPro
 
 /** The rows that can be tried: for the tests, which hold it to every row of the list. */
 export const TRY_PREVIEW_IDS: readonly string[] = Object.keys(PREVIEWS);
+
+/**
+ * One feature's live preview, as Try it shows it, for a place other than the
+ * Plus page: Your plan's posters (components/premium/FeatureShowcase.tsx,
+ * build 89 note 12), where the reader has the feature (`owned`). His word:
+ * "I want each one visualized, explained". Null for a row with none.
+ */
+export function TryPreview({ row, owned = false }: { row: PlusRow; owned?: boolean }) {
+  const Preview = PREVIEWS[row.id];
+  if (!Preview) return null;
+  return (
+    <Suspense fallback={<TryWindow loading />}>
+      <Preview key={row.id} row={row} owned={owned} />
+    </Suspense>
+  );
+}
 
 export type PlusTry = {
   /** The row being tried, or null for the list. */

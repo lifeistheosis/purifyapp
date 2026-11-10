@@ -12,13 +12,15 @@
 // tiles; what it opens as the paywall's posters. No gold, and none of it in
 // DM Serif Display, which the owner asked to keep out. Dark on every palette.
 
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { getClientPlan, type ClientPlan } from "@/lib/entitlements/client";
-import type { PremiumPlanCopy, PlanFeature } from "@/lib/premium/plans";
+import type { PremiumPlanCopy } from "@/lib/premium/plans";
+import { PLUS_ROWS, PRO_ROWS, SOON_LABEL, rowsHere } from "@/lib/premium/plusRows";
+import { useDesktopApp } from "@/lib/desktop/useDesktopApp";
 import { useTranslate } from "@/components/i18n/MessagesProvider";
-import { FeatureShowcase } from "@/components/premium/FeatureShowcase";
+import { FeatureShowcase, type ShowcaseItem } from "@/components/premium/FeatureShowcase";
 import { PREMIUM_CTA, PREMIUM_GHOST } from "@/components/premium/PremiumUI";
 import { deviceDateLocale } from "@/lib/i18n/deviceDates";
 
@@ -113,7 +115,18 @@ export function PlanView({ plan, planCopy }: { plan: ClientPlan; planCopy: Premi
   const isPro = plan.tier === "pro";
   const name = isPro ? planCopy.proTitle : planCopy.plusTitle;
   const lede = isPro ? planCopy.proLede : planCopy.plusLede;
-  const features: PlanFeature[] = isPro ? planCopy.proItems : planCopy.plusItems;
+  const desktopApp = useDesktopApp();
+  // What it opens, in the paywall's own rows and words, in all twenty-one
+  // languages (build 89 note 12): lib/premium/plans.ts is written in English
+  // and German only, and the apps' export resolved it once, in English. A
+  // Plus poster carries its row, so its sheet can show the feature itself.
+  const features: ShowcaseItem[] = useMemo(
+    () =>
+      isPro
+        ? PRO_ROWS.map((r) => ({ id: r.id, title: t(r.name), sub: t(r.body), soon: r.soon }))
+        : rowsHere(PLUS_ROWS, { desktopApp }).map((r) => ({ id: r.id, title: t(r.name), sub: t(r.body), row: r })),
+    [isPro, desktopApp, t],
+  );
   const bill = billing(plan);
   const source = SOURCE_LABEL[plan.source ?? "unknown"] ?? plan.source ?? "Not recorded";
   const delay = (i: number) => ({ animationDelay: `${i * 90}ms` });
@@ -166,7 +179,7 @@ export function PlanView({ plan, planCopy }: { plan: ClientPlan; planCopy: Premi
         {/* What it opens */}
         <div className="reveal-rise mt-7" style={delay(2)}>
           <p className="font-sans text-caption font-semibold text-paper/55">{t("ui.whatSIncluded")}</p>
-          <FeatureShowcase items={features} soonLabel={planCopy.soonLabel} label={t("ui.whatSIncluded")} owned className="mt-2.5" />
+          <FeatureShowcase items={features} soonLabel={t(SOON_LABEL)} label={t("ui.whatSIncluded")} owned className="mt-2.5" />
         </div>
 
         {/* Actions */}

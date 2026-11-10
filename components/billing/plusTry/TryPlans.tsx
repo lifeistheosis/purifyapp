@@ -16,6 +16,7 @@ import { useCallback, useMemo, useState } from "react";
 
 import type { TryProps } from "@/components/billing/PlusTry";
 import { useTranslate } from "@/components/i18n/MessagesProvider";
+import { Check } from "@/components/ui/icons/Check";
 import { PlanPath } from "@/components/plans/PlanPath";
 import { localBookNames } from "@/lib/bible/books";
 import { cn } from "@/lib/cn";
@@ -69,11 +70,17 @@ export default function TryPlans({ row }: TryProps) {
                     setChosen(p.id);
                     setJustRead(null);
                   }}
-                  className={cn("tap-press block w-full py-4 text-start", on ? "opacity-100" : "opacity-60 hover:opacity-90")}
+                  // Every plan reads on every palette (build 89 note 12's check:
+                  // greyed to 60%, the others fell under 4.5:1); the chosen one
+                  // wears the house's check.
+                  className="tap-press flex w-full items-start gap-3 py-4 text-start"
                 >
-                  <span className="block font-serif text-title-sm font-semibold leading-snug text-paper">{t(`plans.${p.id}.name`)}</span>
-                  <span className="mt-1 block font-sans text-detail leading-[1.55] text-paper/70">{t(`plans.${p.id}.body`)}</span>
-                  <span className="mt-1.5 block font-sans text-caption text-paper/50">{tn("plans.days", p.days.length)}</span>
+                  <span className="min-w-0 flex-1">
+                    <span className={cn("block font-serif text-title-sm font-semibold leading-snug", on ? "text-paper" : "text-paper/75")}>{t(`plans.${p.id}.name`)}</span>
+                    <span className="mt-1 block font-sans text-detail leading-[1.55] text-paper/70">{t(`plans.${p.id}.body`)}</span>
+                    <span className="mt-1.5 block font-sans text-caption text-paper/60">{tn("plans.days", p.days.length)}</span>
+                  </span>
+                  {on ? <Check size={18} aria-hidden className="mt-1 shrink-0 text-paper" /> : null}
                 </button>
               </li>
             );

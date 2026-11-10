@@ -226,7 +226,7 @@ export function RememberCardView({
         ) : (
           <>
             {href ? (
-              <Link href={href} className="tap-press mt-2 inline-block font-heading text-[24px] font-bold leading-tight text-paper">
+              <Link href={href} className="tap-press hit-44 mt-2 inline-block font-heading text-[24px] font-bold leading-tight text-paper">
                 {reference}
               </Link>
             ) : (

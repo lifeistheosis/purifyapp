@@ -55,7 +55,7 @@ export default function TryFlorilegium({ row }: TryProps) {
         <Eyebrow>{t("study.florilegium.title")}</Eyebrow>
         <h3 className="mt-3 text-heading font-bold leading-[1.05] tracking-[-0.025em] text-paper">{title}</h3>
         <p className="mt-4 flex flex-wrap items-center gap-2">
-          <span className="inline-flex items-center rounded-pill border border-paper/15 bg-paper/[0.04] px-3 py-1 font-sans text-caption tabular-nums text-paper/65">
+          <span className="inline-flex items-center rounded-pill border border-paper/15 bg-paper/[0.04] px-3 py-1 font-sans text-caption tabular-nums text-paper/75">
             {tn("study.florilegium.lineCount", items.length)}
           </span>
           <ExampleTag />

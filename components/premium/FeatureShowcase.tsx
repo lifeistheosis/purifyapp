@@ -10,12 +10,14 @@
 // movable sheet: its mark large in its pool of light, its name, what it does
 // in the plan's own words (lib/premium/plans.ts), and the posters on either
 // side of it, so every feature can be read one after another without going
-// back to the row. Where the reader already has the feature (Your plan), a
-// way straight to it.
+// back to the row. Where the reader already has the feature (Your plan), the
+// feature itself, live in the sheet as Plus's Try it draws it, and a way
+// straight to it (build 89 note 12: "I want each one visualized, explained").
 
 import Link from "next/link";
 import { useState } from "react";
 
+import { TRY_PREVIEW_IDS, TryPreview } from "@/components/billing/PlusTry";
 import { useTranslate } from "@/components/i18n/MessagesProvider";
 import { FeatureMark, PREMIUM_GHOST, SoonPill, posterGround } from "@/components/premium/PremiumUI";
 import { ChevronRight } from "@/components/ui/icons/ChevronRight";
@@ -23,11 +25,18 @@ import { ScrollRail } from "@/components/ui/ScrollRail";
 import { Sheet } from "@/components/ui/Sheet";
 import { cn } from "@/lib/cn";
 import type { PlanFeature } from "@/lib/premium/plans";
+import type { PlusRow } from "@/lib/premium/plusRows";
+
+/** A poster: a feature's mark, name and line, and for a Plus feature its row, which its live preview is drawn from. */
+export type ShowcaseItem = PlanFeature & { row?: PlusRow };
 
 /** Where a feature lives in the app, for a reader who has it: the place the upgrade sheet's welcome sends them too. */
 export const FEATURE_PLACES: Readonly<Record<string, { href: string; label: string }>> = {
   "cross-refs": { href: "/bible/john/1", label: "plus.active.crossrefs" },
-  "word-study": { href: "/bible/genesis/1", label: "plus.active.wordstudy" },
+  // John 1, where the Greek always pairs with the English verse for verse:
+  // Genesis 1 opened on a page with no Greek to tap (build 89 note 12, "the
+  // Greek doesn't pull up anything").
+  "word-study": { href: "/bible/john/1", label: "plus.active.wordstudy" },
   journal: { href: "/journal", label: "plus.active.journal" },
   plans: { href: "/plans", label: "plus.active.plans" },
   "reading-modes": { href: "/bible/john/1", label: "plus.active.modes" },
@@ -41,7 +50,7 @@ export function FeatureShowcase({
   owned = false,
   className,
 }: {
-  items: PlanFeature[];
+  items: ShowcaseItem[];
   soonLabel: string;
   /** Names the row for assistive technology. */
   label: string;
@@ -55,6 +64,10 @@ export function FeatureShowcase({
   const before = at !== null && at > 0 ? items[at - 1] : null;
   const after = at !== null && at < items.length - 1 ? items[at + 1] : null;
   const place = item && owned ? FEATURE_PLACES[item.id] : undefined;
+  // The feature itself, live in the sheet, as Try it draws it for a reader
+  // without Plus (build 89 note 12: Cross-references only dropped the reader
+  // into the Bible, and the mark and Discord led nowhere).
+  const live = item && owned && item.row && TRY_PREVIEW_IDS.includes(item.id) ? item.row : null;
 
   return (
     <>
@@ -82,14 +95,20 @@ export function FeatureShowcase({
       <Sheet open={item !== null} onClose={() => setAt(null)} title={item?.title ?? label} desktop>
         {item && at !== null ? (
           <div className="pb-2">
-            {/* The poster, opened: its mark large in its own light. */}
-            <div
-              aria-hidden
-              className="dark-island -mx-5 flex h-[168px] items-center justify-center"
-              style={{ background: posterGround(at, 70, "var(--color-night)") }}
-            >
-              <FeatureMark id={item.id} size={56} className="text-paper/90" />
-            </div>
+            {live ? (
+              <div data-plan-preview={item.id}>
+                <TryPreview row={live} owned />
+              </div>
+            ) : (
+              // The poster, opened: its mark large in its own light.
+              <div
+                aria-hidden
+                className="dark-island -mx-5 flex h-[168px] items-center justify-center"
+                style={{ background: posterGround(at, 70, "var(--color-night)") }}
+              >
+                <FeatureMark id={item.id} size={56} className="text-paper/90" />
+              </div>
+            )}
             <p className="mt-5 font-sans text-body leading-[1.6] text-paper/85">
               {/* The plan's lines are written for a list; here each is a sentence. */}
               {/[.!?]$/.test(item.sub) ? item.sub : `${item.sub}.`}
@@ -128,7 +147,7 @@ export function FeatureShowcase({
                 </button>
               ) : null}
             </div>
-            <p className="mt-1 text-center font-sans text-caption tabular-nums text-paper/40">
+            <p className="mt-1 text-center font-sans text-caption tabular-nums text-paper/60">
               {at + 1} / {items.length}
             </p>
           </div>

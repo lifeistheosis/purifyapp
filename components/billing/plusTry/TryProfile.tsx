@@ -129,7 +129,8 @@ export default function TryProfile({ row }: TryProps) {
         <TryStrip label={t("profile.frame")}>
           {frames.map((d) => (
             <TryTile key={d} on={decoration === d} onClick={() => setDecoration(decoration === d ? null : d)}>
-              <CommunityAvatar name={name} url={avatar} size={34} decoration={d} />
+              {/* Its own solid ground, as over a banner: on the chosen tile's paper its faint tint and its initial vanished. */}
+              <CommunityAvatar name={name} url={avatar} size={34} decoration={d} ring={1} />
               <span className="block font-sans text-[12px] font-semibold leading-[1.15]">{t(`profile.frameName.${d}`)}</span>
             </TryTile>
           ))}

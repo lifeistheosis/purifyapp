@@ -228,8 +228,9 @@ export function WordStudyBody({
             )}
           >
             {t(key === "ot" ? "bible.wordStudyOT" : "bible.wordStudyNT")}
+            {/* The count: smaller and lighter than the name, never fainter (at 80% it fell to 3.5:1 on Light, build 89 note 12's check). */}
             {answer ? (
-              <span className="whitespace-nowrap text-caption font-normal tabular-nums opacity-80">
+              <span className="whitespace-nowrap text-caption font-normal tabular-nums">
                 {tn("bible.wordStudyTimes", answer.counts[key])}
               </span>
             ) : null}

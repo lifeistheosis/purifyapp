@@ -82,21 +82,21 @@ export default function TryOffline({ row }: TryProps) {
             {figureName ? <p className="mt-1 truncate font-sans text-detail text-paper/55">{figureName}</p> : null}
           </div>
           {phase.look === "saving" ? (
-            <SaveOfflineMark look="saving" share={total ? done / total : 0} label={t("player.offline.saving", { done, total })} className="-mr-2.5" />
+            <SaveOfflineMark look="saving" share={total ? done / total : 0} label={t("player.offline.saving", { done, total })} className="-me-2.5" />
           ) : phase.look === "saved" ? (
             <SaveOfflineMark
               look="saved"
               expanded={phase.open}
               onClick={() => setPhase({ look: "saved", open: !phase.open })}
               label={t("player.offline.saved", { book: name })}
-              className="-mr-2.5"
+              className="-me-2.5"
             />
           ) : (
             <SaveOfflineMark
               look="save"
               onClick={() => setPhase({ look: "saving", since: Date.now(), now: Date.now() })}
               label={t("player.offline.save", { book: name })}
-              className="-mr-2.5"
+              className="-me-2.5"
             />
           )}
         </div>

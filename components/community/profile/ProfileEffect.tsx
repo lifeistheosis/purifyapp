@@ -145,7 +145,7 @@ export function ProfileEffect({
           className={cn("pfx-p", p.n && "pfx-near", p.c && "pfx-alt", p.still && "pfx-still")}
           style={
             {
-              left: `${p.left}%`,
+              insetInlineStart: `${p.left}%`,
               ...(p.top !== undefined ? { top: `${p.top}%` } : {}),
               ...(p.s !== undefined && effect !== "incense" ? { width: p.s, height: p.s } : {}),
               "--d": `${p.d}s`,

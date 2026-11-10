@@ -390,7 +390,7 @@ export function UpgradeModalProvider({
  *  the Plus list (lib/premium/plans.ts). */
 const UNLOCKED: { key: string; href: string }[] = [
   { key: "plus.active.crossrefs", href: "/bible/john/1" },
-  { key: "plus.active.wordstudy", href: "/bible/genesis/1" },
+  { key: "plus.active.wordstudy", href: "/bible/john/1" },
   { key: "plus.active.journal", href: "/journal" },
   { key: "plus.active.plans", href: "/plans" },
   { key: "plus.active.modes", href: "/bible/john/1" },

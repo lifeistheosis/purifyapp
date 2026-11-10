@@ -21,9 +21,12 @@ export default function TryReadingModes({ row }: TryProps) {
 
   return (
     <>
-      <TryWindow label={t(row.name)} style={paletteVars(palette) as CSSProperties} className="motion-safe:transition-colors motion-safe:duration-300">
-        <JohnPage />
-      </TryWindow>
+      {/* The window wears the palette it shows, never the reader's (TRY_PALETTES). */}
+      <div data-mock-allow="palette" data-mock-why="the preview wears the palette it shows, Candlelight, Monastery or Dark, not the reader's">
+        <TryWindow label={t(row.name)} style={paletteVars(palette) as CSSProperties} className="motion-safe:transition-colors motion-safe:duration-300">
+          <JohnPage />
+        </TryWindow>
+      </div>
       <TrySwitch
         label={t(row.name)}
         value={palette}

@@ -9517,7 +9517,7 @@ html[data-reading-mode="parchment"] .history-saved-lit {
  bottom: -60px;
  width: calc(70px * var(--s, 1));
  height: calc(130px * var(--s, 1));
- margin-left: calc(-35px * var(--s, 1));
+ margin-inline-start: calc(-35px * var(--s, 1));
  border-radius: 50%;
  background: radial-gradient(closest-side, rgb(236 232 226 / 0.62), rgb(236 232 226 / 0.2) 55%, rgb(236 232 226 / 0));
  filter: blur(9px);

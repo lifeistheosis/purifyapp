@@ -80,7 +80,8 @@ describe("every row, in depth (his note 39)", () => {
       const file = files.get(id);
       expect(file, id).toBeTruthy();
       expect(fs.existsSync(path.join(ROOT, TRY_DIR, `${file}.tsx`)), `${id} ${file}`).toBe(true);
-      expect(code(`${TRY_DIR}/${file}.tsx`), file).toMatch(/export default function Try\w+\(\{ row \}: TryProps\)/);
+      // Given its row, and where it can tell, whether the reader has it (Your plan, build 89 note 12).
+      expect(code(`${TRY_DIR}/${file}.tsx`), file).toMatch(/export default function Try\w+\(\{ row(, owned = false)? \}: TryProps\)/);
     }
   });
 

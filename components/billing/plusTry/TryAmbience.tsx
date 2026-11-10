@@ -15,18 +15,20 @@ import type { TryProps } from "@/components/billing/PlusTry";
 import { useTranslate } from "@/components/i18n/MessagesProvider";
 import { AmbienceIcon } from "@/components/player/AmbienceButton";
 import { AMBIENCE_TRACKS } from "@/lib/ambience/ambience";
-import { useAmbience } from "@/lib/ambience/player";
+import { playAmbience, useAmbience } from "@/lib/ambience/player";
 import { cn } from "@/lib/cn";
 import { trySound, useTrySound } from "@/lib/premium/plusTrySound";
 
 import { JohnPage } from "./TryBible";
 import { TryStrip, TryTile, TryWindow } from "./TryKit";
 
-export default function TryAmbience({ row }: TryProps) {
+export default function TryAmbience({ row, owned = false }: TryProps) {
   const { t } = useTranslate();
   const ambience = useAmbience();
   const minute = useTrySound();
-  const ended = minute.ended;
+  // A reader who has ambience (Your plan) plays the sounds as they are: no
+  // minute, and no padlocks after it.
+  const ended = !owned && minute.ended;
 
   return (
     <>
@@ -65,7 +67,11 @@ export default function TryAmbience({ row }: TryProps) {
               on={lit || loading}
               disabled={ended}
               // The sound playing, or the one still loading, stops; any other plays.
-              onClick={() => trySound(lit || loading ? null : track.id)}
+              onClick={() => {
+                const next = lit || loading ? null : track.id;
+                if (owned) void playAmbience(next);
+                else trySound(next);
+              }}
             >
               <span className="flex items-start justify-between gap-1">
                 <AmbienceIcon icon={track.icon} size={26} />
