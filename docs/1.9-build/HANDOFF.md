@@ -6,6 +6,8 @@ the arbiter, the main chat that sends requests out to the other chats. This
 file is what it needs to take over. Read it first, then `BRAINSTORM.md` and
 `PLAN.md` in this folder.
 
+**He does not read code or SQL** (his word, 2026-11-10: "I don't work with code so my take wouldn't be of value for code"). Ask his yes on plain words: what a change does, what a reader sees, what could go wrong, whether it can run twice. Never put code or SQL in front of him to judge. A migration's SQL is reviewed by a second chat before he is asked, and his yes on the plain summary is the sign-off AGENTS.md asks for. His signatures so far: shared pages and the Psalms move (2026-11-09), the campaigns' file one ("R0b yes 1") and the florilegium kinds ("yes florilegium"), both 2026-11-10.
+
 **The arbiter routes; it does not dig** (his word, 2026-11-10: "remember you
 are the arbiter, you worked on the last issue and it's fine don't make that
 mistake again"). A note from him goes into the notes with his words and his
