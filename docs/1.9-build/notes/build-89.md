@@ -94,3 +94,13 @@ What he saw: Prayers' All prayers row (Morning prayers, Evening prayers, The Hou
 Where it is: `components/mobile/PrayersMobile.tsx` (`prayers.allPrayers`). The click as a row scrolls already exists for the Bible's chapter strip and the saints' timeline (`lib/ui/scrollTicks.ts`), so no new native dependency.
 
 Planned fix (on his start), with the design pass of notes 2, 4, 6 and 7: each prayer in the row becomes a small piece in the house style (its own icon or art, its name, its length) in place of a pill, drawn from the app's components and checked with `checkMock`; the row clicks under the finger as each passes the middle, through `scrollTicks`; reduced motion and the browser stay silent, as the strip already does.
+
+### 11. For the living: the sheet revamped, and no box on a tapped field (2026-11-10)
+
+What he saw: the sheet that adds a name to pray for (Name, Relationship, Note "max 500 chars", Nameday "MM-DD", Tags "comma-separated", Cancel, Save), with a thick white ring round the tapped Name field (`build-89/11-for-the-living.png`). His words: "I want you to revamp this system It just doesn't really look good, and there's still that like white box that appears. I want that to be a standard also. A lot of times when you click something and you have to search, it appears a white box or a red box. like outline. I don't like that." The rule is in CLAUDE.md.
+
+Where it is: `components/prayers/Diptychs.tsx` (the fields' `focus-visible:ring-2`), and app/globals.css, where text fields keep the keyboard's ring even after a tap ("since it marks where typing goes"), with an older red ring the owner already caught on 2026-09-27.
+
+Planned fix (on his start):
+- The focus standard, everywhere: a tapped field lights its own fill and a fine edge in the palette's ink, with the caret; no thick white ring, no red; the keyboard's ring stays for keyboard users. A sweep of every field and search box, held by a test.
+- The sheet, in the house style from the app's components: the name first; the relationship offered as a few common words to tap, or typed; the nameday chosen from a month and day, or by naming the saint whose feast it is, never typed as "MM-DD"; tags as a small choice, or dropped if nothing reads them; the note's limit shown only as it nears; Save as the house's own button. `checkMock` on all five palettes, one still to him before it ships.
