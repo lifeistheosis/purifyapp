@@ -39,11 +39,15 @@ function leadOn(today: Date, style: CalStyle = "new"): DayLead | null {
 }
 
 describe("the Orthodox reader's greeting", () => {
-  it("leads 8 November with the Synaxis, the Archangel's icon and the hymns the app holds", () => {
+  it("leads 8 November with the Synaxis and the hymns the app holds", () => {
+    // The Archangel's icon came off the website on 2026-11-10: a workshop's
+    // seal in its corner and no source recorded (the survey of the saints'
+    // icons, build 90). The feast leads with no picture until a sourced one
+    // ships.
     expect(leadOn(civil(2026, 11, 8))).toEqual({
       name: "Synaxis of the Holy Archangel Michael and All the Bodiless Powers",
       kind: "feast",
-      iconUrl: "/saints/icons/archangel-michael.v2.jpg",
+      iconUrl: null,
       hymnsHref: "/saints/archangel-michael#hymns",
     });
   });

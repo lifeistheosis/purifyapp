@@ -103,7 +103,16 @@ describe("shopSaints", () => {
     const named = new Set(seeds.flatMap((s) => (s.subjects ?? []).filter((x) => x.type === "saint").map((x) => x.slug)));
     const rows = shopSaints(catalogue);
     expect(rows.map((r) => r.slug).sort()).toEqual([...named].sort());
-    for (const r of rows) expect(r.iconUrl, r.slug).toBeTruthy();
+    // St Nicholas's and the Archangel's icons came off the website on
+    // 2026-11-10 (a painter's signature, a workshop's seal; no source
+    // recorded: the survey of the saints' icons, build 90). SaintAvatar draws
+    // them by their initials until sourced icons ship. Every other saint the
+    // shop names still has its picture.
+    const offForRights = new Set(["nicholas-the-wonderworker", "archangel-michael"]);
+    for (const r of rows) {
+      if (offForRights.has(r.slug)) expect(r.iconUrl, r.slug).toBeNull();
+      else expect(r.iconUrl, r.slug).toBeTruthy();
+    }
   });
 });
 

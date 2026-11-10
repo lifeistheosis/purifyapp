@@ -853,10 +853,6 @@ export const UNVERIFIED_ICONS: Record<string, string> = {
     "No source, licence or attribution recorded. Fetched before scripts/fetch-missing-icons.mjs had a licence gate. Referenced by SAINTS.iconUrl for apostle-philip and AUTHOR_ICONS. 320x400 JPG, 40 KB. Not yet opened and inspected.",
   "apostle-simon-zealot.jpg":
     "No source, licence or attribution recorded. Fetched before scripts/fetch-missing-icons.mjs had a licence gate. Referenced by SAINTS.iconUrl for apostle-simon-zealot and AUTHOR_ICONS. 281x420 JPG, 24 KB. Not yet opened and inspected.",
-  "apostle-thomas.jpg":
-    "No source, licence or attribution recorded. Fetched before scripts/fetch-missing-icons.mjs had a licence gate. Referenced by SAINTS.iconUrl for apostle-thomas and AUTHOR_ICONS. 300x420 JPG, 33 KB. Not yet opened and inspected.",
-  "archangel-michael.v2.jpg":
-    "No source, licence or attribution recorded. Fetched before scripts/fetch-missing-icons.mjs had a licence gate. Referenced by SAINTS.iconUrl for archangel-michael. 296x416 JPG, 30 KB, cut on 2026-10-17 from the 301x420 file, inside the white line down its right side (1.7.1). Its source is not yet looked into.",
   "arsenios-prislop.jpg":
     "No source, licence or attribution recorded. Fetched before scripts/fetch-missing-icons.mjs had a licence gate. Referenced by SAINTS.iconUrl for arsenius-of-prislop. 280x420 JPG, 27 KB. Not yet opened and inspected.",
   "athanasius-the-great.v2.jpg":
@@ -901,8 +897,6 @@ export const UNVERIFIED_ICONS: Record<string, string> = {
     "No source, licence or attribution recorded. Fetched before scripts/fetch-missing-icons.mjs had a licence gate. Referenced by SAINTS.iconUrl for hermione-of-ephesus. 322x420 JPG, 22 KB. Not yet opened and inspected.",
   "hosius-of-cordova.v2.jpg":
     "No source, licence or attribution recorded. Fetched before scripts/fetch-missing-icons.mjs had a licence gate. Referenced by SAINTS.iconUrl for hosius-of-cordova. 273x416 JPG, 21 KB, cut on 2026-10-17 from the 275x420 file, inside the white line along its foot (1.7.1). Its source is not yet looked into.",
-  "iakovos-of-evia.jpg":
-    "No source, licence or attribution recorded. Fetched before scripts/fetch-missing-icons.mjs had a licence gate. Referenced by SAINTS.iconUrl for iakovos-of-evia. 299x420 JPG, 22 KB. Not yet opened and inspected.",
   "ignatius-of-antioch.jpg":
     "No source, licence or attribution recorded. Fetched before scripts/fetch-missing-icons.mjs had a licence gate. Referenced by SAINTS.iconUrl for ignatius-of-antioch and AUTHOR_ICONS. 299x420 JPG, 31 KB. Not yet opened and inspected.",
   "irenaeus-of-lyons.jpg":
@@ -911,8 +905,6 @@ export const UNVERIFIED_ICONS: Record<string, string> = {
     "No source, licence or attribution recorded. Fetched before scripts/fetch-missing-icons.mjs had a licence gate. Referenced by SAINTS.iconUrl for irene-the-empress. 300x420 JPG, 32 KB. Not yet opened and inspected.",
   "isaac-the-syrian.jpg":
     "No source, licence or attribution recorded. Fetched before scripts/fetch-missing-icons.mjs had a licence gate. Referenced by SAINTS.iconUrl for isaac-the-syrian. 293x420 JPG, 24 KB. Not yet opened and inspected.",
-  "isidora-of-tabenna.jpg":
-    "No source, licence or attribution recorded. Fetched before scripts/fetch-missing-icons.mjs had a licence gate. Referenced by SAINTS.iconUrl for isidora-of-tabenna. 274x420 JPG, 23 KB. Not yet opened and inspected.",
   "john-cassian.jpg":
     "No source, licence or attribution recorded. Fetched before scripts/fetch-missing-icons.mjs had a licence gate. Referenced by SAINTS.iconUrl for john-cassian. 313x420 JPG, 28 KB. Not yet opened and inspected.",
   "john-of-damascus.jpg":
@@ -945,24 +937,16 @@ export const UNVERIFIED_ICONS: Record<string, string> = {
     "No source, licence or attribution recorded. Fetched before scripts/fetch-missing-icons.mjs had a licence gate. Referenced by SAINTS.iconUrl for mary-of-egypt and AUTHOR_ICONS. 350x410 JPG, 27 KB. Not yet opened and inspected.",
   "maximus-the-confessor.jpg":
     "No source, licence or attribution recorded. Fetched before scripts/fetch-missing-icons.mjs had a licence gate. Referenced by SAINTS.iconUrl for maximus-the-confessor and AUTHOR_ICONS. 286x420 JPG, 23 KB. Not yet opened and inspected.",
-  "meletius-of-antioch.jpg":
-    "No source, licence or attribution recorded. Fetched before scripts/fetch-missing-icons.mjs had a licence gate. Referenced by SAINTS.iconUrl for meletius-of-antioch. 297x420 JPG, 30 KB. Not yet opened and inspected.",
-  "memnon-of-ephesus.v2.jpg":
-    "No source, licence or attribution recorded. Fetched before scripts/fetch-missing-icons.mjs had a licence gate. Referenced by SAINTS.iconUrl for memnon-of-ephesus. 415x280 JPG, 24 KB, cut on 2026-10-17 from the 420x286 file, inside the white lines at its edges; a website's watermark is still at its foot, right (1.7.1). Its source is not yet looked into.",
   "nectarius-of-constantinople.jpg":
     "No source, licence or attribution recorded. Fetched before scripts/fetch-missing-icons.mjs had a licence gate. Referenced by SAINTS.iconUrl for nectarius-of-constantinople. 250x364 JPG, 33 KB. Not yet opened and inspected.",
   "nektarios-of-aegina.jpg":
     "No source, licence or attribution recorded. Fetched before scripts/fetch-missing-icons.mjs had a licence gate. Referenced by SAINTS.iconUrl for nektarios-of-aegina. 336x420 JPG, 30 KB. Not yet opened and inspected.",
   "nicholas-of-cabasilas.jpg":
     "No source, licence or attribution recorded. Fetched before scripts/fetch-missing-icons.mjs had a licence gate. Referenced by SAINTS.iconUrl for nicholas-cabasilas. 315x420 JPG, 36 KB. Not yet opened and inspected.",
-  "nicholas-the-wonderworker.jpg":
-    "No source, licence or attribution recorded. Fetched before scripts/fetch-missing-icons.mjs had a licence gate. Referenced by SAINTS.iconUrl for nicholas-the-wonderworker and AUTHOR_ICONS. 302x420 JPG, 29 KB. Not yet opened and inspected.",
   "niketas-the-goth.jpg":
     "No source, licence or attribution recorded. Fetched before scripts/fetch-missing-icons.mjs had a licence gate. Referenced by SAINTS.iconUrl for niketas-the-goth. 315x420 JPG, 36 KB. Not yet opened and inspected.",
   "nikodemos-the-hagiorite.jpg":
     "No source, licence or attribution recorded. Fetched before scripts/fetch-missing-icons.mjs had a licence gate. Referenced by SAINTS.iconUrl for nikodemos-the-hagiorite. 336x420 JPG, 33 KB. Not yet opened and inspected.",
-  "nikon-metanoeite.jpg":
-    "No source, licence or attribution recorded. Fetched before scripts/fetch-missing-icons.mjs had a licence gate. Referenced by SAINTS.iconUrl for nikon-metanoeite. 315x420 JPG, 27 KB. Not yet opened and inspected.",
   "nino-nina-of-georiga.jpg":
     "No source, licence or attribution recorded. Fetched before scripts/fetch-missing-icons.mjs had a licence gate. Referenced by SAINTS.iconUrl for nino-of-georgia. 322x420 JPG, 24 KB. Not yet opened and inspected.",
   "olympias-the-deaconess.jpg":
@@ -971,8 +955,6 @@ export const UNVERIFIED_ICONS: Record<string, string> = {
     "No source, licence or attribution recorded. Fetched before scripts/fetch-missing-icons.mjs had a licence gate. Referenced by SAINTS.iconUrl for paisios-the-athonite and AUTHOR_ICONS. 301x420 JPG, 23 KB. Not yet opened and inspected.",
   "paisius-velichkovsky.jpg":
     "No source, licence or attribution recorded. Fetched before scripts/fetch-missing-icons.mjs had a licence gate. Referenced by SAINTS.iconUrl for paisius-velichkovsky. 295x420 JPG, 21 KB. Not yet opened and inspected.",
-  "papias-of-hierapolis.jpg":
-    "No source, licence or attribution recorded. Fetched before scripts/fetch-missing-icons.mjs had a licence gate. Referenced by SAINTS.iconUrl for papias-of-hierapolis and AUTHOR_ICONS. 279x420 JPG, 22 KB. Not yet opened and inspected.",
   "philoumenos-of-jacobs-well.jpg":
     "No source, licence or attribution recorded. Fetched before scripts/fetch-missing-icons.mjs had a licence gate. Referenced by SAINTS.iconUrl for philoumenos-of-jacobs-well. 420x360 JPG, 31 KB. Not yet opened and inspected.",
   "polycarp-of-smyrna.jpg":
@@ -1001,8 +983,6 @@ export const UNVERIFIED_ICONS: Record<string, string> = {
     "No source, licence or attribution recorded. Fetched before scripts/fetch-missing-icons.mjs had a licence gate. Referenced by SAINTS.iconUrl for sofian-of-antim. 336x420 JPG, 39 KB. Not yet opened and inspected.",
   "sophronius-of-jerusalem.jpg":
     "No source, licence or attribution recorded. Fetched before scripts/fetch-missing-icons.mjs had a licence gate. Referenced by SAINTS.iconUrl for sophronius-of-jerusalem. 288x420 JPG, 33 KB. Not yet opened and inspected.",
-  "sophrony-of-essex.jpg":
-    "No source, licence or attribution recorded. Fetched before scripts/fetch-missing-icons.mjs had a licence gate. Referenced by SAINTS.iconUrl for sophrony-of-essex. 300x420 JPG, 24 KB. Not yet opened and inspected.",
   "spyridon-of-trimythous.jpg":
     "No source, licence or attribution recorded. Fetched before scripts/fetch-missing-icons.mjs had a licence gate. Referenced by SAINTS.iconUrl for spyridon-of-trimythous. 288x420 JPG, 24 KB. Not yet opened and inspected.",
   "st-porphyrios-of-kavsokalyvia-324.jpg":
@@ -1015,12 +995,9 @@ export const UNVERIFIED_ICONS: Record<string, string> = {
     "No source, licence or attribution recorded. Fetched before scripts/fetch-missing-icons.mjs had a licence gate. Referenced by SAINTS.iconUrl for theodosius-the-great. 336x420 JPG, 25 KB. Not yet opened and inspected.",
   "theophan-the-recluse.jpg":
     "No source, licence or attribution recorded. Fetched before scripts/fetch-missing-icons.mjs had a licence gate. Referenced by SAINTS.iconUrl for theophan-the-recluse. 301x420 JPG, 24 KB. Not yet opened and inspected.",
-  "theophylact-of-ohrid.jpg":
-    "No source, licence or attribution recorded. Fetched before scripts/fetch-missing-icons.mjs had a licence gate. Referenced by SAINTS.iconUrl for theophylact-of-ohrid and AUTHOR_ICONS. 336x420 JPG, 26 KB. Not yet opened and inspected.",
   "theotokos.jpg":
     "No source, licence or attribution recorded. Fetched before scripts/fetch-missing-icons.mjs had a licence gate. Referenced by SAINTS.iconUrl for theotokos. 281x420 JPG, 39 KB. Not yet opened and inspected.",
-  "xenia-of-petersburg.v2.jpg":
-    "No source, licence or attribution recorded. Fetched before scripts/fetch-missing-icons.mjs had a licence gate. Referenced by SAINTS.iconUrl for xenia-of-petersburg. 278x376 JPG, 18 KB, cut on 2026-10-17 from the 303x420 file, to the icon itself, off the white wall it was photographed on; small writing is at its foot, right (1.7.1). Its source is not yet looked into.",};
+};
 
 /** Strip the URL prefix so callers can pass either form. */
 function toKey(src: string): string {

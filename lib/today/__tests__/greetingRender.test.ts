@@ -40,11 +40,15 @@ const NOV_21 = new Date(Date.UTC(2026, 10, 21, 12));
 const SYNAXIS = "Synaxis of the Holy Archangel Michael and All the Bodiless Powers";
 
 describe("the greeting, drawn", () => {
-  it("gives the Orthodox reader the feast, its marks, its icon, its hymns and the hour's prayers", async () => {
+  it("gives the Orthodox reader the feast, its marks, its hymns and the hour's prayers", async () => {
     const out = await draw("orthodox", NOV_8);
     expect(out).toContain("Sunday, November 8 · Feast · No fast");
     expect(out).toContain(SYNAXIS);
-    expect(out).toContain('src="/saints/icons/archangel-michael.v2.jpg"');
+    // The Archangel's icon came off the website on 2026-11-10: a workshop's
+    // seal in its corner and no source recorded (the survey of the saints'
+    // icons, build 90). The feast is greeted without a picture until a
+    // sourced one ships.
+    expect(out).not.toContain("archangel-michael.v2.jpg");
     expect(out).toContain('href="/saints/archangel-michael#hymns"');
     expect(out).toContain(en["today.greet.hymns"]);
     expect(out).toContain('href="/prayers/morning"');
