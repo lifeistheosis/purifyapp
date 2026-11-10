@@ -342,8 +342,8 @@ saint's screen, with stills to the arbiter.
   "worse that beastly lust", St John's closing comma). Two cuts, each shown
   as [...]: Butler's sentence that the iconoclast council was not general
   without the pope of Rome (St Stephen; his rule), and a sentence likening
-  peoples he calls savages to apes (St Catherine; not Roman doctrine, our
-  judgment, for him and the priest to confirm). They are not in the app:
+  peoples he calls savages to apes (St Catherine; not Roman doctrine; he
+  confirmed the cut on 2026-11-10). They are not in the app:
   `docs/editorial/held/november/`, clergy item 31 in
   docs/editorial-standards.md, and a test keeps them out of data/saints/ and
   the registry until `--held --release`. Until then each saint keeps his

@@ -29,8 +29,8 @@
 // out (the reason is in the clergy item, not on the page): in St Stephen's
 // Life, his sentence that a council was not general without the pope of Rome,
 // on the owner's rule; in St Catherine's, a sentence that likens peoples he
-// calls savages to apes, which is not Roman doctrine and is left out on our
-// judgment, for the owner and the priest to confirm. A Life that runs on to
+// calls savages to apes, which is not Roman doctrine: left out as unfit to
+// publish, and the owner confirmed it (2026-11-10). A Life that runs on to
 // another saint ends at its last sentence about this one (St Menas).
 
 /** The scans each volume's words are checked against (see above). */
