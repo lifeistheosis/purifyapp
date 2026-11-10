@@ -13,6 +13,8 @@ import {
   shouldShowOnboarding,
   writeWeek,
 } from "@/lib/onboarding/state";
+import { abTick } from "@/lib/ab/device";
+import { readLocalSessionUser } from "@/lib/supabase/localSession";
 import { roadsEnabled } from "@/lib/onboarding/flags";
 import { readRoad } from "@/lib/onboarding/useWeek";
 import { localDay, stepTaken } from "@/lib/onboarding/week";
@@ -87,6 +89,10 @@ export function FirstRunGate({
   // the one place that sees them all.
   useEffect(() => {
     countReturns();
+    // And, for a device shown a version of a running test, the milestones
+    // that are a state of the device and not a tap: it opened Purify again,
+    // and whether someone is signed in on it (lib/ab/device.ts).
+    abTick(!!readLocalSessionUser());
   }, []);
 
   useEffect(() => {

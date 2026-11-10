@@ -202,6 +202,22 @@ export function countDayOne(key: DayOneKey, given: Answers): void {
   );
 }
 
+/**
+ * A reader made or signed in to an account from the card on Today
+ * (components/onboarding/RoadCards.tsx, KeepCard): the answer the account
+ * step has always counted ("account: signed in"), from the place the roads
+ * ask it. Once, by the card's own mark. With the way in and the door the
+ * device kept when it finished the questions.
+ */
+export function countAccountFromCard(): void {
+  if (typeof window === "undefined") return;
+  const record = readRecord();
+  send(
+    { name: "onboarding_answer", props: { route: record?.route ?? "new", question: "account", answer: "signed-in" } },
+    record ? { door: record.door, v: record.v } : undefined,
+  );
+}
+
 function readRecord(): FinishedRecord | null {
   try {
     return parseFinishedRecord(window.localStorage.getItem(FINISHED_KEY));

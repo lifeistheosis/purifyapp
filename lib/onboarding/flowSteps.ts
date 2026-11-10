@@ -75,6 +75,12 @@ export function flowSteps(o: {
   signedIn?: boolean;
   /** Roads only: the reader tapped "I am a priest or deacon" on the rule's screen. */
   clergyOpen?: boolean;
+  /**
+   * Roads only: this device is in the version of the account's test that
+   * asks for an account as the last question (lib/ab/tests.ts,
+   * ACCOUNT_PLACE, "end"), where the other offers it on Today.
+   */
+  accountAtEnd?: boolean;
 }): StepId[] {
   if (o.startAt === "reminders") return ["reminders", "handoff"];
   if (o.roads) {
@@ -85,6 +91,8 @@ export function flowSteps(o: {
       ...(asksRule(o.level) ? (["rule"] as StepId[]) : []),
       ...(asksClergy(o.level) && o.clergyOpen ? (["role", ...clergySteps(o.role, o.country)] as StepId[]) : []),
       "intent",
+      // Never where the questions began at the account (the mobile website).
+      ...(o.accountAtEnd && !o.signedIn && o.startAt !== "account" ? (["account"] as StepId[]) : []),
       ...(o.signedIn && !(o.startAt === "returning" && o.remindersOn) ? (["reminders"] as StepId[]) : []),
       "handoff",
     ];
@@ -129,6 +137,9 @@ export function progressPath(startAt: FlowStart, roads = false): StepId[] {
       "clergyJurisdiction",
       "clergyParish",
       "intent",
+      // The account as the last question (one version of the account's test).
+      // Where the questions began at it, it is in the head and not here.
+      ...(from === "account" ? [] : (["account"] as StepId[])),
       "reminders",
       "handoff",
     ];

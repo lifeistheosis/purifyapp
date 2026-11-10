@@ -36,6 +36,8 @@ import {
   type KeepState,
 } from "@/lib/onboarding/state";
 import { ROAD_PILLS, type Background } from "@/lib/onboarding/space";
+import { reached } from "@/lib/ab/device";
+import { countAccountFromCard } from "@/lib/onboarding/count";
 import { previewSignedOut } from "@/lib/onboarding/testing";
 import { useRoads } from "@/lib/onboarding/useRoads";
 import { localDay } from "@/lib/onboarding/week";
@@ -131,16 +133,24 @@ export function KeepCard({ className }: { className?: string }) {
   const [keep, behind] = snap.split("|") as [KeepState | "", string];
 
   // Who is signed in, read from the device after the page wakes. A reader
-  // back from the card's sign-in who already has reminders is finished here.
+  // back from the card's sign-in is counted once, as the account step always
+  // counted "signed in" (lib/onboarding/count.ts), and offered the reminders,
+  // unless this device has them already.
   useEffect(() => {
     if (!roads || !keep || keep === "done") return;
     let alive = true;
     const id = window.setTimeout(() => {
-      // Testers mode's "Preview as signed out": an admin sees the signed-out
-      // card though signed in, and after its Sign in, the card's second state.
-      const user = !!readLocalSessionUser() && !(previewSignedOut() && keep !== "asked");
-      if (alive) setSignedIn(user);
+      const user = !!readLocalSessionUser();
       if (user && keep === "asked") {
+        countAccountFromCard();
+        reached("account");
+        writeKeep("in");
+        return;
+      }
+      // Testers mode's "Preview as signed out": an admin sees the signed-out
+      // card though signed in.
+      if (alive) setSignedIn(user && !previewSignedOut());
+      if (user && keep === "in") {
         void remindersStatus().then(
           (status) => {
             if (alive && status === "subscribed") writeKeep("done");
@@ -155,10 +165,14 @@ export function KeepCard({ className }: { className?: string }) {
     };
   }, [roads, keep]);
 
-  if (!roads || !keep || keep === "done" || signedIn === null) return null;
+  if (!roads || !keep || keep === "done") return null;
 
-  if (!signedIn) {
-    if (Number(behind) < 1) return null;
+  // Back from the card's sign-in: the reminders, one tap.
+  if (keep !== "in") {
+    // The account, to a reader with none, once a step of the week is behind
+    // them. A reader who is signed in and never came by this card met the
+    // reminders in the questions, and is shown nothing here.
+    if (signedIn !== false || Number(behind) < 1) return null;
     return (
       <TipCard
         id="keep-card"
@@ -174,10 +188,6 @@ export function KeepCard({ className }: { className?: string }) {
       </TipCard>
     );
   }
-
-  // Signed in. The reminders are offered here only to a reader who came by
-  // this card: one who met them in the questions has answered already.
-  if (keep !== "asked") return null;
 
   const turnOn = async () => {
     setBusy(true);

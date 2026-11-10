@@ -78,7 +78,8 @@ const ONBOARDED_DAY_KEY = "purify:onboarded.day";
 // "1" once the one question offered after a skip is answered or closed.
 const SECOND_CHANCE_KEY = "purify:secondchance.done";
 // The card that offers an account and reminders after a first step:
-// "asked" once the reader has gone to sign in from it, "done" once it is
+// "asked" once the reader has gone to sign in from it, "in" once they are
+// back signed in (the reminders are then offered), "done" once it is
 // answered or closed.
 const KEEP_KEY = "purify:keep";
 
@@ -525,11 +526,15 @@ export function markSecondChanceDone(): void {
   writeString(SECOND_CHANCE_KEY, "1");
 }
 
-/** The card that offers an account and reminders after a first step: untouched, gone to sign in, or finished with. */
-export type KeepState = "open" | "asked" | "done";
+/**
+ * The card that offers an account and reminders after a first step:
+ * untouched, gone to sign in from it, back signed in (the reminders offered),
+ * or finished with.
+ */
+export type KeepState = "open" | "asked" | "in" | "done";
 export function readKeep(): KeepState {
   const v = readString(KEEP_KEY);
-  return v === "asked" || v === "done" ? v : "open";
+  return v === "asked" || v === "in" || v === "done" ? v : "open";
 }
 export function writeKeep(state: KeepState): void {
   writeString(KEEP_KEY, state === "open" ? null : state);

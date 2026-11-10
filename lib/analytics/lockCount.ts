@@ -8,6 +8,7 @@
 // purifyapp.net the way apiFetch would (lib/api/client.ts); /api/track/event
 // answers their preflight.
 
+import { reached } from "@/lib/ab/device";
 import { countPlatform, countingAllowed } from "@/lib/onboarding/count";
 import { isNativeClient } from "@/lib/platform/native";
 import { SITE_URL } from "@/lib/site";
@@ -38,4 +39,6 @@ export function countLock(lock: Lock): void {
 /** A purchase in the sheet went through, the sheet having opened on this lock. */
 export function countBought(lock: Lock, plan: BoughtPlan): void {
   send({ name: "plus_bought", props: { lock, plan } });
+  // For a test that reads it (lib/ab/device.ts), in the device's first two weeks after it was shown its version.
+  reached("plus_bought");
 }

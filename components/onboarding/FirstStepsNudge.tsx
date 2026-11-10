@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useTranslate } from "@/components/i18n/MessagesProvider";
 import { Close } from "@/components/ui/icons/Close";
 import { CARD_BG } from "@/components/ui/Graphite";
+import { reached } from "@/lib/ab/device";
 import { dismissNudge, readWeek, wasOnboardedAgain, writeWeek } from "@/lib/onboarding/state";
 import { countDayOne } from "@/lib/onboarding/count";
 import { DAY_ONE_KEYS, dayOneFor, type DayOneKey } from "@/lib/onboarding/space";
@@ -67,6 +68,7 @@ export function FirstStepsNudge() {
               ...(intent ? { intent } : {}),
             });
           }
+          if (week.index === 0) reached("first_step");
           writeWeek(stepTaken(readWeek(), today()));
         }}
       />

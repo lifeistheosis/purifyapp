@@ -167,6 +167,18 @@ describe("with the roads on", () => {
     expect(roads({ startAt: "reminders" })).toEqual(["reminders", "handoff"]);
   });
 
+  it("asks for the account as the last question in that version of the account's test, and only of a reader with none", () => {
+    // lib/ab/tests.ts, ACCOUNT_PLACE: "end", where the other version offers it on Today.
+    expect(roads({ level: "inquirer", accountAtEnd: true })).toEqual(["welcome", "background", "level", "intent", "account", "handoff"]);
+    expect(roads({ level: "practicing", accountAtEnd: true })).toEqual(["welcome", "background", "level", "rule", "intent", "account", "handoff"]);
+    // Signed in at that step: the account step is behind them and the reminders are asked.
+    expect(roads({ level: "inquirer", accountAtEnd: true, signedIn: true })).toEqual(["welcome", "background", "level", "intent", "reminders", "handoff"]);
+    // Never twice where the questions began at the account (the mobile website).
+    expect(roads({ startAt: "account", level: "inquirer", accountAtEnd: true })).toEqual(["account", "background", "level", "intent", "handoff"]);
+    // And never with the roads off.
+    expect(steps({ level: "inquirer", accountAtEnd: true })).toEqual(steps({ level: "inquirer" }));
+  });
+
   it("measures the progress line against a path that holds every screen it can show, in its order", () => {
     for (const startAt of ["welcome", "account", "level", "returning", "reminders"] as FlowStart[]) {
       const path = progressPath(startAt, true);
@@ -175,6 +187,12 @@ describe("with the roads on", () => {
         for (const role of ["priest", "deacon", "layman", null] as (Role | null)[]) {
           for (const clergyOpen of [false, true]) {
             for (const signedIn of [false, true]) {
+              for (const accountAtEnd of [false, true]) {
+                const end = roads({ startAt, level, role, country: "US", clergyOpen, signedIn, accountAtEnd });
+                const places = end.map((x: StepId) => path.indexOf(x));
+                expect(places.every((i) => i >= 0), `${startAt} ${level} end`).toBe(true);
+                expect([...places].sort((a, b) => a - b), `${startAt} ${level} end`).toEqual(places);
+              }
               const shown = roads({ startAt, level, role, country: "US", clergyOpen, signedIn });
               const at = shown.map((x: StepId) => path.indexOf(x));
               const label = `${startAt} ${level} ${role} ${clergyOpen} ${signedIn}`;

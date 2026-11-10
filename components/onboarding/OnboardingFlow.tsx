@@ -24,10 +24,13 @@ import {
   writeFastingRule,
   writeFocus,
   writeIntents,
+  writeKeep,
   writeLevel,
   writeReturning,
   writeRole,
 } from "@/lib/onboarding/state";
+import { armHere, exposed, reached as abReached, refreshWeights } from "@/lib/ab/device";
+import { ACCOUNT_PLACE } from "@/lib/ab/tests";
 import { roadsEnabled } from "@/lib/onboarding/flags";
 import { previewSignedOut } from "@/lib/onboarding/testing";
 import { leanOf, roadOf } from "@/lib/onboarding/road";
@@ -167,7 +170,12 @@ export function OnboardingFlow({
   // reminders are asked here or on Today (lib/onboarding/flowSteps.ts).
   // In Testers mode an admin may preview the signed-out way through
   // (lib/onboarding/testing.ts, previewSignedOut): an admin is always signed in.
-  const [hasAccount] = useState(() => roads && !!readLocalSessionUser() && !previewSignedOut());
+  const [hasAccount, setHasAccount] = useState(() => roads && !!readLocalSessionUser() && !previewSignedOut());
+  // Roads only: the account asked for as the last question, for a device in
+  // that version of the account's test (lib/ab/tests.ts, ACCOUNT_PLACE). Known
+  // once the reader leaves "What are you looking for?", the last screen the
+  // two versions share.
+  const [accountAtEnd, setAccountAtEnd] = useState(false);
   // Back from the sign-in the reminders step sent them to: every answer
   // before it is given already, and the end shows them as they were.
   const resumed = startAt === "reminders";
@@ -225,8 +233,8 @@ export function OnboardingFlow({
   const advancing = useRef(false);
 
   const steps = useMemo<StepId[]>(
-    () => flowSteps({ startAt, level, role, country: clergy.country, remindersOn, roads, signedIn: hasAccount, clergyOpen }),
-    [startAt, level, role, clergy.country, remindersOn, roads, hasAccount, clergyOpen],
+    () => flowSteps({ startAt, level, role, country: clergy.country, remindersOn, roads, signedIn: hasAccount, clergyOpen, accountAtEnd }),
+    [startAt, level, role, clergy.country, remindersOn, roads, hasAccount, clergyOpen, accountAtEnd],
   );
   const step = steps[Math.min(index, steps.length - 1)];
   // The first step the handoff names and the website opens. With the roads
@@ -324,17 +332,31 @@ export function OnboardingFlow({
     const { data } = createClient().auth.onAuthStateChange((event) => {
       if (event === "SIGNED_IN") {
         countAnswer("account", "signed-in");
+        // Roads: signed in now, so the reminders are asked here after all.
+        if (roads) setHasAccount(true);
         next();
       }
     });
     return () => data.subscription.unsubscribe();
-  }, [step, next, countAnswer]);
+  }, [step, next, countAnswer, roads]);
 
   useEffect(() => {
     // On the way into the account step: if sign-in leaves the page, the
     // questions resume when it comes back.
-    if (step === "account") setResumeStage("assessment");
-  }, [step]);
+    // As the last question (the account's test), every answer is given
+    // already: a sign-in that leaves the page comes back to the reminders and
+    // the end, and the card on Today is not for this reader.
+    if (step === "account") {
+      setResumeStage(accountAtEnd ? "reminders" : "assessment");
+      if (accountAtEnd) writeKeep("done");
+    }
+  }, [step, accountAtEnd]);
+
+  // The shares of a running test, asked for while the first questions are up,
+  // so they are here by the time the device is given its version.
+  useEffect(() => {
+    if (roads && !hasAccount) refreshWeights();
+  }, [roads, hasAccount]);
 
   // The reminders' two icons, fetched while the question is still up.
   useEffect(() => {
@@ -485,6 +507,15 @@ export function OnboardingFlow({
   function leaveIntent() {
     if (!intent) return;
     countPicks(route, picks);
+    // The account's test (lib/ab/tests.ts): a reader with no account is in
+    // one of its two versions from here, the last screen they share, and is
+    // counted as shown here whichever it is. Never where the questions began
+    // at the account, and never while no test is running (armHere says).
+    if (roads && !hasAccount && startAt !== "account") {
+      const here = armHere("onboarding");
+      exposed("onboarding");
+      if (here?.test.id === ACCOUNT_PLACE.id && here.arm === "end") setAccountAtEnd(true);
+    }
     next();
   }
 
@@ -510,6 +541,8 @@ export function OnboardingFlow({
       // team has verified it (lib/onboarding/clergyRequest.ts).
       void fileClergyRequest();
       if (reached) {
+        // For a test that reads it (lib/ab/device.ts): the questions reached their end.
+        abReached("finished");
         const kept = readBackground();
         const answers = { ...(kept ? { background: kept } : {}), ...(level ? { level } : {}), ...(intent ? { intent } : {}) };
         void createClient()
