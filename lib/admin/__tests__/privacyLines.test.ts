@@ -21,6 +21,9 @@ const LINES = {
     "We count, without your name, which Bible translations are downloaded, which reading plans are begun and finished, how many journal pages are written and shared, and which version of the app is in use.",
   "Searches that found nothing (A11, lib/search/)":
     "When a search finds nothing, we keep the words you searched, never who you are, for 90 days, so we can add what readers are looking for. Anything that looks like an email address or a phone number is removed before it is kept.",
+  // His yes to 59 (2026-11-10), as the page writes its apostrophe.
+  "What is kept while reading travels with Plus (59, supabase/migrations/20261110012059_user_kept.sql)":
+    "With Purify Plus, what you keep while reading travels too: your progress in each reading plan, Remember the verse&rsquo;s schedule (which verse is due when, not its words), your place in the Bible and in each long work, and your reading settings (palette, size, typeface, line spacing and Focus). Each is one small record that only your account can read or change, and it is deleted with your account.",
 };
 
 // The German page carries the same lines (the page is built in both languages).
@@ -32,6 +35,8 @@ const LINES_DE = {
   "Errors, in German": "Wenn etwas fehlschlägt, meldet die App die Seite, die App-Version und die Art des Geräts, niemals, wer du bist.",
   "Searches that found nothing, in German":
     "Wenn eine Suche nichts findet, behalten wir 90 Tage lang die Wörter, nach denen du gesucht hast, niemals aber, wer du bist, damit wir ergänzen können, wonach Leser suchen. Alles, was wie eine E-Mail-Adresse oder eine Telefonnummer aussieht, wird entfernt, bevor es behalten wird.",
+  "What is kept while reading travels with Plus, in German":
+    "Mit Purify Plus wandert auch mit, was du beim Lesen behältst: dein Fortschritt in jedem Leseplan, der Plan von &bdquo;Den Vers auswendig lernen&ldquo; (welcher Vers wann dran ist, nicht sein Wortlaut), deine Stelle in der Bibel und in jedem langen Werk und deine Leseeinstellungen (Palette, Größe, Schriftart, Zeilenabstand und Fokus). Jedes davon ist ein kleiner Eintrag, den nur dein Konto lesen oder ändern kann und der mit deinem Konto gelöscht wird.",
 };
 
 const german = page.slice(page.indexOf("function PrivacyDe()"));

@@ -113,6 +113,18 @@ export default async function PrivacyPage() {
  row linking your account to that provider; we never see your
  Google/Apple password, only the OAuth token.
  </p>
+ {/* 1.9, his yes to 59 (2026-11-10), word for word: what is kept while
+ reading travels with Plus (supabase/migrations/20261110012059_user_kept.sql).
+ Held by lib/admin/__tests__/privacyLines.test.ts. */}
+ <p className="mt-3 font-serif text-body text-paper/85 leading-[1.65]">
+ With Purify Plus, what you keep while reading travels too: your
+ progress in each reading plan, Remember the verse&rsquo;s schedule
+ (which verse is due when, not its words), your place in the Bible
+ and in each long work, and your reading settings (palette, size,
+ typeface, line spacing and Focus). Each is one small record that
+ only your account can read or change, and it is deleted with your
+ account.
+ </p>
  <p className="mt-3 font-sans text-caption text-paper/55 leading-[1.55]">
  To delete the account and every server-side row it created,
  use the &ldquo;Delete account&rdquo; button on /account. The
@@ -839,6 +851,16 @@ function PrivacyDe() {
  <code className="font-mono text-ui text-paper/70">identities</code>
  -Zeile, die dein Konto mit jenem Anbieter verbindet; wir sehen
  nie dein Google- oder Apple-Passwort, nur das OAuth-Token.
+ </p>
+ {/* 1.9, his yes to 59 (2026-11-10), word for word in German. */}
+ <p className="mt-3 font-serif text-body text-paper/85 leading-[1.65]">
+ Mit Purify Plus wandert auch mit, was du beim Lesen behältst: dein
+ Fortschritt in jedem Leseplan, der Plan von &bdquo;Den Vers auswendig
+ lernen&ldquo; (welcher Vers wann dran ist, nicht sein Wortlaut),
+ deine Stelle in der Bibel und in jedem langen Werk und deine
+ Leseeinstellungen (Palette, Größe, Schriftart, Zeilenabstand und
+ Fokus). Jedes davon ist ein kleiner Eintrag, den nur dein Konto lesen
+ oder ändern kann und der mit deinem Konto gelöscht wird.
  </p>
  <p className="mt-3 font-sans text-caption text-paper/55 leading-[1.55]">
  Um das Konto und jede serverseitige Zeile, die es angelegt hat,
