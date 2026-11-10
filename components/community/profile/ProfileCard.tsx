@@ -523,7 +523,7 @@ export function ProfileAboutDoor({
           <p role="heading" aria-level={3} className={label}>
             {t("profile.aboutMe")}
           </p>
-          <p className="mt-1 whitespace-pre-wrap break-words font-sans text-[15px] leading-[1.45] text-paper/86">
+          <p dir="auto" className="mt-1 whitespace-pre-wrap break-words font-sans text-[15px] leading-[1.45] text-paper/86">
             <SymbolText text={profile.bio} />
           </p>
         </div>

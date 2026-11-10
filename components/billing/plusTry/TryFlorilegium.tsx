@@ -65,6 +65,7 @@ export default function TryFlorilegium({ row }: TryProps) {
             <li key={item.id} className="border-t border-paper/8 first:border-t-0">
               <ItemCard
                 item={item}
+                textLang="en"
                 onRemove={() => setItems((was) => was.filter((i) => i.id !== item.id))}
                 onNote={(note) => setItems((was) => was.map((i) => (i.id === item.id ? { ...i, note } : i)))}
               />

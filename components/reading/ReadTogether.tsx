@@ -172,7 +172,7 @@ export function ReadTogether({ pathId, state }: { pathId: string; state: Circles
             void start();
           }}
         >
-          <input value={name} onChange={(e) => setName(e.target.value)} maxLength={60} placeholder={t("together.name")} aria-label={t("together.name")} className={field} />
+          <input dir="auto" value={name} onChange={(e) => setName(e.target.value)} maxLength={60} placeholder={t("together.name")} aria-label={t("together.name")} className={field} />
           <div role="radiogroup" aria-label={t("together.kind")} className="flex flex-wrap gap-2">
             {CIRCLE_KINDS.map((k) => (
               <button key={k} type="button" role="radio" aria-checked={kind === k} onClick={() => setKind(k)} className={`${pill} aria-checked:border-paper aria-checked:text-paper`}>
@@ -192,7 +192,7 @@ export function ReadTogether({ pathId, state }: { pathId: string; state: Circles
             void join();
           }}
         >
-          <input value={code} onChange={(e) => setCode(e.target.value)} maxLength={9} placeholder={t("together.codePlaceholder")} aria-label={t("together.code")} className={`${field} max-w-[11rem] uppercase tracking-[0.12em]`} />
+          <input dir="auto" value={code} onChange={(e) => setCode(e.target.value)} maxLength={9} placeholder={t("together.codePlaceholder")} aria-label={t("together.code")} className={`${field} max-w-[11rem] uppercase tracking-[0.12em]`} />
           <button type="submit" disabled={busy || normalizeInviteCode(code).length !== 6} className="tap-press inline-flex min-h-11 items-center rounded-pill bg-paper px-5 font-sans text-ui font-semibold text-night disabled:opacity-50">
             {t("together.joinButton")}
           </button>

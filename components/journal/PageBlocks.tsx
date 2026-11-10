@@ -100,7 +100,7 @@ export function PageBlocks({ editor, placeholder }: { editor: PageEditor; placeh
       ) : null}
       <label className="block">
         <span className="sr-only">{t("journal.page.title")}</span>
-        <input
+        <input dir="auto"
           type="text"
           value={page.title}
           maxLength={TITLE_MAX}
@@ -215,14 +215,14 @@ function TextBlock({
       {block.color ? (
         // The wash, behind the words: the same text, laid out the same way,
         // its letters clear, so only the colour shows under the field's own.
-        <div aria-hidden data-hl-color={block.color} style={highlightVars(block.color)} className={cn(words, "pointer-events-none absolute inset-0 text-transparent")}>
+        <div aria-hidden dir="auto" data-hl-color={block.color} style={highlightVars(block.color)} className={cn(words, "pointer-events-none absolute inset-0 text-transparent")}>
           <span className="box-decoration-clone rounded-[4px] bg-[var(--hl-verse)] px-[3px] -mx-[3px] py-[0.1em]">{block.text}</span>
           {"​"}
         </div>
       ) : null}
       <label className="relative block">
         <span className="sr-only">{t("journal.composer.label")}</span>
-        <textarea
+        <textarea dir="auto"
           ref={area}
           value={block.text}
           rows={tall ? 6 : 1}
@@ -274,7 +274,7 @@ function VerseCardWords({ block, verses }: { block: VerseCardBlock; verses: numb
     );
   }
   return (
-    <blockquote className="font-serif text-body leading-[1.65] text-paper/90">
+    <blockquote dir="auto" className="font-serif text-body leading-[1.65] text-paper/90">
       {states.map(({ v, words }) =>
         words.text ? (
           <span key={v}>
@@ -298,7 +298,7 @@ function LibraryCard({ index, block, onRemove }: { index: number; block: Extract
   const { t } = useTranslate();
   return (
     <figure data-page-block={index} data-page-library="" className="relative rounded-2xl border border-paper/10 bg-paper/[0.04] py-3 pe-12 ps-4">
-      <blockquote className="whitespace-pre-line font-serif text-body leading-[1.65] text-paper/90">{block.text}</blockquote>
+      <blockquote dir="auto" className="whitespace-pre-line font-serif text-body leading-[1.65] text-paper/90">{block.text}</blockquote>
       <figcaption className="mt-1.5 flex min-w-0 items-center gap-3 font-sans text-caption text-paper/70">
         <span className="min-w-0 flex-1">
           {block.cite ? <span className="block">{block.cite}</span> : null}
@@ -341,7 +341,7 @@ function QuoteCard({
     <figure data-page-block={index} data-page-quote="" className="relative rounded-2xl border border-paper/10 py-3 pe-12 ps-4">
       <label className="block">
         <span className="sr-only">{t("journal.page.quotePlaceholder")}</span>
-        <textarea
+        <textarea dir="auto"
           ref={area}
           value={text}
           rows={1}
@@ -352,7 +352,7 @@ function QuoteCard({
       </label>
       <label className="-mt-2 block">
         <span className="sr-only">{t("journal.page.quoteBy")}</span>
-        <input
+        <input dir="auto"
           type="text"
           value={by}
           maxLength={BY_MAX}
@@ -375,7 +375,7 @@ function HeadingBlock({ index, text, look, onText, onRemove }: { index: number; 
     <div data-page-block={index} data-page-heading-block="" className="relative pe-12">
       <label className="block">
         <span className="sr-only">{t("journal.page.heading")}</span>
-        <input
+        <input dir="auto"
           type="text"
           value={text}
           maxLength={HEADING_MAX}
@@ -433,7 +433,7 @@ function CheckBlock({ index, items, onItems }: { index: number; items: CheckItem
           </button>
           <label className="min-w-0 flex-1">
             <span className="sr-only">{t("journal.page.itemPlaceholder")}</span>
-            <input
+            <input dir="auto"
               type="text"
               value={item.text}
               maxLength={ITEM_MAX}
@@ -528,7 +528,7 @@ function CalloutBlock({
       </button>
       <label className="min-w-0 flex-1 py-1.5">
         <span className="sr-only">{t("journal.page.callout")}</span>
-        <textarea
+        <textarea dir="auto"
           ref={area}
           value={text}
           rows={1}
@@ -668,7 +668,7 @@ function PropsPanel({ editor, notebooks, onDone }: { editor: PageEditor; noteboo
       </div>
       <label className="block">
         <span className="sr-only">{t("journal.page.notebook")}</span>
-        <input
+        <input dir="auto"
           type="text"
           value={current}
           maxLength={NOTEBOOK_MAX}
@@ -710,7 +710,7 @@ function PropsPanel({ editor, notebooks, onDone }: { editor: PageEditor; noteboo
       {tags.length < TAGS_MAX ? (
         <label className="mt-2 block">
           <span className="sr-only">{t("journal.page.addTag")}</span>
-          <input
+          <input dir="auto"
             type="text"
             value={tag}
             maxLength={TAG_MAX}

@@ -170,7 +170,7 @@ function Medallion({ name, sub, onOpen }: { name: string; sub?: string | null; o
       <span aria-hidden className="rule-med-disc">
         {initialOf(name, locale)}
       </span>
-      <span className="rule-med-name">{name}</span>
+      <span dir="auto" className="rule-med-name">{name}</span>
       {sub ? <span className="rule-med-sub">{sub}</span> : null}
     </button>
   );
@@ -323,7 +323,7 @@ function WallNameSheet({
   const chosen = choice ?? entry.places;
   return (
     <Sheet open={open} onClose={onClose} title={entry.name} desktop openFull>
-      {entry.intention ? <p className="break-words font-serif text-ui italic leading-[1.5] text-paper/75">{entry.intention}</p> : null}
+      {entry.intention ? <p dir="auto" className="break-words font-serif text-ui italic leading-[1.5] text-paper/75">{entry.intention}</p> : null}
       <p data-wall-leaves className="mt-1 font-sans text-caption text-paper/55">
         {t("prayers.diptychs.wallUntil", { date: wallLeavesText(entry.until, locale) })}
       </p>

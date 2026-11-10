@@ -79,7 +79,7 @@ export function SearchField({
       )}
     >
       <Search size={19} className="search-glass shrink-0" />
-      <input
+      <input dir="auto"
         ref={ref}
         id={id}
         type="search"

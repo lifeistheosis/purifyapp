@@ -63,7 +63,7 @@ export function ChapterDiscussions({ book, bookName, chapter }: { book: string; 
                   <span className="block font-sans text-caption text-paper/55">
                     {p.author_name} · {timeAgo(p.created_at)}
                   </span>
-                  {p.title ? <span className="block font-serif text-ui font-semibold leading-snug text-paper">{p.title}</span> : null}
+                  {p.title ? <span dir="auto" className="block font-serif text-ui font-semibold leading-snug text-paper">{p.title}</span> : null}
                   <span className="mt-0.5 line-clamp-2 block font-sans text-detail leading-relaxed text-paper/75">
                     {p.body || p.quote_text}
                   </span>

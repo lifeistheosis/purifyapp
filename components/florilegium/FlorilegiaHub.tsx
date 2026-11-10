@@ -123,7 +123,7 @@ export function FlorilegiaHub({ readOnly = false }: { readOnly?: boolean } = {})
                 <label htmlFor="florilegium-name" className="block font-sans text-caption font-semibold text-paper/60">
                   {t("study.florilegium.nameThisGathering")}
                 </label>
-                <input
+                <input dir="auto"
                   id="florilegium-name"
                   type="text"
                   value={title}

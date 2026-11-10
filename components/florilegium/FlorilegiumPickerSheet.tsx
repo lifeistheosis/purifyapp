@@ -157,7 +157,7 @@ export function FlorilegiumPickerSheet({
               <label htmlFor="picker-new-name" className="block font-sans text-caption font-semibold text-paper/60">
                 {t("study.florilegium.nameNewGathering")}
               </label>
-              <input
+              <input dir="auto"
                 id="picker-new-name"
                 type="text"
                 value={title}

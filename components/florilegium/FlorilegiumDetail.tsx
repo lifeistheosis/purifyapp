@@ -4,6 +4,7 @@ import { useMemo, useState } from "react";
 import Link from "next/link";
 
 import { useTranslate } from "@/components/i18n/MessagesProvider";
+import { textDir } from "@/lib/i18n/textDir";
 import { ConfirmDialog } from "@/components/ui/ConfirmDialog";
 import { Book } from "@/components/ui/icons/Book";
 import { ChevronLeft } from "@/components/ui/icons/ChevronLeft";
@@ -181,12 +182,21 @@ export function ItemCard({
   onRemove,
   onNote,
   readOnly = false,
+  textLang,
 }: {
   item: FlorilegiumItem;
   onRemove: () => void;
   onNote: (note: string) => void;
   /** To read only: no note added or changed, nothing removed (rec 10). */
   readOnly?: boolean;
+  /**
+   * The language the gathered words are known to be in: the Plus screen's
+   * preview, whose lines are the app's English. A gathering's own lines record
+   * no language, so they read as they are written (dir="auto"), as a kept verse
+   * does on You (build 90 note 4). A Father's source is the same English; a
+   * verse's reference is in the reader's language.
+   */
+  textLang?: string;
 }) {
   const { t } = useTranslate();
   const [editing, setEditing] = useState(false);
@@ -199,10 +209,12 @@ export function ItemCard({
       : item.href;
   const mark = item.kind === "scripture" ? <Book size={15} aria-hidden className="shrink-0 text-paper/55" /> : <Quill size={15} aria-hidden className="shrink-0 text-paper/55" />;
   const SOURCE = "inline-flex min-h-11 min-w-0 items-center gap-2 font-sans text-caption font-semibold text-paper/65";
+  const said = textLang ? { lang: textLang, dir: textDir(textLang) } : { dir: "auto" as const };
+  const sourceSaid = item.kind === "father" ? said : { dir: "auto" as const };
 
   return (
     <article data-gathered-line={item.kind} className="pb-2 pt-5">
-      <blockquote dir="auto" className="font-serif text-[17px] leading-[1.7] text-paper/90">
+      <blockquote {...said} className="font-serif text-[17px] leading-[1.7] text-paper/90">
         {item.text}
       </blockquote>
 
@@ -210,12 +222,12 @@ export function ItemCard({
         {href ? (
           <Link href={href} className={cn(SOURCE, "transition-colors hover:text-paper")}>
             {mark}
-            <span dir="auto" className="min-w-0">{source}</span>
+            <span {...sourceSaid} className="min-w-0">{source}</span>
           </Link>
         ) : (
           <p className={SOURCE}>
             {mark}
-            <span dir="auto" className="min-w-0">{source}</span>
+            <span {...sourceSaid} className="min-w-0">{source}</span>
           </p>
         )}
         {!editing && !readOnly && (

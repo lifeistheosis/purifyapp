@@ -80,14 +80,14 @@ export function CommemorationStep({
           <ul className="mt-[0.6em]">
             {living.map((n) => (
               <li key={n.id} className="mt-[0.35em]">
-                <span data-line className={cn("block break-words", lineClass)}>
+                <span data-line dir="auto" className={cn("block break-words", lineClass)}>
                   {n.name}
                 </span>
               </li>
             ))}
             {wall.map((n) => (
               <li key={n.id} className="mt-[0.35em]">
-                <span data-line className={cn("block break-words", lineClass)}>
+                <span data-line dir="auto" className={cn("block break-words", lineClass)}>
                   {n.name}
                 </span>
                 <span className="mt-1 block break-words font-sans text-detail leading-[1.55] text-paper/60">
@@ -97,7 +97,7 @@ export function CommemorationStep({
             ))}
             {campaignLiving.map((c) => (
               <li key={c.id} data-campaign-name="" className="mt-[0.35em]">
-                <span data-line className={cn("block break-words", lineClass)}>
+                <span data-line dir="auto" className={cn("block break-words", lineClass)}>
                   {c.name}
                 </span>
                 <span className="mt-1 block break-words font-sans text-detail leading-[1.55] text-paper/60">{campaignLine(c)}</span>

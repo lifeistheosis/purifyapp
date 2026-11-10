@@ -73,7 +73,7 @@ export function TodayDiptychs({
             key={`l-${e.id}`}
             className="flex items-baseline gap-2 font-sans text-ui text-paper"
           >
-            <span className="font-semibold">{e.name}</span>
+            <span dir="auto" className="font-semibold">{e.name}</span>
             <span className="text-caption text-paper/60">
               {"·"} {namedayLabel ?? t("prayers.today.namedayNote")}
             </span>
@@ -84,7 +84,7 @@ export function TodayDiptychs({
             key={`m-${entry.id}`}
             className="flex items-baseline gap-2 font-sans text-ui text-paper"
           >
-            <span className="font-semibold">{entry.name}</span>
+            <span dir="auto" className="font-semibold">{entry.name}</span>
             <span className="text-caption text-paper/60">
               {"·"} {t(MEMORIAL_KEY[day])}
             </span>
@@ -95,7 +95,7 @@ export function TodayDiptychs({
             key={`d-${entry.id}`}
             className="flex items-baseline gap-2 font-sans text-ui text-paper"
           >
-            <span className="font-semibold">{entry.name}</span>
+            <span dir="auto" className="font-semibold">{entry.name}</span>
             {/* The ordinal used to be built inline as "st"/"nd"/"rd"/"th",
                 in all 21 locales. A plural key says the same thing and
                 translates. */}
@@ -110,7 +110,7 @@ export function TodayDiptychs({
           ? soulSaturday.departed
               .filter((e) => !memorials.some((m) => m.entry.id === e.id) && !anniversaries.some((a) => a.entry.id === e.id))
               .map((e) => (
-                <li key={`s-${e.id}`} className="font-sans text-ui font-semibold text-paper">
+                <li key={`s-${e.id}`} dir="auto" className="font-sans text-ui font-semibold text-paper">
                   {e.name}
                 </li>
               ))

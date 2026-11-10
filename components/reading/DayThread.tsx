@@ -77,7 +77,7 @@ export function DayThread({
                 <p className="font-sans text-caption text-paper/55">
                   <span className="font-semibold text-paper/80">{p.author_name}</span> · {relativeTime(p.created_at, locale)}
                 </p>
-                {p.body ? <p className="mt-1 whitespace-pre-line font-sans text-ui leading-[1.55] text-paper/90">{p.body}</p> : null}
+                {p.body ? <p dir="auto" className="mt-1 whitespace-pre-line font-sans text-ui leading-[1.55] text-paper/90">{p.body}</p> : null}
               </li>
             ))}
           </ol>
@@ -89,7 +89,7 @@ export function DayThread({
           }}
           className="space-y-2"
         >
-          <textarea
+          <textarea dir="auto"
             value={draft}
             onChange={(e) => setDraft(e.target.value)}
             rows={3}

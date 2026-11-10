@@ -71,7 +71,7 @@ export function AccountChoice() {
               >
                 {t("ui.aNameToShowOn")}
               </label>
-              <input
+              <input dir="auto"
                 id="local-account-name"
                 type="text"
                 value={localName}

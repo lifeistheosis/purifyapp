@@ -34,7 +34,7 @@ export function JournalPrompts({
         {waiting.questions.map((q) => (
           <li key={q.key}>
             <button type="button" onClick={() => onAnswer(q)} className="tap-press flex min-h-12 w-full items-center gap-3 py-3 text-start">
-              <span className="min-w-0 flex-1 font-serif text-body leading-[1.5] text-paper">{q.text}</span>
+              <span dir="auto" className="min-w-0 flex-1 font-serif text-body leading-[1.5] text-paper">{q.text}</span>
               <Pen size={16} className="shrink-0 text-paper/45" />
             </button>
           </li>

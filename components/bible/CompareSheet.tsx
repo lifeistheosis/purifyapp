@@ -126,7 +126,9 @@ export function CompareSheet({
 export function CompareEnglishRow({ label, words }: { label: string; words: string }) {
   return (
     <li className="py-3.5" data-compare-row="english">
-      <p className="font-sans text-detail font-semibold text-premium-ink">{label}</p>
+      <p className="font-sans text-detail font-semibold text-premium-ink">
+        <span lang="en" dir="ltr">{label}</span>
+      </p>
       <p lang="en" dir="ltr" className="mt-1 font-serif text-body leading-[1.6] text-paper/80">
         {words}
       </p>

@@ -308,7 +308,7 @@ export function SearchSelect<V extends string>({
               style={menuStyle}
             >
               <div className="shrink-0 border-b border-paper/10 p-2">
-                <input
+                <input dir="auto"
                   ref={searchRef}
                   value={query}
                   onChange={(e) => {

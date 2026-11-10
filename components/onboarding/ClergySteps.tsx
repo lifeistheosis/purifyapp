@@ -142,7 +142,7 @@ const FIELD =
 
 function SearchField({ value, onChange, label }: { value: string; onChange: (v: string) => void; label: string }) {
   return (
-    <input
+    <input dir="auto"
       type="search"
       value={value}
       onChange={(e) => onChange(e.target.value)}
@@ -283,7 +283,7 @@ export function ClergyJurisdiction({
       </div>
       {other ? (
         <>
-          <input
+          <input dir="auto"
             ref={field}
             value={otherName}
             onChange={(e) => onOtherName(e.target.value)}
@@ -335,7 +335,7 @@ function ParishFields({ typed, onPick, nameRef }: { typed: WrittenParish; onPick
   const { t } = useTranslate();
   return (
     <>
-      <input
+      <input dir="auto"
         ref={nameRef}
         value={typed.name}
         onChange={(e) => onPick({ ...typed, name: e.target.value })}
@@ -345,7 +345,7 @@ function ParishFields({ typed, onPick, nameRef }: { typed: WrittenParish; onPick
         autoComplete="off"
         className={FIELD}
       />
-      <input
+      <input dir="auto"
         value={typed.place}
         onChange={(e) => onPick({ ...typed, place: e.target.value })}
         maxLength={TYPED_MAX}

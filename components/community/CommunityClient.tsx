@@ -1669,7 +1669,7 @@ function PostCardInner({
           </div>
 
           {post.title ? (
-            <h3 className="mt-1.5 text-[19px] leading-[1.28] tracking-[-0.005em] text-paper">
+            <h3 dir="auto" className="mt-1.5 text-[19px] leading-[1.28] tracking-[-0.005em] text-paper">
               <SymbolText text={post.title} />
             </h3>
           ) : null}
@@ -1727,6 +1727,7 @@ function PostCardInner({
           {post.body ? (
             <p
               ref={bodyFold}
+              dir="auto"
               className={cn(
                 "mt-2 whitespace-pre-wrap break-words font-sans text-[15px] leading-[22px] text-paper/85",
                 longBody && folded && "post-fold",
@@ -1882,7 +1883,7 @@ function PostCardInner({
                             <SupporterMarkButton tier={r.author_mark} size={14} />
                             <span>· {timeAgo(r.created_at)}</span>
                           </p>
-                          <p className="mt-0.5 whitespace-pre-wrap break-words font-sans text-[13.5px] leading-[1.48] text-paper/85">
+                          <p dir="auto" className="mt-0.5 whitespace-pre-wrap break-words font-sans text-[13.5px] leading-[1.48] text-paper/85">
                             <MentionText text={r.body} />
                           </p>
                           {/*
@@ -1945,6 +1946,7 @@ function PostCardInner({
                         : t("community.replyNotSent")}
                     </p>
                     <p
+                      dir="auto"
                       className={
                         "whitespace-pre-wrap font-sans text-detail leading-relaxed " +
                         (p.status === "failed" ? "text-paper/50" : "text-paper/60")

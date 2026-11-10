@@ -287,7 +287,7 @@ export function JournalClient() {
                   <ul className="mt-2 space-y-3">
                     {remembered.map((n) => (
                       <li key={noteKey(n.book, n.chapter, n.verse)}>
-                        <p className="line-clamp-3 whitespace-pre-line font-serif text-body leading-[1.6] text-paper/90">{n.note}</p>
+                        <p dir="auto" className="line-clamp-3 whitespace-pre-line font-serif text-body leading-[1.6] text-paper/90">{n.note}</p>
                         <p className="mt-1 font-sans text-caption text-paper/50">
                           {`${bookName(n.book)} ${n.chapter}:${n.verse}`}
                           {n.at ? ` · ${dayOf(n.at)}` : ""}

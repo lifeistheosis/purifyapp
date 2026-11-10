@@ -113,7 +113,7 @@ export function ClergyRequestCard({ initial }: { initial: MyClergy | undefined }
           </div>
           <label className="block">
             <span className="mb-1.5 block font-sans text-detail font-semibold text-paper/80">{t("clergy.jurisdiction")}</span>
-            <input
+            <input dir="auto"
               value={jurisdiction}
               onChange={(e) => setJurisdiction(e.target.value)}
               maxLength={CLERGY_TEXT_MAX}
@@ -123,7 +123,7 @@ export function ClergyRequestCard({ initial }: { initial: MyClergy | undefined }
           </label>
           <label className="block">
             <span className="mb-1.5 block font-sans text-detail font-semibold text-paper/80">{t("clergy.parish")}</span>
-            <input
+            <input dir="auto"
               value={parish}
               onChange={(e) => setParish(e.target.value)}
               maxLength={CLERGY_TEXT_MAX}
@@ -133,7 +133,7 @@ export function ClergyRequestCard({ initial }: { initial: MyClergy | undefined }
           </label>
           <label className="block">
             <span className="mb-1.5 block font-sans text-detail font-semibold text-paper/80">{t("clergy.evidence")}</span>
-            <textarea
+            <textarea dir="auto"
               value={evidence}
               onChange={(e) => setEvidence(e.target.value)}
               maxLength={CLERGY_EVIDENCE_MAX}

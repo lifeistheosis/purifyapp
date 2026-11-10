@@ -120,7 +120,7 @@ export function BookSwitcher({ currentSlug }: { currentSlug: string }) {
                 size={14}
                 className="absolute left-3 top-1/2 -translate-y-1/2 text-paper/45"
               />
-              <input
+              <input dir="auto"
                 ref={inputRef}
                 value={query}
                 onChange={(e) => setQuery(e.target.value)}

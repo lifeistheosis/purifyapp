@@ -138,7 +138,7 @@ function NamesSheet({ open, onClose, focusId = null }: Props) {
                 style={highlightVars(c.id)}
                 className="h-[22px] w-[22px] shrink-0 rounded-full bg-[var(--hl-swatch)] shadow-[inset_0_0_0_1px_rgba(0,0,0,0.14)]"
               />
-              <input
+              <input dir="auto"
                 ref={(el) => {
                   inputs.current[c.id] = el;
                 }}

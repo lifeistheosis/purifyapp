@@ -447,7 +447,7 @@ export function ProfileViewer({
                 {t(POST_KIND_KEYS[p.kind])} · {timeAgo(p.createdAt)}
               </p>
               {p.title ? (
-                <p className="mt-1 font-serif text-[16px] font-semibold leading-snug text-paper">
+                <p dir="auto" className="mt-1 font-serif text-[16px] font-semibold leading-snug text-paper">
                   <SymbolText text={p.title} />
                 </p>
               ) : null}

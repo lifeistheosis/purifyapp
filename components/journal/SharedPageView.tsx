@@ -57,7 +57,7 @@ export function SharedPageView({ shared }: { shared: SharedPage }) {
     switch (b.type) {
       case "text":
         return (
-          <p key={i} className={cn("whitespace-pre-line text-body leading-[1.7] text-paper/90", font, align)}>
+          <p key={i} dir="auto" className={cn("whitespace-pre-line text-body leading-[1.7] text-paper/90", font, align)}>
             {b.color ? (
               <span data-hl-color={b.color} style={highlightVars(b.color)} className="box-decoration-clone rounded-[4px] bg-[var(--hl-verse)] px-[3px] -mx-[3px] py-[0.1em]">
                 {b.text}
@@ -71,7 +71,7 @@ export function SharedPageView({ shared }: { shared: SharedPage }) {
         const verses = Array.from({ length: b.to - b.from + 1 }, (_, k) => b.from + k);
         return (
           <figure key={i} className="rounded-2xl border border-paper/10 bg-paper/[0.04] px-4 py-3">
-            <blockquote className="font-serif text-body leading-[1.65] text-paper/90">
+            <blockquote dir="auto" className="font-serif text-body leading-[1.65] text-paper/90">
               {verses.map((v) => {
                 const words = shared.verses[`${b.book}/${b.chapter}/${v}`];
                 return words ? (
@@ -93,13 +93,13 @@ export function SharedPageView({ shared }: { shared: SharedPage }) {
       case "quote":
         return (
           <figure key={i} className="rounded-2xl border border-paper/10 px-4 py-3">
-            <blockquote className={cn("whitespace-pre-line italic text-body leading-[1.65] text-paper", font)}>{b.text}</blockquote>
-            {b.by ? <figcaption className="mt-1.5 font-sans text-caption text-paper/70">{b.by}</figcaption> : null}
+            <blockquote dir="auto" className={cn("whitespace-pre-line italic text-body leading-[1.65] text-paper", font)}>{b.text}</blockquote>
+            {b.by ? <figcaption dir="auto" className="mt-1.5 font-sans text-caption text-paper/70">{b.by}</figcaption> : null}
           </figure>
         );
       case "heading":
         return (
-          <h2 key={i} className={cn("text-[20px] font-semibold leading-[1.3] text-paper", font, align)}>
+          <h2 key={i} dir="auto" className={cn("text-[20px] font-semibold leading-[1.3] text-paper", font, align)}>
             {b.text}
           </h2>
         );
@@ -111,7 +111,7 @@ export function SharedPageView({ shared }: { shared: SharedPage }) {
                 <span aria-hidden className={cn("grid h-[22px] w-[22px] shrink-0 place-items-center rounded-md border", item.done ? "border-paper bg-paper text-night" : "border-paper/45 text-transparent")}>
                   <Check size={15} strokeWidth={2.6} />
                 </span>
-                <span className={cn("text-body leading-[1.5]", font, item.done ? "text-paper/70 line-through decoration-paper/45" : "text-paper")}>{item.text}</span>
+                <span dir="auto" className={cn("text-body leading-[1.5]", font, item.done ? "text-paper/70 line-through decoration-paper/45" : "text-paper")}>{item.text}</span>
               </li>
             ))}
           </ul>
@@ -132,7 +132,7 @@ export function SharedPageView({ shared }: { shared: SharedPage }) {
         return (
           <div key={i} className="flex items-start gap-3 rounded-2xl bg-paper/[0.07] px-4 py-3">
             <span className="mt-0.5 shrink-0 text-paper/85">{CALLOUT[b.icon]}</span>
-            <p className={cn("min-w-0 whitespace-pre-line text-body leading-[1.65] text-paper", font)}>{b.text}</p>
+            <p dir="auto" className={cn("min-w-0 whitespace-pre-line text-body leading-[1.65] text-paper", font)}>{b.text}</p>
           </div>
         );
       default:
@@ -150,7 +150,7 @@ export function SharedPageView({ shared }: { shared: SharedPage }) {
         </figure>
       ) : null}
       <p className="mt-6 font-sans text-caption text-paper/70">{[when, church.headline].filter(Boolean).join(" · ")}</p>
-      {page.title ? <h1 className={cn("mt-2 text-[32px] font-semibold leading-[1.15] text-paper", font, align)}>{page.title}</h1> : null}
+      {page.title ? <h1 dir="auto" className={cn("mt-2 text-[32px] font-semibold leading-[1.15] text-paper", font, align)}>{page.title}</h1> : null}
       <div className="mt-6 space-y-4">{page.blocks.map(block)}</div>
       <footer className="mt-10 flex flex-wrap items-center gap-3 border-t border-paper/10 pt-4">
         <p className="min-w-0 flex-1 font-sans text-caption text-paper/70">{t("journal.share.made")}</p>

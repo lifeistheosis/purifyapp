@@ -121,7 +121,7 @@ export function WhoSaidIt() {
         <form onSubmit={find} className="mt-8">
           <label className="block">
             <span className="sr-only">{t("whoSaidIt.placeholder")}</span>
-            <textarea
+            <textarea dir="auto"
               value={line}
               onChange={(e) => setLine(e.target.value)}
               placeholder={t("whoSaidIt.placeholder")}

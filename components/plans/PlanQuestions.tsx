@@ -74,7 +74,7 @@ export function PlanQuestions({
             </label>
             {/* The verse the question quotes, under it (1.8). */}
             {q.sources?.map((s, k) => <SourceLine key={k} cite={s} className="mt-1" />)}
-            <input
+            <input dir="auto"
               id={`${id}-${i}`}
               type="text"
               maxLength={500}

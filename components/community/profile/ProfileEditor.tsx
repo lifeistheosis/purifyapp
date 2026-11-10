@@ -550,7 +550,7 @@ export function ProfileEditor() {
                 <span className="pl-3.5 font-sans text-ui text-paper/45" aria-hidden="true">
                   @
                 </span>
-                <input
+                <input dir="auto"
                   id="pe-handle"
                   value={draft.handle}
                   onChange={(e) => set({ handle: e.target.value.toLowerCase() })}
@@ -573,7 +573,7 @@ export function ProfileEditor() {
             </Field>
 
             <Field label={t("profile.status")} htmlFor="pe-status" aside={counter(draft.status.length, STATUS_MAX)}>
-              <input
+              <input dir="auto"
                 id="pe-status"
                 value={draft.status}
                 onChange={(e) => set({ status: e.target.value })}
@@ -584,7 +584,7 @@ export function ProfileEditor() {
             </Field>
 
             <Field label={t("profile.aboutMe")} htmlFor="pe-bio" aside={counter(draft.bio.length, BIO_MAX)}>
-              <textarea
+              <textarea dir="auto"
                 id="pe-bio"
                 value={draft.bio}
                 onChange={(e) => set({ bio: e.target.value })}
@@ -596,7 +596,7 @@ export function ProfileEditor() {
             </Field>
 
             <Field label={t("profile.parish")} htmlFor="pe-parish" aside={counter(draft.parish.length, PARISH_MAX)}>
-              <input
+              <input dir="auto"
                 id="pe-parish"
                 value={draft.parish}
                 onChange={(e) => set({ parish: e.target.value })}
@@ -637,7 +637,7 @@ export function ProfileEditor() {
                   searchPlaceholder={t("profile.verseSearch")}
                   emptyLabel={t("profile.verseNoMatch")}
                 />
-                <input
+                <input dir="auto"
                   inputMode="numeric"
                   aria-label={t("profile.verseChapter")}
                   placeholder={t("profile.verseChapterShort")}
@@ -645,7 +645,7 @@ export function ProfileEditor() {
                   onChange={(e) => set({ verseChapter: e.target.value.replace(/\D/g, "").slice(0, 3) })}
                   className={FIELD}
                 />
-                <input
+                <input dir="auto"
                   inputMode="numeric"
                   aria-label={t("profile.verseVerse")}
                   placeholder={t("profile.verseVerseShort")}
@@ -679,7 +679,7 @@ export function ProfileEditor() {
                       ))}
                     </select>
                   </label>
-                  <input
+                  <input dir="auto"
                     value={l.v}
                     onChange={(e) => set({ links: draft.links.map((x, j) => (j === i ? { ...x, v: e.target.value } : x)) })}
                     maxLength={200}

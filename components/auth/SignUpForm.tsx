@@ -127,7 +127,7 @@ export function SignUpForm() {
           {t("common.displayName")}{" "}
           <span className="text-paper/45">{t("ui.parenOptional")}</span>
         </label>
-        <input
+        <input dir="auto"
           id="signup-name"
           type="text"
           autoComplete="name"

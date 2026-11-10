@@ -75,7 +75,7 @@ export function AskPrayersSheet({
               {t("profile.charsLeft", { count: left })}
             </span>
           </div>
-          <textarea
+          <textarea dir="auto"
             ref={field}
             id="wall-intention"
             value={text}

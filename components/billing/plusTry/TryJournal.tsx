@@ -82,7 +82,7 @@ export default function TryJournal({ row }: TryProps) {
         {remembered ? (
           <section aria-label={t("journal.fromThisDay")} className="mt-6 border-y border-paper/10 py-4">
             <p className="font-sans text-caption font-semibold text-paper/60">{t("journal.fromThisDay")}</p>
-            <p className="mt-2 line-clamp-3 whitespace-pre-line font-serif text-body leading-[1.6] text-paper/90">{remembered.text}</p>
+            <p lang="en" dir="ltr" className="mt-2 line-clamp-3 whitespace-pre-line font-serif text-body leading-[1.6] text-paper/90">{remembered.text}</p>
             <p className="mt-1 font-sans text-caption text-paper/50">
               {[`${books[ex.book] ?? t(`bible.books.${ex.book}`)} ${ex.chapter}:${ex.verse}`, monthAgoWords, remembered.author].filter(Boolean).join(" · ")}
             </p>

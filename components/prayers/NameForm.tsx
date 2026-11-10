@@ -106,7 +106,7 @@ export function NameForm({
       <label htmlFor={`${id}-name`} className="block font-sans text-caption font-semibold text-paper/70">
         {t("prayers.diptychs.name")}
       </label>
-      <input
+      <input dir="auto"
         id={`${id}-name`}
         /* eslint-disable-next-line jsx-a11y/no-autofocus -- the sheet is
            opened by an explicit user action (Add), so moving focus into
@@ -128,7 +128,7 @@ export function NameForm({
         label={t("prayers.diptychs.relationshipLabel")}
         cols={3}
       />
-      <input
+      <input dir="auto"
         aria-labelledby={`${id}-rel`}
         placeholder={t("prayers.diptychs.relationshipOther")}
         value={chosen ? "" : relationship}
@@ -150,7 +150,7 @@ export function NameForm({
       <label htmlFor={`${id}-note`} className="mt-5 block font-sans text-caption font-semibold text-paper/70">
         {t("prayers.diptychs.noteLabel")}
       </label>
-      <textarea
+      <textarea dir="auto"
         id={`${id}-note`}
         maxLength={NOTE_MAX}
         rows={3}
@@ -252,7 +252,7 @@ function SaintFeastSearch({ onPick }: { onPick: (mmdd: string) => void }) {
       <label htmlFor={`${id}-saint`} className="block font-sans text-caption font-semibold text-paper/70">
         {t("prayers.diptychs.namedaySaint")}
       </label>
-      <input id={`${id}-saint`} type="search" value={q} onChange={(e) => setQ(e.target.value)} autoComplete="off" className={`${NAME_FIELD} mt-1.5`} />
+      <input dir="auto" id={`${id}-saint`} type="search" value={q} onChange={(e) => setQ(e.target.value)} autoComplete="off" className={`${NAME_FIELD} mt-1.5`} />
       {found.length ? (
         <ul className="mt-1.5">
           {found.map((f) => (
@@ -265,7 +265,7 @@ function SaintFeastSearch({ onPick }: { onPick: (mmdd: string) => void }) {
                 }}
                 className="set-link flex min-h-11 w-full items-center justify-between gap-3 rounded-[10px] px-2 text-start"
               >
-                <span className="min-w-0 truncate font-sans text-ui text-paper">{f.name}</span>
+                <span lang="en" dir="ltr" className="min-w-0 truncate font-sans text-ui text-paper">{f.name}</span>
                 <span className="shrink-0 font-sans text-caption tabular-nums text-paper/60">{formatMmDd(f.days[0], t)}</span>
               </button>
             </li>

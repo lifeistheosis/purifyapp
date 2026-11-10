@@ -162,7 +162,7 @@ export function ProfileHero({
         <div className="mt-4 min-w-0 md:mt-0">
           {editing ? (
             <div className="flex flex-col items-center gap-3 md:items-start">
-              <input
+              <input dir="auto"
                 value={draft}
                 onChange={(e) => setDraft(e.target.value)}
                 aria-label={t("ui.editDisplayName")}

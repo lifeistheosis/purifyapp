@@ -260,9 +260,10 @@ export function JournalFeed({
             {g.items.map((item) => (
               <SwipeRow key={item.key} onRemove={() => onRemove(item)} removeLabel={t("common.remove")}>
                 <button type="button" onClick={() => onOpen(item)} data-journal-entry="" className="block w-full py-4 pe-1 text-start active:opacity-80">
-                  {item.prompt ? <span className="block font-sans text-caption text-paper/55">{item.prompt.text}</span> : null}
+                  {item.prompt ? <span dir="auto" className="block font-sans text-caption text-paper/55">{item.prompt.text}</span> : null}
                   {pages.get(item.key)?.title ? (
                     <span
+                      dir="auto"
                       data-journal-entry-title=""
                       className={`block ${pages.get(item.key)?.sans ? "font-sans" : "font-serif"} text-[19px] font-semibold leading-[1.3] text-paper${item.prompt ? " mt-1" : ""}`}
                     >
@@ -271,6 +272,7 @@ export function JournalFeed({
                   ) : null}
                   {pages.get(item.key)?.text ? (
                     <span
+                      dir="auto"
                       className={`block whitespace-pre-line line-clamp-4 ${pages.get(item.key)?.sans ? "font-sans" : "font-serif"} text-body leading-[1.6] text-paper/90 print:line-clamp-none${item.prompt || pages.get(item.key)?.title ? " mt-1" : ""}`}
                     >
                       {pages.get(item.key)?.text}

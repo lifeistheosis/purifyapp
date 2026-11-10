@@ -108,7 +108,7 @@ export function QuestionCard({
           <label htmlFor={inputId} className="font-sans text-caption text-paper/65">
             {t("catechism.typedLabel")}
           </label>
-          <input
+          <input dir="auto"
             id={inputId}
             type="text"
             autoComplete="off"

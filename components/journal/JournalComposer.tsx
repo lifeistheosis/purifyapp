@@ -206,7 +206,7 @@ export function JournalComposer({
         {isNote ? (
           <label className="mt-5 block">
             <span className="sr-only">{t("journal.composer.label")}</span>
-            <textarea
+            <textarea dir="auto"
               ref={area}
               value={draft.body}
               maxLength={MAX_BODY}
@@ -271,5 +271,5 @@ function SourceCard({
 function VerseQuote({ book, chapter, verse }: { book: string; chapter: number; verse: number }) {
   const words = useVerseWords(book, chapter, verse, true);
   if (!words.text) return null;
-  return <p className="line-clamp-4 font-serif text-body leading-[1.6] text-paper/85">{words.text}</p>;
+  return <p dir="auto" className="line-clamp-4 font-serif text-body leading-[1.6] text-paper/85">{words.text}</p>;
 }

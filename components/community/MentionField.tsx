@@ -122,14 +122,14 @@ export function MentionField(props: Shared & ({ as: "textarea"; rows?: number } 
   return (
     <div className="relative min-w-0 flex-1">
       {props.as === "textarea" ? (
-        <textarea
+        <textarea dir="auto"
           {...common}
           ref={ref as RefObject<HTMLTextAreaElement>}
           rows={props.rows}
           onChange={(e) => track(e.target.value, e.target.selectionStart ?? e.target.value.length)}
         />
       ) : (
-        <input
+        <input dir="auto"
           {...common}
           ref={ref as RefObject<HTMLInputElement>}
           onChange={(e) => track(e.target.value, e.target.selectionStart ?? e.target.value.length)}

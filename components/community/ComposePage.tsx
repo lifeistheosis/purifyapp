@@ -579,7 +579,7 @@ export function ComposePage({
               </div>
             ) : (
               <div className="mt-6">
-                <input
+                <input dir="auto"
                   value={title}
                   onChange={(e) => setTitle(e.target.value)}
                   maxLength={160}
@@ -690,7 +690,7 @@ function SharedLine({ item }: { item: FlorilegiumItem }) {
     <figure data-compose-card="" className="community-quote rounded-[18px] border border-paper/[0.11] px-4 pb-3 pt-4 text-center">
       <PurifyMark size={22} className="community-quote-mark mx-auto mb-2.5 block text-paper" />
       <blockquote>
-        <p className="whitespace-pre-line font-serif text-[17px] font-medium leading-[1.5] text-paper">{item.text}</p>
+        <p dir="auto" className="whitespace-pre-line font-serif text-[17px] font-medium leading-[1.5] text-paper">{item.text}</p>
       </blockquote>
       <span aria-hidden className="mx-auto mt-3 block h-[1.5px] w-7 rounded-full bg-paper/70" />
       <figcaption className="mt-2.5 flex items-center justify-between gap-2">
