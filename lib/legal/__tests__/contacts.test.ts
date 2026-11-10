@@ -17,7 +17,8 @@ import { LEGAL_EMAIL, SUPPORT_EMAIL } from "../entity";
  * purify.app, a domain Purify has never shown to be its own.
  */
 
-const ROOTS = ["app", "components", "lib"];
+// The published notes and boards too: the apps carry them (data/changelog).
+const ROOTS = ["app", "components", "lib", "data/changelog"];
 const ADDRESS = /[A-Za-z0-9._%+-]+@[A-Za-z0-9-]+(?:\.[A-Za-z0-9-]+)*\.[A-Za-z]{2,}/g;
 const PERSONAL = /@(gmail|googlemail|outlook|hotmail|live|yahoo|icloud|me|proton|protonmail)\.[a-z.]+$/i;
 
@@ -57,7 +58,13 @@ describe("Purify's addresses", () => {
       ({ address }) => address.endsWith("@purifyapp.net") || address.endsWith("@purify.app") || PERSONAL.test(address),
     );
     expect(ours.length).toBeGreaterThan(0);
-    const stray = ours.filter(({ file, address }) => ALLOWED[address] !== file).map(({ file, address }) => `${file}: ${address}`);
+    // A note is words, not code, and cannot name a constant: the published
+    // notes and boards may write the two addresses out, and nothing else.
+    const inNotes = (file: string, address: string) =>
+      file.startsWith("data/changelog/") && (address === SUPPORT_EMAIL || address === LEGAL_EMAIL);
+    const stray = ours
+      .filter(({ file, address }) => ALLOWED[address] !== file && !inNotes(file, address))
+      .map(({ file, address }) => `${file}: ${address}`);
     expect(stray).toEqual([]);
   });
 

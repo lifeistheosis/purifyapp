@@ -587,6 +587,14 @@ says go.
 
 1. purifyapp.net/admin, **Releases**, then **Patch notes**.
 2. Read the 1.9 note. **Accept** it, or **Suggest** a change.
+3. Your word: "change out all the stuff with the emails". The branch has
+   already done it in the files the apps carry. The website reads its notes
+   from the database, so one old line there needs the same change: open the
+   **Alpha v6.5** note. In the line that starts "New SECURITY.md", change
+   `security@purify.app` to `support@purifyapp.net`. **Save**. (purify.app is
+   not our domain, so a report sent there goes to a stranger.)
+4. If the list of board messages there shows **2026-W37** (8 September),
+   change the address in its last line to `support@purifyapp.net` too.
 
 Done: the 1.9 note shows as accepted. Until then the website does not show it.
 

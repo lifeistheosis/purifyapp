@@ -184,4 +184,4 @@ the threat model. The threat is a tired author at eleven at night writing
 
 ## Write to us
 
-Discord is the fastest way in: [https://discord.gg/VzBYYUsNJ6](https://discord.gg/VzBYYUsNJ6). For longer-form discussion, [team@purify.app](mailto:team@purify.app).
+Discord is the fastest way in: [https://discord.gg/VzBYYUsNJ6](https://discord.gg/VzBYYUsNJ6). For longer-form discussion, [support@purifyapp.net](mailto:support@purifyapp.net).

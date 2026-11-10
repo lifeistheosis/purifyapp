@@ -2,8 +2,8 @@
 
 ## Reporting a Vulnerability
 
-Email the Purify team at the address in `package.json`'s `author` field
-(or via the contact link in the footer). Please include:
+Email support@purifyapp.net, with "Security" in the subject. It reaches the
+team directly; please do not use any other address. Please include:
 
 - A short description of the issue and its impact.
 - Reproduction steps or a proof of concept.

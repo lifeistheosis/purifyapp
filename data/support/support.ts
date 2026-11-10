@@ -41,7 +41,7 @@ export const SUPPORT = {
  note: "Magic-link sign-in messages and the occasional release-note email.",
  },
  {
- label: "Domain (purify.app)",
+ label: "Domain (purifyapp.net)",
  monthlyUsd: 2,
  note: "Annualized to a per-month figure.",
  },
