@@ -1574,7 +1574,7 @@ if (WALK) {
     expectThat(Boolean(gone), "the removal was not sent");
   }, { mine: [MARIA], parts: { pictures: true }, pictures: { waiting: 1 } });
 
-  await pictureWalk("pictures, on: with a place free its creator is offered it; at five no more, and nothing names Plus", `/campaigns/detail?id=${MARIA}`, async (page) => {
+  await pictureWalk("pictures, on: at five its creator is offered no more, and nothing names Plus", `/campaigns/detail?id=${MARIA}`, async (page) => {
     await page.waitForSelector("[data-campaign-pictures] button img", { timeout: 15000 });
     const section = page.locator("[data-campaign-pictures]");
     // Five pictures, the last one waiting: no place to add, and no door to anything else.
