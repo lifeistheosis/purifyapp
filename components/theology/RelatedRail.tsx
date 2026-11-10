@@ -68,7 +68,10 @@ export function RelatedRail({
                       href={l.href}
                       className="theology-row mx-1.5 flex min-h-[44px] items-center gap-3 rounded-[14px] px-3 py-2"
                     >
-                      <span className="min-w-0 flex-1 font-serif text-[15px] font-semibold leading-[1.25] text-paper/92">{l.label}</span>
+                      {/* A related saint's, council's or study's name is English (build 90 note 4). */}
+                      <span lang="en" dir="ltr" className="min-w-0 flex-1 font-serif text-[15px] font-semibold leading-[1.25] text-paper/92">
+                        {l.label}
+                      </span>
                       <ChevronRight size={14} className="shrink-0 text-paper/32 rtl:-scale-x-100" />
                     </Link>
                   </li>

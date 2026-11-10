@@ -59,14 +59,19 @@ export default async function TheologyStepPage({ params }: { params: Promise<{ s
             >
               {stepNumeral(step.n)} · <T k="study.theology.byFaith" />
             </p>
+            {/* The subject's name and line are English (build 90 note 4). */}
             <h1
               id="step-title"
+              lang="en"
+              dir="ltr"
               className="doctrine-shadow saint-head-in mt-[7px] font-serif text-[30px] font-bold leading-[1.1] text-balance text-paper md:text-display-sm"
               style={{ "--i": 1 } as CSSProperties}
             >
               {step.title}
             </h1>
             <p
+              lang="en"
+              dir="ltr"
               className="doctrine-shadow saint-head-in mt-[7px] max-w-[52ch] font-sans text-[14.5px] leading-[1.45] text-paper/78"
               style={{ "--i": 2 } as CSSProperties}
             >

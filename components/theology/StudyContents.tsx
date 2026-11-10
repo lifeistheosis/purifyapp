@@ -93,7 +93,9 @@ function Faces({ fathers, count }: { fathers: ContentsFather[]; count: number })
         ))}
       </span>
       <span className="font-sans text-[12px] font-semibold tabular-nums text-paper/55">{count}</span>
-      <span className="sr-only">{fathers.map((f) => f.name).join(", ")}</span>
+      <span lang="en" dir="ltr" className="sr-only">
+        {fathers.map((f) => f.name).join(", ")}
+      </span>
     </span>
   );
 }

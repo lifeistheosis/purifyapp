@@ -474,7 +474,11 @@ function SaintBand({ saint }: { saint: BandSaint }) {
         >
           {saint.name}
         </span>
-        {saint.line ? <span className="mt-1 block font-sans text-caption leading-snug text-paper/55">{saint.line.plain}</span> : null}
+        {saint.line ? (
+          <span lang="en" dir="ltr" className="mt-1 block font-sans text-caption leading-snug text-paper/55">
+            {saint.line.plain}
+          </span>
+        ) : null}
       </span>
     </>
   );

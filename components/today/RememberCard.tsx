@@ -36,6 +36,7 @@ import { useBookmarks } from "@/lib/bookmarks";
 import { cn } from "@/lib/cn";
 import { usePlusFeatures } from "@/lib/entitlements/usePlusFeatures";
 import { stepWords, type BlankedWord } from "@/lib/remember/blanks";
+import { textDir } from "@/lib/i18n/textDir";
 import {
   answer,
   backWords,
@@ -111,6 +112,7 @@ export function RememberCard({ className }: { className?: string }) {
       reference={due ? referenceIn(due.label, due.book, books) : ""}
       href={due ? `/bible/${due.book}/${due.chapter}#v${due.verse}` : undefined}
       text={text}
+      textLang={kept ? null : "en"}
       step={step}
       failed={Boolean(fetched) && !text}
       shown={shown}
@@ -138,6 +140,7 @@ export function RememberCardView({
   reference,
   href,
   text,
+  textLang = "en",
   step = 1,
   failed,
   shown,
@@ -156,6 +159,11 @@ export function RememberCardView({
   href?: string;
   /** The verse's words, or null while they come (or when they could not). */
   text: string | null;
+  /**
+   * The words' language (build 90 note 4): the app's English, unless the verse was kept from a
+   * downloaded Bible, whose language is not recorded with it (null: it runs as it is written).
+   */
+  textLang?: string | null;
   /** Which of the three steps (1.9): missing words, first letters, from memory. The first, unless said. */
   step?: RememberStep;
   /** The words could not be read (no signal the first time). */
@@ -235,7 +243,7 @@ export function RememberCardView({
 
             {text ? (
               <>
-                <p className="mt-2.5 font-serif text-[18px] leading-[1.62] text-paper/90" dir="auto">
+                <p className="mt-2.5 font-serif text-[18px] leading-[1.62] text-paper/90" {...(textLang ? { lang: textLang, dir: textDir(textLang) } : { dir: "auto" })}>
                   <BlankedVerse words={words} shown={shown} blank={t("remember.blank")} firsts={step === 2} />
                 </p>
                 <p className="mt-2 font-sans text-caption text-paper/50">

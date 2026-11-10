@@ -205,9 +205,14 @@ export function WordStudyBody({
       <p lang="grc" dir="ltr" style={GREEK} className="text-title text-paper">
         {title}
       </p>
-      {answer?.translit ? <p className="mt-1 font-sans text-ui text-paper/60">{answer.translit}</p> : null}
+      {/* The transliteration and Strong's definition are English (build 90 note 4). */}
+      {answer?.translit ? (
+        <p lang="en" dir="ltr" className="mt-1 font-sans text-ui text-paper/60">
+          {answer.translit}
+        </p>
+      ) : null}
       {answer?.gloss ? (
-        <p className="mt-2 font-sans text-ui leading-[1.55] text-paper/80">
+        <p lang="en" dir="ltr" className="mt-2 font-sans text-ui leading-[1.55] text-paper/80">
           <StrongsDefinition text={answer.gloss} />
         </p>
       ) : null}
@@ -245,7 +250,11 @@ export function WordStudyBody({
               <p className="font-sans text-detail font-semibold text-premium-ink group-hover:text-premium-bright">
                 {t(`bible.books.${it.book}`)} {it.chapter}:{it.verse}
               </p>
-              {it.english ? <p className="mt-1 font-serif text-body leading-[1.6] text-paper/85">{it.english}</p> : null}
+              {it.english ? (
+                <p lang="en" dir="ltr" className="mt-1 font-serif text-body leading-[1.6] text-paper/85">
+                  {it.english}
+                </p>
+              ) : null}
               <p lang="grc" dir="ltr" style={GREEK} className="mt-1 text-ui leading-[1.6] text-paper/65">
                 <Marked text={it.greek} forms={it.forms} />
               </p>

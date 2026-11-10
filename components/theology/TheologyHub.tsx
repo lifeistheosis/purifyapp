@@ -217,7 +217,7 @@ function WhereYouLeftOff({ steps, states, progress }: { steps: PathStep[]; state
             <span className="block font-sans text-caption font-semibold text-paper/50">
               {t("readingsFlow.of", { n: step.n, total: steps.length })}
             </span>
-            <span id="theology-head" className="mt-[3px] block font-serif text-[21px] font-bold leading-[1.15] text-paper">
+            <span id="theology-head" lang="en" dir="ltr" className="mt-[3px] block font-serif text-[21px] font-bold leading-[1.15] text-paper">
               {step.title}
             </span>
           </span>

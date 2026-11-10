@@ -22,6 +22,7 @@ import { updatePathProgress, usePathProgress } from "@/lib/theology/usePathProgr
 import { FatherFace } from "./FatherFace";
 import { KindIcon, ReadMeta, noteOpened } from "./PathRead";
 import { WholeIcon } from "./WholeIcon";
+import { textDir } from "@/lib/i18n/textDir";
 
 /** A step's parts in the order C draws them: the short answer first, then the long studies. */
 const KINDS: readonly ReadKind[] = ["question", "study", "error", "council"];
@@ -108,7 +109,9 @@ export function StepView({
                       className={`${s === "next" ? "path-lit" : "theology-tray"} tap-press block rounded-[16px] px-3.5 py-3`}
                     >
                       <span className="flex items-start justify-between gap-3">
-                        <span className="font-serif text-[17px] font-bold leading-tight text-paper">{read.title}</span>
+                        <span lang="en" dir="ltr" className="font-serif text-[17px] font-bold leading-tight text-paper">
+                          {read.title}
+                        </span>
                         {s === "read" ? (
                           <>
                             <Check size={15} className="mt-0.5 shrink-0 text-paper/60" />
@@ -179,7 +182,12 @@ export function StepView({
           <span className="block font-sans text-[10.5px] font-bold uppercase tracking-[0.14em] text-paper/50">
             {next ? `${t("walk.upNext")} · ${stepNumeral(next.n)}` : t("discover.eyebrow")}
           </span>
-          <span className="mt-1 block font-serif text-[15px] font-semibold leading-[1.3] text-paper">
+          {/* The next subject's name is English; the reader's words stand in its place at the end. */}
+          <span
+            lang={next ? "en" : undefined}
+            dir={textDir(next ? "en" : undefined)}
+            className="mt-1 block font-serif text-[15px] font-semibold leading-[1.3] text-paper"
+          >
             {next ? next.title : t("study.apologetics.goDeeper")}
           </span>
         </span>

@@ -44,16 +44,16 @@ export function PathPlates({
                   </span>
                 ) : null}
               </span>
+              {/* The subject's Roman numeral and its name are English, read left to right (build 90 note 4). */}
               <span
+                lang="en"
+                dir="ltr"
                 className={`mt-[7px] block font-serif text-[13.5px] font-semibold leading-[1.24] ${
                   state === "current" ? "text-paper" : state === "walked" ? "text-paper/60" : "text-paper/92"
                 }`}
               >
                 <span className="me-[3px] text-[11.5px] tracking-[0.06em] text-paper/45">{stepNumeral(s.n)}</span>
-                {/* The subject's name is English (build 90 note 4); its numeral stays with the page. */}
-                <span lang="en" dir="ltr">
-                  {s.title}
-                </span>
+                {s.title}
               </span>
               {state === "walked" ? <span className="sr-only">{t("walk.walked")}</span> : null}
               {state === "current" ? <span className="sr-only">{t("prayers.today.whereYouLeftOff")}</span> : null}

@@ -189,7 +189,10 @@ export function CouncilMap({
             nothing of its own to list (1.9). */}
         {places.filter((p) => p.items.length > 0).map((p) => (
           <li key={p.id} id={`place-${p.id}`} className="scroll-mt-24">
-            <p className="font-sans text-caption font-semibold text-paper/70">{p.place}</p>
+            {/* A place's name and its councils' and events' names are English (build 90 note 4). */}
+            <p lang="en" dir="ltr" className="font-sans text-caption font-semibold text-paper/70">
+              {p.place}
+            </p>
             <PlaceItems items={p.items} />
           </li>
         ))}
@@ -224,7 +227,7 @@ function PlaceItems({ items }: { items: MapItem[] }) {
     <ul className="mt-1 space-y-0.5">
       {items.map((c) => (
         <li key={c.href}>
-          <Link href={c.href} className="font-serif text-ui text-paper/85 underline-offset-4 hover:underline">
+          <Link href={c.href} lang="en" dir="ltr" className="font-serif text-ui text-paper/85 underline-offset-4 hover:underline">
             {c.name}
           </Link>{" "}
           <span className="font-sans text-caption text-paper/50">{c.year}</span>

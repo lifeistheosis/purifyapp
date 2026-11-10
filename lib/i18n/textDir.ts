@@ -18,9 +18,13 @@ import { LOCALES } from "./locales";
  * `dir`, which also sets the page's); any other language (a downloaded
  * Bible's, the Fathers' Greek) by its script: right to left for Arabic,
  * Aramaic, Hebrew, Persian, Syriac, Urdu and their kin, left to right for the
- * rest. A tag's region or script is set aside ("ar-EG" is "ar").
+ * rest. A tag's region is set aside ("ar-EG" is "ar"); a script named in the
+ * tag decides before the language does: "ar-Latn", a chant's Arabic sounds in
+ * Latin letters, runs left to right.
  */
 const RIGHT_TO_LEFT = new Set(["ar", "arc", "ckb", "dv", "fa", "he", "ks", "ps", "sd", "syc", "syr", "ug", "ur", "yi"]);
+/** Scripts (ISO 15924) that run right to left; any other script named in a tag runs left to right. */
+const RIGHT_TO_LEFT_SCRIPTS = new Set(["arab", "aran", "hebr", "syrc", "syre", "syrj", "syrn", "thaa", "nkoo", "samr", "mand", "adlm", "rohg"]);
 
 export type TextDirection = "ltr" | "rtl";
 
@@ -33,8 +37,11 @@ export type TextDirection = "ltr" | "rtl";
 export function textDir(lang: string): TextDirection;
 export function textDir(lang: string | null | undefined): TextDirection | undefined;
 export function textDir(lang: string | null | undefined): TextDirection | undefined {
-  const base = (lang ?? "").trim().toLowerCase().split(/[-_]/)[0];
+  const parts = (lang ?? "").trim().toLowerCase().split(/[-_]/);
+  const base = parts[0];
   if (!base) return undefined;
+  const script = parts.slice(1).find((p) => /^[a-z]{4}$/.test(p));
+  if (script) return RIGHT_TO_LEFT_SCRIPTS.has(script) ? "rtl" : "ltr";
   const own = LOCALES.find((l) => l.code === base);
   if (own) return own.dir;
   return RIGHT_TO_LEFT.has(base) ? "rtl" : "ltr";

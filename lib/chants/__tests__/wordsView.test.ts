@@ -151,8 +151,9 @@ describe("the English, under the line being sung (r3-18 B)", () => {
     const html = page(0);
     const row = html.slice(html.indexOf("<li"), html.indexOf("</li>"));
     expect(row.indexOf("Ἐξομολογεῖσθε")).toBeLessThan(row.indexOf("Give thanks to the Lord"));
-    expect(row).toMatch(/<span data-sung-main="true" dir="auto" lang="el" class="block">/);
-    expect(row).toContain('<span data-sung-gloss="true" dir="auto" lang="en">Give thanks to the Lord: for he is good:</span>');
+    // Each says its language and the direction that goes with it (build 90 note 4: lib/i18n/textDir.ts).
+    expect(row).toMatch(/<span data-sung-main="true" dir="ltr" lang="el" class="block">/);
+    expect(row).toContain('<span data-sung-gloss="true" dir="ltr" lang="en">Give thanks to the Lord: for he is good:</span>');
     expect(html.match(/data-sung-gloss/g)).toHaveLength(2);
   });
 

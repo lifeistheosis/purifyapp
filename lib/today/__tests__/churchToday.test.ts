@@ -90,7 +90,8 @@ describe("The Church today, on St John Chrysostom's day", () => {
     expect(saint).toMatch(/^<article data-today-band="saint" data-tour="quote-picture" data-face="right"/);
     expect(words(saint)).toContain("St. John Chrysostom");
     expect(words(saint)).toContain("“Let no one fear death, for the Saviour's death hath set us free.”");
-    expect(saint).toContain('lang="en" data-band-words=""');
+    // The words say their language and direction together (build 90 note 4).
+    expect(saint).toContain('lang="en" dir="ltr" data-band-words=""');
     // His cover portrait, the face, from the website's covers (the web's own address here), AVIF first.
     expect(saint).toContain('src="/covers/authors/john-chrysostom.v1.jpg"');
     expect(saint).toContain('srcSet="/covers/authors/john-chrysostom.v1.avif"');
@@ -115,7 +116,7 @@ describe("The Church today, on St John Chrysostom's day", () => {
     expect(words(saint)).toContain("St. John Chrysostom , The Paschal Homily");
     expect(saint).not.toContain("Hapgood");
     expect(saint).toMatch(/<button(?=[^>]*aria-label="Share as a picture")(?=[^>]*aria-haspopup="dialog")(?=[^>]*data-saint-share="")/);
-    expect(saint).toMatch(/<a class="today-band-link[^"]*" href="\/saints\/john-chrysostom">St\. John Chrysostom<\/a>/);
+    expect(saint).toMatch(/<a lang="en" dir="ltr" class="today-band-link[^"]*" href="\/saints\/john-chrysostom">St\. John Chrysostom<\/a>/);
     // His window does not open from Today any more: its two actions are on the band.
     expect(out).not.toContain("data-saint-words");
     expect(out).not.toMatch(/<button[^>]*data-today-band/);
@@ -268,7 +269,8 @@ describe("the Desert Fathers' saying, as a band of its own", () => {
     expect(band).toMatch(/<a data-cite="father"[^>]*href="\/saints\/anthony-the-great\/life-of-antony#p-2-93"/);
     expect(band).toMatch(/<button(?=[^>]*data-saying-share="")(?=[^>]*aria-haspopup="dialog")/);
     // On his side the source line keeps clear of the share mark at the corner.
-    expect(band).toMatch(/data-cite="father" class="[^"]*\bpr-8\b/);
+    // The source line says the reader's language and direction on its own link (build 90 note 4).
+    expect(band).toMatch(/data-cite="father" lang="[^"]+" dir="(?:ltr|rtl)" class="[^"]*\bpr-8\b/);
   });
 
   it("stands Abba Moses and Abba Isaac beside their words with the owner's picks of sheet r3-22, the icons the app carries", () => {

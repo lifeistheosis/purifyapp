@@ -108,6 +108,9 @@ describe("words say their language and their direction together", () => {
     for (const b of DOWNLOADABLE_BIBLES) expect(textDir(b.textLang), b.id).toBe(b.dir);
     for (const l of ["he", "fa", "syr", "syc", "arc", "ar-EG", "UR", "ar_SA"]) expect(textDir(l), l).toBe("rtl");
     for (const l of ["en", "grc", "el", "de", "ru", "sr", "la", "en-GB"]) expect(textDir(l), l).toBe("ltr");
+    // A script in the tag decides: a chant's Arabic sounds in Latin letters run left to right.
+    for (const l of ["ar-Latn", "ur-Latn", "fa-Latn-IR", "sr-Cyrl", "sr-Latn"]) expect(textDir(l), l).toBe("ltr");
+    for (const l of ["az-Arab", "ku-Arab", "pa-Arab", "yi-Hebr", "en-Arab"]) expect(textDir(l), l).toBe("rtl");
     // No language said, no direction said: the words run with the page.
     for (const l of ["", " ", null, undefined]) expect(textDir(l), String(l)).toBeUndefined();
   });

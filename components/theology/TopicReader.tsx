@@ -105,14 +105,19 @@ export function TopicReader({
               </span>
             </Link>
           ) : null}
+          {/* The study is written in English; its labels are the reader's (build 90 note 4). */}
           <h1
             id="doctrine-title"
+            lang="en"
+            dir="ltr"
             className="mt-3 font-serif text-[27px] font-bold leading-[1.12] tracking-[-0.2px] text-balance text-paper md:text-display-sm"
           >
             {body.title}
           </h1>
           {body.subtitle ? (
-            <p className="mt-2 font-serif text-[14.5px] italic leading-[1.45] text-paper/70 md:text-lede">{body.subtitle}</p>
+            <p lang="en" dir="ltr" className="mt-2 font-serif text-[14.5px] italic leading-[1.45] text-paper/70 md:text-lede">
+              {body.subtitle}
+            </p>
           ) : null}
         </div>
 
@@ -179,8 +184,14 @@ function ScripturePart({ body }: { body: TheologyBody }) {
               className="theology-row mx-1.5 flex items-start gap-3 rounded-[14px] px-3 py-3"
             >
               <span className="min-w-0 flex-1">
-                <span className="block font-sans text-ui font-semibold text-paper">{s.ref}</span>
-                {s.note ? <span className="mt-1 block font-serif text-detail leading-[1.55] text-paper/65">{s.note}</span> : null}
+                <span lang="en" dir="ltr" className="block font-sans text-ui font-semibold text-paper">
+                  {s.ref}
+                </span>
+                {s.note ? (
+                  <span lang="en" dir="ltr" className="mt-1 block font-serif text-detail leading-[1.55] text-paper/65">
+                    {s.note}
+                  </span>
+                ) : null}
               </span>
               <ChevronRight size={14} className="mt-1 shrink-0 text-paper/32 rtl:-scale-x-100" />
             </Link>
@@ -216,7 +227,7 @@ function RelatedPart({ body, groups, events }: { body: TheologyBody; groups: Rel
               return (
                 <li key={slug} className="theology-rule">
                   <Link href={`/theology/${slug}`} className="theology-row mx-1.5 flex min-h-[48px] items-center gap-3 rounded-[14px] px-3 py-2.5">
-                    <span className="min-w-0 flex-1 font-serif text-[15px] font-semibold leading-[1.25] text-paper/92">
+                    <span lang="en" dir="ltr" className="min-w-0 flex-1 font-serif text-[15px] font-semibold leading-[1.25] text-paper/92">
                       {/* The study's own title. This printed the slug ("council
                           of florence") until build 80. */}
                       {getTopicMeta(slug)?.title ?? slug.replace(/-/g, " ")}

@@ -105,7 +105,7 @@ export default async function CreedPage() {
                   className="flex min-h-[56px] items-center gap-3 py-3 text-paper/90 transition-colors hover:text-paper"
                 >
                   <span className="min-w-0 flex-1">
-                    <span className="block font-serif text-body font-semibold leading-tight">
+                    <span lang="en" dir="ltr" className="block font-serif text-body font-semibold leading-tight">
                       {s.title}
                     </span>
                     <span className="mt-0.5 block font-sans text-caption text-paper/55">
