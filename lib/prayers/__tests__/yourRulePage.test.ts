@@ -245,7 +245,24 @@ describe("the page as the owner picked it, r3-27 A", () => {
     // Both parts' icons once the part is known, the one shown lit.
     expect(head).toMatch(/part\s*\?\s*MY_RULE_PARTS\.map/);
     expect(head).toContain('data-on={on ? "" : undefined}');
-    expect(builder).toContain('t("prayers.mine.partMinutes", { part: t(PART_KEY[shown]), min: minutes[shown] })');
+    expect(builder).toContain('t("prayers.mine.partMinutes", { part: t(PART_KEY[part]), min: minutes[part] })');
+  });
+
+  it("opens on the part the device names, never Morning crossing to Evening (build 89 note 9)", () => {
+    // Decided before the first paint of a page reached inside the app.
+    expect(builder).toMatch(/useLayoutEffect\(\(\) => \{\s*const kept = readMyRule\(\);/);
+    // Until then neither part is lit, nothing about a part is said, and the
+    // morning list holds its room unseen.
+    expect(track).toContain("value: MyRulePart | null;");
+    expect(builder).toContain("<PartSwitch value={part} onChange={select} still={!arrived} />");
+    expect(builder).toContain("part && has(part)");
+    expect(builder).toContain('className={holding ? "invisible mt-5" : arrived ? "mt-5" : "rule-panel-arrive mt-5"}');
+    // Set with no cross-fade, the list arriving with the page's own fade, and
+    // still with motion off; a reader's tap keeps the cross.
+    expect(track).toContain('data-still={still ? "" : undefined}');
+    expect(block).toMatch(/\.rule-track\[data-still\] > button,\s*\.rule-track\[data-still\] > button::before \{\s*transition: none;/);
+    expect(block).toContain(".rule-panel-arrive {\n animation: page-open-fade");
+    expect(block).toContain(':where([data-motion="reduce"]) .rule-panel-arrive');
   });
 
   it("sets Morning and Evening on a carved switch, a tablist kept in the address", () => {

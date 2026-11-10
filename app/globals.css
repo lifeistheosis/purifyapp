@@ -2056,6 +2056,20 @@ html[data-reading-mode="black"] .rule-med-disc:not([data-add]) {
  box-shadow: inset 0 0 0 1px rgb(255 255 255 / 0.2);
 }
 
+/* The part the page opens on is set, not crossed to (build 89 note 9): the
+   switch takes it with no fade while `data-still` is on, and its list
+   arrives with the page's own fade. A reader's tap still crosses. */
+.rule-track[data-still] > button,
+.rule-track[data-still] > button::before {
+ transition: none;
+}
+.rule-panel-arrive {
+ animation: page-open-fade var(--duration-base) var(--ease-house) backwards;
+}
+:where([data-motion="reduce"]) .rule-panel-arrive {
+ animation: none;
+}
+
 /* With motion off, the icon is simply there and the switch simply turns. */
 :where([data-motion="reduce"]) .rule-head-img,
 :where([data-motion="reduce"]) .rule-head-img[data-on],

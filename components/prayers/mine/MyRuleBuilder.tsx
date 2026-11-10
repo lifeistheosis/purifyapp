@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 
 import { useTranslate } from "@/components/i18n/MessagesProvider";
 import { Diptychs } from "@/components/prayers/Diptychs";
@@ -96,6 +96,11 @@ export function MyRuleBuilder() {
   // The part shown: null until the device has said which (the address, the
   // hour and the rule are all the device's), and the head's icon waits for it.
   const [part, setPart] = useState<MyRulePart | null>(null);
+  // False until the first part has stood on the screen for a frame: until
+  // then the switch is set without its cross-fade and the list arrives with
+  // the page's own fade (build 89 note 9: opening on Morning and crossing to
+  // Evening a moment later read as a bug). A reader's own tap still crosses.
+  const [arrived, setArrived] = useState(false);
   // The sheets stay mounted with the part they were opened for, so each can
   // follow the finger away when it closes.
   const [adding, setAdding] = useState<MyRulePart>("morning");
@@ -107,13 +112,28 @@ export function MyRuleBuilder() {
 
   /* eslint-disable react-hooks/set-state-in-effect -- one-time hydration
      gate: the address, the clock and the kept rule are the device's, and a
-     server render of them bakes the build's into the Android export. */
-  useEffect(() => {
+     server render of them bakes the build's into the Android export. A
+     layout effect, so a page reached inside the app is first painted on the
+     right part; only a page loaded whole paints before it, with neither part
+     lit and no list drawn. */
+  useLayoutEffect(() => {
     const kept = readMyRule();
     const hour = ruleIdForHour(new Date().getHours());
     setPart(partInAddress(window.location.hash) ?? (kept[hour].length > 0 ? hour : (MY_RULE_PARTS.find((p) => kept[p].length > 0) ?? hour)));
   }, []);
   /* eslint-enable react-hooks/set-state-in-effect */
+
+  useEffect(() => {
+    if (part === null || arrived) return;
+    let second = 0;
+    const first = window.requestAnimationFrame(() => {
+      second = window.requestAnimationFrame(() => setArrived(true));
+    });
+    return () => {
+      window.cancelAnimationFrame(first);
+      window.cancelAnimationFrame(second);
+    };
+  }, [part, arrived]);
 
   useEffect(() => () => window.clearTimeout(undoTimer.current), []);
 
@@ -201,10 +221,11 @@ export function MyRuleBuilder() {
   }
 
   const has = (p: MyRulePart) => rule[p].length > 0;
-  const shown = part ?? "morning";
-  const pray = has(shown)
-    ? { href: `/prayers/personal/${shown}`, meta: t("prayers.mine.partMinutes", { part: t(PART_KEY[shown]), min: minutes[shown] }) }
-    : null;
+  // Nothing about a part is said before the device has said which part.
+  const pray =
+    part && has(part)
+      ? { href: `/prayers/personal/${part}`, meta: t("prayers.mine.partMinutes", { part: t(PART_KEY[part]), min: minutes[part] }) }
+      : null;
 
   const panel = (p: MyRulePart) => {
     const seed = seedOf(p);
@@ -308,13 +329,27 @@ export function MyRuleBuilder() {
         <RuleHead part={part} pray={pray} />
 
         <div className="mt-6">
-          <PartSwitch value={shown} onChange={select} />
+          <PartSwitch value={part} onChange={select} still={!arrived} />
         </div>
-        {MY_RULE_PARTS.map((p) => (
-          <div key={p} id={`mine-panel-${p}`} role="tabpanel" aria-labelledby={`mine-tab-${p}`} hidden={p !== shown} className="mt-5">
-            {panel(p)}
-          </div>
-        ))}
+        {MY_RULE_PARTS.map((p) => {
+          // Until the device has said which part, neither list is drawn: the
+          // morning one holds its room unseen, so nothing moves when the
+          // right one arrives, with the page's own fade.
+          const holding = part === null;
+          return (
+            <div
+              key={p}
+              id={`mine-panel-${p}`}
+              role="tabpanel"
+              aria-labelledby={`mine-tab-${p}`}
+              aria-hidden={holding || undefined}
+              hidden={holding ? p !== "morning" : p !== part}
+              className={holding ? "invisible mt-5" : arrived ? "mt-5" : "rule-panel-arrive mt-5"}
+            >
+              {panel(p)}
+            </div>
+          );
+        })}
 
         <section aria-labelledby="mine-names" className="mt-14">
           <h2 id="mine-names" className="text-title-sm font-bold leading-tight text-paper">

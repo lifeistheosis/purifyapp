@@ -22,14 +22,27 @@ export const PART_KEY: Record<MyRulePart, string> = {
  * move between the parts in the reading direction, and only the chosen part
  * is in the tab order. Each tab is `mine-tab-<part>` and controls
  * `mine-panel-<part>`.
+ *
+ * `value` is null until the device has said which part the page opens on
+ * (the hour, the address): then neither part is lit, rather than Morning lit
+ * and crossing to Evening a moment later (build 89 note 9). `still` sets the
+ * part with no cross-fade, for that first setting; a reader's tap crosses.
  */
-export function PartSwitch({ value, onChange }: { value: MyRulePart; onChange: (part: MyRulePart) => void }) {
+export function PartSwitch({
+  value,
+  onChange,
+  still = false,
+}: {
+  value: MyRulePart | null;
+  onChange: (part: MyRulePart) => void;
+  still?: boolean;
+}) {
   const { t } = useTranslate();
   const listRef = useRef<HTMLDivElement>(null);
 
   function onKeyDown(e: KeyboardEvent<HTMLButtonElement>) {
     const rtl = document.documentElement.dir === "rtl";
-    const next = tabForKey(e.key, MY_RULE_PARTS.indexOf(value), MY_RULE_PARTS.length, rtl);
+    const next = tabForKey(e.key, value ? MY_RULE_PARTS.indexOf(value) : 0, MY_RULE_PARTS.length, rtl);
     if (next === null) return;
     e.preventDefault();
     const part = MY_RULE_PARTS[next];
@@ -38,8 +51,8 @@ export function PartSwitch({ value, onChange }: { value: MyRulePart; onChange: (
   }
 
   return (
-    <div ref={listRef} role="tablist" aria-label={t("prayers.mine.partsLabel")} className="rule-track">
-      {MY_RULE_PARTS.map((part) => {
+    <div ref={listRef} role="tablist" aria-label={t("prayers.mine.partsLabel")} className="rule-track" data-still={still ? "" : undefined}>
+      {MY_RULE_PARTS.map((part, i) => {
         const on = part === value;
         return (
           <button
@@ -49,7 +62,7 @@ export function PartSwitch({ value, onChange }: { value: MyRulePart; onChange: (
             role="tab"
             aria-selected={on}
             aria-controls={`mine-panel-${part}`}
-            tabIndex={on ? 0 : -1}
+            tabIndex={on || (value === null && i === 0) ? 0 : -1}
             onClick={() => onChange(part)}
             onKeyDown={onKeyDown}
           >
