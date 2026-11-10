@@ -4,6 +4,7 @@ import { useRef, type KeyboardEvent } from "react";
 
 import { cn } from "@/lib/cn";
 import { tabForKey } from "@/lib/ui/sectionTabs";
+import { textDir } from "@/lib/i18n/textDir";
 
 /**
  * The app's segmented switch: one rounded row of equal parts, the chosen one
@@ -37,7 +38,8 @@ export function SegmentedSwitch<T extends string>({
 }: {
   /** What the switch chooses between, for assistive technology. */
   label: string;
-  items: readonly { id: T; label: string }[];
+  /** Each choice; `lang` when its label is not in the reader's language (a rule's own English: build 90 note 4). */
+  items: readonly { id: T; label: string; lang?: string }[];
   selected: T;
   onSelect: (id: T) => void;
   idBase: string;
@@ -80,6 +82,8 @@ export function SegmentedSwitch<T extends string>({
             tabIndex={on ? 0 : -1}
             onClick={() => onSelect(item.id)}
             onKeyDown={onKeyDown}
+            lang={item.lang}
+            dir={textDir(item.lang)}
             className={cn(
               "tap-press min-h-11 min-w-11 whitespace-nowrap rounded-pill px-1 font-sans text-detail font-semibold motion-safe:transition-colors",
               on ? "bg-paper text-night" : "text-paper/65 hover:text-paper",

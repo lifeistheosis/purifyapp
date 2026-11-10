@@ -28,6 +28,7 @@ import path from "node:path";
 import { chromium } from "playwright";
 
 import { IPAD_UA, NATIVE_UA, ORIGIN, go, inBundle, payloadBytes, serveLikeTheShell } from "./lib/shell-server.mjs";
+import { englishOutOfPlace } from "./rtl-walk.mjs";
 
 const argv = process.argv.slice(2);
 /** The value after a flag, taken out of the arguments so the out dir is what is left. */
@@ -8805,6 +8806,25 @@ await section(57, async () => {
   const back = await openAt(29);
   const again = await openAt(1029);
   must(kept[0] && !kept[1] && again.hl4 === "teal" && back.hl4 === null, `a highlight made on the fragments since is theirs: kept under 1029, and not on Sermon 29 (${JSON.stringify(kept)}, ${again.hl4}, ${back.hl4})`);
+  must(errors.length === 0, `no page errors${errors.length ? ": " + errors.slice(0, 2).join(" | ") : ""}`);
+  await ctx.close();
+});
+
+// ---- 58. English reads left to right under Arabic (1.9, build 90 note 4).
+// The full walk is scripts/rtl-walk.mjs: every route, in Arabic and Urdu.
+// These four pages catch a slip between full walks: John 1, the Morning Rule,
+// a council and Today. A saint's page joins when the Updates chat's part lands.
+await section(58, async () => {
+  console.log("\n58. English reads left to right under Arabic: John 1, the Morning Rule, a council, Today (build 90 note 4)");
+  const { ctx, page, errors } = await open({ width: 390, height: 844, phone: true, set: { "CapacitorStorage.purify_locale": "ar" } });
+  for (const at of ["/bible/john/1/", "/prayers/morning/", "/councils/first-nicaea/", "/"]) {
+    await go(page, at);
+    await page.waitForTimeout(1500);
+    const dir = await page.evaluate(() => document.documentElement.getAttribute("dir"));
+    const out = await page.evaluate(englishOutOfPlace);
+    const shown = out.slice(0, 3).map((o) => `<${o.tag}> ${o.why}: "${o.words.slice(0, 40)}"`).join(" | ");
+    must(dir === "rtl" && out.length === 0, `${at} in Arabic: the page right to left, and no English running right to left or announced as Arabic${out.length ? ` (${out.length}: ${shown})` : ""}`);
+  }
   must(errors.length === 0, `no page errors${errors.length ? ": " + errors.slice(0, 2).join(" | ") : ""}`);
   await ctx.close();
 });

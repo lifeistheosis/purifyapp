@@ -216,7 +216,10 @@ Size: about two days of one chat (12 to 16 hours). The 178 marks already there (
 - **The source line** under every quotation says the reader's language on its own frame, so it reads rightly inside an English article too.
 - **Theology's tabs** were typed in English ("Doctrine, Topics, Heresies, Apologetics"); they now speak the reader's language from the catalog's existing words, in all 21 languages.
 - **Plus and Your plan** carry no English mark: their words are the catalog's, in the reader's language, as the arbiter asked.
-- **Waiting:** one attribute in `components/prayers/PrayerRuleReader.tsx`, held for the Themes chat's note 8 (asked of the arbiter).
+- **Then the rest the walk found:** a study's own heading, verse and notes (`TopicReader.tsx`), the related rows' names, a path's subject and its next read, the Theology hub's heading and plates (a plate's Roman numeral is Latin too, so the whole label says it), the Creed's two sources, the councils map's places and names, Today's saint line, the word study's English, Remember's fetched verse (a kept verse, whose Bible's language is not recorded with it, runs as it is written), and the prayer page's source (the reader's "Source:", then the rule's own language). Note 8 had landed in that file, so nothing waits: this chat's list of files not yet marked is empty.
+- **`textDir` lets a script in the tag decide:** a chant's Arabic sounds in Latin letters (`ar-Latn`) run left to right. The chants' own test caught it the first time round.
+- **The tests that read exact markup** (Today's bands, the source line, the sung words) expect the new marks.
+- **Found, not this note's, reported:** the apologetics reader's headings and the email preferences page are written in English in the code, not the catalog (the walk now passes them as English; translating them is new words, his call); the council document's head is drawn by `components/saints/WorkHead.tsx`, in the Updates chat's list.
 
 ### 5. Still no covers on St John Cassian's books (2026-11-10)
 

@@ -36,7 +36,8 @@ export function CouncilFathers({ fathers }: { fathers: CouncilFace[] }) {
     // Keyed by the Father, so a new one arrives as the page's own entrance does.
     <span key={f.name} className="cascade flex min-w-0 gap-3.5">
       <FatherFace face={f} shape="portrait" />
-      <span className="block min-w-0 flex-1">
+      {/* A Father's name, byname and part in the council are English (build 90 note 4). */}
+      <span lang="en" dir="ltr" className="block min-w-0 flex-1">
         <span className="block font-serif text-[16px] font-semibold leading-[1.2] text-paper">{f.name}</span>
         {f.byname ? <span className="mt-0.5 block font-sans text-[11.5px] leading-snug text-paper/50">{f.byname}</span> : null}
         <span className="mt-2 block font-sans text-caption leading-[1.45] text-paper/80">{f.role}</span>
@@ -70,6 +71,8 @@ export function CouncilFathers({ fathers }: { fathers: CouncilFace[] }) {
                 <button
                   type="button"
                   aria-pressed={on}
+                  lang="en"
+                  dir="ltr"
                   aria-label={x.name}
                   onClick={() => setShown(i)}
                   data-father-face={on ? "shown" : ""}

@@ -124,7 +124,7 @@ export function PrayerStep({
         <SegmentedSwitch
           label={t("prayers.reader.jurisdictionWordings")}
           idBase={wordingBase}
-          items={variants.map((v, i) => ({ id: `v${i}`, label: v.jurisdiction }))}
+          items={variants.map((v, i) => ({ id: `v${i}`, label: v.jurisdiction, lang: contentLang }))}
           selected={`v${Math.min(variantIdx, variants.length - 1)}`}
           onSelect={(id) => setVariantIdx(Number(id.slice(1)))}
           className="mx-auto mt-4 max-w-[420px]"
@@ -184,12 +184,15 @@ export function PrayerStep({
       ) : null}
 
       {active ? (
-        <p className="mt-4 font-sans text-caption text-paper/50">
+        <p lang={contentLang} dir={textDir(contentLang)} className="mt-4 font-sans text-caption text-paper/50">
           {active.jurisdiction} · {active.source}
         </p>
       ) : prayer.source ? (
         <p className="mt-4 font-sans text-caption text-paper/50">
-          {t("prayers.reader.sourceLabel")} {prayer.source}
+          {t("prayers.reader.sourceLabel")}{" "}
+          <span lang={contentLang} dir={textDir(contentLang)}>
+            {prayer.source}
+          </span>
         </p>
       ) : null}
 

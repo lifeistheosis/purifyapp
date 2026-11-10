@@ -90,6 +90,7 @@ To put it on the phone, either:
 | | **Settings and a second language** | |
 | 10 | Settings: open each part and come back. Change the palette | Every part opens, and the palette stays after a cold open |
 | 11 | Set the phone to a second language (Greek is a good one), open cold | Purify opens in it from the first screen. English never flashes, and dates and book names follow |
+| 11a | Set the phone to Arabic (from 1.9), open cold. Open John 1, the Morning Rule and a council's page | The bar, the tabs and the headings run right to left, in Arabic. Every block of English (the verses, the prayers, the council's account) runs left to right from the left edge, its full stops at the end of its lines and each verse's number at its left. With TalkBack on, a verse is read in an English voice |
 | | **No signal** | |
 | 12 | Airplane mode, open cold, open five screens | They all open. Anything that needs the network says so plainly |
 | | **The phone itself** | |

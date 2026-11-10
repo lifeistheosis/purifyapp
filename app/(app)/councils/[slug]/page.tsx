@@ -350,7 +350,7 @@ export default async function CouncilProfilePage({
 
  {/* The head's picture, credited where every picture of History is. */}
  {picture ? (
- <p data-council-credit="" className="mt-10 font-sans text-[11px] leading-snug text-paper/45">
+ <p data-council-credit="" lang="en" dir="ltr" className="mt-10 font-sans text-[11px] leading-snug text-paper/45">
  {picture.credit}
  </p>
  ) : null}

@@ -117,7 +117,10 @@ export function CommemorationStep({
             ))}
           </div>
           <p className="mt-4 font-sans text-caption text-paper/50">
-            {t("prayers.reader.sourceLabel")} {DEPARTED_PRAYER.source}
+            {t("prayers.reader.sourceLabel")}{" "}
+            <span lang="en" dir="ltr">
+              {DEPARTED_PRAYER.source}
+            </span>
           </p>
           {campaignDeparted.map((c) => (
             <p key={c.id} data-campaign-name="" className="mt-1 break-words font-sans text-caption text-paper/50">

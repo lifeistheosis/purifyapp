@@ -19,7 +19,7 @@ export function ApologeticsReader({ body }: { body: ApologeticsBody }) {
   return (
     <article lang="en" dir="ltr" className="mx-auto max-w-[760px] w-full">
       <p className="font-sans text-detail font-semibold text-paper/55 mb-4">
-        <Link href="/apologetics" className="hover:text-paper">
+        <Link href="/apologetics" className="hit-44 hover:text-paper">
           Apologetics
         </Link>
       </p>
@@ -56,7 +56,7 @@ export function ApologeticsReader({ body }: { body: ApologeticsBody }) {
           </ul>
         </section>
       ) : (
-        <p className="mt-12 font-sans text-detail text-paper/45 leading-[1.6] italic">
+        <p className="mt-12 font-sans text-detail text-paper/60 leading-[1.6] italic">
           The verbatim patristic florilegium for this entry is being assembled
           and will be added here.
         </p>
@@ -70,7 +70,7 @@ export function ApologeticsReader({ body }: { body: ApologeticsBody }) {
               <li key={i} className="py-3 flex items-baseline gap-4">
                 <Link
                   href={`/bible?q=${encodeURIComponent(s.bibleRef ?? s.ref)}`}
-                  className="shrink-0 font-sans text-ui font-semibold text-paper hover:text-gold transition-colors"
+                  className="hit-44 shrink-0 font-sans text-ui font-semibold text-paper hover:text-gold transition-colors"
                 >
                   {s.ref}
                 </Link>
@@ -96,7 +96,7 @@ export function ApologeticsReader({ body }: { body: ApologeticsBody }) {
                   {saint ? (
                     <Link
                       href={`/saints/${saint.slug}`}
-                      className="inline-block rounded-pill border border-paper/15 px-3 py-1.5 font-sans text-detail text-paper/85 hover:border-gold/40 hover:text-paper transition-colors"
+                      className="hit-44 inline-block rounded-pill border border-paper/15 px-3 py-1.5 font-sans text-detail text-paper/85 hover:border-gold/40 hover:text-paper transition-colors"
                     >
                       {saint.name}
                     </Link>
@@ -120,7 +120,7 @@ export function ApologeticsReader({ body }: { body: ApologeticsBody }) {
               <li key={slug}>
                 <Link
                   href={`/apologetics/${slug}`}
-                  className="inline-block rounded-pill border border-paper/15 px-3 py-1.5 font-sans text-detail text-paper/85 hover:border-gold/40 hover:text-paper transition-colors"
+                  className="hit-44 inline-block rounded-pill border border-paper/15 px-3 py-1.5 font-sans text-detail text-paper/85 hover:border-gold/40 hover:text-paper transition-colors"
                 >
                   {slug.replace(/-/g, " ")}
                 </Link>
@@ -131,7 +131,7 @@ export function ApologeticsReader({ body }: { body: ApologeticsBody }) {
       ) : null}
 
       {body.curatedBy || body.origin ? (
-        <p className="mt-20 font-sans text-caption text-paper/35 leading-[1.6]">
+        <p className="mt-20 font-sans text-caption text-paper/55 leading-[1.6]">
           {body.curatedBy ? <>Curated by {body.curatedBy}</> : null}
           {body.curatedBy && body.curatedOn ? <> · </> : null}
           {body.curatedOn ?? null}
@@ -241,12 +241,12 @@ function QuotationCard({ q }: { q: Quotation }) {
         </p>
       ) : null}
       {q.source ? (
-        <p className="mt-2 font-sans text-caption text-paper/40">
+        <p className="mt-2 font-sans text-caption text-paper/60">
           <a
             href={q.source}
             target="_blank"
             rel="noopener noreferrer"
-            className="underline decoration-paper/20 underline-offset-4 hover:text-paper/60"
+            className="hit-44 underline decoration-paper/20 underline-offset-4 hover:text-paper/80"
           >
             Source
           </a>
