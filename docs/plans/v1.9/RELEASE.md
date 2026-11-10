@@ -205,7 +205,7 @@ in the owner's words.
 
 ## If it goes wrong
 
-Way back: 27f1bcaf203abcfaf0a726e07efbfb85ddce6109 Admin: his picks of 2026-11-04 built: Home A and B in Settings, the rail, pace bars, three lines on one chart, today counting or apart, a zoomable map with green readers, and Live
+Way back: d973feaf0c9f0248ecec0bcd591970fe10b0e2a7 Twelve saints' icons that carry another's mark come off the website
 
 The line above is the commit on `origin/main` that this push replaces.
 `node scripts/release.mjs back` writes it before the push and again after
