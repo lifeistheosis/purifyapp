@@ -120,6 +120,8 @@ for (const account of [false, true]) {
   const greeted = await page.getByText("We updated our onboarding").first().waitFor({ timeout: 30000 }).then(() => true, () => false);
   say(greeted, `answered before, ${who}: greeted "We updated our onboarding"`);
   say(greeted && !(await words(page)).includes("Welcome to Purify"), `answered before, ${who}: not the welcome a new visitor gets`);
+  // The launch screen covers the greeting until its opening has played.
+  await launched(page);
   if (!account) await still(page, '[role="dialog"]', "1-updated.png");
   const seen = await walk(page);
   const asked = (q) => seen.some((s) => s.includes(q));
