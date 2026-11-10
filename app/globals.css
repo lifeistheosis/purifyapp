@@ -3062,6 +3062,15 @@ html[data-input="pointer"] *:focus-visible:not(input, textarea, select, [content
 :where(html[data-input="pointer"]) :where([class*="focus-within:"]) :where(input, textarea, select):focus-visible {
  outline: none;
 }
+/* At rest a field's edge colour is clear, so a field whose colours move
+   (transition-colors moves outline-color too) fades its fine edge in, rather
+   than flashing the text's colour first. In the base layer, so a field's own
+   outline utility still wins. */
+@layer base {
+ :where(input, textarea, select, [contenteditable="true"]) {
+  outline-color: transparent;
+ }
+}
 
 /* The journal's writing sheet, where a verse's note is written too (1.9,
    build 88 note 3): the sheet is the field, with no border of its own, so the

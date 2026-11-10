@@ -63,6 +63,11 @@ describe("a tapped field", () => {
     expect(css).toMatch(/:where\(\[class\*="focus-within:"\]\) :where\(input, textarea, select\):focus-visible \{\s*outline: none;/);
   });
 
+  it("fades its edge in from clear, never flashing the text's colour first", () => {
+    // transition-colors moves outline-color too: at rest a field's edge is clear.
+    expect(css).toMatch(/@layer base \{\s*:where\(input, textarea, select, \[contenteditable="true"\]\) \{\s*outline-color: transparent;/);
+  });
+
   it("keeps the keyboard's ring for keyboard users", () => {
     expect(css).toMatch(/\*:focus-visible \{[^}]*outline: 2px solid color-mix\(in srgb, var\(--color-paper\) 70%, transparent\);/);
     expect(css).toContain('html[data-input="pointer"] *:focus-visible:not(input, textarea, select, [contenteditable="true"])');
