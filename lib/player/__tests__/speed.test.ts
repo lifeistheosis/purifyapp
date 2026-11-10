@@ -85,6 +85,8 @@ describe("a chant is never sped up", () => {
     expect(guard).toBeGreaterThan(-1);
     // Nothing closes the guard between it and the Speed button.
     expect(sheet.slice(guard, at)).not.toContain(") : null}");
-    expect(sheet.match(/t\("player\.speed"\)/g)?.length).toBe(2);
+    // Its name for a screen reader, and its word under the mark (rec 80, player.option.*).
+    expect(sheet.match(/t\("player\.speed"\)/g)?.length).toBe(1);
+    expect(sheet.match(/t\("player\.option\.speed"\)/g)?.length).toBe(1);
   });
 });

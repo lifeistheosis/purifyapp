@@ -217,6 +217,12 @@ export function optionClass(on: boolean): string {
  * hyphenated where the language allows, and never runs into its neighbour.
  * Not balanced (1.9): balancing the lines broke words that fit, as
  * "Elalv / ási időzítő" for "Elalvási / időzítő" and "Фонов / ый звук".
+ *
+ * The words are the row's own (player.option.*, 1.9, rec 80): in the
+ * fourteen languages where a single word was wider than its share at 360px
+ * ("Wiederholen", "Temporizador", "Επανάληψη"), a shorter one ("Schleife",
+ * "Dormir", "Ξανά"); in the rest, the word as before. Each button keeps the
+ * full name for a screen reader (its aria-label).
  */
 export function OptionWord({ children }: { children: React.ReactNode }) {
   return <span className="max-w-full text-center leading-[1.15] [overflow-wrap:anywhere] hyphens-auto">{children}</span>;

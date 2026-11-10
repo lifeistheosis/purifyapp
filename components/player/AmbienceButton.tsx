@@ -63,7 +63,7 @@ export function AmbienceButton({
     return (
       <button type="button" onClick={open} aria-haspopup="dialog" aria-label={label} className={cn(optionClass(lit), className)}>
         {track ? <AmbienceIcon icon={track.icon} size={21} /> : <Sound size={21} />}
-        <OptionWord>{t("ambience.title")}</OptionWord>
+        <OptionWord>{t("player.option.ambience")}</OptionWord>
       </button>
     );
   }

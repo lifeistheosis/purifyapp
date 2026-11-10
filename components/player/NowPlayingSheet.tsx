@@ -371,7 +371,7 @@ export function NowPlayingSheet() {
                   <path d="M20 13v2a4 4 0 0 1-4 4H4" />
                 </svg>
               )}
-              <OptionWord>{t("prayers.audio.loop")}</OptionWord>
+              <OptionWord>{t("player.option.loop")}</OptionWord>
             </button>
             {/* Speed: the Bible read aloud alone. A sung chant is never sped
                 up, so a chant has none (lib/player/speed.ts). */}
@@ -389,7 +389,7 @@ export function NowPlayingSheet() {
                 <span aria-hidden className="grid h-[21px] place-items-center text-[15px] font-bold leading-none text-paper">
                   {speed}
                 </span>
-                <OptionWord>{t("player.speed")}</OptionWord>
+                <OptionWord>{t("player.option.speed")}</OptionWord>
               </button>
             ) : null}
             <AmbienceButton variant="option" />
@@ -401,7 +401,7 @@ export function NowPlayingSheet() {
               className={optionClass(sleeping)}
             >
               <Timer size={21} />
-              <OptionWord>{t("player.sleep")}</OptionWord>
+              <OptionWord>{t("player.option.sleep")}</OptionWord>
             </button>
             {/* Read: the text being played, where it has got to. */}
             {readTo ? (
@@ -412,7 +412,7 @@ export function NowPlayingSheet() {
                 className={optionClass(false)}
               >
                 <Book size={21} />
-                <OptionWord>{t("player.read")}</OptionWord>
+                <OptionWord>{t("player.option.read")}</OptionWord>
               </Link>
             ) : null}
           </div>
