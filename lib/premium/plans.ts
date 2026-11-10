@@ -120,7 +120,7 @@ export const PREMIUM_PLAN_EN: PremiumPlanCopy = {
   freeTitle: "Standard, always free",
   freeItems: [
     "The Scriptures, with the Greek beside them",
-    "Every saint’s life, and the primary writings of the Fathers",
+    "Every saint’s life, and the Fathers’ own writings",
     "Theology: doctrine, apologetics, and the Councils",
     "Orthodox History, from Pentecost onward",
     "The daily prayers, the hours, and the akathists",
@@ -237,10 +237,10 @@ export const PREMIUM_PLAN_EN: PremiumPlanCopy = {
 };
 
 export const PREMIUM_PLAN_DE: PremiumPlanCopy = {
-  freeTitle: "Standard, immer frei",
+  freeTitle: "Standard, immer kostenlos",
   freeItems: [
     "Die Schriften, mit dem Griechischen daneben",
-    "Jedes Leben eines Heiligen und die wichtigsten Schriften der Väter",
+    "Jedes Leben eines Heiligen und die Schriften der Väter selbst",
     "Theologie: Lehre, Apologetik und die Konzilien",
     "Orthodoxe Geschichte, von Pfingsten an",
     "Die täglichen Gebete, die Horen und die Akathiste",
@@ -249,7 +249,7 @@ export const PREMIUM_PLAN_DE: PremiumPlanCopy = {
     "Gebetskampagnen, gemeinsam gebetet",
   ],
   freeFoot:
-    "Keine Werbung. Keine Verfolgung. Keine überraschenden Sperren. Für jeden, der sie braucht.",
+    "Keine Werbung. Kein Tracking. Keine überraschenden Sperren. Für jeden, der sie braucht.",
   soonLabel: "Bald verfügbar",
   plusTitle: "Purify Plus",
   plusLede: "Die Werkzeuge fürs Lesen und Studieren.",
@@ -321,7 +321,7 @@ export const PREMIUM_PLAN_DE: PremiumPlanCopy = {
   plusPromise:
     "Ein gegebenes Versprechen bleibt bestehen: Unterstützer aus der Zeit vor dem Start behalten die geräteübergreifende Synchronisierung auf Lebenszeit, ohne Abonnement. Dieses Versprechen gilt der Synchronisierung selbst; die weiteren Plus-Werkzeuge gehören zum Abonnement.",
   proTitle: "Purify Pro",
-  proLede: "Alles aus Plus und der Mitgliederbereich.",
+  proLede: "Alles aus Plus und die Mitgliederebene.",
   proItems: [
     {
       id: "everything-plus",
@@ -353,7 +353,7 @@ export const PREMIUM_PLAN_DE: PremiumPlanCopy = {
   supportKicker: "Purify wird von denen getragen, denen es hilft.",
   supportLine:
     "Wenn die App dich getragen hat, kannst du sie ein wenig zurücktragen. Über Plus und Pro hinaus ist eine freiwillige Gabe stets willkommen und nie erforderlich.",
-  supportCta: "Eine Kerze anzünden",
+  supportCta: "Eine Lampe anzünden",
   supportFoot: "Völlig freiwillig. Einmal geben, oder gar nicht.",
 };
 
@@ -408,14 +408,14 @@ export const PREMIUM_PAGE_EN: PremiumPageCopy = {
 
 export const PREMIUM_PAGE_DE: PremiumPageCopy = {
   h1: "Die ganze Kirche, mit dir getragen.",
-  lede: "Alles im Herzen von Purify ist frei und bleibt frei. Plus und Pro fügen eine optionale Schicht hinzu: dein Lesen auf jedem Gerät, die Kirche in vollerem Gewand und ein Weg, die Lampen am Brennen zu halten.",
+  lede: "Alles im Herzen von Purify ist kostenlos und bleibt kostenlos. Plus und Pro fügen eine optionale Schicht hinzu: dein Lesen auf jedem Gerät, die Kirche in vollerem Gewand und ein Weg, die Lampen am Brennen zu halten.",
   seePlus: "Purify Plus ansehen",
   seePro: "Purify Pro ansehen",
-  freeHeading: "Frei, und immer",
+  freeHeading: "Kostenlos, für immer",
   plansHeading: "Wähle deinen Plan",
-  plansSub: "Zwei optionale Abonnements. Jederzeit kündbar. Der freie Kern ändert sich nie.",
+  plansSub: "Zwei optionale Abonnements. Jederzeit kündbar. Der kostenlose Kern ändert sich nie.",
   standardName: "Standard",
-  standardPrice: "Frei",
+  standardPrice: "Kostenlos",
   standardPriceSub: "für immer",
   standardTagline: "Der ganze geistliche Schatz, für jeden, der ihn braucht.",
   standardCta: "Purify öffnen",
