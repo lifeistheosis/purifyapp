@@ -3716,3 +3716,113 @@ nine failed a case at once, and the three that did not were the doubled
 rules, which now have a case of their own. The shared test stand-in learned
 an exact count, a database function call, and the circles' two tables.
 
+
+## 28. Each kind starts with its own prayer: as built (2026-11-10)
+
+**His word:** "yes prayers" (about 18:15 UTC, `BRAINSTORM.md`), to the
+mapping of section 22.
+
+### 28.1 What a reader sees
+
+- **Starting a campaign for the living:** the third row is "The prayer"
+  (it was "A psalm"), and says "The name alone" until a kind is chosen.
+  Choosing what the campaign is for sets it:
+
+  | What for | The prayer |
+  |---|---|
+  | An illness | The Trisagion Prayers |
+  | A trial | Psalm 90 |
+  | The persecuted | Psalm 26 |
+  | Guidance | Psalm 142 |
+  | A journey | Psalm 120 |
+  | Thanksgiving | Psalm 102 |
+  | An exam or studies | The name alone |
+  | Something else | The name alone |
+
+- **The creator can change it.** The row opens a list: The name alone, The
+  Trisagion Prayers, then Psalms 24, 26, 50, 90, 102, 120 and 142. Psalm 24
+  is there for studies ("Shew me thy ways, O Lord; and teach me thy paths")
+  and Psalm 50 because it was on the list before.
+- **What a creator chose themselves stays.** Once they have chosen from the
+  list, the name alone included, a later change of kind leaves the prayer as
+  they set it. Not in section 22; added in the building, because a choice
+  made by hand should not be changed for someone.
+- **On the campaign's page:** the prayer's name, its words, and under them
+  the printing they are from.
+- **In a reader's own prayers:** the name is read among those they pray for,
+  and the campaign's prayer follows the names as a step of its own, once
+  however many campaigns name it. A rule that already says that prayer
+  gains no second copy: Morning and Evening prayers open with the Trisagion
+  prayers, so a campaign for an illness adds a name there and no step.
+- **For the reposed nothing changed.**
+
+### 28.2 Where the words come from
+
+Nothing is written by us and nothing is copied: a campaign keeps a pointer
+and the words are read from the app's own file when they are prayed.
+
+- Psalms 26, 50 and 90: the prayer book's files, as before.
+- The Trisagion prayers: the morning prayers' file.
+- Psalms 24, 102, 120 and 142: the Bible's own files of them (Brenton's
+  Septuagint, 1851), a verse a line. The prayer book has no copy of these
+  four. It prints its own psalms from the same Psalter: a test holds that
+  Psalms 90 and 26 are word for word the same in the prayer book and in the
+  Bible's files, so the four are set as the prayer book would set them.
+- **The printing under each** is its file's own source line, cut and never
+  rephrased. For a psalm from the Bible's file it is the prayer book's own
+  sentence for that Psalter, "Psalms from Brenton's public-domain
+  Septuagint.", and only for a file that says it is that text.
+
+### 28.3 What did not change
+
+- **No new words.** "The prayer" is the line the campaign's page already
+  had (`campaigns.thePrayer`), in every language; "The Trisagion Prayers"
+  is the line the first-day walkthrough already had. `campaigns.new.psalm`
+  ("A psalm") left the 21 catalogs.
+- **No SQL.** The table's rule and the route's schema already take any
+  pointer of this shape, and the route still holds it to the list: a psalm
+  of the Bible's that is not on the list is refused.
+- **Three files took the names of what they now carry:**
+  `lib/campaigns/prayerTexts.ts` (was `psalms.ts`), `useCampaignPrayer.ts`
+  (was `useCampaignPsalm.ts`) and
+  `components/campaigns/CampaignPrayerSteps.tsx` (was
+  `CampaignPsalmSteps.tsx`, the name in the table of section 9).
+
+### 28.4 One line that is now a little loose
+
+Under the list stands the line that was there before, "It is read from the
+prayer book, after the names, by those who add this campaign to their
+prayers." It is still true of every psalm. Of the Trisagion prayers in
+Morning and Evening prayers it is loose: those rules say them at their
+start, so nothing is added after the names there. Left as it is, because a
+truer line is new words for his OK and twenty languages. Said to the
+arbiter.
+
+### 28.5 What holds it
+
+`lib/campaigns/__tests__/model.test.ts`: the list of eight; each opening
+from its file word for word; his mapping; each kind's prayer holding the
+words put to him with it, read from the file; the psalm file's guard (not
+another psalm, another book or another text); a creator's own choice kept;
+the printing under each. `routes.test.ts`: the route takes each pointer and
+refuses a psalm that is not on the list. `carried.test.ts`: a device keeps
+only a prayer of the list. Eight ways of breaking it were tried: seven
+failed a case at once, and the one that did not (the psalm file's guard,
+doubled by the list) has a case of its own now.
+
+The walk: the start sends the kind's own prayer (a journey, Psalm 120), and
+a second flow walks every kind, reads the list, and holds that a prayer
+chosen by hand stays. Stills: the start screen with the kind chosen (09),
+the list (30), a campaign's page with the Trisagion prayers (04), and
+Evening prayers with a campaign's psalm after the names (12).
+
+### 28.6 After 1.9
+
+Prayers made for the sick, for studies, for a journey and for thanksgiving,
+word for word from public-domain books, one at a time: Hapgood's Service
+Book has a thanksgiving (p. 512), a service for children beginning
+instruction (p. 519) and a blessing for a journey (p. 524); a prayer for the
+sick still needs its source found. Each is read off its page image and held
+by a test, about three hours apiece. A preset is a pointer, so a prayer
+takes a psalm's place in `KIND_PRAYER` and nothing else changes. Given to
+the arbiter for the timeline's list of what comes after 1.9.

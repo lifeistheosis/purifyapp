@@ -1003,12 +1003,14 @@ if (WALK) {
     }
     // The list: the name alone, then the eight prayers by their names.
     await rows.nth(2).click();
-    await page.waitForSelector("[role=radiogroup]", { timeout: 8000 });
-    const offered = (await page.locator("[role=radio]").allInnerTexts()).map((x) => x.trim().split("\n")[0]);
+    // The sheet's own lines: the page under it has lines to tick of its own ("Who it is for").
+    const sheet = page.locator("[role=dialog]:not([data-campaign-new])");
+    await sheet.locator("[role=radiogroup]").waitFor({ timeout: 8000 });
+    const offered = (await sheet.locator("[role=radio]").allInnerTexts()).map((x) => x.trim().split("\n")[0]);
     const WANT = ["The name alone", "The Trisagion Prayers", "Psalm 24", "Psalm 26", "Psalm 50", "Psalm 90", "Psalm 102", "Psalm 120", "Psalm 142"];
     expectThat(JSON.stringify(offered) === JSON.stringify(WANT), `the list offers ${JSON.stringify(offered)}`);
     // The creator chooses one themselves: Psalm 24, for studies.
-    await page.locator("[role=radio]", { hasText: "Psalm 24" }).click();
+    await sheet.locator("[role=radio]", { hasText: "Psalm 24" }).click();
     await settle(page, 700);
     expectThat((await row()).includes("Psalm 24"), `the creator's choice is not on the row: "${await row()}"`);
     // A change of kind now leaves it as they set it.
@@ -1016,7 +1018,7 @@ if (WALK) {
     expectThat((await row()).includes("Psalm 24"), `a change of kind took the creator's own choice away: the row reads "${await row()}"`);
     // And the name alone, chosen by hand, stays too.
     await rows.nth(2).click();
-    await page.locator("[role=radio]", { hasText: "The name alone" }).click();
+    await sheet.locator("[role=radio]", { hasText: "The name alone" }).click();
     await settle(page, 700);
     await choose("A trial");
     expectThat((await row()).includes("The name alone"), `a change of kind set a prayer over "The name alone": the row reads "${await row()}"`);
