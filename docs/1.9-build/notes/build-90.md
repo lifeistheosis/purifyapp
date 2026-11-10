@@ -38,6 +38,17 @@ Planned (brainstorm, nothing built until his start):
 5. **Nothing in the words changes:** the agreement lines stay as he approved them, the checkout's required agreement (`termsAccepted`) stays, and the whole text beside the action only makes the notice stronger.
 6. **Held by:** a unit test that none of those places links to `/terms` or `/privacy` bare, and that the pages and the sheet draw the same text; a walk on the app's export (the account step, Terms, to the end, Close, still on the account step; the network off, then Privacy opens); and `checkMock` on the sheet in all five palettes.
 
+**Built (the Admin chat, 2026-11-10, on his "All recommendations. Start.", with his yes to the shop's policy in a sheet of its own):**
+
+- **The sheet** (`components/legal/LegalSheet.tsx`): the house's sheet at the whole height of the screen, titled with the words the reader tapped (Terms of Service, Privacy Policy, EIKON · Shipping & Returns), its text in its own scroll, a 44px Close; Escape and the phone's Back close it. It stands over whatever opened it (layer `over-all`, 110: over the onboarding's 100 and over a purchase sheet).
+- **One text:** the Terms, the Privacy Policy (English and German) and the shop's policy moved word for word into `components/legal/` (`TermsText`, `PrivacyText`, `ShopPoliciesText`); the pages and the sheet draw them. The sheet fetches its text when it opens: a file inside the apps, one request on the website; no page carries it.
+- **One link** (`components/legal/LegalLink.tsx`) in the eight places that ask for agreement: the Google and Apple notice, the sign-up form's box, the onboarding's form, the sign-up page's line, the cart and the buy bar (Terms and the shipping and refund policy), and both purchase sheets. A plain tap opens the sheet; a middle or modified click still opens the page on the website.
+- **Inside a text,** a link to another of the three shows it in the sheet; any other page opens on the website, so the reader keeps their place; mail and outside links are as they are.
+- **One press of Back closes one thing:** `lib/platform/useAndroidBack.ts` keeps a stack, and only the top overlay hears a press. Before, the sheet over a purchase sheet would have closed both.
+- A German reader is shown the German Privacy Policy in the sheet, in the apps too (where the page itself is still English for every reader, as before); the English text keeps its own direction under Arabic and Urdu, by note 4's rule.
+- **Held by** `lib/legal/__tests__/legalSheet.test.ts` (8 cases; broken on purpose once, the notice put back to bare links fails it), the legal tests repointed at the shared texts, and `scripts/legal-sheet-walk.mjs` on the export.
+- **Walked on the export of this branch** (Next 16.4.6), his steps from a first open with no signal: all clean. The sheet stands over the account step; the Terms scroll to their end in their own scroll (12,155px) with the page beneath unmoved; a link inside them shows the Privacy Policy in the sheet; Close and Escape leave the reader on the account step; the Privacy Policy opens with no signal; `checkMock` passes on the sheet in all five palettes. Stills: `build-90/01-legal-sheet-terms.png`, `build-90/01-legal-sheet-privacy.png`.
+
 ### 2. Turning on notifications in the onboarding does not work; it just says "static" (2026-11-10)
 
 What he saw: in the onboarding, the step that turns on notifications (reminders) does not work on build 90; it shows only the word "static". His words: "turning on notifications doesn't work it just says static (on the onboarding)".
@@ -114,6 +125,15 @@ Planned for the way back (brainstorm, nothing built until his start):
 2. **Each clear-bar page names its first words:** a council its ordinal line, a Theology topic its quoted line, a Theology path and Your rule their first lines. A saint and a chant keep the default, the name.
 3. **The plate shows over any picture:** a fine edge of paper at 13%, as the new post page's Close has, so it reads on a dark icon too. At rest the bar stays clear, as today.
 4. **Held by:** a test that every clear-bar page names its first words (or its name is its first word); the same scroll measurement as a script on the export, which must find no words under a button while the bar is clear on any of these pages; and `checkMock` on a council's head in all five palettes.
+
+**Built, the way back (the Admin chat, 2026-11-10, on his "All recommendations. Start."):**
+
+- `MobileTopBar` keeps two marks: `data-solid` as soon as the head's first words reach its foot (`solidFrom`, or the name when a page gives none), and `data-revealed` when the name has gone and the bar's own name may show. The clear look in `app/globals.css` is keyed on the first.
+- The first words: a council its ordinal line (`council-ordinal`), a Theology path its kicker (`step-kicker`), a doctrine its epigraph, else its step, else its name (`DOCTRINE_FIRST_WORDS`). A saint, a chant, Your rule and a campaign open with their name.
+- A plate over a picture has a fine edge of paper at 13%, as the new post page's Close; it is there on the solid bar too, unseen, so it fades with the ground.
+- The walk's first run found what the plan's measurement had not: on every Theology path the kicker sat 0.2px under the bar's foot (50.8px under 51px) at the first step, and the observer, told only at the line's two edges and with half a pixel of slack, kept the bar clear until the line was gone. It now compares exactly and is asked again at each quarter of the line.
+- **Held by** `lib/ui/__tests__/clearBar.test.ts` (7 cases; a council without its first words fails it) and `scripts/clear-bar-walk.mjs`, which scrolls every such page on the export 5px at a time and fails on any word under a button while the bar is clear (`--self-test` proves the measure).
+- **Walked on the export of this branch:** before the fix, every Theology path failed at 355px (its kicker under the way back), Your rule at 95px and a saint at 265px; after it, all nine paths, the councils, Your rule, a saint and the doctrines are clean, each solid as its first words reach the bar (a council from 100px, a path from 350px, Your rule from 95px, a doctrine from 185px). The Second Council of Nicaea's bar and head pass `checkMock` in all five palettes. Stills: `build-90/03-council-bar-at-rest.png` (the plates' edge over the icon), `build-90/03-council-bar-solid.png` (solid the moment "Seventh Ecumenical Council" reaches it).
 
 ### 4. In Arabic and Urdu the app's English runs right to left (2026-11-10, found by Updates 2)
 
