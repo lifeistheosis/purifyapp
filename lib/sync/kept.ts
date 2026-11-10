@@ -29,10 +29,10 @@ import {
  * progress, place, palette, settings").
  *
  * One row per slice in public.user_kept, which is the owner's SQL
- * (docs/1.9-build/sql/user-kept.sql) and may not exist yet. A probe asks for
- * the table first, as the journal's sync does (lib/sync/journal.ts): until it
- * answers, all of this stays on the device, as it always has, with no failed
- * request on every page and no error shown.
+ * (supabase/migrations/20261110012059_user_kept.sql) and may not exist
+ * yet. A probe asks for the table first, as the journal's sync does
+ * (lib/sync/journal.ts): until it answers, all of this stays on the device,
+ * as it always has, with no failed request on every page and no error shown.
  *
  * Every exchange is the same three steps, for each slice asked for: read the
  * server's copy, merge it with this device's item by item, the newer of each

@@ -2,16 +2,21 @@
 -- (1.9, PLAN row 29, s5-09 of docs/1.9-build/ideas.json: "Sync everything
 -- kept: plan progress, Remember progress, place, palette, settings").
 --
--- NOT APPLIED. NOT A MIGRATION YET. This file waits for the owner's sign-off
--- (AGENTS.md: a production schema change is his to approve before it runs).
--- It lives in docs/, not supabase/migrations/, so that no merge to main can
--- run it by itself. On his word it is either run by hand in the SQL editor,
--- or copied into supabase/migrations/<YYYYMMDDHHMMSS>_user_kept.sql (a version
--- later than every file there) so the integration runs it.
+-- SIGNED OFF: his "all recs" yes of 2026-11-10 (all of 1.9's database
+-- changes go live with the release, the arbiter's reading), and the
+-- arbiter's word the same day to make this file a migration. Moved here
+-- from docs/1.9-build/sql/user-kept.sql: the 1.9 merge runs it (the Supabase
+-- Preview check), and if that check is red, his backup is to paste this file
+-- by hand (docs/1.9-build/OWNER-STEPS.md, R3). Never edit it once it has
+-- reached main: write a new file.
 --
 -- Until it exists the app keeps all of this on the device, as it does today:
 -- lib/sync/kept.ts asks for the table first and does nothing while it is
 -- absent (the journal's sync, lib/sync/journal.ts, waited the same way).
+--
+-- Checked against the app on 2026-11-10 (lib/sync/kept.ts): the same table,
+-- the same four slices, rows read as (slice, value) and written by an upsert
+-- on (user_id, slice) that sets updated_at itself.
 --
 -- Written to run twice: every statement is "if not exists" or is preceded by
 -- its own "drop ... if exists".

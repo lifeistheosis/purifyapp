@@ -660,8 +660,9 @@ Send back: "R2b sent", or what went wrong.
      - `20261110002921_chant_pulls.sql`
      - `20261110002922_app_errors.sql`
      - `20261110002923_search_misses.sql`
-     and the rest of the 1.9 SQL you approved (sync, the florilegium kinds)
-     as Updates moves it in.
+     - `20261110012059_user_kept.sql`
+     and the rest of the 1.9 SQL you approved (the florilegium kinds) as
+     Updates moves it in.
 
 ### R4. Android: build, then Play Console
 
