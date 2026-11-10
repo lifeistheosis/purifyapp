@@ -5,7 +5,7 @@ import type { User } from "@supabase/supabase-js";
 import { isAdminEmail } from "@/lib/admin/access";
 import { isColumnAbsent } from "@/lib/supabase/columnAbsent";
 import { createClientFromRequest } from "@/lib/supabase/server";
-import { onTestWeb } from "@/lib/testWeb";
+import { isTestWeb } from "@/lib/testWeb";
 
 import { campaignsOpening, type CampaignsOpening } from "./flags";
 
@@ -18,16 +18,24 @@ import { campaignsOpening, type CampaignsOpening } from "./flags";
  * builds will be, at "testers", talking to a website that answers as the
  * main web will once he has opened campaigns. The constant cannot say both
  * at once, since one commit makes the website and the build. So where the
- * constant says "testers" and this server is the test web (lib/testWeb.ts),
- * it answers "open", to every account there.
+ * constant says "testers" and this server is the test web, it answers
+ * "open", to every account there.
+ *
+ * What the test web is, is not this file's to say: the test web's own rules
+ * say it (lib/testWeb/rules.ts, read through lib/testWeb/index.ts, isTestWeb;
+ * the Admin chat's, docs/1.9-build/notes/test-web.md). A server is the test
+ * web only with its flag, on its own database (by its address and by the
+ * project its public key names), at an address that is not purifyapp.net,
+ * with no live payment key; one that says it is the test web and breaks any
+ * of these refuses to start, and isTestWeb() answers no for it.
  *
  * It lifts "testers" to "open" and nothing else. Closed stays closed on
  * every server: a branch that says closed has no campaigns on the test web
- * either. And it cannot reach the main web: lib/testWeb.ts says no wherever
- * the address or the database is the main web's, whatever the settings there
+ * either. And it cannot reach the main web: a server on the main web's
+ * database or at its address is not the test web, whatever its settings
  * say. So the main web opens by the one line in ./flags.ts, on his word, and
  * by nothing else. lib/campaigns/__tests__/testWeb.test.ts holds each of
- * these.
+ * these from this side, by what a campaign route answers.
  *
  * Two quiet places read the constant itself and do not follow this: the
  * Discover menu's row on a wide screen and the free plan's line that names
@@ -36,7 +44,7 @@ import { campaignsOpening, type CampaignsOpening } from "./flags";
  */
 export function serverOpening(): CampaignsOpening {
   const position = campaignsOpening();
-  return position === "testers" && onTestWeb() ? "open" : position;
+  return position === "testers" && isTestWeb() ? "open" : position;
 }
 
 /**

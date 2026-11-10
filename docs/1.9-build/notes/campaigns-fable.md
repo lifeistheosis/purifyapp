@@ -2845,18 +2845,38 @@ this server is the test web, it answers "open", to every account there.
 
 - **It lifts "testers" and nothing else.** A branch that says closed has no
   campaigns on the test web either.
-- **It cannot reach the main web.** `lib/testWeb.ts` answers yes only with
-  the test web's marker (`PURIFY_TEST_WEB=1`, a server-side value that no app
-  and no page carries), on an address that is not the main web's
-  (purifyapp.net, a name under it, or the main service's own Render address),
-  on a database that is not the main web's. The marker pasted into the main
-  web's settings by mistake changes nothing there. The main web opens by the
-  one line in `flags.ts`, on his word, and by nothing else.
-- **The constant's file still reads no setting,** and every campaign route
-  still asks one place.
-- **Held by** `lib/campaigns/__tests__/testWeb.test.ts`, sixteen cases; with
-  the address check, the database check or "testers only" taken out, it
-  fails.
+- **It cannot reach the main web.** What the test web is, the test web's own
+  rules say (`lib/testWeb/rules.ts`, the Admin chat's): its flag, on its own
+  database (by its address and by the project its public key names), at an
+  address that is not purifyapp.net, with no live payment key. A server that
+  says it is the test web and breaks one of these refuses to start, and is
+  not the test web. So the flag pasted into the main web's settings by
+  mistake changes nothing there. The main web opens by the one line in
+  `flags.ts`, on his word, and by nothing else.
+- **The constant's file still reads no setting,** nor does the rule's own
+  file, and every campaign route still asks one place.
+- **Held from this side by** `lib/campaigns/__tests__/testWeb.test.ts`, by
+  what a campaign route is told, on the real rules and no stand-in: nine
+  mistakes (the flag in the main web's own settings, the main web's database,
+  its key, its address, a live payment key, and their like), each alone, and
+  for each the server stays at "testers" and answers for its admins only.
+  If the rules are ever loosened so that a server shaped like the main web
+  passes, it fails.
+
+**A collision on the way, mine, and mended within the half hour.** I first
+wrote the marker's reader as a file of my own, `lib/testWeb.ts`, with a
+marker of my own, and pushed it (`a0eb97365`) minutes after Admin had pushed
+the test web's rules as the folder `lib/testWeb/`. A file of that name is
+found before a folder of it, so every page of Admin's that asked the folder
+(the layout, robots, the sitemap, the footer, mail, the proxy) was handed my
+file instead, which has none of what they ask for. The rebase had no
+conflict to show, and I had run campaigns' tests after it and not the
+typecheck. The file is gone; the rule asks Admin's `isTestWeb()`; there is
+one marker, Admin's. What it costs to say plainly: for that half hour the
+branch did not build. Nothing ran from it: the main web runs main, and the
+test web does not exist yet. The lesson is in how I work from here: after a
+pull that brings code in, the typecheck runs again before the push, every
+time.
 
 **What will differ from the release on the test web, to tell him before he
 walks:** two quiet places read the constant itself and do not follow the
