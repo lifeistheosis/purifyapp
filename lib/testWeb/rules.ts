@@ -11,7 +11,8 @@
 //
 // WHAT THE RULES PROMISE, whatever a setting says:
 //   - the test web never touches the main web's database, never holds a live
-//     payment key and never calls itself purifyapp.net: a server or a build
+//     payment key and never calls itself purifyapp.net, a name under it or
+//     the main web's Render address (sharesMainWebName): a server or a build
 //     that says it is the test web and breaks one of these refuses to start
 //     (testWebProblems), and isTestWeb() answers false for it, so nothing that
 //     only the test web may do (campaigns open to every account there, its
@@ -38,6 +39,32 @@ export type TestWebEnv = Readonly<Record<string, string | undefined>>;
 export function namesMainWeb(url: string | undefined): boolean {
   if (!url) return false;
   return /^(https?:\/\/)?(www\.)?purifyapp\.net(?=$|[/:?#])/i.test(url.trim());
+}
+
+/** The main web's own address on Render, which answers as the main web. */
+export const MAIN_WEB_RENDER_HOST = "purifyapp.onrender.com";
+
+/**
+ * True when the value's host is the main web's or shares its name:
+ * purifyapp.net, any name under it (a cookie set for the whole of
+ * purifyapp.net reaches every one of them, so a test web there could read a
+ * reader's sign-in), or the main web's own Render address. The test web may
+ * use none of them; its address is a name of its own on onrender.com, which
+ * shares cookies with nothing. A value that cannot be read as an address
+ * counts as the main web's, so a mistyped setting refuses to start rather
+ * than passing.
+ */
+export function sharesMainWebName(url: string | undefined): boolean {
+  const value = (url ?? "").trim();
+  if (!value) return false;
+  let host: string;
+  try {
+    host = new URL(/^[a-z][a-z0-9+.-]*:\/\//i.test(value) ? value : `https://${value}`).hostname;
+  } catch {
+    return true;
+  }
+  host = host.toLowerCase().replace(/\.+$/, "");
+  return host === "purifyapp.net" || host.endsWith(".purifyapp.net") || host === MAIN_WEB_RENDER_HOST;
 }
 
 /** True when the value is the main web's Supabase project. */
@@ -84,8 +111,14 @@ export function testWebProblems(env: TestWebEnv): string[] {
   if (keyProject(env.NEXT_PUBLIC_SUPABASE_ANON_KEY) === MAIN_SUPABASE_REF) {
     problems.push("NEXT_PUBLIC_SUPABASE_ANON_KEY is the main web's key. The test web uses its own project's key.");
   }
-  if (namesMainWeb(env.NEXT_PUBLIC_SITE_URL)) {
-    problems.push("NEXT_PUBLIC_SITE_URL is purifyapp.net. The test web has its own address.");
+  if (sharesMainWebName(env.NEXT_PUBLIC_SITE_URL)) {
+    problems.push("NEXT_PUBLIC_SITE_URL is purifyapp.net, a name under it, or the main web's Render address. The test web has its own address.");
+  }
+  // Where NEXT_PUBLIC_SITE_URL is not set, the website takes its address from
+  // the one Render gives the service (lib/site.ts), so that one is held too:
+  // on the main web's own service it is the main web's Render address.
+  if (sharesMainWebName(env.RENDER_EXTERNAL_URL)) {
+    problems.push("RENDER_EXTERNAL_URL is the main web's Render address: this is the main web's service, not the test web's.");
   }
   if (isLiveStripeKey(env.STRIPE_SECRET_KEY)) {
     problems.push("STRIPE_SECRET_KEY is a live key. The test web holds Stripe's test keys only.");

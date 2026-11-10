@@ -13,6 +13,7 @@ import {
   appBuildProblems,
   isTestWebEnv,
   keyProject,
+  sharesMainWebName,
   testWebGate,
   testWebMayEmail,
   testWebProblems,
@@ -65,6 +66,39 @@ describe("the main web can never answer as the test web", () => {
     expect(isTestWebEnv({ ...TEST_WEB, NEXT_PUBLIC_SITE_URL: "PURIFYAPP.NET" })).toBe(false);
     expect(isTestWebEnv({ ...TEST_WEB, STRIPE_SECRET_KEY: "rk_live_abc" })).toBe(false);
     expect(isTestWebEnv({ ...TEST_WEB, NEXT_PUBLIC_SUPABASE_URL: undefined })).toBe(false);
+  });
+
+  it("refuses any name under purifyapp.net and the main web's Render address, not only purifyapp.net", () => {
+    // A cookie set for the whole of purifyapp.net reaches every name under it.
+    for (const site of [
+      "https://test.purifyapp.net",
+      "https://Staging.PurifyApp.net/admin",
+      "test.purifyapp.net",
+      "https://purifyapp.net.",
+      "https://purifyapp.net:8443/",
+      "https://purifyapp.onrender.com",
+      "http://PURIFYAPP.ONRENDER.COM/api",
+      "https://exa mple",
+    ]) {
+      expect(sharesMainWebName(site), site).toBe(true);
+      expect(isTestWebEnv({ ...TEST_WEB, NEXT_PUBLIC_SITE_URL: site }), site).toBe(false);
+    }
+    // Names that only look alike are the test web's to use.
+    for (const site of [TEST_SITE, "https://notpurifyapp.net", "https://purifyapp.net.example.com", "https://purifyapp-test.onrender.com"]) {
+      expect(sharesMainWebName(site), site).toBe(false);
+    }
+    expect(sharesMainWebName(undefined)).toBe(false);
+    expect(sharesMainWebName("  ")).toBe(false);
+  });
+
+  it("holds the address Render gives the service too, which the website uses when its own is not set", () => {
+    // The main web's own service, the test web's value set on it by mistake and its address unset.
+    const mainService = { ...MAIN_WEB, NEXT_PUBLIC_TEST_WEB: "1", NEXT_PUBLIC_SITE_URL: undefined, RENDER_EXTERNAL_URL: "https://purifyapp.onrender.com" };
+    expect(testWebProblems(mainService).some((p) => p.includes("RENDER_EXTERNAL_URL"))).toBe(true);
+    expect(isTestWebEnv({ ...TEST_WEB, RENDER_EXTERNAL_URL: "https://purifyapp.onrender.com" })).toBe(false);
+    // The test web's own service.
+    expect(isTestWebEnv({ ...TEST_WEB, RENDER_EXTERNAL_URL: TEST_SITE })).toBe(true);
+    expect(testWebProblems({ ...MAIN_WEB, RENDER_EXTERNAL_URL: "https://purifyapp.onrender.com" })).toEqual([]);
   });
 
   it("is the test web when set up as his steps say, and only with its value set to 1", () => {
@@ -132,6 +166,9 @@ describe("a store build never talks to the test web", () => {
   it("refuses a store build that says it is the test web, or calls any other address", () => {
     expect(appBuildProblems({ NEXT_PUBLIC_TEST_WEB: "1" }, { testWeb: false })).toHaveLength(1);
     expect(appBuildProblems({ NEXT_PUBLIC_SITE_URL: TEST_SITE }, { testWeb: false })).toHaveLength(1);
+    // Exactly purifyapp.net: not a name under it, nor the main web's Render address.
+    expect(appBuildProblems({ NEXT_PUBLIC_SITE_URL: "https://test.purifyapp.net" }, { testWeb: false })).toHaveLength(1);
+    expect(appBuildProblems({ NEXT_PUBLIC_SITE_URL: "https://purifyapp.onrender.com" }, { testWeb: false })).toHaveLength(1);
   });
 
   it("builds for the test web only as the test web, with its own database and address", () => {
