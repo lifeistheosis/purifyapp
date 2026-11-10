@@ -1246,6 +1246,14 @@ export const ENTRIES: Readonly<Record<WorkKey, ReadingEntry>> = {
   "martyrs-of-nicomedia/the-martyrs-of-nicomedia": { by: null, about: "martyrs-of-nicomedia", form: "life", scope: "selections", themes: [], review: R },
   "melania-the-younger/life-of-melania-the-younger": { by: null, about: "melania-the-younger", form: "life", scope: "selections", themes: [], review: R },
   "ambrose-of-milan/ambrose-in-the-witnesses": { by: null, about: "ambrose-of-milan", form: "life", scope: "selections", themes: [], review: R },
+  // St. John of Damascus's works (December's push 2), whole, in Mary H. Allies's English (1898).
+  "john-of-damascus/on-holy-images": { by: "john-of-damascus", form: "treatise", scope: "complete", themes: [], review: R },
+  "john-of-damascus/sermons-on-the-dormition": { by: "john-of-damascus", form: "homilies", scope: "complete", themes: [], review: R },
+  // St. Ambrose's works (December's push 2), whole, from NPNF II 10.
+  "ambrose-of-milan/on-the-duties-of-the-clergy": { by: "ambrose-of-milan", form: "treatise", scope: "complete", themes: [], review: R },
+  "ambrose-of-milan/on-the-holy-spirit": { by: "ambrose-of-milan", form: "treatise", scope: "complete", themes: [], review: R },
+  "ambrose-of-milan/on-the-mysteries": { by: "ambrose-of-milan", form: "treatise", scope: "complete", themes: [], review: R },
+  "ambrose-of-milan/concerning-repentance": { by: "ambrose-of-milan", form: "treatise", scope: "complete", themes: [], review: R },
   "peter-of-moscow/life-of-peter-of-moscow": { by: null, about: "peter-of-moscow", form: "life", scope: "selections", themes: [], review: R },
 };
 

@@ -152,6 +152,10 @@ describe("the covers' pictures", () => {
     // theirs, and the Holy Innocents' wears St. Matthew's, its author's.
     const december = [
       "ambrose-of-milan/ambrose-in-the-witnesses",
+      "ambrose-of-milan/concerning-repentance",
+      "ambrose-of-milan/on-the-duties-of-the-clergy",
+      "ambrose-of-milan/on-the-holy-spirit",
+      "ambrose-of-milan/on-the-mysteries",
       "martyrs-of-nicomedia/the-martyrs-of-nicomedia",
       "melania-the-younger/life-of-melania-the-younger",
       "prophet-daniel/the-book-of-daniel",

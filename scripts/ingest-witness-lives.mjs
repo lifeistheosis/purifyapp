@@ -103,7 +103,13 @@ export const scanText = (id) => {
 const gutenbergText = async (n) =>
   (await fetchText(`https://www.gutenberg.org/cache/epub/${n}/pg${n}.txt`, path.join(CACHE, "gutenberg", `pg${n}.txt`)))
     .replace(/^\uFEFF/, "")
-    .replace(/\r\n/g, "\n");
+    .replace(/\r\n/g, "\n")
+    // Some of Gutenberg's plain texts write a letter they cannot print by its
+    // Unicode name ("{~GREEK SMALL LETTER DELTA U+03b4~}", St John Damascene,
+    // 1898) and set italics between underscores ("_With_"): the letter as the
+    // page prints it, and the italics plain, as the library sets them.
+    .replace(/\{~[^~]*?U\+([0-9a-fA-F]{4,6})~\}/g, (_, hex) => String.fromCodePoint(parseInt(hex, 16)))
+    .replace(/(^|[^_\w])_(?!_)([^_]+?)_(?![_\w])/g, "$1$2");
 
 /** The transcription a passage is cut from: CCEL's volume, or Gutenberg's book. */
 const sourceText = (vol) => {
@@ -197,9 +203,18 @@ const fromRoman = (s) =>
   [...s.toUpperCase()].reduce((n, c, i, a) => (ROMAN[c] < (ROMAN[a[i + 1]] ?? 0) ? n - ROMAN[c] : n + ROMAN[c]), 0);
 
 function cutWork(text, p, label) {
-  const at = text.indexOf(p.from);
+  // `within`: where a book's heading repeats across the volume ("Book II."
+  // in each of St Ambrose's works), a marker found once in it, and the book
+  // starts at the first `from` after the marker.
+  let base = 0;
+  if (p.within) {
+    base = text.indexOf(p.within);
+    if (base < 0) throw new Error(`${label}: "${p.within}" not found in ${p.vol}`);
+    if (text.indexOf(p.within, base + 1) >= 0) throw new Error(`${label}: "${p.within}" is not unique in ${p.vol}`);
+  }
+  const at = text.indexOf(p.from, base);
   if (at < 0) throw new Error(`${label}: "${p.from}" not found in ${p.vol}`);
-  if (text.indexOf(p.from, at + 1) >= 0) throw new Error(`${label}: "${p.from}" is not unique in ${p.vol}`);
+  if (!p.within && text.indexOf(p.from, at + 1) >= 0) throw new Error(`${label}: "${p.from}" is not unique in ${p.vol}`);
   const end = text.indexOf(p.to, at + p.from.length);
   if (end < 0) throw new Error(`${label}: end "${p.to}" not found after the start`);
   const raw = text.slice(text.lastIndexOf("\n", at) + 1, text.lastIndexOf("\n", end) + 1);
@@ -212,13 +227,20 @@ function cutWork(text, p, label) {
   // Peter's canons with Balsamon and Zonaras), the chapter ends at the first
   // paragraph of theirs; only the author's words are kept.
   const dropFrom = p.chapters.dropFrom ? new RegExp(p.chapters.dropFrom) : null;
+  // `synopsis`: where the edition prints its own summary under each heading
+  // (the NPNF's St Ambrose), the author's text begins at the first paragraph
+  // this pattern finds (his numbered paragraphs, "1. "); the editor's summary
+  // before it is left out, never more than two paragraphs of it.
+  const synopsis = p.chapters.synopsis ? new RegExp(p.chapters.synopsis) : null;
   const chapters = [];
   for (const para of paragraphsOf(kept).slice(p.heading ?? 0)) {
     // `lead`: the edition's opening before chapter I (Barlaam's
-    // "INTRODUCTION") is a section of its own, numbered 0.
-    if (p.chapters.lead && para === p.chapters.lead && !chapters.length) {
-      chapters.push({ numeral: "", n: 0, title: p.chapters.leadTitle ?? para, paras: [], closed: false });
-      continue;
+    // "INTRODUCTION") is a section of its own, numbered 0. `lead: true` takes
+    // whatever stands before the first heading (St Ambrose's own prologue to a
+    // book), the paragraph itself its first words.
+    if (p.chapters.lead && !chapters.length && (p.chapters.lead === true || para === p.chapters.lead)) {
+      chapters.push({ numeral: "", n: 0, title: p.chapters.leadTitle ?? para, paras: [], closed: false, left: [] });
+      if (p.chapters.lead !== true) continue;
     }
     const m = heading.exec(para);
     if (m) {
@@ -226,12 +248,20 @@ function cutWork(text, p, label) {
       // A chapter with no title of its own ("Canon I.") is titled as printed,
       // or as the spec's `title` names it ("Chapter III").
       const title = p.chapters.title?.(m[1], n) ?? ((m[2] ?? "").trim() || para);
-      chapters.push({ numeral: m[1], n, title: title.replace(/\.$/, "").replace(/\s*—\s*/g, ": "), paras: [], closed: false });
+      chapters.push({ numeral: m[1], n, title: title.replace(/\.$/, "").replace(/\s*—\s*/g, ": "), paras: [], closed: false, left: [] });
     } else if (chapters.length) {
       const c = chapters[chapters.length - 1];
+      if (synopsis && !c.paras.length && !synopsis.test(para)) {
+        c.left.push(para);
+        if (c.left.length > 2) throw new Error(`${label}: more than two paragraphs before the text of chapter ${c.numeral || "0"}: "${para.slice(0, 60)}"`);
+        continue;
+      }
       if (dropFrom?.test(para)) c.closed = true;
       if (!c.closed) c.paras.push(para);
     } else throw new Error(`${label}: words before the first chapter heading: "${para.slice(0, 60)}"`);
+  }
+  if (synopsis) {
+    for (const c of chapters) if (!c.paras.length) throw new Error(`${label}: chapter ${c.numeral || "0"} has no text after its summary`);
   }
   if (p.chapters.expect && chapters.length !== p.chapters.expect) {
     throw new Error(`${label}: ${chapters.length} chapters, the spec expects ${p.chapters.expect}`);
@@ -289,7 +319,9 @@ const wordsOf = (s) => s.replace(/[—–]/g, " ").replace(/-/g, "").split(/\s+/
 
 /** Rejoin the scan's end-of-line hyphenation ("pres- byters") before reading it. */
 function scanWords(text) {
-  return wordsOf(text.replace(/(\w)-\s*\n\s*(\w)/g, "$1$2").replace(/\s+/g, " "));
+  // A word broken at a line's end: some scans' text prints the hyphen as "¬"
+  // (stjohndamasceneo00john, 1898).
+  return wordsOf(text.replace(/(\w)[-\u00ac]\s*\n\s*(\w)/g, "$1$2").replace(/\s+/g, " "));
 }
 
 /** How many of a paragraph's first words stand, in order, in the scan from `start`. */
@@ -580,7 +612,8 @@ async function main() {
   // --works reads the month's works (scripts/menologion/<month>-works.mjs,
   // WORKS) instead of its Lives; the same checks, its own review file.
   const kind = rest.includes("--works") ? "works" : rest.includes("--held") ? "held" : "lives";
-  // --release: a held Life's priest has read it (its clergy item is cleared).
+  // --release: a held Life's clergy item is cleared (a priest has read it, or
+  // the owner has published it without one, as November's were on 2026-11-10).
   const release = kind === "held" && rest.includes("--release");
   const specFile = path.join(ROOT, "scripts", "menologion", `${month}-${kind}.mjs`);
   const mod = await import(specFile);

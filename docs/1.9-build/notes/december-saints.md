@@ -238,3 +238,54 @@ there.
 - **Stills** (the Android export): `december-saints/01-new-page-prophet-daniel.png`,
   `02-entry-and-source-sabbas.png`,
   `03-life-in-the-witnesses-words-melania.png`, `04-st-peter-in-mouravieff.png`.
+
+## Push 2a, as built: the works (2026-11-10)
+
+`scripts/menologion/december-works.mjs`, read by `node
+scripts/ingest-witness-lives.mjs december --works`; every word read against
+two scans of its printing, the review in
+`docs/editorial/ingest-review/december-works.md`. Six works whole, about
+193,000 words.
+
+- **St Ambrose**, from the Nicene and Post-Nicene Fathers, Second Series,
+  vol. X (1896): On the Duties of the Clergy (three books, 102 chapters), On
+  the Holy Spirit (three books, 53 sections with his own prologues to the
+  first two), On the Mysteries (nine chapters) and Concerning Repentance (two
+  books, 28 chapters). The volume prints an editor's summary under every
+  chapter heading; those are left out, and his numbered paragraphs are his
+  text. Where a book ran on into the editor's introduction to the next work,
+  or his note on the penitential discipline, it now ends at the last
+  chapter.
+  - Read on the page images: CCEL's slips put right ("coverts" for
+    "converts", "can show" for "call show", "did he answer", "of the king's
+    vineyards", "shalt not eat", "incorporeal", "an harlot", "undeservedly"
+    for "unreservedly", "joining"). The page's own misprints are kept and
+    named in the source lines: "rest" for "lest", "begining", "multipled",
+    "condemed".
+  - Greek words stay in CCEL's Latin letters, as the library's other volumes
+    of the series have them, and the source lines say so; the 1896 page
+    prints them in Greek.
+- **St John of Damascus**, in Mary H. Allies's English (London: Thomas
+  Baker, 1898): On Holy Images, his three apologies with the testimonies of
+  the Fathers after each, and his Three Sermons on the Dormition (the 1898
+  English calls them On the Assumption, and the source line says so). The
+  text is Project Gutenberg's (ebook 49917; its transcriber notes minor
+  emendations of spelling and punctuation, and the source line says that
+  too). Its Greek is in Greek letters, as the page prints it.
+- **The ingest learned five things**, each proved on November's works and
+  December's Lives coming out byte for byte the same: an edition's chapter
+  summary left out (`synopsis`), a book found after a marker when its
+  heading repeats in the volume (`within`), a prologue before chapter I
+  (`lead: true`), Gutenberg's letters written by their Unicode names and its
+  italics in underscores, and a line-end "¬" in a scan's text read as the
+  hyphen it is.
+- **The reading room**: six books more. St Ambrose has no settled icon yet,
+  so his four stand on the plate with his Lives; St John's wear his cover.
+- **The apps**: about 1.1 MB of text more, 0.2 MB packed: the exports are 67.0
+  MB packed of 85.
+- **Walked** on the Android export: St Ambrose's page (Writings: the four)
+  and each of the six works. checkMock finds only the reader's own faults,
+  told before (the chapter buttons, the "Source:" line, the printers' em
+  dashes).
+- **Stills**: `december-saints/05-st-john-on-holy-images.png`,
+  `06-st-ambrose-on-the-duties-of-the-clergy.png`.

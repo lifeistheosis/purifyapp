@@ -1145,6 +1145,25 @@ export const SAINTS: Saint[] = [
  "The Eastern Church's classic systematic theology, complete: God known and unknowable, the Trinity, creation and the angels, man, the Incarnation and the two wills of Christ, the sacraments, the icons, and the last things.",
  topics: ["Theology", "Trinity", "Knowledge of God", "Essence and Energies"],
  },
+ // December's push 2 (1.9): his apologies and sermons in Mary H. Allies's English (1898).
+ {
+ slug: "on-holy-images",
+ title: "On Holy Images",
+ subtitle: "His three apologies against those who decry them",
+ year: "8th century",
+ blurb:
+ "His three apologies for the holy images, written when the emperor Leo the Isaurian made war on them, each followed by the testimonies of the Fathers he gathered. In the public-domain English of 1898.",
+ topics: ["Icons", "Incarnation", "Tradition"],
+ },
+ {
+ slug: "sermons-on-the-dormition",
+ title: "Three Sermons on the Dormition",
+ subtitle: "On the falling asleep of the Mother of God",
+ year: "8th century",
+ blurb:
+ "His three sermons for the feast of the falling asleep of the Mother of God, which the 1898 English calls the Assumption. In the public-domain English of 1898.",
+ topics: ["Theotokos", "Feasts"],
+ },
  ],
  },
  {
@@ -4445,6 +4464,42 @@ export const SAINTS: Saint[] = [
         blurb:
           "Socrates on how he was chosen bishop of Milan, St. Augustine on the bishop who received him there and on the church of Milan in the days of Justina, and Sozomen and Theodoret on the emperor Theodosius kept from the church after Thessalonica. In the public-domain English of Pusey and of the Nicene and Post-Nicene Fathers.",
         topics: ["Episcopate", "Repentance", "Baptism"],
+      },
+      {
+        slug: "on-the-duties-of-the-clergy",
+        title: "On the Duties of the Clergy",
+        subtitle: "Three books",
+        year: "c. 391",
+        blurb:
+          "His three books to his clergy on duty, written as Cicero wrote his for his son, with the saints of Scripture for examples: what is seemly, what is useful, and how the two agree. In the public-domain English of 1896.",
+        topics: ["Priesthood", "Virtue"],
+      },
+      {
+        slug: "on-the-holy-spirit",
+        title: "On the Holy Spirit",
+        subtitle: "Three books to the Emperor Gratian",
+        year: "381",
+        blurb:
+          "His three books to the Emperor Gratian: that the Holy Spirit is no creature but God, one with the Father and the Son in power and in working. In the public-domain English of 1896.",
+        topics: ["Holy Spirit", "Trinity"],
+      },
+      {
+        slug: "on-the-mysteries",
+        title: "On the Mysteries",
+        subtitle: "To the newly baptized",
+        year: "c. 387",
+        blurb:
+          "His teaching to the newly baptized on the rites they have received: the font, the anointing and the Eucharist. In the public-domain English of 1896.",
+        topics: ["Baptism", "Eucharist"],
+      },
+      {
+        slug: "concerning-repentance",
+        title: "Concerning Repentance",
+        subtitle: "Two books against the Novatians",
+        year: "c. 384",
+        blurb:
+          "His two books against the Novatians, who refused the Church's pardon to those who had fallen: that the Church has the power to loose, and that repentance stays open to the sinner. In the public-domain English of 1896.",
+        topics: ["Repentance", "The Church"],
       },
     ],
   },
