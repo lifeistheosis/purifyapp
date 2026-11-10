@@ -208,13 +208,16 @@ export function MobileChapterPill({
           // Sit clear of the tab bar, the now-playing bar when one is up, AND the
           // iOS home indicator, plus a 12px gap. Both vars are 0 when the thing
           // they measure is not on screen, so this is one formula for every case.
+          // --pill-lift is that height, which the fade under the pill reaches
+          // down from, to the foot of the screen (globals.css, .pill-fade).
           style={{
-            bottom:
+            ["--pill-lift" as string]:
               "calc(var(--tab-bar-h) + var(--now-playing-h) + var(--readings-flow-h, 0px) + env(safe-area-inset-bottom, 0px) + 12px)",
+            bottom: "var(--pill-lift)",
           }}
         >
-          {/* The fade the pill floats on, down to the tab bar, behind it. */}
-          <span aria-hidden className="pill-fade pointer-events-none absolute inset-x-0 -bottom-3 -z-10 h-44" />
+          {/* The fade the pill floats on, down to the foot of the screen, behind it and the tab bar. */}
+          <span aria-hidden className="pill-fade pointer-events-none absolute inset-x-0 -z-10" />
           {/* The verse being read and the minutes left, a running line over
               the pill once the title has gone up, as a printed page carries
               its place at its foot. Over the pill and not inside it, so the

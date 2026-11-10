@@ -1148,8 +1148,20 @@ html.reader-focus.has-reader-dock {
 
 /* The fade the pill floats on, as drawn: the words go quiet under it, down
    to the tab bar. The page's own ground, so every palette has it. */
+/* The fade a reader's pill floats on (the Bible's chapter pill, the dock
+   while it plays, a work's pill): from 164px over the pill's foot down to
+   the foot of the screen, behind the tab bar too. It stopped at the tab
+   bar's top, and the tab bar is a pill of its own (max-w-md, centred), so
+   on a tablet the Bible's last lines showed under the dock and on either
+   side of the bar, on every palette (1.9, Themes' walk at 820:
+   docs/1.9-build/notes/decisions/themes-3-wide.png); on a phone, in the
+   bar's gutters. --pill-lift is the pill's height off the foot of the
+   screen, which its container sets. The ramp is measured from the top, so
+   the words go quiet over the same 127px as before. */
 .pill-fade {
- background: linear-gradient(to bottom, transparent, var(--color-night) 72%);
+ bottom: calc(-1 * var(--pill-lift, 12px));
+ height: calc(164px + var(--pill-lift, 12px));
+ background: linear-gradient(to bottom, transparent, var(--color-night) 127px);
 }
 
 /* What is lit on the page glows white, softly (the owner, 2026-10-28: "just
@@ -11883,7 +11895,7 @@ html[data-look]:not([data-look="nightsky"], [data-look="linen"]) .pill-fade {
   display: none;
  }
  html[data-look]:not([data-look="nightsky"], [data-look="linen"]) .pill-fade {
-  background-image: linear-gradient(to bottom, transparent, var(--color-night) 72%);
+  background-image: linear-gradient(to bottom, transparent, var(--color-night) 127px);
  }
 }
 

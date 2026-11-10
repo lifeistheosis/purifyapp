@@ -76,12 +76,15 @@ export function MobileWorkPill({
         "md:hidden native-md-flex fixed inset-x-0 z-40 flex flex-col items-center gap-1.5 px-4 pointer-events-none motion-safe:transition-opacity motion-safe:duration-200",
         covered && "opacity-0",
       )}
+      // --pill-lift: the fade under the pill reaches down from it to the foot
+      // of the screen (globals.css, .pill-fade).
       style={{
-        bottom: "calc(var(--tab-bar-h) + var(--now-playing-h) + var(--readings-flow-h, 0px) + env(safe-area-inset-bottom, 0px) + 12px)",
+        ["--pill-lift" as string]: "calc(var(--tab-bar-h) + var(--now-playing-h) + var(--readings-flow-h, 0px) + env(safe-area-inset-bottom, 0px) + 12px)",
+        bottom: "var(--pill-lift)",
       }}
     >
-      {/* The fade the pill floats on, down to the tab bar, behind it. */}
-      <span aria-hidden className="pill-fade pointer-events-none absolute inset-x-0 -bottom-3 -z-10 h-44" />
+      {/* The fade the pill floats on, down to the foot of the screen, behind it and the tab bar. */}
+      <span aria-hidden className="pill-fade pointer-events-none absolute inset-x-0 -z-10" />
       <RunningLine head={head} words={words} />
       <div
         className={cn(

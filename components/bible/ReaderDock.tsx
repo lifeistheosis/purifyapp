@@ -174,11 +174,16 @@ export function ReaderDock({
         // Over the tab bar and today's readings' bar, clear of the home
         // indicator, with the pill's 12px under it. The mini player is never
         // on this screen with it, so its room is not counted.
-        style={{ bottom: "calc(var(--tab-bar-h) + var(--readings-flow-h, 0px) + env(safe-area-inset-bottom, 0px) + 12px)" }}
+        // --pill-lift: the fade under the card reaches down from it to the
+        // foot of the screen (globals.css, .pill-fade).
+        style={{
+          ["--pill-lift" as string]: "calc(var(--tab-bar-h) + var(--readings-flow-h, 0px) + env(safe-area-inset-bottom, 0px) + 12px)",
+          bottom: "var(--pill-lift)",
+        }}
       >
         {/* The fade the card floats on, as the pill's: the words go quiet
             under it. It goes while the reader reads on. */}
-        <span aria-hidden className="reader-dock-fade pill-fade pointer-events-none absolute inset-x-0 -bottom-3 -z-10 h-44" />
+        <span aria-hidden className="reader-dock-fade pill-fade pointer-events-none absolute inset-x-0 -z-10" />
         <div className="flex w-full max-w-md justify-center">
           <div
             ref={surfaceRef}

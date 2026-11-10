@@ -377,9 +377,18 @@ describe("the floating pill, with Listen", () => {
     expect(read).toMatch(/<ReaderPill onClick=\{start\}/);
   });
 
-  it("floats on a fade of the page, behind it, as drawn", () => {
-    expect(pill).toContain('<span aria-hidden className="pill-fade pointer-events-none absolute inset-x-0 -bottom-3 -z-10 h-44" />');
-    expect(rules()).toMatch(/\.pill-fade \{\s*background: linear-gradient\(to bottom, transparent, var\(--color-night\) 72%\);/);
+  it("floats on a fade of the page, behind it, as drawn, down to the foot of the screen", () => {
+    expect(pill).toContain('<span aria-hidden className="pill-fade pointer-events-none absolute inset-x-0 -z-10" />');
+    // From 164px over the pill's foot to the foot of the screen, behind the
+    // tab bar too: on a tablet the bar is a pill of its own and the last
+    // lines showed on either side of it (1.9). The ramp keeps its 127px.
+    expect(rules()).toMatch(/\.pill-fade \{\s*bottom: calc\(-1 \* var\(--pill-lift, 12px\)\);\s*height: calc\(164px \+ var\(--pill-lift, 12px\)\);\s*background: linear-gradient\(to bottom, transparent, var\(--color-night\) 127px\);/);
+    for (const file of ["components/bible/MobileChapterPill.tsx", "components/bible/ReaderDock.tsx", "components/saints/MobileWorkPill.tsx"]) {
+      const src = code(file);
+      expect(src, file).toMatch(/\["--pill-lift" as string\]:\s*"calc\(var\(--tab-bar-h\)/);
+      expect(src, file).toContain('bottom: "var(--pill-lift)",');
+      expect(src, file).toMatch(/pill-fade pointer-events-none absolute inset-x-0 -z-10" \/>/);
+    }
     // No blur behind the pill: it would be redrawn on every frame of a scroll.
     expect(pill).not.toMatch(/backdrop-blur/);
   });

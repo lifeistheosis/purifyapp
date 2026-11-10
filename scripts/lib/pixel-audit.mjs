@@ -97,7 +97,7 @@ function words([footShare, within, fadeShare]) {
   const bar = document.querySelector("[data-tab-bar]")?.getBoundingClientRect();
   // A palette whose own foot takes the page's last lines (its flames, its
   // sunrise, its flowers) says from where: words below that are giving way.
-  const footFrom = Math.min(fade ? fade.top + fade.height * 0.35 : Infinity, bar ? bar.top - 6 : Infinity, footShare ? innerHeight * footShare : Infinity);
+  const footFrom = Math.min(fade ? fade.top + Math.min(fade.height, 176) * 0.35 : Infinity, bar ? bar.top - 6 : Infinity, footShare ? innerHeight * footShare : Infinity);
   // Where a look's foot begins, and how much further the page can still rise.
   const fadeFrom = fadeShare ? innerHeight * fadeShare : Infinity;
   const rise = Math.max(0, document.documentElement.scrollHeight - innerHeight - scrollY);

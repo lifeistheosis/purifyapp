@@ -74,7 +74,9 @@ describe("the dock", () => {
 
   it("stands at the foot of the screen for the reading place, over the tab bar, never counting the mini player's room", () => {
     expect(DOCK).toContain('data-screen-edge="bottom"');
-    expect(DOCK).toContain('bottom: "calc(var(--tab-bar-h) + var(--readings-flow-h, 0px) + env(safe-area-inset-bottom, 0px) + 12px)"');
+    // Its height off the foot, which the fade under it also reaches down from (1.9).
+    expect(DOCK).toContain('["--pill-lift" as string]: "calc(var(--tab-bar-h) + var(--readings-flow-h, 0px) + env(safe-area-inset-bottom, 0px) + 12px)"');
+    expect(DOCK).toContain('bottom: "var(--pill-lift)",');
   });
 
   it("offers Speed for a chapter read aloud alone, as Now Playing does, and saves it", () => {
