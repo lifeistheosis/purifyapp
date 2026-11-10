@@ -11,7 +11,7 @@ import { requestStanding } from "@/lib/community/adminStanding";
 import { guardWrite } from "@/lib/community/guard";
 import { communityEnabled } from "@/lib/community/flags";
 import { callerIsGroupMember } from "@/lib/community/groupAccess";
-import { notifyMentions, notifyOfReply } from "@/lib/community/notify";
+import { blockedBy, notifyMentions, notifyOfReply } from "@/lib/community/notify";
 import { censorName, censorPost } from "@/lib/moderation/server";
 import { ensureCleanHandle } from "@/lib/profile/server";
 import { ipKey, rateLimited } from "@/lib/security/ratelimit";
@@ -220,9 +220,11 @@ async function handlePOST(req: Request, id: string) {
   const admin = createAdminClient();
   const readPost = (cols: string) => admin.from("community_posts").select(cols).eq("id", id).maybeSingle();
   // category arrives with 20261005; before it, every post is a discussion.
-  let { data: postRow, error: postError } = await readPost("id, reply_count, status, group_id, category");
-  if (postError && isColumnAbsent(postError)) ({ data: postRow, error: postError } = await readPost("id, reply_count, status, group_id"));
-  const post = postRow as unknown as { id: string; status: string; group_id: string | null; category?: string | null } | null;
+  // user_id is read here and never sent: it is who wrote the post, for the
+  // block below.
+  let { data: postRow, error: postError } = await readPost("id, user_id, reply_count, status, group_id, category");
+  if (postError && isColumnAbsent(postError)) ({ data: postRow, error: postError } = await readPost("id, user_id, reply_count, status, group_id"));
+  const post = postRow as unknown as { id: string; user_id: string | null; status: string; group_id: string | null; category?: string | null } | null;
   if (!post || post.status !== "visible") {
     return NextResponse.json({ error: "Not found." }, { status: 404 });
   }
@@ -234,6 +236,14 @@ async function handlePOST(req: Request, id: string) {
     !(await callerIsGroupMember(req, admin, post.group_id as string))
   ) {
     return NextResponse.json({ error: "Not found." }, { status: 404 });
+  }
+  // A block stops writing too (1.9, campaigns-fable.md section 9, item 6).
+  // The feed and the thread already kept a blocked person's words from the
+  // one who blocked them; until now that person could still reply under their
+  // posts, and the reply still told them. Refused before anything is read or
+  // written, in plain words that name nobody.
+  if (post.user_id && post.user_id !== user.id && (await blockedBy(admin, [post.user_id], user.id)).has(post.user_id)) {
+    return NextResponse.json({ error: "You can't reply to this post.", code: "blocked" }, { status: 403 });
   }
 
   const meta = (user.user_metadata ?? {}) as {

@@ -69,6 +69,13 @@ export async function notifyOfReply({
     if (!post?.user_id) return null;
     // Replying to your own post is not news.
     if (post.user_id === actorId) return null;
+    // Someone who blocked the writer is not told of their reply (1.9,
+    // campaigns-fable.md section 9, item 6), as a mention and a follow already
+    // were not. The replies route refuses such a reply now; this holds for one
+    // written before the block and approved after it from the moderation
+    // queue (lib/community/moderation.ts).
+    const author = post.user_id as string;
+    if ((await blockedBy(admin, [author], actorId)).has(author)) return null;
     await insertNotifications(admin, [
       {
         user_id: post.user_id,

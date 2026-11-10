@@ -1408,6 +1408,15 @@ function PostCardInner({
       );
       return;
     }
+    if (!res.ok && res.code === "blocked") {
+      // The post's writer has blocked this reader (the replies route, 1.9).
+      // Nothing to try again, so it is not kept as "Not sent": back to the
+      // box, the words kept, with the route's plain reason.
+      setPending((list) => list.filter((p) => p.tempId !== tempId));
+      setDraft(text);
+      setActionError(res.error ?? t("community.replyFailed"));
+      return;
+    }
     if (res.ok) {
       // Drop the placeholder and take the server's copy, which carries the
       // real id, author name and timestamp.
