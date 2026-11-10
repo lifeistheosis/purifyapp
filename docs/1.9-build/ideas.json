@@ -41,7 +41,7 @@
    "needsDesign": true,
    "version": null,
    "outcome": null,
-   "note": "Looked at 2026-11-07, not built, for his word on one thing. Compare shows a verse in each Bible the app may show, and the downloaded ones keep their own numbering (BIBLES.md): the Synodal counts a psalm's title as its first verses (its Psalm 50:3 is the app's 50:1) and follows the Hebrew order in Jeremiah, the Greek divides Joel in four chapters. So each downloaded Bible needs its verses placed against the app's first, which is also what notes, highlights and the Fathers need in those Bibles. The cleanest source for that is the Copenhagen Alliance's versification mappings (the United Bible Societies, SIL, Tyndale House and YouVersion; github.com/Copenhagen-Alliance/versification-specification), licensed CC BY-SA 4.0: a map made from it would have to be credited and shared under the same licence. His word: use it, or have the maps made from the texts themselves, as the KJV to Septuagint map was (slower, and what cannot be placed stays out). His word (2026-11-09): the Copenhagen maps, credited, the map file shared alike. Built the same day: 710e70b (scripts/bibles/compare-map.mjs and data/bibles/maps/, the Copenhagen files kept unchanged in data/bibles/copenhagen with their checksums) and 22f31f3 (components/bible/CompareSheet.tsx, a Plus card in the verse's Study). The numbering places each verse (the app's KJV map, then the Copenhagen eng, rso and lxx files); the lengths of the two texts judge each chapter, and a chapter they say is misnumbered is left out: the standards have gaps this Synodal file does not (no Daniel 5:31 in rso, nothing for 3 Maccabees, 1 Samuel 20:42 given only its second half in eng). Placed: 91.3% of the app's verses in the Synodal, 94.9% in the Greek; read side by side in four random samples, 92 pairs, the two errors found fixed. The card wears the Codex, the Gospel book the app wears for a Bible (the Scroll read as a phone at 20px). Waits for him: a Compare row on the Plus paywall (copy). The Serbian, Arabic and Spanish added 2026-11-09 (7a667db): 95.0%, 96.2% and 95.0% of verses placed."
+   "note": "Looked at 2026-11-07, not built, for his word on one thing. Compare shows a verse in each Bible the app may show, and the downloaded ones keep their own numbering (BIBLES.md): the Synodal counts a psalm's title as its first verses (its Psalm 50:3 is the app's 50:1) and follows the Hebrew order in Jeremiah, the Greek divides Joel in four chapters. So each downloaded Bible needs its verses placed against the app's first, which is also what notes, highlights and the Fathers need in those Bibles. The cleanest source for that is the Copenhagen Alliance's versification mappings (the United Bible Societies, SIL, Tyndale House and YouVersion; github.com/Copenhagen-Alliance/versification-specification), licensed CC BY-SA 4.0: a map made from it would have to be credited and shared under the same licence. His word: use it, or have the maps made from the texts themselves, as the KJV to Septuagint map was (slower, and what cannot be placed stays out). His word (2026-11-09): the Copenhagen maps, credited, the map file shared alike. Built the same day: 710e70b (scripts/bibles/compare-map.mjs and data/bibles/maps/, the Copenhagen files kept unchanged in data/bibles/copenhagen with their checksums) and 22f31f3 (components/bible/CompareSheet.tsx, a Plus card in the verse's Study). The numbering places each verse (the app's KJV map, then the Copenhagen eng, rso and lxx files); the lengths of the two texts judge each chapter, and a chapter they say is misnumbered is left out: the standards have gaps this Synodal file does not (no Daniel 5:31 in rso, nothing for 3 Maccabees, 1 Samuel 20:42 given only its second half in eng). Placed: 91.3% of the app's verses in the Synodal, 94.9% in the Greek; read side by side in four random samples, 92 pairs, the two errors found fixed. The card wears the Codex, the Gospel book the app wears for a Bible (the Scroll read as a phone at 20px). Waits for him: a Compare row on the Plus paywall (copy). The Serbian, Arabic and Spanish added 2026-11-09 (7a667db): 95.0%, 96.2% and 95.0% of verses placed. The Plus screen's row built 2026-11-10 (9dd0cde) on the arbiter's recs, his \"if these are good\" (BRAINSTORM.md, 2026-11-10): Compare after Ambience in the line carried to him as 85, its lock leading the sheet with that row lit, and its Try it showing Psalm 50:1 in the app's English and at the Synodal's and the Greek's 50:3 and the others' 51:1, every line held to its Bible's file (lib/premium/__tests__/tryCompare.test.ts)."
   },
   {
    "id": "e-ten-each",
@@ -1391,12 +1391,12 @@
    "title": "The Florilegium's gate opens before it knows: a reader without Plus sees the hub for a moment, then the pitch, and a lapsed reader's own gatherings are hidden behind it",
    "from": "claude",
    "asked": "2026-11-07",
-   "status": "proposed",
-   "decided": null,
+   "status": "built",
+   "decided": "2026-11-10",
    "needsDesign": false,
    "version": null,
    "outcome": null,
-   "note": "components/florilegium/FlorilegiumGate.tsx starts entitled = true; found while mapping the page for the revamp; the flash fixed 2026-11-07: the gate now opens with what this device last knew (useExpectedPlusFeatures), so a reader the device last knew without Plus meets the card at once, while a subscriber or a device that never asked still opens on the hub until the live answer. Not walked: Plus can only be enforced inside the real app shell, which dev cannot be. The other half, a lapsed reader's own gatherings behind the card, is for his word"
+   "note": "components/florilegium/FlorilegiumGate.tsx starts entitled = true; found while mapping the page for the revamp; the flash fixed 2026-11-07: the gate now opens with what this device last knew (useExpectedPlusFeatures), so a reader the device last knew without Plus meets the card at once, while a subscriber or a device that never asked still opens on the hub until the live answer. Not walked: Plus can only be enforced inside the real app shell, which dev cannot be. The other half, a lapsed reader's own gatherings behind the card, is for his word The other half built 2026-11-10 (8c51921) on the arbiter's recs, his \"if these are good\" (rec 10: read-only): without Plus the hub shows the card and under it the reader's own gatherings as the device keeps them, to open and read; a gathering shows its lines and notes and then the card; no new gathering, starters, notes, removal, Share, Print or Delete; nothing gathered, the card alone (lib/florilegium/__tests__/lapsedReadOnly.test.ts). Walked in the dev site with Plus switched on and signed out."
   },
   {
    "id": "c-flor-push-errors",
@@ -1747,6 +1747,20 @@
    "version": null,
    "outcome": null,
    "note": "His word of 2026-11-08: \"I want to add all of St. Basil's works... Public domain. English.\" Then: \"Don't start working on that.\" On the still-to-build list (PLAN.md row 35b). First step when he says start: which works have a public-domain English translation, and from which edition (docs/editorial-standards.md: public domain, verbatim, cited)."
+  },
+  {
+   "id": "c-player-words",
+   "section": "Listening",
+   "kind": "bug",
+   "title": "The words under Now Playing's five marks broke mid-word in fourteen languages",
+   "from": "claude",
+   "asked": "2026-11-09",
+   "status": "built",
+   "decided": "2026-11-10",
+   "needsDesign": false,
+   "version": null,
+   "outcome": null,
+   "note": "Found measuring \"Ambience\" breaking as \"Ambienc / e\" at 390px; bdf3342 (2026-11-09) gave each word its whole share of the row and stopped balancing, which took the mid-word breaks from 45 to 20 at 360px and from 30 to 13 at 390, and left single words wider than the share (\"Wiederholen\", \"Temporizador\", \"Επανάληψη\"), which only shorter words fix. Built 2026-11-10 (efa0dc7) on the arbiter's recs, his \"if these are good\" (rec 80): the row's own words (player.option.*), a shorter one in the fourteen languages (Schleife, Klang, Timer; Ξανά, Ήχοι, Ύπνος; Dormir; Laju; Повтор, Таймер; ციკლი; लूप; Dźwięki; Ritmo; Somn; Понови; Uyku; Темп), the full word in the other seven, and each button's full name kept for a screen reader. Measured in the dev site's Now Playing: 21 languages at 360 and 390px, five words each, no word broken mid-word (lib/player/__tests__/optionWords.test.ts)."
   }
  ]
 }
