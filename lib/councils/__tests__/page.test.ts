@@ -165,8 +165,10 @@ describe("the Holy Fathers principally associated", () => {
     // Cyril of Jerusalem at the Second Council, St. Justinian at the Fifth
     // and St. Tarasius at the Seventh; and from November's saints (1.9) St.
     // Gregory the Wonderworker at Antioch (268), his page and his mosaic,
-    // and St. Paul the Confessor at Sardica, his page and his icon.
-    expect(pictured).toHaveLength(20);
+    // and St. Paul the Confessor at Sardica, his page and his icon; and St.
+    // Memnon at Ephesus, his page and Commons' unmarked copy of his fresco
+    // (build 90 note 3, his answer of 2026-11-10).
+    expect(pictured).toHaveLength(21);
     for (const f of pictured) {
       const slug = f.href!.replace("/saints/", "");
       expect(COVER_ART[slug], slug).toBeDefined();

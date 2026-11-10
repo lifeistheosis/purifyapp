@@ -11,6 +11,7 @@ import path from "node:path";
 
 import { describe, expect, it } from "vitest";
 
+import { COUNCILS } from "@/lib/councils/councils";
 import { isCcLicence } from "@/lib/credits/photos";
 import { streamedUrl } from "@/lib/media/streamed";
 import { AUTHOR_COVERS, COUNCIL_COVERS, FEELING_COVERS, WORK_COVERS } from "@/lib/reading/authorCovers";
@@ -31,8 +32,10 @@ const PD = /^(public domain|cc0)$/i;
 const EM_DASH = String.fromCharCode(0x2014);
 
 describe("the covers' pictures", () => {
-  it("are of saints the room knows", () => {
-    for (const slug of Object.keys(COVER_ART)) expect(Boolean(AUTHOR_META[slug] || SUBJECTS[slug]), slug).toBe(true);
+  it("are of saints the room knows, or of a Father a council names, whose face it is on its page", () => {
+    // 1.9, build 90 note 3: St Memnon has no book in the room; his settled icon is his face at Ephesus.
+    const fathers = new Set(COUNCILS.flatMap((c) => (c.principalFathers ?? []).flatMap((f) => (f.slug ? [f.slug] : []))));
+    for (const slug of Object.keys(COVER_ART)) expect(Boolean(AUTHOR_META[slug] || SUBJECTS[slug] || fathers.has(slug)), slug).toBe(true);
   });
 
   it("each have their file, and every file a row", () => {

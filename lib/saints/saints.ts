@@ -3604,6 +3604,8 @@ export const SAINTS: Saint[] = [
  },
  {
  slug: "memnon-of-ephesus",
+ // Commons' unmarked copy of the Dionysiou fresco (1.9, build 90 note 3; lib/saints/iconRights.ts).
+ iconUrl: "/saints/icons/memnon-of-ephesus.v3.jpg",
  name: "St. Memnon of Ephesus",
  epithet: "Archbishop of Ephesus · Host and Father of the Third Council",
  born: "Fourth century",

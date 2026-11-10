@@ -259,6 +259,8 @@ const ICON_FACES: Readonly<Record<string, readonly [number, number, number?]>> =
   "cyril-of-jerusalem.v2.jpg": [0.42, 0.32, 0.49],
   "photius-the-great.v2.jpg": [0.52, 0.3, 0.32],
   "justinian-the-great.v2.jpg": [0.5, 0.27, 0.51],
+  // 1.9, build 90 note 3: St Memnon's fresco at Dionysiou, wider than tall, his face by eye.
+  "memnon-of-ephesus.v3.jpg": [0.49, 0.37],
 };
 
 /**

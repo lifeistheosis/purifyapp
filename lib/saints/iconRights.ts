@@ -1204,6 +1204,22 @@ export const ICON_RIGHTS: Record<string, IconRights> = {
     license: "Public domain",
     evidenceUrl: "https://commons.wikimedia.org/wiki/File:Saint_Nektarios_of_Aegina_at_Rizario.jpg",
   },
+  // Build 90 note 3 (2026-11-10): the answer to St Memnon's question. Commons'
+  // unmarked photograph of the fresco our marked copy showed (3 of 64 bits
+  // apart from it by difference hash: one picture), at its own 375 by 248,
+  // promoted by scripts/fetch-saint-icons.mjs. A new name, v3: his old files
+  // were shipped under the names before it.
+  "memnon-of-ephesus.v3.jpg": {
+    status: "verified",
+    inspectedOn: "2026-11-10",
+    alt: "A wall painting of a bishop with short dark hair and a long dark beard streaked with grey, within a gold halo on a deep blue ground under a red arch, in a white omophorion with large black crosses; his name in Greek in white letters at either side of the halo, a raised hand at the lower left edge and the corner of a red book at the lower right.",
+    work: "Fresco of St Memnon of Ephesus, Dionysiou Monastery, Mount Athos, inscribed with his name",
+    artist: "Theophanes the Cretan, as the Commons page names the painter",
+    workDate: "1547",
+    source: "Wikimedia Commons (from icoana.wordpress.com)",
+    license: "Public domain",
+    evidenceUrl: "https://commons.wikimedia.org/wiki/File:Agios_Memnon_Ephesou_Dionysiou.jpg",
+  },
 };
 
 /**
@@ -1232,10 +1248,10 @@ export type IconQuestion = {
 
 export const ICON_QUESTIONS: Record<string, IconQuestion> = {
   // None open. The two of build 90 note 3 (2026-11-10) were answered the same
-  // day and their files are out of the app: St Memnon's marked copy, with
-  // Commons' unmarked copy of the Dionysiou fresco to come in as its own row
-  // once it is fetched and settled, and St Adrian's picture of another saint,
-  // on the plate until a true icon of him is found.
+  // day and their files are out of the app: St Memnon's marked copy, whose
+  // place Commons' unmarked copy of the Dionysiou fresco took
+  // (memnon-of-ephesus.v3.jpg, its row in ICON_RIGHTS), and St Adrian's
+  // picture of another saint, on the plate until a true icon of him is found.
 };
 
 /**

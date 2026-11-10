@@ -155,6 +155,11 @@ export const COVER_ART: Readonly<Record<string, CoverArt>> = {
   "innocent-of-irkutsk": bundled("innocent-of-irkutsk.jpg", 31),
   "barlaam-and-josaphat": bundled("barlaam-and-josaphat.jpg", 35),
 
+  // 1.9, build 90 note 3: St Memnon, who hosted the Third Council, his face on
+  // its page from Commons' unmarked copy of the fresco at Dionysiou (his
+  // answer of 2026-11-10; lib/saints/iconRights.ts). Carried, so it shows
+  // with no signal; too small a picture for a streamed portrait.
+  "memnon-of-ephesus": bundled("memnon-of-ephesus.v3.jpg", 37),
   // From Wikimedia Commons for the covers (lib/reading/authorCovers.ts).
   ...AUTHOR_COVERS,
 };
