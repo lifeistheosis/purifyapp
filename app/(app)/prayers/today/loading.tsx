@@ -1,3 +1,4 @@
+import { AfterAMoment } from "@/components/ui/AfterAMoment";
 import { Skeleton, SkeletonList } from "@/components/ui/Skeleton";
 
 /**
@@ -13,7 +14,7 @@ import { Skeleton, SkeletonList } from "@/components/ui/Skeleton";
  * PrayersTodayClient on purpose, so the placeholder occupies the same
  * columns the real page will.
  */
-export default function TodayLoading() {
+function TodayOutline() {
   return (
     <div className="bg-night">
       <div className="mx-auto w-full max-w-[680px] px-5 py-10 md:px-8 md:py-12 lg:max-w-[1240px] lg:pb-24">
@@ -63,5 +64,15 @@ export default function TodayLoading() {
         </div>
       </div>
     </div>
+  );
+}
+
+// The outline waits a moment before it shows, so a page that is ready at
+// once arrives as itself (lib/ui/loadingGrace.ts, 1.9).
+export default function TodayLoading() {
+  return (
+    <AfterAMoment>
+      <TodayOutline />
+    </AfterAMoment>
   );
 }

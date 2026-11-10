@@ -1,3 +1,5 @@
+import { noteNav, returnBy } from "@/lib/ui/routeMotion";
+
 import { BACK_FALLBACK_MS, backOutcome } from "./backBar";
 
 /**
@@ -30,6 +32,9 @@ export function goBack(router: BackRouter, floor: string, win?: BackWindow): voi
   if (!w) return;
 
   if (w.navigation && w.navigation.canGoBack === false) {
+    // Still a way back, to the reader: the floor returns as a page behind
+    // this one would (lib/ui/routeMotion.ts).
+    noteNav("back");
     router.push(floor);
     return;
   }
@@ -44,11 +49,16 @@ export function goBack(router: BackRouter, floor: string, win?: BackWindow): voi
   // A page the browser leaves for another site's is not stranded either.
   w.addEventListener("pagehide", onMove, { once: true });
 
-  router.back();
+  // The step itself, pictured where it can be: the page being left sinks away
+  // and the one behind it returns (lib/ui/routeMotion.ts, returnBy).
+  returnBy(() => router.back());
 
   w.setTimeout(() => {
     w.removeEventListener("popstate", onMove);
     w.removeEventListener("pagehide", onMove);
-    if (backOutcome(moved) === "home") router.push(floor);
+    if (backOutcome(moved) === "home") {
+      noteNav("back");
+      router.push(floor);
+    }
   }, BACK_FALLBACK_MS);
 }

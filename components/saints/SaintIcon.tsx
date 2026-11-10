@@ -68,6 +68,9 @@ export function SaintIcon({
  }}
  aria-label={`Icon of ${saint.name}`}
  role="img"
+ // In a card that opens the saint's page, the icon travels to the head of
+ // it, found by the icon's own address (lib/ui/routeMotion.ts, 1.9).
+ data-carry={saint.iconUrl || undefined}
  >
  {/* Placeholder layer, always present underneath. Silver inner frame +
  halo + initials are pure CSS, so something stylized renders before

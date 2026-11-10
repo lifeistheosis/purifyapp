@@ -1,3 +1,4 @@
+import { AfterAMoment } from "@/components/ui/AfterAMoment";
 import { Skeleton } from "@/components/ui/Skeleton";
 
 /**
@@ -15,7 +16,7 @@ import { Skeleton } from "@/components/ui/Skeleton";
  * `cascade cascade-tight` for the same reason: the placeholders arrive in the
  * same order and at the same pace the real rows will.
  */
-export default function DiscoverLoading() {
+function DiscoverOutline() {
   return (
     <div className="bg-night">
       {/* Header strip: the title, the Premium pill, search and the bell. */}
@@ -38,5 +39,15 @@ export default function DiscoverLoading() {
         ))}
       </div>
     </div>
+  );
+}
+
+// The outline waits a moment before it shows, so a page that is ready at
+// once arrives as itself (lib/ui/loadingGrace.ts, 1.9).
+export default function DiscoverLoading() {
+  return (
+    <AfterAMoment>
+      <DiscoverOutline />
+    </AfterAMoment>
   );
 }

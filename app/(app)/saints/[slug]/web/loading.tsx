@@ -1,3 +1,4 @@
+import { AfterAMoment } from "@/components/ui/AfterAMoment";
 import { Skeleton } from "@/components/ui/Skeleton";
 
 /**
@@ -5,7 +6,7 @@ import { Skeleton } from "@/components/ui/Skeleton";
  * A row of chips, the saint in the middle and a few around him, and the sheet
  * at the foot.
  */
-export default function SaintWebLoading() {
+function SaintWebOutline() {
   const around = [
     { left: "86%", top: 170 },
     { left: "14%", top: 170 },
@@ -35,5 +36,15 @@ export default function SaintWebLoading() {
         <Skeleton weight="faint" rounded="rounded-[26px]" className="mx-auto mt-3 h-[150px] w-full max-w-[560px]" />
       </div>
     </div>
+  );
+}
+
+// The outline waits a moment before it shows, so a page that is ready at
+// once arrives as itself (lib/ui/loadingGrace.ts, 1.9).
+export default function SaintWebLoading() {
+  return (
+    <AfterAMoment>
+      <SaintWebOutline />
+    </AfterAMoment>
   );
 }

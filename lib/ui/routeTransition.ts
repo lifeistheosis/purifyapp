@@ -24,6 +24,8 @@
  * attribute rather than holding state.
  */
 
+import { noteNav } from "./routeMotion";
+
 /**
  * Hard ceiling on how long content may sit faded out. Five exit durations is
  * well past the p95 of a prefetched client navigation and still short enough
@@ -35,6 +37,9 @@ let watchdog: ReturnType<typeof setTimeout> | null = null;
 
 export function beginRouteExit(): void {
   if (typeof document === "undefined") return;
+  // A tab is beside the tab it is left for: the two cross-fade, and nothing
+  // travels (lib/ui/routeMotion.ts, 1.9).
+  noteNav("swap");
   document.body.dataset.routeExit = "1";
   // One timer, always. A second tap during the fade resets it rather than
   // stacking another, which is part of why rapid tapping cannot pile up.

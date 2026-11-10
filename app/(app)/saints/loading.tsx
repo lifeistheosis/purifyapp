@@ -1,10 +1,11 @@
+import { AfterAMoment } from "@/components/ui/AfterAMoment";
 import { Skeleton, SkeletonText } from "@/components/ui/Skeleton";
 
 // Mirrors app/(app)/saints/page.tsx: masthead, search field, then the card
 // grid. The grid here previously drew a 2/3/4-column stack of vertical
 // tiles while SaintCard renders a 1/2/3-column grid of horizontal cards, so
 // the layout visibly jumped when the real content arrived. Same shape now.
-export default function SaintsLoading() {
+function SaintsOutline() {
   return (
     // Padding must track app/(app)/saints/page.tsx exactly, or the masthead
     // jumps when the real content swaps in.
@@ -41,5 +42,15 @@ export default function SaintsLoading() {
         </div>
       </div>
     </section>
+  );
+}
+
+// The outline waits a moment before it shows, so a page that is ready at
+// once arrives as itself (lib/ui/loadingGrace.ts, 1.9).
+export default function SaintsLoading() {
+  return (
+    <AfterAMoment>
+      <SaintsOutline />
+    </AfterAMoment>
   );
 }

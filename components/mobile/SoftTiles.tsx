@@ -195,23 +195,28 @@ export function PictureTile({
       )}
       style={{ background: TONES[tone] }}
     >
-      {/* The picture's tiny preview, blurred, at once (1.8): the tile is
-          never an empty box while its picture comes. */}
-      {picture && TILE_PREVIEWS[picture] ? (
-        <span
-          aria-hidden
-          className="absolute inset-0 scale-110 bg-cover bg-center blur-md"
-          style={{ backgroundImage: `url(${TILE_PREVIEWS[picture].src})` }}
-        />
-      ) : null}
+      {/* The picture in a frame of its own, cut to the tile's shape: what
+          travels into the page the tile opens (lib/ui/routeMotion.ts, 1.9).
+          It fills the tile, so the tile is drawn as it was. */}
       {picture ? (
-        <ArrivingImage
-          src={picture}
-          loading={priority ? "eager" : "lazy"}
-          decoding="async"
-          className="absolute inset-0 h-full w-full object-cover"
-          style={crop ? cropStyle(crop) : undefined}
-        />
+        <span data-carry={picture} className="absolute inset-0 overflow-hidden rounded-[inherit]">
+          {/* The picture's tiny preview, blurred, at once (1.8): the tile is
+              never an empty box while its picture comes. */}
+          {TILE_PREVIEWS[picture] ? (
+            <span
+              aria-hidden
+              className="absolute inset-0 scale-110 bg-cover bg-center blur-md"
+              style={{ backgroundImage: `url(${TILE_PREVIEWS[picture].src})` }}
+            />
+          ) : null}
+          <ArrivingImage
+            src={picture}
+            loading={priority ? "eager" : "lazy"}
+            decoding="async"
+            className="absolute inset-0 h-full w-full object-cover"
+            style={crop ? cropStyle(crop) : undefined}
+          />
+        </span>
       ) : null}
       <span aria-hidden className="tile-shade absolute inset-0" />
       {/* A long one-word name breaks at a hyphen rather than running out of

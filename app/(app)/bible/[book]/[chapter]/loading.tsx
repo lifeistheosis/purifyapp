@@ -1,3 +1,4 @@
+import { AfterAMoment } from "@/components/ui/AfterAMoment";
 import { Skeleton, SkeletonText } from "@/components/ui/Skeleton";
 import { IS_STATIC_EXPORT } from "@/lib/platform/buildTarget";
 
@@ -11,7 +12,7 @@ import { IS_STATIC_EXPORT } from "@/lib/platform/buildTarget";
  * show it (native-md-hidden): it was 18 boxes in each of their 1,400
  * chapters (1.9, the full optimize).
  */
-export default function ChapterLoading() {
+function ChapterOutline() {
   return (
     <div className="bg-night flex">
       {/* Sidebar placeholder (the website's wide screen only). */}
@@ -46,5 +47,15 @@ export default function ChapterLoading() {
         </div>
       </section>
     </div>
+  );
+}
+
+// The outline waits a moment before it shows, so a page that is ready at
+// once arrives as itself (lib/ui/loadingGrace.ts, 1.9).
+export default function ChapterLoading() {
+  return (
+    <AfterAMoment>
+      <ChapterOutline />
+    </AfterAMoment>
   );
 }

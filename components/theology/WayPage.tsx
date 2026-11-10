@@ -74,7 +74,7 @@ export function WayPage({
 
         <header data-way-head="">
           <div className="flex items-center gap-3.5">
-            <span aria-hidden data-way-glyph="" className="theology-glyph shrink-0 text-paper">
+            <span aria-hidden data-way-glyph="" data-carry-into={`way:${way}`} className="theology-glyph shrink-0 text-paper">
               <own.Icon size={32} />
             </span>
             <div className="min-w-0">

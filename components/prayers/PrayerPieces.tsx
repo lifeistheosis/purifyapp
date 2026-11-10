@@ -49,7 +49,12 @@ export function PrayerPieces({ hourNow }: { hourNow: HourSlug | null }) {
       {pieces.map((p) => (
         <li key={p.href} className="w-[112px] shrink-0" data-prayer-piece={p.href}>
           <Link href={p.href} className="tap-press group block rounded-[18px] focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-paper">
-            <span className="relative block h-[112px] w-[112px] overflow-hidden rounded-[18px] bg-night-soft shadow-[0_10px_22px_-12px_rgba(0,0,0,0.6)] ring-1 ring-inset ring-paper/10">
+            {/* The piece's icon travels to the same icon on the page it opens,
+                as a Practices tile's does (lib/ui/routeMotion.ts, 1.9). */}
+            <span
+              data-carry={p.art?.src}
+              className="relative block h-[112px] w-[112px] overflow-hidden rounded-[18px] bg-night-soft shadow-[0_10px_22px_-12px_rgba(0,0,0,0.6)] ring-1 ring-inset ring-paper/10"
+            >
               {p.art ? (
                 <ArrivingImage
                   src={p.art.src}

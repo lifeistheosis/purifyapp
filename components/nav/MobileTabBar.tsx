@@ -338,6 +338,11 @@ export function MobileTabBar() {
       // The marker globals.css steps the bar away by while the Bible is read
       // on (1.8, lib/ui/scrollAway.ts), on that screen and no other.
       data-tab-bar
+      // Pictured apart from the page in a page switch, so the bar stands
+      // still while the page under it changes and its lit tab changes in
+      // place (lib/ui/routeMotion.ts, 1.9). It is fixed with a z-index of its
+      // own already, so the name changes nothing else about it.
+      style={{ viewTransitionName: "tab-bar" }}
       // What stands at the foot of the screen, which a page going to a place
       // keeps clear of (lib/ui/readingPlace.ts).
       data-screen-edge="bottom"

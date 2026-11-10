@@ -235,6 +235,10 @@ export function WorkCover({
     onArrive();
   }, [arrived, src, onArrive]);
 
+  // A cover in a link to its book travels to the cover at the head of the
+  // book's page, and back: the same poster at two sizes, known by its title
+  // (lib/ui/routeMotion.ts, 1.9).
+  const carried = `cover:${title}`;
   const { scale, min } = SIZES[size];
   const g = GEOMETRY[scale];
   const words = coverWords({ title, author, size, picture: src !== null });
@@ -303,7 +307,7 @@ export function WorkCover({
 
   if (!src) {
     return (
-      <div aria-hidden data-cover="" className={box} style={{ backgroundImage: LIT }}>
+      <div aria-hidden data-cover="" className={box} data-carry={carried} data-carry-into={carried} style={{ backgroundImage: LIT }}>
         <span
           data-cover-words=""
           className="absolute inset-0 flex flex-col items-center text-center"
@@ -328,7 +332,7 @@ export function WorkCover({
   }
 
   return (
-    <div aria-hidden data-cover="" className={box} style={{ backgroundImage: GROUND }} data-cover-held={held ? "" : undefined}>
+    <div aria-hidden data-cover="" className={box} data-carry={carried} data-carry-into={carried} style={{ backgroundImage: GROUND }} data-cover-held={held ? "" : undefined}>
       {imageUrl ? null : image}
       <span data-cover-words="" className="absolute inset-x-0 bottom-0 flex flex-col">
         <span aria-hidden className="block" style={{ paddingTop: pct(g.fade), backgroundImage: FADE }} />

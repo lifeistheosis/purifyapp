@@ -135,6 +135,7 @@ const nextConfig: NextConfig = isNative
       // phone saved before this build was installed is older than what the
       // build carries, and is not put in front of it.
       env: { NEXT_PUBLIC_PURIFY_BUILT_AT: new Date().toISOString() },
+      experimental: { viewTransition: true },
     }
   : {
       // BUILD MEMORY, not build speed.
@@ -157,7 +158,7 @@ const nextConfig: NextConfig = isNative
       //
       // Two trades build minutes for a deploy that finishes. Raise it only
       // against a real Render build, never against a local one.
-      experimental: { cpus: 2 },
+      experimental: { cpus: 2, viewTransition: true },
       async redirects() {
         return [
           { source: "/prayer", destination: "/prayers", permanent: true },

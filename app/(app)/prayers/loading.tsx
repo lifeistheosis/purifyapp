@@ -1,3 +1,4 @@
+import { AfterAMoment } from "@/components/ui/AfterAMoment";
 import { Skeleton, SkeletonList } from "@/components/ui/Skeleton";
 
 /**
@@ -7,7 +8,7 @@ import { Skeleton, SkeletonList } from "@/components/ui/Skeleton";
  * part that matters on both, because the real eyebrow renders a single space
  * until the date resolves.
  */
-export default function PrayersLoading() {
+function PrayersOutline() {
   return (
     <div className="bg-night">
       <div className="flex items-center justify-between gap-3 px-5 pt-4 pb-2">
@@ -45,5 +46,15 @@ export default function PrayersLoading() {
         <SkeletonList rows={5} className="mt-10" />
       </div>
     </div>
+  );
+}
+
+// The outline waits a moment before it shows, so a page that is ready at
+// once arrives as itself (lib/ui/loadingGrace.ts, 1.9).
+export default function PrayersLoading() {
+  return (
+    <AfterAMoment>
+      <PrayersOutline />
+    </AfterAMoment>
   );
 }

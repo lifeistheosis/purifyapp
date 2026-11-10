@@ -1,3 +1,4 @@
+import { AfterAMoment } from "@/components/ui/AfterAMoment";
 import { Skeleton } from "@/components/ui/Skeleton";
 
 /**
@@ -11,11 +12,21 @@ import { Skeleton } from "@/components/ui/Skeleton";
  * was opened from Settings. That screen is the You page's alone now
  * (../(you)/loading.tsx).
  */
-export default function AccountScreenLoading() {
+function AccountScreenOutline() {
   return (
     <div aria-hidden className="cascade cascade-tight pt-2">
       <Skeleton weight="faint" rounded="rounded-2xl" className="h-[148px] w-full" />
       <Skeleton weight="faint" rounded="rounded-2xl" className="mt-5 h-[96px] w-full" />
     </div>
+  );
+}
+
+// The outline waits a moment before it shows, so a page that is ready at
+// once arrives as itself (lib/ui/loadingGrace.ts, 1.9).
+export default function AccountScreenLoading() {
+  return (
+    <AfterAMoment>
+      <AccountScreenOutline />
+    </AfterAMoment>
   );
 }

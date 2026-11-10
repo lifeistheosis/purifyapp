@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useRef, useState } from "react";
+import { returnBy } from "@/lib/ui/routeMotion";
 import { cn } from "@/lib/cn";
 import { PremiumNavCta } from "@/components/nav/PremiumNavCta";
 import { useScrolled } from "@/lib/useScrolled";
@@ -83,7 +84,9 @@ export function AppNav() {
           <button
             type="button"
             aria-label={t("common.back")}
-            onClick={() => router.back()}
+            // Pictured where it can be, as every way back in the app is
+            // (lib/ui/routeMotion.ts, 1.9).
+            onClick={() => returnBy(() => router.back())}
             style={{ animationDelay: "0ms" }}
             className="appnav-in inline-flex items-center justify-center h-9 w-9 rounded-pill border border-paper/20 text-paper/70 hover:text-paper hover:border-paper/40 transition-colors duration-150 focus-visible:outline-2 focus-visible:outline-paper focus-visible:outline-offset-2"
           >

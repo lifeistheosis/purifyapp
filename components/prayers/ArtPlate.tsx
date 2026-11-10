@@ -26,6 +26,11 @@ export function ArtPlate({ id, size, className }: { id: string; size: ArtSize; c
   return (
     <span
       aria-hidden
+      // The plate travels: out of a row or a tile that opens this icon's
+      // page, and into the place the same icon has there, found by the
+      // icon's own address (lib/ui/routeMotion.ts, 1.9).
+      data-carry={art.src}
+      data-carry-into={art.src}
       className={cn("relative block aspect-[3/4] shrink-0 overflow-hidden bg-night-soft", BOX[size], className)}
     >
       {/* Whole on its plate, or not yet at all (build 85, note 52). */}

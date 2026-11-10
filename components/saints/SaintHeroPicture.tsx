@@ -151,6 +151,10 @@ export function SaintHeroPicture({
         alt={alt}
         decoding="async"
         fetchPriority="high"
+        // The icon of the card that opened this page travels here: the same
+        // icon, larger (lib/ui/routeMotion.ts, 1.9). Not into the wide
+        // picture above, which is another picture with the name over it.
+        data-carry-into={iconUrl}
         className="h-[260px] w-auto rounded-[12px] shadow-[0_24px_60px_-20px_rgba(0,0,0,0.7)] ring-1 ring-paper/10 md:h-[300px]"
       />
     </div>

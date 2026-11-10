@@ -1,10 +1,11 @@
+import { AfterAMoment } from "@/components/ui/AfterAMoment";
 import { Skeleton } from "@/components/ui/Skeleton";
 
 /**
  * The councils while they load: the page's own shape (1.8, the owner's pick of
  * r3-03), its name over the seven bands of the gallery.
  */
-export default function CouncilsLoading() {
+function CouncilsOutline() {
   return (
     <section className="bg-night px-5 md:px-8 pt-6 pb-16 md:py-24">
       <div className="mx-auto max-w-[1200px] w-full cascade">
@@ -19,5 +20,15 @@ export default function CouncilsLoading() {
         </div>
       </div>
     </section>
+  );
+}
+
+// The outline waits a moment before it shows, so a page that is ready at
+// once arrives as itself (lib/ui/loadingGrace.ts, 1.9).
+export default function CouncilsLoading() {
+  return (
+    <AfterAMoment>
+      <CouncilsOutline />
+    </AfterAMoment>
   );
 }

@@ -1,4 +1,5 @@
 import { MobileHeader } from "@/components/mobile/MobileHeader";
+import { AfterAMoment } from "@/components/ui/AfterAMoment";
 import { Skeleton, SkeletonList } from "@/components/ui/Skeleton";
 
 /**
@@ -21,7 +22,7 @@ import { Skeleton, SkeletonList } from "@/components/ui/Skeleton";
  * not change when the screen arrives; under it, the parts of the screen in
  * their places: the picture, the streak, a list, the rows.
  */
-export default function AccountLoading() {
+function AccountOutline() {
   return (
     <div className="bg-night">
       <MobileHeader titleKey="nav.you" />
@@ -42,5 +43,15 @@ export default function AccountLoading() {
         <SkeletonList rows={3} className="mt-7" />
       </div>
     </div>
+  );
+}
+
+// The outline waits a moment before it shows, so a page that is ready at
+// once arrives as itself (lib/ui/loadingGrace.ts, 1.9).
+export default function AccountLoading() {
+  return (
+    <AfterAMoment>
+      <AccountOutline />
+    </AfterAMoment>
   );
 }

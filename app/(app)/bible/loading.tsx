@@ -1,6 +1,7 @@
+import { AfterAMoment } from "@/components/ui/AfterAMoment";
 import { Skeleton } from "@/components/ui/Skeleton";
 
-export default function BibleLoading() {
+function BibleOutline() {
   return (
     <div className="bg-night">
       {/* Centered hero, mirroring the Bible index. */}
@@ -37,5 +38,15 @@ export default function BibleLoading() {
         </div>
       </section>
     </div>
+  );
+}
+
+// The outline waits a moment before it shows, so a page that is ready at
+// once arrives as itself (lib/ui/loadingGrace.ts, 1.9).
+export default function BibleLoading() {
+  return (
+    <AfterAMoment>
+      <BibleOutline />
+    </AfterAMoment>
   );
 }

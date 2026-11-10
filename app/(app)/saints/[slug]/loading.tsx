@@ -1,3 +1,4 @@
+import { AfterAMoment } from "@/components/ui/AfterAMoment";
 import { Skeleton, SkeletonText } from "@/components/ui/Skeleton";
 
 /**
@@ -6,7 +7,7 @@ import { Skeleton, SkeletonText } from "@/components/ui/Skeleton";
  * its line, the row of the request, the doors (round 3b D), and the first
  * paragraphs; on a tablet and a computer, the picture beside the name.
  */
-export default function SaintLoading() {
+function SaintOutline() {
   return (
     <div className="bg-night px-5 md:px-8">
       <div className="mx-auto w-full max-w-[1100px]">
@@ -39,5 +40,15 @@ export default function SaintLoading() {
         </div>
       </div>
     </div>
+  );
+}
+
+// The outline waits a moment before it shows, so a page that is ready at
+// once arrives as itself (lib/ui/loadingGrace.ts, 1.9).
+export default function SaintLoading() {
+  return (
+    <AfterAMoment>
+      <SaintOutline />
+    </AfterAMoment>
   );
 }

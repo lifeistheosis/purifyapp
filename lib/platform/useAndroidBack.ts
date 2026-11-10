@@ -17,6 +17,21 @@ import { useEffect, useRef } from "react";
 
 import { isNativeClient } from "@/lib/platform/native";
 
+// How many sheets and dialogs hold the phone's Back just now. Counted as each
+// becomes active, not as its listener is registered (which is later, and
+// asynchronous), so the answer is right from the frame the sheet opens.
+let owners = 0;
+
+/**
+ * True while a sheet or a dialog has taken the phone's Back for itself. The
+ * page's own Back (components/nav/RouteTransition.tsx, 1.9) asks, and stands
+ * aside: every listener hears the button, and a press that closes a sheet
+ * must not also leave the page.
+ */
+export function overlayOwnsBack(): boolean {
+  return owners > 0;
+}
+
 export function useAndroidBack(active: boolean, onBack: () => void): void {
   // Keep the latest onBack in a ref so the effect below depends ONLY on
   // `active`. Callers almost always pass a fresh arrow each render (e.g.
@@ -33,6 +48,7 @@ export function useAndroidBack(active: boolean, onBack: () => void): void {
 
   useEffect(() => {
     if (!active || !isNativeClient()) return;
+    owners += 1;
     let disposed = false;
     let remove: (() => void) | undefined;
     void (async () => {
@@ -49,6 +65,7 @@ export function useAndroidBack(active: boolean, onBack: () => void): void {
       remove = () => void handle.remove();
     })();
     return () => {
+      owners -= 1;
       disposed = true;
       remove?.();
     };

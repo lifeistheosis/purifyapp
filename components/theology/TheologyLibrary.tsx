@@ -45,7 +45,7 @@ export function WaysRows({ counts }: { counts: WayCounts }) {
       {WAYS.map((w) => (
         <li key={w.key} className="theology-rule">
           <Link href={w.href} className="theology-row flex min-h-[54px] items-center gap-3 rounded-[14px] px-2 py-2">
-            <span className="theology-plate grid size-8 shrink-0 place-items-center rounded-[10px] text-paper/85">
+            <span data-carry={`way:${w.key}`} className="theology-plate grid size-8 shrink-0 place-items-center rounded-[10px] text-paper/85">
               <w.Icon size={17} />
             </span>
             <span className="min-w-0 flex-1">
@@ -71,7 +71,9 @@ export function WaysTiles({ counts }: { counts: WayCounts }) {
       {WAYS.map((w) => (
         <li key={w.key}>
           <Link href={w.href} className="theology-tile press-card flex h-16 items-center gap-[11px] rounded-[16px] px-3">
-            <span className="theology-glyph text-paper">
+            {/* The glyph travels to the head of the way's own page
+                (lib/ui/routeMotion.ts, 1.9). */}
+            <span data-carry={`way:${w.key}`} className="theology-glyph text-paper">
               <w.Icon size={20} />
             </span>
             <span className="min-w-0">

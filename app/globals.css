@@ -8486,6 +8486,188 @@ body[data-route-exit] [data-route-content] {
  transition: none;
 }
 
+/* ── Every page switch moves (1.9, build 89 note 4) ───────────────────
+   The owner, 2026-11-10: "it just instantly pulls up the page ... I want that
+   to be the standard too with every single page switch." The fade above
+   plays when a reader changes section and at no other time (the template it
+   lives on is kept from one page of a section to the next), so a card that
+   opens its own page cut straight to it.
+
+   Now the browser pictures the page being left and the page arriving (View
+   Transitions), and these rules say how the two change places. Which rule
+   applies is the class the page is given as the new page commits
+   (`view-transition-class` on <html>: lib/ui/routeMotion.ts, which also says
+   why going back is started by the app and not by React;
+   components/nav/RouteTransition.tsx is the wiring):
+
+     forward   the new page settles in over the old: it rises its last few
+               pixels as it clears, and the old one is gone in the time the
+               tab bar's dim takes.
+     back      the reverse. The page being left sinks away, and the one
+               behind it is simply there again.
+     swap      a tab for a tab, a chapter for the next: the two cross-fade
+               and nothing travels, because nothing went deeper.
+
+   On the house curve and inside a third of a second, so a reader is never
+   kept waiting on it. Up and down, never sideways: a page that slid in from
+   the right would have to slide in from the left in Arabic.
+
+   These move PICTURES of the page, never the page: the wrapper that holds a
+   route still carries no transform (the doctrine below `.cascade-rise`, held
+   by lib/ui/__tests__/motionDoctrine.test.ts), so nothing fixed inside a page
+   is displaced, during the move or after it.
+
+   Still under reduced motion: no transition is started at all
+   (routeMotion.canMove), and the rule beside the reader's cross-fade
+   ("View Transition tuning") already stops any that is. On a phone with no
+   View Transitions (an iPhone before iOS 18) none of this applies and pages
+   change as they did; on iOS 18.0 and 18.1, which have the transitions and
+   not yet the class, the two pages cross-fade plainly. */
+@keyframes route-leave {
+ to { opacity: 0; }
+}
+@keyframes route-arrive {
+ from { opacity: 0; }
+}
+@keyframes route-settle {
+ from { opacity: 0; translate: 0 14px; }
+}
+@keyframes route-sink {
+ to { opacity: 0; translate: 0 14px; }
+}
+::view-transition-old(root.nav-forward),
+::view-transition-old(root.nav-back),
+::view-transition-old(root.nav-swap),
+::view-transition-new(root.nav-forward),
+::view-transition-new(root.nav-back),
+::view-transition-new(root.nav-swap) {
+ /* One page over the other, plainly. The browser's own blend is made for
+    two pictures fading in step, and these do not. */
+ mix-blend-mode: normal;
+ animation-timing-function: var(--ease-house);
+ animation-fill-mode: both;
+}
+/* The page being left is all but gone before the next one shows: two pages
+   of words read through each other for even three frames look like a
+   fault. The house curve does most of its work early, so the wait is
+   short. With the longest of them, forward, the whole change takes 340ms. */
+::view-transition-old(root.nav-forward),
+::view-transition-old(root.nav-back),
+::view-transition-old(root.nav-swap) {
+ animation-duration: var(--duration-route-exit);
+ animation-delay: 0s;
+}
+::view-transition-new(root.nav-forward),
+::view-transition-new(root.nav-back),
+::view-transition-new(root.nav-swap) {
+ animation-duration: var(--duration-route-enter);
+ animation-delay: 40ms;
+}
+::view-transition-old(root.nav-forward),
+::view-transition-old(root.nav-swap) {
+ animation-name: route-leave;
+}
+::view-transition-new(root.nav-forward) {
+ animation-name: route-settle;
+ animation-duration: 300ms;
+}
+::view-transition-old(root.nav-back) {
+ animation-name: route-sink;
+}
+::view-transition-new(root.nav-back),
+::view-transition-new(root.nav-swap) {
+ animation-name: route-arrive;
+}
+
+/* The tab bar is pictured apart from the page, so it stands still while the
+   page under it changes, and its lit tab changes in place. Its name is on
+   the bar itself (components/nav/MobileTabBar.tsx, view-transition-name:
+   tab-bar), not here: every rule on [data-tab-bar] in this file is one that
+   moves it on a reading screen, and a test holds them to that.
+
+   The website's header, the same: it is the page above it that changes, and
+   a header that rose and faded with every page read as the whole site
+   blinking (seen in stills at a computer's width, 2026-11-10). It is sticky
+   with a z-index of its own already. */
+[data-appnav] {
+ view-transition-name: app-nav;
+}
+
+/* A picture that leads to its own page travels into it: the card's picture
+   and the picture at the head of its page wear one name for the length of
+   the change (lib/ui/routeMotion.ts, "A picture that leads to its own
+   page"), and the browser moves the one into the place and shape of the
+   other. It moves for as long as the page takes to settle, on the same
+   curve. Both pictures fill the frame as it changes shape, cut to it as a
+   picture is cut to its plate, and pass into each other on the way.
+
+   A picture with nowhere to go on the new page leaves with its page, and
+   one with nothing behind it arrives with its page: exactly the page's own
+   motion, so nothing is seen to be apart from it. */
+::view-transition-group(carried) {
+ animation-duration: 320ms;
+ animation-timing-function: var(--ease-house);
+}
+::view-transition-old(carried),
+::view-transition-new(carried) {
+ block-size: 100%;
+ object-fit: cover;
+ /* Cut to the frame: the browser lets a picture that covers its frame
+    spill past it, and the wider of the two showed at the other's sides. */
+ overflow: clip;
+ border-radius: 12px;
+ animation-duration: 320ms;
+}
+::view-transition-old(carried):only-child {
+ animation: route-leave var(--duration-route-exit) var(--ease-house) both;
+}
+::view-transition-new(carried):only-child {
+ animation: route-arrive var(--duration-route-enter) var(--ease-house) 40ms both;
+}
+
+/* What a travelling picture becomes is there at once. A cover's picture
+   fades in over its plate as it loads (components/covers/WorkCover.tsx), and
+   under a picture arriving on it that fade is the picture going out and
+   coming back. Only while it wears the name (routeMotion, wear). */
+[data-carried-in],
+[data-carried-in] * {
+ transition: none !important;
+}
+
+/* What React is asked to picture on a route change: one transparent pixel
+   (components/nav/RouteTransition.tsx). Its own picture takes no time, so
+   that a change in which the page itself is not pictured (a page whose
+   outline came first) is over in a frame and holds nothing back. */
+::view-transition-group(.route-mark),
+::view-transition-old(.route-mark),
+::view-transition-new(.route-mark) {
+ animation-duration: 0s;
+}
+.route-mark {
+ position: fixed;
+ inset-block-start: 0;
+ inset-inline-start: 0;
+ inline-size: 1px;
+ block-size: 1px;
+ opacity: 0;
+ pointer-events: none;
+}
+
+/* A route that arrived in a transition has been brought in already; its own
+   fade on top would bring it in twice (routeMotion.quietEntrance). Its rows
+   still come in after it, in their order, as they do after the fade.
+
+   A route that RETURNED is not assembled again: the reader has seen it, so
+   it is whole in the picture that comes back. The rows' entrance is not
+   taken away (taking an animation away and giving it back starts it), it is
+   set a second into its past, where it has finished. */
+.route-fade[data-carried] {
+ animation: none;
+}
+.route-fade[data-carried="back"] .cascade > * {
+ animation-delay: -1s;
+}
+
 /* Airbnb-style listing card. The surface rises a few px with a soft shadow
    on pointer hover (springs back on leave) and dips on tap, so a grid of
    product cards feels physical and image-led. Hover lift is pointer-only;

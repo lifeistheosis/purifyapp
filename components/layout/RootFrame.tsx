@@ -35,6 +35,7 @@ import { SavingBridge } from "@/components/native/SavingBridge";
 import { ShortcutListener } from "@/components/native/ShortcutListener";
 import { WidgetBridgeSync } from "@/components/native/WidgetBridgeSync";
 import { RouteExitBridge } from "@/components/nav/RouteExitBridge";
+import { RouteTransition } from "@/components/nav/RouteTransition";
 import { ScrollResetBridge } from "@/components/nav/ScrollResetBridge";
 import { FirstRunGate } from "@/components/onboarding/FirstRunGate";
 import { TestersMark } from "@/components/onboarding/TestersMark";
@@ -87,6 +88,10 @@ export function RootFrame({
             while it arrives (lib/ui/scrollReset.ts). Here for the reason
             above. Renders nothing. */}
         <ScrollResetBridge />
+        {/* Every page switch moves (lib/ui/routeMotion.ts, 1.9). Here for the
+            reason above, and after the two above on purpose: it pictures the
+            page once they have set it right. Renders one transparent pixel. */}
+        <RouteTransition />
         {/* Here, for the same reason. Today is app/page.tsx, outside the
             (app) group, and Today is where a reader prays the morning rule
             from. Mounted in (app)/layout.tsx this bridge never ran for them,
