@@ -543,6 +543,30 @@ apps, 4; the two unused packages, 0.5; the twelve Discover tiles resized,
 1; the service worker's cache given a limit, 4; the last dead link in
 `StoreClient.tsx`, 1; signed-out apps not asking for notifications, 0.5.
 
+## The 1.9 part, as it is built (from 2026-11-10)
+
+The arbiter's go: 8, 6, 5 and 7a in that order; 7b held; 9's check on the
+next test build's phone walk (`HANDOFF.md`).
+
+| Item | Commit | Before | After |
+|---|---|---|---|
+| 8. The patch notes leave the start-up scripts | "The front door no longer loads every patch note ever written" | 32 scripts, 2,509 KB (760 KB packed) at the front door | 2,345 KB (705 KB packed) |
+| 7a. Pictures kept at the edge | "The website's pictures are kept at the edge" | every picture `max-age=0` at the origin | a year for a name with a version, a day for any other; the streamed folders unchanged |
+
+Item 8 is one part, not the two planned. Measured before building: the
+home page's chip imported the whole changelog for one title, and that was
+all 175 KB of it. The second part, the calendar's year, turned out to be
+about 250 KB on disk but only about 40 KB packed, and it is what Today
+draws first, so making it load late would change the first screen for a
+small gain. It is left as it is. The English text file stays too, as
+planned.
+
+Gates for these two: typecheck 0; unit tests 10,834 passed, 8 skipped,
+0 failed; lint 0 errors; the website build; `build:android` then
+`build:ios`, 67.1 MB packed (the export grew since phase 2 because other
+work put more covers in the apps). 7a was checked on a local run of the
+built website, nine addresses.
+
 ## Left alone, on purpose
 
 - The 21 language files (about 2.5 MB packed) and the script fonts
