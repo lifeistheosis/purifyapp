@@ -135,7 +135,8 @@ export const RULES: RuleMeta[] = [
  descriptionDe: "Terz, die Stunde von Pfingsten; Psalmen 16, 24 und 50.",
  category: "daily",
  href: "/prayers/hours/third-hour",
- estimatedMinutes: 5,
+ // 6 from his yes to call 13 (2026-11-10): the First Hour's opening prayers, at its own pace.
+ estimatedMinutes: 6,
  timeOfDay: "morning",
  },
  {
@@ -146,7 +147,8 @@ export const RULES: RuleMeta[] = [
  descriptionDe: "Sext, die Stunde der Kreuzigung; Psalmen 53, 54 und 90.",
  category: "daily",
  href: "/prayers/hours/sixth-hour",
- estimatedMinutes: 5,
+ // 6 from his yes to call 13 (2026-11-10): the First Hour's opening prayers, at its own pace.
+ estimatedMinutes: 6,
  timeOfDay: "midday",
  },
  {
@@ -157,7 +159,8 @@ export const RULES: RuleMeta[] = [
  descriptionDe: "Non, die Todesstunde Christi; Psalmen 83, 84 und 85.",
  category: "daily",
  href: "/prayers/hours/ninth-hour",
- estimatedMinutes: 5,
+ // 6 from his yes to call 13 (2026-11-10): the First Hour's opening prayers, at its own pace.
+ estimatedMinutes: 6,
  timeOfDay: "any",
  },
  {

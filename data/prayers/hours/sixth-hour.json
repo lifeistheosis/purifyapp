@@ -4,13 +4,35 @@
   "title": "The Sixth Hour",
   "subtitle": "Sext, prayed at midday, the hour of the Crucifixion.",
   "intro": "The Sixth Hour stands at the noon of the day and remembers the nailing of Christ to the Cross. About five minutes.",
-  "estimatedMinutes": 5,
-  "source": "Common Orthodox Horologion. Psalms from Brenton's public-domain Septuagint; troparia in the public-domain liturgical English of the older service books.",
+  "estimatedMinutes": 6,
+  "source": "Common Orthodox Horologion. The opening prayers in the words of the Morning Rule (the common Orthodox prayer book's public-domain English). Psalms from Brenton's public-domain Septuagint; troparia in the public-domain liturgical English of the older service books.",
   "prayers": [
     {
       "id": "opening",
       "title": "Opening blessing",
       "text": "Through the prayers of our holy fathers, O Lord Jesus Christ our God, have mercy on us. Amen."
+    },
+    {
+      "id": "heavenly-king",
+      "from": {
+        "ruleId": "morning",
+        "prayerId": "heavenly-king"
+      },
+      "instruction": "The opening prayers, as in the Morning Rule."
+    },
+    {
+      "id": "trisagion",
+      "from": {
+        "ruleId": "morning",
+        "prayerId": "trisagion"
+      }
+    },
+    {
+      "id": "our-father",
+      "from": {
+        "ruleId": "morning",
+        "prayerId": "our-father"
+      }
     },
     {
       "id": "psalm-53",

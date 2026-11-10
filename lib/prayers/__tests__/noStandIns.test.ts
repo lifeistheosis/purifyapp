@@ -160,10 +160,14 @@ describe("a prayer's place", () => {
         expect(part.text ?? part.title).toBeUndefined();
       });
     }
-    // The First Hour's opening prayers: O Heavenly King, the Trisagion, the Lord's Prayer.
-    expect(pointing).toBe(3);
-    expect(getHour("first-hour")!.prayers.slice(1, 4).map((p) => p.title)).toEqual(["O Heavenly King", "The Trisagion", "The Lord's Prayer"]);
-    expect(getHour("first-hour")!.prayers[1].instruction).toBe("The opening prayers, as in the Morning Rule.");
+    // Each Hour's opening prayers: O Heavenly King, the Trisagion, the Lord's Prayer. The First
+    // Hour's since build 90 note 7; the Third's, Sixth's and Ninth's since his yes to call 13
+    // (2026-11-10, docs/editorial/hours-opening.md part 1), the same three parts, the same words.
+    expect(pointing).toBe(12);
+    for (const slug of ["first-hour", "third-hour", "sixth-hour", "ninth-hour"]) {
+      expect(getHour(slug)!.prayers.slice(1, 4).map((p) => p.title), slug).toEqual(["O Heavenly King", "The Trisagion", "The Lord's Prayer"]);
+      expect(getHour(slug)!.prayers[1].instruction, slug).toBe("The opening prayers, as in the Morning Rule.");
+    }
   });
 
   it("stops the build where a part points at nothing, rather than show a reader a blank", () => {

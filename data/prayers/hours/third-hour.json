@@ -4,13 +4,35 @@
   "title": "The Third Hour",
   "subtitle": "Terce, prayed around 9 a.m., the hour of the descent of the Holy Spirit at Pentecost.",
   "intro": "The Third Hour commemorates the coming of the Holy Spirit upon the disciples on the day of Pentecost. Short, about five minutes.",
-  "estimatedMinutes": 5,
-  "source": "Common Orthodox Horologion. Psalms from Brenton's public-domain Septuagint; troparia in the public-domain liturgical English of the older service books.",
+  "estimatedMinutes": 6,
+  "source": "Common Orthodox Horologion. The opening prayers in the words of the Morning Rule (the common Orthodox prayer book's public-domain English). Psalms from Brenton's public-domain Septuagint; troparia in the public-domain liturgical English of the older service books.",
   "prayers": [
     {
       "id": "opening",
       "title": "Opening blessing",
       "text": "Through the prayers of our holy fathers, O Lord Jesus Christ our God, have mercy on us. Amen."
+    },
+    {
+      "id": "heavenly-king",
+      "from": {
+        "ruleId": "morning",
+        "prayerId": "heavenly-king"
+      },
+      "instruction": "The opening prayers, as in the Morning Rule."
+    },
+    {
+      "id": "trisagion",
+      "from": {
+        "ruleId": "morning",
+        "prayerId": "trisagion"
+      }
+    },
+    {
+      "id": "our-father",
+      "from": {
+        "ruleId": "morning",
+        "prayerId": "our-father"
+      }
     },
     {
       "id": "psalm-16",

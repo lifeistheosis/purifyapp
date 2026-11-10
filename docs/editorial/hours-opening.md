@@ -1,8 +1,11 @@
-# The opening prayers at the Third, Sixth and Ninth Hours (prepared, not shipped)
+# The opening prayers at the Third, Sixth and Ninth Hours (part 1 shipped)
 
-Build 90 note 7 (2026-11-10). The owner's yes is "with a priest checking
-first": this change ships only once a priest confirms it. It is item 29 of the
-clergy review queue (`docs/editorial-standards.md`).
+Build 90 note 7 (2026-11-10). The owner's first yes was "with a priest checking
+first". His later word, "Yes to all recommended suggestions. Do them all."
+(2026-11-10, about 20:07 UTC, call 13), took the recommendation that these
+Hours open like the First with no priest first, so the change below is applied
+as written. Question 2 still waits for a public-domain source. It is item 29
+of the clergy review queue (`docs/editorial-standards.md`).
 
 ## What the app does today
 
