@@ -11,6 +11,7 @@ import { MobileWorkActions } from "@/components/saints/MobileWorkActions";
 import { ReaderPrefsProvider, ReadingModeController } from "@/components/reader/ReaderPrefs";
 import { getServerLocale } from "@/lib/i18n/server";
 import { ContentNotYetTranslated } from "@/components/i18n/ContentNotYetTranslated";
+import { OpeningCover } from "@/components/reading/OpeningCover";
 import { RecordRead } from "@/components/reading/RecordRead";
 import { KeepDay } from "@/components/streak/KeepDay";
 import { bookPage } from "@/lib/reading/cards";
@@ -98,6 +99,21 @@ export default async function WritingPage({ params }: { params: Params }) {
       {/* The page starts under the plates (globals.css, .under-plates). */}
       <section className="bg-night px-5 md:px-8 under-plates md:pt-16">
         <div className="mx-auto max-w-[1100px] w-full">
+          {/* The book opens on its cover (1.9): over the head of the chapter
+              it opens on, where the cover tapped in the reading room
+              travels to. Written here, outside the reader, so the apps have
+              it on the page before the text has come
+              (components/reading/OpeningCover.tsx). First on the page, over
+              the line that says a work is not yet in the reader's language,
+              so it stands in the same place in every language. */}
+          {book ? (
+            <OpeningCover
+              owner={found.saint.slug}
+              slug={content.slug}
+              first={content.sections[0]?.n ?? 1}
+              card={{ key: book.header.card.key, title: book.header.card.title, author: book.header.card.author, cover: book.header.card.cover }}
+            />
+          ) : null}
           {locale !== "en" && !content.isLocalized ? (
             <ContentNotYetTranslated locale={locale} kind="work" />
           ) : null}

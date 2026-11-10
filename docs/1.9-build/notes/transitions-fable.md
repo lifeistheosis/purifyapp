@@ -129,7 +129,7 @@ place that uses one has it:
 | A prayer's plate in a row (`ArtPlate`) | the same plate on the page it opens | the icon's address |
 | A saint's icon in any card (`SaintIcon`) | the icon at the head of the saint's page | the icon's address |
 | A starter's tile on the Florilegium (`FlorilegiaHub`, notes 6 and 12) | the same picture at the head of the starter's own page (`StarterPage`) | the picture's address |
-| A cover (`WorkCover`) | the same cover at the head of the page it opens (a walkthrough) | the title |
+| A cover (`WorkCover`) | the same cover at the head of the page it opens: a walkthrough, and since his yes of the same day a book of the reading room (`OpeningCover`, below) | the title |
 | One of Theology's four buttons, tiles and rows (`TheologyLibrary`) | the glyph at the head of the way's page (`WayPage`) | the way |
 
 Going back, the picture returns into the card it came out of, found again as
@@ -140,13 +140,14 @@ icon left his page and did not arrive in his card. The card that takes the
 picture back is now drawn for the length of the change.
 
 **The rule kept: a picture travels only where the page shows the same
-picture.** Three places from the plan do not, and nothing travels there (the
-picture leaves with its page, in the page's own motion):
+picture.** Three places from the plan did not, and nothing travelled there
+(the picture leaves with its page, in the page's own motion). The first is
+closed; the other two stand:
 
-- **The reading room's covers.** A cover opens straight into the text
-  ("Book I", then the words). There is no cover at the head of that page to
-  travel into. If he wants one there, that is a change to the reader's head,
-  which note 15 has just set.
+- **The reading room's covers.** A cover opened straight into the text
+  ("Book I", then the words), with no cover at the head of that page to
+  travel into. That was his to decide, and he said yes the same morning: a
+  book now opens on its cover ("A book opens on its cover", below).
 - **Your rule.** Its head is another picture, with the title over it. Tried:
   the tile's Christ changed into the head's fresco on the way and covered the
   title until the change was over.
@@ -158,10 +159,158 @@ picture leaves with its page, in the page's own motion):
 
 `node scripts/route-motion.mjs` opens the export in Chromium, the Android
 WebView's engine, served as the shells serve it, walks the app and reads from
-the browser what it pictured. Twelve walks (eight, and four on the
-Florilegium since its redesign). `--film <folder>` writes stills of
+the browser what it pictured. Eighteen walks (eight, four on the Florilegium since its
+redesign, and six on a book since it opens on its cover). `--film <folder>` writes stills of
 the middle of each transition, which a screenshot of a running app cannot
 take: the transition is stopped as it becomes ready and stepped to each time.
+
+## A book opens on its cover (2026-11-10, on his "all recs")
+
+The question above was his, and he answered it about 08:25 UTC: "all recs",
+which said yes to a cover at the head of a reading room book
+(`BRAINSTORM.md`, the same hour).
+
+### What a reader sees
+
+- **The cover they tap travels into the book.** From a row of the reading
+  room, the day's book, the room's search, a saint's Writings, More like this
+  or a council's shelf: the cover lifts, grows and settles at the head of the
+  page it opens, and the page forms round it. Going back, it returns into
+  the tile it came out of.
+- **The page is otherwise as it was.** Under the cover the chapter's head
+  stands as the Bible's does, then the words. Nothing was taken out and
+  nothing else was added: no new words, no new button.
+- **Only the chapter the book opened on wears it.** Turn to the next chapter
+  and the page is the chapter's own, as before. Come back to that first
+  chapter, by the way back or by the pill, and the page is as it was left.
+- **A book left in the middle opens on its cover too**, and then goes down to
+  the paragraph the reader stopped at.
+- **Held smaller on a short phone**, so the first line or two of the book are
+  still on the first screen.
+
+### The choices, and why
+
+1. **Over the chapter the book opens on, not only over its first chapter.**
+   Most of the room does not open a book at its beginning: the passions, the
+   virtues, daily life and the season's row each open one part of a book
+   ("Homily 12"), Continue reading opens the chapter a reader left, and a
+   plain cover opens the place they kept. A cover only over chapter one would
+   have received the travelling picture from the least-used doors. So the
+   cover belongs to the opening of the book, wherever that is.
+2. **Not over every chapter.** He picked "As the Bible reads" (r3-29 A): a
+   chapter opens on its own head. A cover over each would push the words down
+   a third of a screen at every turn of the page.
+3. **By the chapter, not by the visit.** The cover is there whenever the
+   chapter the book opened on is the one on the page. So a step back through
+   the chapters finds the page as it was left (its scroll was measured with
+   the cover in it), and the last step back, out of the book, finds a cover
+   to carry back into its tile.
+4. **Written with the page, outside the reader, first on the page.** On the
+   website a reader in another language sees a line saying the work is not
+   yet in their language; the cover stands over it, so it is in the same
+   place in every language. In the apps a work's text
+   is a file read after the page opens. A cover drawn with the text would not
+   be standing when the page changes, and a cover that changed hands when
+   the text landed would end the travel half way. It is one element from the
+   first frame to the last (`components/reading/OpeningCover.tsx`, placed by
+   the two pages). What it knows of the chapter it reads from the address and
+   the kept place, never from the text (`useOnOpening`).
+5. **The room's own poster, in the row's own design.** `WorkCover` at the
+   scale the rows use, larger: the same picture, the covers pack laid over
+   it in the apps as the room lays it, a council's document through its
+   window onto the council's icon, and the same title, which is how the
+   travelling picture finds it. All 38 council documents carry one title on
+   the shelf and on their own page; a test holds that.
+6. **Sized by the screen's height: 112 to 160px wide.** Measured in the
+   apps, where the chapter pill stands over the tab bar. At a fixed 160px
+   the first words of a book stood under the pill on a phone 688px tall or
+   shorter: the first screen was all front and no text. So it is 160px on a
+   phone 844px tall and up, narrower by a third of every pixel the screen is
+   shorter, and the row's own 112px from 694px down. An iPhone SE (667px)
+   keeps nearly two of its first lines in sight (1.9, measured), a phone
+   640px tall nearly one (0.9). Nothing smaller than the row's own tile would
+   still be a cover, so on the shortest phones the first screen is mostly the
+   book's front, and the pill and the tab bar step away at the first scroll.
+7. **A return waits for the page to arrive.** A book left in the middle goes
+   down to the reader's paragraph as it opens. It used to start at once,
+   while the page was still settling in. With a cover travelling to the head
+   of that page, the page scrolled away under it. Measured on the export:
+   with the wait switched off the page was 1,245px down before the change was
+   over; with it, 0. The glide now starts when the page has arrived, 360ms at
+   the most, and only where a page switch was pictured
+   (`routeMotion.untilSettled`, `useLanding`). A chapter's top never waits.
+8. **A cover travels as the one it is becoming.** The first film showed the
+   title twice for a few frames: the tile's words and the page's words, one
+   over the other at two sizes, as two pictures passing into each other. A
+   cover is one poster at both ends, so only the arriving cover is drawn
+   while it travels, from the first frame, and it is exact where it lands.
+   A picture says what kind it is in its key ("cover:..."), wears that as a
+   class for the change, and the stylesheet moves covers their own way
+   (`routeMotion.kindOf`, `app/globals.css`, "A cover is one poster"). For
+   the same reason the cover at the head is the row's own design, its words
+   broken and fitted as the row's tile breaks them, so the one that lifts
+   off and the one that lands read the same.
+9. **A picture the reader has scrolled away from is not flown back.** Found
+   by the film of a book read on and then left: the browser pictures a named
+   picture wherever it stands, and the cover, by then 1,100px above the
+   screen, came down into its tile from beyond the top edge. A head that is
+   not in sight is no longer lifted for the way back; the tile arrives with
+   its page (`routeMotion`, `inSight`). This holds for every carried
+   picture, a saint's icon and a starter's plate as much as a cover.
+
+### What was built
+
+- `components/reading/OpeningCover.tsx` (new): the cover.
+- `components/saints/useWorkPlace.ts`: `chapterNamed`, `useOnOpening`, and
+  the landing's wait.
+- `app/(app)/saints/[slug]/[work]/page.tsx` and
+  `app/(app)/councils/[slug]/[document]/page.tsx`: the cover placed above the
+  reader. The readers themselves are unchanged.
+- `lib/ui/routeMotion.ts`: `untilSettled`, a travelling picture's kind, and
+  `inSight`.
+- `app/globals.css`: how a cover travels.
+- No new words, so nothing for the twenty-one languages.
+
+### The check
+
+- `lib/reading/__tests__/openingCover.test.ts` (new) and
+  `lib/ui/__tests__/routeMotion.test.ts`: where the cover stands, that it is
+  written with the page, what it draws, its size, the wait, the cover's own
+  way of travelling.
+- `node scripts/route-motion.mjs`, six more walks on the export: a cover
+  from Short reads into the head of its book, drawn once and never twice;
+  back into its tile, the tile where it was; the same book left in the
+  middle (the page at 0px as it arrived, then at the reader's paragraph);
+  back from there, the cover far up the page, with nothing flown in; a
+  council's document from its shelf, and back. The check now reads whether
+  a picture travelled from the move itself, since a cover no longer fades on
+  both sides.
+- `node scripts/mock-opening-cover.mjs`: the head opened as a reader opens
+  it, held to `checkMock` on all five palettes, on a tall phone, a short one
+  and on Parchment, with a still of each, and the lines of the book left in
+  sight on phones 667px and 640px tall.
+
+### What a phone still has to say
+
+- An iPhone on iOS 18.2 or later: a cover from the room into its book and
+  back. On iOS 18.0 and 18.1 the two covers pass into each other, and the
+  title can be read twice for a few frames.
+- Whether the moment before a return goes down to its paragraph feels right
+  in the hand. One number: `SETTLE_MS` in `lib/ui/routeMotion.ts`.
+
+### What it is not
+
+- The cover does nothing when tapped. About this book is where it was, under
+  the three dots and in the contents.
+- A book opened by a link to one paragraph (a citation, a search result)
+  opens on its cover as well, and goes down to the paragraph.
+- The Bible's chapters are not books of the reading room and are unchanged.
+- One rare case, known and left: the room's covers wait unseen for their
+  pictures (`hold`), and a tile is shown at once for as long as a cover is
+  travelling back into it. If a phone has dropped that picture from its
+  memory in the meantime, the tile can go unseen again for a moment after
+  the cover has landed, until its picture is back. It did not happen in any
+  walk here; the pictures were on the screen a moment before.
 
 ## What a phone still has to say
 

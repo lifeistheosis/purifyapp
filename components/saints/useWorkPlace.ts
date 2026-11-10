@@ -7,6 +7,7 @@ import { recordProgress } from "@/lib/reading/progress";
 import type { SectionHead } from "@/lib/saints/parts";
 import { elementOfPlace, paragraphAtReadingPlace } from "@/lib/saints/paragraphInView";
 import { inputSince, watchInput } from "@/lib/ui/lastInput";
+import { untilSettled } from "@/lib/ui/routeMotion";
 import { watchOwnScroll } from "@/lib/ui/ownScroll";
 import { goToReadingPlace } from "@/lib/ui/readingPlace";
 
@@ -68,6 +69,64 @@ export function useChapterTarget(owner: string, slug: string): string {
 }
 
 /**
+ * The chapter a target names, as far as it can be said before the text is
+ * read: its number; the book's first for a book opened at its beginning; and
+ * for a place by the edition's numbers (#at-1.1.1), which only the text can
+ * turn into a chapter, the address itself.
+ */
+export function chapterNamed(target: string, first: number): string {
+  if (target === "first") return String(first);
+  const kept = /^kept:(\d+):\d+$/.exec(target);
+  if (kept) return kept[1];
+  const place = placeOfHash(target);
+  return place ? String(place.sectionN) : target;
+}
+
+const openedOn = new Map<string, string>();
+
+function onOpeningNow(owner: string, slug: string, first: number): boolean {
+  const key = `${owner}/${slug}`;
+  const chapter = chapterNamed(targetNow(owner, slug), first);
+  if (!openedOn.has(key)) openedOn.set(key, chapter);
+  return openedOn.get(key) === chapter;
+}
+
+/**
+ * Whether the page stands on the chapter the book was opened on (1.9): where
+ * the book's cover stands, at the head of the page a reader opens
+ * (components/reading/OpeningCover.tsx). True as the page opens, whatever it
+ * opens on, so the cover is on the page for a tile's picture to travel into;
+ * false once the reader turns to another chapter, which opens as a chapter
+ * does; true again whenever that first chapter is the one on the page, by
+ * the way back or by the pill, so a step back finds the page as it was left.
+ *
+ * It reads the address and the kept place, never the text: in the apps the
+ * text arrives after the page (components/saints/LazyWritingReader.tsx), and
+ * the cover has to be there before it. `first` is the number of the book's
+ * first chapter, which the page knows.
+ */
+export function useOnOpening(owner: string, slug: string, first: number): boolean {
+  const here = useSyncExternalStore(
+    subscribeHash,
+    () => onOpeningNow(owner, slug, first),
+    () => true,
+  );
+  const key = `${owner}/${slug}`;
+  // Read afresh the next time the book opens. The place it opened on goes
+  // too: this is on the page before the text, and a reader who leaves before
+  // the text has come would otherwise leave it behind for the next visit.
+  useEffect(
+    () => () => {
+      openedOn.delete(key);
+      lastAddress.delete(key);
+      opening.delete(key);
+    },
+    [key],
+  );
+  return here;
+}
+
+/**
  * The chapter a target opens, and the paragraph it lands on (null: the
  * chapter's top). `findAt` answers a place by the edition's numbers.
  */
@@ -106,7 +165,8 @@ export function useGoToChapter(): (n: number) => void {
  * data-place-focus), smooth on the motion switch; a chapter's top is the top
  * of the page. A reader who has already started on their own is left where
  * they are (lib/ui/lastInput.ts): in the apps the text lands a moment after
- * the page opens.
+ * the page opens. A landing that moves the page waits until the page has
+ * arrived (1.9): the book opens on its cover, and then goes to the place.
  */
 export function useLanding(
   owner: string,
@@ -127,23 +187,38 @@ export function useLanding(
     // An address is kept at once: the glide to it is not the reader's scroll.
     if (byAddress) savePosition(owner, slug, place.sectionN, place.paragraph);
     let timer: ReturnType<typeof setTimeout> | null = null;
-    const frame = requestAnimationFrame(() => {
-      if (!byAddress && inputSince(opened)) return;
-      const el = place.paragraph > 0 ? elementOfPlace(place) : null;
-      if (!el || el.id === `s${place.sectionN}`) {
-        window.scrollTo({ top: 0, behavior: "instant" });
-        return;
-      }
-      goToReadingPlace(el);
-      const root = document.documentElement;
-      el.setAttribute("data-focus", "true");
-      root.setAttribute("data-place-focus", "");
-      timer = setTimeout(() => {
-        el.removeAttribute("data-focus");
-        root.removeAttribute("data-place-focus");
-      }, 2000);
-    });
+    let wait: ReturnType<typeof setTimeout> | null = null;
+    let frame = 0;
+    const land = () => {
+      wait = null;
+      frame = requestAnimationFrame(() => {
+        if (!byAddress && inputSince(opened)) return;
+        const el = place.paragraph > 0 ? elementOfPlace(place) : null;
+        if (!el || el.id === `s${place.sectionN}`) {
+          window.scrollTo({ top: 0, behavior: "instant" });
+          return;
+        }
+        goToReadingPlace(el);
+        const root = document.documentElement;
+        el.setAttribute("data-focus", "true");
+        root.setAttribute("data-place-focus", "");
+        timer = setTimeout(() => {
+          el.removeAttribute("data-focus");
+          root.removeAttribute("data-place-focus");
+        }, 2000);
+      });
+    };
+    // A landing that moves the page waits for the page to have arrived (1.9,
+    // lib/ui/routeMotion.ts, untilSettled): the book opens on its cover, which
+    // a tile's picture is still travelling to, and then goes down to the
+    // reader's paragraph. A chapter's top moves nothing and does not wait; nor
+    // does a page that was not pictured arriving (motion off, a chapter
+    // turned inside the book).
+    const settle = place.paragraph > 0 ? untilSettled() : 0;
+    if (settle > 0) wait = setTimeout(land, settle);
+    else land();
     return () => {
+      if (wait) clearTimeout(wait);
       cancelAnimationFrame(frame);
       if (timer) clearTimeout(timer);
       document.documentElement.removeAttribute("data-place-focus");

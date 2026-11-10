@@ -20,6 +20,7 @@ import {
   CARRIED,
   NOTE_MS,
   RETURN_HOLD_MS,
+  SETTLE_MS,
   arrived,
   beginNav,
   canMove,
@@ -27,6 +28,7 @@ import {
   dropReturn,
   endNav,
   isReturning,
+  kindOf,
   liftFrom,
   noteNav,
   quietEntrance,
@@ -36,6 +38,7 @@ import {
   setDown,
   standBeside,
   takeNav,
+  untilSettled,
 } from "../routeMotion";
 
 const ROOT = process.cwd();
@@ -300,6 +303,29 @@ describe("what the page is told while it changes", () => {
     expect(style.get("view-transition-class")).toBe("nav-back");
   });
 
+  // A book takes a returning reader down to the paragraph they left
+  // (components/saints/useWorkPlace.ts, useLanding). It asks this first, so
+  // the page goes there after it has arrived, and not while the book's cover
+  // is still travelling to its head.
+  it("says how long until the page now arriving has arrived, and nothing when none is", () => {
+    vi.useFakeTimers();
+    try {
+      stubDocument({ motion: "full" });
+      expect(untilSettled()).toBe(0);
+      beginNav("forward");
+      expect(untilSettled()).toBe(SETTLE_MS);
+      vi.advanceTimersByTime(200);
+      expect(untilSettled()).toBe(SETTLE_MS - 200);
+      vi.advanceTimersByTime(SETTLE_MS);
+      expect(untilSettled()).toBe(0);
+      // A step back is put back where it was left; nothing waits on it.
+      returnBy(() => {});
+      expect(untilSettled()).toBe(0);
+    } finally {
+      vi.useRealTimers();
+    }
+  });
+
   it("never by an attribute the stylesheet matches: taken off early, it restarts the animation in flight", () => {
     const src = read("lib/ui/routeMotion.ts").replace(/\/\*[\s\S]*?\*\//g, "");
     expect(src).not.toMatch(/dataset\.nav\b/);
@@ -545,6 +571,47 @@ describe("a picture that leads to its own page", () => {
     expect(secondPicture.dataset.carriedIn).toBeUndefined();
   });
 
+  // A book read on, and then left: its cover is far up the page. The browser
+  // pictures a named picture wherever it stands, and the cover came down into
+  // its tile from beyond the top of the screen (the film, 2026-11-10).
+  it("a head the reader has scrolled away from is not flown back in from off the screen", () => {
+    const picture = fake("div", { "data-carry": "cover:Confessions" });
+    const list = [fake("a", { href: "/saints/augustine-of-hippo/confessions/" }, [picture])];
+    const head = fake("div", { "data-carry-into": "cover:Confessions" }) as Fake & { getBoundingClientRect?: () => { top: number; bottom: number } };
+    const open = () => {
+      stage(list);
+      liftFrom(picture as unknown as EventTarget);
+      stage([head]);
+      carryIn("/saints/augustine-of-hippo/confessions/");
+      endNav();
+      stage([head]);
+      (globalThis as { window?: unknown }).window = { location: { pathname: "/saints/augustine-of-hippo/confessions/" }, innerHeight: 844 };
+    };
+
+    // Scrolled 1,200px past it: nothing is lifted, and nothing is carried back.
+    open();
+    head.getBoundingClientRect = () => ({ top: -1360, bottom: -1120 });
+    returnBy(() => {});
+    expect(wears(head)).toBe(false);
+    stage(list);
+    expect(arrived()).toBe(true);
+    expect(wears(picture)).toBe(false);
+    resetRouteMotionForTests();
+
+    // Its foot still on the screen: it goes back into its tile.
+    open();
+    head.getBoundingClientRect = () => ({ top: -200, bottom: 40 });
+    returnBy(() => {});
+    expect(wears(head)).toBe(true);
+    resetRouteMotionForTests();
+
+    // And one below the screen is no more in sight than one above it.
+    open();
+    head.getBoundingClientRect = () => ({ top: 900, bottom: 1140 });
+    returnBy(() => {});
+    expect(wears(head)).toBe(false);
+  });
+
   it("the card it goes back into is drawn for the change, where a long list had left it undrawn", async () => {
     const picture = fake("span", { "data-carry": "/icons/arsenius.jpg" });
     const link = fake("a", { href: "/saints/arsenius/" }, [picture]);
@@ -593,6 +660,42 @@ describe("a picture that leads to its own page", () => {
     expect(wears(picture)).toBe(false);
   });
 
+  // A cover is one poster at both ends, with words on it: passed into each
+  // other, the two titles stood one over the other for the first frames (the
+  // film, 2026-11-10). So a cover says it is one, and the stylesheet draws
+  // only the cover it is becoming.
+  it("a picture of a kind wears its kind beside the name, and one known by its address wears none", () => {
+    expect(kindOf("cover:Confessions")).toBe("cover");
+    expect(kindOf("way:creed")).toBe("way");
+    expect(kindOf("/icons/basil.jpg")).toBeNull();
+    expect(kindOf("https://purifyapp.net/covers/basil.jpg")).toBeNull();
+    expect(kindOf("")).toBeNull();
+
+    const cover = fake("div", { "data-carry": "cover:Confessions" });
+    const tile = fake("a", { href: "/saints/augustine-of-hippo/confessions/" }, [cover]);
+    const icon = fake("span", { "data-carry": "/icons/basil.jpg" });
+    const card = fake("a", { href: "/saints/basil-the-great/" }, [icon]);
+    stage([tile, card]);
+    liftFrom(icon as unknown as EventTarget);
+    expect(icon.names.has("view-transition-class")).toBe(false);
+    liftFrom(cover as unknown as EventTarget);
+    expect(wears(cover)).toBe(true);
+    expect(cover.names.get("view-transition-class")).toBe("carried-cover");
+
+    // The cover at the head of the book's page takes it, and says the same.
+    const head = fake("div", { "data-carry-into": "cover:Confessions" });
+    stage([head]);
+    carryIn("/saints/augustine-of-hippo/confessions/");
+    expect(wears(head)).toBe(true);
+    expect(head.names.get("view-transition-class")).toBe("carried-cover");
+    expect("carriedIn" in head.dataset).toBe(true);
+
+    // And both are given back with the name.
+    setDown();
+    expect(cover.names.size).toBe(0);
+    expect(head.names.size).toBe(0);
+  });
+
   it("the pictures say so themselves: the attributes are on the shared components", () => {
     const has = (file: string, mark: string) => expect(read(file), `${file}: ${mark}`).toContain(mark);
     // Out of a card.
@@ -633,6 +736,32 @@ describe("a picture that leads to its own page", () => {
     expect(css).toMatch(/::view-transition-old\(carried\):only-child \{\s*animation: route-leave var\(--duration-route-exit\) var\(--ease-house\) both;\s*\}/);
     expect(css).toMatch(/::view-transition-new\(carried\):only-child \{\s*animation: route-arrive var\(--duration-route-enter\) var\(--ease-house\) 40ms both;\s*\}/);
     expect(css).toMatch(/\[data-carried-in\],\s*\[data-carried-in\] \* \{\s*transition: none !important;\s*\}/);
+  });
+
+  it("a cover travels as the one it is becoming, alone, so its words are never read twice", () => {
+    const css = read("app/globals.css").replace(/\/\*[\s\S]*?\*\//g, "");
+    // The one being left is not drawn while both are there; the one arriving is, from the first frame.
+    expect(css).toMatch(/@keyframes carried-unseen \{\s*from \{ opacity: 0; \}\s*to \{ opacity: 0; \}\s*\}/);
+    expect(css).toMatch(/::view-transition-old\(carried\.carried-cover\) \{\s*animation: carried-unseen 320ms both;\s*\}/);
+    expect(css).toMatch(/::view-transition-new\(carried\.carried-cover\) \{\s*animation: none;\s*\}/);
+    // For as long as the picture travels.
+    const travels = /::view-transition-group\(carried\) \{\s*animation-duration: (\d+)ms;/.exec(css)![1];
+    expect(travels).toBe("320");
+    // Alone, it leaves or arrives with its page, said after so it holds.
+    const both = css.indexOf("::view-transition-new(carried.carried-cover) {");
+    const leaves = css.indexOf("::view-transition-old(carried.carried-cover):only-child {");
+    const arrives = css.indexOf("::view-transition-new(carried.carried-cover):only-child {");
+    expect(leaves).toBeGreaterThan(both);
+    expect(arrives).toBeGreaterThan(leaves);
+    expect(css.slice(leaves, css.indexOf("}", leaves))).toContain("animation: route-leave var(--duration-route-exit) var(--ease-house) both;");
+    expect(css.slice(arrives, css.indexOf("}", arrives))).toContain("animation: route-arrive var(--duration-route-enter) var(--ease-house) 40ms both;");
+    // The cover it is becoming is whole from the first frame: seen, and its picture shown.
+    expect(css).toMatch(/\[data-carried-in\]\[data-cover\],\s*\[data-carried-in\] \[data-cover-picture\] \{\s*opacity: 1;\s*\}/);
+    // And the cover's own marks are still what the stylesheet looks for.
+    const cover = read("components/covers/WorkCover.tsx");
+    expect(cover).toContain('data-cover=""');
+    expect(cover).toContain('data-cover-picture={shown ? "shown" : "waiting"}');
+    expect(cover).toContain("const carried = `cover:${title}`;");
   });
 });
 
@@ -750,6 +879,16 @@ describe("the stylesheet", () => {
     // The page being left is nearly gone before the next shows.
     expect(wait).toBeGreaterThan(0);
     expect(wait).toBeLessThan(leave);
+  });
+
+  it("a page is said to have arrived when the stylesheet has finished moving it, and not long after", () => {
+    const wait = ms(/::view-transition-new\(root\.nav-swap\) \{[^}]*animation-delay:\s*([^;]+);/.exec(css)![1]);
+    const forward = ms(/::view-transition-new\(root\.nav-forward\) \{\s*animation-name: route-settle;\s*animation-duration:\s*([^;]+);/.exec(css)![1]);
+    const carried = ms(/::view-transition-group\(carried\) \{\s*animation-duration:\s*([^;]+);/.exec(css)![1]);
+    const longest = Math.max(wait + token("--duration-route-enter"), wait + forward, carried);
+    expect(SETTLE_MS).toBeGreaterThanOrEqual(longest);
+    // No more than two frames past it: a reader coming back to a book waits this long for their place.
+    expect(SETTLE_MS - longest).toBeLessThanOrEqual(34);
   });
 
   it("pages move up and down, never sideways, so nothing has to turn in Arabic", () => {

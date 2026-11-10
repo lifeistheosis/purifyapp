@@ -11,6 +11,7 @@ import { MobileWorkProgressBar } from "@/components/saints/MobileWorkProgressBar
 import { MobileWorkActions } from "@/components/saints/MobileWorkActions";
 import { ReaderPrefsProvider, ReadingModeController } from "@/components/reader/ReaderPrefs";
 import { CouncilReader } from "@/components/councils/CouncilReader";
+import { OpeningCover } from "@/components/reading/OpeningCover";
 import { ChevronRight } from "@/components/ui/icons/ChevronRight";
 import { documentMinutes } from "@/lib/councils/books";
 import { authorLine, councilPicture, cropOf, editionOf, eraOfYear } from "@/lib/councils/page";
@@ -102,6 +103,17 @@ export default async function CouncilDocumentPage({
 
  <section className="bg-night px-5 md:px-8 under-plates md:pt-16">
  <div className="mx-auto max-w-[1100px] w-full">
+ {/* The book opens on its cover (1.9): over the head of the section it
+     opens on, where the cover tapped on the council's shelf travels to
+     (components/reading/OpeningCover.tsx). The shelf's own card: the same
+     key, title, author line and window onto the council's icon
+     (lib/councils/books.ts, councilBook). */}
+ <OpeningCover
+  owner={positionKey}
+  slug={docRef.slug}
+  first={about.first}
+  card={{ key: `councils/${c.slug}/${docRef.slug}`, title: docRef.title, author: about.author, cover: about.cover }}
+ />
  {!isLocalized && locale !== "en" && (
  <ContentNotYetTranslated locale={locale} kind="work" />
  )}

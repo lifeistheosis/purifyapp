@@ -8743,6 +8743,52 @@ body[data-route-exit] [data-route-content] {
  transition: none !important;
 }
 
+/* A cover is one poster at both ends, with its title and author on it
+   (1.9: the reading room's cover into the head of the book's page,
+   components/reading/OpeningCover.tsx). Passed into each other as two
+   pictures are, the two posters' words stood one over the other for the
+   first frames, at two sizes: a title read twice (seen in the film,
+   2026-11-10). So a cover travels as the one it is becoming, alone: that
+   cover is drawn from the first frame, at the place and size of the one
+   that was tapped, and grows or shrinks into its own, where it is exact.
+   Cut to a poster's corners, not a plate's.
+
+   The cover it is becoming is whole from that first frame: one that waits
+   unseen for its picture (the room's, `hold`) is seen, and its picture is
+   shown without waiting to be told it has loaded. It is the picture the
+   reader has just been looking at, at the same address, so the phone has it.
+
+   Alone on its side of the change, a cover leaves or arrives with its page
+   as any picture does; said again here, after, so it holds whatever the two
+   selectors weigh. Where the browser has the transitions and not yet the
+   class (iOS 18.0 and 18.1) none of this matches, and the covers pass into
+   each other as before. */
+@keyframes carried-unseen {
+ from { opacity: 0; }
+ to { opacity: 0; }
+}
+::view-transition-old(carried.carried-cover),
+::view-transition-new(carried.carried-cover) {
+ border-radius: 6px;
+ mix-blend-mode: normal;
+}
+::view-transition-old(carried.carried-cover) {
+ animation: carried-unseen 320ms both;
+}
+::view-transition-new(carried.carried-cover) {
+ animation: none;
+}
+::view-transition-old(carried.carried-cover):only-child {
+ animation: route-leave var(--duration-route-exit) var(--ease-house) both;
+}
+::view-transition-new(carried.carried-cover):only-child {
+ animation: route-arrive var(--duration-route-enter) var(--ease-house) 40ms both;
+}
+[data-carried-in][data-cover],
+[data-carried-in] [data-cover-picture] {
+ opacity: 1;
+}
+
 /* What React is asked to picture on a route change: one transparent pixel
    (components/nav/RouteTransition.tsx). Its own picture takes no time, so
    that a change in which the page itself is not pictured (a page whose

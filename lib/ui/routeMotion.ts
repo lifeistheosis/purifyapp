@@ -67,10 +67,19 @@ export const NOTE_MS = 1500;
  */
 export const RETURN_HOLD_MS = 200;
 
+/**
+ * How long a page takes to arrive, at the longest: the page settling in and
+ * a picture travelling to its head (app/globals.css, "Every page switch
+ * moves": 340ms), and a frame more.
+ */
+export const SETTLE_MS = 360;
+
 type Transition = { finished: Promise<unknown>; ready: Promise<unknown>; skipTransition: () => void };
 type MovingDocument = Document & { startViewTransition?: (update: () => unknown) => Transition };
 
 let noted: { note: NavNote; at: number } | null = null;
+/** When the page now arriving will have arrived. */
+let settledAt = 0;
 
 /**
  * The name a travelling picture wears in a transition (below, "A picture that
@@ -268,6 +277,20 @@ export function beginNav(kind: NavKind): void {
   const root = document.documentElement;
   root.style.setProperty("view-transition-name", "root");
   dress(root, kind);
+  settledAt = now() + SETTLE_MS;
+}
+
+/**
+ * How long until the page now arriving has arrived, in milliseconds; 0 when
+ * none is on its way, or none was pictured. For what a page does to itself
+ * as it opens and should do after it has arrived: a book takes a returning
+ * reader down to the paragraph they left (components/saints/useWorkPlace.ts,
+ * useLanding), and a page that scrolled while it was still settling in, with
+ * the book's cover still travelling to its head, moved the place the cover
+ * was travelling to.
+ */
+export function untilSettled(): number {
+  return Math.max(0, Math.ceil(settledAt - now()));
 }
 
 /**
@@ -329,12 +352,30 @@ function pageKey(path: string): string {
 }
 
 /**
+ * What kind of picture a key names, where it says: "cover:Confessions" is a
+ * cover, "way:creed" one of Theology's ways. A picture known by its own
+ * address ("/icons/basil.jpg", "https://...") is of no kind.
+ */
+export function kindOf(key: string): string | null {
+  return /^([a-z]+):(?!\/)/.exec(key)?.[1] ?? null;
+}
+
+/**
  * `landing`: the picture the travelling one becomes. It is marked while it
  * wears the name, and the stylesheet shows what is in it at once: a picture
  * that fades in as it loads would fade in under the one arriving on it.
+ *
+ * A picture of a kind wears its kind too, as a class beside the name
+ * (`view-transition-class: carried-cover`), so the stylesheet can move one
+ * kind in its own way. A cover has to be: it is the same poster at both ends
+ * with its title and author on it, and passed into each other as two
+ * pictures are, the words stood twice for the first frames (seen in the
+ * film, 2026-11-10; app/globals.css, "A cover is one poster").
  */
-function wear(el: HTMLElement, landing = false): void {
+function wear(el: HTMLElement, key: string, landing = false): void {
   el.style.setProperty("view-transition-name", CARRIED);
+  const kind = kindOf(key);
+  if (kind) el.style.setProperty("view-transition-class", `carried-${kind}`);
   if (landing) el.dataset.carriedIn = "";
   wearing.push(el);
 }
@@ -343,6 +384,7 @@ function wear(el: HTMLElement, landing = false): void {
 export function setDown(): void {
   for (const el of wearing) {
     el.style.removeProperty("view-transition-name");
+    el.style.removeProperty("view-transition-class");
     delete el.dataset.carriedIn;
   }
   wearing = [];
@@ -416,7 +458,7 @@ export function liftFrom(target: EventTarget | null): void {
   const href = link?.getAttribute("href") ?? "";
   if (!link || !picture || !href.startsWith("/")) return;
   lifted = { href, key: picture.dataset.carry ?? "", nth: Math.max(0, linksTo(href).indexOf(link)), to: pageKey(href) };
-  wear(picture);
+  wear(picture, lifted.key);
   // A tap that goes nowhere (a new tab, a handler that stops it) leaves no
   // name behind it.
   liftTimer = setTimeout(() => {
@@ -441,20 +483,39 @@ export function carryIn(to: string): void {
   const taker = takerOf(was.key);
   if (!taker) return;
   settle(taker);
-  wear(taker, true);
+  wear(taker, was.key, true);
   ways.delete(was.to);
   ways.set(was.to, { href: was.href, key: was.key, nth: was.nth });
   while (ways.size > KEEP_WAYS) ways.delete(ways.keys().next().value as string);
 }
 
-/** A step back is about to be pictured from this page: its head takes the name, to go back into its card. */
+/**
+ * In sight: some of it is on the screen. The browser pictures a named
+ * picture wherever it stands, on the screen or far above it, and a head the
+ * reader had scrolled a long way past was flown back into its card from
+ * beyond the top of the screen (seen in the film of a book read on,
+ * 2026-11-10: the cover came down out of nowhere). A picture that is not in
+ * sight has nowhere to be seen leaving from.
+ */
+function inSight(el: HTMLElement): boolean {
+  if (typeof window === "undefined" || typeof el.getBoundingClientRect !== "function") return true;
+  const box = el.getBoundingClientRect();
+  const height = window.innerHeight;
+  return box.bottom > 0 && (!(height > 0) || box.top < height);
+}
+
+/**
+ * A step back is about to be pictured from this page: its head takes the
+ * name, to go back into its card. Only a head that is in sight: from further
+ * down the page nothing travels, and the card arrives with its page.
+ */
 function liftBack(from: string): Way | null {
   const way = ways.get(pageKey(from));
   if (!way) return null;
   const head = takerOf(way.key);
-  if (!head) return null;
+  if (!head || !inSight(head)) return null;
   setDown();
-  wear(head);
+  wear(head, way.key);
   return way;
 }
 
@@ -463,12 +524,13 @@ function carryBack(way: Way): void {
   const picture = linksTo(way.href)[way.nth]?.querySelector<HTMLElement>("[data-carry]") ?? null;
   if (!picture) return;
   drawn(picture);
-  wear(picture, true);
+  wear(picture, way.key, true);
 }
 
 /** Test seam. */
 export function resetRouteMotionForTests(): void {
   noted = null;
+  settledAt = 0;
   returning = null;
   wearing = [];
   shown = [];

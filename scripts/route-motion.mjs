@@ -25,6 +25,13 @@
 //             the Florilegium, and back)
 //   a gathering, whose page in the apps is one page for all of them named in
 //             its query, is a page switch like any (lib/florilegium/href.ts)
+//   a book    the cover tapped in the reading room travels to the head of the
+//             book's page and back into its tile (components/reading/
+//             OpeningCover.tsx); a book left in the middle opens on its cover
+//             all the same, and goes down to the reader's paragraph only
+//             once the page has arrived; back from there, with the cover far
+//             up the page, nothing is flown in from off the screen; a
+//             council's document, the same from its council's shelf
 //   each is over within 350ms
 //   the browser's own Back is not pictured (the platform's rule)
 //   with motion reduced, nothing is pictured at all
@@ -55,7 +62,7 @@ function watchTransitions() {
   const start = Document.prototype.startViewTransition;
   if (!start) return;
   Document.prototype.startViewTransition = function (arg) {
-    const entry = { from: location.pathname, at: performance.now(), parts: [], tabBar: false, carried: [], ready: false, done: false };
+    const entry = { from: location.pathname, at: performance.now(), parts: [], tabBar: false, carried: [], travelled: false, leaving: null, ready: false, done: false };
     log.seen.push(entry);
     const transition = start.call(this, arg);
     const held = transition.ready.then(
@@ -69,9 +76,17 @@ function watchTransitions() {
           const timing = a.effect.getComputedTiming();
           const part = a.effect.pseudoElement;
           if (part.includes("(tab-bar)")) entry.tabBar = true;
-          // The travelling picture: its two sides, the card's and the page's.
+          // The travelling picture: its two sides, the card's and the page's,
+          // where each is drawn fading. (A cover draws only the one it is
+          // becoming, which does not fade: app/globals.css, "A cover is one
+          // poster".)
           if (part === "::view-transition-old(carried)" && !entry.carried.includes("old")) entry.carried.push("old");
+          // How the side being left is drawn: a cover's is kept unseen.
+          if (part === "::view-transition-old(carried)") entry.leaving = a.animationName ?? "";
           if (part === "::view-transition-new(carried)" && !entry.carried.includes("new")) entry.carried.push("new");
+          // And whether it travelled: the browser moves the frame the two
+          // share only when there is one on each side of the change.
+          if (part === "::view-transition-group(carried)") entry.travelled = true;
           if (part === "::view-transition-old(root)" || part === "::view-transition-new(root)") {
             entry.parts.push({ part: part.includes("old") ? "old" : "new", name: a.animationName ?? "", ms: Number(timing.duration) + Number(timing.delay) });
           }
@@ -89,6 +104,9 @@ function watchTransitions() {
       () => {
         entry.done = true;
         entry.took = Math.round(performance.now() - entry.at);
+        // How far down the page was when the change was over: a page that
+        // goes somewhere as it opens goes after it has arrived.
+        entry.scrolled = Math.round(window.scrollY);
       },
       () => {
         entry.done = true;
@@ -199,8 +217,11 @@ function judge(result, { old, fresh, tabBar = true, to, carried = false }) {
   const longest = Math.max(0, ...one.parts.map((p) => p.ms));
   if (longest > 350) faults.push(`takes ${longest}ms, over 350`);
   if (tabBar && !one.tabBar) faults.push("the tab bar is not pictured apart from the page");
-  if (carried && !(one.carried.includes("old") && one.carried.includes("new"))) {
-    faults.push(`the picture did not travel (its sides pictured: ${one.carried.join(" and ") || "neither"})`);
+  if (carried && !one.travelled) {
+    faults.push(`the picture did not travel (its sides drawn: ${one.carried.join(" and ") || "neither"})`);
+  }
+  if (carried === "alone" && one.leaving !== "carried-unseen") {
+    faults.push(`a cover was drawn twice as it travelled: the one being left moves as "${one.leaving ?? "nothing"}", not carried-unseen`);
   }
   return faults;
 }
@@ -240,6 +261,19 @@ export async function checkRouteMotion({ film = null, scale = 1 } = {}) {
   ];
   const { browser, ctx, page } = await openPhone({ scale, set: { "purify:florilegia": JSON.stringify(mine) } });
   await ctx.addInitScript(watchTransitions);
+  // The books' covers are pictures the apps ask the website for and never
+  // carry (lib/readAloud/covers.ts; a council's document is a window onto
+  // its council's icon, under /history/media), and the shell here answers
+  // nothing from outside the bundle. They are answered from the same files
+  // in this checkout, which are what the website serves, as a phone with
+  // signal gets them; nothing leaves this machine.
+  for (const folder of ["covers", "history/media"]) {
+    await ctx.route(`https://purifyapp.net/${folder}/**`, (route) => {
+      const file = path.resolve("public", decodeURIComponent(new URL(route.request().url()).pathname).replace(/^\/+/, ""));
+      if (!file.startsWith(path.resolve("public", folder)) || !fs.existsSync(file)) return route.abort();
+      return route.fulfill({ status: 200, contentType: file.endsWith(".avif") ? "image/avif" : "image/jpeg", body: fs.readFileSync(file) });
+    });
+  }
   const chevron = 'button[aria-label="Back"]:visible, a[aria-label="Back"]:visible';
   try {
     // Forward: Prayers, then one of its pages.
@@ -291,6 +325,136 @@ export async function checkRouteMotion({ film = null, scale = 1 } = {}) {
       else if (Math.abs(where - tapped.top) > 6) back.push(`the saint that was tapped came back at ${where}px, not at ${tapped.top}px where it was`);
       note("a scrolled list: back to the same place, the icon back in its card", back, `${r.from} to ${r.to}, the tapped saint at ${where}px (was ${tapped.top}px)`);
       if (film) await sheet(ctx, film, "return", r.stills);
+    }
+
+    // A book (1.9, the owner's yes of 2026-11-10 to a cover at a book's
+    // head). The cover tapped in the reading room travels to the head of the
+    // page it opens, and back into its tile.
+    await go(page, "/reading/");
+    await page.waitForSelector("[data-reading-row] li a[href^='/saints/']", { timeout: 20000 }).catch(() => {});
+    await sleep(page, 1500);
+    // The room opens on the day's book, which fills the first screen: down to
+    // Short reads, the first row of covers, which stays where it is when the
+    // reader comes back (Continue reading arrives under it). A book of that
+    // row whose first chapter is long enough to be left in the middle of.
+    const shelf = "[data-reading-row='short'] li a[href^='/saints/']";
+    const onShelf = await page.evaluate((sel) => [...document.querySelectorAll(sel)].map((a) => a.getAttribute("href")), shelf);
+    const leftAt = (href) => {
+      try {
+        const [saint, work] = href.split("/").filter(Boolean).slice(1);
+        const first = JSON.parse(fs.readFileSync(path.resolve("data", "saints", saint, `${work}.json`), "utf8")).sections[0];
+        const worded = first.paragraphs.map((p, i) => ({ i, n: p.trim() ? p.trim().split(/\s+/).length : 0 })).filter((w) => w.n > 0 && w.i > 0);
+        return worded.length >= 5 ? { saint, work, kept: { sectionN: first.n, paragraph: worded[3].i } } : null;
+      } catch {
+        return null;
+      }
+    };
+    const nth = onShelf.findIndex((href) => href && !href.includes("#") && leftAt(href));
+    /** Marks the book's tile, and says where it stands. */
+    const tile = () =>
+      page.evaluate(
+        ([sel, i]) => {
+          const a = document.querySelectorAll(sel)[i];
+          if (!a) return null;
+          document.querySelectorAll("[data-walk-target]").forEach((el) => el.removeAttribute("data-walk-target"));
+          a.setAttribute("data-walk-target", "");
+          return { href: a.getAttribute("href"), top: Math.round(a.getBoundingClientRect().top) };
+        },
+        [shelf, nth],
+      );
+    if (nth < 0) {
+      note("a book: its cover travelling to the head of its page", ["no book in Short reads has a first chapter long enough to be left in the middle of"], "");
+    } else {
+      await page.evaluate(() => {
+        const row = document.querySelector("[data-reading-row='short']");
+        window.scrollTo(0, row.getBoundingClientRect().top + window.scrollY - 200);
+      });
+      // Into sight, for a book that is a swipe along the row.
+      await page.locator(shelf).nth(nth).scrollIntoViewIfNeeded();
+      await sleep(page, 900);
+      const book = await tile();
+      const { saint, work, kept } = leftAt(book.href);
+
+      r = await walk(page, "book", () => page.locator("[data-walk-target]").first().click(), { film });
+      const faults = judge(r, { old: "route-leave", fresh: "route-settle", to: book.href, carried: "alone" });
+      const head = await page.evaluate(() => {
+        const cover = document.querySelector("[data-opening-cover] [data-cover]");
+        return cover ? { top: Math.round(cover.getBoundingClientRect().top), page: Math.round(window.scrollY) } : null;
+      });
+      if (!head) faults.push("the book's page has no cover at its head");
+      else if (head.page > 2) faults.push(`the book opened ${head.page}px down, not on its cover`);
+      await page.waitForSelector("[data-work-head]", { timeout: 15000 }).catch(() => faults.push("the book's text never came"));
+      note("a book: the reading room's cover travelling to the head of its page", faults, `${r.from} to ${r.to}`);
+      if (film) await sheet(ctx, film, "book", r.stills);
+
+      r = await walk(page, "book-back", () => page.locator(chevron).first().click(), { film });
+      const again = await tile();
+      const back = judge(r, { old: "route-sink", fresh: "route-arrive", to: "/reading", carried: "alone" });
+      if (!again || again.href !== book.href) back.push("the cover that was tapped is not on the page that came back");
+      else if (Math.abs(again.top - book.top) > 6) back.push(`the cover that was tapped came back at ${again.top}px, not at ${book.top}px where it was`);
+      note("a book: back to the reading room, the cover back in its tile", back, `${r.from} to ${r.to}, the tapped cover at ${again?.top}px (was ${book.top}px)`);
+      if (film) await sheet(ctx, film, "book-back", r.stills);
+
+      // The same book, left in the middle: a paragraph well down its first
+      // chapter, kept as the reader keeps it (lib/reader/position.ts). It
+      // opens on its cover, which the tile's picture travels to, and goes
+      // down to that paragraph once the page has arrived, not while it is
+      // arriving (components/saints/useWorkPlace.ts, useLanding). Not
+      // filmed: a film stops the transition, and the wait is by the clock.
+      await page.evaluate(
+        ([key, value]) => localStorage.setItem(key, JSON.stringify(value)),
+        [`purify.reader.position.${saint}/${work}`, { ...kept, savedAt: Date.now() }],
+      );
+      r = await walk(page, "book-kept", () => page.locator("[data-walk-target]").first().click());
+      const left = judge(r, { old: "route-leave", fresh: "route-settle", to: book.href, carried: "alone" });
+      const during = r.pictured[0]?.scrolled ?? null;
+      if (during === null) left.push("the page switch never ended");
+      else if (during > 2) left.push(`the page was ${during}px down before it had arrived: it went to the reader's place while the cover was still travelling`);
+      // Then it goes: the paragraph stands at the reading place, lit.
+      const landed = await page
+        .waitForFunction(([n, i]) => window.scrollY > 40 && document.querySelector(`[data-place="${n}:${i}"]`)?.getAttribute("data-focus") === "true", [kept.sectionN, kept.paragraph], { timeout: 6000 })
+        .then(() => true)
+        .catch(() => false);
+      if (!landed) left.push(`the page did not go on to the paragraph the reader left (${kept.sectionN}:${kept.paragraph})`);
+      note("a book left in the middle: its cover first, then the reader's paragraph", left, `${r.from} to ${r.to}, the page ${during}px down as it arrived`);
+      if (film) {
+        await sleep(page, 1400);
+        await page.screenshot({ path: path.join(film, "book-kept-there.png") });
+      }
+      await page.evaluate((key) => localStorage.removeItem(key), `purify.reader.position.${saint}/${work}`);
+
+      // And back from there, the cover far up the page and off the screen:
+      // a cover that is not in sight is not flown in from above. The tile
+      // arrives with its page, as a picture with nothing behind it does.
+      await sleep(page, 2200);
+      const away = await page.evaluate(() => {
+        const cover = document.querySelector("[data-opening-cover] [data-cover]");
+        return cover ? Math.round(cover.getBoundingClientRect().bottom) : null;
+      });
+      r = await walk(page, "book-read-on-back", () => page.locator(chevron).first().click(), { film });
+      const out = judge(r, { old: "route-sink", fresh: "route-arrive", to: "/reading" });
+      if (away === null) out.push("the cover was not on the page that was left");
+      else if (away > 0) out.push(`the cover was still in sight (its foot at ${away}px), so this did not test a cover off the screen`);
+      if (r.pictured[0]?.travelled) out.push("the cover was flown in from off the screen");
+      note("a book read on: back to the reading room, with no cover flown in from off the screen", out, `${r.from} to ${r.to}, the cover's foot at ${away}px when it was left`);
+      if (film) await sheet(ctx, film, "book-read-on-back", r.stills);
+    }
+
+    // A council's document, from its council's shelf: the same.
+    await go(page, "/reading/councils/first-nicaea/");
+    await page.waitForSelector("[data-council-shelf] a[href^='/councils/']", { timeout: 20000 }).catch(() => {});
+    await sleep(page, 1500);
+    const decree = await pick(page, "[data-council-shelf] li a[href^='/councils/']");
+    if (!decree) {
+      note("a council's document: its cover travelling to the head of its page", ["no document on screen to tap on the council's shelf"], "");
+    } else {
+      r = await walk(page, "council-book", () => page.locator("[data-walk-target]").first().click(), { film });
+      const faults = judge(r, { old: "route-leave", fresh: "route-settle", to: decree.href, carried: "alone" });
+      if (!(await page.locator("[data-opening-cover] [data-cover]").count())) faults.push("the document's page has no cover at its head");
+      note("a council's document: its shelf's cover travelling to the head of its page", faults, `${r.from} to ${r.to}`);
+      if (film) await sheet(ctx, film, "council-book", r.stills);
+      r = await walk(page, "council-book-back", () => page.locator(chevron).first().click());
+      note("a council's document: back to the shelf, the cover back in its place", judge(r, { old: "route-sink", fresh: "route-arrive", to: "/reading/councils/first-nicaea", carried: "alone" }), `${r.from} to ${r.to}`);
     }
 
     // The Florilegium (build 89 notes 6 and 12). A starter's tile carries its
