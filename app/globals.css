@@ -5318,8 +5318,14 @@ html[data-reading-mode="black"] .tile-sheen {
    "7 citations from the Fathers", at 52, was 2.93:1 on Light), and on Light's
    cards 62, 65 and 66 fell short too. Each palette names the shares under its
    own (Dark and True black 42; Candlelight 42, 48 and 52; Monastery, Councils
-   and Cappadocian 42 and 48; Light everything under 68). The test reads every
-   share written in app/ and components/, so the next odd one is held. */
+   and Cappadocian 42, 48 and 52; Light everything under 68). The test reads
+   every share written in app/ and components/, so the next odd one is held.
+   52 joined the three's list after the arithmetic had passed it: on a row
+   of Theology's hub, whose ground is lighter than a card, "7 citations from
+   the Fathers" read 4.49:1 on Monastery and 4.38:1 on Councils and
+   Cappadocian, measured on the export where the letters are
+   (scripts/words-on-pictures.mjs). At the three's own 55 percent it is
+   4.67:1 to 4.79:1. */
 @layer utilities {
  :where(html:not([data-reading-mode])) :is(.text-paper\/42, .text-paper\/45) {
  color: color-mix(in oklab, var(--color-paper) 50%, transparent);
@@ -5330,7 +5336,7 @@ html[data-reading-mode="black"] .tile-sheen {
  :where(html[data-reading-mode="candlelight"]) :is(.text-paper\/42, .text-paper\/45, .text-paper\/48, .text-paper\/50, .text-paper\/52, .text-paper\/55) {
  color: color-mix(in oklab, var(--color-paper) 60%, transparent);
  }
- :where(html[data-reading-mode="monastery"], html[data-reading-mode="councils"], html[data-reading-mode="cappadocian"]) :is(.text-paper\/42, .text-paper\/45, .text-paper\/48, .text-paper\/50) {
+ :where(html[data-reading-mode="monastery"], html[data-reading-mode="councils"], html[data-reading-mode="cappadocian"]) :is(.text-paper\/42, .text-paper\/45, .text-paper\/48, .text-paper\/50, .text-paper\/52) {
  color: color-mix(in oklab, var(--color-paper) 55%, transparent);
  }
  /* Every field's placeholder (1.9, the placeholder sweep; it began with the
@@ -7176,6 +7182,16 @@ html[data-reading-mode="parchment"] .plus-try-tile-lit:not(.dark-island *) {
  border: 1px solid rgb(255 255 255 / 0.085);
  border-color: color-mix(in srgb, var(--color-paper) 8.5%, transparent);
  box-shadow: inset 0 1px 0 rgb(var(--panel-sheen) / 0.07), 0 24px 38px -22px rgb(0 0 0 / 0.95), 0 2px 6px rgb(0 0 0 / 0.35);
+}
+/* Faint words on a tray, on Light. A tray is a step darker than Light's
+   page, and a step's count on the hub's card ("1 of 9", components/theology/
+   TheologyHub.tsx) stands on it under the step's picture as it fades in:
+   Light's own 70 percent read 4.26:1 there, measured on the export where
+   the letters are (scripts/words-on-pictures.mjs; 1.9, the Themes chat's
+   sweep). At 75 it is 4.83:1. Light alone: a light look draws its faint
+   text at a share of its own, most of them higher than this. */
+html[data-reading-mode="parchment"]:not([data-look]) .theology-tray .text-paper\/50 {
+ color: color-mix(in oklab, var(--color-paper) 75%, transparent);
 }
 /* The subject's own icon behind a card's head (the path's cards on the hub,
    components/theology/TheologyHub.tsx), blurred and grey: its light, not a
