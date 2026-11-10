@@ -219,7 +219,14 @@ Esther, 1 to 3 Maccabees, Sirach, Baruch, the Prayer of Manasseh and Jude.
 Either no holy person is named for them, or no public-domain icon of the one
 named passed. 1 and 2 Chronicles, Obadiah, Zechariah and 2 Esdras left the
 plate in 1.9 (above). Jude is held by the owner (his 98): the one mosaic of
-him at size names him Thaddeus, a question for the clergy review. Ruth shows Samuel, whom
+him at size names him Thaddeus, a question for the clergy review. For the
+rest, the search of 2026-11-10 (CC BY and CC BY-SA allowed, every name form
+in more than a dozen languages, Commons' categories and "depicts", Wikidata,
+the Dumbarton Oaks sets and the great Byzantine and Russian manuscripts on
+Commons) found no Orthodox picture of Ezra, Zerubbabel, Nehemiah, Tobit,
+Judith, Esther, the Maccabees, Jesus son of Sirach, Baruch or King Manasseh
+at a usable size on Commons (Rejected, below). They keep the plate until one
+turns up (his 86). Ruth shows Samuel, whom
 her "by" line names, because no icon of Ruth passed.
 
 ## Rejected, and why
@@ -246,6 +253,14 @@ not tell you any of this. Open the image and look at it.**
 | `File:The prophet Obadiah PRIZREN 2 IMG 5307-2.jpg` (BLAGO Fund, CC BY 4.0) | The fresco is hacked over with pick marks; the face is mostly gone. |
 | `File:RossanoGospelsFolio007vGoodSamaritan.jpg` | The only Orthodox Sirach found ("ΣΙΡΑΧ", Rossano Gospels, 6th century, public domain), but his square is about 330px. |
 | `File:Prophets01 (Ferapontov).jpg` | Its page names Baruch, but the figure's name is illegible and his scroll is Jeremiah 11:18; his head is about 300px. |
+| `File:Pilastro con icone, 600-650 ca. 03 solomone e i maccabei.jpg` (Sailko, CC BY 3.0) | St Solomonia of the Maccabees, Santa Maria Antiqua, Rome, about 600 to 650, inscribed "ϹΟΛΟΜΩΝΗ" and "ΑΓΙΑ", a square of about 1026px. Declined on 2026-11-10: the fresco has losses on the face and halo, and its page carries the Italian heritage notice (`Italy-MiBAC-disclaimer`): commercial reproduction of Italian state cultural property can need the Ministry's authorization whatever the photograph's licence, a legal question for an app with a paid tier. Using it would be the owner's legal call; declining it needs none. |
+| `File:Eleusa with Old Testament women (Annunciation cathedral in Moscow) by shakko 02.jpg` and `05.jpg` (CC BY-SA 3.0) | The frame medallions of Judith and Esther (Moscow, about 1700), named from Solntsev's labelled drawing of the icon, their own letters not legible: Judith's about 490px, below any shipped cover; Esther's about 715px, but a band of glare crosses her face. |
+| Santa Maria Antiqua's Judith at the walls of Bethulia (Sailko, CC BY 3.0) | Fragments; Judith herself cannot be made out. |
+| The Florence Baptistery Mattathias and Judas Maccabeus | Western, and 1270px or less. |
+| `File:The Dormition of St. Sava and the Holy Maccabee Martyrs (Patriarchate of Peć, 17th c.).png` | The file shows only the Dormition of St Sava; no Maccabees. |
+| The Menaion icons for August, the 1903 to 1911 Menaion reader prints | The Maccabees a tiny group among a month's saints; a black-and-white book print. |
+| `File:Detail of Genealogy of Mary mosaic at Chora (1).jpg` (CC BY-SA 3.0) | King Manasseh inscribed "ΜΑΝΑ..." but cut off at the photograph's edge, his head about 150px; the other Chora photographs show the whole dome. |
+| The Archangel Raphael on the deacon door of the Annunciation Cathedral (CC BY-SA 3.0) | Raphael alone, without Tobias, for Tobit. |
 | `File:Codex Amiantinus. Firenze, Biblioteca Medicea Laurenziana, Amiat.1, fol. 5r.jpg` (CC BY-SA 4.0) and the Florence Baptistery Ezra, Nehemiah and Zerubbabel | Western, and small for Ezra's head. No Orthodox Ezra, Nehemiah, Zerubbabel or Baruch at size was found under any name form in English, Russian, Greek, Serbian, Romanian or Georgian (the search of 2026-11-10). |
 | `File:Righteous Ruth.jpg`, `File:Righteous Esther.jpg` | 175x175 details of an icon whose large photographs are all CC BY-SA. |
 | `File:Prophet Esdra und Erzengel Uriel.jpg`, for Ezra | Two figures on a late 18th-century Moldavian panel; Ezra's square would be well under the prophets'. From 1.9 it is 2 Esdras' cover, as the scene of both (above). |
