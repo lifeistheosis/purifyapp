@@ -15,7 +15,7 @@
 // data (lib/dictionary/terms.ts) and say so in other languages.
 
 import Link from "next/link";
-import { useMemo, useSyncExternalStore } from "react";
+import { Fragment, useMemo, useSyncExternalStore } from "react";
 
 import { useTranslate } from "@/components/i18n/MessagesProvider";
 import { SearchDoor } from "@/components/search/SearchField";
@@ -34,15 +34,6 @@ function subscribeHash(onChange: () => void) {
 }
 const hashNow = () => decodeURIComponent(window.location.hash.slice(1));
 const noHash = () => "";
-
-function Chevron() {
-  return (
-    // It points the way on: to the left in Arabic and Urdu, as the pill's row runs.
-    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2.2} strokeLinecap="round" strokeLinejoin="round" aria-hidden className="rtl:-scale-x-100">
-      <path d="m9 6 6 6-6 6" />
-    </svg>
-  );
-}
 
 function Entry({ term, lit }: { term: DictionaryTerm; lit: boolean }) {
   const { t } = useTranslate();
@@ -64,20 +55,30 @@ function Entry({ term, lit }: { term: DictionaryTerm; lit: boolean }) {
         {term.definition}
       </p>
       {term.see && term.see.length > 0 ? (
-        <div className="mt-3 flex flex-wrap gap-2">
-          {term.see.map((link) => (
-            <Link
-              key={link.href}
-              href={link.href}
-              className="tap-press inline-flex items-center gap-1 rounded-pill border border-paper/15 bg-paper/[0.04] px-3 py-1 font-sans text-caption text-paper/80 transition-colors hover:border-paper/30 hover:text-paper"
-            >
-              <span lang="en" dir="ltr">
+        // Where to read on, as a line of links (1.9). It was a row of outlined
+        // pills, 29px tall: a list of places to go is not a row of pills (his
+        // word of 2026-11-10, CLAUDE.md), and a link in a sentence is a whole
+        // target as it stands (WCAG 2.5.5; checkMock's own exception).
+        <p className="mt-3 max-w-[62ch] font-sans text-detail leading-[1.7] text-paper/70">
+          <span className="me-1.5">{t("saints.see")}</span>
+          {term.see.map((link, i) => (
+            <Fragment key={link.href}>
+              {i > 0 ? (
+                <span aria-hidden className="mx-1.5">
+                  ·
+                </span>
+              ) : null}
+              <Link
+                href={link.href}
+                lang="en"
+                dir="ltr"
+                className="font-semibold text-paper/85 underline decoration-paper/30 underline-offset-[3px] hover:text-paper hover:decoration-paper/60"
+              >
                 {link.label}
-              </span>
-              <Chevron />
-            </Link>
+              </Link>
+            </Fragment>
           ))}
-        </div>
+        </p>
       ) : null}
     </article>
   );

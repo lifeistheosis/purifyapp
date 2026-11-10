@@ -29,7 +29,7 @@ export function WebKey({
 }) {
   const { t } = useTranslate();
   return (
-    <div className="saint-web-key -mx-1 flex h-[50px] gap-1 rounded-[17px] p-1 md:mx-auto md:max-w-[560px]">
+    <div className="saint-web-key -mx-1 flex h-[53px] gap-1 rounded-[17px] p-1 md:mx-auto md:max-w-[560px]">
       {(["all", ...filters] as const).map((f) => (
         <button
           key={f}

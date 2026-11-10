@@ -34,17 +34,22 @@ export function ChangelogControls() {
         // Written in English, as the notes they open are (build 90 note 4).
         lang="en"
         dir="ltr"
-        className="hover:text-paper transition-colors"
+        // 44 tall to the touch (they were 18.6px; checkMock, 2026-11-10).
+        className="inline-flex min-h-11 items-center hover:text-paper transition-colors"
       >
         Expand all
       </button>
-      <span className="text-paper/25">·</span>
+      {/* A mark between two buttons, not a word to read aloud; at a share each
+          palette holds to 4.5:1 (it was /25, 1.64:1 on Light). */}
+      <span aria-hidden className="text-paper/45">
+        ·
+      </span>
       <button
         type="button"
         onClick={() => setAll(false)}
         lang="en"
         dir="ltr"
-        className="hover:text-paper transition-colors"
+        className="inline-flex min-h-11 items-center hover:text-paper transition-colors"
       >
         Collapse all
       </button>

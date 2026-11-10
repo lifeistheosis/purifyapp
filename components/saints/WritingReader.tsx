@@ -212,7 +212,7 @@ export function WritingReader({
  </section>
 
  <footer id="source" className="mx-auto max-w-[680px] scroll-mt-24 border-t border-paper/8 pt-8">
- <p className="font-sans text-caption text-paper/40">
+ <p className="font-sans text-caption text-paper/45">
  {t("prayers.reader.sourceLabel")} {content.source}
  </p>
  </footer>

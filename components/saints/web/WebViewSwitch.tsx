@@ -97,7 +97,8 @@ export function WebViewSwitch({ idBase }: { idBase: string }) {
             onClick={() => choose(v)}
             onKeyDown={onKeyDown}
             className={cn(
-              "tap-press flex items-center gap-1.5 whitespace-nowrap rounded-pill px-3 font-sans text-detail font-semibold motion-safe:transition-colors",
+              // hit-44: 44 to the touch, the switch's drawn height kept (app/globals.css).
+              "hit-44 tap-press flex items-center gap-1.5 whitespace-nowrap rounded-pill px-3 font-sans text-detail font-semibold motion-safe:transition-colors",
               on ? "bg-paper text-night" : "text-paper/65 hover:text-paper",
             )}
           >

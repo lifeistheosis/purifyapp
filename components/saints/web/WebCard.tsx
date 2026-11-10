@@ -451,7 +451,7 @@ export function WebCard({
                         <Link
                           href={href}
                           prefetch={false}
-                          className="flex items-start gap-2 font-sans text-[12.5px] font-semibold leading-4 text-paper/60 underline-offset-4 hover:text-paper hover:underline"
+                          className="hit-44 flex items-start gap-2 font-sans text-[12.5px] font-semibold leading-4 text-paper/60 underline-offset-4 hover:text-paper hover:underline"
                         >
                           {head}
                           <ChevronRight size={11} className="mt-0.5 shrink-0 text-paper/35 rtl:-scale-x-100" />
@@ -528,7 +528,7 @@ export function WebCard({
         onPointerMove={pullMove}
         onPointerUp={pullEnd}
         onPointerCancel={pullEnd}
-        className="saint-web-handle saint-web-pull fixed left-1/2 z-20 flex h-10 max-w-[calc(100vw-24px)] items-center gap-2 rounded-t-[14px] pb-3 pe-3 ps-[7px] pt-1.5"
+        className="saint-web-handle saint-web-pull fixed left-1/2 z-20 flex h-11 max-w-[calc(100vw-24px)] items-center gap-2 rounded-t-[14px] pb-3 pe-3 ps-[7px] pt-1.5"
       >
         <span aria-hidden className="saint-web-grab saint-web-grab-small" />
         <WebAvatar node={node} size={18} className="saint-web-handle-face" />

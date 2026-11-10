@@ -106,7 +106,8 @@ export function CartDrawer() {
         aria-hidden
         onClick={() => setOpen(false)}
         className={cn(
-          "fixed inset-0 z-40 bg-black/50 transition-opacity duration-200",
+          // The house scrim (components/ui/Sheet.tsx): the palette's night, not a typed black.
+          "fixed inset-0 z-40 bg-night/60 transition-opacity duration-200",
           open ? "opacity-100" : "pointer-events-none opacity-0",
         )}
       />
@@ -121,8 +122,10 @@ export function CartDrawer() {
         aria-label={t("shop.cart")}
         inert={!open}
         className={cn(
-          "fixed inset-y-0 right-0 z-50 flex w-full max-w-[400px] flex-col bg-night shadow-2xl transition-transform duration-300 ease-out",
-          open ? "translate-x-0" : "translate-x-full",
+          // At the end of the line, and out past it when closed: the right in
+          // English, the left in Arabic (it stayed right, by left and right).
+          "fixed inset-y-0 end-0 z-50 flex w-full max-w-[400px] flex-col bg-night shadow-2xl transition-transform duration-300 ease-out",
+          open ? "translate-x-0" : "ltr:translate-x-full rtl:-translate-x-full",
         )}
       >
         <header
@@ -133,7 +136,7 @@ export function CartDrawer() {
           // because app/globals.css records that custom safe-area utilities lose
           // to .py-* on specificity and silently do nothing.
           style={{ paddingTop: "calc(env(safe-area-inset-top, 0px) + 1rem)" }}
-          className="flex items-center justify-between border-b border-white/8 px-5 pb-4"
+          className="flex items-center justify-between border-b border-paper/8 px-5 pb-4"
         >
           <p className="font-heading text-title-sm font-bold text-paper">
             {t("shop.yourCart")}
@@ -143,7 +146,7 @@ export function CartDrawer() {
             type="button"
             onClick={() => setOpen(false)}
             aria-label={t("shop.closeCart")}
-            className="tap-press flex h-9 w-9 items-center justify-center rounded-full text-paper/60 hover:bg-paper/10 hover:text-paper"
+            className="tap-press flex h-11 w-11 items-center justify-center rounded-full text-paper/60 hover:bg-paper/10 hover:text-paper"
           >
             <CloseIcon />
           </button>
@@ -200,7 +203,7 @@ export function CartDrawer() {
                             {item.title}
                           </Link>
                           {lineTotal < listTotal ? (
-                            <p className="shrink-0 text-right font-sans text-detail font-semibold text-paper">
+                            <p className="shrink-0 text-end font-sans text-detail font-semibold text-paper">
                               <span className="block text-eyebrow font-normal text-paper/45 line-through">
                                 {formatPrice(listTotal, item.currency)}
                               </span>
@@ -265,7 +268,7 @@ export function CartDrawer() {
               ) : null}
             </div>
 
-            <div className="border-t border-white/8 px-5 py-4 safe-pb">
+            <div className="border-t border-paper/8 px-5 py-4 safe-pb">
               <div className="flex items-center justify-between">
                 <p className="font-sans text-ui text-paper/70">{t("shop.subtotalX")}</p>
                 <p className="font-sans text-title-sm font-semibold text-paper">

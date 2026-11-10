@@ -1234,7 +1234,18 @@ export function WebConstellation({
         ) : null}
 
         <div ref={slotRef} className="relative mx-auto mt-2 w-full max-w-[560px]" style={{ height: layout.height }}>
-          <div ref={canvasRef} data-saint-web-canvas className="saint-web-canvas absolute inset-0">
+          <div
+            ref={canvasRef}
+            data-saint-web-canvas
+            // The constellation does not mirror in Arabic (the arbiter's rule of
+            // 2026-11-10: only a layout that reads in a direction does). Its
+            // saints fill places in balanced pairs round the middle one, right
+            // and left, above and below (lib/saints/webLayout.ts, PLACES): no
+            // time and no order a reader follows across it.
+            data-mock-allow="mirror"
+            data-mock-why="the constellation's places are pairs round the middle saint, in no reading order"
+            className="saint-web-canvas absolute inset-0"
+          >
             {/* The icon's own light behind him, a grey from its lightness, never its hue. */}
             {center.icon ? (
               <div
@@ -1446,7 +1457,7 @@ export function WebConstellation({
         data-low={card === "tucked" ? "" : undefined}
         inert={!putBackShown}
         onClick={onPutBack}
-        className="saint-web-putback tap-press fixed z-20 flex h-9 items-center gap-[7px] rounded-pill pe-3.5 ps-3 font-sans text-[13px] font-semibold text-paper"
+        className="saint-web-putback tap-press fixed z-20 flex h-11 items-center gap-[7px] rounded-pill pe-3.5 ps-3 font-sans text-[13px] font-semibold text-paper"
       >
         <PutBackMark />
         {t("saints.web.putBack")}

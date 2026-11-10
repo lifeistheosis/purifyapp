@@ -374,8 +374,11 @@ describe("a light look's accent, at the shares the app writes for words", () => 
 // measured them on 2026-11-10 at 3.8:1 on Dark and True black, 2.3:1 on
 // Light, 2.9:1 on Candlelight and 3.3:1 on Monastery. They are words a reader
 // reads, so they wear the faintest share the rules above hold to 4.5:1.
+// A Father's work's source line ("Source: Translation: E. B. Pusey, 1838")
+// joined them on the same day: checkMock read it at 2.31:1 on Light and 3.82
+// on Dark (components/saints/WritingReader.tsx).
 describe("words once drawn at 40 percent", () => {
-  for (const file of ["components/streak/PrayerRope.tsx", "components/today/VerseOfDayView.tsx"]) {
+  for (const file of ["components/streak/PrayerRope.tsx", "components/today/VerseOfDayView.tsx", "components/saints/WritingReader.tsx"]) {
     it(`${file}: every text share is one the rules hold`, () => {
       const src = readFileSync(join(process.cwd(), file), "utf8");
       const shares = [...src.matchAll(/\btext-paper\/(\d+)\b/g)].map((m) => Number(m[1]));

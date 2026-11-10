@@ -60,7 +60,8 @@ export function MobileWorkPill({
   const name = pill(head);
   // A name of the work's own is English; one from the catalog is the reader's.
   const nameLang = "text" in head.pill.name ? "en" : undefined;
-  const arrow = "h-10 w-10 shrink-0 inline-flex items-center justify-center";
+  // 44 to the touch: h-10 drew 42.5px at the reader's text size (checkMock, 2026-11-10).
+  const arrow = "h-11 w-11 shrink-0 inline-flex items-center justify-center";
   return (
     <div
       aria-label={t("bible.chapterSwitcher")}

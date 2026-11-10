@@ -177,7 +177,8 @@ export function CouncilMap({
               {last}
             </span>
             <span className="atlas-door-go">
-              <Play size={14} />
+              {/* Centred by its own path, so its box mirrors in Arabic (a 1px nudge did not). */}
+              <Play size={14} centered />
               <span>{t("councils.map.slider")}</span>
             </span>
           </span>

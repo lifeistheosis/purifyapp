@@ -185,7 +185,7 @@ async function WhatsNewContent() {
  href="https://discord.gg/VzBYYUsNJ6"
  target="_blank"
  rel="noopener noreferrer"
- className="text-sky-400 underline underline-offset-2 decoration-sky-400/50 hover:decoration-sky-300 hover:text-sky-300"
+ className="text-paper underline underline-offset-2 decoration-paper/30 hover:decoration-paper"
  >
  <T k="ui.hier" />
  </a>{" "}
@@ -213,7 +213,7 @@ async function WhatsNewContent() {
  href="https://discord.gg/VzBYYUsNJ6"
  target="_blank"
  rel="noopener noreferrer"
- className="text-sky-400 underline underline-offset-2 decoration-sky-400/50 hover:decoration-sky-300 hover:text-sky-300"
+ className="text-paper underline underline-offset-2 decoration-paper/30 hover:decoration-paper"
  >
  <T k="ui.here" />
  </a>
@@ -286,7 +286,7 @@ async function WhatsNewContent() {
                     open={yi === 0 && mi === 0}
                     className="group/mo rounded-md border border-paper/10 bg-paper/[0.015] open:bg-paper/[0.03] transition-colors"
                   >
-                    <summary className="cursor-pointer list-none px-4 py-3 flex items-center justify-between gap-3">
+                    <summary className="cursor-pointer list-none min-h-11 px-4 py-3 flex items-center justify-between gap-3">
                       <span className="flex items-baseline gap-3 min-w-0">
                         <span lang="en" dir="ltr" className="font-sans text-detail font-semibold text-paper/90 truncate">
                           {mo.label}
@@ -310,7 +310,7 @@ async function WhatsNewContent() {
                           open={yi === 0 && mi === 0 && di === 0}
                           className="group/day rounded-md border border-paper/10 bg-night-soft/25 open:bg-night-soft/45 transition-colors"
                         >
-                          <summary className="cursor-pointer list-none px-4 py-2.5 flex items-center justify-between gap-3">
+                          <summary className="cursor-pointer list-none min-h-11 px-4 py-2.5 flex items-center justify-between gap-3">
                             <span className="flex items-baseline gap-3 min-w-0">
                               <span
                                 title={d.date}

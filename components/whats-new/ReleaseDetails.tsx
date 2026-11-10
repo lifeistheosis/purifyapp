@@ -28,7 +28,7 @@ export function ReleaseDetails({ entry: e }: { entry: Entry }) {
   // say so with their direction (build 90 note 4).
   return (
     <details lang="en" dir="ltr" className="group/rel rounded-md border border-paper/10 bg-night-soft/40 open:bg-night-soft/70 transition-colors">
-      <summary className="cursor-pointer list-none px-4 py-3">
+      <summary className="cursor-pointer list-none min-h-11 px-4 py-3">
         <div className="flex items-baseline gap-3 flex-wrap">
           <span className="font-sans text-body font-bold text-paper tracking-[-0.01em]">
             {e.version}
